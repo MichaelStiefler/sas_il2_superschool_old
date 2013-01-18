@@ -11,7 +11,6 @@ import com.maddox.il2.objects.weapons.GunNull;
 import com.maddox.rts.Property;
 
 public class F_86D40 extends F_86D 
-implements TypeBayDoor
 {
 	public F_86D40() {
 	}
