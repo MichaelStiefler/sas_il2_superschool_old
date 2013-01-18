@@ -22,6 +22,7 @@ public abstract class AD_Tanker extends Scheme1
     cGearPos = 0.0F;
     cGear = 0.0F;
     bNeedSetup = true;
+    bDrogueExtended = true;
   }
 
   protected void moveAileron(float f) {
@@ -259,10 +260,17 @@ public abstract class AD_Tanker extends Scheme1
     if (FM.getAltitude() < 1000 || FM.CT.getGear() > 0.0 || FM.CT.getArrestor() > 0.0) {
       hierMesh().chunkVisible("FuelLine1_D0", false);
       hierMesh().chunkVisible("Drogue1_D0", false);
+      bDrogueExtended = false;
     } else {
       hierMesh().chunkVisible("FuelLine1_D0", true);
       hierMesh().chunkVisible("Drogue1_D0", true);
+      bDrogueExtended = true;
     }
+  }
+
+  public boolean isDrogueExtended()
+  {
+    return bDrogueExtended;
   }
 
   public void doMurderPilot(int i) {
@@ -570,6 +578,7 @@ public abstract class AD_Tanker extends Scheme1
   private float cGear;
   private boolean bNeedSetup;
   protected float arrestor;
+  private boolean bDrogueExtended;
 
   static {
     Class class1 = com.maddox.il2.objects.air.AD_Tanker.class;

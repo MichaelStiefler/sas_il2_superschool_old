@@ -5,6 +5,7 @@ package com.maddox.il2.fm;
 import com.maddox.JGP.*;
 import com.maddox.il2.ai.*;
 import com.maddox.il2.engine.*;
+import com.maddox.il2.game.Main;
 import com.maddox.il2.objects.air.*;
 import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.il2.objects.sounds.Voice;
@@ -143,6 +144,7 @@ public class FlightModelMain extends FMMath
     private float CyBlownFlapsOn;
     private float CyBlownFlapsOff;
     private double ThrustBlownFlaps;
+    public float WingspanFolded;
 	// --------------------------------------------------------
 
     public float getSpeedKMH()
@@ -249,6 +251,7 @@ public class FlightModelMain extends FMMath
         Wingspan = sectfile.get(s2, "Wingspan", 0.0F);
         if(Wingspan == 0.0F)
             throw new RuntimeException(s1);
+        WingspanFolded = sectfile.get(s2, "WingspanFolded", 0.0F);
         Length = sectfile.get(s2, "Length", 0.0F);
         if(Length == 0.0F)
             throw new RuntimeException(s1);
@@ -404,7 +407,9 @@ public class FlightModelMain extends FMMath
             throw new RuntimeException(s1);
         CT.bHasWingControl = j == 1;
         j = sectfile.get(s2, "CCockpitDoor", 0);
-        if(j != 0 && j != 1)
+        if(j == 2)
+        	CT.bNoCarrierCanopyOpen = true;
+        if(j != 0 && j != 1 && j != 2)
             throw new RuntimeException(s1);
         CT.bHasCockpitDoorControl = j == 1;
         j = sectfile.get(s2, "CWheelBrakes", 1);
@@ -1941,139 +1946,201 @@ public class FlightModelMain extends FMMath
     }
 
     //TODO: Following three methods are part of Auto DiffFM mod by Benitomuso
-	// --------------------------------------------------------
-    private static boolean exisstFile(String s)
-    {
-        try
-        {
-            SFSInputStream sfsinputstream = new SFSInputStream(s);
-            sfsinputstream.close();
-        }
-        catch(Exception exception)
-        {
-            return false;
-        }
-        return true;
-    }
-    
-    public static SectFile sectFile(String s)
-    {
-  	boolean bPrintFM = false;
-		if (Config.cur.ini.get("Mods", "PrintFMDinfo", 0) > 0)
-			bPrintFM = true;
-        SectFile sectfile = null;
-        String s1 = s.toLowerCase();
-        String s2 = "gui/game/buttons";
-        int i = 0;
-        byte byte0 = 58;
-        i = s1.indexOf(byte0);
-        if(-1 != i)
-        {
-            s2 = s1.substring(i + 1, s1.length());
-            s1 = s1.substring(0, i);
-            if(s.endsWith(".emd"))
-            {
-                s2 = s2.substring(0, s2.length() - 4);
-                s1 = s1 + ".emd";
-            }
-        }
-        prButtons = Config.cur.ini.get("Mods", "PALButtonsPrefix", "").trim();
-        if(prButtons != null && prButtons.length() > 0)
-        {
-            String s3 = prButtons + s2;
-            int ra = s2.lastIndexOf('/');
-            if(ra > -1)
-                s3 = s2.substring(0, ra + 1) + prButtons + s2.substring(ra + 1, s2.length());
-            if(exisstFile(s3))
-                s2 = s3;
-        }
-        try
-        {
-            Object obj = Property.value(s, "stream", null);
-            InputStream inputstream;
-            if(obj != null)
-            {
-                inputstream = (InputStream)obj;
-            } else
-            {
-          	  if(bPrintFM){
-                System.out.println("sFMDir = " + s2);
-                System.out.println("s1 = " + s1);
-                System.out.println("s = " + s);
-                System.out.println("m_lastFMFile = " + lastFMFile);
-          	  }
-                if(fmDir == null)
-                {
-                    fmDir = new InOutStreams();
-                    fmDir.open(Finger.LongFN(0L, s2));
-                    fmDirs.add(fmDir);
-                    fmDirNames.add(s2);
-                    if(bPrintFM)
-                    System.out.println("opening new fm file " + s2);
-                } else
-                if(!s2.equalsIgnoreCase(lastFMFile))
-                {
-                    fmDir = null;
-                    int j = 0;
-                    do
-                    {
-                        if(j >= fmDirNames.size())
-                            break;
-                        String s3 = (String)fmDirNames.get(j);
-                        if(s2.equalsIgnoreCase(s3))
-                        {
-                            fmDir = (InOutStreams)fmDirs.get(j);
-                            if(bPrintFM)
-                            System.out.println("getting fm file " + s2);
-                            break;
-                        }
-                        j++;
-                    } while(true);
-                    if(null == fmDir)
-                    {
-                        fmDir = new InOutStreams();
-                        fmDir.open(Finger.LongFN(0L, s2));
-                        fmDirs.add(fmDir);
-                        fmDirNames.add(s2);
-                        if(bPrintFM)
-                        System.out.println("opening new fm file " + s2);
-                    }
-                }
-                lastFMFile = s2;
-                inputstream = fmDir.openStream("" + Finger.Int(s1 + "d2wO"));
-                if(inputstream == null)
-                    inputstream = fmDir.openStream("" + Finger.Int(s1 + "d2w0"));
-            }
-            inputstream.mark(0);
-            sectfile = new SectFile(new InputStreamReader(new KryptoInputFilter(inputstream, getSwTbl(Finger.Int(s1 + "ogh9"), inputstream.available())), "Cp1252"));
-            inputstream.reset();
-            if(obj == null)
-                Property.set(s, "stream", inputstream);
-        }
-        catch(Exception exception) { }
-        return sectfile;
-    }
+  	// --------------------------------------------------------
+      private static boolean exisstFile(String s)
+      {
+          try
+          {
+              SFSInputStream sfsinputstream = new SFSInputStream(s);
+              sfsinputstream.close();
+          }
+          catch(Exception exception)
+          {
+              return false;
+          }
+          return true;
+      }
+      
+    //By PAL    
+      public static SectFile sectFile(String s)
+      {
+          boolean bPrintFM = (Config.cur.ini.get("Mods", "PrintFMDinfo", 0) != 0);
+      	String prButtons = Config.cur.ini.get("Mods", "PALButtonsPrefix", "").trim();
+          SectFile sectfile = null;
+          String s1 = s.toLowerCase();
+      //BY PAL, from DiffFM, begin    
+          String s2 = "gui/game/buttons";
+          int i = s1.indexOf(":"); //By PAL, specific FMD
+          if(i > -1)
+          {
+              s2 = s1.substring(i + 1, s1.length());
+              s1 = s1.substring(0, i);
+              if(s.endsWith(".emd"))
+              {
+                  s2 = s2.substring(0, s2.length() - 4);
+                  s1 = s1 + ".emd";
+              }
+     			System.out.println("FM called '" + s + "' is being loaded from File: '" + s2 +"'");           
+          }      
+          //By PAL, alternative buttons
+          if (prButtons != null)
+          	if (prButtons.length() > 0)
+          {
+          	String s3 = prButtons + s2;
+           	int ra = s2.lastIndexOf('/');       	
+          	//By PAL, compose 'gui/game/' + 'test' + 'buttons'
+          	if (ra > -1)	//By PAL, if it has / character
+          		s3 = s2.substring(0, ra + 1) + prButtons + s2.substring(ra + 1, s2.length());        		
+    			//By PAL, if it exists, then replace original
+     			if (exisstFile(s3))
+     			{
+     				s2 = s3;
+  	   			System.out.println("FM called '" + s + "' is being loaded from Alternative File: '" + s2 +"'");
+     			}	
+          }
+           
+      //BY PAL, from DiffFM, end
+          try
+          {
+              Object obj = Property.value(s, "stream", null);
+              InputStream inputstream = null;
+              if(obj != null)
+              {
+                  inputstream = (InputStream)obj;
+              } else
+              {
+      //BY PAL, DiffFM begin            	
+                  if(bPrintFM)
+                  {
+                      System.out.println("sFMDir = " + s2);
+                      System.out.println("s1 = " + s1);
+                      System.out.println("s = " + s);
+                      System.out.println("m_lastFMFile = " + lastFMFile);
+                  }                
+                  if(fmDir == null)
+                  {
+                  	if (exisstFile(s2))
+                      {
+  	                    fmDir = new InOutStreams();
+                      	fmDir.open(Finger.LongFN(0L, s2));
+  	    			//BY PAL, from DiffFM, begin
+  	                    fmDirs.add(fmDir);
+  	                    fmDirNames.add(s2);                  
+                      }
+                      else
+                      {
+                      	System.out.println("Warning, the '" + s2 + "' File Doesn't Exist! Check your Configuration.");
+                      }                                        
+                  } else
+                  if(!s2.equalsIgnoreCase(lastFMFile))
+                  {
+                      fmDir = null;
+                      if (exisstFile(s2))
+                      {
+  	                    int j = 0;
+  	                    do
+  	                    {
+  	                        if(j >= fmDirNames.size())
+  	                            break;
+  	                        String s3 = (String)fmDirNames.get(j);
+  	                        if(s2.equalsIgnoreCase(s3))
+  	                        {
+  	                            fmDir = (InOutStreams)fmDirs.get(j);
+  	                			lastFMFile = s2;                            
+  	                            break;
+  	                        }
+  	                        j++;                         
+  	                    }
+  	                    while(true);
+  	                    if(null == fmDir)
+  	                    {                 	
+  	                        fmDir = new InOutStreams();
+  	                        fmDir.open(Finger.LongFN(0L, s2));
+  	                        fmDirs.add(fmDir);
+  	                        fmDirNames.add(s2);
+  	                        lastFMFile = s2;	                        
+  	                    }                   	
+                      }
+                      else
+                      {
+                      	System.out.println("Warning, the '" + s2 + "' File Doesn't Exist! Check your Configuration.");
+                      }
+                  }
+                  
+                  if (fmDir == null)
+                  {
+                  	if (Main.cur().missionLoading != null)
+                  	{
+  	                	BackgroundTask.cancel("Mission Cancelled, Error in FM!!!" +
+  	                		"\n\nThere was a problem loading FM called:\n'" + s +
+  								"'\n\nIt is not present in File:\n'" + s2 + "'");			             				              				            	
+  	    				return sectfile;
+                  	}                	                	                
+  	                s1 = "FlightModels/Bf-109F-2.fmd";	//By PAL; open PlaceHolder DM to avoid 60& CTD!!!                
+                  	return sectFile(s1);
+                  }
+                  
+                  if (fmDir != null)
+                  {
+  	            //By PAL, if it didn't work with 4.09 / 4.111 Encoding:
+  	                if (inputstream == null)
+  						inputstream = fmDir.openStream("" + Finger.Int(s1 + "d2w0"));                	                	
+  	    		//BY PAL, check it with 4.101 Encoding:
+  	                if (inputstream == null)	    		
+  	    				inputstream = fmDir.openStream("" + Finger.Int(s1 + "d2wO"));                               
+  	            //By PAL, if it didn't work with 4.101 neither with 4.111 then HSFX6 Expert Encoding:
+  	                if (inputstream == null)            
+  	                	inputstream = fmDir.openStream("" + Finger.Int(s1 + "d2w5"));                	
+                  }
+                  if (inputstream == null) //By PAL, Error: no FM
+                  {
+                  	System.out.println("Error loading FM called '" + s + "'!");
+                  	System.out.println("It Cannot be Loaded from '" + s2 + "' File");
+                  	if(s.endsWith(".emd"))
+                  	{
+                  		System.out.println("*** This should have been the reason of the 'Explosion in the Air' when mission started ***");          		
+                  	}
+                  	else
+                  	{
+                  		System.out.println("*** This was the Reason of your 60% or 70% CTD ***");
+                  	}		                                	               			
+                  }
+              }
+      	//BY PAL, DiffFM end            
+          	inputstream.mark(0);
+              sectfile = new SectFile(new InputStreamReader(new KryptoInputFilter(inputstream, getSwTbl(Finger.Int(s1 + "ogh9"), inputstream.available())), "Cp1252"));
+              inputstream.reset();
+              if(obj == null)
+                  Property.set(s, "stream", inputstream);               
+          }
+          catch(Exception exception)
+          {
+          	//By PAL, tell the Reason of the Crash
+          	System.out.println("FM Loading General Exception!\nWarning, the '" + s + "' cannot be loaded from '" + s2 + "' File");
+          } 
+          return sectfile;
+      }
 
-    private static int[] getSwTbl(int i, int j)
-    {
-        if(i < 0)
-            i = -i;
-        if(j < 0)
-            j = -j;
-        int k = (j + i / 5) % 16 + 14;
-        int l = (j + i / 19) % Finger.kTable.length;
-        if(k < 0)
-            k = -k % 16;
-        if(k < 10)
-            k = 10;
-        if(l < 0)
-            l = -l % Finger.kTable.length;
-        int ai[] = new int[k];
-        for(int i1 = 0; i1 < k; i1++)
-            ai[i1] = Finger.kTable[(l + i1) % Finger.kTable.length];
+      private static int[] getSwTbl(int i, int j)
+      {
+          if(i < 0)
+              i = -i;
+          if(j < 0)
+              j = -j;
+          int k = (j + i / 5) % 16 + 14;
+          int l = (j + i / 19) % Finger.kTable.length;
+          if(k < 0)
+              k = -k % 16;
+          if(k < 10)
+              k = 10;
+          if(l < 0)
+              l = -l % Finger.kTable.length;
+          int ai[] = new int[k];
+          for(int i1 = 0; i1 < k; i1++)
+              ai[i1] = Finger.kTable[(l + i1) % Finger.kTable.length];
 
-        return ai;
-    }
-	// --------------------------------------------------------
+          return ai;
+      }
+  	// --------------------------------------------------------
 
 }

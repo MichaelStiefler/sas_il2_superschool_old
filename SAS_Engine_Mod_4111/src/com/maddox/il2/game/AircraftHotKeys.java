@@ -681,8 +681,6 @@ public class AircraftHotKeys
 			hudWeapon(flag, FM.CT.rocketHookSelected);
 			break;
 		case 19:
-			//if (bBombBayDoors && hasBayDoors())
-			//	FM.CT.bHasBayDoors = true;
 			FM.CT.WeaponControl[3] = flag;
 			hudWeapon(flag, 3);
 			if ((aircraft instanceof TypeHasToKG) && FM.CT.Weapons[3] != null && (FM.CT.Weapons[3][0] instanceof TorpedoGun) && FM.CT.Weapons[3][0].haveBullets())
