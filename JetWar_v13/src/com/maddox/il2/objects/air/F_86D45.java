@@ -14,7 +14,6 @@ import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
 public class F_86D45 extends F_86D 
-implements TypeBayDoor
 {
 
 	public F_86D45() {
