@@ -2397,15 +2397,22 @@ public class AircraftState {
 			}
 			// TODO: Edit allowing F-86D to keep rocket tray door open
 			// indefinitely
-			if (!((actor instanceof TypeFighter) && (actor instanceof TypeBayDoor))) {
+			if (!((actor instanceof TypeFighter) && aircraft.FM.CT.bHasBayDoors)) {
 				// TODO: Don't disable this statement and bailout. Else, you
 				// won't be able to bailout!
 				bailout();
-				if (World.Rnd().nextFloat() < 0.25F	&& !((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.saveWeaponControl[3]	&& (!(actor instanceof TypeBomber) || ((SndAircraft) (aircraft)).FM.isReadyToReturn() || ((SndAircraft) (aircraft)).FM.isPlayers() && (((SndAircraft) (aircraft)).FM instanceof RealFlightModel) && ((RealFlightModel) ((SndAircraft) (aircraft)).FM).isRealMode() && !((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.bHasBayDoors))
-					((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.BayDoorControl = 0.0F;
-				
-			} else if (World.Rnd().nextFloat() < 0.125F	&& !((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.saveWeaponControl[3]	&& (!(actor instanceof TypeBomber) || ((FlightModelMain) (((SndAircraft) (aircraft)).FM)).AP.way.curr().Action != 3) && !((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.bHasBayDoors)
-				((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.BayDoorControl = 0.0F;
+	            if(World.Rnd().nextFloat() < 0.25F && !aircraft.FM.CT.saveWeaponControl[3])
+	                if(aircraft.FM.isPlayers() && (aircraft.FM instanceof RealFlightModel) && ((RealFlightModel)aircraft.FM).isRealMode())
+	                {
+	                    if(!aircraft.FM.CT.bHasBayDoors)
+	                        aircraft.FM.CT.BayDoorControl = 0.0F;
+	                } else
+	                if(!(actor instanceof TypeBomber) || aircraft.FM.isReadyToReturn())
+	                    aircraft.FM.CT.BayDoorControl = 0.0F;
+	            bailout();
+	        } else
+	        if(World.Rnd().nextFloat() < 0.125F && !aircraft.FM.CT.saveWeaponControl[3] && (!(actor instanceof TypeBomber) || aircraft.FM.AP.way.curr().Action != 3))
+	            aircraft.FM.CT.BayDoorControl = 0.0F;
 		}
 	}
 
@@ -3105,6 +3112,9 @@ public class AircraftState {
 		netmsgguaranted.writeByte(releaseDelayLow);
 		netmsgguaranted.writeByte(releaseDelayHigh);
 		// TODO: -- Added Code for Net Replication --
+		//TODO: Bay Doors
+        if(aircraft.FM.CT.bHasBayDoors)
+            netmsgguaranted.writeByte((int)aircraft.FM.CT.BayDoorControl);
 	}
 
 	public void netFirstUpdate(NetMsgInput netmsginput) throws IOException {
