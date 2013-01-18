@@ -639,22 +639,6 @@ public class AircraftHotKeys
 			HUD.log(hudLogWeaponId, "OutOfAmmo");
 	}
 
-	private boolean hasBayDoors()
-	{
-		boolean bool = false;
-		//TODO: DBW Version
-		if ((Aircraft) FM.actor instanceof A_20 || (Aircraft) FM.actor instanceof B_17 || (Aircraft) FM.actor instanceof B_24 || (Aircraft) FM.actor instanceof B_25
-				|| (Aircraft) FM.actor instanceof B_29X	|| (Aircraft) FM.actor instanceof BLENHEIM || (Aircraft) FM.actor instanceof DO_335 || (Aircraft) FM.actor instanceof MOSQUITO 
-				|| (Aircraft) FM.actor instanceof HE_111H2 || (Aircraft) FM.actor instanceof IL_10 || (Aircraft) FM.actor instanceof JU_88A4 || ((Aircraft) FM.actor instanceof ME_210 && !((Aircraft) FM.actor instanceof ME_210CA1ZSTR))
-				|| (Aircraft) FM.actor instanceof PE_2 || (Aircraft) FM.actor instanceof PE_8 || (Aircraft) FM.actor instanceof R_10 || (Aircraft) FM.actor instanceof SB
-				|| (Aircraft) FM.actor instanceof SU_2 || (Aircraft) FM.actor instanceof TB_3 || (Aircraft) FM.actor instanceof IL_2 || (Aircraft) FM.actor instanceof IL_4
-				|| (Aircraft) FM.actor instanceof FW_200 || (Aircraft) FM.actor instanceof KI_21 || (Aircraft) FM.actor instanceof YAK_9B || (Aircraft) FM.actor instanceof TU_2S
-				|| (Aircraft) FM.actor instanceof TBF || (Aircraft) FM.actor instanceof CantZ1007 || (Aircraft) FM.actor instanceof SM79 || (Aircraft) FM.actor instanceof Do217 || (Aircraft) FM.actor instanceof TypeBayDoor)
-			bool = true;
-		//DBW End
-		return bool;
-	}
-
 	private void doCmdPilot(int i, boolean flag)
 	{
 		if(!setBombAimerAircraft())
@@ -697,8 +681,8 @@ public class AircraftHotKeys
 			hudWeapon(flag, FM.CT.rocketHookSelected);
 			break;
 		case 19:
-			if (bBombBayDoors && hasBayDoors())
-				FM.CT.bHasBayDoors = true;
+			//if (bBombBayDoors && hasBayDoors())
+			//	FM.CT.bHasBayDoors = true;
 			FM.CT.WeaponControl[3] = flag;
 			hudWeapon(flag, 3);
 			if ((aircraft instanceof TypeHasToKG) && FM.CT.Weapons[3] != null && (FM.CT.Weapons[3][0] instanceof TorpedoGun) && FM.CT.Weapons[3][0].haveBullets())
@@ -1116,9 +1100,8 @@ public class AircraftHotKeys
 			case 131: // '\025'
 				if(bBombBayDoors)
 				{
-					if(!hasBayDoors())
+					if(!FM.CT.bHasBayDoors)
 						break;
-					((FlightModelMain) (FM)).CT.bHasBayDoors = true;
 					if(((FlightModelMain) (FM)).CT.BayDoorControl != 0.0F)
 					{
 						((FlightModelMain) (FM)).CT.BayDoorControl = 0.0F;
