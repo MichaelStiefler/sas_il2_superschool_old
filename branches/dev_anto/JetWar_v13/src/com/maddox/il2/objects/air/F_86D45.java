@@ -22,8 +22,6 @@ public class F_86D45 extends F_86D
 
 	public void onAircraftLoaded() {
 		super.onAircraftLoaded();
-		FM.CT.bHasBayDoors = true;
-		FM.CT.bHasDragChuteControl = true;
 		bHasDeployedDragChute = false;
 		this.setGunNullOwner();
 	}

@@ -150,6 +150,7 @@ public class Controls
 	private float				BlownFlaps;
 	public float				dvBlownFlaps;
 	public String				BlownFlapsType;
+	public boolean				bNoCarrierCanopyOpen;
 	// --------------------------------------------------------
 
 	public Controls(FlightModelMain flightmodelmain)
@@ -260,6 +261,7 @@ public class Controls
 				bHasBlownFlaps = false;
 				BlownFlapsControl = 0.0F;
 				dvBlownFlaps = 0.5F;
+				bNoCarrierCanopyOpen = false;
 				// --------------------------------------------------------
 
 	}

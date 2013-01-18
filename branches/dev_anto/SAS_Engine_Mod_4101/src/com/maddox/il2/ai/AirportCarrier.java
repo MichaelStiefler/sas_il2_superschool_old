@@ -587,13 +587,17 @@ public class AirportCarrier extends Airport
 			byte0 = 13;
         else if(aircraft.FM.CT.bHasWingControl) //This section controls spacing between aircraft for those with folding wings not previously mentioned
 		{
-			if (aircraft.FM.Wingspan < 13 || aircraft instanceof com.maddox.il2.objects.air.JU_87)
+        	float Span;
+        	if(aircraft.FM.WingspanFolded != 0.0F)
+        		Span = aircraft.FM.WingspanFolded;
+        	else Span = aircraft.FM.Wingspan;
+        	if (Span < 13 || aircraft instanceof com.maddox.il2.objects.air.JU_87)
 				byte0 = 7;
-			else if (aircraft.FM.Wingspan >= 13 && aircraft.FM.Wingspan < 15)
+			else if (Span >= 13 && Span < 15)
 				byte0 = 9;
-			else if (aircraft.FM.Wingspan >= 15 && aircraft.FM.Wingspan < 18)
+			else if (Span >= 15 && Span < 18)
 				byte0 = 11;
-			else if (aircraft.FM.Wingspan >= 18)
+			else if (Span >= 18)
 				byte0 = 13;
 		}
 		else //This section caters for all other aircraft

@@ -1701,7 +1701,7 @@ public class Maneuver extends AIFlightModel
                 {
                     super.AP.way.landingAirport.rebuildLandWay(this);
                     //TODO: DBW AI Mod Edits
-                    if(super.CT.bHasCockpitDoorControl && !(super.actor instanceof TypeFastJet))
+                    if(super.CT.bHasCockpitDoorControl && !super.CT.bNoCarrierCanopyOpen)
                         super.AS.setCockpitDoor(super.actor, 1);
                 }
                 break;
@@ -2763,7 +2763,7 @@ public class Maneuver extends AIFlightModel
                                         super.AS.setWingFold(super.actor, 0);
                                     }
                                     //TODO: DBW AI Mod Edits
-                                    if(super.CT.bHasCockpitDoorControl && (super.actor instanceof TypeFastJet))
+                                    if(super.CT.bHasCockpitDoorControl && super.CT.bNoCarrierCanopyOpen)
                                     {
                                         if(bFastLaunchAI)
                                             super.CT.forceCockpitDoor(0.0F);

@@ -41,7 +41,7 @@ public class A1H_Tanker extends AD_Tanker
   public void typeDockableRequestAttach(Actor actor) {
     if (actor instanceof Aircraft) {
       Aircraft aircraft = (Aircraft) actor;
-      if (aircraft.FM.AS.isMaster() && aircraft.FM.getSpeedKMH() > 10F && FM.getSpeedKMH() > 10F) {
+      if (aircraft.FM.AS.isMaster() && aircraft.FM.getSpeedKMH() > 10F && FM.getSpeedKMH() > 10F && isDrogueExtended()) {
         for (int i = 0; i < drones.length; i++) {
           if (Actor.isValid(drones[i])) {
             continue;
