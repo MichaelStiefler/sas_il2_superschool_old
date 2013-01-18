@@ -85,6 +85,5 @@ public class BombZB360 extends Bomb {
     Property.set(class1, "kalibr", 0.5F);
     Property.set(class1, "massa", 345F);
     Property.set(class1, "sound", "weapon.bomb_mid");
-    Property.set(class1, "fuze", new Object[] { Fuze_APUV.class, Fuze_APUV_M.class, Fuze_APUV_1.class, Fuze_AV_1du.class, Fuze_AV_1.class, Fuze_AV_87.class });
   }
 }
