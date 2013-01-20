@@ -589,25 +589,24 @@ public class AirportCarrier extends Airport
 		{
         	float Span;
         	if(aircraft.FM.WingspanFolded != 0.0F)
-        		Span = aircraft.FM.WingspanFolded;
-        	else Span = aircraft.FM.Wingspan;
-        	if (Span < 13 || aircraft instanceof com.maddox.il2.objects.air.JU_87)
-				byte0 = 7;
-			else if (Span >= 13 && Span < 15)
-				byte0 = 9;
-			else if (Span >= 15 && Span < 18)
-				byte0 = 11;
-			else if (Span >= 18)
-				byte0 = 13;
+        		byte0 = (byte)(Math.ceil(aircraft.FM.WingspanFolded) + 1.0F);
+        	else
+            {
+                Span = aircraft.FM.Wingspan;
+        	    if (Span < 13 || aircraft instanceof com.maddox.il2.objects.air.JU_87)
+				    byte0 = 7;
+                else if (Span >= 13 && Span < 15)
+				    byte0 = 9;
+			    else if (Span >= 15 && Span < 18)
+				    byte0 = 11;
+			    else if (Span >= 18)
+				    byte0 = 13;
+            }
 		}
 		else //This section caters for all other aircraft
-		{
-			if (aircraft.FM.Wingspan < 15)
-				byte0 = 12;
-			else if (aircraft.FM.Wingspan >= 15)
-				byte0 = 16;
-		}	
-         return byte0;
+            byte0 = (byte)(Math.ceil(aircraft.FM.Wingspan) + 1.0F);
+
+        return byte0;
 	}
 
 }

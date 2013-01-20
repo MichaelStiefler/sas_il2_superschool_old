@@ -411,7 +411,7 @@ public class FlightModelMain extends FMMath
         	CT.bNoCarrierCanopyOpen = true;
         if(j != 0 && j != 1 && j != 2)
             throw new RuntimeException(s1);
-        CT.bHasCockpitDoorControl = j == 1;
+        CT.bHasCockpitDoorControl = (j != 0);
         j = sectfile.get(s2, "CWheelBrakes", 1);
         CT.bHasBrakeControl = j == 1;
         j = sectfile.get(s2, "CLockTailwheel", 0);
