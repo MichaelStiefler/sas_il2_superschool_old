@@ -1867,7 +1867,12 @@ public class Gear
     	boolean flag2 = false;
     	bCatapultAI = false;
     	
-    	String strSection = bigshipgeneric.getClass().getName();
+        String s = bigshipgeneric.getClass().getName();
+        int i = s.lastIndexOf('.');
+        int j = s.lastIndexOf('$');
+        if(i < j)
+        i = j;
+        String strSection = s.substring(i + 1);
     	if(!flag2){
     		if (!theSectFile.sectionExist(strSection)) strSection = "Default";
     		if(!bStandardDeckCVL && theSectFile.exist(strSection, "dCatapultOffsetXAlt"))
@@ -1885,7 +1890,7 @@ public class Gear
 	
     		dCatapultOffsetX2 = theSectFile.get(strSection, "dCatapultOffsetX2", 0.0F);
     		dCatapultOffsetY2 = theSectFile.get(strSection, "dCatapultOffsetY2", 0.0F);
-    		dCatapultYaw2 = theSectFile.get(strSection, "dCatapultYaw", 0.0F);
+    		dCatapultYaw2 = theSectFile.get(strSection, "dCatapultYaw2", 0.0F);
     		catapultPower = theSectFile.get(strSection, "catapultPower", 0.0F);
     		catapultPowerJets = theSectFile.get(strSection, "catapultPowerJets", 0.0F); 
     		if(theSectFile.get(strSection, "bSteamCatapult", 0) == 1)
