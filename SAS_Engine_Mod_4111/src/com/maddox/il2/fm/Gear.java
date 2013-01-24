@@ -723,7 +723,7 @@ public class Gear
                                     else
                                     if(((((Interpolate) (FM)).actor instanceof TypeSupersonic) || (((Interpolate) (FM)).actor instanceof TypeFastJet)))
                                     {
-                                        catapultAdd = (int)Math.ceil(((((FlightModelMain) (FM)).M.getFullMass() - ((FlightModelMain) (FM)).M.massEmpty) / 1000F) * 2.0F);
+                                        catapultAdd = (int)Math.ceil(((((FlightModelMain) (FM)).M.getFullMass() - ((FlightModelMain) (FM)).M.massEmpty) / 1000F) * 2.4F);
                                         ((FlightModelMain) (FM)).EI.setCatapult(((FlightModelMain) (FM)).M.getFullMass(), catapultPowerJets + (float)catapultAdd, 0);
                                     } else
                                     if(!bSteamCatapult)
@@ -731,7 +731,7 @@ public class Gear
                                         ((FlightModelMain) (FM)).EI.setCatapult(((FlightModelMain) (FM)).M.getFullMass(), catapultPower, 0);
                                     } else
                                     {
-                                        catapultAdd = (int)Math.ceil(((((FlightModelMain) (FM)).M.getFullMass() - ((FlightModelMain) (FM)).M.massEmpty) / 1000F) * 2.0F);
+                                        catapultAdd = (int)Math.ceil(((((FlightModelMain) (FM)).M.getFullMass() - ((FlightModelMain) (FM)).M.massEmpty) / 1000F) * 2.4F);
                                         ((FlightModelMain) (FM)).EI.setCatapult(((FlightModelMain) (FM)).M.getFullMass(), catapultPower + (float)catapultAdd, 0);
                                     }
                                 } else
@@ -763,7 +763,7 @@ public class Gear
                                         else
                                         if(((((Interpolate) (FM)).actor instanceof TypeSupersonic) || (((Interpolate) (FM)).actor instanceof TypeFastJet)) && Mission.curYear() > 1952)
                                         {
-                                            catapultAdd = (int)Math.ceil(((((FlightModelMain) (FM)).M.getFullMass() - ((FlightModelMain) (FM)).M.massEmpty) / 1000F) * 2.0F);
+                                            catapultAdd = (int)Math.ceil(((((FlightModelMain) (FM)).M.getFullMass() - ((FlightModelMain) (FM)).M.massEmpty) / 1000F) * 2.4F);
                                             ((FlightModelMain) (FM)).EI.setCatapult(((FlightModelMain) (FM)).M.getFullMass(), catapultPowerJets + (float)catapultAdd, 1);
                                         } else
                                         if(!bSteamCatapult)
@@ -771,7 +771,7 @@ public class Gear
                                             ((FlightModelMain) (FM)).EI.setCatapult(((FlightModelMain) (FM)).M.getFullMass(), catapultPower, 1);
                                         } else
                                         {
-                                            catapultAdd = (int)Math.ceil(((((FlightModelMain) (FM)).M.getFullMass() - ((FlightModelMain) (FM)).M.massEmpty) / 1000F) * 2.0F);
+                                            catapultAdd = (int)Math.ceil(((((FlightModelMain) (FM)).M.getFullMass() - ((FlightModelMain) (FM)).M.massEmpty) / 1000F) * 2.4F);
                                             ((FlightModelMain) (FM)).EI.setCatapult(((FlightModelMain) (FM)).M.getFullMass(), catapultPower + (float)catapultAdd, 1);
                                         }
                                     } else
@@ -1831,7 +1831,12 @@ public class Gear
     	boolean flag2 = false;
     	bCatapultAI = false;
     	
-    	String strSection = bigshipgeneric.getClass().getName();
+        String s = bigshipgeneric.getClass().getName();
+        int i = s.lastIndexOf('.');
+        int j = s.lastIndexOf('$');
+        if(i < j)
+        i = j;
+        String strSection = s.substring(i + 1);
     	if(!flag2){
     		if (!theSectFile.sectionExist(strSection)) strSection = "Default";
     		if(!bStandardDeckCVL && theSectFile.exist(strSection, "dCatapultOffsetXAlt"))
@@ -1849,7 +1854,7 @@ public class Gear
 	
     		dCatapultOffsetX2 = theSectFile.get(strSection, "dCatapultOffsetX2", 0.0F);
     		dCatapultOffsetY2 = theSectFile.get(strSection, "dCatapultOffsetY2", 0.0F);
-    		dCatapultYaw2 = theSectFile.get(strSection, "dCatapultYaw", 0.0F);
+    		dCatapultYaw2 = theSectFile.get(strSection, "dCatapultYaw2", 0.0F);
     		catapultPower = theSectFile.get(strSection, "catapultPower", 0.0F);
     		catapultPowerJets = theSectFile.get(strSection, "catapultPowerJets", 0.0F); 
     		if(theSectFile.get(strSection, "bSteamCatapult", 0) == 1)

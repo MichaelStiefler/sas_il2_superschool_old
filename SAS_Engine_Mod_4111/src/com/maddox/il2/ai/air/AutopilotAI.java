@@ -12,6 +12,7 @@ import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.TypeBomber;
+import com.maddox.il2.objects.air.TypeFastJet;
 import com.maddox.il2.objects.sounds.Voice;
 
 public class AutopilotAI extends Autopilotage
@@ -247,7 +248,7 @@ label0:
                 if(way.isLanding())
                 {
                     FM.getLoc(P);
-                    if(way.Cur() > 3 && P.z > WPoint.z + 500D)
+                    if(way.Cur() > 3 && P.z > WPoint.z + (((Aircraft)FM.actor instanceof TypeFastJet)? 800D : 500D))
                         way.setCur(1);
                     if(way.Cur() == 5)
                     {
@@ -363,7 +364,10 @@ label0:
             if(d > -50D)
             {
                 float f4 = 5F + 0.00025F * FM.getAltitude();
-                f4 = (float)((double)f4 + 0.02D * (250D - (double)FM.Vmax));
+                if(((Aircraft)FM.actor) instanceof TypeFastJet)
+                    f4 = (float)((double)f4 + 0.02D * (250D - 300D)); //300D=Mach1 , instead of Vmax
+                else
+                    f4 = (float)((double)f4 + 0.02D * (250D - (double)FM.Vmax));
                 if(f4 > 14F)
                     f4 = 14F;
                 d1 = Math.min(FM.getAOA() - f4, FM.Or.getTangage() - 1.0F) * 1.0F * f + 0.5F * FM.getForwAccel();

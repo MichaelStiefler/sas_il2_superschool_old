@@ -26,6 +26,7 @@ import com.maddox.il2.net.BornPlace;
 import com.maddox.il2.net.NetUser;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.NetAircraft;
+import com.maddox.il2.objects.air.TypeFastJet;
 import com.maddox.il2.objects.ships.BigshipGeneric;
 import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.rts.Property;
@@ -43,10 +44,17 @@ public class AirportCarrier extends Airport
 	private GUINetClientDBrief ui = null;
 	private Loc clientLoc = null;
 	private static final Loc invalidLoc = new Loc(0.0, 0.0, 0.0, 0.0F, 0.0F, 0.0F);
-	private static float[] x = {-100.0F, -20.0F, -10.0F, 1000.0F, 3000.0F, 4000.0F, 3000.0F, 0.0F, 0.0F};
+	private static float[] x = {-100.0F, -20.0F, -10.0F, 1000.0F, 3000.0F, 4000.0F, 3000.0F, 2000F, 0F};
+	private static float[] xJ = {-100.0F, -20.0F, -10.0F, 2000.0F, 4500.0F, 6000.0F, 4500.0F, 3000F, 0F};
+	private static float[] xFJ = {-100.0F, -15.0F, 0.0F, 3000.0F, 6000.0F, 8000.0F, 6000.0F, 4000F, 0F};
 	private static float[] y = {0.0F, 0.0F, 0.0F, 0.0F, -500.0F, -1500.0F, -3000.0F, -3000.0F, -3000.0F};
+	private static float[] yJ = {0.0F, 0.0F, 0.0F, 0.0F, -750.0F, -2300.0F, -4500.0F, -4500.0F, -4500.0F};
+	private static float[] yFJ = {0.0F, 0.0F, 0.0F, 0.0F, -1000.0F, -3000.0F, -6000.0F, -6000.0F, -6000.0F};
 	private static float[] z = {-4.0F, 5.0F, 5.0F, 150.0F, 450.0F, 500.0F, 500.0F, 500.0F, 500.0F};
+	private static float[] zJ = {-4.0F, 5.0F, 5.0F, 110.0F, 400.0F, 460.0F, 500.0F, 600.0F, 600.0F};
+	private static float[] zFJ = {-4.0F, 5.0F, 5.0F, 170.0F, 500.0F, 580.0F, 600.0F, 600.0F, 600.0F};
 	private static float[] v = {0.0F, 80.0F, 100.0F, 180.0F, 250.0F, 270.0F, 280.0F, 300.0F, 300.0F};
+	private static float[] vFJ = {0.0F, 80.0F, 220.0F, 260.0F, 290.0F, 320.0F, 330.0F, 350.0F, 350.0F};
 	private Loc tmpLoc = new Loc();
 	private Point3d tmpP3d = new Point3d();
 	private Point3f tmpP3f = new Point3f();
@@ -148,8 +156,34 @@ public class AirportCarrier extends Airport
 		for (int i = x.length - 1; i >= 0; i--)
 		{
 			WayPoint waypoint = new WayPoint();
-			tmpP3d.set((double)(x[i] * f), (double)(y[i] * f), (double)(z[i] * f));
-			waypoint.set(Math.min(v[i] * 0.278F, flightmodel.Vmax * 0.6F));
+            if(((Interpolate) (flightmodel)).actor instanceof TypeFastJet)
+			    tmpP3d.set((double)(xFJ[i]), (double)(yFJ[i]), (double)(zFJ[i]));
+            else if(flightmodel.EI.engines[0].getType() == 3)
+			    tmpP3d.set((double)(xJ[i]), (double)(yJ[i]), (double)(zJ[i]));
+            else
+			    tmpP3d.set((double)(x[i] * f), (double)(y[i] * f), (double)(z[i] * f));
+            if(((Interpolate) (flightmodel)).actor instanceof TypeFastJet)
+            {
+                float vtmp = vFJ[i] * 0.278F;
+                if(i == 2)
+                {
+                    if(vtmp > flightmodel.VminFLAPS + 6F)
+                        vtmp = flightmodel.VminFLAPS + 6F;
+                }
+                else if(i == 3)
+                {
+                    if(vtmp > flightmodel.Vmin + 6F)
+                        vtmp = flightmodel.Vmin + 6F;
+                }
+                else if(i == 4)
+                {
+                    if(vtmp > flightmodel.Vmin + 13F)
+                        vtmp = flightmodel.Vmin + 13F;
+                }
+                waypoint.set(Math.min(vtmp, 300F * 0.36F)); // 300F=Mach1 , instead of Vmax
+            }
+            else
+			    waypoint.set(Math.min(v[i] * 0.278F, flightmodel.Vmax * 0.6F));
 			waypoint.Action = 2;
 			waypoint.sTarget = ship.name();
 			tmpLoc.transform(tmpP3d);
@@ -178,7 +212,10 @@ public class AirportCarrier extends Airport
 			for (int i = 0; i < x.length; i++)
 			{
 				WayPoint waypoint = flightmodel.AP.way.get(i);
-				tmpP3d.set((double)(x[x.length - 1 - i] * f), (double)(y[x.length - 1 - i] * f), (double)(z[x.length - 1 - i] * f));
+                if(((Interpolate) (flightmodel)).actor instanceof TypeFastJet)
+				    tmpP3d.set((double)(xFJ[x.length - 1 - i]), (double)(yFJ[x.length - 1 - i]), (double)(zFJ[x.length - 1 - i]));
+                else
+				    tmpP3d.set((double)(x[x.length - 1 - i] * f), (double)(y[x.length - 1 - i] * f), (double)(z[x.length - 1 - i] * f));
 				tmpLoc.transform(tmpP3d);
 				tmpP3f.set(tmpP3d);
 				waypoint.set(tmpP3f);

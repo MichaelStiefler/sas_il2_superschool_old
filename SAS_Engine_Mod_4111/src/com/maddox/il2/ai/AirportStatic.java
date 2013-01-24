@@ -114,11 +114,15 @@ public abstract class AirportStatic extends Airport
         if(flightmodel.EI.engines[0].getType() == 3)
             f1 = 1.5F;
         float f2 = f1;
-        if(f2 > 1.0F)
-            f2 = 1.0F;
+        // DBW AI MOD - get rid of stock one
+        // if(f2 > 1.0F)
+        //     f2 = 1.0F;
     	//TODO: Edit for fast flying aircraft
-   	 if(((Interpolate) (flightmodel)).actor instanceof TypeFastJet)
-            f2 = 3F;
+   	    if(((Interpolate) (flightmodel)).actor instanceof TypeFastJet)
+        {
+            f1 = 2.0F;
+            f2 = 2.0F;
+        }
         for(int i = x.length - 1; i >= 0; i--)
         {
             WayPoint waypoint = new WayPoint();
@@ -148,7 +152,17 @@ public abstract class AirportStatic extends Airport
                 pd.set(six[i] * f1, siy[i] * f1, siz[i] * f2);
                 break;
             }
-            waypoint.set(Math.min(v[i] * 0.278F, flightmodel.Vmax * 0.7F));
+            float vlanding;
+   	        if(((Interpolate) (flightmodel)).actor instanceof TypeFastJet)
+            {
+                if(i < 3)
+                    vlanding = Math.max(vFJ[i] * 0.278F , flightmodel.VminFLAPS * 1.2F);
+                else
+                    vlanding = Math.max(vFJ[i] * 0.278F , flightmodel.Vmin * 1.2F);
+                waypoint.set(Math.min(vlanding, 300F * 0.4F));  // 300F=Mach1 (instead of Vmax)
+            }
+            else
+                waypoint.set(Math.min(v[i] * 0.278F, flightmodel.Vmax * 0.7F));
             waypoint.Action = 2;
             runway1.loc.transform(pd);
             float f3 = (float)Engine.land().HQ_Air(pd.x, pd.y);
@@ -352,7 +366,7 @@ public abstract class AirportStatic extends Airport
     public static final int PT_STAY = 4;
     private static Point3d p3d = new Point3d();
     private static float x[] = {
-        -500F, 0.0F, 220F, 2000F, 4000F, 5000F, 4000F, 0.0F, 0.0F
+        -500F, 0.0F, 220F, 2000F, 4000F, 5000F, 4000F, 2000F, 0F
     };
     private static float y[] = {
         0.0F, 0.0F, 0.0F, 0.0F, -500F, -2000F, -4000F, -4000F, -4000F
@@ -362,6 +376,9 @@ public abstract class AirportStatic extends Airport
     };
     private static float v[] = {
         0.0F, 180F, 220F, 240F, 270F, 280F, 300F, 300F, 300F
+    };
+    private static float vFJ[] = {
+        0.0F, 250F, 280F, 300F, 330F, 350F, 370F, 390F, 400F
     };
     private static float ry[] = {
         0.0F, 0.0F, 0.0F, 0.0F, 500F, 2000F, 4000F, 4000F, 4000F
