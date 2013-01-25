@@ -16,17 +16,17 @@ public class F_86A5 extends F_86F {
   public void checkHydraulicStatus() {
 	    if (FM.EI.engines[0].getStage() < 6 && FM.Gears.nOfGearsOnGr > 0) {
 	      gearTargetAngle = 90F;
-	      hasHydraulicPressure = false;
+          setHydraulicPressuer(false);
 	      FM.CT.bHasAileronControl = false;
 	      FM.CT.AirBrakeControl = 1.0F;
 	    } else if (FM.EI.engines[0].getStage() < 6) {
-	      hasHydraulicPressure = false;
+          setHydraulicPressuer(false);
 	      FM.CT.bHasAileronControl = false;
 	      FM.CT.bHasAirBrakeControl = false;
 	    }
-	    if (!hasHydraulicPressure) {
+	    if (!getHydraulicPressure()) {
 	      gearTargetAngle = 0.0F;
-	      hasHydraulicPressure = true;
+          setHydraulicPressuer(true);
 	      FM.CT.bHasAileronControl = true;
 	      FM.CT.bHasAirBrakeControl = true;
 	    }
