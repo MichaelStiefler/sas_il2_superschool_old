@@ -77,7 +77,6 @@ public class F_86F extends Scheme1 implements TypeSupersonic, TypeFighter,
   private float engineSurgeDamage;
   protected float gearTargetAngle;
   private float gearCurrentAngle;
-  public boolean hasHydraulicPressure;
   private static float kl = 1.0F;
   private static float kr = 1.0F;
   private static float kc = 1.0F;
@@ -203,7 +202,6 @@ public class F_86F extends Scheme1 implements TypeSupersonic, TypeFighter,
     engineSurgeDamage = 0.0F;
     gearTargetAngle = -1F;
     gearCurrentAngle = -1F;
-    hasHydraulicPressure = true;
   }
   /**
    * G-Force Resistance, Tolerance and Recovery parmeters. See
@@ -228,19 +226,21 @@ public class F_86F extends Scheme1 implements TypeSupersonic, TypeFighter,
     actl = FM.SensRoll;
     ectl = FM.SensPitch;
     rctl = FM.SensYaw;
+    setHasHydraulicPressuerSystem(true);
+    setHydraulicPressuer(false);
   }
 
   public void checkHydraulicStatus() {
     if (FM.EI.engines[0].getStage() < 6
             && FM.Gears.nOfGearsOnGr > 0) {
       gearTargetAngle = 90F;
-      hasHydraulicPressure = false;
+      setHydraulicPressuer(false);
       FM.CT.bHasAileronControl = false;
       FM.CT.bHasElevatorControl = false;
       FM.CT.AirBrakeControl = 1.0F;
-    } else if (!hasHydraulicPressure) {
+    } else if (!getHydraulicPressure()) {
       gearTargetAngle = 0.0F;
-      hasHydraulicPressure = true;
+      setHydraulicPressuer(true);
       FM.CT.bHasAileronControl = true;
       FM.CT.bHasElevatorControl = true;
       FM.CT.bHasAirBrakeControl = true;
@@ -357,39 +357,6 @@ public class F_86F extends Scheme1 implements TypeSupersonic, TypeFighter,
     } else {
       this.hierMesh().chunkVisible("HMask1_D0",
               this.hierMesh().isChunkVisible("Pilot1_D0"));
-    }
-    if ((!FM.isPlayers() || !(FM instanceof RealFlightModel) || !((RealFlightModel) FM).isRealMode()) && (FM instanceof Maneuver)) {
-      if (FM.AP.way.isLanding()
-              && (FM.getSpeed() > FM.VmaxFLAPS)
-              && (FM.getSpeed() > FM.AP.way.curr().getV() * 1.4F)) {
-        if (FM.CT.AirBrakeControl != 1.0F) {
-          FM.CT.AirBrakeControl = 1.0F;
-        }
-      } else if ((((Maneuver) FM).get_maneuver() == Maneuver.LANDING)
-              && FM.AP.way.isLanding()
-              && (FM.getSpeed() < FM.VmaxFLAPS * 1.16F)) {
-        if ((FM.getSpeed() > FM.VminFLAPS * 0.5F) && (FM.Gears.nearGround() || FM.Gears.onGround())) {
-          if (FM.CT.AirBrakeControl != 1.0F) {
-            FM.CT.AirBrakeControl = 1.0F;
-          }
-        } else {
-          if (FM.CT.AirBrakeControl != 0.0F) {
-            FM.CT.AirBrakeControl = 0.0F;
-          }
-        }
-      } else if (((Maneuver) FM).get_maneuver() == Maneuver.TAXI) {
-        if (FM.CT.AirBrakeControl != 0.0F) {
-          FM.CT.AirBrakeControl = 0.0F;
-        }
-      } else if (((Maneuver) FM).get_maneuver() == Maneuver.SPIRAL_BRAKE) {
-        if (FM.CT.AirBrakeControl != 1.0F) {
-          FM.CT.AirBrakeControl = 1.0F;
-        }
-      } else if (this.hasHydraulicPressure) {
-        if (FM.CT.AirBrakeControl != 0.0F) {
-          FM.CT.AirBrakeControl = 0.0F;
-        }
-      }
     }
     ft = World.getTimeofDay() % 0.01F;
     if (ft == 0.0F) {
@@ -1022,7 +989,7 @@ public class F_86F extends Scheme1 implements TypeSupersonic, TypeFighter,
                 && World.Rnd().nextFloat() < 0.05F) {
           this.debuggunnery("Hydro System: Disabled..");
           FM.AS.setInternalDamage(paramShot.initiator, 0);
-          hasHydraulicPressure = false;
+          setHydraulicPressuer(false);
         }
         if (paramString.endsWith("2")
                 && World.Rnd().nextFloat() < 0.1F

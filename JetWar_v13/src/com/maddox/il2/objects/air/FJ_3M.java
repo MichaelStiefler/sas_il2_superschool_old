@@ -430,13 +430,13 @@ public class FJ_3M extends F_86F
   public void checkHydraulicStatus() {
     if (FM.EI.engines[0].getStage() < 6
             && FM.Gears.nOfGearsOnGr > 0) {
-      hasHydraulicPressure = false;
+      setHydraulicPressuer(false);
       FM.CT.bHasAileronControl = false;
       FM.CT.bHasElevatorControl = false;
       FM.CT.AirBrakeControl = 1.0F;
       FM.CT.bHasArrestorControl = false;
-    } else if (!hasHydraulicPressure) {
-      hasHydraulicPressure = true;
+    } else if (!getHydraulicPressure()) {
+      setHydraulicPressuer(true);
       FM.CT.bHasAileronControl = true;
       FM.CT.bHasElevatorControl = true;
       FM.CT.bHasAirBrakeControl = true;
