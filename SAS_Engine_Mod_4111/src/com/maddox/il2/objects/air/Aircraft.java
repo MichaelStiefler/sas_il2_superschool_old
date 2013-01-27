@@ -164,6 +164,8 @@ public abstract class Aircraft extends NetAircraft
 	// --------------------------------------------------------
 	private float VarWing_;
 	private float Refuel_ = 0.0F;
+    private boolean bHasHydraulicPressureSystem = false;
+    private boolean bHasHydraulicPressure = false;
 	//Expanded to allow for up to 8 props
 	protected float[] propPos = {0.0F, 21.6F, 45.9F, 66.9F, 45.0F, 9.2F, 0.0F, 0.0F};
 	protected int[] oldProp = {0, 0, 0, 0, 0, 0, 0, 0};
@@ -3725,5 +3727,25 @@ label0:
     {
         Aircraft aircraft = World.getPlayerAircraft();
         return aircraft.isDestroyed() || aircraft.FM.Gears.isUnderDeck() || aircraft.FM.Gears.getWheelsOnGround() || aircraft.FM.Gears.onGround();
+    }
+
+    public boolean getHasHydraulicPressureSystem()
+    {
+        return bHasHydraulicPressureSystem;
+    }
+
+    public boolean setHasHydraulicPressuerSystem(boolean flag)
+    {
+        return (bHasHydraulicPressureSystem = flag);
+    }
+
+    public boolean getHydraulicPressure()
+    {
+        return bHasHydraulicPressure;
+    }
+
+    public boolean setHydraulicPressuer(boolean flag)
+    {
+        return (bHasHydraulicPressure = flag);
     }
 }

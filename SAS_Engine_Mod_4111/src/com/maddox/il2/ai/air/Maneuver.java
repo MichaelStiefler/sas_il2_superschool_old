@@ -342,6 +342,7 @@ public class Maneuver extends AIFlightModel
 	private boolean				bNoNavLightsAI;
 	private boolean				bFastLaunchAI;
 	private int					passCounter					= 0;
+    private long 				airbraketimer  = 0L;
 	//--------------------------------
 
     void set_TeamMan(int i)
@@ -831,6 +832,79 @@ public class Maneuver extends AIFlightModel
         turnOffTheWeapon();
         maxG = 3.5F + AS.getPilotHealth(0) * (float)Skill * 0.5F;
         Or.wrap();
+
+        // DBW AI MOD
+        if(CT.bHasAirBrakeControl &&
+           ((actor instanceof TypeFastJet) || (actor instanceof TypeSupersonic) || EI.engines[0].getType() == 3))
+        {
+            if(!((Aircraft)actor).getHasHydraulicPressureSystem() ||
+                (((Aircraft)actor).getHasHydraulicPressureSystem() && ((Aircraft)actor).getHydraulicPressure()))
+            {
+                if(!(this instanceof RealFlightModel) ||  !((RealFlightModel)this).isRealMode())
+                {
+                    long AirbrakeTimerValue = 1200L;
+                    if(AP.way.isLanding() && getSpeed() > VmaxFLAPS * 1.1F && getSpeed() > AP.way.curr().getV() * 1.4F)
+                    {
+                        if(CT.AirBrakeControl != 1.0F && Time.current() > airbraketimer)
+                        {
+                            CT.AirBrakeControl = 1.0F;
+                            airbraketimer = Time.current() + AirbrakeTimerValue;
+                        }
+                    } else
+                    if(get_maneuver() == 25 && AP.way.isLanding() && getSpeed() < VmaxFLAPS * 1.16F)
+                    {
+                        if(getSpeed() > VminFLAPS * 0.5F && !AP.way.isLandingOnShip() && (Gears.nearGround() || Gears.onGround()))
+                        {
+                            if(CT.AirBrakeControl != 1.0F && Time.current() > airbraketimer)
+                            {
+                                CT.AirBrakeControl = 1.0F;
+                                airbraketimer = Time.current() + AirbrakeTimerValue;
+                            }
+                        } else
+                        if(CT.AirBrakeControl != 0.0F && Time.current() > airbraketimer)
+                        {
+                            CT.AirBrakeControl = 0.0F;
+                            airbraketimer = Time.current() + AirbrakeTimerValue;
+                        }
+                    } else
+                    if(get_maneuver() == 66)
+                    {
+                        if(CT.AirBrakeControl != 0.0F && Time.current() > airbraketimer)
+                        {
+                            CT.AirBrakeControl = 0.0F;
+                            airbraketimer = Time.current() + AirbrakeTimerValue;
+                        }
+                    } else
+                    if(get_maneuver() == 7)
+                    {
+                        if(CT.AirBrakeControl != 1.0F && Time.current() > airbraketimer)
+                        {
+                            CT.AirBrakeControl = 1.0F;
+                            airbraketimer = Time.current() + AirbrakeTimerValue;
+                        }
+                    } else
+                    if(get_maneuver() == 21 && Alt > 100F && getSpeed() > AP.way.curr().getV() * 1.5F
+                       && EI.engines[0].getControlThrottle() < 0.81)
+                    {
+                        if(CT.AirBrakeControl != 1.0F && Time.current() > airbraketimer)
+                        {
+                            CT.AirBrakeControl = 1.0F;
+                            airbraketimer = Time.current() + AirbrakeTimerValue;
+                        }
+                    } else
+                    if(get_maneuver() == 50)
+                        {  // DiveBomber - do nothing
+                        }
+                    else
+                    if(CT.AirBrakeControl != 0.0F && Time.current() > airbraketimer)
+                    {
+                        CT.AirBrakeControl = 0.0F;
+                        airbraketimer = Time.current() + AirbrakeTimerValue;
+                    }
+                }
+            }
+        }
+        
         if(mn_time > 10F && AOA > AOA_Crit + 5F && isStallable() && stallable)
             safe_set_maneuver(20);
         if(getSpeed() > VmaxAllowed * 0.85F)
@@ -1313,7 +1387,9 @@ public class Maneuver extends AIFlightModel
             AP.setStabAll(false);
             setSpeedMode(11);
             CT.BayDoorControl = 0.0F;
-            CT.AirBrakeControl = 0.0F;
+            if(!((Aircraft)actor).getHasHydraulicPressureSystem() ||
+                (((Aircraft)actor).getHasHydraulicPressureSystem() && ((Aircraft)actor).getHydraulicPressure()))
+                CT.AirBrakeControl = 0.0F;
             float f9 = 0.0003F * M.massEmpty;
             float f11 = 2.0F;
             if(target != null)
@@ -3473,7 +3549,9 @@ public class Maneuver extends AIFlightModel
                 case 1: // '\001'
                     if(sub_Man_Count == 0)
                         CT.AileronControl = World.cur().rnd.nextFloat(-0.15F, 0.15F);
-                    CT.AirBrakeControl = 1.0F;
+                    if(!((Aircraft)actor).getHasHydraulicPressureSystem() ||
+                        (((Aircraft)actor).getHasHydraulicPressureSystem() && ((Aircraft)actor).getHydraulicPressure()))
+                        CT.AirBrakeControl = 1.0F;
                     CT.setPowerControl(1.0F);
                     CT.ElevatorControl = Aircraft.cvt(Or.getTangage(), 0.0F, 60F, 1.0F, 0.0F);
                     if(Or.getTangage() > 30F)
@@ -3640,6 +3718,7 @@ public class Maneuver extends AIFlightModel
                     Or.interpolate(tmpOr, 0.5F * f);
                     callSuperUpdate = false;
                     W.set(0.0D, 0.0D, 0.0D);
+                    System.out.println("Aircraft: CT.ElevatorControl A , f50 = " + Float.toString(f50));
                     CT.ElevatorControl = 0.05F + 0.3F * f50;
                     CT.RudderControl = (float)(-tmpV3f.y * 0.02D);
                     direction = Or.getAzimut();
@@ -3654,12 +3733,14 @@ public class Maneuver extends AIFlightModel
             dA = CT.ElevatorControl;
             AP.update(f);
             setSpeedControl(f);
+            System.out.println("Aircraft: CT.ElevatorControl B , dA = " + Float.toString(dA));
             CT.ElevatorControl = dA;
             if(maneuver != 25)
                 return;
-            if(Alt > ((actor instanceof TypeFastJet)? 120F : 60F))
+            if(Alt > ((EI.engines[0].getType() == 3)? 160F : 60F))
             {
-                if(Alt < ((actor instanceof TypeFastJet)? 320F : 160F))
+                if((Alt < ((EI.engines[0].getType() == 3)? 320F : 160F)) ||
+                   ((actor instanceof TypeFastJet) && Alt < 400F))
                 {
                     CT.FlapsControl = 0.32F;
                      //TODO: Blown Flaps
@@ -3683,16 +3764,30 @@ public class Maneuver extends AIFlightModel
                     dA = -1.2F * f;
                 else
                     dA = 1.2F * f;
-                CT.ElevatorControl = CT.ElevatorControl * 0.9F + dA * 0.1F;
+                if(Alt > 7F)
+                  {
+                    System.out.println("Aircraft: CT.ElevatorControl C , dA = " + Float.toString(dA));
+                    CT.ElevatorControl = CT.ElevatorControl * 0.9F + dA * 0.1F;
+                  }
             } else
             {
                 minElevCoeff = 15F;
                 if(AP.way.Cur() >= 6 || AP.way.Cur() == 0)
                 {
                     if(Or.getTangage() < -5F)
-                        Or.increment(0.0F, -Or.getTangage() - 5F, 0.0F);
-                    if(Or.getTangage() > Gears.Pitch + 10F)
-                        Or.increment(0.0F, -(Or.getTangage() - (Gears.Pitch + 10F)), 0.0F);
+                      {
+                        System.out.println("Aircraft: CT.ElevatorControl D1 , +0.2F");
+                        CT.ElevatorControl = CT.ElevatorControl * 0.8F + 0.2F;
+                      }
+                    float gpitch = Gears.Pitch;
+                    if(gpitch > 180F)
+                        gpitch -= 360F;
+                    
+                    if(Or.getTangage() > gpitch + 10F)
+                      {
+                        System.out.println("Aircraft: CT.ElevatorControl D2 , -0.2F");
+                        CT.ElevatorControl = CT.ElevatorControl * 0.8F - 0.2F;
+                      }
                 }
                 CT.FlapsControl = 1.0F;
                 //TODO: Blown Flaps
@@ -3712,6 +3807,10 @@ public class Maneuver extends AIFlightModel
                             CT.BrakeControl = 1.0F;
                             if(CT.arrestorControl == 1.0F && Gears.onGround())
                                 AS.setArrestor(actor, 0);
+                            if(!((Aircraft)actor).getHasHydraulicPressureSystem() ||
+                                (((Aircraft)actor).getHasHydraulicPressureSystem() && ((Aircraft)actor).getHydraulicPressure()))
+                                if(Gears.onGround())
+                                     CT.AirBrakeControl = 0.0F;
                             MsgDestroy.Post(Time.current() + 25000L, actor);
                         } else
                         {
@@ -3730,9 +3829,11 @@ public class Maneuver extends AIFlightModel
                     CT.FlapsControl = 0.0F;
                     if(CT.bHasBlownFlaps)
                         CT.BlownFlapsControl = 0.0F;
-                    CT.AirBrakeControl = 0.0F;
+                    if(!((Aircraft)actor).getHasHydraulicPressureSystem() ||
+                        (((Aircraft)actor).getHasHydraulicPressureSystem() && ((Aircraft)actor).getHydraulicPressure()))
+                        CT.AirBrakeControl = 0.0F;
                 }
-                if(Vrel.length() < (double)(VmaxFLAPS * 0.25F) && wayCurPos == null && !AP.way.isLandingOnShip())
+                if(Vrel.length() < Math.min(14F, (double)(VmaxFLAPS * ((actor instanceof TypeFastJet)? 0.18F : 0.25F))) && wayCurPos == null && !AP.way.isLandingOnShip())
                 {
                     TaxiMode = true;
                     AP.way.setCur(0);
@@ -3757,30 +3858,62 @@ public class Maneuver extends AIFlightModel
                             Vwld.z *= 0.9100000262260437D;
                     }
                 }
-                float f24 = Gears.Pitch - 2.0F;
-                if(f24 < 5F)
-                    f24 = 5F;
+                float f24 = Gears.Pitch;
+                if(f24 > 180F)
+                    f24 -= 360F;
+                f24 -= 2.0F;
+                    System.out.println("Aircraft: Gears.Pitch = " + Float.toString(Gears.Pitch) + " , f24 = " + Float.toString(f24) + " , Or.getTangage() = " + Or.getTangage());
+                if(f24 < 3F)
+                    f24 = 3F;
                 if(Alt < 7F && Or.getTangage() < f24 || AP.way.isLandingOnShip())
+                  {
+                    System.out.println("Aircraft : CT.ElevatorControl E , Alt < 7F && Or.getTangage() < f24 , f = " + Float.toString(f));
                     CT.ElevatorControl += 1.5F * f;
-                CT.ElevatorControl += 0.05000000074505806D * getW().y;
+                  }
+                if(Or.getTangage() < f24)
+                  {
+                    System.out.println("Aircraft : CT.ElevatorControl F , Or.getTangage() < f24 , getW.y = " + Double.toString(getW().y));
+                    CT.ElevatorControl += 0.05000000074505806D * getW().y;
+                  }
+                else
+                  {
+                    if(CT.ElevatorControl > 0)
+                      {
+                        System.out.println("Aircraft : CT.ElevatorControl F2 , -0.02F");
+                        CT.ElevatorControl -= 0.02F;
+                      }
+                  }
                 if(Gears.onGround())
                 {
-                    if(Gears.Pitch > 5F)
+                    f24 = Gears.Pitch;
+                    if(f24 > 180F)
+                        f24 -= 360F;
+                      System.out.println("Aircraft onGround(): Gears.Pitch = " + Float.toString(Gears.Pitch) + " , f24 = " + Float.toString(f24) + " , Or.getTangage() = " + Or.getTangage());
+                    if(f24 > 5F)
                     {
-                        if(Or.getTangage() < Gears.Pitch)
+                      System.out.println("Aircraft onGround(): CT.ElevatorControl G , f24 > 5F");
+                        if(Or.getTangage() < f24)
                             CT.ElevatorControl += 1.5F * f;
                         if(!AP.way.isLandingOnShip())
                             CT.ElevatorControl += 0.30000001192092896D * getW().y;
                     } else
                     {
+                        CT.ElevatorControl -= 0.02F;
+                    }
+                    if(Gears.nOfGearsOnGr == 3 && !AP.way.isLandingOnShip())
+                    {
                         CT.ElevatorControl = 0.0F;
+                        if(CT.bHasDragChuteControl && CT.DragChuteControl == 0.0F)
+                            CT.DragChuteControl = 1.0F;
                     }
                     if(!TaxiMode)
                     {
                         AFo.setDeg(Or.getAzimut(), direction);
                         CT.RudderControl = 8F * AFo.getDiffRad() + 0.5F * (float)getW().z;
                         if((actor instanceof TypeSupersonic) || (actor instanceof TypeFastJet))
-                            CT.AirBrakeControl = 1.0F;
+                            if(!((Aircraft)actor).getHasHydraulicPressureSystem() ||
+                                (((Aircraft)actor).getHasHydraulicPressureSystem() && ((Aircraft)actor).getHydraulicPressure()))
+                                CT.AirBrakeControl = 1.0F;
                     } else
                     {
                         CT.RudderControl = 0.0F;
@@ -4280,7 +4413,9 @@ public class Maneuver extends AIFlightModel
             if(EI.engines[0].getStage() == 6)
             {
                 CT.BrakeControl = 0.0F;
-                CT.AirBrakeControl = 1.0F;
+                if(!((Aircraft)actor).getHasHydraulicPressureSystem() ||
+                    (((Aircraft)actor).getHasHydraulicPressureSystem() && ((Aircraft)actor).getHydraulicPressure()))
+                    CT.AirBrakeControl = 1.0F;
                 brakeShoe = false;
                 CT.setPowerControl(1.1F);
                 setSpeedMode(11);
@@ -4290,7 +4425,9 @@ public class Maneuver extends AIFlightModel
                 CT.GearControl = 0.0F;
                 rwLoc = null;
                 CT.ElevatorControl = -1F;
-                CT.AirBrakeControl = 0.0F;
+                if(!((Aircraft)actor).getHasHydraulicPressureSystem() ||
+                    (((Aircraft)actor).getHasHydraulicPressureSystem() && ((Aircraft)actor).getHydraulicPressure()))
+                    CT.AirBrakeControl = 0.0F;
                 if(Or.getTangage() < 25F)
                     maneuver = 0;
                 brakeShoe = false;
@@ -4978,8 +5115,10 @@ public class Maneuver extends AIFlightModel
                 {
                     setSpeedMode(6);
                     CT.BayDoorControl = 0.0F;
-                    CT.AirBrakeControl = 0.0F;
                     CT.FlapsControl = 0.0F;
+                    if(!((Aircraft)actor).getHasHydraulicPressureSystem() ||
+                        (((Aircraft)actor).getHasHydraulicPressureSystem() && ((Aircraft)actor).getHydraulicPressure()))
+                        CT.AirBrakeControl = 0.0F;
                     pop();
                     sub_Man_Count = 0;
                 }
@@ -5371,7 +5510,7 @@ public class Maneuver extends AIFlightModel
                     {
                         bombsOut = true;
                         if(CT.Weapons[3] != null && CT.Weapons[3][0] != null && CT.Weapons[3][0].countBullets() != 0 && !(CT.Weapons[3][0] instanceof BombGunPara))
-                            Voice.speakAttackByBombs((Aircraft)actor);
+                            Voice.speakAttackByBombs((Aircraft)this.actor);
                     }
                     push(0);
                     push(55);
@@ -5853,7 +5992,7 @@ public class Maneuver extends AIFlightModel
                     bombsOutCounter = 129;
                 else
                     bombsOutCounter = 0;
-                Voice.speakAttackByBombs((Aircraft)actor);
+                Voice.speakAttackByBombs((Aircraft)this.actor);
                 setSpeedMode(6);
                 CT.BayDoorControl = 0.0F;
                 pop();
@@ -5888,11 +6027,13 @@ public class Maneuver extends AIFlightModel
             if(Alt < 350F)
             {
                 bombsOut = true;
-                Voice.speakAttackByBombs((Aircraft)actor);
+                Voice.speakAttackByBombs((Aircraft)this.actor);
                 setSpeedMode(6);
                 CT.BayDoorControl = 0.0F;
-                CT.AirBrakeControl = 0.0F;
                 CT.FlapsControl = 0.0F;
+                if(!((Aircraft)this.actor).getHasHydraulicPressureSystem() ||
+                    (((Aircraft)this.actor).getHasHydraulicPressureSystem() && ((Aircraft)this.actor).getHydraulicPressure()))
+                    CT.AirBrakeControl = 0.0F;
                 AP.way.next();
                 push(0);
                 push(8);
@@ -5983,8 +6124,10 @@ public class Maneuver extends AIFlightModel
                 smConstSpeed = 110F;
                 if(f3 >= man1Dist)
                     break;
-                CT.AirBrakeControl = 1.0F;
-                if(actor instanceof TypeFighter)
+                if(!((Aircraft)this.actor).getHasHydraulicPressureSystem() ||
+                    (((Aircraft)this.actor).getHasHydraulicPressureSystem() && ((Aircraft)this.actor).getHydraulicPressure()))
+                    CT.AirBrakeControl = 1.0F;
+                if(this.actor instanceof TypeFighter)
                     if(getSpeed() < VmaxFLAPS )
                         CT.FlapsControl = 1.0F;
                 push();
@@ -5997,8 +6140,10 @@ public class Maneuver extends AIFlightModel
                 setSpeedMode(4);
                 smConstSpeed = 110F;
                 sub_Man_Count++;
-                CT.AirBrakeControl = 1.0F;
-                if(actor instanceof TypeFighter)
+                if(!((Aircraft)this.actor).getHasHydraulicPressureSystem() ||
+                    (((Aircraft)this.actor).getHasHydraulicPressureSystem() && ((Aircraft)this.actor).getHydraulicPressure()))
+                    CT.AirBrakeControl = 1.0F;
+                if(this.actor instanceof TypeFighter)
                     if(getSpeed() < VmaxFLAPS )
                         CT.FlapsControl = 1.0F;
                 float f7 = Or.getKren();
@@ -6021,8 +6166,10 @@ public class Maneuver extends AIFlightModel
                 break;
 
             case 3: // '\003'
-                CT.AirBrakeControl = 1.0F;
-                if(actor instanceof TypeFighter)
+                if(!((Aircraft)this.actor).getHasHydraulicPressureSystem() ||
+                    (((Aircraft)this.actor).getHasHydraulicPressureSystem() && ((Aircraft)this.actor).getHydraulicPressure()))
+                    CT.AirBrakeControl = 1.0F;
+                if(this.actor instanceof TypeFighter)
                     if(getSpeed() < VmaxFLAPS )
                         CT.FlapsControl = 1.0F;
                 CT.BayDoorControl = 1.0F;
@@ -6043,9 +6190,11 @@ public class Maneuver extends AIFlightModel
                 if(sub_Man_Count > 100 && Alt < 1000F && Vpl.dot(Ve) > 0.99000000953674316D || Alt < 600F)
                 {
                     bombsOut = true;
-                    Voice.speakAttackByBombs((Aircraft)actor);
+                    Voice.speakAttackByBombs((Aircraft)this.actor);
                     CT.BayDoorControl = 0.0F;
-                    CT.AirBrakeControl = 0.0F;
+                    if(!((Aircraft)this.actor).getHasHydraulicPressureSystem() ||
+                        (((Aircraft)this.actor).getHasHydraulicPressureSystem() && ((Aircraft)this.actor).getHydraulicPressure()))
+                        CT.AirBrakeControl = 0.0F;
                     AP.way.next();
                     push(0);
                     push(8);
@@ -7281,7 +7430,7 @@ public class Maneuver extends AIFlightModel
                     Or.transformInv(tmpV3f);
                     if(Math.abs(tmpV3f.y) < (double)(TargY - TargYS * (float)Skill) && Math.abs(tmpV3f.z) < (double)(TargZ - TargZS * (float)Skill))
                         CT.WeaponControl[2] = true;
-                    Voice.speakAttackByRockets((Aircraft)actor);
+                    Voice.speakAttackByRockets((Aircraft)this.actor);
                     rocketsDelay += 120;
                 }
                 ((Maneuver)target).incDangerAggressiveness(1, 0.8F, f3, this);
@@ -7733,7 +7882,7 @@ public class Maneuver extends AIFlightModel
                         Or.transformInv(tmpV3f);
                         if(Math.abs(tmpV3f.y) < 4D && Math.abs(tmpV3f.z) < 4D)
                             CT.WeaponControl[2] = true;
-                        Voice.speakAttackByRockets((Aircraft)actor);
+                        Voice.speakAttackByRockets((Aircraft)this.actor);
                         rocketsDelay += 120;
                     }
                 }
@@ -7865,7 +8014,7 @@ public class Maneuver extends AIFlightModel
                     Or.transformInv(tmpV3f);
                     if(Math.abs(tmpV3f.y) < 4D && Math.abs(tmpV3f.z) < 4D)
                         CT.WeaponControl[2] = true;
-                    Voice.speakAttackByRockets((Aircraft)actor);
+                    Voice.speakAttackByRockets((Aircraft)this.actor);
                     rocketsDelay += 120;
                 }
             }
