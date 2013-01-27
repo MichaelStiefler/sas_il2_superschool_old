@@ -6,6 +6,7 @@ import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.objects.air.Aircraft;
+import com.maddox.il2.objects.air.TypeFastJet;
 import com.maddox.il2.objects.air.SU_26M2;
 import com.maddox.il2.objects.air.TypeGuidedMissileCarrier;
 import com.maddox.il2.objects.weapons.*;
@@ -948,9 +949,13 @@ public class Controls
 			arrestor = filter(f, arrestorControl, arrestor, 999.9F, 0.2F);
 		if(bHasFlapsControl || flag1)
 		{
+            // DBW AI MOD
 			FlapsControl = clamp01(FlapsControl);
 			if(Flaps > FlapsControl)
-				Flaps = filter(f, FlapsControl, Flaps, 999F, Aircraft.cvt(FM.getSpeedKMH(), 150F, 280F, 0.15F, 0.25F));
+                if((Aircraft)FM.actor instanceof TypeFastJet)
+				    Flaps = filter(f, FlapsControl, Flaps, 999F, Aircraft.cvt(FM.getSpeedKMH(), 260F, 440F, 0.15F, 0.20F));
+                else
+				    Flaps = filter(f, FlapsControl, Flaps, 999F, Aircraft.cvt(FM.getSpeedKMH(), 150F, 280F, 0.15F, 0.25F));
 			else
 				Flaps = filter(f, FlapsControl, Flaps, 999F, Aircraft.cvt(FM.getSpeedKMH(), 150F, 280F, 0.15F, 0.02F));
 		}

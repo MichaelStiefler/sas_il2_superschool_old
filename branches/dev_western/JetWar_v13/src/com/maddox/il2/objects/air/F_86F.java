@@ -362,6 +362,9 @@ public class F_86F extends Scheme1 implements TypeSupersonic, TypeFighter,
     if (ft == 0.0F) {
       UpdateLightIntensity();
     }
+    if(!((Aircraft)this).getHydraulicPressure())
+        if(FM.CT.AirBrakeControl != 1.0F)
+            FM.CT.AirBrakeControl = 1.0F;
   }
 
   private final void UpdateLightIntensity() {
