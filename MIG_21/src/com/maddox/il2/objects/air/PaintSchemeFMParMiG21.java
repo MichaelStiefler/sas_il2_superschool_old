@@ -208,15 +208,8 @@ public class PaintSchemeFMParMiG21 extends PaintSchemeFCSPar06
         }
         if(regiment.country() == PaintScheme.countryRussia)
         {
-			if(k < 10)
-			{
-				changeMat(hiermesh, "Overlay4", "psFM06RUSLNUM" + l + i + "0" + k, "null.tga", "Russian/1" + k + ".tga", 1.0F, 1.0F, 1.0F, psRussianBomberColor[i][0], psRussianBomberColor[i][1], psRussianBomberColor[i][2]);
-				changeMat(class1, hiermesh, "Overlay1", "psFM06RUSRNUM" + l + i + "0" + k, "Russian/1" + k + ".tga", psRussianBomberColor[i][0], psRussianBomberColor[i][1], psRussianBomberColor[i][2]);
-			} else
-			{
-				changeMat(hiermesh, "Overlay1", "psFM06RUSCNUM" + l + i + k, "Russian/1" + k / 10 + ".tga", "Russian/1" + k % 10 + ".tga", psRussianBomberColor[i][0], psRussianBomberColor[i][1], psRussianBomberColor[i][2], psRussianBomberColor[i][0], psRussianBomberColor[i][1], psRussianBomberColor[i][2]);
-				changeMat(hiermesh, "Overlay4", "psFM06RUSCNUM" + l + i + k, "Russian/1" + k / 10 + ".tga", "Russian/1" + k % 10 + ".tga", psRussianBomberColor[i][0], psRussianBomberColor[i][1], psRussianBomberColor[i][2], psRussianBomberColor[i][0], psRussianBomberColor[i][1], psRussianBomberColor[i][2]);
-			}
+	        changeMat(hiermesh, "Overlay1", "psFM06RUSCNUM" + l + i + (k >= 10 ? "" + k : "0" + k), "Russian/1" + k / 10 + ".tga", "Russian/1" + k % 10 + ".tga", psRussianBomberColor[i][0], psRussianBomberColor[i][1], psRussianBomberColor[i][2], psRussianBomberColor[i][0], psRussianBomberColor[i][1], psRussianBomberColor[i][2]);
+	        changeMat(hiermesh, "Overlay4", "psFM06RUSCNUM" + l + i + (k >= 10 ? "" + k : "0" + k), "Russian/1" + k / 10 + ".tga", "Russian/1" + k % 10 + ".tga", psRussianBomberColor[i][0], psRussianBomberColor[i][1], psRussianBomberColor[i][2], psRussianBomberColor[i][0], psRussianBomberColor[i][1], psRussianBomberColor[i][2]);
 			changeMat(class1, hiermesh, "Overlay7", "redstar3", "Russian/redstar3.tga", 1.0F, 1.0F, 1.0F);
 			changeMat(class1, hiermesh, "Overlay8", "redstar3", "Russian/redstar3.tga", 1.0F, 1.0F, 1.0F);
 			return;
