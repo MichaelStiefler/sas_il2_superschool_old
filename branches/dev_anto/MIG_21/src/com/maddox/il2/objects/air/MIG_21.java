@@ -202,48 +202,44 @@ implements TypeSupersonic, TypeFastJet, TypeFighter, TypeBNZFighter, TypeFighter
 
 	public static void moveGear(HierMesh hiermesh, float f)
     {
-        float f1 = Math.max(-f * 1500F, -140F);
-        float f2 = Math.max(-f * 1500F, -100F);
-        hiermesh.chunkSetAngles("GearCBox_D0", 0.0F, -120F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 90F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 90F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, -90F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, -90F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearL44_D0", 0.0F, -30F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearR44_D0", 0.0F, -30F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearL5_D0", 0.0F, 0.0F, -f1);
-        hiermesh.chunkSetAngles("GearR5_D0", 0.0F, 0.0F, f1);
-        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, 0.0F, -f2);
-        hiermesh.chunkSetAngles("GearC6_D0", 0.0F, 0.0F, f2);
-        hiermesh.chunkSetAngles("GearTelescopeL", 0.0F, 115F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearTelescopeR", 0.0F, 115F * f, 0.0F);
+       hiermesh.chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(f, 0.11F, 0.6F, 0.0F, -125F), 0.0F);
+       hiermesh.chunkSetAngles("GearC6_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.2F, 0.0F, -90F));
+       hiermesh.chunkSetAngles("GearC5_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.2F, 0.0F, 90F));
+       hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.11F, 0.6F, 0.0F, -90F));
+       hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.11F, 0.6F, 0.0F, -90F));
+       hiermesh.chunkSetAngles("GearL22_D0", 0.0F, Aircraft.cvt(f, 0.11F, 0.6F, 0.0F, 115F), 0.0F);
+       hiermesh.chunkSetAngles("GearR22_D0", 0.0F, Aircraft.cvt(f, 0.11F, 0.6F, 0.0F, 115F), 0.0F);
+       hiermesh.chunkSetAngles("GearL23_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.11F, 0.2F, 0.0F, -55F));
+       hiermesh.chunkSetAngles("GearR23_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.11F, 0.2F, 0.0F, -55F));
+       hiermesh.chunkSetAngles("GearL3_D0", Aircraft.cvt(f, 0.11F, 0.6F, 0.0F, 45.0F), 0.0F, Aircraft.cvt(f, 0.11F, 0.6F, 0.0F, -40.3F));
+       hiermesh.chunkSetAngles("GearR3_D0", Aircraft.cvt(f, 0.11F, 0.6F, 0.0F, 47.0F), 0.0F, Aircraft.cvt(f, 0.11F, 0.6F, 0.0F, -42.3F));
+       hiermesh.chunkSetAngles("GearL4_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.1F, 0.0F, 145F));
+       hiermesh.chunkSetAngles("GearR4_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.1F, 0.0F, -145F));
     }
-
 
     protected void moveGear(float f)
     {
-        resetYPRmodifier();
-        Aircraft.xyz[0] = Aircraft.cvt(f, 0.0F, 0.1F, 0.0F, -0.25F);
-        hierMesh().chunkSetLocate("GearL33_D0", Aircraft.xyz, Aircraft.ypr);
-        resetYPRmodifier();
-        Aircraft.xyz[0] = Aircraft.cvt(f, 0.0F, 0.1F, 0.0F, -0.25F);
-        hierMesh().chunkSetLocate("GearR33_D0", Aircraft.xyz, Aircraft.ypr);
         moveGear(hierMesh(), f);
+        resetYPRmodifier();
+        Aircraft.xyz[1] = Aircraft.cvt(f, 0.12F, 0.3F, 0.0F, 0.31F);
+        hierMesh().chunkSetLocate("GearL21_D0", Aircraft.xyz, Aircraft.ypr);
+        resetYPRmodifier();
+        Aircraft.xyz[1] = Aircraft.cvt(f, 0.12F, 0.3F, 0.0F, 0.31F);
+        hierMesh().chunkSetLocate("GearR21_D0", Aircraft.xyz, Aircraft.ypr);
     }
 
     public void moveWheelSink()
-    {
+    {	
+        float f = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[2], 0.0F, 0.4F, 0.0F, 0.3F);
+        hierMesh().chunkSetAngles("GearC3_D0", 0.0F, 50.0F * f, 0.0F);
         resetYPRmodifier();
-        float f = ((FlightModelMain) (super.FM)).Gears.gWheelSinking[2];
-        Aircraft.xyz[1] = Aircraft.cvt(f, 0.0F, 0.19F, 0.0F, 0.19F);
-        f = Aircraft.cvt(f, 0.0F, 19F, 0.0F, 25F);
-        hierMesh().chunkSetAngles("GearC2_D0", 0.0F, f, 0.0F);
+        f = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.6F, 0.0F, 0.59F);
+        xyz[1] = f;
+        hierMesh().chunkSetLocate("GearL212_D0", xyz, ypr);
         resetYPRmodifier();
-        Aircraft.xyz[0] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.8F, 0.0F, -0.5F);
-        hierMesh().chunkSetLocate("GearL3_D0", Aircraft.xyz, Aircraft.ypr);
-        resetYPRmodifier();
-        Aircraft.xyz[0] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 0.8F, 0.0F, -0.5F);
-        hierMesh().chunkSetLocate("GearR3_D0", Aircraft.xyz, Aircraft.ypr);
+        f = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 0.6F, 0.0F, 0.59F);
+        xyz[1] = f;
+        hierMesh().chunkSetLocate("GearR212_D0", xyz, ypr);
     }
 
 	protected void moveRudder(float f)
