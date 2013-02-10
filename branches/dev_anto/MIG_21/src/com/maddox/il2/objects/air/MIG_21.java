@@ -290,9 +290,9 @@ implements TypeSupersonic, TypeFastJet, TypeFighter, TypeBNZFighter, TypeFighter
 	{
 
 		if(FM.CT.getGear() < 0.99)
-			hierMesh().chunkSetAngles("GearC_D0", 0.0F, 0.0F, 0.0F*f);
+			hierMesh().chunkSetAngles("GearC_D0", 0.0F*f, 0.0F, 0.0F);
 		else
-				hierMesh().chunkSetAngles("GearC_D0", 0.0F, 0.0F, 30F * f);
+				hierMesh().chunkSetAngles("GearC_D0", -30F * f, 0.0F, 0.0F);
 	} 
 	
 	public void moveShockCone(){
