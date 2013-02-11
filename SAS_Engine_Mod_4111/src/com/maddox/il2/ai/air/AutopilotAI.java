@@ -39,6 +39,7 @@ public class AutopilotAI extends Autopilotage
     private Vector3d Ve;
     private boolean overrideMissileControl = false;
     private Controls theMissileControls = null;
+    private float oldEvdecrease = 0;
 
     public AutopilotAI(FlightModel flightmodel)
     {
@@ -195,13 +196,15 @@ public class AutopilotAI extends Autopilotage
     {
 label0:
         {
-        if (this.overrideMissileControl) {
-            this.theMissileControls.WeaponControl[2] = true;
-          }
+            if(this.overrideMissileControl)
+                this.theMissileControls.WeaponControl[2] = true;
+
             FM.getLoc(PlLoc);
             SA = (float)Math.max(StabAltitude, Engine.land().HQ_Air(PlLoc.x, PlLoc.y) + 5D);
             if(!bWayPoint)
+            {
                 break label0;
+            }
             if(WWPoint != way.auto(PlLoc) || way.isReached(PlLoc))
             {
                 WWPoint = way.auto(PlLoc);
@@ -248,7 +251,8 @@ label0:
                 if(way.isLanding())
                 {
                     FM.getLoc(P);
-                    if(way.Cur() > 3 && P.z > WPoint.z + (((Aircraft)FM.actor instanceof TypeFastJet)? 800D : 500D))
+                    if(way.Cur() > 3 && P.z > (WPoint.z +
+                       ((((Aircraft)FM.actor) instanceof TypeFastJet)? 800D : 500D)))
                         way.setCur(1);
                     if(way.Cur() == 5)
                     {
@@ -312,6 +316,14 @@ label0:
             }
             if(way.isLanding() && way.Cur() < 6 && way.getCurDist() < 800D)
                 way.next();
+         /*   if(way.isLanding() && way.Cur() > 4)
+            {
+                way.prev();
+                float wyspd = way.curr().Speed;
+                way.next();
+                if(FM.getSpeed() > wyspd * 1.5F)
+                    way.first();
+            } */
             if((way.Cur() == way.size() - 1 && getWayPointDistance() < 2000F && way.curr().getTarget() == null && FM.M.fuel < 0.2F * FM.M.maxFuel || way.curr().Action == 2) && !way.isLanding())
             {
                 Airport airport = Airport.makeLandWay(FM);
@@ -346,6 +358,7 @@ label0:
             }
             StabDirection = -FMMath.RAD2DEG((float)Math.atan2(WPoint.y - PlLoc.y, WPoint.x - PlLoc.x));
         }
+          // end of label0
         if(bStabSpeed || bWayPoint)
         {
             Pw = 0.3F - 0.04F * (FM.getSpeed() - (float)StabSpeed);
@@ -388,6 +401,22 @@ label0:
             Ev += 1.0D * FM.getW().y + 0.5D * FM.getAW().y;
             if(FM.getSpeed() < 1.3F * FM.VminFLAPS)
                 Ev -= 0.004F * f;
+          /*  if(FM.getVertSpeed() < 0 && d < -10D )
+                Ev += 0.4F; */
+            if(FM.getSpeed() > 0 && FM.getVertSpeed() < -0.9F && (((Aircraft)FM.actor) instanceof TypeFastJet))
+                if(getWayPointDistance() / FM.getSpeed() * FM.getVertSpeed() < (float)d - Math.min((SA * 0.05F), 50F))
+                {
+                    oldEvdecrease -= (getWayPointDistance() / FM.getSpeed() * FM.getVertSpeed() - (float)d) / 100F;
+                    Ev -= oldEvdecrease;
+                }
+                else
+                {
+                    if(oldEvdecrease < 0)
+                        oldEvdecrease += 0.02F;
+                    if(oldEvdecrease > 0)
+                        oldEvdecrease = 0F;
+                    Ev -= oldEvdecrease;
+                }
             float f6 = (9F * FM.getSpeed()) / FM.VminFLAPS;
             if(FM.VminFLAPS < 28F)
                 f6 = 10F;
@@ -398,6 +427,8 @@ label0:
             if(f8 < -4F)
                 f8 = -4F;
             float f9 = (f8 - FM.Or.getTangage()) * 0.2F;
+            if(FM.getVertSpeed() < 0 && FM.Alt / -FM.getVertSpeed() < 40F && FM.getAOA() < 15F && !(way.isLanding() && way.Cur() > 2))
+                f9 = 0.50F;
             if(Ev > f7)
                 Ev = f7;
             if(Ev < f9)
@@ -407,6 +438,7 @@ label0:
         float f1 = 0.0F;
         if(bStabDirection || bWayPoint)
         {
+            double d = SA - FM.getAltitude();
             f1 = FM.Or.getAzimut();
             float f2 = FM.Or.getKren();
             f1 = (float)((double)f1 - StabDirection);
@@ -438,11 +470,132 @@ label0:
             WPoint.get(Ve);
             Ve.sub(FM.Loc);
             FM.Or.transformInv(Ve);
-            if(Math.abs(Ve.y) < 25D && Math.abs(Ve.x) < 150D)
+            float rolllimitbyspeedhight = 24F + (FM.getSpeed() / FM.Vmin - 1.2F) + (((float)FM.Loc.z - (float)Engine.land().HQ_Air(FM.Loc.x, FM.Loc.y) - 100F) / 10F) + (float)FM.Vwld.z * 1.6F;
+            boolean bflagOK = false;
+            if(rolllimitbyspeedhight > 60F)
+            {
+                rolllimitbyspeedhight = 60F;
+                bflagOK = true;
+            }
+            boolean bflagFIXED = false;
+            if(Math.abs(FM.Or.getRoll() - 360F) > rolllimitbyspeedhight * 1.3 && !bflagOK)
+            {
+                FM.CT.AileronControl = ((FM.Or.getRoll() - 360F) < 0)? -0.5F : 0.5F;
+                bflagFIXED = true;
+            }
+            else if(Math.abs(FM.Or.getRoll() - 360F) > rolllimitbyspeedhight && !bflagOK)
+            {
+                if(FM.CT.AileronControl * Ail > 0)
+                    FM.CT.AileronControl = 0.0F;
+                else
+                    FM.CT.AileronControl = Ail;
+                bflagFIXED = true;
+            }
+            else if(Math.abs(FM.Or.getRoll() - 360F) > rolllimitbyspeedhight * 0.90 && !bflagOK)
+            {
+                float newail;
+                if(Math.abs(Ve.y) < 25D && Math.abs(Ve.x) < 150D)
+                    newail = -0.01F * FM.Or.getKren();
+                else
+                    newail = Ail;
+                if(FM.CT.AileronControl > 0 &&  newail > 0)
+                    if(newail > FM.CT.AileronControl * 0.33F)
+                    {
+                        FM.CT.AileronControl = newail * 0.33F;
+                        bflagFIXED = true;
+                    }
+                    else
+                        FM.CT.AileronControl = newail;
+                else if(FM.CT.AileronControl > 0 &&  newail < 0)
+                    FM.CT.AileronControl = newail;
+                else if(FM.CT.AileronControl < 0 &&  newail < 0)
+                    if(newail < FM.CT.AileronControl * 0.33F)
+                    {
+                        FM.CT.AileronControl = newail * 0.33F;
+                        bflagFIXED = true;
+                    }
+                    else
+                        FM.CT.AileronControl = newail;
+                else
+                    FM.CT.AileronControl = newail;
+                if(bflagFIXED = false && FM.Vwld.z < 0)
+                    bflagFIXED = true;
+            }
+            else if(Math.abs(FM.Or.getRoll() - 360F) > rolllimitbyspeedhight * 0.80 && !bflagOK)
+            {
+                float newail;
+                if(Math.abs(Ve.y) < 25D && Math.abs(Ve.x) < 150D)
+                    newail = -0.01F * FM.Or.getKren();
+                else
+                    newail = Ail;
+                if(FM.CT.AileronControl > 0 &&  newail > 0)
+                    if(newail > FM.CT.AileronControl * 0.5F)
+                    {
+                        FM.CT.AileronControl = newail * 0.5F;
+                        bflagFIXED = true;
+                    }
+                    else
+                        FM.CT.AileronControl = newail;
+                else if(FM.CT.AileronControl > 0 &&  newail < 0)
+                    FM.CT.AileronControl = newail;
+                else if(FM.CT.AileronControl < 0 &&  newail < 0)
+                    if(newail < FM.CT.AileronControl * 0.5F)
+                    {
+                        FM.CT.AileronControl = newail * 0.5F;
+                        bflagFIXED = true;
+                    }
+                    else
+                        FM.CT.AileronControl = newail;
+                else
+                    FM.CT.AileronControl = newail;
+                if(bflagFIXED = false && FM.Vwld.z < 0)
+                    bflagFIXED = true;
+            }
+            else if(Math.abs(FM.Or.getRoll() - 360F) > rolllimitbyspeedhight * 0.70 && !bflagOK)
+            {
+                float newail;
+                if(Math.abs(Ve.y) < 25D && Math.abs(Ve.x) < 150D)
+                    newail = -0.01F * FM.Or.getKren();
+                else
+                    newail = Ail;
+                if(FM.CT.AileronControl > 0 &&  newail > 0)
+                    if(newail > FM.CT.AileronControl * 0.75F)
+                    {
+                        FM.CT.AileronControl = newail * 0.75F;
+                        bflagFIXED = true;
+                    }
+                    else
+                        FM.CT.AileronControl = newail;
+                else if(FM.CT.AileronControl > 0 &&  newail < 0)
+                    FM.CT.AileronControl = newail;
+                if(FM.CT.AileronControl < 0 &&  newail < 0)
+                    if(newail < FM.CT.AileronControl * 0.75F)
+                    {
+                        FM.CT.AileronControl = newail * 0.75F;
+                        bflagFIXED = true;
+                    }
+                    else
+                        FM.CT.AileronControl = newail;
+                else
+                    FM.CT.AileronControl = newail;
+                if(bflagFIXED = false && FM.Vwld.z < 0)
+                    bflagFIXED = true;
+            }
+            else if(Math.abs(Ve.y) < 25D && Math.abs(Ve.x) < 150D)
                 FM.CT.AileronControl = -0.01F * FM.Or.getKren();
             else
                 FM.CT.AileronControl = Ail;
-            FM.CT.ElevatorControl += Math.abs(f2) * 0.004F * f;
+            float newelev = FM.CT.ElevatorControl + (Math.abs(f2) * 0.004F * f + ((bflagFIXED)? 0.08F : 0F));
+            if(FM.getAltitude() < way.curr().z() - 50F)
+                newelev += 0.20F;
+            if(FM.getSpeed() > 0 && FM.getVertSpeed() < -0.9F && (((Aircraft)FM.actor) instanceof TypeFastJet))
+                if(getWayPointDistance() / FM.getSpeed() * FM.getVertSpeed() < (float)d - Math.min((SA * 0.05F), 50F))
+                    newelev -= (getWayPointDistance() / FM.getSpeed() * FM.getVertSpeed() - (float)d) / 200F;
+            if(newelev > 1.0F)
+                newelev = 1.0F;
+            if(newelev < -1.0F)
+                newelev = -1.0F;
+            FM.CT.ElevatorControl = newelev;
             FM.CT.RudderControl -= FM.getAOS() * 0.04F * f;
         }
         if(bWayPoint && way.isLanding())
