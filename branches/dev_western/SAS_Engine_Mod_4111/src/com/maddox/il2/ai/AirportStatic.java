@@ -111,18 +111,14 @@ public abstract class AirportStatic extends Airport
             f1 = 1.0F;
         if(flightmodel.EI.engines[0].getType() > 1)
             f1 = 1.0F;
-        if(flightmodel.EI.engines[0].getType() == 3)
+        if(flightmodel.EI.engines[0].getType() == 2)
+            f1 = 1.25F;
+        else if(flightmodel.EI.engines[0].getType() == 3)
             f1 = 1.5F;
         float f2 = f1;
         // DBW AI MOD - get rid of stock one
         // if(f2 > 1.0F)
         //     f2 = 1.0F;
-    	//TODO: Edit for fast flying aircraft
-   	    if(((Interpolate) (flightmodel)).actor instanceof TypeFastJet)
-        {
-            f1 = 2.0F;
-            f2 = 2.0F;
-        }
         for(int i = x.length - 1; i >= 0; i--)
         {
             WayPoint waypoint = new WayPoint();
@@ -133,23 +129,38 @@ public abstract class AirportStatic extends Airport
             {
             case 0: // '\0'
             default:
-                pd.set(x[i] * f1, y[i] * f1, z[i] * f2);
+      	        if(((Interpolate) (flightmodel)).actor instanceof TypeFastJet)
+                    pd.set(xFJ[i], yFJ[i], zFJ[i]);
+                else
+                    pd.set(x[i] * f1, y[i] * f1, z[i] * f2);
                 break;
 
             case 1: // '\001'
-                pd.set(x[i] * f1, ry[i] * f1, z[i] * f2);
+      	        if(((Interpolate) (flightmodel)).actor instanceof TypeFastJet)
+                    pd.set(xFJ[i], ryFJ[i], zFJ[i]);
+                else
+                    pd.set(x[i] * f1, ry[i] * f1, z[i] * f2);
                 break;
 
             case 2: // '\002'
-                pd.set(x[i] * f1, lsy[i] * f1, z[i] * f2);
+      	        if(((Interpolate) (flightmodel)).actor instanceof TypeFastJet)
+                    pd.set(xFJ[i], lsyFJ[i], zFJ[i]);
+                else
+                    pd.set(x[i] * f1, lsy[i] * f1, z[i] * f2);
                 break;
 
             case 3: // '\003'
-                pd.set(x[i] * f1, rsy[i] * f1, z[i] * f2);
+      	        if(((Interpolate) (flightmodel)).actor instanceof TypeFastJet)
+                    pd.set(xFJ[i], rsyFJ[i], zFJ[i]);
+                else
+                    pd.set(x[i] * f1, rsy[i] * f1, z[i] * f2);
                 break;
 
             case 4: // '\004'
-                pd.set(six[i] * f1, siy[i] * f1, siz[i] * f2);
+      	        if(((Interpolate) (flightmodel)).actor instanceof TypeFastJet)
+                    pd.set(sixFJ[i], siyFJ[i], sizFJ[i]);
+                else
+                    pd.set(six[i] * f1, siy[i] * f1, siz[i] * f2);
                 break;
             }
             float vlanding;
@@ -366,13 +377,22 @@ public abstract class AirportStatic extends Airport
     public static final int PT_STAY = 4;
     private static Point3d p3d = new Point3d();
     private static float x[] = {
-        -500F, 0.0F, 220F, 2000F, 4000F, 5000F, 4000F, 2000F, 0F
+        -500F, 0.0F, 220F, 2000F, 4000F, 5000F, 4000F, 0F, -2000F
+    };
+    private static float xFJ[] = {
+       -1000F, -0.0F, 220F, 4000F, 8000F, 10000F, 8000F, 0F, -4000F
     };
     private static float y[] = {
         0.0F, 0.0F, 0.0F, 0.0F, -500F, -2000F, -4000F, -4000F, -4000F
     };
+    private static float yFJ[] = {
+        0.0F, 0.0F, 0.0F, 0.0F, -1000F, -4000F, -8000F, -8000F, -8000F
+    };
     private static float z[] = {
         0.0F, 6F, 20F, 160F, 500F, 600F, 700F, 700F, 700F
+    };
+    private static float zFJ[] = {
+        0.0F, 6F, 20F, 320F, 800F, 1000F, 1100F, 1100F, 1100F
     };
     private static float v[] = {
         0.0F, 180F, 220F, 240F, 270F, 280F, 300F, 300F, 300F
@@ -383,20 +403,38 @@ public abstract class AirportStatic extends Airport
     private static float ry[] = {
         0.0F, 0.0F, 0.0F, 0.0F, 500F, 2000F, 4000F, 4000F, 4000F
     };
+    private static float ryFJ[] = {
+        0.0F, 0.0F, 0.0F, 0.0F, 1000F, 4000F, 8000F, 8000F, 8000F
+    };
     private static float lsy[] = {
         0.0F, 0.0F, 0.0F, 0.0F, -250F, -1000F, -2000F, -2000F, -2000F
     };
-    private static float rsy[] = {
+    private static float lsyFJ[] = {
+        0.0F, 0.0F, 0.0F, 0.0F, -500F, -2000F, -4000F, -4000F, -4000F
+    };
+     private static float rsy[] = {
         0.0F, 0.0F, 0.0F, 0.0F, 250F, 1000F, 2000F, 2000F, 2000F
+    };
+     private static float rsyFJ[] = {
+        0.0F, 0.0F, 0.0F, 0.0F, 500F, 2000F, 4000F, 4000F, 4000F
     };
     private static float six[] = {
         -500F, 0.0F, 220F, 2000F, 3000F, 4000F, 5000F, 5500F, 6000F
     };
+    private static float sixFJ[] = {
+        -1000F, 0.0F, 220F, 4000F, 6000F, 8000F, 10000F, 11000F, 12000F
+    };
     private static float siy[] = {
+        0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F
+    };
+    private static float siyFJ[] = {
         0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F
     };
     private static float siz[] = {
         0.0F, 6F, 20F, 160F, 500F, 600F, 700F, 700F, 700F
+    };
+    private static float sizFJ[] = {
+        0.0F, 6F, 20F, 320F, 1000F, 1200F, 1400F, 1400F, 1400F
     };
     private static Point3d pWay = new Point3d();
     private static Point3d pd = new Point3d();
