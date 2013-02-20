@@ -23,9 +23,15 @@ public class CockpitMIG_21PF extends CockpitPilot
                 setNew.throttle = 0.9F * setOld.throttle + ((FlightModelMain) (fm)).CT.PowerControl * 0.1F;
                 setNew.starter = 0.94F * setOld.starter + 0.06F * (((FlightModelMain) (fm)).EI.engines[0].getStage() <= 0 || ((FlightModelMain) (fm)).EI.engines[0].getStage() >= 6 ? 0.0F : 1.0F);
                 setNew.altimeter = fm.getAltitude();
-                setNew.azimuth.setDeg(setOld.azimuth.getDeg(1.0F), ((FlightModelMain) (fm)).Or.azimut());
                 float a = waypointAzimuth();
-                setNew.waypointAzimuth.setDeg(setOld.waypointAzimuth.getDeg(0.1F), (a - setOld.azimuth.getDeg(1.0F)) + World.Rnd().nextFloat(-10F, 10F));
+                if (useRealisticNavigationInstruments()) {
+                    setNew.waypointAzimuth.setDeg(a - 90F);
+                    setOld.waypointAzimuth.setDeg(a - 90F);
+                  } else {
+                    setNew.waypointAzimuth.setDeg(setOld.waypointAzimuth.getDeg(0.1F), a - setOld.azimuth.getDeg(1.0F));
+                  }
+                  setNew.azimuth.setDeg(setOld.azimuth.getDeg(1.0F), fm.Or.azimut());
+                  setNew.beaconDirection = (10F * setOld.beaconDirection + getBeaconDirection()) / 11F;
                 setNew.vspeed = (199F * setOld.vspeed + fm.getVertSpeed()) / 200F;
                 float f = ((MIG_21)aircraft()).k14Distance;
                 setNew.k14w = (5F * CockpitMIG_21PF.k14TargetWingspanScale[((MIG_21)aircraft()).k14WingspanType]) / f;
@@ -71,6 +77,7 @@ public class CockpitMIG_21PF extends CockpitPilot
         float k14x;
         float k14y;
         float k14w;
+        float beaconDirection;
 
         private Variables()
         {
@@ -129,8 +136,29 @@ public class CockpitMIG_21PF extends CockpitPilot
         pictElev = 0.0F;
         tmpP = new Point3d();
         tmpV = new Vector3d();
+        HookNamed hooknamed = new HookNamed(mesh, "LAMPHOOK1");
+        Loc loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+        hooknamed.computePos(this, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F), loc);
+        light1 = new LightPointActor(new LightPoint(), loc.getPoint());
+        light1.light.setColor(300F, 0.0F, 0.0F);
+        light1.light.setEmit(0.0F, 0.0F);
+        pos.base().draw.lightMap().put("LAMPHOOK1", light1);
+        hooknamed = new HookNamed(mesh, "LAMPHOOK2");
+        loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+        hooknamed.computePos(this, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F), loc);
+        light2 = new LightPointActor(new LightPoint(), loc.getPoint());
+        light2.light.setColor(300F, 0.0F, 0.0F);
+        light2.light.setEmit(0.0F, 0.0F);
+        pos.base().draw.lightMap().put("LAMPHOOK2", light2);
+        hooknamed = new HookNamed(mesh, "LAMPHOOK3");
+        loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+        hooknamed.computePos(this, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F), loc);
+        light3 = new LightPointActor(new LightPoint(), loc.getPoint());
+        light3.light.setColor(300F, 0.0F, 0.0F);
+        light3.light.setEmit(0.0F, 0.0F);
+        pos.base().draw.lightMap().put("LAMPHOOK3", light3);
         super.cockpitNightMats = (new String[] {
-            "gauges_01", "gauges_02", "gauges_03", "gauges_04", "gauges_05", "Dgauges_01", "Dgauges_02", "Dgauges_03", "Dgauges_05"
+            "gauges1", "gauges2", "gauges3", "gauges4", "gauges5", "instrument"
         });
         setNightMats(false);
         interpPut(new Interpolater(), null, Time.current(), null);
@@ -181,6 +209,15 @@ public class CockpitMIG_21PF extends CockpitPilot
         super.mesh.chunkSetAngles("Z_Hour1", cvt(World.getTimeofDay(), 0.0F, 24F, 0.0F, 720F), 0.0F, 0.0F);
         super.mesh.chunkSetAngles("Z_Minute1", cvt(World.getTimeofDay() % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F, 0.0F);
         super.mesh.chunkSetAngles("Z_Second1", cvt(((World.getTimeofDay() % 1.0F) * 60F) % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("Z_Compass1", 265.0F + setNew.azimuth.getDeg(f * 0.1F)+setNew.waypointAzimuth.getDeg(f * 0.1F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("Z_Compass3", 100.0F + setNew.azimuth.getDeg(f * 0.1F), 0.0F, 0.0F);
+        
+        
+        if (useRealisticNavigationInstruments()) {
+            mesh.chunkSetAngles("Z_Compass2", (90.0F + setNew.azimuth.getDeg(f * 0.1F)) + setNew.beaconDirection, 0.0F, 0.0F);
+          } else {
+            mesh.chunkSetAngles("Z_Compass2", 90.0F + setNew.azimuth.getDeg(f * 0.1F), 0.0F, 0.0F);
+          }
         if(((MIG_21)aircraft()).k14Mode == 2)
             super.mesh.chunkVisible("Z_Z_RETICLE", false);
         else
@@ -211,11 +248,20 @@ public class CockpitMIG_21PF extends CockpitPilot
 
     public void toggleLight()
     {
-        super.cockpitLightControl = !super.cockpitLightControl;
-        if(super.cockpitLightControl)
+        cockpitLightControl = !cockpitLightControl;
+        if(cockpitLightControl)
+        {
+            light1.light.setEmit(0.0060F, 0.4F);
+            light2.light.setEmit(0.0060F, 0.4F);
+            light3.light.setEmit(0.0060F, 0.4F);
             setNightMats(true);
-        else
+        } else
+        {
+            light1.light.setEmit(0.0F, 0.0F);
+            light2.light.setEmit(0.0F, 0.0F);
+            light3.light.setEmit(0.0F, 0.0F);
             setNightMats(false);
+        }
     }
 
     public void doToggleDim()
@@ -228,6 +274,9 @@ public class CockpitMIG_21PF extends CockpitPilot
     private float pictAiler;
     private float pictElev;
     private float pictGear;
+    private LightPointActor light1;
+    private LightPointActor light2;
+    private LightPointActor light3;
     public Vector3f w;
     private static final float speedometerScale[] = {
         19F, 55F, 90F, 105F, 118.8F, 131F, 144.2F, 157.8F, 171.4F, 185.2F, 
@@ -252,14 +301,4 @@ public class CockpitMIG_21PF extends CockpitPilot
     };
     private Point3d tmpP;
     private Vector3d tmpV;
-
-
-
-
-
-
-
-
-
-
 }
