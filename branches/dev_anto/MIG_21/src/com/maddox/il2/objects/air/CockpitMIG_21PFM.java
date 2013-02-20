@@ -129,8 +129,29 @@ public class CockpitMIG_21PFM extends CockpitPilot
         pictElev = 0.0F;
         tmpP = new Point3d();
         tmpV = new Vector3d();
+        HookNamed hooknamed = new HookNamed(mesh, "LAMPHOOK1");
+        Loc loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+        hooknamed.computePos(this, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F), loc);
+        light1 = new LightPointActor(new LightPoint(), loc.getPoint());
+        light1.light.setColor(300F, 0.0F, 0.0F);
+        light1.light.setEmit(0.0F, 0.0F);
+        pos.base().draw.lightMap().put("LAMPHOOK1", light1);
+        hooknamed = new HookNamed(mesh, "LAMPHOOK2");
+        loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+        hooknamed.computePos(this, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F), loc);
+        light2 = new LightPointActor(new LightPoint(), loc.getPoint());
+        light2.light.setColor(300F, 0.0F, 0.0F);
+        light2.light.setEmit(0.0F, 0.0F);
+        pos.base().draw.lightMap().put("LAMPHOOK2", light2);
+        hooknamed = new HookNamed(mesh, "LAMPHOOK3");
+        loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+        hooknamed.computePos(this, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F), loc);
+        light3 = new LightPointActor(new LightPoint(), loc.getPoint());
+        light3.light.setColor(300F, 0.0F, 0.0F);
+        light3.light.setEmit(0.0F, 0.0F);
+        pos.base().draw.lightMap().put("LAMPHOOK3", light3);
         super.cockpitNightMats = (new String[] {
-            "gauges_01", "gauges_02", "gauges_03", "gauges_04", "gauges_05", "Dgauges_01", "Dgauges_02", "Dgauges_03", "Dgauges_05"
+            "gauges1", "gauges2", "gauges3", "gauges4", "gauges5", "instrument"
         });
         setNightMats(false);
         interpPut(new Interpolater(), null, Time.current(), null);
@@ -211,11 +232,20 @@ public class CockpitMIG_21PFM extends CockpitPilot
 
     public void toggleLight()
     {
-        super.cockpitLightControl = !super.cockpitLightControl;
-        if(super.cockpitLightControl)
+        cockpitLightControl = !cockpitLightControl;
+        if(cockpitLightControl)
+        {
+            light1.light.setEmit(0.0060F, 0.4F);
+            light2.light.setEmit(0.0060F, 0.4F);
+            light3.light.setEmit(0.0060F, 0.4F);
             setNightMats(true);
-        else
+        } else
+        {
+            light1.light.setEmit(0.0F, 0.0F);
+            light2.light.setEmit(0.0F, 0.0F);
+            light3.light.setEmit(0.0F, 0.0F);
             setNightMats(false);
+        }
     }
 
     public void doToggleDim()
@@ -228,6 +258,9 @@ public class CockpitMIG_21PFM extends CockpitPilot
     private float pictAiler;
     private float pictElev;
     private float pictGear;
+    private LightPointActor light1;
+    private LightPointActor light2;
+    private LightPointActor light3;
     public Vector3f w;
     private static final float speedometerScale[] = {
         19F, 55F, 90F, 105F, 118.8F, 131F, 144.2F, 157.8F, 171.4F, 185.2F, 
@@ -252,14 +285,4 @@ public class CockpitMIG_21PFM extends CockpitPilot
     };
     private Point3d tmpP;
     private Vector3d tmpV;
-
-
-
-
-
-
-
-
-
-
 }
