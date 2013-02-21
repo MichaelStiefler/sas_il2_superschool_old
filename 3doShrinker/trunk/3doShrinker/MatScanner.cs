@@ -108,10 +108,11 @@ namespace _3doShrinker
                     {
                         hashedTga = this.tgaHashesList[tgaFile];
                     }
-                    else // Just for safety reasons, in case a texture file is missing
+                    else // The texture being referred to can't be found, use a "ghost" hash instead
                     {
-                        hashedTga = Shrinker.RandomHash(); // use a random hash so the file is distinct
-                        this.Proto("### MISSING FILE ### " + tgaFile);
+                        //hashedTga = Shrinker.RandomHash(); // use a random hash so the file is distinct
+                        hashedTga = Shrinker.GetMD5HashFromFile(tgaFile);
+                        //this.Proto("### MISSING FILE ### " + tgaFile);
                         continue;
                     }
                     if (retVal == null)

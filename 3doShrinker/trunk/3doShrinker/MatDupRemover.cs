@@ -74,7 +74,17 @@ namespace _3doShrinker
                 }
                 else
                 {
-                    string backupFolder = Path.GetDirectoryName(Directory.GetParent(this.modPath) + "\\3do_backup" + relativePath);
+                    if (Shrinker.IsSelfScanning)
+                    {
+                        if (String.Compare(relativePath, this.distinctMatList[md5], true) == 0)
+                        {
+                            Shrinker.TheShrinkerStatus.NumDistinct++;
+                            Shrinker.TheShrinkerStatus.SizeDistinct += (new FileInfo(theFilePath)).Length;
+                            this.ShowStatus();
+                            continue; // we're removing duplicates from own base path, don't remove the distinct files themselves.
+                        }
+                    }
+                    string backupFolder = Path.GetDirectoryName(Directory.GetParent(this.modPath) + Shrinker.BackupFolder + relativePath);
                     this.makeMatBasedOn(theFilePath, backupFolder, relativePath, this.distinctMatList[md5]);
                     Shrinker.TheShrinkerStatus.NumDuplicate++;
                     Shrinker.TheShrinkerStatus.SizeDuplicate += (new FileInfo(theFilePath)).Length;
@@ -113,10 +123,11 @@ namespace _3doShrinker
                     {
                         hashedTga = this.tgaHashesList[tgaFile];
                     }
-                    else // Just for safety reasons, should never occur!
+                    else // The texture being referred to can't be found, use a "ghost" hash instead
                     {
-                        hashedTga = Shrinker.RandomHash();
-                        this.Proto("### MISSING FILE ### " + tgaFile);
+                        //hashedTga = Shrinker.RandomHash();#
+                        hashedTga = Shrinker.GetMD5HashFromFile(tgaFile);
+                        //this.Proto("### MISSING FILE ### " + tgaFile);
                         continue;
                     }
                     if (retVal == null)
@@ -137,7 +148,7 @@ namespace _3doShrinker
             {
                 if (!File.Exists(backupFile)) File.Move(matFile, backupFile);
             }
-            string matNameDistinctRelative = Shrinker.RelativePath(Path.GetDirectoryName(relativePathDuplicate), Path.GetDirectoryName(relativePathDistinct)) + "\\" + Path.GetFileName(relativePathDistinct);
+            string matNameDistinctRelative = Shrinker.RelativePath(Path.GetDirectoryName(relativePathDuplicate), Path.GetDirectoryName(relativePathDistinct)) + Path.GetFileName(relativePathDistinct);
             //Debug.WriteLine(string.Format("making .mat {0} based on {1}", matFile, matNameDistinctRelative));
             StreamWriter newMat = File.CreateText(matFile);
             newMat.WriteLine("[ClassInfo]");

@@ -65,6 +65,7 @@
             this.textBox3doBase.Name = "textBox3doBase";
             this.textBox3doBase.Size = new System.Drawing.Size(522, 20);
             this.textBox3doBase.TabIndex = 1;
+            this.textBox3doBase.TextChanged += new System.EventHandler(this.textBox3doBase_TextChanged);
             // 
             // textBox3doMod
             // 
@@ -72,6 +73,7 @@
             this.textBox3doMod.Name = "textBox3doMod";
             this.textBox3doMod.Size = new System.Drawing.Size(522, 20);
             this.textBox3doMod.TabIndex = 3;
+            this.textBox3doMod.TextChanged += new System.EventHandler(this.textBox3doMod_TextChanged);
             // 
             // buttonSelectModFolder
             // 

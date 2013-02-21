@@ -65,7 +65,17 @@ namespace _3doShrinker
                 }
                 else
                 {
-                    string backupFile = Directory.GetParent(this.modPath) + "\\3do_backup" + relativePath;
+                    if (Shrinker.IsSelfScanning)
+                    {
+                        if (String.Compare(relativePath, this.distinctTgaList[md5], true) == 0)
+                        {
+                            Shrinker.TheShrinkerStatus.NumDistinct++;
+                            Shrinker.TheShrinkerStatus.SizeDistinct += (new FileInfo(theFilePath)).Length;
+                            this.ShowStatus();
+                            continue; // we're removing duplicates from own base path, don't remove the distinct files themselves.
+                        }
+                    }
+                    string backupFile = Directory.GetParent(this.modPath) + Shrinker.BackupFolder + relativePath;
                     string backupFolder = Path.GetDirectoryName(backupFile);
                     Shrinker.TheShrinkerStatus.NumDuplicate++;
                     Shrinker.TheShrinkerStatus.SizeDuplicate += (new FileInfo(theFilePath)).Length;
@@ -86,7 +96,7 @@ namespace _3doShrinker
         {
             string matFolder = Path.GetDirectoryName(tgaFile);
             string tgaName = Path.GetFileName(tgaFile);
-            string tgaNameDistinctRelative = Shrinker.RelativePath(Path.GetDirectoryName(relativePathDuplicate), Path.GetDirectoryName(relativePathDistinct)) + "\\" + Path.GetFileName(relativePathDistinct);
+            string tgaNameDistinctRelative = Shrinker.RelativePath(Path.GetDirectoryName(relativePathDuplicate), Path.GetDirectoryName(relativePathDistinct)) + Path.GetFileName(relativePathDistinct);
             string[] filePaths = Directory.GetFiles(matFolder, "*.mat", SearchOption.TopDirectoryOnly);
             foreach (string theMatFile in filePaths)
             {

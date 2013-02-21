@@ -38,6 +38,15 @@ namespace _3doShrinker
 
         public static ShrinkerStatus TheShrinkerStatus = new ShrinkerStatus();
 
+        public static bool IsSelfScanning = false;
+
+        public static string BackupFolder {
+            get
+            {
+                return IsSelfScanning ? "\\3do_backup_selfscan" : "\\3do_backup";
+            }
+        }
+
         public class ShrinkerStatus
         {
             private Object shrinkerStatusLockObject = new Object();
@@ -117,7 +126,13 @@ namespace _3doShrinker
                 Monitor.Exit(this);
             }
         }
-        private string hashCacheFile() { return this.basePath + "\\hash.cache"; }
+        private string hashCacheFile
+        {
+            get
+            {
+                return this.basePath + "\\hash.cache";
+            }
+        }
 
         public Shrinker()
         {
@@ -137,12 +152,14 @@ namespace _3doShrinker
 
 #if DEBUG
             this.folderBrowserDialog3do.SelectedPath = "U:\\IL2\\3DoShrinkTest\\3DO";
-            this.textBox3doBase.Text = "U:\\IL2\\Extracted_SFS_IL2_412\\3DO";
-            this.basePath = "U:\\IL2\\Extracted_SFS_IL2_412\\3DO";
+            //this.textBox3doBase.Text = "U:\\IL2\\Extracted_SFS_IL2_412\\3DO";
+            //this.basePath = "U:\\IL2\\Extracted_SFS_IL2_412\\3DO";
+            this.textBox3doBase.Text = "U:\\IL2\\3DoShrinkTest\\3DO";
+            this.basePath = "U:\\IL2\\3DoShrinkTest\\3DO";
             this.textBox3doMod.Text = "U:\\IL2\\3DoShrinkTest\\3DO";
             this.modPath = "U:\\IL2\\3DoShrinkTest\\3DO";
             this.buttonScanBase.Enabled = true;
-            if (File.Exists(this.hashCacheFile())) this.buttonLoadBase.Enabled = true;
+            if (File.Exists(this.hashCacheFile)) this.buttonLoadBase.Enabled = true;
 #endif
         }
 
@@ -207,7 +224,7 @@ namespace _3doShrinker
             Application.DoEvents();
         }
 
-        private delegate void DoSetStatus(string theStatus);
+        private delegate void DoSetStatusLine(string theStatus);
         private void SetStatus(string theStatus)
         {
             if (stopThreads.WaitOne(0)) return;
@@ -215,7 +232,7 @@ namespace _3doShrinker
             {
                 // we were called on a worker thread
                 // marshal the call to the user interface thread
-                this.Invoke(new DoSetStatus(SetStatus),
+                this.Invoke(new DoSetStatusLine(SetStatus),
                             new object[] { theStatus });
                 return;
             }
@@ -246,23 +263,38 @@ namespace _3doShrinker
 
         private void buttonSelectBaseFolder_Click(object sender, EventArgs e)
         {
+            this.folderBrowserDialog3do.SelectedPath = this.textBox3doBase.Text;
             if (this.folderBrowserDialog3do.ShowDialog() == DialogResult.OK)
             {
-                this.basePath = this.folderBrowserDialog3do.SelectedPath;
+                this.textBox3doBase.Text = this.folderBrowserDialog3do.SelectedPath;
             }
-            this.textBox3doBase.Text = this.basePath;
-            if (this.modPath != "") this.buttonScanBase.Enabled = true;
-            if (File.Exists(this.hashCacheFile())) this.buttonLoadBase.Enabled = true;
         }
 
         private void buttonSelectModFolder_Click(object sender, EventArgs e)
         {
+            this.folderBrowserDialog3do.SelectedPath = this.textBox3doMod.Text;
             if (this.folderBrowserDialog3do.ShowDialog() == DialogResult.OK)
             {
-                this.modPath = this.folderBrowserDialog3do.SelectedPath;
+                this.textBox3doMod.Text = this.folderBrowserDialog3do.SelectedPath;
             }
-            this.textBox3doMod.Text = this.modPath;
-            if (this.basePath != "") this.buttonScanBase.Enabled = true;
+        }
+
+        private void textBox3doBase_TextChanged(object sender, EventArgs e)
+        {
+            this.basePath = this.textBox3doBase.Text;
+            this.buttonScanBase.Enabled = (this.basePath.Length > 0) ;
+            this.buttonLoadBase.Enabled = File.Exists(this.hashCacheFile);
+            IsSelfScanning = (String.Compare(this.basePath, this.modPath, true) == 0);
+        }
+
+        private void textBox3doMod_TextChanged(object sender, EventArgs e)
+        {
+            this.modPath = this.textBox3doMod.Text;
+            if ((this.modPath.Length > 0) && (this.basePath.Length > 0))
+                this.SetControlsEnabled(true, this.buttonRemoveMatDups, this.buttonRemoveTgaDups);
+            else
+                this.SetControlsEnabled(false, this.buttonRemoveMatDups, this.buttonRemoveTgaDups);
+            IsSelfScanning = (String.Compare(this.basePath, this.modPath, true) == 0);
         }
 
         private void buttonScanBase_Click(object sender, EventArgs e)
@@ -321,10 +353,18 @@ namespace _3doShrinker
         internal static string GetMD5HashFromFile(string fileName)
         {
             if (hashListAbsolut.ContainsKey(fileName)) return hashListAbsolut[fileName];
-            FileStream file = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+            byte[] retVal;
             MD5 md5 = new MD5CryptoServiceProvider();
-            byte[] retVal = md5.ComputeHash(file);
-            file.Close();
+            if (File.Exists(fileName))
+            {
+                FileStream file = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+                retVal = md5.ComputeHash(file);
+                file.Close();
+            }
+            else
+            {
+                retVal = md5.ComputeHash(Encoding.Unicode.GetBytes(fileName));
+            }
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < retVal.Length; i++)
             {
@@ -346,18 +386,18 @@ namespace _3doShrinker
             return sb.ToString();
         }
 
-        internal static string RandomHash()
-        {
-            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-            byte[] retVal = new byte[16];
-            rng.GetBytes(retVal);
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < retVal.Length; i++)
-            {
-                sb.Append(retVal[i].ToString("x2"));
-            }
-            return sb.ToString();
-        }
+        //internal static string RandomHash()
+        //{
+        //    RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+        //    byte[] retVal = new byte[16];
+        //    rng.GetBytes(retVal);
+        //    StringBuilder sb = new StringBuilder();
+        //    for (int i = 0; i < retVal.Length; i++)
+        //    {
+        //        sb.Append(retVal[i].ToString("x2"));
+        //    }
+        //    return sb.ToString();
+        //}
 
         private void scanBaseFolder()
         {
@@ -417,7 +457,7 @@ namespace _3doShrinker
                 }
 
                 this.SetStatus("Creating Hash Cache");
-                StreamWriter cacheFile = File.CreateText(this.hashCacheFile());
+                StreamWriter cacheFile = File.CreateText(this.hashCacheFile);
                 cacheFile.AutoFlush = false;
                 cacheFile.WriteLine(string.Format("{0};{1};{2};{3}", TheShrinkerStatus.NumDistinct, TheShrinkerStatus.SizeDistinct, TheShrinkerStatus.NumDuplicate, TheShrinkerStatus.SizeDuplicate));
                 foreach (KeyValuePair<string,string> distinctTga in this.distinctTgaList)
@@ -453,7 +493,7 @@ namespace _3doShrinker
         private void loadBaseFiles()
         {
             this.Proto("Loading Base Hash Cache...");
-            StreamReader cacheFile = new StreamReader(this.hashCacheFile());
+            StreamReader cacheFile = new StreamReader(this.hashCacheFile);
             string cacheFileLine = cacheFile.ReadLine();
             string[] cacheFileLineTokens = cacheFileLine.Split(";".ToCharArray(), 4);
             int iTemp;
@@ -582,6 +622,7 @@ namespace _3doShrinker
 
         public static string RelativePath(string absPath, string relTo)
         {
+            if (String.Compare(absPath, relTo, true) == 0) return "";
             string[] absDirs = absPath.Split('\\');
             string[] relDirs = relTo.Split('\\');
             // Get the shortest of the two paths
@@ -614,8 +655,10 @@ namespace _3doShrinker
                 relativePath.Append(relDirs[index] + "\\");
             }
             relativePath.Append(relDirs[relDirs.Length - 1]);
+            relativePath.Append("\\");
             return relativePath.ToString();
         }
+
     }
 
     internal class FlickerFreeListBox : System.Windows.Forms.ListBox
