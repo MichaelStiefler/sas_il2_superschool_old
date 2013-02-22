@@ -512,8 +512,8 @@ namespace ButtonsToCsv
             }
             csvFmd.Close();
             logFile.Close();
+            Console.WriteLine("Finished, please press key.");
             Console.ReadKey();
-
         }
     }
 }
