@@ -4,6 +4,8 @@ import com.maddox.JGP.Point3d;
 import com.maddox.il2.ai.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.engine.*;
+import com.maddox.il2.game.AircraftHotKeys;
+import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.objects.weapons.GuidedMissileUtils;
 import com.maddox.rts.Property;
@@ -124,6 +126,23 @@ TypeThreatDetector {
 		hierMesh().chunkSetLocate("Flap02a_D0", Aircraft.xyz, Aircraft.ypr);
 	}
 
+	public boolean typeFighterAceMakerToggleAutomation()
+	{
+		k14Mode++;
+		if(k14Mode > 1)
+			k14Mode = 0;
+		if (k14Mode == 0) {
+		      if (FM.actor == World.getPlayerAircraft()) {
+		        HUD.log(AircraftHotKeys.hudLogWeaponId, "PKI Sight: On");
+		      }
+		    } else if (k14Mode == 1) {
+		      if (FM.actor == World.getPlayerAircraft()) {
+		        HUD.log(AircraftHotKeys.hudLogWeaponId, "PKI Sight: Off");
+		      }
+		    }
+		return true;
+	}
+	
 	public void update(float f)
 	{
 		super.update(f);

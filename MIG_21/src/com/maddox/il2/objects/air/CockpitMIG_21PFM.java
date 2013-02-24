@@ -164,19 +164,8 @@ public class CockpitMIG_21PFM extends CockpitPilot
         if((((FlightModelMain) (super.fm)).AS.astateCockpitState & 2) == 0)
         {
             int i = ((MIG_21)aircraft()).k14Mode;
-            boolean bool = i < 2;
+            boolean bool = i < 1;
             super.mesh.chunkVisible("Z_Z_RETICLE", bool);
-            bool = i > 0;
-            super.mesh.chunkVisible("Z_Z_RETICLE1", bool);
-            super.mesh.chunkSetAngles("Z_Z_RETICLE1", 0.0F, setNew.k14x, setNew.k14y);
-            resetYPRmodifier();
-            Cockpit.xyz[0] = setNew.k14w;
-            for(int i_4_ = 1; i_4_ < 11; i_4_++)
-            {
-                super.mesh.chunkVisible("Z_Z_AIMMARK" + i_4_, bool);
-                super.mesh.chunkSetLocate("Z_Z_AIMMARK" + i_4_, Cockpit.xyz, Cockpit.ypr);
-            }
-
         }
         resetYPRmodifier();
         super.mesh.chunkSetAngles("Canopy", -90F * ((FlightModelMain) (super.fm)).CT.getCockpitDoor(), 0.0F, 0.0F);
@@ -202,7 +191,7 @@ public class CockpitMIG_21PFM extends CockpitPilot
         super.mesh.chunkSetAngles("Z_Hour1", cvt(World.getTimeofDay(), 0.0F, 24F, 0.0F, 720F), 0.0F, 0.0F);
         super.mesh.chunkSetAngles("Z_Minute1", cvt(World.getTimeofDay() % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F, 0.0F);
         super.mesh.chunkSetAngles("Z_Second1", cvt(((World.getTimeofDay() % 1.0F) * 60F) % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F, 0.0F);
-        if(((MIG_21)aircraft()).k14Mode == 2)
+        if(((MIG_21)aircraft()).k14Mode >= 1)
             super.mesh.chunkVisible("Z_Z_RETICLE", false);
         else
             super.mesh.chunkVisible("Z_Z_RETICLE", true);
@@ -224,10 +213,6 @@ public class CockpitMIG_21PFM extends CockpitPilot
 
     public void reflectCockpitState()
     {
-        super.mesh.chunkVisible("Z_Z_RETICLE1", false);
-        for(int i = 1; i < 11; i++)
-            super.mesh.chunkVisible("Z_Z_AIMMARK" + i, false);
-
     }
 
     public void toggleLight()
