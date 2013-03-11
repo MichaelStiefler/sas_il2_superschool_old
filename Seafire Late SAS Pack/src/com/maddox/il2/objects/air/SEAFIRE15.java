@@ -66,9 +66,18 @@ public class SEAFIRE15 extends SeafireLate {
 		Aircraft.weaponsRegister(class1, "1x500_2x250", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120",
 				"MGunHispanoMkIkWF 120", "PylonSpitC", "BombGun500lbsE 1", "PylonSpitL", "PylonSpitR", "BombGun250lbsE 1", "BombGun250lbsE 1", null, null, null, null, null, null, null, null, null,
 				null });
+		Aircraft.weaponsRegister(class1, "1xDT_2x250", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120",
+				"MGunHispanoMkIkWF 120", "PylonSpitC", null, "PylonSpitL", "PylonSpitR", "BombGun250lbsE 1", "BombGun250lbsE 1", null, null, null, null, null, null, null, null, null,
+				"FuelTankGun_TankSF17" });
 		Aircraft.weaponsRegister(class1, "4x60hvar", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120",
 				"MGunHispanoMkIkWF 120", null, null, null, null, null, null, "PylonSpitROCK", "PylonSpitROCK", "PylonSpitROCK", "PylonSpitROCK", "RocketGunHVAR5BEAU 1", "RocketGunHVAR5BEAU 1",
 				"RocketGunHVAR5BEAU 1", "RocketGunHVAR5BEAU 1", null, null });
+		Aircraft.weaponsRegister(class1, "1x500_4x60hvar", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120",
+				"MGunHispanoMkIkWF 120", "PylonSpitC", "BombGun500lbsE 1", null, null, null, null, "PylonSpitROCK", "PylonSpitROCK", "PylonSpitROCK", "PylonSpitROCK", "RocketGunHVAR5BEAU 1", "RocketGunHVAR5BEAU 1",
+				"RocketGunHVAR5BEAU 1", "RocketGunHVAR5BEAU 1", null, null });
+		Aircraft.weaponsRegister(class1, "1xDT_4x60hvar", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120",
+				"MGunHispanoMkIkWF 120", "PylonSpitC", null, null, null, null, null, "PylonSpitROCK", "PylonSpitROCK", "PylonSpitROCK", "PylonSpitROCK", "RocketGunHVAR5BEAU 1", "RocketGunHVAR5BEAU 1",
+				"RocketGunHVAR5BEAU 1", "RocketGunHVAR5BEAU 1", null, "FuelTankGun_TankSF17" });
 		Aircraft.weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 	}
 }
