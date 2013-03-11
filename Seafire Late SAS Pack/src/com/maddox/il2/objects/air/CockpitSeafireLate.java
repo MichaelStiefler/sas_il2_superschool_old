@@ -1,3 +1,21 @@
+// This file is part of the SAS IL-2 Sturmovik 1946
+// Late Seafire Mod package.
+// If you copy, modify or redistribute this package, parts
+// of this package or reuse sources from this package,
+// we'd be happy if you could mention the origin including
+// our web address
+//
+// www.sas1946.com
+//
+// Thank you for your cooperation!
+//
+// Original file source: 1C/Maddox/TD
+// Modified by: SAS - Special Aircraft Services
+//              www.sas1946.com
+//
+// Last Edited by: SAS~Storebror
+// Last Edited at: 2013/03/11
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
@@ -11,7 +29,7 @@ import com.maddox.il2.fm.Pitot;
 import com.maddox.rts.Time;
 import com.maddox.sound.ReverbFXRoom;
 
-public class CockpitSeafire47_SAS extends CockpitPilot {
+public class CockpitSeafireLate extends CockpitPilot {
 	class Interpolater extends InterpolateRef {
 
 		public boolean tick() {
@@ -31,16 +49,16 @@ public class CockpitSeafire47_SAS extends CockpitPilot {
 					setOld.azimuth += 360F;
 				setNew.waypointAzimuth = 0.91F * setOld.waypointAzimuth + 0.09F * (waypointAzimuth() - setOld.azimuth) + World.Rnd().nextFloat(-10F, 10F);
 				setNew.vspeed = 0.99F * setOld.vspeed + 0.01F * fm.getVertSpeed();
-				float f = ((SEAFIRE47_SAS) aircraft()).k14Distance;
-				setNew.k14w = (5F * CockpitSeafire47_SAS.k14TargetWingspanScale[((SEAFIRE47_SAS) aircraft()).k14WingspanType]) / f;
+				float f = ((SeafireLate) aircraft()).k14Distance;
+				setNew.k14w = (5F * CockpitSeafireLate.k14TargetWingspanScale[((SeafireLate) aircraft()).k14WingspanType]) / f;
 				setNew.k14w = 0.9F * setOld.k14w + 0.1F * setNew.k14w;
-				setNew.k14wingspan = 0.9F * setOld.k14wingspan + 0.1F * CockpitSeafire47_SAS.k14TargetMarkScale[((SEAFIRE47_SAS) aircraft()).k14WingspanType];
-				setNew.k14mode = 0.8F * setOld.k14mode + 0.2F * (float) ((SEAFIRE47_SAS) aircraft()).k14Mode;
+				setNew.k14wingspan = 0.9F * setOld.k14wingspan + 0.1F * CockpitSeafireLate.k14TargetMarkScale[((SeafireLate) aircraft()).k14WingspanType];
+				setNew.k14mode = 0.8F * setOld.k14mode + 0.2F * (float) ((SeafireLate) aircraft()).k14Mode;
 				Vector3d vector3d = aircraft().FM.getW();
 				double d = 0.00125D * (double) f;
 				float f1 = (float) Math.toDegrees(d * vector3d.z);
 				float f2 = -(float) Math.toDegrees(d * vector3d.y);
-				float f3 = floatindex((f - 200F) * 0.04F, CockpitSeafire47_SAS.k14BulletDrop) - CockpitSeafire47_SAS.k14BulletDrop[0];
+				float f3 = floatindex((f - 200F) * 0.04F, CockpitSeafireLate.k14BulletDrop) - CockpitSeafireLate.k14BulletDrop[0];
 				f2 += (float) Math.toDegrees(Math.atan(f3 / f));
 				setNew.k14x = 0.92F * setOld.k14x + 0.08F * f1;
 				setNew.k14y = 0.92F * setOld.k14y + 0.08F * f2;
@@ -95,7 +113,7 @@ public class CockpitSeafire47_SAS extends CockpitPilot {
 		cameraCenter.add(0.029999999329447746D, 0.0D, 0.0D);
 	}
 
-	public CockpitSeafire47_SAS() {
+	public CockpitSeafireLate() {
 		super("3DO/Cockpit/SeafireMkXVII_SAS/hier.him", "bf109");
 		setOld = new Variables();
 		setNew = new Variables();
@@ -109,7 +127,7 @@ public class CockpitSeafire47_SAS extends CockpitPilot {
 		bNeedSetUp = true;
 		tmpP = new Point3d();
 		tmpV = new Vector3d();
-		if (aircraft() instanceof SEAFIRE47_SAS) {
+		if (aircraft() instanceof SeafireLate) {
 			mesh.materialReplace("BORT2", "BORT2b");
 			mesh.materialReplace("text14", "text14b");
 		}
@@ -141,7 +159,7 @@ public class CockpitSeafire47_SAS extends CockpitPilot {
 			reflectPlaneToModel();
 			bNeedSetUp = false;
 		}
-		int i = ((SEAFIRE47_SAS) aircraft()).k14Mode;
+		int i = ((SeafireLate) aircraft()).k14Mode;
 		boolean flag = i < 2;
 		mesh.chunkVisible("Z_Z_RETICLE", flag);
 		flag = i > 0;
@@ -153,10 +171,10 @@ public class CockpitSeafire47_SAS extends CockpitPilot {
 			mesh.chunkVisible("Z_Z_AIMMARK" + j, flag);
 			mesh.chunkSetLocate("Z_Z_AIMMARK" + j, Cockpit.xyz, Cockpit.ypr);
 		}
-		if (aircraft() instanceof SEAFIRE47_SAS) {
-			if (SEAFIRE47_SAS.bChangedPit) {
+		if (aircraft() instanceof SeafireLate) {
+			if (SeafireLate.bChangedPit) {
 				reflectPlaneToModel();
-				SEAFIRE47_SAS.bChangedPit = false;
+				SeafireLate.bChangedPit = false;
 			}
 		}
 		float f1 = fm.CT.getWing();
@@ -334,5 +352,4 @@ public class CockpitSeafire47_SAS extends CockpitPilot {
 			10.381F, 10.513F, 10.603F, 10.704F, 10.739F, 10.782F, 10.789F };
 	private Point3d tmpP;
 	private Vector3d tmpV;
-
 }
