@@ -230,10 +230,6 @@ public class SeafireLate extends SEAFIRE3 implements TypeFighterAceMaker, TypeBN
 		k14Distance = netmsginput.readFloat();
 	}
 
-	// public int getK14Mode() { return this.k14Mode; }
-	// public int getK14WingspanType() { return this.k14WingspanType; }
-	// public float getK14Distance() { return this.k14Distance; }
-
 	public int k14Mode;
 	public int k14WingspanType;
 	public float k14Distance;
