@@ -20,7 +20,7 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.rts.Property;
 
-public class SEAFIRE45 extends SeafireLateBubbleTopCanopy {
+public class SEAFIRE45 extends SeafireLate {
 
 	public SEAFIRE45() {
 	}

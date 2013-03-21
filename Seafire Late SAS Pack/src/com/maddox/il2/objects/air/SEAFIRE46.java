@@ -76,7 +76,7 @@ public class SEAFIRE46 extends SeafireLateBubbleTopCanopy {
 		World.cur().diffCur.Torque_N_Gyro_Effects = false;
 		super.update(f);
 	}
-
+	
 	static {
 		Class class1 = SEAFIRE46.class;
 		new NetAircraft.SPAWN(class1);
