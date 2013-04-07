@@ -1,6 +1,7 @@
 package com.maddox.rts.cmd;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.util.Map;
 
@@ -11,36 +12,35 @@ import com.maddox.rts.SFS;
 public class CmdSFSAutoMount extends Cmd
 {
 
-	private File[] sfsFileList = null;
-	private String SFSFolder = null;
     public Object exec(CmdEnv cmdenv, Map map)
     {
+    	String theSFSFolderName = null;
         boolean flag = false;
         if(nargs(map, "MOUNT") > 0)
         {
-        	this.SFSFolder = arg(map, "MOUNT", 0);
+        	theSFSFolderName = arg(map, "MOUNT", 0);
             try
             {
-            	this.AutoMountSFSFiles();
+            	this.AutoMountSFSFiles(new File(theSFSFolderName));
             }
             catch(Exception exception1)
             {
                 bMountError = true;
-                ERR_HARD("SFS files from folder (" + this.SFSFolder + ") NOT Mounted: " + exception1.getMessage());
+                ERR_HARD("SFS files from folder (" + theSFSFolderName + ") NOT Mounted: " + exception1.getMessage());
                 exception1.printStackTrace();
             }
             flag = true;
         }
         if(nargs(map, "UNMOUNT") > 0)
         {
-        	this.SFSFolder = arg(map, "UNMOUNT", 0);
+        	theSFSFolderName = arg(map, "UNMOUNT", 0);
             try
             {
-            	this.AutoUnMountSFSFiles();
+            	this.AutoUnMountSFSFiles(new File(theSFSFolderName));
             }
             catch(Exception exception)
             {
-                ERR_HARD("SFS files from folder  (" + this.SFSFolder + ") NOT UnMounted: " + exception.getMessage());
+                ERR_HARD("SFS files from folder  (" + theSFSFolderName + ") NOT UnMounted: " + exception.getMessage());
                 exception.printStackTrace();
             }
             flag = true;
@@ -55,55 +55,92 @@ public class CmdSFSAutoMount extends Cmd
         }
     }
     
-    private void CreateFileList()
+    private File[] CreateFileList(File theSFSFolder)
     {
-    	File dir = new File(this.SFSFolder);
-    	this.sfsFileList = dir.listFiles(new FilenameFilter() {
-    	    public boolean accept(File dir, String name) {
-    	        return name.toLowerCase().endsWith(".sfs");
+    	return theSFSFolder.listFiles(new FilenameFilter() {
+    	    public boolean accept(File theFileFolder, String theFileName) {
+    	        return theFileName.toLowerCase().endsWith(".sfs");
     	    }
     	});
     }
     
-    private void AutoMountSFSFiles()
+    private File[] CreateSubFolderList(File theSFSFolder)
     {
-    	CreateFileList();
-    	System.out.println("AutoMounting SFS files from folder " + this.SFSFolder + " now...");
-    	for (int i=0; i<this.sfsFileList.length; i++) {
+    	return theSFSFolder.listFiles(new FileFilter() {
+    	    public boolean accept(File theFile) {
+    	        return theFile.isDirectory();
+    	    }
+    	});
+    }
+    
+    private void AutoMountSFSFiles(File theSFSFolder)
+    {
+    	File[] theSFSFileList = CreateFileList(theSFSFolder);
+    	if (theSFSFileList.length < 1) return;
+    	System.out.println("AutoMounting SFS files from folder " + theSFSFolder.getPath() + " now...");
+    	for (int i=0; i<theSFSFileList.length; i++) {
     		try {
-    			if (this.sfsFileList[i].getName().startsWith("-")) {
-        			System.out.println("Skipping AutoMount of file " + this.sfsFileList[i].getParent() + File.separator + this.sfsFileList[i].getName().substring(1) + " (disabled)");
+    			if (theSFSFileList[i].getName().startsWith("-")) {
+        			System.out.println("Skipping AutoMount of file " + theSFSFileList[i].getParent() + File.separator + theSFSFileList[i].getName().substring(1) + " (disabled)");
         			continue;
     			}
-    			System.out.print("Trying to AutoMount " + this.sfsFileList[i].getPath() + "... ");
-    			SFS.mount(this.sfsFileList[i].getPath(), 0);
+    			if (theSFSFileList[i].isDirectory()) continue;
+    			System.out.print("Trying to AutoMount " + theSFSFileList[i].getPath() + "... ");
+    			SFS.mount(theSFSFileList[i].getPath(), 0);
     			System.out.println("mounted successfully!");
     		} catch (Exception e) {
     			System.out.println("mount failed, see error below:");
     			System.out.println(e.getMessage());
     		}
     	}
-    	System.out.println("AutoMounting SFS files from folder " + this.SFSFolder + " finished.");
-    }
-
-    private void AutoUnMountSFSFiles()
-    {
-    	CreateFileList();
-    	System.out.println("AutoUnMounting SFS files from folder " + this.SFSFolder + " now...");
-    	for (int i=0; i<this.sfsFileList.length; i++) {
+    	System.out.println("AutoMounting SFS files from folder " + theSFSFolder.getPath() + " finished.");
+    	File[] theSFSSubfolderList = CreateSubFolderList(theSFSFolder);
+    	for (int i=0; i<theSFSSubfolderList.length; i++) {
     		try {
-    			if (this.sfsFileList[i].getName().startsWith("-")) {
+    			if (theSFSSubfolderList[i].getName().startsWith("-")) {
+        			System.out.println("Skipping AutoMount of subfolder " + theSFSSubfolderList[i].getParent() + File.separator + theSFSSubfolderList[i].getName().substring(1) + " (disabled)");
         			continue;
     			}
-    			System.out.print("Trying to AutoUnMount " + this.sfsFileList[i].getPath() + "... ");
-    			SFS.unMount(this.sfsFileList[i].getPath());
+    			this.AutoMountSFSFiles(theSFSSubfolderList[i]);
+    		} catch (Exception e) {
+    			System.out.println("Automount invocation for subfolder " + theSFSSubfolderList[i].getPath() + " failed, see error below:");
+    			System.out.println(e.getMessage());
+    		}
+    	}
+    }
+
+    private void AutoUnMountSFSFiles(File theSFSFolder)
+    {
+    	File[] theSFSFileList = CreateFileList(theSFSFolder);
+    	if (theSFSFileList.length < 1) return;
+    	System.out.println("AutoUnMounting SFS files from folder " + theSFSFolder.getPath() + " now...");
+    	for (int i=0; i<theSFSFileList.length; i++) {
+    		try {
+    			if (theSFSFileList[i].getName().startsWith("-")) {
+        			continue;
+    			}
+    			if (theSFSFileList[i].isDirectory()) continue;
+    			System.out.print("Trying to AutoUnMount " + theSFSFileList[i].getPath() + "... ");
+    			SFS.unMount(theSFSFileList[i].getPath());
     			System.out.println("unmounted successfully!");
     		} catch (Exception e) {
     			System.out.println("unmount failed, see error below:");
     			System.out.println(e.getMessage());
     		}
     	}
-    	System.out.println("AutoUnMounting SFS files from folder " + this.SFSFolder + " finished.");
+    	System.out.println("AutoUnMounting SFS files from folder " + theSFSFolder.getPath() + " finished.");
+    	File[] theSFSSubfolderList = CreateSubFolderList(theSFSFolder);
+    	for (int i=0; i<theSFSSubfolderList.length; i++) {
+    		try {
+    			if (theSFSSubfolderList[i].getName().startsWith("-")) {
+        			continue;
+    			}
+    			this.AutoUnMountSFSFiles(theSFSSubfolderList[i]);
+    		} catch (Exception e) {
+    			System.out.println("Autounmount invocation for subfolder " + theSFSSubfolderList[i].getPath() + " failed, see error below:");
+    			System.out.println(e.getMessage());
+    		}
+    	}
     }
 
     public CmdSFSAutoMount()
