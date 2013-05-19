@@ -1,5 +1,7 @@
 package com.maddox.il2.objects.air;
 
+import java.util.Random;
+
 import com.maddox.JGP.*;
 import com.maddox.il2.ai.*;
 import com.maddox.il2.fm.*;
@@ -20,6 +22,9 @@ TypeThreatDetector {
 	public MIG_21FL()
 	{
 		guidedMissileUtils = new GuidedMissileUtils(this);
+        counter = 0;
+		freq = 800;
+        Timer1 = Timer2 = freq;
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="TypeGuidedMissileCarrier Implementation">
@@ -143,6 +148,198 @@ TypeThreatDetector {
 		return true;
 	}
 	
+    public void rareAction(float f, boolean flag)
+    {
+        if(counter++ % 5 == 0)
+            RP21();
+        super.rareAction(f, flag);
+    }
+    
+    private boolean RP21()
+    {
+        Point3d point3d = new Point3d();
+        super.pos.getAbs(point3d);
+        Vector3d vector3d = new Vector3d();
+        Aircraft aircraft = World.getPlayerAircraft();
+        double d = Main3D.cur3D().land2D.worldOfsX() + ((Tuple3d) (((Actor) (aircraft)).pos.getAbsPoint())).x;
+        double d1 = Main3D.cur3D().land2D.worldOfsY() + ((Tuple3d) (((Actor) (aircraft)).pos.getAbsPoint())).y;
+        double d2 = Main3D.cur3D().land2D.worldOfsY() + ((Tuple3d) (((Actor) (aircraft)).pos.getAbsPoint())).z;
+        double d3 = d2 - (double)Landscape.Hmin((float)((Tuple3d) (((Actor) (aircraft)).pos.getAbsPoint())).x, (float)((Tuple3d) (((Actor) (aircraft)).pos.getAbsPoint())).y);
+        if(d3 < 0.0D)
+            d3 = 0.0D;
+        int i = (int)(-((double)((Actor) (aircraft)).pos.getAbsOrient().getYaw() - 90D));
+        if(i < 0)
+            i += 360;
+        int j = (int)(-((double)((Actor) (aircraft)).pos.getAbsOrient().getPitch() - 90D));
+        if(j < 0)
+            j += 360;
+        for(java.util.Map.Entry entry = Engine.name2Actor().nextEntry(null); entry != null; entry = Engine.name2Actor().nextEntry(entry))
+        {
+            Actor actor = (Actor)entry.getValue();
+            if((actor instanceof Aircraft) && actor.getArmy() != World.getPlayerArmy() && actor != World.getPlayerAircraft() && actor.getSpeed(vector3d) > 20D)
+            {
+                super.pos.getAbs(point3d);
+                double d4 = Main3D.cur3D().land2D.worldOfsX() + ((Tuple3d) (actor.pos.getAbsPoint())).x;
+                double d5 = Main3D.cur3D().land2D.worldOfsY() + ((Tuple3d) (actor.pos.getAbsPoint())).y;
+                double d6 = Main3D.cur3D().land2D.worldOfsY() + ((Tuple3d) (actor.pos.getAbsPoint())).z;
+                new String();
+                new String();
+                double d7 = (int)(Math.ceil((d2 - d6) / 10D) * 10D);
+                Engine.land();
+                String s = "level with us";
+                if(d2 - d6 - 300D >= 0.0D)
+                    s = "below us";
+                if((d2 - d6) + 300D <= 0.0D)
+                    s = "above us";
+                if(d2 - d6 - 300D < 0.0D && d2 - d6 - 150D >= 0.0D)
+                    s = "slightly below";
+                if((d2 - d6) + 300D > 0.0D && (d2 - d6) + 150D < 0.0D)
+                    s = "slightly above";
+                new String();
+                double d8 = d4 - d;
+                double d9 = d5 - d1;
+                float f1 = 57.32484F * (float)Math.atan2(d9, -d8);
+                int j1 = (int)(Math.floor((int)f1) - 90D);
+                if(j1 < 0)
+                    j1 += 360;
+                int k1 = j1 - i;
+                double d10 = d - d4;
+                double d11 = d1 - d5;
+                Random random = new Random();
+                float f2 = ((float)random.nextInt(20) - 10F) / 100F + 1.0F;
+                int l1 = random.nextInt(6) - 3;
+                float f3 = 10000F;
+                float f4 = f3;
+                if(d3 < 1200D)
+                    f4 = (float)(d3 * 0.80000001192092896D * 3D);
+                int i2 = (int)(Math.ceil(Math.sqrt((d11 * d11 + d10 * d10) * (double)f2) / 10D) * 10D);
+                if((float)i2 > f3)
+                    i2 = (int)(Math.ceil(Math.sqrt(d11 * d11 + d10 * d10) / 10D) * 10D);
+                float f5 = 57.32484F * (float)Math.atan2(i2, d7);
+                int j2 = (int)(Math.floor((int)f5) - 90D);
+                int k2 = (j2 - (90 - j)) + l1;
+                int l2 = (int)f3;
+                if((float)i2 < f3)
+                    if(i2 > 1150)
+                        l2 = (int)(Math.ceil((double)i2 / 900D) * 900D);
+                    else
+                        l2 = (int)(Math.ceil((double)i2 / 500D) * 500D);
+                int i3 = k1 + l1;
+                int j3 = i3;
+                if(j3 < 0)
+                    j3 += 360;
+                float f6 = (float)((double)f4 + Math.sin(Math.toRadians(Math.sqrt(k1 * k1) * 3D)) * ((double)f4 * 0.25D));
+                int k3 = (int)((double)f6 * Math.cos(Math.toRadians(k2)));
+                String s1 = "  ";
+                if(j3 < 5)
+                    s1 = "Dead ahead, ";
+                if(j3 >= 5 && (double)j3 <= 7.5D)
+                    s1 = "Right 5, ";
+                if((double)j3 > 7.5D && (double)j3 <= 12.5D)
+                    s1 = "Right 10, ";
+                if((double)j3 > 12.5D && (double)j3 <= 17.5D)
+                    s1 = "Right 15, ";
+                if((double)j3 > 17.5D && j3 <= 25)
+                    s1 = "Right 20, ";
+                if(j3 > 25 && j3 <= 35)
+                    s1 = "Right 30, ";
+                if(j3 > 35 && j3 <= 45)
+                    s1 = "Right 40, ";
+                if(j3 > 45 && j3 <= 60)
+                    s1 = "Turn right, ";
+                if(j3 > 355)
+                    s1 = "Dead ahead, ";
+                if(j3 <= 355 && (double)j3 >= 352.5D)
+                    s1 = "Left 5, ";
+                if((double)j3 < 352.5D && (double)j3 >= 347.5D)
+                    s1 = "Left 10, ";
+                if((double)j3 < 347.5D && (double)j3 >= 342.5D)
+                    s1 = "Left 15, ";
+                if((double)j3 < 342.5D && j3 >= 335)
+                    s1 = "Left 20, ";
+                if(j3 < 335 && j3 >= 325)
+                    s1 = "Left 30, ";
+                if(j3 < 325 && j3 >= 315)
+                    s1 = "Left 40, ";
+                if(j3 < 345 && j3 >= 300)
+                    s1 = "Turn left, ";
+                String s2 = "  ";
+                if(k2 < -10)
+                    s2 = "nose down";
+                if(k2 >= -10 && k2 <= -5)
+                    s2 = "down a bit";
+                if(k2 > -5 && k2 < 5)
+                    s2 = "level";
+                if(k2 <= 10 && k2 >= 5)
+                    s2 = "up a bit";
+                if(k2 > 10)
+                    s2 = "pull up";
+                String s3 = "  ";
+                if(j3 < 5)
+                    s3 = "dead ahead, ";
+                if(j3 >= 5 && (double)j3 <= 7.5D)
+                    s3 = "right by 5\260, ";
+                if((double)j3 > 7.5D && (double)j3 <= 12.5D)
+                    s3 = "right by 10\260, ";
+                if((double)j3 > 12.5D && (double)j3 <= 17.5D)
+                    s3 = "right by 15\260, ";
+                if((double)j3 > 17.5D && j3 <= 25)
+                    s3 = "right by 20\260, ";
+                if(j3 > 25 && j3 <= 35)
+                    s3 = "right by 30\260, ";
+                if(j3 > 35 && j3 <= 45)
+                    s3 = "right by 40\260, ";
+                if(j3 > 45 && j3 <= 60)
+                    s3 = "off our right, ";
+                if(j3 > 355)
+                    s3 = "dead ahead, ";
+                if(j3 <= 355 && (double)j3 >= 352.5D)
+                    s3 = "left by 5\260, ";
+                if((double)j3 < 352.5D && (double)j3 >= 347.5D)
+                    s3 = "left by 10\260, ";
+                if((double)j3 < 347.5D && (double)j3 >= 342.5D)
+                    s3 = "left by 15\260, ";
+                if((double)j3 < 342.5D && j3 >= 335)
+                    s3 = "left by 20\260, ";
+                if(j3 < 335 && j3 >= 325)
+                    s3 = "left by 30\260, ";
+                if(j3 < 325 && j3 >= 315)
+                    s3 = "left by 40\260, ";
+                if(j3 < 345 && j3 >= 300)
+                    s3 = "off our left, ";
+                if((double)i2 <= (double)k3 && (double)i2 > 7000D && k2 >= -20 && k2 <= 20 && Math.sqrt(i3 * i3) <= 60D)
+                {
+                    HUD.logCenter("                                          RP-21: Contact " + s3 + s + ", " + l2 + "m");
+                    freq = 7;
+                } else
+                if((double)i2 <= (double)k3 && (double)i2 <= 7000D && (double)i2 >= 700D && k2 >= -20 && k2 <= 20 && Math.sqrt(i3 * i3) <= 40D)
+                {
+                    HUD.logCenter("                                          RP-21: Target Locked!: " + s1 + s2 + ", " + l2 + "m");
+                    freq = 3;
+                } else
+                {
+                    freq = 7;
+                }
+                setTimer(freq);
+            }
+        }
+
+        return true;
+    }
+
+    public void setTimer(int i)
+    {
+        Random random = new Random();
+        Timer1 = (float)((double)random.nextInt(i) * 0.10000000000000001D);
+        Timer2 = (float)((double)random.nextInt(i) * 0.10000000000000001D);
+    }
+
+    public void resetTimer(float f)
+    {
+        Timer1 = f;
+        Timer2 = f;
+    }
+    
 	public void update(float f)
 	{
 		super.update(f);
@@ -289,6 +486,10 @@ TypeThreatDetector {
 	private boolean bHasDeployedDragChute;
 	private Chute chute;
 	private long removeChuteTimer;
+    private int counter;
+    private int freq;
+    public float Timer1;
+    public float Timer2;
 
 	static 
 	{
