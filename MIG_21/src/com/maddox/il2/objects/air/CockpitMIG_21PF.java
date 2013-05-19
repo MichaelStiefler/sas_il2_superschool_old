@@ -4,6 +4,8 @@ import com.maddox.JGP.*;
 import com.maddox.il2.ai.*;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
+import com.maddox.il2.game.AircraftHotKeys;
+import com.maddox.il2.game.HUD;
 import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.rts.Time;
 import com.maddox.sound.ReverbFXRoom;
@@ -24,15 +26,17 @@ public class CockpitMIG_21PF extends CockpitPilot
                 setNew.starter = 0.94F * setOld.starter + 0.06F * (((FlightModelMain) (fm)).EI.engines[0].getStage() <= 0 || ((FlightModelMain) (fm)).EI.engines[0].getStage() >= 6 ? 0.0F : 1.0F);
                 setNew.altimeter = fm.getAltitude();
                 float a = waypointAzimuth();
-                if (useRealisticNavigationInstruments()) {
-                  setNew.waypointAzimuth.setDeg(a - 90F);
-                  setOld.waypointAzimuth.setDeg(a - 90F);
-                } else {
-                  setNew.waypointAzimuth.setDeg(setOld.waypointAzimuth.getDeg(0.1F), a - setOld.azimuth.getDeg(1.0F));
+                setNew.azimuth.setDeg(setOld.azimuth.getDeg(1.0F), ((FlightModelMain) (fm)).Or.azimut());
+                if(useRealisticNavigationInstruments())
+                {
+                    setNew.waypointAzimuth.setDeg(a - 90F);
+                    setOld.waypointAzimuth.setDeg(a - 90F);
+                    setNew.radioCompassAzimuth.setDeg(setOld.radioCompassAzimuth.getDeg(0.02F), radioCompassAzimuthInvertMinus() - setOld.azimuth.getDeg(1.0F) - 90F);
+                } else
+                {
+                    setNew.waypointAzimuth.setDeg(setOld.waypointAzimuth.getDeg(0.1F), waypointAzimuth() - ((FlightModelMain) (fm)).Or.azimut());
+                    setNew.radioCompassAzimuth.setDeg(setOld.radioCompassAzimuth.getDeg(0.1F), a - setOld.azimuth.getDeg(0.1F) - 90F);
                 }
-                setNew.azimuth.setDeg(setOld.azimuth.getDeg(1.0F), fm.Or.azimut());
-                 setNew.beaconDirection = (10F * setOld.beaconDirection + getBeaconDirection()) / 11F;
-                 setNew.beaconRange = (10F * setOld.beaconRange + getBeaconRange()) / 11F;
                 setNew.vspeed = (199F * setOld.vspeed + fm.getVertSpeed()) / 200F;
                 float f = ((MIG_21)aircraft()).k14Distance;
                 setNew.k14w = (5F * CockpitMIG_21PF.k14TargetWingspanScale[((MIG_21)aircraft()).k14WingspanType]) / f;
@@ -73,8 +77,7 @@ public class CockpitMIG_21PF extends CockpitPilot
         float altimeter;
         AnglesFork azimuth;
         AnglesFork waypointAzimuth;
-        float beaconDirection;
-        float beaconRange;
+        AnglesFork radioCompassAzimuth;
         float k14wingspan;
         float k14mode;
         float k14x;
@@ -89,6 +92,7 @@ public class CockpitMIG_21PF extends CockpitPilot
             vspeed = 0.0F;
             azimuth = new AnglesFork();
             waypointAzimuth = new AnglesFork();
+            radioCompassAzimuth = new AnglesFork();
         }
     }
 
@@ -131,8 +135,6 @@ public class CockpitMIG_21PF extends CockpitPilot
         w = new Vector3f();
         pictAiler = 0.0F;
         pictElev = 0.0F;
-        tmpP = new Point3d();
-        tmpV = new Vector3d();
         HookNamed hooknamed = new HookNamed(mesh, "LAMPHOOK1");
         Loc loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
         hooknamed.computePos(this, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F), loc);
@@ -196,46 +198,16 @@ public class CockpitMIG_21PF extends CockpitPilot
         super.mesh.chunkSetAngles("Z_Minute1", cvt(World.getTimeofDay() % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F, 0.0F);
         super.mesh.chunkSetAngles("Z_Second1", cvt(((World.getTimeofDay() % 1.0F) * 60F) % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F, 0.0F);
         //Main compass disc
-        mesh.chunkSetAngles("Z_Compass3", 90.0F + setNew.azimuth.getDeg(f * 0.1F), 0.0F, 0.0F);
-        //mesh.chunkSetAngles("Z_Compass1", -setNew.azimuth.getDeg(f)- 91F+setNew.waypointAzimuth.getDeg(f * 0.1F), 0.0F, 0.0F);
-
-        
+        mesh.chunkSetAngles("Z_Compass3", 90F + setNew.azimuth.getDeg(f), 0.0F, 0.0F);
         //Radio compass needle
-        if (useRealisticNavigationInstruments()) {
-            mesh.chunkSetAngles("Z_Compass2",
-                    (setNew.azimuth.getDeg(f) - 270) + setNew.beaconDirection, 0.0F, 0.0F);
-          } else {
-            mesh.chunkSetAngles("Z_Compass2", setNew.waypointAzimuth.getDeg(f * 0.1F), 0.0F, 0.0F);
-          }
+        mesh.chunkSetAngles("Z_Compass2", 90F + setNew.radioCompassAzimuth.getDeg(f * 0.02F), 0.0F, 0.0F);
         //Heading needle
-        mesh.chunkSetAngles("Z_Compass1", -setNew.azimuth.getDeg(f)- 91F + setNew.waypointAzimuth.getDeg(f * 0.1F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("Z_Compass1", -setNew.azimuth.getDeg(f) + setNew.waypointAzimuth.getDeg(f * 0.1F), 0.0F, 0.0F);
         resetYPRmodifier();
-        /*
-        if (useRealisticNavigationInstruments()) {
-            //mesh.chunkSetAngles("Z_Compass2", (setNew.azimuth.getDeg(f * 0.1F)) - setNew.beaconDirection, 0.0F, 0.0F);
-        	mesh.chunkSetAngles("Z_Compass2", (-setNew.azimuth.getDeg(f * 0.1F)) + setNew.beaconDirection, 0.0F, 0.0F);
-          } else {
-            mesh.chunkSetAngles("Z_Compass2", -setNew.waypointAzimuth.getDeg(f * 0.1F), 0.0F, 0.0F);
-          }
-          */
         if(((MIG_21)aircraft()).k14Mode >= 1)
             super.mesh.chunkVisible("Z_Z_RETICLE", false);
         else
             super.mesh.chunkVisible("Z_Z_RETICLE", true);
-    }
-
-    protected float waypointAzimuth()
-    {
-        WayPoint waypoint = ((FlightModelMain) (super.fm)).AP.way.curr();
-        if(waypoint == null)
-        {
-            return 0.0F;
-        } else
-        {
-            waypoint.getP(tmpP);
-            tmpV.sub(tmpP, ((FlightModelMain) (super.fm)).Loc);
-            return (float)(57.295779513082323D * Math.atan2(-((Tuple3d) (tmpV)).y, ((Tuple3d) (tmpV)).x));
-        }
     }
 
     public void reflectCockpitState()
@@ -260,8 +232,18 @@ public class CockpitMIG_21PF extends CockpitPilot
         }
     }
 
-    public void doToggleDim()
+    public void toggleDim()
     {
+        super.cockpitDimControl = !super.cockpitDimControl;
+        if(super.cockpitDimControl)
+        {
+            super.mesh.chunkVisible("Z_Z_MASK", true);
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "ZSh-3 Helmet: Visor Down");
+        } else
+        {
+            super.mesh.chunkVisible("Z_Z_MASK", false);
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "ZSh-3 Helmet: Visor Up");
+        }
     }
 
     private Variables setOld;
@@ -295,6 +277,4 @@ public class CockpitMIG_21PF extends CockpitPilot
         8.911F, 9.111F, 9.384F, 9.554F, 9.787F, 9.928F, 9.992F, 10.282F, 10.381F, 10.513F, 
         10.603F, 10.704F, 10.739F, 10.782F, 10.789F
     };
-    private Point3d tmpP;
-    private Vector3d tmpV;
 }
