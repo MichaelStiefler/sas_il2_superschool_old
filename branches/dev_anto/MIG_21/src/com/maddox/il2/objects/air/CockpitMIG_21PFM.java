@@ -242,11 +242,11 @@ public class CockpitMIG_21PFM extends CockpitPilot
         super.cockpitDimControl = !super.cockpitDimControl;
         if(super.cockpitDimControl)
         {
-            super.mesh.chunkVisible("Z_Z_MASK", true);
+            super.mesh.chunkVisible("Z_Z_MASKl", true);
             HUD.log(AircraftHotKeys.hudLogWeaponId, "ZSh-3 Helmet: Visor Down");
         } else
         {
-            super.mesh.chunkVisible("Z_Z_MASK", false);
+            super.mesh.chunkVisible("Z_Z_MASKl", false);
             HUD.log(AircraftHotKeys.hudLogWeaponId, "ZSh-3 Helmet: Visor Up");
         }
     }
