@@ -29,6 +29,7 @@
 #define WM_WATCHDOG							WM_APP + 1946
 #define IL2FBEXE_WAIT_TIMEOUT				5000
 #define WATCHDOG_TIMER_EVENT				1
+#define WATCHDOG_TIMER_CHECKACTIVE_EVENT	2
 #define WATCHDOG_TIMER_TIMEOUT				1000
 #define IL2_MAIN_WINDOW_CLASS				L"MaddoxRtsWndClassW"
 
@@ -49,3 +50,17 @@ void ShowLastError();
 static LRESULT MsgWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 void CheckIl2Termination();
 void CheckIl2Start();
+void CALLBACK WinEventProc(
+						   HWINEVENTHOOK hWinEventHook,
+						   DWORD event,
+						   HWND hwnd,
+						   LONG idObject,
+						   LONG idChild,
+						   DWORD dwEventThread,
+						   DWORD dwmsEventTime
+						   );
+void ActivateIl2MainWindow(HWND hWndIl2Main);
+UINT SetForegroundWindowInternalThread(LPVOID pParam);
+BOOL SetForegroundWindowInternal(HWND hWnd);
+BOOL CheckActivated(HWND hWndIl2Main);
+
