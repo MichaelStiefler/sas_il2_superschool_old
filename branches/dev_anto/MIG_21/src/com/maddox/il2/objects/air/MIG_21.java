@@ -175,6 +175,7 @@ public class MIG_21 extends Scheme1
             hierMesh().chunkVisible("Pilot1_D0", false);
             hierMesh().chunkVisible("Head1_D0", false);
             hierMesh().chunkVisible("HMask1_D0", false);
+            hierMesh().chunkVisible("Glass_Head1_D0", false);
             hierMesh().chunkVisible("Pilot1_D1", true);
             break;
         }
@@ -1097,6 +1098,7 @@ public class MIG_21 extends Scheme1
                     if(i == 11)
                     {
                         doEjectCatapult();
+                        hierMesh().chunkVisible("Glass_Head1_D0", false);
                         super.FM.setTakenMortalDamage(true, null);
                         ((FlightModelMain) (super.FM)).CT.WeaponControl[0] = false;
                         ((FlightModelMain) (super.FM)).CT.WeaponControl[1] = false;
@@ -1143,6 +1145,12 @@ public class MIG_21 extends Scheme1
 
     }
 	
+    public void doRemoveBodyFromPlane(int i)
+    {
+    	super.doRemoveBodyFromPlane(i);
+        doRemoveBodyChunkFromPlane("Glass_Head1_D0");
+    }
+    
     static 
     {
         Class class1 = com.maddox.il2.objects.air.MIG_21.class;

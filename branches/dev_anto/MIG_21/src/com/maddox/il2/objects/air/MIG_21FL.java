@@ -344,15 +344,18 @@ TypeThreatDetector {
 	{
 		super.update(f);
 		if(Config.isUSE_RENDER())
-			if(Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null && Main3D.cur3D().cockpits[0].cockpitDimControl)
-			{
-				hierMesh().chunkVisible("Head1_D0", false);
-				hierMesh().chunkVisible("Glass_Head1_D0", true);
-			} else
-			{
-				hierMesh().chunkVisible("Head1_D0", true);
+			if(((FlightModelMain) (super.FM)).AS.bIsAboutToBailout != true)
+				if(Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null && Main3D.cur3D().cockpits[0].cockpitDimControl)
+				{
+					hierMesh().chunkVisible("Head1_D0", false);
+					hierMesh().chunkVisible("Glass_Head1_D0", true);
+				} else
+				{
+					hierMesh().chunkVisible("Head1_D0", true);
+					hierMesh().chunkVisible("Glass_Head1_D0", false);
+				}
+			else
 				hierMesh().chunkVisible("Glass_Head1_D0", false);
-			}
 		//TODO: Controls afterburner thrust and changes with altitude
 		setAfterburner();
 		if(FM.CT.DragChuteControl > 0.0F && !bHasDeployedDragChute)
