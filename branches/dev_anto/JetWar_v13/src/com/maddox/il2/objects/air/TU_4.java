@@ -51,65 +51,6 @@ public class TU_4 extends B_29X
   private float deltaAzimuth;
   private float deltaTangage;
 
-  static
-  {
-    Class class1 = TU_4.class;
-    new NetAircraft.SPAWN(class1);
-    Property.set(class1, "iconFar_shortClassName", "TU-4");
-    Property.set(class1, "meshName", "3DO/Plane/Tu-4/hier.him");
-    Property.set(class1, "PaintScheme", new PaintSchemeBMPar05());
-    Property.set(class1, "yearService", 1947.0F);
-    Property.set(class1, "yearExpired", 1960.0F);
-    Property.set(class1, "cockpitClass", new Class[] { 
-      CockpitTU4.class, CockpitTU4_Bombardier.class, CockpitTU4_TGunner.class, CockpitTU4_T2Gunner.class, CockpitTU4_FGunner.class, CockpitTU4_AGunner.class, CockpitTU4_RGunner.class });
-
-    Property.set(class1, "FlightModel", "FlightModels/B-29.fmd");
-    Aircraft.weaponTriggersRegister(class1, new int[] { 
-      10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 
-      3, 3, 3, 3, 2, 2, 2, 2, 9, 9 });
-
-    Aircraft.weaponHooksRegister(class1, new String[] { 
-      "_MGUN01", "_MGUN02", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_MGUN09", "_MGUN10", "_MGUN11", "_MGUN12", 
-      "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_ExternalRock01", "_ExternalRock01", "_ExternalRock02", "_ExternalRock02", "_ExternalDev01", "_ExternalDev02" });
-
-    Aircraft.weaponsRegister(class1, "default", new String[] { 
-      "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315" });
-
-    Aircraft.weaponsRegister(class1, "48XFAB-100", new String[] { 
-      "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", 
-      "BombGunFAB100 12", "BombGunFAB100 12", "BombGunFAB100 12", "BombGunFAB100 12" });
-
-    Aircraft.weaponsRegister(class1, "48XFAB-50", new String[] { 
-      "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", 
-      "BombGunFAB50 12", "BombGunFAB50 12", "BombGunFAB50 12", "BombGunFAB50 12" });
-
-    Aircraft.weaponsRegister(class1, "24XFAB-250M-46", new String[] { 
-      "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", 
-      "BombGunFAB250m46 6", "BombGunFAB250m46 6", "BombGunFAB250m46 6", "BombGunFAB250m46 6" });
-
-    Aircraft.weaponsRegister(class1, "24XFAB-250", new String[] { 
-      "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", 
-      "BombGunFAB250int 6", "BombGunFAB250int 6", "BombGunFAB250int 6", "BombGunFAB250int 6" });
-
-    Aircraft.weaponsRegister(class1, "14XFAB-500", new String[] { 
-      "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", 
-      "BombGunFAB500int 4", "BombGunFAB500int 4", "BombGunFAB500int 3", "BombGunFAB500int 3" });
-
-    Aircraft.weaponsRegister(class1, "8XFAB-1000", new String[] { 
-      "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", 
-      "BombGunFAB1000int 2", "BombGunFAB1000int 2", "BombGunFAB1000int 2", "BombGunFAB1000int 2" });
-
-    Aircraft.weaponsRegister(class1, "1xRDS-4T", new String[] { 
-      "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", 
-      "BombGunRDS4T 1" });
-
-    Aircraft.weaponsRegister(class1, "2xKS-1", new String[] { 
-      "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", 
-      null, null, null, null, "RocketGunKS1 1", "RocketGunNull 1", "RocketGunKS1 1", "RocketGunNull 1", "PylonKS1", "PylonKS1" });
-
-    Aircraft.weaponsRegister(class1, "none", new String[17]);
-  }
-
   public TU_4()
   {
     this.bSightAutomation = false;
@@ -122,7 +63,6 @@ public class TU_4 extends B_29X
     this.fSightCurReadyness = 0.0F;
     this.deltaAzimuth = 0.0F;
     this.deltaTangage = 0.0F;
-//    this.guidedMissileUtils = new GuidedMissileUtils(this);
   }
 
   protected boolean cutFM(int i, int j, Actor actor)
@@ -144,7 +84,6 @@ public class TU_4 extends B_29X
         hierMesh().chunkVisible("HMask" + i + "_D0", false);
       else
         hierMesh().chunkVisible("HMask" + i + "_D0", hierMesh().isChunkVisible("Pilot" + i + "_D0"));
-//    ((com.maddox.il2.objects.weapons.RocketGunKS1)this.rocketsList.get(0)).getMissile().createSmokeTest();
   }
 
   protected void nextDMGLevel(String s, int i, Actor actor)
@@ -477,6 +416,7 @@ public class TU_4 extends B_29X
   {
     super.onAircraftLoaded();
     this.guidedMissileUtils.onAircraftLoaded();
+    FM.CT.bHasBayDoors = true;
   }
 
   public void update(float f1) {
@@ -517,5 +457,64 @@ public class TU_4 extends B_29X
   public float typeX4CgetdeltaTangage()
   {
     return this.deltaTangage;
+  }
+  
+  static
+  {
+    Class class1 = TU_4.class;
+    new NetAircraft.SPAWN(class1);
+    Property.set(class1, "iconFar_shortClassName", "TU-4");
+    Property.set(class1, "meshName", "3DO/Plane/Tu-4/hier.him");
+    Property.set(class1, "PaintScheme", new PaintSchemeBMPar05());
+    Property.set(class1, "yearService", 1947.0F);
+    Property.set(class1, "yearExpired", 1960.0F);
+    Property.set(class1, "cockpitClass", new Class[] { 
+      CockpitTU4.class, CockpitTU4_Bombardier.class, CockpitTU4_TGunner.class, CockpitTU4_T2Gunner.class, CockpitTU4_FGunner.class, CockpitTU4_AGunner.class, CockpitTU4_RGunner.class });
+
+    Property.set(class1, "FlightModel", "FlightModels/B-29.fmd");
+    Aircraft.weaponTriggersRegister(class1, new int[] { 
+      10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 
+      3, 3, 3, 3, 2, 2, 2, 2, 9, 9 });
+
+    Aircraft.weaponHooksRegister(class1, new String[] { 
+      "_MGUN01", "_MGUN02", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_MGUN09", "_MGUN10", "_MGUN11", "_MGUN12", 
+      "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_ExternalRock01", "_ExternalRock01", "_ExternalRock02", "_ExternalRock02", "_ExternalDev01", "_ExternalDev02" });
+
+    Aircraft.weaponsRegister(class1, "default", new String[] { 
+      "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315" });
+
+    Aircraft.weaponsRegister(class1, "48XFAB-100", new String[] { 
+      "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", 
+      "BombGunFAB100 12", "BombGunFAB100 12", "BombGunFAB100 12", "BombGunFAB100 12" });
+
+    Aircraft.weaponsRegister(class1, "48XFAB-50", new String[] { 
+      "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", 
+      "BombGunFAB50 12", "BombGunFAB50 12", "BombGunFAB50 12", "BombGunFAB50 12" });
+
+    Aircraft.weaponsRegister(class1, "24XFAB-250M-46", new String[] { 
+      "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", 
+      "BombGunFAB250m46 6", "BombGunFAB250m46 6", "BombGunFAB250m46 6", "BombGunFAB250m46 6" });
+
+    Aircraft.weaponsRegister(class1, "24XFAB-250", new String[] { 
+      "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", 
+      "BombGunFAB250int 6", "BombGunFAB250int 6", "BombGunFAB250int 6", "BombGunFAB250int 6" });
+
+    Aircraft.weaponsRegister(class1, "14XFAB-500", new String[] { 
+      "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", 
+      "BombGunFAB500int 4", "BombGunFAB500int 4", "BombGunFAB500int 3", "BombGunFAB500int 3" });
+
+    Aircraft.weaponsRegister(class1, "8XFAB-1000", new String[] { 
+      "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", 
+      "BombGunFAB1000int 2", "BombGunFAB1000int 2", "BombGunFAB1000int 2", "BombGunFAB1000int 2" });
+
+    Aircraft.weaponsRegister(class1, "1xRDS-4T", new String[] { 
+      "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", 
+      "BombGunRDS4T 1" });
+
+    Aircraft.weaponsRegister(class1, "2xKS-1", new String[] { 
+      "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", "MGunVYakNS23 315", 
+      null, null, null, null, "RocketGunKS1 1", "RocketGunNull 1", "RocketGunKS1 1", "RocketGunNull 1", "PylonKS1", "PylonKS1" });
+
+    Aircraft.weaponsRegister(class1, "none", new String[17]);
   }
 }
