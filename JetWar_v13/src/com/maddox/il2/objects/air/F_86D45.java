@@ -24,6 +24,7 @@ public class F_86D45 extends F_86D
 		super.onAircraftLoaded();
 		bHasDeployedDragChute = false;
 		this.setGunNullOwner();
+	    FM.CT.bHasBayDoors = true;
 	}
 	
 	public void update(float f){

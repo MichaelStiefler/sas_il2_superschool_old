@@ -18,6 +18,7 @@ public class F_86D40 extends F_86D
 	public void onAircraftLoaded() {
 		super.onAircraftLoaded();
 		this.setGunNullOwner();
+	    FM.CT.bHasBayDoors = true;
 	}
 
 	protected void moveBayDoor(float f) {
