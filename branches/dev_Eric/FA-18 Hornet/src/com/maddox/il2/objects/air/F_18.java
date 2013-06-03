@@ -1556,6 +1556,13 @@ public class F_18 extends Scheme2
             hierMesh().chunkSetAngles("SlatLOut_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, -30.5F), 0.0F);
             hierMesh().chunkSetAngles("SlatROut_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, -30.5F), 0.0F);
         }
+        if(FM.CT.getGear() > 0.2F)
+        {
+        	((FlightModelMain) (super.FM)).CT.BlownFlapsControl = 1.0F;
+        } else
+        {
+        	((FlightModelMain) (super.FM)).CT.BlownFlapsControl = 0.0F;
+        }	
         if(FM.CT.getGear() < 0.2F || super.FM.getSpeedKMH() > 590)
         {
         	if(((FlightModelMain) (super.FM)).CT.FlapsControl > 0.16F)

@@ -1473,6 +1473,36 @@ public class F_18S extends Scheme2
             hierMesh().chunkSetAngles("SlatLOut_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, -30.5F), 0.0F);
             hierMesh().chunkSetAngles("SlatROut_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, -30.5F), 0.0F);
         }
+        if(FM.CT.getGear() > 0.2F)
+        {
+        	((FlightModelMain) (super.FM)).CT.BlownFlapsControl = 1.0F;
+        	if(((FlightModelMain) (super.FM)).Gears.onGround())
+        	{
+        	((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(0.5F);
+        	} else
+        	if(((FlightModelMain) (super.FM)).CT.FlapsControl <= 0.4F && super.FM.getSpeedKMH() < 469 && ((FlightModelMain) (super.FM)).CT.ElevatorControl <= 0.05F && ((FlightModelMain) (super.FM)).CT.ElevatorControl >= -0.05F)
+        	{
+        		if(super.FM.getAOA()<0 || super.FM.getAOA()>0)
+        		{
+        			((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(-super.FM.getAOA()*0.1F);
+        		} 	
+        	} else
+        		if(((FlightModelMain) (super.FM)).CT.FlapsControl > 0.4F && super.FM.getSpeedKMH() < 330 && ((FlightModelMain) (super.FM)).CT.ElevatorControl <= 0.05F && ((FlightModelMain) (super.FM)).CT.ElevatorControl >= -0.05F)
+            	{
+            		if(super.FM.getAOA()<8.1)
+            		{
+            			((FlightModelMain) (super.FM)).CT.setTrimElevatorControl((8.1F-super.FM.getAOA())*0.1F);
+            		} else
+            		if(super.FM.getAOA()>8.10)
+            		{		
+                			((FlightModelMain) (super.FM)).CT.setTrimElevatorControl((super.FM.getAOA()-8.1F)*0.1F);
+            		} 		
+            	}	
+        } else
+        {
+        	((FlightModelMain) (super.FM)).CT.BlownFlapsControl = 0.0F;
+        	((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(0F);
+        }		
         if(FM.CT.getGear() < 0.2F || super.FM.getSpeedKMH() > 590)
         {
         	if(((FlightModelMain) (super.FM)).CT.FlapsControl > 0.16F)
@@ -1495,6 +1525,10 @@ public class F_18S extends Scheme2
         	hierMesh().chunkVisible("SSlightnose", true);
         	hierMesh().chunkVisible("SSlighttail", true);
         }
+        if(super.FM.getAOA()>28 || (super.FM.getSpeedKMH() < 469 && ((FlightModelMain) (super.FM)).CT.FlapsControl > 0.16F) || super.FM.getOverload()>=6F)
+        	{
+        	((FlightModelMain) (super.FM)).CT.AirBrakeControl = 0F;		
+        	}
     }
    
 

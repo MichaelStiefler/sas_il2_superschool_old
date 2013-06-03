@@ -389,8 +389,8 @@ public class JDAM84 extends RocketBomb
     private static Actor hunted = null;
     private long tStart;
     private float prevd;
-    private static double azimuthControlScaleFact = 0.90000000000000002D;
-    private static double tangageControlScaleFact = 0.90000000000000002D;
+    private static double azimuthControlScaleFact = 0.90000000000000003D;
+    private static double tangageControlScaleFact = 0.90000000000000003D;
     private boolean first;
     private float targetRCSMax;
 
