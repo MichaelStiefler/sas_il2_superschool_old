@@ -836,8 +836,7 @@ public class F_18S extends Scheme2
 
     protected void moveRudder(float f)
     {
-        hierMesh().chunkSetAngles("RudderL_D0", 25F * f, 0.0F, 0.0F);
-        hierMesh().chunkSetAngles("RudderR_D0", 25F * f, 0.0F, 0.0F);            
+    	updateControlsVisuals2();           
     }
     
     public void moveSteering(float f)
@@ -850,12 +849,25 @@ public class F_18S extends Scheme2
     {
         if(super.FM.getSpeedKMH() > 590F)
         {
-            hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -30F * ((FlightModelMain) (super.FM)).CT.getElevator() + 17F * ((FlightModelMain) (super.FM)).CT.getAileron(), 0.0F);
-            hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -30F * ((FlightModelMain) (super.FM)).CT.getElevator() - 17F * ((FlightModelMain) (super.FM)).CT.getAileron(), 0.0F);
+            hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -30F * ((FlightModelMain) (super.FM)).CT.getElevator() + 27F * ((FlightModelMain) (super.FM)).CT.getAileron(), 0.0F);
+            hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -30F * ((FlightModelMain) (super.FM)).CT.getElevator() - 27F * ((FlightModelMain) (super.FM)).CT.getAileron(), 0.0F);
         } else
         {
             hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -17F * ((FlightModelMain) (super.FM)).CT.getElevator() + 10F * ((FlightModelMain) (super.FM)).CT.getAileron(), 0.0F);
             hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -17F * ((FlightModelMain) (super.FM)).CT.getElevator() - 10F * ((FlightModelMain) (super.FM)).CT.getAileron(), 0.0F);
+        }
+    }
+    
+    private final void updateControlsVisuals2()
+    {
+        if(super.FM.getSpeedKMH() > 590F)
+        {
+            hierMesh().chunkSetAngles("RudderL_D0", 35F * ((FlightModelMain) (super.FM)).CT.getRudder() - 35F * ((FlightModelMain) (super.FM)).CT.getAileron(), 0.0F, 0.0F);
+            hierMesh().chunkSetAngles("RudderR_D0", 35F * ((FlightModelMain) (super.FM)).CT.getRudder() - 35F * ((FlightModelMain) (super.FM)).CT.getAileron(), 0.0F, 0.0F);
+        } else
+        {
+            hierMesh().chunkSetAngles("RudderL_D0", 25F * ((FlightModelMain) (super.FM)).CT.getRudder() - 20F * ((FlightModelMain) (super.FM)).CT.getAileron(), 0.0F, 0.0F);
+            hierMesh().chunkSetAngles("RudderR_D0", 25F * ((FlightModelMain) (super.FM)).CT.getRudder() - 20F * ((FlightModelMain) (super.FM)).CT.getAileron(), 0.0F, 0.0F);
         }
     }
 
@@ -867,10 +879,11 @@ public class F_18S extends Scheme2
     protected void moveAileron(float f)
     {
             updateControlsVisuals();
+            updateControlsVisuals2(); 
             if(super.FM.getSpeedKMH() > 590F)
             {
-                hierMesh().chunkSetAngles("AroneL2_D0", 0.0F, 50F * f, 0.0F);
-                hierMesh().chunkSetAngles("AroneR2_D0", 0.0F, -50F * f, 0.0F);
+                hierMesh().chunkSetAngles("AroneL2_D0", 0.0F, 40F * f, 0.0F);
+                hierMesh().chunkSetAngles("AroneR2_D0", 0.0F, -40F * f, 0.0F);
             } else
             {
                 hierMesh().chunkSetAngles("AroneL2_D0", 0.0F, 20F * f, 0.0F);
@@ -1473,37 +1486,17 @@ public class F_18S extends Scheme2
             hierMesh().chunkSetAngles("SlatLOut_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, -30.5F), 0.0F);
             hierMesh().chunkSetAngles("SlatROut_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, -30.5F), 0.0F);
         }
-        if(FM.CT.getGear() > 0.2F)
-        {
+        if(FM.CT.getGear() > 0.5F && ((FlightModelMain) (super.FM)).Gears.onGround() && !((FlightModelMain) (super.FM)).AP.way.isLanding() && (((FlightModelMain) (super.FM)).CT.getElevator() <= 0.1F && ((FlightModelMain) (super.FM)).CT.getElevator() >= -0.1F))
+        {	
         	((FlightModelMain) (super.FM)).CT.BlownFlapsControl = 1.0F;
-        	if(((FlightModelMain) (super.FM)).Gears.onGround())
-        	{
         	((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(0.5F);
-        	} else
-        	if(((FlightModelMain) (super.FM)).CT.FlapsControl <= 0.4F && super.FM.getSpeedKMH() < 469 && ((FlightModelMain) (super.FM)).CT.ElevatorControl <= 0.05F && ((FlightModelMain) (super.FM)).CT.ElevatorControl >= -0.05F)
-        	{
-        		if(super.FM.getAOA()<0 || super.FM.getAOA()>0)
-        		{
-        			((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(-super.FM.getAOA()*0.1F);
-        		} 	
-        	} else
-        		if(((FlightModelMain) (super.FM)).CT.FlapsControl > 0.4F && super.FM.getSpeedKMH() < 330 && ((FlightModelMain) (super.FM)).CT.ElevatorControl <= 0.05F && ((FlightModelMain) (super.FM)).CT.ElevatorControl >= -0.05F)
-            	{
-            		if(super.FM.getAOA()<8.1)
-            		{
-            			((FlightModelMain) (super.FM)).CT.setTrimElevatorControl((8.1F-super.FM.getAOA())*0.1F);
-            		} else
-            		if(super.FM.getAOA()>8.10)
-            		{		
-                			((FlightModelMain) (super.FM)).CT.setTrimElevatorControl((super.FM.getAOA()-8.1F)*0.1F);
-            		} 		
-            	}	
         } else
+        if(FM.CT.getGear() < 0.9F && FM.CT.getGear() > 0.8F)
         {
         	((FlightModelMain) (super.FM)).CT.BlownFlapsControl = 0.0F;
         	((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(0F);
-        }		
-        if(FM.CT.getGear() < 0.2F || super.FM.getSpeedKMH() > 590)
+        }			
+        if(FM.CT.getGear() < 0.4F || super.FM.getSpeedKMH() > 590)
         {
         	if(((FlightModelMain) (super.FM)).CT.FlapsControl > 0.16F)
         	{
