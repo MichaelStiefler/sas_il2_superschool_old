@@ -116,7 +116,6 @@ public class CockpitTU4_Bombardier extends CockpitPilot
         HookPilot hookpilot = HookPilot.current;
         hookpilot.setInstantOrient(aAim, tAim, 0.0F);
         hookpilot.setSimpleUse(true);
-        doSetSimpleUse(true);
         HotKeyEnv.enable("PanView", false);
         HotKeyEnv.enable("SnapView", false);
         bEntered = true;
@@ -144,7 +143,6 @@ public class CockpitTU4_Bombardier extends CockpitPilot
             hookpilot1.doAim(false);
             hookpilot1.setSimpleAimOrient(0.0F, 0.0F, 0.0F);
             hookpilot1.setSimpleUse(false);
-            doSetSimpleUse(false);
             boolean flag = HotKeyEnv.isEnabled("aircraftView");
             HotKeyEnv.enable("PanView", flag);
             HotKeyEnv.enable("SnapView", flag);
@@ -196,7 +194,6 @@ public class CockpitTU4_Bombardier extends CockpitPilot
         });
         setNightMats(false);
         interpPut(new Interpolater(), null, Time.current(), null);
-        super.printCompassHeading = true;
     }
 
     public void toggleLight()

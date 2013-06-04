@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.*;
-import com.maddox.il2.fm.*;
 import com.maddox.rts.*;
 
 public class CockpitTU4_TGunner extends CockpitGunner
@@ -10,9 +9,9 @@ public class CockpitTU4_TGunner extends CockpitGunner
     public void moveGun(Orient orient)
     {
         super.moveGun(orient);
-        super.mesh.chunkSetAngles("Body", 0.0F, 0.0F, -1F);
-        super.mesh.chunkSetAngles("Turret1A", -orient.getYaw(), 0.0F, 0.0F);
-        super.mesh.chunkSetAngles("Turret1B", 0.0F, orient.getTangage(), 0.0F);
+        mesh.chunkSetAngles("Body", 0.0F, 0.0F, -1F);
+        mesh.chunkSetAngles("Turret1A", -orient.getYaw(), 0.0F, 0.0F);
+        mesh.chunkSetAngles("Turret1B", 0.0F, orient.getTangage(), 0.0F);
     }
 
     public void clipAnglesGun(Orient orient)
@@ -62,10 +61,10 @@ public class CockpitTU4_TGunner extends CockpitGunner
     {
         if(isRealMode())
         {
-            if(super.emitter == null || !super.emitter.haveBullets() || !aiTurret().bIsOperable)
-                super.bGunFire = false;
-            ((FlightModelMain) (super.fm)).CT.WeaponControl[weaponControlNum()] = super.bGunFire;
-            if(super.bGunFire)
+            if(emitter == null || !emitter.haveBullets() || !aiTurret().bIsOperable)
+                bGunFire = false;
+            fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
+            if(bGunFire)
             {
                 if(hook1 == null)
                     hook1 = new HookNamed(aircraft(), "_MGUN07");
@@ -81,20 +80,20 @@ public class CockpitTU4_TGunner extends CockpitGunner
     {
         if(isRealMode())
         {
-            if(super.emitter == null || !super.emitter.haveBullets() || !aiTurret().bIsOperable)
-                super.bGunFire = false;
+            if(emitter == null || !emitter.haveBullets() || !aiTurret().bIsOperable)
+                bGunFire = false;
             else
-                super.bGunFire = flag;
-            ((FlightModelMain) (super.fm)).CT.WeaponControl[weaponControlNum()] = super.bGunFire;
+                bGunFire = flag;
+            fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
         }
     }
 
     public void reflectCockpitState()
     {
-        if((((FlightModelMain) (super.fm)).AS.astateCockpitState & 4) != 0)
-            super.mesh.chunkVisible("Z_Holes1_D1", true);
-        if((((FlightModelMain) (super.fm)).AS.astateCockpitState & 0x10) != 0)
-            super.mesh.chunkVisible("Z_Holes2_D1", true);
+        if((fm.AS.astateCockpitState & 4) != 0)
+            mesh.chunkVisible("Z_Holes1_D1", true);
+        if((fm.AS.astateCockpitState & 0x10) != 0)
+            mesh.chunkVisible("Z_Holes2_D1", true);
     }
 
     public CockpitTU4_TGunner()
@@ -105,20 +104,6 @@ public class CockpitTU4_TGunner extends CockpitGunner
         prevA0 = 0.0F;
         hook1 = null;
         hook2 = null;
-    }
-
-    static Class _mthclass$(String s)
-    {
-        Class class1;
-        try
-        {
-            class1 = Class.forName(s);
-        }
-        catch(ClassNotFoundException classnotfoundexception)
-        {
-            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
-        }
-        return class1;
     }
 
     private boolean bNeedSetUp;
@@ -132,6 +117,6 @@ public class CockpitTU4_TGunner extends CockpitGunner
     {
         Property.set(CLASS.THIS(), "aiTuretNum", 0);
         Property.set(CLASS.THIS(), "weaponControlNum", 10);
-        Property.set(CLASS.THIS(), "astatePilotIndx", 3);
+        Property.set(CLASS.THIS(), "astatePilotIndx", 2);
     }
 }

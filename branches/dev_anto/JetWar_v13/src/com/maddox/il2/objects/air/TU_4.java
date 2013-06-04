@@ -1,37 +1,12 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.JGP.Point3f;
-import com.maddox.il2.ai.BulletEmitter;
-import com.maddox.il2.ai.DifficultySettings;
-import com.maddox.il2.ai.EventLog;
-import com.maddox.il2.ai.World;
-import com.maddox.il2.ai.air.Maneuver;
-import com.maddox.il2.ai.air.Pilot;
-import com.maddox.il2.ai.air.AutopilotAI;
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.engine.ActorHMesh;
-import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.engine.Interpolate;
-import com.maddox.il2.engine.Orient;
-import com.maddox.il2.fm.Controls;
-import com.maddox.il2.fm.FMMath;
-import com.maddox.il2.fm.FlightModelMain;
-import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
-import com.maddox.il2.game.Mission;
-import com.maddox.il2.net.NetMissionTrack;
-import com.maddox.il2.objects.sounds.SndAircraft;
-import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.il2.objects.weapons.GuidedMissileUtils;
-import com.maddox.il2.objects.weapons.GunNull;
-import com.maddox.il2.objects.weapons.RocketGun;
-import com.maddox.il2.objects.weapons.RocketGunWithDelay;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
-import com.maddox.rts.NetMsgOutput;
 import com.maddox.rts.Property;
-import com.maddox.rts.Time;
 import java.io.IOException;
 
 
@@ -471,7 +446,7 @@ public class TU_4 extends B_29X
     Property.set(class1, "cockpitClass", new Class[] { 
       CockpitTU4.class, CockpitTU4_Bombardier.class, CockpitTU4_TGunner.class, CockpitTU4_T2Gunner.class, CockpitTU4_FGunner.class, CockpitTU4_AGunner.class, CockpitTU4_RGunner.class });
 
-    Property.set(class1, "FlightModel", "FlightModels/B-29.fmd");
+    Property.set(class1, "FlightModel", "FlightModels/B-29TU4.fmd");
     Aircraft.weaponTriggersRegister(class1, new int[] { 
       10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 
       3, 3, 3, 3, 2, 2, 2, 2, 9, 9 });
