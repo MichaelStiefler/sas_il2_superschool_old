@@ -9,8 +9,8 @@ import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.TypeX4Carrier;
 import com.maddox.il2.objects.bridges.BridgeSegment;
 import com.maddox.il2.objects.sounds.SndAircraft;
-import com.maddox.il2.objects.weapons.JDAM84.Master;
-import com.maddox.il2.objects.weapons.JDAM84.Mirror;
+import com.maddox.il2.objects.weapons.AGM_154.Master;
+import com.maddox.il2.objects.weapons.AGM_154.Mirror;
 import com.maddox.rts.*;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ import java.util.List;
 // Referenced classes of package com.maddox.il2.objects.weapons:
 //            RocketBomb
 
-public class JDAM84 extends RocketBomb
+public class AGM_154 extends RocketBomb
 {
     static class SPAWN
         implements NetSpawn
@@ -37,7 +37,7 @@ public class JDAM84 extends RocketBomb
                 Point3d point3d = new Point3d(netmsginput.readFloat(), netmsginput.readFloat(), netmsginput.readFloat());
                 Orient orient = new Orient(netmsginput.readFloat(), netmsginput.readFloat(), 0.0F);
                 float f = netmsginput.readFloat();
-                JDAM84 JDAM84 = new JDAM84(actor, netmsginput.channel(), i, point3d, orient, f);
+                AGM_154 AGM_154 = new AGM_154(actor, netmsginput.channel(), i, point3d, orient, f);
             }
             catch(Exception exception)
             {
@@ -88,10 +88,10 @@ public class JDAM84 extends RocketBomb
                 out.unLockAndSet(netmsginput, 0);
                 postReal(Message.currentTime(true), out);
             }
-            JDAM84.v.x = netmsginput.readFloat();
-            JDAM84.v.y = netmsginput.readFloat();
-            JDAM84.v.z = netmsginput.readFloat();
-            setSpeed(JDAM84.v);
+            AGM_154.v.x = netmsginput.readFloat();
+            AGM_154.v.y = netmsginput.readFloat();
+            AGM_154.v.z = netmsginput.readFloat();
+            setSpeed(AGM_154.v);
             return true;
         }
 
@@ -143,10 +143,10 @@ public class JDAM84 extends RocketBomb
             try
             {
                 out.unLockAndClear();
-                getSpeed(JDAM84.v);
-                out.writeFloat((float)JDAM84.v.x);
-                out.writeFloat((float)JDAM84.v.y);
-                out.writeFloat((float)JDAM84.v.z);
+                getSpeed(AGM_154.v);
+                out.writeFloat((float)AGM_154.v.x);
+                out.writeFloat((float)AGM_154.v.y);
+                out.writeFloat((float)AGM_154.v.z);
                 post(Time.current(), out);
             }
             catch(Exception exception)
@@ -167,7 +167,12 @@ public class JDAM84 extends RocketBomb
 
     public boolean interpolateStep()
     {
-        float f = Time.tickLenFs();
+    	if(!popped && Time.current() > tStart + 400L)
+        {
+            setMesh("3DO/Arms/A154D/mono.sim");
+            popped = true;
+        }
+    	float f = Time.tickLenFs();
         super.pos.getAbs(p, or);
         if(first)
             first = false;
@@ -230,16 +235,17 @@ public class JDAM84 extends RocketBomb
         }
     }
 
-    public JDAM84()
+    public AGM_154()
     {
         first = true;
         targetRCSMax = 0.0F;
         fm = null;
         tStart = 0L;
         prevd = 1000F;
+        popped = false;
     }
 
-    public JDAM84(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f)
+    public AGM_154(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f)
     {
         first = true;
         targetRCSMax = 0.0F;
@@ -310,6 +316,8 @@ public class JDAM84 extends RocketBomb
 
         target = actor;
     }
+    
+  
 
     private float antennaPattern(Point3d point3d, Actor actor)
     {
@@ -393,11 +401,12 @@ public class JDAM84 extends RocketBomb
     private static double tangageControlScaleFact = 0.91000000000000003D;
     private boolean first;
     private float targetRCSMax;
+    private boolean popped;
 
     static 
     {
-        Class class1 = com.maddox.il2.objects.weapons.JDAM84.class;
-        Property.set(class1, "mesh", "3DO/Arms/JDAM/mono.sim");
+        Class class1 = com.maddox.il2.objects.weapons.AGM_154.class;
+        Property.set(class1, "mesh", "3DO/Arms/A154/mono.sim");
         Property.set(class1, "sound", "weapon.bomb_big");
         Property.set(class1, "emitLen", 0.0F);
         Property.set(class1, "emitMax", 0.0F);
