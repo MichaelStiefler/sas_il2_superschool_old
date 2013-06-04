@@ -393,8 +393,8 @@ public class HARM extends JDAM84
     private static Actor hunted = null;
     private long tStart;
     private float prevd;
-    private static double azimuthControlScaleFact = 0.90000000000000002D;
-    private static double tangageControlScaleFact = 0.90000000000000002D;
+    private static double azimuthControlScaleFact = 0.92000000000000002D;
+    private static double tangageControlScaleFact = 0.92000000000000002D;
     private boolean first;
     private float targetRCSMax;
 
