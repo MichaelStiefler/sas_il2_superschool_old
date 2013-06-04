@@ -13,7 +13,6 @@ import com.maddox.il2.objects.weapons.AGM_154A.Master;
 import com.maddox.il2.objects.weapons.AGM_154A.Mirror;
 import com.maddox.rts.*;
 import com.maddox.il2.ai.World;
-import com.maddox.il2.objects.effects.Explosions;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
@@ -205,7 +204,8 @@ public class AGM_154A extends RocketBomb
                     if(((Tuple3d) (point3d)).z > d)
                         ((TypeX4Carrier)((Interpolate) (fm)).actor).typeX4CAdjAttitudePlus();
                 }
-                
+                if(((target instanceof TgtVehicle) || (target instanceof TgtTank) || (target instanceof TgtTrain)) && target.pos.getAbsPoint().distance(pos.getAbsPoint()) < 250D)
+                	doFireContaineds();
             }
             getSpeed(RocketBomb.spd);
             float f1 = (float)RocketBomb.spd.length();
@@ -224,8 +224,6 @@ public class AGM_154A extends RocketBomb
             setSpeed(RocketBomb.spd);
             ((TypeX4Carrier)((Interpolate) (fm)).actor).typeX4CResetControls();
         }
-        if(((target instanceof TgtVehicle) || (target instanceof TgtTank) || (target instanceof TgtTrain)) && target.pos.getAbsPoint().distance(pos.getAbsPoint()) < 100D)
-        	doFireContaineds();
         if(!Actor.isValid(getOwner()) || !(getOwner() instanceof Aircraft))
         {
             doExplosionAir();
@@ -287,6 +285,7 @@ public class AGM_154A extends RocketBomb
     {
         super.start(-1F);
         tStart = Time.current();
+        t1 = Time.current() + 1000L;
         super.pos.getAbs(p, or);
         or.setYPR(or.getYaw(), or.getPitch(), 0.0F);
         super.pos.setAbs(p, or);
@@ -370,9 +369,15 @@ public class AGM_154A extends RocketBomb
         super.doExplosionAir();
     }
     
+    public void msgCollision(Actor actor, String s, String s1)
+    {
+        if(t1 > Time.current())
+            doFireContaineds();
+        super.msgCollision(actor, s, s1);
+    }
+    
     private void doFireContaineds()
     {
-        Explosions.AirFlak(pos.getAbsPoint(), 1);
         Actor actor = null;
         if(Actor.isValid(getOwner()))
             actor = getOwner();
@@ -383,7 +388,7 @@ public class AGM_154A extends RocketBomb
         {
             orient.set(World.Rnd().nextFloat(0.0F, 360F), World.Rnd().nextFloat(-90F, 90F), World.Rnd().nextFloat(-180F, 180F));
             getSpeed(vector3d);
-            vector3d.add(World.Rnd().nextDouble(-15D, 15D), World.Rnd().nextDouble(-15D, 15D), World.Rnd().nextDouble(-15D, 15D));
+            vector3d.add(World.Rnd().nextDouble(-30D, 30D), World.Rnd().nextDouble(-30D, 30D), World.Rnd().nextDouble(-30D, 30D));
             BombletMK20 bombletmk20 = new BombletMK20();
             ((Bomb) (bombletmk20)).pos.setUpdateEnable(true);
             ((Bomb) (bombletmk20)).pos.setAbs(point3d, orient);
@@ -392,7 +397,7 @@ public class AGM_154A extends RocketBomb
             bombletmk20.setOwner(actor, false, false, false);
             bombletmk20.setSpeed(vector3d);
         }
-
+        t1 = Time.current() + 10000L;
         postDestroy();
     }
 
@@ -433,6 +438,7 @@ public class AGM_154A extends RocketBomb
     private boolean first;
     private float targetRCSMax;
     private boolean popped;
+    private long t1;
 
     static 
     {
