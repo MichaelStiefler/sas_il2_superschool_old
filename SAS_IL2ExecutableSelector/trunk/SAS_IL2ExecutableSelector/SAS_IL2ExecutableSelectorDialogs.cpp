@@ -39,6 +39,9 @@
 #define _CRT_SECURE_NO_WARNINGS
 #pragma warning( disable : 4996 )
 
+WNDPROC wpOrigEditProcExpert = NULL;
+WNDPROC wpOrigEditProcCachedWrapper = NULL;
+
 //************************************
 // Method:    SASES_DialogProc
 // FullName:  SASES_DialogProc
@@ -92,6 +95,36 @@ INT_PTR CALLBACK SASES_DialogProc(
 
     return FALSE;
 }
+
+LRESULT APIENTRY EditSubclassProcExpert(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
+{ 
+	if (uMsg == WM_LBUTTONDOWN) {
+		TCHAR szEditText[MAX_PATH];
+		SendMessage(hwnd, WM_GETTEXT, MAX_PATH, (LPARAM)&szEditText[0]);
+		if (_tcscmp(szEditText, EDIT_KEY_RESET) == 0) {
+			SetFocus(hwnd);
+			SendMessage(hwnd, EM_SETSEL, 0, -1);
+			return TRUE;
+		}
+	}
+	return CallWindowProc(wpOrigEditProcExpert, hwnd, uMsg, wParam, lParam); 
+} 
+
+LRESULT APIENTRY EditSubclassProcCachedWrapper(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
+{ 
+	if (uMsg == WM_LBUTTONDOWN) {
+		TCHAR szEditText[MAX_PATH];
+		SendMessage(hwnd, WM_GETTEXT, MAX_PATH, (LPARAM)&szEditText[0]);
+		if (_tcscmp(szEditText, EDIT_KEY_RESET) == 0) {
+			SetFocus(hwnd);
+			SendMessage(hwnd, EM_SETSEL, 0, -1);
+			return TRUE;
+		}
+	}
+	return CallWindowProc(wpOrigEditProcCachedWrapper, hwnd, uMsg, wParam, lParam); 
+} 
+
+
 //************************************
 // Method:    SASES_OnCreate
 // FullName:  SASES_OnCreate
@@ -141,7 +174,12 @@ BOOL SASES_OnInitDialog(HWND hwnd, HWND /*hwndFocus*/, LPARAM /*lParam*/)
         SetStatusBar(2, TRUE, GetSysColor(COLOR_BTNTEXT), RGB(0, 255, 0), TRANSPARENT, L"Settings Saved");
     }
 
+	ResetExpertKey();
+	ResetCachedWrapperKey();
+
     SetWindowText(hwnd, szWindowTitle);
+	wpOrigEditProcExpert = (WNDPROC) SetWindowLong(GetDlgItem(hwnd, IDC_EDIT_EXPERT), GWL_WNDPROC, (LONG) EditSubclassProcExpert); 
+	wpOrigEditProcCachedWrapper = (WNDPROC) SetWindowLong(GetDlgItem(hwnd, IDC_EDIT_CACHED_WRAPPER), GWL_WNDPROC, (LONG) EditSubclassProcCachedWrapper); 
     BringToFront(hwnd);
     return FALSE;
 }
@@ -285,12 +323,28 @@ void SASES_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 
     case IDC_CHECK_EXPERT:
         g_bExpertModeEnabled = IsDlgButtonChecked(g_hWnd, IDC_CHECK_EXPERT);
+		if (g_bExpertModeEnabled) {
+			if (!CheckExpertKey()) {
+				ShowRandomErrorMessage();
+				CheckDlgButton(g_hWnd, IDC_CHECK_EXPERT, BST_UNCHECKED);
+				ResetExpertKey();
+				break;
+			}
+		}
         SettingsToControls();
         SetStatusBar(2, TRUE, GetSysColor(COLOR_BTNTEXT), RGB(255, 255, 0), TRANSPARENT, L"Settings Changed");
         break;
 
     case IDC_CHECK_CACHED_WRAPPER:
         g_bEnableModFilesCache = IsDlgButtonChecked(g_hWnd, IDC_CHECK_CACHED_WRAPPER);
+		if (g_bEnableModFilesCache) {
+			if (!CheckCachedWrapperKey()) {
+				ShowRandomErrorMessage();
+				CheckDlgButton(g_hWnd, IDC_CHECK_CACHED_WRAPPER, BST_UNCHECKED);
+				ResetCachedWrapperKey();
+				break;
+			}
+		}
         SettingsToControls();
         SetStatusBar(2, TRUE, GetSysColor(COLOR_BTNTEXT), RGB(255, 255, 0), TRANSPARENT, L"Settings Changed");
         break;

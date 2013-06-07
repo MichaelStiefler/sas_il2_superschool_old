@@ -42,6 +42,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 #pragma warning( disable : 4996 )
 
+DWORD dwErrorNum = 0;
+
 //************************************
 // Method:    AfterIl2Stopped
 // FullName:  AfterIl2Stopped
@@ -199,6 +201,7 @@ void SettingsToControls()
     EnableWindow(GetDlgItem(g_hWnd, IDC_CHECK_EXPERT), bShowExpertMode());
     CheckDlgButton(g_hWnd, IDC_CHECK_EXPERT, (g_bExpertModeEnabled && bShowExpertMode()) ? BST_CHECKED : BST_UNCHECKED);
     EnableWindow(GetDlgItem(g_hWnd, IDC_CHECK_CACHED_WRAPPER), bShowModFilesCache());
+	EnableWindow(GetDlgItem(g_hWnd, IDC_EDIT_CACHED_WRAPPER), bShowModFilesCache());
     CheckDlgButton(g_hWnd, IDC_CHECK_CACHED_WRAPPER, (g_bEnableModFilesCache && bShowModFilesCache()) ? BST_CHECKED : BST_UNCHECKED);
     EnableWindow(GetDlgItem(g_hWnd, IDC_CHECK_MULTI), bShowMultipleInstances());
     CheckDlgButton(g_hWnd, IDC_CHECK_MULTI, (g_bMultipleInstancesEnabled && bShowMultipleInstances()) ? BST_CHECKED : BST_UNCHECKED);
@@ -680,4 +683,49 @@ void SetRAMStatus()
     }
 
     SetStatusBar(0, TRUE, GetSysColor(COLOR_BTNTEXT), RGB(255, 0, 0), TRANSPARENT, L"RAM ERROR");
+}
+
+void ResetExpertKey()
+{
+	SetDlgItemText(g_hWnd, IDC_EDIT_EXPERT, EDIT_KEY_RESET);
+}
+
+void ResetCachedWrapperKey()
+{
+	SetDlgItemText(g_hWnd, IDC_EDIT_CACHED_WRAPPER, EDIT_KEY_RESET);
+}
+
+BOOL CheckExpertKey()
+{
+	TCHAR szText[MAX_PATH];
+	GetDlgItemText(g_hWnd, IDC_EDIT_EXPERT, szText, MAX_PATH);
+	return (_tcscmp(szText, EXPERT_KEY) == 0);
+}
+
+BOOL CheckCachedWrapperKey()
+{
+	TCHAR szText[MAX_PATH];
+	GetDlgItemText(g_hWnd, IDC_EDIT_CACHED_WRAPPER, szText, MAX_PATH);
+	return (_tcscmp(szText, CACHED_WRAPPER_KEY) == 0);
+}
+
+void ShowRandomErrorMessage()
+{
+	switch (++dwErrorNum % 5) {
+		case 1:
+			MessageBox(NULL, KEY_ERROR_1, L"Authentication Code Mismatch!", MB_ICONEXCLAMATION | MB_OK | MB_TOPMOST);
+			break;
+		case 2:
+			MessageBox(NULL, KEY_ERROR_2, L"Authentication Code Mismatch!", MB_ICONEXCLAMATION | MB_OK | MB_TOPMOST);
+			break;
+		case 3:
+			MessageBox(NULL, KEY_ERROR_3, L"Authentication Code Mismatch!", MB_ICONEXCLAMATION | MB_OK | MB_TOPMOST);
+			break;
+		case 4:
+			MessageBox(NULL, KEY_ERROR_4, L"Authentication Code Mismatch!", MB_ICONEXCLAMATION | MB_OK | MB_TOPMOST);
+			break;
+		default:
+			MessageBox(NULL, KEY_ERROR_5, L"Authentication Code Mismatch!", MB_ICONEXCLAMATION | MB_OK | MB_TOPMOST);
+			break;
+	}
 }

@@ -54,6 +54,16 @@
 #define WRAPPER_BASE_NAME			L"basefiles\\mod\\wrapper.dll"
 #define DINPUT_BASE_NAME			L"basefiles\\DINPUT.dll"
 #define HYPERLOBBY_INI				L"HyperLobby\\hyperlobby.ini"
+#define EXPERT_KEY					L"40930"
+#define CACHED_WRAPPER_KEY			L"89857"
+#define EDIT_KEY_RESET				L"Auth. Code"
+
+#define KEY_ERROR_1					L"Looks like you entered the wrong Authorization key, please try again."
+#define KEY_ERROR_2					L"Did you ever consider the beauty of manuals?"
+#define KEY_ERROR_3					L"This is no try and error thing, it's about knowing or not what to enter here."
+#define KEY_ERROR_4					L"You should better not enable this setting as it seems."
+#define KEY_ERROR_5					L"Not clever."
+
 #define lengthof(a) (sizeof a / sizeof a[0])
 #define RunWorker(ThreadStartRoutine) 	CloseHandle(CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)ThreadStartRoutine,NULL,0,NULL))
 
@@ -164,3 +174,10 @@ BOOL bShowMultipleInstances();
 BOOL bShowAdjustHyperlobby();
 BOOL bShowAdjustHyperlobbyOptions();
 BOOL bShowAdditionalJvmParams();
+void ResetExpertKey();
+void ResetCachedWrapperKey();
+void ShowRandomErrorMessage();
+BOOL CheckExpertKey();
+BOOL CheckCachedWrapperKey();
+LRESULT APIENTRY EditSubclassProcExpert(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+LRESULT APIENTRY EditSubclassProcCachedWrapper(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

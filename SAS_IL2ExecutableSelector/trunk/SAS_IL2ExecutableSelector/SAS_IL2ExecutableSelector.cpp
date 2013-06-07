@@ -96,8 +96,8 @@ int WINAPI _tWinMain(
 
     ReadIniSettings();
     g_lpCmdLine = lpCmdLine;
-    g_hIconSmall = (HICON)LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 16, 16, LR_DEFAULTSIZE);
-    g_hIconLarge = (HICON)LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 32, 32, LR_DEFAULTSIZE);
+    g_hIconSmall = (HICON)LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON_SASUP), IMAGE_ICON, 16, 16, LR_DEFAULTSIZE);
+    g_hIconLarge = (HICON)LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON_SASUP), IMAGE_ICON, 32, 32, LR_DEFAULTSIZE);
     g_hBrushYellow = CreateSolidBrush(RGB(255, 255, 0));
     g_hBrushRed = CreateSolidBrush(RGB(255, 0, 0));
     g_hBrushGreen = CreateSolidBrush(RGB(0, 255, 0));

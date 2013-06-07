@@ -52,12 +52,12 @@ BEGIN
                     "Button",BS_AUTORADIOBUTTON | WS_DISABLED | WS_TABSTOP,7,64,118,10
     CONTROL         "Hyperlobby starts IL-2 Selector",IDC_RADIO_HYPERLOBBY_SELECTOR,
                     "Button",BS_AUTORADIOBUTTON | WS_DISABLED | WS_TABSTOP,7,73,116,10
-    CONTROL         "Expert Mode (I know what I'm doing!)",IDC_CHECK_EXPERT,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,82,135,10
+    CONTROL         "Expert Mode    ======>",IDC_CHECK_EXPERT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,82,94,10
     CONTROL         "Balanced",IDC_RADIO_MEM_BALANCED,"Button",BS_AUTORADIOBUTTON | WS_DISABLED | WS_TABSTOP,9,100,38,10
     CONTROL         "Conservative",IDC_RADIO_MEM_CONSERVATIVE,"Button",BS_AUTORADIOBUTTON | WS_DISABLED | WS_TABSTOP,58,100,51,10
     CONTROL         "Heap only",IDC_RADIO_MEM_HEAPONLY,"Button",BS_AUTORADIOBUTTON | WS_DISABLED | WS_TABSTOP,114,100,42,10
-    CONTROL         "Enable mod files cache",IDC_CHECK_CACHED_WRAPPER,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,7,113,91,10
+    CONTROL         "Enable mod files cache =>",IDC_CHECK_CACHED_WRAPPER,
+                    "Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,7,113,102,10
     CONTROL         "Allow multiple IL-2 instances",IDC_CHECK_MULTI,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,7,122,108,10
     EDITTEXT        IDC_EDIT_JVM_PARAMS,7,141,151,46,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | WS_DISABLED | WS_VSCROLL
     DEFPUSHBUTTON   "Save Settings",IDC_BUTTON_SAVE_SETTINGS,7,188,74,14
@@ -70,6 +70,8 @@ BEGIN
     GROUPBOX        "Memory Allocation Strategy",IDC_GB_MEM_METHOD,7,92,151,19,WS_DISABLED
     CTEXT           "Additional JVM Parameters (1 per line)",IDC_STATIC_JVM_PARAMS,7,133,151,8,WS_DISABLED
     EDITTEXT        IDC_EDIT_MODTYPE_HELP,141,7,6,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        IDC_EDIT_EXPERT,118,81,40,12,ES_RIGHT | ES_NUMBER,WS_EX_RIGHT
+    EDITTEXT        IDC_EDIT_CACHED_WRAPPER,118,111,40,12,ES_RIGHT | ES_NUMBER | WS_DISABLED,WS_EX_RIGHT
 END
 
 IDD_IL2EXESELECTOR_START DIALOGEX 0, 0, 126, 100
@@ -165,7 +167,7 @@ END
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Englisch (USA) resources
+// English (U.S.) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
@@ -198,7 +200,7 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
-#endif    // Englisch (USA) resources
+#endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
