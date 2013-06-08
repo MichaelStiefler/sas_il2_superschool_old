@@ -19,6 +19,6 @@ public class Pylon18MTer extends PylonRO_82_1
 
     static 
     {
-        Property.set((Object)com.maddox.il2.objects.weapons.Pylon18MTer.class, "mesh", "3DO/Arms/Pylon18MD/mono.sim");
+        Property.set((Object)com.maddox.il2.objects.weapons.Pylon18MTer.class, "mesh", "3DO/Arms/Pylon18MTer/mono.sim");
     }
 }
