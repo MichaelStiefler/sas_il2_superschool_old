@@ -78,7 +78,7 @@ public class MIG_21 extends Scheme1
     public void rareAction(float f, boolean flag)
     {
         super.rareAction(f, flag);
-        if((((FlightModelMain) (super.FM)).Gears.nearGround() || ((FlightModelMain) (super.FM)).Gears.onGround()) && ((FlightModelMain) (super.FM)).CT.getCockpitDoor() == 1.0F)
+        if((FM.Gears.nearGround() || FM.Gears.onGround()) && FM.CT.getCockpitDoor() == 1.0F)
             hierMesh().chunkVisible("HMask1_D0", false);
         else
             hierMesh().chunkVisible("HMask1_D0", hierMesh().isChunkVisible("Pilot1_D0"));
@@ -211,13 +211,13 @@ public class MIG_21 extends Scheme1
 
     public void moveWheelSink()
     {	
-        float f = ((FlightModelMain) (super.FM)).Gears.gWheelSinking[2];
+        float f = FM.Gears.gWheelSinking[2];
         hierMesh().chunkSetAngles("GearC3_D0", 0.0F, 20.0F * f, 0.0F);
         resetYPRmodifier();
-        xyz[1] = ((FlightModelMain) (super.FM)).Gears.gWheelSinking[0];
+        xyz[1] = FM.Gears.gWheelSinking[0];
         hierMesh().chunkSetLocate("GearL212_D0", xyz, ypr);
         resetYPRmodifier();
-        xyz[1] = ((FlightModelMain) (super.FM)).Gears.gWheelSinking[1];
+        xyz[1] = FM.Gears.gWheelSinking[1];
         hierMesh().chunkSetLocate("GearR212_D0", xyz, ypr);
     }
 
@@ -230,14 +230,14 @@ public class MIG_21 extends Scheme1
     {
         if(f > 0.0F)
         {
-            hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -16.5F * ((FlightModelMain) (super.FM)).CT.getElevator(), 0.0F);
+            hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -16.5F * FM.CT.getElevator(), 0.0F);
 
-            hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -16.5F * ((FlightModelMain) (super.FM)).CT.getElevator(), 0.0F);
+            hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -16.5F * FM.CT.getElevator(), 0.0F);
         } else
         if(f < 0.0F)
         {
-            hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -7F * ((FlightModelMain) (super.FM)).CT.getElevator(), 0.0F);
-            hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -7F * ((FlightModelMain) (super.FM)).CT.getElevator(), 0.0F);
+            hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -7F * FM.CT.getElevator(), 0.0F);
+            hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -7F * FM.CT.getElevator(), 0.0F);
         }
     }
 
@@ -271,9 +271,9 @@ public class MIG_21 extends Scheme1
 
     public void moveSteering(float f)
     {
-    	if(((FlightModelMain) (super.FM)).CT.GearControl > 0.5F)
+    	if(FM.CT.GearControl > 0.5F)
         hierMesh().chunkSetAngles("GearC_D0", 30F * f, 0.0F, 0.0F);
-    	if(((FlightModelMain) (super.FM)).CT.GearControl < 0.5F)
+    	if(FM.CT.GearControl < 0.5F)
             hierMesh().chunkSetAngles("GearC_D0", 0.0F, 0.0F, 0.0F);
     }
 
@@ -303,7 +303,7 @@ public class MIG_21 extends Scheme1
                 if(s.endsWith("g1"))
                 {
                     getEnergyPastArmor((double)World.Rnd().nextFloat(40F, 60F) / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot);
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 2);
+                    FM.AS.setCockpitState(shot.initiator, FM.AS.astateCockpitState | 2);
                     if(shot.power <= 0.0F)
                         doRicochetBack(shot);
                 }
@@ -323,7 +323,7 @@ public class MIG_21 extends Scheme1
                     if(World.Rnd().nextFloat() < 0.5F && getEnergyPastArmor(1.1F, shot) > 0.0F)
                     {
                         debuggunnery("Controls: Ailerones Controls: Out..");
-                        ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                        FM.AS.setControlsDamage(shot.initiator, 0);
                     }
                     break;
 
@@ -332,12 +332,12 @@ public class MIG_21 extends Scheme1
                     if(getEnergyPastArmor(World.Rnd().nextFloat(0.5F, 2.93F), shot) > 0.0F && World.Rnd().nextFloat() < 0.25F)
                     {
                         debuggunnery("Controls: Elevator Controls: Disabled / Strings Broken..");
-                        ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
+                        FM.AS.setControlsDamage(shot.initiator, 1);
                     }
                     if(getEnergyPastArmor(World.Rnd().nextFloat(0.5F, 2.93F), shot) > 0.0F && World.Rnd().nextFloat() < 0.25F)
                     {
                         debuggunnery("Controls: Rudder Controls: Disabled / Strings Broken..");
-                        ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
+                        FM.AS.setControlsDamage(shot.initiator, 2);
                     }
                     break;
                 }
@@ -348,24 +348,24 @@ public class MIG_21 extends Scheme1
                 debuggunnery("Engine Module: Hit..");
                 if(s.endsWith("bloc"))
                     getEnergyPastArmor((double)World.Rnd().nextFloat(0.0F, 60F) / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot);
-                if(s.endsWith("cams") && getEnergyPastArmor(0.45F, shot) > 0.0F && World.Rnd().nextFloat() < ((FlightModelMain) (super.FM)).EI.engines[0].getCylindersRatio() * 20F)
+                if(s.endsWith("cams") && getEnergyPastArmor(0.45F, shot) > 0.0F && World.Rnd().nextFloat() < FM.EI.engines[0].getCylindersRatio() * 20F)
                 {
-                    ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int)(shot.power / 4800F)));
-                    debuggunnery("Engine Module: Engine Cams Hit, " + ((FlightModelMain) (super.FM)).EI.engines[0].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[0].getCylinders() + " Left..");
+                    FM.EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int)(shot.power / 4800F)));
+                    debuggunnery("Engine Module: Engine Cams Hit, " + FM.EI.engines[0].getCylindersOperable() + "/" + FM.EI.engines[0].getCylinders() + " Left..");
                     if(World.Rnd().nextFloat() < shot.power / 24000F)
                     {
-                        ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
+                        FM.AS.hitEngine(shot.initiator, 0, 2);
                         debuggunnery("Engine Module: Engine Cams Hit - Engine Fires..");
                     }
                     if(shot.powerType == 3 && World.Rnd().nextFloat() < 0.75F)
                     {
-                        ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 1);
+                        FM.AS.hitEngine(shot.initiator, 0, 1);
                         debuggunnery("Engine Module: Engine Cams Hit (2) - Engine Fires..");
                     }
                 }
                 if(s.endsWith("eqpt") && World.Rnd().nextFloat() < shot.power / 24000F)
                 {
-                    ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 3);
+                    FM.AS.hitEngine(shot.initiator, 0, 3);
                     debuggunnery("Engine Module: Hit - Engine Fires..");
                 }
                 if(!s.endsWith("exht"));
@@ -374,8 +374,8 @@ public class MIG_21 extends Scheme1
             if(s.startsWith("xxmgun0"))
             {
                 Aircraft.debugprintln(this, "Armament: Gunpod Disabled..");
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 0);
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 1);
+                FM.AS.setJamBullets(0, 0);
+                FM.AS.setJamBullets(0, 1);
                 return;
             }
             if(s.startsWith("xxtank"))
@@ -383,15 +383,15 @@ public class MIG_21 extends Scheme1
                 int k = s.charAt(6) - 49;
                 if(getEnergyPastArmor(0.1F, shot) > 0.0F && World.Rnd().nextFloat() < 0.25F)
                 {
-                    if(((FlightModelMain) (super.FM)).AS.astateTankStates[k] == 0)
+                    if(FM.AS.astateTankStates[k] == 0)
                     {
                         debuggunnery("Fuel Tank (" + k + "): Pierced..");
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, k, 1);
-                        ((FlightModelMain) (super.FM)).AS.doSetTankState(shot.initiator, k, 1);
+                        FM.AS.hitTank(shot.initiator, k, 1);
+                        FM.AS.doSetTankState(shot.initiator, k, 1);
                     }
                     if(shot.powerType == 3 && World.Rnd().nextFloat() < 0.075F)
                     {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, k, 2);
+                        FM.AS.hitTank(shot.initiator, k, 2);
                         debuggunnery("Fuel Tank (" + k + "): Hit..");
                     }
                 }
@@ -424,12 +424,12 @@ public class MIG_21 extends Scheme1
             }
             if(s.startsWith("xxhyd"))
             {
-                ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 3);
+                FM.AS.setInternalDamage(shot.initiator, 3);
                 return;
             }
             if(s.startsWith("xxpnm"))
             {
-                ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 1);
+                FM.AS.setInternalDamage(shot.initiator, 1);
                 return;
             } else
             {
@@ -438,7 +438,7 @@ public class MIG_21 extends Scheme1
         }
         if(s.startsWith("xcockpit"))
         {
-            ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 1);
+            FM.AS.setCockpitState(shot.initiator, FM.AS.astateCockpitState | 1);
             getEnergyPastArmor(0.05F, shot);
         }
         if(s.startsWith("xcf"))
@@ -492,19 +492,19 @@ public class MIG_21 extends Scheme1
             if(s.startsWith("xflap2"))
                 hitChunk("Flap02", shot);
             if(World.Rnd().nextFloat() < 0.4F)
-                ((FlightModelMain) (super.FM)).CT.bHasFlapsControlRed = true;
+                FM.CT.bHasFlapsControlRed = true;
         } else
         if(s.startsWith("xgear"))
         {
             if(s.endsWith("1") && World.Rnd().nextFloat() < 0.05F)
             {
                 debuggunnery("Hydro System: Disabled..");
-                ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 0);
+                FM.AS.setInternalDamage(shot.initiator, 0);
             }
             if(s.endsWith("2") && World.Rnd().nextFloat() < 0.1F && getEnergyPastArmor(World.Rnd().nextFloat(1.2F, 3.435F), shot) > 0.0F)
             {
                 debuggunnery("Undercarriage: Stuck..");
-                ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 3);
+                FM.AS.setInternalDamage(shot.initiator, 3);
             }
         } else
         if(s.startsWith("xpilot") || s.startsWith("xhead"))
@@ -533,7 +533,7 @@ public class MIG_21 extends Scheme1
         switch(i)
         {
         case 19: // '\023'
-            ((FlightModelMain) (super.FM)).EI.engines[0].setEngineDies(actor);
+            FM.EI.engines[0].setEngineDies(actor);
             // fall through
 
         case 33: // '!'
@@ -543,7 +543,7 @@ public class MIG_21 extends Scheme1
         case 37: // '%'
         case 38: // '&'
             doCutBoosters();
-            ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+            FM.AS.setGliderBoostOff();
             bHasBoosters = false;
             // fall through
 
@@ -655,7 +655,7 @@ public class MIG_21 extends Scheme1
             super.FM.VmaxAllowed = super.FM.getSpeedKMH() + f_0_;
             isSonic = true;
         }
-        if(((FlightModelMain) (super.FM)).VmaxAllowed > 1500F)
+        if(FM.VmaxAllowed > 1500F)
             super.FM.VmaxAllowed = 1500F;
         if(isSonic && SonicBoom < 1.0F)
         {
@@ -673,37 +673,37 @@ public class MIG_21 extends Scheme1
 
     public void engineSurge(float f)
     {
-        if(((FlightModelMain) (super.FM)).AS.isMaster())
+        if(FM.AS.isMaster())
             if(curthrl == -1F)
             {
-                curthrl = oldthrl = ((FlightModelMain) (super.FM)).EI.engines[0].getControlThrottle();
+                curthrl = oldthrl = FM.EI.engines[0].getControlThrottle();
             } else
             {
-                curthrl = ((FlightModelMain) (super.FM)).EI.engines[0].getControlThrottle();
+                curthrl = FM.EI.engines[0].getControlThrottle();
                 if(curthrl < 1.05F)
                 {
-                    if((curthrl - oldthrl) / f > 20F && ((FlightModelMain) (super.FM)).EI.engines[0].getRPM() < 3200F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6 && World.Rnd().nextFloat() < 0.4F)
+                    if((curthrl - oldthrl) / f > 20F && FM.EI.engines[0].getRPM() < 3200F && FM.EI.engines[0].getStage() == 6 && World.Rnd().nextFloat() < 0.4F)
                     {
                         if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
                             HUD.log("Compressor Stall!");
                         super.playSound("weapon.MGunMk108s", true);
-                        engineSurgeDamage += 0.01D * (double)(((FlightModelMain) (super.FM)).EI.engines[0].getRPM() / 1000F);
-                        ((FlightModelMain) (super.FM)).EI.engines[0].doSetReadyness(((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() - engineSurgeDamage);
+                        engineSurgeDamage += 0.01D * (double)(FM.EI.engines[0].getRPM() / 1000F);
+                        FM.EI.engines[0].doSetReadyness(FM.EI.engines[0].getReadyness() - engineSurgeDamage);
                         if(World.Rnd().nextFloat() < 0.05F && (super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode())
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(this, 0, 100);
+                            FM.AS.hitEngine(this, 0, 100);
                         if(World.Rnd().nextFloat() < 0.05F && (super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode())
-                            ((FlightModelMain) (super.FM)).EI.engines[0].setEngineDies(this);
+                            FM.EI.engines[0].setEngineDies(this);
                     }
-                    if((curthrl - oldthrl) / f < -20F && (curthrl - oldthrl) / f > -100F && ((FlightModelMain) (super.FM)).EI.engines[0].getRPM() < 3200F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6)
+                    if((curthrl - oldthrl) / f < -20F && (curthrl - oldthrl) / f > -100F && FM.EI.engines[0].getRPM() < 3200F && FM.EI.engines[0].getStage() == 6)
                     {
                         super.playSound("weapon.MGunMk108s", true);
-                        engineSurgeDamage += 0.001D * (double)(((FlightModelMain) (super.FM)).EI.engines[0].getRPM() / 1000F);
-                        ((FlightModelMain) (super.FM)).EI.engines[0].doSetReadyness(((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() - engineSurgeDamage);
+                        engineSurgeDamage += 0.001D * (double)(FM.EI.engines[0].getRPM() / 1000F);
+                        FM.EI.engines[0].doSetReadyness(FM.EI.engines[0].getReadyness() - engineSurgeDamage);
                         if(World.Rnd().nextFloat() < 0.4F && (super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode())
                         {
                             if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
                                 HUD.log("Engine Flameout!");
-                            ((FlightModelMain) (super.FM)).EI.engines[0].setEngineStops(this);
+                            FM.EI.engines[0].setEngineStops(this);
                         } else
                         if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
                             HUD.log("Compressor Stall!");
@@ -715,6 +715,7 @@ public class MIG_21 extends Scheme1
 
     private boolean sirenaWarning()
     {
+    	if ((Aircraft)this != World.getPlayerAircraft()) return false; // MiG-21 Hotfix: Skip Player only functions for AI
         Point3d point3d = new Point3d();
         super.pos.getAbs(point3d);
         Vector3d vector3d = new Vector3d();
@@ -770,6 +771,7 @@ public class MIG_21 extends Scheme1
 
     public void playSirenaWarning(boolean isThreatened)
     {
+    	if ((Aircraft)this != World.getPlayerAircraft()) return; // MiG-21 Hotfix: Skip Player only functions for AI
         if(isThreatened && !sirenaSoundPlaying)
         {
             fxSirena.play(smplSirena);
@@ -786,11 +788,11 @@ public class MIG_21 extends Scheme1
     public void onAircraftLoaded()
     {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).AS.wantBeaconsNet(true);
+        FM.AS.wantBeaconsNet(true);
         if((getBulletEmitterByHookName("_ExternalDev01") instanceof PylonGP9) || (getBulletEmitterByHookName("_ExternalDev02") instanceof MiG21Pylon))
         {
             pylonOccupied = true;
-            ((FlightModelMain) (super.FM)).Sq.dragAirbrakeCx = ((FlightModelMain) (super.FM)).Sq.dragAirbrakeCx / 2.0F;
+            FM.Sq.dragAirbrakeCx = FM.Sq.dragAirbrakeCx / 2.0F;
         }
         if(super.thisWeaponsName.endsWith("RATO"))
         {
@@ -831,23 +833,29 @@ public class MIG_21 extends Scheme1
 
     public void update(float f)
     {
-        if(super.FM.getSpeedKMH() > 700F && ((FlightModelMain) (super.FM)).CT.bHasFlapsControl)
+        super.update(f); // MiG-21 Bugfix: Put super.update(f) in front (super should always be called before any other method).
+        if(super.FM.getSpeedKMH() > 700F && FM.CT.bHasFlapsControl)
         {
-            ((FlightModelMain) (super.FM)).CT.FlapsControl = 0.0F;
-            ((FlightModelMain) (super.FM)).CT.bHasFlapsControl = false;
+            FM.CT.FlapsControl = 0.0F;
+            FM.CT.bHasFlapsControl = false;
         } else
         {
-            ((FlightModelMain) (super.FM)).CT.bHasFlapsControl = true;
+            FM.CT.bHasFlapsControl = true;
         }
-        if(((FlightModelMain) (super.FM)).CT.getFlap() < ((FlightModelMain) (super.FM)).CT.FlapsControl)
-            ((FlightModelMain) (super.FM)).CT.forceFlaps(flapsMovement(f, ((FlightModelMain) (super.FM)).CT.FlapsControl, ((FlightModelMain) (super.FM)).CT.getFlap(), 999F, Aircraft.cvt(super.FM.getSpeedKMH(), 0.0F, 700F, 0.5F, 0.08F)));
-        else
-            ((FlightModelMain) (super.FM)).CT.forceFlaps(flapsMovement(f, ((FlightModelMain) (super.FM)).CT.FlapsControl, ((FlightModelMain) (super.FM)).CT.getFlap(), 999F, Aircraft.cvt(super.FM.getSpeedKMH(), 0.0F, 700F, 0.5F, 0.7F)));
+        if (FM.CT.FlapsControl < 0) FM.CT.FlapsControl = 0; // MiG-21 Bugfix: Limit Flaps Control to 0-100%, don't allow negative flaps values.
+        if (FM.CT.FlapsControl > 1) FM.CT.FlapsControl = 1; // MiG-21 Bugfix: Limit Flaps Control to 0-100%, don't allow excessive flaps values.
+        if(FM.CT.getFlap() < FM.CT.FlapsControl) {
+//            System.out.println("Flaps 1 " + EventLog.name(this) + " getFlap()=" + FM.CT.getFlap() + " FlapsControl=" + FM.CT.FlapsControl);
+            FM.CT.forceFlaps(flapsMovement(f, FM.CT.FlapsControl, FM.CT.getFlap(), 999F, Aircraft.cvt(super.FM.getSpeedKMH(), 0.0F, 700F, 0.5F, 0.08F)));
+        } else if(FM.CT.getFlap() > FM.CT.FlapsControl) {
+//            System.out.println("Flaps 2 " + EventLog.name(this) + " getFlap()=" + FM.CT.getFlap() + " FlapsControl=" + FM.CT.FlapsControl);
+            FM.CT.forceFlaps(flapsMovement(f, FM.CT.FlapsControl, FM.CT.getFlap(), 999F, Aircraft.cvt(super.FM.getSpeedKMH(), 0.0F, 700F, 0.5F, 0.7F)));
+        }
         for(int i = 1; i < 19; i++)
-            hierMesh().chunkSetAngles("EngineExhaustFlap" + i, 0.0F, -38F * ((FlightModelMain) (super.FM)).CT.getPowerControl(), 0.0F);
+            hierMesh().chunkSetAngles("EngineExhaustFlap" + i, 0.0F, -38F * FM.CT.getPowerControl(), 0.0F);
 
         resetYPRmodifier();
-        float f1 = ((FlightModelMain) (super.FM)).CT.getPowerControl() * 1.5F;
+        float f1 = FM.CT.getPowerControl() * 1.5F;
         Aircraft.xyz[0] = Aircraft.cvt(f1, 0.0F, 1.5F, 0.0F, 1.5F);
         hierMesh().chunkSetLocate("EffectBox", Aircraft.xyz, Aircraft.ypr);
         resetYPRmodifier();
@@ -856,9 +864,9 @@ public class MIG_21 extends Scheme1
         float f2 = super.FM.getSpeedKMH() - 1000F;
         if(f2 < 0.0F)
             f2 = 0.0F;
-        ((FlightModelMain) (super.FM)).CT.dvGear = 0.2F - f2 / 1000F;
-        if(((FlightModelMain) (super.FM)).CT.dvGear < 0.0F)
-            ((FlightModelMain) (super.FM)).CT.dvGear = 0.0F;
+        FM.CT.dvGear = 0.2F - f2 / 1000F;
+        if(FM.CT.dvGear < 0.0F)
+            FM.CT.dvGear = 0.0F;
         try
         {
             sirenaWarning();
@@ -867,72 +875,71 @@ public class MIG_21 extends Scheme1
         engineSurge(f);
         typeFighterAceMakerRangeFinder();
         soundbarier();
-        if(((FlightModelMain) (super.FM)).AS.isMaster() && Config.isUSE_RENDER())
-            if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 0.5F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6)
+        if(FM.AS.isMaster() && Config.isUSE_RENDER())
+            if(FM.EI.engines[0].getThrustOutput() > 0.5F && FM.EI.engines[0].getStage() == 6)
             {
-                if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 0.5F)
-                    if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F)
-                        ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 5);
+                if(FM.EI.engines[0].getThrustOutput() > 0.5F)
+                    if(FM.EI.engines[0].getThrustOutput() > 1.001F)
+                        FM.AS.setSootState(this, 0, 5);
                     else
-                        ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 3);
+                        FM.AS.setSootState(this, 0, 3);
             } else
             {
-                ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 0);
+                FM.AS.setSootState(this, 0, 0);
             }
         if((!super.FM.isPlayers() || !(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode()) && (super.FM instanceof Maneuver))
         {
-            if(((FlightModelMain) (super.FM)).AP.way.isLanding() && ((FlightModelMain) (super.FM)).Gears.onGround() && super.FM.getSpeed() > 40F)
+            if(FM.AP.way.isLanding() && FM.Gears.onGround() && super.FM.getSpeed() > 40F)
             {
-                ((FlightModelMain) (super.FM)).CT.AirBrakeControl = 1.0F;
-                if(((FlightModelMain) (super.FM)).CT.bHasDragChuteControl)
-                    ((FlightModelMain) (super.FM)).CT.DragChuteControl = 1.0F;
+                FM.CT.AirBrakeControl = 1.0F;
+                if(FM.CT.bHasDragChuteControl)
+                    FM.CT.DragChuteControl = 1.0F;
             }
-            if(((FlightModelMain) (super.FM)).AP.way.isLanding() && ((FlightModelMain) (super.FM)).Gears.onGround() && super.FM.getSpeed() < 40F)
+            if(FM.AP.way.isLanding() && FM.Gears.onGround() && super.FM.getSpeed() < 40F)
             {
-                ((FlightModelMain) (super.FM)).CT.AirBrakeControl = 0.0F;
+                FM.CT.AirBrakeControl = 0.0F;
                 if(super.FM.getSpeed() < 20F)
-                    ((FlightModelMain) (super.FM)).CT.DragChuteControl = 0.0F;
+                    FM.CT.DragChuteControl = 0.0F;
             }
         }
-        if((((FlightModelMain) (super.FM)).AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && super.FM.getSpeedKMH() > 15F)
+        if((FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && super.FM.getSpeedKMH() > 15F)
         {
             overrideBailout = true;
-            ((FlightModelMain) (super.FM)).AS.bIsAboutToBailout = false;
+            FM.AS.bIsAboutToBailout = false;
             bailout();
         }
         if((super.FM instanceof Pilot) && bHasBoosters && super.thisWeaponsName.endsWith("RATO"))
         {
-            if(super.FM.getAltitude() > 300F && boosterFireOutTime == -1L && ((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z != 0.0D && World.Rnd().nextFloat() < 0.05F)
+            if(super.FM.getAltitude() > 300F && boosterFireOutTime == -1L && ((Tuple3d) (FM.Loc)).z != 0.0D && World.Rnd().nextFloat() < 0.05F)
             {
                 doCutBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                FM.AS.setGliderBoostOff();
                 bHasBoosters = false;
             }
-            if(bHasBoosters && boosterFireOutTime == -1L && ((FlightModelMain) (super.FM)).Gears.onGround() && ((FlightModelMain) (super.FM)).EI.getPowerOutput() > 0.8F && super.FM.getSpeedKMH() > 20F)
+            if(bHasBoosters && boosterFireOutTime == -1L && FM.Gears.onGround() && FM.EI.getPowerOutput() > 0.8F && super.FM.getSpeedKMH() > 20F)
             {
                 boosterFireOutTime = Time.current() + 6000L;
                 doFireBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOn();
+                FM.AS.setGliderBoostOn();
             }
             if(bHasBoosters && boosterFireOutTime > 0L)
             {
                 if(Time.current() < boosterFireOutTime)
-                    ((FlightModelMain) (super.FM)).producedAF.x += 20000D;
+                    FM.producedAF.x += 20000D;
                 if(Time.current() > boosterFireOutTime + 20000L)
                 {
                     doCutBoosters();
-                    ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                    FM.AS.setGliderBoostOff();
                     bHasBoosters = false;
                 }
             }
         }
-        if(((FlightModelMain) (super.FM)).AS.bNavLightsOn && ((FlightModelMain) (super.FM)).CT.getGear() >= 1.0F)
+        if(FM.AS.bNavLightsOn && FM.CT.getGear() >= 1.0F)
             bGearLightsOn = true;
         else
             bGearLightsOn = false;
         if(bGearLightState != bGearLightsOn)
             doSetGearLightsState(bGearLightsOn);	
-        super.update(f);
     }
 
     private void doSetGearLightsState(boolean flag)
@@ -983,9 +990,9 @@ public class MIG_21 extends Scheme1
     {
         for(int k = 0; k < 2; k++)
         {
-            if(((FlightModelMain) (super.FM)).AS.astateSootEffects[i][k] != null)
-                Eff3DActor.finish(((FlightModelMain) (super.FM)).AS.astateSootEffects[i][k]);
-            ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][k] = null;
+            if(FM.AS.astateSootEffects[i][k] != null)
+                Eff3DActor.finish(FM.AS.astateSootEffects[i][k]);
+            FM.AS.astateSootEffects[i][k] = null;
         }
 
         switch(j)
@@ -993,12 +1000,12 @@ public class MIG_21 extends Scheme1
         case 1: // '\001'
         case 2: // '\002'
         case 3: // '\003'
-            ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("HolyGrail02"), null, 1.0F, "3DO/Effects/Aircraft/TurboZippo.eff", -1F);
+            FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("HolyGrail02"), null, 1.0F, "3DO/Effects/Aircraft/TurboZippo.eff", -1F);
             break;
 
         case 5: // '\005'
-            ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("HolyGrail02"), null, 1.0F, "3DO/Effects/Aircraft/TurboZippo.eff", -1F);
-            ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("HolyGrail01"), null, 2.5F, "3DO/Effects/Aircraft/afterburner.eff", -1F);
+            FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("HolyGrail02"), null, 1.0F, "3DO/Effects/Aircraft/TurboZippo.eff", -1F);
+            FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("HolyGrail01"), null, 2.5F, "3DO/Effects/Aircraft/afterburner.eff", -1F);
             // fall through
 
         case 4: // '\004'
@@ -1034,33 +1041,33 @@ public class MIG_21 extends Scheme1
 ;
         hierMesh().chunkVisible("Seat_D0", false);
         super.FM.setTakenMortalDamage(true, null);
-        ((FlightModelMain) (super.FM)).CT.WeaponControl[0] = false;
-        ((FlightModelMain) (super.FM)).CT.WeaponControl[1] = false;
-        ((FlightModelMain) (super.FM)).CT.bHasAileronControl = false;
-        ((FlightModelMain) (super.FM)).CT.bHasRudderControl = false;
-        ((FlightModelMain) (super.FM)).CT.bHasElevatorControl = false;
+        FM.CT.WeaponControl[0] = false;
+        FM.CT.WeaponControl[1] = false;
+        FM.CT.bHasAileronControl = false;
+        FM.CT.bHasRudderControl = false;
+        FM.CT.bHasElevatorControl = false;
     }
 
     private void bailout()
     {
         if(overrideBailout)
-            if(((FlightModelMain) (super.FM)).AS.astateBailoutStep >= 0 && ((FlightModelMain) (super.FM)).AS.astateBailoutStep < 2)
+            if(FM.AS.astateBailoutStep >= 0 && FM.AS.astateBailoutStep < 2)
             {
-                if(((FlightModelMain) (super.FM)).CT.cockpitDoorControl > 0.5F && ((FlightModelMain) (super.FM)).CT.getCockpitDoor() > 0.5F)
+                if(FM.CT.cockpitDoorControl > 0.5F && FM.CT.getCockpitDoor() > 0.5F)
                 {
-                    ((FlightModelMain) (super.FM)).AS.astateBailoutStep = 11;
+                    FM.AS.astateBailoutStep = 11;
                     doRemoveBlisters();
                 } else
                 {
-                    ((FlightModelMain) (super.FM)).AS.astateBailoutStep = 2;
+                    FM.AS.astateBailoutStep = 2;
                 }
             } else
-            if(((FlightModelMain) (super.FM)).AS.astateBailoutStep >= 2 && ((FlightModelMain) (super.FM)).AS.astateBailoutStep <= 3)
+            if(FM.AS.astateBailoutStep >= 2 && FM.AS.astateBailoutStep <= 3)
             {
-                switch(((FlightModelMain) (super.FM)).AS.astateBailoutStep)
+                switch(FM.AS.astateBailoutStep)
                 {
                 case 2: // '\002'
-                    if(((FlightModelMain) (super.FM)).CT.cockpitDoorControl < 0.5F)
+                    if(FM.CT.cockpitDoorControl < 0.5F)
                         doRemoveBlister1();
                     break;
 
@@ -1068,19 +1075,19 @@ public class MIG_21 extends Scheme1
                     doRemoveBlisters();
                     break;
                 }
-                if(((FlightModelMain) (super.FM)).AS.isMaster())
-                    ((FlightModelMain) (super.FM)).AS.netToMirrors(20, ((FlightModelMain) (super.FM)).AS.astateBailoutStep, 1, null);
-                AircraftState tmp178_177 = ((FlightModelMain) (super.FM)).AS;
+                if(FM.AS.isMaster())
+                    FM.AS.netToMirrors(20, FM.AS.astateBailoutStep, 1, null);
+                AircraftState tmp178_177 = FM.AS;
                 tmp178_177.astateBailoutStep = (byte)(tmp178_177.astateBailoutStep + 1);
-                if(((FlightModelMain) (super.FM)).AS.astateBailoutStep == 4)
-                    ((FlightModelMain) (super.FM)).AS.astateBailoutStep = 11;
+                if(FM.AS.astateBailoutStep == 4)
+                    FM.AS.astateBailoutStep = 11;
             } else
-            if(((FlightModelMain) (super.FM)).AS.astateBailoutStep >= 11 && ((FlightModelMain) (super.FM)).AS.astateBailoutStep <= 19)
+            if(FM.AS.astateBailoutStep >= 11 && FM.AS.astateBailoutStep <= 19)
             {
-                int i = ((FlightModelMain) (super.FM)).AS.astateBailoutStep;
-                if(((FlightModelMain) (super.FM)).AS.isMaster())
-                    ((FlightModelMain) (super.FM)).AS.netToMirrors(20, ((FlightModelMain) (super.FM)).AS.astateBailoutStep, 1, null);
-                AircraftState tmp383_382 = ((FlightModelMain) (super.FM)).AS;
+                int i = FM.AS.astateBailoutStep;
+                if(FM.AS.isMaster())
+                    FM.AS.netToMirrors(20, FM.AS.astateBailoutStep, 1, null);
+                AircraftState tmp383_382 = FM.AS;
                 tmp383_382.astateBailoutStep = (byte)(tmp383_382.astateBailoutStep + 1);
                 if(i == 11)
                 {
@@ -1088,11 +1095,11 @@ public class MIG_21 extends Scheme1
                     if((super.FM instanceof Maneuver) && ((Maneuver)super.FM).get_maneuver() != 44)
                     {
                         World.cur();
-                        if(((FlightModelMain) (super.FM)).AS.actor != World.getPlayerAircraft())
+                        if(FM.AS.actor != World.getPlayerAircraft())
                             ((Maneuver)super.FM).set_maneuver(44);
                     }
                 }
-                if(((FlightModelMain) (super.FM)).AS.astatePilotStates[i - 11] < 99)
+                if(FM.AS.astatePilotStates[i - 11] < 99)
                 {
                     doRemoveBodyFromPlane(i - 10);
                     if(i == 11)
@@ -1100,11 +1107,11 @@ public class MIG_21 extends Scheme1
                         doEjectCatapult();
                         hierMesh().chunkVisible("Glass_Head1_D0", false);
                         super.FM.setTakenMortalDamage(true, null);
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[0] = false;
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[1] = false;
-                        ((FlightModelMain) (super.FM)).AS.astateBailoutStep = -1;
+                        FM.CT.WeaponControl[0] = false;
+                        FM.CT.WeaponControl[1] = false;
+                        FM.AS.astateBailoutStep = -1;
                         overrideBailout = false;
-                        ((FlightModelMain) (super.FM)).AS.bIsAboutToBailout = true;
+                        FM.AS.bIsAboutToBailout = true;
                         ejectComplete = true;
                     }
                 }
@@ -1113,7 +1120,7 @@ public class MIG_21 extends Scheme1
 
     private final void doRemoveBlister1()
     {
-        if(hierMesh().chunkFindCheck("Blister1_D0") != -1 && ((FlightModelMain) (super.FM)).AS.getPilotHealth(0) > 0.0F)
+        if(hierMesh().chunkFindCheck("Blister1_D0") != -1 && FM.AS.getPilotHealth(0) > 0.0F)
         {
             hierMesh().hideSubTrees("Blister1_D0");
             if(!bHasSK1Seat)
@@ -1121,7 +1128,7 @@ public class MIG_21 extends Scheme1
                 Wreckage localWreckage = new Wreckage(this, hierMesh().chunkFind("Blister1_D0"));
                 localWreckage.collide(false);
                 Vector3d localVector3d = new Vector3d();
-                localVector3d.set(((FlightModelMain) (super.FM)).Vwld);
+                localVector3d.set(FM.Vwld);
                 localWreckage.setSpeed(localVector3d);
             }
         }
@@ -1130,7 +1137,7 @@ public class MIG_21 extends Scheme1
     private final void doRemoveBlisters()
     {
         for(int i = 2; i < 10; i++)
-            if(hierMesh().chunkFindCheck("Blister" + i + "_D0") != -1 && ((FlightModelMain) (super.FM)).AS.getPilotHealth(i - 1) > 0.0F)
+            if(hierMesh().chunkFindCheck("Blister" + i + "_D0") != -1 && FM.AS.getPilotHealth(i - 1) > 0.0F)
             {
                 hierMesh().hideSubTrees("Blister" + i + "_D0");
                 if(!bHasSK1Seat)
@@ -1138,7 +1145,7 @@ public class MIG_21 extends Scheme1
                     Wreckage localWreckage = new Wreckage(this, hierMesh().chunkFind("Blister" + i + "_D0"));
                     localWreckage.collide(false);
                     Vector3d localVector3d = new Vector3d();
-                    localVector3d.set(((FlightModelMain) (super.FM)).Vwld);
+                    localVector3d.set(FM.Vwld);
                     localWreckage.setSpeed(localVector3d);
                 }
             }
