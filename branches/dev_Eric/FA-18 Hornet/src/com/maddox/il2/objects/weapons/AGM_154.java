@@ -412,8 +412,8 @@ public class AGM_154 extends RocketBomb
         Property.set(class1, "emitMax", 0.0F);
         Property.set(class1, "radius", 250F);
         Property.set(class1, "timeLife", 60F);
-        Property.set(class1, "timeFire", 3F);
-        Property.set(class1, "force", 2.0F);
+        Property.set(class1, "timeFire", 5F);
+        Property.set(class1, "force", 20.0F);
         Property.set(class1, "power", 500F);
         Property.set(class1, "powerType", 0);
         Property.set(class1, "kalibr", 1.34F);

@@ -19,6 +19,6 @@ public class Pylon18Twin extends PylonRO_82_1
 
     static 
     {
-        Property.set((Object)com.maddox.il2.objects.weapons.Pylon18Twin.class, "mesh", "3DO/Arms/Pylon18T/mono.sim");
+        Property.set((Object)com.maddox.il2.objects.weapons.Pylon18Twin.class, "mesh", "3DO/Arms/Pylon18Twin/mono.sim");
     }
 }
