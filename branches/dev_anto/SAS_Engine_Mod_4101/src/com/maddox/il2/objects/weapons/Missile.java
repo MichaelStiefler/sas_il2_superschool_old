@@ -2,50 +2,47 @@
 // Author:           Storebror
 package com.maddox.il2.objects.weapons;
 
+import java.io.IOException;
+import java.security.SecureRandom;
+
 import com.maddox.JGP.Color3f;
-import com.maddox.JGP.Vector3d;
+import com.maddox.JGP.Geom;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Point3f;
-import com.maddox.JGP.Geom;
-import com.maddox.il2.ai.World;
-import com.maddox.il2.ai.EventLog;
+import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.RangeRandom;
+import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Pilot;
-import com.maddox.il2.ai.ground.Predator;
-import com.maddox.il2.engine.BulletProperties;
-import com.maddox.il2.engine.Engine;
-import com.maddox.il2.engine.Eff3DActor;
-import com.maddox.il2.engine.Orient;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorNet;
+import com.maddox.il2.engine.BulletProperties;
 import com.maddox.il2.engine.Config;
+import com.maddox.il2.engine.Eff3DActor;
+import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.Hook;
 import com.maddox.il2.engine.LightPointActor;
 import com.maddox.il2.engine.LightPointWorld;
+import com.maddox.il2.engine.Orient;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.RealFlightModel;
-import com.maddox.il2.game.HUD;
-import com.maddox.il2.game.Selector;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.game.NetSafeLog;
+import com.maddox.il2.game.Selector;
 import com.maddox.il2.objects.ActorSimpleMesh;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.TypeFighter;
 import com.maddox.il2.objects.air.TypeGuidedMissileCarrier;
-import com.maddox.rts.Time;
+import com.maddox.rts.Message;
+import com.maddox.rts.NetChannel;
+import com.maddox.rts.NetMsgFiltered;
+import com.maddox.rts.NetMsgInput;
+import com.maddox.rts.NetMsgSpawn;
+import com.maddox.rts.NetObj;
+import com.maddox.rts.NetSpawn;
+import com.maddox.rts.NetUpdate;
 import com.maddox.rts.ObjState;
 import com.maddox.rts.Property;
-import com.maddox.rts.NetChannel;
-import com.maddox.rts.NetMsgSpawn;
-import com.maddox.rts.NetSpawn;
-import com.maddox.rts.NetMsgInput;
-import com.maddox.rts.NetObj;
-import com.maddox.rts.Message;
-import com.maddox.rts.NetMsgFiltered;
-import com.maddox.rts.NetUpdate;
-import java.io.IOException;
-//import java.text.DecimalFormat; // only required for debugging
-import java.security.SecureRandom;
+import com.maddox.rts.Time;
 
 public class Missile extends Rocket {
   
@@ -78,7 +75,6 @@ public class Missile extends Rocket {
   private float prevd = 0.0F;
   private float deltaAzimuth = 0.0F;
   private float deltaTangage = 0.0F;
-  private double d = 0.0D;
   private Actor victim = null;
   private float fMissileBaseSpeed = 0.0F;
   private double launchKren = 0.0D;
@@ -92,7 +88,6 @@ public class Missile extends Rocket {
   private boolean flameActive = true;
   private boolean smokeActive = true;
   private boolean spriteActive = true;
-  private int iCounter = 0;
   private int iStepMode = 0;
   private float fMaxFOVfrom = 0.0F;
   private float fLeadPercent = 0.0F; // 0 means tail chasing, 100 means full lead tracking
@@ -195,7 +190,7 @@ public class Missile extends Rocket {
     if (this.iExhausts < 2) {
       if (smoke != null)
         Eff3DActor.setIntesity(smoke, theIntensity);
-    } else {
+    } else if (this.smokes != null) { // SAS Engine Mod 2.6 Hotfix: Check if no smokes have been defined.
       for (int i=0; i<this.iExhausts; i++) {
         if (this.smokes[i] == null) continue;
         Eff3DActor.setIntesity(this.smokes[i], theIntensity);
@@ -207,7 +202,7 @@ public class Missile extends Rocket {
     if (this.iExhausts < 2) {
       if (smoke != null)
         Eff3DActor.finish(smoke);
-    } else {
+    } else if (this.smokes != null) { // SAS Engine Mod 2.6 Hotfix: Check if no smokes have been defined.
       for (int i=0; i<this.iExhausts; i++) {
         if (this.smokes[i] == null) continue;
         Eff3DActor.finish(this.smokes[i]);
@@ -220,7 +215,7 @@ public class Missile extends Rocket {
     if (this.iExhausts < 2) {
       if (flame != null)
         ObjState.destroy(flame);
-    } else {
+    } else if (this.flames != null) { // SAS Engine Mod 2.6 Hotfix: Check if no flames have been defined.
       for (int i=0; i<this.iExhausts; i++) {
         if (this.flames[i] == null) continue;
         ObjState.destroy(this.flames[i]);
@@ -238,7 +233,7 @@ public class Missile extends Rocket {
     if (this.iExhausts < 2) {
       if (sprite != null)
         Eff3DActor.setIntesity(sprite, theIntensity);
-    } else {
+    } else if (this.sprites != null) { // SAS Engine Mod 2.6 Hotfix: Check if no sprites have been defined.
       for (int i=0; i<this.iExhausts; i++) {
         if (this.sprites[i] == null) continue;
         Eff3DActor.setIntesity(this.sprites[i], theIntensity);
@@ -251,7 +246,7 @@ public class Missile extends Rocket {
     if (this.iExhausts < 2) {
       if (sprite != null)
         Eff3DActor.finish(sprite);
-    } else {
+    } else if (this.sprites != null) { // SAS Engine Mod 2.6 Hotfix: Check if no sprites have been defined.
       for (int i=0; i<this.iExhausts; i++) {
         if (this.sprites[i] == null) continue;
         Eff3DActor.finish(this.sprites[i]);
@@ -738,8 +733,6 @@ public class Missile extends Rocket {
           }
         }
 
-        this.iCounter++;
-
         if (Time.current() > this.tStart + (long)this.lTrackDelay) {
         float turnStepMax = MissilePhysics.getDegPerSec(/*this.fMissileMaxSpeed*/ fSpeed, this.fMaxG) * fTick * MissilePhysics.getAirDensityFactor((float)this.p.z); // turn limit, results in 12G accelleration at Mach 1.7
         float turnDiffMax = turnStepMax / (float)this.fStepsForFullTurn; // turn rate change limit, smoothen the turns.
@@ -960,7 +953,6 @@ public class Missile extends Rocket {
   }
 
   public final void MissileInit() {
-    this.d = 0.10000000000000001D;
     this.victim = null;
     this.tStart = 0L;
     this.prevd = 1000F;
@@ -987,7 +979,6 @@ public class Missile extends Rocket {
         this.setOwner(actor);
       }
     }
-    this.d = 0.10000000000000001D;
     this.victim = null;
     this.tStart = 0L;
     this.prevd = 1000F;
@@ -1068,7 +1059,6 @@ public class Missile extends Rocket {
 
   private void getMissileProperties() {
     Class localClass = super.getClass();
-    float f = Time.tickLenFs();
     this.iLaunchType = Property.intValue(localClass, "launchType", 0);
     this.iStepMode = Property.intValue(localClass, "stepMode", 0);
     this.fMaxFOVfrom = Property.floatValue(localClass, "maxFOVfrom", 180F);
