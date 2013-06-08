@@ -17,6 +17,7 @@ import com.maddox.il2.objects.ships.Ship;
 import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.rts.*;
 
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
@@ -292,7 +293,7 @@ public class HARM extends JDAM84
         for(int j = 0; j < i; j++)
         {
             Actor actor1 = (Actor)list.get(j);
-            if((actor1 instanceof TgtFlak) || (actor1 instanceof BridgeSegment))
+            if((actor1 instanceof TgtFlak))
             {
                 Point3d point3d = new Point3d();
                 Point3d point3d1 = actor1.pos.getAbsPoint();

@@ -524,6 +524,7 @@ public class F_18 extends Scheme2
         else
             hierMesh().chunkVisible("HMask1_D0", hierMesh().isChunkVisible("Pilot1_D0"));
         if((!super.FM.isPlayers() || !(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode()) && (super.FM instanceof Maneuver))
+        {
             if(((FlightModelMain) (super.FM)).AP.way.isLanding() && super.FM.getSpeed() > ((FlightModelMain) (super.FM)).VmaxFLAPS && super.FM.getSpeed() > ((FlightModelMain) (super.FM)).AP.way.curr().getV() * 1.4F)
             {
                 if(((FlightModelMain) (super.FM)).CT.AirBrakeControl != 1.0F)
@@ -551,7 +552,19 @@ public class F_18 extends Scheme2
                     ((FlightModelMain) (super.FM)).CT.AirBrakeControl = 0.0F;
             } else
             if(((Maneuver)super.FM).get_maneuver() == 7 && ((FlightModelMain) (super.FM)).CT.AirBrakeControl != 1.0F)
-                ((FlightModelMain) (super.FM)).CT.AirBrakeControl = 1.0F; 
+                ((FlightModelMain) (super.FM)).CT.AirBrakeControl = 1.0F;  
+        if(((com.maddox.il2.ai.air.Maneuver)super.FM).get_task() == 7)
+        {
+        com.maddox.JGP.Vector3d vector3d = new Vector3d();
+        getSpeed(vector3d);
+        com.maddox.JGP.Point3d point3d1 = new Point3d();
+        pos.getAbs(point3d1);        
+        float alt = (float)(FM.getAltitude() - com.maddox.il2.ai.World.land().HQ(point3d1.x, point3d1.y));        
+        if(alt < 15 && vector3d.z < 0)
+            vector3d.z = 0;
+        setSpeed(vector3d);        
+        }
+        }
         if(FLIR)
             FLIR();
     }
@@ -1569,21 +1582,21 @@ public class F_18 extends Scheme2
             hierMesh().chunkSetAngles("SlatLOut_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, -30.5F), 0.0F);
             hierMesh().chunkSetAngles("SlatROut_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, -30.5F), 0.0F);
         }
-        if(FM.CT.getGear() > 0.5F && ((FlightModelMain) (super.FM)).Gears.onGround() && !((FlightModelMain) (super.FM)).AP.way.isLanding() && (((FlightModelMain) (super.FM)).CT.getElevator() <= 0.1F && ((FlightModelMain) (super.FM)).CT.getElevator() >= -0.1F))
+        if(FM.CT.getGear() > 0.2F && ((FlightModelMain) (super.FM)).Gears.onGround() && !((FlightModelMain) (super.FM)).AP.way.isLanding() && (((FlightModelMain) (super.FM)).CT.getElevator() <= 0.1F && ((FlightModelMain) (super.FM)).CT.getElevator() >= -0.1F))
         {	
         	((FlightModelMain) (super.FM)).CT.BlownFlapsControl = 1.0F;
         	((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(0.5F);
         } else
-        if(FM.CT.getGear() < 0.9F && FM.CT.getGear() > 0.8F)
+        if(FM.CT.getGear() > 0.2F && !((FlightModelMain) (super.FM)).Gears.onGround() && super.FM.getSpeedKMH() > 490 && super.FM.getSpeedKMH() > 590)
         {
         	((FlightModelMain) (super.FM)).CT.BlownFlapsControl = 0.0F;
         	((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(0F);
-        }	
-        if(FM.CT.getGear() < 0.2F || super.FM.getSpeedKMH() > 590)
+        }		
+        if(FM.CT.getGear() < 0.8F || super.FM.getSpeedKMH() > 590)
         {
-        	if(((FlightModelMain) (super.FM)).CT.FlapsControl > 0.16F)
+        	if(((FlightModelMain) (super.FM)).CT.FlapsControl > 0.18F)
         	{
-        		((FlightModelMain) (super.FM)).CT.FlapsControl = 0.16F;
+        		((FlightModelMain) (super.FM)).CT.FlapsControl = 0.18F;
         	} else
         		if(super.FM.getAOA()>5 && super.FM.getSpeedKMH() > 500)
             	{
