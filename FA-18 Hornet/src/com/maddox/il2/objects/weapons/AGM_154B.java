@@ -9,10 +9,10 @@ import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.TypeX4Carrier;
 import com.maddox.il2.objects.bridges.BridgeSegment;
 import com.maddox.il2.objects.sounds.SndAircraft;
-import com.maddox.il2.objects.weapons.JDAM84.Master;
-import com.maddox.il2.objects.weapons.JDAM84.Mirror;
+import com.maddox.il2.objects.weapons.AGM_154B.Master;
+import com.maddox.il2.objects.weapons.AGM_154B.Mirror;
 import com.maddox.rts.*;
-
+import com.maddox.il2.ai.World;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
 // Referenced classes of package com.maddox.il2.objects.weapons:
 //            RocketBomb
 
-public class JDAM84 extends RocketBomb
+public class AGM_154B extends RocketBomb
 {
     static class SPAWN
         implements NetSpawn
@@ -37,7 +37,7 @@ public class JDAM84 extends RocketBomb
                 Point3d point3d = new Point3d(netmsginput.readFloat(), netmsginput.readFloat(), netmsginput.readFloat());
                 Orient orient = new Orient(netmsginput.readFloat(), netmsginput.readFloat(), 0.0F);
                 float f = netmsginput.readFloat();
-                JDAM84 JDAM84 = new JDAM84(actor, netmsginput.channel(), i, point3d, orient, f);
+                AGM_154B AGM_154B = new AGM_154B(actor, netmsginput.channel(), i, point3d, orient, f);
             }
             catch(Exception exception)
             {
@@ -88,10 +88,10 @@ public class JDAM84 extends RocketBomb
                 out.unLockAndSet(netmsginput, 0);
                 postReal(Message.currentTime(true), out);
             }
-            JDAM84.v.x = netmsginput.readFloat();
-            JDAM84.v.y = netmsginput.readFloat();
-            JDAM84.v.z = netmsginput.readFloat();
-            setSpeed(JDAM84.v);
+            AGM_154B.v.x = netmsginput.readFloat();
+            AGM_154B.v.y = netmsginput.readFloat();
+            AGM_154B.v.z = netmsginput.readFloat();
+            setSpeed(AGM_154B.v);
             return true;
         }
 
@@ -143,10 +143,10 @@ public class JDAM84 extends RocketBomb
             try
             {
                 out.unLockAndClear();
-                getSpeed(JDAM84.v);
-                out.writeFloat((float)JDAM84.v.x);
-                out.writeFloat((float)JDAM84.v.y);
-                out.writeFloat((float)JDAM84.v.z);
+                getSpeed(AGM_154B.v);
+                out.writeFloat((float)AGM_154B.v.x);
+                out.writeFloat((float)AGM_154B.v.y);
+                out.writeFloat((float)AGM_154B.v.z);
                 post(Time.current(), out);
             }
             catch(Exception exception)
@@ -167,7 +167,12 @@ public class JDAM84 extends RocketBomb
 
     public boolean interpolateStep()
     {
-        float f = Time.tickLenFs();
+    	if(!popped && Time.current() > tStart + 400L)
+        {
+            setMesh("3DO/Arms/A154D/mono.sim");
+            popped = true;
+        }
+    	float f = Time.tickLenFs();
         super.pos.getAbs(p, or);
         if(first)
             first = false;
@@ -186,7 +191,7 @@ public class JDAM84 extends RocketBomb
                 if(((Tuple3d) (point3d)).x > -10D)
                 {
                     double d;
-                    if((target instanceof TgtVehicle) || (target instanceof TgtTank) || (target instanceof TgtTrain))
+                    if((target instanceof TgtTank))
                         d = Aircraft.cvt(((FlightModelMain) (fm)).Skill, 0.0F, 3F, 4F / targetRCSMax, 1.0F / targetRCSMax);
                     else
                         d = Aircraft.cvt(((FlightModelMain) (fm)).Skill, 0.0F, 3F, 20F, 4F);
@@ -199,6 +204,8 @@ public class JDAM84 extends RocketBomb
                     if(((Tuple3d) (point3d)).z > d)
                         ((TypeX4Carrier)((Interpolate) (fm)).actor).typeX4CAdjAttitudePlus();
                 }
+                if((target instanceof TgtTank) && target.pos.getAbsPoint().distance(pos.getAbsPoint()) < 250D)
+                	doFireContaineds();
             }
             getSpeed(RocketBomb.spd);
             float f1 = (float)RocketBomb.spd.length();
@@ -230,16 +237,17 @@ public class JDAM84 extends RocketBomb
         }
     }
 
-    public JDAM84()
+    public AGM_154B()
     {
         first = true;
         targetRCSMax = 0.0F;
         fm = null;
         tStart = 0L;
         prevd = 1000F;
+        popped = false;
     }
 
-    public JDAM84(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f)
+    public AGM_154B(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f)
     {
         first = true;
         targetRCSMax = 0.0F;
@@ -277,6 +285,8 @@ public class JDAM84 extends RocketBomb
     {
         super.start(-1F);
         tStart = Time.current();
+        t1 = Time.current() + 1000L;
+        charge = 0;
         super.pos.getAbs(p, or);
         or.setYPR(or.getYaw(), or.getPitch(), 0.0F);
         super.pos.setAbs(p, or);
@@ -288,7 +298,7 @@ public class JDAM84 extends RocketBomb
         for(int j = 0; j < i; j++)
         {
             Actor actor1 = (Actor)list.get(j);
-            if((actor1 instanceof TgtVehicle) || (actor1 instanceof TgtTank) || (actor1 instanceof TgtTrain) || (actor1 instanceof BridgeSegment))
+            if((actor1 instanceof TgtTank))
             {
                 Point3d point3d = new Point3d();
                 Point3d point3d1 = actor1.pos.getAbsPoint();
@@ -309,7 +319,10 @@ public class JDAM84 extends RocketBomb
         }
 
         target = actor;
+        
     }
+    
+  
 
     private float antennaPattern(Point3d point3d, Actor actor)
     {
@@ -326,7 +339,7 @@ public class JDAM84 extends RocketBomb
             d = (Math.cos(f1) * Math.cos(f3)) / (double)(f * f);
         else
             d = 0.0D;
-        if(d > 0.0D && (actor instanceof TgtVehicle) || (actor instanceof TgtTank) || (actor instanceof TgtTrain))
+        if(d > 0.0D && actor instanceof TgtTank)
         {
             float f4 = estimateRCS(actor);
             d *= f4;
@@ -340,7 +353,7 @@ public class JDAM84 extends RocketBomb
         f = actor.collisionR();
         if(f < 5F)
             f = 5F;
-        return f / 40F;
+        return f / 40F;       
     }
 
     public void destroy()
@@ -355,6 +368,38 @@ public class JDAM84 extends RocketBomb
         super.pos.getTime(Time.current(), p);
         MsgExplosion.send(null, null, p, getOwner(), 45F, 2.0F, 1, 550F);
         super.doExplosionAir();
+    }
+    
+    public void msgCollision(Actor actor, String s, String s1)
+    {
+        if(t1 > Time.current())
+            doFireContaineds();
+        super.msgCollision(actor, s, s1);
+    }
+    
+    private void doFireContaineds()
+    {
+        Actor actor = null;
+        if(Actor.isValid(getOwner()))
+            actor = getOwner();
+        Point3d point3d = new Point3d(pos.getAbsPoint());
+        Orient orient = new Orient();
+        Vector3d vector3d = new Vector3d();
+        for(int i = 0; i < 7; i++)
+        {
+            orient.set(World.Rnd().nextFloat(0.0F, 360F), World.Rnd().nextFloat(-90F, 90F), World.Rnd().nextFloat(-180F, 180F));
+            getSpeed(vector3d);
+            vector3d.add(World.Rnd().nextDouble(-15D, 15D), World.Rnd().nextDouble(-15D, 15D), World.Rnd().nextDouble(-35D, 35D));
+            BombBLU_108 BombBLU_108 = new BombBLU_108();
+            ((Bomb) (BombBLU_108)).pos.setUpdateEnable(true);
+            ((Bomb) (BombBLU_108)).pos.setAbs(point3d, orient);
+            ((Bomb) (BombBLU_108)).pos.reset();
+            BombBLU_108.start();
+            BombBLU_108.setOwner(actor, false, false, false);
+            BombBLU_108.setSpeed(vector3d);
+        }
+        t1 = Time.current() + 10000L;
+        postDestroy();
     }
 
     public NetMsgSpawn netReplicate(NetChannel netchannel)
@@ -389,23 +434,26 @@ public class JDAM84 extends RocketBomb
     private static Actor hunted = null;
     private long tStart;
     private float prevd;
-    private static double azimuthControlScaleFact = 0.90500000000000003D;
-    private static double tangageControlScaleFact = 0.90500000000000003D;
+    private static double azimuthControlScaleFact = 0.91000000000000003D;
+    private static double tangageControlScaleFact = 0.91000000000000003D;
     private boolean first;
     private float targetRCSMax;
+    private boolean popped;
+    private long t1;
+    private int charge;
 
     static 
     {
-        Class class1 = com.maddox.il2.objects.weapons.JDAM84.class;
-        Property.set(class1, "mesh", "3DO/Arms/JDAM/mono.sim");
+        Class class1 = com.maddox.il2.objects.weapons.AGM_154B.class;
+        Property.set(class1, "mesh", "3DO/Arms/A154/mono.sim");
         Property.set(class1, "sound", "weapon.bomb_big");
         Property.set(class1, "emitLen", 0.0F);
         Property.set(class1, "emitMax", 0.0F);
         Property.set(class1, "radius", 250F);
         Property.set(class1, "timeLife", 60F);
-        Property.set(class1, "timeFire", 3F);
-        Property.set(class1, "force", 2.0F);
-        Property.set(class1, "power", 1000F);
+        Property.set(class1, "timeFire", 5F);
+        Property.set(class1, "force", 20.0F);
+        Property.set(class1, "power", 500F);
         Property.set(class1, "powerType", 0);
         Property.set(class1, "kalibr", 1.34F);
         Property.set(class1, "massa", 1000F);

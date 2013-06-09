@@ -99,6 +99,7 @@ public class F_18S extends Scheme2
         fSightCurAltitude = 3000F;
         fSightCurSpeed = 200F;
         fSightCurReadyness = 0.0F;
+        trimauto = false;
     }
     
     private static final float toMeters(float f)
@@ -1498,19 +1499,27 @@ public class F_18S extends Scheme2
             hierMesh().chunkSetAngles("SlatRIn_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, -30.5F), 0.0F);
             hierMesh().chunkSetAngles("SlatLOut_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, -30.5F), 0.0F);
             hierMesh().chunkSetAngles("SlatROut_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, -30.5F), 0.0F);
-        }
-        
-        if(FM.CT.getGear() > 0.2F && ((FlightModelMain) (super.FM)).Gears.onGround() && !((FlightModelMain) (super.FM)).AP.way.isLanding() && (((FlightModelMain) (super.FM)).CT.getElevator() <= 0.1F && ((FlightModelMain) (super.FM)).CT.getElevator() >= -0.1F))
+        }        
+        if(FM.CT.getGear() > 0.2F && ((FlightModelMain) (super.FM)).Gears.onGround() && !((FlightModelMain) (super.FM)).AP.way.isLanding())
         {	
         	((FlightModelMain) (super.FM)).CT.BlownFlapsControl = 1.0F;
+        	if(trimauto == false)
+        	{
         	((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(0.5F);
-        } else
-        if(FM.CT.getGear() > 0.2F && !((FlightModelMain) (super.FM)).Gears.onGround() && super.FM.getSpeedKMH() > 490 && super.FM.getSpeedKMH() > 590)
+        	trimauto = true;
+        	}
+        }
+        if(FM.CT.getGear() > 0.2F && !((FlightModelMain) (super.FM)).Gears.onGround() && trimauto == true)
         {
         	((FlightModelMain) (super.FM)).CT.BlownFlapsControl = 0.0F;
-        	((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(0F);
+        	((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(0.2F);
+        	trimauto = false;
         }	
-        
+        if(super.FM.getSpeedKMH() > 500 && !((FlightModelMain) (super.FM)).Gears.onGround() && trimauto == false)
+        {
+        	((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(0F);
+        	trimauto = true;
+        }
         if(FM.CT.getGear() < 0.8F || super.FM.getSpeedKMH() > 590)
         {
         	if(((FlightModelMain) (super.FM)).CT.FlapsControl > 0.16F)
@@ -1909,6 +1918,7 @@ public class F_18S extends Scheme2
     public float fSightCurAltitude;
     public float fSightCurSpeed;
     public float fSightCurReadyness;
+    public boolean trimauto;
 
     static 
     {
