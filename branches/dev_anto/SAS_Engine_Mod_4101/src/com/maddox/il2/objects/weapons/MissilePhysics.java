@@ -41,7 +41,7 @@ public class MissilePhysics {
 
   public static float getCwFactorForMach(float theMachValue) {
     int i = 0;
-    for (i = 0; i < fMachCwX.length; i++) {
+    for (i = 0; i < fMachCwX.length - 1; i++) { // Fix 2013/06/09: Check n-1 elements only, so when loop falls through we're on last element and don't exceed array boundaries
       if (fMachCwX[i] > theMachValue) {
         break;
       }
@@ -60,7 +60,7 @@ public class MissilePhysics {
   public static float getMachForAlt(float theAltValue) {
     theAltValue /= 1000F; // get altitude in km
     int i = 0;
-    for (i = 0; i < fMachAltX.length; i++) {
+    for (i = 0; i < fMachAltX.length - 1; i++) { // Fix 2013/06/09: Check n-1 elements only, so when loop falls through we're on last element and don't exceed array boundaries
       if (fMachAltX[i] > theAltValue) {
         break;
       }
