@@ -58,6 +58,22 @@ public abstract class JetEraStatic
         {
         }
     }
+    
+    public static class F_86D40 extends PlaneGeneric
+    {
+
+        public F_86D40()
+        {
+        }
+    }
+    
+    public static class F_86D45 extends PlaneGeneric
+    {
+
+        public F_86D45()
+        {
+        }
+    }
 
     public static class F_86F_25E extends PlaneGeneric
     {
@@ -138,6 +154,14 @@ public abstract class JetEraStatic
         {
         }
     }
+    
+    public static class TU_4 extends PlaneGeneric
+    {
+
+        public TU_4()
+        {
+        }
+    }
 
 
     public JetEraStatic()
@@ -148,6 +172,8 @@ public abstract class JetEraStatic
     {
         new PlaneGeneric.SPAWN(A1H_Tanker.class);
         new PlaneGeneric.SPAWN(F_86A5.class);
+        new PlaneGeneric.SPAWN(F_86D40.class);
+        new PlaneGeneric.SPAWN(F_86D45.class);
         new PlaneGeneric.SPAWN(F_86E_10.class);
         new PlaneGeneric.SPAWN(F_86F_25E.class);
         new PlaneGeneric.SPAWN(F_86F_25L.class);
@@ -162,5 +188,6 @@ public abstract class JetEraStatic
         new PlaneGeneric.SPAWN(Mig_17A.class);
         new PlaneGeneric.SPAWN(Mig_17F.class);
         new PlaneGeneric.SPAWN(Mig_17PF.class);
+        new PlaneGeneric.SPAWN(TU_4.class);
     }
 }
