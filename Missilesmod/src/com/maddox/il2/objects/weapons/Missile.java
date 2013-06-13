@@ -364,7 +364,7 @@ public class Missile extends Rocket {
   //TODO: For Countermeasures:
 	
     int lockType = ((TypeGuidedMissileCarrier) getOwner()).getGuidedMissileUtils().getDetectorType();
-    int lockTime = 900 + (int)(Math.random()*2000);
+    int lockTime = 970 + (int)(Math.random()*2000);
   	double flare1Distance = 0.0D;
   	double victim1Distance = 0.0D;
   	List list1 = Engine.countermeasures();
@@ -373,10 +373,10 @@ public class Missile extends Rocket {
   		Actor flarechaff = (Actor) list1.get(t);
   		flare1Distance = GuidedMissileUtils.distanceBetween(this, flarechaff);
   		victim1Distance = GuidedMissileUtils.distanceBetween(this, victim);
-  		if(lockType == 1 && flarechaff instanceof com.maddox.il2.objects.weapons.RocketFlare &&  lFlareLockTime < lockTime && flare1Distance < 200D && (double) (GuidedMissileUtils.angleActorBetween(victim, this)) > 15)
+  		if(lockType == 1 && flarechaff instanceof com.maddox.il2.objects.weapons.RocketFlare &&  lFlareLockTime < lockTime && flare1Distance < 1000D && (double) (GuidedMissileUtils.angleActorBetween(this, flarechaff)) < 30)
   		{
   			victim = flarechaff;
-  		} else { if(flarechaff instanceof com.maddox.il2.objects.weapons.BombletChaffF &&  lFlareLockTime < lockTime && flare1Distance < 500D && (double) (GuidedMissileUtils.angleActorBetween(victim, this)) > 15)
+  		} else { if(flarechaff instanceof com.maddox.il2.objects.weapons.BombletChaffF &&  lFlareLockTime < lockTime && flare1Distance < 10000D && (double) (GuidedMissileUtils.angleActorBetween(this, flarechaff)) < 50)
   			victim = flarechaff;
   		}
   	}
