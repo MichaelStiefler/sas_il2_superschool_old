@@ -30,7 +30,7 @@ import java.util.List;
 //            PaintScheme, EjectionSeat
 
 public class F_18S extends Scheme2
-    implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeX4Carrier, TypeGuidedBombCarrier, TypeBomber
+    implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeX4Carrier, TypeGuidedBombCarrier, TypeBomber, TypeAcePlane
 {
 
     public float getDragForce(float f, float f1, float f2, float f3)
@@ -389,6 +389,7 @@ public class F_18S extends Scheme2
         actl = ((FlightModelMain) (super.FM)).SensRoll;
         ectl = ((FlightModelMain) (super.FM)).SensPitch;
         rctl = ((FlightModelMain) (super.FM)).SensYaw;
+        FM.Skill = 3;
     }
 
     public void updateLLights()
@@ -1418,9 +1419,9 @@ public class F_18S extends Scheme2
         }
         if(((FlightModelMain) (super.FM)).AS.isMaster() && Config.isUSE_RENDER())
         {
-            if(((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput() > 0.95F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6)
+            if(((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput() > 0.91F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6)
             {
-                if(((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput() > 1.05F)
+                if(((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput() > 1.01F)
                     ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 5);
                 else
                     ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 3);
@@ -1429,9 +1430,9 @@ public class F_18S extends Scheme2
                 ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 0);
             }
             setExhaustFlame(Math.round(Aircraft.cvt(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput(), 0.7F, 0.87F, 0.0F, 12F)), 0);
-            if(((FlightModelMain) (super.FM)).EI.engines[1].getPowerOutput() > 0.95F && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() == 6)
+            if(((FlightModelMain) (super.FM)).EI.engines[1].getPowerOutput() > 0.91F && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() == 6)
             {
-                if(((FlightModelMain) (super.FM)).EI.engines[1].getPowerOutput() > 1.05F)
+                if(((FlightModelMain) (super.FM)).EI.engines[1].getPowerOutput() > 1.01F)
                     ((FlightModelMain) (super.FM)).AS.setSootState(this, 1, 5);
                 else
                     ((FlightModelMain) (super.FM)).AS.setSootState(this, 1, 3);
