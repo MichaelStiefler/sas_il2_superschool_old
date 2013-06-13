@@ -77,7 +77,7 @@ public class MissileAIM7M extends Missile
         Property.set(class1, "targetType", 1);
         Property.set(class1, "shotFreq", 1.01F);
         Property.set(class1, "groundTrackFactor", 16F);
-        Property.set(class1, "flareLockTime", 1000L);
+        Property.set(class1, "flareLockTime", 1200L);
         Property.set(class1, "trackDelay", 1500L);
         Property.set(class1, "failureRate", 10F);
         Property.set(class1, "maxLockGForce", 40F);
