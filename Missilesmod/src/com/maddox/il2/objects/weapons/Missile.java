@@ -43,6 +43,7 @@ import com.maddox.rts.NetObj;
 import com.maddox.rts.Message;
 import com.maddox.rts.NetMsgFiltered;
 import com.maddox.rts.NetUpdate;
+import com.maddox.il2.objects.weapons.RocketFlare;
 
 import java.io.IOException;
 //import java.text.DecimalFormat; // only required for debugging
@@ -376,7 +377,9 @@ public class Missile extends Rocket {
   		if(lockType == 1 && flarechaff instanceof com.maddox.il2.objects.weapons.RocketFlare &&  lFlareLockTime < lockTime && flare1Distance < 1000D && (double) (GuidedMissileUtils.angleActorBetween(this, flarechaff)) < 30)
   		{
   			victim = flarechaff;
-  		} else { if(flarechaff instanceof com.maddox.il2.objects.weapons.BombletChaffF &&  lFlareLockTime < lockTime && flare1Distance < 10000D && (double) (GuidedMissileUtils.angleActorBetween(this, flarechaff)) < 50)
+  		}
+  		if(lockType > 1 && flarechaff instanceof com.maddox.il2.objects.weapons.BombletChaffF &&  lFlareLockTime < lockTime && flare1Distance < 10000D && (double) (GuidedMissileUtils.angleActorBetween(this, flarechaff)) < 50)
+  		{ 
   			victim = flarechaff;
   		}
   	}
