@@ -965,7 +965,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[84] = new Aircraft._WeaponSlot(8, "BombGunChaffF", 20);
@@ -999,7 +999,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[84] = new Aircraft._WeaponSlot(8, "BombGunChaffF", 20);
@@ -1033,7 +1033,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[84] = new Aircraft._WeaponSlot(8, "BombGunChaffF", 20);
@@ -1067,7 +1067,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[84] = new Aircraft._WeaponSlot(8, "BombGunChaffF", 20);
@@ -1101,7 +1101,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[84] = new Aircraft._WeaponSlot(7, "BombGunChaffF", 20);
@@ -1135,7 +1135,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -1167,7 +1167,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -1211,7 +1211,7 @@ public class F_18C extends F_18S
             a_lweaponslot[38] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[39] = new Aircraft._WeaponSlot(5, "RocketGunAIM7M", 1);
             a_lweaponslot[40] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -1243,7 +1243,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[42] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M", 1);
             a_lweaponslot[43] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[44] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M", 1);
@@ -1289,7 +1289,7 @@ public class F_18C extends F_18S
             a_lweaponslot[24] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[31] = null;
             a_lweaponslot[32] = null;
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[72] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
@@ -1333,7 +1333,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[42] = new Aircraft._WeaponSlot(2, "RocketGunAIM120A", 1);
             a_lweaponslot[43] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[44] = new Aircraft._WeaponSlot(2, "RocketGunAIM120A", 1);
@@ -1379,7 +1379,7 @@ public class F_18C extends F_18S
             a_lweaponslot[24] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[31] = null;
             a_lweaponslot[32] = null;
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[72] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
@@ -1417,7 +1417,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[56] = new Aircraft._WeaponSlot(2, "RocketGunAIM120A", 1);
@@ -1449,7 +1449,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[56] = new Aircraft._WeaponSlot(2, "RocketGunAIM120A", 1);
@@ -1491,7 +1491,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[56] = new Aircraft._WeaponSlot(2, "RocketGunAIM120A", 1);
@@ -1531,7 +1531,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[56] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L", 1);
@@ -1573,7 +1573,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[56] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
@@ -1613,7 +1613,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[56] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
@@ -1655,7 +1655,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[56] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L", 1);
@@ -1691,7 +1691,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[56] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L", 1);
@@ -1733,7 +1733,7 @@ public class F_18C extends F_18S
             a_lweaponslot[24] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[31] = null;
             a_lweaponslot[32] = null;
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[72] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
@@ -1777,7 +1777,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[42] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L", 1);
             a_lweaponslot[43] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[44] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L", 1);
@@ -1831,7 +1831,7 @@ public class F_18C extends F_18S
             a_lweaponslot[38] = new Aircraft._WeaponSlot(3, "BombGunNull", 1);
             a_lweaponslot[39] = new Aircraft._WeaponSlot(3, "BombGunMk82LGB", 1);
             a_lweaponslot[40] = new Aircraft._WeaponSlot(3, "BombGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -1875,7 +1875,7 @@ public class F_18C extends F_18S
             a_lweaponslot[38] = new Aircraft._WeaponSlot(3, "RocketGunJDAM84", 1);
             a_lweaponslot[39] = new Aircraft._WeaponSlot(3, "BombGunNull", 1);
             a_lweaponslot[40] = new Aircraft._WeaponSlot(3, "RocketGunJDAM84", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -1909,7 +1909,7 @@ public class F_18C extends F_18S
             a_lweaponslot[26] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(2, "RocketGunAGM65", 1);
             a_lweaponslot[28] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -1943,7 +1943,7 @@ public class F_18C extends F_18S
             a_lweaponslot[26] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(2, "RocketGunAGM65", 1);
             a_lweaponslot[28] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -1973,7 +1973,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[42] = new Aircraft._WeaponSlot(2, "RocketGunAGM65", 1);
             a_lweaponslot[43] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[44] = new Aircraft._WeaponSlot(2, "RocketGunAGM65", 1);
@@ -2015,7 +2015,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[42] = new Aircraft._WeaponSlot(2, "RocketGunAGM65", 1);
             a_lweaponslot[43] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[44] = new Aircraft._WeaponSlot(2, "RocketGunAGM65", 1);
@@ -2057,7 +2057,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[46] = new Aircraft._WeaponSlot(6, "RocketGunAGM65", 1);
             a_lweaponslot[47] = new Aircraft._WeaponSlot(6, "RocketGunNull", 1);
             a_lweaponslot[48] = new Aircraft._WeaponSlot(2, "RocketGunAGM65D", 1);
@@ -2095,7 +2095,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[46] = new Aircraft._WeaponSlot(6, "RocketGunAGM65", 1);
             a_lweaponslot[47] = new Aircraft._WeaponSlot(6, "RocketGunNull", 1);
             a_lweaponslot[48] = new Aircraft._WeaponSlot(2, "RocketGunAGM65D", 1);
@@ -2131,7 +2131,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[46] = new Aircraft._WeaponSlot(6, "RocketGunAGM65", 1);
             a_lweaponslot[47] = new Aircraft._WeaponSlot(6, "RocketGunNull", 1);
             a_lweaponslot[48] = new Aircraft._WeaponSlot(2, "RocketGunAGM65D", 1);
@@ -2185,7 +2185,7 @@ public class F_18C extends F_18S
             a_lweaponslot[38] = new Aircraft._WeaponSlot(3, "BombGunNull", 1);
             a_lweaponslot[39] = new Aircraft._WeaponSlot(3, "BombGunMk82LGB", 1);
             a_lweaponslot[40] = new Aircraft._WeaponSlot(3, "BombGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -2231,7 +2231,7 @@ public class F_18C extends F_18S
             a_lweaponslot[38] = new Aircraft._WeaponSlot(3, "RocketGunJDAM84", 1);
             a_lweaponslot[39] = new Aircraft._WeaponSlot(3, "BombGunNull", 1);
             a_lweaponslot[40] = new Aircraft._WeaponSlot(3, "RocketGunJDAM84", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -2277,7 +2277,7 @@ public class F_18C extends F_18S
             a_lweaponslot[38] = new Aircraft._WeaponSlot(3, "BombGunNull", 1);
             a_lweaponslot[39] = new Aircraft._WeaponSlot(3, "BombGunMk82LGB", 1);
             a_lweaponslot[40] = new Aircraft._WeaponSlot(3, "BombGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -2323,7 +2323,7 @@ public class F_18C extends F_18S
             a_lweaponslot[38] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[39] = new Aircraft._WeaponSlot(5, "RocketGunAIM7M", 1);
             a_lweaponslot[40] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -2359,7 +2359,7 @@ public class F_18C extends F_18S
             a_lweaponslot[28] = new Aircraft._WeaponSlot(3, "RocketGunNull", 1);
             a_lweaponslot[31] = null;
             a_lweaponslot[32] = null;
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[72] = new Aircraft._WeaponSlot(3, "BombGunMk83", 1);
@@ -2409,7 +2409,7 @@ public class F_18C extends F_18S
             a_lweaponslot[28] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
             a_lweaponslot[31] = null;
             a_lweaponslot[32] = null;
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[72] = new Aircraft._WeaponSlot(3, "BombGunMk83", 1);
@@ -2457,7 +2457,7 @@ public class F_18C extends F_18S
             a_lweaponslot[28] = new Aircraft._WeaponSlot(3, "RocketGunNull", 1);
             a_lweaponslot[31] = null;
             a_lweaponslot[32] = null;
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[72] = new Aircraft._WeaponSlot(3, "BombGunMk82SnakeEye", 1);
@@ -2507,7 +2507,7 @@ public class F_18C extends F_18S
             a_lweaponslot[28] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
             a_lweaponslot[31] = null;
             a_lweaponslot[32] = null;
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[72] = new Aircraft._WeaponSlot(3, "BombGunMk82SnakeEye", 1);
@@ -2602,7 +2602,7 @@ public class F_18C extends F_18S
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[31] = null;
             a_lweaponslot[32] = null;
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[46] = new Aircraft._WeaponSlot(6, "RocketGunAGM65", 1);
             a_lweaponslot[47] = new Aircraft._WeaponSlot(6, "RocketGunNull", 1);
             a_lweaponslot[48] = new Aircraft._WeaponSlot(2, "RocketGunAGM65D", 1);
@@ -2654,7 +2654,7 @@ public class F_18C extends F_18S
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[31] = null;
             a_lweaponslot[32] = null;
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[46] = new Aircraft._WeaponSlot(6, "RocketGunAGM65", 1);
             a_lweaponslot[47] = new Aircraft._WeaponSlot(6, "RocketGunNull", 1);
             a_lweaponslot[48] = new Aircraft._WeaponSlot(2, "RocketGunAGM65D", 1);
@@ -2706,7 +2706,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[42] = new Aircraft._WeaponSlot(1, "CannonRocketSimpleHYDRA", 4);
             a_lweaponslot[43] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
             a_lweaponslot[44] = new Aircraft._WeaponSlot(1, "CannonRocketSimpleHYDRA", 4);
@@ -2748,7 +2748,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[42] = new Aircraft._WeaponSlot(1, "CannonRocketSimpleHYDRA", 4);
             a_lweaponslot[43] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
             a_lweaponslot[44] = new Aircraft._WeaponSlot(1, "CannonRocketSimpleHYDRA", 4);
@@ -2806,7 +2806,7 @@ public class F_18C extends F_18S
             a_lweaponslot[38] = new Aircraft._WeaponSlot(3, "BombGunNull", 1);
             a_lweaponslot[39] = new Aircraft._WeaponSlot(3, "BombGunMk82LGB", 1);
             a_lweaponslot[40] = new Aircraft._WeaponSlot(3, "BombGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -2895,7 +2895,7 @@ public class F_18C extends F_18S
             a_lweaponslot[38] = new Aircraft._WeaponSlot(3, "RocketGunJDAM84", 1);
             a_lweaponslot[39] = new Aircraft._WeaponSlot(3, "BombGunNull", 1);
             a_lweaponslot[40] = new Aircraft._WeaponSlot(3, "RocketGunJDAM84", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -2931,7 +2931,7 @@ public class F_18C extends F_18S
             a_lweaponslot[26] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(1, "CannonRocketSimpleHYDRA", 4);
             a_lweaponslot[28] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -2963,7 +2963,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3007,7 +3007,7 @@ public class F_18C extends F_18S
             a_lweaponslot[38] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[39] = new Aircraft._WeaponSlot(5, "RocketGunAIM7M", 1);
             a_lweaponslot[40] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3039,7 +3039,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3103,7 +3103,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3131,7 +3131,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[56] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
@@ -3171,7 +3171,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3203,7 +3203,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3235,7 +3235,7 @@ public class F_18C extends F_18S
             a_lweaponslot[26] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(1, "CannonRocketSimpleHYDRA", 4);
             a_lweaponslot[28] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3280,7 +3280,7 @@ public class F_18C extends F_18S
             a_lweaponslot[38] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[39] = new Aircraft._WeaponSlot(5, "RocketGunAIM7M", 1);
             a_lweaponslot[40] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3310,7 +3310,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[42] = new Aircraft._WeaponSlot(1, "CannonRocketSimpleHYDRA", 4);
             a_lweaponslot[43] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
             a_lweaponslot[44] = new Aircraft._WeaponSlot(1, "CannonRocketSimpleHYDRA", 4);
@@ -3366,7 +3366,7 @@ public class F_18C extends F_18S
             a_lweaponslot[38] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[39] = new Aircraft._WeaponSlot(5, "RocketGunAIM7M", 1);
             a_lweaponslot[40] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3398,7 +3398,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3430,7 +3430,7 @@ public class F_18C extends F_18S
             a_lweaponslot[26] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(1, "CannonRocketSimpleHYDRA", 4);
             a_lweaponslot[28] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3462,7 +3462,7 @@ public class F_18C extends F_18S
             a_lweaponslot[26] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(4, "RocketGunAGM65", 1);
             a_lweaponslot[28] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3490,7 +3490,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[56] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L", 1);
@@ -3530,7 +3530,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3572,7 +3572,7 @@ public class F_18C extends F_18S
             a_lweaponslot[38] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[39] = new Aircraft._WeaponSlot(5, "RocketGunAIM7M", 1);
             a_lweaponslot[40] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3602,7 +3602,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3632,7 +3632,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3662,7 +3662,7 @@ public class F_18C extends F_18S
             a_lweaponslot[26] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(1, "CannonRocketSimpleHYDRA", 4);
             a_lweaponslot[28] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3692,7 +3692,7 @@ public class F_18C extends F_18S
             a_lweaponslot[26] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(4, "RocketGunAGM65", 1);
             a_lweaponslot[28] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3718,7 +3718,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[56] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L", 1);
@@ -3756,7 +3756,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3788,7 +3788,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3807,9 +3807,9 @@ public class F_18C extends F_18S
             a_lweaponslot[9] = new Aircraft._WeaponSlot(9, "Pylon18CT", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(9, "FuelTankGun_Tank18C", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(9, "Pylon18T", 1);
-            a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon18M", 1);
+            a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon18T", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "Pylon18T", 1);
-            a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon18T", 1);
+            a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon18M", 1);
             a_lweaponslot[15] = new Aircraft._WeaponSlot(9, "FuelTankGun_Tank18C", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "FuelTankGun_Tank18C", 1);
             a_lweaponslot[17] = null;
@@ -3820,12 +3820,12 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "AGM154A + AGM88 + 2xAIM-9 + 2xAIM-7 + 3xDT";
+            s = "AGM154A + HARM + 2xAIM-9 + 2xAIM-7 + 3xDT";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61B", 450);
             a_lweaponslot[1] = new Aircraft._WeaponSlot(5, "RocketGunAIM7M", 1);
@@ -3839,9 +3839,9 @@ public class F_18C extends F_18S
             a_lweaponslot[9] = new Aircraft._WeaponSlot(9, "Pylon18CT", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(9, "FuelTankGun_Tank18C", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(9, "Pylon18T", 1);
-            a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon18M", 1);
+            a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon18T", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "Pylon18T", 1);
-            a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon18T", 1);
+            a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon18M", 1);
             a_lweaponslot[15] = new Aircraft._WeaponSlot(9, "FuelTankGun_Tank18C", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "FuelTankGun_Tank18C", 1);
             a_lweaponslot[17] = null;
@@ -3852,7 +3852,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3884,7 +3884,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3916,7 +3916,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);
@@ -3948,7 +3948,7 @@ public class F_18C extends F_18S
             a_lweaponslot[22] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
-            a_lweaponslot[41] = null;
+            a_lweaponslot[41] = new Aircraft._WeaponSlot(10, "MGunNull", 10);
             a_lweaponslot[54] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlareF18", 35);
             arraylist.add(s);

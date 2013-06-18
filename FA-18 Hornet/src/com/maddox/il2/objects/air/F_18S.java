@@ -68,7 +68,7 @@ public class F_18S extends Scheme2
         curctl = -1F;
         oldthrl = -1F;
         curthrl = -1F;
-        k14Mode = 1;
+        k14Mode = 2;
         k14WingspanType = 0;
         k14Distance = 200F;
         AirBrakeControl = 0.0F;
@@ -100,6 +100,7 @@ public class F_18S extends Scheme2
         fSightCurSpeed = 200F;
         fSightCurReadyness = 0.0F;
         trimauto = false;
+        t1 = 0L;
     }
     
     private static final float toMeters(float f)
@@ -390,6 +391,7 @@ public class F_18S extends Scheme2
         ectl = ((FlightModelMain) (super.FM)).SensPitch;
         rctl = ((FlightModelMain) (super.FM)).SensYaw;
         FM.Skill = 3;
+        t1 = Time.current();
     }
 
     public void updateLLights()
@@ -525,7 +527,8 @@ public class F_18S extends Scheme2
         }
         }
         if(FLIR)
-            FLIR();        
+            FLIR(); 
+        
     }
 
     private final void UpdateLightIntensity()
@@ -542,22 +545,29 @@ public class F_18S extends Scheme2
             lightTime = 1.0F;
     }
 
-    public boolean typeFighterAceMakerToggleAutomation()
-    {
-        return true;
-    }
-    
     public boolean typeBomberToggleAutomation()
     {
-        if(hold)
+    	k14Mode++;
+        if(k14Mode > 2)
+            k14Mode = 0;
+        if(k14Mode == 0)
         {
-            hold = false;
-            HUD.log("Auto Target");
+        	if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Bomb");
         } else
+        if(k14Mode == 1)
         {
-            hold = true;
-            HUD.log("Laser Uncaged");
-        }
+        	if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Gun");
+        } else
+        if(k14Mode == 2 && ((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Off");
+    	return true;
+    }
+    
+    public boolean typeFighterAceMakerToggleAutomation()
+    {
+    	
         return true;
     }
     
@@ -1446,6 +1456,7 @@ public class F_18S extends Scheme2
         }
         if(FLIR)
             laser(spot);
+        
         engineSurge(f);
         typeFighterAceMakerRangeFinder();
         soundbarier();
@@ -1456,7 +1467,19 @@ public class F_18S extends Scheme2
             needUpdateHook = false;
         }
         super.update(f);
-        for(int i = 1; i < 66; i++)
+        if(FM.CT.WeaponControl[10] == true && hold == true && t1 + 200L < Time.current())
+        {
+        	hold = false;
+        	HUD.log("Auto Target");
+        	t1 = Time.current();
+        }	
+        if(FM.CT.WeaponControl[10] == true && hold == false && t1 + 200L < Time.current())
+        {	
+        	hold = true;
+        	HUD.log("Laser Uncaged");
+        	t1 = Time.current();
+        }	
+        for(int i = 1; i < 65; i++)
             hierMesh().chunkSetAngles("Eflap" + i, -8F * ((FlightModelMain) (super.FM)).CT.getPowerControl(), 0.0F, 0.0F);
         if(super.FM.getSpeed() > 7F && World.Rnd().nextFloat() < getAirDensityFactor(super.FM.getAltitude()))
         {
@@ -1920,6 +1943,7 @@ public class F_18S extends Scheme2
     public float fSightCurSpeed;
     public float fSightCurReadyness;
     public boolean trimauto;
+    private long t1;
 
     static 
     {
