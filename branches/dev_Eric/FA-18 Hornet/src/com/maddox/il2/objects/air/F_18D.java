@@ -47,7 +47,7 @@ import java.util.ArrayList;
 //            NetAircraft
 
 public class F_18D extends F_18
-    implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeGSuit, TypeAcePlane, TypeFuelDump, TypeStormovikArmored
+    implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeGSuit, TypeAcePlane, TypeFuelDump, TypeStormovikArmored, TypeLaserSpotter
 {
 
     public F_18D()

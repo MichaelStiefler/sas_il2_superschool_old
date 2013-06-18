@@ -30,7 +30,7 @@ import java.util.List;
 //            PaintScheme, EjectionSeat
 
 public class F_18S extends Scheme2
-    implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeX4Carrier, TypeGuidedBombCarrier, TypeBomber, TypeAcePlane
+    implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeX4Carrier, TypeGuidedBombCarrier, TypeBomber, TypeAcePlane, TypeLaserSpotter
 {
 
     public float getDragForce(float f, float f1, float f2, float f3)
@@ -68,7 +68,7 @@ public class F_18S extends Scheme2
         curctl = -1F;
         oldthrl = -1F;
         curthrl = -1F;
-        k14Mode = 0;
+        k14Mode = 1;
         k14WingspanType = 0;
         k14Distance = 200F;
         AirBrakeControl = 0.0F;
@@ -1905,7 +1905,7 @@ public class F_18S extends Scheme2
     public boolean needUpdateHook;
     private static Loc l = new Loc();
     public boolean FLIR;
-    public static Point3d spot = new Point3d();
+    
     public boolean hold;
     private Eff3DActor pull01;
     private Eff3DActor pull02;

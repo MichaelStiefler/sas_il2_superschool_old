@@ -37,7 +37,7 @@ public class MGunM61B extends MGunAircraftGeneric
         gunproperties.aimMinDist = 5F;
         gunproperties.aimMaxDist = 1500F;
         gunproperties.weaponType = 3;
-        gunproperties.maxDeltaAngle = 0.7F;
+        gunproperties.maxDeltaAngle = 0.55F;
         gunproperties.shotFreq = 120F;
         gunproperties.traceFreq = 1;
         gunproperties.bullets = 250;
