@@ -15,6 +15,13 @@ import com.maddox.il2.objects.weapons.Gun;
 import com.maddox.rts.Time;
 import com.maddox.sound.*;
 import java.util.ArrayList;
+import com.maddox.JGP.*;
+import com.maddox.il2.ai.AnglesFork;
+import com.maddox.il2.ai.World;
+import com.maddox.il2.engine.*;
+import com.maddox.il2.fm.*;
+import com.maddox.il2.objects.sounds.SndAircraft;
+import com.maddox.rts.Time;
 
 // Referenced classes of package com.maddox.il2.objects.air:
 //            CockpitPilot, AircraftLH, F_18, Aircraft, 
@@ -51,6 +58,11 @@ public class CockpitF18C extends CockpitPilot
         float fpmYaw;
         boolean isGeneratorAllive;
         boolean isBatteryOn;
+        float k14wingspan;
+        float k14mode;
+        float k14x;
+        float k14y;
+        float k14w;
 
         private Variables()
         {
@@ -107,7 +119,28 @@ public class CockpitF18C extends CockpitPilot
             setNew.altimeter = fm.getAltitude();
             setNew.throttlel = (10F * setOld.throttlel + ((FlightModelMain) (fm)).EI.engines[0].getControlThrottle()) / 11F;
             setNew.throttler = (10F * setOld.throttler + ((FlightModelMain) (fm)).EI.engines[1].getControlThrottle()) / 11F;
-            float f = waypointAzimuth();
+            float f = ((F_18S)aircraft()).k14Distance;
+            setNew.k14w = (5F * CockpitF18C.k14TargetWingspanScale[((F_18S)aircraft()).k14WingspanType]) / f;
+            setNew.k14w = 0.9F * setOld.k14w + 0.1F * setNew.k14w;
+            setNew.k14wingspan = 0.9F * setOld.k14wingspan + 0.1F * CockpitF18C.k14TargetMarkScale[((F_18S)aircraft()).k14WingspanType];
+            setNew.k14mode = 0.8F * setOld.k14mode + 0.2F * (float)((F_18S)aircraft()).k14Mode;
+            com.maddox.JGP.Vector3d vector3d = ((SndAircraft) (aircraft())).FM.getW();
+            double d = 0.00125D * (double)f;
+            float f1 = (float)Math.toDegrees(d * ((Tuple3d) (vector3d)).z);
+            float f2 = -(float)Math.toDegrees(d * ((Tuple3d) (vector3d)).y);
+            float f3 = floatindex((f - 200F) * 0.04F, CockpitF18C.k14BulletDrop) - CockpitF18C.k14BulletDrop[0];
+            f2 += (float)Math.toDegrees(Math.atan(f3 / f));
+            setNew.k14x = 0.92F * setOld.k14x + 0.08F * f1;
+            setNew.k14y = 0.92F * setOld.k14y + 0.08F * f2;
+            if(setNew.k14x > 7F)
+                setNew.k14x = 7F;
+            if(setNew.k14x < -7F)
+                setNew.k14x = -7F;
+            if(setNew.k14y > 7F)
+                setNew.k14y = 7F;
+            if(setNew.k14y < -7F)
+                setNew.k14y = -7F;
+            f = waypointAzimuth();
             setNew.azimuth.setDeg(setOld.azimuth.getDeg(1.0F), ((FlightModelMain) (fm)).Or.azimut());
             if(useRealisticNavigationInstruments())
             {
@@ -150,10 +183,10 @@ public class CockpitF18C extends CockpitPilot
             setNew.vspeed2 = (49F * setOld.vspeed2 + fm.getVertSpeed()) / 50F;
             setNew.pitch = ((FlightModelMain) (fm)).Or.getPitch();
             setNew.bank = ((FlightModelMain) (fm)).Or.getRoll();
-            Vector3d vector3d = new Vector3d();
-            ((FlightModelMain) (fm)).Or.transformInv(((FlightModelMain) (fm)).Vwld, vector3d);
-            setNew.fpmPitch = FMMath.RAD2DEG(-(float)Math.atan2(((Tuple3d) (vector3d)).z, ((Tuple3d) (vector3d)).x));
-            setNew.fpmYaw = FMMath.RAD2DEG((float)Math.atan2(((Tuple3d) (vector3d)).y, ((Tuple3d) (vector3d)).x));
+            Vector3d vector3d1 = new Vector3d();
+            ((FlightModelMain) (fm)).Or.transformInv(((FlightModelMain) (fm)).Vwld, vector3d1);
+            setNew.fpmPitch = FMMath.RAD2DEG(-(float)Math.atan2(((Tuple3d) (vector3d1)).z, ((Tuple3d) (vector3d1)).x));
+            setNew.fpmYaw = FMMath.RAD2DEG((float)Math.atan2(((Tuple3d) (vector3d1)).y, ((Tuple3d) (vector3d1)).x));
             if(cockpitDimControl)
             {
                 if(setNew.dimPosition > 0.0F)
@@ -278,7 +311,21 @@ public class CockpitF18C extends CockpitPilot
 
     public void reflectWorldToInstruments(float f)
     {
-        if(bNeedSetUp)
+    	if((((FlightModelMain) (super.fm)).AS.astateCockpitState & 2) == 0)
+        {          
+            int i = ((F_18S)aircraft()).k14Mode;
+            resetYPRmodifier();
+            Cockpit.xyz[0] = setNew.k14w;
+            if(i == 1)
+            {
+                super.mesh.chunkSetAngles("Z_Z_RETICLE", -setNew.k14x, -setNew.k14y, 0.0F);
+            }
+            if(i == 0)
+            {
+                super.mesh.chunkSetAngles("Z_Z_RETICLE", 0.0F, 0.0F, 0.0F);
+            }
+        }
+    	if(bNeedSetUp)
         {
             super.mesh.chunkVisible("Int_Marker", false);
             bNeedSetUp = false;
@@ -498,6 +545,8 @@ public class CockpitF18C extends CockpitPilot
         super.mesh.chunkVisible("Z_Z_HUD_DIR", flag1);
         super.mesh.chunkVisible("Z_Z_HUD_DIR_BG", flag1);
         super.mesh.chunkVisible("Z_Z_HUD_GS", flag1);
+        super.mesh.chunkVisible("Z_Z_RETICLE", flag1);
+        super.mesh.chunkVisible("Z_Z_RETICLECROSS", flag1);
         if(!flag1)
             return;
         super.mesh.chunkSetLocate("Z_Z_HUD_SPD", Cockpit.xyz, Cockpit.ypr);
@@ -896,6 +945,17 @@ public class CockpitF18C extends CockpitPilot
         0.0F, 190F, 220F, 300F
     };
     private ClipBoard clipBoard;
+    private static final float k14TargetMarkScale[] = {
+        0.0F, -4.5F, -27.5F, -42.5F, -56.5F, -61.5F, -70F, -95F, -102.5F, -106F
+    };
+    private static final float k14TargetWingspanScale[] = {
+        9.9F, 10.52F, 13.8F, 16.34F, 19F, 20F, 22F, 29.25F, 30F, 32.85F
+    };
+    private static final float k14BulletDrop[] = {
+        5.812F, 6.168F, 6.508F, 6.978F, 7.24F, 7.576F, 7.849F, 8.108F, 8.473F, 8.699F, 
+        8.911F, 9.111F, 9.384F, 9.554F, 9.787F, 9.928F, 9.992F, 10.282F, 10.381F, 10.513F, 
+        10.603F, 10.704F, 10.739F, 10.782F, 10.789F
+    };
 
 
 
