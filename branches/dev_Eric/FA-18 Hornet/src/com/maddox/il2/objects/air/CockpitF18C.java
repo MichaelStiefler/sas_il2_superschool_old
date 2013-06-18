@@ -198,6 +198,14 @@ public class CockpitF18C extends CockpitPilot
                 setNew.isGeneratorAllive = true;
             else
                 setNew.isGeneratorAllive = false;
+            f = ((F_18S)aircraft()).fSightCurForwardAngle;
+            f1 = ((F_18S)aircraft()).fSightCurSideslip;
+            f2 = fm.getAltitude();
+            f3 = (float)(-(Math.abs(fm.Vwld.length()) * Math.sin(Math.toRadians(Math.abs(fm.Or.getTangage())))) * 0.10189999639987946D);
+            f3 += (float)Math.sqrt(f3 * f3 + 2.0F * f2 * 0.1019F);
+            float f4 = Math.abs((float)fm.Vwld.length()) * (float)Math.cos(Math.toRadians(Math.abs(fm.Or.getTangage())));
+            float f5 = (f4 * f3 + 10F) - 10F;
+            alpha = 90F - Math.abs(fm.Or.getTangage()) - (float)Math.toDegrees(Math.atan(f5 / f2));
             return true;
         }
 
@@ -316,13 +324,26 @@ public class CockpitF18C extends CockpitPilot
             int i = ((F_18S)aircraft()).k14Mode;
             resetYPRmodifier();
             Cockpit.xyz[0] = setNew.k14w;
+            if(i == 0)
+            {
+            	super.mesh.chunkSetAngles("Z_Z_RETICLE", -setNew.k14x, -setNew.k14y, 0.0F);
+            	super.mesh.chunkSetAngles("Z_Z_Bombsteer", -setNew.k14x, 0.0F, 0.0F);
+            	super.mesh.chunkVisible("Z_Z_Bombsteer", true);
+                super.mesh.chunkVisible("Z_Z_Bombmark2", true);
+                super.mesh.chunkSetAngles("Z_Z_Bombmark", 0.0F, - 1.3F * alpha, 0.0F);
+            }
             if(i == 1)
             {
                 super.mesh.chunkSetAngles("Z_Z_RETICLE", -setNew.k14x, -setNew.k14y, 0.0F);
+                super.mesh.chunkVisible("Z_Z_RETICLE", true);
+                super.mesh.chunkVisible("Z_Z_Bombsteer", false);
+                super.mesh.chunkVisible("Z_Z_Bombmark2", false);
             }
-            if(i == 0)
+            if(i == 2)
             {
-                super.mesh.chunkSetAngles("Z_Z_RETICLE", 0.0F, 0.0F, 0.0F);
+                super.mesh.chunkVisible("Z_Z_RETICLE", false);
+                super.mesh.chunkVisible("Z_Z_Bombsteer", false);
+                super.mesh.chunkVisible("Z_Z_Bombmark2", false);
             }
         }
     	if(bNeedSetUp)
@@ -545,7 +566,6 @@ public class CockpitF18C extends CockpitPilot
         super.mesh.chunkVisible("Z_Z_HUD_DIR", flag1);
         super.mesh.chunkVisible("Z_Z_HUD_DIR_BG", flag1);
         super.mesh.chunkVisible("Z_Z_HUD_GS", flag1);
-        super.mesh.chunkVisible("Z_Z_RETICLE", flag1);
         super.mesh.chunkVisible("Z_Z_RETICLECROSS", flag1);
         if(!flag1)
             return;
@@ -941,6 +961,7 @@ public class CockpitF18C extends CockpitPilot
     private SoundFX aoaWarnFX4;
     private String hudPitchRudderStr[];
     private Gun gun[];
+    private float alpha;
     private static final float rpmScale[] = {
         0.0F, 190F, 220F, 300F
     };
@@ -956,6 +977,7 @@ public class CockpitF18C extends CockpitPilot
         8.911F, 9.111F, 9.384F, 9.554F, 9.787F, 9.928F, 9.992F, 10.282F, 10.381F, 10.513F, 
         10.603F, 10.704F, 10.739F, 10.782F, 10.789F
     };
+   
 
 
 
