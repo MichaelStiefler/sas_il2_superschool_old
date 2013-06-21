@@ -311,7 +311,7 @@ public class F_18 extends Scheme2
         for(int j = 0; j < i; j++)
         {
             Actor actor = (Actor)list.get(j);
-            if(((actor instanceof Aircraft) || (actor instanceof ArtilleryGeneric) || (actor instanceof CarGeneric) || (actor instanceof TankGeneric)) && !(actor instanceof StationaryGeneric) && actor.pos.getAbsPoint().distance(pos.getAbsPoint()) < 20000D)
+            if(((actor instanceof Aircraft) || (actor instanceof ArtilleryGeneric) || (actor instanceof CarGeneric) || (actor instanceof TankGeneric)) && !(actor instanceof StationaryGeneric) && !(actor instanceof TypeLaserSpotter) && actor.pos.getAbsPoint().distance(pos.getAbsPoint()) < 20000D)
             {
                 Point3d point3d = new Point3d();
                 Orient orient = new Orient();

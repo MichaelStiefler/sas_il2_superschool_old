@@ -78,9 +78,9 @@ public class MissileAGM65D extends Missile
         Property.set(class1, "shotFreq", 1.01F);
         Property.set(class1, "groundTrackFactor", 16F);
         Property.set(class1, "flareLockTime", 1000L);
-        Property.set(class1, "trackDelay", 500L);
+        Property.set(class1, "trackDelay", 200L);
         Property.set(class1, "failureRate", 10F);
-        Property.set(class1, "maxLockGForce", 40F);
+        Property.set(class1, "maxLockGForce", 15F);
         Property.set(class1, "maxFOVfrom", 30F);
         Property.set(class1, "maxFOVto", 360F);
         Property.set(class1, "PkMaxFOVfrom", 25F);
@@ -88,9 +88,9 @@ public class MissileAGM65D extends Missile
         Property.set(class1, "PkDistMin", 1000F);
         Property.set(class1, "PkDistOpt", 3000F);
         Property.set(class1, "PkDistMax", 10000F);
-        Property.set(class1, "leadPercent", 50F);
-        Property.set(class1, "maxGForce", 10F);
-        Property.set(class1, "stepsForFullTurn", 15);
+        Property.set(class1, "leadPercent", 30F);
+        Property.set(class1, "maxGForce", 12F);
+        Property.set(class1, "stepsForFullTurn", 12);
         Property.set(class1, "fxLock", "weapon.F4.lock");
         Property.set(class1, "fxNoLock", "weapon.F4.nolock");
         Property.set(class1, "smplLock", "F4_lock.wav");

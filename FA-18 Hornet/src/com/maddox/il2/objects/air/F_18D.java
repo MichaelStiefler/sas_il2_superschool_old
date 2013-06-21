@@ -867,11 +867,11 @@ public class F_18D extends F_18
             });
             try
             {
-                ArrayList arraylist = new ArrayList();
+            	ArrayList arraylist = new ArrayList();
                 Property.set(class1, "weaponsList", arraylist);
                 HashMapInt hashmapint = new HashMapInt();
                 Property.set(class1, "weaponsMap", hashmapint);
-                byte byte0 = 84;
+                byte byte0 = 86;
                 Aircraft._WeaponSlot a_lweaponslot[] = new Aircraft._WeaponSlot[byte0];
                 String s = "Default";
                 a_lweaponslot = new Aircraft._WeaponSlot[byte0];
@@ -2141,7 +2141,7 @@ public class F_18D extends F_18
                 a_lweaponslot[25] = new Aircraft._WeaponSlot(2, "RocketGunAGM65", 1);
                 a_lweaponslot[26] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
                 a_lweaponslot[27] = new Aircraft._WeaponSlot(2, "RocketGunAGM65", 1);
-                a_lweaponslot[28] = new Aircraft._WeaponSlot(3, "RocketGunNull", 1);
+                a_lweaponslot[28] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
                 a_lweaponslot[29] = new Aircraft._WeaponSlot(9, "Pylon18Twin", 1);
                 a_lweaponslot[30] = new Aircraft._WeaponSlot(9, "Pylon18Twin", 1);
                 a_lweaponslot[31] = null;

@@ -340,7 +340,7 @@ public class JDAM84 extends RocketBomb
         f = actor.collisionR();
         if(f < 5F)
             f = 5F;
-        return f / 40F;
+        return f / 5F;
     }
 
     public void destroy()

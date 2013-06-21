@@ -181,15 +181,15 @@ public class AGM65 extends AGM
         Property.set(class1, "sound", "weapon.rocket_132");
         Property.set(class1, "emitLen", 0.0F);
         Property.set(class1, "emitMax", 0.0F);
-        Property.set(class1, "radius", 85F);
+        Property.set(class1, "radius", 24.93F);
         Property.set(class1, "timeLife", 160F);
         Property.set(class1, "timeFire", 53F);
         Property.set(class1, "force", 20.0F);
-        Property.set(class1, "power", 225F);
+        Property.set(class1, "power", 1.52F);
         Property.set(class1, "powerType", 0);
-        Property.set(class1, "kalibr", 0.34F);
-        Property.set(class1, "massa", 360F);
-        Property.set(class1, "massaEnd", 311F);
+        Property.set(class1, "kalibr", 0.8F);
+        Property.set(class1, "massa", 204F);
+        Property.set(class1, "massaEnd", 185F);
         Spawn.add(class1, new AGM.SPAWN());
     }
 }
