@@ -199,8 +199,8 @@ public class CockpitT4 extends CockpitPilot
                 setNew.isGeneratorAllive = true;
             else
                 setNew.isGeneratorAllive = false;
-            f = ((F_18S)aircraft()).fSightCurForwardAngle;
-            f1 = ((F_18S)aircraft()).fSightCurSideslip;
+            f = ((F_18)aircraft()).fSightCurForwardAngle;
+            f1 = ((F_18)aircraft()).fSightCurSideslip;
             f2 = fm.getAltitude();
             f3 = (float)(-(Math.abs(fm.Vwld.length()) * Math.sin(Math.toRadians(Math.abs(fm.Or.getTangage())))) * 0.10189999639987946D);
             f3 += (float)Math.sqrt(f3 * f3 + 2.0F * f2 * 0.1019F);
@@ -315,7 +315,7 @@ public class CockpitT4 extends CockpitPilot
     {
     	if((((FlightModelMain) (super.fm)).AS.astateCockpitState & 2) == 0)
         {          
-            int i = ((F_18S)aircraft()).k14Mode;
+            int i = ((F_18)aircraft()).k14Mode;
             resetYPRmodifier();
             Cockpit.xyz[0] = setNew.k14w;
             if(i == 0)

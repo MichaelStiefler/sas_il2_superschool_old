@@ -7,7 +7,7 @@ package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.*;
 import com.maddox.il2.ai.MsgExplosion;
-import com.maddox.il2.ai.ground.TgtFlak;
+import com.maddox.il2.objects.vehicles.artillery.AAA;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.objects.air.Aircraft;
@@ -191,7 +191,7 @@ public class HARM extends JDAM84
                 if(((Tuple3d) (point3d)).x > -10D)
                 {
                     double d;
-                    if(target instanceof TgtFlak)
+                    if(target instanceof AAA)
                         d = Aircraft.cvt(((FlightModelMain) (fm)).Skill, 0.0F, 3F, 4F / targetRCSMax, 1.0F / targetRCSMax);
                     else
                         d = Aircraft.cvt(((FlightModelMain) (fm)).Skill, 0.0F, 3F, 20F, 4F);
@@ -293,7 +293,7 @@ public class HARM extends JDAM84
         for(int j = 0; j < i; j++)
         {
             Actor actor1 = (Actor)list.get(j);
-            if((actor1 instanceof TgtFlak))
+            if((actor1 instanceof AAA))
             {
                 Point3d point3d = new Point3d();
                 Point3d point3d1 = actor1.pos.getAbsPoint();
@@ -331,7 +331,7 @@ public class HARM extends JDAM84
             d = (Math.cos(f1) * Math.cos(f3)) / (double)(f * f);
         else
             d = 0.0D;
-        if(d > 0.0D && (actor instanceof TgtFlak))
+        if(d > 0.0D && (actor instanceof AAA))
         {
             float f4 = estimateRCS(actor);
             d *= f4;
@@ -345,7 +345,7 @@ public class HARM extends JDAM84
         f = actor.collisionR();
         if(f < 5F)
             f = 5F;
-        return f / 40F;
+        return f / 5F;
     }
 
     public void destroy()
@@ -394,8 +394,8 @@ public class HARM extends JDAM84
     private static Actor hunted = null;
     private long tStart;
     private float prevd;
-    private static double azimuthControlScaleFact = 0.92000000000000002D;
-    private static double tangageControlScaleFact = 0.92000000000000002D;
+    private static double azimuthControlScaleFact = 0.96000000000000002D;
+    private static double tangageControlScaleFact = 0.96000000000000002D;
     private boolean first;
     private float targetRCSMax;
 

@@ -67,7 +67,7 @@ public class CockpitF18CFLIR extends CockpitGunner
         else
         if(f > 270F && f <= 360F)
             f = (float)Math.sqrt(Math.pow(f - 360F, 2D));
-        float f2 = orient.getPitch() - orient2.getPitch() - 270F;
+        float f2 = orient.getPitch() + orient2.getPitch() - 270F;
         if(f2 > 360F)
             f2 -= 360F;
         else
@@ -180,7 +180,7 @@ public class CockpitF18CFLIR extends CockpitGunner
         prevA0 = 0.0F;
     }
 
-    private static Point3d spot = new Point3d();
+    
     private double dY;
     private double dX;
     private boolean bNeedSetUp;
@@ -192,7 +192,6 @@ public class CockpitF18CFLIR extends CockpitGunner
 
     static 
     {
-        Property.set(com.maddox.il2.objects.air.CockpitF18CFLIR.class, "aiTuretNum", 0);
         Property.set(com.maddox.il2.objects.air.CockpitF18CFLIR.class, "weaponControlNum", 10);
         Property.set(com.maddox.il2.objects.air.CockpitF18CFLIR.class, "astatePilotIndx", 0);
     }
