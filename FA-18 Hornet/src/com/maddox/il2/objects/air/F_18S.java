@@ -21,6 +21,7 @@ import com.maddox.rts.*;
 import com.maddox.util.HashMapExt;
 
 
+
 import java.io.IOException;
 import java.util.List;
 
@@ -381,7 +382,7 @@ public class F_18S extends Scheme2
 
     public void getGFactors(TypeGSuit.GFactors gfactors)
     {
-        gfactors.setGFactors(3.5F, 2F, 1.0F, 7.0F, 2.0F, 5.0F);
+        gfactors.setGFactors(3.5F, 2F, 1.0F, 9.0F, 3.0F, 5.0F);
     }
 
     public void onAircraftLoaded()
@@ -581,16 +582,16 @@ public class F_18S extends Scheme2
     public void typeFighterAceMakerAdjDistancePlus()
     {
         k14Distance += 10F;
-        if(k14Distance > 800F)
-            k14Distance = 800F;
+        if(k14Distance > 1500F)
+            k14Distance = 1500F;
         HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerInc");
     }
 
     public void typeFighterAceMakerAdjDistanceMinus()
     {
         k14Distance -= 10F;
-        if(k14Distance < 200F)
-            k14Distance = 200F;
+        if(k14Distance < 20F)
+            k14Distance = 20F;
         HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerDec");
     }
 
@@ -927,9 +928,7 @@ public class F_18S extends Scheme2
             hierMesh().chunkSetAngles("AroneR1_D0", 0.0F, Aircraft.cvt(f, 0.29F, 0.99F, 0.0F, 38F), 0.0F);   
     }
 
-    protected void moveFan(float f)
-    {
-    }
+    
 
     protected void hitBone(String s, Shot shot, Point3d point3d)
     {
@@ -1243,17 +1242,17 @@ public class F_18S extends Scheme2
         hunted = Main3D.cur3D().getViewPadlockEnemy();
         if(hunted == null)
         {
-            k14Distance = 200F;
+            k14Distance = 500F;
             hunted = War.GetNearestEnemyAircraft(((Interpolate) (super.FM)).actor, 2700F, 9);
         }
         if(hunted != null)
         {
             k14Distance = (float)((Interpolate) (super.FM)).actor.pos.getAbsPoint().distance(hunted.pos.getAbsPoint());
-            if(k14Distance > 800F)
-                k14Distance = 800F;
+            if(k14Distance > 1500F)
+                k14Distance = 1500F;
             else
-            if(k14Distance < 200F)
-                k14Distance = 200F;
+            if(k14Distance < 20F)
+                k14Distance = 20F;
         }
     }
 
@@ -1354,10 +1353,10 @@ public class F_18S extends Scheme2
                     curthrl = ((FlightModelMain) (super.FM)).EI.engines[i].getControlThrottle();
                     if(curthrl < 1.05F)
                     {
-                        if((curthrl - oldthrl) / f > 60F && ((FlightModelMain) (super.FM)).EI.engines[i].getRPM() < 3200F && ((FlightModelMain) (super.FM)).EI.engines[i].getStage() == 6 && World.Rnd().nextFloat() < 0.4F)
+                        if((curthrl - oldthrl) / f > 35F && ((FlightModelMain) (super.FM)).EI.engines[i].getRPM() < 3200F && ((FlightModelMain) (super.FM)).EI.engines[i].getStage() == 6 && World.Rnd().nextFloat() < 0.4F)
                         {
                             if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-                                HUD.log(AircraftHotKeys.hudLogWeaponId, "Compressor Stall!");
+                                HUD.log(AircraftHotKeys.hudLogWeaponId, "Fans Surge!!!");
                             super.playSound("weapon.MGunMk108s", true);
                             engineSurgeDamage += 0.01D * (double)(((FlightModelMain) (super.FM)).EI.engines[i].getRPM() / 1000F);
                             ((FlightModelMain) (super.FM)).EI.engines[i].doSetReadyness(((FlightModelMain) (super.FM)).EI.engines[i].getReadyness() - engineSurgeDamage);
@@ -1366,7 +1365,7 @@ public class F_18S extends Scheme2
                             if(World.Rnd().nextFloat() < 0.05F && (super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode())
                                 ((FlightModelMain) (super.FM)).EI.engines[i].setEngineDies(this);
                         }
-                        if((curthrl - oldthrl) / f < -50F && (curthrl - oldthrl) / f > -100F && ((FlightModelMain) (super.FM)).EI.engines[i].getRPM() < 3200F && ((FlightModelMain) (super.FM)).EI.engines[i].getStage() == 6)
+                        if((curthrl - oldthrl) / f < -35F && (curthrl - oldthrl) / f > -100F && ((FlightModelMain) (super.FM)).EI.engines[i].getRPM() < 3200F && ((FlightModelMain) (super.FM)).EI.engines[i].getStage() == 6)
                         {
                             super.playSound("weapon.MGunMk108s", true);
                             engineSurgeDamage += 0.001D * (double)(((FlightModelMain) (super.FM)).EI.engines[i].getRPM() / 1000F);
@@ -1378,7 +1377,7 @@ public class F_18S extends Scheme2
                                 ((FlightModelMain) (super.FM)).EI.engines[i].setEngineStops(this);
                             } else
                             if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-                                HUD.log(AircraftHotKeys.hudLogWeaponId, "Compressor Stall!");
+                                HUD.log(AircraftHotKeys.hudLogWeaponId, "Fans Surge!!!");
                         }
                     }
                     oldthrl = curthrl;
@@ -1451,7 +1450,7 @@ public class F_18S extends Scheme2
             {
                 ((FlightModelMain) (super.FM)).AS.setSootState(this, 1, 0);
             }
-            setExhaustFlame(Math.round(Aircraft.cvt(((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput(), 0.7F, 0.87F, 0.0F, 12F)), 0);
+            setExhaustFlame1(Math.round(Aircraft.cvt(((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput(), 0.7F, 0.87F, 0.0F, 12F)), 0);
             if(super.FM instanceof RealFlightModel)
                 umn();
         }
@@ -1480,8 +1479,10 @@ public class F_18S extends Scheme2
         	HUD.log("Laser Uncaged");
         	t1 = Time.current();
         }	
-        for(int i = 1; i < 65; i++)
-            hierMesh().chunkSetAngles("Eflap" + i, -8F * ((FlightModelMain) (super.FM)).CT.getPowerControl(), 0.0F, 0.0F);
+        for(int i = 1; i < 33; i++)
+        	hierMesh().chunkSetAngles("Eflap" + i, -8F * ((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput(), 0.0F, 0.0F);
+        for(int j = 33; j > 32 && j < 65; j++)
+            hierMesh().chunkSetAngles("Eflap" + j, -8F * ((FlightModelMain) (super.FM)).EI.engines[1].getPowerOutput(), 0.0F, 0.0F);
         if(super.FM.getSpeed() > 7F && World.Rnd().nextFloat() < getAirDensityFactor(super.FM.getAltitude()))
         {
         	if(super.FM.getOverload()>5.7F)
@@ -1743,6 +1744,125 @@ public class F_18S extends Scheme2
                 break;
             }
     }
+    
+    public void setExhaustFlame1(int i, int j)
+    {
+        if(j == 0)
+            switch(i)
+            {
+            case 0: // '\0'
+                hierMesh().chunkVisible("Exhaust1b", false);
+                hierMesh().chunkVisible("Exhaust2b", false);
+                hierMesh().chunkVisible("Exhaust3b", false);
+                hierMesh().chunkVisible("Exhaust4b", false);
+                hierMesh().chunkVisible("Exhaust5b", false);
+                break;
+
+            case 1: // '\001'
+                hierMesh().chunkVisible("Exhaust1b", true);
+                hierMesh().chunkVisible("Exhaust2b", false);
+                hierMesh().chunkVisible("Exhaust3b", false);
+                hierMesh().chunkVisible("Exhaust4b", false);
+                hierMesh().chunkVisible("Exhaust5b", false);
+                break;
+
+            case 2: // '\002'
+                hierMesh().chunkVisible("Exhaust1b", false);
+                hierMesh().chunkVisible("Exhaust2b", true);
+                hierMesh().chunkVisible("Exhaust3b", false);
+                hierMesh().chunkVisible("Exhaust4b", false);
+                hierMesh().chunkVisible("Exhaust5b", false);
+                break;
+
+            case 3: // '\003'
+                hierMesh().chunkVisible("Exhaust1b", true);
+                hierMesh().chunkVisible("Exhaust2b", true);
+                hierMesh().chunkVisible("Exhaust3b", false);
+                hierMesh().chunkVisible("Exhaust4b", false);
+                hierMesh().chunkVisible("Exhaust5b", false);
+                // fall through
+
+            case 4: // '\004'
+                hierMesh().chunkVisible("Exhaust1b", false);
+                hierMesh().chunkVisible("Exhaust2b", false);
+                hierMesh().chunkVisible("Exhaust3b", true);
+                hierMesh().chunkVisible("Exhaust4b", false);
+                hierMesh().chunkVisible("Exhaust5b", false);
+                break;
+
+            case 5: // '\005'
+                hierMesh().chunkVisible("Exhaust1b", true);
+                hierMesh().chunkVisible("Exhaust2b", false);
+                hierMesh().chunkVisible("Exhaust3b", true);
+                hierMesh().chunkVisible("Exhaust4b", false);
+                hierMesh().chunkVisible("Exhaust5b", false);
+                break;
+
+            case 6: // '\006'
+                hierMesh().chunkVisible("Exhaust1b", false);
+                hierMesh().chunkVisible("Exhaust2b", true);
+                hierMesh().chunkVisible("Exhaust3b", true);
+                hierMesh().chunkVisible("Exhaust4b", false);
+                hierMesh().chunkVisible("Exhaust5b", false);
+                break;
+
+            case 7: // '\007'
+                hierMesh().chunkVisible("Exhaust1b", true);
+                hierMesh().chunkVisible("Exhaust2b", false);
+                hierMesh().chunkVisible("Exhaust3b", false);
+                hierMesh().chunkVisible("Exhaust4b", true);
+                hierMesh().chunkVisible("Exhaust5b", false);
+                break;
+
+            case 8: // '\b'
+                hierMesh().chunkVisible("Exhaust1b", false);
+                hierMesh().chunkVisible("Exhaust2b", true);
+                hierMesh().chunkVisible("Exhaust3b", false);
+                hierMesh().chunkVisible("Exhaust4b", true);
+                hierMesh().chunkVisible("Exhaust5b", false);
+                break;
+
+            case 9: // '\t'
+                hierMesh().chunkVisible("Exhaust1b", false);
+                hierMesh().chunkVisible("Exhaust2b", false);
+                hierMesh().chunkVisible("Exhaust3b", true);
+                hierMesh().chunkVisible("Exhaust4b", true);
+                hierMesh().chunkVisible("Exhaust5b", false);
+                break;
+
+            case 10: // '\n'
+                hierMesh().chunkVisible("Exhaust1b", true);
+                hierMesh().chunkVisible("Exhaust2b", false);
+                hierMesh().chunkVisible("Exhaust3b", false);
+                hierMesh().chunkVisible("Exhaust4b", false);
+                hierMesh().chunkVisible("Exhaust5b", true);
+                break;
+
+            case 11: // '\013'
+                hierMesh().chunkVisible("Exhaust1b", false);
+                hierMesh().chunkVisible("Exhaust2b", true);
+                hierMesh().chunkVisible("Exhaust3b", false);
+                hierMesh().chunkVisible("Exhaust4b", false);
+                hierMesh().chunkVisible("Exhaust5b", true);
+                break;
+
+            case 12: // '\f'
+                hierMesh().chunkVisible("Exhaust1b", false);
+                hierMesh().chunkVisible("Exhaust2b", false);
+                hierMesh().chunkVisible("Exhaust3b", true);
+                hierMesh().chunkVisible("Exhaust4b", false);
+                hierMesh().chunkVisible("Exhaust5b", true);
+                break;
+
+            default:
+                hierMesh().chunkVisible("Exhaust1b", false);
+                hierMesh().chunkVisible("Exhaust2b", false);
+                hierMesh().chunkVisible("Exhaust3b", false);
+                hierMesh().chunkVisible("Exhaust4b", false);
+                hierMesh().chunkVisible("Exhaust5b", false);
+                break;
+            }
+    }
 
     private void bailout()
     {
@@ -1916,8 +2036,8 @@ public class F_18S extends Scheme2
     private static final float NEG_G_TIME_FACTOR = 2.5F;
     private static final float NEG_G_RECOVERY_FACTOR = 1F;
     private static final float POS_G_TOLERANCE_FACTOR = 7F;
-    private static final float POS_G_TIME_FACTOR = 2F;
-    private static final float POS_G_RECOVERY_FACTOR = 3F;
+    private static final float POS_G_TIME_FACTOR = 3F;
+    private static final float POS_G_RECOVERY_FACTOR = 5F;
     public int clipBoardPage_;
     public boolean showClipBoard_;
     public boolean bToFire;

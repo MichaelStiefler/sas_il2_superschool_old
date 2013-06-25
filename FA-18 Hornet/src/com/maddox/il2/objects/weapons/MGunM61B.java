@@ -34,12 +34,12 @@ public class MGunM61B extends MGunAircraftGeneric
         gunproperties.emitI = 10F;
         gunproperties.emitR = 3F;
         gunproperties.emitTime = 0.03F;
-        gunproperties.aimMinDist = 5F;
+        gunproperties.aimMinDist = 200F;
         gunproperties.aimMaxDist = 1500F;
         gunproperties.weaponType = 3;
-        gunproperties.maxDeltaAngle = 0.55F;
-        gunproperties.shotFreq = 120F;
-        gunproperties.traceFreq = 1;
+        gunproperties.maxDeltaAngle = 0.60F;
+        gunproperties.shotFreq = 110F;
+        gunproperties.traceFreq = 5;
         gunproperties.bullets = 250;
         gunproperties.bulletsCluster = 1;
         gunproperties.bullet = (new BulletProperties[] {
@@ -47,7 +47,7 @@ public class MGunM61B extends MGunAircraftGeneric
         });
         gunproperties.bullet[0].massa = 0.102F;
         gunproperties.bullet[0].kalibr = 0.00032F;
-        gunproperties.bullet[0].speed = 1070F;
+        gunproperties.bullet[0].speed = 1050F;
         gunproperties.bullet[0].power = 0.0258F;
         gunproperties.bullet[0].powerType = 0;
         gunproperties.bullet[0].powerRadius = 0.34F;

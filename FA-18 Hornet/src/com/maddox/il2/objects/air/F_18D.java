@@ -285,11 +285,6 @@ public class F_18D extends F_18
         }
     }
 
-    public void getGFactors(TypeGSuit.GFactors gfactors)
-    {
-        gfactors.setGFactors(1.0F, 1.0F, 1.0F, 1.8F, 1.5F, 1.0F);
-    }
-
     public GuidedMissileUtils getGuidedMissileUtils()
     {
         return guidedMissileUtils;
@@ -302,6 +297,7 @@ public class F_18D extends F_18
         guidedMissileUtils.onAircraftLoaded();
         FM.Skill = 3;
         ((FlightModelMain) (super.FM)).CT.bHasDragChuteControl = true;
+        FM.turret[0].bIsAIControlled = false;
         bHasDeployedDragChute = false;
         bulletEmitters = new BulletEmitter[weponHookArray.length];
         for(int i = 0; i < weponHookArray.length; i++)

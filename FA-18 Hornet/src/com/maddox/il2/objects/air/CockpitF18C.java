@@ -281,7 +281,7 @@ public class CockpitF18C extends CockpitPilot
 
     public CockpitF18C()
     {
-        super("3DO/Cockpit/T-4/hier.him", "bf109");
+        super("3DO/Cockpit/F-18/hier.him", "bf109");
         gun = new Gun[4];
         setOld = new Variables(null);
         setNew = new Variables(null);
@@ -390,14 +390,15 @@ public class CockpitF18C extends CockpitPilot
 
     protected void moveControls(float f)
     {
-        super.mesh.chunkSetAngles("FlightStick", ((FlightModelMain) (super.fm)).CT.AileronControl * 10F, 0.0F, ((FlightModelMain) (super.fm)).CT.ElevatorControl * 10F);
-        super.mesh.chunkSetAngles("Throttole", 0.0F, 0.0F, ((FlightModelMain) (super.fm)).CT.PowerControl * -50F);
+        super.mesh.chunkSetAngles("Z_Z_Stick", 0.0F, ((FlightModelMain) (super.fm)).CT.AileronControl * 10F, ((FlightModelMain) (super.fm)).CT.ElevatorControl * 10F);
+        super.mesh.chunkSetAngles("Z_Z_Throttle1", 0.0F, 0.0F, -42F * interp(setNew.throttlel, setOld.throttlel, f));
+        super.mesh.chunkSetAngles("Z_Z_Throttle2", 0.0F, 0.0F, -42F * interp(setNew.throttlel, setOld.throttlel, f));
         Cockpit.xyz[0] = 0.0F;
         Cockpit.xyz[1] = 0.0F;
         Cockpit.xyz[2] = ((FlightModelMain) (super.fm)).CT.getRudder() * -0.07F;
-        super.mesh.chunkSetLocate("FootPedal_L", Cockpit.xyz, Cockpit.ypr);
+        super.mesh.chunkSetLocate("PedalL", Cockpit.xyz, Cockpit.ypr);
         Cockpit.xyz[2] = ((FlightModelMain) (super.fm)).CT.getRudder() * 0.07F;
-        super.mesh.chunkSetLocate("FootPedal_R", Cockpit.xyz, Cockpit.ypr);
+        super.mesh.chunkSetLocate("PedalR", Cockpit.xyz, Cockpit.ypr);
     }
 
     protected void moveGauge(float f)
@@ -512,9 +513,9 @@ public class CockpitF18C extends CockpitPilot
         super.mesh.chunkSetAngles("GaugeMove_FUEL_L", f2, 0.0F, 0.0F);
         super.mesh.chunkSetAngles("GaugeMove_FUEL_R", f2, 0.0F, 0.0F);
         if(((FlightModelMain) (super.fm)).CT.getGear() > 0.0F)
-            super.mesh.chunkSetAngles("GaugeMove_Gear", 0.0F, 0.0F, 0.0F);
+            super.mesh.chunkSetAngles("Z_Z_Gear", 0.0F, 0.0F, 0.0F);
         else
-            super.mesh.chunkSetAngles("GaugeMove_Gear", 0.0F, 0.0F, -15.5F);
+            super.mesh.chunkSetAngles("Z_Z_Gear", 0.0F, 0.0F, -15.5F);
     }
 
     protected void moveHUD(float f)

@@ -87,7 +87,7 @@ public class F_18C extends F_18S
         tX4Prev = 0L;
         tX4PrevP = 0L;
         deltaAzimuth = 0.0F;
-        deltaTangage = 0.0F;
+        deltaTangage = 0.0F;       
     }
     
     private void checkAmmo()
@@ -323,11 +323,6 @@ public class F_18C extends F_18S
         }
     }
 
-    public void getGFactors(TypeGSuit.GFactors gfactors)
-    {
-        gfactors.setGFactors(1.0F, 1.0F, 1.0F, 1.8F, 1.5F, 1.0F);
-    }
-
     public GuidedMissileUtils getGuidedMissileUtils()
     {
         return guidedMissileUtils;
@@ -340,11 +335,11 @@ public class F_18C extends F_18S
         guidedMissileUtils.onAircraftLoaded();
         FM.Skill = 3;
         ((FlightModelMain) (super.FM)).CT.bHasDragChuteControl = true;
+        FM.turret[0].bIsAIControlled = false;
         bHasDeployedDragChute = false;
         bulletEmitters = new BulletEmitter[weponHookArray.length];
         for(int i = 0; i < weponHookArray.length; i++)
             bulletEmitters[i] = getBulletEmitterByHookName(weponHookArray[i]);
-
     }
 
     public void update(float f)
