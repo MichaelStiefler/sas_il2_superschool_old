@@ -1,10 +1,8 @@
-// Source File Name: MGunBrowningM3.java
-// Author:           Storebror
-// Last Modified by: Storebror 2011-06-01
 package com.maddox.il2.objects.weapons;
 
-import com.maddox.il2.ai.RangeRandom;
 import java.security.SecureRandom;
+
+import com.maddox.il2.ai.RangeRandom;
 
 public class MGunBrowningM2 extends MGunBrowning50kAPIT {
 

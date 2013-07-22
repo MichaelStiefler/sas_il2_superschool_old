@@ -44,7 +44,7 @@ public class P_47D22 extends P_47
     Property.set(localClass, "yearService", 1943.0F);
     Property.set(localClass, "yearExpired", 1947.5F);
     Property.set(localClass, "FlightModel", "FlightModels/P-47D-22.fmd");
-    Property.set(localClass, "cockpitClass", (Object)(CockpitP_47D22.class));
+    Property.set(localClass, "cockpitClass", new Class[] {CockpitP_47D22.class});
     Property.set(localClass, "LOSElevation", 0.9879F);
     weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 1, 1, 1, 1, 9, 3, 3, 3, 9, 9, 2, 2, 2, 2, 2, 2, 9, 9, 9 });
     weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_ExternalDev01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb01", "_ExternalDev02", "_ExternalDev03", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb01" });

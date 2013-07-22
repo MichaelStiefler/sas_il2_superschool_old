@@ -39,7 +39,7 @@ public class P_47D10 extends P_47
     Property.set(localClass, "yearExpired", 1947.5F);
 
     Property.set(localClass, "FlightModel", "FlightModels/P-47D-10.fmd");
-    Property.set(localClass, "cockpitClass", (Object)(CockpitP_47D10.class));
+    Property.set(localClass, "cockpitClass", new Class[] {CockpitP_47D10.class});
     Property.set(localClass, "LOSElevation", 0.9879F);
 
     weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 1, 1, 1, 1, 9, 3, 3, 3, 9, 9, 2, 2, 2, 2, 2, 2, 9, 9, 9 });

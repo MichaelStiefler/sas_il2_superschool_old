@@ -1,11 +1,12 @@
 package com.maddox.il2.objects.air;
 
+import java.io.IOException;
+
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
-import java.io.IOException;
 
 public class P_47D extends P_47
   implements TypeFighterAceMaker
@@ -127,7 +128,7 @@ public class P_47D extends P_47
     Property.set(localClass, "yearService", 1944.0F);
     Property.set(localClass, "yearExpired", 1947.5F);
     Property.set(localClass, "FlightModel", "FlightModels/P-47D-27_late.fmd");
-    Property.set(localClass, "cockpitClass", (Object)(CockpitP_47D25.class));
+    Property.set(localClass, "cockpitClass", new Class[] {CockpitP_47D25.class});
     Property.set(localClass, "LOSElevation", 1.1104F);
     weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 1, 1, 1, 1, 9, 3, 3, 3, 9, 9, 2, 2, 2, 2, 2, 2, 9, 9, 9 });
     weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_ExternalDev01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb01", "_ExternalDev02", "_ExternalDev03", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb01" });
