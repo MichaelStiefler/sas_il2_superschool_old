@@ -1,5 +1,0 @@
-@echo off
-cd hashed
-del /f ????????????????
-For /F "Delims=" %%! in ('Dir ".\*.class" /b /s /a-d 2^>nul') do (
-@java -jar "../classhasher.jar" "%%!" >nul)
