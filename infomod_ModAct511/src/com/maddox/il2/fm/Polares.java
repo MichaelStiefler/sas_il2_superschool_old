@@ -201,7 +201,6 @@ public class Polares extends FMMath
     {
         CyCritH = (2.0F * G) / (S * Ro * V_min * V_min);
         AOACritH = AOA_crit;
-        boolean flag = false;
         float f = 10000F;
         float f8 = 0.0F;
         float f9 = 0.0F;
@@ -228,7 +227,6 @@ label0:
                         setCoeffs(f6, f7);
                         if(lineCyCoeff > 0.12F || CxMin < 0.005F || AOAMinCx > 0.0F)
                             continue;
-                        byte byte0 = 1;
                         float f1 = -10000F;
                         float f12 = 0;
                         do
@@ -244,7 +242,6 @@ label0:
                         } while(true);
                         if(f1 > 1.3F * K_max || f1 < 0.6F * K_max)
                             continue;
-                        byte0 = 2;
                         float f2 = -10000F;
                         float f3 = 300F;
                         f12 = 25;
@@ -266,10 +263,8 @@ label0:
                         } while(true);
                         if(f2 > f2 + 3F || f2 < f2 - 3F)
                             continue;
-                        byte0 = 3;
                         if(f3 > 1.3F * V_climb || f3 < 0.7F * V_climb)
                             continue;
-                        byte0 = 4;
                         float f4 = 10000F;
                         float f5 = 300F;
                         for(f12 = 125; f12 > 40; f12--)
@@ -293,8 +288,6 @@ label0:
                             f5 = f12;
                         }
 
-                        byte0 = 5;
-                        byte0 = 6;
                         f12 = K_max - f1;
                         f12 = Math.abs(f12);
                         float f16 = Vz_climb - f2;
@@ -420,13 +413,9 @@ label0:
     public final void drawGraphs(String s, int fuel)
     {
         float f = -10000F;
-        float f1 = 0.0F;
-        float f3 = 0.0F;
-        float f5 = 0.0F;
-        float f7 = 0.0F;
         try
         {
-            PrintWriter printwriter = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(s + "_412_Polares.txt", 0))));
+            PrintWriter printwriter = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(s + "_MA520_Polares.txt", 0))));
             for(int i = -90; i < 90; i++)
                 printwriter.print(i + "\t");
 
@@ -475,7 +464,7 @@ label0:
         }
         try
         {
-            PrintWriter printwriter1 = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(s + "_412_" + (100 - fuel) + "fuel" + "_turn.txt", 0))));
+            PrintWriter printwriter1 = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(s + "_MA520_" + (100 - fuel) + "fuel" + "_turn.txt", 0))));
             for(int j1 = 120; j1 < 620; j1 += 2)
                 printwriter1.print(j1 + "\t");
 

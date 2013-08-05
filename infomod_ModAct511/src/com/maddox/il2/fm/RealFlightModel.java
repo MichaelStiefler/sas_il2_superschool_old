@@ -12,16 +12,12 @@ import com.maddox.il2.engine.*;
 import com.maddox.il2.game.*;
 import com.maddox.il2.objects.air.*;
 import com.maddox.il2.objects.effects.ForceFeedback;
-import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.rts.CmdEnv;
 import com.maddox.rts.Time;
-import com.maddox.sound.AudioStream;
 import com.maddox.sound.SoundFX;
 
-import java.io.PrintStream;
 import java.text.NumberFormat;
-import java.util.Random;
 
 // Referenced classes of package com.maddox.il2.fm:
 //            Autopilot, FlightModel, Autopilotage, Gear, 
@@ -304,14 +300,14 @@ public class RealFlightModel extends Pilot
         }
     }
 
-    private float MulForce(float f)
+/*    private float MulForce(float f)
     {
         if(f < 40F || f > 180F)
             return 1.0F;
         else
             return 1.0F + (70F - Math.abs(f - 110F)) * 0.04F;
     }
-
+*/
     public boolean isRealMode()
     {
         return RealMode;
@@ -435,9 +431,6 @@ public class RealFlightModel extends Pilot
             update(f * 0.5F);
             return;
         }
-        float f3 = 0.0F;
-        float f4 = 0.0F;
-        float f5 = 0.0F;
         if(!RealMode)
         {
             shakeLevel = 0.0F;
@@ -1319,15 +1312,12 @@ public class RealFlightModel extends Pilot
     private float lastAcc;
     private float ailerInfluence;
     private float rudderInfluence;
-    private float oldTime;
     private float deep;
     private float currDeep;
     private float indiffDnTime;
     private float knockDnTime;
     private float indiffUpTime;
     private float knockUpTime;
-    private final float MAX_DN_OL = 3.5F;
-    private final float MAX_UP_OL = 0.88F;
     public float saveDeep;
     private double su26add;
     private double spinCoeff;

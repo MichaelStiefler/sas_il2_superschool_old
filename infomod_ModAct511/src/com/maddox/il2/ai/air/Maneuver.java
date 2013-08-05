@@ -17,7 +17,6 @@ import com.maddox.il2.objects.ships.TestRunway;
 import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.il2.objects.weapons.*;
 import com.maddox.rts.*;
-import java.io.PrintStream;
 import java.util.*;
 import java.text.NumberFormat;
 
@@ -161,9 +160,7 @@ public class Maneuver extends AIFlightModel
 
     private boolean isStallable()
     {
-        if(actor instanceof TypeStormovik)
-            return false;
-        return !(actor instanceof TypeTransport);
+        return !(actor instanceof TypeStormovik) && !(actor instanceof TypeTransport);
     }
 
     private void resetControls()
@@ -182,6 +179,7 @@ public class Maneuver extends AIFlightModel
         shootingDeviation = 6F;
         sp = nShootingPoint(Skill);
         shootingPoint = sp;
+        wanderVector.set(World.Rnd().nextFloat(-1F, 1.0F), World.Rnd().nextFloat(-1F, 1.0F), World.Rnd().nextFloat(-1F, 1.0F));
         if(!dont_change_subm)
         {
             setSpeedMode(3);
@@ -192,30 +190,12 @@ public class Maneuver extends AIFlightModel
         dont_change_subm = false;
         if(maneuver != 48 && maneuver != 0 && maneuver != 26 && maneuver != 64 && maneuver != 102 && maneuver != 44)
             resetControls();
-        if(maneuver == 20 || maneuver == 25 || maneuver == 102 || maneuver == 1 || maneuver == 26 || maneuver == 69 || maneuver == 44 || maneuver == 49 || maneuver == 43 || maneuver == 50 || maneuver == 51 || maneuver == 73 || maneuver == 46 || maneuver == 84 || maneuver == 64 || maneuver == 95 || maneuver == 100)
-            setCheckGround(false);
-        else
-            setCheckGround(true);
-        if(maneuver == 24 || maneuver == 53 || maneuver == 68 || (maneuver == 59) | (maneuver == 82) || (maneuver == 8 || maneuver == 55 || maneuver == 27 || maneuver == 62 || maneuver == 63 || maneuver == 25 || maneuver == 102 || maneuver == 43 || maneuver == 50 || maneuver == 65 || maneuver == 44 || maneuver == 21 || maneuver == 64 || maneuver == 69 || maneuver == 76 || maneuver == 74 || maneuver == 75 || maneuver == 80 || maneuver == 87 || maneuver == 77 || maneuver == 99 || maneuver == 83 || maneuver == 100 || maneuver == 101 || maneuver == 98))
-            frequentControl = true;
-        else
-            frequentControl = false;
-        if(maneuver == 25 || maneuver == 26 || maneuver == 69 || maneuver == 70)
-            turnOnChristmasTree(true);
-        else
-            turnOnChristmasTree(false);
-        if(maneuver == 25)
-            turnOnCloudShine(true);
-        else
-            turnOnCloudShine(false);
-        if(maneuver == 60 || maneuver == 61 || maneuver == 102 || maneuver == 1 || maneuver == 24 || maneuver == 26 || maneuver == 69 || maneuver == 64 || maneuver == 44)
-            checkStrike = false;
-        else
-            checkStrike = true;
-        if(maneuver == 44 || maneuver == 1 || maneuver == 48 || maneuver == 0 || maneuver == 26 || maneuver == 69 || maneuver == 64 || maneuver == 43 || maneuver == 50 || maneuver == 51 || maneuver == 52 || maneuver == 47 || maneuver == 71 || maneuver == 72 || maneuver == 102)
-            stallable = false;
-        else
-            stallable = true;
+        setCheckGround(maneuver != 20 && maneuver != 25 && maneuver != 102 && maneuver != 1 && maneuver != 26 && maneuver != 69 && maneuver != 44 && maneuver != 49 && maneuver != 43 && maneuver != 50 && maneuver != 51 && maneuver != 73 && maneuver != 46 && maneuver != 84 && maneuver != 64 && maneuver != 95 && maneuver != 100);
+        frequentControl = maneuver == 24 || maneuver == 53 || maneuver == 68 || (maneuver == 59) | (maneuver == 82) || (maneuver == 8 || maneuver == 55 || maneuver == 27 || maneuver == 62 || maneuver == 63 || maneuver == 25 || maneuver == 102 || maneuver == 43 || maneuver == 50 || maneuver == 65 || maneuver == 44 || maneuver == 21 || maneuver == 64 || maneuver == 69 || maneuver == 76 || maneuver == 74 || maneuver == 75 || maneuver == 80 || maneuver == 87 || maneuver == 77 || maneuver == 99 || maneuver == 83 || maneuver == 100 || maneuver == 101 || maneuver == 98);
+        turnOnChristmasTree(maneuver == 25 || maneuver == 26 || maneuver == 69 || maneuver == 70);
+        turnOnCloudShine(maneuver == 25);
+        checkStrike = maneuver != 60 && maneuver != 61 && maneuver != 102 && maneuver != 1 && maneuver != 24 && maneuver != 26 && maneuver != 69 && maneuver != 64 && maneuver != 44;
+        stallable = maneuver != 44 && maneuver != 1 && maneuver != 48 && maneuver != 0 && maneuver != 26 && maneuver != 69 && maneuver != 64 && maneuver != 43 && maneuver != 50 && maneuver != 51 && maneuver != 52 && maneuver != 47 && maneuver != 71 && maneuver != 72 && maneuver != 102;
         if(maneuver == 44 || maneuver == 1 || maneuver == 26 || maneuver == 69 || maneuver == 64 || maneuver == 2 || maneuver == 84 || maneuver == 57 || maneuver == 60 || maneuver == 61 || maneuver == 43 || maneuver == 50 || maneuver == 51 || maneuver == 52 || maneuver == 47 || maneuver == 29 || maneuver == 71 || maneuver == 72 || maneuver == 88 || maneuver == 89 || maneuver == 90 || maneuver == 91 || maneuver == 86 || maneuver == 102)
             setBusy(true);
     }
@@ -327,7 +307,7 @@ public class Maneuver extends AIFlightModel
         radius = 50D;
         pointQuality = -1;
         curPointQuality = 50;
-        tLoc = new Loc();
+//        tLoc = new Loc();
         saveOr = new Orient();
         oldVe = new Vector3d();
         Vtarg = new Vector3d();
@@ -350,6 +330,7 @@ public class Maneuver extends AIFlightModel
         if(cCoeff > 1.01F)
             cCoeff = 1.01F;
         lookAroundTime = Time.current() + (long)World.Rnd().nextInt(30000, 0x30d40 - Skill * 40000);
+        wanderVector.set(World.Rnd().nextFloat(-1F, 1.0F), World.Rnd().nextFloat(-1F, 1.0F), World.Rnd().nextFloat(-1F, 1.0F));
     }
 
     public void decDangerAggressiveness()
@@ -478,12 +459,12 @@ public class Maneuver extends AIFlightModel
         decDangerAggressiveness();
         if(Loc.z < -20D)
             ((Aircraft)actor).postEndAction(0.0D, actor, 4, null);
-        LandHQ = (float)Engine.land().HQ_Air(Loc.x, Loc.y);
+        float f1 = (float)Engine.land().HQ_Air(Loc.x, Loc.y);
         Po.set(Vwld);
         Po.scale(3D);
         Po.add(Loc);
-        LandHQ = (float)Math.max(LandHQ, Engine.land().HQ_Air(Po.x, Po.y));
-        Alt = (float)Loc.z - LandHQ;
+        f1 = (float)Math.max(f1, Engine.land().HQ_Air(Po.x, Po.y));
+        Alt = (float)Loc.z - f1;
         indSpeed = getSpeed() * (float)Math.sqrt(Density / 1.225F);
         if(!Gears.onGround() && isOk() && Alt > 8F)
         {
@@ -574,15 +555,15 @@ public class Maneuver extends AIFlightModel
                 CT.AileronControl = 1.0F;
                 CT.RudderControl = -1F;
             }
-            float f1 = Or.getKren();
-            if(f1 > -90F && f1 < 90F)
+            float f2 = Or.getKren();
+            if(f2 > -90F && f2 < 90F)
             {
-                float f4 = 0.01111F * (90F - Math.abs(f1));
-                CT.ElevatorControl = -0.08F * f4 * (Or.getTangage() - 3F);
+                float f5 = 0.01111F * (90F - Math.abs(f2));
+                CT.ElevatorControl = -0.08F * f5 * (Or.getTangage() - 3F);
             } else
             {
-                float f5 = 0.01111F * (Math.abs(f1) - 90F);
-                CT.ElevatorControl = 0.08F * f5 * (Or.getTangage() - 3F);
+                float f6 = 0.01111F * (Math.abs(f2) - 90F);
+                CT.ElevatorControl = 0.08F * f6 * (Or.getTangage() - 3F);
             }
             if(getSpeed() < (1.0F + 0.7F / (float)(1 + flying)) * Vmin)
                 pop();
@@ -694,6 +675,7 @@ public class Maneuver extends AIFlightModel
                 Or.transformInv(Ve);
                 Ve.normalize();
                 turnToDirection(10F);
+                desiredAlt = (float)tmpLoc.z;
                 submaneuver++;
                 break;
 
@@ -707,7 +689,7 @@ public class Maneuver extends AIFlightModel
                     submaneuver++;
                 }
                 Ve.normalize();
-                attackTurnToDirection2(dist, f, 10F);
+                attackTurnToDirection(dist, f, 10F);
                 break;
 
             case 2: // '\002'
@@ -715,7 +697,25 @@ public class Maneuver extends AIFlightModel
                 dist = (float)Ve.length();
                 Or.transformInv(Ve);
                 Ve.normalize();
-                attackTurnToDirection2(dist, f, 10F);
+                attackTurnToDirection(dist, f, 10F);
+                if(dist < 300F)
+                    submaneuver++;
+                break;
+
+            case 3: // '\003'
+                dA = Or.getKren();
+                if(dA > 0.0F)
+                    dA -= 45F;
+                else
+                    dA -= 315F;
+                if(dA < -180F)
+                    dA += 360F;
+                dA = -0.01F * dA;
+                CT.AileronControl = dA;
+                dA = 0.002F * ((desiredAlt - (float)Loc.z) + 250F);
+                if(dA > 0.66F)
+                    dA = 0.66F;
+                CT.ElevatorControl = -0.04F * (Or.getTangage() - 1.0F) + dA;
                 if(actionTimerStop < Time.current())
                 {
                     ((Aircraft)actor).bSpotter = false;
@@ -811,9 +811,9 @@ public class Maneuver extends AIFlightModel
                 int i = World.Rnd().nextInt(0, 100);
                 if(i < 30)
                 {
-                    float f10 = World.Rnd().nextFloat(0.4F, 0.8F);
+                    float f11 = World.Rnd().nextFloat(0.4F, 0.8F);
                     setSpeedMode(4);
-                    smConstSpeed = Vmax * f10;
+                    smConstSpeed = Vmax * f11;
                 } else
                 {
                     setSpeedMode(11);
@@ -822,9 +822,9 @@ public class Maneuver extends AIFlightModel
                 break;
 
             case 2: // '\002'
-                float f8 = getAltitude() - desiredAlt;
-                errorAlt = f8 - oldError;
-                oldError = f8;
+                float f9 = getAltitude() - desiredAlt;
+                errorAlt = f9 - oldError;
+                oldError = f9;
                 if((double)getOverload() < 2.5D + 1.0D / Math.abs(Math.cos(DEG2RAD(dA))) && AOA < AOA_Crit * 0.95F)
                 {
                     CT.ElevatorControl = 1.0F;
@@ -836,7 +836,7 @@ public class Maneuver extends AIFlightModel
                     if(CT.bHasElevatorTrim)
                         CT.setTrimElevatorControl(0.0F);
                 }
-                if(f8 > 0.0F)
+                if(f9 > 0.0F)
                 {
                     if(errorAlt > 0.0F)
                     {
@@ -851,7 +851,7 @@ public class Maneuver extends AIFlightModel
                         else
                             bankAngle -= 0.4F;
                 } else
-                if(f8 < 0.0F)
+                if(f9 < 0.0F)
                     if(errorAlt < 0.0F)
                     {
                         if(bankAngle > 180F)
@@ -902,7 +902,7 @@ public class Maneuver extends AIFlightModel
                 pop();
                 break;
             }
-            float f9 = (target.Energy - Energy) * 0.1019F;
+            float f10 = (target.Energy - Energy) * 0.1019F;
             dist = (float)Ve.length();
             if(target != null && dist < 700F && VisCheck.checkLeadShotBlock((Aircraft)actor, (Aircraft)target.actor))
             {
@@ -929,14 +929,14 @@ public class Maneuver extends AIFlightModel
                 }
                 if(Ve.x > 0.98999999999999999D && dist <= convAI)
                 {
-                    setSpeedMode(1);
+                    setSpeedMode(2);
                     tailForStaying = target;
                     tailOffset.set(-convAI * 0.6F, 0.0D, 0.0D);
                 } else
                 {
                     setSpeedMode(11);
                 }
-                if(mn_time > 30F && Ve.x < -0.5D || mn_time > 60F || f9 > 150F)
+                if(mn_time > 30F && Ve.x < -0.5D || mn_time > 60F || f10 > 150F)
                 {
                     CT.setTrimElevatorControl(0.0F);
                     mn_time = 0.0F;
@@ -1081,9 +1081,10 @@ public class Maneuver extends AIFlightModel
                 setSpeedMode(11);
             else
                 setSpeedMode(8);
+            dA = Or.getKren();
             CT.BayDoorControl = 0.0F;
             CT.AirBrakeControl = 0.0F;
-            CT.AileronControl = -0.04F * (dA = Or.getKren());
+            CT.AileronControl = -0.04F * dA;
             CT.ElevatorControl = 1.0F + 0.3F * (float)getW().y;
             if(CT.ElevatorControl < 0.0F)
                 CT.ElevatorControl = 0.0F;
@@ -1123,58 +1124,58 @@ public class Maneuver extends AIFlightModel
                 setSpeedMode(8);
             CT.BayDoorControl = 0.0F;
             CT.AirBrakeControl = 0.0F;
-            float f11 = Math.min(Or.getPitch(), 375F);
+            float f12 = Math.min(Or.getPitch(), 375F);
             int j = 35;
             boolean flag = true;
-            float f12 = 0.0003F * M.getFullMass();
-            float f13 = 2.0F;
+            float f13 = 0.0003F * M.getFullMass();
+            float f14 = 2.0F;
             if(target != null || danger != null)
-                f13 = 1.7F - 0.1F * (float)Skill * (float)courage;
-            float f14 = (float)Math.sqrt(Vrel.x * Vrel.x + Vrel.y * Vrel.y);
-            float f15 = f14 * 0.12F * f12 * f13 * koeff;
-            if(f15 > 3000F)
-                f15 = 3000F;
-            if(f15 < koeff * 5F)
-                f15 = koeff * 5F;
+                f14 = 1.7F - 0.1F * (float)Skill * (float)courage;
+            float f15 = (float)Math.sqrt(Vrel.x * Vrel.x + Vrel.y * Vrel.y);
+            float f16 = f15 * 0.12F * f13 * f14 * koeff;
+            if(f16 > 3000F)
+                f16 = 3000F;
+            if(f16 < koeff * 5F)
+                f16 = koeff * 5F;
             float af[] = {
                 1.0F, 1.0F, 1.0F
             };
             Po.set(Loc);
-            Vpl.set(f15 * 1.0F, 0.0D, -100D);
-            tmpOr.setYPR(Or.getYaw(), f11, 0.0F);
+            Vpl.set(f16, 0.0D, -100D);
+            tmpOr.setYPR(Or.getYaw(), f12, 0.0F);
             tmpOr.transform(Vpl);
             Po.add(Vpl);
             if(Landscape.rayHitHQ(actor.pos.getAbsPoint(), Po, tempPoint))
             {
                 flag = false;
-                af[0] = (float)Loc.distance(tempPoint) / f15;
+                af[0] = (float)Loc.distance(tempPoint) / f16;
             }
             Po.set(Loc);
-            f15 = Math.max(koeff * 5F, f15);
-            Vpl.set(f15, 0.0D, 0.0D);
-            float f16 = Or.getYaw() + (float)j;
-            if(f16 < -180F)
-                f16 = 360F - f16;
-            tmpOr.setYPR(f16, f11, 0.0F);
+            f16 = Math.max(koeff * 5F, f16);
+            Vpl.set(f16, 0.0D, 0.0D);
+            float f17 = Or.getYaw() + (float)j;
+            if(f17 < -180F)
+                f17 = 360F - f17;
+            tmpOr.setYPR(f17, f12, 0.0F);
             tmpOr.transform(Vpl);
             Po.add(Vpl);
             if(Landscape.rayHitHQ(actor.pos.getAbsPoint(), Po, tempPoint))
             {
                 flag = false;
-                af[1] = (float)Loc.distance(tempPoint) / f15;
+                af[1] = (float)Loc.distance(tempPoint) / f16;
             }
             Po.set(Loc);
-            Vpl.set(f15, 0.0D, 0.0D);
-            f16 = Or.getYaw() - (float)j;
-            if(f16 > 180F)
-                f16 -= 360F;
-            tmpOr.setYPR(f16, f11, 0.0F);
+            Vpl.set(f16, 0.0D, 0.0D);
+            f17 = Or.getYaw() - (float)j;
+            if(f17 > 180F)
+                f17 -= 360F;
+            tmpOr.setYPR(f17, f12, 0.0F);
             tmpOr.transform(Vpl);
             Po.add(Vpl);
             if(Landscape.rayHitHQ(actor.pos.getAbsPoint(), Po, tempPoint))
             {
                 flag = false;
-                af[2] = (float)Loc.distance(tempPoint) / f15;
+                af[2] = (float)Loc.distance(tempPoint) / f16;
             }
             bankAngle = 0.0F;
             dA = Or.getKren();
@@ -1217,8 +1218,8 @@ public class Maneuver extends AIFlightModel
                     {
                         Vpl.sub(AP.way.curr().getP(), actor.pos.getAbsPoint());
                         Vpl.normalize();
-                        float f17 = Math.min(AP.getWayPointDistance(), 4000F);
-                        Vpl.scale(f17);
+                        float f18 = Math.min(AP.getWayPointDistance(), 4000F);
+                        Vpl.scale(f18);
                         Po.set(Loc);
                         Po.add(Vpl);
                         Pd.set(Po);
@@ -1294,10 +1295,13 @@ public class Maneuver extends AIFlightModel
             CT.AileronControl = -0.04F * Or.getKren();
             dA = CT.ElevatorControl;
             if(Or.getTangage() > 15F)
+            {
                 dA -= (Or.getTangage() - 15F) * 0.1F * f;
-            else
+            } else
+            {
                 dA = (((float)Vwld.length() / VminFLAPS) * 140F - 50F - Or.getTangage() * 20F) * 0.004F;
-            dA += 0.5D * getW().y;
+                dA += 0.5D * getW().y;
+            }
             CT.ElevatorControl = dA;
             if(Alt > 250F && mn_time > 6F || mn_time > 20F)
                 pop();
@@ -1637,15 +1641,15 @@ public class Maneuver extends AIFlightModel
             }
             CT.AileronControl = 1.0F * (float)submaneuver;
             CT.RudderControl = 0.0F * (float)submaneuver;
-            float f2 = Or.getKren();
-            if(f2 > -90F && f2 < 90F)
+            float f3 = Or.getKren();
+            if(f3 > -90F && f3 < 90F)
             {
-                float f6 = 0.01111F * (90F - Math.abs(f2));
-                CT.ElevatorControl = -0.08F * f6 * (Or.getTangage() - 3F);
+                float f7 = 0.01111F * (90F - Math.abs(f3));
+                CT.ElevatorControl = -0.08F * f7 * (Or.getTangage() - 3F);
             } else
             {
-                float f7 = 0.01111F * (90F - Math.abs(f2));
-                CT.ElevatorControl = 0.08F * f7 * (Or.getTangage() - 3F);
+                float f8 = 0.01111F * (90F - Math.abs(f3));
+                CT.ElevatorControl = 0.08F * f8 * (Or.getTangage() - 3F);
             }
             if(Or.getKren() * direction < 0.0F)
                 tmpi = 1;
@@ -1743,29 +1747,29 @@ public class Maneuver extends AIFlightModel
             }
             if(danger != null)
             {
-                float f18 = 700F - (float)danger.Loc.distance(Loc);
-                if(f18 < 0.0F)
-                    f18 = 0.0F;
-                f18 *= 0.00143F;
-                float f3 = Or.getKren();
+                float f19 = 700F - (float)danger.Loc.distance(Loc);
+                if(f19 < 0.0F)
+                    f19 = 0.0F;
+                f19 *= 0.00143F;
+                float f4 = Or.getKren();
                 if(sub_Man_Count == 0 || first)
                 {
                     if(raAilShift < 0.0F)
-                        raAilShift = f18 * World.Rnd().nextFloat(0.6F, 1.0F);
+                        raAilShift = f19 * World.Rnd().nextFloat(0.6F, 1.0F);
                     else
-                        raAilShift = f18 * World.Rnd().nextFloat(-1F, -0.6F);
-                    raRudShift = f18 * World.Rnd().nextFloat(-0.5F, 0.5F);
-                    raElevShift = f18 * World.Rnd().nextFloat(-0.8F, 0.8F);
+                        raAilShift = f19 * World.Rnd().nextFloat(-1F, -0.6F);
+                    raRudShift = f19 * World.Rnd().nextFloat(-0.5F, 0.5F);
+                    raElevShift = f19 * World.Rnd().nextFloat(-0.8F, 0.8F);
                 }
                 CT.AileronControl = 0.9F * CT.AileronControl + 0.1F * raAilShift;
                 CT.RudderControl = 0.95F * CT.RudderControl + 0.05F * raRudShift;
-                if(f3 > -90F && f3 < 90F)
+                if(f4 > -90F && f4 < 90F)
                     CT.ElevatorControl = -0.04F * (Or.getTangage() + 5F);
                 else
                     CT.ElevatorControl = 0.05F * (Or.getTangage() + 5F);
                 CT.ElevatorControl += 0.1F * raElevShift;
                 sub_Man_Count++;
-                if((float)sub_Man_Count >= 80F * (1.5F - f18) && f3 > -70F && f3 < 70F)
+                if((float)sub_Man_Count >= 80F * (1.5F - f19) && f4 > -70F && f4 < 70F)
                     sub_Man_Count = 0;
                 if(mn_time > 30F)
                     pop();
@@ -2072,24 +2076,24 @@ public class Maneuver extends AIFlightModel
                     World.cur();
                     if(((Aircraft)actor).getRegiment() == World.getPlayerAircraft().getRegiment())
                     {
-                        float f19 = 1E+012F;
+                        float f20 = 1E+012F;
                         if(AP.way.curr().Action == 3)
                         {
-                            f19 = AP.getWayPointDistance();
+                            f20 = AP.getWayPointDistance();
                         } else
                         {
                             int k = AP.way.Cur();
                             AP.way.next();
                             if(AP.way.curr().Action == 3)
-                                f19 = AP.getWayPointDistance();
+                                f20 = AP.getWayPointDistance();
                             AP.way.setCur(k);
                         }
-                        if(Speak5minutes == 0 && 22000F < f19 && f19 < 30000F)
+                        if(Speak5minutes == 0 && 22000F < f20 && f20 < 30000F)
                         {
                             Voice.speak5minutes((Aircraft)actor);
                             Speak5minutes = 1;
                         }
-                        if(Speak1minute == 0 && f19 < 10000F)
+                        if(Speak1minute == 0 && f20 < 10000F)
                         {
                             Voice.speak1minute((Aircraft)actor);
                             Speak1minute = 1;
@@ -2180,7 +2184,7 @@ public class Maneuver extends AIFlightModel
             break;
 
         case 24: // '\030'
-            if(Leader == null || !Actor.isAlive(Leader.actor) || !((Maneuver)Leader).isOk() || ((Maneuver)Leader).isBusy() && (!(Leader instanceof RealFlightModel) || !((RealFlightModel)Leader).isRealMode()))
+            if(Leader == null || !Actor.isAlive(Leader.actor) || !Leader.isOk() || ((Maneuver)Leader).isBusy() && (!(Leader instanceof RealFlightModel) || !((RealFlightModel)Leader).isRealMode()))
             {
                 if(Group.grTask == 7)
                 {
@@ -2215,30 +2219,7 @@ public class Maneuver extends AIFlightModel
                 }
                 break;
             }
-            if(!Leader.AP.way.isLanding())
-            {
-                AP.way.setCur(Leader.AP.way.Cur());
-                if(!bombsOut && ((Maneuver)Leader).bombsOut && Leader.isCapableOfACM() && !Leader.isReadyToDie() && !Leader.isReadyToReturn())
-                {
-                    bombsOut = true;
-                    for(Maneuver maneuver1 = this; maneuver1.Wingman != null;)
-                    {
-                        maneuver1 = (Maneuver)maneuver1.Wingman;
-                        maneuver1.bombsOut = true;
-                    }
-
-                }
-                if(CT.BayDoorControl != Leader.CT.BayDoorControl)
-                {
-                    CT.BayDoorControl = Leader.CT.BayDoorControl;
-                    for(Pilot pilot = (Pilot)this; pilot.Wingman != null;)
-                    {
-                        pilot = (Pilot)pilot.Wingman;
-                        pilot.CT.BayDoorControl = CT.BayDoorControl;
-                    }
-
-                }
-            } else
+            if(Leader.AP.way.isLanding())
             {
                 if(Leader.Wingman != this)
                 {
@@ -2250,54 +2231,79 @@ public class Maneuver extends AIFlightModel
                 }
                 Leader = null;
                 pop();
-                break;
-            }
-            airClient = Leader;
-            tmpOr.setAT0(airClient.Vwld);
-            tmpOr.increment(0.0F, airClient.getAOA(), 0.0F);
-            Ve.set(followOffset);
-            Ve.x -= 300D;
-            tmpV3f.sub(followTargShift, followCurShift);
-            if(tmpV3f.lengthSquared() < 0.5D)
-                followTargShift.set(World.cur().rnd.nextFloat(-0F, 10F), World.cur().rnd.nextFloat(-5F, 5F), World.cur().rnd.nextFloat(-3.5F, 3.5F));
-            tmpV3f.normalize();
-            tmpV3f.scale(2.0F * f);
-            followCurShift.add(tmpV3f);
-            Ve.add(followCurShift);
-            tmpOr.transform(Ve, Po);
-            Po.scale(-1D);
-            Po.add(airClient.Loc);
-            Ve.sub(Po, Loc);
-            Or.transformInv(Ve);
-            dist = (float)Ve.length();
-            if(followOffset.x > 600D)
+            } else
             {
+                AP.way.setCur(Leader.AP.way.Cur());
+                if(Leader.Wingman != this)
+                {
+                    if(!bombsOut && ((Maneuver)Leader).bombsOut && Leader.isCapableOfACM() && !Leader.isReadyToDie() && !Leader.isReadyToReturn())
+                    {
+                        bombsOut = true;
+                        for(Maneuver maneuver1 = this; maneuver1.Wingman != null;)
+                        {
+                            maneuver1 = (Maneuver)maneuver1.Wingman;
+                            maneuver1.bombsOut = true;
+                        }
+
+                    }
+                    if(CT.BayDoorControl != Leader.CT.BayDoorControl)
+                    {
+                        CT.BayDoorControl = Leader.CT.BayDoorControl;
+                        for(Pilot pilot = (Pilot)this; pilot.Wingman != null;)
+                        {
+                            pilot = (Pilot)pilot.Wingman;
+                            pilot.CT.BayDoorControl = CT.BayDoorControl;
+                        }
+
+                    }
+                }
+                airClient = Leader;
+                tmpOr.setAT0(airClient.Vwld);
+                tmpOr.increment(0.0F, airClient.getAOA(), 0.0F);
                 Ve.set(followOffset);
-                Ve.x -= 0.5D * followOffset.x;
+                Ve.x -= 300D;
+                tmpV3f.sub(followTargShift, followCurShift);
+                if(tmpV3f.lengthSquared() < 0.5D)
+                    followTargShift.set(World.cur().rnd.nextFloat(-0F, 10F), World.cur().rnd.nextFloat(-5F, 5F), World.cur().rnd.nextFloat(-3.5F, 3.5F));
+                tmpV3f.normalize();
+                tmpV3f.scale(2.0F * f);
+                followCurShift.add(tmpV3f);
+                Ve.add(followCurShift);
                 tmpOr.transform(Ve, Po);
                 Po.scale(-1D);
                 Po.add(airClient.Loc);
                 Ve.sub(Po, Loc);
                 Or.transformInv(Ve);
-            }
-            Ve.normalize();
-            if((double)dist > 600D + Ve.x * 400D)
-            {
-                push();
-                push(53);
-                pop();
-            } else
-            {
-                if((actor instanceof TypeTransport) && (double)Vmax < 70D)
-                    farTurnToDirection(6.2F);
-                else
-                    attackTurnToDirection(dist, f, 10F);
-                setSpeedMode(10);
-                tailForStaying = Leader;
-                tailOffset.set(followOffset);
-                tailOffset.scale(-1D);
-                if(isTick(256, 0))
-                    checkBlindSpots();
+                dist = (float)Ve.length();
+                if(followOffset.x > 600D)
+                {
+                    Ve.set(followOffset);
+                    Ve.x -= 0.5D * followOffset.x;
+                    tmpOr.transform(Ve, Po);
+                    Po.scale(-1D);
+                    Po.add(airClient.Loc);
+                    Ve.sub(Po, Loc);
+                    Or.transformInv(Ve);
+                }
+                Ve.normalize();
+                if((double)dist > 600D + Ve.x * 400D)
+                {
+                    push();
+                    push(53);
+                    pop();
+                } else
+                {
+                    if((actor instanceof TypeTransport) && (double)Vmax < 70D)
+                        farTurnToDirection(6.2F);
+                    else
+                        attackTurnToDirection(dist, f, 10F);
+                    setSpeedMode(10);
+                    tailForStaying = Leader;
+                    tailOffset.set(followOffset);
+                    tailOffset.scale(-1D);
+                    if(isTick(256, 0))
+                        checkBlindSpots();
+                }
             }
             break;
 
@@ -2413,8 +2419,8 @@ public class Maneuver extends AIFlightModel
                     farTurnToDirection(8.5F);
                 else
                     farTurnToDirection(7F);
-                float f20 = (Energy - airClient.Energy) * 0.1019F;
-                if((double)f20 < -50D + followOffset.z)
+                float f21 = (Energy - airClient.Energy) * 0.1019F;
+                if((double)f21 < -50D + followOffset.z)
                     setSpeedMode(9);
                 else
                     setSpeedMode(10);
@@ -2542,7 +2548,7 @@ public class Maneuver extends AIFlightModel
                 set_maneuver(0);
             } else
             {
-                Maneuver maneuver6 = (Maneuver)airClient;
+//                Maneuver maneuver6 = (Maneuver)airClient;
                 Maneuver maneuver11 = (Maneuver)((Maneuver)airClient).danger;
                 if(maneuver11 != null && hasCourseWeaponBullets() && !maneuver11.isTakenMortalDamage())
                 {
@@ -2651,8 +2657,8 @@ public class Maneuver extends AIFlightModel
                     beNearOffsPhase++;
                     if(beNearOffsPhase > 3)
                         beNearOffsPhase = 0;
-                    float f23 = (float)Math.sqrt(followOffset.x * followOffset.x + followOffset.y * followOffset.y);
-                    followOffset.set(f23 * (float)Math.sin((float)beNearOffsPhase * 1.5708F), f23 * (float)Math.cos((float)beNearOffsPhase * 1.5708F), followOffset.z);
+                    float f24 = (float)Math.sqrt(followOffset.x * followOffset.x + followOffset.y * followOffset.y);
+                    followOffset.set(f24 * (float)Math.sin((float)beNearOffsPhase * 1.5708F), f24 * (float)Math.cos((float)beNearOffsPhase * 1.5708F), followOffset.z);
                 }
                 if(AOA > 12F && Alt > 15F)
                     Or.increment(0.0F, 12F - AOA, 0.0F);
@@ -2744,17 +2750,18 @@ public class Maneuver extends AIFlightModel
                     ((Maneuver)target).danger = this;
                 if(isTick(64, 0))
                 {
-                    float f21 = (target.Energy - Energy) * 0.1019F;
+                    float f22 = (target.Energy - Energy) * 0.1019F;
                     Ve.sub(target.Loc, Loc);
                     Or.transformInv(Ve);
                     Ve.normalize();
-                    float f24 = (470F + (float)Ve.x * 120F) - f21;
-                    if(f24 < 0.0F)
+                    float f25 = (470F + (float)Ve.x * 120F) - f22;
+                    if(f25 < 0.0F)
                     {
                         clear_stack();
                         set_maneuver(62);
                     }
                 }
+                minElevCoeff = 20F;
                 fighterVsFighter(f);
                 if(AOA > AOA_Crit - 1.0F && Alt > 15F)
                     Or.increment(0.0F, 0.01F * (AOA_Crit - 1.0F - AOA), 0.0F);
@@ -2859,7 +2866,7 @@ public class Maneuver extends AIFlightModel
                 dist = (float)Ve.length();
                 Or.transformInv(Ve);
                 Ve.normalize();
-                attackTurnToDirection2(dist, f, 4F + (float)Skill * 4F);
+                attackTurnToDirection(dist, f, 4F + (float)Skill * 4F);
                 setSpeedMode(9);
                 if(AOA > AOA_Crit - 1.0F && Alt > 15F)
                     Or.increment(0.0F, 0.01F * (AOA_Crit - 1.0F - AOA), 0.0F);
@@ -3169,9 +3176,9 @@ public class Maneuver extends AIFlightModel
                         sub_Man_Count = 0;
                         if(!VisCheck.seekCheck((Aircraft)actor, (Aircraft)target.actor))
                         {
-                            float f25 = Math.abs(target.getOverload());
-                            float f27 = dist * 0.05F;
-                            if(World.Rnd().nextFloat(0.0F, 70F + (float)Skill * 10F) > 10F + f25 * 5F + f27)
+                            float f26 = Math.abs(target.getOverload());
+                            float f28 = dist * 0.05F;
+                            if(World.Rnd().nextFloat(0.0F, 70F + (float)Skill * 10F) > 10F + f26 * 5F + f28)
                                 submaneuver--;
                             else
                                 submaneuver++;
@@ -3338,12 +3345,12 @@ public class Maneuver extends AIFlightModel
                     maneuver = 70;
                 AP.way.curr().getP(Po);
                 int i1 = AP.way.Cur();
-                float f28 = (float)Loc.z - AP.way.last().z();
+                float f29 = (float)Loc.z - AP.way.last().z();
                 AP.way.setCur(i1);
-                Alt = Math.min(Alt, f28);
+                Alt = Math.min(Alt, f29);
                 Po.add(0.0D, 0.0D, -3D);
                 Ve.sub(Po, Loc);
-                float f29 = (float)Ve.length();
+                float f30 = (float)Ve.length();
                 boolean flag4 = Alt > 4.5F + Gears.H && AP.way.Cur() < 8;
                 if(AP.way.isLandingOnShip())
                     flag4 = Alt > 4.5F + Gears.H && AP.way.Cur() < 8;
@@ -3354,7 +3361,7 @@ public class Maneuver extends AIFlightModel
                     AP.way.next();
                     tmpV3f.sub(Po, Pc);
                     tmpV3f.normalize();
-                    if(tmpV3f.dot(Ve) < 0.0D && f29 > 1000F && !TaxiMode)
+                    if(tmpV3f.dot(Ve) < 0.0D && f30 > 1000F && !TaxiMode)
                     {
                         AP.way.first();
                         push(10);
@@ -3365,7 +3372,7 @@ public class Maneuver extends AIFlightModel
                     tmpV3f.scale(-f33);
                     tmpV3f.add(Po, tmpV3f);
                     tmpV3f.sub(Loc);
-                    float f37 = 0.0005F * (3000F - f29);
+                    float f37 = 0.0005F * (3000F - f30);
                     if(f37 > 1.0F)
                         f37 = 1.0F;
                     if(f37 < 0.1F)
@@ -3529,10 +3536,10 @@ public class Maneuver extends AIFlightModel
                             Vwld.z *= 0.9100000262260437D;
                     }
                 }
-                float f26 = Gears.Pitch - 2.0F;
-                if(f26 < 5F)
-                    f26 = 5F;
-                if(Alt < 7F && Or.getTangage() < f26 || AP.way.isLandingOnShip())
+                float f27 = Gears.Pitch - 2.0F;
+                if(f27 < 5F)
+                    f27 = 5F;
+                if(Alt < 7F && Or.getTangage() < f27 || AP.way.isLandingOnShip())
                     CT.ElevatorControl += 1.5F * f;
                 CT.ElevatorControl += 0.05000000074505806D * getW().y;
                 if(Gears.onGround())
@@ -3704,7 +3711,7 @@ public class Maneuver extends AIFlightModel
                         }
                         if(f32 < 2.0F)
                             f32 = 2.0F;
-                        boolean flag5 = false;
+//                        boolean flag5 = false;
                         if(distToTaxiPoint < 5F + actor.collisionR() * 0.75F + Gears.mgx * 2.0F)
                         {
                             f32 = 0.01F;
@@ -3805,7 +3812,6 @@ public class Maneuver extends AIFlightModel
 
         case 26: // '\032'
             Po.set(Loc);
-            float f30 = 8F;
             if((long)AP.way.first().delayTimer * 60000L > Time.current())
                 return;
             int l1 = ((Aircraft)actor).aircIndex();
@@ -3922,16 +3928,16 @@ public class Maneuver extends AIFlightModel
             {
                 CT.BrakeControl = 0.0F;
                 brakeShoe = false;
-                float f43 = (float)((double)Vmin * Math.sqrt(M.getFullMass() / M.referenceWeight));
-                float f46 = 12F * (getSpeed() / f43);
+                float f43 = (float)((double)((Vmin + VminFLAPS) * 0.5F) * Math.sqrt(M.getFullMass() / M.referenceWeight));
+                float f46 = (AOA_Crit - 2.0F) * (getSpeed() / f43);
                 if(Gears.bIsSail)
                     f46 *= 2.0F;
                 if(Gears.bFrontWheel)
                     f46 = Gears.Pitch + 4F;
                 if(f46 < 1.0F)
                     f46 = 1.0F;
-                if(f46 > 12F)
-                    f46 = 12F;
+                if(f46 > AOA_Crit - 2.0F)
+                    f46 = AOA_Crit - 2.0F;
                 float f48 = 1.5F;
                 if(Actor.isAlive(AP.way.takeoffAirport) && (AP.way.takeoffAirport instanceof AirportCarrier))
                 {
@@ -3951,7 +3957,7 @@ public class Maneuver extends AIFlightModel
                     }
                 }
                 if(Or.getTangage() < f46)
-                    dA = -0.7F * (Or.getTangage() - f46) * f43 + f48 * (float)getW().y + 0.5F * (float)getAW().y;
+                    dA = -0.7F * (Or.getTangage() - f46) + f48 * (float)getW().y + 0.5F * (float)getAW().y;
                 else
                     dA = -0.1F * (Or.getTangage() - f46) + f48 * (float)getW().y + 0.5F * (float)getAW().y;
                 CT.ElevatorControl += (dA - CT.ElevatorControl) * 3F * f;
@@ -4009,7 +4015,11 @@ public class Maneuver extends AIFlightModel
                 if(Group.numInGroup((Aircraft)actor) == 0 && Group.grTask == 7)
                     Group.setGroupTask(1);
                 if(AP.way.first().waypointType == 4 || AP.way.prev().waypointType == 5)
-                    AP.way.setCur(curAirdromePoi + 1);
+                {
+                    AP.way.setCur(curAirdromePoi);
+                    curAirdromePoi = 0;
+                    wayCurPos = null;
+                }
             }
             if(actor instanceof TypeGlider)
             {
@@ -4148,8 +4158,8 @@ public class Maneuver extends AIFlightModel
                     else
                         sinKren = World.Rnd().nextFloat(60F, 90F);
                 }
-                float f22 = (Energy - danger.Energy) * 0.1019F;
-                if(Loc.distanceSquared(danger.Loc) < 5000D || f22 < -200F)
+                float f23 = (Energy - danger.Energy) * 0.1019F;
+                if(Loc.distanceSquared(danger.Loc) < 5000D || f23 < -200F)
                 {
                     setSpeedMode(8);
                     CT.setPowerControl(0.0F);
@@ -4614,20 +4624,24 @@ public class Maneuver extends AIFlightModel
 
         case 100: // 'd'
             setSpeedMode(6);
+            if(getSpeed() < Vmax * 0.7F || Or.getPitch() > 360F)
+                setSpeedMode(11);
+            else
+                setSpeedMode(8);
             minElevCoeff = 20F;
             dA = Math.abs(Or.getKren()) * (float)Group.bracketSideGr;
-            if(Math.abs(dA) > 75F)
-                set_maneuver(2);
             if(dA > 0.0F)
                 dA -= 30F;
             else
                 dA -= 330F;
             if(dA < -180F)
                 dA += 360F;
+            if(Math.abs(dA) > 60F)
+                set_maneuver(2);
             dA = 0.03F * dA;
             CT.AileronControl = dA;
             CT.ElevatorControl = 1.0F;
-            if(mn_time > 2.0F)
+            if(mn_time > 1.5F + World.Rnd().nextFloat(0.0F, 2.0F))
                 pop();
             break;
 
@@ -4816,10 +4830,7 @@ public class Maneuver extends AIFlightModel
             AP.update(f);
         else
             AP.update(f * 4F);
-        if(bBusy)
-            wasBusy = true;
-        else
-            wasBusy = false;
+        wasBusy = bBusy;
         if(shotAtFriend > 0)
             shotAtFriend--;
     }
@@ -4854,7 +4865,7 @@ public class Maneuver extends AIFlightModel
         }
         TextScr.output(5, 460, "Alt(MSL)  " + (int)Loc.z + "    " + (CT.BrakeControl <= 0.0F ? "" : "BRAKE"));
         TextScr.output(5, 435, "Alt(AGL)  " + (int)(Loc.z - Engine.land().HQ_Air(Loc.x, Loc.y)));
-        int j = 0;
+//        int j = 0;
         TextScr.output(245, 60, "Mass = " + M.getFullMass() + " kg");
         TextScr.output(245, 35, "Fuel " + (int)((100F * super.M.fuel) / super.M.maxFuel) + "%(" + (int)super.M.fuel + " kg/" + (int)super.M.maxFuel + " kg)");
         TextScr.output(245, 10, "Nitro " + (int)((100F * super.M.nitro) / super.M.maxNitro) + "%(" + (int)super.M.nitro + " kg/" + (int)super.M.maxNitro + " kg)");
@@ -4897,10 +4908,8 @@ public class Maneuver extends AIFlightModel
 
     private static void rotCoord(double d, Vector3d vector3d)
     {
-        double d1 = vector3d.x;
-        double d2 = vector3d.y;
-        d1 = vector3d.x * (double)(float)Math.cos(d) - vector3d.y * (double)(float)Math.sin(d);
-        d2 = vector3d.x * (double)(float)Math.sin(d) + vector3d.y * (double)(float)Math.cos(d);
+        double d1 = vector3d.x * (double)(float)Math.cos(d) - vector3d.y * (double)(float)Math.sin(d);
+        double d2 = vector3d.x * (double)(float)Math.sin(d) + vector3d.y * (double)(float)Math.cos(d);
         vector3d.x = d1;
         vector3d.y = d2;
     }
@@ -4923,7 +4932,7 @@ public class Maneuver extends AIFlightModel
             if(sub_Man_Count == 0)
             {
                 Vtarg.set(actor.pos.getAbsPoint());
-                koeff = (7F * M.getFullMass()) / (Sq.squareWing * Wing.CyCritH_0);
+                koeff = ((float)(12 - flying) * M.getFullMass()) / (Sq.squareWing * Wing.CyCritH_0);
                 float f7 = 0.2666667F;
                 if(koeff < 800F)
                     koeff = 800F;
@@ -4959,7 +4968,6 @@ public class Maneuver extends AIFlightModel
                     rotCoord(d1, tmpV3f);
                 }
                 tmpV3f.normalize();
-                int i = ((Aircraft)this.actor).aircIndex();
                 Vtarg.x -= tmpV3f.x * (double)koeff;
                 Vtarg.y -= tmpV3f.y * (double)koeff;
                 Vtarg.z += koeff * f7;
@@ -4989,6 +4997,13 @@ public class Maneuver extends AIFlightModel
                 }
                 Vtarg.z += koeff * f7 * 0.2F;
                 constVtarg1.set(Vtarg);
+                Vtarg.sub(constVtarg1, constVtarg);
+                if(Vtarg.length() < 500D)
+                {
+                    constVtarg1.add(constVtarg);
+                    constVtarg1.scale(0.5D);
+                    constVtarg.set(constVtarg1);
+                }
             }
             Ve.set(constVtarg1);
             Ve.sub(Loc);
@@ -5014,9 +5029,9 @@ public class Maneuver extends AIFlightModel
                 if(f3 > 1000F)
                     farTurnToDirection(8F);
                 else
-                    attackTurnToDirection2(f3, f, 4F + (float)Skill * 2.0F);
+                    attackTurnToDirection(f3, f, 4F + (float)Skill * 2.0F);
                 sub_Man_Count++;
-                if(f3 < 400F)
+                if(f3 < 300F)
                 {
                     submaneuver++;
                     gattackCounter++;
@@ -5028,15 +5043,10 @@ public class Maneuver extends AIFlightModel
         case 1: // '\001'
             Ve.set(constVtarg);
             Ve.sub(Loc);
-            if(Group.getAaaNum() > 10F)
-            {
-                setRSDv(50F);
-                Ve.add(wanderVector);
-            }
             float f4 = (float)Ve.length();
             Or.transformInv(Ve);
             Ve.normalize();
-            if(Loc.z < constVtarg1.z)
+            if(Loc.z < constVtarg.z)
             {
                 setSpeedMode(6);
             } else
@@ -5047,7 +5057,7 @@ public class Maneuver extends AIFlightModel
             if(f4 > 1000F)
                 farTurnToDirection(8F);
             else
-                attackTurnToDirection2(f4, f, 4F + (float)Skill * 2.0F);
+                attackTurnToDirection(f4, f, 4F + (float)Skill * 2.0F);
             sub_Man_Count++;
             if(f4 < 300F)
             {
@@ -5074,12 +5084,11 @@ public class Maneuver extends AIFlightModel
                 if(gattackCounter < 0)
                     gattackCounter = 0;
             }
-            setRSDv(shootingDeviation);
             P.set(actor.pos.getAbsPoint());
-            P.add(wanderVector);
             Ve.sub(P, Loc);
-            Vtarg.set(Ve);
             float f5 = (float)Ve.length();
+            setRSDgrd(shootingDeviation, f5 * bullTime);
+            Ve.add(wanderVector);
             actor.getSpeed(tmpV3d);
             tmpV3f.x = (float)tmpV3d.x;
             tmpV3f.y = (float)tmpV3d.y;
@@ -5133,7 +5142,7 @@ public class Maneuver extends AIFlightModel
                 return;
             }
             Ve.normalize();
-            attackTurnToDirection(f5, f, 4F + (float)Skill * 2.0F);
+            attackTurnToDirection(f5, f, 10F + (float)Skill * 2.0F);
             setSpeedMode(4);
             smConstSpeed = 100F;
             break;
@@ -5852,7 +5861,7 @@ public class Maneuver extends AIFlightModel
             if(sub_Man_Count > 80)
             {
                 float f8 = (float)Vwld.z * 0.1019F;
-                f8 = f8 + (float)Math.sqrt(f8 * f8 + 2.0F * f3 * 0.1019F) + 0.00035F * f3;
+                f8 += (float)Math.sqrt(f8 * f8 + 2.0F * f3 * 0.1019F) + 0.00035F * f3;
                 float f9 = (float)Math.sqrt(Vwld.x * Vwld.x + Vwld.y * Vwld.y);
                 float f10 = f9 * f8;
                 float f11 = 0.2F * (f1 - f10);
@@ -5911,8 +5920,8 @@ public class Maneuver extends AIFlightModel
         minElevCoeff = 20F;
         Ve.set(actor.pos.getAbsPoint());
         Ve.sub(Loc);
-        double d = Ve.x * Ve.x + Ve.y * Ve.y;
-        float f1 = (float)Math.sqrt(d);
+//        double d = Ve.x * Ve.x + Ve.y * Ve.y;
+//        float f1 = (float)Math.sqrt(d);
         if(first)
         {
             Vtarg.set(actor.pos.getAbsPoint());
@@ -5971,7 +5980,7 @@ public class Maneuver extends AIFlightModel
         Ve.sub(Loc);
         float f2 = (float)Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y + Ve.z * Ve.z);
         Vf.set(Ve);
-        float f3 = (float)(-Ve.z);
+//        float f3 = (float)(-Ve.z);
         Vpl.set(Vwld);
         Vpl.normalize();
         if(Alt < f4 - 5F)
@@ -6322,7 +6331,7 @@ public class Maneuver extends AIFlightModel
         addWindCorrection();
         float f2 = (float)Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y + Ve.z * Ve.z);
         Vf.set(Ve);
-        float f3 = (float)(-Ve.z);
+//        float f3 = (float)(-Ve.z);
         Or.transformInv(Ve);
         Ve.normalize();
         Vpl.set(Vwld);
@@ -6599,7 +6608,7 @@ public class Maneuver extends AIFlightModel
             Ve.z = 0.40000000000000002D;
             Or.transformInv(Ve);
             Ve.normalize();
-            attackTurnToDirection2(1000F, f, 15F);
+            attackTurnToDirection(1000F, f, 15F);
             break;
 
         case 4: // '\004'
@@ -7016,7 +7025,7 @@ public class Maneuver extends AIFlightModel
                 setSpeedMode(4);
                 smConstSpeed = 180F;
             }
-            attackTurnToDirection2(f1, f, 10F * (float)(1.0D + d));
+            attackTurnToDirection(f1, f, 10F * (float)(1.0D + d));
             sub_Man_Count++;
             if((double)f1 < (double)ApproachR * (1.0D + d) && d3 < 200D)
             {
@@ -7057,7 +7066,7 @@ public class Maneuver extends AIFlightModel
                 Or.transformInv(Ve);
                 Ve.normalize();
             }
-            attackTurnToDirection(f2, f, 10F + (float)Skill * 8F);
+            attackTurn(f2, f, 10F + (float)Skill * 8F);
             setSpeedMode(4);
             smConstSpeed = 180F;
             if(f2 < 400F)
@@ -7136,7 +7145,7 @@ public class Maneuver extends AIFlightModel
                 Or.transformInv(Ve);
                 Ve.normalize();
             }
-            attackTurnToDirection(f3, f, 10F + (float)Skill * 8F);
+            attackTurn(f3, f, 10F + (float)Skill * 8F);
             if(target.getSpeed() > 70F)
             {
                 setSpeedMode(2);
@@ -7261,7 +7270,7 @@ public class Maneuver extends AIFlightModel
                 Or.transformInv(Ve);
                 Ve.normalize();
             }
-            attackTurnToDirection2(f2, f, 10F);
+            attackTurn(f2, f, 10F);
             if(target.getSpeed() > 120F)
             {
                 setSpeedMode(2);
@@ -7329,7 +7338,7 @@ public class Maneuver extends AIFlightModel
                 Or.transformInv(Ve);
                 Ve.normalize();
             }
-            attackTurnToDirection(f3, f, 6F + (float)Skill * 3F);
+            attackTurn(f3, f, 6F + (float)Skill * 3F);
             setSpeedMode(1);
             tailForStaying = target;
             tailOffset.set(-190D, 0.0D, 0.0D);
@@ -7460,7 +7469,7 @@ public class Maneuver extends AIFlightModel
             Or.transformInv(Ve);
             Ve.normalize();
             setSpeedMode(9);
-            attackTurnToDirection2(f1, f, 10F * (float)(1.0D + d));
+            attackTurnToDirection(f1, f, 10F * (float)(1.0D + d));
             sub_Man_Count++;
             if((double)f1 < (double)ApproachR * (1.0D + d) && d3 < 200D)
             {
@@ -7534,10 +7543,10 @@ public class Maneuver extends AIFlightModel
             {
                 push();
                 set_maneuver(14);
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     public void fighterVsFighter(float f)
@@ -7551,7 +7560,8 @@ public class Maneuver extends AIFlightModel
             if(CT.Weapons[0] != null)
                 f1 = ((GunGeneric)CT.Weapons[0][0]).bulletSpeed();
             if(f1 > 0.01F)
-                bullTime = 1.0F / f1;
+                bullTime = 1.0F / (f1 + getSpeed());
+            followType = World.cur().rnd.nextInt(0, 2);
         }
         maxAOA = 15F;
         if(rocketsDelay > 0)
@@ -7580,22 +7590,19 @@ public class Maneuver extends AIFlightModel
             lastKnownTargetLoc.x = -1D;
             Ve.sub(target.Loc, Loc);
         }
-        Vtarg.set(Ve);
         float f3 = (float)Ve.length();
         float f5 = 1.0F + 0.15F * sp;
         float f6 = 0.00053F * (1.0F + AOA * 0.007F);
         tmpV3f.sub(target.Vwld, Vwld);
         Vpl.set(tmpV3f);
-        tmpV3f.z += sp * 1.5F;
         tmpV3f.scale(f3 * (bullTime + f6) * f5);
         Ve.add(tmpV3f);
-        tmpV3f.set(Vpl);
-        tmpV3f.scale(f3 * bullTime);
-        Vtarg.add(tmpV3f);
         losVector.scale(Ve.length());
         corrVector.sub(Ve, losVector);
-        setRSD(10F - (float)(Skill * Skill) * 0.33F);
-        corrVector.add(wanderVector);
+        corrVector.scale(f5);
+        corrVector.z += nSD(gunnery, flying, 0, Time.current());
+        corrVector.y += nSD(gunnery, flying, 1, Time.current());
+        Vtarg.set(Ve);
         Ve.add(corrVector);
         Or.transformInv(Vpl);
         float f7 = (float)(-Vpl.x);
@@ -7609,7 +7616,7 @@ public class Maneuver extends AIFlightModel
             return;
         }
         Or.transformInv(Vtarg);
-        if(Vtarg.x > 0.0D && f3 < 600F && (shotAtFriend <= 0 || distToFriend > f3) && !friendCheck(f3, target.Loc))
+        if(Vtarg.x > 0.0D && f3 < 600F && (shotAtFriend <= 0 || distToFriend > f3) && friendCheck(f3, target.Loc))
         {
             if(Math.abs(Vtarg.y) < 13D && Math.abs(Vtarg.z) < 13D)
                 ((Maneuver)target).incDangerAggressiveness(1, 0.95F, f3, this);
@@ -7660,10 +7667,16 @@ public class Maneuver extends AIFlightModel
             Or.transformInv(Ve);
             Ve.normalize();
         }
-        attackTurnToDirection2(f3, f, 10F + (float)Skill * 8F);
-        if(Alt > 5F + (float)((4 - Skill) * 5) && Ve.x > 0.59999999999999998D && f3 < convAI * 1.5F)
+        attackTurn(f3, f, 10F + (float)Skill * 8F);
+        if(Alt > 5F + (float)((4 - Skill) * 5) && Ve.x > 0.97499999999999998D && f3 < convAI * 1.25F)
         {
-            setSpeedMode(1);
+            if(followType == 0)
+                setSpeedMode(2);
+            else
+            if(followType == 1)
+                setSpeedMode(1);
+            else
+                setSpeedMode(9);
             tailForStaying = target;
             tailOffset.set(-convAI * 0.75F, 0.0D, 0.0D);
         } else
@@ -7715,17 +7728,13 @@ public class Maneuver extends AIFlightModel
             lastKnownTargetLoc.x = -1D;
             Ve.sub(target.Loc, Loc);
         }
-        Vtarg.set(Ve);
         float f3 = (float)Ve.length();
         float f5 = 1.0F + 0.15F * sp;
         tmpV3f.sub(target.Vwld, Vwld);
         Vpl.set(tmpV3f);
-        tmpV3f.z += sp * 1.5F;
         tmpV3f.scale(f3 * bullTime * f5);
         Ve.add(tmpV3f);
         tmpV3f.set(Vpl);
-        tmpV3f.scale(f3 * bullTime * f5);
-        Vtarg.add(tmpV3f);
         Or.transformInv(Vpl);
         float f6 = (float)(-Vpl.x);
         if(f6 < 0.001F)
@@ -7737,15 +7746,17 @@ public class Maneuver extends AIFlightModel
             set_maneuver(14);
             return;
         }
-        Or.transformInv(Vtarg);
         losVector.set(1.0D, 0.0D, 0.0D);
         Or.transform(losVector);
         losVector.scale(Ve.length());
         corrVector.sub(Ve, losVector);
-        setRSD(11F - (float)(Skill * Skill) * 0.33F);
-        corrVector.add(wanderVector);
+        corrVector.scale(f5);
+        corrVector.z += nSD(gunnery, flying, 0, Time.current());
+        corrVector.y += nSD(gunnery, flying, 1, Time.current());
+        Vtarg.set(Ve);
         Ve.add(corrVector);
-        if(Vtarg.x > 0.0D && f3 < 700F && (shotAtFriend <= 0 || distToFriend > f3) && !friendCheck(f3, target.Loc) && Math.abs(Vtarg.y) < (double)(5.5F + 2.5F * (float)gunnery) && Math.abs(Vtarg.z) < 5.5D + 2.5D * (double)gunnery && bulletDelay < 120)
+        Or.transformInv(Vtarg);
+        if(Vtarg.x > 0.0D && f3 < 700F && (shotAtFriend <= 0 || distToFriend > f3) && friendCheck(f3, target.Loc) && Math.abs(Vtarg.y) < (double)(5.5F + 2.5F * (float)gunnery) && Math.abs(Vtarg.z) < 5.5D + 2.5D * (double)gunnery && bulletDelay < 120)
         {
             ((Maneuver)target).incDangerAggressiveness(1, 0.8F, f3, this);
             CT.WeaponControl[0] = true;
@@ -7791,7 +7802,7 @@ public class Maneuver extends AIFlightModel
             Or.transformInv(Ve);
             Ve.normalize();
         }
-        attackTurnToDirection2(f3, f, 10F + (float)Skill * 8F);
+        attackTurn(f3, f, 10F + (float)Skill * 8F);
         if(sp > 0.0F && shootingPoint > sp)
             sp += f * 0.05F;
         else
@@ -7978,12 +7989,12 @@ public class Maneuver extends AIFlightModel
         if(AOA < -5F)
             Or.increment(0.0F, 0.12F * (-5F - AOA), 0.0F);
         oldVe.set(Ve);
-        oldAOA = AOA;
+//        oldAOA = AOA;
         sub_Man_Count++;
         W.x *= 0.94999999999999996D;
     }
 
-    private void attackTurnToDirection2(float f, float f1, float f2)
+    private void attackTurn(float f, float f1, float f2)
     {
         if(Ve.x < 0.0099999997764825821D && subSkill > 6 && maneuver == 27 && f < 800F && getMinHeightTurn(100F) < ((Maneuver)target).getMinHeightTurn(50F) + (float)Skill * 0.33F)
             set_maneuver(101);
@@ -7994,17 +8005,19 @@ public class Maneuver extends AIFlightModel
             oldVe.set(Ve);
         if(Ve.x > 0.94999998807907104D)
         {
-            CT.RudderControl = (float)(-6D * Math.atan2(Ve.y, Ve.x) + 0.29999999999999999D * (Ve.y - oldVe.y));
+            CT.RudderControl = (float)(-10D * Math.atan2(Ve.y, Ve.x) + 1.5D * (Ve.y - oldVe.y));
             float f3;
+            float f5;
             if(Ve.z > 0.0D || CT.RudderControl > 0.9F)
             {
                 f3 = (float)(10D * Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - oldVe.z));
-                CT.AileronControl = (-6F * (float)Math.atan2(Ve.y, Ve.x) - 0.004F * Or.getKren()) + 1.0F * (float)W.x;
+                f5 = -10F * (float)Math.atan2(Ve.y, Ve.x);
             } else
             {
                 f3 = (float)(5D * Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - oldVe.z));
-                CT.AileronControl = (-1F * (float)Math.atan2(Ve.y, Ve.x) - 0.004F * Or.getKren()) + 1.0F * (float)W.x;
+                f5 = (-5F * (float)Math.atan2(Ve.y, Ve.x) - 0.02F * Or.getKren()) + 5F * (float)W.x;
             }
+            CT.AileronControl = f5;
             if(Ve.x > (double)(1.0F - 0.005F * (float)Skill))
             {
                 tmpOr.set(Or);
@@ -8024,21 +8037,21 @@ public class Maneuver extends AIFlightModel
                 CT.FlapsControl = 0.1F;
             else
                 CT.FlapsControl = 0.0F;
-            float f5 = 0.6F - (float)Ve.z;
-            if(f5 < 0.0F)
-                f5 = 0.0F;
-            CT.RudderControl = (float)(-2D * Math.atan2(Ve.y, Ve.x) * (double)f5 + 0.066000000000000003D * (Ve.y - oldVe.y) * Ve.x + 0.034000000000000002D * W.z);
+            float f6 = 0.6F - (float)Ve.z;
+            if(f6 < 0.0F)
+                f6 = 0.0F;
+            CT.RudderControl = (float)(-30D * Math.atan2(Ve.y, Ve.x) * (double)f6 + 1.0D * (Ve.y - oldVe.y) * Ve.x + 0.5D * W.z);
             float f4;
-            if(Ve.z > 0.0D || Ve.x < 0.69999998807907104D)
+            if(Ve.z > 0.0D)
             {
-                f4 = (float)(12D * Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - oldVe.z) + 0.5D * (double)(float)W.y);
+                f4 = (float)(10D * Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - oldVe.z) + 0.5D * (double)(float)W.y);
                 if(f4 < 0.0F)
                     f4 = 0.0F;
-                CT.AileronControl = (-3.5F * (float)Math.atan2(Ve.y, Ve.x) - 0.0038F * Or.getKren()) + 0.15F * (float)W.x;
+                CT.AileronControl = (float)((-20D * Math.atan2(Ve.y, Ve.z) - 0.050000000000000003D * (double)Or.getKren()) + 5D * W.x);
             } else
             {
                 f4 = (float)(-5D * Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - oldVe.z) + 0.5D * (double)(float)W.y);
-                CT.AileronControl = (-1.5F * (float)Math.atan2(Ve.y, Ve.x) - 0.0038F * Or.getKren()) + 0.15F * (float)W.x;
+                CT.AileronControl = (float)((-20D * Math.atan2(Ve.y, Ve.z) - 0.050000000000000003D * (double)Or.getKren()) + 5D * W.x);
             }
             if(f4 < 0.0F)
                 f4 = 0.0F;
@@ -8050,17 +8063,17 @@ public class Maneuver extends AIFlightModel
             else
                 CT.ElevatorControl -= 0.3F * f1;
         }
-        float f6 = 0.054F * (600F - f);
-        if(f6 < 4F)
-            f6 = 4F;
-        if(f6 > AOA_Crit)
-            f6 = AOA_Crit;
-        if(AOA > f6 - 1.5F)
-            Or.increment(0.0F, 0.16F * (f6 - 1.5F - AOA), 0.0F);
+        float f7 = 0.054F * (600F - f);
+        if(f7 < 4F)
+            f7 = 4F;
+        if(f7 > AOA_Crit)
+            f7 = AOA_Crit;
+        if(AOA > f7 - 1.5F)
+            Or.increment(0.0F, 0.16F * (f7 - 1.5F - AOA), 0.0F);
         if(AOA < -5F)
             Or.increment(0.0F, 0.12F * (-5F - AOA), 0.0F);
         oldVe.set(Ve);
-        oldAOA = AOA;
+//        oldAOA = AOA;
         sub_Man_Count++;
         W.x *= 0.94999999999999996D;
     }
@@ -8096,7 +8109,7 @@ public class Maneuver extends AIFlightModel
         strikeTarg = flightmodel;
     }
 
-    private float bombDist(float f)
+/*    private float bombDist(float f)
     {
         float f1 = positiveSquareEquation(-0.5F * World.g(), (float)Vwld.z, f);
         if(f1 < 0.0F)
@@ -8104,7 +8117,7 @@ public class Maneuver extends AIFlightModel
         else
             return f1 * (float)Math.sqrt(Vwld.x * Vwld.x + Vwld.y * Vwld.y);
     }
-
+*/
     protected void wingman(boolean flag)
     {
         if(Wingman == null)
@@ -8124,7 +8137,7 @@ public class Maneuver extends AIFlightModel
 
     public void doDumpBombsPassively()
     {
-        boolean flag = false;
+//        boolean flag = false;
         for(int i = 0; i < CT.Weapons.length; i++)
         {
             if(CT.Weapons[i] == null || CT.Weapons[i].length <= 0)
@@ -8135,7 +8148,7 @@ public class Maneuver extends AIFlightModel
                     continue;
                 if((CT.Weapons[i][j] instanceof BombGunPara) || (actor instanceof SM79) && (CT.Weapons[i][j] instanceof TorpedoGun))
                 {
-                    boolean flag1 = true;
+//                    boolean flag1 = true;
                     continue;
                 }
                 CT.dropExternalStores(true);
@@ -8283,14 +8296,14 @@ public class Maneuver extends AIFlightModel
                 f1 = 0.0F;
                 f2 = -90F;
             } else
-            if(get_maneuver() != 44)
-            {
-                f1 = 0.0F;
-                f2 = 0.0F;
-            } else
+            if(get_maneuver() == 44)
             {
                 f2 = -15F;
                 f1 = -15F;
+            } else
+            {
+                f1 = 0.0F;
+                f2 = 0.0F;
             }
             if(Math.abs(pilotHeadT - f1) > 3F)
                 pilotHeadT += 90F * (pilotHeadT <= f1 ? 1.0F : -1F) * f;
@@ -8817,28 +8830,16 @@ public class Maneuver extends AIFlightModel
         TargDevV.interpolate(TargDevVnew, 0.01F);
     }
 
-    private void setRSD(float f)
+    private void setRSDgrd(float f, float f1)
     {
         if(isTick(16, 0))
         {
-            float f1 = f * (7F - (float)(gunnery + flying) * 0.5F);
-            wanderVectorNew.set(World.Rnd().nextFloat(-1F, 1.0F), World.Rnd().nextFloat(-1F, 1.0F), World.Rnd().nextFloat(-1F, 1.0F));
+            float f2 = 0.65F * f * (10F - (float)(gunnery + flying) * 0.5F);
+            wanderVectorNew.set(0.0D, World.Rnd().nextFloat(-1F, 1.0F), World.Rnd().nextFloat(-1F, 1.0F));
             wanderVectorNew.normalize();
-            wanderVectorNew.scale(f1);
+            wanderVectorNew.scale(f2 * f1);
         }
-        wanderVector.interpolate(wanderVectorNew, wanderRate * 0.75F);
-    }
-
-    private void setRSDv(float f)
-    {
-        if(isTick(16, 0))
-        {
-            float f1 = 0.65F * f * (6F - (float)(gunnery + flying) * 0.5F);
-            wanderVectorNew.set(World.Rnd().nextFloat(-1F, 1.0F), World.Rnd().nextFloat(-0.5F, 0.5F), World.Rnd().nextFloat(-1F, 1.0F));
-            wanderVectorNew.normalize();
-            wanderVectorNew.scale(f1);
-        }
-        wanderVector.interpolate(wanderVectorNew, wanderRate * 2.0F);
+        wanderVector.interpolate(wanderVectorNew, wanderRate * 1.2F);
     }
 
     private Point_Any getNextTaxiToTakeOffPoint()
@@ -9097,24 +9098,28 @@ public class Maneuver extends AIFlightModel
         Or.transform(Vpl);
         Po.add(Vpl);
         Pd.set(Po);
-        if(actor != War.getNearestFriendAtPoint(Pd, (Aircraft)actor, 70F))
-            return false;
-        if(canTakeoff)
-            return true;
-        if(Actor.isAlive(AP.way.takeoffAirport))
+        if(actor == War.getNearestFriendAtPoint(Pd, (Aircraft)actor, 70F))
         {
-            if(AP.way.takeoffAirport.takeoffRequest <= 0)
-            {
-                AP.way.takeoffAirport.takeoffRequest = 2000;
-                canTakeoff = true;
+            if(canTakeoff)
                 return true;
+            if(Actor.isAlive(AP.way.takeoffAirport))
+            {
+                if(AP.way.takeoffAirport.takeoffRequest <= 0)
+                {
+                    AP.way.takeoffAirport.takeoffRequest = 2000;
+                    canTakeoff = true;
+                    return true;
+                } else
+                {
+                    return false;
+                }
             } else
             {
-                return false;
+                return true;
             }
         } else
         {
-            return true;
+            return false;
         }
     }
 
@@ -9335,7 +9340,7 @@ label0:
         return new Point_Any(tmpLoc.x, tmpLoc.y);
     }
 
-    private boolean evadeFromRightSide(Point2f point2f)
+    private static boolean evadeFromRightSide(Point2f point2f)
     {
         float f = 360F - (float)RAD2DEG(Vcur.direction());
         Vector2f vector2f = new Vector2f();
@@ -9343,7 +9348,8 @@ label0:
         float f1 = 360F - vector2f.direction();
         if(f > f1)
             return true;
-        return f + 180F < f1;
+        else
+            return f + 180F < f1;
     }
 
     private boolean isStopOnStalemate(Aircraft aircraft)
@@ -9602,7 +9608,7 @@ label0:
     NumberFormat pf;
     private int task;
     private int maneuver;
-    protected float mn_time;
+    private float mn_time;
     private int program[];
     private boolean bBusy;
     public boolean wasBusy;
@@ -9618,12 +9624,11 @@ label0:
     private int rocketsDelay;
     private int bulletDelay;
     private int submanDelay;
-    private static final int volleyL = 120;
+//    private static final int volleyL = 120;
     private float maxG;
     private float maxAOA;
-    private float LandHQ;
     public float Alt;
-    private float oldAOA;
+//    private float oldAOA;
     private float corrCoeff;
     private float corrElev;
     private float corrAile;
@@ -9633,7 +9638,7 @@ label0:
     private boolean stallable;
     public FlightModel airClient;
     public FlightModel target;
-    public FlightModel oldTarget;
+    private FlightModel oldTarget;
     public FlightModel danger;
     private float dangerAggressiveness;
     private float oldDanCoeff;
@@ -9643,11 +9648,11 @@ label0:
     public AirGroup Group;
     protected boolean TaxiMode;
     protected boolean finished;
-    protected boolean canTakeoff;
+    private boolean canTakeoff;
     public Point_Any wayCurPos;
     protected Point_Any wayPrevPos;
     protected Point_Any airdromeWay[];
-    protected Vector2f V_taxiLeg;
+    private Vector2f V_taxiLeg;
     protected List taxiToTakeOffWay;
     private int taxiToTakeOffWayLength;
     protected int curAirdromePoi;
@@ -9655,7 +9660,7 @@ label0:
     public long actionTimerStop;
     protected int gattackCounter;
     private int beNearOffsPhase;
-    public int submaneuver;
+    private int submaneuver;
     private boolean dont_change_subm;
     private int tmpi;
     private int sub_Man_Count;
@@ -9663,28 +9668,32 @@ label0:
     private float dist;
     private float man1Dist;
     private float bullTime;
-    protected static final int STAY_ON_THE_TAIL = 1;
-    protected static final int NOT_TOO_FAST = 2;
-    protected static final int FROM_WAYPOINT = 3;
-    protected static final int CONST_SPEED = 4;
-    protected static final int MIN_SPEED = 5;
-    protected static final int MAX_SPEED = 6;
-    protected static final int CONST_POWER = 7;
+/*
+    private static final int STAY_ON_THE_TAIL = 1;
+    private static final int NOT_TOO_FAST = 2;
+    private static final int FROM_WAYPOINT = 3;
+    private static final int CONST_SPEED = 4;
+    private static final int MIN_SPEED = 5;
+    private static final int MAX_SPEED = 6;
+    private static final int CONST_POWER = 7;
+*/
     protected static final int ZERO_POWER = 8;
-    protected static final int BOOST_ON = 9;
-    protected static final int FOLLOW_WITHOUT_FLAPS = 10;
-    protected static final int BOOST_FULL = 11;
-    protected int speedMode;
-    protected float smConstSpeed;
+    
+/*    private static final int BOOST_ON = 9;
+    private static final int FOLLOW_WITHOUT_FLAPS = 10;
+    private static final int BOOST_FULL = 11;
+*/    
+    private int speedMode;
+    private float smConstSpeed;
     protected float smConstPower;
-    protected FlightModel tailForStaying;
-    public Vector3d tailOffset;
+    private FlightModel tailForStaying;
+    private Vector3d tailOffset;
     protected int Speak5minutes;
     protected int Speak1minute;
     protected int SpeakBeginGattack;
     protected boolean WeWereInGAttack;
     protected boolean WeWereInAttack;
-    protected boolean SpeakMissionAccomplished;
+    private boolean SpeakMissionAccomplished;
     public static final int ROOKIE = 0;
     public static final int NORMAL = 1;
     public static final int VETERAN = 2;
@@ -9700,46 +9709,56 @@ label0:
     public static final int NONE = 0;
     public static final int HOLD = 1;
     public static final int PULL_UP = 2;
-    public static final int LEVEL_PLANE = 3;
-    public static final int ROLL = 4;
-    public static final int ROLL_90 = 5;
-    public static final int ROLL_180 = 6;
-    public static final int SPIRAL_BRAKE = 7;
+/*    
+    private static final int LEVEL_PLANE = 3;
+    private static final int ROLL = 4;
+    private static final int ROLL_90 = 5;
+    private static final int ROLL_180 = 6;
+    private static final int SPIRAL_BRAKE = 7;
+*/    
     public static final int SPIRAL_UP = 8;
-    public static final int SPIRAL_DOWN = 9;
-    public static final int CLIMB = 10;
-    public static final int DIVING_0_RPM = 11;
+/*    
+    private static final int SPIRAL_DOWN = 9;
+    private static final int CLIMB = 10;
+    private static final int DIVING_0_RPM = 11;
+*/    
     public static final int DIVING_30_DEG = 12;
-    public static final int DIVING_45_DEG = 13;
-    public static final int TURN = 14;
-    public static final int MIL_TURN = 15;
-    public static final int LOOP = 16;
-    public static final int LOOP_DOWN = 17;
-    public static final int HALF_LOOP_UP = 18;
-    public static final int HALF_LOOP_DOWN = 19;
+/*
+    private static final int DIVING_45_DEG = 13;
+    private static final int TURN = 14;
+    private static final int MIL_TURN = 15;
+    private static final int LOOP = 16;
+    private static final int LOOP_DOWN = 17;
+    private static final int HALF_LOOP_UP = 18;
+    private static final int HALF_LOOP_DOWN = 19;
+*/
     public static final int STALL = 20;
     public static final int WAYPOINT = 21;
     public static final int SPEEDUP = 22;
-    public static final int BELL = 23;
+//    private static final int BELL = 23;
     public static final int FOLLOW = 24;
     public static final int LANDING = 25;
     public static final int TAKEOFF = 26;
     public static final int ATTACK = 27;
-    public static final int WAVEOUT = 28;
-    public static final int SINUS = 29;
-    public static final int ZIGZAG_UP = 30;
-    public static final int ZIGZAG_DOWN = 31;
-    public static final int ZIGZAG_SPIT = 32;
-    public static final int HALF_LOOP_DOWN_135 = 33;
-    public static final int HARTMANN_REDOUT = 34;
+/*    
+    private static final int WAVEOUT = 28;
+    private static final int SINUS = 29;
+    private static final int ZIGZAG_UP = 30;
+    private static final int ZIGZAG_DOWN = 31;
+    private static final int ZIGZAG_SPIT = 32;
+    private static final int HALF_LOOP_DOWN_135 = 33;
+    private static final int HARTMANN_REDOUT = 34;
+*/
     public static final int ROLL_360 = 35;
-    public static final int STALL_POKRYSHKIN = 36;
-    public static final int BARREL_POKRYSHKIN = 37;
-    public static final int SLIDE_LEVEL = 38;
-    public static final int SLIDE_DESCENT = 39;
-    public static final int RANVERSMAN = 40;
-    public static final int CUBAN = 41;
-    public static final int CUBAN_INVERT = 42;
+/*    
+    private static final int STALL_POKRYSHKIN = 36;
+    private static final int BARREL_POKRYSHKIN = 37;
+    private static final int SLIDE_LEVEL = 38;
+    private static final int SLIDE_DESCENT = 39;
+    private static final int RANVERSMAN = 40;
+    private static final int CUBAN = 41;
+    private static final int CUBAN_INVERT = 42;
+*/
     public static final int GATTACK = 43;
     public static final int PILOT_DEAD = 44;
     public static final int HANG_ON = 45;
@@ -9752,10 +9771,10 @@ label0:
     public static final int GATTACK_TINYTIM = 47;
     public static final int FAR_FOLLOW = 53;
     public static final int SPIRAL_DOWN_SLOW = 54;
-    public static final int FOLLOW_SPIRAL_UP = 55;
-    public static final int SINUS_SHALLOW = 56;
+//    private static final int FOLLOW_SPIRAL_UP = 55;
+//    private static final int SINUS_SHALLOW = 56;
     public static final int GAIN = 57;
-    public static final int SEPARATE = 58;
+//    private static final int SEPARATE = 58;
     public static final int BE_NEAR = 59;
     public static final int EVADE_UP = 60;
     public static final int EVADE_DN = 61;
@@ -9763,46 +9782,56 @@ label0:
     public static final int ATTACK_BOMBER = 63;
     public static final int PARKED_STARTUP = 64;
     public static final int COVER = 65;
-    public static final int TAXI = 66;
-    public static final int RUN_AWAY = 67;
-    public static final int FAR_COVER = 68;
-    public static final int TAKEOFF_VTOL_A = 69;
-    public static final int LANDING_VTOL_A = 70;
+/*
+    private static final int TAXI = 66;
+    private static final int RUN_AWAY = 67;
+    private static final int FAR_COVER = 68;
+    private static final int TAKEOFF_VTOL_A = 69;
+    private static final int LANDING_VTOL_A = 70;
+*/
     public static final int GATTACK_HS293 = 71;
     public static final int GATTACK_FRITZX = 72;
     public static final int GATTACK_TORPEDO_TOKG = 73;
     public static final int COVER_DRAG_AND_BAG = 74;
-    public static final int ATTACK_FROM_PLAYER = 75;
+//    private static final int ATTACK_FROM_PLAYER = 75;
     public static final int COVER_AGRESSIVE = 76;
-    public static final int TURN_HARD = 77;
-    public static final int CLOUDS = 78;
-    public static final int EVADE_ATTACK = 79;
-    public static final int BRACKET_ATTACK = 80;
+/*
+    private static final int TURN_HARD = 77;
+    private static final int CLOUDS = 78;
+    private static final int EVADE_ATTACK = 79;
+    private static final int BRACKET_ATTACK = 80;
+*/
     public static final int DOUBLE_ATTACK = 81;
     public static final int BE_NEAR_LOW = 82;
-    public static final int BARREL_ROLL = 83;
+//    private static final int BARREL_ROLL = 83;
     public static final int PULL_UP_EMERGENCY = 84;
-    public static final int DIVING_90_DEG = 85;
-    public static final int SMOOTH_LEVEL = 86;
-    public static final int IVAN = 87;
+/*    
+    private static final int DIVING_90_DEG = 85;
+    private static final int SMOOTH_LEVEL = 86;
+    private static final int IVAN = 87;
+*/    
     public static final int FISHTAIL_LEFT = 88;
     public static final int FISHTAIL_RIGHT = 89;
     public static final int LOOKDOWN_LEFT = 90;
     public static final int LOOKDOWN_RIGHT = 91;
     public static final int LINE_ATTACK = 92;
     public static final int BOX_ATTACK = 93;
-    public static final int BANG_BANG = 94;
-    public static final int PANIC_MANIC = 95;
-    public static final int PANIC_FREEZE = 96;
-    public static final int COMBAT_CLIMB = 97;
-    public static final int HIT_AND_RUN = 98;
-    public static final int SEEK_AND_DESTROY = 99;
-    public static final int BREAK_AWAY = 100;
-    public static final int ATTACK_HARD = 101;
+/*    
+    private static final int BANG_BANG = 94;
+    private static final int PANIC_MANIC = 95;
+    private static final int PANIC_FREEZE = 96;
+    private static final int COMBAT_CLIMB = 97;
+    private static final int HIT_AND_RUN = 98;
+    private static final int SEEK_AND_DESTROY = 99;
+    private static final int BREAK_AWAY = 100;
+    private static final int ATTACK_HARD = 101;
+*/    
     public static final int TAXI_TO_TO = 102;
-    public static final int MIL_TURN_LEFT = 103;
-    public static final int MIL_TURN_RIGHT = 104;
-    public static final int STRAIGHT_AND_LEVEL = 105;
+/*
+    private static final int MIL_TURN_LEFT = 103;
+    private static final int MIL_TURN_RIGHT = 104;
+    private static final int STRAIGHT_AND_LEVEL = 105;
+*/
     public static final int ART_SPOT = 106;
     public static final int WVSF_RESET = 0;
     public static final int WVSF_BOOM_ZOOM = 1;
@@ -9814,11 +9843,13 @@ label0:
     public static final int WVSF_FROM_BOTTOM = 7;
     public static final int WVSF_FROM_LEFT = 8;
     public static final int WVSF_FROM_RIGHT = 9;
+/*
     private static final int SUB_MAN0 = 0;
     private static final int SUB_MAN1 = 1;
     private static final int SUB_MAN2 = 2;
     private static final int SUB_MAN3 = 3;
     private static final int SUB_MAN4 = 4;
+*/
     public static final int LIVE = 0;
     public static final int RETURN = 1;
     public static final int TASK = 2;
@@ -9840,7 +9871,7 @@ label0:
     public static final int FVSB_FROM_TAIL = 8;
     public static final int FVSB_SHALLOW_DIVE = 9;
     public static final int FVSB_FROM_BOTTOM = 10;
-    private static final int demultiplier = 4;
+//    private static final int demultiplier = 4;
     private Vector3d ApproachV;
     private Vector3d TargV;
     private Vector3d TargDevV;
@@ -9872,10 +9903,11 @@ label0:
     private Vector3d wanderVectorNew;
     private float shootingDeviation;
     private float sp;
+    private int followType;
     Vector3d tmpV3dToDanger;
     Vector3d spreadV3d;
     long lookAroundTime;
-    private static AnglesFork steerAngleFork = new AnglesFork();
+//    private static AnglesFork steerAngleFork = new AnglesFork();
     private float Wo;
     public boolean bKeepOrdnance;
     public int wAttType;
@@ -9896,9 +9928,11 @@ label0:
     double radius;
     int pointQuality;
     int curPointQuality;
+/*    
     private static Vector3d vTemp = new Vector3d();
     private Loc tLoc;
     private static Point3d tPoint = new Point3d();
+*/
     private static Vector3d tmpV3d = new Vector3d();
     private static Vector3d tmpV3f = new Vector3d();
     public static Orient tmpOr = new Orient();
@@ -9919,7 +9953,7 @@ label0:
     private static Point2f Pcur = new Point2f();
     private static Vector2d Vcur = new Vector2d();
     private static Vector2f V_to = new Vector2f();
-    private static Vector2d Vdiff = new Vector2d();
+//    private static Vector2d Vdiff = new Vector2d();
     private static Loc elLoc = new Loc();
     public static boolean showFM = false;
     private float pilotHeadT;

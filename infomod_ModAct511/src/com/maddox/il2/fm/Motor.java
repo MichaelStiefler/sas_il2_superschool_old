@@ -14,7 +14,6 @@ import com.maddox.il2.objects.air.*;
 import com.maddox.rts.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Random;
 
 // Referenced classes of package com.maddox.il2.fm:
 //            FMMath, RealFlightModel, Atmosphere, FlightModelMain, 
@@ -1667,7 +1666,6 @@ label0:
     private void computeFuel(float f)
     {
         tmpF = 0.0F;
-        float f2 = w * _1_wMax;
         if(stage == 6)
         {
             float f1;
@@ -2587,7 +2585,6 @@ label0:
             break;
 
         case 2: // '\002'
-            float f28 = pressureExtBar;
             engineMoment = propAngleDeviceMinParam + getControlThrottle() * (propAngleDeviceMaxParam - propAngleDeviceMinParam);
             engineMoment /= propAngleDeviceMaxParam;
             engineMoment *= engineMomentMax;
@@ -3107,7 +3104,6 @@ label0:
                     maxMoment = f5;
                 }
                 maxW = w;
-                boolean flag2 = false;
                 float f6 = propPhiMin;
                 float f7 = -1E+008F;
                 flag3 = false;
@@ -3171,7 +3167,6 @@ label0:
                 return propForce;
             float f9 = 1.5F;
             float f11 = -0.06F;
-            float f13 = 0.5F * (f9 + f11);
             int k = 0;
             do
             {
@@ -3545,7 +3540,6 @@ label0:
                 do
                 {
                     float f6 = compressorPressure[controlCompressor];
-                    float f13 = compressorRPMtoWMaxATA / f6;
                     float f42 = 1.0F;
                     float f47 = 1.0F;
                     if(f2 > f6)
@@ -3624,7 +3618,6 @@ label0:
                 controlCompressor = 0;
             }
             float f30 = -1F;
-            float f33 = -1F;
             int j = -1;
             float f27;
             if(fastATA)
@@ -3701,7 +3694,7 @@ label0:
                 float f55 = compressorPressure[0];
                 float f60 = (f3 * (compressorPAt0 + (1.0F - compressorPAt0)) * w * _1_wMax * compressorRPMtoWMaxATA) / f55 + 0.001F;
                 float f64 = 1.0F;
-                float f66 = 1.0F;
+//                float f66 = 1.0F;
                 if(f60 < f39 && compressorMaxStep == 1)
                 {
                     controlCompressor = 1;
@@ -3718,11 +3711,11 @@ label0:
                             f44 *= compressorBaseMultipliers[1] * compressorAltMultipliers[1];
                         f64 = f44 + (f49 / f68) * (compressorAltMultipliers[1] - f44);
                         f64 += ((compressorAltMultipliers[0] - f64) * (f70 - 1.0F)) / ((f55 * f39) / f9 - 1.0F);
-                        f66 = f64;
+//                        f66 = f64;
                     } else
                     {
                         f64 = compressorAltMultipliers[controlCompressor];
-                        f66 = (f64 * f3 * f18 * (compressorPAt0 + (1.0F - compressorPAt0) * w * _1_wMax)) / (f9 * f39);
+//                        f66 = (f64 * f3 * f18 * (compressorPAt0 + (1.0F - compressorPAt0) * w * _1_wMax)) / (f9 * f39);
                     }
                 } else
                 {
@@ -3731,9 +3724,9 @@ label0:
                     if(f69 < 0.0001F)
                         f69 = 0.0001F;
                     f64 = 1.0F + (f49 / f69) * (compressorAltMultipliers[0] - 1.0F);
-                    f66 = f64;
+//                    f66 = f64;
                 }
-                float f31 = f66;
+//                float f31 = f66;
                 float f34 = f64;
                 if(j < 0)
                     j = 0;
@@ -3771,7 +3764,7 @@ label0:
             float f11 = compressorPressure[controlCompressor];
             float f17 = compressorRPMtoWMaxATA / f11;
             float f40 = 1.0F;
-            float f45 = 1.0F;
+//            float f45 = 1.0F;
             if(f4 > f11)
             {
                 float f50 = 1.0F - f11;
@@ -3993,7 +3986,7 @@ label0:
         return (f * 60F) / 2.0F / 3.141593F;
     }
 
-    private float getKforH(float f, float f1, float f2)
+ /*   private float getKforH(float f, float f1, float f2)
     {
         float f3 = (Atmosphere.density(f2) * (f1 * f1)) / (Atmosphere.density(0.0F) * (f * f));
         if(type != 2)
@@ -4005,7 +3998,7 @@ label0:
     {
         return 1.0F - 0.0032F * f;
     }
-
+*/
     public final void setAfterburnerType(int i)
     {
         afterburnerType = i;
@@ -4040,7 +4033,7 @@ label0:
         w = netmsginput.readFloat();
     }
 
-    private static final boolean ___debug___ = false;
+//    private static final boolean ___debug___ = false;
     public static final int _E_TYPE_INLINE = 0;
     public static final int _E_TYPE_RADIAL = 1;
     public static final int _E_TYPE_JET = 2;
