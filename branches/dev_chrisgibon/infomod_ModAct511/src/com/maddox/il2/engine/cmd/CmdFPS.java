@@ -8,11 +8,9 @@ package com.maddox.il2.engine.cmd;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Maneuver;
 import com.maddox.il2.engine.*;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Mission;
 import com.maddox.rts.*;
 import com.maddox.sound.AudioDevice;
-import java.io.PrintStream;
 import java.util.*;
 
 public class CmdFPS extends Cmd

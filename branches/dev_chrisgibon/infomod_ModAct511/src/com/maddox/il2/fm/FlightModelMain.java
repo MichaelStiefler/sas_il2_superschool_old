@@ -15,7 +15,6 @@ import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.rts.*;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Random;
 
 // Referenced classes of package com.maddox.il2.fm:
 //            FMMath, Atmosphere, AircraftState, Controls, 
@@ -490,17 +489,17 @@ public class FlightModelMain extends FMMath
             Wing.setFlaps(0.0F);
             Wing.drawGraphs(s1, i);
             Wing.setFlaps(0.0F);
-            s1 = speedFile + "_412_" + (100 - i) + "fuel" + "_speed.txt";
+            s1 = speedFile + "_MA520_" + (100 - i) + "fuel" + "_speed.txt";
             drawSpeed(s1, 1.0F, 1.1F, 1.0F);
             Wing.setFlaps(0.0F);
-            String s2 = speedFile + "_412_avail_thrust.txt";
-            String s3 = speedFile + "_412_thrust_summary" + (100 - i) + ".txt";
-            String s4 = speedFile + "_412_req_thrust" + (100 - i) + ".txt";
+            String s2 = speedFile + "_MA520_avail_thrust.txt";
+            String s3 = speedFile + "_MA520_thrust_summary" + (100 - i) + ".txt";
+            String s4 = speedFile + "_MA520_req_thrust" + (100 - i) + ".txt";
             drawZhukovski(s2, s3, s4);
             Wing.setFlaps(0.0F);
         }
 
-        String s = speedFile + "_412_data.txt";
+        String s = speedFile + "_MA520_data.txt";
         PrintWriter printwriter = null;
         try
         {
