@@ -1,5 +1,4 @@
-/*Modified AIFlightModel class for the SAS Engine Mod*/
-
+/*Modified RealFlightModel class for the SAS Engine Mod*/
 package com.maddox.il2.fm;
 
 import com.maddox.JGP.Point3d;
@@ -14,18 +13,7 @@ import com.maddox.rts.Time;
 
 public class AIFlightModel extends FlightModel
 {
-    private long w;
-    public float Density;
-    public float Kq;
-    protected boolean callSuperUpdate;
-    protected boolean dataDrawn;
-    Vector3d Cw;
-    Vector3d Fw;
-    protected Vector3d Wtrue;
-    private Point3d TmpP;
-    private Vector3d Vn;
-    private Vector3d TmpV;
-    
+
     public AIFlightModel(String s)
     {
         super(s);
@@ -105,6 +93,7 @@ public class AIFlightModel extends FlightModel
         } else {
             Density *= this.Ss.getDragFactorForMach(Mach);
         }
+        fullMach = Mach;
         if(Mach > 0.8F)
             Mach = 0.8F;
         Kq = 1.0F / (float)Math.sqrt(1.0F - Mach * Mach);
@@ -114,9 +103,12 @@ public class AIFlightModel extends FlightModel
         double d = Loc.z - Gears.screenHQ;
         if(d < 0.0D)
             d = 0.0D;
+        float f1 = 0.0F;
+        if(CT.bHasBayDoorControl)
+            f1 = CT.BayDoorControl;
         //TODO: Added drag caused by Drag chute
-        Cw.x = -q_ * (Wing.new_Cx(AOA) + 2.0F * GearCX * CT.getGear() + 2.0F * Sq.dragAirbrakeCx * CT.getAirBrake() + radiatorCX * (EI.getRadiatorPos() + CT.getCockpitDoor()) + Sq.dragChuteCx * CT.getDragChute());
-        Cw.z = q_ * Wing.new_Cy(AOA) * Kq;
+        Cw.x = -q_ * (Wing.new_CxM(AOA, fullMach) + GearCX * CT.getGearR() + GearCX * CT.getGearL() + 2.0F * Sq.dragAirbrakeCx * CT.getAirBrake() + radiatorCX * (EI.getRadiatorPos() + CT.getCockpitDoor() + f1)) + Sq.dragChuteCx * CT.getDragChute();
+        Cw.z = q_ * Wing.new_CyM(AOA, fullMach) * Kq;
         if(fmsfxCurrentType != 0 && fmsfxCurrentType == 1)
             Cw.z *= Aircraft.cvt(fmsfxPrevValue, 0.003F, 0.8F, 1.0F, 0.0F);
         if(d < 0.40000000000000002D * (double)Length)
@@ -168,67 +160,67 @@ public class AIFlightModel extends FlightModel
             AM.y = 1.0F * (Sq.liftStab * Arms.HOR_STAB) * (q_ * Tail.new_Cy(AOA) * Kq);
         if(Math.abs(AOS) > 33F)
             AM.z = 1.0F * ((0.2F + Sq.liftKeel) * Arms.VER_STAB) * (q_ * Tail.new_Cy(AOS) * Kq);
-        float f1 = Sq.liftWingLIn + Sq.liftWingLMid + Sq.liftWingLOut;
-        float f2 = Sq.liftWingRIn + Sq.liftWingRMid + Sq.liftWingROut;
-        float f3 = (float)Vflow.lengthSquared() - 120F;
-        if(f3 < 0.0F)
-            f3 = 0.0F;
+        float f2 = Sq.liftWingLIn + Sq.liftWingLMid + Sq.liftWingLOut;
+        float f3 = Sq.liftWingRIn + Sq.liftWingRMid + Sq.liftWingROut;
+        float f4 = (float)Vflow.lengthSquared() - 120F;
+        if(f4 < 0.0F)
+            f4 = 0.0F;
         if(Vflow.x < 0.0D)
-            f3 = 0.0F;
-        if(f3 > 15000F)
-            f3 = 15000F;
+            f4 = 0.0F;
+        if(f4 > 15000F)
+            f4 = 15000F;
         if(((Maneuver)(Maneuver)((Aircraft)actor).FM).get_maneuver() != 20)
         {
-            float f4 = f1 - f2;
-            if(!getOp(19) && d > 20D && f3 > 10F)
+            float f5 = f2 - f3;
+            if(!getOp(19) && d > 20D && f4 > 10F)
             {
                 AM.y += (double)(5F * Sq.squareWing) * Vflow.x;
                 AM.z += 80F * Sq.squareWing * EI.getPropDirSign();
                 if(AOA > 20F || AOA < -20F)
                 {
-                    float f6 = 1.0F;
+                    float f7 = 1.0F;
                     if(W.z < 0.0D)
-                        f6 = -1F;
-                    AM.z += (double)(30F * f6 * Sq.squareWing) * (3D * Vflow.z + Vflow.x);
-                    AM.x -= (double)(50F * f6 * Sq.squareWing) * (Vflow.z + 3D * Vflow.x);
+                        f7 = -1F;
+                    AM.z += (double)(30F * f7 * Sq.squareWing) * (3D * Vflow.z + Vflow.x);
+                    AM.x -= (double)(50F * f7 * Sq.squareWing) * (Vflow.z + 3D * Vflow.x);
                 }
             } else
             {
                 if(!Gears.onGround())
                 {
-                    float f7 = AOA * 3F;
-                    if(f7 > 25F)
-                        f7 = 25F;
-                    if(f7 < -25F)
-                        f7 = -25F;
+                    float f8 = AOA * 3F;
+                    if(f8 > 25F)
+                        f8 = 25F;
+                    if(f8 < -25F)
+                        f8 = -25F;
                     if(!getOp(34))
-                        AM.x -= f7 * f2 * f3;
+                        AM.x -= f8 * f3 * f4;
                     else
                     if(!getOp(37))
-                        AM.x += f7 * f1 * f3;
+                        AM.x += f8 * f2 * f4;
                     else
                     if(((Maneuver)(Maneuver)((Aircraft)actor).FM).get_maneuver() == 44 && (AOA > 15F || AOA < -12F))
                     {
-                        if(f4 > 0.0F && W.z > 0.0D)
+                        if(f5 > 0.0F && W.z > 0.0D)
                             W.z = -9.9999997473787516E-005D;
-                        if(f4 < 0.0F && W.z < 0.0D)
+                        if(f5 < 0.0F && W.z < 0.0D)
                             W.z = 9.9999997473787516E-005D;
-                        if(f3 > 1000F)
-                            f3 = 1000F;
+                        if(f4 > 1000F)
+                            f4 = 1000F;
                         if(W.z < 0.0D)
                         {
-                            AM.z -= 3F * Sq.squareWing * f3;
+                            AM.z -= 3F * Sq.squareWing * f4;
                             if(AOA > 0.0F)
-                                AM.x += 40F * Sq.squareWing * f3;
+                                AM.x += 40F * Sq.squareWing * f4;
                             else
-                                AM.x -= 40F * Sq.squareWing * f3;
+                                AM.x -= 40F * Sq.squareWing * f4;
                         } else
                         {
-                            AM.z += 3F * Sq.squareWing * f3;
+                            AM.z += 3F * Sq.squareWing * f4;
                             if(AOA > 0.0F)
-                                AM.x -= 40F * Sq.squareWing * f3;
+                                AM.x -= 40F * Sq.squareWing * f4;
                             else
-                                AM.x += 40F * Sq.squareWing * f3;
+                                AM.x += 40F * Sq.squareWing * f4;
                         }
                     }
                 }
@@ -245,15 +237,15 @@ public class AIFlightModel extends FlightModel
                 }
                 if(Vflow.x < 20D && Math.abs(AOS) < 33F)
                     AM.y += d5 * AF.z;
-                float f8 = (float)Vflow.x;
-                if(f8 > 150F)
-                    f8 = 150F;
-                float f9 = SensYaw;
-                if(f9 > 0.2F)
-                    f9 = 0.2F;
-                float f10 = SensRoll;
-                if(f10 > 4F)
-                    f10 = 4F;
+                float f9 = (float)Vflow.x;
+                if(f9 > 150F)
+                    f9 = 150F;
+                float f10 = SensYaw;
+                if(f10 > 0.2F)
+                    f10 = 0.2F;
+                float f11 = SensRoll;
+                if(f11 > 4F)
+                    f11 = 4F;
                 double d7 = 20D - (double)Math.abs(AOA);
                 if(d7 < (double)minElevCoeff)
                     d7 = minElevCoeff;
@@ -278,23 +270,23 @@ public class AIFlightModel extends FlightModel
                 if(d12 < -90D)
                     d12 = 180D - d12;
                 d12 *= d13;
-                float f13 = Sq.squareWing;
-                if(f13 < 1.0F)
-                    f13 = 1.0F;
-                f13 = 1.0F / f13;
-                Wtrue.x = CT.getAileron() * f8 * f10 * Sq.squareAilerons * f13 * 1.0F;
-                Wtrue.y = d9 * (double)f8 * (double)SensPitch * (double)Sq.squareElevators * (double)f13 * 0.012000000104308128D;
-                Wtrue.z = d12 * (double)f8 * (double)f9 * (double)Sq.squareRudders * (double)f13 * 0.15000000596046448D;
+                float f14 = Sq.squareWing;
+                if(f14 < 1.0F)
+                    f14 = 1.0F;
+                f14 = 1.0F / f14;
+                Wtrue.x = CT.getAileron() * f9 * f11 * Sq.squareAilerons * f14 * 1.0F;
+                Wtrue.y = d9 * (double)f9 * (double)SensPitch * (double)Sq.squareElevators * (double)f14 * 0.017000000923871994D;
+                Wtrue.z = d12 * (double)f9 * (double)f10 * (double)Sq.squareRudders * (double)f14 * 0.15000000596046448D;
             }
         } else
         {
-            float f5 = 1.0F;
+            float f6 = 1.0F;
             if(W.z < 0.0D)
-                f5 = -1F;
-            AM.z += (double)(30F * f5 * Sq.squareWing) * (3D * Vflow.z + Vflow.x);
-            AM.x -= (double)(50F * f5 * Sq.squareWing) * (Vflow.z + 3D * Vflow.x);
+                f6 = -1F;
+            AM.z += (double)(30F * f6 * Sq.squareWing) * (3D * Vflow.z + Vflow.x);
+            AM.x -= (double)(50F * f6 * Sq.squareWing) * (Vflow.z + 3D * Vflow.x);
         }
-        if(Sq.squareElevators < 0.1F && d > 20D && f3 > 10F)
+        if(Sq.squareElevators < 0.1F && d > 20D && f4 > 10F)
             AM.y += Gravity * 0.4F;
         AM.add(producedAM);
         AM.add(producedAMM);
@@ -309,7 +301,7 @@ public class AIFlightModel extends FlightModel
         if(d3 < 1.0D)
             d3 = 1.0D;
         d3 = 1.0D / d3;
-        W.x *= 1.0D - 0.12D * (0.20000000000000001D + (double)f1 + (double)f2) * d3;
+        W.x *= 1.0D - 0.12D * (0.20000000000000001D + (double)f2 + (double)f3) * d3;
         W.y *= 1.0D - 0.5D * (0.20000000000000001D + (double)Sq.liftStab) * d3;
         W.z *= 1.0D - 0.5D * (0.20000000000000001D + (double)Sq.liftKeel) * d3;
         GF.set(0.0D, 0.0D, 0.0D);
@@ -352,13 +344,13 @@ public class AIFlightModel extends FlightModel
             dryFriction = 1.0F;
         if(dryFriction > 32F)
             dryFriction = 32F;
-        float f11 = 4F * (0.25F - EI.getPowerOutput());
-        if(f11 < 0.0F)
-            f11 = 0.0F;
-        f11 *= f11;
-        f11 *= dryFriction;
-        float f12 = f11 * M.mass * M.mass;
-        if(!brakeShoe && (Gears.nOfPoiOnGr == 0 && Gears.nOfGearsOnGr < 3 || f11 == 0.0F || SummM.lengthSquared() > (double)(2.0F * f12) || SummF.lengthSquared() > (double)(80F * f12) || W.lengthSquared() > (double)(0.00014F * f11) || Vwld.lengthSquared() > (double)(0.09F * f11)))
+        float f12 = 4F * (0.25F - EI.getPowerOutput());
+        if(f12 < 0.0F)
+            f12 = 0.0F;
+        f12 *= f12;
+        f12 *= dryFriction;
+        float f13 = f12 * M.mass * M.mass;
+        if(!brakeShoe && (Gears.nOfPoiOnGr == 0 && Gears.nOfGearsOnGr < 3 || f12 == 0.0F || SummM.lengthSquared() > (double)(2.0F * f13) || SummF.lengthSquared() > (double)(80F * f13) || W.lengthSquared() > (double)(0.00014F * f12) || Vwld.lengthSquared() > (double)(0.09F * f12)))
         {
             double d8 = 1.0D / (double)l;
             for(int i1 = 0; i1 < l; i1++)
@@ -413,10 +405,24 @@ public class AIFlightModel extends FlightModel
             ((Maneuver)(Maneuver)this).bombsOut = true;
             CT.bDropWithMe = false;
             CT.bDropWithPlayer = false;
+            ((Aircraft)actor).setBombScoreOwner(CT.dropWithPlayer);
             CT.dropWithPlayer = null;
             Voice.airSpeaks((Aircraft)actor, 85, 1);
             Voice.setSyncMode(0);
             CT.bDropWithMe = false;
         }
     }
+
+    private long w;
+    public float Density;
+    public float Kq;
+    public float fullMach;
+    protected boolean callSuperUpdate;
+    protected boolean dataDrawn;
+    Vector3d Cw;
+    Vector3d Fw;
+    protected Vector3d Wtrue;
+    private Point3d TmpP;
+    private Vector3d Vn;
+    private Vector3d TmpV;
 }

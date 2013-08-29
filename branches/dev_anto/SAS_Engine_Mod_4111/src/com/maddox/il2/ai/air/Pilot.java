@@ -1,5 +1,4 @@
 /*Modified Pilot class for the SAS Engine Mod*/
-
 package com.maddox.il2.ai.air;
 
 import com.maddox.JGP.*;
@@ -14,9 +13,6 @@ import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.il2.objects.weapons.*;
 import com.maddox.rts.Time;
-
-// Referenced classes of package com.maddox.il2.ai.air:
-//            Maneuver, AirGroup, Airdrome, NearestTargets
 
 public class Pilot extends Maneuver
 {
@@ -42,35 +38,40 @@ public class Pilot extends Maneuver
     private FlightModel oldTaskObject;
     private Actor oldGTarget;
     private boolean continueManeuver;
-    private static final Vector3d MainLook = new Vector3d(0.34202013999999997D, 0.0D, 0.93969259999999999D);
-    private static Vector3d VDanger = new Vector3d();
-    private static Vector3d OnMe = new Vector3d();
+    private static final Vector3d MAIN_LOOK = new Vector3d(0.34202013999999997D, 0.0D, 0.93969259999999999D);
+    private static Vector3d vecDanger = new Vector3d();
+    private static Vector3d onMe = new Vector3d();
     private static Vector3d diffV = new Vector3d();
-    private static double diffVLength = 0.0D;
+    private double diffVLength;
     private static Vector3f tmpV = new Vector3f();
     private static Point3d p1 = new Point3d();
     private static Point3d p2 = new Point3d();
     private static Point3f p1f = new Point3f();
     private static Point3f p2f = new Point3f();
-    private boolean Visible;
-    private boolean Near;
-    private boolean OnBack;
-    private boolean Looks;
-    private boolean Higher;
-    private boolean Faster;
-    private boolean Energed;
+    private boolean visible;
+    private boolean near;
+    private boolean onBack;
+    private boolean looks;
+    private boolean higher;
+    private boolean faster;
+    private boolean energed;
     private float dist;
     private float dE;
+    public boolean bFromPlayer;
     private Actor act;
     private Actor actg;
 	//-------------------------------------------
+
     
-	//TODO: New Parameters
-	//-------------------------------------------
-	
     public native int[] doFighterDefense(float f, float f1, float f2, float f3, float f4, float f5, int i, 
             int j, int k, boolean flag, boolean flag1, boolean flag2, boolean flag3, boolean flag4, 
-            boolean flag5);
+            boolean flag5, boolean flag6, boolean flag7);
+
+    public native int doStormovikDefense(float f, float f1, float f2, float f3, int i, int j, int k, 
+            boolean flag, int l, int i1);
+
+    public native int doTransportDefense(float f, float f1, float f2, int i, int j, int k, int l, 
+            int i1);
 
     public void targetAll()
     {
@@ -102,9 +103,11 @@ public class Pilot extends Maneuver
         oldTaskObject = null;
         oldGTarget = null;
         continueManeuver = false;
-        Energed = false;
+        diffVLength = 0.0D;
+        energed = false;
         dist = 0.0F;
         dE = 0.0F;
+        bFromPlayer = false;
     }
 
     private boolean killed(Actor actor)
@@ -123,7 +126,7 @@ public class Pilot extends Maneuver
     {
         if(flightmodel == null)
             return true;
-        if(flightmodel.AS.astatePilotStates[0] == 100)
+        if(flightmodel.AS.isAllPilotsDead())
             return true;
         if(Actor.isValid(flightmodel.actor))
             return killed(flightmodel.actor);
@@ -140,11 +143,11 @@ public class Pilot extends Maneuver
             return true;
         } else
         {
-            VDanger.set(((Aircraft)actor).FM.Loc);
-            VDanger.sub(Loc);
-            OnMe.scale(-1D, VDanger);
-            Or.transformInv(VDanger);
-            return VDanger.x >= 0.0D;
+            vecDanger.set(((Aircraft)actor).FM.Loc);
+            vecDanger.sub(Loc);
+            onMe.scale(-1D, vecDanger);
+            Or.transformInv(vecDanger);
+            return vecDanger.x >= 0.0D;
         }
     }
 
@@ -184,7 +187,7 @@ public class Pilot extends Maneuver
             World.cur().airdrome.update(this, f);
             return;
         }
-        else if(isTick(8, 0) || get_maneuver() == 0)
+        if(isTick(8, 0) || get_maneuver() == 0)
         {
             setPriorities();
             setTaskAndManeuver();
@@ -203,7 +206,7 @@ public class Pilot extends Maneuver
         if(killed(target_ground))
             target_ground = null;
         setBusy(false);
-        if(AS.isPilotDead(0))
+        if(AS.isAllPilotsDead())
         {
             setBusy(true);
             set_maneuver(44);
@@ -225,9 +228,9 @@ public class Pilot extends Maneuver
             for(int j = 0; j < i; j++)
                 f += EI.engines[j].getReadyness() / (float)i;
 
-            if(f < 0.7F)
+            if(f < 0.7F + World.Rnd().nextFloat() * 0.15F)
                 setReadyToReturn(true);
-            if(f < 0.3F)
+            if(f < 0.3F + World.Rnd().nextFloat() * 0.2F)
                 setReadyToDie(true);
         }
         if(M.fuel < 0.3F * M.maxFuel)
@@ -266,13 +269,13 @@ public class Pilot extends Maneuver
             setBusy(true);
             return;
         }
-        if(get_maneuver() == 44 || get_maneuver() == 25 || get_maneuver() == 49 || get_maneuver() == 26 || get_maneuver() == 64 || get_maneuver() == 2 || get_maneuver() == 57 || get_maneuver() == 60 || get_maneuver() == 61)
+        if(get_maneuver() == 44 || get_maneuver() == 25 && AP.way.Cur() > 6 || get_maneuver() == 49 || get_maneuver() == 26 || get_maneuver() == 64 || get_maneuver() == 102 || get_maneuver() == 2 || get_maneuver() == 84 || get_maneuver() == 57 || get_maneuver() == 60 || get_maneuver() == 61)
         {
             setBusy(true);
             dontSwitch = true;
             return;
         }
-        if(getDangerAggressiveness() > (1.0F - 0.12F * (float)Skill) * World.Rnd().nextFloat(0.85F, 1.05F) && danger != null && ((danger.actor instanceof TypeFighter) || (danger.actor instanceof TypeStormovik)) && ((Maneuver)danger).isOk())
+        if(getDangerAggressiveness() > (1.0F - 0.12F * (float)Skill) * World.Rnd().nextFloat(0.95F, 1.01F) && danger != null && ((danger.actor instanceof TypeFighter) || (danger.actor instanceof TypeStormovik)) && ((Maneuver)danger).isOk())
         {
             if(courage <= 1 && World.Rnd().nextInt(0, 30000) < 2 - courage)
             {
@@ -290,7 +293,7 @@ public class Pilot extends Maneuver
                 if((actor instanceof TypeStormovik) && Group != null)
                 {
                     int l = Group.numInGroup((Aircraft)actor);
-                    if(Group.nOfAirc >= l + 2)
+                    if(((Aircraft)danger.actor).aircNumber() < Group.nOfAirc && !hasBombs() && Group.nOfAirc >= l + 2)
                     {
                         Maneuver maneuver = (Maneuver)Group.airc[l + 1].FM;
                         Voice.speakCheckYour6((Aircraft)actor, (Aircraft)danger.actor);
@@ -332,6 +335,8 @@ public class Pilot extends Maneuver
         }
         if(get_task() == 6)
         {
+            CT.GearControl = 0.0F;
+            CT.arrestorControl = 0.0F;
             if(target != null && airClient != null && target == ((Maneuver)airClient).danger)
             {
                 if(actor instanceof TypeStormovik)
@@ -480,27 +485,27 @@ public class Pilot extends Maneuver
                 CT.dropFuelTanks();
             }
             dist = (float)Loc.distance(danger.Loc);
-            VDanger.sub(danger.Loc, Loc);
-            OnMe.scale(-1D, VDanger);
+            vecDanger.sub(danger.Loc, Loc);
+            onMe.scale(-1D, vecDanger);
             tmpOr.setYPR(Or.getYaw(), 0.0F, 0.0F);
-            tmpOr.transformInv(VDanger);
+            tmpOr.transformInv(vecDanger);
             diffV.sub(danger.Vwld, Vwld);
             tmpOr.transformInv(diffV);
             diffVLength = diffV.length();
             tmpOr.setYPR(danger.Or.getYaw(), 0.0F, 0.0F);
-            danger.Or.transformInv(OnMe);
-            VDanger.normalize();
-            OnMe.normalize();
+            danger.Or.transformInv(onMe);
+            vecDanger.normalize();
+            onMe.normalize();
             dE = (Energy - danger.Energy) * 0.1019F;
-            Energed = danger.Energy > Energy;
-            Faster = danger.getSpeed() > getSpeed();
-            Higher = danger.Loc.z > Loc.z;
-            Near = dist < 300F;
-            OnBack = VDanger.x < 0.0D && dist < 2000F;
-            Visible = VDanger.dot(MainLook) > 0.0D;
-            Looks = OnMe.x > 0.0D;
-            VDanger.normalize();
-            if(OnBack && Near && (danger instanceof TypeFighter) && ((actor instanceof TypeTransport) || Wingman == null || killed(Wingman) || ((Pilot)Wingman).target != danger))
+            energed = danger.Energy > Energy;
+            faster = danger.getSpeed() > getSpeed();
+            higher = danger.Loc.z > Loc.z;
+            near = dist < 300F;
+            onBack = vecDanger.x < 0.0D && dist < 2000F;
+            visible = vecDanger.dot(MAIN_LOOK) > 0.0D;
+            looks = onMe.x > 0.0D;
+            vecDanger.normalize();
+            if(onBack && near && (danger instanceof TypeFighter) && ((actor instanceof TypeTransport) || Wingman == null || killed(Wingman) || ((Pilot)Wingman).target != danger))
                 if(isLeader())
                 {
                     if(((actor instanceof TypeFighter) || (actor instanceof TypeStormovik) && Skill > 1 && AP.way.curr().Action == 0) && Wingman != null && !killed(Wingman) && !((Pilot)Wingman).requestCoverFor(this))
@@ -566,10 +571,10 @@ public class Pilot extends Maneuver
                     break;
                 }
                 set_task(3);
-                if(Leader != null)
-                    set_maneuver(24);
-                else
+                if(Leader == null)
                     set_maneuver(21);
+                else
+                    set_maneuver(24);
                 break;
             }
             int j = ((Aircraft)actor).aircIndex();
@@ -832,233 +837,28 @@ public class Pilot extends Maneuver
 
     private void transportDefence()
     {
-        switch(Skill)
-        {
-        default:
-            break;
+        int i = 0;
+        for(int j = 0; j < turret.length; j++)
+            if(turret[j].bIsOperable)
+                i++;
 
-        case 0: // '\0'
-            set_maneuver(21);
-            break;
-
-        case 1: // '\001'
-            if(isLonely(30F, true))
-                set_maneuver(38);
-            break;
-
-        case 2: // '\002'
-        case 3: // '\003'
-            if(!isLonely(40F, false))
-                break;
-            switch(World.Rnd().nextInt(0, 3))
-            {
-            case 0: // '\0'
-                set_maneuver(39);
-                break;
-
-            case 1: // '\001'
-                set_maneuver(38);
-                break;
-
-            case 2: // '\002'
-                set_maneuver(8);
-                break;
-
-            case 3: // '\003'
-                set_maneuver(14);
-                break;
-            }
-            break;
-        }
+        int k = ((Aircraft)danger.actor).aircNumber();
+        int l = doTransportDefense((float)vecDanger.x, dist, Alt, Skill, courage, flying, i, k);
+        set_maneuver(l);
     }
 
     private void stormovikDefence()
     {
-        if(dist > 400F)
-        {
-            set_maneuver(3);
-            return;
-        }
-        switch(Skill)
-        {
-        default:
-            break;
+        int i = ((Aircraft)danger.actor).aircNumber();
+        int j = 0;
+        for(int k = 0; k < turret.length; k++)
+            if(turret[k].bIsOperable)
+                j++;
 
-        case 0: // '\0'
-            if(World.Rnd().nextBoolean())
-                set_maneuver(14);
-            else
-                set_maneuver(56);
-            break;
-
-        case 1: // '\001'
-            if(Visible)
-            {
-                set_maneuver(14);
-                break;
-            }
-            switch(World.Rnd().nextInt(0, 7))
-            {
-            case 0: // '\0'
-                set_maneuver(29);
-                break;
-
-            case 1: // '\001'
-                set_maneuver(35);
-                break;
-
-            case 2: // '\002'
-            case 3: // '\003'
-            case 4: // '\004'
-            case 5: // '\005'
-                set_maneuver(14);
-                break;
-
-            case 6: // '\006'
-            case 7: // '\007'
-                set_maneuver(39);
-                break;
-            }
-            break;
-
-        case 2: // '\002'
-        case 3: // '\003'
-            if(Visible)
-            {
-                if(VDanger.x > 0.93999999761581421D)
-                {
-                    switch(World.Rnd().nextInt(0, 13))
-                    {
-                    case 0: // '\0'
-                    case 1: // '\001'
-                    case 2: // '\002'
-                        set_maneuver(38);
-                        break;
-
-                    case 3: // '\003'
-                    case 4: // '\004'
-                        set_maneuver(27);
-                        target = danger;
-                        break;
-
-                    case 5: // '\005'
-                    case 6: // '\006'
-                        set_maneuver(39);
-                        break;
-
-                    case 7: // '\007'
-                    case 8: // '\b'
-                    case 9: // '\t'
-                        set_maneuver(35);
-                        break;
-
-                    case 10: // '\n'
-                    case 11: // '\013'
-                        set_maneuver(6);
-                        break;
-
-                    case 12: // '\f'
-                        set_maneuver(56);
-                        break;
-
-                    case 13: // '\r'
-                        set_maneuver(14);
-                        break;
-                    }
-                    break;
-                }
-                if(Math.abs(VDanger.x) < 0.27500000596046448D)
-                {
-                    switch(World.Rnd().nextInt(0, 7))
-                    {
-                    case 0: // '\0'
-                        set_maneuver(16);
-                        break;
-
-                    case 1: // '\001'
-                        set_maneuver(17);
-                        break;
-
-                    case 2: // '\002'
-                    case 3: // '\003'
-                    case 4: // '\004'
-                        set_maneuver(28);
-                        break;
-
-                    case 5: // '\005'
-                    case 6: // '\006'
-                        set_maneuver(6);
-                        break;
-
-                    case 7: // '\007'
-                        set_maneuver(13);
-                        break;
-                    }
-                    break;
-                }
-                switch(World.Rnd().nextInt(0, 3))
-                {
-                case 0: // '\0'
-                case 1: // '\001'
-                    set_maneuver(14);
-                    break;
-
-                case 2: // '\002'
-                    set_maneuver(29);
-                    break;
-
-                case 3: // '\003'
-                    set_maneuver(39);
-                    break;
-                }
-                break;
-            }
-            switch(World.Rnd().nextInt(0, 17))
-            {
-            case 0: // '\0'
-            case 1: // '\001'
-            case 2: // '\002'
-            case 3: // '\003'
-            case 4: // '\004'
-                set_maneuver(29);
-                break;
-
-            case 5: // '\005'
-            case 6: // '\006'
-                set_maneuver(35);
-                break;
-
-            case 7: // '\007'
-            case 8: // '\b'
-                set_maneuver(28);
-                break;
-
-            case 9: // '\t'
-            case 10: // '\n'
-                set_maneuver(39);
-                break;
-
-            case 11: // '\013'
-                set_maneuver(38);
-                break;
-
-            case 12: // '\f'
-            case 13: // '\r'
-                set_maneuver(32);
-                break;
-
-            case 14: // '\016'
-                set_maneuver(7);
-                break;
-
-            case 15: // '\017'
-            case 16: // '\020'
-            case 17: // '\021'
-                set_maneuver(8);
-                break;
-            }
-            break;
-        }
+        int l = doStormovikDefense((float)vecDanger.x, (float)onMe.x, dist, Alt, Skill, courage, flying, visible, j, i);
+        if(l == 27)
+            target = danger;
+        set_maneuver(l);
     }
 
     private void fighterDefence()
@@ -1071,7 +871,7 @@ public class Pilot extends Maneuver
         case 1: // '\001'
         case 2: // '\002'
         case 3: // '\003'
-            int ai[] = doFighterDefense(dE, (float)VDanger.x, (float)OnMe.x, dist, (float)diffVLength, Alt, Skill, courage, flying, Visible, Near, OnBack, Looks, Higher, Faster);
+            int ai[] = doFighterDefense(dE, (float)vecDanger.x, (float)onMe.x, dist, (float)diffVLength, Alt, Skill, courage, flying, visible, near, onBack, looks, higher, faster, isTurnBetterThanEnemy(), isDiveBetterThanEnemy());
             set_maneuver(ai[0]);
             for(int i = 1; i < ai.length; i++)
                 push(ai[i]);
@@ -1092,6 +892,11 @@ public class Pilot extends Maneuver
 
     public void attackBombers()
     {
+        if(bFromPlayer)
+        {
+            bFromPlayer = false;
+            return;
+        }
         float f = 0.0F;
         if(CT.Weapons[1] != null && ((GunGeneric)CT.Weapons[1][0]).countBullets() > 0)
             f = ((GunGeneric)CT.Weapons[1][0]).bulletMassa();
@@ -1395,17 +1200,17 @@ label0:
                 {
                 case 0: // '\0'
                     followOffset.set(World.Rnd().nextFloat(150F, 200F), (float)(100 - World.Rnd().nextInt(0, 1) * 200) + World.Rnd().nextFloat(-50F, 50F), World.Rnd().nextFloat(-10F, 50F));
-                    set_TeamMan(65);
+                    set_maneuver(65);
                     break;
 
                 case 1: // '\001'
                     followOffset.set(World.Rnd().nextFloat(100F, 150F), (float)(200 - World.Rnd().nextInt(0, 1) * 400) + World.Rnd().nextFloat(-50F, 50F), World.Rnd().nextFloat(-10F, 20F));
-                    set_TeamMan(65);
+                    set_maneuver(65);
                     break;
 
                 case 2: // '\002'
                     followOffset.set(World.Rnd().nextFloat(50F, 100F), (float)(300 - World.Rnd().nextInt(0, 1) * 600) + World.Rnd().nextFloat(-50F, 50F), World.Rnd().nextFloat(-20F, 10F));
-                    set_TeamMan(65);
+                    set_maneuver(65);
                     break;
                 }
                 break;
@@ -1415,17 +1220,17 @@ label0:
                 {
                 case 0: // '\0'
                     followOffset.set(World.Rnd().nextFloat(100F, 200F), (float)(100 - World.Rnd().nextInt(0, 1) * 300) + World.Rnd().nextFloat(-50F, 50F), World.Rnd().nextFloat(-100F, 150F));
-                    set_TeamMan(65);
+                    set_maneuver(65);
                     break;
 
                 case 1: // '\001'
                     followOffset.set(World.Rnd().nextFloat(100F, 250F), (float)(200 - World.Rnd().nextInt(0, 1) * 500) + World.Rnd().nextFloat(-50F, 50F), World.Rnd().nextFloat(-100F, 120F));
-                    set_TeamMan(65);
+                    set_maneuver(65);
                     break;
 
                 case 2: // '\002'
                     followOffset.set(World.Rnd().nextFloat(50F, 200F), (float)(300 - World.Rnd().nextInt(0, 1) * 600) + World.Rnd().nextFloat(-50F, 50F), World.Rnd().nextFloat(-200F, 100F));
-                    set_TeamMan(65);
+                    set_maneuver(65);
                     break;
                 }
                 break;
@@ -1444,16 +1249,16 @@ label0:
                     switch(World.Rnd().nextInt(0, 2))
                     {
                     case 0: // '\0'
-                        set_TeamMan(27);
+                        set_maneuver(27);
                         break;
 
                     case 1: // '\001'
-                        set_TeamMan(81);
+                        set_maneuver(81);
                         break;
 
                     case 2: // '\002'
                         spreadV3d.set(World.Rnd().nextFloat(-20F, 20F), (float)(350 - World.Rnd().nextInt(0, 1) * 700) + World.Rnd().nextFloat(-50F, 100F), 0.0D);
-                        set_TeamMan(74);
+                        set_maneuver(74);
                         break;
                     }
                     break label0;
@@ -1462,17 +1267,17 @@ label0:
                 {
                 case 1: // '\001'
                     spreadV3d.set(World.Rnd().nextFloat(50F, 100F), (float)(300 - World.Rnd().nextInt(0, 1) * 600) + World.Rnd().nextFloat(-50F, 50F), World.Rnd().nextFloat(-20F, 10F));
-                    set_TeamMan(76);
+                    set_maneuver(76);
                     break;
 
                 case 2: // '\002'
                     spreadV3d.set(World.Rnd().nextFloat(-50F, 50F), (float)(300 - World.Rnd().nextInt(0, 1) * 600) + World.Rnd().nextFloat(-50F, 50F), World.Rnd().nextFloat(-10F, 10F));
-                    set_TeamMan(76);
+                    set_maneuver(76);
                     break;
 
                 case 3: // '\003'
                     spreadV3d.set(World.Rnd().nextFloat(-20F, 20F), (float)(350 - World.Rnd().nextInt(0, 1) * 700) + World.Rnd().nextFloat(-50F, 50F), World.Rnd().nextFloat(-10F, 10F));
-                    set_TeamMan(76);
+                    set_maneuver(76);
                     break;
                 }
                 break label0;
@@ -1482,17 +1287,17 @@ label0:
                 {
                 case 1: // '\001'
                     spreadV3d.set(World.Rnd().nextFloat(50F, 100F), (float)(300 - World.Rnd().nextInt(0, 1) * 600) + World.Rnd().nextFloat(-50F, 50F), World.Rnd().nextFloat(-20F, 10F));
-                    set_TeamMan(76);
+                    set_maneuver(76);
                     break;
 
                 case 2: // '\002'
                     spreadV3d.set(World.Rnd().nextFloat(-50F, 50F), (float)(300 - World.Rnd().nextInt(0, 1) * 600) + World.Rnd().nextFloat(-50F, 50F), World.Rnd().nextFloat(-10F, 10F));
-                    set_TeamMan(76);
+                    set_maneuver(76);
                     break;
 
                 case 3: // '\003'
                     spreadV3d.set(World.Rnd().nextFloat(-20F, 20F), (float)(350 - World.Rnd().nextInt(0, 1) * 700) + World.Rnd().nextFloat(-50F, 50F), World.Rnd().nextFloat(-10F, 10F));
-                    set_TeamMan(76);
+                    set_maneuver(76);
                     break;
                 }
                 break label0;
@@ -1502,28 +1307,28 @@ label0:
                 {
                 case 1: // '\001'
                     followOffset.set(World.Rnd().nextFloat(100F, 200F), (float)(100 - World.Rnd().nextInt(0, 1) * 300) + World.Rnd().nextFloat(-50F, 50F), World.Rnd().nextFloat(-100F, 150F));
-                    set_TeamMan(65);
+                    set_maneuver(65);
                     break;
 
                 case 2: // '\002'
                     followOffset.set(World.Rnd().nextFloat(100F, 250F), (float)(200 - World.Rnd().nextInt(0, 1) * 500) + World.Rnd().nextFloat(-50F, 50F), World.Rnd().nextFloat(-100F, 120F));
-                    set_TeamMan(65);
+                    set_maneuver(65);
                     break;
 
                 case 3: // '\003'
                     followOffset.set(World.Rnd().nextFloat(50F, 200F), (float)(300 - World.Rnd().nextInt(0, 1) * 600) + World.Rnd().nextFloat(-50F, 50F), World.Rnd().nextFloat(-200F, 100F));
-                    set_TeamMan(65);
+                    set_maneuver(65);
                     break;
                 }
                 break;
 
             case 3: // '\003'
                 spreadV3d.set(World.Rnd().nextFloat(-10F, 50F), (float)(-1400 + ((Maneuver)airClient).bracketSide * 2800) + World.Rnd().nextFloat(-200F, 200F), World.Rnd().nextFloat(0.0F, 250F));
-                set_TeamMan(74);
+                set_maneuver(74);
                 break;
 
             case 4: // '\004'
-                set_TeamMan(65);
+                set_maneuver(65);
                 break;
             }
             break;
@@ -1538,18 +1343,18 @@ label0:
                 switch(flying)
                 {
                 case 2: // '\002'
-                    setWingmanAttackType(3);
-                    set_TeamMan(81);
+                    setWingmanAttackType(4);
+                    set_maneuver(81);
                     break;
 
                 case 3: // '\003'
                     setWingmanAttackType(6);
-                    set_TeamMan(81);
+                    set_maneuver(81);
                     break;
 
                 case 4: // '\004'
                     setWingmanAttackType(7);
-                    set_TeamMan(81);
+                    set_maneuver(81);
                     break;
                 }
                 break label0;
@@ -1559,33 +1364,33 @@ label0:
                 {
                 case 2: // '\002'
                     spreadV3d.set(World.Rnd().nextFloat(-20F, 20F), (float)(350 - World.Rnd().nextInt(0, 1) * 700) + World.Rnd().nextFloat(-50F, 100F), 0.0D);
-                    set_TeamMan(74);
+                    set_maneuver(74);
                     break;
 
                 case 3: // '\003'
                     spreadV3d.set(World.Rnd().nextFloat(-100F, -300F), (float)(350 - World.Rnd().nextInt(0, 1) * 700) + World.Rnd().nextFloat(-50F, 100F), 0.0D);
-                    set_TeamMan(74);
+                    set_maneuver(74);
                     break;
 
                 case 4: // '\004'
                     spreadV3d.set(World.Rnd().nextFloat(-10F, -100F), (float)(350 - World.Rnd().nextInt(0, 1) * 700) + World.Rnd().nextFloat(-50F, 100F), -20D);
-                    set_TeamMan(74);
+                    set_maneuver(74);
                     break;
                 }
                 break;
 
             case 2: // '\002'
                 spreadV3d.set(World.Rnd().nextFloat(-10F, 50F), (float)(100 - World.Rnd().nextInt(0, 1) * 250) + World.Rnd().nextFloat(-50F, 50F), 0.0D);
-                set_TeamMan(65);
+                set_maneuver(65);
                 break;
 
             case 3: // '\003'
                 spreadV3d.set(World.Rnd().nextFloat(-10F, 50F), (float)(-1400 + ((Maneuver)airClient).bracketSide * 2800) + World.Rnd().nextFloat(-150F, 150F), World.Rnd().nextFloat(0.0F, 550F));
-                set_TeamMan(74);
+                set_maneuver(74);
                 break;
 
             case 4: // '\004'
-                set_TeamMan(65);
+                set_maneuver(65);
                 break;
             }
             break;
@@ -1599,19 +1404,25 @@ label0:
             case 0: // '\0'
                 switch(flying)
                 {
-                case 3: // '\003'
-                    setWingmanAttackType(3);
-                    set_TeamMan(81);
+                default:
                     break;
+
+                case 3: // '\003'
+                    setWingmanAttackType(4);
+                    set_maneuver(81);
+                    break label0;
 
                 case 4: // '\004'
                     setWingmanAttackType(6);
-                    set_TeamMan(81);
-                    break;
+                    set_maneuver(81);
+                    break label0;
 
                 case 5: // '\005'
-                    setWingmanAttackType(4);
-                    set_TeamMan(81);
+                    if(World.Rnd().nextBoolean())
+                        setWingmanAttackType(8);
+                    else
+                        setWingmanAttackType(9);
+                    set_maneuver(81);
                     break;
                 }
                 break label0;
@@ -1621,40 +1432,40 @@ label0:
                 {
                 case 3: // '\003'
                     spreadV3d.set(World.Rnd().nextFloat(-20F, 20F), (float)(350 - World.Rnd().nextInt(0, 1) * 700) + World.Rnd().nextFloat(-50F, 100F), 0.0D);
-                    set_TeamMan(74);
+                    set_maneuver(74);
                     break;
 
                 case 4: // '\004'
                     spreadV3d.set(World.Rnd().nextFloat(-100F, -300F), (float)(350 - World.Rnd().nextInt(0, 1) * 700) + World.Rnd().nextFloat(-50F, 100F), 0.0D);
-                    set_TeamMan(74);
+                    set_maneuver(74);
                     break;
 
                 case 5: // '\005'
                     spreadV3d.set(World.Rnd().nextFloat(-10F, -100F), (float)(350 - World.Rnd().nextInt(0, 1) * 700) + World.Rnd().nextFloat(-50F, 100F), -20D);
-                    set_TeamMan(74);
+                    set_maneuver(74);
                     break;
                 }
                 break;
 
             case 2: // '\002'
                 spreadV3d.set(World.Rnd().nextFloat(-10F, 20F), (float)(100 - World.Rnd().nextInt(0, 1) * 200) + World.Rnd().nextFloat(-50F, 50F), 0.0D);
-                set_TeamMan(65);
+                set_maneuver(65);
                 break;
 
             case 3: // '\003'
                 spreadV3d.set(World.Rnd().nextFloat(-10F, 50F), (float)(-1400 + ((Maneuver)airClient).bracketSide * 2800) + World.Rnd().nextFloat(-200F, 200F), World.Rnd().nextFloat(0.0F, 550F));
-                set_TeamMan(74);
+                set_maneuver(74);
                 break;
 
             case 4: // '\004'
                 spreadV3d.set(World.Rnd().nextFloat(-10F, 20F), (float)(100 - World.Rnd().nextInt(0, 1) * 200) + World.Rnd().nextFloat(-50F, 50F), 0.0D);
-                set_TeamMan(65);
+                set_maneuver(65);
                 break;
             }
             break;
 
         default:
-            set_TeamMan(65);
+            set_maneuver(65);
             break;
         }
     }
@@ -1706,4 +1517,7 @@ label0:
         else
             return true;
     }
+
+
+
 }

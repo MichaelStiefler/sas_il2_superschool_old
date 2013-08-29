@@ -161,8 +161,7 @@ public abstract class AircraftLH extends Aircraft
 			if(hookpilot != null)
 				setHeadAngles(-hookpilot.getAzimut(), hookpilot.getTangage());
 		}
-		movePilotsHead(viewAzimut, viewTangage);
-		//TODO: Plane shake code
+		movePilotsHead(viewAzimut, viewTangage);//TODO: Plane shake code
 		//--------------------------------------------------------------------
 		if(!this.FM.isPlayers() || !(this.FM instanceof RealFlightModel)) return; // don't shake for non-player aircraft.
 		if (this.fEngineShakeLevel == null) this.fEngineShakeLevel = new float[this.FM.EI.getNum()]; // initialize damaged engines array if necessary.
@@ -211,8 +210,32 @@ public abstract class AircraftLH extends Aircraft
 	public void rareAction(float f, boolean flag)
 	{
 		super.rareAction(f, flag);
-		if(this == World.getPlayerAircraft() && !World.cur().diffCur.No_Outside_Views && World.cur().diffCur.NoOwnPlayerViews && Main3D.cur3D().isViewOutside() && Main3D.cur3D().viewActor() == World.getPlayerAircraft() && !Aircraft.isPlayerTaxing())
-			HotKeyCmd.exec("aircraftView", "CockpitView");
+		if(this == World.getPlayerAircraft())
+		{
+			if(!World.cur().diffCur.No_Outside_Views && World.cur().diffCur.NoOwnPlayerViews && Main3D.cur3D().isViewOutside() && Main3D.cur3D().viewActor() == World.getPlayerAircraft() && !Aircraft.isPlayerTaxing())
+				HotKeyCmd.exec("aircraftView", "CockpitView");
+			if((double)FM.CT.getGear() > 0.01D && (FM.AS.gearStates[0] != 0.0F || FM.AS.gearStates[1] != 0.0F || FM.AS.gearStates[2] != 0.0F))
+			{
+				if(FM.getOverload() > World.Rnd().nextFloat(3F, 6F))
+				{
+					if(FM.AS.gearStates[0] < 0.0F && FM.AS.gearDamRecoveryStates[0] < 2)
+						FM.AS.fixGear(this, 0);
+					if(FM.AS.gearStates[1] < 0.0F && FM.AS.gearDamRecoveryStates[1] < 2)
+						FM.AS.fixGear(this, 1);
+					if(FM.AS.gearStates[2] < 0.0F && FM.AS.gearDamRecoveryStates[2] < 2)
+						FM.AS.fixGear(this, 2);
+				}
+				if((double)FM.CT.getGear() > 0.10000000000000001D && (double)FM.CT.getGear() < 0.20000000000000001D && FM.CT.GearControl == 0.0F)
+				{
+					if(FM.AS.gearStates[0] < 0.0F && FM.AS.gearDamRecoveryStates[0] == 0)
+						FM.AS.fixGear(this, 0);
+					if(FM.AS.gearStates[1] < 0.0F && FM.AS.gearDamRecoveryStates[1] == 0)
+						FM.AS.fixGear(this, 1);
+					if(FM.AS.gearStates[2] < 0.0F && FM.AS.gearDamRecoveryStates[2] == 0)
+						FM.AS.fixGear(this, 2);
+				}
+			}
+		}
 	}
 
 	public void beaconPlus()
@@ -256,14 +279,14 @@ public abstract class AircraftLH extends Aircraft
 		switch(i)
 		{
 		case 1: // '\001'
-			headingBug = headingBug + 1.0F;
-			if(headingBug >= 360F)
-				headingBug = 0.0F;
-			if(Main3D.cur3D().cockpitCur.printCompassHeading && World.cur().diffCur.RealisticNavigationInstruments && bWantBeaconKeys)
-				HUD.log(hudLogCompassId, "CompassHeading", new Object[] {
-						"" + (int)headingBug
-				});
-			break;
+		headingBug = headingBug + 1.0F;
+		if(headingBug >= 360F)
+			headingBug = 0.0F;
+		if(Main3D.cur3D().cockpitCur.printCompassHeading && World.cur().diffCur.RealisticNavigationInstruments && bWantBeaconKeys)
+			HUD.log(hudLogCompassId, "CompassHeading", new Object[] {
+					"" + (int)headingBug
+			});
+		break;
 		}
 	}
 
@@ -295,6 +318,32 @@ public abstract class AircraftLH extends Aircraft
 			float f = usercfg.bombDelay;
 			FM.AS.replicateFuzeStatesToNet(j, Fuze_EL_AZ.getFuzeMode(), f);
 		}
+		if(i == 3)
+		{
+			Cockpit cockpit = Main3D.cur3D().cockpitCur;
+			if(cockpit instanceof CockpitPilot)
+				((CockpitPilot)cockpit).toggleReticleBrightness();
+		}
+		if(i == 4)
+			if(!Aircraft.showTaxingWay)
+			{
+				if(isAircraftTaxing())
+					Aircraft.showTaxingWay = !Aircraft.showTaxingWay;
+			} else
+			{
+				Aircraft.showTaxingWay = !Aircraft.showTaxingWay;
+			}
+		if(i == 5 && FM.CT.bHasBayDoorControl && ((Aircraft)FM.actor).canOpenBombBay())
+			if(FM.CT.BayDoorControl > 0.5F && FM.CT.getBayDoor() > 0.99F)
+			{
+				FM.CT.BayDoorControl = 0.0F;
+				HUD.log("BombBayClosed");
+			} else
+				if(FM.CT.BayDoorControl < 0.5F && FM.CT.getBayDoor() < 0.01F)
+				{
+					FM.CT.BayDoorControl = 1.0F;
+					HUD.log("BombBayOpen");
+				}
 	}
 
 	protected void hitFlesh(int i, Shot shot, int j)
@@ -307,12 +356,12 @@ public abstract class AircraftLH extends Aircraft
 			break;
 
 		case 0: // '\0'
-			if(World.Rnd().nextFloat() < 0.05F)
-				return;
-			if(shot.initiator == World.getPlayerAircraft() && World.cur().isArcade())
-				HUD.logCenter("H E A D S H O T");
-			l *= 30;
-			break;
+		if(World.Rnd().nextFloat() < 0.05F)
+			return;
+		if(shot.initiator == World.getPlayerAircraft() && World.cur().isArcade())
+			HUD.logCenter("H E A D S H O T");
+		l *= 30;
+		break;
 
 		case 1: // '\001'
 			if(World.Rnd().nextFloat() < 0.08F)

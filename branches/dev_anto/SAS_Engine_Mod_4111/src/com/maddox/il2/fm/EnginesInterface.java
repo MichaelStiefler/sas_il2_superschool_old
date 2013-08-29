@@ -2,52 +2,54 @@
 
 package com.maddox.il2.fm;
 
-import com.maddox.JGP.*;
+import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Point3f;
+import com.maddox.JGP.Vector3d;
+import com.maddox.JGP.Vector3f;
 import com.maddox.il2.ai.World;
-import com.maddox.il2.engine.*;
+import com.maddox.il2.engine.Actor;
+import com.maddox.il2.engine.Hook;
+import com.maddox.il2.engine.Loc;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Time;
 
-public class EnginesInterface extends FMMath
-{
+public class EnginesInterface extends FMMath {
 
-    public EnginesInterface()
-    {
+    public EnginesInterface() {
         num = 0;
         producedF = new Vector3d();
         producedM = new Vector3d();
         reference = null;
+        //TODO: +++ CTO Mod 4.12 +++
         bCatapultArmed = false;
         dCatapultForce = 0.0D;
         iCatapultNumber = 0;
+        //TODO: --- CTO Mod 4.12 ---
     }
 
-    public void load(FlightModel flightmodel, SectFile sectfile)
-    {
+    public void load(FlightModel flightmodel, SectFile sectfile) {
         reference = flightmodel;
         String s = "Engine";
-        for(num = 0; sectfile.get(s, "Engine" + num + "Family") != null; num++);
+        for (num = 0; sectfile.get(s, "Engine" + num + "Family") != null; num++)
+            ;
         engines = new Motor[num];
-        for(tmpI = 0; tmpI < num; tmpI++)
+        for (tmpI = 0; tmpI < num; tmpI++)
             engines[tmpI] = new Motor();
 
         bCurControl = new boolean[num];
         Aircraft.debugprintln(reference.actor, "Loading " + num + " engine(s) from '" + sectfile.toString() + "....");
-        for(tmpI = 0; tmpI < num; tmpI++)
-        {
+        for (tmpI = 0; tmpI < num; tmpI++) {
             String s1 = sectfile.get(s, "Engine" + tmpI + "Family");
             String s2 = sectfile.get(s, "Engine" + tmpI + "SubModel");
             Aircraft.debugprintln(reference.actor, "Loading engine model from '" + s1 + ".emd', submodel '" + s2 + "'....");
-            engines[tmpI].load(flightmodel, "FlightModels/" + s1 + ".emd", s2, tmpI);
+            engines[tmpI].load(flightmodel, s1, s2, tmpI);
         }
 
-        if(sectfile.get(s, "Position0x", -99999F) != -99999F)
-        {
+        if (sectfile.get(s, "Position0x", -99999F) != -99999F) {
             Point3d point3d = new Point3d();
             Vector3f vector3f = new Vector3f();
-            for(tmpI = 0; tmpI < num; tmpI++)
-            {
+            for (tmpI = 0; tmpI < num; tmpI++) {
                 point3d.x = sectfile.get(s, "Position" + tmpI + "x", 0.0F);
                 point3d.y = sectfile.get(s, "Position" + tmpI + "y", 0.0F);
                 point3d.z = sectfile.get(s, "Position" + tmpI + "z", 0.0F);
@@ -66,48 +68,43 @@ public class EnginesInterface extends FMMath
         setCurControlAll(true);
     }
 
-    public void setNotMirror(boolean flag)
-    {
-        for(int i = 0; i < getNum(); i++)
+    public void setNotMirror(boolean flag) {
+        for (int i = 0; i < getNum(); i++)
             engines[i].setMaster(flag);
 
     }
 
-    public void set(Actor actor)
-    {
+    public void set(Actor actor) {
         Point3d point3d = new Point3d(0.0D, 0.0D, 0.0D);
         Loc loc = new Loc();
-        if(num == 0 || engines[0].getPropPos().distanceSquared(new Point3f(0.0F, 0.0F, 0.0F)) > 0.0F)
+        if (num == 0 || engines[0].getPropPos().distanceSquared(new Point3f(0.0F, 0.0F, 0.0F)) > 0.0F)
             return;
         Vector3f vector3f = new Vector3f(1.0F, 0.0F, 0.0F);
         float af[][] = new float[4][3];
         float af1[][] = new float[num][3];
-        for(tmpI = 0; tmpI < 4; tmpI++)
-        {
+        for (tmpI = 0; tmpI < 4; tmpI++) {
             Hook hook = actor.findHook("_Clip0" + tmpI);
             loc.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
             hook.computePos(actor, actor.pos.getAbs(), loc);
             loc.get(point3d);
             actor.pos.getAbs().transformInv(point3d);
-            af[tmpI][0] = (float)point3d.x;
-            af[tmpI][1] = (float)point3d.y;
-            af[tmpI][2] = (float)point3d.z;
+            af[tmpI][0] = (float) point3d.x;
+            af[tmpI][1] = (float) point3d.y;
+            af[tmpI][2] = (float) point3d.z;
         }
 
-        for(tmpI = 0; tmpI < num; tmpI++)
-        {
+        for (tmpI = 0; tmpI < num; tmpI++) {
             Hook hook1 = actor.findHook("_Engine" + (tmpI + 1) + "Smoke");
             loc.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
             hook1.computePos(actor, actor.pos.getAbs(), loc);
             loc.get(point3d);
             actor.pos.getAbs().transformInv(point3d);
-            af1[tmpI][0] = (float)point3d.x;
-            af1[tmpI][1] = (float)point3d.y;
-            af1[tmpI][2] = (float)point3d.z - 0.7F;
+            af1[tmpI][0] = (float) point3d.x;
+            af1[tmpI][1] = (float) point3d.y;
+            af1[tmpI][2] = (float) point3d.z - 0.7F;
         }
 
-        switch(reference.Scheme)
-        {
+        switch (reference.Scheme) {
         case 0: // '\0'
             point3d.set(0.0D, 0.0D, 0.0D);
             engines[0].setPos(point3d);
@@ -268,455 +265,398 @@ public class EnginesInterface extends FMMath
         }
     }
 
-    public void update(float f)
-    {
+    public void update(float f) {
+        //TODO: +++ CTO Mod 4.12 +++
         if(bCatapultArmed && System.currentTimeMillis() > lCatapultStartTime + 2500L / (long)Time.speed())
         {
             bCatapultArmed = false;
             dCatapultForce = 0.0D;
             iCatapultNumber = 0;
         }
+        //TODO: --- CTO Mod 4.12 ---
         producedF.set(0.0D, 0.0D, 0.0D);
         producedM.set(0.0D, 0.0D, 0.0D);
-        for(int i = 0; i < num; i++)
-        {
+        for (int i = 0; i < num; i++) {
             engines[i].update(f);
-            producedF.x += (double)((Tuple3f) (engines[i].getEngineForce())).x + dCatapultForce / (double)num;
-            producedF.y += ((Tuple3f) (engines[i].getEngineForce())).y;
-            producedF.z += ((Tuple3f) (engines[i].getEngineForce())).z;
-            if( !bCatapultArmed ){
-                producedM.x += ((Tuple3f) (engines[i].getEngineTorque())).x;
-                producedM.y += ((Tuple3f) (engines[i].getEngineTorque())).y;
-                producedM.z += ((Tuple3f) (engines[i].getEngineTorque())).z;
+            //TODO: +++ CTO Mod 4.12 +++
+            producedF.x += engines[i].getEngineForce().x + dCatapultForce / (double)num;
+            producedF.y += engines[i].getEngineForce().y;
+            producedF.z += engines[i].getEngineForce().z;
+            if(!bCatapultArmed)
+            {
+                producedM.x += engines[i].getEngineTorque().x;
+                producedM.y += engines[i].getEngineTorque().y;
+                producedM.z += engines[i].getEngineTorque().z;
             }
+//            producedF.x += engines[i].getEngineForce().x;
+//            producedF.y += engines[i].getEngineForce().y;
+//            producedF.z += engines[i].getEngineForce().z;
+//            producedM.x += engines[i].getEngineTorque().x;
+//            producedM.y += engines[i].getEngineTorque().y;
+//            producedM.z += engines[i].getEngineTorque().z;
+            //TODO: --- CTO Mod 4.12 ---
         }
 
     }
 
-    public void netupdate(float f, boolean flag)
-    {
-        for(int i = 0; i < num; i++)
+    public void netupdate(float f, boolean flag) {
+        for (int i = 0; i < num; i++)
             engines[i].netupdate(f, flag);
 
     }
 
-    public int getNum()
-    {
+    public int getNum() {
         return num;
     }
 
-    public void setNum(int i)
-    {
+    public void setNum(int i) {
         num = i;
     }
 
-    public void toggle()
-    {
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+    public void toggle() {
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 engines[tmpI].toggle();
 
     }
 
-    public void setCurControl(int i, boolean flag)
-    {
+    public void setCurControl(int i, boolean flag) {
         bCurControl[i] = flag;
     }
 
-    public void setCurControlAll(boolean flag)
-    {
-        for(tmpI = 0; tmpI < num; tmpI++)
+    public void setCurControlAll(boolean flag) {
+        for (tmpI = 0; tmpI < num; tmpI++)
             bCurControl[tmpI] = flag;
 
     }
 
-    public boolean getCurControl(int i)
-    {
+    public boolean getCurControl(int i) {
         return bCurControl[i];
     }
 
-    public Motor getFirstSelected()
-    {
-        for(int i = 0; i < num; i++)
-            if(bCurControl[i])
+    public Motor getFirstSelected() {
+        for (int i = 0; i < num; i++)
+            if (bCurControl[i])
                 return engines[i];
 
         return null;
     }
 
-    public int getNumSelected()
-    {
+    public int getNumSelected() {
         int i = 0;
-        for(int j = 0; j < num; j++)
-            if(bCurControl[j])
+        for (int j = 0; j < num; j++)
+            if (bCurControl[j])
                 i++;
 
         return i;
     }
 
-    public float getPropDirSign()
-    {
+    public float getPropDirSign() {
         float f = 0.0F;
-        for(int i = 0; i < getNum(); i++)
-            if(engines[i].getPropDir() == 0)
+        for (int i = 0; i < getNum(); i++)
+            if (engines[i].getPropDir() == 0)
                 f++;
             else
                 f--;
 
-        return f / (float)getNum();
+        return f / (float) getNum();
     }
 
-    public float getRadiatorPos()
-    {
+    public float getRadiatorPos() {
         float f = 0.0F;
-        for(int i = 0; i < getNum(); i++)
+        for (int i = 0; i < getNum(); i++)
             f += engines[i].getControlRadiator();
 
-        return f / (float)getNum();
+        return f / (float) getNum();
     }
 
-    public int[] getSublist(int i, int j)
-    {
+    public int[] getSublist(int i, int j) {
         int ai[] = null;
-        if(j == 1)
-            switch(i)
-            {
+        if (j == 1)
+            switch (i) {
             case 2: // '\002'
             case 3: // '\003'
-                ai = (new int[] {
-                    0
-                });
+                ai = (new int[] { 0 });
                 break;
 
             case 6: // '\006'
-                ai = (new int[] {
-                    0
-                });
+                ai = (new int[] { 0 });
                 break;
 
             case 4: // '\004'
-                ai = (new int[] {
-                    0, 1
-                });
+                ai = (new int[] { 0, 1 });
                 break;
 
             case 5: // '\005'
-                ai = (new int[] {
-                    0, 1
-                });
+                ai = (new int[] { 0, 1 });
                 break;
 
             case 7: // '\007'
-                ai = (new int[] {
-                    0, 1, 2
-                });
+                ai = (new int[] { 0, 1, 2 });
                 break;
             }
-        else
-        if(j == 2)
-            switch(i)
-            {
+        else if (j == 2)
+            switch (i) {
             case 2: // '\002'
             case 3: // '\003'
-                ai = (new int[] {
-                    1
-                });
+                ai = (new int[] { 1 });
                 break;
 
             case 6: // '\006'
-                ai = (new int[] {
-                    2
-                });
+                ai = (new int[] { 2 });
                 break;
 
             case 4: // '\004'
-                ai = (new int[] {
-                    2, 3
-                });
+                ai = (new int[] { 2, 3 });
                 break;
 
             case 5: // '\005'
-                ai = (new int[] {
-                    3, 4
-                });
+                ai = (new int[] { 3, 4 });
                 break;
 
             case 7: // '\007'
-                ai = (new int[] {
-                    3, 4, 5
-                });
+                ai = (new int[] { 3, 4, 5 });
                 break;
             }
         return ai;
     }
 
-    public boolean isSelectionHasControlThrottle()
-    {
+    public boolean isSelectionHasControlThrottle() {
         boolean flag = false;
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 flag |= engines[tmpI].isHasControlThrottle();
 
         return flag;
     }
 
-    public boolean isSelectionHasControlProp()
-    {
+    public boolean isSelectionHasControlProp() {
         boolean flag = false;
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 flag |= engines[tmpI].isHasControlProp();
 
         return flag;
     }
 
-    public boolean isSelectionAllowsAutoProp()
-    {
+    public boolean isSelectionAllowsAutoProp() {
         World.cur();
-        if(reference != World.getPlayerFM())
+        if (reference != World.getPlayerFM())
             return true;
         boolean flag = false;
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 flag |= engines[tmpI].isAllowsAutoProp();
 
         return flag;
     }
 
-    public boolean isSelectionHasControlMix()
-    {
+    public boolean isSelectionHasControlMix() {
         boolean flag = false;
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 flag |= engines[tmpI].isHasControlMix();
 
         return flag;
     }
 
-    public boolean isSelectionHasControlMagnetos()
-    {
+    public boolean isSelectionHasControlMagnetos() {
         boolean flag = false;
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 flag |= engines[tmpI].isHasControlMagnetos();
 
         return flag;
     }
 
-    public boolean isSelectionHasControlCompressor()
-    {
+    public boolean isSelectionHasControlCompressor() {
         boolean flag = false;
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 flag |= engines[tmpI].isHasControlCompressor();
 
         return flag;
     }
 
-    public boolean isSelectionHasControlFeather()
-    {
+    public boolean isSelectionHasControlFeather() {
         boolean flag = false;
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 flag |= engines[tmpI].isHasControlFeather();
 
         return flag;
     }
 
-    public boolean isSelectionHasControlExtinguisher()
-    {
+    public boolean isSelectionHasControlExtinguisher() {
         boolean flag = false;
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 flag |= engines[tmpI].getExtinguishers() > 0;
 
         return flag;
     }
 
-    public boolean isSelectionHasControlAfterburner()
-    {
+    public boolean isSelectionHasControlAfterburner() {
         boolean flag = false;
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 flag |= engines[tmpI].isHasControlAfterburner();
 
         return flag;
     }
 
-    public boolean isSelectionAllowsAutoRadiator()
-    {
+    public boolean isSelectionAllowsAutoRadiator() {
         boolean flag = false;
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 flag |= engines[tmpI].isAllowsAutoRadiator();
 
         return flag;
     }
 
-    public boolean isSelectionHasControlRadiator()
-    {
+    public boolean isSelectionHasControlRadiator() {
         boolean flag = false;
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 flag |= engines[tmpI].isHasControlRadiator();
 
         return flag;
     }
 
-    public float getPowerOutput()
-    {
+    public float getPowerOutput() {
         float f = 0.0F;
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
             f += engines[tmpI].getPowerOutput();
 
-        return f / (float)getNum();
+        return f / (float) getNum();
     }
 
-    public float getThrustOutput()
-    {
+    public float getThrustOutput() {
         float f = 0.0F;
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
             f += engines[tmpI].getThrustOutput();
 
-        return f / (float)getNum();
+        return f / (float) getNum();
     }
 
-    public float getReadyness()
-    {
+    public float getReadyness() {
         float f = 0.0F;
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
             f += engines[tmpI].getReadyness();
 
-        return f / (float)getNum();
+        return f / (float) getNum();
     }
 
-    public float getBoostFactor()
-    {
+    public float getBoostFactor() {
         float f = 0.0F;
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
             f += engines[tmpI].getBoostFactor();
 
-        return f / (float)getNum();
+        return f / (float) getNum();
     }
 
-    public Vector3d getGyro()
-    {
+    public Vector3d getGyro() {
         tmpV3d.set(0.0D, 0.0D, 0.0D);
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
             tmpV3d.add(engines[tmpI].getEngineGyro());
 
         return tmpV3d;
     }
 
-    public void setThrottle(float f)
-    {
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+    public void setThrottle(float f) {
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 engines[tmpI].setControlThrottle(f);
 
     }
 
-    public void setAfterburnerControl(boolean flag)
-    {
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+    public void setAfterburnerControl(boolean flag) {
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 engines[tmpI].setControlAfterburner(flag);
 
     }
 
-    public void setProp(float f)
-    {
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+    public void setProp(float f) {
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 engines[tmpI].setControlProp(f);
 
     }
 
-    public void setPropDelta(int i)
-    {
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+    public void setPropDelta(int i) {
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 engines[tmpI].setControlPropDelta(i);
 
     }
 
-    public void setPropAuto(boolean flag)
-    {
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+    public void setPropAuto(boolean flag) {
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 engines[tmpI].setControlPropAuto(flag);
 
     }
 
-    public void setFeather(int i)
-    {
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+    public void setFeather(int i) {
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 engines[tmpI].setControlFeather(i);
 
     }
 
-    public void setMix(float f)
-    {
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+    public void setMix(float f) {
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 engines[tmpI].setControlMix(f);
 
     }
 
-    public void setMagnetos(int i)
-    {
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+    public void setMagnetos(int i) {
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 engines[tmpI].setControlMagneto(i);
 
     }
 
-    public void setCompressorStep(int i)
-    {
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+    public void setCompressorStep(int i) {
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 engines[tmpI].setControlCompressor(i);
 
     }
 
-    public void setRadiator(float f)
-    {
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+    public void setRadiator(float f) {
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 engines[tmpI].setControlRadiator(f);
 
     }
 
-    public void updateRadiator(float f)
-    {
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
+    public void updateRadiator(float f) {
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
             engines[tmpI].updateRadiator(f);
 
     }
 
-    public void setEngineStops()
-    {
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+    public void setEngineStops() {
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 engines[tmpI].setEngineStops(reference.actor);
 
     }
 
-    public void setEngineRunning()
-    {
-        for(tmpI = 0; tmpI < getNum(); tmpI++)
-            if(bCurControl[tmpI])
+    public void setEngineRunning() {
+        for (tmpI = 0; tmpI < getNum(); tmpI++)
+            if (bCurControl[tmpI])
                 engines[tmpI].setEngineRunning(reference.actor);
 
     }
 
-    public float getAIOverheatFactor()
-    {
+    public float getAIOverheatFactor() {
         float f = -1F;
         float f1 = -1F;
-        for(int i = 0; i < getNum(); i++)
-        {
+        for (int i = 0; i < getNum(); i++) {
             float f2 = engines[i].tOilOut / engines[i].tOilCritMax - 1.0F;
             f = Math.max(f, f2);
             f2 = engines[i].tWaterOut / engines[i].tWaterCritMax - 1.0F;
@@ -726,48 +666,43 @@ public class EnginesInterface extends FMMath
         return Math.max(f, f1);
     }
 
-    public float forcePropAOA(float f, float f1, float f2, boolean flag)
-    {
+    public float forcePropAOA(float f, float f1, float f2, boolean flag) {
         float f3 = 0.0F;
-        for(int i = 0; i < getNum(); i++)
+        for (int i = 0; i < getNum(); i++)
             f3 += engines[i].forcePropAOA(f, f1, f2, flag);
 
         Aircraft.debugprintln(reference.actor, "Computed thrust at " + f + " m/s and " + f1 + " m is " + f3 + " N..");
         return f3;
     }
 
-    public float forcePropAOA(float f, float f1, float f2, boolean flag, float f3)
-    {
+    public float forcePropAOA(float f, float f1, float f2, boolean flag, float f3) {
         float f4 = 0.0F;
-        for(int i = 0; i < getNum(); i++)
+        for (int i = 0; i < getNum(); i++)
             f4 += engines[i].forcePropAOA(f, f1, f2, flag, f3);
 
         Aircraft.debugprintln(reference.actor, "Computed thrust at " + f + " m/s and " + f1 + " m is " + f4 + " N..");
         return f4;
     }
 
-    public void setCatapult(float f, float boost, int num)
-    {
-        if(f > 10000F)
+    // TODO: +++ CTO Mod 4.12 +++
+    public void setCatapult(float f, float f1, int i) {
+        if (f > 10000F)
             f = 10000F;
-        dCatapultForce = f * boost;
+        dCatapultForce = f * f1;
         lCatapultStartTime = System.currentTimeMillis();
         bCatapultArmed = true;
-        iCatapultNumber = num;
+        iCatapultNumber = i;
     }
 
-    public boolean getCatapult()
-    {
+    public boolean getCatapult() {
         return bCatapultArmed;
     }
 
-    public int getCatapultNumber()
-    {
+    public int getCatapultNumber() {
         return iCatapultNumber;
     }
 
-    public void resetCatapultTime()
-    {
+    public void resetCatapultTime() {
         lCatapultStartTime = System.currentTimeMillis();
     }
 
@@ -775,6 +710,7 @@ public class EnginesInterface extends FMMath
     private double dCatapultForce;
     private long lCatapultStartTime;
     private int iCatapultNumber;
+    // TODO: --- CTO Mod 4.12 ---
     public Motor engines[];
     public boolean bCurControl[];
     private int num;

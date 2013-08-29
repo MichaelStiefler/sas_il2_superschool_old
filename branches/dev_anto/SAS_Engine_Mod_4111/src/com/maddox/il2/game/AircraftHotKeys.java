@@ -1098,7 +1098,7 @@ public class AircraftHotKeys
 			case 131: // '\025'
 				if(bBombBayDoors)
 				{
-					if(!FM.CT.bHasBayDoors)
+					if(!FM.CT.bHasBayDoorControl)
 						break;
 					if(((FlightModelMain) (FM)).CT.BayDoorControl != 0.0F)
 					{
@@ -3094,497 +3094,510 @@ public class AircraftHotKeys
 		return Mission.isPlaying();
 	}
 
-	public void createMiscHotKeys()
-	{
-		String s = "misc";
-		HotKeyCmdEnv.setCurrentEnv(s);
-		HotKeyEnv.fromIni(s, Config.cur.ini, "HotKey " + s);
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "autopilot", "00") {
-
-			public void created()
-			{
-				setRecordId(270);
-			}
-
-			public void begin()
-			{
-				if(!isMiscValid())
-					return;
-				if(Main3D.cur3D().isDemoPlaying())
-					return;
-				if(World.getPlayerFM().AS.isPilotDead(Main3D.cur3D().cockpitCur.astatePilotIndx()))
-					return;
-				int j = Main3D.cur3D().cockpitCurIndx();
-				if(AircraftHotKeys.isCockpitRealMode(j))
-					new MsgAction(true, new Integer(j)) {
-
-					public void doAction(Object obj)
-					{
-						int k = ((Integer)obj).intValue();
-						HotKeyCmd.exec("misc", "cockpitRealOff" + k);
-					}
-
-				}
-				;
-				else
-					new MsgAction(true, new Integer(j)) {
-
-					public void doAction(Object obj)
-					{
-						int k = ((Integer)obj).intValue();
-						HotKeyCmd.exec("misc", "cockpitRealOn" + k);
-					}
-
-				}
-				;
-			}
-
-		}
-				);
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "autopilotAuto", "01") {
-
-			public void begin()
-			{
-				if(!isMiscValid())
-					return;
-				if(Main3D.cur3D().isDemoPlaying())
-				{
-					return;
-				} else
-				{
-					new MsgAction(true) {
-
-						public void doAction()
-						{
-							HotKeyCmd.exec("misc", "autopilotAuto_");
-						}
-
-					}
-					;
-					return;
-				}
-			}
-
-		}
-				);
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "autopilotAuto_", null) {
-
-			public void created()
-			{
-				setRecordId(271);
-				HotKeyEnv.currentEnv().remove(sName);
-			}
-
-			public void begin()
-			{
-				if(!isMiscValid())
-				{
-					return;
-				} else
-				{
-					setAutoAutopilot(!isAutoAutopilot());
-					HUD.log("AutopilotAuto" + (isAutoAutopilot() ? "ON" : "OFF"));
-					return;
-				}
-			}
-
-		}
-				);
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "target_", null) {
-
-			public void created()
-			{
-				setRecordId(278);
-				HotKeyEnv.currentEnv().remove(sName);
-			}
-
-			public void begin()
-			{
-				Actor actor = null;
-				if(Main3D.cur3D().isDemoPlaying())
-					actor = Selector._getTrackArg0();
-				else
-					actor = HookPilot.cur().getEnemy();
-				Selector.setTarget(Selector.setCurRecordArg0(actor));
-			}
-
-		}
-				);
-		for(int i = 0; i < 10; i++)
-		{
-			HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "cockpitRealOn" + i, null) {
-
-				public void created()
-				{
-					indx = Character.getNumericValue(name().charAt(name().length() - 1)) - Character.getNumericValue('0');
-					setRecordId(500 + indx);
-					HotKeyEnv.currentEnv().remove(sName);
-				}
-
-				public void begin()
-				{
-					if(!isMiscValid())
-					{
-						return;
-					} else
-					{
-						AircraftHotKeys.setCockpitRealMode(indx, true);
-						return;
-					}
-				}
-
-				int indx;
-
-			}
-					);
-			HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "cockpitRealOff" + i, null) {
-
-				public void created()
-				{
-					indx = Character.getNumericValue(name().charAt(name().length() - 1)) - Character.getNumericValue('0');
-					setRecordId(510 + indx);
-					HotKeyEnv.currentEnv().remove(sName);
-				}
-
-				public void begin()
-				{
-					if(!isMiscValid())
-					{
-						return;
-					} else
-					{
-						AircraftHotKeys.setCockpitRealMode(indx, false);
-						return;
-					}
-				}
-
-				int indx;
-
-			}
-					);
-			HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "cockpitEnter" + i, null) {
-
-				public void created()
-				{
-					indx = Character.getNumericValue(name().charAt(name().length() - 1)) - Character.getNumericValue('0');
-					setRecordId(520 + indx);
-					HotKeyEnv.currentEnv().remove(sName);
-				}
-
-				public void begin()
-				{
-					if(!isMiscValid())
-						return;
-					if(Main3D.cur3D().cockpits != null && indx < Main3D.cur3D().cockpits.length)
-					{
-						World.getPlayerAircraft().FM.AS.astatePlayerIndex = Main3D.cur3D().cockpits[indx].astatePilotIndx();
-						if(!NetMissionTrack.isPlaying())
-						{
-							Aircraft aircraft = World.getPlayerAircraft();
-							if(World.isPlayerGunner())
-								aircraft.netCockpitEnter(World.getPlayerGunner(), indx);
-							else
-								aircraft.netCockpitEnter(aircraft, indx);
-						}
-					}
-				}
-
-				int indx;
-
-			}
-					);
-			HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "cockpitLeave" + i, null) {
-
-				public void created()
-				{
-					indx = Character.getNumericValue(name().charAt(name().length() - 1)) - Character.getNumericValue('0');
-					setRecordId(530 + indx);
-					HotKeyEnv.currentEnv().remove(sName);
-				}
-
-				public void begin()
-				{
-					if(!isMiscValid())
-						return;
-					if(Main3D.cur3D().cockpits != null && indx < Main3D.cur3D().cockpits.length && (Main3D.cur3D().cockpits[indx] instanceof CockpitGunner) && AircraftHotKeys.isCockpitRealMode(indx))
-						((CockpitGunner)Main3D.cur3D().cockpits[indx]).hookGunner().gunFire(false);
-				}
-
-				int indx;
-
-			}
-					);
-		}
-
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "ejectPilot", "02") {
-
-			public void created()
-			{
-				setRecordId(272);
-			}
-
-			public void begin()
-			{
-				if(!isMiscValid())
-					return;
-				if(World.isPlayerGunner())
-					return;
-				if(!(World.getPlayerFM() instanceof RealFlightModel))
-					return;
-				RealFlightModel realflightmodel = (RealFlightModel)World.getPlayerFM();
-				if(!realflightmodel.isRealMode())
-					return;
-				if(realflightmodel.AS.bIsAboutToBailout)
-					return;
-				if(!realflightmodel.AS.bIsEnableToBailout)
-				{
-					return;
-				} else
-				{
-					AircraftState.bCheckPlayerAircraft = false;
-					((Aircraft)realflightmodel.actor).hitDaSilk();
-					AircraftState.bCheckPlayerAircraft = true;
-					Voice.cur().SpeakBailOut[realflightmodel.actor.getArmy() - 1 & 1][((Aircraft)realflightmodel.actor).aircIndex()] = (int)(Time.current() / 60000L) + 1;
-					new MsgAction(true) {
-
-						public void doAction()
-						{
-							if(!Main3D.cur3D().isDemoPlaying() || !HotKeyEnv.isEnabled("aircraftView"))
-								HotKeyCmd.exec("aircraftView", "OutsideView");
-						}
-
-					}
-					;
-					return;
-				}
-			}
-
-		}
-				);
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "cockpitDim", "03") {
-
-			public void created()
-			{
-				setRecordId(274);
-			}
-
-			public void begin()
-			{
-				if(Main3D.cur3D().isViewOutside())
-					return;
-				if(!isMiscValid())
-					return;
-				if(!Actor.isValid(Main3D.cur3D().cockpitCur))
-				{
-					return;
-				} else
-				{
-					Main3D.cur3D().cockpitCur.doToggleDim();
-					return;
-				}
-			}
-
-		}
-				);
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "cockpitLight", "04") {
-
-			public void created()
-			{
-				setRecordId(275);
-			}
-
-			public void begin()
-			{
-				if(Main3D.cur3D().isViewOutside())
-					return;
-				if(!isMiscValid())
-					return;
-				if(!Actor.isValid(Main3D.cur3D().cockpitCur))
-				{
-					return;
-				} else
-				{
-					Main3D.cur3D().cockpitCur.doToggleLight();
-					return;
-				}
-			}
-
-		}
-				);
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "toggleNavLights", "05") {
-
-			public void created()
-			{
-				setRecordId(331);
-			}
-
-			public void begin()
-			{
-				if(!isMiscValid())
-					return;
-				FlightModel flightmodel = World.getPlayerFM();
-				if(flightmodel == null)
-					return;
-				boolean flag = flightmodel.AS.bNavLightsOn;
-				flightmodel.AS.setNavLightsState(!flightmodel.AS.bNavLightsOn);
-				if(!flag && !flightmodel.AS.bNavLightsOn)
-				{
-					return;
-				} else
-				{
-					HUD.log("NavigationLights" + (flightmodel.AS.bNavLightsOn ? "ON" : "OFF"));
-					return;
-				}
-			}
-
-		}
-				);
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "toggleLandingLight", "06") {
-
-			public void created()
-			{
-				setRecordId(345);
-			}
-
-			public void begin()
-			{
-				if(!isMiscValid())
-					return;
-				FlightModel flightmodel = World.getPlayerFM();
-				if(flightmodel == null)
-					return;
-				boolean flag = flightmodel.AS.bLandingLightOn;
-				flightmodel.AS.setLandingLightState(!flightmodel.AS.bLandingLightOn);
-				if(!flag && !flightmodel.AS.bLandingLightOn)
-				{
-					return;
-				} else
-				{
-					HUD.log("LandingLight" + (flightmodel.AS.bLandingLightOn ? "ON" : "OFF"));
-					EventLog.onToggleLandingLight(flightmodel.actor, flightmodel.AS.bLandingLightOn);
-					return;
-				}
-			}
-
-		}
-				);
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "toggleSmokes", "07") {
-
-			public void created()
-			{
-				setRecordId(273);
-			}
-
-			public void begin()
-			{
-				if(!isMiscValid())
-					return;
-				FlightModel flightmodel = World.getPlayerFM();
-				if(flightmodel == null)
-				{
-					return;
-				} else
-				{
-					flightmodel.AS.setAirShowState(!flightmodel.AS.bShowSmokesOn);
-					EventLog.onToggleSmoke(flightmodel.actor, flightmodel.AS.bShowSmokesOn);
-					return;
-				}
-			}
-
-		}
-				);
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "pad", "08") {
-
-			public void end()
-			{
-				int j = Main.state().id();
-				boolean flag = j == 5 || j == 29 || j == 63 || j == 49 || j == 50 || j == 42 || j == 43;
-				if(GUI.pad.isActive())
-					GUI.pad.leave(!flag);
-				else
-					if(flag && !Main3D.cur3D().guiManager.isMouseActive())
-						GUI.pad.enter();
-			}
-
-		}
-				);
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "chat", "09") {
-
-			public void end()
-			{
-				GUI.chatActivate();
-			}
-
-		}
-				);
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "onlineRating", "10") {
-
-			public void begin()
-			{
-				Main3D.cur3D().hud.startNetStat();
-			}
-
-			public void end()
-			{
-				Main3D.cur3D().hud.stopNetStat();
-			}
-
-		}
-				);
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "onlineRatingPage", "11") {
-
-			public void end()
-			{
-				Main3D.cur3D().hud.pageNetStat();
-			}
-
-		}
-				);
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "showPositionHint", "12")
-		{
-			public void begin()
-			{
-				//TODO:
-				if (!bSpeedbarTAS)
-					HUD.setDrawSpeed((HUD.drawSpeed() + 1) % 4);
-				else
-					HUD.setDrawSpeed((HUD.drawSpeed() + 1) % 7);
-			}
-
-			public void created()
-			{
-				setRecordId(277);
-			}
-		});
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "iconTypes", "13") {
-
-			public void end()
-			{
-				Main3D.cur3D().changeIconTypes();
-			}
-
-			public void created()
-			{
-				setRecordId(279);
-			}
-
-		}
-				);
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "showMirror", "14") {
-
-			public void end()
-			{
-				Main3D.cur3D().viewMirror = (Main3D.cur3D().viewMirror + 1) % 3;
-			}
-
-			public void created()
-			{
-				setRecordId(280);
-			}
-
-		}
-				);
-	}
+    public void createMiscHotKeys()
+    {
+        String s = "misc";
+        HotKeyCmdEnv.setCurrentEnv(s);
+        HotKeyEnv.fromIni(s, Config.cur.ini, "HotKey " + s);
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "autopilot", "00") {
+
+            public void created()
+            {
+                setRecordId(270);
+            }
+
+            public void begin()
+            {
+                if(!isMiscValid())
+                    return;
+                if(Main3D.cur3D().isDemoPlaying())
+                    return;
+                if(World.getPlayerFM().AS.isPilotDead(Main3D.cur3D().cockpitCur.astatePilotIndx()))
+                    return;
+                int j = Main3D.cur3D().cockpitCurIndx();
+                if(AircraftHotKeys.isCockpitRealMode(j))
+                    new MsgAction(true, new Integer(j)) {
+
+                        public void doAction(Object obj)
+                        {
+                            int k = ((Integer)obj).intValue();
+                            HotKeyCmd.exec("misc", "cockpitRealOff" + k);
+                        }
+
+                    }
+;
+                else
+                    new MsgAction(true, new Integer(j)) {
+
+                        public void doAction(Object obj)
+                        {
+                            int k = ((Integer)obj).intValue();
+                            HotKeyCmd.exec("misc", "cockpitRealOn" + k);
+                        }
+
+                    }
+;
+            }
+
+        }
+);
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "autopilotAuto", "01") {
+
+            public void begin()
+            {
+                if(!isMiscValid())
+                    return;
+                if(Main3D.cur3D().isDemoPlaying())
+                {
+                    return;
+                } else
+                {
+                    new MsgAction(true) {
+
+                        public void doAction()
+                        {
+                            HotKeyCmd.exec("misc", "autopilotAuto_");
+                        }
+
+                    }
+;
+                    return;
+                }
+            }
+
+        }
+);
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "autopilotAuto_", null) {
+
+            public void created()
+            {
+                setRecordId(271);
+                HotKeyEnv.currentEnv().remove(sName);
+            }
+
+            public void begin()
+            {
+                if(!isMiscValid())
+                {
+                    return;
+                } else
+                {
+                    setAutoAutopilot(!isAutoAutopilot());
+                    HUD.log("AutopilotAuto" + (isAutoAutopilot() ? "ON" : "OFF"));
+                    return;
+                }
+            }
+
+        }
+);
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "target_", null) {
+
+            public void created()
+            {
+                setRecordId(278);
+                HotKeyEnv.currentEnv().remove(sName);
+            }
+
+            public void begin()
+            {
+                Actor actor = null;
+                if(Main3D.cur3D().isDemoPlaying())
+                    actor = Selector._getTrackArg0();
+                else
+                    actor = HookPilot.cur().getEnemy();
+                Selector.setTarget(Selector.setCurRecordArg0(actor));
+            }
+
+        }
+);
+        for(int i = 0; i < 10; i++)
+        {
+            HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "cockpitRealOn" + i, null) {
+
+                public void created()
+                {
+                    indx = Character.getNumericValue(name().charAt(name().length() - 1)) - Character.getNumericValue('0');
+                    setRecordId(500 + indx);
+                    HotKeyEnv.currentEnv().remove(sName);
+                }
+
+                public void begin()
+                {
+                    if(!isMiscValid())
+                    {
+                        return;
+                    } else
+                    {
+                        AircraftHotKeys.setCockpitRealMode(indx, true);
+                        return;
+                    }
+                }
+
+                int indx;
+
+            }
+);
+            HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "cockpitRealOff" + i, null) {
+
+                public void created()
+                {
+                    indx = Character.getNumericValue(name().charAt(name().length() - 1)) - Character.getNumericValue('0');
+                    setRecordId(510 + indx);
+                    HotKeyEnv.currentEnv().remove(sName);
+                }
+
+                public void begin()
+                {
+                    if(!isMiscValid())
+                    {
+                        return;
+                    } else
+                    {
+                        AircraftHotKeys.setCockpitRealMode(indx, false);
+                        return;
+                    }
+                }
+
+                int indx;
+
+            }
+);
+            HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "cockpitEnter" + i, null) {
+
+                public void created()
+                {
+                    indx = Character.getNumericValue(name().charAt(name().length() - 1)) - Character.getNumericValue('0');
+                    setRecordId(520 + indx);
+                    HotKeyEnv.currentEnv().remove(sName);
+                }
+
+                public void begin()
+                {
+                    if(!isMiscValid())
+                        return;
+                    if(Main3D.cur3D().cockpits != null && indx < Main3D.cur3D().cockpits.length)
+                    {
+                        World.getPlayerAircraft().FM.AS.astatePlayerIndex = Main3D.cur3D().cockpits[indx].astatePilotIndx();
+                        if(!NetMissionTrack.isPlaying())
+                        {
+                            Aircraft aircraft = World.getPlayerAircraft();
+                            if(World.isPlayerGunner())
+                                aircraft.netCockpitEnter(World.getPlayerGunner(), indx);
+                            else
+                                aircraft.netCockpitEnter(aircraft, indx);
+                        }
+                    }
+                }
+
+                int indx;
+
+            }
+);
+            HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "cockpitLeave" + i, null) {
+
+                public void created()
+                {
+                    indx = Character.getNumericValue(name().charAt(name().length() - 1)) - Character.getNumericValue('0');
+                    setRecordId(530 + indx);
+                    HotKeyEnv.currentEnv().remove(sName);
+                }
+
+                public void begin()
+                {
+                    if(!isMiscValid())
+                        return;
+                    if(Main3D.cur3D().cockpits != null && indx < Main3D.cur3D().cockpits.length && (Main3D.cur3D().cockpits[indx] instanceof CockpitGunner) && AircraftHotKeys.isCockpitRealMode(indx))
+                        ((CockpitGunner)Main3D.cur3D().cockpits[indx]).hookGunner().gunFire(false);
+                }
+
+                int indx;
+
+            }
+);
+        }
+
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "ejectPilot", "02") {
+
+            public void created()
+            {
+                setRecordId(272);
+            }
+
+            public void begin()
+            {
+                if(!isMiscValid())
+                    return;
+                if(World.isPlayerGunner())
+                    return;
+                if(!(World.getPlayerFM() instanceof RealFlightModel))
+                    return;
+                RealFlightModel realflightmodel = (RealFlightModel)World.getPlayerFM();
+                if(!realflightmodel.isRealMode())
+                    return;
+                if(realflightmodel.AS.bIsAboutToBailout)
+                    return;
+                if(!realflightmodel.AS.bIsEnableToBailout)
+                {
+                    return;
+                } else
+                {
+                    AircraftState.bCheckPlayerAircraft = false;
+                    ((Aircraft)realflightmodel.actor).hitDaSilk();
+                    AircraftState.bCheckPlayerAircraft = true;
+                    Voice.cur().SpeakBailOut[realflightmodel.actor.getArmy() - 1 & 1][((Aircraft)realflightmodel.actor).aircIndex()] = (int)(Time.current() / 60000L) + 1;
+                    new MsgAction(true) {
+
+                        public void doAction()
+                        {
+                            if(!Main3D.cur3D().isDemoPlaying() || !HotKeyEnv.isEnabled("aircraftView"))
+                                HotKeyCmd.exec("aircraftView", "OutsideView");
+                        }
+
+                    }
+;
+                    return;
+                }
+            }
+
+        }
+);
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "cockpitDim", "03") {
+
+            public void created()
+            {
+                setRecordId(274);
+            }
+
+            public void begin()
+            {
+                if(Main3D.cur3D().isViewOutside())
+                    return;
+                if(!isMiscValid())
+                    return;
+                if(!Actor.isValid(Main3D.cur3D().cockpitCur))
+                {
+                    return;
+                } else
+                {
+                    Main3D.cur3D().cockpitCur.doToggleDim();
+                    return;
+                }
+            }
+
+        }
+);
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "cockpitLight", "04") {
+
+            public void created()
+            {
+                setRecordId(275);
+            }
+
+            public void begin()
+            {
+                if(Main3D.cur3D().isViewOutside())
+                    return;
+                if(!isMiscValid())
+                    return;
+                if(!Actor.isValid(Main3D.cur3D().cockpitCur))
+                {
+                    return;
+                } else
+                {
+                    Main3D.cur3D().cockpitCur.doToggleLight();
+                    return;
+                }
+            }
+
+        }
+);
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "toggleNavLights", "05") {
+
+            public void created()
+            {
+                setRecordId(331);
+            }
+
+            public void begin()
+            {
+                if(!isMiscValid())
+                    return;
+                FlightModel flightmodel = World.getPlayerFM();
+                if(flightmodel == null)
+                    return;
+                boolean flag = flightmodel.AS.bNavLightsOn;
+                flightmodel.AS.setNavLightsState(!flightmodel.AS.bNavLightsOn);
+                if(!flag && !flightmodel.AS.bNavLightsOn)
+                {
+                    return;
+                } else
+                {
+                    HUD.log("NavigationLights" + (flightmodel.AS.bNavLightsOn ? "ON" : "OFF"));
+                    return;
+                }
+            }
+
+        }
+);
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "toggleLandingLight", "06") {
+
+            public void created()
+            {
+                setRecordId(345);
+            }
+
+            public void begin()
+            {
+                if(!isMiscValid())
+                    return;
+                FlightModel flightmodel = World.getPlayerFM();
+                if(flightmodel == null)
+                    return;
+                boolean flag = flightmodel.AS.bLandingLightOn;
+                flightmodel.AS.setLandingLightState(!flightmodel.AS.bLandingLightOn);
+                if(!flag && !flightmodel.AS.bLandingLightOn)
+                {
+                    return;
+                } else
+                {
+                    HUD.log("LandingLight" + (flightmodel.AS.bLandingLightOn ? "ON" : "OFF"));
+                    EventLog.onToggleLandingLight(flightmodel.actor, flightmodel.AS.bLandingLightOn);
+                    return;
+                }
+            }
+
+        }
+);
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "toggleSmokes", "07") {
+
+            public void created()
+            {
+                setRecordId(273);
+            }
+
+            public void begin()
+            {
+                if(!isMiscValid())
+                    return;
+                FlightModel flightmodel = World.getPlayerFM();
+                if(flightmodel == null)
+                {
+                    return;
+                } else
+                {
+                    flightmodel.AS.setAirShowState(!flightmodel.AS.bShowSmokesOn);
+                    EventLog.onToggleSmoke(flightmodel.actor, flightmodel.AS.bShowSmokesOn);
+                    return;
+                }
+            }
+
+        }
+);
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "pad", "08") {
+
+            public void end()
+            {
+                int j = Main.state().id();
+                boolean flag = j == 5 || j == 29 || j == 63 || j == 49 || j == 50 || j == 42 || j == 43;
+                if(GUI.pad.isActive())
+                    GUI.pad.leave(!flag);
+                else
+                if(flag && !Main3D.cur3D().guiManager.isMouseActive())
+                    GUI.pad.enter(false);
+            }
+
+        }
+);
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "padFull", "09") {
+
+            public void end()
+            {
+                int j = Main.state().id();
+                boolean flag = j == 5 || j == 29 || j == 63 || j == 49 || j == 50 || j == 42 || j == 43;
+                if(GUI.pad.isActive())
+                    GUI.pad.leave(!flag);
+                else
+                if(flag && !Main3D.cur3D().guiManager.isMouseActive())
+                    GUI.pad.enter(true);
+            }
+
+        }
+);
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "chat", "10") {
+
+            public void end()
+            {
+                GUI.chatActivate();
+            }
+
+        }
+);
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "onlineRating", "11") {
+
+            public void begin()
+            {
+                Main3D.cur3D().hud.startNetStat();
+            }
+
+            public void end()
+            {
+                Main3D.cur3D().hud.stopNetStat();
+            }
+
+        }
+);
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "onlineRatingPage", "12") {
+
+            public void end()
+            {
+                Main3D.cur3D().hud.pageNetStat();
+            }
+
+        }
+);
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "showPositionHint", "13") {
+
+            public void begin()
+            {
+                HUD.setDrawSpeed((HUD.drawSpeed() + 1) % 4);
+            }
+
+            public void created()
+            {
+                setRecordId(277);
+            }
+
+        }
+);
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "iconTypes", "14") {
+
+            public void end()
+            {
+                Main3D.cur3D().changeIconTypes();
+            }
+
+            public void created()
+            {
+                setRecordId(279);
+            }
+
+        }
+);
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "showMirror", "15") {
+
+            public void end()
+            {
+                Main3D.cur3D().viewMirror = (Main3D.cur3D().viewMirror + 1) % 3;
+            }
+
+            public void created()
+            {
+                setRecordId(280);
+            }
+
+        }
+);
+    }
 
 	public void create_MiscHotKeys()
 	{
@@ -4423,7 +4436,7 @@ public class AircraftHotKeys
 
 			public void begin()
 			{
-				VisCheck.playerVisibilityCheck(World.getPlayerAircraft(), true);
+				VisCheck.playerVisibilityCheck(World.getPlayerAircraft(), true, 1.0F);
 				if(World.cur().diffCur.No_Padlock)
 					return;
 				Aircraft aircraft = World.getPlayerAircraft();

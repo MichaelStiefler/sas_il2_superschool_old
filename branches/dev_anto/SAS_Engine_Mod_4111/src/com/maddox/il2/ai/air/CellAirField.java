@@ -1,5 +1,4 @@
 /*Modified CellAirField class for the SAS Engine Mod*/
-
 package com.maddox.il2.ai.air;
 
 import com.maddox.JGP.Point3d;
@@ -9,13 +8,12 @@ import java.util.ArrayList;
 public class CellAirField extends CellObject
     implements Serializable
 {
-
 	private static final long serialVersionUID = 1L;
-    private Point3d leftUpperCorner;
+	private Point3d leftUpperCorner;
     private int resX;
     private int resY;
-	
-	public Point3d leftUpperCorner()
+
+    public Point3d leftUpperCorner()
     {
         return leftUpperCorner;
     }
@@ -281,62 +279,62 @@ label0:
         fieldInitWithComplexPoly(arraylist, d);
     }
 
-  //TODO: CTO Mod
-	//-------------------------------
-    public boolean findPlaceForAirPlaneCarrier(com.maddox.il2.ai.air.CellAirPlane cellairplane)
-    {
-        if(!cellairplane.checkAirFieldSizeCarrier(this))
-            return false;
-        if(!cellairplane.checkAirFieldCapacity(this))
-            return false;
-        for(int i = 0; i <= getHeight() - (cellairplane.getHeight() + 1); i++)
-        {
-            for(int j = 0; j <= getWidth() - cellairplane.getWidth(); j++)
-                if(isThereFreePlaceCarrier(cellairplane, j, i))
-                {
-                    resX = j;
-                    resY = i;
-                    return true;
-                }
-
-        }
-
-        return false;
-    }
-	//-------------------------------
-    
-  //TODO: CTO Mod
-	//-------------------------------
-    public boolean isThereFreePlaceCarrier(com.maddox.il2.ai.air.CellAirPlane cellairplane, int i, int j)
-    {
-        if(getCells() == null)
-            return false;
-        for(int k = j; k < j + cellairplane.getHeight() + 1; k++)
-        {
-            for(int l = i; l < i + cellairplane.getWidth(); l++)
-                if(getCells()[l][k] != null)
-                    return false;
-
-        }
-
-        return true;
-    }
-	//-------------------------------
-    
     //TODO: CTO Mod
-	//-------------------------------
-    public void placeAirPlaneCarrier(com.maddox.il2.ai.air.CellAirPlane cellairplane, int i, int j)
-    {
-        if(getCells() == null)
-            return;
-        cellairplane.setWorldCoordinates(getXCoordinate() + (double)i * getCellSize(), getYCoordinate() + (double)j * getCellSize());
-        for(int k = 0; k < cellairplane.getHeight() + 1; k++)
-        {
-            for(int l = 0; l < cellairplane.getWidth(); l++)
-                getCells()[i + l][j + k] = cellairplane;
+  	//-------------------------------
+      public boolean findPlaceForAirPlaneCarrier(com.maddox.il2.ai.air.CellAirPlane cellairplane)
+      {
+          if(!cellairplane.checkAirFieldSizeCarrier(this))
+              return false;
+          if(!cellairplane.checkAirFieldCapacity(this))
+              return false;
+          for(int i = 0; i <= getHeight() - (cellairplane.getHeight() + 1); i++)
+          {
+              for(int j = 0; j <= getWidth() - cellairplane.getWidth(); j++)
+                  if(isThereFreePlaceCarrier(cellairplane, j, i))
+                  {
+                      resX = j;
+                      resY = i;
+                      return true;
+                  }
 
-        }
+          }
 
-    }
-	//-------------------------------
+          return false;
+      }
+  	//-------------------------------
+      
+    //TODO: CTO Mod
+  	//-------------------------------
+      public boolean isThereFreePlaceCarrier(com.maddox.il2.ai.air.CellAirPlane cellairplane, int i, int j)
+      {
+          if(getCells() == null)
+              return false;
+          for(int k = j; k < j + cellairplane.getHeight() + 1; k++)
+          {
+              for(int l = i; l < i + cellairplane.getWidth(); l++)
+                  if(getCells()[l][k] != null)
+                      return false;
+
+          }
+
+          return true;
+      }
+  	//-------------------------------
+      
+      //TODO: CTO Mod
+  	//-------------------------------
+      public void placeAirPlaneCarrier(com.maddox.il2.ai.air.CellAirPlane cellairplane, int i, int j)
+      {
+          if(getCells() == null)
+              return;
+          cellairplane.setWorldCoordinates(getXCoordinate() + (double)i * getCellSize(), getYCoordinate() + (double)j * getCellSize());
+          for(int k = 0; k < cellairplane.getHeight() + 1; k++)
+          {
+              for(int l = 0; l < cellairplane.getWidth(); l++)
+                  getCells()[i + l][j + k] = cellairplane;
+
+          }
+
+      }
+  	//-------------------------------
 }

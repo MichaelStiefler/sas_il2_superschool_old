@@ -1,6 +1,4 @@
-// 410.1  for  DBW source v12Build250711
-// Left/RightBrake sound control added
-// Source File Name:   SndAircraft.java
+/*Modified SndAircraft class for the SAS Engine Mod*/
 
 package com.maddox.il2.objects.sounds;
 
@@ -15,12 +13,107 @@ import com.maddox.rts.SectFile;
 import com.maddox.rts.Time;
 import com.maddox.sound.*;
 
-// Referenced classes of package com.maddox.il2.objects.sounds:
-//            MotorSound
 
 public class SndAircraft extends ActorHMesh
 {
-
+    public FlightModel FM;
+    protected SoundFX sndRoot;
+    protected float doorSndControl;
+    protected Point3d sndRelPos;
+    protected MotorSound motorSnd[];
+    private boolean bDiving;
+    private float divState;
+    private float divIncr;
+    private long prevRt;
+    public static final int FEED_PNEUMATIC = 0;
+    public static final int FEED_ELECTRIC = 1;
+    public static final int FEED_HYDRAULIC = 2;
+    protected AudioStream sndGear;
+    protected AudioStream sndFlaps;
+    protected AudioStream sndAirBrake;
+    protected SoundFX smokeSound;
+    protected SoundFX doorSound;
+    private float dShake;
+    private float dWheels;
+    private boolean prevWG;
+    protected static SoundPreset prsHit = null;
+    protected static SoundPreset morsePreset = null;
+    protected static SoundPreset morsePresetExtra = null;
+    protected SoundFX morseSounds[];
+    protected SoundFX morseSoundsExtra[];
+    protected Point3d morsePos;
+    private int morseSequence[];
+    private int currentMorse;
+    private float morseSequenceVolume;
+    public static final int MORSE_A = 0;
+    public static final int MORSE_B = 1;
+    public static final int MORSE_C = 2;
+    public static final int MORSE_D = 3;
+    public static final int MORSE_E = 4;
+    public static final int MORSE_F = 5;
+    public static final int MORSE_G = 6;
+    public static final int MORSE_H = 7;
+    public static final int MORSE_I = 8;
+    public static final int MORSE_J = 9;
+    public static final int MORSE_K = 10;
+    public static final int MORSE_L = 11;
+    public static final int MORSE_M = 12;
+    public static final int MORSE_N = 13;
+    public static final int MORSE_O = 14;
+    public static final int MORSE_P = 15;
+    public static final int MORSE_Q = 16;
+    public static final int MORSE_R = 17;
+    public static final int MORSE_S = 18;
+    public static final int MORSE_T = 19;
+    public static final int MORSE_U = 20;
+    public static final int MORSE_V = 21;
+    public static final int MORSE_W = 22;
+    public static final int MORSE_X = 23;
+    public static final int MORSE_Y = 24;
+    public static final int MORSE_Z = 25;
+    public static final int LORENZ_DASH = 26;
+    public static final int LORENZ_DOT = 27;
+    public static final int LORENZ_SOLID = 28;
+    public static final int LORENZ_OUTER_MARKER = 29;
+    public static final int LORENZ_INNER_MARKER = 30;
+    public static final int BEACON_CARRIER = 31;
+    public static final int MORSE_COUNT = 32;
+    public static final int MORSE_1 = 32;
+    public static final int MORSE_2 = 33;
+    public static final int MORSE_3 = 34;
+    public static final int MORSE_4 = 35;
+    public static final int MORSE_5 = 36;
+    public static final int MORSE_6 = 37;
+    public static final int MORSE_7 = 38;
+    public static final int MORSE_8 = 39;
+    public static final int MORSE_9 = 40;
+    public static final int MORSE_0 = 41;
+    public static final int MORSE_COMMA = 42;
+    public static final int MORSE_PERIOD = 43;
+    public static final int MORSE_QUESTION = 44;
+    public static final int MORSE_HYPHEN = 45;
+    public static final int MORSE_SPACE = 46;
+    public static final int RADIO_STATIC1 = 47;
+    public static final int RADIO_STATIC2 = 48;
+    public static final int BEACON_STATIC = 49;
+    public static final int YEYG_STATIC = 50;
+    public static final int MORSE_EXTRA_COUNT = 19;
+    private static float radio_static1 = 1.0F;
+    private static float radio_static2 = 0.0F;
+    private static int radio_static1dir = 0;
+    private static int radio_static2dir = 0;
+    private static final char VALID_MORSE_CHARS[] = {
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 
+        'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 
+        'U', 'V', 'W', 'X', 'Y', 'Z', '.', ',', '-', '?', 
+        ' ', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
+        '0'
+    };
+    private float doorPrev;
+    private boolean doorEnabled;
+    private Point3d doorSndPos;
+    private int smf[];
+    
     public SoundFX getRootFX()
     {
         return sndRoot;
@@ -199,7 +292,6 @@ public class SndAircraft extends ActorHMesh
         sndRelPos = new Point3d(3D, 0.0D, 0.0D);
         motorSnd = null;
         bDiving = false;
-        sndDivingState = false;
         divState = 0.0F;
         divIncr = 0.0F;
         prevRt = 0L;
@@ -275,7 +367,7 @@ public class SndAircraft extends ActorHMesh
                             f = 1.0F;
                         sndRoot.setControl(103, f);
                     }
-// PAS++
+//TODO: PAS++
 // simple version - Left/RightBrakeControl combined
                     float fb = Math.max(FM.CT.BrakeControl, Math.max(FM.CT.BrakeLeftControl, FM.CT.BrakeRightControl));
                     sndRoot.setControl(104, (FM.Gears.gVelocity[0] <= 0.40000000596046448D || !FM.Gears.lgear) && (FM.Gears.gVelocity[1] <= 0.40000000596046448D || !FM.Gears.rgear) && FM.Gears.gVelocity[2] <= 0.40000000596046448D ? 0.0F : fb);
@@ -929,121 +1021,4 @@ public class SndAircraft extends ActorHMesh
         playRadioStatic(false, 0.0F);
         playYEYGCarrier(false, 0.0F);
     }
-
-    public FlightModel FM;
-    protected SoundFX sndRoot;
-    protected float doorSndControl;
-    protected Point3d sndRelPos;
-    protected MotorSound motorSnd[];
-    private static final float divSpeed = 0.3F;
-    private boolean bDiving;
-    private boolean sndDivingState;
-    private float divState;
-    private float divIncr;
-    private static final float GV0 = 0.4F;
-    private long prevRt;
-    public static final int FEED_PNEUMATIC = 0;
-    public static final int FEED_ELECTRIC = 1;
-    public static final int FEED_HYDRAULIC = 2;
-    protected AudioStream sndGear;
-    protected AudioStream sndFlaps;
-    protected AudioStream sndAirBrake;
-    protected SoundFX smokeSound;
-    protected SoundFX doorSound;
-    private float dShake;
-    private float dWheels;
-    private boolean prevWG;
-    protected static SoundPreset prsHit = null;
-    protected static SoundPreset morsePreset = null;
-    protected static SoundPreset morsePresetExtra = null;
-    protected SoundFX morseSounds[];
-    protected SoundFX morseSoundsExtra[];
-    protected Point3d morsePos;
-    private int morseSequence[];
-    private int currentMorse;
-    private float morseSequenceVolume;
-    public static final int MORSE_A = 0;
-    public static final int MORSE_B = 1;
-    public static final int MORSE_C = 2;
-    public static final int MORSE_D = 3;
-    public static final int MORSE_E = 4;
-    public static final int MORSE_F = 5;
-    public static final int MORSE_G = 6;
-    public static final int MORSE_H = 7;
-    public static final int MORSE_I = 8;
-    public static final int MORSE_J = 9;
-    public static final int MORSE_K = 10;
-    public static final int MORSE_L = 11;
-    public static final int MORSE_M = 12;
-    public static final int MORSE_N = 13;
-    public static final int MORSE_O = 14;
-    public static final int MORSE_P = 15;
-    public static final int MORSE_Q = 16;
-    public static final int MORSE_R = 17;
-    public static final int MORSE_S = 18;
-    public static final int MORSE_T = 19;
-    public static final int MORSE_U = 20;
-    public static final int MORSE_V = 21;
-    public static final int MORSE_W = 22;
-    public static final int MORSE_X = 23;
-    public static final int MORSE_Y = 24;
-    public static final int MORSE_Z = 25;
-    public static final int LORENZ_DASH = 26;
-    public static final int LORENZ_DOT = 27;
-    public static final int LORENZ_SOLID = 28;
-    public static final int LORENZ_OUTER_MARKER = 29;
-    public static final int LORENZ_INNER_MARKER = 30;
-    public static final int BEACON_CARRIER = 31;
-    public static final int MORSE_COUNT = 32;
-    public static final int MORSE_1 = 32;
-    public static final int MORSE_2 = 33;
-    public static final int MORSE_3 = 34;
-    public static final int MORSE_4 = 35;
-    public static final int MORSE_5 = 36;
-    public static final int MORSE_6 = 37;
-    public static final int MORSE_7 = 38;
-    public static final int MORSE_8 = 39;
-    public static final int MORSE_9 = 40;
-    public static final int MORSE_0 = 41;
-    public static final int MORSE_COMMA = 42;
-    public static final int MORSE_PERIOD = 43;
-    public static final int MORSE_QUESTION = 44;
-    public static final int MORSE_HYPHEN = 45;
-    public static final int MORSE_SPACE = 46;
-    public static final int RADIO_STATIC1 = 47;
-    public static final int RADIO_STATIC2 = 48;
-    public static final int BEACON_STATIC = 49;
-    public static final int YEYG_STATIC = 50;
-    public static final int MORSE_EXTRA_COUNT = 19;
-    private static float radio_static1 = 1.0F;
-    private static float radio_static2 = 0.0F;
-    private static int radio_static1dir = 0;
-    private static int radio_static2dir = 0;
-    private static final char VALID_MORSE_CHARS[] = {
-        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 
-        'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 
-        'U', 'V', 'W', 'X', 'Y', 'Z', '.', ',', '-', '?', 
-        ' ', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
-        '0'
-    };
-    private float doorPrev;
-    private boolean doorEnabled;
-    private Point3d doorSndPos;
-    private int smf[];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

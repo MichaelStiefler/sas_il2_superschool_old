@@ -1,68 +1,41 @@
-/*Modified Wind class for the SAS Engine Mod*/
-
 package com.maddox.il2.fm;
 
-import com.maddox.JGP.*;
+import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Vector3d;
+import com.maddox.JGP.Vector3f;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Engine;
 import com.maddox.rts.Time;
 
 public class Wind extends FMMath
 {
-    Vector3f steady;
-    float top;
-    float turbulence;
-    float gust;
-    float velocityTop;
-    float velocityTrans;
-    float wTransitionAlt;
-    float velocity10m;
-    float velocityH;
-    float velocityM;
-    float velocityL;
-    float dir;
-    public boolean noWind;
-    int hdg;
-    
-    private float curWindDirection;
-    private float curWindVelocity;
-    private float curGust;
-    private float curTurbulence;
-    
+
     public Wind()
     {
         steady = new Vector3f();
         velocityTrans = 0.0F;
         noWind = false;
-        
+      //TODO: +++ CTO Mod 4.12 +++
         curWindDirection = 0.0F;
         curWindVelocity = 0.0F;
         curGust = 0.0F;
         curTurbulence = 0.0F;
+      //TODO: --- CTO Mod 4.12 ---
     }
 
     public native float SetWind(float f, float f1, float f2, float f3, float f4);
 
     public void set(float f, float f1, float f2, float f3, float f4)
     {
+        //TODO: +++ CTO Mod 4.12 +++
         setWindDirection(f1);
         setWindVelocity(f2);
         setGust(f3);
         setTurbulence(f4);
-        
+        //TODO: --- CTO Mod 4.12 ---
         setHDG(SetWind(f, f1, f2, f3, f4));
         steady.set((float)(-Math.sin(dir)), (float)(-Math.cos(dir)), 0.0F);
         noWind = f2 == 0.0F;
-        top = f + 300F;
-        wTransitionAlt = top / 2.0F;
-        velocity10m = f2;
-        velocityH = velocity10m / 18000F;
-        velocityM = velocity10m / 9000F;
-        velocityL = velocity10m / 3000F;
-        turbulence = f4;
-        gust = f3;
-        velocityTrans = (velocity10m * wTransitionAlt) / 3000F + velocity10m;
-        velocityTop = (velocity10m * (top - wTransitionAlt)) / 9000F + velocityTrans;
     }
 
     public void setHDG(float f)
@@ -173,7 +146,8 @@ public class Wind extends FMMath
             f1 = (velocity10m * (f + 5F)) / 15F;
         return f1;
     }
-    
+
+  //TODO: +++ CTO Mod 4.12 +++
     public float curWindDirection()
     {
         return curWindDirection;
@@ -200,8 +174,7 @@ public class Wind extends FMMath
             f = 0.0F;
         if(f > 359.99F)
             f = 0.0F;
-
-          curWindDirection = f;
+        curWindDirection = f;
     }
 
     public void setWindVelocity(float f)
@@ -210,7 +183,6 @@ public class Wind extends FMMath
             f = 0.0F;
         if(f > 15F)
             f = 15F;
-
         curWindVelocity = f;
     }
 
@@ -220,7 +192,6 @@ public class Wind extends FMMath
             f = 0.0F;
         if(f > 12F)
             f = 12F;
-
         curGust = f;
     }
 
@@ -230,7 +201,26 @@ public class Wind extends FMMath
             f = 0.0F;
         if(f > 6F)
             f = 6F;
-
         curTurbulence = f;
     }
+
+    private float curWindDirection;
+    private float curWindVelocity;
+    private float curGust;
+    private float curTurbulence;
+  //TODO: --- CTO Mod 4.12 ---
+    Vector3f steady;
+    float top;
+    float turbulence;
+    float gust;
+    float velocityTop;
+    float velocityTrans;
+    float wTransitionAlt;
+    float velocity10m;
+    float velocityH;
+    float velocityM;
+    float velocityL;
+    float dir;
+    public boolean noWind;
+    int hdg;
 }

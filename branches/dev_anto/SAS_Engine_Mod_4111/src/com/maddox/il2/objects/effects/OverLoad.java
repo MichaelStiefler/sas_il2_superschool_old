@@ -1,14 +1,18 @@
-/*Modified OverLoad class for the SAS Engine Mod*/
-//TODO: Edited for use with G-Suits
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) deadcode 
+// Source File Name:   OverLoad.java
 
 package com.maddox.il2.objects.effects;
 
 import com.maddox.JGP.Point2f;
 import com.maddox.TexImage.TexImage;
+import com.maddox.il2.ai.DifficultySettings;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.Main3D;
+import com.maddox.il2.objects.air.Cockpit;
 import com.maddox.opengl.*;
 import com.maddox.sound.AudioDevice;
 
