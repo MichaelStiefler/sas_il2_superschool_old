@@ -1,10 +1,9 @@
 /*Modified RealFlightModel class for the SAS Engine Mod*/
-
 package com.maddox.il2.fm;
 
 import com.maddox.JGP.*;
 import com.maddox.il2.ai.*;
-import com.maddox.il2.ai.air.Pilot;
+import com.maddox.il2.ai.air.*;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.game.*;
 import com.maddox.il2.objects.air.*;
@@ -16,7 +15,57 @@ import com.maddox.sound.SoundFX;
 
 public class RealFlightModel extends Pilot
 {
-
+	// TODO: Default Parameters
+	// -------------------------------------------------------------
+    public boolean RealMode;
+    public float indSpeed;
+    private static int stallStringID = HUD.makeIdLog();
+    public DifficultySettings Realism;
+    Vector3d Cwl;
+    Vector3d Cwr;
+    Vector3d Chl;
+    Vector3d Chr;
+    Vector3d Cv;
+    Vector3d Fwl;
+    Vector3d Fwr;
+    Vector3d Fhl;
+    Vector3d Fhr;
+    Vector3d Fv;
+    private float superFuel;
+    private long lastDangerTick;
+    public float shakeLevel;
+    public float producedShakeLevel;
+    private float lastAcc;
+    private float ailerInfluence;
+    private float rudderInfluence;
+    private float deep;
+    private float currDeep;
+    private float indiffDnTime;
+    private float knockDnTime;
+    private float indiffUpTime;
+    private float knockUpTime;
+    public float saveDeep;
+    private double su26add;
+    private double spinCoeff;
+    private SoundFX structuralFX;
+    private boolean bSound;
+    private float rD;
+    public float Current_G_Limit;
+    private int cycleCounter;
+    private float timeCounter;
+    private float max_G_Cycle;
+    private float maxSpeed;
+    private float hpOld;
+    private int airborneState;
+    private Point3d airborneStartPoint;
+    private Point3d TmpP;
+    private Vector3d Vn;
+    private Vector3d TmpV;
+    private Vector3d TmpVd;
+    private Vector3d plAccel;
+    private int gearCutCounter;
+    private boolean bGearCut;
+    
     public RealFlightModel(String s)
     {
         super(s);
@@ -160,7 +209,7 @@ public class RealFlightModel extends Pilot
 
     private void cutWing()
     {
-        if(Realism.Flutter_Effect)
+        if(Realism.Flutter_Effect || Realism.G_Limits)
         {
             String s;
             switch(World.Rnd().nextInt(0, 8))
@@ -195,7 +244,7 @@ public class RealFlightModel extends Pilot
 
     private void cutPart(int i)
     {
-        if(Realism.Flutter_Effect)
+        if(Realism.Flutter_Effect || Realism.G_Limits)
         {
             String s;
             switch(i)
@@ -306,7 +355,10 @@ public class RealFlightModel extends Pilot
             return;
         if(!Actor.isAlive(actor))
             return;
-        Mission.initRadioSounds();
+        if(Config.isUSE_RENDER())
+        {
+            Mission.initRadioSounds();
+        }
         switch(airborneState)
         {
         default:
@@ -441,7 +493,7 @@ public class RealFlightModel extends Pilot
             for(int i = 0; (float)i < shakeLevel * 10.5F; i++)
                 s = s + ">";
 
-            TextScr.output(5, 120, "SHAKE LVL -" + shakeLevel);
+            TextScr.output(5, 120, "SHAKE LVL = " + shakeLevel);
             TextScr.output(5, 670, "Pylon = " + M.pylonCoeff);
             TextScr.output(5, 640, "WIND = " + (float)(int)(Vwind.length() * 10D) / 10F + " " + (float)(int)(Vwind.z * 10D) / 10F + " m/s");
             TextScr.output(5, 140, "BRAKE = " + CT.getBrake());
@@ -528,7 +580,7 @@ public class RealFlightModel extends Pilot
         AOS = RAD2DEG((float)Math.atan2(Vflow.y, Vflow.x));
         indSpeed = getSpeed() * (float)Math.sqrt(Density / 1.225F);
         Mach = V / Atmosphere.sonicSpeed((float)Loc.z);
-        //TODO: Used to calculate Mach Drag if parameters are set
+      //TODO: Used to calculate Mach Drag if parameters are set
         //--------------------------------------------------------
         float fDragFactor = 1.0F;
         float fDragParasiteFactor = 1.0F;
@@ -549,6 +601,7 @@ public class RealFlightModel extends Pilot
 //                  +" Mach: " + Mach);
         }
         //-------------------------------------------------------
+    	fullMach = Mach;
         if(Mach > 0.8F)
             Mach = 0.8F;
         Kq = 1.0F / (float)Math.sqrt(1.0F - Mach * Mach);
@@ -577,9 +630,12 @@ public class RealFlightModel extends Pilot
         float f14 = 0.015F * f1;
         if(f14 < 0.0F)
             f14 *= 0.18F;
-        //TODO: Added drag caused by Drag chute
-        Cwl.x = -d * (double)(Wing.new_Cx(f7) + f14 + GearCX * CT.getGear() + radiatorCX * (EI.getRadiatorPos() + CT.getCockpitDoor()) + Sq.dragAirbrakeCx * CT.getAirBrake() + Sq.dragChuteCx * CT.getDragChute());
-        Cwl.z = d * (double)Wing.new_Cy(f7) * (double)Kq;
+        float f15 = 0.0F;
+        if(CT.bHasBayDoorControl)
+            f15 = CT.BayDoorControl;
+      //TODO: Added drag caused by Drag chute
+        Cwl.x = -d * (double)(Wing.new_CxM(f7, fullMach) + f14 + 0.5F * GearCX * CT.getGearR() + 0.5F * GearCX * CT.getGearL() + radiatorCX * (EI.getRadiatorPos() + CT.getCockpitDoor() + f15) + Sq.dragAirbrakeCx * CT.getAirBrake()) + Sq.dragChuteCx * CT.getDragChute();
+        Cwl.z = d * (double)Wing.new_CyM(f7, fullMach) * (double)Kq;
         if(fmsfxCurrentType != 0)
         {
             if(fmsfxCurrentType == 1)
@@ -602,9 +658,10 @@ public class RealFlightModel extends Pilot
         f14 = -0.015F * f1;
         if(f14 < 0.0F)
             f14 *= 0.18F;
-        //TODO: Added drag caused by Drag chute
-        Cwr.x = -d * (double)(Wing.new_Cx(f9) + f14 + GearCX * CT.getGear() + radiatorCX * EI.getRadiatorPos() + Sq.dragAirbrakeCx * CT.getAirBrake() + Sq.dragChuteCx * CT.getDragChute());
-        Cwr.z = d * (double)Wing.new_Cy(f9) * (double)Kq;
+      //TODO: Added drag caused by Drag chute
+        Cwr.x = -d * (double)(Wing.new_CxM(f9, fullMach) + f14 + 0.5F * GearCX * CT.getGearR() + 0.5F * GearCX * CT.getGearL() + radiatorCX * EI.getRadiatorPos() + Sq.dragAirbrakeCx * CT.getAirBrake()) + Sq.dragChuteCx * CT.getDragChute();
+        Cwr.z = d * (double)Wing.new_CyM(f9, fullMach) * (double)Kq;
+
         if(fmsfxCurrentType != 0)
         {
             if(fmsfxCurrentType == 1)
@@ -620,7 +677,7 @@ public class RealFlightModel extends Pilot
         Cwl.x -= d * (double)Fusel.new_Cx(AOS);
         Cwr.y = -d * (double)Fusel.new_Cy(AOS);
         Cwr.x -= d * (double)Fusel.new_Cx(AOS);
-        float f15 = Wing.get_AOA_CRYT();
+        float f16 = Wing.get_AOA_CRYT();
         double d7 = 1.0D;
         double d8 = 0.5D + 0.40000000000000002D * (double)EI.getPowerOutput();
         double d9 = 1.2D + 0.40000000000000002D * (double)EI.getPowerOutput();
@@ -648,29 +705,29 @@ public class RealFlightModel extends Pilot
                 Cwr.z = d6;
             }
         } else
-        if(f7 > f15 || f9 > f15)
+        if(f7 > f16 || f9 > f16)
         {
             spinCoeff += 0.20000000000000001D * (double)f;
             if((double)Sq.squareRudders > 0.0D && (double)Math.abs(CT.RudderControl) > 0.5D && (double)CT.RudderControl * W.z > 0.0D)
                 spinCoeff -= 0.29999999999999999D * (double)f;
-            float f16;
+            float f17;
             if(f7 > f9)
-                f16 = f7;
+                f17 = f7;
             else
-                f16 = f9;
-            turbCoeff = 0.8F * (f16 - f15);
+                f17 = f9;
+            turbCoeff = 0.8F * (f17 - f16);
             if(turbCoeff < 1.0F)
                 turbCoeff = 1.0F;
             if(turbCoeff > 15F)
                 turbCoeff = 15F;
-            d7 = 1.0D - 0.20000000000000001D * (double)(f16 - f15);
+            d7 = 1.0D - 0.20000000000000001D * (double)(f17 - f16);
             if(d7 < 0.20000000000000001D)
                 d7 = 0.20000000000000001D;
             d7 /= turbCoeff;
             double d12 = d * (double)turbCoeff * spinCoeff;
-            float f17 = getAltitude() - (float)Engine.land().HQ_Air(Loc.x, Loc.y);
-            if(f17 < 10F)
-                d12 *= 0.1F * f17;
+            float f18 = getAltitude() - (float)Engine.land().HQ_Air(Loc.x, Loc.y);
+            if(f18 < 10F)
+                d12 *= 0.1F * f18;
             if(f7 > f9)
             {
                 Cwr.x += 0.019999999552965164D * d12 * (double)Sq.spinCxloss;
@@ -760,7 +817,7 @@ public class RealFlightModel extends Pilot
             Cv.y += Cv.y;
         Vn.set(Vflow);
         d = (double)Density * Vn.lengthSquared() * 0.5D;
-        //TODO: Supersonic Drag Factors
+      //TODO: Supersonic Drag Factors
         Fwl.scale(Sq.liftWingLIn + Sq.liftWingLMid + Sq.liftWingLOut, Cwl);
         Fwr.scale(Sq.liftWingRIn + Sq.liftWingRMid + Sq.liftWingROut, Cwr);
         Fwl.x -= d * (double)((Sq.dragParasiteCx * fDragParasiteFactor) + Sq.dragProducedCx) * 0.5D;
@@ -794,29 +851,29 @@ public class RealFlightModel extends Pilot
         {
             if(Realism.G_Limits)
             {
-                if((getOverload() > getUltimateLoad() + World.Rnd().nextFloat(0.0F, 1.0F) || getOverload() < Negative_G_Limit - World.Rnd().nextFloat(0.0F, 0.5F)) && !Gears.onGround() && World.Rnd().nextInt(0, 100) > 98)
+                if((getOverload() > getUltimateLoad() + World.Rnd().nextFloat(2.0F, 4F) || getOverload() < Negative_G_Limit - World.Rnd().nextFloat(1.0F, 2.5F)) && !Gears.onGround() && World.Rnd().nextInt(0, 100) > 98)
                     if(cutPart < 0)
                         cutWing();
                     else
                         cutPart(cutPart);
                 if(getOverload() > Current_G_Limit || getOverload() < Negative_G_Limit)
                 {
-                    float f19 = Math.abs(getOverload());
-                    if(f19 > max_G_Cycle)
-                        max_G_Cycle = f19;
+                    float f20 = Math.abs(getOverload());
+                    if(f20 > max_G_Cycle)
+                        max_G_Cycle = f20;
                     timeCounter += f;
-                    if(timeCounter > 0.75F)
+                    if(timeCounter > 0.85F)
                     {
                         cycleCounter++;
                         if(cycleCounter > 1)
                         {
-                            float f18;
+                            float f19;
                             if(getOverload() > 1.0F)
-                                f18 = (max_G_Cycle - Current_G_Limit) / Current_G_Limit;
+                                f19 = (max_G_Cycle - Current_G_Limit) / Current_G_Limit;
                             else
-                                f18 = (max_G_Cycle + Negative_G_Limit) / Negative_G_Limit;
-                            f18 *= f18;
-                            setSafetyFactor(f18);
+                                f19 = (max_G_Cycle + Negative_G_Limit) / Negative_G_Limit;
+                            f19 *= f19;
+                            setSafetyFactor(f19);
                             if(structuralFX != null)
                                 structuralFX.play();
                             VmaxAllowed = maxSpeed * (getSafetyFactor() * 0.3F + 0.55F);
@@ -824,65 +881,40 @@ public class RealFlightModel extends Pilot
                             if(rD < 0.001F)
                             {
                                 if(CT.bHasGearControl)
-                                {
-                                    ((Aircraft)actor).msgCollision(actor, "GearR2_D0", "GearR2_D0");
-                                    gearCutCounter++;
-                                }
+                                    AS.hitGear(actor, 1, 2);
                                 Wing.CxMin_0 += 6F * rD;
                                 setSafetyFactor(250F * rD);
-                                CT.bHasGearControl = false;
                             } else
                             if(rD < 0.002F)
                             {
                                 if(CT.bHasGearControl)
-                                {
-                                    ((Aircraft)actor).msgCollision(actor, "GearL2_D0", "GearL2_D0");
-                                    gearCutCounter += 2;
-                                }
+                                    AS.hitGear(actor, 0, 2);
                                 Wing.CxMin_0 += 3F * rD;
                                 setSafetyFactor(125F * rD);
-                                CT.bHasGearControl = false;
                             } else
                             if(rD < 0.0025F)
                             {
                                 if(CT.bHasGearControl)
-                                {
-                                    CT.GearControl = 1.0F;
-                                    ((Aircraft)actor).msgCollision(actor, "GearL2_D0", "GearL2_D0");
-                                    CT.forceGear(1.0F);
-                                    gearCutCounter += 2;
-                                }
+                                    AS.hitGear(actor, 0, 5);
                                 Wing.CxMin_0 += 3F * rD;
                                 setSafetyFactor(125F * rD);
-                                CT.bHasGearControl = false;
                             } else
                             if(rD < 0.003F)
                             {
                                 if(CT.bHasGearControl)
-                                {
-                                    CT.GearControl = 1.0F;
-                                    ((Aircraft)actor).msgCollision(actor, "GearR2_D0", "GearR2_D0");
-                                    CT.forceGear(1.0F);
-                                    gearCutCounter++;
-                                }
+                                    AS.hitGear(actor, 1, 5);
                                 Wing.CxMin_0 += 3F * rD;
                                 setSafetyFactor(125F * rD);
-                                CT.bHasGearControl = false;
                             } else
                             if(rD < 0.0035F)
                             {
                                 if(CT.bHasGearControl)
                                 {
-                                    CT.dvGear = 1.0F;
-                                    CT.forceGear(1.0F);
-                                    CT.GearControl = 1.0F;
-                                    ((Aircraft)actor).msgCollision(actor, "GearR2_D0", "GearR2_D0");
-                                    ((Aircraft)actor).msgCollision(actor, "GearL2_D0", "GearL2_D0");
-                                    gearCutCounter += 3;
+                                    AS.hitGear(actor, 0, 2);
+                                    AS.hitGear(actor, 1, 2);
                                 }
                                 Wing.CxMin_0 += 8F * rD;
                                 setSafetyFactor(125F * rD);
-                                CT.bHasGearControl = false;
                             } else
                             if(rD < 0.04F)
                                 SensYaw *= 0.68F;
@@ -988,7 +1020,7 @@ public class RealFlightModel extends Pilot
                 if(World.Rnd().nextInt(0, 100) > 90 && ((Aircraft)actor).isChunkAnyDamageVisible("WingRMid"))
                     ((Aircraft)actor).msgCollision(actor, "WingRMid_D0", "WingRMid_D0");
             }
-            //TODO: Gives exemption to supersonic aircraft
+          //TODO: Gives exemption to supersonic aircraft
             if(!(super.actor instanceof TypeSupersonic) && indSpeed > 81F && super.CT.bHasFlapsControl && super.CT.FlapsControl > 0.21F && (indSpeed - 81F) * super.CT.getFlap() > 8F)
             {
                 if(World.getPlayerAircraft() == actor && CT.bHasFlapsControl)
@@ -998,23 +1030,13 @@ public class RealFlightModel extends Pilot
             }
             if(indSpeed > VmaxAllowed && World.Rnd().nextFloat(0.0F, 16F) < indSpeed - VmaxAllowed && World.Rnd().nextInt(0, 99) < 2)
                 flutterDamage();
-            if(!(super.actor instanceof TypeSupersonic))
-            {
-                if(indSpeed > 610F)
-                {
-                    if(World.cur().isDebugFM())
-                        System.out.println("*** Sonic overspeed....");
-                    flutter();
-                }
-            } else
-            if(!(super.actor instanceof TypeSupersonic) && indSpeed > 310F)
+            if(indSpeed > 310F)
             {
                 if(World.cur().isDebugFM())
                     System.out.println("*** Sonic overspeed....");
                 flutter();
             }
         }
-        //-----------------------------------------------
         AM.set(0.0D, 0.0D, 0.0D);
         if(Math.abs(AOA) < 12F)
         {
@@ -1138,13 +1160,13 @@ public class RealFlightModel extends Pilot
             dryFriction = 1.0F;
         if(dryFriction > 32F)
             dryFriction = 32F;
-        float f20 = 4F * (0.25F - EI.getPowerOutput());
-        if(f20 < 0.0F)
-            f20 = 0.0F;
-        f20 *= f20;
-        f20 *= dryFriction;
-        float f21 = f20 * M.mass * M.mass;
-        if(!brakeShoe && (Gears.nOfPoiOnGr == 0 && Gears.nOfGearsOnGr < 3 || f20 == 0.0F || SummM.lengthSquared() > (double)(2.0F * f21) || SummF.lengthSquared() > (double)(80F * f21) || W.lengthSquared() > (double)(0.00014F * f20) || Vwld.lengthSquared() > (double)(0.09F * f20)))
+        float f21 = 4F * (0.25F - EI.getPowerOutput());
+        if(f21 < 0.0F)
+            f21 = 0.0F;
+        f21 *= f21;
+        f21 *= dryFriction;
+        float f22 = f21 * M.mass * M.mass;
+        if(!brakeShoe && (Gears.nOfPoiOnGr == 0 && Gears.nOfGearsOnGr < 3 || f21 == 0.0F || SummM.lengthSquared() > (double)(2.0F * f22) || SummF.lengthSquared() > (double)(80F * f22) || W.lengthSquared() > (double)(0.00014F * f21) || Vwld.lengthSquared() > (double)(0.09F * f21)))
         {
             double d25 = 1.0D / (double)k;
             for(int l = 0; l < k; l++)
@@ -1191,12 +1213,17 @@ public class RealFlightModel extends Pilot
         }
         if(Leader != null && isTick(128, 97) && Actor.isAlive(Leader.actor) && !Gears.onGround)
         {
-            float f22 = (float)Loc.distance(Leader.Loc);
-            if(f22 > 3000F)
+            float f23 = (float)Loc.distance(Leader.Loc);
+            if(f23 > 3000F)
+            {
                 Voice.speakDeviateBig((Aircraft)Leader.actor);
-            else
-            if(f22 > 1700F)
+                ((Maneuver)Leader).bSlowDown = true;
+            } else
+            if(f23 > 1700F)
+            {
+                ((Maneuver)Leader).bSlowDown = true;
                 Voice.speakDeviateSmall((Aircraft)Leader.actor);
+            }
         }
         shakeLevel = 0.0F;
         if(Gears.onGround())
@@ -1206,16 +1233,16 @@ public class RealFlightModel extends Pilot
         {
             if(indSpeed > 10F)
             {
-                float f23 = (float)Math.sin(Math.toRadians(Math.abs(AOA)));
-                if(f23 > 0.02F)
+                float f24 = (float)Math.sin(Math.toRadians(Math.abs(AOA)));
+                if(f24 > 0.02F)
                 {
-                    f23 *= f23;
-                    shakeLevel += 0.07F * (f23 - 0.0004F) * (indSpeed - 10F);
+                    f24 *= f24;
+                    shakeLevel += 0.07F * (f24 - 0.0004F) * (indSpeed - 10F);
                     if(isTick(30, 0) && shakeLevel > 0.6F)
                         HUD.log(stallStringID, "Stall");
                 }
             }
-            //TODO: Gear shake removal mod. VmaxFLAPS replaces 35F, shakeLevel reduced from 0.004 to 0.001
+          //TODO: Gear shake removal mod. VmaxFLAPS replaces 35F, shakeLevel reduced from 0.004 to 0.001
             if(indSpeed > VmaxFLAPS)
             {
                 if(CT.bHasGearControl && (Gears.lgear || Gears.rgear) && CT.getGear() > 0.0F)
@@ -1348,54 +1375,4 @@ public class RealFlightModel extends Pilot
         if(producedShakeLevel < f)
             producedShakeLevel = f;
     }
-
-    public boolean RealMode;
-    public float indSpeed;
-    private static int stallStringID = HUD.makeIdLog();
-    public DifficultySettings Realism;
-    Vector3d Cwl;
-    Vector3d Cwr;
-    Vector3d Chl;
-    Vector3d Chr;
-    Vector3d Cv;
-    Vector3d Fwl;
-    Vector3d Fwr;
-    Vector3d Fhl;
-    Vector3d Fhr;
-    Vector3d Fv;
-    private float superFuel;
-    private long lastDangerTick;
-    public float shakeLevel;
-    public float producedShakeLevel;
-    private float lastAcc;
-    private float ailerInfluence;
-    private float rudderInfluence;
-    private float deep;
-    private float currDeep;
-    private float indiffDnTime;
-    private float knockDnTime;
-    private float indiffUpTime;
-    private float knockUpTime;
-    public float saveDeep;
-    private double su26add;
-    private double spinCoeff;
-    private SoundFX structuralFX;
-    private boolean bSound;
-    private float rD;
-    public float Current_G_Limit;
-    private int cycleCounter;
-    private float timeCounter;
-    private int gearCutCounter;
-    private boolean bGearCut;
-    private float max_G_Cycle;
-    private float maxSpeed;
-    private float hpOld;
-    private int airborneState;
-    private Point3d airborneStartPoint;
-    private Point3d TmpP;
-    private Vector3d Vn;
-    private Vector3d TmpV;
-    private Vector3d TmpVd;
-    private Vector3d plAccel;
-
 }

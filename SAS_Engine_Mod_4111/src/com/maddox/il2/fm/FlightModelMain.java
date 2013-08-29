@@ -1,25 +1,47 @@
 /*Modified FlightModelMain class for the SAS Engine Mod*/
-
 package com.maddox.il2.fm;
 
-import com.maddox.JGP.*;
-import com.maddox.il2.ai.*;
-import com.maddox.il2.engine.*;
-import com.maddox.il2.game.Main;
-import com.maddox.il2.objects.air.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+
+import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Point3f;
+import com.maddox.JGP.Vector3d;
+import com.maddox.JGP.Vector3f;
+import com.maddox.il2.ai.EventLog;
+import com.maddox.il2.ai.World;
+import com.maddox.il2.engine.Actor;
+import com.maddox.il2.engine.ActorHMesh;
+import com.maddox.il2.engine.Config;
+import com.maddox.il2.engine.Loc;
+import com.maddox.il2.engine.Orient;
+import com.maddox.il2.engine.Orientation;
+import com.maddox.il2.objects.air.Aircraft;
+import com.maddox.il2.objects.air.Scheme1;
+import com.maddox.il2.objects.air.Scheme2a;
+import com.maddox.il2.objects.air.Scheme5;
+import com.maddox.il2.objects.air.Scheme7;
 import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.il2.objects.sounds.Voice;
-import com.maddox.rts.*;
-
-import java.io.*;
-import java.util.ArrayList;
+import com.maddox.rts.Finger;
+import com.maddox.rts.HomePath;
+import com.maddox.rts.InOutStreams;
+import com.maddox.rts.KryptoInputFilter;
+import com.maddox.rts.Property;
+import com.maddox.rts.SFSInputStream;
+import com.maddox.rts.SectFile;
+import com.maddox.rts.Time;
 
 public class FlightModelMain extends FMMath
 {
 	//TODO: Default Parameters
 	// --------------------------------------------------------
-	public static final int __DEBUG__IL2C_DUMP_LEVEL__ = 0;
-    public static final boolean __DEBUG__LOAD_FM_FROM_DIR__ = false;
+    public static final int __DEBUG__IL2C_DUMP_LEVEL__ = 0;
     public static final int ROOKIE = 0;
     public static final int NORMAL = 1;
     public static final int VETERAN = 2;
@@ -64,9 +86,9 @@ public class FlightModelMain extends FMMath
     public float WingLoss;
     public float turbCoeff;
     public float FuelConsumption;
-	public Vector3d producedAM = null;
-	public Vector3d producedAMM = null;
-	public Vector3d producedAF = null;
+    public Vector3d producedAM;
+    public Vector3d producedAMM;
+    public Vector3d producedAF;
     protected int fmsfxCurrentType;
     protected float fmsfxPrevValue;
     protected long fmsfxTimeDisable;
@@ -134,7 +156,7 @@ public class FlightModelMain extends FMMath
     public long Operate;
     private static Vector3d GPulse = new Vector3d();
     public static boolean bCY_CRIT04 = true;
-    private static InOutStreams fmDir;
+    private static InOutStreams fmDir = null;
     private static String lastFMFile;
     private static ArrayList fmDirs = new ArrayList();
     private static ArrayList fmDirNames = new ArrayList();
@@ -149,6 +171,7 @@ public class FlightModelMain extends FMMath
     private double ThrustBlownFlaps;
     public float WingspanFolded;
 	// --------------------------------------------------------
+    
     
     public float getSpeedKMH()
     {
@@ -259,6 +282,7 @@ public class FlightModelMain extends FMMath
         Wingspan = sectfile.get(s2, "Wingspan", 0.0F);
         if(Wingspan == 0.0F)
             throw new RuntimeException(s1);
+        //TODO: New folded wingspan parameter
         WingspanFolded = sectfile.get(s2, "WingspanFolded", 0.0F);
         Length = sectfile.get(s2, "Length", 0.0F);
         if(Length == 0.0F)
@@ -313,7 +337,7 @@ public class FlightModelMain extends FMMath
         if(j < 0 || j > 3)
             throw new RuntimeException(s1);
         CT.bHasFlapsControlRed = j < 3;
-        //TODO: Modified flap parameters in flight model. Allows up to 5 stages of flaps.
+      //TODO: Modified flap parameters in flight model. Allows up to 5 stages of flaps.
     	// --------------------------------------------------------
         j = sectfile.get(s2, "CFlapPos", -1);
         if(j < 0)
@@ -408,6 +432,7 @@ public class FlightModelMain extends FMMath
         if(j != 0 && j != 1)
             throw new RuntimeException(s1);
         CT.bHasWingControl = j == 1;
+        //TODO: Altered door control - allows setting to prevent canopy opening on carriers
         j = sectfile.get(s2, "CCockpitDoor", 0);
         if(j == 2)
         	CT.bNoCarrierCanopyOpen = true;
@@ -435,6 +460,10 @@ public class FlightModelMain extends FMMath
         CT.RudThr = 0.27778F * sectfile.get(s2, "CRudderThreshold", 360F);
         CT.ElevThr = 0.27778F * sectfile.get(s2, "CElevatorThreshold", 403.2F);
         CT.CalcTresholds();
+        j = sectfile.get(s2, "CBombBay", 0);
+        if(j != 0 && j != 1)
+            throw new RuntimeException(s1);
+        CT.bHasBayDoorControl = j == 1;
         CT.setTrimAileronControl(sectfile.get(s2, "DefaultAileronTrim", -999F));
         if(CT.getTrimAileronControl() == -999F)
             throw new RuntimeException(s1);
@@ -467,7 +496,7 @@ public class FlightModelMain extends FMMath
         f = sectfile.get(s2, "CockpitDoorPeriod", -999F);
         if(f != -999F)
             CT.dvCockpitDoor = 1.0F / f;
-        //TODO: New FM parameter - AirBrakePeriod
+      //TODO: New FM parameter - AirBrakePeriod
     	// --------------------------------------------------------
         f = sectfile.get(s2, "AirBrakePeriod", -999F);
         if(f != -999F)
@@ -683,6 +712,7 @@ public class FlightModelMain extends FMMath
             Wing.declineCoeff = sectfile.get(s2, "Decline", 0.007F);
             Wing.maxDistAng = sectfile.get(s2, "maxDistAng", 30F);
             Wing.setFlaps(0.0F);
+            Wing.loadMachParams(sectfile);
         } else
         {
             throw new RuntimeException(s1);
@@ -710,7 +740,7 @@ public class FlightModelMain extends FMMath
                     if(j >= 1500)
                         break;
                     float f5 = EI.forcePropAOA((float)j * 0.27778F, i, f1, true, f2);
-                    float f7 = Wing.getClimb((float)j * 0.27778F, i, f5);
+                    float f7 = Wing.getClimb((float)j * 0.27778F, i, f5, (Sq.dragParasiteCx * 0.5F) / Wing.S);
                     if(f7 > f3)
                         f3 = f7;
                     if(f7 < 0.0F && f7 < f3)
@@ -733,7 +763,7 @@ public class FlightModelMain extends FMMath
                     if(j >= 1500)
                         break;
                     float f6 = EI.forcePropAOA((float)j * 0.27778F, i, f, false, f2);
-                    float f8 = Wing.getClimb((float)j * 0.27778F, i, f6);
+                    float f8 = Wing.getClimb((float)j * 0.27778F, i, f6, (Sq.dragParasiteCx * 0.5F) / Wing.S);
                     if(f8 > f3)
                         f3 = f8;
                     if(f8 < 0.0F && f8 < f3)
@@ -762,6 +792,108 @@ public class FlightModelMain extends FMMath
 
     public FlightModelMain(String s)
     {
+        prButtons = Config.cur.ini.get("Mods", "PALButtonsPrefix", "").trim();
+        flags0 = 0L;
+        bDamagedGround = false;
+        bDamaged = false;
+        damagedInitiator = null;
+        Skill = 0;
+        crew = 0;
+        turretSkill = 0;
+        AP = null;
+        CT = null;
+        SensYaw = 0.0F;
+        SensPitch = 0.0F;
+        SensRoll = 0.0F;
+        GearCX = 0.0F;
+        radiatorCX = 0.0F;
+        Loc = null;
+        Or = null;
+        Leader = null;
+        Wingman = null;
+        Offset = null;
+        formationType = 0;
+        formationScale = 0.0F;
+        minElevCoeff = 0.0F;
+        AOA = 0.0F;
+        AOS = 0.0F;
+        V = 0.0F;
+        V2 = 0.0F;
+        q_ = 0.0F;
+        Gravity = 0.0F;
+        Mach = 0.0F;
+        Energy = 0.0F;
+        BarometerZ = 0.0F;
+        WingDiff = 0.0F;
+        WingLoss = 0.0F;
+        turbCoeff = 0.0F;
+        FuelConsumption = 0.0F;
+        producedAM = null;
+        producedAMM = null;
+        producedAF = null;
+        fmsfxCurrentType = 0;
+        fmsfxPrevValue = 0.0F;
+        fmsfxTimeDisable = 0L;
+        AF = null;
+        AM = null;
+        GF = null;
+        GM = null;
+        SummF = null;
+        SummM = null;
+        ACmeter = null;
+        Accel = null;
+        LocalAccel = null;
+        BallAccel = null;
+        Vwld = null;
+        Vrel = null;
+        Vair = null;
+        Vflow = null;
+        Vwind = null;
+        J0 = null;
+        J = null;
+        W = null;
+        AW = null;
+        EI = null;
+        M = null;
+        AS = null;
+        Sq = null;
+        Ss = null;
+        Arms = null;
+        Gears = null;
+        AIRBRAKE = false;
+        Wing = null;
+        Tail = null;
+        Fusel = null;
+        Scheme = 0;
+        Wingspan = 0.0F;
+        Length = 0.0F;
+        Vmax = 0.0F;
+        VmaxH = 0.0F;
+        Vmin = 0.0F;
+        HofVmax = 0.0F;
+        VmaxFLAPS = 0.0F;
+        VminFLAPS = 0.0F;
+        VmaxAllowed = 0.0F;
+        indSpeed = 0.0F;
+        AOA_Crit = 0.0F;
+        Range = 0.0F;
+        CruiseSpeed = 0.0F;
+        damagedParts = null;
+        maxDamage = 0;
+        cutPart = 0;
+        bReal = false;
+        UltimateLoad = 0.0F;
+        Negative_G_Limit = 0.0F;
+        Negative_G_Ultimate = 0.0F;
+        LimitLoad = 0.0F;
+        G_ClassCoeff = 0.0F;
+        refM = 0.0F;
+        SafetyFactor = 0.0F;
+        ReferenceForce = 0.0F;
+        turnFile = null;
+        speedFile = null;
+        craftFile = null;
+        Operate = 0L;
         flags0 = 240L;
         bDamagedGround = false;
         bDamaged = false;
@@ -812,6 +944,13 @@ public class FlightModelMain extends FMMath
         M = new Mass();
         AS = new AircraftState();
         Sq = new Squares();
+        //TODO: New parameter
+    	// --------------------------------------------------------
+        Ss = new Supersonic();
+        CyBlownFlapsOn = 0.0F;
+        CyBlownFlapsOff = 0.0F;
+        ThrustBlownFlaps = 0.0F;
+    	// --------------------------------------------------------
         Arms = new Arm();
         Gears = new Gear();
         Wing = new Polares();
@@ -840,13 +979,6 @@ public class FlightModelMain extends FMMath
         speedFile = new String();
         craftFile = new String();
         Operate = 0xfffffffffffL;
-        //TODO: New parameter
-    	// --------------------------------------------------------
-        Ss = new Supersonic();
-        CyBlownFlapsOn = 0.0F;
-        CyBlownFlapsOff = 0.0F;
-        ThrustBlownFlaps = 0.0F;
-    	// --------------------------------------------------------
         load(s);
         init_G_Limits();
     }
@@ -868,24 +1000,24 @@ public class FlightModelMain extends FMMath
 
     public void update(float f)
     {
-		((Aircraft) actor).update(f);
-        //TODO: Adds extra lift generated by blown flaps
-		if(CT.bHasBlownFlaps){
-			if(CT.BlownFlapsType != null)
-				if(CT.BlownFlapsControl > 0.0F && CT.FlapsControl > 0.0F && EI.getThrustOutput() > 0.2F){
-					Wing.Cy0_1 =+ CyBlownFlapsOff + (CyBlownFlapsOn * CT.BlownFlapsControl);
-					producedAF.x -= (ThrustBlownFlaps*EI.getThrustOutput());
-				}
-				else
-				{
-					Wing.Cy0_1  = CyBlownFlapsOff;
-					if(CT.FlapsControl == 0F)
-						CT.BlownFlapsControl = 0.0F;
-				}
-			else if(CT.FlapsControl > 0.0F){
-				Wing.Cy0_1 =+ CyBlownFlapsOff + (CyBlownFlapsOn * EI.getThrustOutput());
-			}	
-		}
+        ((Aircraft)actor).update(f);
+      //TODO: Adds extra lift generated by blown flaps
+      		if(CT.bHasBlownFlaps){
+      			if(CT.BlownFlapsType != null)
+      				if(CT.BlownFlapsControl > 0.0F && CT.FlapsControl > 0.0F && EI.getThrustOutput() > 0.2F){
+      					Wing.Cy0_1 =+ CyBlownFlapsOff + (CyBlownFlapsOn * CT.BlownFlapsControl);
+      					producedAF.x -= (ThrustBlownFlaps*EI.getThrustOutput());
+      				}
+      				else
+      				{
+      					Wing.Cy0_1  = CyBlownFlapsOff;
+      					if(CT.FlapsControl == 0F)
+      						CT.BlownFlapsControl = 0.0F;
+      				}
+      			else if(CT.FlapsControl > 0.0F){
+      				Wing.Cy0_1 =+ CyBlownFlapsOff + (CyBlownFlapsOn * EI.getThrustOutput());
+      			}	
+      		}
     }
 
     public boolean tick()
@@ -1784,8 +1916,9 @@ public class FlightModelMain extends FMMath
             if(EI.engines.length <= 0)
                 break;
             setCapableOfTaxiing(false);
-            if(!(this.actor instanceof Scheme1))
+            if(this.actor instanceof Scheme1)
                 setReadyToDie(true);
+            setCapableOfACM(false);
             EI.engines[0].setEngineDies(this.actor);
             Sq.dragEngineCx[0] = 0.15F;
             break;
@@ -1794,7 +1927,7 @@ public class FlightModelMain extends FMMath
             if(EI.engines.length > 1)
             {
                 setCapableOfTaxiing(false);
-                setReadyToDie(true);
+                setCapableOfACM(false);
                 EI.engines[1].setEngineDies(this.actor);
                 Sq.dragEngineCx[1] = 0.15F;
             }
@@ -1804,7 +1937,7 @@ public class FlightModelMain extends FMMath
             if(EI.engines.length > 2)
             {
                 setCapableOfTaxiing(false);
-                setReadyToDie(true);
+                setCapableOfACM(false);
                 EI.engines[2].setEngineDies(this.actor);
                 Sq.dragEngineCx[2] = 0.15F;
             }
@@ -1814,7 +1947,7 @@ public class FlightModelMain extends FMMath
             if(EI.engines.length > 3)
             {
                 setCapableOfTaxiing(false);
-                setReadyToDie(true);
+                setCapableOfACM(false);
                 EI.engines[3].setEngineDies(this.actor);
                 Sq.dragEngineCx[3] = 0.15F;
             }
@@ -1901,7 +2034,7 @@ public class FlightModelMain extends FMMath
         case 2: // '\002'
         case 3: // '\003'
             fmsfxCurrentType = i;
-            fmsfxTimeDisable = Time.current() + (long)(100 * j);
+            fmsfxTimeDisable = Time.current() + (long)((float)(100 * j) / (Wingspan * Wingspan));
             break;
         }
     }
@@ -1940,203 +2073,135 @@ public class FlightModelMain extends FMMath
         } while(true);
         return l;
     }
+    
+    //TODO: Following three methods are part of Auto DiffFM mod by Benitomuso
+    private static boolean exisstFile(String s)
+    {
+        try
+        {
+            SFSInputStream sfsinputstream = new SFSInputStream(s);
+            sfsinputstream.close();
+        }
+        catch(Exception exception)
+        {
+            return false;
+        }
+        return true;
+    }
 
-  //TODO: Following three methods are part of Auto DiffFM mod by Benitomuso
-  	// --------------------------------------------------------
-      private static boolean exisstFile(String s)
-      {
-          try
-          {
-              SFSInputStream sfsinputstream = new SFSInputStream(s);
-              sfsinputstream.close();
-          }
-          catch(Exception exception)
-          {
-              return false;
-          }
-          return true;
-      }
-      
-    //By PAL    
-      public static SectFile sectFile(String s)
-      {
-          boolean bPrintFM = (Config.cur.ini.get("Mods", "PrintFMDinfo", 0) != 0);
-      	String prButtons = Config.cur.ini.get("Mods", "PALButtonsPrefix", "").trim();
-          SectFile sectfile = null;
-          String s1 = s.toLowerCase();
-      //BY PAL, from DiffFM, begin    
-          String s2 = "gui/game/buttons";
-          int i = s1.indexOf(":"); //By PAL, specific FMD
-          if(i > -1)
-          {
-              s2 = s1.substring(i + 1, s1.length());
-              s1 = s1.substring(0, i);
-              if(s.endsWith(".emd"))
-              {
-                  s2 = s2.substring(0, s2.length() - 4);
-                  s1 = s1 + ".emd";
-              }
-     			System.out.println("FM called '" + s + "' is being loaded from File: '" + s2 +"'");           
-          }      
-          //By PAL, alternative buttons
-          if (prButtons != null)
-          	if (prButtons.length() > 0)
-          {
-          	String s3 = prButtons + s2;
-           	int ra = s2.lastIndexOf('/');       	
-          	//By PAL, compose 'gui/game/' + 'test' + 'buttons'
-          	if (ra > -1)	//By PAL, if it has / character
-          		s3 = s2.substring(0, ra + 1) + prButtons + s2.substring(ra + 1, s2.length());        		
-    			//By PAL, if it exists, then replace original
-     			if (exisstFile(s3))
-     			{
-     				s2 = s3;
-  	   			System.out.println("FM called '" + s + "' is being loaded from Alternative File: '" + s2 +"'");
-     			}	
-          }
-           
-      //BY PAL, from DiffFM, end
-          try
-          {
-              Object obj = Property.value(s, "stream", null);
-              InputStream inputstream = null;
-              if(obj != null)
-              {
-                  inputstream = (InputStream)obj;
-              } else
-              {
-      //BY PAL, DiffFM begin            	
-                  if(bPrintFM)
-                  {
-                      System.out.println("sFMDir = " + s2);
-                      System.out.println("s1 = " + s1);
-                      System.out.println("s = " + s);
-                      System.out.println("m_lastFMFile = " + lastFMFile);
-                  }                
-                  if(fmDir == null)
-                  {
-                  	if (exisstFile(s2))
-                      {
-  	                    fmDir = new InOutStreams();
-                      	fmDir.open(Finger.LongFN(0L, s2));
-  	    			//BY PAL, from DiffFM, begin
-  	                    fmDirs.add(fmDir);
-  	                    fmDirNames.add(s2);                  
-                      }
-                      else
-                      {
-                      	System.out.println("Warning, the '" + s2 + "' File Doesn't Exist! Check your Configuration.");
-                      }                                        
-                  } else
-                  if(!s2.equalsIgnoreCase(lastFMFile))
-                  {
-                      fmDir = null;
-                      if (exisstFile(s2))
-                      {
-  	                    int j = 0;
-  	                    do
-  	                    {
-  	                        if(j >= fmDirNames.size())
-  	                            break;
-  	                        String s3 = (String)fmDirNames.get(j);
-  	                        if(s2.equalsIgnoreCase(s3))
-  	                        {
-  	                            fmDir = (InOutStreams)fmDirs.get(j);
-  	                			lastFMFile = s2;                            
-  	                            break;
-  	                        }
-  	                        j++;                         
-  	                    }
-  	                    while(true);
-  	                    if(null == fmDir)
-  	                    {                 	
-  	                        fmDir = new InOutStreams();
-  	                        fmDir.open(Finger.LongFN(0L, s2));
-  	                        fmDirs.add(fmDir);
-  	                        fmDirNames.add(s2);
-  	                        lastFMFile = s2;	                        
-  	                    }                   	
-                      }
-                      else
-                      {
-                      	System.out.println("Warning, the '" + s2 + "' File Doesn't Exist! Check your Configuration.");
-                      }
-                  }
-                  
-                  if (fmDir == null)
-                  {
-                  	if (Main.cur().missionLoading != null)
-                  	{
-  	                	BackgroundTask.cancel("Mission Cancelled, Error in FM!!!" +
-  	                		"\n\nThere was a problem loading FM called:\n'" + s +
-  								"'\n\nIt is not present in File:\n'" + s2 + "'");			             				              				            	
-  	    				return sectfile;
-                  	}                	                	                
-  	                s1 = "FlightModels/Bf-109F-2.fmd";	//By PAL; open PlaceHolder DM to avoid 60& CTD!!!                
-                  	return sectFile(s1);
-                  }
-                  
-                  if (fmDir != null)
-                  {
-  	            //By PAL, if it didn't work with 4.09 / 4.111 Encoding:
-  	                if (inputstream == null)
-  						inputstream = fmDir.openStream("" + Finger.Int(s1 + "d2w0"));                	                	
-  	    		//BY PAL, check it with 4.101 Encoding:
-  	                if (inputstream == null)	    		
-  	    				inputstream = fmDir.openStream("" + Finger.Int(s1 + "d2wO"));                               
-  	            //By PAL, if it didn't work with 4.101 neither with 4.111 then HSFX6 Expert Encoding:
-  	                if (inputstream == null)            
-  	                	inputstream = fmDir.openStream("" + Finger.Int(s1 + "d2w5"));                	
-                  }
-                  if (inputstream == null) //By PAL, Error: no FM
-                  {
-                  	System.out.println("Error loading FM called '" + s + "'!");
-                  	System.out.println("It Cannot be Loaded from '" + s2 + "' File");
-                  	if(s.endsWith(".emd"))
-                  	{
-                  		System.out.println("*** This should have been the reason of the 'Explosion in the Air' when mission started ***");          		
-                  	}
-                  	else
-                  	{
-                  		System.out.println("*** This was the Reason of your 60% or 70% CTD ***");
-                  	}		                                	               			
-                  }
-              }
-      	//BY PAL, DiffFM end            
-          	inputstream.mark(0);
-              sectfile = new SectFile(new InputStreamReader(new KryptoInputFilter(inputstream, getSwTbl(Finger.Int(s1 + "ogh9"), inputstream.available())), "Cp1252"));
-              inputstream.reset();
-              if(obj == null)
-                  Property.set(s, "stream", inputstream);               
-          }
-          catch(Exception exception)
-          {
-          	//By PAL, tell the Reason of the Crash
-          	System.out.println("FM Loading General Exception!\nWarning, the '" + s + "' cannot be loaded from '" + s2 + "' File");
-          } 
-          return sectfile;
-      }
+    public static SectFile sectFile(String s)
+    {
+        SectFile sectfile = null;
+        String s1 = s.toLowerCase();
+        String s2 = "gui/game/buttons";
+        int i = s1.indexOf(":");
+        if(i > -1)
+        {
+            s2 = s1.substring(i + 1, s1.length());
+            s1 = s1.substring(0, i);
+            if(s.endsWith(".emd"))
+            {
+                s2 = s2.substring(0, s2.length() - 4);
+                s1 = s1 + ".emd";
+            }
+            System.out.println("FM called '" + s + "' is being loaded from File: '" + s2 + "'");
+        }
+        if(prButtons != null && prButtons.length() > 0)
+        {
+            String s3 = prButtons + s2;
+            int ra = s2.lastIndexOf('/');
+            if(ra > -1)
+                s3 = s2.substring(0, ra + 1) + prButtons + s2.substring(ra + 1, s2.length());
+            if(exisstFile(s3))
+            {
+                s2 = s3;
+                System.out.println("FM called '" + s + "' is being loaded from Alternative File: '" + s2 + "'");
+            }
+        }
+        try
+        {
+            Object obj = Property.value(s, "stream", null);
+            InputStream inputstream;
+            if(obj != null)
+            {
+                inputstream = (InputStream)obj;
+            } else
+            {
+                if(fmDir == null)
+                {
+                    fmDir = new InOutStreams();
+                    fmDir.open(Finger.LongFN(0L, s2));
+                    fmDirs.add(fmDir);
+                    fmDirNames.add(s2);
+                } else
+                if(!s2.equalsIgnoreCase(lastFMFile))
+                {
+                    fmDir = null;
+                    int j = 0;
+                    do
+                    {
+                        if(j >= fmDirNames.size())
+                            break;
+                        String s3 = (String)fmDirNames.get(j);
+                        if(s2.equalsIgnoreCase(s3))
+                        {
+                            fmDir = (InOutStreams)fmDirs.get(j);
+                            break;
+                        }
+                        j++;
+                    } while(true);
+                    if(null == fmDir)
+                    {
+                        fmDir = new InOutStreams();
+                        fmDir.open(Finger.LongFN(0L, s2));
+                        fmDirs.add(fmDir);
+                        fmDirNames.add(s2);
+                    }
+                }
+                lastFMFile = s2;
+                inputstream = fmDir.openStream("" + Finger.Int(s1 + "d2wO"));
+                if(inputstream == null)
+                    inputstream = fmDir.openStream("" + Finger.Int(s1 + "d2w0"));
+                if(inputstream == null)
+                    inputstream = fmDir.openStream("" + Finger.Int(s1 + "d2w5"));
+                if(inputstream == null)
+                {
+                    System.out.println("Error loading FM called '" + s + "'!");
+                    System.out.println("This FM is not present in '" + s2 + "' File");
+                    if(s.endsWith(".emd"))
+                        System.out.println("*** This should have been the reason of the 'Explosion in the Air' when mission started ***");
+                    else
+                        System.out.println("*** This was the Reason of your 60% or 70% CTD ***");
+                }
+            }
+            inputstream.mark(0);
+            sectfile = new SectFile(new InputStreamReader(new KryptoInputFilter(inputstream, getSwTbl(Finger.Int(s1 + "ogh9"), inputstream.available())), "Cp1252"));
+            inputstream.reset();
+            if(obj == null)
+                Property.set(s, "stream", inputstream);
+        }
+        catch(Exception exception) { }
+        return sectfile;
+    }
 
-      private static int[] getSwTbl(int i, int j)
-      {
-          if(i < 0)
-              i = -i;
-          if(j < 0)
-              j = -j;
-          int k = (j + i / 5) % 16 + 14;
-          int l = (j + i / 19) % Finger.kTable.length;
-          if(k < 0)
-              k = -k % 16;
-          if(k < 10)
-              k = 10;
-          if(l < 0)
-              l = -l % Finger.kTable.length;
-          int ai[] = new int[k];
-          for(int i1 = 0; i1 < k; i1++)
-              ai[i1] = Finger.kTable[(l + i1) % Finger.kTable.length];
+    private static int[] getSwTbl(int i, int j)
+    {
+        if(i < 0)
+            i = -i;
+        if(j < 0)
+            j = -j;
+        int k = (j + i / 5) % 16 + 14;
+        int l = (j + i / 19) % Finger.kTable.length;
+        if(k < 0)
+            k = -k % 16;
+        if(k < 10)
+            k = 10;
+        if(l < 0)
+            l = -l % Finger.kTable.length;
+        int ai[] = new int[k];
+        for(int i1 = 0; i1 < k; i1++)
+            ai[i1] = Finger.kTable[(l + i1) % Finger.kTable.length];
 
-          return ai;
-      }
-  	// --------------------------------------------------------
-
+        return ai;
+    }
 }

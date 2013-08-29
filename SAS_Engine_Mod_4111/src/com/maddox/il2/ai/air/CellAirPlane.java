@@ -13,7 +13,7 @@ public class CellAirPlane extends CellObject
 	private static final long serialVersionUID = 1L;
     public double ofsX;
     public double ofsY;
-	
+    
 	public boolean checkAirFieldSize(CellAirField cellairfield)
     {
         if(cellairfield.getWidth() < getWidth())
@@ -345,5 +345,4 @@ label0:
 	//-------------------------------
     private int iFoldedWidth;
 	//-------------------------------
-
 }

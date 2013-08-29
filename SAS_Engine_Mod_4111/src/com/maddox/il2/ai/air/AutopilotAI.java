@@ -1,6 +1,4 @@
 /*Modified AutopilotAI class for the SAS Engine Mod*/
-//TODO: Includes changes that allow for AI bomb bay door and missile control
-
 package com.maddox.il2.ai.air;
 
 import com.maddox.JGP.Point3d;
@@ -35,7 +33,9 @@ public class AutopilotAI extends Autopilotage
     private float Pw;
     private float Ev;
     private float SA;
+    private float avoidance;
     private Vector3d Ve;
+    //TODO:
     private boolean overrideMissileControl = false;
     private Controls theMissileControls = null;
 
@@ -193,12 +193,15 @@ public class AutopilotAI extends Autopilotage
     public void update(float f)
     {
 label0:
+	//TODO: Code for missile override
         {
         if (this.overrideMissileControl) {
             this.theMissileControls.WeaponControl[2] = true;
           }
             FM.getLoc(PlLoc);
             SA = (float)Math.max(StabAltitude, Engine.land().HQ_Air(PlLoc.x, PlLoc.y) + 5D);
+            if(((Maneuver) (FM)).Group != null && ((Maneuver) (FM)).Group.getAaaNum() > 3F && ((Aircraft)FM.actor).aircIndex() == 0 && FM.isTick(165, 0))
+                avoidance = (float)(1 - World.Rnd().nextInt(0, 1) * 2) * World.Rnd().nextFloat(15F, 30F);
             if(!bWayPoint)
                 break label0;
             if(WWPoint != way.auto(PlLoc) || way.isReached(PlLoc))
@@ -206,7 +209,15 @@ label0:
                 WWPoint = way.auto(PlLoc);
                 WWPoint.getP(WPoint);
                 if(((Aircraft)FM.actor).aircIndex() == 0 && !way.isLanding())
+                {
                     voiceCommand(WPoint, PlLoc);
+                    FM.formationType = (byte)way.curr().formation;
+                    if(((Maneuver) (FM)).Group != null)
+                    {
+                        ((Maneuver) (FM)).Group.setFormationAndScale(FM.formationType, 1.0F, true);
+                        ((Maneuver) (FM)).Group.formationType = FM.formationType;
+                    }
+                }
                 StabSpeed = WWPoint.Speed - 2.0F * (float)((Aircraft)FM.actor).aircIndex();
                 StabAltitude = WPoint.z;
                 if(WWPoint.Action == 3)
@@ -227,7 +238,7 @@ label0:
                     }
                 } else
                 {
-                    if((Aircraft)FM.actor instanceof TypeBomber)
+                    if(((Aircraft)FM.actor instanceof TypeBomber) || FM.CT.bHasBayDoorControl)
                     {
                         FM.CT.BayDoorControl = 0.0F;
                         for(Pilot pilot = FM; pilot.Wingman != null;)
@@ -240,7 +251,7 @@ label0:
                     Actor actor1 = WWPoint.getTarget();
                     if(actor1 instanceof Aircraft)
                         if(actor1.getArmy() == FM.actor.getArmy())
-                            FM.airClient = (Maneuver)((Aircraft)actor1).FM;
+                            FM.airClient = ((Aircraft)actor1).FM;
                         else
                             FM.target = ((Aircraft)actor1).FM;
                 }
@@ -405,7 +416,10 @@ label0:
         {
             f1 = FM.Or.getAzimut();
             float f2 = FM.Or.getKren();
-            f1 = (float)((double)f1 - StabDirection);
+            if(((Maneuver) (FM)).Group.getAaaNum() > 3F && ((Aircraft)FM.actor).aircIndex() == 0)
+                f1 = (float)((double)f1 - (StabDirection + (double)avoidance));
+            else
+                f1 = (float)((double)f1 - StabDirection);
             f1 = (f1 + 3600F) % 360F;
             f2 = (f2 + 3600F) % 360F;
             if(f1 > 180F)
@@ -465,9 +479,9 @@ label0:
             FM.CT.ElevatorControl -= 0.3F * f;
     }
 
+    //TODO:
     public void setOverrideMissileControl(Controls theControls, boolean overrideMissile) {
         this.theMissileControls = theControls;
         this.overrideMissileControl = overrideMissile;
       }
-    
 }

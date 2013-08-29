@@ -6,6 +6,23 @@ import com.maddox.rts.IniFile;
 
 public class LandConf
 {
+    public String heightMap;
+    public String typeMap;
+    public String camouflage;
+    public int declin;
+    public int month;
+    public String country;
+    public String city;
+    public String rail;
+    public String road;
+    public String highway;
+    public boolean bBig;
+    public int outsideMapCell;
+    public String HeightMap;
+    public String Fields[];
+    public String zutiWaterState;
+    //TODO: New parameter
+    public String climate;
 
     public LandConf()
     {
@@ -30,11 +47,16 @@ public class LandConf
         heightMap = inifile.getValue("MAP", "HeightMap");
         typeMap = inifile.getValue("MAP", "TypeMap");
         camouflage = inifile.get("WORLDPOS", "CAMOUFLAGE", "SUMMER");
-        System.out.println("Loaded camouflage: " + camouflage);
 		//TODO: Added by |ZUTI|
         //-------------------------------------------------------------
         ZutiSupportMethods_Engine.alterWaterState(inifile, camouflage);
         //-------------------------------------------------------------
+        zutiWaterState = inifile.get("WORLDPOS", "WATER_STATE", "");
+        if(zutiWaterState == null || zutiWaterState.trim().length() == 0)
+            if("WINTER".equals(camouflage))
+                zutiWaterState = "ICE";
+            else
+                zutiWaterState = "LIQUID";
         climate = inifile.get("WORLDPOS", "CLIMATE", "Oceanic");
         declin = inifile.get("WORLDPOS", "DECLIN", 45);
         month = inifile.get("WORLDPOS", "MONTH", 6);
@@ -95,21 +117,4 @@ public class LandConf
         }
         CollideEnvXY.STATIC_HMAX = inifile.get("MAP", "STATIC_HMAX", 50F, 50F, 3000F);
     }
-
-    public String heightMap;
-    public String typeMap;
-    public String camouflage;
-    public String climate;
-    public int declin;
-    public int month;
-    public String country;
-    public String city;
-    public String rail;
-    public String road;
-    public String highway;
-    public boolean bBig;
-    public int outsideMapCell;
-    public String HeightMap;
-    public String Fields[];
-    public String zutiWaterState;
 }

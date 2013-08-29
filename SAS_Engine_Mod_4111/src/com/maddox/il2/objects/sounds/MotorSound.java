@@ -123,10 +123,8 @@ label2:
                     if(sndMotor == null)
                         break label0;
                     int i = motor.getType();
-                    Motor _tmp = motor;
                     if(i != 0)
                     {
-                        Motor _tmp1 = motor;
                         if(i != 1)
                             break label2;
                     }
@@ -136,7 +134,6 @@ label2:
                 flag = false;
             }
             float f2 = motor.getReadyness();
-            float f3 = f;
             if(f2 < 0.0F)
                 f2 = 0.0F;
             f2 = 1.0F - f2;

@@ -1,10 +1,11 @@
 /*Modified Motor class for the SAS Engine Mod*/
-
 package com.maddox.il2.fm;
 
 import com.maddox.JGP.*;
 import com.maddox.il2.ai.*;
-import com.maddox.il2.engine.*;
+import com.maddox.il2.engine.Actor;
+import com.maddox.il2.engine.Eff3DActor;
+import com.maddox.il2.engine.Interpolate;
 import com.maddox.il2.game.*;
 import com.maddox.il2.objects.air.*;
 import com.maddox.rts.*;
@@ -15,12 +16,7 @@ public class Motor extends FMMath
 {
 	//TODO: Default variables, modified by |ZUTI|: changed all private variables to protected
 	// --------------------------------------------------------
-	public static final int _S_TYPE_INERTIA = 0;
-	public static final int _S_TYPE_MANUAL = 1;
-	public static final int _S_TYPE_ELECTRIC = 2;
-	public static final int _S_TYPE_CARTRIDGE = 3;
-	public static final int _S_TYPE_PNEUMATIC = 4;
-	public static final int _S_TYPE_BOSCH = 5;
+    protected static final boolean ___debug___ = false;
     public static final int _E_TYPE_INLINE = 0;
     public static final int _E_TYPE_RADIAL = 1;
     public static final int _E_TYPE_JET = 2;
@@ -30,8 +26,6 @@ public class Motor extends FMMath
     public static final int _E_TYPE_PVRD = 6;
     public static final int _E_TYPE_HELO_INLINE = 7;
     public static final int _E_TYPE_UNIDENTIFIED = 8;
-	public static final int _E_TYPE_ROTARY = 9;
-	public static final int _E_TYPE_TURBOPROP = 10;
     public static final int _E_PROP_DIR_LEFT = 0;
     public static final int _E_PROP_DIR_RIGHT = 1;
     public static final int _E_STAGE_NULL = 0;
@@ -84,6 +78,8 @@ public class Motor extends FMMath
     public String soundName;
     public String startStopName;
     public String propName;
+    public String emdName;
+    public String emdSubName;
     protected int number;
     protected int type;
     protected int cylinders;
@@ -102,7 +98,7 @@ public class Motor extends FMMath
     protected float engineDistBM;
     protected float engineDistCM;
     protected float producedDistabilisation;
-    public boolean bRan;
+    protected boolean bRan;
     protected Point3f enginePos;
     protected Vector3f engineVector;
     protected Vector3f engineForce;
@@ -277,10 +273,18 @@ public class Motor extends FMMath
 	
  	//TODO: New Parameters
  	// --------------------------------------------------------
+    public static final int _S_TYPE_INERTIA = 0;
+	public static final int _S_TYPE_MANUAL = 1;
+	public static final int _S_TYPE_ELECTRIC = 2;
+	public static final int _S_TYPE_CARTRIDGE = 3;
+	public static final int _S_TYPE_PNEUMATIC = 4;
+	public static final int _S_TYPE_BOSCH = 5;
+	public static final int _E_TYPE_ROTARY = 9;
+	public static final int _E_TYPE_TURBOPROP = 10;
  	public static int starter = 0;
  	//New boolean to cause instant engine shutdown if prop is struck
  	public boolean bPropHit = false;
-	
+    
     public Motor()
     {
         isnd = null;
@@ -288,6 +292,8 @@ public class Motor extends FMMath
         soundName = null;
         startStopName = null;
         propName = null;
+        emdName = null;
+        emdSubName = null;
         number = 0;
         type = 0;
         cylinders = 12;
@@ -438,19 +444,22 @@ public class Motor extends FMMath
     public void load(FlightModel flightmodel, String s, String s1, int i)
     {
         reference = flightmodel;
+        String s2 = "FlightModels/" + s + ".emd";
+        emdName = s;
+        emdSubName = s1;
         number = i;
-        SectFile sectfile = FlightModelMain.sectFile(s);
+        SectFile sectfile = FlightModelMain.sectFile(s2);
         resolveFromFile(sectfile, "Generic");
         resolveFromFile(sectfile, s1);
         calcAfterburnerCompressorFactor();
-		//TODO: Initializes new engine types
-		if(type == 0 || type == 1 || type == 7 || type == 9)
-			initializeInline(((FlightModelMain) (flightmodel)).Vmax);
-		if(type == 2)
-			initializeJet(((FlightModelMain) (flightmodel)).Vmax);
-		if(type == 10)
-			//initializeTurboprop(((FlightModelMain) (flightmodel)).Vmax);
-			initializeInline(((FlightModelMain) (flightmodel)).Vmax);
+      //TODO: Initializes new engine types
+      		if(type == 0 || type == 1 || type == 7 || type == 9)
+      			initializeInline(((FlightModelMain) (flightmodel)).Vmax);
+      		if(type == 2)
+      			initializeJet(((FlightModelMain) (flightmodel)).Vmax);
+      		if(type == 10)
+      			//initializeTurboprop(((FlightModelMain) (flightmodel)).Vmax);
+      			initializeInline(((FlightModelMain) (flightmodel)).Vmax);
     }
 
     private void resolveFromFile(SectFile sectfile, String s)
@@ -459,55 +468,55 @@ public class Motor extends FMMath
         propName = sectfile.get(s, "PropName", propName);
         startStopName = sectfile.get(s, "StartStopName", startStopName);
         Aircraft.debugprintln(reference.actor, "Resolving submodel " + s + " from file '" + sectfile.toString() + "'....");
-		//TODO: Edits here to add new engine types
-		// --------------------------------------------------------
-        String s1 = sectfile.get(s, "Type");
-		if(s1 != null)
-			if(s1.endsWith("Inline"))
-				type = 0;
-			else
-				if(s1.endsWith("Radial"))
-					type = 1;
-				else
-					if(s1.endsWith("Jet"))
-						type = 2;
-					else
-						if(s1.endsWith("RocketBoost"))
-							type = 4;
-						else
-							if(s1.endsWith("Rocket"))
-								type = 3;
-							else
-								if(s1.endsWith("Tow"))
-									type = 5;
-								else
-									if(s1.endsWith("PVRD"))
-										type = 6;
-									else
-										if(s1.endsWith("Unknown"))
-											type = 8;
-										else
-											if(s1.endsWith("Azure"))
-												type = 8;
-											else
-												if(s1.endsWith("HeloI"))
-													type = 7;
-												else
-													if(s1.endsWith("Rotary"))
-														type = 9;
-													else
-														if(s1.endsWith("Turboprop"))
-															type = 10;
-		if(type == 0 || type == 1 || type == 7 || type == 9)
-		{
-			int i = sectfile.get(s, "Cylinders", 0xfffe7961);
-			if(i != 0xfffe7961)
-			{
-				cylinders = i;
-				cylindersOperable = cylinders;
-			}
-		}
-		// --------------------------------------------------------
+      //TODO: Edits here to add new engine types
+      		// --------------------------------------------------------
+              String s1 = sectfile.get(s, "Type");
+      		if(s1 != null)
+      			if(s1.endsWith("Inline"))
+      				type = 0;
+      			else
+      				if(s1.endsWith("Radial"))
+      					type = 1;
+      				else
+      					if(s1.endsWith("Jet"))
+      						type = 2;
+      					else
+      						if(s1.endsWith("RocketBoost"))
+      							type = 4;
+      						else
+      							if(s1.endsWith("Rocket"))
+      								type = 3;
+      							else
+      								if(s1.endsWith("Tow"))
+      									type = 5;
+      								else
+      									if(s1.endsWith("PVRD"))
+      										type = 6;
+      									else
+      										if(s1.endsWith("Unknown"))
+      											type = 8;
+      										else
+      											if(s1.endsWith("Azure"))
+      												type = 8;
+      											else
+      												if(s1.endsWith("HeloI"))
+      													type = 7;
+      												else
+      													if(s1.endsWith("Rotary"))
+      														type = 9;
+      													else
+      														if(s1.endsWith("Turboprop"))
+      															type = 10;
+      		if(type == 0 || type == 1 || type == 7 || type == 9)
+      		{
+      			int i = sectfile.get(s, "Cylinders", 0xfffe7961);
+      			if(i != 0xfffe7961)
+      			{
+      				cylinders = i;
+      				cylindersOperable = cylinders;
+      			}
+      		}
+      		// --------------------------------------------------------
         s1 = sectfile.get(s, "Direction");
         if(s1 != null)
             if(s1.endsWith("Left"))
@@ -544,38 +553,38 @@ public class Motor extends FMMath
         if(f != -99999F)
             propReductor = f;
       //TODO: New engine types
-      		// --------------------------------------------------------
-      		if(type == 0 || type == 1 || type == 7 || type == 9)
-      		{
-      			f = sectfile.get(s, "HorsePowers", -99999F);
-      			if(f != -99999F)
-      				horsePowers = f;
-      		// --------------------------------------------------------
-      			//TODO: New variable starter
-      			// --------------------------------------------------------
-			s1 = sectfile.get(s, "Starter");
-			if(s1 != null)
-				if(s1.endsWith("Inertia"))
-					starter = 0;
+  		// --------------------------------------------------------
+  		if(type == 0 || type == 1 || type == 7 || type == 9)
+  		{
+  			f = sectfile.get(s, "HorsePowers", -99999F);
+  			if(f != -99999F)
+  				horsePowers = f;
+  		// --------------------------------------------------------
+  			//TODO: New variable starter
+  			// --------------------------------------------------------
+		s1 = sectfile.get(s, "Starter");
+		if(s1 != null)
+			if(s1.endsWith("Inertia"))
+				starter = 0;
+			else
+				if(s1.endsWith("Manual"))
+					starter = 1;
 				else
-					if(s1.endsWith("Manual"))
-						starter = 1;
+					if(s1.endsWith("Electric"))
+						starter = 2;
 					else
-						if(s1.endsWith("Electric"))
-							starter = 2;
+						if(s1.endsWith("Cartridge"))
+							starter = 3;
 						else
-							if(s1.endsWith("Cartridge"))
-								starter = 3;
+							if(s1.endsWith("Pneumatic"))
+								starter = 4;
 							else
-								if(s1.endsWith("Pneumatic"))
-									starter = 4;
+								if(s1.endsWith("Bosch"))
+									starter = 5;
 								else
-									if(s1.endsWith("Bosch"))
-										starter = 5;
-									else
-										if(type == 9)
-											starter = 1;
-			// --------------------------------------------------------
+									if(type == 9)
+										starter = 1;
+		// --------------------------------------------------------
             int j = sectfile.get(s, "Carburetor", 0xfffe7961);
             if(j != 0xfffe7961)
                 engineCarburetorType = j;
@@ -1091,7 +1100,7 @@ public class Motor extends FMMath
             updateLast += f;
             if(updateLast >= updateStep)
             {
-                f = updateStep;
+                f = updateLast;
             } else
             {
                 engineForce.set(old_engineForce);
@@ -1708,6 +1717,8 @@ public class Motor extends FMMath
     {
         if(!bHasExtinguisherControl)
             return;
+        if(reference.AS.bIsAboutToBailout)
+            return;
         extinguishers--;
         if(extinguishers == 0)
             bHasExtinguisherControl = false;
@@ -1730,13 +1741,13 @@ public class Motor extends FMMath
     }
 
     private void computeStage(float f)
-	{
-		if(stage == 6)
-			return;
-		bTFirst = false;
-		float f1 = 20F;
-		long l = Time.current() - timer;
-		if(stage > 0 && stage < 6 && l > given)
+    {
+        if(stage == 6)
+            return;
+        bTFirst = false;
+        float f1 = 20F;
+        long l = Time.current() - timer;
+        if(stage > 0 && stage < 6 && l > given)
 		{
 			stage++;
 			/*TODO:  This part controls hiccups during startup. 
@@ -1794,110 +1805,132 @@ public class Motor extends FMMath
 					stage = 3;
 			}
 
-			timer = Time.current();
-			l = 0L;
-		}
-		if(oldStage != stage)
-		{
-			bTFirst = true;
-			oldStage = stage;
-		}
-		if(stage > 0 && stage < 6)
-			setControlThrottle(0.2F);
-		label0:
-			switch(stage)
-			{
-			case 0: // '\0'
-				if(bTFirst)
-				{
-					given = 0x3fffffffffffffffL;
-					timer = Time.current();
-				}  
-				if(isnd != null)
-					isnd.onEngineState(stage);
-				break;
+            timer = Time.current();
+            l = 0L;
+        }
+        if(oldStage != stage)
+        {
+            bTFirst = true;
+            oldStage = stage;
+        }
+        if(stage > 0 && stage < 6)
+            setControlThrottle(0.2F);
+label0:
+        switch(stage)
+        {
+        case 0: // '\0'
+            if(bTFirst)
+            {
+                given = 0x3fffffffffffffffL;
+                timer = Time.current();
+            }
+            if(isnd != null)
+                isnd.onEngineState(stage);
+            break;
 
-			case 1: // '\001'
-				if(bTFirst)
+        case 1: // '\001'
+            if(bTFirst)
+            {
+                if(bIsStuck)
+                {
+                    stage = 8;
+                    return;
+                }
+                if(type == 3 || type == 4 || type == 6)
+                {
+                    stage = 5;
+                    if(reference.isPlayers())
+                        HUD.log("Starting_Engine");
+                    return;
+                }
+                if(type == 0 || type == 1 || type == 7)
+                {
+                    if(w > wMin)
+                    {
+                        stage = 3;
+                        if(reference.isPlayers())
+                            HUD.log("Starting_Engine");
+                        return;
+                    }
+                    if(!bIsAutonomous)
+                    {
+                    	//TODO: Modified by |ZUTI|: disabled position check. 
+						//if ((Airport.distToNearestAirport(reference.Loc) < 1200.0) && reference.isStationedOnGround())
+						if( reference.isStationedOnGround() )
+                        {
+                            setControlMagneto(3);
+                            if(reference.isPlayers())
+                                HUD.log("Starting_Engine");
+                        } else
+                        {
+                            doSetEngineStops();
+                            if(reference.isPlayers())
+                                HUD.log("EngineI0");
+                            return;
+                        }
+                    } else
+                    if(reference.isPlayers())
+                        HUD.log("Starting_Engine");
+                } else
+                if(!bIsAutonomous)
+                {
+                	//TODO: Modified by |ZUTI|: disabled position check. 
+					//if ((Airport.distToNearestAirport(reference.Loc) < 1200.0) && reference.isStationedOnGround())
+					if( reference.isStationedOnGround() )
+                    {
+                        setControlMagneto(3);
+                        if(reference.isPlayers())
+                            HUD.log("Starting_Engine");
+                    } else
+                    {
+                        if(reference.getSpeedKMH() < 350F)
+                        {
+                            doSetEngineStops();
+                            if(reference.isPlayers())
+                                HUD.log("EngineI0");
+                            return;
+                        }
+                        if(reference.isPlayers())
+                            HUD.log("Starting_Engine");
+                    }
+                } else
+                if(reference.isPlayers())
+                    HUD.log("Starting_Engine");
+                /*TODO:   editing "given" in each stage will give you different starting times....test these planes and see the difference  */ 
+				if(type == 9)
 				{
-					if(bIsStuck)
+					given = (long)(50F * World.Rnd().nextFloat(1.0F, 2.0F));
+				}
+				else
+				if(type == 0 || type == 7){
+					if(starter == 0)
 					{
-						stage = 8;
-						return;
-					}
-					if(type == 3 || type == 4 || type == 6)
-					{
-						stage = 5;
-						if(reference.isPlayers())
-							HUD.log("Starting_Engine");
-						return;
-					}
-					if(type == 0 || type == 1 || type == 7 || type == 9)
-					{
-						if(w > wMin)
-						{
-							stage = 3;
-							if(reference.isPlayers())
-								HUD.log("Starting_Engine");
-							return;
-						}
-						if(!bIsAutonomous)
-						{
-							//TODO: Modified by |ZUTI|: disabled position check. 
-							//if ((Airport.distToNearestAirport(reference.Loc) < 1200.0) && reference.isStationedOnGround())
-							if( reference.isStationedOnGround() )
-
-							{
-								setControlMagneto(3);
-								if(reference.isPlayers())
-									HUD.log("Starting_Engine");
-							} else
-							{
-								doSetEngineStops();
-								if(reference.isPlayers())
-									HUD.log("EngineI0");
-								return;
-							}
-						} else
-							if(reference.isPlayers())
-								HUD.log("Starting_Engine");
+						given = (long)(1500F * World.Rnd().nextFloat(1.0F, 2.0F));
 					} else
-						if(!bIsAutonomous)
+						if(starter == 1)
 						{
-							//TODO: Modified by |ZUTI|: disabled position check. 
-							//if ((Airport.distToNearestAirport(reference.Loc) < 1200.0) && reference.isStationedOnGround())
-							if( reference.isStationedOnGround() )
-
+							given = (long)(50F * World.Rnd().nextFloat(1.0F, 2.0F));
+						}
+						else
+						if(starter == 2)
+						{
+							given = (long)(50F * World.Rnd().nextFloat(1.0F, 2.0F));
+						} else	
+							if(starter == 3)
 							{
-								setControlMagneto(3);
-								if(reference.isPlayers())
-									HUD.log("Starting_Engine");
-							} else
-							{
-								if(reference.getSpeedKMH() < 350F)
-								{
-									doSetEngineStops();
-									if(reference.isPlayers())
-										HUD.log("EngineI0");
-									return;
-								}
-								if(reference.isPlayers())
-									HUD.log("Starting_Engine");
+								given = (long)(50F * World.Rnd().nextFloat(1.0F, 2.0F));
 							}
-						} else
-							if(reference.isPlayers())
-								HUD.log("Starting_Engine");
-
-					/*TODO:   editing "given" in each stage will give you different starting times....test these planes and see the difference  */ 
-					if(type == 9)
-					{
-						given = (long)(50F * World.Rnd().nextFloat(1.0F, 2.0F));
-					}
-					else
-					if(type == 0 || type == 7){
+							else
+								if(starter == 5)
+								{
+									given = (long)(1500F * World.Rnd().nextFloat(1.0F, 2.0F));
+								}
+				}
+				else
+					if(type == 1){
 						if(starter == 0)
 						{
-							given = (long)(1500F * World.Rnd().nextFloat(1.0F, 2.0F));
+							given = (long)(2000F * World.Rnd().nextFloat(1.0F, 2.0F));
 						} else
 							if(starter == 1)
 							{
@@ -1915,377 +1948,347 @@ public class Motor extends FMMath
 								else
 									if(starter == 5)
 									{
-										given = (long)(1500F * World.Rnd().nextFloat(1.0F, 2.0F));
+										given = (long)(5000F * World.Rnd().nextFloat(1.0F, 2.0F));
+									}
+					}
+					else
+						given = (long)(1000F * World.Rnd().nextFloat(1.0F, 2.0F));
+			}
+            if(isnd != null)
+                isnd.onEngineState(stage);
+            reference.CT.setMagnetoControl(3);
+            setControlMagneto(3);
+            w = 0.1047F * ((20F * (float)l) / (float)given);
+            //TODO:
+            if(starter == 5)
+				w = 0;
+			else
+				w = (0.1047F * ((20F * (float)l) / (float)given));
+            setControlThrottle(0.0F);
+            break;
+
+        case 2: // '\002'
+            if(bTFirst)
+            {
+            	if(type == 9)
+				{
+					given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+				} else
+					if(type == 0 || type == 7){
+						if(starter == 0)
+						{
+							given = (long)(5000F * World.Rnd().nextFloat(1.0F, 2.0F));
+						} else
+							if(starter == 1)
+							{
+								given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+							} else
+							if(starter == 2)
+							{
+								given = (long)(1500F * World.Rnd().nextFloat(1.0F, 2.0F));
+							} else
+								if(starter == 3)
+								{
+									given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+								}
+								else
+									if(starter == 5)
+									{
+										given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
 									}
 					}
 					else
 						if(type == 1){
 							if(starter == 0)
 							{
-								given = (long)(2000F * World.Rnd().nextFloat(1.0F, 2.0F));
+								given = (long)(8000F * World.Rnd().nextFloat(1.0F, 2.0F));
 							} else
 								if(starter == 1)
 								{
-									given = (long)(50F * World.Rnd().nextFloat(1.0F, 2.0F));
-								}
-								else
+									given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+								} else
 								if(starter == 2)
 								{
-									given = (long)(50F * World.Rnd().nextFloat(1.0F, 2.0F));
+									given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
 								} else	
 									if(starter == 3)
 									{
-										given = (long)(50F * World.Rnd().nextFloat(1.0F, 2.0F));
+										given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
 									}
 									else
 										if(starter == 5)
 										{
-											given = (long)(5000F * World.Rnd().nextFloat(1.0F, 2.0F));
+											given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+										}
+						}
+						else
+							given = (long)(8000F * World.Rnd().nextFloat(1.0F, 2.0F));
+                if(bRan)
+                {
+                    given = (long)(100F + ((tOilOutMaxRPM - tOilOut) / (tOilOutMaxRPM - f1)) * 7900F * World.Rnd().nextFloat(2.0F, 4.2F));
+                    if(given > 9000L)
+                        given = World.Rnd().nextLong(7800L, 9600L);
+                    if(bIsMaster && World.Rnd().nextFloat() < 0.5F)
+                    {
+                        stage = 0;
+                        reference.AS.setEngineStops(number);
+                    }
+                }
+            }
+            w = 0.1047F * (20F + (15F * (float)l) / (float)given);
+            setControlThrottle(0.0F);
+            if(isnd != null)
+                isnd.onEngineState(stage);
+            break;
+
+        case 3: // '\003'
+            if(bTFirst)
+            {
+                if(isnd != null)
+                    isnd.onEngineState(stage);
+                if(bIsInoperable)
+                {
+                    stage = 0;
+                    doSetEngineDies();
+                    return;
+                }
+                if(type == 9)
+				{
+					given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+				} else
+					if(type == 0 || type == 7){
+						if(starter == 0)
+						{
+							given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+						} else
+							if(starter == 1)
+							{
+								given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+							} else
+							if(starter == 2)
+							{
+								given = (long)(200F * World.Rnd().nextFloat(1.0F, 2.0F));
+							} else
+								if(starter == 3)
+								{
+									given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+								}
+								else
+									if(starter == 5)
+									{
+										given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+									}
+					}
+					else
+						if(type == 1){
+							if(starter == 0)
+							{
+								given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+							} else
+								if(starter == 1)
+								{
+									given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+								} else
+								if(starter == 2)
+								{
+									given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+								} else	
+									if(starter == 3)
+									{
+										given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+									}
+									else
+										if(starter == 5)
+										{
+											given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+										}
+						}
+						else
+							given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+                if(bIsMaster && World.Rnd().nextFloat() < 0.12F && (tOilOutMaxRPM - tOilOut) / (tOilOutMaxRPM - f1) < 0.75F)
+                    reference.AS.setEngineStops(number);
+            }
+            w = 0.1047F * (60F + (60F * (float)l) / (float)given);
+            setControlThrottle(0.0F);
+            if(reference == null || type == 2 || type == 3 || type == 4 || type == 6 || type == 5)
+                break;
+            int i = 1;
+            do
+            {
+                if(i >= 32)
+                    break label0;
+                try
+                {
+                    com.maddox.il2.engine.Hook hook = reference.actor.findHook("_Engine" + (number + 1) + "EF_" + (i >= 10 ? "" + i : "0" + i));
+                    if(hook != null)
+                        Eff3DActor.New(reference.actor, hook, null, 1.0F, "3DO/Effects/Aircraft/EngineStart" + World.Rnd().nextInt(1, 3) + ".eff", -1F);
+                }
+                catch(Exception exception) { }
+                i++;
+            } while(true);
+
+        case 4: // '\004'
+            if(bTFirst)
+            	if(type == 9)
+				{
+					given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+				} else
+					if(type == 0 || type == 7){
+						if(starter == 0)
+						{
+							given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+						} else
+							if(starter == 1)
+							{
+								given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+							} else
+							if(starter == 2)
+							{
+								given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+							} else
+								if(starter == 3)
+								{
+									given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+								}
+								else
+									if(starter == 5)
+									{
+										given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+									}
+					}
+					else
+						if(type == 1){
+							if(starter == 0)
+							{
+								given = (long)(1200F * World.Rnd().nextFloat(1.0F, 2.0F));
+							} else
+								if(starter == 1)
+								{
+									given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+								} else
+								if(starter == 2)
+								{
+									given = (long)(1200F * World.Rnd().nextFloat(1.0F, 2.0F));
+								} else	
+									if(starter == 3)
+									{
+										given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+									}
+									else
+										if(starter == 5)
+										{
+											given = (long)(1200F * World.Rnd().nextFloat(1.0F, 2.0F));
 										}
 						}
 						else
 							given = (long)(1000F * World.Rnd().nextFloat(1.0F, 2.0F));
-				}
-				if(isnd != null)
-					isnd.onEngineState(stage);
-				((FlightModelMain) (reference)).CT.setMagnetoControl(3);
-				setControlMagneto(3);
-				if(starter == 5)
-					w = 0;
-				else
-					w = (0.1047F * ((20F * (float)l) / (float)given));
-				setControlThrottle(0.0F);
-				break;
+            w = 12.564F;
+            setControlThrottle(0.0F);
+            if(isnd != null)
+                isnd.onEngineState(stage);
+            break;
 
-			case 2: // '\002'
-				if(bTFirst)
+        case 5: // '\005'
+            if(bTFirst)
+            {
+            	if(type == 9)
 				{
-					if(type == 9)
-					{
-						given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-					} else
-						if(type == 0 || type == 7){
-							if(starter == 0)
-							{
-								given = (long)(5000F * World.Rnd().nextFloat(1.0F, 2.0F));
-							} else
-								if(starter == 1)
-								{
-									given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else
-								if(starter == 2)
-								{
-									given = (long)(1500F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else
-									if(starter == 3)
-									{
-										given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-									}
-									else
-										if(starter == 5)
-										{
-											given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-										}
-						}
-						else
-							if(type == 1){
-								if(starter == 0)
-								{
-									given = (long)(8000F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else
-									if(starter == 1)
-									{
-										given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-									} else
-									if(starter == 2)
-									{
-										given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-									} else	
-										if(starter == 3)
-										{
-											given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-										}
-										else
-											if(starter == 5)
-											{
-												given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-											}
-							}
-							else
-								given = (long)(8000F * World.Rnd().nextFloat(1.0F, 2.0F));
-					if(bRan)
-					{
-						given = (long)(100F + ((tOilOutMaxRPM - tOilOut) / (tOilOutMaxRPM - f1)) * 7900F * World.Rnd().nextFloat(2.0F, 4.2F));
-						if(given > 9000L)
-							given = World.Rnd().nextLong(7800L, 9600L);
-						if(bIsMaster && World.Rnd().nextFloat() < 0.5F)
-						{
-							stage = 0;
-							((FlightModelMain) (reference)).AS.setEngineStops(number);
-						}
-					}
-				}
-				float spin = 0.1047F * (20F + (7F * (float)l) / (float)given);
-				if(w > spin)
-				{
-					/*float divider = 0.0F;
-                divider += 0.5F;*/
-					w = 12.564F - (0.3547F * (20F + (7F * (float)l) / (float)given)); 
+					given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
 				} else
-					w = spin;
-				setControlThrottle(0.0F);
-				if(isnd != null)
-					isnd.onEngineState(stage);
-				break;
-
-			case 3: // '\003'
-				if(bTFirst)
-				{
-					if(isnd != null)
-						isnd.onEngineState(stage);
-					if(bIsInoperable)
-					{
-						stage = 0;
-						doSetEngineDies();
-						return;
-					}
-					if(type == 9)
-					{
-						given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-					} else
-						if(type == 0 || type == 7){
-							if(starter == 0)
+					if(type == 0 || type == 7){
+						if(starter == 0)
+						{
+							given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+						} else	
+							if(starter == 1)
+							{
+								given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+							} else
+							if(starter == 2)
 							{
 								given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+							} else
+								if(starter == 3)
+								{
+									given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+								}
+								else
+									if(starter == 5)
+									{
+										given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+									}
+					}
+					else
+						if(type == 1){
+							if(starter == 0)
+							{
+								given = (long)(800F * World.Rnd().nextFloat(1.0F, 2.0F));
 							} else
 								if(starter == 1)
 								{
 									given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
 								} else
 								if(starter == 2)
-								{
-									given = (long)(200F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else
-									if(starter == 3)
-									{
-										given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-									}
-									else
-										if(starter == 5)
-										{
-											given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-										}
-						}
-						else
-							if(type == 1){
-								if(starter == 0)
-								{
-									given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else
-									if(starter == 1)
-									{
-										given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-									} else
-									if(starter == 2)
-									{
-										given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-									} else	
-										if(starter == 3)
-										{
-											given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-										}
-										else
-											if(starter == 5)
-											{
-												given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-											}
-							}
-							else
-								given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-					if(bIsMaster && World.Rnd().nextFloat() < 0.12F && (tOilOutMaxRPM - tOilOut) / (tOilOutMaxRPM - f1) < 0.75F)
-						((FlightModelMain) (reference)).AS.setEngineStops(number);
-				}
-				w = 0.1047F * (60F + (30F * (float)l) / (float)given);
-				setControlThrottle(0.0F);
-				if(reference == null || type == 2 || type == 3 || type == 4 || type == 6 || type == 5 || type == 10)
-					break;
-				int i = 1;
-				do
-				{
-					if(i >= 32)
-						break label0;
-					try
-					{
-						com.maddox.il2.engine.Hook hook = ((Interpolate) (reference)).actor.findHook("_Engine" + (number + 1) + "EF_" + (i >= 10 ? "" + i : "0" + i));
-						if(hook != null)
-							Eff3DActor.New(((Interpolate) (reference)).actor, hook, null, 1.0F, "3DO/Effects/Aircraft/EngineStart" + World.Rnd().nextInt(1, 3) + ".eff", -1F);
-					}
-					catch(Exception exception) { }
-					i++;
-				} while(true);
-
-			case 4: // '\004'
-				if(bTFirst)
-					if(type == 9)
-					{
-						given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-					} else
-						if(type == 0 || type == 7){
-							if(starter == 0)
-							{
-								given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-							} else
-								if(starter == 1)
-								{
-									given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else
-								if(starter == 2)
-								{
-									given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else
-									if(starter == 3)
-									{
-										given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-									}
-									else
-										if(starter == 5)
-										{
-											given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-										}
-						}
-						else
-							if(type == 1){
-								if(starter == 0)
-								{
-									given = (long)(1200F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else
-									if(starter == 1)
-									{
-										given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-									} else
-									if(starter == 2)
-									{
-										given = (long)(1200F * World.Rnd().nextFloat(1.0F, 2.0F));
-									} else	
-										if(starter == 3)
-										{
-											given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-										}
-										else
-											if(starter == 5)
-											{
-												given = (long)(1200F * World.Rnd().nextFloat(1.0F, 2.0F));
-											}
-							}
-							else
-								given = (long)(1000F * World.Rnd().nextFloat(1.0F, 2.0F));
-				w = 12.564F;
-				setControlThrottle(0.0F);
-				if(isnd != null)
-					isnd.onEngineState(stage);    
-				break;
-
-			case 5: // '\005'
-				if(bTFirst)
-				{
-					if(type == 9)
-					{
-						given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-					} else
-						if(type == 0 || type == 7){
-							if(starter == 0)
-							{
-								given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-							} else	
-								if(starter == 1)
-								{
-									given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else
-								if(starter == 2)
-								{
-									given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else
-									if(starter == 3)
-									{
-										given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-									}
-									else
-										if(starter == 5)
-										{
-											given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-										}
-						}
-						else
-							if(type == 1){
-								if(starter == 0)
 								{
 									given = (long)(800F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else
-									if(starter == 1)
+								} else	
+									if(starter == 3)
 									{
 										given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-									} else
-									if(starter == 2)
-									{
-										given = (long)(800F * World.Rnd().nextFloat(1.0F, 2.0F));
-									} else	
-										if(starter == 3)
+									}
+									else
+										if(starter == 5)
 										{
-											given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+											given = (long)(800F * World.Rnd().nextFloat(1.0F, 2.0F));
 										}
-										else
-											if(starter == 5)
-											{
-												given = (long)(800F * World.Rnd().nextFloat(1.0F, 2.0F));
-											}
-							}
-							else
-								given = (long)(500F * World.Rnd().nextFloat(1.0F, 2.0F));
-					if(bRan && (type == 0 || type == 1 || type == 7 || type == 9))
-					{
-						if((tOilOutMaxRPM - tOilOut) / (tOilOutMaxRPM - f1) > 0.75F)
-							if(type == 0 || type == 7)
-							{
-								if(bIsMaster && getReadyness() > 0.75F && World.Rnd().nextFloat() < 0.25F)
-									setReadyness(getReadyness() - 0.05F);
-							} else
-								if((type == 1  || type == 9) && bIsMaster && World.Rnd().nextFloat() < 0.1F)
-									((FlightModelMain) (reference)).AS.setEngineDies(((Interpolate) (reference)).actor, number);
-						if(bIsMaster && World.Rnd().nextFloat() < 0.1F)
-							((FlightModelMain) (reference)).AS.setEngineStops(number);
-					}
-					bRan = true;
-				}
-				w = 0.1047F * (120F + (60F * (float)l) / (float)given);
-				setControlThrottle(0.2F);
-				if(isnd != null)
-					isnd.onEngineState(stage);
-				break;
+						}
+						else
+							given = (long)(500F * World.Rnd().nextFloat(1.0F, 2.0F));
+            	if(bRan && (type == 0 || type == 1 || type == 7 || type == 9))
+                {
+                    if((tOilOutMaxRPM - tOilOut) / (tOilOutMaxRPM - f1) > 0.75F)
+                        if(type == 0 || type == 7)
+                        {
+                            if(bIsMaster && getReadyness() > 0.75F && World.Rnd().nextFloat() < 0.25F)
+                                setReadyness(getReadyness() - 0.05F);
+                        } else
+                        if(type == 1 && bIsMaster && World.Rnd().nextFloat() < 0.1F)
+                            reference.AS.setEngineDies(reference.actor, number);
+                    if(bIsMaster && World.Rnd().nextFloat() < 0.1F)
+                        reference.AS.setEngineStops(number);
+                }
+                bRan = true;
+            }
+            w = 0.1047F * (120F + (120F * (float)l) / (float)given);
+            setControlThrottle(0.2F);
+            if(isnd != null)
+                isnd.onEngineState(stage);
+            break;
 
-			case 6: // '\006'
-				if(bTFirst)
-				{
-					given = -1L;
-					((FlightModelMain) (reference)).AS.setEngineRunning(number);
-				}
-				if(isnd != null)
-					isnd.onEngineState(stage);
-				break;
+        case 6: // '\006'
+            if(bTFirst)
+            {
+                given = -1L;
+                reference.AS.setEngineRunning(number);
+            }
+            if(isnd != null)
+                isnd.onEngineState(stage);
+            break;
 
-			case 7: // '\007'
-			case 8: // '\b'
-				if(bTFirst)
-					given = -1L;
-				setReadyness(0.0F);
-				setControlMagneto(0);
-				if(isnd != null)
-					isnd.onEngineState(stage);
-				break;
+        case 7: // '\007'
+        case 8: // '\b'
+            if(bTFirst)
+                given = -1L;
+            setReadyness(0.0F);
+            setControlMagneto(0);
+            if(isnd != null)
+                isnd.onEngineState(stage);
+            break;
 
-			default:
-				return;
-			}
-	}
+        default:
+            return;
+        }
+    }
 
     private void computeFuel(float f)
     {
@@ -2537,37 +2540,41 @@ public class Motor extends FMMath
         float f1 = Math.max(0.0F, reference.getSpeedKMH());
         float f2 = Atmosphere.temperature((float)reference.Loc.z) - 273.15F;
         float f3 = controlThrottle;
-        float f4 = 0.8F + 60F / (50F + f1);
-        float f5 = 0.45F;
+        if(!reference.isPlayers())
+            f3 *= 1.1F;
+        float f4 = f3;
+        float f5 = 0.8F + 60F / (50F + f1);
+        float f6 = 0.45F;
         if(engineBoostFactor > 1.0F)
-            f3 = (controlThrottle + Math.max(controlThrottle - 1.0F, 0.0F) * (engineBoostFactor - 1.1F) * 10F) / engineBoostFactor;
-        if(!controlAfterburner && engineAfterburnerBoostFactor > 1.0F)
-            f3 /= engineAfterburnerBoostFactor;
-        float f6 = f3;
+            f4 = (f3 + Math.max(f3 - 1.0F, 0.0F) * (engineBoostFactor - 1.1F) * 10F) / engineBoostFactor;
+        if(!controlAfterburner && engineAfterburnerBoostFactor > 1.0F && afterburnerType != 1 && afterburnerType != 9 && afterburnerType != 4)
+            f4 /= engineAfterburnerBoostFactor;
+        float f7 = f4;
         if(type == 0 || type == 1 || type == 7)
-            f5 = 0.45F / Atmosphere.density((float)reference.Loc.z);
-        else
-        if(type == 2)
-            f5 = 0.35F + 0.1F / Atmosphere.density((float)reference.Loc.z);
-        float f7 = coolMult * f3;
+            f6 = 0.45F / Atmosphere.density((float)reference.Loc.z);
+        float f8 = coolMult * f4;
         if(World.cur().diffCur.ComplexEManagement && reference.isPlayers() && ((RealFlightModel)reference).isRealMode())
-            f6 = w / wWEP;
+            f7 = w / wWEP;
+        if(!reference.isPlayers())
+            f7 = (w * 1.02F) / wWEP;
         if(stage == 6)
         {
-            float f8 = f2 + tOilOutMaxRPM * (1.0F - 0.15F * controlRadiator) * (0.65F + 0.45F / Atmosphere.density((float)reference.Loc.z)) * (1.0F + (float)reference.AS.astateOilStates[number] * 0.35F) * 1.2F * f6 * f6 * (0.7F + 0.3F * f7) * f4;
-            tOilOut += (f8 - tOilOut) * f * tChangeSpeed;
-            float f12 = tOilOut * (0.75F - 0.05F * controlRadiator);
-            tOilIn += (f12 - tOilIn) * f * 0.5F;
-            f12 = f2 + tWaterMaxRPM * (1.0F - 0.15F * controlRadiator) * (0.65F + f5) * (0.6F + 0.4F * f6) * (0.1F + 1.1F * f7) * f4 * (1.1F - 0.1F * controlMix);
-            tWaterOut += (f12 - tWaterOut) * f * tChangeSpeed;
+            float f9 = f2 + tOilOutMaxRPM * (1.0F - 0.15F * controlRadiator) * (0.65F + 0.45F / Atmosphere.density((float)reference.Loc.z)) * (1.0F + (float)reference.AS.astateOilStates[number] * 0.35F) * 1.2F * f7 * f7 * (0.7F + 0.3F * f8) * f5;
+            tOilOut += (f9 - tOilOut) * f * tChangeSpeed;
+            float f13 = tOilOut * 0.8F;
+            tOilIn += (f13 - tOilIn) * f * 0.5F;
+            if(type == 2)
+                f6 = 0.35F + 0.1F / Atmosphere.density((float)reference.Loc.z);
+            f13 = f2 + tWaterMaxRPM * (1.0F - 0.15F * controlRadiator) * (0.65F + f6) * (0.6F + 0.4F * f7) * (0.1F + 1.1F * f8) * f5 * (1.1F - 0.1F * controlMix);
+            tWaterOut += (f13 - tWaterOut) * f * tChangeSpeed;
         } else
         {
-            float f9 = f2;
-            tOilOut += (f9 - tOilOut) * f * tChangeSpeed * (0.2F + 0.2F * controlRadiator);
-            float f13 = tOilOut;
-            tOilIn += (f13 - tOilIn) * f * 0.5F;
-            f13 = f2;
-            tWaterOut += (f13 - tWaterOut) * f * tChangeSpeed * (0.2F + 0.2F * controlRadiator);
+            float f10 = f2;
+            tOilOut += (f10 - tOilOut) * f * tChangeSpeed * (0.2F + 0.2F * controlRadiator);
+            float f14 = tOilOut;
+            tOilIn += (f14 - tOilIn) * f * 0.5F;
+            f14 = f2;
+            tWaterOut += (f14 - tWaterOut) * f * tChangeSpeed * (0.2F + 0.2F * controlRadiator);
         }
         if(!reference.isPlayers())
             return;
@@ -2579,10 +2586,10 @@ public class Motor extends FMMath
                 HUD.log(heatStringID, "EngineOverheat");
             if(tWaterOut > tWaterCritMax)
             {
-                float f10 = tWaterOut / tWaterCritMax - 1.0F;
-                f10 *= f10 * f10 * f * 1000F;
-                float f14 = World.Rnd().nextFloat() * timeOverheat;
-                if(f10 > f14)
+                float f11 = tWaterOut / tWaterCritMax - 1.0F;
+                f11 *= f11 * f11 * f * 1000F;
+                float f15 = World.Rnd().nextFloat() * timeOverheat;
+                if(f11 > f15)
                     switch(type)
                     {
                     default:
@@ -2617,7 +2624,25 @@ public class Motor extends FMMath
                         if(k < 94)
                         {
                             reference.AS.setEngineCylinderKnockOut(reference.actor, number, 1);
-                            reference.AS.setSootState(reference.actor, number, 3);
+                            int i1 = 1;
+                            do
+                            {
+                                if(i1 >= 11)
+                                    break;
+                                if(World.Rnd().nextFloat() >= 0.8F)
+                                {
+                                    try
+                                    {
+                                        com.maddox.il2.engine.Hook hook = reference.actor.findHook("_Engine" + (number + 1) + "EF_" + (i1 >= 10 ? "" + i1 : "0" + i1));
+                                        if(hook != null)
+                                            Eff3DActor.New(reference.actor, hook, null, 1.0F, "3DO/Effects/Aircraft/EngineStart" + World.Rnd().nextInt(1, 3) + ".eff", -1F);
+                                    }
+                                    catch(Exception exception) { }
+                                    break;
+                                }
+                                i1++;
+                            } while(true);
+                            reference.AS.setSootState(reference.actor, number, 1);
                             Aircraft.debugprintln(reference.actor, "Malfunction #" + number + " - cylinder&smoke");
                             break;
                         }
@@ -2648,10 +2673,10 @@ public class Motor extends FMMath
             }
             if(tOilOut > tOilCritMax)
             {
-                float f11 = tOilOut / tOilCritMax - 1.0F;
-                f11 *= f11 * f11 * f * 1000F;
-                float f15 = World.Rnd().nextFloat() * timeOverheat;
-                if(f11 > f15)
+                float f12 = tOilOut / tOilCritMax - 1.0F;
+                f12 *= f12 * f12 * f * 1000F;
+                float f16 = World.Rnd().nextFloat() * timeOverheat;
+                if(f12 > f16)
                     switch(type)
                     {
                     default:
@@ -2741,35 +2766,7 @@ public class Motor extends FMMath
         }
         if((reference.actor instanceof SPITFIRE9) || (reference.actor instanceof SPITFIRE8) || (reference.actor instanceof SPITFIRE8CLP))
         {
-            float f1 = 0.0F;
-            if(tOilOut > tOilCritMin)
-            {
-                float f2 = tOilCritMax - tOilCritMin;
-                f1 = (1.4F * (tOilOut - tOilCritMin)) / f2;
-                if(f1 > 1.4F)
-                    f1 = 1.4F;
-            }
-            float f3 = 0.0F;
-            if(tWaterOut > tWaterCritMin)
-            {
-                float f4 = tWaterCritMax - tWaterCritMin;
-                f3 = (1.4F * (tWaterOut - tWaterCritMin)) / f4;
-                if(f3 > 1.4F)
-                    f3 = 1.4F;
-            }
-            float f5 = Math.max(f1, f3);
-            float f6 = 1.0F;
-            float f7 = reference.getSpeed();
-            if(f7 > reference.Vmin * 1.5F)
-            {
-                float f8 = reference.Vmax - reference.Vmin * 1.5F;
-                f6 = 1.0F - (1.65F * (f7 - reference.Vmin * 1.5F)) / f8;
-                if(f6 < -1F)
-                    f6 = -1F;
-            }
-            controlRadiator = 0.5F * (f5 + f6);
-            if(tWaterOut > tWaterCritMax || tOilOut > tOilCritMax)
-                controlRadiator += 0.05F * timeCounter;
+            controlRadiator = ((tWaterOut - tWaterCritMax) + 20F) / 20F;
             if(controlRadiator < 0.0F)
                 controlRadiator = 0.0F;
             if(controlRadiator > 1.0F)
@@ -2903,10 +2900,10 @@ public class Motor extends FMMath
             {
             case 3: // '\003'
             case 4: // '\004'
-                float f9 = controlThrottle;
-                if(f9 > 1.0F)
-                    f9 = 1.0F;
-                compressorManifoldThreshold = 0.5F + (compressorRPMtoWMaxATA - 0.5F) * f9;
+                float f8 = controlThrottle;
+                if(f8 > 1.0F)
+                    f8 = 1.0F;
+                compressorManifoldThreshold = 0.5F + (compressorRPMtoWMaxATA - 0.5F) * f8;
                 if(isPropAngleDeviceOperational())
                 {
                     if(bControlPropAuto)
@@ -2923,30 +2920,30 @@ public class Motor extends FMMath
             case 9: // '\t'
                 if(bControlPropAuto)
                 {
-                    float f16 = propAngleDeviceMaxParam;
+                    float f15 = propAngleDeviceMaxParam;
                     if(controlAfterburner)
-                        f16 = propAngleDeviceAfterburnerParam;
+                        f15 = propAngleDeviceAfterburnerParam;
                     controlProp += ((float)controlPropDirection * f) / 5F;
                     if(controlProp > 1.0F)
                         controlProp = 1.0F;
                     else
                     if(controlProp < 0.0F)
                         controlProp = 0.0F;
-                    float f22 = propAngleDeviceMinParam + (f16 - propAngleDeviceMinParam) * controlProp;
-                    float f26 = controlThrottle;
-                    if(f26 > 1.0F)
-                        f26 = 1.0F;
-                    compressorManifoldThreshold = getATA(toRPM(propAngleDeviceMinParam + (propAngleDeviceMaxParam - propAngleDeviceMinParam) * f26));
+                    float f21 = propAngleDeviceMinParam + (f15 - propAngleDeviceMinParam) * controlProp;
+                    float f25 = controlThrottle;
+                    if(f25 > 1.0F)
+                        f25 = 1.0F;
+                    compressorManifoldThreshold = getATA(toRPM(propAngleDeviceMinParam + (propAngleDeviceMaxParam - propAngleDeviceMinParam) * f25));
                     if(isPropAngleDeviceOperational())
                     {
-                        if(w < f22)
+                        if(w < f21)
                         {
-                            f22 = Math.min(1.0F, 0.01F * (f22 - w) - 0.012F * aw);
-                            propTarget -= f22 * getPropAngleDeviceSpeed() * f;
+                            f21 = Math.min(1.0F, 0.01F * (f21 - w) - 0.012F * aw);
+                            propTarget -= f21 * getPropAngleDeviceSpeed() * f;
                         } else
                         {
-                            f22 = Math.min(1.0F, 0.01F * (w - f22) + 0.012F * aw);
-                            propTarget += f22 * getPropAngleDeviceSpeed() * f;
+                            f21 = Math.min(1.0F, 0.01F * (w - f21) + 0.012F * aw);
+                            propTarget += f21 * getPropAngleDeviceSpeed() * f;
                         }
                         if(stage == 6 && propTarget < propPhiW - 0.12F)
                         {
@@ -2978,14 +2975,14 @@ public class Motor extends FMMath
                         controlProp = 0.75F + 0.227272F * controlThrottle;
                     else
                         controlProp = 0.75F + 0.25F * controlThrottle;
-                float f17 = propAngleDeviceMaxParam;
+                float f16 = propAngleDeviceMaxParam;
                 if(controlAfterburner && (!bWepRpmInLowGear || controlCompressor != compressorMaxStep))
-                    f17 = propAngleDeviceAfterburnerParam;
-                float f1 = propAngleDeviceMinParam + (f17 - propAngleDeviceMinParam) * controlProp;
-                float f10 = controlThrottle;
-                if(f10 > 1.0F)
-                    f10 = 1.0F;
-                compressorManifoldThreshold = getATA(toRPM(propAngleDeviceMinParam + (propAngleDeviceMaxParam - propAngleDeviceMinParam) * f10));
+                    f16 = propAngleDeviceAfterburnerParam;
+                float f1 = propAngleDeviceMinParam + (f16 - propAngleDeviceMinParam) * controlProp;
+                float f9 = controlThrottle;
+                if(f9 > 1.0F)
+                    f9 = 1.0F;
+                compressorManifoldThreshold = getATA(toRPM(propAngleDeviceMinParam + (propAngleDeviceMaxParam - propAngleDeviceMinParam) * f9));
                 if(isPropAngleDeviceOperational())
                 {
                     if(w < f1)
@@ -3011,24 +3008,24 @@ public class Motor extends FMMath
                 break;
 
             case 7: // '\007'
-                float f23 = controlThrottle;
+                float f22 = controlThrottle;
                 if(engineBoostFactor > 1.0F)
-                    f23 = 0.9090909F * controlThrottle;
-                float f18 = propAngleDeviceMaxParam;
+                    f22 = 0.9090909F * controlThrottle;
+                float f17 = propAngleDeviceMaxParam;
                 if(controlAfterburner)
                     if(afterburnerType == 1)
                     {
                         if(controlThrottle > 1.0F)
-                            f18 = propAngleDeviceMaxParam + 10F * (controlThrottle - 1.0F) * (propAngleDeviceAfterburnerParam - propAngleDeviceMaxParam);
+                            f17 = propAngleDeviceMaxParam + 10F * (controlThrottle - 1.0F) * (propAngleDeviceAfterburnerParam - propAngleDeviceMaxParam);
                     } else
                     {
-                        f18 = propAngleDeviceAfterburnerParam;
+                        f17 = propAngleDeviceAfterburnerParam;
                     }
-                float f2 = propAngleDeviceMinParam + (f18 - propAngleDeviceMinParam) * f23;
-                float f11 = controlThrottle;
-                if(f11 > 1.0F)
-                    f11 = 1.0F;
-                compressorManifoldThreshold = getATA(toRPM(propAngleDeviceMinParam + (f18 - propAngleDeviceMinParam) * f11));
+                float f2 = propAngleDeviceMinParam + (f17 - propAngleDeviceMinParam) * f22;
+                float f10 = controlThrottle;
+                if(f10 > 1.0F)
+                    f10 = 1.0F;
+                compressorManifoldThreshold = getATA(toRPM(propAngleDeviceMinParam + (f17 - propAngleDeviceMinParam) * f10));
                 if(isPropAngleDeviceOperational())
                     if(bControlPropAuto)
                     {
@@ -3056,35 +3053,35 @@ public class Motor extends FMMath
                             wMaxAllowed = (1.0F - 4E-007F * (w - 1.02F * wMax)) * wMaxAllowed;
                         if(w > wMax)
                         {
-                            float f27 = w - wMax;
-                            f27 *= f27;
-                            float f28 = 1.0F - 0.001F * f27;
-                            if(f28 < 0.0F)
-                                f28 = 0.0F;
-                            propForce *= f28;
+                            float f26 = w - wMax;
+                            f26 *= f26;
+                            float f27 = 1.0F - 0.001F * f26;
+                            if(f27 < 0.0F)
+                                f27 = 0.0F;
+                            propForce *= f27;
                         }
                     }
                 break;
 
             case 8: // '\b'
-                float f24 = controlThrottle;
+                float f23 = controlThrottle;
                 if(engineBoostFactor > 1.0F)
-                    f24 = 0.9090909F * controlThrottle;
-                float f19 = propAngleDeviceMaxParam;
+                    f23 = 0.9090909F * controlThrottle;
+                float f18 = propAngleDeviceMaxParam;
                 if(controlAfterburner)
                     if(afterburnerType == 1)
                     {
                         if(controlThrottle > 1.0F)
-                            f19 = propAngleDeviceMaxParam + 10F * (controlThrottle - 1.0F) * (propAngleDeviceAfterburnerParam - propAngleDeviceMaxParam);
+                            f18 = propAngleDeviceMaxParam + 10F * (controlThrottle - 1.0F) * (propAngleDeviceAfterburnerParam - propAngleDeviceMaxParam);
                     } else
                     {
-                        f19 = propAngleDeviceAfterburnerParam;
+                        f18 = propAngleDeviceAfterburnerParam;
                     }
-                float f3 = propAngleDeviceMinParam + (f19 - propAngleDeviceMinParam) * f24 + (bControlPropAuto ? 0.0F : -25F + 50F * controlProp);
-                float f12 = controlThrottle;
-                if(f12 > 1.0F)
-                    f12 = 1.0F;
-                compressorManifoldThreshold = getATA(toRPM(propAngleDeviceMinParam + (f19 - propAngleDeviceMinParam) * f12));
+                float f3 = propAngleDeviceMinParam + (f18 - propAngleDeviceMinParam) * f23 + (bControlPropAuto ? 0.0F : -25F + 50F * controlProp);
+                float f11 = controlThrottle;
+                if(f11 > 1.0F)
+                    f11 = 1.0F;
+                compressorManifoldThreshold = getATA(toRPM(propAngleDeviceMinParam + (f18 - propAngleDeviceMinParam) * f11));
                 if(isPropAngleDeviceOperational())
                 {
                     if(w < f3)
@@ -3108,10 +3105,10 @@ public class Motor extends FMMath
                 break;
 
             case 6: // '\006'
-                float f13 = controlThrottle;
-                if(f13 > 1.0F)
-                    f13 = 1.0F;
-                compressorManifoldThreshold = 0.5F + (compressorRPMtoWMaxATA - 0.5F) * f13;
+                float f12 = controlThrottle;
+                if(f12 > 1.0F)
+                    f12 = 1.0F;
+                compressorManifoldThreshold = 0.5F + (compressorRPMtoWMaxATA - 0.5F) * f12;
                 if(isPropAngleDeviceOperational())
                     if(bControlPropAuto)
                     {
@@ -3143,10 +3140,10 @@ public class Motor extends FMMath
                 break;
 
             case 5: // '\005'
-                float f14 = controlThrottle;
-                if(f14 > 1.0F)
-                    f14 = 1.0F;
-                compressorManifoldThreshold = 0.5F + (compressorRPMtoWMaxATA - 0.5F) * f14;
+                float f13 = controlThrottle;
+                if(f13 > 1.0F)
+                    f13 = 1.0F;
+                compressorManifoldThreshold = 0.5F + (compressorRPMtoWMaxATA - 0.5F) * f13;
                 if(bControlPropAuto)
                     if(reference.isPlayers() && (reference instanceof RealFlightModel) && ((RealFlightModel)reference).isRealMode())
                     {
@@ -3185,8 +3182,8 @@ public class Motor extends FMMath
             if(propPhi < propPhiMin)
                 propPhi = propPhiMin;
             engineMoment = getN();
-            float f15 = getCompressorMultiplier(f);
-            engineMoment *= f15;
+            float f14 = getCompressorMultiplier(f);
+            engineMoment *= f14;
             momForFuel = engineMoment;
             engineMoment *= getReadyness();
             engineMoment *= getMagnetoMultiplier();
@@ -3194,8 +3191,8 @@ public class Motor extends FMMath
             engineMoment *= getStageMultiplier();
             engineMoment *= getDistabilisationMultiplier();
             engineMoment += getFrictionMoment(f);
-            float f20 = engineMoment - propMoment;
-            aw = f20 / (propI + engineI);
+            float f19 = engineMoment - propMoment;
+            aw = f19 / (propI + engineI);
             if(aw > 0.0F)
                 aw *= engineAcceleration;
             oldW = w;
@@ -3217,15 +3214,15 @@ public class Motor extends FMMath
                 if(propDirection == 1)
                     propIW.x = -propIW.x;
                 engineTorque.set(0.0F, 0.0F, 0.0F);
-                float f25 = propI * aw * propReductor;
+                float f24 = propI * aw * propReductor;
                 if(propDirection == 0)
                 {
                     engineTorque.x += propMoment;
-                    engineTorque.x += f25;
+                    engineTorque.x += f24;
                 } else
                 {
                     engineTorque.x -= propMoment;
-                    engineTorque.x -= f25;
+                    engineTorque.x -= f24;
                 }
             } else
             {
@@ -3256,14 +3253,14 @@ public class Motor extends FMMath
             engineMoment *= getStageMultiplier();
             engineMoment += getJetFrictionMoment(f);
             computePropForces(w, 0.0F, 0.0F, propAoA0, 0.0F);
-            float f30 = w * _1_wMax;
-            float f31 = f30 * pressureExtBar;
-            float f32 = f30 * f30;
-            float f33 = 1.0F - 0.006F * (Atmosphere.temperature((float)reference.Loc.z) - 290F);
-            float f34 = 1.0F - 0.0011F * reference.getSpeed();
-            propForce = thrustMax * f31 * f32 * f33 * f34 * getStageMultiplier();
-            float f21 = engineMoment - propMoment;
-            aw = (f21 / (propI + engineI)) * 1.0F;
+            float f29 = w * _1_wMax;
+            float f30 = f29 * pressureExtBar;
+            float f31 = f29 * f29;
+            float f32 = 1.0F - 0.006F * (Atmosphere.temperature((float)reference.Loc.z) - 290F);
+            float f33 = 1.0F - 0.0011F * reference.getSpeed();
+            propForce = thrustMax * f30 * f31 * f32 * f33 * getStageMultiplier();
+            float f20 = engineMoment - propMoment;
+            aw = (f20 / (propI + engineI)) * 1.0F;
             if(aw > 0.0F)
                 aw *= engineAcceleration;
             w += aw * f;
@@ -3284,12 +3281,7 @@ public class Motor extends FMMath
                 w = 0.0F;
             propForce = (w / wMax) * thrustMax;
             propForce *= getStageMultiplier();
-            float f7 = (float)reference.Vwld.length();
-            if(f7 > 208.333F)
-                if(f7 > 291.666F)
-                    propForce = 0.0F;
-                else
-                    propForce *= (float)Math.sqrt((291.666F - f7) / 83.33299F);
+            propForce *= compressorPMax / (compressorPMax + 1E-005F * Atmosphere.pressure((float)reference.Loc.z));
             engineForce.set(engineVector);
             engineForce.scale(propForce);
             engineTorque.cross(enginePos, engineForce);
@@ -3300,19 +3292,19 @@ public class Motor extends FMMath
             w = wMin + (wMax - wMin) * controlThrottle;
             if(w < wMin || w < 0.0F || stage != 6)
                 w = 0.0F;
-            float f35 = reference.getSpeed() / 94F;
-            if(f35 < 1.0F)
+            float f34 = reference.getSpeed() / 94F;
+            if(f34 < 1.0F)
                 w = 0.0F;
             else
-                f35 = (float)Math.sqrt(f35);
-            propForce = (w / wMax) * thrustMax * f35;
+                f34 = (float)Math.sqrt(f34);
+            propForce = (w / wMax) * thrustMax * f34;
             propForce *= getStageMultiplier();
-            float f8 = (float)reference.Vwld.length();
-            if(f8 > 208.333F)
-                if(f8 > 291.666F)
+            float f7 = (float)reference.Vwld.length();
+            if(f7 > 208.333F)
+                if(f7 > 291.666F)
                     propForce = 0.0F;
                 else
-                    propForce *= (float)Math.sqrt((291.666F - f8) / 83.33299F);
+                    propForce *= (float)Math.sqrt((291.666F - f7) / 83.33299F);
             engineForce.set(engineVector);
             engineForce.scale(propForce);
             engineTorque.cross(enginePos, engineForce);
@@ -3320,9 +3312,9 @@ public class Motor extends FMMath
             if(!(reference instanceof RealFlightModel))
                 break;
             RealFlightModel realflightmodel = (RealFlightModel)reference;
-            f8 = Aircraft.cvt(propForce, 0.0F, thrustMax, 0.0F, 0.21F);
-            if(realflightmodel.producedShakeLevel < f8)
-                realflightmodel.producedShakeLevel = f8;
+            f7 = Aircraft.cvt(propForce, 0.0F, thrustMax, 0.0F, 0.21F);
+            if(realflightmodel.producedShakeLevel < f7)
+                realflightmodel.producedShakeLevel = f7;
             break;
 
         case 5: // '\005'
@@ -3536,7 +3528,7 @@ public class Motor extends FMMath
 
                 case 1: // '\001'
                 case 2: // '\002'
-                    return (reference.actor instanceof SPITFIRE9) || (reference.actor instanceof SPITFIRE8) || (reference.actor instanceof SPITFIRE8CLP);
+                    return (reference.actor instanceof SPITFIRE9E) || (reference.actor instanceof SPITFIRE9ECLP) || (reference.actor instanceof SPITFIRE9EHF) || (reference.actor instanceof SPITFIRE925LBSCW) || (reference.actor instanceof SPITFIRE8) || (reference.actor instanceof SPITFIRE8CLP);
 
                 case 7: // '\007'
                 case 8: // '\b'
@@ -3884,11 +3876,7 @@ label0:
         case 4: // '\004'
         case 6: // '\006'
             propForce = thrustMax;
-            if(f > 208.333F)
-                if(f > 291.666F)
-                    propForce = 0.0F;
-                else
-                    propForce *= (float)Math.sqrt((291.666F - f) / 83.33299F);
+            propForce *= compressorPMax / (compressorPMax + 1E-005F * Atmosphere.pressure(f1));
             return propForce;
 
         case 5: // '\005'
@@ -4113,17 +4101,17 @@ label0:
 
     private float getCompressorMultiplier(float f)
     {
-        float f20 = controlThrottle;
-        if(f20 > 1.0F)
-            f20 = 1.0F;
-        float f15;
+        float f24 = controlThrottle;
+        if(f24 > 1.0F)
+            f24 = 1.0F;
+        float f18;
         switch(propAngleDeviceType)
         {
         case 1: // '\001'
         case 2: // '\002'
         case 7: // '\007'
         case 8: // '\b'
-            f15 = getATA(toRPM(propAngleDeviceMinParam + (propAngleDeviceMaxParam - propAngleDeviceMinParam) * f20));
+            f18 = getATA(toRPM(propAngleDeviceMinParam + (propAngleDeviceMaxParam - propAngleDeviceMinParam) * f24));
             break;
 
         case 3: // '\003'
@@ -4131,18 +4119,18 @@ label0:
         case 5: // '\005'
         case 6: // '\006'
         default:
-            f15 = compressorRPMtoWMaxATA * (0.55F + 0.45F * f20);
+            f18 = compressorRPMtoWMaxATA * (0.55F + 0.45F * f24);
             break;
         }
         coolMult = 1.0F;
-        compressorManifoldThreshold = f15;
+        compressorManifoldThreshold = f18;
         switch(compressorType)
         {
         case 0: // '\0'
             float f1 = Atmosphere.pressure(reference.getAltitude()) + 0.5F * Atmosphere.density(reference.getAltitude()) * reference.getSpeed() * reference.getSpeed();
-            float f21 = f1 / Atmosphere.P0();
-            coolMult = f21;
-            return f21;
+            float f25 = f1 / Atmosphere.P0();
+            coolMult = f25;
+            return f25;
 
         case 1: // '\001'
             float f2 = pressureExtBar;
@@ -4151,109 +4139,105 @@ label0:
                 compressorStepFound = false;
                 controlCompressor = 0;
             }
-            float f25 = -1F;
-            float f26 = -1F;
+            float f29 = -1F;
+            float f32 = -1F;
             int i = -1;
-            float f22;
+            float f26;
             if(fastATA)
             {
                 for(controlCompressor = 0; controlCompressor <= compressorMaxStep; controlCompressor++)
                 {
-                    compressorManifoldThreshold = f15;
+                    compressorManifoldThreshold = f18;
                     float f5 = compressorPressure[controlCompressor];
-                    float f10 = compressorRPMtoWMaxATA / f5;
-                    float f28 = 1.0F;
-                    float f33 = 1.0F;
+                    float f12 = compressorRPMtoWMaxATA / f5;
+                    float f36 = 1.0F;
+                    float f41 = 1.0F;
                     if(f2 > f5)
                     {
-                        float f37 = 1.0F - f5;
-                        if(f37 < 0.0001F)
-                            f37 = 0.0001F;
-                        float f42 = 1.0F - f2;
-                        if(f42 < 0.0F)
-                            f42 = 0.0F;
-                        float f46 = 1.0F;
-                        for(int j = 1; j <= controlCompressor; j++)
+                        float f46 = 1.0F - f5;
+                        if(f46 < 0.0001F)
+                            f46 = 0.0001F;
+                        float f52 = 1.0F - f2;
+                        float f57 = 1.0F;
+                        for(int k = 1; k <= controlCompressor; k++)
                             if(compressorAltMultipliers[controlCompressor] >= 1.0F)
-                                f46 *= compressorBaseMultipliers[controlCompressor];
+                                f57 *= compressorBaseMultipliers[controlCompressor];
                             else
-                                f46 *= compressorBaseMultipliers[controlCompressor] * compressorAltMultipliers[controlCompressor];
+                                f57 *= compressorBaseMultipliers[controlCompressor] * compressorAltMultipliers[controlCompressor];
 
-                        f28 = f46 + (f42 / f37) * (compressorAltMultipliers[controlCompressor] - f46);
+                        f36 = f57 + (f52 / f46) * (compressorAltMultipliers[controlCompressor] - f57);
                     } else
                     {
-                        f28 = compressorAltMultipliers[controlCompressor];
+                        f36 = compressorAltMultipliers[controlCompressor];
                     }
-                    compressorManifoldPressure = (compressorPAt0 + (1.0F - compressorPAt0) * w * _1_wMax) * f2 * f10;
-                    float f16 = compressorRPMtoWMaxATA / compressorManifoldPressure;
+                    compressorManifoldPressure = (compressorPAt0 + (1.0F - compressorPAt0) * w * _1_wMax) * f2 * f12;
+                    float f19 = compressorRPMtoWMaxATA / compressorManifoldPressure;
                     if(controlAfterburner && (afterburnerType != 8 && afterburnerType != 7 || controlCompressor != compressorMaxStep) && (afterburnerType != 1 || controlThrottle <= 1.0F || reference.M.nitro > 0.0F))
                     {
-                        f16 *= afterburnerCompressorFactor;
+                        f19 *= afterburnerCompressorFactor;
                         compressorManifoldThreshold *= afterburnerCompressorFactor;
                     }
-                    compressor2ndThrottle = f16;
+                    compressor2ndThrottle = f19;
                     if(compressor2ndThrottle > 1.0F)
                         compressor2ndThrottle = 1.0F;
                     compressorManifoldPressure *= compressor2ndThrottle;
-                    compressor1stThrottle = f15 / compressorRPMtoWMaxATA;
+                    compressor1stThrottle = f18 / compressorRPMtoWMaxATA;
                     if(compressor1stThrottle > 1.0F)
                         compressor1stThrottle = 1.0F;
                     compressorManifoldPressure *= compressor1stThrottle;
-                    f33 = (f28 * compressorManifoldPressure) / compressorManifoldThreshold;
+                    f41 = (f36 * compressorManifoldPressure) / compressorManifoldThreshold;
                     if(controlAfterburner && (afterburnerType == 8 || afterburnerType == 7) && controlCompressor == compressorMaxStep)
                     {
-                        if(f33 / engineAfterburnerBoostFactor > f25)
+                        if(f41 / engineAfterburnerBoostFactor > f29)
                         {
-                            f25 = f33;
+                            f29 = f41;
                             i = controlCompressor;
                         }
                         continue;
                     }
-                    if(f33 > f25)
+                    if(f41 > f29)
                     {
-                        f25 = f33;
+                        f29 = f41;
                         i = controlCompressor;
                     }
                 }
 
-                f22 = f25;
+                f26 = f29;
                 controlCompressor = i;
             } else
             {
-                float f29 = f15;
+                float f37 = f18;
                 if(controlAfterburner)
-                    f29 *= afterburnerCompressorFactor;
+                    f37 *= afterburnerCompressorFactor;
                 do
                 {
                     float f6 = compressorPressure[controlCompressor];
-                    float f34 = 1.0F;
-                    float f38 = 1.0F;
+                    float f42 = 1.0F;
+                    float f47 = 1.0F;
                     if(f2 > f6)
                     {
-                        float f43 = 1.0F - f6;
-                        if(f43 < 0.0001F)
-                            f43 = 0.0001F;
-                        float f47 = 1.0F - f2;
-                        if(f47 < 0.0F)
-                            f47 = 0.0F;
-                        float f49 = 1.0F;
-                        for(int k = 1; k <= controlCompressor; k++)
+                        float f53 = 1.0F - f6;
+                        if(f53 < 0.0001F)
+                            f53 = 0.0001F;
+                        float f58 = 1.0F - f2;
+                        float f62 = 1.0F;
+                        for(int l = 1; l <= controlCompressor; l++)
                             if(compressorAltMultipliers[controlCompressor] >= 1.0F)
-                                f49 *= compressorBaseMultipliers[controlCompressor];
+                                f62 *= compressorBaseMultipliers[controlCompressor];
                             else
-                                f49 *= compressorBaseMultipliers[controlCompressor] * compressorAltMultipliers[controlCompressor];
+                                f62 *= compressorBaseMultipliers[controlCompressor] * compressorAltMultipliers[controlCompressor];
 
-                        f34 = f49 + (f47 / f43) * (compressorAltMultipliers[controlCompressor] - f49);
-                        f38 = f34;
+                        f42 = f62 + (f58 / f53) * (compressorAltMultipliers[controlCompressor] - f62);
+                        f47 = f42;
                     } else
                     {
-                        f34 = compressorAltMultipliers[controlCompressor];
-                        f38 = (f34 * f2 * f15 * (compressorPAt0 + (1.0F - compressorPAt0) * w * _1_wMax)) / (f6 * f29);
+                        f42 = compressorAltMultipliers[controlCompressor];
+                        f47 = (f42 * f2 * f18 * (compressorPAt0 + (1.0F - compressorPAt0) * w * _1_wMax)) / (f6 * f37);
                     }
-                    if(f38 > f25)
+                    if(f47 > f29)
                     {
-                        f25 = f38;
-                        f26 = f34;
+                        f29 = f47;
+                        f32 = f42;
                         i = controlCompressor;
                     }
                     if(!compressorStepFound)
@@ -4267,28 +4251,28 @@ label0:
                     i = 0;
                 controlCompressor = i;
                 float f7 = compressorPressure[controlCompressor];
-                float f12 = compressorRPMtoWMaxATA / f7;
-                compressorManifoldPressure = (compressorPAt0 + (1.0F - compressorPAt0) * w * _1_wMax) * f2 * f12;
-                float f17 = compressorRPMtoWMaxATA / compressorManifoldPressure;
+                float f14 = compressorRPMtoWMaxATA / f7;
+                compressorManifoldPressure = (compressorPAt0 + (1.0F - compressorPAt0) * w * _1_wMax) * f2 * f14;
+                float f20 = compressorRPMtoWMaxATA / compressorManifoldPressure;
                 if(controlAfterburner && (afterburnerType != 8 && afterburnerType != 7 || controlCompressor != compressorMaxStep) && (afterburnerType != 1 || controlThrottle <= 1.0F || reference.M.nitro > 0.0F))
                 {
-                    f17 *= afterburnerCompressorFactor;
+                    f20 *= afterburnerCompressorFactor;
                     compressorManifoldThreshold *= afterburnerCompressorFactor;
                 }
                 if(fastATA)
-                    compressor2ndThrottle = f17;
+                    compressor2ndThrottle = f20;
                 else
-                    compressor2ndThrottle -= 3F * f * (compressor2ndThrottle - f17);
+                    compressor2ndThrottle -= 3F * f * (compressor2ndThrottle - f20);
                 if(compressor2ndThrottle > 1.0F)
                     compressor2ndThrottle = 1.0F;
                 compressorManifoldPressure *= compressor2ndThrottle;
-                compressor1stThrottle = f15 / compressorRPMtoWMaxATA;
+                compressor1stThrottle = f18 / compressorRPMtoWMaxATA;
                 if(compressor1stThrottle > 1.0F)
                     compressor1stThrottle = 1.0F;
                 compressorManifoldPressure *= compressor1stThrottle;
-                f22 = compressorManifoldPressure / compressorManifoldThreshold;
-                coolMult = f22;
-                f22 *= f26;
+                f26 = compressorManifoldPressure / compressorManifoldThreshold;
+                coolMult = f26;
+                f26 *= f32;
             }
             if(w <= 20F && w < 150F)
                 compressorManifoldPressure = Math.min(compressorManifoldPressure, f2 * (0.4F + (w - 20F) * 0.04F));
@@ -4296,114 +4280,196 @@ label0:
                 compressorManifoldPressure = f2 * (1.0F - w * 0.03F);
             if(mixerType == 1 && stage == 6)
                 compressorManifoldPressure *= getMixMultiplier();
-            return f22;
+            return f26;
 
         case 2: // '\002'
             float f3 = pressureExtBar;
-            float f8 = compressorPressure[controlCompressor];
-            float f13 = compressorRPMtoWMaxATA / f8;
-            compressorManifoldPressure = (compressorPAt0 + (1.0F - compressorPAt0) * w * _1_wMax) * f3 * f13;
-            float f18 = compressorRPMtoWMaxATA / compressorManifoldPressure;
-            if(controlAfterburner && (afterburnerType != 1 || controlThrottle <= 1.0F || reference.M.nitro > 0.0F))
+            if((!bHasCompressorControl || !reference.isPlayers() || !(reference instanceof RealFlightModel) || !((RealFlightModel)reference).isRealMode() || !World.cur().diffCur.ComplexEManagement || fastATA) && (reference.isTick(128, 0) || fastATA))
             {
-                f18 *= afterburnerCompressorFactor;
-                compressorManifoldThreshold *= afterburnerCompressorFactor;
+                compressorStepFound = false;
+                controlCompressor = 0;
             }
+            float f30 = -1F;
+            int j = -1;
+            float f27;
             if(fastATA)
-                compressor2ndThrottle = f18;
-            else
-                compressor2ndThrottle -= 0.1F * (compressor2ndThrottle - f18);
-            if(compressor2ndThrottle > 1.0F)
-                compressor2ndThrottle = 1.0F;
-            compressorManifoldPressure *= compressor2ndThrottle;
-            compressor1stThrottle = f15 / compressorRPMtoWMaxATA;
-            if(compressor1stThrottle > 1.0F)
-                compressor1stThrottle = 1.0F;
-            compressorManifoldPressure *= compressor1stThrottle;
-            float f23;
-            if(controlAfterburner && afterburnerType == 2 && reference.isPlayers() && (reference instanceof RealFlightModel) && ((RealFlightModel)reference).isRealMode() && reference.M.nitro > 0.0F)
             {
-                float f30 = compressorManifoldPressure + 0.2F;
-                if(f30 > compressorRPMtoWMaxATA + 0.199F && !fastATA && World.Rnd().nextFloat() < 0.001F)
+                float f38 = 0.0F;
+                float f43 = 0.0F;
+                for(controlCompressor = 0; controlCompressor <= compressorMaxStep; controlCompressor++)
                 {
-                    readyness = 0.0F;
-                    setEngineDies(reference.actor);
+                    compressorManifoldThreshold = f18;
+                    float f8 = compressorPressure[controlCompressor];
+                    float f15 = compressorRPMtoWMaxATA / f8;
+                    float f48 = 1.0F;
+                    float f54 = 1.0F;
+                    float f59 = 1.0F;
+                    float f63 = 1.0F - f8;
+                    float f65 = 1.0F - f3;
+                    if(f3 > f8)
+                    {
+                        if(f63 < 0.0001F)
+                            f63 = 0.0001F;
+                        for(int i1 = 1; i1 <= controlCompressor; i1++)
+                            if(compressorAltMultipliers[controlCompressor] >= 1.0F)
+                                f59 *= compressorBaseMultipliers[controlCompressor];
+                            else
+                                f59 *= compressorBaseMultipliers[controlCompressor] * compressorAltMultipliers[controlCompressor];
+
+                        f48 = f59 + (f65 / f63) * (compressorAltMultipliers[controlCompressor] - f59);
+                    } else
+                    {
+                        f48 = compressorAltMultipliers[controlCompressor];
+                    }
+                    compressorManifoldPressure = (compressorPAt0 + (1.0F - compressorPAt0) * w * _1_wMax) * f3 * f15;
+                    float f21 = compressorRPMtoWMaxATA / compressorManifoldPressure;
+                    if(controlAfterburner && (afterburnerType != 1 || controlThrottle <= 1.0F || reference.M.nitro > 0.0F))
+                    {
+                        f21 *= afterburnerCompressorFactor;
+                        compressorManifoldThreshold *= afterburnerCompressorFactor;
+                    }
+                    compressor2ndThrottle = f21;
+                    if(compressor2ndThrottle > 1.0F)
+                        compressor2ndThrottle = 1.0F;
+                    compressorManifoldPressure *= compressor2ndThrottle;
+                    if(controlCompressor == 0)
+                    {
+                        f43 = f48;
+                        f38 = compressor2ndThrottle;
+                    }
+                    compressor1stThrottle = f18 / compressorRPMtoWMaxATA;
+                    if(compressor1stThrottle > 1.0F)
+                        compressor1stThrottle = 1.0F;
+                    compressorManifoldPressure *= compressor1stThrottle;
+                    f54 = (f48 * compressorManifoldPressure) / compressorManifoldThreshold;
+                    if((float)controlCompressor == 1.0F && f38 == 1.0F && f21 < 1.0F)
+                    {
+                        float f67 = compressorPressure[1] / (compressorPressure[0] - compressorPressure[1]);
+                        f54 *= 1.0F + (f43 / f48 - 1.0F) * (f38 / f21 - 1.0F) * f67;
+                    }
+                    if(f54 > f30)
+                    {
+                        f30 = f54;
+                        j = controlCompressor;
+                    }
                 }
-                if(f30 > compressorManifoldThreshold)
-                    f30 = compressorManifoldThreshold;
-                f23 = f30 / compressorManifoldThreshold;
+
+                f27 = f30;
+                controlCompressor = j;
             } else
             {
-                f23 = compressorManifoldPressure / compressorManifoldThreshold;
+                float f39 = f18;
+                if(controlAfterburner)
+                    f39 *= afterburnerCompressorFactor;
+                float f44 = 1.0F;
+                float f49 = 1.0F - f3;
+                float f55 = compressorPressure[0];
+                float f60 = (f3 * (compressorPAt0 + (1.0F - compressorPAt0)) * w * _1_wMax * compressorRPMtoWMaxATA) / f55 + 0.001F;
+                float f64 = 1.0F;
+                if(f60 < f39 && compressorMaxStep == 1)
+                {
+                    controlCompressor = 1;
+                    float f9 = compressorPressure[1];
+                    float f68 = 1.0F - f9;
+                    if(f68 < 0.0001F)
+                        f68 = 0.0001F;
+                    float f70 = (f3 * (compressorPAt0 + (1.0F - compressorPAt0)) * w * _1_wMax * compressorRPMtoWMaxATA) / f9 + 0.001F;
+                    if(f70 > f39)
+                    {
+                        if(compressorAltMultipliers[1] >= 1.0F)
+                            f44 *= compressorBaseMultipliers[1];
+                        else
+                            f44 *= compressorBaseMultipliers[1] * compressorAltMultipliers[1];
+                        f64 = f44 + (f49 / f68) * (compressorAltMultipliers[1] - f44);
+                        f64 += ((compressorAltMultipliers[0] - f64) * (f70 - 1.0F)) / ((f55 * f39) / f9 - 1.0F);
+                    } else
+                    {
+                        f64 = compressorAltMultipliers[controlCompressor];
+                    }
+                } else
+                {
+                    controlCompressor = 0;
+                    float f69 = 1.0F - f55;
+                    if(f69 < 0.0001F)
+                        f69 = 0.0001F;
+                    f64 = 1.0F + (f49 / f69) * (compressorAltMultipliers[0] - 1.0F);
+                }
+                float f34 = f64;
+                if(j < 0)
+                    j = 0;
+                float f10 = compressorPressure[controlCompressor];
+                float f16 = compressorRPMtoWMaxATA / f10;
+                compressorManifoldPressure = (compressorPAt0 + (1.0F - compressorPAt0) * w * _1_wMax) * f3 * f16;
+                float f22 = compressorRPMtoWMaxATA / compressorManifoldPressure;
+                if(controlAfterburner && (afterburnerType != 1 || controlThrottle <= 1.0F || reference.M.nitro > 0.0F))
+                {
+                    f22 *= afterburnerCompressorFactor;
+                    compressorManifoldThreshold *= afterburnerCompressorFactor;
+                }
+                compressor2ndThrottle = f22;
+                if(compressor2ndThrottle > 1.0F)
+                    compressor2ndThrottle = 1.0F;
+                compressorManifoldPressure *= compressor2ndThrottle;
+                compressor1stThrottle = f18 / compressorRPMtoWMaxATA;
+                if(compressor1stThrottle > 1.0F)
+                    compressor1stThrottle = 1.0F;
+                compressorManifoldPressure *= compressor1stThrottle;
+                f27 = compressorManifoldPressure / compressorManifoldThreshold;
+                coolMult = f27;
+                f27 *= f34;
             }
             if(w <= 20F && w < 150F)
                 compressorManifoldPressure = Math.min(compressorManifoldPressure, f3 * (0.4F + (w - 20F) * 0.04F));
             if(w < 20F)
                 compressorManifoldPressure = f3 * (1.0F - w * 0.03F);
-            if(f3 > f8)
-            {
-                float f31 = 1.0F - f8;
-                if(f31 < 0.0001F)
-                    f31 = 0.0001F;
-                float f35 = 1.0F - f3;
-                if(f35 < 0.0F)
-                    f35 = 0.0F;
-                float f39 = 1.0F;
-                float f44 = f39 + (f35 / f31) * (compressorAltMultipliers[controlCompressor] - f39);
-                f23 *= f44;
-            } else
-            {
-                f23 *= compressorAltMultipliers[controlCompressor];
-            }
-            coolMult = compressorManifoldPressure / compressorManifoldThreshold;
-            return f23;
+            return f27;
 
         case 3: // '\003'
             float f4 = pressureExtBar;
             controlCompressor = 0;
-            float f27 = -1F;
-            float f9 = compressorPressure[controlCompressor];
-            float f14 = compressorRPMtoWMaxATA / f9;
-            float f32 = 1.0F;
-            if(f4 > f9)
+            float f35 = -1F;
+            float f11 = compressorPressure[controlCompressor];
+            float f17 = compressorRPMtoWMaxATA / f11;
+            float f40 = 1.0F;
+            if(f4 > f11)
             {
-                float f40 = 1.0F - f9;
-                if(f40 < 0.0001F)
-                    f40 = 0.0001F;
-                float f45 = 1.0F - f4;
-                if(f45 < 0.0F)
-                    f45 = 0.0F;
-                float f48 = 1.0F;
-                f32 = f48 + (f45 / f40) * (compressorAltMultipliers[controlCompressor] - f48);
+                float f50 = 1.0F - f11;
+                if(f50 < 0.0001F)
+                    f50 = 0.0001F;
+                float f56 = 1.0F - f4;
+                if(f56 < 0.0F)
+                    f56 = 0.0F;
+                float f61 = 1.0F;
+                f40 = f61 + (f56 / f50) * (compressorAltMultipliers[controlCompressor] - f61);
             } else
             {
-                f32 = compressorAltMultipliers[controlCompressor];
+                f40 = compressorAltMultipliers[controlCompressor];
             }
-            f27 = f32;
-            f14 = compressorRPMtoWMaxATA / f9;
-            if(f4 < f9)
-                f4 = 0.1F * f4 + 0.9F * f9;
-            float f41 = f4 * f14;
-            compressorManifoldPressure = (compressorPAt0 + (1.0F - compressorPAt0) * w * _1_wMax) * f41;
-            float f19 = compressorRPMtoWMaxATA / compressorManifoldPressure;
+            f35 = f40;
+            f17 = compressorRPMtoWMaxATA / f11;
+            if(f4 < f11)
+                f4 = 0.1F * f4 + 0.9F * f11;
+            float f51 = f4 * f17;
+            compressorManifoldPressure = (compressorPAt0 + (1.0F - compressorPAt0) * w * _1_wMax) * f51;
+            float f23 = compressorRPMtoWMaxATA / compressorManifoldPressure;
             if(fastATA)
-                compressor2ndThrottle = f19;
+                compressor2ndThrottle = f23;
             else
-                compressor2ndThrottle -= 3F * f * (compressor2ndThrottle - f19);
+                compressor2ndThrottle -= 3F * f * (compressor2ndThrottle - f23);
             if(compressor2ndThrottle > 1.0F)
                 compressor2ndThrottle = 1.0F;
             compressorManifoldPressure *= compressor2ndThrottle;
-            compressor1stThrottle = f15 / compressorRPMtoWMaxATA;
+            compressor1stThrottle = f18 / compressorRPMtoWMaxATA;
             if(compressor1stThrottle > 1.0F)
                 compressor1stThrottle = 1.0F;
             compressorManifoldPressure *= compressor1stThrottle;
-            float f24 = compressorManifoldPressure / compressorManifoldThreshold;
-            f24 *= f27;
+            float f28 = compressorManifoldPressure / compressorManifoldThreshold;
+            f28 *= f35;
             if(w <= 20F && w < 150F)
                 compressorManifoldPressure = Math.min(compressorManifoldPressure, f4 * (0.4F + (w - 20F) * 0.04F));
             if(w < 20F)
                 compressorManifoldPressure = f4 * (1.0F - w * 0.03F);
-            return f24;
+            return f28;
         }
         return 1.0F;
     }
@@ -4507,8 +4573,8 @@ label0:
         fricCoeffT = f;
     }
 
-	private float getFrictionMoment(float f)
-	{
+    private float getFrictionMoment(float f)
+    {
 		float f1 = 0.0F;
 		if(type == 10) //TODO: Turboprops spin-down like jets
 		{
@@ -4565,7 +4631,7 @@ label0:
 			doSetEngineStuck();      /*   I've put this in just so you can't overrev engine with windmilling   */
 		}
 		return f1;
-	}
+    }
 
     private float getJetFrictionMoment(float f)
     {
@@ -4626,14 +4692,14 @@ label0:
         return (f * 60F) / 2.0F / 3.141593F;
     }
 
-	//TODO: Altered by |ZUTI|: from private to public.
-	public float getKforH(float f, float f1, float f2)
-	{
-		float f3 = (Atmosphere.density(f2) * (f1 * f1)) / (Atmosphere.density(0.0F) * (f * f));
-		if(type != 2)
-			f3 = (f3 * kV(f)) / kV(f1);
-		return f3;
-	}
+  //TODO: Altered by |ZUTI|: from private to public.
+  	public float getKforH(float f, float f1, float f2)
+  	{
+  		float f3 = (Atmosphere.density(f2) * (f1 * f1)) / (Atmosphere.density(0.0F) * (f * f));
+  		if(type != 2)
+  			f3 = (f3 * kV(f)) / kV(f1);
+  		return f3;
+  	}
 
     private float kV(float f)
     {
@@ -4673,4 +4739,7 @@ label0:
         propPhi = ((float)netmsginput.readUnsignedByte() / 255F) * (propPhiMax - propPhiMin) + propPhiMin;
         w = netmsginput.readFloat();
     }
+
+
+
 }

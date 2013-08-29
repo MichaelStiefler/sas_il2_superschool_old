@@ -13,11 +13,11 @@ public class Supersonic {
   public float VmaxMach;
   public float CfmaxMach;
   public boolean allParamsSet;
-  
+
   // Mach Drag Coefficient Factor tables
   private float[] fDragFactorX = { 0.95F, 0.99F, 1.1F, 2.5F }; // Mach Values
   private float[] fDragFactorY = { 1.0F , 5.0F , 5.0F, 1.5F }; // Cw Values
-  
+
   public Supersonic() {
     this.fDragFactorX[0] = this.VminMach = 0.95F;
     this.fDragFactorY[0] = 1.0F;
@@ -28,14 +28,14 @@ public class Supersonic {
     this.fDragFactorX[3] = this.VmaxMach = 2.5F;
     this.fDragFactorY[3] = this.CfmaxMach = 1.5F;
     this.allParamsSet = false;
-    
-  
+
+
   }
-  
+
   public Supersonic(SectFile theSectFile) {
     this.load(theSectFile);
   }
-  
+
   public final void load(SectFile theSectFile)
   {
     String strSection = "Supersonic";
@@ -54,11 +54,11 @@ public class Supersonic {
             && theSectFile.exist(strSection, "VmaxMach")
             && theSectFile.exist(strSection, "CfmaxMach");
   }
-  
+
   public float getDragFactorForMach(float theMachValue) {
     if (theMachValue <= this.VminMach) return 1.0F;
     if (theMachValue >= this.VmaxMach) return this.CfmaxMach;
-    
+
     int i=0;
     for (i=0; i<fDragFactorX.length; i++) {
       if (fDragFactorX[i] > theMachValue) break;

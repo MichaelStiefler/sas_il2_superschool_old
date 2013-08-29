@@ -1,5 +1,4 @@
 /*Modified Airdrome class for the SAS Engine Mod*/
-
 package com.maddox.il2.ai.air;
 
 import com.maddox.JGP.*;
@@ -312,7 +311,7 @@ label0:
             pilot.AP.setStabAll(false);
             return;
         }
-        if(pilot.AS.isPilotDead(0))
+        if(pilot.AS.isAllPilotsDead())
         {
             pilot.TaxiMode = false;
             pilot.setSpeedMode(8);
@@ -361,7 +360,8 @@ label0:
                     if(pilot.wayCurPos != null)
                         i = 0x249f00;
                     pilot.actor.collide(true);
-                    pilot.Vwld.set(0.0D, 0.0D, 0.0D);
+                    pilot.Vwld.scale(0.5D);
+                    pilot.CT.BrakeControl = 0.8F;
                     pilot.CT.setPowerControl(0.0F);
                     pilot.EI.setCurControlAll(true);
                     pilot.EI.setEngineStops();
@@ -391,7 +391,6 @@ label0:
                 Vdiff.scale(f4);
             }
             Vcur.add(Vdiff);
-            tmpOr.setYPR(Pilot.RAD2DEG(Vcur.direction()), pilot.Or.getPitch(), 0.0F);
             pilot.Or.interpolate(tmpOr, 0.2F);
             pilot.Vwld.x = Vcur.x;
             pilot.Vwld.y = Vcur.y;

@@ -1,5 +1,5 @@
 /*Modified Bomb class for the SAS Engine Mod*/
-//Allows for custom effects and new weapon types seen in 1956 pack
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.*;
@@ -19,6 +19,7 @@ import com.maddox.il2.objects.ships.ShipGeneric;
 import com.maddox.rts.*;
 import com.maddox.sound.SoundFX;
 import java.util.AbstractCollection;
+
 
 public class Bomb extends ActorMesh
     implements MsgCollisionRequestListener, MsgCollisionListener
@@ -76,6 +77,7 @@ public class Bomb extends ActorMesh
             if((double)(Bomb.plateBox[0] - 2.5F) < Bomb.corn1.x && Bomb.corn1.x < (double)(Bomb.plateBox[3] + 2.5F) && (double)(Bomb.plateBox[1] - 2.5F) < Bomb.corn1.y && Bomb.corn1.y < (double)(Bomb.plateBox[4] + 2.5F))
             {
                 Bomb.bPlateExist = true;
+                Bomb.bPlateGround = ((Plate)actor).isGround();
             }
             return true;
         }
@@ -86,6 +88,12 @@ public class Bomb extends ActorMesh
 
     }
 
+
+    public void destroy()
+    {
+        fuze = null;
+        super.destroy();
+    }
 
     public void msgCollisionRequest(Actor actor, boolean aflag[])
     {
@@ -108,11 +116,11 @@ public class Bomb extends ActorMesh
         {
             if(speed.z >= 0.0D)
                 return;
-            float f2 = (float)speed.length();
-            if(f2 >= 30F)
+            float f1 = (float)speed.length();
+            if(f1 >= 30F)
             {
                 dir.set(speed);
-                dir.scale(1.0F / f2);
+                dir.scale(1.0F / f1);
                 if(-dir.z < 0.31F)
                 {
                     pos.getAbs(or);
@@ -133,14 +141,14 @@ public class Bomb extends ActorMesh
                             f = 0.0F;
                         else
                             f = (M - 5F) / 195F;
-                        float f4 = 3.5F + f * 15F;
+                        float f2 = 3.5F + f * 15F;
                         if(Engine.land().isWater(p.x, p.y))
                         {
-                            Explosions.SomethingDrop_Water(p, f4);
-                            Explosions.Explode10Kg_Water(p, 2.0F, 1.0F);
+                            Explosions.SomethingDrop_Water(p, f2);
+                            Explosions.dudBomb_Water(p, 2.0F, 1.0F);
                         } else
                         {
-                            Explosions.Explode10Kg_Land(p, 2.0F, 2.0F);
+                            Explosions.dudBomb_Land(p, 2.0F, 2.0F);
                         }
                         if(this instanceof FuelTank)
                         {
@@ -168,32 +176,21 @@ public class Bomb extends ActorMesh
                 }
             }
         }
-        if(getOwner() == World.getPlayerAircraft() && !(actor instanceof ActorLand))
+        if(getScoreOwner() == World.getPlayerAircraft() && !(actor instanceof ActorLand))
         {
             World.cur().scoreCounter.bombHit++;
             if(Mission.isNet() && (actor instanceof Aircraft) && ((Aircraft)actor).isNetPlayer())
-                Chat.sendLogRnd(3, "gore_bombed", (Aircraft)getOwner(), (Aircraft)actor);
+                Chat.sendLogRnd(3, "gore_bombed", (Aircraft)getScoreOwner(), (Aircraft)actor);
         }
         if(actor instanceof ActorLand)
         {
             if(Engine.land().isWater(p.x, p.y))
             {
-                float f1;
-                if(M >= 200F)
-                    f1 = 1.0F;
-                else
-                if(M <= 5F)
-                    f1 = 0.0F;
-                else
-                    f1 = (M - 5F) / 195F;
-                float f3 = 3.5F + f1 * 12F;
-                Explosions.SomethingDrop_Water(p, f3);
                 collide(false);
                 drawing(false);
                 speed.set(0.0D, 0.0D, 0.0D);
             } else
             {
-                Explosions.Explode10Kg_Land(p, 2.0F, 2.0F);
                 stop();
             }
         } else
@@ -213,9 +210,10 @@ public class Bomb extends ActorMesh
                 {
                     if(p.z < Engine.land().HQ(p.x, p.y) + 5D)
                         if(Engine.land().isWater(p.x, p.y))
-                            Explosions.Explode10Kg_Water(p, 2.0F, 2.0F);
+                            Explosions.dudBomb_Water(p, 2.0F, 2.0F);
                         else
-                            Explosions.Explode10Kg_Land(p, 2.0F, 2.0F);
+                        if(speed.length() > 10D)
+                            Explosions.dudBomb_Land(p, 2.0F, 2.0F);
                     destroy();
                 }
         } else
@@ -232,6 +230,11 @@ public class Bomb extends ActorMesh
         collide(false);
     }
 
+    public void setStartDelayedExplosion(boolean flag)
+    {
+        delayedDetonationStarted = flag;
+    }
+
     private void startDelayedExplosion(Actor actor, String s)
     {
         delayedDetonationStarted = true;
@@ -239,9 +242,10 @@ public class Bomb extends ActorMesh
         DelayParam delayparam = new DelayParam(actor, s, loc);
         if(p.z < Engine.land().HQ(p.x, p.y) + 5D)
             if(Engine.land().isWater(p.x, p.y))
-                Explosions.Explode10Kg_Water(p, 2.0F, 2.0F);
+                Explosions.dudBomb_Water(p, 2.0F, 2.0F);
             else
-                Explosions.Explode10Kg_Land(p, 2.0F, 2.0F);
+            if(speed.z < -10D)
+                Explosions.dudBomb_Land(p, 2.0F, 2.0F);
         (new MsgInvokeMethod_Object("doDelayExplosion", delayparam)).post(this, delayExplosion);
         if(sound != null)
             sound.cancel();
@@ -253,6 +257,7 @@ public class Bomb extends ActorMesh
             return true;
         float f = 200F;
         bPlateExist = false;
+        bPlateGround = false;
         p.get(corn);
         Engine.drawEnv().getFiltered((AbstractCollection)null, corn.x - (double)f, corn.y - (double)f, corn.x + (double)f, corn.y + (double)f, 1, plateFilter);
         if(bPlateExist)
@@ -324,11 +329,9 @@ public class Bomb extends ActorMesh
         float f = Property.floatValue(class1, "power", 1000F);
         int i = Property.intValue(class1, "powerType", 0);
         float f1 = Property.floatValue(class1, "radius", 150F);
-        int j = Property.intValue(class1, "newEffect", 0);
-        int k = Property.intValue(class1, "nuke", 0);
-        MsgExplosion.send(other, otherChunk, point3d, getOwner(), M, f, i, f1, k);
+        MsgExplosion.send(other, otherChunk, point3d, getScoreOwner(), M, f, i, f1);
         ActorCrater.initOwner = null;
-        Explosions.generateMidAirBombExp(point3d, f, i, f1, false, j);
+        Explosions.generateMidAirBombExp(point3d, f, i, f1, false);
         destroy();
         stop();
         drawing(false);
@@ -344,9 +347,10 @@ public class Bomb extends ActorMesh
         {
             if(p.z < Engine.land().HQ(p.x, p.y) + 5D)
                 if(Engine.land().isWater(p.x, p.y))
-                    Explosions.Explode10Kg_Water(p, 2.0F, 2.0F);
+                    Explosions.dudBomb_Water(p, 2.0F, 2.0F);
                 else
-                    Explosions.Explode10Kg_Land(p, 2.0F, 2.0F);
+                if(speed.length() > 10D)
+                    Explosions.dudBomb_Land(p, 2.0F, 2.0F);
             destroy();
         }
     }
@@ -364,6 +368,7 @@ public class Bomb extends ActorMesh
         if(isArmed())
         {
             float f2 = 0.0F;
+            boolean flag = false;
             if(delayExplosion > 0.0F)
                 if(actor instanceof ActorLand)
                 {
@@ -376,6 +381,7 @@ public class Bomb extends ActorMesh
                     {
                         f1 = (float)((double)f1 * 0.80000000000000004D);
                         f = (float)((double)f * 0.80000000000000004D);
+                        flag = true;
                     }
                 } else
                 if(actor instanceof House)
@@ -390,11 +396,11 @@ public class Bomb extends ActorMesh
                 }
             if(point3d.z < 0.0D)
                 point3d.z = f2;
-            MsgExplosion.send(actor, s, point3d, getOwner(), M, f, i, f1, k);
-            ActorCrater.initOwner = getOwner();
+            MsgExplosion.send(actor, s, point3d, getScoreOwner(), M, f, i, f1, k);
+            ActorCrater.initOwner = getScoreOwner();
             if(point3d.z < 0.0D)
                 point3d.z = 0.0D;
-            Explosions.generate(actor, point3d, f, i, f1, !Mission.isNet(), j);
+            Explosions.generate(actor, point3d, f, i, f1, !Mission.isNet(), flag, j);
             ActorCrater.initOwner = null;
             destroy();
         } else
@@ -546,7 +552,7 @@ public class Bomb extends ActorMesh
         collide(true);
         interpPut(new Interpolater(), this, Time.current(), null);
         drawing(true);
-        if(Actor.isAlive(World.getPlayerAircraft()) && getOwner() == World.getPlayerAircraft())
+        if(Actor.isAlive(World.getPlayerAircraft()) && getScoreOwner() == World.getPlayerAircraft())
         {
             World.cur().scoreCounter.bombFire++;
             World.cur();
@@ -620,6 +626,22 @@ public class Bomb extends ActorMesh
             fuze.setDetonationDelay(fuze.getDetonationDelay());
     }
 
+    public Actor getScoreOwner()
+    {
+        Actor actor = super.getOwner();
+        if(actor instanceof Aircraft)
+        {
+            Aircraft aircraft = (Aircraft)actor;
+            if(!aircraft.isNetPlayer())
+            {
+                Aircraft aircraft1 = aircraft.getBombScoreOwner();
+                if(aircraft1 != null)
+                    return aircraft1;
+            }
+        }
+        return actor;
+    }
+
     RangeRandom rnd;
     public Fuze fuze;
     private boolean isJettisoned;
@@ -650,6 +672,7 @@ public class Bomb extends ActorMesh
     private static Point3d corn1 = new Point3d();
     private static float plateBox[] = new float[6];
     private static boolean bPlateExist = false;
+    private static boolean bPlateGround = false;
     private static Loc __loc = new Loc();
     protected SoundFX sound;
     protected static final float SND_TIME_BOUND = 5F;

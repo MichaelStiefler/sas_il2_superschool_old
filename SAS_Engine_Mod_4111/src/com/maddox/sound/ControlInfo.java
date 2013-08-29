@@ -1,15 +1,8 @@
-// Decompiled by DJ v3.10.10.93 Copyright 2007 Atanas Neshkov  Date: 18-Dec-12 12:01:44 PM
-// Home Page: http://members.fortunecity.com/neshkov/dj.html  http://www.neshkov.com/dj.html - Check often for new version!
-// Decompiler options: packimports(3) 
-// Source File Name:   ControlInfo.java
+/*Modified ControlInfo class for the SAS Engine Mod*/
 
 package com.maddox.sound;
 
-import java.io.PrintStream;
 import java.util.HashMap;
-
-// Referenced classes of package com.maddox.sound:
-//            BaseObject, SoundControl
 
 public class ControlInfo extends BaseObject
 {
@@ -61,6 +54,7 @@ public class ControlInfo extends BaseObject
     public static final int CC_EMIT_RUN = 500;
     public static final int CC_EMIT_SPEED = 501;
     public static final int CC_MOD = 1000;
+    //TODO: Thrust added as a sound control
     public static final int CC_THRUST = 1001;
     protected int cc;
     protected Class cls;
@@ -89,6 +83,7 @@ public class ControlInfo extends BaseObject
         new ControlInfo("bombtime", 201, com.maddox.sound.BoundsControl.class);
         new ControlInfo("massa", 202, com.maddox.sound.BoundsControl.class);
         new ControlInfo("mod", 1000, com.maddox.sound.ModControl.class);
+        //TODO: Thrust added as a sound control
         new ControlInfo("thrust", 1001, com.maddox.sound.BoundsControl.class);
     }
 }

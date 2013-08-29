@@ -1,5 +1,4 @@
 /*Modified Squares class for the SAS Engine Mod*/
-
 package com.maddox.il2.fm;
 
 import com.maddox.il2.ai.BulletEmitter;
@@ -141,10 +140,10 @@ public class Squares
             }
 
         }
-
-        dragParasiteCx += 0.02F * controls.getCockpitDoor();
-        dragParasiteCx += 0.02F * controls.getBayDoor();
         dragParasiteCx += 0.02F * controls.getRefuel();
+        dragParasiteCx += 0.02F * controls.getCockpitDoor();
+        if(controls.bHasBayDoorControl)
+        dragParasiteCx += 0.02F * controls.getBayDoor();
     }
 
     public float squareWing;

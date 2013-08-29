@@ -1,6 +1,4 @@
 /*Modified AirportStatic class for the SAS Engine Mod*/
-//Unsure of what is currently modified in here
-
 package com.maddox.il2.ai;
 
 import com.maddox.JGP.*;
@@ -46,9 +44,6 @@ public abstract class AirportStatic extends Airport
         if(arraylist == null)
             return;
         ArrayList arraylist1 = new ArrayList();
-        double d = 4000000D;
-        if(arraylist.size() == 4)
-            d = 2890000D;
         while(arraylist.size() > 0) 
         {
             Loc loc = (Loc)arraylist.remove(0);
@@ -94,7 +89,7 @@ public abstract class AirportStatic extends Airport
     		    airportstatic.pos = new ActorPosStatic(airportstatic, loc);
     		    airportstatic.runway.add(new Runway(loc));
     		    arraylist1.add(airportstatic);
-    		}
+            }
         }
     }
 
@@ -274,7 +269,7 @@ public abstract class AirportStatic extends Airport
 
     }
 
-    public double ShiftFromLine(FlightModel flightmodel)
+    public double shiftFromLine(FlightModel flightmodel)
     {
         tmpLoc.set(flightmodel.Loc);
         if(flightmodel instanceof Maneuver)
