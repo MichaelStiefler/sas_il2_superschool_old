@@ -18,6 +18,7 @@ public class RealFlightModel extends Pilot
 	// TODO: Default Parameters
 	// -------------------------------------------------------------
     public boolean RealMode;
+    public boolean RealGunnerMode; //By PAL
     public float indSpeed;
     private static int stallStringID = HUD.makeIdLog();
     public DifficultySettings Realism;
@@ -70,6 +71,8 @@ public class RealFlightModel extends Pilot
     {
         super(s);
         RealMode = true;
+        //By PAL
+        RealGunnerMode = false;
         indSpeed = 0.0F;
         Cwl = new Vector3d();
         Cwr = new Vector3d();
@@ -1374,5 +1377,17 @@ public class RealFlightModel extends Pilot
             f *= 0.05F;
         if(producedShakeLevel < f)
             producedShakeLevel = f;
+    }
+    
+    public void setRealGunnerMode(boolean flag) //By PAL, needed because of ShakeLevel for Gunners
+    {
+        if(RealGunnerMode == flag)
+            return;
+        RealGunnerMode = flag;
+    }
+
+    public boolean isRealGunnerMode()
+    {
+        return RealGunnerMode;
     }
 }
