@@ -58,10 +58,16 @@ public class AircraftHotKeys
 	private boolean changeFovEnabled;
 	private static final int BEACON_PLUS = 139;
 	private static final int BEACON_MINUS = 140;
-	private static final int AUX1_PLUS = 149;
-	private static final int AUX1_MINUS = 150;
-	private static final int AUX_A = 157;
-	private static final int AUX_B = 158;
+    private static final int AUX1_PLUS = 149;
+    private static final int AUX1_MINUS = 150;
+    private static final int AUX2_PLUS = 151;
+    private static final int AUX2_MINUS = 152;
+    private static final int AUX_A = 157;
+    private static final int AUX_B = 158;
+    private static final int AUX_C = 159;
+    private static final int AUX_D = 160;
+    private static final int AUX_E = 161;
+    private static final int AUX_F = 162;
 	private static final int HEAD_LEAN_FORWARD = 170;
 	private static final int HEAD_LEAN_SIDE = 171;
 	private static final int HEAD_RAISE = 172;
@@ -222,7 +228,6 @@ public class AircraftHotKeys
 	private int										SIDE_DOOR					= 2;
 	private boolean									bAllowDumpFuel				= true;
 	private boolean									bDumpFuel					= false;
-	private boolean									bBombBayDoors				= true;
 	private static final int BRAKE_RIGHT = 144;
 	private static final int BRAKE_LEFT = 145;
 	private int flapIndex = 0;
@@ -269,15 +274,8 @@ public class AircraftHotKeys
 			bSeparateRadiatorOpenClose = true;
 		if (Config.cur.ini.get("Mods", "ToggleMusic", 1) == 0)
 			bToggleMusic = false;
-		if (Config.cur.ini.get("Mods", "BombBayDoors", 1) == 0)
-			bBombBayDoors = false;
 		if (Config.cur.ini.get("Mods", "SideDoor", 1) == 0)
 			bSideDoor = false;
-		iAirShowSmoke = Config.cur.ini.get("Mods", "AirShowSmoke", 0);
-		if (iAirShowSmoke < 1 || iAirShowSmoke > 3)
-			iAirShowSmoke = 0;
-		if (Config.cur.ini.get("Mods", "AirShowSmokeEnhanced", 0) > 0)
-			bAirShowSmokeEnhanced = true;
 		if (Config.cur.ini.get("Mods", "DumpFuel", 1) == 0)
 			bAllowDumpFuel = false;
 	}
@@ -654,12 +652,28 @@ public class AircraftHotKeys
 				return;
 
 			case 157: 
-				bAAircraft.auxPressed(1);
-				return;
+                bAAircraft.auxPressed(1);
+                return;
 
-			case 158: 
-				bAAircraft.auxPressed(2);
-				return;
+            case 158: 
+                bAAircraft.auxPressed(2);
+                return;
+
+            case 159: 
+                bAAircraft.auxPressed(3);
+                return;
+
+            case 160: 
+                bAAircraft.auxPressed(4);
+                return;
+
+            case 161: 
+                bAAircraft.auxPressed(5);
+                return;
+
+            case 162: 
+                bAAircraft.auxPressed(6);
+                return;
 			}
 		if(!setPilot())
 			return;
@@ -1096,20 +1110,7 @@ public class AircraftHotKeys
 				break;
 				//TODO: Bomb Bay Door
 			case 131: // '\025'
-				if(bBombBayDoors)
-				{
-					if(!FM.CT.bHasBayDoorControl)
-						break;
-					if(((FlightModelMain) (FM)).CT.BayDoorControl != 0.0F)
-					{
-						((FlightModelMain) (FM)).CT.BayDoorControl = 0.0F;
-						HUD.log("BayDoorsClosed");
-					} else
-					{
-						((FlightModelMain) (FM)).CT.BayDoorControl = 1.0F;
-						HUD.log("BayDoorsOpen");
-					}
-				}
+				//TODO: Formerly bomb bay doors, now free
 				break;
 			case 132: // '\026'
 				if (bAllowDumpFuel)
@@ -1875,15 +1876,25 @@ public class AircraftHotKeys
 			return;
 		switch(i)
 		{
-		case 149: 
-			bAAircraft.auxPlus(1);
-			toTrackSign(i);
-			return;
+        case 149: 
+            bAAircraft.auxPlus(1);
+            toTrackSign(i);
+            return;
 
-		case 150: 
-			bAAircraft.auxMinus(1);
-			toTrackSign(i);
-			return;
+        case 150: 
+            bAAircraft.auxMinus(1);
+            toTrackSign(i);
+            return;
+
+        case 151: 
+            bAAircraft.auxPlus(2);
+            toTrackSign(i);
+            return;
+
+        case 152: 
+            bAAircraft.auxMinus(2);
+            toTrackSign(i);
+            return;
 
 		case 139: 
 			if(World.cur().diffCur.RealisticNavigationInstruments)
@@ -2540,10 +2551,16 @@ public class AircraftHotKeys
 		HotKeyEnv.fromIni(s, Config.cur.ini, "HotKey pilot");
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ18", "BEACON_PLUS", 139, 359));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ19", "BEACON_MINUS", 140, 360));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ40", "AUX1_PLUS", 149, 369));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ41", "AUX1_MINUS", 150, 370));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ60", "AUX_A", 157, 377));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ61", "AUX_B", 158, 378));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ40", "AUX1_PLUS", 149, 369));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ41", "AUX1_MINUS", 150, 370));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ42", "AUX2_PLUS", 151, 371));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ43", "AUX2_MINUS", 152, 372));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ60", "AUX_A", 157, 377));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ61", "AUX_B", 158, 378));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ62", "AUX_C", 159, 379));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ63", "AUX_D", 160, 380));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ64", "AUX_E", 161, 381));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ65", "AUX_F", 162, 382));
 	}
 
 	public void createPilotHotKeys()
@@ -2828,8 +2845,6 @@ public class AircraftHotKeys
 		HotKeyCmdEnv _tmp185 = hotkeycmdenv;
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced20", "Open/Close Side Hatch ", 134, 403));
 		HotKeyCmdEnv _tmp186 = hotkeycmdenv;
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced21", "Open/Close Bay Doors", 131, 400));
-		HotKeyCmdEnv _tmp187 = hotkeycmdenv;
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced22", "Toggle Fuel Dump", 132, 401));
 		//-----------------------------------------------------------------------------
 		HotKeyCmdEnv _tmp114 = hotkeycmdenv;

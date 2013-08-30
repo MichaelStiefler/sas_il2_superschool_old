@@ -321,7 +321,7 @@ public class AircraftState
  	// TODO: New Parameters
  	// -------------------------------------------------------------
 	private Eff3DActor astateDumpFuelEffects[] = { null, null, null };
- 	private int iAirShowSmoke;
+ 	public int iAirShowSmoke;
  	private boolean bAirShowSmokeEnhanced;
  	private boolean bDumpFuel;
  	private int COCKPIT_DOOR;
@@ -1688,6 +1688,10 @@ public class AircraftState
 		if (bShowSmokesOn == flag)
 			return;
 		if (bIsMaster) {
+			if(iAirShowSmoke != 0)
+				iAirShowSmoke++;
+	        if(iAirShowSmoke > 3)
+	        	iAirShowSmoke = 1;
 			doSetAirShowState(flag);
 			netToMirrors(42, iAirShowSmoke, iAirShowSmoke);
 			netToMirrors(43, bAirShowSmokeEnhanced ? 1 : 0, bAirShowSmokeEnhanced ? 1 : 0);
@@ -1700,11 +1704,10 @@ public class AircraftState
 		for (int i = 0; i < 3; i++)
 			if (astateAirShowEffects[i] != null)
 				Eff3DActor.finish(astateAirShowEffects[i]);
-
 		if (flag) {
 			Hook hook = null;
 			try {
-				hook = actor.findHook("_ClipCGear");
+				hook = actor.findHook("_Engine1ES_01");
 			} catch (Exception exception) {
 				hook = null;
 			}

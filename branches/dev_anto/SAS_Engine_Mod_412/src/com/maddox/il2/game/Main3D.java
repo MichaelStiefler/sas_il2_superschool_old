@@ -3748,7 +3748,6 @@ public class Main3D extends Main
         ConsoleGL0.exclusiveDraw("gui/background" + rangerandom.nextInt(0, maxIndex) + ".mat");
     }
 
-
     static
     {
         shadowPairsR = 1000D;

@@ -93,6 +93,8 @@ public class Motor extends FMMath
     public float engineMoment;
     protected float engineMomentMax;
     protected float engineBoostFactor;
+    protected float engineBoostFactorRestrict;
+    protected int engineBoostRestrictDate;
     protected float engineAfterburnerBoostFactor;
     protected float engineDistAM;
     protected float engineDistBM;
@@ -164,6 +166,7 @@ public class Motor extends FMMath
     protected int compressorType;
     public int compressorMaxStep;
     protected float compressorPMax;
+    protected float compressorPMaxRestrict;
     protected float compressorManifoldPressure;
     public float compressorAltitudes[];
     protected float compressorPressure[];
@@ -307,6 +310,8 @@ public class Motor extends FMMath
         engineMoment = 0.0F;
         engineMomentMax = 0.0F;
         engineBoostFactor = 1.0F;
+        engineBoostFactorRestrict = 1.0F;
+        engineBoostRestrictDate = 0;
         engineAfterburnerBoostFactor = 1.0F;
         engineDistAM = 0.0F;
         engineDistBM = 0.0F;
@@ -369,6 +374,7 @@ public class Motor extends FMMath
         compressorType = 0;
         compressorMaxStep = 0;
         compressorPMax = 1.0F;
+        compressorPMaxRestrict = 1.0F;
         compressorManifoldPressure = 1.0F;
         compressorAltitudes = null;
         compressorPressure = null;
@@ -602,6 +608,12 @@ public class Motor extends FMMath
         f = sectfile.get(s, "BoostFactor", -99999F);
         if(f != -99999F)
             engineBoostFactor = f;
+        f = sectfile.get(s, "BoostFactorRestrict", -99999F);
+        if(f != -99999F)
+            engineBoostFactorRestrict = f;
+        int i = sectfile.get(s, "BoostDate", 0);
+        if(i != -99999F)
+            engineBoostRestrictDate = i;
         f = sectfile.get(s, "WEPBoostFactor", -99999F);
         if(f != -99999F)
             engineAfterburnerBoostFactor = f;
@@ -789,6 +801,9 @@ public class Motor extends FMMath
         f = sectfile.get(s, "CompressorPMax", -99999F);
         if(f != -99999F)
             compressorPMax = f;
+        f = sectfile.get(s, "CompressorPMaxRestrict", -99999F);
+        if(f != -99999F)
+            compressorPMaxRestrict = f;
         k = sectfile.get(s, "CompressorSteps", 0xfffe7961);
         if(k != 0xfffe7961)
         {
@@ -1095,6 +1110,12 @@ public class Motor extends FMMath
 
     public void update(float f)
     {
+    	//TODO: Boost restriction code
+    	int i = Mission.getMissionDate(true);
+    	if(i < engineBoostRestrictDate){
+    		engineBoostFactor = engineBoostFactorRestrict;
+    		compressorPMax = compressorPMaxRestrict;
+    	}
         if(!(reference instanceof RealFlightModel) && Time.tickCounter() > 200)
         {
             updateLast += f;
