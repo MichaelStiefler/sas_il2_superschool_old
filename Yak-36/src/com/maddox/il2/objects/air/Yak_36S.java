@@ -11,8 +11,6 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
-import com.maddox.il2.objects.Wreckage;
-import com.maddox.il2.objects.weapons.FuelTankGun_Tank19;
 import com.maddox.il2.objects.weapons.GuidedMissileUtils;
 import com.maddox.rts.*;
 import com.maddox.sound.Sample;
@@ -205,94 +203,17 @@ public class Yak_36S extends Yak_36
     public void onAircraftLoaded()
     {
         super.onAircraftLoaded();
-        droptank();
         guidedMissileUtils.onAircraftLoaded();
         FM.Skill = 3;
         ((FlightModelMain) (super.FM)).CT.bHasDragChuteControl = true;
         bHasDeployedDragChute = false;
-        if(thisWeaponsName.endsWith("P1"))
-        {
-            hierMesh().chunkVisible("PylonTL", true);
-            hierMesh().chunkVisible("PylonTR", true);
-        }
-        if(thisWeaponsName.endsWith("P2"))
-        {
-            hierMesh().chunkVisible("PylonTL", true);
-            hierMesh().chunkVisible("PylonTR", true);
-            hierMesh().chunkVisible("PylonML", true);
-            hierMesh().chunkVisible("PylonMR", true);
-        }
-        if(thisWeaponsName.endsWith("P3"))
-        {
-            hierMesh().chunkVisible("PylonML", true);
-            hierMesh().chunkVisible("PylonMR", true);
-        }
-    }
-    
-    private final void doRemovedroptankL()
-    {
-        if(hierMesh().chunkFindCheck("DroptankL") != -1)
-        {
-            hierMesh().hideSubTrees("DroptankL");
-            Wreckage wreckage = new Wreckage(this, hierMesh().chunkFind("DroptankL"));
-            wreckage.collide(true);
-            Vector3d vector3d = new Vector3d();
-            this.getSpeed(vector3d);
-            vector3d.z -= 10D;
-            vector3d.set(vector3d);
-            wreckage.setSpeed(vector3d);
-        }
-    }
-    
-    private final void doRemovedroptankR()
-    {
-        if(hierMesh().chunkFindCheck("DroptankR") != -1)
-        {
-            hierMesh().hideSubTrees("DroptankR");
-            Wreckage wreckage = new Wreckage(this, hierMesh().chunkFind("DroptankR"));
-            wreckage.collide(true);
-            Vector3d vector3d = new Vector3d();
-            this.getSpeed(vector3d);
-            vector3d.z -= 10D;
-            vector3d.set(vector3d);
-            wreckage.setSpeed(vector3d);
-        }
-    }
-    
-    private void droptank()
-    {
-    	for(int i = 0; i < FM.CT.Weapons.length; i++)
-        {
-        if(FM.CT.Weapons[i] == null)
-              continue;
-          for(int j = 0; j < FM.CT.Weapons[i].length; j++)
-        {
-        if(!FM.CT.Weapons[i][j].haveBullets())
-               continue;
-        if(FM.CT.Weapons[i][j] instanceof FuelTankGun_Tank19)
-        {	
-        	havedroptank = true;
-        	super.hierMesh().chunkVisible("DroptankL", true);
-        	super.hierMesh().chunkVisible("DroptankR", true);
-        }
-    } 
-    }
     }
 
     public void update(float f)
     {
         guidedMissileUtils.update();
         sirenaWarning();
-        super.update(f);
-        if(havedroptank == true)
-        {	
-        if(!FM.CT.Weapons[9][1].haveBullets())	       	
-        {
-        	havedroptank = false;
-        	doRemovedroptankL();
-        	doRemovedroptankR();
-        }
-        }
+        super.update(f);       
         if(((FlightModelMain) (super.FM)).CT.DragChuteControl > 0.0F && !bHasDeployedDragChute)
         {
             chute = new Chute(this);
