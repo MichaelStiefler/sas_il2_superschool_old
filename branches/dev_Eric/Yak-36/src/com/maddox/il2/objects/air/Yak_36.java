@@ -1119,9 +1119,9 @@ label0:
         if(super.FM.getAltitude() > 0.0F && (double)super.FM.getSpeedKMH() >= 300D && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
                 ((FlightModelMain) (super.FM)).producedAF.x -= 10000D;  
         if(super.FM.getAltitude() > 0.0F && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-        	((FlightModelMain) (super.FM)).producedAF.z += (1000F - (double)((FlightModelMain) (super.FM)).getAltitude()) * 3D * ((FlightModelMain) (super.FM)).EI.engines[1].getPowerOutput();
+        	((FlightModelMain) (super.FM)).producedAF.z += (700F - (double)((FlightModelMain) (super.FM)).getAltitude()) * 3D * ((FlightModelMain) (super.FM)).EI.engines[1].getPowerOutput();
         if(super.FM.getAltitude() > 0.0F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-        	((FlightModelMain) (super.FM)).producedAF.z += (1000F - (double)((FlightModelMain) (super.FM)).getAltitude()) * 3D * ((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput();
+        	((FlightModelMain) (super.FM)).producedAF.z += (700F - (double)((FlightModelMain) (super.FM)).getAltitude()) * 3D * ((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput();
         if((super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode() || !(super.FM instanceof Pilot))
         {
             float avW = (((FlightModelMain) (super.FM)).EI.engines[0].getw() + ((FlightModelMain) (super.FM)).EI.engines[1].getw()) / 2.0F;
