@@ -75,7 +75,6 @@ public class P_47D extends P_47 implements TypeFighterAceMaker {
 
 	public void onAircraftLoaded() {
 		super.onAircraftLoaded();
-		com.maddox.il2.ai.EventLog.type("onAircraftLoaded: " + this.thisWeaponsName);
 		hierMesh().chunkVisible("ETank_D0", false);
 		boolean bCenterRackVisible = false;
 		boolean bWingRacksVisible = false;
