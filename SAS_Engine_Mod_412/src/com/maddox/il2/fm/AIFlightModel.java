@@ -91,9 +91,10 @@ public class AIFlightModel extends FlightModel
         if (this.Ss.allParamsSet) { //TODO: calculate Mach Drag if parameters are set
             Density *= this.Ss.getDragFactorForMach(Mach);
         } else {
-            Density *= this.Ss.getDragFactorForMach(Mach);
+            fullMach = Mach;
+            //Density *= this.Ss.getDragFactorForMach(Mach);
         }
-        fullMach = Mach;
+
         if(Mach > 0.8F)
             Mach = 0.8F;
         Kq = 1.0F / (float)Math.sqrt(1.0F - Mach * Mach);
