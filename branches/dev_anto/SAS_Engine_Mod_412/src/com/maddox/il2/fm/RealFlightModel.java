@@ -598,13 +598,14 @@ public class RealFlightModel extends Pilot
         } else {
 //          Density *= this.Ss.getDragFactorForMach(Mach);
           if (this.Ss.getDragFactorForMach(Mach) > 1.0F) {
+          	fullMach = Mach;
 //            NetSafeLog.training(super.actor, "CAUTION: Default Mach Drag Parameters used!");
           }
 //          NetSafeLog.training(super.actor, "NM: " + this.Ss.getDragFactorForMach(Mach)
 //                  +" Mach: " + Mach);
         }
         //-------------------------------------------------------
-    	fullMach = Mach;
+
         if(Mach > 0.8F)
             Mach = 0.8F;
         Kq = 1.0F / (float)Math.sqrt(1.0F - Mach * Mach);
