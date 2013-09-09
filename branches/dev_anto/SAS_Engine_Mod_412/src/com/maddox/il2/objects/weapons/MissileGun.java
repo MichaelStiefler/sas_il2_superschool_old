@@ -2,7 +2,6 @@
 // Author:           Storebror
 package com.maddox.il2.objects.weapons;
 
-import com.maddox.il2.ai.EventLog;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.fm.RealFlightModel;

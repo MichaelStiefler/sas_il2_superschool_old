@@ -58,7 +58,7 @@ public class Airdrome
 
     }
 
-    private void freeStayPoint(Point_Any point_any)
+    protected void freeStayPoint(Point_Any point_any)
     {
         if(point_any == null)
             return;
@@ -391,6 +391,7 @@ label0:
                 Vdiff.scale(f4);
             }
             Vcur.add(Vdiff);
+            tmpOr.setYPR(Pilot.RAD2DEG(Vcur.direction()), pilot.Or.getPitch(), 0.0F);
             pilot.Or.interpolate(tmpOr, 0.2F);
             pilot.Vwld.x = Vcur.x;
             pilot.Vwld.y = Vcur.y;

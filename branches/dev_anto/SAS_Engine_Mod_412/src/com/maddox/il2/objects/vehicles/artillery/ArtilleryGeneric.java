@@ -70,9 +70,9 @@ public abstract class ArtilleryGeneric extends ActorHMesh
     private boolean nearAirfield = false;
     private boolean dontShoot = false;
     private long time_lastCheckShoot = 0L;
-    private static final int DELAY_CHECK_SHOOT = 12000;
-    private static final int DIST_TO_FRIEND_PLANES = 4000;
-    private static final int DIST_TO_AIRFIELD = 2000;
+    protected static final int DELAY_CHECK_SHOOT = 12000;
+    protected static final int DIST_TO_FRIEND_PLANES = 4000;
+    protected static final int DIST_TO_AIRFIELD = 2000;
     private float heightAboveLandSurface;
     private float heightAboveLandSurface2;
     private FireDevice[] arms;

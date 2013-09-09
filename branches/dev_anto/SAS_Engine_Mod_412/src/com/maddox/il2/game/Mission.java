@@ -146,7 +146,7 @@ public class Mission implements Destroy
     private static ArrayList meaconsRed = new ArrayList();
     private static ArrayList meaconsBlue = new ArrayList();
     private static Map hayrakeMap = new HashMap();
-    private final int HAYRAKE_CODE_LENGTH = 12;
+    protected final int HAYRAKE_CODE_LENGTH = 12;
     public static boolean hasRadioStations = false;
     private static boolean radioStationsLoaded = false;
     private float bigShipHpDiv = 1.0F;
@@ -155,10 +155,10 @@ public class Mission implements Destroy
     private int playerNum = 0;
     private HashMap mapWingTakeoff;
     private static SectFile chiefsIni;
-    private static Point3d Loc = new Point3d();
-    private static Orient Or = new Orient();
-    private static Vector3f Spd = new Vector3f();
-    private static Vector3d Spdd = new Vector3d();
+    protected static Point3d Loc = new Point3d();
+    protected static Orient Or = new Orient();
+    protected static Vector3f Spd = new Vector3f();
+    protected static Vector3d Spdd = new Vector3d();
     private static ActorSpawnArg spawnArg = new ActorSpawnArg();
     private static Point3d p = new Point3d();
     private static Orient o = new Orient();
@@ -267,12 +267,14 @@ public class Mission implements Destroy
 				netmsginput.setData(netchannel, true, netmsgguaranted.data(),
 						0, netmsgguaranted.size());
 				MsgNet.postReal(Time.currentReal(), this, netmsginput);
+				netmsgguaranted.close();
 			} catch (Exception exception) {
 				if (this != null) {
 					/* empty */
 				}
 				exception.printStackTrace();
 			}
+			
 		}
 	
 		public boolean netChannelCallback
@@ -308,6 +310,7 @@ public class Mission implements Destroy
 							default:
 								break while_2_;
 							}
+							netmsginput.close();
 						} catch (Exception exception) {
 							if (this != null) {
 								/* empty */
@@ -358,6 +361,7 @@ public class Mission implements Destroy
 					int i = netmsginput.readUnsignedByte();
 					if (i == 4)
 						netchannelinstream.setPause(false);
+					netmsginput.close();
 				} catch (Exception exception) {
 					if (this != null) {
 						/* empty */
@@ -1064,7 +1068,6 @@ public class Mission implements Destroy
 		    Main3D.cur3D().land2D.destroy();
 		Main3D.cur3D().land2D = null;
 	    }
-	    Object object = null;
 	    int i_15_ = sectfile_10_.sectionIndex("MAP2D");
 	    if (i_15_ >= 0) {
 		int i_16_ = sectfile_10_.vars(i_15_);
@@ -1525,7 +1528,6 @@ public class Mission implements Destroy
 	String string = aircraft.name();
 	if (string.length() >= 4) {
 	    String string_58_ = string.substring(0, string.length() - 1);
-	    boolean bool = false;
 	    int i;
 	    try {
 		i = Integer.parseInt(string.substring(string.length() - 1,
@@ -1961,7 +1963,6 @@ public class Mission implements Destroy
 	(String string, String string_96_, int i, double d, double d_97_,
 	 float f, float f_98_, String string_99_, String string_100_,
 	 String string_101_, String string_102_, int i_103_) {
-	Object object = null;
 	Class var_class;
 	try {
 	    var_class = ObjIO.classForName(string_96_);
@@ -2545,7 +2546,6 @@ public class Mission implements Destroy
 		    int i_176_ = SharedTokenizer.next(0);
 		    int i_177_ = SharedTokenizer.next(0);
 		    int i_178_ = SharedTokenizer.next(1000, 50, 3000);
-		    int i_179_ = SharedTokenizer.next(0);
 		    String string = SharedTokenizer.next((String) null);
 		    if (string != null && string.startsWith("Bridge"))
 			string = " " + string;
@@ -3252,9 +3252,7 @@ public class Mission implements Destroy
 		    meaconsBlue.add(objects[0]);
 	    }
 	    arraylist.clear();
-	    Object object = null;
 	    arraylist_207_.clear();
-	    Object object_208_ = null;
 	}
     }
     
@@ -3502,8 +3500,6 @@ public class Mission implements Destroy
 		    string_221_ = stringtokenizer.nextToken();
 		if (string_221_ != null) {
 		    string_221_ = string_221_.intern();
-		    Class var_class = (Class) Property.value(string_221_,
-							     "airClass", null);
 		    Main.cur().mission.ScoutsRed.add(string_221_);
 		}
 	    }
@@ -3525,8 +3521,6 @@ public class Mission implements Destroy
 		    string_224_ = stringtokenizer.nextToken();
 		if (string_224_ != null) {
 		    string_224_ = string_224_.intern();
-		    Class var_class = (Class) Property.value(string_224_,
-							     "airClass", null);
 		    Main.cur().mission.ScoutsBlue.add(string_224_);
 		}
 	    }
@@ -3581,7 +3575,7 @@ public class Mission implements Destroy
 	return Main.cur().mission.bigShipHpDiv;
     }
     
-    private void printWithTime(String string) {
+    protected void printWithTime(String string) {
 	if (shortDate == null)
 	    shortDate = DateFormat.getTimeInstance(2, Locale.GERMANY);
 	Calendar calendar = Calendar.getInstance();

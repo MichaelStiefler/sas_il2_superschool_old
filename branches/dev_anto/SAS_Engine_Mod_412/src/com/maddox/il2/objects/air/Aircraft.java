@@ -443,9 +443,9 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 			break;
 
 		case 2: // '\002'
-		if(isEnablePostEndAction(0.0D))
-			postEndAction(0.0D, actor, 2, null);
-		return false;
+			if(isEnablePostEndAction(0.0D))
+				postEndAction(0.0D, actor, 2, null);
+			return false;
 
 		case 3: // '\003'
 			if(FM.EI.engines.length > 0)
@@ -661,9 +661,9 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 				switch(i)
 				{
 				case 2: // '\002'
-				if(Actor.isAlive(endactionparam.initiator) && (endactionparam.initiator instanceof Aircraft) && ((Aircraft)endactionparam.initiator).isNetPlayer() && FM.Loc.z - Engine.land().HQ_Air(FM.Loc.x, FM.Loc.y) > 100D)
-					Chat.sendLogRnd(1, "gore_blowup", (Aircraft)endactionparam.initiator, this);
-				break;
+					if(Actor.isAlive(endactionparam.initiator) && (endactionparam.initiator instanceof Aircraft) && ((Aircraft)endactionparam.initiator).isNetPlayer() && FM.Loc.z - Engine.land().HQ_Air(FM.Loc.x, FM.Loc.y) > 100D)
+						Chat.sendLogRnd(1, "gore_blowup", (Aircraft)endactionparam.initiator, this);
+					break;
 				}
 			int l;
 			switch(i)
@@ -1785,1341 +1785,1341 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 	}
 
 	//TODO:
-		protected void moveVarWing(float f)
+	protected void moveVarWing(float f)
 	{
 		/* empty */
 	}
 
 
-		protected void moveBayDoor(float f)
-		{
-		}
+	protected void moveBayDoor(float f)
+	{
+	}
 
-		protected void moveAirBrake(float f)
-		{
-		}
+	protected void moveAirBrake(float f)
+	{
+	}
 
-		//TODO:
-		protected void moveRefuel(float f)
-		{
-			/* empty */
-		}
+	//TODO:
+	protected void moveRefuel(float f)
+	{
+		/* empty */
+	}
 
-		public void moveSteering(float f)
-		{
-		}
+	public void moveSteering(float f)
+	{
+	}
 
-		public void moveWheelSink()
-		{
-		}
+	public void moveWheelSink()
+	{
+	}
 
-		public void rareAction(float f, boolean flag)
-		{
-		}
+	public void rareAction(float f, boolean flag)
+	{
+	}
 
-		public float getBayDoor()
-		{
-			return BayDoor_;
-		}
+	public float getBayDoor()
+	{
+		return BayDoor_;
+	}
 
-		protected void moveFan(float f)
+	protected void moveFan(float f)
+	{
+		int i = 0;
+		for(int j = 0; j < FM.EI.getNum(); j++)
 		{
-			int i = 0;
-			for(int j = 0; j < FM.EI.getNum(); j++)
+			if(oldProp[j] < 2)
 			{
-				if(oldProp[j] < 2)
+				i = Math.abs((int)(FM.EI.engines[j].getw() * 0.06F));
+				if(i >= 1)
+					i = 1;
+				if(i != oldProp[j] && hierMesh().isChunkVisible(Props[j][oldProp[j]]))
 				{
-					i = Math.abs((int)(FM.EI.engines[j].getw() * 0.06F));
-					if(i >= 1)
-						i = 1;
-					if(i != oldProp[j] && hierMesh().isChunkVisible(Props[j][oldProp[j]]))
-					{
-						hierMesh().chunkVisible(Props[j][oldProp[j]], false);
-						oldProp[j] = i;
-						hierMesh().chunkVisible(Props[j][i], true);
-					}
+					hierMesh().chunkVisible(Props[j][oldProp[j]], false);
+					oldProp[j] = i;
+					hierMesh().chunkVisible(Props[j][i], true);
 				}
-				if(i == 0)
+			}
+			if(i == 0)
+			{
+				propPos[j] = (propPos[j] + 57.3F * FM.EI.engines[j].getw() * f) % 360F;
+			} else
+			{
+				float f1 = 57.3F * FM.EI.engines[j].getw();
+				f1 %= 2880F;
+				f1 /= 2880F;
+				if(f1 <= 0.5F)
+					f1 *= 2.0F;
+				else
+					f1 = f1 * 2.0F - 2.0F;
+				f1 *= 1200F;
+				propPos[j] = (propPos[j] + f1 * f) % 360F;
+			}
+			hierMesh().chunkSetAngles(Props[j][0], 0.0F, -propPos[j], 0.0F);
+		}
+
+	}
+
+	public void hitProp(int i, int j, Actor actor)
+	{
+		if(i > FM.EI.getNum() - 1 || oldProp[i] == 2)
+			return;
+		super.hitProp(i, j, actor);
+		FM.cut(part("Engine" + (i + 1)), j, actor);
+		if(isChunkAnyDamageVisible("Prop" + (i + 1)) || isChunkAnyDamageVisible("PropRot" + (i + 1)))
+		{
+			hierMesh().chunkVisible(Props[i][0], false);
+			hierMesh().chunkVisible(Props[i][1], false);
+			hierMesh().chunkVisible(Props[i][2], true);
+		}
+		FM.EI.engines[i].setFricCoeffT(2.0F);
+		//TODO: If the prop is hit, tells motor code to stop engine spinning immediately instead of windmilling
+		FM.EI.engines[i].bPropHit = true;
+		oldProp[i] = 2;
+	}
+
+	public void updateLLights()
+	{
+		pos.getRender(_tmpLoc);
+		if(lLight == null)
+		{
+			if(_tmpLoc.getX() < 1.0D)
+				return;
+			lLight = (new LightPointWorld[] {
+					null, null, null, null
+			});
+			for(int i = 0; i < 4; i++)
+			{
+				lLight[i] = new LightPointWorld();
+				lLight[i].setColor(0.4941176F, 0.9098039F, 0.9607843F);
+				lLight[i].setEmit(0.0F, 0.0F);
+				try
 				{
-					propPos[j] = (propPos[j] + 57.3F * FM.EI.engines[j].getw() * f) % 360F;
+					lLightHook[i] = new HookNamed(this, "_LandingLight0" + i);
+				}
+				catch(Exception exception) { }
+			}
+
+			return;
+		}
+		for(int j = 0; j < 4; j++)
+		{
+			if(FM.AS.astateLandingLightEffects[j] != null)
+			{
+				lLightLoc1.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+				lLightHook[j].computePos(this, _tmpLoc, lLightLoc1);
+				lLightLoc1.get(lLightP1);
+				lLightLoc1.set(1000D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+				lLightHook[j].computePos(this, _tmpLoc, lLightLoc1);
+				lLightLoc1.get(lLightP2);
+				Engine.land();
+				if(Landscape.rayHitHQ(lLightP1, lLightP2, lLightPL))
+				{
+					lLightPL.z++;
+					lLightP2.interpolate(lLightP1, lLightPL, 0.95F);
+					lLight[j].setPos(lLightP2);
+					float f = (float)lLightP1.distance(lLightPL);
+					float f1 = f * 0.5F + 30F;
+					float f2 = 0.5F - (0.5F * f) / 1000F;
+					lLight[j].setEmit(f2, f1);
 				} else
 				{
-					float f1 = 57.3F * FM.EI.engines[j].getw();
-					f1 %= 2880F;
-					f1 /= 2880F;
-					if(f1 <= 0.5F)
-						f1 *= 2.0F;
-					else
-						f1 = f1 * 2.0F - 2.0F;
-					f1 *= 1200F;
-					propPos[j] = (propPos[j] + f1 * f) % 360F;
-				}
-				hierMesh().chunkSetAngles(Props[j][0], 0.0F, -propPos[j], 0.0F);
-			}
-
-		}
-
-		public void hitProp(int i, int j, Actor actor)
-		{
-			if(i > FM.EI.getNum() - 1 || oldProp[i] == 2)
-				return;
-			super.hitProp(i, j, actor);
-			FM.cut(part("Engine" + (i + 1)), j, actor);
-			if(isChunkAnyDamageVisible("Prop" + (i + 1)) || isChunkAnyDamageVisible("PropRot" + (i + 1)))
-			{
-				hierMesh().chunkVisible(Props[i][0], false);
-				hierMesh().chunkVisible(Props[i][1], false);
-				hierMesh().chunkVisible(Props[i][2], true);
-			}
-			FM.EI.engines[i].setFricCoeffT(2.0F);
-			//TODO: If the prop is hit, tells motor code to stop engine spinning immediately instead of windmilling
-			FM.EI.engines[i].bPropHit = true;
-			oldProp[i] = 2;
-		}
-
-		public void updateLLights()
-		{
-			pos.getRender(_tmpLoc);
-			if(lLight == null)
-			{
-				if(_tmpLoc.getX() < 1.0D)
-					return;
-				lLight = (new LightPointWorld[] {
-						null, null, null, null
-				});
-				for(int i = 0; i < 4; i++)
-				{
-					lLight[i] = new LightPointWorld();
-					lLight[i].setColor(0.4941176F, 0.9098039F, 0.9607843F);
-					lLight[i].setEmit(0.0F, 0.0F);
-					try
-					{
-						lLightHook[i] = new HookNamed(this, "_LandingLight0" + i);
-					}
-					catch(Exception exception) { }
-				}
-
-				return;
-			}
-			for(int j = 0; j < 4; j++)
-			{
-				if(FM.AS.astateLandingLightEffects[j] != null)
-				{
-					lLightLoc1.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-					lLightHook[j].computePos(this, _tmpLoc, lLightLoc1);
-					lLightLoc1.get(lLightP1);
-					lLightLoc1.set(1000D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-					lLightHook[j].computePos(this, _tmpLoc, lLightLoc1);
-					lLightLoc1.get(lLightP2);
-					Engine.land();
-					if(Landscape.rayHitHQ(lLightP1, lLightP2, lLightPL))
-					{
-						lLightPL.z++;
-						lLightP2.interpolate(lLightP1, lLightPL, 0.95F);
-						lLight[j].setPos(lLightP2);
-						float f = (float)lLightP1.distance(lLightPL);
-						float f1 = f * 0.5F + 30F;
-						float f2 = 0.5F - (0.5F * f) / 1000F;
-						lLight[j].setEmit(f2, f1);
-					} else
-					{
-						lLight[j].setEmit(0.0F, 0.0F);
-					}
-					continue;
-				}
-				if(lLight[j].getR() != 0.0F)
 					lLight[j].setEmit(0.0F, 0.0F);
+				}
+				continue;
 			}
-
+			if(lLight[j].getR() != 0.0F)
+				lLight[j].setEmit(0.0F, 0.0F);
 		}
 
-		public boolean isUnderWater()
-		{
-			Point3d point3d = pos.getAbsPoint();
-			if(!Engine.land().isWater(point3d.x, point3d.y))
-				return false;
-			else
-				return point3d.z < 0.0D;
-		}
+	}
 
-		public void update(float f)
+	public boolean isUnderWater()
+	{
+		Point3d point3d = pos.getAbsPoint();
+		if(!Engine.land().isWater(point3d.x, point3d.y))
+			return false;
+		else
+			return point3d.z < 0.0D;
+	}
+
+	public void update(float f)
+	{
+		super.update(f);
+		if(this == World.getPlayerAircraft())
 		{
-			super.update(f);
-			if(this == World.getPlayerAircraft())
+			if(isUnderWater())
+				World.doPlayerUnderWater();
+			EventLog.flyPlayer(pos.getAbsPoint());
+			if(this instanceof TypeBomber)
+				((TypeBomber)this).typeBomberUpdate(f);
+		}
+		Controls controls = FM.CT;
+		moveFan(f);
+		if(controls.bHasGearControl)
+		{
+			float f6 = controls.getGearL();
+			float f7 = controls.getGearR();
+			float f8 = controls.getGearC();
+			if(Math.abs(GearL_ - f6) > 0.003F)
 			{
-				if(isUnderWater())
-					World.doPlayerUnderWater();
-				EventLog.flyPlayer(pos.getAbsPoint());
-				if(this instanceof TypeBomber)
-					((TypeBomber)this).typeBomberUpdate(f);
-			}
-			Controls controls = FM.CT;
-			moveFan(f);
-			if(controls.bHasGearControl)
-			{
-				float f6 = controls.getGearL();
-				float f7 = controls.getGearR();
-				float f8 = controls.getGearC();
-				if(Math.abs(GearL_ - f6) > 0.003F)
+				if(!(this instanceof I_16))
+					if(Math.abs(f6 - controls.GearControl) <= 0.003F)
+						sfxGear(false);
+					else
+						sfxGear(true);
+				moveGear(GearL_ = f6, GearR_ = f7, GearC_ = f8);
+			} else
+				if(Math.abs(GearR_ - f7) > 0.003F)
 				{
 					if(!(this instanceof I_16))
-						if(Math.abs(f6 - controls.GearControl) <= 0.003F)
+						if(Math.abs(f7 - controls.GearControl) <= 0.003F)
 							sfxGear(false);
 						else
 							sfxGear(true);
 					moveGear(GearL_ = f6, GearR_ = f7, GearC_ = f8);
 				} else
-					if(Math.abs(GearR_ - f7) > 0.003F)
+					if(Math.abs(GearC_ - f8) > 0.003F)
 					{
 						if(!(this instanceof I_16))
-							if(Math.abs(f7 - controls.GearControl) <= 0.003F)
+							if(Math.abs(f8 - controls.GearControl) <= 0.003F)
 								sfxGear(false);
 							else
 								sfxGear(true);
 						moveGear(GearL_ = f6, GearR_ = f7, GearC_ = f8);
-					} else
-						if(Math.abs(GearC_ - f8) > 0.003F)
-						{
-							if(!(this instanceof I_16))
-								if(Math.abs(f8 - controls.GearControl) <= 0.003F)
-									sfxGear(false);
-								else
-									sfxGear(true);
-							moveGear(GearL_ = f6, GearR_ = f7, GearC_ = f8);
-						}
-			}
-			if(controls.bHasArrestorControl)
-			{
-				float f1 = controls.getArrestor();
-				if(Math.abs(arrestor_ - f1) > 0.003F)
-					moveArrestorHook(arrestor_ = f1);
-			}
-			if(controls.bHasWingControl)
-			{
-				float f2 = controls.getWing();
-				if(Math.abs(wingfold_ - f2) > 0.0005F)
-					moveWingFold(wingfold_ = f2);
-			}
-			if(controls.bHasCockpitDoorControl)
-			{
-				float f3 = controls.getCockpitDoor();
-				if(Math.abs(cockpitDoor_ - f3) > 0.0005F)
-					moveCockpitDoor(cockpitDoor_ = f3);
-			}
-			if(controls.bHasFlapsControl)
-			{
-				float f4 = controls.getFlap();
-				if(Math.abs(Flap_ - f4) > 0.003F)
-				{
-					if(Math.abs(f4 - controls.FlapsControl) <= 0.003F)
-						sfxFlaps(false);
-					else
-						sfxFlaps(true);
-					moveFlap(Flap_ = f4);
-				}
-			}
-			//TODO: Variable Wing Control
-			if (controls.bHasVarWingControl)
-			{
-				float f_102x_ = controls.getVarWing();
-				if (Math.abs(VarWing_ - f_102x_) > EpsSmooth_)
-				{
-					if (Math.abs(f_102x_ - controls.VarWingControl) <= EpsSmooth_)
-						sfxFlaps(false);
-					else
-						sfxFlaps(true);
-					moveVarWing(VarWing_ = f_102x_);
-				}
-			}
-			float f5 = controls.getRudder();
-			if(Math.abs(Rudder_ - f5) > 0.03F)
-				moveRudder(Rudder_ = f5);
-			f5 = controls.getElevator();
-			if(Math.abs(Elevator_ - f5) > 0.03F)
-				moveElevator(Elevator_ = f5);
-			f5 = controls.getAileron();
-			if(Math.abs(Aileron_ - f5) > 0.03F)
-				moveAileron(Aileron_ = f5);
-			f5 = controls.getBayDoor();
-			if(Math.abs(BayDoor_ - f5) > 0.025F)
-			{
-				BayDoor_ += 0.025F * (f5 <= BayDoor_ ? -1F : 2.0F);
-				moveBayDoor(BayDoor_);
-			}
-			f5 = controls.getAirBrake();
-			if(Math.abs(AirBrake_ - f5) > 0.003F)
-			{
-				moveAirBrake(AirBrake_ = f5);
-				if(Math.abs(AirBrake_ - 0.5F) >= 0.48F)
-					sfxAirBrake();
-			}
-			//TODO: Added for refuelling equipment
-			f5 = controls.getRefuel();
-					if (Math.abs(Refuel_ - f5) > EpsSmooth_)
-					{
-						moveRefuel(Refuel_ = f5);
-						if (Math.abs(Refuel_ - 0.5F) >= 0.48F)
-							sfxAirBrake();
-					}
-					f5 = FM.Gears.getSteeringAngle();
-					if(Math.abs(Steering_ - f5) > 0.003F)
-						moveSteering(Steering_ = f5);
-					if(FM.Gears.nearGround())
-						moveWheelSink();
-					if(Mission.isSingle())
-					{
-						if(this == World.getPlayerAircraft())
-						{
-							RealFlightModel realflightmodel = (RealFlightModel)World.getPlayerFM();
-							if(realflightmodel.isRealMode() && isAircraftTaxing())
-							{
-								Maneuver.updateCollisionMap(realflightmodel);
-								taxHlpX -= 1.0F * f;
-							} else
-							{
-								showTaxingWay = false;
-							}
-						}
-					} else
-					{
-						if(Mission.isCoop() && this == World.getPlayerAircraft())
-							if(isAircraftTaxing())
-								taxHlpX -= 1.0F * f;
-							else
-								showTaxingWay = false;
-						if(Mission.isServer() && isNetPlayer() && isAircraftTaxing())
-							Maneuver.updateCollisionMap(FM);
 					}
 		}
-
-		public void setFM(int i, boolean flag)
+		if(controls.bHasArrestorControl)
 		{
-			setFM(Property.stringValue(getClass(), "FlightModel", null), i, flag);
+			float f1 = controls.getArrestor();
+			if(Math.abs(arrestor_ - f1) > 0.003F)
+				moveArrestorHook(arrestor_ = f1);
 		}
-
-		public void setFM(String s, int i, boolean flag)
+		if(controls.bHasWingControl)
 		{
-			if(this instanceof JU_88MSTL)
-				i = 1;
-			switch(i)
+			float f2 = controls.getWing();
+			if(Math.abs(wingfold_ - f2) > 0.0005F)
+				moveWingFold(wingfold_ = f2);
+		}
+		if(controls.bHasCockpitDoorControl)
+		{
+			float f3 = controls.getCockpitDoor();
+			if(Math.abs(cockpitDoor_ - f3) > 0.0005F)
+				moveCockpitDoor(cockpitDoor_ = f3);
+		}
+		if(controls.bHasFlapsControl)
+		{
+			float f4 = controls.getFlap();
+			if(Math.abs(Flap_ - f4) > 0.003F)
+			{
+				if(Math.abs(f4 - controls.FlapsControl) <= 0.003F)
+					sfxFlaps(false);
+				else
+					sfxFlaps(true);
+				moveFlap(Flap_ = f4);
+			}
+		}
+		//TODO: Variable Wing Control
+		if (controls.bHasVarWingControl)
+		{
+			float f_102x_ = controls.getVarWing();
+			if (Math.abs(VarWing_ - f_102x_) > EpsSmooth_)
+			{
+				if (Math.abs(f_102x_ - controls.VarWingControl) <= EpsSmooth_)
+					sfxFlaps(false);
+				else
+					sfxFlaps(true);
+				moveVarWing(VarWing_ = f_102x_);
+			}
+		}
+		float f5 = controls.getRudder();
+		if(Math.abs(Rudder_ - f5) > 0.03F)
+			moveRudder(Rudder_ = f5);
+		f5 = controls.getElevator();
+		if(Math.abs(Elevator_ - f5) > 0.03F)
+			moveElevator(Elevator_ = f5);
+		f5 = controls.getAileron();
+		if(Math.abs(Aileron_ - f5) > 0.03F)
+			moveAileron(Aileron_ = f5);
+		f5 = controls.getBayDoor();
+		if(Math.abs(BayDoor_ - f5) > 0.025F)
+		{
+			BayDoor_ += 0.025F * (f5 <= BayDoor_ ? -1F : 2.0F);
+			moveBayDoor(BayDoor_);
+		}
+		f5 = controls.getAirBrake();
+		if(Math.abs(AirBrake_ - f5) > 0.003F)
+		{
+			moveAirBrake(AirBrake_ = f5);
+			if(Math.abs(AirBrake_ - 0.5F) >= 0.48F)
+				sfxAirBrake();
+		}
+		//TODO: Added for refuelling equipment
+		f5 = controls.getRefuel();
+		if (Math.abs(Refuel_ - f5) > EpsSmooth_)
+		{
+			moveRefuel(Refuel_ = f5);
+			if (Math.abs(Refuel_ - 0.5F) >= 0.48F)
+				sfxAirBrake();
+		}
+		f5 = FM.Gears.getSteeringAngle();
+		if(Math.abs(Steering_ - f5) > 0.003F)
+			moveSteering(Steering_ = f5);
+		if(FM.Gears.nearGround())
+			moveWheelSink();
+		if(Mission.isSingle())
+		{
+			if(this == World.getPlayerAircraft())
+			{
+				RealFlightModel realflightmodel = (RealFlightModel)World.getPlayerFM();
+				if(realflightmodel.isRealMode() && isAircraftTaxing())
+				{
+					Maneuver.updateCollisionMap(realflightmodel);
+					taxHlpX -= 1.0F * f;
+				} else
+				{
+					showTaxingWay = false;
+				}
+			}
+		} else
+		{
+			if(Mission.isCoop() && this == World.getPlayerAircraft())
+				if(isAircraftTaxing())
+					taxHlpX -= 1.0F * f;
+				else
+					showTaxingWay = false;
+			if(Mission.isServer() && isNetPlayer() && isAircraftTaxing())
+				Maneuver.updateCollisionMap(FM);
+		}
+	}
+
+	public void setFM(int i, boolean flag)
+	{
+		setFM(Property.stringValue(getClass(), "FlightModel", null), i, flag);
+	}
+
+	public void setFM(String s, int i, boolean flag)
+	{
+		if(this instanceof JU_88MSTL)
+			i = 1;
+		switch(i)
+		{
+		case 0: // '\0'
+		default:
+			FM = new Pilot(s);
+			break;
+
+		case 1: // '\001'
+			FM = new RealFlightModel(s);
+			break;
+
+		case 2: // '\002'
+			FM = new FlightModel(s);
+			FM.AP = new Autopilotage();
+			break;
+		}
+		FM.actor = this;
+		FM.AS.set(this, flag && !NetMissionTrack.isPlaying());
+		FM.EI.setNotMirror(flag && !NetMissionTrack.isPlaying());
+		SectFile sectfile = FlightModelMain.sectFile(s);
+		byte byte0 = 0;
+		String s1 = sectfile.get("SOUND", "FeedType", "PNEUMATIC");
+		if(s1.compareToIgnoreCase("PNEUMATIC") == 0)
+			byte0 = 0;
+		else
+			if(s1.compareToIgnoreCase("ELECTRIC") == 0)
+				byte0 = 1;
+			else
+				if(s1.compareToIgnoreCase("HYDRAULIC") == 0)
+					byte0 = 2;
+				else
+					System.out.println("ERROR: Invalid feed type" + s1);
+		FM.set(hierMesh());
+		forceGear(getClass(), hierMesh(), 1.0F);
+		FM.Gears.computePlaneLandPose(FM);
+		forceGear(getClass(), hierMesh(), 0.0F);
+		FM.EI.set(this);
+		initSound(sectfile);
+		sfxInit(byte0);
+		interpPut(FM, "FlightModel", Time.current(), null);
+	}
+
+	public void destroy()
+	{
+		if(isAlive() && Mission.isPlaying() && name().charAt(0) != ' ' && FM != null)
+		{
+			Front.checkAircraftCaptured(this);
+			World.onActorDied(this, World.remover);
+		}
+		if(lLight != null)
+		{
+			for(int i = 0; i < 4; i++)
+				ObjState.destroy(lLight[i]);
+
+		}
+		if(World.getPlayerAircraft() == this)
+			deleteCockpits();
+		Wing wing = getWing();
+		if(Actor.isValid(wing) && (wing instanceof NetWing))
+			wing.destroy();
+		detachGun(-1);
+		super.destroy();
+		_removeMesh();
+	}
+
+	public Object getSwitchListener(Message message)
+	{
+		return this;
+	}
+
+	public Aircraft()
+	{
+		spawnLocSingleCoop = null;
+		spawnActorName = null;
+		stationarySpawnLocSet = false;
+		timePostEndAction = -1L;
+		buried = false;
+		BayDoor_ = 0.0F;
+		AirBrake_ = 0.0F;
+		Steering_ = 0.0F;
+		wingfold_ = 0.0F;
+		cockpitDoor_ = 0.0F;
+		arrestor_ = 0.0F;
+		typedName = "UNKNOWN";
+		wfrGr21dropped = false;
+		bombScoreOwner = null;
+		headingBug = 0.0F;
+		idleTimeOnCarrier = 0;
+		bSpotter = false;
+		checkLoadingCountry();
+		if(_loadingCountry == null)
+			_setMesh(Property.stringValue(getClass(), "meshName", null));
+		else
+			_setMesh(Property.stringValue(getClass(), "meshName_" + _loadingCountry, null));
+		collide(true);
+		drawing(true);
+		dreamFire(true);
+	}
+
+	private void checkLoadingCountry()
+	{
+		_loadingCountry = null;
+		if(loadingCountry == null)
+			return;
+		Class class1 = getClass();
+		if(Property.value(class1, "PaintScheme_" + loadingCountry) != null && Property.stringValue(class1, "meshName_" + loadingCountry, null) != null)
+			_loadingCountry = loadingCountry;
+	}
+
+	public static String getPropertyMeshDemo(Class class1, String s)
+	{
+		String s1 = "meshNameDemo";
+		String s2 = Property.stringValue(class1, s1, (String)null);
+		if(s2 != null)
+			return s2;
+		else
+			return getPropertyMesh(class1, s);
+	}
+
+	public static String getPropertyMesh(Class class1, String s)
+	{
+		String s1 = "meshName";
+		String s2 = null;
+		if(s != null)
+			s2 = Property.stringValue(class1, s1 + "_" + s, null);
+		if(s2 == null)
+			s2 = Property.stringValue(class1, s1);
+		return s2;
+	}
+
+	public static PaintScheme getPropertyPaintScheme(Class class1, String s)
+	{
+		String s1 = "PaintScheme";
+		PaintScheme paintscheme = null;
+		if(s != null)
+			paintscheme = (PaintScheme)Property.value(class1, s1 + "_" + s, null);
+		if(paintscheme == null)
+			paintscheme = (PaintScheme)Property.value(class1, s1);
+		return paintscheme;
+	}
+
+	public String typedName()
+	{
+		return typedName;
+	}
+
+	private void correctTypedName()
+	{
+		if(typedName != null && typedName.indexOf('_') >= 0)
+		{
+			StringBuffer stringbuffer = new StringBuffer();
+			int i = typedName.length();
+			for(int j = 0; j < i; j++)
+			{
+				char c = typedName.charAt(j);
+				if(c != '_')
+					stringbuffer.append(c);
+			}
+
+			typedName = stringbuffer.toString();
+		}
+	}
+
+	public void preparePaintScheme()
+	{
+		PaintScheme paintscheme = getPropertyPaintScheme(getClass(), _loadingCountry);
+		if(paintscheme != null)
+		{
+			paintscheme.prepare(this, bPaintShemeNumberOn);
+			typedName = paintscheme.typedName(this);
+			correctTypedName();
+		}
+	}
+
+	public void preparePaintScheme(int i)
+	{
+		PaintScheme paintscheme = getPropertyPaintScheme(getClass(), _loadingCountry);
+		if(paintscheme != null)
+		{
+			paintscheme.prepareNum(this, i, bPaintShemeNumberOn);
+			typedName = paintscheme.typedNameNum(this, i);
+			correctTypedName();
+		}
+	}
+
+	public void prepareCamouflage()
+	{
+		String s = getPropertyMesh(getClass(), _loadingCountry);
+		prepareMeshCamouflage(s, hierMesh(), getClass(), getRegiment());
+	}
+
+	public static void prepareMeshCamouflage(String s, HierMesh hiermesh, Class class1, Regiment regiment)
+	{
+		prepareMeshCamouflage(s, hiermesh, null, class1, regiment);
+	}
+
+	public static void prepareMeshCamouflage(String s, HierMesh hiermesh, String s1, Class class1, Regiment regiment)
+	{
+		prepareMeshCamouflage(s, hiermesh, s1, null, class1, regiment);
+	}
+
+	public static void prepareMeshCamouflage(String s, HierMesh hiermesh, String s1, Mat amat[], Class class1, Regiment regiment)
+	{
+		if(!Config.isUSE_RENDER())
+			return;
+		String s2 = s.substring(0, s.lastIndexOf('/') + 1);
+		String s3 = "";
+		if(class1 != null)
+			try
+		{
+				Method method = class1.getMethod("getSkinPrefix", new Class[] {
+						java.lang.String.class, com.maddox.il2.ai.Regiment.class
+				});
+				s3 = (String)method.invoke(null, new Object[] {
+						new String(s), regiment
+				});
+		}
+		catch(Exception exception)
+		{
+			System.out.println(exception.getMessage());
+			exception.printStackTrace();
+		}
+		if(s1 == null)
+		{
+			String s5;
+			switch(World.cur().camouflage)
 			{
 			case 0: // '\0'
-			default:
-				FM = new Pilot(s);
-				break;
-
-			case 1: // '\001'
-				FM = new RealFlightModel(s);
-				break;
-
-			case 2: // '\002'
-				FM = new FlightModel(s);
-				FM.AP = new Autopilotage();
-				break;
-			}
-			FM.actor = this;
-			FM.AS.set(this, flag && !NetMissionTrack.isPlaying());
-			FM.EI.setNotMirror(flag && !NetMissionTrack.isPlaying());
-			SectFile sectfile = FlightModelMain.sectFile(s);
-			byte byte0 = 0;
-			String s1 = sectfile.get("SOUND", "FeedType", "PNEUMATIC");
-			if(s1.compareToIgnoreCase("PNEUMATIC") == 0)
-				byte0 = 0;
-			else
-				if(s1.compareToIgnoreCase("ELECTRIC") == 0)
-					byte0 = 1;
-				else
-					if(s1.compareToIgnoreCase("HYDRAULIC") == 0)
-						byte0 = 2;
-					else
-						System.out.println("ERROR: Invalid feed type" + s1);
-			FM.set(hierMesh());
-			forceGear(getClass(), hierMesh(), 1.0F);
-			FM.Gears.computePlaneLandPose(FM);
-			forceGear(getClass(), hierMesh(), 0.0F);
-			FM.EI.set(this);
-			initSound(sectfile);
-			sfxInit(byte0);
-			interpPut(FM, "FlightModel", Time.current(), null);
-		}
-
-		public void destroy()
-		{
-			if(isAlive() && Mission.isPlaying() && name().charAt(0) != ' ' && FM != null)
-			{
-				Front.checkAircraftCaptured(this);
-				World.onActorDied(this, World.remover);
-			}
-			if(lLight != null)
-			{
-				for(int i = 0; i < 4; i++)
-					ObjState.destroy(lLight[i]);
-
-			}
-			if(World.getPlayerAircraft() == this)
-				deleteCockpits();
-			Wing wing = getWing();
-			if(Actor.isValid(wing) && (wing instanceof NetWing))
-				wing.destroy();
-			detachGun(-1);
-			super.destroy();
-			_removeMesh();
-		}
-
-		public Object getSwitchListener(Message message)
-		{
-			return this;
-		}
-
-		public Aircraft()
-		{
-			spawnLocSingleCoop = null;
-			spawnActorName = null;
-			stationarySpawnLocSet = false;
-			timePostEndAction = -1L;
-			buried = false;
-			BayDoor_ = 0.0F;
-			AirBrake_ = 0.0F;
-			Steering_ = 0.0F;
-			wingfold_ = 0.0F;
-			cockpitDoor_ = 0.0F;
-			arrestor_ = 0.0F;
-			typedName = "UNKNOWN";
-			wfrGr21dropped = false;
-			bombScoreOwner = null;
-			headingBug = 0.0F;
-			idleTimeOnCarrier = 0;
-			bSpotter = false;
-			checkLoadingCountry();
-			if(_loadingCountry == null)
-				_setMesh(Property.stringValue(getClass(), "meshName", null));
-			else
-				_setMesh(Property.stringValue(getClass(), "meshName_" + _loadingCountry, null));
-			collide(true);
-			drawing(true);
-			dreamFire(true);
-		}
-
-		private void checkLoadingCountry()
-		{
-			_loadingCountry = null;
-			if(loadingCountry == null)
-				return;
-			Class class1 = getClass();
-			if(Property.value(class1, "PaintScheme_" + loadingCountry) != null && Property.stringValue(class1, "meshName_" + loadingCountry, null) != null)
-				_loadingCountry = loadingCountry;
-		}
-
-		public static String getPropertyMeshDemo(Class class1, String s)
-		{
-			String s1 = "meshNameDemo";
-			String s2 = Property.stringValue(class1, s1, (String)null);
-			if(s2 != null)
-				return s2;
-			else
-				return getPropertyMesh(class1, s);
-		}
-
-		public static String getPropertyMesh(Class class1, String s)
-		{
-			String s1 = "meshName";
-			String s2 = null;
-			if(s != null)
-				s2 = Property.stringValue(class1, s1 + "_" + s, null);
-			if(s2 == null)
-				s2 = Property.stringValue(class1, s1);
-			return s2;
-		}
-
-		public static PaintScheme getPropertyPaintScheme(Class class1, String s)
-		{
-			String s1 = "PaintScheme";
-			PaintScheme paintscheme = null;
-			if(s != null)
-				paintscheme = (PaintScheme)Property.value(class1, s1 + "_" + s, null);
-			if(paintscheme == null)
-				paintscheme = (PaintScheme)Property.value(class1, s1);
-			return paintscheme;
-		}
-
-		public String typedName()
-		{
-			return typedName;
-		}
-
-		private void correctTypedName()
-		{
-			if(typedName != null && typedName.indexOf('_') >= 0)
-			{
-				StringBuffer stringbuffer = new StringBuffer();
-				int i = typedName.length();
-				for(int j = 0; j < i; j++)
-				{
-					char c = typedName.charAt(j);
-					if(c != '_')
-						stringbuffer.append(c);
-				}
-
-				typedName = stringbuffer.toString();
-			}
-		}
-
-		public void preparePaintScheme()
-		{
-			PaintScheme paintscheme = getPropertyPaintScheme(getClass(), _loadingCountry);
-			if(paintscheme != null)
-			{
-				paintscheme.prepare(this, bPaintShemeNumberOn);
-				typedName = paintscheme.typedName(this);
-				correctTypedName();
-			}
-		}
-
-		public void preparePaintScheme(int i)
-		{
-			PaintScheme paintscheme = getPropertyPaintScheme(getClass(), _loadingCountry);
-			if(paintscheme != null)
-			{
-				paintscheme.prepareNum(this, i, bPaintShemeNumberOn);
-				typedName = paintscheme.typedNameNum(this, i);
-				correctTypedName();
-			}
-		}
-
-		public void prepareCamouflage()
-		{
-			String s = getPropertyMesh(getClass(), _loadingCountry);
-			prepareMeshCamouflage(s, hierMesh(), getClass(), getRegiment());
-		}
-
-		public static void prepareMeshCamouflage(String s, HierMesh hiermesh, Class class1, Regiment regiment)
-		{
-			prepareMeshCamouflage(s, hiermesh, null, class1, regiment);
-		}
-
-		public static void prepareMeshCamouflage(String s, HierMesh hiermesh, String s1, Class class1, Regiment regiment)
-		{
-			prepareMeshCamouflage(s, hiermesh, s1, null, class1, regiment);
-		}
-
-		public static void prepareMeshCamouflage(String s, HierMesh hiermesh, String s1, Mat amat[], Class class1, Regiment regiment)
-		{
-			if(!Config.isUSE_RENDER())
-				return;
-			String s2 = s.substring(0, s.lastIndexOf('/') + 1);
-			String s3 = "";
-			if(class1 != null)
-				try
-			{
-					Method method = class1.getMethod("getSkinPrefix", new Class[] {
-							java.lang.String.class, com.maddox.il2.ai.Regiment.class
-					});
-					s3 = (String)method.invoke(null, new Object[] {
-							new String(s), regiment
-					});
-			}
-			catch(Exception exception)
-			{
-				System.out.println(exception.getMessage());
-				exception.printStackTrace();
-			}
-			if(s1 == null)
-			{
-				String s5;
-				switch(World.cur().camouflage)
-				{
-				case 0: // '\0'
 				s5 = "summer";
 				break;
 
-				case 1: // '\001'
-					s5 = "winter";
-					break;
+			case 1: // '\001'
+				s5 = "winter";
+				break;
 
-				case 2: // '\002'
-					s5 = "desert";
-					break;
+			case 2: // '\002'
+				s5 = "desert";
+				break;
 
-				case 3: // '\003'
-					s5 = "pacific";
-					break;
+			case 3: // '\003'
+				s5 = "pacific";
+				break;
 
-				case 4: // '\004'
-					s5 = "eto";
-					break;
+			case 4: // '\004'
+				s5 = "eto";
+				break;
 
-				case 5: // '\005'
-					s5 = "mto";
-					break;
+			case 5: // '\005'
+				s5 = "mto";
+				break;
 
-				case 6: // '\006'
-					s5 = "cbi";
-					break;
+			case 6: // '\006'
+				s5 = "cbi";
+				break;
 
-				default:
-					s5 = "summer";
-					break;
-				}
-				String s4 = s3 + s5;
-				if(!existSFSFile(s2 + s4 + "/skin1o.tga"))
-					if(World.cur().camouflage == 5)
-					{
-						s4 = s3 + "desert";
-						if(!existSFSFile(s2 + s4 + "/skin1o.tga"))
-							s4 = s5;
-						if(!existSFSFile(s2 + s4 + "/skin1o.tga"))
-							s4 = "desert";
-						if(!existSFSFile(s2 + s4 + "/skin1o.tga"))
-							s4 = "summer";
-						if(!existSFSFile(s2 + s4 + "/skin1o.tga"))
-							return;
-					} else
-					{
-						s4 = s3 + "summer";
-						if(!existSFSFile(s2 + s4 + "/skin1o.tga"))
-							s4 = s5;
-						if(!existSFSFile(s2 + s4 + "/skin1o.tga"))
-							s4 = "summer";
-						if(!existSFSFile(s2 + s4 + "/skin1o.tga"))
-							return;
-					}
-				s1 = s2 + s4;
+			default:
+				s5 = "summer";
+				break;
 			}
-			String as[] = {
-					s1 + "/skin1o.tga", s1 + "/skin1p.tga", s1 + "/skin1q.tga"
-			};
-			int ai[] = new int[4];
-			for(int i = 0; i < _skinMat.length; i++)
-			{
-				int j = hiermesh.materialFind(_skinMat[i]);
-				if(j < 0)
-					continue;
-				Mat mat = hiermesh.material(j);
-				boolean flag = false;
-				label0:
-					for(int k = 0; k < 4; k++)
-					{
-						ai[k] = -1;
-						if(!mat.isValidLayer(k))
-							continue;
-						mat.setLayer(k);
-						String s7 = mat.get('\0');
-						int l = 0;
-						do
-						{
-							if(l >= 3)
-								continue label0;
-							if(s7.regionMatches(true, s7.length() - 10, _curSkin[l], 0, 10))
-							{
-								ai[k] = l;
-								flag = true;
-								continue label0;
-							}
-							l++;
-						} while(true);
-					}
-
-				if(!flag)
-					continue;
-				String s6 = s1 + "/" + _skinMat[i] + ".mat";
-				Mat mat1;
-				if(FObj.Exist(s6))
+			String s4 = s3 + s5;
+			if(!existSFSFile(s2 + s4 + "/skin1o.tga"))
+				if(World.cur().camouflage == 5)
 				{
-					mat1 = (Mat)FObj.Get(s6);
+					s4 = s3 + "desert";
+					if(!existSFSFile(s2 + s4 + "/skin1o.tga"))
+						s4 = s5;
+					if(!existSFSFile(s2 + s4 + "/skin1o.tga"))
+						s4 = "desert";
+					if(!existSFSFile(s2 + s4 + "/skin1o.tga"))
+						s4 = "summer";
+					if(!existSFSFile(s2 + s4 + "/skin1o.tga"))
+						return;
 				} else
 				{
-					mat1 = (Mat)mat.Clone();
-					mat1.Rename(s6);
-					for(int i1 = 0; i1 < 4; i1++)
-						if(ai[i1] >= 0)
-						{
-							mat1.setLayer(i1);
-							mat1.set('\0', as[ai[i1]]);
-						}
-
+					s4 = s3 + "summer";
+					if(!existSFSFile(s2 + s4 + "/skin1o.tga"))
+						s4 = s5;
+					if(!existSFSFile(s2 + s4 + "/skin1o.tga"))
+						s4 = "summer";
+					if(!existSFSFile(s2 + s4 + "/skin1o.tga"))
+						return;
 				}
-				if(amat != null)
-				{
-					for(int j1 = 0; j1 < 4; j1++)
-						if(ai[j1] >= 0)
-							amat[ai[j1]] = mat1;
-
-				}
-				hiermesh.materialReplace(_skinMat[i], mat1);
-			}
-
+			s1 = s2 + s4;
 		}
-
-		public static String getSkinPrefix(String s, Regiment regiment)
+		String as[] = {
+				s1 + "/skin1o.tga", s1 + "/skin1p.tga", s1 + "/skin1q.tga"
+		};
+		int ai[] = new int[4];
+		for(int i = 0; i < _skinMat.length; i++)
 		{
-			return "";
-		}
-
-		public static void prepareMeshSkin(String s, HierMesh hiermesh, String s1, String s2, Regiment regiment)
-		{
-			String s3 = s;
-			int i = s3.lastIndexOf('/');
-			if(i >= 0)
-				s3 = s3.substring(0, i + 1) + "summer";
-			else
-				s3 = s3 + "summer";
-			try
-			{
-				File file = new File(HomePath.toFileSystemName(s2, 0));
-				if(!file.isDirectory())
-					file.mkdir();
-			}
-			catch(Exception exception)
-			{
-				return;
-			}
-			if(!BmpUtils.bmp8PalTo4TGA4(s1, s3, s2))
-				return;
-			if(s2 == null)
-			{
-				return;
-			} else
-			{
-				prepareMeshCamouflage(s, hiermesh, s2, null, regiment);
-				return;
-			}
-		}
-
-		public static void prepareMeshPilot(HierMesh hiermesh, int i, String s, String s1)
-		{
-			prepareMeshPilot(hiermesh, i, s, s1, null);
-		}
-
-		public static void prepareMeshPilot(HierMesh hiermesh, int i, String s, String s1, Mat amat[])
-		{
-			if(!Config.isUSE_RENDER())
-				return;
-			String s2 = "Pilot" + (1 + i);
-			int j = hiermesh.materialFind(s2);
+			int j = hiermesh.materialFind(_skinMat[i]);
 			if(j < 0)
-				return;
-			Mat mat;
-			if(FObj.Exist(s))
-			{
-				mat = (Mat)FObj.Get(s);
-			} else
-			{
-				Mat mat1 = hiermesh.material(j);
-				mat = (Mat)mat1.Clone();
-				mat.Rename(s);
-				mat.setLayer(0);
-				mat.set('\0', s1);
-			}
-			if(amat != null)
-				amat[0] = mat;
-			hiermesh.materialReplace(s2, mat);
-		}
-
-		public static void prepareMeshNoseart(HierMesh hiermesh, String s, String s1, String s2, String s3)
-		{
-			prepareMeshNoseart(hiermesh, s, s1, s2, s3, null);
-		}
-
-		public static void prepareMeshNoseart(HierMesh hiermesh, String s, String s1, String s2, String s3, Mat amat[])
-		{
-			if(!Config.isUSE_RENDER())
-				return;
-			String s4 = "Overlay9";
-			int i = hiermesh.materialFind(s4);
-			if(i < 0)
-				return;
-			Mat mat;
-			if(FObj.Exist(s))
-			{
-				mat = (Mat)FObj.Get(s);
-			} else
-			{
-				Mat mat1 = hiermesh.material(i);
-				mat = (Mat)mat1.Clone();
-				mat.Rename(s);
-				mat.setLayer(0);
-				mat.set('\0', s2);
-			}
-			if(amat != null)
-				amat[0] = mat;
-			hiermesh.materialReplace(s4, mat);
-			s4 = "OverlayA";
-			i = hiermesh.materialFind(s4);
-			if(i < 0)
-				return;
-			if(FObj.Exist(s1))
-			{
-				mat = (Mat)FObj.Get(s1);
-			} else
-			{
-				Mat mat2 = hiermesh.material(i);
-				mat = (Mat)mat2.Clone();
-				mat.Rename(s1);
-				mat.setLayer(0);
-				mat.set('\0', s3);
-			}
-			if(amat != null)
-				amat[1] = mat;
-			hiermesh.materialReplace(s4, mat);
-		}
-
-		private static boolean existSFSFile(String s)
-		{
-			try{
-				SFSInputStream sfsinputstream = new SFSInputStream(s);
-				sfsinputstream.close();
-				return true;
-			}
-			catch(Exception exception){
-				return false;
-			}
-		}
-
-		public double getSpeed(Vector3d vector3d)
-		{
-			if(FM == null)
-			{
-				if(vector3d != null)
-					vector3d.set(0.0D, 0.0D, 0.0D);
-				return 0.0D;
-			}
-			if(vector3d != null)
-				vector3d.set(FM.Vwld);
-			return FM.Vwld.length();
-		}
-
-		public void setSpeed(Vector3d vector3d)
-		{
-			super.setSpeed(vector3d);
-			FM.Vwld.set(vector3d);
-		}
-
-		public void setOnGround(Point3d point3d, Orient orient, Vector3d vector3d)
-		{
-			FM.CT.setLanded();
-			forceGear(getClass(), hierMesh(), FM.CT.getGear());
-			if(point3d != null && orient != null)
-			{
-				pos.setAbs(point3d, orient);
-				pos.reset();
-			}
-			if(vector3d != null)
-				setSpeed(vector3d);
-		}
-
-		public void load(SectFile sectfile, String s, int i, NetChannel netchannel, int j)
-				throws Exception
+				continue;
+			Mat mat = hiermesh.material(j);
+			boolean flag = false;
+			label0:
+				for(int k = 0; k < 4; k++)
 				{
-			if(this == World.getPlayerAircraft())
-			{
-				setFM(1, true);
-				World.setPlayerFM();
-			} else
-				if(netchannel != null)
-					setFM(2, false);
-				else
-					setFM(0, true);
-			String s1 = sectfile.get(s, "spawn" + i, "");
-			if(!s1.equals(""))
-			{
-				spawnActorName = s1;
-				int k = sectfile.sectionIndex("NStationary");
-				if(k >= 0)
-				{
-					int l = sectfile.vars(k);
-					int j1 = 0;
+					ai[k] = -1;
+					if(!mat.isValidLayer(k))
+						continue;
+					mat.setLayer(k);
+					String s7 = mat.get('\0');
+					int l = 0;
 					do
 					{
-						if(j1 >= l)
-							break;
-						NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(k, j1));
-						String s4 = numbertokenizer.next("");
-						String s6 = numbertokenizer.next("");
-						if(s4.equals(s1) && s6.startsWith("vehicles.planes.Plane"))
+						if(l >= 3)
+							continue label0;
+						if(s7.regionMatches(true, s7.length() - 10, _curSkin[l], 0, 10))
 						{
-							numbertokenizer.next(0);
-							double d = numbertokenizer.next(0.0D);
-							double d1 = numbertokenizer.next(0.0D);
-							float f = numbertokenizer.next(0.0F);
-							spawnLocSingleCoop = new Loc(d, d1, 0.0D, f, 0.0F, 0.0F);
-							break;
+							ai[k] = l;
+							flag = true;
+							continue label0;
 						}
-						j1++;
+						l++;
 					} while(true);
 				}
-			}
-			if(sectfile.exist(s, "Skill" + i))
-				FM.setSkill(sectfile.get(s, "Skill" + i, 1));
-			else
-				FM.setSkill(sectfile.get(s, "Skill", 1));
-			FM.M.fuel = sectfile.get(s, "Fuel", 100F, 0.0F, 100F) * 0.01F * FM.M.maxFuel;
-			if(sectfile.exist(s, "numberOn" + i))
-				bPaintShemeNumberOn = sectfile.get(s, "numberOn" + i, 1, 0, 1) == 1;
-			FM.AS.bIsEnableToBailout = sectfile.get(s, "Parachute", 1, 0, 1) == 1;
-			if(Mission.isServer())
-				createNetObject(null, 0);
-			else
-				if(netchannel != null)
-					createNetObject(netchannel, j);
-			if(net != null)
-			{
-				((NetAircraft.AircraftNet)net).netName = name();
-				((NetAircraft.AircraftNet)net).netUser = null;
-			}
-			String s2 = s + "_weapons";
-			int i1 = sectfile.sectionIndex(s2);
-			if(i1 >= 0)
-			{
-				int k1 = sectfile.vars(i1);
-				for(int l1 = 0; l1 < k1; l1++)
-				{
-					NumberTokenizer numbertokenizer1 = new NumberTokenizer(sectfile.line(i1, l1));
-					int j2 = numbertokenizer1.next(9, 0, 19);
-					String s3 = numbertokenizer1.next();
-					String s5 = numbertokenizer1.next();
-					Class class1 = ObjIO.classForName("weapons." + s5);
-					Object obj = class1.newInstance();
-					if(obj instanceof BulletEmitter)
-					{
-						BulletEmitter bulletemitter = (BulletEmitter)obj;
-						bulletemitter.set(this, s3, dumpName(s3));
-						int i2 = numbertokenizer1.next(-12345);
-						if(i2 == -12345)
-							bulletemitter.loadBullets();
-						else
-							bulletemitter._loadBullets(i2);
-						addGun(bulletemitter, j2);
-					}
-				}
 
+			if(!flag)
+				continue;
+			String s6 = s1 + "/" + _skinMat[i] + ".mat";
+			Mat mat1;
+			if(FObj.Exist(s6))
+			{
+				mat1 = (Mat)FObj.Get(s6);
 			} else
 			{
-				thisWeaponsName = sectfile.get(s, "weapons", (String)null);
-				if(thisWeaponsName != null)
-					weaponsLoad(this, thisWeaponsName);
-			}
-			if(this == World.getPlayerAircraft())
-				createCockpits();
-			onAircraftLoaded();
-			FM.Gears.zutiCheckPlaneForSkisAndWinterCamo(getClass().toString());
-				}
+				mat1 = (Mat)mat.Clone();
+				mat1.Rename(s6);
+				for(int i1 = 0; i1 < 4; i1++)
+					if(ai[i1] >= 0)
+					{
+						mat1.setLayer(i1);
+						mat1.set('\0', as[ai[i1]]);
+					}
 
-		private static String dumpName(String s)
-		{
-			int i;
-			for(i = s.length() - 1; i >= 0 && Character.isDigit(s.charAt(i)); i--);
-			i++;
-			return s.substring(0, i) + "Dump" + s.substring(i);
+			}
+			if(amat != null)
+			{
+				for(int j1 = 0; j1 < 4; j1++)
+					if(ai[j1] >= 0)
+						amat[ai[j1]] = mat1;
+
+			}
+			hiermesh.materialReplace(_skinMat[i], mat1);
 		}
 
-		public boolean turretAngles(int i, float af[])
-		{
-			for(int j = 0; j < 2; j++)
-			{
-				af[j] = (af[j] + 3600F) % 360F;
-				if(af[j] > 180F)
-					af[j] -= 360F;
-			}
+	}
 
-			af[2] = 0.0F;
+	public static String getSkinPrefix(String s, Regiment regiment)
+	{
+		return "";
+	}
+
+	public static boolean prepareMeshSkin(String s, HierMesh hiermesh, String s1, String s2, Regiment regiment)
+	{
+		String s3 = s;
+		int i = s3.lastIndexOf('/');
+		if(i >= 0)
+			s3 = s3.substring(0, i + 1) + "summer";
+		else
+			s3 = s3 + "summer";
+		try
+		{
+			File file = new File(HomePath.toFileSystemName(s2, 0));
+			if(!file.isDirectory())
+				file.mkdir();
+		}
+		catch(Exception exception)
+		{
+			return false;
+		}
+		if(!BmpUtils.bmp8PalTo4TGA4(s1, s3, s2))
+			return false;
+		if(s2 == null)
+		{
+			return false;
+		} else
+		{
+			prepareMeshCamouflage(s, hiermesh, s2, null, regiment);
 			return true;
 		}
+	}
 
-		public int WeaponsMask()
+	public static void prepareMeshPilot(HierMesh hiermesh, int i, String s, String s1)
+	{
+		prepareMeshPilot(hiermesh, i, s, s1, null);
+	}
+
+	public static void prepareMeshPilot(HierMesh hiermesh, int i, String s, String s1, Mat amat[])
+	{
+		if(!Config.isUSE_RENDER())
+			return;
+		String s2 = "Pilot" + (1 + i);
+		int j = hiermesh.materialFind(s2);
+		if(j < 0)
+			return;
+		Mat mat;
+		if(FObj.Exist(s))
 		{
-			return -1;
+			mat = (Mat)FObj.Get(s);
+		} else
+		{
+			Mat mat1 = hiermesh.material(j);
+			mat = (Mat)mat1.Clone();
+			mat.Rename(s);
+			mat.setLayer(0);
+			mat.set('\0', s1);
 		}
+		if(amat != null)
+			amat[0] = mat;
+		hiermesh.materialReplace(s2, mat);
+	}
 
-		public int HitbyMask()
+	public static void prepareMeshNoseart(HierMesh hiermesh, String s, String s1, String s2, String s3)
+	{
+		prepareMeshNoseart(hiermesh, s, s1, s2, s3, null);
+	}
+
+	public static void prepareMeshNoseart(HierMesh hiermesh, String s, String s1, String s2, String s3, Mat amat[])
+	{
+		if(!Config.isUSE_RENDER())
+			return;
+		String s4 = "Overlay9";
+		int i = hiermesh.materialFind(s4);
+		if(i < 0)
+			return;
+		Mat mat;
+		if(FObj.Exist(s))
 		{
-			try {
-				return FM.Vwld.length() >= 2D ? -25 : -1;
-			} catch (NullPointerException nullpointerexception) {
-				return 0;
-			}
+			mat = (Mat)FObj.Get(s);
+		} else
+		{
+			Mat mat1 = hiermesh.material(i);
+			mat = (Mat)mat1.Clone();
+			mat.Rename(s);
+			mat.setLayer(0);
+			mat.set('\0', s2);
 		}
-
-		public int chooseBulletType(BulletProperties abulletproperties[])
+		if(amat != null)
+			amat[0] = mat;
+		hiermesh.materialReplace(s4, mat);
+		s4 = "OverlayA";
+		i = hiermesh.materialFind(s4);
+		if(i < 0)
+			return;
+		if(FObj.Exist(s1))
 		{
-			if(FM.isTakenMortalDamage())
-				return -1;
-			if(abulletproperties.length == 1)
-				return 0;
-			if(abulletproperties.length <= 0)
-				return -1;
-			if(abulletproperties[0].power <= 0.0F)
-				return 1;
-			if(abulletproperties[1].power <= 0.0F)
-				return 0;
-			if(abulletproperties[0].powerType == 1)
-				return 0;
-			if(abulletproperties[1].powerType == 1)
-				return 1;
-			if(abulletproperties[0].powerType == 0)
-				return 0;
-			if(abulletproperties[1].powerType == 0)
-				return 1;
-			return abulletproperties[0].powerType != 2 ? 0 : 1;
+			mat = (Mat)FObj.Get(s1);
+		} else
+		{
+			Mat mat2 = hiermesh.material(i);
+			mat = (Mat)mat2.Clone();
+			mat.Rename(s1);
+			mat.setLayer(0);
+			mat.set('\0', s3);
 		}
+		if(amat != null)
+			amat[1] = mat;
+		hiermesh.materialReplace(s4, mat);
+	}
 
-		public int chooseShotpoint(BulletProperties bulletproperties)
-		{
-			return !FM.isTakenMortalDamage() ? 0 : -1;
-		}
-
-		public boolean getShotpointOffset(int i, Point3d point3d)
-		{
-			if(FM.isTakenMortalDamage())
-				return false;
-			if(i != 0)
-				return false;
-			if(point3d != null)
-				point3d.set(0.0D, 0.0D, 0.0D);
+	private static boolean existSFSFile(String s)
+	{
+		try{
+			SFSInputStream sfsinputstream = new SFSInputStream(s);
+			sfsinputstream.close();
 			return true;
 		}
-
-		public float AttackMaxDistance()
-		{
-			return 1500F;
+		catch(Exception exception){
+			return false;
 		}
+	}
 
-		private static int[] getSwTbl(int i)
+	public double getSpeed(Vector3d vector3d)
+	{
+		if(FM == null)
 		{
-			if(i < 0)
-				i = -i;
-			int j = i % 16 + 11;
-			int k = i % Finger.kTable.length;
-			if(j < 0)
-				j = -j % 16;
-			if(j < 10)
-				j = 10;
-			if(k < 0)
-				k = -k % Finger.kTable.length;
-			int ai[] = new int[j];
-			for(int l = 0; l < j; l++)
-				ai[l] = Finger.kTable[(k + l) % Finger.kTable.length];
-
-			return ai;
+			if(vector3d != null)
+				vector3d.set(0.0D, 0.0D, 0.0D);
+			return 0.0D;
 		}
+		if(vector3d != null)
+			vector3d.set(FM.Vwld);
+		return FM.Vwld.length();
+	}
 
-		public static void weapons(Class class1)
+	public void setSpeed(Vector3d vector3d)
+	{
+		super.setSpeed(vector3d);
+		FM.Vwld.set(vector3d);
+	}
+
+	public void setOnGround(Point3d point3d, Orient orient, Vector3d vector3d)
+	{
+		FM.CT.setLanded();
+		forceGear(getClass(), hierMesh(), FM.CT.getGear());
+		if(point3d != null && orient != null)
 		{
-			try
+			pos.setAbs(point3d, orient);
+			pos.reset();
+		}
+		if(vector3d != null)
+			setSpeed(vector3d);
+	}
+
+	public void load(SectFile sectfile, String s, int i, NetChannel netchannel, int j)
+			throws Exception
 			{
-				int i = Finger.Int("ce" + class1.getName() + "vd");
-				BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(i, "adt"))), getSwTbl(i))));
-				ArrayList arraylist = weaponsListProperty(class1);
-				HashMapInt hashmapint = weaponsMapProperty(class1);
+		if(this == World.getPlayerAircraft())
+		{
+			setFM(1, true);
+			World.setPlayerFM();
+		} else
+			if(netchannel != null)
+				setFM(2, false);
+			else
+				setFM(0, true);
+		String s1 = sectfile.get(s, "spawn" + i, "");
+		if(!s1.equals(""))
+		{
+			spawnActorName = s1;
+			int k = sectfile.sectionIndex("NStationary");
+			if(k >= 0)
+			{
+				int l = sectfile.vars(k);
+				int j1 = 0;
 				do
 				{
-					String s = bufferedreader.readLine();
-					if(s == null)
+					if(j1 >= l)
 						break;
-					StringTokenizer stringtokenizer = new StringTokenizer(s, ",");
-					int j = stringtokenizer.countTokens() - 1;
-					String s1 = stringtokenizer.nextToken();
-					_WeaponSlot a_lweaponslot[] = new _WeaponSlot[j];
-					for(int k = 0; k < j; k++)
+					NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(k, j1));
+					String s4 = numbertokenizer.next("");
+					String s6 = numbertokenizer.next("");
+					if(s4.equals(s1) && s6.startsWith("vehicles.planes.Plane"))
 					{
-						String s2 = stringtokenizer.nextToken();
-						if(s2 != null && s2.length() > 3)
-						{
-							NumberTokenizer numbertokenizer = new NumberTokenizer(s2);
-							a_lweaponslot[k] = new _WeaponSlot(numbertokenizer.next(0), numbertokenizer.next(null), numbertokenizer.next(-12345));
-						}
+						numbertokenizer.next(0);
+						double d = numbertokenizer.next(0.0D);
+						double d1 = numbertokenizer.next(0.0D);
+						float f = numbertokenizer.next(0.0F);
+						spawnLocSingleCoop = new Loc(d, d1, 0.0D, f, 0.0F, 0.0F);
+						break;
 					}
-
-					arraylist.add(s1);
-					hashmapint.put(Finger.Int(s1), a_lweaponslot);
+					j1++;
 				} while(true);
-				bufferedreader.close();
 			}
-			catch(Exception exception) { }
+		}
+		if(sectfile.exist(s, "Skill" + i))
+			FM.setSkill(sectfile.get(s, "Skill" + i, 1));
+		else
+			FM.setSkill(sectfile.get(s, "Skill", 1));
+		FM.M.fuel = sectfile.get(s, "Fuel", 100F, 0.0F, 100F) * 0.01F * FM.M.maxFuel;
+		if(sectfile.exist(s, "numberOn" + i))
+			bPaintShemeNumberOn = sectfile.get(s, "numberOn" + i, 1, 0, 1) == 1;
+		FM.AS.bIsEnableToBailout = sectfile.get(s, "Parachute", 1, 0, 1) == 1;
+		if(Mission.isServer())
+			createNetObject(null, 0);
+		else
+			if(netchannel != null)
+				createNetObject(netchannel, j);
+		if(net != null)
+		{
+			((NetAircraft.AircraftNet)net).netName = name();
+			((NetAircraft.AircraftNet)net).netUser = null;
+		}
+		String s2 = s + "_weapons";
+		int i1 = sectfile.sectionIndex(s2);
+		if(i1 >= 0)
+		{
+			int k1 = sectfile.vars(i1);
+			for(int l1 = 0; l1 < k1; l1++)
+			{
+				NumberTokenizer numbertokenizer1 = new NumberTokenizer(sectfile.line(i1, l1));
+				int j2 = numbertokenizer1.next(9, 0, 19);
+				String s3 = numbertokenizer1.next();
+				String s5 = numbertokenizer1.next();
+				Class class1 = ObjIO.classForName("weapons." + s5);
+				Object obj = class1.newInstance();
+				if(obj instanceof BulletEmitter)
+				{
+					BulletEmitter bulletemitter = (BulletEmitter)obj;
+					bulletemitter.set(this, s3, dumpName(s3));
+					int i2 = numbertokenizer1.next(-12345);
+					if(i2 == -12345)
+						bulletemitter.loadBullets();
+					else
+						bulletemitter._loadBullets(i2);
+					addGun(bulletemitter, j2);
+				}
+			}
+
+		} else
+		{
+			thisWeaponsName = sectfile.get(s, "weapons", (String)null);
+			if(thisWeaponsName != null)
+				weaponsLoad(this, thisWeaponsName);
+		}
+		if(this == World.getPlayerAircraft())
+			createCockpits();
+		onAircraftLoaded();
+		FM.Gears.zutiCheckPlaneForSkisAndWinterCamo(getClass().toString());
+			}
+
+	private static String dumpName(String s)
+	{
+		int i;
+		for(i = s.length() - 1; i >= 0 && Character.isDigit(s.charAt(i)); i--);
+		i++;
+		return s.substring(0, i) + "Dump" + s.substring(i);
+	}
+
+	public boolean turretAngles(int i, float af[])
+	{
+		for(int j = 0; j < 2; j++)
+		{
+			af[j] = (af[j] + 3600F) % 360F;
+			if(af[j] > 180F)
+				af[j] -= 360F;
 		}
 
-		public long finger(long l)
-		{
-			Class class1 = getClass();
-			l = FlightModelMain.finger(l, Property.stringValue(class1, "FlightModel", null));
-			l = Finger.incLong(l, Property.stringValue(class1, "meshName", null));
-			Object obj = Property.value(class1, "cockpitClass", null);
-			if(obj != null)
-				if(obj instanceof Class)
-				{
-					l = Finger.incLong(l, ((Class)obj).getName());
-				} else
-				{
-					Class aclass[] = (Class[])(Class[])obj;
-					for(int j = 0; j < aclass.length; j++)
-						l = Finger.incLong(l, aclass[j].getName());
+		af[2] = 0.0F;
+		return true;
+	}
 
-				}
-			for(int i = 0; i < FM.CT.Weapons.length; i++)
+	public int WeaponsMask()
+	{
+		return -1;
+	}
+
+	public int HitbyMask()
+	{
+		try {
+			return FM.Vwld.length() >= 2D ? -25 : -1;
+		} catch (NullPointerException nullpointerexception) {
+			return 0;
+		}
+	}
+
+	public int chooseBulletType(BulletProperties abulletproperties[])
+	{
+		if(FM.isTakenMortalDamage())
+			return -1;
+		if(abulletproperties.length == 1)
+			return 0;
+		if(abulletproperties.length <= 0)
+			return -1;
+		if(abulletproperties[0].power <= 0.0F)
+			return 1;
+		if(abulletproperties[1].power <= 0.0F)
+			return 0;
+		if(abulletproperties[0].powerType == 1)
+			return 0;
+		if(abulletproperties[1].powerType == 1)
+			return 1;
+		if(abulletproperties[0].powerType == 0)
+			return 0;
+		if(abulletproperties[1].powerType == 0)
+			return 1;
+		return abulletproperties[0].powerType != 2 ? 0 : 1;
+	}
+
+	public int chooseShotpoint(BulletProperties bulletproperties)
+	{
+		return !FM.isTakenMortalDamage() ? 0 : -1;
+	}
+
+	public boolean getShotpointOffset(int i, Point3d point3d)
+	{
+		if(FM.isTakenMortalDamage())
+			return false;
+		if(i != 0)
+			return false;
+		if(point3d != null)
+			point3d.set(0.0D, 0.0D, 0.0D);
+		return true;
+	}
+
+	public float AttackMaxDistance()
+	{
+		return 1500F;
+	}
+
+	private static int[] getSwTbl(int i)
+	{
+		if(i < 0)
+			i = -i;
+		int j = i % 16 + 11;
+		int k = i % Finger.kTable.length;
+		if(j < 0)
+			j = -j % 16;
+		if(j < 10)
+			j = 10;
+		if(k < 0)
+			k = -k % Finger.kTable.length;
+		int ai[] = new int[j];
+		for(int l = 0; l < j; l++)
+			ai[l] = Finger.kTable[(k + l) % Finger.kTable.length];
+
+		return ai;
+	}
+
+	public static void weapons(Class class1)
+	{
+		try
+		{
+			int i = Finger.Int("ce" + class1.getName() + "vd");
+			BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(i, "adt"))), getSwTbl(i))));
+			ArrayList arraylist = weaponsListProperty(class1);
+			HashMapInt hashmapint = weaponsMapProperty(class1);
+			do
 			{
-				BulletEmitter abulletemitter[] = FM.CT.Weapons[i];
-				if(abulletemitter == null)
+				String s = bufferedreader.readLine();
+				if(s == null)
+					break;
+				StringTokenizer stringtokenizer = new StringTokenizer(s, ",");
+				int j = stringtokenizer.countTokens() - 1;
+				String s1 = stringtokenizer.nextToken();
+				_WeaponSlot a_lweaponslot[] = new _WeaponSlot[j];
+				for(int k = 0; k < j; k++)
+				{
+					String s2 = stringtokenizer.nextToken();
+					if(s2 != null && s2.length() > 3)
+					{
+						NumberTokenizer numbertokenizer = new NumberTokenizer(s2);
+						a_lweaponslot[k] = new _WeaponSlot(numbertokenizer.next(0), numbertokenizer.next(null), numbertokenizer.next(-12345));
+					}
+				}
+
+				arraylist.add(s1);
+				hashmapint.put(Finger.Int(s1), a_lweaponslot);
+			} while(true);
+			bufferedreader.close();
+		}
+		catch(Exception exception) { }
+	}
+
+	public long finger(long l)
+	{
+		Class class1 = getClass();
+		l = FlightModelMain.finger(l, Property.stringValue(class1, "FlightModel", null));
+		l = Finger.incLong(l, Property.stringValue(class1, "meshName", null));
+		Object obj = Property.value(class1, "cockpitClass", null);
+		if(obj != null)
+			if(obj instanceof Class)
+			{
+				l = Finger.incLong(l, ((Class)obj).getName());
+			} else
+			{
+				Class aclass[] = (Class[])(Class[])obj;
+				for(int j = 0; j < aclass.length; j++)
+					l = Finger.incLong(l, aclass[j].getName());
+
+			}
+		for(int i = 0; i < FM.CT.Weapons.length; i++)
+		{
+			BulletEmitter abulletemitter[] = FM.CT.Weapons[i];
+			if(abulletemitter == null)
+				continue;
+			for(int k = 0; k < abulletemitter.length; k++)
+			{
+				BulletEmitter bulletemitter = abulletemitter[k];
+				l = Finger.incLong(l, Property.intValue(bulletemitter, "_count", 0));
+				if(bulletemitter instanceof Gun)
+				{
+					GunProperties gunproperties = ((Gun)bulletemitter).prop;
+					l = Finger.incLong(l, gunproperties.shotFreq);
+					l = Finger.incLong(l, gunproperties.shotFreqDeviation);
+					l = Finger.incLong(l, gunproperties.maxDeltaAngle);
+					l = Finger.incLong(l, gunproperties.bullets);
+					BulletProperties abulletproperties[] = gunproperties.bullet;
+					if(abulletproperties == null)
+						continue;
+					for(int i1 = 0; i1 < abulletproperties.length; i1++)
+					{
+						l = Finger.incLong(l, abulletproperties[i1].massa);
+						l = Finger.incLong(l, abulletproperties[i1].kalibr);
+						l = Finger.incLong(l, abulletproperties[i1].speed);
+						l = Finger.incLong(l, abulletproperties[i1].cumulativePower);
+						l = Finger.incLong(l, abulletproperties[i1].power);
+						l = Finger.incLong(l, abulletproperties[i1].powerType);
+						l = Finger.incLong(l, abulletproperties[i1].powerRadius);
+						l = Finger.incLong(l, abulletproperties[i1].timeLife);
+					}
+
 					continue;
-				for(int k = 0; k < abulletemitter.length; k++)
-				{
-					BulletEmitter bulletemitter = abulletemitter[k];
-					l = Finger.incLong(l, Property.intValue(bulletemitter, "_count", 0));
-					if(bulletemitter instanceof Gun)
-					{
-						GunProperties gunproperties = ((Gun)bulletemitter).prop;
-						l = Finger.incLong(l, gunproperties.shotFreq);
-						l = Finger.incLong(l, gunproperties.shotFreqDeviation);
-						l = Finger.incLong(l, gunproperties.maxDeltaAngle);
-						l = Finger.incLong(l, gunproperties.bullets);
-						BulletProperties abulletproperties[] = gunproperties.bullet;
-						if(abulletproperties == null)
-							continue;
-						for(int i1 = 0; i1 < abulletproperties.length; i1++)
-						{
-							l = Finger.incLong(l, abulletproperties[i1].massa);
-							l = Finger.incLong(l, abulletproperties[i1].kalibr);
-							l = Finger.incLong(l, abulletproperties[i1].speed);
-							l = Finger.incLong(l, abulletproperties[i1].cumulativePower);
-							l = Finger.incLong(l, abulletproperties[i1].power);
-							l = Finger.incLong(l, abulletproperties[i1].powerType);
-							l = Finger.incLong(l, abulletproperties[i1].powerRadius);
-							l = Finger.incLong(l, abulletproperties[i1].timeLife);
-						}
-
-						continue;
-					}
-					if(bulletemitter instanceof RocketGun)
-					{
-						RocketGun rocketgun = (RocketGun)bulletemitter;
-						Class class2 = (Class)Property.value(rocketgun.getClass(), "bulletClass", null);
-						l = Finger.incLong(l, Property.intValue(rocketgun.getClass(), "bullets", 1));
-						l = Finger.incLong(l, Property.floatValue(rocketgun.getClass(), "shotFreq", 0.5F));
-						if(class2 != null)
-						{
-							l = Finger.incLong(l, Property.floatValue(class2, "radius", 1.0F));
-							l = Finger.incLong(l, Property.floatValue(class2, "timeLife", 1.0F));
-							l = Finger.incLong(l, Property.floatValue(class2, "timeFire", 1.0F));
-							l = Finger.incLong(l, Property.floatValue(class2, "force", 1.0F));
-							l = Finger.incLong(l, Property.floatValue(class2, "power", 1.0F));
-							l = Finger.incLong(l, Property.intValue(class2, "powerType", 1));
-							l = Finger.incLong(l, Property.floatValue(class2, "kalibr", 1.0F));
-							l = Finger.incLong(l, Property.floatValue(class2, "massa", 1.0F));
-							l = Finger.incLong(l, Property.floatValue(class2, "massaEnd", 1.0F));
-						}
-						continue;
-					}
-					if(!(bulletemitter instanceof BombGun))
-						continue;
-					BombGun bombgun = (BombGun)bulletemitter;
-					Class class3 = (Class)Property.value(bombgun.getClass(), "bulletClass", null);
-					l = Finger.incLong(l, Property.intValue(bombgun.getClass(), "bullets", 1));
-					l = Finger.incLong(l, Property.floatValue(bombgun.getClass(), "shotFreq", 0.5F));
-					if(class3 != null)
-					{
-						l = Finger.incLong(l, Property.floatValue(class3, "radius", 1.0F));
-						l = Finger.incLong(l, Property.floatValue(class3, "power", 1.0F));
-						l = Finger.incLong(l, Property.intValue(class3, "powerType", 1));
-						l = Finger.incLong(l, Property.floatValue(class3, "kalibr", 1.0F));
-						l = Finger.incLong(l, Property.floatValue(class3, "massa", 1.0F));
-					}
 				}
-
+				if(bulletemitter instanceof RocketGun)
+				{
+					RocketGun rocketgun = (RocketGun)bulletemitter;
+					Class class2 = (Class)Property.value(rocketgun.getClass(), "bulletClass", null);
+					l = Finger.incLong(l, Property.intValue(rocketgun.getClass(), "bullets", 1));
+					l = Finger.incLong(l, Property.floatValue(rocketgun.getClass(), "shotFreq", 0.5F));
+					if(class2 != null)
+					{
+						l = Finger.incLong(l, Property.floatValue(class2, "radius", 1.0F));
+						l = Finger.incLong(l, Property.floatValue(class2, "timeLife", 1.0F));
+						l = Finger.incLong(l, Property.floatValue(class2, "timeFire", 1.0F));
+						l = Finger.incLong(l, Property.floatValue(class2, "force", 1.0F));
+						l = Finger.incLong(l, Property.floatValue(class2, "power", 1.0F));
+						l = Finger.incLong(l, Property.intValue(class2, "powerType", 1));
+						l = Finger.incLong(l, Property.floatValue(class2, "kalibr", 1.0F));
+						l = Finger.incLong(l, Property.floatValue(class2, "massa", 1.0F));
+						l = Finger.incLong(l, Property.floatValue(class2, "massaEnd", 1.0F));
+					}
+					continue;
+				}
+				if(!(bulletemitter instanceof BombGun))
+					continue;
+				BombGun bombgun = (BombGun)bulletemitter;
+				Class class3 = (Class)Property.value(bombgun.getClass(), "bulletClass", null);
+				l = Finger.incLong(l, Property.intValue(bombgun.getClass(), "bullets", 1));
+				l = Finger.incLong(l, Property.floatValue(bombgun.getClass(), "shotFreq", 0.5F));
+				if(class3 != null)
+				{
+					l = Finger.incLong(l, Property.floatValue(class3, "radius", 1.0F));
+					l = Finger.incLong(l, Property.floatValue(class3, "power", 1.0F));
+					l = Finger.incLong(l, Property.intValue(class3, "powerType", 1));
+					l = Finger.incLong(l, Property.floatValue(class3, "kalibr", 1.0F));
+					l = Finger.incLong(l, Property.floatValue(class3, "massa", 1.0F));
+				}
 			}
 
-			return l;
 		}
 
-		protected static void weaponTriggersRegister(Class class1, int ai[])
+		return l;
+	}
+
+	protected static void weaponTriggersRegister(Class class1, int ai[])
+	{
+		Property.set(class1, "weaponTriggers", ai);
+	}
+
+	public static int[] getWeaponTriggersRegistered(Class class1)
+	{
+		return (int[])(int[])Property.value(class1, "weaponTriggers", null);
+	}
+
+	protected static void weaponHooksRegister(Class class1, String as[])
+	{
+		if(as.length != getWeaponTriggersRegistered(class1).length)
 		{
-			Property.set(class1, "weaponTriggers", ai);
+			throw new RuntimeException("Sizeof 'weaponHooks' != sizeof 'weaponTriggers'");
+		} else
+		{
+			Property.set(class1, "weaponHooks", as);
+			return;
 		}
+	}
 
-		public static int[] getWeaponTriggersRegistered(Class class1)
+	public static String[] getWeaponHooksRegistered(Class class1)
+	{
+		return (String[])(String[])Property.value(class1, "weaponHooks", null);
+	}
+
+	protected static void weaponsRegister(Class class1, String s, String as[])
+	{
+	}
+
+	protected static void weaponsUnRegister(Class class1, String s)
+	{
+		ArrayList arraylist = weaponsListProperty(class1);
+		HashMapInt hashmapint = weaponsMapProperty(class1);
+		int i = arraylist.indexOf(s);
+		if(i < 0)
 		{
-			return (int[])(int[])Property.value(class1, "weaponTriggers", null);
+			return;
+		} else
+		{
+			arraylist.remove(i);
+			hashmapint.remove(Finger.Int(s));
+			return;
 		}
+	}
 
-		protected static void weaponHooksRegister(Class class1, String as[])
+	public static String[] getWeaponsRegistered(Class class1)
+	{
+		ArrayList arraylist = weaponsListProperty(class1);
+		String as[] = new String[arraylist.size()];
+		for(int i = 0; i < as.length; i++)
+			as[i] = (String)arraylist.get(i);
+
+		return as;
+	}
+
+	public static _WeaponSlot[] getWeaponSlotsRegistered(Class class1, String s)
+	{
+		HashMapInt hashmapint = weaponsMapProperty(class1);
+		return (_WeaponSlot[])(_WeaponSlot[])hashmapint.get(Finger.Int(s));
+	}
+
+	public static boolean weaponsExist(Class class1, String s)
+	{
+		Object obj = Property.value(class1, "weaponsMap", null);
+		if(obj == null)
 		{
-			if(as.length != getWeaponTriggersRegistered(class1).length)
-			{
-				throw new RuntimeException("Sizeof 'weaponHooks' != sizeof 'weaponTriggers'");
-			} else
-			{
-				Property.set(class1, "weaponHooks", as);
-				return;
-			}
-		}
-
-		public static String[] getWeaponHooksRegistered(Class class1)
+			return false;
+		} else
 		{
-			return (String[])(String[])Property.value(class1, "weaponHooks", null);
-		}
-
-		protected static void weaponsRegister(Class class1, String s, String as[])
-		{
-		}
-
-		protected static void weaponsUnRegister(Class class1, String s)
-		{
-			ArrayList arraylist = weaponsListProperty(class1);
-			HashMapInt hashmapint = weaponsMapProperty(class1);
-			int i = arraylist.indexOf(s);
-			if(i < 0)
-			{
-				return;
-			} else
-			{
-				arraylist.remove(i);
-				hashmapint.remove(Finger.Int(s));
-				return;
-			}
-		}
-
-		public static String[] getWeaponsRegistered(Class class1)
-		{
-			ArrayList arraylist = weaponsListProperty(class1);
-			String as[] = new String[arraylist.size()];
-			for(int i = 0; i < as.length; i++)
-				as[i] = (String)arraylist.get(i);
-
-			return as;
-		}
-
-		public static _WeaponSlot[] getWeaponSlotsRegistered(Class class1, String s)
-		{
-			HashMapInt hashmapint = weaponsMapProperty(class1);
-			return (_WeaponSlot[])(_WeaponSlot[])hashmapint.get(Finger.Int(s));
-		}
-
-		public static boolean weaponsExist(Class class1, String s)
-		{
-			Object obj = Property.value(class1, "weaponsMap", null);
-			if(obj == null)
-			{
-				return false;
-			} else
-			{
-				HashMapInt hashmapint = (HashMapInt)obj;
-				int i = Finger.Int(s);
-				boolean flag = isWeaponDateOk(class1, s);
-				return hashmapint.containsKey(i) && flag;
-			}
-		}
-
-		public static boolean isWeaponDateOk(Class class1, String s)
-		{
-			HashMapInt hashmapint = weaponsMapProperty(class1);
+			HashMapInt hashmapint = (HashMapInt)obj;
 			int i = Finger.Int(s);
-			if(!hashmapint.containsKey(i))
-				return true;
-			int j = Mission.getMissionDate(false);
-			if(j == 0)
-				return true;
-			String s1 = "";
-			try
-			{
-				s1 = class1.toString().substring(class1.toString().lastIndexOf(".") + 1, class1.toString().length());
-			}
-			catch(Exception exception)
-			{
-				return true;
-			}
-			String as[] = getWeaponHooksRegistered(class1);
-			_WeaponSlot a_lweaponslot[] = (_WeaponSlot[])(_WeaponSlot[])hashmapint.get(i);
-			for(int k = 0; k < as.length; k++)
-			{
-				if(a_lweaponslot[k] == null)
-					continue;
-				int l = Property.intValue(a_lweaponslot[k].clazz, "dateOfUse_" + s1, 0);
-				if(l == 0)
-					l = Property.intValue(a_lweaponslot[k].clazz, "dateOfUse", 0);
-				if(l != 0 && j < l)
-					return false;
-			}
+			boolean flag = isWeaponDateOk(class1, s);
+			return hashmapint.containsKey(i) && flag;
+		}
+	}
 
+	public static boolean isWeaponDateOk(Class class1, String s)
+	{
+		HashMapInt hashmapint = weaponsMapProperty(class1);
+		int i = Finger.Int(s);
+		if(!hashmapint.containsKey(i))
+			return true;
+		int j = Mission.getMissionDate(false);
+		if(j == 0)
+			return true;
+		String s1 = "";
+		try
+		{
+			s1 = class1.toString().substring(class1.toString().lastIndexOf(".") + 1, class1.toString().length());
+		}
+		catch(Exception exception)
+		{
 			return true;
 		}
+		String as[] = getWeaponHooksRegistered(class1);
+		_WeaponSlot a_lweaponslot[] = (_WeaponSlot[])(_WeaponSlot[])hashmapint.get(i);
+		for(int k = 0; k < as.length; k++)
+		{
+			if(a_lweaponslot[k] == null)
+				continue;
+			int l = Property.intValue(a_lweaponslot[k].clazz, "dateOfUse_" + s1, 0);
+			if(l == 0)
+				l = Property.intValue(a_lweaponslot[k].clazz, "dateOfUse", 0);
+			if(l != 0 && j < l)
+				return false;
+		}
 
-		protected void weaponsLoad(String s)
-				throws Exception
-				{
-			weaponsLoad(this, s);
-				}
+		return true;
+	}
 
-		protected void weaponsLoad(Aircraft aircraft, String s)
-				throws Exception
-				{
-			Class class1 = aircraft.getClass();
-			HashMapInt hashmapint = weaponsMapProperty(class1);
-			int i = Finger.Int(s);
-			if(!hashmapint.containsKey(i))
+	protected void weaponsLoad(String s)
+			throws Exception
 			{
-				throw new RuntimeException("Weapon set '" + s + "' not registered in " + ObjIO.classGetName(class1));
-			} else
-			{
-				weaponsLoad(aircraft, i, hashmapint);
-				return;
+		weaponsLoad(this, s);
 			}
-				}
 
-		protected void weaponsLoad(Aircraft aircraft, int i)
-				throws Exception
-				{
-			HashMapInt hashmapint = weaponsMapProperty(aircraft.getClass());
-			if(!hashmapint.containsKey(i))
+	protected void weaponsLoad(Aircraft aircraft, String s)
+			throws Exception
 			{
-				throw new RuntimeException("Weapon set '" + i + "' not registered in " + ObjIO.classGetName(aircraft.getClass()));
-			} else
-			{
-				weaponsLoad(aircraft, i, hashmapint);
-				return;
+		Class class1 = aircraft.getClass();
+		HashMapInt hashmapint = weaponsMapProperty(class1);
+		int i = Finger.Int(s);
+		if(!hashmapint.containsKey(i))
+		{
+			throw new RuntimeException("Weapon set '" + s + "' not registered in " + ObjIO.classGetName(class1));
+		} else
+		{
+			weaponsLoad(aircraft, i, hashmapint);
+			return;
+		}
 			}
-				}
 
-		protected void weaponsLoad(Aircraft aircraft, int i, HashMapInt hashmapint)
-				throws Exception
-				{
-			if(World.getPlayerAircraft() == aircraft)
+	protected void weaponsLoad(Aircraft aircraft, int i)
+			throws Exception
 			{
-				Fuze_EL_AZ.reset();
-				AircraftLH.clearInfo();
-				Torpedo.clearInfo();
+		HashMapInt hashmapint = weaponsMapProperty(aircraft.getClass());
+		if(!hashmapint.containsKey(i))
+		{
+			throw new RuntimeException("Weapon set '" + i + "' not registered in " + ObjIO.classGetName(aircraft.getClass()));
+		} else
+		{
+			weaponsLoad(aircraft, i, hashmapint);
+			return;
+		}
 			}
-			String as[] = getWeaponHooksRegistered(aircraft.getClass());
-			_WeaponSlot a_lweaponslot[] = (_WeaponSlot[])(_WeaponSlot[])hashmapint.get(i);
-			for(int j = 0; j < as.length; j++)
+
+	protected void weaponsLoad(Aircraft aircraft, int i, HashMapInt hashmapint)
+			throws Exception
 			{
-				if(a_lweaponslot[j] == null)
-					continue;
-				if(aircraft.mesh().hookFind(as[j]) != -1)
+		if(World.getPlayerAircraft() == aircraft)
+		{
+			Fuze_EL_AZ.reset();
+			AircraftLH.clearInfo();
+			Torpedo.clearInfo();
+		}
+		String as[] = getWeaponHooksRegistered(aircraft.getClass());
+		_WeaponSlot a_lweaponslot[] = (_WeaponSlot[])(_WeaponSlot[])hashmapint.get(i);
+		for(int j = 0; j < as.length; j++)
+		{
+			if(a_lweaponslot[j] == null)
+				continue;
+			if(aircraft.mesh().hookFind(as[j]) != -1)
+			{
+				BulletEmitter bulletemitter = (BulletEmitter)a_lweaponslot[j].clazz.newInstance();
+				bulletemitter.set(aircraft, as[j], dumpName(as[j]));
+				if(aircraft.isNet() && aircraft.isNetMirror())
 				{
-					BulletEmitter bulletemitter = (BulletEmitter)a_lweaponslot[j].clazz.newInstance();
-					bulletemitter.set(aircraft, as[j], dumpName(as[j]));
-					if(aircraft.isNet() && aircraft.isNetMirror())
-					{
-						if(!World.cur().diffCur.Limited_Ammo)
+					if(!World.cur().diffCur.Limited_Ammo)
+						bulletemitter.loadBullets(-1);
+					else
+						if(a_lweaponslot[j].trigger == 2 || a_lweaponslot[j].trigger == 3 || a_lweaponslot[j].trigger >= 10)
+						{
+							if(a_lweaponslot[j].bullets == -12345)
+								bulletemitter.loadBullets();
+							else
+								bulletemitter._loadBullets(a_lweaponslot[j].bullets);
+						} else
+						{
 							bulletemitter.loadBullets(-1);
-						else
-							if(a_lweaponslot[j].trigger == 2 || a_lweaponslot[j].trigger == 3 || a_lweaponslot[j].trigger >= 10)
-							{
-								if(a_lweaponslot[j].bullets == -12345)
-									bulletemitter.loadBullets();
-								else
-									bulletemitter._loadBullets(a_lweaponslot[j].bullets);
-							} else
-							{
-								bulletemitter.loadBullets(-1);
-							}
-					} else
-						if(a_lweaponslot[j].bullets == -12345)
-							bulletemitter.loadBullets();
-						else
-							bulletemitter.loadBullets(a_lweaponslot[j].bullets);
-					aircraft.addGun(bulletemitter, a_lweaponslot[j].trigger);
-					Property.set(bulletemitter, "_count", a_lweaponslot[j].bullets);
-					switch(a_lweaponslot[j].trigger)
-					{
-					case 0: // '\0'
+						}
+				} else
+					if(a_lweaponslot[j].bullets == -12345)
+						bulletemitter.loadBullets();
+					else
+						bulletemitter.loadBullets(a_lweaponslot[j].bullets);
+				aircraft.addGun(bulletemitter, a_lweaponslot[j].trigger);
+				Property.set(bulletemitter, "_count", a_lweaponslot[j].bullets);
+				switch(a_lweaponslot[j].trigger)
+				{
+				case 0: // '\0'
 					if(bulletemitter instanceof MGunAircraftGeneric)
 						if(World.getPlayerAircraft() == aircraft)
 							((MGunAircraftGeneric)bulletemitter).setConvDistance(World.cur().userCoverMashineGun, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F));
@@ -3130,898 +3130,898 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 								((MGunAircraftGeneric)bulletemitter).setConvDistance(FM.convAI + FM.convAI * 0.25F, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F));
 					break;
 
-					case 1: // '\001'
-						if(bulletemitter instanceof MGunAircraftGeneric)
-							if(World.getPlayerAircraft() == aircraft)
-								((MGunAircraftGeneric)bulletemitter).setConvDistance(World.cur().userCoverCannon, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F));
+				case 1: // '\001'
+					if(bulletemitter instanceof MGunAircraftGeneric)
+						if(World.getPlayerAircraft() == aircraft)
+							((MGunAircraftGeneric)bulletemitter).setConvDistance(World.cur().userCoverCannon, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F));
+						else
+							if(aircraft.isNet() && aircraft.isNetPlayer())
+								((MGunAircraftGeneric)bulletemitter).setConvDistance(400F, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F));
 							else
-								if(aircraft.isNet() && aircraft.isNetPlayer())
-									((MGunAircraftGeneric)bulletemitter).setConvDistance(400F, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F));
-								else
-									((MGunAircraftGeneric)bulletemitter).setConvDistance(FM.convAI, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F));
-						break;
+								((MGunAircraftGeneric)bulletemitter).setConvDistance(FM.convAI, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F));
+					break;
 
-					case 2: // '\002'
-						if(bulletemitter instanceof RocketGun)
-							if(World.getPlayerAircraft() == aircraft)
-							{
-								((RocketGun)bulletemitter).setRocketTimeLife(World.cur().userRocketDelay);
-								((RocketGun)bulletemitter).setConvDistance(World.cur().userCoverRocket, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F) - 2.81F);
-							} else
-								if(aircraft.isNet() && aircraft.isNetPlayer())
-									((RocketGun)bulletemitter).setConvDistance(400F, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F) - 2.81F);
-								else
-									if(aircraft instanceof TypeFighter)
-										((RocketGun)bulletemitter).setConvDistance(400F, -1.8F);
-									else
-										if(((RocketGun)bulletemitter).bulletMassa() > 10F)
-										{
-											if(aircraft instanceof IL_2)
-												((RocketGun)bulletemitter).setConvDistance(400F, -2F);
-											else
-												((RocketGun)bulletemitter).setConvDistance(400F, -1.65F);
-										} else
-											if(aircraft instanceof IL_2)
-												((RocketGun)bulletemitter).setConvDistance(400F, -2.1F);
-											else
-												((RocketGun)bulletemitter).setConvDistance(400F, -1.9F);
-						break;
-
-					case 3: // '\003'
-						if((bulletemitter instanceof BombGun) && World.getPlayerAircraft() == aircraft)
+				case 2: // '\002'
+					if(bulletemitter instanceof RocketGun)
+						if(World.getPlayerAircraft() == aircraft)
 						{
-							((BombGun)bulletemitter).setBombDelay(World.cur().userBombDelay);
-							((BombGun)bulletemitter).selectFuzeAutomatically(true);
-							if(bulletemitter instanceof TorpedoGun)
-							{
-								Class class1 = (Class)Property.value(bulletemitter.getClass(), "bulletClass", null);
-								Torpedo.setInfo(class1);
-							}
+							((RocketGun)bulletemitter).setRocketTimeLife(World.cur().userRocketDelay);
+							((RocketGun)bulletemitter).setConvDistance(World.cur().userCoverRocket, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F) - 2.81F);
+						} else
+							if(aircraft.isNet() && aircraft.isNetPlayer())
+								((RocketGun)bulletemitter).setConvDistance(400F, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F) - 2.81F);
+							else
+								if(aircraft instanceof TypeFighter)
+									((RocketGun)bulletemitter).setConvDistance(400F, -1.8F);
+								else
+									if(((RocketGun)bulletemitter).bulletMassa() > 10F)
+									{
+										if(aircraft instanceof IL_2)
+											((RocketGun)bulletemitter).setConvDistance(400F, -2F);
+										else
+											((RocketGun)bulletemitter).setConvDistance(400F, -1.65F);
+									} else
+										if(aircraft instanceof IL_2)
+											((RocketGun)bulletemitter).setConvDistance(400F, -2.1F);
+										else
+											((RocketGun)bulletemitter).setConvDistance(400F, -1.9F);
+					break;
+
+				case 3: // '\003'
+					if((bulletemitter instanceof BombGun) && World.getPlayerAircraft() == aircraft)
+					{
+						((BombGun)bulletemitter).setBombDelay(World.cur().userBombDelay);
+						((BombGun)bulletemitter).selectFuzeAutomatically(true);
+						if(bulletemitter instanceof TorpedoGun)
+						{
+							Class class1 = (Class)Property.value(bulletemitter.getClass(), "bulletClass", null);
+							Torpedo.setInfo(class1);
 						}
-						break;
+					}
+					break;
+				}
+			} else
+			{
+				System.err.println("Hook '" + as[j] + "' NOT found in mesh of " + aircraft.getClass());
+			}
+		}
+
+		aircraft.FM.AS.setArmingSeeds();
+			}
+
+	public void missionStarting()
+	{
+		super.missionStarting();
+		if(this == World.getPlayerAircraft())
+			return;
+		boolean flag = false;
+		if(Mission.isSingle() || Mission.isCoop())
+			flag = isPlayersWing(this);
+		for(int i = 0; i < FM.CT.Weapons.length; i++)
+		{
+			BulletEmitter abulletemitter[] = FM.CT.Weapons[i];
+			if(abulletemitter == null)
+				continue;
+			for(int j = 0; j < abulletemitter.length; j++)
+			{
+				BulletEmitter bulletemitter = abulletemitter[j];
+				if(!(bulletemitter instanceof BombGun))
+					continue;
+				BombGun bombgun = (BombGun)bulletemitter;
+				if(flag)
+				{
+					bombgun.setBombDelay(World.cur().userBombDelay);
+					bombgun.selectFuzeAutomatically(false);
+					if(Mission.isCoop())
+					{
+						UserCfg usercfg = World.cur().userCfg;
+						int k = usercfg.fuzeType;
+						float f = usercfg.bombDelay;
+						FM.AS.replicateFuzeStatesToNet(k, 1, f);
 					}
 				} else
 				{
-					System.err.println("Hook '" + as[j] + "' NOT found in mesh of " + aircraft.getClass());
+					bombgun.addGenericFuze();
 				}
-			}
-
-			aircraft.FM.AS.setArmingSeeds();
-				}
-
-		public void missionStarting()
-		{
-			super.missionStarting();
-			if(this == World.getPlayerAircraft())
-				return;
-			boolean flag = false;
-			if(Mission.isSingle() || Mission.isCoop())
-				flag = isPlayersWing(this);
-			for(int i = 0; i < FM.CT.Weapons.length; i++)
-			{
-				BulletEmitter abulletemitter[] = FM.CT.Weapons[i];
-				if(abulletemitter == null)
-					continue;
-				for(int j = 0; j < abulletemitter.length; j++)
-				{
-					BulletEmitter bulletemitter = abulletemitter[j];
-					if(!(bulletemitter instanceof BombGun))
-						continue;
-					BombGun bombgun = (BombGun)bulletemitter;
-					if(flag)
-					{
-						bombgun.setBombDelay(World.cur().userBombDelay);
-						bombgun.selectFuzeAutomatically(false);
-						if(Mission.isCoop())
-						{
-							UserCfg usercfg = World.cur().userCfg;
-							int k = usercfg.fuzeType;
-							float f = usercfg.bombDelay;
-							FM.AS.replicateFuzeStatesToNet(k, 1, f);
-						}
-					} else
-					{
-						bombgun.addGenericFuze();
-					}
-				}
-
 			}
 
 		}
 
-		private static boolean isPlayersWing(Aircraft aircraft) {
-			try {
-				Wing wing = aircraft.getWing();
-				if (wing == null)
-					return false;
-				for (int i = 0; i < wing.airc.length; i++) {
-					Aircraft aircraft2 = wing.airc[i];
-					if (aircraft2 == World.getPlayerAircraft())
-						return true;
-					if (aircraft2.isNetPlayer() || aircraft2.isNetMaster())
-						return false;
-				}
+	}
+
+	private static boolean isPlayersWing(Aircraft aircraft) {
+		try {
+			Wing wing = aircraft.getWing();
+			if (wing == null)
 				return false;
-			} catch (Exception exception) {
-				return false;
-			}
-		}
-
-		private static ArrayList weaponsListProperty(Class class1)
-		{
-			Object obj = Property.value(class1, "weaponsList", null);
-			if(obj != null)
-			{
-				return (ArrayList)obj;
-			} else
-			{
-				ArrayList arraylist = new ArrayList();
-				Property.set(class1, "weaponsList", arraylist);
-				return (ArrayList)arraylist;
-			}
-		}
-
-		// TODO: Edited by |ZUTI|: changed from private to public - called from ZutiTimer_ChangeLoadout
-		public static HashMapInt weaponsMapProperty(Class class1)
-		{
-			Object obj = Property.value(class1, "weaponsMap", null);
-			if(obj != null)
-			{
-				return (HashMapInt)obj;
-			} else
-			{
-				HashMapInt hashmapint = new HashMapInt();
-				Property.set(class1, "weaponsMap", hashmapint);
-				return (HashMapInt)hashmapint;
-			}
-		}
-
-		//TODO: Edited to include RocketBombGun
-		public void hideWingWeapons(boolean bool)
-		{
-			for (int i = 0; i < FM.CT.Weapons.length; i++)
-			{
-				BulletEmitter[] bulletemitters = FM.CT.Weapons[i];
-				if (bulletemitters != null)
-				{
-					for (int i_164_ = 0; i_164_ < bulletemitters.length; i_164_++)
-					{
-						if (bulletemitters[i_164_] instanceof BombGun)
-							((BombGun)bulletemitters[i_164_]).hide(bool);
-						else if (bulletemitters[i_164_] instanceof RocketGun)
-							((RocketGun)bulletemitters[i_164_]).hide(bool);
-						else if (bulletemitters[i_164_] instanceof RocketBombGun)
-							((RocketBombGun)bulletemitters[i_164_]).hide(bool);
-						else if (bulletemitters[i_164_] instanceof Pylon)
-							((Pylon)bulletemitters[i_164_]).drawing(!bool);
-					}
-				}
-			}
-		}
-
-		public void createCockpits()
-		{
-			if(!Config.isUSE_RENDER())
-				return;
-			deleteCockpits();
-			Object obj = Property.value(getClass(), "cockpitClass");
-			if(obj == null)
-				return;
-			Cockpit._newAircraft = this;
-			if(obj instanceof Class)
-			{
-				Class class1 = (Class)obj;
-				try
-				{
-					Main3D.cur3D().cockpits = new Cockpit[1];
-					Main3D.cur3D().cockpits[0] = (Cockpit)class1.newInstance();
-					Main3D.cur3D().cockpitCur = Main3D.cur3D().cockpits[0];
-				}
-				catch(Exception exception)
-				{
-					System.out.println(exception.getMessage());
-					exception.printStackTrace();
-				}
-			} else
-			{
-				Class aclass[] = (Class[])(Class[])obj;
-				try
-				{
-					Main3D.cur3D().cockpits = new Cockpit[aclass.length];
-					for(int i = 0; i < aclass.length; i++)
-						Main3D.cur3D().cockpits[i] = (Cockpit)aclass[i].newInstance();
-
-					Main3D.cur3D().cockpitCur = Main3D.cur3D().cockpits[0];
-				}
-				catch(Exception exception1)
-				{
-					System.out.println(exception1.getMessage());
-					exception1.printStackTrace();
-				}
-			}
-			Cockpit._newAircraft = null;
-		}
-
-		protected void deleteCockpits()
-		{
-			if(!Config.isUSE_RENDER())
-				return;
-			Cockpit acockpit[] = Main3D.cur3D().cockpits;
-			if(acockpit == null)
-				return;
-			for(int i = 0; i < acockpit.length; i++)
-			{
-				acockpit[i].destroy();
-				acockpit[i] = null;
-			}
-
-			Main3D.cur3D().cockpits = null;
-			Main3D.cur3D().cockpitCur = null;
-		}
-
-		private void explode()
-		{
-			if(FM.Wingman != null)
-				FM.Wingman.Leader = FM.Leader;
-			if(FM.Leader != null)
-				FM.Leader.Wingman = FM.Wingman;
-			FM.Wingman = null;
-			FM.Leader = null;
-			HierMesh hiermesh = hierMesh();
-			int l = -1;
-			float f = 30F;
-			for(int i = 9; i >= 0 && (l = hiermesh.chunkFindCheck("CF_D" + i)) < 0; i--);
-			int ai1[] = hideSubTrees("");
-			if(ai1 == null)
-				return;
-			int ai[] = ai1;
-			ai1 = new int[ai.length + 1];
-			int j;
-			for(j = 0; j < ai.length; j++)
-				ai1[j] = ai[j];
-
-			ai1[j] = l;
-			for(int k = 0; k < ai1.length; k++)
-			{
-				Wreckage wreckage = new Wreckage(this, ai1[k]);
-				if(World.Rnd().nextInt(0, 99) < 30)
-				{
-					float f1 = 2.5F + World.Rnd().nextFloat(0.0F, 5F);
-					Eff3DActor.New(wreckage, null, null, 1.0F, Wreckage.FIRE, f1);
-					if(World.Rnd().nextInt(0, 99) < 50)
-						Eff3DActor.New(wreckage, null, null, 1.0F, Wreckage.SMOKE_EXPLODE, f1 + 1.0F);
-				}
-				getSpeed(Vd);
-				Vd.x += (double)f * (World.Rnd().nextDouble(0.0D, 1.0D) - 0.5D);
-				Vd.y += (double)f * (World.Rnd().nextDouble(0.0D, 1.0D) - 0.5D);
-				Vd.z += (double)f * (World.Rnd().nextDouble(0.0D, 1.0D) - 0.5D);
-				wreckage.setSpeed(Vd);
-			}
-
-		}
-
-		public int aircNumber()
-		{
-			Wing wing = (Wing)getOwner();
-			if(wing == null)
-				return -1;
-			else
-				return wing.aircReady();
-		}
-
-		public int aircIndex()
-		{
-			Wing wing = (Wing)getOwner();
-			if(wing == null)
-				return -1;
-			else
-				return wing.aircIndex(this);
-		}
-
-		public boolean isInPlayerWing()
-		{
-			if(!Actor.isValid(World.getPlayerAircraft()))
-				return false;
-			else
-				return getWing() == World.getPlayerAircraft().getWing();
-		}
-
-		public boolean isInPlayerSquadron()
-		{
-			if(!Actor.isValid(World.getPlayerAircraft()))
-				return false;
-			else
-				return getSquadron() == World.getPlayerAircraft().getSquadron();
-		}
-
-		public boolean isInPlayerRegiment()
-		{
-			return getRegiment() == World.getPlayerRegiment();
-		}
-
-		public boolean isChunkAnyDamageVisible(String s)
-		{
-			if(s.lastIndexOf("_") == -1)
-				s = s + "_D";
-			for(int i = 0; i < 4; i++)
-				if(hierMesh().chunkFindCheck(s + i) != -1 && hierMesh().isChunkVisible(s + i))
+			for (int i = 0; i < wing.airc.length; i++) {
+				Aircraft aircraft2 = wing.airc[i];
+				if (aircraft2 == World.getPlayerAircraft())
 					return true;
-
+				if (aircraft2.isNetPlayer() || aircraft2.isNetMaster())
+					return false;
+			}
+			return false;
+		} catch (Exception exception) {
 			return false;
 		}
+	}
 
-		protected int chunkDamageVisible(String s)
+	private static ArrayList weaponsListProperty(Class class1)
+	{
+		Object obj = Property.value(class1, "weaponsList", null);
+		if(obj != null)
 		{
-			if(s.lastIndexOf("_") == -1)
-				s = s + "_D";
-			for(int i = 0; i < 4; i++)
-				if(hierMesh().chunkFindCheck(s + i) != -1 && hierMesh().isChunkVisible(s + i))
-					return i;
-
-			return 0;
+			return (ArrayList)obj;
+		} else
+		{
+			ArrayList arraylist = new ArrayList();
+			Property.set(class1, "weaponsList", arraylist);
+			return (ArrayList)arraylist;
 		}
+	}
 
-		public Wing getWing()
+	// TODO: Edited by |ZUTI|: changed from private to public - called from ZutiTimer_ChangeLoadout
+	public static HashMapInt weaponsMapProperty(Class class1)
+	{
+		Object obj = Property.value(class1, "weaponsMap", null);
+		if(obj != null)
 		{
-			return (Wing)getOwner();
+			return (HashMapInt)obj;
+		} else
+		{
+			HashMapInt hashmapint = new HashMapInt();
+			Property.set(class1, "weaponsMap", hashmapint);
+			return (HashMapInt)hashmapint;
 		}
+	}
 
-		public Squadron getSquadron()
+	//TODO: Edited to include RocketBombGun
+	public void hideWingWeapons(boolean bool)
+	{
+		for (int i = 0; i < FM.CT.Weapons.length; i++)
 		{
-			Wing wing = getWing();
-			if(wing == null)
-				return null;
-			else
-				return wing.squadron();
-		}
-
-		public Regiment getRegiment()
-		{
-			Wing wing = getWing();
-			if(wing == null)
-				return null;
-			else
-				return wing.regiment();
-		}
-
-		public void hitDaSilk()
-		{
-			FM.AS.hitDaSilk();
-			FM.setReadyToDie(true);
-			if(FM.Loc.z - Engine.land().HQ_Air(FM.Loc.x, FM.Loc.y) > 20D)
-				Voice.speakBailOut(this);
-		}
-
-		protected void killPilot(Actor actor, int i)
-		{
-			FM.AS.hitPilot(actor, i, 100);
-		}
-
-		public void doWoundPilot(int i, float f)
-		{
-		}
-
-		public void doMurderPilot(int i)
-		{
-		}
-
-		public void doRemoveBodyFromPlane(int i)
-		{
-			doRemoveBodyChunkFromPlane("Pilot" + i);
-			doRemoveBodyChunkFromPlane("Head" + i);
-			doRemoveBodyChunkFromPlane("HMask" + i);
-			doRemoveBodyChunkFromPlane("Pilot" + i + "a");
-			doRemoveBodyChunkFromPlane("Head" + i + "a");
-			doRemoveBodyChunkFromPlane("Pilot" + i + "FAK");
-			doRemoveBodyChunkFromPlane("Head" + i + "FAK");
-			doRemoveBodyChunkFromPlane("Pilot" + i + "FAL");
-			doRemoveBodyChunkFromPlane("Head" + i + "FAL");
-		}
-
-		protected void doRemoveBodyChunkFromPlane(String s)
-		{
-			if(hierMesh().chunkFindCheck(s + "_D0") != -1)
-				hierMesh().chunkVisible(s + "_D0", false);
-			if(hierMesh().chunkFindCheck(s + "_D1") != -1)
-				hierMesh().chunkVisible(s + "_D1", false);
-		}
-
-		public void doSetSootState(int i, int j)
-		{
-			for(int k = 0; k < 2; k++)
+			BulletEmitter[] bulletemitters = FM.CT.Weapons[i];
+			if (bulletemitters != null)
 			{
-				if(FM.AS.astateSootEffects[i][k] != null)
-					Eff3DActor.finish(FM.AS.astateSootEffects[i][k]);
-				FM.AS.astateSootEffects[i][k] = null;
+				for (int i_164_ = 0; i_164_ < bulletemitters.length; i_164_++)
+				{
+					if (bulletemitters[i_164_] instanceof BombGun)
+						((BombGun)bulletemitters[i_164_]).hide(bool);
+					else if (bulletemitters[i_164_] instanceof RocketGun)
+						((RocketGun)bulletemitters[i_164_]).hide(bool);
+					else if (bulletemitters[i_164_] instanceof RocketBombGun)
+						((RocketBombGun)bulletemitters[i_164_]).hide(bool);
+					else if (bulletemitters[i_164_] instanceof Pylon)
+						((Pylon)bulletemitters[i_164_]).drawing(!bool);
+				}
 			}
+		}
+	}
 
-			switch(j)
+	public void createCockpits()
+	{
+		if(!Config.isUSE_RENDER())
+			return;
+		deleteCockpits();
+		Object obj = Property.value(getClass(), "cockpitClass");
+		if(obj == null)
+			return;
+		Cockpit._newAircraft = this;
+		if(obj instanceof Class)
+		{
+			Class class1 = (Class)obj;
+			try
 			{
-			case 1: // '\001'
+				Main3D.cur3D().cockpits = new Cockpit[1];
+				Main3D.cur3D().cockpits[0] = (Cockpit)class1.newInstance();
+				Main3D.cur3D().cockpitCur = Main3D.cur3D().cockpits[0];
+			}
+			catch(Exception exception)
+			{
+				System.out.println(exception.getMessage());
+				exception.printStackTrace();
+			}
+		} else
+		{
+			Class aclass[] = (Class[])(Class[])obj;
+			try
+			{
+				Main3D.cur3D().cockpits = new Cockpit[aclass.length];
+				for(int i = 0; i < aclass.length; i++)
+					Main3D.cur3D().cockpits[i] = (Cockpit)aclass[i].newInstance();
+
+				Main3D.cur3D().cockpitCur = Main3D.cur3D().cockpits[0];
+			}
+			catch(Exception exception1)
+			{
+				System.out.println(exception1.getMessage());
+				exception1.printStackTrace();
+			}
+		}
+		Cockpit._newAircraft = null;
+	}
+
+	protected void deleteCockpits()
+	{
+		if(!Config.isUSE_RENDER())
+			return;
+		Cockpit acockpit[] = Main3D.cur3D().cockpits;
+		if(acockpit == null)
+			return;
+		for(int i = 0; i < acockpit.length; i++)
+		{
+			acockpit[i].destroy();
+			acockpit[i] = null;
+		}
+
+		Main3D.cur3D().cockpits = null;
+		Main3D.cur3D().cockpitCur = null;
+	}
+
+	private void explode()
+	{
+		if(FM.Wingman != null)
+			FM.Wingman.Leader = FM.Leader;
+		if(FM.Leader != null)
+			FM.Leader.Wingman = FM.Wingman;
+		FM.Wingman = null;
+		FM.Leader = null;
+		HierMesh hiermesh = hierMesh();
+		int l = -1;
+		float f = 30F;
+		for(int i = 9; i >= 0 && (l = hiermesh.chunkFindCheck("CF_D" + i)) < 0; i--);
+		int ai1[] = hideSubTrees("");
+		if(ai1 == null)
+			return;
+		int ai[] = ai1;
+		ai1 = new int[ai.length + 1];
+		int j;
+		for(j = 0; j < ai.length; j++)
+			ai1[j] = ai[j];
+
+		ai1[j] = l;
+		for(int k = 0; k < ai1.length; k++)
+		{
+			Wreckage wreckage = new Wreckage(this, ai1[k]);
+			if(World.Rnd().nextInt(0, 99) < 30)
+			{
+				float f1 = 2.5F + World.Rnd().nextFloat(0.0F, 5F);
+				Eff3DActor.New(wreckage, null, null, 1.0F, Wreckage.FIRE, f1);
+				if(World.Rnd().nextInt(0, 99) < 50)
+					Eff3DActor.New(wreckage, null, null, 1.0F, Wreckage.SMOKE_EXPLODE, f1 + 1.0F);
+			}
+			getSpeed(Vd);
+			Vd.x += (double)f * (World.Rnd().nextDouble(0.0D, 1.0D) - 0.5D);
+			Vd.y += (double)f * (World.Rnd().nextDouble(0.0D, 1.0D) - 0.5D);
+			Vd.z += (double)f * (World.Rnd().nextDouble(0.0D, 1.0D) - 0.5D);
+			wreckage.setSpeed(Vd);
+		}
+
+	}
+
+	public int aircNumber()
+	{
+		Wing wing = (Wing)getOwner();
+		if(wing == null)
+			return -1;
+		else
+			return wing.aircReady();
+	}
+
+	public int aircIndex()
+	{
+		Wing wing = (Wing)getOwner();
+		if(wing == null)
+			return -1;
+		else
+			return wing.aircIndex(this);
+	}
+
+	public boolean isInPlayerWing()
+	{
+		if(!Actor.isValid(World.getPlayerAircraft()))
+			return false;
+		else
+			return getWing() == World.getPlayerAircraft().getWing();
+	}
+
+	public boolean isInPlayerSquadron()
+	{
+		if(!Actor.isValid(World.getPlayerAircraft()))
+			return false;
+		else
+			return getSquadron() == World.getPlayerAircraft().getSquadron();
+	}
+
+	public boolean isInPlayerRegiment()
+	{
+		return getRegiment() == World.getPlayerRegiment();
+	}
+
+	public boolean isChunkAnyDamageVisible(String s)
+	{
+		if(s.lastIndexOf("_") == -1)
+			s = s + "_D";
+		for(int i = 0; i < 4; i++)
+			if(hierMesh().chunkFindCheck(s + i) != -1 && hierMesh().isChunkVisible(s + i))
+				return true;
+
+		return false;
+	}
+
+	protected int chunkDamageVisible(String s)
+	{
+		if(s.lastIndexOf("_") == -1)
+			s = s + "_D";
+		for(int i = 0; i < 4; i++)
+			if(hierMesh().chunkFindCheck(s + i) != -1 && hierMesh().isChunkVisible(s + i))
+				return i;
+
+		return 0;
+	}
+
+	public Wing getWing()
+	{
+		return (Wing)getOwner();
+	}
+
+	public Squadron getSquadron()
+	{
+		Wing wing = getWing();
+		if(wing == null)
+			return null;
+		else
+			return wing.squadron();
+	}
+
+	public Regiment getRegiment()
+	{
+		Wing wing = getWing();
+		if(wing == null)
+			return null;
+		else
+			return wing.regiment();
+	}
+
+	public void hitDaSilk()
+	{
+		FM.AS.hitDaSilk();
+		FM.setReadyToDie(true);
+		if(FM.Loc.z - Engine.land().HQ_Air(FM.Loc.x, FM.Loc.y) > 20D)
+			Voice.speakBailOut(this);
+	}
+
+	protected void killPilot(Actor actor, int i)
+	{
+		FM.AS.hitPilot(actor, i, 100);
+	}
+
+	public void doWoundPilot(int i, float f)
+	{
+	}
+
+	public void doMurderPilot(int i)
+	{
+	}
+
+	public void doRemoveBodyFromPlane(int i)
+	{
+		doRemoveBodyChunkFromPlane("Pilot" + i);
+		doRemoveBodyChunkFromPlane("Head" + i);
+		doRemoveBodyChunkFromPlane("HMask" + i);
+		doRemoveBodyChunkFromPlane("Pilot" + i + "a");
+		doRemoveBodyChunkFromPlane("Head" + i + "a");
+		doRemoveBodyChunkFromPlane("Pilot" + i + "FAK");
+		doRemoveBodyChunkFromPlane("Head" + i + "FAK");
+		doRemoveBodyChunkFromPlane("Pilot" + i + "FAL");
+		doRemoveBodyChunkFromPlane("Head" + i + "FAL");
+	}
+
+	protected void doRemoveBodyChunkFromPlane(String s)
+	{
+		if(hierMesh().chunkFindCheck(s + "_D0") != -1)
+			hierMesh().chunkVisible(s + "_D0", false);
+		if(hierMesh().chunkFindCheck(s + "_D1") != -1)
+			hierMesh().chunkVisible(s + "_D1", false);
+	}
+
+	public void doSetSootState(int i, int j)
+	{
+		for(int k = 0; k < 2; k++)
+		{
+			if(FM.AS.astateSootEffects[i][k] != null)
+				Eff3DActor.finish(FM.AS.astateSootEffects[i][k]);
+			FM.AS.astateSootEffects[i][k] = null;
+		}
+
+		switch(j)
+		{
+		case 1: // '\001'
 			FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
 			FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_02"), null, 1.0F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
 			break;
 
-			case 3: // '\003'
-				FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
-				// fall through
+		case 3: // '\003'
+			FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
+			// fall through
 
-			case 2: // '\002'
-				FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/TurboZippo.eff", -1F);
-				break;
+		case 2: // '\002'
+			FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/TurboZippo.eff", -1F);
+			break;
 
-			case 5: // '\005'
-				FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 3F, "3DO/Effects/Aircraft/TurboJRD1100F.eff", -1F);
-				// fall through
+		case 5: // '\005'
+			FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 3F, "3DO/Effects/Aircraft/TurboJRD1100F.eff", -1F);
+			// fall through
 
-			case 4: // '\004'
-				FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
-				break;
-			}
+		case 4: // '\004'
+			FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
+			break;
 		}
+	}
 
-		public void onAircraftLoaded()
+	public void onAircraftLoaded()
+	{
+		if(FM instanceof Maneuver)
 		{
-			if(FM instanceof Maneuver)
+			Maneuver maneuver = (Maneuver)FM;
+			maneuver.takeIntoAccount[0] = 1.0F;
+			maneuver.takeIntoAccount[1] = 1.0F;
+			maneuver.takeIntoAccount[2] = 0.7F;
+			if(this instanceof TypeFighter)
 			{
-				Maneuver maneuver = (Maneuver)FM;
-				maneuver.takeIntoAccount[0] = 1.0F;
-				maneuver.takeIntoAccount[1] = 1.0F;
-				maneuver.takeIntoAccount[2] = 0.7F;
-				if(this instanceof TypeFighter)
+				if(aircIndex() % 2 == 0)
 				{
-					if(aircIndex() % 2 == 0)
-					{
-						maneuver.takeIntoAccount[3] = 0.0F;
-						maneuver.takeIntoAccount[4] = 1.0F;
-					} else
-					{
-						maneuver.takeIntoAccount[2] = 0.1F;
-						maneuver.takeIntoAccount[3] = 1.0F;
-						maneuver.takeIntoAccount[4] = 0.0F;
-					}
-					maneuver.takeIntoAccount[5] = 0.3F;
-					maneuver.takeIntoAccount[6] = 0.3F;
-					maneuver.takeIntoAccount[7] = 0.1F;
-				} else
-					if(this instanceof TypeStormovik)
-					{
-						if(aircIndex() != 0)
-							maneuver.takeIntoAccount[2] = 0.5F;
-						maneuver.takeIntoAccount[3] = 0.4F;
-						maneuver.takeIntoAccount[4] = 0.2F;
-						maneuver.takeIntoAccount[5] = 0.1F;
-						maneuver.takeIntoAccount[6] = 0.1F;
-						maneuver.takeIntoAccount[7] = 0.6F;
-					} else
-					{
-						if(aircIndex() != 0)
-							maneuver.takeIntoAccount[2] = 0.4F;
-						maneuver.takeIntoAccount[3] = 0.2F;
-						maneuver.takeIntoAccount[4] = 0.0F;
-						maneuver.takeIntoAccount[5] = 0.0F;
-						maneuver.takeIntoAccount[6] = 0.0F;
-						maneuver.takeIntoAccount[7] = 1.0F;
-					}
-				for(int i = 0; i < 8; i++)
-					maneuver.AccountCoeff[i] = 0.0F;
-
-			}
-		}
-
-		public static float cvt(float f, float f1, float f2, float f3, float f4)
-		{
-			f = Math.min(Math.max(f, f1), f2);
-			return f3 + ((f4 - f3) * (f - f1)) / (f2 - f1);
-		}
-
-		protected void debugprintln(String s)
-		{
-			if(World.cur().isDebugFM())
-				System.out.println("<" + name() + "> (" + typedName() + ") " + s);
-		}
-
-		public static void debugprintln(Actor actor, String s)
-		{
-			if(World.cur().isDebugFM())
-			{
-				if(Actor.isValid(actor))
-				{
-					System.out.print("<" + actor.name() + ">");
-					if(actor instanceof Aircraft)
-						System.out.print(" (" + ((Aircraft)actor).typedName() + ")");
+					maneuver.takeIntoAccount[3] = 0.0F;
+					maneuver.takeIntoAccount[4] = 1.0F;
 				} else
 				{
-					System.out.print("<INVALIDACTOR>");
+					maneuver.takeIntoAccount[2] = 0.1F;
+					maneuver.takeIntoAccount[3] = 1.0F;
+					maneuver.takeIntoAccount[4] = 0.0F;
 				}
-				System.out.println(" " + s);
-			}
-		}
+				maneuver.takeIntoAccount[5] = 0.3F;
+				maneuver.takeIntoAccount[6] = 0.3F;
+				maneuver.takeIntoAccount[7] = 0.1F;
+			} else
+				if(this instanceof TypeStormovik)
+				{
+					if(aircIndex() != 0)
+						maneuver.takeIntoAccount[2] = 0.5F;
+					maneuver.takeIntoAccount[3] = 0.4F;
+					maneuver.takeIntoAccount[4] = 0.2F;
+					maneuver.takeIntoAccount[5] = 0.1F;
+					maneuver.takeIntoAccount[6] = 0.1F;
+					maneuver.takeIntoAccount[7] = 0.6F;
+				} else
+				{
+					if(aircIndex() != 0)
+						maneuver.takeIntoAccount[2] = 0.4F;
+					maneuver.takeIntoAccount[3] = 0.2F;
+					maneuver.takeIntoAccount[4] = 0.0F;
+					maneuver.takeIntoAccount[5] = 0.0F;
+					maneuver.takeIntoAccount[6] = 0.0F;
+					maneuver.takeIntoAccount[7] = 1.0F;
+				}
+			for(int i = 0; i < 8; i++)
+				maneuver.AccountCoeff[i] = 0.0F;
 
-		public void debuggunnery(String s)
-		{
-			if(World.cur().isDebugFM())
-				System.out.println("<" + name() + "> (" + typedName() + ") *** BULLET *** : " + s);
 		}
+	}
 
-		protected float bailProbabilityOnCut(String s)
-		{
-			if(s.startsWith("Nose"))
-				return 0.5F;
-			if(s.startsWith("Wing"))
-				return 0.99F;
-			if(s.startsWith("Aroone"))
-				return 0.05F;
-			if(s.startsWith("Tail"))
-				return 0.99F;
-			if(s.startsWith("StabL") && !isChunkAnyDamageVisible("VatorR"))
-				return 0.99F;
-			if(s.startsWith("StabR") && !isChunkAnyDamageVisible("VatorL"))
-				return 0.99F;
-			if(s.startsWith("Stab"))
-				return 0.33F;
-			if(s.startsWith("VatorL") && !isChunkAnyDamageVisible("VatorR"))
-				return 0.99F;
-			if(s.startsWith("VatorR") && !isChunkAnyDamageVisible("VatorL"))
-				return 0.99F;
-			if(s.startsWith("Vator"))
-				return 0.01F;
-			if(s.startsWith("Keel"))
-				return 0.5F;
-			if(s.startsWith("Rudder"))
-				return 0.05F;
-			return !s.startsWith("Engine") ? -0F : 0.12F;
-		}
+	public static float cvt(float f, float f1, float f2, float f3, float f4)
+	{
+		f = Math.min(Math.max(f, f1), f2);
+		return f3 + ((f4 - f3) * (f - f1)) / (f2 - f1);
+	}
 
-		private void _setMesh(String s)
+	protected void debugprintln(String s)
+	{
+		if(World.cur().isDebugFM())
+			System.out.println("<" + name() + "> (" + typedName() + ") " + s);
+	}
+
+	public static void debugprintln(Actor actor, String s)
+	{
+		if(World.cur().isDebugFM())
 		{
-			setMesh(s);
-			CacheItem cacheitem = (CacheItem)meshCache.get(s);
-			if(cacheitem == null)
+			if(Actor.isValid(actor))
 			{
-				cacheitem = new CacheItem();
+				System.out.print("<" + actor.name() + ">");
+				if(actor instanceof Aircraft)
+					System.out.print(" (" + ((Aircraft)actor).typedName() + ")");
+			} else
+			{
+				System.out.print("<INVALIDACTOR>");
+			}
+			System.out.println(" " + s);
+		}
+	}
+
+	public void debuggunnery(String s)
+	{
+		if(World.cur().isDebugFM())
+			System.out.println("<" + name() + "> (" + typedName() + ") *** BULLET *** : " + s);
+	}
+
+	protected float bailProbabilityOnCut(String s)
+	{
+		if(s.startsWith("Nose"))
+			return 0.5F;
+		if(s.startsWith("Wing"))
+			return 0.99F;
+		if(s.startsWith("Aroone"))
+			return 0.05F;
+		if(s.startsWith("Tail"))
+			return 0.99F;
+		if(s.startsWith("StabL") && !isChunkAnyDamageVisible("VatorR"))
+			return 0.99F;
+		if(s.startsWith("StabR") && !isChunkAnyDamageVisible("VatorL"))
+			return 0.99F;
+		if(s.startsWith("Stab"))
+			return 0.33F;
+		if(s.startsWith("VatorL") && !isChunkAnyDamageVisible("VatorR"))
+			return 0.99F;
+		if(s.startsWith("VatorR") && !isChunkAnyDamageVisible("VatorL"))
+			return 0.99F;
+		if(s.startsWith("Vator"))
+			return 0.01F;
+		if(s.startsWith("Keel"))
+			return 0.5F;
+		if(s.startsWith("Rudder"))
+			return 0.05F;
+		return !s.startsWith("Engine") ? -0F : 0.12F;
+	}
+
+	private void _setMesh(String s)
+	{
+		setMesh(s);
+		CacheItem cacheitem = (CacheItem)meshCache.get(s);
+		if(cacheitem == null)
+		{
+			cacheitem = new CacheItem();
+			cacheitem.mesh = new HierMesh(s);
+			prepareMeshCamouflage(s, cacheitem.mesh, null, null);
+			cacheitem.bExistTextures = true;
+			cacheitem.loaded = 1;
+			meshCache.put(s, cacheitem);
+		} else
+		{
+			cacheitem.loaded++;
+			if(!cacheitem.bExistTextures)
+			{
+				cacheitem.mesh.destroy();
 				cacheitem.mesh = new HierMesh(s);
 				prepareMeshCamouflage(s, cacheitem.mesh, null, null);
 				cacheitem.bExistTextures = true;
-				cacheitem.loaded = 1;
-				meshCache.put(s, cacheitem);
-			} else
-			{
-				cacheitem.loaded++;
-				if(!cacheitem.bExistTextures)
-				{
-					cacheitem.mesh.destroy();
-					cacheitem.mesh = new HierMesh(s);
-					prepareMeshCamouflage(s, cacheitem.mesh, null, null);
-					cacheitem.bExistTextures = true;
-				}
 			}
-			airCache.put(this, cacheitem);
-			checkMeshCache();
+		}
+		airCache.put(this, cacheitem);
+		checkMeshCache();
+	}
+
+	private void _removeMesh()
+	{
+		CacheItem cacheitem = (CacheItem)airCache.get(this);
+		if(cacheitem == null)
+			return;
+		airCache.remove(this);
+		cacheitem.loaded--;
+		if(cacheitem.loaded == 0)
+			cacheitem.time = Time.real();
+		checkMeshCache();
+	}
+
+	public static void checkMeshCache()
+	{
+		if(!Config.isUSE_RENDER())
+			return;
+		long l = Time.real();
+		for(java.util.Map.Entry entry = meshCache.nextEntry(null); entry != null; entry = meshCache.nextEntry(entry))
+		{
+			CacheItem cacheitem = (CacheItem)entry.getValue();
+			if(cacheitem.loaded != 0 || !cacheitem.bExistTextures || l - cacheitem.time <= 0x2bf20L)
+				continue;
+			HierMesh hiermesh = cacheitem.mesh;
+			int i = hiermesh.materials();
+			Mat mat = Mat.New("3do/textures/clear.mat");
+			for(int j = 0; j < i; j++)
+				hiermesh.materialReplace(j, mat);
+
+			cacheitem.bExistTextures = false;
 		}
 
-		private void _removeMesh()
-		{
-			CacheItem cacheitem = (CacheItem)airCache.get(this);
-			if(cacheitem == null)
-				return;
-			airCache.remove(this);
-			cacheitem.loaded--;
-			if(cacheitem.loaded == 0)
-				cacheitem.time = Time.real();
-			checkMeshCache();
-		}
+	}
 
-		public static void checkMeshCache()
-		{
-			if(!Config.isUSE_RENDER())
-				return;
-			long l = Time.real();
-			for(java.util.Map.Entry entry = meshCache.nextEntry(null); entry != null; entry = meshCache.nextEntry(entry))
-			{
-				CacheItem cacheitem = (CacheItem)entry.getValue();
-				if(cacheitem.loaded != 0 || !cacheitem.bExistTextures || l - cacheitem.time <= 0x2bf20L)
-					continue;
-				HierMesh hiermesh = cacheitem.mesh;
-				int i = hiermesh.materials();
-				Mat mat = Mat.New("3do/textures/clear.mat");
-				for(int j = 0; j < i; j++)
-					hiermesh.materialReplace(j, mat);
+	public static void resetGameClear()
+	{
+		meshCache.clear();
+		airCache.clear();
+	}
 
-				cacheitem.bExistTextures = false;
-			}
+	public void setCockpitState(int i)
+	{
+		if(FM.isPlayers() && World.cur().diffCur.Vulnerability && Actor.isValid(Main3D.cur3D().cockpitCur))
+			Main3D.cur3D().cockpitCur.doReflectCockitState();
+	}
 
-		}
+	protected void resetYPRmodifier()
+	{
+		ypr[0] = ypr[1] = ypr[2] = xyz[0] = xyz[1] = xyz[2] = 0.0F;
+	}
 
-		public static void resetGameClear()
-		{
-			meshCache.clear();
-			airCache.clear();
-		}
-
-		public void setCockpitState(int i)
-		{
-			if(FM.isPlayers() && World.cur().diffCur.Vulnerability && Actor.isValid(Main3D.cur3D().cockpitCur))
-				Main3D.cur3D().cockpitCur.doReflectCockitState();
-		}
-
-		protected void resetYPRmodifier()
-		{
-			ypr[0] = ypr[1] = ypr[2] = xyz[0] = xyz[1] = xyz[2] = 0.0F;
-		}
-
-		public CellAirPlane getCellAirPlane()
-		{
-			CellAirPlane cellairplane = (CellAirPlane)Property.value(this, "CellAirPlane", (Object)null);
-			if(cellairplane != null)
-				return cellairplane;
-			cellairplane = (CellAirPlane)Property.value(getClass(), "CellObject", (Object)null);
-			if(cellairplane == null)
-			{
-				tmpLocCell.set(0.0D, 0.0D, FM.Gears.H, 0.0F, FM.Gears.Pitch, 0.0F);
-				cellairplane = new CellAirPlane(new com.maddox.il2.ai.air.CellObject[1][1], hierMesh(), tmpLocCell, 1.0D);
-				cellairplane.blurSiluet8x();
-				cellairplane.clampCells();
-				Property.set(getClass(), "CellObject", cellairplane);
-			}
-			cellairplane = (CellAirPlane)cellairplane.getClone();
-			Property.set(this, "CellObject", cellairplane);
+	public CellAirPlane getCellAirPlane()
+	{
+		CellAirPlane cellairplane = (CellAirPlane)Property.value(this, "CellAirPlane", (Object)null);
+		if(cellairplane != null)
 			return cellairplane;
-		}
-
-		public static CellAirPlane getCellAirPlane(Class class1)
+		cellairplane = (CellAirPlane)Property.value(getClass(), "CellObject", (Object)null);
+		if(cellairplane == null)
 		{
-			CellAirPlane cellairplane = null;
-			tmpLocCell.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-			HierMesh hiermesh = new HierMesh(getPropertyMesh(class1, null));
-			cellairplane = new CellAirPlane(new com.maddox.il2.ai.air.CellObject[1][1], hiermesh, tmpLocCell, 1.0D);
+			tmpLocCell.set(0.0D, 0.0D, FM.Gears.H, 0.0F, FM.Gears.Pitch, 0.0F);
+			cellairplane = new CellAirPlane(new com.maddox.il2.ai.air.CellObject[1][1], hierMesh(), tmpLocCell, 1.0D);
 			cellairplane.blurSiluet8x();
 			cellairplane.clampCells();
-			return cellairplane;
+			Property.set(getClass(), "CellObject", cellairplane);
+		}
+		cellairplane = (CellAirPlane)cellairplane.getClone();
+		Property.set(this, "CellObject", cellairplane);
+		return cellairplane;
+	}
+
+	public static CellAirPlane getCellAirPlane(Class class1)
+	{
+		CellAirPlane cellairplane = null;
+		tmpLocCell.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+		HierMesh hiermesh = new HierMesh(getPropertyMesh(class1, null));
+		cellairplane = new CellAirPlane(new com.maddox.il2.ai.air.CellObject[1][1], hiermesh, tmpLocCell, 1.0D);
+		cellairplane.blurSiluet8x();
+		cellairplane.clampCells();
+		return cellairplane;
+	}
+
+	public boolean dropExternalStores(boolean flag)
+	{
+		boolean flag1 = false;
+		for(int i = 0; i < FM.CT.Weapons.length; i++)
+		{
+			BulletEmitter abulletemitter[] = FM.CT.Weapons[i];
+			if(abulletemitter == null)
+				continue;
+			for(int j = 0; j < abulletemitter.length; j++)
+			{
+				BulletEmitter bulletemitter = abulletemitter[j];
+				if(!(bulletemitter instanceof BombGun) || (bulletemitter instanceof FuelTankGun))
+					continue;
+				((BombGun)bulletemitter).jettisonBomb();
+				if(bulletemitter.countBullets() == 0)
+					continue;
+				if(bulletemitter.countBullets() == -1)
+					bulletemitter.loadBullets(1);
+				flag1 = true;
+				bulletemitter.shots(99);
+				if(bulletemitter.getHookName().startsWith("_BombSpawn"))
+					FM.CT.BayDoorControl = 1.0F;
+			}
+
 		}
 
-		public boolean dropExternalStores(boolean flag)
+		if(!flag1)
+			return dropWfrGr21();
+		else
+			return flag1;
+	}
+
+	private boolean dropWfrGr21()
+	{
+		if(!wfrGr21dropped)
 		{
-			boolean flag1 = false;
-			for(int i = 0; i < FM.CT.Weapons.length; i++)
+			Object aobj[] = pos.getBaseAttached();
+			if(aobj != null)
 			{
-				BulletEmitter abulletemitter[] = FM.CT.Weapons[i];
-				if(abulletemitter == null)
-					continue;
-				for(int j = 0; j < abulletemitter.length; j++)
+				for(int i = 0; i < aobj.length; i++)
 				{
-					BulletEmitter bulletemitter = abulletemitter[j];
-					if(!(bulletemitter instanceof BombGun) || (bulletemitter instanceof FuelTankGun))
+					if(aobj[i] instanceof PylonRO_WfrGr21)
+					{
+						PylonRO_WfrGr21 pylonro_wfrgr21 = (PylonRO_WfrGr21)aobj[i];
+						pylonro_wfrgr21.drawing(false);
+						pylonro_wfrgr21.visibilityAsBase(false);
+						wfrGr21dropped = true;
+						if(World.getPlayerAircraft() == this)
+							World.cur().scoreCounter.playerDroppedExternalStores(2);
+					}
+					if(!(aobj[i] instanceof PylonRO_WfrGr21Dual))
 						continue;
-					((BombGun)bulletemitter).jettisonBomb();
-					if(bulletemitter.countBullets() == 0)
-						continue;
-					if(bulletemitter.countBullets() == -1)
-						bulletemitter.loadBullets(1);
-					flag1 = true;
-					bulletemitter.shots(99);
-					if(bulletemitter.getHookName().startsWith("_BombSpawn"))
-						FM.CT.BayDoorControl = 1.0F;
+					PylonRO_WfrGr21Dual pylonro_wfrgr21dual = (PylonRO_WfrGr21Dual)aobj[i];
+					pylonro_wfrgr21dual.drawing(false);
+					pylonro_wfrgr21dual.visibilityAsBase(false);
+					wfrGr21dropped = true;
+					if(World.getPlayerAircraft() == this)
+						World.cur().scoreCounter.playerDroppedExternalStores(4);
 				}
 
 			}
-
-			if(!flag1)
-				return dropWfrGr21();
-			else
-				return flag1;
-		}
-
-		private boolean dropWfrGr21()
-		{
-			if(!wfrGr21dropped)
+			if(wfrGr21dropped)
 			{
-				Object aobj[] = pos.getBaseAttached();
-				if(aobj != null)
+				for(int j = 0; j < FM.CT.Weapons.length; j++)
 				{
-					for(int i = 0; i < aobj.length; i++)
+					BulletEmitter abulletemitter[] = FM.CT.Weapons[j];
+					if(abulletemitter == null)
+						continue;
+					for(int k = 0; k < abulletemitter.length; k++)
 					{
-						if(aobj[i] instanceof PylonRO_WfrGr21)
+						Object obj = abulletemitter[k];
+						if(obj instanceof RocketGunWfrGr21)
 						{
-							PylonRO_WfrGr21 pylonro_wfrgr21 = (PylonRO_WfrGr21)aobj[i];
-							pylonro_wfrgr21.drawing(false);
-							pylonro_wfrgr21.visibilityAsBase(false);
-							wfrGr21dropped = true;
-							if(World.getPlayerAircraft() == this)
-								World.cur().scoreCounter.playerDroppedExternalStores(2);
+							RocketGunWfrGr21 rocketgunwfrgr21 = (RocketGunWfrGr21)obj;
+							FM.CT.Weapons[j][k] = GunEmpty.get();
+							rocketgunwfrgr21.setHookToRel(true);
+							rocketgunwfrgr21.shots(0);
+							rocketgunwfrgr21.hide(true);
+							obj = GunEmpty.get();
+							rocketgunwfrgr21.doDestroy();
 						}
-						if(!(aobj[i] instanceof PylonRO_WfrGr21Dual))
-							continue;
-						PylonRO_WfrGr21Dual pylonro_wfrgr21dual = (PylonRO_WfrGr21Dual)aobj[i];
-						pylonro_wfrgr21dual.drawing(false);
-						pylonro_wfrgr21dual.visibilityAsBase(false);
-						wfrGr21dropped = true;
-						if(World.getPlayerAircraft() == this)
-							World.cur().scoreCounter.playerDroppedExternalStores(4);
+						if((obj instanceof PylonRO_WfrGr21) || (obj instanceof PylonRO_WfrGr21Dual))
+						{
+							((Pylon)obj).destroy();
+							FM.CT.Weapons[j][k] = GunEmpty.get();
+							obj = GunEmpty.get();
+						}
 					}
 
 				}
-				if(wfrGr21dropped)
-				{
-					for(int j = 0; j < FM.CT.Weapons.length; j++)
-					{
-						BulletEmitter abulletemitter[] = FM.CT.Weapons[j];
-						if(abulletemitter == null)
-							continue;
-						for(int k = 0; k < abulletemitter.length; k++)
-						{
-							Object obj = abulletemitter[k];
-							if(obj instanceof RocketGunWfrGr21)
-							{
-								RocketGunWfrGr21 rocketgunwfrgr21 = (RocketGunWfrGr21)obj;
-								FM.CT.Weapons[j][k] = GunEmpty.get();
-								rocketgunwfrgr21.setHookToRel(true);
-								rocketgunwfrgr21.shots(0);
-								rocketgunwfrgr21.hide(true);
-								obj = GunEmpty.get();
-								rocketgunwfrgr21.doDestroy();
-							}
-							if((obj instanceof PylonRO_WfrGr21) || (obj instanceof PylonRO_WfrGr21Dual))
-							{
-								((Pylon)obj).destroy();
-								FM.CT.Weapons[j][k] = GunEmpty.get();
-								obj = GunEmpty.get();
-							}
-						}
 
-					}
-
-					sfxHit(1.0F, new Point3d(0.0D, 0.0D, -1D));
-					Vector3d vector3d = new Vector3d();
-					vector3d.set(FM.Vwld);
-					vector3d.z = vector3d.z - 6D;
-					Wreckage wreckage = new Wreckage(this, hierMesh().chunkFind("WfrGr21L"));
-					vector3d.x += Math.random() + 0.5D;
-					vector3d.y += Math.random() + 0.5D;
-					vector3d.z += Math.random() + 0.5D;
-					wreckage.setSpeed(vector3d);
-					wreckage.collide(true);
-					Vector3d vector3d1 = new Vector3d();
-					vector3d1.set(FM.Vwld);
-					vector3d1.z = vector3d1.z - 7D;
-					Wreckage wreckage1 = new Wreckage(this, hierMesh().chunkFind("WfrGr21R"));
-					vector3d1.x += Math.random() + 0.5D;
-					vector3d1.y += Math.random() + 0.5D;
-					vector3d1.z += Math.random() + 0.5D;
-					wreckage1.setSpeed(vector3d1);
-					wreckage1.collide(true);
-					return true;
-				} else
-				{
-					return false;
-				}
+				sfxHit(1.0F, new Point3d(0.0D, 0.0D, -1D));
+				Vector3d vector3d = new Vector3d();
+				vector3d.set(FM.Vwld);
+				vector3d.z = vector3d.z - 6D;
+				Wreckage wreckage = new Wreckage(this, hierMesh().chunkFind("WfrGr21L"));
+				vector3d.x += Math.random() + 0.5D;
+				vector3d.y += Math.random() + 0.5D;
+				vector3d.z += Math.random() + 0.5D;
+				wreckage.setSpeed(vector3d);
+				wreckage.collide(true);
+				Vector3d vector3d1 = new Vector3d();
+				vector3d1.set(FM.Vwld);
+				vector3d1.z = vector3d1.z - 7D;
+				Wreckage wreckage1 = new Wreckage(this, hierMesh().chunkFind("WfrGr21R"));
+				vector3d1.x += Math.random() + 0.5D;
+				vector3d1.y += Math.random() + 0.5D;
+				vector3d1.z += Math.random() + 0.5D;
+				wreckage1.setSpeed(vector3d1);
+				wreckage1.collide(true);
+				return true;
 			} else
 			{
 				return false;
 			}
-		}
-
-		public void blisterRemoved(int i)
+		} else
 		{
-		}
-
-		public static boolean hasPlaneZBReceiver(Aircraft aircraft)
-		{
-			for(int i = 0; i < planesWithZBReceiver.length; i++)
-			{
-				if(!planesWithZBReceiver[i].isInstance(aircraft))
-					continue;
-				String s = aircraft.getRegiment().country();
-				if(s.equals(PaintScheme.countryBritain) || s.equals(PaintScheme.countryUSA) || s.equals(PaintScheme.countryNewZealand))
-					return true;
-			}
-
 			return false;
 		}
+	}
 
-		public boolean isAircraftTaxing()
+	public void blisterRemoved(int i)
+	{
+	}
+
+	public static boolean hasPlaneZBReceiver(Aircraft aircraft)
+	{
+		for(int i = 0; i < planesWithZBReceiver.length; i++)
 		{
-			return FM.Gears.isUnderDeck() || FM.Gears.getWheelsOnGround() || FM.Gears.onGround();
+			if(!planesWithZBReceiver[i].isInstance(aircraft))
+				continue;
+			String s = aircraft.getRegiment().country();
+			if(s.equals(PaintScheme.countryBritain) || s.equals(PaintScheme.countryUSA) || s.equals(PaintScheme.countryNewZealand))
+				return true;
 		}
 
-		public static boolean isPlayerTaxing()
-		{
-			Aircraft aircraft = World.getPlayerAircraft();
-			return aircraft.isDestroyed() || aircraft.FM.Gears.isUnderDeck() || aircraft.FM.Gears.getWheelsOnGround() || aircraft.FM.Gears.onGround();
-		}
+		return false;
+	}
 
-		public void setHumanControlledTurretAngels(Turret turret, float af[], HierMesh hiermesh, ActorHMesh actorhmesh)
-		{
-			af[0] = af[1] = af[2] = 0.0F;
-			af[1] = turret.tu[0];
-			hiermesh.setCurChunk(turret.indexA);
-			actorhmesh.hierMesh().chunkSetAngles(af);
-			af[1] = turret.tu[1];
-			hiermesh.setCurChunk(turret.indexB);
-			actorhmesh.hierMesh().chunkSetAngles(af);
-		}
+	public boolean isAircraftTaxing()
+	{
+		return FM.Gears.isUnderDeck() || FM.Gears.getWheelsOnGround() || FM.Gears.onGround();
+	}
 
-		public void initPlayerTaxingWay()
-		{
-			showTaxingWay = false;
-			Aircraft aircraft = World.getPlayerAircraft();
-			playerTaxingWay = new ArrayList();
-			if(aircraft.FM == null || aircraft.FM.AP == null)
-				return;
-			int i = 0;
-			do
-			{
-				if(i >= aircraft.FM.AP.way.size())
-					break;
-				WayPoint waypoint = aircraft.FM.AP.way.look_at_point(i);
-				if((waypoint == null || waypoint.waypointType != 4) && waypoint.waypointType != 5)
-					break;
-				World.cur();
-				World.land();
-				double d = Landscape.HQ_Air(waypoint.x(), waypoint.y()) + 0.1F;
-				Point3d point3d = new Point3d(waypoint.x(), waypoint.y(), d);
-				playerTaxingWay.add(point3d);
-				i++;
-			} while(true);
-		}
+	public static boolean isPlayerTaxing()
+	{
+		Aircraft aircraft = World.getPlayerAircraft();
+		return aircraft.isDestroyed() || aircraft.FM.Gears.isUnderDeck() || aircraft.FM.Gears.getWheelsOnGround() || aircraft.FM.Gears.onGround();
+	}
 
-		public void setBombScoreOwner(Aircraft aircraft)
-		{
-			bombScoreOwner = aircraft;
-		}
+	public void setHumanControlledTurretAngels(Turret turret, float af[], HierMesh hiermesh, ActorHMesh actorhmesh)
+	{
+		af[0] = af[1] = af[2] = 0.0F;
+		af[1] = turret.tu[0];
+		hiermesh.setCurChunk(turret.indexA);
+		actorhmesh.hierMesh().chunkSetAngles(af);
+		af[1] = turret.tu[1];
+		hiermesh.setCurChunk(turret.indexB);
+		actorhmesh.hierMesh().chunkSetAngles(af);
+	}
 
-		public Aircraft getBombScoreOwner()
+	public void initPlayerTaxingWay()
+	{
+		showTaxingWay = false;
+		Aircraft aircraft = World.getPlayerAircraft();
+		playerTaxingWay = new ArrayList();
+		if(aircraft.FM == null || aircraft.FM.AP == null)
+			return;
+		int i = 0;
+		do
 		{
-			return bombScoreOwner;
-		}
+			if(i >= aircraft.FM.AP.way.size())
+				break;
+			WayPoint waypoint = aircraft.FM.AP.way.look_at_point(i);
+			if((waypoint == null || waypoint.waypointType != 4) && waypoint.waypointType != 5)
+				break;
+			World.cur();
+			World.land();
+			double d = Landscape.HQ_Air(waypoint.x(), waypoint.y()) + 0.1F;
+			Point3d point3d = new Point3d(waypoint.x(), waypoint.y(), d);
+			playerTaxingWay.add(point3d);
+			i++;
+		} while(true);
+	}
 
-		public Point3d getTankBurnLightPoint(int i, Hook hook)
+	public void setBombScoreOwner(Aircraft aircraft)
+	{
+		bombScoreOwner = aircraft;
+	}
+
+	public Aircraft getBombScoreOwner()
+	{
+		return bombScoreOwner;
+	}
+
+	public Point3d getTankBurnLightPoint(int i, Hook hook)
+	{
+		Loc loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+		Loc loc1 = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+		if(hook.chunkName().toLowerCase().startsWith("cf"))
 		{
-			Loc loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-			Loc loc1 = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-			if(hook.chunkName().toLowerCase().startsWith("cf"))
-			{
-				hook.computePos(this, loc, loc1);
-				Point3d point3d = loc1.getPoint();
-				if(point3d.z > 0.0D)
-					loc = new Loc(0.0D, 0.0D, 0.5D, 0.0F, 0.0F, 0.0F);
-				else
-					loc = new Loc(0.0D, 0.0D, -0.75D, 0.0F, 0.0F, 0.0F);
-				loc1 = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-			} else
-			{
-				loc = new Loc(-1D, 0.0D, 0.5D, 0.0F, 0.0F, 0.0F);
-			}
 			hook.computePos(this, loc, loc1);
-			Point3d point3d1 = loc1.getPoint();
-			return point3d1;
-		}
-
-		public Loc getEngineBurnLightLoc(int i)
+			Point3d point3d = loc1.getPoint();
+			if(point3d.z > 0.0D)
+				loc = new Loc(0.0D, 0.0D, 0.5D, 0.0F, 0.0F, 0.0F);
+			else
+				loc = new Loc(0.0D, 0.0D, -0.75D, 0.0F, 0.0F, 0.0F);
+			loc1 = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+		} else
 		{
-			return engineBurnLightLoc;
+			loc = new Loc(-1D, 0.0D, 0.5D, 0.0F, 0.0F, 0.0F);
 		}
+		hook.computePos(this, loc, loc1);
+		Point3d point3d1 = loc1.getPoint();
+		return point3d1;
+	}
 
-		public float getWheelWidth(int i)
-		{
-			float f = cvt(FM.Wingspan, 10F, 40F, 0.12F, 0.42F);
-			if(i == 2)
-				f = (float)((double)f * 0.59999999999999998D);
-			return f;
-		}
+	public Loc getEngineBurnLightLoc(int i)
+	{
+		return engineBurnLightLoc;
+	}
 
-		public boolean needsOpenBombBay()
-		{
-			return true;
-		}
+	public float getWheelWidth(int i)
+	{
+		float f = cvt(FM.Wingspan, 10F, 40F, 0.12F, 0.42F);
+		if(i == 2)
+			f = (float)((double)f * 0.59999999999999998D);
+		return f;
+	}
 
-		public boolean canOpenBombBay()
-		{
-			return true;
-		}
+	public boolean needsOpenBombBay()
+	{
+		return true;
+	}
 
-		public float getEyeLevelCorrection()
-		{
-			return 0.0F;
-		}
+	public boolean canOpenBombBay()
+	{
+		return true;
+	}
+
+	public float getEyeLevelCorrection()
+	{
+		return 0.0F;
+	}
 }

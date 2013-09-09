@@ -33,7 +33,7 @@ public class EjectionSeat extends ActorHMesh
                     vector3d.scale(1.0F / Time.tickLenFs());
                     if(Actor.isValid(ownerAircraft))
                     {
-                        Paratrooper paratrooper = new Paratrooper(ownerAircraft, ownerAircraft.getArmy(), 0, l, vector3d);
+                        new Paratrooper(ownerAircraft, ownerAircraft.getArmy(), 0, l, vector3d);
                         doRemovePilot();
                         bPilotAttached = false;
                         ownerAircraft.FM.AS.astateBailoutStep = 12;

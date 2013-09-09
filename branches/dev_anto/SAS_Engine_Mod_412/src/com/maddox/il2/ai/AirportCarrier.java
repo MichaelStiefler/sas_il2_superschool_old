@@ -525,7 +525,6 @@ public class AirportCarrier extends Airport {
 				runway[0].getTangage(), runway[0].getKren());
 		tmpLoc.add(ship.pos.getAbs());
 		loc.set(tmpLoc);
-		Point3d point3d = loc.getPoint();
 		Orient orient = loc.getOrient();
 		orient.increment(0.0F, aircraft.FM.Gears.Pitch, 0.0F);
 		if (aircraft.FM instanceof Maneuver)
@@ -556,7 +555,6 @@ public class AirportCarrier extends Airport {
 		for (int i_20_ = 0; i_20_ < i; i_20_++) {
 			int i_21_ = sectfile.vars(i_20_);
 			for (int i_22_ = 0; i_22_ < i_21_; i_22_++) {
-				String string = sectfile.value(i_20_, i_22_);
 				StringTokenizer stringtokenizer = new StringTokenizer(
 						sectfile.value(i_20_, i_22_));
 				if (stringtokenizer.hasMoreTokens()) {
@@ -635,7 +633,6 @@ public class AirportCarrier extends Airport {
 						arraylist.add(new Point2d(-1.0, 1.0));
 				}
 			} else {
-				Object object = null;
 				String string = ship.getShipProp().typicalPlaneClass;
 				CellAirPlane cellairplane;
 				if (string != null && !string.equals("")) {

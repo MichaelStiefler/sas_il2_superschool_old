@@ -672,7 +672,7 @@ public class Bomb extends ActorMesh
     private static Point3d corn1 = new Point3d();
     private static float plateBox[] = new float[6];
     private static boolean bPlateExist = false;
-    private static boolean bPlateGround = false;
+    protected static boolean bPlateGround = false;
     private static Loc __loc = new Loc();
     protected SoundFX sound;
     protected static final float SND_TIME_BOUND = 5F;
