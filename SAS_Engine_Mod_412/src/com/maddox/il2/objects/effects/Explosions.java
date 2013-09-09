@@ -367,9 +367,7 @@ public class Explosions
     {
         if(!Config.isUSE_RENDER())
             return;
-        Point3d point3d = new Point3d();
         String s = "";
-        boolean flag = false;
         byte byte0 = 0;
         float f = 1.0F;
         switch(i)
@@ -399,7 +397,6 @@ public class Explosions
 
         case 6: // '\006'
             s = "Fuel";
-            boolean flag1 = true;
             byte0 = 5;
             break;
 
@@ -410,7 +407,6 @@ public class Explosions
         String s1 = "effects/Explodes/Objects/House/" + s + "/Boiling.eff";
         String s2 = "effects/Explodes/Objects/House/" + s + "/Boiling2.eff";
         String s3 = "effects/Explodes/Objects/House/" + s + "/Pieces.eff";
-        float f1 = 4F;
         Eff3D.initSetBoundBox(af[0], af[1], af[2], af[3], af[4], af[5]);
         Eff3DActor.New(loc, 1.0F, s1, 3F);
         Eff3D.initSetBoundBox(af[0] + (af[3] - af[0]) * 0.25F, af[1] + (af[4] - af[1]) * 0.25F, af[2], af[3] - (af[3] - af[0]) * 0.25F, af[4] - (af[4] - af[1]) * 0.25F, af[2] + (af[5] - af[2]) * 0.5F);
@@ -622,7 +618,6 @@ public class Explosions
             Tank_ExplodeCollapse(point3d);
             float f = 31.25F;
             float f2 = 150F;
-            float f1 = 6.75F;
             int i = 0;
             boolean flag = true;
             o.set(0.0F, 0.0F, 0.0F);
@@ -657,7 +652,7 @@ public class Explosions
         }
     }
 
-    private static void Building_Explode(Point3d point3d)
+    protected static void Building_Explode(Point3d point3d)
     {
         if(!Config.isUSE_RENDER())
             return;
@@ -666,8 +661,6 @@ public class Explosions
         Point3d point3d1 = new Point3d();
         String s = "effects/Explodes/Objects/Building20m/SmokeBoiling.eff";
         String s1 = "effects/Explodes/Objects/Building20m/SmokeBoiling2.eff";
-        float f1 = 4F;
-        float f2 = 1.0F;
         for(int i = 0; i < byte0 * byte0; i++)
         {
             double d = (Math.random() - 0.5D) * (double)f;
@@ -683,8 +676,6 @@ public class Explosions
         o.set(0.0F, 0.0F, 0.0F);
         l.set(point3d, o);
         float f3 = 62.5F;
-        float f5 = 150F;
-        float f4 = 6.75F;
         int j = 0;
         boolean flag = false;
         ExplodeSurfaceWave(j, f3, flag ? 0.6F : 0.8F);
@@ -707,20 +698,17 @@ public class Explosions
     {
         o.set(0.0F, 90F, 0.0F);
         l.set(point3d, o);
-        float f = 60F;
         String s = "Objects/Tank_Collapse";
-        float f1 = 31.25F;
         float f3 = 150F;
-        float f2 = 6.75F;
         String s1 = "effects/Explodes/" + s + "/Peaces1.eff";
         String s2 = "effects/Explodes/" + s + "/Peaces2.eff";
         String s3 = "effects/Explodes/" + s + "/Sparks.eff";
         String s4 = "effects/Explodes/" + s + "/Burn.eff";
         String s5 = "effects/Explodes/" + s + "/SmokeBoiling.eff";
-        Eff3DActor eff3dactor = Eff3DActor.New(l, 1.0F, s1, 3.5F);
-        Eff3DActor eff3dactor1 = Eff3DActor.New(l, 1.0F, s2, 3.5F);
-        eff3dactor1 = Eff3DActor.New(l, 1.0F, s3, 0.5F);
-        eff3dactor1 = Eff3DActor.New(l, 1.0F, s5, 2.5F);
+        Eff3DActor.New(l, 1.0F, s1, 3.5F);
+        Eff3DActor.New(l, 1.0F, s2, 3.5F);
+        Eff3DActor.New(l, 1.0F, s3, 0.5F);
+        Eff3DActor.New(l, 1.0F, s5, 2.5F);
         Eff3DActor eff3dactor2 = Eff3DActor.New(l, 1.0F, s4, 0.3F);
         eff3dactor2.postDestroy(Time.current() + 1500L);
         LightPointActor lightpointactor = new LightPointActor(new LightPointWorld(), new Point3d(5D, 0.0D, 0.0D));
@@ -771,7 +759,8 @@ public class Explosions
         bEnableActorCrater = true;
         SfxExplosion.crashAir(point3d, 0);
         l = new Loc(point3d);
-        l.getPoint().z = World.cur().land().HQ(point3d.x, point3d.y);
+        World.cur();
+		l.getPoint().z = World.land().HQ(point3d.x, point3d.y);
         Eff3DActor.New(l, 1.0F, "EFFECTS/Smokes/SmokeBoiling.eff", 1200F);
         Eff3DActor.New(l, 1.0F, "3DO/Effects/Aircraft/BlackHeavyGND.eff", 1200F);
         Eff3DActor.New(l, 1.75F, "3DO/Effects/Aircraft/FireGND.eff", 1200F);
@@ -788,7 +777,8 @@ public class Explosions
                 d = 0.5D;
             point3d1.y += d;
             Loc loc = new Loc(point3d1);
-            loc.getPoint().z = World.cur().land().HQ(point3d1.x, point3d1.y);
+            World.cur();
+			loc.getPoint().z = World.land().HQ(point3d1.x, point3d1.y);
             Eff3DActor.New(loc, 1.0F, "3DO/Effects/Aircraft/FireGND.eff", 1200F - World.rnd().nextFloat(10F, 200F));
         }
 
@@ -937,7 +927,8 @@ public class Explosions
         Eff3DActor.New(loc, 1.0F, "3DO/Effects/Fireworks/Tank_SmokeBoiling.eff", -1F);
         Eff3DActor.New(loc, 1.0F, "3DO/Effects/Fireworks/Tank_Sparks.eff", -1F);
         Eff3DActor.New(loc, 1.0F, "3DO/Effects/Fireworks/Tank_SparksP.eff", -1F);
-        if(point3d.z - World.cur().land().HQ(point3d.x, point3d.y) > 3D)
+        World.cur();
+		if(point3d.z - World.land().HQ(point3d.x, point3d.y) > 3D)
         {
             SfxExplosion.crashAir(point3d, 1);
         } else
@@ -957,8 +948,6 @@ public class Explosions
         if(i < 2)
             i = 2;
         Point3d point3d2 = new Point3d();
-        float f2 = 4F;
-        float f3 = 1.0F;
         for(int j = 0; j < i; j++)
         {
             point3d2.interpolate(point3d, point3d1, Math.random());
@@ -1776,8 +1765,6 @@ public class Explosions
         int j = 0;
         if(Engine.land().isWater(point3d.x, point3d.y))
             j = 1;
-        int k = 4 + World.rnd().nextInt(2);
-        float f4 = 30F;
         o.set(0.0F, 90F, 0.0F);
         l.set(point3d, o);
         float f2;
@@ -1795,7 +1782,6 @@ public class Explosions
         {
             s = "Bomb1000";
             f5 = 600F;
-            int i1 = 3 + World.rnd().nextInt(3);
             f2 = 500F;
             f3 = 1.6F;
         } else
@@ -1809,7 +1795,6 @@ public class Explosions
         {
             s = "RS82";
             f5 = 150F;
-            int j1 = 2 + World.rnd().nextInt(2);
             f2 = 125F;
             f3 = 0.6F;
         }
@@ -1838,7 +1823,7 @@ public class Explosions
 
     private static void playShotSound(Shot shot1)
     {
-        double d = shot1.p.distanceSquared(Engine.soundListener().absPos);
+        shot1.p.distanceSquared(Engine.soundListener().absPos);
     }
 
     public static void generateShot(Actor actor, Shot shot1)
@@ -2192,14 +2177,6 @@ public class Explosions
     private static Loc l = new Loc();
     private static Loc rel = new Loc();
     private static Loc tmpLoc = new Loc();
-    private static Point3d ap;
-    private static final int LAND = 0;
-    private static final int WATER = 1;
-    private static final int OBJECT = 2;
-    private static final int BOMB250 = 0;
-    private static final int BOMB1000 = 2;
-    private static final int RS82 = 1;
-    private static final int DEBRIS = 3;
     public static final int AB23 = 0;
     public static final int AB250 = 1;
     public static final int AB500 = 2;

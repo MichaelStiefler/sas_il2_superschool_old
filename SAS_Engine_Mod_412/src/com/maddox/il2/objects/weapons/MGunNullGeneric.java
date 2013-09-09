@@ -85,7 +85,7 @@ public class MGunNullGeneric extends GunNull
     }
     return _index;
   }
-  private static final boolean DEBUG = false;
+  protected static final boolean DEBUG = false;
   protected BulletAircraftGeneric guardBullet;
   private static Bullet bullet;
   private int _index;

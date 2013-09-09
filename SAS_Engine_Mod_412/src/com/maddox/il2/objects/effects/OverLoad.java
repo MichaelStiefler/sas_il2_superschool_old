@@ -7,12 +7,10 @@ package com.maddox.il2.objects.effects;
 
 import com.maddox.JGP.Point2f;
 import com.maddox.TexImage.TexImage;
-import com.maddox.il2.ai.DifficultySettings;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.Main3D;
-import com.maddox.il2.objects.air.Cockpit;
 import com.maddox.opengl.*;
 import com.maddox.sound.AudioDevice;
 
@@ -245,12 +243,8 @@ public class OverLoad extends Render
     private int Tex[] = {
         0
     };
-    private static final int N = 16;
     private static Point2f pnts[];
     private static Point2f tnts[];
-    private static final float O_MIN = 0.2F;
-    private static final float O_MAX = 0.7F;
-
     static 
     {
         pnts = new Point2f[17];

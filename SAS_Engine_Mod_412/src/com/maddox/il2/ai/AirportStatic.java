@@ -108,12 +108,12 @@ public abstract class AirportStatic extends Airport
             f1 = 1.0F;
         if(flightmodel.EI.engines[0].getType() == 3)
             f1 = 1.5F;
+    	//TODO: Edit for fast flying aircraft
+        if(((Interpolate) (flightmodel)).actor instanceof TypeFastJet)
+        	f1 = 3F;
         float f2 = f1;
         if(f2 > 1.0F)
-            f2 = 1.0F;
-    	//TODO: Edit for fast flying aircraft
-   	 if(((Interpolate) (flightmodel)).actor instanceof TypeFastJet)
-            f2 = 3F;
+            f2 = 1.0F;          
         for(int i = x.length - 1; i >= 0; i--)
         {
             WayPoint waypoint = new WayPoint();
