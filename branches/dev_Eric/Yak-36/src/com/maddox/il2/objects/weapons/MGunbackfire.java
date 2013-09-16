@@ -29,7 +29,7 @@ public class MGunbackfire extends MGunAircraftGeneric
         gunproperties.sprite = null;
         gunproperties.smoke = "effects/smokes/CannonTank.eff";
         gunproperties.shells = "3DO/Effects/GunShells/CannonShells.eff";
-        gunproperties.sound = "weapon.NS30";
+        gunproperties.sound = null;
         gunproperties.emitColor = new Color3f(1.0F, 1.0F, 0.0F);
         gunproperties.emitI = 20F;
         gunproperties.emitR = 3F;
