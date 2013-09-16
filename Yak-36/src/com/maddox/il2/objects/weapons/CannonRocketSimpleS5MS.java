@@ -25,7 +25,7 @@ public class CannonRocketSimpleS5MS extends CannonRocketSimple
         gunproperties.aimMinDist = 10F;
         gunproperties.aimMaxDist = 2000F;
         BulletProperties bulletproperties = gunproperties.bullet[0];
-        bulletproperties.speed = 350F;
+        bulletproperties.speed = 550F;
     }
 
     public void launch(Point3d point3d, Orient orient, float f, Actor actor)

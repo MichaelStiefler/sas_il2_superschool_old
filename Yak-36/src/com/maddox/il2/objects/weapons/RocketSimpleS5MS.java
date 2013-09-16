@@ -24,6 +24,13 @@ public class RocketSimpleS5MS extends RocketSimple
     {
         super(point3d, orient, actor);
     }
+    
+    public void start(float f)
+    {
+        float f1 = f-1F;
+        super.start(f1);
+        Eff3DActor.New(this, null, new Loc(), 1.0F, "EFFECTS/Smokes/SmokeMissilessmall.eff", f1);
+    }
 
     static 
     {
@@ -40,7 +47,7 @@ public class RocketSimpleS5MS extends RocketSimple
         Property.set(class1, "timeLife", 60F);
         Property.set(class1, "timeFire", 1.1F);
         Property.set(class1, "force", 1300F);
-        Property.set(class1, "power", 10.8F);
+        Property.set(class1, "power", 25.8F);
         Property.set(class1, "powerType", 0);
         Property.set(class1, "kalibr", 0.055F);
         Property.set(class1, "massa", 3.86F);

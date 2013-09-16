@@ -79,10 +79,6 @@ public class Yak_36 extends Scheme2
         gearTargetAngle = -1F;
         gearCurrentAngle = -1F;
         hasHydraulicPressure = true;
-        bCanopyInitState = false;
-        radarmode = 0;
-        targetnum = 0;
-        lockrange = 0.035F;
         vectorthrustx = 0F;
         vectorthrustz = 0F;
     }
@@ -393,7 +389,7 @@ public class Yak_36 extends Scheme2
                 {
                     Loc loc = new Loc();
                     Loc loc1 = new Loc();
-                    Vector3d vector3d = new Vector3d(0.0D, 0.0D, 30D);
+                    Vector3d vector3d = new Vector3d(0.0D, 0.0D, 60D);
                     HookNamed hooknamed = new HookNamed(aircraft, "_ExternalSeat01");
                     ((Actor) (aircraft)).pos.getAbs(loc1);
                     hooknamed.computePos(aircraft, loc1, loc);
@@ -401,7 +397,7 @@ public class Yak_36 extends Scheme2
                     vector3d.x += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).x;
                     vector3d.y += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).y;
                     vector3d.z += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).z;
-                    new EjectionSeat(1, loc, vector3d, aircraft);
+                    new EjectionSeat(10, loc, vector3d, aircraft);
                 }
             }
 
@@ -998,17 +994,17 @@ label0:
     }
 
     public void update(float f)
-    {
+    {   	
+        if(((FlightModelMain) (super.FM)).CT.getFlap() < ((FlightModelMain) (super.FM)).CT.FlapsControl)
+            ((FlightModelMain) (super.FM)).CT.forceFlaps(flapsMovement(f, ((FlightModelMain) (super.FM)).CT.FlapsControl, ((FlightModelMain) (super.FM)).CT.getFlap(), 999F, Aircraft.cvt(super.FM.getSpeedKMH(), 0.0F, 700F, 0.5F, 0.08F)));
+        else
+            ((FlightModelMain) (super.FM)).CT.forceFlaps(flapsMovement(f, ((FlightModelMain) (super.FM)).CT.FlapsControl, ((FlightModelMain) (super.FM)).CT.getFlap(), 999F, Aircraft.cvt(super.FM.getSpeedKMH(), 0.0F, 700F, 0.5F, 0.7F)));
         if((((FlightModelMain) (super.FM)).AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && super.FM.getSpeedKMH() > 15F)
         {
             overrideBailout = true;
             ((FlightModelMain) (super.FM)).AS.bIsAboutToBailout = false;
             bailout();
-        }
-        if(((FlightModelMain) (super.FM)).CT.getFlap() < ((FlightModelMain) (super.FM)).CT.FlapsControl)
-            ((FlightModelMain) (super.FM)).CT.forceFlaps(flapsMovement(f, ((FlightModelMain) (super.FM)).CT.FlapsControl, ((FlightModelMain) (super.FM)).CT.getFlap(), 999F, Aircraft.cvt(super.FM.getSpeedKMH(), 0.0F, 700F, 0.5F, 0.08F)));
-        else
-            ((FlightModelMain) (super.FM)).CT.forceFlaps(flapsMovement(f, ((FlightModelMain) (super.FM)).CT.FlapsControl, ((FlightModelMain) (super.FM)).CT.getFlap(), 999F, Aircraft.cvt(super.FM.getSpeedKMH(), 0.0F, 700F, 0.5F, 0.7F)));
+        } 	
         float f2 = super.FM.getSpeedKMH() - 1000F;
         if(f2 < 0.0F)
             f2 = 0.0F;
@@ -1066,14 +1062,14 @@ label0:
         moveHydraulics(f);
         soundbarier();
         super.update(f);  
-        if((!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode()) && (FM instanceof Maneuver) && ((Maneuver)FM).get_task() == 7) //TODO straft
+        if((!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode()) && (FM instanceof Maneuver) && ((Maneuver)FM).get_task() == 7 && !((FlightModelMain) (super.FM)).AP.way.isLanding()) //TODO straft
         {
             Pilot pilot = (Pilot)FM;
             if(pilot != null && isAlive(pilot.target_ground))
             {
                 Point3d point3d2 = new Point3d();
                 pilot.target_ground.pos.getAbs(point3d2);
-                if(pos.getAbsPoint().distance(point3d2) < 4500D)
+                if(pos.getAbsPoint().distance(point3d2) < 1000D)
                 {
                     point3d2.sub(FM.Loc);
                     FM.Or.transformInv(point3d2);
@@ -1163,16 +1159,23 @@ label0:
         }
 		if(nozzlemode == 0)
 		{
-        Vector3f eVect = new Vector3f();
+		float t = (tnozzle - Time.current())/10000;
+		if(t<0)
+			t = 0;
+		Vector3f eVect = new Vector3f();
         eVect.x = 1F - vectorthrustx;
         eVect.y = 0.0F;
-        eVect.z = vectorthrustz;
+        eVect.z = vectorthrustz + t*2;
         eVect.normalize();
         ((FlightModelMain) (super.FM)).EI.engines[0].setVector(eVect);
-        ((FlightModelMain) (super.FM)).EI.engines[1].setVector(eVect);
-        if(nozzleswitch == true)
+        ((FlightModelMain) (super.FM)).EI.engines[1].setVector(eVect);        
+        if(nozzleswitch == true && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5 && ((FlightModelMain) (super.FM)).EI.engines[1].getPowerOutput() > 0.7F && !((FlightModelMain) (super.FM)).Gears.onGround())
         {	
-        ((FlightModelMain) (super.FM)).producedAF.x += vectorthrustx * 700000D;        
+        ((FlightModelMain) (super.FM)).producedAF.x += vectorthrustx * 850000D;        
+        }
+        if(nozzleswitch == true && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5 && ((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput() > 0.7F && !((FlightModelMain) (super.FM)).Gears.onGround())
+        {	
+        ((FlightModelMain) (super.FM)).producedAF.x += vectorthrustx * 850000D;        
         }
         if(super.FM.getAltitude() > 0.0F && (double)super.FM.getSpeedKMH() >= 100D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
             ((FlightModelMain) (super.FM)).producedAF.x -= (double)((FlightModelMain) (super.FM)).getSpeedKMH()*30D;
@@ -1181,12 +1184,14 @@ label0:
 		}
     }
     
-    protected void moveBayDoor(float f)
+    public void moveArrestorHook(float f)
     {
-    	
+        hierMesh().chunkSetAngles("Tailhook_D0", 0.0F, 0.0F, 65F * f);
     }
     
-    public void moveArrestorHook(float f)
+    private long tnozzle;
+    
+    public void moveRefuel(float f) //TODO VTOL
     {
     	hierMesh().chunkSetAngles("GearC5_D0", 0.0F, 0.0F, -45F * f);
         hierMesh().chunkSetAngles("GearC6_D0", 0.0F, 0.0F, -45F * f);
@@ -1208,7 +1213,10 @@ label0:
         	nozzlemode = 0;        	
         }  
         if(f<0.1F)
+        {
         	nozzleswitch = false;
+        	tnozzle = Time.current() + 4000L;
+        }
         float f1 = f * 4F;
         if(f1 > 0.5F)
         	f1 = 0.5F;
@@ -1291,19 +1299,19 @@ label0:
                 }
                 if(((FlightModelMain) (super.FM)).AS.isMaster())
                     ((FlightModelMain) (super.FM)).AS.netToMirrors(20, ((FlightModelMain) (super.FM)).AS.astateBailoutStep, 1, null);
-                AircraftState aircraftstate = ((FlightModelMain) (super.FM)).AS;
-                aircraftstate.astateBailoutStep = (byte)(aircraftstate.astateBailoutStep + 1);
+                AircraftState tmp178_177 = ((FlightModelMain) (super.FM)).AS;
+                tmp178_177.astateBailoutStep = (byte)(tmp178_177.astateBailoutStep + 1);
                 if(((FlightModelMain) (super.FM)).AS.astateBailoutStep == 4)
                     ((FlightModelMain) (super.FM)).AS.astateBailoutStep = 11;
             } else
             if(((FlightModelMain) (super.FM)).AS.astateBailoutStep >= 11 && ((FlightModelMain) (super.FM)).AS.astateBailoutStep <= 19)
             {
-                byte byte0 = ((FlightModelMain) (super.FM)).AS.astateBailoutStep;
+                int i = ((FlightModelMain) (super.FM)).AS.astateBailoutStep;
                 if(((FlightModelMain) (super.FM)).AS.isMaster())
                     ((FlightModelMain) (super.FM)).AS.netToMirrors(20, ((FlightModelMain) (super.FM)).AS.astateBailoutStep, 1, null);
-                AircraftState aircraftstate1 = ((FlightModelMain) (super.FM)).AS;
-                aircraftstate1.astateBailoutStep = (byte)(aircraftstate1.astateBailoutStep + 1);
-                if(byte0 == 11)
+                AircraftState tmp383_382 = ((FlightModelMain) (super.FM)).AS;
+                tmp383_382.astateBailoutStep = (byte)(tmp383_382.astateBailoutStep + 1);
+                if(i == 11)
                 {
                     super.FM.setTakenMortalDamage(true, null);
                     if((super.FM instanceof Maneuver) && ((Maneuver)super.FM).get_maneuver() != 44)
@@ -1313,10 +1321,10 @@ label0:
                             ((Maneuver)super.FM).set_maneuver(44);
                     }
                 }
-                if(((FlightModelMain) (super.FM)).AS.astatePilotStates[byte0 - 11] < 99)
+                if(((FlightModelMain) (super.FM)).AS.astatePilotStates[i - 11] < 99)
                 {
-                    doRemoveBodyFromPlane(byte0 - 10);
-                    if(byte0 == 11)
+                    doRemoveBodyFromPlane(i - 10);
+                    if(i == 11)
                     {
                         doEjectCatapult();
                         super.FM.setTakenMortalDamage(true, null);
@@ -1326,6 +1334,8 @@ label0:
                         overrideBailout = false;
                         ((FlightModelMain) (super.FM)).AS.bIsAboutToBailout = true;
                         ejectComplete = true;
+                        if(i > 10 && i <= 19)
+                            EventLog.onBailedOut(this, i - 11);
                     }
                 }
             }
@@ -1344,7 +1354,7 @@ label0:
         }
     }
 
-    private final void doRemoveBlisters()
+    protected final void doRemoveBlisters()
     {
         for(int i = 2; i < 10; i++)
             if(hierMesh().chunkFindCheck("Blister" + i + "_D0") != -1 && ((FlightModelMain) (super.FM)).AS.getPilotHealth(i - 1) > 0.0F)
@@ -1436,10 +1446,6 @@ label0:
     private static final float POS_G_TOLERANCE_FACTOR = 2F;
     private static final float POS_G_TIME_FACTOR = 2F;
     private static final float POS_G_RECOVERY_FACTOR = 2F;
-    private boolean bCanopyInitState;
-    public int radarmode;
-    public int targetnum;
-    public float lockrange;
 
     static 
     {
