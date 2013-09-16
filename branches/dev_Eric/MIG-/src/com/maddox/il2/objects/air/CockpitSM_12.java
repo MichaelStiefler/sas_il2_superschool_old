@@ -188,9 +188,9 @@ public class CockpitSM_12 extends CockpitPilot
         interpPut(new Interpolater(), null, Time.current(), null);
         if(super.acoustics != null)
             super.acoustics.globFX = new ReverbFXRoom(0.45F);
-        FOV = 1.0D;
-        ScX = 0.00099999997764825821D;
-        ScY = 0.000002;
+        FOV = 1.0D; //TODO Radar parameter
+        ScX = 0.00199999997764825821D;
+        ScY = 0.0000039;
         ScZ = 0.0010000000474974513D;
         FOrigX = 0.0F;
         FOrigY = 0.0F;
@@ -205,7 +205,8 @@ public class CockpitSM_12 extends CockpitPilot
         radarPlane = new ArrayList();
         radarPlanefriendly = new ArrayList();
         radarTracking = new ArrayList();
-        targetnum = 0;
+        trackzone = false;
+
     }
 
     public void reflectWorldToInstruments(float f)
@@ -250,10 +251,11 @@ public class CockpitSM_12 extends CockpitPilot
             super.mesh.chunkVisible("Z_Z_RETICLE", true);
         
         radarclutter();	
-        targetnum = ((Mig_19)aircraft()).targetnum;
+
     }
     
     private long t1;
+    private long t2;
     private boolean clutter;
     
     public void radarclutter()
@@ -288,6 +290,9 @@ public class CockpitSM_12 extends CockpitPilot
                         String m = "Radarmark0" + j;
                         String n = "RadarA0" + j;
                         String o = "RadarB0" + j;
+                        String p = "RadarIFF0" + j;
+                        if(super.mesh.isChunkVisible(p))
+                            super.mesh.chunkVisible(p, false);
                         if(super.mesh.isChunkVisible(m))
                              super.mesh.chunkVisible(m, false);
                         if(super.mesh.isChunkVisible(n))
@@ -316,6 +321,8 @@ public class CockpitSM_12 extends CockpitPilot
                     { 
             		clutter = false;
             		tracking = true;
+            		azimult = 0D;
+            		tangage = 0D;
                     radarscan(); // TODO radar
                     String m = "Radarlock";
                     String n = "RadarLL";
@@ -344,13 +351,16 @@ public class CockpitSM_12 extends CockpitPilot
                         String m = "Radarmark0" + j;
                         String n = "RadarA0" + j;
                         String o = "RadarB0" + j;
+                        String p = "RadarIFF0" + j;
+                        if(super.mesh.isChunkVisible(p))
+                            super.mesh.chunkVisible(p, false);
                         if(super.mesh.isChunkVisible(m))
                              super.mesh.chunkVisible(m, false);
                         if(super.mesh.isChunkVisible(n))
                              super.mesh.chunkVisible(n, false);
                         if(super.mesh.isChunkVisible(o))
                              super.mesh.chunkVisible(o, false); 
-                    }
+                    }                    
                     super.mesh.chunkVisible("Radarlockrange", false);
                     radartracking();
                     }	
@@ -366,15 +376,18 @@ public class CockpitSM_12 extends CockpitPilot
         try
         {
             Aircraft ownaircraft = World.getPlayerAircraft();
+            
+            long ti = (Time.current() + World.Rnd().nextLong(-250L, 250L)); // track delay (target mark appear disappear)
+            if(ti > to + 1450L)
+            radarPlane.clear();
             if(Actor.isValid(ownaircraft) && Actor.isAlive(ownaircraft))
-            {
-                long ti = (Time.current() + World.Rnd().nextLong(-250L, 250L)); // track delay (target mark appear disappear)
-                if(ti > to + 1250L)
+            {               
+                if(ti > to + 2000L)
                 {
                     to = ti;
                     Point3d pointAC = ((Actor) (ownaircraft)).pos.getAbsPoint();
                     Orient orientAC = ((Actor) (ownaircraft)).pos.getAbsOrient();
-                    radarPlane.clear();
+                    
                     List list = Engine.targets();
                     int i = list.size();
                     for(int j = 0; j < i; j++)
@@ -389,37 +402,18 @@ public class CockpitSM_12 extends CockpitPilot
                             pointOrtho.sub(pointAC);
                             orientAC.transformInv(pointOrtho);
                             float f = Mission.cur().sectFile().get("Weather", "WindSpeed", 0.0F);
-                            if(((Tuple3d) (pointOrtho)).x > (double)RClose && ((Tuple3d) (pointOrtho)).x < (double)RRange - (double)(350F * f) && (((Tuple3d) (pointOrtho)).y < ((Tuple3d) (pointOrtho)).x * 0.57735026919 && ((Tuple3d) (pointOrtho)).y > -((Tuple3d) (pointOrtho)).x * 0.57735026919) && (((Tuple3d) (pointOrtho)).z < ((Tuple3d) (pointOrtho)).x * 0.1763269807 && ((Tuple3d) (pointOrtho)).z > -((Tuple3d) (pointOrtho)).x * 0.1763269807))
+                            if(((Tuple3d) (pointOrtho)).x > (double)RClose && ((Tuple3d) (pointOrtho)).x < (double)RRange - (double)(350F * f) && (((Tuple3d) (pointOrtho)).y < ((Tuple3d) (pointOrtho)).x * 0.46630765815 && ((Tuple3d) (pointOrtho)).y > -((Tuple3d) (pointOrtho)).x * 0.46630765815) && (((Tuple3d) (pointOrtho)).z < ((Tuple3d) (pointOrtho)).x * 0.1763269807 && ((Tuple3d) (pointOrtho)).z > -((Tuple3d) (pointOrtho)).x * 0.1763269807))
                                 radarPlane.add(pointOrtho);
                         }
-                    }
-
-                }
-                if(ti < to + 1250L)
-                {
-                for(int j = 0; j <= nTgts + 1; j++)
-                {
-                        String m = "Radarmark0" + j;
-                        String n = "RadarA0" + j;
-                        String o = "RadarB0" + j;
-                        if(super.mesh.isChunkVisible(m))
-                             super.mesh.chunkVisible(m, false);
-                        if(super.mesh.isChunkVisible(n))
-                             super.mesh.chunkVisible(n, false);
-                        if(super.mesh.isChunkVisible(o))
-                             super.mesh.chunkVisible(o, false); 
-                }	
+                    }               	
                 }
                 int i = radarPlane.size();
                 int nt = 0;
-                long t = Time.current() + World.Rnd().nextLong(-250L, 250L);
-                long t1 = 0L;
                 for(int j = 0; j < i; j++)
                 {
                     double x = ((Tuple3d) ((Point3d)radarPlane.get(j))).x;                   
                     if(x > (double)RClose && nt <= nTgts)
                     {
-                        t1 = t;
                     	FOV = 60D / x; // distance relationship, to adjust the deviation of radar mark when getting closer to target planes
                         double NewX = -((Tuple3d) ((Point3d)radarPlane.get(j))).y * FOV; // spanning
                         double NewY = ((Tuple3d) ((Point3d)radarPlane.get(j))).x; //distance
@@ -481,14 +475,15 @@ public class CockpitSM_12 extends CockpitPilot
                     if(super.mesh.isChunkVisible(o))
                         super.mesh.chunkVisible(o, false);
                 }
-                if(i == 0) // hide everything when there's no enemy
-                	if(super.mesh.isChunkVisible("Radarmark00"))
-                        super.mesh.chunkVisible("Radarmark00", false);
-                    if(super.mesh.isChunkVisible("RadarA00"))
-                        super.mesh.chunkVisible("RadarA00", false);
-                    if(super.mesh.isChunkVisible("RadarB00"))
-                        super.mesh.chunkVisible("RadarB00", false);
+                
             }
+            if(radarPlane.size() == 0) // hide everything when there's no enemy
+            	if(super.mesh.isChunkVisible("Radarmark00"))
+                    super.mesh.chunkVisible("Radarmark00", false);
+                if(super.mesh.isChunkVisible("RadarA00"))
+                    super.mesh.chunkVisible("RadarA00", false);
+                if(super.mesh.isChunkVisible("RadarB00"))
+                    super.mesh.chunkVisible("RadarB00", false);
         }
         catch(Exception exception)
         {
@@ -496,82 +491,184 @@ public class CockpitSM_12 extends CockpitPilot
         }
     }  
     
-    private int targetnum;
+    public void radarscanIFF() // TODO radar scan IFF
+    {
+        try
+        {
+            Aircraft ownaircraft = World.getPlayerAircraft();
+            
+            long ti = (Time.current() + World.Rnd().nextLong(-250L, 250L)); // track delay (target mark appear disappear)
+            if(ti > to + 1450L)
+            radarPlanefriendly.clear();
+            if(Actor.isValid(ownaircraft) && Actor.isAlive(ownaircraft))
+            {               
+                if(ti > to + 2000L)
+                {
+                    to = ti;
+                    Point3d pointAC = ((Actor) (ownaircraft)).pos.getAbsPoint();
+                    Orient orientAC = ((Actor) (ownaircraft)).pos.getAbsOrient();
+                    
+                    List list = Engine.targets();
+                    int i = list.size();
+                    for(int j = 0; j < i; j++)
+                    {
+                        Actor actor = (Actor)list.get(j);
+                        if((actor instanceof Aircraft) && actor != World.getPlayerAircraft() && actor.getArmy() != World.getPlayerArmy()) //basically tell that target is not your own aircraft and not friendly aircraft
+                        {
+                        	Vector3d vector3d = new Vector3d(); 
+                        	vector3d.set(pointAC);                       	
+                        	Point3d pointOrtho = new Point3d();
+                            pointOrtho.set(actor.pos.getAbsPoint());
+                            pointOrtho.sub(pointAC);
+                            orientAC.transformInv(pointOrtho);
+                            float f = Mission.cur().sectFile().get("Weather", "WindSpeed", 0.0F);
+                            if(((Tuple3d) (pointOrtho)).x > (double)RClose && ((Tuple3d) (pointOrtho)).x < (double)RRange - (double)(350F * f) && (((Tuple3d) (pointOrtho)).y < ((Tuple3d) (pointOrtho)).x * 0.46630765815 && ((Tuple3d) (pointOrtho)).y > -((Tuple3d) (pointOrtho)).x * 0.46630765815) && (((Tuple3d) (pointOrtho)).z < ((Tuple3d) (pointOrtho)).x * 0.1763269807 && ((Tuple3d) (pointOrtho)).z > -((Tuple3d) (pointOrtho)).x * 0.1763269807))
+                            	radarPlanefriendly.add(pointOrtho);
+                        }
+                    }               	
+                }
+                int i = radarPlanefriendly.size();
+                int nt = 0;
+                for(int j = 0; j < i; j++)
+                {
+                    double x = ((Tuple3d) ((Point3d)radarPlanefriendly.get(j))).x;                   
+                    if(x > (double)RClose && nt <= nTgts)
+                    {
+                    	FOV = 60D / x; // distance relationship, to adjust the deviation of radar mark when getting closer to target planes
+                        double NewX = -((Tuple3d) ((Point3d)radarPlanefriendly.get(j))).y * FOV; // spanning
+                        double NewY = ((Tuple3d) ((Point3d)radarPlanefriendly.get(j))).x; //distance
+                        float f = FOrigX + (float)(NewX * ScX); //FOrigX currently do nothing
+                        if(f>0.07F) // limiting the deviation
+                        	f=0.07F;
+                        if(f<-0.07F)
+                        	f=-0.07F;
+                        float f1 = FOrigY + (float)(NewY * ScY);
+                        if(f1>0.07F)
+                        	f1=0.07F;
+                        if(f1<-0.07F)
+                        	f1=-0.07F;
+                        nt++; // number of marks, from 0 -> 10
+                        String m = "RadarIFF0" + nt;
+                        super.mesh.setCurChunk(m);
+                        super.mesh.setScaleXYZ(0.5F, 0.5F, 0.5F);
+                        resetYPRmodifier();
+                        Cockpit.xyz[1] = -f;
+                        Cockpit.xyz[0] = f1;
+                        super.mesh.chunkSetLocate(Cockpit.xyz, Cockpit.ypr);
+                        super.mesh.render();
+                        if(!super.mesh.isChunkVisible(m))
+                            super.mesh.chunkVisible(m, true);                        	
+                    }	
+                }  
+                for(int j = nt + 1; j <= nTgts; j++)
+                {
+                    String m = "RadarIFF0" + j;
+                    if(super.mesh.isChunkVisible(m))
+                        super.mesh.chunkVisible(m, false);
+                }
+                
+            }
+            if(radarPlanefriendly.size() == 0) // hide everything when there's no enemy
+            	if(super.mesh.isChunkVisible("RadarIFF00"))
+                    super.mesh.chunkVisible("RadarIFF00", false);
+        }
+        catch(Exception exception)
+        {
+            exception.printStackTrace();
+        }
+    }
+    
+
     private boolean tracking;
+    private long trefresh;
+    private double azimult;
+    private double tangage;
+    private boolean trackzone;
     
     public void radartracking()
     {
         try
-        // TODO
+        // TODO radar tracking
         {
             Aircraft aircraft = World.getPlayerAircraft();
-            if(Actor.isValid(aircraft) && Actor.isAlive(aircraft) && tracking == true)
+            long ti = (Time.current() + World.Rnd().nextLong(-15L, 15L));
+            if(Actor.isValid(aircraft) && Actor.isAlive(aircraft) && trefresh + 30L < ti)
             {              
-                    Point3d point3d = ((Actor) (aircraft)).pos.getAbsPoint();
+            		trefresh = ti;    
+            		Point3d point3d = ((Actor) (aircraft)).pos.getAbsPoint();
                     Orient orient = ((Actor) (aircraft)).pos.getAbsOrient();
                     radarTracking.clear();
                     List list = Engine.targets();
                     int j1 = list.size();                   
                     for(int k1 = 0; k1 < j1; k1++)
                     {
-                    	Actor actor = (Actor)list.get(k1);   
-                        if((actor instanceof Aircraft) && actor != World.getPlayerAircraft() && actor.getArmy() != World.getPlayerArmy())
-                        {
-                        	
-                        	actor = War.GetNearestEnemyAircraft(((Interpolate) (super.fm)).actor, 7000F, 1);
+                    	Actor actor = (Actor)list.get(k1);                     	
+                        if((actor instanceof Aircraft) && actor != World.getPlayerAircraft() && actor.getArmy() != World.getPlayerArmy() && tracking == true)
+                        {                       	
+                        	//actor = War.GetNearestEnemyAircraft(((Interpolate) (super.fm)).actor, 7000F, 1);
+                        	double D1 = 0F;
+                        	if(azimult == 0 && tangage == 0) {D1 = 0.16397023426D;} else {D1 = 0.02748866352D;}                       	
                         	Vector3d vector3d = new Vector3d(); 
                         	vector3d.set(point3d);                       	
                         	Point3d point3d1 = new Point3d();
                             point3d1.set(actor.pos.getAbsPoint());
                             point3d1.sub(point3d);
                             orient.transformInv(point3d1);
-                            float f = Mission.cur().sectFile().get("Weather", "WindSpeed", 0.0F);	
-                            if(actor.isAlive() && ((Tuple3d) (point3d1)).x < 8000D - (double)(200F * f) && (((Tuple3d) (point3d1)).y < ((Tuple3d) (point3d1)).x * 0.46630765815 && ((Tuple3d) (point3d1)).y > -((Tuple3d) (point3d1)).x * 0.46630765815) && (((Tuple3d) (point3d1)).z < ((Tuple3d) (point3d1)).x * 0.46630765815 && ((Tuple3d) (point3d1)).z > -((Tuple3d) (point3d1)).x * 0.46630765815))                           
+                            float f = Mission.cur().sectFile().get("Weather", "WindSpeed", 0.0F);
+                            double d2 = 222222.22222222222222222222222222D;
+                            if(trackzone == false)
+                            {	
+                            if(((Tuple3d) (point3d1)).x < ((double)(((Mig_19)aircraft()).lockrange + 0.01F)*d2) - (double)(200F * f) && ((Tuple3d) (point3d1)).x > ((double)(((Mig_19)aircraft()).lockrange - 0.01F)*d2) - (double)(200F * f) && (((Tuple3d) (point3d1)).y < tangage + ((Tuple3d) (point3d1)).x * D1 && ((Tuple3d) (point3d1)).y > tangage - ((Tuple3d) (point3d1)).x * D1) && (((Tuple3d) (point3d1)).z < azimult + ((Tuple3d) (point3d1)).x * D1 && ((Tuple3d) (point3d1)).z > azimult - ((Tuple3d) (point3d1)).x * D1))                                                      
                             {
-                            radarTracking.add(point3d1);                            	
+                            	radarTracking.add(point3d1);
+                            	HUD.log(AircraftHotKeys.hudLogWeaponId, "Target acquired");
+                            	trackzone = true;
+                            }
                             } else
                             {
-                            tracking = false;
+                            if(((Tuple3d) (point3d1)).x < ((double)(((Mig_19)aircraft()).lockrange + 0.01F)*d2) - (double)(200F * f) && (((Tuple3d) (point3d1)).y < tangage + ((Tuple3d) (point3d1)).x * D1 && ((Tuple3d) (point3d1)).y > tangage - ((Tuple3d) (point3d1)).x * D1) && (((Tuple3d) (point3d1)).z < azimult + ((Tuple3d) (point3d1)).x * D1 && ((Tuple3d) (point3d1)).z > azimult - ((Tuple3d) (point3d1)).x * D1))                                                      
+                            {
+                                radarTracking.add(point3d1);
+                            }	
                             }
                         }
-                    }                   
-            }
+                    }                              
                 int i = radarTracking.size();
-                int j = 0;              
-                if(((Mig_19)aircraft()).targetnum >= i) 
-                {
-                	((Mig_19)aircraft()).targetnum = 0;
-                }               	
-                for(int l = 0; l < i; l++)
-                {
-                	int k = ((Mig_19)aircraft()).targetnum;
-                	if(k>l)
-                		continue;
-                	if(k<=l)
-                	{	
-                	double x = ((Tuple3d) ((Point3d)radarTracking.get(k))).x;
-                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Target number  " + k);
-                    if(x < 7000D && j <= nTgts)
+                int j = 0;
+                for(int k = 0; k < i && k < 1; k++)
+                {	
+                	double x = ((Tuple3d) ((Point3d)radarTracking.get(k))).x;   
+                	tangage = ((Tuple3d) ((Point3d)radarTracking.get(k))).y;
+                	azimult = ((Tuple3d) ((Point3d)radarTracking.get(k))).z;
+                    if(x < 18000D && j <= nTgts)
                     {
-                    		FOV = 1880F/x;
+                    		FOV = 1680F/x;
                         	double d3 = -(((Tuple3d) ((Point3d)radarTracking.get(k))).y) *FOV;
                             double d4 = (((Tuple3d) ((Point3d)radarTracking.get(k))).z) *FOV;
                             double d5 = ((Tuple3d) ((Point3d)radarTracking.get(k))).x;
-                            float f =(float)(d3 * 0.000069999997764825821D);
-                            if(f>0.01F)
-                            	f=0.01F;
-                            if(f<-0.01F)
-                            	f=-0.01F;
-                            float f1 =(float)(d4 * 0.000069999997764825821D);
-                            if(f>0.01F)
-                            	f=0.01F;
-                            if(f<-0.01F)
-                            	f=-0.01F;
+                            float f =(float)(d3 * 0.000599999997764825821D);
+                            if(f>0.075F)
+                            	f=0.07F;
+                            if(f<-0.07F)
+                            	f=-0.07F;
+                            float f1 =(float)(d4 * 0.000399999997764825821D);
+                            if(f1>0.07F)
+                            	f1=0.07F;
+                            if(f1<-0.07F)
+                            	f1=-0.07F;
                             float f2 =(float)(d5 * 0.0000029D);
-                            if(f>0.01F)
-                            	f=0.01F;
-                            if(f<-0.01F)
-                            	f=-0.01F;
+                            if(f2>0.07F)
+                            	f2=0.07F;
+                            if(f2<-0.07F)
+                            	f2=-0.07F;
+                            float fx = (float)(d3 * 0.000499999997764825821D);
+                            float fy = (float)(d4 * 0.000299999997764825821D);
+                            if(fx>0.07 || fx<-0.07 || fy>0.035 || fy<-0.035)
+                            {
+                            	tracking = false;
+                            	trackzone = false;
+                            	HUD.log(AircraftHotKeys.hudLogWeaponId, "Target lost");
+                            }	
                             j++;
                             String s1 = "Radarlock";
                             super.mesh.setCurChunk(s1);
@@ -635,7 +732,6 @@ public class CockpitSM_12 extends CockpitPilot
                         if(super.mesh.isChunkVisible(o))
                             super.mesh.chunkVisible(o, false);
                         }
-                }
                 }	
                 if(i == 0)
                 {
@@ -654,7 +750,9 @@ public class CockpitSM_12 extends CockpitPilot
                     super.mesh.chunkVisible(n, false);
                 if(super.mesh.isChunkVisible(o))
                     super.mesh.chunkVisible(o, false);
+                tracking = false;
                 }
+        }
         }
         catch(Exception exception)
         {
