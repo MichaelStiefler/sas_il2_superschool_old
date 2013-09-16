@@ -1,7 +1,7 @@
 // Decompiled by DJ v3.10.10.93 Copyright 2007 Atanas Neshkov  Date: 5/16/2012 8:31:49 PM
 // Home Page: http://members.fortunecity.com/neshkov/dj.html  http://www.neshkov.com/dj.html - Check often for new version!
 // Decompiler options: packimports(3) 
-// Source File Name:   MGunNR30kiSM.java
+// Source File Name:   MGunRBackfire.java
 
 package com.maddox.il2.objects.weapons;
 
@@ -38,7 +38,7 @@ public class MGunNR30kiSM extends MGunAircraftGeneric
         gunproperties.aimMaxDist = 1200F;
         gunproperties.weaponType = -1;
         gunproperties.maxDeltaAngle = 0.33F;
-        gunproperties.shotFreq = 22.00F;
+        gunproperties.shotFreq = 25.00F;
         gunproperties.traceFreq = 1;
         gunproperties.bullets = 50;
         gunproperties.bulletsCluster = 1;

@@ -81,7 +81,7 @@ public class Mig_19 extends Scheme2
         bCanopyInitState = false;
         radarmode = 0;
         targetnum = 0;
-        lockrange = 0.035F;
+        lockrange = 0.018F;
     }
 
     public void getGFactors(TypeGSuit.GFactors gfactors)
@@ -1465,9 +1465,9 @@ label0:
     	
     	if(this.radarmode == 0)
     	{
-    	lockrange -= 0.005F;
-    	if(lockrange < 0.01F)
-			lockrange = 0.01F;
+    	lockrange -= 0.002F;
+    	if(lockrange < -0.01F)
+			lockrange = -0.01F;
     	} else
     	{
     		targetnum--;
@@ -1481,9 +1481,9 @@ label0:
 		// TODO Auto-generated method stub
 		if(this.radarmode == 0)
     	{
-		lockrange += 0.005F;
-		if(lockrange>0.035F)
-			lockrange = 0.035F;
+		lockrange += 0.002F;
+		if(lockrange>0.018F)
+			lockrange = 0.018F;
     	} else
     	{
     		targetnum++;
@@ -1515,13 +1515,21 @@ label0:
 	}
 
 	public boolean typeRadarToggleMode() {
+		long t1 = Time.current();
+		if(radarmode == 1)
 		radarmode++;
+		if(radarmode == 0 && t1 > twait + 5000L)
+		{	
+		radarmode++;
+		twait = t1;
+		}
 		if(radarmode>1)
 			radarmode=0;		
 		return false;
 	}
 
-    protected boolean bSlatsOff;
+    private long twait;
+	protected boolean bSlatsOff;
     private float oldctl;
     private float curctl;
     private float oldthrl;
