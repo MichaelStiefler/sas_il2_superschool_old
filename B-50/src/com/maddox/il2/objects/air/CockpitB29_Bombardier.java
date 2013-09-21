@@ -31,8 +31,8 @@ public class CockpitB29_Bombardier extends CockpitPilot
 
         public boolean tick()
         {
-            float f = ((B_29)aircraft()).fSightCurForwardAngle;
-            float f1 = ((B_29)aircraft()).fSightCurSideslip;
+            float f = ((B_29X)aircraft()).fSightCurForwardAngle;
+            float f1 = ((B_29X)aircraft()).fSightCurSideslip;
             CockpitB29_Bombardier.calibrAngle = 360F - fm.Or.getPitch();
             mesh.chunkSetAngles("BlackBox", -10F * f1, 0.0F, CockpitB29_Bombardier.calibrAngle + f);
             if(bEntered)
@@ -259,8 +259,8 @@ public class CockpitB29_Bombardier extends CockpitPilot
         }
         if(bEntered)
         {
-            mesh.chunkSetAngles("zAngleMark", -floatindex(cvt(((B_29)aircraft()).fSightCurForwardAngle, 7F, 140F, 0.7F, 14F), angleScale), 0.0F, 0.0F);
-            boolean flag = ((B_29)aircraft()).fSightCurReadyness > 0.93F;
+            mesh.chunkSetAngles("zAngleMark", -floatindex(cvt(((B_29X)aircraft()).fSightCurForwardAngle, 7F, 140F, 0.7F, 14F), angleScale), 0.0F, 0.0F);
+            boolean flag = ((B_29X)aircraft()).fSightCurReadyness > 0.93F;
             mesh.chunkVisible("BlackBox", true);
             mesh.chunkVisible("zReticle", flag);
             mesh.chunkVisible("zAngleMark", flag);

@@ -56,7 +56,7 @@ public class B_29SP extends B_29X
         Property.set(class1, "yearExpired", 2800.9F);
         Property.set(class1, "FlightModel", "FlightModels/B-29SP.fmd:B29_50");
         Property.set(class1, "cockpitClass", new Class[] {
-            com.maddox.il2.objects.air.CockpitB29.class, com.maddox.il2.objects.air.CockpitB29SP_Bombardier.class, com.maddox.il2.objects.air.CockpitB29_AGunner.class
+            com.maddox.il2.objects.air.CockpitB29.class, com.maddox.il2.objects.air.CockpitB29_Bombardier.class, com.maddox.il2.objects.air.CockpitB29_AGunner.class
         });
         weaponTriggersRegister(class1, new int[] {
             14, 14, 3, 3
