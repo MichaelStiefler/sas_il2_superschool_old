@@ -2,7 +2,7 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.rts.Property;
 
-public class P_47B1 extends P_47 {
+public class P_47B1 extends P_47ModPack {
 
 	static {
 		Class class1 = P_47B1.class;
@@ -14,9 +14,10 @@ public class P_47B1 extends P_47 {
 		Property.set(class1, "PaintScheme_us", new PaintSchemeFMPar06());
 		Property.set(class1, "yearService", 1941F);
 		Property.set(class1, "yearExpired", 1947.5F);
-		Property.set(class1, "FlightModel", "FlightModels/P-47D-10.fmd");
+		Property.set(class1, "FlightModel", "FlightModels/P-47B1.fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitP_47D10.class });
 		Property.set(class1, "LOSElevation", 0.9879F);
+		Property.set(class1, "StockOrdnanceAvailable", 0);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0 });
 		Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06" });
 	}

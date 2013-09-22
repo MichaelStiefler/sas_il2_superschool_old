@@ -26,30 +26,30 @@ public class CockpitP_47N15K extends CockpitPilot {
 				setTmp = setOld;
 				setOld = setNew;
 				setNew = setTmp;
-				setNew.throttle = 0.85F * setOld.throttle + ((FlightModelMain) (fm)).CT.PowerControl * 0.15F;
-				setNew.prop = 0.85F * setOld.prop + ((FlightModelMain) (fm)).CT.getStepControl() * 0.15F;
-				setNew.stage = 0.85F * setOld.stage + (float) ((FlightModelMain) (fm)).EI.engines[0].getControlCompressor() * 0.15F;
-				setNew.mix = 0.85F * setOld.mix + ((FlightModelMain) (fm)).EI.engines[0].getControlMix() * 0.15F;
-				setNew.manifold = 0.7F * setOld.manifold + 0.3F * ((FlightModelMain) (fm)).EI.engines[0].getManifoldPressure();
+				setNew.throttle = 0.85F * setOld.throttle + fm.CT.PowerControl * 0.15F;
+				setNew.prop = 0.85F * setOld.prop + fm.CT.getStepControl() * 0.15F;
+				setNew.stage = 0.85F * setOld.stage + (float) fm.EI.engines[0].getControlCompressor() * 0.15F;
+				setNew.mix = 0.85F * setOld.mix + fm.EI.engines[0].getControlMix() * 0.15F;
+				setNew.manifold = 0.7F * setOld.manifold + 0.3F * fm.EI.engines[0].getManifoldPressure();
 				setNew.altimeter = fm.getAltitude();
-				if (Math.abs(((FlightModelMain) (fm)).Or.getKren()) < 45F)
-					setNew.azimuth = (35F * setOld.azimuth + -((FlightModelMain) (fm)).Or.getYaw()) / 36F;
+				if (Math.abs(fm.Or.getKren()) < 45F)
+					setNew.azimuth = (35F * setOld.azimuth + -fm.Or.getYaw()) / 36F;
 				if (setOld.azimuth > 270F && setNew.azimuth < 90F)
 					setOld.azimuth -= 360F;
 				if (setOld.azimuth < 90F && setNew.azimuth > 270F)
 					setOld.azimuth += 360F;
 				setNew.waypointAzimuth = (10F * setOld.waypointAzimuth + (waypointAzimuth() - setOld.azimuth) + World.Rnd().nextFloat(-30F, 30F)) / 11F;
 				setNew.vspeed = (199F * setOld.vspeed + fm.getVertSpeed()) / 200F;
-				pictTurba = 0.97F * pictTurba + 0.03F * (0.5F * ((FlightModelMain) (fm)).EI.engines[0].getPowerOutput() + 0.5F * cvt(((FlightModelMain) (fm)).EI.engines[0].getRPM(), 0.0F, 2000F, 0.0F, 1.0F));
+				pictTurba = 0.97F * pictTurba + 0.03F * (0.5F * fm.EI.engines[0].getPowerOutput() + 0.5F * cvt(fm.EI.engines[0].getRPM(), 0.0F, 2000F, 0.0F, 1.0F));
 				float f = ((P_47N15) aircraft()).k14Distance;
 				setNew.k14w = (4.95F * CockpitP_47N15K.k14TargetWingspanScale[((P_47N15) aircraft()).k14WingspanType]) / f;
 				setNew.k14w = 0.9F * setOld.k14w + 0.1F * setNew.k14w;
 				setNew.k14wingspan = 0.9F * setOld.k14wingspan + 0.1F * CockpitP_47N15K.k14TargetMarkScale[((P_47N15) aircraft()).k14WingspanType];
 				setNew.k14mode = 0.8F * setOld.k14mode + 0.2F * (float) ((P_47N15) aircraft()).k14Mode;
-				Vector3d vector3d = ((SndAircraft) (aircraft())).FM.getW();
+				Vector3d vector3d = fm.getW();
 				double d = 0.00125D * (double) f;
-				float f1 = (float) Math.toDegrees(d * ((Tuple3d) (vector3d)).z);
-				float f2 = -(float) Math.toDegrees(d * ((Tuple3d) (vector3d)).y);
+				float f1 = (float) Math.toDegrees(d * vector3d.z);
+				float f2 = -(float) Math.toDegrees(d * vector3d.y);
 				float f3 = floatindex((f - 200F) * 0.02F, CockpitP_47N15K.k14BulletDrop) - CockpitP_47N15K.k14BulletDrop[0];
 				f2 += (float) Math.toDegrees(Math.atan(f3 / f));
 				setNew.k14x = 0.92F * setOld.k14x + 0.08F * f1;
@@ -67,7 +67,7 @@ public class CockpitP_47N15K extends CockpitPilot {
 				else
 					fzp = fzp > 0.0F ? fzp - 0.005F : 0.0F;
 				if (fm.getAltitude() > 3000F) {
-					CockpitP_47N15K.oxyp = CockpitP_47N15K.oxyp > 0.0F ? CockpitP_47N15K.oxyp - 1E-005F : 0.0F;
+					oxyp = oxyp > 0.0F ? oxyp - 1E-005F : 0.0F;
 					if (iOxy++ > 90)
 						iOxy = 0;
 				}
@@ -105,13 +105,13 @@ public class CockpitP_47N15K extends CockpitPilot {
 	}
 
 	protected float waypointAzimuth() {
-		WayPoint waypoint = ((FlightModelMain) (super.fm)).AP.way.curr();
+		WayPoint waypoint = fm.AP.way.curr();
 		if (waypoint == null) {
 			return 0.0F;
 		} else {
 			waypoint.getP(tmpP);
-			tmpV.sub(tmpP, ((FlightModelMain) (super.fm)).Loc);
-			return (float) (57.295779513082323D * Math.atan2(-((Tuple3d) (tmpV)).y, ((Tuple3d) (tmpV)).x));
+			tmpV.sub(tmpP, fm.Loc);
+			return (float) (57.295779513082323D * Math.atan2(-tmpV.y, tmpV.x));
 		}
 	}
 
@@ -135,10 +135,10 @@ public class CockpitP_47N15K extends CockpitPilot {
 	public void reflectWorldToInstruments(float f) {
 		checkForEnemyBehind();
 		resetYPRmodifier();
-		Cockpit.xyz[1] = cvt(((FlightModelMain) (super.fm)).CT.getCockpitDoor(), 0.01F, 0.99F, 0.0F, 0.65F);
+		Cockpit.xyz[1] = cvt(fm.CT.getCockpitDoor(), 0.01F, 0.99F, 0.0F, 0.65F);
 		super.mesh.chunkSetLocate("Body_blister", Cockpit.xyz, Cockpit.ypr);
 		super.mesh.chunkSetLocate("Glass1", Cockpit.xyz, Cockpit.ypr);
-		if ((((FlightModelMain) (super.fm)).AS.astateCockpitState & 2) == 0) {
+		if ((fm.AS.astateCockpitState & 2) == 0) {
 			int i = ((P_47N15) aircraft()).k14Mode;
 			boolean flag = i < 2;
 			if (bPowerON)
@@ -162,96 +162,96 @@ public class CockpitP_47N15K extends CockpitPilot {
 			}
 
 		}
-		super.mesh.chunkSetAngles("armPedalL", 0.0F, -15F * ((FlightModelMain) (super.fm)).CT.getRudder(), 0.0F);
-		super.mesh.chunkSetAngles("armPedalR", 0.0F, 15F * ((FlightModelMain) (super.fm)).CT.getRudder(), 0.0F);
-		super.mesh.chunkSetAngles("PedalL", 0.0F, 15F * ((FlightModelMain) (super.fm)).CT.getRudder(), 0.0F);
-		super.mesh.chunkSetAngles("PedalR", 0.0F, -15F * ((FlightModelMain) (super.fm)).CT.getRudder(), 0.0F);
-		super.mesh.chunkSetAngles("Stick", 0.0F, (pictAiler = 0.85F * pictAiler + 0.15F * ((FlightModelMain) (super.fm)).CT.AileronControl) * 20F, (pictElev = 0.85F * pictElev + 0.15F * ((FlightModelMain) (super.fm)).CT.ElevatorControl) * 16F);
+		super.mesh.chunkSetAngles("armPedalL", 0.0F, -15F * fm.CT.getRudder(), 0.0F);
+		super.mesh.chunkSetAngles("armPedalR", 0.0F, 15F * fm.CT.getRudder(), 0.0F);
+		super.mesh.chunkSetAngles("PedalL", 0.0F, 15F * fm.CT.getRudder(), 0.0F);
+		super.mesh.chunkSetAngles("PedalR", 0.0F, -15F * fm.CT.getRudder(), 0.0F);
+		super.mesh.chunkSetAngles("Stick", 0.0F, (pictAiler = 0.85F * pictAiler + 0.15F * fm.CT.AileronControl) * 20F, (pictElev = 0.85F * pictElev + 0.15F * fm.CT.ElevatorControl) * 16F);
 		super.mesh.chunkSetAngles("Z_Target1", setNew.k14wingspan, 0.0F, 0.0F);
 		super.mesh.chunkSetAngles("supercharge", 0.0F, 60F * setNew.throttle, 0.0F);
 		super.mesh.chunkSetAngles("throttle", 0.0F, 62F * setNew.throttle, 0.0F);
 		super.mesh.chunkSetAngles("prop", 0.0F, 70F * setNew.prop, 0.0F);
 		super.mesh.chunkSetAngles("mixtura", 0.0F, 55F * setNew.mix, 0.0F);
-		super.mesh.chunkSetAngles("flaplever", 0.0F, 0.0F, 70F * ((FlightModelMain) (super.fm)).CT.FlapsControl);
-		super.mesh.chunkSetAngles("zfuelR", 0.0F, floatindex(cvt(((FlightModelMain) (super.fm)).M.fuel, 0.0F, 981F, 0.0F, 6F), fuelGallonsScale), 0.0F);
-		super.mesh.chunkSetAngles("zfuelL", 0.0F, -floatindex(cvt(((FlightModelMain) (super.fm)).M.fuel, 0.0F, 981F, 0.0F, 4F), fuelGallonsAuxScale), 0.0F);
+		super.mesh.chunkSetAngles("flaplever", 0.0F, 0.0F, 70F * fm.CT.FlapsControl);
+		super.mesh.chunkSetAngles("zfuelR", 0.0F, floatindex(cvt(fm.M.fuel, 0.0F, 981F, 0.0F, 6F), fuelGallonsScale), 0.0F);
+		super.mesh.chunkSetAngles("zfuelL", 0.0F, -floatindex(cvt(fm.M.fuel, 0.0F, 981F, 0.0F, 4F), fuelGallonsAuxScale), 0.0F);
 		super.mesh.chunkSetAngles("zacceleration", 0.0F, cvt(super.fm.getOverload(), -4F, 12F, -77F, 244F), 0.0F);
-		super.mesh.chunkSetAngles("zSpeed1a", 0.0F, floatindex(cvt(Pitot.Indicator((float) ((Tuple3d) (((FlightModelMain) (super.fm)).Loc)).z, super.fm.getSpeedKMH()), 0.0F, 1126.541F, 0.0F, 14F), speedometerScale), 0.0F);
+		super.mesh.chunkSetAngles("zSpeed1a", 0.0F, floatindex(cvt(Pitot.Indicator((float) fm.Loc.z, super.fm.getSpeedKMH()), 0.0F, 1126.541F, 0.0F, 14F), speedometerScale), 0.0F);
 		super.mesh.chunkSetAngles("zclimb", 0.0F, floatindex(cvt(setNew.vspeed, -30.48F, 30.48F, 0.0F, 12F), variometerScale), 0.0F);
 		w.set(super.fm.getW());
-		((FlightModelMain) (super.fm)).Or.transform(w);
+		fm.Or.transform(w);
 		super.mesh.chunkSetAngles("zTurn1a", 0.0F, cvt(((Tuple3f) (w)).z, -0.23562F, 0.23562F, 25F, -25F), 0.0F);
 		super.mesh.chunkSetAngles("zSlide1a", 0.0F, cvt(getBall(7D), -7F, 7F, -16F, 16F), 0.0F);
-		super.mesh.chunkSetAngles("zManifold1a", 0.0F, cvt(((FlightModelMain) (super.fm)).EI.engines[0].getManifoldPressure(), 0.3386378F, 2.370465F, 0.0F, 320F), 0.0F);
+		super.mesh.chunkSetAngles("zManifold1a", 0.0F, cvt(fm.EI.engines[0].getManifoldPressure(), 0.3386378F, 2.370465F, 0.0F, 320F), 0.0F);
 		super.mesh.chunkSetAngles("z_Altimeter1", 0.0F, cvt(interp(setNew.altimeter, setOld.altimeter, f), 0.0F, 30480F, 0.0F, 36000F), 0.0F);
 		super.mesh.chunkSetAngles("z_Altimeter2", 0.0F, cvt(interp(setNew.altimeter, setOld.altimeter, f), 0.0F, 30480F, 0.0F, 3600F), 0.0F);
 		super.mesh.chunkSetAngles("z_Altimeter3", 0.0F, cvt(interp(setNew.altimeter, setOld.altimeter, f), 0.0F, 30480F, 0.0F, 360F), 0.0F);
-		super.mesh.chunkSetAngles("zRPM1a", 0.0F, cvt(((FlightModelMain) (super.fm)).EI.engines[0].getRPM(), 0.0F, 4500F, 0.0F, 316F), 0.0F);
-		super.mesh.chunkSetAngles("zoiltemp1a", 0.0F, cvt(((FlightModelMain) (super.fm)).EI.engines[0].tOilOut, 0.0F, 300F, 0.0F, 84F), 0.0F);
+		super.mesh.chunkSetAngles("zRPM1a", 0.0F, cvt(fm.EI.engines[0].getRPM(), 0.0F, 4500F, 0.0F, 316F), 0.0F);
+		super.mesh.chunkSetAngles("zoiltemp1a", 0.0F, cvt(fm.EI.engines[0].tOilOut, 0.0F, 300F, 0.0F, 84F), 0.0F);
 		super.mesh.chunkSetAngles("zClock1b", 0.0F, cvt(World.getTimeofDay(), 0.0F, 24F, 0.0F, 720F), 0.0F);
 		super.mesh.chunkSetAngles("zClock1a", 0.0F, cvt(World.getTimeofDay() % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F);
-		super.mesh.chunkSetAngles("zhorizont1a", 0.0F, -((FlightModelMain) (super.fm)).Or.getKren(), 0.0F);
-		if (((FlightModelMain) (super.fm)).EI.engines[0].getStage() < 2) {
+		super.mesh.chunkSetAngles("zhorizont1a", 0.0F, -fm.Or.getKren(), 0.0F);
+		if (fm.EI.engines[0].getStage() < 2) {
 			super.mesh.chunkSetAngles("zhorizont1a", 0.0F, -30F, 0.0F);
 			super.mesh.chunkSetLocate("zhorizont1b", new float[] { 0.0F, 0.0F, -0.01F }, new float[] { 0.0F, 0.0F, -10F });
 			super.mesh.chunkVisible("Frame_64sc", true);
 		} else {
-			super.mesh.chunkSetAngles("zhorizont1a", 0.0F, -((FlightModelMain) (super.fm)).Or.getKren(), 0.0F);
+			super.mesh.chunkSetAngles("zhorizont1a", 0.0F, -fm.Or.getKren(), 0.0F);
 			resetYPRmodifier();
-			Cockpit.xyz[2] = cvt(((FlightModelMain) (super.fm)).Or.getTangage(), -45F, 45F, 0.0328F, -0.0328F);
+			Cockpit.xyz[2] = cvt(fm.Or.getTangage(), -45F, 45F, 0.0328F, -0.0328F);
 			super.mesh.chunkSetLocate("zhorizont1b", Cockpit.xyz, Cockpit.ypr);
 			super.mesh.chunkVisible("Frame_64sc", false);
 		}
-		super.mesh.chunkSetAngles("zpressfuel1a", 0.0F, cvt(((FlightModelMain) (super.fm)).M.fuel <= 1.0F ? 0.0F : 0.26F, 0.0F, 0.4F, 0.0F, -154F), 0.0F);
-		super.mesh.chunkSetAngles("zpressoil1a", 0.0F, cvt(1.0F + 0.05F * ((FlightModelMain) (super.fm)).EI.engines[0].tOilOut * ((FlightModelMain) (super.fm)).EI.engines[0].getReadyness(), 0.0F, 7.45F, 0.0F, 180F), 0.0F);
-		super.mesh.chunkSetAngles("zAzimuth1a", 0.0F, cvt(((FlightModelMain) (super.fm)).Or.getTangage(), -5F, 5F, -5F, 5F), 0.0F);
+		super.mesh.chunkSetAngles("zpressfuel1a", 0.0F, cvt(fm.M.fuel <= 1.0F ? 0.0F : 0.26F, 0.0F, 0.4F, 0.0F, -154F), 0.0F);
+		super.mesh.chunkSetAngles("zpressoil1a", 0.0F, cvt(1.0F + 0.05F * fm.EI.engines[0].tOilOut * fm.EI.engines[0].getReadyness(), 0.0F, 7.45F, 0.0F, 180F), 0.0F);
+		super.mesh.chunkSetAngles("zAzimuth1a", 0.0F, cvt(fm.Or.getTangage(), -5F, 5F, -5F, 5F), 0.0F);
 		super.mesh.chunkSetAngles("zAzimuth1b", 0.0F, 90F - setNew.azimuth, 0.0F);
-		super.mesh.chunkSetAngles("zMagAzimuth1a", 0.0F, cvt(((FlightModelMain) (super.fm)).Or.getTangage(), -65F, 65F, -65F, 65F), 0.0F);
+		super.mesh.chunkSetAngles("zMagAzimuth1a", 0.0F, cvt(fm.Or.getTangage(), -65F, 65F, -65F, 65F), 0.0F);
 		super.mesh.chunkSetAngles("zMagAzimuth1b", -90F + setNew.azimuth, 0.0F, 0.0F);
-		super.mesh.chunkVisible("Z_Red1", ((FlightModelMain) (super.fm)).CT.getGear() < 0.05F || !((FlightModelMain) (super.fm)).Gears.lgear || !((FlightModelMain) (super.fm)).Gears.rgear);
-		super.mesh.chunkVisible("Z_Green1", ((FlightModelMain) (super.fm)).CT.getGear() > 0.95F);
-		super.mesh.chunkVisible("Z_Red2", ((FlightModelMain) (super.fm)).M.fuel / ((FlightModelMain) (super.fm)).M.maxFuel < 0.15F);
-		super.mesh.chunkSetAngles("ztemp1a", 0.0F, cvt((Atmosphere.temperature((float) ((Tuple3d) (((FlightModelMain) (super.fm)).Loc)).z) - 273.15F) + 25F * ((FlightModelMain) (super.fm)).EI.engines[0].getPowerOutput(), -50F, 150F, 0.0F, 105F), 0.0F);
-		super.mesh.chunkSetAngles("zpress1a", 0.0F, cvt(((FlightModelMain) (super.fm)).EI.engines[0].tOilOut, -50F, 150F, -15F, 115F), 0.0F);
-		float f1 = ((FlightModelMain) (super.fm)).EI.engines[0].getRPM();
+		super.mesh.chunkVisible("Z_Red1", fm.CT.getGear() < 0.05F || !fm.Gears.lgear || !fm.Gears.rgear);
+		super.mesh.chunkVisible("Z_Green1", fm.CT.getGear() > 0.95F);
+		super.mesh.chunkVisible("Z_Red2", fm.M.fuel / fm.M.maxFuel < 0.15F);
+		super.mesh.chunkSetAngles("ztemp1a", 0.0F, cvt((Atmosphere.temperature((float) fm.Loc.z) - 273.15F) + 25F * fm.EI.engines[0].getPowerOutput(), -50F, 150F, 0.0F, 105F), 0.0F);
+		super.mesh.chunkSetAngles("zpress1a", 0.0F, cvt(fm.EI.engines[0].tOilOut, -50F, 150F, -15F, 115F), 0.0F);
+		float f1 = fm.EI.engines[0].getRPM();
 		f1 = 1.8F * (float) Math.sqrt(Math.sqrt(Math.sqrt(Math.sqrt(f1))));
 		super.mesh.chunkSetAngles("zpresswater1a", 0.0F, cvt(f1, 0.0F, 5F, 0.0F, 300F), 0.0F);
-		float f2 = ((FlightModelMain) (super.fm)).EI.engines[0].getRPM();
+		float f2 = fm.EI.engines[0].getRPM();
 		f2 = 550F * (float) Math.sqrt(Math.sqrt(Math.sqrt(Math.sqrt(f2))));
 		super.mesh.chunkSetAngles("zfas1a", 0.0F, cvt(f2, 0.0F, 2000F, 0.0F, 180F), 0.0F);
 		super.mesh.chunkSetAngles("zoxipress1a", 0.0F, cvt(300F, 0.0F, 500F, 0.0F, 180F), 0.0F);
-		float f3 = ((FlightModelMain) (super.fm)).EI.engines[0].getRPM();
+		float f3 = fm.EI.engines[0].getRPM();
 		f3 = 1.52F * (float) Math.sqrt(Math.sqrt(Math.sqrt(f3)));
 		super.mesh.chunkSetAngles("zsuction1a", 0.0F, cvt(f3, 0.0F, 10F, 0.0F, 300F), 0.0F);
 		float f4 = 0.0F;
-		int k = ((FlightModelMain) (super.fm)).EI.engines[0].getStage();
+		int k = fm.EI.engines[0].getStage();
 		f4 = k == 2 ? 75F : 0.0F;
-		if (((FlightModelMain) (super.fm)).AS.bLandingLightOn)
+		if (fm.AS.bLandingLightOn)
 			f4 += 35F;
-		if (((FlightModelMain) (super.fm)).AS.bNavLightsOn)
+		if (fm.AS.bNavLightsOn)
 			f4 += 5F;
 		if (super.cockpitLightControl)
 			f4 += 3F;
-		if (((FlightModelMain) (super.fm)).AS.bShowSmokesOn)
+		if (fm.AS.bShowSmokesOn)
 			f4 += 5F;
-		super.mesh.chunkSetAngles("zamper", 0.0F, cvt(f4 - cvt(((FlightModelMain) (super.fm)).EI.engines[0].getRPM(), 150F, 2380F, 0.0F, 41.1F), 0.0F, 150F, 0.0F, 90F), 0.0F);
-		super.mesh.chunkSetAngles("MagSwitch", 0.0F, 30F * (float) ((FlightModelMain) (super.fm)).EI.engines[0].getControlMagnetos(), 0.0F);
+		super.mesh.chunkSetAngles("zamper", 0.0F, cvt(f4 - cvt(fm.EI.engines[0].getRPM(), 150F, 2380F, 0.0F, 41.1F), 0.0F, 150F, 0.0F, 90F), 0.0F);
+		super.mesh.chunkSetAngles("MagSwitch", 0.0F, 30F * (float) fm.EI.engines[0].getControlMagnetos(), 0.0F);
 		float f5 = 0.0F;
-		float f6 = P_47Z.bExtTank ? ((FlightModelMain) (super.fm)).M.fuel + 284F : ((FlightModelMain) (super.fm)).M.fuel;
+		float f6 = ((P_47ModPack) this.aircraft()).bExtTank ? fm.M.fuel + 284F : fm.M.fuel;
 		if (f6 < 705F)
 			f5 = f6 > 350F ? -90F : -180F;
 		super.mesh.chunkSetAngles("fuelsw1", f5, 0.0F, 0.0F);
 		float f7 = 0.0F;
-		if (P_47Z.bExtTank && f6 > 1006F)
+		if (((P_47ModPack) this.aircraft()).bExtTank && f6 > 1006F)
 			f7 = 90F;
 		super.mesh.chunkSetAngles("fuelsw2", f7, 0.0F, 0.0F);
 		if (bPowerON) {
-			super.mesh.chunkVisible("Z_Red1", ((FlightModelMain) (super.fm)).CT.getGear() < 0.05F || !((FlightModelMain) (super.fm)).Gears.lgear || !((FlightModelMain) (super.fm)).Gears.rgear);
-			super.mesh.chunkVisible("Z_Green1", ((FlightModelMain) (super.fm)).CT.getGear() > 0.95F);
-			super.mesh.chunkVisible("Z_Red2", ((FlightModelMain) (super.fm)).M.fuel / ((FlightModelMain) (super.fm)).M.maxFuel < 0.15F);
-			super.mesh.chunkVisible("Z_WaterInjL1", ((FlightModelMain) (super.fm)).EI.engines[0].getControlAfterburner());
+			super.mesh.chunkVisible("Z_Red1", fm.CT.getGear() < 0.05F || !fm.Gears.lgear || !fm.Gears.rgear);
+			super.mesh.chunkVisible("Z_Green1", fm.CT.getGear() > 0.95F);
+			super.mesh.chunkVisible("Z_Red2", fm.M.fuel / fm.M.maxFuel < 0.15F);
+			super.mesh.chunkVisible("Z_WaterInjL1", fm.EI.engines[0].getControlAfterburner());
 			super.mesh.chunkVisible("Z_Green2", bRadarWarning);
-			super.mesh.chunkVisible("Z_Red4", ((FlightModelMain) (super.fm)).AS.bShowSmokesOn);
+			super.mesh.chunkVisible("Z_Red4", fm.AS.bShowSmokesOn);
 			if (super.fm.getAltitude() > 3000F) {
 				super.mesh.chunkVisible("Z_Oxy_ON", iOxy < 45);
 				super.mesh.chunkVisible("Z_Oxy_OFF", iOxy > 46 && iOxy < 89);
@@ -268,31 +268,31 @@ public class CockpitP_47N15K extends CockpitPilot {
 			super.mesh.chunkVisible("Z_Green2", false);
 			super.mesh.chunkVisible("Z_Red4", false);
 		}
-		if (bNavLightsState != ((FlightModelMain) (super.fm)).AS.bNavLightsOn) {
+		if (bNavLightsState != fm.AS.bNavLightsOn) {
 			sfxClick(1);
-			bNavLightsState = ((FlightModelMain) (super.fm)).AS.bNavLightsOn;
+			bNavLightsState = fm.AS.bNavLightsOn;
 		}
-		if (bLandingLightState != ((FlightModelMain) (super.fm)).AS.bLandingLightOn) {
+		if (bLandingLightState != fm.AS.bLandingLightOn) {
 			sfxClick(1);
-			bLandingLightState = ((FlightModelMain) (super.fm)).AS.bLandingLightOn;
+			bLandingLightState = fm.AS.bLandingLightOn;
 		}
-		if (iMagnetosState != ((FlightModelMain) (super.fm)).EI.engines[0].getControlMagnetos()) {
+		if (iMagnetosState != fm.EI.engines[0].getControlMagnetos()) {
 			sfxClick(2);
-			iMagnetosState = ((FlightModelMain) (super.fm)).EI.engines[0].getControlMagnetos();
+			iMagnetosState = fm.EI.engines[0].getControlMagnetos();
 		}
 	}
 
 	public void reflectCockpitState() {
-		if ((((FlightModelMain) (super.fm)).AS.astateCockpitState & 2) != 0) {
+		if ((fm.AS.astateCockpitState & 2) != 0) {
 			super.mesh.chunkVisible("Z_Holes1_D1", true);
 			super.mesh.chunkVisible("pricel", false);
 			super.mesh.chunkVisible("pricel_d1", true);
 			super.mesh.chunkVisible("Z_Z_RETICLE", false);
 			super.mesh.chunkVisible("Z_Z_MASK", false);
 		}
-		if ((((FlightModelMain) (super.fm)).AS.astateCockpitState & 1) != 0)
+		if ((fm.AS.astateCockpitState & 1) != 0)
 			super.mesh.chunkVisible("Z_Holes1_D1", true);
-		if ((((FlightModelMain) (super.fm)).AS.astateCockpitState & 0x40) != 0) {
+		if ((fm.AS.astateCockpitState & 0x40) != 0) {
 			super.mesh.chunkVisible("pribors1", false);
 			super.mesh.chunkVisible("pribors1_d1", true);
 			super.mesh.chunkVisible("zamper", false);
@@ -310,11 +310,11 @@ public class CockpitP_47N15K extends CockpitPilot {
 			super.mesh.chunkVisible("zfas1a", false);
 			super.mesh.chunkVisible("zoxipress1a", false);
 		}
-		if ((((FlightModelMain) (super.fm)).AS.astateCockpitState & 4) == 0 || (((FlightModelMain) (super.fm)).AS.astateCockpitState & 8) != 0)
+		if ((fm.AS.astateCockpitState & 4) == 0 || (fm.AS.astateCockpitState & 8) != 0)
 			super.mesh.chunkVisible("Z_Holes2_D1", true);
-		if ((((FlightModelMain) (super.fm)).AS.astateCockpitState & 0x80) != 0)
+		if ((fm.AS.astateCockpitState & 0x80) != 0)
 			super.mesh.chunkVisible("Z_OilSplats_D1", true);
-		if ((((FlightModelMain) (super.fm)).AS.astateCockpitState & 0x10) == 0 || (((FlightModelMain) (super.fm)).AS.astateCockpitState & 0x20) != 0) {
+		if ((fm.AS.astateCockpitState & 0x10) == 0 || (fm.AS.astateCockpitState & 0x20) != 0) {
 			super.mesh.chunkVisible("pribors2", false);
 			super.mesh.chunkVisible("pribors2_d1", true);
 			super.mesh.chunkVisible("zClock1b", false);
@@ -336,7 +336,7 @@ public class CockpitP_47N15K extends CockpitPilot {
 	}
 
 	protected void reflectCockpitMats() {
-		stage = ((FlightModelMain) (super.fm)).EI.engines[0].getStage();
+		stage = fm.EI.engines[0].getStage();
 		if (stage > 0 && stage < 4 && !bEngage && !bEnergize) {
 			super.mesh.materialReplace(super.mesh.materialFind("Texture21s"), "Texture21sd");
 			bEnergize = true;
@@ -352,7 +352,7 @@ public class CockpitP_47N15K extends CockpitPilot {
 			bEnergize = false;
 			bEngage = false;
 		}
-		if (((FlightModelMain) (super.fm)).EI.engines[0].getControlMagnetos() == 0 && bPowerON) {
+		if (fm.EI.engines[0].getControlMagnetos() == 0 && bPowerON) {
 			if (super.mesh.chunkFindCheck("Z_Z_RETICLE0") >= 0)
 				super.mesh.chunkVisible("Z_Z_RETICLE0", false);
 			int i = super.mesh.materialFind("K-14windows");
@@ -363,7 +363,7 @@ public class CockpitP_47N15K extends CockpitPilot {
 				super.mesh.materialReplace(i, "shkala_off");
 			bPowerON = false;
 		}
-		if (((FlightModelMain) (super.fm)).EI.engines[0].getControlMagnetos() > 0 && !bPowerON) {
+		if (fm.EI.engines[0].getControlMagnetos() > 0 && !bPowerON) {
 			if (super.mesh.chunkFindCheck("Z_Z_RETICLE0") >= 0)
 				super.mesh.chunkVisible("Z_Z_RETICLE0", true);
 			int j = super.mesh.materialFind("K-14windows");
@@ -375,13 +375,13 @@ public class CockpitP_47N15K extends CockpitPilot {
 			bPowerON = true;
 			sfxStart(9);
 		}
-		if (((FlightModelMain) (super.fm)).Gears.bTailwheelLocked && !bTWlock) {
+		if (fm.Gears.bTailwheelLocked && !bTWlock) {
 			int k = super.mesh.materialFind("wlock");
 			if (k > 0)
 				super.mesh.materialReplace(k, "wlock_on");
 			bTWlock = true;
 		}
-		if (!((FlightModelMain) (super.fm)).Gears.bTailwheelLocked && bTWlock) {
+		if (!fm.Gears.bTailwheelLocked && bTWlock) {
 			int l = super.mesh.materialFind("wlock");
 			if (l > 0)
 				super.mesh.materialReplace(l, "wlock");

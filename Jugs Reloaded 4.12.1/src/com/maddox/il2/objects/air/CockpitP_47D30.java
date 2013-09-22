@@ -225,12 +225,12 @@ public class CockpitP_47D30 extends CockpitPilot {
 		mesh.chunkSetAngles("zamper", 0.0F, cvt(f4 - cvt(fm.EI.engines[0].getRPM(), 150F, 2380F, 0.0F, 41.1F), 0.0F, 150F, 0.0F, 90F), 0.0F);
 		mesh.chunkSetAngles("MagSwitch", 0.0F, 30F * (float) fm.EI.engines[0].getControlMagnetos(), 0.0F);
 		float f5 = 0.0F;
-		float f6 = P_47D30.bExtTank ? fm.M.fuel + 284F : fm.M.fuel;
+		float f6 = ((P_47ModPack) this.aircraft()).bExtTank ? fm.M.fuel + 284F : fm.M.fuel;
 		if (f6 < 705F)
 			f5 = f6 <= 350F ? -180F : -90F;
 		mesh.chunkSetAngles("fuelsw1", f5, 0.0F, 0.0F);
 		float f7 = 0.0F;
-		if (P_47D30.bExtTank && f6 > 1006F)
+		if (((P_47ModPack) this.aircraft()).bExtTank && f6 > 1006F)
 			f7 = 90F;
 		mesh.chunkSetAngles("fuelsw2", f7, 0.0F, 0.0F);
 		if (bPowerON) {
@@ -413,7 +413,7 @@ public class CockpitP_47D30 extends CockpitPilot {
 					soundfx1.setUsrFlag(15);
 					soundfx1.setPosition(new Point3d(1.0D, 0.0D, 0.0D));
 					sndWind = sounds[15];
-					System.out.println("*** Canopy wind sound loaded");
+					P_47ModPack.printDebugMessage("*** Canopy wind sound loaded");
 				}
 			}
 			soundfx = sounds[14];
@@ -425,7 +425,7 @@ public class CockpitP_47D30 extends CockpitPilot {
 					soundfx1.setUsrFlag(14);
 					soundfx1.setPosition(new Point3d(0.5D, 0.0D, -0.5D));
 					sndFlaps = sounds[14];
-					System.out.println("*** Flaps sound loaded");
+					P_47ModPack.printDebugMessage("*** Flaps sound loaded");
 				}
 			}
 			soundfx = sounds[13];
@@ -437,7 +437,7 @@ public class CockpitP_47D30 extends CockpitPilot {
 					soundfx1.setUsrFlag(13);
 					soundfx1.setPosition(new Point3d(0.5D, 0.0D, -0.5D));
 					sndFlapsEnd = sounds[13];
-					System.out.println("*** FlapsEnd sound loaded");
+					P_47ModPack.printDebugMessage("*** FlapsEnd sound loaded");
 				}
 			}
 			soundfx = sounds[12];
@@ -448,8 +448,8 @@ public class CockpitP_47D30 extends CockpitPilot {
 					sounds[12] = soundfx1;
 					soundfx1.setUsrFlag(12);
 					soundfx1.setPosition(new Point3d(0.0D, 0.0D, -1D));
-					((P_47X) aircraft()).soundGearDn = sounds[12];
-					System.out.println("*** GearDn sound loaded");
+					((P_47ModPack) aircraft()).soundGearDn = sounds[12];
+					P_47ModPack.printDebugMessage("*** GearDn sound loaded");
 				}
 			}
 			soundfx = sounds[11];
@@ -460,8 +460,8 @@ public class CockpitP_47D30 extends CockpitPilot {
 					sounds[11] = soundfx1;
 					soundfx1.setUsrFlag(11);
 					soundfx1.setPosition(new Point3d(0.0D, 0.0D, -1D));
-					((P_47X) aircraft()).soundGearUp = sounds[11];
-					System.out.println("*** GearUp sound loaded");
+					((P_47ModPack) aircraft()).soundGearUp = sounds[11];
+					P_47ModPack.printDebugMessage("*** GearUp sound loaded");
 				}
 			}
 			soundfx = sounds[10];
@@ -472,8 +472,8 @@ public class CockpitP_47D30 extends CockpitPilot {
 					sounds[10] = soundfx1;
 					soundfx1.setUsrFlag(10);
 					soundfx1.setPosition(new Point3d(0.0D, 0.0D, -1D));
-					((P_47X) aircraft()).soundWheels = sounds[10];
-					System.out.println("*** GearUp sound loaded");
+					((P_47ModPack) aircraft()).soundWheels = sounds[10];
+					P_47ModPack.printDebugMessage("*** GearUp sound loaded");
 				}
 			}
 			soundfx = sounds[8];
@@ -485,25 +485,25 @@ public class CockpitP_47D30 extends CockpitPilot {
 					soundfx1.setUsrFlag(8);
 					soundfx1.setPosition(new Point3d(0.5D, 0.0D, -0.5D));
 					sndTurbo = sounds[8];
-					System.out.println("*** Turbo sound loaded");
+					P_47ModPack.printDebugMessage("*** Turbo sound loaded");
 				}
 			}
 		}
 	}
 
 	private void sfxFlapSound() {
-		if (((P_47X) aircraft()).bFlaps) {
+		if (((P_47ModPack) aircraft()).bFlaps) {
 			if (sndFlaps != null)
 				sndFlaps.setPlay(true);
 			iFlapEndCycles = fm.CT.FlapsControl != 0.0F ? 10 : 20;
 		}
-		if (((P_47X) aircraft()).bFlapsEnd) {
+		if (((P_47ModPack) aircraft()).bFlapsEnd) {
 			if (sndFlapsEnd != null)
 				sndFlapsEnd.setPlay(true);
 			if (iFlapEndCycles-- == 0) {
 				if (sndFlaps != null)
 					sndFlaps.setPlay(false);
-				((P_47X) aircraft()).bFlapsEnd = false;
+				((P_47ModPack) aircraft()).bFlapsEnd = false;
 			}
 		}
 	}
@@ -545,10 +545,10 @@ public class CockpitP_47D30 extends CockpitPilot {
 	private void setReticle() {
 		UserCfg usercfg = World.cur().userCfg;
 		String s = usercfg.getSkin("P-47D-30");
-		System.out.println("*** Skin Loaded: " + s);
+		P_47ModPack.printDebugMessage("*** Skin Loaded: " + s);
 		String s1 = "ReticleMk8";
 		int i = mesh.materialFind(s1);
-		System.out.println("*** Material Found: " + i);
+		P_47ModPack.printDebugMessage("*** Material Found: " + i);
 		if (i > 0 && s != null) {
 			if (s.regionMatches(0, "Navy_", 0, 5))
 				mesh.materialReplace(i, "ReticleMk8n");
@@ -556,7 +556,7 @@ public class CockpitP_47D30 extends CockpitPilot {
 				mesh.materialReplace(i, "ReticleMk8g");
 		}
 		String s2 = aircraft().getRegiment().country();
-		System.out.println("*** Country Found: " + s2);
+		P_47ModPack.printDebugMessage("*** Country Found: " + s2);
 	}
 
 	protected void reflectCockpitMats() {
@@ -585,7 +585,7 @@ public class CockpitP_47D30 extends CockpitPilot {
 			if (i > 0)
 				mesh.materialReplace(i, "shkala_off");
 			bPowerON = false;
-			System.out.println("*** Electrics turned OFF");
+			P_47ModPack.printDebugMessage("*** Electrics turned OFF");
 		}
 		if (fm.EI.engines[0].getControlMagnetos() > 0 && !bPowerON) {
 			mesh.chunkVisible("Z_Z_RETICLE", true);
@@ -597,21 +597,21 @@ public class CockpitP_47D30 extends CockpitPilot {
 				mesh.materialReplace(j, "shkala");
 			bPowerON = true;
 			sfxStart(9);
-			System.out.println("*** Electrics turned ON");
+			P_47ModPack.printDebugMessage("*** Electrics turned ON");
 		}
 		if (fm.Gears.bTailwheelLocked && !bTWlock) {
 			int k = mesh.materialFind("wlock");
 			if (k > 0)
 				mesh.materialReplace(k, "wlock_on");
 			bTWlock = true;
-			System.out.println("*** Tail Wheel locked");
+			P_47ModPack.printDebugMessage("*** Tail Wheel locked");
 		}
 		if (!fm.Gears.bTailwheelLocked && bTWlock) {
 			int l = mesh.materialFind("wlock");
 			if (l > 0)
 				mesh.materialReplace(l, "wlock");
 			bTWlock = false;
-			System.out.println("*** Tail Wheel unlocked");
+			P_47ModPack.printDebugMessage("*** Tail Wheel unlocked");
 		}
 	}
 
@@ -619,24 +619,24 @@ public class CockpitP_47D30 extends CockpitPilot {
 		sfxPreset = null;
 		sfxPreset = new SoundPreset("aircraft.cockpit_p47");
 		sounds = new SoundFX[18];
-		System.out.println("*** Local Sounds Loaded: aircraft.cockpit_p47.prs");
+		P_47ModPack.printDebugMessage("*** Local Sounds Loaded: aircraft.cockpit_p47.prs");
 	}
 
 	private void resetAcoustics(String s) {
-		((P_47X) aircraft()).setAcoustics(null);
+		((P_47ModPack) aircraft()).setAcoustics(null);
 		acoustics = new Acoustics(s);
 		acoustics.setParent(Engine.worldAcoustics());
-		((P_47X) aircraft()).setAcoustics(acoustics);
-		((P_47X) aircraft()).enableDoorSnd(true);
+		((P_47ModPack) aircraft()).setAcoustics(acoustics);
+		((P_47ModPack) aircraft()).enableDoorSnd(true);
 		acoustics.globFX = new ReverbFXRoom(0.45F);
-		System.out.println("*** Acoustics Loaded:" + s);
+		P_47ModPack.printDebugMessage("*** Acoustics Loaded:" + s);
 	}
 
 	private void updateSound() {
 		if ((fm.CT.getCockpitDoor() == 0.0F || fm.CT.getCockpitDoor() == 1.0F) && Main3D.cur3D().isViewOutside() && !bMusicPresent && fm.isStationedOnGround()) {
 			CmdEnv.top().exec("music PLAY");
 			bMusicPresent = true;
-			System.out.println("*** Music set to play outside");
+			P_47ModPack.printDebugMessage("*** Music set to play outside");
 		}
 	}
 
@@ -645,28 +645,28 @@ public class CockpitP_47D30 extends CockpitPilot {
 			CmdEnv.top().exec("music STOP");
 			bCanopyInit = true;
 			bMusicPresent = false;
-			System.out.println("*** Music stopped on canopy state: " + fm.CT.getCockpitDoor());
+			P_47ModPack.printDebugMessage("*** Music stopped on canopy state: " + fm.CT.getCockpitDoor());
 		}
 		if (fm.CT.getCockpitDoor() == 0.0F && !bCanopyClosed) {
 			resetAcoustics("p47cls");
 			bCanopyClosed = true;
-			System.out.println("*** Canopy closed - music: " + bMusicPresent);
+			P_47ModPack.printDebugMessage("*** Canopy closed - music: " + bMusicPresent);
 		}
 		if (fm.CT.getCockpitDoor() == 1.0F && bCanopyClosed) {
 			resetAcoustics("p47opn");
 			bCanopyClosed = false;
-			System.out.println("*** Canopy open - music: " + bMusicPresent);
+			P_47ModPack.printDebugMessage("*** Canopy open - music: " + bMusicPresent);
 		}
 		if (fm.isStationedOnGround() && !Main3D.cur3D().isViewOutside()) {
 			if (bMusicPresent && fm.CT.getCockpitDoor() == 0.0F) {
 				CmdEnv.top().exec("music STOP");
 				bMusicPresent = false;
-				System.out.println("*** Music set to stop");
+				P_47ModPack.printDebugMessage("*** Music set to stop");
 			}
 			if (!bMusicPresent && fm.CT.getCockpitDoor() == 1.0F) {
 				CmdEnv.top().exec("music PLAY");
 				bMusicPresent = true;
-				System.out.println("*** Music set to play");
+				P_47ModPack.printDebugMessage("*** Music set to play");
 			}
 		}
 	}

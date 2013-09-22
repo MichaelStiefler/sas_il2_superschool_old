@@ -22,7 +22,7 @@ public class BombletFireNapalm2 extends Bomb {
 	}
 
 	public void msgCollision(Actor actor, String s, String s1) {
-		System.out.println("msgCollision2 at " + Time.current());
+//		System.out.println("msgCollision2 at " + Time.current());
 		if (actor != null) {
 			Point3d point3d = new Point3d();
 			pos.getTime(Time.current(), point3d);

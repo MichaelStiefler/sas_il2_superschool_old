@@ -59,12 +59,12 @@ public class CockpitP_47M extends CockpitPilot {
 	}
 
 	protected float waypointAzimuth() {
-		WayPoint waypoint = ((FlightModelMain) (super.fm)).AP.way.curr();
+		WayPoint waypoint = fm.AP.way.curr();
 		if (waypoint == null) {
 			return 0.0F;
 		} else {
 			waypoint.getP(tmpP);
-			tmpV.sub(tmpP, ((FlightModelMain) (super.fm)).Loc);
+			tmpV.sub(tmpP, fm.Loc);
 			return (float) (57.295779513082323D * Math.atan2(-((Tuple3d) (tmpV)).y, ((Tuple3d) (tmpV)).x));
 		}
 	}
@@ -84,54 +84,54 @@ public class CockpitP_47M extends CockpitPilot {
 	}
 
 	public void reflectWorldToInstruments(float f) {
-		super.mesh.chunkSetAngles("armPedalL", 0.0F, -15F * ((FlightModelMain) (super.fm)).CT.getRudder(), 0.0F);
-		super.mesh.chunkSetAngles("armPedalR", 0.0F, 15F * ((FlightModelMain) (super.fm)).CT.getRudder(), 0.0F);
-		super.mesh.chunkSetAngles("PedalL", 0.0F, 15F * ((FlightModelMain) (super.fm)).CT.getRudder(), 0.0F);
-		super.mesh.chunkSetAngles("PedalR", 0.0F, -15F * ((FlightModelMain) (super.fm)).CT.getRudder(), 0.0F);
-		super.mesh.chunkSetAngles("Stick", 0.0F, (pictAiler = 0.85F * pictAiler + 0.15F * ((FlightModelMain) (super.fm)).CT.AileronControl) * 20F, (pictElev = 0.85F * pictElev + 0.15F * ((FlightModelMain) (super.fm)).CT.ElevatorControl) * 16F);
+		super.mesh.chunkSetAngles("armPedalL", 0.0F, -15F * fm.CT.getRudder(), 0.0F);
+		super.mesh.chunkSetAngles("armPedalR", 0.0F, 15F * fm.CT.getRudder(), 0.0F);
+		super.mesh.chunkSetAngles("PedalL", 0.0F, 15F * fm.CT.getRudder(), 0.0F);
+		super.mesh.chunkSetAngles("PedalR", 0.0F, -15F * fm.CT.getRudder(), 0.0F);
+		super.mesh.chunkSetAngles("Stick", 0.0F, (pictAiler = 0.85F * pictAiler + 0.15F * fm.CT.AileronControl) * 20F, (pictElev = 0.85F * pictElev + 0.15F * fm.CT.ElevatorControl) * 16F);
 		super.mesh.chunkSetAngles("supercharge", 0.0F, 70F * setNew.stage, 0.0F);
 		super.mesh.chunkSetAngles("throtle", 0.0F, 62.7F * setNew.throttle, 0.0F);
 		super.mesh.chunkSetAngles("prop", 0.0F, 70F * setNew.prop, 0.0F);
 		super.mesh.chunkSetAngles("mixtura", 0.0F, 55F * setNew.mix, 0.0F);
-		super.mesh.chunkSetAngles("flaplever", 0.0F, 0.0F, 70F * ((FlightModelMain) (super.fm)).CT.FlapsControl);
-		super.mesh.chunkSetAngles("zfuelR", 0.0F, floatindex(cvt(((FlightModelMain) (super.fm)).M.fuel, 0.0F, 981F, 0.0F, 6F), fuelGallonsScale), 0.0F);
-		super.mesh.chunkSetAngles("zfuelL", 0.0F, -floatindex(cvt(((FlightModelMain) (super.fm)).M.fuel, 0.0F, 981F, 0.0F, 4F), fuelGallonsAuxScale), 0.0F);
+		super.mesh.chunkSetAngles("flaplever", 0.0F, 0.0F, 70F * fm.CT.FlapsControl);
+		super.mesh.chunkSetAngles("zfuelR", 0.0F, floatindex(cvt(fm.M.fuel, 0.0F, 981F, 0.0F, 6F), fuelGallonsScale), 0.0F);
+		super.mesh.chunkSetAngles("zfuelL", 0.0F, -floatindex(cvt(fm.M.fuel, 0.0F, 981F, 0.0F, 4F), fuelGallonsAuxScale), 0.0F);
 		super.mesh.chunkSetAngles("zacceleration", 0.0F, cvt(super.fm.getOverload(), -4F, 12F, -77F, 244F), 0.0F);
-		super.mesh.chunkSetAngles("zSpeed1a", 0.0F, floatindex(cvt(Pitot.Indicator((float) ((Tuple3d) (((FlightModelMain) (super.fm)).Loc)).z, super.fm.getSpeedKMH()), 0.0F, 1126.541F, 0.0F, 14F), speedometerScale), 0.0F);
+		super.mesh.chunkSetAngles("zSpeed1a", 0.0F, floatindex(cvt(Pitot.Indicator((float) ((Tuple3d) (fm.Loc)).z, super.fm.getSpeedKMH()), 0.0F, 1126.541F, 0.0F, 14F), speedometerScale), 0.0F);
 		super.mesh.chunkSetAngles("zclimb", 0.0F, floatindex(cvt(setNew.vspeed, -30.48F, 30.48F, 0.0F, 12F), variometerScale), 0.0F);
 		w.set(super.fm.getW());
-		((FlightModelMain) (super.fm)).Or.transform(w);
+		fm.Or.transform(w);
 		super.mesh.chunkSetAngles("zTurn1a", 0.0F, cvt(((Tuple3f) (w)).z, -0.23562F, 0.23562F, 25F, -25F), 0.0F);
 		super.mesh.chunkSetAngles("zSlide1a", 0.0F, cvt(getBall(7D), -7F, 7F, -16F, 16F), 0.0F);
 		super.mesh.chunkSetAngles("zSlide1b", 0.0F, cvt(getBall(7D), -7F, 7F, -16F, 16F), 0.0F);
-		super.mesh.chunkSetAngles("zManifold1a", 0.0F, cvt(((FlightModelMain) (super.fm)).EI.engines[0].getManifoldPressure(), 0.3386378F, 2.370465F, 0.0F, 320F), 0.0F);
+		super.mesh.chunkSetAngles("zManifold1a", 0.0F, cvt(fm.EI.engines[0].getManifoldPressure(), 0.3386378F, 2.370465F, 0.0F, 320F), 0.0F);
 		super.mesh.chunkSetAngles("zAlt1a", 0.0F, cvt(interp(setNew.altimeter, setOld.altimeter, f), 0.0F, 9144F, 0.0F, 10800F), 0.0F);
 		super.mesh.chunkSetAngles("zAlt1b", 0.0F, cvt(interp(setNew.altimeter, setOld.altimeter, f), 0.0F, 9144F, 0.0F, 1080F), 0.0F);
-		super.mesh.chunkSetAngles("zRPM1a", 0.0F, cvt(((FlightModelMain) (super.fm)).EI.engines[0].getRPM(), 0.0F, 4500F, 0.0F, 316F), 0.0F);
-		super.mesh.chunkSetAngles("zoiltemp1a", 0.0F, cvt(((FlightModelMain) (super.fm)).EI.engines[0].tOilOut, 0.0F, 300F, 0.0F, 84F), 0.0F);
+		super.mesh.chunkSetAngles("zRPM1a", 0.0F, cvt(fm.EI.engines[0].getRPM(), 0.0F, 4500F, 0.0F, 316F), 0.0F);
+		super.mesh.chunkSetAngles("zoiltemp1a", 0.0F, cvt(fm.EI.engines[0].tOilOut, 0.0F, 300F, 0.0F, 84F), 0.0F);
 		super.mesh.chunkSetAngles("zClock1b", 0.0F, cvt(World.getTimeofDay(), 0.0F, 24F, 0.0F, 720F), 0.0F);
 		super.mesh.chunkSetAngles("zClock1a", 0.0F, cvt(World.getTimeofDay() % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F);
-		super.mesh.chunkSetAngles("zhorizont1a", 0.0F, -((FlightModelMain) (super.fm)).Or.getKren(), 0.0F);
+		super.mesh.chunkSetAngles("zhorizont1a", 0.0F, -fm.Or.getKren(), 0.0F);
 		resetYPRmodifier();
-		Cockpit.xyz[2] = cvt(((FlightModelMain) (super.fm)).Or.getTangage(), -45F, 45F, 0.0328F, -0.0328F);
+		Cockpit.xyz[2] = cvt(fm.Or.getTangage(), -45F, 45F, 0.0328F, -0.0328F);
 		super.mesh.chunkSetLocate("zhorizont1b", Cockpit.xyz, Cockpit.ypr);
 		super.mesh.chunkSetAngles("zturborpm1a", 0.0F, cvt(pictTurba, 0.0F, 2.0F, 0.0F, 207.5F), 0.0F);
-		super.mesh.chunkSetAngles("zpressfuel1a", 0.0F, cvt(((FlightModelMain) (super.fm)).M.fuel <= 1.0F ? 0.0F : 0.26F, 0.0F, 0.4F, 0.0F, -154F), 0.0F);
-		super.mesh.chunkSetAngles("zpressoil1a", 0.0F, cvt(1.0F + 0.05F * ((FlightModelMain) (super.fm)).EI.engines[0].tOilOut * ((FlightModelMain) (super.fm)).EI.engines[0].getReadyness(), 0.0F, 7.45F, 0.0F, 180F), 0.0F);
-		super.mesh.chunkSetAngles("zAzimuth1a", 0.0F, cvt(((FlightModelMain) (super.fm)).Or.getTangage(), -5F, 5F, -5F, 5F), 0.0F);
+		super.mesh.chunkSetAngles("zpressfuel1a", 0.0F, cvt(fm.M.fuel <= 1.0F ? 0.0F : 0.26F, 0.0F, 0.4F, 0.0F, -154F), 0.0F);
+		super.mesh.chunkSetAngles("zpressoil1a", 0.0F, cvt(1.0F + 0.05F * fm.EI.engines[0].tOilOut * fm.EI.engines[0].getReadyness(), 0.0F, 7.45F, 0.0F, 180F), 0.0F);
+		super.mesh.chunkSetAngles("zAzimuth1a", 0.0F, cvt(fm.Or.getTangage(), -5F, 5F, -5F, 5F), 0.0F);
 		super.mesh.chunkSetAngles("zAzimuth1b", 0.0F, 90F - setNew.azimuth, 0.0F);
-		super.mesh.chunkSetAngles("zMagAzimuth1a", 0.0F, cvt(((FlightModelMain) (super.fm)).Or.getTangage(), -65F, 65F, -65F, 65F), 0.0F);
+		super.mesh.chunkSetAngles("zMagAzimuth1a", 0.0F, cvt(fm.Or.getTangage(), -65F, 65F, -65F, 65F), 0.0F);
 		super.mesh.chunkSetAngles("zMagAzimuth1b", -90F + setNew.azimuth, 0.0F, 0.0F);
-		super.mesh.chunkVisible("Z_Red1", ((FlightModelMain) (super.fm)).CT.getGear() < 0.05F || !((FlightModelMain) (super.fm)).Gears.lgear || !((FlightModelMain) (super.fm)).Gears.rgear);
-		super.mesh.chunkVisible("Z_Green1", ((FlightModelMain) (super.fm)).CT.getGear() > 0.95F);
-		super.mesh.chunkVisible("Z_Red2", ((FlightModelMain) (super.fm)).M.fuel / ((FlightModelMain) (super.fm)).M.maxFuel < 0.15F);
+		super.mesh.chunkVisible("Z_Red1", fm.CT.getGear() < 0.05F || !fm.Gears.lgear || !fm.Gears.rgear);
+		super.mesh.chunkVisible("Z_Green1", fm.CT.getGear() > 0.95F);
+		super.mesh.chunkVisible("Z_Red2", fm.M.fuel / fm.M.maxFuel < 0.15F);
 		super.mesh.chunkVisible("Z_Red3", pictTurba > 1.0485F);
-		super.mesh.chunkVisible("Z_Green2", ((FlightModelMain) (super.fm)).AS.bNavLightsOn);
-		super.mesh.chunkVisible("Z_Red4", ((FlightModelMain) (super.fm)).AS.bNavLightsOn);
+		super.mesh.chunkVisible("Z_Green2", fm.AS.bNavLightsOn);
+		super.mesh.chunkVisible("Z_Red4", fm.AS.bNavLightsOn);
 	}
 
 	public void reflectCockpitState() {
-		if ((((FlightModelMain) (super.fm)).AS.astateCockpitState & 2) != 0) {
+		if ((fm.AS.astateCockpitState & 2) != 0) {
 			super.mesh.chunkVisible("Z_Holes1_D1", true);
 			super.mesh.chunkVisible("pricel", false);
 			super.mesh.chunkVisible("pricel_d1", true);
@@ -140,9 +140,9 @@ public class CockpitP_47M extends CockpitPilot {
 			super.mesh.chunkVisible("zSlide1b", false);
 			super.mesh.chunkVisible("GSlip", false);
 		}
-		if ((((FlightModelMain) (super.fm)).AS.astateCockpitState & 1) != 0)
+		if ((fm.AS.astateCockpitState & 1) != 0)
 			super.mesh.chunkVisible("Z_Holes1_D1", true);
-		if ((((FlightModelMain) (super.fm)).AS.astateCockpitState & 0x40) != 0) {
+		if ((fm.AS.astateCockpitState & 0x40) != 0) {
 			super.mesh.chunkVisible("pribors1", false);
 			super.mesh.chunkVisible("pribors1_d1", true);
 			super.mesh.chunkVisible("zamper", false);
@@ -160,15 +160,15 @@ public class CockpitP_47M extends CockpitPilot {
 			super.mesh.chunkVisible("zfas1a", false);
 			super.mesh.chunkVisible("zoxipress1a", false);
 		}
-		if ((((FlightModelMain) (super.fm)).AS.astateCockpitState & 4) != 0)
+		if ((fm.AS.astateCockpitState & 4) != 0)
 			;
-		if ((((FlightModelMain) (super.fm)).AS.astateCockpitState & 8) != 0)
+		if ((fm.AS.astateCockpitState & 8) != 0)
 			super.mesh.chunkVisible("Z_Holes2_D1", true);
-		if ((((FlightModelMain) (super.fm)).AS.astateCockpitState & 0x80) != 0)
+		if ((fm.AS.astateCockpitState & 0x80) != 0)
 			super.mesh.chunkVisible("Z_OilSplats_D1", true);
-		if ((((FlightModelMain) (super.fm)).AS.astateCockpitState & 0x10) != 0)
+		if ((fm.AS.astateCockpitState & 0x10) != 0)
 			;
-		if ((((FlightModelMain) (super.fm)).AS.astateCockpitState & 0x20) != 0) {
+		if ((fm.AS.astateCockpitState & 0x20) != 0) {
 			super.mesh.chunkVisible("pribors2", false);
 			super.mesh.chunkVisible("pribors2_d1", true);
 			super.mesh.chunkVisible("zClock1b", false);
