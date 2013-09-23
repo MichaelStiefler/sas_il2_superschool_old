@@ -1,10 +1,17 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.JGP.*;
+import java.lang.reflect.Field;
+
+import com.maddox.JGP.Tuple3d;
+import com.maddox.JGP.Tuple3f;
+import com.maddox.JGP.Vector3f;
 import com.maddox.il2.ai.AnglesFork;
 import com.maddox.il2.ai.World;
-import com.maddox.il2.engine.*;
-import com.maddox.il2.fm.*;
+import com.maddox.il2.engine.HierMesh;
+import com.maddox.il2.engine.InterpolateRef;
+import com.maddox.il2.fm.Atmosphere;
+import com.maddox.il2.fm.FlightModelMain;
+import com.maddox.il2.fm.Pitot;
 import com.maddox.rts.Time;
 
 public class CockpitWhirlwind extends CockpitPilot
@@ -102,7 +109,33 @@ public class CockpitWhirlwind extends CockpitPilot
         });
         setNightMats(false);
         interpPut(new Interpolater(), null, Time.current(), null);
-        super.printCompassHeading = true;
+        
+        // The field "printCompassHeading" has been a static field of "AircraftLH" class up to IL-2 4.10.1m and became an object field of "Cockpit" class in 4.11.1m onwards.
+        // The following code is supposed to dynamically access the available field according to it's presence.
+        // Attention: Sticky fingers here, we've got to go through reflection!
+        
+        Class superClass = this.getClass().getSuperclass().getSuperclass();
+        boolean oldBaseGameVersion = true;
+        try {
+        	Field f = superClass.getDeclaredField("printCompassHeading");
+//        	System.out.println("printCompassHeading found in super class, we're on 4.11m+");
+        	f.setBoolean(this, true);
+//        	System.out.println("printCompassHeading=true success!");
+        	oldBaseGameVersion = false;
+        } catch (Exception e) {
+//        	e.printStackTrace();
+        }
+        if (oldBaseGameVersion) {
+            Class aircradtLHClass = AircraftLH.class;
+	        try {
+	        	Field f = aircradtLHClass.getField("printCompassHeading");
+//	        	System.out.println("printCompassHeading found in AircraftLH class, we're on 4.10.1m-");
+	        	f.setBoolean(this, true);
+//	        	System.out.println("printCompassHeading=true success!");
+	        } catch (Exception e) {
+//	        	e.printStackTrace();
+	        }
+        }
     }
 
     protected boolean doFocusEnter()
