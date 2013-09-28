@@ -29,13 +29,13 @@ public class RocketSimpleS5MS extends RocketSimple
     {
         float f1 = f-1F;
         super.start(f1);
-        Eff3DActor.New(this, null, new Loc(), 1.0F, "EFFECTS/Smokes/SmokeMissilessmall.eff", f1);
+        Eff3DActor.New(this, null, new Loc(), 1.0F, "EFFECTS/Smokes/SmokeMissilessmall.eff", -1F);
     }
 
     static 
     {
         Class class1 = com.maddox.il2.objects.weapons.RocketSimpleS5MS.class;
-        Property.set(class1, "mesh", "3DO/Arms/S5/mono.sim");
+        Property.set(class1, "mesh", "3DO/Arms/2-75inch/mono.sim");
         Property.set(class1, "sprite", "3DO/Effects/Tracers/GuidedRocket/White.eff");
         Property.set(class1, "flame", "3DO/Effects/Rocket/mono.sim");
         Property.set(class1, "smoke", "3DO/Effects/Tracers/GuidedRocket/White.eff");
