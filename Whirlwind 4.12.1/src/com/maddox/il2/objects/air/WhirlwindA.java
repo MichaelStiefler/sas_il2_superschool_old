@@ -15,7 +15,7 @@
 //                       www.sas1946.com
 //
 // Last Edited by:       SAS~Storebror
-// Last Edited at:       2013/09/29
+// Last Edited at:       2013/10/01
 
 package com.maddox.il2.objects.air;
 
@@ -45,9 +45,9 @@ public class WhirlwindA extends Whirlwind implements TypeFighter, TypeStormovik 
 		Property.set(class1, "FlightModel", "FlightModels/whirlwind.fmd:whirlwind_FM");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitWhirlwind.class });
 		Property.set(class1, "LOSElevation", 0.6731F);
-		Aircraft.weaponTriggersRegister(class1, new int[] { 1, 1, 1, 1, 3, 3, 3, 9, 9, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 });
+		Aircraft.weaponTriggersRegister(class1, new int[] { 1, 1, 1, 1, 3, 3, 3, 9, 9, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 9, 9, 2, 2, 2 });
 		Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04", "_ExternalBomb01", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev01", "_ExternalDev02", "_ExternalRock01", "_ExternalRock01",
 				"_ExternalRock02", "_ExternalRock02", "_ExternalRock03", "_ExternalRock03", "_ExternalRock04", "_ExternalRock04", "_ExternalRock05", "_ExternalRock05", "_ExternalRock06", "_ExternalRock06", "_ExternalRock07", "_ExternalRock07",
-				"_ExternalRock08" });
+				"_ExternalRock08", "_ExternalDev03", "_ExternalDev04", "_ExternalRock09", "_ExternalRock09", "_ExternalRock10" });
 	}
 }

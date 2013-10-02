@@ -15,7 +15,7 @@
 //                       www.sas1946.com
 //
 // Last Edited by:       SAS~Storebror
-// Last Edited at:       2013/09/29
+// Last Edited at:       2013/10/02
 
 package com.maddox.il2.objects.air;
 
@@ -35,7 +35,7 @@ public abstract class Whirlwind extends MOSQUITO {
 	// out base classes' code.
 	private Field fkangle1;
 	private Field fkangle2;
-	private static boolean initLogWritten = false;
+//	private static boolean initLogWritten = false;
 
 	public Whirlwind() {
 		// Attention: VERY dirty fingers here!
@@ -48,10 +48,10 @@ public abstract class Whirlwind extends MOSQUITO {
 			fkangle1.setAccessible(true);
 			fkangle2 = superClass.getDeclaredField("kangle2");
 			fkangle2.setAccessible(true);
-			if (!initLogWritten) {
-				System.out.println("Whirlwind radiator flaps fields accessibility set successfully.");
-				initLogWritten = true;
-			}
+//			if (!initLogWritten) {
+//				System.out.println("Whirlwind radiator flaps fields accessibility set successfully.");
+//				initLogWritten = true;
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

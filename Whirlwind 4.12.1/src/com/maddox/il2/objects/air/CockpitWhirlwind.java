@@ -15,7 +15,7 @@
 //                       www.sas1946.com
 //
 // Last Edited by:       SAS~Storebror
-// Last Edited at:       2013/09/29
+// Last Edited at:       2013/10/02
 
 package com.maddox.il2.objects.air;
 
@@ -28,7 +28,6 @@ import com.maddox.JGP.Vector3f;
 import com.maddox.il2.ai.AnglesFork;
 import com.maddox.il2.ai.WayPoint;
 import com.maddox.il2.ai.World;
-import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.InterpolateRef;
 import com.maddox.il2.engine.Mat;
@@ -158,8 +157,8 @@ public class CockpitWhirlwind extends CockpitPilot {
 		this.waypointAzimuthInvertMinusMethod = null;
 		this.useRealisticNavigationInstrumentsMethod = null;
 		Class waypointAzimuthInvertMinusMethodParameterTypes[] = { java.lang.Float.class };
-		if (!initLogWritten) System.out.println("*******************************************************");
-		if (!initLogWritten) System.out.println("Whirlwind Cockpit Base Game Version Compatibility Check");
+//		if (!initLogWritten) System.out.println("*******************************************************");
+//		if (!initLogWritten) System.out.println("Whirlwind Cockpit Base Game Version Compatibility Check");
 
 		do {
 			superClass = superClass.getSuperclass(); // make our way back through class inheritance
@@ -170,7 +169,7 @@ public class CockpitWhirlwind extends CockpitPilot {
 					Field f = superClass.getDeclaredField("printCompassHeading");
 					f.setBoolean(this, true);
 					oldBaseGameVersion = false; // This game is 4.11m or newer
-					if (!initLogWritten) System.out.println("printCompassHeading found in Cockpit Class, Base Game Version seems to be 4.11m or newer");
+//					if (!initLogWritten) System.out.println("printCompassHeading found in Cockpit Class, Base Game Version seems to be 4.11m or newer");
 				} catch (Exception e) {
 				}
 			}
@@ -178,7 +177,7 @@ public class CockpitWhirlwind extends CockpitPilot {
 				try {
 					this.waypointAzimuthInvertMinusMethod = superClass.getDeclaredMethod("waypointAzimuthInvertMinus", waypointAzimuthInvertMinusMethodParameterTypes);
 					waypointAzimuthInvertMinusMethodFound = true;
-					if (!initLogWritten) System.out.println("waypointAzimuthInvertMinus Method found, Base Game Version seems to be 4.10m or newer");
+//					if (!initLogWritten) System.out.println("waypointAzimuthInvertMinus Method found, Base Game Version seems to be 4.10m or newer");
 				} catch (Exception e) {
 				}
 			}
@@ -186,7 +185,7 @@ public class CockpitWhirlwind extends CockpitPilot {
 				try {
 					this.useRealisticNavigationInstrumentsMethod = superClass.getDeclaredMethod("useRealisticNavigationInstruments", null);
 					useRealisticNavigationInstrumentsMethodFound = true;
-					if (!initLogWritten) System.out.println("useRealisticNavigationInstruments Method found, Base Game Version seems to be 4.10m or newer");
+//					if (!initLogWritten) System.out.println("useRealisticNavigationInstruments Method found, Base Game Version seems to be 4.10m or newer");
 				} catch (Exception e) {
 				}
 			}
@@ -203,33 +202,30 @@ public class CockpitWhirlwind extends CockpitPilot {
 				try {
 					Field f = aircradtLHClass.getField("printCompassHeading");
 					f.setBoolean(this, true);
-					if (!initLogWritten) System.out.println("printCompassHeading found in AircraftLH Class, Base Game Version seems to be 4.10m or 4.10.1m");
+//					if (!initLogWritten) System.out.println("printCompassHeading found in AircraftLH Class, Base Game Version seems to be 4.10m or 4.10.1m");
 				} catch (Exception e) {
 				}
 			}
 		}
 		
-		if (!initLogWritten) {
-			initLogWritten = true;
-			if (AircraftLHClassExists) {
-				System.out.println("Base Game Version 4.10m or 4.10.1m detected");
-			} else if (!oldBaseGameVersion) {
-				System.out.println("Base Game Version 4.11m or newer detected");
-			} else {
-				System.out.println("Base Game Version 4.09m or older detected");
-			}
-			try {
-				Class configClass = Config.class;
-				Field versionField = configClass.getField("VERSION");
-				String versionString = (String)versionField.get(null);
-				System.out.println("Base Game Version according to Config: " + versionString);
-			} catch (Exception e) {
-			}
-			System.out.println("*******************************************************");
-		}
-		
-		
-		
+//		if (!initLogWritten) {
+//			initLogWritten = true;
+//			if (AircraftLHClassExists) {
+//				System.out.println("Base Game Version 4.10m or 4.10.1m detected");
+//			} else if (!oldBaseGameVersion) {
+//				System.out.println("Base Game Version 4.11m or newer detected");
+//			} else {
+//				System.out.println("Base Game Version 4.09m or older detected");
+//			}
+//			try {
+//				Class configClass = Config.class;
+//				Field versionField = configClass.getField("VERSION");
+//				String versionString = (String)versionField.get(null);
+//				System.out.println("Base Game Version according to Config: " + versionString);
+//			} catch (Exception e) {
+//			}
+//			System.out.println("*******************************************************");
+//		}
 		
         tmpP = new Point3d();
         tmpV = new Vector3d();
@@ -392,7 +388,7 @@ public class CockpitWhirlwind extends CockpitPilot {
 	private Method waypointAzimuthInvertMinusMethod;
 	private Point3d tmpP;
 	private Vector3d tmpV;
-	private static boolean initLogWritten = false;
+//	private static boolean initLogWritten = false;
 
 	private Variables setOld;
 	private Variables setNew;
