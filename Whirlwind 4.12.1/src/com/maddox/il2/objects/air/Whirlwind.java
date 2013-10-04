@@ -15,7 +15,7 @@
 //                       www.sas1946.com
 //
 // Last Edited by:       SAS~Storebror
-// Last Edited at:       2013/10/02
+// Last Edited at:       2013/10/03
 
 package com.maddox.il2.objects.air;
 
@@ -35,6 +35,7 @@ public abstract class Whirlwind extends MOSQUITO {
 	// out base classes' code.
 	private Field fkangle1;
 	private Field fkangle2;
+	public boolean bChangedPit = true;
 //	private static boolean initLogWritten = false;
 
 	public Whirlwind() {
@@ -57,6 +58,18 @@ public abstract class Whirlwind extends MOSQUITO {
 		}
 	}
 	
+	protected void nextDMGLevel(String s, int i, Actor actor) {
+		super.nextDMGLevel(s, i, actor);
+		if (this.FM.isPlayers())
+			this.bChangedPit = true;
+	}
+
+	protected void nextCUTLevel(String s, int i, Actor actor) {
+		super.nextCUTLevel(s, i, actor);
+		if (this.FM.isPlayers())
+			this.bChangedPit = true;
+	}
+
 	public void onAircraftLoaded() {
 		super.onAircraftLoaded();
 		
@@ -68,11 +81,11 @@ public abstract class Whirlwind extends MOSQUITO {
 		try {
 			Class controlsClass = this.FM.CT.getClass();
 			Field dvGearField = controlsClass.getField("dvGearL");
-			dvGearField.setFloat(this, this.FM.CT.dvGear * 0.95F);
+			dvGearField.setFloat(this.FM.CT, this.FM.CT.dvGear);
 			dvGearField = controlsClass.getField("dvGearR");
-			dvGearField.setFloat(this, this.FM.CT.dvGear * 1.05F);
+			dvGearField.setFloat(this.FM.CT, this.FM.CT.dvGear);
 			dvGearField = controlsClass.getField("dvGearC");
-			dvGearField.setFloat(this, this.FM.CT.dvGear * 1.8F);
+			dvGearField.setFloat(this.FM.CT, this.FM.CT.dvGear);
 		} catch (Exception e) { // Game is 4.11.1m or older, fall through...
 		}
 	}
@@ -121,38 +134,111 @@ public abstract class Whirlwind extends MOSQUITO {
 			setDoorSnd(f);
 		}
 	}
+    
+	// New Gear Animation Code,
+	// historically accurate in terms of moving main gear before tail wheel
+	// In order to do so, new Parameter "bDown" has been introduced to distinguish between
+	// gear up and gear down
+    public static void moveGear(HierMesh hiermesh, float f, float f1, float f2, boolean bDown) {
+    	
+    	if (bDown) { // Gear Down
+
+    		// Always Set Gear direction "straight" when extending/retracting gears.
+    		hiermesh.chunkSetAngles("GearL6_D0", 0.0F, 0.0F, 0.0F);                                 // Left Wheel Direction
+    		
+    		// Wheel Doors of Left Main Gear move first when extending gears,
+    		// Left Door moves slightly before movement of Right Door starts
+    		// (Movement of Doors overlaps)
+    		hiermesh.chunkSetAngles("GearL7_D0", 0.0F, cvt(f, 0.01F, 0.18F, 0.0F, -72F), 0.0F);     // Left Wheel Door 1
+    		hiermesh.chunkSetAngles("GearL8_D0", 0.0F, cvt(f, 0.05F, 0.22F, 0.0F, -68F), 0.0F);     // Left Wheel Door 2
+    		
+    		// When Doors of Left Main Gear are fully open,
+    		// Left Main Gear extends
+			hiermesh.chunkSetAngles("GearL2_D0", 0.0F, cvt(f, 0.22F, 0.55F, 0.0F, -114F), 0.0F);    // Left Wheel Part 1
+			hiermesh.chunkSetAngles("GearL4_D0", 0.0F, cvt(f, 0.22F, 0.55F, 0.0F, -59F), 0.0F);     // Left Wheel Part 2
+			hiermesh.chunkSetAngles("GearL5_D0", 0.0F, cvt(f, 0.22F, 0.55F, 0.0F, -116.5F), 0.0F);  // Left Wheel Part 3
+			
+			
+    		
+    		// Right Main Gear extends slightly after Left Main Gear
+    		// (Movement overlaps)
+			
+    		// Always Set Gear direction "straight" when extending/retracting gears.
+    		hiermesh.chunkSetAngles("GearR6_D0", 0.0F, 0.0F, 0.0F);                                 // Right Wheel Direction
+    		
+    		// Wheel Doors of Right Main Gear move second when extending gears,
+    		// Left Door moves slightly before movement of Right Door starts
+    		// (Movement of Doors overlaps)
+    		hiermesh.chunkSetAngles("GearR7_D0", 0.0F, cvt(f1, 0.1F, 0.27F, 0.0F, -72F), 0.0F);     // Right Wheel Door 1
+    		hiermesh.chunkSetAngles("GearR8_D0", 0.0F, cvt(f1, 0.14F, 0.31F, 0.0F, -68F), 0.0F);    // Right Wheel Door 2
+
+    		// When Doors of Right Main Gear are fully open,
+    		// Right Main Gear extends
+    		hiermesh.chunkSetAngles("GearR2_D0", 0.0F, cvt(f1, 0.31F, 0.64F, 0.0F, -114F), 0.0F);   // Right Wheel Part 1
+    		hiermesh.chunkSetAngles("GearR4_D0", 0.0F, cvt(f1, 0.31F, 0.64F, 0.0F, -59F), 0.0F);    // Right Wheel Part 2
+    		hiermesh.chunkSetAngles("GearR5_D0", 0.0F, cvt(f1, 0.31F, 0.64F, 0.0F, -116.5F), 0.0F); // Right Wheel Part 3
+    		
+    		// Tail Gear starts moving when Main Gears are fully extended
+
+    		// Always Set Gear direction "straight" when extending/retracting gears.
+    		hiermesh.chunkSetAngles("GearC3_D0", 0.0F, 0.0F, 0.0F);                                 // Tail Wheel Direction
+    		
+    		// Start Tail Gear extension with opening doors,
+    		// Left Door moves slightly before movement of Right Door starts
+    		// (Movement of Doors overlaps)
+    		hiermesh.chunkSetAngles("GearC4_D0", 0.0F, cvt(f2, 0.64F, 0.75F, 0.0F, -70F), 0.0F);    // Tail Wheel Door 1
+    		hiermesh.chunkSetAngles("GearC5_D0", 0.0F, cvt(f2, 0.68F, 0.79F, 0.0F, -70F), 0.0F);    // Tail Wheel Door 2
+    		
+    		// When Doors of Right Main Gear are fully open,
+    		// Tail Gear extends
+    		hiermesh.chunkSetAngles("GearC2_D0", 0.0F, cvt(f2, 0.79F, 0.99F, 0.0F, -80F), 0.0F);    // Tail Wheel
+    		
+    	} else { // Gear Up
+    		
+    		// Retraction movement order is opposite to extension
+    		// apart from Main Gears move before Tail Gear
+    		
+    		hiermesh.chunkSetAngles("GearL2_D0", 0.0F, cvt(f1, 0.66F, 0.99F, 0.0F, -114F), 0.0F);   // Left Wheel Part 1
+    		hiermesh.chunkSetAngles("GearL4_D0", 0.0F, cvt(f1, 0.66F, 0.99F, 0.0F, -59F), 0.0F);    // Left Wheel Part 2
+    		hiermesh.chunkSetAngles("GearL5_D0", 0.0F, cvt(f1, 0.66F, 0.99F, 0.0F, -116.5F), 0.0F); // Left Wheel Part 3
+    		hiermesh.chunkSetAngles("GearL6_D0", 0.0F, 0.0F, 0.0F);                                 // Left Wheel Direction
+    		hiermesh.chunkSetAngles("GearL7_D0", 0.0F, cvt(f, 0.49F, 0.66F, 0.0F, -72F), 0.0F);     // Left Wheel Door 1
+    		hiermesh.chunkSetAngles("GearL8_D0", 0.0F, cvt(f, 0.45F, 0.61F, 0.0F, -68F), 0.0F);     // Left Wheel Door 2
+    		
+    		hiermesh.chunkSetAngles("GearR2_D0", 0.0F, cvt(f1, 0.56F, 0.89F, 0.0F, -114F), 0.0F);   // Right Wheel Part 1
+    		hiermesh.chunkSetAngles("GearR4_D0", 0.0F, cvt(f1, 0.56F, 0.89F, 0.0F, -59F), 0.0F);    // Right Wheel Part 2
+    		hiermesh.chunkSetAngles("GearR5_D0", 0.0F, cvt(f1, 0.56F, 0.89F, 0.0F, -116.5F), 0.0F); // Right Wheel Part 3
+    		hiermesh.chunkSetAngles("GearR6_D0", 0.0F, 0.0F, 0.0F);                                 // Right Wheel Direction
+    		hiermesh.chunkSetAngles("GearR7_D0", 0.0F, cvt(f1, 0.39F, 0.56F, 0.0F, -72F), 0.0F);    // Right Wheel Door 1
+    		hiermesh.chunkSetAngles("GearR8_D0", 0.0F, cvt(f1, 0.35F, 0.51F, 0.0F, -68F), 0.0F);    // Right Wheel Door 2
+    		
+    		hiermesh.chunkSetAngles("GearC2_D0", 0.0F, cvt(f2, 0.18F, 0.35F, 0.0F, -80F), 0.0F);    // Tail Wheel
+    		hiermesh.chunkSetAngles("GearC3_D0", 0.0F, 0.0F, 0.0F);                                 // Tail Wheel Direction
+    		hiermesh.chunkSetAngles("GearC4_D0", 0.0F, cvt(f2, 0.05F, 0.18F, 0.0F, -70F), 0.0F);    // Tail Wheel Door 1
+    		hiermesh.chunkSetAngles("GearC5_D0", 0.0F, cvt(f2, 0.01F, 0.14F, 0.0F, -70F), 0.0F);    // Tail Wheel Door 2
+    	}
+    }
 
 	public static void moveGear(HierMesh hiermesh, float f, float f1, float f2) {
-		hiermesh.chunkSetAngles("GearC3_D0", 0.0F, 0.0F, 0.0F);                                 // Tail Wheel Direction
-		hiermesh.chunkSetAngles("GearC2_D0", 0.0F, cvt(f2, 0.25F, 0.99F, 0.0F, -80F), 0.0F);    // Tail Wheel
-		hiermesh.chunkSetAngles("GearC4_D0", 0.0F, cvt(f2, 0.01F, 0.3F, 0.0F, -70F), 0.0F);     // Tail Wheel Door 1
-		hiermesh.chunkSetAngles("GearC5_D0", 0.0F, cvt(f2, 0.11F, 0.35F, 0.0F, -70F), 0.0F);    // Tail Wheel Door 2
-		hiermesh.chunkSetAngles("GearL2_D0", 0.0F, cvt(f, 0.35F, 0.89F, 0.0F, -114F), 0.0F);    // Left Wheel Part 1
-		hiermesh.chunkSetAngles("GearL4_D0", 0.0F, cvt(f, 0.35F, 0.89F, 0.0F, -59F), 0.0F);     // Left Wheel Part 2
-		hiermesh.chunkSetAngles("GearL5_D0", 0.0F, cvt(f, 0.35F, 0.89F, 0.0F, -116.5F), 0.0F);  // Left Wheel Part 3
-		hiermesh.chunkSetAngles("GearL6_D0", 0.0F, 0.0F, 0.0F);                                 // Left Wheel Direction
-		hiermesh.chunkSetAngles("GearL7_D0", 0.0F, cvt(f, 0.01F, 0.4F, 0.0F, -72F), 0.0F);      // Left Wheel Door 1
-		hiermesh.chunkSetAngles("GearL8_D0", 0.0F, cvt(f, 0.01F, 0.4F, 0.0F, -68F), 0.0F);      // Left Wheel Door 2
-		hiermesh.chunkSetAngles("GearR2_D0", 0.0F, cvt(f1, 0.45F, 0.99F, 0.0F, -114F), 0.0F);   // Right Wheel Part 1
-		hiermesh.chunkSetAngles("GearR4_D0", 0.0F, cvt(f1, 0.45F, 0.99F, 0.0F, -59F), 0.0F);    // Right Wheel Part 2
-		hiermesh.chunkSetAngles("GearR5_D0", 0.0F, cvt(f1, 0.45F, 0.99F, 0.0F, -116.5F), 0.0F); // Right Wheel Part 3
-		hiermesh.chunkSetAngles("GearR6_D0", 0.0F, 0.0F, 0.0F);                                 // Right Wheel Direction
-		hiermesh.chunkSetAngles("GearR7_D0", 0.0F, cvt(f1, 0.11F, 0.5F, 0.0F, -72F), 0.0F);     // Right Wheel Door 1
-		hiermesh.chunkSetAngles("GearR8_D0", 0.0F, cvt(f1, 0.11F, 0.5F, 0.0F, -68F), 0.0F);     // Right Wheel Door 2
+		moveGear(hiermesh, f, f1, f2, true);
 	}
 
 	protected void moveGear(float f, float f1, float f2) {
-		moveGear(hierMesh(), f, f1, f2);
+		moveGear(hierMesh(), f, f1, f2, this.FM.CT.GearControl>0.5F);
 	}
 
 	// ************************************************************************************************
 	// Gear code for backward compatibility, older base game versions don't indepently move their gears
-	public static void moveGear(HierMesh hiermesh, float f) {
-		moveGear(hiermesh, f, f, f); // re-route old style function calls to new code
+	public static void moveGear(HierMesh hiermesh, float f, boolean bDown) {
+		moveGear(hiermesh, f, f, f, bDown); // re-route old style function calls to new code
 	}
 
-	protected void moveGear(float F) {
-		moveGear(hierMesh(), F);
+	public static void moveGear(HierMesh hiermesh, float f) {
+		moveGear(hiermesh, f, f, f, true); // re-route old style function calls to new code
+	}
+
+	protected void moveGear(float f) {
+		moveGear(hierMesh(), f, this.FM.CT.GearControl>0.5F);
 	}
 	// ************************************************************************************************
 
