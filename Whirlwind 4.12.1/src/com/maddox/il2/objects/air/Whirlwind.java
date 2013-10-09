@@ -15,16 +15,22 @@
 //                       www.sas1946.com
 //
 // Last Edited by:       SAS~Storebror
-// Last Edited at:       2013/10/03
+// Last Edited at:       2013/10/07
 
 package com.maddox.il2.objects.air;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
+import com.maddox.JGP.Point3f;
+import com.maddox.JGP.Vector3f;
 import com.maddox.il2.ai.Regiment;
+import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
+import com.maddox.il2.fm.Motor;
+import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.game.Mission;
 
@@ -36,6 +42,10 @@ public abstract class Whirlwind extends MOSQUITO {
 	private Field fkangle1;
 	private Field fkangle2;
 	public boolean bChangedPit = true;
+	private static float fShakeThreshold = 0.2F;    // Shake Threshold, apply no shake if shake level would be lower than this value
+	private static float fMaxShake = 0.2F;          // Maximum Shake Level
+	private static float fStartupShakeLevel = 0.8F; // Max. Startup Shake Level in range 0.0F - 1.0F
+	private float[] fEngineShakeLevel = null;       // Array of current shake levels per engine
 //	private static boolean initLogWritten = false;
 
 	public Whirlwind() {
@@ -56,6 +66,7 @@ public abstract class Whirlwind extends MOSQUITO {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		if (this.fEngineShakeLevel == null) this.fEngineShakeLevel = new float[2]; // initialize damaged engines array
 	}
 	
 	protected void nextDMGLevel(String s, int i, Actor actor) {
@@ -242,9 +253,9 @@ public abstract class Whirlwind extends MOSQUITO {
 	}
 	// ************************************************************************************************
 
-	public void update(float paramFloat) {
+	public void update(float f) {
 
-		float f, kangle1, kangle2;
+		float controlRadiator, kangle1, kangle2;
 
 		// Attention: VERY dirty fingers here!
 		// We have to use reflection and break Java access modifier rules in order to get access
@@ -252,24 +263,66 @@ public abstract class Whirlwind extends MOSQUITO {
 		// Not only do we access these fields, we even alter their values.
 		// Children should do this under parental supervision only!
 		try {
-			f = this.FM.EI.engines[0].getControlRadiator();
+			controlRadiator = this.FM.EI.engines[0].getControlRadiator();
 			kangle1 = fkangle1.getFloat(this);
-			if (Math.abs(kangle1 - f) > 0.01F) {
-				fkangle1.setFloat(this, f);
-				hierMesh().chunkSetAngles("WaterL_D0", 0.0F, -20.0F * f, 0.0F);
+			if (Math.abs(kangle1 - controlRadiator) > 0.01F) {
+				fkangle1.setFloat(this, controlRadiator);
+				hierMesh().chunkSetAngles("WaterL_D0", 0.0F, -20.0F * controlRadiator, 0.0F);
 			}
 
-			f = this.FM.EI.engines[1].getControlRadiator();
+			controlRadiator = this.FM.EI.engines[1].getControlRadiator();
 			kangle2 = fkangle2.getFloat(this);
-			if (Math.abs(kangle2 - f) > 0.01F) {
-				fkangle2.setFloat(this, f);
-				hierMesh().chunkSetAngles("WaterR_D0", 0.0F, -20.0F * f, 0.0F);
+			if (Math.abs(kangle2 - controlRadiator) > 0.01F) {
+				fkangle2.setFloat(this, controlRadiator);
+				hierMesh().chunkSetAngles("WaterR_D0", 0.0F, -20.0F * controlRadiator, 0.0F);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		super.update(paramFloat);
+		super.update(f);
+		
+		if(!this.FM.isPlayers() || !(this.FM instanceof RealFlightModel)) return; // don't shake for non-player aircraft.
+
+		Arrays.fill(this.fEngineShakeLevel, 0.0F); // initialize Engine Shake Level Array
+		
+		for (int i=0; i<2; i++) { // check each engine's stage
+			if (this.FM.EI.engines[i].getStage() < Motor._E_STAGE_CATCH_UP) continue; // engine is not running, no shake
+			if (this.FM.EI.engines[i].getStage() > Motor._E_STAGE_NOMINAL) {
+				if (this.FM.EI.engines[i].getRPM() == 0.0F)	continue; // engine is not running, no shake
+			}
+			if (this.FM.EI.engines[i].getStage() < Motor._E_STAGE_CATCH_FIRE)
+				this.fEngineShakeLevel[i] = fStartupShakeLevel * (float)(this.FM.EI.engines[i].getStage()) / 5.0F; // engine is starting, set specified startup shake level
+			else {
+				this.fEngineShakeLevel[i] = 1.0F - this.FM.EI.engines[i].getReadyness(); // engine is running, set shake level according to damage
+				float engineRpm = FM.EI.engines[i].getRPM();
+				if (engineRpm < 1000F && engineRpm > 100F)
+					this.fEngineShakeLevel[i] += (1000F - engineRpm) / 5000F + fShakeThreshold;
+				if (this.fEngineShakeLevel[i] < fShakeThreshold) this.fEngineShakeLevel[i] = 0.0F; // only take shake levels into account which exceed the threshold shake setting
+			}
+
+			// Shake whole aircraft, not just inside the cockpit.
+			if (this.fEngineShakeLevel[i] == 0.0F) continue; // don't apply aircraft shake force vector if there's no shake to apply
+			Point3f theEnginePos = this.FM.EI.engines[i].getEnginePos(); // get engine position
+			Vector3f theEngineShake = new Vector3f(World.Rnd().nextFloat(-1.0F, 1.0F), World.Rnd().nextFloat(-1.0F, 1.0F), World.Rnd().nextFloat(-1.0F, 1.0F)); // generate random shake force vector
+			float fShakeFactor = (float)Math.pow(this.FM.M.massEmpty, 0.3F) / (float)2 * 10000F * fMaxShake; // calculate shake force, must fit for aircraft weight etc.
+			theEngineShake.scale(this.fEngineShakeLevel[i] * fShakeFactor); // scale random shake vector accordingly
+			Vector3f theEngineMomentum = new Vector3f(); // instantiate the damage shake moment
+			theEngineMomentum.cross(theEnginePos, theEngineShake); // damage shake momentum is the vector's cartesian product between engine pos and random shake force
+			this.FM.producedAM.x += theEngineMomentum.x; // apply x-axis turn momentum only
+		}
+		
+		float fTotalShake = 0.0F; // aggregated shake level of all engines
+		int iShakeWeightFactor = 2; // weighted shake, engine with highest shake level counts most
+		Arrays.sort(fEngineShakeLevel); // sort shake level array (sorts in ascending order)
+		for (int i=1; i>=0; i--) { // go through the list of engine shake levels in descending order
+			if (this.fEngineShakeLevel[i] == 0.0F) break; // no more engine shake? exit loop.
+			fTotalShake += this.fEngineShakeLevel[i] * (float)iShakeWeightFactor; // add weighted total shake
+			iShakeWeightFactor >>= 1; // reduce weight factor by 2
+		}
+		fTotalShake /= (float)(2); // adjust total shake to 0.0F through 1.0F again.
+		if (((RealFlightModel)this.FM).producedShakeLevel < fTotalShake * fMaxShake) // if in-cockpit shake is stronger already, do nothing.
+			((RealFlightModel)this.FM).producedShakeLevel = fTotalShake * fMaxShake; // apply shake level according to max shake level setting.
 	}
 
 	public static String getSkinPrefix(String s, Regiment regiment) {
