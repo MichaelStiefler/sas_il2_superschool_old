@@ -21,12 +21,12 @@ package com.maddox.il2.objects.weapons;
 
 import com.maddox.rts.Property;
 
-public class BombGun500LbsMC extends BombGun
+public class BombGun250lbsSAP extends BombGun
 {
     static 
     {
-        Class class1 = BombGun500LbsMC.class;
-        Property.set(class1, "bulletClass", (Object)Bomb500LbsMC.class);
+        Class class1 = BombGun250lbsSAP.class;
+        Property.set(class1, "bulletClass", (Object)Bomb250lbsSAP.class);
         Property.set(class1, "bullets", 1);
         Property.set(class1, "shotFreq", 2.0F);
         Property.set(class1, "external", 1);

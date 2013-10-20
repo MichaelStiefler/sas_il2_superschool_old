@@ -21,10 +21,16 @@ package com.maddox.il2.objects.weapons;
 
 import com.maddox.rts.Property;
 
-public class PylonWhirlwindWing extends Pylon
+public class BombGun20lbsSBC extends BombGun
 {
-    static
+    static 
     {
-        Property.set(PylonWhirlwindWing.class, "mesh", "3do/arms/Whirlwind_BombRack_Wing/mono.sim");
+        Class class1 = BombGun20lbsSBC.class;
+        Property.set(class1, "bulletClass", (Object)Bomb20lbsSBC.class);
+        Property.set(class1, "bullets", 1);
+        Property.set(class1, "shotFreq", 4.0F);
+        Property.set(class1, "external", 1);
+        Property.set(class1, "cassette", 1);
+        Property.set(class1, "sound", "weapon.bombgun");
     }
 }

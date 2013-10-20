@@ -21,13 +21,13 @@ package com.maddox.il2.objects.weapons;
 
 import com.maddox.rts.Property;
 
-public class Bomb250LbsMC extends Bomb
+public class Bomb250lbsSAP extends Bomb
 {
     static 
     {
-        Class class1 = Bomb250LbsMC.class;
-        Property.set(class1, "mesh", "3DO/Arms/Bomb250LbsMC/mono.sim");
-        Property.set(class1, "power", 88F);
+        Class class1 = Bomb250lbsSAP.class;
+        Property.set(class1, "mesh", "3DO/Arms/Bomb250lbsSAP/mono.sim");
+        Property.set(class1, "power", 41.25F);
         Property.set(class1, "powerType", 0);
         Property.set(class1, "kalibr", 0.26162F);
         Property.set(class1, "massa", 125F);
@@ -38,6 +38,5 @@ public class Bomb250LbsMC extends Bomb
         	Class fuze3 = Class.forName("com.maddox.il2.objects.weapons.Fuze_PistolNo28");
         	Property.set(class1, "fuze", new Object[] { fuze1, fuze2, fuze3 });
         } catch (Exception e) { }
-//        Property.set(class1, "fuze", new Object[] { Fuze_PistolNo44.class, Fuze_PistolNo54.class, Fuze_PistolNo28.class });
     }
 }

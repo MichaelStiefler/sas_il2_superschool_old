@@ -21,27 +21,22 @@ package com.maddox.il2.objects.weapons;
 
 import com.maddox.rts.Property;
 
-public class Bomb4LbsInc extends Bomb
+public class Bomb500lbsSAP extends Bomb
 {
-    protected boolean haveSound()
-    {
-        return false;
-    }
-
     static 
     {
-        Class class1 = Bomb4LbsInc.class;
-        Property.set(class1, "mesh", "3DO/Arms/Bomb4lbsInc/mono.sim");
-        Property.set(class1, "power", 0.91F);
-        Property.set(class1, "powerType", 2);
-        Property.set(class1, "kalibr", 0.042F);
-        Property.set(class1, "massa", 1.81F);
-        Property.set(class1, "sound", "weapon.bomb_cassette");
-        Property.set(class1, "randomOrient", 1);
+        Class class1 = Bomb500lbsSAP.class;
+        Property.set(class1, "mesh", "3DO/Arms/Bomb500lbsSAP/mono.sim");
+        Property.set(class1, "power", 82.5F);
+        Property.set(class1, "powerType", 0);
+        Property.set(class1, "kalibr", 0.32F);
+        Property.set(class1, "massa", 250F);
+        Property.set(class1, "sound", "weapon.bomb_mid");
         try {
-        	Class fuze = Class.forName("com.maddox.il2.objects.weapons.Fuze_instant");
-        	Property.set(class1, "fuze", new Object[] { fuze });
+        	Class fuze1 = Class.forName("com.maddox.il2.objects.weapons.Fuze_PistolNo44");
+        	Class fuze2 = Class.forName("com.maddox.il2.objects.weapons.Fuze_PistolNo54");
+        	Class fuze3 = Class.forName("com.maddox.il2.objects.weapons.Fuze_PistolNo28");
+        	Property.set(class1, "fuze", new Object[] { fuze1, fuze2, fuze3 });
         } catch (Exception e) { }
-//        Property.set(class1, "fuze", new Object[] {Fuze_instant.class});
     }
 }
