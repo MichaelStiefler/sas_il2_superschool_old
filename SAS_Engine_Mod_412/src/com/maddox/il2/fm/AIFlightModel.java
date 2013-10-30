@@ -88,13 +88,15 @@ public class AIFlightModel extends FlightModel
         V2 = (float)Vflow.lengthSquared();
         V = (float)Math.sqrt(V2);
         Mach = V / Atmosphere.sonicSpeed((float)Loc.z);
+        //TODO: Used to calculate Mach Drag if parameters are set
+        //--------------------------------------------------------
         if (this.Ss.allParamsSet) { //TODO: calculate Mach Drag if parameters are set
             Density *= this.Ss.getDragFactorForMach(Mach);
         } else {
-            fullMach = Mach;
             //Density *= this.Ss.getDragFactorForMach(Mach);
+            fullMach = Mach;
         }
-
+        //-------------------------------------------------------
         if(Mach > 0.8F)
             Mach = 0.8F;
         Kq = 1.0F / (float)Math.sqrt(1.0F - Mach * Mach);

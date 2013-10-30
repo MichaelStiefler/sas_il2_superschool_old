@@ -2426,7 +2426,10 @@ public class AircraftState
                 }
             } else
             if(i > 0 && !bIsAboutToBailout)
+            {
                 Explosions.generateComicBulb(actor, "GunnerDown", 9F);
+                EventLog.onPilotKilled(aircraft, i, actor1 != aircraft ? actor1 : null);
+            }
         } else
         if(byte0 < 66 && j > 66)
             EventLog.onPilotHeavilyWounded(aircraft, i);
