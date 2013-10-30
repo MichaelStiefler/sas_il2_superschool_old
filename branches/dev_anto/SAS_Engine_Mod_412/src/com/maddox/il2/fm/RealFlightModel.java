@@ -592,20 +592,12 @@ public class RealFlightModel extends Pilot
           float fMachDrag = this.Ss.getDragFactorForMach(Mach);
           fDragFactor = (float)Math.sqrt(fMachDrag);
           fDragParasiteFactor = (float)Math.pow(fMachDrag, 5);
-//          Density *= this.Ss.getDragFactorForMach(Mach);
-//          NetSafeLog.training(super.actor, "YM: " + this.Ss.getDragFactorForMach(Mach)
-//                  +" Mach: " + Mach);
         } else {
-//          Density *= this.Ss.getDragFactorForMach(Mach);
           if (this.Ss.getDragFactorForMach(Mach) > 1.0F) {
-          	fullMach = Mach;
-//            NetSafeLog.training(super.actor, "CAUTION: Default Mach Drag Parameters used!");
           }
-//          NetSafeLog.training(super.actor, "NM: " + this.Ss.getDragFactorForMach(Mach)
-//                  +" Mach: " + Mach);
+          fullMach = Mach;
         }
         //-------------------------------------------------------
-
         if(Mach > 0.8F)
             Mach = 0.8F;
         Kq = 1.0F / (float)Math.sqrt(1.0F - Mach * Mach);
@@ -1034,13 +1026,17 @@ public class RealFlightModel extends Pilot
             }
             if(indSpeed > VmaxAllowed && World.Rnd().nextFloat(0.0F, 16F) < indSpeed - VmaxAllowed && World.Rnd().nextInt(0, 99) < 2)
                 flutterDamage();
-            if(indSpeed > 310F)
+            if(!(super.actor instanceof TypeSupersonic))
             {
-                if(World.cur().isDebugFM())
-                    System.out.println("*** Sonic overspeed....");
-                flutter();
+                if(indSpeed > 610F)
+                {
+                    if(World.cur().isDebugFM())
+                        System.out.println("*** Sonic overspeed....");
+                    flutter();
+                }
             }
         }
+        //-----------------------------------------------
         AM.set(0.0D, 0.0D, 0.0D);
         if(Math.abs(AOA) < 12F)
         {

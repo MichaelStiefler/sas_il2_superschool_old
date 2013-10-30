@@ -598,8 +598,12 @@ public class Main3D extends Main
             case 1: // '\001'
                 break;
             }
-            if(d <= dotrange.range())
-                s2 = lenToString((int)d);
+            if(d <= dotrange.range()){
+            	double d3 = d;
+            	if(Config.cur.iconUnits > 0)
+            		d3 *= 3.2808399200439453D;
+            	s2 = lenToString((int)d3);
+            }
             String s3 = null;
             if(s2 != null)
                 s3 = s2;
@@ -2621,7 +2625,7 @@ public class Main3D extends Main
         if(sectfile.vars(i) <= 12)
             return "Track file '" + s1 + "' is empty";
         int k = Integer.parseInt(sectfile.var(i, 0));
-        if(k != 134)
+        if(k != 135)
             return "Track file '" + s1 + "' version is not supported";
         long l = Long.parseLong(sectfile.var(i, 1));
         float f = Float.parseFloat(sectfile.var(i, 2));
@@ -2702,10 +2706,10 @@ public class Main3D extends Main
             BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(inputstream));
             int i = Integer.parseInt(bufferedreader.readLine());
             int j = i;
-            if(i >= 106)
+            if(i >= 107)
                 j = Integer.parseInt(bufferedreader.readLine());
             bufferedreader.close();
-            if ((i != 100) && (i != 101) && (i != 102) && (i != 103) && (i != 104) && (i != 105) && (i != 106)) {
+            if ((i != 100) && (i != 101) && (i != 102) && (i != 103) && (i != 104) && (i != 105) && (i != 106) && (i != 107)) {
                 try { playRecordedStreams.close(); } catch(Exception exception) { }
                 playRecordedStreams = null;
                 return "Track file '" + s + "' version is not supported";
@@ -2818,8 +2822,8 @@ public class Main3D extends Main
                 sectfile.sectionClear(i);
             else
                 i = sectfile.sectionAdd("$$$record");
-            sectfile.lineAdd(i, "134", "");
-            long l = Finger.incLong(mission.finger(), 134);
+            sectfile.lineAdd(i, "135", "");
+            long l = Finger.incLong(mission.finger(), 135);
             long l1 = World.cur().diffCur.get();
             sectfile.lineAdd(i, "" + l1, "");
             l = Finger.incLong(mission.finger(), l1);
