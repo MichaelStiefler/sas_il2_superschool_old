@@ -88,6 +88,8 @@ public abstract class Main {
 	private static boolean bRequestExit = false;
 	private static Main cur;
 	public static int iExitCode = 0;
+	protected static boolean showRandomSplash = true;
+	protected static String onlineUsernameOverride = "";
 
 	public Main() {
 		this.airClasses = new ArrayList();
@@ -367,8 +369,8 @@ public abstract class Main {
 		return cur;
 	}
 
-	public static void exec(Main paramMain, String paramString1, String paramString2, int paramInt) {
-		IniFile localIniFile = new IniFile(paramString1, 0);
+	public static void exec(Main main, String s, String s2, int i) {
+		IniFile localIniFile = new IniFile(s, 0);
 		String userLanguage = System.getProperty("user.language").toLowerCase();
 		if (userLanguage == null)
 			userLanguage = "us";
@@ -384,7 +386,7 @@ public abstract class Main {
 			Locale.setDefault(new Locale("ru", "RU"));
 			try {
 				Cpu86ID.getMask();
-			} catch (Throwable localThrowable1) {
+			} catch (Throwable t) {
 			}
 		} else if (Config.LOCALE.equals("JP")) {
 			Locale.setDefault(new Locale("ja", "JP"));
@@ -403,7 +405,7 @@ public abstract class Main {
 					str = userLanguage.substring(0, 2);
 			}
 			Locale.setDefault(new Locale(str, ""));
-		} catch (Exception localException1) {
+		} catch (Exception e) {
 		}
 		if ("ru".equals(Locale.getDefault().getLanguage()))
 			RTSConf.charEncoding = "Cp1251";
@@ -424,19 +426,18 @@ public abstract class Main {
 		}
 		Runtime.getRuntime().traceInstructions(false);
 		Runtime.getRuntime().traceMethodCalls(false);
-		cur = paramMain;
-		if (!paramMain.isLifeLimitted()) {
+		cur = main;
+		if (!main.isLifeLimitted()) {
 			try {
-				if (paramMain.beginApp(paramString1, paramString2, paramInt)) {
+				if (main.beginApp(s, s2, i)) {
 					clearCache();
 
 					if (Config.LOCALE.equals("RU")) {
-						int i;
 						try {
 							Cpu86ID.getMask();
-						} catch (Throwable localThrowable2) {
-							for (i = 0; i < 10; i++)
-								new MsgAction(64, 1.0D + i * 10 + Math.random() * 10.0D) {
+						} catch (Throwable t) {
+							for (int j = 0; j < 10; j++)
+								new MsgAction(64, 1.0D + j * 10 + Math.random() * 10.0D) {
 									public void doAction() {
 										Main.doGameExit();
 									}
@@ -444,32 +445,39 @@ public abstract class Main {
 						}
 					}
 					try {
-						paramMain.lifeLimitted();
-						paramMain.loopApp();
-					} catch (Exception localException2) {
-						System.out.println("Main loop: " + localException2.getMessage());
-						localException2.printStackTrace();
+						main.lifeLimitted();
+						main.loopApp();
+					} catch (Exception e) {
+						System.out.println("Main loop: " + e.getMessage());
+						e.printStackTrace();
 					}
 				}
-			} catch (Exception localException3) {
-				System.out.println("Main begin: " + localException3.getMessage());
-				localException3.printStackTrace();
+			} catch (Exception e) {
+				System.out.println("Main begin: " + e.getMessage());
+				e.printStackTrace();
 			}
 			clearCache();
 			try {
-				paramMain.endApp();
-			} catch (Exception localException4) {
-				System.out.println("Main end: " + localException4.getMessage());
-				localException4.printStackTrace();
+				Config.cur.ini.set("Mods", "RandomSplash", showRandomSplash ? "1":"0");
+				Config.cur.ini.set("Mods", "netCallsign", onlineUsernameOverride);
+			} catch (Exception e) {
+				System.out.println("Main pre-end Modact 5 param storage: " + e.getMessage());
+				e.printStackTrace();
+			}
+			try {
+				main.endApp();
+			} catch (Exception e) {
+				System.out.println("Main end: " + e.getMessage());
+				e.printStackTrace();
 			}
 			if ((RTSConf.cur != null) && (RTSConf.cur.console != null))
 				RTSConf.cur.console.log(false);
 			if ((RTSConf.cur != null) && (RTSConf.cur.execPostProcessCmd != null)) {
 				try {
 					RTS.setPostProcessCmd(RTSConf.cur.execPostProcessCmd);
-				} catch (Exception localException5) {
-					System.out.println("Exec cmd (" + RTSConf.cur.execPostProcessCmd + ") error: " + localException5.getMessage());
-					localException5.printStackTrace();
+				} catch (Exception e) {
+					System.out.println("Exec cmd (" + RTSConf.cur.execPostProcessCmd + ") error: " + e.getMessage());
+					e.printStackTrace();
 				}
 			}
 		}

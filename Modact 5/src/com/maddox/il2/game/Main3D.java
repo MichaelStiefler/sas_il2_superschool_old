@@ -1437,14 +1437,15 @@ public class Main3D extends Main {
 	}
 
 	public boolean beginApp(GLContext glcontext, int i) {
+		Main.showRandomSplash = (Config.cur.ini.get("Mods", "RandomSplash", 1) == 1);
 		Config.typeGlStrings();
 		Config.cur.typeContextSettings(glcontext);
 		bDrawIfNotFocused = Config.cur.ini.get("window", "DrawIfNotFocused", bDrawIfNotFocused);
 		bShowStartIntro = Config.cur.ini.get("game", "intro", bShowStartIntro);
+		Main.onlineUsernameOverride = Config.cur.ini.get("Mods", "netCallsign", "").trim();
 		if (Main.cur().netGameSpy != null) {
-			String onlineUsernameOverride = Config.cur.ini.get("Mods", "netCallsign", (String) null);
-			if (onlineUsernameOverride != null) {
-				Main.cur().netGameSpy.userName = UnicodeTo8bit.load(onlineUsernameOverride);
+			if (Main.onlineUsernameOverride.length() > 0) {
+				Main.cur().netGameSpy.userName = UnicodeTo8bit.load(Main.onlineUsernameOverride);
 			}
 		}
 		RTSConf.cur.start();
@@ -1467,11 +1468,18 @@ public class Main3D extends Main {
 		ConsoleGL0.init("Console", i);
 		bUseStartLog = Config.cur.ini.get("Console", "UseStartLog", bUseStartLog);
 
-		SFS.mount("SFS_AUTO/sas_basic_50.sfs");
+		SFS.mount("sas_basic_50.sfs");
+		try {
+			SFS.mount("sas_basic_50_light.sfs");
+			System.out.println("...using \"light\" Splash Screens...");
+		} catch (Exception e) {}
 		if (bUseStartLog) {
 			ConsoleGL0.exclusiveDraw(true);
 		} else {
-			this.drawRandomSplashScreen();
+			if (Main.showRandomSplash)
+				this.drawRandomSplashScreen();
+			else
+				this.drawSingleSplashScreen();
 		}
 		beginStep(5);
 		CmdEnv.top().exec("CmdLoad com.maddox.rts.cmd.CmdLoad");
@@ -3139,6 +3147,10 @@ public class Main3D extends Main {
 		ConsoleGL0.exclusiveDraw("gui/background" + rangerandom.nextInt(0, maxIndex) + ".mat");
 	}
 
+	private void drawSingleSplashScreen() {
+		ConsoleGL0.exclusiveDraw("gui/background.mat");
+	}
+	
 	public static float FOVX = 70F;
 	public static final float ZNEAR = 1.2F;
 	public static final float ZFAR = 48000F;
