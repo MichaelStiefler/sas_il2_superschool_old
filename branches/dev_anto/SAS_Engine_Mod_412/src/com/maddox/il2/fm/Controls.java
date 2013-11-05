@@ -138,7 +138,7 @@ public class Controls
 	public int					iToggleBombSide		= LEFT;
 	public long					lWeaponTime			= System.currentTimeMillis();
 	public int					weaponFireMode		= 2;
-	public long					weaponReleaseDelay  = 125L;
+	public long					weaponReleaseDelay  = 33L;
 	public int					rocketHookSelected 	= 2;
 	public String				rocketNameSelected = null;
 	public int 					nFlapStages;
@@ -1571,13 +1571,17 @@ public class Controls
 	public void toggleWeaponReleaseDelay(int hudLogWeaponId)
 	{
 		if(Weapons[2] == null && Weapons[3] == null) return;
-		if(weaponReleaseDelay == 125L)
-			this.doChangeWeaponReleaseDelay(125L);
+		if(weaponReleaseDelay == 33L)
+			this.doChangeWeaponReleaseDelay(92L);
 		else
-			if(weaponReleaseDelay >= 250L)
-				this.doChangeWeaponReleaseDelay(250L);
+			if(weaponReleaseDelay >= 125L){
+				if(weaponReleaseDelay >= 250L)
+					this.doChangeWeaponReleaseDelay(250L);
+				else
+					this.doChangeWeaponReleaseDelay(125L);
+			}
 		if(weaponReleaseDelay > 1000L)
-			this.doSetWeaponReleaseDelay(125L);
+			this.doSetWeaponReleaseDelay(33L);
 		HUD.log(hudLogWeaponId, "Release Delay: " + (float)weaponReleaseDelay / 1000F + " sec");
 	}
 	// TODO: -- Added Code for Net Replication --
