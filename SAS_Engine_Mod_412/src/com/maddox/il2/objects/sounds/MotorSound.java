@@ -82,7 +82,7 @@ public class MotorSound
             {
                 if(i == 2 && spStart != null){
                     sndMotor.play(spStart);
-                    if(Motor.starter == Motor._S_TYPE_CARTRIDGE)
+                    if(Motor.getStarter() == Motor._S_TYPE_CARTRIDGE)
                     	sndMotor.play(spCartridge);
                 }
                 if(i == 4 && spEnd != null)
