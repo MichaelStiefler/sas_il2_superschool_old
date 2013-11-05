@@ -954,7 +954,10 @@ public class Motor extends FMMath
 
     private void initializeJet(float f)
     {
-        propSEquivalent = ((float)(cylinders * cylinders) * (2.0F * thrustMax)) / (getFanCy(propAoA0) * Atmosphere.ro0() * wMax * wMax * propr * propr);
+        if(type == 10)
+            propSEquivalent = 0.26F * propr * propr;
+        else
+        	propSEquivalent = ((float)(cylinders * cylinders) * (2.0F * thrustMax)) / (getFanCy(propAoA0) * Atmosphere.ro0() * wMax * wMax * propr * propr);
         computePropForces(wMax, 0.0F, 0.0F, propAoA0, 0.0F);
         engineMomentMax = propMoment;
     }
@@ -2366,6 +2369,10 @@ label0:
             case 2: // '\002'
                 tmpF = (float)(d1 * d * (double)f);
                 break;
+                
+            case 10: // '\002'
+                tmpF = (float)(d1 * d * (double)f);
+                break;
 
             case 3: // '\003'
                 if((reference.actor instanceof BI_1) || (reference.actor instanceof BI_6))
@@ -3221,7 +3228,7 @@ label0:
             if(addVside < 0.0D)
                 addVside = 0.0D;
             break;
-
+           
         case 2: // '\002'
             engineMoment = propAngleDeviceMinParam + getControlThrottle() * (propAngleDeviceMaxParam - propAngleDeviceMinParam);
             engineMoment /= propAngleDeviceMaxParam;
@@ -3251,7 +3258,66 @@ label0:
             engineTorque.cross(enginePos, engineForce);
             rpm = toRPM(w);
             break;
-
+            
+          //TODO
+        case 10: // '\002'
+            engineMoment = propAngleDeviceMinParam + getControlThrottle() * (propAngleDeviceMaxParam - propAngleDeviceMinParam);
+            controlProp = 0.75F + 0.25F * controlThrottle;
+            if(Math.abs(w) < 1E-005F)
+                propPhiW = 1.570796F;
+            else
+                propPhiW = (float)Math.atan(((Tuple3d) (((FlightModelMain) (reference)).Vflow)).x / (double)(w * propReductor * propr));
+            propAoA = propPhi - propPhiW;
+            computePropForces(w * propReductor, (float)((Tuple3d) (((FlightModelMain) (reference)).Vflow)).x, propPhi, propAoA, reference.getAltitude());
+            if(isPropAngleDeviceOperational())
+            {
+                if(w < engineMoment)
+                {
+                	engineMoment = Math.min(1.0F, 0.01F * (engineMoment - w) - 0.012F * aw);
+                    propTarget -= engineMoment * getPropAngleDeviceSpeed() * f;
+                } else
+                {
+                	engineMoment = Math.min(1.0F, 0.01F * (w - engineMoment) + 0.012F * aw);
+                    propTarget += engineMoment * getPropAngleDeviceSpeed() * f;
+                }
+                if(stage == 6 && propTarget < propPhiW - 0.12F)
+                {
+                    propTarget = propPhiW - 0.12F;
+                    if(propPhi < propTarget)
+                        propPhi += 0.2F * f;
+                }
+            } else
+            {
+                propTarget = 0.0F;
+            }
+            engineMoment /= propAngleDeviceMaxParam;
+            engineMoment *= engineMomentMax;
+            engineMoment *= getReadyness();
+            engineMoment *= getDistabilisationMultiplier();
+            engineMoment *= getStageMultiplier();
+            engineMoment += getJetFrictionMoment(f);
+            computePropForces(w, 0.0F, 0.0F, propAoA0, 0.0F);
+            float f291 = w * _1_wMax;
+            float f301 = f291 * pressureExtBar;
+            float f311 = f291 * f291;
+            float f321 = 1.0F - 0.006F * (Atmosphere.temperature((float)reference.Loc.z) - 290F);
+            float f331 = 1.0F - 0.0011F * reference.getSpeed();
+            propForce = thrustMax * f301 * f311 * f321 * f331 * getStageMultiplier();
+            float f201 = engineMoment - propMoment;
+            aw = (f201 / (propI + engineI)) * 1.0F;
+            if(aw > 0.0F)
+                aw *= engineAcceleration;
+            w += aw * f;
+            if(w < -wMaxAllowed)
+                w = -wMaxAllowed;
+            if(w > wMaxAllowed + wMaxAllowed)
+                w = wMaxAllowed + wMaxAllowed;
+            engineForce.set(engineVector);
+            engineForce.scale(propForce);
+            engineTorque.cross(enginePos, engineForce);
+            rpm = toRPM(w);
+            break;
+            
         case 3: // '\003'
         case 4: // '\004'
             w = wMin + (wMax - wMin) * controlThrottle;
@@ -3825,6 +3891,34 @@ label0:
                     return propForce;
                 }
             } while(true);
+        case 10:
+        	 float f5 = getCompressorMultiplier(0.033F);
+             f5 *= getN();
+             w = 0.0F;
+             float f7 = 1.5F;
+             float f9x = -0.06F;
+             int kx = 0;
+             do
+             {
+                 float f13 = 0.5F * (f7 + f9x);
+                 if(flag)
+                     computePropForces(wWEP * propReductor, f, 0.0F, f13, f1);
+                 else
+                     computePropForces(wMax * propReductor, f, 0.0F, f13, f1);
+                 if((propForce <= 0.0F || Math.abs(propMoment - f5) >= 1E-005F) && kx <= 32)
+                 {
+                     if(propForce > 0.0F && propMoment > f5)
+                         f7 = f13;
+                     else
+                         f9x = f13;
+                     kx++;
+                 } else
+                 {
+                	 //TODO
+                     propForce = (float)Math.toDegrees(Math.atan(f / (wMax * propReductor * propr)) + (double)f13);
+                     return propForce;
+                 }
+             } while(true);
 
         case 2: // '\002'
             pressureExtBar = Atmosphere.pressure(f1) + compressorSpeedManifold * 0.5F * Atmosphere.density(f1) * f * f;

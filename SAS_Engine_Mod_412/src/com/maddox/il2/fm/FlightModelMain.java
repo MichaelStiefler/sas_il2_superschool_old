@@ -1,4 +1,5 @@
 /*Modified FlightModelMain class for the SAS Engine Mod*/
+/*4.121 Oct 27 version, changes by PAL*/
 package com.maddox.il2.fm;
 
 import java.io.BufferedWriter;
@@ -36,6 +37,9 @@ import com.maddox.rts.Property;
 import com.maddox.rts.SFSInputStream;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Time;
+import com.maddox.rts.BackgroundTask;
+import com.maddox.il2.game.Main;
+import com.maddox.il2.game.Mission;
 
 public class FlightModelMain extends FMMath
 {
@@ -156,11 +160,6 @@ public class FlightModelMain extends FMMath
     public long Operate;
     private static Vector3d GPulse = new Vector3d();
     public static boolean bCY_CRIT04 = true;
-    private static InOutStreams fmDir = null;
-    private static String lastFMFile;
-    private static ArrayList fmDirs = new ArrayList();
-    private static ArrayList fmDirNames = new ArrayList();
-    private static String prButtons;
 	// --------------------------------------------------------
     
 	//TODO: New Parameters
@@ -171,7 +170,14 @@ public class FlightModelMain extends FMMath
     private double ThrustBlownFlaps;
     public float WingspanFolded;
 	// --------------------------------------------------------
-    
+
+    //By PAL, required for FMDiff
+    private static String fmLastFName;
+    private static InOutStreams fmFile;
+    private static ArrayList fmFiles = new ArrayList();
+    private static ArrayList fmFNames = new ArrayList();
+    private static boolean bPrintFM = false;
+    private static String prButtons;       
     
     public float getSpeedKMH()
     {
@@ -502,6 +508,32 @@ public class FlightModelMain extends FMMath
         if(f != -999F)
             CT.dvAirbrake = 1.0F / f;  
     	// --------------------------------------------------------
+        //TODO: +++ Online Compatibility / Smoke Bug Fix +++
+        if (Mission.isNet()) {
+        	boolean bOnlineArrestor = sectfile.get(s2, "OnlineArrestorHook", CT.bHasArrestorControl?1:0) == 1;
+        	boolean bOnlineWingFold = sectfile.get(s2, "OnlineWingFold", CT.bHasWingControl?1:0) == 1;
+        	boolean bOnlineCockpitDoor = sectfile.get(s2, "OnlineCockpitDoor", CT.bHasCockpitDoorControl?1:0) == 1;
+        	boolean bOnlineBombBay = sectfile.get(s2, "OnlineBombBay", CT.bHasBayDoorControl?1:0) == 1;
+        	
+        	if (Config.cur.ini.get("Mods", "ShowOnlineCompatibleFlightModelChanges", 0) == 1) {
+	        	if (CT.bHasArrestorControl != bOnlineArrestor || CT.bHasWingControl != bOnlineWingFold || CT.bHasCockpitDoorControl != bOnlineCockpitDoor || CT.bHasBayDoorControl != bOnlineBombBay) {
+		        	System.out.println("******************************************");
+		        	System.out.println("*** Online Mission active, Ensuring Stock");
+		        	System.out.println("*** Compatibility for " + s);
+		        	System.out.println("*** Parameter             Old    New");
+		        	if (CT.bHasArrestorControl != bOnlineArrestor) System.out.println("*** HasArrestorControl    " + CT.bHasArrestorControl + " " + bOnlineArrestor);
+		        	if (CT.bHasWingControl != bOnlineWingFold) System.out.println("*** HasWingControl        " + CT.bHasWingControl + " " + bOnlineWingFold);
+		        	if (CT.bHasCockpitDoorControl != bOnlineCockpitDoor) System.out.println("*** HasCockpitDoorControl " + CT.bHasCockpitDoorControl + " " + bOnlineCockpitDoor);
+		        	if (CT.bHasBayDoorControl != bOnlineBombBay) System.out.println("*** HasBayDoorControl     " + CT.bHasBayDoorControl + " " + bOnlineBombBay);
+		        	System.out.println("******************************************");
+	        	}
+        	}
+        	CT.bHasArrestorControl = bOnlineArrestor;
+        	CT.bHasWingControl = bOnlineWingFold;
+        	CT.bHasCockpitDoorControl = bOnlineCockpitDoor;
+        	CT.bHasBayDoorControl = bOnlineBombBay;
+        }
+        //TODO: --- Online Compatibility / Smoke Bug Fix ---
         switch(Scheme)
         {
         default:
@@ -712,7 +744,16 @@ public class FlightModelMain extends FMMath
             Wing.declineCoeff = sectfile.get(s2, "Decline", 0.007F);
             Wing.maxDistAng = sectfile.get(s2, "maxDistAng", 30F);
             Wing.setFlaps(0.0F);
-            Wing.loadMachParams(sectfile);
+            //TODO: +++ Check Mach Drag availability prior to loading Mach Params +++
+            String machCheck = sectfile.get(s2, "mc3", "");
+            if (machCheck.length() > 8) {
+                Wing.loadMachParams(sectfile);
+            } else {
+            	System.out.println("Flight Model File " + s + " contains no Mach Drag Parameters.");
+            	Wing.mcMin = 999.0F;
+            }
+//            Wing.loadMachParams(sectfile);
+            //TODO: --- Check Mach Drag availability prior to loading Mach Params code ---
         } else
         {
             throw new RuntimeException(s1);
@@ -2089,98 +2130,178 @@ public class FlightModelMain extends FMMath
         return true;
     }
 
+//By PAL    
     public static SectFile sectFile(String s)
     {
+    	if(fmFile == null)
+    	{
+        	bPrintFM = Config.cur.ini.get("Mods", "PrintFMDinfo", 0) != 0;
+            prButtons = Config.cur.ini.get("Mods", "PALButtonsPrefix", "").trim();  		
+    	}
         SectFile sectfile = null;
-        String s1 = s.toLowerCase();
+        String s1 = s.toLowerCase().trim();    	        
+	    //BY PAL, from DiffFM, begin    
         String s2 = "gui/game/buttons";
-        int i = s1.indexOf(":");
-        if(i > -1)
+        int i = s1.indexOf(":"); //By PAL, specific FMD (DiffFM)
+        if(i > -1) //It is not valid in first position either
         {
-            s2 = s1.substring(i + 1, s1.length());
+            s2 = s1.substring(i + 1);
             s1 = s1.substring(0, i);
-            if(s.endsWith(".emd"))
+            //Example FlightModels/PWJ57:F100D.emd
+            if(s2.endsWith(".emd"))
             {
+                s1 = s1 + ".emd";   //FlightModels/PWJ57 + .emd         	
                 s2 = s2.substring(0, s2.length() - 4);
-                s1 = s1 + ".emd";
             }
-            System.out.println("FM called '" + s + "' is being loaded from File: '" + s2 + "'");
+   			System.out.println("FM called '" + s + "' is being loaded from File: '" + s2 +"'");           
         }
-        if(prButtons != null && prButtons.length() > 0)
+
+        //By PAL, alternative buttons
+        if (prButtons != null)
         {
-            String s3 = prButtons + s2;
-            int ra = s2.lastIndexOf('/');
-            if(ra > -1)
-                s3 = s2.substring(0, ra + 1) + prButtons + s2.substring(ra + 1, s2.length());
-            if(exisstFile(s3))
-            {
-                s2 = s3;
-                System.out.println("FM called '" + s + "' is being loaded from Alternative File: '" + s2 + "'");
-            }
+        	String s3;
+         	int ra = s2.lastIndexOf('/');       	
+        	//By PAL, compose 'gui/game/' + 'test' + 'buttons'
+        	if (ra > -1)	//By PAL, if it has / character
+        		s3 = s2.substring(0, ra + 1) + prButtons + s2.substring(ra + 1);
+        	else
+        		s3 = prButtons + s2;        		
+  			//By PAL, if it exists, then replace original
+   			if (exisstFile(s3))
+   			{
+   				s2 = s3;
+	   			//System.out.println("s2 = " + s2 + ", s3 = " + s3);
+	   			System.out.println("FM called '" + s + "' is being loaded from Alternative File: '" + s2 + "'");
+   			}	
         }
+         
+    	//BY PAL, from DiffFM, end
         try
         {
             Object obj = Property.value(s, "stream", null);
-            InputStream inputstream;
+            InputStream inputstream = null;
             if(obj != null)
             {
                 inputstream = (InputStream)obj;
-            } else
+            }
+            else
             {
-                if(fmDir == null)
+    		//BY PAL, DiffFM begin            	
+                if(bPrintFM)
                 {
-                    fmDir = new InOutStreams();
-                    fmDir.open(Finger.LongFN(0L, s2));
-                    fmDirs.add(fmDir);
-                    fmDirNames.add(s2);
-                } else
-                if(!s2.equalsIgnoreCase(lastFMFile))
+                    System.out.println("FMRequested = " + s);                	
+                    System.out.println("fmFile      = " + s2);
+                    System.out.println("fmName      = " + s1);
+                    System.out.println("**fmLastFName = " + fmLastFName);
+                }                
+                if(fmFile == null)
                 {
-                    fmDir = null;
-                    int j = 0;
-                    do
+                	if (exisstFile(s2))
                     {
-                        if(j >= fmDirNames.size())
-                            break;
-                        String s3 = (String)fmDirNames.get(j);
+	                    fmFile = new InOutStreams();
+		                //By PAL, original 
+		                    //fmFile.open(Finger.LongFN(0L, "gui/game/buttons"));	                    
+                    	fmFile.open(Finger.LongFN(0L, s2));
+	                    fmFiles.add(fmFile); //BY PAL, from DiffFM
+	                    fmFNames.add(s2); //BY PAL, from DiffFM
+	                    //System.out.println("opening new fm file " + s2);
+                		fmLastFName = s2; //By PAL, I have founded it	                                        
+                    }
+                    else
+                    {
+                    	System.out.println("Warning A, the '" + s2 + "' File Doesn't Exist! Check your Configuration.");
+                    }                                        
+                } 
+                else
+                if(!s2.equalsIgnoreCase(fmLastFName))
+                {
+                    fmFile = null;
+                    fmLastFName = ""; //To be possitive that I'm not inheriting a wrong name
+                    for(int j = 0; j < fmFNames.size(); j++)
+                    {
+                        String s3 = (String)fmFNames.get(j);
                         if(s2.equalsIgnoreCase(s3))
                         {
-                            fmDir = (InOutStreams)fmDirs.get(j);
+                            fmFile = (InOutStreams)fmFiles.get(j);
+                            if(bPrintFM)
+                            	System.out.println("Getting FM from Previous File: '" + s2 + "'");
+                			fmLastFName = s2;	                                                        
                             break;
-                        }
-                        j++;
-                    } while(true);
-                    if(null == fmDir)
-                    {
-                        fmDir = new InOutStreams();
-                        fmDir.open(Finger.LongFN(0L, s2));
-                        fmDirs.add(fmDir);
-                        fmDirNames.add(s2);
+                        }                       
+                    }
+                    if (fmFile == null) //By PAL, it wasn't loaded before                                        
+                    {   
+	                    if (exisstFile(s2))
+	                    {                 	
+	                        fmFile = new InOutStreams();
+	                        fmFile.open(Finger.LongFN(0L, s2));
+		                    fmFiles.add(fmFile); //BY PAL, from DiffFM
+		                    fmFNames.add(s2); //BY PAL, from DiffFM
+	                        if(bPrintFM)
+	                        	System.out.println("Opening FM from New File: '" + s2 + "'");	                        	                        
+	                		fmLastFName = s2;
+	                    }	                                       	
+	                    else
+	                    {
+	                    	System.out.println("Warning B, the '" + s2 + "' File Doesn't Exist! Check your Configuration.");
+	                    }
                     }
                 }
-                lastFMFile = s2;
-                inputstream = fmDir.openStream("" + Finger.Int(s1 + "d2wO"));
-                if(inputstream == null)
-                    inputstream = fmDir.openStream("" + Finger.Int(s1 + "d2w0"));
-                if(inputstream == null)
-                    inputstream = fmDir.openStream("" + Finger.Int(s1 + "d2w5"));
-                if(inputstream == null)
+                
+                if (fmFile == null)
                 {
-                    System.out.println("Error loading FM called '" + s + "'!");
-                    System.out.println("This FM is not present in '" + s2 + "' File");
-                    if(s.endsWith(".emd"))
-                        System.out.println("*** This should have been the reason of the 'Explosion in the Air' when mission started ***");
-                    else
-                        System.out.println("*** This was the Reason of your 60% or 70% CTD ***");
+                	if (Main.cur().missionLoading != null)
+                	{
+	                	BackgroundTask.cancel("Mission Cancelled, Error in FM!!!" +
+	                		"\n\nThere was a problem loading FM called:\n'" + s1 +
+								"'\n\nIt is not present in File:\n'" + s2 + "'");//i18n("miss.ErrorFM"));
+	                	//errorMessage(s, s2);			             				              				            	
+	    				return sectfile;
+                	}
+                	if(s1.endsWith(".emd"))
+                		return sectFile("FlightModels/DB-600_Series.emd"); //By PAL; open PlaceHolder DM to avoid 60% CTD!!!   	                	                	               
+                	return sectFile("FlightModels/Bf-109F-2.fmd"); //By PAL; open PlaceHolder DM to avoid 60% CTD!!! 
+                }
+                
+                if (fmFile != null)
+                {
+	            //By PAL, if it didn't work with 4.09 / 4.111 Encoding:
+	                //if (inputstream == null)
+						inputstream = fmFile.openStream("" + Finger.Int(s1 + "d2w0"));                	                	
+	    		//BY PAL, check it with 4.101 Encoding:
+	                if (inputstream == null)	    		
+	    				inputstream = fmFile.openStream("" + Finger.Int(s1 + "d2wO"));                               
+	            //By PAL, if it didn't work with 4.101 neither with 4.111 then HSFX6 Expert Encoding:
+	                if (inputstream == null)            
+	                	inputstream = fmFile.openStream("" + Finger.Int(s1 + "d2w5"));                	
+                }
+                
+                if (inputstream == null) //By PAL, Error: no FM
+                {
+                	System.out.println("Error loading FM called '" + s1 + "'!");
+                	System.out.println("It Cannot be Loaded from '" + s2 + "' File");
+                	if(s1.endsWith(".emd"))
+                	{
+                		System.out.println("*** This should have been the reason of the 'Explosion in the Air' when mission started ***");          		
+                	}
+                	else
+                	{
+                		System.out.println("*** This was the Reason of your 60% or 70% CTD ***");
+                	}		                                	               			
                 }
             }
-            inputstream.mark(0);
+    	//BY PAL, DiffFM end            
+        	inputstream.mark(0);
             sectfile = new SectFile(new InputStreamReader(new KryptoInputFilter(inputstream, getSwTbl(Finger.Int(s1 + "ogh9"), inputstream.available())), "Cp1252"));
             inputstream.reset();
             if(obj == null)
-                Property.set(s, "stream", inputstream);
+                Property.set(s, "stream", inputstream);               
         }
-        catch(Exception exception) { }
+        catch(Exception exception)
+        {
+        	//By PAL, tell the Reason of the Crash
+        	System.out.println("FM Loading General Exception!\nWarning, the '" + s + "' cannot be loaded from '" + s2 + "' File");
+        } 
         return sectfile;
     }
 
