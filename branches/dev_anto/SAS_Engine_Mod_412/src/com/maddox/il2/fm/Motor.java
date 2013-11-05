@@ -282,7 +282,7 @@ public class Motor extends FMMath
 	public static final int _S_TYPE_BOSCH = 5;
 	public static final int _E_TYPE_ROTARY = 9;
 	public static final int _E_TYPE_TURBOPROP = 10;
- 	public static int starter = 0;
+ 	private static int starter;
  	//New boolean to cause instant engine shutdown if prop is struck
  	public boolean bPropHit = false;
 
@@ -3499,6 +3499,12 @@ label0:
     public int getType()
     {
         return type;
+    }
+    
+    //TODO
+    public static int getStarter()
+    {
+        return starter;
     }
 
     public float getControlThrottle()

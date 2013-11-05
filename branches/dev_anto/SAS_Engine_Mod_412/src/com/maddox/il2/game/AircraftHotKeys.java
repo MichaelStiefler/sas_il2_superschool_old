@@ -68,10 +68,8 @@ public class AircraftHotKeys
  	private boolean									bToggleMusic				= true;
  	protected int										iAirShowSmoke				= 0;
  	protected boolean									bAirShowSmokeEnhanced		= false;
- 	private boolean									bSideDoor					= true;
  	private int										COCKPIT_DOOR				= 1;
  	private int										SIDE_DOOR					= 2;
- 	private boolean									bAllowDumpFuel				= true;
  	private boolean									bDumpFuel					= false;
  	protected static final int BRAKE_RIGHT = 144;
  	protected static final int BRAKE_LEFT = 145;
@@ -122,10 +120,6 @@ public class AircraftHotKeys
 			bSeparateRadiatorOpenClose = true;
 		if (Config.cur.ini.get("Mods", "ToggleMusic", 1) == 0)
 			bToggleMusic = false;
-		if (Config.cur.ini.get("Mods", "SideDoor", 1) == 0)
-			bSideDoor = false;
-		if (Config.cur.ini.get("Mods", "DumpFuel", 1) == 0)
-			bAllowDumpFuel = false;
 		//---------------------------------
     }
     
@@ -996,10 +990,7 @@ label0:
             break;
 
         case 132: // '\026'
-			if (bAllowDumpFuel)
-			{
 				//TODO: Disabled for ModAct compatibility
-
 				if (aircraft instanceof TypeFuelDump)
 				{
 					if (bDumpFuel){
@@ -1013,7 +1004,6 @@ label0:
 					FM.AS.setDumpFuelState(bDumpFuel);
 
 				}
-			}
 			break;
 		case 133:
 			if (bToggleMusic)
@@ -1031,8 +1021,6 @@ label0:
 			}
 			break;
 		case 134:
-			if (bSideDoor)
-			{
 				try
 				{
 					//TODO: Disabled for ModAct compatibility
@@ -1057,7 +1045,6 @@ label0:
 						HUD.log("Hatch Closed");
 					}
 				}
-			}
 			break;
 		case 135: 
 			// TODO: ++ Added Code for Net Replication ++
@@ -1637,8 +1624,6 @@ label0:
         case 128:
 			if (FM.CT.bHasCockpitDoorControl)
 			{
-				if (bSideDoor)
-				{
 					try
 					{
 						//TODO: Disabled for ModAct compatibility
@@ -1651,7 +1636,6 @@ label0:
 					}
 					if (FM.CT.bHasSideDoor)
 						FM.CT.setActiveDoor(COCKPIT_DOOR);
-				}
 				if (FM.CT.cockpitDoorControl < 0.5F && FM.CT.getCockpitDoor() < 0.01F)
 				{
 					FM.AS.setCockpitDoor(aircraft, 1);

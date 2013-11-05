@@ -424,6 +424,7 @@ public class Maneuver extends AIFlightModel {
   	private float				fNearestDistance;
   	private boolean				bCatapultAI;
   	private boolean				bFastLaunchAI;
+    private boolean 			bNoNavLightsAI;
   	private int					passCounter					= 0;
   	//--------------------------------
   	
@@ -711,6 +712,14 @@ public class Maneuver extends AIFlightModel {
         bStage7 = false;
         bAlreadyCheckedStage7 = false;
         bFastLaunchAI = false;
+        if(Config.cur.ini.get("Mods", "NoNavLightsAI", 0) == 1)
+            bNoNavLightsAI = true;
+        if(Mission.cur().sectFile().get("Mods", "NoNavLightsAI", 0) == 1)
+            bNoNavLightsAI = true;
+        if(Config.cur.ini.get("Mods", "FastLaunchAI" , 0) == 1)
+            bFastLaunchAI = true;
+        if(Mission.cur().sectFile().get("Mods", "FastLaunchAI" , 0) == 1)
+            bFastLaunchAI = true;
         // TODO: --- CTO Mod 4.12 ---
 
     }
@@ -8086,7 +8095,7 @@ public class Maneuver extends AIFlightModel {
 
     protected void turnOnChristmasTree(boolean flag) {
         if (flag) {
-            if (World.Sun().ToSun.z < -0.22F)
+            if (World.Sun().ToSun.z < -0.22F || bNoNavLightsAI)
                 AS.setNavLightsState(true);
         } else {
             AS.setNavLightsState(false);
