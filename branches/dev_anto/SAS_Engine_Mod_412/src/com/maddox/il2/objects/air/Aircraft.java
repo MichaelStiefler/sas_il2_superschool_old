@@ -1684,21 +1684,15 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 
 	public BulletEmitter getBulletEmitterByHookName(String s)
 	{
-		label0:
 			for(int i = 0; i < FM.CT.Weapons.length; i++)
 			{
 				BulletEmitter abulletemitter[] = FM.CT.Weapons[i];
 				if(abulletemitter == null)
 					continue;
-				int j = 0;
-				do
-				{
-					if(j >= abulletemitter.length)
-						continue label0;
+				for (int j=0; j<abulletemitter.length; j++) {
 					if(s.equals(abulletemitter[j].getHookName()))
 						return abulletemitter[j];
-					j++;
-				} while(true);
+				}
 			}
 
 	return GunEmpty.get();
@@ -2396,7 +2390,6 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 				continue;
 			Mat mat = hiermesh.material(j);
 			boolean flag = false;
-			label0:
 				for(int k = 0; k < 4; k++)
 				{
 					ai[k] = -1;
@@ -2404,19 +2397,14 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 						continue;
 					mat.setLayer(k);
 					String s7 = mat.get('\0');
-					int l = 0;
-					do
-					{
-						if(l >= 3)
-							continue label0;
+					for (int l=0; l<3; l++) {
 						if(s7.regionMatches(true, s7.length() - 10, _curSkin[l], 0, 10))
 						{
 							ai[k] = l;
 							flag = true;
-							continue label0;
+							break;
 						}
-						l++;
-					} while(true);
+					}
 				}
 
 			if(!flag)

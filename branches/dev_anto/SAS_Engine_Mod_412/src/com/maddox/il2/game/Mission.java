@@ -2809,7 +2809,6 @@ public class Mission implements Destroy
 			NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
 			netmsgguaranted.writeByte(i);
 			int j = sectFile.sections();
-			label0:
 				for(int k = 0; k < j; k++)
 				{
 					String s = sectFile.sectionName(k);
@@ -2824,11 +2823,7 @@ public class Mission implements Destroy
 					netmsgguaranted.writeInt(-1);
 					netmsgguaranted.write255(s);
 					int l = sectFile.vars(k);
-					int i1 = 0;
-					do
-					{
-						if(i1 >= l)
-							continue label0;
+					for (int i1=0; i1 < l ; i1++) {
 						String s1 = sectFile.var(k, i1);
 						String s2 = sectFile.value(k, i1);
 						if(netmsgguaranted.size() + s1.length() + s2.length() >= 250)
@@ -2840,8 +2835,7 @@ public class Mission implements Destroy
 						netmsgguaranted.writeInt(k);
 						netmsgguaranted.write255(s1);
 						netmsgguaranted.write255(s2);
-						i1++;
-					} while(true);
+					}
 				}
 
 			if(netmsgguaranted.size() > 1)

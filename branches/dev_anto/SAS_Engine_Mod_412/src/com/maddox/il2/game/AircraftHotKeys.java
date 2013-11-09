@@ -724,7 +724,6 @@ public class AircraftHotKeys
             }
             return;
         }
-label0:
         switch(i)
         {
         case 8: // '\b'
@@ -1511,15 +1510,10 @@ label0:
         case 113: // 'q'
             if(!FM.EI.isSelectionHasControlExtinguisher())
                 break;
-            int k = 0;
-            do
-            {
-                if(k >= FM.EI.getNum())
-                    break label0;
+            for (int k=0; k<FM.EI.getNum(); k++) {
                 if(FM.EI.getCurControl(k))
                     FM.EI.engines[k].setExtinguisherFire();
-                k++;
-            } while(true);
+            }
 
           //TODO: Added flapIndex integer to following two keys to allow for custom flap settings
 		case 53: // '5'

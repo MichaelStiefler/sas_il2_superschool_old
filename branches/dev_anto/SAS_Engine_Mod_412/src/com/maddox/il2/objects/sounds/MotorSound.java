@@ -82,7 +82,7 @@ public class MotorSound
             {
                 if(i == 2 && spStart != null){
                     sndMotor.play(spStart);
-                    if(Motor.getStarter() == Motor._S_TYPE_CARTRIDGE)
+                    if(this.motor.getStarter() == Motor._S_TYPE_CARTRIDGE) // Change from static method to class member here to avoid starter type overwrite issues
                     	sndMotor.play(spCartridge);
                 }
                 if(i == 4 && spEnd != null)
@@ -111,28 +111,10 @@ public class MotorSound
 
     public void update()
     {
-label0:
-        {
-            float f;
-            boolean flag;
-label1:
-            {
-label2:
-                {
-                    f = motor.getRPM();
-                    if(sndMotor == null)
-                        break label0;
-                    int i = motor.getType();
-                    if(i != 0)
-                    {
-                        if(i != 1)
-                            break label2;
-                    }
-                    flag = true;
-                    break label1;
-                }
-                flag = false;
-            }
+    	float f = motor.getRPM();
+    	if (sndMotor != null) {
+            int i = motor.getType();
+            boolean flag = (i==0) || (i==1);
             float f2 = motor.getReadyness();
             if(f2 < 0.0F)
                 f2 = 0.0F;
