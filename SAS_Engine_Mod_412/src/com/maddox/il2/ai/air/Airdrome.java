@@ -40,20 +40,20 @@ public class Airdrome
 
     public Airdrome()
     {
-        aPoints = new AiardromePoint[512];
+        aPoints = new AiardromePoint[MAX_AIRPOINTS];
         poiNum = 0;
-        aLines = new AiardromeLine[512];
+        aLines = new AiardromeLine[MAX_AIRPOINTS];
         lineNum = 0;
-        airdromeWay = new Point_Any[512];
+        airdromeWay = new Point_Any[MAX_AIRPOINTS];
         testParkPoint = new Point3d();
         airdromeList = new ArrayList();
-        for(int i = 0; i < 512; i++)
+        for(int i = 0; i < MAX_AIRPOINTS; i++)
             aPoints[i] = new AiardromePoint();
 
-        for(int j = 0; j < 512; j++)
+        for(int j = 0; j < MAX_AIRPOINTS; j++)
             aLines[j] = new AiardromeLine();
 
-        for(int k = 0; k < 512; k++)
+        for(int k = 0; k < MAX_AIRPOINTS; k++)
             airdromeWay[k] = new Point_Any(0.0F, 0.0F);
 
     }
@@ -155,25 +155,20 @@ public class Airdrome
                 if(taxi[k].length < 2 || point_null.distance(taxi[k][0]) > 2000F)
                     continue;
                 boolean flag = false;
-                int j2 = 0;
-                do
-                {
-                    if(j2 >= poiNum)
-                        break;
+                for (int j2=0; j2<poiNum; j2++) {
                     if(aPoints[j2].poi.distance(taxi[k][0]) < 18F)
                     {
                         i4 = j2;
                         flag = true;
                         break;
                     }
-                    j2++;
-                } while(true);
+                }
                 if(!flag)
                 {
                     i4 = poiNum;
                     //TODO: Disabled to prevent rare freeze when AI landing on certain runways
-                    //aPoints[poiNum].poiCounter = 255;
-                    //aPoints[poiNum++].poi = taxi[k][0];
+                    aPoints[poiNum].poiCounter = 255;
+                    aPoints[poiNum++].poi = taxi[k][0];
                     //TODO: Please re-check, freeze was likely because of a "label0:" endless loop from buggy decompiler code in this method!
                 }
                 for (int l1 = 1; l1 < this.taxi[k].length; l1++) {
@@ -395,6 +390,7 @@ public class Airdrome
         pilot.Loc.set(P);
     }
 
+    private static final int MAX_AIRPOINTS = 1024; 
     public static float CONN_DIST = 10F;
     public Point_Runaway runw[][];
     public Point_Taxi taxi[][];
