@@ -150,7 +150,6 @@ public class Airdrome
 
         if(poiNum >= 3)
         {
-label0:
             for(int k = 0; k < taxi.length; k++)
             {
                 if(taxi[k].length < 2 || point_null.distance(taxi[k][0]) > 2000F)
@@ -175,26 +174,18 @@ label0:
                     //TODO: Disabled to prevent rare freeze when AI landing on certain runways
                     //aPoints[poiNum].poiCounter = 255;
                     //aPoints[poiNum++].poi = taxi[k][0];
+                    //TODO: Please re-check, freeze was likely because of a "label0:" endless loop from buggy decompiler code in this method!
                 }
-                int l1 = 1;
-                do
-                {
-                    if(l1 >= taxi[k].length)
-                        continue label0;
-                    boolean flag1 = false;
-                    int k2 = 0;
-                    do
-                    {
-                        if(k2 >= poiNum)
-                            break;
+                for (int l1 = 1; l1 < this.taxi[k].length; l1++) {
+                	boolean flag1 = false;
+                    for (int k2 = 0; k2 < this.poiNum; k2++) {
                         if(aPoints[k2].poi.distance(taxi[k][l1]) < 18F)
                         {
                             j4 = k2;
                             flag1 = true;
                             break;
                         }
-                        k2++;
-                    } while(true);
+                    }
                     if(!flag1)
                     {
                         j4 = poiNum;
@@ -204,8 +195,7 @@ label0:
                     aLines[lineNum].from = i4;
                     aLines[lineNum++].to = j4;
                     i4 = j4;
-                    l1++;
-                } while(true);
+                }
             }
 
             for(int l = 0; l < poiNum; l++)

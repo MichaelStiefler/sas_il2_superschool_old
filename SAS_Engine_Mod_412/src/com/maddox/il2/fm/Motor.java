@@ -282,7 +282,10 @@ public class Motor extends FMMath
 	public static final int _S_TYPE_BOSCH = 5;
 	public static final int _E_TYPE_ROTARY = 9;
 	public static final int _E_TYPE_TURBOPROP = 10;
- 	private static int starter;
+	
+	// Storebror's starter code tuning
+	private static String[] starterTypes = {"Inertia", "Manual", "Electric", "Cartridge", "Pneumatic", "Bosch"};
+ 	private int starter; // this property field must not be static, otherwise all engines share the same starter type (namely the latest one being loaded)
  	//New boolean to cause instant engine shutdown if prop is struck
  	public boolean bPropHit = false;
 
@@ -564,27 +567,23 @@ public class Motor extends FMMath
   			//TODO: New variable starter
   			// --------------------------------------------------------
 		s1 = sectfile.get(s, "Starter");
-		if(s1 != null)
-			if(s1.endsWith("Inertia"))
-				starter = 0;
-			else
-				if(s1.endsWith("Manual"))
-					starter = 1;
-				else
-					if(s1.endsWith("Electric"))
-						starter = 2;
-					else
-						if(s1.endsWith("Cartridge"))
-							starter = 3;
-						else
-							if(s1.endsWith("Pneumatic"))
-								starter = 4;
-							else
-								if(s1.endsWith("Bosch"))
-									starter = 5;
-								else
-									if(type == 9)
-										starter = 1;
+		
+		// Storebror's starter code tuning
+		do {
+			if (s1 == null) break;
+			s1= s1.trim(); // make sure to remove trailing/leading spaces etc.
+			starter = -1; // initialize starter type to invalid value, this is used as a type of flag to indicate whether the starter type has been found yet.
+			for (int starterTypeIndex = 0; starterTypeIndex < starterTypes.length; starterTypeIndex++) { // parse starterTypes array for the given starter type
+				if (s1.indexOf(starterTypes[starterTypeIndex]) != -1) { // check for occurance of the given string, don't use "endsWith" here as the string might contain trailing garbage.
+					starter = starterTypeIndex; // starter type found!
+					break;
+				}
+			}
+			if (starter != -1) break; // Starter Type has been found in starterTypes array
+			if (type == 9) starter = 1;
+			if (starter < 0) starter = 0; // Default back to Inertia Starter default in case none of the above checks managed to resolve the starter type.			
+		} while (false); // we don't really want to loop here. The do-while statement was used just to avoid excessive if-then-else nesting.
+    	System.out.println("Motor resolveFromFile starter = " + starter);
 		// --------------------------------------------------------
             int j = sectfile.get(s, "Carburetor", 0xfffe7961);
             if(j != 0xfffe7961)
@@ -1819,7 +1818,6 @@ public class Motor extends FMMath
         }
         if(stage > 0 && stage < 6)
             setControlThrottle(0.2F);
-label0:
         switch(stage)
         {
         case 0: // '\0'
@@ -2122,11 +2120,7 @@ label0:
             setControlThrottle(0.0F);
 			if(reference == null || type == 2 || type == 3 || type == 4 || type == 6 || type == 5 || type == 10)
                 break;
-            int i = 1;
-            do
-            {
-                if(i >= 32)
-                    break label0;
+			for (int i=1; i<32; i++) {
                 try
                 {
                     com.maddox.il2.engine.Hook hook = reference.actor.findHook("_Engine" + (number + 1) + "EF_" + (i >= 10 ? "" + i : "0" + i));
@@ -2134,8 +2128,7 @@ label0:
                         Eff3DActor.New(reference.actor, hook, null, 1.0F, "3DO/Effects/Aircraft/EngineStart" + World.Rnd().nextInt(1, 3) + ".eff", -1F);
                 }
                 catch(Exception exception) { }
-                i++;
-            } while(true);
+            }
 
         case 4: // '\004'
             if(bTFirst)
@@ -3502,7 +3495,7 @@ label0:
     }
     
     //TODO
-    public static int getStarter()
+    public int getStarter() // no static method but class method, following the non-static "starter" property!
     {
         return starter;
     }
@@ -3779,7 +3772,6 @@ label0:
             boolean flag1;
             int i;
             boolean flag3;
-label0:
             {
                 f4 = controlThrottle;
                 flag1 = controlAfterburner;
@@ -3819,10 +3811,8 @@ label0:
                 flag3 = false;
                 if((Aircraft)(Aircraft)reference.actor instanceof TypeTwoPitchProp)
                     flag3 = true;
-                do
+                while (propAngleDeviceType == 0 || flag3)
                 {
-                    if(propAngleDeviceType != 0 && !flag3)
-                        break label0;
                     float f8 = 2.0F;
                     int j = 0;
                     float f10 = 0.1F;
@@ -3855,13 +3845,12 @@ label0:
                         }
                         j++;
                     } while(true);
-                    if(!flag3)
-                        break label0;
+                    if(!flag3) break;
                     if(f6 != propPhiMin)
                         break;
                     f7 = propForce;
                     f6 = propPhiMax;
-                } while(true);
+                }
                 if(f7 > propForce)
                     propForce = f7;
             }

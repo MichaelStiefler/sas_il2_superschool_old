@@ -1186,7 +1186,6 @@ public class Pilot extends Maneuver
 
     public void wingmanAttacks(int i)
     {
-label0:
         switch(Skill)
         {
         case 0: // '\0'
@@ -1261,9 +1260,8 @@ label0:
                         set_maneuver(74);
                         break;
                     }
-                    break label0;
                 }
-                switch(flying)
+                else switch(flying)
                 {
                 case 1: // '\001'
                     spreadV3d.set(World.Rnd().nextFloat(50F, 100F), (float)(300 - World.Rnd().nextInt(0, 1) * 600) + World.Rnd().nextFloat(-50F, 50F), World.Rnd().nextFloat(-20F, 10F));
@@ -1280,7 +1278,7 @@ label0:
                     set_maneuver(76);
                     break;
                 }
-                break label0;
+                break;
 
             case 1: // '\001'
                 switch(flying)
@@ -1300,7 +1298,7 @@ label0:
                     set_maneuver(76);
                     break;
                 }
-                break label0;
+                break;
 
             case 2: // '\002'
                 switch(flying)
@@ -1357,7 +1355,7 @@ label0:
                     set_maneuver(81);
                     break;
                 }
-                break label0;
+                break;
 
             case 1: // '\001'
                 switch(flying)
@@ -1410,12 +1408,12 @@ label0:
                 case 3: // '\003'
                     setWingmanAttackType(4);
                     set_maneuver(81);
-                    break label0;
+                    break;
 
                 case 4: // '\004'
                     setWingmanAttackType(6);
                     set_maneuver(81);
-                    break label0;
+                    break;
 
                 case 5: // '\005'
                     if(World.Rnd().nextBoolean())
@@ -1425,7 +1423,7 @@ label0:
                     set_maneuver(81);
                     break;
                 }
-                break label0;
+                break;
 
             case 1: // '\001'
                 switch(flying)

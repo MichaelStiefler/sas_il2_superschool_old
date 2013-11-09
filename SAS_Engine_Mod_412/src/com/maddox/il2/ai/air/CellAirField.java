@@ -60,22 +60,16 @@ public class CellAirField extends CellObject
             return false;
         for(int k = j; k < j + cellairplane.getHeight(); k++)
         {
-label0:
             for(int l = i; l < i + cellairplane.getWidth(); l++)
             {
                 if(getCells()[l][k] != null && cellairplane.getCells()[l - i][k - j] != null)
                     return false;
                 if(cellairplane.getCells()[l - i][k - j] == null)
                     continue;
-                int i1 = k;
-                do
-                {
-                    if(i1 >= getHeight())
-                        continue label0;
+                for (int i1 = k; i1<getHeight(); i1++) {
                     if(getCells()[l][i1] != null && getCells()[l][i1] != this)
                         return false;
-                    i1++;
-                } while(true);
+                }
             }
 
         }

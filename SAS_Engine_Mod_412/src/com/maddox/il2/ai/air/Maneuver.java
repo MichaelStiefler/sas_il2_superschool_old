@@ -8802,14 +8802,9 @@ public class Maneuver extends AIFlightModel {
     }
 
     private void addWindCorrection() {
-        label0: {
-            if (World.cur().diffCur.Wind_N_Turbulence) {
-                World.cur();
-                if (!World.wind().noWind)
-                    break label0;
-            }
-            return;
-        }
+        if (!World.cur().diffCur.Wind_N_Turbulence) return;
+        if (World.wind().noWind) return;
+
         double d = Ve.length();
         World.cur();
         World.wind().getVectorAI(actor.pos.getAbsPoint(), windV);
