@@ -1,5 +1,6 @@
 package com.maddox.il2.objects.air;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import com.maddox.il2.ai.BulletEmitter;
@@ -8,6 +9,7 @@ import com.maddox.il2.engine.Config;
 import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
+import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.weapons.BombGun;
 import com.maddox.il2.objects.weapons.BombGunNull;
 import com.maddox.il2.objects.weapons.FuelTank;
@@ -35,7 +37,7 @@ public class P_47ModPack extends P_47 {
 				|| (this.thisWeaponsName.equalsIgnoreCase("1x1000")) || (this.thisWeaponsName.equalsIgnoreCase("1x10002x500")) || (this.thisWeaponsName.equalsIgnoreCase("1x10006x45")) || (this.thisWeaponsName.equalsIgnoreCase("1x10002x5006x45")) || (this.thisWeaponsName
 				.indexOf("c_") != -1));
 		bWingRacksVisible = ((this.thisWeaponsName.equalsIgnoreCase("tank2x500")) || (this.thisWeaponsName.equalsIgnoreCase("tank2x5006x45")) || (this.thisWeaponsName.equalsIgnoreCase("2x500")) || (this.thisWeaponsName.equalsIgnoreCase("2x5006x45"))
-				|| (this.thisWeaponsName.equalsIgnoreCase("1x10002x500")) || (this.thisWeaponsName.equalsIgnoreCase("1x10002x5006x45")) || (this.thisWeaponsName.indexOf("w_") != -1));
+				|| (this.thisWeaponsName.equalsIgnoreCase("1x10002x500")) || (this.thisWeaponsName.equalsIgnoreCase("1x10002x5006x45")) || (this.thisWeaponsName.equalsIgnoreCase("2x1000")) || (this.thisWeaponsName.indexOf("w_") != -1));
 		if (hierMesh().chunkFindCheck("Rack_D0") >= 0)
 			hierMesh().chunkVisible("Rack_D0", bCenterRackVisible);
 		if (hierMesh().chunkFindCheck("RackL_D0") >= 0)
@@ -59,6 +61,22 @@ public class P_47ModPack extends P_47 {
 
 		if (this.hasStockOrdnance || !(World.cur().diffCur.Limited_Ammo))
 			this.removeBombGunNull();
+		
+		// Some stock FMs don't have compressor control for the P&W engines, but our Jugs should have them, so we forcibly enable it here!
+		try {
+			Class engineClass = this.FM.EI.engines[0].getClass();
+			Field bHasCompressorControlField = engineClass.getDeclaredField("bHasCompressorControl");
+			bHasCompressorControlField.setAccessible(true);
+			bHasCompressorControlField.setBoolean(this.FM.EI.engines[0], true);
+		} catch (Exception e) {
+			System.out.println("Exception in setting bHasCompressorControl=true:");
+			e.printStackTrace();
+		}
+        if (!Mission.isNet()) {
+        	this.FM.CT.bHasCockpitDoorControl = true;
+        	this.FM.CT.dvCockpitDoor = 1F;
+        }
+		
 	}
 
 	private int getNumBulletsAvail(int triggerNum) {
@@ -312,7 +330,15 @@ public class P_47ModPack extends P_47 {
 
 	public void moveCockpitDoor(float f) {
 		resetYPRmodifier();
-		Aircraft.xyz[2] = -Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 0.65F);
+		if (this instanceof P_47B1 || this instanceof P_47B15 || this instanceof P_47BDT || this instanceof P_47C5 || this instanceof P_47D10 || this instanceof P_47D22) {
+			Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 0.85F);
+			Aircraft.xyz[2] = -Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 0.025F);
+		} else if (this instanceof P_47D27 || this instanceof P_47D) {
+			Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 0.65F);
+			Aircraft.xyz[2] = -Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 0.025F);
+		} else {
+			Aircraft.xyz[2] = -Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 0.65F);
+		}
 		hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
 		if (Config.isUSE_RENDER()) {
 			if (Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null)
@@ -322,17 +348,10 @@ public class P_47ModPack extends P_47 {
 	}
 
 	protected void moveFan(float f) {
-		if (!Config.isUSE_RENDER())
-			return;
-		float f1 = f;
+		if (!Config.isUSE_RENDER()) return;
 		int i = FM.EI.engines[0].getStage();
-		if (i >= 1 && i <= 3)
-			f1 = 0.0F;
-		if (i == 4)
-			f1 = -150F;
-		if (i == 5)
-			f1 = -400F;
-		super.moveFan(f1);
+		if (i > 0 && i < 6) f = 0.005F * (float)i;
+		super.moveFan(f);
 		hierMesh().chunkSetAngles(Aircraft.Props[0][0], 0.0F, -propPos[0] + 45F, 0.0F);
 		// float f2 = FM.CT.getRudder();
 		// hierMesh().chunkSetAngles("Head1_D0", 0.0F, Aircraft.cvt(-f2, -1F, 1.0F, -30F, 30F), 0.0F);
@@ -343,7 +362,7 @@ public class P_47ModPack extends P_47 {
 		hierMesh().chunkSetAngles("Brake1_D0", 0.0F, 0.0F, f1);
 		hierMesh().chunkSetAngles("Brake2_D0", 0.0F, 0.0F, f1);
 	}
-
+	
 	// private int rocketsLeft = 0;
 	// private int bombsLeft = 0;
 	private int releaseMode = 0;

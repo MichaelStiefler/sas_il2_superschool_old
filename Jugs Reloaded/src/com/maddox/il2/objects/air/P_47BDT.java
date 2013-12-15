@@ -10,29 +10,33 @@ public class P_47BDT extends P_47ModPack {
 	protected void moveFan(float f) {
 		if (!Config.isUSE_RENDER())
 			return;
-		switch (FM.EI.engines[0].getStage()) {
-			case 1:
-			case 2:
-			case 3:
-				f = 0.0F;
-				break;
-			case 4:
-				f = -150F;
-				break;
-			case 5:
-				f = -400F;
-				break;
-			default:
-				break;
-		}
+//		switch (FM.EI.engines[0].getStage()) {
+//			case 1:
+//			case 2:
+//			case 3:
+//				f = 0.0F;
+//				break;
+//			case 4:
+//				f = -150F;
+//				break;
+//			case 5:
+//				f = -400F;
+//				break;
+//			default:
+//				break;
+//		}
 //		if (engineState >= 1 && engineState <= 3)
 //			f = 0.0F;
 //		if (engineState == 4)
 //			f = -150F;
 //		if (engineState == 5)
 //			f = -400F;
+
+		int i = FM.EI.engines[0].getStage();
+		if (i > 0 && i < 6) f = 0.005F * (float)i;
+		
 		hierMesh().chunkFind(Aircraft.Props[1][0]);
-		int i = 0;
+//		int i = 0;
 		for (int j = 0; j < 2; j++) {
 			if (oldProp[j] < 2) {
 				i = Math.abs((int) (FM.EI.engines[0].getw() * 0.06F));

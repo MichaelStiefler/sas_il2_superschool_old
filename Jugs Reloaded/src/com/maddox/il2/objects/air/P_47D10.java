@@ -16,7 +16,18 @@ public class P_47D10 extends P_47ModPack {
 		}
 		return "";
 	}
-
+	
+//	public void moveCockpitDoor(float f) {
+//		resetYPRmodifier();
+//		Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 0.85F);
+//		hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
+//		if (Config.isUSE_RENDER()) {
+//			if (Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null)
+//				Main3D.cur3D().cockpits[0].onDoorMoved(f);
+//			setDoorSnd(f);
+//		}
+//	}
+//
 	static {
 		Class class1 = P_47D10.class;
 		new NetAircraft.SPAWN(class1);

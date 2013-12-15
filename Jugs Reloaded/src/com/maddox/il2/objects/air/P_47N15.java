@@ -25,7 +25,8 @@ public class P_47N15 extends P_47AceMakerGunsight implements TypeFighterAceMaker
 		Property.set(class1, "yearService", 1945F);
 		Property.set(class1, "yearExpired", 1947.5F);
 		Property.set(class1, "FlightModel", "FlightModels/P-47N-15.fmd:P47Pack_FM");
-		Property.set(class1, "cockpitClass", new Class[] { CockpitP_47N15K.class });
+		Property.set(class1, "cockpitClass", new Class[] { CockpitP_47D25.class });
+//		Property.set(class1, "cockpitClass", new Class[] { CockpitP_47N15K.class });
 		Property.set(class1, "LOSElevation", 1.1104F);
 		Property.set(class1, "StockOrdnanceAvailable", 0);
 

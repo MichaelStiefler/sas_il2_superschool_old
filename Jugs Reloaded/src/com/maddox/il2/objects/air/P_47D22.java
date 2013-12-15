@@ -28,7 +28,7 @@ public class P_47D22 extends P_47ModPack {
 		Property.set(class1, "yearService", 1943.0F);
 		Property.set(class1, "yearExpired", 1947.5F);
 		Property.set(class1, "FlightModel", "FlightModels/P-47D-22.fmd");
-		Property.set(class1, "cockpitClass", new Class[] { CockpitP_47D10.class });
+		Property.set(class1, "cockpitClass", new Class[] { CockpitP_47D22.class });
 		Property.set(class1, "LOSElevation", 0.9879F);
 		Property.set(class1, "StockOrdnanceAvailable", 1);
 
