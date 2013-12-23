@@ -1,3 +1,4 @@
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.*;
@@ -7,6 +8,8 @@ import com.maddox.il2.fm.*;
 import com.maddox.il2.objects.weapons.Gun;
 import com.maddox.rts.Time;
 
+// Referenced classes of package com.maddox.il2.objects.air:
+//            CockpitPilot, Aircraft, Cockpit
 
 public class CockpitF_4E extends CockpitPilot
 {
@@ -239,8 +242,14 @@ public class CockpitF_4E extends CockpitPilot
             mesh.chunkSetAngles("Z_Bombbutton", 0.0F, 53F, 0.0F);
         mesh.chunkSetAngles("Z_AmmoCounter1", cvt(gun[1].countBullets(), 0.0F, 100F, 0.0F, -7F), 0.0F, 0.0F);
         mesh.chunkSetAngles("Z_AmmoCounter2", cvt(gun[2].countBullets(), 0.0F, 100F, 0.0F, -7F), 0.0F, 0.0F);
-        mesh.chunkSetAngles("Z_Speedometer1", floatindex(cvt(Pitot.Indicator((float)((Tuple3d) (((FlightModelMain) (fm)).Loc)).z, ((FlightModelMain) (fm)).getSpeedKMH()), 0.0F, 1540F, 0.0F, 22F), speedometerIndScale), 0.0F, 0.0F);
-        mesh.chunkSetAngles("Z_MachMeter", floatindex(cvt(((Atmosphere.sonicSpeed((float)((Tuple3d) (((FlightModelMain) (fm)).Loc)).z) / 334F) - 1F), -0.5F, 0.0F, 0.0F, 5F), machmeterScale), 0.0F, 0.0F);
+        if(((FlightModelMain) (fm)).getSpeedKMH() < 400F)
+            mesh.chunkSetAngles("Z_Speedometer1", floatindex(cvt(Pitot.Indicator((float)((Tuple3d) (((FlightModelMain) (fm)).Loc)).z, ((FlightModelMain) (fm)).getSpeedKMH()), 0.0F, 1500.24F, 0.0F, 58F), speedometerIndScale), 0.0F, 0.0F);
+        else
+            mesh.chunkSetAngles("Z_Speedometer1", floatindex(cvt(((FlightModelMain) (fm)).getSpeedKMH(), 0.0F, 1500.24F, 0.0F, 58F), speedometerIndScale), 0.0F, 0.0F);
+        if(((FlightModelMain) (fm)).getSpeedKMH() < 1500F)
+            mesh.chunkSetAngles("Z_MachMeter", floatindex(cvt(((Atmosphere.sonicSpeed((float)((Tuple3d) (((FlightModelMain) (fm)).Loc)).z) / 334F) - 1F), -0.5F, 0.0F, 0.0F, 5F), machmeterScale), 0.0F, 0.0F);
+        else
+            mesh.chunkSetAngles("Z_MachMeter", floatindex(cvt((((Atmosphere.sonicSpeed((float)((Tuple3d) (((FlightModelMain) (fm)).Loc)).z) / 334F) - 1F) + ((1500F - ((FlightModelMain) (fm)).getSpeedKMH()) / 1500F)), -0.5F, 0.0F, 0.0F, 5F), machmeterScale), 0.0F, 0.0F);
         mesh.chunkSetAngles("Z_TAS_1", cvt(((FlightModelMain) (fm)).getSpeedKMH(), 0.0F, 3704F, 0.0F, 72000F), 0.0F, 0.0F);
         mesh.chunkSetAngles("Z_TAS_10", cvt((float)Math.floor(((FlightModelMain) (fm)).getSpeedKMH() / 18.52F), 0.0F, 200F, 0.0F, 7200F), 0.0F, 0.0F);
         mesh.chunkSetAngles("Z_TAS_100", cvt((float)Math.floor(((FlightModelMain) (fm)).getSpeedKMH() / 185.2F), 0.0F, 20F, 0.0F, 720F), 0.0F, 0.0F);
@@ -272,7 +281,8 @@ public class CockpitF_4E extends CockpitPilot
         w.set(((FlightModelMain) (fm)).getW());
         ((FlightModelMain) (fm)).Or.transform(w);
         mesh.chunkSetAngles("Z_horizont1", 0.0F, 0.0F, ((FlightModelMain) (fm)).Or.getKren());
-        mesh.chunkSetAngles("Z_horizont1a", setNew.azimuth.getDeg(f) + 90F, ((FlightModelMain) (fm)).Or.getTangage(), 0.0F);
+        mesh.chunkSetAngles("Z_horizont1b", 0.0F, ((FlightModelMain) (fm)).Or.getTangage(), 0.0F);
+        mesh.chunkSetAngles("Z_horizont1a", setNew.azimuth.getDeg(f) + 90F, 0.0F, 0.0F);
         mesh.chunkSetAngles("Z_horizont2", 0.0F, 0.0F, ((FlightModelMain) (fm)).Or.getKren());
         mesh.chunkSetAngles("Z_horizont2b", 0.0F, ((FlightModelMain) (fm)).Or.getTangage(), 0.0F);
         mesh.chunkSetAngles("zBall", 0.0F, cvt(getBall(6D), -6F, 6F, -9F, 9F), 0.0F);
@@ -477,10 +487,13 @@ public class CockpitF_4E extends CockpitPilot
     private float pictElev;
     private boolean bU4;
     private static final float speedometerIndScale[] = {
-        0.0F,   8.0F,  16.0F,  53.3F,  90.3F, 123.8F, 146.5F, 168.8F, 185.5F, 201.0F,
-      215.5F, 229.5F, 242.6F, 253.9F, 265.1F, 275.6F, 285.8F, 297.5F, 304.2F, 314.5F,
-      319.9F, 327.0F, 342.0F
-    };
+          0.00F,   2.41F,   4.82F,  10.36F,  16.14F,  23.44F,  35.11F,  47.26F,  60.07F,  73.80F,
+         87.14F,  99.47F, 111.75F, 123.91F, 135.64F, 142.87F, 150.10F, 157.33F, 164.56F, 171.81F,
+        179.09F, 186.37F, 193.65F, 200.93F, 206.65F, 212.30F, 217.94F, 223.59F, 229.03F, 234.10F,
+        239.17F, 244.24F, 249.31F, 253.44F, 257.23F, 261.03F, 264.83F, 268.63F, 272.49F, 276.34F,
+        280.20F, 284.06F, 287.80F, 291.43F, 295.07F, 298.71F, 302.34F, 305.49F, 308.60F, 311.70F,
+        314.80F, 317.84F, 320.74F, 323.65F, 326.55F, 329.45F, 332.35F
+      };
     private static final float machmeterScale[] = {
         -103.6F, -74.6F, -51.0F, -35.4F, -19.1F, 0.0F
     };
