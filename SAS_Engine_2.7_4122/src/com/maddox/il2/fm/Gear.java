@@ -44,6 +44,7 @@ import com.maddox.il2.objects.air.TypeFastJet;
 import com.maddox.il2.objects.buildings.Plate;
 import com.maddox.il2.objects.effects.MiscEffects;
 import com.maddox.il2.objects.ships.BigshipGeneric;
+import com.maddox.il2.objects.ships.TypeBlastDeflector;
 import com.maddox.il2.objects.weapons.BombGun;
 import com.maddox.il2.objects.weapons.RocketBombGun;
 import com.maddox.il2.objects.weapons.RocketGun;
@@ -192,12 +193,6 @@ public class Gear
 
 	// TODO: New parameters
 	// --------------------------------------------------------
-    private double dCatapultOffsetX;
-    private double dCatapultOffsetY;
-    private double dCatapultYaw;
-    private double dCatapultOffsetX2;
-    private double dCatapultOffsetY2;
-    private double dCatapultYaw2;
     private boolean bCatapultAllow;
     private boolean bCatapultBoost;
     private float catapultPower;
@@ -208,8 +203,16 @@ public class Gear
     private boolean bAlreadySetCatapult;
     private boolean bStandardDeckCVL;
     private boolean bSteamCatapult;
+    private int iCatapultAlreadySetNum;
+    private boolean bHasBlastDeflector;
     private Eff3DActor catEff;
     public ZutiAirfieldPoint zutiCurrentZAP;
+	// --------------------------------------------------------
+    private double[] dCatapultOffsetX = new double[4];
+    private double[] dCatapultOffsetY = new double[4];
+    private double[] dCatapultYaw = new double[4];
+    private int iCatapults;
+    private static boolean bLogDetailBD = false;
 	// --------------------------------------------------------
     
     private static class PlateFilter
@@ -308,12 +311,13 @@ public class Gear
         tempLoc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
         tempPoint = new Point3f();
       //TODO: +++ CTO Mod 4.12 +++
-        dCatapultOffsetX = 0.0D;
-        dCatapultOffsetY = 0.0D;
-        dCatapultYaw = 0.0D;
-        dCatapultOffsetX2 = 0.0D;
-        dCatapultOffsetY2 = 0.0D;
-        dCatapultYaw2 = 0.0D;
+        for(int cati=0; cati<4; cati++){
+            dCatapultOffsetX[cati] = 0.0D;
+            dCatapultOffsetY[cati] = 0.0D;
+            dCatapultYaw[cati] = 0.0D;
+        }
+        iCatapults = 0;
+      
         bCatapultAllow = true;
         bCatapultBoost = false;
         bCatapultAI = true;
@@ -322,6 +326,8 @@ public class Gear
         bAlreadySetCatapult = false;
         bStandardDeckCVL = false;
         bSteamCatapult = false;
+        iCatapultAlreadySetNum = -1;
+        bHasBlastDeflector = false;
         onGround = false;
         nearGround = false;
         nOfGearsOnGr = 0;
@@ -805,17 +811,11 @@ public class Gear
                             bCatapultSet = setCatapultOffset(bigshipgeneric1, new SectFile("com/maddox/il2/objects/Catapults.ini"));
                             bAlreadySetCatapult = true;
                         }
-                        if (bCatapultAllow && !FM.EI.getCatapult() && bCatapultSet) {
+                        if (bCatapultAllow && !FM.EI.getCatapult() && bCatapultSet)
+                        {
                             bigshipgeneric1.getAirport().pos.getCurrent();
                             Point3d point3d = L.getPoint();
                             CellAirField cellairfield = bigshipgeneric1.getCellTO();
-                            double d4 = -cellairfield.leftUpperCorner().x - dCatapultOffsetX;
-                            double d6 = cellairfield.leftUpperCorner().y - dCatapultOffsetY;
-                            Loc loc1 = new Loc(d6, d4, 0.0D, 0.0F, 0.0F, 0.0F);
-                            loc1.add(FM.brakeShoeLastCarrier.pos.getAbs());
-                            Point3d point3d1 = loc1.getPoint();
-                            double d7 = Math.abs((point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y));
-
                             boolean bIsTypeSupersonic = false;
                             boolean bIsTypeFastJet = false;
                             boolean bIsJets = false;
@@ -833,67 +833,59 @@ public class Gear
                                 bIsJets = true;
                             }
 
-                          
-                            if (d7 <= 100D) {
-                                L.set(d6, d4, FM.brakeShoeLoc.getZ(), FM.brakeShoeLoc.getAzimut(), FM.brakeShoeLoc.getTangage(), FM.brakeShoeLoc.getKren());
-                                L.add(FM.brakeShoeLastCarrier.pos.getAbs());
-                                FM.Loc.set(L.getPoint());
-                                FM.Or.setYPR(FM.brakeShoeLastCarrier.pos.getAbsOrient().getYaw() + (float) dCatapultYaw, Pitch, FM.brakeShoeLastCarrier.pos.getAbsOrient().getRoll());
-                                FM.actor.pos.setAbs(FM.Loc, FM.Or);
-                                if (bCatapultBoost) {
-                                    if ((bIsTypeSupersonic || bIsTypeFastJet || bIsJets) && Mission.curYear() > 1945 && Mission.curYear() < 1953){
-                                        FM.EI.setCatapult(FM.M.getFullMass(), catapultPowerJets, 0);
-                                    }
-                                    else if ((bIsTypeSupersonic || bIsTypeFastJet || bIsJets) && Mission.curYear() > 1952) {
-                                        int i = (int) Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 1000F) * catapultPowerJets / 12);
-                                        FM.EI.setCatapult(FM.M.getFullMass(), catapultPowerJets + (float) i, 0);
-                                    } else if (Mission.curYear() < 1953) {
-                                        FM.EI.setCatapult(FM.M.getFullMass(), catapultPower, 0);
-                                    } else {
-                                        int j = (int) Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 1000F) * 2.0F);
-                                        FM.EI.setCatapult(FM.M.getFullMass(), catapultPower + (float) j, 0);
-                                    }
-                                } else{
-                                    FM.EI.setCatapult(FM.M.getFullMass(), 10F, 0);
-                                }
-                                FM.brakeShoeLoc.set(FM.actor.pos.getAbs());
-                                FM.brakeShoeLoc.sub(FM.brakeShoeLastCarrier.pos.getAbs());
-                            } else if (dCatapultOffsetX2 != 0.0D) {
-                                double d8 = -cellairfield.leftUpperCorner().x - dCatapultOffsetX2;
-                                double d9 = cellairfield.leftUpperCorner().y - dCatapultOffsetY2;
-                                loc1.set(d9, d8, 0.0D, 0.0F, 0.0F, 0.0F);
-                                loc1.add(FM.brakeShoeLastCarrier.pos.getAbs());
-                                Point3d point3d2 = loc1.getPoint();
-                                double d10 = Math.abs((point3d.x - point3d2.x) * (point3d.x - point3d2.x) + (point3d.y - point3d2.y)
-                                        * (point3d.y - point3d2.y));
-                                if (d10 <= 100D) {
-                                    L.set(d9, d8, FM.brakeShoeLoc.getZ(), FM.brakeShoeLoc.getAzimut(), FM.brakeShoeLoc.getTangage(), FM.brakeShoeLoc.getKren());
-                                    L.add(FM.brakeShoeLastCarrier.pos.getAbs());
-                                    FM.Loc.set(L.getPoint());
-                                    FM.Or.setYPR(FM.brakeShoeLastCarrier.pos.getAbsOrient().getYaw() + (float) dCatapultYaw2, Pitch, FM.brakeShoeLastCarrier.pos.getAbsOrient().getRoll());
-                                    FM.actor.pos.setAbs(FM.Loc, FM.Or);
-                                    if (bCatapultBoost) {
-                                        if (!bSteamCatapult && (bIsTypeSupersonic || bIsTypeFastJet || bIsJets)){
-                                            FM.EI.setCatapult(FM.M.getFullMass(), catapultPowerJets, 1);
-                                        }
-                                        else if ((bIsTypeSupersonic || bIsTypeFastJet || bIsJets)) {
-                                            int k1 = (int) Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 1000F) * catapultPowerJets / 12);
-                                            FM.EI.setCatapult(FM.M.getFullMass(), catapultPowerJets + (float) k1, 1);
-                                        } else if(!bSteamCatapult) {
-                                            FM.EI.setCatapult(FM.M.getFullMass(), catapultPower, 1);
+                            for( int i4 = 0; i4 < iCatapults; i4++)
+                            {
+                                if(dCatapultOffsetX[i4] != 0.0D && dCatapultOffsetY[i4] != 0.0D)
+                                {
+                                    double d4 = -cellairfield.leftUpperCorner().x - dCatapultOffsetX[i4];
+                                    double d6 = cellairfield.leftUpperCorner().y - dCatapultOffsetY[i4];
+                                    Loc loc1 = new Loc(d6, d4, 0.0D, 0.0F, 0.0F, 0.0F);
+                                    loc1.add(FM.brakeShoeLastCarrier.pos.getAbs());
+                                    Point3d point3d1 = loc1.getPoint();
+                                    double d7 = Math.abs((point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y));
+
+                                    if (d7 <= 100D)
+                                    {
+                                        L.set(d6, d4, FM.brakeShoeLoc.getZ(), FM.brakeShoeLoc.getAzimut(), FM.brakeShoeLoc.getTangage(), FM.brakeShoeLoc.getKren());
+                                        L.add(FM.brakeShoeLastCarrier.pos.getAbs());
+                                        FM.Loc.set(L.getPoint());
+                                        FM.Or.setYPR(FM.brakeShoeLastCarrier.pos.getAbsOrient().getYaw() + (float) dCatapultYaw[i4], Pitch, FM.brakeShoeLastCarrier.pos.getAbsOrient().getRoll());
+                                        FM.actor.pos.setAbs(FM.Loc, FM.Or);
+                                        if (bCatapultBoost) {
+                                            if ((bIsTypeSupersonic || bIsTypeFastJet || bIsJets) && Mission.curYear() > 1945 && Mission.curYear() < 1953){
+                                                FM.EI.setCatapult(FM.M.getFullMass(), catapultPowerJets, i4);
+                                            }
+                                            else if ((bIsTypeSupersonic || bIsTypeFastJet || bIsJets) && Mission.curYear() > 1952) {
+                                                int i = (int) Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 900F) * catapultPowerJets / 10);
+                                                FM.EI.setCatapult(FM.M.getFullMass(), catapultPowerJets + (float) i, i4);
+                                            }
+                                            else if (Mission.curYear() < 1953) {
+                                                FM.EI.setCatapult(FM.M.getFullMass(), catapultPower, i4);
+                                            } else {
+                                                int j = (int) Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 900F) * 2.0F);
+                                                FM.EI.setCatapult(FM.M.getFullMass(), catapultPower + (float) j, i4);
+                                            }
                                         } else {
-                                            int l1 = (int) Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 1000F) * 2.0F);
-                                            FM.EI.setCatapult(FM.M.getFullMass(), catapultPower + (float) l1, 1);
+                                            FM.EI.setCatapult(FM.M.getFullMass(), 10F, i4);
                                         }
-                                    } else{
-                                        FM.EI.setCatapult(FM.M.getFullMass(), 10F, 1);
+                                        FM.brakeShoeLoc.set(FM.actor.pos.getAbs());
+                                        FM.brakeShoeLoc.sub(FM.brakeShoeLastCarrier.pos.getAbs());
+
+                                        iCatapultAlreadySetNum = i4;
+                                        if (bHasBlastDeflector)
+                                        {
+ if( bLogDetailBD )
+   System.out.println("Gear: 876 - bHasBlastDeflector = true , setBlastDeflector(i4=" + Integer.toString(i4) + ", 1)");
+                                            ((TypeBlastDeflector)bigshipgeneric1).setBlastDeflector(i4, 1);
+                                        }
+
+                                        break;
                                     }
-                                    FM.brakeShoeLoc.set(FM.actor.pos.getAbs());
-                                    FM.brakeShoeLoc.sub(FM.brakeShoeLastCarrier.pos.getAbs());
                                 }
                             }
-                        } else if (FM.EI.getCatapult())
+                        } else if (FM.EI.getCatapult()) {
                             FM.EI.resetCatapultTime();
+                        }
                       //TODO: --- CTO Mod 4.12 ---
                         FM.brakeShoeLastCarrier.getSpeed(FM.Vwld);
                         FM.Vrel.set(0.0D, 0.0D, 0.0D);
@@ -908,13 +900,8 @@ public class Gear
                     }
                 } else {
                     //TODO: +++ CTO Mod 4.12 +++
-                    if(FM.EI.getCatapult()) {
-                        if(FM.EI.getCatapultNumber() == 0)
-                            FM.Or.setYPR(FM.brakeShoeLastCarrier.pos.getAbsOrient().getYaw() + (float)dCatapultYaw, FM.Or.getPitch(), FM.brakeShoeLastCarrier.pos.getAbsOrient().getRoll());
-                        else
-                        if(FM.EI.getCatapultNumber() == 1)
-                            FM.Or.setYPR(FM.brakeShoeLastCarrier.pos.getAbsOrient().getYaw() + (float)dCatapultYaw2, FM.Or.getPitch(), FM.brakeShoeLastCarrier.pos.getAbsOrient().getRoll());
-                    }
+                    if(FM.EI.getCatapult())
+                        FM.Or.setYPR(FM.brakeShoeLastCarrier.pos.getAbsOrient().getYaw() + (float)dCatapultYaw[ FM.EI.getCatapultNumber() ], FM.Or.getPitch(), FM.brakeShoeLastCarrier.pos.getAbsOrient().getRoll());
                     //TODO: --- CTO Mod 4.12 ---
                     if(nOfGearsOnGr == 3 && nP == 3 && FM.Vrel.lengthSquared() < 1.0D)
                     {
@@ -924,6 +911,12 @@ public class Gear
                     }
                   //TODO: +++ CTO Mod 4.12 +++
                     bAlreadySetCatapult = false;
+
+                    if (bHasBlastDeflector){
+ if( bLogDetailBD )
+   System.out.println("Gear: 915 - bHasBlastDeflector = true , setBlastDeflector(FM.EI.getCatapultNumber()=" + Integer.toString(FM.EI.getCatapultNumber()) + ", 0)");
+                           ((TypeBlastDeflector)bigshipgeneric1).setBlastDeflector(FM.EI.getCatapultNumber(), 0);
+                            }
                   //TODO: --- CTO Mod 4.12 ---
                 }
             } else
@@ -2006,53 +1999,86 @@ public class Gear
         i = j;
         String strSection = s.substring(i + 1);
     	if(!flag2){
-    		if (!theSectFile.sectionExist(strSection)) strSection = "Default";
-    		if(!bStandardDeckCVL && theSectFile.exist(strSection, "dCatapultOffsetXAlt"))
-    		{
-    			dCatapultOffsetX = theSectFile.get(strSection, "dCatapultOffsetXAlt", 0.0F);
-    			dCatapultOffsetY = theSectFile.get(strSection, "dCatapultOffsetYAlt", 0.0F);
-    			dCatapultYaw = theSectFile.get(strSection, "dCatapultYawAlt", 0.0F);
-    		}
-    		else
-    		{
-    			dCatapultOffsetX = theSectFile.get(strSection, "dCatapultOffsetX", 0.0F);
-    			dCatapultOffsetY = theSectFile.get(strSection, "dCatapultOffsetY", 0.0F);
-    			dCatapultYaw = theSectFile.get(strSection, "dCatapultYaw", 0.0F);
-    		}
-	
-    		dCatapultOffsetX2 = theSectFile.get(strSection, "dCatapultOffsetX2", 0.0F);
-    		dCatapultOffsetY2 = theSectFile.get(strSection, "dCatapultOffsetY2", 0.0F);
-    		dCatapultYaw2 = theSectFile.get(strSection, "dCatapultYaw2", 0.0F);
-    		catapultPower = theSectFile.get(strSection, "catapultPower", 0.0F);
-    		catapultPowerJets = theSectFile.get(strSection, "catapultPowerJets", 0.0F); 
-    		if(theSectFile.get(strSection, "bSteamCatapult", 0) == 1)
+    		if (!theSectFile.sectionExist(strSection))
+                    strSection = "Default";
+                else {
+    		    if(!bStandardDeckCVL && theSectFile.exist(strSection, "dCatapultOffsetXAlt"))
+    		    {
+    			    dCatapultOffsetX[0] = theSectFile.get(strSection, "dCatapultOffsetXAlt", 0.0F);
+    			    dCatapultOffsetY[0] = theSectFile.get(strSection, "dCatapultOffsetYAlt", 0.0F);
+    			    dCatapultYaw[0] = theSectFile.get(strSection, "dCatapultYawAlt", 0.0F);
+                            if( iCatapults < 1  && !(dCatapultOffsetX[0] == 0.0D && dCatapultOffsetY[0] == 0.0D))
+                                iCatapults = 1;
+    		    }
+    		    else
+    		    {
+    			    dCatapultOffsetX[0] = theSectFile.get(strSection, "dCatapultOffsetX", 0.0F);
+    			    dCatapultOffsetY[0] = theSectFile.get(strSection, "dCatapultOffsetY", 0.0F);
+    			    dCatapultYaw[0] = theSectFile.get(strSection, "dCatapultYaw", 0.0F);
+                            if( iCatapults < 1 && !(dCatapultOffsetX[0] == 0.0D && dCatapultOffsetY[0] == 0.0D))
+                                iCatapults = 1;
+    		    }
+                    if(iCatapults > 0)
+                    {
+                        for( int o=1; o<4; o++ ){
+    		            if( theSectFile.exist(strSection, ("dCatapultOffsetX" + Integer.toString(o+1))))
+                            {
+   		                dCatapultOffsetX[o] = theSectFile.get(strSection, ("dCatapultOffsetX" + Integer.toString(o+1)), 0.0F);
+   		                dCatapultOffsetY[o] = theSectFile.get(strSection, ("dCatapultOffsetY" + Integer.toString(o+1)), 0.0F);
+ 		                dCatapultYaw[o] = theSectFile.get(strSection, ("dCatapultYaw" + Integer.toString(o+1)), 0.0F);
+                                iCatapults = o + 1;
+                            }
+                            else
+                                break;
+                        }
+                    }
+
+    		    catapultPower = theSectFile.get(strSection, "catapultPower", 0.0F);
+    		    catapultPowerJets = theSectFile.get(strSection, "catapultPowerJets", 0.0F); 
+    		    if(theSectFile.get(strSection, "bSteamCatapult", 0) == 1)
     			bSteamCatapult = true;
-        	if (dCatapultOffsetX != 0.0D || dCatapultOffsetY != 0.0D || dCatapultOffsetX2 != 0.0D || dCatapultOffsetY2 != 0.0D) {
+        	    if (iCatapults > 0) {
         		flag2 = true;
         		bCatapultAI = bCatapultAllowAI;
+                    }
         	}
         }
+
+        bHasBlastDeflector = (bigshipgeneric instanceof TypeBlastDeflector);
+
         return flag2;
     }
 
+    public double getCatapultOffsetX(int i) {
+        return dCatapultOffsetX[i];
+    }
+
+    public double getCatapultOffsetY(int i) {
+        return dCatapultOffsetY[i];
+    }
+
     public double getCatapultOffsetX() {
-        return dCatapultOffsetX;
+        return getCatapultOffsetX(0);
     }
 
     public double getCatapultOffsetY() {
-        return dCatapultOffsetY;
+        return getCatapultOffsetY(0);
     }
 
     public double getCatapultOffsetX2() {
-        return dCatapultOffsetX2;
+        return getCatapultOffsetX(1);
     }
 
     public double getCatapultOffsetY2() {
-        return dCatapultOffsetY2;
+        return getCatapultOffsetY(1);
     }
 
     public boolean getCatapultAI() {
         return bCatapultAI;
+    }
+
+    public int getCatapultAlreadySetNum() {
+        return iCatapultAlreadySetNum;
     }
 
     public double getD0() {
