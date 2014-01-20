@@ -3971,18 +3971,21 @@ public class Maneuver extends AIFlightModel {
                                 CellAirField cellairfield = bigshipgeneric1.getCellTO();
                                 double d3;
                                 double d6;
-                                if (bCatapultAI) {
-                                    d3 = -((Tuple3d) (cellairfield.leftUpperCorner())).x - Gears.getCatapultOffsetX();
-                                    d6 = ((Tuple3d) (cellairfield.leftUpperCorner())).y - Gears.getCatapultOffsetY();
-                                } else {
-                                    d3 = -((Tuple3d) (cellairfield.leftUpperCorner())).x - (double) (cellairfield.getWidth() / 2 - 3);
-                                    d6 = brakeShoeLoc.getX() + (double) aircraft.getCellAirPlane().getHeight() + 4D;
+                                if(Gears.getCatapultAlreadySetNum() == -1)
+                                {
+                                    if (bCatapultAI) {
+                                        d3 = -((Tuple3d) (cellairfield.leftUpperCorner())).x - Gears.getCatapultOffsetX();
+                                        d6 = ((Tuple3d) (cellairfield.leftUpperCorner())).y - Gears.getCatapultOffsetY();
+                                    } else {
+                                        d3 = -((Tuple3d) (cellairfield.leftUpperCorner())).x - (double) (cellairfield.getWidth() / 2 - 3);
+                                        d6 = brakeShoeLoc.getX() + (double) aircraft.getCellAirPlane().getHeight() + 4D;
+                                    }
+                                    loc.set(d6, d3, brakeShoeLoc.getZ(), brakeShoeLoc.getAzimut(), brakeShoeLoc.getTangage(), brakeShoeLoc.getKren());
+                                    loc.add(brakeShoeLastCarrier.pos.getAbs());
+                                    actor.pos.setAbs(loc.getPoint());
+                                    brakeShoeLoc.set(actor.pos.getAbs());
+                                    brakeShoeLoc.sub(brakeShoeLastCarrier.pos.getAbs());
                                 }
-                                loc.set(d6, d3, brakeShoeLoc.getZ(), brakeShoeLoc.getAzimut(), brakeShoeLoc.getTangage(), brakeShoeLoc.getKren());
-                                loc.add(brakeShoeLastCarrier.pos.getAbs());
-                                actor.pos.setAbs(loc.getPoint());
-                                brakeShoeLoc.set(actor.pos.getAbs());
-                                brakeShoeLoc.sub(brakeShoeLastCarrier.pos.getAbs());
                                 bStage4 = true;
                             } else {
                                 CT.setPowerControl(1.0F);
