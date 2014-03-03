@@ -1,22 +1,12 @@
 package com.maddox.il2.objects.air;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-
-import com.maddox.il2.ai.BulletEmitter;
-import com.maddox.il2.ai.World;
+import com.maddox.JGP.Point3f;
+import com.maddox.JGP.Vector3f;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.fm.RealFlightModel;
-import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.game.Mission;
-import com.maddox.il2.objects.weapons.BombGun;
-import com.maddox.il2.objects.weapons.BombGunNull;
-import com.maddox.il2.objects.weapons.FuelTank;
-import com.maddox.il2.objects.weapons.RocketBombGun;
-import com.maddox.il2.objects.weapons.RocketGun;
-import com.maddox.il2.objects.weapons.WeaponHelper;
-import com.maddox.rts.Property;
+import com.maddox.rts.IniFile;
 import com.maddox.rts.Time;
 import com.maddox.sound.SoundFX;
 
@@ -25,7 +15,15 @@ public class P_47ModPack extends P_47 {
 	public P_47ModPack() {
 		bFlaps = false;
 		bFlapsEnd = false;
+		pTailSway = new Point3f(4.0F, 0F, 0F);
+//		try {
+//			this.aircraftLHclass = Class.forName("com.maddox.il2.objects.air.AircraftLH");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 	}
+	
+//	private Class aircraftLHclass;
 
 	public void onAircraftLoaded() {
 		super.onAircraftLoaded();
@@ -44,34 +42,16 @@ public class P_47ModPack extends P_47 {
 			hierMesh().chunkVisible("RackL_D0", bWingRacksVisible);
 		if (hierMesh().chunkFindCheck("RackR_D0") >= 0)
 			hierMesh().chunkVisible("RackR_D0", bWingRacksVisible);
-		// this.rocketsLeft = this.getNumRocketsAvail();
-		// this.bombsLeft = this.getNumBombsAvail();
-		this.releaseMode = 0;
-		this.lastRocketSalvoShotTime = 0;
-		this.inRocketSalvoMode = false;
-		this.inBombSalvoMode = false;
-		this.inReleaseModeToggle = false;
-		this.inPairwiseMode = false;
-		this.bExtTank = checkFuelTanks();
-
-		this.hasStockOrdnance = false;
-		int stockOrdnanceAvailable = Property.intValue(this.getClass(), "StockOrdnanceAvailable", 0);
-		if (stockOrdnanceAvailable != 0)
-			this.hasStockOrdnance = (this.thisWeaponsName.indexOf("*") == -1);
-
-		if (this.hasStockOrdnance || !(World.cur().diffCur.Limited_Ammo))
-			this.removeBombGunNull();
-		
 		// Some stock FMs don't have compressor control for the P&W engines, but our Jugs should have them, so we forcibly enable it here!
-		try {
-			Class engineClass = this.FM.EI.engines[0].getClass();
-			Field bHasCompressorControlField = engineClass.getDeclaredField("bHasCompressorControl");
-			bHasCompressorControlField.setAccessible(true);
-			bHasCompressorControlField.setBoolean(this.FM.EI.engines[0], true);
-		} catch (Exception e) {
-			System.out.println("Exception in setting bHasCompressorControl=true:");
-			e.printStackTrace();
-		}
+//		try {
+//			Class engineClass = this.FM.EI.engines[0].getClass();
+//			Field bHasCompressorControlField = engineClass.getDeclaredField("bHasCompressorControl");
+//			bHasCompressorControlField.setAccessible(true);
+//			bHasCompressorControlField.setBoolean(this.FM.EI.engines[0], true);
+//		} catch (Exception e) {
+//			System.out.println("Exception in setting bHasCompressorControl=true:");
+//			e.printStackTrace();
+//		}
         if (!Mission.isNet()) {
         	this.FM.CT.bHasCockpitDoorControl = true;
         	this.FM.CT.dvCockpitDoor = 1F;
@@ -79,208 +59,7 @@ public class P_47ModPack extends P_47 {
 		
 	}
 
-	private int getNumBulletsAvail(int triggerNum) {
-		int retVal = 0;
-		if (this.FM.CT.Weapons.length < triggerNum + 1)
-			return retVal;
-		if (this.FM.CT.Weapons[triggerNum] == null)
-			return retVal;
-		for (int i = 0; i < this.FM.CT.Weapons[triggerNum].length; triggerNum++)
-			if (this.FM.CT.Weapons[triggerNum][i] != null)
-				// if ((this.FM.CT.Weapons[triggerNum][i] instanceof RocketGun) || (this.FM.CT.Weapons[triggerNum][i] instanceof RocketBombGun))
-				retVal += this.FM.CT.Weapons[triggerNum][i].countBullets();
-		return retVal;
-	}
-
-	// private int getNumRocketsAvail() {
-	// int retVal = 0;
-	// try {
-	// for (int i = 0; i < this.FM.CT.Weapons.length; i++)
-	// if (this.FM.CT.Weapons[i] != null)
-	// for (int j = 0; j < this.FM.CT.Weapons[i].length; j++)
-	// if (this.FM.CT.Weapons[i][j] != null)
-	// if ((this.FM.CT.Weapons[i][j] instanceof RocketGun) || (this.FM.CT.Weapons[i][j] instanceof RocketBombGun))
-	// retVal += this.FM.CT.Weapons[i][j].countBullets();
-	// } catch (Exception exception) {
-	// printDebugMessage("Exception in getNumRocketsAvail(): " + exception.getMessage());
-	// }
-	// return retVal;
-	// }
-	//
-	// private int getNumBombsAvail() {
-	// int retVal = 0;
-	// try {
-	// for (int i = 0; i < this.FM.CT.Weapons.length; i++)
-	// if (this.FM.CT.Weapons[i] != null)
-	// for (int j = 0; j < this.FM.CT.Weapons[i].length; j++)
-	// if (this.FM.CT.Weapons[i][j] != null)
-	// if (this.FM.CT.Weapons[i][j] instanceof BombGun)
-	// retVal += this.FM.CT.Weapons[i][j].countBullets();
-	// } catch (Exception exception) {
-	// printDebugMessage("Exception in getNumBombsAvail(): " + exception.getMessage());
-	// }
-	// return retVal;
-	// }
-
-	private void removeBombGunNull() {
-		for (int i = 0; i < this.FM.CT.Weapons.length; i++) {
-			if (this.FM.CT.Weapons[i] != null) {
-				ArrayList saveWeapons = new ArrayList();
-				for (int j = 0; j < this.FM.CT.Weapons[i].length; j++) {
-					if (!(this.FM.CT.Weapons[i][j] instanceof BombGunNull)) {
-						saveWeapons.add(this.FM.CT.Weapons[i][j]);
-					}
-					if (!(World.cur().diffCur.Limited_Ammo)) {
-						if (isBombRocketGun(this.FM.CT.Weapons[i][j])) {
-							setShotStep(this.FM.CT.Weapons[i][j], 1);
-						}
-					}
-				}
-				this.FM.CT.Weapons[i] = new BulletEmitter[saveWeapons.size()];
-				for (int j = 0; j < saveWeapons.size(); j++) {
-					this.FM.CT.Weapons[i][j] = (BulletEmitter) saveWeapons.get(j);
-				}
-			}
-		}
-	}
-
-	private boolean checkFuelTanks() {
-		Object aobj[] = pos.getBaseAttached();
-		if (aobj == null)
-			return false;
-		for (int i = 0; i < aobj.length; i++)
-			if (aobj[i] instanceof FuelTank)
-				return true;
-		return false;
-	}
-
-	private void setShotStep(BulletEmitter theBulletEmitter, int theShotStep) {
-		if (theBulletEmitter instanceof BombGun)
-			WeaponHelper.setBombGunShotStep((BombGun) theBulletEmitter, 1);
-		else if (theBulletEmitter instanceof RocketGun)
-			WeaponHelper.setRocketGunShotStep((RocketGun) theBulletEmitter, 1);
-		else if (theBulletEmitter instanceof RocketBombGun)
-			WeaponHelper.setRocketBombGunShotStep((RocketBombGun) theBulletEmitter, 1);
-	}
-
-	private boolean isBombRocketGun(BulletEmitter theBulletEmitter) {
-		return (theBulletEmitter instanceof BombGun) || (theBulletEmitter instanceof RocketGun) || (theBulletEmitter instanceof RocketBombGun);
-	}
-
-	private void toggleReleaseMode() {
-		if (this.inReleaseModeToggle)
-			return;
-		this.inReleaseModeToggle = true;
-		this.releaseMode++;
-		this.releaseMode %= 3;
-		if (this == World.getPlayerAircraft()) {
-			switch (this.releaseMode) {
-			case 0:
-				HUD.log("Single Weapon Release");
-				break;
-			case 1:
-				HUD.log("Pairwise Weapon Release");
-				break;
-			case 2:
-				HUD.log("Salvo Weapon Release");
-				break;
-			}
-		}
-	}
-
 	public void update(float f) {
-		do {
-
-			if (!(World.cur().diffCur.Limited_Ammo) || this.hasStockOrdnance)
-				break;
-
-			if (this.FM.CT.WeaponControl[TRIGGER_CANNONS] && !this.FM.CT.saveWeaponControl[TRIGGER_GUNS]) // Toggle Release Mode when Trigger 2 only has been pressed.
-				this.toggleReleaseMode();
-			else
-				this.inReleaseModeToggle = false;
-
-			if (this.FM.CT.saveWeaponControl[TRIGGER_ROCKETS]) { // Trigger 3 (Rockets) pressed
-				// if (this.rocketsLeft > 0)
-				// this.rocketsLeft--;
-				switch (this.releaseMode) {
-				case RELEASE_MODE_PAIR:
-					if (this.inPairwiseMode)
-						break;
-					this.inPairwiseMode = true;
-					this.FM.CT.WeaponControl[2] = true;
-					break;
-				case RELEASE_MODE_SALVO:
-					// if (this.rocketsLeft > 0) {
-					if (this.getNumBulletsAvail(TRIGGER_ROCKETS) > 0) {
-						this.inRocketSalvoMode = true;
-						this.lastRocketSalvoShotTime = Time.current();
-					}
-					break;
-				case RELEASE_MODE_SINGLE:
-				default:
-					break;
-				}
-			}
-			if (this.FM.CT.saveWeaponControl[TRIGGER_BOMBS]) { // Trigger 4 (Bombs) pressed
-				// if (this.bombsLeft > 0)
-				// this.bombsLeft--;
-				switch (this.releaseMode) {
-				case RELEASE_MODE_PAIR:
-					if (this.inPairwiseMode)
-						break;
-					this.inPairwiseMode = true;
-					this.FM.CT.WeaponControl[TRIGGER_BOMBS] = true;
-					break;
-				case RELEASE_MODE_SALVO:
-					// if (this.bombsLeft > 0) {
-					if (this.getNumBulletsAvail(TRIGGER_BOMBS) > 0) {
-						this.inBombSalvoMode = true;
-						this.lastBombSalvoShotTime = Time.current();
-					}
-					break;
-				case RELEASE_MODE_SINGLE:
-				default:
-					break;
-				}
-			}
-			if (!this.FM.CT.saveWeaponControl[TRIGGER_ROCKETS] && !this.FM.CT.saveWeaponControl[TRIGGER_BOMBS])
-				this.inPairwiseMode = false;
-
-			// if (this.rocketsLeft < 1) {
-			// if (this.getNumBulletsAvail(TRIGGER_ROCKETS) < 1) {
-			// this.inRocketSalvoMode = false;
-			// this.rocketsLeft = 0;
-			// }
-
-			// if (this.bombsLeft < 1) {
-			// if (this.getNumBulletsAvail(TRIGGER_BOMBS) < 1) {
-			// this.inBombSalvoMode = false;
-			// this.bombsLeft = 0;
-			// }
-
-			if (this.inRocketSalvoMode) {
-				if (Time.current() - this.lastRocketSalvoShotTime > rocketSalvoShotGap) {
-					if (this.getNumBulletsAvail(TRIGGER_ROCKETS) < 1) {
-						this.inRocketSalvoMode = false;
-					} else {
-						this.FM.CT.WeaponControl[TRIGGER_ROCKETS] = true;
-						this.lastRocketSalvoShotTime = Time.current();
-					}
-				}
-			}
-
-			if (this.inBombSalvoMode) {
-				if (Time.current() - this.lastBombSalvoShotTime > bombSalvoShotGap) {
-					if (this.getNumBulletsAvail(TRIGGER_BOMBS) < 1) {
-						this.inBombSalvoMode = false;
-					} else {
-						this.FM.CT.WeaponControl[TRIGGER_BOMBS] = true;
-						this.lastBombSalvoShotTime = Time.current();
-					}
-				}
-			}
-		} while (false);
-
 		super.update(f);
 
 		if ((FM instanceof RealFlightModel) && ((RealFlightModel) FM).isRealMode()) {
@@ -319,7 +98,9 @@ public class P_47ModPack extends P_47 {
 	public void destroy() {
 		if (isDestroyed())
 			return;
+//    	System.out.println("P_47ModPack destroy 01");
 		super.destroy();
+//    	System.out.println("P_47ModPack destroy 02");
 		if (soundWheels != null)
 			soundWheels.cancel();
 		if (soundGearDn != null)
@@ -363,39 +144,38 @@ public class P_47ModPack extends P_47 {
 		hierMesh().chunkSetAngles("Brake2_D0", 0.0F, 0.0F, f1);
 	}
 	
-	// private int rocketsLeft = 0;
-	// private int bombsLeft = 0;
-	private int releaseMode = 0;
-	private long lastRocketSalvoShotTime = 0;
-	private long lastBombSalvoShotTime = 0;
-	private boolean inRocketSalvoMode = false;
-	private boolean inBombSalvoMode = false;
-	private boolean inPairwiseMode = false;
-	private boolean inReleaseModeToggle = false;
-	private boolean hasStockOrdnance = false;
-
+    void bubbleTopTailSway() {
+    	float fGunFactor = this.FM.CT.WeaponControl[0] || this.FM.CT.WeaponControl[1]?2F:1F;
+    	Vector3f theTailSway = new Vector3f(0F, (float)Math.sin((float)Time.current() / 1000F * Math.PI * fGunFactor), 0F);
+    	float fSwayFactor = this.FM.getSpeed() * this.FM.getSpeed() * fGunFactor * fGunFactor / 15F;
+    	theTailSway.scale(fSwayFactor);
+    	Vector3f theTailSwayMomentum = new Vector3f();
+    	theTailSwayMomentum.cross(pTailSway, theTailSway);
+    	this.FM.producedAM.z += theTailSwayMomentum.z;
+    }
+    
+    
+    private Point3f pTailSway;
 	public boolean bExtTank = false;
 	public SoundFX soundWheels;
 	public SoundFX soundGearDn;
 	public SoundFX soundGearUp;
 	public boolean bFlaps;
 	public boolean bFlapsEnd;
+	private static int flightModelsConfIniValue = -1;
 
 	private static boolean _DEBUG = false;
-	private static final long rocketSalvoShotGap = 250;
-	private static final long bombSalvoShotGap = 250;
-
-	private static final int TRIGGER_GUNS = 0;
-	private static final int TRIGGER_CANNONS = 1;
-	private static final int TRIGGER_ROCKETS = 2;
-	private static final int TRIGGER_BOMBS = 3;
-
-	private static final int RELEASE_MODE_SINGLE = 0;
-	private static final int RELEASE_MODE_PAIR = 1;
-	private static final int RELEASE_MODE_SALVO = 2;
 
 	protected static void printDebugMessage(String theMessage) {
 		if (_DEBUG)
 			System.out.println(theMessage);
+	}
+	
+	static boolean useStockFlightModels() {
+		if (flightModelsConfIniValue == -1) {
+	        IniFile inifile = new IniFile("conf.ini", 0);
+	        flightModelsConfIniValue = inifile.get("Mods", "P47PackNewFM", 0);
+		}
+		return flightModelsConfIniValue == 0;
 	}
 }

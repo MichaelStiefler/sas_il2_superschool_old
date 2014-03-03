@@ -25,7 +25,6 @@ public class P_47M extends P_47AceMakerGunsight {
 		Property.set(class1, "yearService", 1944F);
 		Property.set(class1, "yearExpired", 1947.5F);
 		Property.set(class1, "FlightModel", "FlightModels/P-47M.fmd:P47Pack_FM");
-//		Property.set(class1, "cockpitClass", new Class[] { CockpitP_47D40.class });
 		Property.set(class1, "cockpitClass", new Class[] { CockpitP_47D25.class });
 		Property.set(class1, "LOSElevation", 1.1104F);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 3, 9, 9 });

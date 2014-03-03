@@ -210,7 +210,8 @@ public class CockpitP_47DModPack extends CockpitPilot {
         resetYPRmodifier();
         Cockpit.xyz[2] = cvt(this.fm.Or.getTangage(), -45F, 45F, 0.0328F, -0.0328F);
         this.mesh.chunkSetLocate("zhorizont1b", Cockpit.xyz, Cockpit.ypr);
-        this.mesh.chunkSetAngles("zturborpm1a", 0.0F, cvt(pictTurba, 0.0F, 2.0F, 0.0F, 207.5F), 0.0F);
+        if (this.mesh.chunkFindCheck("zturborpm1a") > 0)
+        	this.mesh.chunkSetAngles("zturborpm1a", 0.0F, cvt(pictTurba, 0.0F, 2.0F, 0.0F, 207.5F), 0.0F);
         this.mesh.chunkSetAngles("zpressfuel1a", 0.0F, cvt(this.fm.M.fuel > 1.0F ? 0.26F : 0.0F, 0.0F, 0.4F, 0.0F, -180F), 0.0F);
         this.mesh.chunkSetAngles("zpressoil1a", 0.0F, cvt(1.0F + 0.05F * this.fm.EI.engines[0].tOilOut * this.fm.EI.engines[0].getReadyness(), 0.0F, 7.45F, 0.0F, 60F), 0.0F);
         this.mesh.chunkSetAngles("zAzimuth1a", 0.0F, cvt(this.fm.Or.getTangage(), -5F, 5F, -5F, 5F), 0.0F);
@@ -307,7 +308,8 @@ public class CockpitP_47DModPack extends CockpitPilot {
             this.mesh.chunkVisible("zpressfuel1a", false);
             this.mesh.chunkVisible("zpressoil1a", false);
             this.mesh.chunkVisible("ztempoil1a", false);
-            this.mesh.chunkVisible("zturbormp1a", false);
+            if (this.mesh.chunkFindCheck("zturborpm1a") > 0)
+            	this.mesh.chunkVisible("zturbormp1a", false);
             this.mesh.chunkVisible("zManifold1a", false);
             this.mesh.chunkVisible("zBlink1", false);
             this.mesh.chunkVisible("zBlink2", false);
@@ -343,7 +345,7 @@ public class CockpitP_47DModPack extends CockpitPilot {
             setNightMats(false);
         }
     }
-
+    
     private Variables setOld;
     protected Variables setNew;
     private Variables setTmp;

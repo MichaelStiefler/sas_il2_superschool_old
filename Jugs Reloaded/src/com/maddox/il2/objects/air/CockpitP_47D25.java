@@ -7,6 +7,11 @@ public class CockpitP_47D25 extends CockpitP_47DModPack
     public CockpitP_47D25()
     {
         super("3DO/Cockpit/P-47D-25/hier.him");
+    	if (!(aircraft() instanceof P_47AceMakerGunsight)) {
+	        this.mesh.chunkVisible("Z_Z_RETICLE1", false);
+	        for(int i = 1; i < 7; i++)
+	            this.mesh.chunkVisible("Z_Z_AIMMARK" + i, false);
+    	}
     }
 
     public void reflectWorldToInstruments(float f)

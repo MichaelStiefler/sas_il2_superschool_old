@@ -10,6 +10,7 @@ import com.maddox.il2.engine.Loc;
 import com.maddox.il2.engine.Orient;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
+import com.maddox.sas1946.il2.util.BaseGameVersion;
 import com.maddox.sound.SoundFX;
 import com.maddox.sound.SoundPreset;
 
@@ -132,6 +133,7 @@ public class BombM17Inc extends Bomb {
 		Property.set(class1, "kalibr", 0.32F);
 		Property.set(class1, "massa", 260F);
 		Property.set(class1, "sound", "weapon.bomb_phball");
-		Property.set(class1, "fuze", new Object[] { Fuze_fragBundle.class });
+		if (BaseGameVersion.is411orLater())
+			Property.set(class1, "fuze", new Object[] { Fuze_fragBundle.class });
 	}
 }

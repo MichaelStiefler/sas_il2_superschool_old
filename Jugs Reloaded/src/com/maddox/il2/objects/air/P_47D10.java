@@ -17,17 +17,6 @@ public class P_47D10 extends P_47ModPack {
 		return "";
 	}
 	
-//	public void moveCockpitDoor(float f) {
-//		resetYPRmodifier();
-//		Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 0.85F);
-//		hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
-//		if (Config.isUSE_RENDER()) {
-//			if (Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null)
-//				Main3D.cur3D().cockpits[0].onDoorMoved(f);
-//			setDoorSnd(f);
-//		}
-//	}
-//
 	static {
 		Class class1 = P_47D10.class;
 		new NetAircraft.SPAWN(class1);
@@ -39,12 +28,12 @@ public class P_47D10 extends P_47ModPack {
 		Property.set(class1, "PaintScheme_us", new PaintSchemeFMPar06());
 		Property.set(class1, "yearService", 1943.0F);
 		Property.set(class1, "yearExpired", 1947.5F);
-		Property.set(class1, "FlightModel", "FlightModels/P-47D-10.fmd");
+		Property.set(class1, "FlightModel", useStockFlightModels()?"FlightModels/P-47D-10.fmd":"FlightModels/P-47D-10.fmd:P47Pack_FM");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitP_47D10.class });
 		Property.set(class1, "LOSElevation", 0.9879F);
 		Property.set(class1, "StockOrdnanceAvailable", 1);
 
-		Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 9, 9, 9, 9 });
+		Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 9, 9, 9, 9 });
 		Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_ExternalRock01", "_ExternalRock01", "_ExternalRock02", "_ExternalRock02", "_ExternalRock03",
 				"_ExternalRock03", "_ExternalRock04", "_ExternalRock04", "_ExternalRock05", "_ExternalRock05", "_ExternalRock06", "_ExternalBomb01", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalBomb01" });
 	}

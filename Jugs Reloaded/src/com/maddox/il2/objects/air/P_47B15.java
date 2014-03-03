@@ -14,7 +14,7 @@ public class P_47B15 extends P_47ModPack {
 		Property.set(class1, "PaintScheme_us", new PaintSchemeFMPar06());
 		Property.set(class1, "yearService", 1941F);
 		Property.set(class1, "yearExpired", 1947.5F);
-		Property.set(class1, "FlightModel", "FlightModels/P-47B15.fmd");
+		Property.set(class1, "FlightModel", "FlightModels/P-47B15.fmd:P47Pack_FM");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitP_47D10.class });
 		Property.set(class1, "LOSElevation", 0.9879F);
 		Property.set(class1, "StockOrdnanceAvailable", 0);

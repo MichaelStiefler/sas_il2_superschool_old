@@ -1,6 +1,7 @@
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.rts.Property;
+import com.maddox.sas1946.il2.util.BaseGameVersion;
 
 public class BombM50XA3Inc extends Bomb {
 
@@ -13,6 +14,7 @@ public class BombM50XA3Inc extends Bomb {
 		Property.set(class1, "kalibr", 0.0406F);
 		Property.set(class1, "massa", 1.6F);
 		Property.set(class1, "sound", "weapon.bomb_cassette");
-		Property.set(class1, "fuze", new Object[] { Fuze_instant.class });
+		if (BaseGameVersion.is411orLater())
+			Property.set(class1, "fuze", new Object[] { Fuze_instant.class });
 	}
 }
