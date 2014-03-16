@@ -2,7 +2,7 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.rts.Property;
 
-public class P_47M extends P_47AceMakerGunsight {
+public class P_47M extends P_47ModPackAceMakerGunsight {
 
 	public void missionStarting() {
 		super.missionStarting();

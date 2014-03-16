@@ -12,8 +12,9 @@ public class P_47BDT extends P_47ModPack {
 			return;
 
 		int i = FM.EI.engines[0].getStage();
-		if (i > 0 && i < 6) f = 0.005F * (float)i;
-		
+		if (i > 0 && i < 6)
+			f = 0.005F * (float) i;
+
 		hierMesh().chunkFind(Aircraft.Props[1][0]);
 		for (int j = 0; j < 2; j++) {
 			if (oldProp[j] < 2) {
@@ -58,9 +59,11 @@ public class P_47BDT extends P_47ModPack {
 	}
 
 	public void update(float f) {
-		if (this == World.getPlayerAircraft()) World.cur().diffCur.Torque_N_Gyro_Effects = false;
+		if (this == World.getPlayerAircraft())
+			World.cur().diffCur.Torque_N_Gyro_Effects = false;
 		super.update(f);
 	}
+
 	static {
 		Class class1 = P_47BDT.class;
 		new NetAircraft.SPAWN(class1);
@@ -74,7 +77,6 @@ public class P_47BDT extends P_47ModPack {
 		Property.set(class1, "FlightModel", "FlightModels/P-47B15.fmd:P47Pack_FM");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitP_47D10.class });
 		Property.set(class1, "LOSElevation", 0.9879F);
-		Property.set(class1, "StockOrdnanceAvailable", 0);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0, 0, 0 });
 		Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08" });
 	}

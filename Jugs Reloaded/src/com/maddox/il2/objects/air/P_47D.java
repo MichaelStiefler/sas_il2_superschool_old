@@ -7,8 +7,7 @@ public class P_47D extends P_47ModPack {
 	public float getEyeLevelCorrection() {
 		return 0.05F;
 	}
-	
-	
+
 	public void update(float f) {
 		super.update(f);
 		this.bubbleTopTailSway();
@@ -17,7 +16,7 @@ public class P_47D extends P_47ModPack {
 	static {
 		Class class1 = P_47D.class;
 		new NetAircraft.SPAWN(class1);
-		
+
 		Property.set(class1, "iconFar_shortClassName", "P-47");
 		Property.set(class1, "meshName", "3DO/Plane/P-47D(Multi1)/hier.him");
 		Property.set(class1, "PaintScheme", new PaintSchemeFMPar05());
@@ -26,10 +25,9 @@ public class P_47D extends P_47ModPack {
 		Property.set(class1, "noseart", 1);
 		Property.set(class1, "yearService", 1944.0F);
 		Property.set(class1, "yearExpired", 1947.5F);
-		Property.set(class1, "FlightModel", useStockFlightModels()?"FlightModels/P-47D-27_late.fmd":"FlightModels/P-47D-27_late.fmd:P47Pack_FM");
+		Property.set(class1, "FlightModel", useStockFlightModels() ? "FlightModels/P-47D-27_late.fmd" : "FlightModels/P-47D-27_late.fmd:P47Pack_FM");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitP_47D25.class });
 		Property.set(class1, "LOSElevation", 1.1104F);
-		Property.set(class1, "StockOrdnanceAvailable", 1);
 
 		weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 9, 9, 9, 9, 9, 9 });
 		weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_ExternalRock01", "_ExternalRock01", "_ExternalRock02", "_ExternalRock02", "_ExternalRock03", "_ExternalRock03",

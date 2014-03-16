@@ -2,7 +2,7 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.rts.Property;
 
-public class P_47N15 extends P_47AceMakerGunsight implements TypeFighterAceMaker {
+public class P_47N15 extends P_47ModPackAceMakerGunsight implements TypeFighterAceMaker {
 
 	public void missionStarting() {
 		super.missionStarting();
@@ -27,7 +27,6 @@ public class P_47N15 extends P_47AceMakerGunsight implements TypeFighterAceMaker
 		Property.set(class1, "FlightModel", "FlightModels/P-47N-15.fmd:P47Pack_FM");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitP_47D25.class });
 		Property.set(class1, "LOSElevation", 1.1104F);
-		Property.set(class1, "StockOrdnanceAvailable", 0);
 
 		weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 9, 9, 9, 9, 9, 9, 9, 9 });
 		weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_ExternalRock01", "_ExternalRock01", "_ExternalRock02", "_ExternalRock02", "_ExternalRock03", "_ExternalRock03",

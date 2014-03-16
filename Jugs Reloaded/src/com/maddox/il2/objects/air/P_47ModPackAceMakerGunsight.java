@@ -7,13 +7,13 @@ import com.maddox.il2.game.HUD;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 
-public class P_47AceMakerGunsight extends P_47ModPack implements TypeFighterAceMaker {
+public class P_47ModPackAceMakerGunsight extends P_47ModPack implements TypeFighterAceMaker {
 
 	public int k14Mode;
 	public int k14WingspanType;
 	public float k14Distance;
 
-	public P_47AceMakerGunsight() {
+	public P_47ModPackAceMakerGunsight() {
 		this.k14Mode = 0;
 		this.k14WingspanType = 0;
 		this.k14Distance = 200.0F;

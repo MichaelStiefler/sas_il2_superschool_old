@@ -17,7 +17,6 @@ public class P_47B15 extends P_47ModPack {
 		Property.set(class1, "FlightModel", "FlightModels/P-47B15.fmd:P47Pack_FM");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitP_47D10.class });
 		Property.set(class1, "LOSElevation", 0.9879F);
-		Property.set(class1, "StockOrdnanceAvailable", 0);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0, 0, 0 });
 		Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08" });
 	}

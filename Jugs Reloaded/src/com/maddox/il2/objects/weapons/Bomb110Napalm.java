@@ -29,7 +29,7 @@ public class Bomb110Napalm extends Bomb {
 	}
 
 	private void doFireContaineds() {
-//		System.out.println("doFireContaineds at " + Time.current());
+		// System.out.println("doFireContaineds at " + Time.current());
 		Actor actor = null;
 		if (Actor.isValid(getOwner()))
 			actor = getOwner();
