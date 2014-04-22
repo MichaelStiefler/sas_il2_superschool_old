@@ -65,25 +65,46 @@ public class CockpitF_4E extends CockpitPilot
             float f = waypointAzimuth();
             if(useRealisticNavigationInstruments())
             {
-                setNew.waypointAzimuth.setDeg(f - 90F);
-                setOld.waypointAzimuth.setDeg(f - 90F);
+                setNew.waypointAzimuth.setDeg(f);
+                setOld.waypointAzimuth.setDeg(f);
                 setNew.radioCompassAzimuth.setDeg(setOld.radioCompassAzimuth.getDeg(0.02F), radioCompassAzimuthInvertMinus() - setOld.azimuth.getDeg(1.0F) - 90F);
-                if(((FlightModelMain) (fm)).AS.listenLorenzBlindLanding && ((FlightModelMain) (fm)).AS.isAAFIAS)
+                if(((FlightModelMain) (fm)).AS.listenLorenzBlindLanding && ((FlightModelMain) (fm)).AS.isILSBL)
                 {
+                    setNew.hsiLoc = (10F * setOld.hsiLoc + getBeaconDirection()) / 11F;
                     setNew.ilsLoc = (10F * setOld.ilsLoc + getBeaconDirection()) / 11F;
                     setNew.ilsGS = (10F * setOld.ilsGS + getGlidePath()) / 11F;
+                    bHSIILS = true;
+                    bHSIDL = bHSIMAN = bHSINAV = bHSITAC = bHSITGT = bHSIUHF = false;
+                } else if(((FlightModelMain) (fm)).AS.listenTACAN)
+                {
+                    setNew.hsiLoc = (10F * setOld.hsiLoc + getBeaconDirection()) / 11F;
+                    setNew.ilsLoc = (10F * setOld.ilsLoc + getBeaconDirection()) / 11F;
+                    setNew.ilsGS = 0.0F;
+                    bHSITAC = true;
+                    bHSIDL = bHSIILS = bHSIMAN = bHSINAV = bHSITGT = bHSIUHF = false;
+                } else if(((FlightModelMain) (fm)).AS.listenNDBeacon || ((FlightModelMain) (fm)).AS.listenYGBeacon)
+                {
+                    setNew.hsiLoc = (10F * setOld.hsiLoc + getBeaconDirection()) / 11F;
+                    setNew.ilsLoc = (10F * setOld.ilsLoc + getBeaconDirection()) / 11F;
+                    setNew.ilsGS = 0.0F;
+                    bHSIUHF = true;
+                    bHSIDL = bHSIILS = bHSIMAN = bHSINAV = bHSITAC = bHSITGT = false;
                 } else
                 {
+                    setNew.hsiLoc = 0.0F;
                     setNew.ilsLoc = 0.0F;
                     setNew.ilsGS = 0.0F;
+                    bHSIDL = bHSIILS = bHSIMAN = bHSINAV = bHSITAC = bHSITGT = bHSIUHF = false;
                 }
             } else
             {
                 setNew.waypointAzimuth.setDeg(setOld.waypointAzimuth.getDeg(0.1F), f);
                 setNew.radioCompassAzimuth.setDeg(setOld.radioCompassAzimuth.getDeg(0.1F), f - setOld.azimuth.getDeg(0.1F) - 90F);
+                bHSINAV = true;
+                bHSIDL = bHSIILS = bHSIMAN = bHSITAC = bHSITGT = bHSIUHF = false;
             }
             setNew.azimuth.setDeg(setOld.azimuth.getDeg(1.0F), ((FlightModelMain) (fm)).Or.azimut());
-            setNew.vspeed = (299F * setOld.vspeed + ((FlightModelMain) (fm)).getVertSpeed()) / 300F;
+            setNew.vspeed = (199F * setOld.vspeed + ((FlightModelMain) (fm)).getVertSpeed()) / 200F;
             if(cockpitDimControl)
             {
                 if(setNew.dimPosition > 0.0F)
@@ -118,6 +139,7 @@ public class CockpitF_4E extends CockpitPilot
         AnglesFork radioCompassAzimuth;
         float beaconDirection;
         float beaconRange;
+        float hsiLoc;
         float ilsLoc;
         float ilsGS;
         float dimPosition;
@@ -156,13 +178,14 @@ public class CockpitF_4E extends CockpitPilot
         pictAiler = 0.0F;
         pictElev = 0.0F;
         bU4 = false;
+        bHSIDL = bHSIILS = bHSIMAN = bHSINAV = bHSITAC = bHSITGT = bHSIUHF = false;
         cockpitNightMats = (new String[] {
-            "2petitsb_d1", "2petitsb", "aiguill1", "badinetm_d1", "badinetm", "baguecom", "brasdele", "comptemu_d1", "comptemu", "petitfla_d1", 
-            "petitfla", "turnbank"
+            "Gauges_02", "Gauges_03", "Gauges_04", "Gauges_05", "Gauges_06", "Gauges_08", "Gauges_10", "Needles", "Needles2"
         });
         setNightMats(false);
         setNew.dimPosition = 1.0F;
         interpPut(new Interpolater(), null, Time.current(), null);
+        printCompassHeading = true;
     }
 
     public void removeCanopy()
@@ -259,18 +282,59 @@ public class CockpitF_4E extends CockpitPilot
         mesh.chunkSetAngles("Z_horizont2", 0.0F, 0.0F, ((FlightModelMain) (fm)).Or.getKren());
         mesh.chunkSetAngles("Z_horizont2b", 0.0F, ((FlightModelMain) (fm)).Or.getTangage(), 0.0F);
         mesh.chunkSetAngles("zBall", 0.0F, cvt(getBall(6D), -6F, 6F, -9F, 9F), 0.0F);
-        Cockpit.xyz[0] = -cvt(setNew.ilsLoc, -63F, 63F, -0.036F, 0.036F);
+        float ilsloctmp = setNew.ilsLoc * setNew.ilsLoc * ((setNew.ilsLoc < 0)? -1F : 1F);
+        Cockpit.xyz[0] = -cvt(ilsloctmp, -10000F, 10000F, -0.036F, 0.036F);
         Cockpit.xyz[1] = Cockpit.xyz[2] = 0.0F;
         Cockpit.ypr[0] = cvt(((FlightModelMain) (fm)).Or.getKren(), -35F, 35F, -35F, 35F);
         Cockpit.ypr[1] = Cockpit.ypr[2] = 0.0F;
         mesh.chunkSetLocate("BL_Vert", Cockpit.xyz, Cockpit.ypr);
-        Cockpit.xyz[1] = -cvt(setNew.ilsGS, -0.5F, 0.5F, -0.036F, 0.036F);
+        float ilsgstmp = setNew.ilsGS * setNew.ilsGS * ((setNew.ilsGS < 0)? -1F : 1F);
+//        Cockpit.xyz[1] = -cvt(setNew.ilsGS, -0.3F, 0.5F, -0.036F, 0.036F);
+// 2014.04.20        Cockpit.xyz[1] = -cvt(setNew.ilsGS, -0.09F, 0.64F, -0.036F, 0.036F);
+        Cockpit.xyz[1] = -cvt(setNew.ilsGS, -0.25F, 0.25F, -0.036F, 0.036F);
         Cockpit.xyz[0] = Cockpit.xyz[2] = 0.0F;
         Cockpit.ypr[0] = cvt(((FlightModelMain) (fm)).Or.getKren(), -35F, 35F, -35F, 35F);
         Cockpit.ypr[1] = Cockpit.ypr[2] = 0.0F;
         mesh.chunkSetLocate("BL_Horiz", Cockpit.xyz, Cockpit.ypr);
-        if(((FlightModelMain) (fm)).AS.isAAFIAS)
-            mesh.chunkVisible("BL_Light", isOnBlindLandingMarker());
+        mesh.chunkVisible("BL_Vert", bHSIDL || bHSIILS || bHSIMAN || bHSINAV || bHSITAC || bHSITGT || bHSIUHF);
+        mesh.chunkVisible("BL_Horiz", bHSIILS);
+        resetYPRmodifier();
+        float hsiloctmp = setNew.hsiLoc * setNew.hsiLoc * ((setNew.hsiLoc < 0)? -1F : 1F);
+        Cockpit.xyz[1] = cvt(hsiloctmp, -20000F, 20000F, -0.036F, 0.036F);
+        Cockpit.xyz[0] = Cockpit.xyz[2] = 0.0F;
+        mesh.chunkSetLocate("Z_Azimuth_3", Cockpit.xyz, Cockpit.ypr);
+        if(useRealisticNavigationInstruments())
+        {
+            mesh.chunkSetAngles("Z_Compass4", setNew.waypointAzimuth.getDeg(f * 0.1F), 0.0F, 0.0F);
+            mesh.chunkSetAngles("Z_course_1", cvt(waypointAzimuth(), 0.0F, 360F, 0.0F, 12960F), 0.0F, 0.0F);
+            mesh.chunkSetAngles("Z_course_10", cvt((float)Math.floor(waypointAzimuth() / 10F), 0.0F, 36F, 0.0F, 1296F), 0.0F, 0.0F);
+            mesh.chunkSetAngles("Z_course_100", cvt((float)Math.floor(waypointAzimuth() / 100F), 0.0F, 3F, 0.0F, 108F), 0.0F, 0.0F);
+        }
+        float BeaconDistanceInNM = getBeaconDistance() / 1852F;
+        if(!useRealisticNavigationInstruments())
+        {
+            WayPoint waypoint = ((FlightModelMain) (fm)).AP.way.curr();
+            if(waypoint != null)
+            {
+                Point3d P1 = new Point3d();
+                Vector3d V = new Vector3d();
+                waypoint.getP(P1);
+                V.sub(P1, ((FlightModelMain) (fm)).Loc);
+                BeaconDistanceInNM = (float)Math.sqrt(V.x * V.x + V.y * V.y) / 1852F;
+            }
+        }
+        mesh.chunkSetAngles("Z_miles_01", cvt(BeaconDistanceInNM, 0.0F, 1000F, 0.0F, 360000F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("Z_miles_1", cvt((float)Math.floor(BeaconDistanceInNM), 0.0F, 1000F, 0.0F, 36000F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("Z_miles_10", cvt((float)Math.floor(BeaconDistanceInNM / 10F), 0.0F, 100F, 0.0F, 3600F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("Z_miles_100", cvt((float)Math.floor(BeaconDistanceInNM / 100F), 0.0F, 10F, 0.0F, 360F), 0.0F, 0.0F);
+        mesh.chunkVisible("Z_miles_hide", !bHSIILS && !bHSITAC && !bHSINAV && !bHSITGT);
+        mesh.chunkVisible("Z_HSItext_DL", bHSIDL);
+        mesh.chunkVisible("Z_HSItext_ILS", bHSIILS);
+        mesh.chunkVisible("Z_HSItext_MAN", bHSIMAN);
+        mesh.chunkVisible("Z_HSItext_NAV", bHSINAV);
+        mesh.chunkVisible("Z_HSItext_TAC", bHSITAC);
+        mesh.chunkVisible("Z_HSItext_TGT", bHSITGT);
+        mesh.chunkVisible("Z_HSItext_UHF", bHSIUHF);
         mesh.chunkSetAngles("Z_AOA", cvt(30F - AOAunits, 0F, 30F, 0.0F, 270F), 0.0F, 0.0F);
         mesh.chunkSetAngles("Z_Accello1", cvt(((FlightModelMain) (fm)).getOverload(), -5F, 10F, -220F, 114F), 0.0F, 0.0F);
         mesh.chunkSetAngles("Z_Accello2", cvt(setNew.accelloMax, -5F, 10F, -220F, 114F), 0.0F, 0.0F);
@@ -604,6 +668,13 @@ public class CockpitF_4E extends CockpitPilot
     private float pictAiler;
     private float pictElev;
     private boolean bU4;
+    private boolean bHSIDL;
+    private boolean bHSIILS;
+    private boolean bHSIMAN;
+    private boolean bHSINAV;
+    private boolean bHSITAC;
+    private boolean bHSITGT;
+    private boolean bHSIUHF;
     private static final float speedometerIndScale[] = {
           0.00F,   2.41F,   4.82F,  10.36F,  16.14F,  23.44F,  35.11F,  47.26F,  60.07F,  73.80F,
          87.14F,  99.47F, 111.75F, 123.91F, 135.64F, 142.87F, 150.10F, 157.33F, 164.56F, 171.81F,

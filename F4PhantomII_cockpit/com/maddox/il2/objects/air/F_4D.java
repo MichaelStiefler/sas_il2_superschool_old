@@ -519,7 +519,7 @@ public class F_4D extends F_4
         if(((FlightModelMain) (super.FM)).CT.DragChuteControl > 0.0F && !bHasDeployedDragChute)
         {
             chute = new Chute(this);
-            chute.setMesh("3do/plane/ChuteF86/mono.sim");
+            chute.setMesh("3do/plane/ChuteF-4/mono.sim");
             chute.collide(true);
             chute.mesh().setScale(0.8F);
             ((Actor) (chute)).pos.setRel(new Point3d(-8D, 0.0D, 0.5D), new Orient(0.0F, 90F, 0.0F));
@@ -557,102 +557,106 @@ public class F_4D extends F_4
             hierMesh().chunkSetAngles("SlatL_Out", 0.0F, 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, -20.5F));
             hierMesh().chunkSetAngles("SlatR_Out", 0.0F, 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, -20.5F));
         }
-        if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x += 28000D;
-        if(((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x += 28000D;
-        if(super.FM.getAltitude() > 0.0F && (double)calculateMach() >= 1.1799999999999999D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 10000D;
-        if(super.FM.getAltitude() > 0.0F && (double)calculateMach() >= 1.1799999999999999D && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 10000D;
-        if(super.FM.getAltitude() > 500F && (double)calculateMach() >= 1.1799999999999999D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x += 7000D;
-        if(super.FM.getAltitude() > 500F && (double)calculateMach() >= 1.1799999999999999D && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x += 7000D;
-        if(super.FM.getAltitude() > 1000F && (double)calculateMach() >= 1.1799999999999999D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x += 1500D;
-        if(super.FM.getAltitude() > 1000F && (double)calculateMach() >= 1.1799999999999999D && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x += 1500D;
-        if(super.FM.getAltitude() > 1500F && (double)calculateMach() >= 1.1799999999999999D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x += 1500D;
-        if(super.FM.getAltitude() > 1500F && (double)calculateMach() >= 1.1799999999999999D && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x += 1500D;
-        if(super.FM.getAltitude() > 9000F && ((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() < 1.001F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 1900D;
-        if(super.FM.getAltitude() > 9000F && ((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput() < 1.001F && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 1900D;
-        if(super.FM.getAltitude() > 10000F && (double)calculateMach() >= 2.27D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 8000D;
-        if(super.FM.getAltitude() > 10000F && (double)calculateMach() >= 2.27D && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 8000D;
-        if(super.FM.getAltitude() > 11000F && ((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x += 5500D;
-        if(super.FM.getAltitude() > 11000F && ((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x += 5500D;
-        if(super.FM.getAltitude() > 12500F && ((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 2000D;
-        if(super.FM.getAltitude() > 12500F && ((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 2000D;
-        if(super.FM.getAltitude() > 14000F && ((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 2000D;
-        if(super.FM.getAltitude() > 14000F && ((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 2000D;
-        if(super.FM.getAltitude() > 15000F && ((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 2000D;
-        if(super.FM.getAltitude() > 15000F && ((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 2000D;
-        if(super.FM.getAltitude() > 15500F && (double)calculateMach() >= 2.0099999999999998D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 8000D;
-        if(super.FM.getAltitude() > 15500F && (double)calculateMach() >= 2.0099999999999998D && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 8000D;
-        if(super.FM.getAltitude() > 16000F && ((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 2000D;
-        if(super.FM.getAltitude() > 16000F && ((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 2000D;
-        if(super.FM.getAltitude() > 16000F && (double)calculateMach() >= 1.9199999999999999D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 8000D;
-        if(super.FM.getAltitude() > 16000F && (double)calculateMach() >= 1.9199999999999999D && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 8000D;
-        if(super.FM.getAltitude() > 17000F && ((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 3000D;
-        if(super.FM.getAltitude() > 17000F && ((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 3000D;
-        if(super.FM.getAltitude() > 17000F && (double)calculateMach() >= 1.8200000000000001D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 8000D;
-        if(super.FM.getAltitude() > 17000F && (double)calculateMach() >= 1.8200000000000001D && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 8000D;
-        if(super.FM.getAltitude() > 17500F && (double)calculateMach() >= 1.73D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 8000D;
-        if(super.FM.getAltitude() > 17500F && (double)calculateMach() >= 1.73D && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 8000D;
-        if(super.FM.getAltitude() > 18000F && ((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 3000D;
-        if(super.FM.getAltitude() > 18000F && ((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 3000D;
-        if(super.FM.getAltitude() > 18000F && (double)calculateMach() >= 1.5900000000000001D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 8000D;
-        if(super.FM.getAltitude() > 18000F && (double)calculateMach() >= 1.5900000000000001D && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 8000D;
-        if(super.FM.getAltitude() > 18500F && (double)calculateMach() >= 1.5800000000000001D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 8000D;
-        if(super.FM.getAltitude() > 18500F && (double)calculateMach() >= 1.5800000000000001D && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 8000D;
-        if(super.FM.getAltitude() > 18800F && ((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 3000D;
-        if(super.FM.getAltitude() > 18800F && ((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 3000D;
-        if(super.FM.getAltitude() > 19000F && (double)calculateMach() >= 1.52D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 8000D;
-        if(super.FM.getAltitude() > 19000F && (double)calculateMach() >= 1.52D && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 8000D;
-        if(super.FM.getAltitude() > 20000F && ((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 7000D;
-        if(super.FM.getAltitude() > 20000F && ((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 7000D;
-        if(super.FM.getAltitude() > 21000F && ((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 17000D;
-        if(super.FM.getAltitude() > 21000F && ((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= 17000D;
+        double Eto0 = ((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput();
+        double Eto1 = ((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput();
+        boolean bEs0 = ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5;
+        boolean bEs1 = ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5;
+        if(Eto0 > 1.001F && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x += Eto0 * 26000D;
+        if(Eto1 > 1.001F && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x += Eto1 * 26000D;
+        if(super.FM.getAltitude() > 0.0F && (double)calculateMach() >= 1.1799999999999999D && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto0 * 10000D;
+        if(super.FM.getAltitude() > 0.0F && (double)calculateMach() >= 1.1799999999999999D && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto1 * 10000D;
+        if(super.FM.getAltitude() > 500F && (double)calculateMach() >= 1.1799999999999999D && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x += Eto0 * 7000D;
+        if(super.FM.getAltitude() > 500F && (double)calculateMach() >= 1.1799999999999999D && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x += Eto1 * 7000D;
+        if(super.FM.getAltitude() > 1000F && (double)calculateMach() >= 1.1799999999999999D && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x += Eto0 * 1500D;
+        if(super.FM.getAltitude() > 1000F && (double)calculateMach() >= 1.1799999999999999D && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x += Eto1 * 1500D;
+        if(super.FM.getAltitude() > 1500F && (double)calculateMach() >= 1.1799999999999999D && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x += Eto0 * 1500D;
+        if(super.FM.getAltitude() > 1500F && (double)calculateMach() >= 1.1799999999999999D && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x += Eto1 * 1500D;
+        if(super.FM.getAltitude() > 9000F && Eto0 < 1.001F && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto0 * 1900D;
+        if(super.FM.getAltitude() > 9000F && Eto1 < 1.001F && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto1 * 1900D;
+        if(super.FM.getAltitude() > 10000F && (double)calculateMach() >= 2.27D && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto0 * 8000D;
+        if(super.FM.getAltitude() > 10000F && (double)calculateMach() >= 2.27D && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto1 * 8000D;
+        if(super.FM.getAltitude() > 11000F && Eto0 > 1.001F && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x += Eto0 * 5000D;
+        if(super.FM.getAltitude() > 11000F && Eto1 > 1.001F && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x += Eto1 * 5000D;
+        if(super.FM.getAltitude() > 12500F && Eto0 > 1.001F && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto0 * 2000D;
+        if(super.FM.getAltitude() > 12500F && Eto1 > 1.001F && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto1 * 2000D;
+        if(super.FM.getAltitude() > 14000F && Eto0 > 1.001F && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto0 * 2000D;
+        if(super.FM.getAltitude() > 14000F && Eto1 > 1.001F && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto1 * 2000D;
+        if(super.FM.getAltitude() > 15000F && Eto0 > 1.001F && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto0 * 2000D;
+        if(super.FM.getAltitude() > 15000F && Eto1 > 1.001F && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto1 * 2000D;
+        if(super.FM.getAltitude() > 15500F && (double)calculateMach() >= 2.0099999999999998D && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto0 * 8000D;
+        if(super.FM.getAltitude() > 15500F && (double)calculateMach() >= 2.0099999999999998D && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto1 * 8000D;
+        if(super.FM.getAltitude() > 16000F && Eto0 > 1.001F && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto0 * 2000D;
+        if(super.FM.getAltitude() > 16000F && Eto1 > 1.001F && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto1 * 2000D;
+        if(super.FM.getAltitude() > 16000F && (double)calculateMach() >= 1.9199999999999999D && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto0 * 8000D;
+        if(super.FM.getAltitude() > 16000F && (double)calculateMach() >= 1.9199999999999999D && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto1 * 8000D;
+        if(super.FM.getAltitude() > 17000F && Eto0 > 1.001F && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto0 * 2700D;
+        if(super.FM.getAltitude() > 17000F && Eto1 > 1.001F && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto1 * 3000D;
+        if(super.FM.getAltitude() > 17000F && (double)calculateMach() >= 1.8200000000000001D && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto0 * 8000D;
+        if(super.FM.getAltitude() > 17000F && (double)calculateMach() >= 1.8200000000000001D && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto1 * 8000D;
+        if(super.FM.getAltitude() > 17500F && (double)calculateMach() >= 1.73D && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto0 * 8000D;
+        if(super.FM.getAltitude() > 17500F && (double)calculateMach() >= 1.73D && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto1 * 8000D;
+        if(super.FM.getAltitude() > 18000F && Eto0 > 1.001F && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto0 * 2700D;
+        if(super.FM.getAltitude() > 18000F && Eto1 > 1.001F && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto1 * 2700D;
+        if(super.FM.getAltitude() > 18000F && (double)calculateMach() >= 1.5900000000000001D && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto0 * 8000D;
+        if(super.FM.getAltitude() > 18000F && (double)calculateMach() >= 1.5900000000000001D && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto1 * 8000D;
+        if(super.FM.getAltitude() > 18500F && (double)calculateMach() >= 1.5800000000000001D && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto0 * 8000D;
+        if(super.FM.getAltitude() > 18500F && (double)calculateMach() >= 1.5800000000000001D && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto1 * 8000D;
+        if(super.FM.getAltitude() > 18800F && Eto0 > 1.001F && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto0 * 2700D;
+        if(super.FM.getAltitude() > 18800F && Eto1 > 1.001F && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto1 * 2700D;
+        if(super.FM.getAltitude() > 19000F && (double)calculateMach() >= 1.52D && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto0 * 8000D;
+        if(super.FM.getAltitude() > 19000F && (double)calculateMach() >= 1.52D && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto1 * 8000D;
+        if(super.FM.getAltitude() > 20000F && Eto0 > 1.001F && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto0 * 6300D;
+        if(super.FM.getAltitude() > 20000F && Eto1 > 1.001F && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto1 * 6300D;
+        if(super.FM.getAltitude() > 21000F && Eto0 > 1.001F && bEs0)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto0 * 15500D;
+        if(super.FM.getAltitude() > 21000F && Eto1 > 1.001F && bEs1)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Eto1 * 15500D;
     }
 
     public void moveFan(float f)
@@ -3163,10 +3167,10 @@ public class F_4D extends F_4
             a_lweaponslot[108] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
             a_lweaponslot[109] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
             a_lweaponslot[110] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
-            a_lweaponslot[115] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[116] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[117] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[118] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
+            a_lweaponslot[115] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
+            a_lweaponslot[116] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
+            a_lweaponslot[117] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
+            a_lweaponslot[118] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
             a_lweaponslot[60] = null;
             a_lweaponslot[61] = null;
             a_lweaponslot[70] = null;
@@ -3234,10 +3238,10 @@ public class F_4D extends F_4
             a_lweaponslot[108] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
             a_lweaponslot[109] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
             a_lweaponslot[110] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
-            a_lweaponslot[115] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[116] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[117] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[118] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
+            a_lweaponslot[115] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
+            a_lweaponslot[116] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
+            a_lweaponslot[117] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
+            a_lweaponslot[118] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
             a_lweaponslot[60] = null;
             a_lweaponslot[61] = null;
             a_lweaponslot[70] = new Aircraft._WeaponSlot(0, "MGunM61", 1200);
@@ -3309,14 +3313,14 @@ public class F_4D extends F_4
             a_lweaponslot[112] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
             a_lweaponslot[113] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
             a_lweaponslot[114] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
-            a_lweaponslot[115] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[116] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[117] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[118] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[121] = new Aircraft._WeaponSlot(4, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[122] = new Aircraft._WeaponSlot(4, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[123] = new Aircraft._WeaponSlot(4, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[124] = new Aircraft._WeaponSlot(4, "CannonRocketSimpleZuni", 4);
+            a_lweaponslot[115] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
+            a_lweaponslot[116] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
+            a_lweaponslot[117] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
+            a_lweaponslot[118] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
+            a_lweaponslot[121] = new Aircraft._WeaponSlot(4, "RocketGun5inchZuni", 4);
+            a_lweaponslot[122] = new Aircraft._WeaponSlot(4, "RocketGun5inchZuni", 4);
+            a_lweaponslot[123] = new Aircraft._WeaponSlot(4, "RocketGun5inchZuni", 4);
+            a_lweaponslot[124] = new Aircraft._WeaponSlot(4, "RocketGun5inchZuni", 4);
             a_lweaponslot[60] = null;
             a_lweaponslot[61] = null;
             a_lweaponslot[70] = new Aircraft._WeaponSlot(0, "MGunM61", 1200);
@@ -3364,10 +3368,10 @@ public class F_4D extends F_4
             a_lweaponslot[112] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
             a_lweaponslot[113] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
             a_lweaponslot[114] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
-            a_lweaponslot[121] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[122] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[123] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[124] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
+            a_lweaponslot[121] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
+            a_lweaponslot[122] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
+            a_lweaponslot[123] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
+            a_lweaponslot[124] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
             a_lweaponslot[70] = new Aircraft._WeaponSlot(0, "MGunM61", 1200);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
@@ -3443,14 +3447,14 @@ public class F_4D extends F_4
             a_lweaponslot[112] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
             a_lweaponslot[113] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
             a_lweaponslot[114] = new Aircraft._WeaponSlot(9, "Pylon_Zuni", 1);
-            a_lweaponslot[115] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[116] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[117] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[118] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[121] = new Aircraft._WeaponSlot(4, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[122] = new Aircraft._WeaponSlot(4, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[123] = new Aircraft._WeaponSlot(4, "CannonRocketSimpleZuni", 4);
-            a_lweaponslot[124] = new Aircraft._WeaponSlot(4, "CannonRocketSimpleZuni", 4);
+            a_lweaponslot[115] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
+            a_lweaponslot[116] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
+            a_lweaponslot[117] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
+            a_lweaponslot[118] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
+            a_lweaponslot[121] = new Aircraft._WeaponSlot(4, "RocketGun5inchZuni", 4);
+            a_lweaponslot[122] = new Aircraft._WeaponSlot(4, "RocketGun5inchZuni", 4);
+            a_lweaponslot[123] = new Aircraft._WeaponSlot(4, "RocketGun5inchZuni", 4);
+            a_lweaponslot[124] = new Aircraft._WeaponSlot(4, "RocketGun5inchZuni", 4);
             a_lweaponslot[60] = null;
             a_lweaponslot[61] = null;
             a_lweaponslot[70] = null;
@@ -3518,10 +3522,10 @@ public class F_4D extends F_4
             a_lweaponslot[128] = new Aircraft._WeaponSlot(9, "Pylon_LAU130green", 1);
             a_lweaponslot[129] = new Aircraft._WeaponSlot(9, "Pylon_LAU130green", 1);
             a_lweaponslot[130] = new Aircraft._WeaponSlot(9, "Pylon_LAU130green", 1);
-            a_lweaponslot[115] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[116] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[117] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[118] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
+            a_lweaponslot[115] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[116] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[117] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[118] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
             a_lweaponslot[60] = null;
             a_lweaponslot[61] = null;
             a_lweaponslot[70] = null;
@@ -3589,10 +3593,10 @@ public class F_4D extends F_4
             a_lweaponslot[128] = new Aircraft._WeaponSlot(9, "Pylon_LAU130green", 1);
             a_lweaponslot[129] = new Aircraft._WeaponSlot(9, "Pylon_LAU130green", 1);
             a_lweaponslot[130] = new Aircraft._WeaponSlot(9, "Pylon_LAU130green", 1);
-            a_lweaponslot[115] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[116] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[117] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[118] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
+            a_lweaponslot[115] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[116] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[117] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[118] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
             a_lweaponslot[60] = null;
             a_lweaponslot[61] = null;
             a_lweaponslot[70] = new Aircraft._WeaponSlot(0, "MGunM61", 1200);
@@ -3662,12 +3666,12 @@ public class F_4D extends F_4
             a_lweaponslot[130] = new Aircraft._WeaponSlot(9, "Pylon_LAU130green", 1);
             a_lweaponslot[131] = new Aircraft._WeaponSlot(9, "Pylon_LAU130green", 1);
             a_lweaponslot[132] = new Aircraft._WeaponSlot(9, "Pylon_LAU130green", 1);
-            a_lweaponslot[115] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[116] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[117] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[118] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[119] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[120] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
+            a_lweaponslot[115] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[116] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[117] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[118] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[119] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[120] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
             a_lweaponslot[60] = null;
             a_lweaponslot[61] = null;
             a_lweaponslot[70] = new Aircraft._WeaponSlot(0, "MGunM61", 1200);
@@ -3746,21 +3750,21 @@ public class F_4D extends F_4
             a_lweaponslot[139] = new Aircraft._WeaponSlot(9, "Pylon_LAU130green", 1);
             a_lweaponslot[140] = new Aircraft._WeaponSlot(9, "Pylon_LAU130green", 1);
             a_lweaponslot[141] = new Aircraft._WeaponSlot(9, "Pylon_LAU130green", 1);
-            a_lweaponslot[115] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[116] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[117] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[118] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[119] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[120] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
+            a_lweaponslot[115] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[116] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[117] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[118] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[119] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[120] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
             a_lweaponslot[121] = null;
             a_lweaponslot[122] = null;
             a_lweaponslot[123] = null;
             a_lweaponslot[124] = null;
             a_lweaponslot[125] = null;
             a_lweaponslot[126] = null;
-            a_lweaponslot[142] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[143] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[144] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
+            a_lweaponslot[142] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[143] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[144] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
             a_lweaponslot[60] = null;
             a_lweaponslot[61] = null;
             a_lweaponslot[70] = null;
@@ -3799,12 +3803,12 @@ public class F_4D extends F_4
             a_lweaponslot[136] = new Aircraft._WeaponSlot(9, "Pylon_LAU130green", 1);
             a_lweaponslot[137] = new Aircraft._WeaponSlot(9, "Pylon_LAU130green", 1);
             a_lweaponslot[138] = new Aircraft._WeaponSlot(9, "Pylon_LAU130green", 1);
-            a_lweaponslot[121] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[122] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[123] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[124] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[125] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
-            a_lweaponslot[126] = new Aircraft._WeaponSlot(2, "CannonRocketSimpleHYDRA", 19);
+            a_lweaponslot[121] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[122] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[123] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[124] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[125] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
+            a_lweaponslot[126] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
             a_lweaponslot[36] = null;
             a_lweaponslot[37] = null;
             a_lweaponslot[38] = null;
