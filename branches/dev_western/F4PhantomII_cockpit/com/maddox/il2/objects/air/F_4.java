@@ -85,6 +85,9 @@ public class F_4 extends Scheme2
         hasHydraulicPressure = true;
         lTimeNextEject = 0L;
         lTimeNextEject = 0L;
+        APmode1 = false;
+        APmode2 = false;
+        APmode3 = false;
     }
 
     public void getGFactors(TypeGSuit.GFactors gfactors)
@@ -244,6 +247,7 @@ public class F_4 extends Scheme2
         else
             hierMesh().chunkVisible("HMask2_D0", hierMesh().isChunkVisible("Pilot2_D0"));
         if((!super.FM.isPlayers() || !(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode()) && (super.FM instanceof Maneuver))
+        {
             if(((FlightModelMain) (super.FM)).AP.way.isLanding() && super.FM.getSpeed() > ((FlightModelMain) (super.FM)).VmaxFLAPS && super.FM.getSpeed() > ((FlightModelMain) (super.FM)).AP.way.curr().getV() * 1.4F)
             {
                 if(((FlightModelMain) (super.FM)).CT.AirBrakeControl != 1.0F)
@@ -253,7 +257,7 @@ public class F_4 extends Scheme2
             {
                 if(super.FM.getSpeed() > ((FlightModelMain) (super.FM)).VminFLAPS * 0.5F && ((FlightModelMain) (super.FM)).Gears.nearGround())
                 {
-                    if(((FlightModelMain) (super.FM)).Gears.onGround())
+                    if(((FlightModelMain) (super.FM)).Gears.onGround() && !((FlightModelMain) (super.FM)).AP.way.isLandingOnShip())
                     {
                         if(((FlightModelMain) (super.FM)).CT.AirBrakeControl != 1.0F)
                             ((FlightModelMain) (super.FM)).CT.AirBrakeControl = 1.0F;
@@ -277,8 +281,10 @@ public class F_4 extends Scheme2
             } else
             if(hasHydraulicPressure && ((FlightModelMain) (super.FM)).CT.AirBrakeControl != 0.0F)
                 ((FlightModelMain) (super.FM)).CT.AirBrakeControl = 0.0F;
-//        if(((FlightModelMain) (super.FM)).AP.way.curr().Action == 3)
-//            ((FlightModelMain) (super.FM)).CT.dropFuelTanks();
+
+            if(((FlightModelMain) (super.FM)).AP.way.curr().Action == 3)
+                ((FlightModelMain) (super.FM)).CT.dropFuelTanks();
+        }
         if(((FlightModelMain) (super.FM)).AP.way.curr().Action == 3 && !((Maneuver)super.FM).hasBombs())
         {
             ((FlightModelMain) (super.FM)).AP.way.next();
@@ -1071,7 +1077,7 @@ public class F_4 extends Scheme2
         }
         if(((FlightModelMain) (super.FM)).AS.isMaster() && Config.isUSE_RENDER())
         {
-            if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 0.5F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6)
+            if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 0.25F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6)
             {
                 if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F)
                     ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 5);
@@ -1626,6 +1632,68 @@ public class F_4 extends Scheme2
         fSightCurReadyness = (float)netmsginput.readUnsignedByte() / 200F;
     }
 
+    public void auxPressed(int i)
+    {
+        super.auxPressed(i);
+        if(i == 20)
+            if(!APmode1)
+            {
+                APmode1 = true;
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Autopilot Mode: Altitude ON");
+                ((FlightModelMain) (FM)).AP.setStabAltitude(((FlightModelMain) (FM)).getAltitude());
+            } else
+            if(APmode1)
+            {
+                APmode1 = false;
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Autopilot Mode: Altitude OFF");
+                ((FlightModelMain) (FM)).AP.setStabAltitude(false);
+            }
+        if(i == 21)
+            if(!APmode2)
+            {
+                APmode2 = true;
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Autopilot Mode: Direction ON");
+                ((FlightModelMain) (FM)).AP.setStabDirection(true);
+                ((FlightModelMain) (FM)).CT.bHasRudderControl = false;
+            } else
+            if(APmode2)
+            {
+                APmode2 = false;
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Autopilot Mode: Direction OFF");
+                ((FlightModelMain) (FM)).AP.setStabDirection(false);
+                ((FlightModelMain) (FM)).CT.bHasRudderControl = true;
+            }
+        if(i == 22)
+            if(!APmode3)
+            {
+                APmode3 = true;
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Autopilot Mode: Route ON");
+                ((FlightModelMain) (FM)).AP.setWayPoint(true);
+            } else
+            if(APmode3)
+            {
+                APmode3 = false;
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Autopilot Mode: Route OFF");
+                ((FlightModelMain) (FM)).AP.setWayPoint(false);
+                ((FlightModelMain) (FM)).CT.AileronControl = 0.0F;
+                ((FlightModelMain) (FM)).CT.ElevatorControl = 0.0F;
+                ((FlightModelMain) (FM)).CT.RudderControl = 0.0F;
+            }
+        if(i == 23)
+        {
+            ((FlightModelMain) (FM)).CT.AileronControl = 0.0F;
+            ((FlightModelMain) (FM)).CT.ElevatorControl = 0.0F;
+            ((FlightModelMain) (FM)).CT.RudderControl = 0.0F;
+            ((FlightModelMain) (FM)).AP.setWayPoint(false);
+            ((FlightModelMain) (FM)).AP.setStabDirection(false);
+            ((FlightModelMain) (FM)).AP.setStabAltitude(false);
+            APmode1 = false;
+            APmode2 = false;
+            APmode3 = false;
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "Autopilot Mode: All Off");
+        }
+    }
+
     static Class _mthclass$(String s)
     {
         try
@@ -1695,6 +1763,9 @@ public class F_4 extends Scheme2
     private static final float POS_G_TIME_FACTOR = 2F;
     private static final float POS_G_RECOVERY_FACTOR = 2F;
     private long lTimeNextEject;
+    public boolean APmode1;
+    public boolean APmode2;
+    public boolean APmode3;
 
     static 
     {
