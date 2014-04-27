@@ -66,7 +66,7 @@ public class MissileAIM7M extends Missile
         Property.set(class1, "massaEnd", 85F);
         Property.set(class1, "stepMode", 0);
         Property.set(class1, "launchType", 2);
-        Property.set(class1, "detectorType", 1);
+        Property.set(class1, "detectorType", 2);
         Property.set(class1, "sunRayAngle", 0.0F);
         Property.set(class1, "multiTrackingCapable", 1);
         Property.set(class1, "canTrackSubs", 0);

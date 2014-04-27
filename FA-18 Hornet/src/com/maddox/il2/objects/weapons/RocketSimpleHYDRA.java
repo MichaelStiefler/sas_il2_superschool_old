@@ -36,7 +36,7 @@ public class RocketSimpleHYDRA extends RocketSimple
         Property.set(class1, "radius", 20F);
         Property.set(class1, "timeLife", 999.999F);
         Property.set(class1, "timeFire", 1F);
-        Property.set(class1, "force", 50F);
+        Property.set(class1, "force", 2000F);
         Property.set(class1, "power", 9.6F);
         Property.set(class1, "powerType", 0);
         Property.set(class1, "kalibr", 0.16985F);

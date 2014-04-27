@@ -42,12 +42,12 @@ public class BombMk82LGB extends Bomb
 
     public void interpolateTick()
     {
-        if(!popped && Time.current() > t1)
+    	if(!popped && Time.current() > t1)
         {
             setMesh("3DO/Arms/Mk82LGBD/mono.sim");
             popped = true;
         }
-        if(Time.current() > t1 + 10000L)
+    	if(Time.current() > t1 + 3000L)
         {
             float f = Time.tickLenFs();
             float f1 = (float)getSpeed((Vector3d)null);
@@ -74,7 +74,7 @@ public class BombMk82LGB extends Bomb
                 {
                     pT.sub(p);
                     or.transformInv(pT);
-                    float f2 = 0.35F;
+                    float f2 = 0.1F;
                     if(p.distance(pT) > 0.0D)
                     {
                         if(pT.y > 0.10000000000000001D)
@@ -85,7 +85,7 @@ public class BombMk82LGB extends Bomb
                             deltaTangage = -f2;
                         if(pT.z > 0.10000000000000001D)
                             deltaTangage = f2;
-                        or.increment(50F * f * deltaAzimuth, 50F * f * deltaTangage, 0.0F);
+                        or.increment(50F * f2 * deltaAzimuth, 50F * f2 * deltaTangage, 0.0F);
                         deltaAzimuth = deltaTangage = 0.0F;
                     }
                 }
@@ -110,7 +110,6 @@ public class BombMk82LGB extends Bomb
             if((actor instanceof TypeLaserSpotter) && actor.pos.getAbsPoint().distance(pos.getAbsPoint()) < 20000D && actor == World.getPlayerAircraft())
             {
                 Point3d point3d = new Point3d();
-                TypeLaserSpotter _tmp = (TypeLaserSpotter)actor;
                 point3d = TypeLaserSpotter.spot;
                 if(pos.getAbsPoint().distance(point3d) >= 15000D);
                 pT.set(point3d);
@@ -120,7 +119,6 @@ public class BombMk82LGB extends Bomb
 
     }
 
-    private FlightModel fm;
     private static Orient or = new Orient();
     private static Point3d p = new Point3d();
     private static Point3d pT = new Point3d();

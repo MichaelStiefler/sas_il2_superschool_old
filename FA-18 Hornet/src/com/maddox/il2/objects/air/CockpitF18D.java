@@ -52,7 +52,7 @@ import com.maddox.il2.objects.sounds.SndAircraft;
 //            CockpitPilot, AircraftLH, F_18, Aircraft, 
 //            Cockpit, TypeSupersonic
 
-public class CockpitF18C extends CockpitPilot
+public class CockpitF18D extends CockpitPilot
 {
     private class Variables
     {
@@ -141,15 +141,15 @@ public class CockpitF18C extends CockpitPilot
             setNew.throttlel = (10F * setOld.throttlel + ((FlightModelMain) (fm)).EI.engines[0].getControlThrottle()) / 11F;
             setNew.throttler = (10F * setOld.throttler + ((FlightModelMain) (fm)).EI.engines[1].getControlThrottle()) / 11F;
             float f = ((F_18S)aircraft()).k14Distance;
-            setNew.k14w = (5F * CockpitF18C.k14TargetWingspanScale[((F_18S)aircraft()).k14WingspanType]) / f;
+            setNew.k14w = (5F * CockpitF18D.k14TargetWingspanScale[((F_18S)aircraft()).k14WingspanType]) / f;
             setNew.k14w = 0.9F * setOld.k14w + 0.1F * setNew.k14w;
-            setNew.k14wingspan = 0.9F * setOld.k14wingspan + 0.1F * CockpitF18C.k14TargetMarkScale[((F_18S)aircraft()).k14WingspanType];
+            setNew.k14wingspan = 0.9F * setOld.k14wingspan + 0.1F * CockpitF18D.k14TargetMarkScale[((F_18S)aircraft()).k14WingspanType];
             setNew.k14mode = 0.8F * setOld.k14mode + 0.2F * (float)((F_18S)aircraft()).k14Mode;
             com.maddox.JGP.Vector3d vector3d = ((SndAircraft) (aircraft())).FM.getW();
             double d = 0.00125D * (double)f;
             float f1 = (float)Math.toDegrees(d * ((Tuple3d) (vector3d)).z);
             float f2 = -(float)Math.toDegrees(d * ((Tuple3d) (vector3d)).y);
-            float f3 = floatindex((f - 200F) * 0.04F, CockpitF18C.k14BulletDrop) - CockpitF18C.k14BulletDrop[0];
+            float f3 = floatindex((f - 200F) * 0.04F, CockpitF18D.k14BulletDrop) - CockpitF18D.k14BulletDrop[0];
             f2 += (float)Math.toDegrees(Math.atan(f3 / f));
             setNew.k14x = 0.92F * setOld.k14x + 0.08F * f1;
             setNew.k14y = 0.92F * setOld.k14y + 0.08F * f2;
@@ -243,7 +243,7 @@ public class CockpitF18C extends CockpitPilot
         return super.waypointAzimuthInvertMinus(10F);
     }
 
-    public CockpitF18C()
+    public CockpitF18D()
     {
         super("3DO/Cockpit/F-18/hier.him", "bf109");
         gun = new Gun[4];
@@ -787,7 +787,7 @@ public class CockpitF18C extends CockpitPilot
         for(int j = 0; j < fm.CT.Weapons[9].length && j < 2; j++)
         if(fm.CT.Weapons[9][j].haveBullets())
         {
-            	tankC = (((F_18C)aircraft()).checkfuel(0)/1000)*2.20462262F; 
+            	tankC = (((F_18D)aircraft()).checkfuel(0)/1000)*2.20462262F; 
         } else
         {	
             	tankC = 0F;
@@ -810,7 +810,7 @@ public class CockpitF18C extends CockpitPilot
         for(int j = 2; j < fm.CT.Weapons[9].length && j < 7; j++)
         if(fm.CT.Weapons[9][j].haveBullets())
         {
-        	tankL = (((F_18C)aircraft()).checkfuel(1)/1000)*2.20462262F; 
+        	tankL = (((F_18D)aircraft()).checkfuel(1)/1000)*2.20462262F; 
         } else
         {	
         	tankL = 0F;
@@ -948,7 +948,7 @@ public class CockpitF18C extends CockpitPilot
         for(int j = 2; j < fm.CT.Weapons[9].length; j++)
         if(fm.CT.Weapons[9][j].haveBullets())
         {
-        	tankL = (((F_18C)aircraft()).checkfuel(1)); 
+        	tankL = (((F_18D)aircraft()).checkfuel(1)); 
         } else
         {	
         	tankL = 0F;        	
@@ -956,7 +956,7 @@ public class CockpitF18C extends CockpitPilot
         float tankC = 0F;
         if(fm.CT.Weapons[9][1].haveBullets())
         {
-        	tankC = (((F_18C)aircraft()).checkfuel(0)); 
+        	tankC = (((F_18D)aircraft()).checkfuel(0)); 
         } else
         {	
         	tankC = 0F;

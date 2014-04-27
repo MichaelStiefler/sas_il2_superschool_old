@@ -49,12 +49,12 @@ public class BombletChaffF extends Bomb
     {
         Class class1 = com.maddox.il2.objects.weapons.BombletChaffF.class;
         Property.set(class1, "mesh", "3do/arms/2KgBomblet/mono.sim");
-        Property.set(class1, "radius", 0.1F);
-        Property.set(class1, "power", 0.1F);
+        Property.set(class1, "radius", 0.11F);
+        Property.set(class1, "power", 0.11F);
         Property.set(class1, "powerType", 0);
         Property.set(class1, "timeLife", 7F);
         Property.set(class1, "kalibr", 0.1F);
-        Property.set(class1, "massa", 22.6F);
+        Property.set(class1, "massa", 0.6F);
         Property.set(class1, "randomOrient", 1);
         Property.set(class1, "sound", "weapon.bomb_cassette");
     }
