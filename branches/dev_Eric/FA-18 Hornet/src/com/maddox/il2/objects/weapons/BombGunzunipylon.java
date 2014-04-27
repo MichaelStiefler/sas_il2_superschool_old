@@ -10,17 +10,17 @@ import com.maddox.rts.Property;
 // Referenced classes of package com.maddox.il2.objects.weapons:
 //            BombGunSC50
 
-public class BombGunChaffF extends BombGun
+public class BombGunzunipylon extends BombGun
 {
 
-    public BombGunChaffF()
+    public BombGunzunipylon()
     {
     }
 
     static 
     {
-        Class class1 = com.maddox.il2.objects.weapons.BombGunChaffF.class;
-        Property.set(class1, "bulletClass", (Object)com.maddox.il2.objects.weapons.BombChaffF.class);
+        Class class1 = com.maddox.il2.objects.weapons.BombGunzunipylon.class;
+        Property.set(class1, "bulletClass", (Object)com.maddox.il2.objects.weapons.ZuniF18.class);
         Property.set(class1, "bullets", 1);
         Property.set(class1, "shotFreq", 6F);
         Property.set(class1, "external", 0);

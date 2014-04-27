@@ -1,7 +1,7 @@
-// Decompiled by DJ v3.10.10.93 Copyright 2007 Atanas Neshkov  Date: 6/4/2013 4:22:42 PM
+// Decompiled by DJ v3.10.10.93 Copyright 2007 Atanas Neshkov  Date: 7/28/2013 9:30:23 AM
 // Home Page: http://members.fortunecity.com/neshkov/dj.html  http://www.neshkov.com/dj.html - Check often for new version!
 // Decompiler options: packimports(3) 
-// Source File Name:   BombBLU_108.java
+// Source File Name:   BombChaffF.java
 
 package com.maddox.il2.objects.weapons;
 
@@ -15,26 +15,19 @@ import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
 // Referenced classes of package com.maddox.il2.objects.weapons:
-//            Bomb, BombletBLU108
+//            Bomb, BombletChaffF
 
 public class BombChaffF extends Bomb
 {
 
     public BombChaffF()
     {
-        bFinsDeployed = false;
-    }
-
-    protected boolean haveSound()
-    {
-        return false;
     }
 
     public void start()
     {
         super.start();
-        ttcurTM = World.Rnd().nextFloat(0.5F, 1.0F);
-        t1 = Time.current() + 10L;
+        t1 = Time.current() + 400L;
     }
 
     public void interpolateTick()
@@ -59,37 +52,46 @@ public class BombChaffF extends Bomb
         Point3d point3d = new Point3d(pos.getAbsPoint());
         Orient orient = new Orient();
         Vector3d vector3d = new Vector3d();
-        for(int i = 0; i < 50; i++)
+        for(int i = 0; i < 150; i++)
         {
-            orient.set(World.Rnd().nextFloat(0.0F, 360F), World.Rnd().nextFloat(-90F, 90F), World.Rnd().nextFloat(-180F, 180F));
+            orient.set(World.Rnd().nextFloat(90.0F, 270F), World.Rnd().nextFloat(-50F, 50F), World.Rnd().nextFloat(-270F, -180F));
             getSpeed(vector3d);
-            vector3d.add(World.Rnd().nextDouble(-7D, 7D), World.Rnd().nextDouble(-7D, 7D), World.Rnd().nextDouble(-7D, 7D));
-            BombletBLU108 BombletBLU108 = new BombletBLU108();
-            ((Bomb) (BombletBLU108)).pos.setUpdateEnable(true);
-            ((Bomb) (BombletBLU108)).pos.setAbs(point3d, orient);
-            ((Bomb) (BombletBLU108)).pos.reset();
-            BombletBLU108.start();
-            BombletBLU108.setOwner(actor, false, false, false);
-            BombletBLU108.setSpeed(vector3d);
+            vector3d.add(World.Rnd().nextDouble(-15D, 15D), World.Rnd().nextDouble(-15D, 15D), World.Rnd().nextDouble(-15D, 15D));
+            BombletChaffF BombletChaffF = new BombletChaffF();
+            ((Bomb) (BombletChaffF)).pos.setUpdateEnable(true);
+            ((Bomb) (BombletChaffF)).pos.setAbs(point3d, orient);
+            ((Bomb) (BombletChaffF)).pos.reset();
+            BombletChaffF.start();
+            BombletChaffF.setOwner(actor, false, false, false);
+            BombletChaffF.setSpeed(vector3d);
         }
 
         postDestroy();
     }
 
-    private boolean bFinsDeployed;
-    private float ttcurTM;
+    static Class _mthclass$(String s)
+    {
+        try
+        {
+            return Class.forName(s);
+        }
+        catch(ClassNotFoundException classnotfoundexception)
+        {
+            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+        }
+    }
+
     private long t1;
 
     static 
     {
         Class class1 = com.maddox.il2.objects.weapons.BombChaffF.class;
         Property.set(class1, "mesh", "3do/arms/2KgBomblet/mono.sim");
-        Property.set(class1, "radius", 0.001F);
-        Property.set(class1, "power", 0.001F);
-        Property.set(class1, "dragCoefficient", 0.0F);
+        Property.set(class1, "radius", 1.0F);
+        Property.set(class1, "power", 0.15F);
         Property.set(class1, "powerType", 0);
-        Property.set(class1, "kalibr", 0.00001F);
-        Property.set(class1, "massa", 0.00001F);
-        Property.set(class1, "sound", "weapon.bomb_mid");
+        Property.set(class1, "kalibr", 0.1F);
+        Property.set(class1, "massa", 0.1);
+        Property.set(class1, "sound", "weapon.bomb_std");
     }
 }

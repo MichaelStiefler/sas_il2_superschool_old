@@ -25,7 +25,7 @@ public class CannonRocketSimpleHYDRA extends CannonRocketSimple
         gunproperties.aimMinDist = 10F;
         gunproperties.aimMaxDist = 8000F;
         BulletProperties bulletproperties = gunproperties.bullet[0];
-        bulletproperties.speed = 2000F;
+        bulletproperties.speed = 900F;
     }
 
     public void launch(Point3d point3d, Orient orient, float f, Actor actor)

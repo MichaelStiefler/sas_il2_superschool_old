@@ -34,7 +34,7 @@ public class BombBLU_108 extends Bomb
     {
         super.start();
         ttcurTM = World.Rnd().nextFloat(0.5F, 1.0F);
-        t1 = Time.current() + 450L + World.Rnd().nextLong(-150L, 250L);
+        t1 = Time.current() + 550L + World.Rnd().nextLong(-150L, 250L);
     }
 
     public void interpolateTick()
@@ -60,11 +60,11 @@ public class BombBLU_108 extends Bomb
         Point3d point3d = new Point3d(pos.getAbsPoint());
         Orient orient = new Orient();
         Vector3d vector3d = new Vector3d();
-        for(int i = 0; i < 21; i++)
+        for(int i = 0; i < 8; i++)
         {
             orient.set(World.Rnd().nextFloat(0.0F, 360F), World.Rnd().nextFloat(-90F, 90F), World.Rnd().nextFloat(-180F, 180F));
             getSpeed(vector3d);
-            vector3d.add(World.Rnd().nextDouble(-7D, 7D), World.Rnd().nextDouble(-7D, 7D), World.Rnd().nextDouble(-7D, 7D));
+            vector3d.add(World.Rnd().nextDouble(-5D, 5D), World.Rnd().nextDouble(-5D, 5D), World.Rnd().nextDouble(-5D, 5D));
             BombletBLU108 BombletBLU108 = new BombletBLU108();
             ((Bomb) (BombletBLU108)).pos.setUpdateEnable(true);
             ((Bomb) (BombletBLU108)).pos.setAbs(point3d, orient);

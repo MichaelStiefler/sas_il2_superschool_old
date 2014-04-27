@@ -844,10 +844,7 @@ public class KF_18C extends F_18S
         Property.set(class1, "PaintScheme", new PaintSchemeFMPar05());
         Property.set(class1, "yearService", 1965F);
         Property.set(class1, "yearExpired", 1990F);
-        Property.set(class1, "FlightModel", "FlightModels/F-18C.fmd:F18_FM");
-        Property.set(class1, "cockpitClass", new Class[] {
-            com.maddox.il2.objects.air.CockpitF18C.class, com.maddox.il2.objects.air.CockpitF18CFLIR.class
-        });
+        Property.set(class1, "FlightModel", "FlightModels/F-18C.fmd:F18_FM");       
         Property.set(class1, "LOSElevation", 0.965F);
         Aircraft.weaponTriggersRegister(class1, new int[] {
             0, 2, 2, 2, 2, 2, 2, 2, 2, 9, 

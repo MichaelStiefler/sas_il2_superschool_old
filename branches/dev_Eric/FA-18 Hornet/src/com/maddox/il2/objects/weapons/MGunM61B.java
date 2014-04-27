@@ -37,33 +37,23 @@ public class MGunM61B extends MGunAircraftGeneric
         gunproperties.aimMinDist = 200F;
         gunproperties.aimMaxDist = 1500F;
         gunproperties.weaponType = 3;
-        gunproperties.maxDeltaAngle = 0.60F;
+        gunproperties.maxDeltaAngle = 0.57F;
         gunproperties.shotFreq = 110F;
-        gunproperties.traceFreq = 5;
+        gunproperties.traceFreq = 7;
         gunproperties.bullets = 250;
         gunproperties.bulletsCluster = 1;
         gunproperties.bullet = (new BulletProperties[] {
-            new BulletProperties(), new BulletProperties()
+            new BulletProperties()
         });
         gunproperties.bullet[0].massa = 0.102F;
         gunproperties.bullet[0].kalibr = 0.00032F;
         gunproperties.bullet[0].speed = 1050F;
-        gunproperties.bullet[0].power = 0.0258F;
+        gunproperties.bullet[0].power = 0.0058F;
         gunproperties.bullet[0].powerType = 0;
-        gunproperties.bullet[0].powerRadius = 0.34F;
+        gunproperties.bullet[0].powerRadius = 0.14F;
         gunproperties.bullet[0].traceMesh = "3do/effects/tracers/20mmYellow_V/mono.sim";
         gunproperties.bullet[0].traceColor = 0xd200ffff;
-        gunproperties.bullet[0].timeLife = 3F;
-        gunproperties.bullet[1].massa = 0.102F;
-        gunproperties.bullet[1].kalibr = 0.00032F;
-        gunproperties.bullet[1].speed = 1050F;
-        gunproperties.bullet[1].power = 0.0258F;
-        gunproperties.bullet[1].powerType = 0;
-        gunproperties.bullet[1].powerRadius = 0.34F;
-        gunproperties.bullet[1].traceMesh = "3do/effects/tracers/20mmYellow_V/mono.sim";
-        gunproperties.bullet[1].traceTrail = null;
-        gunproperties.bullet[1].traceColor = 0xd200ffff;
-        gunproperties.bullet[1].timeLife = 3F;
+        gunproperties.bullet[0].timeLife = 3F;       
         return gunproperties;
     }
 }
