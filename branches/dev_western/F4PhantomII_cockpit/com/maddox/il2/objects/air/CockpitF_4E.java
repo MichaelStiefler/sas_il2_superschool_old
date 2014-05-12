@@ -8,6 +8,7 @@ import com.maddox.il2.fm.*;
 import com.maddox.il2.objects.weapons.Gun;
 import com.maddox.il2.objects.weapons.RocketGunAIM7E;
 import com.maddox.il2.objects.weapons.RocketGunAIM9D;
+import com.maddox.il2.objects.weapons.GuidedMissileUtils;
 import com.maddox.rts.Time;
 
 // Referenced classes of package com.maddox.il2.objects.air:
@@ -289,8 +290,6 @@ public class CockpitF_4E extends CockpitPilot
         Cockpit.ypr[1] = Cockpit.ypr[2] = 0.0F;
         mesh.chunkSetLocate("BL_Vert", Cockpit.xyz, Cockpit.ypr);
         float ilsgstmp = setNew.ilsGS * setNew.ilsGS * ((setNew.ilsGS < 0)? -1F : 1F);
-//        Cockpit.xyz[1] = -cvt(setNew.ilsGS, -0.3F, 0.5F, -0.036F, 0.036F);
-// 2014.04.20        Cockpit.xyz[1] = -cvt(setNew.ilsGS, -0.09F, 0.64F, -0.036F, 0.036F);
         Cockpit.xyz[1] = -cvt(setNew.ilsGS, -0.25F, 0.25F, -0.036F, 0.036F);
         Cockpit.xyz[0] = Cockpit.xyz[2] = 0.0F;
         Cockpit.ypr[0] = cvt(((FlightModelMain) (fm)).Or.getKren(), -35F, 35F, -35F, 35F);
@@ -389,7 +388,7 @@ public class CockpitF_4E extends CockpitPilot
                         mesh.chunkVisible("Z_MisSelect_SelL1", false);
                         mesh.chunkVisible("Z_MisSelect_SelL2", false);
                         mesh.chunkVisible("Z_MisSelect_SelR2", false);
-                        mesh.chunkVisible("Z_MisSelect_RdR1", true);
+                        mesh.chunkVisible("Z_MisSelect_RdR1", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 1);
                         mesh.chunkVisible("Z_MisSelect_SelR1", true);
                         break;
                     }
@@ -401,7 +400,7 @@ public class CockpitF_4E extends CockpitPilot
                         mesh.chunkVisible("Z_MisSelect_SelL2", false);
                         mesh.chunkVisible("Z_MisSelect_SelR1", false);
                         mesh.chunkVisible("Z_MisSelect_SelR2", false);
-                        mesh.chunkVisible("Z_MisSelect_RdL1", true);
+                        mesh.chunkVisible("Z_MisSelect_RdL1", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 1);
                         mesh.chunkVisible("Z_MisSelect_SelL1", true);
                         break;
                     }
@@ -414,7 +413,7 @@ public class CockpitF_4E extends CockpitPilot
                         mesh.chunkVisible("Z_MisSelect_SelL1", false);
                         mesh.chunkVisible("Z_MisSelect_SelR1", false);
                         mesh.chunkVisible("Z_MisSelect_SelR2", false);
-                        mesh.chunkVisible("Z_MisSelect_RdL2", true);
+                        mesh.chunkVisible("Z_MisSelect_RdL2", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 1);
                         mesh.chunkVisible("Z_MisSelect_SelL2", true);
                         break;
                     }
@@ -427,7 +426,7 @@ public class CockpitF_4E extends CockpitPilot
                         mesh.chunkVisible("Z_MisSelect_SelL1", false);
                         mesh.chunkVisible("Z_MisSelect_SelL2", false);
                         mesh.chunkVisible("Z_MisSelect_SelR1", false);
-                        mesh.chunkVisible("Z_MisSelect_RdR2", true);
+                        mesh.chunkVisible("Z_MisSelect_RdR2", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 1);
                         mesh.chunkVisible("Z_MisSelect_SelR2", true);
                         break;
                     }
@@ -469,7 +468,7 @@ public class CockpitF_4E extends CockpitPilot
                         mesh.chunkVisible("Z_MisSelect_SwL1", false);
                         mesh.chunkVisible("Z_MisSelect_SwR1", false);
                         mesh.chunkVisible("Z_MisSelect_SwR2", false);
-                        mesh.chunkVisible("Z_MisSelect_RdLW", true);
+                        mesh.chunkVisible("Z_MisSelect_RdLW", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 2);
                         mesh.chunkVisible("Z_MisSelect_SwL2", true);
                         break;
                     }
@@ -479,7 +478,7 @@ public class CockpitF_4E extends CockpitPilot
                         mesh.chunkVisible("Z_MisSelect_SwL1", false);
                         mesh.chunkVisible("Z_MisSelect_SwL2", false);
                         mesh.chunkVisible("Z_MisSelect_SwR2", false);
-                        mesh.chunkVisible("Z_MisSelect_RdRW", true);
+                        mesh.chunkVisible("Z_MisSelect_RdRW", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 2);
                         mesh.chunkVisible("Z_MisSelect_SwR1", true);
                         break;
                     }
@@ -489,7 +488,7 @@ public class CockpitF_4E extends CockpitPilot
                         mesh.chunkVisible("Z_MisSelect_SwL2", false);
                         mesh.chunkVisible("Z_MisSelect_SwR1", false);
                         mesh.chunkVisible("Z_MisSelect_SwR2", false);
-                        mesh.chunkVisible("Z_MisSelect_RdLW", true);
+                        mesh.chunkVisible("Z_MisSelect_RdLW", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 2);
                         mesh.chunkVisible("Z_MisSelect_SwL1", true);
                         break;
                     }
@@ -499,7 +498,7 @@ public class CockpitF_4E extends CockpitPilot
                         mesh.chunkVisible("Z_MisSelect_SwL1", false);
                         mesh.chunkVisible("Z_MisSelect_SwL2", false);
                         mesh.chunkVisible("Z_MisSelect_SwR1", false);
-                        mesh.chunkVisible("Z_MisSelect_RdRW", true);
+                        mesh.chunkVisible("Z_MisSelect_RdRW", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 2);
                         mesh.chunkVisible("Z_MisSelect_SwR2", true);
                         break;
                     }
@@ -684,8 +683,7 @@ public class CockpitF_4E extends CockpitPilot
         314.80F, 317.84F, 320.74F, 323.65F, 326.55F, 329.45F, 332.35F
       };
     private static final float machmeterScale[] = {
-        -116.28F, 96.41F, -79.75F, -64.06F, -50.94F, -41.61F, -32.30F, -22.31F, -10.87F, 0.00F
-//      -103.6F, -74.6F, -51.0F, -35.4F, -19.1F, 0.0F
+        -91.28F, -85.41F, -77.60F, -64.06F, -50.94F, -41.61F, -32.30F, -22.31F, -10.87F, 0.00F
     };
     private static final float variometerScale[] = {
         -170F, -160F, -145F, -125F, -88F, -55F, 0.0F, 55F, 88F, 125F, 
