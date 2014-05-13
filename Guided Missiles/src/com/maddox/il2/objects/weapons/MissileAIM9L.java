@@ -58,7 +58,7 @@ public class MissileAIM9L extends Missile {
 		// (altitude in meters divided by 1000)^2
 		Property.set(class1, "groundTrackFactor", 16.0F); // lower value means higher probability of ground target tracking
 		Property.set(class1, "flareLockTime", 1200L); // time (in milliseconds) for missile locking on to different target, i.e. flare (sun, ground clutter etc.)
-		Property.set(class1, "trackDelay", 200L); // time (in milliseconds) for missile tracking target after launch (i.e. the time for the missile to fly straight first to be clear of the launching A/C)
+		Property.set(class1, "trackDelay", 500L); // time (in milliseconds) for missile tracking target after launch (i.e. the time for the missile to fly straight first to be clear of the launching A/C)
 		Property.set(class1, "failureRate", 10.0F); // Failure rate in percent
 		Property.set(class1, "maxLockGForce", 9.0F); // max. G-Force for lockon
 		Property.set(class1, "maxFOVfrom", 30.0F); // max Angle offset from launch A/C POV

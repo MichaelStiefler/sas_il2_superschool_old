@@ -345,7 +345,7 @@ public class Missile extends Rocket {
 				if (f2Future < 0F) {
 					f2Future = 0F;
 				}
-				if (((this.victim instanceof Aircraft) || (this.victim instanceof MissileInterceptable)) && (f2Future > f2 * 2F || f2 > this.previousDistance) && this.previousDistance != 1000F) {
+				if (((this.victim instanceof Aircraft) || (this.victim instanceof MissileInterceptable)) && (f2Future > f2 * 5F || f2 > this.previousDistance) && this.previousDistance != 1000F) {
 					if (f2 < 50F) {
 						// Time.setPause(true); // Test detonation distance!
 						// HUD.log("MD:" + twoPlaces.format(f2) + "/" + twoPlaces.format(f2Future) + "/" + twoPlaces.format(previousDistance));
@@ -455,17 +455,22 @@ public class Missile extends Rocket {
 	private void computeMissilePath(float missileSpeed, float hTurn, float vTurn, float azimuth, float tangage) {
 		// System.out.println("computeMissilePath(" + missileSpeed + ", " + hTurn + ", " + vTurn + ", " + azimuth + ", " + tangage + ")");
 		// if (Time.current() > this.startTime + this.trackDelay) {
-		float turnStepMax = MissilePhysics.getDegPerSec(missileSpeed, this.maxG) * Time.tickLenFs() * MissilePhysics.getAirDensityFactor((float) this.missilePoint3d.z); // turn limit, higher altitude means less turn capability (app. 1/10th from ground
+		float turnStepMax = MissilePhysics.getDegPerSec(missileSpeed, this.maxG) * Time.tickLenFs(); // turn limit, higher altitude means less turn capability (app. 1/10th from ground
 		// to 10km)
+		float turnStepMaxSpeedFactor = 1F;
+		float turnStepMaxAltitudeFactor = MissilePhysics.getAirDensityFactor((float) this.missilePoint3d.z);
 		if (missileSpeed < 340F) { // Missile slower than Mach 1, control surfaces effectivity decreases
-			turnStepMax *= missileSpeed / 340F;
-		} else if (missileSpeed > 680F) { // Missile faster than Mach 2, control surfaces force limit reached
-			turnStepMax /= missileSpeed / 680F;
+			turnStepMaxSpeedFactor = missileSpeed / 340F;
+		} else {
+			turnStepMaxAltitudeFactor *= Math.sqrt(missileSpeed / 340F);
+			if (turnStepMaxAltitudeFactor > 1F) turnStepMaxAltitudeFactor = 1F;
 		}
+		
+		turnStepMax *= turnStepMaxSpeedFactor * turnStepMaxAltitudeFactor;
 
 		float newTurnDiffMax = turnStepMax / this.stepsForFullTurn; // turn rate change limit, smoothen the turns.
 		if (newTurnDiffMax > this.turnDiffMax) {
-			this.turnDiffMax = (this.turnDiffMax * this.stepsForFullTurn * this.stepsForFullTurn + newTurnDiffMax) / (this.stepsForFullTurn * this.stepsForFullTurn + 1.0F);
+			this.turnDiffMax = (this.turnDiffMax * this.stepsForFullTurn + newTurnDiffMax) / (this.stepsForFullTurn + 1.0F);
 		}
 
 		if (this.getFailState() == FAIL_TYPE_IVAN) {
@@ -602,17 +607,18 @@ public class Missile extends Rocket {
 			this.oldDeltaAzimuth = orYPR[0];
 			this.oldDeltaTangage = orYPR[1];
 			this.dropFlightPathOrient.getYPR(orFPYPR);
-			for (int i = 0; i < 3; i++) {
+			for (int i = 0; i < 2; i++) {
 				orYPR[i] = (orYPR[i] * smoothingFactor + orFPYPR[i]) / (smoothingFactor + 1.0F);
 			}
-			this.missileOrient.setYPR(orYPR[0], orYPR[1], orYPR[2]);
+//			this.missileOrient.setYPR(orYPR[0], orYPR[1], orYPR[2]);
+			this.missileOrient.setYPR(orYPR[0], orYPR[1], this.getRoll());
 			this.oldDeltaAzimuth = orYPR[0] - this.oldDeltaAzimuth;
 			this.oldDeltaTangage = orYPR[1] - this.oldDeltaTangage;
 		} else // fly straight if no launch pitch.
 		{
 			this.missileOrient.setYPR(this.missileOrient.getYaw(), this.missileOrient.getPitch(), this.getRoll());
 		}
-		this.deltaAzimuth = this.deltaTangage = this.oldDeltaAzimuth = this.oldDeltaTangage = 0.0F;
+//		this.deltaAzimuth = this.deltaTangage = this.oldDeltaAzimuth = this.oldDeltaTangage = 0.0F;
 	}
 
 	private void createAdditionalFlames() {
@@ -1542,7 +1548,9 @@ public class Missile extends Rocket {
 				this.victim = null;
 			}
 		}
-		if (this.victim != null) {
+		if (Time.current() < this.startTime + this.trackDelay) {
+			this.computeNoTrackPath();
+		} else if (this.victim != null) {
 			if (myOwner != null) {
 
 				float hTurn = 0.0F;
@@ -1657,14 +1665,14 @@ public class Missile extends Rocket {
 				this.computeMissilePath(missileSpeed, hTurn, vTurn, targetAzimuth, targetElevation);
 
 			}
-		} else {
-			if ((Time.current() < this.startTime + this.trackDelay) && (this.launchType == Missile.LAUNCH_TYPE_DROP)) // recover from launch pitch even if there's no target.
-			{
-				this.computeNoTrackPath();
-			} else { // fly straight on after 1 sec. if no target available.
-				this.missileOrient.setYPR(this.missileOrient.getYaw(), this.missileOrient.getPitch(), this.getRoll());
-			}
-		}
+		} //else {
+//			if ((Time.current() < this.startTime + this.trackDelay) && (this.launchType == Missile.LAUNCH_TYPE_DROP)) // recover from launch pitch even if there's no target.
+//			{
+//				this.computeNoTrackPath();
+//			} else { // fly straight on after 1 sec. if no target available.
+//				this.missileOrient.setYPR(this.missileOrient.getYaw(), this.missileOrient.getPitch(), this.getRoll());
+//			}
+//		}
 
 		return this.computeFuzeState();
 	}

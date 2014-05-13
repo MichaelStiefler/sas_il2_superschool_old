@@ -27,7 +27,6 @@ import com.maddox.il2.engine.Orient;
 import com.maddox.il2.fm.EnginesInterface;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.FlightModelMain;
-import com.maddox.il2.fm.FlightModelMainEx;
 import com.maddox.il2.fm.Mass;
 import com.maddox.il2.fm.Motor;
 import com.maddox.il2.fm.RealFlightModel;
@@ -942,10 +941,11 @@ public class GuidedMissileUtils {
 							maxTargetBait = targetBait;
 							selectedActor = theTarget1;
 							if (theTarget1 instanceof Aircraft) {
-								float fGC = FlightModelMainEx.getFmGCenter((((SndAircraft) (theTarget1)).FM));
+//								float fGC = FlightModelMainEx.getFmGCenter((((SndAircraft) (theTarget1)).FM));
 								// Arm Arms = (Arm) Reflection.genericGetFieldValue((FlightModelMain) (((SndAircraft) (theTarget1)).FM), "Arms");
 								// float fGC = ((Float) Reflection.genericGetFieldValue(Arms, "GCENTER")).floatValue();
-								theSelectedActorOffset.set(fGC, 0, 0);
+//								theSelectedActorOffset.set(fGC, 0, 0);
+								theSelectedActorOffset.set(0, 0, 0);
 							}
 						}
 						break;
