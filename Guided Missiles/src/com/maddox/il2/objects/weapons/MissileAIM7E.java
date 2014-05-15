@@ -38,8 +38,8 @@ public class MissileAIM7E extends Missile {
 		Property.set(class1, "forceP1", 0.0F); // Power1, i.e. Rocket Engine force output at beginning (in Percent)
 		Property.set(class1, "dragCoefficient", 0.3F); // Aerodynamic Drag Coefficient
 		Property.set(class1, "powerType", 0); // Type of Explosion. 0="Splash", 1="Splinters", 2="Napalm"
-		Property.set(class1, "power", 1.00F); // RL Data: 4.5kg HE warhead, for realism reduced to 1/10th of it's RL weight
-		Property.set(class1, "radius", 18F); // Radius of Explosion Effect
+		Property.set(class1, "power", 4.00F); // RL Data: 40kg HE warhead, for realism reduced to 1/10th of it's RL weight
+		Property.set(class1, "radius", 25.0F); // Radius of Explosion Effect
 		Property.set(class1, "kalibr", 0.203F); // Diameter of Missile Body
 		Property.set(class1, "massa", 197.0F); // Missile Weight at Launch time
 		Property.set(class1, "massaEnd", 137.0F); // Missile Weight when Booster burned out

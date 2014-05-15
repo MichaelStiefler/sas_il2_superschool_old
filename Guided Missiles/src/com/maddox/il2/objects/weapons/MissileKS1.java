@@ -21,24 +21,25 @@ public class MissileKS1 extends Missile implements MissileInterceptable {
 		Property.set(class1, "sprite", (String) null);
 		Property.set(class1, "flame", "3do/Effects/RocketKS1/RocketKS1Flame.sim");
 		Property.set(class1, "smoke", "3do/Effects/RocketKS1/RocketKS1Smoke.eff");
+		Property.set(class1, "exhausts", 1); // Number of Rocket Motor Exhausts, default "1"
 		Property.set(class1, "emitColor", new Color3f(1.0F, 1.0F, 0.5F));
-		Property.set(class1, "emitLen", 50.0F);
-		Property.set(class1, "emitMax", 0.4F);
-		Property.set(class1, "sound", "weapon.rocket_132");
+		Property.set(class1, "emitLen", 50.0F); // Emitted Smoke length
+		Property.set(class1, "emitMax", 0.4F); // Amount of emitted Smoke
+		Property.set(class1, "sound", "weapon.rocket_132"); // Sound of Rocket Motor
 		Property.set(class1, "timeLife", 400F); // Rocket life time in Seconds
-		Property.set(class1, "timeFire", 300F); // Rocket Engine Burn time in Seconds
-		Property.set(class1, "force", 8900F); // Rocket Engine Power (in Newton)
+		Property.set(class1, "timeFire", 100F); // Rocket Engine Burn time in Seconds
+		Property.set(class1, "force", 9500F); // Rocket Engine Power (in Newton)
+		Property.set(class1, "timeSustain", 300F); // Rocket Sustained Motor Burn time in Seconds (0 for single stage rockets)
+		Property.set(class1, "forceSustain", 5500F); // Rocket Sustained Power (in Newton)
 		Property.set(class1, "forceT1", 10.0F); // Time1, i.e. time until Rocket Engine force output maximum reached (in Seconds), 0 disables this feature
 		Property.set(class1, "forceP1", 0.0F); // Power1, i.e. Rocket Engine force output at beginning (in Percent)
-		Property.set(class1, "forceT2", 1.0F); // Time2, i.e. time before Rocket Engine burn time ends (in Seconds), from this time on Rocket Engine power output decreases, 0 disables this feature
-		Property.set(class1, "forceP2", 100.0F); // Power2, i.e. Rocket Engine force output at the end of burn time (in Percent)
 		Property.set(class1, "dragCoefficient", 0.5F); // Aerodynamic Drag Coefficient
-		Property.set(class1, "powerType", 0);
-		Property.set(class1, "power", 650F); // RL Data: 1015kg HE warhead, for realism reduced to 1/10th of it's RL weight
-		Property.set(class1, "radius", 250.0F);
-		Property.set(class1, "kalibr", 0.92F);
-		Property.set(class1, "massa", 2735.0F);
-		Property.set(class1, "massaEnd", 2471.0F); // 264kg fuel load
+		Property.set(class1, "powerType", 0); // Type of Explosion. 0="Splash", 1="Splinters", 2="Napalm"
+		Property.set(class1, "power", 650F); // RL Data: 1015kg HE warhead
+		Property.set(class1, "radius", 250.0F); // Radius of Explosion Effect
+		Property.set(class1, "kalibr", 0.92F); // Diameter of Missile Body
+		Property.set(class1, "massa", 2735.0F); // Missile Weight at Launch time
+		Property.set(class1, "massaEnd", 2471.0F); // Missile Weight when Booster burned out; 264kg fuel load
 		Property.set(class1, "stepMode", Missile.STEP_MODE_HOMING); // target tracking mode
 		Property.set(class1, "launchType", Missile.LAUNCH_TYPE_DROP); // launch pattern
 		Property.set(class1, "detectorType", Missile.DETECTOR_TYPE_RADAR_HOMING); // detector type
@@ -71,7 +72,9 @@ public class MissileKS1 extends Missile implements MissileInterceptable {
 		Property.set(class1, "maxGForce", 3.0F); // max turning rate G-Force
 		Property.set(class1, "stepsForFullTurn", 30); // No. of ticks (1 tick = 30ms) for full control surface turn, higher value means slower reaction and smoother flight, lower value means higher agility
 		Property.set(class1, "fxLock", (String) null); // prs file for Lock Tone
+		Property.set(class1, "fxLockVolume", 1.0F); // Volume for Lock Tone, "1" is default
 		Property.set(class1, "fxNoLock", (String) null); // prs file for No Lock Tone
+		Property.set(class1, "fxNoLockVolume", 1.0F); // Volume for No Lock Tone, "1" is default
 		Property.set(class1, "smplLock", (String) null); // wav file for Lock Tone
 		Property.set(class1, "smplNoLock", (String) null); // wav file for No Lock Tone
 		Property.set(class1, "friendlyName", "KS-1"); // Display Name of this missile

@@ -235,7 +235,7 @@ public class Missile extends Rocket {
 	private boolean flameActive = true;
 	private Actor[] flames = null;
 	private long flareLockTime = 1000L;
-	private float fMaxSpeed = 0.0F;
+//	private float fMaxSpeed = 0.0F;
 	private float frontSquare = 1.0F;
 	private float groundTrackFactor = 0.0F;
 	private float initialMissileForce = 0F;
@@ -599,21 +599,37 @@ public class Missile extends Rocket {
 
 	private void computeNoTrackPath() {
 		if (this.launchType == Missile.LAUNCH_TYPE_DROP) {
+//			float launchYaw = (float) this.getLaunchYaw();
+//			float launchPitch = (float) this.getLaunchPitch();
+//			float launchRoll = this.getRoll();
+//			float launchTimeFactor = (float)this.getLaunchTimeFactor();
+//			System.out.println(launchTimeFactor+";"+launchYaw+";"+launchPitch+";"+launchRoll+";"+this.launchKren);
+			
+//			this.dropFlightPathOrient.setYPR((float) this.getLaunchYaw(), (float) this.getLaunchPitch(), this.getRoll());
+//			float smoothingFactor = 0.0F;
+//			float orYPR[] = new float[3];
+//			float orFPYPR[] = new float[3];
+//			this.missileOrient.getYPR(orYPR);
+//			this.oldDeltaAzimuth = orYPR[0];
+//			this.oldDeltaTangage = orYPR[1];
+//			this.dropFlightPathOrient.getYPR(orFPYPR);
+//			for (int i = 0; i < 2; i++) {
+//				orYPR[i] = (orYPR[i] * smoothingFactor + orFPYPR[i]) / (smoothingFactor + 1.0F);
+//			}
+////			this.missileOrient.setYPR(orYPR[0], orYPR[1], orYPR[2]);
+//			this.missileOrient.setYPR(orYPR[0], orYPR[1], this.getRoll());
+//			this.oldDeltaAzimuth = orYPR[0] - this.oldDeltaAzimuth;
+//			this.oldDeltaTangage = orYPR[1] - this.oldDeltaTangage;
+
+			
 			this.dropFlightPathOrient.setYPR((float) this.getLaunchYaw(), (float) this.getLaunchPitch(), this.getRoll());
-			float smoothingFactor = 100.0F;
-			float orYPR[] = new float[3];
-			float orFPYPR[] = new float[3];
-			this.missileOrient.getYPR(orYPR);
-			this.oldDeltaAzimuth = orYPR[0];
-			this.oldDeltaTangage = orYPR[1];
-			this.dropFlightPathOrient.getYPR(orFPYPR);
-			for (int i = 0; i < 2; i++) {
-				orYPR[i] = (orYPR[i] * smoothingFactor + orFPYPR[i]) / (smoothingFactor + 1.0F);
-			}
-//			this.missileOrient.setYPR(orYPR[0], orYPR[1], orYPR[2]);
-			this.missileOrient.setYPR(orYPR[0], orYPR[1], this.getRoll());
-			this.oldDeltaAzimuth = orYPR[0] - this.oldDeltaAzimuth;
-			this.oldDeltaTangage = orYPR[1] - this.oldDeltaTangage;
+			this.missileOrient.setYPR(this.dropFlightPathOrient.getYaw(), this.dropFlightPathOrient.getPitch(), this.getRoll());
+			
+			
+//			this.dropFlightPathOrient.setYPR(launchYaw, launchPitch, launchRoll);
+//			this.missileOrient.setYPR(launchYaw, launchPitch, launchRoll);
+//			this.oldDeltaAzimuth = launchYaw - this.oldDeltaAzimuth;
+//			this.oldDeltaTangage = launchPitch - this.oldDeltaTangage;
 		} else // fly straight if no launch pitch.
 		{
 			this.missileOrient.setYPR(this.missileOrient.getYaw(), this.missileOrient.getPitch(), this.getRoll());
@@ -900,9 +916,12 @@ public class Missile extends Rocket {
 
 	public double getLaunchPitch() {
 		double launchPitchTimeFactor = this.getLaunchTimeFactor();
-		double theLaunchPitch = 2.0D * (Math.cos(launchPitchTimeFactor + 0.4D) - 1.02D + launchPitchTimeFactor / 5.0D);
+//		double theLaunchPitch = 2.0D * (Math.cos(launchPitchTimeFactor + 0.4D) - 1.02D + launchPitchTimeFactor / 5.0D);
+		double theLaunchPitch = 2.0D * (Math.cos(launchPitchTimeFactor + 0.4D) - 2.1759949269D + launchPitchTimeFactor / 5.0D);
 		theLaunchPitch *= Math.cos(this.launchKren);
 		theLaunchPitch += this.launchPitch;
+		while (theLaunchPitch > 180F) theLaunchPitch -= 360F;
+		while (theLaunchPitch < -180F) theLaunchPitch += 360F;
 		return theLaunchPitch;
 	}
 
@@ -912,9 +931,12 @@ public class Missile extends Rocket {
 
 	public double getLaunchYaw() {
 		double launchYawTimeFactor = this.getLaunchTimeFactor();
-		double theLaunchYaw = 2.0D * (Math.cos(launchYawTimeFactor + 0.4D) - 1.02D + launchYawTimeFactor / 5.0D);
+//		double theLaunchYaw = 2.0D * (Math.cos(launchYawTimeFactor + 0.4D) - 1.02D + launchYawTimeFactor / 5.0D);
+		double theLaunchYaw = 2.0D * (Math.cos(launchYawTimeFactor + 0.4D) - 2.1759949269D + launchYawTimeFactor / 5.0D);
 		theLaunchYaw *= Math.sin(this.launchKren);
 		theLaunchYaw += this.launchYaw;
+		while (theLaunchYaw > 180F) theLaunchYaw -= 360F;
+		while (theLaunchYaw < -180F) theLaunchYaw += 360F;
 		return theLaunchYaw;
 	}
 
@@ -999,6 +1021,8 @@ public class Missile extends Rocket {
 		float fRollCalcAbscissa = ((float) (Time.current() - this.startTime) / (float) this.trackDelay) * (float) Math.PI;
 		float fRollCalcOrdinate = ((float) Math.cos(fRollCalcAbscissa) + 1F) * 0.5F;
 		float fRet = 360F - (fRollCalcOrdinate * (360F - this.oldRoll));
+		while (fRet > 180F) fRet -= 360F;
+		while (fRet < -180F) fRet += 360F;
 		return fRet;
 	}
 
@@ -1033,9 +1057,9 @@ public class Missile extends Rocket {
 			}
 		}
 		float fSpeed = (float) this.getSpeed((Vector3d) null) * 3.6F;
-		if (fSpeed > this.fMaxSpeed) {
-			this.fMaxSpeed = fSpeed;
-		}
+//		if (fSpeed > this.fMaxSpeed) {
+//			this.fMaxSpeed = fSpeed;
+//		}
 		// HUD.training("" + this.twoPlaces.format(fSpeed) + " / " + this.twoPlaces.format(this.fMaxSpeed));
 		switch (this.stepMode) {
 		case STEP_MODE_HOMING: {
@@ -1241,7 +1265,8 @@ public class Missile extends Rocket {
 			this.missileOrient.transform(this.trajectoryVector3d);
 			this.trajectoryVector3d.scale(this.missileBaseSpeed);
 			this.setSpeed(this.trajectoryVector3d);
-			this.launchKren = Math.toRadians(this.missileOrient.getKren());
+//			this.launchKren = Math.toRadians(this.missileOrient.getKren());
+			this.launchKren = Math.toRadians(this.missileOrient.getRoll());
 			this.launchYaw = this.missileOrient.getYaw();
 			this.launchPitch = this.missileOrient.getPitch();
 			this.oldRoll = this.missileOrient.getRoll();
@@ -1252,9 +1277,10 @@ public class Missile extends Rocket {
 		case LAUNCH_TYPE_DROP: // drop pattern
 		{
 			// start with -6° pitch if launched from Aircraft
-			this.launchKren = Math.toRadians(this.missileOrient.getKren());
+//			this.launchKren = Math.toRadians(this.missileOrient.getKren());
+			this.launchKren = Math.toRadians(this.getOwner().pos.getAbsOrient().getRoll());
 			if (this.ownerIsAircraft()) {
-				this.launchYaw = this.missileOrient.getYaw() + (this.getFM().getAOA() * (float) Math.sin(this.launchKren));
+				this.launchYaw = this.missileOrient.getYaw() - (this.getFM().getAOA() * (float) Math.sin(this.launchKren));
 				this.launchPitch = this.missileOrient.getPitch() - (this.getFM().getAOA() * (float) Math.cos(this.launchKren));
 				this.oldRoll = this.missileOrient.getRoll();
 			} else { // if not launched from Aircraft, start in owner's current direction

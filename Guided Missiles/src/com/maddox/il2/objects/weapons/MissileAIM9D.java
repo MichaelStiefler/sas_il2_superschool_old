@@ -73,7 +73,7 @@ public class MissileAIM9D extends Missile {
 		Property.set(class1, "PkDistOpt", 4500.0F); // optimum Distance for Pk calculation
 		Property.set(class1, "PkDistMax", 8000.0F); // max Distance for Pk calculation
 		Property.set(class1, "leadPercent", 100.0F); // Track calculation lead value
-		Property.set(class1, "maxGForce", 20.0F); // max turning rate G-Force
+		Property.set(class1, "maxGForce", 25.0F); // max turning rate G-Force
 		Property.set(class1, "stepsForFullTurn", 8); // No. of ticks (1 tick = 30ms) for full control surface turn, higher value means slower reaction and smoother flight, lower value means higher agility
 		Property.set(class1, "fxLock", "weapon.AIM9.lock"); // prs file for Lock Tone
 		Property.set(class1, "fxLockVolume", 1.0F); // Volume for Lock Tone, "1" is default

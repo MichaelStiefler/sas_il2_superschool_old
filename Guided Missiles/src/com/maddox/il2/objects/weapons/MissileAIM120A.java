@@ -35,8 +35,8 @@ public class MissileAIM120A extends Missile {
 		Property.set(class1, "forceP1", 0.0F); // Power1, i.e. Rocket Engine force output at beginning (in Percent)
 		Property.set(class1, "dragCoefficient", 0.3F); // Aerodynamic Drag Coefficient
 		Property.set(class1, "powerType", 0); // Type of Explosion. 0="Splash", 1="Splinters", 2="Napalm"
-		Property.set(class1, "power", 1.00F); // RL Data: 4.5kg HE warhead, for realism reduced to 1/10th of it's RL weight
-		Property.set(class1, "radius", 18F); // Radius of Explosion Effect
+		Property.set(class1, "power", 15.70F); // RL Data: 157kg HE warhead, for realism reduced to 1/10th of it's RL weight
+		Property.set(class1, "radius", 35F); // Radius of Explosion Effect
 		Property.set(class1, "kalibr", 0.178F); // Diameter of Missile Body
 		Property.set(class1, "massa", 150.0F); // Missile Weight at Launch time
 		Property.set(class1, "massaEnd", 101.0F); // Missile Weight when Booster burned out
@@ -69,7 +69,7 @@ public class MissileAIM120A extends Missile {
 		Property.set(class1, "PkDistOpt", 10000.0F); // optimum Distance for Pk calculation
 		Property.set(class1, "PkDistMax", 50000.0F); // max Distance for Pk calculation
 		Property.set(class1, "leadPercent", 100.0F); // Track calculation lead value
-		Property.set(class1, "maxGForce", 20.0F); // max turning rate G-Force
+		Property.set(class1, "maxGForce", 30.0F); // max turning rate G-Force
 		Property.set(class1, "stepsForFullTurn", 10); // No. of ticks (1 tick = 30ms) for full control surface turn, higher value means slower reaction and smoother flight, lower value means higher agility
 		Property.set(class1, "fxLock", "weapon.AIM7.lock"); // prs file for Lock Tone
 		Property.set(class1, "fxLockVolume", 1.0F); // Volume for Lock Tone, "1" is default

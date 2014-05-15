@@ -72,7 +72,6 @@ public class MissileK13A extends Missile {
 		Property.set(class1, "PkDistMin", 400.0F); // min Distance for Pk calculation
 		Property.set(class1, "PkDistOpt", 1500.0F); // optimum Distance for Pk calculation
 		Property.set(class1, "PkDistMax", 5000.0F); // max Distance for Pk calculation
-		Property.set(class1, "maxSpeed", 2012.2145F); // max Speed in km/h
 		Property.set(class1, "leadPercent", 100.0F); // Track calculation lead value
 		Property.set(class1, "maxGForce", 11.0F); // max turning rate G-Force
 		Property.set(class1, "stepsForFullTurn", 10); // No. of ticks (1 tick = 30ms) for full control surface turn, higher value means slower reaction and smoother flight, lower value means higher agility
