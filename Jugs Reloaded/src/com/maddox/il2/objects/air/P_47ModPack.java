@@ -14,9 +14,9 @@ import com.maddox.sound.SoundFX;
 public class P_47ModPack extends P_47 {
 
 	public P_47ModPack() {
-		bFlaps = false;
-		bFlapsEnd = false;
-		pTailSway = new Point3f(4.0F, 0F, 0F);
+		this.bFlaps = false;
+		this.bFlapsEnd = false;
+		this.pTailSway = new Point3f(4.0F, 0F, 0F);
 		// try {
 		// this.aircraftLHclass = Class.forName("com.maddox.il2.objects.air.AircraftLH");
 		// } catch (Exception e) {
@@ -28,21 +28,25 @@ public class P_47ModPack extends P_47 {
 
 	public void onAircraftLoaded() {
 		super.onAircraftLoaded();
-		if (hierMesh().chunkFindCheck("ETank_D0") >= 0)
-			hierMesh().chunkVisible("ETank_D0", false);
+		if (this.hierMesh().chunkFindCheck("ETank_D0") >= 0) {
+			this.hierMesh().chunkVisible("ETank_D0", false);
+		}
 		boolean bCenterRackVisible = false;
 		boolean bWingRacksVisible = false;
 		bCenterRackVisible = ((this.thisWeaponsName.equalsIgnoreCase("tank")) || (this.thisWeaponsName.equalsIgnoreCase("tank2x500")) || (this.thisWeaponsName.equalsIgnoreCase("tank6x45")) || (this.thisWeaponsName.equalsIgnoreCase("tank2x5006x45"))
 				|| (this.thisWeaponsName.equalsIgnoreCase("1x1000")) || (this.thisWeaponsName.equalsIgnoreCase("1x10002x500")) || (this.thisWeaponsName.equalsIgnoreCase("1x10006x45")) || (this.thisWeaponsName.equalsIgnoreCase("1x10002x5006x45")) || (this.thisWeaponsName
-				.indexOf("c_") != -1));
+						.indexOf("c_") != -1));
 		bWingRacksVisible = ((this.thisWeaponsName.equalsIgnoreCase("tank2x500")) || (this.thisWeaponsName.equalsIgnoreCase("tank2x5006x45")) || (this.thisWeaponsName.equalsIgnoreCase("2x500")) || (this.thisWeaponsName.equalsIgnoreCase("2x5006x45"))
 				|| (this.thisWeaponsName.equalsIgnoreCase("1x10002x500")) || (this.thisWeaponsName.equalsIgnoreCase("1x10002x5006x45")) || (this.thisWeaponsName.equalsIgnoreCase("2x1000")) || (this.thisWeaponsName.indexOf("w_") != -1));
-		if (hierMesh().chunkFindCheck("Rack_D0") >= 0)
-			hierMesh().chunkVisible("Rack_D0", bCenterRackVisible);
-		if (hierMesh().chunkFindCheck("RackL_D0") >= 0)
-			hierMesh().chunkVisible("RackL_D0", bWingRacksVisible);
-		if (hierMesh().chunkFindCheck("RackR_D0") >= 0)
-			hierMesh().chunkVisible("RackR_D0", bWingRacksVisible);
+		if (this.hierMesh().chunkFindCheck("Rack_D0") >= 0) {
+			this.hierMesh().chunkVisible("Rack_D0", bCenterRackVisible);
+		}
+		if (this.hierMesh().chunkFindCheck("RackL_D0") >= 0) {
+			this.hierMesh().chunkVisible("RackL_D0", bWingRacksVisible);
+		}
+		if (this.hierMesh().chunkFindCheck("RackR_D0") >= 0) {
+			this.hierMesh().chunkVisible("RackR_D0", bWingRacksVisible);
+		}
 		if (!Mission.isNet()) {
 			this.FM.CT.bHasCockpitDoorControl = true;
 			this.FM.CT.dvCockpitDoor = 1F;
@@ -53,55 +57,60 @@ public class P_47ModPack extends P_47 {
 	public void update(float f) {
 		super.update(f);
 
-		if ((FM instanceof RealFlightModel) && ((RealFlightModel) FM).isRealMode()) {
-			float f2 = FM.EI.engines[0].getRPM();
-			if (f2 < 1000F && f2 > 100F)
-				((RealFlightModel) FM).producedShakeLevel = (1000F - f2) / 8000F;
+		if ((this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode()) {
+			float f2 = this.FM.EI.engines[0].getRPM();
+			if (f2 < 1000F && f2 > 100F) {
+				((RealFlightModel) this.FM).producedShakeLevel = (1000F - f2) / 8000F;
+			}
 		}
 	}
 
 	public void sfxFlaps(boolean flag) {
 		if (flag) {
-			bFlaps = true;
-			bFlapsEnd = false;
+			this.bFlaps = true;
+			this.bFlapsEnd = false;
 			printDebugMessage("*** Flaps sound starts");
 		}
-		if (bFlaps && !flag) {
-			bFlaps = false;
-			bFlapsEnd = true;
+		if (this.bFlaps && !flag) {
+			this.bFlaps = false;
+			this.bFlapsEnd = true;
 			printDebugMessage("*** Flaps sound ends");
 		}
 	}
 
 	public void sfxGear(boolean flag) {
-		if (soundGearUp != null)
-			soundGearUp.setPlay(flag);
+		if (this.soundGearUp != null) {
+			this.soundGearUp.setPlay(flag);
+		}
 	}
 
 	public void sfxWheels() {
-		if (FM.getSpeedKMH() > 0.0F) {
-			if (soundWheels != null)
-				soundWheels.setPlay(true);
+		if (this.FM.getSpeedKMH() > 0.0F) {
+			if (this.soundWheels != null) {
+				this.soundWheels.setPlay(true);
+			}
 			printDebugMessage("*** Wheels sound used");
 		}
 	}
 
 	public void destroy() {
-		if (isDestroyed())
-			return;
+		if (this.isDestroyed()) return;
 		// System.out.println("P_47ModPack destroy 01");
 		super.destroy();
 		// System.out.println("P_47ModPack destroy 02");
-		if (soundWheels != null)
-			soundWheels.cancel();
-		if (soundGearDn != null)
-			soundGearDn.cancel();
-		if (soundGearUp != null)
-			soundGearUp.cancel();
+		if (this.soundWheels != null) {
+			this.soundWheels.cancel();
+		}
+		if (this.soundGearDn != null) {
+			this.soundGearDn.cancel();
+		}
+		if (this.soundGearUp != null) {
+			this.soundGearUp.cancel();
+		}
 	}
 
 	public void moveCockpitDoor(float f) {
-		resetYPRmodifier();
+		this.resetYPRmodifier();
 		if (this instanceof P_47B1 || this instanceof P_47B15 || this instanceof P_47BDT || this instanceof P_47C5 || this instanceof P_47D10 || this instanceof P_47D22 || this instanceof ThunderboltMkI) {
 			Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 0.85F);
 			Aircraft.xyz[2] = -Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 0.025F);
@@ -111,39 +120,41 @@ public class P_47ModPack extends P_47 {
 		} else {
 			Aircraft.xyz[2] = -Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 0.65F);
 		}
-		hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
+		this.hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
 		if (Config.isUSE_RENDER()) {
-			if (Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null)
+			if (Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null) {
 				Main3D.cur3D().cockpits[0].onDoorMoved(f);
-			setDoorSnd(f);
+			}
+			this.setDoorSnd(f);
 		}
 	}
 
 	protected void moveFan(float f) {
-		if (!Config.isUSE_RENDER())
-			return;
-		int i = FM.EI.engines[0].getStage();
-		if (i > 0 && i < 6)
-			f = 0.005F * (float) i;
+		if (!Config.isUSE_RENDER()) return;
+		int i = this.FM.EI.engines[0].getStage();
+		if (i > 0 && i < 6) {
+			f = 0.005F * i;
+		}
 		super.moveFan(f);
-		hierMesh().chunkSetAngles(Aircraft.Props[0][0], 0.0F, -propPos[0] + 45F, 0.0F);
-		if (!BaseGameVersion.is411orLater())
-			hierMesh().chunkSetAngles("Head1_D0", 0.0F, Aircraft.cvt(-FM.CT.getRudder(), -1.0F, 1.0F, -60F, 60F), 0.0F);
+		this.hierMesh().chunkSetAngles(Aircraft.Props[0][0], 0.0F, -this.propPos[0] + 45F, 0.0F);
+		if (!BaseGameVersion.is411orLater()) {
+			this.hierMesh().chunkSetAngles("Head1_D0", 0.0F, Aircraft.cvt(-this.FM.CT.getRudder(), -1.0F, 1.0F, -60F, 60F), 0.0F);
+		}
 	}
 
 	protected void moveAirBrake(float f) {
 		float f1 = 30F * f;
-		hierMesh().chunkSetAngles("Brake1_D0", 0.0F, 0.0F, f1);
-		hierMesh().chunkSetAngles("Brake2_D0", 0.0F, 0.0F, f1);
+		this.hierMesh().chunkSetAngles("Brake1_D0", 0.0F, 0.0F, f1);
+		this.hierMesh().chunkSetAngles("Brake2_D0", 0.0F, 0.0F, f1);
 	}
 
 	void bubbleTopTailSway() {
 		float fGunFactor = this.FM.CT.WeaponControl[0] || this.FM.CT.WeaponControl[1] ? 2F : 1F;
-		Vector3f theTailSway = new Vector3f(0F, (float) Math.sin((float) Time.current() / 1000F * Math.PI * fGunFactor), 0F);
+		Vector3f theTailSway = new Vector3f(0F, (float) Math.sin(Time.current() / 1000F * Math.PI * fGunFactor), 0F);
 		float fSwayFactor = this.FM.getSpeed() * this.FM.getSpeed() * fGunFactor * fGunFactor / 15F;
 		theTailSway.scale(fSwayFactor);
 		Vector3f theTailSwayMomentum = new Vector3f();
-		theTailSwayMomentum.cross(pTailSway, theTailSway);
+		theTailSwayMomentum.cross(this.pTailSway, theTailSway);
 		this.FM.producedAM.z += theTailSwayMomentum.z;
 	}
 
@@ -159,8 +170,9 @@ public class P_47ModPack extends P_47 {
 	private static boolean _DEBUG = false;
 
 	protected static void printDebugMessage(String theMessage) {
-		if (_DEBUG)
+		if (_DEBUG) {
 			System.out.println(theMessage);
+		}
 	}
 
 	static boolean useStockFlightModels() {

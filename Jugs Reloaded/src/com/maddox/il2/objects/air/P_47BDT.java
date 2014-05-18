@@ -8,59 +8,62 @@ import com.maddox.rts.Property;
 public class P_47BDT extends P_47ModPack {
 
 	protected void moveFan(float f) {
-		if (!Config.isUSE_RENDER())
-			return;
+		if (!Config.isUSE_RENDER()) return;
 
-		int i = FM.EI.engines[0].getStage();
-		if (i > 0 && i < 6)
-			f = 0.005F * (float) i;
+		int i = this.FM.EI.engines[0].getStage();
+		if (i > 0 && i < 6) {
+			f = 0.005F * i;
+		}
 
-		hierMesh().chunkFind(Aircraft.Props[1][0]);
+		this.hierMesh().chunkFind(Aircraft.Props[1][0]);
 		for (int j = 0; j < 2; j++) {
-			if (oldProp[j] < 2) {
-				i = Math.abs((int) (FM.EI.engines[0].getw() * 0.06F));
-				if (i >= 1)
+			if (this.oldProp[j] < 2) {
+				i = Math.abs((int) (this.FM.EI.engines[0].getw() * 0.06F));
+				if (i >= 1) {
 					i = 1;
-				if (i != oldProp[j] && hierMesh().isChunkVisible(Aircraft.Props[j][oldProp[j]])) {
-					hierMesh().chunkVisible(Aircraft.Props[j][oldProp[j]], false);
-					oldProp[j] = i;
-					hierMesh().chunkVisible(Aircraft.Props[j][i], true);
+				}
+				if (i != this.oldProp[j] && this.hierMesh().isChunkVisible(Aircraft.Props[j][this.oldProp[j]])) {
+					this.hierMesh().chunkVisible(Aircraft.Props[j][this.oldProp[j]], false);
+					this.oldProp[j] = i;
+					this.hierMesh().chunkVisible(Aircraft.Props[j][i], true);
 				}
 			}
 			if (i == 0) {
-				propPos[j] = (propPos[j] + 57.3F * FM.EI.engines[0].getw() * f) % 360F;
+				this.propPos[j] = (this.propPos[j] + 57.3F * this.FM.EI.engines[0].getw() * f) % 360F;
 			} else {
-				float f1 = 57.3F * FM.EI.engines[0].getw();
+				float f1 = 57.3F * this.FM.EI.engines[0].getw();
 				f1 %= 2880F;
 				f1 /= 2880F;
-				if (f1 <= 0.5F)
+				if (f1 <= 0.5F) {
 					f1 *= 2.0F;
-				else
+				} else {
 					f1 = f1 * 2.0F - 2.0F;
+				}
 				f1 *= 1200F;
-				propPos[j] = (propPos[j] + f1 * f) % 360F;
+				this.propPos[j] = (this.propPos[j] + f1 * f) % 360F;
 			}
-			if (j == 0)
-				hierMesh().chunkSetAngles(Aircraft.Props[j][i], 0.0F, propPos[j], 0.0F);
-			else
-				hierMesh().chunkSetAngles(Aircraft.Props[j][i], 0.0F, -propPos[j], 0.0F);
+			if (j == 0) {
+				this.hierMesh().chunkSetAngles(Aircraft.Props[j][i], 0.0F, this.propPos[j], 0.0F);
+			} else {
+				this.hierMesh().chunkSetAngles(Aircraft.Props[j][i], 0.0F, -this.propPos[j], 0.0F);
+			}
 		}
 	}
 
 	public void hitProp(int i, int j, Actor actor) {
-		if (i > FM.EI.getNum() - 1 || oldProp[i] == 2)
-			return;
-		if (isChunkAnyDamageVisible("Prop" + (i + 1)) || isChunkAnyDamageVisible("PropRot" + (i + 1))) {
-			hierMesh().chunkVisible(Aircraft.Props[i + 1][0], false);
-			hierMesh().chunkVisible(Aircraft.Props[i + 1][1], false);
-			hierMesh().chunkVisible(Aircraft.Props[i + 1][2], true);
+		if (i > this.FM.EI.getNum() - 1 || this.oldProp[i] == 2) return;
+		if (this.isChunkAnyDamageVisible("Prop" + (i + 1)) || this.isChunkAnyDamageVisible("PropRot" + (i + 1))) {
+			this.hierMesh().chunkVisible(Aircraft.Props[i + 1][0], false);
+			this.hierMesh().chunkVisible(Aircraft.Props[i + 1][1], false);
+			this.hierMesh().chunkVisible(Aircraft.Props[i + 1][2], true);
 		}
 		super.hitProp(i, j, actor);
 	}
 
 	public void update(float f) {
-		if (this == World.getPlayerAircraft())
+		if (this == World.getPlayerAircraft()) {
 			World.cur().diffCur.Torque_N_Gyro_Effects = false;
+		}
 		super.update(f);
 	}
 

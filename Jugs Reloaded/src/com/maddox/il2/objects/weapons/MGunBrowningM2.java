@@ -12,14 +12,12 @@ public class MGunBrowningM2 extends MGunBrowning50kAPIT {
 	}
 
 	private void initRandom() {
-		if (theRangeRandom != null) {
-			return;
-		}
+		if (theRangeRandom != null) return;
 		long lTime = System.currentTimeMillis();
 		SecureRandom secRandom = new SecureRandom();
 		secRandom.setSeed(lTime);
-		long lSeed1 = (long) secRandom.nextInt();
-		long lSeed2 = (long) secRandom.nextInt();
+		long lSeed1 = secRandom.nextInt();
+		long lSeed2 = secRandom.nextInt();
 		long lSeed = (lSeed1 << 32) + lSeed2;
 		theRangeRandom = new RangeRandom(lSeed);
 	}

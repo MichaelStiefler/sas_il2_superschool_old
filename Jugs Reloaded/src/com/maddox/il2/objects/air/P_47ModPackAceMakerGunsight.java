@@ -21,8 +21,9 @@ public class P_47ModPackAceMakerGunsight extends P_47ModPack implements TypeFigh
 
 	public boolean typeFighterAceMakerToggleAutomation() {
 		this.k14Mode += 1;
-		if (this.k14Mode > 2)
+		if (this.k14Mode > 2) {
 			this.k14Mode = 0;
+		}
 		HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerMode" + this.k14Mode);
 		return true;
 	}
@@ -32,15 +33,17 @@ public class P_47ModPackAceMakerGunsight extends P_47ModPack implements TypeFigh
 
 	public void typeFighterAceMakerAdjDistancePlus() {
 		this.k14Distance += 10.0F;
-		if (this.k14Distance > 800.0F)
+		if (this.k14Distance > 800.0F) {
 			this.k14Distance = 800.0F;
+		}
 		HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerInc");
 	}
 
 	public void typeFighterAceMakerAdjDistanceMinus() {
 		this.k14Distance -= 10.0F;
-		if (this.k14Distance < 200.0F)
+		if (this.k14Distance < 200.0F) {
 			this.k14Distance = 200.0F;
+		}
 		HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerDec");
 	}
 
@@ -49,15 +52,17 @@ public class P_47ModPackAceMakerGunsight extends P_47ModPack implements TypeFigh
 
 	public void typeFighterAceMakerAdjSideslipPlus() {
 		this.k14WingspanType -= 1;
-		if (this.k14WingspanType < 0)
+		if (this.k14WingspanType < 0) {
 			this.k14WingspanType = 0;
+		}
 		HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerWing" + this.k14WingspanType);
 	}
 
 	public void typeFighterAceMakerAdjSideslipMinus() {
 		this.k14WingspanType += 1;
-		if (this.k14WingspanType > 9)
+		if (this.k14WingspanType > 9) {
 			this.k14WingspanType = 9;
+		}
 		HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerWing" + this.k14WingspanType);
 	}
 

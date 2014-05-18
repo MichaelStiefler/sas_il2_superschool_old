@@ -7,12 +7,10 @@ import com.maddox.rts.Property;
 public class P_47D22 extends P_47ModPack {
 
 	public static String getSkinPrefix(String s, Regiment regiment) {
-		if (regiment == null || regiment.country() == null)
-			return "";
+		if (regiment == null || regiment.country() == null) return "";
 		if (regiment.country().equals("us")) {
 			int i = Mission.getMissionDate(true);
-			if (i > 0 && i < 19440606)
-				return "PreInvasion_";
+			if (i > 0 && i < 19440606) return "PreInvasion_";
 		}
 		return "";
 	}

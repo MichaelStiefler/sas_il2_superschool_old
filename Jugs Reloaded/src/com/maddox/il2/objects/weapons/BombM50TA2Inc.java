@@ -14,7 +14,8 @@ public class BombM50TA2Inc extends Bomb {
 		Property.set(class1, "kalibr", 0.0406F);
 		Property.set(class1, "massa", 1.6F);
 		Property.set(class1, "sound", "weapon.bomb_cassette");
-		if (BaseGameVersion.is411orLater())
+		if (BaseGameVersion.is411orLater()) {
 			Property.set(class1, "fuze", new Object[] { Fuze_instant.class });
+		}
 	}
 }

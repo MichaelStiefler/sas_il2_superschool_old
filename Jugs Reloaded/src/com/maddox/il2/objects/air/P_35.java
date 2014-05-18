@@ -8,7 +8,7 @@ public class P_35 extends P_35xyz {
 	public void missionStarting() {
 		super.missionStarting();
 		if (this.FM.isStationedOnGround()) {
-			this.FM.AS.setCockpitDoor(FM.actor, 1);
+			this.FM.AS.setCockpitDoor(this.FM.actor, 1);
 			this.FM.CT.cockpitDoorControl = 1.0F;
 		}
 	}

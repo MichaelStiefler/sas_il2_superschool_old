@@ -25,10 +25,10 @@ public class BombletFireNapalm2 extends Bomb {
 		// System.out.println("msgCollision2 at " + Time.current());
 		if (actor != null) {
 			Point3d point3d = new Point3d();
-			pos.getTime(Time.current(), point3d);
+			this.pos.getTime(Time.current(), point3d);
 			Loc loc = new Loc(point3d);
 
-			Class class1 = getClass();
+			Class class1 = this.getClass();
 			float f = Property.floatValue(class1, "power", 0.0F);
 			int i = Property.intValue(class1, "powerType", 0);
 			float f1 = Property.floatValue(class1, "radius", 1.0F);
@@ -36,7 +36,7 @@ public class BombletFireNapalm2 extends Bomb {
 				Eff3DActor.New(loc, World.Rnd().nextFloat(0.5F, 4.0F), "3DO/Effects/Fireworks/NapalmFire2.eff", 10F);
 				Eff3DActor.New(loc, World.Rnd().nextFloat(0.5F, 4.0F), "3DO/Effects/Explodes/NapalmSmoke.eff", 10F);
 			}
-			MsgExplosion.send(actor, s1, point3d, getOwner(), M, f, i, f1);
+			MsgExplosion.send(actor, s1, point3d, this.getOwner(), this.M, f, i, f1);
 		}
 		super.msgCollision(actor, s, s1);
 	}

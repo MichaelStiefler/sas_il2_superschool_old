@@ -8,10 +8,11 @@ public abstract class P_35xyz extends RE_2000xyz {
 
 	public void update(float f) {
 		super.update(f);
-		if ((FM instanceof RealFlightModel) && ((RealFlightModel) FM).isRealMode()) {
-			float f2 = FM.EI.engines[0].getRPM();
-			if (f2 < 1000F && f2 > 100F)
-				((RealFlightModel) FM).producedShakeLevel = (1000F - f2) / 8000F;
+		if ((this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode()) {
+			float f2 = this.FM.EI.engines[0].getRPM();
+			if (f2 < 1000F && f2 > 100F) {
+				((RealFlightModel) this.FM).producedShakeLevel = (1000F - f2) / 8000F;
+			}
 		}
 	}
 
@@ -28,20 +29,21 @@ public abstract class P_35xyz extends RE_2000xyz {
 	}
 
 	protected void moveFan(float f) {
-		if (!Config.isUSE_RENDER())
-			return;
-		int i = FM.EI.engines[0].getStage();
-		if (i > 0 && i < 6)
-			f = 0.005F * (float) i;
+		if (!Config.isUSE_RENDER()) return;
+		int i = this.FM.EI.engines[0].getStage();
+		if (i > 0 && i < 6) {
+			f = 0.005F * i;
+		}
 		super.moveFan(f);
-		hierMesh().chunkSetAngles(Aircraft.Props[0][0], 0.0F, -propPos[0] + 45F, 0.0F);
+		this.hierMesh().chunkSetAngles(Aircraft.Props[0][0], 0.0F, -this.propPos[0] + 45F, 0.0F);
 	}
 
 	private static boolean _DEBUG = false;
 
 	protected static void printDebugMessage(String theMessage) {
-		if (_DEBUG)
+		if (_DEBUG) {
 			System.out.println(theMessage);
+		}
 	}
 
 	static {

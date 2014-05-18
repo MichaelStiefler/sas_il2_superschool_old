@@ -17,22 +17,23 @@ public class Bomb110Napalm extends Bomb {
 	}
 
 	public void msgCollision(Actor actor, String s, String s1) {
-		doFireContaineds();
+		this.doFireContaineds();
 		Point3d point3d = new Point3d();
-		pos.getTime(Time.current(), point3d);
-		Class class1 = getClass();
+		this.pos.getTime(Time.current(), point3d);
+		Class class1 = this.getClass();
 		float f = Property.floatValue(class1, "power", 0.0F);
 		int i = Property.intValue(class1, "powerType", 0);
 		float f1 = Property.floatValue(class1, "radius", 1.0F);
-		MsgExplosion.send(actor, s1, point3d, getOwner(), M, f, i, f1);
+		MsgExplosion.send(actor, s1, point3d, this.getOwner(), this.M, f, i, f1);
 		super.msgCollision(actor, s, s1);
 	}
 
 	private void doFireContaineds() {
 		// System.out.println("doFireContaineds at " + Time.current());
 		Actor actor = null;
-		if (Actor.isValid(getOwner()))
-			actor = getOwner();
+		if (Actor.isValid(this.getOwner())) {
+			actor = this.getOwner();
+		}
 
 		Point3d point3d = new Point3d();
 		Orient orient = new Orient();
@@ -40,7 +41,7 @@ public class Bomb110Napalm extends Bomb {
 		Vector3d vector3d2 = new Vector3d();
 		Loc loc1 = new Loc();
 		this.pos.getCurrent(loc1);
-		getSpeed(vector3d2);
+		this.getSpeed(vector3d2);
 		vector3d2.z = 0.0D;
 
 		for (int i = 0; i < 20; i++) {
@@ -74,7 +75,7 @@ public class Bomb110Napalm extends Bomb {
 			}
 		}
 
-		postDestroy();
+		this.postDestroy();
 	}
 
 	// private void doFireContaineds()

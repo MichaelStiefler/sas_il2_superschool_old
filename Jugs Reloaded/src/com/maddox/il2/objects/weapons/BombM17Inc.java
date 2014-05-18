@@ -23,41 +23,44 @@ public class BombM17Inc extends Bomb {
 
 	public void start() {
 		super.start();
-		setStartDelayedExplosion(true);
-		if (this.fuze == null)
+		if (BaseGameVersion.is412orLater()) {
+			this.setStartDelayedExplosion(true);
+		}
+		if (BaseGameVersion.is411orLater() && this.fuze == null) {
 			this.t1 = (Time.current() + 1000L);
-		else if (this.delayExplosion == 0.0F)
+		} else if (this.delayExplosion == 0.0F) {
 			this.t1 = (Time.current() + 200L);
-		else
+		} else {
 			this.t1 = (Time.current() + (long) (1000.0F * this.delayExplosion));
+		}
 		this.charge = 0;
 	}
 
 	public void interpolateTick() {
 		super.interpolateTick();
-		if (this.t1 < Time.current())
-			doFireContaineds();
+		if (this.t1 < Time.current()) {
+			this.doFireContaineds();
+		}
 	}
 
 	public void msgCollision(Actor paramActor, String paramString1, String paramString2) {
 		super.msgCollision(paramActor, paramString1, paramString2);
 
-		if (isArmed())
-			doFireContaineds();
-		else
-			destroy();
+		if (this.isArmed()) {
+			this.doFireContaineds();
+		} else {
+			this.destroy();
+		}
 	}
 
 	private void ExplodeCharge(Point3d paramPoint3d) {
-		if (!Config.isUSE_RENDER()) {
-			return;
-		}
+		if (!Config.isUSE_RENDER()) return;
 		o.set(0.0F, 0.0F, 0.0F);
 		l.set(paramPoint3d, o);
 
 		String str = "effects/Explodes/Air/Zenitka/US_Frag/";
 
-		FragChargeSound(paramPoint3d);
+		this.FragChargeSound(paramPoint3d);
 		float f = -1.0F;
 
 		Eff3DActor.New(l, 1.0F, str + "Sparks.eff", f);
@@ -76,11 +79,9 @@ public class BombM17Inc extends Bomb {
 		this.charge++;
 		if (this.charge < 6) {
 			// Explosions.airbustABcontainer(this.pos.getAbsPoint(), 3);
-			ExplodeCharge(this.pos.getAbsPoint());
-			Actor actor = getOwner();
-			if (!Actor.isValid(actor)) {
-				return;
-			}
+			this.ExplodeCharge(this.pos.getAbsPoint());
+			Actor actor = this.getOwner();
+			if (!Actor.isValid(actor)) return;
 
 			Point3d point3d = new Point3d();
 			Orient orient = new Orient();
@@ -90,7 +91,7 @@ public class BombM17Inc extends Bomb {
 			// Loc loc2 = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
 			this.pos.getCurrent(loc1);
 			// findHook("_Spawn0" + this.charge).computePos(this, loc1, loc2);
-			getSpeed(vector3d2);
+			this.getSpeed(vector3d2);
 			for (int i = 0; i < (this.charge % 3 == 0 ? 19 : 18); i++) {
 				// loc2.get(point3d, orient);
 				loc1.get(point3d, orient);
@@ -102,10 +103,11 @@ public class BombM17Inc extends Bomb {
 				vector3d1.scale(World.Rnd().nextDouble(1.0D, 10.0D));
 				vector3d1.add(vector3d2);
 				Bomb bomblet = null;
-				if (i == 0)
+				if (i == 0) {
 					bomblet = new BombM50XA3Inc();
-				else
+				} else {
 					bomblet = new BombM50TA2Inc();
+				}
 				bomblet.pos.setUpdateEnable(true);
 				bomblet.pos.setAbs(point3d, orient);
 				bomblet.pos.reset();
@@ -120,7 +122,7 @@ public class BombM17Inc extends Bomb {
 			this.t1 = (Time.current() + 200L);
 		} else {
 			// Explosions.AirFlak(this.pos.getAbsPoint(), 1);
-			postDestroy();
+			this.postDestroy();
 		}
 	}
 
@@ -133,7 +135,8 @@ public class BombM17Inc extends Bomb {
 		Property.set(class1, "kalibr", 0.32F);
 		Property.set(class1, "massa", 260F);
 		Property.set(class1, "sound", "weapon.bomb_phball");
-		if (BaseGameVersion.is411orLater())
+		if (BaseGameVersion.is411orLater()) {
 			Property.set(class1, "fuze", new Object[] { Fuze_fragBundle.class });
+		}
 	}
 }

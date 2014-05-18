@@ -14,7 +14,8 @@ public class Bomb100lbs extends Bomb {
 		Property.set(class1, "kalibr", 0.32F);
 		Property.set(class1, "massa", 50F);
 		Property.set(class1, "sound", "weapon.bomb_mid");
-		if (BaseGameVersion.is411orLater())
+		if (BaseGameVersion.is411orLater()) {
 			Property.set(class1, "fuze", new Object[] { Fuze_AN_M103.class, Fuze_M112.class, Fuze_M115.class, Fuze_M135A1.class });
+		}
 	}
 }
