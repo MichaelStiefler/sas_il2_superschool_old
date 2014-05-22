@@ -866,6 +866,10 @@ public class HUD {
 			int j2 = 3;
 			// ---
 			
+			// TODO: During NTRK playback, leave bottom line gap for recorded time display
+			if (NetMissionTrack.isPlaying()) j2 += ttfont3.height();
+			// ---
+			
 			int l2 = 0xff0000ff;
 			
 			// TODO: Replace the final "5000" by the static field "logTimeFire"
@@ -901,6 +905,10 @@ public class HUD {
 		
 		// TODO: If WEP message is active, leave 1 line gap at the bottom
 		if (logRightBottom != null && bDrawAllMessages) k2 += l1;
+		// ---
+		
+		// TODO: During NTRK playback, leave bottom line gap for recorded time display
+		if (NetMissionTrack.isPlaying()) k2 += l1;
 		// ---
 		
 		for (int i3 = 0; i3 < logLen; i3++) {
