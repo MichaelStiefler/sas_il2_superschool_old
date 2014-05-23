@@ -8,6 +8,7 @@
 package com.maddox.il2.game;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Map;
@@ -825,23 +826,23 @@ public class HUD {
 			float f = ttfont.width(logIntro);
 			int i1 = 0xff000000;
 			ttfont.output(i1, ((float) viewDX - f) / 2.0F, (float) viewDY * 0.75F, 0.0F, logIntro);
-			
-		// TODO: Replace the final "10000" by the static field "logCenterTimeLife"
+
+			// TODO: Replace the final "10000" by the static field "logCenterTimeLife"
 		} else if (logCenter != null) if (l > logCenterTime + logCenterTimeLife) logCenter = null;
 		// ---
-		
-		else if (bDrawAllMessages) {
-			TTFont ttfont1 = fntCenter;
-			float f1 = ttfont1.width(logCenter);
-			int j1 = 0xff0000ff;
-			
-			// TODO: Replace the final "10000" by the static field "logCenterTimeLife"
-			int i2 = 255 - (int) (((double) (l - logCenterTime) / (double)logCenterTimeLife) * 255D);
-			// ---
-			
-			j1 |= i2 << 8;
-			ttfont1.output(j1, ((float) viewDX - f1) / 2.0F, (float) viewDY * 0.75F, 0.0F, logCenter);
-		}
+
+			else if (bDrawAllMessages) {
+				TTFont ttfont1 = fntCenter;
+				float f1 = ttfont1.width(logCenter);
+				int j1 = 0xff0000ff;
+
+				// TODO: Replace the final "10000" by the static field "logCenterTimeLife"
+				int i2 = 255 - (int) (((double) (l - logCenterTime) / (double) logCenterTimeLife) * 255D);
+				// ---
+
+				j1 |= i2 << 8;
+				ttfont1.output(j1, ((float) viewDX - f1) / 2.0F, (float) viewDY * 0.75F, 0.0F, logCenter);
+			}
 		if (logIntroESC != null) {
 			TTFont ttfont2 = TTFont.font[0];
 			float f2 = ttfont2.width(logIntroESC);
@@ -851,36 +852,39 @@ public class HUD {
 		if (!Main3D.cur3D().aircraftHotKeys.isAfterburner()) logRightBottom = null;
 		if (logRightBottom != null && bDrawAllMessages) {
 			TTFont ttfont3 = TTFont.font[1];
-			
+
 			// TODO: Let Log start 2 pixels off the right side of the screen.
 			// Original code line commented out for reference
 			// int j = (int) ((double) viewDX * 0.95D);
 			int j = viewDX - 2;
 			// ---
-			
+
 			int k1 = (int) ttfont3.width(logRightBottom);
-			
+
 			// TODO: Let Log start 3 pixels off the bottom of the screen.
 			// Original code line commented out for reference
 			// int j2 = (int) ((double) viewDY * 0.45D - (double) (lenLogBuf * ttfont3.height()));
 			int j2 = 3;
 			// ---
-			
+
 			// TODO: During NTRK playback, leave bottom line gap for recorded time display
 			if (NetMissionTrack.isPlaying()) j2 += ttfont3.height();
 			// ---
-			
-			int l2 = 0xff0000ff;
-			
-			// TODO: Replace the final "5000" by the static field "logTimeFire"
-			int j3 = (int) ((510F * (float) ((Time.current() - logRightBottomTime) % logTimeFire)) / (float)logTimeFire);
-			// ---
-			
-			if ((j3 -= 255) < 0) j3 = -j3;
-			ttfont3.output(l2 | j3 << 8, j - k1, j2, 0.0F, logRightBottom);
+
+			float fadePercent = 2.0F * (float) ((Time.current() - logRightBottomTime) % logTimeFire) / (float) logTimeFire;
+			ttfont3.output(crossFadeColor(colorLogBottom1, colorLogBottom2, fadePercent), j - k1, j2, 0.0F, logRightBottom);
+
+			// int l2 = 0xff0000ff;
+			//
+			// // TODO: Replace the final "5000" by the static field "logTimeFire"
+			// int j3 = (int) ((510F * (float) ((Time.current() - logRightBottomTime) % logTimeFire)) / (float)logTimeFire);
+			// // ---
+			//
+			// if ((j3 -= 255) < 0) j3 = -j3;
+			// ttfont3.output(l2 | j3 << 8, j - k1, j2, 0.0F, logRightBottom);
 		}
 		if (logLen == 0) return;
-		
+
 		// TODO: Replace final values (10000, 3) by the static fields "logTimeLife" and "lenLogBuf"
 		for (; logLen > 0 && l >= logTime[logPtr] + logTimeLife; logLen--)
 			logPtr = (logPtr + 1) % lenLogBuf;
@@ -888,51 +892,43 @@ public class HUD {
 
 		if (logLen == 0) return;
 		TTFont ttfont4 = TTFont.font[1];
-		
+
 		// TODO: Let Log start 2 pixels off the right side of the screen.
 		// Original code line commented out for reference
 		// int k = (int) ((double) viewDX * 0.95D);
 		int k = viewDX - 2;
 		// ---
-		
+
 		int l1 = ttfont4.height();
-		
+
 		// TODO: Let Log start 3 pixels off the bottom of the screen.
 		// Original code line commented out for reference
 		// int k2 = (int) ((double) viewDY * 0.45D) - (lenLogBuf - logLen) * l1;
 		int k2 = 3 + (logLen - 1) * l1;
 		// ---
-		
+
 		// TODO: If WEP message is active, leave 1 line gap at the bottom
 		if (logRightBottom != null && bDrawAllMessages) k2 += l1;
 		// ---
-		
+
 		// TODO: During NTRK playback, leave bottom line gap for recorded time display
 		if (NetMissionTrack.isPlaying()) k2 += l1;
 		// ---
-		
+
 		for (int i3 = 0; i3 < logLen; i3++) {
 			int k3 = (logPtr + i3) % lenLogBuf;
-			int l3 = 0xffff0000;
-			
-			// TODO: Replace the final "5000" by the static field "logTimeFire"
+
+			// TODO: New Log Color Transition / Fading Code with user selectable colors
+			int l3;
 			if (l < logTime[k3] + logTimeFire) {
-				int i4 = (int) (((double) ((logTime[k3] + logTimeFire) - l) / (double)logTimeFire) * 255D);
+				float fadePercent = (float) ((logTime[k3] + logTimeFire) - l) / (float) logTimeFire;
+				l3 = crossFadeColor(colorLog2, colorLog1, fadePercent);
+			} else {
+				float fadePercent = (float) ((logTime[k3] + logTimeLife) - l) / (float) (logTimeLife - logTimeFire);
+				l3 = crossFadeColor(colorLog2 & 0x00ffffff, colorLog2, fadePercent);
+			}
 			// ---
-				
-				l3 |= i4 | i4 << 8;
-            }
-			
-			// TODO: If "logTimeFire" (5 seconds) have been passed, per default the log message will
-			//       be dark blue and suddenly disappear after another 5 seconds (logTimeLife has been passed, 10 seconds total)
-			//       Instead of this behaviour, let the message fade away within the second 5 seconds
-			else {
-                l3 = 0x00ff0000;
-                int i4 = (int)(((double)((logTime[k3] + logTimeLife) - l) /  (double)(logTimeLife - logTimeFire)) * 255D);
-                l3 |= i4 << 24;
-            }
-			// ---
-			
+
 			float f4 = ttfont4.width(logBufStr[k3]);
 			if (bDrawAllMessages) ttfont4.output(l3, (float) k - f4, k2, 0.0F, logBufStr[k3]);
 			k2 -= l1;
@@ -940,34 +936,71 @@ public class HUD {
 
 	}
 
+	// TODO: Calculation Algorithm for cross fading between two RGB color values with alpha.
+	// "fadePercent" is the percentage of color2 to apply, in the range of 0.0F - 1.0F (0-100%)
+	// Negative values for "fadePercent" will be inverted
+	// Values from 1.0F to 2.0F will be "mirrored" at 1.0F, e.g. 1.25F becomes 0.75F
+	// Values for "fadePercent" are modulo 2.0F
+	private static int crossFadeColor(int color1, int color2, float fadePercent) {
+		fadePercent %= 2.0F;
+		if (fadePercent < 0.0F) fadePercent = -fadePercent;
+		if (fadePercent > 1.0F) fadePercent = 2.0F - fadePercent;
+		int fadedColor = 0;
+		for (int i = 0; i < 4; i++) {
+			int shift = i * 8;
+			int c1 = (color1 & (0xff << shift)) >>> shift;
+			int c2 = (color2 & (0xff << shift)) >>> shift;
+			int c3 = c1 + (int) ((float) (c2 - c1) * fadePercent);
+			fadedColor |= c3 << shift;
+		}
+		return fadedColor;
+	}
+
+	// ---
+
+	// TODO: Read Hex Values from conf.ini
+	private static int getHexFromIni(String section, String value, int defaultValue) {
+		int retVal = 0;
+		String defaultString = Integer.toHexString(defaultValue);
+		String retValString = Config.cur.ini.get(section, value, defaultString);
+		try {
+			retVal = new BigInteger(retValString, 16).intValue();
+		} catch (NumberFormatException nfe) {
+			nfe.printStackTrace();
+		}
+		return retVal;
+	}
+
+	// ---
+
 	private int __log(int i, String s) {
 		if (logLen > 0 && i != 0) {
-			
+
 			// TODO: Replace the final "3" by the static field "lenLogBuf"
 			int j = ((logPtr + logLen) - 1) % lenLogBuf;
 			// ---
-			
+
 			if (logBufId[j] == i) {
 				logTime[j] = Time.current();
 				logBuf[j] = s;
 				return j;
 			}
 		}
-		
+
 		// TODO: Replace the final "3" by the static field "lenLogBuf"
 		if (logLen >= lenLogBuf) {
 			logPtr = (logPtr + 1) % lenLogBuf;
-		// ---
-			
+			// ---
+
 			// TODO: Replace the final "2" by the static field "lenLogBuf" - 1
 			logLen = lenLogBuf - 1;
 			// ---
 		}
-		
+
 		// TODO: Replace the final "3" by the static field "lenLogBuf"
 		int k = (logPtr + logLen) % lenLogBuf;
 		// ---
-		
+
 		logBuf[k] = s;
 		logBufId[k] = i;
 		logTime[k] = Time.current();
@@ -1424,7 +1457,7 @@ public class HUD {
 		msgLines = new ArrayList();
 		trainingLines = new ArrayList();
 		bCoopTimeStart = false;
-		
+
 		// TODO: Read max. Number of Log Lines from conf.ini and initialize log buffers accordingly
 		lenLogBuf = Config.cur.ini.get("Mods", "HUDLogLines", lenLogBuf);
 		logBuf = new String[lenLogBuf];
@@ -1432,7 +1465,14 @@ public class HUD {
 		logBufId = new int[lenLogBuf];
 		logTime = new long[lenLogBuf];
 		// ---
-		
+
+		// TODO: Read custom color values from conf.ini
+		colorLog1 = getHexFromIni("Mods", "HUDLogColor1", COLOR_LOG1_DEFAULT);
+		colorLog2 = getHexFromIni("Mods", "HUDLogColor2", COLOR_LOG2_DEFAULT);
+		colorLogBottom1 = getHexFromIni("Mods", "HUDLogBottomColor1", COLOR_LOG_BOTTOM1_DEFAULT);
+		colorLogBottom2 = getHexFromIni("Mods", "HUDLogBottomColor2", COLOR_LOG_BOTTOM2_DEFAULT);
+		// ---
+
 		logPtr = 0;
 		logLen = 0;
 		bDrawNetStat = false;
@@ -1510,6 +1550,25 @@ public class HUD {
 	private static int lenLogBuf = 3;
 	private static final long logTimeLife = 10000L;
 	private static final long logTimeFire = 5000L;
+
+	// TODO: Custom color values for cross fading message colors
+	// Both "normal" and "bottom" (WEP) log messages
+	private static int colorLog1;
+	private static int colorLog2;
+	private static int colorLogBottom1;
+	private static int colorLogBottom2;
+
+	private static final int COLOR_LOG1_DEFAULT = 0xffffffff;
+	private static final int COLOR_LOG2_DEFAULT = 0xffff0000;
+	private static final int COLOR_LOG_BOTTOM1_DEFAULT = 0xff0000ff;
+	private static final int COLOR_LOG_BOTTOM2_DEFAULT = 0xff00ffff;
+	// ---
+
+	// // TODO: These Fields hold an array with RGB values for Color Fading transition
+	// private int color1RGBA[] = new int[3];
+	// private int color2RGBA[] = new int[3];
+	// // ---
+
 	private String logBuf[];
 	private String logBufStr[];
 	private int logBufId[];
