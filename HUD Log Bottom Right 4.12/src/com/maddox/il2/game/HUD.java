@@ -58,7 +58,7 @@ public class HUD {
 			y = f1;
 			color = i;
 			alpha = f2;
-			angle = (float) ((double) (f3 * 180F) / 3.1415926535897931D);
+			angle = (float) ((double) (f3 * 180F) / Math.PI);
 		}
 
 		float x;
@@ -827,7 +827,7 @@ public class HUD {
 			int i1 = 0xff000000;
 			ttfont.output(i1, ((float) viewDX - f) / 2.0F, (float) viewDY * 0.75F, 0.0F, logIntro);
 
-			// TODO: Replace the final "10000" by the static field "logCenterTimeLife"
+			// TODO: Replace the final "5000" by the static field "logCenterTimeLife"
 		} else if (logCenter != null) if (l > logCenterTime + logCenterTimeLife) logCenter = null;
 		// ---
 
@@ -836,7 +836,7 @@ public class HUD {
 				float f1 = ttfont1.width(logCenter);
 				int j1 = 0xff0000ff;
 
-				// TODO: Replace the final "10000" by the static field "logCenterTimeLife"
+				// TODO: Replace the final "5000" by the static field "logCenterTimeLife"
 				int i2 = 255 - (int) (((double) (l - logCenterTime) / (double) logCenterTimeLife) * 255D);
 				// ---
 
@@ -871,17 +871,11 @@ public class HUD {
 			if (NetMissionTrack.isPlaying()) j2 += ttfont3.height();
 			// ---
 
+			// TODO: New Bottom Log Line Color fading code
 			float fadePercent = 2.0F * (float) ((Time.current() - logRightBottomTime) % logTimeFire) / (float) logTimeFire;
 			ttfont3.output(crossFadeColor(colorLogBottom1, colorLogBottom2, fadePercent), j - k1, j2, 0.0F, logRightBottom);
+			// ---
 
-			// int l2 = 0xff0000ff;
-			//
-			// // TODO: Replace the final "5000" by the static field "logTimeFire"
-			// int j3 = (int) ((510F * (float) ((Time.current() - logRightBottomTime) % logTimeFire)) / (float)logTimeFire);
-			// // ---
-			//
-			// if ((j3 -= 255) < 0) j3 = -j3;
-			// ttfont3.output(l2 | j3 << 8, j - k1, j2, 0.0F, logRightBottom);
 		}
 		if (logLen == 0) return;
 
@@ -970,7 +964,6 @@ public class HUD {
 		}
 		return retVal;
 	}
-
 	// ---
 
 	private int __log(int i, String s) {
@@ -1547,7 +1540,11 @@ public class HUD {
 	private TTFont fntCenter;
 	private boolean bCoopTimeStart;
 	private long coopTimeStart;
+
+	// TODO: Remove "final" modifier for lenLogBuf
 	private static int lenLogBuf = 3;
+	// ---
+
 	private static final long logTimeLife = 10000L;
 	private static final long logTimeFire = 5000L;
 
@@ -1563,11 +1560,6 @@ public class HUD {
 	private static final int COLOR_LOG_BOTTOM1_DEFAULT = 0xff0000ff;
 	private static final int COLOR_LOG_BOTTOM2_DEFAULT = 0xff00ffff;
 	// ---
-
-	// // TODO: These Fields hold an array with RGB values for Color Fading transition
-	// private int color1RGBA[] = new int[3];
-	// private int color2RGBA[] = new int[3];
-	// // ---
 
 	private String logBuf[];
 	private String logBufStr[];
