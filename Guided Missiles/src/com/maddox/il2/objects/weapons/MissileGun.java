@@ -59,7 +59,7 @@ public class MissileGun extends RocketGun {
 				this.shotFrequency = (long) (1000.0F * Property.floatValue(theMissile.getClass(), "shotFreq", 0.5F));
 			}
 		}
-		// EventLog.type("MissileGun shots 1");
+//		System.out.println("MissileGun shots 1");
 		try {
 			if (Actor.isValid(this.actor) && (this.actor instanceof Aircraft) && (this.actor instanceof TypeGuidedMissileCarrier) && (Aircraft) this.actor == World.getPlayerAircraft()
 					&& ((RealFlightModel) ((SndAircraft) ((Aircraft) this.actor)).FM).isRealMode() && ((TypeGuidedMissileCarrier) this.actor).getGuidedMissileUtils().hasMissiles()
@@ -78,7 +78,7 @@ public class MissileGun extends RocketGun {
 			return;
 		}
 		if (theMissile == null) {
-			// EventLog.type("MissileGun shots 0");
+//			System.out.println("MissileGun shots 0");
 			this.engineWarmupRunning = false;
 			return;
 		}
@@ -90,9 +90,9 @@ public class MissileGun extends RocketGun {
 		}
 		this.engineWarmupTime = Property.longValue(theMissile.getClass(), "engineDelayTime", 0L) * -1L;
 		if (this.engineWarmupTime > 0L) {
-			// EventLog.type("MissileGun shots 2");
+//			System.out.println("MissileGun shots 2");
 			if (!this.engineWarmupRunning) {
-				// EventLog.type("MissileGun shots 3");
+//				System.out.println("MissileGun shots 3");
 				theMissile.startEngine();
 				theMissile.setStartTime();
 				if (this.engineWarmupTime > 1000L) {
@@ -103,7 +103,7 @@ public class MissileGun extends RocketGun {
 				return;
 			}
 		}
-		// EventLog.type("MissileGun shots 4");
+//		System.out.println("MissileGun shots 4");
 		this.engineWarmupRunning = false;
 		this.bExecuted = false;
 		super.shots(paramInt);

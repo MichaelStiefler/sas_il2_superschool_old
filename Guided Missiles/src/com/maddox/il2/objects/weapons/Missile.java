@@ -1056,7 +1056,7 @@ public class Missile extends Rocket {
 				this.victim = null;
 			}
 		}
-		float fSpeed = (float) this.getSpeed((Vector3d) null) * 3.6F;
+//		float fSpeed = (float) this.getSpeed((Vector3d) null) * 3.6F;
 //		if (fSpeed > this.fMaxSpeed) {
 //			this.fMaxSpeed = fSpeed;
 //		}
@@ -1516,47 +1516,6 @@ public class Missile extends Rocket {
 		if (this.engineDelayTime <= 0L) {
 			this.startEngine();
 		}
-
-		// Hook localHook = null;
-		// String str = null;
-		// if (this.sprite == null) {
-		// str = Property.stringValue(localClass, "sprite", null);
-		// if (str != null) {
-		// if (localHook == null) {
-		// localHook = findHook("_SMOKE");
-		// }
-		// this.sprite = Eff3DActor.New(this, localHook, null, f1, str, -1.0F);
-		// if (this.sprite != null)
-		// this.sprite.pos.changeHookToRel();
-		// }
-		// }
-		// if (this.flame == null) {
-		// str = Property.stringValue(localClass, "flame", null);
-		// if (str != null) {
-		// if (localHook == null) {
-		// localHook = findHook("_SMOKE");
-		// }
-		// this.flame = new ActorSimpleMesh(str);
-		// if (this.flame != null) {
-		// ((ActorSimpleMesh)this.flame).mesh().setScale(f1);
-		// this.flame.pos.setBase(this, localHook, false);
-		// this.flame.pos.changeHookToRel();
-		// this.flame.pos.resetAsBase();
-		// }
-		// }
-		// }
-		// if (this.smoke == null) {
-		// str = Property.stringValue(localClass, "smoke", null);
-		// if (str != null) {
-		// if (localHook == null) {
-		// localHook = findHook("_SMOKE");
-		// }
-		// this.smoke = Eff3DActor.New(this, localHook, null, 1.0F, str, -1.0F);
-		// if (this.smoke != null) {
-		// this.smoke.pos.changeHookToRel();
-		// }
-		// }
-		// }
 		this.light = new LightPointActor(new LightPointWorld(), new Point3d());
 		this.light.light.setColor((Color3f) Property.value(localClass, "emitColor", new Color3f(1.0F, 1.0F, 0.5F)));
 		this.light.light.setEmit(Property.floatValue(localClass, "emitMax", 1.0F), Property.floatValue(localClass, "emitLen", 50.0F));
