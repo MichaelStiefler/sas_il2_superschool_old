@@ -15,6 +15,7 @@ import com.maddox.il2.engine.LightPointActor;
 import com.maddox.il2.engine.LightPointWorld;
 import com.maddox.il2.engine.Loc;
 import com.maddox.il2.engine.Orient;
+import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.objects.bridges.BridgeSegment;
 import com.maddox.rts.Finger;
 import com.maddox.rts.Property;
@@ -28,9 +29,6 @@ public class AH1 extends Scheme1 implements TypeScout, TypeTransport, TypeStormo
 		dynamoOrient = 0.0F;
 		bDynamoRotary = false;
 		rotorrpm = 0;
-		pictAileron = 0.0F;
-		pictVator = 0.0F;
-		pictRudder = 0.0F;
 	}
 
 	public void rareAction(float f, boolean flag) {
@@ -238,7 +236,7 @@ public class AH1 extends Scheme1 implements TypeScout, TypeTransport, TypeStormo
 		Vector3d vector3d = new Vector3d();
 		getSpeed(vector3d);
 		Point3d point3d = new Point3d();
-		super.pos.getAbs(point3d);
+		this.pos.getAbs(point3d);
 		float f = (float) (this.FM.getAltitude() - World.land().HQ(point3d.x, point3d.y));
 		if (f < 10F && this.FM.getSpeedKMH() < 60F && vector3d.z < -1D) {
 			vector3d.z *= 0.90000000000000002D;
@@ -265,18 +263,18 @@ public class AH1 extends Scheme1 implements TypeScout, TypeTransport, TypeStormo
 	public void update(float f) {
 		// ***************************** NET FIX START ***********************************************
 		// Net Fix: Don't apply own FM calculations for net objects!
-	    if (!isNetMirror()) {
+		if (!isNetMirror()) {
 			tiltRotor(f);
 			stability();
-	    }
+		}
 		super.update(f);
-	    if (isNetMirror()) return;
+		if (isNetMirror()) return;
 		// ****************************** NET FIX END ************************************************
 		Pilot pilot = (Pilot) this.FM;
 		if (this instanceof AH1_AI) {
 			if (pilot.get_maneuver() == 25 && this.FM.AP.way.isLandingOnShip() && this.FM.Gears.nOfGearsOnGr >= 3) this.FM.CT.BrakeControl = 1.0F;
 		}
-		
+
 		if (this.FM.AS.isMaster() && Config.isUSE_RENDER()) if (this.FM.EI.engines[0].getPowerOutput() >= 0.0F && this.FM.EI.engines[0].getStage() == 6) {
 			if (this.FM.EI.engines[0].getPowerOutput() > 0.5F) this.FM.AS.setSootState(this, 0, 2);
 			else this.FM.AS.setSootState(this, 0, 4);
@@ -302,13 +300,6 @@ public class AH1 extends Scheme1 implements TypeScout, TypeTransport, TypeStormo
 
 			}
 		}
-		float f1 = this.FM.CT.getAirBrake();
-		f1 = this.FM.CT.getAileron();
-		if (Math.abs(pictAileron - f1) > 0.01F) pictAileron = f1;
-		f1 = this.FM.CT.getRudder();
-		if (Math.abs(pictRudder - f1) > 0.01F) pictRudder = f1;
-		f1 = this.FM.CT.getElevator();
-		if (Math.abs(pictVator - f1) > 0.01F) pictVator = f1;
 		float f2 = this.FM.EI.getPowerOutput() * Aircraft.cvt(this.FM.getSpeedKMH(), 0.0F, 600F, 2.0F, 0.0F);
 		if (this.FM.CT.getAirBrake() > 0.5F) {
 			if (this.FM.Or.getTangage() > 5F) {
@@ -324,11 +315,12 @@ public class AH1 extends Scheme1 implements TypeScout, TypeTransport, TypeStormo
 				this.FM.CT.trimRudder = Aircraft.cvt(f4, -15F, 15F, 0.04F, -0.04F);
 			}
 		} else {
-			this.FM.CT.trimAileron = 0.0F;
-			this.FM.CT.trimElevator = 0.0F;
-			this.FM.CT.trimRudder = 0.0F;
+			// this.FM.CT.trimAileron = 0.0F;
+			// this.FM.CT.trimElevator = 0.0F;
+			// this.FM.CT.trimRudder = 0.0F;
 		}
 		this.FM.Or.increment(f2 * (this.FM.CT.getRudder() + this.FM.CT.getTrimRudderControl()), f2 * (this.FM.CT.getElevator() + this.FM.CT.getTrimElevatorControl()), f2 * (this.FM.CT.getAileron() + this.FM.CT.getTrimAileronControl()));
+		this.FM.getW().scale(0.6D);
 		if (this instanceof AH1_AI) {
 			if (this.FM.getAltitude() > 0.0F && this.FM.getSpeedKMH() >= 190D && this.FM.EI.engines[0].getStage() > 5) this.FM.producedAF.x -= 1400D;
 			if (this.FM.getAltitude() > 0.0F && this.FM.getSpeedKMH() >= 210D && this.FM.EI.engines[0].getStage() > 5) this.FM.producedAF.x -= 1600D;
@@ -340,6 +332,14 @@ public class AH1 extends Scheme1 implements TypeScout, TypeTransport, TypeStormo
 		}
 		if (this.FM.getAltitude() > 3700F && this.FM.EI.engines[0].getThrustOutput() > 1.01F && this.FM.EI.engines[0].getStage() > 5) this.FM.producedAF.x -= 1000D;
 		if (this.FM.getAltitude() > 4500F && this.FM.EI.engines[0].getThrustOutput() > 1.01F && this.FM.EI.engines[0].getStage() > 5) this.FM.producedAF.x -= 1000D;
+	}
+
+	public void netUpdateWayPoint() {
+		super.netUpdateWayPoint();
+		if (!(this.FM instanceof RealFlightModel)) return;
+		if (this.FM.CT.StabilizerControl) {
+			this.FM.getW().scale(0.16D);
+		}
 	}
 
 	public boolean turretAngles(int i, float af[]) {
@@ -386,7 +386,7 @@ public class AH1 extends Scheme1 implements TypeScout, TypeTransport, TypeStormo
 		}
 		return a_lweaponslot;
 	}
-	
+
 	static void initialize(Class aircraftClass) {
 		new NetAircraft.SPAWN(aircraftClass);
 		Property.set(aircraftClass, "meshName", "3DO/Plane/AH1-Cobra(Multi1)/hier.him");
@@ -394,10 +394,10 @@ public class AH1 extends Scheme1 implements TypeScout, TypeTransport, TypeStormo
 		Property.set(aircraftClass, "yearService", 1956F);
 		Property.set(aircraftClass, "yearExpired", 1986.5F);
 		Aircraft.weaponTriggersRegister(aircraftClass, new int[] { 10, 10, 9, 9, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 9, 9, 9, 9, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 9, 9, 9, 9, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1 });
-		Aircraft.weaponHooksRegister(aircraftClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalDev01", "_ExternalDev02", "_MGUN03", "_MGUN04", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06",
-				"_ExternalRock07", "_ExternalRock08", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalRock09", "_ExternalRock10", "_ExternalRock11", "_ExternalRock12", "_ExternalRock13", "_ExternalRock14",
-				"_ExternalRock15", "_ExternalRock16", "_ExternalRock17", "_ExternalRock18", "_ExternalRock19", "_ExternalRock20", "_ExternalRock21", "_ExternalRock22", "_ExternalDev07", "_ExternalDev08", "_ExternalDev09", "_ExternalDev10",
-				"_ExternalRock23", "_ExternalRock24", "_ExternalRock25", "_ExternalRock26", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_MGUN09", "_MGUN10", "_MGUN11", "_MGUN12" });
+		Aircraft.weaponHooksRegister(aircraftClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalDev01", "_ExternalDev02", "_MGUN03", "_MGUN04", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05",
+				"_ExternalRock06", "_ExternalRock07", "_ExternalRock08", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalRock09", "_ExternalRock10", "_ExternalRock11", "_ExternalRock12", "_ExternalRock13",
+				"_ExternalRock14", "_ExternalRock15", "_ExternalRock16", "_ExternalRock17", "_ExternalRock18", "_ExternalRock19", "_ExternalRock20", "_ExternalRock21", "_ExternalRock22", "_ExternalDev07", "_ExternalDev08", "_ExternalDev09",
+				"_ExternalDev10", "_ExternalRock23", "_ExternalRock24", "_ExternalRock25", "_ExternalRock26", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_MGUN09", "_MGUN10", "_MGUN11", "_MGUN12" });
 		String s = "";
 		try {
 			ArrayList arraylist = new ArrayList();
@@ -621,9 +621,6 @@ public class AH1 extends Scheme1 implements TypeScout, TypeTransport, TypeStormo
 	private float dynamoOrient;
 	private boolean bDynamoRotary;
 	private int rotorrpm;
-	private float pictAileron;
-	private float pictVator;
-	private float pictRudder;
 
 	static {
 		Class class1 = AH1.class;
