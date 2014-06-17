@@ -9,10 +9,21 @@ import com.maddox.il2.objects.air.CockpitPilot;
  * This Class provides helper functions for Cross Version Compatible coding of IL-2 1946 mods.
  * <p>
  *
+ * @version 1.0.4
+ * @since 1.0.2
  * @author SAS~Storebror
  */
 public class CrossVersion {
 
+	/**
+	 * Override default Constructor to avoid instanciation
+	 * @throws Exception
+     * @since 1.0.4
+	 */
+	private CrossVersion() throws Exception{
+        throw new Exception("Class com.maddox.sas1946.il2.util.CrossVersion cannot be instanciated!");
+	}
+	
 	// *****************************************************************************************************************************************************************************************************
 	// Public interface section.
 	// Methods and Arguments are supposed to be final here.
@@ -33,6 +44,7 @@ public class CrossVersion {
 	 *            The Object (Aircraft or Cockpit) instance where you want to set the "printCompassHeading" field for.
 	 * @param flag
 	 *            defines the value which the field "printCompassHeading" will be set to.
+     * @since 1.0.2
 	 */
 	public static final void setPrintCompassHeading(Object obj, boolean flag) {
 		doSetPrintCompassHeading(obj, flag);
@@ -46,6 +58,7 @@ public class CrossVersion {
 	 *            The Cockpit instance where you want to set the "limits6DoF" field for.
 	 * @param limits
 	 *            The limits to apply for 6DoF
+     * @since 1.0.2
 	 */
 	public static final void setLimits6DoF(Object obj, float[] limits) {
 		doSetLimits6DoF(obj, limits);
@@ -61,6 +74,7 @@ public class CrossVersion {
 	 * @param af
 	 *            The array of float values to compare "f" to.
 	 * @return The interpolated array index position of "f".
+     * @since 1.0.2
 	 */
 	public static final float floatindex(float f, float af[]) {
 		return thefloatindex(f, af);
@@ -73,9 +87,9 @@ public class CrossVersion {
 
 	private static void doSetPrintCompassHeading(Object obj, boolean flag) {
 		if (BaseGameVersion.is411orLater()) {
-			Reflection.genericSetFieldValue(obj, "printCompassHeading", new Boolean(flag));
+			Reflection.setBoolean(obj, "printCompassHeading", flag);
 		} else if (BaseGameVersion.is410orLater()) {
-			Reflection.genericSetFieldValueStatic(AircraftLH.class, "printCompassHeading", new Boolean(flag));
+			Reflection.setBoolean(AircraftLH.class, "printCompassHeading", flag);
 		}
 	}
 

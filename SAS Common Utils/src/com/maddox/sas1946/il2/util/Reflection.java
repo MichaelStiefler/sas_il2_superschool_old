@@ -10,9 +10,21 @@ import java.lang.reflect.Method;
  * This Class is mainly used to gain access to fields and methods of other classes where the access modifier (private/protected/(none)/public) prohibits access to that field/method.
  * <p>
  * 
+ * @version 1.0.4
+ * @since 1.0.1
  * @author SAS~Storebror
  */
 public class Reflection {
+
+	/**
+	 * Override default Constructor to avoid instanciation
+	 * 
+	 * @throws Exception
+	 * @since 1.0.4
+	 */
+	private Reflection() throws Exception {
+		throw new Exception("Class com.maddox.sas1946.il2.util.Reflection cannot be instanciated!");
+	}
 
 	// *****************************************************************************************************************************************************************************************************
 	// Public interface section.
@@ -32,6 +44,8 @@ public class Reflection {
 	 * @param methodName
 	 *            The name of the Method
 	 * @return The return value of the Method
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #invokeMethod(Object obj, String methodName)}
 	 */
 	public static final Object genericInvokeMethod(Object obj, String methodName) {
 		return doGenericInvokeMethod(obj, methodName, new Object[] {});
@@ -48,6 +62,8 @@ public class Reflection {
 	 * @param params
 	 *            The arguments for calling the Method
 	 * @return The return value of the Method
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #invokeMethod(Object obj, String methodName, Object[] params)}
 	 */
 	public static final Object genericInvokeMethod(Object obj, String methodName, Object[] params) {
 		return doGenericInvokeMethod(obj, methodName, params);
@@ -62,6 +78,8 @@ public class Reflection {
 	 * @param methodName
 	 *            The name of the Method
 	 * @return The return value of the Method
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #invokeMethod(Class declaringClass, String methodName)}
 	 */
 	public static final Object genericInvokeMethodStatic(Class declaringClass, String methodName) {
 		return doGenericInvokeMethod(declaringClass, methodName, new Object[] {});
@@ -78,9 +96,127 @@ public class Reflection {
 	 * @param params
 	 *            The arguments for calling the Method
 	 * @return The return value of the Method
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #invokeMethod(Class declaringClass, String methodName, Object[] params)}
 	 */
 	public static final Object genericInvokeMethodStatic(Class declaringClass, String methodName, Object[] params) {
 		return doGenericInvokeMethod(declaringClass, methodName, params);
+	}
+
+	/**
+	 * Searches for the Method specified by "methodName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the method will be called (with given arguments from "params") and the return value will be returned to the caller.
+	 *
+	 * @param method
+	 *            The Method to invoke
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Method resides in
+	 * @param params
+	 *            The arguments for calling the Method
+	 * @return The return value of the Method
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #invokeMethod(Method method, Object obj, Object[] params)}
+	 */
+	public static final Object genericInvokeMethod(Method method, Object obj, Object[] params) {
+		return doGenericInvokeMethod(method, obj, params);
+	}
+
+	/**
+	 * Searches for the static Method specified by "methodName" within the given Class "declaringClass".<br>
+	 * Once found, the method will be called (with no arguments) and the return value will be returned to the caller.
+	 *
+	 * @param method
+	 *            The Method to invoke
+	 * @return The return value of the Method
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #invokeMethod(Method method)}
+	 */
+	public static final Object genericInvokeMethodStatic(Method method) {
+		return doGenericInvokeMethod(method, (Object) null, new Object[] {});
+	}
+
+	/**
+	 * Searches for the static Method specified by "methodName" within the given Class "declaringClass".<br>
+	 * Once found, the method will be called (with given arguments from "params") and the return value will be returned to the caller.
+	 *
+	 * @param method
+	 *            The Method to invoke
+	 * @param params
+	 *            The arguments for calling the Method
+	 * @return The return value of the Method
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #invokeMethod(Method method, Object[] params)}
+	 */
+	public static final Object genericInvokeMethodStatic(Method method, Object[] params) {
+		return doGenericInvokeMethod(method, (Object) null, params);
+	}
+
+	/**
+	 * Searches for the Method specified by "methodName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the method will be returned to the caller.
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Method resides in
+	 * @param methodName
+	 *            The name of the Method
+	 * @return The Method found
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getMethod(Object obj, String methodName)}
+	 */
+	public static final Method genericGetMethod(Object obj, String methodName) {
+		return doGenericGetMethod(obj, null, methodName, new Object[] {});
+	}
+
+	/**
+	 * Searches for the Method specified by "methodName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the method will be returned to the caller.
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Method resides in
+	 * @param methodName
+	 *            The name of the Method
+	 * @param params
+	 *            The arguments for calling the Method
+	 * @return The Method found
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getMethod(Object obj, String methodName, Object[] params)}
+	 */
+	public static final Method genericGetMethod(Object obj, String methodName, Object[] params) {
+		return doGenericGetMethod(obj, null, methodName, params);
+	}
+
+	/**
+	 * Searches for the static Method specified by "methodName" within the given Class "declaringClass".<br>
+	 * Once found, the method will be returned to the caller.
+	 *
+	 * @param declaringClass
+	 *            The class where the Method resides in
+	 * @param methodName
+	 *            The name of the Method
+	 * @return The Method found
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getMethod(Class declaringClass, String methodName)}
+	 */
+	public static final Method genericGetMethodStatic(Class declaringClass, String methodName) {
+		return doGenericGetMethod(null, declaringClass, methodName, new Object[] {});
+	}
+
+	/**
+	 * Searches for the static Method specified by "methodName" within the given Class "declaringClass".<br>
+	 * Once found, the method will be returned to the caller.
+	 *
+	 * @param declaringClass
+	 *            The class where the Method resides in
+	 * @param methodName
+	 *            The name of the Method
+	 * @param params
+	 *            The arguments for calling the Method
+	 * @return The Method found
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getMethod(Class declaringClass, String methodName, Object[] params)}
+	 */
+	public static final Method genericGetMethodStatic(Class declaringClass, String methodName, Object[] params) {
+		return doGenericGetMethod(null, declaringClass, methodName, params);
 	}
 
 	/**
@@ -92,6 +228,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getField(Object obj, String fieldName)}
 	 */
 	public static final Field genericGetField(Object obj, String fieldName) {
 		return doGenericGetField(obj, fieldName);
@@ -106,6 +244,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getField(Class declaringClass, String fieldName)}
 	 */
 	public static final Field genericGetFieldStatic(Class declaringClass, String fieldName) {
 		return doGenericGetField(declaringClass, fieldName);
@@ -120,6 +260,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field value
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getValue(Object obj, String fieldName)}
 	 */
 	public static final Object genericGetFieldValue(Object obj, String fieldName) {
 		return doGenericGetFieldValue(obj, fieldName);
@@ -134,6 +276,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field value
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getValue(Class declaringClass, String fieldName)}
 	 */
 	public static final Object genericGetFieldValueStatic(Class declaringClass, String fieldName) {
 		return doGenericGetFieldValue(declaringClass, fieldName);
@@ -148,6 +292,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field value
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getBoolean(Object obj, String fieldName)}
 	 */
 	public static final boolean booleanGetFieldValue(Object obj, String fieldName) {
 		return doBooleanGetFieldValue(obj, fieldName);
@@ -162,6 +308,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field value
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getBoolean(Class declaringClass, String fieldName)}
 	 */
 	public static final boolean booleanGetFieldValueStatic(Class declaringClass, String fieldName) {
 		return doBooleanGetFieldValue(declaringClass, fieldName);
@@ -176,6 +324,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field value
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getByte(Object obj, String fieldName)}
 	 */
 	public static final byte byteGetFieldValue(Object obj, String fieldName) {
 		return doByteGetFieldValue(obj, fieldName);
@@ -190,6 +340,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field value
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getByte(Class declaringClass, String fieldName)}
 	 */
 	public static final byte byteGetFieldValueStatic(Class declaringClass, String fieldName) {
 		return doByteGetFieldValue(declaringClass, fieldName);
@@ -204,6 +356,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field value
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getChar(Object obj, String fieldName)}
 	 */
 	public static final char charGetFieldValue(Object obj, String fieldName) {
 		return doCharGetFieldValue(obj, fieldName);
@@ -218,6 +372,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field value
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getChar(Class declaringClass, String fieldName)}
 	 */
 	public static final char charGetFieldValueStatic(Class declaringClass, String fieldName) {
 		return doCharGetFieldValue(declaringClass, fieldName);
@@ -232,6 +388,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field value
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getDouble(Object obj, String fieldName)}
 	 */
 	public static final double doubleGetFieldValue(Object obj, String fieldName) {
 		return doDoubleGetFieldValue(obj, fieldName);
@@ -246,6 +404,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field value
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getDouble(Class declaringClass, String fieldName)}
 	 */
 	public static final double doubleGetFieldValueStatic(Class declaringClass, String fieldName) {
 		return doDoubleGetFieldValue(declaringClass, fieldName);
@@ -260,6 +420,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field value
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getFloat(Object obj, String fieldName)}
 	 */
 	public static final float floatGetFieldValue(Object obj, String fieldName) {
 		return doFloatGetFieldValue(obj, fieldName);
@@ -274,6 +436,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field value
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getFloat(Class declaringClass, String fieldName)}
 	 */
 	public static final float floatGetFieldValueStatic(Class declaringClass, String fieldName) {
 		return doFloatGetFieldValue(declaringClass, fieldName);
@@ -288,6 +452,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field value
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getInt(Object obj, String fieldName)}
 	 */
 	public static final int intGetFieldValue(Object obj, String fieldName) {
 		return doIntGetFieldValue(obj, fieldName);
@@ -302,6 +468,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field value
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getInt(Class declaringClass, String fieldName)}
 	 */
 	public static final int intGetFieldValueStatic(Class declaringClass, String fieldName) {
 		return doIntGetFieldValue(declaringClass, fieldName);
@@ -316,6 +484,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field value
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getLong(Object obj, String fieldName)}
 	 */
 	public static final long longGetFieldValue(Object obj, String fieldName) {
 		return doLongGetFieldValue(obj, fieldName);
@@ -330,6 +500,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field value
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getLong(Class declaringClass, String fieldName)}
 	 */
 	public static final long longGetFieldValueStatic(Class declaringClass, String fieldName) {
 		return doLongGetFieldValue(declaringClass, fieldName);
@@ -344,6 +516,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field value
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getShort(Object obj, String fieldName)}
 	 */
 	public static final short shortGetFieldValue(Object obj, String fieldName) {
 		return doShortGetFieldValue(obj, fieldName);
@@ -358,6 +532,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field value
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getShort(Class declaringClass, String fieldName)}
 	 */
 	public static final short shortGetFieldValueStatic(Class declaringClass, String fieldName) {
 		return doShortGetFieldValue(declaringClass, fieldName);
@@ -372,6 +548,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field type
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getType(Object obj, String fieldName)}
 	 */
 	public static final Class genericGetFieldType(Object obj, String fieldName) {
 		return doGenericGetFieldType(obj, fieldName);
@@ -386,6 +564,8 @@ public class Reflection {
 	 * @param fieldName
 	 *            The name of the Field
 	 * @return The Field type
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #getType(Class declaringClass, String fieldName)}
 	 */
 	public static final Class genericGetFieldTypeStatic(Class declaringClass, String fieldName) {
 		return doGenericGetFieldType(declaringClass, fieldName);
@@ -401,6 +581,8 @@ public class Reflection {
 	 *            The name of the Field
 	 * @param value
 	 *            The value to set the Field to
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #setValue(Object obj, String fieldName, Object value)}
 	 */
 	public static final void genericSetFieldValue(Object obj, String fieldName, Object value) {
 		doGenericSetFieldValue(obj, fieldName, value);
@@ -416,6 +598,8 @@ public class Reflection {
 	 *            The name of the Field
 	 * @param value
 	 *            The value to set the Field to
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #setValue(Class declaringClass, String fieldName, Object value)}
 	 */
 	public static final void genericSetFieldValueStatic(Class declaringClass, String fieldName, Object value) {
 		doGenericSetFieldValue(declaringClass, fieldName, value);
@@ -431,6 +615,8 @@ public class Reflection {
 	 *            The name of the Field
 	 * @param value
 	 *            The value to set the Field to
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #setBoolean(Object obj, String fieldName, boolean value)}
 	 */
 	public static final void booleanSetFieldValue(Object obj, String fieldName, boolean value) {
 		doBooleanSetFieldValue(obj, fieldName, value);
@@ -446,6 +632,8 @@ public class Reflection {
 	 *            The name of the Field
 	 * @param value
 	 *            The value to set the Field to
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #setBoolean(Class declaringClass, String fieldName, boolean value)}
 	 */
 	public static final void booleanSetFieldValueStatic(Class declaringClass, String fieldName, boolean value) {
 		doBooleanSetFieldValue(declaringClass, fieldName, value);
@@ -461,6 +649,8 @@ public class Reflection {
 	 *            The name of the Field
 	 * @param value
 	 *            The value to set the Field to
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #setByte(Object obj, String fieldName, byte value)}
 	 */
 	public static final void byteSetFieldValue(Object obj, String fieldName, byte value) {
 		doByteSetFieldValue(obj, fieldName, value);
@@ -476,6 +666,8 @@ public class Reflection {
 	 *            The name of the Field
 	 * @param value
 	 *            The value to set the Field to
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #setByte(Class declaringClass, String fieldName, byte value)}
 	 */
 	public static final void byteSetFieldValueStatic(Class declaringClass, String fieldName, byte value) {
 		doByteSetFieldValue(declaringClass, fieldName, value);
@@ -491,6 +683,8 @@ public class Reflection {
 	 *            The name of the Field
 	 * @param value
 	 *            The value to set the Field to
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #setChar(Object obj, String fieldName, char value)}
 	 */
 	public static final void charSetFieldValue(Object obj, String fieldName, char value) {
 		doCharSetFieldValue(obj, fieldName, value);
@@ -506,6 +700,8 @@ public class Reflection {
 	 *            The name of the Field
 	 * @param value
 	 *            The value to set the Field to
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #setChar(Class declaringClass, String fieldName, char value)}
 	 */
 	public static final void charSetFieldValueStatic(Class declaringClass, String fieldName, char value) {
 		doCharSetFieldValue(declaringClass, fieldName, value);
@@ -521,6 +717,8 @@ public class Reflection {
 	 *            The name of the Field
 	 * @param value
 	 *            The value to set the Field to
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #setDouble(Object obj, String fieldName, double value)}
 	 */
 	public static final void doubleSetFieldValue(Object obj, String fieldName, double value) {
 		doDoubleSetFieldValue(obj, fieldName, value);
@@ -536,6 +734,8 @@ public class Reflection {
 	 *            The name of the Field
 	 * @param value
 	 *            The value to set the Field to
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #setDouble(Class declaringClass, String fieldName, double value)}
 	 */
 	public static final void doubleSetFieldValueStatic(Class declaringClass, String fieldName, double value) {
 		doDoubleSetFieldValue(declaringClass, fieldName, value);
@@ -551,6 +751,8 @@ public class Reflection {
 	 *            The name of the Field
 	 * @param value
 	 *            The value to set the Field to
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #setFloat(Object obj, String fieldName, float value)}
 	 */
 	public static final void floatSetFieldValue(Object obj, String fieldName, float value) {
 		doFloatSetFieldValue(obj, fieldName, value);
@@ -566,6 +768,8 @@ public class Reflection {
 	 *            The name of the Field
 	 * @param value
 	 *            The value to set the Field to
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #setFloat(Class declaringClass, String fieldName, float value)}
 	 */
 	public static final void floatSetFieldValueStatic(Class declaringClass, String fieldName, float value) {
 		doFloatSetFieldValue(declaringClass, fieldName, value);
@@ -581,6 +785,8 @@ public class Reflection {
 	 *            The name of the Field
 	 * @param value
 	 *            The value to set the Field to
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #setInt(Object obj, String fieldName, int value)}
 	 */
 	public static final void intSetFieldValue(Object obj, String fieldName, int value) {
 		doIntSetFieldValue(obj, fieldName, value);
@@ -596,6 +802,8 @@ public class Reflection {
 	 *            The name of the Field
 	 * @param value
 	 *            The value to set the Field to
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #setInt(Class declaringClass, String fieldName, int value)}
 	 */
 	public static final void intSetFieldValueStatic(Class declaringClass, String fieldName, int value) {
 		doIntSetFieldValue(declaringClass, fieldName, value);
@@ -611,6 +819,8 @@ public class Reflection {
 	 *            The name of the Field
 	 * @param value
 	 *            The value to set the Field to
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #setLong(Object obj, String fieldName, long value)}
 	 */
 	public static final void longSetFieldValue(Object obj, String fieldName, long value) {
 		doLongSetFieldValue(obj, fieldName, value);
@@ -626,6 +836,8 @@ public class Reflection {
 	 *            The name of the Field
 	 * @param value
 	 *            The value to set the Field to
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #setLong(Class declaringClass, String fieldName, long value)}
 	 */
 	public static final void longSetFieldValueStatic(Class declaringClass, String fieldName, long value) {
 		doLongSetFieldValue(declaringClass, fieldName, value);
@@ -641,6 +853,8 @@ public class Reflection {
 	 *            The name of the Field
 	 * @param value
 	 *            The value to set the Field to
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #setShort(Object obj, String fieldName, short value)}
 	 */
 	public static final void shortSetFieldValue(Object obj, String fieldName, short value) {
 		doShortSetFieldValue(obj, fieldName, value);
@@ -656,9 +870,864 @@ public class Reflection {
 	 *            The name of the Field
 	 * @param value
 	 *            The value to set the Field to
+	 * @since 1.0.1
+	 * @deprecated As of release 1.0.4, replaced by {@link #setShort(Class declaringClass, String fieldName, short value)}
 	 */
 	public static final void shortSetFieldValueStatic(Class declaringClass, String fieldName, short value) {
 		doShortSetFieldValue(declaringClass, fieldName, value);
+	}
+
+	/**
+	 * Searches for the Method specified by "methodName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the method will be called (with no arguments) and the return value will be returned to the caller.
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Method resides in
+	 * @param methodName
+	 *            The name of the Method
+	 * @return The return value of the Method
+	 * @since 1.0.4
+	 */
+	public static final Object invokeMethod(Object obj, String methodName) {
+		return doGenericInvokeMethod(obj, methodName, new Object[] {});
+	}
+
+	/**
+	 * Searches for the Method specified by "methodName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the method will be called (with given arguments from "params") and the return value will be returned to the caller.
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Method resides in
+	 * @param methodName
+	 *            The name of the Method
+	 * @param params
+	 *            The arguments for calling the Method
+	 * @return The return value of the Method
+	 * @since 1.0.4
+	 */
+	public static final Object invokeMethod(Object obj, String methodName, Object[] params) {
+		return doGenericInvokeMethod(obj, methodName, params);
+	}
+
+	/**
+	 * Searches for the static Method specified by "methodName" within the given Class "declaringClass".<br>
+	 * Once found, the method will be called (with no arguments) and the return value will be returned to the caller.
+	 *
+	 * @param declaringClass
+	 *            The class where the Method resides in
+	 * @param methodName
+	 *            The name of the Method
+	 * @return The return value of the Method
+	 * @since 1.0.4
+	 */
+	public static final Object invokeMethod(Class declaringClass, String methodName) {
+		return doGenericInvokeMethod(declaringClass, methodName, new Object[] {});
+	}
+
+	/**
+	 * Searches for the static Method specified by "methodName" within the given Class "declaringClass".<br>
+	 * Once found, the method will be called (with given arguments from "params") and the return value will be returned to the caller.
+	 *
+	 * @param declaringClass
+	 *            The class where the Method resides in
+	 * @param methodName
+	 *            The name of the Method
+	 * @param params
+	 *            The arguments for calling the Method
+	 * @return The return value of the Method
+	 * @since 1.0.4
+	 */
+	public static final Object invokeMethod(Class declaringClass, String methodName, Object[] params) {
+		return doGenericInvokeMethod(declaringClass, methodName, params);
+	}
+
+	/**
+	 * Searches for the Method specified by "methodName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the method will be called (with given arguments from "params") and the return value will be returned to the caller.
+	 *
+	 * @param method
+	 *            The Method to invoke
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Method resides in
+	 * @param params
+	 *            The arguments for calling the Method
+	 * @return The return value of the Method
+	 * @since 1.0.4
+	 */
+	public static final Object invokeMethod(Method method, Object obj, Object[] params) {
+		return doGenericInvokeMethod(method, obj, params);
+	}
+
+	/**
+	 * Searches for the static Method specified by "methodName" within the given Class "declaringClass".<br>
+	 * Once found, the method will be called (with no arguments) and the return value will be returned to the caller.
+	 *
+	 * @param method
+	 *            The Method to invoke
+	 * @return The return value of the Method
+	 * @since 1.0.4
+	 */
+	public static final Object invokeMethod(Method method) {
+		return doGenericInvokeMethod(method, (Object) null, new Object[] {});
+	}
+
+	/**
+	 * Searches for the static Method specified by "methodName" within the given Class "declaringClass".<br>
+	 * Once found, the method will be called (with given arguments from "params") and the return value will be returned to the caller.
+	 *
+	 * @param method
+	 *            The Method to invoke
+	 * @param params
+	 *            The arguments for calling the Method
+	 * @return The return value of the Method
+	 * @since 1.0.4
+	 */
+	public static final Object invokeMethod(Method method, Object[] params) {
+		return doGenericInvokeMethod(method, (Object) null, params);
+	}
+
+	/**
+	 * Searches for the Method specified by "methodName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the method will be returned to the caller.
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Method resides in
+	 * @param methodName
+	 *            The name of the Method
+	 * @return The Method found
+	 * @since 1.0.4
+	 */
+	public static final Method getMethod(Object obj, String methodName) {
+		return doGenericGetMethod(obj, null, methodName, new Object[] {});
+	}
+
+	/**
+	 * Searches for the Method specified by "methodName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the method will be returned to the caller.
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Method resides in
+	 * @param methodName
+	 *            The name of the Method
+	 * @param params
+	 *            The arguments for calling the Method
+	 * @return The Method found
+	 * @since 1.0.4
+	 */
+	public static final Method getMethod(Object obj, String methodName, Object[] params) {
+		return doGenericGetMethod(obj, null, methodName, params);
+	}
+
+	/**
+	 * Searches for the static Method specified by "methodName" within the given Class "declaringClass".<br>
+	 * Once found, the method will be returned to the caller.
+	 *
+	 * @param declaringClass
+	 *            The class where the Method resides in
+	 * @param methodName
+	 *            The name of the Method
+	 * @return The Method found
+	 * @since 1.0.4
+	 */
+	public static final Method getMethod(Class declaringClass, String methodName) {
+		return doGenericGetMethod(null, declaringClass, methodName, new Object[] {});
+	}
+
+	/**
+	 * Searches for the static Method specified by "methodName" within the given Class "declaringClass".<br>
+	 * Once found, the method will be returned to the caller.
+	 *
+	 * @param declaringClass
+	 *            The class where the Method resides in
+	 * @param methodName
+	 *            The name of the Method
+	 * @param params
+	 *            The arguments for calling the Method
+	 * @return The Method found
+	 * @since 1.0.4
+	 */
+	public static final Method getMethod(Class declaringClass, String methodName, Object[] params) {
+		return doGenericGetMethod(null, declaringClass, methodName, params);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field will be returned to the caller.
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field
+	 * @since 1.0.4
+	 */
+	public static final Field getField(Object obj, String fieldName) {
+		return doGenericGetField(obj, fieldName);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field will be returned to the caller.
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field
+	 * @since 1.0.4
+	 */
+	public static final Field getField(Class declaringClass, String fieldName) {
+		return doGenericGetField(declaringClass, fieldName);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be returned to the caller.
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final Object getValue(Object obj, String fieldName) {
+		return doGenericGetFieldValue(obj, fieldName);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be returned to the caller.
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final Object getValue(Class declaringClass, String fieldName) {
+		return doGenericGetFieldValue(declaringClass, fieldName);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be returned to the caller.
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final boolean getBoolean(Object obj, String fieldName) {
+		return doBooleanGetFieldValue(obj, fieldName);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be returned to the caller.
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final boolean getBoolean(Class declaringClass, String fieldName) {
+		return doBooleanGetFieldValue(declaringClass, fieldName);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be returned to the caller.
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final byte getByte(Object obj, String fieldName) {
+		return doByteGetFieldValue(obj, fieldName);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be returned to the caller.
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final byte getByte(Class declaringClass, String fieldName) {
+		return doByteGetFieldValue(declaringClass, fieldName);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be returned to the caller.
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final char getChar(Object obj, String fieldName) {
+		return doCharGetFieldValue(obj, fieldName);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be returned to the caller.
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final char getChar(Class declaringClass, String fieldName) {
+		return doCharGetFieldValue(declaringClass, fieldName);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be returned to the caller.
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final double getDouble(Object obj, String fieldName) {
+		return doDoubleGetFieldValue(obj, fieldName);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be returned to the caller.
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final double getDouble(Class declaringClass, String fieldName) {
+		return doDoubleGetFieldValue(declaringClass, fieldName);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be returned to the caller.
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final float getFloat(Object obj, String fieldName) {
+		return doFloatGetFieldValue(obj, fieldName);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be returned to the caller.
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final float getFloat(Class declaringClass, String fieldName) {
+		return doFloatGetFieldValue(declaringClass, fieldName);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be returned to the caller.
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final int getInt(Object obj, String fieldName) {
+		return doIntGetFieldValue(obj, fieldName);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be returned to the caller.
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final int getInt(Class declaringClass, String fieldName) {
+		return doIntGetFieldValue(declaringClass, fieldName);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be returned to the caller.
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final long getLong(Object obj, String fieldName) {
+		return doLongGetFieldValue(obj, fieldName);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be returned to the caller.
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final long getLong(Class declaringClass, String fieldName) {
+		return doLongGetFieldValue(declaringClass, fieldName);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be returned to the caller.
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final short getShort(Object obj, String fieldName) {
+		return doShortGetFieldValue(obj, fieldName);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be returned to the caller.
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final short getShort(Class declaringClass, String fieldName) {
+		return doShortGetFieldValue(declaringClass, fieldName);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field type will be returned to the caller.
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field type
+	 * @since 1.0.4
+	 */
+	public static final Class getType(Object obj, String fieldName) {
+		return doGenericGetFieldType(obj, fieldName);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field type will be returned to the caller.
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field type
+	 * @since 1.0.4
+	 */
+	public static final Class getType(Class declaringClass, String fieldName) {
+		return doGenericGetFieldType(declaringClass, fieldName);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be returned to the caller.
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final String getString(Object obj, String fieldName) {
+		return (String) doGenericGetFieldValue(obj, fieldName);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be returned to the caller.
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @return The Field value
+	 * @since 1.0.4
+	 */
+	public static final String getString(Class declaringClass, String fieldName) {
+		return (String) doGenericGetFieldValue(declaringClass, fieldName);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be set to the value given by "value".
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setValue(Object obj, String fieldName, Object value) {
+		doGenericSetFieldValue(obj, fieldName, value);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be set to the value given by "value".
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setValue(Class declaringClass, String fieldName, Object value) {
+		doGenericSetFieldValue(declaringClass, fieldName, value);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be set to the value given by "value".
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setBoolean(Object obj, String fieldName, boolean value) {
+		doBooleanSetFieldValue(obj, fieldName, value);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be set to the value given by "value".
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setBoolean(Class declaringClass, String fieldName, boolean value) {
+		doBooleanSetFieldValue(declaringClass, fieldName, value);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be set to the value given by "value".
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setByte(Object obj, String fieldName, byte value) {
+		doByteSetFieldValue(obj, fieldName, value);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be set to the value given by "value".
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setByte(Class declaringClass, String fieldName, byte value) {
+		doByteSetFieldValue(declaringClass, fieldName, value);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be set to the value given by "value".
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setChar(Object obj, String fieldName, char value) {
+		doCharSetFieldValue(obj, fieldName, value);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be set to the value given by "value".
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setChar(Class declaringClass, String fieldName, char value) {
+		doCharSetFieldValue(declaringClass, fieldName, value);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be set to the value given by "value".
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setDouble(Object obj, String fieldName, double value) {
+		doDoubleSetFieldValue(obj, fieldName, value);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be set to the value given by "value".
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setDouble(Class declaringClass, String fieldName, double value) {
+		doDoubleSetFieldValue(declaringClass, fieldName, value);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be set to the value given by "value".
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setFloat(Object obj, String fieldName, float value) {
+		doFloatSetFieldValue(obj, fieldName, value);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be set to the value given by "value".
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setFloat(Class declaringClass, String fieldName, float value) {
+		doFloatSetFieldValue(declaringClass, fieldName, value);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be set to the value given by "value".
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setInt(Object obj, String fieldName, int value) {
+		doIntSetFieldValue(obj, fieldName, value);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be set to the value given by "value".
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setInt(Class declaringClass, String fieldName, int value) {
+		doIntSetFieldValue(declaringClass, fieldName, value);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be set to the value given by "value".
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setLong(Object obj, String fieldName, long value) {
+		doLongSetFieldValue(obj, fieldName, value);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be set to the value given by "value".
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setLong(Class declaringClass, String fieldName, long value) {
+		doLongSetFieldValue(declaringClass, fieldName, value);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be set to the value given by "value".
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setShort(Object obj, String fieldName, short value) {
+		doShortSetFieldValue(obj, fieldName, value);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be set to the value given by "value".
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setShort(Class declaringClass, String fieldName, short value) {
+		doShortSetFieldValue(declaringClass, fieldName, value);
+	}
+
+	/**
+	 * Searches for a Field specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
+	 * Once found, the Field value will be set to the value given by "value".
+	 *
+	 * @param obj
+	 *            The instance Object where (or in which's inherited objects) the regarding Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setString(Object obj, String fieldName, String value) {
+		doGenericSetFieldValue(obj, fieldName, value);
+	}
+
+	/**
+	 * Searches for a static Field specified by "fieldName" within the class "declaringClass".<br>
+	 * If found, the Field value will be set to the value given by "value".
+	 *
+	 * @param declaringClass
+	 *            The class where the Field resides in
+	 * @param fieldName
+	 *            The name of the Field
+	 * @param value
+	 *            The value to set the Field to
+	 * @since 1.0.4
+	 */
+	public static final void setString(Class declaringClass, String fieldName, String value) {
+		doGenericSetFieldValue(declaringClass, fieldName, value);
 	}
 
 	// *****************************************************************************************************************************************************************************************************
@@ -675,8 +1744,27 @@ public class Reflection {
 	}
 
 	private static Object doGenericInvokeMethod(Object obj, Class declaringClass, String methodName, Object[] params) {
-		Method method = null;
+		return doGenericInvokeMethod(doGenericGetMethod(obj, declaringClass, methodName, params), obj, params);
+	}
+
+	private static Object doGenericInvokeMethod(Method method, Object obj, Object[] params) {
 		Object requiredObj = null;
+		if (method != null) {
+			try {
+				requiredObj = method.invoke(obj, params);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
+		return requiredObj;
+	}
+
+	private static Method doGenericGetMethod(Object obj, Class declaringClass, String methodName, Object[] params) {
+		Method method = null;
 		Class[] classArray = new Class[params.length];
 		for (int i = 0; i < params.length; i++) {
 			classArray[i] = params[i].getClass();
@@ -701,20 +1789,7 @@ public class Reflection {
 			} catch (Exception e) {
 			}
 		}
-
-		if (method != null) {
-			try {
-				requiredObj = method.invoke(obj, params);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return requiredObj;
+		return method;
 	}
 
 	private static Field doGenericGetField(Object obj, String methodName) {
