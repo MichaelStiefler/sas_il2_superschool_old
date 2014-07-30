@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
  * This Class is mainly used to gain access to fields and methods of other classes where the access modifier (private/protected/(none)/public) prohibits access to that field/method.
  * <p>
  * 
- * @version 1.0.5
+ * @version 1.0.6
  * @since 1.0.1
  * @author SAS~Storebror
  */

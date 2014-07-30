@@ -12,7 +12,7 @@ import com.maddox.il2.engine.Config;
  * This Class is intended to be used with other classes of this package, e.g. the "Reflection" class e.g. in order to get access to fields which are not part of the base game version a mod is currently compiled against.
  * <p>
  * 
- * @version 1.0.4
+ * @version 1.0.6
  * @since 1.0.2
  * @author SAS~Storebror
  */

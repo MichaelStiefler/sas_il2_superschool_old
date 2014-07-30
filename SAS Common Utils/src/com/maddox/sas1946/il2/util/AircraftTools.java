@@ -15,7 +15,7 @@ import com.maddox.util.NumberTokenizer;
  * This Class is used to provide helpers and missing functions for Aircrafts in IL-2 Sturmovik 1946.
  * <p>
  * 
- * @version 1.0.4
+ * @version 1.0.6
  * @since 1.0.4
  * @author SAS~Storebror
  */
@@ -89,7 +89,7 @@ public class AircraftTools {
 		if (slotName == null) return;
 		if (slotName.length() < 1) return;
 		if (aircraftClass == null) return;
-		if (!(AircraftTools.class.isAssignableFrom(aircraftClass))) return;
+		if (!(Aircraft.class.isAssignableFrom(aircraftClass))) return;
 		ArrayList registeredWeaponsList = weaponsListProperty(aircraftClass);
 		HashMapInt weaponsHashMap = weaponsMapProperty(aircraftClass);
 		int weaponTriggersRegistered[] = getWeaponTriggersRegistered(aircraftClass);

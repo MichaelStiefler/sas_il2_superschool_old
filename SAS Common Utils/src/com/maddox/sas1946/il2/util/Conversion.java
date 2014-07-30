@@ -6,7 +6,7 @@ package com.maddox.sas1946.il2.util;
  * This Class is used to provide different type conversions which are not available in Java 1.3 by default.
  * <p>
  * 
- * @version 1.0.4
+ * @version 1.0.6
  * @since 1.0.3
  * @author SAS~Storebror
  */

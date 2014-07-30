@@ -12,7 +12,7 @@ import com.maddox.il2.ai.World;
  * This Class is used to provide "true" randomized numbers for IL-2 Sturmovik 1946, in opposite to the reproduceable "pseudo" random numbers being available in the stock game.
  * <p>
  * 
- * @version 1.0.4
+ * @version 1.0.6
  * @since 1.0.3
  * @author SAS~Storebror
  */
