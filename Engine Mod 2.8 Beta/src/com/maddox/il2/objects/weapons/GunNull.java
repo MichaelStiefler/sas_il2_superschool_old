@@ -1,3 +1,8 @@
+/*
+ * Changelog:
+ * 2014.08.11: doSetRocketHook method changed to make this class independent from Guided Missile Mod
+ */
+
 // Source File Name: GunNull.java
 // Author:           Storebror
 // Last Modified by: Storebror 2011-06-01
@@ -6,9 +11,10 @@ package com.maddox.il2.objects.weapons;
 import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorPosMove;
+import com.maddox.il2.engine.GuidedMissileInterop;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.Loc;
-import com.maddox.il2.objects.air.TypeGuidedMissileCarrier;
+import com.maddox.sas1946.il2.util.Reflection;
 
 public class GunNull extends Gun {
 
@@ -33,7 +39,16 @@ public class GunNull extends Gun {
 
 	public int countBullets() {
 		if (this.getOwner() != null) {
-			if (this.getOwner() instanceof TypeGuidedMissileCarrier) return ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().hasMissiles() ? Integer.MAX_VALUE : 0;
+			// TODO: ++ Changed Code to make Engine Mod independent of Guided Missiles Mod ++
+			if (GuidedMissileInterop.getGuidedMissileModExists()) {
+				if (GuidedMissileInterop.getTypeGuidedMissileCarrierAbstract().isInstance(this.getOwner())) {
+					Object guidedMissileUtils = Reflection.invokeMethod(this.getOwner(), "getGuidedMissileUtils");
+					boolean hasMissiles = ((Boolean)Reflection.invokeMethod(guidedMissileUtils, "hasMissiles")).booleanValue();
+					return hasMissiles ? Integer.MAX_VALUE : 0;
+				}
+			}
+//			if (this.getOwner() instanceof TypeGuidedMissileCarrier) return ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().hasMissiles() ? Integer.MAX_VALUE : 0;
+			// TODO: -- Added/changed Code Multiple Missile Type Selection --
 		}
 		return this.hasBullets ? Integer.MAX_VALUE : 0;
 	}
@@ -52,7 +67,15 @@ public class GunNull extends Gun {
 
 	public boolean haveBullets() {
 		if (this.getOwner() != null) {
-			if (this.getOwner() instanceof TypeGuidedMissileCarrier) return ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().hasMissiles();
+			// TODO: ++ Changed Code to make Engine Mod independent of Guided Missiles Mod ++
+			if (GuidedMissileInterop.getGuidedMissileModExists()) {
+				if (GuidedMissileInterop.getTypeGuidedMissileCarrierAbstract().isInstance(this.getOwner())) {
+					Object guidedMissileUtils = Reflection.invokeMethod(this.getOwner(), "getGuidedMissileUtils");
+					return ((Boolean)Reflection.invokeMethod(guidedMissileUtils, "hasMissiles")).booleanValue();
+				}
+			}
+//			if (this.getOwner() instanceof TypeGuidedMissileCarrier) return ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().hasMissiles();
+			// TODO: -- Added/changed Code Multiple Missile Type Selection --
 		}
 		return this.hasBullets;
 	}

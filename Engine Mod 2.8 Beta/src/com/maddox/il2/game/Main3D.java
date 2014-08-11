@@ -1,3 +1,8 @@
+/*
+ * Changelog:
+ * 2014.08.11: doSetRocketHook method changed to make this class independent from Guided Missile Mod
+ */
+
 package com.maddox.il2.game;
 
 import java.io.BufferedReader;
@@ -34,6 +39,7 @@ import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.ConsoleGL0;
 import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.GUIWindowManager;
+import com.maddox.il2.engine.GuidedMissileInterop;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.HookRender;
 import com.maddox.il2.engine.Interpolate;
@@ -92,7 +98,6 @@ import com.maddox.il2.objects.ships.TransparentTestRunway;
 import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.il2.objects.vehicles.lights.SearchlightGeneric;
 import com.maddox.il2.objects.weapons.Bomb;
-import com.maddox.il2.objects.weapons.MissileInterceptable;
 import com.maddox.il2.objects.weapons.Rocket;
 import com.maddox.opengl.GLContext;
 import com.maddox.opengl.gl;
@@ -118,6 +123,7 @@ import com.maddox.rts.SFSInputStream;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Time;
 import com.maddox.rts.cmd.CmdSFS;
+import com.maddox.sas1946.il2.util.Reflection;
 import com.maddox.sound.AudioDevice;
 import com.maddox.util.UnicodeTo8bit;
 
@@ -408,9 +414,19 @@ public class Main3D extends Main {
 				}
 			}
 			// TODO: Interceptable Missile Code
-			if ((actor instanceof Aircraft) || ((actor instanceof MissileInterceptable) && (((MissileInterceptable) actor).isReleased()))) {
-				if (d1 < 0.65000000000000002D) d1 = 0.65000000000000002D;
-				if (d1 > 2.2000000000000002D) d1 = 2.2000000000000002D;
+			
+			// TODO: ++ Changed Code to make Engine Mod independent of Guided Missiles Mod ++
+			boolean isReleasedInterceptableMissile = false;
+			if (GuidedMissileInterop.getGuidedMissileModExists()) {
+				if (GuidedMissileInterop.getMissileInterceptableClass().isInstance(actor)) {
+					isReleasedInterceptableMissile = ((Boolean)Reflection.invokeMethod(actor, "isReleased")).booleanValue();
+				}
+			}
+			// if ((actor instanceof Aircraft) || ((actor instanceof MissileInterceptable) && (((MissileInterceptable) actor).isReleased()))) {
+			if ((actor instanceof Aircraft) || isReleasedInterceptableMissile) {
+			// TODO: -- Changed Code to make Engine Mod independent of Guided Missiles Mod --
+				if (d1 < 0.65D) d1 = 0.65D;
+				if (d1 > 2.2D) d1 = 2.2D;
 			} else {
 				d1 *= 1.2D;
 			}
@@ -421,7 +437,10 @@ public class Main3D extends Main {
 			if (p2d.z > 1.0D || p2d.x < iconClipX0 || p2d.x > iconClipX1 || p2d.y < iconClipY0 || p2d.y > iconClipY1) {
 				if (bRenderMirror) return false;
 				// TODO: Missile Code
-				if ((!(actor instanceof Aircraft)) && (!((actor instanceof MissileInterceptable) && (((MissileInterceptable) actor).isReleased())))) return false;
+				// TODO: ++ Changed Code to make Engine Mod independent of Guided Missiles Mod ++
+				//if ((!(actor instanceof Aircraft)) && (!((actor instanceof MissileInterceptable) && (((MissileInterceptable) actor).isReleased())))) return false;
+				if ((!(actor instanceof Aircraft)) && !isReleasedInterceptableMissile) return false;
+				// TODO: -- Changed Code to make Engine Mod independent of Guided Missiles Mod --
 				if (isViewInsideShow()) return false;
 				if (World.cur().diffCur.No_Icons) return false;
 				if (iRenderIndx == 0) drawPointer(i, d, render2D.getViewPortWidth() / 2, render2D.getViewPortHeight() / 2);
