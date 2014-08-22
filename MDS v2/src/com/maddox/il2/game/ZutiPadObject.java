@@ -20,13 +20,14 @@ public class ZutiPadObject
 	
 	static
 	{
-		ARTILLERY_TANK_ICON = Mat.New("icons/fieldgun.mat");
-		AAA_ICON = Mat.New("icons/antiaircraft.mat");
-		TRAIN_ICON = Mat.New("icons/Train.mat");
-		AIRCRAFT_ICON = Mat.New("icons/plane.mat");
-		SHIP_ICON = Mat.New("icons/shipDestroyer.mat");
-		CAR_ICON = Mat.New("icons/car.mat");
-		ROCKET_ICON = Mat.New("icons/objV1.mat");
+		// TODO: Additional Icon Initialization moved to class constructor to avoid startup errors
+//		ARTILLERY_TANK_ICON = Mat.New("icons/fieldgun.mat");
+//		AAA_ICON = Mat.New("icons/antiaircraft.mat");
+//		TRAIN_ICON = Mat.New("icons/Train.mat");
+//		AIRCRAFT_ICON = Mat.New("icons/plane.mat");
+//		SHIP_ICON = Mat.New("icons/shipDestroyer.mat");
+//		CAR_ICON = Mat.New("icons/car.mat");
+//		ROCKET_ICON = Mat.New("icons/objV1.mat");
 	}
 	
 	private Actor actor;
@@ -70,6 +71,15 @@ public class ZutiPadObject
 			name = actor.name();
 			isPlayerArmyScout = ZutiRadarObject.isPlayerArmyScout(inActor, ZutiSupportMethods.getPlayerArmy());
 			scoutsAsRadar = Mission.MDS_VARIABLES().zutiRadar_ScoutsAsRadar;
+			
+			// TODO: Additional Icon Initialization moved to class constructor to avoid startup errors
+			if (ARTILLERY_TANK_ICON == null) ARTILLERY_TANK_ICON = Mat.New("icons/fieldgun.mat");
+			if (AAA_ICON == null) AAA_ICON = Mat.New("icons/antiaircraft.mat");
+			if (TRAIN_ICON == null) TRAIN_ICON = Mat.New("icons/Train.mat");
+			if (AIRCRAFT_ICON == null) AIRCRAFT_ICON = Mat.New("icons/plane.mat");
+			if (SHIP_ICON == null) SHIP_ICON = Mat.New("icons/shipDestroyer.mat");
+			if (CAR_ICON == null) CAR_ICON = Mat.New("icons/car.mat");
+			if (ROCKET_ICON == null) ROCKET_ICON = Mat.New("icons/objV1.mat");
 		}
 		catch(Exception ex)
 		{
