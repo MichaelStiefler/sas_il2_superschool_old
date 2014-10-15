@@ -1268,7 +1268,7 @@ public class Controls {
 			return false;
 		if (!theEmitter.haveBullets())
 			return false;
-		if (theEmitter.getHookName().startsWith("_BombSpawn") && ((Aircraft)FM.actor).needsOpenBombBay()) {
+		if ((theEmitter.getHookName().startsWith("_BombSpawn") || theEmitter.getHookName().startsWith("_InternalRock")) && ((Aircraft)FM.actor).needsOpenBombBay()) {
 			if (bHasBayDoorControl && isPlayers((Aircraft)FM.actor)) {
 				if (BayDoorControl < 0.9F)
 					return true;
@@ -1276,8 +1276,8 @@ public class Controls {
 				BayDoorControl = 1.0F;
 			}
 		}
-		if (theEmitter.getHookName().startsWith("_InternalRock") && BayDoorControl == 0.0F)
-			return true;
+		// if (theEmitter.getHookName().startsWith("_InternalRock") && BayDoorControl == 0.0F)
+		//	return true;             // merged to "_BombSpawn" for Tu-95MS's rotally launcher
 		if (!(theEmitter instanceof BombGun) && !(theEmitter instanceof RocketGun) && !(theEmitter instanceof RocketBombGun))
 			return false;
 

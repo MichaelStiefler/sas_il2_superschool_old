@@ -210,7 +210,7 @@ public class Missile extends Rocket {
 	}
 
 	public float AttackMaxDistance() {
-		return 5000F;
+		return this.attackMaxDistance;
 	}
 
 	public int chooseBulletType(BulletProperties abulletproperties[]) {
@@ -286,9 +286,10 @@ public class Missile extends Rocket {
 		float millisecondsFromStart = Time.current() - this.startTime;
 
 		if (millisecondsFromStart > this.rocketMotorOperationTime + this.rocketMotorSustainedOperationTime) {
+			this.endSmoke();
 			this.flameActive = false;
 			this.smokeActive = false;
-			this.endSmoke();
+			this.spriteActive = false;
 			this.missileMass = this.massaEnd;
 			this.missileForce = 0.0F;
 		} else if (millisecondsFromStart > this.rocketMotorOperationTime) {
@@ -647,10 +648,10 @@ public class Missile extends Rocket {
 			this.doExplosionAir();
 		}
 		this.endNavLights();
+		this.endSmoke();
 		this.flameActive = false;
 		this.smokeActive = false;
 		this.spriteActive = false;
-		this.endSmoke();
 		this.victim = null;
 		this.startTime = 0L;
 		this.previousDistance = 1000F;
@@ -879,6 +880,7 @@ public class Missile extends Rocket {
 		this.initialMissileForce = Property.floatValue(localClass, "forceP1", 0.0F);
 		this.dragCoefficient = Property.floatValue(localClass, "dragCoefficient", 0.3F);
 		this.dragCoefficientTurn = Property.floatValue(localClass, "dragCoefficientTurn", this.dragCoefficient);
+		this.attackMaxDistance = Property.floatValue(localClass, "PkDistMax", 5000F);
 		this.exhausts = this.getNumExhausts();
 		this.effSmoke = Property.stringValue(localClass, "smoke", null);
 		this.effSprite = Property.stringValue(localClass, "sprite", null);
@@ -1689,6 +1691,7 @@ public class Missile extends Rocket {
 	protected static final int STEP_MODE_HOMING = 0;
 	protected static final int TARGET_AIR = 0x0001;
 	protected static final int TARGET_GROUND = 0x0010;
+	protected static final int TARGET_LOCATE = 0x0020;
 	protected static final int TARGET_SHIP = 0x0100;
 	private float deltaAzimuth = 0.0F;
 	private float deltaTangage = 0.0F;
@@ -1758,6 +1761,7 @@ public class Missile extends Rocket {
 	private long trackDelay = 1000L;
 	private Vector3d trajectoryVector3d = null;
 	private float turnDiffMax = 0F;
+	private float attackMaxDistance = 5000F;
 	DecimalFormat twoPlaces = new DecimalFormat("+000.00;-000.00"); // only required for debugging
 
 	private Actor victim = null;
