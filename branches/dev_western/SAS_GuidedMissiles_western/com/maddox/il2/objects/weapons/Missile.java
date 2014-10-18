@@ -286,10 +286,10 @@ public class Missile extends Rocket {
 		float millisecondsFromStart = Time.current() - this.startTime;
 
 		if (millisecondsFromStart > this.rocketMotorOperationTime + this.rocketMotorSustainedOperationTime) {
-			this.endSmoke();
 			this.flameActive = false;
 			this.smokeActive = false;
 			this.spriteActive = false;
+			this.endSmoke();
 			this.missileMass = this.massaEnd;
 			this.missileForce = 0.0F;
 		} else if (millisecondsFromStart > this.rocketMotorOperationTime) {
@@ -543,10 +543,12 @@ public class Missile extends Rocket {
 			theHook = this.findHook("_SMOKE" + i);
 			this.flames[i] = new ActorSimpleMesh(this.simFlame);
 			if (this.flames[i] != null) {
-				((ActorSimpleMesh) this.flames[i]).mesh().setScale(1);
+				((ActorSimpleMesh) this.flames[i]).mesh().setScale(1.0F);
 				this.flames[i].pos.setBase(this, theHook, false);
 				this.flames[i].pos.changeHookToRel();
 				this.flames[i].pos.resetAsBase();
+				if (Config.isUSE_RENDER())
+					this.flames[i].drawing(true);
 			}
 		}
 	}
@@ -648,10 +650,10 @@ public class Missile extends Rocket {
 			this.doExplosionAir();
 		}
 		this.endNavLights();
-		this.endSmoke();
 		this.flameActive = false;
 		this.smokeActive = false;
 		this.spriteActive = false;
+		this.endSmoke();
 		this.victim = null;
 		this.startTime = 0L;
 		this.previousDistance = 1000F;
@@ -1060,26 +1062,12 @@ public class Missile extends Rocket {
 		this.pos.setAbs(point3d, orient);
 		this.pos.reset();
 		this.pos.setBase(actor, null, true);
-		this.doStart(-1F);
 		this.trajectoryVector3d.set(1.0D, 0.0D, 0.0D);
 		orient.transform(this.trajectoryVector3d);
 		this.trajectoryVector3d.scale(f);
 		this.setSpeed(this.trajectoryVector3d);
 		this.collide(false);
 		this.getMissileProperties();
-		this.startTime = Time.current();
-		this.releaseTime = Time.current();
-		if (this.engineDelayTime < 0L) {
-			this.startTime += this.engineDelayTime;
-		}
-		if (this instanceof MissileInterceptable) {
-			// TODO: For RWR 
-			try {
-				Engine.missiles().add(this);
-			} catch (Exception e) {}
-			Engine.targets().add(this);
-			// EventLog.type("MissileInit 2");
-		}
 	}
 
 	public NetMsgSpawn netReplicate(NetChannel netchannel) throws IOException {
@@ -1209,19 +1197,10 @@ public class Missile extends Rocket {
 	}
 
 	public void setMissileEffects() {
-		if (this.engineDelayTime <= 0L) {
-			this.setSmokeSpriteFlames();
-		}
 		this.firstNavLight = null;
 		this.lastNavLight = null;
 		if (Config.isUSE_RENDER()) {
 			this.createNavLights();
-		}
-		if (this.flame != null) {
-			((ActorSimpleMesh) this.flame).mesh().setScale(1);
-		}
-		if (Config.isUSE_RENDER() && (this.flame != null)) {
-			this.flame.drawing(true);
 		}
 	}
 
@@ -1284,7 +1263,6 @@ public class Missile extends Rocket {
 				this.createAdditionalFlames();
 			}
 		}
-		this.engineRunning = true;
 	}
 
 	public void setStartTime() {
@@ -1317,6 +1295,8 @@ public class Missile extends Rocket {
 	}
 
 	public void startEngine() {
+		if(this.engineRunning)
+			return;
 		// EventLog.type("startEngine");
 
 		Class localClass = this.getClass();
@@ -1332,7 +1312,6 @@ public class Missile extends Rocket {
 				this.sprite.pos.changeHookToRel();
 			}
 		}
-		this.createAdditionalSprites();
 		str = Property.stringValue(localClass, "flame", null);
 		if (str != null) {
 			if (localHook == null) {
@@ -1344,9 +1323,10 @@ public class Missile extends Rocket {
 				this.flame.pos.setBase(this, localHook, false);
 				this.flame.pos.changeHookToRel();
 				this.flame.pos.resetAsBase();
+				if (Config.isUSE_RENDER())
+					this.flame.drawing(true);
 			}
 		}
-		this.createAdditionalFlames();
 		str = Property.stringValue(localClass, "smoke", null);
 		if (str != null) {
 			if (localHook == null) {
@@ -1357,7 +1337,7 @@ public class Missile extends Rocket {
 				this.smoke.pos.changeHookToRel();
 			}
 		}
-		this.createAdditionalSmokes();
+		setSmokeSpriteFlames();
 		this.soundName = Property.stringValue(localClass, "sound", null);
 		if (this.soundName != null) {
 			this.newSound(this.soundName, true);
@@ -1774,5 +1754,4 @@ public class Missile extends Rocket {
 
 	private Vector3d victimSpeed = null;
 
-	
 }
