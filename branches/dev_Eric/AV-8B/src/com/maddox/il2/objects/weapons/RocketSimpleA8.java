@@ -1,7 +1,7 @@
 // Decompiled by DJ v3.10.10.93 Copyright 2007 Atanas Neshkov  Date: 8/31/2013 9:33:37 PM
 // Home Page: http://members.fortunecity.com/neshkov/dj.html  http://www.neshkov.com/dj.html - Check often for new version!
 // Decompiler options: packimports(3) 
-// Source File Name:   RocketSimpleS5MS.java
+// Source File Name:   RocketSimpleA8.java
 
 package com.maddox.il2.objects.weapons;
 
@@ -17,10 +17,10 @@ import com.maddox.rts.Property;
 // Referenced classes of package com.maddox.il2.objects.weapons:
 //            RocketSimple
 
-public class RocketSimpleS5MS extends RocketSimple
+public class RocketSimpleA8 extends RocketSimple
 {
 
-    public RocketSimpleS5MS(Point3d point3d, Orient orient, Actor actor)
+    public RocketSimpleA8(Point3d point3d, Orient orient, Actor actor)
     {
         super(point3d, orient, actor);
     }
@@ -29,12 +29,12 @@ public class RocketSimpleS5MS extends RocketSimple
     {
         float f1 = f-1F;
         super.start(f1);
-        Eff3DActor.New(this, null, new Loc(), 1.0F, "EFFECTS/Smokes/SmokeMissilessmall.eff", -1F);
+        //Eff3DActor.New(this, null, new Loc(), 1.0F, "EFFECTS/Smokes/SmokeMissilessmall.eff", -1F);
     }
 
     static 
     {
-        Class class1 = com.maddox.il2.objects.weapons.RocketSimpleS5MS.class;
+        Class class1 = com.maddox.il2.objects.weapons.RocketSimpleA8.class;
         Property.set(class1, "mesh", "3DO/Arms/2-75inch/mono.sim");
         Property.set(class1, "sprite", "3DO/Effects/Tracers/GuidedRocket/White.eff");
         //Property.set(class1, "flame", "3DO/Effects/Rocket/mono.sim");

@@ -11,10 +11,10 @@ import com.maddox.il2.engine.*;
 // Referenced classes of package com.maddox.il2.objects.weapons:
 //            CannonRocketSimple, RocketSimpleS5MS
 
-public class CannonRocketSimpleS5MS extends CannonRocketSimple
+public class CannonRocketSimpleA8 extends CannonRocketSimple
 {
 
-    public CannonRocketSimpleS5MS()
+    public CannonRocketSimpleA8()
     {
     }
 
@@ -30,7 +30,7 @@ public class CannonRocketSimpleS5MS extends CannonRocketSimple
 
     public void launch(Point3d point3d, Orient orient, float f, Actor actor)
     {
-        RocketSimpleS5MS rocketsimpleS5MS= new RocketSimpleS5MS(point3d, orient, actor);
-        rocketsimpleS5MS.start(f);
+        RocketSimpleA8 rocketsimpleA8= new RocketSimpleA8(point3d, orient, actor);
+        rocketsimpleA8.start(f);
     }
 }

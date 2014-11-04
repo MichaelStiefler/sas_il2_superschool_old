@@ -1,7 +1,7 @@
 // Decompiled by DJ v3.10.10.93 Copyright 2007 Atanas Neshkov  Date: 9/19/2013 4:37:14 PM
 // Home Page: http://members.fortunecity.com/neshkov/dj.html  http://www.neshkov.com/dj.html - Check often for new version!
 // Decompiler options: packimports(3) 
-// Source File Name:   MGunGSH6_30ki.java
+// Source File Name:   MGunGAU12U.java
 
 package com.maddox.il2.objects.weapons;
 
@@ -14,10 +14,10 @@ import java.security.SecureRandom;
 // Referenced classes of package com.maddox.il2.objects.weapons:
 //            MGunVYas
 
-public class MGunGSH6_30ki extends MGunVYas
+public class MGunGAU12U extends MGunVYas
 {
 
-    public MGunGSH6_30ki()
+    public MGunGAU12U()
     {
     }
 
@@ -74,17 +74,17 @@ public class MGunGSH6_30ki extends MGunVYas
         gunproperties.weaponType = 3;
         gunproperties.maxDeltaAngle = 0.78F;
         gunproperties.shotFreqDeviation = 0.03F;
-        gunproperties.shotFreq = 120.5F;
+        gunproperties.shotFreq = 100.0F;
         gunproperties.traceFreq = 10;
         gunproperties.bullets = 120;
         gunproperties.bulletsCluster = 1;
         gunproperties.bullet = (new BulletProperties[] {
             new BulletProperties()
         });
-        gunproperties.bullet[0].massa = 0.3F;
-        gunproperties.bullet[0].kalibr = 0.0004245F;
-        gunproperties.bullet[0].speed = 900F;
-        gunproperties.bullet[0].power = 0.0605F;
+        gunproperties.bullet[0].massa = 0.25F;
+        gunproperties.bullet[0].kalibr = 0.0002545F;
+        gunproperties.bullet[0].speed = 1040F;
+        gunproperties.bullet[0].power = 0.0305F;
         gunproperties.bullet[0].powerType = 0;
         gunproperties.bullet[0].powerRadius = 1.0F;
         gunproperties.bullet[0].traceMesh = "3do/effects/tracers/20mmYellow/mono.sim";
