@@ -76,7 +76,7 @@ public class AV_8 extends Scheme1
         curctl = -1F;
         oldthrl = -1F;
         curthrl = -1F;
-        k14Mode = 3;
+        k14Mode = 2;
         k14WingspanType = 0;
         k14Distance = 200F;
         AirBrakeControl = 0.0F;
@@ -114,12 +114,15 @@ public class AV_8 extends Scheme1
         radargunsight = 0;
         leftscreen = 0;
         Bingofuel = 1000;
+        radarrange=1;
     }
     
     public float Fuelamount;
     public float checkfuel(int i)
     {
     	FuelTank[] fuelTanks = FM.CT.getFuelTanks();
+    	if(fuelTanks.length == 0)
+    		return 0F; else
     	for(i = 0; i < fuelTanks.length; i++)
     		Fuelamount = fuelTanks[i].Fuel;
     	return Fuelamount;
@@ -142,14 +145,19 @@ public class AV_8 extends Scheme1
         {       		
            lockmode++;	
             if(lockmode>1)
-            	lockmode = 0;           
+            	lockmode = 0;          
         }
         if(i == 23)
         {
         	radargunsight++;
-        	if(radargunsight > 1)
+        	if(radargunsight > 2)
         		radargunsight = 0;
-        	HUD.log(AircraftHotKeys.hudLogWeaponId, "sight" + radargunsight);
+        	if(radargunsight == 0)
+        	HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: funnel");
+        	if(radargunsight == 1)
+            	HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Radar ranging");
+        	if(radargunsight == 2)
+            	HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Unguided Rocket");
         }
         if(i == 24)
         {
@@ -1083,7 +1091,7 @@ label0:
 
     public void typeFighterAceMakerRangeFinder()
     {
-        if(k14Mode == 2)
+        if(k14Mode != 1)
             return;
         hunted = Main3D.cur3D().getViewPadlockEnemy();
         if(hunted == null)
@@ -1784,14 +1792,18 @@ label0:
 		
 	}
 
-	public void typeRadarRangeMinus() {
-		// TODO Auto-generated method stub
-		
+	public void typeRadarRangeMinus() {		
+		radarrange++;
+		if(radarrange>4)
+			radarrange = 4;
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "range" + radarrange);
 	}
 
 	public void typeRadarRangePlus() {
-		// TODO Auto-generated method stub
-		
+		radarrange--;
+		if(radarrange<1)
+			radarrange = 1;
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "range" + radarrange);
 	}
 
 	public void typeRadarReplicateFromNet(NetMsgInput arg0) throws IOException {
@@ -1807,13 +1819,14 @@ label0:
 
 	public boolean typeRadarToggleMode() {
 		radarmode++;
-		if(radarmode>2)
+		if(radarmode>1)
 			radarmode=0;
 		HUD.log(AircraftHotKeys.hudLogWeaponId, "radar mode" + radarmode);
 		return false;
 	}
 
-    private long twait;
+    public int radarrange;
+	private long twait;
 	protected boolean bSlatsOff;
     private float oldctl;
     private float curctl;
@@ -1912,7 +1925,7 @@ label0:
 
 	public boolean typeBomberToggleAutomation() {
 		k14Mode++;
-        if(k14Mode > 3)
+        if(k14Mode > 2)
             k14Mode = 0;
         if(k14Mode == 0)
         {
@@ -1923,13 +1936,8 @@ label0:
         {
             if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Gunnery");
-        } else
-        if(k14Mode == 2)
-        {
-            if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Radar");
-        } else	
-        if(k14Mode == 3 && ((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
+        } else        
+        if(k14Mode == 2 && ((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
             HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Navigation");
 		return true;
 	}
