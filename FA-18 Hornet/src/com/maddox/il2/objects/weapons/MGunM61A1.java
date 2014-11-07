@@ -9,6 +9,7 @@ public class MGunM61A1 extends MGunAircraftGeneric {
 	
 	public MGunM61A1() {
 	    this.tLastShotFreqChange = 0L;
+	    this.dAccel = 0D;
 	    this.fShotFreqFactor = 0.2F;
 	}
 
@@ -23,6 +24,7 @@ public class MGunM61A1 extends MGunAircraftGeneric {
 	    		if (this.fShotFreqFactor > 1.0F) fShotFreqFactor = 1.0F;
     		}
             this._shotStep = (float)prop.bulletsCluster / (prop.shotFreq * this.fShotFreqFactor);
+//    		HUD.training("SF: " + this.fShotFreqFactor);
             this.sound.setPitch(this.fShotFreqFactor);
     	}
         this.tLastShotFreqChange = Time.current();
@@ -40,7 +42,7 @@ public class MGunM61A1 extends MGunAircraftGeneric {
         gunproperties.smoke = "effects/smokes/CannonTank.eff";
         gunproperties.shells = null;
         gunproperties.sound = "weapon.Gau4";
-        gunproperties.customSound = "weapon.Gau4";
+//        gunproperties.customSound = "weapon.cannon_m61";
         gunproperties.emitColor = new Color3f(0.6F, 0.4F, 0.2F);
         gunproperties.emitI = 10F;
         gunproperties.emitR = 3F;
@@ -48,7 +50,7 @@ public class MGunM61A1 extends MGunAircraftGeneric {
         gunproperties.aimMinDist = 10F;
         gunproperties.aimMaxDist = 2000F;
         gunproperties.weaponType = 3;
-        gunproperties.maxDeltaAngle = 0.2F;
+        gunproperties.maxDeltaAngle = 0.12F;
         gunproperties.shotFreq = 100F;
         gunproperties.traceFreq = 1;
         gunproperties.bullets = 250;
@@ -70,5 +72,6 @@ public class MGunM61A1 extends MGunAircraftGeneric {
     }
     
     private long tLastShotFreqChange;
+    private double dAccel;
     private float fShotFreqFactor;
 }
