@@ -270,7 +270,9 @@ public class GuidedMissileUtils {
 
 	private void checkAIlaunchMissile() {
 		if (!(this.missileOwner instanceof Aircraft)) return;
-		if (!this.attackDecisionByAI) return;
+		if (!this.attackDecisionByAI && !this.attackDecisionByWaypoint) return;
+		Autopilotage AP = ((Aircraft)(this.missileOwner)).FM.AP;
+		if (this.attackDecisionByWaypoint && (AP.way.curr().Action != 3 || AP.way.curr().getTarget() == null)) return;
 		Aircraft ownerAircraft = (Aircraft) this.missileOwner;
 		if ((((ownerAircraft.FM instanceof RealFlightModel)) && (((RealFlightModel) ownerAircraft.FM).isRealMode())) || (!(ownerAircraft.FM instanceof Pilot))) return;
 		if (this.rocketsList.isEmpty()) return;
@@ -608,6 +610,10 @@ public class GuidedMissileUtils {
 		return this.attackDecisionByAI;
 	}
 
+	public boolean getAttackDecisionByWaypoint() {
+		return this.attackDecisionByWaypoint;
+	}
+
 	// TODO: For Countermeasures:
 	public int getDetectorType() {
 		int lockType = 0;
@@ -705,7 +711,8 @@ public class GuidedMissileUtils {
 		this.fLeadPercent = Property.floatValue(theMissileClass, "leadPercent", 99.9F);
 		this.fMaxG = Property.floatValue(theMissileClass, "maxGForce", 99.9F);
 		this.iDetectorMode = Property.intValue(theMissileClass, "detectorType", Missile.DETECTOR_TYPE_MANUAL);
-		this.attackDecisionByAI = Property.intValue(theMissileClass, "attackDecisionByAI", 0) != 0;
+		this.attackDecisionByAI = Property.intValue(theMissileClass, "attackDecisionByAI", 0) == 1;
+		this.attackDecisionByWaypoint = Property.intValue(theMissileClass, "attackDecisionByAI", 0) == 2;
 		this.canTrackSubs = Property.intValue(theMissileClass, "canTrackSubs", 0) != 0;
 		this.multiTrackingCapable = Property.intValue(theMissileClass, "multiTrackingCapable", 0) != 0;
 		this.minPkForAttack = Property.floatValue(theMissileClass, "minPkForAI", 25.0F);
@@ -790,6 +797,7 @@ public class GuidedMissileUtils {
 		this.rocketsList = new ArrayList();
 		this.tMissilePrev = 0L;
 		this.attackDecisionByAI = false;
+		this.attackDecisionByWaypoint = false;
 		this.minPkForAttack = 25.0F;
 		this.millisecondsBetweenMissileLaunchAI = 10000L;
 	}
@@ -1494,6 +1502,10 @@ public class GuidedMissileUtils {
 		this.attackDecisionByAI = theAttackDecisionByAI;
 	}
 
+	public void setAttackDecisionByWaypoint(boolean theAttackDecisionByWaypoint) {
+		this.attackDecisionByWaypoint = theAttackDecisionByWaypoint;
+	}
+
 	public void setCanTrackSubs(boolean theCanTrackSubs) {
 		this.canTrackSubs = theCanTrackSubs;
 	}
@@ -1894,6 +1906,7 @@ public class GuidedMissileUtils {
 	public static int HEAT_SPREAD_NONE = 0; // Engine produces no heat, i.e. Tow Gliders
 
 	private boolean attackDecisionByAI = false;
+	private boolean attackDecisionByWaypoint = false;
 	private boolean canTrackSubs = false;
 	protected double d = 0.0D;
 	protected float deltaAzimuth = 0.0F;
