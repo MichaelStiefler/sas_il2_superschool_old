@@ -46,7 +46,11 @@ public class Rocket extends ActorMesh implements MsgCollisionRequestListener, Ms
 			} else {
 				M -= DM;
 			}
-			if (interpolateStep()) Ballistics.update(actor, M, S, P, timeBegin + noGDelay < Time.current());
+			if(spinFactor > 0.0F)
+			{
+				if (interpolateStep()) Ballistics.updateSpinningRocket(actor, M, S, P, timeBegin + noGDelay < Time.current(), spinFactor);
+			}
+			else if (interpolateStep()) Ballistics.update(actor, M, S, P, timeBegin + noGDelay < Time.current());
 			return true;
 		}
 
@@ -166,6 +170,7 @@ public class Rocket extends ActorMesh implements MsgCollisionRequestListener, Ms
 		float f3 = -1F + 2.0F * rangerandom.nextFloat();
 		f3 *= f3 * f3;
 		init(f1, Property.floatValue(class1, "massa", 6.8F), Property.floatValue(class1, "massaEnd", 2.52F), Property.floatValue(class1, "timeFire", 4F) / (1.0F + 0.1F * f2), Property.floatValue(class1, "force", 500F) * (1.0F + 0.1F * f2), f + f3 * 0.1F);
+		spinFactor = Property.floatValue(class1, "spinningStraightFactor", 0.0F);
 		setOwner(pos.base(), false, false, false);
 		pos.setBase(null, null, true);
 		pos.setAbs(pos.getCurrent());
@@ -254,4 +259,5 @@ public class Rocket extends ActorMesh implements MsgCollisionRequestListener, Ms
 	protected float M;
 	private float DM;
 	private float P;
+	private float spinFactor;
 }
