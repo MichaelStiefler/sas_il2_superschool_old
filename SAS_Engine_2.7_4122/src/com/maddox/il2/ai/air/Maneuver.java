@@ -5224,14 +5224,17 @@ public class Maneuver extends AIFlightModel {
             f8 += f5 * getAOA() * 0.005F;
             Ve.z += f8 + Group.getAaaNum() * 0.5F;
             Or.transformInv(Ve);
-            if (f5 < 800F && (shotAtFriend <= 0 || distToFriend > f5)) {
+			float speedFactor = getSpeedKMH() / 260F;
+			if(speedFactor < 1F)
+				speedFactor = 1F;
+            if (f5 < 800F * speedFactor && (shotAtFriend <= 0 || distToFriend > f5)) {
                 shootingDeviation -= f;
                 if (shootingDeviation < (float) (6 - gunnery))
                     shootingDeviation = 6 - gunnery;
                 if (Math.abs(Ve.y) < 15D && Math.abs(Ve.z) < 10D) {
-                    if (f5 < 800F && Group.getAaaNum() > 10F || f5 < 650F)
+                    if (f5 < 800F * speedFactor && Group.getAaaNum() > 10F || f5 < 650F * speedFactor)
                         CT.WeaponControl[0] = true;
-                    if (f5 < 700F && Group.getAaaNum() > 10F || f5 < 550F)
+                    if (f5 < 700F * speedFactor && Group.getAaaNum() > 10F || f5 < 550F * speedFactor)
                         CT.WeaponControl[1] = true;
                     if (CT.Weapons[2] != null && CT.Weapons[2][0] != null && CT.Weapons[2][CT.Weapons[2].length - 1].countBullets() != 0 && rocketsDelay < 1 && f5 < 570F) {
                         CT.WeaponControl[2] = true;
@@ -5243,7 +5246,7 @@ public class Maneuver extends AIFlightModel {
                     }
                 }
             }
-            if (sub_Man_Count > 200 && Ve.x < (double) (getSpeed() * 2.4F) || (this.actor instanceof TypeStormovik) && Alt < 80F || Alt < 40F) {
+            if (sub_Man_Count > 200 && Ve.x < (double) (getSpeed() * 2.4F) || (this.actor instanceof TypeStormovik) && Alt < 80F * speedFactor || Alt < 40F * speedFactor) {
                 if (Leader == null || !Actor.isAlive(Leader.actor))
                     Voice.speakEndGattack((Aircraft) this.actor);
                 rocketsDelay = 0;
