@@ -43,11 +43,11 @@ public class RocketSimpleA8 extends RocketSimple
         Property.set(class1, "emitLen", 50F);
         Property.set(class1, "emitMax", 1.0F);
         Property.set(class1, "sound", "weapon.rocket_132");
-        Property.set(class1, "radius", 5F);
+        Property.set(class1, "radius", 1.5F);
         Property.set(class1, "timeLife", 60F);
         Property.set(class1, "timeFire", 1.1F);
         Property.set(class1, "force", 2300F);
-        Property.set(class1, "power", 15.8F);
+        Property.set(class1, "power", 10.8F);
         Property.set(class1, "powerType", 0);
         Property.set(class1, "kalibr", 0.055F);
         Property.set(class1, "massa", 3.86F);

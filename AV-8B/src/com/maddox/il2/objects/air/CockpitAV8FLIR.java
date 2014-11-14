@@ -1,0 +1,266 @@
+// Decompiled by DJ v3.10.10.93 Copyright 2007 Atanas Neshkov  Date: 11/4/2012 6:52:29 AM
+// Home Page: http://members.fortunecity.com/neshkov/dj.html  http://www.neshkov.com/dj.html - Check often for new version!
+// Decompiler options: packimports(3) 
+// Source File Name:   CockpitF18FLIR.java
+
+package com.maddox.il2.objects.air;
+
+import com.maddox.JGP.Point3d;
+import com.maddox.il2.ai.BulletEmitter;
+import com.maddox.il2.engine.*;
+import com.maddox.il2.fm.*;
+import com.maddox.il2.game.AircraftHotKeys;
+import com.maddox.il2.game.HUD;
+import com.maddox.rts.*;
+import com.maddox.JGP.*;
+import com.maddox.il2.ai.AnglesFork;
+import com.maddox.il2.ai.World;
+import com.maddox.il2.engine.*;
+import com.maddox.il2.fm.*;
+import com.maddox.il2.game.*;
+import com.maddox.il2.objects.sounds.SndAircraft;
+import com.maddox.il2.objects.weapons.GuidedMissileUtils;
+import com.maddox.rts.Time;
+import com.maddox.sound.Acoustics;
+import com.maddox.sound.ReverbFXRoom;
+import com.maddox.util.HashMapExt;
+
+import java.util.ArrayList;
+
+// Referenced classes of package com.maddox.il2.objects.air:
+//            CockpitGunner, F_18
+
+public class CockpitAV8FLIR extends CockpitGunner
+{
+
+    protected boolean doFocusEnter()
+    {
+        if(super.doFocusEnter())
+        {
+            ((AV_8)aircraft()).FLIR = true;
+            CmdEnv.top().exec("fov 33.3");
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    protected void doFocusLeave()
+    {
+        super.doFocusLeave();
+        ((AV_8)aircraft()).FLIR = false;
+    }
+
+    public void moveGun(Orient orient)
+    {
+        super.moveGun(orient);       
+        orient1.set(orient);
+        laser(orient);
+        //laserTrack();
+    }
+    
+    private float h;
+    private float v;
+    private float v1;
+    private float h1;
+
+    public void laser(Orient orient)
+    {
+        Orient orient2 = new Orient();
+        Point3d point3d = new Point3d();
+        ((AV_8)aircraft()).pos.getAbs(point3d, orient2);       
+        float roll = orient2.getRoll();
+        float yaw = orient2.getYaw();
+        float fn = orient2.getPitch();
+        float pitch = 0F;
+    	if(fn>90F)
+    		pitch = fn - 360F;
+    	if(fn<90F)
+    		pitch = fn;   	
+    	super.mesh.chunkSetAngles("baseflir", 0.0F, -pitch, roll);   	
+        float f = orient.getYaw() - orient2.getYaw() + 90F;
+        if(f > 360F)
+            f -= 360F;
+        else
+        if(f < 0.0F)
+            f += 360F;
+        float f1 = f;       
+        if(f > 90F && f <= 180F)
+            f = (float)Math.sqrt(Math.pow(f - 180F, 2D));
+        else
+        if(f > 180F && f <= 270F)
+            f -= 180F;
+        else
+        if(f > 270F && f <= 360F)
+            f = (float)Math.sqrt(Math.pow(f - 360F, 2D));
+        float f2 = orient.getPitch() - (orient2.getPitch())*0.01F - 265.75F;        
+        if(f2 > 360F)
+            f2 -= 360F;
+        else
+        if(f2 < 0.0F)
+            f2 += 360F;
+        f2 *= 0.01745329F;
+        f *= 0.01745329F;
+        double d = Math.tan(f2) * point3d.z;
+        dY = Math.sin(f) * d;
+        dX = Math.cos(f) * d;
+        float aa = ((AV_8)aircraft()).azimult;
+        float ta = ((AV_8)aircraft()).tangate;
+        if(f1 > 0.0F && f1 <= 90F)
+            spot1.set(point3d.x + dY, point3d.y + dX, 0.0D);
+        else
+        if(f1 > 90F && f1 <= 180F)
+            spot1.set(point3d.x + dY, point3d.y - dX, 0.0D);
+        else
+        if(f1 > 180F && f1 <= 270F)
+            spot1.set(point3d.x - dY, point3d.y - dX, 0.0D);
+        else
+            spot1.set(point3d.x - dY, point3d.y + dX, 0.0D);       
+        //HUD.log(AircraftHotKeys.hudLogWeaponId, "test " + (d1 - d3));
+        float y = 0F;
+        float t = 0F;
+        if(!((AV_8)aircraft()).hold)
+        {          
+           ((AV_8)aircraft()).spot.set(spot1);          
+           this.v = 0F;
+           this.h = 0F;
+           this.v1 = 0F;
+           this.h1 = 0F;
+           y = orient.getYaw();
+           t = orient.getTangage(); 
+           ((AV_8)aircraft()).azimult = 0F;
+           ((AV_8)aircraft()).tangate = 0F;
+        }
+        if(((AV_8)aircraft()).hold)
+        {
+        	((Tuple3d) ((Point3d)((AV_8)aircraft()).spot)).y += -ta;
+        	((Tuple3d) ((Point3d)((AV_8)aircraft()).spot)).x += aa;
+        	Point3d laser = new Point3d();
+        	laser.set(((AV_8)aircraft()).spot);
+        	laser.sub(point3d);
+        	//Aircraft ownaircraft = World.getPlayerAircraft();
+        	//Orient orientAC = ((Actor) (ownaircraft)).pos.getAbsOrient();
+        	//orientAC.transformInv(laserP);
+            double d1 = ((Tuple3d) ((Point3d)laser)).y;
+            double d2 = ((Tuple3d) ((Point3d)laser)).x;
+            double d3 = ((Tuple3d) ((Point3d)laser)).z;
+            //y = -(float)Math.toDegrees(Math.atan(d1/d2));
+            double range = Math.abs(Math.sqrt(d2*d2 + d3*d3));
+            double radius = Math.abs(Math.sqrt(d1*d1 + d2*d2));
+            //if(f1 > 0.0F && f1 <= 180F)
+            t = 270F - (float)Math.toDegrees(Math.atan(radius/d3));
+            //if(f1 > 180.0F && f1 <= 360F)
+            //t = -80 + (float)Math.toDegrees(Math.atan(d2/d3));	
+            y = orient.getYaw();
+            //t = orient.getTangage();                     
+        }
+        super.mesh.chunkSetAngles("Turret1A", y, 180F, 180F);
+        super.mesh.chunkSetAngles("Turret1B", 180F, -t, 180F);
+        //HUD.log(AircraftHotKeys.hudLogWeaponId, "test " + ((Tuple3d) ((Point3d)((AV_8)aircraft()).spot)).x);
+    }
+
+    public void clipAnglesGun(Orient orient)
+    {
+        float f = orient.getYaw();
+        float f1 = orient.getTangage();
+        float f2 = Math.abs(f);
+        for(; f < -180F; f += 360F);
+        for(; f > 180F; f -= 360F);
+        for(; prevA0 < -180F; prevA0 += 360F);
+        for(; prevA0 > 180F; prevA0 -= 360F);
+        if(!isRealMode())
+        {
+            prevA0 = f;
+        } else
+        {
+            if(bNeedSetUp)
+            {
+                prevTime = Time.current() - 1L;
+                bNeedSetUp = false;
+            }
+            if(f < -120F && prevA0 > 120F)
+                f += 360F;
+            else
+            if(f > 120F && prevA0 < -120F)
+                prevA0 += 360F;
+            float f3 = f - prevA0;
+            float f4 = 0.001F * (float)(Time.current() - prevTime);
+            float f5 = Math.abs(f3 / f4);
+            if(f5 > 120F)
+                if(f > prevA0)
+                    f = prevA0 + 120F * f4;
+                else
+                if(f < prevA0)
+                    f = prevA0 - 120F * f4;
+            prevTime = Time.current();
+            if(f1 > 0.0F)
+                f1 = 0.0F;
+            if(f1 < -95F)
+                f1 = -95F;
+            orient.setYPR(f, f1, 0.0F);
+            orient.wrap();
+            prevA0 = f;
+        }
+    }
+
+    protected void interpTick()
+    {
+        if(!isRealMode())
+            return;
+        if(emitter == null || !emitter.haveBullets() || !aiTurret().bIsOperable)
+            bGunFire = false;
+        fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
+    }
+
+    public void doGunFire(boolean flag)
+    {
+        if(!isRealMode())
+            return;
+        if(emitter == null || !emitter.haveBullets() || !aiTurret().bIsOperable)
+            bGunFire = false;
+        else
+            bGunFire = flag;
+        fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
+    }
+
+    public void reflectCockpitState()
+    {
+        if((fm.AS.astateCockpitState & 4) != 0)
+            mesh.chunkVisible("Z_Holes1_D1", true);
+        if((fm.AS.astateCockpitState & 0x10) != 0)
+            mesh.chunkVisible("Z_Holes2_D1", true);
+    }
+
+    public CockpitAV8FLIR()
+    {
+        super("3DO/Cockpit/AV8FLIR/AV8FLIR.him", "he111_gunner");
+        dY = 0.0D;
+        dX = 0.0D;
+        point3d1 = new Point3d();
+        orient1 = new Orient();
+        spot1 = new Point3d();
+        bNeedSetUp = true;
+        prevTime = -1L;
+        prevA0 = 0.0F;
+        h = 0;
+        v = 0;
+    }
+
+    
+    private double dY;
+    private double dX;
+    private boolean bNeedSetUp;
+    private long prevTime;
+    private float prevA0;
+    public Point3d point3d1;
+    public Orient orient1;
+    public Point3d spot1;
+    public Point3d spot2;
+
+    static 
+    {
+        Property.set(com.maddox.il2.objects.air.CockpitAV8FLIR.class, "weaponControlNum", 10);
+        Property.set(com.maddox.il2.objects.air.CockpitAV8FLIR.class, "astatePilotIndx", 0);
+    }
+}
