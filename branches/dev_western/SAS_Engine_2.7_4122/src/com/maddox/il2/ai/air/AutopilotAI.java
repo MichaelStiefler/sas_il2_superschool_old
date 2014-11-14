@@ -204,7 +204,9 @@ public class AutopilotAI extends Autopilotage {
 					Actor actor = WWPoint.getTarget();
 					if (actor != null)
 						FM.target_ground = null;
-					else if (((Aircraft) FM.actor instanceof TypeBomber) && FM.CT.Weapons[3] != null && FM.CT.Weapons[3][0] != null && FM.CT.Weapons[3][FM.CT.Weapons[3].length - 1].haveBullets()) {
+					else if (((Aircraft) FM.actor instanceof TypeBomber) 
+							&& ((FM.CT.Weapons[2] != null && FM.CT.Weapons[2][0] != null && FM.CT.Weapons[2][FM.CT.Weapons[2].length - 1].haveBullets())
+							|| (FM.CT.Weapons[3] != null && FM.CT.Weapons[3][0] != null && FM.CT.Weapons[3][FM.CT.Weapons[3].length - 1].haveBullets()))) {
 						FM.CT.BayDoorControl = 1.0F;
 						for (Pilot pilot1 = FM; pilot1.Wingman != null;) {
 							pilot1 = (Pilot) pilot1.Wingman;
