@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="/F-18/Required Countermeasure Classes"/>
 	<classpathentry kind="lib" path="/F-18/Required Engine Mod Classes"/>
 	<classpathentry kind="lib" path="/F-18/Required SAS Common Utils Classes"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Mordenweaponry"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
