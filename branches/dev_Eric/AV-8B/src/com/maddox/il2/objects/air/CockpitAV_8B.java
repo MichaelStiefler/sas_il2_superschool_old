@@ -316,7 +316,16 @@ public class CockpitAV_8B extends CockpitPilot
         radarPlane = new ArrayList();
         radarLock = new ArrayList();
         radarmissile = new ArrayList();
+        HookNamed hooknamed = new HookNamed(mesh, "LAMPHOOK1");
+        Loc loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+        hooknamed.computePos(this, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F), loc);
+        light1 = new LightPointActor(new LightPoint(), loc.getPoint());
+        light1.light.setColor(0F, 300.0F,0.0F);
+        light1.light.setEmit(0.0F, 0.0F);
+        pos.base().draw.lightMap().put("LAMPHOOK1", light1);
     }
+    
+    private LightPointActor light1;
 
     public void reflectWorldToInstruments(float f)
     {
@@ -326,7 +335,71 @@ public class CockpitAV_8B extends CockpitPilot
             reflectPlaneToModel();
             bNeedSetUp = false;
         }
-		if ((fm.AS.astateCockpitState & 2) == 0) {
+    	HUDgunsight();
+		radarclutter();
+    	boolean flag = false;
+    	boolean flag1 = false;
+    	int i = ((AV_8)aircraft()).leftscreen;
+    	if(i == 0)
+    	{
+    		flag = true;
+    		flag1 = false;
+    	}
+    	if(i == 1)	
+    	{
+    		flag = false;
+    		flag1 = true;
+    	}
+    	super.mesh.chunkVisible("HDD_Fuel", flag);        	
+    	super.mesh.chunkVisible("HDD_FuelFlow", flag1);
+    	int j = ((AV_8)aircraft()).leftscreen;
+    	if(j == 0)
+    	{
+    		movescreenfuel();
+    	}
+    	if(j == 1)
+    	{
+    		movescreenfuelflow();
+    	}
+    	if(bNeedSetUp)
+        {
+            super.mesh.chunkVisible("Int_Marker", false);
+            bNeedSetUp = false;
+        }
+        ((AircraftLH)aircraft()).bWantBeaconKeys = true;        
+        resetYPRmodifier();
+        moveControls(f);
+        moveHUD(f);
+        //moveGauge(f);
+        drawSound(f);        
+        //if(((FlightModelMain) (super.fm)).AS.bShowSmokesOn)
+            //super.mesh.chunkVisible("Int_SmokeON", true);
+        //else
+            //super.mesh.chunkVisible("Int_SmokeON", false);
+        //if(((FlightModelMain) (super.fm)).CT.getAirBrake() > 0.0F)
+            //super.mesh.chunkVisible("Int_Speed_Ext", true);
+        //else
+            //super.mesh.chunkVisible("Int_Speed_Ext", false);
+        //if(((FlightModelMain) (super.fm)).CT.getGear() < 0.999999F)
+            //super.mesh.chunkVisible("Int_LDG_ON", false);
+        //else
+            //super.mesh.chunkVisible("Int_LDG_ON", true);
+        //super.mesh.chunkVisible("Int_Marker", isDimmer);
+        ((FlightModelMain) (super.fm)).Or.getMatrix(tmpMat);
+        float f1 = (float)tmpMat.getElement(2, 0);
+        f1 = 1.0F - f1;
+        f1 *= 0.045F;
+        f1 += (float)tmpMat.getElement(2, 2) * -0.014F;
+        if(f1 < 0.0F)
+            f1 = 0.0F;
+        //resetYPRmodifier();
+        //Cockpit.xyz[2] = f1;
+        //super.mesh.chunkSetLocate("ShadowMove1", Cockpit.xyz, Cockpit.ypr);
+    }
+    
+    private void HUDgunsight()
+    {
+    	if ((fm.AS.astateCockpitState & 2) == 0) {
 			int i = ((AV_8) aircraft()).k14Mode;
 			resetYPRmodifier();
 			Cockpit.xyz[0] = setNew.k14w;
@@ -403,65 +476,6 @@ public class CockpitAV_8B extends CockpitPilot
 			super.mesh.chunkVisible("Z_Z_radarlock", false);
 			super.mesh.chunkVisible("Z_Z_missilelock", false);}
 		}
-		radarclutter();
-    	boolean flag = false;
-    	boolean flag1 = false;
-    	int i = ((AV_8)aircraft()).leftscreen;
-    	if(i == 0)
-    	{
-    		flag = true;
-    		flag1 = false;
-    	}
-    	if(i == 1)	
-    	{
-    		flag = false;
-    		flag1 = true;
-    	}
-    	super.mesh.chunkVisible("HDD_Fuel", flag);        	
-    	super.mesh.chunkVisible("HDD_FuelFlow", flag1);
-    	int j = ((AV_8)aircraft()).leftscreen;
-    	if(j == 0)
-    	{
-    		movescreenfuel();
-    	}
-    	if(j == 1)
-    	{
-    		movescreenfuelflow();
-    	}
-    	if(bNeedSetUp)
-        {
-            super.mesh.chunkVisible("Int_Marker", false);
-            bNeedSetUp = false;
-        }
-        ((AircraftLH)aircraft()).bWantBeaconKeys = true;        
-        resetYPRmodifier();
-        moveControls(f);
-        moveHUD(f);
-        //moveGauge(f);
-        drawSound(f);        
-        //if(((FlightModelMain) (super.fm)).AS.bShowSmokesOn)
-            //super.mesh.chunkVisible("Int_SmokeON", true);
-        //else
-            //super.mesh.chunkVisible("Int_SmokeON", false);
-        //if(((FlightModelMain) (super.fm)).CT.getAirBrake() > 0.0F)
-            //super.mesh.chunkVisible("Int_Speed_Ext", true);
-        //else
-            //super.mesh.chunkVisible("Int_Speed_Ext", false);
-        //if(((FlightModelMain) (super.fm)).CT.getGear() < 0.999999F)
-            //super.mesh.chunkVisible("Int_LDG_ON", false);
-        //else
-            //super.mesh.chunkVisible("Int_LDG_ON", true);
-        //super.mesh.chunkVisible("Int_Marker", isDimmer);
-        ((FlightModelMain) (super.fm)).Or.getMatrix(tmpMat);
-        float f1 = (float)tmpMat.getElement(2, 0);
-        f1 = 1.0F - f1;
-        f1 *= 0.045F;
-        f1 += (float)tmpMat.getElement(2, 2) * -0.014F;
-        if(f1 < 0.0F)
-            f1 = 0.0F;
-        //resetYPRmodifier();
-        //Cockpit.xyz[2] = f1;
-        //super.mesh.chunkSetLocate("ShadowMove1", Cockpit.xyz, Cockpit.ypr);
     }
     
     public long t;
@@ -1946,11 +1960,15 @@ public class CockpitAV_8B extends CockpitPilot
         if(super.cockpitLightControl)
         {
             super.mesh.chunkVisible("Z_Z_NVision", true);
+            light1.light.setEmit(0.0060F, 0.6F);
+            ((AV_8)aircraft()).FLIR = true;
         } else
         {
             super.mesh.chunkVisible("Z_Z_NVision", false);
+            light1.light.setEmit(0.0F, 0.0F);
+            ((AV_8)aircraft()).FLIR = false;
         }
-    }
+    }   
 
     private void retoggleLight()
     {

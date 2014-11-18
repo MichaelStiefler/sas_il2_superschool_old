@@ -1,6 +1,3 @@
-// Decompiled by DJ v3.10.10.93 Copyright 2007 Atanas Neshkov  Date: 01.06.2013 16:03:35
-// Home Page: http://members.fortunecity.com/neshkov/dj.html  http://www.neshkov.com/dj.html - Check often for new version!
-// Decompiler options: packimports(3) 
 // Source File Name:   Engine.java
 
 package com.maddox.il2.engine;
@@ -15,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 // Referenced classes of package com.maddox.il2.engine:
-//            ActorDestroyListener, Actor, ActorSoundListener, LightEnvXY, 
-//            DrawEnvXY, CollideEnvXY, DreamEnvXY, InterpolateAdapter, 
-//            EngineProfile, Renders, Landscape, BulletGeneric, 
-//            DrawEnv, CollideEnv, DreamEnv, MeshShared, 
-//            GObj, LightEnv
+//            ActorDestroyListener, Actor, BulletGeneric, DrawEnv, 
+//            CollideEnv, DreamEnv, InterpolateAdapter, MeshShared, 
+//            GObj, LightEnv, ActorSoundListener, LightEnvXY, 
+//            DrawEnvXY, CollideEnvXY, DreamEnvXY, EngineProfile, 
+//            Renders, Landscape
 
 public class Engine
 {
@@ -63,13 +60,12 @@ public class Engine
     {
         return cur.targets;
     }
-    
-//TODO: For RWR
+
     public static List missiles()
     {
         return cur.missiles;
     }
-    
+
     public static List countermeasures()
     {
         return cur.countermeasures;
@@ -149,16 +145,15 @@ public class Engine
         for(int j = 0; j < i; j++)
         {
             Actor actor = (Actor)list.get(j);
-            if(!Actor.isValid(actor) || (actor.flags & 0x4000) != 0)
-                continue;
-            try
-            {
-                actor.destroy();
-            }
-            catch(Exception exception)
-            {
-                printDebug(exception);
-            }
+            if(Actor.isValid(actor) && (actor.flags & 0x4000) == 0)
+                try
+                {
+                    actor.destroy();
+                }
+                catch(Exception exception)
+                {
+                    printDebug(exception);
+                }
         }
 
         list.clear();
@@ -199,11 +194,8 @@ public class Engine
             bulletgeneric.nextBullet = null;
         }
         targets.clear();
-//TODO: For RWR
         missiles.clear();
-        
         countermeasures.clear();
-        
         ArrayList arraylist = new ArrayList();
         cur.drawEnv.resetGameClear();
         cur.collideEnv.resetGameClear();
@@ -244,11 +236,8 @@ public class Engine
         collideEnv = new CollideEnvXY();
         dreamEnv = new DreamEnvXY();
         targets = new ArrayList();
-//TODO: For RWR
         missiles = new ArrayList();
-        
         countermeasures = new ArrayList();
-        
         worldAcoustics = null;
         soundListener = null;
         interpolateAdapter = new InterpolateAdapter();
@@ -283,11 +272,8 @@ public class Engine
     public CollideEnv collideEnv;
     public DreamEnv dreamEnv;
     protected ArrayList targets;
-//TODO: for RWR
     protected ArrayList missiles;
-    
     protected ArrayList countermeasures;
-    
     private Acoustics worldAcoustics;
     protected ActorSoundListener soundListener;
     private Renders rendersMain;
