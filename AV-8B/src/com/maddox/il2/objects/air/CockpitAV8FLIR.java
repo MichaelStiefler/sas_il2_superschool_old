@@ -65,20 +65,22 @@ public class CockpitAV8FLIR extends CockpitGunner
     private float v1;
     private float h1;
 
-    public void laser(Orient orient)
+    public void laser(Orient orient)// Laser designator
     {
         Orient orient2 = new Orient();
         Point3d point3d = new Point3d();
         ((AV_8)aircraft()).pos.getAbs(point3d, orient2);       
         float roll = orient2.getRoll();
-        float yaw = orient2.getYaw();
         float fn = orient2.getPitch();
+        float antiroll = 360F - roll;
         float pitch = 0F;
     	if(fn>90F)
     		pitch = fn - 360F;
     	if(fn<90F)
     		pitch = fn;   	
-    	super.mesh.chunkSetAngles("baseflir", 0.0F, -pitch, roll);   	
+    	super.mesh.chunkSetAngles("baseflir", 0.0F, -pitch, roll);
+    	//super.mesh.chunkSetAngles("baseflir2", -antiroll, 0.0F, 0.0F);
+    	//HUD.log(AircraftHotKeys.hudLogWeaponId, "roll " + 0.0F);
         float f = orient.getYaw() - orient2.getYaw() + 90F;
         if(f > 360F)
             f -= 360F;
@@ -94,7 +96,7 @@ public class CockpitAV8FLIR extends CockpitGunner
         else
         if(f > 270F && f <= 360F)
             f = (float)Math.sqrt(Math.pow(f - 360F, 2D));
-        float f2 = orient.getPitch() - (orient2.getPitch())*0.01F - 265.75F;        
+        float f2 = orient.getPitch() - (orient2.getPitch())*0.01F - 270F;        
         if(f2 > 360F)
             f2 -= 360F;
         else
@@ -116,10 +118,31 @@ public class CockpitAV8FLIR extends CockpitGunner
         if(f1 > 180F && f1 <= 270F)
             spot1.set(point3d.x - dY, point3d.y - dX, 0.0D);
         else
-            spot1.set(point3d.x - dY, point3d.y + dX, 0.0D);       
-        //HUD.log(AircraftHotKeys.hudLogWeaponId, "test " + (d1 - d3));
+            spot1.set(point3d.x - dY, point3d.y + dX, 0.0D);              
         float y = 0F;
         float t = 0F;
+        Point3d laser = new Point3d();
+    	laser.set(((AV_8)aircraft()).spot);
+    	laser.sub(point3d);        	
+        double d1 = ((Tuple3d) ((Point3d)laser)).y;
+        double d2 = ((Tuple3d) ((Point3d)laser)).x;
+        double d3 = ((Tuple3d) ((Point3d)laser)).z;
+        double radius = Math.abs(Math.sqrt(d1*d1 + d2*d2));
+        t = 269.35F - (float)Math.toDegrees(Math.atan(radius/d3)) + 1.9F;
+        float te = 0F;
+        float x = orient2.getYaw();
+        if(x<=0F)
+        	te = 180F + x;
+        if(x>0)
+        	te = x + 180F;            
+        if(f1 > 90F && f1 <= 180F)
+        y = -(float)Math.toDegrees(Math.atan(d1/d2)) + orient2.getYaw(); else
+        if(f1 > 180F && f1 <= 270F)
+        y = -(float)Math.toDegrees(Math.atan(d1/d2)) + te; else
+        if(f1 > 270F && f1 <= 360F)
+        y = -(float)Math.toDegrees(Math.atan(d1/d2)) + te; else
+        if(f1 > 0F && f1 <= 90F)	
+        y = -(float)Math.toDegrees(Math.atan(d1/d2)) + orient2.getYaw();
         if(!((AV_8)aircraft()).hold)
         {          
            ((AV_8)aircraft()).spot.set(spot1);          
@@ -127,37 +150,16 @@ public class CockpitAV8FLIR extends CockpitGunner
            this.h = 0F;
            this.v1 = 0F;
            this.h1 = 0F;
-           y = orient.getYaw();
-           t = orient.getTangage(); 
            ((AV_8)aircraft()).azimult = 0F;
            ((AV_8)aircraft()).tangate = 0F;
         }
         if(((AV_8)aircraft()).hold)
         {
         	((Tuple3d) ((Point3d)((AV_8)aircraft()).spot)).y += -ta;
-        	((Tuple3d) ((Point3d)((AV_8)aircraft()).spot)).x += aa;
-        	Point3d laser = new Point3d();
-        	laser.set(((AV_8)aircraft()).spot);
-        	laser.sub(point3d);
-        	//Aircraft ownaircraft = World.getPlayerAircraft();
-        	//Orient orientAC = ((Actor) (ownaircraft)).pos.getAbsOrient();
-        	//orientAC.transformInv(laserP);
-            double d1 = ((Tuple3d) ((Point3d)laser)).y;
-            double d2 = ((Tuple3d) ((Point3d)laser)).x;
-            double d3 = ((Tuple3d) ((Point3d)laser)).z;
-            //y = -(float)Math.toDegrees(Math.atan(d1/d2));
-            double range = Math.abs(Math.sqrt(d2*d2 + d3*d3));
-            double radius = Math.abs(Math.sqrt(d1*d1 + d2*d2));
-            //if(f1 > 0.0F && f1 <= 180F)
-            t = 270F - (float)Math.toDegrees(Math.atan(radius/d3));
-            //if(f1 > 180.0F && f1 <= 360F)
-            //t = -80 + (float)Math.toDegrees(Math.atan(d2/d3));	
-            y = orient.getYaw();
-            //t = orient.getTangage();                     
+        	((Tuple3d) ((Point3d)((AV_8)aircraft()).spot)).x += aa;        	
         }
         super.mesh.chunkSetAngles("Turret1A", y, 180F, 180F);
-        super.mesh.chunkSetAngles("Turret1B", 180F, -t, 180F);
-        //HUD.log(AircraftHotKeys.hudLogWeaponId, "test " + ((Tuple3d) ((Point3d)((AV_8)aircraft()).spot)).x);
+        super.mesh.chunkSetAngles("Turret1B", 180F, -t, 180F);              
     }
 
     public void clipAnglesGun(Orient orient)

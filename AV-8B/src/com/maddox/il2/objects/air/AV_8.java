@@ -123,6 +123,7 @@ public class AV_8 extends Scheme1
         tangate = 0F;
         azimult = 0f;
         tf = 0L;
+        APmode1=false;
     }
     
     public float Fuelamount;
@@ -140,8 +141,8 @@ public class AV_8 extends Scheme1
     {
         super.auxPressed(i);
         if(i == 20)
-        {       		
-           targetnum++;            
+        {       		                     
+        	   targetnum++;   
         }
         if(i == 21)
         {       		
@@ -211,7 +212,8 @@ public class AV_8 extends Scheme1
         
     public boolean hold;
     private long t1;
-    public int lockmode; 
+    public int lockmode;
+    private boolean APmode1;
     
     private void laser(Point3d point3d)
     {
@@ -228,12 +230,13 @@ public class AV_8 extends Scheme1
         for(int j = 0; j < i; j++)
         {
             Actor actor = (Actor)list.get(j);
-            if(((actor instanceof Aircraft) || (actor instanceof ArtilleryGeneric) || (actor instanceof CarGeneric) || (actor instanceof TankGeneric)) && !(actor instanceof StationaryGeneric) && !(actor instanceof TypeLaserSpotter) && actor.pos.getAbsPoint().distance(pos.getAbsPoint()) < 20000D)
+            if(((actor instanceof Aircraft) || (actor instanceof ArtilleryGeneric) || (actor instanceof CarGeneric) || (actor instanceof TankGeneric)) && !(actor instanceof StationaryGeneric) && !(actor instanceof TypeLaserSpotter) && actor.pos.getAbsPoint().distance(pos.getAbsPoint()) < 30000D)
             {
                 Point3d point3d = new Point3d();
                 Orient orient = new Orient();
                 actor.pos.getAbs(point3d, orient);
                 l.set(point3d, orient);
+                //Eff3DActor eff3dactor = Eff3DActor.New(actor, null, new Loc(), 1.0F, "effects/Explodes/Air/Zenitka/Germ_88mm/Glow.eff", 1.0F);
                 Eff3DActor eff3dactor = Eff3DActor.New(actor, null, new Loc(), 1.0F, "effects/Explodes/Air/Zenitka/Germ_88mm/Glow.eff", 1.0F);
                 eff3dactor.postDestroy(Time.current() + 1500L);
                 LightPointActor lightpointactor = new LightPointActor(new LightPointWorld(), new Point3d());
@@ -322,12 +325,26 @@ public class AV_8 extends Scheme1
 
     public void typeBomberAdjAltitudeReset()
     {
-        
+    	
     }
 
     public void typeBomberAdjAltitudePlus()
     {
-        
+    	if(FLIR)
+        {
+     	   if(!APmode1)
+            {
+                APmode1 = true;
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Altitude Hold Engaged");
+                ((FlightModelMain) (super.FM)).AP.setStabAltitude(2000F);
+            } else
+            if(APmode1)
+            {
+                APmode1 = false;
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Altitude Hold Released");
+                ((FlightModelMain) (super.FM)).AP.setStabAltitude(false);
+            }
+        }
     }
 
     public void typeBomberAdjAltitudeMinus()
@@ -551,6 +568,8 @@ public class AV_8 extends Scheme1
                 ((FlightModelMain) (super.FM)).CT.AirBrakeControl = 0.0F; 
         if(FLIR)
             FLIR();
+        if(!FLIR)
+        	((FlightModelMain) (super.FM)).AP.setStabAltitude(false);
     }
 
     private final void UpdateLightIntensity()
@@ -723,7 +742,7 @@ public class AV_8 extends Scheme1
     {
         float fy = (f <= 0.5F ? Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, 90.0F) : Aircraft.cvt(f, 0.8F, 1.0F, 90.0F, 0.0F));  
         float fx = (f <= 0.5F ? Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, 6.0F) : Aircraft.cvt(f, 0.8F, 1.0F, 6.0F, 0.0F));
-    	hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.6F, 0.0F, -91F));
+    	hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.3F, 0.8F, 0.0F, -91F));
         hiermesh.chunkSetAngles("GearC7_D0", fx, -fy, 0.0F);
         hiermesh.chunkSetAngles("GearC8_D0", -fx, fy, 0.0F);
         hiermesh.chunkSetAngles("GearC9_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, 90F), 0.0F);
@@ -1348,11 +1367,11 @@ label0:
         {
         	if(((FlightModelMain) (super.FM)).CT.getGear() > 0.2F)
         	{
-                ((FlightModelMain) (super.FM)).CT.arrestorControl = 1.0F;
+                ((FlightModelMain) (super.FM)).CT.VarWingControl = 0.6F;
         	}
         	if(((FlightModelMain) (super.FM)).CT.getGear() < 0.2F)
         	{
-                ((FlightModelMain) (super.FM)).CT.arrestorControl = 0.0F;
+                ((FlightModelMain) (super.FM)).CT.VarWingControl = 0.0F;
         	}
         }
         if(super.FM.getSpeed() > 300F)
@@ -1471,9 +1490,9 @@ label0:
             if(avW > 60F)
             {
                 Vector3f eVect = new Vector3f();
-                eVect.x =(-(((FlightModelMain) (super.FM)).CT.getElevator() + ((FlightModelMain) (super.FM)).CT.getTrimElevatorControl())) * 0.3F;
+                eVect.x =(-(((FlightModelMain) (super.FM)).CT.getElevator() + ((FlightModelMain) (super.FM)).CT.getTrimElevatorControl())) * 0.3F + (1F - vtolvect);
                 eVect.y =(-(((FlightModelMain) (super.FM)).CT.getAileron() + ((FlightModelMain) (super.FM)).CT.getTrimRudderControl())) * 0.3F;
-                eVect.z = 1.5F;
+                eVect.z = 1.5F * vtolvect;
                 eVect.normalize();
                 ((FlightModelMain) (super.FM)).EI.engines[0].setVector(eVect);              
                 ((FlightModelMain) (super.FM)).Or.increment((((FlightModelMain) (super.FM)).CT.getRudder() + ((FlightModelMain) (super.FM)).CT.getTrimRudderControl()) * 0.3F, (((FlightModelMain) (super.FM)).CT.getElevator() + ((FlightModelMain) (super.FM)).CT.getTrimElevatorControl()) * 0.3F, (((FlightModelMain) (super.FM)).CT.getAileron() + ((FlightModelMain) (super.FM)).CT.getTrimAileronControl()) * 0.3F);
@@ -1546,16 +1565,20 @@ label0:
 		}
     }
     
-    public void moveArrestorHook(float f) //TODO VTOL
-    {        
-        hierMesh().chunkSetAngles("nozzole3", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, 90F));
+    private float vtolvect;
+    
+    //TODO VTOL
+  	protected void moveVarWing(float f)
+  	{
+  		hierMesh().chunkSetAngles("nozzole3", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, 90F));
         hierMesh().chunkSetAngles("nozzole4", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, 90F));
         hierMesh().chunkSetAngles("nozzole1", 0.0F, 0.0F, Aircraft.cvt(f, 0.5F, 1.0F, 0.0F, 90F));
-        hierMesh().chunkSetAngles("nozzole2", 0.0F, 0.0F, Aircraft.cvt(f, 0.5F, 1.0F, 0.0F, 90F));
-        if(f > 0.7F)
+        hierMesh().chunkSetAngles("nozzole2", 0.0F, 0.0F, Aircraft.cvt(f, 0.5F, 1.0F, 0.0F, 90F));       
+        if(f > 0.49F)
         {
         	nozzlemode = 1;
         	nozzleswitch = true;
+        	vtolvect = f;
         } else
         {
         	nozzlemode = 0;        	
@@ -1570,7 +1593,7 @@ label0:
         	f1 = 0.5F;
         vectorthrustz = f1;
         vectorthrustx = 0.5F * f;
-    }
+  	}
     
     private long tnozzle;
     
