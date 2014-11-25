@@ -278,7 +278,7 @@ public class AV_8 extends Scheme1
     public void typeBomberAdjDistancePlus()
     {
     	if(this.FLIR)
-    		this.azimult += 2F;
+    		this.azimult += 0.5F;
     		tf = Time.current();
     	//HUD.log(AircraftHotKeys.hudLogWeaponId, "range " + azimult);
     }
@@ -286,7 +286,7 @@ public class AV_8 extends Scheme1
     public void typeBomberAdjDistanceMinus()
     {
     	if(this.FLIR)
-    		this.azimult -= 2F;
+    		this.azimult -= 0.5F;
     		tf = Time.current();
     	//HUD.log(AircraftHotKeys.hudLogWeaponId, "range " + azimult);
     }
@@ -294,14 +294,14 @@ public class AV_8 extends Scheme1
     public void typeBomberAdjSideslipReset()
     {
     	if(this.FLIR)
-    		this.tangate = 0F;
+    		this.tangate = 0.5F;
     	//HUD.log(AircraftHotKeys.hudLogWeaponId, "range " + tangate);
     }
 
     public void typeBomberAdjSideslipPlus()
     {
     	if(this.FLIR)
-    		this.tangate += 2F;
+    		this.tangate += 0.5F;
     		tf = Time.current();
     	//HUD.log(AircraftHotKeys.hudLogWeaponId, "range " + tangate);
     }
@@ -309,14 +309,14 @@ public class AV_8 extends Scheme1
     public void typeBomberAdjSideslipMinus()
     {
     	if(this.FLIR)
-    		this.tangate -= 2F;
+    		this.tangate -= 0.5F;
     		tf = Time.current();
     	//HUD.log(AircraftHotKeys.hudLogWeaponId, "range " + tangate);
     }
     
     public void updatecontrollaser()
     {
-    	if(tf + 10L <= Time.current())
+    	if(tf + 5L <= Time.current())
     	{
     		this.tangate = 0F;
     		this.azimult = 0F;
@@ -729,10 +729,11 @@ public class AV_8 extends Scheme1
     private boolean bDynamoRotary;
     private int pk;
     
-    protected void moveAirBrake(float f)
+    protected void moveAirBrake(float f)//TODO
     {
-        hierMesh().chunkSetAngles("Airbrake_D0", 0.0F, 0.0F, -45F * f);
-        hierMesh().chunkSetAngles("Airbrake2_D0", 0.0F, 0.0F, 22F * f);
+        float f1 = (((FlightModelMain) (super.FM)).CT.GearControl > 0.5F ? 25F : 50F);
+    	hierMesh().chunkSetAngles("Airbrake_D0", 0.0F, 0.0F, f1 * f);
+        hierMesh().chunkSetAngles("Airbrake2_D0", 0.0F, 0.0F, -70F * f);
         resetYPRmodifier();
         Aircraft.xyz[1] = Aircraft.cvt(f, 0.0F, 1.0F, 0.0F, 0.14F);
         hierMesh().chunkSetLocate("Airbrake21_D0", Aircraft.xyz, Aircraft.ypr);   
@@ -742,29 +743,31 @@ public class AV_8 extends Scheme1
     {
         float fy = (f <= 0.5F ? Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, 90.0F) : Aircraft.cvt(f, 0.8F, 1.0F, 90.0F, 0.0F));  
         float fx = (f <= 0.5F ? Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, 6.0F) : Aircraft.cvt(f, 0.8F, 1.0F, 6.0F, 0.0F));
-    	hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.3F, 0.8F, 0.0F, -91F));
+    	hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.3F, 0.8F, 0.0F, -95F));
         hiermesh.chunkSetAngles("GearC7_D0", fx, -fy, 0.0F);
         hiermesh.chunkSetAngles("GearC8_D0", -fx, fy, 0.0F);
         hiermesh.chunkSetAngles("GearC9_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, 90F), 0.0F);
         hiermesh.chunkSetAngles("GearC10_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, -90F), 0.0F);
         hiermesh.chunkSetAngles("GearC11_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, -90F));
-        hiermesh.chunkSetAngles("GearB2_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, 100F));
-        hiermesh.chunkSetAngles("GearB5_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, 85F));
-        hiermesh.chunkSetAngles("GearB6_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, -40F));
-        hiermesh.chunkSetAngles("GearB7_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, 90F), 0.0F);
-        hiermesh.chunkSetAngles("GearB8_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, 90F), 0.0F);
+        hiermesh.chunkSetAngles("GearB2_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.7F, 0.0F, 115F));
+        hiermesh.chunkSetAngles("GearB5_D0", 0.0F, Aircraft.cvt(f, 0.0F, 0.7F, 0.0F, 90F), 0.0F);
+        hiermesh.chunkSetAngles("GearB6_D0", 0.0F, Aircraft.cvt(f, 0.0F, 0.7F, 0.0F, -90F), 0.0F);
+        hiermesh.chunkSetAngles("GearB7_D0", 0.0F, fy, 0.0F);
+        hiermesh.chunkSetAngles("GearB8_D0", 0.0F, fy, 0.0F);
         hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, 85F));
-        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, 85F));              
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, 85F));
+        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, -90F), 0.0F);
+        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, -90F), 0.0F);
+        hiermesh.chunkSetAngles("GearL5_D0", 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, 90F), 0.0F);
+        hiermesh.chunkSetAngles("GearR5_D0", 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, 90F), 0.0F);
+        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, 45F));
+        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, 45F));
     }
 
     protected void moveGear(float f)
     {
         moveGear(hierMesh(), f);
-        resetYPRmodifier();
-        Aircraft.xyz[1] = Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, 0.17F);
-        Aircraft.xyz[2] = Aircraft.cvt(f, 0.6F, 0.8F, 0.0F, 0.02F);
-        hierMesh().chunkSetLocate("GearL4_D0", Aircraft.xyz, Aircraft.ypr);
-        hierMesh().chunkSetLocate("GearR4_D0", Aircraft.xyz, Aircraft.ypr);
+        resetYPRmodifier();       
     }
 
     public void moveWheelSink()
@@ -829,9 +832,16 @@ public class AV_8 extends Scheme1
 
     protected void moveFlap(float f)
     {
-        float f1 = 38F * f;
+        float f1 = 35F * f;
+        float f2 = Aircraft.cvt(f, 0.5F, 1.0F, 0.0F, 18F);
         hierMesh().chunkSetAngles("Flap1_D0", 0.0F, 0.0F, f1);
         hierMesh().chunkSetAngles("Flap2_D0", 0.0F, 0.0F, f1);
+        hierMesh().chunkSetAngles("Flap12_D0", 0.0F, 0.0F, f2);
+        hierMesh().chunkSetAngles("Flap22_D0", 0.0F, 0.0F, f2);
+        resetYPRmodifier();
+        Aircraft.xyz[1] = Aircraft.cvt(f, 0.5F, 0.8F, 0.0F, 0.2F);
+        hierMesh().chunkSetLocate("Flap21_D0", Aircraft.xyz, Aircraft.ypr);       
+        hierMesh().chunkSetLocate("Flap11_D0", Aircraft.xyz, Aircraft.ypr);
     }
 
     protected void hitBone(String s, Shot shot, Point3d point3d)
@@ -1312,20 +1322,28 @@ label0:
                     	if(nozzlemode == 1)
                         	((FlightModelMain) (super.FM)).AS.setSootState(this, i, 5);
                             else
-                            ((FlightModelMain) (super.FM)).AS.setSootState(this, i, 6);
+                            {((FlightModelMain) (super.FM)).AS.setSootState(this, i, 6);
+                    		Eff3DActor.finish(jet1);
+                    		Eff3DActor.finish(jet2);}
                     } else
                     if(((FlightModelMain) (super.FM)).EI.engines[i].getPowerOutput() > 0.55F && ((FlightModelMain) (super.FM)).EI.engines[i].getPowerOutput() < 0.85F)
                     {
                     	if(nozzlemode == 1)
                     	((FlightModelMain) (super.FM)).AS.setSootState(this, i, 3);
                         else
-                        ((FlightModelMain) (super.FM)).AS.setSootState(this, i, 4);	
+                        {((FlightModelMain) (super.FM)).AS.setSootState(this, i, 4);
+                    	Eff3DActor.finish(jet1);
+                        Eff3DActor.finish(jet2);}
                     }	
                     else
-                        ((FlightModelMain) (super.FM)).AS.setSootState(this, i, 2);
+                        {((FlightModelMain) (super.FM)).AS.setSootState(this, i, 2);
+                    	Eff3DActor.finish(jet1);
+                    	Eff3DActor.finish(jet2);}
                 } else
                 {
-                    ((FlightModelMain) (super.FM)).AS.setSootState(this, i, 0);
+                    {((FlightModelMain) (super.FM)).AS.setSootState(this, i, 0);
+                    Eff3DActor.finish(jet1);
+                    Eff3DActor.finish(jet2);}
                 }               
             }
             if(super.FM instanceof RealFlightModel)
@@ -1478,12 +1496,13 @@ label0:
         { 	       
         if((super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode() || !(super.FM instanceof Pilot))
         {
+        if(((FlightModelMain) (super.FM)).CT.getAirBrake()>0.1){
         if(super.FM.getAltitude() > 0.0F && (double)super.FM.getSpeedKMH() >= 80D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
                 ((FlightModelMain) (super.FM)).producedAF.x -= 3200D;   
         if(super.FM.getAltitude() > 0.0F && (double)super.FM.getSpeedKMH() >= 200D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
                 ((FlightModelMain) (super.FM)).producedAF.x -= 5300D;        
         if(super.FM.getAltitude() > 0.0F && (double)super.FM.getSpeedKMH() >= 300D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-                ((FlightModelMain) (super.FM)).producedAF.x -= 10000D;       
+                ((FlightModelMain) (super.FM)).producedAF.x -= 10000D;}       
         if(super.FM.getAltitude() > 0.0F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
         	((FlightModelMain) (super.FM)).producedAF.z += (700F - (double)((FlightModelMain) (super.FM)).getAltitude()) * 3D * ((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput();
         	float avW = ((FlightModelMain) (super.FM)).EI.engines[0].getw()/ 2.0F;
@@ -1574,7 +1593,7 @@ label0:
         hierMesh().chunkSetAngles("nozzole4", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, 90F));
         hierMesh().chunkSetAngles("nozzole1", 0.0F, 0.0F, Aircraft.cvt(f, 0.5F, 1.0F, 0.0F, 90F));
         hierMesh().chunkSetAngles("nozzole2", 0.0F, 0.0F, Aircraft.cvt(f, 0.5F, 1.0F, 0.0F, 90F));       
-        if(f > 0.49F)
+        if(f > 0.3F)
         {
         	nozzlemode = 1;
         	nozzleswitch = true;
@@ -1586,7 +1605,7 @@ label0:
         if(f<0.1F)
         {
         	nozzleswitch = false;
-        	tnozzle = Time.current() + 4000L;
+        	tnozzle = Time.current() + 8000L;
         }
         float f1 = f * 4F;
         if(f1 > 0.5F)
@@ -1600,6 +1619,8 @@ label0:
     public void moveRefuel(float f) 
     {
     	hierMesh().chunkSetAngles("Refillrod1", Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, 15F), 0.0F, 0.0F);
+    	hierMesh().chunkSetAngles("Refillrod3", 0.0F, Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, 75F), 0.0F);
+    	hierMesh().chunkSetAngles("Refillrod4", 0.0F, Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, -165F), 0.0F);
     	Aircraft.xyz[1] = Aircraft.cvt(f, 0.0F, 1.0F, 0.0F, -0.9F);
         hierMesh().chunkSetLocate("Refillrod2", Aircraft.xyz, Aircraft.ypr);
     }
