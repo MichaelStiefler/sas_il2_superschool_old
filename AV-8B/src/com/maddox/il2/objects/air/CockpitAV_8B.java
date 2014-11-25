@@ -288,6 +288,8 @@ public class CockpitAV_8B extends CockpitPilot
         aoaWarnFX2 = aircraft().newSound("aircraft.AOA_Mid", false);
         aoaWarnFX3 = aircraft().newSound("aircraft.AOA_Fast", false);
         aoaWarnFX4 = aircraft().newSound("aircraft.AOA_Stall", false);
+        PullupWarn = aircraft().newSound("aircraft.Pullup", false);
+        AltitudeWarn = aircraft().newSound("aircraft.Altitude", false);
         hudPitchRudderStr = new String[37];
         for(int i = 18; i >= 0; i--)
             hudPitchRudderStr[i] = "Z_Z_HUD_PITCH" + (90 - i * 5);
@@ -323,6 +325,7 @@ public class CockpitAV_8B extends CockpitPilot
         light1.light.setColor(0F, 300.0F,0.0F);
         light1.light.setEmit(0.0F, 0.0F);
         pos.base().draw.lightMap().put("LAMPHOOK1", light1);
+        tw = 0L;
     }
     
     private LightPointActor light1;
@@ -1852,7 +1855,9 @@ public class CockpitAV_8B extends CockpitPilot
 
     protected void drawSound(float f)
     {
-        if(aoaWarnFX != null)
+        if(((AV_8) aircraft()).nozzlemode == 0)
+        {	
+    	if(aoaWarnFX != null)
             if(setNew.fpmPitch >= 9.7F && setNew.fpmPitch < 12F && ((FlightModelMain) (super.fm)).Gears.nOfGearsOnGr < 1)
             {
                 if(!aoaWarnFX.isPlaying())
@@ -1888,7 +1893,29 @@ public class CockpitAV_8B extends CockpitPilot
             {
                 aoaWarnFX4.cancel();
             }
+        if(AltitudeWarn != null)
+        {	
+        if((((FlightModelMain) (fm)).getAltitude()<550F && ((FlightModelMain) (fm)).getVertSpeed() < -70F) || (((FlightModelMain) (fm)).getAltitude()<100F && ((FlightModelMain) (super.fm)).CT.getGear() < 0.999999F))
+        {
+        	if((((FlightModelMain) (fm)).Or.getPitch() - 360F) < -22F)
+        	{
+        			PullupWarn.start();
+        			AltitudeWarn.stop();
+        	} else
+        	{	
+        			AltitudeWarn.start();
+        			PullupWarn.stop();
+        	}
+        } else
+        {
+        	AltitudeWarn.stop();
+        	PullupWarn.stop();
+        }
+        }
+        }
     }
+    
+    private long tw;
 
     public float normalizeDegree(float f)
     {
@@ -2046,6 +2073,8 @@ public class CockpitAV_8B extends CockpitPilot
     private SoundFX aoaWarnFX2;
     private SoundFX aoaWarnFX3;
     private SoundFX aoaWarnFX4;
+    private SoundFX PullupWarn;
+    private SoundFX AltitudeWarn;
     private String hudPitchRudderStr[];
     private Gun gun[];
     private float alpha;

@@ -91,7 +91,7 @@ public class MGunGAU12U extends MGunVYas
         gunproperties.sprite = "3DO/Effects/GunFire/20mm/GunFlare.eff";
         gunproperties.smoke = "effects/smokes/CannonTank.eff";
         gunproperties.shells = null;
-        gunproperties.sound = "weapon.Gau4";
+        gunproperties.sound = "weapon.Gau12";
         gunproperties.emitColor = new Color3f(1.0F, 1.0F, 0.0F);
         gunproperties.emitI = 2.5F;
         gunproperties.emitR = 1.5F;
@@ -99,7 +99,7 @@ public class MGunGAU12U extends MGunVYas
         gunproperties.aimMinDist = 10F;
         gunproperties.aimMaxDist = 2000F;
         gunproperties.weaponType = 3;
-        gunproperties.maxDeltaAngle = 0.65F;
+        gunproperties.maxDeltaAngle = 0.25F;
         //gunproperties.shotFreqDeviation = 0.03F;
         gunproperties.shotFreq = 80.0F;
         gunproperties.traceFreq = 8;
@@ -108,10 +108,10 @@ public class MGunGAU12U extends MGunVYas
         gunproperties.bullet = (new BulletProperties[] {
             new BulletProperties()
         });
-        gunproperties.bullet[0].massa = 0.125F;
+        gunproperties.bullet[0].massa = 0.055F;
         gunproperties.bullet[0].kalibr = 0.0003545F;
         gunproperties.bullet[0].speed = 1050F;
-        gunproperties.bullet[0].power = 0.0085F;
+        gunproperties.bullet[0].power = 0.0165F;
         gunproperties.bullet[0].powerType = 0;
         gunproperties.bullet[0].powerRadius = 0.5F;
         gunproperties.bullet[0].traceMesh = "3do/effects/tracers/20mmYellow/mono.sim";

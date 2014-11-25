@@ -143,6 +143,7 @@ public class CockpitAV8FLIR extends CockpitGunner
         y = -(float)Math.toDegrees(Math.atan(d1/d2)) + te; else
         if(f1 > 0F && f1 <= 90F)	
         y = -(float)Math.toDegrees(Math.atan(d1/d2)) + orient2.getYaw();
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "roll " + y);
         if(!((AV_8)aircraft()).hold)
         {          
            ((AV_8)aircraft()).spot.set(spot1);          
