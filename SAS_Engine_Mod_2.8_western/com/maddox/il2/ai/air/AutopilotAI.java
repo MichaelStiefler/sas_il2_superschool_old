@@ -48,7 +48,7 @@ public class AutopilotAI extends Autopilotage {
 //	private float oldEvdecrease = 0F;
 	private float newEv = 0F;
 
-//	private boolean bLogDetail = false;
+//	private boolean bLogDetail = true;
 
 	public AutopilotAI(FlightModel flightmodel) {
 		WPoint = new Point3d();
@@ -232,7 +232,7 @@ public class AutopilotAI extends Autopilotage {
 						FM.CT.FlapsControl = 0.0F;
 						way.setCur(1);
 					}
-					if (way.Cur() > 3 && FM.getSpeed() > way.curr().getV() * 1.8F) {
+					if (way.Cur() > 3 && FM.getSpeed() > way.curr().getV() * 1.8F && ((Aircraft) FM.actor) instanceof TypeFastJet) {
 						FM.CT.FlapsControl = 0.0F;
 						way.setCur(1);
 					}
