@@ -10,10 +10,10 @@ import com.maddox.rts.Property;
 // Referenced classes of package com.maddox.il2.objects.weapons:
 //            RocketGun
 
-public class RocketGunAGM65D extends RocketGun
+public class RocketGunAGM65Ds extends RocketGun
 {
 
-    public RocketGunAGM65D()
+    public RocketGunAGM65Ds()
     {
     }
 
@@ -25,7 +25,7 @@ public class RocketGunAGM65D extends RocketGun
 
     static 
     {
-        Class class1 = com.maddox.il2.objects.weapons.RocketGunAGM65D.class;
+        Class class1 = com.maddox.il2.objects.weapons.RocketGunAGM65Ds.class;
         Property.set(class1, "bulletClass", (Object) com.maddox.il2.objects.weapons.AGM65D.class);
         Property.set(class1, "bullets", 1);
         Property.set(class1, "shotFreq", 4.0F);
