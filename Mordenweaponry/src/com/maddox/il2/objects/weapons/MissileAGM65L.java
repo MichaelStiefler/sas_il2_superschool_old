@@ -35,7 +35,7 @@ public class MissileAGM65L extends Missile {
     {
         float f = Time.tickLenFs();
         float f1 = (float)getSpeed((Vector3d)null);
-        f1 += (320F - f1) * 2.1F * f;
+        f1 += (320F - f1) * 70.1F * f;
         pos.getAbs(p, or);
         v.set(1.0D, 0.0D, 0.0D);
         or.transform(v);
@@ -100,12 +100,12 @@ public class MissileAGM65L extends Missile {
                         deltaTangage = -f2;
                     if(pT.z > 0.10000000000000001D)
                         deltaTangage = f2;
-                    or.increment(50F * f2 * deltaAzimuth, 50F * f2 * deltaTangage, 0.0F);
+                    or.increment(20F * f2 * deltaAzimuth, 20F * f2 * deltaTangage, 10550F * f);
                     deltaAzimuth = deltaTangage = 0.0F;
                 }
             } else
             {
-                or.increment(0.0F, 0.0F, 0.0F);
+                or.increment(0.0F, 0.0F, 10550F * f);
             }
         }
         pos.setAbs(p, or);
@@ -203,7 +203,7 @@ public class MissileAGM65L extends Missile {
 
   static {
     Class class1 = com.maddox.il2.objects.weapons.MissileAGM65L.class;
-    Property.set(class1, "mesh", "3do/arms/AGM65/mono.sim");
+    Property.set(class1, "mesh", "3do/arms/AGM65L/mono.sim");
     Property.set(class1, "sprite", "3do/Effects/RocketSidewinder/RocketSidewinderSmoke.eff");
     Property.set(class1, "flame", "3do/Effects/RocketSidewinder/RocketSidewinderFlame.sim");
     Property.set(class1, "smoke", "EFFECTS/Smokes/SmokeBlack_missiles.eff");

@@ -31,7 +31,7 @@ public class AGM65D extends AGM
     {
         float f = Time.tickLenFs();
         float f1 = (float)getSpeed((Vector3d)null);
-        f1 += (320F - f1) * 0.1F * f;
+        f1 += (320F - f1) * 70.1F * f;
         pos.getAbs(p, or);
         v.set(1.0D, 0.0D, 0.0D);
         or.transform(v);
@@ -97,12 +97,12 @@ public class AGM65D extends AGM
                         deltaTangage = -1F;
                     if(pT.z > 0.10000000000000001D)
                         deltaTangage = 1F;
-                    or.increment(10F * f * deltaAzimuth, 10F * f * deltaTangage, 5520F * f);
+                    or.increment(20F * f * deltaAzimuth, 20F * f * deltaTangage, 10550F * f);
                     deltaAzimuth = deltaTangage = 0.0F;
                 }
             } else
             {
-                or.increment(0.0F, 0.0F, 5520F * f);
+                or.increment(0.0F, 0.0F, 10550F * f);
             }
         }
         pos.setAbs(p, or);
