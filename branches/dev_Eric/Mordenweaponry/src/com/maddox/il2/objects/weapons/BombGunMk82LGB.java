@@ -10,7 +10,7 @@ import com.maddox.rts.Property;
 // Referenced classes of package com.maddox.il2.objects.weapons:
 //            BombGunSC50
 
-public class BombGunMk82LGB extends RocketBombGun
+public class BombGunMk82LGB extends BombGun
 {
 
     public BombGunMk82LGB()

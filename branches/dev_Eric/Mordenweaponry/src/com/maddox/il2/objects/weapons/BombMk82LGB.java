@@ -74,7 +74,7 @@ public class BombMk82LGB extends Bomb
                 {
                     pT.sub(p);
                     or.transformInv(pT);
-                    float f2 = 0.1F;
+                    float f2 = 0.05F;
                     if(p.distance(pT) > 0.0D)
                     {
                         if(pT.y > 0.10000000000000001D)
@@ -85,7 +85,7 @@ public class BombMk82LGB extends Bomb
                             deltaTangage = -f2;
                         if(pT.z > 0.10000000000000001D)
                             deltaTangage = f2;
-                        or.increment(50F * f2 * deltaAzimuth, 50F * f2 * deltaTangage, 0.0F);
+                        or.increment(10F * f2 * deltaAzimuth, 10F * f2 * deltaTangage, 0.0F);
                         deltaAzimuth = deltaTangage = 0.0F;
                     }
                 }

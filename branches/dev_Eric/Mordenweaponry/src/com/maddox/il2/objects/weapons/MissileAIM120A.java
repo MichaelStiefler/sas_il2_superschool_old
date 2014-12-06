@@ -42,8 +42,8 @@ public class MissileAIM120A extends Missile {
 		Property.set(class1, "forceP2", 50F);
 		Property.set(class1, "dragCoefficient", 0.1F);
 		Property.set(class1, "powerType", 0);
-		Property.set(class1, "power", 1.00F);
-		Property.set(class1, "radius", 18.00F);
+		Property.set(class1, "power", 0.80F);
+		Property.set(class1, "radius", 10.00F);
 		Property.set(class1, "kalibr", 0.5F);
 		Property.set(class1, "massa", 152F);
 		Property.set(class1, "massaEnd", 50F);
