@@ -1,7 +1,7 @@
 // Decompiled by DJ v3.10.10.93 Copyright 2007 Atanas Neshkov  Date: 5/17/2012 6:26:12 AM
 // Home Page: http://members.fortunecity.com/neshkov/dj.html  http://www.neshkov.com/dj.html - Check often for new version!
 // Decompiler options: packimports(3) 
-// Source File Name:   FuelTank_Tankyak.java
+// Source File Name:   FuelTank_AV8B.java
 
 package com.maddox.il2.objects.weapons;
 
@@ -31,17 +31,17 @@ import java.util.*;
 // Referenced classes of package com.maddox.il2.objects.weapons:
 //            FuelTank
 
-public class FuelTank_Tankyak extends FuelTank
+public class FuelTank_AV8B extends FuelTank
 {
 
-    public FuelTank_Tankyak()
+    public FuelTank_AV8B()
     {
     }    
 
     static 
     {
-        Class class1 = com.maddox.il2.objects.weapons.FuelTank_Tankyak.class;
-        Property.set(class1, "mesh", "3do/Arms/tankyak/mono.sim");
+        Class class1 = com.maddox.il2.objects.weapons.FuelTank_AV8B.class;
+        Property.set(class1, "mesh", "3do/Arms/TankAV8B/mono.sim");
         Property.set(class1, "kalibr", 0.6F);
         Property.set(class1, "massa", 184F);
     }
