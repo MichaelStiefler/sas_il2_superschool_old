@@ -42,8 +42,8 @@ public class MissileAIM9L extends Missile {
 		Property.set(class1, "forceP2", 50F);
 		Property.set(class1, "dragCoefficient", 0.3F);
 		Property.set(class1, "powerType", 0);
-		Property.set(class1, "power", 1.02F);
-		Property.set(class1, "radius", 12.93F);
+		Property.set(class1, "power", 0.82F);
+		Property.set(class1, "radius", 8.93F);
 		Property.set(class1, "kalibr", 0.2F);
 		Property.set(class1, "massa", 88.5F);
 		Property.set(class1, "massaEnd", 60F);
