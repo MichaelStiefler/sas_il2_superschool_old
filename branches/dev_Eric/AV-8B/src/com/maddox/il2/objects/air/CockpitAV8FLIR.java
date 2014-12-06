@@ -128,7 +128,7 @@ public class CockpitAV8FLIR extends CockpitGunner
         double d2 = ((Tuple3d) ((Point3d)laser)).x;
         double d3 = ((Tuple3d) ((Point3d)laser)).z;
         double radius = Math.abs(Math.sqrt(d1*d1 + d2*d2));
-        t = 269.35F - (float)Math.toDegrees(Math.atan(radius/d3)) + 1.9F;
+        t = 267.8F - (float)Math.toDegrees(Math.atan(radius/d3)) + 1.9F;
         float te = 0F;
         float x = orient2.getYaw();
         if(x<=0F)
@@ -143,6 +143,12 @@ public class CockpitAV8FLIR extends CockpitGunner
         y = -(float)Math.toDegrees(Math.atan(d1/d2)) + te; else
         if(f1 > 0F && f1 <= 90F)	
         y = -(float)Math.toDegrees(Math.atan(d1/d2)) + orient2.getYaw();
+        if(y > 100F && y < 180F)
+        	y = 100F;
+        if(y < 260F && y > 180F)
+        	y = 260F;
+        if((y >= 100F && y < 180F) || (y <= 260F && y > 180F))
+        	((AV_8)aircraft()).hold = false;
         HUD.log(AircraftHotKeys.hudLogWeaponId, "roll " + y);
         if(!((AV_8)aircraft()).hold)
         {          

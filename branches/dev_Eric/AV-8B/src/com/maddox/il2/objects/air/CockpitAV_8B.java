@@ -152,8 +152,10 @@ public class CockpitAV_8B extends CockpitPilot
 				f = 200F;
 			if(((AV_8) aircraft()).radargunsight == 1 && ((AV_8) aircraft()).k14Mode == 1)
 				f = ((AV_8) aircraft()).k14Distance;
+			Point3d pointAC = ((Actor) (World.getPlayerAircraft())).pos.getAbsPoint();
+			float z = (float)((Tuple3d) (pointAC)).z;
 			if((((AV_8) aircraft()).radargunsight == 2 || ((AV_8) aircraft()).radargunsight == 3) && ((AV_8) aircraft()).k14Mode == 1){
-				f = fm.getAltitude()/(float)Math.cos(Math.toRadians(fm.Or.getPitch()-270F)) + 200F;				
+				f = z/(float)Math.cos(Math.toRadians(fm.Or.getPitch()-270F)) + 200F;				
 			}
             setNew.k14w = (5F * CockpitAV_8B.k14TargetWingspanScale[((AV_8)aircraft()).k14WingspanType]) / f;
             setNew.k14w = 0.9F * setOld.k14w + 0.1F * setNew.k14w;
@@ -169,14 +171,14 @@ public class CockpitAV_8B extends CockpitPilot
             f2 += (float)Math.toDegrees(Math.atan(f3 / f));
             setNew.k14x = 0.92F * setOld.k14x + 0.08F * f1;
             setNew.k14y = 0.92F * setOld.k14y + 0.08F * f2;            
-            if(setNew.k14x > 7F)
-                setNew.k14x = 7F;
-            if(setNew.k14x < -7F)
-                setNew.k14x = -7F;
-            if(setNew.k14y > 7F)
-                setNew.k14y = 7F;
-            if(setNew.k14y < -7F)
-                setNew.k14y = -7F;
+            if(setNew.k14x > 9F)
+                setNew.k14x = 9F;
+            if(setNew.k14x < -9F)
+                setNew.k14x = -9F;
+            if(setNew.k14y > 9F)
+                setNew.k14y = 9F;
+            if(setNew.k14y < -9F)
+                setNew.k14y = -9F;
             f = waypointAzimuth();
             setNew.azimuth.setDeg(setOld.azimuth.getDeg(1.0F), ((FlightModelMain) (fm)).Or.azimut());
             if(useRealisticNavigationInstruments())
@@ -450,7 +452,7 @@ public class CockpitAV_8B extends CockpitPilot
 					super.mesh.chunkVisible("Z_Z_missilelock", false);
 				}
 				if(((AV_8) aircraft()).radargunsight == 2){
-					super.mesh.chunkSetAngles("Z_Z_RETICLE", -setNew.k14x*0.55F, -setNew.k14y*0.55F, 0.0F);
+					super.mesh.chunkSetAngles("Z_Z_RETICLE", -setNew.k14x*0.75F, -setNew.k14y*0.75F, 0.0F);
 					super.mesh.chunkVisible("Z_Z_RETICLE", true);
 					super.mesh.chunkVisible("Z_Z_BulletdropL", false);
 					super.mesh.chunkVisible("Z_Z_BulletdropR", false);
@@ -458,7 +460,7 @@ public class CockpitAV_8B extends CockpitPilot
 					super.mesh.chunkVisible("Z_Z_missilelock", false);
 				}
 				if(((AV_8) aircraft()).radargunsight == 3){
-					super.mesh.chunkSetAngles("Z_Z_RETICLE", -setNew.k14x*0.12F, -setNew.k14y*0.12F, 0.0F);
+					super.mesh.chunkSetAngles("Z_Z_RETICLE", -setNew.k14x*0.22F, -setNew.k14y*0.22F, 0.0F);
 					super.mesh.chunkVisible("Z_Z_RETICLE", true);
 					super.mesh.chunkVisible("Z_Z_BulletdropL", false);
 					super.mesh.chunkVisible("Z_Z_BulletdropR", false);
@@ -1988,12 +1990,12 @@ public class CockpitAV_8B extends CockpitPilot
         {
             super.mesh.chunkVisible("Z_Z_NVision", true);
             light1.light.setEmit(0.0060F, 0.6F);
-            ((AV_8)aircraft()).FLIR = true;
+            //((AV_8)aircraft()).FLIR = true;
         } else
         {
             super.mesh.chunkVisible("Z_Z_NVision", false);
             light1.light.setEmit(0.0F, 0.0F);
-            ((AV_8)aircraft()).FLIR = false;
+            //((AV_8)aircraft()).FLIR = false;
         }
     }   
 

@@ -39,7 +39,7 @@ import java.util.List;
 //            Cockpit, PaintScheme, EjectionSeat
 
 public class AV_8 extends Scheme1
-    implements TypeSupersonic, TypeFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeStormovikArmored, TypeRadar, TypeBomber, TypeX4Carrier, TypeLaserSpotter
+    implements TypeSupersonic, TypeFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeRadar, TypeBomber, TypeX4Carrier, TypeLaserSpotter, TypeStormovikArmored
 {
 
     public float getDragForce(float f, float f1, float f2, float f3)
@@ -278,7 +278,7 @@ public class AV_8 extends Scheme1
     public void typeBomberAdjDistancePlus()
     {
     	if(this.FLIR)
-    		this.azimult += 0.5F;
+    		this.azimult += 1.0F;
     		tf = Time.current();
     	//HUD.log(AircraftHotKeys.hudLogWeaponId, "range " + azimult);
     }
@@ -286,22 +286,20 @@ public class AV_8 extends Scheme1
     public void typeBomberAdjDistanceMinus()
     {
     	if(this.FLIR)
-    		this.azimult -= 0.5F;
+    		this.azimult -= 1F;
     		tf = Time.current();
     	//HUD.log(AircraftHotKeys.hudLogWeaponId, "range " + azimult);
     }
 
     public void typeBomberAdjSideslipReset()
     {
-    	if(this.FLIR)
-    		this.tangate = 0.5F;
-    	//HUD.log(AircraftHotKeys.hudLogWeaponId, "range " + tangate);
+    	
     }
 
     public void typeBomberAdjSideslipPlus()
     {
     	if(this.FLIR)
-    		this.tangate += 0.5F;
+    		this.tangate += 1F;
     		tf = Time.current();
     	//HUD.log(AircraftHotKeys.hudLogWeaponId, "range " + tangate);
     }
@@ -309,7 +307,7 @@ public class AV_8 extends Scheme1
     public void typeBomberAdjSideslipMinus()
     {
     	if(this.FLIR)
-    		this.tangate -= 0.5F;
+    		this.tangate -= 1F;
     		tf = Time.current();
     	//HUD.log(AircraftHotKeys.hudLogWeaponId, "range " + tangate);
     }
@@ -369,20 +367,66 @@ public class AV_8 extends Scheme1
     
     public void typeBomberUpdate(float f)
     {
-        
+        if((double)Math.abs(FM.Or.getKren()) > 4.5D)
+        {
+            fSightCurReadyness -= 0.0666666F * f;
+            if(fSightCurReadyness < 0.0F)
+                fSightCurReadyness = 0.0F;
+        }
+        if(fSightCurReadyness < 1.0F)
+            fSightCurReadyness += 0.0333333F * f;
+        else
+        if(bSightAutomation)
+        {
+            fSightCurDistance -= toMetersPerSecond(fSightCurSpeed) * f;
+            if(fSightCurDistance < 0.0F)
+            {
+                fSightCurDistance = 0.0F;
+                typeBomberToggleAutomation();
+            }
+            fSightCurForwardAngle = (float)Math.toDegrees(Math.atan(fSightCurDistance / toMeters(fSightCurAltitude)));
+            if((double)fSightCurDistance < (double)toMetersPerSecond(fSightCurSpeed) * Math.sqrt(toMeters(fSightCurAltitude) * 0.2038736F))
+                bSightBombDump = true;
+            if(bSightBombDump)
+                if(FM.isTick(3, 0))
+                {
+                    if(FM.CT.Weapons[3] != null && FM.CT.Weapons[3][FM.CT.Weapons[3].length - 1] != null && FM.CT.Weapons[3][FM.CT.Weapons[3].length - 1].haveBullets())
+                    {
+                        FM.CT.WeaponControl[3] = true;
+                        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
+                    }
+                } else
+                {
+                    FM.CT.WeaponControl[3] = false;
+                }
+        }
     }
-    
-    public void typeBomberReplicateToNet(NetMsgGuaranted netmsgguaranted)
-            throws IOException
-        {
-            
-        }
 
-        public void typeBomberReplicateFromNet(NetMsgInput netmsginput)
-            throws IOException
-        {
-            
-        }
+    public void typeBomberReplicateToNet(NetMsgGuaranted netmsgguaranted)
+        throws IOException
+    {
+        netmsgguaranted.writeByte((bSightAutomation ? 1 : 0) | (bSightBombDump ? 2 : 0));
+        netmsgguaranted.writeFloat(fSightCurDistance);
+        netmsgguaranted.writeByte((int)fSightCurForwardAngle);
+        netmsgguaranted.writeByte((int)((fSightCurSideslip + 3F) * 33.33333F));
+        netmsgguaranted.writeFloat(fSightCurAltitude);
+        netmsgguaranted.writeByte((int)(fSightCurSpeed / 2.5F));
+        netmsgguaranted.writeByte((int)(fSightCurReadyness * 200F));
+    }
+
+    public void typeBomberReplicateFromNet(NetMsgInput netmsginput)
+        throws IOException
+    {
+        int i = netmsginput.readUnsignedByte();
+        bSightAutomation = (i & 1) != 0;
+        bSightBombDump = (i & 2) != 0;
+        fSightCurDistance = netmsginput.readFloat();
+        fSightCurForwardAngle = netmsginput.readUnsignedByte();
+        fSightCurSideslip = -3F + (float)netmsginput.readUnsignedByte() / 33.33333F;
+        fSightCurAltitude = netmsginput.readFloat();
+        fSightCurSpeed = (float)netmsginput.readUnsignedByte() * 2.5F;
+        fSightCurReadyness = (float)netmsginput.readUnsignedByte() / 200F;
+    }
 
     public void getGFactors(TypeGSuit.GFactors gfactors)
     {
@@ -833,13 +877,13 @@ public class AV_8 extends Scheme1
     protected void moveFlap(float f)
     {
         float f1 = 35F * f;
-        float f2 = Aircraft.cvt(f, 0.5F, 1.0F, 0.0F, 18F);
+        float f2 = Aircraft.cvt(f, 0.0F, 1.0F, 0.0F, 18F);
         hierMesh().chunkSetAngles("Flap1_D0", 0.0F, 0.0F, f1);
         hierMesh().chunkSetAngles("Flap2_D0", 0.0F, 0.0F, f1);
         hierMesh().chunkSetAngles("Flap12_D0", 0.0F, 0.0F, f2);
         hierMesh().chunkSetAngles("Flap22_D0", 0.0F, 0.0F, f2);
         resetYPRmodifier();
-        Aircraft.xyz[1] = Aircraft.cvt(f, 0.5F, 0.8F, 0.0F, 0.2F);
+        Aircraft.xyz[1] = Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, 0.2F);
         hierMesh().chunkSetLocate("Flap21_D0", Aircraft.xyz, Aircraft.ypr);       
         hierMesh().chunkSetLocate("Flap11_D0", Aircraft.xyz, Aircraft.ypr);
     }
@@ -855,7 +899,7 @@ public class AV_8 extends Scheme1
                 if(s.endsWith("p1"))
                 {
                     getEnergyPastArmor(13.350000381469727D / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot);
-                    if(shot.power <= 0.0F)
+                    if(shot.power <= -7.0F)
                         doRicochetBack(shot);
                 } else
                 if(s.endsWith("p2"))
@@ -865,7 +909,7 @@ public class AV_8 extends Scheme1
                 {
                     getEnergyPastArmor((double)World.Rnd().nextFloat(40F, 60F) / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot);
                     ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 2);
-                    if(shot.power <= 0.0F)
+                    if(shot.power <= -7.0F)
                         doRicochetBack(shot);
                 }
             } else
@@ -966,10 +1010,17 @@ public class AV_8 extends Scheme1
                 getEnergyPastArmor(0.05F, shot);
             }
             if(s.startsWith("xcf"))
-                hitChunk("CF", shot);
+            {	
+                hitChunk("CF", shot);         
+            }
             else
             if(s.startsWith("xnose"))
-                hitChunk("Nose", shot);
+            {
+            	if(chunkDamageVisible("Nose") < 2)
+            	hitChunk("Nose", shot);
+            	if(chunkDamageVisible("Tail2") < 2)
+            	hitChunk("Tail2", shot);
+            }    
             else
             if(s.startsWith("xtail"))
             {
@@ -983,14 +1034,7 @@ public class AV_8 extends Scheme1
             } else
             if(s.startsWith("xrudder"))
                 hitChunk("Rudder1", shot);
-            else
-            if(s.startsWith("xstab"))
-            {
-                if(s.startsWith("xstabl") && chunkDamageVisible("StabL") < 2)
-                    hitChunk("StabL", shot);
-                if(s.startsWith("xstabr") && chunkDamageVisible("StabR") < 1)
-                    hitChunk("StabR", shot);
-            } else
+            else            
             if(s.startsWith("xvator"))
             {
                 if(s.startsWith("xvatorl"))
@@ -1000,14 +1044,22 @@ public class AV_8 extends Scheme1
             } else
             if(s.startsWith("xwing"))
             {
-                if(s.startsWith("xwinglin") && chunkDamageVisible("WingLIn") < 3)
+                if(s.startsWith("xwinglin") && chunkDamageVisible("WingLIn") < 2)
                     hitChunk("WingLIn", shot);
-                if(s.startsWith("xwingrin") && chunkDamageVisible("WingRIn") < 3)
+                if(s.startsWith("xwingrin") && chunkDamageVisible("WingRIn") < 2)
                     hitChunk("WingRIn", shot);
                 if(s.startsWith("xwinglmid") && chunkDamageVisible("WingLMid") < 3)
+                {
                     hitChunk("WingLMid", shot);
+                    hitChunk("Flap1", shot);
+                    hitChunk("Flap12", shot);
+                }    
                 if(s.startsWith("xwingrmid") && chunkDamageVisible("WingRMid") < 3)
+                {	
                     hitChunk("WingRMid", shot);
+                    hitChunk("Flap2", shot);
+                    hitChunk("Flap22", shot);
+                }    
                 if(s.startsWith("xwinglout") && chunkDamageVisible("WingLOut") < 3)
                     hitChunk("WingLOut", shot);
                 if(s.startsWith("xwingrout") && chunkDamageVisible("WingROut") < 3)
@@ -1323,8 +1375,7 @@ label0:
                         	((FlightModelMain) (super.FM)).AS.setSootState(this, i, 5);
                             else
                             {((FlightModelMain) (super.FM)).AS.setSootState(this, i, 6);
-                    		Eff3DActor.finish(jet1);
-                    		Eff3DActor.finish(jet2);}
+                    		}
                     } else
                     if(((FlightModelMain) (super.FM)).EI.engines[i].getPowerOutput() > 0.55F && ((FlightModelMain) (super.FM)).EI.engines[i].getPowerOutput() < 0.85F)
                     {
@@ -1332,18 +1383,15 @@ label0:
                     	((FlightModelMain) (super.FM)).AS.setSootState(this, i, 3);
                         else
                         {((FlightModelMain) (super.FM)).AS.setSootState(this, i, 4);
-                    	Eff3DActor.finish(jet1);
-                        Eff3DActor.finish(jet2);}
+                    	}
                     }	
                     else
                         {((FlightModelMain) (super.FM)).AS.setSootState(this, i, 2);
-                    	Eff3DActor.finish(jet1);
-                    	Eff3DActor.finish(jet2);}
+                    	}
                 } else
                 {
                     {((FlightModelMain) (super.FM)).AS.setSootState(this, i, 0);
-                    Eff3DActor.finish(jet1);
-                    Eff3DActor.finish(jet2);}
+}
                 }               
             }
             if(super.FM instanceof RealFlightModel)
@@ -1358,45 +1406,20 @@ label0:
         moveHydraulics(f);
         soundbarier();       
         super.update(f);              
-        int ws = Mission.cur().curCloudsType();
-        float we = Mission.cur().curCloudsHeight() + 500F;
-        //HUD.log(AircraftHotKeys.hudLogWeaponId, "weather" + ws);
-        if(World.getTimeofDay() <= 6.5F || World.getTimeofDay() > 18F || (ws > 4 && this.FM.getAltitude()<we))
-        {
-        	hierMesh().chunkVisible("SlightNose", true);
-        	hierMesh().chunkVisible("SlightTail", true);
-        	hierMesh().chunkVisible("SlightWTopL", true);
-        	hierMesh().chunkVisible("SlightWTopR", true);
-        	hierMesh().chunkVisible("SlightKeel", true);
-        	hierMesh().chunkVisible("SlightWTipL", true);
-        	hierMesh().chunkVisible("SlightWTipR", true);
-        }
-        if((World.getTimeofDay() > 6.5F && World.getTimeofDay() <= 18F && ws <= 4) || (World.getTimeofDay() > 6.5F && World.getTimeofDay() <= 18F && this.FM.getAltitude()>we))
-        {
-        	hierMesh().chunkVisible("SlightNose", false);
-        	hierMesh().chunkVisible("SlightTail", false);
-        	hierMesh().chunkVisible("SlightWTopL", false);
-        	hierMesh().chunkVisible("SlightWTopR", false);
-        	hierMesh().chunkVisible("SlightKeel", false);
-        	hierMesh().chunkVisible("SlightWTipL", false);
-        	hierMesh().chunkVisible("SlightWTipR", false);
-        }
-        if((!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode()) && (FM instanceof Maneuver) && !((FlightModelMain) (super.FM)).AP.way.isLanding())
-        {
-        	if(((FlightModelMain) (super.FM)).CT.getGear() > 0.2F)
-        	{
-                ((FlightModelMain) (super.FM)).CT.VarWingControl = 0.6F;
-        	}
-        	if(((FlightModelMain) (super.FM)).CT.getGear() < 0.2F)
-        	{
-                ((FlightModelMain) (super.FM)).CT.VarWingControl = 0.0F;
-        	}
-        }
+        formationlights();
+        pullingvapor();
+        VTOL();
         if(super.FM.getSpeed() > 300F)
         {
         	((FlightModelMain) (super.FM)).CT.cockpitDoorControl = 0.0F;
         }
-        if(super.FM.getSpeed() > 7F && World.Rnd().nextFloat() < getAirDensityFactor(super.FM.getAltitude()))
+        for (int i = 1; i < 15; i++)
+			hierMesh().chunkSetAngles("Eflap" + i, 0.0F, 0.0F, Aircraft.cvt(200F - ((FlightModelMain) (super.FM)).getSpeedKMH(), -200F, 0F, 0.0F, 30.0F));
+    }
+    
+    private void pullingvapor()
+    {
+    	if(super.FM.getSpeed() > 7F && World.Rnd().nextFloat() < getAirDensityFactor(super.FM.getAltitude()))
         {
         	if(super.FM.getOverload()> 6.5F + getAirDensityFactor(super.FM.getAltitude()) * 0.1)
         {
@@ -1485,6 +1508,52 @@ label0:
         	Eff3DActor.finish(pull16);
         }	
         }
+    }
+    
+    private void formationlights()
+    {
+    	int ws = Mission.cur().curCloudsType();
+        float we = Mission.cur().curCloudsHeight() + 500F;
+        //HUD.log(AircraftHotKeys.hudLogWeaponId, "weather" + ws);
+        if(World.getTimeofDay() <= 6.5F || World.getTimeofDay() > 18F || (ws > 4 && this.FM.getAltitude()<we))
+        {
+        	hierMesh().chunkVisible("SlightNose", true);
+        	hierMesh().chunkVisible("SlightTail", true);
+        	hierMesh().chunkVisible("SlightWTopL", true);
+        	hierMesh().chunkVisible("SlightWTopR", true);
+        	hierMesh().chunkVisible("SlightKeel", true);
+        	hierMesh().chunkVisible("SlightWTipL", true);
+        	hierMesh().chunkVisible("SlightWTipR", true);
+        }
+        if((World.getTimeofDay() > 6.5F && World.getTimeofDay() <= 18F && ws <= 4) || (World.getTimeofDay() > 6.5F && World.getTimeofDay() <= 18F && this.FM.getAltitude()>we))
+        {
+        	hierMesh().chunkVisible("SlightNose", false);
+        	hierMesh().chunkVisible("SlightTail", false);
+        	hierMesh().chunkVisible("SlightWTopL", false);
+        	hierMesh().chunkVisible("SlightWTopR", false);
+        	hierMesh().chunkVisible("SlightKeel", false);
+        	hierMesh().chunkVisible("SlightWTipL", false);
+        	hierMesh().chunkVisible("SlightWTipR", false);
+        }
+    }
+    
+    private float vtolvect;
+    
+    //TODO VTOL
+    
+    private void VTOL()
+    {
+    	if((!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode()) && (FM instanceof Maneuver) && !((FlightModelMain) (super.FM)).AP.way.isLanding())
+        {
+        	if(((FlightModelMain) (super.FM)).CT.getGear() > 0.2F)
+        	{
+                ((FlightModelMain) (super.FM)).CT.VarWingControl = 0.2F;
+        	}
+        	if(((FlightModelMain) (super.FM)).CT.getGear() < 0.2F)
+        	{
+                ((FlightModelMain) (super.FM)).CT.VarWingControl = 0.0F;
+        	}
+        }
         if(((FlightModelMain) (super.FM)).CT.getBrake() > 0.5 && ((FlightModelMain) (super.FM)).Gears.onGround())
         {
         	if(((FlightModelMain) (super.FM)).getSpeedKMH()> 15)
@@ -1504,17 +1573,17 @@ label0:
         if(super.FM.getAltitude() > 0.0F && (double)super.FM.getSpeedKMH() >= 300D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
                 ((FlightModelMain) (super.FM)).producedAF.x -= 10000D;}       
         if(super.FM.getAltitude() > 0.0F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-        	((FlightModelMain) (super.FM)).producedAF.z += (700F - (double)((FlightModelMain) (super.FM)).getAltitude()) * 3D * ((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput();
+        	((FlightModelMain) (super.FM)).producedAF.z -= (double)((FlightModelMain) (super.FM)).getAltitude() * 3D * ((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput();
         	float avW = ((FlightModelMain) (super.FM)).EI.engines[0].getw()/ 2.0F;
             if(avW > 60F)
             {
                 Vector3f eVect = new Vector3f();
                 eVect.x =(-(((FlightModelMain) (super.FM)).CT.getElevator() + ((FlightModelMain) (super.FM)).CT.getTrimElevatorControl())) * 0.3F + (1F - vtolvect);
                 eVect.y =(-(((FlightModelMain) (super.FM)).CT.getAileron() + ((FlightModelMain) (super.FM)).CT.getTrimRudderControl())) * 0.3F;
-                eVect.z = 1.5F * vtolvect;
+                eVect.z = 1.0F * vtolvect;
                 eVect.normalize();
                 ((FlightModelMain) (super.FM)).EI.engines[0].setVector(eVect);              
-                ((FlightModelMain) (super.FM)).Or.increment((((FlightModelMain) (super.FM)).CT.getRudder() + ((FlightModelMain) (super.FM)).CT.getTrimRudderControl()) * 0.3F, (((FlightModelMain) (super.FM)).CT.getElevator() + ((FlightModelMain) (super.FM)).CT.getTrimElevatorControl()) * 0.3F, (((FlightModelMain) (super.FM)).CT.getAileron() + ((FlightModelMain) (super.FM)).CT.getTrimAileronControl()) * 0.3F);
+                ((FlightModelMain) (super.FM)).Or.increment((((FlightModelMain) (super.FM)).CT.getRudder() + ((FlightModelMain) (super.FM)).CT.getTrimRudderControl()) * 0.4F, (((FlightModelMain) (super.FM)).CT.getElevator() + ((FlightModelMain) (super.FM)).CT.getTrimElevatorControl()) * 0.4F, (((FlightModelMain) (super.FM)).CT.getAileron() + ((FlightModelMain) (super.FM)).CT.getTrimAileronControl()) * 0.4F);
                 if(hierMesh().isChunkVisible("WingROut_CAP") || hierMesh().isChunkVisible("WingROut_CAP") || hierMesh().isChunkVisible("WingROut_CAP"))
                 	((FlightModelMain) (super.FM)).Or.increment(0.0F, 0.0F, -1.0F);
                 if(hierMesh().isChunkVisible("WingLOut_CAP") || hierMesh().isChunkVisible("WingLOut_CAP") || hierMesh().isChunkVisible("WingLOut_CAP"))
@@ -1523,7 +1592,7 @@ label0:
                 	((FlightModelMain) (super.FM)).Or.increment(0.0F, 3.0F, 0.0F);
                 if(hierMesh().isChunkVisible("Nose_CAP"))
                 	((FlightModelMain) (super.FM)).Or.increment(0.0F, -3.0F, 0.0F);
-                super.FM.getW().scale(0.89999999999999996D);                
+                super.FM.getW().scale(0.79999999999999996D);                
             } else
             {
                 if(((FlightModelMain) (super.FM)).Gears.nOfGearsOnGr < 2)
@@ -1544,11 +1613,11 @@ label0:
         	Vector3f eVect = new Vector3f();
             eVect.x = 2.0F;
             eVect.y = 0.0F;
-            eVect.z = 2.0F;
+            eVect.z = 0.5F;
             eVect.normalize();
             ((FlightModelMain) (super.FM)).EI.engines[0].setVector(eVect);          
-            ((FlightModelMain) (super.FM)).CT.FlapsControl = 1.0F;
-            ((FlightModelMain) (super.FM)).producedAF.z += 15000D;           
+            ((FlightModelMain) (super.FM)).CT.FlapsControl = 0.6F;
+            ((FlightModelMain) (super.FM)).producedAF.z += 2000D;           
             super.FM.getW().scale(0.69999999999999996D);
             flapswitch = true;
         }
@@ -1566,7 +1635,7 @@ label0:
         ((FlightModelMain) (super.FM)).EI.engines[0].setVector(eVect);                                       
         if(nozzleswitch == true && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5 && ((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput() > 0.7F && !((FlightModelMain) (super.FM)).Gears.onGround())
         {	
-        ((FlightModelMain) (super.FM)).producedAF.x += vectorthrustx * 1700000D;
+        //((FlightModelMain) (super.FM)).producedAF.x += vectorthrustx * 1700000D;
         if(flapswitch)
         {
         	((FlightModelMain) (super.FM)).CT.FlapsControl = 0.0F;
@@ -1584,16 +1653,13 @@ label0:
 		}
     }
     
-    private float vtolvect;
-    
-    //TODO VTOL
   	protected void moveVarWing(float f)
-  	{
-  		hierMesh().chunkSetAngles("nozzole3", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, 90F));
-        hierMesh().chunkSetAngles("nozzole4", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, 90F));
-        hierMesh().chunkSetAngles("nozzole1", 0.0F, 0.0F, Aircraft.cvt(f, 0.5F, 1.0F, 0.0F, 90F));
-        hierMesh().chunkSetAngles("nozzole2", 0.0F, 0.0F, Aircraft.cvt(f, 0.5F, 1.0F, 0.0F, 90F));       
-        if(f > 0.3F)
+  	{  		
+  		hierMesh().chunkSetAngles("nozzole3", 0.0F, 0.0F, Aircraft.cvt(f, 0.5F, 1.0F, 0.0F, 90F));
+        hierMesh().chunkSetAngles("nozzole4", 0.0F, 0.0F, Aircraft.cvt(f, 0.5F, 1.0F, 0.0F, 90F));
+        hierMesh().chunkSetAngles("nozzole1", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, 90F));
+        hierMesh().chunkSetAngles("nozzole2", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, 90F));       
+        if(f > 0.1F)
         {
         	nozzlemode = 1;
         	nozzleswitch = true;
@@ -1618,6 +1684,7 @@ label0:
     
     public void moveRefuel(float f) 
     {
+    	resetYPRmodifier();
     	hierMesh().chunkSetAngles("Refillrod1", Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, 15F), 0.0F, 0.0F);
     	hierMesh().chunkSetAngles("Refillrod3", 0.0F, Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, 75F), 0.0F);
     	hierMesh().chunkSetAngles("Refillrod4", 0.0F, Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, -165F), 0.0F);
@@ -1642,49 +1709,35 @@ label0:
         switch(j)     
         {
         case 0:
-        	Eff3DActor.finish(jet1);
-            Eff3DActor.finish(jet2);
             break;
         case 1: // '\001'
             ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
             ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_02"), null, 1.0F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
-            Eff3DActor.finish(jet1);
-            Eff3DActor.finish(jet2);
             break;
 
         case 3: // '\003'
         	((FlightModelMain) (super.FM)).AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 0.5F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
             ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_02"), null, 0.5F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
-            this.jet1 = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_03"), null, f, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
-            this.jet2 = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_04"), null, f, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
             break;
 
         case 2: // '\002'
             ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 0.1F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
             ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_02"), null, 0.1F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
-            Eff3DActor.finish(jet1);
-            Eff3DActor.finish(jet2);
             break;
 
         case 5: // '\005'
             ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 0.7F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
             ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_02"), null, 0.7F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
-            this.jet1 = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_03"), null, f, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
-            this.jet2 = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_04"), null, f, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
             break;
             
         case 6: // '\006'
             ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 0.5F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
             ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_02"), null, 0.5F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
-            Eff3DActor.finish(jet1);
-            Eff3DActor.finish(jet2);
             break;
 
         case 4: // '\004'
         	((FlightModelMain) (super.FM)).AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 0.2F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
         	((FlightModelMain) (super.FM)).AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_02"), null, 0.2F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
-        	Eff3DActor.finish(jet1);
-            Eff3DActor.finish(jet2);
             break;
         }
     }//TODO effect
