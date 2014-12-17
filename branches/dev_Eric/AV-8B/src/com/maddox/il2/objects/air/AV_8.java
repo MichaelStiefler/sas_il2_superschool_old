@@ -124,6 +124,9 @@ public class AV_8 extends Scheme1
         azimult = 0f;
         tf = 0L;
         APmode1=false;
+        radartogle = false;
+        v = 0F;
+        h = 0F;
     }
     
     public float Fuelamount;
@@ -137,18 +140,27 @@ public class AV_8 extends Scheme1
     	return Fuelamount;
     }
     
+    public boolean radartogle;
+    
     public void auxPressed(int i)//TODO Misc key
     {
         super.auxPressed(i);
         if(i == 20)
         {       		                     
-        	   targetnum++;   
+        	   if(!radartogle)
+        	   {
+        		   radartogle = true;
+        		   HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar ON");
+        		   radarmode=0;
+        	   } else	   
+        	   {
+        		   radartogle = false;
+        		   HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar OFF");
+        	   }
         }
         if(i == 21)
         {       		
-           targetnum--;	
-            if(targetnum<0)
-            targetnum = 0;           
+                     
         }
         if(i == 22)
         {       		
@@ -198,13 +210,13 @@ public class AV_8 extends Scheme1
           	if(hold == true && t1 + 200L < Time.current())
             {
             	hold = false;
-            	HUD.log("Auto Target");
+            	HUD.log("Lazer Unlock");
             	t1 = Time.current();
             }	
             if(hold == false && t1 + 200L < Time.current())
             {	
             	hold = true;
-            	HUD.log("Laser Uncaged");
+            	HUD.log("Lazer Lock");
             	t1 = Time.current();
             }
         }       
@@ -267,28 +279,34 @@ public class AV_8 extends Scheme1
     public float azimult; //TODO controlling the laser spot
     public float tangate;
     public long tf;
+    public float v;
+    public float h;
     
     public void typeBomberAdjDistanceReset()
     {
-    	if(this.FLIR)
-    		this.azimult = 0F;
-    	//HUD.log(AircraftHotKeys.hudLogWeaponId, "range " + azimult);
+    	
     }
 
     public void typeBomberAdjDistancePlus()
     {
-    	if(this.FLIR)
+    	if(this.FLIR){
     		this.azimult += 1.0F;
-    		tf = Time.current();
-    	//HUD.log(AircraftHotKeys.hudLogWeaponId, "range " + azimult);
+    		tf = Time.current();} else  	
+    	if(radartogle && lockmode == 0)
+    		h+=0.0035F;
+    	//HUD.log(AircraftHotKeys.hudLogWeaponId, "v " + v);
     }
 
     public void typeBomberAdjDistanceMinus()
     {
     	if(this.FLIR)
+    	{	
     		this.azimult -= 1F;
     		tf = Time.current();
+    	}	else
     	//HUD.log(AircraftHotKeys.hudLogWeaponId, "range " + azimult);
+    	if(radartogle && lockmode == 0)
+        	h-=0.0035F;   	
     }
 
     public void typeBomberAdjSideslipReset()
@@ -298,18 +316,22 @@ public class AV_8 extends Scheme1
 
     public void typeBomberAdjSideslipPlus()
     {
-    	if(this.FLIR)
+    	if(this.FLIR){
     		this.tangate += 1F;
-    		tf = Time.current();
+    		tf = Time.current();} else
     	//HUD.log(AircraftHotKeys.hudLogWeaponId, "range " + tangate);
+    	if(radartogle && lockmode == 0)
+            v+=0.0035F;	
     }
 
     public void typeBomberAdjSideslipMinus()
     {
-    	if(this.FLIR)
+    	if(this.FLIR){
     		this.tangate -= 1F;
-    		tf = Time.current();
+    		tf = Time.current();} else
     	//HUD.log(AircraftHotKeys.hudLogWeaponId, "range " + tangate);
+    	if(radartogle && lockmode == 0)
+    		v-=0.0035F;
     }
     
     public void updatecontrollaser()
@@ -1414,7 +1436,7 @@ label0:
         	((FlightModelMain) (super.FM)).CT.cockpitDoorControl = 0.0F;
         }
         for (int i = 1; i < 15; i++)
-			hierMesh().chunkSetAngles("Eflap" + i, 0.0F, 0.0F, Aircraft.cvt(200F - ((FlightModelMain) (super.FM)).getSpeedKMH(), -200F, 0F, 0.0F, 30.0F));
+			hierMesh().chunkSetAngles("Eflap" + i, 0.0F, 0.0F, Aircraft.cvt(150F - ((FlightModelMain) (super.FM)).getSpeedKMH(), -200F, 0F, 0.0F, 30.0F));
     }
     
     private void pullingvapor()
@@ -1578,8 +1600,8 @@ label0:
             if(avW > 60F)
             {
                 Vector3f eVect = new Vector3f();
-                eVect.x =(-(((FlightModelMain) (super.FM)).CT.getElevator() + ((FlightModelMain) (super.FM)).CT.getTrimElevatorControl())) * 0.3F + (1F - vtolvect);
-                eVect.y =(-(((FlightModelMain) (super.FM)).CT.getAileron() + ((FlightModelMain) (super.FM)).CT.getTrimRudderControl())) * 0.3F;
+                eVect.x =(-(((FlightModelMain) (super.FM)).CT.getElevator() + ((FlightModelMain) (super.FM)).CT.getTrimElevatorControl())) * 0.6F + (1F - vtolvect);
+                eVect.y =(-(((FlightModelMain) (super.FM)).CT.getAileron() + ((FlightModelMain) (super.FM)).CT.getTrimRudderControl())) * 0.6F;
                 eVect.z = 1.0F * vtolvect;
                 eVect.normalize();
                 ((FlightModelMain) (super.FM)).EI.engines[0].setVector(eVect);              
@@ -1642,14 +1664,8 @@ label0:
         	flapswitch = false;
         }
         }
-        if(super.FM.getAltitude() > 0.0F && (double)super.FM.getSpeedKMH() >= 650D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= (double)((FlightModelMain) (super.FM)).getSpeedKMH()*28D;      
-        if(super.FM.getAltitude() > 0.0F && (double)super.FM.getSpeedKMH() >= 1150D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            ((FlightModelMain) (super.FM)).producedAF.x -= (double)((FlightModelMain) (super.FM)).getSpeedKMH()*43D;                
-        if(((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5 && (double)((FlightModelMain) (super.FM)).getAltitude() < 5500D)
-        	((FlightModelMain) (super.FM)).producedAF.x -= ((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput() * (double)((FlightModelMain) (super.FM)).getAltitude()*1.6D;      
-        if(((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5 && (double)((FlightModelMain) (super.FM)).getAltitude() >= 5500D && (double)((FlightModelMain) (super.FM)).getAltitude() <= 10000D)
-            ((FlightModelMain) (super.FM)).producedAF.x -= ((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput() * (double)((FlightModelMain) (super.FM)).getAltitude()*1.0D;
+        if(super.FM.getAltitude() > 0.0F && calculateMach() > 0.0F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
+            ((FlightModelMain) (super.FM)).producedAF.x -= Math.pow((double)((FlightModelMain) (super.FM)).getSpeedKMH(),2)/20D;                                     
 		}
     }
     
