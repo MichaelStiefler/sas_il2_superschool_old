@@ -317,9 +317,9 @@ public class AV_8A extends AV_8
     	Point3d point3d = new Point3d();
         pos.getAbs(point3d);
         Vector3d vector3d = new Vector3d();
-        Actor actor = World.getPlayerAircraft();
+        Actor actor = this;
         super.pos.getAbs(point3d);
-		Aircraft aircraft = World.getPlayerAircraft();
+		Aircraft aircraft = this;
 		double dd = Main3D.cur3D().land2D.worldOfsX()
 				+ ((Actor) (actor)).pos.getAbsPoint().x;
 		double dd1 = Main3D.cur3D().land2D.worldOfsY()
