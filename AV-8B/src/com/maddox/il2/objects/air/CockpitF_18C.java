@@ -55,7 +55,7 @@ import com.maddox.il2.objects.sounds.SndAircraft;
 //            CockpitPilot, AircraftLH, F_18, Aircraft, 
 //            Cockpit, TypeSupersonic
 
-public class CockpitAV_8B extends CockpitPilot
+public class CockpitF_18C extends CockpitPilot
 {
     private class Variables
     {
@@ -144,26 +144,26 @@ public class CockpitAV_8B extends CockpitPilot
             setNew.throttlel = (10F * setOld.throttlel + ((FlightModelMain) (fm)).EI.engines[0].getControlThrottle()) / 11F;
             setNew.throttler = (10F * setOld.throttler + ((FlightModelMain) (fm)).EI.engines[0].getControlThrottle()) / 11F;
             float f = 200F;
-			if(((AV_8) aircraft()).radargunsight == 0 && ((AV_8) aircraft()).k14Mode == 1)
+			if(((F_18) aircraft()).radargunsight == 0 && ((F_18) aircraft()).k14Mode == 1)
 				f = 200F;
-			if(((AV_8) aircraft()).radargunsight == 1 && ((AV_8) aircraft()).k14Mode == 1)
-				f = ((AV_8) aircraft()).k14Distance;
+			if(((F_18) aircraft()).radargunsight == 1 && ((F_18) aircraft()).k14Mode == 1)
+				f = ((F_18) aircraft()).k14Distance;
 			Point3d pointAC = ((Actor) (World.getPlayerAircraft())).pos.getAbsPoint();
 			float z = (float)((Tuple3d) (pointAC)).z;
-			if((((AV_8) aircraft()).radargunsight == 2 || ((AV_8) aircraft()).radargunsight == 3) && ((AV_8) aircraft()).k14Mode == 1){
+			if((((F_18) aircraft()).radargunsight == 2 || ((F_18) aircraft()).radargunsight == 3) && ((F_18) aircraft()).k14Mode == 1){
 				f = z/(float)Math.cos(Math.toRadians(fm.Or.getPitch()-270F)) + 200F;				
 			}
-            setNew.k14w = (5F * CockpitAV_8B.k14TargetWingspanScale[((AV_8)aircraft()).k14WingspanType]) / f;
+            setNew.k14w = (5F * CockpitF_18C.k14TargetWingspanScale[((F_18)aircraft()).k14WingspanType]) / f;
             setNew.k14w = 0.9F * setOld.k14w + 0.1F * setNew.k14w;
-            setNew.k14wingspan = 0.9F * setOld.k14wingspan + 0.1F * CockpitAV_8B.k14TargetMarkScale[((AV_8)aircraft()).k14WingspanType];
-            setNew.k14mode = 0.8F * setOld.k14mode + 0.2F * (float)((AV_8)aircraft()).k14Mode;
+            setNew.k14wingspan = 0.9F * setOld.k14wingspan + 0.1F * CockpitF_18C.k14TargetMarkScale[((F_18)aircraft()).k14WingspanType];
+            setNew.k14mode = 0.8F * setOld.k14mode + 0.2F * (float)((F_18)aircraft()).k14Mode;
             com.maddox.JGP.Vector3d vector3d = ((SndAircraft) (aircraft())).FM.getW();
             double d = 0.00125D * (double)f;
             float f1 = (float)Math.toDegrees(d * ((Tuple3d) (vector3d)).z);
             float f2 = -(float)Math.toDegrees(d * ((Tuple3d) (vector3d)).y);            
-            float f3 = floatindex((f - 200F) * 0.04F, CockpitAV_8B.k14BulletDrop) - CockpitAV_8B.k14BulletDrop[0];
-            if(((AV_8) aircraft()).radargunsight == 2)
-            	f3 = floatindex((f - 200F) * 0.04F, CockpitAV_8B.k14RocketDrop) - CockpitAV_8B.k14RocketDrop[0];
+            float f3 = floatindex((f - 200F) * 0.04F, CockpitF_18C.k14BulletDrop) - CockpitF_18C.k14BulletDrop[0];
+            if(((F_18) aircraft()).radargunsight == 2)
+            	f3 = floatindex((f - 200F) * 0.04F, CockpitF_18C.k14RocketDrop) - CockpitF_18C.k14RocketDrop[0];
             f2 += (float)Math.toDegrees(Math.atan(f3 / f));
             setNew.k14x = 0.92F * setOld.k14x + 0.08F * f1;
             setNew.k14y = 0.92F * setOld.k14y + 0.08F * f2;            
@@ -233,8 +233,8 @@ public class CockpitAV_8B extends CockpitPilot
                 setNew.isGeneratorAllive = true;
             else
                 setNew.isGeneratorAllive = false;
-            f = ((AV_8)aircraft()).fSightCurForwardAngle;
-            f1 = ((AV_8)aircraft()).fSightCurSideslip;
+            f = ((F_18)aircraft()).fSightCurForwardAngle;
+            f1 = ((F_18)aircraft()).fSightCurSideslip;
             f2 = fm.getAltitude();
             f3 = (float)(-(Math.abs(fm.Vwld.length()) * Math.sin(Math.toRadians(Math.abs(fm.Or.getTangage())))) * 0.10189999639987946D);
             f3 += (float)Math.sqrt(f3 * f3 + 2.0F * f2 * 0.1019F);
@@ -257,9 +257,9 @@ public class CockpitAV_8B extends CockpitPilot
         return super.waypointAzimuthInvertMinus(10F);
     }
 
-    public CockpitAV_8B()
+    public CockpitF_18C()
     {
-        super("3DO/Cockpit/AV-8B/hier.him", "bf109");
+        super("3DO/Cockpit/F-18/hier.him", "bf109");
         gun = new Gun[4];
         setOld = new Variables(null);
         setNew = new Variables(null);
@@ -344,7 +344,7 @@ public class CockpitAV_8B extends CockpitPilot
 		radarclutter(f);
     	boolean flag = false;
     	boolean flag1 = false;
-    	int i = ((AV_8)aircraft()).leftscreen;
+    	int i = ((F_18)aircraft()).leftscreen;
     	if(i == 0)
     	{
     		flag = true;
@@ -357,7 +357,7 @@ public class CockpitAV_8B extends CockpitPilot
     	}
     	super.mesh.chunkVisible("HDD_Fuel", flag);        	
     	super.mesh.chunkVisible("HDD_FuelFlow", flag1);
-    	int j = ((AV_8)aircraft()).leftscreen;
+    	int j = ((F_18)aircraft()).leftscreen;
     	if(j == 0)
     	{
     		movescreenfuel();
@@ -407,7 +407,7 @@ public class CockpitAV_8B extends CockpitPilot
     private void HUDgunsight()
     {
     	if ((fm.AS.astateCockpitState & 2) == 0) {
-			int i = ((AV_8) aircraft()).k14Mode;
+			int i = ((F_18) aircraft()).k14Mode;
 			resetYPRmodifier();
 			Cockpit.xyz[0] = setNew.k14w;
 			if (i == 0) {				
@@ -432,13 +432,13 @@ public class CockpitAV_8B extends CockpitPilot
 				super.mesh.chunkVisible("Z_Z_Bombmark2", false);
 				super.mesh.chunkVisible("Z_Z_Bombmark3", false);
 				super.mesh.chunkVisible("Z_Z_Bombmark4", false);
-				if(((AV_8) aircraft()).radargunsight == 1){
+				if(((F_18) aircraft()).radargunsight == 1){
 				super.mesh.chunkSetAngles("Z_Z_RETICLE", -setNew.k14x, -setNew.k14y, 0.0F);
 				super.mesh.chunkVisible("Z_Z_RETICLE", true);
 				super.mesh.chunkVisible("Z_Z_BulletdropL", false);
 				super.mesh.chunkVisible("Z_Z_BulletdropR", false);				
 				} else
-				if(((AV_8) aircraft()).radargunsight == 0){				
+				if(((F_18) aircraft()).radargunsight == 0){				
 					super.mesh.chunkVisible("Z_Z_RETICLE", false);
 					super.mesh.chunkVisible("Z_Z_BulletdropL", true);
 					super.mesh.chunkVisible("Z_Z_BulletdropR", true);
@@ -452,7 +452,7 @@ public class CockpitAV_8B extends CockpitPilot
 					super.mesh.chunkVisible("Z_Z_radarlock", false);
 					super.mesh.chunkVisible("Z_Z_missilelock", false);
 				}
-				if(((AV_8) aircraft()).radargunsight == 2){
+				if(((F_18) aircraft()).radargunsight == 2){
 					super.mesh.chunkSetAngles("Z_Z_RETICLE", -setNew.k14x*0.75F, -setNew.k14y*0.75F, 0.0F);
 					super.mesh.chunkVisible("Z_Z_RETICLE", true);
 					super.mesh.chunkVisible("Z_Z_BulletdropL", false);
@@ -460,7 +460,7 @@ public class CockpitAV_8B extends CockpitPilot
 					super.mesh.chunkVisible("Z_Z_radarlock", false);
 					super.mesh.chunkVisible("Z_Z_missilelock", false);
 				}
-				if(((AV_8) aircraft()).radargunsight == 3){
+				if(((F_18) aircraft()).radargunsight == 3){
 					super.mesh.chunkSetAngles("Z_Z_RETICLE", -setNew.k14x*0.22F, -setNew.k14y*0.22F, 0.0F);
 					super.mesh.chunkVisible("Z_Z_RETICLE", true);
 					super.mesh.chunkVisible("Z_Z_BulletdropL", false);
@@ -486,7 +486,7 @@ public class CockpitAV_8B extends CockpitPilot
     
 	public void radarclutter(float r) {//TODO: Radar		
 		boolean radar = false;
-		if(!setNew.isBatteryOn && !setNew.isGeneratorAllive || ((AV_8) aircraft()).radartogle == false)			
+		if(!setNew.isBatteryOn && !setNew.isGeneratorAllive || ((F_18) aircraft()).radartogle == false)			
 		{	
 			radar = false;
 			start = false;
@@ -510,7 +510,7 @@ public class CockpitAV_8B extends CockpitPilot
 		} else	
 		{
 			radar = true;
-			if(((AV_8) aircraft()).k14Mode != 1){
+			if(((F_18) aircraft()).k14Mode != 1){
 				super.mesh.chunkVisible("Z_Z_radarlock", false);
 				super.mesh.chunkVisible("Z_Z_missilelock", false);}
 			super.mesh.chunkVisible("HDDR", false);
@@ -534,25 +534,25 @@ public class CockpitAV_8B extends CockpitPilot
 		}
 		float limit = 0F;
 		long ts = Time.current();
-		if(((AV_8)aircraft()).v == 0 && ((AV_8)aircraft()).h == 0)
+		if(((F_18)aircraft()).v == 0 && ((F_18)aircraft()).h == 0)
 		super.mesh.chunkVisible("Z_Z_lockgate", false); else
 		super.mesh.chunkVisible("Z_Z_lockgate", true);	
         resetYPRmodifier();
-        Cockpit.xyz[1] = -((AV_8)aircraft()).v;
-        Cockpit.xyz[2] = ((AV_8)aircraft()).h;
+        Cockpit.xyz[1] = -((F_18)aircraft()).v;
+        Cockpit.xyz[2] = ((F_18)aircraft()).h;
         super.mesh.chunkSetLocate("Z_Z_lockgate", Cockpit.xyz, Cockpit.ypr);
-		if(((AV_8) aircraft()).radarmode == 0 && ((AV_8) aircraft()).lockmode == 0)
+		if(((F_18) aircraft()).radarmode == 0 && ((F_18) aircraft()).lockmode == 0)
 		{
 		radarselection();
 		limit = 0.145F;
-		if((((AV_8)aircraft()).v != 0F || ((AV_8)aircraft()).h != 0F) && t3  + 60000L < ts)		
+		if((((F_18)aircraft()).v != 0F || ((F_18)aircraft()).h != 0F) && t3  + 60000L < ts)		
 		{
-			((AV_8)aircraft()).v = 0F;
-			((AV_8)aircraft()).h = 0F;
+			((F_18)aircraft()).v = 0F;
+			((F_18)aircraft()).h = 0F;
 			t3 = ts;
 		}
 		}
-		if(((AV_8) aircraft()).radarmode == 0 && ((AV_8) aircraft()).lockmode == 1)
+		if(((F_18) aircraft()).radarmode == 0 && ((F_18) aircraft()).lockmode == 1)
 		{
 			radarselection();
 			limit = 0.035F;
@@ -630,10 +630,10 @@ public class CockpitAV_8B extends CockpitPilot
 			}	
 			//HUD.log(AircraftHotKeys.hudLogWeaponId, "scan " + x + " " + right + " " + left + start);
 			resetYPRmodifier();
-			if(((AV_8) aircraft()).lockmode == 0)
+			if(((F_18) aircraft()).lockmode == 0)
 		    Cockpit.xyz[1] = x;
-			if(((AV_8) aircraft()).lockmode == 1)
-			Cockpit.xyz[1] = x - ((AV_8)aircraft()).v;
+			if(((F_18) aircraft()).lockmode == 1)
+			Cockpit.xyz[1] = x - ((F_18)aircraft()).v;
 		    super.mesh.chunkSetLocate("Z_Z_Scan_1", Cockpit.xyz, Cockpit.ypr);
 	}
 	
@@ -703,9 +703,9 @@ public class CockpitAV_8B extends CockpitPilot
                 if(i1>0)
                 {	
                 int nt = 0;
-                targetnum = ((AV_8) aircraft()).targetnum;
-                if(((AV_8) aircraft()).targetnum>=i1)
-                	((AV_8) aircraft()).targetnum = i1;
+                targetnum = ((F_18) aircraft()).targetnum;
+                if(((F_18) aircraft()).targetnum>=i1)
+                	((F_18) aircraft()).targetnum = i1;
                 int k = this.targetnum;
                 if(i>0)
                 {              	
@@ -855,8 +855,8 @@ public class CockpitAV_8B extends CockpitPilot
         {
             Aircraft ownaircraft = World.getPlayerAircraft();           
             radarPlane.clear();
-            double v = -((((AV_8)aircraft()).v + ((float)Math.sin(Math.toRadians(((FlightModelMain) (super.fm)).Or.getRoll())) * 0.011F))/ScX);
-            double h = ((((AV_8)aircraft()).h)/(ScY * ((AV_8) aircraft()).radarrange));
+            double v = -((((F_18)aircraft()).v + ((float)Math.sin(Math.toRadians(((FlightModelMain) (super.fm)).Or.getRoll())) * 0.011F))/ScX);
+            double h = ((((F_18)aircraft()).h)/(ScY * ((F_18) aircraft()).radarrange));
             float mach = 0F;
             float alt = 0F;
             float dif = 0F;
@@ -948,9 +948,9 @@ public class CockpitAV_8B extends CockpitPilot
                         double NewX = -((Tuple3d) ((Point3d)radarPlane.get(k))).y * FOV; // spanning
                         double NewY = ((Tuple3d) ((Point3d)radarPlane.get(k))).x; //distance
                         float f = FOrigX + (float)(NewX * ScX) - ((float)Math.sin(Math.toRadians(((FlightModelMain) (super.fm)).Or.getRoll())) * 0.011F);
-                        float f1 = FOrigY + (float)(NewY * ScY) * ((AV_8) aircraft()).radarrange;
-                        ((AV_8)aircraft()).v = f;
-                        ((AV_8)aircraft()).h = f1;
+                        float f1 = FOrigY + (float)(NewY * ScY) * ((F_18) aircraft()).radarrange;
+                        ((F_18)aircraft()).v = f;
+                        ((F_18)aircraft()).h = f1;
                         if(f1 < 0)
                         	f1 = 0;                      
                         String m = "Z_Z_lockgate";
@@ -973,7 +973,7 @@ public class CockpitAV_8B extends CockpitPilot
                         double NewX = -((Tuple3d) ((Point3d)radarPlane.get(k))).y * FOV; // spanning
                         double NewY = ((Tuple3d) ((Point3d)radarPlane.get(k))).x; //distance
                         float f = FOrigX + (float)(NewX * ScX) - ((float)Math.sin(Math.toRadians(((FlightModelMain) (super.fm)).Or.getRoll())) * 0.011F); //FOrigX currently do nothing
-                        float f1 = FOrigY + (float)(NewY * ScY) * ((AV_8) aircraft()).radarrange;
+                        float f1 = FOrigY + (float)(NewY * ScY) * ((F_18) aircraft()).radarrange;
                         if(f1 < 0)
                         	f1 = 0;                       
                         String m = "Z_Z_RadarMark0";
@@ -1009,7 +1009,7 @@ public class CockpitAV_8B extends CockpitPilot
                 	super.mesh.chunkVisible("Z_Z_dif+", false);
     				super.mesh.chunkVisible("Z_Z_dif-", false);
     				super.mesh.chunkVisible("Z_Z_Radarbrg", false);
-                    ((AV_8)aircraft()).lockmode = 0;                  
+                    ((F_18)aircraft()).lockmode = 0;                  
                 } 
             } 
                 
@@ -1123,7 +1123,7 @@ public class CockpitAV_8B extends CockpitPilot
         if(f5 == 0F && f4 == 0F && f3 == 0F)
         	super.mesh.chunkVisible("Z_Z_Ins_Fuel_3", false);
         super.mesh.chunkSetAngles("Z_Z_Ins_Fuel_3", 0.0F, 0.0F, f5);       
-        float bingo = ((AV_8)aircraft()).Bingofuel/1000F;
+        float bingo = ((F_18)aircraft()).Bingofuel/1000F;
         f3 = (float)(int)bingo * 36F;        	
         super.mesh.chunkSetAngles("Z_Z_Ins_Bingo_1", 0.0F, 0.0F, f3);
         float fuelinteltempL = ((FlightModelMain) (super.fm)).EI.engines[0].tWaterOut;
@@ -1406,7 +1406,7 @@ public class CockpitAV_8B extends CockpitPilot
         for(int j = 0; j < fm.CT.Weapons[9].length && j < 2; j++)
         if(fm.CT.Weapons[9][j].haveBullets())
         {
-        	tankL = (((AV_8)aircraft()).checkfuel(0)/1000)*2.20462262F; 
+        	tankL = (((F_18)aircraft()).checkfuel(0)/1000)*2.20462262F; 
         } else
         {	
         	tankL = 0F;
@@ -1511,7 +1511,7 @@ public class CockpitAV_8B extends CockpitPilot
         {
         super.mesh.chunkVisible("Z_Z_HDD_Fuel_5", false);
         }
-        float bingo = ((AV_8)aircraft()).Bingofuel/1000F;
+        float bingo = ((F_18)aircraft()).Bingofuel/1000F;
         f3 = (float)(int)bingo * 36F;
         if(f3 == 0F)
         {
@@ -1547,7 +1547,7 @@ public class CockpitAV_8B extends CockpitPilot
         for(int j = 0; j < fm.CT.Weapons[9].length && j < 2; j++)
         if(fm.CT.Weapons[9][j].haveBullets())
         {
-        	tankL = (((AV_8)aircraft()).checkfuel(0)/1000)*2.20462262F; 
+        	tankL = (((F_18)aircraft()).checkfuel(0)/1000)*2.20462262F; 
         } else
         {	
         	tankL = 0F;
@@ -1578,7 +1578,7 @@ public class CockpitAV_8B extends CockpitPilot
         super.mesh.chunkSetAngles("Z_Z_HDD_Fuel_4", 0.0F, 0.0F, f7);
         float Currange = Duration * super.fm.getSpeedKMH() * 0.621371192F;        
         float weight = this.fm.M.getFullMass()*9.8F;
-        float duspeed = ((float)Math.pow((this.fm.Sq.dragProducedCx/this.fm.Fusel.CxMin_0), 0.25D)) * (float)Math.sqrt((2*weight)/(((AV_8)aircraft()).getAirPressure(this.fm.getAltitude()) * this.fm.Sq.squareWing));
+        float duspeed = ((float)Math.pow((this.fm.Sq.dragProducedCx/this.fm.Fusel.CxMin_0), 0.25D)) * (float)Math.sqrt((2*weight)/(((F_18)aircraft()).getAirPressure(this.fm.getAltitude()) * this.fm.Sq.squareWing));
         float thrustrequired = ((1/(this.fm.Fusel.K_max)*weight)/10600F)*100F;
         float bestspeed = (float)((thrustrequired * (2.17F * (Math.log(thrustrequired)))) + (27.44F * Math.log(this.fm.getAltitude())));
         float temperature = Atmosphere.temperature(this.fm.HofVmax);
@@ -1589,8 +1589,8 @@ public class CockpitAV_8B extends CockpitPilot
         Duration = (Sfuel/flowrate)/3600;
         Currange = Duration * super.fm.getSpeedKMH() * 0.621371192F;       
         float MDalt = this.fm.HofVmax - 0.06F * temperature + 0.01F * density;
-        float MDaltspeed = ((float)Math.pow((this.fm.Sq.dragProducedCx/this.fm.Fusel.CxMin_0), 0.25D)) * (float)Math.sqrt((2*weight)/(((AV_8)aircraft()).getAirPressure(MDalt) * this.fm.Sq.squareWing));
-        thrustrequired = (this.fm.Fusel.CxMin_0 * (((AV_8)aircraft()).getAirPressure(MDalt)/2F) * (float)Math.pow(MDaltspeed, 2D) * this.fm.Sq.squareWing) + (2F * this.fm.Sq.dragProducedCx * weight)/(((AV_8)aircraft()).getAirPressure(MDalt) * (float)Math.pow(MDaltspeed, 2D) * this.fm.Sq.squareWing);
+        float MDaltspeed = ((float)Math.pow((this.fm.Sq.dragProducedCx/this.fm.Fusel.CxMin_0), 0.25D)) * (float)Math.sqrt((2*weight)/(((F_18)aircraft()).getAirPressure(MDalt) * this.fm.Sq.squareWing));
+        thrustrequired = (this.fm.Fusel.CxMin_0 * (((F_18)aircraft()).getAirPressure(MDalt)/2F) * (float)Math.pow(MDaltspeed, 2D) * this.fm.Sq.squareWing) + (2F * this.fm.Sq.dragProducedCx * weight)/(((F_18)aircraft()).getAirPressure(MDalt) * (float)Math.pow(MDaltspeed, 2D) * this.fm.Sq.squareWing);
         flowrate = (thrustrequired * 0.065F)/3600F;
         float MDaltDuration = (Sfuel/flowrate)/3600;   
     }
@@ -2023,9 +2023,7 @@ public class CockpitAV_8B extends CockpitPilot
     }
 
     protected void drawSound(float f)
-    {
-        if(((AV_8) aircraft()).nozzlemode == 0)
-        {	
+    {       	
     	if(aoaWarnFX != null)
             if(setNew.fpmPitch >= 9.7F && setNew.fpmPitch < 12F && ((FlightModelMain) (super.fm)).Gears.nOfGearsOnGr < 1)
             {
@@ -2080,8 +2078,7 @@ public class CockpitAV_8B extends CockpitPilot
         	AltitudeWarn.stop();
         	PullupWarn.stop();
         }
-        }
-        }
+        }       
     }
     
     private long tw;
@@ -2157,12 +2154,12 @@ public class CockpitAV_8B extends CockpitPilot
         {
             super.mesh.chunkVisible("Z_Z_NVision", true);
             //light1.light.setEmit(0.0060F, 0.6F);
-            //((AV_8)aircraft()).FLIR = true;
+            //((F_18)aircraft()).FLIR = true;
         } else
         {
             super.mesh.chunkVisible("Z_Z_NVision", false);
             //light1.light.setEmit(0.0F, 0.0F);
-            //((AV_8)aircraft()).FLIR = false;
+            //((F_18)aircraft()).FLIR = false;
         }
     }   
 
