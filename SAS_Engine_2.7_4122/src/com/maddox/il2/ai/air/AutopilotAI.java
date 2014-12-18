@@ -238,7 +238,7 @@ public class AutopilotAI extends Autopilotage {
 						FM.CT.FlapsControl = 0.0F;
 						way.setCur(1);
                                         }
-					if(way.Cur() > 3 && FM.getSpeed() > way.curr().getV() * 1.8F)
+					if (way.Cur() > 3 && FM.getSpeed() > way.curr().getV() * 1.8F && ((Aircraft) FM.actor) instanceof TypeFastJet)
                                         {
 						FM.CT.FlapsControl = 0.0F;
 						way.setCur(1);
