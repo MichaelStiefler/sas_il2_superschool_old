@@ -612,36 +612,6 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 			hierMesh().chunkVisible("HMask1_D0", false);
 		else
 			hierMesh().chunkVisible("HMask1_D0", hierMesh().isChunkVisible("Pilot1_D0"));
-		if ((!super.FM.isPlayers() || !(super.FM instanceof RealFlightModel) || !((RealFlightModel) super.FM).isRealMode()) && (super.FM instanceof Maneuver)) {
-			if (FM.AP.way.isLanding() && super.FM.getSpeed() > FM.VmaxFLAPS && super.FM.getSpeed() > FM.AP.way.curr().getV() * 1.4F) {
-				if (FM.CT.AirBrakeControl != 1.0F)
-					FM.CT.AirBrakeControl = 1.0F;
-			} else if (((Maneuver) super.FM).get_maneuver() == 25 && FM.AP.way.isLanding() && super.FM.getSpeed() < FM.VmaxFLAPS * 1.2F) {
-				if (super.FM.getSpeed() > FM.VminFLAPS * 0.5F && FM.Gears.nearGround()) {
-					if (FM.Gears.onGround()) {
-						if (FM.CT.AirBrakeControl != 1.0F)
-							FM.CT.AirBrakeControl = 1.0F;
-						FM.CT.DragChuteControl = 1.0F;
-					} else if (FM.CT.AirBrakeControl != 1.0F)
-						FM.CT.AirBrakeControl = 1.0F;
-				} else if (FM.CT.AirBrakeControl != 0.0F)
-					FM.CT.AirBrakeControl = 0.0F;
-			} else if (((Maneuver) super.FM).get_maneuver() == 66) {
-				if (FM.CT.AirBrakeControl != 0.0F)
-					FM.CT.AirBrakeControl = 0.0F;
-			} else if (((Maneuver) super.FM).get_maneuver() == 7 && FM.CT.AirBrakeControl != 1.0F)
-				FM.CT.AirBrakeControl = 1.0F;
-			if (((com.maddox.il2.ai.air.Maneuver) super.FM).get_task() == 7) {
-				com.maddox.JGP.Vector3d vector3d = new Vector3d();
-				getSpeed(vector3d);
-				com.maddox.JGP.Point3d point3d1 = new Point3d();
-				pos.getAbs(point3d1);
-				float alt = (float) (FM.getAltitude() - com.maddox.il2.ai.World.land().HQ(point3d1.x, point3d1.y));
-				if (alt < 15 && vector3d.z < 0)
-					vector3d.z = 0;
-				setSpeed(vector3d);
-			}
-		}
 		if (FLIR)
 			FLIR();
 	}
@@ -702,73 +672,11 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 	}
 
 	public void typeFighterAceMakerAdjSideslipPlus() {
-		k14WingspanType--;
-		if (k14WingspanType < 0)
-			k14WingspanType = 0;
-		if (k14WingspanType == 0) {
-			if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: MiG-17/19/21");
-		} else if (k14WingspanType == 1) {
-			if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: MiG-15");
-		} else if (k14WingspanType == 2) {
-			if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Me-262");
-		} else if (k14WingspanType == 3) {
-			if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Pe-2");
-		} else if (k14WingspanType == 4) {
-			if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: 60ft");
-		} else if (k14WingspanType == 5) {
-			if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Canberra Bomber");
-		} else if (k14WingspanType == 6) {
-			if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Yak-28/Il-28");
-		} else if (k14WingspanType == 7) {
-			if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: C-47");
-		} else if (k14WingspanType == 8) {
-			if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Tu-16");
-		} else if (k14WingspanType == 9 && ((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-			HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Tu-4");
+		
 	}
 
 	public void typeFighterAceMakerAdjSideslipMinus() {
-		k14WingspanType++;
-		if (k14WingspanType > 9)
-			k14WingspanType = 9;
-		if (k14WingspanType == 0) {
-			if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: MiG-17/19/21");
-		} else if (k14WingspanType == 1) {
-			if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: MiG-15");
-		} else if (k14WingspanType == 2) {
-			if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Me-262");
-		} else if (k14WingspanType == 3) {
-			if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Pe-2");
-		} else if (k14WingspanType == 4) {
-			if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: 60ft");
-		} else if (k14WingspanType == 5) {
-			if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Canberra Bomber");
-		} else if (k14WingspanType == 6) {
-			if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Yak-28/Il-28");
-		} else if (k14WingspanType == 7) {
-			if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: C-47");
-		} else if (k14WingspanType == 8) {
-			if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Tu-16");
-		} else if (k14WingspanType == 9 && ((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-			HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Tu-4");
+		
 	}
 
 	public void typeFighterAceMakerReplicateToNet(NetMsgGuaranted netmsgguaranted) throws IOException {
@@ -1383,8 +1291,8 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 				bailout();
 		}
 		if (FM.AS.isMaster() && Config.isUSE_RENDER()) {
-			if (FM.EI.engines[0].getPowerOutput() > 0.91F && FM.EI.engines[0].getStage() == 6) {
-				if (FM.EI.engines[0].getPowerOutput() > 1.01F)
+			if (FM.EI.engines[0].getPowerOutput() > 1.001F && FM.EI.engines[0].getStage() == 6) {
+				if(World.getTimeofDay()>=18F || World.getTimeofDay()<=6F)
 					FM.AS.setSootState(this, 0, 5);
 				else
 					FM.AS.setSootState(this, 0, 3);
@@ -1392,8 +1300,8 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 				FM.AS.setSootState(this, 0, 0);
 			}
 			setExhaustFlame(Math.round(Aircraft.cvt(FM.EI.engines[0].getThrustOutput(), 0.7F, 0.87F, 0.0F, 12F)), 0);
-			if (FM.EI.engines[1].getPowerOutput() > 0.91F && FM.EI.engines[1].getStage() == 6) {
-				if (FM.EI.engines[1].getPowerOutput() > 1.01F)
+			if (FM.EI.engines[1].getPowerOutput() > 1.001F && FM.EI.engines[1].getStage() == 6) {
+				if(World.getTimeofDay()>=18F || World.getTimeofDay()<=6F)
 					FM.AS.setSootState(this, 1, 5);
 				else
 					FM.AS.setSootState(this, 1, 3);
@@ -1539,9 +1447,9 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 		if (removeChuteTimer > 0L && !FM.CT.bHasDragChuteControl && Time.current() > removeChuteTimer)
 			chute.destroy();
 		if (FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() > 5)
-			FM.producedAF.x += 32000D;
+			FM.producedAF.x += 18000D;
 		if (FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() > 5)
-			FM.producedAF.x += 32000D;
+			FM.producedAF.x += 18000D;
 		if (super.FM.getAltitude() > 10000F && FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() > 5)
 			FM.producedAF.x -= 3500D;
 		if (super.FM.getAltitude() > 10000F && FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() > 5)
@@ -1638,6 +1546,9 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 			FM.producedAF.x -= 17000D;
 		if (super.FM.getAltitude() > 20000F && FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() > 5)
 			FM.producedAF.x -= 17000D;
+		float autothrottle = cvt(super.FM.getAltitude(), 0F, 10000F, 0.8F, 1.3F);
+		if(super.FM.getAltitude() > 0.0F && calculateMach() > autothrottle && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
+			((FlightModelMain) (super.FM)).producedAF.x -= Math.pow((double)((FlightModelMain) (super.FM)).getSpeedKMH(),2)/10D;
 	}
 
 	public void updateHook() {
@@ -1668,8 +1579,7 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 			break;
 
 		case 5: // '\005'
-			FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 2.5F, "3DO/Effects/Aircraft/AfterBurnerF18.eff", -1F);
-			if(World.getTimeofDay()>18.5F || World.getTimeofDay()<5.5F)
+			FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 2.5F, "3DO/Effects/Aircraft/AfterBurnerF18.eff", -1F);			
 			FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 2.5F, "3DO/Effects/Aircraft/AfterBurnerF18A.eff", -1F);
 			break;
 

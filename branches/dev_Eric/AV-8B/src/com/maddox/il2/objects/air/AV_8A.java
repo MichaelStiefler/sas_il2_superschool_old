@@ -80,8 +80,7 @@ public class AV_8A extends AV_8
 		IR = false;
 		tX4Prev = 0L;
 		backfireList = new ArrayList();
-		backfire = false;
-		launch = false;		
+		backfire = false;		
     }   
 
     
@@ -310,8 +309,6 @@ public class AV_8A extends AV_8
 	return true;
     }
     
-    private boolean launch;
-    
     private boolean RWRLaunchWarning()
     {   	
     	Point3d point3d = new Point3d();
@@ -388,7 +385,6 @@ public class AV_8A extends AV_8
     			{
     				bMissileWarning = false;
     				playRWRWarning();
-    				launch = false;
     			}
 		}
 	return true;
@@ -1024,7 +1020,7 @@ public class AV_8A extends AV_8
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Harrier");
         Property.set(class1, "meshName", "3DO/Plane/AV-8B/hier.him");
-        Property.set(class1, "PaintScheme", new PaintSchemeFMParMiG21());
+        Property.set(class1, "PaintScheme", new PaintSchemeFMPar05());
         Property.set(class1, "noseart", 1);
         Property.set(class1, "yearService", 1997F);
         Property.set(class1, "yearExpired", 2014F);
@@ -1270,7 +1266,7 @@ public class AV_8A extends AV_8
             a_lweaponslot[68] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 32);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);            
-            s = "4xMk82SnakeEye + 2xAIM-9";
+            s = "4 x Mk82SnakeEye + 2xAIM-9";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunGAU12U", 300);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(3, "BombGunNull", 1);
@@ -1289,7 +1285,7 @@ public class AV_8A extends AV_8
             a_lweaponslot[68] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 32);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "6xMk82SnakeEye";
+            s = "6 x Mk82SnakeEye";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunGAU12U", 300);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(3, "BombGunNull", 1);
