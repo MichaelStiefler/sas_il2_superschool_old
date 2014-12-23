@@ -284,13 +284,13 @@ public class CockpitF_4E extends CockpitPilot
         mesh.chunkSetAngles("Z_horizont2b", 0.0F, ((FlightModelMain) (fm)).Or.getTangage(), 0.0F);
         mesh.chunkSetAngles("zBall", 0.0F, cvt(getBall(6D), -6F, 6F, -9F, 9F), 0.0F);
         float ilsloctmp = setNew.ilsLoc * setNew.ilsLoc * ((setNew.ilsLoc < 0)? -1F : 1F);
-        Cockpit.xyz[0] = -cvt(ilsloctmp, -10000F, 10000F, -0.036F, 0.036F);
+        Cockpit.xyz[0] = -cvt(ilsloctmp, -10000F, 10000F, -0.020F, 0.020F);
         Cockpit.xyz[1] = Cockpit.xyz[2] = 0.0F;
         Cockpit.ypr[0] = cvt(((FlightModelMain) (fm)).Or.getKren(), -35F, 35F, -35F, 35F);
         Cockpit.ypr[1] = Cockpit.ypr[2] = 0.0F;
         mesh.chunkSetLocate("BL_Vert", Cockpit.xyz, Cockpit.ypr);
         float ilsgstmp = setNew.ilsGS * setNew.ilsGS * ((setNew.ilsGS < 0)? -1F : 1F);
-        Cockpit.xyz[1] = -cvt(setNew.ilsGS, -0.25F, 0.25F, -0.036F, 0.036F);
+        Cockpit.xyz[1] = -cvt(ilsgstmp, -0.25F, 0.25F, -0.020F, 0.020F);
         Cockpit.xyz[0] = Cockpit.xyz[2] = 0.0F;
         Cockpit.ypr[0] = cvt(((FlightModelMain) (fm)).Or.getKren(), -35F, 35F, -35F, 35F);
         Cockpit.ypr[1] = Cockpit.ypr[2] = 0.0F;
@@ -388,7 +388,7 @@ public class CockpitF_4E extends CockpitPilot
                         mesh.chunkVisible("Z_MisSelect_SelL1", false);
                         mesh.chunkVisible("Z_MisSelect_SelL2", false);
                         mesh.chunkVisible("Z_MisSelect_SelR2", false);
-                        mesh.chunkVisible("Z_MisSelect_RdR1", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 1);
+                        mesh.chunkVisible("Z_MisSelect_RdR1", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 2);
                         mesh.chunkVisible("Z_MisSelect_SelR1", true);
                         break;
                     }
@@ -400,7 +400,7 @@ public class CockpitF_4E extends CockpitPilot
                         mesh.chunkVisible("Z_MisSelect_SelL2", false);
                         mesh.chunkVisible("Z_MisSelect_SelR1", false);
                         mesh.chunkVisible("Z_MisSelect_SelR2", false);
-                        mesh.chunkVisible("Z_MisSelect_RdL1", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 1);
+                        mesh.chunkVisible("Z_MisSelect_RdL1", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 2);
                         mesh.chunkVisible("Z_MisSelect_SelL1", true);
                         break;
                     }
@@ -413,7 +413,7 @@ public class CockpitF_4E extends CockpitPilot
                         mesh.chunkVisible("Z_MisSelect_SelL1", false);
                         mesh.chunkVisible("Z_MisSelect_SelR1", false);
                         mesh.chunkVisible("Z_MisSelect_SelR2", false);
-                        mesh.chunkVisible("Z_MisSelect_RdL2", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 1);
+                        mesh.chunkVisible("Z_MisSelect_RdL2", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 2);
                         mesh.chunkVisible("Z_MisSelect_SelL2", true);
                         break;
                     }
@@ -426,7 +426,7 @@ public class CockpitF_4E extends CockpitPilot
                         mesh.chunkVisible("Z_MisSelect_SelL1", false);
                         mesh.chunkVisible("Z_MisSelect_SelL2", false);
                         mesh.chunkVisible("Z_MisSelect_SelR1", false);
-                        mesh.chunkVisible("Z_MisSelect_RdR2", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 1);
+                        mesh.chunkVisible("Z_MisSelect_RdR2", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 2);
                         mesh.chunkVisible("Z_MisSelect_SelR2", true);
                         break;
                     }
