@@ -285,12 +285,6 @@ public class F_4 extends Scheme2
             if(((FlightModelMain) (super.FM)).AP.way.curr().Action == 3)
                 ((FlightModelMain) (super.FM)).CT.dropFuelTanks();
         }
-        if(((FlightModelMain) (super.FM)).AP.way.curr().Action == 3 && !((Maneuver)super.FM).hasBombs())
-        {
-            ((FlightModelMain) (super.FM)).AP.way.next();
-            ((Maneuver)super.FM).target_ground = null;
-            ((Maneuver)super.FM).Group.setGroupTask(1);
-        }
     }
 
     private final void UpdateLightIntensity()
