@@ -47,16 +47,10 @@ import com.maddox.sound.Sample;
 import com.maddox.sound.SoundFX;
 import com.maddox.util.HashMapInt;
 
-public class F_18D extends F_18 implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeGSuit, TypeAcePlane, TypeFuelDump, TypeStormovikArmored {
+public class F_18D extends F_18 implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeGSuit, TypeAcePlane, TypeFuelDump, TypeStormovikArmored, TypeDockable {
 
 	public F_18D() {
 		guidedMissileUtils = null;
-		fxRWR = newSound("aircraft.RWR2", false);
-        smplRWR = new Sample("RWR2.wav", 256, 65535);
-        RWRSoundPlaying = false;
-        fxMissileWarning = newSound("aircraft.MissileMissile", false);
-        smplMissileWarning = new Sample("MissileMissile.wav", 256, 65535);
-        MissileSoundPlaying = false;
 		hasChaff = false;
 		hasFlare = false;
 		lastChaffDeployed = 0L;
@@ -200,258 +194,6 @@ public class F_18D extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 	private void doDealMissileLaunchThreat() {
 	}
 
-	private boolean RWRWarning()//TODO RWR
-    {
-    	boolean SPIKE = false;
-		Point3d point3d = new Point3d();
-		super.pos.getAbs(point3d);
-        Vector3d vector3d = new Vector3d();
-        Aircraft spike = War.getNearestEnemy(this, 6000F);
-        if (spike != null)
-        {
-        double d = Main3D.cur3D().land2D.worldOfsX() + ((Actor) (spike)).pos.getAbsPoint().x;
-        double d1 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (spike)).pos.getAbsPoint().y;
-        double d2 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (spike)).pos.getAbsPoint().z;
-        double d3 = d2 - (double)Landscape.Hmin((float)((Actor) (spike)).pos.getAbsPoint().x, (float)((Actor) (spike)).pos.getAbsPoint().y);
-        if(d3 < 0.0D)
-            d3 = 0.0D;
-        int i = (int)(-((double)((Actor) (spike)).pos.getAbsOrient().getYaw() - 90D));
-        if(i < 0)
-            i = 360 + i;
-        int j = (int)(-((double)((Actor) (spike)).pos.getAbsOrient().getPitch() - 90D));
-        if(j < 0)
-            j = 360 + j;
-        Actor actor = War.getNearestEnemy(spike, 6000F);
-        if((actor instanceof Aircraft) && spike.getArmy() != World.getPlayerArmy() && (spike instanceof TypeFighterAceMaker)&& ((spike instanceof TypeSupersonic) || (spike instanceof TypeFastJet)) && actor == World.getPlayerAircraft() && actor.getSpeed(vector3d) > 20D)
-        	{
-                pos.getAbs(point3d);
-                double d4 = Main3D.cur3D().land2D.worldOfsX() + actor.pos.getAbsPoint().x;
-                double d5 = Main3D.cur3D().land2D.worldOfsY() + actor.pos.getAbsPoint().y;
-                double d6 = Main3D.cur3D().land2D.worldOfsY() + actor.pos.getAbsPoint().z;
-                new String();
-                new String();
-                int k = (int)(Math.floor(actor.pos.getAbsPoint().z * 0.10000000000000001D) * 10D);
-                int l = (int)(Math.floor((actor.getSpeed(vector3d) * 60D * 60D) / 10000D) * 10D);
-                double d7 = (int)(Math.ceil((d2 - d6) / 10D) * 10D);
-                boolean flag2 = false;
-                Engine.land();
-                int i1 = Landscape.getPixelMapT(Engine.land().WORLD2PIXX(actor.pos.getAbsPoint().x), Engine.land().WORLD2PIXY(actor.pos.getAbsPoint().y));
-                float f = Mission.cur().sectFile().get("Weather", "WindSpeed", 0.0F);
-                if(i1 >= 28 && i1 < 32 && f < 7.5F)
-                    flag2 = true;
-                new String();
-                double d8 = d4 - d;
-                double d9 = d5 - d1;
-                float f1 = 57.32484F * (float)Math.atan2(d9, -d8);
-                int j1 = (int)(Math.floor((int)f1) - 90D);
-                if(j1 < 0)
-                    j1 = 360 + j1;
-                int k1 = j1 - i;
-                double d10 = d - d4;
-                double d11 = d1 - d5;
-                Random random = new Random();
-                float f2 = ((float)random.nextInt(20) - 10F) / 100F + 1.0F;
-                int l1 = random.nextInt(6) - 3;
-                float f3 = 19000F;
-                float f4 = f3;
-                if(d3 < 1200D)
-                    f4 = (float)(d3 * 0.80000001192092896D * 3D);
-                int i2 = (int)(Math.ceil(Math.sqrt((d11 * d11 + d10 * d10) * (double)f2) / 10D) * 10D);
-                if((float)i2 > f3)
-                    i2 = (int)(Math.ceil(Math.sqrt(d11 * d11 + d10 * d10) / 10D) * 10D);
-                float f5 = 57.32484F * (float)Math.atan2(i2, d7);
-                int j2 = (int)(Math.floor((int)f5) - 90D);
-                int k2 = (j2 - (90 - j)) + l1;
-                int l2 = (int)f3;
-                if((float)i2 < f3)
-                    if(i2 > 1150)
-                        l2 = (int)(Math.ceil((double)i2 / 900D) * 900D);
-                    else
-                        l2 = (int)(Math.ceil((double)i2 / 500D) * 500D);
-                int i3 = k1 + l1;
-                int j3 = i3;
-                if(j3 < 0)
-                    j3 += 360;
-                float f6 = (float)((double)f4 + Math.sin(Math.toRadians(Math.sqrt(k1 * k1) * 3D)) * ((double)f4 * 0.25D));
-                int k3 = (int)((double)f6 * Math.cos(Math.toRadians(k2)));
-                if((double)i2 <= (double)k3 && (double)i2 <= 14000D && (double)i2 >= 200D && k2 >= -30 && k2 <= 30 && Math.sqrt(i3 * i3) <= 60D)
-                {
-                    SPIKE = true;
-                } else {
-                	SPIKE = false;
-                }
-                
-        	}
-		Aircraft aircraft = World.getPlayerAircraft();
-		double dd = Main3D.cur3D().land2D.worldOfsX()
-				+ ((Actor) (actor)).pos.getAbsPoint().x;
-		double dd1 = Main3D.cur3D().land2D.worldOfsY()
-				+ ((Actor) (actor)).pos.getAbsPoint().y;
-		double dd2 = Main3D.cur3D().land2D.worldOfsY()
-				+ ((Actor) (actor)).pos.getAbsPoint().z;
-		int ii = (int) (-((double) ((Actor) (aircraft)).pos.getAbsOrient()
-				.getYaw() - 90D));
-		if (ii < 0)
-			ii = 360 + ii;
-		if(SPIKE && actor == World.getPlayerAircraft() && actor instanceof AV_8A)
-    	{
-			pos.getAbs(point3d);
-			double d31 = Main3D.cur3D().land2D.worldOfsX()
-					+ spike.pos.getAbsPoint().x;
-			double d41 = Main3D.cur3D().land2D.worldOfsY()
-					+ spike.pos.getAbsPoint().y;
-			double d51 = Main3D.cur3D().land2D.worldOfsY()
-					+ spike.pos.getAbsPoint().z;
-			double d81 = (int) (Math.ceil((dd2 - d51) / 10D) * 10D);
-			String s = "";
-			if (dd2 - d51 - 500D >= 0.0D)
-				s = " low";
-			if ((dd2 - d51) + 500D < 0.0D)
-				s = " high";
-			new String();
-			double d91 = d31 - dd;
-			double d101 = d41 - dd1;
-			float f11 = 57.32484F * (float) Math.atan2(d101, -d91);
-			int j11 = (int) (Math.floor((int) f11) - 90D);
-			if (j11 < 0)
-				j11 = 360 + j11;
-			int k11 = j11 - ii;
-			if (k11 < 0)
-				k11 = 360 + k11;
-			int l11 = (int) (Math.ceil((double) (k11 + 15) / 30D) - 1.0D);
-			if (l11 < 1)
-				l11 = 12;
-			double d111 = dd - d31;
-			double d12 = dd1 - d41;
-			double d13 = Math
-					.ceil(Math.sqrt(d12 * d12 + d111 * d111) / 10D) * 10D;
-			if(bMissileWarning == true)
-			{
-				bRadarWarning = false;
-				playRWRWarning();
-			}
-			else
-				{bRadarWarning = d13 <= 8000D && d13 >= 500D
-						&& Math.sqrt(d81 * d81) <= 6000D;
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Enemy at " + l11 + " o'clock" + s + "!");}
-				playRWRWarning();
-    			} else {
-    				bRadarWarning = false;
-    				playRWRWarning();
-    			}
-        }				
-	return true;
-    }
-    
-    private boolean launch;
-    
-    private boolean RWRLaunchWarning()
-    {   	
-    	Point3d point3d = new Point3d();
-        pos.getAbs(point3d);
-        Vector3d vector3d = new Vector3d();
-        Actor actor = this;
-        super.pos.getAbs(point3d);
-		Aircraft aircraft = this;
-		double dd = Main3D.cur3D().land2D.worldOfsX()
-				+ ((Actor) (actor)).pos.getAbsPoint().x;
-		double dd1 = Main3D.cur3D().land2D.worldOfsY()
-				+ ((Actor) (actor)).pos.getAbsPoint().y;
-		double dd2 = Main3D.cur3D().land2D.worldOfsY()
-				+ ((Actor) (actor)).pos.getAbsPoint().z;
-		int ii = (int) (-((double) ((Actor) (aircraft)).pos.getAbsOrient()
-				.getYaw() - 90D));
-		if (ii < 0)
-			ii = 360 + ii;
-		List list = Engine.missiles();
-		int m = list.size();		
-		for (int t = 0; t < m; t++) {
-			Actor missile = (Actor) list.get(t);		
-		if((missile instanceof com.maddox.il2.objects.weapons.Missile || missile instanceof com.maddox.il2.objects.weapons.MissileSAM) && missile.getSpeed(vector3d) > 20D && ((Missile) missile).getMissileTarget() == this && actor instanceof TypeCountermeasure)
-    	{
-				pos.getAbs(point3d);
-				double d31 = Main3D.cur3D().land2D.worldOfsX()
-						+ actor.pos.getAbsPoint().x;
-				double d41 = Main3D.cur3D().land2D.worldOfsY()
-						+ actor.pos.getAbsPoint().y;
-				double d51 = Main3D.cur3D().land2D.worldOfsY()
-						+ actor.pos.getAbsPoint().z;
-				double d81 = (int) (Math.ceil((dd2 - d51) / 10D) * 10D);
-				String s = "";
-				if (dd2 - d51 - 500D >= 0.0D)
-					s = " LOW";
-				if ((dd2 - d51) + 500D < 0.0D)
-					s = " HIGH";
-				new String();
-				double d91 = d31 - dd;
-				double d101 = d41 - dd1;
-				float f11 = 57.32484F * (float) Math.atan2(d101, -d91);
-				int j11 = (int) (Math.floor((int) f11) - 90D);
-				if (j11 < 0)
-					j11 = 360 + j11;
-				int k11 = j11 - ii;
-				if (k11 < 0)
-					k11 = 360 + k11;
-				int l11 = (int) (Math.ceil((double) (k11 + 15) / 30D) - 1.0D);
-				if (l11 < 1)
-					l11 = 12;
-				double d111 = dd - d31;
-				double d12 = dd1 - d41;
-				double d13 = Math
-						.ceil(Math.sqrt(d12 * d12 + d111 * d111) / 10D) * 10D;
-				//bMissileWarning = d13 <= 8000D && d13 >= 500D && Math.sqrt(d81 * d81) <= 6000D;
-				bMissileWarning = true;
-				if((super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode() || !(super.FM instanceof Pilot))
-		        {
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "MISSILE AT " + l11 + " O'CLOCK" + s + "!!!" + bMissileWarning);
-				playRWRWarning();
-		        }
-				if ((!FM.isPlayers() || !(FM instanceof RealFlightModel) || !((RealFlightModel) FM).isRealMode()) && (FM instanceof Maneuver))
-				{
-					backFire();					
-//					if (FM.CT.Weapons[7] != null) {
-//						for (int i = 0; i < FM.CT.Weapons[7].length; ++i) {
-//							if ((FM.CT.Weapons[7][i] != null) && (FM.CT.Weapons[7][i].countBullets() != 0)) {
-//								FM.CT.Weapons[7][i].shots(3);
-//							}
-//						}
-//					}
-				}
-    			} else 
-    			{
-    				bMissileWarning = false;
-    				playRWRWarning();
-    				launch = false;
-    			}
-		}
-	return true;
-    }
-
-    public void playRWRWarning()
-    {
-        if(bRadarWarning && !fxRWR.isPlaying())
-        {
-        	fxRWR.start();
-        	//fxRWR.play();           
-        } else
-        if(!bRadarWarning && fxRWR.isPlaying())
-        {
-        	fxRWR.stop();
-        	//fxRWR.cancel();
-        }
-        if(bMissileWarning && !fxMissileWarning.isPlaying())
-        {
-        	fxMissileWarning.start();
-        	fxRWR.stop();
-        	//fxMissileWarning.play();
-        } else
-        if(!bMissileWarning && fxMissileWarning.isPlaying())
-        {
-        	fxMissileWarning.stop();
-        	//fxMissileWarning.cancel();
-        }
-    }
-
 	public GuidedMissileUtils getGuidedMissileUtils() {
 		return guidedMissileUtils;
 	}
@@ -473,39 +215,51 @@ public class F_18D extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 			checkAsDrone();
 		guidedMissileUtils.update();
 		int i = aircIndex();
-		if (super.FM instanceof Maneuver)
-			if (typeDockableIsDocked()) {
-				if (!(super.FM instanceof RealFlightModel) || !((RealFlightModel) super.FM).isRealMode()) {
-					((Maneuver) super.FM).unblock();
-					((Maneuver) super.FM).set_maneuver(48);
-					for (int j = 0; j < i; j++)
-						((Maneuver) super.FM).push(48);
-					if (FM.AP.way.curr().Action != 3)
-						((FlightModelMain) ((Maneuver) super.FM)).AP.way.setCur(((FlightModelMain) (((SndAircraft) ((Aircraft) queen_)).FM)).AP.way.Cur());
-					((Pilot) super.FM).setDumbTime(3000L);
-				}
-				if (FM.M.fuel < FM.M.maxFuel)
-					FM.M.fuel += 20F * f;
-			} else if (!(super.FM instanceof RealFlightModel) || !((RealFlightModel) super.FM).isRealMode()) {
-				if (FM.CT.GearControl == 0.0F && FM.EI.engines[0].getStage() == 0)
-					FM.EI.setEngineRunning();
-				if (dtime > 0L && ((Maneuver) super.FM).Group != null) {
-					((Maneuver) super.FM).Group.leaderGroup = null;
-					((Maneuver) super.FM).set_maneuver(22);
-					((Pilot) super.FM).setDumbTime(3000L);
-					if (Time.current() > dtime + 3000L) {
-						dtime = -1L;
-						((Maneuver) super.FM).clear_stack();
-						((Maneuver) super.FM).set_maneuver(0);
-						((Pilot) super.FM).setDumbTime(0L);
-					}
-				} else if (FM.AP.way.curr().Action == 0) {
-					Maneuver maneuver = (Maneuver) super.FM;
-					if (maneuver.Group != null && maneuver.Group.airc[0] == this && maneuver.Group.clientGroup != null)
-						maneuver.Group.setGroupTask(2);
-				}
-			}
-		RWRLaunchWarning(); 
+    	if(super.FM instanceof Maneuver)
+            if(typeDockableIsDocked())
+            {
+                if(((FlightModelMain) (super.FM)).CT.getRefuel() < 0.90F)
+                    typeDockableAttemptDetach();
+                else
+                {
+                    if(!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode())
+                    {
+                        ((Maneuver)super.FM).unblock();
+                        ((Maneuver)super.FM).set_maneuver(48);
+                        for(int j = 0; j < i; j++)
+                            ((Maneuver)super.FM).push(48);
+                        if(((FlightModelMain) (super.FM)).AP.way.curr().Action != 3)
+                            ((FlightModelMain) ((Maneuver)super.FM)).AP.way.setCur(((FlightModelMain) (((SndAircraft) ((Aircraft)queen_)).FM)).AP.way.Cur());
+                        ((Pilot)super.FM).setDumbTime(3000L);
+                    }
+                    if(((FlightModelMain) (super.FM)).M.fuel < ((FlightModelMain) (super.FM)).M.maxFuel)
+                        ((FlightModelMain) (super.FM)).M.fuel += 20F * f;
+                }
+            } else
+            if(!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode())
+            {
+                if(((FlightModelMain) (super.FM)).CT.GearControl == 0.0F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 0)
+                    ((FlightModelMain) (super.FM)).EI.setEngineRunning();
+                if(dtime > 0L && ((Maneuver)super.FM).Group != null)
+                {
+                    ((Maneuver)super.FM).Group.leaderGroup = null;
+                    ((Maneuver)super.FM).set_maneuver(22);
+                    ((Pilot)super.FM).setDumbTime(3000L);
+                    if(Time.current() > dtime + 3000L)
+                    {
+                        dtime = -1L;
+                        ((Maneuver)super.FM).clear_stack();
+                        ((Maneuver)super.FM).set_maneuver(0);
+                        ((Pilot)super.FM).setDumbTime(0L);
+                    }
+                } else
+                if(((FlightModelMain) (super.FM)).AP.way.curr().Action == 0)
+                {
+                    Maneuver maneuver = (Maneuver)super.FM;
+                    if(maneuver.Group != null && maneuver.Group.airc[0] == this && maneuver.Group.clientGroup != null)
+                        maneuver.Group.setGroupTask(2);
+                }
+            }
 		if (FM.CT.getArrestor() > 0.2F)
 			if (FM.Gears.arrestorVAngle != 0.0F) {
 				float f1 = Aircraft.cvt(FM.Gears.arrestorVAngle, -50F, 7F, 1.0F, 0.0F);
@@ -530,6 +284,8 @@ public class F_18D extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 				moveArrestorHook(arrestor);
 			}
 		super.update(f);
+		if(this.backfire)
+			backFire();
 		if((!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode()) && (FM instanceof Maneuver) && ((Maneuver)FM).get_task() == 7 && !((FlightModelMain) (super.FM)).AP.way.isLanding()) //TODO straft
         {           
         	if(missilesList.isEmpty() && !((Maneuver)super.FM).hasBombs())
@@ -581,160 +337,187 @@ public class F_18D extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
         }
 	}
 
-	public void msgCollisionRequest(Actor actor, boolean aflag[]) {
-		super.msgCollisionRequest(actor, aflag);
-		if (queen_last != null && queen_last == actor && (queen_time == 0L || Time.current() < queen_time + 5000L))
-			aflag[0] = false;
-		else
-			aflag[0] = true;
-	}
+	public void msgCollisionRequest(Actor actor, boolean aflag[])
+    {
+        super.msgCollisionRequest(actor, aflag);
+        if(queen_last != null && queen_last == actor && (queen_time == 0L || Time.current() < queen_time + 5000L))
+            aflag[0] = false;
+        else
+            aflag[0] = true;
+    }
 
-	public void missionStarting() {
-		checkAsDrone();
-	}
+    public void missionStarting()
+    {
+        checkAsDrone();
+    }
 
-	private void checkAsDrone() {
-		if (target_ == null) {
-			if (FM.AP.way.curr().getTarget() == null)
-				FM.AP.way.next();
-			target_ = FM.AP.way.curr().getTarget();
-			if (Actor.isValid(target_) && (target_ instanceof Wing)) {
-				Wing wing = (Wing) target_;
-				int i = aircIndex();
-				if (Actor.isValid(wing.airc[i / 2]))
-					target_ = wing.airc[i / 2];
-				else
-					target_ = null;
-			}
-		}
-		if (Actor.isValid(target_) && (target_ instanceof TypeTankerDrogue)) {
-			queen_last = target_;
-			queen_time = Time.current();
-			if (isNetMaster())
-				((TypeDockable) target_).typeDockableRequestAttach(this, aircIndex() % 2, true);
-		}
-		bNeedSetup = false;
-		target_ = null;
-	}
-
-	public int typeDockableGetDockport() {
-		if (typeDockableIsDocked())
-			return dockport_;
-		else
-			return -1;
-	}
-
-	public Actor typeDockableGetQueen() {
-		return queen_;
-	}
-
-	public boolean typeDockableIsDocked() {
-		return Actor.isValid(queen_);
-	}
-
-	public void typeDockableAttemptAttach() {
-		if (FM.AS.isMaster() && !typeDockableIsDocked()) {
-			Aircraft aircraft = War.getNearestFriend(this);
-			if (aircraft instanceof TypeTankerDrogue) {
-				((TypeDockable) aircraft).typeDockableRequestAttach(this);
-				FM.CT.RefuelControl = 1F;
-			} else {
-				FM.CT.RefuelControl = 0F;
-			}
-		}
-	}
-
-	public void typeDockableAttemptDetach() {
-		if (FM.AS.isMaster() && typeDockableIsDocked() && Actor.isValid(queen_))
-			((TypeDockable) queen_).typeDockableRequestDetach(this);
-	}
-
-	public void typeDockableRequestAttach(Actor actor) {
-	}
-
-	public void typeDockableRequestDetach(Actor actor) {
-	}
-
-	public void typeDockableRequestAttach(Actor actor, int i, boolean flag) {
-	}
-
-	public void typeDockableRequestDetach(Actor actor, int i, boolean flag) {
-	}
-
-	public void typeDockableDoAttachToDrone(Actor actor, int i) {
-	}
-
-	public void typeDockableDoDetachFromDrone(int i) {
-	}
-
-	public void typeDockableDoAttachToQueen(Actor actor, int i) {
-		queen_ = actor;
-		dockport_ = i;
-		queen_last = queen_;
-		queen_time = 0L;
-		FM.EI.setEngineRunning();
-		FM.CT.setGearAirborne();
-		moveGear(0.0F);
-		com.maddox.il2.fm.FlightModel flightmodel = ((SndAircraft) ((Aircraft) queen_)).FM;
-		if (aircIndex() == 0 && (super.FM instanceof Maneuver) && (flightmodel instanceof Maneuver)) {
-			Maneuver maneuver = (Maneuver) flightmodel;
-			Maneuver maneuver1 = (Maneuver) super.FM;
-			if (maneuver.Group != null && maneuver1.Group != null && maneuver1.Group.numInGroup(this) == maneuver1.Group.nOfAirc - 1) {
-				AirGroup airgroup = new AirGroup(maneuver1.Group);
-				maneuver1.Group.delAircraft(this);
-				airgroup.addAircraft(this);
-				airgroup.attachGroup(maneuver.Group);
-				airgroup.rejoinGroup = null;
-				airgroup.leaderGroup = null;
-				airgroup.clientGroup = maneuver.Group;
-			}
-		}
-	}
-
-	public void typeDockableDoDetachFromQueen(int i) {
-		if (dockport_ == i) {
-			queen_last = queen_;
-			queen_time = Time.current();
-			queen_ = null;
-			dockport_ = 0;
-		}
-	}
-
-	public void typeDockableReplicateToNet(NetMsgGuaranted netmsgguaranted) throws IOException {
-		if (typeDockableIsDocked()) {
-			netmsgguaranted.writeByte(1);
-			com.maddox.il2.engine.ActorNet actornet = null;
-			if (Actor.isValid(queen_)) {
-				actornet = queen_.net;
-				if (actornet.countNoMirrors() > 0)
-					actornet = null;
-			}
-			netmsgguaranted.writeByte(dockport_);
-			netmsgguaranted.writeNetObj(actornet);
-		} else {
-			netmsgguaranted.writeByte(0);
-		}
-	}
-
-	public void typeDockableReplicateFromNet(NetMsgInput netmsginput) throws IOException {
-		if (netmsginput.readByte() == 1) {
-			dockport_ = netmsginput.readByte();
-			NetObj netobj = netmsginput.readNetObj();
-			if (netobj != null) {
-				Actor actor = (Actor) netobj.superObj();
-				((TypeDockable) actor).typeDockableDoAttachToDrone(this, dockport_);
-			}
-		}
-	}
-
-	public void rareAction(float f, boolean flag) {
-		int counter = 0;
-		if((super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode() || !(super.FM instanceof Pilot))
+    private void checkAsDrone()
+    {
+        if(target_ == null)
         {
-    	if (counter++ % 5 == 0) {
-			RWRWarning();
-    	}	
-	}
+            if(((FlightModelMain) (super.FM)).AP.way.curr().getTarget() == null)
+                ((FlightModelMain) (super.FM)).AP.way.next();
+            target_ = ((FlightModelMain) (super.FM)).AP.way.curr().getTarget();
+            if(Actor.isValid(target_) && (target_ instanceof Wing))
+            {
+                Wing wing = (Wing)target_;
+                int i = aircIndex();
+                if(Actor.isValid(wing.airc[i / 2]))
+                    target_ = wing.airc[i / 2];
+                else
+                    target_ = null;
+            }
+        }
+        if(Actor.isValid(target_) && (target_ instanceof TypeTankerDrogue))
+        {
+            queen_last = target_;
+            queen_time = Time.current();
+            if(isNetMaster())
+                ((TypeDockable)target_).typeDockableRequestAttach(this, aircIndex() % 2, true);
+        }
+        bNeedSetup = false;
+        target_ = null;
+    }
+
+    public int typeDockableGetDockport()
+    {
+        if(typeDockableIsDocked())
+            return dockport_;
+        else
+            return -1;
+    }
+
+    public Actor typeDockableGetQueen()
+    {
+        return queen_;
+    }
+
+    public boolean typeDockableIsDocked()
+    {
+        return Actor.isValid(queen_);
+    }
+
+    public void typeDockableAttemptAttach()
+    {
+        if(((FlightModelMain) (super.FM)).AS.isMaster() && !typeDockableIsDocked())
+        {
+            Aircraft aircraft = War.getNearestFriend(this);
+            if(aircraft instanceof TypeTankerDrogue && ((FlightModelMain) (super.FM)).CT.getRefuel() > 0.95F)
+                ((TypeDockable)aircraft).typeDockableRequestAttach(this);
+      /*          ((FlightModelMain) (super.FM)).CT.RefuelControl = 1F;
+            } else  
+            {
+                ((FlightModelMain) (super.FM)).CT.RefuelControl = 0F;
+            }	*/
+        }
+    }
+    
+
+    public void typeDockableAttemptDetach()
+    {
+        if(((FlightModelMain) (super.FM)).AS.isMaster() && typeDockableIsDocked() && Actor.isValid(queen_))
+            ((TypeDockable)queen_).typeDockableRequestDetach(this);
+    }
+
+    public void typeDockableRequestAttach(Actor actor)
+    {
+    }
+
+    public void typeDockableRequestDetach(Actor actor)
+    {
+    }
+
+    public void typeDockableRequestAttach(Actor actor, int i, boolean flag)
+    {
+    }
+
+    public void typeDockableRequestDetach(Actor actor, int i, boolean flag)
+    {
+    }
+
+    public void typeDockableDoAttachToDrone(Actor actor, int i)
+    {
+    }
+
+    public void typeDockableDoDetachFromDrone(int i)
+    {
+    }
+
+    public void typeDockableDoAttachToQueen(Actor actor, int i)
+    {
+        queen_ = actor;
+        dockport_ = i;
+        queen_last = queen_;
+        queen_time = 0L;
+        ((FlightModelMain) (super.FM)).EI.setEngineRunning();
+        ((FlightModelMain) (super.FM)).CT.setGearAirborne();
+        moveGear(0.0F);
+        com.maddox.il2.fm.FlightModel flightmodel = ((SndAircraft) ((Aircraft)queen_)).FM;
+        if(aircIndex() == 0 && (super.FM instanceof Maneuver) && (flightmodel instanceof Maneuver))
+        {
+            Maneuver maneuver = (Maneuver)flightmodel;
+            Maneuver maneuver1 = (Maneuver)super.FM;
+            if(maneuver.Group != null && maneuver1.Group != null && maneuver1.Group.numInGroup(this) == maneuver1.Group.nOfAirc - 1)
+            {
+                AirGroup airgroup = new AirGroup(maneuver1.Group);
+                maneuver1.Group.delAircraft(this);
+                airgroup.addAircraft(this);
+                airgroup.attachGroup(maneuver.Group);
+                airgroup.rejoinGroup = null;
+                airgroup.leaderGroup = null;
+                airgroup.clientGroup = maneuver.Group;
+            }
+        }
+    }
+
+    public void typeDockableDoDetachFromQueen(int i)
+    {
+        if(dockport_ == i)
+        {
+            queen_last = queen_;
+            queen_time = Time.current();
+            queen_ = null;
+            dockport_ = 0;
+        }
+    }
+
+    public void typeDockableReplicateToNet(NetMsgGuaranted netmsgguaranted)
+        throws IOException
+    {
+        if(typeDockableIsDocked())
+        {
+            netmsgguaranted.writeByte(1);
+            com.maddox.il2.engine.ActorNet actornet = null;
+            if(Actor.isValid(queen_))
+            {
+                actornet = queen_.net;
+                if(actornet.countNoMirrors() > 0)
+                    actornet = null;
+            }
+            netmsgguaranted.writeByte(dockport_);
+            netmsgguaranted.writeNetObj(actornet);
+        } else
+        {
+            netmsgguaranted.writeByte(0);
+        }
+    }
+
+    public void typeDockableReplicateFromNet(NetMsgInput netmsginput)
+        throws IOException
+    {
+        if(netmsginput.readByte() == 1)
+        {
+            dockport_ = netmsginput.readByte();
+            NetObj netobj = netmsginput.readNetObj();
+            if(netobj != null)
+            {
+                Actor actor = (Actor)netobj.superObj();
+                ((TypeDockable)actor).typeDockableDoAttachToDrone(this, dockport_);
+            }
+        }
+    }
+
+	public void rareAction(float f, boolean flag) {		
 		super.rareAction(f, flag);
 		
 	}
@@ -764,14 +547,6 @@ public class F_18D extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 			"_Extmis32", "_Extmis33" };
 	BulletEmitter bulletEmitters[];
 	private GuidedMissileUtils guidedMissileUtils;
-	private SoundFX fxRWR;
-    private Sample smplRWR;
-    private boolean RWRSoundPlaying;
-    private SoundFX fxMissileWarning;
-    private Sample smplMissileWarning;
-    private boolean MissileSoundPlaying;
-    private boolean bRadarWarning;
-    private boolean bMissileWarning;
 	private boolean hasChaff;
 	private boolean hasFlare;
 	private long lastChaffDeployed;

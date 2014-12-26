@@ -657,6 +657,7 @@ public class FlightModelMain extends FMMath
         VmaxFLAPS *= 0.2777778F;
         VminFLAPS *= 0.2416667F;
         VmaxAllowed *= 0.2777778F;
+        s2 = "Polares";
         Fusel.lineCyCoeff = 0.02F;
         Fusel.AOAMinCx_Shift = 0.0F;
         Fusel.Cy0_0 = 0.0F;
@@ -665,13 +666,13 @@ public class FlightModelMain extends FMMath
         Fusel.CyCritH_0 = 0.2F;
         Fusel.CyCritL_0 = -0.2F;
         Fusel.parabCxCoeff_0 = 0.0006F;
-        Fusel.CxMin_0 = 0.0F;
+        Fusel.CxMin_0 = 0.02F;
         Fusel.Cy0_1 = 0.0F;
         Fusel.AOACritH_1 = 17F;
         Fusel.AOACritL_1 = -17F;
         Fusel.CyCritH_1 = 0.2F;
         Fusel.CyCritL_1 = -0.2F;
-        Fusel.CxMin_1 = 0.0F;
+        Fusel.CxMin_1 = 0.02F;
         Fusel.parabCxCoeff_1 = 0.0006F;
         Fusel.declineCoeff = 0.007F;
         Fusel.maxDistAng = 30F;
