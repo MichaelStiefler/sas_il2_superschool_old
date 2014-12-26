@@ -112,7 +112,7 @@ public class AV_8 extends Scheme1
 		deltaAzimuth = 0.0F;
         deltaTangage = 0.0F;
         radargunsight = 0;
-        leftscreen = 0;
+        leftscreen = 2;
         Bingofuel = 1000;
         radarrange=1;
         bDynamoOperational = true;
@@ -127,6 +127,8 @@ public class AV_8 extends Scheme1
         radartogle = false;
         v = 0F;
         h = 0F;
+        Nvision = false;
+        FL = false;
     }
     
     public float Fuelamount;
@@ -141,6 +143,7 @@ public class AV_8 extends Scheme1
     }
     
     public boolean radartogle;
+    public boolean Nvision;
     
     public void auxPressed(int i)//TODO Misc key
     {
@@ -160,7 +163,15 @@ public class AV_8 extends Scheme1
         }
         if(i == 21)
         {       		
-                     
+        	if(!Nvision)
+     	   {
+        		Nvision = true;
+     		   HUD.log(AircraftHotKeys.hudLogWeaponId, "Nvision ON");
+     	   } else	   
+     	   {
+     		   Nvision = false;
+     		   HUD.log(AircraftHotKeys.hudLogWeaponId, "Nvision OFF");
+     	   }       
         }
         if(i == 22)
         {       		
@@ -185,17 +196,19 @@ public class AV_8 extends Scheme1
         if(i == 24)
         {
         	leftscreen++;
-            if(leftscreen>1)
+            if(leftscreen>2)
             	leftscreen = 0;
             if(leftscreen == 0)
             {
-            	if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
                     HUD.log(AircraftHotKeys.hudLogWeaponId, "Left screen: Fuel");
             } else
             if(leftscreen == 1)
             {
-            	if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
                     HUD.log(AircraftHotKeys.hudLogWeaponId, "Left screen: FPAS");
+            } else
+            if(leftscreen == 2)
+            {
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Left screen: Engine");
             }
         }
         if(i == 25)
@@ -219,13 +232,26 @@ public class AV_8 extends Scheme1
             	HUD.log("Lazer Lock");
             	t1 = Time.current();
             }
-        }       
+        }
+        if(i == 27)
+        {
+        	if(!ILS)
+      	   {
+        		ILS = true;
+      		   HUD.log(AircraftHotKeys.hudLogWeaponId, "ILS ON");
+      	   } else	   
+      	   {
+      		 ILS = false;
+      		   HUD.log(AircraftHotKeys.hudLogWeaponId, "ILS OFF");
+      	   }
+        }
     }
         
-    public boolean hold;
-    private long t1;
     public int lockmode;
     private boolean APmode1;
+    public boolean ILS;	
+    public boolean hold;
+    public long t1;
     
     private void laser(Point3d point3d)
     {
@@ -1537,29 +1563,25 @@ label0:
     	int ws = Mission.cur().curCloudsType();
         float we = Mission.cur().curCloudsHeight() + 500F;
         //HUD.log(AircraftHotKeys.hudLogWeaponId, "weather" + ws);
-        if(World.getTimeofDay() <= 6.5F || World.getTimeofDay() > 18F || (ws > 4 && this.FM.getAltitude()<we))
+        if((World.getTimeofDay() <= 6.5F || World.getTimeofDay() > 18F || (ws > 4 && this.FM.getAltitude()<we)) && !this.FM.isPlayers())
         {
-        	hierMesh().chunkVisible("SlightNose", true);
-        	hierMesh().chunkVisible("SlightTail", true);
-        	hierMesh().chunkVisible("SlightWTopL", true);
-        	hierMesh().chunkVisible("SlightWTopR", true);
-        	hierMesh().chunkVisible("SlightKeel", true);
-        	hierMesh().chunkVisible("SlightWTipL", true);
-        	hierMesh().chunkVisible("SlightWTipR", true);
+        	FL = true;
         }
-        if((World.getTimeofDay() > 6.5F && World.getTimeofDay() <= 18F && ws <= 4) || (World.getTimeofDay() > 6.5F && World.getTimeofDay() <= 18F && this.FM.getAltitude()>we))
+        if(((World.getTimeofDay() > 6.5F && World.getTimeofDay() <= 18F && ws <= 4) || (World.getTimeofDay() > 6.5F && World.getTimeofDay() <= 18F && this.FM.getAltitude()>we)) && !this.FM.isPlayers())
         {
-        	hierMesh().chunkVisible("SlightNose", false);
-        	hierMesh().chunkVisible("SlightTail", false);
-        	hierMesh().chunkVisible("SlightWTopL", false);
-        	hierMesh().chunkVisible("SlightWTopR", false);
-        	hierMesh().chunkVisible("SlightKeel", false);
-        	hierMesh().chunkVisible("SlightWTipL", false);
-        	hierMesh().chunkVisible("SlightWTipR", false);
+        	FL = false;
         }
+        	hierMesh().chunkVisible("SlightNose", FL);
+        	hierMesh().chunkVisible("SlightTail", FL);
+        	hierMesh().chunkVisible("SlightWTopL", FL);
+        	hierMesh().chunkVisible("SlightWTopR", FL);
+        	hierMesh().chunkVisible("SlightKeel", FL);
+        	hierMesh().chunkVisible("SlightWTipL", FL);
+        	hierMesh().chunkVisible("SlightWTipR", FL);
     }
     
     private float vtolvect;
+    public boolean FL;
     
     //TODO VTOL
     

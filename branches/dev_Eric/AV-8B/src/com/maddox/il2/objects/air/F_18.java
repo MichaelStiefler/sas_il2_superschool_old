@@ -143,6 +143,7 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
         MissileSoundPlaying = false;
         misslebrg = 0F;
 	    aircraftbrg = 0F;
+	    FL = false;
 	}
 
 	private static final float toMeters(float f) {
@@ -213,13 +214,13 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
         	if(radargunsight > 3)
         		radargunsight = 0;
         	if(radargunsight == 0)
-        	HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: GAU-12: funnel");
+        	HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: funnel");
         	if(radargunsight == 1)
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: GAU-12: Radar ranging");
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Radar ranging");
         	if(radargunsight == 2)
             HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Unguided Rocket");
         	if(radargunsight == 3)
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: GAU-12: Ground");
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Ground");
         }
         if(i == 24)
         {
@@ -273,11 +274,24 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
       		   HUD.log(AircraftHotKeys.hudLogWeaponId, "ILS OFF");
       	   }
         }
+        if(i == 27)
+        {
+        	if(!FL)
+      	   {
+        		FL = true;
+      		   HUD.log(AircraftHotKeys.hudLogWeaponId, "FL ON");
+      	   } else	   
+      	   {
+      		 FL = false;
+      		   HUD.log(AircraftHotKeys.hudLogWeaponId, "FL OFF");
+      	   }
+        }
     }
         
     public int lockmode;
     private boolean APmode1;
     public boolean ILS;
+    public boolean FL;
 	public float azimult; //TODO controlling the laser spot
     public float tangate;
     public long tf;
@@ -1707,11 +1721,6 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 			FM.CT.setTrimElevatorControl(0F);
 			trimauto = true;
 		}
-//		if (FM.CT.getGear() > 0.2F && FM.CT.FlapsControl > 0.16F) {
-//			FM.CT.BlownFlapsControl = 1.0F;
-//		} else {
-//			FM.CT.BlownFlapsControl = 0.0F;
-//		}
 		if (FM.CT.getGear() < 0.8F || super.FM.getSpeedKMH() > 590) {
 			if (FM.CT.FlapsControl > 0.16F) {
 				FM.CT.FlapsControl = 0.16F;
@@ -1722,12 +1731,7 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 				FM.CT.FlapsControl = 0F;
 			}
 		}
-		if (World.getTimeofDay() <= 6.5F || World.getTimeofDay() > 18F) {
-			hierMesh().chunkVisible("SSlightstabr", true);
-			hierMesh().chunkVisible("SSlightstabl", true);
-			hierMesh().chunkVisible("SSlightnose", true);
-			hierMesh().chunkVisible("SSlighttail", true);
-		}
+		formationlights();
 		if (super.FM.getAOA() > 28 || (super.FM.getSpeedKMH() < 469 && FM.CT.FlapsControl > 0.16F) || super.FM.getOverload() >= 6F) {
 			FM.CT.AirBrakeControl = 0F;
 		}
@@ -1861,6 +1865,25 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 		if (super.FM.getAltitude() > 20000F && FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() > 5)
 			FM.producedAF.x -= 17000D;
 	}
+	
+	private void formationlights()
+    {
+    	int ws = Mission.cur().curCloudsType();
+        float we = Mission.cur().curCloudsHeight() + 500F;
+        //HUD.log(AircraftHotKeys.hudLogWeaponId, "weather" + ws);
+        if((World.getTimeofDay() <= 6.5F || World.getTimeofDay() > 18F || (ws > 4 && this.FM.getAltitude()<we)) && !this.FM.isPlayers())
+        {
+        	FL = true;
+        }
+        if(((World.getTimeofDay() > 6.5F && World.getTimeofDay() <= 18F && ws <= 4) || (World.getTimeofDay() > 6.5F && World.getTimeofDay() <= 18F && this.FM.getAltitude()>we)) && !this.FM.isPlayers())
+        {
+        	FL = false;
+        }
+        hierMesh().chunkVisible("SSlightstabr", FL);
+		hierMesh().chunkVisible("SSlightstabl", FL);
+		hierMesh().chunkVisible("SSlightnose", FL);
+		hierMesh().chunkVisible("SSlighttail", FL);
+    }
 
 	public void updateHook() {
 	}

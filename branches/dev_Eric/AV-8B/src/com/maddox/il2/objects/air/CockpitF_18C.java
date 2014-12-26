@@ -307,12 +307,12 @@ public class CockpitF_18C extends CockpitPilot
 		t3 = 0L;
 		FOV = 1.0D;
         ScX = 0.0059999997764825821D;
-        ScY = 0.0000065;
+        ScY = 0.0000045;
         ScZ = 0.0010000000474974513D;
         FOrigX = 0.0F;
         FOrigY = 0.0F;
         nTgts = 10;
-        RRange = 50000F;
+        RRange = 74000F;
         RClose = 5F;
         BRange = 0.1F;
         BRefresh = 1300;
@@ -825,7 +825,7 @@ public class CockpitF_18C extends CockpitPilot
                             orientAC.transformInv(pointOrtho);
                             float f = Mission.cur().curCloudsType();
                             double v = ((x + ((float)Math.sin(Math.toRadians(((FlightModelMain) (super.fm)).Or.getRoll())) * 0.011F))/ScX)/(30D/((Tuple3d) (pointOrtho)).x);
-                            if(((Tuple3d) (pointOrtho)).x > (double)RClose && ((Tuple3d) (pointOrtho)).x < (double)RRange - (double)(350F * f) && ((Tuple3d) (pointOrtho)).y < v + 7000D && ((Tuple3d) (pointOrtho)).y > v - 7000D && (((Tuple3d) (pointOrtho)).z < ((Tuple3d) (pointOrtho)).x * 0.36397023426 && ((Tuple3d) (pointOrtho)).z > -((Tuple3d) (pointOrtho)).x * 0.36397023426))
+                            if(((Tuple3d) (pointOrtho)).x > (double)RClose && ((Tuple3d) (pointOrtho)).x < (double)RRange - (double)(350F * f) && ((Tuple3d) (pointOrtho)).y < v + 6000D && ((Tuple3d) (pointOrtho)).y > v - 6000D && (((Tuple3d) (pointOrtho)).z < ((Tuple3d) (pointOrtho)).x * 0.46397023426 && ((Tuple3d) (pointOrtho)).z > -((Tuple3d) (pointOrtho)).x * 0.46397023426))
                                 radarPlane.add(pointOrtho);                                                     
                         }               	
                     }                  
@@ -925,7 +925,7 @@ public class CockpitF_18C extends CockpitPilot
                             orientAC.transformInv(pointOrtho);                           
                         	//HUD.log(AircraftHotKeys.hudLogWeaponId, "target heading" + HDG);
                             float f = Mission.cur().curCloudsType();                                                       
-                            if(((Tuple3d) (pointOrtho)).x > h - 500D && ((Tuple3d) (pointOrtho)).x < h + 500D && ((Tuple3d) (pointOrtho)).y < v/(30D/((Tuple3d) (pointOrtho)).x) + 500D && ((Tuple3d) (pointOrtho)).y > v/(30D/((Tuple3d) (pointOrtho)).x) - 500D && (((Tuple3d) (pointOrtho)).z < ((Tuple3d) (pointOrtho)).x * 0.36397023426 && ((Tuple3d) (pointOrtho)).z > -((Tuple3d) (pointOrtho)).x * 0.36397023426))
+                            if(((Tuple3d) (pointOrtho)).x > h - 500D && ((Tuple3d) (pointOrtho)).x < h + 500D && ((Tuple3d) (pointOrtho)).y < v/(30D/((Tuple3d) (pointOrtho)).x) + 500D && ((Tuple3d) (pointOrtho)).y > v/(30D/((Tuple3d) (pointOrtho)).x) - 500D && (((Tuple3d) (pointOrtho)).z < ((Tuple3d) (pointOrtho)).x * 0.56397023426 && ((Tuple3d) (pointOrtho)).z > -((Tuple3d) (pointOrtho)).x * 0.56397023426))
                             {
                             	radarLock.add(pointOrtho);
                             	victim.add(actor);
@@ -1069,7 +1069,8 @@ public class CockpitF_18C extends CockpitPilot
 
     protected void moveControls(float f)
     {
-        super.mesh.chunkSetAngles("Z_Z_Stick", 0.0F, ((FlightModelMain) (super.fm)).CT.AileronControl * 10F, ((FlightModelMain) (super.fm)).CT.ElevatorControl * 10F);
+    	super.mesh.chunkSetAngles("Canopy", 0.0F, 0.0F, 20F * ((FlightModelMain) (super.fm)).CT.getCockpitDoor());
+    	super.mesh.chunkSetAngles("Z_Z_Stick", 0.0F, ((FlightModelMain) (super.fm)).CT.AileronControl * 10F, ((FlightModelMain) (super.fm)).CT.ElevatorControl * 10F);
         super.mesh.chunkSetAngles("Z_Z_Throttle1", 0.0F, 0.0F, -42F * interp(setNew.throttlel, setOld.throttlel, f));
         super.mesh.chunkSetAngles("Z_Z_Throttle2", 0.0F, 0.0F, -42F * interp(setNew.throttlel, setOld.throttlel, f));
         resetYPRmodifier();
@@ -1097,8 +1098,8 @@ public class CockpitF_18C extends CockpitPilot
         	f1 = 15F;
         	super.mesh.chunkSetAngles("Z_Z_Flap", 0.0F, 0.0F, f1);
         }
-        super.mesh.chunkSetAngles("Z_Z_Hook", 0.0F, 0.0F, cvt(((FlightModelMain) (super.fm)).CT.getArrestor(),0.0F,1.0F,0.0F,20F));
-        super.mesh.chunkSetAngles("Z_Z_WingFold", cvt(((FlightModelMain) (super.fm)).CT.getWing(),0.0F,1.0F,0.0F,-80F), 0.0F, 0.0F);
+        super.mesh.chunkSetAngles("Z_Z_Hook", 0.0F, 0.0F, (int)((FlightModelMain) (super.fm)).CT.getArrestor() * 20F);
+        super.mesh.chunkSetAngles("Z_Z_WingFold",(int)((FlightModelMain) (super.fm)).CT.getWing() * -80F, 0.0F, 0.0F);
     }
     
     protected void backupGauges(float f)//TODO Gauges
@@ -1402,7 +1403,7 @@ public class CockpitF_18C extends CockpitPilot
         for(int j = 0; j < fm.CT.Weapons[9].length && j < 2; j++)
         if(fm.CT.Weapons[9][j].haveBullets())
         {
-            	tankC = (((F_18C)aircraft()).checkfuel(0)/1000)*2.20462262F; 
+            	tankC = (((F_18)aircraft()).checkfuel(0)/1000)*2.20462262F; 
         } else
         {	
             	tankC = 0F;
@@ -1427,7 +1428,7 @@ public class CockpitF_18C extends CockpitPilot
         for(int j = 2; j < fm.CT.Weapons[9].length && j < 7; j++)
         if(fm.CT.Weapons[9][j].haveBullets())
         {
-        	tankL = (((F_18C)aircraft()).checkfuel(1)/1000)*2.20462262F; 
+        	tankL = (((F_18)aircraft()).checkfuel(1)/1000)*2.20462262F; 
         } else
         {	
         	tankL = 0F;
@@ -1669,7 +1670,7 @@ public class CockpitF_18C extends CockpitPilot
         for(int j = 2; j < fm.CT.Weapons[9].length && j < 7; j++)
         if(fm.CT.Weapons[9][j].haveBullets())
         {
-        	tankL = (((F_18C)aircraft()).checkfuel(1)/1000)*2.20462262F; 
+        	tankL = (((F_18)aircraft()).checkfuel(1)/1000)*2.20462262F; 
         } else
         {	
         	tankL = 0F;
@@ -1678,7 +1679,7 @@ public class CockpitF_18C extends CockpitPilot
         for(int j = 0; j < fm.CT.Weapons[9].length && j < 2; j++)
         if(fm.CT.Weapons[9][j].haveBullets())
         {
-            	tankC = (((F_18C)aircraft()).checkfuel(0)/1000)*2.20462262F; 
+            	tankC = (((F_18)aircraft()).checkfuel(0)/1000)*2.20462262F; 
         } else
         {	
             	tankC = 0F;
@@ -2437,6 +2438,11 @@ public class CockpitF_18C extends CockpitPilot
         	super.mesh.chunkVisible("Z_Z_HUD_Bank", false); else
         		super.mesh.chunkVisible("Z_Z_HUD_Bank", true);
         super.mesh.chunkSetAngles("Z_Z_HUD_BANK", 0.0F, f3, 0.0F);
+        f10 = setNew.fpmPitch/10;
+        f3 = (float)(int)f10 * 36F;
+        super.mesh.chunkSetAngles("Z_Z_HUD_AOA_1", 0.0F, 0.0F, f3);
+        f3 = (float)((int)(f10 * 10F) % 10) * 36F;
+        super.mesh.chunkSetAngles("Z_Z_HUD_AOA_2", 0.0F, 0.0F, f3); 
     }   
 
     protected void drawSound(float f)//TODO SOUND
@@ -2488,7 +2494,9 @@ public class CockpitF_18C extends CockpitPilot
             }
         if(AltitudeWarn != null)
         {	
-        if((((FlightModelMain) (fm)).getAltitude()<550F && ((FlightModelMain) (fm)).getVertSpeed() < -40F) || (((FlightModelMain) (fm)).getAltitude()<100F && ((FlightModelMain) (super.fm)).CT.getGear() < 0.999999F))
+        float radioaltnow = ((FlightModelMain) (fm)).getAltitude() - (float)Engine.land().HQ_Air(((FlightModelMain) (fm)).Loc.x, ((FlightModelMain) (fm)).Loc.y);
+        radioaltnow = radioaltnow / (float)Math.cos(Math.toRadians(Math.abs(((FlightModelMain) (fm)).Or.getKren()))) / (float)Math.cos(Math.toRadians(Math.abs(((FlightModelMain) (fm)).Or.getTangage())));	
+        if((radioaltnow<550F && ((FlightModelMain) (fm)).getVertSpeed() < -40F) || (radioaltnow<100F && ((FlightModelMain) (super.fm)).CT.getGear() < 0.999999F))
         {
         	if((((FlightModelMain) (fm)).Or.getPitch() - 360F) < -22F)
         	{
