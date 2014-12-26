@@ -43,7 +43,7 @@ public class MissileAGM84B extends Missile
     static 
     {
         Class class1 = com.maddox.il2.objects.weapons.MissileAGM84B.class;
-        Property.set(class1, "mesh", "3do/arms/AGM84A/mono.sim");
+        Property.set(class1, "mesh", "3do/arms/AGM-84A/mono.sim");
         Property.set(class1, "sprite", "3do/Effects/RocketSidewinder/RocketSidewinderSmoke.eff");
         Property.set(class1, "flame", "3do/Effects/RocketSidewinder/RocketSidewinderFlame.sim");
         Property.set(class1, "smoke", "EFFECTS/Smokes/SmokeBlack_missiles.eff");
