@@ -55,13 +55,13 @@ public class MissileAIM7Eps extends Missile {
 		Property.set(class1, "canTrackSubs", 0);
 		Property.set(class1, "minPkForAI", 25F);
 		Property.set(class1, "timeForNextLaunchAI", 10000L);
-		Property.set(class1, "engineDelayTime", 0);
+		Property.set(class1, "engineDelayTime", 200L);
 		Property.set(class1, "attackDecisionByAI", 1);
 		Property.set(class1, "targetType", 1);
-		Property.set(class1, "shotFreq", 0.01F);
+		Property.set(class1, "shotFreq", 1.01F);
 		Property.set(class1, "groundTrackFactor", 0.0F);
 		Property.set(class1, "flareLockTime", 1000L);
-		Property.set(class1, "trackDelay", 100L);
+		Property.set(class1, "trackDelay", 1000L);
 		Property.set(class1, "failureRate", 30F);
 		Property.set(class1, "maxLockGForce", 99.9F);
 		Property.set(class1, "maxFOVfrom", 20F);
