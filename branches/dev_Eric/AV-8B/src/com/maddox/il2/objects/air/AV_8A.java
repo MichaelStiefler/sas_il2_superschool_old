@@ -628,7 +628,7 @@ public class AV_8A extends AV_8
             return;
         } else
         {
-            ((RocketGunAGM65L)missilesList.remove(0)).shots(1);
+            ((RocketGunAGM65Ds)missilesList.remove(0)).shots(1);
             return;
         }
     }
@@ -656,21 +656,26 @@ public class AV_8A extends AV_8
     	guidedMissileUtils.update();
     	//AIswitchmissile();
     	int i = aircIndex();
-        if(super.FM instanceof Maneuver)
+    	if(super.FM instanceof Maneuver)
             if(typeDockableIsDocked())
             {
-                if(!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode())
+                if(((FlightModelMain) (super.FM)).CT.getRefuel() < 0.90F)
+                    typeDockableAttemptDetach();
+                else
                 {
-                    ((Maneuver)super.FM).unblock();
-                    ((Maneuver)super.FM).set_maneuver(48);
-                    for(int j = 0; j < i; j++)
-                        ((Maneuver)super.FM).push(48);
-                    if(((FlightModelMain) (super.FM)).AP.way.curr().Action != 3)
-                        ((FlightModelMain) ((Maneuver)super.FM)).AP.way.setCur(((FlightModelMain) (((SndAircraft) ((Aircraft)queen_)).FM)).AP.way.Cur());
-                    ((Pilot)super.FM).setDumbTime(3000L);
+                    if(!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode())
+                    {
+                        ((Maneuver)super.FM).unblock();
+                        ((Maneuver)super.FM).set_maneuver(48);
+                        for(int j = 0; j < i; j++)
+                            ((Maneuver)super.FM).push(48);
+                        if(((FlightModelMain) (super.FM)).AP.way.curr().Action != 3)
+                            ((FlightModelMain) ((Maneuver)super.FM)).AP.way.setCur(((FlightModelMain) (((SndAircraft) ((Aircraft)queen_)).FM)).AP.way.Cur());
+                        ((Pilot)super.FM).setDumbTime(3000L);
+                    }
+                    if(((FlightModelMain) (super.FM)).M.fuel < ((FlightModelMain) (super.FM)).M.maxFuel)
+                        ((FlightModelMain) (super.FM)).M.fuel += 20F * f;
                 }
-                if(((FlightModelMain) (super.FM)).M.fuel < ((FlightModelMain) (super.FM)).M.maxFuel)
-                    ((FlightModelMain) (super.FM)).M.fuel += 20F * f;
             } else
             if(!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode())
             {
@@ -850,14 +855,13 @@ public class AV_8A extends AV_8
         if(((FlightModelMain) (super.FM)).AS.isMaster() && !typeDockableIsDocked())
         {
             Aircraft aircraft = War.getNearestFriend(this);
-            if(aircraft instanceof TypeTankerDrogue)
-            {
+            if(aircraft instanceof TypeTankerDrogue && ((FlightModelMain) (super.FM)).CT.getRefuel() > 0.95F)
                 ((TypeDockable)aircraft).typeDockableRequestAttach(this);
-                ((FlightModelMain) (super.FM)).CT.RefuelControl = 1F;
+      /*          ((FlightModelMain) (super.FM)).CT.RefuelControl = 1F;
             } else  
             {
                 ((FlightModelMain) (super.FM)).CT.RefuelControl = 0F;
-            }	
+            }	*/
         }
     }
     
