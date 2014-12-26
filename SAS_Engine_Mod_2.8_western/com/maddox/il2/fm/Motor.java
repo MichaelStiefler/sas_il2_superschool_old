@@ -134,7 +134,7 @@ public class Motor extends FMMath {
 	protected float engineMass;
 	protected float wMin;
 	protected float wNom;
-	protected float wMax;
+	public float wMax;
 	protected float wWEP;
 	protected float wMaxAllowed;
 	public int wNetPrev;
@@ -189,7 +189,7 @@ public class Motor extends FMMath {
 	protected int mixerType;
 	protected float mixerLowPressureBar;
 	protected float horsePowers;
-	protected float thrustMax;
+	public float thrustMax;
 	protected int cylindersOperable;
 	protected float engineI;
 	protected float engineAcceleration;
@@ -313,7 +313,7 @@ public class Motor extends FMMath {
 	protected static Vector3f safeVwld = new Vector3f();
 	protected static Vector3f safeVflow = new Vector3f();
 	protected static boolean tmpB;
-	protected static float tmpF;
+	public static float tmpF;
 	protected int engineNoFuelHUDLogId;
 	// --------------------------------------------------------
 
