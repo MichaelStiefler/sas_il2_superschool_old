@@ -80,7 +80,9 @@ public class AV_8A extends AV_8
 		IR = false;
 		tX4Prev = 0L;
 		backfireList = new ArrayList();
-		backfire = false;		
+		backfire = false;	
+		misslebrg = 0F;
+	    aircraftbrg = 0F;
     }   
 
     
@@ -167,7 +169,7 @@ public class AV_8A extends AV_8
     }
 
     private boolean RWRWarning()//TODO RWR
-    {
+    {   	
     	boolean SPIKE = false;
 		Point3d point3d = new Point3d();
 		super.pos.getAbs(point3d);
@@ -189,8 +191,8 @@ public class AV_8A extends AV_8
             j = 360 + j;
         Actor actor = War.getNearestEnemy(spike, 6000F);
         if((actor instanceof Aircraft) && spike.getArmy() != World.getPlayerArmy() && (spike instanceof TypeFighterAceMaker)&& ((spike instanceof TypeSupersonic) || (spike instanceof TypeFastJet)) && actor == World.getPlayerAircraft() && actor.getSpeed(vector3d) > 20D)
-        	{
-                pos.getAbs(point3d);
+        	{                
+        		pos.getAbs(point3d);
                 double d4 = Main3D.cur3D().land2D.worldOfsX() + actor.pos.getAbsPoint().x;
                 double d5 = Main3D.cur3D().land2D.worldOfsY() + actor.pos.getAbsPoint().y;
                 double d6 = Main3D.cur3D().land2D.worldOfsY() + actor.pos.getAbsPoint().z;
@@ -259,7 +261,7 @@ public class AV_8A extends AV_8
 				.getYaw() - 90D));
 		if (ii < 0)
 			ii = 360 + ii;
-		if(SPIKE && actor == World.getPlayerAircraft() && actor instanceof AV_8A)
+		if(SPIKE && actor == World.getPlayerAircraft() && actor instanceof F_18)
     	{
 			pos.getAbs(point3d);
 			double d31 = Main3D.cur3D().land2D.worldOfsX()
@@ -298,25 +300,38 @@ public class AV_8A extends AV_8
 			}
 			else
 				{bRadarWarning = d13 <= 8000D && d13 >= 500D
-						&& Math.sqrt(d81 * d81) <= 6000D;
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "Enemy at " + l11 + " o'clock" + s + "!");}
+						&& Math.sqrt(d81 * d81) <= 6000D;				
+				aircraftbrg = cvt(l11, 0, 12, 0F,360F);
+				HUD.log(AircraftHotKeys.hudLogWeaponId, "Enemy at " + l11 + " o'clock" + s + "!");
+				}
 				playRWRWarning();
-    			} else {
+    			} else 
+    			{
     				bRadarWarning = false;
     				playRWRWarning();
+    				aircraftbrg = 0F;
     			}
         }				
 	return true;
     }
     
+    public float misslebrg;
+    public float aircraftbrg;
+    
     private boolean RWRLaunchWarning()
-    {   	
+    {   	    	
     	Point3d point3d = new Point3d();
         pos.getAbs(point3d);
         Vector3d vector3d = new Vector3d();
-        Actor actor = this;
+        Actor actor;
+        if((super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode() || !(super.FM instanceof Pilot))
+        actor = World.getPlayerAircraft(); else
+        actor = this;	
         super.pos.getAbs(point3d);
-		Aircraft aircraft = this;
+		Aircraft aircraft;
+		if((super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode() || !(super.FM instanceof Pilot))
+		aircraft = World.getPlayerAircraft(); else
+		aircraft = this;
 		double dd = Main3D.cur3D().land2D.worldOfsX()
 				+ ((Actor) (actor)).pos.getAbsPoint().x;
 		double dd1 = Main3D.cur3D().land2D.worldOfsY()
@@ -331,15 +346,15 @@ public class AV_8A extends AV_8
 		int m = list.size();		
 		for (int t = 0; t < m; t++) {
 			Actor missile = (Actor) list.get(t);		
-		if((missile instanceof com.maddox.il2.objects.weapons.Missile || missile instanceof com.maddox.il2.objects.weapons.MissileSAM) && missile.getSpeed(vector3d) > 20D && ((Missile) missile).getMissileTarget() == this && actor instanceof AV_8A)
+		if((missile instanceof com.maddox.il2.objects.weapons.Missile || missile instanceof com.maddox.il2.objects.weapons.MissileSAM) && missile.getSpeed(vector3d) > 20D && ((Missile) missile).getMissileTarget() == this)
     	{
 				pos.getAbs(point3d);
 				double d31 = Main3D.cur3D().land2D.worldOfsX()
-						+ actor.pos.getAbsPoint().x;
+						+ missile.pos.getAbsPoint().x;
 				double d41 = Main3D.cur3D().land2D.worldOfsY()
-						+ actor.pos.getAbsPoint().y;
+						+ missile.pos.getAbsPoint().y;
 				double d51 = Main3D.cur3D().land2D.worldOfsY()
-						+ actor.pos.getAbsPoint().z;
+						+ missile.pos.getAbsPoint().z;
 				double d81 = (int) (Math.ceil((dd2 - d51) / 10D) * 10D);
 				String s = "";
 				if (dd2 - d51 - 500D >= 0.0D)
@@ -367,8 +382,9 @@ public class AV_8A extends AV_8
 				bMissileWarning = true;
 				if((super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode() || !(super.FM instanceof Pilot))
 		        {
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "MISSILE AT " + l11 + " O'CLOCK" + s + "!!!" + bMissileWarning);
+				HUD.log(AircraftHotKeys.hudLogWeaponId, "MISSILE AT " + l11 + " O'CLOCK" + s + "!!!" + misslebrg);
 				playRWRWarning();
+				misslebrg = cvt(l11, 0, 12, 0F,360F);
 		        }
 				if ((!FM.isPlayers() || !(FM instanceof RealFlightModel) || !((RealFlightModel) FM).isRealMode()) && (FM instanceof Maneuver))
 				{
@@ -384,7 +400,8 @@ public class AV_8A extends AV_8
     			} else 
     			{
     				bMissileWarning = false;
-    				playRWRWarning();
+    				playRWRWarning(); 
+    				misslebrg = 0F;
     			}
 		}
 	return true;
@@ -977,8 +994,8 @@ public class AV_8A extends AV_8
     private SoundFX fxMissileWarning;
     private Sample smplMissileWarning;
     private boolean MissileSoundPlaying;
-    private boolean bRadarWarning;
-    private boolean bMissileWarning;
+    boolean bRadarWarning;
+    boolean bMissileWarning;
     private boolean hasChaff;
     private boolean hasFlare;
     private long lastChaffDeployed;
