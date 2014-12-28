@@ -821,7 +821,7 @@ public class AV_8 extends Scheme1
     private boolean bDynamoRotary;
     private int pk;
     
-    protected void moveAirBrake(float f)//TODO
+    protected void moveAirBrake(float f)
     {
         float f1 = (((FlightModelMain) (super.FM)).CT.GearControl > 0.5F ? 25F : 50F);
     	hierMesh().chunkSetAngles("Airbrake_D0", 0.0F, 0.0F, f1 * f);
@@ -1580,7 +1580,7 @@ label0:
         	hierMesh().chunkVisible("SlightWTipR", FL);
     }
     
-    private float vtolvect;
+    float vtolvect;
     public boolean FL;
     
     //TODO VTOL
