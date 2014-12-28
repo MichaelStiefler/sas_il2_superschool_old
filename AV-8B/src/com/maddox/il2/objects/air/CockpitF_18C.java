@@ -1079,17 +1079,17 @@ public class CockpitF_18C extends CockpitPilot
         resetYPRmodifier();
         super.mesh.chunkSetAngles("Z_Z_Gear", 0.0F, 0.0F, cvt(((FlightModelMain) (super.fm)).CT.GearControl,0.0F,1.0F,0.0F,20F));
         float f1 = 0F;
-        if(((FlightModelMain) (super.fm)).CT.getFlap()<0.16F)
+        if(((FlightModelMain) (super.fm)).CT.FlapsControl<0.6F)
         {	
         	f1 = -15F;
         	super.mesh.chunkSetAngles("Z_Z_Flap", 0.0F, 0.0F, f1);
         }
-        if(((FlightModelMain) (super.fm)).CT.getFlap()>=0.16F && ((FlightModelMain) (super.fm)).CT.getFlap()<0.5F)
+        if(((FlightModelMain) (super.fm)).CT.FlapsControl>=0.66F && ((FlightModelMain) (super.fm)).CT.FlapsControl<0.75F)
         {	
-        	f1 = 15F;
+        	f1 = 0F;
         	super.mesh.chunkSetAngles("Z_Z_Flap", f1, 0.0F, 0.0F);
         }
-        if(((FlightModelMain) (super.fm)).CT.getFlap()>=0.5F)
+        if(((FlightModelMain) (super.fm)).CT.FlapsControl>=0.75F)
         {	
         	f1 = 15F;
         	super.mesh.chunkSetAngles("Z_Z_Flap", 0.0F, 0.0F, f1);
@@ -1186,33 +1186,37 @@ public class CockpitF_18C extends CockpitPilot
         f3 = (float)(int)bingo * 36F;        	
         super.mesh.chunkSetAngles("Z_Z_Ins_Bingo_1", 0.0F, 0.0F, f3);
         float fuelinteltempL = ((FlightModelMain) (super.fm)).EI.engines[0].tWaterOut;
-    	float fuelinteltempR = ((FlightModelMain) (super.fm)).EI.engines[0].tWaterOut;
+    	float fuelinteltempR = ((FlightModelMain) (super.fm)).EI.engines[1].tWaterOut;
+        if(fuelinteltempL < fuelinteltempR)  fuelinteltempL = fuelinteltempR;
     	f3 = (float)((int)(fuelinteltempL/1000F * 10F) % 10) * 36F;
     	super.mesh.chunkSetAngles("Z_Z_Ins_Temp_1", 0.0F, 0.0F, f3);
     	f4 = (float)((int)(fuelinteltempL/1000F * 100F) % 10) * 36F;
         super.mesh.chunkSetAngles("Z_Z_Ins_Temp_2", 0.0F, 0.0F, f4);
-    	float N1L = cvt(((FlightModelMain) (super.fm)).EI.engines[0].getRPM(), 0.0F, 4080F, 0F, 100F)/10F;
-    	float N1R = cvt(((FlightModelMain) (super.fm)).EI.engines[0].getRPM(), 0.0F, 4080F, 0F, 100F)/10F;
-    	f3 = (float)((int)(N1L * 10F) % 10) * 36F;
+    	float N1L = cvt(((FlightModelMain) (super.fm)).EI.engines[0].getRPM(), 0.0F, 4090F, 0F, 100F)/10F;
+    	float N1R = cvt(((FlightModelMain) (super.fm)).EI.engines[0].getRPM(), 0.0F, 4090F, 0F, 100F)/10F;
+        if(N1L < N1R)  N1L = N1R;
+    	f3 = (float)((int)(N1L) % 10) * 36F;
     	super.mesh.chunkSetAngles("Z_Z_Ins_RPM_1", 0.0F, 0.0F, f3);
-    	f4 = (float)((int)(N1L * 100F) % 10) * 36F;
+    	f4 = (float)((int)(N1L * 10F) % 10) * 36F;
         super.mesh.chunkSetAngles("Z_Z_Ins_RPM_2", 0.0F, 0.0F, f4);
     	float FFL = this.fm.EI.engines[0].tmpF;
-    	float FFR = this.fm.EI.engines[0].tmpF;
+    	float FFR = this.fm.EI.engines[1].tmpF;
+        if(FFL < FFR)  FFL = FFR;
     	f3 = (float)((int)(FFL*10F * 10F) % 10) * 36F;
     	super.mesh.chunkSetAngles("Z_Z_Ins_FF_1", 0.0F, 0.0F, f3);
     	f4 = (float)((int)(FFL*10F * 100F) % 10) * 36F;
         super.mesh.chunkSetAngles("Z_Z_Ins_FF_2", 0.0F, 0.0F, f4);
-    	float extempL = cvt(((FlightModelMain) (super.fm)).EI.engines[0].tOilOut, 0F, 120F, 0F, 80F);
-    	float extempR = cvt(((FlightModelMain) (super.fm)).EI.engines[0].tOilOut, 0F, 120F, 0F, 80F);
-    	super.mesh.chunkSetAngles("Z_Z_Ins_EGT_1", -extempL, 0.0F, 0.0F);
-    	super.mesh.chunkSetAngles("Z_Z_Ins_EGT_2", extempL, 0.0F, 0.0F);
+    	float exnozzL = cvt(((F_18) aircraft()).fNozzleOpenL, -9F, 0F, 0F, 80F);
+    	float exnozzR = cvt(((F_18) aircraft()).fNozzleOpenR, -9F, 0F, 0F, 80F);
+    	super.mesh.chunkSetAngles("Z_Z_Ins_EGT_1", -exnozzL, 0.0F, 0.0F);
+    	super.mesh.chunkSetAngles("Z_Z_Ins_EGT_2", exnozzR, 0.0F, 0.0F);
     	float oilpressL = 1.0F + 0.05F * ((FlightModelMain) (super.fm)).EI.engines[0].tOilOut * ((FlightModelMain) (super.fm)).EI.engines[0].getReadyness();
-    	float oilpressR = 1.0F + 0.05F * ((FlightModelMain) (super.fm)).EI.engines[0].tOilOut * ((FlightModelMain) (super.fm)).EI.engines[0].getReadyness();
+    	float oilpressR = 1.0F + 0.05F * ((FlightModelMain) (super.fm)).EI.engines[1].tOilOut * ((FlightModelMain) (super.fm)).EI.engines[0].getReadyness();
+        if(oilpressL < oilpressR)  oilpressL = oilpressR;
     	f3 = (float)(int)oilpressL/10F * 36F;
     	super.mesh.chunkSetAngles("Z_Z_Ins_Oil_1", 0.0F, 0.0F, f3);
     	f4 = (float)((int)(oilpressL/10F * 10F) % 10) * 36F;
-        super.mesh.chunkSetAngles("Z_Z_Ins_Oil_1", 0.0F, 0.0F, f4);
+        super.mesh.chunkSetAngles("Z_Z_Ins_Oil_2", 0.0F, 0.0F, f4);
         super.mesh.chunkSetAngles("Z_Z_Ins_H", 0.0F, cvt(World.getTimeofDay(), 0.0F, 24F, 0.0F, 720F), 0.0F);
         super.mesh.chunkSetAngles("Z_Z_Ins_M", 0.0F, cvt(World.getTimeofDay() % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F);
         super.mesh.chunkSetAngles("Z_Z_Ins_S", 0.0F, cvt(((World.getTimeofDay() % 1.0F) * 60F) % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F);
@@ -2015,7 +2019,7 @@ public class CockpitF_18C extends CockpitPilot
         	super.mesh.chunkVisible("Z_Z_HDD_NUM22_3", false); else super.mesh.chunkVisible("Z_Z_HDD_NUM22_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM22_3", 0.0F, 0.0F, f4); 
     	float fuelinteltempL = ((FlightModelMain) (super.fm)).EI.engines[0].tWaterOut;   	 
-    	float fuelinteltempR = ((FlightModelMain) (super.fm)).EI.engines[0].tWaterOut;
+    	float fuelinteltempR = ((FlightModelMain) (super.fm)).EI.engines[1].tWaterOut;
     	float N1L = cvt(((FlightModelMain) (super.fm)).EI.engines[0].getRPM(), 0.0F, 4080F, 0F, 100F);
     	f2 = N1L/10F;
     	if(f2>9.9F)
@@ -2120,8 +2124,7 @@ public class CockpitF_18C extends CockpitPilot
         if(f4 == 0F && f3 == 0F && f5 == 0F)
         	super.mesh.chunkVisible("Z_Z_HDD_NUM34_3", false); else super.mesh.chunkVisible("Z_Z_HDD_NUM34_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM34_3", 0.0F, 0.0F, f5);
-    	float nozposL = (((FlightModelMain) (super.fm)).EI.engines[0].getPowerOutput() <= 0.92 ? cvt(((FlightModelMain) (super.fm)).EI.engines[0].getPowerOutput(), 0F, 0.92F, 99F, 0F) : cvt(((FlightModelMain) (super.fm)).EI.engines[0].getPowerOutput(), 0.92F, 1.10F, 0F, 99F));
-    	f2 = nozposL / 10F;
+    	f2 = ((F_18) aircraft()).fNozzleOpenL + 9.8F;
     	f3 = (float)(int)f2 * 36F;
         if(f3 == 0F)
         	super.mesh.chunkVisible("Z_Z_HDD_NUM27_2", false); else super.mesh.chunkVisible("Z_Z_HDD_NUM27_2", true);
@@ -2129,8 +2132,7 @@ public class CockpitF_18C extends CockpitPilot
         f4 = (float)((int)(f2 * 10F) % 10) * 36F;
         super.mesh.chunkVisible("Z_Z_HDD_NUM27_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM27_3", 0.0F, 0.0F, f4);
-    	float nozposR = (((FlightModelMain) (super.fm)).EI.engines[1].getPowerOutput() <= 0.92 ? cvt(((FlightModelMain) (super.fm)).EI.engines[1].getPowerOutput(), 0F, 0.92F, 99F, 0F) : cvt(((FlightModelMain) (super.fm)).EI.engines[1].getPowerOutput(), 0.92F, 1.10F, 0F, 99F));
-    	f2 = nozposR / 10F;
+    	f2 = ((F_18) aircraft()).fNozzleOpenR + 9.8F;
     	f3 = (float)(int)f2 * 36F;
         if(f3 == 0F)
         	super.mesh.chunkVisible("Z_Z_HDD_NUM28_2", false); else super.mesh.chunkVisible("Z_Z_HDD_NUM28_2", true);
@@ -2526,46 +2528,40 @@ public class CockpitF_18C extends CockpitPilot
         boolean L = false;
         if(this.fm.CT.getGear()<0.1F)
         {
-        	H = false;
-        	M = false;
+            H = false;
+            M = false;
             L = false;
         } else
-        {	
-        if(this.fm.getSpeedKMH()<=100F && setNew.fpmPitch > 9.3F)
         {
-        	H = true;
-        	M = false;
-            L = false;
-        } else
-        if(this.fm.getSpeedKMH()>100F && this.fm.getSpeedKMH()<150F && setNew.fpmPitch > 8.8F && setNew.fpmPitch < 9.3F)
-        {
-        	H = true;
-        	M = true;
-            L = false;
-        } else
-        if(this.fm.getSpeedKMH()>=150F && this.fm.getSpeedKMH()<200F && setNew.fpmPitch > 7.4F && setNew.fpmPitch < 8.8F)
-        {
-        	H = false;
-        	M = true;
-            L = false;
-        } else
-        if(this.fm.getSpeedKMH()>=200F && this.fm.getSpeedKMH()<300F && setNew.fpmPitch > 6.9F && setNew.fpmPitch < 7.4F)
-        {
-        	H = false;
-        	M = true;
-            L = true;
-        } else
-        if(this.fm.getSpeedKMH()>=300F && setNew.fpmPitch > 0F && setNew.fpmPitch < 6.9F)
-        {
-        	H = false;
-        	M = false;
-            L = true;
-        } else	
-        {
-        	H = false;
-        	M = false;
-            L = false;
-        }
+            if(((FlightModelMain) (fm)).getAOA() > 8.9F)
+            {
+                H = true;
+                M = false;
+                L = false;
+            } else
+            if(((FlightModelMain) (fm)).getAOA() > 8.1F)
+            {
+                H = true;
+                M = true;
+                L = false;
+            } else
+            if(((FlightModelMain) (fm)).getAOA() > 6.9F)
+            {
+                H = false;
+                M = true;
+                L = false;
+            } else
+            if(((FlightModelMain) (fm)).getAOA() > 6.4F)
+            {
+                H = false;
+                M = true;
+                L = true;
+            } else
+            {
+                H = false;
+                M = false;
+                L = true;
+            }
         }
         super.mesh.chunkVisible("L_AOAH", H);
         super.mesh.chunkVisible("L_AOAL", L);
