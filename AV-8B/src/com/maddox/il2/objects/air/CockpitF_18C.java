@@ -1206,10 +1206,10 @@ public class CockpitF_18C extends CockpitPilot
     	super.mesh.chunkSetAngles("Z_Z_Ins_FF_1", 0.0F, 0.0F, f3);
     	f4 = (float)((int)(FFL*10F * 100F) % 10) * 36F;
         super.mesh.chunkSetAngles("Z_Z_Ins_FF_2", 0.0F, 0.0F, f4);
-    	float exnozzL = cvt(((F_18) aircraft()).fNozzleOpenL, -9F, 0F, 78F, 0F);
-    	float exnozzR = cvt(((F_18) aircraft()).fNozzleOpenR, -9F, 0F, 78F, 0F);
-    	super.mesh.chunkSetAngles("Z_Z_Ins_EGT_1", -exnozzL, 0.0F, 0.0F);
-    	super.mesh.chunkSetAngles("Z_Z_Ins_EGT_2", exnozzR, 0.0F, 0.0F);
+    	float extempL = cvt(((FlightModelMain) (super.fm)).EI.engines[0].tOilOut, 0F, 120F, 0F, 80F);
+    	float extempR = cvt(((FlightModelMain) (super.fm)).EI.engines[0].tOilOut, 0F, 120F, 0F, 80F);
+    	super.mesh.chunkSetAngles("Z_Z_Ins_EGT_1", -extempL, 0.0F, 0.0F);
+    	super.mesh.chunkSetAngles("Z_Z_Ins_EGT_2", extempL, 0.0F, 0.0F);
     	float oilpressL = 1.0F + 0.05F * ((FlightModelMain) (super.fm)).EI.engines[0].tOilOut * ((FlightModelMain) (super.fm)).EI.engines[0].getReadyness();
     	float oilpressR = 1.0F + 0.05F * ((FlightModelMain) (super.fm)).EI.engines[1].tOilOut * ((FlightModelMain) (super.fm)).EI.engines[0].getReadyness();
         if(oilpressL < oilpressR)  oilpressL = oilpressR;
