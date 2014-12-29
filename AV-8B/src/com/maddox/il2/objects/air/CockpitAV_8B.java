@@ -271,7 +271,7 @@ public class CockpitAV_8B extends CockpitPilot
 
     public CockpitAV_8B()
     {
-        super("3DO/Cockpit/F-18/hier.him", "bf109");
+        super("3DO/Cockpit/AV-8B/hier.him", "bf109");
         gun = new Gun[4];
         setOld = new Variables(null);
         setNew = new Variables(null);
