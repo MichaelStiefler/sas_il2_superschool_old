@@ -415,6 +415,7 @@ public class CockpitF_18C extends CockpitPilot
     	if(((F_18)aircraft()).bMissileWarning == true)
     	{
     		super.mesh.chunkVisible("Z_Z_RWR_M", true);
+    		super.mesh.chunkVisible("L_AI", true);
     		resetYPRmodifier();
     		float f = ((F_18)aircraft()).misslebrg;
     		Cockpit.xyz[0] = -(float) Math.sin(Math.toRadians(f)) * 0.01F;
@@ -423,10 +424,12 @@ public class CockpitF_18C extends CockpitPilot
     	} else
     	{
     		super.mesh.chunkVisible("Z_Z_RWR_M", false);
+    		super.mesh.chunkVisible("L_AI", false);
     	}
     	if(((F_18)aircraft()).bRadarWarning == true)
     	{
     		super.mesh.chunkVisible("Z_Z_RWR_U", true);
+    		super.mesh.chunkVisible("L_AI", true);
     		resetYPRmodifier();
     		float f = ((F_18)aircraft()).aircraftbrg;
     		Cockpit.xyz[0] = -(float) Math.sin(Math.toRadians(f)) * 0.02F;
@@ -435,6 +438,7 @@ public class CockpitF_18C extends CockpitPilot
     	} else
     	{
     		super.mesh.chunkVisible("Z_Z_RWR_U", false);
+    		super.mesh.chunkVisible("L_AI", false);
     	}
     }
     
@@ -738,12 +742,12 @@ public class CockpitF_18C extends CockpitPilot
 					right = true;
 					left = false;						
 				} 
-				if(y<-55F)
+				if(y<-57F)
 				{
 					right = true;
 					left = false;			
 				}
-				if(y>55F)
+				if(y>57F)
 				{
 					right = false;
 					left = true;
@@ -761,9 +765,11 @@ public class CockpitF_18C extends CockpitPilot
 						y+= 2F;
 						t2 = ts;
 					}
+				x = cvt(y, -50F, 50F, 0.03625F, -0.03625F);
 				super.mesh.chunkSetAngles("Z_Z_Scan_1", 0.0F, y, 0.0F);
 				super.mesh.chunkVisible("Z_Z_RadarGround", true);
 				super.mesh.chunkVisible("Z_Z_RadarFrame", false);
+				super.mesh.chunkVisible("Z_Z_RADAR_TBRG", false);
 			}
 	}
 	
@@ -904,7 +910,7 @@ public class CockpitF_18C extends CockpitPilot
                             orientAC.transformInv(pointOrtho);
                             float f = Mission.cur().curCloudsType();
                             double v = ((x + ((float)Math.sin(Math.toRadians(((FlightModelMain) (super.fm)).Or.getRoll())) * 0.011F))/ScX)/(30D/((Tuple3d) (pointOrtho)).x);
-                            if(((Tuple3d) (pointOrtho)).x > (double)RClose && ((Tuple3d) (pointOrtho)).x < (double)RRange - (double)(350F * f) && ((Tuple3d) (pointOrtho)).y < v + 2000D && ((Tuple3d) (pointOrtho)).y > v - 2000D && (((Tuple3d) (pointOrtho)).z < ((Tuple3d) (pointOrtho)).x * 0.46397023426 && ((Tuple3d) (pointOrtho)).z > -((Tuple3d) (pointOrtho)).x * 0.46397023426))
+                            if(((Tuple3d) (pointOrtho)).x > (double)RClose && ((Tuple3d) (pointOrtho)).x < (double)RRange - (double)(350F * f) && ((Tuple3d) (pointOrtho)).y < v + 5000D && ((Tuple3d) (pointOrtho)).y > v - 5000D && (((Tuple3d) (pointOrtho)).z < ((Tuple3d) (pointOrtho)).x * 0.46397023426 && ((Tuple3d) (pointOrtho)).z > -((Tuple3d) (pointOrtho)).x * 0.46397023426))
                             {
                             	radarPlane.add(pointOrtho); 
                             	tw = Time.current();
@@ -1008,7 +1014,7 @@ public class CockpitF_18C extends CockpitPilot
                             orientAC.transformInv(pointOrtho);                           
                         	//HUD.log(AircraftHotKeys.hudLogWeaponId, "target heading" + HDG);
                             float f = Mission.cur().curCloudsType();                                                       
-                            if(((Tuple3d) (pointOrtho)).x > h - 500D && ((Tuple3d) (pointOrtho)).x < h + 500D && ((Tuple3d) (pointOrtho)).y < v/(30D/((Tuple3d) (pointOrtho)).x) + 500D && ((Tuple3d) (pointOrtho)).y > v/(30D/((Tuple3d) (pointOrtho)).x) - 500D && (((Tuple3d) (pointOrtho)).z < ((Tuple3d) (pointOrtho)).x * 0.56397023426 && ((Tuple3d) (pointOrtho)).z > -((Tuple3d) (pointOrtho)).x * 0.56397023426))
+                            if(((Tuple3d) (pointOrtho)).x > h - 500D && ((Tuple3d) (pointOrtho)).x < h + 500D && ((Tuple3d) (pointOrtho)).x < 48000D && ((Tuple3d) (pointOrtho)).y < v/(30D/((Tuple3d) (pointOrtho)).x) + 500D && ((Tuple3d) (pointOrtho)).y > v/(30D/((Tuple3d) (pointOrtho)).x) - 500D && (((Tuple3d) (pointOrtho)).z < ((Tuple3d) (pointOrtho)).x * 0.56397023426 && ((Tuple3d) (pointOrtho)).z > -((Tuple3d) (pointOrtho)).x * 0.56397023426))
                             {
                             	radarLock.add(pointOrtho);
                             	victim.add(actor);
@@ -1349,7 +1355,7 @@ public class CockpitF_18C extends CockpitPilot
                     for(int j = 0; j < i; j++)
                     {
                         Actor actor = (Actor)list.get(j);
-                        if(((actor instanceof ArtilleryGeneric) || (actor instanceof CarGeneric) || (actor instanceof TankGeneric) || (actor instanceof ShipGeneric) || (actor instanceof BridgeSegment)) && !(actor instanceof StationaryGeneric) && actor != World.getPlayerAircraft() && actor.getArmy() != World.getPlayerArmy()) //basically tell that target is not your own aircraft and not friendly aircraft
+                        if(((actor instanceof CarGeneric) || (actor instanceof TankGeneric) || (actor instanceof ShipGeneric) || (actor instanceof BridgeSegment)) && !(actor instanceof StationaryGeneric) && actor != World.getPlayerAircraft() && actor.getArmy() != World.getPlayerArmy()) //basically tell that target is not your own aircraft and not friendly aircraft
                         {                       	
                         	Vector3d vector3d = new Vector3d();                       	
                         	vector3d.set(pointAC);                       	
@@ -1358,22 +1364,15 @@ public class CockpitF_18C extends CockpitPilot
                             pointOrtho.sub(pointAC);
                             orientAC.transformInv(pointOrtho);
                             float f = Mission.cur().curCloudsType();
-                            double v = (((float)Math.sin(Math.toRadians(y))*32000F + ((float)Math.sin(Math.toRadians(((FlightModelMain) (super.fm)).Or.getRoll())) * 0.011F))/ScX)/(30D/((Tuple3d) (pointOrtho)).x);;
-                            //HUD.log(AircraftHotKeys.hudLogWeaponId, "scan " + v);
-                            if(((Tuple3d) (pointOrtho)).x > (double)RClose && ((Tuple3d) (pointOrtho)).x < (double)RRange - (double)(350F * f) && ((Tuple3d) (pointOrtho)).y < v + 9000D && ((Tuple3d) (pointOrtho)).y > v - 9000D)
-                            {                          	
-                            	radarPlane.add(pointOrtho);                             	
-                            }    
+                            double v = ((x + ((float)Math.sin(Math.toRadians(((FlightModelMain) (super.fm)).Or.getRoll())) * 0.011F))/ScX)/(30D/((Tuple3d) (pointOrtho)).x);
+                            if(((Tuple3d) (pointOrtho)).x > (double)RClose && ((Tuple3d) (pointOrtho)).x < 24000D && ((Tuple3d) (pointOrtho)).y < v + 1000D && ((Tuple3d) (pointOrtho)).y > v - 1000D)
+                            {
+                            	radarPlane.add(pointOrtho); 
+                            	tw = Time.current();
+                            }   
                         }               	
-                    }
-                for(int m = 0; m < radarPlane.size() && m < 5; m++)
-                radarground.add(radarPlane.get(m));	
-                if(Time.current() > tw + 1000L)
-                {	
-                	tw = Time.current();
-                	radarground.clear();
-                }              
-                int i1 = radarground.size();
+                    }             
+                int i1 = radarPlane.size();
                 if(i1>0)
                 {	
                 int nt = 0;           
@@ -1381,12 +1380,12 @@ public class CockpitF_18C extends CockpitPilot
                                 
                 for(int j = 0; j < i1; j++)
                 {
-                    double x = ((Tuple3d) ((Point3d)radarground.get(j))).x;                   
+                    double x = ((Tuple3d) ((Point3d)radarPlane.get(j))).x;                   
                     if(x > (double)RClose && nt <= nTgts)
                     {
                     	FOV = 30D / x; // distance relationship, to adjust the deviation of radar mark when getting closer to target planes
-                        double NewX = -((Tuple3d) ((Point3d)radarground.get(j))).y * FOV; // spanning
-                        double NewY = ((Tuple3d) ((Point3d)radarground.get(j))).x; //distance
+                        double NewX = -((Tuple3d) ((Point3d)radarPlane.get(j))).y * FOV; // spanning
+                        double NewY = ((Tuple3d) ((Point3d)radarPlane.get(j))).x; //distance
                         float f = FOrigX + (float)(NewX * ScX) - ((float)Math.sin(Math.toRadians(((FlightModelMain) (super.fm)).Or.getRoll())) * 0.011F); //FOrigX currently do nothing
                         float f1 = FOrigY + (float)(NewY * ScY);
                         if(f1 < 0)
@@ -1460,7 +1459,7 @@ public class CockpitF_18C extends CockpitPilot
                     for(int j = 0; j < i; j++)
                     {
                         Actor actor = (Actor)list.get(j);
-                        if((actor instanceof Aircraft) && actor != World.getPlayerAircraft() && actor.getArmy() != World.getPlayerArmy()) //basically tell that target is not your own aircraft and not friendly aircraft
+                        if(((actor instanceof CarGeneric) || (actor instanceof TankGeneric) || (actor instanceof ShipGeneric) || (actor instanceof BridgeSegment)) && !(actor instanceof StationaryGeneric) && actor != World.getPlayerAircraft() && actor.getArmy() != World.getPlayerArmy())
                         {                        	                      	
                         	Vector3d vector3d = new Vector3d();                       	
                         	vector3d.set(pointAC);                       	
@@ -1528,7 +1527,14 @@ public class CockpitF_18C extends CockpitPilot
                         else
                         if(!super.mesh.isChunkVisible(m))
                             super.mesh.chunkVisible(m, true);
-                        
+                        if(super.mesh.isChunkVisible("Z_Z_RadarMark11"))
+                            super.mesh.chunkVisible("Z_Z_RadarMark11", false);
+                        for(int j = 0; j <= nTgts + 1; j++)
+                        {
+                            String n = "Z_Z_RadarMark" + j;
+                            if(super.mesh.isChunkVisible(n))
+                                super.mesh.chunkVisible(n, false);
+                        }                      
                     }            
                 } else              
                 {	// hide everything when there's no enemy
