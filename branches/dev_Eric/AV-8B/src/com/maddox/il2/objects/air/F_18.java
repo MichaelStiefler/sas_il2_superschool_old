@@ -379,11 +379,15 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
                 if((double)i2 <= (double)k3 && (double)i2 <= 14000D && (double)i2 >= 200D && k2 >= -30 && k2 <= 30 && Math.sqrt(i3 * i3) <= 60D)
                 {
                     SPIKE = true;
-                } else {
+                } else 
+                {
                 	SPIKE = false;
                 }
                 
-        	}
+        	} else
+        	{
+            	SPIKE = false;
+            }	
 		Aircraft aircraft = World.getPlayerAircraft();
 		double dd = Main3D.cur3D().land2D.worldOfsX()
 				+ ((Actor) (actor)).pos.getAbsPoint().x;
@@ -439,13 +443,18 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 				HUD.log(AircraftHotKeys.hudLogWeaponId, "Enemy at " + l11 + " o'clock" + s + "!");
 				}
 				playRWRWarning();
-    			} else 
-    			{
-    				bRadarWarning = false;
-    				playRWRWarning();
-    				aircraftbrg = 0F;
-    			}
-        }				
+    	} else 
+    	{
+    		bRadarWarning = false;
+    		playRWRWarning();
+    		aircraftbrg = 0F;
+    	}
+        } else
+        {
+    		bRadarWarning = false;
+    		playRWRWarning();
+    		aircraftbrg = 0F;
+    	}	
 	return true;
     }
     
@@ -905,14 +914,7 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 			bChangedPit = true;
 	}
 
-	public void rareAction(float f, boolean flag) {
-		int counter = 0;
-		if((super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode() || !(super.FM instanceof Pilot))
-        {
-    	if (counter++ % 5 == 0) {
-			RWRWarning();
-    	}	
-        }
+	public void rareAction(float f, boolean flag) {		
 		super.rareAction(f, flag);
 		if (FM.crew > 1 && !bObserverKilled)
 			if (obsLookTime == 0) {
@@ -1655,6 +1657,10 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 		typeFighterAceMakerRangeFinder();
 		soundbarier();
 		RWRLaunchWarning();
+		if((super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode() || !(super.FM instanceof Pilot))
+        {   	
+			RWRWarning();    		
+        }
 		updatecontrollaser();
 		if (FM.crew > 1 && obsMove < obsMoveTot && !bObserverKilled && !FM.AS.isPilotParatrooper(1)) {
 			if (obsMove < 0.2F || obsMove > obsMoveTot - 0.2F)
@@ -1671,7 +1677,7 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 		if (needUpdateHook) {
 			updateHook();
 			needUpdateHook = false;
-		}
+		}		
 		super.update(f);				
 		for (int i = 1; i < 33; i++)			
 		{

@@ -311,7 +311,12 @@ public class AV_8A extends AV_8
     				playRWRWarning();
     				aircraftbrg = 0F;
     			}
-        }				
+        } else
+        {
+			bMissileWarning = false;
+			playRWRWarning(); 
+			misslebrg = 0F;
+		}
 	return true;
     }
     

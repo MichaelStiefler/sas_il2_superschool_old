@@ -327,7 +327,7 @@ public class CockpitF_18C extends CockpitPilot
         tBOld = 0L;
         radarPlane = new ArrayList();
         radarLock = new ArrayList();
-        radarmissile = new ArrayList();
+        radarground = new ArrayList();
         victim = new ArrayList();
         HookNamed hooknamed = new HookNamed(mesh, "LAMPHOOK1");
         Loc loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
@@ -769,7 +769,7 @@ public class CockpitF_18C extends CockpitPilot
 	
 	private ArrayList radarPlane;
 	private ArrayList radarLock;
-	private ArrayList radarmissile;
+	private ArrayList radarground;
 	private ArrayList victim;
 	private long t2;
 	private float x;
@@ -884,7 +884,6 @@ public class CockpitF_18C extends CockpitPilot
         try
         {
             Aircraft ownaircraft = World.getPlayerAircraft();
-            //if(Time.current() > tw + 1000L)
             radarPlane.clear();
             if(Actor.isValid(ownaircraft) && Actor.isAlive(ownaircraft))
             {                                  
@@ -911,7 +910,7 @@ public class CockpitF_18C extends CockpitPilot
                             	tw = Time.current();
                             }    
                         }               	
-                    }                  
+                    }    
                 int i1 = radarPlane.size();
                 if(i1>0)
                 {	
@@ -1188,7 +1187,7 @@ public class CockpitF_18C extends CockpitPilot
                             
                         	//HUD.log(AircraftHotKeys.hudLogWeaponId, "target heading" + HDG);                          
                             float f = Mission.cur().curCloudsType();
-                            if(range + 700F >= (double)RRange - (double)(350F * f))
+                            if(range + 700F >= 16000F - (double)(350F * f))
                             	range = 0F;
                             double v = ((x + ((float)Math.sin(Math.toRadians(((FlightModelMain) (super.fm)).Or.getRoll())) * 0.011F))/ScX)/(30D/((Tuple3d) (pointOrtho)).x);
                             if(((Tuple3d) (pointOrtho)).x < range + 700F && ((Tuple3d) (pointOrtho)).y < v + 8000D && ((Tuple3d) (pointOrtho)).y > v - 8000D && (((Tuple3d) (pointOrtho)).z < ((Tuple3d) (pointOrtho)).x * 0.56397023426 && ((Tuple3d) (pointOrtho)).z > -((Tuple3d) (pointOrtho)).x * 0.56397023426))
@@ -1339,7 +1338,7 @@ public class CockpitF_18C extends CockpitPilot
     {
         try
         {
-            Aircraft ownaircraft = World.getPlayerAircraft();
+            Aircraft ownaircraft = World.getPlayerAircraft();  
             radarPlane.clear();
             if(Actor.isValid(ownaircraft) && Actor.isAlive(ownaircraft))
             {                                  
@@ -1359,16 +1358,22 @@ public class CockpitF_18C extends CockpitPilot
                             pointOrtho.sub(pointAC);
                             orientAC.transformInv(pointOrtho);
                             float f = Mission.cur().curCloudsType();
-                            double v = (((float)Math.sin(Math.toRadians(y))*((Tuple3d) (pointOrtho)).x + ((float)Math.sin(Math.toRadians(((FlightModelMain) (super.fm)).Or.getRoll())) * 0.011F))/ScX)/(30D/((Tuple3d) (pointOrtho)).x);;
+                            double v = (((float)Math.sin(Math.toRadians(y))*32000F + ((float)Math.sin(Math.toRadians(((FlightModelMain) (super.fm)).Or.getRoll())) * 0.011F))/ScX)/(30D/((Tuple3d) (pointOrtho)).x);;
                             //HUD.log(AircraftHotKeys.hudLogWeaponId, "scan " + v);
                             if(((Tuple3d) (pointOrtho)).x > (double)RClose && ((Tuple3d) (pointOrtho)).x < (double)RRange - (double)(350F * f) && ((Tuple3d) (pointOrtho)).y < v + 9000D && ((Tuple3d) (pointOrtho)).y > v - 9000D)
                             {                          	
-                            	radarPlane.add(pointOrtho); 
-                            	tw = Time.current();
+                            	radarPlane.add(pointOrtho);                             	
                             }    
                         }               	
-                    }                  
-                int i1 = radarPlane.size();
+                    }
+                for(int m = 0; m < radarPlane.size() && m < 5; m++)
+                radarground.add(radarPlane.get(m));	
+                if(Time.current() > tw + 1000L)
+                {	
+                	tw = Time.current();
+                	radarground.clear();
+                }              
+                int i1 = radarground.size();
                 if(i1>0)
                 {	
                 int nt = 0;           
@@ -1376,12 +1381,12 @@ public class CockpitF_18C extends CockpitPilot
                                 
                 for(int j = 0; j < i1; j++)
                 {
-                    double x = ((Tuple3d) ((Point3d)radarPlane.get(j))).x;                   
+                    double x = ((Tuple3d) ((Point3d)radarground.get(j))).x;                   
                     if(x > (double)RClose && nt <= nTgts)
                     {
                     	FOV = 30D / x; // distance relationship, to adjust the deviation of radar mark when getting closer to target planes
-                        double NewX = -((Tuple3d) ((Point3d)radarPlane.get(j))).y * FOV; // spanning
-                        double NewY = ((Tuple3d) ((Point3d)radarPlane.get(j))).x; //distance
+                        double NewX = -((Tuple3d) ((Point3d)radarground.get(j))).y * FOV; // spanning
+                        double NewY = ((Tuple3d) ((Point3d)radarground.get(j))).x; //distance
                         float f = FOrigX + (float)(NewX * ScX) - ((float)Math.sin(Math.toRadians(((FlightModelMain) (super.fm)).Or.getRoll())) * 0.011F); //FOrigX currently do nothing
                         float f1 = FOrigY + (float)(NewY * ScY);
                         if(f1 < 0)
@@ -1468,29 +1473,9 @@ public class CockpitF_18C extends CockpitPilot
                             if(((Tuple3d) (pointOrtho)).x > h - 500D && ((Tuple3d) (pointOrtho)).x < h + 500D && ((Tuple3d) (pointOrtho)).y < v/(30D/((Tuple3d) (pointOrtho)).x) + 500D && ((Tuple3d) (pointOrtho)).y > v/(30D/((Tuple3d) (pointOrtho)).x) - 500D)
                             {
                             	radarLock.add(pointOrtho);
-                            	victim.add(actor);
                             }	
                         }
-                    }
-                 i = victim.size();
-                 if(i>0)
-                 {	
-                    for(int j = 0; j < i; j++)
-                    {	
-                        Actor avictim = (Actor)victim.get(j);
-                        Vector3d tarvec = new Vector3d();
-                        tarvec.set(avictim.pos.getAbsPoint());
-                        Point3d target = new Point3d();
-                        target.set(avictim.pos.getAbsPoint());                            
-                    	mach = ((float)avictim.getSpeed(tarvec)*3.6F/getMachForAlt((float)((Tuple3d) (target)).z))*1.621371F;
-                    	alt = ((float)((Tuple3d) (target)).z*3.28084F)/10000F;
-                    	dif = ((this.fm.getAltitude() - (float)((Tuple3d) (target)).z)*3.28084F)/1000F;
-                    	Orient tgt = ((Actor) (avictim)).pos.getAbsOrient();
-                    	Orient orient = ((Actor) (ownaircraft)).pos.getAbsOrient();
-                    	HDG = (normalizeDegree(tgt.getAzimut() - 270F))/100F;
-                    	brg = normalizeDegree(-normalizeDegree(setNew.azimuth.getDeg(r) + 90F) + (normalizeDegree(tgt.getAzimut() - 270F)));                    	
-                    }
-                }
+                    }                
                 int i1 = radarLock.size();
                 if(i1>0)
                 {	
