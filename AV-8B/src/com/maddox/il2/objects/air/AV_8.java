@@ -185,13 +185,13 @@ public class AV_8 extends Scheme1
         	if(radargunsight > 3)
         		radargunsight = 0;
         	if(radargunsight == 0)
-        	HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: GAU-12: funnel");
+        	HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: funnel");
         	if(radargunsight == 1)
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: GAU-12: Radar ranging");
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Radar ranging");
         	if(radargunsight == 2)
             HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Unguided Rocket");
         	if(radargunsight == 3)
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: GAU-12: Ground");
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Ground");
         }
         if(i == 24)
         {
@@ -245,6 +245,18 @@ public class AV_8 extends Scheme1
       		   HUD.log(AircraftHotKeys.hudLogWeaponId, "ILS OFF");
       	   }
         }
+        if(i == 28)
+        {
+        	if(!FL)
+      	   {
+        		FL = true;
+      		   HUD.log(AircraftHotKeys.hudLogWeaponId, "FL ON");
+      	   } else	   
+      	   {
+      		 FL = false;
+      		   HUD.log(AircraftHotKeys.hudLogWeaponId, "FL OFF");
+      	   }
+        }       
     }
         
     public int lockmode;
@@ -405,12 +417,18 @@ public class AV_8 extends Scheme1
 
     public void typeBomberAdjSpeedPlus()
     {
-        
+    	radarrange+= 1;
+		if(radarrange>5)
+			radarrange = 5;
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "range" + radarrange);
     }
 
     public void typeBomberAdjSpeedMinus()
     {
-       
+    	radarrange-= 1;
+		if(radarrange<1)
+			radarrange = 1;
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "range" + radarrange);
     }
     
     public void typeBomberUpdate(float f)
