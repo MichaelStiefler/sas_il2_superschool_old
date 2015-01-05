@@ -50,7 +50,7 @@ public class MGunM61A1 extends MGunAircraftGeneric {
         gunproperties.weaponType = 3;
         gunproperties.maxDeltaAngle = 0.7F;
         gunproperties.shotFreq = 100F;
-        gunproperties.traceFreq = 7;
+        gunproperties.traceFreq = 4;
         gunproperties.bullets = 250;
         gunproperties.bulletsCluster = 1;
         gunproperties.bullet = (new BulletProperties[] {
@@ -59,7 +59,7 @@ public class MGunM61A1 extends MGunAircraftGeneric {
         gunproperties.bullet[0].massa = 0.102F;
         gunproperties.bullet[0].kalibr = 0.00032F;
         gunproperties.bullet[0].speed = 1030F;
-        gunproperties.bullet[0].power = 0.0042F;
+        gunproperties.bullet[0].power = 0.0072F;
         gunproperties.bullet[0].powerType = 0;
         gunproperties.bullet[0].powerRadius = 0.2F;
         gunproperties.bullet[0].traceMesh = "3do/effects/tracers/20mmYellow/mono.sim";
