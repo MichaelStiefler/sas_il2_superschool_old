@@ -1764,7 +1764,7 @@ public class Missile extends Rocket {
 	private float attackMaxDistance = 5000F;
 	DecimalFormat twoPlaces = new DecimalFormat("+000.00;-000.00"); // only required for debugging
 
-	private Actor victim = null;
+	public Actor victim = null;
 
 	// private static RangeRandom theRangeRandom;
 
