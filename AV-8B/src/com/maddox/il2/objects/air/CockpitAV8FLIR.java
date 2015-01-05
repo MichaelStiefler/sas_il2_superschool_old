@@ -149,7 +149,7 @@ public class CockpitAV8FLIR extends CockpitGunner
         	y = 260F;
         if((y >= 100F && y < 180F) || (y <= 260F && y > 180F))
         	((AV_8)aircraft()).hold = false;
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "roll " + y);
+        //HUD.log(AircraftHotKeys.hudLogWeaponId, "roll " + y);
         if(!((AV_8)aircraft()).hold)
         {          
            ((AV_8)aircraft()).spot.set(spot1);          

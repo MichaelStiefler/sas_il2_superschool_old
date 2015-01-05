@@ -53,7 +53,7 @@ import com.maddox.sound.Sample;
 import com.maddox.sound.SoundFX;
 import com.maddox.sas1946.il2.util.Reflection;
 
-public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeX4Carrier, TypeGuidedBombCarrier, TypeBomber, TypeAcePlane, TypeLaserSpotter, TypeRadar {
+public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeX4Carrier, TypeGuidedBombCarrier, TypeBomber, TypeAcePlane, TypeLaserSpotter, TypeRadar, TypeSemiRadar {
 
 	public float getDragForce(float f, float f1, float f2, float f3) {
 		throw new UnsupportedOperationException("getDragForce not supported anymore.");
@@ -253,13 +253,13 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
         }
         if(i == 26)
         {
-          	if(hold == true && t1 + 200L < Time.current())
+          	if(hold == true && t1 + 200L < Time.current() && this.FLIR)
             {
             	hold = false;
             	HUD.log("Lazer Unlock");
             	t1 = Time.current();
             }	
-            if(hold == false && t1 + 200L < Time.current())
+            if(hold == false && t1 + 200L < Time.current() && this.FLIR)
             {	
             	hold = true;
             	HUD.log("Lazer Lock");
@@ -1229,10 +1229,20 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 	protected void moveFlap(float f) {
 		hierMesh().chunkSetAngles("Flap1_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 55F), 0.0F);
 		hierMesh().chunkSetAngles("Flap2_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 55F), 0.0F);
-		hierMesh().chunkSetAngles("AroneL_D0", 0.0F, Aircraft.cvt(f, 0.25F, 0.29F, 0.0F, 17F), 0.0F);
-		hierMesh().chunkSetAngles("AroneR_D0", 0.0F, Aircraft.cvt(f, 0.25F, 0.29F, 0.0F, 17F), 0.0F);
-		hierMesh().chunkSetAngles("AroneL1_D0", 0.0F, Aircraft.cvt(f, 0.29F, 0.99F, 0.0F, 38F), 0.0F);
-		hierMesh().chunkSetAngles("AroneR1_D0", 0.0F, Aircraft.cvt(f, 0.29F, 0.99F, 0.0F, 38F), 0.0F);
+		if(FM.CT.getWing() < 0.01F)
+		{
+			hierMesh().chunkSetAngles("AroneL_D0", 0.0F, Aircraft.cvt(f, 0.25F, 0.29F, 0.0F, 17F), 0.0F);
+			hierMesh().chunkSetAngles("AroneR_D0", 0.0F, Aircraft.cvt(f, 0.25F, 0.29F, 0.0F, 17F), 0.0F);
+			hierMesh().chunkSetAngles("AroneL1_D0", 0.0F, Aircraft.cvt(f, 0.29F, 0.99F, 0.0F, 38F), 0.0F);
+			hierMesh().chunkSetAngles("AroneR1_D0", 0.0F, Aircraft.cvt(f, 0.29F, 0.99F, 0.0F, 38F), 0.0F);
+		}
+		else
+		{
+			hierMesh().chunkSetAngles("AroneL_D0", 0.0F, 0.0F, 0.0F);
+			hierMesh().chunkSetAngles("AroneR_D0", 0.0F, 0.0F, 0.0F);
+			hierMesh().chunkSetAngles("AroneL1_D0", 0.0F, 0.0F, 0.0F);
+			hierMesh().chunkSetAngles("AroneR1_D0", 0.0F, 0.0F, 0.0F);
+		}
 	}
 
 	protected void hitBone(String s, Shot shot, Point3d point3d) {
@@ -1756,35 +1766,44 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 		//this.computeElevators();
 	}
 	
-	private void computeflightmodel()
+	private void computeflightmodel()//TODO flightmodel
 	{
-		float fl =	(float) (cvt(super.FM.getAOA(), 0, 5, 0F, 1F) * super.FM.getAOA() * 0.025 * cvt(super.FM.getSpeedKMH(), 0F, 500F, 0F, 1F));
-		if (FM.CT.getGear() < 0.8F)
-		{			
-			if(Time.current() > tflap + 5000L && Time.current() < tflap + 6000L)
-			{	
-			FM.CT.FlapsControl = 0F;
-			FM.CT.setTrimElevatorControl(0.0F);	
+		float fl =	(float) (cvt(FM.getAOA(), 0, 5, 0F, 1F) * FM.getAOA() * 0.025 * cvt(FM.getSpeedKMH(), 0F, 500F, 0F, 1F));
+		if (FM.getSpeedKMH() > 465F || FM.CT.FlapsControlSwitch == 0)
+		{
+			if(FM.CT.FlapsControlSwitch > 0)
+				bForceFlapmodeAuto = true;
+			else
+				bForceFlapmodeAuto = false;
+			if(Time.current() > tflap + 3000L && Time.current() < tflap + 4000L)
+			{
+				FM.CT.FlapsControl = 0F;
+				FM.CT.setTrimElevatorControl(0.0F);
 			} else
-			if(Time.current() > tflap + 6000L)	
-			{	
-			FM.CT.FlapsControl = cvt(fl, 0F, 0.20F, 0F, 0.20F);
-			//FM.CT.bHasFlapsControl = false;
+			if(Time.current() > tflap + 4000L)
+			{
+				FM.CT.FlapsControl = cvt(fl, 0F, 0.20F, 0F, 0.20F);
+				//FM.CT.bHasFlapsControl = false;
 			}
 		}
-		if (FM.CT.getGear() > 0.8F)
-		{			
+		else
+		{
+			bForceFlapmodeAuto = false;
+			float newFlapsControl = cvt(FM.getSpeedKMH(), 330F, 465F, 1.0F, 0.0F);
+			if(FM.CT.FlapsControlSwitch == 1 && newFlapsControl > FM.CT.FlapStage[0])
+				newFlapsControl = FM.CT.FlapStage[0];
+			FM.CT.FlapsControl = newFlapsControl;
 			tflap = Time.current();
-			FM.CT.bHasFlapsControl = true;
+			//FM.CT.bHasFlapsControl = true;
 			if(FM.CT.FlapsControl>0.6 && FM.Gears.onGround())
-			FM.CT.setTrimElevatorControl(0.7F);	
+				FM.CT.setTrimElevatorControl(0.7F);
 		}
 		formationlights();
-		if (super.FM.getAOA() > 28 || (super.FM.getSpeedKMH() < 469 && FM.CT.FlapsControl > 0.16F && FM.CT.getGear() < 0.8F) || super.FM.getOverload() >= 6F) {
+		if (FM.getAOA() > 28 || (FM.getSpeedKMH() < 469 && FM.CT.FlapsControl > 0.16F && FM.CT.getGear() < 0.8F) || FM.getOverload() >= 6F) {
 			FM.CT.AirBrakeControl = 0F;
-		}		
+		}
 		this.computeThrust();
-		this.restoreElevatorControl();		
+		this.restoreElevatorControl();
 	}
 	
 	private void computeThrust() {
@@ -2443,6 +2462,7 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
     public float fNozzleOpenR;
 	private Field elevatorsField = null;
 	private long tflap = 0L;
+	public boolean bForceFlapmodeAuto = false;
 
 	static {
 		Class class1 = F_18.class;

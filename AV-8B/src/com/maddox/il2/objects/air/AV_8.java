@@ -1965,7 +1965,7 @@ label0:
 
 	public boolean typeRadarToggleMode() {
 		radarmode++;
-		if(radarmode>1)
+		if(radarmode>2)
 			radarmode=0;
 		HUD.log(AircraftHotKeys.hudLogWeaponId, "radar mode" + radarmode);
 		return false;

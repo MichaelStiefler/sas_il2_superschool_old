@@ -3,6 +3,8 @@
 	<name>AV-8B</name>
 	<comment></comment>
 	<projects>
+		<project>Aircraft Java 4.10.1</project>
+		<project>Mordenweaponry</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
