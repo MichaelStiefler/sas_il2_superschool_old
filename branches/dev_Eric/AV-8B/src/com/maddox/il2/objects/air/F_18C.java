@@ -78,7 +78,7 @@ public class F_18C extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 			for (int j = 0; j < FM.CT.Weapons[i].length; j++) {
 				if (!FM.CT.Weapons[i][j].haveBullets())
 					continue;
-				if (FM.CT.Weapons[i][j] instanceof RocketGunAGM65Ds || FM.CT.Weapons[i][j] instanceof RocketGunAGM65L) {
+				if (FM.CT.Weapons[i][j] instanceof RocketGunAGM65Ds) {
 					IR = true;
 					missilesList.add(FM.CT.Weapons[i][j]);
 				}

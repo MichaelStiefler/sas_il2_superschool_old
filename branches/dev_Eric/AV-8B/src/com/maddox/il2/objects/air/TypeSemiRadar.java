@@ -9,7 +9,8 @@ import com.maddox.JGP.Point3d;
 
 public interface TypeSemiRadar
 {
-
-    public static final Point3d target = new Point3d();
+	
+	public static final Point3d target = new Point3d();
 
 }
+
