@@ -454,7 +454,8 @@ public class AV_8A extends AV_8
         this.FM.Skill = 3;
         droptank();
         ((FlightModelMain) (super.FM)).CT.bHasDragChuteControl = true;
-        bHasDeployedDragChute = false;   
+        bHasDeployedDragChute = false;  
+        FM.turret[0].bIsAIControlled = false;
         checkmesh();
     }
     

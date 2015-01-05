@@ -145,6 +145,7 @@ public class F_18D extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 	protected void moveWingFold(HierMesh hiermesh, float f) {
 		hiermesh.chunkSetAngles("WingLOut_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 92F), 0.0F);
 		hiermesh.chunkSetAngles("WingROut_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, -92F), 0.0F);
+		moveFlap(FM.CT.getFlap());
 	}
 
 	public long getChaffDeployed() {

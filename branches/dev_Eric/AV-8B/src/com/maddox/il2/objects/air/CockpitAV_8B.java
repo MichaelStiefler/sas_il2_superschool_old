@@ -414,6 +414,7 @@ public class CockpitAV_8B extends CockpitPilot
     	if(((AV_8A)aircraft()).bMissileWarning == true)
     	{
     		super.mesh.chunkVisible("Z_Z_RWR_M", true);
+    		super.mesh.chunkVisible("L_AI", true);
     		resetYPRmodifier();
     		float f = ((AV_8A)aircraft()).misslebrg;
     		Cockpit.xyz[0] = -(float) Math.sin(Math.toRadians(f)) * 0.01F;
@@ -422,10 +423,12 @@ public class CockpitAV_8B extends CockpitPilot
     	} else
     	{
     		super.mesh.chunkVisible("Z_Z_RWR_M", false);
+    		super.mesh.chunkVisible("L_AI", false);
     	}
     	if(((AV_8A)aircraft()).bRadarWarning == true)
     	{
     		super.mesh.chunkVisible("Z_Z_RWR_U", true);
+    		super.mesh.chunkVisible("L_AI", true);
     		resetYPRmodifier();
     		float f = ((AV_8A)aircraft()).aircraftbrg;
     		Cockpit.xyz[0] = -(float) Math.sin(Math.toRadians(f)) * 0.02F;
@@ -434,6 +437,7 @@ public class CockpitAV_8B extends CockpitPilot
     	} else
     	{
     		super.mesh.chunkVisible("Z_Z_RWR_U", false);
+    		super.mesh.chunkVisible("L_AI", false);
     	}
     }
     
@@ -760,7 +764,7 @@ public class CockpitAV_8B extends CockpitPilot
 						y+= 2F;
 						t2 = ts;
 					}
-				x = cvt(y, -50F, 50F, -0.03625F, 0.03625F);
+				x = cvt(y, -50F, 50F, 0.03625F, -0.03625F);
 				super.mesh.chunkSetAngles("Z_Z_Scan_1", 0.0F, y, 0.0F);
 				super.mesh.chunkVisible("Z_Z_RadarGround", true);
 				super.mesh.chunkVisible("Z_Z_RadarFrame", false);
@@ -1524,7 +1528,7 @@ public class CockpitAV_8B extends CockpitPilot
                             super.mesh.chunkVisible(m, true);
                         if(super.mesh.isChunkVisible("Z_Z_RadarMark11"))
                             super.mesh.chunkVisible("Z_Z_RadarMark11", false);
-                        for(int j = 0; j <= nTgts + 1; j++)
+                        for(int j = 1; j <= nTgts + 1; j++)
                         {
                             String n = "Z_Z_RadarMark" + j;
                             if(super.mesh.isChunkVisible(n))
@@ -2505,7 +2509,7 @@ public class CockpitAV_8B extends CockpitPilot
         if(f4 == 0F && f3 == 0F)
         	super.mesh.chunkVisible("Z_Z_HDD_NUM23_3", false); else super.mesh.chunkVisible("Z_Z_HDD_NUM23_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM23_3", 0.0F, 0.0F, f4);
-    	float N1R = cvt(((FlightModelMain) (super.fm)).EI.engines[1].getRPM(), 0.0F, 4080F, 0F, 100F);
+    	float N1R = cvt(((FlightModelMain) (super.fm)).EI.engines[0].getRPM(), 0.0F, 4080F, 0F, 100F);
     	f2 = N1R/10F;
     	if(f2>9.9F)
     		f2 = 9.0F;
@@ -2529,7 +2533,7 @@ public class CockpitAV_8B extends CockpitPilot
         if(f4 == 0F && f3 == 0F)
         	super.mesh.chunkVisible("Z_Z_HDD_NUM25_3", false); else super.mesh.chunkVisible("Z_Z_HDD_NUM25_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM25_3", 0.0F, 0.0F, f4);
-    	float N2R = cvt(((FlightModelMain) (super.fm)).EI.engines[1].getRPM() * 0.85294117647058823529411764705882F, 0.0F, 3480F, 0F, 100F);
+    	float N2R = cvt(((FlightModelMain) (super.fm)).EI.engines[0].getRPM() * 0.85294117647058823529411764705882F, 0.0F, 3480F, 0F, 100F);
     	f2 = N2R/10F;
     	if(f2>9.9F)
     		f2 = 9.0F;
@@ -2555,7 +2559,7 @@ public class CockpitAV_8B extends CockpitPilot
         if(f4 == 0F && f3 == 0F && f5 == 0F)
         	super.mesh.chunkVisible("Z_Z_HDD_NUM31_3", false); else super.mesh.chunkVisible("Z_Z_HDD_NUM31_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM31_3", 0.0F, 0.0F, f5);
-    	float extempR = cvt(((FlightModelMain) (super.fm)).EI.engines[1].tOilOut, 0F, 120F, 10F, 838F);
+    	float extempR = cvt(((FlightModelMain) (super.fm)).EI.engines[0].tOilOut, 0F, 120F, 10F, 838F);
     	f2 = extempR/100F;
     	f3 = (float)(int)f2 * 36F;
         if(f3 == 0F)
@@ -2583,7 +2587,7 @@ public class CockpitAV_8B extends CockpitPilot
         if(f4 == 0F && f3 == 0F && f5 == 0F)
         	super.mesh.chunkVisible("Z_Z_HDD_NUM33_3", false); else super.mesh.chunkVisible("Z_Z_HDD_NUM33_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM33_3", 0.0F, 0.0F, f5);
-    	float FFR = this.fm.EI.engines[1].tmpF;
+    	float FFR = this.fm.EI.engines[0].tmpF;
     	f2 = FFR * 100F;
     	f3 = (float)(int)f2 * 36F;
         if(f3 == 0F)
@@ -2623,7 +2627,7 @@ public class CockpitAV_8B extends CockpitPilot
         if(f4 == 0F && f3 == 0F)
         	super.mesh.chunkVisible("Z_Z_HDD_NUM29_3", false); else super.mesh.chunkVisible("Z_Z_HDD_NUM29_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM29_3", 0.0F, 0.0F, f4);
-    	float oilpressR = 1.0F + 0.05F * ((FlightModelMain) (super.fm)).EI.engines[1].tOilOut * ((FlightModelMain) (super.fm)).EI.engines[1].getReadyness();
+    	float oilpressR = 1.0F + 0.05F * ((FlightModelMain) (super.fm)).EI.engines[0].tOilOut * ((FlightModelMain) (super.fm)).EI.engines[0].getReadyness();
     	f2 = oilpressR;
     	f3 = (float)(int)f2 * 36F;
         if(f3 == 0F)
@@ -2686,8 +2690,8 @@ public class CockpitAV_8B extends CockpitPilot
         super.mesh.chunkVisible("Z_Z_HDD_NUM37_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM37_3", 0.0F, 0.0F, f4);
         super.mesh.chunkVisible("Z_Z_HDD_NUM37_4", false);
-    	shake = (((FlightModelMain) (super.fm)).EI.engines[1].w / ((FlightModelMain) (super.fm)).EI.engines[1].wMax) * ((FlightModelMain) (super.fm)).EI.engines[1].thrustMax * (float)Math.sqrt(this.fm.getSpeed() / 94F);
-    	float enginevibR = cvt(shake, 0.0F, ((FlightModelMain) (super.fm)).EI.engines[1].thrustMax, 0.05F, 0.21F);
+    	shake = (((FlightModelMain) (super.fm)).EI.engines[0].w / ((FlightModelMain) (super.fm)).EI.engines[0].wMax) * ((FlightModelMain) (super.fm)).EI.engines[0].thrustMax * (float)Math.sqrt(this.fm.getSpeed() / 94F);
+    	float enginevibR = cvt(shake, 0.0F, ((FlightModelMain) (super.fm)).EI.engines[0].thrustMax, 0.05F, 0.21F);
     	f2 = enginevibR * 10F;
     	f3 = (float)(int)f2 * 36F;
         if(f3 == 0F)
