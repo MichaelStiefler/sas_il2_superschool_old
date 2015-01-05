@@ -3,6 +3,8 @@
 	<name>Mordenweaponry</name>
 	<comment></comment>
 	<projects>
+		<project>AV-8B</project>
+		<project>Copy of Missilesmod</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

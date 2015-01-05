@@ -2,6 +2,7 @@ package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Color3f;
 import com.maddox.JGP.Point3d;
+import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Orient;
 import com.maddox.rts.NetChannel;
@@ -48,7 +49,7 @@ public class MissileAIM7M extends Missile {
 		Property.set(class1, "massa", 152F);
 		Property.set(class1, "massaEnd", 50F);
 		Property.set(class1, "stepMode", 0);
-		Property.set(class1, "launchType", 2);
+		Property.set(class1, "launchType", 2);		
 		Property.set(class1, "detectorType", 3);
 		Property.set(class1, "sunRayAngle", 0.0F);
 		Property.set(class1, "multiTrackingCapable", 1);

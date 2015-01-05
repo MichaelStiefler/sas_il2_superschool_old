@@ -24,7 +24,6 @@ import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.TypeX4Carrier;
 import com.maddox.il2.objects.ships.BigshipGeneric;
 import com.maddox.il2.objects.ships.ShipGeneric;
-import com.maddox.il2.objects.weapons.MissileAGM65D.SPAWN;
 import com.maddox.il2.objects.air.TypeLaserSpotter;
 
 //import com.maddox.il2.objects.air.Mi24V;
