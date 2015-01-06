@@ -1517,6 +1517,8 @@ public class CockpitF_18C extends CockpitPilot
                         	vector3d.set(pointAC);                       	
                         	Point3d pointOrtho = new Point3d();
                             pointOrtho.set(actor.pos.getAbsPoint());
+                            Point3d victim = new Point3d();
+                            victim.set(actor.pos.getAbsPoint());
                             pointOrtho.sub(pointAC);
                             orientAC.transformInv(pointOrtho);                           
                         	//HUD.log(AircraftHotKeys.hudLogWeaponId, "target heading" + HDG);
@@ -1524,6 +1526,7 @@ public class CockpitF_18C extends CockpitPilot
                             if(((Tuple3d) (pointOrtho)).x > h - 500D && ((Tuple3d) (pointOrtho)).x < h + 500D && ((Tuple3d) (pointOrtho)).y < v/(30D/((Tuple3d) (pointOrtho)).x) + 500D && ((Tuple3d) (pointOrtho)).y > v/(30D/((Tuple3d) (pointOrtho)).x) - 500D)
                             {
                             	radarLock.add(pointOrtho);
+                            	((F_18)aircraft()).groundtarget.set(victim);
                             }	
                         }
                     }                

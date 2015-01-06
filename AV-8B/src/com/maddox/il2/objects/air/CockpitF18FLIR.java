@@ -189,15 +189,7 @@ public class CockpitF18FLIR extends CockpitGunner
                     	
                     }                                       
                 }               	
-            }
-            int l = autotrack.size();
-            Point3d ground = new Point3d();
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "Tracking " + l);
-            if(l > 0)
-            {	
-            ground = (Point3d) autotrack.get(0);
-            //((F_18)aircraft()).spot.set(ground);
-            }
+            }           
         }
         super.mesh.chunkSetAngles("Turret1A", y, 180F, 180F);
         super.mesh.chunkSetAngles("Turret1B", 180F, -t, 180F);              

@@ -80,7 +80,7 @@ public class F_18C extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 					continue;
 				if (FM.CT.Weapons[i][j] instanceof RocketGunAGM65Ds) {
 					IR = true;
-					missilesList.add(FM.CT.Weapons[i][j]);
+					//missilesList.add(FM.CT.Weapons[i][j]);
 				}
 				if (FM.CT.Weapons[i][j] instanceof RocketGunFlare) {
 					backfireList.add(FM.CT.Weapons[i][j]);
@@ -1266,7 +1266,7 @@ public class F_18C extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 			a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
 			arraylist.add(s);
 			hashmapint.put(Finger.Int(s), a_lweaponslot);
-			s = "3xDT + 2xAGM65 + 2xAIM-9";
+			s = "3xDT + 2xAGM65E + 2xAIM-9";
 			a_lweaponslot = new Aircraft._WeaponSlot[byte0];
 			a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61A1", 450);
 			a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FLIRPOD", 1);
@@ -1300,7 +1300,7 @@ public class F_18C extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 			a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
 			arraylist.add(s);
 			hashmapint.put(Finger.Int(s), a_lweaponslot);
-			s = "2xDT + 2xAGM65 + 2xAIM-9";
+			s = "2xDT + 2xAGM65E + 2xAIM-9";
 			a_lweaponslot = new Aircraft._WeaponSlot[byte0];
 			a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61A1", 450);
 			a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FLIRPOD", 1);
@@ -1334,7 +1334,7 @@ public class F_18C extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 			a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
 			arraylist.add(s);
 			hashmapint.put(Finger.Int(s), a_lweaponslot);
-			s = "2xDT + 6xAGM65B + 2xAIM-9";
+			s = "2xDT + 6xAGM65E + 2xAIM-9";
 			a_lweaponslot = new Aircraft._WeaponSlot[byte0];
 			a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61A1", 450);
 			a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FLIRPOD", 1);
@@ -1376,7 +1376,7 @@ public class F_18C extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 			a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
 			arraylist.add(s);
 			hashmapint.put(Finger.Int(s), a_lweaponslot);
-			s = "3xDT + 6xAGM65B + 2xAIM-9";
+			s = "3xDT + 6xAGM65E + 2xAIM-9";
 			a_lweaponslot = new Aircraft._WeaponSlot[byte0];
 			a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61A1", 450);
 			a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FLIRPOD", 1);
@@ -1418,7 +1418,7 @@ public class F_18C extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 			a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
 			arraylist.add(s);
 			hashmapint.put(Finger.Int(s), a_lweaponslot);
-			s = "2xDT + 2xAGM65B + 2xAGM65D + 2xAIM-9";
+			s = "2xDT + 2xAGM65E + 2xAGM65D + 2xAIM-9";
 			a_lweaponslot = new Aircraft._WeaponSlot[byte0];
 			a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61A1", 450);
 			a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FLIRPOD", 1);
@@ -1456,7 +1456,7 @@ public class F_18C extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 			a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
 			arraylist.add(s);
 			hashmapint.put(Finger.Int(s), a_lweaponslot);
-			s = "3xDT + 2xAGM65B + 2xAGM65D + 2xAIM-9";
+			s = "3xDT + 2xAGM65E + 2xAGM65D + 2xAIM-9";
 			a_lweaponslot = new Aircraft._WeaponSlot[byte0];
 			a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61A1", 450);
 			a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FLIRPOD", 1);
@@ -1494,7 +1494,7 @@ public class F_18C extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 			a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
 			arraylist.add(s);
 			hashmapint.put(Finger.Int(s), a_lweaponslot);
-			s = "2xAGM-84 + 2xAGM65B + 2xAGM65D + 2xAIM-9";
+			s = "2xAGM-84 + 2xAGM65E + 2xAGM65D + 2xAIM-9";
 			a_lweaponslot = new Aircraft._WeaponSlot[byte0];
 			a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61A1", 450);
 			a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FLIRPOD", 1);
@@ -1530,7 +1530,7 @@ public class F_18C extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 			a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
 			arraylist.add(s);
 			hashmapint.put(Finger.Int(s), a_lweaponslot);
-			s = "4xMk82LGB + 2xAGM65 + 2xAIM-9";
+			s = "4xMk82LGB + 2xAGM65E + 2xAIM-9";
 			a_lweaponslot = new Aircraft._WeaponSlot[byte0];
 			a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61A1", 450);
 			a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FLIRPOD", 1);
@@ -1576,7 +1576,7 @@ public class F_18C extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 			a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
 			arraylist.add(s);
 			hashmapint.put(Finger.Int(s), a_lweaponslot);
-			s = "4xJDAM84 + 2xAGM65 + 2xAIM-9";
+			s = "4xJDAM84 + 2xAGM65E + 2xAIM-9";
 			a_lweaponslot = new Aircraft._WeaponSlot[byte0];
 			a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61A1", 450);
 			a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FLIRPOD", 1);
@@ -1622,7 +1622,7 @@ public class F_18C extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 			a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
 			arraylist.add(s);
 			hashmapint.put(Finger.Int(s), a_lweaponslot);
-			s = "4xMk82LGB + 2xAGM65 + 1xDT + 2xAIM-9";
+			s = "4xMk82LGB + 2xAGM65E + 1xDT + 2xAIM-9";
 			a_lweaponslot = new Aircraft._WeaponSlot[byte0];
 			a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61A1", 450);
 			a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FLIRPOD", 1);
@@ -1668,7 +1668,7 @@ public class F_18C extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 			a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
 			arraylist.add(s);
 			hashmapint.put(Finger.Int(s), a_lweaponslot);
-			s = "4xAIM-7 + 2xAGM65 + 2xAIM-9";
+			s = "4xAIM-7 + 2xAGM65E + 2xAIM-9";
 			a_lweaponslot = new Aircraft._WeaponSlot[byte0];
 			a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61A1", 450);
 			a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FLIRPOD", 1);
@@ -1714,7 +1714,7 @@ public class F_18C extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 			a_lweaponslot[55] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
 			arraylist.add(s);
 			hashmapint.put(Finger.Int(s), a_lweaponslot);
-			s = "2xAGM65 + 6xMk83 + 2xAIM-9";
+			s = "2xAGM65E + 6xMk83 + 2xAIM-9";
 			a_lweaponslot = new Aircraft._WeaponSlot[byte0];
 			a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61A1", 450);
 			a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FLIRPOD", 1);
@@ -1812,7 +1812,7 @@ public class F_18C extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 			a_lweaponslot[83] = new Aircraft._WeaponSlot(3, "BombGunNull", 1);
 			arraylist.add(s);
 			hashmapint.put(Finger.Int(s), a_lweaponslot);
-			s = "2xAGM65 + 6xMk82Snakeyes + 2xAIM-9";
+			s = "2xAGM65E + 6xMk82Snakeyes + 2xAIM-9";
 			a_lweaponslot = new Aircraft._WeaponSlot[byte0];
 			a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61A1", 450);
 			a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FLIRPOD", 1);
@@ -1961,7 +1961,7 @@ public class F_18C extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 			a_lweaponslot[83] = new Aircraft._WeaponSlot(3, "BombGunNull", 1);
 			arraylist.add(s);
 			hashmapint.put(Finger.Int(s), a_lweaponslot);
-			s = "2xAGM-65D + 2xAGM-65B + 6xMk82Snakeyes + 2xAIM-9";
+			s = "2xAGM65D + 2xAGM65E + 6xMk82Snakeyes + 2xAIM-9";
 			a_lweaponslot = new Aircraft._WeaponSlot[byte0];
 			a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61A1", 450);
 			a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FLIRPOD", 1);
@@ -2013,7 +2013,7 @@ public class F_18C extends F_18 implements TypeGuidedMissileCarrier, TypeCounter
 			a_lweaponslot[83] = new Aircraft._WeaponSlot(3, "BombGunNull", 1);
 			arraylist.add(s);
 			hashmapint.put(Finger.Int(s), a_lweaponslot);
-			s = "2xAGM-65D + 2xAGM-65B + 6xMk83 + 2xAIM-9";
+			s = "2xAGM65D + 2xAGM65E + 6xMk83 + 2xAIM-9";
 			a_lweaponslot = new Aircraft._WeaponSlot[byte0];
 			a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61A1", 450);
 			a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FLIRPOD", 1);

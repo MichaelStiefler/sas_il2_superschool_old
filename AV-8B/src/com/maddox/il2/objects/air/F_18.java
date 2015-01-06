@@ -53,7 +53,7 @@ import com.maddox.sound.Sample;
 import com.maddox.sound.SoundFX;
 import com.maddox.sas1946.il2.util.Reflection;
 
-public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeX4Carrier, TypeGuidedBombCarrier, TypeBomber, TypeAcePlane, TypeLaserSpotter, TypeRadar, TypeSemiRadar {
+public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeX4Carrier, TypeGuidedBombCarrier, TypeBomber, TypeAcePlane, TypeLaserSpotter, TypeRadar, TypeSemiRadar, TypeGroundRadar {
 
 	public float getDragForce(float f, float f1, float f2, float f3) {
 		throw new UnsupportedOperationException("getDragForce not supported anymore.");
