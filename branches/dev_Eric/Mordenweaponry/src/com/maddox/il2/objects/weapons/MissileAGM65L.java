@@ -31,8 +31,8 @@ import com.maddox.il2.objects.air.TypeLaserSpotter;
 public class MissileAGM65L extends Missile {
 
     public boolean interpolateStep()
-    {
-        float f = Time.tickLenFs();
+    {  	
+    	float f = Time.tickLenFs();
         float f1 = (float)getSpeed((Vector3d)null);
         f1 += (320F - f1) * 70.1F * f;
         pos.getAbs(p, or);
@@ -99,7 +99,7 @@ public class MissileAGM65L extends Missile {
                         deltaTangage = -f2;
                     if(pT.z > 0.10000000000000001D)
                         deltaTangage = f2;
-                    or.increment(20F * f2 * deltaAzimuth, 20F * f2 * deltaTangage, 10550F * f);
+                    or.increment(20F * f2 * deltaAzimuth, 20F * f2 * deltaTangage, 20550F * f);
                     deltaAzimuth = deltaTangage = 0.0F;
                 }
             } else
@@ -135,13 +135,12 @@ public class MissileAGM65L extends Missile {
   static class SPAWN extends Missile.SPAWN {
 
     public void doSpawn(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f) {
-      new MissileAIM9B(actor, netchannel, i, point3d, orient, f);
+      new MissileAGM65L(actor, netchannel, i, point3d, orient, f);
     }
   }
 
   public MissileAGM65L(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f) {
     this.MissileInit(actor, netchannel, i, point3d, orient, f);
-    victim = null;
     fm = null;
     tStart = 0L;
     pos.setAbs(point3d, orient);
@@ -198,7 +197,7 @@ public class MissileAGM65L extends Missile {
   private long tStart;
   private float deltaAzimuth;
   private float deltaTangage;
-  private Actor victim;
+  //private Actor victim;
 
   static {
     Class class1 = com.maddox.il2.objects.weapons.MissileAGM65L.class;
@@ -226,7 +225,7 @@ public class MissileAGM65L extends Missile {
     Property.set(class1, "massaEnd", 125F);
     Property.set(class1, "stepMode", 0);
     Property.set(class1, "launchType", 0);
-    Property.set(class1, "detectorType", Missile.DETECTOR_TYPE_MANUAL);
+    Property.set(class1, "detectorType", 4);
     Property.set(class1, "sunRayAngle", 0.0F);
     Property.set(class1, "multiTrackingCapable", 0);
     Property.set(class1, "canTrackSubs", 0);
