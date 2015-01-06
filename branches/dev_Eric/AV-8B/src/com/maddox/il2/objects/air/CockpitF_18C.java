@@ -352,6 +352,8 @@ public class CockpitF_18C extends CockpitPilot
     	oldleftscreen = 0;
         oldrightscreen = 0;
         oldhddnav = 0;
+        if(!useRealisticNavigationInstruments())
+            super.mesh.materialReplace("Nav_Tacan", "Nav_WPT");
     }
     
     private float testfuel;
@@ -694,7 +696,7 @@ public class CockpitF_18C extends CockpitPilot
 			super.mesh.chunkSetAngles("Z_Z_RADAR_Mach_1", 0.0F, 0.0F, f1);
 			float f2 = (float)((int)(f * 10F) % 10) * 36F;
 			super.mesh.chunkSetAngles("Z_Z_RADAR_Mach_2", 0.0F, 0.0F, f2 - f1);
-			f = (this.fm.getSpeedKMH() * 0.621371F)/100F;
+			f = (this.fm.getSpeedKMH() * 0.539956803455F)/100F;
 		    f1 = (float)(int)f * 36F;
 			super.mesh.chunkSetAngles("Z_Z_RADAR_Speed_1", 0.0F, 0.0F, f1);
 			f2 = (float)((int)(f * 10F) % 10) * 36F;
@@ -1619,19 +1621,19 @@ public class CockpitF_18C extends CockpitPilot
         Cockpit.xyz[2] = ((FlightModelMain) (super.fm)).CT.getRudder() * 0.07F;
         super.mesh.chunkSetLocate("PedalR", Cockpit.xyz, Cockpit.ypr);
         resetYPRmodifier();
-        super.mesh.chunkSetAngles("Z_Z_Gear", 0.0F, 0.0F, cvt(((FlightModelMain) (super.fm)).CT.getGear(),0.0F,1.0F,0.0F,20F));
+        super.mesh.chunkSetAngles("Z_Z_Gear", 0.0F, 0.0F, cvt(((FlightModelMain) (super.fm)).CT.GearControl,0.0F,1.0F,0.0F,20F));
         float f1 = 0F;
-        if(((FlightModelMain) (super.fm)).CT.FlapsControl<0.6F)
+        if(((FlightModelMain) (super.fm)).CT.FlapsControlSwitch == 0)
         {	
         	f1 = -15F;
         	super.mesh.chunkSetAngles("Z_Z_Flap", 0.0F, 0.0F, f1);
         }
-        if(((FlightModelMain) (super.fm)).CT.FlapsControl>=0.66F && ((FlightModelMain) (super.fm)).CT.FlapsControl<0.75F)
+        if(((FlightModelMain) (super.fm)).CT.FlapsControlSwitch == 1)
         {	
         	f1 = 0F;
         	super.mesh.chunkSetAngles("Z_Z_Flap", f1, 0.0F, 0.0F);
         }
-        if(((FlightModelMain) (super.fm)).CT.FlapsControl>=0.75F)
+        if(((FlightModelMain) (super.fm)).CT.FlapsControlSwitch == 2)
         {	
         	f1 = 15F;
         	super.mesh.chunkSetAngles("Z_Z_Flap", 0.0F, 0.0F, f1);
@@ -1736,12 +1738,12 @@ public class CockpitF_18C extends CockpitPilot
     	float N1L = cvt(((FlightModelMain) (super.fm)).EI.engines[0].getRPM(), 0.0F, 4080F, 0F, 100F)/10F;
     	float N1R = cvt(((FlightModelMain) (super.fm)).EI.engines[1].getRPM(), 0.0F, 4080F, 0F, 100F)/10F;
     	if(N1L < N1R)  N1L = N1R;
-    	f3 = (float)((int)(N1L * 10F) % 10) * 36F;
+    	f3 = (float)((int)(N1L) % 10) * 36F;    	
     	super.mesh.chunkSetAngles("Z_Z_Ins_RPM_1", 0.0F, 0.0F, f3);
-    	f4 = (float)((int)(N1L * 100F) % 10) * 36F;
+    	f4 = (float)((int)(N1L * 10F) % 10) * 36F;
         super.mesh.chunkSetAngles("Z_Z_Ins_RPM_2", 0.0F, 0.0F, f4);
     	float FFL = this.fm.EI.engines[0].tmpF;
-    	float FFR = this.fm.EI.engines[0].tmpF;
+    	float FFR = this.fm.EI.engines[1].tmpF;
     	if(FFL < FFR)  FFL = FFR;
     	f3 = (float)((int)(FFL*10F * 10F) % 10) * 36F;
     	super.mesh.chunkSetAngles("Z_Z_Ins_FF_1", 0.0F, 0.0F, f3);
@@ -1757,7 +1759,7 @@ public class CockpitF_18C extends CockpitPilot
     	f3 = (float)(int)oilpressL/10F * 36F;
     	super.mesh.chunkSetAngles("Z_Z_Ins_Oil_1", 0.0F, 0.0F, f3);
     	f4 = (float)((int)(oilpressL/10F * 10F) % 10) * 36F;
-        super.mesh.chunkSetAngles("Z_Z_Ins_Oil_1", 0.0F, 0.0F, f4);
+        super.mesh.chunkSetAngles("Z_Z_Ins_Oil_2", 0.0F, 0.0F, f4);
         super.mesh.chunkSetAngles("Z_Z_Ins_H", 0.0F, cvt(World.getTimeofDay(), 0.0F, 24F, 0.0F, 720F), 0.0F);
         super.mesh.chunkSetAngles("Z_Z_Ins_M", 0.0F, cvt(World.getTimeofDay() % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F);
         super.mesh.chunkSetAngles("Z_Z_Ins_S", 0.0F, cvt(((World.getTimeofDay() % 1.0F) * 60F) % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F);
@@ -2292,7 +2294,7 @@ public class CockpitF_18C extends CockpitPilot
         f6 = (float)(int)f5 * 36F;
         super.mesh.chunkVisible("Z_Z_HDD_NUM23_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM23_3", 0.0F, 0.0F, f6);        
-        Currange = Duration * 10F * super.fm.getSpeedKMH() * 0.621371192F;//Bingo Range
+        Currange = Duration * 10F * super.fm.getSpeedKMH() * 0.539956803455F;//Bingo Range
         f2 = Currange/10000F;
 		f3 = (float)(int)f2 * 36F;
         if(f3 == 0F)
@@ -2333,7 +2335,7 @@ public class CockpitF_18C extends CockpitPilot
         f6 = (float)(int)f5 * 36F;
         super.mesh.chunkVisible("Z_Z_HDD_NUM26_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM26_3", 0.0F, 0.0F, f6);
-        Currange = Duration * 10F * duspeed * 0.621371192F;//best mach range
+        Currange = Duration * 10F * duspeed * 0.539956803455F;//best mach range
         f2 = Currange/10000F;
 		f3 = (float)(int)f2 * 36F;
         if(f3 == 0F)
@@ -2833,7 +2835,7 @@ public class CockpitF_18C extends CockpitPilot
         {
                 super.mesh.chunkVisible("HDD_Nav_Tacan", bHSIILS || bHSITAC);
                 resetYPRmodifier();
-                Cockpit.xyz[2] = cvt(beaconDistanceInMeter, 1852F, 92600F, -0.04F, 0.0F);
+                Cockpit.xyz[2] = cvt(beaconDistanceInMeter, 1852F, 92600F, -0.044F, -0.01F);
                 Cockpit.xyz[0] = Cockpit.xyz[1] = 0.0F;
                 super.mesh.chunkSetLocate("HDD_Nav_Tacan", Cockpit.xyz, Cockpit.ypr);
         }
@@ -2885,7 +2887,7 @@ public class CockpitF_18C extends CockpitPilot
         super.mesh.chunkSetAngles("Z_Z_HUD_Mach_1", 0.0F, 0.0F, f3);
         f3 = (float)((int)(f10 * 10F) % 10) * 36F;
         super.mesh.chunkSetAngles("Z_Z_HUD_Mach_2", 0.0F, 0.0F, f3);       
-		float f = (this.fm.getSpeedKMH() * 0.621371F)/1000F;
+		float f = (this.fm.getSpeedKMH() * 0.539956803455F)/1000F;
 	    float f1 = (float)(int)f * 36F;
 	    if(f1 == 0)
 	    	super.mesh.chunkVisible("Z_Z_HUD_Speed_1", false);
