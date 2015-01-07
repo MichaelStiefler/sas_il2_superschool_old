@@ -1492,11 +1492,11 @@ label0:
         computeflightmodel();
     }
 
-    private void computeflightmodel()//TODO flightmodel
+    private void computeflightmodel() //TODO flightmodel
     {
 	    if(FM.CT.FlapsControlSwitch == 0)
 	    {
-	        FM.CT.FlapsControl = (5.0F / 62.0F);
+	        FM.CT.FlapsControl = (5.0F / FM.CT.FlapStageMax);
             bUseDroopAileron = false;
         }
 	    else if(FM.CT.FlapsControlSwitch == 1)
@@ -1508,12 +1508,12 @@ label0:
                 float limitTAS = (float) (cvt(FM.getSpeedKMH(), 557F, 1002F, 25.0F, 5.0F));
                 if(fl > limitmach)  fl = limitmach;
                 if(fl > limitTAS)  fl = limitTAS;
-                FM.CT.FlapsControl = fl / 62.0F;
+                FM.CT.FlapsControl = fl / FM.CT.FlapStageMax;
                 bUseDroopAileron = false;
             }
             else
             {
-                FM.CT.FlapsControl = 25.0F / 62.0F;
+                FM.CT.FlapsControl = 25.0F / FM.CT.FlapStageMax;
                 bUseDroopAileron = false;
             }
         }
@@ -1521,20 +1521,20 @@ label0:
         {
             if(FM.Gears.nOfGearsOnGr > 0 || FM.getSpeedKMH() < 306F)
             {
-                if(FM.CT.VarWingControl < (25.0F / 90.0F))
+                if(FM.CT.VarWingControl < (25.0F / FM.CT.VarWingStageMax))
                 {
-                    FM.CT.FlapsControl = 25.0F / 62.0F;
+                    FM.CT.FlapsControl = 25.0F / FM.CT.FlapStageMax;
                     bUseDroopAileron = (FM.Gears.nOfGearsOnGr > 0);
                 }
                 else
                 {
-                    FM.CT.FlapsControl = (float) (cvt((FM.CT.VarWingControl * 90.0F), 25.0F, 50.0F, 25.0F, 62.0F)) / 62.0F;
+                    FM.CT.FlapsControl = (float) (cvt((FM.CT.VarWingControl * FM.CT.VarWingStageMax), 25.0F, 50.0F, 25.0F, FM.CT.FlapStageMax)) / FM.CT.FlapStageMax;
                     bUseDroopAileron = true;
                 }
             }
             else
             {
-                FM.CT.FlapsControl = 25.0F / 62.0F;
+                FM.CT.FlapsControl = 25.0F / FM.CT.FlapStageMax;
                 bUseDroopAileron = false;
             }
 		}

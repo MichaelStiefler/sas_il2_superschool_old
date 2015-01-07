@@ -37,7 +37,6 @@ public class Controls {
 	public float cockpitDoorControl;
 	public float arrestorControl;
 	public float FlapsControl;
-	public int FlapsControlSwitch;
 	public float AileronControl;
 	public float ElevatorControl;
 	public float RudderControl;
@@ -67,7 +66,6 @@ public class Controls {
 	public boolean bHasArrestorControl;
 	public boolean bHasFlapsControl;
 	public boolean bHasFlapsControlRed;
-	public boolean bHasFlapsControlSwitch;
 	public boolean bHasAileronControl;
 	public boolean bHasElevatorControl;
 	public boolean bHasRudderControl;
@@ -162,7 +160,6 @@ public class Controls {
 	public int nFlapStages;
 	public float FlapStageMax;
 	public float[] FlapStage = null;
-	public String[] FlapStageText = null;
 	public float VarWingControl;
 	private float VarWing;
 	public int nVarWingStages;
@@ -179,6 +176,9 @@ public class Controls {
 	public String BlownFlapsType;
 	public boolean bNoCarrierCanopyOpen;
 	public boolean bHasSideDoor;
+	public int FlapsControlSwitch;
+	public boolean bHasFlapsControlSwitch;
+	public String[] FlapStageText = null;
 
 	// --------------------------------------------------------
 
@@ -190,7 +190,6 @@ public class Controls {
 		cockpitDoorControl = 0.0F;
 		arrestorControl = 0.0F;
 		FlapsControl = 0.0F;
-		FlapsControlSwitch = 0;
 		AileronControl = 0.0F;
 		ElevatorControl = 0.0F;
 		RudderControl = 0.0F;
@@ -220,7 +219,6 @@ public class Controls {
 		bHasArrestorControl = false;
 		bHasFlapsControl = true;
 		bHasFlapsControlRed = false;
-		bHasFlapsControlSwitch = false;
 		bHasAileronControl = true;
 		bHasElevatorControl = true;
 		bHasRudderControl = true;
@@ -273,7 +271,6 @@ public class Controls {
 		nFlapStages = -1;
 		FlapStageMax = -1.0F;
 		FlapStage = null;
-		FlapStageText = null;
 		bHasVarWingControl = false;
 		bHasVarIncidence = false;
 		VarWingControl = 0.0F;
@@ -291,6 +288,9 @@ public class Controls {
 		dvBlownFlaps = 0.5F;
 		bNoCarrierCanopyOpen = false;
 		bHasSideDoor = false;
+		FlapsControlSwitch = 0;
+		bHasFlapsControlSwitch = false;
+		FlapStageText = null;
 		// --------------------------------------------------------
 	}
 
@@ -299,7 +299,6 @@ public class Controls {
 		GearControl = controls.GearControl;
 		arrestorControl = controls.arrestorControl;
 		FlapsControl = controls.FlapsControl;
-		FlapsControlSwitch = controls.FlapsControlSwitch;
 		AileronControl = controls.AileronControl;
 		ElevatorControl = controls.ElevatorControl;
 		RudderControl = controls.RudderControl;
@@ -315,6 +314,7 @@ public class Controls {
 		dvRefuel = controls.dvRefuel;
 		dvVarWing = controls.dvVarWing;
 		dvBlownFlaps = controls.dvBlownFlaps;
+		FlapsControlSwitch = controls.FlapsControlSwitch;
 	}
 
 	public void CalcTresholds() {
@@ -329,7 +329,6 @@ public class Controls {
 		else
 			Gear = gearC = gearR = gearL = 1.0F;
 		FlapsControl = Flaps = 0.0F;
-        FlapsControlSwitch = 0;
 		StepControl = 1.0F;
 		bStepControlAuto = true;
 		bRadiatorControlAuto = true;
@@ -340,6 +339,7 @@ public class Controls {
 		RefuelControl = 0.0F;
 		VarWingControl = VarWing = 0.0F;
 		BlownFlapsControl = BlownFlaps = 0.0F;
+        FlapsControlSwitch = 0;
 	}
 
 	public void setFixedGear(boolean flag) {

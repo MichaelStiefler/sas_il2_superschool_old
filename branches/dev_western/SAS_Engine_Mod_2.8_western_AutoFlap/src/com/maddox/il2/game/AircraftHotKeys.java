@@ -1793,8 +1793,32 @@ public class AircraftHotKeys {
 		case 2: // '\002'
 			if (!FM.CT.bHasFlapsControl) break;
 			if (!FM.CT.bHasFlapsControlRed) {
-				FM.CT.FlapsControl = f * 0.5F + 0.5F;
-				break;
+				if (FM.CT.bHasFlapsControlSwitch) {
+					if (f < 0.1F){
+						FM.CT.FlapsControlSwitch = 0;
+						break;
+					}
+					else if (f > 0.9F){
+						FM.CT.FlapsControlSwitch = FM.CT.nFlapStages;
+						break;
+					}
+					else {
+						float div = 1.0F / (FM.CT.nFlapStages + 1);
+						for(int ii = 1; ii<FM.CT.nFlapStages; ii++)
+						{
+							if(f > div * ii && f < div * (ii + 1))
+							{
+								FM.CT.FlapsControlSwitch = ii;
+								break;
+							}
+						}
+						break;
+					}
+				}
+				else{
+					FM.CT.FlapsControl = f * 0.5F + 0.5F;
+					break;
+				}
 			}
 			if (f < 0.0F) {
 				FM.CT.FlapsControl = 0.0F;
@@ -4062,9 +4086,9 @@ public class AircraftHotKeys {
 					{
 						RFM.CT.FlapsControlSwitch--;
 						if (RFM.CT.FlapStageText != null)
-							HUD.log("Flaps Switch: " + RFM.CT.FlapStageText[RFM.CT.FlapsControlSwitch]);
+							HUD.log("Flaps: " + RFM.CT.FlapStageText[RFM.CT.FlapsControlSwitch]);
 						else
-							HUD.log("Flaps Switch: 1 Up");
+							HUD.log("Flaps: 1 Up");
 					}
 					break;
 				}
@@ -4073,12 +4097,13 @@ public class AircraftHotKeys {
 					if (RFM.CT.FlapStage != null && RFM.CT.FlapStageMax != -1.0F) {
 						if (RFM.CT.FlapsControl > RFM.CT.FlapStage[flapIndex]) {
 							RFM.CT.FlapsControl = RFM.CT.FlapStage[flapIndex];
-							HUD.log("Flaps: " + (RFM.CT.FlapStage[flapIndex] * RFM.CT.FlapStageMax) + " deg.");
+							HUD.log("Flaps: " + (Math.floor((double)RFM.CT.FlapStage[flapIndex] * RFM.CT.FlapStageMax * 100F) / 100F) + " deg.");
 							break;
 						}
-						if (RFM.CT.FlapsControl > 0.0F) {
+						else if (flapIndex == 0 && RFM.CT.FlapsControl > 0.0F) {
 							RFM.CT.FlapsControl = 0.0F;
 							HUD.log("FlapsRaised");
+                            break;
 						}
 						break;
 					} else {
@@ -4114,9 +4139,9 @@ public class AircraftHotKeys {
 					{
 						RFM.CT.FlapsControlSwitch++;
 						if (RFM.CT.FlapStageText != null)
-							HUD.log("Flaps Switch: " + RFM.CT.FlapStageText[RFM.CT.FlapsControlSwitch]);
+							HUD.log("Flaps: " + RFM.CT.FlapStageText[RFM.CT.FlapsControlSwitch]);
 						else
-							HUD.log("Flaps Switch: 1 Down");
+							HUD.log("Flaps: 1 Down");
 					}
 					break;
 				}
@@ -4125,13 +4150,13 @@ public class AircraftHotKeys {
 					if (RFM.CT.FlapStage != null && RFM.CT.FlapStageMax != -1.0F) {
 						if (RFM.CT.FlapsControl < RFM.CT.FlapStage[flapIndex]) {
 							RFM.CT.FlapsControl = RFM.CT.FlapStage[flapIndex];
-							HUD.log("Flaps: " + (RFM.CT.FlapStage[flapIndex] * RFM.CT.FlapStageMax) + " deg.");
+							HUD.log("Flaps: " + (Math.floor((double)RFM.CT.FlapStage[flapIndex] * RFM.CT.FlapStageMax * 100F) / 100F) + " deg.");
 							break;
 						}
-
-						if (RFM.CT.FlapsControl < 1.0F) {
+						else if (flapIndex == (RFM.CT.nFlapStages - 1) && RFM.CT.FlapsControl < 1.0F) {
 							RFM.CT.FlapsControl = 1.0F;
 							HUD.log("Flaps: " + RFM.CT.FlapStageMax + " deg.");
+						    break;
 						}
 						break;
 					} else {
@@ -4174,12 +4199,13 @@ public class AircraftHotKeys {
 			if (RFM.CT.VarWingStage != null && RFM.CT.VarWingStageMax != -1.0F) {
 				if (RFM.CT.VarWingControl > RFM.CT.VarWingStage[varWingIndex]) {
 					RFM.CT.VarWingControl = RFM.CT.VarWingStage[varWingIndex];
-					HUD.log("Wings: " + (RFM.CT.VarWingStage[varWingIndex] * RFM.CT.VarWingStageMax) + " deg.");
+					HUD.log("Wings: " + (Math.floor((double)RFM.CT.VarWingStage[varWingIndex] * RFM.CT.VarWingStageMax * 100F) / 100F) + " deg.");
 					break;
 				}
-				if (RFM.CT.VarWingControl > 0.0F) {
+				else if (varWingIndex == 0 && RFM.CT.VarWingControl > 0.0F) {
 					RFM.CT.VarWingControl = 0.0F;
-					HUD.log("Wings Retracted");
+					HUD.log("Wings: Retracted");
+                    break;
 				}
 				break;
 			}
@@ -4187,13 +4213,13 @@ public class AircraftHotKeys {
 			if (RFM.CT.VarWingStage != null && RFM.CT.VarWingStageMax != -1.0F) {
 				if (RFM.CT.VarWingControl < RFM.CT.VarWingStage[varWingIndex]) {
 					RFM.CT.VarWingControl = RFM.CT.VarWingStage[varWingIndex];
-					HUD.log("Wings: " + (RFM.CT.VarWingStage[varWingIndex] * RFM.CT.VarWingStageMax) + " deg.");
+					HUD.log("Wings: " + (Math.floor((double)RFM.CT.VarWingStage[varWingIndex] * RFM.CT.VarWingStageMax * 100F) / 100F) + " deg.");
 					break;
 				}
-
-				if (RFM.CT.VarWingControl < 1.0F) {
+				else if (varWingIndex == (RFM.CT.nVarWingStages - 1) && RFM.CT.VarWingControl < 1.0F) {
 					RFM.CT.VarWingControl = 1.0F;
 					HUD.log("Wings: " + RFM.CT.VarWingStageMax + " deg.");
+					break;
 				}
 				break;
 			}
