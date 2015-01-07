@@ -39,7 +39,7 @@ import java.util.List;
 //            Cockpit, PaintScheme, EjectionSeat
 
 public class AV_8 extends Scheme1
-    implements TypeSupersonic, TypeFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeRadar, TypeBomber, TypeX4Carrier, TypeLaserSpotter, TypeStormovikArmored
+    implements TypeSupersonic, TypeFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeRadar, TypeBomber, TypeX4Carrier, TypeLaserSpotter, TypeStormovikArmored, TypeGroundRadar
 {
 
     public float getDragForce(float f, float f1, float f2, float f3)
@@ -220,13 +220,13 @@ public class AV_8 extends Scheme1
         }
         if(i == 26)
         {
-          	if(hold == true && t1 + 200L < Time.current())
+          	if(hold == true && t1 + 200L < Time.current() && FLIR)
             {
             	hold = false;
             	HUD.log("Lazer Unlock");
             	t1 = Time.current();
             }	
-            if(hold == false && t1 + 200L < Time.current())
+            if(hold == false && t1 + 200L < Time.current() && FLIR)
             {	
             	hold = true;
             	HUD.log("Lazer Lock");
@@ -680,6 +680,15 @@ public class AV_8 extends Scheme1
             FLIR();
         if(!FLIR)
         	((FlightModelMain) (super.FM)).AP.setStabAltitude(false);
+        if(!super.FM.isPlayers())
+        {
+            if(((Maneuver)super.FM).get_maneuver() == 25 && ((FlightModelMain) (super.FM)).AP.way.isLanding())
+                FM.CT.FlapsControlSwitch = 2;
+            else if(((Maneuver)super.FM).get_maneuver() == 26)
+                FM.CT.FlapsControlSwitch = 2;
+            else
+                FM.CT.FlapsControlSwitch = 1;
+        }
     }
 
     private final void UpdateLightIntensity()
@@ -928,15 +937,23 @@ public class AV_8 extends Scheme1
     protected void moveAileron(float f)
     {
     	updateControlsVisuals();
-    	if(super.FM.getSpeedKMH() > 570F)
+        if(bUseDroopAileron)
         {
-            float f1 = 2.0F * f;
-            hierMesh().chunkSetAngles("AroneL_D0", 0.0F, 0.0F, 20F * f1);
-            hierMesh().chunkSetAngles("AroneR_D0", 0.0F, 0.0F, -20F * f1);
-        } else
+            hierMesh().chunkSetAngles("AroneL_D0", 0.0F, 0.0F, 15F);
+            hierMesh().chunkSetAngles("AroneR_D0", 0.0F, 0.0F, 15F);
+        }
+        else
         {
-            hierMesh().chunkSetAngles("AroneL_D0", 0.0F, 0.0F, 20F * f);
-            hierMesh().chunkSetAngles("AroneR_D0", 0.0F, 0.0F, -20F * f);
+            if(super.FM.getSpeedKMH() > 570F)
+            {
+                float f1 = 2.0F * f;
+                hierMesh().chunkSetAngles("AroneL_D0", 0.0F, 0.0F, 20F * f1);
+                hierMesh().chunkSetAngles("AroneR_D0", 0.0F, 0.0F, -20F * f1);
+            } else
+            {
+                hierMesh().chunkSetAngles("AroneL_D0", 0.0F, 0.0F, 20F * f);
+                hierMesh().chunkSetAngles("AroneR_D0", 0.0F, 0.0F, -20F * f);
+            }
         }
     }
 
@@ -1481,8 +1498,62 @@ label0:
         }
         for (int i = 1; i < 15; i++)
 			hierMesh().chunkSetAngles("Eflap" + i, 0.0F, 0.0F, Aircraft.cvt(150F - ((FlightModelMain) (super.FM)).getSpeedKMH(), -200F, 0F, 0.0F, 30.0F));
+        computeflightmodel();
     }
-    
+
+    private void computeflightmodel() //TODO flightmodel
+    {
+	    if(FM.CT.FlapsControlSwitch == 0)
+	    {
+	        FM.CT.FlapsControl = (5.0F / FM.CT.FlapStageMax);
+            bUseDroopAileron = false;
+        }
+	    else if(FM.CT.FlapsControlSwitch == 1)
+	    {
+            if(FM.CT.getGear() < 0.01F)
+            {
+                float fl = (float) (cvt(FM.getAOA(), 5.0F, 15.0F, 0.0F, 25.0F));
+                float limitmach = (float) (cvt(calculateMach(), 5.5F, 9.5F, 25.0F, 0.0F));
+                float limitTAS = (float) (cvt(FM.getSpeedKMH(), 557F, 1002F, 25.0F, 0.0F));
+                if(fl > limitmach)  fl = limitmach;
+                if(fl > limitTAS)  fl = limitTAS;
+                FM.CT.FlapsControl = fl / FM.CT.FlapStageMax;
+                bUseDroopAileron = false;
+            }
+            else
+            {
+                FM.CT.FlapsControl = 25.0F / FM.CT.FlapStageMax;
+                bUseDroopAileron = false;
+            }
+        }
+	    else if(FM.CT.FlapsControlSwitch == 2)
+        {
+            if(FM.Gears.nOfGearsOnGr > 0 || FM.getSpeedKMH() < 306F)
+            {
+                if(FM.CT.VarWingControl < (25.0F / FM.CT.VarWingStageMax))
+                {
+                    FM.CT.FlapsControl = 25.0F / FM.CT.FlapStageMax;
+                    bUseDroopAileron = (FM.Gears.nOfGearsOnGr > 0);
+                }
+                else
+                {
+                    FM.CT.FlapsControl = (float) (cvt((FM.CT.VarWingControl * FM.CT.VarWingStageMax), 25.0F, 50.0F, 25.0F, FM.CT.FlapStageMax)) / FM.CT.FlapStageMax;
+                    bUseDroopAileron = true;
+                }
+            }
+            else
+            {
+                FM.CT.FlapsControl = 25.0F / FM.CT.FlapStageMax;
+                bUseDroopAileron = false;
+            }
+		}
+        if(bUseDroopAileron != oldbUseDroopAileron)
+        {
+            moveAileron(FM.CT.getAileron());
+            oldbUseDroopAileron = bUseDroopAileron;
+        }
+	}
+  
     private void pullingvapor()
     {
     	if(super.FM.getSpeed() > 7F && World.Rnd().nextFloat() < getAirDensityFactor(super.FM.getAltitude()))
@@ -2060,6 +2131,8 @@ label0:
     public int radargunsight;
     public int leftscreen;
     public int Bingofuel;
+    private boolean bUseDroopAileron;
+    private boolean oldbUseDroopAileron;
     
 
     static 
