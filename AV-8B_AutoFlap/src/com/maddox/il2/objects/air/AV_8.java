@@ -680,6 +680,15 @@ public class AV_8 extends Scheme1
             FLIR();
         if(!FLIR)
         	((FlightModelMain) (super.FM)).AP.setStabAltitude(false);
+        if(!super.FM.isPlayers())
+        {
+            if(((Maneuver)super.FM).get_maneuver() == 25 && ((FlightModelMain) (super.FM)).AP.way.isLanding())
+                FM.CT.FlapsControlSwitch = 2;
+            else if(((Maneuver)super.FM).get_maneuver() == 26)
+                FM.CT.FlapsControlSwitch = 2;
+            else
+                FM.CT.FlapsControlSwitch = 1;
+        }
     }
 
     private final void UpdateLightIntensity()
