@@ -958,9 +958,9 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
             if(((Maneuver)super.FM).get_maneuver() == 25 && ((FlightModelMain) (super.FM)).AP.way.isLanding())
                 FM.CT.FlapsControlSwitch = 2;
             else if(((Maneuver)super.FM).get_maneuver() == 26)
-                FM.CT.FlapsControlSwitch = 2;
-            else
                 FM.CT.FlapsControlSwitch = 1;
+            else
+                FM.CT.FlapsControlSwitch = 0;
         }
 	}
 
