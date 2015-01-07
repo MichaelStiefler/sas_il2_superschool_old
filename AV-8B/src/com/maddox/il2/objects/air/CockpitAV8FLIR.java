@@ -1,16 +1,19 @@
 // Decompiled by DJ v3.10.10.93 Copyright 2007 Atanas Neshkov  Date: 11/4/2012 6:52:29 AM
 // Home Page: http://members.fortunecity.com/neshkov/dj.html  http://www.neshkov.com/dj.html - Check often for new version!
 // Decompiler options: packimports(3) 
-// Source File Name:   CockpitF18FLIR.java
+// Source File Name:   CockpitAV8FLIR.java
 
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Tuple3d;
+import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
+import com.maddox.il2.game.Mission;
 import com.maddox.rts.*;
 import com.maddox.JGP.*;
 import com.maddox.il2.ai.AnglesFork;
@@ -18,7 +21,12 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
+import com.maddox.il2.objects.bridges.BridgeSegment;
+import com.maddox.il2.objects.ships.ShipGeneric;
 import com.maddox.il2.objects.sounds.SndAircraft;
+import com.maddox.il2.objects.vehicles.cars.CarGeneric;
+import com.maddox.il2.objects.vehicles.stationary.StationaryGeneric;
+import com.maddox.il2.objects.vehicles.tanks.TankGeneric;
 import com.maddox.il2.objects.weapons.GuidedMissileUtils;
 import com.maddox.rts.Time;
 import com.maddox.sound.Acoustics;
@@ -26,9 +34,10 @@ import com.maddox.sound.ReverbFXRoom;
 import com.maddox.util.HashMapExt;
 
 import java.util.ArrayList;
+import java.util.List;
 
 // Referenced classes of package com.maddox.il2.objects.air:
-//            CockpitGunner, F_18
+//            CockpitGunner, AV_8
 
 public class CockpitAV8FLIR extends CockpitGunner
 {
@@ -59,6 +68,7 @@ public class CockpitAV8FLIR extends CockpitGunner
         laser(orient);
         //laserTrack();
     }
+       
     
     private float h;
     private float v;
@@ -147,9 +157,7 @@ public class CockpitAV8FLIR extends CockpitGunner
         	y = 100F;
         if(y < 260F && y > 180F)
         	y = 260F;
-        if((y >= 100F && y < 180F) || (y <= 260F && y > 180F))
-        	((AV_8)aircraft()).hold = false;
-        //HUD.log(AircraftHotKeys.hudLogWeaponId, "roll " + y);
+        
         if(!((AV_8)aircraft()).hold)
         {          
            ((AV_8)aircraft()).spot.set(spot1);          
@@ -163,11 +171,31 @@ public class CockpitAV8FLIR extends CockpitGunner
         if(((AV_8)aircraft()).hold)
         {
         	((Tuple3d) ((Point3d)((AV_8)aircraft()).spot)).y += -ta;
-        	((Tuple3d) ((Point3d)((AV_8)aircraft()).spot)).x += aa;        	
+        	((Tuple3d) ((Point3d)((AV_8)aircraft()).spot)).x += aa;
+            autotrack.clear();
+            List list = Engine.targets();
+            int i = list.size();                   
+            for(int j = 0; j < i; j++)
+            {
+                Actor actor = (Actor)list.get(j);
+                if(((actor instanceof CarGeneric) || (actor instanceof TankGeneric) || (actor instanceof ShipGeneric) || (actor instanceof BridgeSegment)) && !(actor instanceof StationaryGeneric) && actor != World.getPlayerAircraft() && actor.getArmy() != World.getPlayerArmy()) //basically tell that target is not your own aircraft and not friendly aircraft
+                {                       	                      	
+                	Point3d pointOrtho = new Point3d();
+                    pointOrtho.set(actor.pos.getAbsPoint());                          
+                    if(((Tuple3d) (pointOrtho)).x > ((AV_8)aircraft()).spot.x - 10D && ((Tuple3d) (pointOrtho)).x < ((AV_8)aircraft()).spot.x + 10D && ((Tuple3d) (pointOrtho)).y < ((AV_8)aircraft()).spot.y + 10D && ((Tuple3d) (pointOrtho)).y > ((AV_8)aircraft()).spot.y - 10D)
+                    {
+                    	autotrack.add(pointOrtho); 
+                    	((AV_8)aircraft()).spot.set(pointOrtho);
+                    	
+                    }                                       
+                }               	
+            }           
         }
         super.mesh.chunkSetAngles("Turret1A", y, 180F, 180F);
         super.mesh.chunkSetAngles("Turret1B", 180F, -t, 180F);              
     }
+    
+    private ArrayList autotrack = new ArrayList();
 
     public void clipAnglesGun(Orient orient)
     {

@@ -849,14 +849,18 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 		FM.Skill = 3;
 		FM.Sq.dragChuteCx = -10000.0F;
 		bHasDeployedDragChute = false;
-		t1 = Time.current();
-		
+		t1 = Time.current();		
 		// Modify G limits
 		this.FM.LimitLoad = 20.0F;
 		if (this.FM instanceof RealFlightModel)
 			Reflection.genericInvokeMethod(this.FM, "init_G_Limits");
 		this.FM.CT.toggleRocketHook();
 		this.getThrustMaxFromEmd();
+		if((super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode() || !(super.FM instanceof Pilot))
+        {   				
+			FM.Sq.squareElevators += 2;
+			FM.Sq.liftStab +=2;
+        }
 	}
 
 	public void updateLLights() {
@@ -953,6 +957,15 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 			hierMesh().chunkVisible("HMask1_D0", hierMesh().isChunkVisible("Pilot1_D0"));
 		if (FLIR)
 			FLIR();
+		if(!super.FM.isPlayers())
+        {
+            if(((Maneuver)super.FM).get_maneuver() == 25 && ((FlightModelMain) (super.FM)).AP.way.isLanding())
+                FM.CT.FlapsControlSwitch = 2;
+            else if(((Maneuver)super.FM).get_maneuver() == 26)
+                FM.CT.FlapsControlSwitch = 1;
+            else
+                FM.CT.FlapsControlSwitch = 0;
+        }
 	}
 
 	private final void UpdateLightIntensity() {
@@ -1669,7 +1682,7 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 		RWRLaunchWarning();
 		if((super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode() || !(super.FM instanceof Pilot))
         {   	
-			RWRWarning();    		
+			RWRWarning(); 
         }
 		updatecontrollaser();
 		if (FM.crew > 1 && obsMove < obsMoveTot && !bObserverKilled && !FM.AS.isPilotParatrooper(1)) {
