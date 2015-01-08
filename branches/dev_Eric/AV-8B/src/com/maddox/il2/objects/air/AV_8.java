@@ -1513,7 +1513,7 @@ label0:
 	    {
             if(FM.CT.getGear() < 0.01F)
             {
-                float fl = (float) (cvt(FM.getAOA(), 5.0F, 15.0F, 0.0F, 25.0F));
+                float fl = (float) (cvt(FM.getAOA(), 5.0F, 15.0F, 5.0F, 25.0F));
                 float limitmach = (float) (cvt(calculateMach(), 5.5F, 9.5F, 25.0F, 0.0F));
                 float limitTAS = (float) (cvt(FM.getSpeedKMH(), 557F, 1002F, 25.0F, 5.0F));
                 if(fl > limitmach)  fl = limitmach;
