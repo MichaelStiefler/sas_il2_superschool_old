@@ -1790,7 +1790,7 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 				bForceFlapmodeAuto = false;
 			if(Time.current() > tflap + 3000L && Time.current() < tflap + 4000L)
 			{
-				FM.CT.FlapsControl = 0F;
+				FM.CT.FlapsControlSwitch = 0;
 				FM.CT.setTrimElevatorControl(0.0F);
 			} else
 			if(Time.current() > tflap + 4000L)

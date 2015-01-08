@@ -1507,6 +1507,7 @@ label0:
 	    {
 	        FM.CT.FlapsControl = (5.0F / FM.CT.FlapStageMax);
             bUseDroopAileron = false;
+            FM.CT.trimElevator = (cvt(FM.getSpeedKMH(), 500F, 1000F, -0.17F, -0.82F));
         }
 	    else if(FM.CT.FlapsControlSwitch == 1)
 	    {
@@ -1514,7 +1515,7 @@ label0:
             {
                 float fl = (float) (cvt(FM.getAOA(), 5.0F, 15.0F, 0.0F, 25.0F));
                 float limitmach = (float) (cvt(calculateMach(), 5.5F, 9.5F, 25.0F, 0.0F));
-                float limitTAS = (float) (cvt(FM.getSpeedKMH(), 557F, 1002F, 25.0F, 0.0F));
+                float limitTAS = (float) (cvt(FM.getSpeedKMH(), 557F, 1002F, 25.0F, 5.0F));
                 if(fl > limitmach)  fl = limitmach;
                 if(fl > limitTAS)  fl = limitTAS;
                 FM.CT.FlapsControl = fl / FM.CT.FlapStageMax;
