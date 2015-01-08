@@ -39,7 +39,7 @@ import java.util.List;
 //            Cockpit, PaintScheme, EjectionSeat
 
 public class AV_8 extends Scheme1
-    implements TypeSupersonic, TypeFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeRadar, TypeBomber, TypeX4Carrier, TypeLaserSpotter, TypeStormovikArmored
+    implements TypeSupersonic, TypeFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeRadar, TypeBomber, TypeX4Carrier, TypeLaserSpotter, TypeStormovikArmored, TypeGroundRadar
 {
 
     public float getDragForce(float f, float f1, float f2, float f3)
@@ -220,13 +220,13 @@ public class AV_8 extends Scheme1
         }
         if(i == 26)
         {
-          	if(hold == true && t1 + 200L < Time.current())
+          	if(hold == true && t1 + 200L < Time.current() && FLIR)
             {
             	hold = false;
             	HUD.log("Lazer Unlock");
             	t1 = Time.current();
             }	
-            if(hold == false && t1 + 200L < Time.current())
+            if(hold == false && t1 + 200L < Time.current() && FLIR)
             {	
             	hold = true;
             	HUD.log("Lazer Lock");
@@ -1507,6 +1507,7 @@ label0:
 	    {
 	        FM.CT.FlapsControl = (5.0F / FM.CT.FlapStageMax);
             bUseDroopAileron = false;
+            FM.CT.trimElevator = (cvt(FM.getSpeedKMH(), 500F, 1000F, -0.17F, -0.82F));
         }
 	    else if(FM.CT.FlapsControlSwitch == 1)
 	    {
@@ -1519,6 +1520,7 @@ label0:
                 if(fl > limitTAS)  fl = limitTAS;
                 FM.CT.FlapsControl = fl / FM.CT.FlapStageMax;
                 bUseDroopAileron = false;
+                FM.CT.trimElevator = (cvt(FM.getSpeedKMH(), 500F, 1000F, -0.17F, -0.82F));
             }
             else
             {
