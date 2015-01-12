@@ -34,7 +34,7 @@ public class MissileAGM65D extends Missile {
     {  	
     	float f = Time.tickLenFs();
         float f1 = (float)getSpeed((Vector3d)null);
-        f1 += (320F - f1) * 70.1F * f;
+        f1 += (4000F - f1) * 0.1F * f;
         pos.getAbs(p, or);
         v.set(1.0D, 0.0D, 0.0D);
         or.transform(v);
@@ -99,12 +99,12 @@ public class MissileAGM65D extends Missile {
                         deltaTangage = -f2;
                     if(pT.z > 0.10000000000000001D)
                         deltaTangage = f2;
-                    or.increment(20F * f2 * deltaAzimuth, 20F * f2 * deltaTangage, 30550F * f);
+                    or.increment(20F * f2 * deltaAzimuth, 20F * f2 * deltaTangage, 5520F * f);
                     deltaAzimuth = deltaTangage = 0.0F;
                 }
             } else
             {
-                or.increment(0.0F, 0.0F, 30550F * f);
+                or.increment(0.0F, 0.0F, 0.0F);
             }
         }
         pos.setAbs(p, or);

@@ -47,7 +47,7 @@ public class BombMk82LGB extends Bomb
             setMesh("3DO/arms/Mk82LGBD/mono.sim");
             popped = true;
         }
-    	if(Time.current() > t1 + 3000L)
+    	if(Time.current() > t1 + 1000L)
         {
             float f = Time.tickLenFs();
             float f1 = (float)getSpeed((Vector3d)null);
@@ -85,7 +85,7 @@ public class BombMk82LGB extends Bomb
                             deltaTangage = -f2;
                         if(pT.z > 0.10000000000000001D)
                             deltaTangage = f2;
-                        or.increment(10F * f2 * deltaAzimuth, 10F * f2 * deltaTangage, 0.0F);
+                        or.increment(70F * f2 * deltaAzimuth, 70F * f2 * deltaTangage, 0.0F);
                         deltaAzimuth = deltaTangage = 0.0F;
                     }
                 }
