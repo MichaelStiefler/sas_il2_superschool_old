@@ -1711,11 +1711,12 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 		{
 			fNozzleOpenR = (FM.EI.engines[1].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[1].getPowerOutput(), 0F, 0.92F, -9F, 0F) : cvt(FM.EI.engines[1].getPowerOutput(), 0.92F, 1.10F, 0F, -9F)); 
 			hierMesh().chunkSetAngles("Eflap" + j, fNozzleOpenR, 0.0F, 0.0F);
-		}	
+		}
+		float m = cvt(super.FM.getSpeedKMH(), 500.0F, 1000F, 0.999F, 0.601F);
 		if (super.FM.getSpeed() > 7F && World.Rnd().nextFloat() < getAirDensityFactor(super.FM.getAltitude())) {
 			if (super.FM.getOverload() > 5.7F) {
-				pull01 = Eff3DActor.New(this, findHook("_Pull01"), null, 1.0F, "3DO/Effects/Aircraft/Pullingvapor.eff", -1F);
-				pull02 = Eff3DActor.New(this, findHook("_Pull02"), null, 1.0F, "3DO/Effects/Aircraft/Pullingvapor.eff", -1F);
+				pull01 = Eff3DActor.New(this, findHook("_Pull01"), null, m, "3DO/Effects/Aircraft/Pullingvapor.eff", -1F);
+				pull02 = Eff3DActor.New(this, findHook("_Pull02"), null, m, "3DO/Effects/Aircraft/Pullingvapor.eff", -1F);
 			}
 			if (super.FM.getOverload() <= 5.7F) {
 				Eff3DActor.finish(pull01);
