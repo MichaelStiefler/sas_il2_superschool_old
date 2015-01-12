@@ -67,9 +67,53 @@ public class CockpitF18FLIR extends CockpitGunner
         orient1.set(orient);
         //laser(orient);
         laserTrack(orient);
-    }  
+        instrument(orient);
+    } 
     
-public void laserTrack(Orient orient) {
+    private void instrument(Orient orient)
+    {
+    	if(((F_18)aircraft()).Nvision == false)
+    	{
+    		super.mesh.chunkVisible("Screen", false);
+    		super.mesh.chunkVisible("Dark", true);
+    	} else
+    	{
+    		super.mesh.chunkVisible("Screen", true);
+    		super.mesh.chunkVisible("Dark", false);
+    	}
+    	float yaw = cvt(orient.getYaw(), -120F, 120F, -0.25F, 0.25F);
+    	resetYPRmodifier();
+        Cockpit.xyz[0] = yaw;
+        super.mesh.chunkSetLocate("Z_Z_FLIR_HDG", Cockpit.xyz, Cockpit.ypr);
+        resetYPRmodifier();
+        float pitch = cvt(orient.getPitch(), 270F, 360F, -0.5F, 0F);
+        Cockpit.xyz[1] = pitch;
+        super.mesh.chunkSetLocate("Z_Z_FLIR_VERT", Cockpit.xyz, Cockpit.ypr);
+        Orient orient2 = new Orient();
+        Point3d point3d = new Point3d();
+        ((F_18)aircraft()).pos.getAbs(point3d, orient2);       
+        float roll = orient2.getRoll();
+        float antiroll = 360F - roll;
+        if(antiroll > 180F)
+        	antiroll = antiroll - 360F;
+        float fn = orient2.getPitch();
+        float r = orient.getPitch();
+        if(fn>90F)
+    		r = orient.getPitch() - 360F;
+    	if(fn<90F)
+    		r = orient.getPitch();
+    	if(fn>90F)
+    		pitch = fn - 360F + r;
+    	if(fn<90F)
+    		pitch = fn - r; 
+        super.mesh.chunkSetAngles("Z_Z_FLIR_BRG", 0.0F, antiroll, 0.0F);       
+        resetYPRmodifier();
+        pitch = cvt(pitch, 0F, -180F, 0F, 0.15F);
+        Cockpit.xyz[1] = pitch;
+        super.mesh.chunkSetLocate("Z_Z_FLIR_BRG2", Cockpit.xyz, Cockpit.ypr);
+    }
+    
+    public void laserTrack(Orient orient) {
 		Orient orient2 = new Orient();
 		Point3d point3d = new Point3d();
 		((F_18)aircraft()).pos.getAbs(point3d, orient2);       
@@ -100,7 +144,9 @@ public void laserTrack(Orient orient) {
     	}
     	super.mesh.chunkSetAngles("Turret1A", orient.getYaw(), 180F, 180F);
         super.mesh.chunkSetAngles("Turret1B", 180F, -orient.getPitch(), 180F);
+        super.mesh.chunkVisible("Z_Z_FLIR_Lock", false);
     	} else if(((F_18)aircraft()).hold) {
+    		super.mesh.chunkVisible("Z_Z_FLIR_Lock", true);
     		LaserP3.x = LaserP2.x; 
     		LaserP3.y = LaserP2.y; 
     		LaserP3.z = LaserP2.z;     		
@@ -112,17 +158,24 @@ public void laserTrack(Orient orient) {
             for(int j = 0; j < i; j++)
             {
                 Actor actor = (Actor)list.get(j);
-                if(((actor instanceof CarGeneric) || (actor instanceof TankGeneric) || (actor instanceof ShipGeneric) || (actor instanceof BridgeSegment)) && !(actor instanceof StationaryGeneric) && actor != World.getPlayerAircraft() && actor.getArmy() != World.getPlayerArmy()) //basically tell that target is not your own aircraft and not friendly aircraft
+                if(((actor instanceof CarGeneric) || (actor instanceof TankGeneric) || (actor instanceof ShipGeneric)) && !(actor instanceof StationaryGeneric) && actor != World.getPlayerAircraft() && actor.getArmy() != World.getPlayerArmy()) //basically tell that target is not your own aircraft and not friendly aircraft
                 {                       	                      	
                 	Point3d pointOrtho = new Point3d();
                     pointOrtho.set(actor.pos.getAbsPoint());                          
-                    if(((Tuple3d) (pointOrtho)).x > ((F_18)aircraft()).spot.x - 10D && ((Tuple3d) (pointOrtho)).x < ((F_18)aircraft()).spot.x + 10D && ((Tuple3d) (pointOrtho)).y < ((F_18)aircraft()).spot.y + 10D && ((Tuple3d) (pointOrtho)).y > ((F_18)aircraft()).spot.y - 10D)
+                    if(((Tuple3d) (pointOrtho)).x > ((F_18)aircraft()).spot.x - 8D && ((Tuple3d) (pointOrtho)).x < ((F_18)aircraft()).spot.x + 8D && ((Tuple3d) (pointOrtho)).y < ((F_18)aircraft()).spot.y + 8D && ((Tuple3d) (pointOrtho)).y > ((F_18)aircraft()).spot.y - 8D)
                     {
-                    	autotrack.add(pointOrtho); 
-                    	((F_18)aircraft()).spot.set(pointOrtho);	
-                    }                                       
-                }               	
+                    	autotrack.add(pointOrtho); 	                    	
+                    }
+                }                	
             }
+            if(autotrack.size() > 0)
+            {
+            	super.mesh.chunkVisible("Z_Z_FLIR_Tracking", true);
+            	Point3d victim = new Point3d();
+            	victim.set(((Tuple3d) ((Point3d)autotrack.get(0))));
+                ((F_18)aircraft()).spot.set(victim);
+            }	else
+            {	super.mesh.chunkVisible("Z_Z_FLIR_Tracking", false);}            
     		Point3d laser = new Point3d();
     		laser.set(((F_18)aircraft()).spot);
         	laser.sub(point3d);        	
@@ -153,10 +206,10 @@ public void laserTrack(Orient orient) {
             y = -(float)Math.toDegrees(Math.atan(d1/d2)) + te; else
             if(f1 > 0F && f1 <= 90F)	
             y = -(float)Math.toDegrees(Math.atan(d1/d2)) + orient2.getYaw();
-            if(y > 100F && y < 180F)
-            	y = 100F;
-            if(y < 260F && y > 180F)
-            	y = 260F;
+            //if(y > 100F && y < 180F)
+            	//y = 100F;
+            //if(y < 260F && y > 180F)
+            	//y = 260F;
             super.mesh.chunkSetAngles("Turret1A", y, 180F, 180F);
             super.mesh.chunkSetAngles("Turret1B", 180F, -t, 180F);
     	}        
