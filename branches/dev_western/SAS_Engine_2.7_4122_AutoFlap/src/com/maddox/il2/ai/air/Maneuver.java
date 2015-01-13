@@ -1461,7 +1461,7 @@ public class Maneuver extends AIFlightModel {
             Po.add(Vpl);
             if (Landscape.rayHitHQ(actor.pos.getAbsPoint(), Po, tempPoint)) {
                 flag = false;
-                af[0] = (float) Loc.distance(tempPoint) / f15;
+                af[0] = (float) Loc.distance(tempPoint) / f16;
             }
             Po.set(Loc);
             f16 = Math.max(koeff * 5F, f16);
