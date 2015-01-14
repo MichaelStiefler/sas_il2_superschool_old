@@ -229,15 +229,15 @@ public class AutopilotAI extends Autopilotage {
 				if (way.isLanding()) {
 					FM.getLoc(P);
 					if (way.Cur() > 3 && P.z > (WPoint.z + ((((Aircraft) FM.actor) instanceof TypeFastJet) ? 600D : 500D))) {
-						FM.CT.FlapsControl = 0.0F;
+						if(!FM.CT.bHasFlapsControlSwitch) FM.CT.FlapsControl = 0.0F;
 						way.setCur(1);
 					}
 					if (way.Cur() > 3 && FM.getSpeed() > way.curr().getV() * 1.8F && ((Aircraft) FM.actor) instanceof TypeFastJet) {
-						FM.CT.FlapsControl = 0.0F;
+						if(!FM.CT.bHasFlapsControlSwitch) FM.CT.FlapsControl = 0.0F;
 						way.setCur(1);
 					}
 					if (way.Cur() == 4 && ((Aircraft) FM.actor) instanceof TypeFastJet) {
-						FM.CT.FlapsControl = 0.4F;
+						if(!FM.CT.bHasFlapsControlSwitch) FM.CT.FlapsControl = 0.4F;
 					}
 					if (way.Cur() == 5) {
 						if (!Mission.isDogfight() || !Main.cur().mission.zutiMisc_DisableAIRadioChatter) Voice.speakLanding((Aircraft) FM.actor);
@@ -257,7 +257,7 @@ public class AutopilotAI extends Autopilotage {
 							FM.push(2);
 							FM.pop();
 							if (!Mission.isDogfight() || !Main.cur().mission.zutiMisc_DisableAIRadioChatter) Voice.speakGoAround((Aircraft) FM.actor);
-							FM.CT.FlapsControl = 0.4F;
+							if(!FM.CT.bHasFlapsControlSwitch) FM.CT.FlapsControl = 0.4F;
 							FM.CT.GearControl = 0.0F;
 							return;
 						}
@@ -275,7 +275,7 @@ public class AutopilotAI extends Autopilotage {
 								FM.push(2);
 								FM.push(2);
 								FM.pop();
-								FM.CT.FlapsControl = 0.4F;
+								if(!FM.CT.bHasFlapsControlSwitch) FM.CT.FlapsControl = 0.4F;
 								FM.CT.GearControl = 0.0F;
 								Aircraft.debugprintln(FM.actor, "Going around!.");
 								return;
