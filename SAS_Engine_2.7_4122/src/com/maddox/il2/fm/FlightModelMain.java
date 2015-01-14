@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Point3f;
@@ -336,9 +337,9 @@ public class FlightModelMain extends FMMath
             throw new RuntimeException(s1);
         CT.bHasRudderTrim = j == 1;
         j = sectfile.get(s2, "CFlap", 0);
-        if(j != 0 && j != 1)
-            throw new RuntimeException(s1);
-        CT.bHasFlapsControl = j == 1;
+		if (j != 0 && j != 1 && j != 3) throw new RuntimeException(s1);
+		CT.bHasFlapsControl = ((j & 1) != 0);
+		CT.bHasFlapsControlSwitch = ((j & 2) != 0);
         j = sectfile.get(s2, "CFlapPos", -1);
         if(j < 0 || j > 3)
             throw new RuntimeException(s1);
@@ -365,6 +366,17 @@ public class FlightModelMain extends FMMath
         			}
         		}
         }
+		if (CT.bHasFlapsControlSwitch && CT.FlapStageText == null && CT.nFlapStages != -1)
+		{
+			CT.FlapStageText = new String[CT.nFlapStages + 1];
+			String sst = sectfile.get(s2, "CFlapStageText", (String)null);
+			if(sst != null)
+			{
+				StringTokenizer stringtokenizer = new StringTokenizer(sst, ",");
+				for(int ii = 0; ii <= CT.nFlapStages; ii++)
+				CT.FlapStageText[ii] = stringtokenizer.nextToken();
+			}
+		}
     	// --------------------------------------------------------
         j = sectfile.get(s2, "CFlapBlown", 0);
         if(j != 0 && j > 3)
@@ -666,13 +678,13 @@ public class FlightModelMain extends FMMath
         Fusel.CyCritH_0 = 0.2F;
         Fusel.CyCritL_0 = -0.2F;
         Fusel.parabCxCoeff_0 = 0.0006F;
-        Fusel.CxMin_0 = 0.02F;
+        Fusel.CxMin_0 = 0.0F;
         Fusel.Cy0_1 = 0.0F;
         Fusel.AOACritH_1 = 17F;
         Fusel.AOACritL_1 = -17F;
         Fusel.CyCritH_1 = 0.2F;
         Fusel.CyCritL_1 = -0.2F;
-        Fusel.CxMin_1 = 0.02F;
+        Fusel.CxMin_1 = 0.0F;
         Fusel.parabCxCoeff_1 = 0.0006F;
         Fusel.declineCoeff = 0.007F;
         Fusel.maxDistAng = 30F;

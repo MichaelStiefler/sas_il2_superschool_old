@@ -161,6 +161,9 @@ public class Controls
 	public String				BlownFlapsType;
 	public boolean				bNoCarrierCanopyOpen;
 	public boolean				bHasSideDoor;
+	public int					FlapsControlSwitch;
+	public boolean				bHasFlapsControlSwitch;
+	public String[]				FlapStageText = null;
 	// --------------------------------------------------------
 
 	public Controls(FlightModelMain flightmodelmain)
@@ -270,6 +273,9 @@ public class Controls
 				dvBlownFlaps = 0.5F;
 				bNoCarrierCanopyOpen = false;
 				bHasSideDoor = false;
+				FlapsControlSwitch = 0;
+				bHasFlapsControlSwitch = false;
+				FlapStageText = null;
 				// --------------------------------------------------------
 	}
 
@@ -294,6 +300,7 @@ public class Controls
 		dvRefuel = controls.dvRefuel;
 		dvVarWing = controls.dvVarWing;
 		dvBlownFlaps = controls.dvBlownFlaps;
+		FlapsControlSwitch = controls.FlapsControlSwitch;
 	}
 
 	public void CalcTresholds()
@@ -320,6 +327,7 @@ public class Controls
 		RefuelControl = 0.0F;
 		VarWingControl = VarWing = 0.0F;
 		BlownFlapsControl = BlownFlaps = 0.0F;
+        FlapsControlSwitch = 0;
 	}
 
 	public void setFixedGear(boolean flag)

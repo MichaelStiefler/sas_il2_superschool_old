@@ -851,7 +851,7 @@ public class Maneuver extends AIFlightModel {
 
 		case 1: // '\001'
 			dryFriction = 8F;
-			CT.FlapsControl = 0.0F;
+			if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
 			CT.BrakeControl = 1.0F;
 			break;
 
@@ -1148,10 +1148,12 @@ public class Maneuver extends AIFlightModel {
 				set_maneuver(27);
 			} else {
 				turnBaby(dist, f, 2 * subSkill + 1);
-				if (AOA > AOA_Crit * 0.85F && Ve.x > 0.97000002861022949D || dist < 300F) {
-					if (CT.FlapsControl < 0.18F) CT.FlapsControl += 0.02F;
-				} else {
-					CT.FlapsControl = 0.0F;
+				if (!CT.bHasFlapsControlSwitch) {
+					if (AOA > AOA_Crit * 0.85F && Ve.x > 0.97000002861022949D || dist < 300F) {
+						if (CT.FlapsControl < 0.18F) CT.FlapsControl += 0.02F;
+					} else {
+						CT.FlapsControl = 0.0F;
+					}
 				}
 				if (Ve.x > 0.98999999999999999D && dist <= convAI) {
 					setSpeedMode(2);
@@ -1190,7 +1192,7 @@ public class Maneuver extends AIFlightModel {
 			case 1: // '\001'
 				sub_Man_Count++;
 				CT.AileronControl = 0.0F;
-				CT.FlapsControl = 0.2F;
+				if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.2F;
 				if (AOA < AOA_Crit * 0.8F) {
 					CT.ElevatorControl = 1.0F;
 					if (CT.bHasElevatorTrim) CT.setTrimElevatorControl(0.75F);
@@ -1201,7 +1203,7 @@ public class Maneuver extends AIFlightModel {
 				if (sub_Man_Count > 32) setSpeedMode(11);
 				if (sub_Man_Count > 75 + World.Rnd().nextInt(0, 30)) {
 					sinKren = World.Rnd().nextFloat(-270F, 90F);
-					CT.FlapsControl = 0.0F;
+					if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
 					sub_Man_Count = 0;
 					submaneuver++;
 				}
@@ -1391,8 +1393,8 @@ public class Maneuver extends AIFlightModel {
 				}
 			}
 			CT.RudderControl = -0.1F * getAOS();
-			if (getSpeed() < Vmin * 1.5F) CT.FlapsControl = 0.15F;
-			else CT.FlapsControl = 0.0F;
+			if (getSpeed() < Vmin * 1.5F && !CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.15F;
+			else if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
 			if (mn_time > 27F) {
 				push(49);
 				pop();
@@ -3071,7 +3073,7 @@ public class Maneuver extends AIFlightModel {
 					AP.setWayPoint(true);
 					doDumpBombsPassively();
 					submaneuver = 0;
-					if (super.actor instanceof TypeFastJet) CT.FlapsControl = 1.0F;
+					if ((super.actor instanceof TypeFastJet) && !CT.bHasFlapsControlSwitch) CT.FlapsControl = 1.0F;
 				}
 				if ((actor instanceof HE_LERCHE3) && Alt < 50F) maneuver = 70;
 				AP.way.curr().getP(Po);
@@ -3191,10 +3193,10 @@ public class Maneuver extends AIFlightModel {
 			if (maneuver != 25) return;
 			if (Alt > 60F) {
 				if (Alt < 160F) {
-					if (!(super.actor instanceof TypeFastJet)) CT.FlapsControl = 0.32F;
+					if (!(super.actor instanceof TypeFastJet) && !CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.32F;
 					// TODO: Blown Flaps
 					if (CT.bHasBlownFlaps) CT.BlownFlapsControl = 1.0F;
-				} else if (!(super.actor instanceof TypeFastJet)) CT.FlapsControl = 0.0F;
+				} else if (!(super.actor instanceof TypeFastJet) && !CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
 				setSpeedMode(7);
 				smConstPower = 0.2F;
 				if (super.actor instanceof TypeFastJet) dA = Math.min(210F + Alt, 350F);
@@ -3210,10 +3212,11 @@ public class Maneuver extends AIFlightModel {
 				}
 				// TODO: Blown Flaps
 				if (CT.bHasBlownFlaps) CT.BlownFlapsControl = 1.0F;
-				CT.FlapsControl = 1.0F;
+				if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 1.0F;
 				if (Vrel.length() < 1.0D) {
 					// TODO: Blown Flaps
-					CT.FlapsControl = CT.BlownFlapsControl = CT.BrakeControl = 0.0F;
+					if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
+					CT.BlownFlapsControl = CT.BrakeControl = 0.0F;
 					if (!TaxiMode) {
 						setSpeedMode(8);
 						if (AP.way.isLandingOnShip()) {
@@ -3231,7 +3234,7 @@ public class Maneuver extends AIFlightModel {
 						}
 					}
 				}
-				if (getSpeed() < VmaxFLAPS * 0.21F) CT.FlapsControl = 0.0F;
+				if (getSpeed() < VmaxFLAPS * 0.21F && !CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
 				if (Vrel.length() < (double) ((super.actor instanceof TypeFastJet) ? (Math.min(35F, VminFLAPS * 0.50F)) : (VmaxFLAPS * 0.25F)) && wayCurPos == null && !AP.way.isLandingOnShip() && isEnableToTaxi()) {
 					TaxiMode = true;
 					AP.way.setCur(0);
@@ -3661,7 +3664,7 @@ public class Maneuver extends AIFlightModel {
 				CT.setPowerControl(1.1F);
 				setSpeedMode(11);
 			}
-			if (CT.FlapsControl == 0.0F && CT.getWing() < 0.001F) CT.FlapsControl = 0.4F;
+			if (CT.FlapsControl == 0.0F && CT.getWing() < 0.001F && !CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.4F;
 			if (EI.engines[0].getStage() == 6 && CT.getPower() > f39) {
 				CT.BrakeControl = 0.0F;
 				brakeShoe = false;
@@ -3716,7 +3719,7 @@ public class Maneuver extends AIFlightModel {
 			float f49 = 1.0F;
 			if (hasBombs() || !flag8) f49 *= 1.7F;
 			if (f35 > 120F * f49 || getSpeed() > Vmin * 1.8F * f49 || f35 > 80F * f49 && getSpeed() > Vmin * 1.6F * f49 || f35 > 40F * f49 && getSpeed() > Vmin * 1.3F * f49 && mn_time > 60F + (float) ((Aircraft) actor).aircIndex() * 3F) {
-				CT.FlapsControl = 0.0F;
+				if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
 				CT.GearControl = 0.0F;
 				rwLoc = null;
 				if (actor instanceof TypeGlider) push(24);
@@ -3849,13 +3852,13 @@ public class Maneuver extends AIFlightModel {
 			} else {
 				pop();
 			}
-			CT.FlapsControl = 0.2F;
+			if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.2F;
 			// TODO: Blown Flaps
 			if ((double) getSpeed() < 120D) {
-				CT.FlapsControl = 0.33F;
+				if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.33F;
 				if (CT.bHasBlownFlaps) CT.BlownFlapsControl = 1.0F;
 			}
-			if ((double) getSpeed() < 80D) CT.FlapsControl = 1.0F;
+			if ((double) getSpeed() < 80D && !CT.bHasFlapsControlSwitch) CT.FlapsControl = 1.0F;
 			CT.AileronControl = -0.08F * (Or.getKren() + sinKren);
 			CT.ElevatorControl = 0.9F;
 			CT.RudderControl = 0.0F;
@@ -4345,7 +4348,7 @@ public class Maneuver extends AIFlightModel {
 					setSpeedMode(6);
 					CT.BayDoorControl = 0.0F;
 					CT.AirBrakeControl = 0.0F;
-					CT.FlapsControl = 0.0F;
+					if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
 					pop();
 					sub_Man_Count = 0;
 				}
@@ -5223,7 +5226,7 @@ public class Maneuver extends AIFlightModel {
 			smConstSpeed = 110F;
 			if (f1 >= man1Dist) break;
 			CT.AirBrakeControl = 1.0F;
-			if (this.actor instanceof TypeFighter) CT.FlapsControl = 1.0F;
+			if ((this.actor instanceof TypeFighter) && !CT.bHasFlapsControlSwitch) CT.FlapsControl = 1.0F;
 			push();
 			push(6);
 			safe_pop();
@@ -5235,7 +5238,7 @@ public class Maneuver extends AIFlightModel {
 			smConstSpeed = 110F;
 			sub_Man_Count++;
 			CT.AirBrakeControl = 1.0F;
-			if (this.actor instanceof TypeFighter) CT.FlapsControl = 1.0F;
+			if ((this.actor instanceof TypeFighter) && !CT.bHasFlapsControlSwitch) CT.FlapsControl = 1.0F;
 			float f2 = Or.getKren();
 			if (Or.getTangage() > -90F) {
 				f2 -= 180F;
@@ -5252,7 +5255,7 @@ public class Maneuver extends AIFlightModel {
 
 		case 3: // '\003'
 			CT.AirBrakeControl = 1.0F;
-			if (this.actor instanceof TypeFighter) CT.FlapsControl = 1.0F;
+			if ((this.actor instanceof TypeFighter) && !CT.bHasFlapsControlSwitch) CT.FlapsControl = 1.0F;
 			CT.BayDoorControl = 1.0F;
 			setSpeedMode(4);
 			smConstSpeed = 110F;
@@ -6958,7 +6961,7 @@ public class Maneuver extends AIFlightModel {
 			else if (CT.ElevatorControl < f3) CT.ElevatorControl += f2 * f1;
 			else CT.ElevatorControl -= f2 * f1;
 		} else {
-			if (Skill >= 2 && Ve.z > 0.5D && f < 600F) CT.FlapsControl = 0.1F;
+			if (Skill >= 2 && Ve.z > 0.5D && f < 600F && !CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.1F;
 			else CT.FlapsControl = 0.0F;
 			float f5 = 0.6F - (float) Ve.z;
 			if (f5 < 0.0F) f5 = 0.0F;
@@ -7013,8 +7016,8 @@ public class Maneuver extends AIFlightModel {
 			else if (CT.ElevatorControl < f3) CT.ElevatorControl += f2 * f1;
 			else CT.ElevatorControl -= f2 * f1;
 		} else {
-			if (Skill >= 2 && Ve.z > 0.5D && f < 600F) CT.FlapsControl = 0.1F;
-			else CT.FlapsControl = 0.0F;
+			if (Skill >= 2 && Ve.z > 0.5D && f < 600F && !CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.1F;
+			else if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
 			float f6 = 0.6F - (float) Ve.z;
 			if (f6 < 0.0F) f6 = 0.0F;
 			CT.RudderControl = (float) (-30D * Math.atan2(Ve.y, Ve.x) * (double) f6 + 1.0D * (Ve.y - oldVe.y) * Ve.x + 0.5D * W.z);
@@ -7433,10 +7436,10 @@ public class Maneuver extends AIFlightModel {
 					float f24 = -0.3F * f22;
 					float f29 = -3F * (getForwAccel() - tailForStaying.getForwAccel());
 					if (f22 > 27F) {
-						CT.FlapsControl = 1.0F;
+						if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 1.0F;
 						f1 = 0.0F;
 					} else {
-						CT.FlapsControl = 0.02F * f22 + 0.02F * -f10;
+						if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.02F * f22 + 0.02F * -f10;
 						f1 = f18 + f12 + f24 + f29;
 					}
 				} else {
@@ -7471,7 +7474,7 @@ public class Maneuver extends AIFlightModel {
 
 		case 5: // '\005'
 			f1 = CT.PowerControl;
-			CT.FlapsControl = 1.0F;
+			if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 1.0F;
 			f1 += (f4 * (1.3F * VminFLAPS - Pitot.Indicator((float) Loc.z, getSpeed())) - f5 * getForwAccel()) * f;
 			break;
 
@@ -7758,7 +7761,7 @@ public class Maneuver extends AIFlightModel {
 			} else {
 				dA = f1;
 			}
-			CT.FlapsControl = 0.33F;
+			if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.33F;
 			if (Alt < 9F && Math.abs(Or.getKren()) < 5F && getVertSpeed() < -0.7F) Vwld.z *= 0.87000000476837158D;
 		} else {
 			rmax = 1.2F * Kmax * Alt;
