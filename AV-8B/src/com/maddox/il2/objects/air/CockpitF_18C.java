@@ -1945,13 +1945,16 @@ public class CockpitF_18C extends CockpitPilot
         super.mesh.chunkVisible("Z_Z_HDD_NUM211_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM211_3", 0.0F, 0.0F, f6);        
         float tankC = 0F;
-        for(int j = 0; j < fm.CT.Weapons[9].length && j < 2; j++)
-        if(fm.CT.Weapons[9][j].haveBullets())
+        if(fm.CT.Weapons[9] != null)
         {
+            for(int j = 0; j < fm.CT.Weapons[9].length && j < 2; j++)
+                if(fm.CT.Weapons[9][j] != null && fm.CT.Weapons[9][j].haveBullets())
+                {
             	tankC = (((F_18)aircraft()).checkfuel(0)/1000)*2.20462262F; 
         } else
         {	
             	tankC = 0F;
+        }
         }
         f3 = (float)(int)tankC * 36F;
         if(f3 == 0F)
@@ -1970,14 +1973,17 @@ public class CockpitF_18C extends CockpitPilot
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM212_2", 0.0F, 0.0F, f6);
         super.mesh.chunkVisible("Z_Z_HDD_NUM212_3", false);
         float tankL = 0F;
-        for(int j = 2; j < fm.CT.Weapons[9].length && j < 7; j++)
-        if(fm.CT.Weapons[9][j].haveBullets())
+        if(fm.CT.Weapons[9] != null)
+        {
+            for(int j = 0; j < fm.CT.Weapons[9].length && j < 7; j++)
+                if(fm.CT.Weapons[9][j] != null && fm.CT.Weapons[9][j].haveBullets())
         {
         	tankL = (((F_18)aircraft()).checkfuel(1)/1000)*2.20462262F; 
         } else
         {	
         	tankL = 0F;
         }
+        }    
         f3 = (float)(int)tankL * 36F;
         if(f3 == 0F)
         {
@@ -2212,23 +2218,29 @@ public class CockpitF_18C extends CockpitPilot
         Cockpit.xyz[2] = -0.037F;
         super.mesh.chunkSetLocate("Z_Z_HDD_NUM38_1", Cockpit.xyz, Cockpit.ypr);//TOTAL 2
         float tankL = 0F;
-        for(int j = 2; j < fm.CT.Weapons[9].length && j < 7; j++)
-        if(fm.CT.Weapons[9][j].haveBullets())
+        if(fm.CT.Weapons[9] != null)
+        {
+            for(int j = 0; j < fm.CT.Weapons[9].length && j < 7; j++)
+                if(fm.CT.Weapons[9][j] != null && fm.CT.Weapons[9][j].haveBullets())
         {
         	tankL = (((F_18)aircraft()).checkfuel(1)/1000)*2.20462262F; 
         } else
         {	
         	tankL = 0F;
         }
+        }
         float tankC = 0F;
-        for(int j = 0; j < fm.CT.Weapons[9].length && j < 2; j++)
-        if(fm.CT.Weapons[9][j].haveBullets())
+        if(fm.CT.Weapons[9] != null)
+        {
+            for(int j = 0; j < fm.CT.Weapons[9].length && j < 2; j++)
+                if(fm.CT.Weapons[9][j] != null && fm.CT.Weapons[9][j].haveBullets())
         {
             	tankC = (((F_18)aircraft()).checkfuel(0)/1000)*2.20462262F; 
         } else
         {	
             	tankC = 0F;
-        }               
+        }
+        }    
 		float Sumfuel = ((((FlightModelMain) (super.fm)).M.fuel/1000F)*2.20462262F + tankL*2F + tankC)/10F;//FUEL REMAIN
 		float Sfuel = Sumfuel*10000F/2.20462262F;
 		float flowrate = (totalfuel*10000F/2.20462262F - Sfuel)/((Time.current() - timefuel)/1000L);
