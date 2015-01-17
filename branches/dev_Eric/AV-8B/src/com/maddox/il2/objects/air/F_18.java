@@ -1723,6 +1723,10 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 				Eff3DActor.finish(pull02);
 			}
 		}
+		if(super.FM.getSpeedKMH() > 300F)
+        {
+        	((FlightModelMain) (super.FM)).CT.cockpitDoorControl = 0.0F;
+        }
 		if (FM.Gears.onGround()) {
 			hierMesh().chunkSetAngles("SlatLIn_D0", 0.0F, -14.5F, 0.0F);
 			hierMesh().chunkSetAngles("SlatRIn_D0", 0.0F, -14.5F, 0.0F);
@@ -1821,14 +1825,13 @@ public class F_18 extends Scheme2 implements TypeSupersonic, TypeFighter, TypeBN
 	}
 	
 	private void computeThrust() {
-		for (int engineNumber = 0; engineNumber < this.FM.EI.getNum(); engineNumber++) {
-			
+		for (int engineNumber = 0; engineNumber < this.FM.EI.getNum(); engineNumber++) {			
 			double dAFOffset = 0.0D;
 			if (this.FM.EI.engines[engineNumber].getThrustOutput() > 0.92F && this.FM.EI.engines[engineNumber].getStage() > 5) {
 				float fAlt = this.FM.getAltitude() / 100.0F;
 				dAFOffset = -5.637192294E-7 * Math.pow(fAlt, 4) + 1.189116E-4 * Math.pow(fAlt, 3) - 4.623164566E-3 * Math.pow(fAlt, 2) - 0.5398652995D * fAlt + 196.0112104D;
 				if (dAFOffset < 0.0D) dAFOffset = 0.0D;
-				dAFOffset *= this.FM.EI.engines[engineNumber].getRPM() / 40.0F;
+				dAFOffset *= this.FM.EI.engines[engineNumber].getRPM() / 13.0F;
 				this.FM.producedAF.x += dAFOffset;
 			}
 			
