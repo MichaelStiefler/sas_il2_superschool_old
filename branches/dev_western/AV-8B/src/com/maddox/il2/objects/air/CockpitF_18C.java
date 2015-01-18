@@ -585,34 +585,33 @@ public class CockpitF_18C extends CockpitPilot
 			radar = false;
 			start = false;
 			ground = false;
+			if(oldrightscreen != 0)
+				super.mesh.materialReplace("HDDR", "HDDR");
+			oldrightscreen = 0;
 			super.mesh.chunkVisible("Z_Z_RADAR_AH", false);
 			super.mesh.chunkVisible("Z_Z_lockgate", false);
-			super.mesh.chunkVisible("Z_Z_RadarFrame", false);
-			super.mesh.chunkVisible("Z_Z_RadarGround", false);
 			super.mesh.chunkVisible("Z_Z_Scan_1", false);
-	        super.mesh.chunkVisible("HDDR", true);
-	        	for(int j = 1; j < 3; j++)
+			for(int j = 1; j < 3; j++)
                 super.mesh.chunkVisible("Z_Z_TARGET_Mach_" + j, false);
-            	for(int j = 1; j < 3; j++)
+			for(int j = 1; j < 3; j++)
                 super.mesh.chunkVisible("Z_Z_TARGET_ALT_" + j, false);
-            	for(int j = 1; j < 3; j++)
+			for(int j = 1; j < 3; j++)
                 super.mesh.chunkVisible("Z_Z_TARGET_Dif_" + j, false);
-            	for(int j = 1; j < 4; j++)
+			for(int j = 1; j < 4; j++)
                 super.mesh.chunkVisible("Z_Z_TARGET_HDG_" + j, false);
-            	super.mesh.chunkVisible("Z_Z_dif+", false);
-				super.mesh.chunkVisible("Z_Z_dif-", false);
-				super.mesh.chunkVisible("Z_Z_Radarbrg", false);
-				super.mesh.chunkVisible("Z_Z_RADAR_MBRG", false);
-				super.mesh.chunkVisible("Z_Z_RADAR_TBRG", false);
-				((F_18) aircraft()).radarmode = 0;
-				((F_18) aircraft()).lockmode = 0;				
+			super.mesh.chunkVisible("Z_Z_dif+", false);
+			super.mesh.chunkVisible("Z_Z_dif-", false);
+			super.mesh.chunkVisible("Z_Z_Radarbrg", false);
+			super.mesh.chunkVisible("Z_Z_RADAR_MBRG", false);
+			super.mesh.chunkVisible("Z_Z_RADAR_TBRG", false);
+			((F_18) aircraft()).radarmode = 0;
+			((F_18) aircraft()).lockmode = 0;				
 		} else	
 		{
 			radar = true;
 			if(((F_18) aircraft()).k14Mode != 1){
 				super.mesh.chunkVisible("Z_Z_radarlock", false);
 				super.mesh.chunkVisible("Z_Z_missilelock", false);}
-			super.mesh.chunkVisible("HDDR", false);			
 		}
 		for(int ra = 1; ra<3;ra++)
 			super.mesh.chunkVisible("Z_Z_RADAR_Mach_" + ra, radar);
@@ -642,6 +641,9 @@ public class CockpitF_18C extends CockpitPilot
         boolean flag = false;
 		if(((F_18) aircraft()).radarmode == 0 && ((F_18) aircraft()).lockmode == 0)
 		{
+			if(oldrightscreen != 1)
+				super.mesh.materialReplace("HDDR", "radarframe");
+			oldrightscreen = 1;
 		super.mesh.chunkVisible("Z_Z_RadarFrame", true);
 		super.mesh.chunkVisible("Z_Z_RadarGround", false);
 		radarselection();
@@ -657,8 +659,9 @@ public class CockpitF_18C extends CockpitPilot
 		}
 		if(((F_18) aircraft()).radarmode == 0 && ((F_18) aircraft()).lockmode == 1)
 		{
-			super.mesh.chunkVisible("Z_Z_RadarFrame", true);
-			super.mesh.chunkVisible("Z_Z_RadarGround", false);
+			if(oldrightscreen != 1)
+				super.mesh.materialReplace("HDDR", "radarframe");
+			oldrightscreen = 1;
 			radarselection();
 			limit = 0.00875F;
 			radaracquire(r);
@@ -791,8 +794,9 @@ public class CockpitF_18C extends CockpitPilot
 					}
 				x = cvt(y, -50F, 50F, 0.145F, -0.145F);
 				super.mesh.chunkSetAngles("Z_Z_Scan_1", 0.0F, y, 0.0F);
-				super.mesh.chunkVisible("Z_Z_RadarGround", true);
-				super.mesh.chunkVisible("Z_Z_RadarFrame", false);
+				if(oldrightscreen != 2)
+					super.mesh.materialReplace("HDDR", "Groundradar");
+				oldrightscreen = 2;
 				super.mesh.chunkVisible("Z_Z_RADAR_TBRG", false);
 			}
 	}
@@ -1950,11 +1954,11 @@ public class CockpitF_18C extends CockpitPilot
             for(int j = 0; j < fm.CT.Weapons[9].length && j < 2; j++)
                 if(fm.CT.Weapons[9][j] != null && fm.CT.Weapons[9][j].haveBullets())
                 {
-                   	tankC = (((F_18)aircraft()).checkfuel(0)/1000)*2.20462262F; 
-                } else
-                {	
-            	    tankC = 0F;
-                }
+            	tankC = (((F_18)aircraft()).checkfuel(0)/1000)*2.20462262F; 
+        } else
+        {	
+            	tankC = 0F;
+        }
         }
         f3 = (float)(int)tankC * 36F;
         if(f3 == 0F)
@@ -1975,15 +1979,15 @@ public class CockpitF_18C extends CockpitPilot
         float tankL = 0F;
         if(fm.CT.Weapons[9] != null)
         {
-            for(int j = 2; j < fm.CT.Weapons[9].length && j < 7; j++)
+            for(int j = 0; j < fm.CT.Weapons[9].length && j < 7; j++)
                 if(fm.CT.Weapons[9][j] != null && fm.CT.Weapons[9][j].haveBullets())
-                {
-                	tankL = (((F_18)aircraft()).checkfuel(1)/1000)*2.20462262F; 
-                } else
-                {	
-                 	tankL = 0F;
-                }
+        {
+        	tankL = (((F_18)aircraft()).checkfuel(1)/1000)*2.20462262F; 
+        } else
+        {	
+        	tankL = 0F;
         }
+        }    
         f3 = (float)(int)tankL * 36F;
         if(f3 == 0F)
         {
@@ -2218,26 +2222,29 @@ public class CockpitF_18C extends CockpitPilot
         Cockpit.xyz[2] = -0.037F;
         super.mesh.chunkSetLocate("Z_Z_HDD_NUM38_1", Cockpit.xyz, Cockpit.ypr);//TOTAL 2
         float tankL = 0F;
+        if(fm.CT.Weapons[9] != null)
+        {
+            for(int j = 0; j < fm.CT.Weapons[9].length && j < 7; j++)
+                if(fm.CT.Weapons[9][j] != null && fm.CT.Weapons[9][j].haveBullets())
+        {
+        	tankL = (((F_18)aircraft()).checkfuel(1)/1000)*2.20462262F; 
+        } else
+        {	
+        	tankL = 0F;
+        }
+        }
         float tankC = 0F;
         if(fm.CT.Weapons[9] != null)
         {
-            for(int j = 2; j < fm.CT.Weapons[9].length && j < 7; j++)
+            for(int j = 0; j < fm.CT.Weapons[9].length && j < 2; j++)
                 if(fm.CT.Weapons[9][j] != null && fm.CT.Weapons[9][j].haveBullets())
-                {
-                	tankL = (((F_18)aircraft()).checkfuel(1)/1000)*2.20462262F; 
-                } else
-                {	
-                	tankL = 0F;
-                }
-                for(int j = 0; j < fm.CT.Weapons[9].length && j < 2; j++)
-                if(fm.CT.Weapons[9][j] != null && fm.CT.Weapons[9][j].haveBullets())
-                {
-                   	tankC = (((F_18)aircraft()).checkfuel(0)/1000)*2.20462262F; 
-                } else
-                {	
-            	    tankC = 0F;
-                }               
+        {
+            	tankC = (((F_18)aircraft()).checkfuel(0)/1000)*2.20462262F; 
+        } else
+        {	
+            	tankC = 0F;
         }
+        }    
 		float Sumfuel = ((((FlightModelMain) (super.fm)).M.fuel/1000F)*2.20462262F + tankL*2F + tankC)/10F;//FUEL REMAIN
 		float Sfuel = Sumfuel*10000F/2.20462262F;
 		float flowrate = (totalfuel*10000F/2.20462262F - Sfuel)/((Time.current() - timefuel)/1000L);
@@ -2826,7 +2833,7 @@ public class CockpitF_18C extends CockpitPilot
             }
         }
         becondistance = beaconDistanceInMeter;
-        float f2 = (beaconDistanceInMeter / 1852) / 1000F;		
+        float f2 = (beaconDistanceInMeter / 1852F) / 1000F;		
 		float f3 = (float)(int)f2 * 36F;
         if(f3 == 0F)
         	super.mesh.chunkVisible("Z_Z_Nav_SDT_1", false); else super.mesh.chunkVisible("Z_Z_Nav_SDT_1", true);
@@ -3011,7 +3018,26 @@ public class CockpitF_18C extends CockpitPilot
         f3 = (float)(int)f10 * 36F;
         super.mesh.chunkSetAngles("Z_Z_HUD_AOA_1", 0.0F, 0.0F, f3);
         f3 = (float)((int)(f10 * 10F) % 10) * 36F;
-        super.mesh.chunkSetAngles("Z_Z_HUD_AOA_2", 0.0F, 0.0F, f3); 
+        super.mesh.chunkSetAngles("Z_Z_HUD_AOA_2", 0.0F, 0.0F, f3);
+        float beaconDistanceInNM = getBeaconDistance() / 1852F;
+        if((bHSIILS || bHSITAC) && flag1)
+        {
+            super.mesh.chunkVisible("Z_Z_HUD_TCN_1", beaconDistanceInNM >= 10.0F);
+            super.mesh.chunkVisible("Z_Z_HUD_TCN_2", true);
+            super.mesh.chunkVisible("Z_Z_HUD_TCN_3", true);
+            f3 = (float)(Math.floor((double)(beaconDistanceInNM / 10F))) * 36F;
+            super.mesh.chunkSetAngles("Z_Z_HUD_TCN_1", 0.0F, 0.0F, f3);
+            f3 = (float)(Math.floor((double)(beaconDistanceInNM)) * 36F);
+            super.mesh.chunkSetAngles("Z_Z_HUD_TCN_2", 0.0F, 0.0F, f3);
+            f3 = (float)(Math.floor((double)(beaconDistanceInNM * 10F) % 10) * 36F);
+            super.mesh.chunkSetAngles("Z_Z_HUD_TCN_3", 0.0F, 0.0F, f3);
+        }
+        else
+        {
+            super.mesh.chunkVisible("Z_Z_HUD_TCN_1", false);
+            super.mesh.chunkVisible("Z_Z_HUD_TCN_2", false);
+            super.mesh.chunkVisible("Z_Z_HUD_TCN_3", false);
+        }
     }   
 
     protected void drawSound(float f)//TODO SOUND
