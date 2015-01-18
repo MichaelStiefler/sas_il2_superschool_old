@@ -644,8 +644,6 @@ public class CockpitF_18C extends CockpitPilot
 			if(oldrightscreen != 1)
 				super.mesh.materialReplace("HDDR", "radarframe");
 			oldrightscreen = 1;
-		super.mesh.chunkVisible("Z_Z_RadarFrame", true);
-		super.mesh.chunkVisible("Z_Z_RadarGround", false);
 		radarselection();
 		limit = 0.03625F;
 		super.mesh.chunkVisible("Z_Z_RADAR_MBRG", false);
@@ -670,8 +668,9 @@ public class CockpitF_18C extends CockpitPilot
 		} else
 		if(((F_18) aircraft()).radarmode == 1)
 		{
-			super.mesh.chunkVisible("Z_Z_RadarFrame", true);
-			super.mesh.chunkVisible("Z_Z_RadarGround", false);
+			if(oldrightscreen != 1)
+				super.mesh.materialReplace("HDDR", "radarframe");
+			oldrightscreen = 1;
 			radarselection();
 			limit = 0.01375F;
 			radarboresight(r);
