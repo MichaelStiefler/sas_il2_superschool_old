@@ -3020,6 +3020,7 @@ public class CockpitF_18C extends CockpitPilot
         f3 = (float)((int)(f10 * 10F) % 10) * 36F;
         super.mesh.chunkSetAngles("Z_Z_HUD_AOA_2", 0.0F, 0.0F, f3);
         float beaconDistanceInNM = getBeaconDistance() / 1852F;
+        if(beaconDistanceInNM > 99.9F) beaconDistanceInNM = 99.9F;
         if((bHSIILS || bHSITAC) && flag1)
         {
             super.mesh.chunkVisible("Z_Z_HUD_TCN_1", beaconDistanceInNM >= 10.0F);
