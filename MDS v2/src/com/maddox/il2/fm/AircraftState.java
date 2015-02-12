@@ -1931,6 +1931,8 @@ public class AircraftState
 	{
 		if ((Mission.isSingle()) || ((this.aircraft.FM.isPlayers()) && (!Mission.isServer())) || ((Mission.isNet()) && (Mission.isServer()) && (!this.aircraft.isNetPlayer())))
 		{
+			// +++ MDS Hotfix by Storebror
+			if (paramInt2 == 0) return;
 			long l1 = 120000 / paramInt2;
 			int i;
 			if (this.astateBleedingNext[paramInt1] == 0L)
@@ -3321,10 +3323,16 @@ public class AircraftState
 			this.aircraft.dropExternalStores(false);
 		}
 		
-		//TODO: Added by |ZUTI|: multicrew related code
-		//----------------------------------------------------
-		this.bzutiIsMultiCrew = paramNetMsgInput.readBoolean();
-		this.bzutiIsMultiCrewAnytime = paramNetMsgInput.readBoolean();
+		// +++ MDS Hotfix by Storebror
+		if (paramNetMsgInput.available() < 1) return;
+		try {
+			//TODO: Added by |ZUTI|: multicrew related code
+			//----------------------------------------------------
+			this.bzutiIsMultiCrew = paramNetMsgInput.readBoolean();
+			this.bzutiIsMultiCrewAnytime = paramNetMsgInput.readBoolean();
+		} catch (Exception e) {
+			System.out.println("Player aircraft " + this.aircraft.name() + " has no MultiCrew net parameters!");
+		}
 		
 
 		//Request user new net place if plane is multi crew plane because removing it
@@ -3372,6 +3380,9 @@ public class AircraftState
 			if (this.aircraft.FM.CT.Weapons[2] != null)
 				for (int i = 0; i < this.aircraft.FM.CT.Weapons[2].length; i++)
 				{
+					// +++ MDS Hotfix by Storebror
+					if (!(this.aircraft.FM.CT.Weapons[2][i] instanceof RocketGun)) continue;
+					
 					((RocketGun) this.aircraft.FM.CT.Weapons[2][i]).setSpreadRnd(this.aircraft.armingRnd.nextInt());
 				}
 		}

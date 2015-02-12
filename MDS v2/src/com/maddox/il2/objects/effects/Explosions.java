@@ -1091,7 +1091,12 @@ public class Explosions
 	{
 		//TODO: Added by |ZUTI|: bomb was released, store its crater effect if it is enabled
 		//--------------------------------------------------
-		System.out.println("Bomb with charge mass of >" + bombChargeMas + "kg<, hit >" + actor.name() + "<.");
+		
+		//TODO: Check if Actor is null to avoid exception here!
+		if (actor == null)
+			System.out.println("Bomb with charge mass of >" + bombChargeMas + "kg<, hit >null<.");
+		else
+			System.out.println("Bomb with charge mass of >" + bombChargeMas + "kg<, hit >" + actor.name() + "<.");
 		Explosions.ZUTI_CRATER_SIZE = ZutiSupportMethods_Effects.getCraterSize(bombChargeMas);
 		Explosions.ZUTI_TIME_TO_LIVE = ZutiSupportMethods_Effects.getCraterTimeToLive(bombChargeMas);
 		

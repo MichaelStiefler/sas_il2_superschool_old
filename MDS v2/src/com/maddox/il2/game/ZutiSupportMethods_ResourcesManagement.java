@@ -1157,7 +1157,7 @@ public class ZutiSupportMethods_ResourcesManagement
 				}
 			}
 			//----------------------------------------------------------------
-			System.out.println( updateSideResources + ", " + Mission.MDS_VARIABLES().enabledResourcesManagement_BySide);
+			//System.out.println( updateSideResources + ", " + Mission.MDS_VARIABLES().enabledResourcesManagement_BySide);
 			if( updateSideResources && Mission.MDS_VARIABLES().enabledResourcesManagement_BySide )
 			{
 				int army = Front.army(housePosition.x, housePosition.y);
@@ -1263,7 +1263,7 @@ public class ZutiSupportMethods_ResourcesManagement
 				}
 			}
 			//----------------------------------------------------------------
-			System.out.println( updateSideResources + ", " + Mission.MDS_VARIABLES().enabledResourcesManagement_BySide);
+			//System.out.println( updateSideResources + ", " + Mission.MDS_VARIABLES().enabledResourcesManagement_BySide);
 			if( updateSideResources && Mission.MDS_VARIABLES().enabledResourcesManagement_BySide )
 			{
 				if( chiefArmy == 1 && Mission.MDS_VARIABLES().objectsMap_Red != null )

@@ -771,7 +771,12 @@ public abstract class ArtilleryGeneric extends ActorHMesh implements MsgCollisio
 
 	public void setMesh(String string)
 	{
-		super.setMesh(string);
+		// +++ MDS Hotfix by Storebror
+		try {
+			super.setMesh(string);
+		} catch (Exception e) {
+			System.out.println("Setting mesh " + string + " for " + this.getClass().getName() + " failed!");
+		}
 		if (!Config.cur.b3dgunners) mesh().materialReplaceToNull("Pilot1");
 	}
 

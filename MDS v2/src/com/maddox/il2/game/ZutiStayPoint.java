@@ -38,37 +38,86 @@ public class ZutiStayPoint
 		
 		if( actor.getDeckTypeId() == 1 )
 		{
+			// +++ MDS Hotfix by Storebror
+			if (index >= deckType1_Distance.length) index = deckType1_Distance.length - 1;
+			
 			distanceFromShipCenter = deckType1_Distance[index];
+			
+			// +++ MDS Hotfix by Storebror
+			if (index >= deckType1_Angles.length) index = deckType1_Angles.length - 1;
+			
 			delta_Angle = shipSpawnYaw - deckType1_Angles[index];
 		}
 		else if( actor.getDeckTypeId() == 2 )
 		{
+			// +++ MDS Hotfix by Storebror
+			if (index >= deckType2_Distance.length) index = deckType2_Distance.length - 1;
+			
 			distanceFromShipCenter = deckType2_Distance[index];
+			
+			// +++ MDS Hotfix by Storebror
+			if (index >= deckType2_Angles.length) index = deckType2_Angles.length - 1;
+			
 			delta_Angle = shipSpawnYaw - deckType2_Angles[index];
 		}
 		else if( actor.getDeckTypeId() == 3 )
 		{
+			// +++ MDS Hotfix by Storebror
+			if (index >= deckType3_Distance.length) index = deckType3_Distance.length - 1;
+			
 			distanceFromShipCenter = deckType3_Distance[index];
+			
+			// +++ MDS Hotfix by Storebror
+			if (index >= deckType3_Angles.length) index = deckType3_Angles.length - 1;
+			
 			delta_Angle = shipSpawnYaw - deckType3_Angles[index];
 		}
 		else if( actor.getDeckTypeId() == 4 )
 		{
+			// +++ MDS Hotfix by Storebror
+			if (index >= deckType4_Distance.length) index = deckType4_Distance.length - 1;
+			
 			distanceFromShipCenter = deckType4_Distance[index];
+			
+			// +++ MDS Hotfix by Storebror
+			if (index >= deskType4_Angles.length) index = deskType4_Angles.length - 1;
+			
 			delta_Angle = shipSpawnYaw - deskType4_Angles[index];
 		}
 		else if( actor.getDeckTypeId() == 5 )
 		{
+			// +++ MDS Hotfix by Storebror
+			if (index >= deckType5_Distance.length) index = deckType5_Distance.length - 1;
+			
 			distanceFromShipCenter = deckType5_Distance[index];
+			
+			// +++ MDS Hotfix by Storebror
+			if (index >= deckType5_Angles.length) index = deckType5_Angles.length - 1;
+			
 			delta_Angle = shipSpawnYaw - deckType5_Angles[index];
 		}
 		else if( actor.getDeckTypeId() == 6 )
 		{
+			// +++ MDS Hotfix by Storebror
+			if (index >= deckType6_Distance.length) index = deckType6_Distance.length - 1;
+			
 			distanceFromShipCenter = deckType6_Distance[index];
+			
+			// +++ MDS Hotfix by Storebror
+			if (index >= deckType6_Angles.length) index = deckType6_Angles.length - 1;
+			
 			delta_Angle = shipSpawnYaw - deckType6_Angles[index];
 		}
 		else if( actor.getDeckTypeId() == 7 )
 		{
+			// +++ MDS Hotfix by Storebror
+			if (index >= deckType7_Distance.length) index = deckType7_Distance.length - 1;
+			
 			distanceFromShipCenter = deckType7_Distance[index];
+			
+			// +++ MDS Hotfix by Storebror
+			if (index >= deckType7_Angles.length) index = deckType7_Angles.length - 1;
+			
 			delta_Angle = shipSpawnYaw - deckType7_Angles[index];
 		}
         //System.out.println("Angle to S(" + shipX + ", " + shipY + "): " + delta_Angle);

@@ -153,7 +153,7 @@ public class DServer extends Main
         long l1 = Time.real();
         final IniFile inifile = new IniFile("il2server.ini", 0);
         int iMaxRam = inifile.get("Settings", "RamSize", 512);
-        iMaxRam *= (int)0.9;
+        iMaxRam = (int)(iMaxRam * 0.9);
         final int iMaxRamGC = (int)(iMaxRam * 0.8);
         while (!RTSConf.isRequestExitApp()) {
             synchronized (RTSConf.lockObject()) {
@@ -166,6 +166,8 @@ public class DServer extends Main
                     final long allocatedMemoryGC = runtime.totalMemory();
                     System.out.println("Manual Garbage collection freed " + (allocatedMemory - allocatedMemoryGC) / 1024L + " KB RAM.");
                     if (allocatedMemory > 1048576 * iMaxRamGC) {
+                    	System.out.println("Exiting due to excessive Memory allocation.");
+                    	System.out.println("iMaxRamGC=" + (1048576 * iMaxRamGC) + ", allocatedMemory=" + allocatedMemory + ", allocatedMemoryGC=" + allocatedMemoryGC);
                         Main.iExitCode = -1;
                         RTSConf.setRequestExitApp(true);
                     }

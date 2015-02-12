@@ -136,7 +136,12 @@ public class Airdrome
 			if (stay[i_10_].length >= 2)
 			{
 				float f_11_ = point_null.distance(stay[i_10_][1]);
-				if (f_11_ < 2000.0F && !stayHold[i_10_])
+				
+				// +++ MDS Hotfix by Storebror
+				boolean bStayHold = true;
+				if (i_10_ < stayHold.length) bStayHold = stayHold[i_10_];
+				// if (f_11_ < 2000.0F && !stayHold[i_10_])
+				if (f_11_ < 2000.0F && !bStayHold)
 				{
 					Point3d point3d = testParkPoint;
 					double d = (double)stay[i_10_][1].x;

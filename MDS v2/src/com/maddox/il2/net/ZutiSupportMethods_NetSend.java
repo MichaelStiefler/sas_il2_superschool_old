@@ -1991,15 +1991,19 @@ public class ZutiSupportMethods_NetSend
 				return;
 			
 			int userBornPlace = netUser.getBornPlace();
-			if( userBornPlace >= World.cur().bornPlaces.size() )
-			{
-				netUser.zutiSetAirdomeStay(-1);
-				return;
-			}
 			
-			BornPlace bp = (BornPlace)World.cur().bornPlaces.get(userBornPlace);
-			if( bp == null || bp.zutiAirspawnOnly || !bp.zutiAlreadyAssigned || !bp.zutiEnableQueue )
-				return;
+			// +++ MDS Hotfix by Storebror
+			if (World.cur().bornPlaces != null) {
+				if( userBornPlace >= World.cur().bornPlaces.size() )
+				{
+					netUser.zutiSetAirdomeStay(-1);
+					return;
+				}
+				
+				BornPlace bp = (BornPlace)World.cur().bornPlaces.get(userBornPlace);
+				if( bp == null || bp.zutiAirspawnOnly || !bp.zutiAlreadyAssigned || !bp.zutiEnableQueue )
+					return;
+			}
 			
 			if (Main.cur().netServerParams.masterChannel() != null)
 			{
