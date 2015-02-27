@@ -1883,22 +1883,47 @@ label0:
 
     public void computeElevators()
     {
+        // Don't compute fly-by-wire elevator positions when automatic Stabilizers are engaged. 
         if(this.FM.CT.StabilizerControl)
             return;
+        
+        // Don't compute fly-by-wire elevator positions when aircraft is on ground or Flaps are set. 
+        // This is to avoid excessive elevator movement from aircraft accelleration due to gear forces,
+        // and to give full manual control on approach
         if(this.FM.Gears.onGround() && this.FM.CT.FlapsControl > 0.68F)
             return;
+        
+        // Don't compute fly-by-wire elevator positions at slow speed.
+        // This is to avoid excessive elevator movement when aircraft is about to stall
         if(this.FM.getSpeedKMH() < 30F)
             return;
+        
+        // Initial Elevator Position is the manually steered one
         float elevatorControl = this.FM.CT.getElevator();
+        
+        // Calculate the G-Force equivalent to current stick position
         float targetGForce = 0.0F;
         if(this.FM.CT.ElevatorControl > 0.0F)
             targetGForce = (this.FM.getLimitLoad() * 0.9F - 1.0F) * this.FM.CT.ElevatorControl + 1.0F;
         else
             targetGForce = 1.0F - (this.FM.Negative_G_Limit * 0.9F - 1.0F) * this.FM.CT.ElevatorControl;
+        
+        // Calculate the difference between desired G-Force from Stick position and current G-Force applied
         float gForceDiff = this.FM.getOverload() - targetGForce;
+        
+        // Adjust Elevator accordingly to apply desired G-Force
         elevatorControl -= gForceDiff / Math.max(this.FM.getSpeedKMH() / 1.6F, 200F);
+        
+        // Clamp Elevator control into -1...+1 range (full down, full up)
         elevatorControl = clamp11(elevatorControl);
+        
+        // Disable Elevator control in Controls class to avoid our calculated value to be overridden.
+        // bHasElevatorControl will be restored to "true" at the end of the "update()" method, when
+        // all flight model calculations have been done.
         this.FM.CT.bHasElevatorControl = false;
+        
+        // Get access to the field "Elevators" in the Controls class.
+        // It's a private field, so we need the SAS Common Utils Reflection class to get access to it.
         if(elevatorsField == null)
         {
             elevatorsField = Reflection.getField(this.FM.CT, "Elevators");
@@ -1906,9 +1931,10 @@ label0:
         }
         try
         {
+            // Apply our calculated value
             elevatorsField.setFloat(this.FM.CT, elevatorControl);
         }
-        catch(IllegalAccessException illegalaccessexception) { }
+        catch(IllegalAccessException illegalaccessexception) { } // should never happen.
     }
 
     private void moveSlat()
