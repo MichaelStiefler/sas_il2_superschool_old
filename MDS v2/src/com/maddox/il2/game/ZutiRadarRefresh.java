@@ -445,13 +445,16 @@ public class ZutiRadarRefresh
 		ZUTI_RADARS.clear();
 		
 		ZUTI_RADARS.findLandBasedRadars(playerArmy);
-		System.out.println("ZutiRadarRefresh_New - radars after searching houses: " + ZUTI_RADARS.radars.size());
+        //TODO: Limit Log output // by Storebror
+//		System.out.println("ZutiRadarRefresh_New - radars after searching houses: " + ZUTI_RADARS.radars.size());
 		
 		ZUTI_RADARS.findSeaBasedRadars(playerArmy);
-		System.out.println("ZutiRadarRefresh_New - radars after searching ships: " + ZUTI_RADARS.radars.size());
+        //TODO: Limit Log output // by Storebror
+//		System.out.println("ZutiRadarRefresh_New - radars after searching ships: " + ZUTI_RADARS.radars.size());
 		
 		ZUTI_RADARS.findAirborneRadars(playerArmy);
-		System.out.println("ZutiRadarRefresh_New - radars after searching aircrafts: " + ZUTI_RADARS.radars.size());
+        //TODO: Limit Log output // by Storebror
+//		System.out.println("ZutiRadarRefresh_New - radars after searching aircrafts: " + ZUTI_RADARS.radars.size());
 		
 		ZUTI_RADARS.sortRadars();
 	}

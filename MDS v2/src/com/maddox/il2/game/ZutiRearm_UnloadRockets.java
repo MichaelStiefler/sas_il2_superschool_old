@@ -58,7 +58,7 @@ public class ZutiRearm_UnloadRockets
 				
 				String userData = ZutiSupportMethods.getAircraftCompleteName(World.getPlayerAircraft());
 				String userLocation = ZutiSupportMethods.getPlayerLocation();
-				ZutiSupportMethods_NetSend.logMessage((NetUser)NetEnv.host(), userData + " unloaded bullets at " + userLocation);
+				ZutiSupportMethods_NetSend.logMessage((NetUser)NetEnv.host(), userData + " unloaded rockets at " + userLocation);
 				
 				rocketsUnloadingTime = -1;
 								

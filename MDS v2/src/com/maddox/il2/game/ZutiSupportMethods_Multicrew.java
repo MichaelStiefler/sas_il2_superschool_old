@@ -220,7 +220,8 @@ public class ZutiSupportMethods_Multicrew
 		updateNetUsersCrewPlaces(1);
 		updateNetUsersCrewPlaces(2);
 		//System.out.println("--------------------------------------------------------------------------------");
-		System.out.println("Updated users net places!");
+        //TODO: Limit Log output // by Storebror
+//		System.out.println("Updated users net places!");
 	}
 	
 	/**

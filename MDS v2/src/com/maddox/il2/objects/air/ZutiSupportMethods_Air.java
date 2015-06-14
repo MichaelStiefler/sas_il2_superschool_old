@@ -192,7 +192,10 @@ public class ZutiSupportMethods_Air
 	public static void executeWhenAircraftIsCreated(Aircraft aircraft)
 	{
 		aircraft.FM.CT.zutiOwnerAircraftName = aircraft.name();
-		System.out.println("ZSM_Air - Spawning new AC. Owner name is >" + aircraft.FM.CT.zutiOwnerAircraftName + "<");
+		
+		//TODO: Limit Log output to player planes only // by Storebror
+		if (aircraft.FM.CT.zutiOwnerAircraftName.endsWith("_0"))
+		    System.out.println("ZSM_Air - Spawning new AC. Owner name is >" + aircraft.FM.CT.zutiOwnerAircraftName + "<");
 		
 		//Remember the fuel value of loaded aircraft
 		aircraft.zutiAircraftFuel = aircraft.FM.M.fuel;

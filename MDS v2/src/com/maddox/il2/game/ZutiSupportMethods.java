@@ -2126,8 +2126,10 @@ public class ZutiSupportMethods
 			
 			if( nearestActor != null )
 				System.out.println("Marker >" + marker + "< assigned to >" + nearestActor.name() + "< - " + nearestActor);
-			else
-				System.out.println("Marker >" + marker + "< not assigned");
+			
+			//TODO: Limit Log output // by Storebror
+//			else
+//				System.out.println("Marker >" + marker + "< not assigned");
 			
 			//Reset min distance
 			min = ZutiSupportMethods_Builder.FRONT_MARKER_RADIUS*ZutiSupportMethods_Builder.FRONT_MARKER_RADIUS_SHIP_MULTI;

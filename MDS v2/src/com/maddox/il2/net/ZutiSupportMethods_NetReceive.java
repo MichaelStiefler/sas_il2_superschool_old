@@ -1499,7 +1499,8 @@ public class ZutiSupportMethods_NetReceive
 				ship.zutiAddFrontMarker(marker);
 				System.out.println("Marker assigned to: " + carrier);
 			}
-			System.out.println("ZutiNetReceiveMethods - frontMarker data received! Markers count: " + Front.markers().size());
+	        //TODO: Limit Log output // by Storebror
+//			System.out.println("ZutiNetReceiveMethods - frontMarker data received! Markers count: " + Front.markers().size());
 		}
 		catch(Exception ex){ex.printStackTrace();}
 	}
