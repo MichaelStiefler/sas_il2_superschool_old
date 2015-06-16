@@ -256,7 +256,7 @@ class ConsoleGL0Render extends Render {
 	}
 
 	private static final String GAME_VERSION = "V 4.13RC04m";
-	private static final String MODACT_VERSION = "6";
+	private static final String MODACT_VERSION = "6.01";
 	private static String AI_FLYABLES = "";
 	private Class theAIFlyablesClass = null;
 	private boolean theAIFlyablesClassChecked = false;

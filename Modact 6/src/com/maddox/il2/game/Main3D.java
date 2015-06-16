@@ -3284,8 +3284,13 @@ public class Main3D extends Main {
 		this.debugSplashScreen("TGA file creation return code: " + createSplashResult);
 		jpgFileContents = null;
 		if (createSplashResult == 0) {
-			try {	
-				PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(splashPathWide + "/splash.mat", 0))));
+			try {
+			    String splashMatName = "/splash.mat";
+			    if ("ru".equalsIgnoreCase(RTSConf.cur.locale.getLanguage()))
+			    {   
+			        splashMatName = "/splash_ru.mat";
+			    }
+				PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(splashPathWide + splashMatName, 0))));
 				pw.println("[ClassInfo]");
 				pw.println("  ClassName TMaterial");
 				pw.println("[Layer0]");

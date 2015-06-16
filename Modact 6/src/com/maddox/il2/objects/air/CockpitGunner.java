@@ -324,10 +324,10 @@ public class CockpitGunner extends Cockpit implements com.maddox.il2.engine.hotk
 		if (Actor.isValid(aircraft))
 			aircraft.drawing(true);
 		if (aircraft != null) {
-			if ((double)aircraft.FM.CT.getCockpitDoor() < 0.5D)
-				aircraft.setDoorSnd(0.0F);
-			else
-				aircraft.setDoorSnd(1.0F);
+//			if ((double)aircraft.FM.CT.getCockpitDoor() < 0.5D)
+//				aircraft.setDoorSnd(0.0F);
+//			else
+//				aircraft.setDoorSnd(1.0F);
 			aircraft.setAcoustics(null);
 		}
 		aircraft.enableDoorSnd(false);
@@ -533,8 +533,8 @@ public class CockpitGunner extends Cockpit implements com.maddox.il2.engine.hotk
 	protected boolean bReloading;
 
 	static {
-		Property.set(com.maddox.il2.objects.air.CockpitGunner.class, "aiTuretNum", 0);
-		Property.set(com.maddox.il2.objects.air.CockpitGunner.class, "weaponControlNum", 10);
-		Property.set(com.maddox.il2.objects.air.CockpitGunner.class, "astatePilotIndx", 1);
+		Property.set(CockpitGunner.class, "aiTuretNum", 0);
+		Property.set(CockpitGunner.class, "weaponControlNum", 10);
+		Property.set(CockpitGunner.class, "astatePilotIndx", 1);
 	}
 }
