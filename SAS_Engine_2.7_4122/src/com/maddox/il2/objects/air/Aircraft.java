@@ -252,12 +252,12 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 
 	public int part(String s)
 	{
-		if (s == null)
+		if(s == null)
 			return 43;
 		int i = 0;
 		while (i < 44)
 		{
-			if (s.startsWith(partNames[i]))
+			if(s.startsWith(partNames[i]))
 				return i;
 			i++;
 		}
@@ -945,6 +945,7 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 			float f2 = explosion.power * 10F;
 			if(shot.mass > f2)
 				shot.mass = f2;
+			shot.p.interpolate(tmpP1, tmpP2, hierMesh().collisionDistMulti(0));
 			if(World.Rnd().nextFloat() < 0.333333F)
 				shot.powerType = 2;
 			else
@@ -1227,56 +1228,59 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 		}
 	}
 
-	public void msgShot(Shot shot) {
-		if (this == World.getPlayerAircraft())
+	public void msgShot(Shot shot)
+	{
+		if(this == World.getPlayerAircraft())
 			TimeSkip.airAction(2);
 		setShot(shot);
-		if (!isNet()) {
+		if(!isNet())
+		{
 			FM.dryFriction = 1.0F;
-			if (FM.isPlayers() && FM instanceof RealFlightModel)
+			if(FM.isPlayers() && FM instanceof RealFlightModel)
 				((RealFlightModel) FM).producedShakeLevel = 1.0F;
 			float f = 2000.0F * shot.mass / FM.M.mass;
 			FM.getW().add((double) World.Rnd().nextFloat(-f, f),
 					(double) World.Rnd().nextFloat(-f, f),
 					(double) World.Rnd().nextFloat(-f, f));
 		}
-		if (shot.chunkName != null) {
-			if (shot.chunkName == partNames[43]) {
-				if (World.Rnd().nextFloat() < 0.25F)
+		if(shot.chunkName != null)
+		{
+			if(shot.chunkName == partNames[43]) {
+				if(World.Rnd().nextFloat() < 0.25F)
 					doRicochet(shot);
 			} else {
-				if (shot.chunkName.startsWith("Wing")
+				if(shot.chunkName.startsWith("Wing")
 						&& (shot.chunkName.endsWith("_D3")
 								|| shot.chunkName.endsWith("_D2") && FM.Skill >= 2))
 					FM.setCapableOfACM(false);
-				if (FM instanceof Pilot
+				if(FM instanceof Pilot
 						&& World.Rnd().nextInt(-1, 8) < FM.Skill)
 					((Pilot) FM).setAsDanger(shot.initiator);
-				if (Config.isUSE_RENDER() && FM instanceof RealFlightModel) {
+				if(Config.isUSE_RENDER() && FM instanceof RealFlightModel) {
 					_tmpPoint.set(pos.getAbsPoint());
 					_tmpPoint.sub(shot.p);
 					msgSndShot(shot.mass, _tmpPoint.x, _tmpPoint.y,
 							_tmpPoint.z);
 				}
 				shot.bodyMaterial = 2;
-				if (isNetPlayer())
+				if(isNetPlayer())
 					sendMsgSndShot(shot);
-				if (tmpBonesHit > 0) {
+				if(tmpBonesHit > 0) {
 					debuggunnery("");
 					debuggunnery("New Bullet: E = " + (int) shot.power
 							+ " [J], M = " + (int) (1000.0F * shot.mass)
 							+ " [g], Type = (" + sttp(shot.powerType)
 							+ ")");
-					if (shot.powerType == 1)
+					if(shot.powerType == 1)
 						tmpBonesHit = Math.min(tmpBonesHit, 2);
 					for (int i = 0; i < tmpBonesHit; i++) {
 						hierMesh();
 						String string = HierMesh.collisionNameMulti(i, 1);
-						if (string.length() == 0) {
+						if(string.length() == 0) {
 							hierMesh();
 							string = HierMesh.collisionNameMulti(i, 0);
 						}
-						if (shot.power > 0.0F) {
+						if(shot.power > 0.0F) {
 							Point3d point3d = Pd;
 							Point3d point3d_71_ = tmpP1;
 							Point3d point3d_72_ = tmpP2;
@@ -1288,11 +1292,11 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 							debuggunnery("Hit Bone [" + string + "], E = "
 									+ (int) shot.power);
 							hitBone(string, shot, Pd);
-							if (!string.startsWith("xx")) {
+							if(!string.startsWith("xx")) {
 								Aircraft aircraft_73_ = this;
 								float f = 33.333F;
 								float f_74_;
-								if (i == tmpBonesHit - 1)
+								if(i == tmpBonesHit - 1)
 									f_74_ = 0.02F;
 								else {
 									hierMesh();
@@ -1304,19 +1308,19 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 								}
 								aircraft_73_.getEnergyPastArmor(f * f_74_,
 										shot);
-								if (World.Rnd().nextFloat() < 0.05F) {
+								if(World.Rnd().nextFloat() < 0.05F) {
 									shot.power = 0.0F;
 									debuggunnery("Inner Ricochet");
 								}
 							}
-							if (FM.CT.bHasGearControl
+							if(FM.CT.bHasGearControl
 									&& (string.toLowerCase().startsWith("xgear")
 											|| string.toLowerCase().startsWith("gear"))
 											&& getEnergyPastArmor(2.0F, shot) > 0.0F
 											&& shot.power > 2500.0F) {
 								int i_76_ = -1;
 								String string_77_ = "";
-								if (string.toLowerCase().startsWith("x"))
+								if(string.toLowerCase().startsWith("x"))
 									string_77_
 									= string.substring(5, 6).toUpperCase();
 								else
@@ -1324,68 +1328,68 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 									= string.substring(4, 5).toUpperCase();
 								int i_78_ = 0;
 								int i_79_ = World.Rnd().nextInt(0, 150);
-								if ((double) FM.CT.getGear() > 0.99) {
-									if (i_79_ < 5)
+								if((double) FM.CT.getGear() > 0.99) {
+									if(i_79_ < 5)
 										i_78_ = 8;
-									else if (i_79_ < 10)
+									else if(i_79_ < 10)
 										i_78_ = 7;
-									else if (i_79_ < 15)
+									else if(i_79_ < 15)
 										i_78_ = 1;
-									else if (i_79_ < 20)
+									else if(i_79_ < 20)
 										i_78_ = 2;
-									else if (i_79_ < 25)
+									else if(i_79_ < 25)
 										i_78_ = 3;
-									else if (i_79_ < 30)
+									else if(i_79_ < 30)
 										i_78_ = 10;
-								} else if (string.indexOf("1") != -1) {
-									if (i_79_ < 5)
+								} else if(string.indexOf("1") != -1) {
+									if(i_79_ < 5)
 										i_78_ = 8;
-									else if (i_79_ < 10)
+									else if(i_79_ < 10)
 										i_78_ = 7;
-									else if (i_79_ < 15)
+									else if(i_79_ < 15)
 										i_78_ = 1;
-									else if (i_79_ < 20)
+									else if(i_79_ < 20)
 										i_78_ = 2;
-									else if (i_79_ < 25)
+									else if(i_79_ < 25)
 										i_78_ = 3;
-									else if (i_79_ < 30)
+									else if(i_79_ < 30)
 										i_78_ = 10;
-								} else if (i_79_ < 1)
+								} else if(i_79_ < 1)
 									i_78_ = 6;
-								else if (i_79_ < 2)
+								else if(i_79_ < 2)
 									i_78_ = 5;
-								else if (i_79_ < 3)
+								else if(i_79_ < 3)
 									i_78_ = 4;
-								else if (i_79_ < 12)
+								else if(i_79_ < 12)
 									i_78_ = 2;
-								else if (i_79_ < 17)
+								else if(i_79_ < 17)
 									i_78_ = 9;
-								else if (i_79_ < 27)
+								else if(i_79_ < 27)
 									i_78_ = 1;
-								else if (i_79_ < 32)
+								else if(i_79_ < 32)
 									i_78_ = 10;
-								else if (i_79_ < 35)
+								else if(i_79_ < 35)
 									i_78_ = 8;
-								else if (i_79_ < 37)
+								else if(i_79_ < 37)
 									i_78_ = 7;
-								else if (i_79_ < 40)
+								else if(i_79_ < 40)
 									i_78_ = 3;
-								if (string_77_.equals("L"))
+								if(string_77_.equals("L"))
 									i_76_ = 0;
-								else if (string_77_.equals("R"))
+								else if(string_77_.equals("R"))
 									i_76_ = 1;
-								else if (string_77_.equals("C"))
+								else if(string_77_.equals("C"))
 									i_76_ = 2;
-								if ((i_76_ == 0 || i_76_ == 1) && i_79_ > 99
+								if((i_76_ == 0 || i_76_ == 1) && i_79_ > 99
 										&& chunkDamageVisible("WingLIn") > 1
 										&& chunkDamageVisible("WingRIn") > 1) {
 									FM.AS.hitGear(shot.initiator, 0, 4);
 									FM.AS.hitGear(shot.initiator, 1, 4);
-								} else if (i_78_ != 0) {
-									if (shot.power > 40000.0F)
+								} else if(i_78_ != 0) {
+									if(shot.power > 40000.0F)
 										i_76_ += 3;
-									if (i_78_ == 8) {
-										if ((double) World.Rnd().nextFloat()
+									if(i_78_ == 8) {
+										if((double) World.Rnd().nextFloat()
 												< 0.5) {
 											FM.AS.hitGear(shot.initiator, 1,
 													8);
@@ -1405,36 +1409,36 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 				boolean bool = false;
 				for (int i = 0; i < tmpBonesHit; i++) {
 					hierMesh();
-					if (HierMesh.collisionNameMulti(i, 1) != null) {
+					if(HierMesh.collisionNameMulti(i, 1) != null) {
 						hierMesh();
 						String string = HierMesh.collisionNameMulti(i, 1);
 						hierMesh();
-						if (!string.equals(HierMesh.collisionNameMulti(i, 0)))
+						if(!string.equals(HierMesh.collisionNameMulti(i, 0)))
 							continue;
 					}
 					bool = true;
 				}
-				if (bool) {
+				if(bool) {
 					debuggunnery("[+++ PROCESS OLD +++]");
 					Shot shot_80_ = shot;
 					hierMesh();
 					shot_80_.chunkName = HierMesh.collisionNameMulti(0, 0);
-					if (shot.chunkName.startsWith("WingLOut")
+					if(shot.chunkName.startsWith("WingLOut")
 							&& World.Rnd().nextInt(0, 99) < 20)
 						shot.chunkName = "AroneL_D0";
-					if (shot.chunkName.startsWith("WingROut")
+					if(shot.chunkName.startsWith("WingROut")
 							&& World.Rnd().nextInt(0, 99) < 20)
 						shot.chunkName = "AroneR_D0";
-					if (shot.chunkName.startsWith("StabL")
+					if(shot.chunkName.startsWith("StabL")
 							&& World.Rnd().nextInt(0, 99) < 45)
 						shot.chunkName = "VatorL_D0";
-					if (shot.chunkName.startsWith("StabR")
+					if(shot.chunkName.startsWith("StabR")
 							&& World.Rnd().nextInt(0, 99) < 45)
 						shot.chunkName = "VatorR_D0";
-					if (shot.chunkName.startsWith("Keel1")
+					if(shot.chunkName.startsWith("Keel1")
 							&& World.Rnd().nextInt(0, 99) < 33)
 						shot.chunkName = "Rudder1_D0";
-					if (shot.chunkName.startsWith("Keel2")
+					if(shot.chunkName.startsWith("Keel2")
 							&& World.Rnd().nextInt(0, 99) < 33)
 						shot.chunkName = "Rudder2_D0";
 					float f = shot.powerToTNT();
@@ -1450,14 +1454,14 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 																			(part(shot.chunkName))))))
 																			+ " %..");
 					shot.bodyMaterial = 2;
-					if (FM instanceof Pilot
+					if(FM instanceof Pilot
 							&& World.Rnd().nextInt(-1, 8) < FM.Skill)
 						((Pilot) FM).setAsDanger(shot.initiator);
-					if (f <= 5.0000006E-7F)
+					if(f <= 5.0000006E-7F)
 						return;
-					if (shot.chunkName.endsWith("_D0")
+					if(shot.chunkName.endsWith("_D0")
 							&& !shot.chunkName.startsWith("Gear")) {
-						if (f > 0.01F)
+						if(f > 0.01F)
 							f = (1.0F
 									+ ((f - 0.01F)
 											/ FM.Sq.getToughness(part(shot
@@ -1469,14 +1473,14 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 					f += FM.Sq.eAbsorber[part(shot.chunkName)];
 					int i = (int) f;
 					FM.Sq.eAbsorber[part(shot.chunkName)] = f - (float) i;
-					if (i > 0) {
+					if(i > 0) {
 						setDamager(shot.initiator, i);
-						if (shot.chunkName.startsWith("Pilot")) {
+						if(shot.chunkName.startsWith("Pilot")) {
 							killPilot(shot.initiator,
 									shot.chunkName.charAt(5) - '1');
 							return;
 						}
-						if (shot.chunkName.startsWith("Head")) {
+						if(shot.chunkName.startsWith("Head")) {
 							killPilot(shot.initiator,
 									shot.chunkName.charAt(4) - '1');
 							return;
@@ -1484,11 +1488,11 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 					}
 					nextDMGLevels(i, 2, shot.chunkName, shot.initiator);
 				}
-				if (bWasAlive && FM.isTakenMortalDamage()
+				if(bWasAlive && FM.isTakenMortalDamage()
 						&& getDamager() instanceof Aircraft
 						&& FM.actor.getArmy() != getDamager().getArmy()
 						&& World.Rnd().nextInt(0, 99) < 66) {
-					if (!buried)
+					if(!buried)
 						Voice.speakNiceKill((Aircraft) getDamager());
 					buried = true;
 				}
@@ -2013,12 +2017,12 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 			}
 		}
 		//TODO: Variable Wing Control
-		if (controls.bHasVarWingControl)
+		if(controls.bHasVarWingControl)
 		{
 			float f_102x_ = controls.getVarWing();
-			if (Math.abs(VarWing_ - f_102x_) > EpsSmooth_)
+			if(Math.abs(VarWing_ - f_102x_) > EpsSmooth_)
 			{
-				if (Math.abs(f_102x_ - controls.VarWingControl) <= EpsSmooth_)
+				if(Math.abs(f_102x_ - controls.VarWingControl) <= EpsSmooth_)
 					sfxFlaps(false);
 				else
 					sfxFlaps(true);
@@ -2049,10 +2053,10 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 		}
 		//TODO: Added for refuelling equipment
 		f5 = controls.getRefuel();
-		if (Math.abs(Refuel_ - f5) > EpsSmooth_)
+		if(Math.abs(Refuel_ - f5) > EpsSmooth_)
 		{
 			moveRefuel(Refuel_ = f5);
-			if (Math.abs(Refuel_ - 0.5F) >= 0.48F)
+			if(Math.abs(Refuel_ - 0.5F) >= 0.48F)
 				sfxAirBrake();
 		}
 		f5 = FM.Gears.getSteeringAngle();
@@ -3220,13 +3224,13 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 	private static boolean isPlayersWing(Aircraft aircraft) {
 		try {
 			Wing wing = aircraft.getWing();
-			if (wing == null)
+			if(wing == null)
 				return false;
 			for (int i = 0; i < wing.airc.length; i++) {
 				Aircraft aircraft2 = wing.airc[i];
-				if (aircraft2 == World.getPlayerAircraft())
+				if(aircraft2 == World.getPlayerAircraft())
 					return true;
-				if (aircraft2.isNetPlayer() || aircraft2.isNetMaster())
+				if(aircraft2.isNetPlayer() || aircraft2.isNetMaster())
 					return false;
 			}
 			return false;
@@ -3270,17 +3274,17 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 		for (int i = 0; i < FM.CT.Weapons.length; i++)
 		{
 			BulletEmitter[] bulletemitters = FM.CT.Weapons[i];
-			if (bulletemitters != null)
+			if(bulletemitters != null)
 			{
 				for (int i_164_ = 0; i_164_ < bulletemitters.length; i_164_++)
 				{
-					if (bulletemitters[i_164_] instanceof BombGun)
+					if(bulletemitters[i_164_] instanceof BombGun)
 						((BombGun)bulletemitters[i_164_]).hide(bool);
-					else if (bulletemitters[i_164_] instanceof RocketGun)
+					else if(bulletemitters[i_164_] instanceof RocketGun)
 						((RocketGun)bulletemitters[i_164_]).hide(bool);
-					else if (bulletemitters[i_164_] instanceof RocketBombGun)
+					else if(bulletemitters[i_164_] instanceof RocketBombGun)
 						((RocketBombGun)bulletemitters[i_164_]).hide(bool);
-					else if (bulletemitters[i_164_] instanceof Pylon)
+					else if(bulletemitters[i_164_] instanceof Pylon)
 						((Pylon)bulletemitters[i_164_]).drawing(!bool);
 				}
 			}
