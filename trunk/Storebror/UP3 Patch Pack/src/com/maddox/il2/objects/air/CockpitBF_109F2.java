@@ -256,6 +256,10 @@ public class CockpitBF_109F2 extends CockpitPilot {
             this.mesh.chunkVisible("Z_ArmorGlass1", true);
         else if (Actor.isValid(this.fm.actor) && ((this.fm.actor instanceof BF_109F0) || (this.fm.actor instanceof BF_109F1) || (this.fm.actor instanceof BF_109F2) || (this.fm.actor instanceof BF_109F2U)))
             this.mesh.chunkVisible("Z_ArmorGlass1", false);
+        // TODO: Storebror, Bugfix required to reflect correct cockpit type in case of repairing Cockpit Damage
+        //------------------------------------------
+        ZutiSupportMethods_Air.backupCockpit(this);
+        //------------------------------------------
     }
 
     protected boolean doFocusEnter() {

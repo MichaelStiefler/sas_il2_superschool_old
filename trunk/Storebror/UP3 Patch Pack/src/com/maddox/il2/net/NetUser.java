@@ -58,49 +58,53 @@ import com.maddox.rts.Spawn;
 import com.maddox.rts.Time;
 import com.maddox.rts.net.NetFileClient;
 import com.maddox.rts.net.NetFileRequest;
+import com.maddox.sas1946.il2.util.BaseGameVersion;
 import com.maddox.util.IntHashtable;
 
 public class NetUser extends NetHost implements NetFileClient, NetUpdate {
-    public static final int    MSG_READY              = 1;
-    public static final int    MSG_BORNPLACE          = 2;
-    public static final int    MSG_AIRDROMESTAY       = 3;
-    public static final int    MSG_STAT               = 4;
-    public static final int    MSG_STAT_INC           = 5;
-    public static final int    MSG_CURSTAT            = 6;
-    public static final int    MSG_CURSTAT_INC        = 7;
-    public static final int    MSG_PING               = 8;
-    public static final int    MSG_PING_INC           = 9;
-    public static final int    MSG_REGIMENT           = 10;
-    public static final int    MSG_SKIN               = 11;
-    public static final int    MSG_PILOT              = 12;
-    public static final int    MSG_REQUEST_PLACE      = 13;
-    public static final int    MSG_PLACE              = 14;
-    public static final int    MSG_REQUEST_WAIT_START = 15;
-    public static final int    MSG_WAIT_START         = 16;
-    public static final int    MSG_KICK               = 17;
-    public static final int    MSG_MISSION_COMPLETE   = 18;
-    public static final int    MSG_CAMERA             = 19;
-    public static final int    MSG_ORDER_CMD          = 20;
-    public static final int    MSG_RADIO              = 21;
-    public static final int    MSG_VOICE              = 22;
-    public static final int    MSG_TASK_COMPLETE      = 23;
-    public static final int    MSG_HOUSE_DIE          = 24;
-    public static final int    MSG_HOUSE_SYNC         = 25;
-    public static final int    MSG_BRIDGE_RDIE        = 26;
-    public static final int    MSG_BRIDGE_DIE         = 27;
-    public static final int    MSG_BRIDGE_SYNC        = 28;
-    public static final int    MSG_DOT_RANGE_FRIENDLY = 29;
-    public static final int    MSG_DOT_RANGE_FOE      = 30;
-    public static final int    MSG_EVENTLOG           = 31;
-    public static final int    MSG_NOISEART           = 32;
+    public static final int MSG_READY              = 1;
+    public static final int MSG_BORNPLACE          = 2;
+    public static final int MSG_AIRDROMESTAY       = 3;
+    public static final int MSG_STAT               = 4;
+    public static final int MSG_STAT_INC           = 5;
+    public static final int MSG_CURSTAT            = 6;
+    public static final int MSG_CURSTAT_INC        = 7;
+    public static final int MSG_PING               = 8;
+    public static final int MSG_PING_INC           = 9;
+    public static final int MSG_REGIMENT           = 10;
+    public static final int MSG_SKIN               = 11;
+    public static final int MSG_PILOT              = 12;
+    public static final int MSG_REQUEST_PLACE      = 13;
+    public static final int MSG_PLACE              = 14;
+    public static final int MSG_REQUEST_WAIT_START = 15;
+    public static final int MSG_WAIT_START         = 16;
+    public static final int MSG_KICK               = 17;
+    public static final int MSG_MISSION_COMPLETE   = 18;
+    public static final int MSG_CAMERA             = 19;
+    public static final int MSG_ORDER_CMD          = 20;
+    public static final int MSG_RADIO              = 21;
+    public static final int MSG_VOICE              = 22;
+    public static final int MSG_TASK_COMPLETE      = 23;
+    public static final int MSG_HOUSE_DIE          = 24;
+    public static final int MSG_HOUSE_SYNC         = 25;
+    public static final int MSG_BRIDGE_RDIE        = 26;
+    public static final int MSG_BRIDGE_DIE         = 27;
+    public static final int MSG_BRIDGE_SYNC        = 28;
+    public static final int MSG_DOT_RANGE_FRIENDLY = 29;
+    public static final int MSG_DOT_RANGE_FOE      = 30;
+    public static final int MSG_EVENTLOG           = 31;
+    public static final int MSG_NOISEART           = 32;
 
     // TODO: Storebror: Implement Patch Level Replication
     public static final byte   MSG_PATCHLEVEL         = 101;
-    public static final String PATCH_LEVEL            = "103";
+    public static final byte   MSG_SELECTOR_VERSION   = 102;
+    public static final String MIN_PATCH_LEVEL        = "103";
+    public static final String PATCH_LEVEL            = "104";
     public static final String PATCH_LEVEL_TEST       = "102b1";
-    public static String[]     PATCHLEVEL_G           = { "103" };
-    public static String[]     PATCHLEVEL_Y           = { "102b4", "102b3" };
+    public static String[]     PATCHLEVEL_G           = { "104" };
+    public static String[]     PATCHLEVEL_Y           = { "103", "102b4", "102b3" };
     private String             patchLevel             = "none";
+    private String             selectorVersion        = "unknown";
     public static final long   UPDATE_CHAT_INTERVAL   = 60000L;
     private long               lastUpdateChatMessages = 0L;
 
@@ -112,6 +116,17 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
         this.patchLevel = patchLevel;
     }
 
+    public String getSelectorVersion() {
+        return this.selectorVersion;
+    }
+
+    public void setSelectorVersion(String selectorVersion) {
+        this.selectorVersion = selectorVersion;
+    }
+
+    public boolean needsUpdate(String patchLevel) {
+        return (patchLevel.compareTo(MIN_PATCH_LEVEL) < 0);
+    }
     // ---
 
     private NetUserStat        stat;
@@ -1245,11 +1260,15 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                     this.replicateDotRange(false);
                     return true;
 
-                    // TODO: Storebror: Implement Patch Level Replication
+                // TODO: Storebror: Implement Patch Level Replication
                 case MSG_PATCHLEVEL: // 101
                     this.readPatchLevel(netmsginput, true);
                     return true;
-                    // ---
+
+                case MSG_SELECTOR_VERSION: // 102
+                    this.readSelectorVersion(netmsginput, true);
+                    return true;
+                // ---
 
             }
         }
@@ -1368,7 +1387,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             case MSG_PATCHLEVEL: // 101
                 this.readPatchLevel(netmsginput, false);
                 return true;
-                // ---
+            // ---
 
             default:
                 return false;
@@ -1836,6 +1855,44 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
         }
     }
 
+    public void replicateSelectorVersion(NetUser theNetUser) {
+//      replicateSelectorVersion(null);
+        NetServerParams netserverparams = Main.cur().netServerParams;
+        if (netserverparams == null)
+            return;
+        if (!netserverparams.isMaster())
+            return;
+        if (!NetEnv.host().isMirrored())
+            return;
+        List list = NetEnv.channels();
+        for (int j = 0; j < list.size(); j++) {
+            NetChannel netchannel = (NetChannel) list.get(j);
+            if (netchannel.isMirrored(this) || netchannel == this.masterChannel())
+                this.replicateSelectorVersion(netchannel, theNetUser);
+        }
+
+    }
+
+    private void replicateSelectorVersion(NetChannel netchannel, NetUser theNetUser) {
+//      System.out.println("replicateSelectorVersion, " + (netchannel == null ? "netchannel == null" : "netchannel != null"));
+        if (!this.isMirrored() && netchannel == null)
+            return;
+        try {
+            NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+            netmsgguaranted.writeByte(MSG_SELECTOR_VERSION);
+            netmsgguaranted.write255(theNetUser.getSelectorVersion());
+//          if (!Config.isUSE_RENDER())
+            netmsgguaranted.writeNetObj(theNetUser);
+            System.out.println("Replicating Selector Version " + theNetUser.getSelectorVersion() + " for user " + theNetUser.uniqueName() + " to " + (netchannel == null ? "all" : "Channel " + netchannel.id()));
+            if (netchannel == null)
+                this.post(netmsgguaranted);
+            else
+                this.postTo(netchannel, netmsgguaranted);
+        } catch (Exception exception) {
+            NetObj.printDebug(exception);
+        }
+    }
+
     private void checkUpdateChatMessages() {
         long l = Time.real();
         if (this.lastUpdateChatMessages + UPDATE_CHAT_INTERVAL > l)
@@ -1856,16 +1913,18 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
         List list = NetEnv.hosts();
         for (int j = 0; j < list.size(); j++) {
             NetUser netuser = (NetUser) list.get(j);
-            if (!netuser.getPatchLevel().equalsIgnoreCase(PATCH_LEVEL)) {
-                ArrayList arraylist = new ArrayList(1);
-                arraylist.add(netuser);
-                System.out.println(this.uniqueName() + " sends Patch Update Message to " + netuser.uniqueName() + " (using Patch Level " + netuser.getPatchLevel() + ")");
-                if (netuser.getPatchLevel().equalsIgnoreCase("none"))
-                    Main.cur().chat.send(NetEnv.host(), "!! " + netuser.uniqueName() + " !! You've got no Patch Pack installed !!", arraylist, (byte) 0, false);
-                else
-                    Main.cur().chat.send(NetEnv.host(), "!! " + netuser.uniqueName() + " !! You've got Patch Pack " + netuser.getPatchLevel() + " installed !!", arraylist, (byte) 0, false);
-                Main.cur().chat.send(NetEnv.host(), "!! " + netuser.uniqueName() + " !! New Patch Pack " + PATCH_LEVEL + " is available at <<< http://j.mp/up3pp >>> !!", arraylist, (byte) 0, false);
-            }
+            if (netuser.getPatchLevel().equalsIgnoreCase(PATCH_LEVEL))
+                continue;
+            if (!this.needsUpdate(netuser.getPatchLevel()))
+                continue;
+            ArrayList arraylist = new ArrayList(1);
+            arraylist.add(netuser);
+            System.out.println(this.uniqueName() + " sends Patch Update Message to " + netuser.uniqueName() + " (using Patch Level " + netuser.getPatchLevel() + ")");
+            if (netuser.getPatchLevel().equalsIgnoreCase("none"))
+                Main.cur().chat.send(NetEnv.host(), "!! " + netuser.uniqueName() + " !! You've got no Patch Pack installed !!", arraylist, (byte) 0, false);
+            else
+                Main.cur().chat.send(NetEnv.host(), "!! " + netuser.uniqueName() + " !! You've got Patch Pack " + netuser.getPatchLevel() + " installed !!", arraylist, (byte) 0, false);
+            Main.cur().chat.send(NetEnv.host(), "!! " + netuser.uniqueName() + " !! New Patch Pack " + PATCH_LEVEL + " is available at <<< http://j.mp/up3pp >>> !!", arraylist, (byte) 0, false);
         }
     }
 
@@ -2222,6 +2281,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             // TODO: Storebror: Implement Patch Level Replication
             System.out.println("msgNetNewChannel replicate patch level");
             this.replicatePatchLevel(netchannel, this); // Replicate own patch level
+            this.replicateSelectorVersion(netchannel, this); // Replicate own selector version
 //            replicatePatchLevel(this.masterChannel()); // Replicate own patch level to server
             // ---
 
@@ -2258,8 +2318,12 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
         this.makeUniqueName();
         this.netUserRegiment = new NetUserRegiment();
         // TODO: Storebror: Implement Patch Level Replication
-        if (this.isMaster())
+        if (this.isMaster()) {
             this.patchLevel = PATCH_LEVEL;
+            this.selectorVersion = BaseGameVersion.selectorInfo(BaseGameVersion.SELECTOR_INFO_PRODUCT_VERSION);
+            if (this.selectorVersion.equalsIgnoreCase("N/A"))
+                this.selectorVersion = "unknown";
+        }
 //        if (Config.isUSE_RENDER())
 //            this.patchLevel = PATCH_LEVEL_TEST;
         this.lastUpdateChatMessages = Time.real() - UPDATE_CHAT_INTERVAL + 10000L;
@@ -2326,8 +2390,12 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             };
         }
         // TODO: Storebror: Implement Patch Level Replication
-        if (this.isMaster())
+        if (this.isMaster()) {
             this.patchLevel = PATCH_LEVEL;
+            this.selectorVersion = BaseGameVersion.selectorInfo(BaseGameVersion.SELECTOR_INFO_PRODUCT_VERSION);
+            if (this.selectorVersion.equalsIgnoreCase("N/A"))
+                this.selectorVersion = "unknown";
+        }
 //        if (Config.isUSE_RENDER())
 //            this.patchLevel = PATCH_LEVEL_TEST;
         this.lastUpdateChatMessages = Time.real() - UPDATE_CHAT_INTERVAL + 10000L;
@@ -2383,4 +2451,40 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
         }
     }
 
+    private void readSelectorVersion(NetMsgInput netmsginput, boolean isMasterChannel) {
+        if (netmsginput.available() > 0) {
+            String theSelectorVersion = "unknown";
+            try {
+                theSelectorVersion = netmsginput.read255();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+            NetUser theNetUser = null;
+            if (netmsginput.available() > 0)
+                theNetUser = (NetUser) netmsginput.readNetObj();
+
+            if (theNetUser == null) {
+                List list = NetEnv.hosts();
+                for (int nui = 0; nui < list.size(); nui++) {
+                    if (((NetUser) list.get(nui)).masterChannel() == netmsginput.channel()) {
+                        theNetUser = (NetUser) list.get(nui);
+                        if (theNetUser.getSelectorVersion().equalsIgnoreCase("unknown")) {
+                            break;
+                        }
+                        theNetUser = null;
+                    }
+                }
+            }
+
+            if (theNetUser != null) {
+                theNetUser.setSelectorVersion(theSelectorVersion);
+                System.out.println("MSG_SELECTOR_VERSION received (Master = " + isMasterChannel + ") for netuser " + theNetUser.uniqueName() + ", Selector Version is " + theSelectorVersion);
+                this.replicateSelectorVersion(theNetUser);
+            } else {
+                System.out.println("MSG_SELECTOR_VERSION received (Master = " + isMasterChannel + ") for netuser null, Selector Version is " + theSelectorVersion);
+            }
+            // this.setPatchLevel(netmsginput.read255());
+        }
+    }
 }

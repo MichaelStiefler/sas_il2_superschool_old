@@ -327,6 +327,10 @@ public class CockpitBF_109Ex extends CockpitPilot {
                     this.mesh.chunkVisible("oxigen-7z", true);
                     break;
             }
+            // TODO: Storebror, Bugfix required to reflect correct cockpit type in case of repairing Cockpit Damage
+            //------------------------------------------
+            ZutiSupportMethods_Air.backupCockpit(this);
+            //------------------------------------------
         }
     }
 

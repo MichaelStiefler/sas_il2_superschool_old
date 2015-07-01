@@ -7,6 +7,7 @@ import com.maddox.rts.MainWin32;
 import com.maddox.rts.RTSConf;
 import com.maddox.rts.RTSConfWin;
 import com.maddox.rts.Time;
+import com.maddox.sas1946.il2.util.BaseGameVersion;
 
 class ConsoleGL0Render extends Render {
 
@@ -27,12 +28,17 @@ class ConsoleGL0Render extends Render {
             drawTile(0.0F, 0.0F, RendersMain.getViewPortWidth(), RendersMain.getViewPortHeight(), 0.0F, ConsoleGL0.backgroundMat, -1, 0.0F, 1.0F, 1.0F, -1F);
             if (this.sstep != null) {
                 int i = 0xff0000ff;
+                String selectorInfo = BaseGameVersion.selectorInfo(BaseGameVersion.SELECTOR_INFO_PRODUCT_VERSION);
+                if (selectorInfo.equalsIgnoreCase("N/A"))
+                    selectorInfo = "";
+                else
+                    selectorInfo = ", Selector Version " + selectorInfo;
                 if ("ru".equalsIgnoreCase(RTSConf.cur.locale.getLanguage())) {
                     TTFont.font[2].output(i, RendersMain.getViewPortWidth() * 0.083F, RendersMain.getViewPortHeight() * 0.12F, 0.0F, this.sstep);
-                    TTFont.font[2].output(i, RendersMain.getViewPortWidth() * 0.083F, (RendersMain.getViewPortHeight() * 0.12F + TTFont.font[2].height()) - TTFont.font[2].descender(), 0.0F, "UP 3.0 RC4 Patch Pack " + NetUser.PATCH_LEVEL);
+                    TTFont.font[2].output(i, RendersMain.getViewPortWidth() * 0.083F, (RendersMain.getViewPortHeight() * 0.12F + TTFont.font[2].height()) - TTFont.font[2].descender(), 0.0F, "UP 3.0 RC4 Patch Pack " + NetUser.PATCH_LEVEL + selectorInfo);
                 } else {
                     TTFont.font[2].output(i, RendersMain.getViewPortWidth() * 0.02F, RendersMain.getViewPortHeight() * 0.17F, 0.0F, this.sstep);
-                    TTFont.font[2].output(i, RendersMain.getViewPortWidth() * 0.02F, (RendersMain.getViewPortHeight() * 0.17F + TTFont.font[2].height()) - TTFont.font[2].descender(), 0.0F, "UP 3.0 RC4 Patch Pack " + NetUser.PATCH_LEVEL);
+                    TTFont.font[2].output(i, RendersMain.getViewPortWidth() * 0.02F, (RendersMain.getViewPortHeight() * 0.17F + TTFont.font[2].height()) - TTFont.font[2].descender(), 0.0F, "UP 3.0 RC4 Patch Pack " + NetUser.PATCH_LEVEL + selectorInfo);
                 }
             }
             return;
