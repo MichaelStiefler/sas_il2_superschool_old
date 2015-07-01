@@ -1082,6 +1082,10 @@ public class HUD {
                 }
                 // TODO: Storebror: Implement Aircraft Control Surfaces and Pilot View Replication
                 statValueWidth = (int) ttfont.width(statuser.user.getPatchLevel());
+                String selectorVersion = statuser.user.getSelectorVersion();
+                if (!selectorVersion.equalsIgnoreCase("unknown")) {
+                    statValueWidth += (int) ttfont.width(" / " + selectorVersion);
+                }
                 if (patchLevelWidth < statValueWidth)
                     patchLevelWidth = statValueWidth;
                 // ---
@@ -1131,8 +1135,13 @@ public class HUD {
                         break;
                     }
                 }
+                String versionInfo = statuser.user.getPatchLevel();
+                String selectorVersion = statuser.user.getSelectorVersion();
+                if (!selectorVersion.equalsIgnoreCase("unknown")) {
+                    versionInfo += " / " + selectorVersion;
+                }
 //                System.out.println("Rendering Patch Level " + statuser.user.getPatchLevel() + " for user " + statuser.user.uniqueName() + " with color " + patchLevelColor);
-                ttfont.output(patchLevelColor, patchLevelX, statRowY, 0.0F, statuser.user.getPatchLevel());
+                ttfont.output(patchLevelColor, patchLevelX, statRowY, 0.0F, versionInfo);
                 // ---
             }
         }
