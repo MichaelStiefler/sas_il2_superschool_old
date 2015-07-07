@@ -335,29 +335,7 @@ public class MIG_21R extends MIG_21
         ((FlightModelMain) (super.FM)).CT.bHasElevatorControl = false;
     }
 
-    static Class _mthclass$(String s)
-    {
-        try
-        {
-            return Class.forName(s);
-        }
-        catch(ClassNotFoundException classnotfoundexception)
-        {
-            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
-        }
-    }
-
-    static Class _mthclass$(String s)
-    {
-        try
-        {
-            return Class.forName(s);
-        }
-        catch(ClassNotFoundException classnotfoundexception)
-        {
-            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
-        }
-    }
+    
 
     private boolean pylonOccupied;
     private GuidedMissileUtils guidedMissileUtils;
@@ -415,6 +393,7 @@ public class MIG_21R extends MIG_21
             "_ExternalBomb09", "_ExternalBomb10", "_ExternalBomb11", "_ExternalBomb12", "_Rock35", "_Rock36", "_ExternalRock37", "_ExternalRock38", "_ExternalRock39", "_ExternalRock40", 
             "_Rock41", "_Rock42", "_CANNON01", "_CANNON02", "_ExternalDev17"
         });
+        String s = "unknown";
         try
         {
             ArrayList arraylist = new ArrayList();
@@ -423,7 +402,7 @@ public class MIG_21R extends MIG_21
             Property.set(class1, "weaponsMap", hashmapint);
             byte byte0 = 65;
             Aircraft._WeaponSlot a_lweaponslot[] = new Aircraft._WeaponSlot[byte0];
-            String s = "Default-Recon+2*PTB-490";
+            s = "Default-Recon+2*PTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[64] = new Aircraft._WeaponSlot(9, "PylonGP9", 1);  /*!!!Substitute for recon container - changes needed in code above!!!*/
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
