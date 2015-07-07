@@ -387,7 +387,7 @@ public class MIG_21R extends MIG_21
         Class class1 = com.maddox.il2.objects.air.MIG_21R.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "MiG21");
-        Property.set(class1, "meshName", "3DO/Plane/MiG-21R/hier.him");
+        Property.set(class1, "meshName", "3do/Plane/MiG-21R/hier.him");
         Property.set(class1, "PaintScheme", new PaintSchemeFMParMiG21());
         Property.set(class1, "noseart", 1);
         Property.set(class1, "yearService", 1944.9F);
@@ -425,7 +425,6 @@ public class MIG_21R extends MIG_21
             Aircraft._WeaponSlot a_lweaponslot[] = new Aircraft._WeaponSlot[byte0];
             String s = "Default-Recon+2*PTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[64] = new Aircraft._WeaponSlot(9, "PylonGP9", 1);  /*!!!Substitute for recon container - changes needed in code above!!!*/
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
             a_lweaponslot[17] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
@@ -433,15 +432,16 @@ public class MIG_21R extends MIG_21
             a_lweaponslot[1] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 32);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
+            
             s = "Recon";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[64] = new Aircraft._WeaponSlot(9, "PylonGP9", 1);
             a_lweaponslot[0] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 32);
             a_lweaponslot[1] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 32);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "Recon+2*K-55";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[64] = new Aircraft._WeaponSlot(9, "PylonGP9", 1);
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
@@ -454,7 +454,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "Recon+2*R-3S";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[64] = new Aircraft._WeaponSlot(9, "PylonGP9", 1);
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
@@ -467,7 +467,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "Recon+2*R-13M";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[64] = new Aircraft._WeaponSlot(9, "PylonGP9", 1);
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
@@ -480,7 +480,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "Recon+2*RS-2US";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[64] = new Aircraft._WeaponSlot(9, "PylonGP9", 1);
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
@@ -496,7 +496,7 @@ public class MIG_21R extends MIG_21
             
             
             s = "Recon+2*PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[64] = new Aircraft._WeaponSlot(9, "PylonGP9", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
             a_lweaponslot[17] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
@@ -506,7 +506,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "Recon+2*K-55+2*PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[64] = new Aircraft._WeaponSlot(9, "PylonGP9", 1);
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
@@ -521,7 +521,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "Recon+2*R-3S+2*PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[64] = new Aircraft._WeaponSlot(9, "PylonGP9", 1);
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
@@ -536,7 +536,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "Recon+2*R-13M+2*PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[64] = new Aircraft._WeaponSlot(9, "PylonGP9", 1);
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
@@ -551,7 +551,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "Recon+2*RS-2US+2*PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[64] = new Aircraft._WeaponSlot(9, "PylonGP9", 1);
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
@@ -568,7 +568,7 @@ public class MIG_21R extends MIG_21
             
             
             s = "2*K-55";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunR55", 1);
@@ -579,7 +579,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             
             s = "2*R-3S";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunK13A", 1);
@@ -589,7 +588,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*R-13M";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunR13M", 1);
@@ -599,7 +598,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*RS-2US";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunK5M", 1);
@@ -610,7 +609,7 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             
             s = "2*K-55+PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunR55", 1);
@@ -623,7 +622,7 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             
             s = "2*R-3S+PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunK13A", 1);
@@ -635,7 +634,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*R-13M+PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunR13M", 1);
@@ -647,7 +646,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*RS-2US+PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunK5M", 1);
@@ -661,7 +660,7 @@ public class MIG_21R extends MIG_21
             
             
             s = "2*K-55+PTB-800";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunR55", 1);
@@ -674,7 +673,7 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             
             s = "2*R-3S+PTB-800";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunK13A", 1);
@@ -686,7 +685,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*R-13M+PTB-800";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunR13M", 1);
@@ -698,7 +697,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*RS-2US+PTB-800";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunK5M", 1);
@@ -711,7 +710,7 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             
             s = "2*K-55+2*PTB-490";                                               //2*490
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunR55", 1);
@@ -723,7 +722,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*R-3S+2*PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunK13A", 1);
@@ -735,7 +734,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*R-13M+2*PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunR13M", 1);
@@ -747,7 +746,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*RS-2US+2*PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunK5M", 1);
@@ -760,7 +759,7 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             
             s = "2*K-55+3*PTB-490";                                                  //3*PTB-490
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunR55", 1);
@@ -774,7 +773,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*R-3S+3*PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunK13A", 1);
@@ -788,7 +787,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*R-13M+3*PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunR13M", 1);
@@ -802,7 +801,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*RS-2US+3*PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunK5M", 1);
@@ -816,12 +815,12 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             
-            /*
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB800L", 1);*/
+            
+           // a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
+           // a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB800L", 1);
             
             s = "2*K-55+2*PTB-490+PTB-800";                                                  //2*PTB-490+800
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunR55", 1);
@@ -835,7 +834,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*R-3S+2*PTB-490+PTB-800";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunK13A", 1);
@@ -849,7 +848,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*R-13M+2*PTB-490+PTB-800";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunR13M", 1);
@@ -863,7 +862,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*RS-2US+2*PTB-490+PTB-800";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunK5M", 1);
@@ -879,7 +878,7 @@ public class MIG_21R extends MIG_21
             
             //Groundattack
             s = "2*UB-32-57";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[9] = new Aircraft._WeaponSlot(2, "RocketGunS5M", 32);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(2, "RocketGunS5M", 32);
             a_lweaponslot[18] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
@@ -887,7 +886,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*S-24";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(2, "RocketGunS24", 1);
@@ -896,28 +895,24 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*FAB-100";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunFAB100m54", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunFAB100m54", 1);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*FAB-250";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunFAB250m46", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunFAB250m46", 1);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*RBK-250";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunRBK250", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunRBK250", 1);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*ZB-360";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunZB360", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunZB360", 1);
             arraylist.add(s);
@@ -925,7 +920,7 @@ public class MIG_21R extends MIG_21
             
             
             s = "2*UB-32-57+PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[9] = new Aircraft._WeaponSlot(2, "RocketGunS5M", 32);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(2, "RocketGunS5M", 32);
             a_lweaponslot[18] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
@@ -935,7 +930,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*S-24+PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(2, "RocketGunS24", 1);
@@ -946,7 +941,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*FAB-100+PTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunFAB100m54", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunFAB100m54", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
@@ -955,7 +949,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*FAB-250+PTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunFAB250m46", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunFAB250m46", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
@@ -964,7 +957,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*RBK-250+PTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunRBK250", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunRBK250", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
@@ -973,7 +965,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*ZB-360+PTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunZB360", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunZB360", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
@@ -983,7 +974,7 @@ public class MIG_21R extends MIG_21
             
             
             s = "2*UB-32-57+PTB-800";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[9] = new Aircraft._WeaponSlot(2, "RocketGunS5M", 32);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(2, "RocketGunS5M", 32);
             a_lweaponslot[18] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
@@ -993,7 +984,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*S-24+PTB-800";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(2, "RocketGunS24", 1);
@@ -1004,7 +995,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*FAB-100+PTB-800";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunFAB100m54", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunFAB100m54", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
@@ -1013,7 +1003,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*FAB-250+PTB-800";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunFAB250m46", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunFAB250m46", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
@@ -1022,7 +1011,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*RBK-250+PTB-800";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunRBK250", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunRBK250", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
@@ -1031,7 +1019,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*ZB-360+PTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunZB360", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunZB360", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
@@ -1040,7 +1027,7 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             
             s = "2*UB-32-57+2*PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[9] = new Aircraft._WeaponSlot(2, "RocketGunS5M", 32);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(2, "RocketGunS5M", 32);
             a_lweaponslot[18] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
@@ -1050,7 +1037,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*S-24+2*PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(2, "RocketGunS24", 1);
@@ -1061,7 +1048,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*FAB-100+2*PTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunFAB100m54", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunFAB100m54", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
@@ -1070,7 +1056,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*FAB-250+2*PTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunFAB250m46", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunFAB250m46", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
@@ -1079,7 +1064,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*RBK-250+2*PTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunRBK250", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunRBK250", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
@@ -1088,7 +1072,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*ZB-360+2*PTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunZB360", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunZB360", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
@@ -1098,7 +1081,7 @@ public class MIG_21R extends MIG_21
             
             
             s = "2*UB-32-57+3*PTB-490";                                           //3*PTB-490
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[9] = new Aircraft._WeaponSlot(2, "RocketGunS5M", 32);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(2, "RocketGunS5M", 32);
             a_lweaponslot[18] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
@@ -1110,7 +1093,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*S-24+3*PTB-490";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(2, "RocketGunS24", 1);
@@ -1123,7 +1106,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*FAB-100+3*PTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunFAB100m54", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunFAB100m54", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
@@ -1134,7 +1116,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*FAB-250+3*PTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunFAB250m46", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunFAB250m46", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
@@ -1145,7 +1126,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*RBK-250+3*PTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunRBK250", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunRBK250", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
@@ -1156,7 +1136,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*ZB-360+3*PTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunZB360", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunZB360", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
@@ -1168,7 +1147,7 @@ public class MIG_21R extends MIG_21
             
             
             s = "2*UB-32-57+2*PTB-490+PTB-800";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[9] = new Aircraft._WeaponSlot(2, "RocketGunS5M", 32);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(2, "RocketGunS5M", 32);
             a_lweaponslot[18] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
@@ -1180,7 +1159,7 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*S-24+2*PTB-490+PTB-800";
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "MiG21WingPylon", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(2, "RocketGunS24", 1);
@@ -1193,7 +1172,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*FAB-100+2*PTB-490+PTB-800";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunFAB100m54", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunFAB100m54", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
@@ -1204,7 +1182,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*FAB-250+2*PTB-490+PTB-800";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunFAB250m46", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunFAB250m46", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
@@ -1215,7 +1192,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*RBK-250+2*PTB-490+PTB-800";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunRBK250", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunRBK250", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
@@ -1226,7 +1202,6 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2*ZB-360+2*PTB-490+PTB-800";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunZB360", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunZB360", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
@@ -1244,37 +1219,32 @@ public class MIG_21R extends MIG_21
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "PTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "PTB-800";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB800L", 1);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "2*PTB-490";
+            s = "2xPTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
             a_lweaponslot[17] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "3*PTB-490";
+            s = "3xPTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
             a_lweaponslot[17] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "2*PTB-490+PTB-800";
+            s = "2xPTB-490+PTB-800";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[62] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB800L", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
@@ -1282,6 +1252,10 @@ public class MIG_21R extends MIG_21
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
         }
-        catch(Exception exception) { }
+        catch(Exception exception) 
+        	{
+        	system.out.println("Error in weapon slot declaration for slot " + s);
+        	e.printStackTrace();
+        	}
     }
 }
