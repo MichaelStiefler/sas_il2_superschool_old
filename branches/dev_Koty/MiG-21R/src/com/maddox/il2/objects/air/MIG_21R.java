@@ -125,22 +125,20 @@ public class MIG_21R extends MIG_21
 
     public boolean typeFighterAceMakerToggleAutomation()
     {
-        super.k14Mode++;
-        if(super.k14Mode > 1)
-            super.k14Mode = 0;
-        if(super.k14Mode == 0)
-        {
-            if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "ASP-PFD: Fixed");
-        } else
-        if(super.k14Mode == 1)
-            if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "ASP-PFD: Fixed + Gyro");
-            else
-            if(super.k14Mode == 2 && ((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "ASP-PFD: Gyro");
-        return true;
-    }
+		k14Mode++;
+		if(k14Mode > 1)
+			k14Mode = 0;
+		if (k14Mode == 0) {
+		      if (FM.actor == World.getPlayerAircraft()) {
+		        HUD.log(AircraftHotKeys.hudLogWeaponId, "PKI Sight: On");
+		      }
+		    } else if (k14Mode == 1) {
+		      if (FM.actor == World.getPlayerAircraft()) {
+		        HUD.log(AircraftHotKeys.hudLogWeaponId, "PKI Sight: Off");
+		      }
+		    }
+		return true;
+	}
 
     public void rareAction(float f, boolean flag)
     {
@@ -372,7 +370,7 @@ public class MIG_21R extends MIG_21
         Property.set(class1, "yearExpired", 1948.3F);
         Property.set(class1, "FlightModel", "FlightModels/MiG-21S.fmd:MIG21S");
         Property.set(class1, "cockpitClass", new Class[] {
-            com.maddox.il2.objects.air.CockpitMIG_21MF.class
+        		com.maddox.il2.objects.air.CockpitMIG_21PFM.class
         });
         Property.set(class1, "LOSElevation", 0.965F);
         Aircraft.weaponTriggersRegister(class1, new int[] {
@@ -1208,13 +1206,13 @@ public class MIG_21R extends MIG_21
             a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB800L", 1);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "2xPTB-490";
+            s = "2*PTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
             a_lweaponslot[17] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "3xPTB-490";
+            s = "3*PTB-490";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
@@ -1222,7 +1220,7 @@ public class MIG_21R extends MIG_21
             a_lweaponslot[17] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB490", 1);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "2xPTB-490+PTB-800";
+            s = "2*PTB-490+PTB-800";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "MiG21Pylon", 1);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "FuelTankGun_PTB800L", 1);
