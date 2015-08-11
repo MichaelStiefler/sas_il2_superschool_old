@@ -10,6 +10,7 @@ import java.util.StringTokenizer;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.il2.ai.Army;
+import com.maddox.il2.ai.EventLog;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
@@ -30,6 +31,8 @@ import com.maddox.il2.net.NetUser;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.ZutiSupportMethods_Air;
 import com.maddox.il2.objects.sounds.VoiceBase;
+import com.maddox.il2.objects.weapons.Torpedo;
+import com.maddox.il2.objects.weapons.TorpedoGun;
 import com.maddox.rts.LDRres;
 import com.maddox.rts.NetEnv;
 import com.maddox.rts.NetMsgGuaranted;
@@ -39,9 +42,9 @@ import com.maddox.rts.RTSConf;
 import com.maddox.rts.Time;
 
 public class HUD {
-    private static final int  lenLogBuf             = 6;
-    private static final long logTimeLife           = 10000L;
-    private static final long logTimeFire           = 5000L;
+    private static final int  lenLogBuf   = 6;
+    private static final long logTimeLife = 10000L;
+    private static final long logTimeFire = 5000L;
 
     public boolean            bDrawAllMessages      = true;
     public boolean            bDrawVoiceMessages    = true;
@@ -419,8 +422,97 @@ public class HUD {
                         i_16_ -= i_15_;
                     }
                 }
+                this.drawTorpedoParameters(i, i_16_, i_15_);
             }
         }
+    }
+
+    // TODO: Storebror: Show Torpedo Drop Parameters
+    private void drawTorpedoParameters(int i, int j, int k) {
+        Aircraft theTorpedoCarrier = World.getPlayerAircraft();
+        if (theTorpedoCarrier == null)
+            return;
+        j -= k;
+        j -= k;
+        Class theTorpedoClass = null;
+        try {
+            for (int l = 0; l < theTorpedoCarrier.FM.CT.Weapons.length; l++) {
+                if (theTorpedoCarrier.FM.CT.Weapons[l] != null) {
+                    for (int l1 = 0; l1 < theTorpedoCarrier.FM.CT.Weapons[l].length; l1++) {
+                        if ((theTorpedoCarrier.FM.CT.Weapons[l][l1] != null) && ((theTorpedoCarrier.FM.CT.Weapons[l][l1] instanceof TorpedoGun))) {
+                            Class theBulletClass = ((TorpedoGun) theTorpedoCarrier.FM.CT.Weapons[l][l1]).bulletClass();
+                            if (Torpedo.class.isAssignableFrom(theBulletClass)) {
+                                theTorpedoClass = theBulletClass;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (theTorpedoClass != null)
+                    break;
+            }
+        } catch (Exception exception) {
+            EventLog.type("Exception in drawTorpedoParameters: " + exception.getMessage());
+        }
+        if (theTorpedoClass == null) {
+            return;
+        }
+        float dropAltitude = Property.floatValue(theTorpedoClass, "dropAltitude");
+        float dropSpeed =  Property.floatValue(theTorpedoClass, "dropSpeed");
+        float impactSpeed =  Property.floatValue(theTorpedoClass, "impactSpeed");
+        float impactAngleMin = Property.floatValue(theTorpedoClass, "impactAngleMin");
+        float impactAngleMax =  Property.floatValue(theTorpedoClass, "impactAngleMax");
+        
+        String alt = "";
+        String speed = "";
+        
+        switch (this.iDrawSpeed) {
+            default:
+                impactSpeed *= 3.6F;
+                alt = "m";
+                speed = "km/h";
+                break;
+            case 2:
+                impactSpeed *= 1.943845F;
+                dropSpeed *= 0.539957F;
+                dropAltitude *= 3.28084F;
+                alt = "ft";
+                speed = "kts";
+                break;
+            case 3:
+                impactSpeed *= 2.236936F;
+                dropSpeed *= 0.621371F;
+                dropAltitude *= 3.28084F;
+                alt = "ft";
+                speed = "mph";
+                break;
+        }
+        this.drawTorpedoParameter("h(drop)=" + (int)dropAltitude + alt + ", v(drop)=" + (int)dropSpeed + speed + ", v(impact)(max)=" + (int)impactSpeed + speed + ", impact°(min)=" + (int)impactAngleMin + "°, impact°(max)=" + (int)impactAngleMax + "°", i, j);
+    }
+
+    private void drawTorpedoParameter(String string, int i, int j) {
+        int color = -16776961;
+        TTFont ttfont = TTFont.font[1];
+        ttfont.output(color, i, j, 0.0F, string);
+    }
+    
+    public void logTorpedoImpact(float speedValue, float angle) {
+       String speed = "";
+       switch (this.iDrawSpeed) {
+            default:
+                speedValue *= 3.6F;
+                speed = "km/h";
+                break;
+            case 2:
+                speedValue *= 1.943845F;
+                speed = "kts";
+                break;
+            case 3:
+                speedValue *= 2.236936F;
+                speed = "mph";
+                break;
+        }
+        log("Torpedo impact: " + (int)speedValue + speed + ", " + (int)angle + "°");
     }
 
     private void drawShipIDs(String string, int i, int i_23_) {

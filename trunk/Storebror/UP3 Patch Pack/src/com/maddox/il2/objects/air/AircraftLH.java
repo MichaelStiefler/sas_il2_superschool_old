@@ -9,7 +9,6 @@ import com.maddox.il2.engine.Orient;
 import com.maddox.il2.engine.hotkey.HookPilot;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main;
-import com.maddox.il2.net.NetMissionTrack;
 
 public abstract class AircraftLH extends Aircraft {
     public static int     hudLogCompassId     = HUD.makeIdLog();
@@ -114,7 +113,7 @@ public abstract class AircraftLH extends Aircraft {
 
     public void update(float f) {
         super.update(f);
-        if (World.getPlayerAircraft() == this && !NetMissionTrack.isPlaying() && !World.isPlayerGunner() && this.FM.AS.astatePilotStates[0] <= 95) {
+        if (World.getPlayerAircraft() == this /* && !NetMissionTrack.isPlaying() */ && !World.isPlayerGunner() && this.FM.AS.astatePilotStates[0] <= 95) {
 //            HookPilot hookpilot = HookPilot.current;
 //            if(hookpilot != null) {
 //                Orient o = (Orient)Reflection.getValue(hookpilot, "o");
@@ -209,18 +208,22 @@ public abstract class AircraftLH extends Aircraft {
 //            f *= 0.7F;
 //            f1 *= 0.7F;
             tmpOrLH.setYPR(0.0F, 0.0F, 0.0F);
-            tmpOrLH.increment(f1, f, -0.2F * f1 + 0.05F * f);
+            tmpOrLH.increment(0.0F, f, 0.0F);
+            tmpOrLH.increment(f1, 0.0F, 0.0F);
+            tmpOrLH.increment(0.0F, 0.0F, -0.2F * f1 + 0.05F * f1);
+            
             this.headOr[0] = tmpOrLH.getYaw();
             this.headOr[1] = tmpOrLH.getPitch();
             this.headOr[2] = tmpOrLH.getRoll();
+
             this.headPos[0] = 0.0005F * Math.abs(f);
             this.headPos[1] = -0.0001F * Math.abs(f);
             this.headPos[2] = 0.0F;
             this.hierMesh().chunkSetLocate("Head1_D0", this.headPos, this.headOr);
-//            // TODO: Debugging Head Movement...
+            // TODO: Debugging Head Movement...
 //            if (this == World.getPlayerAircraft()) {
 //                java.text.DecimalFormat twoDigits = new java.text.DecimalFormat("#.##");
-//                HUD.training("Y:" + twoDigits.format(headOr[0]) + "P:" + twoDigits.format(headOr[1]) + "R:" + twoDigits.format(headOr[2]));
+//                HUD.training("f:" + twoDigits.format(f) + "f1:" + twoDigits.format(f1) + " Y:" + twoDigits.format(headOr[0]) + " P:" + twoDigits.format(headOr[1]) + " R:" + twoDigits.format(headOr[2]));
 //            }
         }
     }

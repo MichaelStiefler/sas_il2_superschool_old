@@ -99,10 +99,10 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
     public static final byte   MSG_PATCHLEVEL         = 101;
     public static final byte   MSG_SELECTOR_VERSION   = 102;
     public static final String MIN_PATCH_LEVEL        = "103";
-    public static final String PATCH_LEVEL            = "104";
+    public static final String PATCH_LEVEL            = "105";
     public static final String PATCH_LEVEL_TEST       = "102b1";
-    public static String[]     PATCHLEVEL_G           = { "104" };
-    public static String[]     PATCHLEVEL_Y           = { "103", "102b4", "102b3" };
+    public static String[]     PATCHLEVEL_G           = { "105" };
+    public static String[]     PATCHLEVEL_Y           = { "104", "103", "102b4", "102b3" };
     private String             patchLevel             = "none";
     private String             selectorVersion        = "unknown";
     public static final long   UPDATE_CHAT_INTERVAL   = 60000L;
@@ -661,7 +661,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                     if (netchannel.isMirrored(this) || netchannel == this.masterChannel())
                         try {
                             NetMsgGuaranted netmsgguaranted1 = new NetMsgGuaranted();
-                            netmsgguaranted1.writeByte(14);
+                            netmsgguaranted1.writeByte(MSG_PLACE);
                             netmsgguaranted1.writeByte(this.place);
                             netmsgguaranted1.writeNetObj(this);
                             NetEnv.host().postTo(netchannel, netmsgguaranted1);
@@ -1120,7 +1120,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                     if (this.isMirrored())
                         try {
                             NetMsgGuaranted netmsgguaranted4 = new NetMsgGuaranted();
-                            netmsgguaranted4.writeByte(14);
+                            netmsgguaranted4.writeByte(MSG_PLACE);
                             netmsgguaranted4.writeByte(i);
                             netmsgguaranted4.writeNetObj(netuser2);
                             this.post(netmsgguaranted4);
@@ -1845,7 +1845,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             netmsgguaranted.write255(theNetUser.getPatchLevel());
 //            if (!Config.isUSE_RENDER())
             netmsgguaranted.writeNetObj(theNetUser);
-            System.out.println("Replicating Patchlevel " + theNetUser.getPatchLevel() + " for user " + theNetUser.uniqueName() + " to " + (netchannel == null ? "all" : "Channel " + netchannel.id()));
+//            System.out.println("Replicating Patchlevel " + theNetUser.getPatchLevel() + " for user " + theNetUser.uniqueName() + " to " + (netchannel == null ? "all" : "Channel " + netchannel.id()));
             if (netchannel == null)
                 this.post(netmsgguaranted);
             else
@@ -1883,7 +1883,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             netmsgguaranted.write255(theNetUser.getSelectorVersion());
 //          if (!Config.isUSE_RENDER())
             netmsgguaranted.writeNetObj(theNetUser);
-            System.out.println("Replicating Selector Version " + theNetUser.getSelectorVersion() + " for user " + theNetUser.uniqueName() + " to " + (netchannel == null ? "all" : "Channel " + netchannel.id()));
+//            System.out.println("Replicating Selector Version " + theNetUser.getSelectorVersion() + " for user " + theNetUser.uniqueName() + " to " + (netchannel == null ? "all" : "Channel " + netchannel.id()));
             if (netchannel == null)
                 this.post(netmsgguaranted);
             else
@@ -1919,7 +1919,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                 continue;
             ArrayList arraylist = new ArrayList(1);
             arraylist.add(netuser);
-            System.out.println(this.uniqueName() + " sends Patch Update Message to " + netuser.uniqueName() + " (using Patch Level " + netuser.getPatchLevel() + ")");
+//            System.out.println(this.uniqueName() + " sends Patch Update Message to " + netuser.uniqueName() + " (using Patch Level " + netuser.getPatchLevel() + ")");
             if (netuser.getPatchLevel().equalsIgnoreCase("none"))
                 Main.cur().chat.send(NetEnv.host(), "!! " + netuser.uniqueName() + " !! You've got no Patch Pack installed !!", arraylist, (byte) 0, false);
             else
@@ -2279,7 +2279,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             }
             this.replicateDotRange(netchannel);
             // TODO: Storebror: Implement Patch Level Replication
-            System.out.println("msgNetNewChannel replicate patch level");
+//            System.out.println("msgNetNewChannel replicate patch level");
             this.replicatePatchLevel(netchannel, this); // Replicate own patch level
             this.replicateSelectorVersion(netchannel, this); // Replicate own selector version
 //            replicatePatchLevel(this.masterChannel()); // Replicate own patch level to server
@@ -2358,7 +2358,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             // penalties...
             // ----------------------------------------------------------------------
             String IP = netchannel.remoteAddress().getHostAddress();
-            System.out.println("NetUser - Checking if user >" + s + " [" + IP + "]< has any refly/KIA time penalties...");
+//            System.out.println("NetUser - Checking if user >" + s + " [" + IP + "]< has any refly/KIA time penalties...");
             if (ZutiSupportMethods.isUserPenalized(s, IP)) {
                 this.kick(this);
                 System.out.println("User '" + s + "' [" + netchannel.remoteAddress().getHostAddress() + "] has refly time penalties pending!");
@@ -2442,10 +2442,10 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
 
             if (theNetUser != null) {
                 theNetUser.setPatchLevel(thePatchLevel);
-                System.out.println("MSG_PATCHLEVEL received (Master = " + isMasterChannel + ") for netuser " + theNetUser.uniqueName() + ", Patch Level is " + thePatchLevel);
+//                System.out.println("MSG_PATCHLEVEL received (Master = " + isMasterChannel + ") for netuser " + theNetUser.uniqueName() + ", Patch Level is " + thePatchLevel);
                 this.replicatePatchLevel(theNetUser);
             } else {
-                System.out.println("MSG_PATCHLEVEL received (Master = " + isMasterChannel + ") for netuser null, Patch Level is " + thePatchLevel);
+//                System.out.println("MSG_PATCHLEVEL received (Master = " + isMasterChannel + ") for netuser null, Patch Level is " + thePatchLevel);
             }
             // this.setPatchLevel(netmsginput.read255());
         }
@@ -2479,10 +2479,10 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
 
             if (theNetUser != null) {
                 theNetUser.setSelectorVersion(theSelectorVersion);
-                System.out.println("MSG_SELECTOR_VERSION received (Master = " + isMasterChannel + ") for netuser " + theNetUser.uniqueName() + ", Selector Version is " + theSelectorVersion);
+//                System.out.println("MSG_SELECTOR_VERSION received (Master = " + isMasterChannel + ") for netuser " + theNetUser.uniqueName() + ", Selector Version is " + theSelectorVersion);
                 this.replicateSelectorVersion(theNetUser);
             } else {
-                System.out.println("MSG_SELECTOR_VERSION received (Master = " + isMasterChannel + ") for netuser null, Selector Version is " + theSelectorVersion);
+//                System.out.println("MSG_SELECTOR_VERSION received (Master = " + isMasterChannel + ") for netuser null, Selector Version is " + theSelectorVersion);
             }
             // this.setPatchLevel(netmsginput.read255());
         }
