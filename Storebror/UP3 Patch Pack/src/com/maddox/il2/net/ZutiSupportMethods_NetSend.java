@@ -358,7 +358,7 @@ public class ZutiSupportMethods_NetSend
 			ZutiAircraftCrew positions = ZutiAircraftCrewManagement.getAircraftCrew(acName);
 			positions.setUserPosition(username, -1);
 
-			//System.out.println("ZutiNetSendMethods - ejectGunner >" + username +"< executed for user >" + username + "<.");
+			System.out.println("ZutiNetSendMethods - ejectGunner >" + username +"< executed for user >" + username + "<.");
 		}
 		catch (IOException ex)
 		{

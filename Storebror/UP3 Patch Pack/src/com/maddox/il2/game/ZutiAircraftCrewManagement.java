@@ -49,7 +49,7 @@ public class ZutiAircraftCrewManagement
 		if( AIRCRAFT_CREW != null && AIRCRAFT_CREW.containsKey(acName) )
 		{
 			AIRCRAFT_CREW.remove(acName);
-//			System.out.println("ZutiAircraftCrewManagement - removeAircraft: Aircraft removed >" + acName);
+			System.out.println("ZutiAircraftCrewManagement - removeAircraft: Aircraft removed >" + acName);
 		}
 	}
 }
