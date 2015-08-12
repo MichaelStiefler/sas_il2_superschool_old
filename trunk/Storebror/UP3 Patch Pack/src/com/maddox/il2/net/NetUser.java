@@ -635,8 +635,8 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             if (this.place >= 0) {
                 // TODO: Added by |ZUTI|: don't change army if user is changing position in own ac!
                 // TODO: Storebror: Gunner Switch TEST!
-                if (!NetEnv.isServer() && !ZutiSupportMethods_Net.isInOwnAircraft(this, World.getPlayerAircraft())) {
-//                if (!ZutiSupportMethods_Net.isInOwnAircraft(this, World.getPlayerAircraft())) {
+//                if (!NetEnv.isServer() && !ZutiSupportMethods_Net.isInOwnAircraft(this, World.getPlayerAircraft())) {
+                if (!ZutiSupportMethods_Net.isInOwnAircraft(this, World.getPlayerAircraft())) {
                     try {
                         // TODO: Storebror: Debugging Army switch on gunner pos switch bug
                         int iLogArmy = 0;
