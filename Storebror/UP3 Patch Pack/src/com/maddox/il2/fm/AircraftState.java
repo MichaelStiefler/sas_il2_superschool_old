@@ -63,8 +63,10 @@ import com.maddox.il2.objects.vehicles.radios.TypeHasHayRake;
 import com.maddox.il2.objects.vehicles.radios.TypeHasLorenzBlindLanding;
 import com.maddox.il2.objects.vehicles.radios.TypeHasRadioStation;
 import com.maddox.il2.objects.vehicles.radios.TypeHasYGBeacon;
+import com.maddox.il2.objects.weapons.BombGun;
 import com.maddox.il2.objects.weapons.MGunAircraftGeneric;
 import com.maddox.il2.objects.weapons.RocketGun;
+import com.maddox.il2.objects.weapons.TorpedoGun;
 import com.maddox.rts.MsgDestroy;
 import com.maddox.rts.NetEnv;
 import com.maddox.rts.NetMsgGuaranted;
@@ -72,85 +74,92 @@ import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.NetObj;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
+import com.maddox.sas1946.il2.util.TrueRandom;
 import com.maddox.sound.CmdMusic;
 
 public class AircraftState {
-    public static final boolean   __DEBUG_SPREAD__                       = false;
-    private static final float    astateEffectCriticalSpeed              = 10.0F;
-    private static final float    astateCondensateCriticalAlt            = 7000.0F;
-    private static final Loc      astateCondensateDispVector             = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-    public static final int       _AS_RESERVED                           = 0;
-    public static final int       _AS_ENGINE_STATE                       = 1;
-    public static final int       _AS_ENGINE_SPECIFIC_DMG                = 2;
-    public static final int       _AS_ENGINE_EXPLODES                    = 3;
-    public static final int       _AS_ENGINE_STARTS                      = 4;
-    public static final int       _AS_ENGINE_RUNS                        = 5;
-    public static final int       _AS_ENGINE_STOPS                       = 6;
-    public static final int       _AS_ENGINE_DIES                        = 7;
-    public static final int       _AS_ENGINE_SOOT_POWERS                 = 8;
-    public static final int       _AS_ENGINE_READYNESS                   = 25;
-    public static final int       _AS_ENGINE_STAGE                       = 26;
-    public static final int       _AS_ENGINE_CYL_KNOCKOUT                = 27;
-    public static final int       _AS_ENGINE_MAG_KNOCKOUT                = 28;
-    public static final int       _AS_ENGINE_STUCK                       = 29;
-    public static final int       _AS_TANK_STATE                         = 9;
-    public static final int       _AS_TANK_EXPLODES                      = 10;
-    public static final int       _AS_OIL_STATE                          = 11;
-    public static final int       _AS_GLIDER_BOOSTER                     = 12;
-    public static final int       _AS_GLIDER_BOOSTOFF                    = 13;
-    public static final int       _AS_GLIDER_CUTCART                     = 14;
-    public static final int       _AS_AIRSHOW_SMOKES_STATE               = 15;
-    public static final int       _AS_WINGTIP_SMOKES_STATE               = 16;
-    public static final int       _AS_PILOT_STATE                        = 17;
-    public static final int       _AS_KILLPILOT                          = 18;
-    public static final int       _AS_HEADSHOT                           = 19;
-    public static final int       _AS_BAILOUT                            = 20;
-    public static final int       _AS_CONTROLS_HURT                      = 21;
-    public static final int       _AS_INTERNALS_HURT                     = 22;
-    public static final int       _AS_COCKPIT_STATE_BYTE                 = 23;
-    public static final int       _AS_JAM_BULLETS                        = 24;
-    public static final int       _AS_NAVIGATION_LIGHTS_STATE            = 30;
-    public static final int       _AS_LANDING_LIGHT_STATE                = 31;
-    public static final int       _AS_TYPEDOCKABLE_REQ_ATTACHTODRONE     = 32;
-    public static final int       _AS_TYPEDOCKABLE_REQ_DETACHFROMDRONE   = 33;
-    public static final int       _AS_TYPEDOCKABLE_FORCE_ATTACHTODRONE   = 34;
-    public static final int       _AS_TYPEDOCKABLE_FORCE_DETACHFROMDRONE = 35;
-    public static final int       _AS_FLATTOP_FORCESTRING                = 36;
-    public static final int       _AS_FMSFX                              = 37;
-    public static final int       _AS_WINGFOLD                           = 38;
-    public static final int       _AS_COCKPITDOOR                        = 39;
-    public static final int       _AS_ARRESTOR                           = 40;
-    public static final int       _AS_COUNT_CODES                        = 41;
-    public static final int       _AS_BEACONS                            = 42;
-    public static final int       _AS_GYROANGLE                          = 44;
-    public static final int       _AS_SPREADANGLE                        = 45;
-    public static final int       _AS_PILOT_WOUNDED                      = 46;
-    public static final int       _AS_PILOT_BLEEDING                     = 47;
-    public static final int       _AS_COCKPIT_GLASS                      = 1;
-    public static final int       _AS_COCKPIT_ARMORGLASS                 = 2;
-    public static final int       _AS_COCKPIT_LEFT1                      = 4;
-    public static final int       _AS_COCKPIT_LEFT2                      = 8;
-    public static final int       _AS_COCKPIT_RIGHT1                     = 16;
-    public static final int       _AS_COCKPIT_RIGHT2                     = 32;
-    public static final int       _AS_COCKPIT_INSTRUMENTS                = 64;
-    public static final int       _AS_COCKPIT_OIL                        = 128;
-    public static final int       _ENGINE_SPECIFIC_BOOSTER               = 0;
-    public static final int       _ENGINE_SPECIFIC_THROTTLECTRL          = 1;
-    public static final int       _ENGINE_SPECIFIC_HEATER                = 2;
-    public static final int       _ENGINE_SPECIFIC_ANGLER                = 3;
-    public static final int       _ENGINE_SPECIFIC_ANGLERSPEEDS          = 4;
-    public static final int       _ENGINE_SPECIFIC_EXTINGUISHER          = 5;
-    public static final int       _ENGINE_SPECIFIC_PROPCTRL              = 6;
-    public static final int       _ENGINE_SPECIFIC_MIXCTRL               = 7;
-    public static final int       _CONTROLS_AILERONS                     = 0;
-    public static final int       _CONTROLS_ELEVATORS                    = 1;
-    public static final int       _CONTROLS_RUDDERS                      = 2;
-    public static final int       _INTERNALS_HYDRO_OFFLINE               = 0;
-    public static final int       _INTERNALS_PNEUMO_OFFLINE              = 1;
-    public static final int       _INTERNALS_MW50_OFFLINE                = 2;
-    public static final int       _INTERNALS_GEAR_STUCK                  = 3;
-    public static final int       _INTERNALS_KEEL_SHUTOFF                = 4;
-    public static final int       _INTERNALS_SHAFT_SHUTOFF               = 5;
+    public static final boolean __DEBUG_SPREAD__                       = false;
+    private static final float  astateEffectCriticalSpeed              = 10.0F;
+    private static final float  astateCondensateCriticalAlt            = 7000.0F;
+    private static final Loc    astateCondensateDispVector             = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+    public static final int     _AS_RESERVED                           = 0;
+    public static final int     _AS_ENGINE_STATE                       = 1;
+    public static final int     _AS_ENGINE_SPECIFIC_DMG                = 2;
+    public static final int     _AS_ENGINE_EXPLODES                    = 3;
+    public static final int     _AS_ENGINE_STARTS                      = 4;
+    public static final int     _AS_ENGINE_RUNS                        = 5;
+    public static final int     _AS_ENGINE_STOPS                       = 6;
+    public static final int     _AS_ENGINE_DIES                        = 7;
+    public static final int     _AS_ENGINE_SOOT_POWERS                 = 8;
+    public static final int     _AS_ENGINE_READYNESS                   = 25;
+    public static final int     _AS_ENGINE_STAGE                       = 26;
+    public static final int     _AS_ENGINE_CYL_KNOCKOUT                = 27;
+    public static final int     _AS_ENGINE_MAG_KNOCKOUT                = 28;
+    public static final int     _AS_ENGINE_STUCK                       = 29;
+    public static final int     _AS_TANK_STATE                         = 9;
+    public static final int     _AS_TANK_EXPLODES                      = 10;
+    public static final int     _AS_OIL_STATE                          = 11;
+    public static final int     _AS_GLIDER_BOOSTER                     = 12;
+    public static final int     _AS_GLIDER_BOOSTOFF                    = 13;
+    public static final int     _AS_GLIDER_CUTCART                     = 14;
+    public static final int     _AS_AIRSHOW_SMOKES_STATE               = 15;
+    public static final int     _AS_WINGTIP_SMOKES_STATE               = 16;
+    public static final int     _AS_PILOT_STATE                        = 17;
+    public static final int     _AS_KILLPILOT                          = 18;
+    public static final int     _AS_HEADSHOT                           = 19;
+    public static final int     _AS_BAILOUT                            = 20;
+    public static final int     _AS_CONTROLS_HURT                      = 21;
+    public static final int     _AS_INTERNALS_HURT                     = 22;
+    public static final int     _AS_COCKPIT_STATE_BYTE                 = 23;
+    public static final int     _AS_JAM_BULLETS                        = 24;
+    public static final int     _AS_NAVIGATION_LIGHTS_STATE            = 30;
+    public static final int     _AS_LANDING_LIGHT_STATE                = 31;
+    public static final int     _AS_TYPEDOCKABLE_REQ_ATTACHTODRONE     = 32;
+    public static final int     _AS_TYPEDOCKABLE_REQ_DETACHFROMDRONE   = 33;
+    public static final int     _AS_TYPEDOCKABLE_FORCE_ATTACHTODRONE   = 34;
+    public static final int     _AS_TYPEDOCKABLE_FORCE_DETACHFROMDRONE = 35;
+    public static final int     _AS_FLATTOP_FORCESTRING                = 36;
+    public static final int     _AS_FMSFX                              = 37;
+    public static final int     _AS_WINGFOLD                           = 38;
+    public static final int     _AS_COCKPITDOOR                        = 39;
+    public static final int     _AS_ARRESTOR                           = 40;
+    public static final int     _AS_COUNT_CODES                        = 41;
+    public static final int     _AS_BEACONS                            = 42;
+    public static final int     _AS_GYROANGLE                          = 44;
+    public static final int     _AS_SPREADANGLE                        = 45;
+    public static final int     _AS_PILOT_WOUNDED                      = 46;
+    public static final int     _AS_PILOT_BLEEDING                     = 47;
+
+//    // TODO: Storebror: Bomb Delay and Torpedo Failure Rate Replication
+//    // ------------------------------------
+//    public static final int _AS_BOMB_TORP_PARAMS_EX = 48;
+//    // ------------------------------------
+
+    public static final int       _AS_COCKPIT_GLASS             = 1;
+    public static final int       _AS_COCKPIT_ARMORGLASS        = 2;
+    public static final int       _AS_COCKPIT_LEFT1             = 4;
+    public static final int       _AS_COCKPIT_LEFT2             = 8;
+    public static final int       _AS_COCKPIT_RIGHT1            = 16;
+    public static final int       _AS_COCKPIT_RIGHT2            = 32;
+    public static final int       _AS_COCKPIT_INSTRUMENTS       = 64;
+    public static final int       _AS_COCKPIT_OIL               = 128;
+    public static final int       _ENGINE_SPECIFIC_BOOSTER      = 0;
+    public static final int       _ENGINE_SPECIFIC_THROTTLECTRL = 1;
+    public static final int       _ENGINE_SPECIFIC_HEATER       = 2;
+    public static final int       _ENGINE_SPECIFIC_ANGLER       = 3;
+    public static final int       _ENGINE_SPECIFIC_ANGLERSPEEDS = 4;
+    public static final int       _ENGINE_SPECIFIC_EXTINGUISHER = 5;
+    public static final int       _ENGINE_SPECIFIC_PROPCTRL     = 6;
+    public static final int       _ENGINE_SPECIFIC_MIXCTRL      = 7;
+    public static final int       _CONTROLS_AILERONS            = 0;
+    public static final int       _CONTROLS_ELEVATORS           = 1;
+    public static final int       _CONTROLS_RUDDERS             = 2;
+    public static final int       _INTERNALS_HYDRO_OFFLINE      = 0;
+    public static final int       _INTERNALS_PNEUMO_OFFLINE     = 1;
+    public static final int       _INTERNALS_MW50_OFFLINE       = 2;
+    public static final int       _INTERNALS_GEAR_STUCK         = 3;
+    public static final int       _INTERNALS_KEEL_SHUTOFF       = 4;
+    public static final int       _INTERNALS_SHAFT_SHUTOFF      = 5;
     protected long                bleedingTime;
     public long[]                 astateBleedingTimes;
     public long[]                 astateBleedingNext;
@@ -158,11 +167,11 @@ public class AircraftState {
     private boolean               armsWounded;
     public int                    torpedoGyroAngle;
     public int                    torpedoSpreadAngle;
-    private static final float    gyroAngleLimit                         = 50.0F;
-    public static final int       spreadAngleLimit                       = 30;
+    private static final float    gyroAngleLimit                = 50.0F;
+    public static final int       spreadAngleLimit              = 30;
     private int                   beacon;
     private boolean               bWantBeaconsNet;
-    public static final int       MAX_NUMBER_OF_BEACONS                  = 32;
+    public static final int       MAX_NUMBER_OF_BEACONS         = 32;
     public boolean                listenLorenzBlindLanding;
     public boolean                isAAFIAS;
     public boolean                listenYGBeacon;
@@ -170,70 +179,77 @@ public class AircraftState {
     public boolean                listenRadioStation;
     public Actor                  hayrakeCarrier;
     public String                 hayrakeCode;
-    public static int             hudLogBeaconId                         = HUD.makeIdLog();
+    public static int             hudLogBeaconId                = HUD.makeIdLog();
     public boolean                externalStoresDropped;
-    private static final String[] astateOilStrings                       = { "3DO/Effects/Aircraft/BlackMediumSPD.eff", "3DO/Effects/Aircraft/BlackMediumTSPD.eff", null, null };
+    private static final String[] astateOilStrings              = { "3DO/Effects/Aircraft/BlackMediumSPD.eff", "3DO/Effects/Aircraft/BlackMediumTSPD.eff", null, null };
 
-    private static final String[] astateTankStrings                      = { null, null, null, "3DO/Effects/Aircraft/RedLeakTSPD.eff", null, null, "3DO/Effects/Aircraft/RedLeakTSPD.eff", null, null, "3DO/Effects/Aircraft/BlackMediumSPD.eff",
+    private static final String[] astateTankStrings = { null, null, null, "3DO/Effects/Aircraft/RedLeakTSPD.eff", null, null, "3DO/Effects/Aircraft/RedLeakTSPD.eff", null, null, "3DO/Effects/Aircraft/BlackMediumSPD.eff",
             "3DO/Effects/Aircraft/BlackMediumTSPD.eff", null, "3DO/Effects/Aircraft/BlackHeavySPD.eff", "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", null, "3DO/Effects/Aircraft/FireSPD.eff", "3DO/Effects/Aircraft/BlackHeavySPD.eff",
             "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", "3DO/Effects/Aircraft/FireSPD.eff", "3DO/Effects/Aircraft/BlackHeavySPD.eff", "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", null, null, null, "3DO/Effects/Aircraft/RedLeakGND.eff", null, null,
-            "3DO/Effects/Aircraft/RedLeakGND.eff", null, null, "3DO/Effects/Aircraft/BlackMediumGND.eff", null, null, "3DO/Effects/Aircraft/BlackHeavyGND.eff", null, null, "3DO/Effects/Aircraft/FireGND.eff", "3DO/Effects/Aircraft/BlackHeavyGND.eff",
-            null, "3DO/Effects/Aircraft/FireGND.eff", "3DO/Effects/Aircraft/BlackHeavyGND.eff", null };
-
-    private static final String[] astateEngineStrings                    = { null, null, null, "3DO/Effects/Aircraft/GraySmallSPD.eff", "3DO/Effects/Aircraft/GraySmallTSPD.eff", null, "3DO/Effects/Aircraft/BlackMediumSPD.eff",
-            "3DO/Effects/Aircraft/BlackMediumTSPD.eff", null, "3DO/Effects/Aircraft/BlackHeavySPD.eff", "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", null, "3DO/Effects/Aircraft/FireSPD.eff", "3DO/Effects/Aircraft/BlackHeavySPD.eff",
-            "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", null, null, null, "3DO/Effects/Aircraft/GraySmallGND.eff", null, null, "3DO/Effects/Aircraft/BlackMediumGND.eff", null, null, "3DO/Effects/Aircraft/BlackHeavyGND.eff", null, null,
+            "3DO/Effects/Aircraft/RedLeakGND.eff", null, null, "3DO/Effects/Aircraft/BlackMediumGND.eff", null, null, "3DO/Effects/Aircraft/BlackHeavyGND.eff", null, null, "3DO/Effects/Aircraft/FireGND.eff", "3DO/Effects/Aircraft/BlackHeavyGND.eff", null,
             "3DO/Effects/Aircraft/FireGND.eff", "3DO/Effects/Aircraft/BlackHeavyGND.eff", null };
 
-    private static final String[] astateCondensateStrings                = { null, "3DO/Effects/Aircraft/CondensateTSPD.eff" };
+    private static final String[] astateEngineStrings = { null, null, null, "3DO/Effects/Aircraft/GraySmallSPD.eff", "3DO/Effects/Aircraft/GraySmallTSPD.eff", null, "3DO/Effects/Aircraft/BlackMediumSPD.eff", "3DO/Effects/Aircraft/BlackMediumTSPD.eff",
+            null, "3DO/Effects/Aircraft/BlackHeavySPD.eff", "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", null, "3DO/Effects/Aircraft/FireSPD.eff", "3DO/Effects/Aircraft/BlackHeavySPD.eff", "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", null, null, null,
+            "3DO/Effects/Aircraft/GraySmallGND.eff", null, null, "3DO/Effects/Aircraft/BlackMediumGND.eff", null, null, "3DO/Effects/Aircraft/BlackHeavyGND.eff", null, null, "3DO/Effects/Aircraft/FireGND.eff", "3DO/Effects/Aircraft/BlackHeavyGND.eff",
+            null };
 
-    private static final String[] astateStallStrings                     = { null, "3DO/Effects/Aircraft/StallTSPD.eff" };
+    private static final String[] astateCondensateStrings = { null, "3DO/Effects/Aircraft/CondensateTSPD.eff" };
 
-    public static final String[]  astateHUDPilotHits                     = { "Player", "Pilot", "CPilot", "NGunner", "TGunner", "WGunner", "VGunner", "RGunner", "EngMas", "BombMas", "RadMas", "ObsMas" };
+    private static final String[] astateStallStrings = { null, "3DO/Effects/Aircraft/StallTSPD.eff" };
 
-    private static boolean        bCriticalStatePassed                   = false;
-    private boolean               bIsAboveCriticalSpeed;
-    private boolean               bIsAboveCondensateAlt;
-    private boolean               bIsOnInadequateAOA;
-    public boolean                bShowSmokesOn;
-    public boolean                bNavLightsOn;
-    public boolean                bLandingLightOn;
-    public boolean                bWingTipLExists;
-    public boolean                bWingTipRExists;
-    private boolean               bIsMaster;
-    public Actor                  actor;
-    public AircraftLH             aircraft;
-    public byte[]                 astatePilotStates;
-    public byte[]                 astatePilotFunctions;
-    public int                    astatePlayerIndex;
-    public boolean                bIsAboutToBailout;
-    public boolean                bIsEnableToBailout;
-    public byte                   astateBailoutStep;
-    public int                    astateCockpitState;
-    public byte[]                 astateOilStates;
-    private Eff3DActor[][]        astateOilEffects;
-    public byte[]                 astateTankStates;
-    private Eff3DActor[][]        astateTankEffects;
-    public byte[]                 astateEngineStates;
-    private Eff3DActor[][]        astateEngineEffects;
-    public byte[]                 astateSootStates;
-    public Eff3DActor[][]         astateSootEffects;
-    private Eff3DActor[]          astateCondensateEffects;
-    private Eff3DActor[]          astateStallEffects;
-    private Eff3DActor[]          astateAirShowEffects;
-    private Eff3DActor[]          astateNavLightsEffects;
-    private LightPointActor[]     astateNavLightsLights;
-    public Eff3DActor[]           astateLandingLightEffects;
-    private LightPointActor[]     astateLandingLightLights;
-    public String[]               astateEffectChunks;
-    public static final int       astateEffectsDispTanks                 = 0;
-    public static final int       astateEffectsDispEngines               = 4;
-    public static final int       astateEffectsDispLights                = 12;
-    public static final int       astateEffectsDispLandingLights         = 18;
-    public static final int       astateEffectsDispOilfilters            = 22;
-    public static boolean         bCheckPlayerAircraft                   = true;
-    private Item[]                itemsToMaster;
-    private Item[]                itemsToMirrors;
+    public static final String[] astateHUDPilotHits = { "Player", "Pilot", "CPilot", "NGunner", "TGunner", "WGunner", "VGunner", "RGunner", "EngMas", "BombMas", "RadMas", "ObsMas" };
+
+    private static boolean    bCriticalStatePassed           = false;
+    private boolean           bIsAboveCriticalSpeed;
+    private boolean           bIsAboveCondensateAlt;
+    private boolean           bIsOnInadequateAOA;
+    public boolean            bShowSmokesOn;
+    public boolean            bNavLightsOn;
+    public boolean            bLandingLightOn;
+    public boolean            bWingTipLExists;
+    public boolean            bWingTipRExists;
+    private boolean           bIsMaster;
+    public Actor              actor;
+    public AircraftLH         aircraft;
+    public byte[]             astatePilotStates;
+    public byte[]             astatePilotFunctions;
+    public int                astatePlayerIndex;
+    public boolean            bIsAboutToBailout;
+    public boolean            bIsEnableToBailout;
+    public byte               astateBailoutStep;
+    public int                astateCockpitState;
+    public byte[]             astateOilStates;
+    private Eff3DActor[][]    astateOilEffects;
+    public byte[]             astateTankStates;
+    private Eff3DActor[][]    astateTankEffects;
+    public byte[]             astateEngineStates;
+    private Eff3DActor[][]    astateEngineEffects;
+    public byte[]             astateSootStates;
+    public Eff3DActor[][]     astateSootEffects;
+    private Eff3DActor[]      astateCondensateEffects;
+    private Eff3DActor[]      astateStallEffects;
+    private Eff3DActor[]      astateAirShowEffects;
+    private Eff3DActor[]      astateNavLightsEffects;
+    private LightPointActor[] astateNavLightsLights;
+    public Eff3DActor[]       astateLandingLightEffects;
+    private LightPointActor[] astateLandingLightLights;
+    public String[]           astateEffectChunks;
+    public static final int   astateEffectsDispTanks         = 0;
+    public static final int   astateEffectsDispEngines       = 4;
+    public static final int   astateEffectsDispLights        = 12;
+    public static final int   astateEffectsDispLandingLights = 18;
+    public static final int   astateEffectsDispOilfilters    = 22;
+    public static boolean     bCheckPlayerAircraft           = true;
+    private Item[]            itemsToMaster;
+    private Item[]            itemsToMirrors;
+    
+    //TODO: Storebror: Torpedo Failure Rate Values
+    //------------------------------------
+    public int                torpLimitSeed;
+    //------------------------------------
+    
+
 
     public AircraftState() {
         this.bleedingTime = 0L;
@@ -311,6 +327,11 @@ public class AircraftState {
 
         this.itemsToMaster = null;
         this.itemsToMirrors = null;
+        
+        //TODO: Storebror: Torpedo Failure Rate Values
+        //------------------------------------
+        this.torpLimitSeed = TrueRandom.nextInt();
+        //------------------------------------
     }
 
     public void set(Actor paramActor, boolean paramBoolean) {
@@ -2158,13 +2179,13 @@ public class AircraftState {
 
             }
 
-            if (World.Rnd().nextFloat() < 0.25F
-                    && !aircraft.FM.CT.saveWeaponControl[3]
-                    && (!(actor instanceof com.maddox.il2.objects.air.TypeBomber) || aircraft.FM.isReadyToReturn() || aircraft.FM.isPlayers() && (aircraft.FM instanceof com.maddox.il2.fm.RealFlightModel)
-                            && ((com.maddox.il2.fm.RealFlightModel) aircraft.FM).isRealMode()) &&
+            if (World.Rnd().nextFloat() < 0.25F && !aircraft.FM.CT.saveWeaponControl[3]
+                    && (!(actor instanceof com.maddox.il2.objects.air.TypeBomber) || aircraft.FM.isReadyToReturn()
+                            || aircraft.FM.isPlayers() && (aircraft.FM instanceof com.maddox.il2.fm.RealFlightModel) && ((com.maddox.il2.fm.RealFlightModel) aircraft.FM).isRealMode())
+                    &&
                     // TODO: Added by |ZUTI| for bomb bay door mod
                     // -------------------------------------------
-                    !aircraft.FM.CT.bHasBayDoors
+            !aircraft.FM.CT.bHasBayDoors
             // -------------------------------------------
             ) {
                 aircraft.FM.CT.BayDoorControl = 0.0F;
@@ -2172,9 +2193,9 @@ public class AircraftState {
 
             bailout();
         } else if (World.Rnd().nextFloat() < 0.125F && !aircraft.FM.CT.saveWeaponControl[3] && (!(actor instanceof com.maddox.il2.objects.air.TypeBomber) || aircraft.FM.AP.way.curr().Action != 3) &&
-        // TODO: Added by |ZUTI| for bomb bay door mod
-        // -------------------------------------------
-                !aircraft.FM.CT.bHasBayDoors
+                // TODO: Added by |ZUTI| for bomb bay door mod
+                // -------------------------------------------
+        !aircraft.FM.CT.bHasBayDoors
         // -------------------------------------------
         ) {
             this.aircraft.FM.CT.BayDoorControl = 0.0F;
@@ -2454,6 +2475,15 @@ public class AircraftState {
                         break;
                     case 45:
                         setSpreadAngle(localActor, j, k, true);
+                        break;
+                        
+                    // TODO: Storebror: Bomb Delay and Torpedo Failure Rate Replication
+                    // ------------------------------------
+//                    case _AS_BOMB_TORP_PARAMS_EX:
+//                        setBombTorpParamsEx(localActor, j, k, true);
+//                        break;
+                    // ------------------------------------
+                        
                     case 36:
                     case 38:
                     case 39:
@@ -2622,6 +2652,15 @@ public class AircraftState {
                     break;
                 case 45:
                     doSetSpreadAngle(localActor, j, k);
+                    break;
+                    
+                // TODO: Storebror: Bomb Delay and Torpedo Failure Rate Replication
+                // ------------------------------------
+//                case _AS_BOMB_TORP_PARAMS_EX:
+//                    doSetBombTorpParamsEx(localActor, j, k);
+//                    break;
+                // ------------------------------------
+                    
                 case 41:
                 case 43:
             }
@@ -2713,6 +2752,14 @@ public class AircraftState {
         paramNetMsgGuaranted.writeBoolean(bzutiIsMultiCrew);
         paramNetMsgGuaranted.writeBoolean(bzutiIsMultiCrewAnytime);
         // -------------------------------------------------
+
+        // TODO: Storebror: Bomb Delay and Torpedo Failure Rate Replication
+        // ------------------------------------
+//        if (World.getPlayerAircraft() == this.aircraft) {
+//            replicateBombTorpParamsExToNet(World.cur().userCfg.bombDelay, this.torpLimitSeed);
+//        }
+        // ------------------------------------
+
     }
 
     public void netFirstUpdate(NetMsgInput paramNetMsgInput) throws IOException {
@@ -2889,7 +2936,8 @@ public class AircraftState {
         }
     }
 
-    void setArmingSeeds(int paramInt) {
+    void setArmingSeeds(int armingSeed) {
+        System.out.println("setArmingSeeds(" + armingSeed + ")");
         this.aircraft.armingRnd = new RangeRandom(this.aircraft.armingSeed);
         try {
             if (this.aircraft.FM.CT.Weapons[2] != null)
@@ -2897,13 +2945,28 @@ public class AircraftState {
                     // +++ MDS Hotfix by Storebror
                     if (!(this.aircraft.FM.CT.Weapons[2][i] instanceof RocketGun))
                         continue;
-
                     ((RocketGun) this.aircraft.FM.CT.Weapons[2][i]).setSpreadRnd(this.aircraft.armingRnd.nextInt());
                 }
-        } catch (Exception localException) {
-            System.out.println(localException.getMessage());
-            localException.printStackTrace();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
+        // TODO: Storebror: Torpedo Failure Rate and Bomb Spread Replication
+        // ------------------------------------
+        try {
+            if (this.aircraft.FM.CT.Weapons[3] != null)
+                for (int i = 0; i < this.aircraft.FM.CT.Weapons[3].length; i++) {
+                    if ((this.aircraft.FM.CT.Weapons[3][i] instanceof TorpedoGun)) {
+                        ((TorpedoGun) this.aircraft.FM.CT.Weapons[3][i]).setLimits(this.aircraft.armingRnd.nextFloat(), this.aircraft.armingRnd.nextFloat(), this.aircraft.armingRnd.nextFloat());
+                    } else if ((this.aircraft.FM.CT.Weapons[3][i] instanceof BombGun)) {
+                        ((BombGun)this.aircraft.FM.CT.Weapons[3][i]).setRnd(this.aircraft.armingRnd.nextInt());
+                    }
+                }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        // ------------------------------------
     }
 
     private void netToMaster(int paramInt1, int paramInt2, int paramInt3) {
@@ -3082,6 +3145,45 @@ public class AircraftState {
             return (this.msgDestination == paramInt1) && (this.msgContext == paramInt2) && (this.initiator == paramActor);
         }
     }
+
+    // TODO: Storebror: Bomb Delay and Torpedo Failure Rate Replication
+    // ------------------------------------
+//    public void replicateBombTorpParamsExToNet(float bombDelay, int torpLimitSeed) {
+//        int bombDelayInt = (int) (bombDelay * 2.0F);
+//        setBombTorpParamsEx(this.actor, torpLimitSeed, bombDelayInt, false);
+//    }
+//
+//    private void setBombTorpParamsEx(Actor actor, int torpLimitSeed, int bombDelay, boolean applySettings) {
+//        if (!Actor.isValid(actor))
+//            return;
+//        System.out.println("setBombTorpParamsEx(actor, " + torpLimitSeed + ", " + bombDelay + ", " + applySettings + "), bIsMaster=" + this.bIsMaster);
+//        if (applySettings) {
+//            doSetBombTorpParamsEx(actor, torpLimitSeed, bombDelay);
+//        }
+//        if (this.bIsMaster)
+//            netToMirrors(_AS_BOMB_TORP_PARAMS_EX, torpLimitSeed, bombDelay);
+//        else
+//            netToMaster(_AS_BOMB_TORP_PARAMS_EX, torpLimitSeed, bombDelay, actor);
+//    }
+//
+//    private void doSetBombTorpParamsEx(Actor actor, int torpLimitSeed, int bombDelay) {
+//        System.out.println("doSetBombTorpParamsEx(actor, " + torpLimitSeed + ", " + bombDelay + ")");
+//        float bombDelayValue = bombDelay / 2.0F;
+//
+//        if (this.aircraft.FM.CT.Weapons[3] != null)
+//            for (int k = 0; k < this.aircraft.FM.CT.Weapons[3].length; k++) {
+//                BulletEmitter emitter = this.aircraft.FM.CT.Weapons[3][k];
+//                if ((emitter != null) && ((emitter instanceof BombGun)) && (emitter.countBullets() != 0)) {
+//                    BombGun bombGun = (BombGun) this.aircraft.FM.CT.Weapons[3][k];
+//                    bombGun.setBombDelay(bombDelayValue);
+//                    if (bombGun instanceof TorpedoGun) {
+//                        ((TorpedoGun)bombGun).setTorpLimitSeed(torpLimitSeed);
+//                    }
+//
+//                }
+//            }
+//    }
+    // ------------------------------------
 
     // TODO: |ZUTI| variables
     // --------------------------------------------

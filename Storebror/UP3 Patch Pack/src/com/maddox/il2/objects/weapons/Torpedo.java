@@ -13,7 +13,6 @@ import com.maddox.il2.engine.Orient;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
-import com.maddox.il2.net.NetMissionTrack;
 import com.maddox.il2.objects.ActorLand;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.TypeHasToKG;
@@ -120,6 +119,10 @@ public class Torpedo extends Bomb {
             }
             
             // TODO: Storebror: +++++ New Impact Check with "smooth" envelope limits +++++
+//            float speedLimit = this.limitRnd.nextFloat();
+//            float angleLimitLow = this.limitRnd.nextFloat();
+//            float angleLimitHigh = this.limitRnd.nextFloat();
+            System.out.println("Torp Limits... speedLimit=" + speedLimit + ", angleLimitLow=" + angleLimitLow + ", angleLimitHigh=" + angleLimitHigh);
             double sinImpactAngle = -1D;
             if (curImpactSpeed > 0.001D)
                 sinImpactAngle = spd.z / curImpactSpeed;
@@ -128,9 +131,9 @@ public class Torpedo extends Bomb {
                 Main3D.cur3D().hud.logTorpedoImpact((float)curImpactSpeed, impactAngle);
             if (curImpactSpeed > (double) impactSpeed && checkEntryParams) {
                 boolean failed = true;
-                if (ownerAircraft != null && ownerAircraft.FM.isPlayers() && !NetMissionTrack.isPlaying()) {
+                if (ownerAircraft != null && ownerAircraft.FM.isPlayers()/* && !NetMissionTrack.isPlaying()*/) {
                     float impactSpeedExceedFactor = ((float)curImpactSpeed / impactSpeed) - 1.0F;
-                    if (World.Rnd().nextFloat() > impactSpeedExceedFactor * impactSpeedExceedFactor)
+                    if (speedLimit > impactSpeedExceedFactor * impactSpeedExceedFactor)
                         failed = false;
                 }
                 if (failed) {
@@ -143,17 +146,17 @@ public class Torpedo extends Bomb {
                 boolean failed = false;
                 if (checkEntryParams && (impactAngle > impactAngleMax || sinImpactAngle < -0.99D)) {
                     failed = true;
-                    if (ownerAircraft != null && ownerAircraft.FM.isPlayers() && !NetMissionTrack.isPlaying()) {
+                    if (ownerAircraft != null && ownerAircraft.FM.isPlayers()/* && !NetMissionTrack.isPlaying()*/) {
                         float impactAngleExceedFactor = (impactAngle / impactAngleMax) - 1.0F;
-                        if (World.Rnd().nextFloat() > impactAngleExceedFactor * impactAngleExceedFactor)
+                        if (angleLimitHigh > impactAngleExceedFactor * impactAngleExceedFactor)
                             failed = false;
                     }
                 }
                 if (checkEntryParams && impactAngle < impactAngleMin) {
                     failed = true;
-                    if (ownerAircraft != null && ownerAircraft.FM.isPlayers() && !NetMissionTrack.isPlaying()) {
+                    if (ownerAircraft != null && ownerAircraft.FM.isPlayers()/* && !NetMissionTrack.isPlaying()*/) {
                         float impactAngleExceedFactor = impactAngle / impactAngleMin;
-                        if (World.Rnd().nextFloat() * World.Rnd().nextFloat() < impactAngleExceedFactor)
+                        if (angleLimitLow * angleLimitLow < impactAngleExceedFactor)
                             failed = false;
                     }
                 }
@@ -304,6 +307,19 @@ public class Torpedo extends Bomb {
         if (sound != null)
             sound.play();
     }
+    
+    // TODO: Storebror: Torpedo Failure Rate Replication
+    // ------------------------------------
+//    protected void setLimitSeed(int limitSeed) {
+//        this.limitRnd = new RangeRandom(limitSeed);
+//    }
+    public void setLimits(float speedLimit, float angleLimitLow, float angleLimitHigh) {
+        System.out.println("Torpedo setLimits(" + speedLimit + ", " + angleLimitLow + ", " + angleLimitHigh + ")");
+        this.speedLimit = speedLimit;
+        this.angleLimitLow = angleLimitLow;
+        this.angleLimitHigh = angleLimitHigh;
+    }
+    // ------------------------------------
 
     public Torpedo() {
         gyroAngle = 0.0F;
@@ -336,5 +352,14 @@ public class Torpedo extends Bomb {
     static Vector3d spd = new Vector3d();
     static Orient   Or  = new Orient();
     static Point3d  P   = new Point3d();
+
+    // TODO: Storebror: Torpedo Failure Rate Replication
+    // ------------------------------------
+//    protected int   limitSeed;
+    private float   speedLimit;
+    private float   angleLimitLow;
+    private float   angleLimitHigh;
+//    private RangeRandom limitRnd = new RangeRandom();
+    // ------------------------------------
 
 }
