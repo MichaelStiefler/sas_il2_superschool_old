@@ -96,6 +96,7 @@ import com.maddox.rts.Property;
 import com.maddox.rts.SFSInputStream;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Time;
+import com.maddox.sas1946.il2.util.TrueRandom;
 import com.maddox.util.HashMapExt;
 import com.maddox.util.HashMapInt;
 import com.maddox.util.NumberTokenizer;
@@ -107,7 +108,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	public int idleTimeOnCarrier;
 	private static final java.lang.Class planesWithZBReceiver[];
 	public int armingSeed;
-	public com.maddox.il2.ai.RangeRandom armingRnd;
+	public RangeRandom armingRnd;
 	
 	static
 	{
@@ -2026,8 +2027,13 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		wfrGr21dropped = false;
 		headingBug = 0.0F;
 		idleTimeOnCarrier = 0;
-		armingSeed = com.maddox.il2.ai.World.Rnd().nextInt(0, 65535);
+		
+		//TODO: Storebror: Make Arming Random "real" random!
+        //------------------------------------
+		//armingSeed = com.maddox.il2.ai.World.Rnd().nextInt(0, 65535);
+		armingSeed = TrueRandom.nextInt(65536);
 		armingRnd = new RangeRandom(armingSeed);
+        //------------------------------------
 		
 		checkLoadingCountry();
 		if (_loadingCountry == null)
