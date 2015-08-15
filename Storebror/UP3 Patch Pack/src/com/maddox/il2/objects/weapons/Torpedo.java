@@ -119,9 +119,6 @@ public class Torpedo extends Bomb {
             }
             
             // TODO: Storebror: +++++ New Impact Check with "smooth" envelope limits +++++
-//            float speedLimit = this.limitRnd.nextFloat();
-//            float angleLimitLow = this.limitRnd.nextFloat();
-//            float angleLimitHigh = this.limitRnd.nextFloat();
             System.out.println("Torp Limits... speedLimit=" + speedLimit + ", angleLimitLow=" + angleLimitLow + ", angleLimitHigh=" + angleLimitHigh);
             double sinImpactAngle = -1D;
             if (curImpactSpeed > 0.001D)
@@ -310,9 +307,6 @@ public class Torpedo extends Bomb {
     
     // TODO: Storebror: Torpedo Failure Rate Replication
     // ------------------------------------
-//    protected void setLimitSeed(int limitSeed) {
-//        this.limitRnd = new RangeRandom(limitSeed);
-//    }
     public void setLimits(float speedLimit, float angleLimitLow, float angleLimitHigh) {
         System.out.println("Torpedo setLimits(" + speedLimit + ", " + angleLimitLow + ", " + angleLimitHigh + ")");
         this.speedLimit = speedLimit;

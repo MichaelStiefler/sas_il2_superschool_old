@@ -74,7 +74,6 @@ import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.NetObj;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
-import com.maddox.sas1946.il2.util.TrueRandom;
 import com.maddox.sound.CmdMusic;
 
 public class AircraftState {
@@ -129,12 +128,6 @@ public class AircraftState {
     public static final int     _AS_SPREADANGLE                        = 45;
     public static final int     _AS_PILOT_WOUNDED                      = 46;
     public static final int     _AS_PILOT_BLEEDING                     = 47;
-
-//    // TODO: Storebror: Bomb Delay and Torpedo Failure Rate Replication
-//    // ------------------------------------
-//    public static final int _AS_BOMB_TORP_PARAMS_EX = 48;
-//    // ------------------------------------
-
     public static final int       _AS_COCKPIT_GLASS             = 1;
     public static final int       _AS_COCKPIT_ARMORGLASS        = 2;
     public static final int       _AS_COCKPIT_LEFT1             = 4;
@@ -244,13 +237,6 @@ public class AircraftState {
     private Item[]            itemsToMaster;
     private Item[]            itemsToMirrors;
     
-    //TODO: Storebror: Torpedo Failure Rate Values
-    //------------------------------------
-    public int                torpLimitSeed;
-    //------------------------------------
-    
-
-
     public AircraftState() {
         this.bleedingTime = 0L;
         this.astateBleedingTimes = new long[9];
@@ -327,11 +313,6 @@ public class AircraftState {
 
         this.itemsToMaster = null;
         this.itemsToMirrors = null;
-        
-        //TODO: Storebror: Torpedo Failure Rate Values
-        //------------------------------------
-        this.torpLimitSeed = TrueRandom.nextInt();
-        //------------------------------------
     }
 
     public void set(Actor paramActor, boolean paramBoolean) {
@@ -2476,14 +2457,7 @@ public class AircraftState {
                     case 45:
                         setSpreadAngle(localActor, j, k, true);
                         break;
-                        
-                    // TODO: Storebror: Bomb Delay and Torpedo Failure Rate Replication
-                    // ------------------------------------
-//                    case _AS_BOMB_TORP_PARAMS_EX:
-//                        setBombTorpParamsEx(localActor, j, k, true);
-//                        break;
-                    // ------------------------------------
-                        
+                                                
                     case 36:
                     case 38:
                     case 39:
@@ -2654,13 +2628,6 @@ public class AircraftState {
                     doSetSpreadAngle(localActor, j, k);
                     break;
                     
-                // TODO: Storebror: Bomb Delay and Torpedo Failure Rate Replication
-                // ------------------------------------
-//                case _AS_BOMB_TORP_PARAMS_EX:
-//                    doSetBombTorpParamsEx(localActor, j, k);
-//                    break;
-                // ------------------------------------
-                    
                 case 41:
                 case 43:
             }
@@ -2752,13 +2719,6 @@ public class AircraftState {
         paramNetMsgGuaranted.writeBoolean(bzutiIsMultiCrew);
         paramNetMsgGuaranted.writeBoolean(bzutiIsMultiCrewAnytime);
         // -------------------------------------------------
-
-        // TODO: Storebror: Bomb Delay and Torpedo Failure Rate Replication
-        // ------------------------------------
-//        if (World.getPlayerAircraft() == this.aircraft) {
-//            replicateBombTorpParamsExToNet(World.cur().userCfg.bombDelay, this.torpLimitSeed);
-//        }
-        // ------------------------------------
 
     }
 
