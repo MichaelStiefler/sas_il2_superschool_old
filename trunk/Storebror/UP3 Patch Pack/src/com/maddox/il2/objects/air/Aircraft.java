@@ -2030,7 +2030,6 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		
 		//TODO: Storebror: Make Arming Random "real" random!
         //------------------------------------
-		//armingSeed = com.maddox.il2.ai.World.Rnd().nextInt(0, 65535);
 		armingSeed = TrueRandom.nextInt(65536);
 		armingRnd = new RangeRandom(armingSeed);
         //------------------------------------

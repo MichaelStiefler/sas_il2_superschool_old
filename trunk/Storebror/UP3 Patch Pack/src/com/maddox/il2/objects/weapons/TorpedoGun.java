@@ -13,12 +13,6 @@ public class TorpedoGun extends BombGun
     
     // TODO: Storebror: Torpedo Failure Rate Replication
     // ------------------------------------
-//    public void setTorpLimitSeed(int torpLimitSeed) {
-//        System.out.println("setTorpParamsEx(" + torpLimitSeed + "), isTorpedo=" + (this.bomb instanceof Torpedo));
-//        if (!(this.bomb instanceof Torpedo)) return;
-//        Torpedo torpedo = (Torpedo)this.bomb;
-//        torpedo.setLimitSeed(torpLimitSeed);
-//    }
     public void setLimits(float speedLimit, float angleLimitLow, float angleLimitHigh) {
         this.speedLimit = speedLimit;
         this.angleLimitLow = angleLimitLow;
