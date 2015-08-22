@@ -1511,7 +1511,7 @@ public abstract class ArtilleryGeneric extends ActorHMesh
 //TODO: ZP's gunner scare code	
 	float f3 = arms[i].gunPitch;
     float f4 = -actor.pos.getAbsOrient().getTangage();
-    if(d < 800D && f4 - f3 > -5F && f4 - f3 < 5F)
+    if(d < 800D && f4 - f3 > -5F && f4 - f3 < 5F && (actor instanceof Aircraft))
     {
         RangeRandom rangerandom = World.Rnd();
         double d2 = 7D * (230D / d) * (230D / d);
