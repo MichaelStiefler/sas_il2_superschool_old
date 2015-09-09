@@ -857,7 +857,8 @@ public class GuidedMissileUtils
                     return;
                 }
             }
-            else if (((targetType & Missile.TARGET_GROUND) != 0)||((targetType & Missile.TARGET_SHIP) != 0)) {
+            else if ((((targetType & Missile.TARGET_GROUND) != 0)||((targetType & Missile.TARGET_SHIP) != 0))
+                     && ((((SndAircraft) (ownerAircraft)).FM instanceof Pilot)||(AP.way.curr().Action == 3))) {
                 if (Actor.isValid(this.trgtAI)) {
                     this.setMissileTarget(this.trgtAI);
                     this.trgtPk = this.getMissilePk();
@@ -865,7 +866,7 @@ public class GuidedMissileUtils
                     this.trgtPk = 0F;
                     return;
                 }
-	    }
+	        }
             else if ((targetType & Missile.TARGET_LOCATE) != 0) {
                 this.setMissileTarget(this.trgtAI);
                 this.trgtPk = this.getMissilePk();
