@@ -1,3 +1,7 @@
+// Decompiled by DJ v3.10.10.93 Copyright 2007 Atanas Neshkov  Date: 18/06/2015 18:40:43
+// Home Page: http://members.fortunecity.com/neshkov/dj.html  http://www.neshkov.com/dj.html - Check often for new version!
+// Decompiler options: packimports(3) 
+// Source File Name:   F_16.java
 
 package com.maddox.il2.objects.air;
 
@@ -21,6 +25,7 @@ import com.maddox.util.HashMapExt;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
+import com.maddox.il2.objects.sounds.SndAircraft;
 
 // Referenced classes of package com.maddox.il2.objects.air:
 //            Scheme1, Aircraft, TypeFighterAceMaker, TypeSupersonic, 
@@ -724,6 +729,8 @@ public class F_16 extends Scheme1
             hasHydraulicPressure = false;
             FM.CT.bHasAileronControl = false;
             FM.CT.bHasElevatorControl = false;
+            FM.CT.bHasRudderControl = false;
+            FM.CT.bHasFlapsControl = false;
             FM.CT.AirBrakeControl = 0.0F;
         } else
         if(!hasHydraulicPressure)
@@ -732,6 +739,8 @@ public class F_16 extends Scheme1
             hasHydraulicPressure = true;
             FM.CT.bHasAileronControl = true;
             FM.CT.bHasElevatorControl = true;
+            FM.CT.bHasRudderControl = true;
+            FM.CT.bHasFlapsControl = true;
             FM.CT.bHasAirBrakeControl = true;
         }
     }
@@ -845,7 +854,16 @@ public class F_16 extends Scheme1
             if(ft == 0.0F)
                 UpdateLightIntensity();
         }
-        hierMesh().chunkVisible("HMask1_D0", hierMesh().isChunkVisible("Pilot1_D0"));
+        if (this.FM.Gears.onGround() && this.FM.CT.getCockpitDoor() == 1.0F)
+        {
+            hierMesh().chunkVisible("HMask1_D0", false);
+            hierMesh().chunkVisible("HMask2_D0", false);
+        }
+        else
+        {
+            hierMesh().chunkVisible("HMask1_D0", hierMesh().isChunkVisible("Pilot1_D0"));
+            hierMesh().chunkVisible("HMask2_D0", hierMesh().isChunkVisible("Pilot2_D0"));
+        }
         if(FLIR)
             FLIR();
         if(!FLIR)
@@ -939,6 +957,32 @@ public class F_16 extends Scheme1
             break;
         }
     }
+    
+    public void doEjectCatapultStudent() {
+        new MsgAction(false, this) {
+
+            public void doAction(Object obj) {
+                Aircraft aircraft = (Aircraft) obj;
+                if (Actor.isValid(aircraft)) {
+                    Loc loc = new Loc();
+                    Loc loc1 = new Loc();
+                    Vector3d vector3d = new Vector3d(0.0D, 0.0D, 30D);
+                    HookNamed hooknamed = new HookNamed(aircraft, "_ExternalSeat02");
+                    ((Actor) (aircraft)).pos.getAbs(loc1);
+                    hooknamed.computePos(aircraft, loc1, loc);
+                    loc.transform(vector3d);
+                    vector3d.x += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).x;
+                    vector3d.y += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).y;
+                    vector3d.z += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).z;
+                    new EjectionSeat(10, loc, vector3d, aircraft);
+                }
+            }
+
+        };
+        hierMesh().chunkVisible("Seat2_D0", false);
+    }
+
+    
 
     public void doEjectCatapult()
     {
@@ -1036,7 +1080,7 @@ public class F_16 extends Scheme1
     public void moveSteering(float f)
     {
         if(FM.CT.GearControl > 0.5F && FM.Gears.onGround())
-            hierMesh().chunkSetAngles("GearC7_D0", 0.0F, -30F * f, 0.0F);
+            hierMesh().chunkSetAngles("GearC7_D0", 0.0F, 2.4F * f, 0.0F);
         if(FM.CT.GearControl < 0.5F)
             hierMesh().chunkSetAngles("GearC7_D0", 0.0F, 0.0F, 0.0F);
     }
@@ -1582,6 +1626,7 @@ label0:
         soundbarier();
         groundcrew();
         super.update(f);
+        this.computeLift();
         computeflightmodel();
         moveSlat();
         restoreElevatorControl();
@@ -1611,11 +1656,50 @@ label0:
 
     private void groundcrew()
     {
-        if(FM.getSpeed() < 5F && FM.Gears.onGround() && FM.CT.cockpitDoorControl > 0.5F)
+        if(FM.Vwld.length() < 0.05D && FM.Gears.onGround() && FM.CT.cockpitDoorControl > 0.5F
+           && Time.current() > timeLastCrewErase + 2000L && (FM.isPlayers() || ((Maneuver)FM).get_maneuver() != 102))
+        {
             hierMesh().chunkVisible("crew", true);
+            bCrewErased = false;
+        }
         else
+        {
             hierMesh().chunkVisible("crew", false);
+            if(!bCrewErased)
+            {
+                timeLastCrewErase = Time.current();
+                bCrewErased = true;
+            }
+        }
     }
+    
+    
+    public void computeLift()
+       {
+        Polares polares = (Polares)Reflection.getValue(FM, "Wing");
+        float x = this.calculateMach();
+        if(this.calculateMach() >= 0.0F);
+        float Lift = 0.0F;
+        if((double)x > 2.25F)
+        {
+            Lift = 0.12F;
+        } else
+        {
+            float x2 = x * x;
+            float x3 = x2 * x;
+            float x4 = x3 * x;
+            float x5 = x4 * x;
+            float x6 = x5 * x;
+            float x7 = x6 * x;
+            float x8 = x7 * x;
+            float x9 = x8 * x;
+            Lift= 0.00152131F*x8 + 0.0351945F*x7 - 0.403687F*x6 + 1.58931F*x5 - 3.09189F*x4 + 3.21415F*x3 - 1.73844F*x2 + 0.364213F*x + 0.078F; 
+           // {{0.0,0.078},{0.25, 0.1}, {0.6, 0.05},{0.97, 0.04}, {1.3, 0.03},{1.68, 0.013}, {2.0, 0.012}, {2.2, 0.011}, {2.3, 0.010}}                      
+            }
+        polares.lineCyCoeff= Lift;
+    }
+
+    
 
     public void setExhaustFlame(int i, int j)
     {
@@ -1747,6 +1831,7 @@ label0:
                 bForceFlapmodeAuto = false;
             if(Time.current() > tflap + 3000L && Time.current() < tflap + 4000L)
             {
+                FM.CT.FlapsControlSwitch = 0;
                 FM.CT.setTrimElevatorControl(0.0F);
             } else
             if(Time.current() > tflap + 4000L)
@@ -1766,6 +1851,8 @@ label0:
             FM.CT.AirBrakeControl = 0.0F;
     }
 
+    
+  
 
     private float clamp11(float f)
     {
@@ -1803,15 +1890,15 @@ label0:
             return;
         if(FM.getSpeedKMH() < 30F)
             return;
-        float f = FM.CT.getElevator();
-        float f1 = 0.0F;
+        float elevatorControl = FM.CT.getElevator();
+        float targetGForce = 0.0F;
         if(FM.CT.ElevatorControl > 0.0F)
-            f1 = (FM.getLimitLoad() * 0.9F - 1.0F) * FM.CT.ElevatorControl + 1.0F;
+            targetGForce = (FM.getLimitLoad() * 0.9F - 1.0F) * FM.CT.ElevatorControl + 1.0F;
         else
-            f1 = 1.0F - (FM.Negative_G_Limit * 0.9F - 1.0F) * FM.CT.ElevatorControl;
-        float f2 = FM.getOverload() - f1;
-        f -= f2 / Math.max(FM.getSpeedKMH() / 1.6F, 200F);
-        f = clamp11(f);
+            targetGForce = 1.0F - (FM.Negative_G_Limit * 0.9F - 1.0F) * FM.CT.ElevatorControl;
+        float gForceDiff  = FM.getOverload() - targetGForce;
+        elevatorControl -= gForceDiff  / Math.max(FM.getSpeedKMH() / 1.6F, 200F);
+        elevatorControl = clamp11(elevatorControl);
         FM.CT.bHasElevatorControl = false;
         if(elevatorsField == null)
         {
@@ -1820,7 +1907,7 @@ label0:
         }
         try
         {
-            elevatorsField.setFloat(FM.CT, f);
+            elevatorsField.setFloat(FM.CT, elevatorControl);
         }
         catch(IllegalAccessException illegalaccessexception) { }
     }
@@ -1955,8 +2042,24 @@ label0:
                         FM.AS.bIsAboutToBailout = true;
                         ejectComplete = true;
                         if(byte0 > 10 && byte0 <= 19)
-                            EventLog.onBailedOut(this, byte0 - 11);
+                            EventLog.onBailedOut(this, byte0 - 11);  
+                     } 
+                    else if (FM.crew > 1 && byte0 == 12) {
+                        doRemoveBodyFromPlane(1);
+                        doEjectCatapult();
+                        FM.AS.astateBailoutStep = 51;
+                        super.FM.setTakenMortalDamage(true, null);
+                        FM.CT.WeaponControl[0] = false;
+                        FM.CT.WeaponControl[1] = false;
+                        FM.AS.astateBailoutStep = -1;
+                        overrideBailout = false;
+                        FM.AS.bIsAboutToBailout = true;
+                        ejectComplete = true;
                     }
+                    if (FM.crew > 1)
+                        FM.AS.astatePilotStates[byte0 - 11] = 99;
+                } else {
+                    EventLog.type("astatePilotStates[" + (byte0 - 11) + "]=" + FM.AS.astatePilotStates[byte0 - 11]);
                 }
             }
     }
@@ -2264,7 +2367,9 @@ label0:
     public boolean bForceFlapmodeAuto;
     public float fNozzleOpenL;
     private Field thrustMaxField[];
-
+    private long timeLastCrewErase;
+    private boolean bCrewErased;
+  
     static 
     {
         Class class1 = com.maddox.il2.objects.air.F_16.class;
