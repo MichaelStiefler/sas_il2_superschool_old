@@ -453,11 +453,29 @@ public class F_105 extends Scheme1
         this.resetYPRmodifier();
         Aircraft.xyz[1] = 0.10F - 0.18F * f;
         this.hierMesh().chunkSetLocate("GearC7d_D0", Aircraft.xyz, Aircraft.ypr);
+
+        this.resetYPRmodifier();
+        f = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.11F, 0.0F, 1.0F);
+        Aircraft.xyz[0] = - 0.08F + 0.07F * f;
+        this.hierMesh().chunkSetLocate("GearL3_D0", Aircraft.xyz, Aircraft.ypr);
+        this.resetYPRmodifier();
+        f = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.11F, 0.0F, 1.0F);
+        Aircraft.xyz[0] = - 0.08F + 0.07F * f;
+        this.hierMesh().chunkSetLocate("GearR3_D0", Aircraft.xyz, Aircraft.ypr);
     }
 
     protected void moveRudder(float f) {
         this.hierMesh().chunkSetAngles("Rudder1_D0", 0.0F, 30F * f, 0.0F);
-        this.hierMesh().chunkSetAngles("GearC7_D0", 0.0F, -30F * f, 0.0F);
+    }
+
+    public void moveSteering(float f)
+    {
+        if(FM.CT.GearControl > 0.5F && this.FM.Gears.onGround())
+            this.hierMesh().chunkSetAngles("GearC7_D0", 0.0F, 1.0F * f, 0.0F);
+        if(FM.CT.GearControl < 0.5F)
+            this.hierMesh().chunkSetAngles("GearC7_D0", 0.0F, 0.0F, 0.0F);
+
+            if(f != 0.0F)  System.out.println("moveSteering f = " + Math.floor(f * 1000F) / 1000F);
     }
 
     protected void moveElevator(float f) {
