@@ -1080,7 +1080,7 @@ public class F_16 extends Scheme1
     public void moveSteering(float f)
     {
         if(FM.CT.GearControl > 0.5F && FM.Gears.onGround())
-            hierMesh().chunkSetAngles("GearC7_D0", 0.0F, 2.4F * f, 0.0F);
+            hierMesh().chunkSetAngles("GearC7_D0", 0.0F, f, 0.0F);
         if(FM.CT.GearControl < 0.5F)
             hierMesh().chunkSetAngles("GearC7_D0", 0.0F, 0.0F, 0.0F);
     }
