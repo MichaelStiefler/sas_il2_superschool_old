@@ -213,6 +213,10 @@ public class Gear
     private double[] dCatapultYaw = new double[4];
     private int iCatapults;
     private static boolean bLogDetailBD = false;
+
+    public double fric_pub;
+    public double fricF_pub;
+    public double fricR_pub;
 	// --------------------------------------------------------
     
     private static class PlateFilter
@@ -1312,8 +1316,12 @@ public class Gear
 					// if(msg1)
 					// {System.out.println(">>> Front wheel active steering");
 					// msg1 = false;}
+					boolean bTaxing = FM.Vwld.length() < 8.33F;  // (now taxing, speed < 30km/h)
 					gVelocity[i] = ForwardVPrj;
-					tmpV.set(1.0D, -0.5D * (double) FM.CT.getRudder(), 0.0D); // std
+                    if(bTaxing)
+						tmpV.set(1.0D, -1.04D * (double) FM.CT.getRudder(), 0.0D); // taxing
+					else
+						tmpV.set(1.0D, -0.5D * (double) FM.CT.getRudder(), 0.0D); // stock
 					// -
 					// rudder
 					// control
@@ -1329,18 +1337,22 @@ public class Gear
 							+ RightVPrj * RightVPrj);
 					if (d19 < 0.01D)
 						d19 = 0.01D;
+					maxFric = 4000D;
 					fricF = -100D * ForwardVPrj;
-					maxFric = 4000D;
-					if (fricF > maxFric)
-						fricF = maxFric;
-					if (fricF < -maxFric)
-						fricF = -maxFric;
-					fricR = -500D * RightVPrj;
-					maxFric = 4000D;
+					if(bTaxing)
+						fricR = (double)Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, -500F, -1500F) * RightVPrj;  // taxing
+					else
+						fricR = -500D * RightVPrj;  // stock
 					if (fricR > maxFric)
 						fricR = maxFric;
 					if (fricR < -maxFric)
 						fricR = -maxFric;
+					if(bTaxing)
+						fricF -= Math.abs(fricR / (double)Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, 8.0F, 3.2F));   // braking effect in taxing turn
+					if (fricF > maxFric)
+						fricF = maxFric;
+					if (fricF < -maxFric)
+						fricF = -maxFric;
 					maxFric = 1.0D - 0.02D * d19;
 					if (maxFric < 0.10000000000000001D)
 						maxFric = 0.10000000000000001D;
@@ -1445,13 +1457,14 @@ public class Gear
 			break;
 		}
 		Tn.scale(MassCoeff);
-        if(!bPlateConcrete && FM.Vrel.length() > 0.10000000149011612D && World.cur().camouflage == 1)
-        {
-            tempLoc.set(Pnt[i].x, Pnt[i].y, Pnt[i].z + 0.05F, 0.0F, 0.0F, 0.0F);
-            MiscEffects.gearMarksSnow(FM, tempLoc, i, pnti[i]);
-        }
-        return true;
-    }
+		if(!bPlateConcrete && FM.Vrel.length() > 0.10000000149011612D && World.cur().camouflage == 1)
+		{
+			tempLoc.set(Pnt[i].x, Pnt[i].y, Pnt[i].z + 0.05F, 0.0F, 0.0F, 0.0F);
+			MiscEffects.gearMarksSnow(FM, tempLoc, i, pnti[i]);
+		}
+		fric_pub = fric;  fricF_pub = fricF;  fricR_pub = fricR;
+		return true;
+	}
 
     private boolean testWaterCollision(int i)
     {
