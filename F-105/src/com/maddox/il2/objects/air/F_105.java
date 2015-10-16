@@ -474,8 +474,6 @@ public class F_105 extends Scheme1
             this.hierMesh().chunkSetAngles("GearC7_D0", 0.0F, 1.0F * f, 0.0F);
         if(FM.CT.GearControl < 0.5F)
             this.hierMesh().chunkSetAngles("GearC7_D0", 0.0F, 0.0F, 0.0F);
-
-            if(f != 0.0F)  System.out.println("moveSteering f = " + Math.floor(f * 1000F) / 1000F);
     }
 
     protected void moveElevator(float f) {
