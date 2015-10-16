@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<workspace_user>
+	<active_project>
+		<label>Planes</label>
+	</active_project>
+	<projects>
+		<project>
+			<label>Planes</label>
+			<showfiles>false</showfiles>
+			<folderitem>
+				<path>JetWar_v13</path>
+			</folderitem>
+			<folderitem>
+				<path>JetWar_v13\src</path>
+			</folderitem>
+			<folderitem>
+				<path>JetWar_v13\src\com</path>
+			</folderitem>
+			<folderitem>
+				<path>JetWar_v13\src\com\maddox</path>
+			</folderitem>
+			<folderitem>
+				<path>JetWar_v13\src\com\maddox\il2</path>
+			</folderitem>
+			<folderitem>
+				<path>JetWar_v13\src\com\maddox\il2\objects</path>
+			</folderitem>
+			<folderitem>
+				<path>JetWar_v13\src\com\maddox\il2\objects\air</path>
+			</folderitem>
+			<folderitem>
+				<path>JetWar_v13\src\com\maddox\il2\objects\vehicles</path>
+			</folderitem>
+			<folderitem>
+				<path>JetWar_v13\src\com\maddox\il2\objects\vehicles\planes</path>
+			</folderitem>
+			<folderitem>
+				<path>JetWar_v13\src\com\maddox\il2\objects\weapons</path>
+			</folderitem>
+			<folderitem>
+				<path>MODded</path>
+			</folderitem>
+		</project>
+	</projects>
+</workspace_user>
