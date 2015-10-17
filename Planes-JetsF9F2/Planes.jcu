@@ -9,27 +9,6 @@
 			<label>Planes</label>
 			<showfiles>false</showfiles>
 			<folderitem>
-				<path>F9</path>
-			</folderitem>
-			<folderitem>
-				<path>F9\air</path>
-			</folderitem>
-			<folderitem>
-				<path>F9\weapons</path>
-			</folderitem>
-			<folderitem>
-				<path>F9F2Anto</path>
-			</folderitem>
-			<folderitem>
-				<path>F9F2Anto - copia</path>
-			</folderitem>
-			<folderitem>
-				<path>F9F2HSFX</path>
-			</folderitem>
-			<folderitem>
-				<path>F9Freddy</path>
-			</folderitem>
-			<folderitem>
 				<path>MODded</path>
 			</folderitem>
 		</project>

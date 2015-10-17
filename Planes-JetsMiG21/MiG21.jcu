@@ -9,55 +9,7 @@
 			<label>MiG21</label>
 			<showfiles>false</showfiles>
 			<folderitem>
-				<path>src</path>
-			</folderitem>
-			<folderitem>
-				<path>src3rdGen</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVega</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVega\com</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVega\com\maddox</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVega\com\maddox\il2</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVega\com\maddox\il2\objects</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVega\com\maddox\il2\objects\air</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVega\com\maddox\il2\objects\vehicles</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVega\com\maddox\il2\objects\vehicles\planes</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVegaWeapons</path>
-			</folderitem>
-			<folderitem>
 				<path>MODded</path>
-			</folderitem>
-			<folderitem>
-				<path>Anto</path>
-			</folderitem>
-			<folderitem>
-				<path>srcChute</path>
-			</folderitem>
-			<folderitem>
-				<path>srcMiG21R</path>
-			</folderitem>
-			<folderitem>
-				<path>srcMissiles</path>
-			</folderitem>
-			<folderitem>
-				<path>srcModernWeapons</path>
 			</folderitem>
 		</project>
 	</projects>
@@ -66,7 +18,7 @@
 			<path>MODded\MIG_21bis.java</path>
 			<source>true</source>
 			<index>0</index>
-			<active>false</active>
+			<active>true</active>
 		</docitem>
 		<docitem>
 			<path>MODded\PaintSchemeFMParMiG21.java</path>
@@ -78,7 +30,7 @@
 			<path>MODded\MIG_21.java</path>
 			<source>true</source>
 			<index>2</index>
-			<active>true</active>
+			<active>false</active>
 		</docitem>
 		<docitem>
 			<path>MODded\MIG21FL.java</path>
@@ -444,11 +396,7 @@
 		<symboltable>
 			<path>MODded\MIG_21.java.sdk</path>
 			<symbols>
-				<symbol>Bomb</symbol>
-				<symbol>BombSPRD99</symbol>
 				<symbol>MIG_21</symbol>
-				<symbol>MiG21Pylon</symbol>
-				<symbol>PylonGP9</symbol>
 			</symbols>
 		</symboltable>
 		<symboltable>
@@ -457,8 +405,6 @@
 				<symbol>Chute</symbol>
 				<symbol>CockpitMIG_21MF</symbol>
 				<symbol>CockpitRP_22</symbol>
-				<symbol>Engine</symbol>
-				<symbol>GuidedMissileUtils</symbol>
 				<symbol>MIG_21</symbol>
 				<symbol>MIG_21bis</symbol>
 				<symbol>PaintSchemeFMParMiG21</symbol>
