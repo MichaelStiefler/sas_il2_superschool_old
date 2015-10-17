@@ -9,73 +9,7 @@
 			<label>Su25</label>
 			<showfiles>false</showfiles>
 			<folderitem>
-				<path>src</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVega</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVega\com</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVega\com\maddox</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVega\com\maddox\il2</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVega\com\maddox\il2\objects</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVega\com\maddox\il2\objects\air</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVega\com\maddox\il2\objects\vehicles</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVega\com\maddox\il2\objects\vehicles\planes</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVega\com\maddox\il2\objects\weapons</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVegaWeapons</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVegaWeapons\com</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVegaWeapons\com\maddox</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVegaWeapons\com\maddox\il2</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVegaWeapons\com\maddox\il2\objects</path>
-			</folderitem>
-			<folderitem>
-				<path>srcVegaWeapons\com\maddox\il2\objects\weapons</path>
-			</folderitem>
-			<folderitem>
 				<path>MODded</path>
-			</folderitem>
-			<folderitem>
-				<path>srcWasted</path>
-			</folderitem>
-			<folderitem>
-				<path>com</path>
-			</folderitem>
-			<folderitem>
-				<path>com\maddox</path>
-			</folderitem>
-			<folderitem>
-				<path>com\maddox\il2</path>
-			</folderitem>
-			<folderitem>
-				<path>com\maddox\il2\objects</path>
-			</folderitem>
-			<folderitem>
-				<path>com\maddox\il2\objects\air</path>
 			</folderitem>
 		</project>
 	</projects>
@@ -161,10 +95,6 @@
 			<path>MODded\Su_25.java.sdk</path>
 			<symbols>
 				<symbol>CockpitSu_25</symbol>
-				<symbol>GuidedMissileUtils</symbol>
-				<symbol>Missile</symbol>
-				<symbol>MissileSAM</symbol>
-				<symbol>RocketGunFlare</symbol>
 				<symbol>Su_25</symbol>
 				<symbol>Su_25X</symbol>
 				<symbol>TypeLaserSpotter</symbol>
