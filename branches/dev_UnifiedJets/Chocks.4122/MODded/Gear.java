@@ -27,7 +27,174 @@ import java.util.AbstractCollection;
 
 public class Gear
 {
-    private static class PlateFilter
+    public int pnti[];
+    boolean onGround;
+    boolean nearGround;
+    public float H;
+    public float Pitch;
+    public float sinkFactor;
+    public float springsStiffness;
+    public float tailStiffness;
+    public boolean bIsSail;
+    public int nOfGearsOnGr;
+    public int nOfPoiOnGr;
+    private int oldNOfGearsOnGr;
+    private int oldNOfPoiOnGr;
+    private int nP;
+    public boolean gearsChanged;
+    HierMesh HM;
+    public boolean bFlatTopGearCheck;
+    public static final int MP = 64;
+    public static final double maxVf_gr = 65D;
+    public static final double maxVn_gr = 7D;
+    public static final double maxVf_wt = 50D;
+    public static final double maxVn_wt = 30D;
+    public static final double maxVf_wl = 110D;
+    public static final double maxVn_wl = 7D;
+    public static final double _1_maxVf_gr2 = 0.00023668639053254438D;
+    public static final double _1_maxVn_gr2 = 0.020408163265306121D;
+    public static final double _1_maxVf_wt2 = 0.00040000000000000002D;
+    public static final double _1_maxVn_wt2 = 0.0011111111111111111D;
+    public static final double _1_maxVf_wl2 = 8.264462809917356E-005D;
+    public static final double _1_maxVn_wl2 = 0.020408163265306121D;
+    private static Point3f Pnt[];
+    private static boolean clp[] = new boolean[64];
+    private Eff3DActor clpEff[];
+    public Eff3DActor clpGearEff[][] = {
+        {
+            null, null
+        }, {
+            null, null
+        }, {
+            null, null
+        }
+    };
+    public Eff3DActor clpEngineEff[][];
+    private String effectName;
+    private boolean bTheBabysGonnaBlow;
+    public boolean lgear;
+    public boolean rgear;
+    public boolean cgear;
+    public boolean bIsHydroOperable;
+    private boolean bIsOperable;
+    public boolean bTailwheelLocked;
+    public double gVelocity[] = {
+        0.0D, 0.0D, 0.0D
+    };
+    public float gWheelAngles[] = {
+        0.0F, 0.0F, 0.0F
+    };
+    public float gWheelSinking[] = {
+        0.0F, 0.0F, 0.0F
+    };
+    public float steerAngle;
+    public double roughness;
+    public float arrestorVAngle;
+    public float arrestorVSink;
+    public HookNamed arrestorHook;
+    public int waterList[];
+    private boolean isGearColl;
+    private double MassCoeff;
+    public boolean bFrontWheel;
+    private static AnglesFork steerAngleFork = new AnglesFork();
+    private double d;
+    private double poiDrag;
+    private double D0;
+    private double D;
+
+    private double Vnorm;
+    private boolean isWater;
+    private boolean bUnderDeck;
+    private boolean bIsGear;
+    private FlightModel FM;
+    private boolean bIsMaster;
+    private int fatigue[];
+    private Point3d p0;
+    private Point3d p1;
+    private Loc l0;
+    private Vector3d v0;
+    private Vector3d tmpV;
+    private Vector3d tmpV1;
+    private double fric;
+    private double fricF;
+    private double fricR;
+    private double maxFric;
+    public double screenHQ;
+    static ClipFilter clipFilter = new ClipFilter();
+    private boolean canDoEffect;
+    private static Vector3d Normal = new Vector3d();
+    private static Vector3d Forward = new Vector3d();
+    private static Vector3d Right = new Vector3d();
+    private static Vector3d nwForward = new Vector3d();
+    private static Vector3d nwRight = new Vector3d();
+    private static double NormalVPrj;
+    private static double ForwardVPrj;
+    private static double RightVPrj;
+    private static Vector3d Vnf = new Vector3d();
+    private static Vector3d Fd = new Vector3d();
+    private static Vector3d Fx = new Vector3d();
+    private static Vector3d Vship = new Vector3d();
+    private static Vector3d Fv = new Vector3d();
+    private static Vector3d Tn = new Vector3d();
+    private static Point3d Pn = new Point3d();
+    private static Point3d PnT = new Point3d();
+    private static Point3d Pship = new Point3d();
+    private static Vector3d Vs = new Vector3d();
+    private static Matrix4d M4 = new Matrix4d();
+    private static Gear plateFilterGear = null;
+    private static PlateFilter plateFilter = new PlateFilter();
+    private static Point3d corn = new Point3d();
+    private static Point3d corn1 = new Point3d();
+    private static Loc L = new Loc();
+    private static float plateBox[] = new float[6];
+    public boolean bPlateExist;
+    public boolean bPlateGround;
+    public boolean bPlateConcrete;
+    public boolean bPlateSand;
+    private BornPlace currentBornPlace;
+    private static String ZUTI_SKIS_AC_CLASSES[] = {
+        "DXXI_SARJA3_EARLY", "DXXI_SARJA3_LATE", "DXXI_SARJA3_SARVANTO", "DXXI_SARJA4", "R_5_SKIS", "BLENHEIM1", "BLENHEIM4", "GLADIATOR1", "GLADIATOR1J8A", "GLADIATOR2", 
+        "I_15BIS_SKIS", "I_16TYPE5_SKIS", "I_16TYPE6_SKIS"
+    };
+    private boolean zutiHasPlaneSkisOnWinterCamo;
+    Loc tempLoc;
+    Point3f tempPoint;
+    public float mgx;
+    public float mgy;
+    public float mgh;
+    public float mgalpha;
+    public float sgx;
+	// --------------------------------------------------------
+
+	// TODO: New parameters
+	// --------------------------------------------------------
+    private boolean bCatapultAllow;
+    private boolean bCatapultBoost;
+    private float catapultPower;
+    private float catapultPowerJets;
+    private boolean bCatapultAI;
+    private boolean bCatapultAllowAI;
+    private boolean bCatapultSet;
+    private boolean bAlreadySetCatapult;
+    private boolean bStandardDeckCVL;
+    private boolean bSteamCatapult;
+    private int iCatapultAlreadySetNum;
+    private boolean bHasBlastDeflector;
+    private Eff3DActor catEff;
+    public ZutiAirfieldPoint zutiCurrentZAP;
+	// --------------------------------------------------------
+    private double[] dCatapultOffsetX = new double[4];
+    private double[] dCatapultOffsetY = new double[4];
+    private double[] dCatapultYaw = new double[4];
+    private int iCatapults;
+    private static boolean bLogDetailBD = false;
+
+    public double fric_pub;
+    public double fricF_pub;
+    public double fricR_pub;
+	// --------------------------------------------------------
+
+	private static class PlateFilter
         implements ActorFilter
     {
 
@@ -69,12 +236,9 @@ public class Gear
         {
         }
     }
-    
+	
     public Gear()
     {
-        dCatapultOffsetX = new double[4];
-        dCatapultOffsetY = new double[4];
-        dCatapultYaw = new double[4];
         onGround = false;
         nearGround = false;
         nOfGearsOnGr = 0;
@@ -159,6 +323,8 @@ public class Gear
             bStandardDeckCVL = true;
 		//By PAL, for Chocks:
 		bShowChocks = Config.cur.ini.get("Mods", "PALShowChocks", 0) == 1;
+		//By PAL, for Catapult Cables, etc:
+		bShowCatGear = Config.cur.ini.get("Mods", "PALShowCatGear", 0) == 1;		
     }
 
     public boolean onGround()
@@ -404,23 +570,23 @@ public class Gear
                             arrestorVAngle = (float)Math.toDegrees(Math.asin(v0.z));
                             double d4 = 1000D;
                     //By PAL, arrestor cable Effect, multiplied!
-                            Class class1 = null;
-                            Class class2 = null;
+                            Class theTypeSupersonicClass = null;
+                            Class theTypeFastJetClass = null;
                             try
                             {
-                                class1 = Class.forName("com.maddox.il2.objects.air.TypeSupersonic");
+                                theTypeSupersonicClass = Class.forName("com.maddox.il2.objects.air.TypeSupersonic");
                             }
                             catch(Exception exception) { }
                             try
                             {
-                                class2 = Class.forName("com.maddox.il2.objects.air.TypeFastJet");
+                                theTypeFastJetClass = Class.forName("com.maddox.il2.objects.air.TypeFastJet");
                             }
                             catch(Exception exception1) { }
                             if(Mission.curYear() > 1948)
                             {
-                                if(class1 != null && FM.actor != null && FM.actor.getClass().isInstance(class1))
+                                if(theTypeSupersonicClass != null && FM.actor != null && FM.actor.getClass().isInstance(theTypeSupersonicClass))
                                     d4 = 3000D;
-                                if(class2 != null && FM.actor != null && FM.actor.getClass().isInstance(class2))
+                                if(theTypeFastJetClass != null && FM.actor != null && FM.actor.getClass().isInstance(theTypeFastJetClass))
                                     d4 = 3000D;
                             }
                             if(FM.Vmin > 190F)
@@ -566,7 +732,10 @@ public class Gear
             if(bigshipgeneric1 != null)
                 FM.brakeShoeLastCarrier = bigshipgeneric1;
             else
-            if((Mission.isCoop() || Mission.isDogfight()) && !Mission.isServer() && Actor.isAlive(FM.brakeShoeLastCarrier) && Time.current() < 60000L)
+                //TODO: +++ CTO Mod 4.12 +++
+//            if((Mission.isCoop() || Mission.isDogfight()) && !Mission.isServer() && Actor.isAlive(FM.brakeShoeLastCarrier) && Time.current() < 60000L)
+            if(Mission.isCoop() && !Mission.isServer() && Actor.isAlive(FM.brakeShoeLastCarrier) && Time.current() < 60000L)
+                //TODO: --- CTO Mod 4.12 ---
                 bigshipgeneric1 = (BigshipGeneric)FM.brakeShoeLastCarrier;
             if(bigshipgeneric1 != null)
             {
@@ -589,15 +758,15 @@ public class Gear
                             bigshipgeneric1.getAirport().pos.getCurrent();
                             Point3d point3d = L.getPoint();
                             CellAirField cellairfield = bigshipgeneric1.getCellTO();
-                            boolean flag3 = false;
-                            boolean flag4 = false;
-                            boolean flag5 = false;
+                            boolean bIsTypeSupersonic = false;
+                            boolean bIsTypeFastJet = false;
+                            boolean bIsJets = false;
                             if(((Interpolate) (FM)).actor instanceof TypeSupersonic)
-                                flag3 = true;
+                                bIsTypeSupersonic = true;
                             if(((Interpolate) (FM)).actor instanceof TypeFastJet)
-                                flag4 = true;
+                                bIsTypeFastJet = true;
                             if(FM.EI.engines[0].getType() == 2)
-                                flag5 = true;
+                                bIsJets = true;
                             int k1 = 0;
                             do
                             {
@@ -622,10 +791,10 @@ public class Gear
                                         if(bCatapultBoost)
                                         {
 
-                                            if((flag3 || flag4 || flag5) && Mission.curYear() > 1945 && Mission.curYear() < 1953)
+                                            if((bIsTypeSupersonic || bIsTypeFastJet || bIsJets) && Mission.curYear() > 1945 && Mission.curYear() < 1953)
                                                 FM.EI.setCatapult(FM.M.getFullMass(), catapultPowerJets, k1);
                                             else
-                                            if((flag3 || flag4 || flag5) && Mission.curYear() > 1952)
+                                            if((bIsTypeSupersonic || bIsTypeFastJet || bIsJets) && Mission.curYear() > 1952)
                                             {
                                                 int l1 = (int)Math.ceil((((FM.M.getFullMass() - FM.M.massEmpty) / 900F) * catapultPowerJets) / 10F);
                                                 FM.EI.setCatapult(FM.M.getFullMass(), catapultPowerJets + (float)l1, k1);
@@ -1281,6 +1450,7 @@ public class Gear
             tempLoc.set(Pnt[i].x, Pnt[i].y, Pnt[i].z + 0.05F, 0.0F, 0.0F, 0.0F);
             MiscEffects.gearMarksSnow(FM, tempLoc, i, pnti[i]);
         }
+		fric_pub = fric;  fricF_pub = fricF;  fricR_pub = fricR;
         return true;
     }
 
@@ -1301,7 +1471,7 @@ public class Gear
         if((!bIsSail || !bInWaterList(i)) && d < -2D)
             d = -2D;
         double d2 = -(1.0D + 0.29999999999999999D * d1) * (double)sinkFactor * d * Math.abs(d) * (1.0D + 0.29999999999999999D * Math.sin((double)((long)(1 + i % 3) * Time.current()) * 0.001D));
-        double d3 = 0.0001D * d2;
+        //double d3 = 0.0001D * d2;
         if(bIsSail && bInWaterList(i))
         {
             if(NormalVPrj > 0.0D)
@@ -1554,6 +1724,7 @@ public class Gear
             catEff = null;
         }
         
+      //TODO: --- CTO Mod 4.12 ---
         if(FM.EI.getNum() > 0)
         {
             for(int k = 0; k < FM.EI.getNum(); k++)
@@ -1649,11 +1820,13 @@ public class Gear
             }
 			
 			//By PAL and Western, Catapult Effect
+          //TODO: +++ CTO Mod 4.12 +++
             if(catEff != null)
             {
                 Eff3DActor.finish(catEff);
                 catEff = null;
             }
+          //TODO: --- CTO Mod 4.12 ---
         }
     }
 
@@ -1758,12 +1931,12 @@ public class Gear
         plateFilterGear = this;
         Engine.drawEnv().getFiltered((AbstractCollection)null, corn.x - (double)f, corn.y - (double)f, corn.x + (double)f, corn.y + (double)f, 1, plateFilter);
         if(bPlateExist)
-            return bPlateGround ? 0.80000000000000004D : 0.0D;
+            return bPlateGround ? 0.8D : 0.0D;
         int i = Engine.cur.land.HQ_RoadTypeHere(flightmodel.Loc.x, flightmodel.Loc.y);
         switch(i)
         {
         case 1: // '\001'
-            return 0.80000000000000004D;
+            return 0.8D;
 
         case 2: // '\002'
             return 0.0D;
@@ -1775,13 +1948,13 @@ public class Gear
         {
             double d1 = currentBornPlace.getBornPlaceFriction(flightmodel.Loc.x, flightmodel.Loc.y);
             if(d1 != -1D)
-                if(zutiHasPlaneSkisOnWinterCamo && d1 > 2.3999999999999999D)
-                    return 2.4000000953674316D;
+                if(zutiHasPlaneSkisOnWinterCamo && d1 > 2.4D)
+                    return 2.4D;
                 else
                     return d1;
         }
         currentBornPlace = BornPlace.getCurrentBornPlace(flightmodel.Loc.x, flightmodel.Loc.y);
-        return zutiHasPlaneSkisOnWinterCamo ? 2.4000000953674316D : 3.7999999999999998D;
+        return zutiHasPlaneSkisOnWinterCamo ? 2.4D : 3.8D;
     }
 
     private String s(int i)
@@ -1918,169 +2091,13 @@ public class Gear
     {
         return D0;
     }
-
-    public void setD0(double d1)
-    {
-        D0 = d1;
-    }
-
-    public int pnti[];
-    boolean onGround;
-    boolean nearGround;
-    public float H;
-    public float Pitch;
-    public float sinkFactor;
-    public float springsStiffness;
-    public float tailStiffness;
-    public boolean bIsSail;
-    public int nOfGearsOnGr;
-    public int nOfPoiOnGr;
-    private int oldNOfGearsOnGr;
-    private int oldNOfPoiOnGr;
-    private int nP;
-    public boolean gearsChanged;
-    HierMesh HM;
-    public boolean bFlatTopGearCheck;
-    public static final int MP = 64;
-    public static final double maxVf_gr = 65D;
-    public static final double maxVn_gr = 7D;
-    public static final double maxVf_wt = 50D;
-    public static final double maxVn_wt = 30D;
-    public static final double maxVf_wl = 110D;
-    public static final double maxVn_wl = 7D;
-    public static final double _1_maxVf_gr2 = 0.00023668639053254438D;
-    public static final double _1_maxVn_gr2 = 0.020408163265306121D;
-    public static final double _1_maxVf_wt2 = 0.00040000000000000002D;
-    public static final double _1_maxVn_wt2 = 0.0011111111111111111D;
-    public static final double _1_maxVf_wl2 = 8.264462809917356E-005D;
-    public static final double _1_maxVn_wl2 = 0.020408163265306121D;
-    private static Point3f Pnt[];
-    private static boolean clp[] = new boolean[64];
-    private Eff3DActor clpEff[];
-    public Eff3DActor clpGearEff[][] = {
-        {
-            null, null
-        }, {
-            null, null
-        }, {
-            null, null
-        }
-    };
-    public Eff3DActor clpEngineEff[][];
-    private String effectName;
-    private boolean bTheBabysGonnaBlow;
-    public boolean lgear;
-    public boolean rgear;
-    public boolean cgear;
-    public boolean bIsHydroOperable;
-    private boolean bIsOperable;
-    public boolean bTailwheelLocked;
-    public double gVelocity[] = {
-        0.0D, 0.0D, 0.0D
-    };
-    public float gWheelAngles[] = {
-        0.0F, 0.0F, 0.0F
-    };
-    public float gWheelSinking[] = {
-        0.0F, 0.0F, 0.0F
-    };
-    public float steerAngle;
-    public double roughness;
-    public float arrestorVAngle;
-    public float arrestorVSink;
-    public HookNamed arrestorHook;
-    public int waterList[];
-    private boolean isGearColl;
-    private double MassCoeff;
-    public boolean bFrontWheel;
-    private static AnglesFork steerAngleFork = new AnglesFork();
-    private double d;
-    private double poiDrag;
-    private double D0;
-    private double D;
-
-    private double Vnorm;
-    private boolean isWater;
-    private boolean bUnderDeck;
-    private boolean bIsGear;
-    private FlightModel FM;
-    private boolean bIsMaster;
-    private int fatigue[];
-    private Point3d p0;
-    private Point3d p1;
-    private Loc l0;
-    private Vector3d v0;
-    private Vector3d tmpV;
-    private Vector3d tmpV1;
-    private double fric;
-    private double fricF;
-    private double fricR;
-    private double maxFric;
-    public double screenHQ;
-    static ClipFilter clipFilter = new ClipFilter();
-    private boolean canDoEffect;
-    private static Vector3d Normal = new Vector3d();
-    private static Vector3d Forward = new Vector3d();
-    private static Vector3d Right = new Vector3d();
-    private static Vector3d nwForward = new Vector3d();
-    private static Vector3d nwRight = new Vector3d();
-    private static double NormalVPrj;
-    private static double ForwardVPrj;
-    private static double RightVPrj;
-    private static Vector3d Vnf = new Vector3d();
-    private static Vector3d Fd = new Vector3d();
-    private static Vector3d Fx = new Vector3d();
-    private static Vector3d Vship = new Vector3d();
-    private static Vector3d Fv = new Vector3d();
-    private static Vector3d Tn = new Vector3d();
-    private static Point3d Pn = new Point3d();
-    private static Point3d PnT = new Point3d();
-    private static Point3d Pship = new Point3d();
-    private static Vector3d Vs = new Vector3d();
-    private static Matrix4d M4 = new Matrix4d();
-    private static Gear plateFilterGear = null;
-    private static PlateFilter plateFilter = new PlateFilter();
-    private static Point3d corn = new Point3d();
-    private static Point3d corn1 = new Point3d();
-    private static Loc L = new Loc();
-    private static float plateBox[] = new float[6];
-    public boolean bPlateExist;
-    public boolean bPlateGround;
-    public boolean bPlateConcrete;
-    public boolean bPlateSand;
-    private BornPlace currentBornPlace;
-    private static String ZUTI_SKIS_AC_CLASSES[] = {
-        "DXXI_SARJA3_EARLY", "DXXI_SARJA3_LATE", "DXXI_SARJA3_SARVANTO", "DXXI_SARJA4", "R_5_SKIS", "BLENHEIM1", "BLENHEIM4", "GLADIATOR1", "GLADIATOR1J8A", "GLADIATOR2", 
-        "I_15BIS_SKIS", "I_16TYPE5_SKIS", "I_16TYPE6_SKIS"
-    };
-    private boolean zutiHasPlaneSkisOnWinterCamo;
-    Loc tempLoc;
-    Point3f tempPoint;
-    public float mgx;
-    public float mgy;
-    public float mgh;
-    public float mgalpha;
-    public float sgx;
-    private boolean bCatapultAllow;
-    private boolean bCatapultBoost;
-    private float catapultPower;
-    private float catapultPowerJets;
-    private boolean bCatapultAI;
-    private boolean bCatapultAllowAI;
-    private boolean bCatapultSet;
-    private boolean bAlreadySetCatapult;
-    private boolean bStandardDeckCVL;
-    private boolean bSteamCatapult;
-    private int iCatapultAlreadySetNum;
-    private boolean bHasBlastDeflector;
-    private Eff3DActor catEff;
-    public ZutiAirfieldPoint zutiCurrentZAP;
-    private double dCatapultOffsetX[];
-    private double dCatapultOffsetY[];
-    private double dCatapultYaw[];
-    private int iCatapults;
-    private static boolean bLogDetailBD = false;
-
+	
+	//By PAL, unnecesary method, non-existent in 4.12
+    //public void setD0(double d1)
+    //{
+    //    D0 = d1;
+    //}	
+	
     static 
     {
         Pnt = new Point3f[64];
@@ -2095,6 +2112,7 @@ public class Gear
 	private boolean bChocks = false;
 	private boolean bCatHook = false;	
 	static private boolean bShowChocks = false;
+	static private boolean bShowCatGear = false;	
 	private ActorSimpleMesh ChL = null;
 	private ActorSimpleMesh ChR = null;
 	private ActorSimpleMesh CatH = null;	
@@ -2119,7 +2137,7 @@ public class Gear
     private void showCatapult(boolean isCarrier, boolean isCatapult)
     {
 		//By PAL, if not activated, don't do anything.
-		if(!bShowChocks)
+		if(!bShowCatGear)
 			return;
 		
 		if(!isCarrier)
