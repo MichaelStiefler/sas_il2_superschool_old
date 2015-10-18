@@ -1,7 +1,7 @@
 // Decompiled by DJ v3.10.10.93 Copyright 2007 Atanas Neshkov  Date: 19/06/2015 10:52:06
 // Home Page: http://members.fortunecity.com/neshkov/dj.html  http://www.neshkov.com/dj.html - Check often for new version!
 // Decompiler options: packimports(3) 
-// Source File Name:   F_16C_B52.java
+// Source File Name:   F_16I.java
 
 package com.maddox.il2.objects.air;
 
@@ -25,11 +25,11 @@ import com.maddox.sas1946.il2.util.Reflection;
 //            TypeThreatDetector, TypeGSuit, TypeAcePlane, TypeFuelDump, 
 //            NetAircraft
 
-public class F_16C_B52 extends F_16
+public class F_16I extends F_16
     implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeGSuit, TypeAcePlane, TypeFuelDump, TypeDockable
 {
 
-    public F_16C_B52()
+    public F_16I()
     {
         lastCommonThreatActive = 0L;
         intervalCommonThreat = 1000L;
@@ -405,7 +405,6 @@ public class F_16C_B52 extends F_16
 	FM.producedAF.x -=  thrustDegradation * 1000F;
          }
          
-    
 
     public void msgCollisionRequest(Actor actor, boolean aflag[])
     {
@@ -634,10 +633,10 @@ public class F_16C_B52 extends F_16
 
     static 
     {
-        Class class1 = com.maddox.il2.objects.air.F_16C_B52.class;
+        Class class1 = com.maddox.il2.objects.air.F_16I.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Viper");
-        Property.set(class1, "meshName", "3DO/Plane/F-16Viper(Multi1)/hier.him");
+        Property.set(class1, "meshName", "3DO/Plane/F-16B/hierSUFA.him");
         Property.set(class1, "PaintScheme", new PaintSchemeFMPar06());
         Property.set(class1, "yearService", 1973.3F);
         Property.set(class1, "yearExpired", 1999.3F);
