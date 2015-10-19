@@ -12,6 +12,7 @@ import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
+import com.maddox.il2.objects.air.F_16A_B10;
 import com.maddox.il2.objects.air.F_16B_B05;
 import com.maddox.il2.objects.air.F_16I;
 import com.maddox.il2.objects.sounds.SndAircraft;
@@ -2157,7 +2158,10 @@ label0:
     public boolean typeRadarToggleMode()
     {
         radarmode++;
-        if(radarmode > 2)
+  /*      if((this instanceof com.maddox.il2.objects.air.F_16B_B05 || this instanceof com.maddox.il2.objects.air.F_16A_B10)
+           && radarmode > 1)
+            radarmode = 0;
+        else */ if(radarmode > 2)
             radarmode = 0;
         HUD.log(AircraftHotKeys.hudLogWeaponId, "radar mode" + radarmode);
         return false;
