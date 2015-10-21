@@ -1,6 +1,6 @@
 // Decompiled by DJ v3.10.10.93 Copyright 2007 Atanas Neshkov  Date: 18/06/2015 18:40:43
 // Home Page: http://members.fortunecity.com/neshkov/dj.html  http://www.neshkov.com/dj.html - Check often for new version!
-// Decompiler options: packimports(3) 
+// Decompiler options: packimports(3)
 // Source File Name:   F_16.java
 
 package com.maddox.il2.objects.air;
@@ -31,10 +31,10 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 // Referenced classes of package com.maddox.il2.objects.air:
-//            Scheme1, Aircraft, TypeFighterAceMaker, TypeSupersonic, 
-//            TypeFastJet, F_18, TypeLaserSpotter, TypeFighter, 
-//            TypeGSuit, TypeRadar, TypeBomber, TypeX4Carrier, 
-//            TypeStormovikArmored, TypeSemiRadar, TypeGroundRadar, Cockpit, 
+//            Scheme1, Aircraft, TypeFighterAceMaker, TypeSupersonic,
+//            TypeFastJet, F_18, TypeLaserSpotter, TypeFighter,
+//            TypeGSuit, TypeRadar, TypeBomber, TypeX4Carrier,
+//            TypeStormovikArmored, TypeSemiRadar, TypeGroundRadar, Cockpit,
 //            PaintScheme, EjectionSeat
 
 public class F_16 extends Scheme1
@@ -1631,6 +1631,7 @@ label0:
         groundcrew();
         super.update(f);
         this.computeLift();
+        this.computeEnergy();
         computeflightmodel();
         moveSlat();
         restoreElevatorControl();
@@ -1677,8 +1678,8 @@ label0:
             }
         }
     }
-    
-    
+
+
     public void computeLift()
        {
         Polares polares = (Polares)Reflection.getValue(FM, "Wing");
@@ -1698,13 +1699,36 @@ label0:
             float x7 = x6 * x;
             float x8 = x7 * x;
             float x9 = x8 * x;
-            Lift= 0.00152131F*x8 + 0.0351945F*x7 - 0.403687F*x6 + 1.58931F*x5 - 3.09189F*x4 + 3.21415F*x3 - 1.73844F*x2 + 0.364213F*x + 0.078F; 
-           // {{0.0,0.078},{0.25, 0.1}, {0.6, 0.05},{0.97, 0.04}, {1.3, 0.03},{1.68, 0.013}, {2.0, 0.012}, {2.2, 0.011}, {2.3, 0.010}}                      
+            Lift= 0.00152131F*x8 + 0.0351945F*x7 - 0.403687F*x6 + 1.58931F*x5 - 3.09189F*x4 + 3.21415F*x3 - 1.73844F*x2 + 0.364213F*x + 0.078F;
+           // {{0.0,0.078},{0.25, 0.1}, {0.6, 0.05},{0.97, 0.04}, {1.3, 0.03},{1.68, 0.013}, {2.0, 0.012}, {2.2, 0.011}, {2.3, 0.010}}
             }
         polares.lineCyCoeff= Lift;
     }
-
     
+    public void computeEnergy()
+       {
+        Polares polares = (Polares)Reflection.getValue(FM, "Wing");
+        float x = this.calculateMach();
+        if(this.calculateMach() >= 0.0F);
+        float Energy = 0.0F;
+        if((double)x >=1F)
+        {
+            Energy = 8.5F;
+        } else
+        {
+            float x2 = x * x;
+            float x3 = x2 * x;
+            float x4 = x3 * x;
+            float x5 = x4 * x;
+            float x6 = x5 * x;
+            Energy= -1672.62F*x5 +  3775.6F*x4 - 2934.82F*x3 + 933.101F*x2 - 99.256F*x + 6.5F;  
+            //{{0,6.5}, {0.2,6},{0.5,7},{0.7,13},{0.9,23},{1,8.5}}                                                  
+            }
+        polares.parabCxCoeff_0 = Energy*0.0001F;
+    }    
+
+
+
 
     public void setExhaustFlame(int i, int j)
     {
@@ -1855,8 +1879,8 @@ label0:
             FM.CT.AirBrakeControl = 0.0F;
     }
 
-    
-  
+
+
 
     private float clamp11(float f)
     {
@@ -2051,7 +2075,7 @@ label0:
                             if(byte0 > 10 && byte0 <= 19)
                                 EventLog.onBailedOut(this, byte0 - 11);
                         }
-                    } 
+                    }
                     else if (bTwoSeat && byte0 == 12) {
                         doEjectCatapult(byte0 - 10);
                         FM.AS.astateBailoutStep = 51;
@@ -2158,12 +2182,12 @@ label0:
     public boolean typeRadarToggleMode()
     {
         radarmode++;
-  /*      if((this instanceof com.maddox.il2.objects.air.F_16B_B05 || this instanceof com.maddox.il2.objects.air.F_16A_B10)
+        if((this instanceof com.maddox.il2.objects.air.F_16B_B05 || this instanceof com.maddox.il2.objects.air.F_16A_B10)
            && radarmode > 1)
             radarmode = 0;
-        else */ if(radarmode > 2)
+        if(radarmode > 2)
             radarmode = 0;
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "radar mode" + radarmode);
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar mode" + radarmode);
         return false;
     }
 
@@ -2367,7 +2391,7 @@ label0:
     private boolean bTwoSeat;
     private long lTimeNextEject;
 
-  static 
+  static
     {
         Class class1 = com.maddox.il2.objects.air.F_16.class;
         Property.set(class1, "originCountry", PaintScheme.countryUSA);
