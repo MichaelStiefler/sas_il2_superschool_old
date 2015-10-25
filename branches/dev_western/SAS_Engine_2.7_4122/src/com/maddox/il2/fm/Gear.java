@@ -1337,10 +1337,10 @@ public class Gear
 							+ RightVPrj * RightVPrj);
 					if (d19 < 0.01D)
 						d19 = 0.01D;
-					maxFric = 4000D;
+					maxFric = bTaxing ? (double)Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, 4400F, 6000F) : 4000F;
 					fricF = -100D * ForwardVPrj;
 					if(bTaxing)
-						fricR = (double)Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, -500F, -1500F) * RightVPrj;  // taxing
+						fricR = (double)Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, -550F, -2500F) * RightVPrj;  // taxing
 					else
 						fricR = -500D * RightVPrj;  // stock
 					if (fricR > maxFric)
@@ -1348,7 +1348,7 @@ public class Gear
 					if (fricR < -maxFric)
 						fricR = -maxFric;
 					if(bTaxing)
-						fricF -= Math.abs(fricR / (double)Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, 8.0F, 3.2F));   // braking effect in taxing turn
+						fricF -= Math.abs(fricR / (double)Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, 8.0F, 2.8F));   // braking effect in taxing turn
 					if (fricF > maxFric)
 						fricF = maxFric;
 					if (fricF < -maxFric)
@@ -1356,7 +1356,7 @@ public class Gear
 					maxFric = 1.0D - 0.02D * d19;
 					if (maxFric < 0.10000000000000001D)
 						maxFric = 0.10000000000000001D;
-					maxFric = 5000D * maxFric;
+					maxFric = (bTaxing ? 7500D : 5000D) * maxFric;
 					fric = Math.sqrt(fricF * fricF + fricR * fricR);
 					if (fric > maxFric) {
 						fric = maxFric / fric;
