@@ -57,8 +57,8 @@ public class F_105D extends F_105 {
         "_ExternalRock04", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalDev07", 
         "_ExternalDev08", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalDev09", "_ExternalDev10", "_ExternalDev11", "_ExternalDev12", "_ExternalDev13", 
         "_ExternalDev14", "_Rocket05", "_Rocket06", "_Rocket07", "_Rocket08", "_Rocket09", "_Rocket10", "_ExternalBomb09", "_ExternalBomb10", "_ExternalBomb11", 
-        "_ExternalBomb12", "_ExternalBomb13", "_ExternalBomb14", "_ExternalBomb15", "_ExternalBomb16", "_ExternalDev15", "_ExternalDev16", "_Dev17", "_Dev18", "_ExternalDev19", 
-        "_ExternalBomb17", "_ExternalBomb18", "_ExternalBomb19", "_ExternalBomb20", "_ExternalBomb21", "_ExternalBomb22", "_ExternalBomb23", "_ExternalDev20", "_Dev21", "_ExternalRock11", 
+        "_ExternalBomb12", "_ExternalBomb13", "_ExternalBomb14", "_ExternalBomb15", "_ExternalBomb16", "_Dev15", "_Dev16", "_ExternalDev17", "_ExternalDev18", "_ExternalDev19", 
+        "_ExternalBomb17", "_ExternalBomb18", "_ExternalBomb19", "_ExternalBomb20", "_ExternalBomb21", "_ExternalBomb22", "_ExternalBomb23", "_Dev20", "_ExternalDev21", "_ExternalRock11", 
         "_ExternalRock11", "_ExternalRock12", "_ExternalRock12", "_ExternalRock13", "_ExternalRock13", "_ExternalRock14", "_ExternalRock14", "_ExternalRock15", "_ExternalRock15", "_ExternalRock16", 
         "_ExternalRock16", "_ExternalRock17", "_ExternalRock17", "_ExternalRock18", "_ExternalRock18", "_ExternalBomb24", "_ExternalBomb25", "_ExternalDev22", "_ExternalDev23", "_ExternalBomb26",
         "_ExternalBomb27", "_ExternalBomb28", "_ExternalDev24" 

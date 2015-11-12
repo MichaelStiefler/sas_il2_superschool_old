@@ -1,7 +1,3 @@
-// Decompiled by DJ v3.10.10.93 Copyright 2007 Atanas Neshkov Date: 15/06/2015 12:55:28
-// Home Page: http://members.fortunecity.com/neshkov/dj.html  http://www.neshkov.com/dj.html - Check often for new version!
-// Decompiler options: packimports(3)
-// Source File Name:   F_105.java
 
 package com.maddox.il2.objects.air;
 
@@ -15,6 +11,8 @@ import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
 import com.maddox.il2.objects.Wreckage;
+import com.maddox.il2.objects.air.F_105D;
+import com.maddox.il2.objects.air.F_105F;
 import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.il2.objects.weapons.GuidedMissileUtils;
 import com.maddox.rts.*;
@@ -149,29 +147,33 @@ public class F_105 extends Scheme1
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).CT.bHasDragChuteControl = true;
+        FM.CT.bHasDragChuteControl = true;
         bHasDeployedDragChute = false;
-        this.guidedMissileUtils.onAircraftLoaded();
-        this.FM.AS.wantBeaconsNet(true);
-        this.actl = this.FM.SensRoll;
-        this.ectl = this.FM.SensPitch;
-        this.rctl = this.FM.SensYaw;
-       }
+        guidedMissileUtils.onAircraftLoaded();
+        FM.AS.wantBeaconsNet(true);
+        actl = this.FM.SensRoll;
+        ectl = this.FM.SensPitch;
+        rctl = this.FM.SensYaw;
+        if(!(this instanceof com.maddox.il2.objects.air.F_105D))
+            bTwoSeat = true;
+        fAirbrakeCx = FM.Sq.dragAirbrakeCx;
+        }
 
     public void checkHydraulicStatus() {
-        if (this.FM.EI.engines[0].getStage() < 6 && this.FM.Gears.nOfGearsOnGr > 0) {
-            this.hasHydraulicPressure = false;
-            this.FM.CT.bHasAileronControl = false;
-            this.FM.CT.bHasElevatorControl = false;
-            this.FM.CT.bHasRudderControl = false;
-            this.FM.CT.AirBrakeControl = 0.14F;
-        } else if (!this.hasHydraulicPressure) {
-            this.hasHydraulicPressure = true;
-            this.FM.CT.bHasAileronControl = true;
-            this.FM.CT.bHasElevatorControl = true;
-            this.FM.CT.bHasRudderControl = true;
-            this.FM.CT.bHasAirBrakeControl = true;
-            if(this.FM.CT.AirBrakeControl == 0.14F)  this.FM.CT.AirBrakeControl = 0.0F;
+        if (FM.EI.engines[0].getStage() < 6 && FM.Gears.nOfGearsOnGr > 0) {
+            hasHydraulicPressure = false;
+            FM.CT.bHasAileronControl = false;
+            FM.CT.bHasElevatorControl = false;
+            FM.CT.bHasRudderControl = false;
+            FM.CT.AirBrakeControl = 0.14F;
+        } else if (!hasHydraulicPressure) {
+            hasHydraulicPressure = true;
+            FM.CT.bHasAileronControl = true;
+            FM.CT.bHasElevatorControl = true;
+            FM.CT.bHasRudderControl = true;
+            FM.CT.bHasAirBrakeControl = true;
+            if(FM.CT.AirBrakeControl == 0.14F)  FM.CT.AirBrakeControl = 0.0F;
+            lTimeLastHydraulicPressureRecover = Time.current();
         }
     }
 
@@ -234,12 +236,14 @@ public class F_105 extends Scheme1
         if (this.FM.Gears.onGround() && this.FM.CT.getCockpitDoor() == 1.0F)
         {
             this.hierMesh().chunkVisible("HMask1_D0", false);
-            this.hierMesh().chunkVisible("HMask2_D0", false);
+            if(bTwoSeat)
+                this.hierMesh().chunkVisible("HMask2_D0", false);
         }
         else
         {
             this.hierMesh().chunkVisible("HMask1_D0", this.hierMesh().isChunkVisible("Pilot1_D0"));
-            this.hierMesh().chunkVisible("HMask2_D0", this.hierMesh().isChunkVisible("Pilot2_D0"));
+            if(bTwoSeat)
+                this.hierMesh().chunkVisible("HMask2_D0", this.hierMesh().isChunkVisible("Pilot2_D0"));
         }
         if (this.FM.AS.isMaster() && Config.isUSE_RENDER()) {
             Vector3d vector3d = this.FM.getVflow();
@@ -259,20 +263,20 @@ public class F_105 extends Scheme1
             this.UpdateLightIntensity();
         if ((this.FM instanceof RealFlightModel) && ((RealFlightModel) super.FM).isRealMode() || !flag || !(super.FM instanceof Pilot))
             return;
-        if (flag && ((FlightModelMain) (super.FM)).AP.way.curr().Action == 3 && this.typeDockableIsDocked() && Math.abs(((FlightModelMain) (((SndAircraft) ((Aircraft) this.queen_)).FM)).Or.getKren()) < 3F)
+        if (flag && FM.AP.way.curr().Action == 3 && this.typeDockableIsDocked() && Math.abs(((FlightModelMain) (((SndAircraft) ((Aircraft) this.queen_)).FM)).Or.getKren()) < 3F)
             if (super.FM.isPlayers()) {
                 if ((super.FM instanceof RealFlightModel) && !((RealFlightModel) super.FM).isRealMode()) {
                     this.typeDockableAttemptDetach();
                     ((Maneuver) super.FM).set_maneuver(22);
                     ((Maneuver) super.FM).setCheckStrike(false);
-                    ((FlightModelMain) (super.FM)).Vwld.z -= 5D;
+                    FM.Vwld.z -= 5D;
                     this.dtime = Time.current();
                 }
             } else {
                 this.typeDockableAttemptDetach();
                 ((Maneuver) super.FM).set_maneuver(22);
                 ((Maneuver) super.FM).setCheckStrike(false);
-                ((FlightModelMain) (super.FM)).Vwld.z -= 5D;
+                FM.Vwld.z -= 5D;
                 this.dtime = Time.current();
             }
         if ((!this.FM.isPlayers() || !(this.FM instanceof RealFlightModel) || !((RealFlightModel) this.FM).isRealMode()) && (this.FM instanceof Maneuver))
@@ -370,13 +374,23 @@ public class F_105 extends Scheme1
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
+            case 1: // '\1'
+            if(bTwoSeat)
+            {
+                this.hierMesh().chunkVisible("Pilot2_D0", false);
+                this.hierMesh().chunkVisible("Head2_D0", false);
+                this.hierMesh().chunkVisible("HMask2_D0", false);
+                this.hierMesh().chunkVisible("Pilot2_D1", true);
+                break;
+            }
         }
     }
 
 
     public void moveCockpitDoor(float f) {
-        this.hierMesh().chunkSetAngles("Blister1_D0", 0.0F, 45F * f, 0.0F);
-        this.hierMesh().chunkSetAngles("Blister2_D0", 0.0F, 45F * f, 0.0F);
+        this.hierMesh().chunkSetAngles("Blister1_D0", 0.0F, (bTwoSeat ? 70F : 45F) * f, 0.0F);
+        if(bTwoSeat)
+            this.hierMesh().chunkSetAngles("Blister2_D0", 0.0F, 70F * f, 0.0F);
         if (Config.isUSE_RENDER()) {
             if (Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null)
                 Main3D.cur3D().cockpits[0].onDoorMoved(f);
@@ -388,8 +402,8 @@ public class F_105 extends Scheme1
     public static void moveGear(HierMesh hiermesh, float f, float f1, float f2) {
         // Fully open Main Gear Fuselage Covers and keep them open,
         // "over-extend" opening angle by 5 degrees to "lean" covers against fuselage
-        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, Aircraft.cvt(f, 0.15F, 0.26F, 0.0F, -95F), 0.0F);
-        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, Aircraft.cvt(f1, 0.09F, 0.22F, 0.0F, -95F), 0.0F);
+        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, Aircraft.cvt(f, 0.15F, 0.26F, 0.0F, -89F), 0.0F);
+        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, Aircraft.cvt(f1, 0.09F, 0.22F, 0.0F, -89F), 0.0F);
 
         if (f2 < 0.27F) { // Open Front Gear Doors fully while Gear Strut passes through
             hiermesh.chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(f2, 0.0F, 0.11F, 0.0F, -90F), 0.0F);
@@ -409,10 +423,10 @@ public class F_105 extends Scheme1
         else // after passing cover, extract strut again
             xyz[0] = Aircraft.cvt(f, 0.34F, 0.65F, 0.2F, 0.0F);
         ypr[0] = Aircraft.cvt(f, 0.23F, 0.65F, 0.0F, 43F); // rotate left main gear strut to align with x-axis properly
-        ypr[1] = Aircraft.cvt(f, 0.23F, 0.65F, 0.0F, -85F); // extract/retract left main gear
+        ypr[1] = Aircraft.cvt(f, 0.23F, 0.65F, 0.0F, -90F); // extract/retract left main gear
         hiermesh.chunkSetLocate("GearL2_D0", xyz, ypr); // Left Main Gear moves here!
         // Left Main Gear outer Wing cover, move and rotate to align with x-axis properly
-        hiermesh.chunkSetAngles("GearL4_D0", Aircraft.cvt(f, 0.23F, 0.65F, 0.0F, -43F), Aircraft.cvt(f, 0.23F, 0.65F, 0.0F, -85F), 0.0F);
+        hiermesh.chunkSetAngles("GearL4_D0", Aircraft.cvt(f, 0.23F, 0.65F, 0.0F, -43F), Aircraft.cvt(f, 0.23F, 0.65F, 0.0F, -90F), 0.0F);
 
         // Right Gear Fuselage Cover avoidance
         if (f1 < 0.38F) // When near Fuselage cover, retract strut slightly to avoid cover
@@ -420,10 +434,10 @@ public class F_105 extends Scheme1
         else // after passing cover, extract strut again
             xyz[0] = Aircraft.cvt(f1, 0.39F, 0.70F, 0.2F, 0.0F);
         ypr[0] = Aircraft.cvt(f1, 0.28F, 0.7F, 0.0F, -43F); // rotate right main gear strut to align with x-axis properly
-        ypr[1] = Aircraft.cvt(f1, 0.28F, 0.7F, 0.0F, -85F); // extract/retract right main gear
+        ypr[1] = Aircraft.cvt(f1, 0.28F, 0.7F, 0.0F, -90F); // extract/retract right main gear
         hiermesh.chunkSetLocate("GearR2_D0", xyz, ypr); // Right Main Gear moves here!
         // Right Main Gear outer Wing cover, move and rotate to align with x-axis properly
-        hiermesh.chunkSetAngles("GearR4_D0", Aircraft.cvt(f1, 0.28F, 0.7F, 0.0F, 43F), Aircraft.cvt(f1, 0.28F, 0.7F, 0.0F, -85F), 0.0F);
+        hiermesh.chunkSetAngles("GearR4_D0", Aircraft.cvt(f1, 0.28F, 0.7F, 0.0F, 43F), Aircraft.cvt(f1, 0.28F, 0.7F, 0.0F, -90F), 0.0F);
 
         // Remaining Gear Parts movement
           //  hiermesh.chunkSetAngles("GearC10_D0", 0.0F, Aircraft.cvt(f2, 0.69F, 0.74F, 0.0F, -90F), 0.0F);   // missing in F-105
@@ -793,10 +807,10 @@ public class F_105 extends Scheme1
 
     public void update(float f)
     {
-        if((((FlightModelMain) (super.FM)).AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && super.FM.getSpeedKMH() > 15F)
+        if((FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete)
         {
             overrideBailout = true;
-            ((FlightModelMain) (super.FM)).AS.bIsAboutToBailout = false;
+            FM.AS.bIsAboutToBailout = false;
             if(Time.current() > lTimeNextEject)
                 bailout();
         }
@@ -814,13 +828,13 @@ public class F_105 extends Scheme1
                 this.umn();
             }
         }
-        if(super.FM.getSpeedKMH() > 600F && ((FlightModelMain) (super.FM)).CT.bHasFlapsControl)
+        if(FM.getSpeedKMH() > 600F && FM.CT.bHasFlapsControl)
         {
-            ((FlightModelMain) (super.FM)).CT.FlapsControl = 0.0F;
-            ((FlightModelMain) (super.FM)).CT.bHasFlapsControl = false;
+            FM.CT.FlapsControl = 0.0F;
+            FM.CT.bHasFlapsControl = false;
         } else
         {
-            ((FlightModelMain) (super.FM)).CT.bHasFlapsControl = true;
+            FM.CT.bHasFlapsControl = true;
         }
         if (this.bNeedSetup)
             this.checkAsDrone();
@@ -839,7 +853,7 @@ public class F_105 extends Scheme1
         int i = this.aircIndex();
         if (this.FM instanceof Maneuver)
             if (this.typeDockableIsDocked()) {
-                if(((FlightModelMain) (super.FM)).CT.getRefuel() < 0.90F)
+                if(FM.CT.getRefuel() < 0.90F)
                     typeDockableAttemptDetach();
                 else
                 {
@@ -900,7 +914,7 @@ public class F_105 extends Scheme1
             }
 
         super.update(f);
-        if(((FlightModelMain) (super.FM)).CT.DragChuteControl > 0.0F && !bHasDeployedDragChute)
+        if(FM.CT.DragChuteControl > 0.0F && !bHasDeployedDragChute)
         {
             chute = new Chute(this);
             chute.setMesh("3do/plane/ChuteF-105/mono.sim");
@@ -909,30 +923,30 @@ public class F_105 extends Scheme1
             ((Actor) (chute)).pos.setRel(new Point3d(-8D, 0.0D, 0.5D), new Orient(0.0F, 90F, 0.0F));
             bHasDeployedDragChute = true;
         } else
-        if(bHasDeployedDragChute && ((FlightModelMain) (super.FM)).CT.bHasDragChuteControl)
-            if(((FlightModelMain) (super.FM)).CT.DragChuteControl == 1.0F && super.FM.getSpeedKMH() > 600F || ((FlightModelMain) (super.FM)).CT.DragChuteControl < 1.0F)
+        if(bHasDeployedDragChute && FM.CT.bHasDragChuteControl)
+            if(FM.CT.DragChuteControl == 1.0F && FM.getSpeedKMH() > 600F || FM.CT.DragChuteControl < 1.0F)
             {
                 if(chute != null)
                 {
                     chute.tangleChute(this);
                     ((Actor) (chute)).pos.setRel(new Point3d(-10D, 0.0D, 1.0D), new Orient(0.0F, 80F, 0.0F));
                 }
-                ((FlightModelMain) (super.FM)).CT.DragChuteControl = 0.0F;
-                ((FlightModelMain) (super.FM)).CT.bHasDragChuteControl = false;
-                ((FlightModelMain) (super.FM)).Sq.dragChuteCx = 0.0F;
+                FM.CT.DragChuteControl = 0.0F;
+                FM.CT.bHasDragChuteControl = false;
+                FM.Sq.dragChuteCx = 0.0F;
                 removeChuteTimer = Time.current() + 250L;
             } else
-            if(((FlightModelMain) (super.FM)).CT.DragChuteControl == 1.0F && super.FM.getSpeedKMH() < 20F)
+            if(FM.CT.DragChuteControl == 1.0F && FM.getSpeedKMH() < 20F)
             {
                 if(chute != null)
                     chute.tangleChute(this);
                 ((Actor) (chute)).pos.setRel(new Orient(0.0F, 100F, 0.0F));
-                ((FlightModelMain) (super.FM)).CT.DragChuteControl = 0.0F;
-                ((FlightModelMain) (super.FM)).CT.bHasDragChuteControl = false;
-                ((FlightModelMain) (super.FM)).Sq.dragChuteCx = 0.0F;
+                FM.CT.DragChuteControl = 0.0F;
+                FM.CT.bHasDragChuteControl = false;
+                FM.Sq.dragChuteCx = 0.0F;
                 removeChuteTimer = Time.current() + 10000L;
             }
-        if(removeChuteTimer > 0L && !((FlightModelMain) (super.FM)).CT.bHasDragChuteControl && Time.current() > removeChuteTimer)
+        if(removeChuteTimer > 0L && !FM.CT.bHasDragChuteControl && Time.current() > removeChuteTimer)
             chute.destroy();
       }
     public void doSetSootState(int i, int j) {
@@ -967,16 +981,25 @@ public class F_105 extends Scheme1
     }
 
     protected void moveAirBrake(float f) {
-        this.hierMesh().chunkSetAngles("Brake01_D0", 0.0F, 75F * f, 0.0F);
-        this.hierMesh().chunkSetAngles("Brake02_D0", 0.0F, 75F * f, 0.0F);
-        this.hierMesh().chunkSetAngles("Brake03_D0",  -75F * f, 0.0F, 0.0F);
-        this.hierMesh().chunkSetAngles("Brake04_D0",  75F * f, 0.0F, 0.0F);
-//        if (f < 0.20000000000000001D)
-//            Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.18F, 0.0F, -0.05F);
-//        else
-//            Aircraft.xyz[2] = Aircraft.cvt(f, 0.22F, 0.99F, -0.05F, -0.22F);
-//        this.hierMesh().chunkSetLocate("BrakeB01e_D0", Aircraft.xyz, Aircraft.ypr);
-//        this.hierMesh().chunkSetLocate("BrakeB02e_D0", Aircraft.xyz, Aircraft.ypr);
+        if(FM.CT.getGear() > 0.1F)
+            FM.Sq.dragAirbrakeCx = fAirbrakeCx / 2F;
+        else
+            FM.Sq.dragAirbrakeCx = fAirbrakeCx;
+
+        if(hasHydraulicPressure && (Time.current() > lTimeLastHydraulicPressureRecover + 500L) && FM.CT.getGear() > 0.1F)
+        {
+            this.hierMesh().chunkSetAngles("Brake01_D0", 0.0F, 0F * f, 0.0F);      // under
+            this.hierMesh().chunkSetAngles("Brake02_D0", 0.0F, 0F * f, 0.0F);      // up
+            this.hierMesh().chunkSetAngles("Brake03_D0",  -75F * f, 0.0F, 0.0F);   // side
+            this.hierMesh().chunkSetAngles("Brake04_D0",  75F * f, 0.0F, 0.0F);    // side
+        }
+        else
+        {
+            this.hierMesh().chunkSetAngles("Brake01_D0", 0.0F, 75F * f, 0.0F);     // under
+            this.hierMesh().chunkSetAngles("Brake02_D0", 0.0F, 75F * f, 0.0F);     // up
+            this.hierMesh().chunkSetAngles("Brake03_D0",  -75F * f, 0.0F, 0.0F);   // side
+            this.hierMesh().chunkSetAngles("Brake04_D0",  75F * f, 0.0F, 0.0F);    // side
+        }
  }
 
 
@@ -1113,10 +1136,9 @@ public class F_105 extends Scheme1
         if(overrideBailout)
             if(FM.AS.astateBailoutStep >= 0 && FM.AS.astateBailoutStep < 2)
             {
-                if(FM.CT.cockpitDoorControl > 0.5F && FM.CT.getCockpitDoor() > 0.5F)
+                if(FM.CT.cockpitDoorControl > 0.5F && FM.CT.getCockpitDoor() > 0.5F && FM.getSpeedKMH() < 15F)
                 {
                     FM.AS.astateBailoutStep = 11;
-                    doRemoveBlisters();
                 } else
                 {
                     FM.AS.astateBailoutStep = 2;
@@ -1127,93 +1149,124 @@ public class F_105 extends Scheme1
                 switch(FM.AS.astateBailoutStep)
                 {
                 case 2: // '\002'
-                    if(FM.CT.cockpitDoorControl < 0.5F)
-                        doRemoveBlister1();
+                    if(FM.CT.cockpitDoorControl < 0.5F || FM.CT.getCockpitDoor() < 0.5F || FM.getSpeedKMH() > 15F)
+                        doRemoveBlisters();
                     break;
 
                 case 3: // '\003'
-                    doRemoveBlisters();
                     lTimeNextEject = Time.current() + 1000L;
                     break;
                 }
-                if(((FlightModelMain) (super.FM)).AS.isMaster())
-                    ((FlightModelMain) (super.FM)).AS.netToMirrors(20, ((FlightModelMain) (super.FM)).AS.astateBailoutStep, 1, null);
-                ((FlightModelMain) (super.FM)).AS.astateBailoutStep = (byte)(((FlightModelMain) (super.FM)).AS.astateBailoutStep + 1);
-                if(((FlightModelMain) (super.FM)).AS.astateBailoutStep == 4)
-                    ((FlightModelMain) (super.FM)).AS.astateBailoutStep = 11;
+                if(FM.AS.isMaster())
+                    FM.AS.netToMirrors(20, FM.AS.astateBailoutStep, 1, null);
+                FM.AS.astateBailoutStep = (byte)(FM.AS.astateBailoutStep + 1);
+                if(FM.AS.astateBailoutStep == 4)
+                    FM.AS.astateBailoutStep = 11;
             } else
-            if(((FlightModelMain) (super.FM)).AS.astateBailoutStep >= 11 && ((FlightModelMain) (super.FM)).AS.astateBailoutStep <= 19)
+            if(FM.AS.astateBailoutStep >= 11 && FM.AS.astateBailoutStep <= 19)
             {
-                byte byte0 = ((FlightModelMain) (super.FM)).AS.astateBailoutStep;
-                if(((FlightModelMain) (super.FM)).AS.isMaster())
-                    ((FlightModelMain) (super.FM)).AS.netToMirrors(20, ((FlightModelMain) (super.FM)).AS.astateBailoutStep, 1, null);
-                ((FlightModelMain) (super.FM)).AS.astateBailoutStep = (byte)(((FlightModelMain) (super.FM)).AS.astateBailoutStep + 1);
-                if((super.FM instanceof Maneuver) && ((Maneuver)super.FM).get_maneuver() != 44)
+                byte byte0 = FM.AS.astateBailoutStep;
+                if(FM.AS.isMaster())
+                    FM.AS.netToMirrors(20, FM.AS.astateBailoutStep, 1, null);
+                FM.AS.astateBailoutStep = (byte)(FM.AS.astateBailoutStep + 1);
+                if((FM instanceof Maneuver) && ((Maneuver)FM).get_maneuver() != 44)
                 {
                     World.cur();
-                    if(((FlightModelMain) (super.FM)).AS.actor != World.getPlayerAircraft())
-                        ((Maneuver)super.FM).set_maneuver(44);
+                    if(FM.AS.actor != World.getPlayerAircraft())
+                        ((Maneuver)FM).set_maneuver(44);
                 }
-                if(((FlightModelMain) (super.FM)).AS.astatePilotStates[byte0 - 11] < 99)
+                doRemoveBodyFromPlane(byte0 - 10);
+                if(FM.getSpeedKMH() > 15F)
                 {
+                    if(byte0 == 11 || (byte0 == 12 && bTwoSeat))
+                        doEjectCatapult(byte0 - 10);
                     if(byte0 == 11)
-                    {
-                        doRemoveBodyFromPlane(2);
-                        doEjectCatapultStudent();
                         lTimeNextEject = Time.current() + 1000L;
-                    } else
-                    if(byte0 == 12)
-                    {
-                        doRemoveBodyFromPlane(1);
-                        doEjectCatapult();
-                        ((FlightModelMain) (super.FM)).AS.astateBailoutStep = 51;
-                        super.FM.setTakenMortalDamage(true, null);
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[0] = false;
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[1] = false;
-                        ((FlightModelMain) (super.FM)).AS.astateBailoutStep = -1;
+                    if (!bTwoSeat || byte0 > 11) {
+                        FM.AS.astateBailoutStep = -1;
                         overrideBailout = false;
-                        ((FlightModelMain) (super.FM)).AS.bIsAboutToBailout = true;
+                        FM.AS.bIsAboutToBailout = true;
                         ejectComplete = true;
                     }
-                    ((FlightModelMain) (super.FM)).AS.astatePilotStates[byte0 - 11] = 99;
-                } else
-                {
-                    EventLog.type("astatePilotStates[" + (byte0 - 11) + "]=" + ((FlightModelMain) (super.FM)).AS.astatePilotStates[byte0 - 11]);
+                    EventLog.onBailedOut(this, byte0 - 11);
+                    FM.AS.astatePilotStates[byte0 - 11] = 99;
+                    return;
                 }
+                else
+                {
+                    if(FM.AS.astatePilotStates[byte0 - 11] < 99)
+                    {
+                        FM.AS.astatePilotStates[byte0 - 11] = 100;
+                        if(FM.AS.isMaster())
+                        {
+                            try
+                            {
+                              Hook localHook = this.findHook("_ExternalBail0" + (byte0 - 10));
+
+                              if (localHook != null)
+                              {
+                                  Loc localLoc = new Loc(0.0D, 0.0D, 0.0D, World.Rnd().nextFloat(-45.0F, 45.0F), 0.0F, 0.0F);
+
+                                  localHook.computePos(this, this.pos.getAbs(), localLoc);
+
+                                  new Paratrooper(this, this.getArmy(), byte0 - 11, localLoc, this.FM.Vwld);
+
+                                  if ((byte0 > 10) && (byte0 <= 19))
+                                  {
+                                      EventLog.onBailedOut(this, byte0 - 11);
+                                  }
+                              }
+                            } catch (Exception localException) {
+                            } finally {
+                            }
+                            if ((FM.AS.astatePilotStates[byte0 - 11] == 19) && (this == World.getPlayerAircraft()) && (!World.isPlayerGunner()) && (FM.brakeShoe))
+                            {
+                                  MsgDestroy.Post(Time.current() + 1000L, this);
+                            }
+                        }
+                        FM.setTakenMortalDamage(true, null);
+                        FM.CT.WeaponControl[0] = false;
+                        FM.CT.WeaponControl[1] = false;
+                        FM.CT.bHasAileronControl = false;
+                        FM.CT.bHasRudderControl = false;
+                        FM.CT.bHasElevatorControl = false;
+                        if(!bTwoSeat || byte0 > 11)
+                        {
+                            FM.AS.astateBailoutStep = -1;
+                            overrideBailout = false;
+                            FM.AS.bIsAboutToBailout = true;
+                            ejectComplete = true;
+                            if ((this == World.getPlayerAircraft()) && (!World.isPlayerGunner()) && (FM.brakeShoe))
+                            {
+                                  MsgDestroy.Post(Time.current() + 1000L, this);
+                            }
+                        }
+                        return;
+                    }
+                }
+                EventLog.type("astatePilotStates[" + (byte0 - 11) + "]=" + FM.AS.astatePilotStates[byte0 - 11]);
             }
     }
 
-
-
     private final void doRemoveBlister1()
     {
-        if(hierMesh().chunkFindCheck("Blister1_D0") != -1 && FM.AS.getPilotHealth(0) > 0.0F)
-        {
-            hierMesh().hideSubTrees("Blister1_D0");
-            Wreckage wreckage = new Wreckage(this, hierMesh().chunkFind("Blister1_D0"));
-            wreckage.collide(false);
-            Vector3d vector3d = new Vector3d();
-            vector3d.set(FM.Vwld);
-            wreckage.setSpeed(vector3d);
-        }
     }
 
     private final void doRemoveBlisters()
     {
-        for(int i = 2; i < 10; i++)
-            if(hierMesh().chunkFindCheck("Blister" + i + "_D0") != -1 && FM.AS.getPilotHealth(i - 1) > 0.0F)
+        for(int i = 1; i < 5; i++)
+            if(hierMesh().chunkFindCheck("Blister" + i + "_D0") != -1)
             {
                 hierMesh().hideSubTrees("Blister" + i + "_D0");
-                Wreckage wreckage = new Wreckage(this, hierMesh().chunkFind("Blister" + i + "_D0"));
+                Wreckage wreckage = new Wreckage(this, hierMesh().chunkFind( bTwoSeat ? ("Blister" + i + "a_D0") : ("Blister" + i + "_D0") ));
                 wreckage.collide(false);
                 Vector3d vector3d = new Vector3d();
                 vector3d.set(FM.Vwld);
                 wreckage.setSpeed(vector3d);
             }
-
     }
 
-    public void doEjectCatapult()
+    public void doEjectCatapult(final int i)
     {
         new MsgAction(false, this) {
 
@@ -1224,8 +1277,8 @@ public class F_105 extends Scheme1
                 {
                     Loc loc = new Loc();
                     Loc loc1 = new Loc();
-                    Vector3d vector3d = new Vector3d(0.0D, 0.0D, 20D);
-                    HookNamed hooknamed = new HookNamed(aircraft, "_ExternalSeat01");
+                    Vector3d vector3d = new Vector3d(0.0D, 0.0D, 40D - (double) i * 7D);
+                    HookNamed hooknamed = new HookNamed(aircraft, "_ExternalSeat0" + i);
                     aircraft.pos.getAbs(loc1);
                     hooknamed.computePos(aircraft, loc1, loc);
                     loc.transform(vector3d);
@@ -1238,7 +1291,7 @@ public class F_105 extends Scheme1
 
         }
 ;
-        hierMesh().chunkVisible("Seat_D0", false);
+        hierMesh().chunkVisible("Seat" + i + "_D0", false);
         FM.setTakenMortalDamage(true, null);
         FM.CT.WeaponControl[0] = false;
         FM.CT.WeaponControl[1] = false;
@@ -1246,36 +1299,6 @@ public class F_105 extends Scheme1
         FM.CT.bHasRudderControl = false;
         FM.CT.bHasElevatorControl = false;
     }
-
-
-    public void doEjectCatapultStudent()
-    {
-        new MsgAction(false, this) {
-
-            public void doAction(Object obj)
-            {
-                Aircraft aircraft = (Aircraft)obj;
-                if(Actor.isValid(aircraft))
-                {
-                    Loc loc = new Loc();
-                    Loc loc1 = new Loc();
-                    Vector3d vector3d = new Vector3d(0.0D, 0.0D, 20D);
-                    HookNamed hooknamed = new HookNamed(aircraft, "_ExternalSeat02");
-                    aircraft.pos.getAbs(loc1);
-                    hooknamed.computePos(aircraft, loc1, loc);
-                    loc.transform(vector3d);
-                    vector3d.x += aircraft.FM.Vwld.x;
-                    vector3d.y += aircraft.FM.Vwld.y;
-                    vector3d.z += aircraft.FM.Vwld.z;
-                    new EjectionSeat(6, loc, vector3d, aircraft);
-                }
-            }
-
-        }
-;
-        hierMesh().chunkVisible("Seat2_D0", false);
-    }
-
 
     private final void umn() {
         Vector3d vector3d = this.FM.getVflow();
@@ -1334,7 +1357,7 @@ public class F_105 extends Scheme1
     {
         float x = FM.getAltitude() / 1000F;
         float ThrustDegradation = 0.0F;
-        if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() < 1.001F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
+        if(FM.EI.engines[0].getThrustOutput() < 1.001F && FM.EI.engines[0].getStage() > 5)
             if(calculateMach() < 0.0F);
         if((double)x > 14.0D)
         {
@@ -1352,10 +1375,10 @@ public class F_105 extends Scheme1
 
 
     public void computeEngineAB() {
-        if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 0.99F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5 && this.calculateMach() <= 0.3 )
-           ((FlightModelMain) (super.FM)).producedAF.x += 12000D;
-        if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-           ((FlightModelMain) (super.FM)).producedAF.x += 38110D;
+        if(FM.EI.engines[0].getThrustOutput() > 0.99F && FM.EI.engines[0].getStage() > 5 && this.calculateMach() <= 0.3 )
+           FM.producedAF.x += 12000D;
+        if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() > 5)
+           FM.producedAF.x += 38110D;
         float x = this.FM.getAltitude() / 1000F;
         float thrustDegradation  = 0.0F;
         if (this.FM.EI.engines[0].getThrustOutput() > 1.001F && this.FM.EI.engines[0].getStage() == 6)
@@ -1379,7 +1402,7 @@ public class F_105 extends Scheme1
     
     
     private void setSubsonicLimiter() {
-        if (super.FM.getAltitude() > 0.0F && this.calculateMach() >= 0.96999999999999997D && this.FM.EI.engines[0].getThrustOutput() < 1.001F && this.FM.EI.engines[0].getStage() > 5)
+        if (FM.getAltitude() > 0.0F && this.calculateMach() >= 0.96999999999999997D && this.FM.EI.engines[0].getThrustOutput() < 1.001F && this.FM.EI.engines[0].getStage() > 5)
             this.FM.Sq.dragParasiteCx += 0.003F;
     }
 
@@ -1396,7 +1419,7 @@ public class F_105 extends Scheme1
         Drag = 0.00032F - 0.00016F*x;
         //{{0,0.00032},{2, 0.0}}
     }
-    ((FlightModelMain) (super.FM)).Sq.dragParasiteCx += Drag;
+    FM.Sq.dragParasiteCx += Drag;
          }
 
 
@@ -1404,12 +1427,12 @@ public class F_105 extends Scheme1
     private boolean Flaps ()
      {
                     Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-                    if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F && (double)calculateMach() >= 0.13D && (double)calculateMach() < 0.18D && !Flaps)
+                    if(FM.EI.engines[0].getThrustOutput() > 1.001F && (double)calculateMach() >= 0.13D && (double)calculateMach() < 0.18D && !Flaps)
             {
                     polares.Cy0_1 += 2.0F;
             Flaps = true;
                     }
-                    if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() < 1.001F && (double)calculateMach() < 0.13D && (double)calculateMach() > 0.18D && Flaps)
+                    if(FM.EI.engines[0].getThrustOutput() < 1.001F && (double)calculateMach() < 0.13D && (double)calculateMach() > 0.18D && Flaps)
                     {
                     polares.Cy0_1 -=2.0F;
             Flaps = false;
@@ -1421,12 +1444,12 @@ public class F_105 extends Scheme1
     private boolean Flaps2()
      {
                     Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-                    if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F && (double)calculateMach() >= 0.05D && (double)calculateMach() < 0.21D && !Flaps2)
+                    if(FM.EI.engines[0].getThrustOutput() > 1.001F && (double)calculateMach() >= 0.05D && (double)calculateMach() < 0.21D && !Flaps2)
             {
                     polares.CyCritH_1 += 1.3F;
             Flaps2 = true;
                     }
-                    if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() < 1.001F && (double)calculateMach() < 0.05D && (double)calculateMach() > 0.21D && Flaps2)
+                    if(FM.EI.engines[0].getThrustOutput() < 1.001F && (double)calculateMach() < 0.05D && (double)calculateMach() > 0.21D && Flaps2)
                     {
                     polares.CyCritH_1 -=1.3F;
             Flaps2 = false;
@@ -1437,12 +1460,12 @@ public class F_105 extends Scheme1
           private boolean Flaps3()
      {
                     Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-                    if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F && (double)calculateMach() < 0.28D && !Flaps3)
+                    if(FM.EI.engines[0].getThrustOutput() > 1.001F && (double)calculateMach() < 0.28D && !Flaps3)
             {
                     polares.CxMin_1 -= 0.04;
             Flaps3 = true;
                     }
-                    if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() < 1.001F && (double)calculateMach() > 0.28D && Flaps3)
+                    if(FM.EI.engines[0].getThrustOutput() < 1.001F && (double)calculateMach() > 0.28D && Flaps3)
                     {
                     polares.CxMin_1 +=0.04;
             Flaps3 = false;
@@ -1949,6 +1972,9 @@ public class F_105 extends Scheme1
     private long openChuteTimer = 0L;
     private long removeChuteTimer;
     private static Orient o = new Orient();
+    private boolean bTwoSeat;
+    private float fAirbrakeCx;
+    private long lTimeLastHydraulicPressureRecover;
 
 
 
