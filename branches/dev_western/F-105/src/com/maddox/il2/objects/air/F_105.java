@@ -499,6 +499,9 @@ public class F_105 extends Scheme1
         float f1 = -45F * f;
         this.hierMesh().chunkSetAngles("Flap01_D0", 0.0F, f1, 0.0F);
         this.hierMesh().chunkSetAngles("Flap02_D0", 0.0F, f1, 0.0F);
+        f1 = Aircraft.cvt(f, 0.22F, 0.29F, 0.0F, 20F);
+        this.hierMesh().chunkSetAngles("SlatL_D0", 0.0F, 0.0F, -f1);
+        this.hierMesh().chunkSetAngles("SlatR_D0", 0.0F, 0.0F, -f1);
     }
 
     protected void moveFan(float f) {}
@@ -948,7 +951,10 @@ public class F_105 extends Scheme1
             }
         if(removeChuteTimer > 0L && !FM.CT.bHasDragChuteControl && Time.current() > removeChuteTimer)
             chute.destroy();
+        if(FM.CT.getAirBrake() == 0.0F && FM.EI.engines[0].getControlThrottle() > 0.90F)
+            moveAirBrake(0.0F);
       }
+
     public void doSetSootState(int i, int j) {
         for (int k = 0; k < 2; k++) {
             if (this.FM.AS.astateSootEffects[i][k] != null)
@@ -986,19 +992,28 @@ public class F_105 extends Scheme1
         else
             FM.Sq.dragAirbrakeCx = fAirbrakeCx;
 
+        boolean bNozzleOpen = false;
+        float f1 = f;
+        float fNozzleOpenBase = Aircraft.cvt(FM.EI.engines[0].getControlThrottle(), 0.90F, 1.10F, 0.0F, 0.115F);
+        if(FM.EI.engines[0].getControlThrottle() > 0.90F)
+        {
+            bNozzleOpen = true;
+            f1 = Math.max(f, fNozzleOpenBase);
+        }
+
         if(hasHydraulicPressure && (Time.current() > lTimeLastHydraulicPressureRecover + 500L) && FM.CT.getGear() > 0.1F)
         {
-            this.hierMesh().chunkSetAngles("Brake01_D0", 0.0F, 0F * f, 0.0F);      // under
-            this.hierMesh().chunkSetAngles("Brake02_D0", 0.0F, 0F * f, 0.0F);      // up
-            this.hierMesh().chunkSetAngles("Brake03_D0",  -75F * f, 0.0F, 0.0F);   // side
-            this.hierMesh().chunkSetAngles("Brake04_D0",  75F * f, 0.0F, 0.0F);    // side
+            this.hierMesh().chunkSetAngles("Brake01_D0", 0.0F, (bNozzleOpen ? 75F : 0F) * fNozzleOpenBase, 0.0F);      // under
+            this.hierMesh().chunkSetAngles("Brake02_D0", 0.0F, (bNozzleOpen ? 75F : 0F) * fNozzleOpenBase, 0.0F);      // up
+            this.hierMesh().chunkSetAngles("Brake03_D0",  -75F * f1, 0.0F, 0.0F);   // side
+            this.hierMesh().chunkSetAngles("Brake04_D0",  75F * f1, 0.0F, 0.0F);    // side
         }
         else
         {
-            this.hierMesh().chunkSetAngles("Brake01_D0", 0.0F, 75F * f, 0.0F);     // under
-            this.hierMesh().chunkSetAngles("Brake02_D0", 0.0F, 75F * f, 0.0F);     // up
-            this.hierMesh().chunkSetAngles("Brake03_D0",  -75F * f, 0.0F, 0.0F);   // side
-            this.hierMesh().chunkSetAngles("Brake04_D0",  75F * f, 0.0F, 0.0F);    // side
+            this.hierMesh().chunkSetAngles("Brake01_D0", 0.0F, (hasHydraulicPressure ? 75F : 460F) * f1, 0.0F);     // under
+            this.hierMesh().chunkSetAngles("Brake02_D0", 0.0F, 75F * f1, 0.0F);     // up
+            this.hierMesh().chunkSetAngles("Brake03_D0",  -75F * f1, 0.0F, 0.0F);   // side
+            this.hierMesh().chunkSetAngles("Brake04_D0",  75F * f1, 0.0F, 0.0F);    // side
         }
  }
 
