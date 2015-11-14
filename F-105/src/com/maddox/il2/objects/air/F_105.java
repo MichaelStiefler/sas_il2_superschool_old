@@ -951,8 +951,7 @@ public class F_105 extends Scheme1
             }
         if(removeChuteTimer > 0L && !FM.CT.bHasDragChuteControl && Time.current() > removeChuteTimer)
             chute.destroy();
-        if(FM.CT.getAirBrake() == 0.0F && FM.EI.engines[0].getControlThrottle() > 0.90F)
-            moveAirBrake(0.0F);
+        moveAirBrake(FM.CT.getAirBrake());
       }
 
     public void doSetSootState(int i, int j) {
