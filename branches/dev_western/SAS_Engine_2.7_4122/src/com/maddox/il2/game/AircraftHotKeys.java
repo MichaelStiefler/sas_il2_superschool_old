@@ -2577,7 +2577,7 @@ public class AircraftHotKeys
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced16", "AIRCRAFT_CARRIERHOOK", 129, 349));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced17", "AIRCRAFT_BRAKESHOE", 130, 350));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced18", "COCKPITDOOR", 128, 348));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced19", "Open/Close Side Hatch ", 134, 403));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced19", "Open/Close Side Hatch", 134, 403));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced20", "Toggle Fuel Dump", 132, 401));
         HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$10", "3advanced21") {
 
