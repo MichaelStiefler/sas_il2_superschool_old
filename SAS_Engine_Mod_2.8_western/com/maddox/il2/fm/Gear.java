@@ -178,6 +178,7 @@ public class Gear {
 	// --------------------------------------------------------
 	private boolean bCatapultAllow;
 	private boolean bCatapultBoost;
+	private boolean bCatapultReferMissionYear;
 	private float catapultPower;
 	private float catapultPowerJets;
 	private boolean bCatapultAI;
@@ -185,7 +186,7 @@ public class Gear {
 	private boolean bCatapultSet;
 	private boolean bAlreadySetCatapult;
 	private boolean bStandardDeckCVL;
-//	private boolean bSteamCatapult;
+	private boolean bSteamCatapult;
 	private int iCatapultAlreadySetNum;
 	private boolean bHasBlastDeflector;
 	private Eff3DActor catEff;
@@ -297,10 +298,11 @@ public class Gear {
 		bCatapultBoost = false;
 		bCatapultAI = true;
 		bCatapultAllowAI = true;
+		bCatapultReferMissionYear = false;
 		bCatapultSet = false;
 		bAlreadySetCatapult = false;
 		bStandardDeckCVL = false;
-//		bSteamCatapult = false;
+		bSteamCatapult = false;
 		iCatapultAlreadySetNum = -1;
 		bHasBlastDeflector = false;
 		onGround = false;
@@ -352,6 +354,8 @@ public class Gear {
 		if (Mission.cur().sectFile().get("Mods", "CatapultBoost", 1) == 1 && !Mission.isCoop()) bCatapultBoost = true;
 		if (Config.cur.ini.get("Mods", "CatapultAllowAI", 1) == 0) bCatapultAllowAI = false;
 		if (Mission.cur().sectFile().get("Mods", "CatapultAllowAI", 1) == 0) bCatapultAllowAI = false;
+		if (Config.cur.ini.get("Mods", "CatapultReferMissionYear", 0) == 1) bCatapultReferMissionYear = true;
+		if (Mission.cur().sectFile().get("Mods", "CatapultReferMissionYear", 0) == 1) bCatapultReferMissionYear = true;
 		if (Config.cur.ini.get("Mods", "StandardDeckCVL", 0) == 1) bStandardDeckCVL = true;
 		if (Mission.cur().sectFile().get("Mods", "StandardDeckCVL", 0) == 1) bStandardDeckCVL = true;
 		// TODO: --- CTO Mod 4.12 ---
@@ -570,7 +574,7 @@ public class Gear {
 								theTypeFastJetClass = Class.forName("com.maddox.il2.objects.air.TypeFastJet");
 							} catch (Exception e) {
 							}
-							if (Mission.curYear() > 1948) {
+							if (!bCatapultReferMissionYear || Mission.curYear() > 1948) {
 								if ((theTypeSupersonicClass != null) && (FM.actor != null) && (FM.actor.getClass().isInstance(theTypeSupersonicClass))) d5 = 3000D;
 								if ((theTypeFastJetClass != null) && (FM.actor != null) && (FM.actor.getClass().isInstance(theTypeFastJetClass))) d5 = 3000D;
 							}
@@ -739,16 +743,27 @@ public class Gear {
 										FM.Or.setYPR(FM.brakeShoeLastCarrier.pos.getAbsOrient().getYaw() + (float) dCatapultYaw[i4], Pitch, FM.brakeShoeLastCarrier.pos.getAbsOrient().getRoll());
 										FM.actor.pos.setAbs(FM.Loc, FM.Or);
 										if (bCatapultBoost) {
-											if ((bIsTypeSupersonic || bIsTypeFastJet || bIsJets) && Mission.curYear() > 1945 && Mission.curYear() < 1953) {
-												FM.EI.setCatapult(FM.M.getFullMass(), catapultPowerJets, i4);
-											} else if ((bIsTypeSupersonic || bIsTypeFastJet || bIsJets) && Mission.curYear() > 1952) {
-												int i = (int) Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 900F) * catapultPowerJets / 10);
-												FM.EI.setCatapult(FM.M.getFullMass(), catapultPowerJets + (float) i, i4);
-											} else if (Mission.curYear() < 1953) {
-												FM.EI.setCatapult(FM.M.getFullMass(), catapultPower, i4);
-											} else {
-												int j = (int) Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 900F) * 2.0F);
-												FM.EI.setCatapult(FM.M.getFullMass(), catapultPower + (float) j, i4);
+											if (bCatapultReferMissionYear){
+												if ((bIsTypeSupersonic || bIsTypeFastJet || bIsJets) && Mission.curYear() > 1945 && Mission.curYear() < 1953) {
+													FM.EI.setCatapult(FM.M.getFullMass(), catapultPowerJets, i4);
+												} else if ((bIsTypeSupersonic || bIsTypeFastJet || bIsJets) && Mission.curYear() > 1952) {
+													int i = (int) Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 900F) * catapultPowerJets / 10);
+													FM.EI.setCatapult(FM.M.getFullMass(), catapultPowerJets + (float) i, i4);
+												} else if (Mission.curYear() < 1953) {
+													FM.EI.setCatapult(FM.M.getFullMass(), catapultPower, i4);
+												} else {
+													int j = (int) Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 900F) * 2.0F);
+													FM.EI.setCatapult(FM.M.getFullMass(), catapultPower + (float) j, i4);
+												}
+											}
+											else{
+												if (bIsTypeSupersonic || bIsTypeFastJet || bIsJets) {
+													int i = (int) Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 900F) * catapultPowerJets / 10);
+													FM.EI.setCatapult(FM.M.getFullMass(), catapultPowerJets + (float) i, i4);
+												} else {
+													int j = (int) Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 900F) * 2.0F);
+													FM.EI.setCatapult(FM.M.getFullMass(), catapultPower + (float) j, i4);
+												}
 											}
 										} else {
 											FM.EI.setCatapult(FM.M.getFullMass(), 10F, i4);
@@ -1412,7 +1427,7 @@ public class Gear {
 
 		// TODO: +++ CTO Mod 4.12 +++
 		if (FM.EI.getCatapult() && isUnderDeck() && !FM.brakeShoe) {
-			if (FM.brakeShoeLastCarrier != null && catEff == null && Mission.curYear() > 1952) {
+			if (FM.brakeShoeLastCarrier != null && catEff == null && bSteamCatapult) {
 				FM.actor.pos.getAbs(Aircraft.tmpLoc1);
 				FM.brakeShoeLoc.get(Pn);
 				Aircraft.tmpLoc1.transform(Pn, PnT);
@@ -1675,7 +1690,7 @@ public class Gear {
 
 				catapultPower = theSectFile.get(strSection, "catapultPower", 0.0F);
 				catapultPowerJets = theSectFile.get(strSection, "catapultPowerJets", 0.0F);
-//				if (theSectFile.get(strSection, "bSteamCatapult", 0) == 1) bSteamCatapult = true;
+				if (theSectFile.get(strSection, "bSteamCatapult", 0) == 1) bSteamCatapult = true;
 				if (iCatapults > 0) {
 					flag2 = true;
 					bCatapultAI = bCatapultAllowAI;

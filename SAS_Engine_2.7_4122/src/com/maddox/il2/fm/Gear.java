@@ -53,8 +53,8 @@ import com.maddox.rts.Time;
 
 public class Gear
 {
-	//TODO: Default Parameters
-	// --------------------------------------------------------
+    //TODO: Default Parameters
+    // --------------------------------------------------------
     public int pnti[];
     boolean onGround;
     boolean nearGround;
@@ -189,12 +189,13 @@ public class Gear
     public float mgh;
     public float mgalpha;
     public float sgx;
-	// --------------------------------------------------------
+    // --------------------------------------------------------
 
-	// TODO: New parameters
-	// --------------------------------------------------------
+    // TODO: New parameters
+    // --------------------------------------------------------
     private boolean bCatapultAllow;
     private boolean bCatapultBoost;
+    private boolean bCatapultReferMissionYear;
     private float catapultPower;
     private float catapultPowerJets;
     private boolean bCatapultAI;
@@ -207,7 +208,7 @@ public class Gear
     private boolean bHasBlastDeflector;
     private Eff3DActor catEff;
     public ZutiAirfieldPoint zutiCurrentZAP;
-	// --------------------------------------------------------
+    // --------------------------------------------------------
     private double[] dCatapultOffsetX = new double[4];
     private double[] dCatapultOffsetY = new double[4];
     private double[] dCatapultYaw = new double[4];
@@ -217,7 +218,7 @@ public class Gear
     public double fric_pub;
     public double fricF_pub;
     public double fricR_pub;
-	// --------------------------------------------------------
+    // --------------------------------------------------------
     
     private static class PlateFilter
         implements ActorFilter
@@ -326,6 +327,7 @@ public class Gear
         bCatapultBoost = false;
         bCatapultAI = true;
         bCatapultAllowAI = true;
+        bCatapultReferMissionYear = false;
         bCatapultSet = false;
         bAlreadySetCatapult = false;
         bStandardDeckCVL = false;
@@ -385,6 +387,10 @@ public class Gear
             bCatapultAllowAI = false;
         if(Mission.cur().sectFile().get("Mods", "CatapultAllowAI", 1) == 0)
             bCatapultAllowAI = false;
+        if (Config.cur.ini.get("Mods", "CatapultReferMissionYear", 0) == 1)
+            bCatapultReferMissionYear = true;
+        if (Mission.cur().sectFile().get("Mods", "CatapultReferMissionYear", 0) == 1)
+            bCatapultReferMissionYear = true;
         if(Config.cur.ini.get("Mods", "StandardDeckCVL", 0) == 1)
             bStandardDeckCVL = true;
         if(Mission.cur().sectFile().get("Mods", "StandardDeckCVL", 0) == 1)
@@ -644,7 +650,7 @@ public class Gear
                                 theTypeFastJetClass = Class.forName("com.maddox.il2.objects.air.TypeFastJet");
                             } catch (Exception e) {
                             }
-                            if (Mission.curYear() > 1948) {
+                            if (!bCatapultReferMissionYear || Mission.curYear() > 1948) {
                                 if ((theTypeSupersonicClass != null) && (FM.actor != null) && (FM.actor.getClass().isInstance(theTypeSupersonicClass)))
                                     d5 = 3000D;
                                 if ((theTypeFastJetClass != null) && (FM.actor != null) && (FM.actor.getClass().isInstance(theTypeFastJetClass)))
@@ -856,18 +862,28 @@ public class Gear
                                         FM.Or.setYPR(FM.brakeShoeLastCarrier.pos.getAbsOrient().getYaw() + (float) dCatapultYaw[i4], Pitch, FM.brakeShoeLastCarrier.pos.getAbsOrient().getRoll());
                                         FM.actor.pos.setAbs(FM.Loc, FM.Or);
                                         if (bCatapultBoost) {
-                                            if ((bIsTypeSupersonic || bIsTypeFastJet || bIsJets) && Mission.curYear() > 1945 && Mission.curYear() < 1953){
-                                                FM.EI.setCatapult(FM.M.getFullMass(), catapultPowerJets, i4);
-                                            }
-                                            else if ((bIsTypeSupersonic || bIsTypeFastJet || bIsJets) && Mission.curYear() > 1952) {
-                                                int i = (int) Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 900F) * catapultPowerJets / 10);
-                                                FM.EI.setCatapult(FM.M.getFullMass(), catapultPowerJets + (float) i, i4);
-                                            }
-                                            else if (Mission.curYear() < 1953) {
-                                                FM.EI.setCatapult(FM.M.getFullMass(), catapultPower, i4);
+                                            if (bCatapultReferMissionYear){
+                                                if ((bIsTypeSupersonic || bIsTypeFastJet || bIsJets) && Mission.curYear() > 1945 && Mission.curYear() < 1953){
+                                                    FM.EI.setCatapult(FM.M.getFullMass(), catapultPowerJets, i4);
+                                                }
+                                                else if ((bIsTypeSupersonic || bIsTypeFastJet || bIsJets) && Mission.curYear() > 1952) {
+                                                    int i = (int) Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 900F) * catapultPowerJets / 10);
+                                                    FM.EI.setCatapult(FM.M.getFullMass(), catapultPowerJets + (float) i, i4);
+                                                }
+                                                else if (Mission.curYear() < 1953) {
+                                                    FM.EI.setCatapult(FM.M.getFullMass(), catapultPower, i4);
+                                                } else {
+                                                    int j = (int) Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 900F) * 2.0F);
+                                                    FM.EI.setCatapult(FM.M.getFullMass(), catapultPower + (float) j, i4);
+                                                }
                                             } else {
-                                                int j = (int) Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 900F) * 2.0F);
-                                                FM.EI.setCatapult(FM.M.getFullMass(), catapultPower + (float) j, i4);
+                                                if (bIsTypeSupersonic || bIsTypeFastJet || bIsJets) {
+                                                    int i = (int) Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 900F) * catapultPowerJets / 10);
+                                                    FM.EI.setCatapult(FM.M.getFullMass(), catapultPowerJets + (float) i, i4);
+                                                } else {
+                                                    int j = (int) Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 900F) * 2.0F);
+                                                    FM.EI.setCatapult(FM.M.getFullMass(), catapultPower + (float) j, i4);
+                                                }
                                             }
                                         } else {
                                             FM.EI.setCatapult(FM.M.getFullMass(), 10F, i4);
@@ -1124,347 +1140,347 @@ public class Gear
         double d5 = 0.0001D * d1;
         double d6 = FM.CT.getBrake();
         double d7 = FM.CT.getRudder();
-		// TODO: PAS++
-		double db1 = ((FlightModelMain) (FM)).CT.getBrakeRight();
-		double db2 = ((FlightModelMain) (FM)).CT.getBrakeLeft();
-		double da = db1 - db2; // diff alone
-		double db = Math.max(d6, Math.max(db1, db2)); // applied pedal brakes
-		// combined with common
-		// PAS--
-		
-		switch (i) {
-		case 0: // '\0' // MAIN WHEELS ( LEFT & RIGHT )
-		case 1: // '\001'
-			double d8 = 1.2D;
-			if (i == 0)
-				d8 = -1.2D;
-			nOfGearsOnGr++;
-			isGearColl = true;
-			gVelocity[i] = ForwardVPrj;
-			// TODO: PAS++ after TAK
-			// this sets the action of braking system: independent differential
-			// vs. rudder controlled
-			if (d6 > 0.1D || db > 0.1D) // total brake action as db or d6
-			{
-				switch (FM.CT.DiffBrakesType) {
-				case 0: // std
-				case 1: // std for passive front wheel steering
-				default:
-					if (d7 > 0.1D)
-						db += d8 * db * (d7 - 0.1D); // common * rudder - brake
-					// & pedal action
-					// combined
-					if (d7 < -0.1D)
-						db += d8 * db * (d7 + 0.1D);
-					break;
-				case 2: // diff combined - common * rudder plus left/right
-					// brakes difference
-					if (d7 > 0.1D)
-						db += d8 * db * (d7 - 0.1D);
-					if (d7 < -0.1D)
-						db += d8 * db * (d7 + 0.1D);
-					if (da > 0.1D)
-						db += d8 * 4D * (da - 0.1D);
-					if (da < -0.1D)
-						db += d8 * 4D * (da + 0.1D);
-					break;
-				case 3: // diff - toe brakes
-					if (da > 0.1D)
-						db += d8 * 2D * (da - 0.1D); // left/right brakes
-					// difference alone
-					if (da < -0.1D)
-						db += d8 * 2D * (da + 0.1D);
-					// if(d6 > 0.1D)
-					// db += d8 * 2D * (d6 - 0.1D); // common added (overriding)
-					// - in reality there should be no common!
-					break;
-				case 4: // common * rudder - no pedals - Spitfire & Yak style
-					if (d7 > 0.1D)
-						db += d8 * d6 * (d7 - 0.1D);
-					if (d7 < -0.1D)
-						db += d8 * d6 * (d7 + 0.1D);
-					break;
-				}
-				if (db > 1.0D)
-					db = 1.0D;
-				if (db < 0.0D)
-					db = 0.0D;
-				// PAS--
-			}
-			double d9 = Math.sqrt(ForwardVPrj * ForwardVPrj + RightVPrj
-					* RightVPrj);
-			if (d9 < 0.01D)
-				d9 = 0.01D;
-			double d10 = 1.0D / d9;
-			double d11 = ForwardVPrj * d10;
-			if (d11 < 0.0D)
-				d11 *= -1D;
-			double d12 = RightVPrj * d10;
-			if (d12 < 0.0D)
-				d12 *= -1D;
-			double d13 = 5D;
-			if (((Tuple3d) (PnT)).y * RightVPrj > 0.0D) {
-				if (((Tuple3d) (PnT)).y > 0.0D)
-					d13 += 7D * RightVPrj;
-				else
-					d13 -= 7D * RightVPrj;
-				if (d13 > 20D)
-					d13 = 20D;
-			}
-			double d14 = 15000D;
-			if (d9 < 3D) {
-				double d15 = -0.33333299999999999D * (d9 - 3D);
-				d14 += 3000D * d15 * d15;
-			}
-			fricR = -d13 * 100000D * RightVPrj * d5;
-			maxFric = d14 * d5 * d12;
-			if (fricR > maxFric)
-				fricR = maxFric;
-			if (fricR < -maxFric)
-				fricR = -maxFric;
-			fricF = -d13 * 600D * ForwardVPrj * d5;
-			maxFric = d13
-			* Math.max(200D * (1.0D - 0.040000000000000001D * d9), 5D)
-			* d5 * d11;
-			if (fricF > maxFric)
-				fricF = maxFric;
-			if (fricF < -maxFric)
-				fricF = -maxFric;
-			double d16 = 0.029999999999999999D;
-			if (((Tuple3f) (Pnt[2])).x > 0.0F)
-				d16 = 0.059999999999999998D;
-			double d17 = Math.abs(ForwardVPrj);
-			if (d17 < 1.0D)
-				d16 += 3D * (1.0D - d17);
-			// TODO: PAS++
-			d16 *= 0.029999999999999999D * db;
-			// PAS--
-			fricF += -300000D * d16 * ForwardVPrj * d5;
-			maxFric = d14 * d5 * d11;
-			if (fricF > maxFric)
-				fricF = maxFric;
-			if (fricF < -maxFric)
-				fricF = -maxFric;
-			fric = Math.sqrt(fricF * fricF + fricR * fricR);
-			if (fric > maxFric) {
-				fric = maxFric / fric;
-				fricF *= fric;
-				fricR *= fric;
-			}
-			tmpV.scale(fricF, Forward);
-			Tn.add(tmpV);
-			tmpV.scale(fricR, Right);
-			Tn.add(tmpV);
-			if (bIsMaster && NormalVPrj < 0.0D) {
-				double d18 = ForwardVPrj * ForwardVPrj
-				* 8.0000000000000007E-005D + RightVPrj * RightVPrj
-				* 0.0067999999999999996D;
-				if (((FlightModelMain) (FM)).CT.bHasArrestorControl)
-					d18 += NormalVPrj * NormalVPrj * 0.025000000000000001D;
-				else
-					d18 += NormalVPrj * NormalVPrj * 0.070000000000000007D;
-				if (d18 > 1.0D) {
-					fatigue[i] += 10;
-					double d21 = 38000D + (double) ((FlightModelMain) (FM)).M.massEmpty * 6D;
-					double d23 = (((Tuple3d) (Tn)).x * ((Tuple3d) (Tn)).x
-							* 0.14999999999999999D + ((Tuple3d) (Tn)).y
-							* ((Tuple3d) (Tn)).y * 0.14999999999999999D + ((Tuple3d) (Tn)).z
-							* ((Tuple3d) (Tn)).z * 0.080000000000000002D)
-							/ (d21 * d21);
-					if (fatigue[i] > 100 || d23 > 1.0D) {
-						landHit(i, (float) d18);
-						Aircraft aircraft1 = (Aircraft) ((Interpolate) (FM)).actor;
-						if (i == 0)
-							aircraft1.msgCollision(aircraft1, "GearL2_D0",
-							"GearL2_D0");
-						if (i == 1)
-							aircraft1.msgCollision(aircraft1, "GearR2_D0",
-							"GearR2_D0");
-					}
-				}
-			}
-			break;
+        // TODO: PAS++
+        double db1 = ((FlightModelMain) (FM)).CT.getBrakeRight();
+        double db2 = ((FlightModelMain) (FM)).CT.getBrakeLeft();
+        double da = db1 - db2; // diff alone
+        double db = Math.max(d6, Math.max(db1, db2)); // applied pedal brakes
+        // combined with common
+        // PAS--
+        
+        switch (i) {
+        case 0: // '\0' // MAIN WHEELS ( LEFT & RIGHT )
+        case 1: // '\001'
+            double d8 = 1.2D;
+            if (i == 0)
+                d8 = -1.2D;
+            nOfGearsOnGr++;
+            isGearColl = true;
+            gVelocity[i] = ForwardVPrj;
+            // TODO: PAS++ after TAK
+            // this sets the action of braking system: independent differential
+            // vs. rudder controlled
+            if (d6 > 0.1D || db > 0.1D) // total brake action as db or d6
+            {
+                switch (FM.CT.DiffBrakesType) {
+                case 0: // std
+                case 1: // std for passive front wheel steering
+                default:
+                    if (d7 > 0.1D)
+                        db += d8 * db * (d7 - 0.1D); // common * rudder - brake
+                    // & pedal action
+                    // combined
+                    if (d7 < -0.1D)
+                        db += d8 * db * (d7 + 0.1D);
+                    break;
+                case 2: // diff combined - common * rudder plus left/right
+                    // brakes difference
+                    if (d7 > 0.1D)
+                        db += d8 * db * (d7 - 0.1D);
+                    if (d7 < -0.1D)
+                        db += d8 * db * (d7 + 0.1D);
+                    if (da > 0.1D)
+                        db += d8 * 4D * (da - 0.1D);
+                    if (da < -0.1D)
+                        db += d8 * 4D * (da + 0.1D);
+                    break;
+                case 3: // diff - toe brakes
+                    if (da > 0.1D)
+                        db += d8 * 2D * (da - 0.1D); // left/right brakes
+                    // difference alone
+                    if (da < -0.1D)
+                        db += d8 * 2D * (da + 0.1D);
+                    // if(d6 > 0.1D)
+                    // db += d8 * 2D * (d6 - 0.1D); // common added (overriding)
+                    // - in reality there should be no common!
+                    break;
+                case 4: // common * rudder - no pedals - Spitfire & Yak style
+                    if (d7 > 0.1D)
+                        db += d8 * d6 * (d7 - 0.1D);
+                    if (d7 < -0.1D)
+                        db += d8 * d6 * (d7 + 0.1D);
+                    break;
+                }
+                if (db > 1.0D)
+                    db = 1.0D;
+                if (db < 0.0D)
+                    db = 0.0D;
+                // PAS--
+            }
+            double d9 = Math.sqrt(ForwardVPrj * ForwardVPrj + RightVPrj
+                    * RightVPrj);
+            if (d9 < 0.01D)
+                d9 = 0.01D;
+            double d10 = 1.0D / d9;
+            double d11 = ForwardVPrj * d10;
+            if (d11 < 0.0D)
+                d11 *= -1D;
+            double d12 = RightVPrj * d10;
+            if (d12 < 0.0D)
+                d12 *= -1D;
+            double d13 = 5D;
+            if (((Tuple3d) (PnT)).y * RightVPrj > 0.0D) {
+                if (((Tuple3d) (PnT)).y > 0.0D)
+                    d13 += 7D * RightVPrj;
+                else
+                    d13 -= 7D * RightVPrj;
+                if (d13 > 20D)
+                    d13 = 20D;
+            }
+            double d14 = 15000D;
+            if (d9 < 3D) {
+                double d15 = -0.33333299999999999D * (d9 - 3D);
+                d14 += 3000D * d15 * d15;
+            }
+            fricR = -d13 * 100000D * RightVPrj * d5;
+            maxFric = d14 * d5 * d12;
+            if (fricR > maxFric)
+                fricR = maxFric;
+            if (fricR < -maxFric)
+                fricR = -maxFric;
+            fricF = -d13 * 600D * ForwardVPrj * d5;
+            maxFric = d13
+            * Math.max(200D * (1.0D - 0.040000000000000001D * d9), 5D)
+            * d5 * d11;
+            if (fricF > maxFric)
+                fricF = maxFric;
+            if (fricF < -maxFric)
+                fricF = -maxFric;
+            double d16 = 0.029999999999999999D;
+            if (((Tuple3f) (Pnt[2])).x > 0.0F)
+                d16 = 0.059999999999999998D;
+            double d17 = Math.abs(ForwardVPrj);
+            if (d17 < 1.0D)
+                d16 += 3D * (1.0D - d17);
+            // TODO: PAS++
+            d16 *= 0.029999999999999999D * db;
+            // PAS--
+            fricF += -300000D * d16 * ForwardVPrj * d5;
+            maxFric = d14 * d5 * d11;
+            if (fricF > maxFric)
+                fricF = maxFric;
+            if (fricF < -maxFric)
+                fricF = -maxFric;
+            fric = Math.sqrt(fricF * fricF + fricR * fricR);
+            if (fric > maxFric) {
+                fric = maxFric / fric;
+                fricF *= fric;
+                fricR *= fric;
+            }
+            tmpV.scale(fricF, Forward);
+            Tn.add(tmpV);
+            tmpV.scale(fricR, Right);
+            Tn.add(tmpV);
+            if (bIsMaster && NormalVPrj < 0.0D) {
+                double d18 = ForwardVPrj * ForwardVPrj
+                * 8.0000000000000007E-005D + RightVPrj * RightVPrj
+                * 0.0067999999999999996D;
+                if (((FlightModelMain) (FM)).CT.bHasArrestorControl)
+                    d18 += NormalVPrj * NormalVPrj * 0.025000000000000001D;
+                else
+                    d18 += NormalVPrj * NormalVPrj * 0.070000000000000007D;
+                if (d18 > 1.0D) {
+                    fatigue[i] += 10;
+                    double d21 = 38000D + (double) ((FlightModelMain) (FM)).M.massEmpty * 6D;
+                    double d23 = (((Tuple3d) (Tn)).x * ((Tuple3d) (Tn)).x
+                            * 0.14999999999999999D + ((Tuple3d) (Tn)).y
+                            * ((Tuple3d) (Tn)).y * 0.14999999999999999D + ((Tuple3d) (Tn)).z
+                            * ((Tuple3d) (Tn)).z * 0.080000000000000002D)
+                            / (d21 * d21);
+                    if (fatigue[i] > 100 || d23 > 1.0D) {
+                        landHit(i, (float) d18);
+                        Aircraft aircraft1 = (Aircraft) ((Interpolate) (FM)).actor;
+                        if (i == 0)
+                            aircraft1.msgCollision(aircraft1, "GearL2_D0",
+                            "GearL2_D0");
+                        if (i == 1)
+                            aircraft1.msgCollision(aircraft1, "GearR2_D0",
+                            "GearR2_D0");
+                    }
+                }
+            }
+            break;
 
-		case 2: // '\002' // FRONT or REAR WHEEL
-			nOfGearsOnGr++;
-			if (bTailwheelLocked && steerAngle > -5F && steerAngle < 5F) {
-				gVelocity[i] = ForwardVPrj;
-				steerAngle = 0.0F;
-				fric = -400D * ForwardVPrj;
-				maxFric = 400D;
-				if (fric > maxFric)
-					fric = maxFric;
-				if (fric < -maxFric)
-					fric = -maxFric;
-				tmpV.scale(fric, Forward);
-				Tn.add(tmpV);
-				fric = -10000D * RightVPrj;
-				maxFric = 40000D;
-				if (fric > maxFric)
-					fric = maxFric;
-				if (fric < -maxFric)
-					fric = -maxFric;
-				tmpV.scale(fric, Right);
-				Tn.add(tmpV);
-			} else if (bFrontWheel) // FRONT WHEEL STEERING
-			{
-				// TODO: PAS++
-				// passive or active steering dependent on diff brakes type
-				switch (FM.CT.DiffBrakesType) {
-				case 0:
-				default:
-					// if(msg1)
-					// {System.out.println(">>> Front wheel active steering");
-					// msg1 = false;}
-					boolean bTaxing = FM.Vwld.length() < 8.33F;  // (now taxing, speed < 30km/h)
-					gVelocity[i] = ForwardVPrj;
+        case 2: // '\002' // FRONT or REAR WHEEL
+            nOfGearsOnGr++;
+            if (bTailwheelLocked && steerAngle > -5F && steerAngle < 5F) {
+                gVelocity[i] = ForwardVPrj;
+                steerAngle = 0.0F;
+                fric = -400D * ForwardVPrj;
+                maxFric = 400D;
+                if (fric > maxFric)
+                    fric = maxFric;
+                if (fric < -maxFric)
+                    fric = -maxFric;
+                tmpV.scale(fric, Forward);
+                Tn.add(tmpV);
+                fric = -10000D * RightVPrj;
+                maxFric = 40000D;
+                if (fric > maxFric)
+                    fric = maxFric;
+                if (fric < -maxFric)
+                    fric = -maxFric;
+                tmpV.scale(fric, Right);
+                Tn.add(tmpV);
+            } else if (bFrontWheel) // FRONT WHEEL STEERING
+            {
+                // TODO: PAS++
+                // passive or active steering dependent on diff brakes type
+                switch (FM.CT.DiffBrakesType) {
+                case 0:
+                default:
+                    // if(msg1)
+                    // {System.out.println(">>> Front wheel active steering");
+                    // msg1 = false;}
+                    boolean bTaxing = FM.Vwld.length() < 8.33F;  // (now taxing, speed < 30km/h)
+                    gVelocity[i] = ForwardVPrj;
                     if(bTaxing)
-						tmpV.set(1.0D, -1.04D * (double) FM.CT.getRudder(), 0.0D); // taxing
-					else
-						tmpV.set(1.0D, -0.5D * (double) FM.CT.getRudder(), 0.0D); // stock
-					// -
-					// rudder
-					// control
-					steerAngleFork.setDeg(steerAngle, (float) Math
-							.toDegrees(Math.atan2(tmpV.y, tmpV.x)));
-					steerAngle = steerAngleFork.getDeg(0.115F);
-					nwRight.cross(Normal, tmpV);
-					nwRight.normalize();
-					nwForward.cross(nwRight, Normal);
-					ForwardVPrj = nwForward.dot(Vs);
-					RightVPrj = nwRight.dot(Vs);
-					double d19 = Math.sqrt(ForwardVPrj * ForwardVPrj
-							+ RightVPrj * RightVPrj);
-					if (d19 < 0.01D)
-						d19 = 0.01D;
-					maxFric = bTaxing ? (double)Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, 4400F, 6000F) : 4000F;
-					fricF = -100D * ForwardVPrj;
-					if(bTaxing)
-						fricR = (double)Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, -550F, -2500F) * RightVPrj;  // taxing
-					else
-						fricR = -500D * RightVPrj;  // stock
-					if (fricR > maxFric)
-						fricR = maxFric;
-					if (fricR < -maxFric)
-						fricR = -maxFric;
-					if(bTaxing)
-						fricF -= Math.abs(fricR / (double)Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, 8.0F, 2.8F));   // braking effect in taxing turn
-					if (fricF > maxFric)
-						fricF = maxFric;
-					if (fricF < -maxFric)
-						fricF = -maxFric;
-					maxFric = 1.0D - 0.02D * d19;
-					if (maxFric < 0.10000000000000001D)
-						maxFric = 0.10000000000000001D;
-					maxFric = (bTaxing ? 7500D : 5000D) * maxFric;
-					fric = Math.sqrt(fricF * fricF + fricR * fricR);
-					if (fric > maxFric) {
-						fric = maxFric / fric;
-						fricF *= fric;
-						fricR *= fric;
-					}
-					tmpV.scale(fricF, Forward);
-					Tn.add(tmpV);
-					tmpV.scale(fricR, Right);
-					Tn.add(tmpV);
-					break;
+                        tmpV.set(1.0D, -1.04D * (double) FM.CT.getRudder(), 0.0D); // taxing
+                    else
+                        tmpV.set(1.0D, -0.5D * (double) FM.CT.getRudder(), 0.0D); // stock
+                    // -
+                    // rudder
+                    // control
+                    steerAngleFork.setDeg(steerAngle, (float) Math
+                            .toDegrees(Math.atan2(tmpV.y, tmpV.x)));
+                    steerAngle = steerAngleFork.getDeg(0.115F);
+                    nwRight.cross(Normal, tmpV);
+                    nwRight.normalize();
+                    nwForward.cross(nwRight, Normal);
+                    ForwardVPrj = nwForward.dot(Vs);
+                    RightVPrj = nwRight.dot(Vs);
+                    double d19 = Math.sqrt(ForwardVPrj * ForwardVPrj
+                            + RightVPrj * RightVPrj);
+                    if (d19 < 0.01D)
+                        d19 = 0.01D;
+                    maxFric = bTaxing ? (double)Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, 4400F, 6000F) : 4000F;
+                    fricF = -100D * ForwardVPrj;
+                    if(bTaxing)
+                        fricR = (double)Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, -550F, -2500F) * RightVPrj;  // taxing
+                    else
+                        fricR = -500D * RightVPrj;  // stock
+                    if (fricR > maxFric)
+                        fricR = maxFric;
+                    if (fricR < -maxFric)
+                        fricR = -maxFric;
+                    if(bTaxing)
+                        fricF -= Math.abs(fricR / (double)Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, 8.0F, 2.8F));   // braking effect in taxing turn
+                    if (fricF > maxFric)
+                        fricF = maxFric;
+                    if (fricF < -maxFric)
+                        fricF = -maxFric;
+                    maxFric = 1.0D - 0.02D * d19;
+                    if (maxFric < 0.10000000000000001D)
+                        maxFric = 0.10000000000000001D;
+                    maxFric = (bTaxing ? 7500D : 5000D) * maxFric;
+                    fric = Math.sqrt(fricF * fricF + fricR * fricR);
+                    if (fric > maxFric) {
+                        fric = maxFric / fric;
+                        fricF *= fric;
+                        fricR *= fric;
+                    }
+                    tmpV.scale(fricF, Forward);
+                    Tn.add(tmpV);
+                    tmpV.scale(fricR, Right);
+                    Tn.add(tmpV);
+                    break;
 
-				case 1: // passive steering
-				case 2:
-				case 3:
-				case 4:
-					// if(msg2)
-					// {System.out.println(">>> Front wheel passive steering");
-					// msg2 = false;}
-					gVelocity[i] = Vs.length();
-					if (Vs.lengthSquared() > 0.040000000000000001D) {
-						steerAngleFork.setDeg(steerAngle, (float) Math
-								.toDegrees(Math.atan2(Vs.y, Vs.x)));
-						//TODO: This edit sets limits on degree of rotation for passively steering front wheels
-						if(steerAngleFork.getDeg(0.001F) > -1F && steerAngleFork.getDeg(0.001F) <1F)
-							steerAngle = steerAngleFork.getDeg(0.001F);
-						else if(steerAngleFork.getDeg(0.001F) < -1F)
-							steerAngle = -1F;
-						else if(steerAngleFork.getDeg(0.001F) > 1F)
-							steerAngle = 1F;
-					}
-					fricF = -1000D * ForwardVPrj;
-					fricR = -1000D * RightVPrj;
-					fric = Math.sqrt(fricF * fricF + fricR * fricR);
-					maxFric = 1500D;
-					if (fric > maxFric) {
-						fric = maxFric / fric;
-						fricF *= fric;
-						fricR *= fric;
-					}
-					tmpV.scale(fricF, Forward);
-					Tn.add(tmpV);
-					tmpV.scale(fricR, Right);
-					Tn.add(tmpV);
-					break;
-				}
-				// PAS--
-			} else // REAR WHEEL PASSIVE STEERING
-			{
-				gVelocity[i] = Vs.length();
-				if (Vs.lengthSquared() > 0.040000000000000001D) {
-					steerAngleFork.setDeg(steerAngle, (float) Math
-							.toDegrees(Math.atan2(((Tuple3d) (Vs)).y,
-									((Tuple3d) (Vs)).x)));
-					steerAngle = steerAngleFork.getDeg(0.115F);
-				}
-				fricF = -1000D * ForwardVPrj;
-				fricR = -1000D * RightVPrj;
-				fric = Math.sqrt(fricF * fricF + fricR * fricR);
-				maxFric = 1500D;
-				if (fric > maxFric) {
-					fric = maxFric / fric;
-					fricF *= fric;
-					fricR *= fric;
-				}
-				tmpV.scale(fricF, Forward);
-				Tn.add(tmpV);
-				tmpV.scale(fricR, Right);
-				Tn.add(tmpV);
-			}
-			if (!bIsMaster || NormalVPrj >= 0.0D)
-				break;
-			double d20 = (ForwardVPrj * ForwardVPrj + RightVPrj * RightVPrj) * 0.0001D;
-			if (((FlightModelMain) (FM)).CT.bHasArrestorControl)
-				d20 += NormalVPrj * NormalVPrj * 0.0040000000000000001D;
-			else
-				d20 += NormalVPrj * NormalVPrj * 0.02D;
-			if (d20 > 1.0D) {
-				landHit(i, (float) d20);
-				Aircraft aircraft = (Aircraft) ((Interpolate) (FM)).actor;
-				aircraft.msgCollision(aircraft, "GearC2_D0", "GearC2_D0");
-			}
-			break;
+                case 1: // passive steering
+                case 2:
+                case 3:
+                case 4:
+                    // if(msg2)
+                    // {System.out.println(">>> Front wheel passive steering");
+                    // msg2 = false;}
+                    gVelocity[i] = Vs.length();
+                    if (Vs.lengthSquared() > 0.040000000000000001D) {
+                        steerAngleFork.setDeg(steerAngle, (float) Math
+                                .toDegrees(Math.atan2(Vs.y, Vs.x)));
+                        //TODO: This edit sets limits on degree of rotation for passively steering front wheels
+                        if(steerAngleFork.getDeg(0.001F) > -1F && steerAngleFork.getDeg(0.001F) <1F)
+                            steerAngle = steerAngleFork.getDeg(0.001F);
+                        else if(steerAngleFork.getDeg(0.001F) < -1F)
+                            steerAngle = -1F;
+                        else if(steerAngleFork.getDeg(0.001F) > 1F)
+                            steerAngle = 1F;
+                    }
+                    fricF = -1000D * ForwardVPrj;
+                    fricR = -1000D * RightVPrj;
+                    fric = Math.sqrt(fricF * fricF + fricR * fricR);
+                    maxFric = 1500D;
+                    if (fric > maxFric) {
+                        fric = maxFric / fric;
+                        fricF *= fric;
+                        fricR *= fric;
+                    }
+                    tmpV.scale(fricF, Forward);
+                    Tn.add(tmpV);
+                    tmpV.scale(fricR, Right);
+                    Tn.add(tmpV);
+                    break;
+                }
+                // PAS--
+            } else // REAR WHEEL PASSIVE STEERING
+            {
+                gVelocity[i] = Vs.length();
+                if (Vs.lengthSquared() > 0.040000000000000001D) {
+                    steerAngleFork.setDeg(steerAngle, (float) Math
+                            .toDegrees(Math.atan2(((Tuple3d) (Vs)).y,
+                                    ((Tuple3d) (Vs)).x)));
+                    steerAngle = steerAngleFork.getDeg(0.115F);
+                }
+                fricF = -1000D * ForwardVPrj;
+                fricR = -1000D * RightVPrj;
+                fric = Math.sqrt(fricF * fricF + fricR * fricR);
+                maxFric = 1500D;
+                if (fric > maxFric) {
+                    fric = maxFric / fric;
+                    fricF *= fric;
+                    fricR *= fric;
+                }
+                tmpV.scale(fricF, Forward);
+                Tn.add(tmpV);
+                tmpV.scale(fricR, Right);
+                Tn.add(tmpV);
+            }
+            if (!bIsMaster || NormalVPrj >= 0.0D)
+                break;
+            double d20 = (ForwardVPrj * ForwardVPrj + RightVPrj * RightVPrj) * 0.0001D;
+            if (((FlightModelMain) (FM)).CT.bHasArrestorControl)
+                d20 += NormalVPrj * NormalVPrj * 0.0040000000000000001D;
+            else
+                d20 += NormalVPrj * NormalVPrj * 0.02D;
+            if (d20 > 1.0D) {
+                landHit(i, (float) d20);
+                Aircraft aircraft = (Aircraft) ((Interpolate) (FM)).actor;
+                aircraft.msgCollision(aircraft, "GearC2_D0", "GearC2_D0");
+            }
+            break;
 
-		default:
-			fricF = -4000D * ForwardVPrj;
-			fricR = -4000D * RightVPrj;
-			fric = Math.sqrt(fricF * fricF + fricR * fricR);
-			if (fric > 10000D) {
-				fric = 10000D / fric;
-				fricF *= fric;
-				fricR *= fric;
-			}
-			tmpV.scale(fricF, Forward);
-			Tn.add(tmpV);
-			tmpV.scale(fricR, Right);
-			Tn.add(tmpV);
-			break;
-		}
-		Tn.scale(MassCoeff);
-		if(!bPlateConcrete && FM.Vrel.length() > 0.10000000149011612D && World.cur().camouflage == 1)
-		{
-			tempLoc.set(Pnt[i].x, Pnt[i].y, Pnt[i].z + 0.05F, 0.0F, 0.0F, 0.0F);
-			MiscEffects.gearMarksSnow(FM, tempLoc, i, pnti[i]);
-		}
-		fric_pub = fric;  fricF_pub = fricF;  fricR_pub = fricR;
-		return true;
-	}
+        default:
+            fricF = -4000D * ForwardVPrj;
+            fricR = -4000D * RightVPrj;
+            fric = Math.sqrt(fricF * fricF + fricR * fricR);
+            if (fric > 10000D) {
+                fric = 10000D / fric;
+                fricF *= fric;
+                fricR *= fric;
+            }
+            tmpV.scale(fricF, Forward);
+            Tn.add(tmpV);
+            tmpV.scale(fricR, Right);
+            Tn.add(tmpV);
+            break;
+        }
+        Tn.scale(MassCoeff);
+        if(!bPlateConcrete && FM.Vrel.length() > 0.10000000149011612D && World.cur().camouflage == 1)
+        {
+            tempLoc.set(Pnt[i].x, Pnt[i].y, Pnt[i].z + 0.05F, 0.0F, 0.0F, 0.0F);
+            MiscEffects.gearMarksSnow(FM, tempLoc, i, pnti[i]);
+        }
+        fric_pub = fric;  fricF_pub = fricF;  fricR_pub = fricR;
+        return true;
+    }
 
     private boolean testWaterCollision(int i)
     {
@@ -1706,7 +1722,7 @@ public class Gear
       //TODO: +++ CTO Mod 4.12 +++
         if(FM.EI.getCatapult() && isUnderDeck() && !FM.brakeShoe)
         {
-            if(FM.brakeShoeLastCarrier != null && catEff == null && Mission.curYear() > 1952)
+            if(FM.brakeShoeLastCarrier != null && catEff == null && bSteamCatapult)
             {
                 FM.actor.pos.getAbs(Aircraft.tmpLoc1);
                 FM.brakeShoeLoc.get(Pn);
@@ -2002,43 +2018,43 @@ public class Gear
   //TODO: This method controls carrier catapult offest and positioning. To be edited in future versions so this info is read from an external .ini file
     public boolean setCatapultOffset(BigshipGeneric bigshipgeneric, SectFile theSectFile)
     {
-    	boolean flag2 = false;
-    	bCatapultAI = false;
-    	
+        boolean flag2 = false;
+        bCatapultAI = false;
+        
         String s = bigshipgeneric.getClass().getName();
         int i = s.lastIndexOf('.');
         int j = s.lastIndexOf('$');
         if(i < j)
         i = j;
         String strSection = s.substring(i + 1);
-    	if(!flag2){
-    		if (!theSectFile.sectionExist(strSection))
+        if(!flag2){
+            if (!theSectFile.sectionExist(strSection))
                     strSection = "Default";
                 else {
-    		    if(!bStandardDeckCVL && theSectFile.exist(strSection, "dCatapultOffsetXAlt"))
-    		    {
-    			    dCatapultOffsetX[0] = theSectFile.get(strSection, "dCatapultOffsetXAlt", 0.0F);
-    			    dCatapultOffsetY[0] = theSectFile.get(strSection, "dCatapultOffsetYAlt", 0.0F);
-    			    dCatapultYaw[0] = theSectFile.get(strSection, "dCatapultYawAlt", 0.0F);
+                if(!bStandardDeckCVL && theSectFile.exist(strSection, "dCatapultOffsetXAlt"))
+                {
+                    dCatapultOffsetX[0] = theSectFile.get(strSection, "dCatapultOffsetXAlt", 0.0F);
+                    dCatapultOffsetY[0] = theSectFile.get(strSection, "dCatapultOffsetYAlt", 0.0F);
+                    dCatapultYaw[0] = theSectFile.get(strSection, "dCatapultYawAlt", 0.0F);
                             if( iCatapults < 1  && !(dCatapultOffsetX[0] == 0.0D && dCatapultOffsetY[0] == 0.0D))
                                 iCatapults = 1;
-    		    }
-    		    else
-    		    {
-    			    dCatapultOffsetX[0] = theSectFile.get(strSection, "dCatapultOffsetX", 0.0F);
-    			    dCatapultOffsetY[0] = theSectFile.get(strSection, "dCatapultOffsetY", 0.0F);
-    			    dCatapultYaw[0] = theSectFile.get(strSection, "dCatapultYaw", 0.0F);
+                }
+                else
+                {
+                    dCatapultOffsetX[0] = theSectFile.get(strSection, "dCatapultOffsetX", 0.0F);
+                    dCatapultOffsetY[0] = theSectFile.get(strSection, "dCatapultOffsetY", 0.0F);
+                    dCatapultYaw[0] = theSectFile.get(strSection, "dCatapultYaw", 0.0F);
                             if( iCatapults < 1 && !(dCatapultOffsetX[0] == 0.0D && dCatapultOffsetY[0] == 0.0D))
                                 iCatapults = 1;
-    		    }
+                }
                     if(iCatapults > 0)
                     {
                         for( int o=1; o<4; o++ ){
-    		            if( theSectFile.exist(strSection, ("dCatapultOffsetX" + Integer.toString(o+1))))
+                        if( theSectFile.exist(strSection, ("dCatapultOffsetX" + Integer.toString(o+1))))
                             {
-   		                dCatapultOffsetX[o] = theSectFile.get(strSection, ("dCatapultOffsetX" + Integer.toString(o+1)), 0.0F);
-   		                dCatapultOffsetY[o] = theSectFile.get(strSection, ("dCatapultOffsetY" + Integer.toString(o+1)), 0.0F);
- 		                dCatapultYaw[o] = theSectFile.get(strSection, ("dCatapultYaw" + Integer.toString(o+1)), 0.0F);
+                           dCatapultOffsetX[o] = theSectFile.get(strSection, ("dCatapultOffsetX" + Integer.toString(o+1)), 0.0F);
+                           dCatapultOffsetY[o] = theSectFile.get(strSection, ("dCatapultOffsetY" + Integer.toString(o+1)), 0.0F);
+                         dCatapultYaw[o] = theSectFile.get(strSection, ("dCatapultYaw" + Integer.toString(o+1)), 0.0F);
                                 iCatapults = o + 1;
                             }
                             else
@@ -2046,15 +2062,15 @@ public class Gear
                         }
                     }
 
-    		    catapultPower = theSectFile.get(strSection, "catapultPower", 0.0F);
-    		    catapultPowerJets = theSectFile.get(strSection, "catapultPowerJets", 0.0F); 
-    		    if(theSectFile.get(strSection, "bSteamCatapult", 0) == 1)
-    			bSteamCatapult = true;
-        	    if (iCatapults > 0) {
-        		flag2 = true;
-        		bCatapultAI = bCatapultAllowAI;
-                    }
-        	}
+                catapultPower = theSectFile.get(strSection, "catapultPower", 0.0F);
+                catapultPowerJets = theSectFile.get(strSection, "catapultPowerJets", 0.0F); 
+                if(theSectFile.get(strSection, "bSteamCatapult", 0) == 1)
+                      bSteamCatapult = true;
+                if (iCatapults > 0) {
+                    flag2 = true;
+                    bCatapultAI = bCatapultAllowAI;
+                }
+            }
         }
 
         bHasBlastDeflector = (bigshipgeneric instanceof TypeBlastDeflector);
@@ -2109,8 +2125,6 @@ public class Gear
             Pnt[i] = new Point3f();
 
     }
-
-
 
 
 }
