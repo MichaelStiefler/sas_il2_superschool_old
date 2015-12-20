@@ -374,7 +374,7 @@ public class FlightModelMain extends FMMath
 			{
 				StringTokenizer stringtokenizer = new StringTokenizer(sst, ",");
 				for(int ii = 0; ii <= CT.nFlapStages; ii++)
-				CT.FlapStageText[ii] = stringtokenizer.nextToken();
+					CT.FlapStageText[ii] = stringtokenizer.nextToken();
 			}
 		}
     	// --------------------------------------------------------

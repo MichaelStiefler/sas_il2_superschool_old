@@ -244,7 +244,12 @@ public class AutopilotAI extends Autopilotage {
 						way.setCur(1);
                                         }
 					if (way.Cur() == 4 && ((Aircraft)FM.actor) instanceof TypeFastJet) {
-						if(!FM.CT.bHasFlapsControlSwitch) FM.CT.FlapsControl = 0.4F;
+						if(!FM.CT.bHasFlapsControlSwitch){
+							if(FM.CT.FlapStage != null && FM.CT.FlapStageMax != -1.0F)
+								FM.CT.FlapsControl = FM.CT.FlapStage[FM.CT.nFlapStages - 1];
+							else
+								FM.CT.FlapsControl = 0.33F;
+						}
 					}
 					if (way.Cur() == 5) {
 						if (!Mission.isDogfight() || !Main.cur().mission.zutiMisc_DisableAIRadioChatter)
@@ -269,7 +274,12 @@ public class AutopilotAI extends Autopilotage {
 							FM.pop();
 							if (!Mission.isDogfight() || !Main.cur().mission.zutiMisc_DisableAIRadioChatter)
 								Voice.speakGoAround((Aircraft) FM.actor);
-							if(!FM.CT.bHasFlapsControlSwitch) FM.CT.FlapsControl = 0.4F;
+							if(!FM.CT.bHasFlapsControlSwitch){
+								if(FM.CT.FlapStage != null && FM.CT.FlapStageMax != -1.0F)
+									FM.CT.FlapsControl = FM.CT.FlapStage[FM.CT.nFlapStages - 1];
+								else
+									FM.CT.FlapsControl = 0.33F;
+							}
 							FM.CT.GearControl = 0.0F;
 							return;
 						}
@@ -289,7 +299,12 @@ public class AutopilotAI extends Autopilotage {
 								FM.push(2);
 								FM.push(2);
 								FM.pop();
-								if(!FM.CT.bHasFlapsControlSwitch) FM.CT.FlapsControl = 0.4F;
+								if(!FM.CT.bHasFlapsControlSwitch){
+									if(FM.CT.FlapStage != null && FM.CT.FlapStageMax != -1.0F)
+										FM.CT.FlapsControl = FM.CT.FlapStage[FM.CT.nFlapStages - 1];
+									else
+										FM.CT.FlapsControl = 0.33F;
+								}
 								FM.CT.GearControl = 0.0F;
 								Aircraft.debugprintln(FM.actor, "Going around!.");
 								return;
