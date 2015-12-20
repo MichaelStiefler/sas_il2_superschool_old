@@ -1303,7 +1303,10 @@ public class Maneuver extends AIFlightModel {
             case 1: // '\001'
                 sub_Man_Count++;
                 CT.AileronControl = 0.0F;
-                if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.2F;
+                if(!CT.bHasFlapsControlSwitch && CT.nFlapStages > 1){
+                    if(CT.FlapStageMax > 0F && CT.FlapStage != null) CT.FlapsControl = CT.FlapStage[0];
+                    else CT.FlapsControl = 0.2F;
+                }
                 if (AOA < AOA_Crit * 0.8F) {
                     CT.ElevatorControl = 1.0F;
                     if (CT.bHasElevatorTrim)
@@ -1534,8 +1537,10 @@ public class Maneuver extends AIFlightModel {
                 }
             }
             CT.RudderControl = -0.1F * getAOS();
-            if (getSpeed() < Vmin * 1.5F)
-                if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.15F;
+            if (getSpeed() < Vmin * 1.5F && !CT.bHasFlapsControlSwitch && CT.nFlapStages > 1){
+                if(CT.FlapStageMax > 0F && CT.FlapStage != null) CT.FlapsControl = CT.FlapStage[0];
+                else CT.FlapsControl = 0.15F;
+            }
             else
                 if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
             if (mn_time > 27F) {
@@ -3443,8 +3448,10 @@ public class Maneuver extends AIFlightModel {
                     AP.setWayPoint(true);
                     doDumpBombsPassively();
                     submaneuver = 0;
-                    if ((super.actor instanceof TypeFastJet) && !CT.bHasFlapsControlSwitch)
-                        CT.FlapsControl = 1.0F;
+                    if ((super.actor instanceof TypeFastJet) && !CT.bHasFlapsControlSwitch && CT.nFlapStages > 0){
+                        if(CT.FlapStageMax > 0F && CT.FlapStage != null) CT.FlapsControl = CT.FlapStage[CT.nFlapStages - 1];
+                        else CT.FlapsControl = 0.33F;
+                    }
                 }
                 if ((actor instanceof HE_LERCHE3) && Alt < 50F)
                     maneuver = 70;
@@ -3591,8 +3598,12 @@ public class Maneuver extends AIFlightModel {
                 return;
             if (Alt > 60F) {
             	if(Alt < 160F){
-                    if (!(super.actor instanceof TypeFastJet) && !CT.bHasFlapsControlSwitch)
-                        CT.FlapsControl = 0.32F;
+                    if (!(super.actor instanceof TypeFastJet) && !CT.bHasFlapsControlSwitch){
+                        if(CT.nFlapStages == 0) CT.FlapsControl = 1.0F;
+                        else CT.FlapsControl = 0.33F;
+                    }
+                    if ((super.actor instanceof TypeFastJet) && !CT.bHasFlapsControlSwitch)
+                        CT.FlapsControl = 1.0F;
                      //TODO: Blown Flaps
                     if(CT.bHasBlownFlaps)
                     	CT.BlownFlapsControl = 1.0F;
@@ -3980,7 +3991,9 @@ public class Maneuver extends AIFlightModel {
                     f35 -= ((AirportCarrier) AP.way.takeoffAirport).height();
                     if (Alt < 9F && Vwld.z < 0.0D)
                         Vwld.z *= 0.84999999999999998D;
-                    f39 = 0.97F;
+                    // +++ Engine2.7 use afterburner enough in taking-off
+                    f39 = (EI.engines[0].getBoostFactor() > 1.0F) ? 1.058F : 0.97F;
+                    // --- Engine2.7
                     if (CT.bHasCockpitDoorControl && !bStage6)
                         AS.setCockpitDoor(actor, 1);
                 }
@@ -4142,8 +4155,10 @@ public class Maneuver extends AIFlightModel {
                 CT.setPowerControl(1.1F);
                 setSpeedMode(11);
             }
-            if (CT.FlapsControl == 0.0F && CT.getWing() < 0.001F && !CT.bHasFlapsControlSwitch)
-                CT.FlapsControl = 0.4F;
+            if (CT.FlapsControl == 0.0F && CT.getWing() < 0.001F && !CT.bHasFlapsControlSwitch && CT.nFlapStages > 0){
+                if(CT.FlapStageMax > 0F && CT.FlapStage != null) CT.FlapsControl = CT.FlapStage[CT.nFlapStages -1];
+                else CT.FlapsControl = 0.33F;
+            }
             if (EI.engines[0].getStage() == 6 && CT.getPower() > f39) {
                 CT.BrakeControl = 0.0F;
                 brakeShoe = false;
@@ -4364,11 +4379,16 @@ public class Maneuver extends AIFlightModel {
             } else {
                 pop();
             }
-            if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.2F;
+            if(!CT.bHasFlapsControlSwitch && CT.nFlapStages > 1){
+                if(CT.FlapStageMax > 0F && CT.FlapStage != null) CT.FlapsControl = CT.FlapStage[0];
+                else CT.FlapsControl = 0.2F;
+            }
           //TODO: Blown Flaps
             if((double)getSpeed() < 120D){
-                if(!CT.bHasFlapsControlSwitch)
-                    CT.FlapsControl = 0.33F;
+                if(!CT.bHasFlapsControlSwitch && CT.nFlapStages > 0){
+                    if(CT.FlapStageMax > 0F && CT.FlapStage != null) CT.FlapsControl = CT.FlapStage[CT.nFlapStages -1];
+                    else CT.FlapsControl = 0.33F;
+                }
                 if(CT.bHasBlownFlaps)
                 	CT.BlownFlapsControl = 1.0F;
             }
@@ -7851,7 +7871,7 @@ public class Maneuver extends AIFlightModel {
             else
                 CT.ElevatorControl -= f2 * f1;
         } else {
-            if (Skill >= 2 && Ve.z > 0.5D && f < 600F)
+            if (Skill >= 2 && Ve.z > 0.5D && f < 600F && CT.nFlapStages > 1)
                 if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.1F;
             else
                 if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
@@ -7924,7 +7944,7 @@ public class Maneuver extends AIFlightModel {
             else
                 CT.ElevatorControl -= f2 * f1;
         } else {
-            if (Skill >= 2 && Ve.z > 0.5D && f < 600F)
+            if (Skill >= 2 && Ve.z > 0.5D && f < 600F && CT.nFlapStages > 1)
                 if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.1F;
             else
                 if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
@@ -8437,7 +8457,7 @@ public class Maneuver extends AIFlightModel {
                         if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 1.0F;
                         f1 = 0.0F;
                     } else {
-                        if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.02F * f22 + 0.02F * -f10;
+                        if(!CT.bHasFlapsControlSwitch && CT.nFlapStages > 1) CT.FlapsControl = 0.02F * f22 + 0.02F * -f10;
                         f1 = f18 + f12 + f24 + f29;
                     }
                 } else {
@@ -8829,6 +8849,14 @@ public class Maneuver extends AIFlightModel {
             } else {
                 dA = f1;
             }
+            if(!CT.bHasFlapsControlSwitch){
+                if(CT.nFlapStages == 0) CT.FlapsControl = 1.0F;
+                else{
+                    if(CT.FlapStageMax > 0F && CT.FlapStage != null) CT.FlapsControl = CT.FlapStage[CT.nFlapStages - 1];
+                    else CT.FlapsControl = 0.33F;
+                }
+            }
+            else CT.FlapsControlSwitch = CT.nFlapStages;
             if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.33F;
             if (Alt < 9F && Math.abs(Or.getKren()) < 5F && getVertSpeed() < -0.7F)
                 Vwld.z *= 0.87000000476837158D;

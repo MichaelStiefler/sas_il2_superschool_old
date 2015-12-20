@@ -15,6 +15,7 @@ import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.SU_26M2;
+import com.maddox.il2.objects.air.TypeFastJet;
 import com.maddox.il2.objects.weapons.BombGun;
 import com.maddox.il2.objects.weapons.BombGunNull;
 import com.maddox.il2.objects.weapons.FuelTank;
@@ -339,7 +340,7 @@ public class Controls {
 		RefuelControl = 0.0F;
 		VarWingControl = VarWing = 0.0F;
 		BlownFlapsControl = BlownFlaps = 0.0F;
-        FlapsControlSwitch = 0;
+		FlapsControlSwitch = 0;
 	}
 
 	public void setFixedGear(boolean flag) {
@@ -954,10 +955,19 @@ public class Controls {
 			arrestor = filter(f, arrestorControl, arrestor, 999.9F, 0.2F);
 		if (bHasFlapsControl || flag1) {
 			FlapsControl = clamp01(FlapsControl);
-			if (Flaps > FlapsControl)
-				Flaps = filter(f, FlapsControl, Flaps, 999F, Aircraft.cvt(FM.getSpeedKMH(), 150F, 280F, 0.15F, 0.25F));
+			if (Flaps > FlapsControl){
+				if ((Aircraft)FM.actor instanceof TypeFastJet)
+					Flaps = filter(f, FlapsControl, Flaps, 999F, 0.25F);
+				else
+					Flaps = filter(f, FlapsControl, Flaps, 999F, Aircraft.cvt(FM.getSpeedKMH(), 150F, 280F, 0.15F, 0.25F));
+			}
 			else
-				Flaps = filter(f, FlapsControl, Flaps, 999F, Aircraft.cvt(FM.getSpeedKMH(), 150F, 280F, 0.15F, 0.02F));
+			{
+				if ((Aircraft)FM.actor instanceof TypeFastJet)
+					Flaps = filter(f, FlapsControl, Flaps, 999F, Aircraft.cvt(FM.getSpeedKMH(), 250F, 400F, 0.16F, 0.11F));
+				else
+					Flaps = filter(f, FlapsControl, Flaps, 999F, Aircraft.cvt(FM.getSpeedKMH(), 150F, 280F, 0.15F, 0.02F));
+			}
 		}
 		if (StabilizerControl) {
 			AileronControl = -0.2F * FM.Or.getKren() - 2.0F * (float)FM.getW().x;
@@ -1285,7 +1295,7 @@ public class Controls {
 			}
 		}
 		// if (theEmitter.getHookName().startsWith("_InternalRock") && BayDoorControl == 0.0F)
-		//	return true;             // merged to "_BombSpawn" for Tu-95MS's rotally launcher
+		//	return true;			 // merged to "_BombSpawn" for Tu-95MS's rotally launcher
 		if (!(theEmitter instanceof BombGun) && !(theEmitter instanceof RocketGun) && !(theEmitter instanceof RocketBombGun))
 			return false;
 

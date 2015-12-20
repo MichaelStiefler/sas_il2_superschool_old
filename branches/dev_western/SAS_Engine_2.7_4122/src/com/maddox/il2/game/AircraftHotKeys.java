@@ -5115,7 +5115,8 @@ public class AircraftHotKeys
 						if (RFM.CT.FlapStageText != null)
 							HUD.log("Flaps: " + RFM.CT.FlapStageText[RFM.CT.FlapsControlSwitch]);
 						else
-							HUD.log("Flaps: 1 Up");
+							if (RFM.CT.FlapsControlSwitch == 0) HUD.log("FlapsRaised");
+							else HUD.log("Flaps: 1 Up");
 					}
 					break;
 				}
@@ -5139,7 +5140,7 @@ public class AircraftHotKeys
 							HUD.log("FlapsTakeOff");
 							break;
 						}
-						if (RFM.CT.FlapsControl > 0.2F) {
+						if (RFM.CT.FlapsControl > 0.2F && RFM.CT.nFlapStages > 1) {
 							RFM.CT.FlapsControl = 0.2F;
 							HUD.log("FlapsCombat");
 							break;
@@ -5168,7 +5169,8 @@ public class AircraftHotKeys
 						if (RFM.CT.FlapStageText != null)
 							HUD.log("Flaps: " + RFM.CT.FlapStageText[RFM.CT.FlapsControlSwitch]);
 						else
-							HUD.log("Flaps: 1 Down");
+							if (RFM.CT.FlapsControlSwitch == RFM.CT.nFlapStages) HUD.log("FlapsLanding");
+							else HUD.log("Flaps: 1 Down");
 					}
 					break;
 				}
@@ -5187,7 +5189,7 @@ public class AircraftHotKeys
 						}
 						break;
 					} else {
-						if (RFM.CT.FlapsControl < 0.2F) {
+						if (RFM.CT.FlapsControl < 0.2F && RFM.CT.nFlapStages > 1) {
 							RFM.CT.FlapsControl = 0.2F;
 							HUD.log("FlapsCombat");
 							break;
@@ -5260,4 +5262,13 @@ public class AircraftHotKeys
 		}
 		return true;
 	}
+
+
+	public void setFlapIndex(int i) {
+		if(i > FM.CT.nFlapStages - 1) i = FM.CT.nFlapStages - 1;
+		if(i < 0 ) i = 0;
+		
+		flapIndex = i;
+	}
+
 }

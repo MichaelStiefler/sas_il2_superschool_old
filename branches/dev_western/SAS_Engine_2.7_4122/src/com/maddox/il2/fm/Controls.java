@@ -8,6 +8,7 @@ import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.SU_26M2;
+import com.maddox.il2.objects.air.TypeFastJet;
 import com.maddox.il2.objects.air.TypeGuidedMissileCarrier;
 import com.maddox.il2.objects.weapons.*;
 import com.maddox.rts.Property;
@@ -1057,10 +1058,19 @@ public class Controls
 		if(bHasFlapsControl || flag1)
 		{
 			FlapsControl = clamp01(FlapsControl);
-			if(Flaps > FlapsControl)
-				Flaps = filter(f, FlapsControl, Flaps, 999F, Aircraft.cvt(FM.getSpeedKMH(), 150F, 280F, 0.15F, 0.25F));
+			if (Flaps > FlapsControl){
+				if ((Aircraft)FM.actor instanceof TypeFastJet)
+					Flaps = filter(f, FlapsControl, Flaps, 999F, 0.25F);
+				else
+					Flaps = filter(f, FlapsControl, Flaps, 999F, Aircraft.cvt(FM.getSpeedKMH(), 150F, 280F, 0.15F, 0.25F));
+			}
 			else
-				Flaps = filter(f, FlapsControl, Flaps, 999F, Aircraft.cvt(FM.getSpeedKMH(), 150F, 280F, 0.15F, 0.02F));
+			{
+				if ((Aircraft)FM.actor instanceof TypeFastJet)
+					Flaps = filter(f, FlapsControl, Flaps, 999F, Aircraft.cvt(FM.getSpeedKMH(), 250F, 400F, 0.16F, 0.11F));
+				else
+					Flaps = filter(f, FlapsControl, Flaps, 999F, Aircraft.cvt(FM.getSpeedKMH(), 150F, 280F, 0.15F, 0.02F));
+			}
 		}
 		if(StabilizerControl)
 		{
