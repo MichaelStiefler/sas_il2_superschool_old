@@ -34,15 +34,12 @@ public class A_6E extends A_6
         lastMissileLaunchThreatActive = 0L;
         intervalMissileLaunchThreat = 1000L;
         guidedMissileUtils = new GuidedMissileUtils(this);
-        windFoldValue = 0.0F;
         hasIR = false;
         hasPRHM = false;
         IR = false;
         missilesList = new ArrayList();
-        backfireList = new ArrayList();
         tX4Prev = 0L;
         g1 = null;
-        a2a = false;
         backfireList = new ArrayList();
         backfire = false;
     }
@@ -179,6 +176,41 @@ public class A_6E extends A_6
         return guidedMissileUtils;
     }
 
+    public void typeX4CAdjSidePlus()
+    {
+        deltaAzimuth = 0.1F;
+    }
+
+    public void typeX4CAdjSideMinus()
+    {
+        deltaAzimuth = -0.1F;
+    }
+
+    public void typeX4CAdjAttitudePlus()
+    {
+        deltaTangage = 0.1F;
+    }
+
+    public void typeX4CAdjAttitudeMinus()
+    {
+        deltaTangage = -0.1F;
+    }
+
+    public void typeX4CResetControls()
+    {
+        deltaAzimuth = deltaTangage = 0.0F;
+    }
+
+    public float typeX4CgetdeltaAzimuth()
+    {
+        return deltaAzimuth;
+    }
+
+    public float typeX4CgetdeltaTangage()
+    {
+        return deltaTangage;
+    }
+
     public void onAircraftLoaded()
     {
         super.onAircraftLoaded();
@@ -235,6 +267,7 @@ public class A_6E extends A_6
                         maneuver.Group.setGroupTask(2);
                 }
             }
+
         if(((FlightModelMain) (super.FM)).CT.getArrestor() > 0.2F)
             if(((FlightModelMain) (super.FM)).Gears.arrestorVAngle != 0.0F)
             {
@@ -261,6 +294,7 @@ public class A_6E extends A_6
                     arrestor = 1.0F;
                 moveArrestorHook(arrestor);
             }
+
         super.update(f);
         if(super.backfire)
             backFire();
@@ -488,11 +522,6 @@ public class A_6E extends A_6
         }
     }
 
-    public void rareAction(float f, boolean flag)
-    {
-        super.rareAction(f, flag);
-    }
-
     static Class _mthclass$(String s)
     {
         try
@@ -520,13 +549,13 @@ public class A_6E extends A_6
     public static float FuelReserve = 1500F;
     public boolean bToFire;
     private float arrestor;
-    private float windFoldValue;
     private long tX4Prev;
     private boolean IR;
     private boolean hasIR;
     private boolean hasPRHM;
     private ArrayList missilesList;
     private ArrayList backfireList;
+    private boolean backfire;
     private Actor queen_last;
     private long queen_time;
     private boolean bNeedSetup;
@@ -536,8 +565,8 @@ public class A_6E extends A_6
     private int dockport_;
     public BulletEmitter Weapons[][];
     private BulletEmitter g1;
-    private boolean a2a;
-    private boolean backfire;
+    private float deltaAzimuth;
+    private float deltaTangage;
     private boolean HasAGM;
 
     static 
@@ -547,8 +576,8 @@ public class A_6E extends A_6
         Property.set(class1, "iconFar_shortClassName", "A-6E");
         Property.set(class1, "meshName", "3DO/Plane/A-6E/hier.him");
         Property.set(class1, "PaintScheme", new PaintSchemeFMPar05());
-        Property.set(class1, "yearService", 1965F);
-        Property.set(class1, "yearExpired", 1990F);
+        Property.set(class1, "yearService", 1970F);
+        Property.set(class1, "yearExpired", 1997F);
         Property.set(class1, "FlightModel", "FlightModels/A6E.fmd:A6");
         Property.set(class1, "cockpitClass", new Class[] {
             com.maddox.il2.objects.air.CockpitA_6.class, com.maddox.il2.objects.air.CockpitA_6_Bombardier.class, com.maddox.il2.objects.air.CockpitA_6FLIR.class
@@ -4317,18 +4346,18 @@ public class A_6E extends A_6
             a_lweaponslot[91] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
             a_lweaponslot[92] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
             a_lweaponslot[93] = new Aircraft._WeaponSlot(2, "RocketGunHYDRA", 19);
-            a_lweaponslot[94] = new Aircraft._WeaponSlot(2, "RocketGunAGM65B", 1);
-            a_lweaponslot[95] = new Aircraft._WeaponSlot(2, "BombGunNull", 1);
-            a_lweaponslot[96] = new Aircraft._WeaponSlot(2, "RocketGunAGM65B", 1);
-            a_lweaponslot[97] = new Aircraft._WeaponSlot(2, "BombGunNull", 1);
-            a_lweaponslot[98] = new Aircraft._WeaponSlot(2, "RocketGunAGM65B", 1);
-            a_lweaponslot[99] = new Aircraft._WeaponSlot(2, "BombGunNull", 1);
-            a_lweaponslot[100] = new Aircraft._WeaponSlot(2, "RocketGunAGM65B", 1);
-            a_lweaponslot[101] = new Aircraft._WeaponSlot(2, "BombGunNull", 1);
-            a_lweaponslot[102] = new Aircraft._WeaponSlot(2, "RocketGunAGM65B", 1);
-            a_lweaponslot[103] = new Aircraft._WeaponSlot(2, "BombGunNull", 1);
-            a_lweaponslot[104] = new Aircraft._WeaponSlot(2, "RocketGunAGM65B", 1);
-            a_lweaponslot[105] = new Aircraft._WeaponSlot(2, "BombGunNull", 1);
+            a_lweaponslot[94] = new Aircraft._WeaponSlot(4, "RocketGunAGM65B", 1);
+            a_lweaponslot[95] = new Aircraft._WeaponSlot(4, "BombGunNull", 1);
+            a_lweaponslot[96] = new Aircraft._WeaponSlot(4, "RocketGunAGM65B", 1);
+            a_lweaponslot[97] = new Aircraft._WeaponSlot(4, "BombGunNull", 1);
+            a_lweaponslot[98] = new Aircraft._WeaponSlot(4, "RocketGunAGM65B", 1);
+            a_lweaponslot[99] = new Aircraft._WeaponSlot(4, "BombGunNull", 1);
+            a_lweaponslot[100] = new Aircraft._WeaponSlot(4, "RocketGunAGM65B", 1);
+            a_lweaponslot[101] = new Aircraft._WeaponSlot(4, "BombGunNull", 1);
+            a_lweaponslot[102] = new Aircraft._WeaponSlot(4, "RocketGunAGM65B", 1);
+            a_lweaponslot[103] = new Aircraft._WeaponSlot(4, "BombGunNull", 1);
+            a_lweaponslot[104] = new Aircraft._WeaponSlot(4, "RocketGunAGM65B", 1);
+            a_lweaponslot[105] = new Aircraft._WeaponSlot(4, "BombGunNull", 1);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "6x Mk20 Cluster + 6x AGM65B Maverick + 4x ZUNI";
@@ -4355,18 +4384,18 @@ public class A_6E extends A_6
             a_lweaponslot[91] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
             a_lweaponslot[92] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
             a_lweaponslot[93] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuni", 4);
-            a_lweaponslot[94] = new Aircraft._WeaponSlot(2, "RocketGunAGM65B", 1);
-            a_lweaponslot[95] = new Aircraft._WeaponSlot(2, "BombGunNull", 1);
-            a_lweaponslot[96] = new Aircraft._WeaponSlot(2, "RocketGunAGM65B", 1);
-            a_lweaponslot[97] = new Aircraft._WeaponSlot(2, "BombGunNull", 1);
-            a_lweaponslot[98] = new Aircraft._WeaponSlot(2, "RocketGunAGM65B", 1);
-            a_lweaponslot[99] = new Aircraft._WeaponSlot(2, "BombGunNull", 1);
-            a_lweaponslot[100] = new Aircraft._WeaponSlot(2, "RocketGunAGM65B", 1);
-            a_lweaponslot[101] = new Aircraft._WeaponSlot(2, "BombGunNull", 1);
-            a_lweaponslot[102] = new Aircraft._WeaponSlot(2, "RocketGunAGM65B", 1);
-            a_lweaponslot[103] = new Aircraft._WeaponSlot(2, "BombGunNull", 1);
-            a_lweaponslot[104] = new Aircraft._WeaponSlot(2, "RocketGunAGM65B", 1);
-            a_lweaponslot[105] = new Aircraft._WeaponSlot(2, "BombGunNull", 1);
+            a_lweaponslot[94] = new Aircraft._WeaponSlot(4, "RocketGunAGM65B", 1);
+            a_lweaponslot[95] = new Aircraft._WeaponSlot(4, "BombGunNull", 1);
+            a_lweaponslot[96] = new Aircraft._WeaponSlot(4, "RocketGunAGM65B", 1);
+            a_lweaponslot[97] = new Aircraft._WeaponSlot(4, "BombGunNull", 1);
+            a_lweaponslot[98] = new Aircraft._WeaponSlot(4, "RocketGunAGM65B", 1);
+            a_lweaponslot[99] = new Aircraft._WeaponSlot(4, "BombGunNull", 1);
+            a_lweaponslot[100] = new Aircraft._WeaponSlot(4, "RocketGunAGM65B", 1);
+            a_lweaponslot[101] = new Aircraft._WeaponSlot(4, "BombGunNull", 1);
+            a_lweaponslot[102] = new Aircraft._WeaponSlot(4, "RocketGunAGM65B", 1);
+            a_lweaponslot[103] = new Aircraft._WeaponSlot(4, "BombGunNull", 1);
+            a_lweaponslot[104] = new Aircraft._WeaponSlot(4, "RocketGunAGM65B", 1);
+            a_lweaponslot[105] = new Aircraft._WeaponSlot(4, "BombGunNull", 1);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "6x Gbu-12 + 6x AGM65B Maverick";
