@@ -8,13 +8,9 @@ import com.maddox.il2.game.*;
 import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.il2.objects.weapons.GuidedMissileUtils;
 import com.maddox.rts.*;
-import com.maddox.sas1946.il2.util.Reflection;
-import com.maddox.sound.Sample;
-import com.maddox.sound.SoundFX;
 import com.maddox.util.HashMapInt;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class KA_6D extends A_6
@@ -36,14 +32,13 @@ public class KA_6D extends A_6
         intervalMissileLaunchThreat = 1000L;
         guidedMissileUtils = new GuidedMissileUtils(this);
         g1 = null;
-        outCommand = new NetMsgFiltered();
-        myArmy = getArmy();
-        counter = 0;
-        freq = 800;
-        Timer1 = Timer2 = freq;
-        Flaps = false;
         bDrogueExtended = true;
         drones = new Actor[1];
+    }
+
+    public static String getSkinPrefix(String s, Regiment regiment)
+    {
+        return "KA6D_";
     }
 
     public boolean isDrogueExtended()
@@ -119,32 +114,6 @@ public class KA_6D extends A_6
     {
     }
 
-    public static final double Rnd(double d, double d1)
-    {
-        return World.Rnd().nextDouble(d, d1);
-    }
-
-    public static final float Rnd(float f, float f1)
-    {
-        return World.Rnd().nextFloat(f, f1);
-    }
-
-    private boolean RndB(float f)
-    {
-        return World.Rnd().nextFloat(0.0F, 1.0F) < f;
-    }
-
-    private static final long SecsToTicks(float f)
-    {
-        long l = (long)(0.5D + (double)(f / Time.tickLenFs()));
-        return l < 1L ? 1L : l;
-    }
-
-    public void getGFactors(TypeGSuit.GFactors gfactors)
-    {
-        gfactors.setGFactors(1.0F, 1.0F, 1.0F, 1.8F, 1.5F, 1.0F);
-    }
-
     public GuidedMissileUtils getGuidedMissileUtils()
     {
         return guidedMissileUtils;
@@ -162,8 +131,6 @@ public class KA_6D extends A_6
     public void update(float f)
     {
         guidedMissileUtils.update();
-        computeLift();
-        Flaps();
         if(FM.getAltitude() < 1000F || FM.CT.getGear() > 0.0F || FM.CT.getArrestor() > 0.0F || (double)(FM.M.fuel) < (double)(FM.M.maxFuel) * 0.20000000000000001D)
         {
             hierMesh().chunkVisible("FuelLine1_D0", false);
@@ -176,6 +143,7 @@ public class KA_6D extends A_6
             hierMesh().chunkVisible("Drogue1_D0", true);
             bDrogueExtended = true;
         }
+
         if(bDrogueExtended && ((FlightModelMain) FM).AS.isMaster())
         {
             for(int i = 0; i < drones.length; i++)
@@ -183,6 +151,7 @@ public class KA_6D extends A_6
                     FM.M.fuel -= 20F * f;
 
         }
+
         if(FM.CT.getArrestor() > 0.2F)
             if(FM.Gears.arrestorVAngle != 0.0F)
             {
@@ -209,47 +178,8 @@ public class KA_6D extends A_6
                     arrestor = 1.0F;
                 moveArrestorHook(arrestor);
             }
+
         super.update(f);
-    }
-
-    public void computeLift()
-    {
-        Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-        float f = calculateMach();
-        if(calculateMach() < 0.0F);
-            float f1 = 0.0F;
-        if((double)f > 2.25D)
-        {
-            f1 = 0.12F;
-        } else
-        {
-            float f2 = f * f;
-            float f3 = f2 * f;
-            float f4 = f3 * f;
-            float f5 = f4 * f;
-            float f6 = f5 * f;
-            float f7 = f6 * f;
-            float f8 = f7 * f;
-            float f9 = f8 * f;
-            f1 = ((((((-0.0998429F * f8 + 1.02985F * f7) - 4.34775F * f6) + 9.5949F * f5) - 11.7055F * f4) + 7.70811F * f3) - 2.5701F * f2) + 0.398187F * f + 0.078F;
-        }
-        polares.lineCyCoeff = f1;
-    }
-
-    private boolean Flaps()
-    {
-        Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-        if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 0.95F && (double)calculateMach() < 0.35999999999999999D && !Flaps)
-        {
-            polares.Cy0_1 += 1.2D;
-            Flaps = true;
-        }
-        if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() < 0.95F && (double)calculateMach() >= 0.35999999999999999D && Flaps)
-        {
-            polares.Cy0_1 -= 1.2D;
-            Flaps = false;
-        }
-        return Flaps;
     }
 
     public boolean typeDockableIsDocked()
@@ -457,7 +387,6 @@ public class KA_6D extends A_6
     }
 
     private GuidedMissileUtils guidedMissileUtils;
-    private boolean bRadarWarning;
     private boolean hasChaff;
     private boolean hasFlare;
     private long lastChaffDeployed;
@@ -470,29 +399,9 @@ public class KA_6D extends A_6
     private long intervalMissileLaunchThreat;
     public static float FlowRate = 10F;
     public static float FuelReserve = 1500F;
-    private static final float NEG_G_TOLERANCE_FACTOR = 1.5F;
-    private static final float NEG_G_TIME_FACTOR = 1.5F;
-    private static final float NEG_G_RECOVERY_FACTOR = 1F;
-    private static final float POS_G_TOLERANCE_FACTOR = 2F;
-    private static final float POS_G_TIME_FACTOR = 2F;
-    private static final float POS_G_RECOVERY_FACTOR = 2F;
     public boolean bToFire;
     private float arrestor;
     private BulletEmitter g1;
-    private int oldbullets;
-    private int pk;
-    protected int engineSTimer;
-    private int myArmy;
-    private static Point3d p = new Point3d();
-    private static Orient o = new Orient();
-    private static Vector3f n = new Vector3f();
-    private static Vector3d tmpv = new Vector3d();
-    private NetMsgFiltered outCommand;
-    public float Timer1;
-    public float Timer2;
-    private int freq;
-    private int counter;
-    private boolean Flaps;
     private boolean bDrogueExtended;
     private Actor drones[];
 
@@ -503,10 +412,10 @@ public class KA_6D extends A_6
         Property.set(class1, "iconFar_shortClassName", "KA-6D");
         Property.set(class1, "meshName", "3DO/Plane/A-6A/KA6D.him");
         Property.set(class1, "PaintScheme", new PaintSchemeFMPar05());
-        Property.set(class1, "yearService", 1965F);
-        Property.set(class1, "yearExpired", 1990F);
+        Property.set(class1, "yearService", 1970F);
+        Property.set(class1, "yearExpired", 1980F);
         Property.set(class1, "FlightModel", "FlightModels/A6A.fmd:A6");
-        Property.set(class1, "cockpitClass", new Class[0]);
+  //      Property.set(class1, "cockpitClass", new Class[0]);           // AI only
         Property.set(class1, "LOSElevation", 0.965F);
         Aircraft.weaponTriggersRegister(class1, new int[] {
             2, 9, 9, 9, 9, 9, 9, 3, 3, 3, 

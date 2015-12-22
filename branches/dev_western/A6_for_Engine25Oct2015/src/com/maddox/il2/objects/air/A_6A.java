@@ -9,12 +9,11 @@ import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
 import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.il2.objects.sounds.Voice;
-import com.maddox.il2.objects.weapons.GuidedMissileUtils;
+import com.maddox.il2.objects.weapons.*;
 import com.maddox.rts.*;
 import com.maddox.util.HashMapInt;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class A_6A extends A_6
@@ -35,9 +34,42 @@ public class A_6A extends A_6
         lastMissileLaunchThreatActive = 0L;
         intervalMissileLaunchThreat = 1000L;
         guidedMissileUtils = new GuidedMissileUtils(this);
-        windFoldValue = 0.0F;
+        missilesList = new ArrayList();
         tX4Prev = 0L;
         g1 = null;
+        backfireList = new ArrayList();
+        backfire = false;
+    }
+
+    private void checkAmmo()
+    {
+        missilesList.clear();
+        for(int i = 0; i < ((FlightModelMain) (super.FM)).CT.Weapons.length; i++)
+            if(((FlightModelMain) (super.FM)).CT.Weapons[i] != null)
+            {
+                for(int j = 0; j < ((FlightModelMain) (super.FM)).CT.Weapons[i].length; j++)
+                    if(((FlightModelMain) (super.FM)).CT.Weapons[i][j].haveBullets())
+                    {
+                        if(((FlightModelMain) (super.FM)).CT.Weapons[i][j] instanceof RocketGunFlare)
+                            backfireList.add(((FlightModelMain) (super.FM)).CT.Weapons[i][j]);
+                        else
+                            missilesList.add(((FlightModelMain) (super.FM)).CT.Weapons[i][j]);
+                    }
+
+            }
+
+    }
+
+    public void backFire()
+    {
+        if(backfireList.isEmpty())
+        {
+            return;
+        } else
+        {
+            ((RocketGunFlare)backfireList.remove(0)).shots(3);
+            return;
+        }
     }
 
     public float getFlowRate()
@@ -106,105 +138,6 @@ public class A_6A extends A_6
 
     private void doDealMissileLaunchThreat()
     {
-    }
-
-    public static final double Rnd(double d, double d1)
-    {
-        return World.Rnd().nextDouble(d, d1);
-    }
-
-    public static final float Rnd(float f, float f1)
-    {
-        return World.Rnd().nextFloat(f, f1);
-    }
-
-    private boolean RndB(float f)
-    {
-        return World.Rnd().nextFloat(0.0F, 1.0F) < f;
-    }
-
-    private static final long SecsToTicks(float f)
-    {
-        long l = (long)(0.5D + (double)(f / Time.tickLenFs()));
-        return l < 1L ? 1L : l;
-    }
-
-    public void rareAction()
-    {
-        Point3d point3d = new Point3d();
-        pos.getAbs(point3d);
-        Vector3d vector3d = new Vector3d();
-        Aircraft aircraft = World.getPlayerAircraft();
-        double d = Main3D.cur3D().land2D.worldOfsX() + ((Actor) (aircraft)).pos.getAbsPoint().x;
-        double d1 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (aircraft)).pos.getAbsPoint().y;
-        double d2 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (aircraft)).pos.getAbsPoint().z;
-        int i = (int)(-((double)((Actor) (aircraft)).pos.getAbsOrient().getYaw() - 90D));
-        if(i < 0)
-            i = 360 + i;
-        int j = (int)(-((double)((Actor) (aircraft)).pos.getAbsOrient().getPitch() - 90D));
-        if(j < 0)
-            j = 360 + j;
-        boolean flag = false;
-        boolean flag1 = false;
-        float f = 100F;
-        Object obj = null;
-        do
-        {
-            Point3d point3d1 = ((Actor) (aircraft)).pos.getAbsPoint();
-            List list = Engine.targets();
-            int k = list.size();
-            for(int l = 0; l < k; l++)
-            {
-                Actor actor = (Actor)list.get(l);
-                if((actor instanceof Aircraft) && actor != World.getPlayerAircraft() && actor.getArmy() != myArmy)
-                {
-                    double d3 = Main3D.cur3D().land2D.worldOfsX() + actor.pos.getAbsPoint().x;
-                    double d4 = Main3D.cur3D().land2D.worldOfsY() + actor.pos.getAbsPoint().y;
-                    double d5 = Main3D.cur3D().land2D.worldOfsY() + actor.pos.getAbsPoint().z;
-                    double d6 = d3 - d;
-                    double d7 = d4 - d1;
-                    double d8 = (int)(Math.ceil((d2 - d5) / 10D) * 10D);
-                    float f1 = 57.32484F * (float)Math.atan2(d7, -d6);
-                    int i1 = (int)(Math.floor((int)f1) - 90D);
-                    if(i1 < 0)
-                        i1 = 360 + i1;
-                    int j1 = i1 - i;
-                    double d9 = d - d3;
-                    double d10 = d1 - d4;
-                    double d11 = Math.sqrt(d8 * d8);
-                    int k1 = (int)(Math.ceil(Math.sqrt(d10 * d10 + d9 * d9) / 10D) * 10D);
-                    float f2 = 57.32484F * (float)Math.atan2(k1, d11);
-                    int l1 = (int)(Math.floor((int)f2) - 90D);
-                    if(l1 < 0)
-                        l1 = 360 + l1;
-                    int i2 = l1 - j;
-                    if((float)k1 <= f && (double)k1 >= 120D && i2 >= 235 && i2 <= 305 && Math.sqrt(j1 * j1) <= 60D && actor.getSpeed(vector3d) > 20D)
-                    {
-                        String s = "level with us";
-                        if(d2 - d5 - 200D >= 0.0D)
-                            s = "below us";
-                        if((d2 - d5) + 200D < 0.0D)
-                            s = "above us";
-                        int j2 = k1;
-                        String s1 = "m";
-                        if(j2 >= 1000)
-                        {
-                            j2 = (int)Math.floor(j2 / 1000);
-                            s1 = "km";
-                        }
-                        HUD.logCenter("                                          WSO: Radar Contact Bearing " + i1 + "\260" + ", Range " + j2 + s1 + ", " + s);
-                        flag1 = true;
-                    }
-                }
-                f += 100F;
-            }
-
-        } while(!flag1 && f <= 5000F);
-    }
-
-    public void getGFactors(TypeGSuit.GFactors gfactors)
-    {
-        gfactors.setGFactors(1.0F, 1.0F, 1.0F, 1.8F, 1.5F, 1.0F);
     }
 
     public GuidedMissileUtils getGuidedMissileUtils()
@@ -303,6 +236,7 @@ public class A_6A extends A_6
                         maneuver.Group.setGroupTask(2);
                 }
             }
+
         if(FM.CT.getArrestor() > 0.2F)
             if(FM.Gears.arrestorVAngle != 0.0F)
             {
@@ -329,18 +263,10 @@ public class A_6A extends A_6
                     arrestor = 1.0F;
                 moveArrestorHook(arrestor);
             }
+
         super.update(f);
-        if(super.FM.getSpeed() > 5F)
-        {
-            hierMesh().chunkSetAngles("SlatL_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, 14.5F), 0.0F);
-            hierMesh().chunkSetAngles("SlatR_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, -14.5F), 0.0F);
-            hierMesh().chunkSetAngles("SlatL_Out", 0.0F, 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, -20.5F));
-            hierMesh().chunkSetAngles("SlatR_Out", 0.0F, 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, -20.5F));
-        }
-        double d = ((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput();
-        double d1 = ((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput();
-        boolean flag = ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5;
-        boolean flag1 = ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5;
+        if(super.backfire)
+            backFire();
     }
 
     public void msgCollisionRequest(Actor actor, boolean aflag[])
@@ -530,7 +456,6 @@ public class A_6A extends A_6
     }
 
     private GuidedMissileUtils guidedMissileUtils;
-    private boolean bRadarWarning;
     private boolean hasChaff;
     private boolean hasFlare;
     private long lastChaffDeployed;
@@ -543,26 +468,12 @@ public class A_6A extends A_6
     private long intervalMissileLaunchThreat;
     public static float FlowRate = 10F;
     public static float FuelReserve = 1500F;
-    private static final float NEG_G_TOLERANCE_FACTOR = 1.5F;
-    private static final float NEG_G_TIME_FACTOR = 1.5F;
-    private static final float NEG_G_RECOVERY_FACTOR = 1F;
-    private static final float POS_G_TOLERANCE_FACTOR = 2F;
-    private static final float POS_G_TIME_FACTOR = 2F;
-    private static final float POS_G_RECOVERY_FACTOR = 2F;
     public boolean bToFire;
     private float arrestor;
-    private BulletEmitter g1;
-    private int oldbullets;
-    private int pk;
-    protected int engineSTimer;
-    private int myArmy;
-    private static Point3d p = new Point3d();
-    private static Orient o = new Orient();
-    private static Vector3f n = new Vector3f();
-    private static Vector3d tmpv = new Vector3d();
-    private NetMsgFiltered outCommand;
-    private float windFoldValue;
     private long tX4Prev;
+    private ArrayList missilesList;
+    private ArrayList backfireList;
+    private boolean backfire;
     private Actor queen_last;
     private long queen_time;
     private boolean bNeedSetup;
@@ -570,12 +481,10 @@ public class A_6A extends A_6
     private Actor target_;
     private Actor queen_;
     private int dockport_;
+    public BulletEmitter Weapons[][];
+    private BulletEmitter g1;
     private float deltaAzimuth;
     private float deltaTangage;
-    public float Timer1;
-    public float Timer2;
-    private int freq;
-    private int counter;
 
     static 
     {
@@ -584,8 +493,8 @@ public class A_6A extends A_6
         Property.set(class1, "iconFar_shortClassName", "A-6A");
         Property.set(class1, "meshName", "3DO/Plane/A-6A/hier.him");
         Property.set(class1, "PaintScheme", new PaintSchemeFMPar05());
-        Property.set(class1, "yearService", 1965F);
-        Property.set(class1, "yearExpired", 1990F);
+        Property.set(class1, "yearService", 1959F);
+        Property.set(class1, "yearExpired", 1980F);
         Property.set(class1, "FlightModel", "FlightModels/A6A.fmd:A6");
         Property.set(class1, "cockpitClass", new Class[] {
             com.maddox.il2.objects.air.CockpitA_6.class, com.maddox.il2.objects.air.CockpitA_6_Bombardier.class
