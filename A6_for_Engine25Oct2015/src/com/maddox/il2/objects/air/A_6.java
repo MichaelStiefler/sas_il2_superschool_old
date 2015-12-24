@@ -686,7 +686,6 @@ public class A_6 extends Scheme2
     {
         if(FM.EI.engines[0].getStage() < 6 && FM.Gears.nOfGearsOnGr > 0)
         {
-            gearTargetAngle = 90F;
             hasHydraulicPressure = false;
             FM.CT.bHasAileronControl = false;
             FM.CT.bHasElevatorControl = false;
@@ -694,7 +693,6 @@ public class A_6 extends Scheme2
         } else
         if(!hasHydraulicPressure)
         {
-            gearTargetAngle = 0.0F;
             hasHydraulicPressure = true;
             FM.CT.bHasAileronControl = true;
             FM.CT.bHasElevatorControl = true;
@@ -1845,9 +1843,9 @@ public class A_6 extends Scheme2
                     gearTargetAngle = -1F;
                 }
             }
-            hierMesh().chunkSetAngles("GearL6_D0", 0.0F, -gearCurrentAngle, 0.0F);
-            hierMesh().chunkSetAngles("GearR6_D0", 0.0F, gearCurrentAngle, 0.0F);
-            hierMesh().chunkSetAngles("GearC4_D0", 0.0F, gearCurrentAngle, 0.0F);
+        //    hierMesh().chunkSetAngles("GearL6_D0", 0.0F, -gearCurrentAngle, 0.0F);
+        //    hierMesh().chunkSetAngles("GearR6_D0", 0.0F, gearCurrentAngle, 0.0F);
+        //    hierMesh().chunkSetAngles("GearC4_D0", 0.0F, gearCurrentAngle, 0.0F);
         }
     }
 
@@ -1855,7 +1853,7 @@ public class A_6 extends Scheme2
     {
         if(FM.CT.bMoveSideDoor)
         {
-            hierMesh().chunkSetAngles("Blister2_D0", 0.0F, 0.0F, 45F * f);
+            hierMesh().chunkSetAngles("Nose1_D0", 0.0F, 0.0F, 45F * f);
         }
         else
         {
@@ -1887,16 +1885,16 @@ public class A_6 extends Scheme2
         hiermesh.chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(f2, 0.01F, 0.11F, 0.0F, 90F), 0.0F);
         hiermesh.chunkSetAngles("GearL3_D0", 0.0F, 90F * f, 35F * f);
         hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 0.0F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearR3_D0", 0.0F, -90F * f, 35F * f1);
+        hiermesh.chunkSetAngles("GearR3_D0", 0.0F, -90F * f1, 35F * f1);
         hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 0.0F, 0.0F);
         hiermesh.chunkSetAngles("GearL4_D0", 0.0F, 0.0F, 0.0F);
         hiermesh.chunkSetAngles("GearR4_D0", 0.0F, 0.0F, 0.0F);
         hiermesh.chunkSetAngles("GearL5_D0", 0.0F, 100F * f, 35F * f);
-        hiermesh.chunkSetAngles("GearL11_D0", 0.0F, 91F * f, 35F * f);
+        hiermesh.chunkSetAngles("GearL11_D0", 0.0F, Aircraft.cvt(f, 0.03F, 0.15F, 0.0F, 30F), 0.0F);
         hiermesh.chunkSetAngles("GearR5_D0", 0.0F, -100F * f1, 35F * f1);
-        hiermesh.chunkSetAngles("GearR11_D0", 0.0F, -91F * f1, 35F * f1);
-        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, -90F), 0.0F);
-        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, Aircraft.cvt(f1, 0.01F, 0.11F, 0.0F, 90F), 0.0F);
+        hiermesh.chunkSetAngles("GearR11_D0", 0.0F, Aircraft.cvt(f1, 0.03F, 0.15F, 0.0F, -30F), 0.0F);
+        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.19F, 0.0F, -90F), 0.0F);
+        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, Aircraft.cvt(f1, 0.01F, 0.19F, 0.0F, 90F), 0.0F);
     }
 
     protected void moveGear(float f, float f1, float f2) {

@@ -2140,7 +2140,7 @@ public class A_6E extends A_6
             a_lweaponslot[51] = new Aircraft._WeaponSlot(3, "BombGunMk81", 1);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "6x Mk20 cluster ";
+            s = "6x Mk20 cluster";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
             a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunNull", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "PylonF100_Outboard", 1);
