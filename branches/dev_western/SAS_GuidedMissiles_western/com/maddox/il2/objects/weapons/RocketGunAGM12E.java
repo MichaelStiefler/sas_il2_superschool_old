@@ -6,10 +6,10 @@ import com.maddox.rts.Property;
 // Referenced classes of package com.maddox.il2.objects.weapons:
 //            RocketGun
 
-public class RocketGunAGM12C extends RocketGun
+public class RocketGunAGM12E extends RocketGun
 {
 
-    public RocketGunAGM12C()
+    public RocketGunAGM12E()
     {
     }
 
@@ -29,21 +29,21 @@ public class RocketGunAGM12C extends RocketGun
         return c;
     }
 
-    static Class class$com$maddox$il2$objects$weapons$RocketGunAGM12C;
-    static Class class$com$maddox$il2$objects$weapons$RocketAGM12C;
+    static Class class$com$maddox$il2$objects$weapons$RocketGunAGM12E;
+    static Class class$com$maddox$il2$objects$weapons$RocketAGM12E;
   
     static 
     {
    	Class class1
-	    = (class$com$maddox$il2$objects$weapons$RocketGunAGM12C == null
-	       ? (class$com$maddox$il2$objects$weapons$RocketGunAGM12C
-		  = _mthclass$("com.maddox.il2.objects.weapons.RocketGunAGM12C"))
-	       : class$com$maddox$il2$objects$weapons$RocketGunAGM12C);
+	    = (class$com$maddox$il2$objects$weapons$RocketGunAGM12E == null
+	       ? (class$com$maddox$il2$objects$weapons$RocketGunAGM12E
+		  = _mthclass$("com.maddox.il2.objects.weapons.RocketGunAGM12E"))
+	       : class$com$maddox$il2$objects$weapons$RocketGunAGM12E);
         Class classbu
-	    = (class$com$maddox$il2$objects$weapons$RocketAGM12C == null
-	       ? (class$com$maddox$il2$objects$weapons$RocketAGM12C
-		  = _mthclass$("com.maddox.il2.objects.weapons.RocketAGM12C"))
-	       : class$com$maddox$il2$objects$weapons$RocketAGM12C);
+	    = (class$com$maddox$il2$objects$weapons$RocketAGM12E == null
+	       ? (class$com$maddox$il2$objects$weapons$RocketAGM12E
+		  = _mthclass$("com.maddox.il2.objects.weapons.RocketAGM12E"))
+	       : class$com$maddox$il2$objects$weapons$RocketAGM12E);
         Property.set(class1, "bulletClass", (Object) classbu);
         Property.set(class1, "bullets", 1);
         Property.set(class1, "shotFreq", 0.10F);
