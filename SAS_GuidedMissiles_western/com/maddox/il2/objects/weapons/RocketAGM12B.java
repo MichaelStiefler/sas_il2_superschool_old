@@ -5,17 +5,15 @@ import com.maddox.JGP.*;
 import com.maddox.il2.engine.*;
 import com.maddox.rts.*;
 
-// Referenced classes of package com.maddox.il2.objects.weapons:
-//            Rocket
 
-public class RocketAGM12C extends RemoteControlRocket
+public class RocketAGM12B extends RemoteControlRocket
 {
-    public RocketAGM12C()
+    public RocketAGM12B()
     {
         super();
     }
 
-    public RocketAGM12C(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f)
+    public RocketAGM12B(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f)
     {
         super(actor, netchannel, i, point3d, orient, f);
     }
@@ -52,7 +50,7 @@ public class RocketAGM12C extends RemoteControlRocket
         return c;
     }
 
-    static Class class$com$maddox$il2$objects$weapons$RocketAGM12C;
+    static Class class$com$maddox$il2$objects$weapons$RocketAGM12B;
 
     private Eff3DActor fl1;
     private Eff3DActor fl2;
@@ -60,11 +58,11 @@ public class RocketAGM12C extends RemoteControlRocket
     static 
     {
    	Class class1
-	    = (class$com$maddox$il2$objects$weapons$RocketAGM12C == null
-	       ? (class$com$maddox$il2$objects$weapons$RocketAGM12C
-		  = _mthclass$("com.maddox.il2.objects.weapons.RocketAGM12C"))
-	       : class$com$maddox$il2$objects$weapons$RocketAGM12C);
-        Property.set(class1, "mesh", "3do/arms/AGM12/mono.sim");
+	    = (class$com$maddox$il2$objects$weapons$RocketAGM12B == null
+	       ? (class$com$maddox$il2$objects$weapons$RocketAGM12B
+		  = _mthclass$("com.maddox.il2.objects.weapons.RocketAGM12B"))
+	       : class$com$maddox$il2$objects$weapons$RocketAGM12B);
+        Property.set(class1, "mesh", "3do/arms/AGM12B/mono.sim");
         Property.set(class1, "sprite", "3DO/Effects/Tracers/GuidedRocket/Black.eff");
         Property.set(class1, "flame", "3do/effects/rocket/mono.sim");
         Property.set(class1, "smoke", "3DO/Effects/Tracers/GuidedRocket/White.eff");
@@ -72,16 +70,16 @@ public class RocketAGM12C extends RemoteControlRocket
         Property.set(class1, "emitLen", 50F);
         Property.set(class1, "emitMax", 1.0F);
         Property.set(class1, "sound", "weapon.rocket_132");
-        Property.set(class1, "radius", 380F);
+        Property.set(class1, "radius", 50F);
         Property.set(class1, "timeLife", 30F);
         Property.set(class1, "timeFire", 29F);
-        Property.set(class1, "force", 15712F);
-        Property.set(class1, "power", 414F);
+        Property.set(class1, "force", 13000F);
+        Property.set(class1, "power", 120F);
         Property.set(class1, "powerType", 0);
-        Property.set(class1, "kalibr", 0.46F);
-        Property.set(class1, "massa", 810F);
-        Property.set(class1, "massaEnd", 553F);
-        Property.set(class1, "friendlyName", "AGM-12C");
+        Property.set(class1, "kalibr", 0.30F);
+        Property.set(class1, "massa", 259F);
+        Property.set(class1, "massaEnd", 183F);
+        Property.set(class1, "friendlyName", "AGM-12B");
         Spawn.add(class1, new SPAWN());
     }
 
