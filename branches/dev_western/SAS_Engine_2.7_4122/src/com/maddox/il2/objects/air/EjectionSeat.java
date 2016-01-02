@@ -214,6 +214,7 @@ public class EjectionSeat extends ActorHMesh
                 hookcount++;
             }
         }
+    }
 
     private Vector3d v;
     private Loc l;
