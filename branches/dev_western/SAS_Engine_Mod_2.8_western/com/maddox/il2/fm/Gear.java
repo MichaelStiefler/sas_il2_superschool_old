@@ -962,6 +962,8 @@ public class Gear {
 		d1 -= 40000D * NormalVPrj;
 		Tn.scale(d1, Normal);
 		double d5 = 0.0001D * d1;
+		if(d5 > 3.3D)
+			d5 = 3.3D;  // TODO: Limiter to avoid heavy planes bouncing on the ground
 		double d6 = FM.CT.getBrake();
 		double d7 = FM.CT.getRudder();
 		// TODO: PAS++
@@ -1108,7 +1110,7 @@ public class Gear {
 				case 0:
 				default:
 					// if(msg1)
-					// {System.out.println(">>> Front wheel active steering");
+					// {if (FM.actor != World.getPlayerAircraft()) System.out.println(">>> Front wheel active steering");
 					// msg1 = false;}
 					boolean bTaxing = FM.Vwld.length() < 8.33F;  // (now taxing, speed < 30km/h)
 					gVelocity[i] = ForwardVPrj;

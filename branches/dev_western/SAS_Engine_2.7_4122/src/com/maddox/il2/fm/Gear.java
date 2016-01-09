@@ -1138,6 +1138,8 @@ public class Gear
         d1 -= 40000D * NormalVPrj;
         Tn.scale(d1, Normal);
         double d5 = 0.0001D * d1;
+        if(d5 > 3.3D)
+            d5 = 3.3D;  // TODO: Limiter to avoid heavy planes bouncing on the ground
         double d6 = FM.CT.getBrake();
         double d7 = FM.CT.getRudder();
         // TODO: PAS++
