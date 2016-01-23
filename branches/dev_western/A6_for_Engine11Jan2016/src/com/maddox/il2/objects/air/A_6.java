@@ -11,6 +11,8 @@ import com.maddox.il2.objects.Wreckage;
 import com.maddox.il2.objects.air.A_6A;
 import com.maddox.il2.objects.air.A_6E;
 import com.maddox.il2.objects.air.KA_6D;
+import com.maddox.il2.objects.air.EA_6B;
+import com.maddox.il2.objects.air.EA_6BicapII;
 import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric;
 import com.maddox.il2.objects.vehicles.cars.CarGeneric;
@@ -23,12 +25,13 @@ import com.maddox.sas1946.il2.util.Reflection;
 import com.maddox.sound.SoundFX;
 import com.maddox.util.HashMapExt;
 import java.io.IOException;
+import java.lang.Math;
 import java.lang.reflect.Field;
 import java.util.*;
 
 
 public class A_6 extends Scheme2
-    implements TypeSupersonic, TypeFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeRadar, TypeBomber, TypeX4Carrier, TypeLaserSpotter, TypeStormovikArmored, TypeSemiRadar, TypeGroundRadar
+    implements TypeSupersonic, TypeFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeRadar, TypeBomber, TypeX4Carrier, TypeGuidedBombCarrier, TypeLaserSpotter, TypeStormovikArmored, TypeSemiRadar, TypeGroundRadar
 {
 
     public float getDragForce(float f, float f1, float f2, float f3)
@@ -59,10 +62,8 @@ public class A_6 extends Scheme2
     public A_6()
     {
         elevatorsField = null;
-        tflap = 0L;
-        lLightHook = new Hook[4];
+        lLightHook = new Hook[8];
         SonicBoom = 0.0F;
-        bSlatsOff = false;
         oldctl = -1F;
         curctl = -1F;
         oldthrl = -1F;
@@ -70,7 +71,7 @@ public class A_6 extends Scheme2
         k14Mode = 2;
         k14WingspanType = 0;
         k14Distance = 200F;
-        AirBrakeControl = 0.0F;
+        SpoilerBrakeControl = 0.0F;
         overrideBailout = false;
         ejectComplete = false;
         lightTime = 0.0F;
@@ -79,8 +80,6 @@ public class A_6 extends Scheme2
         ts = false;
         ictl = false;
         engineSurgeDamage = 0.0F;
-        gearTargetAngle = -1F;
-        gearCurrentAngle = -1F;
         hasHydraulicPressure = true;
         radarmode = 0;
         targetnum = 0;
@@ -123,7 +122,8 @@ public class A_6 extends Scheme2
         fxMissileWarning = newSound("aircraft.MissileMissile", false);
         misslebrg = 0.0F;
         aircraftbrg = 0.0F;
-        FL = false;
+        bFL = false;
+        noFL = false;
         thrustMaxField = new Field[2];
         lTimeNextEject = 0L;
         obsLookTime = 0;
@@ -137,6 +137,8 @@ public class A_6 extends Scheme2
         obsMoveTot = 0.0F;
         bObserverKilled = false;
         Flaps = false;
+        antiColLight = new Eff3DActor[6];
+        bAntiColLight = false;
     }
 
     private static final float toMeters(float f)
@@ -157,28 +159,28 @@ public class A_6 extends Scheme2
             {
                 APmode1 = true;
                 HUD.log("Autopilot Mode: Altitude ON");
-                ((FlightModelMain) (super.FM)).AP.setStabAltitude(1000F);
+                FM.AP.setStabAltitude(1000F);
             } else
             if(APmode1)
             {
                 APmode1 = false;
                 HUD.log("Autopilot Mode: Altitude OFF");
-                ((FlightModelMain) (super.FM)).AP.setStabAltitude(false);
+                FM.AP.setStabAltitude(false);
             }
         if(i == 21)
             if(!APmode2)
             {
                 APmode2 = true;
                 HUD.log("Autopilot Mode: Direction ON");
-                ((FlightModelMain) (super.FM)).AP.setStabDirection(true);
-                ((FlightModelMain) (super.FM)).CT.bHasRudderControl = false;
+                FM.AP.setStabDirection(true);
+                FM.CT.bHasRudderControl = false;
             } else
             if(APmode2)
             {
                 APmode2 = false;
                 HUD.log("Autopilot Mode: Direction OFF");
-                ((FlightModelMain) (super.FM)).AP.setStabDirection(false);
-                ((FlightModelMain) (super.FM)).CT.bHasRudderControl = true;
+                FM.AP.setStabDirection(false);
+                FM.CT.bHasRudderControl = true;
             }
         if(i == 26)
         {
@@ -195,25 +197,28 @@ public class A_6 extends Scheme2
                 t1 = Time.current();
             }
         }
-        if(i == 27)
-            if(!ILS)
-            {
-                ILS = true;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "ILS ON");
-            } else
-            {
-                ILS = false;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "ILS OFF");
-            }
         if(i == 28)
-            if(!FL)
+            if(!noFL)
             {
-                FL = true;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "FL ON");
+                if(!bFL)
+                {
+                    bFL = true;
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "FL ON");
+                } else
+                {
+                    bFL = false;
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "FL OFF");
+                }
+            }
+        if(i == 29)
+            if(!bAntiColLight)
+            {
+                bAntiColLight = true;
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Anti-Col Lights ON");
             } else
             {
-                FL = false;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "FL OFF");
+                bAntiColLight = false;
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Anti-Col Lights OFF");
             }
     }
 
@@ -675,11 +680,54 @@ public class A_6 extends Scheme2
             bGen1st = true;
         else
             bGen1st = false;
-        if((FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
+        if(this instanceof com.maddox.il2.objects.air.EA_6B || this instanceof com.maddox.il2.objects.air.EA_6BicapII)
+            bEA6B = true;
+        else
+            bEA6B = false;
+        stockDragAirbrake = FM.Sq.dragAirbrakeCx;
+        nonAileronTimer = Time.current();
+        nonAileronTimerSet = false;
+    //    if((FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
+    //    {
+          //  FM.Sq.squareElevators += 0.5F;   //  FM.Sq.squareElevators += 2.0F;
+          //  FM.Sq.liftStab += 0.5F;          //  FM.Sq.liftStab += 2.0F;
+    //    }
+    }
+
+    public void checkSpolers()
+    {
+        if(bGen1st) return;
+
+        boolean SpoilerAsAileron = (FM.CT.getAileron() < -0.008F || FM.CT.getAileron() > 0.008F);
+
+        if(!SpoilerAsAileron && oldSpoilerAsAileron && !nonAileronTimerSet)
         {
-            FM.Sq.squareElevators += 2.0F;
-            FM.Sq.liftStab += 2.0F;
+            nonAileronTimer = Time.current() + 1000L;
+            nonAileronTimerSet = true;
         }
+
+        if(((FM.EI.engines[0].getControlThrottle() < 0.04F && FM.EI.engines[1].getControlThrottle() < 0.04F)
+            || FM.Gears.nOfGearsOnGr > 1) && !SpoilerAsAileron && Time.current() > nonAileronTimer && FM.CT.getWing() < 0.001F)
+        {
+            SpoilerBrakeControl = FM.CT.getAirBrake();
+            FM.Sq.dragAirbrakeCx = stockDragAirbrake * 2.0F;
+            nonAileronTimerSet = false;
+        }
+        else
+        {
+            SpoilerBrakeControl = 0.0F;
+            FM.Sq.dragAirbrakeCx = stockDragAirbrake;
+        }
+
+        if(SpoilerBrakeControl != oldSpoilerBrakeControl)
+        {
+            hierMesh().chunkSetAngles("AroneLOut_D0", 0.0F, 55F * SpoilerBrakeControl, 0.0F);
+            hierMesh().chunkSetAngles("AroneLIn_D0", 0.0F, 55F * SpoilerBrakeControl, 0.0F);
+            hierMesh().chunkSetAngles("AroneROut_D0", 0.0F, -55F * SpoilerBrakeControl, 0.0F);
+            hierMesh().chunkSetAngles("AroneRIn_D0", 0.0F, -55F * SpoilerBrakeControl, 0.0F);
+        }
+        oldSpoilerBrakeControl = SpoilerBrakeControl;
+        oldSpoilerAsAileron = SpoilerAsAileron;
     }
 
     public void checkHydraulicStatus()
@@ -707,8 +755,8 @@ public class A_6 extends Scheme2
         {
             if(Actor._tmpLoc.getX() >= 1.0D)
             {
-                lLight = new LightPointWorld[4];
-                for(int i = 0; i < 4; i++)
+                lLight = new LightPointWorld[8];
+                for(int i = 0; i < 8; i++)
                 {
                     lLight[i] = new LightPointWorld();
                     lLight[i].setColor(1.0F, 1.0F, 1.0F);
@@ -726,29 +774,33 @@ public class A_6 extends Scheme2
             for(int j = 0; j < 4; j++)
                 if(FM.AS.astateLandingLightEffects[j] != null)
                 {
-                    lLightLoc1.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-                    lLightHook[j].computePos(this, Actor._tmpLoc, lLightLoc1);
-                    lLightLoc1.get(lLightP1);
-                    lLightLoc1.set(2000D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-                    lLightHook[j].computePos(this, Actor._tmpLoc, lLightLoc1);
-                    lLightLoc1.get(lLightP2);
-                    Engine.land();
-                    if(Landscape.rayHitHQ(lLightP1, lLightP2, lLightPL))
+                    for(int k = 0; k < 2; k++)
                     {
-                        lLightPL.z++;
-                        lLightP2.interpolate(lLightP1, lLightPL, 0.95F);
-                        lLight[j].setPos(lLightP2);
-                        float f = (float)lLightP1.distance(lLightPL);
-                        float f1 = f * 0.5F + 60F;
-                        float f2 = 0.7F - (0.8F * f * lightTime) / 2000F;
-                        lLight[j].setEmit(f2, f1);
-                    } else
-                    {
-                        lLight[j].setEmit(0.0F, 0.0F);
+                        lLightLoc1.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+                        lLightHook[j + k * 4].computePos(this, Actor._tmpLoc, lLightLoc1);
+                        lLightLoc1.get(lLightP1);
+                        lLightLoc1.set(2000D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+                        lLightHook[j + k * 4].computePos(this, Actor._tmpLoc, lLightLoc1);
+                        lLightLoc1.get(lLightP2);
+                        Engine.land();
+                        if(Landscape.rayHitHQ(lLightP1, lLightP2, lLightPL))
+                        {
+                            lLightPL.z++;
+                            lLightP2.interpolate(lLightP1, lLightPL, 0.95F);
+                            lLight[j + k * 4].setPos(lLightP2);
+                            float f = (float)lLightP1.distance(lLightPL);
+                            float f1 = f * 0.5F + 60F;
+                            float f2 = 0.7F - (0.8F * f * lightTime) / 2000F;
+                            lLight[j + k * 4].setEmit(f2 / 2F, f1 / 2F);
+                        } else
+                        {
+                            lLight[j + k * 4].setEmit(0.0F, 0.0F);
+                        }
                     }
                 } else
                 if(lLight[j].getR() != 0.0F)
-                    lLight[j].setEmit(0.0F, 0.0F);
+                    for(int k = 0; k < 2; k++)
+                        lLight[j + k * 4].setEmit(0.0F, 0.0F);
 
         }
     }
@@ -784,25 +836,35 @@ public class A_6 extends Scheme2
             {
                 hierMesh().chunkVisible("HMask1_D0", false);
                 hierMesh().chunkVisible("HMask2_D0", false);
+                if(bEA6B)
+                {
+                    hierMesh().chunkVisible("HMask3_D0", false);
+                    hierMesh().chunkVisible("HMask4_D0", false);
+                }
             }
             else
             {
                 hierMesh().chunkVisible("HMask1_D0", hierMesh().isChunkVisible("Pilot1_D0"));
                 hierMesh().chunkVisible("HMask2_D0", hierMesh().isChunkVisible("Pilot2_D0"));
+                if(bEA6B)
+                {
+                    hierMesh().chunkVisible("HMask3_D0", hierMesh().isChunkVisible("Pilot3_D0"));
+                    hierMesh().chunkVisible("HMask4_D0", hierMesh().isChunkVisible("Pilot4_D0"));
+                }
             }
 
             if(FM.brakeShoe && FM.CT.getCockpitDoor() > 0.4F)
             {
-                hierMesh().chunkSetAngles("StairsL", 0.0F, -180.0F, 0.0F);
-                hierMesh().chunkSetAngles("StairsR", 0.0F, 180.0F, 0.0F);
+                hierMesh().chunkSetAngles("StairsL_D0", 0.0F, -180.0F, 0.0F);
+                hierMesh().chunkSetAngles("StairsR_D0", 0.0F, 180.0F, 0.0F);
             }
             else
             {
-                hierMesh().chunkSetAngles("StairsL", 0.0F, 0.0F, 0.0F);
-                hierMesh().chunkSetAngles("StairsR", 0.0F, 0.0F, 0.0F);
+                hierMesh().chunkSetAngles("StairsL_D0", 0.0F, 0.0F, 0.0F);
+                hierMesh().chunkSetAngles("StairsR_D0", 0.0F, 0.0F, 0.0F);
             }
         }
-        if(FM.Gears.onGround() && FM.brakeShoe)
+        if(FM.Gears.onGround() && FM.brakeShoe && !bEA6B)
         {
             FM.CT.bHasSideDoor = true;
         }
@@ -839,8 +901,8 @@ public class A_6 extends Scheme2
         if ((!FM.isPlayers() || !(FM instanceof RealFlightModel) || !((RealFlightModel) FM).isRealMode()) && (FM instanceof Maneuver))
             if (FM.AP.way.isLanding() && FM.getSpeed() > FM.VmaxFLAPS && FM.getSpeed() > FM.AP.way.curr().getV() * 1.4F)
             {
-                if (this.FM.CT.AirBrakeControl != 1.0F)
-                    this.FM.CT.AirBrakeControl = 1.0F;
+                if (FM.CT.AirBrakeControl != 1.0F)
+                    FM.CT.AirBrakeControl = 1.0F;
             }
             else if (((Maneuver) FM).get_maneuver() == 25 && FM.AP.way.isLanding() && FM.getSpeed() < FM.VmaxFLAPS * 1.16F)
             {
@@ -866,6 +928,10 @@ public class A_6 extends Scheme2
                 FM.CT.AirBrakeControl = 0.0F;
         if(FM.EI.engines[0].getThrustOutput() > 0.91F || FM.EI.engines[1].getThrustOutput() > 0.91F)
             FM.CT.AirBrakeControl = 0.0F;
+
+        formationlights();
+        if(!FM.isPlayers())
+            bAntiColLight = FM.AS.bNavLightsOn;
     }
 
     private final void UpdateLightIntensity()
@@ -935,40 +1001,6 @@ public class A_6 extends Scheme2
         k14Distance = netmsginput.readFloat();
     }
 
-    public void doEjectCatapult()
-    {
-        new MsgAction(false, this) {
-
-            public void doAction(Object obj)
-            {
-                Aircraft aircraft = (Aircraft)obj;
-                if(Actor.isValid(aircraft))
-                {
-                    Loc loc = new Loc();
-                    Loc loc1 = new Loc();
-                    Vector3d vector3d = new Vector3d(0.0D, 0.0D, 60D);
-                    HookNamed hooknamed = new HookNamed(aircraft, "_ExternalSeat01");
-                    aircraft.pos.getAbs(loc1);
-                    hooknamed.computePos(aircraft, loc1, loc);
-                    loc.transform(vector3d);
-                    vector3d.x += aircraft.FM.Vwld.x;
-                    vector3d.y += aircraft.FM.Vwld.y;
-                    vector3d.z += aircraft.FM.Vwld.z;
-                    new EjectionSeat(10, loc, vector3d, aircraft);
-                }
-            }
-
-        }
-;
-        hierMesh().chunkVisible("Seat1_D0", false);
-        FM.setTakenMortalDamage(true, null);
-        FM.CT.WeaponControl[0] = false;
-        FM.CT.WeaponControl[1] = false;
-        FM.CT.bHasAileronControl = false;
-        FM.CT.bHasRudderControl = false;
-        FM.CT.bHasElevatorControl = false;
-    }
-
     protected void hitBone(String s, Shot shot, Point3d point3d)
     {
         if(s.startsWith("xx"))
@@ -988,7 +1020,7 @@ public class A_6 extends Scheme2
                 if(s.endsWith("g1"))
                 {
                     getEnergyPastArmor((double)World.Rnd().nextFloat(40F, 60F) / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot);
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 2);
+                    FM.AS.setCockpitState(shot.initiator, FM.AS.astateCockpitState | 2);
                     if(shot.power <= 0.0F)
                         doRicochetBack(shot);
                 }
@@ -1004,7 +1036,7 @@ public class A_6 extends Scheme2
                     if(World.Rnd().nextFloat() < 0.5F && getEnergyPastArmor(1.1F, shot) > 0.0F)
                     {
                         debuggunnery("Controls: Ailerones Controls: Out..");
-                        ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                        FM.AS.setControlsDamage(shot.initiator, 0);
                     }
                     break;
 
@@ -1013,12 +1045,12 @@ public class A_6 extends Scheme2
                     if(getEnergyPastArmor(World.Rnd().nextFloat(0.5F, 2.93F), shot) > 0.0F && World.Rnd().nextFloat() < 0.25F)
                     {
                         debuggunnery("Controls: Elevator Controls: Disabled / Strings Broken..");
-                        ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
+                        FM.AS.setControlsDamage(shot.initiator, 1);
                     }
                     if(getEnergyPastArmor(World.Rnd().nextFloat(0.5F, 2.93F), shot) > 0.0F && World.Rnd().nextFloat() < 0.25F)
                     {
                         debuggunnery("Controls: Rudder Controls: Disabled / Strings Broken..");
-                        ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
+                        FM.AS.setControlsDamage(shot.initiator, 2);
                     }
                     break;
                 }
@@ -1034,18 +1066,18 @@ public class A_6 extends Scheme2
                     debuggunnery("Engine Module: Engine Cams Hit, " + FM.EI.engines[0].getCylindersOperable() + "/" + FM.EI.engines[0].getCylinders() + " Left..");
                     if(World.Rnd().nextFloat() < shot.power / 24000F)
                     {
-                        ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
+                        FM.AS.hitEngine(shot.initiator, 0, 2);
                         debuggunnery("Engine Module: Engine Cams Hit - Engine Fires..");
                     }
                     if(shot.powerType == 3 && World.Rnd().nextFloat() < 0.75F)
                     {
-                        ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 1);
+                        FM.AS.hitEngine(shot.initiator, 0, 1);
                         debuggunnery("Engine Module: Engine Cams Hit (2) - Engine Fires..");
                     }
                 }
                 if(s.endsWith("eqpt") && World.Rnd().nextFloat() < shot.power / 24000F)
                 {
-                    ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 3);
+                    FM.AS.hitEngine(shot.initiator, 0, 3);
                     debuggunnery("Engine Module: Hit - Engine Fires..");
                 }
                 s.endsWith("exht");
@@ -1055,15 +1087,15 @@ public class A_6 extends Scheme2
                 int j = s.charAt(6) - 49;
                 if(getEnergyPastArmor(0.1F, shot) > 0.0F && World.Rnd().nextFloat() < 0.25F)
                 {
-                    if(((FlightModelMain) (super.FM)).AS.astateTankStates[j] == 0)
+                    if(FM.AS.astateTankStates[j] == 0)
                     {
                         debuggunnery("Fuel Tank (" + j + "): Pierced..");
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, j, 1);
-                        ((FlightModelMain) (super.FM)).AS.doSetTankState(shot.initiator, j, 1);
+                        FM.AS.hitTank(shot.initiator, j, 1);
+                        FM.AS.doSetTankState(shot.initiator, j, 1);
                     }
                     if(shot.powerType == 3 && World.Rnd().nextFloat() < 0.075F)
                     {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, j, 2);
+                        FM.AS.hitTank(shot.initiator, j, 2);
                         debuggunnery("Fuel Tank (" + j + "): Hit..");
                     }
                 }
@@ -1093,15 +1125,15 @@ public class A_6 extends Scheme2
                 }
             } else
             if(s.startsWith("xxhyd"))
-                ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 3);
+                FM.AS.setInternalDamage(shot.initiator, 3);
             else
             if(s.startsWith("xxpnm"))
-                ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 1);
+                FM.AS.setInternalDamage(shot.initiator, 1);
         } else
         {
             if(s.startsWith("xcockpit"))
             {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 1);
+                FM.AS.setCockpitState(shot.initiator, FM.AS.astateCockpitState | 1);
                 getEnergyPastArmor(0.05F, shot);
             }
             if(s.startsWith("xcf"))
@@ -1164,12 +1196,12 @@ public class A_6 extends Scheme2
                 if(s.endsWith("1") && World.Rnd().nextFloat() < 0.05F)
                 {
                     debuggunnery("Hydro System: Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 0);
+                    FM.AS.setInternalDamage(shot.initiator, 0);
                 }
                 if(s.endsWith("2") && World.Rnd().nextFloat() < 0.1F && getEnergyPastArmor(World.Rnd().nextFloat(1.2F, 3.435F), shot) > 0.0F)
                 {
                     debuggunnery("Undercarriage: Stuck..");
-                    ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 3);
+                    FM.AS.setInternalDamage(shot.initiator, 3);
                 }
             } else
             if(s.startsWith("xpilot") || s.startsWith("xhead"))
@@ -1208,148 +1240,160 @@ public class A_6 extends Scheme2
     private void bailout()
     {
         if(overrideBailout)
-            if(((FlightModelMain) (super.FM)).AS.astateBailoutStep >= 0 && ((FlightModelMain) (super.FM)).AS.astateBailoutStep < 2)
+            if(FM.AS.astateBailoutStep >= 0 && FM.AS.astateBailoutStep < 2)
             {
-                if(((FlightModelMain) (super.FM)).CT.cockpitDoorControl > 0.5F && ((FlightModelMain) (super.FM)).CT.getCockpitDoor() > 0.5F)
-                    ((FlightModelMain) (super.FM)).AS.astateBailoutStep = 11;
-                else
-                    ((FlightModelMain) (super.FM)).AS.astateBailoutStep = 2;
+                if(FM.getSpeedKMH() < 15F)
+                {
+                    FM.CT.cockpitDoorControl = 1.0F;
+                    if(FM.CT.cockpitDoorControl > 0.5F && FM.CT.getCockpitDoor() > 0.5F)
+                        FM.AS.astateBailoutStep = 11;
+                } else
+                {
+                    FM.AS.astateBailoutStep = 2;
+                }
             } else
-            if(((FlightModelMain) (super.FM)).AS.astateBailoutStep >= 2 && ((FlightModelMain) (super.FM)).AS.astateBailoutStep <= 3)
+            if(FM.AS.astateBailoutStep >= 2 && FM.AS.astateBailoutStep <= 3)
             {
-                switch(((FlightModelMain) (super.FM)).AS.astateBailoutStep)
+                switch(FM.AS.astateBailoutStep)
                 {
                 case 2: // '\002'
-                    if(((FlightModelMain) (super.FM)).CT.cockpitDoorControl < 0.5F)
-                        doRemoveBlisters();
                     break;
 
                 case 3: // '\003'
                     lTimeNextEject = Time.current() + 1000L;
                     break;
                 }
-                if(((FlightModelMain) (super.FM)).AS.isMaster())
-                    ((FlightModelMain) (super.FM)).AS.netToMirrors(20, ((FlightModelMain) (super.FM)).AS.astateBailoutStep, 1, null);
-                ((FlightModelMain) (super.FM)).AS.astateBailoutStep = (byte)(((FlightModelMain) (super.FM)).AS.astateBailoutStep + 1);
-                if(((FlightModelMain) (super.FM)).AS.astateBailoutStep == 4)
-                    ((FlightModelMain) (super.FM)).AS.astateBailoutStep = 11;
+                if(FM.AS.isMaster())
+                    FM.AS.netToMirrors(20, FM.AS.astateBailoutStep, 1, null);
+                FM.AS.astateBailoutStep = (byte)(FM.AS.astateBailoutStep + 1);
+                if(FM.AS.astateBailoutStep == 4)
+                    FM.AS.astateBailoutStep = 11;
             } else
-            if(((FlightModelMain) (super.FM)).AS.astateBailoutStep >= 11 && ((FlightModelMain) (super.FM)).AS.astateBailoutStep <= 19)
+            if(FM.AS.astateBailoutStep >= 11 && FM.AS.astateBailoutStep <= 19)
             {
-                byte byte0 = ((FlightModelMain) (super.FM)).AS.astateBailoutStep;
-                if(((FlightModelMain) (super.FM)).AS.isMaster())
-                    ((FlightModelMain) (super.FM)).AS.netToMirrors(20, ((FlightModelMain) (super.FM)).AS.astateBailoutStep, 1, null);
-                ((FlightModelMain) (super.FM)).AS.astateBailoutStep = (byte)(((FlightModelMain) (super.FM)).AS.astateBailoutStep + 1);
-                if((super.FM instanceof Maneuver) && ((Maneuver)super.FM).get_maneuver() != 44)
+                byte byte0 = FM.AS.astateBailoutStep;
+                if(FM.AS.isMaster())
+                    FM.AS.netToMirrors(20, FM.AS.astateBailoutStep, 1, null);
+                FM.AS.astateBailoutStep = (byte)(FM.AS.astateBailoutStep + 1);
+                if((FM instanceof Maneuver) && ((Maneuver)FM).get_maneuver() != 44)
                 {
                     World.cur();
-                    if(((FlightModelMain) (super.FM)).AS.actor != World.getPlayerAircraft())
-                        ((Maneuver)super.FM).set_maneuver(44);
+                    if(FM.AS.actor != World.getPlayerAircraft())
+                        ((Maneuver)FM).set_maneuver(44);
                 }
-                if(((FlightModelMain) (super.FM)).AS.astatePilotStates[byte0 - 11] < 99)
+                doRemoveBodyFromPlane(byte0 - 10);
+                if(FM.getSpeedKMH() > 15F)
                 {
-                    if(byte0 == 11)
-                    {
-                        doRemoveBodyFromPlane(2);
-                        doEjectCatapultStudent();
-                        lTimeNextEject = Time.current() + 1000L;
-                    } else
-                    if(byte0 == 12)
-                    {
-                        doRemoveBodyFromPlane(1);
-                        doEjectCatapultInstructor();
-                        ((FlightModelMain) (super.FM)).AS.astateBailoutStep = 51;
-                        super.FM.setTakenMortalDamage(true, null);
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[0] = false;
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[1] = false;
-                        ((FlightModelMain) (super.FM)).AS.astateBailoutStep = -1;
+                    if(byte0 == 11 || byte0 == 12 || ((byte0 == 13 || byte0 == 14)&& bEA6B))
+                        doEjectCatapult(byte0 - 10);
+                    lTimeNextEject = Time.current() + 1000L;
+                    if ((!bEA6B && byte0 > 11) || byte0 > 13) {
+                        FM.AS.astateBailoutStep = 51;
                         overrideBailout = false;
-                        ((FlightModelMain) (super.FM)).AS.bIsAboutToBailout = true;
+                        FM.AS.bIsAboutToBailout = true;
                         ejectComplete = true;
                     }
-                    ((FlightModelMain) (super.FM)).AS.astatePilotStates[byte0 - 11] = 99;
-                } else
-                {
-                    EventLog.type("astatePilotStates[" + (byte0 - 11) + "]=" + ((FlightModelMain) (super.FM)).AS.astatePilotStates[byte0 - 11]);
+                    EventLog.onBailedOut(this, byte0 - 11);
+                    FM.AS.astatePilotStates[byte0 - 11] = 99;
+                    return;
                 }
+                else
+                {
+                    if(FM.AS.astatePilotStates[byte0 - 11] < 99)
+                    {
+                        FM.AS.astatePilotStates[byte0 - 11] = 100;
+                        if(FM.AS.isMaster())
+                        {
+                            try
+                            {
+                              Hook localHook = this.findHook("_ExternalBail0" + (byte0 - 10));
+
+                              if (localHook != null)
+                              {
+                                  Loc localLoc = new Loc(0.0D, 0.0D, 0.0D, World.Rnd().nextFloat(-45.0F, 45.0F), 0.0F, 0.0F);
+
+                                  localHook.computePos(this, this.pos.getAbs(), localLoc);
+
+                                  new Paratrooper(this, this.getArmy(), byte0 - 11, localLoc, this.FM.Vwld);
+
+                                  if ((byte0 > 10) && (byte0 <= 19))
+                                  {
+                                      EventLog.onBailedOut(this, byte0 - 11);
+                                  }
+                              }
+                            } catch (Exception localException) {
+                            } finally {
+                            }
+                            if ((FM.AS.astatePilotStates[byte0 - 11] == 19) && (this == World.getPlayerAircraft()) && (!World.isPlayerGunner()) && (FM.brakeShoe))
+                            {
+                                  MsgDestroy.Post(Time.current() + 1000L, this);
+                            }
+                        }
+                        FM.setTakenMortalDamage(true, null);
+                        FM.CT.WeaponControl[0] = false;
+                        FM.CT.WeaponControl[1] = false;
+                        FM.CT.bHasAileronControl = false;
+                        FM.CT.bHasRudderControl = false;
+                        FM.CT.bHasElevatorControl = false;
+                        if((!bEA6B && byte0 > 11) || byte0 > 13)
+                        {
+                            FM.AS.astateBailoutStep = 51;
+                            overrideBailout = false;
+                            FM.AS.bIsAboutToBailout = true;
+                            ejectComplete = true;
+                            if ((this == World.getPlayerAircraft()) && (!World.isPlayerGunner()) && (FM.brakeShoe))
+                            {
+                                  MsgDestroy.Post(Time.current() + 1000L, this);
+                            }
+                        }
+                        return;
+                    }
+                }
+                EventLog.type("astatePilotStates[" + (byte0 - 11) + "]=" + FM.AS.astatePilotStates[byte0 - 11]);
             }
     }
 
-    public void doEjectCatapultStudent()
+    private final void doRemoveBlister1()
     {
-        new MsgAction(false, this) {
-
-            public void doAction(Object obj)
-            {
-                Aircraft aircraft = (Aircraft)obj;
-                if(Actor.isValid(aircraft))
-                {
-                    Loc loc = new Loc();
-                    Loc loc1 = new Loc();
-                    Vector3d vector3d = new Vector3d(0.0D, 0.0D, 10D);
-                    HookNamed hooknamed = new HookNamed(aircraft, "_ExternalSeat02");
-                    ((Actor) (aircraft)).pos.getAbs(loc1);
-                    hooknamed.computePos(aircraft, loc1, loc);
-                    loc.transform(vector3d);
-                    vector3d.x += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).x;
-                    vector3d.y += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).y;
-                    vector3d.z += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).z;
-                    new EjectionSeat(1, loc, vector3d, aircraft);
-                }
-            }
-
-        }
-;
-        hierMesh().chunkVisible("Seat2_D0", false);
-    }
-
-    public void doEjectCatapultInstructor()
-    {
-        new MsgAction(false, this) {
-
-            public void doAction(Object obj)
-            {
-                Aircraft aircraft = (Aircraft)obj;
-                if(Actor.isValid(aircraft))
-                {
-                    Loc loc = new Loc();
-                    Loc loc1 = new Loc();
-                    Vector3d vector3d = new Vector3d(0.0D, 0.0D, 10D);
-                    HookNamed hooknamed = new HookNamed(aircraft, "_ExternalSeat01");
-                    ((Actor) (aircraft)).pos.getAbs(loc1);
-                    hooknamed.computePos(aircraft, loc1, loc);
-                    loc.transform(vector3d);
-                    vector3d.x += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).x;
-                    vector3d.y += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).y;
-                    vector3d.z += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).z;
-                    new EjectionSeat(1, loc, vector3d, aircraft);
-                }
-            }
-
-        }
-;
-        hierMesh().chunkVisible("Seat1_D0", false);
-        super.FM.setTakenMortalDamage(true, null);
-        ((FlightModelMain) (super.FM)).CT.WeaponControl[0] = false;
-        ((FlightModelMain) (super.FM)).CT.WeaponControl[1] = false;
-        ((FlightModelMain) (super.FM)).CT.bHasAileronControl = false;
-        ((FlightModelMain) (super.FM)).CT.bHasRudderControl = false;
-        ((FlightModelMain) (super.FM)).CT.bHasElevatorControl = false;
     }
 
     private final void doRemoveBlisters()
     {
-        for(int i = 1; i < 10; i++)
-            if(hierMesh().chunkFindCheck("Blister" + i + "_D0") != -1 && ((FlightModelMain) (super.FM)).AS.getPilotHealth(i - 1) > 0.0F)
+    }
+
+    public void doEjectCatapult(final int i)
+    {
+        new MsgAction(false, this) {
+
+            public void doAction(Object obj)
             {
-                hierMesh().hideSubTrees("Blister" + i + "_D0");
-                Wreckage wreckage = new Wreckage(this, hierMesh().chunkFind("Blister" + i + "_D0"));
-                wreckage.collide(false);
-                Vector3d vector3d = new Vector3d();
-                vector3d.set(((FlightModelMain) (super.FM)).Vwld);
-                wreckage.setSpeed(vector3d);
+                Aircraft aircraft = (Aircraft)obj;
+                if(Actor.isValid(aircraft))
+                {
+                    Loc loc = new Loc();
+                    Loc loc1 = new Loc();
+                    Vector3d vector3d = bGen1st ? new Vector3d(0.0D, 0.0D, 40D - (double) i * 7D):
+                                                  new Vector3d(0.0D, 0.0D, 80D - (double) i * 8D);
+                    HookNamed hooknamed = new HookNamed(aircraft, "_ExternalSeat0" + i);
+                    aircraft.pos.getAbs(loc1);
+                    hooknamed.computePos(aircraft, loc1, loc);
+                    loc.transform(vector3d);
+                    vector3d.x += aircraft.FM.Vwld.x;
+                    vector3d.y += aircraft.FM.Vwld.y;
+                    vector3d.z += aircraft.FM.Vwld.z;
+                    new EjectionSeat(10, loc, vector3d, aircraft, true);
+                }
             }
 
+        }
+;
+        hierMesh().chunkVisible("Seat" + i + "_D0", false);
+        FM.setTakenMortalDamage(true, null);
+        FM.CT.WeaponControl[0] = false;
+        FM.CT.WeaponControl[1] = false;
+        FM.CT.bHasAileronControl = false;
+        FM.CT.bHasRudderControl = false;
+        FM.CT.bHasElevatorControl = false;
     }
 
     public void typeFighterAceMakerRangeFinder()
@@ -1513,47 +1557,42 @@ public class A_6 extends Scheme2
         {
             FM.CT.bHasFlapsControl = true;
         }
-        if((((FlightModelMain) (super.FM)).AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && super.FM.getSpeedKMH() > 15F)
+        if((FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete)
         {
             overrideBailout = true;
-            ((FlightModelMain) (super.FM)).AS.bIsAboutToBailout = false;
+            FM.AS.bIsAboutToBailout = false;
             if(Time.current() > lTimeNextEject)
                 bailout();
         }
-        if(((FlightModelMain) (super.FM)).AS.isMaster() && Config.isUSE_RENDER())
+        if(FM.AS.isMaster() && Config.isUSE_RENDER())
         {
-            if(FM.EI.engines[0].getThrustOutput() > 0.5F && FM.EI.engines[0].getStage() == 6)
+            for(int i = 0; i < 2; i++)
             {
-                if(FM.EI.engines[0].getThrustOutput() > 1.001F)
-                    ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 5);
-                else
-                if(FM.EI.engines[0].getThrustOutput() > 0.92F && FM.EI.engines[0].getThrustOutput() < 1.001F)
-                    ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 3);
-                else
-                    ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 2);
-            } else
-            {
-                ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 0);
+                if(FM.EI.engines[i].getThrustOutput() > 0.40F && FM.EI.engines[i].getStage() == 6)
+                {
+                    if(FM.EI.engines[i].getThrustOutput() > 0.97F)
+                        FM.AS.setSootState(this, i, 5);
+                    else
+                    if(FM.EI.engines[i].getThrustOutput() > 0.91F && FM.EI.engines[i].getThrustOutput() < 0.971F)
+                        FM.AS.setSootState(this, i, 4);
+                    else
+                    if(FM.EI.engines[i].getThrustOutput() > 0.84F && FM.EI.engines[i].getThrustOutput() < 0.911F)
+                        FM.AS.setSootState(this, i, 3);
+                    else
+                    if(FM.EI.engines[i].getThrustOutput() > 0.58F && FM.EI.engines[i].getThrustOutput() < 0.841F)
+                        FM.AS.setSootState(this, i, 2);
+                    else
+                        FM.AS.setSootState(this, i, 1);
+                } else
+                {
+                    FM.AS.setSootState(this, i, 0);
+                }
+                setExhaustFlame(Math.round(Aircraft.cvt(FM.EI.engines[i].getThrustOutput(), 0.86F, 1.04F, 0.0F, 12F)), i);
             }
-            setExhaustFlame(Math.round(Aircraft.cvt(FM.EI.engines[0].getThrustOutput(), 0.7F, 0.87F, 0.0F, 12F)), 0);
-            if(FM.EI.engines[1].getThrustOutput() > 0.25F && FM.EI.engines[1].getStage() == 6)
-            {
-                if(FM.EI.engines[1].getThrustOutput() > 1.001F)
-                    ((FlightModelMain) (super.FM)).AS.setSootState(this, 1, 5);
-                else
-                if(FM.EI.engines[1].getThrustOutput() > 0.92F && FM.EI.engines[1].getThrustOutput() < 1.001F)
-                    ((FlightModelMain) (super.FM)).AS.setSootState(this, 1, 3);
-                else
-                    ((FlightModelMain) (super.FM)).AS.setSootState(this, 1, 2);
-            } else
-            {
-                ((FlightModelMain) (super.FM)).AS.setSootState(this, 1, 0);
-            }
-            setExhaustFlame(Math.round(Aircraft.cvt(FM.EI.engines[1].getThrustOutput(), 0.7F, 0.87F, 0.0F, 12F)), 0);
             if(FM instanceof RealFlightModel)
                 umn();
         }
-        if(obsMove < obsMoveTot && !bObserverKilled && !((FlightModelMain) (super.FM)).AS.isPilotParatrooper(1))
+        if(obsMove < obsMoveTot && !bObserverKilled && !FM.AS.isPilotParatrooper(1))
         {
             if(obsMove < 0.2F || obsMove > obsMoveTot - 0.2F)
                 obsMove += 0.29999999999999999D * (double)f;
@@ -1572,18 +1611,21 @@ public class A_6 extends Scheme2
         engineSurge(f);
         typeFighterAceMakerRangeFinder();
         checkHydraulicStatus();
-        moveHydraulics(f);
         soundbarier();
         super.update(f);
         computeThrust();
         computeLift();
         Flaps();
+        LimitMovings();
+        if(!bGen1st)
+            checkSpolers();
         if(FM.getSpeedKMH() > 250F)
             FM.CT.cockpitDoorControl = 0.0F;
         if(FM.getSpeedKMH() > 300F)
             FM.CT.bHasCockpitDoorControl = false;
         else
             FM.CT.bHasCockpitDoorControl = true;
+        anticollight();
     }
 
     public void doMurderPilot(int i)
@@ -1595,15 +1637,28 @@ public class A_6 extends Scheme2
             hierMesh().chunkVisible("Head1_D0", false);
             hierMesh().chunkVisible("HMask1_D0", false);
             hierMesh().chunkVisible("Pilot1_D1", true);
-            // fall through
+            break;
 
         case 1: // '\001'
             hierMesh().chunkVisible("Pilot2_D0", false);
             hierMesh().chunkVisible("Head2_D0", false);
             hierMesh().chunkVisible("HMask2_D0", false);
             hierMesh().chunkVisible("Pilot2_D1", true);
-            bObserverKilled = true;
-            // fall through
+            break;
+
+        case 2: // '\002'
+            hierMesh().chunkVisible("Pilot3_D0", false);
+            hierMesh().chunkVisible("Head3_D0", false);
+            hierMesh().chunkVisible("HMask3_D0", false);
+            hierMesh().chunkVisible("Pilot3_D1", true);
+            break;
+
+        case 3: // '\003'
+            hierMesh().chunkVisible("Pilot4_D0", false);
+            hierMesh().chunkVisible("Head4_D0", false);
+            hierMesh().chunkVisible("HMask4_D0", false);
+            hierMesh().chunkVisible("Pilot4_D1", true);
+            break;
 
         default:
             return;
@@ -1641,28 +1696,29 @@ public class A_6 extends Scheme2
         switch(j)
         {
         case 1: // '\001'
-            FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
-            FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_02"), null, 1.0F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
-            break;
-
-        case 3: // '\003'
-            FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.5F, "3DO/Effects/Aircraft/TurboZippo.eff", -1F);
-            FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 4F, "3DO/Effects/Aircraft/TurboJRD1100F.eff", -1F);
+            FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackMediumWtTSPD.eff", -1F);
             break;
 
         case 2: // '\002'
-            FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.8F, "3DO/Effects/Aircraft/TurboZippo.eff", -1F);
-            FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 1.5F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
+            FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 1.1F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
             break;
 
-        case 5: // '\005'
-            FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 2.5F, "3DO/Effects/Aircraft/AfterBurnerF18.eff", -1F);
-            FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 2.5F, "3DO/Effects/Aircraft/AfterBurnerF18A.eff", -1F);
+        case 3: // '\003'
+            if(bGen1st)
+                FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 1.6F, "3DO/Effects/Aircraft/BlackMediumBk2TSPD.eff", -1F);
+            else
+                FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 1.6F, "3DO/Effects/Aircraft/BlackMediumBk1TSPD.eff", -1F);
             break;
 
         case 4: // '\004'
-            FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
+            FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.3F, "3DO/Effects/Aircraft/TurboZippo.eff", -1F);
             break;
+
+        case 5: // '\005'
+            FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.8F, "3DO/Effects/Aircraft/TurboZippo.eff", -1F);
+            FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 1.0F, "3DO/Effects/Aircraft/TurboJRD1100F.eff", -1F);
+            break;
+
         }
     }
 
@@ -1822,52 +1878,33 @@ public class A_6 extends Scheme2
         return deltaTangage;
     }
 
-    public void moveHydraulics(float f)
-    {
-        if(gearTargetAngle >= 0.0F)
-        {
-            if(gearCurrentAngle < gearTargetAngle)
-            {
-                gearCurrentAngle += 90F * f * 0.8F;
-                if(gearCurrentAngle >= gearTargetAngle)
-                {
-                    gearCurrentAngle = gearTargetAngle;
-                    gearTargetAngle = -1F;
-                }
-            } else
-            {
-                gearCurrentAngle -= 90F * f * 0.8F;
-                if(gearCurrentAngle <= gearTargetAngle)
-                {
-                    gearCurrentAngle = gearTargetAngle;
-                    gearTargetAngle = -1F;
-                }
-            }
-        //    hierMesh().chunkSetAngles("GearL6_D0", 0.0F, -gearCurrentAngle, 0.0F);
-        //    hierMesh().chunkSetAngles("GearR6_D0", 0.0F, gearCurrentAngle, 0.0F);
-        //    hierMesh().chunkSetAngles("GearC4_D0", 0.0F, gearCurrentAngle, 0.0F);
-        }
-    }
-
     public void moveCockpitDoor(float f)
     {
         if(FM.CT.bMoveSideDoor)
         {
-            hierMesh().chunkSetAngles("Nose1_D0", 0.0F, 0.0F, 45F * f);
+            hierMesh().chunkSetAngles("Nose_D0", 0.0F, 0.0F, 50F * f);
         }
         else
         {
-            resetYPRmodifier();
-            if(f < 0.05F)
+            if(bEA6B)
             {
-                Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.04F, 0.0F, 0.01F);
-                Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.04F, 0.0F, 0.01F);
-            } else
-            {
-                Aircraft.xyz[1] = Aircraft.cvt(f, 0.1F, 0.99F, 0.01F, 1.1F);
-                Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.04F, 0.0F, 0.01F);
+                hierMesh().chunkSetAngles("Blister1_D0", 0.0F, 0.0F, 36F * f);
+                hierMesh().chunkSetAngles("Blister2_D0", 0.0F, 0.0F, 36F * f);
             }
-            hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
+            else
+            {
+                resetYPRmodifier();
+                if(f < 0.05F)
+                {
+                    Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.04F, 0.0F, 0.01F);
+                    Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.04F, 0.0F, 0.01F);
+                } else
+                {
+                    Aircraft.xyz[1] = Aircraft.cvt(f, 0.1F, 0.99F, 0.01F, 1.1F);
+                    Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.04F, 0.0F, 0.01F);
+                }
+                hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
+            }
             if(Config.isUSE_RENDER())
             {
                 if(Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null)
@@ -1879,22 +1916,117 @@ public class A_6 extends Scheme2
 
     public static void moveGear(HierMesh hiermesh, float f, float f1, float f2)
     {
-        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 100F * f2, 0.0F);
-        hiermesh.chunkSetAngles("GearC21_D0", 0.0F, 0.0F, 0.0F);
-        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, -92F * f2, 0.0F);
-        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(f2, 0.01F, 0.11F, 0.0F, 90F), 0.0F);
-        hiermesh.chunkSetAngles("GearL3_D0", 0.0F, 90F * f, 35F * f);
-        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 0.0F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearR3_D0", 0.0F, -90F * f1, 35F * f1);
-        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 0.0F, 0.0F);
-        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, 0.0F, 0.0F);
-        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, 0.0F, 0.0F);
-        hiermesh.chunkSetAngles("GearL5_D0", 0.0F, 100F * f, 35F * f);
-        hiermesh.chunkSetAngles("GearL11_D0", 0.0F, Aircraft.cvt(f, 0.03F, 0.15F, 0.0F, 30F), 0.0F);
-        hiermesh.chunkSetAngles("GearR5_D0", 0.0F, -100F * f1, 35F * f1);
+        hiermesh.chunkSetAngles("GearC7_D0", 0.0F, Aircraft.cvt(f2, 0.01F, 0.16F, 0.0F, 90F), 0.0F);
+        hiermesh.chunkSetAngles("GearC3_D0", 0.0F, Aircraft.cvt(f2, 0.01F, 0.11F, 0.0F, -94F), 0.0F);
+        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(f2, 0.01F, 0.11F, 0.0F, 94F), 0.0F);
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(f2, 0.11F, 0.85F, 0.0F, 85F), 0.0F);
+        if(f2 < 0.31F)
+            hiermesh.chunkSetAngles("GearC8_D0", 0.0F, Aircraft.cvt(f2, 0.11F, 0.31F, 0.0F, -46F), 0.0F);
+        else if(f2 < 0.69F)
+            hiermesh.chunkSetAngles("GearC8_D0", 0.0F, Aircraft.cvt(f2, 0.31F, 0.69F, -46F, -179F), 0.0F);
+        else
+            hiermesh.chunkSetAngles("GearC8_D0", 0.0F, Aircraft.cvt(f2, 0.75F, 0.85F, -179F, -140F), 0.0F);
+        if(f2 < 0.31F)
+            hiermesh.chunkSetAngles("GearC9_D0", 0.0F, Aircraft.cvt(f2, 0.11F, 0.31F, 0.0F, 17.3F), 0.0F);
+        else if(f2 < 0.69F)
+            hiermesh.chunkSetAngles("GearC9_D0", 0.0F, Aircraft.cvt(f2, 0.31F, 0.69F, 17.3F, 85F), 0.0F);
+        else if(f2 < 0.75F)
+            hiermesh.chunkSetAngles("GearC9_D0", 0.0F, Aircraft.cvt(f2, 0.69F, 0.75F, 85F, 71F), 0.0F);
+        else
+            hiermesh.chunkSetAngles("GearC9_D0", 0.0F, Aircraft.cvt(f2, 0.75F, 0.85F, 71F, -2F), 0.0F);
+        resetXYZYPR();
+        Aircraft.xyz[0] = Aircraft.cvt(f2, 0.15F, 0.83F, 0.0F, 0.26F);
+        hiermesh.chunkSetLocate("GearC6_D0", Aircraft.xyz, Aircraft.ypr);
+        float deg = (float)Math.toDegrees(Math.acos((double)((0.742F - Aircraft.xyz[0]) / 0.742F)));
+        hiermesh.chunkSetAngles("GearC71_D0", 0.0F, -deg, 0.0F);
+        hiermesh.chunkSetAngles("GearC72_D0", 0.0F, deg * 2F, 0.0F);
+        hiermesh.chunkSetAngles("GearC51_D0", 0.0F, Aircraft.cvt(f2, 0.75F, 0.90F, 0.0F, -25F), 0.0F);
+
+        resetXYZYPR();
+        if(f < 0.5F)
+        {
+            Aircraft.xyz[1] = Aircraft.cvt(f, 0.10F, 0.20F, 0.0F, 0.15F);
+            Aircraft.ypr[1] = Aircraft.cvt(f, 0.10F, 0.5F, 0.0F, -50F);
+            Aircraft.ypr[2] = Aircraft.cvt(f, 0.05F, 0.14F, 0.0F, -8F);
+        }
+        else if(f < 0.75F)
+        {
+            Aircraft.xyz[1] = 0.15F;
+            Aircraft.ypr[1] = Aircraft.cvt(f, 0.5F, 0.75F, -50F, -85F);
+            Aircraft.ypr[2] = Aircraft.cvt(f, 0.5F, 0.75F, -8F, -2.8F);
+        }
+        else
+        {
+            Aircraft.xyz[1] = 0.15F;
+            Aircraft.ypr[1] = Aircraft.cvt(f, 0.75F, 1F, -85F, -105F);
+            Aircraft.ypr[2] = Aircraft.cvt(f, 0.75F, 1F, -2.8F, -0.8F);
+        }
+        hiermesh.chunkSetLocate("GearL2_D0", Aircraft.xyz, Aircraft.ypr);
+        hiermesh.chunkSetAngles("GearL3_D0", Aircraft.cvt(f, 0.10F, 0.20F, 0.0F, 98F), 0.0F, 0.0F);
+        hiermesh.chunkSetAngles("GearL5_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.65F, 1F, 0F, 16.32F));
+        if(f < 0.6F)
+            hiermesh.chunkSetAngles("GearL51_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.4F, 0.6F, 0F, -77.4F));
+        else
+            hiermesh.chunkSetAngles("GearL51_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.6F, 1.0F, -77.4F, -167.627F));
+        hiermesh.chunkSetAngles("GearL22_D0", 0.0F, Aircraft.cvt(f, 0.1F, 1.0F, 0.0F, 4.25F), 0.0F);
+        resetXYZYPR();
+        Aircraft.xyz[2] = Aircraft.cvt(f, 0.1F, 1.0F, 0.0F, -0.222F);
+        hiermesh.chunkSetLocate("GearL23_D0", Aircraft.xyz, Aircraft.ypr);
+        resetXYZYPR();
+        Aircraft.xyz[1] = Aircraft.cvt(f, 0.4F, 0.8F, 0.0F, 0.51F);
+        hiermesh.chunkSetLocate("GearL4_D0", Aircraft.xyz, Aircraft.ypr);
+        deg = (float)Math.toDegrees(Math.acos((double)((0.96F - 0.104F - Aircraft.xyz[1]) / 0.96F)));
+        deg -= (float)Math.toDegrees(Math.acos((double)((0.96F - 0.104F) / 0.96F)));
+        hiermesh.chunkSetAngles("GearL41_D0", 0.0F, 0.0F, -deg);
+        hiermesh.chunkSetAngles("GearL42_D0", 0.0F, 0.0F, deg * 2F);
+        hiermesh.chunkSetAngles("GearL15_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.4F, 0.6F, 0F, 70F));
+
+        hiermesh.chunkSetAngles("GearL11_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.1F, 0.0F, 30F), 0.0F);
+        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.01F, 0.1F, 0.0F, -90F));
+        hiermesh.chunkSetAngles("GearL61_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.03F, 0.1F, 0.0F, 90F));
+      
+        resetXYZYPR();
+        if(f1 < 0.5F)
+        {
+            Aircraft.xyz[1] = Aircraft.cvt(f1, 0.10F, 0.20F, 0.0F, -0.15F);
+            Aircraft.ypr[1] = Aircraft.cvt(f1, 0.10F, 0.5F, 0.0F, -50F);
+            Aircraft.ypr[2] = Aircraft.cvt(f1, 0.05F, 0.14F, 0.0F, 8F);
+        }
+        else if(f1 < 0.75F)
+        {
+            Aircraft.xyz[1] = -0.15F;
+            Aircraft.ypr[1] = Aircraft.cvt(f1, 0.5F, 0.75F, -50F, -85F);
+            Aircraft.ypr[2] = Aircraft.cvt(f1, 0.5F, 0.75F, 8F, 2.8F);
+        }
+        else
+        {
+            Aircraft.xyz[1] = -0.15F;
+            Aircraft.ypr[1] = Aircraft.cvt(f1, 0.75F, 1F, -85F, -105F);
+            Aircraft.ypr[2] = Aircraft.cvt(f1, 0.75F, 1F, 2.8F, 0.8F);
+        }
+        hiermesh.chunkSetLocate("GearR2_D0", Aircraft.xyz, Aircraft.ypr);
+        hiermesh.chunkSetAngles("GearR3_D0", Aircraft.cvt(f1, 0.10F, 0.20F, 0.0F, -98F), 0.0F, 0.0F);
+        hiermesh.chunkSetAngles("GearR5_D0", 0.0F, 0.0F, Aircraft.cvt(f1, 0.65F, 1F, 0F, 16.32F));
+        if(f1 < 0.6F)
+            hiermesh.chunkSetAngles("GearR51_D0", 0.0F, 0.0F, Aircraft.cvt(f1, 0.4F, 0.6F, 0F, -77.4F));
+        else
+            hiermesh.chunkSetAngles("GearR51_D0", 0.0F, 0.0F, Aircraft.cvt(f1, 0.6F, 1.0F, -77.4F, -167.627F));
+        hiermesh.chunkSetAngles("GearR22_D0", 0.0F, Aircraft.cvt(f1, 0.1F, 1.0F, 0.0F, 4.25F), 0.0F);
+        resetXYZYPR();
+        Aircraft.xyz[2] = Aircraft.cvt(f1, 0.1F, 1.0F, 0.0F, -0.222F);
+        hiermesh.chunkSetLocate("GearR23_D0", Aircraft.xyz, Aircraft.ypr);
+        resetXYZYPR();
+        Aircraft.xyz[1] = Aircraft.cvt(f1, 0.4F, 0.8F, 0.0F, 0.51F);
+        hiermesh.chunkSetLocate("GearR4_D0", Aircraft.xyz, Aircraft.ypr);
+        deg = (float)Math.toDegrees(Math.acos((double)((0.96F - 0.104F - Aircraft.xyz[1]) / 0.96F)));
+        deg -= (float)Math.toDegrees(Math.acos((double)((0.96F - 0.104F) / 0.96F)));
+        hiermesh.chunkSetAngles("GearR41_D0", 0.0F, 0.0F, -deg);
+        hiermesh.chunkSetAngles("GearR42_D0", 0.0F, 0.0F, deg * 2F);
+        hiermesh.chunkSetAngles("GearR15_D0", 0.0F, 0.0F, Aircraft.cvt(f1, 0.4F, 0.6F, 0F, -70F));
+
         hiermesh.chunkSetAngles("GearR11_D0", 0.0F, Aircraft.cvt(f1, 0.03F, 0.15F, 0.0F, -30F), 0.0F);
-        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.19F, 0.0F, -90F), 0.0F);
-        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, Aircraft.cvt(f1, 0.01F, 0.19F, 0.0F, 90F), 0.0F);
+        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, 0.0F, Aircraft.cvt(f1, 0.01F, 0.1F, 0.0F, 90F));
+        hiermesh.chunkSetAngles("GearR61_D0", 0.0F, 0.0F, Aircraft.cvt(f1, 0.03F, 0.1F, 0.0F, -90F));
     }
 
     protected void moveGear(float f, float f1, float f2) {
@@ -1902,7 +2034,7 @@ public class A_6 extends Scheme2
     }
 
     // ************************************************************************************************
-    // Gear code for backward compatibility, older base game versions don'f1 indepently move their gears
+    // Gear code for backward compatibility, older base game versions don't indepently move their gears
     public static void moveGear(HierMesh hiermesh, float f) {
         moveGear(hiermesh, f, f, f); // re-route old style function calls to new code
     }
@@ -1914,20 +2046,41 @@ public class A_6 extends Scheme2
 
     public void moveWheelSink()
     {
-        resetYPRmodifier();
-        float f = FM.Gears.gWheelSinking[2];
-        Aircraft.xyz[0] = Aircraft.cvt(f, 0.0F, 0.19F, 0.0F, 0.19F);
-        hierMesh().chunkSetLocate("GearC22_D0", Aircraft.xyz, Aircraft.ypr);
-        f = Aircraft.cvt(f, 0.0F, 19F, 0.0F, 30F);
-        hierMesh().chunkSetAngles("GearC7_D0", 0.0F, f, 0.0F);
-        hierMesh().chunkSetAngles("GearC8_D0", 0.0F, 2.0F * f, 0.0F);
-        resetYPRmodifier();
-        Aircraft.xyz[1] = Aircraft.cvt(FM.Gears.gWheelSinking[0], 0.0F, 0.19F, 0.0F, 0.19F);
-        hierMesh().chunkSetLocate("GearL22_D0", Aircraft.xyz, Aircraft.ypr);
-        resetYPRmodifier();
-        Aircraft.xyz[1] = Aircraft.cvt(FM.Gears.gWheelSinking[1], 0.0F, 0.19F, 0.0F, 0.19F);
-        hierMesh().chunkSetLocate("GearR22_D0", Aircraft.xyz, Aircraft.ypr);
-        resetYPRmodifier();
+        if(FM.CT.getGearC() > 0.999F)
+        {
+            float f = FM.Gears.gWheelSinking[2];
+            resetYPRmodifier();
+            Aircraft.xyz[0] = Aircraft.cvt(f, 0.0F, 0.19F, 0.0F, 0.19F) + 0.26F;
+            hierMesh().chunkSetLocate("GearC6_D0", Aircraft.xyz, Aircraft.ypr);
+            float deg = (float)Math.toDegrees(Math.acos((double)((0.742F - Aircraft.xyz[0]) / 0.742F)));
+            hierMesh().chunkSetAngles("GearC71_D0", 0.0F, -deg, 0.0F);
+            hierMesh().chunkSetAngles("GearC72_D0", 0.0F, deg * 2F, 0.0F);
+            hierMesh().chunkSetAngles("GearC8_D0", 0.0F, Aircraft.cvt(f, 0.0F, 0.19F, -140F, -128F), 0.0F);
+        }
+
+        if(FM.CT.getGearL() > 0.999F)
+        {
+            float f = FM.Gears.gWheelSinking[0];
+            resetYPRmodifier();
+            Aircraft.xyz[1] = Aircraft.cvt(f, 0.0F, 0.19F, 0.0F, 0.19F) + 0.51F;
+            float deg = (float)Math.toDegrees(Math.acos((double)((0.96F - 0.104F - Aircraft.xyz[1]) / 0.96F)));
+            deg -= (float)Math.toDegrees(Math.acos((double)((0.96F - 0.104F) / 0.96F)));
+            hierMesh().chunkSetLocate("GearL4_D0", Aircraft.xyz, Aircraft.ypr);
+            hierMesh().chunkSetAngles("GearL41_D0", 0.0F, 0.0F, -deg);
+            hierMesh().chunkSetAngles("GearL42_D0", 0.0F, 0.0F, deg * 2F);
+        }
+
+        if(FM.CT.getGearR() > 0.999F)
+        {
+            float f = FM.Gears.gWheelSinking[1];
+            resetYPRmodifier();
+            Aircraft.xyz[1] = Aircraft.cvt(f, 0.0F, 0.19F, 0.0F, 0.19F) + 0.51F;
+            float deg = (float)Math.toDegrees(Math.acos((double)((0.96F - 0.104F - Aircraft.xyz[1]) / 0.96F)));
+            deg -= (float)Math.toDegrees(Math.acos((double)((0.96F - 0.104F) / 0.96F)));
+            hierMesh().chunkSetLocate("GearR4_D0", Aircraft.xyz, Aircraft.ypr);
+            hierMesh().chunkSetAngles("GearR41_D0", 0.0F, 0.0F, -deg);
+            hierMesh().chunkSetAngles("GearR42_D0", 0.0F, 0.0F, deg * 2F);
+        }
     }
 
     protected void moveRudder(float f)
@@ -1938,9 +2091,9 @@ public class A_6 extends Scheme2
     public void moveSteering(float f)
     {
         if(FM.CT.GearControl > 0.5F && FM.Gears.onGround())
-            hierMesh().chunkSetAngles("GearC7_D0", 0.0F, -1.0F * f, 0.0F);
+            hierMesh().chunkSetAngles("GearC5_D0", 0.0F, 0.0F, -1.0F * f);
         if(FM.CT.GearControl < 0.5F)
-            hierMesh().chunkSetAngles("GearC7_D0", 0.0F, 0.0F, 0.0F);
+            hierMesh().chunkSetAngles("GearC5_D0", 0.0F, 0.0F, 0.0F);
     }
 
     protected void moveElevator(float f)
@@ -1953,25 +2106,25 @@ public class A_6 extends Scheme2
     {
         if(FM.CT.getWing() > 0.001F)
         {
-            hierMesh().chunkSetAngles("AroneL_D0", 0.0F, 0.0F, 0.0F);
-            hierMesh().chunkSetAngles("AroneL1_D0", 0.0F, 0.0F, 0.0F);
-            hierMesh().chunkSetAngles("AroneR_D0", 0.0F, 0.0F, 0.0F);
-            hierMesh().chunkSetAngles("AroneR1_D0", 0.0F, 0.0F, 0.0F);
+            hierMesh().chunkSetAngles("AroneLOut_D0", 0.0F, 0.0F, 0.0F);
+            hierMesh().chunkSetAngles("AroneLIn_D0", 0.0F, 0.0F, 0.0F);
+            hierMesh().chunkSetAngles("AroneROut_D0", 0.0F, 0.0F, 0.0F);
+            hierMesh().chunkSetAngles("AroneRIn_D0", 0.0F, 0.0F, 0.0F);
             return;
         }
         if(f < 0F)
         {
-            hierMesh().chunkSetAngles("AroneL_D0", 0.0F, -55F * f, 0.0F);
-            hierMesh().chunkSetAngles("AroneL1_D0", 0.0F, -55F * f, 0.0F);
-            hierMesh().chunkSetAngles("AroneR_D0", 0.0F, 0.0F, 0.0F);
-            hierMesh().chunkSetAngles("AroneR1_D0", 0.0F, 0.0F, 0.0F);
+            hierMesh().chunkSetAngles("AroneLOut_D0", 0.0F, -55F * f, 0.0F);
+            hierMesh().chunkSetAngles("AroneLIn_D0", 0.0F, -55F * f, 0.0F);
+            hierMesh().chunkSetAngles("AroneROut_D0", 0.0F, 0.0F, 0.0F);
+            hierMesh().chunkSetAngles("AroneRIn_D0", 0.0F, 0.0F, 0.0F);
         }
         else
         {
-            hierMesh().chunkSetAngles("AroneL_D0", 0.0F, 0.0F, 0.0F);
-            hierMesh().chunkSetAngles("AroneL1_D0", 0.0F, 0.0F, 0.0F);
-            hierMesh().chunkSetAngles("AroneR_D0", 0.0F, -55F * f, 0.0F);
-            hierMesh().chunkSetAngles("AroneR1_D0", 0.0F, -55F * f, 0.0F);
+            hierMesh().chunkSetAngles("AroneLOut_D0", 0.0F, 0.0F, 0.0F);
+            hierMesh().chunkSetAngles("AroneLIn_D0", 0.0F, 0.0F, 0.0F);
+            hierMesh().chunkSetAngles("AroneROut_D0", 0.0F, -55F * f, 0.0F);
+            hierMesh().chunkSetAngles("AroneRIn_D0", 0.0F, -55F * f, 0.0F);
         }
     }
 
@@ -1981,14 +2134,14 @@ public class A_6 extends Scheme2
         if(FM.CT.getWing() == 0.0F)
         {
             Aircraft.xyz[0] = 0.16F * f;
-            Aircraft.ypr[1] = -24F * f;
+            Aircraft.ypr[1] = -40F * f;
         }
         else
             FM.CT.FlapsControl = 0.0F;
-        hierMesh().chunkSetLocate("Flap01_D0", Aircraft.xyz, Aircraft.ypr);
-        hierMesh().chunkSetLocate("Flap02_D0", Aircraft.xyz, Aircraft.ypr);
-        hierMesh().chunkSetLocate("Flap03_D0", Aircraft.xyz, Aircraft.ypr);
-        hierMesh().chunkSetLocate("Flap04_D0", Aircraft.xyz, Aircraft.ypr);
+        hierMesh().chunkSetLocate("FlapLIn_D0", Aircraft.xyz, Aircraft.ypr);
+        hierMesh().chunkSetLocate("FlapRIn_D0", Aircraft.xyz, Aircraft.ypr);
+        hierMesh().chunkSetLocate("FlapLOut_D0", Aircraft.xyz, Aircraft.ypr);
+        hierMesh().chunkSetLocate("FlapROut_D0", Aircraft.xyz, Aircraft.ypr);
 
         float xyz_Lin[] = { 0.0F, 0.0F, 0.0F };
         float ypr_Lin[] = { 0.0F, 0.0F, 0.0F };
@@ -2017,10 +2170,10 @@ public class A_6 extends Scheme2
             xyz_Rout[2] = Aircraft.cvt(f, 0.01F, 0.23F, 0.0F, -0.061F);
             ypr_Rout[2] = Aircraft.cvt(f, 0.01F, 0.23F, 0.0F, -27.5F);
         }
-        hierMesh().chunkSetLocate("SlatL_D0", xyz_Lin, ypr_Lin);
-        hierMesh().chunkSetLocate("SlatL_Out", xyz_Lout, ypr_Lout);
-        hierMesh().chunkSetLocate("SlatR_D0", xyz_Rin, ypr_Rin);
-        hierMesh().chunkSetLocate("SlatR_Out", xyz_Rout, ypr_Rout);
+        hierMesh().chunkSetLocate("SlatLIn_D0", xyz_Lin, ypr_Lin);
+        hierMesh().chunkSetLocate("SlatLOut_D0", xyz_Lout, ypr_Lout);
+        hierMesh().chunkSetLocate("SlatRIn_D0", xyz_Rin, ypr_Rin);
+        hierMesh().chunkSetLocate("SlatROut_D0", xyz_Rout, ypr_Rout);
     }
 
     protected void moveFan(float f)
@@ -2045,8 +2198,8 @@ public class A_6 extends Scheme2
         }
         if(bGen1st)
         {
-            hierMesh().chunkSetAngles("BrakeR_D0", 0.0F, 50F * f, 0.0F);
-            hierMesh().chunkSetAngles("BrakeL_D0", 0.0F, -50F * f, 0.0F);
+            hierMesh().chunkSetAngles("BrakeBR_D0", 0.0F, 50F * f, 0.0F);
+            hierMesh().chunkSetAngles("BrakeBL_D0", 0.0F, -50F * f, 0.0F);
         }
     }
 
@@ -2057,8 +2210,8 @@ public class A_6 extends Scheme2
 
     protected void moveWingFold(HierMesh hiermesh, float f)
     {
-        hiermesh.chunkSetAngles("WingLOut_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 140F), 0.0F);
-        hiermesh.chunkSetAngles("WingROut_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, -140F), 0.0F);
+        hiermesh.chunkSetAngles("WingLOut_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 146F), 0.0F);
+        hiermesh.chunkSetAngles("WingROut_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, -146F), 0.0F);
     }
 
     public void moveWingFold(float f)
@@ -2070,21 +2223,21 @@ public class A_6 extends Scheme2
         } else
         {
             setGunPodsOn(false);
-            ((FlightModelMain) (super.FM)).CT.WeaponControl[0] = false;
+            FM.CT.WeaponControl[0] = false;
             hideWingWeapons(false);
             resetYPRmodifier();
-            hierMesh().chunkSetLocate("Flap01_D0", Aircraft.xyz, Aircraft.ypr);
-            hierMesh().chunkSetLocate("Flap02_D0", Aircraft.xyz, Aircraft.ypr);
-            hierMesh().chunkSetLocate("Flap03_D0", Aircraft.xyz, Aircraft.ypr);
-            hierMesh().chunkSetLocate("Flap04_D0", Aircraft.xyz, Aircraft.ypr);
-            hierMesh().chunkSetLocate("SlatL_D0", Aircraft.xyz, Aircraft.ypr);
-            hierMesh().chunkSetLocate("SlatL_Out", Aircraft.xyz, Aircraft.ypr);
-            hierMesh().chunkSetLocate("SlatR_D0", Aircraft.xyz, Aircraft.ypr);
-            hierMesh().chunkSetLocate("SlatR_Out", Aircraft.xyz, Aircraft.ypr);
-            hierMesh().chunkSetAngles("AroneL_D0", 0.0F, 0.0F, 0.0F);
-            hierMesh().chunkSetAngles("AroneL1_D0", 0.0F, 0.0F, 0.0F);
-            hierMesh().chunkSetAngles("AroneR_D0", 0.0F, 0.0F, 0.0F);
-            hierMesh().chunkSetAngles("AroneR1_D0", 0.0F, 0.0F, 0.0F);
+            hierMesh().chunkSetLocate("FlapLIn_D0", Aircraft.xyz, Aircraft.ypr);
+            hierMesh().chunkSetLocate("FlapRIn_D0", Aircraft.xyz, Aircraft.ypr);
+            hierMesh().chunkSetLocate("FlapLOut_D0", Aircraft.xyz, Aircraft.ypr);
+            hierMesh().chunkSetLocate("FlapROut_D0", Aircraft.xyz, Aircraft.ypr);
+            hierMesh().chunkSetLocate("SlatLIn_D0", Aircraft.xyz, Aircraft.ypr);
+            hierMesh().chunkSetLocate("SlatLOut_D0", Aircraft.xyz, Aircraft.ypr);
+            hierMesh().chunkSetLocate("SlatRIn_D0", Aircraft.xyz, Aircraft.ypr);
+            hierMesh().chunkSetLocate("SlatROut_D0", Aircraft.xyz, Aircraft.ypr);
+            hierMesh().chunkSetAngles("AroneLOut_D0", 0.0F, 0.0F, 0.0F);
+            hierMesh().chunkSetAngles("AroneLIn_D0", 0.0F, 0.0F, 0.0F);
+            hierMesh().chunkSetAngles("AroneROut_D0", 0.0F, 0.0F, 0.0F);
+            hierMesh().chunkSetAngles("AroneRIn_D0", 0.0F, 0.0F, 0.0F);
             hierMesh().chunkSetAngles("BrakeL1_D0", 0.0F, 0.0F, 0.0F);
             hierMesh().chunkSetAngles("BrakeL2_D0", 0.0F, 0.0F, 0.0F);
             hierMesh().chunkSetAngles("BrakeR1_D0", 0.0F, 0.0F, 0.0F);
@@ -2099,115 +2252,230 @@ public class A_6 extends Scheme2
             switch(i)
             {
             case 0: // '\0'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("ExhaustL1", false);
+                hierMesh().chunkVisible("ExhaustL2", false);
+                hierMesh().chunkVisible("ExhaustL3", false);
+                hierMesh().chunkVisible("ExhaustL4", false);
+                hierMesh().chunkVisible("ExhaustL5", false);
                 break;
 
             case 1: // '\001'
-                hierMesh().chunkVisible("Exhaust1", true);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("ExhaustL1", true);
+                hierMesh().chunkVisible("ExhaustL2", false);
+                hierMesh().chunkVisible("ExhaustL3", false);
+                hierMesh().chunkVisible("ExhaustL4", false);
+                hierMesh().chunkVisible("ExhaustL5", false);
                 break;
 
             case 2: // '\002'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", true);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("ExhaustL1", false);
+                hierMesh().chunkVisible("ExhaustL2", true);
+                hierMesh().chunkVisible("ExhaustL3", false);
+                hierMesh().chunkVisible("ExhaustL4", false);
+                hierMesh().chunkVisible("ExhaustL5", false);
                 break;
 
             case 3: // '\003'
-                hierMesh().chunkVisible("Exhaust1", true);
-                hierMesh().chunkVisible("Exhaust2", true);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("ExhaustL1", true);
+                hierMesh().chunkVisible("ExhaustL2", true);
+                hierMesh().chunkVisible("ExhaustL3", false);
+                hierMesh().chunkVisible("ExhaustL4", false);
+                hierMesh().chunkVisible("ExhaustL5", false);
                 // fall through
 
             case 4: // '\004'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", true);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("ExhaustL1", false);
+                hierMesh().chunkVisible("ExhaustL2", false);
+                hierMesh().chunkVisible("ExhaustL3", true);
+                hierMesh().chunkVisible("ExhaustL4", false);
+                hierMesh().chunkVisible("ExhaustL5", false);
                 break;
 
             case 5: // '\005'
-                hierMesh().chunkVisible("Exhaust1", true);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", true);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("ExhaustL1", true);
+                hierMesh().chunkVisible("ExhaustL2", false);
+                hierMesh().chunkVisible("ExhaustL3", true);
+                hierMesh().chunkVisible("ExhaustL4", false);
+                hierMesh().chunkVisible("ExhaustL5", false);
                 break;
 
             case 6: // '\006'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", true);
-                hierMesh().chunkVisible("Exhaust3", true);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("ExhaustL1", false);
+                hierMesh().chunkVisible("ExhaustL2", true);
+                hierMesh().chunkVisible("ExhaustL3", true);
+                hierMesh().chunkVisible("ExhaustL4", false);
+                hierMesh().chunkVisible("ExhaustL5", false);
                 break;
 
             case 7: // '\007'
-                hierMesh().chunkVisible("Exhaust1", true);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", true);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("ExhaustL1", true);
+                hierMesh().chunkVisible("ExhaustL2", false);
+                hierMesh().chunkVisible("ExhaustL3", false);
+                hierMesh().chunkVisible("ExhaustL4", true);
+                hierMesh().chunkVisible("ExhaustL5", false);
                 break;
 
             case 8: // '\b'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", true);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", true);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("ExhaustL1", false);
+                hierMesh().chunkVisible("ExhaustL2", true);
+                hierMesh().chunkVisible("ExhaustL3", false);
+                hierMesh().chunkVisible("ExhaustL4", true);
+                hierMesh().chunkVisible("ExhaustL5", false);
                 break;
 
             case 9: // '\t'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", true);
-                hierMesh().chunkVisible("Exhaust4", true);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("ExhaustL1", false);
+                hierMesh().chunkVisible("ExhaustL2", false);
+                hierMesh().chunkVisible("ExhaustL3", true);
+                hierMesh().chunkVisible("ExhaustL4", true);
+                hierMesh().chunkVisible("ExhaustL5", false);
                 break;
 
             case 10: // '\n'
-                hierMesh().chunkVisible("Exhaust1", true);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", true);
+                hierMesh().chunkVisible("ExhaustL1", true);
+                hierMesh().chunkVisible("ExhaustL2", false);
+                hierMesh().chunkVisible("ExhaustL3", false);
+                hierMesh().chunkVisible("ExhaustL4", false);
+                hierMesh().chunkVisible("ExhaustL5", true);
                 break;
 
             case 11: // '\013'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", true);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", true);
+                hierMesh().chunkVisible("ExhaustL1", false);
+                hierMesh().chunkVisible("ExhaustL2", true);
+                hierMesh().chunkVisible("ExhaustL3", false);
+                hierMesh().chunkVisible("ExhaustL4", false);
+                hierMesh().chunkVisible("ExhaustL5", true);
                 break;
 
             case 12: // '\f'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", true);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", true);
+                hierMesh().chunkVisible("ExhaustL1", false);
+                hierMesh().chunkVisible("ExhaustL2", false);
+                hierMesh().chunkVisible("ExhaustL3", true);
+                hierMesh().chunkVisible("ExhaustL4", false);
+                hierMesh().chunkVisible("ExhaustL5", true);
                 break;
 
             default:
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("ExhaustL1", false);
+                hierMesh().chunkVisible("ExhaustL2", false);
+                hierMesh().chunkVisible("ExhaustL3", false);
+                hierMesh().chunkVisible("ExhaustL4", false);
+                hierMesh().chunkVisible("ExhaustL5", false);
+                break;
+            }
+        if(j == 1)
+            switch(i)
+            {
+            case 0: // '\0'
+                hierMesh().chunkVisible("ExhaustR1", false);
+                hierMesh().chunkVisible("ExhaustR2", false);
+                hierMesh().chunkVisible("ExhaustR3", false);
+                hierMesh().chunkVisible("ExhaustR4", false);
+                hierMesh().chunkVisible("ExhaustR5", false);
+                break;
+
+            case 1: // '\001'
+                hierMesh().chunkVisible("ExhaustR1", true);
+                hierMesh().chunkVisible("ExhaustR2", false);
+                hierMesh().chunkVisible("ExhaustR3", false);
+                hierMesh().chunkVisible("ExhaustR4", false);
+                hierMesh().chunkVisible("ExhaustR5", false);
+                break;
+
+            case 2: // '\002'
+                hierMesh().chunkVisible("ExhaustR1", false);
+                hierMesh().chunkVisible("ExhaustR2", true);
+                hierMesh().chunkVisible("ExhaustR3", false);
+                hierMesh().chunkVisible("ExhaustR4", false);
+                hierMesh().chunkVisible("ExhaustR5", false);
+                break;
+
+            case 3: // '\003'
+                hierMesh().chunkVisible("ExhaustR1", true);
+                hierMesh().chunkVisible("ExhaustR2", true);
+                hierMesh().chunkVisible("ExhaustR3", false);
+                hierMesh().chunkVisible("ExhaustR4", false);
+                hierMesh().chunkVisible("ExhaustR5", false);
+                // fall through
+
+            case 4: // '\004'
+                hierMesh().chunkVisible("ExhaustR1", false);
+                hierMesh().chunkVisible("ExhaustR2", false);
+                hierMesh().chunkVisible("ExhaustR3", true);
+                hierMesh().chunkVisible("ExhaustR4", false);
+                hierMesh().chunkVisible("ExhaustR5", false);
+                break;
+
+            case 5: // '\005'
+                hierMesh().chunkVisible("ExhaustR1", true);
+                hierMesh().chunkVisible("ExhaustR2", false);
+                hierMesh().chunkVisible("ExhaustR3", true);
+                hierMesh().chunkVisible("ExhaustR4", false);
+                hierMesh().chunkVisible("ExhaustR5", false);
+                break;
+
+            case 6: // '\006'
+                hierMesh().chunkVisible("ExhaustR1", false);
+                hierMesh().chunkVisible("ExhaustR2", true);
+                hierMesh().chunkVisible("ExhaustR3", true);
+                hierMesh().chunkVisible("ExhaustR4", false);
+                hierMesh().chunkVisible("ExhaustR5", false);
+                break;
+
+            case 7: // '\007'
+                hierMesh().chunkVisible("ExhaustR1", true);
+                hierMesh().chunkVisible("ExhaustR2", false);
+                hierMesh().chunkVisible("ExhaustR3", false);
+                hierMesh().chunkVisible("ExhaustR4", true);
+                hierMesh().chunkVisible("ExhaustR5", false);
+                break;
+
+            case 8: // '\b'
+                hierMesh().chunkVisible("ExhaustR1", false);
+                hierMesh().chunkVisible("ExhaustR2", true);
+                hierMesh().chunkVisible("ExhaustR3", false);
+                hierMesh().chunkVisible("ExhaustR4", true);
+                hierMesh().chunkVisible("ExhaustR5", false);
+                break;
+
+            case 9: // '\t'
+                hierMesh().chunkVisible("ExhaustR1", false);
+                hierMesh().chunkVisible("ExhaustR2", false);
+                hierMesh().chunkVisible("ExhaustR3", true);
+                hierMesh().chunkVisible("ExhaustR4", true);
+                hierMesh().chunkVisible("ExhaustR5", false);
+                break;
+
+            case 10: // '\n'
+                hierMesh().chunkVisible("ExhaustR1", true);
+                hierMesh().chunkVisible("ExhaustR2", false);
+                hierMesh().chunkVisible("ExhaustR3", false);
+                hierMesh().chunkVisible("ExhaustR4", false);
+                hierMesh().chunkVisible("ExhaustR5", true);
+                break;
+
+            case 11: // '\013'
+                hierMesh().chunkVisible("ExhaustR1", false);
+                hierMesh().chunkVisible("ExhaustR2", true);
+                hierMesh().chunkVisible("ExhaustR3", false);
+                hierMesh().chunkVisible("ExhaustR4", false);
+                hierMesh().chunkVisible("ExhaustR5", true);
+                break;
+
+            case 12: // '\f'
+                hierMesh().chunkVisible("ExhaustR1", false);
+                hierMesh().chunkVisible("ExhaustR2", false);
+                hierMesh().chunkVisible("ExhaustR3", true);
+                hierMesh().chunkVisible("ExhaustR4", false);
+                hierMesh().chunkVisible("ExhaustR5", true);
+                break;
+
+            default:
+                hierMesh().chunkVisible("ExhaustR1", false);
+                hierMesh().chunkVisible("ExhaustR2", false);
+                hierMesh().chunkVisible("ExhaustR3", false);
+                hierMesh().chunkVisible("ExhaustR4", false);
+                hierMesh().chunkVisible("ExhaustR5", false);
                 break;
             }
     }
@@ -2261,17 +2529,121 @@ public class A_6 extends Scheme2
     private boolean Flaps()
     {
         Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-        if(FM.EI.engines[0].getThrustOutput() > 0.95F && (double)calculateMach() < 0.35999999999999999D && !Flaps)
+        if(Flaps)
         {
-            polares.Cy0_1 += 1.2D;
-            Flaps = true;
+            if(FM.EI.engines[0].getThrustOutput() <= 0.95F || (double)calculateMach() >= 0.35999999999999999D || (double)calculateMach() <= 0.09999999999999999D)
+            {
+                polares.Cy0_1 -= 0.6D;
+                Flaps = false;
+            }
         }
-        if(FM.EI.engines[0].getThrustOutput() < 0.95F && (double)calculateMach() >= 0.35999999999999999D && Flaps)
+        else
         {
-            polares.Cy0_1 -= 1.2D;
-            Flaps = false;
+            if(FM.EI.engines[0].getThrustOutput() > 0.95F && (double)calculateMach() < 0.35999999999999999D && (double)calculateMach() > 0.09999999999999999D)
+            {
+                polares.Cy0_1 += 0.6D;
+                Flaps = true;
+            }
         }
         return Flaps;
+    }
+
+    private void LimitMovings()
+    {
+        if(FM.CT.FlapsControl > 0.01F)
+        {
+            if(FM.CT.ElevatorControl < -0.0625F) FM.CT.ElevatorControl = -0.0625F;
+            if(FM.CT.trimElevator < -0.06F) FM.CT.trimElevator = -0.06F;
+            if(FM.CT.getTrimElevatorControl() < -0.06F) FM.CT.setTrimElevatorControl(-0.06F);
+        }
+        else if(FM.Gears.nOfGearsOnGr > 2)
+        {
+            if(FM.CT.ElevatorControl < -0.0625F) FM.CT.ElevatorControl = -0.0625F;
+            if(FM.CT.trimElevator < -0.06F) FM.CT.trimElevator = -0.06F;
+            if(FM.CT.getTrimElevatorControl() < -0.06F) FM.CT.setTrimElevatorControl(-0.06F);
+            if(FM.CT.ElevatorControl > 0.39584F) FM.CT.ElevatorControl = 0.39584F;
+            if(FM.CT.trimElevator > 0.38F) FM.CT.trimElevator = 0.38F;
+            if(FM.CT.getTrimElevatorControl() > 0.38F) FM.CT.setTrimElevatorControl(0.38F);
+        }
+        else
+        {
+            if(FM.CT.RudderControl < -0.11429F) FM.CT.RudderControl = -0.11429F;
+            if(FM.CT.trimRudder < -0.11F) FM.CT.trimRudder = -0.11F;
+            if(FM.CT.getTrimRudderControl() < -0.11F) FM.CT.setTrimRudderControl(-0.11F);
+            if(FM.CT.RudderControl > 0.11429F) FM.CT.RudderControl = 0.11429F;
+            if(FM.CT.trimRudder > 0.11F) FM.CT.trimRudder = 0.11F;
+            if(FM.CT.getTrimRudderControl() > 0.11F) FM.CT.setTrimRudderControl(0.11F);
+            if(FM.CT.ElevatorControl < -0.0625F) FM.CT.ElevatorControl = -0.0625F;
+            if(FM.CT.trimElevator < -0.06F) FM.CT.trimElevator = -0.06F;
+            if(FM.CT.getTrimElevatorControl() < -0.06F) FM.CT.setTrimElevatorControl(-0.06F);
+            if(FM.CT.ElevatorControl > 0.39584F) FM.CT.ElevatorControl = 0.39584F;
+            if(FM.CT.trimElevator > 0.39F) FM.CT.trimElevator = 0.39F;
+            if(FM.CT.getTrimElevatorControl() > 0.39F) FM.CT.setTrimElevatorControl(0.39F);
+        }
+
+        if(FM.CT.getPowerControl() > 1.0F)
+        {
+            FM.CT.setPowerControl(1.0F);
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogPowerId, "Power", new Object[] { new Integer(100) });
+        }
+        if(FM.EI.engines[0].getControlThrottle() > 1.0F)
+            FM.EI.engines[0].setControlThrottle(1.0F);
+        if(FM.EI.engines[1].getControlThrottle() > 1.0F)
+            FM.EI.engines[1].setControlThrottle(1.0F);
+    }
+
+    void anticollight()
+    {
+        if(bAntiColLight)
+        {
+            for(int i = 0; i < 6; i++)
+            {
+                if(antiColLight[i] == null)
+                {
+                    try
+                    {
+                        if(bEA6B)
+                            antiColLight[i] = Eff3DActor.New(this, findHook("_AntiColLight" + Integer.toString(i + 1)), new Loc(), 1.0F, "3DO/Effects/Fireworks/FlareRedFlash2.eff", -1.0F, false);
+                        else
+                            antiColLight[i] = Eff3DActor.New(this, findHook("_AntiColLight" + Integer.toString(i + 1)), new Loc(), 1.0F, "3DO/Effects/Fireworks/FlareRedFlash.eff", -1.0F, false);
+                    } catch(Exception excp) {}
+                }
+            }
+        }
+        else
+        {
+            for(int i = 0; i < 6; i++)
+              if(antiColLight[i] != null)
+              {
+                  Eff3DActor.finish(antiColLight[i]);
+                  antiColLight[i] = null;
+              }
+        }
+    }
+
+    private void formationlights()
+    {
+        if(noFL)
+            return;
+
+        int ws = Mission.cur().curCloudsType();
+        float we = Mission.cur().curCloudsHeight() + 500F;
+        if((World.getTimeofDay() <= 6.5F || World.getTimeofDay() > 18F || (ws > 4 && FM.getAltitude()<we)) && !FM.isPlayers())
+        {
+            bFL = true;
+        }
+        if(((World.getTimeofDay() > 6.5F && World.getTimeofDay() <= 18F && ws <= 4) || (World.getTimeofDay() > 6.5F && World.getTimeofDay() <= 18F && FM.getAltitude()>we)) && !FM.isPlayers())
+        {
+            bFL = false;
+        }
+        hierMesh().chunkVisible("SSlightcf", bFL);
+    }
+
+    private static void resetXYZYPR()
+    {
+        Aircraft.xyz[0] = Aircraft.xyz[1] = Aircraft.xyz[2] = 0.0F;
+        Aircraft.ypr[0] = Aircraft.ypr[1] = Aircraft.ypr[2] = 0.0F;
     }
 
     static Class _mthclass$(String s)
@@ -2291,7 +2663,6 @@ public class A_6 extends Scheme2
     private int pk;
     public int radarrange;
     private long twait;
-    protected boolean bSlatsOff;
     private float oldctl;
     private float curctl;
     private float oldthrl;
@@ -2299,7 +2670,11 @@ public class A_6 extends Scheme2
     public int k14Mode;
     public int k14WingspanType;
     public float k14Distance;
-    public float AirBrakeControl;
+    public float SpoilerBrakeControl;
+    private float oldSpoilerBrakeControl;
+    private boolean oldSpoilerAsAileron;
+    private long nonAileronTimer;
+    private boolean nonAileronTimerSet;
     private boolean overrideBailout;
     private boolean ejectComplete;
     private float lightTime;
@@ -2327,8 +2702,6 @@ public class A_6 extends Scheme2
     public static int LockState = 0;
     static Actor hunted = null;
     private float engineSurgeDamage;
-    private float gearTargetAngle;
-    private float gearCurrentAngle;
     public boolean hasHydraulicPressure;
     private static final float NEG_G_TOLERANCE_FACTOR = 1.5F;
     private static final float NEG_G_TIME_FACTOR = 1.5F;
@@ -2360,8 +2733,8 @@ public class A_6 extends Scheme2
     public int lockmode;
     private boolean APmode1;
     private boolean APmode2;
-    public boolean ILS;
-    public boolean FL;
+    public boolean bFL;
+    public boolean noFL;
     public float azimult;
     public float tangate;
     public long tf;
@@ -2385,8 +2758,6 @@ public class A_6 extends Scheme2
     private SoundFX fxRWR;
     private SoundFX fxMissileWarning;
     private Field elevatorsField;
-    private long tflap;
-    public float fNozzleOpenL;
     private Field thrustMaxField[];
     private long lTimeNextEject;
     boolean bObserverKilled;
@@ -2401,7 +2772,11 @@ public class A_6 extends Scheme2
     private float obsMoveTot;
     private boolean Flaps;
     private boolean bGen1st;
-
+    private boolean bEA6B;
+    private float stockDragAirbrake;
+    private Eff3DActor antiColLight[];
+    private boolean bAntiColLight;
+   
     static 
     {
         Class class1 = com.maddox.il2.objects.air.A_6.class;
