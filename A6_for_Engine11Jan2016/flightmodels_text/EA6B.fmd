@@ -1,18 +1,18 @@
 [Aircraft]
   Type 2
-  Crew 2
+  Crew 4
   Wingspan 16.16
   WingspanFolded 9.0
-  Length 16.64
+  Length 18.24
   Seaplane 0
   Canard 0
   Jet 1
   JetHiV 1
 [Mass]
-  Empty 11728
-  TakeOff 19000
+  Empty 14776
+  TakeOff 29484
   Oil 20.81
-  Fuel 7300.0
+  Fuel 8344.0
 [Controls]
   CAileron 1
   CAileronTrim 1
@@ -46,17 +46,17 @@
   DefaultRudderTrim 0.000
 [Squares]
   Wing 49.15
-  Aileron 2.42
-  Flap 6.0
-  Stabilizer 3.20
-  Elevator 4.0
+  Aileron 1.72
+  Flap 14.54
+  Stabilizer 2.20
+  Elevator 8.2
   Keel 6.1
-  Rudder 0.7
+  Rudder 1.1
   Wing_In 5.32
-  Wing_Mid 12.1
-  Wing_Out 7.2
+  Wing_Mid 7.1
+  Wing_Out 12.15
   FuselageCxS 0.001
-  AirbrakeCxS 0.25
+  AirbrakeCxS 0.22
 [Arm]
   Aileron 3.5
   Flap 1.6
@@ -71,7 +71,7 @@
   GCenter  0.00
   GCenterZ 0.00
   GC_AOA_Shift -1.00
-  GC_Flaps_Shift -0.1
+  GC_Flaps_Shift 0.08
   GC_Gear_Shift -0.1
 [Toughness]
   AroneL 150
@@ -101,9 +101,9 @@
   Flap02 250
 [Engine]
   Engine0Family P&W:A6
-  Engine0SubModel J52-P6A
+  Engine0SubModel J52-P8B
   Engine1Family P&W:A6
-  Engine1SubModel J52-P6A
+  Engine1SubModel J52-P8B
   Position0x 0.0
   Position0y 0.5
   Position0z 0.0
@@ -125,8 +125,8 @@
 [Gear]
   H 1.614541
   Pitch 11.842
-  SinkFactor 200.0
-  SpringsStiffness 0.7 
+  SinkFactor 600.0
+  SpringsStiffness 0.5 
   TailStiffness 0.4
 [Params]
   CriticalAOA 25.00
@@ -169,14 +169,14 @@
   AOACritL_0 -16.0
   CyCritH_0 1.34
   CyCritL_0 -0.75
-  CxMin_0 0.029
+  CxMin_0 0.032
   parabCxCoeff_0 8.0E-4
-  Cy0_1 0.3
+  Cy0_1 0.4
   AOACritH_1 25.0
   AOACritL_1 -22.0
   CyCritH_1 1.6
   CyCritL_1 -0.7
-  CxMin_1 0.05
+  CxMin_1 0.057
   parabCxCoeff_1 9.5E-4
   parabAngle 6.0
   Decline 0.004

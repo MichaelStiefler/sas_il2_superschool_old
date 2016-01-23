@@ -31,41 +31,6 @@ public class CockpitA_6 extends CockpitPilot
                 setNew.accelloMax = fm.getOverload();
             if(fm.getOverload() < setOld.accelloMin)
                 setNew.accelloMin = fm.getOverload();
-            float f1 = 100F;
-            if(((FlightModelMain) (fm)).EI.engines[0].getControlThrottle() > 1.0F)
-                f1 = 100F;
-            else
-            if(((FlightModelMain) (fm)).EI.engines[0].getControlThrottle() > 0.95F)
-                f1 = 75F;
-            else
-            if(((FlightModelMain) (fm)).EI.engines[0].getControlThrottle() > 0.6F)
-                f1 = 10F;
-            else
-            if(((FlightModelMain) (fm)).EI.engines[0].getControlThrottle() > 0.35F)
-                f1 = 30F;
-            else
-            if(((FlightModelMain) (fm)).EI.engines[0].getControlThrottle() > 0.05F)
-                f1 = 50F;
-            else
-                f1 = 100F;
-            setNew.nozzlel = (4F * setOld.nozzlel + f1) / 5F;
-            if(((FlightModelMain) (fm)).EI.engines[1].getControlThrottle() > 1.0F)
-                f1 = 100F;
-            else
-            if(((FlightModelMain) (fm)).EI.engines[1].getControlThrottle() > 0.95F)
-                f1 = 75F;
-            else
-            if(((FlightModelMain) (fm)).EI.engines[1].getControlThrottle() > 0.6F)
-                f1 = 10F;
-            else
-            if(((FlightModelMain) (fm)).EI.engines[1].getControlThrottle() > 0.35F)
-                f1 = 30F;
-            else
-            if(((FlightModelMain) (fm)).EI.engines[1].getControlThrottle() > 0.05F)
-                f1 = 50F;
-            else
-                f1 = 100F;
-            setNew.nozzler = (4F * setOld.nozzler + f1) / 5F;
             float f2 = waypointAzimuth();
             if(useRealisticNavigationInstruments())
             {
@@ -138,8 +103,6 @@ public class CockpitA_6 extends CockpitPilot
         float fuelpressr;
         float accelloMax;
         float accelloMin;
-        float nozzlel;
-        float nozzler;
         AnglesFork azimuth;
         AnglesFork waypointAzimuth;
         AnglesFork radioCompassAzimuth;
@@ -173,7 +136,7 @@ public class CockpitA_6 extends CockpitPilot
 
     public CockpitA_6()
     {
-        super("3DO/Cockpit/A6E/F4.him", "he111");
+        super("3DO/Cockpit/A6E/A6E.him", "he111");
         setOld = new Variables(null);
         setNew = new Variables(null);
         w = new Vector3f();
@@ -368,8 +331,6 @@ public class CockpitA_6 extends CockpitPilot
         mesh.chunkSetAngles("Z_RPM2s", cvt(((FlightModelMain) (fm)).EI.engines[1].getRPM() / 41F, 0.0F, 100F, 0.0F, 3600F), 0.0F, 0.0F);
         mesh.chunkSetAngles("Z_FuelPressL", cvt(interp(setNew.fuelpressl, setOld.fuelpressl, f), 0.0F, 160F, 0.0F, 278F), 0.0F, 0.0F);
         mesh.chunkSetAngles("Z_FuelPressR", cvt(interp(setNew.fuelpressr, setOld.fuelpressr, f), 0.0F, 160F, 0.0F, 278F), 0.0F, 0.0F);
-        mesh.chunkSetAngles("Z_Nozzle1", cvt(-setNew.nozzlel, -100F, 0.0F, -51F, 51F), 0.0F, 0.0F);
-        mesh.chunkSetAngles("Z_Nozzle2", cvt(-setNew.nozzler, -100F, 0.0F, -51F, 51F), 0.0F, 0.0F);
         float f12 = ((FlightModelMain) (fm)).M.fuel * 2.20463F;
         mesh.chunkSetAngles("Z_Fuel", cvt(f12, 0.0F, 10000F, 0.0F, 180F), 0.0F, 0.0F);
         mesh.chunkSetAngles("Z_fuelnum_10", cvt((float)(Math.floor(f12 / 10F) % 10D), 0.0F, 10F, 0.0F, 360F), 0.0F, 0.0F);
@@ -392,152 +353,6 @@ public class CockpitA_6 extends CockpitPilot
             mesh.chunkVisible("Z_AOALanding3", false);
         }
         mesh.chunkVisible("Z_Warn_WHEELS", ((FlightModelMain) (fm)).CT.getGear() < 1.0F && ((FlightModelMain) (fm)).CT.FlapsControl > 0.2F);
-        boolean flag = false;
-        if(((FlightModelMain) (fm)).CT.Weapons[5] != null && "AIM-7E".equals(((FlightModelMain) (fm)).CT.rocketNameSelected))
-        {
-            int i;
-            for(i = 0; i < ((FlightModelMain) (fm)).CT.Weapons[5].length; i++)
-            {
-                if(!((FlightModelMain) (fm)).CT.Weapons[5][i].haveBullets() || !(((FlightModelMain) (fm)).CT.Weapons[5][i] instanceof RocketGunAIM7E))
-                    continue;
-                if(i == 0)
-                {
-                    mesh.chunkVisible("Z_MisSelect_RdL1", false);
-                    mesh.chunkVisible("Z_MisSelect_RdL2", false);
-                    mesh.chunkVisible("Z_MisSelect_RdR2", false);
-                    mesh.chunkVisible("Z_MisSelect_SelL1", false);
-                    mesh.chunkVisible("Z_MisSelect_SelL2", false);
-                    mesh.chunkVisible("Z_MisSelect_SelR2", false);
-                    mesh.chunkVisible("Z_MisSelect_RdR1", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 2);
-                    mesh.chunkVisible("Z_MisSelect_SelR1", true);
-                    break;
-                }
-                if(i == 2 && aircraft().thisWeaponsName.indexOf("4xAIM7E") != -1)
-                {
-                    mesh.chunkVisible("Z_MisSelect_RdL2", false);
-                    mesh.chunkVisible("Z_MisSelect_RdR1", false);
-                    mesh.chunkVisible("Z_MisSelect_RdR2", false);
-                    mesh.chunkVisible("Z_MisSelect_SelL2", false);
-                    mesh.chunkVisible("Z_MisSelect_SelR1", false);
-                    mesh.chunkVisible("Z_MisSelect_SelR2", false);
-                    mesh.chunkVisible("Z_MisSelect_RdL1", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 2);
-                    mesh.chunkVisible("Z_MisSelect_SelL1", true);
-                    break;
-                }
-                if(i == 4 && aircraft().thisWeaponsName.indexOf("4xAIM7E") != -1 || i == 2 && aircraft().thisWeaponsName.indexOf("3xAIM7E") != -1)
-                {
-                    mesh.chunkVisible("Z_MisSelect_RdL1", false);
-                    mesh.chunkVisible("Z_MisSelect_RdR1", false);
-                    mesh.chunkVisible("Z_MisSelect_RdR2", false);
-                    mesh.chunkVisible("Z_MisSelect_SelL1", false);
-                    mesh.chunkVisible("Z_MisSelect_SelR1", false);
-                    mesh.chunkVisible("Z_MisSelect_SelR2", false);
-                    mesh.chunkVisible("Z_MisSelect_RdL2", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 2);
-                    mesh.chunkVisible("Z_MisSelect_SelL2", true);
-                    break;
-                }
-                if((i != 6 || aircraft().thisWeaponsName.indexOf("4xAIM7E") == -1) && (i != 4 || aircraft().thisWeaponsName.indexOf("3xAIM7E") == -1))
-                    continue;
-                mesh.chunkVisible("Z_MisSelect_RdL1", false);
-                mesh.chunkVisible("Z_MisSelect_RdL2", false);
-                mesh.chunkVisible("Z_MisSelect_RdR1", false);
-                mesh.chunkVisible("Z_MisSelect_SelL1", false);
-                mesh.chunkVisible("Z_MisSelect_SelL2", false);
-                mesh.chunkVisible("Z_MisSelect_SelR1", false);
-                mesh.chunkVisible("Z_MisSelect_RdR2", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 2);
-                mesh.chunkVisible("Z_MisSelect_SelR2", true);
-                break;
-            }
-
-            if(i == ((FlightModelMain) (fm)).CT.Weapons[5].length)
-            {
-                mesh.chunkVisible("Z_MisSelect_RdL1", false);
-                mesh.chunkVisible("Z_MisSelect_RdL2", false);
-                mesh.chunkVisible("Z_MisSelect_RdR1", false);
-                mesh.chunkVisible("Z_MisSelect_RdR2", false);
-                mesh.chunkVisible("Z_MisSelect_SelL1", false);
-                mesh.chunkVisible("Z_MisSelect_SelL2", false);
-                mesh.chunkVisible("Z_MisSelect_SelR1", false);
-                mesh.chunkVisible("Z_MisSelect_SelR2", false);
-            }
-        } else
-        {
-            mesh.chunkVisible("Z_MisSelect_RdL1", false);
-            mesh.chunkVisible("Z_MisSelect_RdL2", false);
-            mesh.chunkVisible("Z_MisSelect_RdR1", false);
-            mesh.chunkVisible("Z_MisSelect_RdR2", false);
-            mesh.chunkVisible("Z_MisSelect_SelL1", false);
-            mesh.chunkVisible("Z_MisSelect_SelL2", false);
-            mesh.chunkVisible("Z_MisSelect_SelR1", false);
-            mesh.chunkVisible("Z_MisSelect_SelR2", false);
-        }
-        boolean flag1 = false;
-        if(((FlightModelMain) (fm)).CT.Weapons[6] != null && "AIM-9D".equals(((FlightModelMain) (fm)).CT.rocketNameSelected))
-        {
-            int j;
-            for(j = 0; j < ((FlightModelMain) (fm)).CT.Weapons[6].length; j++)
-            {
-                if(!((FlightModelMain) (fm)).CT.Weapons[6][j].haveBullets() || !(((FlightModelMain) (fm)).CT.Weapons[6][j] instanceof RocketGunAIM9D))
-                    continue;
-                if(j == 0)
-                {
-                    mesh.chunkVisible("Z_MisSelect_RdRW", false);
-                    mesh.chunkVisible("Z_MisSelect_SwL1", false);
-                    mesh.chunkVisible("Z_MisSelect_SwR1", false);
-                    mesh.chunkVisible("Z_MisSelect_SwR2", false);
-                    mesh.chunkVisible("Z_MisSelect_RdLW", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 2);
-                    mesh.chunkVisible("Z_MisSelect_SwL2", true);
-                    break;
-                }
-                if(j == 2)
-                {
-                    mesh.chunkVisible("Z_MisSelect_RdLW", false);
-                    mesh.chunkVisible("Z_MisSelect_SwL1", false);
-                    mesh.chunkVisible("Z_MisSelect_SwL2", false);
-                    mesh.chunkVisible("Z_MisSelect_SwR2", false);
-                    mesh.chunkVisible("Z_MisSelect_RdRW", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 2);
-                    mesh.chunkVisible("Z_MisSelect_SwR1", true);
-                    break;
-                }
-                if(j == 4)
-                {
-                    mesh.chunkVisible("Z_MisSelect_RdRW", false);
-                    mesh.chunkVisible("Z_MisSelect_SwL2", false);
-                    mesh.chunkVisible("Z_MisSelect_SwR1", false);
-                    mesh.chunkVisible("Z_MisSelect_SwR2", false);
-                    mesh.chunkVisible("Z_MisSelect_RdLW", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 2);
-                    mesh.chunkVisible("Z_MisSelect_SwL1", true);
-                    break;
-                }
-                if(j != 6)
-                    continue;
-                mesh.chunkVisible("Z_MisSelect_RdLW", false);
-                mesh.chunkVisible("Z_MisSelect_SwL1", false);
-                mesh.chunkVisible("Z_MisSelect_SwL2", false);
-                mesh.chunkVisible("Z_MisSelect_SwR1", false);
-                mesh.chunkVisible("Z_MisSelect_RdRW", ((TypeGuidedMissileCarrier)fm.actor).getGuidedMissileUtils().getMissileLockState() == 2);
-                mesh.chunkVisible("Z_MisSelect_SwR2", true);
-                break;
-            }
-
-            if(j == ((FlightModelMain) (fm)).CT.Weapons[6].length)
-            {
-                mesh.chunkVisible("Z_MisSelect_RdLW", false);
-                mesh.chunkVisible("Z_MisSelect_RdRW", false);
-                mesh.chunkVisible("Z_MisSelect_SwL1", false);
-                mesh.chunkVisible("Z_MisSelect_SwL2", false);
-                mesh.chunkVisible("Z_MisSelect_SwR1", false);
-                mesh.chunkVisible("Z_MisSelect_SwR2", false);
-            }
-        } else
-        {
-            mesh.chunkVisible("Z_MisSelect_RdLW", false);
-            mesh.chunkVisible("Z_MisSelect_RdRW", false);
-            mesh.chunkVisible("Z_MisSelect_SwL1", false);
-            mesh.chunkVisible("Z_MisSelect_SwL2", false);
-            mesh.chunkVisible("Z_MisSelect_SwR1", false);
-            mesh.chunkVisible("Z_MisSelect_SwR2", false);
-        }
     }
 
     public void reflectCockpitState()
