@@ -46,8 +46,7 @@ public class AirportCarrier extends Airport {
 	private GUINetClientDBrief ui = null;
 	private Loc clientLoc = null;
 	private static Vector3d zeroSpeed = new Vector3d();
-	private static final Loc invalidLoc = new Loc(0.0, 0.0, 0.0, 0.0F, 0.0F,
-			0.0F);
+	private static final Loc invalidLoc = new Loc(0.0, 0.0, 0.0, 0.0F, 0.0F, 0.0F);
 	private static Vector3d v1 = new Vector3d();
 	private Aircraft lastAddedAC = null;
 	private CellAirPlane lastAddedCells = null;
@@ -55,18 +54,18 @@ public class AirportCarrier extends Airport {
 	private int rnd2 = World.Rnd().nextInt(40, 60);
 	private Point_Stay[][] ownDefaultStayPoints = null;
 	private boolean skipCheck = false;
-	private static float[] x = {-100.0F, -20.0F, -10.0F, 1000.0F, 3000.0F, 4000.0F, 3000.0F, 0F, -1000F};
-	private static float[] xJ = {-100.0F, -20.0F, -10.0F, 2000.0F, 4500.0F, 6000.0F, 4500.0F, 0F, -1500F};
-	private static float[] xFJ = {-100.0F, -15.0F, 0.0F, 3000.0F, 6000.0F, 8000.0F, 6000.0F, 0F, -2000F};
-	private static float[] y = {0.0F, 0.0F, 0.0F, 0.0F, -500.0F, -1500.0F, -3000.0F, -3000.0F, -3000.0F};
-	private static float[] yJ = {0.0F, 0.0F, 0.0F, 0.0F, -750.0F, -2300.0F, -4500.0F, -4500.0F, -4500.0F};
-	private static float[] yFJ = {0.0F, 0.0F, 0.0F, 0.0F, -1000.0F, -3000.0F, -6000.0F, -6000.0F, -6000.0F};
-	private static float[] z = {-4.0F, 5.0F, 5.0F, 150.0F, 450.0F, 500.0F, 500.0F, 500.0F, 500.0F};
-	private static float[] zJ = {-4.0F, 5.0F, 5.0F, 230.0F, 450.0F, 500.0F, 500.0F, 600.0F, 600.0F};
-	private static float[] zFJ = {-4.0F, 5.0F, 5.0F, 450.0F, 520.0F, 580.0F, 600.0F, 600.0F, 600.0F};
-	private static float[] v = {0.0F, 80.0F, 100.0F, 180.0F, 250.0F, 270.0F, 280.0F, 300.0F, 300.0F};
-	private static float[] vJ = {0.0F, 80.0F, 160.0F, 220.0F, 260.0F, 290.0F, 300.0F, 300.0F, 300.0F};
-	private static float[] vFJ = {0.0F, 80.0F, 260.0F, 300.0F, 320.0F, 340.0F, 370.0F, 400.0F, 400.0F};
+	private static float[] x = { -100.0F, -20.0F, -10.0F, 1000.0F, 3000.0F, 4000.0F, 3000.0F, 0F, -1000F };
+	private static float[] xJ = { -100.0F, -20.0F, -10.0F, 2000.0F, 4500.0F, 6000.0F, 4500.0F, 0F, -1500F };
+	private static float[] xFJ = { -100.0F, -15.0F, 0.0F, 3000.0F, 6000.0F, 8000.0F, 6000.0F, 0F, -2000F };
+	private static float[] y = { 0.0F, 0.0F, 0.0F, 0.0F, -500.0F, -1500.0F, -3000.0F, -3000.0F, -3000.0F };
+	private static float[] yJ = { 0.0F, 0.0F, 0.0F, 0.0F, -750.0F, -2300.0F, -4500.0F, -4500.0F, -4500.0F };
+	private static float[] yFJ = { 0.0F, 0.0F, 0.0F, 0.0F, -1000.0F, -3000.0F, -6000.0F, -6000.0F, -6000.0F };
+	private static float[] z = { -4.0F, 5.0F, 5.0F, 150.0F, 450.0F, 500.0F, 500.0F, 500.0F, 500.0F };
+	private static float[] zJ = { -4.0F, 5.0F, 5.0F, 230.0F, 450.0F, 500.0F, 500.0F, 600.0F, 600.0F };
+	private static float[] zFJ = { -4.0F, 5.0F, 5.0F, 450.0F, 520.0F, 580.0F, 600.0F, 600.0F, 600.0F };
+	private static float[] v = { 0.0F, 80.0F, 100.0F, 180.0F, 250.0F, 270.0F, 280.0F, 300.0F, 300.0F };
+	private static float[] vJ = { 0.0F, 80.0F, 160.0F, 220.0F, 260.0F, 290.0F, 300.0F, 300.0F, 300.0F };
+	private static float[] vFJ = { 0.0F, 80.0F, 260.0F, 300.0F, 320.0F, 340.0F, 370.0F, 400.0F, 400.0F };
 	private Loc tmpLoc = new Loc();
 	private Point3d tmpP3d = new Point3d();
 	private Point3f tmpP3f = new Point3f();
@@ -111,8 +110,7 @@ public class AirportCarrier extends Airport {
 		if (Mission.isDogfight()) {
 			ownDefaultStayPoints = getStayPlaces(false);
 			Point_Stay[][] point_stays = World.cur().airdrome.stay;
-			Point_Stay[][] point_stays_0_ = (new Point_Stay[point_stays.length
-					+ ownDefaultStayPoints.length][]);
+			Point_Stay[][] point_stays_0_ = (new Point_Stay[point_stays.length + ownDefaultStayPoints.length][]);
 			int i = 0;
 			for (int i_1_ = 0; i_1_ < point_stays.length; i_1_++)
 				point_stays_0_[i++] = point_stays[i_1_];
@@ -124,18 +122,15 @@ public class AirportCarrier extends Airport {
 	}
 
 	public void destroy() {
-		if (lastCarrierUsers != null)
-			lastCarrierUsers.clear();
+		if (lastCarrierUsers != null) lastCarrierUsers.clear();
 		super.destroy();
 	}
 
 	public void setCustomStayPoints() {
-		if (ship.zutiBornPlace != null
-				&& ship.zutiBornPlace.zutiMaxBasePilots > 0) {
+		if (ship.zutiBornPlace != null && ship.zutiBornPlace.zutiMaxBasePilots > 0) {
 			Point_Stay[][] point_stays = World.cur().airdrome.stay;
 			Point_Stay[][] point_stays_3_ = getStayPlaces(true);
-			Point_Stay[][] point_stays_4_ = (new Point_Stay[(point_stays.length
-					- ownDefaultStayPoints.length + point_stays_3_.length)][]);
+			Point_Stay[][] point_stays_4_ = (new Point_Stay[(point_stays.length - ownDefaultStayPoints.length + point_stays_3_.length)][]);
 			int i = 0;
 			for (int i_5_ = 0; i_5_ < point_stays.length; i_5_++) {
 				boolean bool = false;
@@ -145,8 +140,7 @@ public class AirportCarrier extends Airport {
 						break;
 					}
 				}
-				if (!bool)
-					point_stays_4_[i++] = point_stays[i_5_];
+				if (!bool) point_stays_4_[i++] = point_stays[i_5_];
 			}
 			for (int i_7_ = 0; i_7_ < point_stays_3_.length; i_7_++)
 				point_stays_4_[i++] = point_stays_3_[i_7_];
@@ -160,8 +154,7 @@ public class AirportCarrier extends Airport {
 	}
 
 	public int getArmy() {
-		if (Actor.isAlive(ship))
-			return ship.getArmy();
+		if (Actor.isAlive(ship)) return ship.getArmy();
 		return super.getArmy();
 	}
 
@@ -170,60 +163,34 @@ public class AirportCarrier extends Airport {
 		tmpLoc.set(runway[1]);
 		tmpLoc.add(ship.initLoc);
 		float f = flightmodel.M.massEmpty * 3.333E-4F;
-		if (f > 1.0F)
-			f = 1.0F;
-		if (f < 0.4F)
-			f = 0.4F;
+		if (f > 1.0F) f = 1.0F;
+		if (f < 0.4F) f = 0.4F;
 		for (int i = x.length - 1; i >= 0; i--) {
 			WayPoint waypoint = new WayPoint();
-				if(((Interpolate) (flightmodel)).actor instanceof TypeFastJet)
-				tmpP3d.set((double)(xFJ[i]), (double)(yFJ[i]), (double)(zFJ[i]));
-				else if(flightmodel.EI.engines[0].getType() == 2)
-				tmpP3d.set((double)(xJ[i]), (double)(yJ[i]), (double)(zJ[i]));
-				else
-				tmpP3d.set((double)(x[i] * f), (double)(y[i] * f), (double)(z[i] * f));
-				if(((Interpolate) (flightmodel)).actor instanceof TypeFastJet)
-				{
-					float vtmp = vFJ[i] * 0.278F;
-					if(i == 2)
-					{
-						if(vtmp > flightmodel.VminFLAPS + 13F)
-							vtmp = flightmodel.VminFLAPS + 13F;
-					}
-					else if(i == 3)
-					{
-						if(vtmp > flightmodel.Vmin + 13F)
-							vtmp = flightmodel.Vmin + 13F;
-					}
-					else if(i == 4)
-					{
-	 				   if(vtmp > flightmodel.Vmin + 25F)
-							vtmp = flightmodel.Vmin + 25F;
-					}
-					waypoint.set(Math.min(vtmp, 300F * 0.36F)); // 300F=Mach1 , instead of Vmax
+			if (((Interpolate) (flightmodel)).actor instanceof TypeFastJet) tmpP3d.set((double) (xFJ[i]), (double) (yFJ[i]), (double) (zFJ[i]));
+			else if (flightmodel.EI.engines[0].getType() == 2) tmpP3d.set((double) (xJ[i]), (double) (yJ[i]), (double) (zJ[i]));
+			else tmpP3d.set((double) (x[i] * f), (double) (y[i] * f), (double) (z[i] * f));
+			if (((Interpolate) (flightmodel)).actor instanceof TypeFastJet) {
+				float vtmp = vFJ[i] * 0.278F;
+				if (i == 2) {
+					if (vtmp > flightmodel.VminFLAPS + 13F) vtmp = flightmodel.VminFLAPS + 13F;
+				} else if (i == 3) {
+					if (vtmp > flightmodel.Vmin + 13F) vtmp = flightmodel.Vmin + 13F;
+				} else if (i == 4) {
+					if (vtmp > flightmodel.Vmin + 25F) vtmp = flightmodel.Vmin + 25F;
 				}
-				else if(flightmodel.EI.engines[0].getType() == 2)
-				{
-					float vtmp = vJ[i] * 0.278F;
-					if(i == 2)
-					{
-						if(vtmp > flightmodel.VminFLAPS + 13F)
-							vtmp = flightmodel.VminFLAPS + 13F;
-					}
-					else if(i == 3)
-					{
-						if(vtmp > flightmodel.Vmin + 13F)
-							vtmp = flightmodel.Vmin + 13F;
-					}
-					else if(i == 4)
-					{
-						if(vtmp > flightmodel.Vmin + 25F)
-							vtmp = flightmodel.Vmin + 25F;
-					}
-					waypoint.set(Math.min(vtmp, 300F * 0.30F)); // 300F=Mach1 , instead of Vmax
+				waypoint.set(Math.min(vtmp, 300F * 0.36F)); // 300F=Mach1 , instead of Vmax
+			} else if (flightmodel.EI.engines[0].getType() == 2) {
+				float vtmp = vJ[i] * 0.278F;
+				if (i == 2) {
+					if (vtmp > flightmodel.VminFLAPS + 13F) vtmp = flightmodel.VminFLAPS + 13F;
+				} else if (i == 3) {
+					if (vtmp > flightmodel.Vmin + 13F) vtmp = flightmodel.Vmin + 13F;
+				} else if (i == 4) {
+					if (vtmp > flightmodel.Vmin + 25F) vtmp = flightmodel.Vmin + 25F;
 				}
-				else
-					waypoint.set(Math.min(v[i] * 0.278F, flightmodel.Vmax * 0.6F));
+				waypoint.set(Math.min(vtmp, 300F * 0.30F)); // 300F=Mach1 , instead of Vmax
+			} else waypoint.set(Math.min(v[i] * 0.278F, flightmodel.Vmax * 0.6F));
 			waypoint.Action = 2;
 			waypoint.sTarget = ship.name();
 			tmpLoc.transform(tmpP3d);
@@ -237,22 +204,17 @@ public class AirportCarrier extends Airport {
 	}
 
 	public void rebuildLandWay(FlightModel flightmodel) {
-		if (!ship.isAlive())
-			flightmodel.AP.way.setLanding(false);
+		if (!ship.isAlive()) flightmodel.AP.way.setLanding(false);
 		else {
 			tmpLoc.set(runway[1]);
 			tmpLoc.add(ship.initLoc);
 			float f = flightmodel.M.massEmpty * 3.333E-4F;
-			if (f > 1.0F)
-				f = 1.0F;
-			if (f < 0.4F)
-				f = 0.4F;
+			if (f > 1.0F) f = 1.0F;
+			if (f < 0.4F) f = 0.4F;
 			for (int i = 0; i < x.length; i++) {
 				WayPoint waypoint = flightmodel.AP.way.get(i);
-						if(((Interpolate) (flightmodel)).actor instanceof TypeFastJet)
-					tmpP3d.set((double)(xFJ[x.length - 1 - i]), (double)(yFJ[x.length - 1 - i]), (double)(zFJ[x.length - 1 - i]));
-						else
-					tmpP3d.set((double)(x[x.length - 1 - i] * f), (double)(y[x.length - 1 - i] * f), (double)(z[x.length - 1 - i] * f));
+				if (((Interpolate) (flightmodel)).actor instanceof TypeFastJet) tmpP3d.set((double) (xFJ[x.length - 1 - i]), (double) (yFJ[x.length - 1 - i]), (double) (zFJ[x.length - 1 - i]));
+				else tmpP3d.set((double) (x[x.length - 1 - i] * f), (double) (y[x.length - 1 - i] * f), (double) (z[x.length - 1 - i] * f));
 				tmpLoc.transform(tmpP3d);
 				tmpP3f.set(tmpP3d);
 				waypoint.set(tmpP3f);
@@ -288,14 +250,10 @@ public class AirportCarrier extends Airport {
 	public int landingFeedback(Point3d point3d, Aircraft aircraft) {
 		tmpLoc.set(runway[1]);
 		tmpLoc.add(ship.initLoc);
-		Aircraft aircraft_8_ = War.getNearestFriendAtPoint(tmpLoc.getPoint(),
-				aircraft, 50.0F);
-		if (aircraft_8_ != null && aircraft_8_ != aircraft)
-			return 1;
-		if (aircraft.FM.CT.GearControl > 0.0F)
-			return 0;
-		if (landingRequest > 0)
-			return 1;
+		Aircraft aircraft_8_ = War.getNearestFriendAtPoint(tmpLoc.getPoint(), aircraft, 50.0F);
+		if (aircraft_8_ != null && aircraft_8_ != aircraft) return 1;
+		if (aircraft.FM.CT.GearControl > 0.0F) return 0;
+		if (landingRequest > 0) return 1;
 		landingRequest = 3000;
 		return 0;
 	}
@@ -311,9 +269,7 @@ public class AirportCarrier extends Airport {
 			curPlaneShift++;
 			aircraft.FM.setStationedOnGround(false);
 			aircraft.FM.setWasAirborne(true);
-			tmpLoc.set((double) -((float) curPlaneShift * 200.0F),
-					(double) -((float) curPlaneShift * 100.0F), 300.0, 0.0F,
-					0.0F, 0.0F);
+			tmpLoc.set((double) -((float) curPlaneShift * 200.0F), (double) -((float) curPlaneShift * 100.0F), 300.0, 0.0F, 0.0F, 0.0F);
 			tmpLoc.add(r);
 			aircraft.pos.setAbs(tmpLoc);
 			aircraft.pos.getAbs(tmpP3d, tmpOr);
@@ -321,9 +277,7 @@ public class AirportCarrier extends Airport {
 			tmpOr.transform(startSpeed);
 			aircraft.setSpeed(startSpeed);
 			aircraft.pos.reset();
-			if (aircraft.FM instanceof Maneuver)
-				((Maneuver) aircraft.FM).direction = aircraft.pos
-						.getAbsOrient().getAzimut();
+			if (aircraft.FM instanceof Maneuver) ((Maneuver) aircraft.FM).direction = aircraft.pos.getAbsOrient().getAzimut();
 			aircraft.FM.AP.way.takeoffAirport = this;
 			if (aircraft == World.getPlayerAircraft()) {
 				aircraft.FM.EI.setCurControlAll(true);
@@ -347,14 +301,12 @@ public class AirportCarrier extends Airport {
 		orient.increment(0.0F, aircraft.FM.Gears.Pitch, 0.0F);
 		aircraft.setOnGround(point3d, orient, zeroSpeed);
 		if (aircraft.FM instanceof Maneuver) {
-			((Maneuver) aircraft.FM).direction = aircraft.pos.getAbsOrient()
-					.getAzimut();
+			((Maneuver) aircraft.FM).direction = aircraft.pos.getAbsOrient().getAzimut();
 			((Maneuver) aircraft.FM).rwLoc = r;
 		}
 		aircraft.FM.AP.way.takeoffAirport = this;
 		aircraft.spawnLocSingleCoop.set(aircraft.pos.getAbs());
-		if (!Mission.isCoop() || aircraft.getWing().bOnlyAI)
-			actor.destroy();
+		if (!Mission.isCoop() || aircraft.getWing().bOnlyAI) actor.destroy();
 		aircraft.stationarySpawnLocSet = true;
 		return true;
 	}
@@ -369,22 +321,15 @@ public class AirportCarrier extends Airport {
 			if (lastAddedAC != null && lastAddedAC.isDestroyed()) {
 				CellAirField cellairfield = ship.getCellTO();
 				boolean bool = cellairfield.removeAirPlane(lastAddedCells);
-				if (bool)
-					curPlaneShift--;
+				if (bool) curPlaneShift--;
 				lastAddedAC = null;
 				lastAddedCells = null;
 			}
 			boolean bool = true;
 			for (int i = lastCarrierUsers.size() - 1; i >= 0; i--) {
 				Aircraft aircraft = (Aircraft) lastCarrierUsers.get(i);
-				if (aircraft != null
-						&& !aircraft.isDestroyed()
-						&& aircraft.isAlive()
-						&& (aircraft.FM.Gears.isUnderDeck() || NetAircraft
-								.isOnCarrierDeck(this, aircraft.pos.getAbs())))
-					bool = false;
-				else
-					lastCarrierUsers.remove(aircraft);
+				if (aircraft != null && !aircraft.isDestroyed() && aircraft.isAlive() && (aircraft.FM.Gears.isUnderDeck() || NetAircraft.isOnCarrierDeck(this, aircraft.pos.getAbs()))) bool = false;
+				else lastCarrierUsers.remove(aircraft);
 			}
 			if (bool) {
 				lastCarrierUsers.clear();
@@ -396,10 +341,7 @@ public class AirportCarrier extends Airport {
 	private void checkPlaneIdle() {
 		for (int i = lastCarrierUsers.size() - 1; i >= 0; i--) {
 			Aircraft aircraft = (Aircraft) lastCarrierUsers.get(i);
-			if (aircraft != null
-					&& !aircraft.isDestroyed()
-					&& (aircraft.FM.Gears.isUnderDeck() || NetAircraft
-							.isOnCarrierDeck(this, aircraft.pos.getAbs()))) {
+			if (aircraft != null && !aircraft.isDestroyed() && (aircraft.FM.Gears.isUnderDeck() || NetAircraft.isOnCarrierDeck(this, aircraft.pos.getAbs()))) {
 				aircraft.idleTimeOnCarrier++;
 				if (aircraft.idleTimeOnCarrier >= 6) {
 					if (aircraft.isNetPlayer() && !aircraft.isNetMaster()) {
@@ -418,18 +360,15 @@ public class AirportCarrier extends Airport {
 
 	public Loc setClientTakeOff(Point3d point3d, Aircraft aircraft) {
 		Loc loc = null;
-		if (clientLoc != null)
-			loc = new Loc(clientLoc);
+		if (clientLoc != null) loc = new Loc(clientLoc);
 		clientLoc = null;
 		if (loc == null || !isLocValid(loc)) {
 			setTakeoffOld(point3d, aircraft);
 			Loc loc_10_ = aircraft.pos.getAbs();
 			double d = World.Rnd().nextDouble(400.0, 800.0);
 			double d_11_ = World.Rnd().nextDouble(400.0, 800.0);
-			if (World.Rnd().nextFloat() < 0.5F)
-				d *= -1.0;
-			if (World.Rnd().nextFloat() < 0.5F)
-				d_11_ *= -1.0;
+			if (World.Rnd().nextFloat() < 0.5F) d *= -1.0;
+			if (World.Rnd().nextFloat() < 0.5F) d_11_ *= -1.0;
 			Point3d point3d_12_ = new Point3d(d, d_11_, 0.0);
 			loc_10_.add(point3d_12_);
 			aircraft.pos.setAbs(loc_10_);
@@ -441,9 +380,7 @@ public class AirportCarrier extends Airport {
 		orient.increment(0.0F, aircraft.FM.Gears.Pitch, 0.0F);
 		ship.getSpeed(shipSpeed);
 		aircraft.setOnGround(point3d_13_, orient, shipSpeed);
-		if (aircraft.FM instanceof Maneuver)
-			((Maneuver) aircraft.FM).direction = aircraft.pos.getAbsOrient()
-					.getAzimut();
+		if (aircraft.FM instanceof Maneuver) ((Maneuver) aircraft.FM).direction = aircraft.pos.getAbsOrient().getAzimut();
 		aircraft.FM.AP.way.takeoffAirport = this;
 		aircraft.FM.brakeShoe = true;
 		aircraft.FM.turnOffCollisions = true;
@@ -459,16 +396,12 @@ public class AirportCarrier extends Airport {
 		return loc;
 	}
 
-	private Point3d reservePlaceForPlane(CellAirPlane cellairplane,
-			Aircraft aircraft) {
+	private Point3d reservePlaceForPlane(CellAirPlane cellairplane, Aircraft aircraft) {
 		CellAirField cellairfield = ship.getCellTO();
 		if (cellairfield.findPlaceForAirPlane(cellairplane)) {
-			cellairfield.placeAirPlane(cellairplane, cellairfield.resX(),
-					cellairfield.resY());
-			double d = (-cellairfield.leftUpperCorner().x
-					- (double) cellairfield.resX() * cellairfield.getCellSize() - cellairplane.ofsX);
-			double d_14_ = (cellairfield.leftUpperCorner().y
-					- (double) cellairfield.resY() * cellairfield.getCellSize() - cellairplane.ofsY);
+			cellairfield.placeAirPlane(cellairplane, cellairfield.resX(), cellairfield.resY());
+			double d = (-cellairfield.leftUpperCorner().x - (double) cellairfield.resX() * cellairfield.getCellSize() - cellairplane.ofsX);
+			double d_14_ = (cellairfield.leftUpperCorner().y - (double) cellairfield.resY() * cellairfield.getCellSize() - cellairplane.ofsY);
 			double d_15_ = runway[0].getZ();
 			curPlaneShift++;
 			if (Mission.isDogfight() && ship.net.isMaster()) {
@@ -486,65 +419,52 @@ public class AirportCarrier extends Airport {
 	public void setStationaryPlaneTakeoff(Aircraft[] aircrafts) {
 		if (!Mission.isDogfight()) {
 			for (int i = 0; i < aircrafts.length; i++) {
-				if (aircrafts[i] != null
-						&& aircrafts[i].spawnLocSingleCoop != null)
-					setStationaryPlaneTakeoff(aircrafts[i]);
+				if (aircrafts[i] != null && aircrafts[i].spawnLocSingleCoop != null) setStationaryPlaneTakeoff(aircrafts[i]);
 			}
 		}
 	}
-	
-	
-	public void setTakeoff(Point3d point3d, Aircraft[] aircrafts)
-	{
-        setStationaryPlaneTakeoff(aircrafts);
+
+	public void setTakeoff(Point3d point3d, Aircraft[] aircrafts) {
+		setStationaryPlaneTakeoff(aircrafts);
 		CellAirField cellairfield = ship.getCellTO();
-		if (cellairfield == null)
-		{
+		if (cellairfield == null) {
 			for (int i = 0; i < aircrafts.length; i++)
 				setTakeoffOld(point3d, aircrafts[i]);
-		}
-		else
-		{
-			if(!Mission.isDogfight() && Time.tickCounter() != oldTickCounter)
-			{
+		} else {
+			if (!Mission.isDogfight() && Time.tickCounter() != oldTickCounter) {
 				oldTickCounter = Time.tickCounter();
 				curPlaneShift = 0;
 				cellairfield.freeCells();
 			}
 			ship.getSpeed(shipSpeed);
-			
+
 			// TODO: CTO Mod
-			// ----------------------------------------		
-			for (int k = 0; k < aircrafts.length; k++)
-			{
-				if (Actor.isValid(aircrafts[k]))
-				{
-                    if(aircrafts[k].stationarySpawnLocSet && (!Mission.isCoop() || aircrafts[k].getWing().bOnlyAI))
-                        continue;
+			// ----------------------------------------
+			for (int k = 0; k < aircrafts.length; k++) {
+				if (Actor.isValid(aircrafts[k])) {
+					if(aircrafts[k].stationarySpawnLocSet && (!Mission.isCoop() || aircrafts[k].getWing().bOnlyAI)) continue;
 					CellAirPlane cellairplane = aircrafts[k].getCellAirPlane();
-					
+
 					// TODO: CTO Mod: replaced old IF below
 					// ----------------------------------------
-					if(aircrafts[k].FM.WingspanFolded != 0F && aircrafts[k].FM.CT.bHasWingControl)
+					if (aircrafts[k].FM.WingspanFolded != 0F && aircrafts[k].FM.CT.bHasWingControl)
 						cellairplane.setFoldedWidth((int) aircrafts[k].FM.WingspanFolded);
-					if(cellairfield.findPlaceForAirPlaneCarrier(cellairplane))
-					{
-                        if(aircrafts[k].FM.CT.bHasWingControl){
-                            aircrafts[k].FM.CT.wingControl = 1.0F;
-                            aircrafts[k].FM.CT.forceWing(1.0F);
-                        }
+					if (cellairfield.findPlaceForAirPlaneCarrier(cellairplane)) {
+						if (aircrafts[k].FM.CT.bHasWingControl) {
+							aircrafts[k].FM.CT.wingControl = 1.0F;
+							aircrafts[k].FM.CT.forceWing(1.0F);
+						}
 						cellairfield.placeAirPlaneCarrier(cellairplane, cellairfield.resX(), cellairfield.resY());
-						double d = -((com.maddox.JGP.Tuple3d) (cellairfield.leftUpperCorner())).x - (double)cellairfield.resX() * cellairfield.getCellSize() - (double)(cellairplane.getWidth() / 2);
-						double d1 = ((com.maddox.JGP.Tuple3d) (cellairfield.leftUpperCorner())).y - (double)cellairfield.resY() * cellairfield.getCellSize() - cellairplane.ofsY;
+						double d = -((com.maddox.JGP.Tuple3d) (cellairfield.leftUpperCorner())).x - (double) cellairfield.resX() * cellairfield.getCellSize() - (double) (cellairplane.getWidth() / 2);
+						double d1 = ((com.maddox.JGP.Tuple3d) (cellairfield.leftUpperCorner())).y - (double) cellairfield.resY() * cellairfield.getCellSize() - cellairplane.ofsY;
 						double d2 = runway[0].getZ();
-						tmpLoc.set(d1, d, d2 + (double)aircrafts[k].FM.Gears.H, runway[0].getAzimut(), runway[0].getTangage(), runway[0].getKren());
+						tmpLoc.set(d1, d, d2 + (double) aircrafts[k].FM.Gears.H, runway[0].getAzimut(), runway[0].getTangage(), runway[0].getKren());
 						tmpLoc.add(((Actor) (ship)).pos.getAbs());
 						Point3d point3d1 = tmpLoc.getPoint();
 						Orient orient = tmpLoc.getOrient();
 						orient.increment(0.0F, aircrafts[k].FM.Gears.Pitch, 0.0F);
 						aircrafts[k].setOnGround(point3d1, orient, shipSpeed);
-						if(aircrafts[k].FM instanceof com.maddox.il2.ai.air.Maneuver)
-							((com.maddox.il2.ai.air.Maneuver) aircrafts[k].FM).direction = ((Actor) (aircrafts[k])).pos.getAbsOrient().getAzimut();
+						if (aircrafts[k].FM instanceof com.maddox.il2.ai.air.Maneuver) ((com.maddox.il2.ai.air.Maneuver) aircrafts[k].FM).direction = ((Actor) (aircrafts[k])).pos.getAbsOrient().getAzimut();
 						aircrafts[k].FM.AP.way.takeoffAirport = this;
 						aircrafts[k].FM.brakeShoe = true;
 						aircrafts[k].FM.turnOffCollisions = true;
@@ -555,30 +475,24 @@ public class AirportCarrier extends Airport {
 						aircrafts[k].makeMirrorCarrierRelPos();
 					}
 					// ----------------------------------------
-					else
-						setTakeoffOld(point3d, aircrafts[k]);
+					else setTakeoffOld(point3d, aircrafts[k]);
 				}
 			}
-			if (Actor.isValid(aircrafts[0]) && aircrafts[0].FM instanceof Maneuver)
-			{
-				Maneuver maneuver = (Maneuver)aircrafts[0].FM;
-				if (maneuver.Group != null && maneuver.Group.w != null)
-					maneuver.Group.w.takeoffAirport = this;
+			if (Actor.isValid(aircrafts[0]) && aircrafts[0].FM instanceof Maneuver) {
+				Maneuver maneuver = (Maneuver) aircrafts[0].FM;
+				if (maneuver.Group != null && maneuver.Group.w != null) maneuver.Group.w.takeoffAirport = this;
 			}
 		}
 	}
 
 	public void getTakeoff(Aircraft aircraft, Loc loc) {
 		tmpLoc.sub(loc, ship.initLoc);
-		tmpLoc.set(tmpLoc.getPoint().x, tmpLoc.getPoint().y, runway[0].getZ()
-				+ (double) aircraft.FM.Gears.H, runway[0].getAzimut(),
-				runway[0].getTangage(), runway[0].getKren());
+		tmpLoc.set(tmpLoc.getPoint().x, tmpLoc.getPoint().y, runway[0].getZ() + (double) aircraft.FM.Gears.H, runway[0].getAzimut(), runway[0].getTangage(), runway[0].getKren());
 		tmpLoc.add(ship.pos.getAbs());
 		loc.set(tmpLoc);
 		Orient orient = loc.getOrient();
 		orient.increment(0.0F, aircraft.FM.Gears.Pitch, 0.0F);
-		if (aircraft.FM instanceof Maneuver)
-			((Maneuver) aircraft.FM).direction = loc.getAzimut();
+		if (aircraft.FM instanceof Maneuver) ((Maneuver) aircraft.FM).direction = loc.getAzimut();
 		aircraft.FM.AP.way.takeoffAirport = this;
 		aircraft.FM.brakeShoe = true;
 		aircraft.FM.turnOffCollisions = true;
@@ -597,50 +511,39 @@ public class AirportCarrier extends Airport {
 	}
 
 	private static Class clsBigArrestorPlane() {
-		if (_clsBigArrestorPlane != null)
-			return _clsBigArrestorPlane;
+		if (_clsBigArrestorPlane != null) return _clsBigArrestorPlane;
 		double d = 0.0;
 		SectFile sectfile = new SectFile("com/maddox/il2/objects/air.ini", 0);
 		int i = sectfile.sections();
 		for (int i_20_ = 0; i_20_ < i; i_20_++) {
 			int i_21_ = sectfile.vars(i_20_);
 			for (int i_22_ = 0; i_22_ < i_21_; i_22_++) {
-				StringTokenizer stringtokenizer = new StringTokenizer(
-						sectfile.value(i_20_, i_22_));
+				StringTokenizer stringtokenizer = new StringTokenizer(sectfile.value(i_20_, i_22_));
 				if (stringtokenizer.hasMoreTokens()) {
-					String string_23_ = ("com.maddox.il2.objects." + stringtokenizer
-							.nextToken());
+					String string_23_ = ("com.maddox.il2.objects." + stringtokenizer.nextToken());
 					Class var_class = null;
 					String string_24_ = null;
 					try {
 						var_class = Class.forName(string_23_);
-						string_24_ = Property.stringValue(var_class,
-								"FlightModel", null);
+						string_24_ = Property.stringValue(var_class, "FlightModel", null);
 					} catch (Exception exception) {
 						System.out.println(exception.getMessage());
 						exception.printStackTrace();
 					}
 					try {
 						if (string_24_ != null) {
-							SectFile sectfile_25_ = FlightModelMain
-									.sectFile(string_24_);
-							if (sectfile_25_
-									.get("Controls", "CArrestorHook", 0) == 1) {
+							SectFile sectfile_25_ = FlightModelMain.sectFile(string_24_);
+							if (sectfile_25_.get("Controls", "CArrestorHook", 0) == 1) {
 								_clsMapArrestorPlane.put(var_class, null);
-								String string_26_ = Aircraft.getPropertyMesh(
-										var_class, null);
-								SectFile sectfile_27_ = new SectFile(
-										string_26_, 0);
-								String string_28_ = sectfile_27_.get("_ROOT_",
-										"CollisionObject", (String) null);
+								String string_26_ = Aircraft.getPropertyMesh(var_class, null);
+								SectFile sectfile_27_ = new SectFile(string_26_, 0);
+								String string_28_ = sectfile_27_.get("_ROOT_", "CollisionObject", (String) null);
 								if (string_28_ != null) {
-									NumberTokenizer numbertokenizer = new NumberTokenizer(
-											string_28_);
+									NumberTokenizer numbertokenizer = new NumberTokenizer(string_28_);
 									if (numbertokenizer.hasMoreTokens()) {
 										numbertokenizer.next();
 										if (numbertokenizer.hasMoreTokens()) {
-											double d_29_ = numbertokenizer
-													.next(-1.0);
+											double d_29_ = numbertokenizer.next(-1.0);
 											if (d_29_ > 0.0 && d < d_29_) {
 												d = d_29_;
 												_clsBigArrestorPlane = var_class;
@@ -661,8 +564,7 @@ public class AirportCarrier extends Airport {
 	}
 
 	private static CellAirPlane cellBigArrestorPlane() {
-		if (_cellBigArrestorPlane != null)
-			return _cellBigArrestorPlane;
+		if (_cellBigArrestorPlane != null) return _cellBigArrestorPlane;
 		_cellBigArrestorPlane = Aircraft.getCellAirPlane(clsBigArrestorPlane());
 		return _cellBigArrestorPlane;
 	}
@@ -670,15 +572,13 @@ public class AirportCarrier extends Airport {
 	private Point_Stay[][] getStayPlaces(boolean bool) {
 		Point_Stay[][] point_stays = null;
 		Class var_class = ship.getClass();
-		point_stays = (Point_Stay[][]) Property.value(var_class, "StayPlaces",
-				null);
+		point_stays = (Point_Stay[][]) Property.value(var_class, "StayPlaces", null);
 		if (point_stays == null || bool) {
 			ArrayList arraylist = new ArrayList();
 			if (bool) {
 				if (ship.zutiBornPlace != null) {
 					int i = ship.zutiBornPlace.zutiMaxBasePilots;
-					if (i > 164)
-						i = 164;
+					if (i > 164) i = 164;
 					for (int i_30_ = 0; i_30_ < i; i_30_++)
 						arraylist.add(new Point2d(-1.0, 1.0));
 				}
@@ -692,22 +592,15 @@ public class AirportCarrier extends Airport {
 					} catch (ClassNotFoundException classnotfoundexception) {
 						cellairplane = cellBigArrestorPlane();
 					}
-				} else
-					cellairplane = cellBigArrestorPlane();
+				} else cellairplane = cellBigArrestorPlane();
 				CellAirField cellairfield = ship.getCellTO();
 				cellairfield = (CellAirField) cellairfield.getClone();
 				for (;;) {
 					cellairplane = (CellAirPlane) cellairplane.getClone();
-					if (!cellairfield.findPlaceForAirPlane(cellairplane))
-						break;
-					cellairfield.placeAirPlane(cellairplane,
-							cellairfield.resX(), cellairfield.resY());
-					double d = (-cellairfield.leftUpperCorner().x
-							- ((double) cellairfield.resX() * cellairfield
-									.getCellSize()) - cellairplane.ofsX);
-					double d_32_ = (cellairfield.leftUpperCorner().y
-							- ((double) cellairfield.resY() * cellairfield
-									.getCellSize()) - cellairplane.ofsY);
+					if (!cellairfield.findPlaceForAirPlane(cellairplane)) break;
+					cellairfield.placeAirPlane(cellairplane, cellairfield.resX(), cellairfield.resY());
+					double d = (-cellairfield.leftUpperCorner().x - ((double) cellairfield.resX() * cellairfield.getCellSize()) - cellairplane.ofsX);
+					double d_32_ = (cellairfield.leftUpperCorner().y - ((double) cellairfield.resY() * cellairfield.getCellSize()) - cellairplane.ofsY);
 					arraylist.add(new Point2d(d_32_, d));
 				}
 			}
@@ -716,27 +609,22 @@ public class AirportCarrier extends Airport {
 				point_stays = new Point_Stay[i][1];
 				for (int i_33_ = 0; i_33_ < i; i_33_++) {
 					Point2d point2d = (Point2d) arraylist.get(i_33_);
-					point_stays[i_33_][0] = new Point_Stay((float) point2d.x,
-							(float) point2d.y);
+					point_stays[i_33_][0] = new Point_Stay((float) point2d.x, (float) point2d.y);
 				}
-				if (!bool)
-					Property.set(var_class, "StayPlaces", point_stays);
+				if (!bool) Property.set(var_class, "StayPlaces", point_stays);
 			}
 		}
-		if (point_stays == null)
-			return null;
+		if (point_stays == null) return null;
 		Point_Stay[][] point_stays_34_ = new Point_Stay[point_stays.length][1];
 		for (int i = 0; i < point_stays.length; i++) {
 			Point_Stay point_stay = point_stays[i][0];
 			double d = (double) point_stay.x;
 			double d_35_ = (double) point_stay.y;
 			double d_36_ = runway[0].getZ();
-			tmpLoc.set(d, d_35_, d_36_, runway[0].getAzimut(),
-					runway[0].getTangage(), runway[0].getKren());
+			tmpLoc.set(d, d_35_, d_36_, runway[0].getAzimut(), runway[0].getTangage(), runway[0].getKren());
 			tmpLoc.add(ship.pos.getAbs());
 			Point3d point3d = tmpLoc.getPoint();
-			point_stays_34_[i][0] = new Point_Stay((float) point3d.x,
-					(float) point3d.y);
+			point_stays_34_[i][0] = new Point_Stay((float) point3d.x, (float) point3d.y);
 		}
 		return point_stays_34_;
 	}
@@ -747,13 +635,11 @@ public class AirportCarrier extends Airport {
 			lastCarrierUsers.add(aircraft);
 			lastAddedAC = aircraft;
 		}
-		if (aircraft.FM.CT.bHasWingControl && !aircraft.isNetPlayer())
-			aircraft.FM.CT.wingControl = 0.0F;
+		if (aircraft.FM.CT.bHasWingControl && !aircraft.isNetPlayer()) aircraft.FM.CT.wingControl = 0.0F;
 	}
 
 	public Loc requestCell(Aircraft aircraft) {
-		if (!ship().isAlive())
-			return invalidLoc;
+		if (!ship().isAlive()) return invalidLoc;
 		CellAirPlane cellairplane = aircraft.getCellAirPlane();
 		Point3d point3d = reservePlaceForPlane(cellairplane, null);
 		if (point3d != null) {
@@ -762,9 +648,7 @@ public class AirportCarrier extends Airport {
 			double d_37_ = point3d.y;
 			double d_38_ = point3d.z;
 			Loc loc = new Loc();
-			loc.set(d, d_37_, d_38_ + (double) aircraft.FM.Gears.H,
-					runway[0].getAzimut(), runway[0].getTangage(),
-					runway[0].getKren());
+			loc.set(d, d_37_, d_38_ + (double) aircraft.FM.Gears.H, runway[0].getAzimut(), runway[0].getTangage(), runway[0].getKren());
 			return loc;
 		}
 		return invalidLoc;
@@ -783,23 +667,16 @@ public class AirportCarrier extends Airport {
 	public void setClientLoc(Loc loc) {
 		clientLoc = loc;
 		boolean bool = isLocValid(loc);
-		if (ui != null)
-			ui.flyFromCarrier(bool);
+		if (ui != null) ui.flyFromCarrier(bool);
 	}
 
 	private boolean isLocValid(Loc loc) {
-		if (loc == null)
-			return false;
-		if ((int) loc.getX() == 0 && (int) loc.getY() == 0
-				&& (int) loc.getZ() == 0 && (int) loc.getTangage() == 0
-				&& (int) loc.getKren() == 0)
-			return false;
+		if (loc == null) return false;
+		if ((int) loc.getX() == 0 && (int) loc.getY() == 0 && (int) loc.getZ() == 0 && (int) loc.getTangage() == 0 && (int) loc.getKren() == 0) return false;
 		return true;
 	}
 
 	public void startDeckOperations() {
-		if (Mission.isDogfight() && ship.net.isMaster())
-			interpPut(new DeckUpdater(), "deck_operations", Time.current(),
-					null);
+		if (Mission.isDogfight() && ship.net.isMaster()) interpPut(new DeckUpdater(), "deck_operations", Time.current(), null);
 	}
 }
