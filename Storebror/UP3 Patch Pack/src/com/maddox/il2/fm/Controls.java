@@ -6,6 +6,7 @@ import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.game.ZutiSupportMethods_Multicrew;
 import com.maddox.il2.net.ZutiSupportMethods_NetSend;
 import com.maddox.il2.objects.air.Aircraft;
+import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.air.SU_26M2;
 import com.maddox.il2.objects.air.TypeBomber;
 import com.maddox.il2.objects.weapons.BombGun;
@@ -776,6 +777,23 @@ public class Controls {
                     : 32));
             this.WCT &= 0xfc;
             this.TWCT &= 0xfc;
+            
+            // +++ Bomb Release Bug hunting
+            NetAircraft.restorePendingWeaponDropReplication(this.FM.actor);
+            if (this.WeaponControl[2]) {
+                if (NetAircraft.hasBullets(this.FM.actor, 2))
+                    NetAircraft.printDebugMessage(this.FM.actor, "Rocket Trigger pressed!");
+                else
+                    this.WeaponControl[2] = false;
+            }
+            if (this.WeaponControl[3]){
+                if (NetAircraft.hasBullets(this.FM.actor, 3))
+                    NetAircraft.printDebugMessage(this.FM.actor, "Bomb Trigger pressed!");
+                else
+                    this.WeaponControl[3] = false;
+            }
+            // --- Bomb Release Bug hunting
+            
             int i = 0;
             for (int i_17_ = 1; i < this.WeaponControl.length && i_17_ < 256; i_17_ <<= 1) {
                 if (this.WeaponControl[i]) {
@@ -822,6 +840,10 @@ public class Controls {
                                             if (this.bHasBayDoors && this.Weapons[i_19_][i_22_].getHookName().startsWith("_BombSpawn")) {
                                                 if (this.BayDoorControl == 1.0F) {
                                                     this.Weapons[i_19_][i_22_].shots(i_20_);
+                                                    // +++ Bomb Release Bug hunting
+                                                    NetAircraft.ensureWeaponDropReplication(this.FM.actor, i_19_);
+                                                    NetAircraft.printDebugMessage(this.FM.actor, (i_19_ == 2? "Rocket ":"Bomb ") + this.Weapons[i_19_][i_22_].getClass().getName() + " dropped!");
+                                                    // --- Bomb Release Bug hunting
                                                     // TODO:Added by |ZUTI|
                                                     // System.out.println("INTERNAL: i19=" + i_19_ + ", i22=" + i_22_ + ", i20=" + i_20_);
                                                     ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, i_19_, i_22_, i_20_);
@@ -830,6 +852,10 @@ public class Controls {
                                                 if (!this.bIsMustang || (this.Weapons[i_19_][i_22_] instanceof RocketGun4andHalfInch) || ((this.Weapons[i_19_][i_22_] instanceof RocketGun) && (this.iToggleRocketSide == this.LEFT))
                                                         || ((this.Weapons[i_19_][i_22_] instanceof BombGun) && (this.iToggleBombSide == this.LEFT))) {
                                                     this.Weapons[i_19_][i_22_].shots(i_20_);
+                                                    // +++ Bomb Release Bug hunting
+                                                    NetAircraft.ensureWeaponDropReplication(this.FM.actor, i_19_);
+                                                    NetAircraft.printDebugMessage(this.FM.actor, (i_19_ == 2? "Rocket ":"Bomb ") + this.Weapons[i_19_][i_22_].getClass().getName() + " dropped!");
+                                                    // --- Bomb Release Bug hunting
                                                     // TODO:Added by |ZUTI|
                                                     // System.out.println("EXTERNAL: i19=" + i_19_ + ", i22=" + i_22_ + ", i20=" + i_20_);
                                                     ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, i_19_, i_22_, i_20_);
@@ -850,12 +876,20 @@ public class Controls {
                                             if (this.bHasBayDoors && this.Weapons[i_19_][i_23_].getHookName().startsWith("_BombSpawn")) {
                                                 if (this.BayDoorControl == 1.0F) {
                                                     this.Weapons[i_19_][i_23_].shots(i_20_);
+                                                    // +++ Bomb Release Bug hunting
+                                                    NetAircraft.ensureWeaponDropReplication(this.FM.actor, i_19_);
+                                                    NetAircraft.printDebugMessage(this.FM.actor, (i_19_ == 2? "Rocket ":"Bomb ") + this.Weapons[i_19_][i_23_].getClass().getName() + " dropped!");
+                                                    // --- Bomb Release Bug hunting
                                                     // TODO:Added by |ZUTI|
                                                     ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, i_19_, i_23_, i_20_);
                                                 }
                                             } else if (!this.bIsMustang || (this.Weapons[i_19_][i_23_] instanceof RocketGun4andHalfInch) || ((this.Weapons[i_19_][i_23_] instanceof RocketGun) && (this.iToggleRocketSide == this.RIGHT))
                                                     || ((this.Weapons[i_19_][i_23_] instanceof BombGun) && (this.iToggleBombSide == this.RIGHT))) {
                                                 this.Weapons[i_19_][i_23_].shots(i_20_);
+                                                // +++ Bomb Release Bug hunting
+                                                NetAircraft.ensureWeaponDropReplication(this.FM.actor, i_19_);
+                                                NetAircraft.printDebugMessage(this.FM.actor, (i_19_ == 2? "Rocket ":"Bomb ") + this.Weapons[i_19_][i_23_].getClass().getName() + " dropped!");
+                                                // --- Bomb Release Bug hunting
                                                 // TODO:Added by |ZUTI|
                                                 ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, i_19_, i_23_, i_20_);
                                             }
@@ -899,6 +933,9 @@ public class Controls {
                     }
                 }
             }
+            // +++ Bomb Release Bug hunting
+            NetAircraft.resetPendingWeaponDropReplication(this.FM.actor);
+            // --- Bomb Release Bug hunting
         }
     }
 

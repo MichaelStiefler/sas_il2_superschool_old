@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import com.maddox.il2.ai.Army;
 import com.maddox.il2.ai.EventLog;
 import com.maddox.il2.ai.Regiment;
 import com.maddox.il2.ai.UserCfg;
@@ -98,11 +99,11 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
     // TODO: Storebror: Implement Patch Level Replication
     public static final byte   MSG_PATCHLEVEL         = 101;
     public static final byte   MSG_SELECTOR_VERSION   = 102;
-    public static final String MIN_PATCH_LEVEL        = "103";
-    public static final String PATCH_LEVEL            = "106";
+    public static final String MIN_PATCH_LEVEL        = "106";
+    public static final String PATCH_LEVEL            = "107b3";
     public static final String PATCH_LEVEL_TEST       = "102b1";
-    public static String[]     PATCHLEVEL_G           = { "106" };
-    public static String[]     PATCHLEVEL_Y           = { "105", "104", "103" };
+    public static String[]     PATCHLEVEL_G           = { "106v3", "106v2", "106" };
+    public static String[]     PATCHLEVEL_Y           = { "107b3", "107b2", "107b1", "105", "104", "103" };
     private String             patchLevel             = "none";
     private String             selectorVersion        = "unknown";
     public static final long   UPDATE_CHAT_INTERVAL   = 60000L;
@@ -639,15 +640,32 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                 if (!ZutiSupportMethods_Net.isInOwnAircraft(this, World.getPlayerAircraft())) {
                     try {
                         // TODO: Storebror: Debugging Army switch on gunner pos switch bug
-                        int iLogArmy = 0;
+                        int iLogArmy = this.getArmy();
                         try {
-                            iLogArmy = GUINetAircraft.getItem(this.place).reg.getArmy();
-                        } catch (Exception ex) {}
-                        System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetUser.requestPlace NetUser " + this.uniqueName() + " place " + this.place + " setArmy(" + iLogArmy + ")");
+//                            iLogArmy = GUINetAircraft.getItem(this.place).reg.getArmy();
+                            GUINetAircraft.Item tempItem = GUINetAircraft.getItem(this.place);
+                            if (tempItem == null) {
+                                System.out.println("NetUser requestPlace(" + i + ") GUINetAircraft.getItem(" + this.place + ")==null");
+                            } else {
+                                Regiment tempRegiment = tempItem.reg;
+                                if (tempRegiment == null) {
+                                    System.out.println("NetUser requestPlace(" + i + ") GUINetAircraft.getItem(" + this.place + ").reg==null");
+                                } else {
+                                    iLogArmy = tempRegiment.getArmy();
+                                }
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+//                        System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetUser.requestPlace NetUser " + this.uniqueName() + " place " + this.place + " setArmy(" + iLogArmy + ")");
+//                        this.setArmy(GUINetAircraft.getItem(this.place).reg.getArmy());
+//                        this.setArmy(iLogArmy);
+                        String armyName = iLogArmy >= Army.amountNet()?"!!!NOT DEFINED!!!":Army.name(iLogArmy);
+                        System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetUser " + this.uniqueName() + " changed to place " + this.place + ", which belongs to Army " + armyName + " (possible side switch SKIPPED in this Patch Pack!) ###");
                         // ...
-                        this.setArmy(GUINetAircraft.getItem(this.place).reg.getArmy());
                     } catch (Exception ex) {
                         // TODO: Storebror: Debugging Army switch on gunner pos switch bug
+                        System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetUser.requestPlace NetUser " + this.uniqueName() + " place " + this.place + " ERROR ###");
                         ex.printStackTrace();
                         // ...
                     }
@@ -2402,7 +2420,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
         // ---
         EventLog.onConnected(this.uniqueName());
     }
-
+    
     static {
         Spawn.add(NetUser.class, new SPAWN());
     }

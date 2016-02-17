@@ -2897,7 +2897,7 @@ public class AircraftState {
     }
 
     void setArmingSeeds(int armingSeed) {
-        System.out.println("setArmingSeeds(" + armingSeed + ")");
+//        System.out.println("setArmingSeeds(" + armingSeed + ")");
         this.aircraft.armingRnd = new RangeRandom(this.aircraft.armingSeed);
         try {
             if (this.aircraft.FM.CT.Weapons[2] != null)
@@ -3105,45 +3105,6 @@ public class AircraftState {
             return (this.msgDestination == paramInt1) && (this.msgContext == paramInt2) && (this.initiator == paramActor);
         }
     }
-
-    // TODO: Storebror: Bomb Delay and Torpedo Failure Rate Replication
-    // ------------------------------------
-//    public void replicateBombTorpParamsExToNet(float bombDelay, int torpLimitSeed) {
-//        int bombDelayInt = (int) (bombDelay * 2.0F);
-//        setBombTorpParamsEx(this.actor, torpLimitSeed, bombDelayInt, false);
-//    }
-//
-//    private void setBombTorpParamsEx(Actor actor, int torpLimitSeed, int bombDelay, boolean applySettings) {
-//        if (!Actor.isValid(actor))
-//            return;
-//        System.out.println("setBombTorpParamsEx(actor, " + torpLimitSeed + ", " + bombDelay + ", " + applySettings + "), bIsMaster=" + this.bIsMaster);
-//        if (applySettings) {
-//            doSetBombTorpParamsEx(actor, torpLimitSeed, bombDelay);
-//        }
-//        if (this.bIsMaster)
-//            netToMirrors(_AS_BOMB_TORP_PARAMS_EX, torpLimitSeed, bombDelay);
-//        else
-//            netToMaster(_AS_BOMB_TORP_PARAMS_EX, torpLimitSeed, bombDelay, actor);
-//    }
-//
-//    private void doSetBombTorpParamsEx(Actor actor, int torpLimitSeed, int bombDelay) {
-//        System.out.println("doSetBombTorpParamsEx(actor, " + torpLimitSeed + ", " + bombDelay + ")");
-//        float bombDelayValue = bombDelay / 2.0F;
-//
-//        if (this.aircraft.FM.CT.Weapons[3] != null)
-//            for (int k = 0; k < this.aircraft.FM.CT.Weapons[3].length; k++) {
-//                BulletEmitter emitter = this.aircraft.FM.CT.Weapons[3][k];
-//                if ((emitter != null) && ((emitter instanceof BombGun)) && (emitter.countBullets() != 0)) {
-//                    BombGun bombGun = (BombGun) this.aircraft.FM.CT.Weapons[3][k];
-//                    bombGun.setBombDelay(bombDelayValue);
-//                    if (bombGun instanceof TorpedoGun) {
-//                        ((TorpedoGun)bombGun).setTorpLimitSeed(torpLimitSeed);
-//                    }
-//
-//                }
-//            }
-//    }
-    // ------------------------------------
 
     // TODO: |ZUTI| variables
     // --------------------------------------------

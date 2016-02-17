@@ -274,6 +274,11 @@ public class ZutiSupportMethods_Net {
                 ZutiSupportMethods_Net.setBornPlaceAircraftList(bp, aircraftList);
         }
     }
+    
+    // TODO: Patch Pack 107, add previous function signature and remap to old behaviour
+    public static void addAircraftToBornPlace(BornPlace bp, String acName) {
+        addAircraftToBornPlace(bp, acName, false);
+    }
 
     /**
      * Method refills the airNames with full AC list and omit those planes that come with aircraftToIgnore parameter.
@@ -281,7 +286,8 @@ public class ZutiSupportMethods_Net {
      * @param bp
      * @param acName
      */
-    public static void addAircraftToBornPlace(BornPlace bp, String acName) {
+    // TODO: Patch Pack 107, add "skipIfNotExist" Parameter in order not to add crashed enemy planes to homebase
+    public static void addAircraftToBornPlace(BornPlace bp, String acName, boolean skipIfNotExist) {
         if (bp == null) {
             System.out.println("BornPlace = null!");
             return;
@@ -307,7 +313,7 @@ public class ZutiSupportMethods_Net {
             }
         }
 
-        if (!updated) {
+        if (!updated && !skipIfNotExist) {
             // Aircraft does not exist at specified born place. Create it.
             zac = ZutiSupportMethods_Air.createDefaultZutiAircraft(acName);
             // change default settings

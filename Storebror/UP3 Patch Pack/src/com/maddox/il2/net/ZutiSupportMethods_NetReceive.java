@@ -222,7 +222,7 @@ public class ZutiSupportMethods_NetReceive
 					{
 						String acName = netmsginput.read255();
 						// TODO: Storebror: Cockpit Change Bugfix
-						int requestedPosition = netmsginput.readByte(); // .readInt();
+						int requestedPosition = netmsginput.readInt(); //.readByte(); // .readInt();
 						boolean isPilot = netmsginput.readBoolean();
 						
 						ZutiSupportMethods_NetSend.processCockpitChangeRequest(sender, acName, requestedPosition, isPilot);

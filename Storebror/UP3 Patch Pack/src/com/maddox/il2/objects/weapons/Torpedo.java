@@ -349,11 +349,9 @@ public class Torpedo extends Bomb {
 
     // TODO: Storebror: Torpedo Failure Rate Replication
     // ------------------------------------
-//    protected int   limitSeed;
     private float   speedLimit;
     private float   angleLimitLow;
     private float   angleLimitHigh;
-//    private RangeRandom limitRnd = new RangeRandom();
     // ------------------------------------
 
 }

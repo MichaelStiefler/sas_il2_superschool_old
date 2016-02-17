@@ -1,9 +1,12 @@
 /* 4.10.1 class */
 package com.maddox.il2.ai;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.il2.ai.air.Airdrome;
@@ -57,70 +60,96 @@ import com.maddox.rts.Time;
 import com.maddox.sas1946.il2.util.Reflection;
 
 public class World {
-    public boolean            showMorseAsText;
-    public static final float NORD                    = 270.0F;
-    public static final float PIXEL                   = 200.0F;
-    public static float       MaxVisualDistance       = 5000.0F;
-    public static float       MaxStaticVisualDistance = 4000.0F;
-    public static float       MaxLongVisualDistance   = 10000.0F;
-    public static float       MaxPlateVisualDistance  = 16000.0F;
-    public boolean            blockMorseChat          = false;
-    public boolean            smallMapWPLabels        = false;
-    public RangeRandom        rnd                     = new RangeRandom();
-    public int                camouflage              = 0;
-    public static final int   CAMOUFLAGE_SUMMER       = 0;
-    public static final int   CAMOUFLAGE_WINTER       = 1;
-    public static final int   CAMOUFLAGE_DESERT       = 2;
-    public static final int   CAMOUFLAGE_PACIFIC      = 3;
-    public static final int   CAMOUFLAGE_ETO          = 4;
-    public static final int   CAMOUFLAGE_MTO          = 5;
-    public static final int   CAMOUFLAGE_CBI          = 6;
-    public DifficultySettings diffCur                 = new DifficultySettings();
-    public DifficultySettings diffUser                = new DifficultySettings();
-    public UserCfg            userCfg;
-    public float              userCoverMashineGun     = 500.0F;
-    public float              userCoverCannon         = 500.0F;
-    public float              userCoverRocket         = 500.0F;
-    public float              userRocketDelay         = 10.0F;
-    public float              userBombDelay           = 0.0F;
-    private boolean           bArcade                 = false;
-    private boolean           bHighGore               = false;
-    private boolean           bHakenAllowed           = false;
-    private boolean           bDebugFM                = false;
-    private boolean           bTimeOfDayConstant      = false;
-    private boolean           bWeaponsConstant        = false;
-    protected War             war;
-    protected ArrayList       airports;
-    public ArrayList          bornPlaces;
-    public HouseManager       houseManager;
-    public Runaway            runawayList;
-    public Airdrome           airdrome;
-    private int               missionArmy             = 1;
-    private Aircraft          PlayerAircraft;
-    private NetGunner         PlayerGunner;
-    private int               PlayerArmy              = 1;
-    private FlightModel       PlayerFM;
-    private Regiment          PlayerRegiment;
-    private String            PlayerLastCountry;
-    private boolean           bPlayerParatrooper      = false;
-    private boolean           bPlayerDead             = false;
-    private boolean           bPlayerCaptured         = false;
-    private boolean           bPlayerRemoved          = false;
-    public static Actor       remover                 = new Remover();
-    static ClipFilter         clipFilter              = new ClipFilter();
-    public TargetsGuard       targetsGuard            = new TargetsGuard();
-    public ScoreCounter       scoreCounter            = new ScoreCounter();
-    private Wind              wind                    = new Wind();
-    protected Front           front                   = new Front();
-    public Statics            statics;
-    private int               startTimeofDay          = 43200;
-    public Atmosphere         Atm                     = new Atmosphere();
-    public float[]            fogColor                = { 0.53F, 0.64F, 0.8F, 1.0F };
-    public float[]            beachColor              = { 0.6F, 0.6F, 0.6F };
-    public float[]            lodColor                = { 0.7F, 0.7F, 0.7F };
-    public ChiefManager       ChiefMan                = new ChiefManager();
-    private Sun               sun                     = new Sun();
-    public Voice              voicebase               = new Voice();
+    public static final boolean DEBUG_TIME_OF_DAY       = true;
+
+    public boolean              showMorseAsText;
+    public static final float   NORD                    = 270.0F;
+    public static final float   PIXEL                   = 200.0F;
+    public static float         MaxVisualDistance       = 5000.0F;
+    public static float         MaxStaticVisualDistance = 4000.0F;
+    public static float         MaxLongVisualDistance   = 10000.0F;
+    public static float         MaxPlateVisualDistance  = 16000.0F;
+    public boolean              blockMorseChat          = false;
+    public boolean              smallMapWPLabels        = false;
+    public RangeRandom          rnd                     = new RangeRandom();
+    public int                  camouflage              = 0;
+    public static final int     CAMOUFLAGE_SUMMER       = 0;
+    public static final int     CAMOUFLAGE_WINTER       = 1;
+    public static final int     CAMOUFLAGE_DESERT       = 2;
+    public static final int     CAMOUFLAGE_PACIFIC      = 3;
+    public static final int     CAMOUFLAGE_ETO          = 4;
+    public static final int     CAMOUFLAGE_MTO          = 5;
+    public static final int     CAMOUFLAGE_CBI          = 6;
+    public DifficultySettings   diffCur                 = new DifficultySettings();
+    public DifficultySettings   diffUser                = new DifficultySettings();
+    public UserCfg              userCfg;
+    public float                userCoverMashineGun     = 500.0F;
+    public float                userCoverCannon         = 500.0F;
+    public float                userCoverRocket         = 500.0F;
+    public float                userRocketDelay         = 10.0F;
+    public float                userBombDelay           = 0.0F;
+    private boolean             bArcade                 = false;
+    private boolean             bHighGore               = false;
+    private boolean             bHakenAllowed           = false;
+    private boolean             bDebugFM                = false;
+    private boolean             bTimeOfDayConstant      = false;
+    private boolean             bWeaponsConstant        = false;
+    protected War               war;
+    protected ArrayList         airports;
+    public ArrayList            bornPlaces;
+    public HouseManager         houseManager;
+    public Runaway              runawayList;
+    public Airdrome             airdrome;
+    private int                 missionArmy             = 1;
+    private Aircraft            PlayerAircraft;
+    private NetGunner           PlayerGunner;
+    private int                 PlayerArmy              = 1;
+    private FlightModel         PlayerFM;
+    private Regiment            PlayerRegiment;
+    private String              PlayerLastCountry;
+    private boolean             bPlayerParatrooper      = false;
+    private boolean             bPlayerDead             = false;
+    private boolean             bPlayerCaptured         = false;
+    private boolean             bPlayerRemoved          = false;
+    public static Actor         remover                 = new Remover();
+    static ClipFilter           clipFilter              = new ClipFilter();
+    public TargetsGuard         targetsGuard            = new TargetsGuard();
+    public ScoreCounter         scoreCounter            = new ScoreCounter();
+    private Wind                wind                    = new Wind();
+    protected Front             front                   = new Front();
+    public Statics              statics;
+    private int                 startTimeofDay          = 43200;
+    public Atmosphere           Atm                     = new Atmosphere();
+    public float[]              fogColor                = { 0.53F, 0.64F, 0.8F, 1.0F };
+    public float[]              beachColor              = { 0.6F, 0.6F, 0.6F };
+    public float[]              lodColor                = { 0.7F, 0.7F, 0.7F };
+    public ChiefManager         ChiefMan                = new ChiefManager();
+    private Sun                 sun                     = new Sun();
+    public Voice                voicebase               = new Voice();
+    
+    public static void showCallingLine(String message) {
+        Exception ex = new Exception();
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String stacktrace = sw.getBuffer().toString();
+        StringTokenizer stacktraceTokens = new StringTokenizer(stacktrace, "\n");
+        boolean foundSource = false;
+        int linesToSkip = 2;
+        while(stacktraceTokens.hasMoreTokens()) {
+            String stacktraceToken = stacktraceTokens.nextToken();
+            while (stacktraceToken.startsWith("\t"))
+                stacktraceToken = stacktraceToken.substring(1);
+            if (!stacktraceToken.startsWith("at ")) continue;
+            stacktraceToken = stacktraceToken.substring(3);
+            if (linesToSkip-- > 0) continue;
+            foundSource = true;
+            System.out.println(message + stacktraceToken);
+            break;
+        }
+        if (!foundSource)
+            System.out.println(message + "unknown source");
+    }
 
     static class ClipFilter implements ActorFilter {
         public boolean isUse(Actor actor, double d) {
@@ -191,6 +220,9 @@ public class World {
 
     public void setTimeOfDayConstant(boolean bool) {
         bTimeOfDayConstant = bool;
+        if (DEBUG_TIME_OF_DAY) {
+            showCallingLine("setTimeOfDayConstant(" + bool + ") called from ");
+        }
     }
 
     public boolean isWeaponsConstant() {
@@ -523,7 +555,8 @@ public class World {
                         System.out.println("___________________________________________________");
 
                         // For this case we will RETURN the AC.
-                        ZutiSupportMethods_Net.addAircraftToBornPlace(bp, acName);
+                        // TODO: Patch Pack 107, skip adding crashed aircraft to homebase which have not been available there before
+                        ZutiSupportMethods_Net.addAircraftToBornPlace(bp, acName, true);
                     }
                 }
             }
@@ -769,6 +802,10 @@ public class World {
             cur().startTimeofDay = i;
         else
             cur().startTimeofDay = i - (int) (Time.current() / 1000L);
+        if (DEBUG_TIME_OF_DAY) {
+            showCallingLine("setTimeofDay(" + f + ") called from ");
+            System.out.println("startTimeofDay = " + cur().startTimeofDay);
+        }
     }
 
     public static float g() {
