@@ -10,6 +10,7 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.ZutiTargetsSupportMethods;
 import com.maddox.il2.builder.ZutiSupportMethods_Builder;
 import com.maddox.il2.builder.Zuti_WResourcesManagement.RRRItem;
+import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.GunGeneric;
 import com.maddox.il2.engine.ZutiSupportMethods_Engine;
 import com.maddox.il2.fm.FlightModel;
@@ -20,6 +21,7 @@ import com.maddox.il2.objects.ActorSimpleMesh;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.Aircraft._WeaponSlot;
 import com.maddox.il2.objects.air.CockpitGunner;
+import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.air.ZutiSupportMethods_Air;
 import com.maddox.il2.objects.weapons.BombGun;
 import com.maddox.il2.objects.weapons.RocketGun;
@@ -99,7 +101,11 @@ public class ZutiWeaponsManagement
 						((BombGun)weapons[i][j]).loadBullets(0);
 				}
 			}
-			catch(Exception ex){}
+            catch(Exception ex){
+                // TODO: +++ RRR Bug hunting
+                ex.printStackTrace();
+                // --- RRR Bug hunting
+            }
 		}
 	}
 	
@@ -121,7 +127,11 @@ public class ZutiWeaponsManagement
 						((BombGun)weapons[i][j]).doDestroy();
 				}
 			}
-			catch(Exception ex){}
+            catch(Exception ex){
+                // TODO: +++ RRR Bug hunting
+                ex.printStackTrace();
+                // --- RRR Bug hunting
+            }
 		}
 	}
 	
@@ -151,7 +161,11 @@ public class ZutiWeaponsManagement
 					//System.out.println("NetAircraft - removed bomb pylon");
 					//ac.hierMesh().chunkVisible("Rack_D0", false);
 				}
-				catch(Exception ex){};
+	            catch(Exception ex){
+	                // TODO: +++ RRR Bug hunting
+	                ex.printStackTrace();
+	                // --- RRR Bug hunting
+	            }
             }
 		}
     }
@@ -199,7 +213,10 @@ public class ZutiWeaponsManagement
 					if (s != null)
 					{
 						try{new ActorSimpleMesh(s);}
-						catch (Exception exception){System.out.println("ZutiWeaponsManagement error, ID_02: " + exception.getMessage());}
+						catch (Exception exception){
+						    System.out.println("ZutiWeaponsManagement error, ID_02: " + exception.getMessage());
+						    exception.printStackTrace();
+						}
 					}
 				}
 			}
@@ -311,7 +328,11 @@ public class ZutiWeaponsManagement
 					}
 				}
 			}
-			catch(Exception ex){}
+            catch(Exception ex){
+                // TODO: +++ RRR Bug hunting
+                ex.printStackTrace();
+                // --- RRR Bug hunting
+            }
 		}
 		
 		System.out.println("Bombs, FuelTanks and Torpedoes rearmed");
@@ -363,7 +384,11 @@ public class ZutiWeaponsManagement
 					}
 				}
 			}
-			catch(Exception ex){}
+            catch(Exception ex){
+                // TODO: +++ RRR Bug hunting
+                ex.printStackTrace();
+                // --- RRR Bug hunting
+            }
 		}
 		
 		System.out.println("MGs and cannons rearmed");
@@ -376,6 +401,9 @@ public class ZutiWeaponsManagement
 	 */
 	public static void rearmRockets(Aircraft aircraft, long rockets)
 	{
+	    // TODO: +++ RRR Bug hunting
+	    printDebugMessage(aircraft, "rearmRockets (" + rockets + ")");
+	    // --- RRR Bug hunting
 		if( aircraft == null )
 			return;
 		
@@ -396,8 +424,12 @@ public class ZutiWeaponsManagement
 						bulletCount = Property.get(weapons[i][j], "_count");
 						((RocketGun)weapons[i][j]).loadBullets(0);
 						long loadBullets = 1;
-						if( bulletCount != null && bulletCount.intValue() > 0 )
+						if( bulletCount != null && bulletCount.intValue() > 0 ) {
 							loadBullets = bulletCount.intValue();
+					        // TODO: +++ RRR Bug hunting
+					        printDebugMessage(aircraft, "found _count value on Gun [" + i + ", " + j + "]" + weapons[i][j].toString() + " = " + loadBullets + ", remaining rockets = " + rockets);
+					        // --- RRR Bug hunting
+						}
 						
 						if( loadBullets >= rockets )
 						{
@@ -409,10 +441,18 @@ public class ZutiWeaponsManagement
 						
 						((RocketGun)weapons[i][j]).loadBullets((int)loadBullets);
 						//System.out.println("  Gun [" + i + ", " + j + "]" + weapons[i][j].toString() + " reloaded to bullets: " + ((RocketGun)weapons[i][j]).countBullets());
+				        
+						// TODO: +++ RRR Bug hunting
+				        printDebugMessage(aircraft, "rearmRockets Gun [" + i + ", " + j + "]" + weapons[i][j].toString() + " reloaded to bullets: " + ((RocketGun)weapons[i][j]).countBullets());
+				        // --- RRR Bug hunting
 					}
 				}
 			}
-			catch(Exception ex){}
+			catch(Exception ex){
+		        // TODO: +++ RRR Bug hunting
+			    ex.printStackTrace();
+		        // --- RRR Bug hunting
+			}
 		}
 		
 		System.out.println("Rockets rearmed");
@@ -471,7 +511,11 @@ public class ZutiWeaponsManagement
 				
 				ZUTI_PROCESS_CARGO_DROPS = false;
 			}
-			catch(Exception ex){}
+            catch(Exception ex){
+                // TODO: +++ RRR Bug hunting
+                ex.printStackTrace();
+                // --- RRR Bug hunting
+            }
 		}
 	}
 	
@@ -499,7 +543,11 @@ public class ZutiWeaponsManagement
 			if( Mission.MDS_VARIABLES().zutiDrop_OverDefenceGroundArea && dropOverTargetArea(flightmodel.Loc.x, flightmodel.Loc.y) )
 				return true;
 		}
-		catch(Exception ex){}
+        catch(Exception ex){
+            // TODO: +++ RRR Bug hunting
+            ex.printStackTrace();
+            // --- RRR Bug hunting
+        }
 		
 		return false;
 	}	
@@ -683,7 +731,11 @@ public class ZutiWeaponsManagement
 					}
 				}
 			}
-			catch(Exception ex){}
+            catch(Exception ex){
+                // TODO: +++ RRR Bug hunting
+                ex.printStackTrace();
+                // --- RRR Bug hunting
+            }
 		}
 		
 		//Return fuel
@@ -776,7 +828,11 @@ public class ZutiWeaponsManagement
 					}
 				}
 			}
-			catch(Exception ex){}
+            catch(Exception ex){
+                // TODO: +++ RRR Bug hunting
+                ex.printStackTrace();
+                // --- RRR Bug hunting
+            }
 		}
 		
 		return guns;
@@ -819,7 +875,11 @@ public class ZutiWeaponsManagement
 					}
 				}
 			}
-			catch(Exception ex){}
+            catch(Exception ex){
+                // TODO: +++ RRR Bug hunting
+                ex.printStackTrace();
+                // --- RRR Bug hunting
+            }
 		}
 		
 		if( sync )
@@ -869,7 +929,11 @@ public class ZutiWeaponsManagement
 					}
 				}
 			}
-			catch(Exception ex){}
+            catch(Exception ex){
+                // TODO: +++ RRR Bug hunting
+                ex.printStackTrace();
+                // --- RRR Bug hunting
+            }
 		}
 		
 		if( sync )
@@ -996,7 +1060,11 @@ public class ZutiWeaponsManagement
 					}
 				}
 			}
-			catch(Exception ex){}
+            catch(Exception ex){
+                // TODO: +++ RRR Bug hunting
+                ex.printStackTrace();
+                // --- RRR Bug hunting
+            }
 		}
 		
 		if( sync )
@@ -1133,7 +1201,11 @@ public class ZutiWeaponsManagement
 					}
 				}
 			}
-			catch(Exception ex){}
+            catch(Exception ex){
+                // TODO: +++ RRR Bug hunting
+                ex.printStackTrace();
+                // --- RRR Bug hunting
+            }
 		}
 	}
 	
@@ -1189,7 +1261,11 @@ public class ZutiWeaponsManagement
 					}
 				}
 			}
-			catch(Exception ex){}
+            catch(Exception ex){
+                // TODO: +++ RRR Bug hunting
+                ex.printStackTrace();
+                // --- RRR Bug hunting
+            }
 		}
 		System.out.println("===========================================");
 		System.out.println("  Bombs by weight: ");
@@ -1203,5 +1279,24 @@ public class ZutiWeaponsManagement
 		
 		return categories;
 	}
+	
+    // TODO: +++ RRR Bug hunting
+    public static void printDebugMessage(Actor actor, String theMessage) {
+        if (!(actor instanceof NetAircraft)) return;
+        NetAircraft netAircraft = (NetAircraft)actor;
+        if (netAircraft.netUser() != null) {
+            System.out.println("§§§§§§§§§§ " + netAircraft.netUser().uniqueName() + " " + theMessage + " §§§§§§§§§§");
+        } else {
+            System.out.println("§§§§§§§§§§ " + netAircraft.name() + " " + theMessage + " §§§§§§§§§§");
+        }
+
+    }
+    public static void printDebug(String message)
+    {
+        Exception exception = new Exception(message);
+        System.out.println(exception.getMessage());
+        exception.printStackTrace();
+    }
+    // --- RRR Bug hunting
 	
 }

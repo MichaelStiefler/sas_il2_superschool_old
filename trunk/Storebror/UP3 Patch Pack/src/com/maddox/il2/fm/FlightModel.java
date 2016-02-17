@@ -148,6 +148,21 @@ public class FlightModel extends FlightModelMain {
         this.prev0 = tu[0];
         this.prev1 = tu[1];
         float maxRotSpeed = 40F * tickLen;
+        
+        switch (this.Skill) {
+            case TU_SKILL_ROOKIE:
+                maxRotSpeed *= 0.8F;
+                break;
+            case TU_SKILL_AVERAGE:
+            default:
+                break;
+            case TU_SKILL_VETERAN:
+                maxRotSpeed *= 1.4F;
+                break;
+            case TU_SKILL_ACE:
+                maxRotSpeed *= 2F;
+                break;
+        }
         // TODO: --- UP3 Sniper Gunner Hotfix ---
         float azimuth = tu[0] - theTurret.tu[0];
         if (azimuth < -maxRotSpeed)
@@ -238,7 +253,7 @@ public class FlightModel extends FlightModelMain {
         // TODO: +++ UP3 Sniper Gunner Hotfix +++
         float randomWidth = 0.4F;
         float skillParam = 0.1F;
-        float rotationDeviation = this.rotSpeed * (6.0F - gunnerSkillFloat);
+        float rotationDeviation = this.Skill == TU_SKILL_ACE? 0F : this.rotSpeed * (6.0F - gunnerSkillFloat);
         if ((this.actor == World.getPlayerAircraft() || ((Aircraft) this.actor).isNetPlayer()) && (theTurret.target != null)) {
             randomWidth = FlightModel.cvt(targetDistance, 1000F, 200F, 0.4F, 0.2F);
             skillParam = FlightModel.cvt(targetDistance, 1000F, 200F, 0.1F, 0.06F);
@@ -264,6 +279,29 @@ public class FlightModel extends FlightModelMain {
                 long timeNext4 = (long) FlightModel.cvt(World.Sun().ToSun.z, darkness, dawn, 4000L, 3000L);
                 long timeNext5 = 100L;
                 long timeNext6 = 500L;
+                if (this.Skill == TU_SKILL_VETERAN) {
+                    dawn = 0F;
+                    darkness = -0.3F;
+                    searchDistance1 *= 1.4F;
+                    searchDistance2 *= 1.4F;
+                    timeNext1 = (long)((float)timeNext1 / 1.4F);
+                    timeNext2 = (long)((float)timeNext2 / 1.4F);
+                    timeNext3 = (long)((float)timeNext3 / 1.4F);
+                    timeNext4 = (long)((float)timeNext4 / 1.4F);
+                    timeNext5 = (long)((float)timeNext5 / 1.4F);
+                    timeNext6 = (long)((float)timeNext6 / 1.4F);
+                } else if (this.Skill == TU_SKILL_VETERAN) {
+                    dawn = -0.2F;
+                    darkness = -0.4F;
+                    searchDistance1 *= 2F;
+                    searchDistance2 *= 2F;
+                    timeNext1 = (long)((float)timeNext1 / 2F);
+                    timeNext2 = (long)((float)timeNext2 / 2F);
+                    timeNext3 = (long)((float)timeNext3 / 2F);
+                    timeNext4 = (long)((float)timeNext4 / 2F);
+                    timeNext5 = (long)((float)timeNext5 / 2F);
+                    timeNext6 = (long)((float)timeNext6 / 2F);
+                }
                 boolean isDawn = World.Sun().ToSun.z < dawn;
 
                 theTurret.bIsShooting = false;

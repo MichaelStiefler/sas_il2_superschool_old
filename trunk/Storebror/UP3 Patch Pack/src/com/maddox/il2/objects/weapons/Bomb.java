@@ -79,16 +79,16 @@ public class Bomb extends ActorMesh implements MsgCollisionRequestListener, MsgC
         pos.getTime(Time.current(), p);
         impact = Time.current() - started;
         if (impact < armingTime && isArmed) {
-            System.out.println("Bomb NOT armed!");
-            System.out.println("================================");
+//            System.out.println("Bomb NOT armed!");
+//            System.out.println("================================");
             isArmed = false;
         }
         // TODO: Added by |ZUTI|
         // -----------------------------
         else if (impact >= armingTime && !isArmed) {
             if (!(actor instanceof ActorLand)) {
-                System.out.println("Bomb impacted >" + actor.name() + "< in more than 2s...");
-                System.out.println("================================");
+//                System.out.println("Bomb impacted >" + actor.name() + "< in more than 2s...");
+//                System.out.println("================================");
                 isArmed = true;
             }
         }
@@ -402,7 +402,7 @@ public class Bomb extends ActorMesh implements MsgCollisionRequestListener, MsgC
     public void setSeed(int seedValue) {
         this.seed = seedValue;
         this.rnd = new RangeRandom(this.seed);
-        System.out.println("Bomb setSeed(" + seedValue + ")");
+//        System.out.println("Bomb setSeed(" + seedValue + ")");
     }
 
     public RangeRandom getRnd()

@@ -11,6 +11,7 @@ import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
+import com.maddox.sas1946.il2.util.TrueRandom;
 import com.maddox.sound.SoundFX;
 
 public class BombGun extends Interpolate implements BulletEmitter {
@@ -305,7 +306,7 @@ public class BombGun extends Interpolate implements BulletEmitter {
         this.bomb.setSeed(this.armingRnd.nextInt());
     }
 
-    protected RangeRandom armingRnd = new RangeRandom(0L);
+    protected RangeRandom armingRnd = new RangeRandom(TrueRandom.nextLong());
     // ------------------------------------
 
     protected boolean   ready;

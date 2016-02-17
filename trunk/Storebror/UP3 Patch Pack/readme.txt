@@ -1,4 +1,4 @@
-UP3 RC4 Patch Pack v1.06
+UP3 RC4 Patch Pack v1.06 v2
 
 Contents:
 - All fixes listed below
@@ -30,6 +30,7 @@ Included feature enhancements:
   Detonation Delay (Bomb fuze) settings and
   Random Explosion Radii get replicated over the net, so that everyone sees what you see
   (and your NTRK playbacks always look the same like original as well)
+- AI Gunners are slightly better again when being on Veteran or Ace level
 
 (*) To activate the Stabilizers for all Aircraft ("Stabs4All"), add the following entry
     to your conf.ini file:
@@ -65,6 +66,25 @@ Included fixes:
 - Me-163 Flight Model from 4.13 implemented to get rid of the lame duck FM which existed up to 4.10
 - Bomb rotation axis fixed, was set to a Null-Vector in UP3 (??)
 - Replaced the partly predictable and reproduceable "pseudo" random number generator static initialization, now "Random" _IS_ random.
+- Initial static random "0" seed for bombs fixed
+- Pe-2 wounded gunner bug fixed
+- Further fix for gunner position switch bug, reducing log output and defaults to player previous army setting now
+- Missing Dead Meshes fixed for following pacific buildings: Flag_ArmeeRouge, Flag_LW, Flag_RAF, Flag_US, Flag_VVS
+- Missing Dead Meshes fixed for Train "Platform1_Dmg"
+- Disappearing Bombs/Torpedos/Rockets bug fixed
+  (this was an old IL-2 Core game bug where Bombs/Torpedos/Rockets would simply disappear instead of being dropped/shot online or during NTRK playback)
+- VAP bomb (IL-2 incendiary cluster bomb) rearming fixed, based on hotfix by SAS~Skylla from 22 Sep 2015
+- FM2 rocket trigger fixed, now all rockets can be fired with rocket trigger key (previously the last pair had to be fired using bomb trigger key)
+- Invincible Opel Maultier Flak fixed
+- Do-217 crew position locked up in belly gunner position fixed
+- Pairwise Hs-293 and Fritz-X drop on Do-217K-2 fixed
+- SBD gunner envelope limits fixed
+- B-29 gunner positions fixed
+- Fokker DXXI compass fixed
+- H8K outer frame parts appearing in cockpit view when plane is damaged: Fixed
+- I-16 SPB "Drone" picks up fuel from mothership until it reaches 100%: Fixed, will refuel up to initial mission start limit only
+- Enemy planes become available on player homebase not only after (belly/emergency) landing, but even if they crashed there: Fixed
+- On maps with more than 256 bridges, when a human player destroys a bridge with index 256 or bigger, another bridge with that index modulo 256 will be destroyed instead: Fixed
 
 ********************
 

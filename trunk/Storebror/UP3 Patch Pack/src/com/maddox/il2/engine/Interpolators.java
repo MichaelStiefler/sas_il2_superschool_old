@@ -291,7 +291,10 @@ public final class Interpolators
 	{
 		if (bDoTick)
 		{
-			throw new ActorException("Interpolators destroying in invoked method 'tick' ");
+		    // TODO: Storebror:
+		    // Disabled this log entry since it serves no purpose, gives useless "information" only.
+		    // In return, it keeps the game from exiting due to a log flood caused in case of game lockups.
+//			throw new ActorException("Interpolators destroying in invoked method 'tick' ");
 		}
 		else
 		{

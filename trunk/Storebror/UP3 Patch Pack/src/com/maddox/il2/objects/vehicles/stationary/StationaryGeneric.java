@@ -1,4 +1,3 @@
-/*4.10.1 class*/
 package com.maddox.il2.objects.vehicles.stationary;
 import java.io.IOException;
 
@@ -32,6 +31,7 @@ import com.maddox.rts.NetChannelInStream;
 import com.maddox.rts.NetMsgFiltered;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
+import com.maddox.rts.NetObj;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Spawn;
@@ -149,7 +149,7 @@ public abstract class StationaryGeneric extends ActorHMesh implements MsgExplosi
 				if (i < i_9_)
 					i = i_9_;
 				String string_10_ = string.substring(i + 1);
-				proper = LoadStationaryProperties(Statics.getTechnicsFile(), string_10_, var_class);
+				this.proper = LoadStationaryProperties(Statics.getTechnicsFile(), string_10_, var_class);
 			}
 			catch (Exception exception)
 			{
@@ -157,8 +157,8 @@ public abstract class StationaryGeneric extends ActorHMesh implements MsgExplosi
 				exception.printStackTrace();
 				System.out.println("Problem in spawn: " + var_class.getName());
 			}
-			cls = var_class;
-			Spawn.add(cls, this);
+			this.cls = var_class;
+			Spawn.add(this.cls, this);
 		}
 		
 		public Actor actorSpawn(ActorSpawnArg actorspawnarg)
@@ -166,23 +166,23 @@ public abstract class StationaryGeneric extends ActorHMesh implements MsgExplosi
 			switch (World.cur().camouflage)
 			{
 				case 1 :
-					proper.meshName = proper.meshWinter;
-					proper.meshName1 = proper.meshWinter1;
+					this.proper.meshName = this.proper.meshWinter;
+					this.proper.meshName1 = this.proper.meshWinter1;
 					break;
 				case 2 :
-					proper.meshName = proper.meshDesert;
-					proper.meshName1 = proper.meshDesert1;
+					this.proper.meshName = this.proper.meshDesert;
+					this.proper.meshName1 = this.proper.meshDesert1;
 					break;
 				default :
-					proper.meshName = proper.meshSummer;
-					proper.meshName1 = proper.meshSummer1;
+					this.proper.meshName = this.proper.meshSummer;
+					this.proper.meshName1 = this.proper.meshSummer1;
 			}
 			StationaryGeneric stationarygeneric;
 			try
 			{
-				StationaryGeneric.constr_arg1 = proper;
+				StationaryGeneric.constr_arg1 = this.proper;
 				StationaryGeneric.constr_arg2 = actorspawnarg;
-				stationarygeneric = (StationaryGeneric)cls.newInstance();
+				stationarygeneric = (StationaryGeneric)this.cls.newInstance();
 				StationaryGeneric.constr_arg1 = null;
 				StationaryGeneric.constr_arg2 = null;
 			}
@@ -192,7 +192,7 @@ public abstract class StationaryGeneric extends ActorHMesh implements MsgExplosi
 				StationaryGeneric.constr_arg2 = null;
 				System.out.println(exception.getMessage());
 				exception.printStackTrace();
-				System.out.println("SPAWN: Can't create Stationary object [class:" + cls.getName() + "]");
+				System.out.println("SPAWN: Can't create Stationary object [class:" + this.cls.getName() + "]");
 				return null;
 			}
 			return stationarygeneric;
@@ -211,13 +211,13 @@ public abstract class StationaryGeneric extends ActorHMesh implements MsgExplosi
 				{
 					case 73 :
 					{
-						if (isMirrored())
+						if (this.isMirrored())
 						{
 							NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted(netmsginput, 0);
-							post(netmsgguaranted);
+							this.post(netmsgguaranted);
 						}
 						short i = netmsginput.readShort();
-						if (i > 0 && dying != 1)
+						if (i > 0 && StationaryGeneric.this.dying != 1)
 						{
 							StationaryGeneric.this.Die(null, (short)1, false);
 							
@@ -238,14 +238,14 @@ public abstract class StationaryGeneric extends ActorHMesh implements MsgExplosi
 						return true;
 					}
 					case 68 :
-						if (isMirrored())
+						if (this.isMirrored())
 						{
 							NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted(netmsginput, 1);
-							post(netmsgguaranted);
+							this.post(netmsgguaranted);
 						}
-						if (dying != 1)
+						if (StationaryGeneric.this.dying != 1)
 						{
-							com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+							NetObj netobj = netmsginput.readNetObj();
 							Actor actor = (netobj == null ? null : ((ActorNet)netobj).actor());
 							StationaryGeneric.this.Die(actor, (short)1, true);
 							
@@ -267,7 +267,7 @@ public abstract class StationaryGeneric extends ActorHMesh implements MsgExplosi
 					case 100 :
 					{
 						NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted(netmsginput, 1);
-						postTo(masterChannel(), netmsgguaranted);
+						this.postTo(this.masterChannel(), netmsgguaranted);
 						return true;
 					}
 					default :
@@ -299,9 +299,9 @@ public abstract class StationaryGeneric extends ActorHMesh implements MsgExplosi
 			}
 			else
 				return false;
-			if (dying == 1)
+			if (StationaryGeneric.this.dying == 1)
 				return true;
-			com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+			NetObj netobj = netmsginput.readNetObj();
 			Actor actor = netobj == null ? null : ((ActorNet)netobj).actor();
 			StationaryGeneric.this.Die(actor, (short)0, true);
 			return true;
@@ -354,27 +354,27 @@ public abstract class StationaryGeneric extends ActorHMesh implements MsgExplosi
 	public void msgShot(Shot shot)
 	{
 		shot.bodyMaterial = 2;
-		if (dying == 0 && !(shot.power <= 0.0F) && (!isNetMirror() || !shot.isMirage()))
+		if (this.dying == 0 && !(shot.power <= 0.0F) && (!this.isNetMirror() || !shot.isMirage()))
 		{
 			if (shot.powerType == 1)
 			{
-				if (!RndB(0.15F))
-					Die(shot.initiator, (short)0, true);
+				if (!this.RndB(0.15F))
+					this.Die(shot.initiator, (short)0, true);
 			}
 			else
 			{
-				float f = Shot.panzerThickness(pos.getAbsOrient(), shot.v, shot.chunkName.equalsIgnoreCase("Head"), prop.PANZER_BODY_FRONT, prop.PANZER_BODY_SIDE, prop.PANZER_BODY_BACK, prop.PANZER_BODY_TOP, prop.PANZER_HEAD, prop.PANZER_HEAD_TOP);
+				float f = Shot.panzerThickness(this.pos.getAbsOrient(), shot.v, shot.chunkName.equalsIgnoreCase("Head"), this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_SIDE, this.prop.PANZER_BODY_BACK, this.prop.PANZER_BODY_TOP, this.prop.PANZER_HEAD, this.prop.PANZER_HEAD_TOP);
 				f *= Rnd(0.93F, 1.07F);
-				float f_13_ = prop.fnShotPanzer.Value(shot.power, f);
-				if (f_13_ < 1000.0F && (f_13_ <= 1.0F || RndB(1.0F / f_13_)))
-					Die(shot.initiator, (short)0, true);
+				float f_13_ = this.prop.fnShotPanzer.Value(shot.power, f);
+				if (f_13_ < 1000.0F && (f_13_ <= 1.0F || this.RndB(1.0F / f_13_)))
+					this.Die(shot.initiator, (short)0, true);
 			}
 		}
 	}
 	
 	public void msgExplosion(Explosion explosion)
 	{
-		if (dying == 0 && (!isNetMirror() || !explosion.isMirage()) && !(explosion.power <= 0.0F))
+		if (this.dying == 0 && (!this.isNetMirror() || !explosion.isMirage()) && !(explosion.power <= 0.0F))
 		{
 			int i = explosion.powerType;
 			if (explosion != null)
@@ -383,9 +383,9 @@ public abstract class StationaryGeneric extends ActorHMesh implements MsgExplosi
 			}
 			if (i == 1)
 			{
-				if (TankGeneric.splintersKill(explosion, prop.fnShotPanzer, Rnd(0.0F, 1.0F), Rnd(0.0F, 1.0F), this, 0.7F, 0.25F, prop.PANZER_BODY_FRONT, prop.PANZER_BODY_SIDE, prop.PANZER_BODY_BACK, prop.PANZER_BODY_TOP, prop.PANZER_HEAD,
-						prop.PANZER_HEAD_TOP))
-					Die(explosion.initiator, (short)0, true);
+				if (TankGeneric.splintersKill(explosion, this.prop.fnShotPanzer, Rnd(0.0F, 1.0F), Rnd(0.0F, 1.0F), this, 0.7F, 0.25F, this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_SIDE, this.prop.PANZER_BODY_BACK, this.prop.PANZER_BODY_TOP, this.prop.PANZER_HEAD,
+						this.prop.PANZER_HEAD_TOP))
+					this.Die(explosion.initiator, (short)0, true);
 			}
 			else
 			{
@@ -395,7 +395,7 @@ public abstract class StationaryGeneric extends ActorHMesh implements MsgExplosi
 					/* empty */
 				}
 				if (i_14_ == 2 && explosion.chunkName != null)
-					Die(explosion.initiator, (short)0, true);
+					this.Die(explosion.initiator, (short)0, true);
 				else
 				{
 					float f;
@@ -404,9 +404,9 @@ public abstract class StationaryGeneric extends ActorHMesh implements MsgExplosi
 					else
 						f = explosion.receivedTNTpower(this);
 					f *= Rnd(0.95F, 1.05F);
-					float f_15_ = prop.fnExplodePanzer.Value(f, prop.PANZER_TNT_TYPE);
-					if (f_15_ < 1000.0F && (f_15_ <= 1.0F || RndB(1.0F / f_15_)))
-						Die(explosion.initiator, (short)0, true);
+					float f_15_ = this.prop.fnExplodePanzer.Value(f, this.prop.PANZER_TNT_TYPE);
+					if (f_15_ < 1000.0F && (f_15_ <= 1.0F || this.RndB(1.0F / f_15_)))
+						this.Die(explosion.initiator, (short)0, true);
 				}
 			}
 		}
@@ -416,45 +416,45 @@ public abstract class StationaryGeneric extends ActorHMesh implements MsgExplosi
 	{
 		if (f > 0.0F)
 			f = Rnd(f, f * 1.6F);
-		Explosions.runByName(prop.explodeName, this, "Smoke", "SmokeHead", f, actor);
+		Explosions.runByName(this.prop.explodeName, this, "Smoke", "SmokeHead", f, actor);
 	}
 	
 	private void Die(Actor actor, short i, boolean bool)
 	{
-		if (dying == 0)
+		if (this.dying == 0)
 		{
 			if (i <= 0)
 			{
-				if (isNetMirror())
+				if (this.isNetMirror())
 				{
-					send_DeathRequest(actor);
+					this.send_DeathRequest(actor);
 					return;
 				}
 			}
-			dying = 1;
+			this.dying = 1;
 			World.onActorDied(this, actor);
-			if (prop.meshName1 == null)
-				mesh().makeAllMaterialsDarker(0.22F, 0.35F);
+			if (this.prop.meshName1 == null)
+				this.mesh().makeAllMaterialsDarker(0.22F, 0.35F);
 			else
-				setMesh(prop.meshName1);
-			int i_17_ = mesh().hookFind("Ground_Level");
+				this.setMesh(this.prop.meshName1);
+			int i_17_ = this.mesh().hookFind("Ground_Level");
 			if (i_17_ != -1)
 			{
 				Matrix4d matrix4d = new Matrix4d();
-				mesh().hookMatrix(i_17_, matrix4d);
-				heightAboveLandSurface = (float)-matrix4d.m23;
+				this.mesh().hookMatrix(i_17_, matrix4d);
+				this.heightAboveLandSurface = (float)-matrix4d.m23;
 			}
-			Align();
+			this.Align();
 			if (bool)
-				ShowExplode(15.0F, actor);
+				this.ShowExplode(15.0F, actor);
 			if (bool)
-				send_DeathCommand(actor);
+				this.send_DeathCommand(actor);
 		}
 	}
 	
 	public void destroy()
 	{
-		if (!isDestroyed())
+		if (!this.isDestroyed())
 			super.destroy();
 	}
 	
@@ -471,47 +471,47 @@ public abstract class StationaryGeneric extends ActorHMesh implements MsgExplosi
 	private StationaryGeneric(StationaryProperties stationaryproperties, ActorSpawnArg actorspawnarg)
 	{
 		super(stationaryproperties.meshName);
-		prop = stationaryproperties;
+		this.prop = stationaryproperties;
 		actorspawnarg.setStationary(this);
-		collide(true);
-		drawing(true);
-		createNetObject(actorspawnarg.netChannel, actorspawnarg.netIdRemote);
-		heightAboveLandSurface = 0.0F;
-		int i = mesh().hookFind("Ground_Level");
+		this.collide(true);
+		this.drawing(true);
+		this.createNetObject(actorspawnarg.netChannel, actorspawnarg.netIdRemote);
+		this.heightAboveLandSurface = 0.0F;
+		int i = this.mesh().hookFind("Ground_Level");
 		if (i != -1)
 		{
 			Matrix4d matrix4d = new Matrix4d();
-			mesh().hookMatrix(i, matrix4d);
-			heightAboveLandSurface = (float)-matrix4d.m23;
+			this.mesh().hookMatrix(i, matrix4d);
+			this.heightAboveLandSurface = (float)-matrix4d.m23;
 		}
 		else
 			System.out.println("Stationary " + this.getClass().getName() + ": hook Ground_Level not found");
-		Align();
+		this.Align();
 	}
 	
 	private void Align()
 	{
-		pos.getAbs(p);
-		p.z = Engine.land().HQ(p.x, p.y) + (double)heightAboveLandSurface;
-		o.setYPR(pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
+		this.pos.getAbs(p);
+		p.z = Engine.land().HQ(p.x, p.y) + this.heightAboveLandSurface;
+		o.setYPR(this.pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
 		Engine.land().N(p.x, p.y, n);
 		o.orient(n);
-		pos.setAbs(p, o);
+		this.pos.setAbs(p, o);
 	}
 	
 	public void align()
 	{
-		Align();
+		this.Align();
 	}
 	
 	public int HitbyMask()
 	{
-		return prop.HITBY_MASK;
+		return this.prop.HITBY_MASK;
 	}
 	
 	public int chooseBulletType(BulletProperties[] bulletpropertieses)
 	{
-		if (dying != 0)
+		if (this.dying != 0)
 			return -1;
 		if (bulletpropertieses.length == 1)
 			return 0;
@@ -550,14 +550,14 @@ public abstract class StationaryGeneric extends ActorHMesh implements MsgExplosi
 	
 	public int chooseShotpoint(BulletProperties bulletproperties)
 	{
-		if (dying != 0)
+		if (this.dying != 0)
 			return -1;
 		return 0;
 	}
 	
 	public boolean getShotpointOffset(int i, Point3d point3d)
 	{
-		if (dying != 0)
+		if (this.dying != 0)
 			return false;
 		if (i != 0)
 			return false;
@@ -573,29 +573,29 @@ public abstract class StationaryGeneric extends ActorHMesh implements MsgExplosi
 	
 	public void collisionDeath()
 	{
-		if (!isNet())
+		if (!this.isNet())
 		{
-			ShowExplode(-1.0F, null);
-			destroy();
+			this.ShowExplode(-1.0F, null);
+			this.destroy();
 		}
 	}
 	
 	public float futurePosition(float f, Point3d point3d)
 	{
-		pos.getAbs(point3d);
+		this.pos.getAbs(point3d);
 		return f <= 0.0F ? 0.0F : f;
 	}
 	
 	private void send_DeathCommand(Actor actor)
 	{
-		if (isNetMaster())
+		if (this.isNetMaster())
 		{
 			NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
 			try
 			{
 				netmsgguaranted.writeByte(68);
 				netmsgguaranted.writeNetObj(actor == null ? (ActorNet)null : actor.net);
-				net.post(netmsgguaranted);
+				this.net.post(netmsgguaranted);
 			}
 			catch (Exception exception)
 			{
@@ -607,14 +607,14 @@ public abstract class StationaryGeneric extends ActorHMesh implements MsgExplosi
 	
 	private void send_DeathRequest(Actor actor)
 	{
-		if (isNetMirror() && !(net.masterChannel() instanceof NetChannelInStream))
+		if (this.isNetMirror() && !(this.net.masterChannel() instanceof NetChannelInStream))
 		{
 			try
 			{
 				NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
 				netmsgguaranted.writeByte(100);
 				netmsgguaranted.writeNetObj(actor == null ? (ActorNet)null : actor.net);
-				net.postTo(net.masterChannel(), netmsgguaranted);
+				this.net.postTo(this.net.masterChannel(), netmsgguaranted);
 			}
 			catch (Exception exception)
 			{
@@ -627,19 +627,19 @@ public abstract class StationaryGeneric extends ActorHMesh implements MsgExplosi
 	public void createNetObject(NetChannel netchannel, int i)
 	{
 		if (netchannel == null)
-			net = new Master(this);
+			this.net = new Master(this);
 		else
-			net = new Mirror(this, netchannel, i);
+			this.net = new Mirror(this, netchannel, i);
 	}
 	
 	public void netFirstUpdate(NetChannel netchannel) throws IOException
 	{
 		NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
 		netmsgguaranted.writeByte(73);
-		if (dying == 0)
+		if (this.dying == 0)
 			netmsgguaranted.writeShort(0);
 		else
 			netmsgguaranted.writeShort(1);
-		net.postTo(netchannel, netmsgguaranted);
+		this.net.postTo(netchannel, netmsgguaranted);
 	}
 }
