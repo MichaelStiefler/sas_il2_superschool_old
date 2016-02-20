@@ -85,6 +85,9 @@ Included fixes:
 - I-16 SPB "Drone" picks up fuel from mothership until it reaches 100%: Fixed, will refuel up to initial mission start limit only
 - Enemy planes become available on player homebase not only after (belly/emergency) landing, but even if they crashed there: Fixed
 - On maps with more than 256 bridges, when a human player destroys a bridge with index 256 or bigger, another bridge with that index modulo 256 will be destroyed instead: Fixed
+- MDS/RRR: other players will only see one rocket being rearmed although you have (and see) all: Fixed
+- MDS/RRR: other players will not see any bomb/droptank/torpedo rearming at all: Fixed
+- MDS/RRR: other players will see an empty loadout when loadout options are changed: Fixed
 
 ********************
 

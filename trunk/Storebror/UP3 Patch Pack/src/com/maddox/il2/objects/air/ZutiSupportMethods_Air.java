@@ -6,13 +6,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.BulletEmitter;
+import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.ZutiSupportMethods_AI;
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.engine.Config;
+import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.GunGeneric;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.fm.AircraftState;
@@ -420,6 +422,20 @@ public class ZutiSupportMethods_Air
 	 */
 	public static boolean sendNetAircraftRearmOrdinance(Aircraft aircraft, int weaponsId, long amount, int[] bombsAmount)
 	{
+        // TODO: +++ RRR Bug hunting
+        String bombsArray = "";
+        if (bombsAmount == null) {
+            bombsArray = "null";
+        } else {
+            bombsArray = "{ ";
+            for (int bai=0; bai<bombsAmount.length; bai++) {
+                if (bai > 0) bombsArray += ", ";
+                bombsArray += bombsAmount[bai];
+            }
+            bombsArray += " }";
+        }
+        ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air sendNetAircraftRearmOrdinance(" + aircraft.getClass().getName() + ", " + weaponsId + ", " + amount + ", " + bombsArray + " )");
+        // --- RRR Bug hunting
 		if (!aircraft.isNet() || aircraft.net.countMirrors() == 0)
 			return false;
 		
@@ -430,8 +446,12 @@ public class ZutiSupportMethods_Air
             netMsgGuaranted.writeByte(91);
             netMsgGuaranted.writeInt(weaponsId);
             
-            if( bombsAmount == null )
+            if( bombsAmount == null ) {
             	netMsgGuaranted.writeLong(amount);
+                // TODO: +++ RRR Bug hunting
+                ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air sendNetAircraftRearmOrdinance netMsgGuaranted has no bombs array");
+                // --- RRR Bug hunting
+            }
             else
             {
             	netMsgGuaranted.writeInt(bombsAmount[0]);
@@ -440,9 +460,18 @@ public class ZutiSupportMethods_Air
             	netMsgGuaranted.writeInt(bombsAmount[3]);
             	netMsgGuaranted.writeInt(bombsAmount[4]);
             	netMsgGuaranted.writeInt(bombsAmount[5]);
+                // TODO: +++ RRR Bug hunting
+                ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air sendNetAircraftRearmOrdinance netMsgGuaranted has bombs array");
+                // --- RRR Bug hunting
             }
             	
+            // TODO: +++ RRR Bug hunting
+            ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air sendNetAircraftRearmOrdinance sending netMsgGuaranted");
+            // --- RRR Bug hunting
             aircraft.net.post(netMsgGuaranted);
+            // TODO: +++ RRR Bug hunting
+            ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air sendNetAircraftRearmOrdinance netMsgGuaranted sent");
+            // --- RRR Bug hunting
             //net.postTo(Main.cur().netServerParams.masterChannel(), netMsgGuaranted);
             return true;
         }
@@ -475,8 +504,11 @@ public class ZutiSupportMethods_Air
 					
 //					System.out.println("NetAircraft: received change loadout to >" + loadoutId + "< command!");
 					
-					if( Config.isUSE_RENDER() )
-					{
+					// TODO: +++ RRR Bug hunting					
+//					if( Config.isUSE_RENDER() ) // This if clause causes the net message not to populate across a dedicated server
+//					{
+                    // --- RRR Bug hunting
+					
 						//Clear all ammo
 						ZutiWeaponsManagement.unloadLoadedWeapons(aircraft);
 						//Clear old pylons
@@ -485,7 +517,11 @@ public class ZutiSupportMethods_Air
 						ZutiWeaponsManagement.preloadLoadOptions(aircraft, loadoutId, selectedLoadout );
 						
 						ZutiWeaponsManagement.changeLoadout(aircraft, selectedLoadout, false);
-					}
+						
+	                // TODO: +++ RRR Bug hunting                    
+//					}
+	                // --- RRR Bug hunting
+						
 					//Forward this message to remaining clients
 					ZutiSupportMethods_Air.sendNetAircraftLoadoutChange(aircraft, loadoutId, selectedLoadout);
 					return true;
@@ -493,25 +529,39 @@ public class ZutiSupportMethods_Air
 				case 91:
 				{
 					int weaponsId = netmsginput.readInt();
+                    // TODO: +++ RRR Bug hunting
+                    ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air processNetAircraftMirroredMessage(" + aircraft.getClass().getName() + ", 91, NetMsgInput), weaponsId = " + weaponsId);
+                    // --- RRR Bug hunting
 					
 //					System.out.println("NetAircraft: received reload weapons >" + weaponsId + "< command!");
 					long bulletsRockets = -1;
 					int[] bombs = null;
 					
-					if( Config.isUSE_RENDER() )
-					{
+                    // TODO: +++ RRR Bug hunting                    
+//					if( Config.isUSE_RENDER() ) // This if clause causes the net message not to populate across a dedicated server
+//					{
+                    // --- RRR Bug hunting
 						switch( weaponsId )
 						{
 							case 0:
 								bulletsRockets = netmsginput.readLong();
+			                    // TODO: +++ RRR Bug hunting
+			                    ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air processNetAircraftMirroredMessage bulletsRockets = " + bulletsRockets);
+			                    // --- RRR Bug hunting
 								ZutiWeaponsManagement.rearmMGs_Cannons(aircraft, bulletsRockets);
 								break;
 							case 1:
 								bulletsRockets = netmsginput.readLong();
+                                // TODO: +++ RRR Bug hunting
+                                ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air processNetAircraftMirroredMessage bulletsRockets = " + bulletsRockets);
+                                // --- RRR Bug hunting
 								ZutiWeaponsManagement.rearmRockets(aircraft, bulletsRockets);
 								break;
 							case 2:
-								bombs = new int[]{0,0,0,0,0,0,0};
+			                    // TODO: +++ RRR Bug hunting                    
+								// bombs = new int[]{0,0,0,0,0,0,0};
+                                bombs = new int[]{0,0,0,0,0,0}; // Good morning Zuti, index 0-5 is 6 elements, not 7.
+			                    // --- RRR Bug hunting
 								bombs[0] = netmsginput.readInt();
 								bombs[1] = netmsginput.readInt();
 								bombs[2] = netmsginput.readInt();
@@ -519,12 +569,42 @@ public class ZutiSupportMethods_Air
 								bombs[4] = netmsginput.readInt();
 								bombs[5] = netmsginput.readInt();
 								
-								ZutiWeaponsManagement.rearmBombsFTanksTorpedoes(aircraft, bombs);
+                                // TODO: +++ RRR Bug hunting
+						        String bombsArray = "";
+						        bombsArray = "{ ";
+		                        for (int bai=0; bai<bombs.length; bai++) {
+		                            if (bai > 0) bombsArray += ", ";
+		                            bombsArray += bombs[bai];
+		                        }
+						        bombsArray += " }";
+                                ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air processNetAircraftMirroredMessage bombs = " + bombsArray);
+//								ZutiWeaponsManagement.rearmBombsFTanksTorpedoes(aircraft, bombs);
+                                ZutiWeaponsManagement.rearmBombsFTanksTorpedoes(aircraft, (int[])bombs.clone()); // Objects like arrays are passed as reference, this would reduce the number of bombs to reload before the reload command is sent to other clients!
+                                // --- RRR Bug hunting
 								break;
 						}
-					}
+	                // TODO: +++ RRR Bug hunting                    
+//					}
+				    // --- RRR Bug hunting
 					//Forward this message to remaining clients
+                    // TODO: +++ RRR Bug hunting
+                    String bombsArray = "";
+                    if (bombs == null) {
+                        bombsArray = "null";
+                    } else {
+                        bombsArray = "{ ";
+                        for (int bai=0; bai<bombs.length; bai++) {
+                            if (bai > 0) bombsArray += ", ";
+                            bombsArray += bombs[bai];
+                        }
+                        bombsArray += " }";
+                    }
+                    ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air processNetAircraftMirroredMessage calling ZutiSupportMethods_Air.sendNetAircraftRearmOrdinance(" + aircraft.getClass().getName() + ", " + weaponsId + ", " +  bulletsRockets + ", " + bombsArray + ")");
+                    // --- RRR Bug hunting
 					ZutiSupportMethods_Air.sendNetAircraftRearmOrdinance(aircraft, weaponsId, bulletsRockets, bombs);
+                    // TODO: +++ RRR Bug hunting
+                    ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air processNetAircraftMirroredMessage ZutiSupportMethods_Air.sendNetAircraftRearmOrdinance called");
+                    // --- RRR Bug hunting
 					return true;
 				}
 			}
@@ -549,14 +629,14 @@ public class ZutiSupportMethods_Air
 		Orient o = new Orient();
 		
 		aircraft.pos.getAbs(p, o);
-        p.z = com.maddox.il2.engine.Engine.land().HQ(p.x, p.y) + (double)aircraft.FM.Gears.H;
+        p.z = Engine.land().HQ(p.x, p.y) + (double)aircraft.FM.Gears.H;
         o.increment(0.0F, -aircraft.FM.Gears.Pitch, 0.0F);
-        com.maddox.il2.engine.Engine.land().N(p.x, p.y, n);
+        Engine.land().N(p.x, p.y, n);
         o.orient(n);
         o.increment(0.0F, aircraft.FM.Gears.Pitch, 0.0F);
         
         long l = (long)((p.x % 2.2999999999999998D) * 221D + (p.y % 3.3999999999999999D) * 211D * 211D);
-        com.maddox.il2.ai.RangeRandom rangerandom = new com.maddox.il2.ai.RangeRandom(l);
+        RangeRandom rangerandom = new RangeRandom(l);
         p.z += rangerandom.nextFloat(0.1F, 0.4F);
         
         aircraft.pos.setAbs(p, o);

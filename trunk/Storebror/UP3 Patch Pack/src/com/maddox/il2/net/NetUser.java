@@ -100,10 +100,10 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
     public static final byte   MSG_PATCHLEVEL         = 101;
     public static final byte   MSG_SELECTOR_VERSION   = 102;
     public static final String MIN_PATCH_LEVEL        = "106";
-    public static final String PATCH_LEVEL            = "107b3";
+    public static final String PATCH_LEVEL            = "107b5";
     public static final String PATCH_LEVEL_TEST       = "102b1";
     public static String[]     PATCHLEVEL_G           = { "106v3", "106v2", "106" };
-    public static String[]     PATCHLEVEL_Y           = { "107b3", "107b2", "107b1", "105", "104", "103" };
+    public static String[]     PATCHLEVEL_Y           = { "107b5", "105", "104", "103" };
     private String             patchLevel             = "none";
     private String             selectorVersion        = "unknown";
     public static final long   UPDATE_CHAT_INTERVAL   = 60000L;
