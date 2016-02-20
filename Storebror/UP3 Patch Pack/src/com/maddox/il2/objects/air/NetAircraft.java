@@ -2732,7 +2732,16 @@ public abstract class NetAircraft extends SndAircraft {
     public boolean masterRocketReleasePending = false;
     public boolean masterBombReleasePending = false;
 
+    private static int debugLevel = Integer.MIN_VALUE;
+    private static final int DEBUG_DEFAULT = 1;
+    
+    private static int curDebugLevel() {
+        if (debugLevel == Integer.MIN_VALUE) debugLevel = Config.cur.ini.get("Mods", "DEBUG_NETAIRCRAFT", DEBUG_DEFAULT);
+        return debugLevel;
+    }
+    
     public static void printDebugMessage(Actor actor, String theMessage) {
+        if (curDebugLevel() == 0) return;
         if (!(actor instanceof NetAircraft)) return;
         NetAircraft netAircraft = (NetAircraft)actor;
         if (netAircraft.netUser() != null) {
@@ -2744,6 +2753,7 @@ public abstract class NetAircraft extends SndAircraft {
     }
     public static void printDebug(String message)
     {
+        if (curDebugLevel() == 0) return;
         Exception exception = new Exception(message);
         System.out.println(exception.getMessage());
         exception.printStackTrace();
@@ -2774,6 +2784,10 @@ public abstract class NetAircraft extends SndAircraft {
     public static boolean hasBullets(Actor actor, int trigger) {
         if (!(actor instanceof NetAircraft)) return false;
         NetAircraft netAircraft = (NetAircraft)actor;
+        // TODO: +++ RRR Bug hunting
+        if (netAircraft.FM.CT.Weapons == null) return false;
+        if (netAircraft.FM.CT.Weapons[trigger] == null) return false;
+        // --- RRR Bug hunting
         for (int wi = 0; wi<netAircraft.FM.CT.Weapons[trigger].length; wi++) {
             if (netAircraft.FM.CT.Weapons[trigger][wi].haveBullets()) {
                 return true;

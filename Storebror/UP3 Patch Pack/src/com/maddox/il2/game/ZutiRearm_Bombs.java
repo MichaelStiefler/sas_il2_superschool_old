@@ -3,6 +3,7 @@
 //***********************************
 package com.maddox.il2.game;
 
+import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.ZutiSupportMethods_AI;
 import com.maddox.il2.net.BornPlace;
@@ -29,18 +30,36 @@ public class ZutiRearm_Bombs
 		this.bombs = bombs;
 		this.playerAC = World.getPlayerAircraft();
 		this.bornPlace = ZutiSupportMethods.isPilotLandedOnBPWithOwnRRRSettings(playerAC.FM);
+        // TODO: +++ RRR Bug hunting
+        String bombsArray = "";
+        if (bombs == null) {
+            bombsArray = "null";
+        } else {
+            bombsArray = "{ ";
+            for (int i=0; i<bombs.length; i++) {
+                if (i > 0) bombsArray += ", ";
+                bombsArray += bombs[i];
+            }
+            bombsArray += " }";
+        }
+        ZutiWeaponsManagement.printDebugMessage(playerAC, "ZutiRearm_Bombs(" + rearmPenalty + ", bombs = " + bombsArray + ")");
+        // --- RRR Bug hunting
 		
 		if( playerAC.FM.CT.wingControl > 0 )
 		{
-			com.maddox.il2.game.HUD.log("mds.unfoldWings");
+			HUD.log("mds.unfoldWings");
 			return;
 		}
 	
 		calculateRearmingTimeConsumption(rearmPenalty);
 		
-		HUD.log( "mds.rearmingBombsTime", new java.lang.Object[]{new Integer(Math.round(bombsRearmTime))} );
+		HUD.log( "mds.rearmingBombsTime", new Object[]{new Integer(Math.round(bombsRearmTime))} );
 		
-		bombsRearmTime 		*= 1000;
+        // TODO: +++ RRR Bug hunting
+        ZutiWeaponsManagement.printDebugMessage(playerAC, "ZutiRearm_Bombs bombsRearmTime = " + bombsRearmTime);
+        // --- RRR Bug hunting
+
+        bombsRearmTime 		*= 1000;
 		startTime = Time.current();
 	}
 
@@ -60,13 +79,36 @@ public class ZutiRearm_Bombs
 		{		
 			if( bombsRearmTime > -1 && Time.current()-startTime > bombsRearmTime )
 			{
-				ZutiWeaponsManagement.rearmBombsFTanksTorpedoes(playerAC, this.bombs);
+                // TODO: +++ RRR Bug hunting
+                ZutiWeaponsManagement.printDebugMessage(playerAC, "ZutiRearm_Bombs updateTimer Checkpoint 1");
+//				ZutiWeaponsManagement.rearmBombsFTanksTorpedoes(playerAC, this.bombs);
+                ZutiWeaponsManagement.rearmBombsFTanksTorpedoes(playerAC, (int[])this.bombs.clone()); // Objects like arrays are passed as reference, this would reduce the number of bombs to reload before the reload command is sent to other clients!
+                ZutiWeaponsManagement.printDebugMessage(playerAC, "ZutiRearm_Bombs updateTimer Checkpoint 2");
+                // --- RRR Bug hunting
 
-				if( playerAC instanceof NetAircraft )
+                if( playerAC instanceof NetAircraft ) {
+                    // TODO: +++ RRR Bug hunting
+                    String bombsArray = "";
+                    if (bombs == null) {
+                        bombsArray = "null";
+                    } else {
+                        bombsArray = "{ ";
+                        for (int i=0; i<bombs.length; i++) {
+                            if (i > 0) bombsArray += ", ";
+                            bombsArray += bombs[i];
+                        }
+                        bombsArray += " }";
+                    }
+                    ZutiWeaponsManagement.printDebugMessage(playerAC, "ZutiRearm_Bombs sendNetAircraftRearmOrdinance(playerAC, 2, -1, " + bombsArray + ")");
+                    // --- RRR Bug hunting
 					ZutiSupportMethods_Air.sendNetAircraftRearmOrdinance(playerAC, 2, -1, this.bombs);
+                }
 				
 				String userData = ZutiSupportMethods.getAircraftCompleteName(World.getPlayerAircraft());
 				String userLocation = ZutiSupportMethods.getPlayerLocation();
+                // TODO: +++ RRR Bug hunting
+                ZutiWeaponsManagement.printDebugMessage(playerAC, "ZutiSupportMethods_NetSend.logMessage((NetUser)NetEnv.host(), " + userData + " rearmed bombs at " + userLocation + ")");
+                // --- RRR Bug hunting
 				ZutiSupportMethods_NetSend.logMessage((NetUser)NetEnv.host(), userData + " rearmed bombs at " + userLocation);
 				
 				bombsRearmTime = -1;
@@ -89,7 +131,7 @@ public class ZutiRearm_Bombs
 	private void calculateRearmingTimeConsumption(float rearmPenalty)
 	{
 		/*
-		com.maddox.il2.ai.BulletEmitter[][] weapons = World.getPlayerAircraft().FM.CT.Weapons;
+		BulletEmitter[][] weapons = World.getPlayerAircraft().FM.CT.Weapons;
 		Property bombsCount = null;
 		
 		for( int i=0; i<weapons.length; i++ )
@@ -145,7 +187,7 @@ public class ZutiRearm_Bombs
 	private int countLoadedBombs()
 	{
 		int counter = 0;
-		com.maddox.il2.ai.BulletEmitter[][] weapons = World.getPlayerAircraft().FM.CT.Weapons;
+		BulletEmitter[][] weapons = World.getPlayerAircraft().FM.CT.Weapons;
 		
 		for( int i=0; i<weapons.length; i++ )
 		{
@@ -172,7 +214,7 @@ public class ZutiRearm_Bombs
 		ZutiSupportMethods_NetSend.returnRRRResources_Bombs(this.bombs, playerAC.pos.getAbsPoint());
 		
 		int loadedBombs = countLoadedBombs();
-		HUD.log("mds.rearmingBombsDone", new java.lang.Object[]{new Integer(loadedBombs)} );
+		HUD.log("mds.rearmingBombsDone", new Object[]{new Integer(loadedBombs)} );
 		System.out.println("Bomb Rearming done! Loaded >" + loadedBombs +"< bombs.");
 	}
 	
@@ -181,7 +223,7 @@ public class ZutiRearm_Bombs
 		//Return unused bombs
 		ZutiSupportMethods_NetSend.returnRRRResources_Bombs(this.bombs, playerAC.pos.getAbsPoint());
 		
-		com.maddox.il2.game.HUD.log("mds.rearmingBombsAborted");
+		HUD.log("mds.rearmingBombsAborted");
 		System.out.println("Bomb Rearming aborted!!!");
 	}
 }

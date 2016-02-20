@@ -6,11 +6,14 @@ import java.util.List;
 import com.maddox.JGP.Point3d;
 import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.ai.Front;
+import com.maddox.il2.ai.ScoreCounter;
+import com.maddox.il2.ai.ScoreItem;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.ZutiTargetsSupportMethods;
 import com.maddox.il2.builder.ZutiSupportMethods_Builder;
 import com.maddox.il2.builder.Zuti_WResourcesManagement.RRRItem;
 import com.maddox.il2.engine.Actor;
+import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.GunGeneric;
 import com.maddox.il2.engine.ZutiSupportMethods_Engine;
 import com.maddox.il2.fm.FlightModel;
@@ -24,9 +27,13 @@ import com.maddox.il2.objects.air.CockpitGunner;
 import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.air.ZutiSupportMethods_Air;
 import com.maddox.il2.objects.weapons.BombGun;
+import com.maddox.il2.objects.weapons.Pylon;
 import com.maddox.il2.objects.weapons.RocketGun;
+import com.maddox.rts.Finger;
 import com.maddox.rts.NetEnv;
+import com.maddox.rts.ObjIO;
 import com.maddox.rts.Property;
+import com.maddox.util.HashMapInt;
 
 public class ZutiWeaponsManagement
 {
@@ -39,7 +46,7 @@ public class ZutiWeaponsManagement
 		//Destroy current weapons
 		destroyLoadedWeapons(aircraft);
 		//Reset current loadout
-		aircraft.FM.CT.Weapons = new com.maddox.il2.ai.BulletEmitter[20][];
+		aircraft.FM.CT.Weapons = new BulletEmitter[20][];
 		
 		System.out.println("Changing loadout to: " + selectedLoadout);
 		try
@@ -65,7 +72,7 @@ public class ZutiWeaponsManagement
 		
 		System.out.println("Loadout changed!");
 		if( showHUD )
-			com.maddox.il2.game.HUD.log("Loadout changed!");
+			HUD.log("Loadout changed!");
 		
 		String userData = ZutiSupportMethods.getAircraftCompleteName(World.getPlayerAircraft());
 		String userLocation = ZutiSupportMethods.getPlayerLocation();
@@ -74,6 +81,9 @@ public class ZutiWeaponsManagement
 	
 	private static void resetGunnersEmitters()
 	{
+        // TODO: +++ RRR Bug hunting
+	    if( !Config.isUSE_RENDER() ) return; // Dedicated Servers don't have no "Main3D", their "Main" Class is of type "DServer" hence there's no 3D Render, therefore no cockpits.
+        // --- RRR Bug hunting
 		for (int i = 0; i < Main3D.cur3D().cockpits.length; i++)
 		{
 			if (Main3D.cur3D().cockpits[i] instanceof CockpitGunner)
@@ -85,10 +95,13 @@ public class ZutiWeaponsManagement
 	
 	public static void unloadLoadedWeapons(Aircraft aircraft)
 	{
-		com.maddox.il2.ai.BulletEmitter[][] weapons = aircraft.FM.CT.Weapons;
+		BulletEmitter[][] weapons = aircraft.FM.CT.Weapons;
 		
 		for( int i=0; i<weapons.length; i++ )
 		{
+            // TODO: +++ RRR Bug hunting
+            if (weapons[i] == null) continue;
+            // --- RRR Bug hunting
 			try
 			{
 				for( int j=0; j<weapons[i].length; j++ )
@@ -111,12 +124,15 @@ public class ZutiWeaponsManagement
 	
 	public static void destroyLoadedWeapons(Aircraft aircraft)
 	{
-		com.maddox.il2.ai.BulletEmitter[][] weapons = aircraft.FM.CT.Weapons;
+		BulletEmitter[][] weapons = aircraft.FM.CT.Weapons;
 		
 		for( int i=0; i<weapons.length; i++ )
 		{
 			try
 			{
+	            // TODO: +++ RRR Bug hunting
+	            if (weapons[i] == null) continue;
+	            // --- RRR Bug hunting
 				for( int j=0; j<weapons[i].length; j++ )
 				{
 					if( weapons[i][j] instanceof GunGeneric )
@@ -139,7 +155,7 @@ public class ZutiWeaponsManagement
     {
 		//System.out.println("NetAircraft - " + ac.toString());
 		
-        java.lang.Object aobj[] = aircraft.pos.getBaseAttached();
+        Object aobj[] = aircraft.pos.getBaseAttached();
         if(aobj == null)
 		{
 			//System.out.println("NetAircraft - no pylons to remove!");
@@ -153,11 +169,11 @@ public class ZutiWeaponsManagement
 			Object object = (Object)aobj[i];
 			//System.out.println("NetAircraft - " + o);
 			
-			if(object instanceof com.maddox.il2.objects.weapons.Pylon)
+			if(object instanceof Pylon)
             {
 				try
 				{
-					((com.maddox.il2.objects.weapons.Pylon)object).destroy();
+					((Pylon)object).destroy();
 					//System.out.println("NetAircraft - removed bomb pylon");
 					//ac.hierMesh().chunkVisible("Rack_D0", false);
 				}
@@ -183,25 +199,25 @@ public class ZutiWeaponsManagement
 	
 	private static void prepareWeapons(Aircraft aircraft, String loadoutName)
 	{
-		java.lang.Class class1 = aircraft.getClass();
-        com.maddox.util.HashMapInt hashmapint = com.maddox.il2.objects.air.Aircraft.weaponsMapProperty(class1);		
-		int weaponId = com.maddox.rts.Finger.Int(loadoutName);
+		Class class1 = aircraft.getClass();
+        HashMapInt hashmapint = Aircraft.weaponsMapProperty(class1);		
+		int weaponId = Finger.Int(loadoutName);
 		
 		if(!hashmapint.containsKey(weaponId))
         {
-            System.out.println("Weapon set '" + loadoutName + "' not registered in " + com.maddox.rts.ObjIO.classGetName(class1));
+            System.out.println("Weapon set '" + loadoutName + "' not registered in " + ObjIO.classGetName(class1));
 			return;
         }
 		
 		_WeaponSlot a_lweaponslot[] = (_WeaponSlot[])(_WeaponSlot[])hashmapint.get(weaponId);
-		java.lang.String as[] = com.maddox.il2.objects.air.Aircraft.getWeaponHooksRegistered(aircraft.getClass());
+		String as[] = Aircraft.getWeaponHooksRegistered(aircraft.getClass());
 		
 		for (int j = 0; j < as.length; j++)
 		{
 			if (as[j] != null && a_lweaponslot[j] != null)
 			{
 				Class class2 = a_lweaponslot[j].clazz;
-				if (!(com.maddox.il2.objects.weapons.BombGun.class).isAssignableFrom(class2) || Property.containsValue(class2, "external"))
+				if (!(BombGun.class).isAssignableFrom(class2) || Property.containsValue(class2, "external"))
 				{
 					String s = Property.stringValue(class2, "mesh", null);
 					if (s == null)
@@ -230,16 +246,42 @@ public class ZutiWeaponsManagement
 	 */
 	public static void rearmBombsFTanksTorpedoes(Aircraft aircraft, int[] bombs)
 	{
-		if( aircraft == null )
+		if( aircraft == null ) {
+	        // TODO: +++ RRR Bug hunting
+	        ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiWeaponsManagement rearmBombsFTanksTorpedoes aircraft = null!");
+	        // --- RRR Bug hunting
 			return;
+		}
 		
+        // TODO: +++ RRR Bug hunting
+        String bombsArray = "";
+        if (bombs == null) {
+            bombsArray = "null";
+        } else {
+            bombsArray = "{ ";
+            for (int i=0; i<bombs.length; i++) {
+                if (i > 0) bombsArray += ", ";
+                bombsArray += bombs[i];
+            }
+            bombsArray += " }";
+        }
+        ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiWeaponsManagement rearmBombsFTanksTorpedoes(" + aircraft.getClass().getName() + ", " + bombsArray + ")");
+        // --- RRR Bug hunting
+        
 		BulletEmitter[][] weapons = aircraft.FM.CT.Weapons;
 		Property bulletCount = null;
 		
+        // TODO: +++ RRR Bug hunting
+        ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiWeaponsManagement weapons.length = " + weapons.length);
+        // --- RRR Bug hunting
 		for( int i=0; i<weapons.length; i++ )
 		{
-			if( weapons[i] == null )
+			if( weapons[i] == null ) {
+		        // TODO: +++ RRR Bug hunting
+		        ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiWeaponsManagement weapons[" + i + "] == null!");
+		        // --- RRR Bug hunting
 				continue;
+			}
 			
 			try
 			{
@@ -254,6 +296,9 @@ public class ZutiWeaponsManagement
 						float weaponPower = Property.floatValue(weaponClass, "power", -1F);
 						
 						bulletCount = Property.get(weapons[i][j], "_count");
+				        // TODO: +++ RRR Bug hunting
+				        ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiWeaponsManagement unloading BombGun weapons[" + i + "][" + j + "] is BombGun, className="+ className + ", weaponClass=" + weaponClass.getName() + ", weaponPower="+ weaponPower + ", bulletCount=" + bulletCount);
+				        // --- RRR Bug hunting
 						((BombGun)weapons[i][j]).loadBullets(0);
 						int loadBombs = 0;
 						if( bulletCount != null && bulletCount.intValue() > 0 )
@@ -261,6 +306,21 @@ public class ZutiWeaponsManagement
 						else
 							loadBombs = 1;
 						
+                        // TODO: +++ RRR Bug hunting
+                        ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiWeaponsManagement weapons[" + i + "][" + j + "] is BombGun, className="+ className + ", weaponClass=" + weaponClass.getName() + ", weaponPower=" + weaponPower + ", bulletCount=" + bulletCount + ", loadBombs=" + loadBombs);
+                        bombsArray = "";
+                        if (bombs == null) {
+                            bombsArray = "null";
+                        } else {
+                            bombsArray = "{ ";
+                            for (int bai=0; bai<bombs.length; bai++) {
+                                if (bai > 0) bombsArray += ", ";
+                                bombsArray += bombs[bai];
+                            }
+                            bombsArray += " }";
+                        }
+                        ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiWeaponsManagement current bombsArray = " + bombsArray + ")");
+                        // --- RRR Bug hunting
 						if( weaponPower <= 250F )
 						{
 							if( loadBombs >= bombs[0] )
@@ -324,7 +384,13 @@ public class ZutiWeaponsManagement
 								bombs[5] -= loadBombs;
 						}
 						
+                        // TODO: +++ RRR Bug hunting
+                        ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiWeaponsManagement loading BombGun weapons[" + i + "][" + j + "], className="+ className + ", weaponClass=" + weaponClass.getName() + " with " + loadBombs + " bullets!");
+                        // --- RRR Bug hunting
 						((BombGun)weapons[i][j]).loadBullets((int)loadBombs);
+                        // TODO: +++ RRR Bug hunting
+                        ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiWeaponsManagement BombGun weapons[" + i + "][" + j + "], className="+ className + ", weaponClass=" + weaponClass.getName() + " loaded with " + loadBombs + " bombs!");
+                        // --- RRR Bug hunting
 					}
 				}
 			}
@@ -498,16 +564,16 @@ public class ZutiWeaponsManagement
 		{
 			if( altitude < Mission.MDS_VARIABLES().zutiDrop_MinHeight || altitude > Mission.MDS_VARIABLES().zutiDrop_MaxHeight )
 			{
-				com.maddox.il2.game.HUD.log("mds.dropWrongAltitude");
+				HUD.log("mds.dropWrongAltitude");
 				return;
 			}
 			
 			try
 			{
-				com.maddox.il2.ai.ScoreCounter scorecounter = com.maddox.il2.ai.World.cur().scoreCounter;
+				ScoreCounter scorecounter = World.cur().scoreCounter;
 				//8=StaticAir, 500=points
-				scorecounter.enemyItems.add(new com.maddox.il2.ai.ScoreItem(8, 500 ));
-				com.maddox.il2.game.HUD.log("mds.dropPoints");
+				scorecounter.enemyItems.add(new ScoreItem(8, 500 ));
+				HUD.log("mds.dropPoints");
 				
 				ZUTI_PROCESS_CARGO_DROPS = false;
 			}
@@ -1281,7 +1347,16 @@ public class ZutiWeaponsManagement
 	}
 	
     // TODO: +++ RRR Bug hunting
+	private static int debugLevel = Integer.MIN_VALUE;
+    private static final int DEBUG_DEFAULT = 1;
+	
+	private static int curDebugLevel() {
+	    if (debugLevel == Integer.MIN_VALUE) debugLevel = Config.cur.ini.get("Mods", "DEBUG_RRR", DEBUG_DEFAULT);
+	    return debugLevel;
+	}
+	
     public static void printDebugMessage(Actor actor, String theMessage) {
+        if (curDebugLevel() == 0) return;
         if (!(actor instanceof NetAircraft)) return;
         NetAircraft netAircraft = (NetAircraft)actor;
         if (netAircraft.netUser() != null) {
@@ -1293,6 +1368,7 @@ public class ZutiWeaponsManagement
     }
     public static void printDebug(String message)
     {
+        if (curDebugLevel() == 0) return;
         Exception exception = new Exception(message);
         System.out.println(exception.getMessage());
         exception.printStackTrace();

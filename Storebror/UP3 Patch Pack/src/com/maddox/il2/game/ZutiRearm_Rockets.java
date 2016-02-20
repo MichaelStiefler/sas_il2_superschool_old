@@ -3,6 +3,7 @@
 //***********************************
 package com.maddox.il2.game;
 
+import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.ZutiSupportMethods_AI;
 import com.maddox.il2.net.BornPlace;
@@ -29,18 +30,25 @@ public class ZutiRearm_Rockets
 		this.rockets = rockets;
 		this.playerAC = World.getPlayerAircraft();
 		this.bornPlace = ZutiSupportMethods.isPilotLandedOnBPWithOwnRRRSettings(playerAC.FM);
+        // TODO: +++ RRR Bug hunting
+		ZutiWeaponsManagement.printDebugMessage(playerAC, "ZutiRearm_Rockets(" + rearmPenalty + ", " + rockets + ")");
+        // --- RRR Bug hunting
 		
 		if( playerAC.FM.CT.wingControl > 0 )
 		{
-			com.maddox.il2.game.HUD.log("mds.unfoldWings");
+			HUD.log("mds.unfoldWings");
 			return;
 		}
 	
 		calculateRearmingTimeConsumption(rearmPenalty);
 		
-		HUD.log( "mds.rearmingRocketsTime", new java.lang.Object[]{new Integer(Math.round(rocketsRearmTime))} );
+		HUD.log( "mds.rearmingRocketsTime", new Object[]{new Integer(Math.round(rocketsRearmTime))} );
 		
-		rocketsRearmTime *= 1000;
+        // TODO: +++ RRR Bug hunting
+        ZutiWeaponsManagement.printDebugMessage(playerAC, "ZutiRearm_Rockets rocketsRearmTime = " + rocketsRearmTime);
+        // --- RRR Bug hunting
+
+        rocketsRearmTime *= 1000;
 		
 		startTime = Time.current();
 	}
@@ -61,13 +69,26 @@ public class ZutiRearm_Rockets
 		{		
 			if( rocketsRearmTime > -1 && Time.current()-startTime > rocketsRearmTime )
 			{
+		        // TODO: +++ RRR Bug hunting
+		        ZutiWeaponsManagement.printDebugMessage(playerAC, "ZutiRearm_Rockets updateTimer Checkpoint 1");
+		        // --- RRR Bug hunting
 				ZutiWeaponsManagement.rearmRockets(playerAC, this.rockets);
 				
-				if( playerAC instanceof NetAircraft )
+		        // TODO: +++ RRR Bug hunting
+                ZutiWeaponsManagement.printDebugMessage(playerAC, "ZutiRearm_Rockets updateTimer Checkpoint 2");
+                // --- RRR Bug hunting
+				if( playerAC instanceof NetAircraft ) {
+			        // TODO: +++ RRR Bug hunting
+	                ZutiWeaponsManagement.printDebugMessage(playerAC, "ZutiRearm_Rockets sendNetAircraftRearmOrdinance(playerAC, 1, " + this.rockets + ", null)");
+	                // --- RRR Bug hunting
 					ZutiSupportMethods_Air.sendNetAircraftRearmOrdinance(playerAC, 1, this.rockets, null);
+				}
 				
 				String userData = ZutiSupportMethods.getAircraftCompleteName(World.getPlayerAircraft());
 				String userLocation = ZutiSupportMethods.getPlayerLocation();
+		        // TODO: +++ RRR Bug hunting
+                ZutiWeaponsManagement.printDebugMessage(playerAC, "ZutiSupportMethods_NetSend.logMessage((NetUser)NetEnv.host(), " + userData + " rearmed rockets at " + userLocation + ")");
+                // --- RRR Bug hunting
 				ZutiSupportMethods_NetSend.logMessage((NetUser)NetEnv.host(), userData + " rearmed rockets at " + userLocation);
 				
 				rocketsRearmTime = -1;
@@ -90,7 +111,7 @@ public class ZutiRearm_Rockets
 	private void calculateRearmingTimeConsumption(float rearmPenalty)
 	{
 		/*
-		com.maddox.il2.ai.BulletEmitter[][] weapons = World.getPlayerAircraft().FM.CT.Weapons;
+		BulletEmitter[][] weapons = World.getPlayerAircraft().FM.CT.Weapons;
 		
 		for( int i=0; i<weapons.length; i++ )
 		{
@@ -129,7 +150,7 @@ public class ZutiRearm_Rockets
 	private int countLoadedRockets()
 	{
 		int counter = 0;
-		com.maddox.il2.ai.BulletEmitter[][] weapons = World.getPlayerAircraft().FM.CT.Weapons;
+		BulletEmitter[][] weapons = World.getPlayerAircraft().FM.CT.Weapons;
 		
 		for( int i=0; i<weapons.length; i++ )
 		{
@@ -153,7 +174,7 @@ public class ZutiRearm_Rockets
 	private void stopTimer()
 	{
 		int loadedRockets = countLoadedRockets();
-		HUD.log("mds.rearmingRocketsDone", new java.lang.Object[]{new Integer(loadedRockets)} );
+		HUD.log("mds.rearmingRocketsDone", new Object[]{new Integer(loadedRockets)} );
 		System.out.println("Rearming done! Loaded >" + loadedRockets +"< rockets.");
 	}
 	
@@ -162,7 +183,7 @@ public class ZutiRearm_Rockets
 		//Return unused fuel
 		ZutiSupportMethods_NetSend.returnRRRResources_Rockets(this.rockets, playerAC.pos.getAbsPoint());
 		
-		com.maddox.il2.game.HUD.log("mds.rearmingRocketsAborted");
+		HUD.log("mds.rearmingRocketsAborted");
 		System.out.println("Rearming aborted!!!");
 	}
 }
