@@ -562,6 +562,8 @@ public abstract class Plane {
 
     public static class SWORDFISH extends PlaneGeneric {}
 
+    public static class Swordfish1 extends PlaneGeneric {}
+
     public static class RE_2002 extends PlaneGeneric {}
 
     public static class R_5 extends PlaneGeneric {}
@@ -1823,6 +1825,7 @@ public abstract class Plane {
         new PlaneGeneric.SPAWN(R_5.class);
         new PlaneGeneric.SPAWN(RE_2002.class);
         new PlaneGeneric.SPAWN(SWORDFISH.class);
+        new PlaneGeneric.SPAWN(Swordfish1.class);
         new PlaneGeneric.SPAWN(P_47D.class);
         new PlaneGeneric.SPAWN(SPITFIRE5B12LBS.class);
         new PlaneGeneric.SPAWN(SPITFIRE5B16LBS.class);

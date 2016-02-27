@@ -13,7 +13,6 @@ import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.objects.bridges.BridgeSegment;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -765,7 +764,7 @@ public abstract class Swordfish extends Scheme1 implements TypeBomber, TypeStorm
     boolean         bObserverKilled;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = Swordfish.class;
         Property.set(class1, "originCountry", PaintScheme.countryBritain);
     }
 }

@@ -1348,7 +1348,7 @@ public class ZutiWeaponsManagement
 	
     // TODO: +++ RRR Bug hunting
 	private static int debugLevel = Integer.MIN_VALUE;
-    private static final int DEBUG_DEFAULT = 1;
+    private static final int DEBUG_DEFAULT = 0;
 	
 	private static int curDebugLevel() {
 	    if (debugLevel == Integer.MIN_VALUE) debugLevel = Config.cur.ini.get("Mods", "DEBUG_RRR", DEBUG_DEFAULT);

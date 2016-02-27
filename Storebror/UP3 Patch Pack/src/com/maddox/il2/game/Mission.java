@@ -1031,7 +1031,7 @@ public class Mission implements Destroy
 		{
 			MDS_VARIABLES().loadVariables(sectfile);
 			// Load additional airfields/rearm places that mission maker set up
-			System.out.println("Loading mission.mis defined airfields:");
+			System.out.println("Loading mission.mis defined airfields...");
 			if (ZutiSupportMethods_Engine.AIRFIELDS != null)
 				ZutiSupportMethods_Engine.AIRFIELDS.clear();
 			else

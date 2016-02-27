@@ -33,6 +33,7 @@ import com.maddox.il2.builder.Zuti_WResourcesManagement.RRRItem;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorSpawn;
 import com.maddox.il2.engine.ActorSpawnArg;
+import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.Loc;
 import com.maddox.il2.engine.Orient;
@@ -1520,9 +1521,9 @@ public class ZutiSupportMethods_Builder
 			if( merge )
 			{
 				//Add found points to existing ones
-				System.out.println("ZutiSupportMethods_Builder - stay points before merge: " + World.cur().airdrome.stay.length);
+				printDebugMessage("ZutiSupportMethods_Builder - stay points before merge: " + World.cur().airdrome.stay.length);
 				World.cur().airdrome.stay = ZutiSupportMethods.mergeArrays(World.cur().airdrome.stay, points);
-				System.out.println("ZutiSupportMethods_Builder - stay points after merge: " + World.cur().airdrome.stay.length);
+				printDebugMessage("ZutiSupportMethods_Builder - stay points after merge: " + World.cur().airdrome.stay.length);
 			}
 		}
 		
@@ -4999,4 +5000,18 @@ public class ZutiSupportMethods_Builder
 		
 		return null;
 	}
+	
+    private static int debugLevel = Integer.MIN_VALUE;
+    private static final int DEBUG_DEFAULT = 0;
+    
+    private static int curDebugLevel() {
+        if (debugLevel == Integer.MIN_VALUE) debugLevel = Config.cur.ini.get("Mods", "DEBUG_ZSM_BUILDER", DEBUG_DEFAULT);
+        return debugLevel;
+    }
+    
+    public static void printDebugMessage(String theMessage) {
+        if (curDebugLevel() == 0) return;
+        System.out.println(theMessage);
+    }
+
 }

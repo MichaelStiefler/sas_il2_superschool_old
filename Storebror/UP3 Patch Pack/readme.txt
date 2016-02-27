@@ -1,4 +1,4 @@
-UP3 RC4 Patch Pack v1.06 v2
+UP3 RC4 Patch Pack v1.07 RC1
 
 Contents:
 - All fixes listed below
@@ -31,6 +31,7 @@ Included feature enhancements:
   Random Explosion Radii get replicated over the net, so that everyone sees what you see
   (and your NTRK playbacks always look the same like original as well)
 - AI Gunners are slightly better again when being on Veteran or Ace level
+- Enhanced Cheater protection
 
 (*) To activate the Stabilizers for all Aircraft ("Stabs4All"), add the following entry
     to your conf.ini file:
@@ -89,18 +90,35 @@ Included fixes:
 - MDS/RRR: other players will not see any bomb/droptank/torpedo rearming at all: Fixed
 - MDS/RRR: other players will see an empty loadout when loadout options are changed: Fixed
 
+Additionally implemented Debugging Switches:
+You can adjust log.lst debugging by setting the following values in the conf.ini [Mods] section:
+
+DEBUG_ZSM_BUILDER=<0/1>    ZutiSupportMethods_Builder enhanced debugging, default=0, 0=disable, 1=enable
+DEBUG_ZSM_RESM=<0/1>       ZutiSupportMethods_ResourcesManagement enhanced debugging, default=0, 0=disable, 1=enable
+DEBUG_ZSM=<0/1>            ZutiSupportMethods enhanced debugging, default=0, 0=disable, 1=enable
+DEBUG_RRR=<0/1>            Repair, Refuel and Rearm enhanced debugging, default=0, 0=disable, 1=enable
+DEBUG_ZSM_NET=<0/1>        ZutiSupportMethods_Net enhanced debugging, default=0, 0=disable, 1=enable
+DEBUG_ZSM_NETRECEIVE=<0/1> ZutiSupportMethods_NetReceive enhanced debugging, default=0, 0=disable, 1=enable
+DEBUG_NETAIRCRAFT=<0/1>    NetAircraft enhanced debugging, default=0, 0=disable, 1=enable
+DEBUG_HOUSE=<0/1>          House enhanced debugging, default=0, 0=disable, 1=enable
+DEBUG_HIERMESH=<0-3>       HierMesh enhanced debugging, default=0, 0=disable, 1=enable, 2=enable detailed error report, 3=extremely detailed (handle with care!)
+DEBUG_USER=<0/1>           User enhanced debugging, default=0, 0=disable, 1=enable
+DEBUG_TORPEDO=<0/1>        Torpedo enhanced debugging, default=0, 0=disable, 1=enable
+DEBUG_ZSM_GAMEORDER=<0/1>  ZutiSupportMethods_GameOrder enhanced debugging, default=0, 0=disable, 1=enable
+DEBUG_ZSM_ENGINE=<0/1>     ZutiSupportMethods_Engine enhanced debugging, default=0, 0=disable, 1=enable
+
 ********************
 
 Installation:
 1.) Run JSGME.exe from your UP3 RC4 game folder and disable any of the following previously installed mods(packs), if applicable:
     * Any old Hotfix Pack (* see below)
-    * Any old Patch Pack (e.g. "#UP#_Patch_Pack_105")
+    * Any old Patch Pack (e.g. "#UP#_Patch_Pack_106_v3")
     * UP3 RC4 without obfuscation ("#UP#_Unobfuscated_MDS_for_UP3"), because this is integrated in this patch pack already
 2.) Check your enabled JSGME Mods, now there should only be:
     * #UP#_Enable_UP.3.0
     * Additional JSGME Mods not related to Fixes, Patches, unobfuscated UP etc.
 3.) Extract this Patch Pack to your UP3 RC4 game folder
-4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_106")
+4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_107_RC1")
 
 ********************
 

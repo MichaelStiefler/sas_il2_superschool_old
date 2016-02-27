@@ -622,7 +622,7 @@ public class ZutiSupportMethods_NetReceive
 				nextAcToken = acTokenizer.nextToken();
 				try
 				{
-					System.out.println("Parsing: " + nextAcToken);
+				    printDebugMessage("Parsing: " + nextAcToken);
 					acPropertiesTokenizer = new StringTokenizer(nextAcToken, " ");
 					selectedLoadouts.clear();
 					zac = new ZutiAircraft();
@@ -1515,5 +1515,16 @@ public class ZutiSupportMethods_NetReceive
 		System.out.println("ZutiNetReceiveMethods - frontRefresh data received! Total markers in the list: " + Front.markers().size());
 	}
 
-
+    private static int debugLevel = Integer.MIN_VALUE;
+    private static final int DEBUG_DEFAULT = 0;
+    
+    private static int curDebugLevel() {
+        if (debugLevel == Integer.MIN_VALUE) debugLevel = Config.cur.ini.get("Mods", "DEBUG_ZSM_NETRECEIVE", DEBUG_DEFAULT);
+        return debugLevel;
+    }
+    
+    public static void printDebugMessage(String theMessage) {
+        if (curDebugLevel() == 0) return;
+        System.out.println(theMessage);
+    }
 }

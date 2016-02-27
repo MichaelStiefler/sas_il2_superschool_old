@@ -3,6 +3,7 @@ package com.maddox.il2.game.order;
 import com.maddox.JGP.Point3d;
 import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.builder.ZutiSupportMethods_Builder;
+import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.GunGeneric;
 import com.maddox.il2.game.ZutiRearm_Cannons;
 import com.maddox.il2.game.ZutiWeaponsManagement;
@@ -149,7 +150,7 @@ public class ZutiSupportMethods_GameOrder
 	 */
 	public static float calculateFuelToRefuel(Aircraft aircraft, boolean full)
 	{
-		System.out.println("ZSP_GameOrder: maxFuel="  + aircraft.FM.M.maxFuel + ", currentFuel=" + aircraft.FM.M.fuel + ", requestingFullTank=" + full);
+		printDebugMessage("ZSP_GameOrder: maxFuel="  + aircraft.FM.M.maxFuel + ", currentFuel=" + aircraft.FM.M.fuel + ", requestingFullTank=" + full);
 		Point3d pos = aircraft.pos.getAbsPoint();
 		
 		//This is the fuel amount that plane had when it spawned
@@ -280,15 +281,15 @@ public class ZutiSupportMethods_GameOrder
 			catch(Exception ex){ex.printStackTrace();}
 		}
 		
-		System.out.println("===========================================");
-		System.out.println("  Requesting Bombs by weight: ");
-		System.out.println("   	 250kg: " + categories[0]);
-		System.out.println("   	 500kg: " + categories[1]);
-		System.out.println("   	1000kg: " + categories[2]);
-		System.out.println("   	2000kg: " + categories[3]);
-		System.out.println("   	5000kg: " + categories[4]);
-		System.out.println("   	  more: " + categories[5]);
-		System.out.println("===========================================");
+		printDebugMessage("===========================================");
+		printDebugMessage("  Requesting Bombs by weight: ");
+		printDebugMessage("   	 250kg: " + categories[0]);
+		printDebugMessage("   	 500kg: " + categories[1]);
+		printDebugMessage("   	1000kg: " + categories[2]);
+		printDebugMessage("   	2000kg: " + categories[3]);
+		printDebugMessage("   	5000kg: " + categories[4]);
+		printDebugMessage("   	  more: " + categories[5]);
+		printDebugMessage("===========================================");
 		return categories;
 	}
 	
@@ -363,11 +364,23 @@ public class ZutiSupportMethods_GameOrder
 			catch(Exception ex){ex.printStackTrace();}
 		}
 		
-		System.out.println("===========================================");
-		System.out.println("  Requesting Cargo: " + cargo);
-		System.out.println("===========================================");
+		printDebugMessage("===========================================");
+		printDebugMessage("  Requesting Cargo: " + cargo);
+		printDebugMessage("===========================================");
 		
 		return cargo;
 	}
 
+    private static int debugLevel = Integer.MIN_VALUE;
+    private static final int DEBUG_DEFAULT = 0;
+    
+    private static int curDebugLevel() {
+        if (debugLevel == Integer.MIN_VALUE) debugLevel = Config.cur.ini.get("Mods", "DEBUG_ZSM_GAMEORDER", DEBUG_DEFAULT);
+        return debugLevel;
+    }
+    
+    public static void printDebugMessage(String theMessage) {
+        if (curDebugLevel() == 0) return;
+        System.out.println(theMessage);
+    }
 }

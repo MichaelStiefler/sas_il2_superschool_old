@@ -11,6 +11,7 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.AirGroup;
 import com.maddox.il2.ai.air.AirGroupList;
 import com.maddox.il2.ai.air.Point_Stay;
+import com.maddox.il2.engine.Config;
 import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Mission;
 import com.maddox.il2.game.ZutiAircraft;
@@ -94,9 +95,9 @@ public class ZutiSupportMethods_Net {
             }
         }
 
-        System.out.println("ZSM_N - Number of spawn places: " + World.cur().airdrome.stay.length);
-        System.out.println("ZSM_N - BornPlace x=" + (int) bp.place.x + ", y=" + (int) bp.place.y + ", startIndex=" + bp.zutiStayPointStartIndex + ", endIndex=" + bp.zutiStayPointEndIndex);
-        System.out.println("======================================");
+        printDebugMessage("ZSM_N - Number of spawn places: " + World.cur().airdrome.stay.length);
+        printDebugMessage("ZSM_N - BornPlace x=" + (int) bp.place.x + ", y=" + (int) bp.place.y + ", startIndex=" + bp.zutiStayPointStartIndex + ", endIndex=" + bp.zutiStayPointEndIndex);
+        printDebugMessage("======================================");
     }
 
     /**
@@ -173,7 +174,7 @@ public class ZutiSupportMethods_Net {
                     // If aircraft is available, return it and decrease it's number at specified home base.
                     if (zac.isAvailable(bp)) {
                         zac.decreaseNumberOfAircraft(bp);
-                        System.out.println("  Available!");
+//                        System.out.println("  Available!");
                         return zac;
                     }
                 }
@@ -373,7 +374,10 @@ public class ZutiSupportMethods_Net {
             if (zac.isAvailable(bp)) {
                 bp.airNames.add(zac.getAcName());
 
-                System.out.println("  " + zac.getAcName());
+                // TODO: Patch Pack 107, show number of planes available!
+//                System.out.println("  " + zac.getAcName());
+                System.out.println("  " + zac.getAcName() + "(" + zac.getNumberOfAIrcraft() + ")");
+                // ---
             }
         }
         System.out.println("==============================");
@@ -392,17 +396,17 @@ public class ZutiSupportMethods_Net {
 
         ZutiAircraft zac = null;
 
-        System.out.println("Setting AC list for home base >" + (int) bp.place.x + "," + (int) bp.place.y + "<:");
+        printDebugMessage("Setting AC list for home base >" + (int) bp.place.x + "," + (int) bp.place.y + "<:");
         for (int i = 0; i < zutiAircraft.size(); i++) {
             zac = (ZutiAircraft) zutiAircraft.get(i);
             if (bp.zutiAircraft.contains(zac))
                 bp.zutiAircraft.remove(zac);
 
             bp.zutiAircraft.add(zac);
-            System.out.println("  Updated status for aircraft >" + zac.getAcName() + "<");
+            printDebugMessage("  Updated status for aircraft >" + zac.getAcName() + "<");
         }
-        System.out.println("  Total AC: " + bp.zutiAircraft.size());
-        System.out.println("==========================");
+        printDebugMessage("  Total AC: " + bp.zutiAircraft.size());
+        printDebugMessage("==========================");
     }
 
     /**
@@ -1039,5 +1043,17 @@ public class ZutiSupportMethods_Net {
             return true;
 
         return false;
+    }
+    private static int debugLevel = Integer.MIN_VALUE;
+    private static final int DEBUG_DEFAULT = 0;
+    
+    private static int curDebugLevel() {
+        if (debugLevel == Integer.MIN_VALUE) debugLevel = Config.cur.ini.get("Mods", "DEBUG_ZSM_NET", DEBUG_DEFAULT);
+        return debugLevel;
+    }
+    
+    public static void printDebugMessage(String theMessage) {
+        if (curDebugLevel() == 0) return;
+        System.out.println(theMessage);
     }
 }

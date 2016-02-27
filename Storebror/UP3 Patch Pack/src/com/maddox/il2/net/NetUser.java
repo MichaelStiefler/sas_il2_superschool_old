@@ -25,6 +25,7 @@ import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.game.Mission;
 import com.maddox.il2.game.Selector;
+import com.maddox.il2.game.ZutiAircraftCrewManagement;
 import com.maddox.il2.game.ZutiSupportMethods;
 import com.maddox.il2.game.order.OrdersTree;
 import com.maddox.il2.gui.GUIAirArming;
@@ -95,15 +96,27 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
     public static final int MSG_DOT_RANGE_FOE      = 30;
     public static final int MSG_EVENTLOG           = 31;
     public static final int MSG_NOISEART           = 32;
+    
+    // TODO: Storebror: Track Users hitting refly where this shouldn't be possible
+    private long lastSuspiciousPreRefly = 0L;
+
+    public long getLastSuspiciousPreRefly() {
+        return lastSuspiciousPreRefly;
+    }
+
+    public void setLastSuspiciousPreRefly(long lastSuspiciousPreRefly) {
+        this.lastSuspiciousPreRefly = lastSuspiciousPreRefly;
+    }
+    // ---
 
     // TODO: Storebror: Implement Patch Level Replication
     public static final byte   MSG_PATCHLEVEL         = 101;
     public static final byte   MSG_SELECTOR_VERSION   = 102;
     public static final String MIN_PATCH_LEVEL        = "106";
-    public static final String PATCH_LEVEL            = "107b5";
+    public static final String PATCH_LEVEL            = "107RC1";
     public static final String PATCH_LEVEL_TEST       = "102b1";
     public static String[]     PATCHLEVEL_G           = { "106v3", "106v2", "106" };
-    public static String[]     PATCHLEVEL_Y           = { "107b5", "105", "104", "103" };
+    public static String[]     PATCHLEVEL_Y           = { "107RC1", "105", "104", "103" };
     private String             patchLevel             = "none";
     private String             selectorVersion        = "unknown";
     public static final long   UPDATE_CHAT_INTERVAL   = 60000L;
@@ -1074,6 +1087,13 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
     private void getEventLog(NetMsgInput netmsginput) {
         try {
             byte byte0 = netmsginput.readByte();
+            // TODO: Storebror: Track Users hitting refly where this shouldn't be possible
+            if (ZutiAircraftCrewManagement.isSuspiciousRefly(byte0, this)) {
+                Chat.sendLog(0, "user_cheatkick2", this, null);
+                kick(this);
+                return;
+            }
+            // ---    
             float f = netmsginput.readFloat();
             String s = netmsginput.read255();
             String s1 = netmsginput.read255();
@@ -1093,6 +1113,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
 
         netmsginput.reset();
         byte byte0 = netmsginput.readByte();
+//        System.out.println("NetUser " + this.uniqueName() + " netInput byte0 = " + byte0);
 
         // TODO: Added by |ZUTI|
         // -----------------------------------------------
