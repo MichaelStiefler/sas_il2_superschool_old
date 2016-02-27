@@ -494,6 +494,7 @@ public class EventLog
 			stringbuffer.append(" ");
 			stringbuffer.append(f2);
 		}
+//		System.out.println(stringbuffer);
 		if (EventLog.open() && EventLog.isTyping(i))
 			file.println(stringbuffer);
 		if (flag)

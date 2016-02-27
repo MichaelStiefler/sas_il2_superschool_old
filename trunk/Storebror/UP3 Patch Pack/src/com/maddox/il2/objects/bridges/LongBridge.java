@@ -328,7 +328,7 @@ public class LongBridge extends Actor
 
     public BitSet GetStateOfSegments()
     {
-        Object bridgeSegment[] = (BridgeSegment[])getOwnerAttached();
+        Object bridgeSegment[] = getOwnerAttached();
         BitSet bitset = new BitSet(2 * bridgeSegment.length);
         for(int i = 0; i < bridgeSegment.length; i++)
         {
@@ -345,7 +345,7 @@ public class LongBridge extends Actor
 
     public void SetStateOfSegments(BitSet bitset)
     {
-        Object bridgeSegment[] = (BridgeSegment[])getOwnerAttached();
+        Object bridgeSegment[] = getOwnerAttached();
         for(int i = 0; i < bridgeSegment.length; i++)
         {
             boolean flag1 = bitset.get(i * 2 + 0);
@@ -414,7 +414,7 @@ public class LongBridge extends Actor
             return;
         if(j == 0)
             return;
-        Object bridgeSegment[] = (BridgeSegment[])getOwnerAttached();
+        Object bridgeSegment[] = getOwnerAttached();
         int l = 1 + 2 * nMidCells + 1;
         Actor actor1 = actor;
         if((j & 1) != 0 && i > 0)

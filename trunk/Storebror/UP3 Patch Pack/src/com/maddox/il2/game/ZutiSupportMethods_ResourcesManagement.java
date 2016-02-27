@@ -6,6 +6,7 @@ import com.maddox.JGP.Point3d;
 import com.maddox.il2.ai.Front;
 import com.maddox.il2.builder.ZutiSupportMethods_Builder;
 import com.maddox.il2.builder.Zuti_WResourcesManagement.RRRItem;
+import com.maddox.il2.engine.Config;
 import com.maddox.il2.net.BornPlace;
 import com.maddox.il2.net.ZutiSupportMethods_Net;
 import com.maddox.il2.objects.buildings.House;
@@ -69,19 +70,19 @@ public class ZutiSupportMethods_ResourcesManagement {
         // -------------------PRINT OUT--------------------------------------------
         if (bp != null) {
             if (bp.zutiEnableResourcesManagement) {
-                System.out.println("After deduction of >" + requestedFuel + "< fuel - Home Base(" + (int) bp.place.x + ", " + (int) bp.place.y + ")");
-                System.out.println("  Fuel supply=" + bp.zutiFuelSupply);
-                System.out.println("======================================================");
+                printDebugMessage("After deduction of >" + requestedFuel + "< fuel - Home Base(" + (int) bp.place.x + ", " + (int) bp.place.y + ")");
+                printDebugMessage("  Fuel supply=" + bp.zutiFuelSupply);
+                printDebugMessage("======================================================");
             }
         } else if (Mission.MDS_VARIABLES().enabledResourcesManagement_BySide) {
             if (armyForLocation == 1) {
-                System.out.println("After deduction of >" + requestedFuel + "< fuel - Red side");
-                System.out.println("  Fuel supply=" + Mission.MDS_VARIABLES().zutiFuelSupply_Red);
-                System.out.println("======================================================");
+                printDebugMessage("After deduction of >" + requestedFuel + "< fuel - Red side");
+                printDebugMessage("  Fuel supply=" + Mission.MDS_VARIABLES().zutiFuelSupply_Red);
+                printDebugMessage("======================================================");
             } else if (armyForLocation == 2) {
-                System.out.println("After deduction of >" + requestedFuel + "< fuel - Blue side");
-                System.out.println("  Fuel supply=" + Mission.MDS_VARIABLES().zutiFuelSupply_Blue);
-                System.out.println("======================================================");
+                printDebugMessage("After deduction of >" + requestedFuel + "< fuel - Blue side");
+                printDebugMessage("  Fuel supply=" + Mission.MDS_VARIABLES().zutiFuelSupply_Blue);
+                printDebugMessage("======================================================");
             }
         }
         // ------------------------------------------------------------------------
@@ -138,19 +139,19 @@ public class ZutiSupportMethods_ResourcesManagement {
         // -------------------PRINT OUT--------------------------------------------
         if (bp != null) {
             if (bp.zutiEnableResourcesManagement) {
-                System.out.println("After deduction of >" + requestedBullets + "< bullets - Home Base(" + (int) bp.place.x + ", " + (int) bp.place.y + ")");
-                System.out.println("  Bullets supply=" + bp.zutiBulletsSupply);
-                System.out.println("======================================================");
+                printDebugMessage("After deduction of >" + requestedBullets + "< bullets - Home Base(" + (int) bp.place.x + ", " + (int) bp.place.y + ")");
+                printDebugMessage("  Bullets supply=" + bp.zutiBulletsSupply);
+                printDebugMessage("======================================================");
             }
         } else if (Mission.MDS_VARIABLES().enabledResourcesManagement_BySide) {
             if (armyForLocation == 1) {
-                System.out.println("After deduction of >" + requestedBullets + "< bullets - Red side");
-                System.out.println("  Bullets supply=" + Mission.MDS_VARIABLES().zutiBulletsSupply_Red);
-                System.out.println("======================================================");
+                printDebugMessage("After deduction of >" + requestedBullets + "< bullets - Red side");
+                printDebugMessage("  Bullets supply=" + Mission.MDS_VARIABLES().zutiBulletsSupply_Red);
+                printDebugMessage("======================================================");
             } else if (armyForLocation == 2) {
-                System.out.println("After deduction of >" + requestedBullets + "< bullets - Blue side");
-                System.out.println("  Bullets supply=" + Mission.MDS_VARIABLES().zutiBulletsSupply_Blue);
-                System.out.println("======================================================");
+                printDebugMessage("After deduction of >" + requestedBullets + "< bullets - Blue side");
+                printDebugMessage("  Bullets supply=" + Mission.MDS_VARIABLES().zutiBulletsSupply_Blue);
+                printDebugMessage("======================================================");
             }
         }
         // ------------------------------------------------------------------------
@@ -311,34 +312,34 @@ public class ZutiSupportMethods_ResourcesManagement {
 
         if (bp != null) {
             if (bp.zutiEnableResourcesManagement) {
-                System.out.println("After deductin of bombs - Home Base (" + (int) bp.place.x + ", " + (int) bp.place.y + ")");
-                System.out.println("  Bombs{250kg}  supply=" + bp.zutiBombsSupply[0]);
-                System.out.println("  Bombs{500kg}  supply=" + bp.zutiBombsSupply[1]);
-                System.out.println("  Bombs{1000kg} supply=" + bp.zutiBombsSupply[2]);
-                System.out.println("  Bombs{2000kg} supply=" + bp.zutiBombsSupply[3]);
-                System.out.println("  Bombs{5000kg} supply=" + bp.zutiBombsSupply[4]);
-                System.out.println("  Bombs{9999kg} supply=" + bp.zutiBombsSupply[5]);
-                System.out.println("======================================================");
+                printDebugMessage("After deductin of bombs - Home Base (" + (int) bp.place.x + ", " + (int) bp.place.y + ")");
+                printDebugMessage("  Bombs{250kg}  supply=" + bp.zutiBombsSupply[0]);
+                printDebugMessage("  Bombs{500kg}  supply=" + bp.zutiBombsSupply[1]);
+                printDebugMessage("  Bombs{1000kg} supply=" + bp.zutiBombsSupply[2]);
+                printDebugMessage("  Bombs{2000kg} supply=" + bp.zutiBombsSupply[3]);
+                printDebugMessage("  Bombs{5000kg} supply=" + bp.zutiBombsSupply[4]);
+                printDebugMessage("  Bombs{9999kg} supply=" + bp.zutiBombsSupply[5]);
+                printDebugMessage("======================================================");
             }
         } else if (Mission.MDS_VARIABLES().enabledResourcesManagement_BySide) {
             if (armyForLocation == 1) {
-                System.out.println("After deductin of bombs - Red side");
-                System.out.println("  Bombs{250kg}  supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Red[0]);
-                System.out.println("  Bombs{500kg}  supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Red[1]);
-                System.out.println("  Bombs{1000kg} supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Red[2]);
-                System.out.println("  Bombs{2000kg} supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Red[3]);
-                System.out.println("  Bombs{5000kg} supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Red[4]);
-                System.out.println("  Bombs{9999kg} supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Red[5]);
-                System.out.println("======================================================");
+                printDebugMessage("After deductin of bombs - Red side");
+                printDebugMessage("  Bombs{250kg}  supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Red[0]);
+                printDebugMessage("  Bombs{500kg}  supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Red[1]);
+                printDebugMessage("  Bombs{1000kg} supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Red[2]);
+                printDebugMessage("  Bombs{2000kg} supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Red[3]);
+                printDebugMessage("  Bombs{5000kg} supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Red[4]);
+                printDebugMessage("  Bombs{9999kg} supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Red[5]);
+                printDebugMessage("======================================================");
             } else if (armyForLocation == 2) {
-                System.out.println("After deductin of bombs - Blue side");
-                System.out.println("  Bombs{250kg}  supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[0]);
-                System.out.println("  Bombs{500kg}  supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[1]);
-                System.out.println("  Bombs{1000kg} supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[2]);
-                System.out.println("  Bombs{2000kg} supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[3]);
-                System.out.println("  Bombs{5000kg} supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[4]);
-                System.out.println("  Bombs{9999kg} supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[5]);
-                System.out.println("======================================================");
+                printDebugMessage("After deductin of bombs - Blue side");
+                printDebugMessage("  Bombs{250kg}  supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[0]);
+                printDebugMessage("  Bombs{500kg}  supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[1]);
+                printDebugMessage("  Bombs{1000kg} supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[2]);
+                printDebugMessage("  Bombs{2000kg} supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[3]);
+                printDebugMessage("  Bombs{5000kg} supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[4]);
+                printDebugMessage("  Bombs{9999kg} supply=" + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[5]);
+                printDebugMessage("======================================================");
             }
         }
 
@@ -394,19 +395,19 @@ public class ZutiSupportMethods_ResourcesManagement {
         // -------------------PRINT OUT--------------------------------------------
         if (bp != null) {
             if (bp.zutiEnableResourcesManagement) {
-                System.out.println("After deduction of >" + requestedRockets + "< rockets - Home Base(" + (int) bp.place.x + ", " + (int) bp.place.y + ")");
-                System.out.println("  Rockets supply=" + bp.zutiRocketsSupply);
-                System.out.println("======================================================");
+                printDebugMessage("After deduction of >" + requestedRockets + "< rockets - Home Base(" + (int) bp.place.x + ", " + (int) bp.place.y + ")");
+                printDebugMessage("  Rockets supply=" + bp.zutiRocketsSupply);
+                printDebugMessage("======================================================");
             }
         } else if (Mission.MDS_VARIABLES().enabledResourcesManagement_BySide) {
             if (armyForLocation == 1) {
-                System.out.println("After deduction of >" + requestedRockets + "< rockets - Red side");
-                System.out.println("  Rockets supply=" + Mission.MDS_VARIABLES().zutiRocketsSupply_Red);
-                System.out.println("======================================================");
+                printDebugMessage("After deduction of >" + requestedRockets + "< rockets - Red side");
+                printDebugMessage("  Rockets supply=" + Mission.MDS_VARIABLES().zutiRocketsSupply_Red);
+                printDebugMessage("======================================================");
             } else if (armyForLocation == 2) {
-                System.out.println("After deduction of >" + requestedRockets + "< rockets - Blue side");
-                System.out.println("  Rockets supply=" + Mission.MDS_VARIABLES().zutiRocketsSupply_Blue);
-                System.out.println("======================================================");
+                printDebugMessage("After deduction of >" + requestedRockets + "< rockets - Blue side");
+                printDebugMessage("  Rockets supply=" + Mission.MDS_VARIABLES().zutiRocketsSupply_Blue);
+                printDebugMessage("======================================================");
             }
         }
         // ------------------------------------------------------------------------
@@ -782,18 +783,18 @@ public class ZutiSupportMethods_ResourcesManagement {
 
         // -------------------PRINT OUT--------------------------------------------
         if (bp != null && bp.zutiEnableResourcesManagement) {
-            System.out.println("After deduction of >" + requestedEngines + "< engines - Home Base(" + (int) bp.place.x + ", " + (int) bp.place.y + ")");
-            System.out.println("  Engines supply=" + bp.zutiEnginesSupply);
-            System.out.println("======================================================");
+            printDebugMessage("After deduction of >" + requestedEngines + "< engines - Home Base(" + (int) bp.place.x + ", " + (int) bp.place.y + ")");
+            printDebugMessage("  Engines supply=" + bp.zutiEnginesSupply);
+            printDebugMessage("======================================================");
         } else if (Mission.MDS_VARIABLES().enabledResourcesManagement_BySide) {
             if (armyForLocation == 1) {
-                System.out.println("After deduction of >" + requestedEngines + "< engines - Red side");
-                System.out.println("  Engines supply=" + Mission.MDS_VARIABLES().zutiEnginesSupply_Red);
-                System.out.println("======================================================");
+                printDebugMessage("After deduction of >" + requestedEngines + "< engines - Red side");
+                printDebugMessage("  Engines supply=" + Mission.MDS_VARIABLES().zutiEnginesSupply_Red);
+                printDebugMessage("======================================================");
             } else if (armyForLocation == 2) {
-                System.out.println("After deduction of >" + requestedEngines + "< engines - Blue side");
-                System.out.println("  Engines supply=" + Mission.MDS_VARIABLES().zutiEnginesSupply_Blue);
-                System.out.println("======================================================");
+                printDebugMessage("After deduction of >" + requestedEngines + "< engines - Blue side");
+                printDebugMessage("  Engines supply=" + Mission.MDS_VARIABLES().zutiEnginesSupply_Blue);
+                printDebugMessage("======================================================");
             }
         }
         // ------------------------------------------------------------------------
@@ -850,18 +851,18 @@ public class ZutiSupportMethods_ResourcesManagement {
 
         // -------------------PRINT OUT--------------------------------------------
         if (bp != null && bp.zutiEnableResourcesManagement) {
-            System.out.println("After deduction of >" + requestedKits + "< repair kits - Home Base(" + (int) bp.place.x + ", " + (int) bp.place.y + ")");
-            System.out.println("  Repair kits supply=" + bp.zutiRepairKitsSupply);
-            System.out.println("======================================================");
+            printDebugMessage("After deduction of >" + requestedKits + "< repair kits - Home Base(" + (int) bp.place.x + ", " + (int) bp.place.y + ")");
+            printDebugMessage("  Repair kits supply=" + bp.zutiRepairKitsSupply);
+            printDebugMessage("======================================================");
         } else if (Mission.MDS_VARIABLES().enabledResourcesManagement_BySide) {
             if (armyForLocation == 1) {
-                System.out.println("After deduction of >" + requestedKits + "< repair kits - Red side");
-                System.out.println("  Repair kits supply=" + Mission.MDS_VARIABLES().zutiRepairKitsSupply_Red);
-                System.out.println("======================================================");
+                printDebugMessage("After deduction of >" + requestedKits + "< repair kits - Red side");
+                printDebugMessage("  Repair kits supply=" + Mission.MDS_VARIABLES().zutiRepairKitsSupply_Red);
+                printDebugMessage("======================================================");
             } else if (armyForLocation == 2) {
-                System.out.println("After deduction of >" + requestedKits + "< repair kits - Blue side");
-                System.out.println("  Repair kits supply=" + Mission.MDS_VARIABLES().zutiRepairKitsSupply_Blue);
-                System.out.println("======================================================");
+                printDebugMessage("After deduction of >" + requestedKits + "< repair kits - Blue side");
+                printDebugMessage("  Repair kits supply=" + Mission.MDS_VARIABLES().zutiRepairKitsSupply_Blue);
+                printDebugMessage("======================================================");
             }
         }
         // ------------------------------------------------------------------------
@@ -1144,53 +1145,65 @@ public class ZutiSupportMethods_ResourcesManagement {
 
     public static void printOutResourcesForHomeBase(BornPlace bp) {
         if (bp != null && bp.zutiEnableResourcesManagement) {
-            System.out.println("Resources status - Home Base(" + (int) bp.place.x + ", " + (int) bp.place.y + ")");
-            System.out.println("  Bullets       supply=" + bp.zutiBulletsSupply);
-            System.out.println("  Rockets       supply=" + bp.zutiRocketsSupply);
-            System.out.println("  Bombs{250kg}  supply=" + bp.zutiBombsSupply[0]);
-            System.out.println("  Bombs{500kg}  supply=" + bp.zutiBombsSupply[1]);
-            System.out.println("  Bombs{1000kg} supply=" + bp.zutiBombsSupply[2]);
-            System.out.println("  Bombs{2000kg} supply=" + bp.zutiBombsSupply[3]);
-            System.out.println("  Bombs{5000kg} supply=" + bp.zutiBombsSupply[4]);
-            System.out.println("  Bombs{9999kg} supply=" + bp.zutiBombsSupply[5]);
-            System.out.println("  Fuel          supply=" + bp.zutiFuelSupply);
-            System.out.println("  Engines       supply=" + bp.zutiEnginesSupply);
-            System.out.println("  Repair kits   supply=" + bp.zutiRepairKitsSupply);
-            System.out.println("======================================================");
+            printDebugMessage("Resources status - Home Base(" + (int) bp.place.x + ", " + (int) bp.place.y + ")");
+            printDebugMessage("  Bullets       supply=" + bp.zutiBulletsSupply);
+            printDebugMessage("  Rockets       supply=" + bp.zutiRocketsSupply);
+            printDebugMessage("  Bombs{250kg}  supply=" + bp.zutiBombsSupply[0]);
+            printDebugMessage("  Bombs{500kg}  supply=" + bp.zutiBombsSupply[1]);
+            printDebugMessage("  Bombs{1000kg} supply=" + bp.zutiBombsSupply[2]);
+            printDebugMessage("  Bombs{2000kg} supply=" + bp.zutiBombsSupply[3]);
+            printDebugMessage("  Bombs{5000kg} supply=" + bp.zutiBombsSupply[4]);
+            printDebugMessage("  Bombs{9999kg} supply=" + bp.zutiBombsSupply[5]);
+            printDebugMessage("  Fuel          supply=" + bp.zutiFuelSupply);
+            printDebugMessage("  Engines       supply=" + bp.zutiEnginesSupply);
+            printDebugMessage("  Repair kits   supply=" + bp.zutiRepairKitsSupply);
+            printDebugMessage("======================================================");
         }
     }
 
     public static void printOutResourcesForSide(int army) {
         if (Mission.MDS_VARIABLES().enabledResourcesManagement_BySide) {
             if (army == 1) {
-                System.out.println("Resources - Red side");
-                System.out.println("  Bullets  = " + Mission.MDS_VARIABLES().zutiBulletsSupply_Red);
-                System.out.println("  Rockets  = " + Mission.MDS_VARIABLES().zutiRocketsSupply_Red);
-                System.out.println("  Bomb250  = " + Mission.MDS_VARIABLES().zutiBombsSupply_Red[0]);
-                System.out.println("  Bomb500  = " + Mission.MDS_VARIABLES().zutiBombsSupply_Red[1]);
-                System.out.println("  Bomb1000 = " + Mission.MDS_VARIABLES().zutiBombsSupply_Red[2]);
-                System.out.println("  Bomb2000 = " + Mission.MDS_VARIABLES().zutiBombsSupply_Red[3]);
-                System.out.println("  Bomb5000 = " + Mission.MDS_VARIABLES().zutiBombsSupply_Red[4]);
-                System.out.println("  Bomb9999 = " + Mission.MDS_VARIABLES().zutiBombsSupply_Red[5]);
-                System.out.println("  Fuel     = " + Mission.MDS_VARIABLES().zutiFuelSupply_Red);
-                System.out.println("  Engines  = " + Mission.MDS_VARIABLES().zutiEnginesSupply_Red);
-                System.out.println("  Repairs  = " + Mission.MDS_VARIABLES().zutiRepairKitsSupply_Red);
-                System.out.println("================================");
+                printDebugMessage("Resources - Red side");
+                printDebugMessage("  Bullets  = " + Mission.MDS_VARIABLES().zutiBulletsSupply_Red);
+                printDebugMessage("  Rockets  = " + Mission.MDS_VARIABLES().zutiRocketsSupply_Red);
+                printDebugMessage("  Bomb250  = " + Mission.MDS_VARIABLES().zutiBombsSupply_Red[0]);
+                printDebugMessage("  Bomb500  = " + Mission.MDS_VARIABLES().zutiBombsSupply_Red[1]);
+                printDebugMessage("  Bomb1000 = " + Mission.MDS_VARIABLES().zutiBombsSupply_Red[2]);
+                printDebugMessage("  Bomb2000 = " + Mission.MDS_VARIABLES().zutiBombsSupply_Red[3]);
+                printDebugMessage("  Bomb5000 = " + Mission.MDS_VARIABLES().zutiBombsSupply_Red[4]);
+                printDebugMessage("  Bomb9999 = " + Mission.MDS_VARIABLES().zutiBombsSupply_Red[5]);
+                printDebugMessage("  Fuel     = " + Mission.MDS_VARIABLES().zutiFuelSupply_Red);
+                printDebugMessage("  Engines  = " + Mission.MDS_VARIABLES().zutiEnginesSupply_Red);
+                printDebugMessage("  Repairs  = " + Mission.MDS_VARIABLES().zutiRepairKitsSupply_Red);
+                printDebugMessage("================================");
             } else if (army == 2) {
-                System.out.println("Resources - Blue side");
-                System.out.println("  Bullets  = " + Mission.MDS_VARIABLES().zutiBulletsSupply_Blue);
-                System.out.println("  Rockets  = " + Mission.MDS_VARIABLES().zutiRocketsSupply_Blue);
-                System.out.println("  Bomb250  = " + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[0]);
-                System.out.println("  Bomb500  = " + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[1]);
-                System.out.println("  Bomb1000 = " + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[2]);
-                System.out.println("  Bomb2000 = " + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[3]);
-                System.out.println("  Bomb5000 = " + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[4]);
-                System.out.println("  Bomb9999 = " + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[5]);
-                System.out.println("  Fuel     = " + Mission.MDS_VARIABLES().zutiFuelSupply_Blue);
-                System.out.println("  Engines  = " + Mission.MDS_VARIABLES().zutiEnginesSupply_Blue);
-                System.out.println("  Repairs  = " + Mission.MDS_VARIABLES().zutiRepairKitsSupply_Blue);
-                System.out.println("================================");
+                printDebugMessage("Resources - Blue side");
+                printDebugMessage("  Bullets  = " + Mission.MDS_VARIABLES().zutiBulletsSupply_Blue);
+                printDebugMessage("  Rockets  = " + Mission.MDS_VARIABLES().zutiRocketsSupply_Blue);
+                printDebugMessage("  Bomb250  = " + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[0]);
+                printDebugMessage("  Bomb500  = " + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[1]);
+                printDebugMessage("  Bomb1000 = " + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[2]);
+                printDebugMessage("  Bomb2000 = " + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[3]);
+                printDebugMessage("  Bomb5000 = " + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[4]);
+                printDebugMessage("  Bomb9999 = " + Mission.MDS_VARIABLES().zutiBombsSupply_Blue[5]);
+                printDebugMessage("  Fuel     = " + Mission.MDS_VARIABLES().zutiFuelSupply_Blue);
+                printDebugMessage("  Engines  = " + Mission.MDS_VARIABLES().zutiEnginesSupply_Blue);
+                printDebugMessage("  Repairs  = " + Mission.MDS_VARIABLES().zutiRepairKitsSupply_Blue);
+                printDebugMessage("================================");
             }
         }
+    }
+    private static int debugLevel = Integer.MIN_VALUE;
+    private static final int DEBUG_DEFAULT = 0;
+    
+    private static int curDebugLevel() {
+        if (debugLevel == Integer.MIN_VALUE) debugLevel = Config.cur.ini.get("Mods", "DEBUG_ZSM_RESM", DEBUG_DEFAULT);
+        return debugLevel;
+    }
+    
+    public static void printDebugMessage(String theMessage) {
+        if (curDebugLevel() == 0) return;
+        System.out.println(theMessage);
     }
 }

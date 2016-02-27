@@ -854,7 +854,7 @@ public class ZutiSupportMethods_NetSend_ToClients
 				
 				//Add user information to the stream
 				netmsgguaranted.write255(user);
-				System.out.println("SENT TO USER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				//System.out.println("SENT TO USER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 				NetEnv.host().postTo(netuser.masterChannel(), netmsgguaranted);
 			}
 		}

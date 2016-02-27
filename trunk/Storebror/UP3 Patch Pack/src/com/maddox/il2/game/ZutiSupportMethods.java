@@ -24,6 +24,7 @@ import com.maddox.il2.ai.air.Point_Stay;
 import com.maddox.il2.builder.ZutiSupportMethods_Builder;
 import com.maddox.il2.builder.ZutiTypeFrontCarrier;
 import com.maddox.il2.engine.Actor;
+import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.IconDraw;
 import com.maddox.il2.engine.ZutiSupportMethods_Engine;
 import com.maddox.il2.fm.FlightModel;
@@ -876,9 +877,9 @@ public class ZutiSupportMethods {
 
         // remove this front marker from global list
         if (!markerReasigned) {
-            System.out.println("Markers before removing: " + Front.markers().size());
+            printDebugMessage("Markers before removing: " + Front.markers().size());
             com.maddox.il2.ai.Front.markers().remove(marker);
-            System.out.println("Markers after removing: " + Front.markers().size());
+            printDebugMessage("Markers after removing: " + Front.markers().size());
             Front.setMarkersChanged();
             marker = null;
         }
@@ -1913,7 +1914,7 @@ public class ZutiSupportMethods {
                 marker.zutiMarkerCarrierName = nearestActor.name();
 
             if (nearestActor != null)
-                System.out.println("Marker >" + marker + "< assigned to >" + nearestActor.name() + "< - " + nearestActor);
+                printDebugMessage("Marker >" + marker + "< assigned to >" + nearestActor.name() + "< - " + nearestActor);
 
             // TODO: Limit Log output // by Storebror
 //			else
@@ -2084,7 +2085,7 @@ public class ZutiSupportMethods {
 
                 if (zaps != null) {
                     zaps.add(new com.maddox.il2.game.ZutiAirfieldPoint(x1, y1, x2, y2, friction));
-                    System.out.println("BornPlace is also friction area: Location(" + x1 + ", " + y1 + "), T2(" + x2 + ", " + y2 + "), friction=" + friction);
+                    printDebugMessage("BornPlace is also friction area: Location(" + x1 + ", " + y1 + "), T2(" + x2 + ", " + y2 + "), friction=" + friction);
                 } else
                     System.out.println("ZutiAirports table is null!");
             }
@@ -2697,5 +2698,18 @@ public class ZutiSupportMethods {
      */
     public static String getWeaponI18NName(String acName, String name) {
         return I18N.weapons(acName, name);
+    }
+    
+    private static int debugLevel = Integer.MIN_VALUE;
+    private static final int DEBUG_DEFAULT = 0;
+    
+    private static int curDebugLevel() {
+        if (debugLevel == Integer.MIN_VALUE) debugLevel = Config.cur.ini.get("Mods", "DEBUG_ZSM", DEBUG_DEFAULT);
+        return debugLevel;
+    }
+    
+    public static void printDebugMessage(String theMessage) {
+        if (curDebugLevel() == 0) return;
+        System.out.println(theMessage);
     }
 }

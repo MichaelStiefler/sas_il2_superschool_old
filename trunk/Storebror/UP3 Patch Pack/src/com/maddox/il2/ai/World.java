@@ -60,8 +60,6 @@ import com.maddox.rts.Time;
 import com.maddox.sas1946.il2.util.Reflection;
 
 public class World {
-    public static final boolean DEBUG_TIME_OF_DAY       = true;
-
     public boolean              showMorseAsText;
     public static final float   NORD                    = 270.0F;
     public static final float   PIXEL                   = 200.0F;
@@ -220,7 +218,7 @@ public class World {
 
     public void setTimeOfDayConstant(boolean bool) {
         bTimeOfDayConstant = bool;
-        if (DEBUG_TIME_OF_DAY) {
+        if (curDebugLevel() != 0) {
             showCallingLine("setTimeOfDayConstant(" + bool + ") called from ");
         }
     }
@@ -802,7 +800,7 @@ public class World {
             cur().startTimeofDay = i;
         else
             cur().startTimeofDay = i - (int) (Time.current() / 1000L);
-        if (DEBUG_TIME_OF_DAY) {
+        if (curDebugLevel() != 0) {
             showCallingLine("setTimeofDay(" + f + ") called from ");
             System.out.println("startTimeofDay = " + cur().startTimeofDay);
         }
@@ -823,4 +821,18 @@ public class World {
     static {
         ScoreRegister.load();
     }
+    
+    private static int debugLevel = Integer.MIN_VALUE;
+    private static final int DEBUG_DEFAULT = 0;
+    
+    private static int curDebugLevel() {
+        if (debugLevel == Integer.MIN_VALUE) debugLevel = Config.cur.ini.get("Mods", "DEBUG_TIMEOFDAY", DEBUG_DEFAULT);
+        return debugLevel;
+    }
+    
+    public static void printDebugMessage(String theMessage) {
+        if (curDebugLevel() == 0) return;
+        System.out.println(theMessage);
+    }
+
 }

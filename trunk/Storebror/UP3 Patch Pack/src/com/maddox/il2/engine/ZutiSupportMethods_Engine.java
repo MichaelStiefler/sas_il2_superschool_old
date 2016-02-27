@@ -69,7 +69,7 @@ public class ZutiSupportMethods_Engine
 				System.out.println("ZutiAirports table is null!");
 				
 			//System.out.println("Mis file: T1 <" + new Double(x1).toString() + ", " + new Double(y1).toString() + ">, T2 <" + new Double(x2).toString() + ", " + new Double(y2).toString() + ">, Friction: " + new Double(friction).toString());
-			System.out.println("Mis file: line <" + originalLine + "> is valid!");
+			printDebugMessage("Mis file: line <" + originalLine + "> is valid!");
 		}
 		catch(Exception ex)
 		{
@@ -140,7 +140,7 @@ public class ZutiSupportMethods_Engine
 	{
 		//TODO: Created by |ZUTI|: load airfields/rearm places defined by map maker
 		//--------------------------------------------------------------------------
-		System.out.println("Loading map.ini defined airfields:");
+		System.out.println("Loading map.ini defined airfields...");
 		if( ZutiSupportMethods_Engine.AIRFIELDS == null )
 			ZutiSupportMethods_Engine.AIRFIELDS = new ArrayList();
 		
@@ -175,4 +175,18 @@ public class ZutiSupportMethods_Engine
 				ZutiSupportMethods_Engine.WATER_STATE = "LIQUID";
 		}
 	}
+	
+    private static int debugLevel = Integer.MIN_VALUE;
+    private static final int DEBUG_DEFAULT = 0;
+    
+    private static int curDebugLevel() {
+        if (debugLevel == Integer.MIN_VALUE) debugLevel = Config.cur.ini.get("Mods", "DEBUG_ZSM_ENGINE", DEBUG_DEFAULT);
+        return debugLevel;
+    }
+    
+    public static void printDebugMessage(String theMessage) {
+        if (curDebugLevel() == 0) return;
+        System.out.println(theMessage);
+    }
+
 }

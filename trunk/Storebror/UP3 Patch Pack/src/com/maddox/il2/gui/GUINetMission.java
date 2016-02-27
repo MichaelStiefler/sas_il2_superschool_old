@@ -26,6 +26,7 @@ import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.Paratrooper;
 import com.maddox.il2.objects.air.ZutiSupportMethods_Air;
 import com.maddox.rts.NetEnv;
+import com.maddox.rts.RTSConf;
 
 public class GUINetMission extends GameState
 {
@@ -188,17 +189,26 @@ public class GUINetMission extends GameState
 
 	public static boolean isEnableReFly()
 	{
+	    // TODO: Storebror: Track Users hitting refly where this shouldn't be possible
+	    if (RTSConf.cur.console.getEnv().existAtom("reflytest", true)) {
+	        if (RTSConf.cur.console.getEnv().atom("reflytest").toString().trim().equalsIgnoreCase("on")) {
+	            System.out.println("GUINetMission overriding isEnableReFly() checks because reflytest is on");
+	            return true;
+	        }
+	    }
+	    // ---
 		/*
-		System.out.println("NET_MISSION =============================================================");
-		System.out.println(Main.cur().mission.zutiMisc_DisableReflyForMissionDuration);
-		System.out.println(Main.cur().mission.zutiMisc_EnableReflyOnlyIfBailedOrDied);
+		System.out.println("GUINetMission isEnableReFly() =============================================================");
+		System.out.println(Mission.MDS_VARIABLES().zutiMisc_DisableReflyForMissionDuration);
+		System.out.println(Mission.MDS_VARIABLES().zutiMisc_EnableReflyOnlyIfBailedOrDied);
 		System.out.println(World.isPlayerDead());
 		System.out.println(World.isPlayerParatrooper());
 		System.out.println(World.isPlayerCaptured());
 		System.out.println(World.isPlayerRemoved());
-		System.out.println(com.maddox.il2.ai.World.ZUTI_KIA_DELAY_CLEARED);
+		System.out.println(ZutiSupportMethods.ZUTI_KIA_DELAY_CLEARED);
 		System.out.println("=============================================================");
 		*/
+	    
 		//TODO: Added by |ZUTI|
 		//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 		//This flag is set if user selected unavailable aircraft

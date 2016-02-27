@@ -5,6 +5,7 @@ import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
+import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.LightPointActor;
 import com.maddox.il2.engine.LightPointWorld;
@@ -119,7 +120,7 @@ public class Torpedo extends Bomb {
             }
             
             // TODO: Storebror: +++++ New Impact Check with "smooth" envelope limits +++++
-            System.out.println("Torp Limits... speedLimit=" + speedLimit + ", angleLimitLow=" + angleLimitLow + ", angleLimitHigh=" + angleLimitHigh);
+            printDebugMessage("Torp Limits... speedLimit=" + speedLimit + ", angleLimitLow=" + angleLimitLow + ", angleLimitHigh=" + angleLimitHigh);
             double sinImpactAngle = -1D;
             if (curImpactSpeed > 0.001D)
                 sinImpactAngle = spd.z / curImpactSpeed;
@@ -308,7 +309,7 @@ public class Torpedo extends Bomb {
     // TODO: Storebror: Torpedo Failure Rate Replication
     // ------------------------------------
     public void setLimits(float speedLimit, float angleLimitLow, float angleLimitHigh) {
-        System.out.println("Torpedo setLimits(" + speedLimit + ", " + angleLimitLow + ", " + angleLimitHigh + ")");
+        printDebugMessage("Torpedo setLimits(" + speedLimit + ", " + angleLimitLow + ", " + angleLimitHigh + ")");
         this.speedLimit = speedLimit;
         this.angleLimitLow = angleLimitLow;
         this.angleLimitHigh = angleLimitHigh;
@@ -354,4 +355,16 @@ public class Torpedo extends Bomb {
     private float   angleLimitHigh;
     // ------------------------------------
 
+    private static int debugLevel = Integer.MIN_VALUE;
+    private static final int DEBUG_DEFAULT = 0;
+    
+    private static int curDebugLevel() {
+        if (debugLevel == Integer.MIN_VALUE) debugLevel = Config.cur.ini.get("Mods", "DEBUG_TORPEDO", DEBUG_DEFAULT);
+        return debugLevel;
+    }
+    
+    public static void printDebugMessage(String theMessage) {
+        if (curDebugLevel() == 0) return;
+        System.out.println(theMessage);
+    }
 }

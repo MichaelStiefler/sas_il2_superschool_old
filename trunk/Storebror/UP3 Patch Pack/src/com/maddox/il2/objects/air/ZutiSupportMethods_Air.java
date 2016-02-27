@@ -821,7 +821,7 @@ public class ZutiSupportMethods_Air
 	{
 		String acName = ZutiSupportMethods.getAircraftName_I18N( ZutiSupportMethods_Air.getStaticAcNameFromActor(stationaryPlane) );
 		
-		System.out.println("  Destroyed AC >" + acName + "<");
+		// System.out.println("  Destroyed AC >" + acName + "<"); Patch Pack 107, reduce logging
 		
 		Point3d point3d = stationaryPlane.pos.getAbsPoint();
 		double x = point3d.x; 

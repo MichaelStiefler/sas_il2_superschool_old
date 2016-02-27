@@ -103,6 +103,12 @@ public class DServer extends Main
         }
         Main.cur().netServerParams.serverDescription = Config.cur.netServerDescription;
         int i = Config.cur.ini.get("NET", "difficulty", 193791);
+        
+        // TODO: Patch Pack 107 Refly Cheat Protection
+        String reflykicksetting = Config.cur.ini.get("Mods", "reflykick", "off");
+        RTSConf.cur.console.getEnv().setAtom("reflykick", reflykicksetting);
+        // ---
+        
         if (Config.cur.newCloudsRender) {
             i |= 0x1000000;
         }
@@ -301,6 +307,11 @@ public class DServer extends Main
     
     public static void main(final String[] paramArrayOfString) {
         System.out.println("UP 3.0 RC4 dedicated server without obfuscation");
+        
+        // TODO: Patch Pack Replication
+        System.out.println("Patch Pack: " + NetUser.PATCH_LEVEL);
+        // ---
+        
         DServer.args = paramArrayOfString;
         String str1 = "confs.ini";
         if (DServer.args != null) {
