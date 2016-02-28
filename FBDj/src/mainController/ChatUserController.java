@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import model.MissionFile;
+import utility.Time;
 import utility.UnicodeFormatter;
 
 class ChatUserController {
@@ -203,6 +204,11 @@ class ChatUserController {
      * @see ChatUserParse, ChatUserController.userCommandVote(), AdminCommandController.adminCommandLoadMission(), ChatUserController.userCommandRequest();
      */
     public static void userCommandRequest(String name, String newMission) {
+    	if(MissionController.isVoteBlocked()) {
+    		ServerCommandController.serverCommandSend("chat Requests are Blocked by Veto TO \"" + name + "\"");
+    		ServerCommandController.serverCommandSend("chat Time until Veto gets lifted: " +  (MainController.MISSIONCONTROL.getVoteEndTime() - Time.getTime()) / 60000  + " Minutes TO \"" + name + "\"");
+    		return;
+    	}
     	//first: check if Mission exists!
     	 try {
     		 MissionController.setRequestedMissionFile(newMission);
@@ -228,11 +234,16 @@ class ChatUserController {
     }
 
     public static void userCommandVote(String name, String vote) {
+    	if(MissionController.isVoteBlocked()) {
+    		ServerCommandController.serverCommandSend("chat Vote is Blocked by Veto TO \"" + name + "\"");
+    		ServerCommandController.serverCommandSend("chat Time until Veto gets lifted: " +  (MainController.MISSIONCONTROL.getVoteEndTime() - Time.getTime()) / 60000 + " Minutes TO \"" + name + "\"");
+    		return;
+    	}
         try {
             if (MainController.CONFIG.getVoteTime() > 0) {
                 if (vote.equalsIgnoreCase("yes") || (vote.equalsIgnoreCase("no"))) {
                     ServerCommandController.serverCommandSend("chat You have voted " + vote + " to change the Mission TO \"" + name + "\"");
-
+                    
                     String unicodeName = name;
                     if (name.contains("\\u")) {
                         unicodeName = UnicodeFormatter.convertAsciiStringToUnicode(name);

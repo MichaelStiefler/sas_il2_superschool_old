@@ -312,6 +312,8 @@ class AdminCommandController {
 
                 long newTimeLeft = (Time.getTime() - MainController.ACTIVEMISSION.getStartTime() + (timeleftMinutes * 60000));
                 MainController.ACTIVEMISSION.getMissionParameters().setTimeLimit(newTimeLeft);
+                //TODO: skylla: Mission extension:
+                MissionController.setMissionExtended(true);
 
                 ServerCommandController.serverCommandSend("chat Mission Time Remaining Reset to: " + timeleftMinutes + " Minutes TO ALL");
 
@@ -328,19 +330,22 @@ class AdminCommandController {
     //TODO: skylla: Admin-Veto:
     
     public static boolean adminCommandVeto(String name) {
+    	boolean b = true;
     	if(AdminCommandController.adminCommandValidateAdmin(name, AdminCommands.VETO)) {
     		if(MainController.MISSIONCONTROL.getVoteCalled()) {
     			if(MissionController.getRequestedMissionFile() != null) {
-    				MissionController.clearMissionVote();
-    				ServerCommandController.serverCommandSend(name + " placed an Admin Veto! The current vote is stopped! TO ALL");
-    				MainController.writeDebugLogFile(1, "AdminCommandController.adminCommandVeto: " + name + " placed a Veto!");
-    				return true;
+    				MissionController.resetRequestedMissionFile();
     			}
+    			MissionController.clearMissionVote();
+    			ServerCommandController.serverCommandSend("chat " + name + " placed an Admin Veto! The current vote is stopped! TO ALL");
+    			MainController.writeDebugLogFile(1, "AdminCommandController.adminCommandVeto: " + name + " placed a Veto!");
+    			b = false;
     		}
-    		else {
-    			ServerCommandController.serverCommandSend("Veto cannot be placed; no Vote is running! TO \"" + name + "\"");
-    		}
+    		if(b)
+    			ServerCommandController.serverCommandSend("chat " + name + " placed an Admin Veto TO ALL");
+			return true;
     	}
+    	ServerCommandController.serverCommandSend("chat You have not the rights to Veto TO \"" + name + "\"");
     	return false;
     }
     
@@ -348,10 +353,11 @@ class AdminCommandController {
     	if(adminCommandVeto(name)) {
     		try {
     			MissionController.blockVote(timeOut);
-    			ServerCommandController.serverCommandSend("The Veto will block every Vote being called for the next " + timeOut + "minutes TO ALL");
+    			if(timeOut != 0)
+    				ServerCommandController.serverCommandSend("chat The Veto will block every Vote for the next " + timeOut + " Minutes TO ALL");
     			MainController.writeDebugLogFile(1, "AdminCommandController.adminCommandVetoTime: " + name + " added a " + timeOut + " Minute Vote-Timeout!");
     		} catch(IllegalInputException e) {
-    			ServerCommandController.serverCommandSend("Vote-Timeout failed: " + e.getReason() + "TO \"" + name + "\"");
+    			ServerCommandController.serverCommandSend("chat Vote-Timeout failed: " + e.getReason() + " TO \"" + name + "\"");
     			MainController.writeDebugLogFile(1, "AdminCommandController.adminCommandVetoTime: Adding a Vote-Timeout failed! Reason: " + e.getReason());
     		}
     	}
@@ -530,7 +536,7 @@ class AdminCommandController {
         }
     }
 
-    //TODO: skylla: check if veto works!
+    
     
     // Admin Validation
     private static boolean adminCommandValidateAdmin(String name, AdminCommands adminCommand) {

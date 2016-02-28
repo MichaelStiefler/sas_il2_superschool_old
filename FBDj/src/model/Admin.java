@@ -78,10 +78,6 @@ public class Admin implements Serializable {
 
     public void setKick(boolean kick) {
         this.kick = kick;
-        //------------------------------------
-        //TODO: skylla: Admin-Veto
-        setVeto();
-        //------------------------------------
     }
 
     public boolean isBanAdd() {
@@ -106,13 +102,17 @@ public class Admin implements Serializable {
 
     public void setMissionExtend(boolean missionExtend) {
         this.missionExtend = missionExtend;
+        //------------------------------------
+        //TODO: skylla: Admin-Veto
+        setVeto();
+        //------------------------------------
     }
     
     //------------------------------------
     //TODO: skylla: Admin-Veto:
     
     public void setVeto() {
-    	this.veto = kick;
+    	this.veto = missionExtend;
     }
     
     public boolean isVeto() {
