@@ -21,10 +21,16 @@ import utility.Time;
 import utility.UnicodeFormatter;
 import viewController.MainWindowController;
 
-class MissionController {
+public class MissionController {
 
 	//TODO: skylla: request_mission command
 	private static MissionFile requestedMissionFile;
+	
+	//TODO: skylla Admin-Veto timeout;
+	private static boolean voteIsBlocked = false;
+	
+	//TODO: skylla: extending Mission always possible:
+	private static boolean missionIsExtended = false;
 	
     public static void setMissionObjectLost(MissionObject missionObject) {
         try {
@@ -551,6 +557,7 @@ class MissionController {
             String             notification;
             int                counter;
             ArrayList<Integer> interval;
+            
 
             public MissionEndNotification(String notification, int counter, ArrayList<Integer> interval) {
                 this.notification = notification;
@@ -558,7 +565,19 @@ class MissionController {
                 this.interval = interval;
             }
 
+            @Override
             public void run() {
+            	//TODO: skylla: Mission extension:
+            	//This does not work: Timer keeps counting. 
+                if(isMissionExtended() == true) {
+            		setMissionExtended(false);
+            		MainController.MISSIONCONTROL.setMissionOverMessageSent(false);
+            		MainController.MISSIONCONTROL.setMissionEndSent(false);
+            		MainController.MISSIONCONTROL.setMissionEndReceived(false);
+            		MainController.MISSIONCONTROL.setMissionOver(false);
+					timer.cancel();
+            		return; 
+            	}  
                 try {
 
                     long waitTime = 1;
@@ -615,9 +634,7 @@ class MissionController {
         ServerCommandController.serverCommandSend("chat Next Mission Load in " + waitTime + " Seconds TO ALL");
         MainController.ACTIVEMISSION.getMissionParameters().setTimeLimit(waitTime * 1000 + 1000);
         MainController.writeDebugLogFile(2, "Mission notification sent waittime: " + waitTime + "(s) Current Time: " + Time.getTime());
-
         timer.schedule(new MissionEndNotification(notification, 0, interval), timerLength);
-
     }
 
     public static MissionFile getMission(String missionName) {
@@ -668,7 +685,7 @@ class MissionController {
                 }
                 pilotCount++;
             }
-            votesNeeded = Math.round(Double.valueOf(pilotCount) * 0.60);
+            votesNeeded = (long) Math.ceil(Double.valueOf(pilotCount) * 0.60);
 //    		MainController.writeDebugLogFile(2, "MissionController.missionVoteTally - Pilots("+pilotCount+") VotesFor("+votesFor+") Votes Needed("+votesNeeded+")");
             if (MainController.MISSIONCONTROL.getVoteCalled() && votesFor >= votesNeeded) {
                 ServerCommandController.serverCommandSend("chat Players Voted to Change Mission ! TO ALL");
@@ -681,9 +698,15 @@ class MissionController {
 //                MainController.writeDebugLogFile(2, "MissionController.missionVoteTally - CurrentTime("+Time.getTime()+")");
                 if (MainController.MISSIONCONTROL.getVoteEndTime() > 0 && MainController.MISSIONCONTROL.getVoteEndTime() < Time.getTime()) {
                     // Time length for the vote expired so reset everything
-                    ServerCommandController.serverCommandSend("chat Vote Time expired, mission not changed ! TO ALL");
-                    String voteTally = "chat Vote Results (" + votesFor + ") For / (" + votesNeeded + ") Needed";
-                    ServerCommandController.serverCommandSend(voteTally);
+                	//TODO: skylla: Admin-Veto: check if it was a "Veto-Vote"!
+                	if(isVoteBlocked()) {
+                		ServerCommandController.serverCommandSend("chat Veto time expired, voting is unlocked again TO ALL");
+                	}
+                	else {
+                		ServerCommandController.serverCommandSend("chat Vote Time expired, mission not changed ! TO ALL");
+                    	String voteTally = "chat Vote Results (" + votesFor + ") For / (" + votesNeeded + ") Needed";
+                    	ServerCommandController.serverCommandSend(voteTally);
+                	}
                     //---------------------------------------
                     //TODO: skylla: Requested Mission must not be loaded if the vote has a 'no'- majority
                     clearReqMissionVote();
@@ -773,6 +796,10 @@ class MissionController {
         	throw new IllegalMissionException(reqmis);
         }
     }
+    
+    public static void resetRequestedMissionFile() {
+    	requestedMissionFile = null;
+    }
     /*
      * @author skylla
      * @see missionOverCheck()
@@ -794,6 +821,10 @@ class MissionController {
     }
 
     public static void clearMissionVote() {
+    	//TODO: skylla Admin-Veto Time
+    	//Veto lifted:
+    	setVoteBlocked(false);
+    	//-----------------------------
         MainController.MISSIONCONTROL.setVoteCalled(false);
         MainController.MISSIONCONTROL.setVoteEndTime(0);
         Iterator<String> it = MainController.PILOTS.keySet().iterator();
@@ -814,9 +845,32 @@ class MissionController {
     		clearMissionVote();
     	}
     	if(!(timeOut < 1 || timeOut >= 90)) {
-    		MainController.MISSIONCONTROL.setVoteEndTime(timeOut);
+    		MainController.MISSIONCONTROL.setVoteEndTime(Time.getTime() + timeOut*60000);
+    		MainController.MISSIONCONTROL.setVoteCalled(false);
+    		setVoteBlocked(true);
+    	} else if(timeOut == 0) {
+    		clearMissionVote();
+    		ServerCommandController.serverCommandSend("chat Veto time expired, voting is unlocked again TO ALL"); 
     	} else {
-    		throw new IllegalInputException("" + timeOut, "Timeout must be between 1 and 91 Minutes!");
+    		throw new IllegalInputException("" + timeOut, "Timeout must be between 0 and 91 Minutes!");
     	}
+    }
+    
+    public static void setVoteBlocked(boolean blocked) {
+    	voteIsBlocked = blocked;
+    }
+    
+    public static boolean isVoteBlocked() {
+    	return voteIsBlocked;
+    }
+    
+    public static boolean isMissionExtended() {
+    	return missionIsExtended;
+    }
+    
+    
+    //TODO: skylla: Mission Extending always possible:
+    public static void setMissionExtended(boolean extended) {
+    	missionIsExtended = extended;
     }
 }

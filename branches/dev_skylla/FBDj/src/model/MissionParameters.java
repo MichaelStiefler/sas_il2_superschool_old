@@ -2,6 +2,7 @@ package model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import mainController.MissionController;
 
 import mainController.MainController;
 
@@ -102,6 +103,8 @@ public class MissionParameters implements Serializable {
 
     public void setTimeLimit(long timeLimit) {
         this.timeLimit = timeLimit;
+        //TODO: skylla: Mission extension:
+        MissionController.setMissionExtended(false);
     }
 
     public Mission.MissionObjectiveType getObjectiveType() {
