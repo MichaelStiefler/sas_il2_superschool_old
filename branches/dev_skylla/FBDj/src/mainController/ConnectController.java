@@ -143,7 +143,6 @@ public class ConnectController {
         int missionOverCheckThrottle = 1;
         int schedulerThrottle = 1;
         // CONNECT LOOP
-        //TODO: mission extension
         while (MainController.CONNECTED) {
             try {
                 // Check Input Queue
