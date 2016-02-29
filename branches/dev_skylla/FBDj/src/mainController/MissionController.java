@@ -568,7 +568,6 @@ public class MissionController {
             @Override
             public void run() {
             	//TODO: skylla: Mission extension:
-            	//This does not work: Timer keeps counting. 
                 if(isMissionExtended() == true) {
             		setMissionExtended(false);
             		MainController.MISSIONCONTROL.setMissionOverMessageSent(false);
