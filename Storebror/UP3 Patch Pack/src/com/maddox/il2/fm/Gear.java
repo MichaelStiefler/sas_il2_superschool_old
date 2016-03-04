@@ -1,4 +1,6 @@
 /*4.10.1 class + CTO Mod*/
+
+// Code Cleaned by SAS~Storebror
 package com.maddox.il2.fm;
 import java.util.AbstractCollection;
 import java.util.List;
@@ -12,10 +14,12 @@ import com.maddox.JGP.Point3f;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.AnglesFork;
 import com.maddox.il2.ai.World;
+import com.maddox.il2.ai.air.CellAirField;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorFilter;
 import com.maddox.il2.engine.ActorHMesh;
 import com.maddox.il2.engine.ActorMesh;
+import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.HierMesh;
@@ -26,12 +30,14 @@ import com.maddox.il2.engine.MsgCollision;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.engine.ZutiSupportMethods_Engine;
 import com.maddox.il2.game.HUD;
+import com.maddox.il2.game.Mission;
 import com.maddox.il2.game.ZutiAirfieldPoint;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.air.Scheme1;
 import com.maddox.il2.objects.buildings.Plate;
 import com.maddox.il2.objects.ships.BigshipGeneric;
+import com.maddox.il2.objects.ships.Ship;
 import com.maddox.il2.objects.weapons.BombGun;
 import com.maddox.il2.objects.weapons.RocketBombGun;
 import com.maddox.il2.objects.weapons.RocketGun;
@@ -170,7 +176,6 @@ public class Gear
 	{
 		private PlateFilter()
 		{
-		/* empty */
 		}
 
 		public boolean isUse(Actor actor, double d)
@@ -229,8 +234,8 @@ public class Gear
 		oldNOfPoiOnGr = 0;
 		nP = 0;
 		gearsChanged = false;
-		clpEff = new com.maddox.il2.engine.Eff3DActor[64];
-		clpEngineEff = new com.maddox.il2.engine.Eff3DActor[8][2];
+		clpEff = new Eff3DActor[64];
+		clpEngineEff = new Eff3DActor[8][2];
 		effectName = new String();
 		bTheBabysGonnaBlow = false;
 		lgear = true;
@@ -265,40 +270,40 @@ public class Gear
 
 		// TODO: CTO Mod
 		// ----------------------------------------
-		if (com.maddox.il2.game.Mission.cur().sectFile().get("Mods", "CatapultAllow", 1) == 0)
+		if (Mission.cur().sectFile().get("Mods", "CatapultAllow", 1) == 0)
 		{
 			bCatapultAllow = false;
 			bCatapultAllowAI = false;
 		}
-		if (com.maddox.il2.game.Mission.cur().sectFile().get("Mods", "CatapultBoost", 0) == 1 && !com.maddox.il2.game.Mission.isCoop())
+		if (Mission.cur().sectFile().get("Mods", "CatapultBoost", 0) == 1 && !Mission.isCoop())
 			bCatapultBoost = true;
-		if (com.maddox.il2.engine.Config.cur.ini.get("Mods", "CatapultAllowAI", 1) == 0)
+		if (Config.cur.ini.get("Mods", "CatapultAllowAI", 1) == 0)
 			bCatapultAllowAI = false;
-		if (com.maddox.il2.game.Mission.cur().sectFile().get("Mods", "CatapultAllowAI", 1) == 0)
+		if (Mission.cur().sectFile().get("Mods", "CatapultAllowAI", 1) == 0)
 			bCatapultAllowAI = false;
-		if (com.maddox.il2.engine.Config.cur.ini.get("Mods", "CatapultAI_CVE", 1) == 0)
+		if (Config.cur.ini.get("Mods", "CatapultAI_CVE", 1) == 0)
 			bCatapultAI_CVE = false;
-		if (com.maddox.il2.game.Mission.cur().sectFile().get("Mods", "CatapultAI_CVE", 1) == 0)
+		if (Mission.cur().sectFile().get("Mods", "CatapultAI_CVE", 1) == 0)
 			bCatapultAI_CVE = false;
-		if (com.maddox.il2.engine.Config.cur.ini.get("Mods", "CatapultAI_EssexClass", 1) == 0)
+		if (Config.cur.ini.get("Mods", "CatapultAI_EssexClass", 1) == 0)
 			bCatapultAI_EssexClass = false;
-		if (com.maddox.il2.game.Mission.cur().sectFile().get("Mods", "CatapultAI_EssexClass", 1) == 0)
+		if (Mission.cur().sectFile().get("Mods", "CatapultAI_EssexClass", 1) == 0)
 			bCatapultAI_EssexClass = false;
-		if (com.maddox.il2.engine.Config.cur.ini.get("Mods", "CatapultAI_Illustrious", 1) == 0)
+		if (Config.cur.ini.get("Mods", "CatapultAI_Illustrious", 1) == 0)
 			bCatapultAI_Illustrious = false;
-		if (com.maddox.il2.game.Mission.cur().sectFile().get("Mods", "CatapultAI_Illustrious", 1) == 0)
+		if (Mission.cur().sectFile().get("Mods", "CatapultAI_Illustrious", 1) == 0)
 			bCatapultAI_Illustrious = false;
-		if (com.maddox.il2.engine.Config.cur.ini.get("Mods", "CatapultAI_GrafZep", 1) == 0)
+		if (Config.cur.ini.get("Mods", "CatapultAI_GrafZep", 1) == 0)
 			bCatapultAI_GrafZep = false;
-		if (com.maddox.il2.game.Mission.cur().sectFile().get("Mods", "CatapultAI_GrafZep", 1) == 0)
+		if (Mission.cur().sectFile().get("Mods", "CatapultAI_GrafZep", 1) == 0)
 			bCatapultAI_GrafZep = false;
-		if (com.maddox.il2.engine.Config.cur.ini.get("Mods", "CatapultAI_CVL", 1) == 0)
+		if (Config.cur.ini.get("Mods", "CatapultAI_CVL", 1) == 0)
 			bCatapultAI_CVL = false;
-		if (com.maddox.il2.game.Mission.cur().sectFile().get("Mods", "CatapultAI_CVL", 1) == 0)
+		if (Mission.cur().sectFile().get("Mods", "CatapultAI_CVL", 1) == 0)
 			bCatapultAI_CVL = false;
-		if (com.maddox.il2.engine.Config.cur.ini.get("Mods", "StandardDeckCVL", 0) == 1)
+		if (Config.cur.ini.get("Mods", "StandardDeckCVL", 0) == 1)
 			bStandardDeckCVL = true;
-		if (com.maddox.il2.game.Mission.cur().sectFile().get("Mods", "StandardDeckCVL", 0) == 1)
+		if (Mission.cur().sectFile().get("Mods", "StandardDeckCVL", 0) == 1)
 			bStandardDeckCVL = true;
 		// ----------------------------------------
 	}
@@ -405,7 +410,7 @@ public class Gear
 			Line2f line2f = new Line2f();
 			line2f.set(new Point2f((float)d_1_, (float)d_2_), new Point2f((float)d, (float)d_0_));
 			H = line2f.distance(new Point2f(0.0F, 0.0F));
-			H -= (double)((FM.M.massEmpty + FM.M.maxFuel + FM.M.maxNitro) * Atmosphere.g()) / 2700000.0;
+			H -= (FM.M.massEmpty + FM.M.maxFuel + FM.M.maxNitro) * Atmosphere.g() / 2700000.0F;
 		}
 	}
 
@@ -436,108 +441,108 @@ public class Gear
 		ground(flightmodel, bool, false);
 	}
 
-	public void ground(com.maddox.il2.fm.FlightModel flightmodel, boolean flag, boolean flag1)
+	public void ground(FlightModel flightmodel, boolean flag, boolean flag1)
 	{
 		FM = flightmodel;
 		bIsMaster = flag;
 		onGround = flag1;
-		((com.maddox.il2.fm.FlightModelMain)(FM)).Vrel.x = -((com.maddox.JGP.Tuple3d)(((com.maddox.il2.fm.FlightModelMain)(FM)).Vwld)).x;
-		((com.maddox.il2.fm.FlightModelMain)(FM)).Vrel.y = -((com.maddox.JGP.Tuple3d)(((com.maddox.il2.fm.FlightModelMain)(FM)).Vwld)).y;
-		((com.maddox.il2.fm.FlightModelMain)(FM)).Vrel.z = -((com.maddox.JGP.Tuple3d)(((com.maddox.il2.fm.FlightModelMain)(FM)).Vwld)).z;
+		FM.Vrel.x = -FM.Vwld.x;
+		FM.Vrel.y = -FM.Vwld.y;
+		FM.Vrel.z = -FM.Vwld.z;
 		for (int i = 0; i < 2; i++)
 			if (fatigue[i] > 0)
 				fatigue[i]--;
 
-		Pn.set(((com.maddox.il2.fm.FlightModelMain)(FM)).Loc);
-		Pn.z = com.maddox.il2.engine.Engine.cur.land.HQ(((com.maddox.JGP.Tuple3d)(Pn)).x, ((com.maddox.JGP.Tuple3d)(Pn)).y);
-		double d1 = ((com.maddox.JGP.Tuple3d)(Pn)).z;
+		Pn.set(FM.Loc);
+		Pn.z = Engine.cur.land.HQ(Pn.x, Pn.y);
+		double d1 = Pn.z;
 		screenHQ = d1;
-		if (((com.maddox.JGP.Tuple3d)(((com.maddox.il2.fm.FlightModelMain)(FM)).Loc)).z - d1 > 50D && !bFlatTopGearCheck)
+		if (FM.Loc.z - d1 > 50D && !bFlatTopGearCheck)
 		{
 			turnOffEffects();
 			arrestorVSink = -50F;
 			return;
 		}
-		isWater = com.maddox.il2.engine.Engine.cur.land.isWater(((com.maddox.JGP.Tuple3d)(Pn)).x, ((com.maddox.JGP.Tuple3d)(Pn)).y);
+		isWater = Engine.cur.land.isWater(Pn.x, Pn.y);
 		if (isWater)
 			roughness = 0.5D;
-		com.maddox.il2.engine.Engine.cur.land.EQN(((com.maddox.JGP.Tuple3d)(Pn)).x, ((com.maddox.JGP.Tuple3d)(Pn)).y, Normal);
+		Engine.cur.land.EQN(Pn.x, Pn.y, Normal);
 		bUnderDeck = false;
-		com.maddox.il2.objects.ships.BigshipGeneric bigshipgeneric = null;
+		BigshipGeneric bigshipgeneric = null;
 		if (bFlatTopGearCheck)
 		{
-			corn.set(((com.maddox.il2.fm.FlightModelMain)(FM)).Loc);
-			corn1.set(((com.maddox.il2.fm.FlightModelMain)(FM)).Loc);
+			corn.set(FM.Loc);
+			corn1.set(FM.Loc);
 			corn1.z -= 20D;
-			com.maddox.il2.engine.Actor actor = com.maddox.il2.engine.Engine.collideEnv().getLine(corn, corn1, false, clipFilter, Pship);
-			if (actor instanceof com.maddox.il2.objects.ships.BigshipGeneric)
+			Actor actor = Engine.collideEnv().getLine(corn, corn1, false, clipFilter, Pship);
+			if (actor instanceof BigshipGeneric)
 			{
-				Pn.z = ((com.maddox.JGP.Tuple3d)(Pship)).z + 0.5D;
-				d1 = ((com.maddox.JGP.Tuple3d)(Pn)).z;
+				Pn.z = Pship.z + 0.5D;
+				d1 = Pn.z;
 				isWater = false;
 				bUnderDeck = true;
 				actor.getSpeed(Vship);
-				((com.maddox.il2.fm.FlightModelMain)(FM)).Vrel.add(Vship);
-				bigshipgeneric = (com.maddox.il2.objects.ships.BigshipGeneric)actor;
-				bigshipgeneric.addRockingSpeed(((com.maddox.il2.fm.FlightModelMain)(FM)).Vrel, Normal, ((com.maddox.il2.fm.FlightModelMain)(FM)).Loc);
-				if (((com.maddox.il2.fm.FlightModelMain)(flightmodel)).AS.isMaster() && bigshipgeneric.getAirport() != null && ((com.maddox.il2.fm.FlightModelMain)(flightmodel)).CT.bHasArrestorControl)
+				FM.Vrel.add(Vship);
+				bigshipgeneric = (BigshipGeneric)actor;
+				bigshipgeneric.addRockingSpeed(FM.Vrel, Normal, FM.Loc);
+				if (flightmodel.AS.isMaster() && bigshipgeneric.getAirport() != null && flightmodel.CT.bHasArrestorControl)
 				{
-					if (!bigshipgeneric.isTowAircraft((com.maddox.il2.objects.air.Aircraft)((com.maddox.il2.engine.Interpolate)(flightmodel)).actor) && ((com.maddox.il2.fm.FlightModelMain)(FM)).Vrel.lengthSquared() > 10D
-							&& ((com.maddox.il2.fm.FlightModelMain)(flightmodel)).CT.getArrestor() > 0.1F)
+					if (!bigshipgeneric.isTowAircraft((Aircraft)flightmodel.actor) && FM.Vrel.lengthSquared() > 10D
+							&& flightmodel.CT.getArrestor() > 0.1F)
 					{
-						bigshipgeneric.requestTowAircraft((com.maddox.il2.objects.air.Aircraft)((com.maddox.il2.engine.Interpolate)(flightmodel)).actor);
-						if (bigshipgeneric.isTowAircraft((com.maddox.il2.objects.air.Aircraft)((com.maddox.il2.engine.Interpolate)(flightmodel)).actor))
+						bigshipgeneric.requestTowAircraft((Aircraft)flightmodel.actor);
+						if (bigshipgeneric.isTowAircraft((Aircraft)flightmodel.actor))
 						{
-							((com.maddox.il2.fm.FlightModelMain)(flightmodel)).AS.setFlatTopString(bigshipgeneric, bigshipgeneric.towPortNum);
-							if ((FM instanceof com.maddox.il2.fm.RealFlightModel) && bIsMaster && ((com.maddox.il2.fm.RealFlightModel)FM).isRealMode())
-								((com.maddox.il2.fm.RealFlightModel)FM).producedShakeLevel = 5F;
-							((com.maddox.il2.objects.air.Aircraft)((com.maddox.il2.engine.Interpolate)(flightmodel)).actor).sfxTow();
+							flightmodel.AS.setFlatTopString(bigshipgeneric, bigshipgeneric.towPortNum);
+							if ((FM instanceof RealFlightModel) && bIsMaster && ((RealFlightModel)FM).isRealMode())
+								((RealFlightModel)FM).producedShakeLevel = 5F;
+							((Aircraft)flightmodel.actor).sfxTow();
 						}
 					}
-					if (bigshipgeneric.isTowAircraft((com.maddox.il2.objects.air.Aircraft)((com.maddox.il2.engine.Interpolate)(flightmodel)).actor) && ((com.maddox.il2.fm.FlightModelMain)(FM)).Vrel.lengthSquared() < 1.0D
-							&& com.maddox.il2.ai.World.Rnd().nextFloat() < 0.008F)
+					if (bigshipgeneric.isTowAircraft((Aircraft)flightmodel.actor) && FM.Vrel.lengthSquared() < 1.0D
+							&& World.Rnd().nextFloat() < 0.008F)
 					{
-						bigshipgeneric.requestDetowAircraft((com.maddox.il2.objects.air.Aircraft)((com.maddox.il2.engine.Interpolate)(flightmodel)).actor);
-						((com.maddox.il2.fm.FlightModelMain)(flightmodel)).AS.setFlatTopString(bigshipgeneric, -1);
+						bigshipgeneric.requestDetowAircraft((Aircraft)flightmodel.actor);
+						flightmodel.AS.setFlatTopString(bigshipgeneric, -1);
 					}
 				}
-				if (bigshipgeneric.isTowAircraft((com.maddox.il2.objects.air.Aircraft)((com.maddox.il2.engine.Interpolate)(flightmodel)).actor))
+				if (bigshipgeneric.isTowAircraft((Aircraft)flightmodel.actor))
 				{
 					int k = bigshipgeneric.towPortNum;
-					com.maddox.JGP.Point3d apoint3d[] = bigshipgeneric.getShipProp().propAirport.towPRel;
-					((com.maddox.il2.engine.Actor)(bigshipgeneric)).pos.getAbs(l0);
+					Point3d apoint3d[] = bigshipgeneric.getShipProp().propAirport.towPRel;
+					bigshipgeneric.pos.getAbs(l0);
 					l0.transform(apoint3d[k * 2], p0);
 					l0.transform(apoint3d[k * 2 + 1], p1);
-					p0.x = 0.5D * (((com.maddox.JGP.Tuple3d)(p0)).x + ((com.maddox.JGP.Tuple3d)(p1)).x);
-					p0.y = 0.5D * (((com.maddox.JGP.Tuple3d)(p0)).y + ((com.maddox.JGP.Tuple3d)(p1)).y);
-					p0.z = 0.5D * (((com.maddox.JGP.Tuple3d)(p0)).z + ((com.maddox.JGP.Tuple3d)(p1)).z);
-					((com.maddox.il2.engine.Interpolate)(flightmodel)).actor.pos.getAbs(l0);
+					p0.x = 0.5D * (p0.x + p1.x);
+					p0.y = 0.5D * (p0.y + p1.y);
+					p0.z = 0.5D * (p0.z + p1.z);
+					flightmodel.actor.pos.getAbs(l0);
 					l0.transformInv(p0);
 					l0.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-					bigshipgeneric.towHook.computePos(((com.maddox.il2.engine.Interpolate)(flightmodel)).actor, new Loc(l0), l0);
+					bigshipgeneric.towHook.computePos(flightmodel.actor, new Loc(l0), l0);
 					v0.sub(p0, l0.getPoint());
-					if (((com.maddox.JGP.Tuple3d)(v0)).x > 0.0D)
+					if (v0.x > 0.0D)
 					{
-						if (bigshipgeneric.isTowAircraft((com.maddox.il2.objects.air.Aircraft)((com.maddox.il2.engine.Interpolate)(flightmodel)).actor))
+						if (bigshipgeneric.isTowAircraft((Aircraft)flightmodel.actor))
 						{
-							bigshipgeneric.requestDetowAircraft((com.maddox.il2.objects.air.Aircraft)((com.maddox.il2.engine.Interpolate)(flightmodel)).actor);
-							((com.maddox.il2.fm.FlightModelMain)(flightmodel)).AS.setFlatTopString(bigshipgeneric, -1);
+							bigshipgeneric.requestDetowAircraft((Aircraft)flightmodel.actor);
+							flightmodel.AS.setFlatTopString(bigshipgeneric, -1);
 						}
 					}
 					else
 					{
-						tmpV.set(((com.maddox.il2.fm.FlightModelMain)(FM)).Vrel);
-						((com.maddox.il2.engine.Interpolate)(flightmodel)).actor.pos.getAbsOrient().transformInv(tmpV);
-						if (((com.maddox.JGP.Tuple3d)(tmpV)).x < 0.0D)
+						tmpV.set(FM.Vrel);
+						flightmodel.actor.pos.getAbsOrient().transformInv(tmpV);
+						if (tmpV.x < 0.0D)
 						{
 							double d3 = v0.length();
 							v0.normalize();
-							arrestorVAngle = (float)java.lang.Math.toDegrees(java.lang.Math.asin(((com.maddox.JGP.Tuple3d)(v0)).z));
+							arrestorVAngle = (float)Math.toDegrees(Math.asin(v0.z));
 							v0.scale(1000D * d3);
-							((com.maddox.il2.fm.FlightModelMain)(flightmodel)).GF.add(v0);
-							v0.scale(0.29999999999999999D);
+							flightmodel.GF.add(v0);
+							v0.scale(0.3D);
 							v0.cross(l0.getPoint(), v0);
-							((com.maddox.il2.fm.FlightModelMain)(flightmodel)).GM.add(v0);
+							flightmodel.GM.add(v0);
 						}
 					}
 				}
@@ -547,25 +552,25 @@ public class Gear
 				}
 			}
 		}
-		if (((com.maddox.il2.fm.FlightModelMain)(flightmodel)).CT.bHasArrestorControl)
+		if (flightmodel.CT.bHasArrestorControl)
 		{
-			((com.maddox.il2.engine.Interpolate)(flightmodel)).actor.pos.getAbs(com.maddox.il2.objects.air.Aircraft.tmpLoc1);
-			com.maddox.il2.engine.Loc loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-			arrestorHook.computePos(((com.maddox.il2.engine.Interpolate)(flightmodel)).actor, com.maddox.il2.objects.air.Aircraft.tmpLoc1, loc);
-			arrestorVSink = (float)(((com.maddox.JGP.Tuple3d)(Pn)).z - ((com.maddox.JGP.Tuple3d)(loc.getPoint())).z);
+			flightmodel.actor.pos.getAbs(Aircraft.tmpLoc1);
+			Loc loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+			arrestorHook.computePos(flightmodel.actor, Aircraft.tmpLoc1, loc);
+			arrestorVSink = (float)(Pn.z - loc.getPoint().z);
 		}
-		Fd.set(((com.maddox.il2.fm.FlightModelMain)(FM)).Vrel);
+		Fd.set(FM.Vrel);
 		Vnf.set(Normal);
-		((com.maddox.il2.fm.FlightModelMain)(FM)).Or.transformInv(Normal);
-		((com.maddox.il2.fm.FlightModelMain)(FM)).Or.transformInv(Fd);
+		FM.Or.transformInv(Normal);
+		FM.Or.transformInv(Fd);
 		Fd.normalize();
 		Pn.x = 0.0D;
 		Pn.y = 0.0D;
-		Pn.z -= ((com.maddox.JGP.Tuple3d)(((com.maddox.il2.fm.FlightModelMain)(FM)).Loc)).z;
-		((com.maddox.il2.fm.FlightModelMain)(FM)).Or.transformInv(Pn);
+		Pn.z -= FM.Loc.z;
+		FM.Or.transformInv(Pn);
 		D = -Normal.dot(Pn);
 		if (!bIsMaster)
-			D -= 0.014999999999999999D;
+			D -= 0.015D;
 		if (D > 50D)
 		{
 			nearGround = false;
@@ -600,7 +605,7 @@ public class Gear
 			if (i1 <= 2)
 			{
 				bIsGear = true;
-				if (i1 == 0 && (!lgear || ((com.maddox.il2.fm.FlightModelMain)(FM)).CT.getGear() < 0.01F) || i1 == 1 && (!rgear || ((com.maddox.il2.fm.FlightModelMain)(FM)).CT.getGear() < 0.01F) || i1 == 2 && !cgear)
+				if (i1 == 0 && (!lgear || FM.CT.getGear() < 0.01F) || i1 == 1 && (!rgear || FM.CT.getGear() < 0.01F) || i1 == 2 && !cgear)
 					continue;
 			}
 			else
@@ -610,7 +615,7 @@ public class Gear
 			PnT.set(Pnt[i1]);
 			d = Normal.dot(PnT) + D;
 			Fx.set(Fd);
-			MassCoeff = 0.00040000000000000002D * (double)((com.maddox.il2.fm.FlightModelMain)(FM)).M.getFullMass();
+			MassCoeff = 0.0004D * (double)FM.M.getFullMass();
 			if (MassCoeff > 1.0D)
 				MassCoeff = 1.0D;
 			if (d < 0.0D)
@@ -622,12 +627,12 @@ public class Gear
 			}
 			else
 			{
-				if (d >= 0.10000000000000001D || isWater || bIsGear || !testNonGearCollision(i1))
+				if (d >= 0.1D || isWater || bIsGear || !testNonGearCollision(i1))
 					continue;
 				clp[i1] = true;
 				nP++;
 			}
-			PnT.x += ((com.maddox.il2.fm.FlightModelMain)(FM)).Arms.GC_GEAR_SHIFT;
+			PnT.x += FM.Arms.GC_GEAR_SHIFT;
 			Fx.cross(PnT, Tn);
 			Fv.set(Fx);
 			if (bIsSail && bInWaterList(i1))
@@ -639,8 +644,8 @@ public class Gear
 			}
 			if (bIsMaster)
 			{
-				((com.maddox.il2.fm.FlightModelMain)(FM)).GF.add(Tn);
-				((com.maddox.il2.fm.FlightModelMain)(FM)).GM.add(Fx);
+				FM.GF.add(Tn);
+				FM.GM.add(Fx);
 			}
 		}
 
@@ -651,16 +656,16 @@ public class Gear
 		oldNOfGearsOnGr = nOfGearsOnGr;
 		oldNOfPoiOnGr = nOfPoiOnGr;
 		onGround = nP > 0;
-		if (com.maddox.il2.engine.Config.isUSE_RENDER())
+		if (Config.isUSE_RENDER())
 			drawEffects();
 		if (bIsMaster)
 		{
 			FM.canChangeBrakeShoe = false;
-			com.maddox.il2.objects.ships.BigshipGeneric bigshipgeneric1 = bigshipgeneric;
+			BigshipGeneric bigshipgeneric1 = bigshipgeneric;
 			if (bigshipgeneric1 != null)
 				FM.brakeShoeLastCarrier = bigshipgeneric1;
-			else if (com.maddox.il2.game.Mission.isCoop() && !com.maddox.il2.game.Mission.isServer() && com.maddox.il2.engine.Actor.isAlive(FM.brakeShoeLastCarrier) && com.maddox.rts.Time.current() < 60000L)
-				bigshipgeneric1 = (com.maddox.il2.objects.ships.BigshipGeneric)FM.brakeShoeLastCarrier;
+			else if (Mission.isCoop() && !Mission.isServer() && Actor.isAlive(FM.brakeShoeLastCarrier) && Time.current() < 60000L)
+				bigshipgeneric1 = (BigshipGeneric)FM.brakeShoeLastCarrier;
 			if (bigshipgeneric1 != null)
 			{
 				if (FM.brakeShoe)
@@ -672,64 +677,64 @@ public class Gear
 
 						// TODO: CTO Mod
 						// ----------------------------------------
-						((com.maddox.il2.fm.FlightModelMain)(FM)).Loc.set(L.getPoint());
-						((com.maddox.il2.fm.FlightModelMain)(FM)).Or.set(L.getOrient());
+						FM.Loc.set(L.getPoint());
+						FM.Or.set(L.getOrient());
 						if (!bAlreadySetCatapult)
 						{
 							bCatapultSet = setCatapultOffset(bigshipgeneric1);
 							bAlreadySetCatapult = true;
 						}
-						if (bCatapultAllow && !((com.maddox.il2.fm.FlightModelMain)(FM)).EI.getCatapult() && bCatapultSet)
+						if (bCatapultAllow && !FM.EI.getCatapult() && bCatapultSet)
 						{
-							((com.maddox.il2.engine.Actor)(bigshipgeneric1.getAirport())).pos.getCurrent();
-							com.maddox.JGP.Point3d point3d = L.getPoint();
-							com.maddox.il2.ai.air.CellAirField cellairfield = bigshipgeneric1.getCellTO();
-							double d4 = -((com.maddox.JGP.Tuple3d)(cellairfield.leftUpperCorner())).x - dCatapultOffsetX;
-							double d6 = ((com.maddox.JGP.Tuple3d)(cellairfield.leftUpperCorner())).y - dCatapultOffsetY;
-							com.maddox.il2.engine.Loc loc2 = new Loc(d6, d4, 0.0D, 0.0F, 0.0F, 0.0F);
+							((Actor)(bigshipgeneric1.getAirport())).pos.getCurrent();
+							Point3d point3d = L.getPoint();
+							CellAirField cellairfield = bigshipgeneric1.getCellTO();
+							double d4 = -cellairfield.leftUpperCorner().x - dCatapultOffsetX;
+							double d6 = cellairfield.leftUpperCorner().y - dCatapultOffsetY;
+							Loc loc2 = new Loc(d6, d4, 0.0D, 0.0F, 0.0F, 0.0F);
 							loc2.add(FM.brakeShoeLastCarrier.pos.getAbs());
-							com.maddox.JGP.Point3d point3d1 = loc2.getPoint();
-							double d8 = (((com.maddox.JGP.Tuple3d)(point3d)).x - ((com.maddox.JGP.Tuple3d)(point3d1)).x) * (((com.maddox.JGP.Tuple3d)(point3d)).x - ((com.maddox.JGP.Tuple3d)(point3d1)).x)
-									+ (((com.maddox.JGP.Tuple3d)(point3d)).y - ((com.maddox.JGP.Tuple3d)(point3d1)).y) * (((com.maddox.JGP.Tuple3d)(point3d)).y - ((com.maddox.JGP.Tuple3d)(point3d1)).y);
+							Point3d point3d1 = loc2.getPoint();
+							double d8 = (point3d.x - point3d1.x) * (point3d.x - point3d1.x)
+									+ (point3d.y - point3d1.y) * (point3d.y - point3d1.y);
 							if (d8 <= 100D)
 							{
 								L.set(d6, d4, FM.brakeShoeLoc.getZ(), FM.brakeShoeLoc.getAzimut(), FM.brakeShoeLoc.getTangage(), FM.brakeShoeLoc.getKren());
 								L.add(FM.brakeShoeLastCarrier.pos.getAbs());
-								((com.maddox.il2.fm.FlightModelMain)(FM)).Loc.set(L.getPoint());
-								((com.maddox.il2.fm.FlightModelMain)(FM)).Or.setYPR(FM.brakeShoeLastCarrier.pos.getAbsOrient().getYaw(), Pitch, FM.brakeShoeLastCarrier.pos.getAbsOrient().getRoll());
-								((com.maddox.il2.engine.Interpolate)(FM)).actor.pos.setAbs(((com.maddox.il2.fm.FlightModelMain)(FM)).Loc, ((com.maddox.il2.fm.FlightModelMain)(FM)).Or);
-								((com.maddox.il2.fm.FlightModelMain)(FM)).EI.setCatapult(((com.maddox.il2.fm.FlightModelMain)(FM)).M.mass, bCatapultBoost);
-								FM.brakeShoeLoc.set(((com.maddox.il2.engine.Interpolate)(FM)).actor.pos.getAbs());
+								FM.Loc.set(L.getPoint());
+								FM.Or.setYPR(FM.brakeShoeLastCarrier.pos.getAbsOrient().getYaw(), Pitch, FM.brakeShoeLastCarrier.pos.getAbsOrient().getRoll());
+								FM.actor.pos.setAbs(FM.Loc, FM.Or);
+								FM.EI.setCatapult(FM.M.mass, bCatapultBoost);
+								FM.brakeShoeLoc.set(FM.actor.pos.getAbs());
 								FM.brakeShoeLoc.sub(FM.brakeShoeLastCarrier.pos.getAbs());
 							}
 							else if (dCatapultOffsetX2 > 0.0D)
 							{
-								double d5 = -((com.maddox.JGP.Tuple3d)(cellairfield.leftUpperCorner())).x - dCatapultOffsetX2;
-								double d7 = ((com.maddox.JGP.Tuple3d)(cellairfield.leftUpperCorner())).y - dCatapultOffsetY2;
+								double d5 = -cellairfield.leftUpperCorner().x - dCatapultOffsetX2;
+								double d7 = cellairfield.leftUpperCorner().y - dCatapultOffsetY2;
 								loc2.set(d7, d5, 0.0D, 0.0F, 0.0F, 0.0F);
 								loc2.add(FM.brakeShoeLastCarrier.pos.getAbs());
-								com.maddox.JGP.Point3d point3d2 = loc2.getPoint();
-								double d9 = (((com.maddox.JGP.Tuple3d)(point3d)).x - ((com.maddox.JGP.Tuple3d)(point3d2)).x) * (((com.maddox.JGP.Tuple3d)(point3d)).x - ((com.maddox.JGP.Tuple3d)(point3d2)).x)
-										+ (((com.maddox.JGP.Tuple3d)(point3d)).y - ((com.maddox.JGP.Tuple3d)(point3d2)).y) * (((com.maddox.JGP.Tuple3d)(point3d)).y - ((com.maddox.JGP.Tuple3d)(point3d2)).y);
+								Point3d point3d2 = loc2.getPoint();
+								double d9 = (point3d.x - point3d2.x) * (point3d.x - point3d2.x)
+										+ (point3d.y - point3d2.y) * (point3d.y - point3d2.y);
 								if (d9 <= 100D)
 								{
 									L.set(d7, d5, FM.brakeShoeLoc.getZ(), FM.brakeShoeLoc.getAzimut(), FM.brakeShoeLoc.getTangage(), FM.brakeShoeLoc.getKren());
 									L.add(FM.brakeShoeLastCarrier.pos.getAbs());
-									((com.maddox.il2.fm.FlightModelMain)(FM)).Loc.set(L.getPoint());
-									((com.maddox.il2.fm.FlightModelMain)(FM)).Or.setYPR(FM.brakeShoeLastCarrier.pos.getAbsOrient().getYaw(), Pitch, FM.brakeShoeLastCarrier.pos.getAbsOrient().getRoll());
-									((com.maddox.il2.engine.Interpolate)(FM)).actor.pos.setAbs(((com.maddox.il2.fm.FlightModelMain)(FM)).Loc, ((com.maddox.il2.fm.FlightModelMain)(FM)).Or);
-									((com.maddox.il2.fm.FlightModelMain)(FM)).EI.setCatapult(((com.maddox.il2.fm.FlightModelMain)(FM)).M.mass, bCatapultBoost);
-									FM.brakeShoeLoc.set(((com.maddox.il2.engine.Interpolate)(FM)).actor.pos.getAbs());
+									FM.Loc.set(L.getPoint());
+									FM.Or.setYPR(FM.brakeShoeLastCarrier.pos.getAbsOrient().getYaw(), Pitch, FM.brakeShoeLastCarrier.pos.getAbsOrient().getRoll());
+									FM.actor.pos.setAbs(FM.Loc, FM.Or);
+									FM.EI.setCatapult(FM.M.mass, bCatapultBoost);
+									FM.brakeShoeLoc.set(FM.actor.pos.getAbs());
 									FM.brakeShoeLoc.sub(FM.brakeShoeLastCarrier.pos.getAbs());
 								}
 							}
 						}
-						else if (((com.maddox.il2.fm.FlightModelMain)(FM)).EI.getCatapult())
-							((com.maddox.il2.fm.FlightModelMain)(FM)).EI.resetCatapultTime();
-						FM.brakeShoeLastCarrier.getSpeed(((com.maddox.il2.fm.FlightModelMain)(FM)).Vwld);
+						else if (FM.EI.getCatapult())
+							FM.EI.resetCatapultTime();
+						FM.brakeShoeLastCarrier.getSpeed(FM.Vwld);
 						// ----------------------------------------
 
-						((com.maddox.il2.fm.FlightModelMain)(FM)).Vrel.set(0.0D, 0.0D, 0.0D);
+						FM.Vrel.set(0.0D, 0.0D, 0.0D);
 						for (int j1 = 0; j1 < 3; j1++)
 							gVelocity[j1] = 0.0D;
 
@@ -745,11 +750,11 @@ public class Gear
 				{
 					// TODO: CTO Mod
 					// ----------------------------------------
-					if (((com.maddox.il2.fm.FlightModelMain)(FM)).EI.getCatapult())
-						((com.maddox.il2.fm.FlightModelMain)(FM)).Or.setYPR(FM.brakeShoeLastCarrier.pos.getAbsOrient().getYaw(), ((com.maddox.il2.fm.FlightModelMain)(FM)).Or.getPitch(), FM.brakeShoeLastCarrier.pos.getAbsOrient().getRoll());
-					if (nOfGearsOnGr == 3 && nP == 3 && ((com.maddox.il2.fm.FlightModelMain)(FM)).Vrel.lengthSquared() < 1.0D)
+					if (FM.EI.getCatapult())
+						FM.Or.setYPR(FM.brakeShoeLastCarrier.pos.getAbsOrient().getYaw(), FM.Or.getPitch(), FM.brakeShoeLastCarrier.pos.getAbsOrient().getRoll());
+					if (nOfGearsOnGr == 3 && nP == 3 && FM.Vrel.lengthSquared() < 1.0D)
 					{
-						FM.brakeShoeLoc.set(((com.maddox.il2.engine.Interpolate)(FM)).actor.pos.getCurrent());
+						FM.brakeShoeLoc.set(FM.actor.pos.getCurrent());
 						FM.brakeShoeLoc.sub(FM.brakeShoeLastCarrier.pos.getCurrent());
 						FM.canChangeBrakeShoe = true;
 					}
@@ -782,9 +787,9 @@ public class Gear
 			return;
 		if (onGround && !isWater)
 			processingCollisionEffect();
-		double d2 = com.maddox.il2.engine.Engine.cur.land.HQ_ForestHeightHere(((com.maddox.JGP.Tuple3d)(((com.maddox.il2.fm.FlightModelMain)(FM)).Loc)).x, ((com.maddox.JGP.Tuple3d)(((com.maddox.il2.fm.FlightModelMain)(FM)).Loc)).y);
-		if (d2 > 0.0D && ((com.maddox.JGP.Tuple3d)(((com.maddox.il2.fm.FlightModelMain)(FM)).Loc)).z <= d1 + d2 && ((com.maddox.il2.objects.air.Aircraft)((com.maddox.il2.engine.Interpolate)(FM)).actor).isEnablePostEndAction(0.0D))
-			((com.maddox.il2.objects.air.Aircraft)((com.maddox.il2.engine.Interpolate)(FM)).actor).postEndAction(0.0D, com.maddox.il2.engine.Engine.actorLand(), 2, null);
+		double d2 = Engine.cur.land.HQ_ForestHeightHere(FM.Loc.x, FM.Loc.y);
+		if (d2 > 0.0D && FM.Loc.z <= d1 + d2 && ((Aircraft)FM.actor).isEnablePostEndAction(0.0D))
+			((Aircraft)FM.actor).postEndAction(0.0D, Engine.actorLand(), 2, null);
 	}
 
 	private boolean testNonGearCollision(int i)
@@ -807,7 +812,7 @@ public class Gear
 		}
 		double d = 1.0;
 		double d_11_ = this.d - 0.06;
-		double d_12_ = this.d + 0.04000000000000001;
+		double d_12_ = this.d + 0.04;
 		if (d_11_ > 0.0)
 			d_11_ = 0.0;
 		if (d_11_ < -2.0)
@@ -900,13 +905,13 @@ public class Gear
 			d_18_ = 0.0;
 		if (d_18_ > 4.5)
 			d_18_ = 4.5;
-		double d_19_ = 0.4000000059604645 * Math.max(roughness * roughness, roughness);
+		double d_19_ = 0.4 * Math.max(roughness * roughness, roughness);
 		if (d_18_ > d_19_)
 			d_18_ = d_19_;
 		if (roughness > d_18_)
 			roughness = d_18_;
-		if (roughness < 0.20000000298023224)
-			roughness = 0.20000000298023224;
+		if (roughness < 0.2)
+			roughness = 0.2;
 		if (i < 2)
 		{
 			this.d += ((double)World.Rnd().nextFloat(-2.0F, 1.0F) * 0.04 * d_18_ * MassCoeff);
@@ -918,7 +923,7 @@ public class Gear
 			this.d += ((double)(World.Rnd().nextFloat(-2.0F, 1.0F) * 0.04F) * d_18_ * MassCoeff);
 			d = Math.max(-9500.0 * (this.d - 0.1), -950000.0 * this.d);
 			if (Pnt[i].x > 0.0F && Fd.dot(Normal) >= 0.0)
-				d *= 0.44999998807907104;
+				d *= 0.45;
 			else
 				d *= (double)tailStiffness;
 		}
@@ -1147,7 +1152,7 @@ public class Gear
 						d_38_ += NormalVPrj * NormalVPrj * 0.02;
 					if (d_38_ > 1.0)
 					{
-						landHit(i, (double)(float)d_38_);
+						landHit(i, d_38_);
 						Aircraft aircraft = (Aircraft)FM.actor;
 						aircraft.msgCollision(aircraft, "GearC2_D0", "GearC2_D0");
 					}
@@ -1600,7 +1605,7 @@ public class Gear
 				return 5.0;
 			default :
 				// TODO: Edited by |ZUTI|: default value, means nothing is on this point. Check if the point is in defined airfields areas on the map...
-				// com.maddox.il2.ai.World.land().config
+				// World.land().config
 				// ------------------------------------------------------------
 				if (zutiCurrentZAP != null)
 				{
@@ -1608,7 +1613,7 @@ public class Gear
 					if (result > -1)
 					{
 						if (zutiHasPlaneSkisOnWinterCamo && result > 2.4)
-							return 2.4000000953674316;
+							return 2.4;
 
 						return result;
 					}
@@ -1626,7 +1631,7 @@ public class Gear
 							zutiCurrentZAP = point;
 
 							if (zutiHasPlaneSkisOnWinterCamo)
-								return 2.4000000953674316;
+								return 2.4;
 
 							return result;
 						}
@@ -1704,8 +1709,9 @@ public class Gear
 
 	// TODO: CTO Mod
 	// ----------------------------------------
-	public boolean setCatapultOffset(com.maddox.il2.objects.ships.BigshipGeneric bigshipgeneric)
+	public boolean setCatapultOffset(BigshipGeneric bigshipgeneric)
 	{
+        printDebugMessage(DEBUG_DETAILED, "setCatapultOffset(" + bigshipgeneric.getClass().getName() + ")"); // TODO: Graf Zeppelin Debug
 		boolean flag = false;
 		boolean flag1 = false;
 		boolean flag2 = false;
@@ -1714,10 +1720,10 @@ public class Gear
 		dCatapultOffsetX2 = 0.0D;
 		dCatapultOffsetY2 = 0.0D;
 		bCatapultAI = false;
-		if ((bigshipgeneric instanceof com.maddox.il2.objects.ships.Ship.USSKitkunBayCVE71) || (bigshipgeneric instanceof com.maddox.il2.objects.ships.Ship.USSCasablancaCVE55)
-				|| (bigshipgeneric instanceof com.maddox.il2.objects.ships.Ship.USSShamrockBayCVE84))
+		if ((bigshipgeneric instanceof Ship.USSKitkunBayCVE71) || (bigshipgeneric instanceof Ship.USSCasablancaCVE55)
+				|| (bigshipgeneric instanceof Ship.USSShamrockBayCVE84))
 		{
-			dCatapultOffsetX = 4.2000000000000002D;
+			dCatapultOffsetX = 4.2D;
 			dCatapultOffsetY = -64D;
 			flag2 = true;
 			if (!bCatapultAllowAI || !bCatapultAI_CVE)
@@ -1725,11 +1731,11 @@ public class Gear
 			else
 				bCatapultAI = true;
 		}
-		else if ((bigshipgeneric instanceof com.maddox.il2.objects.ships.Ship.USSEssexCV9) || (bigshipgeneric instanceof com.maddox.il2.objects.ships.Ship.USSIntrepidCV11))
+		else if ((bigshipgeneric instanceof Ship.USSEssexCV9) || (bigshipgeneric instanceof Ship.USSIntrepidCV11))
 		{
 			dCatapultOffsetX = 9D;
 			dCatapultOffsetY = -130D;
-			dCatapultOffsetX2 = 27.600000000000001D;
+			dCatapultOffsetX2 = 27.6D;
 			dCatapultOffsetY2 = -137.5D;
 			flag2 = true;
 			if (!bCatapultAllowAI || !bCatapultAI_EssexClass)
@@ -1737,7 +1743,7 @@ public class Gear
 			else
 				bCatapultAI = true;
 		}
-		else if (bigshipgeneric instanceof com.maddox.il2.objects.ships.Ship.HMSIllustriousCV)
+		else if (bigshipgeneric instanceof Ship.HMSIllustriousCV)
 		{
 			dCatapultOffsetX = 7D;
 			dCatapultOffsetY = -68D;
@@ -1749,24 +1755,27 @@ public class Gear
 		}
 		try
 		{
-			java.lang.Class.forName("com.maddox.il2.objects.ships.Ship$Carrier0");
+			Class.forName("com.maddox.il2.objects.ships.Ship$Carrier1"); // TODO: Patch Pack 107, fix missing catapult on german carriers
+//            Class.forName("com.maddox.il2.objects.ships.Ship$Carrier0");
 			flag = true;
 		}
-		catch (java.lang.ClassNotFoundException classnotfoundexception)
+		catch (ClassNotFoundException classnotfoundexception)
 		{}
 		try
 		{
-			java.lang.Class.forName("com.maddox.il2.objects.ships.Ship$USSBelleauWoodCVL24");
+			Class.forName("com.maddox.il2.objects.ships.Ship$USSBelleauWoodCVL24");
 			flag1 = true;
 		}
-		catch (java.lang.ClassNotFoundException classnotfoundexception1)
+		catch (ClassNotFoundException classnotfoundexception1)
 		{}
-		if (!flag2 && flag)
-			if (bigshipgeneric instanceof com.maddox.il2.objects.ships.Ship.GrafZeppelin)
+        printDebugMessage(DEBUG_DETAILED, "setCatapultOffset(" + bigshipgeneric.getClass().getName() + ") flag2 = " + flag2 + ", flag = " + flag); // TODO: Graf Zeppelin Debug
+		if (!flag2 && flag) {
+			if ((bigshipgeneric instanceof Ship.GrafZeppelin) || (bigshipgeneric instanceof Ship.PeterStrasser))
 			{
-				dCatapultOffsetX = 4.7999999999999998D;
+			    printDebugMessage(DEBUG_NORMAL, "### GRAF ZEPPELIN / PETER STRASSER CATAPULT ENABLED!!! ###"); // TODO: Graf Zeppelin Debug
+				dCatapultOffsetX = 4.8D;
 				dCatapultOffsetY = -113.5D;
-				dCatapultOffsetX2 = 19.100000000000001D;
+				dCatapultOffsetX2 = 19.1D;
 				dCatapultOffsetY2 = -113.5D;
 				flag2 = true;
 				if (!bCatapultAllowAI || !bCatapultAI_GrafZep)
@@ -1774,9 +1783,9 @@ public class Gear
 				else
 					bCatapultAI = true;
 			}
-			else if (bigshipgeneric instanceof com.maddox.il2.objects.ships.Ship.Carrier1)
+			else if (bigshipgeneric instanceof Ship.Carrier1)
 			{
-				dCatapultOffsetX = 4.2000000000000002D;
+				dCatapultOffsetX = 4.2D;
 				dCatapultOffsetY = -64D;
 				flag2 = true;
 				if (!bCatapultAllowAI || !bCatapultAI_CVE)
@@ -1784,9 +1793,10 @@ public class Gear
 				else
 					bCatapultAI = true;
 			}
+		}
 		if (!flag2
 				&& flag1
-				&& ((bigshipgeneric instanceof com.maddox.il2.objects.ships.Ship.USSSanJacintoCVL30) || (bigshipgeneric instanceof com.maddox.il2.objects.ships.Ship.USSBelleauWoodCVL24) || (bigshipgeneric instanceof com.maddox.il2.objects.ships.Ship.USSPrincetonCVL23)))
+				&& ((bigshipgeneric instanceof Ship.USSSanJacintoCVL30) || (bigshipgeneric instanceof Ship.USSBelleauWoodCVL24) || (bigshipgeneric instanceof Ship.USSPrincetonCVL23)))
 		{
 			if (bStandardDeckCVL)
 			{
@@ -1828,4 +1838,20 @@ public class Gear
 	// ---------------------------------------------------------------------------------
 	public ZutiAirfieldPoint zutiCurrentZAP = null;
 	// ---------------------------------------------------------------------------------
+
+    private static int debugLevel = Integer.MIN_VALUE;
+    private static final int DEBUG_NONE = 0;
+    private static final int DEBUG_NORMAL = 1;
+    private static final int DEBUG_DETAILED = 2;
+    private static final int DEBUG_DEFAULT = DEBUG_NONE;
+    
+    private static int curDebugLevel() {
+        if (debugLevel == Integer.MIN_VALUE) debugLevel = Config.cur.ini.get("Mods", "DEBUG_GEAR", DEBUG_DEFAULT);
+        return debugLevel;
+    }
+    
+    public static void printDebugMessage(int minLogLevel, String theMessage) {
+        if (curDebugLevel() < minLogLevel) return;
+        System.out.println(theMessage);
+    }
 }

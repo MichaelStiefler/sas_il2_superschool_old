@@ -26,7 +26,8 @@ public class HierMesh extends Mesh {
 
         public ChunkState(String s) {
             try {
-                indx = chunkFind(s);
+//                indx = chunkFind(s);
+                indx = chunkFindCheck(s); // TODO: Patch Pack 107 use chunkFindCheck to avoid internal errors flooding the log!
             } catch (Exception exception) {
                 bExist = false;
                 return;
@@ -263,7 +264,7 @@ public class HierMesh extends Mesh {
         if (chunkstate.bExist)
             return chunkstate;
         else {
-            printDebugMessage(DEBUG_DETAILED, "HierMesh Debugger Error in chunkState(" + s + "): Chunk '" + s + "' does not exist in HierMesh '" + this.meshName + "'.");
+            if (this.meshName != null) printDebugMessage(DEBUG_DETAILED, "HierMesh Debugger Error in chunkState(" + s + "): Chunk '" + s + "' does not exist in HierMesh '" + this.meshName + "'.");
             return null;
         }
     }
@@ -275,7 +276,7 @@ public class HierMesh extends Mesh {
 
     public void setCurChunk(String s) {
         this.curchunk = this.SetCurChunkByName(this.cppObj, s);
-        if (this.curchunk < 0) {
+        if (this.curchunk < 0 && this.meshName != null ) {
             printDebugMessage(DEBUG_DETAILED, "HierMesh Debugger Error in setCurChunk(" + s + "): Chunk '" + s + "' does not exist in HierMesh '" + this.meshName + "'.");
         }
     }
@@ -285,10 +286,11 @@ public class HierMesh extends Mesh {
     }
 
     public int chunkFind(String s) {
-        if (HierMesh.curDebugLevel() < DEBUG_NORMAL) {
-            return this.ChunkFindCheck(this.cppObj, s);
-        }
+//        if (HierMesh.curDebugLevel() < DEBUG_NORMAL) { // Temporarily disabled workaround until further checks completed
+//            return this.ChunkFindCheck(this.cppObj, s);
+//        }
         int retVal = this.ChunkFind(this.cppObj, s);
+//        System.out.println("chunkFind(" + s + ") = " + retVal);
         if (retVal < 0) {
             printDebugMessage(DEBUG_DETAILED, "HierMesh Error in chunkFind(" + s + "): Chunk '" + s + "' does not exist in HierMesh '" + this.meshName + "'.");
         }
@@ -297,7 +299,7 @@ public class HierMesh extends Mesh {
 
     public int chunkFindCheck(String s) {
         int retVal = this.ChunkFindCheck(this.cppObj, s);
-        if (retVal < 0) {
+        if (retVal < 0 && this.meshName != null ) {
             printDebugMessage(DEBUG_EXTREME, "HierMesh Debugger Error in chunkFindCheck(" + s + "): Chunk '" + s + "' does not exist in HierMesh '" + this.meshName + "'.");
         }
         return retVal;
@@ -373,7 +375,7 @@ public class HierMesh extends Mesh {
 
     public int hookFind(String s) {
         int retVal = this.HookFind(this.cppObj, s);
-        if (retVal < 0) {
+        if (retVal < 0 && this.meshName != null ) {
             printDebugMessage(DEBUG_EXTREME, "HierMesh Debugger Error in hookFind(" + s + "): Hook '" + s + "' does not exist in HierMesh '" + this.meshName + "'.");
         }
         return retVal;
@@ -386,7 +388,7 @@ public class HierMesh extends Mesh {
         } else {
             retVal--;
         }
-        if (retVal < 0) {
+        if (retVal < 0 && this.meshName != null ) {
             printDebugMessage(DEBUG_EXTREME, "HierMesh Debugger Error in hookParentChunk(" + s + "): Hook '" + s + "' does not exist in HierMesh '" + this.meshName + "'.");
         }
         return retVal;
@@ -857,6 +859,10 @@ public class HierMesh extends Mesh {
     
     public static void printDebugMessage(int minLogLevel, String theMessage) {
         if (curDebugLevel() < minLogLevel) return;
+        if (curDebugLevel() == DEBUG_EXTREME) {
+            printDebug(theMessage);
+            return;
+        }
         System.out.println(theMessage);
     }
 
@@ -873,7 +879,7 @@ public class HierMesh extends Mesh {
         return retVal;
     }
 
-    public static void printDebugMessage(String theMessage) {
+    public static void printDebug(String theMessage) {
         if (curDebugLevel() == 0) return;
         System.out.println(theMessage);
         if (debugLevel < DEBUG_EXTREME) return;

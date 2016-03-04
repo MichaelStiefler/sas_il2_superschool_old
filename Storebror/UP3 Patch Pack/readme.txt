@@ -89,6 +89,7 @@ Included fixes:
 - MDS/RRR: other players will only see one rocket being rearmed although you have (and see) all: Fixed
 - MDS/RRR: other players will not see any bomb/droptank/torpedo rearming at all: Fixed
 - MDS/RRR: other players will see an empty loadout when loadout options are changed: Fixed
+- Missing Catapults and arrestor wires on german carriers "Graf Zeppelin" and "Peter Strasser" fixed
 
 Additionally implemented Debugging Switches:
 You can adjust log.lst debugging by setting the following values in the conf.ini [Mods] section:
@@ -106,6 +107,7 @@ DEBUG_USER=<0/1>           User enhanced debugging, default=0, 0=disable, 1=enab
 DEBUG_TORPEDO=<0/1>        Torpedo enhanced debugging, default=0, 0=disable, 1=enable
 DEBUG_ZSM_GAMEORDER=<0/1>  ZutiSupportMethods_GameOrder enhanced debugging, default=0, 0=disable, 1=enable
 DEBUG_ZSM_ENGINE=<0/1>     ZutiSupportMethods_Engine enhanced debugging, default=0, 0=disable, 1=enable
+DEBUG_GEAR=<0-2>           Gear enhanced debugging, default=0, 0=disable, 1=enable, 2=detailed, useful for carrier takeoff mod debugging
 
 ********************
 
