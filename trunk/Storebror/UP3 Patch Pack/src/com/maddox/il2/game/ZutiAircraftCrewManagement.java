@@ -94,6 +94,8 @@ public class ZutiAircraftCrewManagement {
                 System.out.println("Chocks engaged = " + isAircraftOnChocks);
                 boolean isAircraftGearDamaged = netaircraft.FM.Gears.isAnyDamaged();
                 System.out.println("Gear damaged = " + isAircraftGearDamaged);
+                boolean bDamagedGround = Reflection.getBoolean(netaircraft.FM, "bDamagedGround");
+                System.out.println("bDamagedGround = " + bDamagedGround);
                 boolean isReflyOverride = NetAircraft.ZUTI_REFLY_OWERRIDE;
                 System.out.println("Refly override = " + isReflyOverride);
                 boolean isLandedOnWater = false;
@@ -118,6 +120,8 @@ public class ZutiAircraftCrewManagement {
                     break;
                 if (isLandedOnWater)
                     break;
+                if (bDamagedGround)
+                    break;
                 System.out.println("This could become a suspicious refly attempt, current time is " + Time.current());
                 netuser.setLastSuspiciousPreRefly(Time.current());
                 
@@ -140,7 +144,6 @@ public class ZutiAircraftCrewManagement {
                 System.out.println("isSentBuryNote = " + netaircraft.FM.isSentBuryNote());
                 System.out.println("isSentControlsOutNote = " + netaircraft.FM.isSentControlsOutNote());
                 System.out.println("bDamaged = " + Reflection.getBoolean(netaircraft.FM, "bDamaged"));
-                System.out.println("bDamagedGround = " + Reflection.getBoolean(netaircraft.FM, "bDamagedGround"));
                 System.out.println("flags0 = " + Reflection.getLong(netaircraft.FM, "flags0"));
                 
                 dumpArray(netaircraft.FM.AS.astateBleedingNext, "astateBleedingNext contents:");
@@ -165,10 +168,6 @@ public class ZutiAircraftCrewManagement {
                 System.out.println("bIsOnInadequateAOA = " + Reflection.getBoolean(netaircraft.FM, "bIsOnInadequateAOA"));
                 System.out.println("legsWounded = " + Reflection.getBoolean(netaircraft.FM, "legsWounded"));
                 System.out.println("armsWounded = " + Reflection.getBoolean(netaircraft.FM, "armsWounded"));
-
-
-                
-                
             } while (false);
         }
         // ---
@@ -220,6 +219,7 @@ public class ZutiAircraftCrewManagement {
                 System.out.println("********************************************************************************************************************************************");
                 System.out.println(" ****************************************************************************************************************************************** ");
                 System.out.println();
+                System.out.println("Time: " + Time.current());
                 System.out.println("ZutiAircraftCrewManagement isSuspiciousRefly(" + byte0 + ", " + netuser.uniqueName() + ") = true and reflykick is on, player will be kicked!");
                 return true;
             }

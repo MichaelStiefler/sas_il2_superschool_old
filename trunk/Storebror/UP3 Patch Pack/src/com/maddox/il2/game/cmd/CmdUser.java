@@ -64,38 +64,38 @@ public class CmdUser extends Cmd {
                     s = netuserleft.uniqueName;
                     flag = true;
                 }
-                printDebugMessage("-------------------------------------------------------");
-                printDebugMessage("Name: \t" + s);
-                printDebugMessage("Score: \t" + (flag ? 0 : (int) netuserstat.score));
-                printDebugMessage("State: \t" + playerState(netuserstat, flag));
-                printDebugMessage("Enemy Aircraft Kill: \t" + netuserstat.enemyKill[0]);
-                printDebugMessage("Enemy Static Aircraft Kill: \t" + netuserstat.enemyKill[8]);
-                printDebugMessage("Enemy Tank Kill: \t" + netuserstat.enemyKill[1]);
-                printDebugMessage("Enemy Car Kill: \t" + netuserstat.enemyKill[2]);
-                printDebugMessage("Enemy Artillery Kill: \t" + netuserstat.enemyKill[3]);
-                printDebugMessage("Enemy AAA Kill: \t" + netuserstat.enemyKill[4]);
-                printDebugMessage("Enemy Wagon Kill: \t" + netuserstat.enemyKill[6]);
-                printDebugMessage("Enemy Ship Kill: \t" + netuserstat.enemyKill[7]);
-                printDebugMessage("Enemy Radio Kill: \t" + netuserstat.enemyKill[9]);
-                printDebugMessage("Friend Aircraft Kill: \t" + netuserstat.friendKill[0]);
-                printDebugMessage("Friend Static Aircraft Kill: \t" + netuserstat.friendKill[8]);
-                printDebugMessage("Friend Tank Kill: \t" + netuserstat.friendKill[1]);
-                printDebugMessage("Friend Car Kill: \t" + netuserstat.friendKill[2]);
-                printDebugMessage("Friend Artillery Kill: \t" + netuserstat.friendKill[3]);
-                printDebugMessage("Friend AAA Kill: \t" + netuserstat.friendKill[4]);
-                printDebugMessage("Friend Wagon Kill: \t" + netuserstat.friendKill[6]);
-                printDebugMessage("Friend Ship Kill: \t" + netuserstat.friendKill[7]);
-                printDebugMessage("Friend Radio Kill: \t" + netuserstat.friendKill[9]);
-                printDebugMessage("Fire Bullets: \t\t" + netuserstat.bulletsFire);
-                printDebugMessage("Hit Bullets: \t\t" + netuserstat.bulletsHit);
-                printDebugMessage("Hit Air Bullets: \t" + netuserstat.bulletsHitAir);
-                printDebugMessage("Fire Roskets: \t\t" + netuserstat.rocketsFire);
-                printDebugMessage("Hit Roskets: \t\t" + netuserstat.rocketsHit);
-                printDebugMessage("Fire Bombs: \t\t" + netuserstat.bombFire);
-                printDebugMessage("Hit Bombs: \t\t" + netuserstat.bombHit);
+                INFO_HARD("-------------------------------------------------------");
+                INFO_HARD("Name: \t" + s);
+                INFO_HARD("Score: \t" + (flag ? 0 : (int) netuserstat.score));
+                INFO_HARD("State: \t" + playerState(netuserstat, flag));
+                INFO_HARD("Enemy Aircraft Kill: \t" + netuserstat.enemyKill[0]);
+                INFO_HARD("Enemy Static Aircraft Kill: \t" + netuserstat.enemyKill[8]);
+                INFO_HARD("Enemy Tank Kill: \t" + netuserstat.enemyKill[1]);
+                INFO_HARD("Enemy Car Kill: \t" + netuserstat.enemyKill[2]);
+                INFO_HARD("Enemy Artillery Kill: \t" + netuserstat.enemyKill[3]);
+                INFO_HARD("Enemy AAA Kill: \t" + netuserstat.enemyKill[4]);
+                INFO_HARD("Enemy Wagon Kill: \t" + netuserstat.enemyKill[6]);
+                INFO_HARD("Enemy Ship Kill: \t" + netuserstat.enemyKill[7]);
+                INFO_HARD("Enemy Radio Kill: \t" + netuserstat.enemyKill[9]);
+                INFO_HARD("Friend Aircraft Kill: \t" + netuserstat.friendKill[0]);
+                INFO_HARD("Friend Static Aircraft Kill: \t" + netuserstat.friendKill[8]);
+                INFO_HARD("Friend Tank Kill: \t" + netuserstat.friendKill[1]);
+                INFO_HARD("Friend Car Kill: \t" + netuserstat.friendKill[2]);
+                INFO_HARD("Friend Artillery Kill: \t" + netuserstat.friendKill[3]);
+                INFO_HARD("Friend AAA Kill: \t" + netuserstat.friendKill[4]);
+                INFO_HARD("Friend Wagon Kill: \t" + netuserstat.friendKill[6]);
+                INFO_HARD("Friend Ship Kill: \t" + netuserstat.friendKill[7]);
+                INFO_HARD("Friend Radio Kill: \t" + netuserstat.friendKill[9]);
+                INFO_HARD("Fire Bullets: \t\t" + netuserstat.bulletsFire);
+                INFO_HARD("Hit Bullets: \t\t" + netuserstat.bulletsHit);
+                INFO_HARD("Hit Air Bullets: \t" + netuserstat.bulletsHitAir);
+                INFO_HARD("Fire Roskets: \t\t" + netuserstat.rocketsFire);
+                INFO_HARD("Hit Roskets: \t\t" + netuserstat.rocketsHit);
+                INFO_HARD("Fire Bombs: \t\t" + netuserstat.bombFire);
+                INFO_HARD("Hit Bombs: \t\t" + netuserstat.bombHit);
             }
 
-            printDebugMessage("-------------------------------------------------------");
+            INFO_HARD("-------------------------------------------------------");
         } else {
             INFO_HARD(" N       Name           Ping    Score   Army        Aircraft");
             for (int j = 0; j < arraylist.size(); j++) {
