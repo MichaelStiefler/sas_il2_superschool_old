@@ -75,6 +75,8 @@ public class AircraftHotKeys
  	protected static final int BRAKE_LEFT = 145;
  	private int flapIndex = 0;
  	private int varWingIndex = 0;
+    private boolean useSmartAxisForPower2 = false;
+    private boolean useSmartAxisForPitch2 = false;
  	// --------------------------------------------------------
     
     public AircraftHotKeys()
@@ -97,7 +99,9 @@ public class AircraftHotKeys
         bombSightFovEnabled = false;
         unconvertedFoV = 0.0F;
         useSmartAxisForPower = false;
+        useSmartAxisForPower2 = false;
         useSmartAxisForPitch = false;
+        useSmartAxisForPitch2 = false;
         bAutoAutopilot = false;
         switchToCockpitRequest = -1;
         cmdFov = new HotKeyCmd[16];
@@ -2084,6 +2088,10 @@ public class AircraftHotKeys
 
     private void doCmdPilotMove(int i, float f)
     {
+        float flp12 = 0.0F;
+        float flp23 = 0.0F;
+        float flp34 = 0.0F;
+
         if(!setPilot())
             return;
         switch(i)
@@ -2191,18 +2199,68 @@ public class AircraftHotKeys
             if(Math.abs(f3 - lastPower1) < 0.01F)
                 break;
             lastPower1 = f3;
-            if(useSmartAxisForPower && FM.EI.engines.length == 3)
+            flp12 = (lastPower1 + lastPower2) / 2.0F;
+            if (useSmartAxisForPower && FM.EI.engines.length == 3)
             {
                 setPowerControl(f3, 1);
-                float f9 = (lastPower1 + lastPower2) / 2.0F;
-                setPowerControl(f9, 2);
+                setPowerControl(flp12, 2);
                 break;
             }
-            if(useSmartAxisForPower && FM.EI.engines.length == 4)
+            else if (useSmartAxisForPower && FM.EI.engines.length == 4)
             {
                 setPowerControl(f3, 1);
                 setPowerControl(f3, 2);
-            } else
+                break;
+            }
+            else if (useSmartAxisForPower && FM.EI.engines.length == 5)
+            {
+                setPowerControl(f3, 1);
+                setPowerControl(f3, 2);
+                setPowerControl(flp12, 3);
+                break;
+            }
+            else if (useSmartAxisForPower && FM.EI.engines.length == 6)
+            {
+                setPowerControl(f3, 1);
+                setPowerControl(f3, 2);
+                setPowerControl(f3, 3);
+                break;
+            }
+            else if (useSmartAxisForPower2 && FM.EI.engines.length == 6)
+            {
+                setPowerControl(f3, 1);
+                setPowerControl(flp12, 2);
+                break;
+            }
+            else if (useSmartAxisForPower && FM.EI.engines.length == 7)
+            {
+                setPowerControl(f3, 1);
+                setPowerControl(f3, 2);
+                setPowerControl(f3, 3);
+                setPowerControl(flp12, 4);
+                break;
+            }
+            else if (useSmartAxisForPower2 && FM.EI.engines.length == 7)
+            {
+                setPowerControl(f3, 1);
+                setPowerControl(flp12, 2);
+                break;
+            }
+            else if (useSmartAxisForPower && FM.EI.engines.length == 8)
+            {
+                setPowerControl(f3, 1);
+                setPowerControl(f3, 2);
+                setPowerControl(f3, 3);
+                setPowerControl(f3, 4);
+                break;
+            }
+            else if (useSmartAxisForPower2 && FM.EI.engines.length == 8)
+            {
+                setPowerControl(f3, 1);
+                setPowerControl(f3, 2);
+                break;
+            }
+            else
             {
                 setPowerControl(f3, 1);
             }
@@ -2210,21 +2268,79 @@ public class AircraftHotKeys
 
         case 16: // '\020'
             float f4 = f * 0.55F + 0.55F;
-            if(Math.abs(f4 - lastPower2) < 0.01F)
+            if (Math.abs(f4 - lastPower2) < 0.01F)
                 break;
             lastPower2 = f4;
-            if(useSmartAxisForPower && FM.EI.engines.length == 3)
+            flp12 = (lastPower1 + lastPower2) / 2.0F;
+            flp23 = (lastPower2 + lastPower3) / 2.0F;
+            if (useSmartAxisForPower && FM.EI.engines.length == 3)
             {
                 setPowerControl(f4, 3);
-                float f10 = (lastPower1 + lastPower2) / 2.0F;
-                setPowerControl(f10, 2);
+                setPowerControl(flp12, 2);
                 break;
             }
-            if(useSmartAxisForPower && FM.EI.engines.length == 4)
+            else if (useSmartAxisForPower && FM.EI.engines.length == 4)
             {
                 setPowerControl(f4, 3);
                 setPowerControl(f4, 4);
-            } else
+                break;
+            }
+            else if (useSmartAxisForPower && FM.EI.engines.length == 5)
+            {
+                setPowerControl(f4, 4);
+                setPowerControl(f4, 5);
+                setPowerControl(flp12, 3);
+                break;
+            }
+            else if (useSmartAxisForPower2 && FM.EI.engines.length == 5)
+            {
+                    setPowerControl(f4, 2);
+                    setPowerControl(flp23, 3);
+                    break;
+            }
+            else if (useSmartAxisForPower && FM.EI.engines.length == 6)
+            {
+                setPowerControl(f4, 4);
+                setPowerControl(f4, 5);
+                setPowerControl(f4, 6);
+                break;
+            }
+            else if (useSmartAxisForPower2 && FM.EI.engines.length == 6)
+            {
+                setPowerControl(f4, 3);
+                setPowerControl(flp12, 2);
+                break;
+            }
+            else if (useSmartAxisForPower && FM.EI.engines.length == 7)
+            {
+                setPowerControl(f4, 5);
+                setPowerControl(f4, 6);
+                setPowerControl(f4, 7);
+                setPowerControl(flp12, 4);
+                break;
+            }
+            else if (useSmartAxisForPower2 && FM.EI.engines.length == 7)
+            {
+                setPowerControl(f4, 3);
+                setPowerControl(flp12, 2);
+                setPowerControl(flp23, 4);
+                break;
+            }
+            else if (useSmartAxisForPower && FM.EI.engines.length == 8)
+            {
+                setPowerControl(f4, 5);
+                setPowerControl(f4, 6);
+                setPowerControl(f4, 7);
+                setPowerControl(f4, 8);
+                break;
+            }
+            else if (useSmartAxisForPower2 && FM.EI.engines.length == 8)
+            {
+                setPowerControl(f4, 3);
+                setPowerControl(f4, 4);
+                break;
+            }
+            else
             {
                 setPowerControl(f4, 2);
             }
@@ -2232,18 +2348,72 @@ public class AircraftHotKeys
 
         case 17: // '\021'
             float f5 = f * 0.55F + 0.55F;
-            if(Math.abs(f5 - lastPower3) >= 0.01F)
+            if (Math.abs(f5 - lastPower3) < 0.01F)
+                break;
+            lastPower3 = f5;
+            flp23 = (lastPower2 + lastPower3) / 2.0F;
+            flp34 = (lastPower3 + lastPower4) / 2.0F;
+            if (useSmartAxisForPower2 && FM.EI.engines.length == 5)
             {
-                lastPower3 = f5;
+                setPowerControl(f5, 4);
+                setPowerControl(flp23, 3);
+                break;
+            }
+            else if (useSmartAxisForPower2 && FM.EI.engines.length == 6)
+            {
+                setPowerControl(f5, 4);
+                setPowerControl(flp34, 5);
+                break;
+            }
+            else if (useSmartAxisForPower2 && FM.EI.engines.length == 7)
+            {
+                setPowerControl(f5, 5);
+                setPowerControl(flp23, 4);
+                setPowerControl(flp34, 6);
+                break;
+            }
+            else if (useSmartAxisForPower2 && FM.EI.engines.length == 8)
+            {
+                setPowerControl(f5, 5);
+                setPowerControl(f5, 6);
+                break;
+            }
+            else
+            {
                 setPowerControl(f5, 3);
             }
             break;
 
         case 18: // '\022'
             float f6 = f * 0.55F + 0.55F;
-            if(Math.abs(f6 - lastPower4) >= 0.01F)
+            if (Math.abs(f6 - lastPower4) < 0.01F) break;
+            lastPower4 = f6;
+            flp34 = (lastPower3 + lastPower4) / 2.0F;
+            if (useSmartAxisForPower2 && FM.EI.engines.length == 5)
             {
-                lastPower4 = f6;
+                setPowerControl(f6, 5);
+                break;
+            }
+            else if (useSmartAxisForPower2 && FM.EI.engines.length == 6)
+            {
+                setPowerControl(f6, 6);
+                setPowerControl(flp34, 5);
+                break;
+            }
+            else if (useSmartAxisForPower2 && FM.EI.engines.length == 7)
+            {
+                setPowerControl(f6, 7);
+                setPowerControl(flp34, 6);
+                break;
+            }
+            else if (useSmartAxisForPower2 && FM.EI.engines.length == 8)
+            {
+                setPowerControl(f6, 7);
+                setPowerControl(f6, 8);
+                break;
+            }
+            else
+            {
                 setPowerControl(f6, 4);
             }
             break;
@@ -4957,7 +5127,9 @@ public class AircraftHotKeys
     private void checkSmartControlsUse()
     {
         useSmartAxisForPower = false;
+        useSmartAxisForPower2 = false;
         useSmartAxisForPitch = false;
+        useSmartAxisForPitch2 = false;
         if(!World.cur().useSmartAxis)
             return;
         boolean aflag[] = {
@@ -4994,8 +5166,12 @@ public class AircraftHotKeys
 
         if(aflag[0] && aflag[1] && !aflag[2] && !aflag[3])
             useSmartAxisForPower = true;
+        if(aflag[0] && aflag[1] && aflag[2] && aflag[3])
+            useSmartAxisForPower2 = true;
         if(aflag1[0] && aflag1[1] && !aflag1[2] && !aflag1[3])
             useSmartAxisForPitch = true;
+        if(aflag1[0] && aflag1[1] && aflag1[2] && aflag1[3])
+            useSmartAxisForPitch2 = true;
     }
 
     private int getFoVInt(float f)
