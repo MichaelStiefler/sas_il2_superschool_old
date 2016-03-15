@@ -12,7 +12,11 @@ import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 import com.maddox.util.HashMapInt;
 
-public class Short_Sunderland extends Sunderlandxyz implements TypeSeaPlane, TypeTransport, TypeBomber {
+/*
+ * Sunderland Mk.II by Barnesy/CWatson/Freemodding
+ * Latest edit: 2016-03-15 by SAS~Storebror
+ */
+public class Short_Sunderland extends Sunderlandxyz implements TypeSailPlane, TypeSeaPlane, TypeTransport, TypeBomber {
 
     public Short_Sunderland() {
         this.bSightAutomation = false;
@@ -25,16 +29,24 @@ public class Short_Sunderland extends Sunderlandxyz implements TypeSeaPlane, Typ
         this.fSightCurReadyness = 0.0F;
     }
 
-    // Fix number of Crew members and roles in plane
+    // Fix number of Crew members and roles in plane in case H8K1 stand in flight model is used only.
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        this.FM.crew = 6;
-        this.FM.AS.astatePilotFunctions[0] = 1; // pilot
-        this.FM.AS.astatePilotFunctions[1] = 2; // copilot
-        this.FM.AS.astatePilotFunctions[2] = 3; // nose gunner
-        this.FM.AS.astatePilotFunctions[3] = 10; // Radio Master Operator, Navigator
-        this.FM.AS.astatePilotFunctions[4] = 4; // dorsal gunner
-        this.FM.AS.astatePilotFunctions[5] = 7; // tail gunner
+//        this.FM.crew = 6;
+//        this.FM.AS.astatePilotFunctions[0] = 1; // pilot
+//        this.FM.AS.astatePilotFunctions[1] = 2; // copilot
+//        this.FM.AS.astatePilotFunctions[2] = 3; // nose gunner
+//        this.FM.AS.astatePilotFunctions[3] = 10; // Radio Master Operator, Navigator
+//        this.FM.AS.astatePilotFunctions[4] = 4; // dorsal gunner
+//        this.FM.AS.astatePilotFunctions[5] = 7; // tail gunner
+
+        // Hide radar equipment and bomb rack in case of rescue duty
+        if (this.thisWeaponsName.toLowerCase().startsWith("rescue")) {
+            this.hierMesh().chunkVisible("YAGGL_D0", false);
+            this.hierMesh().chunkVisible("YAGGR_D0", false);
+            this.hierMesh().chunkVisible("Wire_D0", false);
+            this.hierMesh().chunkVisible("BH_D0", false);
+        }
     }
 
     public void rareAction(float f, boolean flag) {
@@ -139,12 +151,12 @@ public class Short_Sunderland extends Sunderlandxyz implements TypeSeaPlane, Typ
                 break;
 
             case 2: // Tail Turret
-                if (f < -88F) {
-                    f = -88F;
+                if (f < -60F) {
+                    f = -60F;
                     flag = false;
                 }
-                if (f > 88F) {
-                    f = 88F;
+                if (f > 60F) {
+                    f = 60F;
                     flag = false;
                 }
                 if (f1 < -45F) {
@@ -357,8 +369,10 @@ public class Short_Sunderland extends Sunderlandxyz implements TypeSeaPlane, Typ
         Aircraft._WeaponSlot retval[] = new Aircraft._WeaponSlot[slotLength];
         int[] triggers = { 10, 11, 11, 12, 12, 12, 12 };
         try {
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 4; i++)
                 retval[i] = new Aircraft._WeaponSlot(triggers[i], "MGunVikkersKt", 500);
+            for (int i = 4; i < 7; i++)
+                retval[i] = new Aircraft._WeaponSlot(triggers[i], "MGunVikkersKt", 1000); // Late MkII FN4a turret increased ammo to 1000 rounds per gun!
             for (int i = 7; i < slotLength; i++)
                 retval[i] = null;
         } catch (Exception e) {
@@ -375,7 +389,8 @@ public class Short_Sunderland extends Sunderlandxyz implements TypeSeaPlane, Typ
         Property.set(class1, "PaintScheme", new PaintSchemeBMPar04());
         Property.set(class1, "yearService", 1941F);
         Property.set(class1, "yearExpired", 2048F);
-        Property.set(class1, "FlightModel", "FlightModels/H8K1.fmd");
+//        Property.set(class1, "FlightModel", "FlightModels/H8K1.fmd");
+        Property.set(class1, "FlightModel", "FlightModels/SunderlandMkII.fmd:SUNDERLAND_II_FM");
         Property.set(class1, "cockpitClass", new Class[] { CockpitSunderland.class, CockpitSunderlandBombardier.class, CockpitSunderlandNGunner.class, CockpitSunderlandTGunner.class, CockpitSunderlandAGunner.class });
         Property.set(class1, "LOSElevation", 1.4078F);
         Aircraft.weaponTriggersRegister(class1, new int[] { 10, 11, 11, 12, 12, 12, 12, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
@@ -414,6 +429,11 @@ public class Short_Sunderland extends Sunderlandxyz implements TypeSeaPlane, Typ
             a_lweaponslot = createDefaultWeaponSlot(slotLength);
             for (int i = 11; i < 19; i++)
                 a_lweaponslot[i] = new Aircraft._WeaponSlot(3, "BombGunMk53Charge", 1);
+            arraylist.add(s);
+            hashmapint.put(Finger.Int(s), a_lweaponslot);
+
+            s = "rescue";
+            a_lweaponslot = createDefaultWeaponSlot(slotLength);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
 

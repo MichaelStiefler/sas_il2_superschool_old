@@ -10,10 +10,15 @@ import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 
-public abstract class Sunderlandxyz extends Scheme4 implements TypeSeaPlane, TypeTransport, TypeBomber {
+/*
+ * Sunderland base class by Barnesy/CWatson/Freemodding
+ * Latest edit: 2016-03-11 by SAS~Storebror
+ */
+public abstract class Sunderlandxyz extends Scheme4 implements TypeSailPlane, TypeSeaPlane, TypeTransport, TypeBomber {
 
     public Sunderlandxyz() {
         this.cfDamageVisible = 0;
+        this.tail1DamageVisible = 0;
     }
 
     public void update(float f) {
