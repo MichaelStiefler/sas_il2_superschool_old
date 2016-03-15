@@ -9,8 +9,8 @@ import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
 /*
- * Dorsal Gunner for Sunderland Mk.II by Barnesy/Freemodding
- * Latest edit: 2016-03-08 by SAS~Storebror
+ * Dorsal Gunner for Sunderland Mk.II by Barnesy/CWatson/Freemodding
+ * Latest edit: 2016-03-11 by SAS~Storebror
  */
 public class CockpitSunderlandTGunner extends CockpitGunner {
 
@@ -27,6 +27,14 @@ public class CockpitSunderlandTGunner extends CockpitGunner {
             if (this.hook2 == null)
                 this.hook2 = new HookNamed(this.aircraft(), "_MGUN03");
             this.doHitMasterAircraft(this.aircraft(), this.hook2, "_MGUN03");
+        }
+        // Check if tail damage state has changed
+        int curDamageState = ((Sunderlandxyz) this.aircraft()).getTail1DamageVisible();
+        if (curDamageState != this.lastDamageState) {
+            // If so, hide new damage state tail mesh (tail shall not be visible as long as turret is manned)
+            // and keep track of damage state so it can be set visible again when player leaves turret
+            this.aircraft().hierMesh().chunkVisible("Tail1_D" + this.lastDamageState, false);
+            curDamageState = this.lastDamageState;
         }
     }
 
@@ -135,6 +143,14 @@ public class CockpitSunderlandTGunner extends CockpitGunner {
             this.aircraft().hierMesh().chunkVisible("Pilot5_D0", false);
             this.aircraft().hierMesh().chunkVisible("Head5_D0", false);
             this.aircraft().hierMesh().chunkVisible("HMASK5_D0", false);
+
+            // When entering turret, save current tail damage state for visibility toggle
+            ((Sunderlandxyz) this.aircraft()).updateDamageState();
+            this.lastDamageState = ((Sunderlandxyz) this.aircraft()).getTail1DamageVisible();
+            this.aircraft().hierMesh().chunkVisible("Tail1_D" + this.lastDamageState, false);
+
+            // Hide away the radar antenna and wires
+            this.aircraft().hierMesh().chunkVisible("Wire_D0", false);
             return true;
         } else {
             return false;
@@ -147,13 +163,18 @@ public class CockpitSunderlandTGunner extends CockpitGunner {
         } else {
             /*
              * When leaving this turret, regain visibility of the turret's external 3D model,
-             * and show gunner if alive!
+             * show gunner if alive and show the plane's tail in it's appropriate damage state again!
              */
             this.aircraft().hierMesh().chunkVisible("Turret2A_D0", true);
             this.aircraft().hierMesh().chunkVisible("Turret2A1_D0", true);
             this.aircraft().hierMesh().chunkVisible("Turret2B_D0", true);
             this.aircraft().hierMesh().chunkVisible("Pilot5_D0", !this.aircraft().hierMesh().isChunkVisible("Pilot5_D1"));
             this.aircraft().hierMesh().chunkVisible("Head5_D0", !this.aircraft().hierMesh().isChunkVisible("Pilot5_D1"));
+            this.aircraft().hierMesh().chunkVisible("Tail1_D" + this.lastDamageState, true);
+
+            // Show radar antenna and wires again if they're part of the external 3D model in the current weapon slot
+            if (!this.aircraft().thisWeaponsName.toLowerCase().startsWith("rescue"))
+                this.aircraft().hierMesh().chunkVisible("Wire_D0", true);
             super.doFocusLeave();
         }
     }
@@ -189,6 +210,7 @@ public class CockpitSunderlandTGunner extends CockpitGunner {
         this.suppressGunFire = false;
     }
 
+    private int     lastDamageState;
     private boolean bNeedSetUp;
     private long    prevTime;
     private float   prevA0;

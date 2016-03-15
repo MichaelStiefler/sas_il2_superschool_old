@@ -14,6 +14,10 @@ import com.maddox.il2.fm.Pitot;
 import com.maddox.rts.Time;
 import com.maddox.sound.ReverbFXRoom;
 
+/*
+ * Pilot Cockpit for Sunderland Mk.II by Barnesy/CWatson/Freemodding
+ * Latest edit: 2016-03-09 by SAS~Storebror
+ */
 public class CockpitSunderland extends CockpitPilot {
     private class Variables {
 

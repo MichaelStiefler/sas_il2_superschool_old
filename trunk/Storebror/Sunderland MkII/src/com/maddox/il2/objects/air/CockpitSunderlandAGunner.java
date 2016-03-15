@@ -8,8 +8,8 @@ import com.maddox.il2.engine.Orient;
 import com.maddox.rts.Property;
 
 /*
- * Tail Gunner for Sunderland Mk.II by Barnesy/Freemodding
- * Latest edit: 2016-03-08 by SAS~Storebror
+ * Tail Gunner for Sunderland Mk.II by Barnesy/CWatson/Freemodding
+ * Latest edit: 2016-03-15 by SAS~Storebror
  */
 public class CockpitSunderlandAGunner extends CockpitGunner {
 
@@ -65,10 +65,10 @@ public class CockpitSunderlandAGunner extends CockpitGunner {
                 /*
                  * limit turret movement to FN turret physical limits
                  */
-                if (f < -88F)
-                    f = -88F;
-                if (f > 88F)
-                    f = 88F;
+                if (f < -60F)
+                    f = -60F;
+                if (f > 60F)
+                    f = 60F;
                 if (f1 > 60F)
                     f1 = 60F;
                 if (f1 < -45F)

@@ -9,7 +9,7 @@ import com.maddox.il2.engine.Orient;
 import com.maddox.rts.Property;
 
 /*
- * Nose Gunner for Sunderland Mk.II by Barnesy/Freemodding
+ * Nose Gunner for Sunderland Mk.II by Barnesy/CWatson/Freemodding
  * Latest edit: 2016-03-08 by SAS~Storebror
  */
 public class CockpitSunderlandNGunner extends CockpitGunner {
