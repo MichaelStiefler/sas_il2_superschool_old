@@ -646,6 +646,14 @@ public class EA_6B extends A_6
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "PylonF100_Outboard", 1);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
+            s = "3xBomb500lbs";
+            a_lweaponslot = new Aircraft._WeaponSlot[c];
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(3, "BombGun500lbs_wes", 1);
+            a_lweaponslot[1] = new Aircraft._WeaponSlot(3, "BombGun500lbs_wes", 1);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(3, "BombGun500lbs_wes", 1);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "PylonF100_Outboard", 1);
+            arraylist.add(s);
+            hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "empty";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
             arraylist.add(s);
