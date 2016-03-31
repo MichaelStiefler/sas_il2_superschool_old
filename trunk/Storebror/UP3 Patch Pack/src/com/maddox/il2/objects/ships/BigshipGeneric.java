@@ -4,12 +4,10 @@ package com.maddox.il2.objects.ships;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+
 import com.maddox.JGP.Geom;
 import com.maddox.JGP.Line2d;
 import com.maddox.JGP.Matrix4d;
-import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.game.ZutiSupportMethods;
-import com.maddox.il2.game.ZutiSupportMethods_ResourcesManagement;
 import com.maddox.JGP.Point2d;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Point3f;
@@ -20,8 +18,9 @@ import com.maddox.il2.ai.AirportCarrier;
 import com.maddox.il2.ai.AnglesRange;
 import com.maddox.il2.ai.BulletAimer;
 import com.maddox.il2.ai.Chief;
-import com.maddox.il2.ai.Explosion;
 import com.maddox.il2.ai.EventLog;
+import com.maddox.il2.ai.Explosion;
+import com.maddox.il2.ai.Front.Marker;
 import com.maddox.il2.ai.MsgExplosionListener;
 import com.maddox.il2.ai.MsgShotListener;
 import com.maddox.il2.ai.Shot;
@@ -57,9 +56,12 @@ import com.maddox.il2.engine.MsgCollisionListener;
 import com.maddox.il2.engine.MsgCollisionRequestListener;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.engine.VisibilityLong;
+import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.game.Mission;
-import com.maddox.il2.net.NetServerParams;
+import com.maddox.il2.game.ZutiSupportMethods;
+import com.maddox.il2.game.ZutiSupportMethods_ResourcesManagement;
 import com.maddox.il2.net.BornPlace;
+import com.maddox.il2.net.NetServerParams;
 import com.maddox.il2.net.ZutiSupportMethods_NetSend;
 import com.maddox.il2.objects.ActorAlign;
 import com.maddox.il2.objects.Statics;
@@ -82,7 +84,6 @@ import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Spawn;
 import com.maddox.rts.Time;
-import com.maddox.il2.ai.Front.Marker;
 
 public class BigshipGeneric extends ActorHMesh implements MsgCollisionRequestListener, MsgCollisionListener, MsgExplosionListener, MsgShotListener, Predator, ActorAlign, HunterInterface,
 		VisibilityLong
@@ -276,10 +277,10 @@ public class BigshipGeneric extends ActorHMesh implements MsgCollisionRequestLis
 		private int			state;
 		ShipPartProperties	pro;
 
-		/* synthetic */static float access$2316(Part part, float f)
-		{
-			return part.damage += f;
-		}
+//		/* synthetic */static float access$2316(Part part, float f)
+//		{
+//			return part.damage += f;
+//		}
 	}
 
 	private static class Segment
@@ -369,8 +370,9 @@ public class BigshipGeneric extends ActorHMesh implements MsgCollisionRequestLis
 						}
 					}
 					if (wakeupTmr > 0L)
-						access$3810(BigshipGeneric.this);
-					else if (access$3804(BigshipGeneric.this) == 0L)
+					    BigshipGeneric.this.wakeupTmr--;
+//						access$3810(BigshipGeneric.this);
+					else if (++BigshipGeneric.this.wakeupTmr == 0L)
 					{
 						if (BigshipGeneric.this.isAnyEnemyNear())
 							wakeupTmr = SecsToTicks(Rnd(DELAY_WAKEUP, DELAY_WAKEUP * 1.2F));
@@ -421,7 +423,7 @@ public class BigshipGeneric extends ActorHMesh implements MsgCollisionRequestLis
 				}
 				// ---------------------------------------------
 
-				if (access$4910(BigshipGeneric.this) > 0L)
+				if (BigshipGeneric.this.respawnDelay-- > 0L)
 					return true;
 				if (!BigshipGeneric.this.isNetMaster())
 				{
@@ -561,7 +563,8 @@ public class BigshipGeneric extends ActorHMesh implements MsgCollisionRequestLis
 				Actor actor = netobj != null ? ((ActorNet) netobj).actor() : null;
 				if (parts[i_4_].state != 2)
 				{
-					Part.access$2316(parts[i_4_], (float) ((i_5_ & 0x7f) + 1) / 128.0F);
+				    parts[i_4_].damage += (float) ((i_5_ & 0x7f) + 1) / 128.0F;
+//					Part.access$2316(parts[i_4_], (float) ((i_5_ & 0x7f) + 1) / 128.0F);
 					parts[i_4_].damageIsFromRight = (i_5_ & 0x80) != 0;
 					BigshipGeneric.this.InjurePart(i_4_, actor, true);
 				}
@@ -711,7 +714,8 @@ public class BigshipGeneric extends ActorHMesh implements MsgCollisionRequestLis
 						bodyPitch1 = (float) (90.0 * ((double) netmsginput.readShort() / 32767.0));
 						bodyRoll1 = (float) (90.0 * ((double) netmsginput.readShort() / 32767.0));
 						tmInterpoStart = tmInterpoEnd = NetServerParams.getServerTime();
-						access$1014(BigshipGeneric.this, (long) (1000.0 * (1200.0 * ((double) (netmsginput.readUnsignedShort() & 0x7fff) / 32767.0))));
+						BigshipGeneric.this.tmInterpoEnd += (long) (1000.0 * (1200.0 * ((double) (netmsginput.readUnsignedShort() & 0x7fff) / 32767.0)));
+//						access$1014(BigshipGeneric.this, (long) (1000.0 * (1200.0 * ((double) (netmsginput.readUnsignedShort() & 0x7fff) / 32767.0))));
 						BigshipGeneric.this.computeInterpolatedDPR(NetServerParams.getServerTime());
 						return true;
 					}
@@ -768,21 +772,26 @@ public class BigshipGeneric extends ActorHMesh implements MsgCollisionRequestLis
 						bodyPitch1 = (float) (90.0 * ((double) netmsginput.readShort() / 32767.0));
 						bodyRoll1 = (float) (90.0 * ((double) netmsginput.readShort() / 32767.0));
 						tmInterpoStart = tmInterpoEnd = NetServerParams.getServerTime();
-						access$1014(BigshipGeneric.this, (long) (1000.0 * (1200.0 * ((double) (netmsginput.readUnsignedShort() & 0x7fff) / 32767.0))));
+                        BigshipGeneric.this.tmInterpoEnd += (long) (1000.0 * (1200.0 * ((double) (netmsginput.readUnsignedShort() & 0x7fff) / 32767.0)));
+//						access$1014(BigshipGeneric.this, (long) (1000.0 * (1200.0 * ((double) (netmsginput.readUnsignedShort() & 0x7fff) / 32767.0))));
 						BigshipGeneric.this.computeInterpolatedDPR(NetServerParams.getServerTime());
 						sink2Depth = (float) (1000.0 * ((double) (netmsginput.readUnsignedShort() & 0x7fff) / 32767.0));
 						sink2Pitch = (float) (90.0 * ((double) netmsginput.readShort() / 32767.0));
 						sink2Roll = (float) (90.0 * ((double) netmsginput.readShort() / 32767.0));
 						sink2timeWhenStop = tmInterpoEnd;
-						access$3014(BigshipGeneric.this, (long) (1000.0 * (1200.0 * ((double) (netmsginput.readUnsignedShort() & 0x7fff) / 32767.0))));
+                        BigshipGeneric.this.tmInterpoEnd += (long) (1000.0 * (1200.0 * ((double) (netmsginput.readUnsignedShort() & 0x7fff) / 32767.0)));
+//						access$3014(BigshipGeneric.this, (long) (1000.0 * (1200.0 * ((double) (netmsginput.readUnsignedShort() & 0x7fff) / 32767.0))));
 						if (bool)
 						{
 							long l = netmsginput.readLong();
 							if (l > 0L)
 							{
-								access$922(BigshipGeneric.this, l);
-								access$1022(BigshipGeneric.this, l);
-								access$3022(BigshipGeneric.this, l);
+							    BigshipGeneric.this.tmInterpoStart -= l;
+                                BigshipGeneric.this.tmInterpoEnd -= l;
+                                BigshipGeneric.this.sink2timeWhenStop -= l;
+//								access$922(BigshipGeneric.this, l);
+//								access$1022(BigshipGeneric.this, l);
+//								access$3022(BigshipGeneric.this, l);
 								BigshipGeneric.this.computeInterpolatedDPR(NetServerParams.getServerTime());
 							}
 						}
@@ -1416,7 +1425,8 @@ public class BigshipGeneric extends ActorHMesh implements MsgCollisionRequestLis
 					pos.getAbs().transformInv(tmpvd);
 					parts[i].damageIsFromRight = tmpvd.y > 0.0;
 					float f_63_ = f_62_ / f_61_;
-					Part.access$2316(parts[i], f_63_);
+					parts[i].damage += f_63_;
+//					Part.access$2316(parts[i], f_63_);
 					if (isNetMirror() && shot.initiator != null)
 						parts[i].mirror_initiator = shot.initiator;
 					InjurePart(i, shot.initiator, true);
@@ -4111,47 +4121,47 @@ public class BigshipGeneric extends ActorHMesh implements MsgCollisionRequestLis
 		{
 			HookNamed hooknamed = new HookNamed(aircraft, "_ClipAGear");
 			Point3d[] point3ds = prop.propAirport.towPRel;
-			Point3d point3d = new Point3d();
-			Point3d point3d_227_ = new Point3d();
-			Point3d point3d_228_ = new Point3d();
-			Point3d point3d_229_ = new Point3d();
+			Point3d point3d_1 = new Point3d();
+			Point3d point3d_2 = new Point3d();
+			Point3d point3d_3 = new Point3d();
+			Point3d point3d_4 = new Point3d();
 			Loc loc = new Loc();
 			Loc loc_230_ = new Loc();
 			for (int i = 0; i < point3ds.length / 2; i++)
 			{
 				pos.getCurrent(loc);
-				point3d_228_.set(point3ds[i + i]);
-				loc.transform(point3d_228_);
-				point3d_229_.set(point3ds[i + i + 1]);
-				loc.transform(point3d_229_);
+				point3d_3.set(point3ds[i + i]);
+				loc.transform(point3d_3);
+				point3d_4.set(point3ds[i + i + 1]);
+				loc.transform(point3d_4);
 				aircraft.pos.getCurrent(loc_230_);
 				loc.set(0.0, 0.0, 0.0, 0.0F, 0.0F, 0.0F);
 				hooknamed.computePos(aircraft, loc_230_, loc);
-				point3d.set(loc.getPoint());
+				point3d_1.set(loc.getPoint());
 				aircraft.pos.getPrev(loc_230_);
 				loc.set(0.0, 0.0, 0.0, 0.0F, 0.0F, 0.0F);
 				hooknamed.computePos(aircraft, loc_230_, loc);
-				point3d_227_.set(loc.getPoint());
-				if (point3d_227_.z < (point3d_228_.z + 0.5 * (point3d_229_.z - point3d_228_.z) + 0.2))
+				point3d_2.set(loc.getPoint());
+				if (point3d_2.z < (point3d_3.z + 0.5 * (point3d_4.z - point3d_3.z) + 0.2))
 				{
-					Line2d line2d = new Line2d(new Point2d(point3d_228_.x, point3d_228_.y), new Point2d(point3d_229_.x, point3d_229_.y));
-					Line2d line2d_231_ = new Line2d(new Point2d(point3d.x, point3d.y), new Point2d(point3d_227_.x, point3d_227_.y));
+					Line2d line2d = new Line2d(new Point2d(point3d_3.x, point3d_3.y), new Point2d(point3d_4.x, point3d_4.y));
+					Line2d line2d_231_ = new Line2d(new Point2d(point3d_1.x, point3d_1.y), new Point2d(point3d_2.x, point3d_2.y));
 					do
 					{
 						try
 						{
 							Point2d point2d = line2d.crossPRE(line2d_231_);
-							double d = Math.min(point3d_228_.x, point3d_229_.x);
-							double d_232_ = Math.max(point3d_228_.x, point3d_229_.x);
-							double d_233_ = Math.min(point3d_228_.y, point3d_229_.y);
-							double d_234_ = Math.max(point3d_228_.y, point3d_229_.y);
-							if (!(point2d.x > d) || !(point2d.x < d_232_) || !(point2d.y > d_233_) || !(point2d.y < d_234_))
+							double d_1 = Math.min(point3d_3.x, point3d_4.x);
+							double d_2 = Math.max(point3d_3.x, point3d_4.x);
+							double d_3 = Math.min(point3d_3.y, point3d_4.y);
+							double d_4 = Math.max(point3d_3.y, point3d_4.y);
+							if (!(point2d.x >= d_1) || !(point2d.x <= d_2) || !(point2d.y >= d_3) || !(point2d.y <= d_4))
 								break;
-							double d_235_ = Math.min(point3d.x, point3d_227_.x);
-							double d_236_ = Math.max(point3d.x, point3d_227_.x);
-							double d_237_ = Math.min(point3d.y, point3d_227_.y);
-							double d_238_ = Math.max(point3d.y, point3d_227_.y);
-							if (!(point2d.x > d_235_) || !(point2d.x < d_236_) || !(point2d.y > d_237_) || !(point2d.y < d_238_))
+							double d_5 = Math.min(point3d_1.x, point3d_2.x);
+							double d_6 = Math.max(point3d_1.x, point3d_2.x);
+							double d_7 = Math.min(point3d_1.y, point3d_2.y);
+							double d_8 = Math.max(point3d_1.y, point3d_2.y);
+							if (!(point2d.x >= d_5) || !(point2d.x <= d_6) || !(point2d.y >= d_7) || !(point2d.y <= d_8))
 								break;
 							towPortNum = i;
 							towAircraft = aircraft;
@@ -4159,6 +4169,9 @@ public class BigshipGeneric extends ActorHMesh implements MsgCollisionRequestLis
 						}
 						catch (Exception exception)
 						{
+					        // TODO: +++ Arrestor Hook Debugging
+						    exception.printStackTrace();
+						    // ---
 							break;
 						}
 						return;
@@ -4202,46 +4215,6 @@ public class BigshipGeneric extends ActorHMesh implements MsgCollisionRequestLis
 	public void hideTransparentRunwayRed()
 	{
 		hierMesh().chunkVisible("Red", false);
-	}
-
-	/* synthetic */static long access$1014(BigshipGeneric bigshipgeneric, long l)
-	{
-		return bigshipgeneric.tmInterpoEnd += l;
-	}
-
-	/* synthetic */static long access$3014(BigshipGeneric bigshipgeneric, long l)
-	{
-		return bigshipgeneric.sink2timeWhenStop += l;
-	}
-
-	/* synthetic */static long access$922(BigshipGeneric bigshipgeneric, long l)
-	{
-		return bigshipgeneric.tmInterpoStart -= l;
-	}
-
-	/* synthetic */static long access$1022(BigshipGeneric bigshipgeneric, long l)
-	{
-		return bigshipgeneric.tmInterpoEnd -= l;
-	}
-
-	/* synthetic */static long access$3022(BigshipGeneric bigshipgeneric, long l)
-	{
-		return bigshipgeneric.sink2timeWhenStop -= l;
-	}
-
-	/* synthetic */static long access$3810(BigshipGeneric bigshipgeneric)
-	{
-		return bigshipgeneric.wakeupTmr--;
-	}
-
-	/* synthetic */static long access$3804(BigshipGeneric bigshipgeneric)
-	{
-		return ++bigshipgeneric.wakeupTmr;
-	}
-
-	/* synthetic */static long access$4910(BigshipGeneric bigshipgeneric)
-	{
-		return bigshipgeneric.respawnDelay--;
 	}
 
 	public void showTransparentRunwayRed()
@@ -4350,4 +4323,37 @@ public class BigshipGeneric extends ActorHMesh implements MsgCollisionRequestLis
 			zutiFrontMarkers.clear();
 	}
 	// ----------------------------------------------------
+	
+	
+    // Patch Pack 107, additional Debugging Settings
+    private static int debugLevel = Integer.MIN_VALUE;
+    private static final int DEBUG_NONE = 0;
+    static final int DEBUG_NORMAL = 1;
+    static final int DEBUG_DETAILED = 2;
+    private static final int DEBUG_EXTREME = 3;
+    private static final int DEBUG_DEFAULT = DEBUG_NONE;
+    
+    private static int curDebugLevel() {
+        if (debugLevel == Integer.MIN_VALUE) debugLevel = Config.cur.ini.get("Mods", "DEBUG_BSG", DEBUG_DEFAULT);
+        return debugLevel;
+    }
+    
+    public static void printDebugMessage(int minLogLevel, String theMessage) {
+        if (curDebugLevel() < minLogLevel) return;
+        if (curDebugLevel() == DEBUG_EXTREME) {
+            printDebug(theMessage);
+            return;
+        }
+        System.out.println(theMessage);
+    }
+
+    public static void printDebug(String theMessage) {
+        if (curDebugLevel() == 0) return;
+        System.out.println(theMessage);
+        Exception e = new Exception("BigshipGeneric Debugger Stacktrace");
+        System.out.println("Stacktrace follows:");
+        e.printStackTrace();
+    }
+    // ---
+
 }

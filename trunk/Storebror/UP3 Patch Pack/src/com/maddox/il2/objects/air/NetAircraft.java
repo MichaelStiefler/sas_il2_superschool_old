@@ -2785,7 +2785,10 @@ public abstract class NetAircraft extends SndAircraft {
         if (!(actor instanceof NetAircraft)) return false;
         NetAircraft netAircraft = (NetAircraft)actor;
         // TODO: +++ RRR Bug hunting
+        if (netAircraft.FM == null) return false;
+        if (netAircraft.FM.CT == null) return false;
         if (netAircraft.FM.CT.Weapons == null) return false;
+        if (netAircraft.FM.CT.Weapons.length <= trigger) return false;
         if (netAircraft.FM.CT.Weapons[trigger] == null) return false;
         // --- RRR Bug hunting
         for (int wi = 0; wi<netAircraft.FM.CT.Weapons[trigger].length; wi++) {
