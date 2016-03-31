@@ -1217,7 +1217,7 @@ public class Paratrooper extends ActorMesh implements MsgCollisionRequestListene
 	{
 		if( name().equals("_paraplayer_") )
 		{
-			System.out.println("AC = " + actor + ", isAC=" + (actor instanceof Aircraft));
+//			System.out.println("AC = " + actor + ", isAC=" + (actor instanceof Aircraft));
 			Point3d zp = actor.pos.getAbsPoint();
 			if( World.land().isWater(zp.x, zp.y) )
 			{

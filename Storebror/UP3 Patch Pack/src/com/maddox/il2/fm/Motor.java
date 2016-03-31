@@ -1069,8 +1069,10 @@ public class Motor extends FMMath
 					reference.setReadyToDie(true);
 			}
 			stage = 7;
-			if (reference.isPlayers())
+			if (reference.isPlayers()) {
+			    printDebug("Motor doSetEngineDies()");
 				HUD.log("FailedEngine");
+			}
 			timer = Time.current();
 		}
 	}
@@ -1188,8 +1190,10 @@ public class Motor extends FMMath
 		if (stage != 8)
 		{
 			setReadyness(0.0F);
-			if (reference.isPlayers() && stage != 7)
+			if (reference.isPlayers() && stage != 7) {
+			    printDebug("Motor doSetEngineStuck()");
 				HUD.log("FailedEngine");
+			}
 			stage = 8;
 			timer = Time.current();
 		}
@@ -3831,4 +3835,11 @@ public class Motor extends FMMath
 		propPhi = ((float)netmsginput.readUnsignedByte() / 255.0F * (propPhiMax - propPhiMin)) + propPhiMin;
 		w = netmsginput.readFloat();
 	}
+	
+    public static void printDebug(String theMessage) {
+        System.out.println(theMessage);
+        Exception e = new Exception("Motor Debugger Stacktrace");
+        System.out.println("Stacktrace follows:");
+        e.printStackTrace();
+    }
 }

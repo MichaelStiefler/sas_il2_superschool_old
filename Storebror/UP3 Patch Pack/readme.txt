@@ -1,4 +1,4 @@
-UP3 RC4 Patch Pack v1.07 RC1
+UP3 RC4 Patch Pack v1.07 RC3
 
 Contents:
 - All fixes listed below
@@ -90,6 +90,37 @@ Included fixes:
 - MDS/RRR: other players will not see any bomb/droptank/torpedo rearming at all: Fixed
 - MDS/RRR: other players will see an empty loadout when loadout options are changed: Fixed
 - Missing Catapults and arrestor wires on german carriers "Graf Zeppelin" and "Peter Strasser" fixed
+- Non-functional arrestor wires on german carriers in online mode fixed
+- Bf-109T-1 flight model fixed (inherited from Bf-109E-7/N like in real life now, with larger wing span and increased weight)
+- Bf-109T-1 nose over after unhooking from arrestor wires fixed
+- Invincible H8K "Emily" fixed
+- I-16 Type 24 guns separated on trigger 1 (cowling guns) and trigger 2 (wing guns) (by SAS~Skylla)
+- Me-262V3 engine damage on ground start fixed
+- Me-262V3 flight model fixed (*)
+- Me-262V3 muzzles, cannon bulges, nose gear door seams, gun camera, shell and cartridge exhaust bays removed
+
+(*) Me-262V3 flight model:
+    Like in real life, you have to tap the brakes in order to get the 262V3 off the ground.
+    Let the plane accelerate to 180km/h, tap the brakes until the tail comes up and you will soon get airborne automatically.
+    Remember to move the throttle gently below 7000rpm.
+    VERY GENTLY!
+    This plane is equipped with very early stages of the Jumo 004 jet engines which are still under development.
+    The specified spool up time from idle to full throttle is ==>> 40 Seconds <<==
+    This means that e.g. when using keyboard for throttle, you're allowed to increase throttle by one step (=5%) every 2 seconds only !!
+    You might be lucky and manage to spool up within half of that time (20 seconds) but we cannot guarantee that the engines will survive it.
+    If you spool up any faster, your engines will go up in flames, mark these words!
+    The same applies when you throttle back: Same limits, same time. GENTLY!
+    That much for the bad news about the engines, the good news is that above 7000rpm you can move the throttle as quick as you like.
+    Watch your RPMs!
+    
+    Note: * Trim setting for ground start is "full up".
+            It will be applied automatically on ground start, however if you have a joystick axis attached for elevator trim,
+            remember to trim up all the way when you start on ground, otherwise you risk to nose over when you tap the brakes.
+          * Don't let the plane accelerate beyond 200 km/h without lifting the tail.
+            Otherwise eventually the wings might lift the plane into the air (especially with low fuel load),
+            but you have no elevator authority yet since they're still wing alee: -> Crash.
+          * Don't tap the brakes too soon when you try to lift the tail.
+            If you do so below ~160km/h, the tail will come up, but since you don't have sufficient elevator authority yet, your plane will nose over.
 
 Additionally implemented Debugging Switches:
 You can adjust log.lst debugging by setting the following values in the conf.ini [Mods] section:
@@ -120,7 +151,7 @@ Installation:
     * #UP#_Enable_UP.3.0
     * Additional JSGME Mods not related to Fixes, Patches, unobfuscated UP etc.
 3.) Extract this Patch Pack to your UP3 RC4 game folder
-4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_107_RC1")
+4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_107_RC3")
 
 ********************
 

@@ -605,8 +605,9 @@ public class Gear
 			if (i1 <= 2)
 			{
 				bIsGear = true;
-				if (i1 == 0 && (!lgear || FM.CT.getGear() < 0.01F) || i1 == 1 && (!rgear || FM.CT.getGear() < 0.01F) || i1 == 2 && !cgear)
-					continue;
+				if (i1 == 0 && (!lgear || FM.CT.getGear() < 0.01F) || i1 == 1 && (!rgear || FM.CT.getGear() < 0.01F) || i1 == 2 && !cgear) {
+			        continue;
+				}
 			}
 			else
 			{
@@ -618,6 +619,7 @@ public class Gear
 			MassCoeff = 0.0004D * (double)FM.M.getFullMass();
 			if (MassCoeff > 1.0D)
 				MassCoeff = 1.0D;
+//			if (i1 <= 2) System.out.println("ground d=" + d);
 			if (d < 0.0D)
 			{
 				if (!testPropellorCollision(i1) || (isWater ? !testWaterCollision(i1) : bIsGear ? !testGearCollision(i1) : !testNonGearCollision(i1)))
@@ -666,6 +668,7 @@ public class Gear
 				FM.brakeShoeLastCarrier = bigshipgeneric1;
 			else if (Mission.isCoop() && !Mission.isServer() && Actor.isAlive(FM.brakeShoeLastCarrier) && Time.current() < 60000L)
 				bigshipgeneric1 = (BigshipGeneric)FM.brakeShoeLastCarrier;
+//			System.out.println("nOfGearsOnGr == " + nOfGearsOnGr + ", nP == " + nP + ", FM.Vrel.lengthSquared() = " + FM.Vrel.lengthSquared());
 			if (bigshipgeneric1 != null)
 			{
 				if (FM.brakeShoe)
@@ -937,6 +940,7 @@ public class Gear
 		double d29_Left = (double) FM.CT.getBrakeLeft();
 		double d30_2 = (double) d29_Right - d29_Left;
 		// TAK--
+//		System.out.println("testGearCollision(" + i+ ")");
 		switch (i)
 		{
 			case 0 :

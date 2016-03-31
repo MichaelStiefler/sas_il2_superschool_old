@@ -374,7 +374,7 @@ public class World {
                 Main3D.cur3D().ordersTree.unactivate();
                 ForceFeedback.stopMission();
 
-                System.out.println("World - player is paratrooper!");
+//                System.out.println("World - player is paratrooper!");
             }
         }
 
@@ -492,7 +492,7 @@ public class World {
                 List bornPlaces = World.cur().bornPlaces;
                 if (bornPlaces != null) {
                     NetUser netUser = ZutiSupportMethods.getNetUser(actor.name().substring(0, actor.name().length() - 2));
-                    if (netUser != null && netUser.getBornPlace() >= 0 && netUser.getBornPlace() <= World.cur().bornPlaces.size())
+                    if (netUser != null && netUser.getBornPlace() >= 0 && netUser.getBornPlace() < World.cur().bornPlaces.size()) // Patch Pack 107, change last comparison from <= to < because array indices are 0-based!
                         bp = (BornPlace) World.cur().bornPlaces.get(netUser.getBornPlace());
                 }
             }
