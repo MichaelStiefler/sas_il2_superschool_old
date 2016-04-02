@@ -153,6 +153,7 @@ public class Controls
 	public float[] 				VarWingStage = null;
 	public float				dvVarWing;
 	public boolean				bHasVarWingControl;
+	public boolean				bHasVarWingControlFree;
 	public boolean				bHasVarIncidence;
 	public boolean 				bHasStabilizerControl;
 	public boolean				bHasBlownFlaps;
@@ -258,6 +259,7 @@ public class Controls
 				FlapStageMax = -1.0F;
 				FlapStage = null;
 				bHasVarWingControl = false;
+				bHasVarWingControlFree = false;
 				bHasVarIncidence = false;
 				VarWingControl = 0.0F;
 				nVarWingStages = -1;

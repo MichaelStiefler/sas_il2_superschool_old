@@ -349,8 +349,9 @@ public class FlightModelMain extends FMMath {
 		// TODO: Variable geometry/incidence.
 		// --------------------------------------------------------
 		j = sectfile.get(s2, "CVarWing", 0);
-		if (j != 0 && j != 1) throw new RuntimeException(s1);
-		CT.bHasVarWingControl = j == 1;
+		if (j != 0 && j != 1 && j != 3) throw new RuntimeException(s1);
+		CT.bHasVarWingControl = (j == 1 || j == 3);
+		CT.bHasVarWingControlFree = j == 3;
 		j = sectfile.get(s2, "CVarWingPos", 0);
 		if (j < 0) throw new RuntimeException(s1);
 		if (CT.nVarWingStages == -1) CT.nVarWingStages = j - 1;
