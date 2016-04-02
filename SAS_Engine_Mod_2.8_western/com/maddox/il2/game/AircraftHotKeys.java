@@ -128,7 +128,11 @@ public class AircraftHotKeys {
 	protected static final int BRAKE_RIGHT = 144;
 	protected static final int BRAKE_LEFT = 145;
 	private int flapIndex = 0;
+	private int oldFlapIndex = 0;
+	private int oldFlapsControlSwitch = 0;
 	private int varWingIndex = 0;
+	private int oldVarWingIndex = 0;
+	private float oldVarWingControl = 0.0F;
 	private boolean useSmartAxisForPower2;
 	private boolean useSmartAxisForPitch2;
 
@@ -1304,26 +1308,38 @@ public class AircraftHotKeys {
 		case 53: // '5'
 			if (FM.CT.bHasFlapsControl) {
 				SetFlapsHotKeys(1, FM);
-				if (FM.CT.FlapStageMax != -1.0F && flapIndex < (FM.CT.nFlapStages - 1)) flapIndex++;
+				if (FM.CT.FlapStageMax != -1.0F && flapIndex < (FM.CT.nFlapStages - 1)) {
+					flapIndex++;
+					oldFlapIndex = flapIndex;
+				}
 			}
 			break;
 		case 52: // '4'
 			if (FM.CT.bHasFlapsControl) {
 				SetFlapsHotKeys(0, FM);
-				if (FM.CT.FlapStageMax != -1.0F && flapIndex > 0) flapIndex--;
+				if (FM.CT.FlapStageMax != -1.0F && flapIndex > 0) {
+					flapIndex--;
+					oldFlapIndex = flapIndex;
+				}
 			}
 			break;
 		// TODO: New hotkeys for variable geometry/incidence wings
 		case 202: // '5'
 			if (FM.CT.bHasVarWingControl) {
 				SetVarWingHotKeys(0, FM);
-				if (varWingIndex > 0) varWingIndex--;
+				if (varWingIndex > 0) {
+					varWingIndex--;
+					oldVarWingIndex = varWingIndex;
+				}
 			}
 			break;
 		case 203: // '4'
 			if (FM.CT.bHasVarWingControl) {
 				SetVarWingHotKeys(1, FM);
-				if (varWingIndex < (FM.CT.nVarWingStages - 1)) varWingIndex++;
+				if (varWingIndex < (FM.CT.nVarWingStages - 1)) {
+					varWingIndex++;
+					oldVarWingIndex = varWingIndex;
+				}
 			}
 			break;
 		// TODO: Blown Flaps
@@ -1785,6 +1801,9 @@ public class AircraftHotKeys {
 		float flp12 = 0.0F;
 		float flp23 = 0.0F;
 		float flp34 = 0.0F;
+		float flpp12 = 0.0F;
+		float flpp23 = 0.0F;
+		float flpp34 = 0.0F;
 
 		if (!setPilot()) return;
 		switch (i) {
@@ -1801,22 +1820,78 @@ public class AircraftHotKeys {
 		case 2: // '\002'
 			if (!FM.CT.bHasFlapsControl) break;
 			if (!FM.CT.bHasFlapsControlRed) {
+				float ff  = f * 0.5F + 0.5F;
 				if (FM.CT.bHasFlapsControlSwitch) {
-					if (f < 0.1F){
+					if (ff < 0.1F){
 						FM.CT.FlapsControlSwitch = 0;
+						if (oldFlapsControlSwitch != FM.CT.FlapsControlSwitch) {
+							if (FM.CT.FlapStageText != null)
+								HUD.log("Flaps: " + FM.CT.FlapStageText[FM.CT.FlapsControlSwitch]);
+							else
+								HUD.log("FlapsRaised");
+							oldFlapsControlSwitch = FM.CT.FlapsControlSwitch;
+						}
 						break;
 					}
-					else if (f > 0.9F){
+					else if (ff > 0.9F){
 						FM.CT.FlapsControlSwitch = FM.CT.nFlapStages;
+						if (oldFlapsControlSwitch != FM.CT.FlapsControlSwitch) {
+							if (FM.CT.FlapStageText != null)
+								HUD.log("Flaps: " + FM.CT.FlapStageText[FM.CT.FlapsControlSwitch]);
+							else
+								HUD.log("FlapsLanding");
+							oldFlapsControlSwitch = FM.CT.FlapsControlSwitch;
+						}
 						break;
 					}
 					else {
 						float div = 1.0F / (FM.CT.nFlapStages + 1);
 						for(int ii = 1; ii<FM.CT.nFlapStages; ii++)
 						{
-							if(f > div * ii && f < div * (ii + 1))
+							if(ff > div * ii && ff < div * (ii + 1))
 							{
 								FM.CT.FlapsControlSwitch = ii;
+								if (oldFlapsControlSwitch != FM.CT.FlapsControlSwitch) {
+									if (FM.CT.FlapStageText != null)
+										HUD.log("Flaps: " + FM.CT.FlapStageText[FM.CT.FlapsControlSwitch]);
+									oldFlapsControlSwitch = FM.CT.FlapsControlSwitch;
+								}
+								break;
+							}
+						}
+						break;
+					}
+				}
+				else if (FM.CT.FlapStage != null && FM.CT.FlapStageMax != -1.0F) {
+					if (ff < 0.1F){
+						flapIndex = 0;
+						oldFlapIndex = flapIndex;
+						if (FM.CT.FlapsControl != 0.0F)
+							HUD.log("FlapsRaised");
+						FM.CT.FlapsControl = 0.0F;
+						break;
+					}
+					else if (ff > 0.9F){
+						flapIndex = FM.CT.nFlapStages;
+						FM.CT.FlapsControl = 1.0F;
+						if (oldFlapIndex != flapIndex) {
+							HUD.log("Flaps: " + FM.CT.FlapStageMax + " deg.");
+							oldFlapIndex = flapIndex;
+						}
+						break;
+					}
+					else {
+						float div = 1.0F / (FM.CT.nFlapStages + 2);
+						for(int ii = 1; ii < FM.CT.nFlapStages + 1; ii++)
+						{
+							if(ff > div * ii && ff < div * (ii + 1))
+							{
+								flapIndex = ii - 1;
+								if (oldFlapIndex != flapIndex || FM.CT.FlapsControl == 0.0F) {
+									FM.CT.FlapsControl = FM.CT.FlapStage[flapIndex];
+									HUD.log("Flaps: " + (Math.floor((double)FM.CT.FlapStage[flapIndex] * FM.CT.FlapStageMax * 100F) / 100F) + " deg.");
+									oldFlapIndex = flapIndex;
+								}
 								break;
 							}
 						}
@@ -1851,6 +1926,14 @@ public class AircraftHotKeys {
 
 		case 6: // '\006'
 			if (FM.CT.bHasBrakeControl) FM.CT.BrakeControl = f * 0.5F + 0.5F;
+			break;
+
+		case 112:
+			if (FM.CT.bHasBrakeControl) FM.CT.BrakeRightControl = f * 0.5F + 0.5F;
+			break;
+
+		case 111:
+			if (FM.CT.bHasBrakeControl) FM.CT.BrakeLeftControl = f * 0.5F + 0.5F;
 			break;
 
 		case 8: // '\b'
@@ -1944,9 +2027,9 @@ public class AircraftHotKeys {
 				setPowerControl(flp12, 3);
 				break;
 			} else if (useSmartAxisForPower2 && FM.EI.engines.length == 5) {
-					setPowerControl(f4, 2);
-					setPowerControl(flp23, 3);
-					break;
+				setPowerControl(f4, 2);
+				setPowerControl(flp23, 3);
+				break;
 			} else if (useSmartAxisForPower && FM.EI.engines.length == 6) {
 				setPowerControl(f4, 4);
 				setPowerControl(f4, 5);
@@ -2055,15 +2138,50 @@ public class AircraftHotKeys {
 		case 20: // '\024'
 			float f11 = f * 0.5F + 0.5F;
 			if (Math.abs(f11 - lastProp1) < 0.02F || 0 >= FM.EI.getNum() || !FM.EI.engines[0].isHasControlProp()) break;
+			lastProp1 = f11;
+			flpp12 = (lastProp1 + lastProp2) / 2.0F;
 			if (useSmartAxisForPitch && FM.EI.engines.length == 3) {
 				setPropControl(f11, 1);
-				float f15 = (lastProp1 + lastProp2) / 2.0F;
-				setPropControl(f15, 2);
+				setPropControl(flpp12, 2);
 				break;
-			}
-			if (useSmartAxisForPitch && FM.EI.engines.length == 4) {
+			} else if (useSmartAxisForPitch && FM.EI.engines.length == 4) {
 				setPropControl(f11, 1);
 				setPropControl(f11, 2);
+				break;
+			} else if (useSmartAxisForPitch && FM.EI.engines.length == 5) {
+				setPropControl(f11, 1);
+				setPropControl(f11, 2);
+				setPropControl(flpp12, 3);
+				break;
+			} else if (useSmartAxisForPitch && FM.EI.engines.length == 6) {
+				setPropControl(f11, 1);
+				setPropControl(f11, 2);
+				setPropControl(f11, 3);
+				break;
+			} else if (useSmartAxisForPitch2 && FM.EI.engines.length == 6) {
+				setPropControl(f11, 1);
+				setPropControl(flpp12, 2);
+				break;
+			} else if (useSmartAxisForPitch && FM.EI.engines.length == 7) {
+				setPropControl(f11, 1);
+				setPropControl(f11, 2);
+				setPropControl(f11, 3);
+				setPropControl(flpp12, 4);
+				break;
+			} else if (useSmartAxisForPitch2 && FM.EI.engines.length == 7) {
+				setPropControl(f11, 1);
+				setPropControl(flpp12, 2);
+				break;
+			} else if (useSmartAxisForPitch && FM.EI.engines.length == 8) {
+				setPropControl(f11, 1);
+				setPropControl(f11, 2);
+				setPropControl(f11, 3);
+				setPropControl(f11, 4);
+				break;
+			} else if (useSmartAxisForPitch2 && FM.EI.engines.length == 8) {
+				setPropControl(f11, 1);
+				setPropControl(f11, 2);
+				break;
 			} else {
 				setPropControl(f11, 1);
 			}
@@ -2072,15 +2190,56 @@ public class AircraftHotKeys {
 		case 21: // '\025'
 			float f12 = f * 0.5F + 0.5F;
 			if (Math.abs(f12 - lastProp2) < 0.02F || 1 >= FM.EI.getNum() || !FM.EI.engines[1].isHasControlProp()) break;
+			lastProp2 = f12;
+			flpp12 = (lastProp1 + lastProp2) / 2.0F;
+			flpp23 = (lastProp2 + lastProp3) / 2.0F;
 			if (useSmartAxisForPitch && FM.EI.engines.length == 3) {
 				setPropControl(f12, 3);
-				float f16 = (lastProp1 + lastProp2) / 2.0F;
-				setPropControl(f16, 2);
+				setPropControl(flpp12, 2);
 				break;
-			}
-			if (useSmartAxisForPitch && FM.EI.engines.length == 4) {
+			} else if (useSmartAxisForPitch && FM.EI.engines.length == 4) {
 				setPropControl(f12, 3);
 				setPropControl(f12, 4);
+				break;
+			} else if (useSmartAxisForPitch && FM.EI.engines.length == 5) {
+				setPropControl(f12, 4);
+				setPropControl(f12, 5);
+				setPropControl(flpp12, 3);
+				break;
+			} else if (useSmartAxisForPitch2 && FM.EI.engines.length == 5) {
+				setPropControl(f12, 2);
+				setPropControl(flpp23, 3);
+				break;
+			} else if (useSmartAxisForPitch && FM.EI.engines.length == 6) {
+				setPropControl(f12, 4);
+				setPropControl(f12, 5);
+				setPropControl(f12, 6);
+				break;
+			} else if (useSmartAxisForPitch2 && FM.EI.engines.length == 6) {
+				setPropControl(f12, 3);
+				setPropControl(flpp12, 2);
+				break;
+			} else if (useSmartAxisForPitch && FM.EI.engines.length == 7) {
+				setPropControl(f12, 5);
+				setPropControl(f12, 6);
+				setPropControl(f12, 7);
+				setPropControl(flpp12, 4);
+				break;
+			} else if (useSmartAxisForPitch2 && FM.EI.engines.length == 7) {
+				setPropControl(f12, 3);
+				setPropControl(flpp12, 2);
+				setPropControl(flpp23, 4);
+				break;
+			} else if (useSmartAxisForPitch && FM.EI.engines.length == 8) {
+				setPropControl(f12, 5);
+				setPropControl(f12, 6);
+				setPropControl(f12, 7);
+				setPropControl(f12, 8);
+				break;
+			} else if (useSmartAxisForPitch2 && FM.EI.engines.length == 8) {
+				setPropControl(f12, 3);
+				setPropControl(f12, 4);
+				break;
 			} else {
 				setPropControl(f12, 2);
 			}
@@ -2088,12 +2247,55 @@ public class AircraftHotKeys {
 
 		case 22: // '\026'
 			float f13 = f * 0.5F + 0.5F;
-			if (Math.abs(f13 - lastProp3) >= 0.02F && 2 < FM.EI.getNum() && FM.EI.engines[2].isHasControlProp()) setPropControl(f13, 3);
+			if (Math.abs(f13 - lastProp3) < 0.02F || 2 >= FM.EI.getNum() || !FM.EI.engines[2].isHasControlProp()) break;
+			lastProp3 = f13;
+			flpp23 = (lastProp2 + lastProp3) / 2.0F;
+			flpp34 = (lastProp3 + lastProp4) / 2.0F;
+			if (useSmartAxisForPitch2 && FM.EI.engines.length == 5) {
+				setPropControl(f13, 4);
+				setPropControl(flpp23, 3);
+				break;
+			} else if (useSmartAxisForPitch2 && FM.EI.engines.length == 6) {
+				setPropControl(f13, 4);
+				setPropControl(flpp34, 5);
+				break;
+			} else if (useSmartAxisForPitch2 && FM.EI.engines.length == 7) {
+				setPropControl(f13, 5);
+				setPropControl(flpp23, 4);
+				setPropControl(flpp34, 6);
+				break;
+			} else if (useSmartAxisForPitch2 && FM.EI.engines.length == 8) {
+				setPropControl(f13, 5);
+				setPropControl(f13, 6);
+				break;
+			} else {
+				setPropControl(f13, 3);
+			}
 			break;
 
 		case 23: // '\027'
 			float f14 = f * 0.5F + 0.5F;
-			if (Math.abs(f14 - lastProp4) >= 0.02F && 3 < FM.EI.getNum() && FM.EI.engines[3].isHasControlProp()) setPropControl(f14, 4);
+			if (Math.abs(f14 - lastProp4) < 0.02F || 3 >= FM.EI.getNum() || !FM.EI.engines[3].isHasControlProp()) break;
+			lastProp4 = f14;
+			flpp34 = (lastProp3 + lastProp4) / 2.0F;
+			if (useSmartAxisForPitch2 && FM.EI.engines.length == 5) {
+				setPropControl(f14, 5);
+				break;
+			} else if (useSmartAxisForPitch2 && FM.EI.engines.length == 6) {
+				setPropControl(f14, 6);
+				setPropControl(flpp34, 5);
+				break;
+			} else if (useSmartAxisForPitch2 && FM.EI.engines.length == 7) {
+				setPropControl(f14, 7);
+				setPropControl(flpp34, 6);
+				break;
+			} else if (useSmartAxisForPitch2 && FM.EI.engines.length == 8) {
+				setPropControl(f14, 7);
+				setPropControl(f14, 8);
+				break;
+			} else {
+				setPropControl(f14, 4);
+			}
 			break;
 
 		case 170:
@@ -2106,6 +2308,60 @@ public class AircraftHotKeys {
 
 		case 172:
 			HookPilot.cur().raiseMove(f);
+			break;
+
+		case 51:
+			if (!FM.CT.bHasVarWingControl) break;
+			if (FM.CT.bHasVarWingControlFree) {
+				FM.CT.VarWingControl = f * 0.5F + 0.5F;
+				if (FM.CT.VarWingControl > 0.95F && oldVarWingControl <= 0.95F) {
+					HUD.log("Wings: Extended");
+				} else if (FM.CT.VarWingControl < 0.05F && oldVarWingControl >= 0.05F) {
+					HUD.log("Wings: Retracted");
+				}
+				oldVarWingControl = FM.CT.VarWingControl;
+				break;
+			} else {
+				float ff  = f * 0.5F + 0.5F;
+				if (FM.CT.VarWingStage != null && FM.CT.VarWingStageMax != -1.0F) {
+					if (ff < 0.1F){
+						varWingIndex = 0;
+						oldVarWingIndex = varWingIndex;
+						if (FM.CT.VarWingControl != 0.0F)
+							HUD.log("Wings: Retracted");
+						FM.CT.VarWingControl = 0.0F;
+						break;
+					}
+					else if (ff > 0.9F){
+						varWingIndex = FM.CT.nVarWingStages;
+						FM.CT.VarWingControl = 1.0F;
+						if (oldVarWingIndex != varWingIndex) {
+							HUD.log("Wings: " + FM.CT.VarWingStageMax + " deg.");
+							oldVarWingIndex = varWingIndex;
+							oldVarWingControl = FM.CT.VarWingControl;
+						}
+						break;
+					}
+					else {
+						float div = 1.0F / (FM.CT.nVarWingStages + 2);
+						for(int ii = 1; ii < FM.CT.nVarWingStages + 1; ii++)
+						{
+							if(ff > div * ii && ff < div * (ii + 1))
+							{
+								varWingIndex = ii - 1;
+								if (oldVarWingIndex != varWingIndex || FM.CT.VarWingControl == 0.0F) {
+									FM.CT.VarWingControl = FM.CT.VarWingStage[varWingIndex];
+									HUD.log("Wings: " + (Math.floor((double)FM.CT.VarWingStage[varWingIndex] * FM.CT.VarWingStageMax * 100F) / 100F) + " deg.");
+									oldVarWingIndex = varWingIndex;
+									oldVarWingControl = FM.CT.VarWingControl;
+								}
+								break;
+							}
+						}
+						break;
+					}
+				}
+			}
 			break;
 
 		default:
@@ -2124,6 +2380,8 @@ public class AircraftHotKeys {
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("04", "elevator", 4, 4));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("05", "rudder", 5, 5));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("06", "brakes", 6, 6));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("061", "brakes_left", 111, 121));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("062", "brakes_right", 112, 122));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("07", "pitch", 7, 7));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("08", "trimaileron", 8, 8));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("09", "trimelevator", 9, 9));
@@ -2134,6 +2392,8 @@ public class AircraftHotKeys {
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-elevator", 4, 14));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-rudder", 5, 15));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-brakes", 6, 16));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-brakes_left", 111, 142));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-brakes_right", 112, 143));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-pitch", 7, 17));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-trimaileron", 8, 18));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-trimelevator", 9, 19));
@@ -2166,6 +2426,8 @@ public class AircraftHotKeys {
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-LeanS", 171, 414, true));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("33", "Raise", 172, 412, true));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-Raise", 172, 415, true));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("301", "Wing_Sweep_Incidence", 51, 151));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-Wing_Sweep_Incidence", 51, 152));
 	}
 
 	private void createCommonHotKeys() {
@@ -4208,6 +4470,7 @@ public class AircraftHotKeys {
 					if (RFM.CT.FlapsControlSwitch > 0)
 					{
 						RFM.CT.FlapsControlSwitch--;
+						oldFlapsControlSwitch = RFM.CT.FlapsControlSwitch;
 						if (RFM.CT.FlapStageText != null)
 							HUD.log("Flaps: " + RFM.CT.FlapStageText[RFM.CT.FlapsControlSwitch]);
 						else
@@ -4262,6 +4525,7 @@ public class AircraftHotKeys {
 					if (RFM.CT.FlapsControlSwitch < RFM.CT.nFlapStages)
 					{
 						RFM.CT.FlapsControlSwitch++;
+						oldFlapsControlSwitch = RFM.CT.FlapsControlSwitch;
 						if (RFM.CT.FlapStageText != null)
 							HUD.log("Flaps: " + RFM.CT.FlapStageText[RFM.CT.FlapsControlSwitch]);
 						else
@@ -4325,11 +4589,13 @@ public class AircraftHotKeys {
 				if (RFM.CT.VarWingControl > RFM.CT.VarWingStage[varWingIndex]) {
 					RFM.CT.VarWingControl = RFM.CT.VarWingStage[varWingIndex];
 					HUD.log("Wings: " + (Math.floor((double)RFM.CT.VarWingStage[varWingIndex] * RFM.CT.VarWingStageMax * 100F) / 100F) + " deg.");
+					oldVarWingControl = RFM.CT.VarWingControl;
 					break;
 				}
 				else if (varWingIndex == 0 && RFM.CT.VarWingControl > 0.0F) {
 					RFM.CT.VarWingControl = 0.0F;
 					HUD.log("Wings: Retracted");
+					oldVarWingControl = RFM.CT.VarWingControl;
 					break;
 				}
 				break;
@@ -4339,11 +4605,13 @@ public class AircraftHotKeys {
 				if (RFM.CT.VarWingControl < RFM.CT.VarWingStage[varWingIndex]) {
 					RFM.CT.VarWingControl = RFM.CT.VarWingStage[varWingIndex];
 					HUD.log("Wings: " + (Math.floor((double)RFM.CT.VarWingStage[varWingIndex] * RFM.CT.VarWingStageMax * 100F) / 100F) + " deg.");
+					oldVarWingControl = RFM.CT.VarWingControl;
 					break;
 				}
 				else if (varWingIndex == (RFM.CT.nVarWingStages - 1) && RFM.CT.VarWingControl < 1.0F) {
 					RFM.CT.VarWingControl = 1.0F;
 					HUD.log("Wings: " + RFM.CT.VarWingStageMax + " deg.");
+					oldVarWingControl = RFM.CT.VarWingControl;
 					break;
 				}
 				break;
