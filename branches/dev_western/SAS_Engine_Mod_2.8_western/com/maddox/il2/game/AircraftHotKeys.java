@@ -2330,12 +2330,13 @@ public class AircraftHotKeys {
 						if (FM.CT.VarWingControl != 0.0F)
 							HUD.log("Wings: Retracted");
 						FM.CT.VarWingControl = 0.0F;
+						oldVarWingControl = FM.CT.VarWingControl;
 						break;
 					}
 					else if (ff > 0.9F){
 						varWingIndex = FM.CT.nVarWingStages;
 						FM.CT.VarWingControl = 1.0F;
-						if (oldVarWingIndex != varWingIndex) {
+						if (oldVarWingIndex != varWingIndex || oldVarWingControl == 0.0F) {
 							HUD.log("Wings: " + FM.CT.VarWingStageMax + " deg.");
 							oldVarWingIndex = varWingIndex;
 							oldVarWingControl = FM.CT.VarWingControl;
@@ -4586,7 +4587,14 @@ public class AircraftHotKeys {
 		switch (i) {
 		case 0:
 			if (RFM.CT.VarWingStage != null && RFM.CT.VarWingStageMax != -1.0F) {
-				if (RFM.CT.VarWingControl > RFM.CT.VarWingStage[varWingIndex]) {
+				if (RFM.CT.nVarWingStages == 0) {
+					RFM.CT.VarWingControl = 0.0F;
+					if (oldVarWingControl > 0.0F)
+						HUD.log("Wings: Retracted");
+					oldVarWingControl = RFM.CT.VarWingControl;
+					break;
+				}
+				else if (RFM.CT.VarWingControl > RFM.CT.VarWingStage[varWingIndex]) {
 					RFM.CT.VarWingControl = RFM.CT.VarWingStage[varWingIndex];
 					HUD.log("Wings: " + (Math.floor((double)RFM.CT.VarWingStage[varWingIndex] * RFM.CT.VarWingStageMax * 100F) / 100F) + " deg.");
 					oldVarWingControl = RFM.CT.VarWingControl;
@@ -4602,7 +4610,14 @@ public class AircraftHotKeys {
 			}
 		case 1:
 			if (RFM.CT.VarWingStage != null && RFM.CT.VarWingStageMax != -1.0F) {
-				if (RFM.CT.VarWingControl < RFM.CT.VarWingStage[varWingIndex]) {
+				if (RFM.CT.nVarWingStages == 0) {
+					RFM.CT.VarWingControl = 1.0F;
+					if (oldVarWingControl < 1.0F)
+						HUD.log("Wings: " + RFM.CT.VarWingStageMax + " deg.");
+					oldVarWingControl = RFM.CT.VarWingControl;
+					break;
+				}
+				else if (RFM.CT.VarWingControl < RFM.CT.VarWingStage[varWingIndex]) {
 					RFM.CT.VarWingControl = RFM.CT.VarWingStage[varWingIndex];
 					HUD.log("Wings: " + (Math.floor((double)RFM.CT.VarWingStage[varWingIndex] * RFM.CT.VarWingStageMax * 100F) / 100F) + " deg.");
 					oldVarWingControl = RFM.CT.VarWingControl;
