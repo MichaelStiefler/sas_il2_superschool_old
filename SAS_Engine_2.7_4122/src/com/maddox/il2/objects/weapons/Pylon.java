@@ -110,14 +110,26 @@ public class Pylon extends ActorMesh
         return massa;
     }
 
+    public float setMassa(float f) {
+        return massa = f;
+    }
+
     public float getDragCx()
     {
         return dragCx;
     }
 
+    public float setDragCx(float f) {
+        return dragCx = f;
+    }
+
     public boolean isMinusDrag()
     {
         return bMinusDrag;
+    }
+
+    public boolean setMinusDrag(boolean b) {
+        return bMinusDrag = b;
     }
         // --- Engine MOD massa and dragCx
 

@@ -30,6 +30,13 @@ public class Pylon_LAU130_Cap_gn16 extends Pylon
         mesh.materialReplace("LAU10q", "LAU10brownq");
     }
 
+    public void jettisonCap()
+    {
+        drawing(false);
+        setMassa(0.000001F);   // When equal just 0.0F, Mass.class ignores its value and treat as default mass.
+        setDragCx(0.000001F);  // When equal just 0.0F, Squre.class ignores its value and treat as default dragCx.
+    }
+
     static 
     {
         Class class1 = com.maddox.il2.objects.weapons.Pylon_LAU130_Cap_gn16.class;
