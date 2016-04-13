@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import com.maddox.il2.ai.Army;
 import com.maddox.il2.ai.EventLog;
 import com.maddox.il2.ai.Regiment;
 import com.maddox.il2.ai.UserCfg;
@@ -112,11 +111,11 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
     // TODO: Storebror: Implement Patch Level Replication
     public static final byte   MSG_PATCHLEVEL         = 101;
     public static final byte   MSG_SELECTOR_VERSION   = 102;
-    public static final String MIN_PATCH_LEVEL        = "107RC3";
-    public static final String PATCH_LEVEL            = "107RC3";
+    public static final String MIN_PATCH_LEVEL        = "107";
+    public static final String PATCH_LEVEL            = "107";
     public static final String PATCH_LEVEL_TEST       = "102b1";
-    public static String[]     PATCHLEVEL_G           = { "107RC3" };
-    public static String[]     PATCHLEVEL_Y           = { "107RC2", "106v3", "106v2", "106" };
+    public static String[]     PATCHLEVEL_G           = { "107" };
+    public static String[]     PATCHLEVEL_Y           = { "107RC3" };
     private String             patchLevel             = "none";
     private String             selectorVersion        = "unknown";
     public static final long   UPDATE_CHAT_INTERVAL   = 60000L;
@@ -646,44 +645,47 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                 }
             }
             this.place = i;
-            if (this.place >= 0) {
-                // TODO: Added by |ZUTI|: don't change army if user is changing position in own ac!
-                // TODO: Storebror: Gunner Switch TEST!
-//                if (!NetEnv.isServer() && !ZutiSupportMethods_Net.isInOwnAircraft(this, World.getPlayerAircraft())) {
-                if (!ZutiSupportMethods_Net.isInOwnAircraft(this, World.getPlayerAircraft())) {
-                    try {
-                        // TODO: Storebror: Debugging Army switch on gunner pos switch bug
-                        int iLogArmy = this.getArmy();
-                        try {
-//                            iLogArmy = GUINetAircraft.getItem(this.place).reg.getArmy();
-                            GUINetAircraft.Item tempItem = GUINetAircraft.getItem(this.place);
-                            if (tempItem == null) {
-                                System.out.println("NetUser requestPlace(" + i + ") GUINetAircraft.getItem(" + this.place + ")==null");
-                            } else {
-                                Regiment tempRegiment = tempItem.reg;
-                                if (tempRegiment == null) {
-                                    System.out.println("NetUser requestPlace(" + i + ") GUINetAircraft.getItem(" + this.place + ").reg==null");
-                                } else {
-                                    iLogArmy = tempRegiment.getArmy();
-                                }
-                            }
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-//                        System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetUser.requestPlace NetUser " + this.uniqueName() + " place " + this.place + " setArmy(" + iLogArmy + ")");
+            
+            // TODO: Storebror: Temporary "fix", don't change army at all when changing ac position!
+            
+//            if (this.place >= 0) {
+//                // TODO: Added by |ZUTI|: don't change army if user is changing position in own ac!
+//                // TODO: Storebror: Gunner Switch TEST!
+////                if (!NetEnv.isServer() && !ZutiSupportMethods_Net.isInOwnAircraft(this, World.getPlayerAircraft())) {
+//                if (!ZutiSupportMethods_Net.isInOwnAircraft(this, World.getPlayerAircraft())) {
+//                    try {
+//                        // TODO: Storebror: Debugging Army switch on gunner pos switch bug
+////                        int iLogArmy = this.getArmy();
+////                        try {
+//////                            iLogArmy = GUINetAircraft.getItem(this.place).reg.getArmy();
+////                            GUINetAircraft.Item tempItem = GUINetAircraft.getItem(this.place);
+////                            if (tempItem == null) {
+////                                System.out.println("NetUser requestPlace(" + i + ") GUINetAircraft.getItem(" + this.place + ")==null");
+////                            } else {
+////                                Regiment tempRegiment = tempItem.reg;
+////                                if (tempRegiment == null) {
+////                                    System.out.println("NetUser requestPlace(" + i + ") GUINetAircraft.getItem(" + this.place + ").reg==null");
+////                                } else {
+////                                    iLogArmy = tempRegiment.getArmy();
+////                                }
+////                            }
+////                        } catch (Exception ex) {
+////                            ex.printStackTrace();
+////                        }
+////                        System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetUser.requestPlace NetUser " + this.uniqueName() + " place " + this.place + " setArmy(" + iLogArmy + ")");
 //                        this.setArmy(GUINetAircraft.getItem(this.place).reg.getArmy());
-//                        this.setArmy(iLogArmy);
-                        String armyName = iLogArmy >= Army.amountNet()?"!!!NOT DEFINED!!!":Army.name(iLogArmy);
-                        System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetUser " + this.uniqueName() + " changed to place " + this.place + ", which belongs to Army " + armyName + " (possible side switch SKIPPED in this Patch Pack!) ###");
-                        // ...
-                    } catch (Exception ex) {
-                        // TODO: Storebror: Debugging Army switch on gunner pos switch bug
-                        System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetUser.requestPlace NetUser " + this.uniqueName() + " place " + this.place + " ERROR ###");
-                        ex.printStackTrace();
-                        // ...
-                    }
-                }
-            }
+////                        this.setArmy(iLogArmy);
+////                        String armyName = iLogArmy >= Army.amountNet()?"!!!NOT DEFINED!!!":Army.name(iLogArmy);
+////                        System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetUser " + this.uniqueName() + " changed to place " + this.place + ", which belongs to Army " + armyName + " (possible side switch SKIPPED in this Patch Pack!) ###");
+//                        // ...
+//                    } catch (Exception ex) {
+//                        // TODO: Storebror: Debugging Army switch on gunner pos switch bug
+////                        System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetUser.requestPlace NetUser " + this.uniqueName() + " place " + this.place + " ERROR ###");
+////                        ex.printStackTrace();
+//                        // ...
+//                    }
+//                }
+//            }
             this.bWaitStartCoopMission = false;
             if (NetEnv.host().isMirrored()) {
                 List list = NetEnv.channels();
@@ -1142,30 +1144,32 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                     if (i >= 0 && Mission.cur() != null && Main.cur().missionLoading == null) {
                         try {
                             // TODO: Storebror: Debugging Army switch on gunner pos switch bug
-                            int iLogArmy = 0;
-                            try {
-                                iLogArmy = GUINetAircraft.getItem(i).reg.getArmy();
-                            } catch (Exception ex) {}
-                            System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetUser.netInput NetUser " + netuser2.uniqueName() + " place " + i + " setArmy(" + iLogArmy + ")");
+//                            int iLogArmy = 0;
+//                            try {
+//                                iLogArmy = GUINetAircraft.getItem(i).reg.getArmy();
+//                            } catch (Exception ex) {}
+//                            System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetUser.netInput NetUser " + netuser2.uniqueName() + " place " + i + " setArmy(" + iLogArmy + ")");
                             // ...
                             netuser2.setArmy(GUINetAircraft.getItem(i).reg.getArmy());
                         } catch (Exception ex) {
-                            // TODO: Storebror: Debugging Army switch on gunner pos switch bug
-                            ex.printStackTrace();
-                            // ...
+//                            // TODO: Storebror: Debugging Army switch on gunner pos switch bug
+//                            ex.printStackTrace();
+//                            // ...
                         }
                     }
                     netuser2.bWaitStartCoopMission = false;
-                    if (this.isMirrored())
-                        try {
-                            NetMsgGuaranted netmsgguaranted4 = new NetMsgGuaranted();
-                            netmsgguaranted4.writeByte(MSG_PLACE);
-                            netmsgguaranted4.writeByte(i);
-                            netmsgguaranted4.writeNetObj(netuser2);
-                            this.post(netmsgguaranted4);
-                        } catch (Exception exception2) {
-                            NetObj.printDebug(exception2);
-                        }
+                    // TODO: Storebror: Debugging Army switch on gunner pos switch bug - avoid mirroring mirrored position change!!!
+//                    if (this.isMirrored())
+//                        try {
+//                            NetMsgGuaranted netmsgguaranted4 = new NetMsgGuaranted();
+//                            netmsgguaranted4.writeByte(MSG_PLACE);
+//                            netmsgguaranted4.writeByte(i);
+//                            netmsgguaranted4.writeNetObj(netuser2);
+//                            this.post(netmsgguaranted4);
+//                        } catch (Exception exception2) {
+//                            NetObj.printDebug(exception2);
+//                        }
+                    // ---
                     return true;
 
                 case MSG_WAIT_START: // '\020'

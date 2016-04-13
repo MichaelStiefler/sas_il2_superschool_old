@@ -1027,17 +1027,17 @@ public class ZutiSupportMethods_Net {
      */
     public static boolean isInOwnAircraft(NetUser netuser, Aircraft aircraft) {
         // TODO: Storebror: Debugging Army switch on gunner pos switch bug
-        if (netuser == null)
-            System.out.println("### GUNNER POS SWITCH BUG DEBUG: ZutiSupportMethods_Net.isInOwnAircraft netuser is null!!!");
-        if (aircraft == null)
-            System.out.println("### GUNNER POS SWITCH BUG DEBUG: ZutiSupportMethods_Net.isInOwnAircraft aircraft is null!!!");
+//        if (netuser == null)
+//            System.out.println("### GUNNER POS SWITCH BUG DEBUG: ZutiSupportMethods_Net.isInOwnAircraft netuser is null!!!");
+//        if (aircraft == null)
+//            System.out.println("### GUNNER POS SWITCH BUG DEBUG: ZutiSupportMethods_Net.isInOwnAircraft aircraft is null!!!");
         // ...
         if (netuser == null || aircraft == null)
             return false;
 
         String compiledAcName = netuser.uniqueName() + "_0";
         // TODO: Storebror: Debugging Army switch on gunner pos switch bug
-        System.out.println("### GUNNER POS SWITCH BUG DEBUG: ZutiSupportMethods_Net.isInOwnAircraft compiledAcName=" + compiledAcName + ", aircraft.name()=" + aircraft.name());
+//        System.out.println("### GUNNER POS SWITCH BUG DEBUG: ZutiSupportMethods_Net.isInOwnAircraft compiledAcName=" + compiledAcName + ", aircraft.name()=" + aircraft.name());
         // ...
         if (aircraft.name().equals(compiledAcName))
             return true;

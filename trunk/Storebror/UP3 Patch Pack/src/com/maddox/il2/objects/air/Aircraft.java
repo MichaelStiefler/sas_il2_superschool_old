@@ -231,7 +231,6 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	public static Orient tmpOr = new Orient();
 	private static int tmpBonesHit;
 	private static boolean bWasAlive = true;
-	static Class class$com$maddox$il2$engine$HierMesh;
 	
 	static class EndActionParam
 	{
@@ -1653,8 +1652,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	{
 		try
 		{
-			Method method = (var_class.getMethod("moveGear", (new Class[]{
-					(class$com$maddox$il2$engine$HierMesh == null ? (class$com$maddox$il2$engine$HierMesh = class$ZutiAircraft("com.maddox.il2.engine.HierMesh")) : class$com$maddox$il2$engine$HierMesh), Float.TYPE})));
+			Method method = (var_class.getMethod("moveGear", (new Class[]{ com.maddox.il2.engine.HierMesh.class, Float.TYPE})));
 			method.invoke(null, new Object[]{hiermesh, new Float(f)});
 		}
 		catch (Exception exception)

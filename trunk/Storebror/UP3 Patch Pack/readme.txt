@@ -1,4 +1,4 @@
-UP3 RC4 Patch Pack v1.07 RC3
+UP3 RC4 Patch Pack v1.07
 
 Contents:
 - All fixes listed below
@@ -32,6 +32,8 @@ Included feature enhancements:
   (and your NTRK playbacks always look the same like original as well)
 - AI Gunners are slightly better again when being on Veteran or Ace level
 - Enhanced Cheater protection
+- Flak Burst Flash Light Effects by SAS~Skylla
+- PA_Jeronimo improved engine cowling for ME-262V3
 
 (*) To activate the Stabilizers for all Aircraft ("Stabs4All"), add the following entry
     to your conf.ini file:
@@ -102,15 +104,16 @@ Included fixes:
 (*) Me-262V3 flight model:
     Like in real life, you have to tap the brakes in order to get the 262V3 off the ground.
     Let the plane accelerate to 180km/h, tap the brakes until the tail comes up and you will soon get airborne automatically.
-    Remember to move the throttle gently below 7000rpm.
+    Remember to move the throttle gently below 6000rpm.
     VERY GENTLY!
     This plane is equipped with very early stages of the Jumo 004 jet engines which are still under development.
     The specified spool up time from idle to full throttle is ==>> 40 Seconds <<==
     This means that e.g. when using keyboard for throttle, you're allowed to increase throttle by one step (=5%) every 2 seconds only !!
     You might be lucky and manage to spool up within half of that time (20 seconds) but we cannot guarantee that the engines will survive it.
     If you spool up any faster, your engines will go up in flames, mark these words!
-    The same applies when you throttle back: Same limits, same time. GENTLY!
-    That much for the bad news about the engines, the good news is that above 7000rpm you can move the throttle as quick as you like.
+    The same applies when you throttle back: GENTLY!
+    You can do it quicker than throttling up, actually about twice as fast, but you still have to do it GENTLY once you fall below 6000rpm.
+    That much for the bad news about the engines, the good news is that above 6000rpm you can move the throttle as quick as you like.
     Watch your RPMs!
     
     Note: * Trim setting for ground start is "full up".
@@ -121,6 +124,9 @@ Included fixes:
             but you have no elevator authority yet since they're still wing alee: -> Crash.
           * Don't tap the brakes too soon when you try to lift the tail.
             If you do so below ~160km/h, the tail will come up, but since you don't have sufficient elevator authority yet, your plane will nose over.
+    
+    ATTENTION: If you have installed PA_Jeronimo's Engine Cowling Mod, please deactivate the Me-262V-3 folder inside of that mod, otherwise
+               Your engine will get damage once started on ground, see deactivation details below.
 
 Additionally implemented Debugging Switches:
 You can adjust log.lst debugging by setting the following values in the conf.ini [Mods] section:
@@ -151,7 +157,7 @@ Installation:
     * #UP#_Enable_UP.3.0
     * Additional JSGME Mods not related to Fixes, Patches, unobfuscated UP etc.
 3.) Extract this Patch Pack to your UP3 RC4 game folder
-4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_107_RC3")
+4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_107")
 
 ********************
 
@@ -170,3 +176,10 @@ The Hotfixes appear like this in JSGME, watch out for them and deactivate them i
 
 The Bf 109 G14 Hotfix installs directly into the #UP# folder, please remove or deactivate that folder:
 - UP3 Bf 109G-14 Hotfix
+
+IMPORTANT: If you have PA_Jeronimo's Engine Cowling Mod installed in your game, please make sure to Rename the folder
+           3do/plane/Me-262V-3
+           inside that mod folder (e.g. the path in your game might be like "#UP#\Fixed cowling engine & props\3do\plane\Me-262V-3") to
+           3do/plane/-Me-262V-3
+           or simply remove the "Me-262V-3" of it.
+           If you don't do so, your engines will die on ground start.
