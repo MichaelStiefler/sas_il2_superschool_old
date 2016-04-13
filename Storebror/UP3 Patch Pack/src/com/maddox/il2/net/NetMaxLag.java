@@ -94,7 +94,9 @@ public class NetMaxLag {
 //                Chat.sendLog(0, s, aircraftToCheck, null);
 //            }
             } else {
-                Chat.sendLog(0, "User " + aircraftToCheck.netUser().shortName() + " lags (Warning " + this.warningCounter + "/" + netserverparams.cheaterWarningNum() + ")!", (Aircraft) null, null);
+                // TODO: Changed by Storebror, only show lag warnings when there's a limit set for lagging.
+                if (netserverparams.cheaterWarningNum() > 0) Chat.sendLog(0, "User " + aircraftToCheck.netUser().shortName() + " lags (Warning " + this.warningCounter + "/" + netserverparams.cheaterWarningNum() + ")!", (Aircraft) null, null);
+                // ---
             }
             return;
         }
