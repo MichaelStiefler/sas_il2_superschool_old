@@ -53,6 +53,8 @@ public class CockpitFW_190A4 extends CockpitPilot
     private static boolean mg151shown = false;
     private static boolean mg17shown = false;
     */
+    private static int mg17rbullets = 0;
+    private static int mg17lbullets = 0;
     
     /* skylla: Schusszaehler fix:
      * @author: SAS~Skylla
@@ -165,16 +167,21 @@ public class CockpitFW_190A4 extends CockpitPilot
             	mg17shown = false;          	
             }
            */
+            if(this.gun[0].haveBullets() && this.gun[0].isShots() && this.gun[0].countBullets() != mg17lbullets) {
+            	this.mesh.chunkVisible("XLampMG17_1", true);
+            	mg17lbullets = this.gun[0].countBullets();
+            }
         }
         if (this.gun[1] != null) {
             Cockpit.xyz[0] = this.cvt(this.gun[1].countBullets(), 0.0f, 500.0f, -0.044f, 0.0f);
             //this.mesh.chunkSetLocate("RC_MG17_R", Cockpit.xyz, Cockpit.ypr);
             this.mesh.chunkVisible("XLampMG17_2", !this.gun[1].haveBullets());
-            /*
-            if(this.gun[1].haveBullets() && this.gun[1].isShots()) {
+            
+            if(this.gun[1].haveBullets() && this.gun[1].isShots() && this.gun[1].countBullets() != mg17rbullets) {
             	this.mesh.chunkVisible("XLampMG17_2", true);
+            	mg17rbullets = this.gun[1].countBullets();
             }
-            */
+            
         }
         if (this.gun[4] != null) {
             Cockpit.xyz[0] = this.cvt(this.gun[4].countBullets(), 0.0f, 500.0f, -0.045f, 0.0f); 
