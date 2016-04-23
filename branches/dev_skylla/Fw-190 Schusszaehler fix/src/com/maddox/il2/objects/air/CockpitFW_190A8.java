@@ -60,6 +60,9 @@ public class CockpitFW_190A8 extends CockpitPilot
      * 			float offset: offset at which the ammocounter shows zero bullets left (-0.018f for outer, -0.045f for inner)
      * 			int counterrange: number of bullets the counter can display (100 for outer, 500 for inner)
      */
+    private static int mg17lbullets = 0;
+    private static int mg17rbullets = 0;
+        
     private static float ammoCounter(int bullets, float offset, int counterrange) {
     	float f = (0.026f - offset) / counterrange;
     	bullets = Math.min(bullets, counterrange);
@@ -176,9 +179,17 @@ public class CockpitFW_190A8 extends CockpitPilot
         if (this.gun[0] != null) {
             Cockpit.xyz[0] = this.cvt(this.gun[0].countBullets(), 0.0f, 500.0f, -0.044f, 0.0f);
             this.mesh.chunkVisible("XLampMG17_1", !this.gun[0].haveBullets());
+            if(this.gun[0].haveBullets() && this.gun[0].isShots() && this.gun[0].countBullets() != mg17lbullets) {
+            	this.mesh.chunkVisible("XLampMG17_1", true);
+            	mg17lbullets = this.gun[0].countBullets();
+            }
         }
         if (this.gun[1] != null) {
             this.mesh.chunkVisible("XLampMG17_2", !this.gun[1].haveBullets());
+            if(this.gun[1].haveBullets() && this.gun[1].isShots() && this.gun[1].countBullets() != mg17rbullets) {
+            	this.mesh.chunkVisible("XLampMG17_2", true);
+            	mg17rbullets = this.gun[1].countBullets();
+            }
         }
         if (this.gun[4] != null) {
         	Cockpit.xyz[0] = this.cvt(this.gun[4].countBullets(), 0.0f, 500.0f, -0.045f, 0.0f); 
