@@ -167,14 +167,19 @@ public class CockpitFW_190A4 extends CockpitPilot
            */
         }
         if (this.gun[1] != null) {
-            //Cockpit.xyz[0] = this.cvt(this.gun[1].countBullets(), 0.0f, 500.0f, -0.044f, 0.0f);
+            Cockpit.xyz[0] = this.cvt(this.gun[1].countBullets(), 0.0f, 500.0f, -0.044f, 0.0f);
             //this.mesh.chunkSetLocate("RC_MG17_R", Cockpit.xyz, Cockpit.ypr);
             this.mesh.chunkVisible("XLampMG17_2", !this.gun[1].haveBullets());
+            /*
+            if(this.gun[1].haveBullets() && this.gun[1].isShots()) {
+            	this.mesh.chunkVisible("XLampMG17_2", true);
+            }
+            */
         }
         if (this.gun[4] != null) {
-            //Cockpit.xyz[0] = this.cvt(this.gun[4].countBullets(), 0.0f, 500.0f, -0.045f, 0.0f); // <- the calculations with Cockpit.cvt() lead to wrong results.
+            Cockpit.xyz[0] = this.cvt(this.gun[4].countBullets(), 0.0f, 500.0f, -0.045f, 0.0f); 
             //this.mesh.chunkSetLocate("RC_MG151_L", Cockpit.xyz, Cockpit.ypr); // <- this refers to the outer ammocounters; inner MG151 historically occupied the inner ammocounters
-        	Cockpit.xyz[0] = ammoCounter(this.gun[4].countBullets(), -0.045f, 500); // <- new code with CockpitFW_190A4.ammoCounter(); see the method for more details
+        	//Cockpit.xyz[0] = ammoCounter(this.gun[4].countBullets(), -0.045f, 500); 
             this.mesh.chunkSetLocate("RC_MG17_L", Cockpit.xyz, Cockpit.ypr);
             /* That would be too easy ;)
             if(this.gun[4].countBullets() % 10 == 0) {
@@ -188,13 +193,13 @@ public class CockpitFW_190A4 extends CockpitPilot
             */
         }
         if (this.gun[5] != null) {
-            //Cockpit.xyz[0] = this.cvt(this.gun[5].countBullets(), 0.0f, 500.0f, -0.045f, 0.0f); // <- the calculations with Cockpit.cvt() lead to wrong results.
+            Cockpit.xyz[0] = this.cvt(this.gun[5].countBullets(), 0.0f, 500.0f, -0.045f, 0.0f);
             //this.mesh.chunkSetLocate("RC_MG151_R", Cockpit.xyz, Cockpit.ypr);
-        	Cockpit.xyz[0] = ammoCounter(this.gun[5].countBullets(), -0.045f, 500); // <- new code with CockpitFW_190A4.ammoCounter(); see the method for more details
+        	//Cockpit.xyz[0] = ammoCounter(this.gun[5].countBullets(), -0.045f, 500);
             this.mesh.chunkSetLocate("RC_MG17_R", Cockpit.xyz, Cockpit.ypr);
         }
         if (this.gun[2] != null) { //0.026 -> voll; -0.018 -> leer!!
-            //Cockpit.xyz[0] = this.cvt(this.gun[2].countBullets(), 0.0f, 37.5f, -0.018f, 0.0f);
+            //Cockpit.xyz[0] = this.cvt(this.gun[2].countBullets(), 0.0f, 37.5f, -0.018f, 0.025f);
             //this.mesh.chunkSetLocate("RC_MGFF_WingL", Cockpit.xyz, Cockpit.ypr);
         	Cockpit.xyz[0] = ammoCounter(this.gun[2].countBullets(), -0.018f, 100); // <- new code with CockpitFW_190A4.ammoCounter(); see the method for more details
             this.mesh.chunkSetLocate("RC_MG151_L", Cockpit.xyz, Cockpit.ypr); // MG FF\outer MG151 occupied the outer ammocounters

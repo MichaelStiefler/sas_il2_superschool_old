@@ -181,11 +181,13 @@ public class CockpitFW_190A8 extends CockpitPilot
             this.mesh.chunkVisible("XLampMG17_2", !this.gun[1].haveBullets());
         }
         if (this.gun[4] != null) {
-        	Cockpit.xyz[0] = ammoCounter(this.gun[4].countBullets(), -0.045f, 500); // <- new code with CockpitFW_190A4.ammoCounter(); see Cockpit class of FW-190A4 for more details
+        	Cockpit.xyz[0] = this.cvt(this.gun[4].countBullets(), 0.0f, 500.0f, -0.045f, 0.0f); 
+        	//Cockpit.xyz[0] = ammoCounter(this.gun[4].countBullets(), -0.045f, 500); 
             this.mesh.chunkSetLocate("RC_MG17_L", Cockpit.xyz, Cockpit.ypr);
         }
         if (this.gun[5] != null) {
-        	Cockpit.xyz[0] = ammoCounter(this.gun[5].countBullets(), -0.045f, 500); // <- new code with CockpitFW_190A4.ammoCounter(); see Cockpit class of FW-190A4 for more details
+        	Cockpit.xyz[0] = this.cvt(this.gun[5].countBullets(), 0.0f, 500.0f, -0.045f, 0.0f); 
+        	//Cockpit.xyz[0] = ammoCounter(this.gun[5].countBullets(), -0.045f, 500);
             this.mesh.chunkSetLocate("RC_MG17_R", Cockpit.xyz, Cockpit.ypr);
         }
         if (this.gun[2] != null) {
@@ -193,7 +195,7 @@ public class CockpitFW_190A8 extends CockpitPilot
             this.mesh.chunkSetLocate("RC_MG151_L", Cockpit.xyz, Cockpit.ypr);
         }
         if (this.gun[3] != null) {
-            Cockpit.xyz[0] = ammoCounter(this.gun[3].countBullets(), -0.018f, 100);
+            Cockpit.xyz[0] = ammoCounter(this.gun[3].countBullets(), -0.018f, 100); // <- new code with CockpitFW_190A4.ammoCounter(); see Cockpit class of FW-190A4 for more details
             this.mesh.chunkSetLocate("RC_MG151_R", Cockpit.xyz, Cockpit.ypr);
         }        
         /* old code:
