@@ -167,6 +167,7 @@ public class CockpitFW_190A4 extends CockpitPilot
             	mg17shown = false;          	
             }
            */
+            //In reality, MG17 lamps are flashing when guns are fired:
             if(this.gun[0].haveBullets() && this.gun[0].isShots() && this.gun[0].countBullets() != mg17lbullets) {
             	this.mesh.chunkVisible("XLampMG17_1", true);
             	mg17lbullets = this.gun[0].countBullets();
@@ -186,7 +187,7 @@ public class CockpitFW_190A4 extends CockpitPilot
         if (this.gun[4] != null) {
             Cockpit.xyz[0] = this.cvt(this.gun[4].countBullets(), 0.0f, 500.0f, -0.045f, 0.0f); 
             //this.mesh.chunkSetLocate("RC_MG151_L", Cockpit.xyz, Cockpit.ypr); // <- this refers to the outer ammocounters; inner MG151 historically occupied the inner ammocounters
-        	//Cockpit.xyz[0] = ammoCounter(this.gun[4].countBullets(), -0.045f, 500); 
+        	//Cockpit.xyz[0] = ammoCounter(this.gun[4].countBullets(), -0.045f, 500);  // <- cvt is correct here 	
             this.mesh.chunkSetLocate("RC_MG17_L", Cockpit.xyz, Cockpit.ypr);
             /* That would be too easy ;)
             if(this.gun[4].countBullets() % 10 == 0) {
@@ -198,11 +199,17 @@ public class CockpitFW_190A4 extends CockpitPilot
             	mg151shown = false;          	
             }
             */
+            
+            //TODO: test Verschlusskappenschauzeichen: ---------------------------
+            //this.mesh.chunkVisible("RC_MG17cap_L", true);
+            //Cockpit.xyz[0] = 0.028f;
+            //this.mesh.chunkSetLocate("RC_MG17cap_L", Cockpit.xyz, Cockpit.ypr);
+            //--------------------------------------------------------------------
         }
         if (this.gun[5] != null) {
             Cockpit.xyz[0] = this.cvt(this.gun[5].countBullets(), 0.0f, 500.0f, -0.045f, 0.0f);
             //this.mesh.chunkSetLocate("RC_MG151_R", Cockpit.xyz, Cockpit.ypr);
-        	//Cockpit.xyz[0] = ammoCounter(this.gun[5].countBullets(), -0.045f, 500);
+        	//Cockpit.xyz[0] = ammoCounter(this.gun[5].countBullets(), -0.045f, 500);  // <- cvt is correct here 			
             this.mesh.chunkSetLocate("RC_MG17_R", Cockpit.xyz, Cockpit.ypr);
         }
         if (this.gun[2] != null) { //0.026 -> voll; -0.018 -> leer!!
