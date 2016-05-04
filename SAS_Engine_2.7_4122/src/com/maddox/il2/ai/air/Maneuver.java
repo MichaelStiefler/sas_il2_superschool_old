@@ -430,7 +430,8 @@ public class Maneuver extends AIFlightModel {
     private float               of52 = 0.0F;
     private boolean bTouchingDown = false;
     private long brakingtimer = 0L;
-    private boolean bLogDetail   = true;
+    private boolean bLogDetail   = false;
+    private float maxThrottleAITakeoffavoidOH = 0.0F;
   	//--------------------------------
   	
     public void set_task(int i) {
@@ -3992,7 +3993,8 @@ public class Maneuver extends AIFlightModel {
                     if (Alt < 9F && Vwld.z < 0.0D)
                         Vwld.z *= 0.84999999999999998D;
                     // +++ Engine2.7 use afterburner enough in taking-off
-                    f39 = (EI.engines[0].getBoostFactor() > 1.0F) ? 1.058F : 0.97F;
+                    f39 = (EI.engines[0].getBoostFactor() > 1.0F) ? 1.0599F : 0.97F;
+                    if(maxThrottleAITakeoffavoidOH > 0.1F && f39 > maxThrottleAITakeoffavoidOH * 0.98F) f39 = maxThrottleAITakeoffavoidOH * 0.98F;
                     // --- Engine2.7
                     if (CT.bHasCockpitDoorControl && !bStage6)
                         AS.setCockpitDoor(actor, 1);
@@ -4212,7 +4214,8 @@ public class Maneuver extends AIFlightModel {
                             d7 = 1.5D;
                         if (d7 < -1.5D)
                             d7 = -1.5D;
-                        CT.RudderControl += (float) d7;
+                        if (!bCatapultAI)    // TODO: CTO Mod 4.12 , canceling rudder diff on the catapult.
+                            CT.RudderControl += (float) d7;
                     }
                 } else {
                     CT.BrakeControl = 1.0F;
@@ -8523,6 +8526,7 @@ public class Maneuver extends AIFlightModel {
             CT.setAfterburnerControl(true);
             f14 = 0.04F;
             flag = true;
+            maxThrottleAITakeoffavoidOH = 1.1F;
             break;
 
         case 7: // '\007'
@@ -8624,6 +8628,7 @@ public class Maneuver extends AIFlightModel {
                 f1 = 1.1F;
             else if (f1 < 0.0F)
                 f1 = 0.0F;
+            maxThrottleAITakeoffavoidOH = f1;
         } else if (!EI.isSelectionAllowsAutoRadiator() && CT.getRadiatorControl() > 0.0F && (flag || isTick(c, 0)))
             CT.setRadiatorControl(0.0F);
         if ((double) Math.abs(CT.PowerControl - f1) < 0.5D * (double) f)
@@ -8637,6 +8642,8 @@ public class Maneuver extends AIFlightModel {
             float f2 = (10F * (f28 - EI.engines[0].getw())) / f28;
             if (f2 < CT.PowerControl)
                 CT.setPowerControl(f2);
+            if (CT.PowerControl < maxThrottleAITakeoffavoidOH)
+                maxThrottleAITakeoffavoidOH = CT.PowerControl;
         }
         if (indSpeed > 0.8F * VmaxAllowed) {
             float f3 = (1.0F * (VmaxAllowed - indSpeed)) / VmaxAllowed;
