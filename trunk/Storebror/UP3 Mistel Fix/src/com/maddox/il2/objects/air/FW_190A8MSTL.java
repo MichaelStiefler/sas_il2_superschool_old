@@ -2,6 +2,9 @@ package com.maddox.il2.objects.air;
 
 import java.io.IOException;
 
+import com.maddox.JGP.Vector3d;
+import com.maddox.il2.ai.BulletEmitter;
+import com.maddox.il2.ai.MsgExplosion;
 import com.maddox.il2.ai.War;
 import com.maddox.il2.ai.Wing;
 import com.maddox.il2.ai.air.AirGroup;
@@ -10,11 +13,14 @@ import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorNet;
 import com.maddox.il2.engine.Eff3DActor;
+import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Motor;
 import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.game.Mission;
+import com.maddox.il2.objects.weapons.BombFAB5000;
+import com.maddox.il2.objects.weapons.BombGunNull;
 import com.maddox.rts.CmdEnv;
 import com.maddox.rts.MsgAction;
 import com.maddox.rts.NetMsgGuaranted;
@@ -22,14 +28,32 @@ import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.NetObj;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
+import com.maddox.sas1946.il2.util.Reflection;
 
-public class FW_190A8MSTL extends FW_190 implements TypeDockable {
+public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 
     public FW_190A8MSTL() {
         this.bNeedSetup = true;
         this.dtime = -1L;
         this.target_ = null;
         this.queen_ = null;
+        this.mistelQueen = null;
+        this.lastPowerControl = 0F;
+        this.lastBreak = 0F;
+        this.lastBreakLeft = 0F;
+        this.lastBreakRight = 0F;
+        this.lastTailWheelLocked = false;
+    }
+
+    public Aircraft getDrone() {
+        return this;
+    }
+    public Aircraft getQueen() {
+        if (!(this.queen_ instanceof Aircraft)) return null;
+        return (Aircraft)this.queen_;
+    }
+    public void doSpawnMistelBomb() {
+        this.spawnBomb();
     }
 
     protected void moveFan(float f) {
@@ -117,11 +141,31 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable {
                 }
         if (this.typeDockableIsDocked()) {
             Aircraft aircraft = (Aircraft) this.typeDockableGetQueen();
+            if (this.isNetMaster()) {
+                if (this.lastPowerControl != this.FM.CT.getPowerControl()) {
+                    this.lastPowerControl = this.FM.CT.getPowerControl();
+                    System.out.println("FW_190A8MSTL PowerControl = " + this.FM.CT.getPowerControl());
+                    NetMistel.netSendPowerControlToMirrors(this);
+                }
+                if (this.lastTailWheelLocked != this.FM.Gears.bTailwheelLocked) {
+                    this.lastTailWheelLocked = this.FM.Gears.bTailwheelLocked;
+                    System.out.println("FW_190A8MSTL bTailwheelLocked = " + this.FM.Gears.bTailwheelLocked);
+                    NetMistel.netSendTailwheelLockToMirrors(this);
+                }
+                if (this.lastBreak != this.FM.CT.BrakeControl ||
+                    this.lastBreakLeft != this.FM.CT.BrakeLeftControl || 
+                    this.lastBreakRight != this.FM.CT.BrakeRightControl) {
+                    this.lastBreak = this.FM.CT.BrakeControl;
+                    this.lastBreakLeft = this.FM.CT.BrakeLeftControl;
+                    this.lastBreakRight = this.FM.CT.BrakeRightControl;
+                    System.out.println("FW_190A8MSTL BrakeControl=" + this.FM.CT.BrakeControl + ", BrakeLeftControl=" + this.FM.CT.BrakeLeftControl + ", BrakeRightControl=" + this.FM.CT.BrakeRightControl);
+                    NetMistel.netSendBrakesToMirrors(this);
+                }
+            }
             if (!aircraft.isNetMirror()) {
                 aircraft.FM.CT.AileronControl = this.FM.CT.AileronControl;
                 aircraft.FM.CT.ElevatorControl = this.FM.CT.ElevatorControl;
                 aircraft.FM.CT.RudderControl = this.FM.CT.RudderControl;
-                aircraft.FM.CT.setPowerControl(this.FM.CT.getPowerControl());
                 aircraft.FM.CT.setTrimAileronControl(this.FM.CT.getTrimAileronControl());
                 aircraft.FM.CT.setTrimElevatorControl(this.FM.CT.getTrimElevatorControl());
                 aircraft.FM.CT.setTrimRudderControl(this.FM.CT.getTrimRudderControl());
@@ -129,9 +173,10 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable {
             aircraft.FM.CT.GearControl = this.FM.CT.GearControl;
             aircraft.FM.CT.FlapsControl = this.FM.CT.FlapsControl;
             aircraft.FM.CT.forceFlaps(this.FM.CT.getFlap());
+            aircraft.FM.AS.setNavLightsState(this.FM.AS.bNavLightsOn);
+            aircraft.FM.AS.setAirShowState(this.FM.AS.bShowSmokesOn);
+            this.moveSteering(0.0F);
         }
-        for (int i=0; i<4; i++)
-            System.out.println("wct[" + i + "]=" + this.FM.CT.WeaponControl[i] + ", swct[" + i + "]=" + this.FM.CT.saveWeaponControl[i]);
         if (this.FM.CT.saveWeaponControl[3] || this.FM.CT.WeaponControl[3])
             this.typeDockableAttemptDetach();
         super.update(f);
@@ -139,8 +184,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable {
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (!flag)
-            ;
+        
     }
 
     public void onAircraftLoaded() {
@@ -242,8 +286,18 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable {
 
     public void typeDockableDoAttachToQueen(Actor actor, int i) {
         this.queen_ = actor;
+        this.mistelQueen = actor;
         this.dockport_ = i;
         if (this.FM.EI.getNum() == 1) {
+            System.out.println("typeDockableDoAttachToQueen(" + actor.getClass().getName() + ", " + i + ")");
+            System.out.println("queen isNet=" + this.queen_.isNet());
+            System.out.println("queen isNetMaster=" + this.queen_.isNetMaster());
+            System.out.println("queen isNetMirror=" + this.queen_.isNetMirror());
+            System.out.println("this isNet=" + this.isNet());
+            System.out.println("this isNetMaster=" + this.isNetMaster());
+            System.out.println("this isNetMirror=" + this.isNetMirror());
+            
+            
             this.FM.Scheme = 2;
             Aircraft aircraft = (Aircraft) actor;
             this.FM.EI.setNum(3);
@@ -253,12 +307,13 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable {
             this.FM.EI.engines[1] = aircraft.FM.EI.engines[0];
             this.FM.EI.engines[2] = aircraft.FM.EI.engines[1];
             this.FM.EI.bCurControl = (new boolean[] { true, true, true });
-            aircraft.FM.EI.bCurControl[0] = false;
-            aircraft.FM.EI.bCurControl[1] = false;
+//            aircraft.FM.EI.bCurControl[0] = false;
+//            aircraft.FM.EI.bCurControl[1] = false;
         }
         this.FM.EI.setEngineRunning();
         this.FM.CT.setGearAirborne();
         this.moveGear(0.0F);
+        this.moveSteering(0.0F);
         this.FM.CT.GearControl = ((Aircraft) actor).FM.CT.GearControl;
         FlightModel flightmodel = ((Aircraft) this.queen_).FM;
         if ((this.FM instanceof Maneuver) && (flightmodel instanceof Maneuver)) {
@@ -272,6 +327,12 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable {
                 airgroup.rejoinGroup = null;
             }
         }
+        if (this.FM.CT.Weapons[3] == null) {
+            this.FM.CT.Weapons[3] = new BulletEmitter[1];
+        }
+        this.FM.CT.Weapons[3][0] = new BombGunNull();
+        this.FM.CT.Weapons[3][0].set(this, "_Clip00");
+        this.FM.CT.Weapons[3][0].loadBullets(2);
     }
 
     public void typeDockableDoDetachFromQueen(int i) {
@@ -330,11 +391,117 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable {
         }
     }
 
+    private void spawnBomb() {
+        System.out.println("FW_190A8MSTL spawnBomb() 1");
+        if (this.mistelQueen == null) return;
+        System.out.println("FW_190A8MSTL spawnBomb() 2");
+        if (this.mistelQueen.pos.getAbsPoint().z - Engine.cur.land.HQ(this.mistelQueen.pos.getAbsPoint().x, this.mistelQueen.pos.getAbsPoint().y) > 50D) {
+            MsgExplosion.send(this, null, this.mistelQueen.pos.getAbsPoint(), this, 0.0F, 4550.0F, 0, 890.0F);
+            System.out.println("FW_190A8MSTL spawnBomb() 3");
+            return;
+        }
+        BombFAB5000 bomb = new BombFAB5000();
+        bomb.pos.setUpdateEnable(true);
+        bomb.pos.setAbs(this.mistelQueen.pos.getAbs());
+        bomb.pos.reset();
+        bomb.start();
+        bomb.setOwner(this);
+        bomb.setSpeed(new Vector3d());
+        bomb.armingTime = 0L;
+        Reflection.setBoolean(bomb, "isArmed", true);
+        System.out.println("FW_190A8MSTL spawnBomb() 4");
+    }
+
+    
+    public boolean netGetGMsg(NetMsgInput netmsginput, boolean bool) throws IOException {
+        if (this.mistelQueen == null)
+            return super.netGetGMsg(netmsginput, bool);
+        netmsginput.mark(2);
+        int i = netmsginput.readUnsignedByte();
+        switch (i) {
+            case 92:
+                int j = netmsginput.readUnsignedByte();
+                switch (j) {
+                    case 1:
+                        return this.receiveNetExploded(netmsginput);
+                    case 2:
+                        return this.receivePowerControl(netmsginput);
+                    case 3:
+                        return this.receiveTailWheelLocked(netmsginput);
+                    case 4:
+                        return this.receiveBrakes(netmsginput);
+                    default:
+                        break;
+                }
+                return true;
+            default:
+                netmsginput.reset();
+                return super.netGetGMsg(netmsginput, bool);
+        }
+    }
+
+    private boolean receiveNetExploded(NetMsgInput netmsginput) {
+        System.out.println("FW_190A8MSTL receiveNetExploded() 1");
+        if (this.net != netmsginput.readNetObj())
+            return false;
+        System.out.println("FW_190A8MSTL receiveNetExploded() 2");
+        if (this.mistelQueen.net != netmsginput.readNetObj())
+            return false;
+        System.out.println("FW_190A8MSTL receiveNetExploded() 3");
+        this.spawnBomb();
+        System.out.println("FW_190A8MSTL receiveNetExploded() 6");
+        return true;
+    }
+
+    private boolean receivePowerControl(NetMsgInput netmsginput) throws IOException {
+        System.out.println("FW_190A8MSTL receivePowerControl() 1");
+        if (this.net != netmsginput.readNetObj())
+            return false;
+        System.out.println("FW_190A8MSTL receivePowerControl() 2");
+        float fThrottle = netmsginput.readFloat();
+        System.out.println("FW_190A8MSTL receivePowerControl() 3");
+        this.FM.CT.setPowerControl(fThrottle);
+        System.out.println("FW_190A8MSTL receivePowerControl() 4");
+        return true;
+    }
+    
+    private boolean receiveTailWheelLocked(NetMsgInput netmsginput) throws IOException {
+        System.out.println("FW_190A8MSTL receiveTailWheelLocked() 1");
+        if (this.net != netmsginput.readNetObj())
+            return false;
+        System.out.println("FW_190A8MSTL receiveTailWheelLocked() 2");
+        boolean bTailWheelLocked = netmsginput.readBoolean();
+        System.out.println("FW_190A8MSTL receiveTailWheelLocked() 3");
+        this.FM.CT.bHasLockGearControl = true;
+        this.FM.Gears.bTailwheelLocked = bTailWheelLocked;
+        this.FM.CT.bHasLockGearControl = false;
+        System.out.println("FW_190A8MSTL receiveTailWheelLocked() 4");
+        return true;
+    }
+
+    private boolean receiveBrakes(NetMsgInput netmsginput) throws IOException {
+        System.out.println("FW_190A8MSTL receiveBrakes() 1");
+        if (this.net != netmsginput.readNetObj())
+            return false;
+        System.out.println("FW_190A8MSTL receiveBrakes() 2");
+        this.FM.CT.BrakeControl = netmsginput.readFloat();
+        this.FM.CT.BrakeLeftControl = netmsginput.readFloat();
+        this.FM.CT.BrakeRightControl = netmsginput.readFloat();
+        System.out.println("FW_190A8MSTL receiveBrakes() 3");
+        return true;
+    }
+
     private boolean bNeedSetup;
     private long    dtime;
     private Actor   target_;
     private Actor   queen_;
     private int     dockport_;
+    private Actor   mistelQueen;
+    private float   lastPowerControl;
+    private boolean lastTailWheelLocked;
+    private float   lastBreak;
+    private float   lastBreakLeft;
+    private float   lastBreakRight;
 
     static {
         Class class1 = FW_190A8MSTL.class;
