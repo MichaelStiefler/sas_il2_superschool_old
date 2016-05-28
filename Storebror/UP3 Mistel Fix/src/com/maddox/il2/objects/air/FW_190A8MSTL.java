@@ -38,22 +38,46 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
         this.target_ = null;
         this.queen_ = null;
         this.mistelQueen = null;
-        this.lastPowerControl = 0F;
-        this.lastBreak = 0F;
-        this.lastBreakLeft = 0F;
-        this.lastBreakRight = 0F;
-        this.lastTailWheelLocked = false;
     }
 
     public Aircraft getDrone() {
         return this;
     }
+
     public Aircraft getQueen() {
-        if (!(this.queen_ instanceof Aircraft)) return null;
-        return (Aircraft)this.queen_;
+        if (!(this.mistelQueen instanceof Aircraft))
+            return null;
+        return (Aircraft) this.mistelQueen;
     }
-    public void doSpawnMistelBomb() {
-        this.spawnBomb();
+
+    public void mistelExplosion() {
+        if (this.mistelQueen == null) {
+            if (DEBUG >= 1)
+                System.out.println("FW_190A8MSTL mistelExplosion() mistelQueen=null");
+            return;
+        }
+        if (this.mistelQueen.pos.getAbsPoint().z - Engine.cur.land.HQ(this.mistelQueen.pos.getAbsPoint().x, this.mistelQueen.pos.getAbsPoint().y) > 50D) {
+            if (DEBUG >= 1)
+                System.out.println("FW_190A8MSTL mistelExplosion() Altitude above land > 50m");
+            MsgExplosion.send(this.mistelQueen, null, this.mistelQueen.pos.getAbsPoint(), this, 0.0F, 6550.0F, 0, 890.0F);
+            return;
+        }
+        if (DEBUG >= 1)
+            System.out.println("FW_190A8MSTL mistelExplosion() spawning BombFAB5000");
+        BombFAB5000 bomb = new BombFAB5000();
+        bomb.pos.setUpdateEnable(true);
+        bomb.pos.setAbs(this.mistelQueen.pos.getAbs());
+        bomb.pos.reset();
+        bomb.start();
+        bomb.setOwner(this);
+        bomb.setSpeed(new Vector3d());
+        bomb.armingTime = 0L;
+        Reflection.setBoolean(bomb, "isArmed", true);
+    }
+
+    protected void finalize() {
+        super.finalize();
+        NetMistel.removeNetMistelFromList(this);
     }
 
     protected void moveFan(float f) {
@@ -141,27 +165,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
                 }
         if (this.typeDockableIsDocked()) {
             Aircraft aircraft = (Aircraft) this.typeDockableGetQueen();
-            if (this.isNetMaster()) {
-                if (this.lastPowerControl != this.FM.CT.getPowerControl()) {
-                    this.lastPowerControl = this.FM.CT.getPowerControl();
-                    System.out.println("FW_190A8MSTL PowerControl = " + this.FM.CT.getPowerControl());
-                    NetMistel.netSendPowerControlToMirrors(this);
-                }
-                if (this.lastTailWheelLocked != this.FM.Gears.bTailwheelLocked) {
-                    this.lastTailWheelLocked = this.FM.Gears.bTailwheelLocked;
-                    System.out.println("FW_190A8MSTL bTailwheelLocked = " + this.FM.Gears.bTailwheelLocked);
-                    NetMistel.netSendTailwheelLockToMirrors(this);
-                }
-                if (this.lastBreak != this.FM.CT.BrakeControl ||
-                    this.lastBreakLeft != this.FM.CT.BrakeLeftControl || 
-                    this.lastBreakRight != this.FM.CT.BrakeRightControl) {
-                    this.lastBreak = this.FM.CT.BrakeControl;
-                    this.lastBreakLeft = this.FM.CT.BrakeLeftControl;
-                    this.lastBreakRight = this.FM.CT.BrakeRightControl;
-                    System.out.println("FW_190A8MSTL BrakeControl=" + this.FM.CT.BrakeControl + ", BrakeLeftControl=" + this.FM.CT.BrakeLeftControl + ", BrakeRightControl=" + this.FM.CT.BrakeRightControl);
-                    NetMistel.netSendBrakesToMirrors(this);
-                }
-            }
+            NetMistel.mistelToMirrors(this);
             if (!aircraft.isNetMirror()) {
                 aircraft.FM.CT.AileronControl = this.FM.CT.AileronControl;
                 aircraft.FM.CT.ElevatorControl = this.FM.CT.ElevatorControl;
@@ -173,18 +177,20 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
             aircraft.FM.CT.GearControl = this.FM.CT.GearControl;
             aircraft.FM.CT.FlapsControl = this.FM.CT.FlapsControl;
             aircraft.FM.CT.forceFlaps(this.FM.CT.getFlap());
-            aircraft.FM.AS.setNavLightsState(this.FM.AS.bNavLightsOn);
-            aircraft.FM.AS.setAirShowState(this.FM.AS.bShowSmokesOn);
             this.moveSteering(0.0F);
+            this.FM.canChangeBrakeShoe = (aircraft.FM.Gears.onGround() && this.FM.getSpeedKMH() < 10F);
+            if (aircraft.FM.Gears.onGround()) {
+                this.FM.Loc.z = Engine.cur.land.HQ(this.FM.Loc.x, this.FM.Loc.y) + 51D;
+            }
         }
+        super.update(f);
         if (this.FM.CT.saveWeaponControl[3] || this.FM.CT.WeaponControl[3])
             this.typeDockableAttemptDetach();
-        super.update(f);
     }
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        
+
     }
 
     public void onAircraftLoaded() {
@@ -289,16 +295,16 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
         this.mistelQueen = actor;
         this.dockport_ = i;
         if (this.FM.EI.getNum() == 1) {
-            System.out.println("typeDockableDoAttachToQueen(" + actor.getClass().getName() + ", " + i + ")");
-            System.out.println("queen isNet=" + this.queen_.isNet());
-            System.out.println("queen isNetMaster=" + this.queen_.isNetMaster());
-            System.out.println("queen isNetMirror=" + this.queen_.isNetMirror());
-            System.out.println("this isNet=" + this.isNet());
-            System.out.println("this isNetMaster=" + this.isNetMaster());
-            System.out.println("this isNetMirror=" + this.isNetMirror());
-            
-            
-            this.FM.Scheme = 2;
+            if (DEBUG >= 2) {
+                System.out.println("typeDockableDoAttachToQueen(" + actor.getClass().getName() + ", " + i + ")");
+                System.out.println("queen isNet=" + this.queen_.isNet());
+                System.out.println("queen isNetMaster=" + this.queen_.isNetMaster());
+                System.out.println("queen isNetMirror=" + this.queen_.isNetMirror());
+                System.out.println("this isNet=" + this.isNet());
+                System.out.println("this isNetMaster=" + this.isNetMaster());
+                System.out.println("this isNetMirror=" + this.isNetMirror());
+            }
+            this.FM.Scheme = 6;
             Aircraft aircraft = (Aircraft) actor;
             this.FM.EI.setNum(3);
             Motor motor = this.FM.EI.engines[0];
@@ -307,8 +313,6 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
             this.FM.EI.engines[1] = aircraft.FM.EI.engines[0];
             this.FM.EI.engines[2] = aircraft.FM.EI.engines[1];
             this.FM.EI.bCurControl = (new boolean[] { true, true, true });
-//            aircraft.FM.EI.bCurControl[0] = false;
-//            aircraft.FM.EI.bCurControl[1] = false;
         }
         this.FM.EI.setEngineRunning();
         this.FM.CT.setGearAirborne();
@@ -391,117 +395,19 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
         }
     }
 
-    private void spawnBomb() {
-        System.out.println("FW_190A8MSTL spawnBomb() 1");
-        if (this.mistelQueen == null) return;
-        System.out.println("FW_190A8MSTL spawnBomb() 2");
-        if (this.mistelQueen.pos.getAbsPoint().z - Engine.cur.land.HQ(this.mistelQueen.pos.getAbsPoint().x, this.mistelQueen.pos.getAbsPoint().y) > 50D) {
-            MsgExplosion.send(this, null, this.mistelQueen.pos.getAbsPoint(), this, 0.0F, 4550.0F, 0, 890.0F);
-            System.out.println("FW_190A8MSTL spawnBomb() 3");
-            return;
-        }
-        BombFAB5000 bomb = new BombFAB5000();
-        bomb.pos.setUpdateEnable(true);
-        bomb.pos.setAbs(this.mistelQueen.pos.getAbs());
-        bomb.pos.reset();
-        bomb.start();
-        bomb.setOwner(this);
-        bomb.setSpeed(new Vector3d());
-        bomb.armingTime = 0L;
-        Reflection.setBoolean(bomb, "isArmed", true);
-        System.out.println("FW_190A8MSTL spawnBomb() 4");
-    }
-
-    
     public boolean netGetGMsg(NetMsgInput netmsginput, boolean bool) throws IOException {
-        if (this.mistelQueen == null)
+        if (!NetMistel.netGetGMsg(this, netmsginput, bool))
             return super.netGetGMsg(netmsginput, bool);
-        netmsginput.mark(2);
-        int i = netmsginput.readUnsignedByte();
-        switch (i) {
-            case 92:
-                int j = netmsginput.readUnsignedByte();
-                switch (j) {
-                    case 1:
-                        return this.receiveNetExploded(netmsginput);
-                    case 2:
-                        return this.receivePowerControl(netmsginput);
-                    case 3:
-                        return this.receiveTailWheelLocked(netmsginput);
-                    case 4:
-                        return this.receiveBrakes(netmsginput);
-                    default:
-                        break;
-                }
-                return true;
-            default:
-                netmsginput.reset();
-                return super.netGetGMsg(netmsginput, bool);
-        }
-    }
-
-    private boolean receiveNetExploded(NetMsgInput netmsginput) {
-        System.out.println("FW_190A8MSTL receiveNetExploded() 1");
-        if (this.net != netmsginput.readNetObj())
-            return false;
-        System.out.println("FW_190A8MSTL receiveNetExploded() 2");
-        if (this.mistelQueen.net != netmsginput.readNetObj())
-            return false;
-        System.out.println("FW_190A8MSTL receiveNetExploded() 3");
-        this.spawnBomb();
-        System.out.println("FW_190A8MSTL receiveNetExploded() 6");
         return true;
     }
 
-    private boolean receivePowerControl(NetMsgInput netmsginput) throws IOException {
-        System.out.println("FW_190A8MSTL receivePowerControl() 1");
-        if (this.net != netmsginput.readNetObj())
-            return false;
-        System.out.println("FW_190A8MSTL receivePowerControl() 2");
-        float fThrottle = netmsginput.readFloat();
-        System.out.println("FW_190A8MSTL receivePowerControl() 3");
-        this.FM.CT.setPowerControl(fThrottle);
-        System.out.println("FW_190A8MSTL receivePowerControl() 4");
-        return true;
-    }
-    
-    private boolean receiveTailWheelLocked(NetMsgInput netmsginput) throws IOException {
-        System.out.println("FW_190A8MSTL receiveTailWheelLocked() 1");
-        if (this.net != netmsginput.readNetObj())
-            return false;
-        System.out.println("FW_190A8MSTL receiveTailWheelLocked() 2");
-        boolean bTailWheelLocked = netmsginput.readBoolean();
-        System.out.println("FW_190A8MSTL receiveTailWheelLocked() 3");
-        this.FM.CT.bHasLockGearControl = true;
-        this.FM.Gears.bTailwheelLocked = bTailWheelLocked;
-        this.FM.CT.bHasLockGearControl = false;
-        System.out.println("FW_190A8MSTL receiveTailWheelLocked() 4");
-        return true;
-    }
-
-    private boolean receiveBrakes(NetMsgInput netmsginput) throws IOException {
-        System.out.println("FW_190A8MSTL receiveBrakes() 1");
-        if (this.net != netmsginput.readNetObj())
-            return false;
-        System.out.println("FW_190A8MSTL receiveBrakes() 2");
-        this.FM.CT.BrakeControl = netmsginput.readFloat();
-        this.FM.CT.BrakeLeftControl = netmsginput.readFloat();
-        this.FM.CT.BrakeRightControl = netmsginput.readFloat();
-        System.out.println("FW_190A8MSTL receiveBrakes() 3");
-        return true;
-    }
-
-    private boolean bNeedSetup;
-    private long    dtime;
-    private Actor   target_;
-    private Actor   queen_;
-    private int     dockport_;
-    private Actor   mistelQueen;
-    private float   lastPowerControl;
-    private boolean lastTailWheelLocked;
-    private float   lastBreak;
-    private float   lastBreakLeft;
-    private float   lastBreakRight;
+    private boolean    bNeedSetup;
+    private long       dtime;
+    private Actor      target_;
+    private Actor      queen_;
+    private int        dockport_;
+    private Actor      mistelQueen;
+    private static int DEBUG = 1;
 
     static {
         Class class1 = FW_190A8MSTL.class;
