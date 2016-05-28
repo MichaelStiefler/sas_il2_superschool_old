@@ -29,19 +29,23 @@ public class JU_88MSTL extends JU_88 implements TypeDockable, Mistel {
         this.patinAutopilotEngaged = false;
         this.pImpact = new Point3d();
         this.isExploded = false;
-        this.lastPowerControl = 0F;
     }
 
     public Aircraft getDrone() {
-        if (!(this.droneInitiator instanceof Aircraft)) return null;
-        return (Aircraft)this.droneInitiator;
+        if (!(this.droneInitiator instanceof Aircraft))
+            return null;
+        return (Aircraft) this.droneInitiator;
     }
-    
+
     public Aircraft getQueen() {
         return this;
     }
 
-    public void doSpawnMistelBomb() {
+    public void mistelExplosion() {}
+
+    protected void finalize() {
+        super.finalize();
+        NetMistel.removeNetMistelFromList(this);
     }
 
     public void msgEndAction(Object obj, int i) {
@@ -49,12 +53,14 @@ public class JU_88MSTL extends JU_88 implements TypeDockable, Mistel {
         switch (i) {
             case 2:
                 if (!this.isExploded) {
-                    if (this.isNetMaster() && NetMistel.netSendExplosionToDroneMaster(this)) break;
+                    if (this.isNetMaster() && NetMistel.netSendExplosionToDroneMaster(this))
+                        break;
                     if (this.droneInitiator != null && this.droneInitiator instanceof Mistel) {
-                        ((Mistel)this.droneInitiator).doSpawnMistelBomb();
+                        ((Mistel) this.droneInitiator).mistelExplosion();
                         break;
                     }
-                    System.out.println("Ju88 Mistel msgEndAction no remote detonator available!");
+                    if (DEBUG >= 1)
+                        System.out.println("Ju88 Mistel msgEndAction no remote detonator available!");
                     MsgExplosion.send(this, null, this.FM.Loc, this.droneInitiator, 0.0F, 4550.0F, 0, 890.0F);
                 }
                 break;
@@ -111,32 +117,34 @@ public class JU_88MSTL extends JU_88 implements TypeDockable, Mistel {
 
         boolean attachEnabled = false;
         double attachMaxDistance = 50D;
-        if (parasiteAircraft.FM.AS.isMaster() && parasiteAircraft.FM.Gears.onGround() && parasiteAircraft.FM.getSpeedKMH() < 10F && FM.getSpeedKMH() < 10F) {
+        if (parasiteAircraft.FM.AS.isMaster() && parasiteAircraft.FM.Gears.onGround() && parasiteAircraft.FM.getSpeedKMH() < 10F && this.FM.getSpeedKMH() < 10F) {
             attachMaxDistance = 50D;
             attachEnabled = true;
         }
 
-        attachMaxDistance = 5000D; // TEST!!!
-        attachEnabled = true; // TEST!!!
+        if (DEBUG >= 2)
+            attachMaxDistance = 5000D; // TEST!!!
+        if (DEBUG >= 2)
+            attachEnabled = true; // TEST!!!
 
         if (!attachEnabled)
             return;
-        for (int i = 0; i < drones.length; i++) {
-            if (Actor.isValid(drones[i]))
+        for (int i = 0; i < this.drones.length; i++) {
+            if (Actor.isValid(this.drones[i]))
                 continue;
             HookNamed hooknamed = new HookNamed(this, "_Dockport" + i);
             Loc loc = new Loc();
             Loc loc1 = new Loc();
-            pos.getAbs(loc1);
+            this.pos.getAbs(loc1);
             hooknamed.computePos(this, loc1, loc);
             actor.pos.getAbs(loc1);
             if (loc.getPoint().distance(loc1.getPoint()) >= attachMaxDistance)
                 continue;
-            if (FM.AS.isMaster()) {
-                typeDockableRequestAttach(actor, i, true);
+            if (this.FM.AS.isMaster()) {
+                this.typeDockableRequestAttach(actor, i, true);
                 return;
             } else {
-                FM.AS.netToMaster(32, i, 0, actor);
+                this.FM.AS.netToMaster(32, i, 0, actor);
                 return;
             }
         }
@@ -200,17 +208,24 @@ public class JU_88MSTL extends JU_88 implements TypeDockable, Mistel {
             this.drones[i] = actor;
             this.droneInitiator = actor;
             ((TypeDockable) this.drones[i]).typeDockableDoAttachToQueen(this, i);
-            System.out.println("droneInitiator isNet=" + this.droneInitiator.isNet());
-            System.out.println("droneInitiator isNetMaster=" + this.droneInitiator.isNetMaster());
-            System.out.println("droneInitiator isNetMirror=" + this.droneInitiator.isNetMirror());
-            System.out.println("this isNet=" + this.isNet());
-            System.out.println("this isNetMaster=" + this.isNetMaster());
-            System.out.println("this isNetMirror=" + this.isNetMirror());
-            System.out.println("this.net.isMaster()=" + this.net.isMaster());
-            System.out.println("this.net.isMirrored()=" + this.net.isMirrored());
-            System.out.println("this.net.masterChannel() instanceof NetChannelInStream=" + (this.net.masterChannel() instanceof NetChannelInStream));
-//            this.FM.EI.bCurControl[0] = false;
-//            this.FM.EI.bCurControl[1] = false;
+            if (DEBUG >= 2)
+                System.out.println("droneInitiator isNet=" + this.droneInitiator.isNet());
+            if (DEBUG >= 2)
+                System.out.println("droneInitiator isNetMaster=" + this.droneInitiator.isNetMaster());
+            if (DEBUG >= 2)
+                System.out.println("droneInitiator isNetMirror=" + this.droneInitiator.isNetMirror());
+            if (DEBUG >= 2)
+                System.out.println("this isNet=" + this.isNet());
+            if (DEBUG >= 2)
+                System.out.println("this isNetMaster=" + this.isNetMaster());
+            if (DEBUG >= 2)
+                System.out.println("this isNetMirror=" + this.isNetMirror());
+            if (DEBUG >= 2)
+                System.out.println("this.net.isMaster()=" + this.net.isMaster());
+            if (DEBUG >= 2)
+                System.out.println("this.net.isMirrored()=" + this.net.isMirrored());
+            if (DEBUG >= 2)
+                System.out.println("this.net.masterChannel() instanceof NetChannelInStream=" + (this.net.masterChannel() instanceof NetChannelInStream));
             if (this.FM.EI.engines[0].getStage() == 0)
                 this.FM.EI.engines[0].toggle();
             if (this.FM.EI.engines[1].getStage() == 0)
@@ -283,8 +298,8 @@ public class JU_88MSTL extends JU_88 implements TypeDockable, Mistel {
         this.FM.CT.bHasGearControl = !this.FM.Gears.onGround();
 
         if (this.patinAutopilotEngaged) {
-            this.FM.CT.AileronControl = -0.2F * FM.Or.getKren() - 2.0F * (float) FM.getW().x;
-            Point3d p1 = new Point3d(pImpact);
+            this.FM.CT.AileronControl = -0.2F * this.FM.Or.getKren() - 2.0F * (float) this.FM.getW().x;
+            Point3d p1 = new Point3d(this.pImpact);
             Point3d p2 = new Point3d();
             this.pos.getAbs(p2);
             Vector3d v1 = new Vector3d();
@@ -303,23 +318,19 @@ public class JU_88MSTL extends JU_88 implements TypeDockable, Mistel {
             this.FM.EI.engines[1].setControlThrottle(1.0F);
         }
 
-        if (this.isNetMaster() && this.typeDockableIsDocked() && this.droneInitiator != null && this.droneInitiator instanceof Aircraft) {
-            this.FM.CT.setPowerControl(((Aircraft)this.droneInitiator).FM.CT.getPowerControl());
-            this.FM.CT.BrakeControl = ((Aircraft)this.droneInitiator).FM.CT.BrakeControl;
-            this.FM.CT.BrakeLeftControl = ((Aircraft)this.droneInitiator).FM.CT.BrakeLeftControl;
-            this.FM.CT.BrakeRightControl = ((Aircraft)this.droneInitiator).FM.CT.BrakeRightControl;
+        if (this.isNetMaster() && Actor.isValid(this.drones[0]) && this.droneInitiator != null && this.droneInitiator instanceof Aircraft) {
+            this.FM.CT.setPowerControl(((Aircraft) this.droneInitiator).FM.CT.getPowerControl());
+            this.FM.CT.BrakeControl = ((Aircraft) this.droneInitiator).FM.CT.BrakeControl;
+            this.FM.CT.BrakeLeftControl = ((Aircraft) this.droneInitiator).FM.CT.BrakeLeftControl;
+            this.FM.CT.BrakeRightControl = ((Aircraft) this.droneInitiator).FM.CT.BrakeRightControl;
             this.FM.CT.bHasLockGearControl = true;
-            this.FM.Gears.bTailwheelLocked = ((Aircraft)this.droneInitiator).FM.Gears.bTailwheelLocked;
-//            this.FM.CT.bHasLockGearControl = false;
+            this.FM.Gears.bTailwheelLocked = ((Aircraft) this.droneInitiator).FM.Gears.bTailwheelLocked;
+            this.FM.brakeShoe = ((Aircraft) this.droneInitiator).FM.brakeShoe;
+            this.FM.AS.setNavLightsState(((Aircraft) this.droneInitiator).FM.AS.bNavLightsOn);
+            this.FM.AS.setAirShowState(((Aircraft) this.droneInitiator).FM.AS.bShowSmokesOn);
         }
-        
-        if (this.lastPowerControl != this.FM.CT.getPowerControl()) {
-            this.lastPowerControl = this.FM.CT.getPowerControl();
-            System.out.println("JU_88MSTL PowerControl = " + this.FM.CT.getPowerControl());
-            if (this.isNetMaster()) {
-                NetMistel.netSendPowerControlToMirrors(this);
-            }
-        }
+
+        NetMistel.mistelToMirrors(this);
         super.update(f);
     }
 
@@ -334,51 +345,24 @@ public class JU_88MSTL extends JU_88 implements TypeDockable, Mistel {
         Point3d p1 = new Point3d();
         p1.set(this.FM.Loc);
         if (Landscape.rayHitHQ(this.FM.Loc, p2, p1)) {
-            pImpact.set(p1);
+            this.pImpact.set(p1);
             this.FM.CT.setPowerControl(1.1F);
             this.patinAutopilotEngaged = true;
         }
     }
 
-    private boolean receivePowerControl(NetMsgInput netmsginput) throws IOException {
-        System.out.println("Ju88 Mistel receivePowerControl() 1");
-        if (this.net != netmsginput.readNetObj())
-            return false;
-        System.out.println("Ju88 Mistel receivePowerControl() 2");
-        float fThrottle = netmsginput.readFloat();
-        System.out.println("Ju88 Mistel receivePowerControl() 3");
-        this.FM.CT.setPowerControl(fThrottle);
-        System.out.println("Ju88 Mistel receivePowerControl() 4");
+    public boolean netGetGMsg(NetMsgInput netmsginput, boolean bool) throws IOException {
+        if (!NetMistel.netGetGMsg(this, netmsginput, bool))
+            return super.netGetGMsg(netmsginput, bool);
         return true;
     }
 
-    public boolean netGetGMsg(NetMsgInput netmsginput, boolean bool) throws IOException {
-        if (this.droneInitiator == null)
-            return super.netGetGMsg(netmsginput, bool);
-        netmsginput.mark(2);
-        int i = netmsginput.readUnsignedByte();
-        switch (i) {
-            case 92:
-                int j = netmsginput.readUnsignedByte();
-                switch (j) {
-                    case 2:
-                        return this.receivePowerControl(netmsginput);
-                    default:
-                        break;
-                }
-                return true;
-            default:
-                netmsginput.reset();
-                return super.netGetGMsg(netmsginput, bool);
-        }
-    }
-
-    private Actor   drones[] = { null };
-    private Actor   droneInitiator;
-    private boolean patinAutopilotEngaged;
-    private boolean isExploded;
-    private Point3d pImpact;
-    private float   lastPowerControl;
+    private Actor      drones[] = { null };
+    private Actor      droneInitiator;
+    private boolean    patinAutopilotEngaged;
+    private boolean    isExploded;
+    private Point3d    pImpact;
+    private static int DEBUG    = 1;
 
     static {
         Class class1 = JU_88MSTL.class;
