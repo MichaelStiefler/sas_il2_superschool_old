@@ -2422,7 +2422,11 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
         this.makeUniqueName();
         this.netUserRegiment = new NetUserRegiment();
         if (NetEnv.isServer()) {
-            System.out.println("socket channel '" + netchannel.id() + "', ip " + netchannel.remoteAddress().getHostAddress() + ":" + netchannel.remotePort() + ", " + this.uniqueName() + ", is complete created");
+         // TODO: +++ NetBoost by SAS~Storebror +++
+//            System.out.println("socket channel '" + netchannel.id() + "', ip " + netchannel.remoteAddress().getHostAddress() + ":" + netchannel.remotePort() + ", " + this.uniqueName() + ", is complete created");
+            System.out.println("socket channel '" + netchannel.id() + "', ip " + netchannel.remoteAddress().getHostAddress() + ":" + netchannel.remotePort() + ", " + this.uniqueName() + ", maxSpeed=" + netchannel.getMaxSpeed() + "kBit/s, maxDataSize=" + netchannel.socket().getMaxDataSize() + ", is complete created");
+            // TODO: --- NetBoost  by SAS~Storebror ---
+            
             new MsgAction(64, 1.0D, this) {
 
                 public void doAction(Object obj) {

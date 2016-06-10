@@ -854,7 +854,7 @@ public class AircraftHotKeys {
                                     break;
                                 }
                             }
-                            if (Config.cur.ini.get("Mods", "Stabs4All", 0) == 1) {
+                            if (Config.cur.bStabs4All) {
                                 canUseStabs = true;
                                 break;
                             }
