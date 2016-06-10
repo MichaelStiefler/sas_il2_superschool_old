@@ -1,4 +1,4 @@
-UP3 RC4 Patch Pack v1.07
+UP3 RC4 Patch Pack v2.00 BETA 3
 
 Contents:
 - All fixes listed below
@@ -34,11 +34,11 @@ Included feature enhancements:
 - Enhanced Cheater protection
 - Flak Burst Flash Light Effects by SAS~Skylla
 - PA_Jeronimo improved engine cowling for ME-262V3
-
-(*) To activate the Stabilizers for all Aircraft ("Stabs4All"), add the following entry
-    to your conf.ini file:
-    [MODS]
-    Stabs4All=1
+- New AI code from TD's Il-2 Patch 4.13.2 implemented
+- New "Mods" GUI for a couple of settings, no need to manually edit them in conf.ini anymore
+- New TrackIR code from TD's Il-2 Patch 4.11+ available optionally
+- Network File Transfer Boost setting available, makes skin transfers about 4 times faster
+- New "Mods" GUI for various conf.ini settings, no need to manually edit conf.ini for those settings anymore
 
 Included fixes:
 - Bf 109 Series Cockpit Code fix
@@ -100,6 +100,11 @@ Included fixes:
 - Me-262V3 engine damage on ground start fixed
 - Me-262V3 flight model fixed (*)
 - Me-262V3 muzzles, cannon bulges, nose gear door seams, gun camera, shell and cartridge exhaust bays removed
+- Mistel Hotfix
+- FW 190 Schusszaehler Fix
+- Bailout Speed Fix (players can bail out at any time now, but risk to get hurt when speed is too high)
+- Explosion Fix (gets rid of the big explosion meshes on ground after large bomb detonations even if smaller bombs or actors crash later on)
+
 
 (*) Me-262V3 flight model:
     Like in real life, you have to tap the brakes in order to get the 262V3 off the ground.
@@ -151,13 +156,13 @@ DEBUG_GEAR=<0-2>           Gear enhanced debugging, default=0, 0=disable, 1=enab
 Installation:
 1.) Run JSGME.exe from your UP3 RC4 game folder and disable any of the following previously installed mods(packs), if applicable:
     * Any old Hotfix Pack (* see below)
-    * Any old Patch Pack (e.g. "#UP#_Patch_Pack_106_v3")
+    * Any old Patch Pack (e.g. "#UP#_Patch_Pack_107")
     * UP3 RC4 without obfuscation ("#UP#_Unobfuscated_MDS_for_UP3"), because this is integrated in this patch pack already
 2.) Check your enabled JSGME Mods, now there should only be:
     * #UP#_Enable_UP.3.0
     * Additional JSGME Mods not related to Fixes, Patches, unobfuscated UP etc.
 3.) Extract this Patch Pack to your UP3 RC4 game folder
-4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_107")
+4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_200_BETA_3")
 
 ********************
 
@@ -176,6 +181,12 @@ The Hotfixes appear like this in JSGME, watch out for them and deactivate them i
 
 The Bf 109 G14 Hotfix installs directly into the #UP# folder, please remove or deactivate that folder:
 - UP3 Bf 109G-14 Hotfix
+
+Several other Hotfixes installed directly into the #UP# folder are to be removed or deactivated as well:
+- UP3 ##MISTEL FIX##
+- Fw-190_Schusszaehler_fix_v1.3
+- UP3 ##BAILOUT SPEED FIX##
+- UP3 ##EXPLOSIONS FIX##
 
 IMPORTANT: If you have PA_Jeronimo's Engine Cowling Mod installed in your game, please make sure to Rename the folder
            3do/plane/Me-262V-3

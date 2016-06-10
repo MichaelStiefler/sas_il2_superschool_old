@@ -431,12 +431,14 @@ public abstract class Main
                     clearCache();
                     if (Config.LOCALE.equals("RU")) {
                         try {
-                            Cpu86ID.getMask();
+                            if (Config.isUSE_RENDER()) Cpu86ID.getMask();
                         }
-                        catch (Throwable localThrowable2) {
+                        catch (final Throwable localThrowable2) {
                             for (int i = 0; i < 10; ++i) {
                                 new MsgAction(64, 1.0 + i * 10 + Math.random() * 10.0) {
                                     public void doAction() {
+                                        System.out.println("Main loop Exception: " + localThrowable2.getMessage());
+                                        localThrowable2.printStackTrace();
                                         Main.doGameExit();
                                     }
                                 };
