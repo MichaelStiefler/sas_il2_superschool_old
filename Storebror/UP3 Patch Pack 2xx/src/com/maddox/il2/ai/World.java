@@ -57,6 +57,7 @@ import com.maddox.rts.CmdEnv;
 import com.maddox.rts.NetEnv;
 import com.maddox.rts.RTSConf;
 import com.maddox.rts.Time;
+import com.maddox.rts.TrackIRWin;
 import com.maddox.sas1946.il2.util.Reflection;
 
 public class World {
@@ -786,6 +787,9 @@ public class World {
         this.rnd = new RangeRandom(seed);
         Reflection.setInt(this.rnd, "countAccess", saveCountAccess);
         // ------------------------------------
+        // TODO: +++ 4.11+ TrackIR implementation by SAS~Storebror +++
+            if (Config.isUSE_RENDER()) System.out.println("Using new TrackIR: " + TrackIRWin.isUseNewTrackIR());
+        // TODO: --- 4.11+ TrackIR implementation by SAS~Storebror ---
     }
 
     public static float getTimeofDay() {

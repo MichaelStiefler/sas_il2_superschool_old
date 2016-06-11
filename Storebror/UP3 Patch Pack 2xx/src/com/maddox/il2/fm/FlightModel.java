@@ -26,7 +26,7 @@ import com.maddox.il2.objects.air.TypeFighter;
 import com.maddox.il2.objects.air.TypeStormovik;
 import com.maddox.il2.objects.ships.BigshipGeneric;
 import com.maddox.il2.objects.ships.TestRunway;
-import com.maddox.il2.objects.sounds.SndAircraft;
+import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Time;
 
@@ -49,28 +49,28 @@ public class FlightModel extends FlightModelMain {
     static class ClipFilter implements ActorFilter {
 
         public boolean isUse(Actor actor, double d) {
-            return actor != Engine.actorLand() && actor != target && actor != owner && !(actor instanceof TestRunway);
+            return actor != Engine.actorLand() && actor != this.target && actor != this.owner && !(actor instanceof TestRunway);
         }
 
         public void setTarget(Actor actor) {
-            target = actor;
+            this.target = actor;
         }
 
         public void setOwner(Actor actor) {
-            owner = actor;
+            this.owner = actor;
         }
 
         Actor target;
         Actor owner;
 
         ClipFilter() {
-            target = null;
-            owner = null;
+            this.target = null;
+            this.owner = null;
         }
     }
 
     public Polares getWing() {
-        return Wing;
+        return this.Wing;
     }
 
     private native void nCreateSubSkills(int i);
@@ -88,17 +88,17 @@ public class FlightModel extends FlightModelMain {
     public native float nSD(int i, int j, int k, long l);
 
     public void shakeMe(float f, float f1, float f2, float f3, float f4, float f5) {
-        producedAMM.x += f;
-        producedAMM.y += f1;
-        producedAMM.z += f2;
-        producedAF.x += f3;
-        producedAF.y += f4;
-        producedAF.z += f5;
+        this.producedAMM.x += f;
+        this.producedAMM.y += f1;
+        this.producedAMM.z += f2;
+        this.producedAF.x += f3;
+        this.producedAF.y += f4;
+        this.producedAF.z += f5;
     }
 
     public void control(float f, float f1) {
-        bankAngle = f;
-        CT.AileronControl = f1;
+        this.bankAngle = f;
+        this.CT.AileronControl = f1;
     }
 
     public native float nDanCoeff(double d, float f, float f1);
@@ -118,7 +118,7 @@ public class FlightModel extends FlightModelMain {
         // TODO: --- UP3 Sniper Gunner Hotfix ---
         this.Skill = newSkill;
         // TODO: +++ TD AI code backport from 4.13 +++
-        nCreateSubSkills(Skill);
+        this.nCreateSubSkills(this.Skill);
         // TODO: --- TD AI code backport from 4.13 ---
         this.turretSkill = newSkill;
         for (int j = 0; j < this.turret.length; j++) {
@@ -179,7 +179,7 @@ public class FlightModel extends FlightModelMain {
             this.am.hierMesh().chunkSetAngles(tu);
             this.am.getChunkLoc(this.turret[j].Lstart);
             // TODO: +++ TD AI code backport from 4.13 +++
-            turret[j].setObservingDirection();
+            this.turret[j].setObservingDirection();
             // TODO: --- TD AI code backport from 4.13 ---
         }
 
@@ -237,42 +237,41 @@ public class FlightModel extends FlightModelMain {
         return;
     }
 
-    private void updateTurret(Turret theTurret, int turretIndex, float tickLen) {
-        if (!theTurret.bIsOperable) {
-            this.CT.WeaponControl[turretIndex + _FIRST_TURRET] = false;
+    private void updateTurret(Turret theTurret, int turretIndex, float tickLen)
+    {
+        if(!theTurret.bIsOperable)
+        {
+            this.CT.WeaponControl[turretIndex + 10] = false;
             return;
         }
-        if (!theTurret.bIsAIControlled) {
-            tu[0] = tu[1] = tu[2] = 0.0F;
-            tu[1] = theTurret.tu[0];
-            this.HM.setCurChunk(theTurret.indexA);
-            this.am.hierMesh().chunkSetAngles(tu);
-            tu[1] = theTurret.tu[1];
-            this.HM.setCurChunk(theTurret.indexB);
-            this.am.hierMesh().chunkSetAngles(tu);
+        if(!theTurret.bIsAIControlled)
+        {
+            ((Aircraft)this.actor).setHumanControlledTurretAngels(theTurret, tu, this.HM, this.am);
             return;
         }
-
-        if (theTurret.indexA == -1 || theTurret.indexB == -1)
+        if(theTurret.indexA == -1 || theTurret.indexB == -1)
             return;
-
-        this.am = (ActorHMesh) this.actor;
+        this.am = (ActorHMesh)this.actor;
         float targetDistance = 0.0F;
-        float gunnerSkillFloat = theTurret.gunnerSkill;
-        if (this.W.lengthSquared() > 0.25D)
-            gunnerSkillFloat *= 1.0F - (float) Math.sqrt(this.W.length() - 0.5D);
-        if (this.getOverload() > 0.5F)
-            gunnerSkillFloat *= FlightModel.cvt(this.getOverload(), 0.0F, 5F, 1.0F, 0.0F);
-        else if (this.getOverload() < -0.25F)
-            gunnerSkillFloat *= FlightModel.cvt(this.getOverload(), -1F, 0.0F, 0.0F, 1.0F);
-        if (theTurret.target != null && (theTurret.target instanceof Aircraft) && ((SndAircraft) ((Aircraft) theTurret.target)).FM.isTakenMortalDamage())
+        float gunnerSkill = (this.turretSkill + 1) * theTurret.health;
+        if(this.W.lengthSquared() > 0.25D)
+            gunnerSkill *= 1.0F - (float)Math.sqrt(this.W.length() - 0.5D);
+        if(this.getOverload() > 1.0F)
+            gunnerSkill *= Aircraft.cvt(this.getOverload(), 1.0F, 5F, 1.0F, 0.0F);
+        else
+        if(this.getOverload() < 0.0F)
+            gunnerSkill *= Aircraft.cvt(this.getOverload(), -1.5F, 0.0F, 0.0F, 1.0F);
+        if(theTurret.target != null && (theTurret.target instanceof Aircraft) && ((Aircraft)theTurret.target).FM.isTakenMortalDamage())
             theTurret.target = null;
-        if (theTurret.target == null) {
-            if (theTurret.tMode != 0) {
+        if(theTurret.target == null)
+        {
+            if(theTurret.tMode != Turret.TU_MO_SLEEP)
+            {
                 theTurret.tMode = Turret.TU_MO_SLEEP;
                 theTurret.timeNext = Time.current();
             }
-        } else {
+        } else
+        {
             theTurret.target.pos.getAbs(Pt);
             theTurret.target.getSpeed(Vt);
             this.actor.getSpeed(Ve);
@@ -280,9 +279,9 @@ public class FlightModel extends FlightModelMain {
             this.HM.setCurChunk(theTurret.indexA);
             this.am.getChunkLocAbs(Actor._tmpLoc);
             Ve.sub(Pt, Actor._tmpLoc.getPoint());
-            targetDistance = (float) Ve.length();
-            float speedDeviation = 10F * (float) Math.sin((Time.current() & 0xFFFFL) * 0.003F);
-            Vt.scale((targetDistance + speedDeviation) / 670.0F);
+            targetDistance = (float)Ve.length();
+            float f2 = (14F - 2.25F * gunnerSkill) * (float)Math.sin((Time.current() & 65535L) * 0.003F);
+            Vt.scale((targetDistance + f2) * 0.001492537F);
             Ve.add(Vt);
             Vg.set(Ve);
             this.Or.transformInv(Ve);
@@ -295,233 +294,209 @@ public class FlightModel extends FlightModelMain {
             this.Or.transformInv(Vt);
             theTurret.Lstart.transformInv(Vt);
             Vt.normalize();
-            this.shoot = ((Aircraft) this.actor).turretAngles(turretIndex, tu);
+            this.shoot = ((Aircraft)this.actor).turretAngles(turretIndex, tu);
         }
-
+        
         // TODO: +++ UP3 Sniper Gunner Hotfix +++
         float randomWidth = 0.4F;
         float skillParam = 0.1F;
-        float rotationDeviation = this.Skill == TU_SKILL_ACE ? 0F : this.rotSpeed * (6.0F - gunnerSkillFloat);
+        float rotationDeviation = this.Skill == TU_SKILL_ACE ? 0F : this.rotSpeed * (6.0F - gunnerSkill);
         if ((this.actor == World.getPlayerAircraft() || ((Aircraft) this.actor).isNetPlayer()) && (theTurret.target != null)) {
             randomWidth = FlightModel.cvt(targetDistance, 1000F, 200F, 0.4F, 0.2F);
             skillParam = FlightModel.cvt(targetDistance, 1000F, 200F, 0.1F, 0.06F);
             rotationDeviation /= FlightModel.cvt(targetDistance, 1000F, 0F, 1F, 5F);
         }
-        float skillDeviation = skillParam * gunnerSkillFloat;
+        float skillDeviation = skillParam * gunnerSkill;
         // TODO: --- UP3 Sniper Gunner Hotfix ---
 
-        switch (theTurret.tMode) {
-            default:
-                break;
+        switch(theTurret.tMode)
+        {
+        default:
+            break;
 
-            case Turret.TU_MO_SLEEP:
-
-                // TODO: +++ UP3 Sniper Gunner Hotfix +++
-                float darkness = -0.2F;
-                float dawn = 0.03F;
-                float searchDistance1 = FlightModel.cvt(World.Sun().ToSun.z, darkness, dawn, 500F, 3619F);
-                float searchDistance2 = FlightModel.cvt(World.Sun().ToSun.z, darkness, dawn, 1500F, 6822F);
-                long timeNext1 = (long) FlightModel.cvt(World.Sun().ToSun.z, darkness, dawn, 3200L, 1000L);
-                long timeNext2 = 10000L;
-                long timeNext3 = (long) FlightModel.cvt(World.Sun().ToSun.z, darkness, dawn, 1500L, 100L);
-                long timeNext4 = (long) FlightModel.cvt(World.Sun().ToSun.z, darkness, dawn, 4000L, 3000L);
-                long timeNext5 = 100L;
-                long timeNext6 = 500L;
-                if (this.Skill == TU_SKILL_VETERAN) {
-                    dawn = 0F;
-                    darkness = -0.3F;
-                    searchDistance1 *= 1.4F;
-                    searchDistance2 *= 1.4F;
-                    timeNext1 = (long) ((float) timeNext1 / 1.4F);
-                    timeNext2 = (long) ((float) timeNext2 / 1.4F);
-                    timeNext3 = (long) ((float) timeNext3 / 1.4F);
-                    timeNext4 = (long) ((float) timeNext4 / 1.4F);
-                    timeNext5 = (long) ((float) timeNext5 / 1.4F);
-                    timeNext6 = (long) ((float) timeNext6 / 1.4F);
-                } else if (this.Skill == TU_SKILL_VETERAN) {
-                    dawn = -0.2F;
-                    darkness = -0.4F;
-                    searchDistance1 *= 2F;
-                    searchDistance2 *= 2F;
-                    timeNext1 = (long) ((float) timeNext1 / 2F);
-                    timeNext2 = (long) ((float) timeNext2 / 2F);
-                    timeNext3 = (long) ((float) timeNext3 / 2F);
-                    timeNext4 = (long) ((float) timeNext4 / 2F);
-                    timeNext5 = (long) ((float) timeNext5 / 2F);
-                    timeNext6 = (long) ((float) timeNext6 / 2F);
-                }
-                boolean isDawn = World.Sun().ToSun.z < dawn;
-
-                theTurret.bIsShooting = false;
-                theTurret.tuLim[0] = theTurret.tuLim[1] = 0.0F;
-                if (Time.current() > theTurret.timeNext) {
-                    theTurret.target = War.GetNearestEnemyAircraft(this.actor, searchDistance1, 9);
-                    if (theTurret.target == null) {
-                        theTurret.target = War.GetNearestEnemyAircraft(this.actor, searchDistance2, 9);
-                        if (theTurret.target == null)
-                            theTurret.timeNext = Time.current() + World.Rnd().nextLong(timeNext1, timeNext2);
-                        else if (VisCheck.visCheckTurret(theTurret, (Aircraft) this.actor, (Aircraft) theTurret.target, true)) {
-                            theTurret.tMode = Turret.TU_MO_TRACKING;
-                            theTurret.timeNext = 0L;
-                        } else {
-                            theTurret.timeNext = Time.current() + World.Rnd().nextLong(timeNext3, timeNext4);
-                        }
-                    } else {
-                        if (isDawn) {
-                            theTurret.timeNext = Time.current() + World.Rnd().nextLong(timeNext5, timeNext6);
-                            if (VisCheck.visCheckTurret(theTurret, (Aircraft) this.actor, (Aircraft) theTurret.target, true)) {
-                                theTurret.tMode = Turret.TU_MO_TRACKING;
-                                theTurret.timeNext = 0L;
-                            }
-                        } else {
-                            theTurret.tMode = Turret.TU_MO_TRACKING;
-                            theTurret.timeNext = 0L;
-                        }
+        case Turret.TU_MO_SLEEP:
+            theTurret.bIsShooting = false;
+            float af[] = ((Aircraft)this.actor).getTurretRestOrient(turretIndex);
+            theTurret.tuLim[0] = af[0];
+            theTurret.tuLim[1] = af[1];
+            if(Time.current() > theTurret.timeNext)
+            {
+                theTurret.target = War.GetNearestEnemyAircraft(this.actor, 3619F, 9);
+                if(theTurret.target == null)
+                {
+                    theTurret.target = War.GetNearestEnemyAircraft(this.actor, 6822F, 9);
+                    if(theTurret.target == null)
+                        theTurret.timeNext = Time.current() + World.Rnd().nextLong(1000L, 10000L);
+                    else
+                    if(VisCheck.visCheckTurret(theTurret, (Aircraft)this.actor, (Aircraft)theTurret.target, true))
+                    {
+                        theTurret.tMode = Turret.TU_MO_TRACKING;
+                        theTurret.timeNext = 0L;
+                        if((Aircraft)this.actor == World.getPlayerAircraft() && theTurret.health > 0.4F)
+                            Voice.speakEnemyDetected((Aircraft)this.actor, (Aircraft)theTurret.target);
+                    } else
+                    {
+                        theTurret.timeNext = Time.current() + World.Rnd().nextLong(100L, 3000L);
                     }
-                }
-                // TODO: --- UP3 Sniper Gunner Hotfix ---
-                break;
-
-            case Turret.TU_MO_TRACKING:
-                theTurret.bIsShooting = false;
-                theTurret.tuLim[0] = tu[0];
-                theTurret.tuLim[1] = tu[1];
-                if (!this.isTick(39, 16))
-                    break;
-                if (!this.shoot && targetDistance > 550F || World.Rnd().nextFloat() < 0.1F) {
-                    theTurret.tMode = Turret.TU_MO_SLEEP;
-                    theTurret.timeNext = Time.current();
-                }
-                if ((World.Rnd().nextInt() & 0xff) >= 32F * (gunnerSkillFloat + 1.0F) && targetDistance >= 148F + 27F * gunnerSkillFloat)
-                    break;
-                if (targetDistance < 450F + 66.6F * gunnerSkillFloat) {
-                    switch (theTurret.igunnerSkill) {
-                        default:
-                            break;
-
-                        case TU_SKILL_ROOKIE:
-                            if (Vt.x < -0.96D) {
-                                switch (World.Rnd().nextInt(1, 3)) {
-                                    case 1:
-                                        theTurret.tMode = Turret.TU_MO_STOPPED;
-                                        theTurret.timeNext = Time.current() + World.Rnd().nextLong(500L, 1200L);
-                                        break;
-
-                                    case 2:
-                                        theTurret.tuLim[0] += World.Rnd().nextFloat(-15F, 15F);
-                                        theTurret.tuLim[1] += World.Rnd().nextFloat(-10F, 10F);
-                                        // fall through
-
-                                    case 3:
-                                        theTurret.tMode = Turret.TU_MO_FIRING_STOPPED;
-                                        theTurret.timeNext = Time.current() + World.Rnd().nextLong(500L, 10000L);
-                                        break;
-                                }
-                            } else if (Vt.x < -0.33D) {
-                                theTurret.tMode = Turret.TU_MO_FIRING_STOPPED;
-                                theTurret.timeNext = Time.current() + World.Rnd().nextLong(1000L, 5000L);
-                            }
-                            break;
-
-                        case TU_SKILL_AVERAGE:
-                        case TU_SKILL_VETERAN:
-                            if (Vt.x < -0.91) {
-                                if (World.Rnd().nextBoolean())
-                                    theTurret.tMode = Turret.TU_MO_FIRING_STOPPED;
-                                else
-                                    theTurret.tMode = Turret.TU_MO_FIRING_TRACKING;
-                                theTurret.timeNext = Time.current() + World.Rnd().nextLong(500L, 2200L);
-                            } else {
-                                if (World.Rnd().nextFloat() < 0.5F)
-                                    theTurret.tMode = Turret.TU_MO_FIRING_TRACKING;
-                                else
-                                    theTurret.tMode = Turret.TU_MO_FIRING_STOPPED;
-                                theTurret.timeNext = Time.current() + World.Rnd().nextLong(1500L, 7500L);
-                            }
-                            break;
-
-                        case TU_SKILL_ACE:
-                            theTurret.tMode = Turret.TU_MO_FIRING_TRACKING;
-                            theTurret.timeNext = Time.current() + World.Rnd().nextLong(500L, 7500L);
-                            break;
-                    }
-                    break;
-                } else if (targetDistance < 902F + 88F * gunnerSkillFloat) {
-                    theTurret.tMode = Turret.TU_MO_FIRING_STOPPED;
-                    theTurret.timeNext = Time.current() + World.Rnd().nextLong(100L, 1000L);
-                }
-                break;
-
-            case Turret.TU_MO_STOPPED:
-                theTurret.bIsShooting = false;
-                if (Time.current() > theTurret.timeNext) {
-                    theTurret.tMode = Turret.TU_MO_SLEEP;
-                    theTurret.timeNext = 0L;
-                }
-                break;
-
-            case Turret.TU_MO_FIRING_STOPPED:
-                theTurret.bIsShooting = true;
-                // TODO: +++ UP3 Sniper Gunner Hotfix +++
-                theTurret.tuLim[0] = tu[0] * World.Rnd().nextFloat_DomeInv(1.0F - randomWidth + skillDeviation, 1.0F + randomWidth - skillDeviation)
-                        + World.Rnd().nextFloat(-this.tAcc2 + this.tAcc3 * gunnerSkillFloat - rotationDeviation, this.tAcc2 - this.tAcc3 * gunnerSkillFloat + rotationDeviation);
-                theTurret.tuLim[1] = tu[1] * World.Rnd().nextFloat_DomeInv(1.0F - randomWidth + skillDeviation, 1.0F + randomWidth - skillDeviation)
-                        + World.Rnd().nextFloat(-this.tAcc2 + this.tAcc3 * gunnerSkillFloat - rotationDeviation, this.tAcc2 - this.tAcc3 * gunnerSkillFloat + rotationDeviation);
-                // TODO: --- UP3 Sniper Gunner Hotfix ---
-                if (Time.current() > theTurret.timeNext)
+                } else
+                if(VisCheck.visCheckTurret(theTurret, (Aircraft)this.actor, (Aircraft)theTurret.target, true))
+                {
                     theTurret.tMode = Turret.TU_MO_TRACKING;
-                break;
+                    theTurret.timeNext = 0L;
+                    if((Aircraft)this.actor == World.getPlayerAircraft() && theTurret.health > 0.4F)
+                        Voice.speakEnemyDetected((Aircraft)this.actor, (Aircraft)theTurret.target);
+                } else
+                {
+                    theTurret.timeNext = Time.current() + World.Rnd().nextLong(100L, 3000L);
+                }
+            }
+            break;
 
-            case Turret.TU_MO_FIRING_TRACKING:
-                theTurret.bIsShooting = true;
-                // TODO: +++ UP3 Sniper Gunner Hotfix +++
-                theTurret.tuLim[0] = tu[0] * World.Rnd().nextFloat_DomeInv(1.0F - randomWidth + skillDeviation, 1.0F + randomWidth - skillDeviation)
-                        + World.Rnd().nextFloat(-this.tAcc2 + this.tAcc3 * gunnerSkillFloat, this.tAcc2 - this.tAcc3 * gunnerSkillFloat);
-                theTurret.tuLim[1] = tu[1] * World.Rnd().nextFloat_DomeInv(1.0F - randomWidth + skillDeviation, 1.0F + randomWidth - skillDeviation)
-                        + World.Rnd().nextFloat(-this.tAcc2 + this.tAcc3 * gunnerSkillFloat - rotationDeviation, this.tAcc2 - this.tAcc3 * gunnerSkillFloat + rotationDeviation);
-                // TODO: --- UP3 Sniper Gunner Hotfix ---
-                if (Time.current() <= theTurret.timeNext)
+        case Turret.TU_MO_TRACKING:
+            theTurret.bIsShooting = false;
+            theTurret.tuLim[0] = tu[0];
+            theTurret.tuLim[1] = tu[1];
+            if(!this.isTick(39, 16))
+                break;
+            if(!this.shoot && targetDistance > 550F || World.Rnd().nextFloat() < 0.1F)
+            {
+                theTurret.tMode = Turret.TU_MO_SLEEP;
+                theTurret.timeNext = Time.current();
+            }
+            if((World.Rnd().nextInt() & 0xff) >= 32F * gunnerSkill && targetDistance >= 148F + 27F * (gunnerSkill - 1.0F))
+                break;
+            if(targetDistance < 450F + 66.6F * (gunnerSkill - 1.0F))
+            {
+                if(gunnerSkill - 1.0F <= 0.0F)
+                {
+                    if(Vt.x < -0.96D)
+                    {
+                        switch(World.Rnd().nextInt(1, 3))
+                        {
+                        case 1:
+                            theTurret.tMode = Turret.TU_MO_STOPPED;
+                            theTurret.timeNext = Time.current() + World.Rnd().nextLong(500L, 1200L);
+                            break;
+
+                        case 2:
+                            theTurret.tuLim[0] += World.Rnd().nextFloat(-15F, 15F);
+                            theTurret.tuLim[1] += World.Rnd().nextFloat(-10F, 10F);
+                            // fall through
+
+                        case 3:
+                            theTurret.tMode = Turret.TU_MO_FIRING_STOPPED;
+                            theTurret.timeNext = Time.current() + World.Rnd().nextLong(500L, 10000L);
+                            break;
+                        }
+                        break;
+                    }
+                    if(Vt.x < -0.33D)
+                    {
+                        theTurret.tMode = Turret.TU_MO_FIRING_STOPPED;
+                        theTurret.timeNext = Time.current() + World.Rnd().nextLong(1000L, 5000L);
+                    }
                     break;
-                theTurret.tMode = Turret.TU_MO_TRACKING;
-                // TODO: +++ UP3 Sniper Gunner Hotfix +++
-                if (this.turretSkill < TU_SKILL_VETERAN) {
-                    // TODO: --- UP3 Sniper Gunner Hotfix ---
-                    theTurret.tMode = Turret.TU_MO_SLEEP;
-                    theTurret.timeNext = Time.current() + World.Rnd().nextLong(100L, (long) ((gunnerSkillFloat + 1.0F) * 700F));
+                }
+                if(gunnerSkill - 1.0F <= 2.0F)
+                {
+                    if(Vt.x < -0.91D)
+                    {
+                        if(World.Rnd().nextBoolean())
+                            theTurret.tMode = Turret.TU_MO_FIRING_STOPPED;
+                        else
+                            theTurret.tMode = Turret.TU_MO_FIRING_TRACKING;
+                        theTurret.timeNext = Time.current() + World.Rnd().nextLong(500L, 2200L);
+                        break;
+                    }
+                    if(World.Rnd().nextFloat() < 0.5F)
+                        theTurret.tMode = Turret.TU_MO_FIRING_TRACKING;
+                    else
+                        theTurret.tMode = Turret.TU_MO_FIRING_STOPPED;
+                    theTurret.timeNext = Time.current() + World.Rnd().nextLong(1500L, 7500L);
+                } else
+                {
+                    theTurret.tMode = Turret.TU_MO_FIRING_TRACKING;
+                    theTurret.timeNext = Time.current() + World.Rnd().nextLong(500L, 7500L);
                 }
                 break;
+            }
+            if(targetDistance < 902F + 88F * (gunnerSkill - 1.0F))
+            {
+                theTurret.tMode = Turret.TU_MO_FIRING_STOPPED;
+                theTurret.timeNext = Time.current() + World.Rnd().nextLong(100L, 1000L);
+            }
+            break;
 
-            case Turret.TU_MO_PANIC:
-                theTurret.bIsShooting = true;
-                this.shoot = true;
-                ((Aircraft) this.actor).turretAngles(turretIndex, theTurret.tuLim);
-                if (this.isTick(20, 0)) {
-                    theTurret.tuLim[0] += World.Rnd().nextFloat(-50F, 50F);
-                    theTurret.tuLim[1] += World.Rnd().nextFloat(-50F, 50F);
-                }
-                if (Time.current() > theTurret.timeNext) {
-                    theTurret.tMode = Turret.TU_MO_STOPPED;
-                    theTurret.timeNext = Time.current() + World.Rnd().nextLong(100L, 1500L);
-                }
+        case Turret.TU_MO_STOPPED:
+            theTurret.bIsShooting = false;
+            if(Time.current() > theTurret.timeNext)
+            {
+                theTurret.tMode = Turret.TU_MO_SLEEP;
+                theTurret.timeNext = 0L;
+            }
+            break;
+
+        case Turret.TU_MO_FIRING_STOPPED:
+            theTurret.bIsShooting = true;
+            // TODO: +++ UP3 Sniper Gunner Hotfix +++
+//            theTurret.tuLim[0] = tu[0] * World.Rnd().nextFloat(0.76F + 0.06F * gunnerSkill, 1.24F - 0.06F * gunnerSkill) + World.Rnd().nextFloat((-10F + 2.5F * gunnerSkill) - this.rotSpeed * 5F, (10F - 2.5F * gunnerSkill) + this.rotSpeed * 5F);
+//            theTurret.tuLim[1] = tu[1] * World.Rnd().nextFloat(0.76F + 0.06F * gunnerSkill, 1.24F - 0.06F * gunnerSkill) + World.Rnd().nextFloat((-10F + 2.5F * gunnerSkill) - this.rotSpeed * 5F, (10F - 2.5F * gunnerSkill) + this.rotSpeed * 5F);
+            theTurret.tuLim[0] = tu[0] * World.Rnd().nextFloat_DomeInv(1.0F - randomWidth + skillDeviation, 1.0F + randomWidth - skillDeviation)
+                    + World.Rnd().nextFloat(-this.tAcc2 + this.tAcc3 * gunnerSkill - rotationDeviation, this.tAcc2 - this.tAcc3 * gunnerSkill + rotationDeviation);
+            theTurret.tuLim[1] = tu[1] * World.Rnd().nextFloat_DomeInv(1.0F - randomWidth + skillDeviation, 1.0F + randomWidth - skillDeviation)
+                    + World.Rnd().nextFloat(-this.tAcc2 + this.tAcc3 * gunnerSkill - rotationDeviation, this.tAcc2 - this.tAcc3 * gunnerSkill + rotationDeviation);
+            // TODO: --- UP3 Sniper Gunner Hotfix ---
+            if(Time.current() > theTurret.timeNext)
+                theTurret.tMode = Turret.TU_MO_TRACKING;
+            break;
+
+        case Turret.TU_MO_FIRING_TRACKING:
+            theTurret.bIsShooting = true;
+            // TODO: +++ UP3 Sniper Gunner Hotfix +++
+//            theTurret.tuLim[0] = tu[0] * World.Rnd().nextFloat(0.76F + 0.06F * gunnerSkill, 1.24F - 0.06F * gunnerSkill) + World.Rnd().nextFloat((-10F + 2.5F * gunnerSkill) - this.rotSpeed * 4F, (10F - 2.5F * gunnerSkill) + this.rotSpeed * 4F);
+//            theTurret.tuLim[1] = tu[1] * World.Rnd().nextFloat(0.76F + 0.06F * gunnerSkill, 1.24F - 0.06F * gunnerSkill) + World.Rnd().nextFloat((-10F + 2.5F * gunnerSkill) - this.rotSpeed * 4F, (10F - 2.5F * gunnerSkill) + this.rotSpeed * 4F);
+            theTurret.tuLim[0] = tu[0] * World.Rnd().nextFloat_DomeInv(1.0F - randomWidth + skillDeviation, 1.0F + randomWidth - skillDeviation)
+                    + World.Rnd().nextFloat(-this.tAcc2 + this.tAcc3 * gunnerSkill, this.tAcc2 - this.tAcc3 * gunnerSkill);
+            theTurret.tuLim[1] = tu[1] * World.Rnd().nextFloat_DomeInv(1.0F - randomWidth + skillDeviation, 1.0F + randomWidth - skillDeviation)
+                    + World.Rnd().nextFloat(-this.tAcc2 + this.tAcc3 * gunnerSkill - rotationDeviation, this.tAcc2 - this.tAcc3 * gunnerSkill + rotationDeviation);
+            // TODO: --- UP3 Sniper Gunner Hotfix ---
+            if(Time.current() <= theTurret.timeNext)
                 break;
+            theTurret.tMode = Turret.TU_MO_TRACKING;
+            if(gunnerSkill - 1.0F <= 1.0F)
+            {
+                theTurret.tMode = Turret.TU_MO_SLEEP;
+                theTurret.timeNext = Time.current() + World.Rnd().nextLong(100L, (long)(gunnerSkill * 700F));
+            }
+            break;
+
+        case Turret.TU_MO_PANIC:
+            theTurret.bIsShooting = true;
+            this.shoot = true;
+            ((Aircraft)this.actor).turretAngles(turretIndex, theTurret.tuLim);
+            if(this.isTick(20, 0))
+            {
+                theTurret.tuLim[0] += World.Rnd().nextFloat(-50F, 50F);
+                theTurret.tuLim[1] += World.Rnd().nextFloat(-50F, 50F);
+            }
+            if(Time.current() > theTurret.timeNext)
+            {
+                theTurret.tMode = Turret.TU_MO_STOPPED;
+                theTurret.timeNext = Time.current() + World.Rnd().nextLong(100L, 1500L);
+            }
+            break;
         }
         this.shoot &= theTurret.bIsShooting;
-
-        // TODO: +++ TD AI code backport from 4.13 +++
-        if(shoot && isTick(32, 0))
+        if(this.shoot && this.isTick(32, 0))
         {
-            shoot = VisCheck.visCheckTurret(theTurret, (Aircraft)this.actor, (Aircraft)theTurret.target, false);
-            if(!shoot)
-                theTurret.tMode = 0;
+            this.shoot = VisCheck.visCheckTurret(theTurret, (Aircraft)this.actor, (Aircraft)theTurret.target, false);
+            if(!this.shoot)
+                theTurret.tMode = Turret.TU_MO_SLEEP;
         }
-
-//        if (this.shoot)
-//            this.shoot = VisCheck.visCheckTurret(theTurret, (Aircraft) this.actor, (Aircraft) theTurret.target, true); // !this.isComingFromTheSun(theTurret.target);
-
-        if(shoot)
+        if(this.shoot)
         {
-            HM.setCurChunk(theTurret.indexB);
-            am.getChunkLocAbs(Actor._tmpLoc);
+            this.HM.setCurChunk(theTurret.indexB);
+            this.am.getChunkLocAbs(Actor._tmpLoc);
             Vg.normalize();
             Vg.scale(2D);
             p.set(Actor._tmpLoc.getPoint());
@@ -532,29 +507,22 @@ public class FlightModel extends FlightModelMain {
             p2.add(Vg);
             clipFilter.setTarget(theTurret.target);
             clipFilter.setOwner(this.actor);
-        if(shoot && isTick(32, 0))
-        {
-            shoot = VisCheck.visCheckTurret(theTurret, (Aircraft)this.actor, (Aircraft)theTurret.target, false);
-            if(!shoot)
-                theTurret.tMode = 0;
-        }
             Actor actor = Engine.collideEnv().getLine(p, p2, true, clipFilter, null);
             if(actor != null && actor.getArmy() == this.actor.getArmy() && actor != this.actor && (actor instanceof Aircraft))
             {
-                shoot = false;
+                this.shoot = false;
             } else
             {
                 Vt.set(1.0D, 0.0D, 0.0D);
                 Actor._tmpLoc.getOrient().transform(Vt);
                 double d = Vg.angle(Vt);
                 if(d > 0.1D)
-                    shoot = false;
+                    this.shoot = false;
             }
         }
-        if(gunnerSkillFloat <= 0.0F)
-            shoot = false;
-        // TODO: --- TD AI code backport from 4.13 ---
-        this.CT.WeaponControl[turretIndex + _FIRST_TURRET] = this.shoot;
+        if(gunnerSkill <= 0.0F)
+            this.shoot = false;
+        this.CT.WeaponControl[turretIndex + 10] = this.shoot;
         this.updateRotation(theTurret, tickLen);
     }
 

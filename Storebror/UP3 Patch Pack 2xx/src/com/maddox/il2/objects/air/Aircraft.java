@@ -3143,7 +3143,13 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
     public Aircraft getBombScoreOwner() {
         return bombScoreOwner;
     }
+    
+    public float[] getTurretRestOrient(int paramInt)
+    {
+      return defTurretRest;
+    }
 
+    private static final float[] defTurretRest = { 0.0F, 0.0F };
     private Aircraft      bombScoreOwner;
     public static boolean showTaxingWay              = false;
     public static List    playerTaxingWay            = null;

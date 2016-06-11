@@ -1954,6 +1954,14 @@ public class ZutiSupportMethods {
                         bornplace.zutiHomeBaseCountries.add(country);
                 } catch (Exception ex) {}
             }
+            // TODO: +++ Add Default Country "None" Mod by SAS~Storebror +++
+            if (Config.cur.bAddDefaultCountryNone) {
+                if( !bornplace.zutiHomeBaseCountries.contains("None") ) {
+//                    System.out.println("zutiHomeBaseCountries old add default");
+                    bornplace.zutiHomeBaseCountries.add("None");
+                }
+            }
+            // TODO: --- Add Default Country "None" Mod by SAS~Storebror ---
         }
 
         count = sectfile.sectionIndex("MDS_BornPlace_" + (int) bornplace.place.x + "_" + (int) bornplace.place.y + "_CapturedCountries_Red");
@@ -1971,6 +1979,14 @@ public class ZutiSupportMethods {
                         bornplace.zutiHomeBaseCapturedRedCountries.add(country);
                 } catch (Exception ex) {}
             }
+            // TODO: +++ Add Default Country "None" Mod by SAS~Storebror +++
+            if (Config.cur.bAddDefaultCountryNone) {
+                if( !bornplace.zutiHomeBaseCapturedRedCountries.contains("None") ) {
+//                    System.out.println("zutiHomeBaseCapturedRedCountries old add default");
+                    bornplace.zutiHomeBaseCapturedRedCountries.add("None");
+                }
+            }
+            // TODO: --- Add Default Country "None" Mod by SAS~Storebror ---
         }
 
         count = sectfile.sectionIndex("MDS_BornPlace_" + (int) bornplace.place.x + "_" + (int) bornplace.place.y + "_CapturedCountries_Blue");
@@ -1988,6 +2004,14 @@ public class ZutiSupportMethods {
                         bornplace.zutiHomeBaseCapturedBlueCountries.add(country);
                 } catch (Exception ex) {}
             }
+            // TODO: +++ Add Default Country "None" Mod by SAS~Storebror +++
+            if (Config.cur.bAddDefaultCountryNone) {
+                if( !bornplace.zutiHomeBaseCapturedBlueCountries.contains("None") ) {
+//                    System.out.println("zutiHomeBaseCapturedBlueCountries old add default");
+                    bornplace.zutiHomeBaseCapturedBlueCountries.add("None");
+                }
+            }
+            // TODO: --- Add Default Country "None" Mod by SAS~Storebror ---
         }
     }
 
@@ -2023,6 +2047,16 @@ public class ZutiSupportMethods {
                     }
                 } catch (Exception ex) {}
             }
+            // TODO: +++ Add Default Country "None" Mod by SAS~Storebror +++
+            if (Config.cur.bAddDefaultCountryNone) {
+                i18nCountryName = resourcebundle.getString("nn");
+//                System.out.println("zutiHomeBaseCountries add default 1, i18nCountryName=" + i18nCountryName);
+                if( i18nCountryName != null && !bornplace.zutiHomeBaseCountries.contains(i18nCountryName) ) {
+//                    System.out.println("zutiHomeBaseCountries add default 2");
+                    bornplace.zutiHomeBaseCountries.add(i18nCountryName);
+                }
+            }
+            // TODO: --- Add Default Country "None" Mod by SAS~Storebror ---
         }
 
         if (bornplace.zutiHomeBaseCountries.size() == 0)
@@ -2042,6 +2076,16 @@ public class ZutiSupportMethods {
                         bornplace.zutiHomeBaseCapturedRedCountries.add(basicCountryName);
                 } catch (Exception ex) {}
             }
+            // TODO: +++ Add Default Country "None" Mod by SAS~Storebror +++
+            if (Config.cur.bAddDefaultCountryNone) {
+                i18nCountryName = resourcebundle.getString("nn");
+//                System.out.println("zutiHomeBaseCapturedRedCountries add default 1, i18nCountryName=" + i18nCountryName);
+                if( i18nCountryName != null && !bornplace.zutiHomeBaseCapturedRedCountries.contains(i18nCountryName) ) {
+//                    System.out.println("zutiHomeBaseCapturedRedCountries add default 2");
+                    bornplace.zutiHomeBaseCapturedRedCountries.add(i18nCountryName);
+                }
+            }
+            // TODO: --- Add Default Country "None" Mod by SAS~Storebror ---
         }
 
         count = sectfile.sectionIndex("MDS_BornPlace_" + (int) bornplace.place.x + "_" + (int) bornplace.place.y + "_CapturedCountries_Blue");
@@ -2058,6 +2102,16 @@ public class ZutiSupportMethods {
                         bornplace.zutiHomeBaseCapturedBlueCountries.add(basicCountryName);
                 } catch (Exception ex) {}
             }
+            // TODO: +++ Add Default Country "None" Mod by SAS~Storebror +++
+            if (Config.cur.bAddDefaultCountryNone) {
+                i18nCountryName = resourcebundle.getString("nn");
+//                System.out.println("zutiHomeBaseCapturedBlueCountries add default 1, i18nCountryName=" + i18nCountryName);
+                if( i18nCountryName != null && !bornplace.zutiHomeBaseCapturedBlueCountries.contains(i18nCountryName) ) {
+//                    System.out.println("zutiHomeBaseCapturedBlueCountries add default 2");
+                    bornplace.zutiHomeBaseCapturedBlueCountries.add(i18nCountryName);
+                }
+            }
+            // TODO: --- Add Default Country "None" Mod by SAS~Storebror ---
         }
     }
 

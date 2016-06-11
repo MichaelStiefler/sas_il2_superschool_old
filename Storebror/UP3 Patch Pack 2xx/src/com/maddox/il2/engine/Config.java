@@ -125,6 +125,7 @@ public class Config {
         this.bNetBoost = ini.get("Mods", "HighSpeedNet", 0) != 0;
         if (this.bNetBoost) 
             netSpeed = NET_SPEED_HIGH;
+        this.bAddDefaultCountryNone = ini.get("Mods", "AddDefaultCountryNone", 0) != 0;
         // TODO: --- Mods Settings GUI by SAS~Storebror ---
         netLocalHost = ini.get("NET", "localHost", netLocalHost);
         if (netLocalHost != null)
@@ -180,6 +181,7 @@ public class Config {
         
      // TODO: +++ Mods Settings GUI by SAS~Storebror +++
         ini.setValue("Mods", "HighSpeedNet", this.bNetBoost ? "1" : "0");
+        ini.setValue("Mods", "AddDefaultCountryNone", this.bAddDefaultCountryNone ? "1" : "0");
      // TODO: --- Mods Settings GUI by SAS~Storebror ---
         
         ini.setValue("NET", "serverChannels", "" + netServerChannels);
@@ -640,6 +642,7 @@ public class Config {
     public boolean              bStabs4All;
     public boolean              bNetBoost;
     public boolean              bNewTrackIR;
+    public boolean              bAddDefaultCountryNone;
  // TODO: --- Mods Settings GUI by SAS~Storebror ---
 
 }
