@@ -5,7 +5,9 @@
 
 package com.maddox.rts;
 
-import com.maddox.il2.engine.Config;
+import java.text.DecimalFormat;
+
+import com.maddox.il2.game.HUD;
 
 public final class TrackIRWin
     implements MsgTimeOutListener
@@ -29,7 +31,8 @@ public final class TrackIRWin
         if (useNewTrackIR)
             createSuccess = nCreateDT(RTSConf.cur.mainWindow.hWnd(), ProgramID);
         else
-            nCreate(ProgramID);
+            createSuccess = nCreate(ProgramID);
+        System.out.println("TrackIRWin create(), useNewTrackIR=" + useNewTrackIR + ", createSuccess=" + createSuccess);
         // if(!nCreate(ProgramID))
         if(!createSuccess)
         // TODO: --- 4.11+ TrackIR implementation by SAS~Storebror ---
@@ -72,8 +75,17 @@ public final class TrackIRWin
             // RTSConf.cur.trackIR.setAngles(angles[0], angles[1], angles[2], angles[3], angles[4], angles[5]); // unconditionally set angles? lol?
             
             if (useNewTrackIR) {
-                if(nGetAnglesDT(nDTangles))
-                    RTSConf.cur.trackIR.setAngles(angles[0], angles[1], angles[2], -angles[5], angles[3], angles[4]);
+                if(nGetAnglesDT(nDTangles)) {
+                    DecimalFormat twoDigits = new DecimalFormat("#.##");
+                    HUD.training("" + twoDigits.format(nDTangles[0])
+                              + "-" + twoDigits.format(nDTangles[1])
+                              + "-" + twoDigits.format(nDTangles[2])
+                              + "-" + twoDigits.format(nDTangles[3])
+                              + "-" + twoDigits.format(nDTangles[4])
+                              + "-" + twoDigits.format(nDTangles[5])
+                                      );
+                    RTSConf.cur.trackIR.setAngles(nDTangles[0], nDTangles[1], nDTangles[2], -nDTangles[5], nDTangles[3], nDTangles[4]);
+                }
             } else {
                 if(nGetAngles(angles))
                     RTSConf.cur.trackIR.setAngles(angles[0], angles[1], angles[2], angles[3], angles[4], angles[5]);
@@ -84,28 +96,40 @@ public final class TrackIRWin
         }
     }
 
+    // TODO: +++ 4.11+ TrackIR implementation by SAS~Storebror +++
     protected TrackIRWin(int i, boolean flag)
     {
-        // TODO: +++ 4.11+ TrackIR implementation by SAS~Storebror +++
+       this(i, flag, (IniFile)null);
+    }
+    
+    protected TrackIRWin(int i, boolean flag, IniFile inifile)
+    {
         
         // remove old bullshit code first
         // angles = new float[7]; ahh... what? re-instanciate a static member? lol?
         
-        if (useNewTrackIR) nDTangles = new float[6];
         // TODO: --- 4.11+ TrackIR implementation by SAS~Storebror ---
+        nDTangles = new float[6];
         bCreated = false;
         ticker = new MsgTimeOut(null);
         ticker.setTickPos(i);
         ticker.setNotCleanAfterSend();
         ticker.setFlags(88);
         ticker.setListener(this);
-        if (Config.cur != null && Config.cur.ini != null) {
-            useNewTrackIR = (Config.cur.ini.get("Mods", "NewTrackIR", 0) != 0);
-            if (useNewTrackIR)
-                System.out.println("  *** Using New 4.11+ style TrackIR from DT.dll *** ");
-            else
-                System.out.println("  *** Using old 4.10 style TrackIR from il2fb.exe *** ");
+//        System.err.println("TrackIRWin(" + i + ", " + flag + ", " + inifile.fileName + ")");
+        if (inifile != null) {
+            useNewTrackIR = inifile.get("Mods", "NewTrackIR", useNewTrackIR);
         }
+//        System.err.println("Using new TrackIR: " + useNewTrackIR);
+//        System.out.println("TrackIRWin 1");
+//        if (Config.cur != null && Config.cur.ini != null) {
+//            System.out.println("TrackIRWin 1");
+//            useNewTrackIR = (Config.cur.ini.get("Mods", "NewTrackIR", 0) != 0);
+//            if (useNewTrackIR)
+//                System.out.println("  *** Using New 4.11+ style TrackIR from DT.dll *** ");
+//            else
+//                System.out.println("  *** Using old 4.10 style TrackIR from il2fb.exe *** ");
+//        }
         if(flag)
             create();
     }
@@ -145,6 +169,10 @@ public final class TrackIRWin
             System.out.println("  *** Library **** DT ****  Loaded *** " + i);
             libLoaded = true;
         }
+    }
+    
+    public static boolean isUseNewTrackIR() {
+        return useNewTrackIR;
     }
     // TODO: --- 4.11+ TrackIR implementation by SAS~Storebror ---
 

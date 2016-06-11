@@ -25,6 +25,7 @@ public class GUIModSettings extends GameState {
     public GUISwitchBox3 sStabsForAll;
     public GUISwitchBox3 sNewTIR;
     public GUISwitchBox3 sHighSpeedNet;
+    public GUISwitchBox3 sAddDefaultCountryNone;
 
     public GUIButton     bExit;
     
@@ -51,14 +52,16 @@ public class GUIModSettings extends GameState {
             draw(x1024(96.0F), y1024(577.0F), x1024(224.0F), y1024(48.0F), 0, GUIModSettings.this.i18n("diff.Back"));
             draw(x1024(128.0F), y1024(32.0F), x1024(272.0F), y1024(48.0F), 0, "Stabilizers on all Aircraft");
             draw(x1024(128.0F), y1024(96.0F), x1024(272.0F), y1024(48.0F), 0, "Use Network File Transfer Boost");
-            if (bUseTrackIR) draw(x1024(128.0F), y1024(160.0F), x1024(272.0F), y1024(48.0F), 0, "Use new TrackIR code");
+            draw(x1024(128.0F), y1024(160.0F), x1024(272.0F), y1024(48.0F), 0, "Add Default Country \"None\"");
+            if (bUseTrackIR) draw(x1024(128.0F), y1024(224.0F), x1024(272.0F), y1024(48.0F), 0, "Use new TrackIR code");
         }
 
         public void setPosSize() {
             set1024PosSize(92.0F, 72.0F, 832.0F, 656.0F);
             sStabsForAll.setPosC(x1024(88.0F), y1024(56.0F));
             sHighSpeedNet.setPosC(x1024(88.0F), y1024(120.0F));
-            if (bUseTrackIR) sNewTIR.setPosC(x1024(88.0F), y1024(184.0F));
+            sAddDefaultCountryNone.setPosC(x1024(88.0F), y1024(184.0F));
+            if (bUseTrackIR) sNewTIR.setPosC(x1024(88.0F), y1024(248.0F));
             bExit.setPosC(x1024(56.0F), y1024(602.0F));
         }
     }
@@ -75,6 +78,7 @@ public class GUIModSettings extends GameState {
         reset();
         sStabsForAll.setEnable(true);
         sHighSpeedNet.setEnable(true);
+        sAddDefaultCountryNone.setEnable(true);
         if (bUseTrackIR) sNewTIR.setEnable(true);
         client.activateWindow();
     }
@@ -82,6 +86,7 @@ public class GUIModSettings extends GameState {
     private void reset() {
         sStabsForAll.setChecked(Config.cur.bStabs4All, false);
         sHighSpeedNet.setChecked(Config.cur.bNetBoost, false);
+        sAddDefaultCountryNone.setChecked(Config.cur.bAddDefaultCountryNone, false);
         if (bUseTrackIR) sNewTIR.setChecked(Config.cur.bNewTrackIR, false);
     }
 
@@ -90,6 +95,7 @@ public class GUIModSettings extends GameState {
         Config.cur.bNetBoost = sHighSpeedNet.bChecked;
         if (sHighSpeedNet.bChecked)
             Config.cur.netSpeed = Config.NET_SPEED_HIGH;
+        Config.cur.bAddDefaultCountryNone = sAddDefaultCountryNone.bChecked;
         if (bUseTrackIR) {
             Config.cur.bNewTrackIR = sNewTIR.bChecked;
             ((RTSConfWin)RTSConf.cur).trackIRWin.create();
@@ -122,6 +128,7 @@ public class GUIModSettings extends GameState {
         sStabsForAll = ((GUISwitchBox3) dialogClient.addControl(new GUISwitchBox3(dialogClient)));
         sHighSpeedNet = ((GUISwitchBox3) dialogClient.addControl(new GUISwitchBox3(dialogClient)));
         if (bUseTrackIR) sNewTIR = ((GUISwitchBox3) dialogClient.addControl(new GUISwitchBox3(dialogClient)));
+        sAddDefaultCountryNone = ((GUISwitchBox3) dialogClient.addControl(new GUISwitchBox3(dialogClient)));
         clientInit(gwindowroot);
         dialogClient.activateWindow();
         client.hideWindow();
