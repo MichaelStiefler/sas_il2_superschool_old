@@ -58,19 +58,19 @@ public class NetFileServerDef extends NetObj implements NetFileServer {
 
         public String toString() {
             switch (state) {
-                case 0: // '\0'
+                case 0:
                     return "state Init";
 
-                case 1: // '\001'
+                case 1:
                     return "state WaitCommand";
 
-                case 2: // '\002'
+                case 2:
                     return "state Send Finger";
 
-                case 3: // '\003'
+                case 3:
                     return "state Send Header";
 
-                case 4: // '\004'
+                case 4:
                     return "state Transfer";
 
                 case -1:
@@ -143,19 +143,19 @@ public class NetFileServerDef extends NetObj implements NetFileServer {
             else
                 s = "";
             switch (state) {
-                case 0: // '\0'
+                case 0:
                     return s + "state Init";
 
-                case 1: // '\001'
+                case 1:
                     return s + "state Request Finger";
 
-                case 2: // '\002'
+                case 2:
                     return s + "state Answer Finger";
 
-                case 3: // '\003'
+                case 3:
                     return s + "state Request File";
 
-                case 4: // '\004'
+                case 4:
                     return s + "state Transfer";
             }
             return s + "state UNKNOWN";
@@ -406,11 +406,11 @@ public class NetFileServerDef extends NetObj implements NetFileServer {
             return 0;
         switch (out.state) {
             case -1:
-            case 1: // '\001'
+            case 1:
             default:
                 return 0;
 
-            case 0: // '\0'
+            case 0:
                 out.size = fileLength(netfilerequest1.localFullFileName(primaryPath(), alternativePath()));
                 if (out.size == 0) {
                     return 4;
@@ -419,10 +419,10 @@ public class NetFileServerDef extends NetObj implements NetFileServer {
                     return 2;
                 }
 
-            case 2: // '\002'
+            case 2:
                 return 2;
 
-            case 3: // '\003'
+            case 3:
                 if (out.bufSize > 0)
                     out.ptr += out.buf.length;
                 if (out.ptr >= out.size) {
@@ -446,7 +446,7 @@ public class NetFileServerDef extends NetObj implements NetFileServer {
                 }
                 return 2;
 
-            case 4: // '\004'
+            case 4:
                 break;
         }
         if (out.size == out.ptr)
@@ -476,31 +476,31 @@ public class NetFileServerDef extends NetObj implements NetFileServer {
             return false;
         switch (out.state) {
             case -1:
-            case 1: // '\001'
+            case 1:
             default:
                 return false;
 
-            case 0: // '\0'
+            case 0:
                 netmsgguaranted.writeInt(j);
                 netmsgguaranted.writeInt(out.size);
                 netmsgguaranted.writeLong(out.finger);
                 out.state = 1;
                 return true;
 
-            case 2: // '\002'
+            case 2:
                 netmsgguaranted.writeInt(j);
                 netmsgguaranted.writeInt(out.shortSize);
                 netmsgguaranted.writeLong(out.shortFinger);
                 out.state = 1;
                 return true;
 
-            case 3: // '\003'
+            case 3:
                 netmsgguaranted.writeInt(j);
                 netmsgguaranted.writeInt(out.bufSize);
                 out.state = 4;
                 return true;
 
-            case 4: // '\004'
+            case 4:
                 netmsgguaranted.writeInt(j);
                 break;
         }
@@ -574,12 +574,12 @@ public class NetFileServerDef extends NetObj implements NetFileServer {
             return 1;
         switch (in.state) {
             case -1:
-            case 1: // '\001'
-            case 3: // '\003'
+            case 1:
+            case 3:
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 in.size = netmsginput.readInt();
                 in.finger = netmsginput.readLong();
                 String s = filePrimaryName(netfilerequest1.ownerFileName());
@@ -614,7 +614,7 @@ public class NetFileServerDef extends NetObj implements NetFileServer {
                     return -3;
                 break;
 
-            case 2: // '\002'
+            case 2:
                 int j = netmsginput.readInt();
                 long l2 = netmsginput.readLong();
                 if (j != in.localSize || l2 != in.localFinger)
@@ -624,7 +624,7 @@ public class NetFileServerDef extends NetObj implements NetFileServer {
                     return -3;
                 break;
 
-            case 4: // '\004'
+            case 4:
                 if (compressMethod() != 0)
                     in.bufSize = netmsginput.readInt();
                 break;
@@ -639,20 +639,20 @@ public class NetFileServerDef extends NetObj implements NetFileServer {
             return false;
         switch (in.state) {
             case -1:
-            case 0: // '\0'
-            case 2: // '\002'
-            case 4: // '\004'
+            case 0:
+            case 2:
+            case 4:
             default:
                 return false;
 
-            case 1: // '\001'
+            case 1:
                 netmsgguaranted.writeInt(j);
                 netmsgguaranted.writeInt(in.localSize);
                 netmsgguaranted.writeLong(in.localFinger);
                 in.state = 2;
                 return true;
 
-            case 3: // '\003'
+            case 3:
                 netmsgguaranted.writeInt(j);
                 break;
         }

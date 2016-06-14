@@ -200,15 +200,15 @@ public class NetFileRequest {
 		// testException.printStackTrace();
 		String s = null;
 		switch (state) {
-		case 2: // '\002'
+		case 2:
 			s = "init";
 			break;
 
-		case 1: // '\001'
+		case 1:
 			s = "progress " + (int) (100F * complete);
 			break;
 
-		case 0: // '\0'
+		case 0:
 			s = "success";
 			break;
 
@@ -328,8 +328,11 @@ public class NetFileRequest {
 		if (this.logID == -1) {
 			this.logID = HUD.makeIdLog();
 		}
+		int iComplete = (int) (fComplete * 100F);
+		if (iComplete - this.lastComplete < 2 && fComplete < 1.0F) return;
+		this.lastComplete = iComplete;
 		if (fComplete < 1.0F) {
-			HUD.log(this.logID, "D/L " + fileType + " from " + userName + " " + (int) (fComplete * 100) + "%", false);
+			HUD.log(this.logID, "D/L " + fileType + " from " + userName + " " + iComplete + "%", false);
 		} else {
 			HUD.log(this.logID, "D/L " + fileType + " from " + userName + " finished!", false);
 			if (fileType != "unknown" && this.startTime != 0L) {
@@ -374,6 +377,7 @@ public class NetFileRequest {
 	private String userName = "unknown";
 	private boolean isTransferring = false;
 	private int logID = -1;
+	private int lastComplete = -1;
 	// private static DecimalFormat twoPlaces = new DecimalFormat("#.##");
 	private long startTime = 0L;
 

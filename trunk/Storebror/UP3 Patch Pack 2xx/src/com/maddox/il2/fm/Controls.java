@@ -643,12 +643,13 @@ public class Controls {
 
             }
         }
-        if (!bool_11_)
-            enginesinterface.setAfterburnerControl(this.afterburnerControl);
-         // TODO: +++ TD AI code backport from 4.13 +++
-            enginesinterface.setManualAfterburnerControl(afterburnerFControl);
-         // TODO: --- TD AI code backport from 4.13 ---
+        // TODO: +++ TD AI code backport from 4.13 +++
+//        if (!bool_11_)
+//            enginesinterface.setAfterburnerControl(this.afterburnerControl);
         if (!bool_11_) {
+            enginesinterface.setAfterburnerControl(this.afterburnerControl);
+            enginesinterface.setManualAfterburnerControl(afterburnerFControl);
+            // TODO: --- TD AI code backport from 4.13 ---
             this.StepControl = this.clamp01(this.StepControl);
             if (this.bUseElectricProp && (this.FM instanceof com.maddox.il2.fm.RealFlightModel)) {
                 enginesinterface.setPropAuto(this.bStepControlAuto);

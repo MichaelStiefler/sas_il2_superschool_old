@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.StringTokenizer;
 
 import com.maddox.JGP.Point2d;
 import com.maddox.JGP.Point3d;
@@ -111,8 +112,6 @@ import com.maddox.util.HashMapInt;
 import com.maddox.util.HashMapIntEntry;
 import com.maddox.util.NumberTokenizer;
 import com.maddox.util.SharedTokenizer;
-import com.maddox.il2.game.ZutiAircraft;
-import java.util.StringTokenizer;
 
 public class Mission implements Destroy
 {
@@ -123,11 +122,11 @@ public class Mission implements Destroy
     private float curWindVelocity;
     private float curGust;
     private float curTurbulence;
-    private static java.util.ArrayList beaconsRed = new ArrayList();
-    private static java.util.ArrayList beaconsBlue = new ArrayList();
-    private static java.util.ArrayList meaconsRed = new ArrayList();
-    private static java.util.ArrayList meaconsBlue = new ArrayList();
-    private static java.util.Map hayrakeMap = new HashMap();
+    private static ArrayList beaconsRed = new ArrayList();
+    private static ArrayList beaconsBlue = new ArrayList();
+    private static ArrayList meaconsRed = new ArrayList();
+    private static ArrayList meaconsBlue = new ArrayList();
+    private static Map hayrakeMap = new HashMap();
     public static boolean hasRadioStations = false;
     private static boolean radioStationsLoaded = false;
     private float bigShipHpDiv;
@@ -194,12 +193,12 @@ public class Mission implements Destroy
 	{
 		public Mirror(Mission mission_0_, NetChannel netchannel, int i)
 		{
-			super((Object)mission_0_, netchannel, i);
+			super(mission_0_, netchannel, i);
 			try
 			{
 				NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
 				netmsgguaranted.writeByte(0);
-				postTo(netchannel, netmsgguaranted);
+				this.postTo(netchannel, netmsgguaranted);
 			}
 			catch (Exception exception)
 			{
@@ -216,7 +215,7 @@ public class Mission implements Destroy
 	{
 		public Master(Mission mission_1_)
 		{
-			super((Object)mission_1_);
+			super(mission_1_);
 			mission_1_.sectFinger = mission_1_.sectFile.fingerExcludeSectPrefix("$$$");
 		}
 	}
@@ -242,7 +241,7 @@ public class Mission implements Destroy
 		public boolean netChannelCallback(NetChannelOutStream netchanneloutstream, NetMsgGuaranted netmsgguaranted)
 		{
 			if (netmsgguaranted instanceof NetMsgSpawn)
-				msgCallback(netchanneloutstream, 0);
+				this.msgCallback(netchanneloutstream, 0);
 			else if (!(netmsgguaranted instanceof NetMsgDestroy))
 			{
 				while_0_ : do
@@ -256,13 +255,13 @@ public class Mission implements Destroy
 						switch (i)
 						{
 							case 0 :
-								msgCallback(netchanneloutstream, 1);
+								this.msgCallback(netchanneloutstream, 1);
 								break while_0_;
 							case 2 :
-								msgCallback(netchanneloutstream, 3);
+								this.msgCallback(netchanneloutstream, 3);
 								break while_0_;
 							case 4 :
-								msgCallback(netchanneloutstream, 4);
+								this.msgCallback(netchanneloutstream, 4);
 								break while_0_;
 							case 12 :
 								Main3D.cur3D().gameTrackRecord().startKeyRecord(netmsgguaranted);
@@ -335,7 +334,7 @@ public class Mission implements Destroy
 		
 		public boolean netInput(NetMsgInput netmsginput) throws IOException
 		{
-			Mission mission = (Mission)superObj();
+			Mission mission = (Mission)this.superObj();
 			mission.netInput(netmsginput);
 			return true;
 		}
@@ -343,16 +342,16 @@ public class Mission implements Destroy
 		public void msgNetNewChannel(NetChannel netchannel)
 		{
 			if (Main.cur().missionLoading == null)
-				tryReplicate(netchannel);
+				this.tryReplicate(netchannel);
 		}
 		
 		private void tryReplicate(NetChannel netchannel)
 		{
-			if (netchannel.isReady() && netchannel.isPublic() && netchannel != masterChannel && !netchannel.isMirrored(this) && netchannel.userState == 1)
+			if (netchannel.isReady() && netchannel.isPublic() && netchannel != this.masterChannel && !netchannel.isMirrored(this) && netchannel.userState == 1)
 			{
 				try
 				{
-					postTo(netchannel, new NetMsgSpawn(this));
+					this.postTo(netchannel, new NetMsgSpawn(this));
 				}
 				catch (Exception exception)
 				{
@@ -379,8 +378,8 @@ public class Mission implements Destroy
 		
 		public WingTakeoffPos(double d, double d_2_)
 		{
-			x = (int)(d / 100.0) * 100;
-			y = (int)(d_2_ / 100.0) * 100;
+			this.x = (int)(d / 100.0) * 100;
+			this.y = (int)(d_2_ / 100.0) * 100;
 		}
 		
 		public boolean equals(Object object)
@@ -390,12 +389,12 @@ public class Mission implements Destroy
 			if (!(object instanceof WingTakeoffPos))
 				return false;
 			WingTakeoffPos wingtakeoffpos_3_ = (WingTakeoffPos)object;
-			return x == wingtakeoffpos_3_.x && y == wingtakeoffpos_3_.y;
+			return this.x == wingtakeoffpos_3_.x && this.y == wingtakeoffpos_3_.y;
 		}
 		
 		public int hashCode()
 		{
-			return x + y;
+			return this.x + this.y;
 		}
 	}
 	
@@ -405,23 +404,23 @@ public class Mission implements Destroy
 		
 		public void start()
 		{
-			if (!isDestroyed())
+			if (!Mission.this.isDestroyed())
 			{
 				try
 				{
 					// TODO: Added by |ZUTI|: if wing is spawned on overrun home base, don't load it!
 					// ----------------------------------------------------------------------------
-					Point3d toPoint = ZutiSupportMethods_Air.getWingTakeoffLocation(sectFile, wingName);
+					Point3d toPoint = ZutiSupportMethods_Air.getWingTakeoffLocation(Mission.this.sectFile, this.wingName);
 					if (toPoint != null)
 					{
-						Squadron squadron = Squadron.New(wingName.substring(0, wingName.length() - 1));
+						Squadron squadron = Squadron.New(this.wingName.substring(0, this.wingName.length() - 1));
 						BornPlace bp = ZutiSupportMethods_Net.getNearestBornPlace_AnyArmy(toPoint.x, toPoint.y);
 						
 						if (bp != null && squadron.getArmy() != bp.army)
 						{
 							if (Math.sqrt(Math.pow(toPoint.x - bp.place.x, 2) + Math.pow(toPoint.y - bp.place.y, 2)) <= bp.r)
 							{
-								System.out.println("Mission: wing " + wingName + " not loaded because its TO point is located on enemy home base!");
+								System.out.println("Mission: wing " + this.wingName + " not loaded because its TO point is located on enemy home base!");
 								return;
 							}
 						}
@@ -430,8 +429,8 @@ public class Mission implements Destroy
 					
 					NetAircraft.loadingCoopPlane = false;
 					Wing wing = new Wing();
-					wing.load(sectFile, wingName, null);
-					Mission.this.prepareSkinInWing(sectFile, wing);
+					wing.load(Mission.this.sectFile, this.wingName, null);
+					Mission.this.prepareSkinInWing(Mission.this.sectFile, wing);
 					wing.setOnAirport();
 				}
 				catch (Exception exception)
@@ -443,7 +442,7 @@ public class Mission implements Destroy
 		
 		public TimeOutWing(String string)
 		{
-			wingName = string;
+			this.wingName = string;
 		}
 	}
 	
@@ -454,13 +453,13 @@ public class Mission implements Destroy
 		
 		public void run() throws Exception
 		{
-			Mission.this._load(_name, _in, true);
+			Mission.this._load(this._name, this._in, true);
 		}
 		
 		public BackgroundLoader(String string, SectFile sectfile)
 		{
-			_name = string;
-			_in = sectfile;
+			this._name = string;
+			this._in = sectfile;
 		}
 	}
 	
@@ -511,9 +510,9 @@ public class Mission implements Destroy
 	
 	public NetChannel getNetMasterChannel()
 	{
-		if (net == null)
+		if (this.net == null)
 			return null;
-		return net.masterChannel();
+		return this.net.masterChannel();
 	}
 	
 	public static boolean isServer()
@@ -623,62 +622,66 @@ public class Mission implements Destroy
 	
 	public String name()
 	{
-		return name;
+		return this.name;
 	}
 	
 	public SectFile sectFile()
 	{
-		return sectFile;
+		return this.sectFile;
 	}
 	
 	public long finger()
 	{
-		return sectFinger;
+		return this.sectFinger;
 	}
 	
 	public boolean isDestroyed()
 	{
-		return name == null;
+		return this.name == null;
 	}
 	
 	public void destroy()
 	{
-		if (!isDestroyed())
+		if (!this.isDestroyed())
 		{
 			// TODO: Added by |ZUTI|
 			// -----------------------------------
 			MDS_VARIABLES().resetVariables();
 			// -----------------------------------
 			
-			if (bPlaying)
-				doEnd();
-			bPlaying = false;
-			clear();
-			name = null;
+			if (this.bPlaying)
+				this.doEnd();
+			this.bPlaying = false;
+			this.clear();
+			this.name = null;
 			Main.cur().mission = null;
 			if (Main.cur().netMissionListener != null)
 				Main.cur().netMissionListener.netMissionState(8, 0.0F, null);
-			if (net != null && !net.isDestroyed())
-				net.destroy();
-			net = null;
+			if (this.net != null && !this.net.isDestroyed())
+				this.net.destroy();
+			this.net = null;
+			
+		    // TODO: +++ New automatic Garbage Collection at mission end by SAS~Storebror +++
+			doGarbageCollection();
+		    // TODO: --- New automatic Garbage Collection at mission end by SAS~Storebror ---
 		}
 	}
 	
 	private void clear()
 	{
-		if (net != null)
+		if (this.net != null)
 		{
-			doReplicateNotMissionActors(false);
-			if (net.masterChannel() != null)
-				doReplicateNotMissionActors(net.masterChannel(), false);
+			this.doReplicateNotMissionActors(false);
+			if (this.net.masterChannel() != null)
+				this.doReplicateNotMissionActors(this.net.masterChannel(), false);
 		}
-		actors.clear();
+		this.actors.clear();
 		beaconsRed.clear();
 		beaconsBlue.clear();
 		meaconsRed.clear();
 		meaconsBlue.clear();
 		hayrakeMap.clear();
-		curActor = 0;
+		this.curActor = 0;
 		Main.cur().resetGame();
 		if (GUI.pad != null)
 			GUI.pad.zutiPadObjects.clear();
@@ -692,13 +695,13 @@ public class Mission implements Destroy
 		}
 		else
 		{
-			_load(string, sectfile, bool);
+			this._load(string, sectfile, bool);
 		}
 	}
 	
 	private void LOADING_STEP(float f, String string)
 	{
-		if (net != null && Main.cur().netMissionListener != null)
+		if (this.net != null && Main.cur().netMissionListener != null)
 			Main.cur().netMissionListener.netMissionState(3, f, string);
 		if (!BackgroundTask.step(f, string))
 			throw new RuntimeException(BackgroundTask.executed().messageCancel());
@@ -724,15 +727,15 @@ public class Mission implements Destroy
 		try
 		{
 			Main.cur().mission = this;
-			name = string;
-			if (net == null)
-				createNetObject(null, 0);
+			this.name = string;
+			if (this.net == null)
+				this.createNetObject(null, 0);
 			
-			loadMain(sectfile);
+			this.loadMain(sectfile);
 			
 			try
 			{
-				loadRespawnTime(sectfile);
+				this.loadRespawnTime(sectfile);
 			}
 			catch (Exception ex)
 			{
@@ -754,7 +757,7 @@ public class Mission implements Destroy
 				// load AI planes
 				try
 				{
-					list = loadWings(sectfile);
+					list = this.loadWings(sectfile);
 				}
 				catch (Exception ex)
 				{
@@ -764,7 +767,7 @@ public class Mission implements Destroy
 				// loads ships/cars/trains
 				try
 				{
-					loadChiefs(sectfile);
+					this.loadChiefs(sectfile);
 				}
 				catch (Exception ex)
 				{
@@ -774,7 +777,7 @@ public class Mission implements Destroy
 			
 			try
 			{
-				loadHouses(sectfile);
+				this.loadHouses(sectfile);
 			}
 			catch (Exception ex)
 			{
@@ -782,7 +785,7 @@ public class Mission implements Destroy
 			}
 			try
 			{
-				loadNStationary(sectfile);
+				this.loadNStationary(sectfile);
 			}
 			catch (Exception ex)
 			{
@@ -790,7 +793,7 @@ public class Mission implements Destroy
 			}
 			try
 			{
-				loadStationary(sectfile);
+				this.loadStationary(sectfile);
 			}
 			catch (Exception ex)
 			{
@@ -798,7 +801,7 @@ public class Mission implements Destroy
 			}
 			try
 			{
-				loadRocketry(sectfile);
+				this.loadRocketry(sectfile);
 			}
 			catch (Exception ex)
 			{
@@ -806,7 +809,7 @@ public class Mission implements Destroy
 			}
 			try
 			{
-				loadViewPoint(sectfile);
+				this.loadViewPoint(sectfile);
 			}
 			catch (Exception ex)
 			{
@@ -818,7 +821,7 @@ public class Mission implements Destroy
 			// {
 			try
 			{
-				loadBornPlaces(sectfile);
+				this.loadBornPlaces(sectfile);
 			}
 			catch (Exception ex)
 			{
@@ -826,7 +829,7 @@ public class Mission implements Destroy
 			}
 			try
             {
-                populateBeacons();
+                this.populateBeacons();
             }
             catch(Exception ex)
             {
@@ -834,7 +837,7 @@ public class Mission implements Destroy
             }
             try
             {
-                populateRunwayLights();
+                this.populateRunwayLights();
             }
             catch(Exception ex)
             {
@@ -846,7 +849,7 @@ public class Mission implements Destroy
 			{
 				try
 				{
-					loadTargets(sectfile);
+					this.loadTargets(sectfile);
 				}
 				catch (Exception ex)
 				{
@@ -876,17 +879,17 @@ public class Mission implements Destroy
 		{
 			exception.printStackTrace();
 			
-			if (net != null && Main.cur().netMissionListener != null)
+			if (this.net != null && Main.cur().netMissionListener != null)
 				Main.cur().netMissionListener.netMissionState(4, 0.0F, exception.getMessage());
-			clear();
-			if (net != null && !net.isDestroyed())
-				net.destroy();
-			net = null;
+			this.clear();
+			if (this.net != null && !this.net.isDestroyed())
+				this.net.destroy();
+			this.net = null;
 			Main.cur().mission = null;
-			name = null;
+			this.name = null;
 			Actor.setSpawnFromMission(false);
 			Main.cur().missionLoading = null;
-			setTime(false);
+			this.setTime(false);
 			throw exception;
 		}
 		if (Config.isUSE_RENDER())
@@ -900,10 +903,10 @@ public class Mission implements Destroy
 		Actor.setSpawnFromMission(false);
 		Main.cur().missionLoading = null;
 		Main.cur().missionCounter++;
-		setTime(!Main.cur().netServerParams.isSingle());
-		LOADING_STEP(90.0F, "task.Load_humans");
+		this.setTime(!Main.cur().netServerParams.isSingle());
+		this.LOADING_STEP(90.0F, "task.Load_humans");
 		Paratrooper.PRELOAD();
-		LOADING_STEP(95.0F, "task.Load_humans");
+		this.LOADING_STEP(95.0F, "task.Load_humans");
 		// TODO: Edited by |ZUTI|
 		// if (Main.cur().netServerParams.isSingle() || Main.cur().netServerParams.isCoop())
 		if (Main.cur().netServerParams.isSingle() || Main.cur().netServerParams.isCoop() || Main.cur().netServerParams.isDogfight())
@@ -917,17 +920,17 @@ public class Mission implements Destroy
 				System.out.println("Mission error, ID_09: " + ex.toString());
 			}
 		}
-		LOADING_STEP(100.0F, "");
+		this.LOADING_STEP(100.0F, "");
 		if (Main.cur().netMissionListener != null)
 			Main.cur().netMissionListener.netMissionState(5, 0.0F, null);
-		if (net.isMirror())
+		if (this.net.isMirror())
 		{
 			try
 			{
 				NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
 				netmsgguaranted.writeByte(4);
-				net.masterChannel().userState = 4;
-				net.postTo(net.masterChannel(), netmsgguaranted);
+				this.net.masterChannel().userState = 4;
+				this.net.postTo(this.net.masterChannel(), netmsgguaranted);
 			}
 			catch (Exception exception)
 			{
@@ -946,7 +949,7 @@ public class Mission implements Destroy
 		else
 			((NetUser)NetEnv.host()).replicateDotRange();
 		
-		NetObj.tryReplicate(net, false);
+		NetObj.tryReplicate(this.net, false);
 		
 		// TODO: Added by |ZUTI|
 		// -----------------------------------------------------
@@ -1063,7 +1066,7 @@ public class Mission implements Destroy
 		int i_7_ = sectfile.get("MAIN", "WEAPONSCONSTANT", 0, 0, 1);
 		World.cur().setWeaponsConstant(i_7_ == 1);
 		
-		bigShipHpDiv = 1.0F / sectfile.get("MAIN", "ShipHP", 1.0F, 0.001F, 100F);
+		this.bigShipHpDiv = 1.0F / sectfile.get("MAIN", "ShipHP", 1.0F, 0.001F, 100F);
 		
 		String string = sectfile.get("MAIN", "MAP");
 		if (string == null)
@@ -1084,14 +1087,17 @@ public class Mission implements Destroy
 			}
 		}
 		
-		LOADING_STEP(0.0F, "task.Load_landscape");
+		this.LOADING_STEP(0.0F, "task.Load_landscape");
 		
 		int l = sectfile.get("SEASON", "Year", 1940, 1930, 1960);
-		int i1 = sectfile.get("SEASON", "Month", com.maddox.il2.ai.World.land().config.getDefaultMonth("maps/" + string), 1, 12);
+		int i1 = sectfile.get("SEASON", "Month", World.land().config.getDefaultMonth("maps/" + string), 1, 12);
 		int j1 = sectfile.get("SEASON", "Day", 15, 1, 31);
-		com.maddox.il2.game.Mission.setDate(l, i1, j1);
+		setDate(l, i1, j1);
 		
-		World.land().LoadMap(string, is);
+        // TODO: +++ Mission Date Fix by SAS~Storebror +++
+//		World.land().LoadMap(string, is);
+        World.land().LoadMap(string, is, i1, j1);
+        // TODO: --- Mission Date Fix by SAS~Storebror ---
 		
 		//TODO: Disabled as this is loaded elsewhere!
 		//---------------------------------------------------------
@@ -1112,8 +1118,8 @@ public class Mission implements Destroy
 				int i_12_ = sectfile_9_.vars(i_11_);
 				if (i_12_ > 0)
 				{
-					LOADING_STEP(20.0F, "task.Load_map");
-					Main3D.cur3D().land2D = new Land2Dn(string, (double)World.land().getSizeX(), (double)World.land().getSizeY());
+					this.LOADING_STEP(20.0F, "task.Load_map");
+					Main3D.cur3D().land2D = new Land2Dn(string, World.land().getSizeX(), World.land().getSizeY());
 				}
 			}
 			if (Main3D.cur3D().land2DText == null)
@@ -1123,14 +1129,14 @@ public class Mission implements Destroy
 			int i_13_ = sectfile_9_.sectionIndex("text");
 			if (i_13_ >= 0 && sectfile_9_.vars(i_13_) > 0)
 			{
-				LOADING_STEP(22.0F, "task.Load_landscape_texts");
+				this.LOADING_STEP(22.0F, "task.Load_landscape_texts");
 				String string_14_ = sectfile_9_.var(i_13_, 0);
 				Main3D.cur3D().land2DText.load(HomePath.concatNames("maps/" + string, string_14_));
 			}
 		}
 		if (string_8_ != null)
 		{
-			LOADING_STEP(23.0F, "task.Load_static_objects");
+			this.LOADING_STEP(23.0F, "task.Load_static_objects");
 			Statics.load(string_8_, World.cur().statics.bridges);
 			Engine.drawEnv().staticTrimToSize();
 		}
@@ -1145,7 +1151,7 @@ public class Mission implements Destroy
 				World.cur().statics.loadStateHouses(sectfile, false);
 				World.cur().statics.loadStateBridges(sectfile, true);
 				World.cur().statics.loadStateHouses(sectfile, true);
-				checkBridgesAndHouses(sectfile);
+				this.checkBridgesAndHouses(sectfile);
 			}
 			catch (Exception ex)
 			{
@@ -1154,17 +1160,17 @@ public class Mission implements Destroy
 		}
 		if (Main.cur().netServerParams.isSingle())
 		{
-			player = sectfile.get("MAIN", "player");
-			playerNum = sectfile.get("MAIN", "playerNum", 0, 0, 3);
+			this.player = sectfile.get("MAIN", "player");
+			this.playerNum = sectfile.get("MAIN", "playerNum", 0, 0, 3);
 		}
 		else
-			player = null;
+			this.player = null;
 		World.setMissionArmy(sectfile.get("MAIN", "army", 1, 1, 2));
 		if (Config.isUSE_RENDER())
 			Main3D.cur3D().ordersTree.setFrequency(new Boolean(true));
 		if (Config.isUSE_RENDER())
 		{
-			LOADING_STEP(29.0F, "task.Load_landscape_effects");
+			this.LOADING_STEP(29.0F, "task.Load_landscape_effects");
 			Main3D main3d = Main3D.cur3D();
 			int i_15_ = sectfile.get("MAIN", "CloudType", 0, 0, 6);
 			float f = sectfile.get("MAIN", "CloudHeight", 1000.0F, 300.0F, 5000.0F);
@@ -1177,16 +1183,16 @@ public class Mission implements Destroy
 			else
 				main3d.sunFlareShow(false);
 			
-			float f1 = (float)(string.charAt(0) - 64) * 3.141593F;
+			float f1 = (string.charAt(0) - 64) * 3.141593F;
 			f1 = sectfile.get("WEATHER", "WindDirection", f1, 0.0F, 359.99F);
-			float f2 = 0.25F + (float)(i_15_ * i_15_) * 0.12F;
+			float f2 = 0.25F + i_15_ * i_15_ * 0.12F;
 			f2 = sectfile.get("WEATHER", "WindSpeed", f2, 0.0F, 15F);
-			float f3 = i_15_ > 3 ? (float)i_15_ * 2.0F : 0.0F;
+			float f3 = i_15_ > 3 ? i_15_ * 2.0F : 0.0F;
 			f3 = sectfile.get("WEATHER", "Gust", f3, 0.0F, 12F);
 			float f4 = i_15_ > 2 ? i_15_ : 0.0F;
 			f4 = sectfile.get("WEATHER", "Turbulence", f4, 0.0F, 6F);
 			
-			com.maddox.il2.ai.World.wind().set(f, f1, f2, f3, f4);
+			World.wind().set(f, f1, f2, f3, f4);
 			for (int i_16_ = 0; i_16_ < 3; i_16_++)
 			{
 				Main3D.cur3D()._lightsGlare[i_16_].setShow(true);
@@ -1197,9 +1203,9 @@ public class Mission implements Destroy
 	
 	public static void setDate(int i, int j, int k)
 	{
-		com.maddox.il2.game.Mission.setYear(i);
-		com.maddox.il2.game.Mission.setMonth(j);
-		com.maddox.il2.game.Mission.setDay(k);
+		setYear(i);
+		setMonth(j);
+		setDay(k);
 	}
 	
 	public static void setYear(int i)
@@ -1208,8 +1214,8 @@ public class Mission implements Destroy
 			i = 1930;
 		if (i > 1960)
 			i = 1960;
-		if (com.maddox.il2.game.Mission.cur() != null)
-			com.maddox.il2.game.Mission.cur().curYear = i;
+		if (cur() != null)
+			cur().curYear = i;
 	}
 	
 	public static void setMonth(int i)
@@ -1218,8 +1224,8 @@ public class Mission implements Destroy
 			i = 1;
 		if (i > 12)
 			i = 12;
-		if (com.maddox.il2.game.Mission.cur() != null)
-			com.maddox.il2.game.Mission.cur().curMonth = i;
+		if (cur() != null)
+			cur().curMonth = i;
 	}
 	
 	public static void setDay(int i)
@@ -1228,8 +1234,8 @@ public class Mission implements Destroy
 			i = 1;
 		if (i > 31)
 			i = 31;
-		if (com.maddox.il2.game.Mission.cur() != null)
-			com.maddox.il2.game.Mission.cur().curDay = i;
+		if (cur() != null)
+			cur().curDay = i;
 	}
 	
 	public static void setWindDirection(float f)
@@ -1238,8 +1244,8 @@ public class Mission implements Destroy
 			f = 0.0F;
 		if (f > 359.99F)
 			f = 0.0F;
-		if (com.maddox.il2.game.Mission.cur() != null)
-			com.maddox.il2.game.Mission.cur().curWindDirection = f;
+		if (cur() != null)
+			cur().curWindDirection = f;
 	}
 	
 	public static void setWindVelocity(float f)
@@ -1248,8 +1254,8 @@ public class Mission implements Destroy
 			f = 0.0F;
 		if (f > 15F)
 			f = 15F;
-		if (com.maddox.il2.game.Mission.cur() != null)
-			com.maddox.il2.game.Mission.cur().curWindVelocity = f;
+		if (cur() != null)
+			cur().curWindVelocity = f;
 	}
 	
 	public static void setGust(float f)
@@ -1258,8 +1264,8 @@ public class Mission implements Destroy
 			f = 0.0F;
 		if (f > 12F)
 			f = 12F;
-		if (com.maddox.il2.game.Mission.cur() != null)
-			com.maddox.il2.game.Mission.cur().curGust = f;
+		if (cur() != null)
+			cur().curGust = f;
 	}
 	
 	public static void setTurbulence(float f)
@@ -1268,8 +1274,8 @@ public class Mission implements Destroy
 			f = 0.0F;
 		if (f > 6F)
 			f = 6F;
-		if (com.maddox.il2.game.Mission.cur() != null)
-			com.maddox.il2.game.Mission.cur().curTurbulence = f;
+		if (cur() != null)
+			cur().curTurbulence = f;
 	}
 	
 	public static void initRadioSounds()
@@ -1277,17 +1283,17 @@ public class Mission implements Destroy
 		if (radioStationsLoaded)
 			return;
 		
-		com.maddox.il2.objects.air.Aircraft aircraft = com.maddox.il2.ai.World.getPlayerAircraft();
+		Aircraft aircraft = World.getPlayerAircraft();
 		if (aircraft != null)
 		{
-			java.util.ArrayList arraylist = com.maddox.il2.game.Main.cur().mission.getBeacons(aircraft.FM.actor.getArmy());
+			ArrayList arraylist = Main.cur().mission.getBeacons(aircraft.FM.actor.getArmy());
 			if (arraylist != null)
 			{
 				for (int i = 0; i < arraylist.size(); i++)
 				{
 					
-					com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)arraylist.get(i);
-					if (actor instanceof com.maddox.il2.objects.vehicles.radios.TypeHasRadioStation)
+					Actor actor = (Actor)arraylist.get(i);
+					if (actor instanceof TypeHasRadioStation)
 					{
 						hasRadioStations = true;
 						aircraft.FM.AS.preLoadRadioStation(actor);
@@ -1418,12 +1424,12 @@ public class Mission implements Destroy
 			return null;
 		
 		if (!World.cur().diffCur.Takeoff_N_Landing)
-			prepareTakeoff(sectfile, !Main.cur().netServerParams.isSingle());
+			this.prepareTakeoff(sectfile, !Main.cur().netServerParams.isSingle());
 		
 		NetChannel netchannel = null;
 		
 		if (!isServer())
-			netchannel = net.masterChannel();
+			netchannel = this.net.masterChannel();
 		
 		int i_21_ = sectfile.vars(i);
 		ArrayList arraylist = null;
@@ -1432,15 +1438,15 @@ public class Mission implements Destroy
 		
 		for (int i_22_ = 0; i_22_ < i_21_; i_22_++)
 		{
-			LOADING_STEP((float)(30 + Math.round((float)i_22_ / (float)i_21_ * 30.0F)), "task.Load_aircraft");
+			this.LOADING_STEP(30 + Math.round((float)i_22_ / (float)i_21_ * 30.0F), "task.Load_aircraft");
 			String string = sectfile.var(i, i_22_);
-			_loadPlayer = string.equals(player);
+			this._loadPlayer = string.equals(this.player);
 			int i_23_ = sectfile.get(string, "StartTime", 0);
-			if (i_23_ > 0 && !_loadPlayer)
+			if (i_23_ > 0 && !this._loadPlayer)
 			{
 				if (netchannel == null)
 				{
-					double d = (double)((long)i_23_ * 60L);
+					double d = i_23_ * 60L;
 					new MsgAction(0, d, new TimeOutWing(string))
 					{
 						public void doAction(Object object)
@@ -1471,10 +1477,10 @@ public class Mission implements Destroy
 					}
 				}
 				arraylist.add(wing);
-				prepareSkinInWing(sectfile, wing);
+				this.prepareSkinInWing(sectfile, wing);
 			}
 		}
-		LOADING_STEP(60.0F, "task.Load_aircraft");
+		this.LOADING_STEP(60.0F, "task.Load_aircraft");
 		return arraylist;
 	}
 	
@@ -1488,7 +1494,7 @@ public class Mission implements Destroy
 				if (Actor.isValid(aircrafts[i]))
 				{
 					Aircraft aircraft = aircrafts[i];
-					prepareSkinInWing(sectfile, aircraft, wing.name(), i);
+					this.prepareSkinInWing(sectfile, aircraft, wing.name(), i);
 				}
 			}
 		}
@@ -1621,7 +1627,7 @@ public class Mission implements Destroy
 			{
 				return;
 			}
-			prepareSkinInWing(sectFile, aircraft, string_48_, i);
+			this.prepareSkinInWing(this.sectFile, aircraft, string_48_, i);
 		}
 	}
 	
@@ -1629,25 +1635,25 @@ public class Mission implements Destroy
 	{
 		if (!isDogfight())
 		{
-			int i = sectFile.sectionIndex("Wing");
+			int i = this.sectFile.sectionIndex("Wing");
 			if (i >= 0)
 			{
-				int i_49_ = sectFile.vars(i);
+				int i_49_ = this.sectFile.vars(i);
 				for (int i_50_ = 0; i_50_ < i_49_; i_50_++)
 				{
 					try
 					{
-						String string = sectFile.var(i, i_50_);
-						String string_51_ = sectFile.get(string, "Class", (String)null);
+						String string = this.sectFile.var(i, i_50_);
+						String string_51_ = this.sectFile.get(string, "Class", (String)null);
 						Class var_class = ObjIO.classForName(string_51_);
 						String string_52_ = (GUIAirArming.validateFileName(Property.stringValue(var_class, "keyName", null)));
 						for (int i_53_ = 0; i_53_ < 4; i_53_++)
 						{
-							String string_54_ = sectFile.get(string, "skin" + i_53_, (String)null);
+							String string_54_ = this.sectFile.get(string, "skin" + i_53_, (String)null);
 							if (string_54_ != null)
-								recordNetFile(Main.cur().netFileServerSkin, string_52_ + "/" + string_54_);
-							recordNetFile(Main.cur().netFileServerNoseart, sectFile.get(string, "noseart" + i_53_, (String)null));
-							recordNetFile(Main.cur().netFileServerPilot, sectFile.get(string, "pilot" + i_53_, (String)null));
+								this.recordNetFile(Main.cur().netFileServerSkin, string_52_ + "/" + string_54_);
+							this.recordNetFile(Main.cur().netFileServerNoseart, this.sectFile.get(string, "noseart" + i_53_, (String)null));
+							this.recordNetFile(Main.cur().netFileServerPilot, this.sectFile.get(string, "pilot" + i_53_, (String)null));
 						}
 					}
 					catch (Exception exception)
@@ -1679,41 +1685,41 @@ public class Mission implements Destroy
 		boolean bool = !isServer();
 		Class var_class = ObjIO.classForName(string);
 		Aircraft aircraft = (Aircraft)var_class.newInstance();
-		if (Main.cur().netServerParams.isSingle() && _loadPlayer)
+		if (Main.cur().netServerParams.isSingle() && this._loadPlayer)
 		{
 			if (Property.value(var_class, "cockpitClass", null) == null)
 				throw new Exception("One of selected aircraft has no cockpit.");
-			if (playerNum == 0)
+			if (this.playerNum == 0)
 			{
 				World.setPlayerAircraft(aircraft);
-				_loadPlayer = false;
+				this._loadPlayer = false;
 			}
 			else
-				playerNum--;
+				this.playerNum--;
 		}
 		aircraft.setName(string_57_);
 		int i_58_ = 0;
 		if (bool)
 		{
-			i_58_ = ((Integer)actors.get(curActor)).intValue();
+			i_58_ = ((Integer)this.actors.get(this.curActor)).intValue();
 			if (i_58_ == 0)
 				aircraft.load(sectfile, string_56_, i, null, 0);
 			else
-				aircraft.load(sectfile, string_56_, i, net.masterChannel(), i_58_);
+				aircraft.load(sectfile, string_56_, i, this.net.masterChannel(), i_58_);
 		}
 		else
 			aircraft.load(sectfile, string_56_, i, null, 0);
 		if (aircraft.isSpawnFromMission())
 		{
-			if (net.isMirror())
+			if (this.net.isMirror())
 			{
 				if (i_58_ == 0)
-					actors.set(curActor++, null);
+					this.actors.set(this.curActor++, null);
 				else
-					actors.set(curActor++, aircraft);
+					this.actors.set(this.curActor++, aircraft);
 			}
 			else
-				actors.add(aircraft);
+				this.actors.add(aircraft);
 		}
 		aircraft.pos.reset();
 		return aircraft;
@@ -1739,16 +1745,16 @@ public class Mission implements Destroy
 				return;
 			int i_60_ = sectfile.vars(i);
 			for (int i_61_ = 0; i_61_ < i_60_; i_61_++)
-				prepareWingTakeoff(sectfile, sectfile.var(i, i_61_));
+				this.prepareWingTakeoff(sectfile, sectfile.var(i, i_61_));
 		}
 		else
 		{
 			String string = sectfile.get("MAIN", "player", (String)null);
 			if (string == null)
 				return;
-			prepareWingTakeoff(sectfile, string);
+			this.prepareWingTakeoff(sectfile, string);
 		}
-		sectFinger = sectfile.fingerExcludeSectPrefix("$$$");
+		this.sectFinger = sectfile.fingerExcludeSectPrefix("$$$");
 	}
 	
 	private void prepareWingTakeoff(SectFile sectfile, String string)
@@ -1772,26 +1778,26 @@ public class Mission implements Destroy
 					double d = numbertokenizer.next(1000.0);
 					double d_66_ = numbertokenizer.next(1000.0);
 					WingTakeoffPos wingtakeoffpos = new WingTakeoffPos(d, d_66_);
-					if (mapWingTakeoff == null)
+					if (this.mapWingTakeoff == null)
 					{
-						mapWingTakeoff = new HashMap();
-						mapWingTakeoff.put(wingtakeoffpos, wingtakeoffpos);
+						this.mapWingTakeoff = new HashMap();
+						this.mapWingTakeoff.put(wingtakeoffpos, wingtakeoffpos);
 					}
 					else
 					{
 						for (;;)
 						{
-							WingTakeoffPos wingtakeoffpos_67_ = ((WingTakeoffPos)mapWingTakeoff.get(wingtakeoffpos));
+							WingTakeoffPos wingtakeoffpos_67_ = ((WingTakeoffPos)this.mapWingTakeoff.get(wingtakeoffpos));
 							if (wingtakeoffpos_67_ == null)
 							{
-								mapWingTakeoff.put(wingtakeoffpos, wingtakeoffpos);
+								this.mapWingTakeoff.put(wingtakeoffpos, wingtakeoffpos);
 								break;
 							}
 							wingtakeoffpos.x += 200;
 						}
 					}
-					d = (double)wingtakeoffpos.x;
-					d_66_ = (double)wingtakeoffpos.y;
+					d = wingtakeoffpos.x;
+					d_66_ = wingtakeoffpos.y;
 					stringbuffer.append(" ");
 					stringbuffer.append(d);
 					stringbuffer.append(" ");
@@ -1837,7 +1843,7 @@ public class Mission implements Destroy
 			int i_70_ = sectfile.vars(i);
 			for (int i_71_ = 0; i_71_ < i_70_; i_71_++)
 			{
-				LOADING_STEP((float)(60 + Math.round((float)i_71_ / (float)i_70_ * 20.0F)), "task.Load_tanks");
+				this.LOADING_STEP(60 + Math.round((float)i_71_ / (float)i_70_ * 20.0F), "task.Load_tanks");
 				NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(i, i_71_));
 				String string = numbertokenizer.next();
 				String string_72_ = numbertokenizer.next();
@@ -1900,7 +1906,7 @@ public class Mission implements Destroy
 											System.out.println("Mission: No required constructor in chief's class [" + string_77_ + "]");
 											continue;
 										}
-										int i_79_ = curActor;
+										int i_79_ = this.curActor;
 										Object object;
 										try
 										{
@@ -1920,11 +1926,11 @@ public class Mission implements Destroy
 										}
 										if (string_78_ != null)
 											((Actor)object).icon = IconDraw.get(string_78_);
-										if (i_79_ != curActor && net != null && net.isMirror())
+										if (i_79_ != this.curActor && this.net != null && this.net.isMirror())
 										{
-											for (int i_80_ = i_79_; i_80_ < curActor; i_80_++)
+											for (int i_80_ = i_79_; i_80_ < this.curActor; i_80_++)
 											{
-												Actor actor = ((Actor)actors.get(i_80_));
+												Actor actor = ((Actor)this.actors.get(i_80_));
 												if (actor.net == null || actor.net.isMaster())
 												{
 													if (Actor.isValid(actor))
@@ -1933,7 +1939,7 @@ public class Mission implements Destroy
 															((ChiefGround)object).Detach(actor, actor);
 														actor.destroy();
 													}
-													actors.set(i_80_, null);
+													this.actors.set(i_80_, null);
 												}
 											}
 										}
@@ -1951,14 +1957,14 @@ public class Mission implements Destroy
 	
 	public int getUnitNetIdRemote(Actor actor)
 	{
-		if (net.isMaster())
+		if (this.net.isMaster())
 		{
-			actors.add(actor);
+			this.actors.add(actor);
 			return 0;
 		}
-		Integer integer = (Integer)actors.get(curActor);
-		actors.set(curActor, actor);
-		curActor++;
+		Integer integer = (Integer)this.actors.get(this.curActor);
+		this.actors.set(this.curActor, actor);
+		this.curActor++;
 		return integer.intValue();
 	}
 	
@@ -2004,7 +2010,7 @@ public class Mission implements Destroy
 		{
 			try
 			{
-				Chief.new_DELAY_WAKEUP = (float)Integer.parseInt(string_84_);
+				Chief.new_DELAY_WAKEUP = Integer.parseInt(string_84_);
 				ArtilleryGeneric.new_RADIUS_HIDE = Chief.new_DELAY_WAKEUP;
 			}
 			catch (Exception exception)
@@ -2057,13 +2063,13 @@ public class Mission implements Destroy
 		}
 		spawnArg.netChannel = null;
 		spawnArg.netIdRemote = 0;
-		if (net.isMirror())
+		if (this.net.isMirror())
 		{
-			spawnArg.netChannel = net.masterChannel();
-			spawnArg.netIdRemote = ((Integer)actors.get(curActor)).intValue();
+			spawnArg.netChannel = this.net.masterChannel();
+			spawnArg.netIdRemote = ((Integer)this.actors.get(this.curActor)).intValue();
 			if (spawnArg.netIdRemote == 0)
 			{
-				actors.set(curActor++, null);
+				this.actors.set(this.curActor++, null);
 				return null;
 			}
 		}
@@ -2077,10 +2083,10 @@ public class Mission implements Destroy
 			System.out.println(exception.getMessage());
 			exception.printStackTrace();
 		}
-		if (net.isMirror())
-			actors.set(curActor++, actor);
+		if (this.net.isMirror())
+			this.actors.set(this.curActor++, actor);
 		else
-			actors.add(actor);
+			this.actors.add(actor);
 		
 		return actor;
 	}
@@ -2095,9 +2101,9 @@ public class Mission implements Destroy
 			{
 				try
 				{
-					LOADING_STEP((float)(80 + Math.round((float)i_88_ / (float)i_87_ * 5.0F)), "task.Load_stationary_objects");
+					this.LOADING_STEP(80 + Math.round((float)i_88_ / (float)i_87_ * 5.0F), "task.Load_stationary_objects");
 					NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(i, i_88_));
-					loadStationaryActor(null, numbertokenizer.next(""), numbertokenizer.next(0), numbertokenizer.next(0.0), numbertokenizer.next(0.0), numbertokenizer.next(0.0F), numbertokenizer.next(0.0F), numbertokenizer.next((String)null),
+					this.loadStationaryActor(null, numbertokenizer.next(""), numbertokenizer.next(0), numbertokenizer.next(0.0), numbertokenizer.next(0.0), numbertokenizer.next(0.0F), numbertokenizer.next(0.0F), numbertokenizer.next((String)null),
 							numbertokenizer.next((String)null), numbertokenizer.next((String)null));
 				}
 				catch (Exception ex)
@@ -2119,9 +2125,9 @@ public class Mission implements Destroy
 			{
 				try
 				{
-					LOADING_STEP((float)(85 + Math.round((float)i_90_ / (float)i_89_ * 5.0F)), "task.Load_stationary_objects");
+					this.LOADING_STEP(85 + Math.round((float)i_90_ / (float)i_89_ * 5.0F), "task.Load_stationary_objects");
 					NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(i, i_90_));
-					loadStationaryActor(numbertokenizer.next(""), numbertokenizer.next(""), numbertokenizer.next(0), numbertokenizer.next(0.0), numbertokenizer.next(0.0), numbertokenizer.next(0.0F), numbertokenizer.next(0.0F), numbertokenizer
+					this.loadStationaryActor(numbertokenizer.next(""), numbertokenizer.next(""), numbertokenizer.next(0), numbertokenizer.next(0.0), numbertokenizer.next(0.0), numbertokenizer.next(0.0F), numbertokenizer.next(0.0F), numbertokenizer
 							.next((String)null), numbertokenizer.next((String)null), numbertokenizer.next((String)null));
 				}
 				catch (Exception ex)
@@ -2167,13 +2173,13 @@ public class Mission implements Destroy
 											point2d = new Point2d(numbertokenizer.next(0.0), numbertokenizer.next(0.0));
 										NetChannel netchannel = null;
 										int i_99_ = 0;
-										if (net.isMirror())
+										if (this.net.isMirror())
 										{
-											netchannel = net.masterChannel();
-											i_99_ = ((Integer)actors.get(curActor)).intValue();
+											netchannel = this.net.masterChannel();
+											i_99_ = ((Integer)this.actors.get(this.curActor)).intValue();
 											if (i_99_ == 0)
 											{
-												actors.set(curActor++, null);
+												this.actors.set(this.curActor++, null);
 												continue;
 											}
 										}
@@ -2187,10 +2193,10 @@ public class Mission implements Destroy
 											System.out.println(exception.getMessage());
 											exception.printStackTrace();
 										}
-										if (net.isMirror())
-											actors.set(curActor++, rocketrygeneric);
+										if (this.net.isMirror())
+											this.actors.set(this.curActor++, rocketrygeneric);
 										else
-											actors.add(rocketrygeneric);
+											this.actors.add(rocketrygeneric);
 									}
 								}
 							}
@@ -2209,17 +2215,17 @@ public class Mission implements Destroy
 			int i_100_ = sectfile.vars(i);
 			if (i_100_ != 0)
 			{
-				if (net.isMirror())
+				if (this.net.isMirror())
 				{
-					spawnArg.netChannel = net.masterChannel();
-					spawnArg.netIdRemote = ((Integer)actors.get(curActor)).intValue();
-					HouseManager housemanager = new HouseManager(sectfile, "Buildings", net.masterChannel(), ((Integer)actors.get(curActor)).intValue());
-					actors.set(curActor++, housemanager);
+					spawnArg.netChannel = this.net.masterChannel();
+					spawnArg.netIdRemote = ((Integer)this.actors.get(this.curActor)).intValue();
+					HouseManager housemanager = new HouseManager(sectfile, "Buildings", this.net.masterChannel(), ((Integer)this.actors.get(this.curActor)).intValue());
+					this.actors.set(this.curActor++, housemanager);
 				}
 				else
 				{
 					HouseManager housemanager = new HouseManager(sectfile, "Buildings", null, 0);
-					actors.add(housemanager);
+					this.actors.add(housemanager);
 				}
 			}
 		}
@@ -2255,10 +2261,10 @@ public class Mission implements Destroy
 					{
 						NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(i, i_102_));
 						int army = numbertokenizer.next(0, 0, Army.amountNet() - 1);
-						float radius = (float)numbertokenizer.next(1000, 500, 10000);
-						double d = (double)(radius * radius);
-						float xCoordinate = (float)numbertokenizer.next(0);
-						float yCoordinate = (float)numbertokenizer.next(0);
+						float radius = numbertokenizer.next(1000, 500, 10000);
+						double d = radius * radius;
+						float xCoordinate = numbertokenizer.next(0);
+						float yCoordinate = numbertokenizer.next(0);
 						boolean parachute = numbertokenizer.next(1) == 1;
 						
 						// TODO: Added by |ZUTI|
@@ -2404,7 +2410,7 @@ public class Mission implements Destroy
 								{
 									Point_Stay point_stay = point_stays[spawnPointsCounter][point_stays[spawnPointsCounter].length - 1];
 									// System.out.println("Mission - sp coordinates: " + point_stay.x + ", " + point_stay.y);
-									if ((double)(((point_stay.x - xCoordinate) * (point_stay.x - xCoordinate)) + ((point_stay.y - yCoordinate) * (point_stay.y - yCoordinate))) <= d)
+									if (((point_stay.x - xCoordinate) * (point_stay.x - xCoordinate)) + ((point_stay.y - yCoordinate) * (point_stay.y - yCoordinate)) <= d)
 									{
 										hasSpawnPointsDefined = true;
 										break;
@@ -2415,7 +2421,7 @@ public class Mission implements Destroy
 
 						if (hasSpawnPointsDefined || zutiIsStandAloneBornPlace)
 						{
-							BornPlace bornplace = new BornPlace((double)xCoordinate, (double)yCoordinate, army, radius);
+							BornPlace bornplace = new BornPlace(xCoordinate, yCoordinate, army, radius);
 							bornplace.zutiCanThisHomeBaseBeCaptured = zutiCanThisHomeBaseBeCaptured;
 							bornplace.zutiRadarHeight_MIN = zutiRadarHeight_MIN;
 							bornplace.zutiRadarHeight_MAX = zutiRadarHeight_MAX;
@@ -2454,18 +2460,18 @@ public class Mission implements Destroy
 							ZutiSupportMethods.loadCapturedPlanesList(bornplace, sectfile);
 							// TODO: Comment by |ZUTI|: changed so that only static actors get converted. This should be fine, i hope
 							// --------------------------------------------------------------------------------------------------------------------------
-							if (actors != null)
+							if (this.actors != null)
 							{
-								int i_108_ = actors.size();
+								int i_108_ = this.actors.size();
 								for (int i_109_ = 0; i_109_ < i_108_; i_109_++)
 								{
-									Actor actor = (Actor)actors.get(i_109_);
+									Actor actor = (Actor)this.actors.get(i_109_);
 									// Changed that this will convert only static actors to appropriate army
 									// if (Actor.isValid(actor) && actor.pos != null)
 									if (Actor.isValid(actor) && actor.pos != null && ZutiSupportMethods.isStaticActor(actor))
 									{
 										Point3d point3d = actor.pos.getAbsPoint();
-										double d_110_ = (((point3d.x - (double)xCoordinate) * (point3d.x - (double)xCoordinate)) + ((point3d.y - (double)yCoordinate) * (point3d.y - (double)yCoordinate)));
+										double d_110_ = (((point3d.x - xCoordinate) * (point3d.x - xCoordinate)) + ((point3d.y - yCoordinate) * (point3d.y - yCoordinate)));
 										if (d_110_ <= d)
 											actor.setArmy(bornplace.army);
 									}
@@ -2595,29 +2601,29 @@ public class Mission implements Destroy
 			for (int i_117_ = 0; i_117_ < i_116_; i_117_++)
 			{
 				NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(i, i_117_));
-				float f = (float)numbertokenizer.next(0);
-				float f_118_ = (float)numbertokenizer.next(0);
-				float f_119_ = (float)numbertokenizer.next(100, 2, 10000);
+				float f = numbertokenizer.next(0);
+				float f_118_ = numbertokenizer.next(0);
+				float f_119_ = numbertokenizer.next(100, 2, 10000);
 				ActorViewPoint actorviewpoint = new ActorViewPoint();
-				double d = (double)f;
-				double d_120_ = (double)f_118_;
+				double d = f;
+				double d_120_ = f_118_;
 				float f_121_ = f_119_;
 				World.land();
-				Point3d point3d = new Point3d(d, d_120_, (double)(f_121_ + Landscape.HQ_Air(f, f_118_)));
+				Point3d point3d = new Point3d(d, d_120_, f_121_ + Landscape.HQ_Air(f, f_118_));
 				Point3d point3d_122_ = point3d;
 				actorviewpoint.pos.setAbs(point3d_122_);
 				actorviewpoint.pos.reset();
 				actorviewpoint.dreamFire(true);
 				actorviewpoint.setName("StaticCamera_" + i_117_);
-				if (net.isMirror())
+				if (this.net.isMirror())
 				{
-					actorviewpoint.createNetObject(net.masterChannel(), ((Integer)actors.get(curActor)).intValue());
-					actors.set(curActor++, actorviewpoint);
+					actorviewpoint.createNetObject(this.net.masterChannel(), ((Integer)this.actors.get(this.curActor)).intValue());
+					this.actors.set(this.curActor++, actorviewpoint);
 				}
 				else
 				{
 					actorviewpoint.createNetObject(null, 0);
-					actors.add(actorviewpoint);
+					this.actors.add(actorviewpoint);
 				}
 			}
 		}
@@ -2695,7 +2701,7 @@ public class Mission implements Destroy
 					{
 						case 1 :
 						case 6 :
-							World.cur().statics.restoreAllHouses((float)i_135_, (float)i_136_, (float)i_137_);
+							World.cur().statics.restoreAllHouses(i_135_, i_136_, i_137_);
 							break;
 						case 2 :
 						case 7 :
@@ -2736,7 +2742,7 @@ public class Mission implements Destroy
 	
 	public void doBegin()
 	{
-		if (!bPlaying)
+		if (!this.bPlaying)
 		{
 			if (Config.isUSE_RENDER())
 			{
@@ -2789,10 +2795,10 @@ public class Mission implements Destroy
 				doMissionStarting();
 				Time.setPause(false);
 			}
-			if (net.isMaster())
+			if (this.net.isMaster())
 			{
-				sendCmd(10);
-				doReplicateNotMissionActors(true);
+				this.sendCmd(10);
+				this.doReplicateNotMissionActors(true);
 			}
 			if (Main.cur().netServerParams.isSingle())
 			{
@@ -2803,14 +2809,14 @@ public class Mission implements Destroy
 			// if (Main.cur().netServerParams.isMaster() && (Main.cur().netServerParams.isCoop() || Main.cur().netServerParams.isSingle()))
 			if (Main.cur().netServerParams.isMaster() && (Main.cur().netServerParams.isCoop() || Main.cur().netServerParams.isDogfight() || Main.cur().netServerParams.isSingle()))
 				World.cur().targetsGuard.activate();
-			EventLog.type(true, "Mission: " + name() + " is Playing");
+			EventLog.type(true, "Mission: " + this.name() + " is Playing");
 			EventLog.type("Mission BEGIN");
 			
 			// TODO: Added by |ZUTI|: reset server time!
 			if (Main.cur().netServerParams != null)
 				ZutiSupportMethods_Net.resetServerTime(Main.cur().netServerParams);
 			
-			bPlaying = true;
+			this.bPlaying = true;
 			if (Main.cur().netServerParams != null)
 				Main.cur().netServerParams.USGSupdate();
 		}
@@ -2821,7 +2827,7 @@ public class Mission implements Destroy
 		// TODO: Added by |ZUTI|
 		try
 		{
-			if (bPlaying)
+			if (this.bPlaying)
 			{
 				EventLog.type("Mission END");
 				if (Config.isUSE_RENDER())
@@ -2846,11 +2852,11 @@ public class Mission implements Destroy
 				}
 				RTSConf.cur.time.setEnableChangePause1(true);
 				Time.setPause(true);
-				if (net.isMaster())
-					sendCmd(20);
+				if (this.net.isMaster())
+					this.sendCmd(20);
 				AudioDevice.soundsOff();
 				Voice.endSession();
-				bPlaying = false;
+				this.bPlaying = false;
 				if (Main.cur().netServerParams != null)
 					Main.cur().netServerParams.USGSupdate();
 			}
@@ -2863,12 +2869,12 @@ public class Mission implements Destroy
 	
 	public NetObj netObj()
 	{
-		return net;
+		return this.net;
 	}
 	
 	private void sendCmd(int i)
 	{
-		if (net.isMirrored())
+		if (this.net.isMirrored())
 		{
 			try
 			{
@@ -2877,11 +2883,11 @@ public class Mission implements Destroy
 				for (int i_141_ = 0; i_141_ < i_140_; i_141_++)
 				{
 					NetChannel netchannel = (NetChannel)list.get(i_141_);
-					if (netchannel != net.masterChannel() && netchannel.isReady() && netchannel.isMirrored(net) && (netchannel.userState == 4 || netchannel.userState == 0))
+					if (netchannel != this.net.masterChannel() && netchannel.isReady() && netchannel.isMirrored(this.net) && (netchannel.userState == 4 || netchannel.userState == 0))
 					{
 						NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
 						netmsgguaranted.writeByte(i);
-						net.postTo(netchannel, netmsgguaranted);
+						this.net.postTo(netchannel, netmsgguaranted);
 					}
 				}
 			}
@@ -2894,19 +2900,19 @@ public class Mission implements Destroy
 	
 	private void doReplicateNotMissionActors(boolean bool)
 	{
-		if (net.isMirrored())
+		if (this.net.isMirrored())
 		{
 			List list = NetEnv.channels();
 			int i = list.size();
 			for (int i_142_ = 0; i_142_ < i; i_142_++)
 			{
 				NetChannel netchannel = (NetChannel)list.get(i_142_);
-				if (netchannel != net.masterChannel() && netchannel.isReady() && netchannel.isMirrored(net))
+				if (netchannel != this.net.masterChannel() && netchannel.isReady() && netchannel.isMirrored(this.net))
 				{
 					if (bool)
 					{
 						if (netchannel.userState == 4)
-							doReplicateNotMissionActors(netchannel, true);
+							this.doReplicateNotMissionActors(netchannel, true);
 					}
 					else
 						netchannel.userState = 1;
@@ -2946,10 +2952,10 @@ public class Mission implements Destroy
 				if (i < 0)
 				{
 					String string = netmsginput.read255();
-					sectFile.sectionAdd(string);
+					this.sectFile.sectionAdd(string);
 				}
 				else
-					sectFile.lineAdd(i, netmsginput.read255(), netmsginput.read255());
+					this.sectFile.lineAdd(i, netmsginput.read255(), netmsginput.read255());
 			}
 		}
 		catch (Exception exception)
@@ -2965,40 +2971,40 @@ public class Mission implements Destroy
 		{
 			NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
 			netmsgguaranted.writeByte(i);
-			int i_143_ = sectFile.sections();
+			int i_143_ = this.sectFile.sections();
 			for (int i_144_ = 0; i_144_ < i_143_; i_144_++)
 			{
-				String string = sectFile.sectionName(i_144_);
+				String string = this.sectFile.sectionName(i_144_);
 				if (!string.startsWith("$$$"))
 				{
 					if (netmsgguaranted.size() >= 128)
 					{
-						net.postTo(netchannel, netmsgguaranted);
+						this.net.postTo(netchannel, netmsgguaranted);
 						netmsgguaranted = new NetMsgGuaranted();
 						netmsgguaranted.writeByte(i);
 					}
 					netmsgguaranted.writeInt(-1);
 					netmsgguaranted.write255(string);
-					int i_145_ = sectFile.vars(i_144_);
+					int i_145_ = this.sectFile.vars(i_144_);
 					for (int i_146_ = 0; i_146_ < i_145_; i_146_++)
 					{
 						if (netmsgguaranted.size() >= 128)
 						{
-							net.postTo(netchannel, netmsgguaranted);
+							this.net.postTo(netchannel, netmsgguaranted);
 							netmsgguaranted = new NetMsgGuaranted();
 							netmsgguaranted.writeByte(i);
 						}
 						netmsgguaranted.writeInt(i_144_);
-						netmsgguaranted.write255(sectFile.var(i_144_, i_146_));
-						netmsgguaranted.write255(sectFile.value(i_144_, i_146_));
+						netmsgguaranted.write255(this.sectFile.var(i_144_, i_146_));
+						netmsgguaranted.write255(this.sectFile.value(i_144_, i_146_));
 					}
 				}
 			}
 			if (netmsgguaranted.size() > 1)
-				net.postTo(netchannel, netmsgguaranted);
+				this.net.postTo(netchannel, netmsgguaranted);
 			netmsgguaranted = new NetMsgGuaranted();
 			netmsgguaranted.writeByte(i + 1);
-			net.postTo(netchannel, netmsgguaranted);
+			this.net.postTo(netchannel, netmsgguaranted);
 		}
 		catch (Exception exception)
 		{
@@ -3015,7 +3021,7 @@ public class Mission implements Destroy
 				NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
 				netmsgguaranted.writeByte(11);
 				netmsgguaranted.writeFloat(World.getTimeofDay());
-				net.post(netmsgguaranted);
+				this.net.post(netmsgguaranted);
 			}
 			catch (Exception exception)
 			{
@@ -3043,7 +3049,7 @@ public class Mission implements Destroy
 	private void netInput(NetMsgInput netmsginput) throws IOException
 	{
 		boolean bool = false;
-		if (net instanceof Master || netmsginput.channel() != net.masterChannel())
+		if (this.net instanceof Master || netmsginput.channel() != this.net.masterChannel())
 			bool = true;
 		boolean bool_147_ = netmsginput.channel() instanceof NetChannelStream;
 		NetMsgGuaranted netmsgguaranted = null;
@@ -3060,38 +3066,38 @@ public class Mission implements Destroy
 						NetMsgGuaranted netmsgguaranted_148_ = new NetMsgGuaranted();
 						netmsgguaranted_148_.writeByte(13);
 						netmsgguaranted_148_.writeLong(Time.current());
-						net.postTo(netmsginput.channel(), netmsgguaranted_148_);
+						this.net.postTo(netmsginput.channel(), netmsgguaranted_148_);
 					}
 					netmsgguaranted.writeByte(0);
-					netmsgguaranted.write255(name);
-					netmsgguaranted.writeLong(sectFinger);
+					netmsgguaranted.write255(this.name);
+					netmsgguaranted.writeLong(this.sectFinger);
 				}
 				else
 				{
-					name = netmsginput.read255();
-					sectFinger = netmsginput.readLong();
-					Main.cur().netMissionListener.netMissionState(0, 0.0F, name);
+					this.name = netmsginput.read255();
+					this.sectFinger = netmsginput.readLong();
+					Main.cur().netMissionListener.netMissionState(0, 0.0F, this.name);
 					if (!bool_147_)
-						((NetUser)NetEnv.host()).setMissProp("missions/" + name);
-					String string = "missions/" + name;
-					if (!bool_147_ && isExistFile(string))
+						((NetUser)NetEnv.host()).setMissProp("missions/" + this.name);
+					String string = "missions/" + this.name;
+					if (!bool_147_ && this.isExistFile(string))
 					{
-						sectFile = new SectFile(string, 0, false);
-						if (sectFinger == sectFile.fingerExcludeSectPrefix("$$$"))
+						this.sectFile = new SectFile(string, 0, false);
+						if (this.sectFinger == this.sectFile.fingerExcludeSectPrefix("$$$"))
 						{
 							netmsgguaranted.writeByte(3);
 							break;
 						}
 					}
-					string = "missions/Net/Cache/" + sectFinger + ".mis";
-					int[] is = getSwTbl(string, sectFinger);
-					sectFile = new SectFile(string, 0, false, is);
-					if (!bool_147_ && sectFinger == sectFile.fingerExcludeSectPrefix("$$$"))
+					string = "missions/Net/Cache/" + this.sectFinger + ".mis";
+					int[] is = this.getSwTbl(string, this.sectFinger);
+					this.sectFile = new SectFile(string, 0, false, is);
+					if (!bool_147_ && this.sectFinger == this.sectFile.fingerExcludeSectPrefix("$$$"))
 						netmsgguaranted.writeByte(3);
 					else
 					{
-						sectFile = new SectFile(string, 1, false, is);
-						sectFile.clear();
+						this.sectFile = new SectFile(string, 1, false, is);
+						this.sectFile.clear();
 						netmsgguaranted.writeByte(1);
 					}
 				}
@@ -3106,17 +3112,17 @@ public class Mission implements Destroy
 				break;
 			case 1 :
 				if (bool)
-					doSendMission(netmsginput.channel(), 1);
+					this.doSendMission(netmsginput.channel(), 1);
 				else
 				{
 					Main.cur().netMissionListener.netMissionState(1, 0.0F, null);
-					doResvMission(netmsginput);
+					this.doResvMission(netmsginput);
 				}
 				break;
 			case 2 :
 				if (!bool)
 				{
-					sectFile.saveFile();
+					this.sectFile.saveFile();
 					netmsgguaranted = new NetMsgGuaranted();
 					netmsgguaranted.writeByte(3);
 				}
@@ -3124,7 +3130,7 @@ public class Mission implements Destroy
 			case 3 :
 				if (bool)
 				{
-					int i_149_ = actors.size();
+					int i_149_ = this.actors.size();
 					int i_150_ = 0;
 					while (i_150_ < i_149_)
 					{
@@ -3133,13 +3139,13 @@ public class Mission implements Destroy
 						int i_151_ = 64;
 						while (i_151_-- > 0 && i_150_ < i_149_)
 						{
-							Actor actor = (Actor)actors.get(i_150_++);
+							Actor actor = (Actor)this.actors.get(i_150_++);
 							if (Actor.isValid(actor))
 								netmsgguaranted.writeShort(actor.net.idLocal());
 							else
 								netmsgguaranted.writeShort(0);
 						}
-						net.postTo(netmsginput.channel(), netmsgguaranted);
+						this.net.postTo(netmsginput.channel(), netmsgguaranted);
 					}
 					netmsgguaranted = new NetMsgGuaranted();
 					netmsgguaranted.writeByte(4);
@@ -3149,7 +3155,7 @@ public class Mission implements Destroy
 				{
 					Main.cur().netMissionListener.netMissionState(2, 0.0F, null);
 					while (netmsginput.available() > 0)
-						actors.add(new Integer(netmsginput.readUnsignedShort()));
+						this.actors.add(new Integer(netmsginput.readUnsignedShort()));
 				}
 				break;
 			case 4 :
@@ -3161,9 +3167,9 @@ public class Mission implements Destroy
 						World.cur().statics.netBridgeSync(netmsginput.channel());
 						World.cur().statics.netHouseSync(netmsginput.channel());
 					}
-					for (int i_152_ = 0; i_152_ < actors.size(); i_152_++)
+					for (int i_152_ = 0; i_152_ < this.actors.size(); i_152_++)
 					{
-						Actor actor = (Actor)actors.get(i_152_);
+						Actor actor = (Actor)this.actors.get(i_152_);
 						if (Actor.isValid(actor))
 						{
 							try
@@ -3184,14 +3190,14 @@ public class Mission implements Destroy
 					if (isPlaying())
 					{
 						netmsgguaranted.writeByte(10);
-						net.postTo(netmsginput.channel(), netmsgguaranted);
+						this.net.postTo(netmsginput.channel(), netmsgguaranted);
 						netmsgguaranted = new NetMsgGuaranted();
 						netmsgguaranted.writeByte(11);
 						netmsgguaranted.writeFloat(World.getTimeofDay());
-						net.postTo(netmsginput.channel(), netmsgguaranted);
+						this.net.postTo(netmsginput.channel(), netmsgguaranted);
 						netmsgguaranted = null;
-						doReplicateNotMissionActors(netmsginput.channel(), true);
-						trySendMsgStart(netmsginput.channel());
+						this.doReplicateNotMissionActors(netmsginput.channel(), true);
+						this.trySendMsgStart(netmsginput.channel());
 					}
 					else
 					{
@@ -3204,7 +3210,7 @@ public class Mission implements Destroy
 					netmsginput.channel().userState = 3;
 					try
 					{
-						load(name, sectFile, true);
+						this.load(this.name, this.sectFile, true);
 					}
 					catch (Exception exception)
 					{
@@ -3216,23 +3222,23 @@ public class Mission implements Destroy
 			case 5 :
 				break;
 			case 10 :
-				if (!(net instanceof Master) && netmsginput.channel() == net.masterChannel())
+				if (!(this.net instanceof Master) && netmsginput.channel() == this.net.masterChannel())
 				{
-					if (net.isMirrored())
+					if (this.net.isMirrored())
 					{
 						netmsgguaranted = new NetMsgGuaranted();
 						netmsgguaranted.writeByte(10);
-						net.post(netmsgguaranted);
+						this.net.post(netmsgguaranted);
 						netmsgguaranted = null;
 					}
-					doReplicateNotMissionActors(true);
-					doReplicateNotMissionActors(netmsginput.channel(), true);
-					doBegin();
+					this.doReplicateNotMissionActors(true);
+					this.doReplicateNotMissionActors(netmsginput.channel(), true);
+					this.doBegin();
 					Main.cur().netMissionListener.netMissionState(6, 0.0F, null);
 				}
 				break;
 			case 11 :
-				if (!(net instanceof Master) && netmsginput.channel() == net.masterChannel())
+				if (!(this.net instanceof Master) && netmsginput.channel() == this.net.masterChannel())
 				{
 					float f = netmsginput.readFloat();
 					World.setTimeofDay(f);
@@ -3240,33 +3246,33 @@ public class Mission implements Destroy
 				}
 				break;
 			case 20 :
-				if (!(net instanceof Master) && netmsginput.channel() == net.masterChannel())
+				if (!(this.net instanceof Master) && netmsginput.channel() == this.net.masterChannel())
 				{
 					Main.cur().netMissionListener.netMissionState(7, 0.0F, null);
-					doReplicateNotMissionActors(false);
-					doReplicateNotMissionActors(netmsginput.channel(), false);
-					doEnd();
-					if (net.isMirrored())
+					this.doReplicateNotMissionActors(false);
+					this.doReplicateNotMissionActors(netmsginput.channel(), false);
+					this.doEnd();
+					if (this.net.isMirrored())
 					{
 						netmsgguaranted = new NetMsgGuaranted();
 						netmsgguaranted.writeByte(20);
-						net.post(netmsgguaranted);
+						this.net.post(netmsgguaranted);
 						netmsgguaranted = null;
 					}
 				}
 				break;
 			case 12 :
-				if (!(net instanceof Master) && netmsginput.channel() == net.masterChannel())
+				if (!(this.net instanceof Master) && netmsginput.channel() == this.net.masterChannel())
 					Main.cur().netMissionListener.netMissionState(9, 0.0F, null);
 				break;
 		}
 		if (netmsgguaranted != null && netmsgguaranted.size() > 0)
-			net.postTo(netmsginput.channel(), netmsgguaranted);
+			this.net.postTo(netmsginput.channel(), netmsgguaranted);
 	}
 	
 	public void trySendMsgStart(Object object)
 	{
-		if (!isDestroyed())
+		if (!this.isDestroyed())
 		{
 			NetChannel netchannel = (NetChannel)object;
 			if (!netchannel.isDestroyed())
@@ -3292,7 +3298,7 @@ public class Mission implements Destroy
 				{
 					NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
 					netmsgguaranted.writeByte(12);
-					net.postTo(netchannel, netmsgguaranted);
+					this.net.postTo(netchannel, netmsgguaranted);
 				}
 				catch (Exception exception)
 				{
@@ -3304,16 +3310,16 @@ public class Mission implements Destroy
 	
 	private void createNetObject(NetChannel netchannel, int i)
 	{
-		setTime(true);
+		this.setTime(true);
 		if (netchannel == null)
 		{
-			net = new Master(this);
-			doReplicateNotMissionActors(false);
+			this.net = new Master(this);
+			this.doReplicateNotMissionActors(false);
 		}
 		else
 		{
-			net = new Mirror(this, netchannel, i);
-			doReplicateNotMissionActors(netchannel, false);
+			this.net = new Mirror(this, netchannel, i);
+			this.doReplicateNotMissionActors(netchannel, false);
 		}
 	}
 	
@@ -3352,58 +3358,58 @@ public class Mission implements Destroy
 	
 	public static int curYear()
 	{
-		if (com.maddox.il2.game.Main.cur().mission == null)
+		if (Main.cur().mission == null)
 			return 0;
 		else
-			return com.maddox.il2.game.Main.cur().mission.curYear;
+			return Main.cur().mission.curYear;
 	}
 	
 	public static int curMonth()
 	{
-		if (com.maddox.il2.game.Main.cur().mission == null)
+		if (Main.cur().mission == null)
 			return 0;
 		else
-			return com.maddox.il2.game.Main.cur().mission.curMonth;
+			return Main.cur().mission.curMonth;
 	}
 	
 	public static int curDay()
 	{
-		if (com.maddox.il2.game.Main.cur().mission == null)
+		if (Main.cur().mission == null)
 			return 0;
 		else
-			return com.maddox.il2.game.Main.cur().mission.curDay;
+			return Main.cur().mission.curDay;
 	}
 	
 	public static float curWindDirection()
 	{
-		if (com.maddox.il2.game.Main.cur().mission == null)
+		if (Main.cur().mission == null)
 			return 0.0F;
 		else
-			return com.maddox.il2.game.Main.cur().mission.curWindDirection;
+			return Main.cur().mission.curWindDirection;
 	}
 	
 	public static float curWindVelocity()
 	{
-		if (com.maddox.il2.game.Main.cur().mission == null)
+		if (Main.cur().mission == null)
 			return 0.0F;
 		else
-			return com.maddox.il2.game.Main.cur().mission.curWindVelocity;
+			return Main.cur().mission.curWindVelocity;
 	}
 	
 	public static float curGust()
 	{
-		if (com.maddox.il2.game.Main.cur().mission == null)
+		if (Main.cur().mission == null)
 			return 0.0F;
 		else
-			return com.maddox.il2.game.Main.cur().mission.curGust;
+			return Main.cur().mission.curGust;
 	}
 	
 	public static float curTurbulence()
 	{
-		if (com.maddox.il2.game.Main.cur().mission == null)
+		if (Main.cur().mission == null)
 			return 0.0F;
 		else
-			return com.maddox.il2.game.Main.cur().mission.curTurbulence;
+			return Main.cur().mission.curTurbulence;
 	}
 	
 	private String generateHayrakeCode(Point3d point3d)
@@ -3444,13 +3450,13 @@ public class Mission implements Destroy
 		{
 			if (arraylist.get(i) instanceof AirportGround)
 			{
-				for (int i_193_ = 0; i_193_ < actors.size(); i_193_++)
+				for (int i_193_ = 0; i_193_ < this.actors.size(); i_193_++)
 				{
-					if (actors.get(i_193_) instanceof SmokeGeneric
-							&& (actors.get(i_193_) instanceof Smoke.Smoke15 || actors.get(i_193_) instanceof Smoke.Smoke14 || actors.get(i_193_) instanceof Smoke.Smoke13 || actors.get(i_193_) instanceof Smoke.Smoke12))
+					if (this.actors.get(i_193_) instanceof SmokeGeneric
+							&& (this.actors.get(i_193_) instanceof Smoke.Smoke15 || this.actors.get(i_193_) instanceof Smoke.Smoke14 || this.actors.get(i_193_) instanceof Smoke.Smoke13 || this.actors.get(i_193_) instanceof Smoke.Smoke12))
 					{
 						AirportGround airportground = (AirportGround)arraylist.get(i);
-						Actor actor = (Actor)actors.get(i_193_);
+						Actor actor = (Actor)this.actors.get(i_193_);
 						double d = (airportground.pos.getAbsPoint().x - actor.pos.getAbsPoint().x);
 						double d_194_ = (airportground.pos.getAbsPoint().y - actor.pos.getAbsPoint().y);
 						if (Math.abs(d) < 2000.0 && Math.abs(d_194_) < 2000.0 && (actor.getArmy() == 1 || actor.getArmy() == 2))
@@ -3463,10 +3469,10 @@ public class Mission implements Destroy
 				}
 			}
 		}
-		for (int i = 0; i < actors.size(); i++)
+		for (int i = 0; i < this.actors.size(); i++)
 		{
-			if (actors.get(i) instanceof SmokeGeneric)
-				((SmokeGeneric)actors.get(i)).setArmy(0);
+			if (this.actors.get(i) instanceof SmokeGeneric)
+				((SmokeGeneric)this.actors.get(i)).setArmy(0);
 		}
 	}
 	
@@ -3474,33 +3480,33 @@ public class Mission implements Destroy
 	{
 		ArrayList arraylist = new ArrayList();
 		ArrayList arraylist_195_ = new ArrayList();
-		for (int i = 0; i < actors.size(); i++)
+		for (int i = 0; i < this.actors.size(); i++)
 		{
-			if (actors.get(i) instanceof TypeHasBeacon)
+			if (this.actors.get(i) instanceof TypeHasBeacon)
 			{
-				Point3d point3d = ((Actor)actors.get(i)).pos.getAbsPoint();
-				arraylist.add(new Object[]{actors.get(i), point3d});
-				if (actors.get(i) instanceof TypeHasLorenzBlindLanding)
-					((Actor)actors.get(i)).missionStarting();
-				if (actors.get(i) instanceof BigshipGeneric)
-					hayrakeMap.put((Actor)actors.get(i), "NDB");
+				Point3d point3d = ((Actor)this.actors.get(i)).pos.getAbsPoint();
+				arraylist.add(new Object[]{this.actors.get(i), point3d});
+				if (this.actors.get(i) instanceof TypeHasLorenzBlindLanding)
+					((Actor)this.actors.get(i)).missionStarting();
+				if (this.actors.get(i) instanceof BigshipGeneric)
+					hayrakeMap.put(this.actors.get(i), "NDB");
 			}
-			else if (actors.get(i) instanceof TypeHasMeacon)
+			else if (this.actors.get(i) instanceof TypeHasMeacon)
 			{
-				Point3d point3d = ((Actor)actors.get(i)).pos.getAbsPoint();
-				arraylist_195_.add(new Object[]{actors.get(i), point3d});
+				Point3d point3d = ((Actor)this.actors.get(i)).pos.getAbsPoint();
+				arraylist_195_.add(new Object[]{this.actors.get(i), point3d});
 			}
-			else if (actors.get(i) instanceof TypeHasHayRake)
+			else if (this.actors.get(i) instanceof TypeHasHayRake)
 			{
-				Point3d point3d = ((Actor)actors.get(i)).pos.getAbsPoint();
-				String string = generateHayrakeCode(point3d);
-				arraylist.add(new Object[]{actors.get(i), point3d});
-				hayrakeMap.put((Actor)actors.get(i), string);
+				Point3d point3d = ((Actor)this.actors.get(i)).pos.getAbsPoint();
+				String string = this.generateHayrakeCode(point3d);
+				arraylist.add(new Object[]{this.actors.get(i), point3d});
+				hayrakeMap.put(this.actors.get(i), string);
 			}
 		}
 		if (arraylist.size() != 0)
 		{
-			sortBeaconsList(arraylist);
+			this.sortBeaconsList(arraylist);
 			for (int i = 0; i < arraylist.size(); i++)
 			{
 				Object[] objects = (Object[])arraylist.get(i);
@@ -3643,35 +3649,35 @@ public class Mission implements Destroy
 	
 	public Mission()
 	{
-		name = null;
-		sectFinger = 0L;
-		actors = new ArrayList();
-		curActor = 0;
-		bPlaying = false;
-		curCloudsType = 0;
-		curCloudsHeight = 1000F;
-		curYear = 0;
-		curMonth = 0;
-		curDay = 0;
-		curWindDirection = 0.0F;
-		curWindVelocity = 0.0F;
-		curGust = 0.0F;
-		curTurbulence = 0.0F;
-		bigShipHpDiv = 1.0F;
-		_loadPlayer = false;
-		playerNum = 0;
+		this.name = null;
+		this.sectFinger = 0L;
+		this.actors = new ArrayList();
+		this.curActor = 0;
+		this.bPlaying = false;
+		this.curCloudsType = 0;
+		this.curCloudsHeight = 1000F;
+		this.curYear = 0;
+		this.curMonth = 0;
+		this.curDay = 0;
+		this.curWindDirection = 0.0F;
+		this.curWindVelocity = 0.0F;
+		this.curGust = 0.0F;
+		this.curTurbulence = 0.0F;
+		this.bigShipHpDiv = 1.0F;
+		this._loadPlayer = false;
+		this.playerNum = 0;
 	}
 	
 	public static int getMissionDate(boolean flag)
     {
         int i = 0;
-        if(com.maddox.il2.game.Main.cur().mission == null)
+        if(Main.cur().mission == null)
         {
-            com.maddox.rts.SectFile sectfile = com.maddox.il2.game.Main.cur().currentMissionFile;
+            SectFile sectfile = Main.cur().currentMissionFile;
             if(sectfile == null)
                 return 0;
-            java.lang.String s = sectfile.get("MAIN", "MAP");
-            int l = com.maddox.il2.ai.World.land().config.getDefaultMonth("maps/" + s);
+            String s = sectfile.get("MAIN", "MAP");
+            int l = World.land().config.getDefaultMonth("maps/" + s);
             int j1 = sectfile.get("SEASON", "Year", 1940, 1930, 1960);
             int k1 = sectfile.get("SEASON", "Month", l, 1, 12);
             int l1 = sectfile.get("SEASON", "Day", 15, 1, 31);
@@ -3681,17 +3687,17 @@ public class Mission implements Destroy
                 i = 0;
         } else
         {
-            int j = com.maddox.il2.game.Mission.curYear();
-            int k = com.maddox.il2.game.Mission.curMonth();
-            int i1 = com.maddox.il2.game.Mission.curDay();
+            int j = curYear();
+            int k = curMonth();
+            int i1 = curDay();
             i = j * 10000 + k * 100 + i1;
             if(flag)
             {
-                com.maddox.rts.SectFile sectfile1 = com.maddox.il2.game.Main.cur().currentMissionFile;
+                SectFile sectfile1 = Main.cur().currentMissionFile;
                 if(sectfile1 == null)
                     return 0;
-                java.lang.String s1 = sectfile1.get("MAIN", "MAP");
-                int i2 = com.maddox.il2.ai.World.land().config.getDefaultMonth("maps/" + s1);
+                String s1 = sectfile1.get("MAIN", "MAP");
+                int i2 = World.land().config.getDefaultMonth("maps/" + s1);
                 int k2 = 0x1280540 + i2 * 100 + 15;
                 if(i == k2)
                     i = 0;
@@ -3702,10 +3708,10 @@ public class Mission implements Destroy
 
     public static float BigShipHpDiv()
     {
-        if(com.maddox.il2.game.Main.cur().mission == null)
+        if(Main.cur().mission == null)
             return 1.0F;
         else
-            return com.maddox.il2.game.Main.cur().mission.bigShipHpDiv;
+            return Main.cur().mission.bigShipHpDiv;
     }
 	
 	// TODO: Variables and Method created by |ZUTI|
@@ -3721,4 +3727,36 @@ public class Mission implements Destroy
 		return ZUTI_MDS_VARIABLES;
 	}
 	// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+    // TODO: +++ New automatic Garbage Collection at mission end by SAS~Storebror +++
+	public static void doGarbageCollection() {
+        System.out.println("Before GC, Memory: total(" + Runtime.getRuntime().totalMemory() + ") free(" + Runtime.getRuntime().freeMemory() + ")");
+        try {
+            Runtime.getRuntime().gc();
+            Runtime.getRuntime().runFinalization();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ie) {
+                ie.printStackTrace();
+            }
+            Runtime.getRuntime().gc();
+            Runtime.getRuntime().runFinalization();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ie) {
+                ie.printStackTrace();
+            }
+            Runtime.getRuntime().gc();
+            Runtime.getRuntime().runFinalization();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ie) {
+                ie.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(" After GC, Memory: total(" + Runtime.getRuntime().totalMemory() + ") free(" + Runtime.getRuntime().freeMemory() + ")");
+	}
+    // TODO: --- New automatic Garbage Collection at mission end by SAS~Storebror ---
 }

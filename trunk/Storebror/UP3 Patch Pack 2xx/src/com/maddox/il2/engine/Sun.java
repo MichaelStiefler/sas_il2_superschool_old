@@ -18,6 +18,8 @@ public class Sun
         ToMoon = new Vector3f();
         moonPhase = 0.5F;
         tod = 0.0F;
+        darkness = 1.0F;
+        sunMultiplier = 1.0F;
         tmpV3f = new Vector3f();
         tmpV2f = new Vector2f();
         aiLow = 1.0F;
@@ -85,6 +87,9 @@ public class Sun
 
     public void setAstronomic(int i, int j, int k, float f, float f1)
     {
+//        System.out.println("setAstronomic(" + i + ", " + j + ", " + k + ", " + f + ", " + f1 + ")");
+//        Exception test = new Exception("TEST");
+//        test.printStackTrace();
         float f3 = (float)(90 - i) * DEG2RAD;
         float f4 = (float)Math.cos(f3);
         float f5 = (float)Math.sin(f3);
@@ -122,6 +127,9 @@ public class Sun
         ToMoon.y = f8 * f4 + f9 * f5;
         ToMoon.z = f9 * f4 - f8 * f5;
         ToMoon.normalize();
+//        if (ToMoon.z < 0.8F) ToMoon.z = 0.8F; // TEST!!!
+//        moonPhase = 0.1F; // TEST!!!
+//        System.out.println("moonPhase=" + moonPhase + ", ToMoon.x=" + ToMoon.x + ", ToMoon.y=" + ToMoon.y + ", ToMoon.z=" + ToMoon.z);
         float f14 = 0.0F;
         if(ToMoon.z > -0.31F)
         {
@@ -145,25 +153,25 @@ public class Sun
             float f21 = 0.0F;
             switch(effclouds.type())
             {
-            case 3: // '\003'
+            case 3:
                 clLow = f19 + 200F;
                 clHigh = f19 + 1000F;
                 f21 = 4.8F;
                 break;
 
-            case 4: // '\004'
+            case 4:
                 clLow = f19 + 200F;
                 clHigh = f19 + 1600F;
                 f21 = 8F;
                 break;
 
-            case 5: // '\005'
+            case 5:
                 clLow = f19 + 100F;
                 clHigh = f19 + 1900F;
                 f21 = 12.8F;
                 break;
 
-            case 6: // '\006'
+            case 6:
                 clLow = f19;
                 clHigh = f19 + 1200F;
                 f21 = 16F;
@@ -228,6 +236,35 @@ public class Sun
             ToSun.z *= 1.0F - ToSun.z * 10F;
         ToSun.normalize();
         activate();
+        
+        // TODO: Ultrapack backward compatibility!
+        if (Config.isUSE_RENDER()) {
+//            if(Main3D.cur3D().clouds != null && Main3D.cur3D().clouds.type() > 4)
+//            {
+//                float sunFactor = (ToSun.z + 0.11F) * 4F;
+//                float ambientFactor = 0.2F + sunFactor * 0.7F;
+//                Diffuze = 0.05F + sunFactor * 0.95F * 0.4F;
+//                Specular = 0.4F + sunFactor * 0.6F * 0.5F;
+//                Ambient = ambientFactor - Diffuze;
+//            }
+//            if(Engine.land().config.camouflage.equalsIgnoreCase("WINTER") && RenderContext.cfgHardwareShaders.get() > 0)
+//            {
+//                float sunFactor = (ToSun.z - 0.1F) * 7F;
+//                if(sunFactor < 0.0F)
+//                    sunFactor = 0.0F;
+//                if(sunFactor > 1.0F)
+//                    sunFactor = 1.0F;
+//                Ambient *= 1.0F * (1.0F - sunFactor) + 1.7F * sunFactor;
+//                Diffuze *= 1.0F * (1.0F - sunFactor) + 0.6F * sunFactor;
+//            }
+            float moonPhaseFactor = 1.0F - 2.0F * Math.abs(moonPhase - 0.5F);
+            darkness = 0.095F + moonPhaseFactor * 0.666F;
+            sunMultiplier = cvt(ToSun.z, -0.6F, 0.0F, darkness, 1.0F);
+//            float specularFactor = cvt(sunMultiplier, darkness, 1.0F, 0.5F, 1.0F);
+//            Ambient *= f1 * sunMultiplier;
+//            Specular *= specularFactor;
+//            Diffuze *= sunMultiplier;
+        }
     }
 
     private static native void setNative(float f, float f1, float f2, float f3, float f4, float f5, float f6, float f7, 
@@ -247,6 +284,7 @@ public class Sun
     {
         if(f > clHigh && h0 > clHigh || f < clLow && h0 < clLow)
             return false;
+//        return true;
         return f - h0 > 30F || f - h0 < -30F;
     }
 
@@ -274,6 +312,7 @@ public class Sun
     float clLow;
     float clHigh;
     private float h0;
-//    public float sunMultiplier = 1.0F;
+    public float darkness;
+    public float sunMultiplier;
 
 }

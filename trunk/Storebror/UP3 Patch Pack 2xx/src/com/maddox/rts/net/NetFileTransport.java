@@ -21,23 +21,23 @@ public class NetFileTransport extends NetObj implements MsgNetAskNakListener {
         public void typeState(PrintStream printstream) {
             String s = null;
             switch (state) {
-                case ST_INIT: // '\0'
+                case ST_INIT:
                     s = "Init";
                     break;
 
-                case ST_WAIT_PARENT: // '\004'
+                case ST_WAIT_PARENT:
                     s = "Wait Parent Request";
                     break;
 
-                case ST_SEND_NAME: // '\001'
+                case ST_SEND_NAME:
                     s = "Send Name";
                     break;
 
-                case ST_SEND_DATA: // '\002'
+                case ST_SEND_DATA:
                     s = "Send Data";
                     break;
 
-                case ST_SEND_CANCEL: // '\003'
+                case ST_SEND_CANCEL:
                     s = "Send Cancel";
                     break;
 
@@ -67,34 +67,34 @@ public class NetFileTransport extends NetObj implements MsgNetAskNakListener {
             int j = 1;
             boolean flag = true;
             switch (i) {
-                case ID_AR_DATA: // '\0'
+                case ID_AR_DATA:
                     DEBUGR(localId, "get data");
                     flag = false;
                     j = nreq.server().getAnswerData(nreq, netmsginput);
                     break;
 
-                case ID_AR_EXT_DATA: // '\001'
+                case ID_AR_EXT_DATA:
                     DEBUGR(localId, "get ext data");
                     flag = false;
                     j = nreq.server().getAnswerExtData(nreq, netmsginput);
                     break;
 
-                case ID_AR_SUCCESS: // '\002'
+                case ID_AR_SUCCESS:
                     DEBUGR(localId, "get 'success'");
                     j = 0;
                     break;
 
-                case ID_AR_DISCONNECT: // '\003'
+                case ID_AR_DISCONNECT:
                     DEBUGR(localId, "get 'owner disconnect'");
                     j = -1;
                     break;
 
-                case ID_AR_NOT_FOUND: // '\004'
+                case ID_AR_NOT_FOUND:
                     DEBUGR(localId, "get 'not found'");
                     j = -2;
                     break;
 
-                case ID_AR_IO: // '\005'
+                case ID_AR_IO:
                     DEBUGR(localId, "get 'io error'");
                     j = -3;
                     break;
@@ -184,11 +184,11 @@ public class NetFileTransport extends NetObj implements MsgNetAskNakListener {
             if (parent != null)
                 return false;
             switch (state) {
-                case ST_WAIT_PARENT: // '\004'
+                case ST_WAIT_PARENT:
                 default:
                     return false;
 
-                case ST_INIT: // '\0'
+                case ST_INIT:
                     DEBUGR(localId, "send 'spawn begin'");
                     writeId(netmsgguaranted, ID_RA_SPAWN_BEGIN);
                     netmsgguaranted.writeByte(nreq.prior());
@@ -198,20 +198,20 @@ public class NetFileTransport extends NetObj implements MsgNetAskNakListener {
                     state = 1;
                     return true;
 
-                case ST_SEND_NAME: // '\001'
+                case ST_SEND_NAME:
                     DEBUGR(localId, "send 'name'");
                     writeId(netmsgguaranted, ID_RA_SPAWN_NAME);
                     if (writeStr(netmsgguaranted, i, nreq.ownerFileName()))
                         state = 2;
                     return true;
 
-                case ST_SEND_DATA: // '\002'
+                case ST_SEND_DATA:
                     boolean flag = nreq.server().sendRequestData(nreq, netmsgguaranted, i, 0 | localId | 1);
                     if (flag)
                         DEBUGR(localId, "send data");
                     return flag;
 
-                case ST_SEND_CANCEL: // '\003'
+                case ST_SEND_CANCEL:
                     DEBUGR(localId, "send 'cancel'");
                     writeId(netmsgguaranted, ID_RA_CANCEL);
                     destroy();
@@ -311,23 +311,23 @@ public class NetFileTransport extends NetObj implements MsgNetAskNakListener {
         public void typeState(PrintStream printstream) {
             String s = null;
             switch (state) {
-                case ST_INIT: // '\0'
+                case ST_INIT:
                     s = "Init";
                     break;
 
-                case ST_TRANSFER: // '\001'
+                case ST_TRANSFER:
                     s = "Transfer";
                     break;
 
-                case ST_DISCONNECT: // '\002'
+                case ST_DISCONNECT:
                     s = "Owner Disconnect";
                     break;
 
-                case ST_NOT_FOUND: // '\003'
+                case ST_NOT_FOUND:
                     s = "Not Found";
                     break;
 
-                case ST_IO: // '\004'
+                case ST_IO:
                     s = "IO Error";
                     break;
 
@@ -359,7 +359,7 @@ public class NetFileTransport extends NetObj implements MsgNetAskNakListener {
                 default:
                     break;
 
-                case ST_INIT: // '\0'
+                case ST_INIT:
                     if (i == 2) {
                         String s = readStr(netmsginput);
                         if (nreq.ownerFileName == null)
@@ -373,7 +373,7 @@ public class NetFileTransport extends NetObj implements MsgNetAskNakListener {
                     }
                     break;
 
-                case ST_TRANSFER: // '\001'
+                case ST_TRANSFER:
                     if (i == 0) {
                         DEBUGA(remoteId, "input data");
                         nreq.server().getRequestData(nreq, netmsginput);
@@ -409,26 +409,26 @@ public class NetFileTransport extends NetObj implements MsgNetAskNakListener {
 
         public boolean netOutput(NetMsgGuaranted netmsgguaranted, int i) throws IOException {
             switch (state) {
-                case ID_AR_EXT_DATA: // '\001'
+                case ID_AR_EXT_DATA:
                     int j = nreq.server().getAnswerState(nreq, i);
                     switch (j) {
-                        case ID_AR_EXT_DATA: // '\001'
+                        case ID_AR_EXT_DATA:
                             DEBUGA(remoteId, "send data");
                             nreq.server().sendAnswerData(nreq, netmsgguaranted, i, ID_RA_DATA | remoteId);
                             return true;
 
-                        case ID_AR_SUCCESS: // '\002'
+                        case ID_AR_SUCCESS:
                             DEBUGA(remoteId, "send ext data");
                             nreq.server().sendAnswerData(nreq, netmsgguaranted, i, 0x10000000 | remoteId);
                             return true;
 
-                        case ID_AR_DISCONNECT: // '\003'
+                        case ID_AR_DISCONNECT:
                             DEBUGA(remoteId, "send 'success'");
                             writeId(netmsgguaranted, ID_AR_SUCCESS);
                             destroy();
                             return true;
 
-                        case ID_AR_NOT_FOUND: // '\004'
+                        case ID_AR_NOT_FOUND:
                             DEBUGA(remoteId, "send 'io error 0'");
                             writeId(netmsgguaranted, ID_AR_IO);
                             destroy();
@@ -436,19 +436,19 @@ public class NetFileTransport extends NetObj implements MsgNetAskNakListener {
                     }
                     break;
 
-                case ID_AR_SUCCESS: // '\002'
+                case ID_AR_SUCCESS:
                     DEBUGA(remoteId, "send 'owner disconnect'");
                     writeId(netmsgguaranted, ID_AR_DISCONNECT);
                     destroy();
                     return true;
 
-                case ID_AR_DISCONNECT: // '\003'
+                case ID_AR_DISCONNECT:
                     DEBUGA(remoteId, "send 'not found'");
                     writeId(netmsgguaranted, ID_AR_NOT_FOUND);
                     destroy();
                     return true;
 
-                case ID_AR_NOT_FOUND: // '\004'
+                case ID_AR_NOT_FOUND:
                     DEBUGA(remoteId, "send 'io error 1'");
                     writeId(netmsgguaranted, ID_AR_IO);
                     destroy();
