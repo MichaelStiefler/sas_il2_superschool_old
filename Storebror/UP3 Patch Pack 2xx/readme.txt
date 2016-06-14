@@ -1,4 +1,4 @@
-UP3 RC4 Patch Pack v2.00 BETA 4
+UP3 RC4 Patch Pack v2.00 BETA 5
 
 Contents:
 - All fixes listed below
@@ -39,6 +39,8 @@ Included feature enhancements:
 - Network File Transfer Boost setting available, makes skin transfers about 4 times faster
 - New "Mods" GUI for various conf.ini settings, no need to manually edit conf.ini for those settings anymore
 - New optional setting to add default "None" country to missions where it's missing by default
+- New Fiat CR.32 3D model
+- New Moon Textures by TT
 
 Included fixes:
 - Bf 109 Series Cockpit Code fix
@@ -105,6 +107,7 @@ Included fixes:
 - Bailout Speed Fix (players can bail out at any time now, but risk to get hurt when speed is too high)
 - Explosion Fix (gets rid of the big explosion meshes on ground after large bomb detonations even if smaller bombs or actors crash later on)
 - IJN Ryujo fixed
+- A nasty IL-2 bug has been fixed that prevented IL-2 to actually take the month and day from a mission date into account
 
 (*) Me-262V3 flight model:
     Like in real life, you have to tap the brakes in order to get the 262V3 off the ground.
@@ -162,7 +165,7 @@ Installation:
     * #UP#_Enable_UP.3.0
     * Additional JSGME Mods not related to Fixes, Patches, unobfuscated UP etc.
 3.) Extract this Patch Pack to your UP3 RC4 game folder
-4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_200_BETA_4")
+4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_200_BETA_5")
 
 ********************
 

@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import com.maddox.JGP.Point3d;
 import com.maddox.il2.ai.EventLog;
+import com.maddox.il2.ai.MsgExplosion;
 import com.maddox.il2.ai.Regiment;
 import com.maddox.il2.ai.UserCfg;
 import com.maddox.il2.ai.World;
@@ -98,6 +100,19 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
     
     // TODO: Storebror: Track Users hitting refly where this shouldn't be possible
     private long lastSuspiciousPreRefly = 0L;
+    private ArrayList suspiciousPreReflyAddonInfo = new ArrayList();
+    
+    public ArrayList getSuspiciousPreReflyAddonInfo() {
+        return suspiciousPreReflyAddonInfo;
+    }
+
+    public void addSuspiciousPreReflyAddonInfo(String addonInfo) {
+        this.suspiciousPreReflyAddonInfo.add(addonInfo);
+    }
+
+    public void clearSuspiciousPreReflyAddonInfo() {
+        this.suspiciousPreReflyAddonInfo.clear();
+    }
 
     public long getLastSuspiciousPreRefly() {
         return lastSuspiciousPreRefly;
@@ -126,6 +141,9 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
     }
 
     public void setPatchLevel(String patchLevel) {
+        if (this.patchLevel != patchLevel) {
+            System.out.println("Player " + this.uniqueName() + " uses Patch Pack " + patchLevel + "!");
+        }
         this.patchLevel = patchLevel;
     }
 
@@ -134,6 +152,9 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
     }
 
     public void setSelectorVersion(String selectorVersion) {
+        if (this.selectorVersion != selectorVersion) {
+            System.out.println("Player " + this.uniqueName() + " uses Selector Version " + selectorVersion + "!");
+        }
         this.selectorVersion = selectorVersion;
     }
 
@@ -1091,10 +1112,12 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             byte byte0 = netmsginput.readByte();
             // TODO: Storebror: Track Users hitting refly where this shouldn't be possible
             if (ZutiAircraftCrewManagement.isSuspiciousRefly(byte0, this)) {
+                this.suspiciousPreReflyAddonInfo.clear();
                 Chat.sendLog(0, "user_cheatkick2", this, null);
                 kick(this);
                 return;
             }
+            this.suspiciousPreReflyAddonInfo.clear();
             // ---    
             float f = netmsginput.readFloat();
             String s = netmsginput.read255();
@@ -2534,4 +2557,24 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             // this.setPatchLevel(netmsginput.read255());
         }
     }
+    
+    // TODO: +++ New "slap" command implementation by SAS~Storebror +++
+    public void slap(NetUser netuser) {
+        if (netuser == null || netuser.isDestroyed())
+            return;
+        NetServerParams netserverparams = Main.cur().netServerParams;
+        if (!netserverparams.isMaster())
+            return;
+        if (netuser.isMaster()) {
+            return;
+        }
+        Aircraft aircraft = netuser.findAircraft();
+        if (aircraft == null) return;
+        System.out.println("Slapping " + netuser.uniqueName() + " (aircraft:" + aircraft.netName() + ")!");
+        Point3d p = new Point3d(aircraft.net.actor().pos.getAbsPoint());
+        p.add(0, 0, 20);
+        MsgExplosion.send(null, null, p, null, 100, 100, 1, 30, 0);
+        System.out.println(netuser.uniqueName() + " slapped!");
+    }
+    // TODO: --- New "slap" command implementation by SAS~Storebror ---
 }

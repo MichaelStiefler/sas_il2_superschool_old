@@ -97,6 +97,7 @@ public class GUIModSettings extends GameState {
             Config.cur.netSpeed = Config.NET_SPEED_HIGH;
         Config.cur.bAddDefaultCountryNone = sAddDefaultCountryNone.bChecked;
         if (bUseTrackIR) {
+            ((RTSConfWin)RTSConf.cur).trackIRWin.destroy();
             Config.cur.bNewTrackIR = sNewTIR.bChecked;
             ((RTSConfWin)RTSConf.cur).trackIRWin.create();
             Reflection.setBoolean(((RTSConfWin)RTSConf.cur).trackIR, "bExist", ((RTSConfWin)RTSConf.cur).trackIRWin.isCreated());

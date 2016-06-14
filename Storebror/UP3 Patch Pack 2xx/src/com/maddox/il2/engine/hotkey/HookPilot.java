@@ -44,6 +44,12 @@ public class HookPilot extends HookRender {
     private float                maxAzimut;
     private float                maxTangage;
     private float                minTangage;
+    // TODO: +++ 4.11+ TrackIR implementation by SAS~Storebror +++
+//    private float                Roll         = 0.0F;
+//    private float                _Roll        = 0.0F;
+    private float                maxRoll      = 45.0F;
+    private float                minRoll      = -45.0F;
+    // TODO: --- 4.11+ TrackIR implementation by SAS~Storebror ---
     private float                Azimut;
     private float                Tangage;
     private float                _Azimut;
@@ -247,6 +253,16 @@ public class HookPilot extends HookRender {
             }
             // --------------------------------------------------------
             TrackIR.adapter().getAngles(af);
+//              DecimalFormat twoDigits = new DecimalFormat("#.##");
+//              HUD.training("" + twoDigits.format(af[0])
+//                        + "-" + twoDigits.format(af[1])
+//                        + "-" + twoDigits.format(af[2])
+//                        + "-" + twoDigits.format(af[3])
+//                        + "-" + twoDigits.format(af[4])
+//                        + "-" + twoDigits.format(af[5])
+//                                );
+//              for (int i=3; i<6; i++)
+//                  af[i]*=360F;
             float f;
             float f_4_;
             float f_5_;
@@ -378,9 +394,9 @@ public class HookPilot extends HookRender {
         }
     }
 
-    public void setMinMax(float f, float f_16_, float f_17_) {
+    public void setMinMax(float maxAzimut, float minTangage, float maxTangage) {
         this.maxAzimut = 150.0F;
-        this.minTangage = f_16_;
+        this.minTangage = minTangage;
         this.maxTangage = 180.0F;
     }
 
@@ -763,42 +779,91 @@ public class HookPilot extends HookRender {
         }
     }
 
-    public void viewSet(float f, float f_36_) {
-        if (this.bUse && !this.bPadlock && !this.bSimpleUse) {
-            if (this.bUseMouse) {
-                this.timeViewSet = Time.real();
-                f %= 360.0F;
-                if (f > 180.0F)
-                    f -= 360.0F;
-                else if (f < -180.0F)
-                    f += 360.0F;
-                f_36_ %= 360.0F;
-                if (f_36_ > 180.0F)
-                    f_36_ -= 360.0F;
-                else if (f_36_ < -180.0F)
-                    f_36_ += 360.0F;
-                if (f < -this.maxAzimut)
-                    f = -this.maxAzimut;
-                else if (f > this.maxAzimut)
-                    f = this.maxAzimut;
-                if (f_36_ > this.maxTangage)
-                    f_36_ = this.maxTangage;
-                else if (f_36_ < this.minTangage)
-                    f_36_ = this.minTangage;
-                this._Azimut = this.Azimut = f;
-                this._Tangage = this.Tangage = f_36_;
-                if (af[2] > 90.0)
-                    af[2] = 90.0F;
-                else if (af[2] < -90.0F)
-                    af[2] = -90.0F;
-                this.o.set(f, f_36_, -af[2]);
-                if (Actor.isValid(this.target))
-                    this.target.pos.inValidate(true);
-                if (Actor.isValid(this.target2))
-                    this.target2.pos.inValidate(true);
-            }
-        }
+    public void viewSet(float yaw, float pitch) {
+        if (!this.bUse || this.bPadlock || this.bSimpleUse)
+            return;
+        if (!this.bUseMouse)
+            return;
+        this.timeViewSet = Time.real();
+        yaw %= 360.0F;
+        if (yaw > 180.0F)
+            yaw -= 360.0F;
+        else if (yaw < -180.0F)
+            yaw += 360.0F;
+        pitch %= 360.0F;
+        if (pitch > 180.0F)
+            pitch -= 360.0F;
+        else if (pitch < -180.0F)
+            pitch += 360.0F;
+        if (yaw < -this.maxAzimut)
+            yaw = -this.maxAzimut;
+        else if (yaw > this.maxAzimut)
+            yaw = this.maxAzimut;
+        if (pitch > this.maxTangage)
+            pitch = this.maxTangage;
+        else if (pitch < this.minTangage)
+            pitch = this.minTangage;
+        this._Azimut = this.Azimut = yaw;
+        this._Tangage = this.Tangage = pitch;
+        if (af[2] > 90.0)
+            af[2] = 90.0F;
+        else if (af[2] < -90.0F)
+            af[2] = -90.0F;
+        this.o.set(yaw, pitch, -af[2]);
+        if (Actor.isValid(this.target))
+            this.target.pos.inValidate(true);
+        if (Actor.isValid(this.target2))
+            this.target2.pos.inValidate(true);
     }
+
+    // TODO: +++ 4.11+ TrackIR implementation by SAS~Storebror +++
+    public void viewSet(float yaw, float pitch, float roll) {
+        if (!this.bUse || this.bPadlock || this.bSimpleUse)
+            return;
+        if (!this.bUseMouse)
+            return;
+        this.timeViewSet = Time.real();
+        yaw %= 360.0F;
+        if (yaw > 180.0F)
+            yaw -= 360.0F;
+        else if (yaw < -180.0F)
+            yaw += 360.0F;
+        pitch %= 360.0F;
+        if (pitch > 180.0F)
+            pitch -= 360.0F;
+        else if (pitch < -180.0F)
+            pitch += 360.0F;
+        roll %= 360.0F;
+        if (roll > 180.0F)
+            roll -= 360.0F;
+        else if (roll < -180.0F)
+            roll += 360.0F;
+        if (yaw < -this.maxAzimut)
+            yaw = -this.maxAzimut;
+        else if (yaw > this.maxAzimut)
+            yaw = this.maxAzimut;
+        if (pitch > this.maxTangage)
+            pitch = this.maxTangage;
+        else if (pitch < this.minTangage)
+            pitch = this.minTangage;
+        if (roll > this.maxRoll)
+            roll = this.maxRoll;
+        else if (roll < this.minRoll)
+            roll = this.minRoll;
+        this._Azimut = this.Azimut = yaw;
+        this._Tangage = this.Tangage = pitch;
+//        this._Roll = (this.Roll = roll);
+//        if (af[2] > 90.0)
+//            af[2] = 90.0F;
+//        else if (af[2] < -90.0F)
+//            af[2] = -90.0F;
+        this.o.set(yaw, pitch, roll);
+        if (Actor.isValid(this.target))
+            this.target.pos.inValidate(true);
+        if (Actor.isValid(this.target2))
+            this.target2.pos.inValidate(true);
+    }
+    // TODO: --- 4.11+ TrackIR implementation by SAS~Storebror ---
 
     public void snapSet(float f, float f_37_) {
         if (this.bUse && !this.bPadlock && !this.bSimpleUse) {
@@ -919,5 +984,4 @@ public class HookPilot extends HookRender {
     public static HookPilot cur() {
         return New();
     }
-
 }

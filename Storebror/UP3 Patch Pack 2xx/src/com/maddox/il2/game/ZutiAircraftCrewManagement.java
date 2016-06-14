@@ -1,5 +1,6 @@
 package com.maddox.il2.game;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,6 +59,7 @@ public class ZutiAircraftCrewManagement {
         // TODO: Storebror: Track Users hitting refly where this shouldn't be possible
         NetUser netuser = null;
         NetAircraft netaircraft = null;
+        boolean isSuspicious = false;
         if (NetEnv.isServer()) {
             netaircraft = (NetAircraft) Actor.getByName(acName);
             do {
@@ -66,43 +68,45 @@ public class ZutiAircraftCrewManagement {
                 netuser = ((AircraftNet) (netaircraft.net)).netUser;
                 if (netuser == null)
                     break;
+//                netuser.addSuspiciousPreReflyAddonInfo("----------------------ZutiAircraftCrewManagement - Removing AC: " + acName);
                 System.out.println("----------------------ZutiAircraftCrewManagement - Removing AC: " + acName);
-                System.out.println("netaircraft = " + netaircraft.name());
-                System.out.println("user = " + netuser.uniqueName());
+                netuser.clearSuspiciousPreReflyAddonInfo();
+                netuser.addSuspiciousPreReflyAddonInfo("netaircraft = " + netaircraft.name());
+                netuser.addSuspiciousPreReflyAddonInfo("user = " + netuser.uniqueName());
                 boolean isAircraftValid = Actor.isValid(netaircraft);
-                System.out.println("Is valid = " + isAircraftValid);
+                netuser.addSuspiciousPreReflyAddonInfo("Is valid = " + isAircraftValid);
                 if (!isAircraftValid)
                     break;
                 boolean isAircraftAlive = netaircraft.isAlive();
-                System.out.println("Is alive = " + isAircraftAlive);
+                netuser.addSuspiciousPreReflyAddonInfo("Is alive = " + isAircraftAlive);
                 if (!isAircraftAlive)
                     break;
-                System.out.println("Takeoff_N_Landing = " + World.cur().diffCur.Takeoff_N_Landing);
+                netuser.addSuspiciousPreReflyAddonInfo("Takeoff_N_Landing = " + World.cur().diffCur.Takeoff_N_Landing);
                 if (!World.cur().diffCur.Takeoff_N_Landing)
                     break;
                 boolean isPilotDead = netaircraft.FM.AS.isPilotDead(0);
-                System.out.println("Is Pilot dead = " + isPilotDead);
+                netuser.addSuspiciousPreReflyAddonInfo("Is Pilot dead = " + isPilotDead);
                 byte astateBailoutStep = netaircraft.FM.AS.astateBailoutStep;
-                System.out.println("astateBailoutStep = " + astateBailoutStep);
+                netuser.addSuspiciousPreReflyAddonInfo("astateBailoutStep = " + astateBailoutStep);
                 boolean isPilotParatrooper = netaircraft.FM.AS.isPilotParatrooper(0);
-                System.out.println("Is Pilot Paratrooper = " + isPilotParatrooper);
+                netuser.addSuspiciousPreReflyAddonInfo("Is Pilot Paratrooper = " + isPilotParatrooper);
                 boolean isAircraftOnGround = netaircraft.FM.Gears.onGround();
-                System.out.println("Is on ground = " + isAircraftOnGround);
+                netuser.addSuspiciousPreReflyAddonInfo("Is on ground = " + isAircraftOnGround);
                 boolean isAircraftStandingStill = netaircraft.FM.getSpeedKMH() < 10F;
-                System.out.println("Speed (kmh)= " + netaircraft.FM.getSpeedKMH());
+                netuser.addSuspiciousPreReflyAddonInfo("Speed (kmh)= " + netaircraft.FM.getSpeedKMH());
                 boolean isAircraftOnChocks = netaircraft.FM.brakeShoe;
-                System.out.println("Chocks engaged = " + isAircraftOnChocks);
+                netuser.addSuspiciousPreReflyAddonInfo("Chocks engaged = " + isAircraftOnChocks);
                 boolean isAircraftGearDamaged = netaircraft.FM.Gears.isAnyDamaged();
-                System.out.println("Gear damaged = " + isAircraftGearDamaged);
+                netuser.addSuspiciousPreReflyAddonInfo("Gear damaged = " + isAircraftGearDamaged);
                 boolean bDamagedGround = Reflection.getBoolean(netaircraft.FM, "bDamagedGround");
-                System.out.println("bDamagedGround = " + bDamagedGround);
+                netuser.addSuspiciousPreReflyAddonInfo("bDamagedGround = " + bDamagedGround);
                 boolean isReflyOverride = NetAircraft.ZUTI_REFLY_OWERRIDE;
-                System.out.println("Refly override = " + isReflyOverride);
+                netuser.addSuspiciousPreReflyAddonInfo("Refly override = " + isReflyOverride);
                 boolean isLandedOnWater = false;
                 Point3d pos = netaircraft.pos.getAbsPoint();
                 if (pos != null && netaircraft.FM.getSpeedKMH() < 100F && netaircraft.FM.getAltitude() < 50F && World.land().isWater(pos.x, pos.y))
                     isLandedOnWater = true;
-                System.out.println("Landed on water = " + isLandedOnWater);
+                netuser.addSuspiciousPreReflyAddonInfo("Landed on water = " + isLandedOnWater);
                 
                 if (isReflyOverride)
                     break;
@@ -122,53 +126,56 @@ public class ZutiAircraftCrewManagement {
                     break;
                 if (bDamagedGround)
                     break;
-                System.out.println("This could become a suspicious refly attempt, current time is " + Time.current());
+                netuser.addSuspiciousPreReflyAddonInfo("This could become a suspicious refly attempt, current time is " + Time.current());
                 netuser.setLastSuspiciousPreRefly(Time.current());
+                isSuspicious = true;
                 
-                System.out.println("*********************************************************************************");
-                System.out.println("*                 additional Aircraft/Player State Information                  *");
-                System.out.println("*********************************************************************************");
+                netuser.addSuspiciousPreReflyAddonInfo("*********************************************************************************");
+                netuser.addSuspiciousPreReflyAddonInfo("*                 additional Aircraft/Player State Information                  *");
+                netuser.addSuspiciousPreReflyAddonInfo("*********************************************************************************");
                 
-                System.out.println("isCapableOfACM = " + netaircraft.FM.isCapableOfACM());
-                System.out.println("isCapableOfBMP = " + netaircraft.FM.isCapableOfBMP());
-                System.out.println("isCapableOfTaxiing = " + netaircraft.FM.isCapableOfTaxiing());
-                System.out.println("isReadyToDie = " + netaircraft.FM.isReadyToDie());
-                System.out.println("isReadyToReturn = " + netaircraft.FM.isReadyToReturn());
-                System.out.println("isTakenMortalDamage = " + netaircraft.FM.isTakenMortalDamage());
-                System.out.println("isStationedOnGround = " + netaircraft.FM.isStationedOnGround());
-                System.out.println("isCrashedOnGround = " + netaircraft.FM.isCrashedOnGround());
-                System.out.println("isNearAirdrome = " + netaircraft.FM.isNearAirdrome());
-                System.out.println("isCrossCountry = " + netaircraft.FM.isCrossCountry());
-                System.out.println("isWasAirborne = " + netaircraft.FM.isWasAirborne());
-                System.out.println("isSentWingNote = " + netaircraft.FM.isSentWingNote());
-                System.out.println("isSentBuryNote = " + netaircraft.FM.isSentBuryNote());
-                System.out.println("isSentControlsOutNote = " + netaircraft.FM.isSentControlsOutNote());
-                System.out.println("bDamaged = " + Reflection.getBoolean(netaircraft.FM, "bDamaged"));
-                System.out.println("flags0 = " + Reflection.getLong(netaircraft.FM, "flags0"));
+                netuser.addSuspiciousPreReflyAddonInfo("isCapableOfACM = " + netaircraft.FM.isCapableOfACM());
+                netuser.addSuspiciousPreReflyAddonInfo("isCapableOfBMP = " + netaircraft.FM.isCapableOfBMP());
+                netuser.addSuspiciousPreReflyAddonInfo("isCapableOfTaxiing = " + netaircraft.FM.isCapableOfTaxiing());
+                netuser.addSuspiciousPreReflyAddonInfo("isReadyToDie = " + netaircraft.FM.isReadyToDie());
+                netuser.addSuspiciousPreReflyAddonInfo("isReadyToReturn = " + netaircraft.FM.isReadyToReturn());
+                netuser.addSuspiciousPreReflyAddonInfo("isTakenMortalDamage = " + netaircraft.FM.isTakenMortalDamage());
+                netuser.addSuspiciousPreReflyAddonInfo("isStationedOnGround = " + netaircraft.FM.isStationedOnGround());
+                netuser.addSuspiciousPreReflyAddonInfo("isCrashedOnGround = " + netaircraft.FM.isCrashedOnGround());
+                netuser.addSuspiciousPreReflyAddonInfo("isNearAirdrome = " + netaircraft.FM.isNearAirdrome());
+                netuser.addSuspiciousPreReflyAddonInfo("isCrossCountry = " + netaircraft.FM.isCrossCountry());
+                netuser.addSuspiciousPreReflyAddonInfo("isWasAirborne = " + netaircraft.FM.isWasAirborne());
+                netuser.addSuspiciousPreReflyAddonInfo("isSentWingNote = " + netaircraft.FM.isSentWingNote());
+                netuser.addSuspiciousPreReflyAddonInfo("isSentBuryNote = " + netaircraft.FM.isSentBuryNote());
+                netuser.addSuspiciousPreReflyAddonInfo("isSentControlsOutNote = " + netaircraft.FM.isSentControlsOutNote());
+                netuser.addSuspiciousPreReflyAddonInfo("bDamaged = " + Reflection.getBoolean(netaircraft.FM, "bDamaged"));
+                netuser.addSuspiciousPreReflyAddonInfo("flags0 = " + Reflection.getLong(netaircraft.FM, "flags0"));
                 
-                dumpArray(netaircraft.FM.AS.astateBleedingNext, "astateBleedingNext contents:");
-                dumpArray(netaircraft.FM.AS.astateBleedingTimes, "astateBleedingTimes contents:");
-                dumpArray(netaircraft.FM.AS.astateEngineStates, "astateEngineStates contents:");
-                dumpArray(netaircraft.FM.AS.astateOilStates, "astateOilStates contents:");
-                dumpArray(netaircraft.FM.AS.astatePilotStates, "astatePilotStates contents:");
-                dumpArray(netaircraft.FM.AS.astateSootStates, "astateSootStates contents:");
-                dumpArray(netaircraft.FM.AS.astateTankStates, "astateTankStates contents:");
+                dumpArray(netuser, netaircraft.FM.AS.astateBleedingNext, "astateBleedingNext contents:");
+                dumpArray(netuser, netaircraft.FM.AS.astateBleedingTimes, "astateBleedingTimes contents:");
+                dumpArray(netuser, netaircraft.FM.AS.astateEngineStates, "astateEngineStates contents:");
+                dumpArray(netuser, netaircraft.FM.AS.astateOilStates, "astateOilStates contents:");
+                dumpArray(netuser, netaircraft.FM.AS.astatePilotStates, "astatePilotStates contents:");
+                dumpArray(netuser, netaircraft.FM.AS.astateSootStates, "astateSootStates contents:");
+                dumpArray(netuser, netaircraft.FM.AS.astateTankStates, "astateTankStates contents:");
                 
-                System.out.println("astateCockpitState = " + netaircraft.FM.AS.astateCockpitState);
-                System.out.println("astatePlayerIndex = " + netaircraft.FM.AS.astatePlayerIndex);
-                System.out.println("bIsAboutToBailout = " + netaircraft.FM.AS.bIsAboutToBailout);
-                System.out.println("bIsEnableToBailout = " + netaircraft.FM.AS.bIsEnableToBailout);
-                System.out.println("bShowSmokesOn = " + netaircraft.FM.AS.bShowSmokesOn);
-                System.out.println("bNavLightsOn = " + netaircraft.FM.AS.bNavLightsOn);
-                System.out.println("bLandingLightOn = " + netaircraft.FM.AS.bLandingLightOn);
-                System.out.println("bWingTipLExists = " + netaircraft.FM.AS.bWingTipLExists);
-                System.out.println("bWingTipRExists = " + netaircraft.FM.AS.bWingTipRExists);
-                System.out.println("bIsAboveCriticalSpeed = " + Reflection.getBoolean(netaircraft.FM, "bIsAboveCriticalSpeed"));
-                System.out.println("bIsAboveCondensateAlt = " + Reflection.getBoolean(netaircraft.FM, "bIsAboveCondensateAlt"));
-                System.out.println("bIsOnInadequateAOA = " + Reflection.getBoolean(netaircraft.FM, "bIsOnInadequateAOA"));
-                System.out.println("legsWounded = " + Reflection.getBoolean(netaircraft.FM, "legsWounded"));
-                System.out.println("armsWounded = " + Reflection.getBoolean(netaircraft.FM, "armsWounded"));
+                netuser.addSuspiciousPreReflyAddonInfo("astateCockpitState = " + netaircraft.FM.AS.astateCockpitState);
+                netuser.addSuspiciousPreReflyAddonInfo("astatePlayerIndex = " + netaircraft.FM.AS.astatePlayerIndex);
+                netuser.addSuspiciousPreReflyAddonInfo("bIsAboutToBailout = " + netaircraft.FM.AS.bIsAboutToBailout);
+                netuser.addSuspiciousPreReflyAddonInfo("bIsEnableToBailout = " + netaircraft.FM.AS.bIsEnableToBailout);
+                netuser.addSuspiciousPreReflyAddonInfo("bShowSmokesOn = " + netaircraft.FM.AS.bShowSmokesOn);
+                netuser.addSuspiciousPreReflyAddonInfo("bNavLightsOn = " + netaircraft.FM.AS.bNavLightsOn);
+                netuser.addSuspiciousPreReflyAddonInfo("bLandingLightOn = " + netaircraft.FM.AS.bLandingLightOn);
+                netuser.addSuspiciousPreReflyAddonInfo("bWingTipLExists = " + netaircraft.FM.AS.bWingTipLExists);
+                netuser.addSuspiciousPreReflyAddonInfo("bWingTipRExists = " + netaircraft.FM.AS.bWingTipRExists);
+                netuser.addSuspiciousPreReflyAddonInfo("bIsAboveCriticalSpeed = " + Reflection.getBoolean(netaircraft.FM, "bIsAboveCriticalSpeed"));
+                netuser.addSuspiciousPreReflyAddonInfo("bIsAboveCondensateAlt = " + Reflection.getBoolean(netaircraft.FM, "bIsAboveCondensateAlt"));
+                netuser.addSuspiciousPreReflyAddonInfo("bIsOnInadequateAOA = " + Reflection.getBoolean(netaircraft.FM, "bIsOnInadequateAOA"));
+                netuser.addSuspiciousPreReflyAddonInfo("legsWounded = " + Reflection.getBoolean(netaircraft.FM, "legsWounded"));
+                netuser.addSuspiciousPreReflyAddonInfo("armsWounded = " + Reflection.getBoolean(netaircraft.FM, "armsWounded"));
             } while (false);
+            if (!isSuspicious && netuser != null)
+                netuser.clearSuspiciousPreReflyAddonInfo();
         }
         // ---
 
@@ -192,6 +199,16 @@ public class ZutiAircraftCrewManagement {
         System.out.println(sb.toString());
     }
 
+    public static void dumpArray(NetUser netuser, long[] theArray, String theMessage) {
+        netuser.addSuspiciousPreReflyAddonInfo(theMessage);
+        StringBuffer sb = new StringBuffer();
+        for (int i=0; i<theArray.length; i++) {
+            if (i>0) sb.append(", ");
+            sb.append(theArray[i]);
+        }
+        netuser.addSuspiciousPreReflyAddonInfo(sb.toString());
+    }
+
     public static void dumpArray(byte[] theArray, String theMessage) {
         System.out.println(theMessage);
         StringBuffer sb = new StringBuffer();
@@ -202,33 +219,64 @@ public class ZutiAircraftCrewManagement {
         System.out.println(sb.toString());
     }
 
+    public static void dumpArray(NetUser netuser, byte[] theArray, String theMessage) {
+        netuser.addSuspiciousPreReflyAddonInfo(theMessage);
+        StringBuffer sb = new StringBuffer();
+        for (int i=0; i<theArray.length; i++) {
+            if (i>0) sb.append(", ");
+            sb.append(theArray[i]);
+        }
+        netuser.addSuspiciousPreReflyAddonInfo(sb.toString());
+    }
+
     public static boolean isSuspiciousRefly(byte byte0, NetUser netuser) {
         if (!NetEnv.isServer()) return false;
         if (byte0 != EventLog.REFLY) return false;
         if (netuser.getLastSuspiciousPreRefly() == 0L) return false;
         if (Time.current() < netuser.getLastSuspiciousPreRefly()) return false;
         if (Time.current() - netuser.getLastSuspiciousPreRefly() > REFLY_TRACKING_TIME) return false;
+        ArrayList suspiciousPreReflyAddonInfo = netuser.getSuspiciousPreReflyAddonInfo();
         if (RTSConf.cur.console.getEnv().existAtom("reflykick", true)) {
             if (RTSConf.cur.console.getEnv().atom("reflykick").toString().trim().equalsIgnoreCase("on")) {
                 
                 System.out.println(" ****************************************************************************************************************************************** ");
                 System.out.println("********************************************************************************************************************************************");
                 System.out.println("**                                                                                                                                        **");
-                System.out.println("**                                                       !!! REFLY KICK !!!                                                               **");
+                System.out.println("**                                                   +++ !!! REFLY KICK !!! +++                                                           **");
                 System.out.println("**                                                                                                                                        **");
                 System.out.println("********************************************************************************************************************************************");
                 System.out.println(" ****************************************************************************************************************************************** ");
                 System.out.println();
                 System.out.println("Time: " + Time.current());
                 System.out.println("ZutiAircraftCrewManagement isSuspiciousRefly(" + byte0 + ", " + netuser.uniqueName() + ") = true and reflykick is on, player will be kicked!");
+                System.out.println();
+                for (int i=0; i<suspiciousPreReflyAddonInfo.size(); i++) {
+                    System.out.println(suspiciousPreReflyAddonInfo.get(i));
+                }
+                System.out.println();
+                System.out.println(" ****************************************************************************************************************************************** ");
+                System.out.println("********************************************************************************************************************************************");
+                System.out.println("**                                                                                                                                        **");
+                System.out.println("**                                                   --- !!! REFLY KICK !!! ---                                                           **");
+                System.out.println("**                                                                                                                                        **");
+                System.out.println("********************************************************************************************************************************************");
+                System.out.println(" ****************************************************************************************************************************************** ");
                 return true;
             }
         }
         System.out.println("************************************");
-        System.out.println("*     --- SUSPICIOUS REFLY ---     *");
+        System.out.println("*     +++ SUSPICIOUS REFLY +++     *");
         System.out.println("************************************");
         System.out.println();
         System.out.println("ZutiAircraftCrewManagement isSuspiciousRefly(" + byte0 + ", " + netuser.uniqueName() + ") = true but reflykick isn't on, player will stay!");
+        System.out.println();
+        for (int i=0; i<suspiciousPreReflyAddonInfo.size(); i++) {
+            System.out.println(suspiciousPreReflyAddonInfo.get(i));
+        }
+        System.out.println();
+        System.out.println("************************************");
+        System.out.println("*     --- SUSPICIOUS REFLY ---     *");
+        System.out.println("************************************");
         return false;
     }
     // ---
