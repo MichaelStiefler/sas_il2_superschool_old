@@ -522,7 +522,7 @@ public class Maneuver extends AIFlightModel {
 
     public void accurate_set_task_maneuver(int i, int j) {
         // TODO: +++ TD AI code backport from 4.13 +++
-        if (this.maneuver != 44 && this.maneuver != 26 && this.maneuver != 69 && this.maneuver != 64 || this.maneuver == 102) {
+        if (this.maneuver != 44 && this.maneuver != 26 && this.maneuver != 69 && this.maneuver != 64 || this.maneuver == TAXI_TO_TO) {
             // TODO: --- TD AI code backport from 4.13 ---
             this.set_task(i);
             if (this.maneuver != j) {
@@ -534,7 +534,7 @@ public class Maneuver extends AIFlightModel {
 
     public void accurate_set_FOLLOW() {
         // TODO: +++ TD AI code backport from 4.13 +++
-        if (this.maneuver != 44 && this.maneuver != 26 && this.maneuver != 69 && this.maneuver != 64 || this.maneuver == 102) {
+        if (this.maneuver != 44 && this.maneuver != 26 && this.maneuver != 69 && this.maneuver != 64 || this.maneuver == TAXI_TO_TO) {
             // TODO: --- TD AI code backport from 4.13 ---
             this.set_task(2);
             if (this.maneuver != 24 && this.maneuver != 53) {
@@ -570,7 +570,7 @@ public class Maneuver extends AIFlightModel {
     private void set_flags() {
         if (World.cur().isDebugFM())
             this.printDebugFM();
-        
+
 //      // TODO: !!!!TEST!!!!
 //      if (this.actor.name().toLowerCase().indexOf("g010") != -1) {
 //          printDebugFM();
@@ -593,22 +593,22 @@ public class Maneuver extends AIFlightModel {
             this.sub_Man_Count = 0;
         }
         this.dont_change_subm = false;
-        if (this.maneuver != 48 && this.maneuver != 0 && this.maneuver != 26 && this.maneuver != 64 && this.maneuver != 102 && this.maneuver != 44)
+        if (this.maneuver != 48 && this.maneuver != 0 && this.maneuver != 26 && this.maneuver != 64 && this.maneuver != TAXI_TO_TO && this.maneuver != 44)
             this.resetControls();
-        this.setCheckGround(this.maneuver != 20 && this.maneuver != 25 && this.maneuver != 102 && this.maneuver != 1 && this.maneuver != 26 && this.maneuver != 69 && this.maneuver != 44 && this.maneuver != 49 && this.maneuver != 43 && this.maneuver != 50
-                && this.maneuver != 51 && this.maneuver != 73 && this.maneuver != 46 && this.maneuver != 84 && this.maneuver != 64 && this.maneuver != 95 && this.maneuver != 100);
+        this.setCheckGround(this.maneuver != 20 && this.maneuver != 25 && this.maneuver != TAXI_TO_TO && this.maneuver != 1 && this.maneuver != 26 && this.maneuver != 69 && this.maneuver != 44 && this.maneuver != 49 && this.maneuver != 43
+                && this.maneuver != 50 && this.maneuver != 51 && this.maneuver != 73 && this.maneuver != 46 && this.maneuver != 84 && this.maneuver != 64 && this.maneuver != 95 && this.maneuver != BREAK_AWAY);
         this.frequentControl = this.maneuver == 24 || this.maneuver == 53 || this.maneuver == 68 || (this.maneuver == 59) | (this.maneuver == 82)
-                || (this.maneuver == 8 || this.maneuver == 55 || this.maneuver == 27 || this.maneuver == 62 || this.maneuver == 63 || this.maneuver == 25 || this.maneuver == 102 || this.maneuver == 43 || this.maneuver == 50 || this.maneuver == 65
+                || (this.maneuver == 8 || this.maneuver == 55 || this.maneuver == 27 || this.maneuver == 62 || this.maneuver == 63 || this.maneuver == 25 || this.maneuver == TAXI_TO_TO || this.maneuver == 43 || this.maneuver == 50 || this.maneuver == 65
                         || this.maneuver == 44 || this.maneuver == 21 || this.maneuver == 64 || this.maneuver == 69 || this.maneuver == 76 || this.maneuver == 74 || this.maneuver == 75 || this.maneuver == 80 || this.maneuver == 87 || this.maneuver == 77
-                        || this.maneuver == 99 || this.maneuver == 83 || this.maneuver == 100 || this.maneuver == 101 || this.maneuver == 98);
+                        || this.maneuver == 99 || this.maneuver == 83 || this.maneuver == BREAK_AWAY || this.maneuver == ATTACK_HARD || this.maneuver == 98);
         this.turnOnChristmasTree(this.maneuver == 25 || this.maneuver == 26 || this.maneuver == 69 || this.maneuver == 70);
         this.turnOnCloudShine(this.maneuver == 25);
-        this.checkStrike = this.maneuver != 60 && this.maneuver != 61 && this.maneuver != 102 && this.maneuver != 1 && this.maneuver != 24 && this.maneuver != 26 && this.maneuver != 69 && this.maneuver != 64 && this.maneuver != 44;
+        this.checkStrike = this.maneuver != 60 && this.maneuver != 61 && this.maneuver != TAXI_TO_TO && this.maneuver != 1 && this.maneuver != 24 && this.maneuver != 26 && this.maneuver != 69 && this.maneuver != 64 && this.maneuver != 44;
         this.stallable = this.maneuver != 44 && this.maneuver != 1 && this.maneuver != 48 && this.maneuver != 0 && this.maneuver != 26 && this.maneuver != 69 && this.maneuver != 64 && this.maneuver != 43 && this.maneuver != 50 && this.maneuver != 51
-                && this.maneuver != 52 && this.maneuver != 47 && this.maneuver != 71 && this.maneuver != 72 && this.maneuver != 102;
+                && this.maneuver != 52 && this.maneuver != 47 && this.maneuver != 71 && this.maneuver != 72 && this.maneuver != TAXI_TO_TO;
         if (this.maneuver == 44 || this.maneuver == 1 || this.maneuver == 26 || this.maneuver == 69 || this.maneuver == 64 || this.maneuver == 2 || this.maneuver == 84 || this.maneuver == 57 || this.maneuver == 60 || this.maneuver == 61
                 || this.maneuver == 43 || this.maneuver == 50 || this.maneuver == 51 || this.maneuver == 52 || this.maneuver == 47 || this.maneuver == 29 || this.maneuver == 71 || this.maneuver == 72 || this.maneuver == 88 || this.maneuver == 89
-                || this.maneuver == 90 || this.maneuver == 91 || this.maneuver == 86 || this.maneuver == 102)
+                || this.maneuver == 90 || this.maneuver == 91 || this.maneuver == 86 || this.maneuver == TAXI_TO_TO)
             this.setBusy(true);
     }
 
@@ -1103,7 +1103,7 @@ public class Maneuver extends AIFlightModel {
                     break;
 
                 // TODO: +++ TD AI code backport from 4.13 +++
-                case 106:
+                case ART_SPOT:
                     this.setSpeedMode(7);
                     this.smConstPower = 0.8F;
                     switch (this.submaneuver) {
@@ -1168,7 +1168,7 @@ public class Maneuver extends AIFlightModel {
 
                 case 54:
                     if (this.Vwld.length() > this.VminFLAPS * 2.0F)
-                        this.Vwld.scale(0.9950000047683716);
+                        this.Vwld.scale(0.995);
                     // fall through, 54 is slow version of 9 (both spiral down)
                 case 9:
                     if (this.first && !this.isCapableOfACM()) {
@@ -1311,12 +1311,12 @@ public class Maneuver extends AIFlightModel {
                         this.CT.setTrimElevatorControl(0.0F);
                         this.mn_time = 0.0F;
                         if (this.dangerAggressiveness < 0.8F)
-                            this.push(101);
+                            this.push(ATTACK_HARD);
                         this.pop();
                     }
                     break;
 
-                case 101:
+                case ATTACK_HARD:
                     this.minElevCoeff = 20F;
                     if (this.target != null) {
                         Ve.sub(this.target.Loc, this.Loc);
@@ -1497,7 +1497,7 @@ public class Maneuver extends AIFlightModel {
                     if (this.AOA > 15.0F)
                         this.Or.increment(0.0F, (15.0F - this.AOA) * 0.5F * f, 0.0F);
                     if (this.Alt < 10.0F && this.Vwld.z < 0.0)
-                        this.Vwld.z *= 0.8999999761581421;
+                        this.Vwld.z *= 0.9;
                     if (this.Vwld.z > 1.0) {
                         if (this.actor instanceof TypeGlider)
                             this.push(49);
@@ -1880,7 +1880,7 @@ public class Maneuver extends AIFlightModel {
                     this.smConstSpeed = 80.0F;
                     this.CT.AileronControl = -0.04F * this.Or.getKren();
                     if (this.Vwld.length() > this.VminFLAPS * 2.0F)
-                        this.Vwld.scale(0.9950000047683716);
+                        this.Vwld.scale(0.995);
                     this.dA = -((float) this.Vwld.z / (Math.abs(this.getSpeed()) + 1.0F) + 0.5F);
                     if (this.dA < -0.1F)
                         this.dA = -0.1F;
@@ -2362,7 +2362,7 @@ public class Maneuver extends AIFlightModel {
                     break;
 
                 // TODO: +++ TD AI code backport from 4.13 +++
-                case 103:
+                case MIL_TURN_LEFT:
                     this.setTurn(1000F, 130F, 200F);
                     if (this.mn_time > 4F || this.dangerAggressiveness > 0.7F) {
                         this.mn_time = 0.0F;
@@ -2370,7 +2370,7 @@ public class Maneuver extends AIFlightModel {
                     }
                     break;
 
-                case 104:
+                case MIL_TURN_RIGHT:
                     this.setTurn(1000F, -130F, 200F);
                     if (this.mn_time > 4F || this.dangerAggressiveness > 0.7F) {
                         this.mn_time = 0.0F;
@@ -2410,9 +2410,9 @@ public class Maneuver extends AIFlightModel {
                     if (this.isTick(256, 0) && !this.actor.isTaskComplete() && (this.AP.way.isLast() && this.AP.getWayPointDistance() < 1500.0F || this.AP.way.isLanding()))
                         World.onTaskComplete(this.actor);
                     if (((Aircraft) this.actor).aircIndex() == 0 && !this.isReadyToReturn()) {
-                        World.cur();
+
                         if (World.getPlayerAircraft() != null) {
-                            World.cur();
+
                             if (((Aircraft) this.actor).getRegiment() == World.getPlayerAircraft().getRegiment()) {
                                 float f9 = 1.0E12F;
                                 if (this.AP.way.curr().Action == 3)
@@ -2810,7 +2810,7 @@ public class Maneuver extends AIFlightModel {
                             this.dist = (float) this.tmpV3dToDanger.length();
                             this.Or.transformInv(this.tmpV3dToDanger);
                             this.tmpV3dToDanger.normalize();
-                            if (flag5 && (maneuver5.getDangerAggressiveness() >= 0.5F || this.dist < 800F && this.tmpV3dToDanger.x > -0.33000000000000002D) || this.dist < 300F) {
+                            if (flag5 && (maneuver5.getDangerAggressiveness() >= 0.5F || this.dist < 800F && this.tmpV3dToDanger.x > -0.33D) || this.dist < 300F) {
                                 this.set_task(6);
                                 this.target = maneuver10;
                                 this.push();
@@ -2858,7 +2858,7 @@ public class Maneuver extends AIFlightModel {
                             this.dist = (float) this.tmpV3dToDanger.length();
                             this.Or.transformInv(this.tmpV3dToDanger);
                             this.tmpV3dToDanger.normalize();
-                            if (this.dist < 700F && this.tmpV3dToDanger.x > -0.20000000000000001D) {
+                            if (this.dist < 700F && this.tmpV3dToDanger.x > -0.2D) {
                                 this.set_task(6);
                                 this.target = maneuver11;
                                 this.set_maneuver(27);
@@ -3299,7 +3299,7 @@ public class Maneuver extends AIFlightModel {
                     }
                     break;
 
-                case 105:
+                case STRAIGHT_AND_LEVEL:
                     this.CT.setPowerControl(1.1F);
                     this.setTurn(500F, 0.0F, 0.0F);
                     if (this.mn_time > 715F / this.Vmax)
@@ -3701,7 +3701,7 @@ public class Maneuver extends AIFlightModel {
                                     } else {
                                         this.EI.setEngineStops();
                                         if (this.EI.engines[0].getPropw() < 1.0F) {
-                                            World.cur();
+
                                             if (this.actor != World.getPlayerAircraft())
                                                 MsgDestroy.Post((Time.current() + 12000L), this.actor);
                                         }
@@ -3721,16 +3721,16 @@ public class Maneuver extends AIFlightModel {
                                 this.setSpeedMode(8);
                                 if (this.AP.way.isLandingOnShip() && this.CT.bHasArrestorControl) {
                                     if (this.Vwld.z < -5.5)
-                                        this.Vwld.z *= 0.949999988079071;
+                                        this.Vwld.z *= 0.95;
                                     if (this.Vwld.z > 0.0)
-                                        this.Vwld.z *= 0.9100000262260437;
+                                        this.Vwld.z *= 0.91;
                                 } else {
-                                    if (this.Vwld.z < -0.6000000238418579)
-                                        this.Vwld.z *= 0.9399999976158142;
+                                    if (this.Vwld.z < -0.6)
+                                        this.Vwld.z *= 0.94;
                                     if (this.Vwld.z < -2.5)
                                         this.Vwld.z = -2.5;
                                     if (this.Vwld.z > 0.0)
-                                        this.Vwld.z *= 0.9100000262260437;
+                                        this.Vwld.z *= 0.91;
                                 }
                             }
                             float f141 = this.Gears.Pitch - 2.0F;
@@ -3738,13 +3738,13 @@ public class Maneuver extends AIFlightModel {
                                 f141 = 5.0F;
                             if (this.Alt < 7.0F && this.Or.getTangage() < f141 || this.AP.way.isLandingOnShip())
                                 this.CT.ElevatorControl += 1.5F * f;
-                            this.CT.ElevatorControl += 0.05000000074505806 * this.getW().y;
+                            this.CT.ElevatorControl += 0.05 * this.getW().y;
                             if (this.Gears.onGround()) {
                                 if (this.Gears.Pitch > 5.0F) {
                                     if (this.Or.getTangage() < this.Gears.Pitch)
                                         this.CT.ElevatorControl += 1.5F * f;
                                     if (!this.AP.way.isLandingOnShip())
-                                        this.CT.ElevatorControl += 0.30000001192092896 * this.getW().y;
+                                        this.CT.ElevatorControl += 0.3 * this.getW().y;
                                 } else
                                     this.CT.ElevatorControl = 0.0F;
                                 if (!this.TaxiMode) {
@@ -3814,7 +3814,7 @@ public class Maneuver extends AIFlightModel {
                                             this.CT.setPowerControl(0.0F);
                                             this.EI.setCurControlAll(true);
                                             this.EI.setEngineStops();
-                                            World.cur();
+
                                             if (this.actor != World.getPlayerAircraft()) {
                                                 MsgDestroy.Post((Time.current() + l), this.actor);
                                                 this.setStationedOnGround(true);
@@ -3846,7 +3846,7 @@ public class Maneuver extends AIFlightModel {
                                 P.y += Vcur.y * f;
                             } else {
                                 this.wayPrevPos = this.wayCurPos = new Point_Null((float) this.Loc.x, (float) this.Loc.y);
-                                World.cur();
+
                                 if (this.actor != World.getPlayerAircraft()) {
                                     MsgDestroy.Post(Time.current() + 30000L, this.actor);
                                     this.setStationedOnGround(true);
@@ -3910,7 +3910,7 @@ public class Maneuver extends AIFlightModel {
                     break;
 
                 // TODO: +++ TD AI code backport from 4.13 +++
-                case 102:
+                case TAXI_TO_TO:
                     if (this.Group == null || this.actor == null)
                         break;
                     int j1 = 5 + this.Group.numInGroup((Aircraft) this.actor) * 8;
@@ -3934,7 +3934,7 @@ public class Maneuver extends AIFlightModel {
                         double d1 = Ve.length();
                         Ve.normalize();
                         this.Or.transformInv(Ve);
-                        if (Ve.x < 0.69999998807907104D && d1 < 80D)
+                        if (Ve.x < 0.7D && d1 < 80D)
                             return;
                         if (this.Leader.Vwld.lengthSquared() < 25D)
                             return;
@@ -4056,7 +4056,7 @@ public class Maneuver extends AIFlightModel {
                         for (; f41 < -180F; f41 += 360F)
                             ;
                         this.Wo += (2.0F * f41 * f) / this.actor.collisionR();
-                        if (f35 < 0.10000000000000001D)
+                        if (f35 < 0.1D)
                             this.Wo *= 0.95F;
                         f41 = (f41 > 20F ? 20F : f41) < -20F ? -20F : f41;
                         this.CT.RudderControl = -f41 * 0.05F;
@@ -4083,7 +4083,7 @@ public class Maneuver extends AIFlightModel {
                         this.Vwld.y = this.Gears.mgh * Math.cos(this.Gears.mgalpha + this.W.z) - this.Gears.mgy;
                         this.Vwld.x += 2.0F * f * (f35 > this.Vwld.x ? 1.0F : -1F);
                         this.Vwld.y += this.W.z * 0.5D * this.Vwld.x;
-                        if (this.Vwld.x > 0.019999999552965164D)
+                        if (this.Vwld.x > 0.02D)
                             this.Gears.setSteeringAngle((float) Math.toDegrees(Math.atan2(this.W.z * (this.Gears.sgx + this.Gears.mgx), this.Vwld.x)));
                         this.Or.transform(this.Vwld);
                         P.x += this.Vwld.x * f;
@@ -4146,7 +4146,7 @@ public class Maneuver extends AIFlightModel {
                         if (this.actor == World.getPlayerAircraft()) {
                             if (Aircraft.isPlayerTaxing() && this.EI.engines[0].getStage() == 6 && (this.AP.way.first().waypointType == 4 || this.AP.way.first().waypointType == 5) && this.lookAtNextTaxiToTakeOffPoint() != null) {
                                 this.push();
-                                this.push(102);
+                                this.push(TAXI_TO_TO);
                                 this.submaneuver = 0;
                                 this.maneuver = 0;
                                 this.safe_pop();
@@ -4168,7 +4168,7 @@ public class Maneuver extends AIFlightModel {
                                 this.push();
                                 // TODO: +++ TD AI code backport from 4.13 +++
                                 if (this.AP.way.first().waypointType == 4 || this.AP.way.first().waypointType == 5)
-                                    this.push(102);
+                                    this.push(TAXI_TO_TO);
                                 // TODO: --- TD AI code backport from 4.13 ---
                                 this.push(64);
                                 this.submaneuver = SUB_MAN0;
@@ -4645,7 +4645,7 @@ public class Maneuver extends AIFlightModel {
                             if (this.mn_time > 2.0F && this.Or.getTangage() < this.direction + 20.0F)
                                 this.submaneuver++;
                             if (this.danger != null) {
-                                if (this.Skill >= 2 && this.Or.getTangage() < -30.0F && Vpl.x > 0.9986295104026794)
+                                if (this.Skill >= 2 && this.Or.getTangage() < -30.0F && Vpl.x > 0.999D)
                                     this.submaneuver++;
                                 if (this.Skill >= 3 && Math.abs(this.Or.getTangage()) > 145.0F && Math.abs(this.danger.Or.getTangage()) > 135.0F && this.dist < 400.0F)
                                     this.submaneuver++;
@@ -4680,7 +4680,7 @@ public class Maneuver extends AIFlightModel {
                                 this.CT.ElevatorControl += 1.6F * f;
                             if (this.Or.getTangage() > 80.0F || this.mn_time > 4.0F || this.getSpeed() < this.Vmin * 1.5F)
                                 this.pop();
-                            if (this.danger != null && (Ve.z < -1.0 || this.dist > 600.0F || Vpl.x < 0.7880100011825562))
+                            if (this.danger != null && (Ve.z < -1.0 || this.dist > 600.0F || Vpl.x < 0.788))
                                 this.pop();
                             break;
                     }
@@ -4917,7 +4917,7 @@ public class Maneuver extends AIFlightModel {
                     break;
 
                 // TODO: +++ TD AI code backport from 4.13 +++
-                case 100:
+                case BREAK_AWAY:
                     this.setSpeedMode(6);
                     if (this.getSpeed() < this.Vmax * 0.7F || this.Or.getPitch() > 360F)
                         this.setSpeedMode(11);
@@ -4941,7 +4941,7 @@ public class Maneuver extends AIFlightModel {
                     break;
                 // TODO: --- TD AI code backport from 4.13 ---
 
-                case 46:
+                case GATTACK_KAMIKAZE:
                     if (this.target_ground == null || this.target_ground.pos == null) {
                         if (this.Group != null) {
                             this.dont_change_subm = true;
@@ -4974,11 +4974,11 @@ public class Maneuver extends AIFlightModel {
                     }
                     this.groundAttackKamikaze(this.target_ground, f);
                     break;
-                case 43:
-                case 47:
-                case 50:
-                case 51:
-                case 52:
+                case GATTACK:
+                case GATTACK_TINYTIM:
+                case GATTACK_DIVE:
+                case GATTACK_TORPEDO:
+                case GATTACK_CASSETTE:
                 case GATTACK_HS293:
                 case GATTACK_FRITZX:
                 case GATTACK_TORPEDO_TOKG:
@@ -5028,45 +5028,63 @@ public class Maneuver extends AIFlightModel {
                                 break;
                             }
                         }
-                        switch (this.maneuver) {
-                            default:
-                                break;
-                            case 43:
-                                this.groundAttack(this.target_ground, f);
-                                if (this.mn_time > 120.0F)
-                                    this.set_maneuver(0);
-                                break;
-                            case 50:
-                                this.groundAttackDiveBomber(this.target_ground, f);
-                                if (this.mn_time > 120.0F) {
-                                    this.setSpeedMode(6);
-                                    this.CT.BayDoorControl = 0.0F;
-                                    this.CT.AirBrakeControl = 0.0F;
-                                    this.CT.FlapsControl = 0.0F;
-                                    this.pop();
-                                    this.sub_Man_Count = 0;
-                                }
-                                break;
-                            case 51:
-                                this.groundAttackTorpedo(this.target_ground, f);
-                                break;
-                            case GATTACK_TORPEDO_TOKG:
-                                this.groundAttackTorpedoToKG(this.target_ground, f);
-                                break;
-                            case 52:
-                                this.groundAttackCassette(this.target_ground, f);
-                                break;
-                            case 46:
-                                this.groundAttackKamikaze(this.target_ground, f);
-                                break;
-                            case 47:
-                                this.groundAttackTinyTim(this.target_ground, f);
-                                break;
-                            case GATTACK_HS293:
-                                this.groundAttackHS293(this.target_ground, f);
-                                break;
-                            case GATTACK_FRITZX:
-                                this.groundAttackFritzX(this.target_ground, f);
+                        // TODO: +++ Skip Ground Attack Waypoints when there's nothing to attack with - by SAS~Storebror +++
+                        if (!this.hasBombs() && !this.hasRockets()) {
+                            this.bombsOut = true;
+                            this.setReadyToReturn(true);
+                            if (this.Group != null) {
+                                System.out.println("Skipped Waypoint No. " + this.AP.way.Cur() + " (waiting for Group " + this.Group.hashCode() + ") since it's a GATTACK waypoint and this plane (" + this.actor.name() + ") has neither bombs nor rockets left");
+                                this.Group.waitGroup(this.Group.numInGroup((Aircraft) this.actor));
+                            } else {
+                                System.out.println("Skipped Waypoint No. " + this.AP.way.Cur() + " since it's a GATTACK waypoint and this plane (" + this.actor.name() + ") has neither bombs nor rockets left");
+                                this.AP.way.next();
+                                this.set_task(3);
+                                this.clear_stack();
+                                this.set_maneuver(21);
+                            }
+                            break;
+                        } else {
+                            // TODO: --- Skip Ground Attack Waypoints when there's nothing to attack with - by SAS~Storebror ---
+                            switch (this.maneuver) {
+                                default:
+                                    break;
+                                case GATTACK:
+                                    this.groundAttack(this.target_ground, f);
+                                    if (this.mn_time > 120.0F)
+                                        this.set_maneuver(0);
+                                    break;
+                                case GATTACK_DIVE:
+                                    this.groundAttackDiveBomber(this.target_ground, f);
+                                    if (this.mn_time > 120.0F) {
+                                        this.setSpeedMode(6);
+                                        this.CT.BayDoorControl = 0.0F;
+                                        this.CT.AirBrakeControl = 0.0F;
+                                        this.CT.FlapsControl = 0.0F;
+                                        this.pop();
+                                        this.sub_Man_Count = 0;
+                                    }
+                                    break;
+                                case GATTACK_TORPEDO:
+                                    this.groundAttackTorpedo(this.target_ground, f);
+                                    break;
+                                case GATTACK_TORPEDO_TOKG:
+                                    this.groundAttackTorpedoToKG(this.target_ground, f);
+                                    break;
+                                case GATTACK_CASSETTE:
+                                    this.groundAttackCassette(this.target_ground, f);
+                                    break;
+                                case GATTACK_KAMIKAZE:
+                                    this.groundAttackKamikaze(this.target_ground, f);
+                                    break;
+                                case GATTACK_TINYTIM:
+                                    this.groundAttackTinyTim(this.target_ground, f);
+                                    break;
+                                case GATTACK_HS293:
+                                    this.groundAttackHS293(this.target_ground, f);
+                                    break;
+                                case GATTACK_FRITZX:
+                                    this.groundAttackFritzX(this.target_ground, f);
+                            }
                         }
                     }
             }
@@ -5198,7 +5216,7 @@ public class Maneuver extends AIFlightModel {
                     tmpV3f.z = 0.0D;
                     double d = tmpV3f.length();
                     double d1 = 0.0D;
-                    if (d < 9.9999997473787516E-005D || this.Group.getAaaNum() > 8.5F && !(actor instanceof TgtShip)) {
+                    if (d < 0.0001D || this.Group.getAaaNum() > 8.5F && !(actor instanceof TgtShip)) {
                         tmpV3f.sub(this.Vtarg, this.Loc);
                         tmpV3f.z = 0.0D;
                         tmpV3f.normalize();
@@ -5209,7 +5227,7 @@ public class Maneuver extends AIFlightModel {
                         else if (d1 < -180D)
                             d1 += 360D;
                         d1 = FMMath.DEG2RAD(d1);
-                        d1 *= -0.33000000000000002D;
+                        d1 *= -0.33D;
                         if (f6 < 0.0F)
                             f6 = this.koeff * 0.7F;
                         else
@@ -5221,8 +5239,8 @@ public class Maneuver extends AIFlightModel {
                     this.Vtarg.y -= tmpV3f.y * this.koeff;
                     this.Vtarg.z += this.koeff * f7;
                     this.constVtarg.set(this.Vtarg);
-                    if (d < 9.9999997473787516E-005D) {
-                        rotCoord(-0.69999999999999996D * d1, tmpV3f);
+                    if (d < 0.0001D) {
+                        rotCoord(-0.7D * d1, tmpV3f);
                         tmpV3f.normalize();
                         d1 = Math.abs(d1);
                         this.Vtarg.x -= tmpV3f.x * this.koeff * d1 + f6;
@@ -5366,8 +5384,8 @@ public class Maneuver extends AIFlightModel {
                     this.push(55);
                     this.push(10);
                     if (this.Group.getAaaNum() > 3F)
-                        this.push(105);
-                    this.push(100);
+                        this.push(STRAIGHT_AND_LEVEL);
+                    this.push(BREAK_AWAY);
                     this.pop();
                     this.dontSwitch = true;
                     return;
@@ -5457,7 +5475,7 @@ public class Maneuver extends AIFlightModel {
         Vpl.set(this.Vwld);
         Vpl.normalize();
         this.CT.BayDoorControl = 1.0F;
-        if (f1 + 4F * f5 < this.getSpeed() * f5 && Ve.x > 0.0D && Vpl.dot(this.Vtarg) > 0.98000001907348633D) {
+        if (f1 + 4F * f5 < this.getSpeed() * f5 && Ve.x > 0.0D && Vpl.dot(this.Vtarg) > 0.98D) {
             if (!this.bombsOut) {
                 this.bombsOut = true;
                 if (this.CT.Weapons[3] != null && this.CT.Weapons[3][0] != null && this.CT.Weapons[3][0].countBullets() != 0 && !(this.CT.Weapons[3][0] instanceof BombGunPara))
@@ -5476,20 +5494,20 @@ public class Maneuver extends AIFlightModel {
             this.push(10);
             this.pop();
         }
-        if (Math.abs(Ve.y) > 0.10000000149011612D)
+        if (Math.abs(Ve.y) > 0.1D)
             this.CT.AileronControl = -(float) Math.atan2(Ve.y, Ve.z) - 0.016F * this.Or.getKren();
         else
             this.CT.AileronControl = -(float) Math.atan2(Ve.y, Ve.x) - 0.016F * this.Or.getKren();
-        if (Math.abs(Ve.y) > 0.0010000000474974513D)
+        if (Math.abs(Ve.y) > 0.001D)
             this.CT.RudderControl = -98F * (float) Math.atan2(Ve.y, Ve.x);
         else
             this.CT.RudderControl = 0.0F;
         if (this.CT.RudderControl * this.W.z > 0.0D)
             this.W.z = 0.0D;
         else
-            this.W.z *= 1.0399999618530273D;
+            this.W.z *= 1.04D;
         float f2 = (float) Math.atan2(Ve.z, Ve.x);
-        if (Math.abs(Ve.y) < 0.0020000000949949026D && Math.abs(Ve.z) < 0.0020000000949949026D)
+        if (Math.abs(Ve.y) < 0.002D && Math.abs(Ve.z) < 0.002D)
             f2 = 0.0F;
         if (Ve.x < 0.0D) {
             f2 = 1.0F;
@@ -5528,7 +5546,7 @@ public class Maneuver extends AIFlightModel {
                     tmpV3f.x += World.Rnd().nextFloat(-100F, 100F);
                     tmpV3f.y += World.Rnd().nextFloat(-100F, 100F);
                     tmpV3f.z = 0.0D;
-                    if (tmpV3f.length() < 9.9999997473787516E-005D) {
+                    if (tmpV3f.length() < 0.0001D) {
                         tmpV3f.sub(this.Vtarg, this.Loc);
                         tmpV3f.z = 0.0D;
                     }
@@ -5704,7 +5722,7 @@ public class Maneuver extends AIFlightModel {
                     this.pop();
                 }
                 Ve.normalize();
-                if (Ve.x < 0.80000001192092896D)
+                if (Ve.x < 0.8D)
                     this.turnToDirection(f);
                 else
                     this.attackTurnToDirection((float) d1, f, 2.0F + this.Skill * 1.5F);
@@ -5757,7 +5775,7 @@ public class Maneuver extends AIFlightModel {
                 this.Or.transformInv(Ve);
                 this.sub_Man_Count++;
                 TypeGuidedBombCarrier typeguidedbombcarrier = (TypeGuidedBombCarrier) this.actor;
-                if (d2 > 2000D && d2 < 6500D && d1 < 0.90000000000000002D && !typeguidedbombcarrier.typeGuidedBombCgetIsGuiding()) {
+                if (d2 > 2000D && d2 < 6500D && d1 < 0.9D && !typeguidedbombcarrier.typeGuidedBombCgetIsGuiding()) {
                     this.CT.WeaponControl[3] = true;
                     this.push(0);
                     this.push(10);
@@ -5770,7 +5788,7 @@ public class Maneuver extends AIFlightModel {
                     this.pop();
                 }
                 Ve.normalize();
-                if (Ve.x < 99999.800000011921D)
+                if (Ve.x < 99999.8D)
                     this.turnToDirection(f);
                 else
                     this.attackTurnToDirection((float) d2, f, 2.0F + this.Skill * 1.5F);
@@ -5823,7 +5841,7 @@ public class Maneuver extends AIFlightModel {
                 this.Or.transformInv(Ve);
                 this.sub_Man_Count++;
                 TypeGuidedBombCarrier typeguidedbombcarrier = (TypeGuidedBombCarrier) this.actor;
-                if (d2 < 4000D && d1 < 0.90000000000000002D && (d2 < 2000D || d1 > 0.40000000000000002D) && !typeguidedbombcarrier.typeGuidedBombCgetIsGuiding()) {
+                if (d2 < 4000D && d1 < 0.9D && (d2 < 2000D || d1 > 0.4D) && !typeguidedbombcarrier.typeGuidedBombCgetIsGuiding()) {
                     this.CT.WeaponControl[3] = true;
                     this.setSpeedMode(5);
                     this.push(0);
@@ -5837,7 +5855,7 @@ public class Maneuver extends AIFlightModel {
                     this.pop();
                 }
                 Ve.normalize();
-                if (Ve.x < 99999.800000011921D)
+                if (Ve.x < 99999.8D)
                     this.turnToDirection(f);
                 else
                     this.attackTurnToDirection((float) d2, f, 2.0F + this.Skill * 1.5F);
@@ -5884,7 +5902,7 @@ public class Maneuver extends AIFlightModel {
         float f4 = (float) Math.sqrt(this.Vwld.x * this.Vwld.x + this.Vwld.y * this.Vwld.y);
         float f5 = f4 * f3 + 10F;
         actor.getSpeed(tmpV3d);
-        tmpV3d.scale(f3 * 0.34999999999999998D * this.Skill);
+        tmpV3d.scale(f3 * 0.35D * this.Skill);
         Ve.x += (float) tmpV3d.x;
         Ve.y += (float) tmpV3d.y;
         Ve.z += (float) tmpV3d.z;
@@ -6055,7 +6073,7 @@ public class Maneuver extends AIFlightModel {
                     if (this.Vxy.z > 0.7F * f3)
                         this.Vxy.z = 0.7F * f3;
                 }
-                if (this.sub_Man_Count > 100 && this.Alt < 1000F && Vpl.dot(Ve) > 0.99000000953674316D || this.Alt < 600F) {
+                if (this.sub_Man_Count > 100 && this.Alt < 1000F && Vpl.dot(Ve) > 0.99D || this.Alt < 600F) {
                     this.bombsOut = true;
                     Voice.speakAttackByBombs((Aircraft) this.actor);
                     this.CT.BayDoorControl = 0.0F;
@@ -6108,7 +6126,7 @@ public class Maneuver extends AIFlightModel {
             tmpV3f.set(actor.pos.getAbsPoint());
             tmpV3f.sub(this.Vtarg);
             actor.getSpeed(tmpV3d);
-            if (tmpV3f.length() > 9.9999997473787516E-005D)
+            if (tmpV3f.length() > 0.0001D)
                 tmpV3f.normalize();
             this.Vxy.set(tmpV3f.y * 3000D, -tmpV3f.x * 3000D, 0.0D);
             this.direc = this.Vxy.dot(Ve) > 0.0D;
@@ -6140,7 +6158,7 @@ public class Maneuver extends AIFlightModel {
             }
             if (this.actor instanceof JU_88NEW)
                 f12 += 90F;
-            double d1 = Math.sqrt(0.20399999999999999D * this.Loc.z);
+            double d1 = Math.sqrt(0.204D * this.Loc.z);
             double d2 = 1.0D * d1 * this.getSpeed();
             double d3 = (f12 + f5 - d2) / f7;
             this.Vtarg.x += (float) (tmpV3d.x * d3);
@@ -6239,9 +6257,9 @@ public class Maneuver extends AIFlightModel {
         this.Or.transformInv(Ve);
         if (this.submaneuver == 3) {
             if (this.sub_Man_Count < 20)
-                Ve.set(1.0D, 0.090000003576278687D, 0.029999999329447746D);
+                Ve.set(1.0D, 0.09D, 0.03D);
             else
-                Ve.set(1.0D, 0.090000003576278687D, 0.0099999997764825821D);
+                Ve.set(1.0D, 0.09D, 0.01D);
             if (!this.direc)
                 Ve.y *= -1D;
         }
@@ -6274,7 +6292,7 @@ public class Maneuver extends AIFlightModel {
         if (this.submaneuver == 1 && this.sub_Man_Count == 0) {
             tmpV3f.set(actor.pos.getAbsPoint());
             tmpV3f.sub(this.Vtarg);
-            if (tmpV3f.length() > 9.9999997473787516E-005D)
+            if (tmpV3f.length() > 0.0001D)
                 tmpV3f.normalize();
             this.Vxy.set(tmpV3f.y * 3000D, -tmpV3f.x * 3000D, 0.0D);
             this.direc = this.Vxy.dot(Ve) > 0.0D;
@@ -6345,14 +6363,14 @@ public class Maneuver extends AIFlightModel {
                     d1 = 0.0D;
                 if (this.Skill == 2)
                     d1 += 100D;
-                if (f1 < f6 - d1 && f1 > 1800F && d < 0.20000000000000001D) {
+                if (f1 < f6 - d1 && f1 > 1800F && d < 0.2D) {
                     actor.getSpeed(tmpV3d);
                     float f7 = 1.0F;
                     if (this.Skill == 2)
                         f7 = World.Rnd().nextFloat(0.8F, 1.2F);
                     else if (this.Skill == 3)
                         f7 = World.Rnd().nextFloat(0.9F, 1.1F);
-                    f7 = (float) (f7 + 0.10000000000000001D);
+                    f7 = (float) (f7 + 0.1D);
                     ToKGUtils.setTorpedoGyroAngle(this, f3, (float) (1.95D * tmpV3d.length()) * f7);
                     if (((TypeHasToKG) this.actor).isSalvo()) {
                         int i = 0;
@@ -6401,9 +6419,9 @@ public class Maneuver extends AIFlightModel {
         this.Or.transformInv(Ve);
         if (this.submaneuver == 3) {
             if (this.sub_Man_Count < 20)
-                Ve.set(1.0D, 0.090000003576278687D, 0.029999999329447746D);
+                Ve.set(1.0D, 0.09D, 0.03D);
             else
-                Ve.set(1.0D, 0.090000003576278687D, 0.0099999997764825821D);
+                Ve.set(1.0D, 0.09D, 0.01D);
             if (!this.direc)
                 Ve.y *= -1D;
         }
@@ -6515,9 +6533,9 @@ public class Maneuver extends AIFlightModel {
             case 3:
                 this.setSpeedMode(6);
                 this.sub_Man_Count++;
-                this.Vwld.z *= 0.80000001192092896D;
+                this.Vwld.z *= 0.8D;
                 this.Or.transformInv(this.Vwld);
-                this.Vwld.y *= 0.89999997615814209D;
+                this.Vwld.y *= 0.9D;
                 this.Or.transform(this.Vwld);
                 float f5 = this.sub_Man_Count;
                 if (f5 < 100F)
@@ -6567,7 +6585,7 @@ public class Maneuver extends AIFlightModel {
         if (f1 < 1500.0F) {
             float f7 = 0.0F;
             float f9 = 0.0F;
-            if (this.Vtarg.x > -0.20000000298023224) {
+            if (this.Vtarg.x > -0.2) {
                 f7 = 3.0F * ((float) this.Vtarg.x + 0.2F);
                 this.Vxy.set(tmpV3f);
                 this.Vxy.scale(1.0);
@@ -6727,7 +6745,7 @@ public class Maneuver extends AIFlightModel {
                 Ve.sub(this.target.Loc, this.Loc);
                 Ve.z = 0.0D;
                 Ve.normalize();
-                Ve.z = 0.94999999999999996D;
+                Ve.z = 0.95D;
                 this.Or.transformInv(Ve);
                 Ve.normalize();
                 this.attackTurnToDirection(1000F, f, 15F);
@@ -6765,7 +6783,7 @@ public class Maneuver extends AIFlightModel {
         if (f1 < 1500.0F) {
             float f5 = 0.0F;
             float f7 = 0.0F;
-            if (this.Vtarg.x > -0.20000000298023224) {
+            if (this.Vtarg.x > -0.2) {
                 f5 = 3.0F * ((float) this.Vtarg.x + 0.2F);
                 this.Vxy.set(tmpV3f);
                 this.Vxy.scale(1.0);
@@ -7117,8 +7135,8 @@ public class Maneuver extends AIFlightModel {
                     this.sub_Man_Count = 0;
                     this.set_maneuver(0);
                 } else {
-                    if (Ve.x < 0.30000001192092896) {
-                        this.Vtarg.z += (0.012F * this.Skill * (800.0F + f2) * (0.30000001192092896 - Ve.x));
+                    if (Ve.x < 0.3) {
+                        this.Vtarg.z += (0.012F * this.Skill * (800.0F + f2) * (0.3 - Ve.x));
                         Ve.set(this.Vtarg);
                         this.Or.transformInv(Ve);
                         Ve.normalize();
@@ -7198,8 +7216,8 @@ public class Maneuver extends AIFlightModel {
                     this.Or.transformInv(Ve);
                     Ve.normalize();
                     ((Maneuver) this.target).incDangerAggressiveness(1, (float) Ve.x, f3, this);
-                    if (Ve.x < 0.30000001192092896) {
-                        this.Vtarg.z += (0.01F * this.Skill * (800.0F + f3) * (0.30000001192092896 - Ve.x));
+                    if (Ve.x < 0.3) {
+                        this.Vtarg.z += (0.01F * this.Skill * (800.0F + f3) * (0.3 - Ve.x));
                         Ve.set(this.Vtarg);
                         this.Or.transformInv(Ve);
                         Ve.normalize();
@@ -7222,7 +7240,7 @@ public class Maneuver extends AIFlightModel {
                         if (tmpV3f.x < 0.0)
                             break;
                         tmpV3f.sub(this.strikeTarg.Vwld, this.Vwld);
-                        tmpV3f.scale(0.699999988079071);
+                        tmpV3f.scale(0.7);
                         Vpl.add(tmpV3f);
                         this.Or.transformInv(Vpl);
                         this.push();
@@ -7313,8 +7331,8 @@ public class Maneuver extends AIFlightModel {
                     this.submaneuver = 0;
                     this.sub_Man_Count = 0;
                 } else {
-                    if (Ve.x < 0.30000001192092896) {
-                        this.Vtarg.z += (0.01F * this.Skill * (800.0F + f2) * (0.30000001192092896 - Ve.x));
+                    if (Ve.x < 0.3) {
+                        this.Vtarg.z += (0.01F * this.Skill * (800.0F + f2) * (0.3 - Ve.x));
                         Ve.set(this.Vtarg);
                         this.Or.transformInv(Ve);
                         Ve.normalize();
@@ -7376,8 +7394,8 @@ public class Maneuver extends AIFlightModel {
                     }
                     // TODO: --- TD AI code backport from 4.13 ---
                     Ve.normalize();
-                    if (Ve.x < 0.30000001192092896) {
-                        this.Vtarg.z += (0.01F * this.Skill * (800.0F + f3) * (0.30000001192092896 - Ve.x));
+                    if (Ve.x < 0.3) {
+                        this.Vtarg.z += (0.01F * this.Skill * (800.0F + f3) * (0.3 - Ve.x));
                         Ve.set(this.Vtarg);
                         this.Or.transformInv(Ve);
                         Ve.normalize();
@@ -7539,8 +7557,8 @@ public class Maneuver extends AIFlightModel {
                     this.set_maneuver(0);
                     break;
                 }
-                if (Ve.x < 0.30000001192092896D) {
-                    this.Vtarg.z += 0.012F * this.Skill * (800F + f2) * (0.30000001192092896D - Ve.x);
+                if (Ve.x < 0.3D) {
+                    this.Vtarg.z += 0.012F * this.Skill * (800F + f2) * (0.3D - Ve.x);
                     Ve.set(this.Vtarg);
                     this.Or.transformInv(Ve);
                     Ve.normalize();
@@ -7571,7 +7589,7 @@ public class Maneuver extends AIFlightModel {
             tmpV3d.sub(this.target.Loc, this.Loc);
             this.Or.transformInv(tmpV3d);
             tmpV3d.normalize();
-            if (tmpV3d.x > 0.80000001192092896D) {
+            if (tmpV3d.x > 0.8D) {
                 this.push();
                 this.set_maneuver(14);
                 return false;
@@ -7634,7 +7652,7 @@ public class Maneuver extends AIFlightModel {
         if (f7 < 0.001F)
             f7 = 0.001F;
         Vpl.normalize();
-        if (Vpl.x < -0.93999999761581421D && f3 / f7 < 1.5F * (3 - this.Skill)) {
+        if (Vpl.x < -0.94D && f3 / f7 < 1.5F * (3 - this.Skill)) {
             this.push();
             this.set_maneuver(14);
             return;
@@ -7677,14 +7695,14 @@ public class Maneuver extends AIFlightModel {
         this.Or.transformInv(Ve);
         Ve.normalize();
         ((Maneuver) this.target).incDangerAggressiveness(1, (float) Ve.x, f3, this);
-        if (Ve.x < 0.30000001192092896D) {
-            this.Vtarg.z += 0.044999999999999998D * this.flying * (800F + f3) * (0.30000001192092896D - Ve.x);
+        if (Ve.x < 0.3D) {
+            this.Vtarg.z += 0.045D * this.flying * (800F + f3) * (0.3D - Ve.x);
             Ve.set(this.Vtarg);
             this.Or.transformInv(Ve);
             Ve.normalize();
         }
         this.attackTurn(f3, f, 10F + this.Skill * 8F);
-        if (this.Alt > 5F + (4 - this.Skill) * 5 && Ve.x > 0.97499999999999998D && f3 < this.convAI * 1.25F) {
+        if (this.Alt > 5F + (4 - this.Skill) * 5 && Ve.x > 0.975D && f3 < this.convAI * 1.25F) {
             if (this.followType == 0)
                 this.setSpeedMode(2);
             else if (this.followType == 1)
@@ -7746,7 +7764,7 @@ public class Maneuver extends AIFlightModel {
         if (f6 < 0.001F)
             f6 = 0.001F;
         Vpl.normalize();
-        if (Vpl.x < -0.93999999761581421D && f3 / f6 < 1.5F * (3 - this.Skill)) {
+        if (Vpl.x < -0.94D && f3 / f6 < 1.5F * (3 - this.Skill)) {
             this.push();
             this.set_maneuver(14);
             return;
@@ -7796,8 +7814,8 @@ public class Maneuver extends AIFlightModel {
         this.Or.transformInv(Ve);
         Ve.normalize();
         ((Maneuver) this.target).incDangerAggressiveness(1, (float) Ve.x, f3, this);
-        if (Ve.x < 0.89999997615814209D) {
-            this.Vtarg.z += 0.03F * this.Skill * (800F + f3) * (0.89999997615814209D - Ve.x);
+        if (Ve.x < 0.9D) {
+            this.Vtarg.z += 0.03F * this.Skill * (800F + f3) * (0.9D - Ve.x);
             Ve.set(this.Vtarg);
             this.Or.transformInv(Ve);
             Ve.normalize();
@@ -7811,7 +7829,7 @@ public class Maneuver extends AIFlightModel {
     // TODO: --- TD AI code backport from 4.13 ---
 
     private void turnToDirection(float f) {
-        if (Math.abs(Ve.y) > 0.10000000149011612)
+        if (Math.abs(Ve.y) > 0.1)
             this.CT.AileronControl = -(float) Math.atan2(Ve.y, Ve.z) - 0.016F * this.Or.getKren();
         else
             this.CT.AileronControl = -(float) Math.atan2(Ve.y, Ve.x) - 0.016F * this.Or.getKren();
@@ -7819,9 +7837,9 @@ public class Maneuver extends AIFlightModel {
         if (this.CT.RudderControl * this.W.z > 0.0)
             this.W.z = 0.0;
         else
-            this.W.z *= 1.0399999618530273;
+            this.W.z *= 1.04;
         float f1 = (float) Math.atan2(Ve.z, Ve.x);
-        if (Math.abs(Ve.y) < 0.0020000000949949026 && Math.abs(Ve.z) < 0.0020000000949949026)
+        if (Math.abs(Ve.y) < 0.002 && Math.abs(Ve.z) < 0.002)
             f1 = 0.0F;
         if (Ve.x < 0.0)
             f1 = 1.0F;
@@ -7869,7 +7887,7 @@ public class Maneuver extends AIFlightModel {
             f5 = -0.1F * (this.getAOA() - f) + 0.5F * (float) this.getW().y;
         else
             f5 = 1.0F * (float) Ve.z + 0.5F * (float) this.getW().y;
-        if (Math.abs(Ve.y) < 0.0020000000949949026) {
+        if (Math.abs(Ve.y) < 0.002) {
             f2 = 0.0F;
             this.CT.RudderControl = 0.0F;
         }
@@ -7887,12 +7905,12 @@ public class Maneuver extends AIFlightModel {
 
     // TODO: +++ TD AI code backport from 4.13 +++
     private void turnBaby(float f, float f1, float f2) {
-        if (Ve.x < 0.0099999997764825821D)
-            Ve.x = 0.0099999997764825821D;
+        if (Ve.x < 0.01D)
+            Ve.x = 0.01D;
         if (this.sub_Man_Count == 0)
             this.oldVe.set(Ve);
         this.minElevCoeff = 20F;
-        this.CT.RudderControl = (float) (-3D * Math.atan2(Ve.y, Ve.x) + 0.050000000000000003D * (Ve.y - this.oldVe.y));
+        this.CT.RudderControl = (float) (-3D * Math.atan2(Ve.y, Ve.x) + 0.05D * (Ve.y - this.oldVe.y));
         float f3 = (float) (10D * Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - this.oldVe.z));
         this.CT.AileronControl = (-3F * (float) Math.atan2(Ve.y, Ve.x) - 0.006F * this.Or.getKren()) + 0.3F * (float) this.W.x;
         if (Math.abs(this.CT.ElevatorControl - f3) < f2 * f1)
@@ -7908,11 +7926,11 @@ public class Maneuver extends AIFlightModel {
     // TODO: --- TD AI code backport from 4.13 ---
 
     private void attackTurnToDirection(float f, float f1, float f2) {
-        if (Ve.x < 0.009999999776482582)
-            Ve.x = 0.009999999776482582;
+        if (Ve.x < 0.01)
+            Ve.x = 0.01;
         if (this.sub_Man_Count == 0)
             this.oldVe.set(Ve);
-        if (Ve.x > 0.949999988079071) {
+        if (Ve.x > 0.95) {
             this.CT.RudderControl = (float) (-30.0 * Math.atan2(Ve.y, Ve.x) + 1.5 * (Ve.y - this.oldVe.y));
             float f3;
             if (Ve.z > 0.0 || this.CT.RudderControl > 0.9F) {
@@ -7977,13 +7995,13 @@ public class Maneuver extends AIFlightModel {
 
     // TODO: +++ TD AI code backport from 4.13 +++
     private void attackTurn(float f, float f1, float f2) {
-        if (Ve.x < 0.0099999997764825821D && this.subSkill > 6 && this.maneuver == 27 && f < 800F && this.getMinHeightTurn(100F) < ((Maneuver) this.target).getMinHeightTurn(50F) + this.Skill * 0.33F)
-            this.set_maneuver(101);
-        else if (Ve.x < 0.0099999997764825821D)
-            Ve.x = 0.0099999997764825821D;
+        if (Ve.x < 0.01D && this.subSkill > 6 && this.maneuver == 27 && f < 800F && this.getMinHeightTurn(100F) < ((Maneuver) this.target).getMinHeightTurn(50F) + this.Skill * 0.33F)
+            this.set_maneuver(ATTACK_HARD);
+        else if (Ve.x < 0.01D)
+            Ve.x = 0.01D;
         if (this.sub_Man_Count == 0)
             this.oldVe.set(Ve);
-        if (Ve.x > 0.94999998807907104D) {
+        if (Ve.x > 0.95D) {
             this.CT.RudderControl = (float) (-10D * Math.atan2(Ve.y, Ve.x) + 1.5D * (Ve.y - this.oldVe.y));
             float f3;
             float f5;
@@ -8020,10 +8038,10 @@ public class Maneuver extends AIFlightModel {
                 f4 = (float) (10D * Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - this.oldVe.z) + 0.5D * (float) this.W.y);
                 if (f4 < 0.0F)
                     f4 = 0.0F;
-                this.CT.AileronControl = (float) ((-20D * Math.atan2(Ve.y, Ve.z) - 0.050000000000000003D * this.Or.getKren()) + 5D * this.W.x);
+                this.CT.AileronControl = (float) ((-20D * Math.atan2(Ve.y, Ve.z) - 0.05D * this.Or.getKren()) + 5D * this.W.x);
             } else {
                 f4 = (float) (-5D * Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - this.oldVe.z) + 0.5D * (float) this.W.y);
-                this.CT.AileronControl = (float) ((-20D * Math.atan2(Ve.y, Ve.z) - 0.050000000000000003D * this.Or.getKren()) + 5D * this.W.x);
+                this.CT.AileronControl = (float) ((-20D * Math.atan2(Ve.y, Ve.z) - 0.05D * this.Or.getKren()) + 5D * this.W.x);
             }
             if (f4 < 0.0F)
                 f4 = 0.0F;
@@ -8046,29 +8064,43 @@ public class Maneuver extends AIFlightModel {
         this.oldVe.set(Ve);
         this.oldAOA = this.AOA;
         this.sub_Man_Count++;
-        this.W.x *= 0.94999999999999996D;
+        this.W.x *= 0.95D;
     }
     // TODO: --- TD AI code backport from 4.13 ---
 
     private void doCheckStrike() {
-        if ((!(this.M.massEmpty > 5000.0F) || this.AP.way.isLanding()) && (this.maneuver != 24 || this.strikeTarg != this.Leader) && (!(this.actor instanceof TypeDockable) || !((TypeDockable) this.actor).typeDockableIsDocked())) {
-            Vpl.sub(this.strikeTarg.Loc, this.Loc);
-            tmpV3f.set(Vpl);
-            this.Or.transformInv(tmpV3f);
-            if (!(tmpV3f.x < 0.0)) {
-                tmpV3f.sub(this.strikeTarg.Vwld, this.Vwld);
-                tmpV3f.scale(0.699999988079071);
-                Vpl.add(tmpV3f);
-                this.Or.transformInv(Vpl);
-                this.push();
-                // TODO: +++ TD AI code backport from 4.13 +++
-                if (Vpl.z > 0.0D && this.Alt > 50F)
-                    // TODO: --- TD AI code backport from 4.13 ---
-                    this.push(61);
-                else
-                    this.push(60);
-                this.safe_pop();
-            }
+        // TODO: +++ Avoid mid air collision - by SAS~Storebror +++
+//        if ((this.M.massEmpty > 5000.0F) && (!this.AP.way.isLanding())) {
+//            return;
+//        }
+        if ((this.M.massEmpty > this.strikeTarg.M.massEmpty * 1.5F) && (!this.AP.way.isLanding()))
+            return;
+        // TODO: --- Avoid mid air collision - by SAS~Storebror ---
+        if ((this.maneuver == 24) && (this.strikeTarg == this.Leader)) {
+            return;
+        }
+        if (((this.actor instanceof TypeDockable)) && (((TypeDockable) this.actor).typeDockableIsDocked())) {
+            return;
+        }
+        Vpl.sub(this.strikeTarg.Loc, this.Loc);
+        tmpV3f.set(Vpl);
+        this.Or.transformInv(tmpV3f);
+        if (!(tmpV3f.x < 0.0)) {
+            tmpV3f.sub(this.strikeTarg.Vwld, this.Vwld);
+            tmpV3f.scale(0.7);
+            Vpl.add(tmpV3f);
+            this.Or.transformInv(Vpl);
+            this.push();
+            // TODO: +++ Avoid mid air collision - by SAS~Storebror +++
+            // TODO: +++ TD AI code backport from 4.13 +++
+//            if (Vpl.z > 0.0D && this.Alt > 50F)
+            // TODO: --- TD AI code backport from 4.13 ---
+            if (Vpl.z > 10.0D && this.Alt > 300F && World.Rnd().nextFloat() > 0.8F)
+                // TODO: --- Avoid mid air collision - by SAS~Storebror ---
+                this.push(EVADE_DN);
+            else
+                this.push(EVADE_UP);
+            this.safe_pop();
         }
     }
 
@@ -8448,7 +8480,7 @@ public class Maneuver extends AIFlightModel {
         this.CT.AileronControl = this.corrCoeff * this.corrAile + (1.0F - this.corrCoeff) * this.CT.AileronControl;
         this.CT.ElevatorControl = this.corrCoeff * this.corrElev + (1.0F - this.corrCoeff) * this.CT.ElevatorControl;
         if (this.Alt < 15.0F && this.Vwld.z < 0.0)
-            this.Vwld.z *= 0.8500000238418579;
+            this.Vwld.z *= 0.85;
         // TODO: +++ TD AI code backport from 4.13 +++
         if ((-this.Vwld.z * 2.5D > this.Alt) || (this.Alt < 20F / (this.Skill + 1))) {
             if (this.maneuver == 27 || this.maneuver == 43 || this.maneuver == 21 || this.maneuver == 24 || this.maneuver == 68 || this.maneuver == 53 || this.maneuver == 65 || this.maneuver == 76 || this.maneuver == 74 || this.maneuver == 75) {
@@ -8557,7 +8589,7 @@ public class Maneuver extends AIFlightModel {
             }
             case 4:
                 f1 = this.CT.PowerControl;
-                f1 += ((f4 * (this.smConstSpeed - Pitot.Indicator((float) this.Loc.z, this.getSpeed())) - f5 * this.getLocalAccel().x / 9.8100004196167) * f);
+                f1 += ((f4 * (this.smConstSpeed - Pitot.Indicator((float) this.Loc.z, this.getSpeed())) - f5 * this.getLocalAccel().x / 9.81) * f);
                 if (f1 > 1.0F)
                     f1 = 1.0F;
                 break;
@@ -8639,7 +8671,7 @@ public class Maneuver extends AIFlightModel {
                         float f26 = -0.3F * f24;
                         float f27 = -3.0F * (this.getForwAccel() - this.tailForStaying.getForwAccel());
                         if (f24 > 27.0F) {
-                            this.Vwld.scale(0.9800000190734863);
+                            this.Vwld.scale(0.98);
                             f1 = 0.0F;
                         } else {
                             float f28 = 1.0F - 0.02F * (0.02F * f24 + 0.02F * -f11);
@@ -8837,7 +8869,7 @@ public class Maneuver extends AIFlightModel {
     }
 
     private void emergencyTurnToDirection(float f) {
-        if (Math.abs(Ve.y) > 0.10000000149011612)
+        if (Math.abs(Ve.y) > 0.1)
             this.CT.AileronControl = -(float) Math.atan2(Ve.y, Ve.z) - 0.016F * this.Or.getKren();
         else
             this.CT.AileronControl = -(float) Math.atan2(Ve.y, Ve.x) - 0.016F * this.Or.getKren();
@@ -8845,7 +8877,7 @@ public class Maneuver extends AIFlightModel {
         if (this.CT.RudderControl * this.W.z > 0.0)
             this.W.z = 0.0;
         else
-            this.W.z *= 1.0399999618530273;
+            this.W.z *= 1.04;
     }
 
     private void initTargPoint(float f) {
@@ -8896,9 +8928,9 @@ public class Maneuver extends AIFlightModel {
             if (this.Alt < 5.0F)
                 this.setSpeedMode(8);
             this.CT.BrakeControl = 0.2F;
-            if (this.Vwld.length() < 0.30000001192092896 && World.Rnd().nextInt(0, 99) < 4) {
+            if (this.Vwld.length() < 0.3 && World.Rnd().nextInt(0, 99) < 4) {
                 this.setStationedOnGround(true);
-                World.cur();
+
                 if (this.actor != World.getPlayerAircraft()) {
                     this.push(44);
                     this.safe_pop();
@@ -8914,7 +8946,7 @@ public class Maneuver extends AIFlightModel {
                     this.Group.delAircraft((Aircraft) this.actor);
                 if (this.actor instanceof TypeGlider || this.actor instanceof TypeSailPlane)
                     return;
-                World.cur();
+
                 if (this.actor != World.getPlayerAircraft()) {
                     if (Airport.distToNearestAirport(this.Loc) > 900.0)
                         ((Aircraft) this.actor).postEndAction(60.0, this.actor, 4, null);
@@ -8941,7 +8973,7 @@ public class Maneuver extends AIFlightModel {
                 this.dA = f1;
             this.CT.FlapsControl = 0.33F;
             if (this.Alt < 9.0F && Math.abs(this.Or.getKren()) < 5.0F && this.getVertSpeed() < -0.7F)
-                this.Vwld.z *= 0.8700000047683716;
+                this.Vwld.z *= 0.87;
         } else {
             this.rmax = 1.2F * this.Kmax * this.Alt;
             this.rmin = 0.6F * this.Kmax * this.Alt;
@@ -9015,14 +9047,14 @@ public class Maneuver extends AIFlightModel {
     private void addWindCorrection() {
         do {
             if (World.cur().diffCur.Wind_N_Turbulence) {
-                World.cur();
+
                 if (!World.wind().noWind)
                     break;
             }
             return;
         } while (false);
         double d = Ve.length();
-        World.cur();
+
         World.wind().getVectorAI(this.actor.pos.getAbsPoint(), this.windV);
         this.windV.scale(-1.0);
         Ve.normalize();
@@ -9067,7 +9099,7 @@ public class Maneuver extends AIFlightModel {
                 float f = this.AP.getWayPointDistance();
                 if (f < 1000F)
                     return;
-                if (this.AS.getPilotHealth(0) < 0.20000000000000001D || !this.isCapableOfACM())
+                if (this.AS.getPilotHealth(0) < 0.2D || !this.isCapableOfACM())
                     return;
                 if (this.first)
                     this.lookAroundTime = Time.current() + World.Rnd().nextInt(5000, 0x186a0 - this.Skill * 20000);
@@ -9330,7 +9362,7 @@ public class Maneuver extends AIFlightModel {
                         return this.isStopOnStalemate(aircraft);
                     if (((Maneuver) aircraft.FM).distToTaxiPoint == -1F)
                         continue;
-                } else if (!actor.isAlive() || actor.isDestroyed() || actor.getSpeed(Vpl) < 0.10000000149011612D) {
+                } else if (!actor.isAlive() || actor.isDestroyed() || actor.getSpeed(Vpl) < 0.1D) {
                     this.planAlternativeTaxiRoute(actor.pos.getAbsPoint(), actor.collisionR() * 5F, actor);
                     this.ignoredActor = actor;
                     return false;

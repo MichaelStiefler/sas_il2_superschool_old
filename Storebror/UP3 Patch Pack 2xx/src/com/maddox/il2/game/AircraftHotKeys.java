@@ -56,6 +56,7 @@ import com.maddox.il2.objects.air.LANCASTER;
 import com.maddox.il2.objects.air.ME_210;
 import com.maddox.il2.objects.air.ME_210CA1ZSTR;
 import com.maddox.il2.objects.air.MOSQUITO;
+import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.air.P2V;
 import com.maddox.il2.objects.air.PE_2;
 import com.maddox.il2.objects.air.PE_8;
@@ -95,6 +96,7 @@ import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.RTSConf;
 import com.maddox.rts.Time;
+import com.maddox.sas1946.il2.util.Reflection;
 import com.maddox.sound.AudioDevice;
 import com.maddox.sound.CmdMusic;
 import com.maddox.sound.RadioChannel;
@@ -3947,50 +3949,84 @@ public class AircraftHotKeys {
         return Selector.setCurRecordArg0(World.getPlayerAircraft());
     }
 
-    private Actor nextViewActor(boolean bool) {
+    private Actor nextViewActor(boolean showEnemy) {
         if (Selector.isEnableTrackArgs())
             return Selector.setCurRecordArg0(Selector.getTrackArg0());
-        int i = World.getPlayerArmy();
+        int playerArmyIndex = World.getPlayerArmy();
         namedAircraft.clear();
-        Actor actor = Main3D.cur3D().viewActor();
-        if (this.isViewed(actor))
-            namedAircraft.put(actor.name(), null);
-        for (Map.Entry entry = Engine.name2Actor().nextEntry(null); entry != null; entry = Engine.name2Actor().nextEntry(entry)) {
-            Actor actor_319_ = (Actor) entry.getValue();
+        Actor viewActor = Main3D.cur3D().viewActor();
+        if (this.isViewed(viewActor))
+            namedAircraft.put(viewActor.name(), null);
+        // TODO: Added by SAS~Storebor: Show Player Aircraft before any AI Actors!
+        // -------------------------------------------------
+        for (Map.Entry actorEntry = Engine.name2Actor().nextEntry(null); actorEntry != null; actorEntry = Engine.name2Actor().nextEntry(actorEntry)) {
+            Actor curActor = (Actor) actorEntry.getValue();
+            NetUser netuser = null;
+            if (curActor instanceof Aircraft) {
+                netuser = ((NetAircraft) curActor).netUser();
+            } else if (curActor instanceof Paratrooper) {
+                netuser = (NetUser)Reflection.getValue(curActor, "driver");
+            }
+            if (netuser == null) continue; // skip any AI stuff at this stage...
 
             // TODO: Added by |ZUTI|: Disable showing of paratroopers! New difficulty setting?
             // -------------------------------------------------
-            if (actor_319_ instanceof Paratrooper)
+            if (curActor instanceof Paratrooper)
                 continue;
             // -------------------------------------------------
 
-            if (this.isViewed(actor_319_) && actor_319_ != actor) {
-                if (bool) {
-                    if (actor_319_.getArmy() != i)
-                        namedAircraft.put(actor_319_.name(), null);
-                } else if (actor_319_.getArmy() == i)
-                    namedAircraft.put(actor_319_.name(), null);
+            if (this.isViewed(curActor) && curActor != viewActor) {
+                if (showEnemy) {
+                    if (curActor.getArmy() != playerArmyIndex)
+                        namedAircraft.put(curActor.name(), null);
+                } else if (curActor.getArmy() == playerArmyIndex)
+                    namedAircraft.put(curActor.name(), null);
+            }
+        }
+        // -------------------------------------------------
+        
+        for (Map.Entry actorEntry = Engine.name2Actor().nextEntry(null); actorEntry != null; actorEntry = Engine.name2Actor().nextEntry(actorEntry)) {
+            Actor curActor = (Actor) actorEntry.getValue();
+
+            // TODO: Added by |ZUTI|: Disable showing of paratroopers! New difficulty setting?
+            // -------------------------------------------------
+            if (curActor instanceof Paratrooper) // TODO: Only AI Paratroopers get skipped now (added by SAS~Storebror)
+                continue;
+            // -------------------------------------------------
+
+            // TODO: Added by SAS~Storebor: Show Player Aircraft before any AI Actors!
+            // -------------------------------------------------
+            if (curActor instanceof Aircraft)
+                if (((NetAircraft) curActor).netUser() != null) continue; // Skip Player Aircraft at this stage
+            // -------------------------------------------------
+            
+            if (this.isViewed(curActor) && curActor != viewActor) {
+                if (showEnemy) {
+                    if (curActor.getArmy() != playerArmyIndex)
+                        namedAircraft.put(curActor.name(), null);
+                } else if (curActor.getArmy() == playerArmyIndex)
+                    namedAircraft.put(curActor.name(), null);
             }
         }
         if (namedAircraft.size() == 0)
             return Selector.setCurRecordArg0(null);
-        if (!this.isViewed(actor))
+        if (!this.isViewed(viewActor))
             return (Selector.setCurRecordArg0((Actor) Engine.name2Actor().get(namedAircraft.firstKey())));
-        if (namedAircraft.size() == 1 && this.isViewed(actor))
+        if (namedAircraft.size() == 1 && this.isViewed(viewActor))
             return Selector.setCurRecordArg0(null);
         namedAll = namedAircraft.keySet().toArray(namedAll);
-        int i_320_ = 0;
-        String string = actor.name();
-        for (/**/; namedAll[i_320_] != null; i_320_++) {
-            if (string.equals(namedAll[i_320_]))
+        int viewIndex = 0;
+        String string = viewActor.name();
+        for (; namedAll[viewIndex] != null; viewIndex++) {
+            if (string.equals(namedAll[viewIndex]))
                 break;
         }
-        if (namedAll[i_320_] == null)
+        if (namedAll[viewIndex] == null)
             return Selector.setCurRecordArg0(null);
-        i_320_++;
-        if (namedAll.length == i_320_ || namedAll[i_320_] == null)
-            i_320_ = 0;
-        return Selector.setCurRecordArg0((Actor) Engine.name2Actor().get(namedAll[i_320_]));
+        viewIndex++;
+        if (namedAll.length == viewIndex || namedAll[viewIndex] == null)
+            viewIndex = 0;
+        return Selector.setCurRecordArg0((Actor) Engine.name2Actor().get(namedAll[viewIndex]));
     }
 
     private boolean isViewed(Actor actor) {

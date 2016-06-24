@@ -4,6 +4,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
+import com.maddox.il2.game.Main;
 import com.maddox.opengl.GLCaps;
 import com.maddox.opengl.GLContext;
 import com.maddox.opengl.GLContextException;
@@ -70,6 +71,9 @@ public class Config {
          // TODO: +++ Mods Settings GUI by SAS~Storebror +++
             this.bStabs4All = ini.get("Mods", "Stabs4All", 0) != 0;
             this.bNewTrackIR = ini.get("Mods", "NewTrackIR", 0) != 0;
+            this.bAutoNtrkRecording = ini.get("Mods", "AutoNtrk", 0) != 0;
+            this.iDarkness = ini.get("Mods", "Darkness", MAX_NIGHT_SETTINGS);
+            this.iDiffuse = ini.get("Mods", "Diffuse", MAX_NIGHT_SETTINGS);
          // TODO: --- Mods Settings GUI by SAS~Storebror ---
             
             checkWindowUse3Renders();
@@ -108,6 +112,9 @@ public class Config {
             // TODO: +++ Mods Settings GUI by SAS~Storebror +++
             ini.setValue("Mods", "Stabs4All", this.bStabs4All ? "1" : "0");
             ini.setValue("Mods", "NewTrackIR", this.bNewTrackIR ? "1" : "0");
+            ini.setValue("Mods", "AutoNtrk", this.bAutoNtrkRecording ? "1" : "0");
+            ini.setValue("Mods", "Darkness", "" + this.iDarkness);
+            ini.setValue("Mods", "Diffuse", "" + this.iDiffuse);
             // TODO: --- Mods Settings GUI by SAS~Storebror ---
             saveSound();
             saveEngine();
@@ -126,6 +133,17 @@ public class Config {
         if (this.bNetBoost) 
             netSpeed = NET_SPEED_HIGH;
         this.bAddDefaultCountryNone = ini.get("Mods", "AddDefaultCountryNone", 0) != 0;
+        this.bUseAutoAdminLogin = ini.get("Mods", "useNetLogin", 0) != 0;
+        this.sAutoAdminPassword = ini.get("Mods", "netLogin", "");
+        this.bUseAutoUserLogin = ini.get("Mods", "useNetLoginUser", 0) != 0;
+        this.sAutoUserPassword = ini.get("Mods", "netLoginUser", "");
+        this.bOverrideOnlineCallsign = ini.get("Mods", "useNetCallsign", 0) != 0;
+        this.sOnlineCallsign = ini.get("Mods", "netCallsign", "");
+        // TODO: +++ Override Online Callsign - by SAS~Storebror +++
+        if (Main.cur().netGameSpy != null && this.bOverrideOnlineCallsign && this.sOnlineCallsign.length() > 0) {
+            Main.cur().netGameSpy.userName = UnicodeTo8bit.load(this.sOnlineCallsign);
+        }
+        // TODO: --- Override Online Callsign - by SAS~Storebror ---
         // TODO: --- Mods Settings GUI by SAS~Storebror ---
         netLocalHost = ini.get("NET", "localHost", netLocalHost);
         if (netLocalHost != null)
@@ -182,6 +200,12 @@ public class Config {
      // TODO: +++ Mods Settings GUI by SAS~Storebror +++
         ini.setValue("Mods", "HighSpeedNet", this.bNetBoost ? "1" : "0");
         ini.setValue("Mods", "AddDefaultCountryNone", this.bAddDefaultCountryNone ? "1" : "0");
+        ini.setValue("Mods", "useNetLogin", this.bUseAutoAdminLogin ? "1" : "0");
+        ini.setValue("Mods", "netLogin", this.sAutoAdminPassword);
+        ini.setValue("Mods", "useNetLoginUser", this.bUseAutoUserLogin ? "1" : "0");
+        ini.setValue("Mods", "netLoginUser", this.sAutoUserPassword);
+        ini.setValue("Mods", "useNetCallsign", this.bOverrideOnlineCallsign ? "1" : "0");
+        ini.setValue("Mods", "netCallsign", this.sOnlineCallsign);
      // TODO: --- Mods Settings GUI by SAS~Storebror ---
         
         ini.setValue("NET", "serverChannels", "" + netServerChannels);
@@ -643,6 +667,17 @@ public class Config {
     public boolean              bNetBoost;
     public boolean              bNewTrackIR;
     public boolean              bAddDefaultCountryNone;
+    public boolean              bAutoNtrkRecording;
+    public boolean              bUseAutoAdminLogin;
+    public String               sAutoAdminPassword;
+    public boolean              bUseAutoUserLogin;
+    public String               sAutoUserPassword;
+    public boolean              bOverrideOnlineCallsign;
+    public String               sOnlineCallsign;
+    public int                  iDarkness;
+    public int                  iDiffuse;
+    public static final int     MIN_NIGHT_SETTINGS = 0;
+    public static final int     MAX_NIGHT_SETTINGS = 10;
  // TODO: --- Mods Settings GUI by SAS~Storebror ---
 
 }

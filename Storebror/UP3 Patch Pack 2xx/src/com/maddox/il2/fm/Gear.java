@@ -818,7 +818,10 @@ public class Gear
 			}
 			//TODO: Added by |ZUTI|: enables usage of chocks on ground airfields too. And compensate if player fires during chocks-in period - no back thrust.
 			//-----------------------------------------------------------------------
-			else if (nOfGearsOnGr == 3 && nP == 3 && FM.Vrel.lengthSquared() < 1.5)
+	        // TODO: +++ Slowly rolling wheels Mod by SAS~Storebror +++
+//			else if (nOfGearsOnGr == 3 && nP == 3 && FM.Vrel.lengthSquared() < 1.5)
+	        else if (nOfGearsOnGr == 3 && nP == 3 && FM.Vrel.lengthSquared() < 0.0001)
+	        // TODO: --- Slowly rolling wheels Mod by SAS~Storebror ---
 			{
 				FM.brakeShoeLoc.set(FM.actor.pos.getCurrent());
                 FM.Vrel.set(0.0D, 0.0D, 0.0D);

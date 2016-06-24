@@ -7,6 +7,8 @@ package com.maddox.il2.gui;
 import com.maddox.gwindow.GColor;
 import com.maddox.gwindow.GTexture;
 import com.maddox.gwindow.GWindow;
+import com.maddox.gwindow.GWindowEditControl;
+import com.maddox.gwindow.GWindowHSliderInt;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.il2.ai.DifficultySettings;
 import com.maddox.il2.ai.World;
@@ -18,25 +20,34 @@ import com.maddox.rts.RTSConfWin;
 import com.maddox.sas1946.il2.util.Reflection;
 
 public class GUIModSettings extends GameState {
-    public GUIClient     client;
-    public DialogClient  dialogClient;
-    public GUIInfoMenu   infoMenu;
-    public GUIInfoName   infoName;
-    public GUISwitchBox3 sStabsForAll;
-    public GUISwitchBox3 sNewTIR;
-    public GUISwitchBox3 sHighSpeedNet;
-    public GUISwitchBox3 sAddDefaultCountryNone;
+    public GUIClient          client;
+    public DialogClient       dialogClient;
+    public GUIInfoMenu        infoMenu;
+    public GUIInfoName        infoName;
+    public GUISwitchBox3      sStabsForAll;
+    public GUISwitchBox3      sNewTIR;
+    public GUISwitchBox3      sHighSpeedNet;
+    public GUISwitchBox3      sAddDefaultCountryNone;
+    public GUISwitchBox3      sAutoNtrkRecording;
+    public GUISwitchBox3      sAutoAdminLogin;
+    public GWindowEditControl wAdminPassword;
+    public GUISwitchBox3      sAutoUserLogin;
+    public GWindowEditControl wUserPassword;
+    public GUISwitchBox3      sOverrideOnlineCallsign;
+    public GWindowEditControl wOnlineCallsign;
 
-    public GUIButton     bExit;
-    
-    private boolean      bUseTrackIR;
+    public GWindowHSliderInt  hsDarkness;
+    public GWindowHSliderInt  hsDiffuse;
 
+    public GUIButton          bExit;
+
+    private boolean           bUseTrackIR;
 
     public class DialogClient extends GUIDialogClient {
         public boolean notify(GWindow gwindow, int i, int i_0_) {
             if (i != 2)
                 return super.notify(gwindow, i, i_0_);
-            if (gwindow == bExit) {
+            if (gwindow == GUIModSettings.this.bExit) {
                 Main.stateStack().pop();
                 return true;
             }
@@ -45,29 +56,99 @@ public class GUIModSettings extends GameState {
 
         public void render() {
             super.render();
-            GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(464.0F), x1024(768.0F), 2.0F);
-            GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(544.0F), x1024(768.0F), 2.0F);
-            setCanvasColor(GColor.Gray);
-            setCanvasFont(0);
-            draw(x1024(96.0F), y1024(577.0F), x1024(224.0F), y1024(48.0F), 0, GUIModSettings.this.i18n("diff.Back"));
-            draw(x1024(128.0F), y1024(32.0F), x1024(272.0F), y1024(48.0F), 0, "Stabilizers on all Aircraft");
-            draw(x1024(128.0F), y1024(96.0F), x1024(272.0F), y1024(48.0F), 0, "Use Network File Transfer Boost");
-            draw(x1024(128.0F), y1024(160.0F), x1024(272.0F), y1024(48.0F), 0, "Add Default Country \"None\"");
-            if (bUseTrackIR) draw(x1024(128.0F), y1024(224.0F), x1024(272.0F), y1024(48.0F), 0, "Use new TrackIR code");
+            GUISeparate.draw(this, GColor.Gray, this.x1024(32.0F), this.y1024(464.0F), this.x1024(768.0F), 2.0F);
+            GUISeparate.draw(this, GColor.Gray, this.x1024(32.0F), this.y1024(544.0F), this.x1024(768.0F), 2.0F);
+            this.setCanvasColor(GColor.Gray);
+            this.setCanvasFont(0);
+            this.draw(this.x1024(96.0F), this.y1024(577.0F), this.x1024(224.0F), this.y1024(48.0F), 0, GUIModSettings.this.i18n("diff.Back"));
+            float y = 32F;
+            float x = 128F;
+            this.draw(this.x1024(x), this.y1024(y), this.x1024(272.0F), this.y1024(48.0F), 0, "Stabilizers on all Aircraft");
+            y += 64F;
+            this.draw(this.x1024(x), this.y1024(y), this.x1024(272.0F), this.y1024(48.0F), 0, "Use Network File Transfer Boost");
+            y += 64F;
+            this.draw(this.x1024(x), this.y1024(y), this.x1024(272.0F), this.y1024(48.0F), 0, "Add Default Country \"None\"");
+            y += 64F;
+            if (GUIModSettings.this.bUseTrackIR) {
+                this.draw(this.x1024(x), this.y1024(y), this.x1024(272.0F), this.y1024(48.0F), 0, "Use new TrackIR code");
+                y += 64F;
+            }
+            this.draw(this.x1024(x), this.y1024(y), this.x1024(272.0F), this.y1024(48.0F), 0, "Automatic Track Recording");
+            y += 64F;
+
+            this.draw(this.x1024(20F), this.y1024(y), this.x1024(272.0F), this.y1024(48.0F), 0, "Night Darkness");
+            this.draw(this.x1024(155F), this.y1024(y), this.x1024(272.0F), this.y1024(48.0F), 0, "dark");
+            this.draw(this.x1024(392F), this.y1024(y), this.x1024(272.0F), this.y1024(48.0F), 0, "default");
+            y += 64F;
+            this.draw(this.x1024(20F), this.y1024(y), this.x1024(272.0F), this.y1024(48.0F), 0, "Diffuse Moonlight");
+            this.draw(this.x1024(155F), this.y1024(y), this.x1024(272.0F), this.y1024(48.0F), 0, "dark");
+            this.draw(this.x1024(392F), this.y1024(y), this.x1024(272.0F), this.y1024(48.0F), 0, "default");
+            y += 64F;
+
+            y = 32F;
+            x = 400F;
+            this.draw(this.x1024(x), this.y1024(y), this.x1024(272.0F), this.y1024(48.0F), 2, "Online Auto Admin Login");
+            y += 64F;
+            this.draw(this.x1024(x), this.y1024(y), this.x1024(272.0F), this.y1024(48.0F), 2, "Online Admin Password");
+            y += 64F;
+            this.draw(this.x1024(x), this.y1024(y), this.x1024(272.0F), this.y1024(48.0F), 2, "Online Auto User Login");
+            y += 64F;
+            this.draw(this.x1024(x), this.y1024(y), this.x1024(272.0F), this.y1024(48.0F), 2, "Online User Password");
+            y += 64F;
+            this.draw(this.x1024(x), this.y1024(y), this.x1024(272.0F), this.y1024(48.0F), 2, "Use Custom Online Callsign");
+            y += 64F;
+            this.draw(this.x1024(x), this.y1024(y), this.x1024(272.0F), this.y1024(48.0F), 2, "Custom Online Callsign");
+            y += 64F;
         }
 
         public void setPosSize() {
-            set1024PosSize(92.0F, 72.0F, 832.0F, 656.0F);
-            sStabsForAll.setPosC(x1024(88.0F), y1024(56.0F));
-            sHighSpeedNet.setPosC(x1024(88.0F), y1024(120.0F));
-            sAddDefaultCountryNone.setPosC(x1024(88.0F), y1024(184.0F));
-            if (bUseTrackIR) sNewTIR.setPosC(x1024(88.0F), y1024(248.0F));
-            bExit.setPosC(x1024(56.0F), y1024(602.0F));
+            this.set1024PosSize(92.0F, 72.0F, 832.0F, 656.0F);
+            float y = 56F;
+            float x = 88F;
+            GUIModSettings.this.sStabsForAll.setPosC(this.x1024(x), this.y1024(y));
+            y += 64F;
+            GUIModSettings.this.sHighSpeedNet.setPosC(this.x1024(x), this.y1024(y));
+            y += 64F;
+            GUIModSettings.this.sAddDefaultCountryNone.setPosC(this.x1024(x), this.y1024(y));
+            y += 64F;
+            if (GUIModSettings.this.bUseTrackIR) {
+                GUIModSettings.this.sNewTIR.setPosC(this.x1024(x), this.y1024(y));
+                y += 64F;
+            }
+            GUIModSettings.this.sAutoNtrkRecording.setPosC(this.x1024(x), this.y1024(y));
+            y += 64F;
+
+            GUIModSettings.this.hsDarkness.set1024PosSize(x + 100F, y - 12F, 200F, 32F);
+            y += 64F;
+            GUIModSettings.this.hsDiffuse.set1024PosSize(x + 100F, y - 12F, 200F, 32F);
+            y += 64F;
+
+            y = 56F;
+            x = 760F;
+            float xEditSize = 120F;
+            float yEditSize = 32F;
+            float xEditOffset = xEditSize / 2F;
+            float yEditOffset = yEditSize / 2F;
+
+            GUIModSettings.this.sAutoAdminLogin.setPosC(this.x1024(x), this.y1024(y));
+            y += 64F;
+            GUIModSettings.this.wAdminPassword.set1024PosSize(x - xEditOffset, y - yEditOffset, xEditSize, yEditSize);
+            y += 64F;
+            GUIModSettings.this.sAutoUserLogin.setPosC(this.x1024(x), this.y1024(y));
+            y += 64F;
+            GUIModSettings.this.wUserPassword.set1024PosSize(x - xEditOffset, y - yEditOffset, xEditSize, yEditSize);
+            y += 64F;
+            GUIModSettings.this.sOverrideOnlineCallsign.setPosC(this.x1024(x), this.y1024(y));
+            y += 64F;
+            GUIModSettings.this.wOnlineCallsign.set1024PosSize(x - xEditOffset, y - yEditOffset, xEditSize, yEditSize);
+            y += 64F;
+
+            GUIModSettings.this.bExit.setPosC(this.x1024(56.0F), this.y1024(602.0F));
         }
     }
 
     public void enterPush(GameState gamestate) {
-        _enter();
+        this._enter();
     }
 
     protected DifficultySettings settings() {
@@ -75,38 +156,68 @@ public class GUIModSettings extends GameState {
     }
 
     public void _enter() {
-        reset();
-        sStabsForAll.setEnable(true);
-        sHighSpeedNet.setEnable(true);
-        sAddDefaultCountryNone.setEnable(true);
-        if (bUseTrackIR) sNewTIR.setEnable(true);
-        client.activateWindow();
+        this.reset();
+        this.sStabsForAll.setEnable(true);
+        this.sHighSpeedNet.setEnable(true);
+        this.sAddDefaultCountryNone.setEnable(true);
+        if (this.bUseTrackIR)
+            this.sNewTIR.setEnable(true);
+        this.sAutoNtrkRecording.setEnable(true);
+        this.sAutoAdminLogin.setEnable(true);
+        this.wAdminPassword.setEnable(true);
+        this.sAutoUserLogin.setEnable(true);
+        this.wUserPassword.setEnable(true);
+        this.sOverrideOnlineCallsign.setEnable(true);
+        this.wOnlineCallsign.setEnable(true);
+        this.hsDarkness.setEnable(true);
+        this.hsDiffuse.setEnable(true);
+        this.client.activateWindow();
     }
 
     private void reset() {
-        sStabsForAll.setChecked(Config.cur.bStabs4All, false);
-        sHighSpeedNet.setChecked(Config.cur.bNetBoost, false);
-        sAddDefaultCountryNone.setChecked(Config.cur.bAddDefaultCountryNone, false);
-        if (bUseTrackIR) sNewTIR.setChecked(Config.cur.bNewTrackIR, false);
+        this.sStabsForAll.setChecked(Config.cur.bStabs4All, false);
+        this.sHighSpeedNet.setChecked(Config.cur.bNetBoost, false);
+        this.sAddDefaultCountryNone.setChecked(Config.cur.bAddDefaultCountryNone, false);
+        if (this.bUseTrackIR)
+            this.sNewTIR.setChecked(Config.cur.bNewTrackIR, false);
+        this.sAutoNtrkRecording.setChecked(Config.cur.bAutoNtrkRecording, false);
+        this.sAutoAdminLogin.setChecked(Config.cur.bUseAutoAdminLogin, false);
+        this.wAdminPassword.setValue(Config.cur.sAutoAdminPassword);
+        this.sAutoUserLogin.setChecked(Config.cur.bUseAutoUserLogin, false);
+        this.wUserPassword.setValue(Config.cur.sAutoUserPassword);
+        this.sOverrideOnlineCallsign.setChecked(Config.cur.bOverrideOnlineCallsign, false);
+        this.wOnlineCallsign.setValue(Config.cur.sOnlineCallsign);
+        this.hsDarkness.setPos(Config.cur.iDarkness, false);
+        this.hsDiffuse.setPos(Config.cur.iDiffuse, false);
     }
 
     public void _leave() {
-        Config.cur.bStabs4All = sStabsForAll.bChecked;
-        Config.cur.bNetBoost = sHighSpeedNet.bChecked;
-        if (sHighSpeedNet.bChecked)
+        Config.cur.bStabs4All = this.sStabsForAll.bChecked;
+        Config.cur.bNetBoost = this.sHighSpeedNet.bChecked;
+        if (this.sHighSpeedNet.bChecked)
             Config.cur.netSpeed = Config.NET_SPEED_HIGH;
-        Config.cur.bAddDefaultCountryNone = sAddDefaultCountryNone.bChecked;
-        if (bUseTrackIR) {
-            ((RTSConfWin)RTSConf.cur).trackIRWin.destroy();
-            Config.cur.bNewTrackIR = sNewTIR.bChecked;
-            ((RTSConfWin)RTSConf.cur).trackIRWin.create();
-            Reflection.setBoolean(((RTSConfWin)RTSConf.cur).trackIR, "bExist", ((RTSConfWin)RTSConf.cur).trackIRWin.isCreated());
+        Config.cur.bAddDefaultCountryNone = this.sAddDefaultCountryNone.bChecked;
+        if (this.bUseTrackIR) {
+            ((RTSConfWin) RTSConf.cur).trackIRWin.destroy();
+            Config.cur.bNewTrackIR = this.sNewTIR.bChecked;
+            ((RTSConfWin) RTSConf.cur).trackIRWin.create();
+            Reflection.setBoolean(((RTSConfWin) RTSConf.cur).trackIR, "bExist", ((RTSConfWin) RTSConf.cur).trackIRWin.isCreated());
         }
-        client.hideWindow();
+        Config.cur.bAutoNtrkRecording = this.sAutoNtrkRecording.bChecked;
+
+        Config.cur.bUseAutoAdminLogin = this.sAutoAdminLogin.bChecked;
+        Config.cur.sAutoAdminPassword = this.wAdminPassword.getValue();
+        Config.cur.bUseAutoUserLogin = this.sAutoUserLogin.bChecked;
+        Config.cur.sAutoUserPassword = this.wUserPassword.getValue();
+        Config.cur.bOverrideOnlineCallsign = this.sOverrideOnlineCallsign.bChecked;
+        Config.cur.sOnlineCallsign = this.wOnlineCallsign.getValue();
+        Config.cur.iDarkness = this.hsDarkness.pos();
+        Config.cur.iDiffuse = this.hsDiffuse.pos();
+
+        this.client.hideWindow();
     }
 
-    protected void clientInit(GWindowRoot gwindowroot) {
-    }
+    protected void clientInit(GWindowRoot gwindowroot) {}
 
     public GUIModSettings(GWindowRoot gwindowroot) {
         this(gwindowroot, MOD_SETTINGS);
@@ -119,19 +230,45 @@ public class GUIModSettings extends GameState {
                 this.bUseTrackIR = true;
             }
         }
-        client = (GUIClient) gwindowroot.create(new GUIClient());
-        dialogClient = (DialogClient) client.create(new DialogClient());
-        infoMenu = (GUIInfoMenu) client.create(new GUIInfoMenu());
-        infoMenu.info = i18n("diff.info");
-        infoName = (GUIInfoName) client.create(new GUIInfoName());
+        this.client = (GUIClient) gwindowroot.create(new GUIClient());
+        this.dialogClient = (DialogClient) this.client.create(new DialogClient());
+        this.infoMenu = (GUIInfoMenu) this.client.create(new GUIInfoMenu());
+        this.infoMenu.info = this.i18n("diff.info");
+        this.infoName = (GUIInfoName) this.client.create(new GUIInfoName());
         GTexture gtexture = ((GUILookAndFeel) gwindowroot.lookAndFeel()).buttons2;
-        bExit = (GUIButton) dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96.0F, 48.0F, 48.0F));
-        sStabsForAll = ((GUISwitchBox3) dialogClient.addControl(new GUISwitchBox3(dialogClient)));
-        sHighSpeedNet = ((GUISwitchBox3) dialogClient.addControl(new GUISwitchBox3(dialogClient)));
-        if (bUseTrackIR) sNewTIR = ((GUISwitchBox3) dialogClient.addControl(new GUISwitchBox3(dialogClient)));
-        sAddDefaultCountryNone = ((GUISwitchBox3) dialogClient.addControl(new GUISwitchBox3(dialogClient)));
-        clientInit(gwindowroot);
-        dialogClient.activateWindow();
-        client.hideWindow();
+        this.bExit = (GUIButton) this.dialogClient.addEscape(new GUIButton(this.dialogClient, gtexture, 0.0F, 96.0F, 48.0F, 48.0F));
+        this.sStabsForAll = ((GUISwitchBox3) this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
+        this.sHighSpeedNet = ((GUISwitchBox3) this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
+        if (this.bUseTrackIR)
+            this.sNewTIR = ((GUISwitchBox3) this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
+        this.sAddDefaultCountryNone = ((GUISwitchBox3) this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
+        this.sAutoNtrkRecording = ((GUISwitchBox3) this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
+
+        this.sAutoAdminLogin = ((GUISwitchBox3) this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
+        this.wAdminPassword = ((GWindowEditControl) this.dialogClient.addControl(new GWindowEditControl(this.dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null)));
+        this.wAdminPassword.bNumericOnly = false;
+        this.wAdminPassword.bDelayedNotify = true;
+        this.wAdminPassword.align = 1;
+
+        this.sAutoUserLogin = ((GUISwitchBox3) this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
+        this.wUserPassword = ((GWindowEditControl) this.dialogClient.addControl(new GWindowEditControl(this.dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null)));
+        this.wUserPassword.bNumericOnly = false;
+        this.wUserPassword.bDelayedNotify = true;
+        this.wUserPassword.align = 1;
+
+        this.sOverrideOnlineCallsign = ((GUISwitchBox3) this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
+        this.wOnlineCallsign = ((GWindowEditControl) this.dialogClient.addControl(new GWindowEditControl(this.dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null)));
+        this.wOnlineCallsign.bNumericOnly = false;
+        this.wOnlineCallsign.bDelayedNotify = true;
+        this.wOnlineCallsign.align = 1;
+
+        this.dialogClient.addControl(this.hsDarkness = new GWindowHSliderInt(this.dialogClient));
+        this.hsDarkness.setRange(0, Config.MAX_NIGHT_SETTINGS, Config.MAX_NIGHT_SETTINGS);
+        this.dialogClient.addControl(this.hsDiffuse = new GWindowHSliderInt(this.dialogClient));
+        this.hsDiffuse.setRange(0, Config.MAX_NIGHT_SETTINGS, Config.MAX_NIGHT_SETTINGS);
+
+        this.clientInit(gwindowroot);
+        this.dialogClient.activateWindow();
+        this.client.hideWindow();
     }
 }

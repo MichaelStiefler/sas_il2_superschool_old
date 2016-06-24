@@ -3,11 +3,13 @@ package com.maddox.il2.net;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.EventLog;
 import com.maddox.il2.ai.MsgExplosion;
 import com.maddox.il2.ai.Regiment;
@@ -65,43 +67,43 @@ import com.maddox.sas1946.il2.util.BaseGameVersion;
 import com.maddox.util.IntHashtable;
 
 public class NetUser extends NetHost implements NetFileClient, NetUpdate {
-    public static final int MSG_READY              = 1;
-    public static final int MSG_BORNPLACE          = 2;
-    public static final int MSG_AIRDROMESTAY       = 3;
-    public static final int MSG_STAT               = 4;
-    public static final int MSG_STAT_INC           = 5;
-    public static final int MSG_CURSTAT            = 6;
-    public static final int MSG_CURSTAT_INC        = 7;
-    public static final int MSG_PING               = 8;
-    public static final int MSG_PING_INC           = 9;
-    public static final int MSG_REGIMENT           = 10;
-    public static final int MSG_SKIN               = 11;
-    public static final int MSG_PILOT              = 12;
-    public static final int MSG_REQUEST_PLACE      = 13;
-    public static final int MSG_PLACE              = 14;
-    public static final int MSG_REQUEST_WAIT_START = 15;
-    public static final int MSG_WAIT_START         = 16;
-    public static final int MSG_KICK               = 17;
-    public static final int MSG_MISSION_COMPLETE   = 18;
-    public static final int MSG_CAMERA             = 19;
-    public static final int MSG_ORDER_CMD          = 20;
-    public static final int MSG_RADIO              = 21;
-    public static final int MSG_VOICE              = 22;
-    public static final int MSG_TASK_COMPLETE      = 23;
-    public static final int MSG_HOUSE_DIE          = 24;
-    public static final int MSG_HOUSE_SYNC         = 25;
-    public static final int MSG_BRIDGE_RDIE        = 26;
-    public static final int MSG_BRIDGE_DIE         = 27;
-    public static final int MSG_BRIDGE_SYNC        = 28;
-    public static final int MSG_DOT_RANGE_FRIENDLY = 29;
-    public static final int MSG_DOT_RANGE_FOE      = 30;
-    public static final int MSG_EVENTLOG           = 31;
-    public static final int MSG_NOISEART           = 32;
-    
+    public static final int MSG_READY                   = 1;
+    public static final int MSG_BORNPLACE               = 2;
+    public static final int MSG_AIRDROMESTAY            = 3;
+    public static final int MSG_STAT                    = 4;
+    public static final int MSG_STAT_INC                = 5;
+    public static final int MSG_CURSTAT                 = 6;
+    public static final int MSG_CURSTAT_INC             = 7;
+    public static final int MSG_PING                    = 8;
+    public static final int MSG_PING_INC                = 9;
+    public static final int MSG_REGIMENT                = 10;
+    public static final int MSG_SKIN                    = 11;
+    public static final int MSG_PILOT                   = 12;
+    public static final int MSG_REQUEST_PLACE           = 13;
+    public static final int MSG_PLACE                   = 14;
+    public static final int MSG_REQUEST_WAIT_START      = 15;
+    public static final int MSG_WAIT_START              = 16;
+    public static final int MSG_KICK                    = 17;
+    public static final int MSG_MISSION_COMPLETE        = 18;
+    public static final int MSG_CAMERA                  = 19;
+    public static final int MSG_ORDER_CMD               = 20;
+    public static final int MSG_RADIO                   = 21;
+    public static final int MSG_VOICE                   = 22;
+    public static final int MSG_TASK_COMPLETE           = 23;
+    public static final int MSG_HOUSE_DIE               = 24;
+    public static final int MSG_HOUSE_SYNC              = 25;
+    public static final int MSG_BRIDGE_RDIE             = 26;
+    public static final int MSG_BRIDGE_DIE              = 27;
+    public static final int MSG_BRIDGE_SYNC             = 28;
+    public static final int MSG_DOT_RANGE_FRIENDLY      = 29;
+    public static final int MSG_DOT_RANGE_FOE           = 30;
+    public static final int MSG_EVENTLOG                = 31;
+    public static final int MSG_NOISEART                = 32;
+
     // TODO: Storebror: Track Users hitting refly where this shouldn't be possible
-    private long lastSuspiciousPreRefly = 0L;
-    private ArrayList suspiciousPreReflyAddonInfo = new ArrayList();
-    
+    private long            lastSuspiciousPreRefly      = 0L;
+    private ArrayList       suspiciousPreReflyAddonInfo = new ArrayList();
+
     public ArrayList getSuspiciousPreReflyAddonInfo() {
         return suspiciousPreReflyAddonInfo;
     }
@@ -122,6 +124,12 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
         this.lastSuspiciousPreRefly = lastSuspiciousPreRefly;
     }
     // ---
+
+    // TODO: +++ New "slap" command implementation by SAS~Storebror +++
+    private int                remainingSlaps         = 0;
+    private int                lastSlapTickCount      = 0;
+    private static final int   TICK_DIVISOR           = 33;
+    // TODO: --- New "slap" command implementation by SAS~Storebror ---
 
     // TODO: Storebror: Implement Patch Level Replication
     public static final byte   MSG_PATCHLEVEL         = 101;
@@ -449,6 +457,10 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
     }
 
     public void netUpdate() {
+        // TODO: +++ New "slap" command implementation by SAS~Storebror +++
+        if (!this.isMaster() && this.remainingSlaps > 0)
+            this.doRemainingSlaps();
+        // TODO: --- New "slap" command implementation by SAS~Storebror ---
         if (!this.isMaster())
             return;
         this.checkCameraBaseChanged();
@@ -666,9 +678,9 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                 }
             }
             this.place = i;
-            
+
             // TODO: Storebror: Temporary "fix", don't change army at all when changing ac position!
-            
+
 //            if (this.place >= 0) {
 //                // TODO: Added by |ZUTI|: don't change army if user is changing position in own ac!
 //                // TODO: Storebror: Gunner Switch TEST!
@@ -1118,7 +1130,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                 return;
             }
             this.suspiciousPreReflyAddonInfo.clear();
-            // ---    
+            // ---
             float f = netmsginput.readFloat();
             String s = netmsginput.read255();
             String s1 = netmsginput.read255();
@@ -1148,7 +1160,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
 
         if (this.isMirror() && netmsginput.channel() == this.masterChannel) {
             switch (byte0) {
-                case MSG_READY: // '\001'
+                case MSG_READY:
                     if (netmsginput.channel().userState == -1) {
                         netmsginput.channel().userState = 1;
                         if (Mission.cur() != null && Mission.cur().netObj() != null)
@@ -1156,7 +1168,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                     }
                     return true;
 
-                case MSG_PLACE: // '\016'
+                case MSG_PLACE:
                     int i = netmsginput.readUnsignedByte();
                     if (i == 255)
                         i = -1;
@@ -1195,7 +1207,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                     // ---
                     return true;
 
-                case MSG_WAIT_START: // '\020'
+                case MSG_WAIT_START:
                     NetUser netuser = (NetUser) netmsginput.readNetObj();
                     if (netuser == null)
                         return true;
@@ -1211,7 +1223,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                         }
                     return true;
 
-                case MSG_KICK: // '\021'
+                case MSG_KICK:
                     NetUser netuser1 = (NetUser) netmsginput.readNetObj();
                     if (netuser1 == null) {
                         return true;
@@ -1220,7 +1232,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                         return true;
                     }
 
-                case MSG_ORDER_CMD: // '\024'
+                case MSG_ORDER_CMD:
                     byte byte1 = netmsginput.readByte();
                     if (netmsginput.available() > 0) {
                         Actor actor = null;
@@ -1233,7 +1245,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                     }
                     return true;
 
-                case MSG_MISSION_COMPLETE: // '\022'
+                case MSG_MISSION_COMPLETE:
                     boolean flag = netmsginput.readByte() != 0;
                     if (this.isMirrored())
                         try {
@@ -1247,14 +1259,14 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                     this.setClientMissionComplete(flag);
                     return true;
 
-                case MSG_BORNPLACE: // '\002'
+                case MSG_BORNPLACE:
                     int j = netmsginput.readUnsignedByte();
                     if (j == 255)
                         j = -1;
                     this.setBornPlace(j);
                     return true;
 
-                case MSG_REGIMENT: // '\n'
+                case MSG_REGIMENT:
                     String s = netmsginput.read255();
                     char ac[] = new char[2];
                     ac[0] = netmsginput.readChar();
@@ -1265,13 +1277,13 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                     this.replicateNetUserRegiment();
                     return true;
 
-                case MSG_SKIN: // '\013'
+                case MSG_SKIN:
                     String s1 = netmsginput.read255();
                     this.setSkin(s1);
                     this.replicateSkin();
                     return true;
 
-                case MSG_PILOT: // '\f'
+                case MSG_PILOT:
                     String s2 = netmsginput.read255();
                     this.setPilot(s2);
                     this.replicatePilot();
@@ -1283,7 +1295,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                     this.replicateNoseart();
                     return true;
 
-                case MSG_RADIO: // '\025'
+                case MSG_RADIO:
                     String s4 = null;
                     int k1 = 0;
                     if (netmsginput.available() > 0) {
@@ -1299,15 +1311,15 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                         this.replicateRadio(s4, k1);
                     return true;
 
-                case MSG_VOICE: // '\026'
+                case MSG_VOICE:
                     this.getVoice(netmsginput);
                     return true;
 
-                case MSG_CAMERA: // '\023'
+                case MSG_CAMERA:
                     this.replicateCameraBaseChanged(netmsginput.readNetObj());
                     return true;
 
-                case MSG_TASK_COMPLETE: // '\027'
+                case MSG_TASK_COMPLETE:
                     NetObj netobj = netmsginput.readNetObj();
                     if (netobj == null) {
                         return true;
@@ -1316,12 +1328,12 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                         return true;
                     }
 
-                case MSG_DOT_RANGE_FRIENDLY: // '\035'
+                case MSG_DOT_RANGE_FRIENDLY:
                     Main.cur().dotRangeFriendly.netInput(netmsginput);
                     this.replicateDotRange(true);
                     return true;
 
-                case MSG_DOT_RANGE_FOE: // '\036'
+                case MSG_DOT_RANGE_FOE:
                     Main.cur().dotRangeFoe.netInput(netmsginput);
                     this.replicateDotRange(false);
                     return true;
@@ -1339,18 +1351,18 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             }
         }
         switch (byte0) {
-            case 13: // '\r'
+            case 13:
                 int k = netmsginput.readUnsignedByte();
                 if (k == 255)
                     k = -1;
                 this.requestPlace(k);
                 return true;
 
-            case 15: // '\017'
+            case 15:
                 this.doWaitStartCoopMission();
                 return true;
 
-            case 3: // '\003'
+            case 3:
                 int l = netmsginput.readUnsignedByte();
                 if (l == 255)
                     l = -1;
@@ -1362,17 +1374,17 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                         this.airdromeStay = l1;
                 return true;
 
-            case 4: // '\004'
-            case 6: // '\006'
+            case 4:
+            case 6:
                 this.getStat(netmsginput, byte0 == 6);
                 return true;
 
-            case 5: // '\005'
-            case 7: // '\007'
+            case 5:
+            case 7:
                 this.getIncStat(netmsginput, byte0 == 7);
                 return true;
 
-            case 9: // '\t'
+            case 9:
                 int i1 = 0;
                 if (netmsginput.available() == 4)
                     i1 = netmsginput.readInt();
@@ -1392,7 +1404,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                 }
                 return true;
 
-            case 8: // '\b'
+            case 8:
                 int j1 = netmsginput.readInt();
                 NetUser netuser3 = (NetUser) netmsginput.readNetObj();
                 if (netuser3 != null) {
@@ -1405,52 +1417,52 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                 }
                 return true;
 
-            case 24: // '\030'
+            case 24:
                 if (World.cur().statics != null)
                     World.cur().statics.netMsgHouseDie(this, netmsginput);
                 return true;
 
-            case 25: // '\031'
+            case 25:
                 if (World.cur().statics != null)
                     World.cur().statics.netMsgHouseSync(netmsginput);
                 return true;
 
-            case 26: // '\032'
+            case 26:
                 if (World.cur().statics != null)
                     World.cur().statics.netMsgBridgeRDie(netmsginput);
                 return true;
 
-            case 27: // '\033'
+            case 27:
                 if (World.cur().statics != null)
                     World.cur().statics.netMsgBridgeDie(this, netmsginput);
                 return true;
 
-            case 28: // '\034'
+            case 28:
                 if (World.cur().statics != null)
                     World.cur().statics.netMsgBridgeSync(netmsginput);
                 return true;
 
-            case 31: // '\037'
+            case MSG_EVENTLOG:
                 this.getEventLog(netmsginput);
                 return true;
 
-            case 10: // '\n'
-            case 11: // '\013'
-            case 12: // '\f'
-            case 14: // '\016'
-            case 16: // '\020'
-            case 17: // '\021'
-            case 18: // '\022'
-            case 19: // '\023'
-            case 20: // '\024'
-            case 21: // '\025'
-            case 22: // '\026'
-            case 23: // '\027'
-            case 29: // '\035'
-            case 30: // '\036'
+            case 10:
+            case 11:
+            case 12:
+            case 14:
+            case 16:
+            case 17:
+            case 18:
+            case 19:
+            case 20:
+            case 21:
+            case 22:
+            case 23:
+            case 29:
+            case 30:
 
                 // TODO: Storebror: Implement Patch Level Replication
-            case MSG_PATCHLEVEL: // 101
+            case MSG_PATCHLEVEL:
                 this.readPatchLevel(netmsginput, false);
                 return true;
             // ---
@@ -2448,8 +2460,8 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             System.out.println("socket channel '" + netchannel.id() + "', ip " + netchannel.remoteAddress().getHostAddress() + ":" + netchannel.remotePort() + ", " + this.uniqueName() + ", is complete created");
             // TODO: +++ NetBoost by SAS~Storebror +++
             System.out.println("maxSpeed=" + netchannel.getMaxSpeed() + "kBit/s, maxDataSize=" + netchannel.socket().getMaxDataSize());
-            // TODO: --- NetBoost  by SAS~Storebror ---
-            
+            // TODO: --- NetBoost by SAS~Storebror ---
+
             new MsgAction(64, 1.0D, this) {
 
                 public void doAction(Object obj) {
@@ -2472,7 +2484,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
         // ---
         EventLog.onConnected(this.uniqueName());
     }
-    
+
     static {
         Spawn.add(NetUser.class, new SPAWN());
     }
@@ -2557,24 +2569,59 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             // this.setPatchLevel(netmsginput.read255());
         }
     }
-    
+
     // TODO: +++ New "slap" command implementation by SAS~Storebror +++
-    public void slap(NetUser netuser) {
+    public void slap(NetUser netuser, int numSlaps) {
         if (netuser == null || netuser.isDestroyed())
             return;
         NetServerParams netserverparams = Main.cur().netServerParams;
-        if (!netserverparams.isMaster())
+        if (netserverparams == null || !netserverparams.isMaster())
             return;
         if (netuser.isMaster()) {
             return;
         }
         Aircraft aircraft = netuser.findAircraft();
-        if (aircraft == null) return;
-        System.out.println("Slapping " + netuser.uniqueName() + " (aircraft:" + aircraft.netName() + ")!");
-        Point3d p = new Point3d(aircraft.net.actor().pos.getAbsPoint());
-        p.add(0, 0, 20);
-        MsgExplosion.send(null, null, p, null, 100, 100, 1, 30, 0);
-        System.out.println(netuser.uniqueName() + " slapped!");
+        if (!Actor.isValid(aircraft) || !Actor.isAlive(aircraft))
+            return;
+
+        netuser.remainingSlaps = numSlaps;
+    }
+
+    private void doRemainingSlaps() {
+        do {
+            if (this.isDestroyed())
+                break;
+            Aircraft aircraft = this.findAircraft();
+            if (!Actor.isValid(aircraft) || !Actor.isAlive(aircraft))
+                break;
+            if (Time.tickCounter() - this.lastSlapTickCount < TICK_DIVISOR) return;
+            this.lastSlapTickCount = Time.tickCounter();
+            Point3d p = new Point3d(aircraft.net.actor().pos.getAbsPoint());
+            Tuple3d t = slapPoint(aircraft, 20, 5);
+            p.add(t);
+            DecimalFormat twoDigits = new DecimalFormat("00.00");
+            MsgExplosion.send(null, null, p, null, 100, 100, 1, 30, 0);
+            System.out.println("Slapping " + this.uniqueName() + " (aircraft:" + aircraft.netName() + "), slap point is " + twoDigits.format(Math.abs(t.x)) + "m " + (t.x > 0 ? "in front of" : "behind     ") + ", " + twoDigits.format(Math.abs(t.y)) + "m " + (t.y > 0 ? "right" : " left") + " of and " + twoDigits.format(Math.abs(t.z)) + "m "
+                    + (t.z > 0 ? "above" : "below") + " the aircraft. Remaining slaps: " + --this.remainingSlaps);
+            return;
+        } while (false);
+        this.remainingSlaps = 0;
+    }
+
+    private static Tuple3d slapPoint(Aircraft aircraft, double distance, double minHeightAboveGround) {
+        double maxTheta = Math.PI;
+        Point3d aircraftPos = aircraft.net.actor().pos.getAbsPoint();
+        double aircraftAlt = aircraftPos.z - Engine.land().HQ_Air(aircraftPos.x, aircraftPos.y);
+        double remainingHeight = aircraftAlt - minHeightAboveGround;
+        if (remainingHeight < distance) {
+            maxTheta = Math.acos(-remainingHeight / distance);
+        }
+        double theta = World.Rnd().nextDouble(0D, maxTheta);
+        double phi = World.Rnd().nextDouble(0D, Math.PI * 2D);
+        double dx = distance * Math.sin(theta) * Math.cos(phi);
+        double dy = distance * Math.sin(theta) * Math.sin(phi);
+        double dz = distance * Math.cos(theta);
+        return new Point3d(dx, dy, dz);
     }
     // TODO: --- New "slap" command implementation by SAS~Storebror ---
 }
