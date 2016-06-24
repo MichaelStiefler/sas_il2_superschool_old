@@ -1,4 +1,4 @@
-UP3 RC4 Patch Pack v2.00 BETA 5
+UP3 RC4 Patch Pack v2.00 BETA 7
 
 Contents:
 - All fixes listed below
@@ -41,6 +41,12 @@ Included feature enhancements:
 - New optional setting to add default "None" country to missions where it's missing by default
 - New Fiat CR.32 3D model
 - New Moon Textures by TT
+- Automatic Track Recording on demand (can be activated in new Mods GUI)
+- Cycling through externals shows player planes first, AI and static cameras follow behind
+- Additional nightly darkness disabled by default, can be re-enabled (and adjusted) by user in Mod GUI if this is desired
+- Nightly moonlight effect enhanced by default, can be disabled (and adjusted) by user in Mod GUI if this is desired
+- Auto Admin (for FBDj Admins) and Auto User (for reserved names in Online Gameplay) added to Mod GUI
+- User can select specific Username for Online Gameplay, e.g. to override the default Hyperlobby Username
 
 Included fixes:
 - Bf 109 Series Cockpit Code fix
@@ -108,6 +114,11 @@ Included fixes:
 - Explosion Fix (gets rid of the big explosion meshes on ground after large bomb detonations even if smaller bombs or actors crash later on)
 - IJN Ryujo fixed
 - A nasty IL-2 bug has been fixed that prevented IL-2 to actually take the month and day from a mission date into account
+- Right Alt (Alt Gr) key works in Chat etc. now
+- Wheels turn when plane starts to roll, not just when it rolls with more than 5 km/h
+- AI doesn't proceed to further Ground Attack waypoints anymore when there's nothing left to attack with
+- AI avoids collisions also when flying heavy planes, as long as they're not much heavier than the plane they're about to collide with.
+  In the latter case it's the smaller plane's responsibility to avoid the collision.
 
 (*) Me-262V3 flight model:
     Like in real life, you have to tap the brakes in order to get the 262V3 off the ground.
@@ -165,7 +176,7 @@ Installation:
     * #UP#_Enable_UP.3.0
     * Additional JSGME Mods not related to Fixes, Patches, unobfuscated UP etc.
 3.) Extract this Patch Pack to your UP3 RC4 game folder
-4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_200_BETA_5")
+4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_200_BETA_7")
 
 ********************
 

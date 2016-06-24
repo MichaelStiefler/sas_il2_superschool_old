@@ -1,34 +1,64 @@
 /*4.10.1 class*/
 package com.maddox.il2.gui;
 
-import com.maddox.gwindow.GWindowButton;
-import com.maddox.gwindow.GWindowEditControl;
-import com.maddox.gwindow.GWindowLabel;
-import com.maddox.rts.MsgInvokeMethod;
-import com.maddox.rts.NetMsgInput;
-import com.maddox.rts.net.IPAddress;
-import com.maddox.util.NumberTokenizer;
 import java.util.ArrayList;
 import java.util.HashMap;
-import com.maddox.gwindow.GWindowComboControl;
 
-public class GUINetNewClient extends com.maddox.il2.game.GameState implements com.maddox.il2.net.NetChannelListener, com.maddox.rts.MsgNetExtListener
+import com.maddox.gwindow.GColor;
+import com.maddox.gwindow.GTexture;
+import com.maddox.gwindow.GWindow;
+import com.maddox.gwindow.GWindowButton;
+import com.maddox.gwindow.GWindowComboControl;
+import com.maddox.gwindow.GWindowDialogClient;
+import com.maddox.gwindow.GWindowEditControl;
+import com.maddox.gwindow.GWindowFramed;
+import com.maddox.gwindow.GWindowLabel;
+import com.maddox.gwindow.GWindowMessageBox;
+import com.maddox.gwindow.GWindowRoot;
+import com.maddox.gwindow.GWindowTable;
+import com.maddox.il2.ai.World;
+import com.maddox.il2.engine.Config;
+import com.maddox.il2.game.GameState;
+import com.maddox.il2.game.I18N;
+import com.maddox.il2.game.Main;
+import com.maddox.il2.net.NetChannelListener;
+import com.maddox.il2.net.NetUser;
+import com.maddox.il2.net.USGS;
+import com.maddox.rts.CmdEnv;
+import com.maddox.rts.Finger;
+import com.maddox.rts.MsgAction;
+import com.maddox.rts.MsgAddListener;
+import com.maddox.rts.MsgInvokeMethod;
+import com.maddox.rts.MsgNetExtListener;
+import com.maddox.rts.MsgRemoveListener;
+import com.maddox.rts.NetAddress;
+import com.maddox.rts.NetChannel;
+import com.maddox.rts.NetControl;
+import com.maddox.rts.NetEnv;
+import com.maddox.rts.NetMsgInput;
+import com.maddox.rts.NetSocket;
+import com.maddox.rts.Time;
+import com.maddox.rts.net.IPAddress;
+import com.maddox.util.NumberTokenizer;
+import com.maddox.util.UnicodeTo8bit;
+
+public class GUINetNewClient extends GameState implements NetChannelListener, MsgNetExtListener
 {
-	public com.maddox.il2.gui.GUIClient client;
-	public com.maddox.il2.gui.GUINetNewClient.DialogClient dialogClient;
-	public com.maddox.il2.gui.GUIInfoMenu infoMenu;
-	public com.maddox.il2.gui.GUIInfoName infoName;
-	public com.maddox.il2.gui.GUINetNewClient.Table wTable;
-	public com.maddox.gwindow.GWindowEditControl wEdit;
-	public com.maddox.il2.gui.GUIButton bSearch;
-	public com.maddox.il2.gui.GUIButton bJoin;
-	public com.maddox.il2.gui.GUIButton bExit;
-	public com.maddox.gwindow.GWindow connectMessgeBox;
+	public GUIClient client;
+	public GUINetNewClient.DialogClient dialogClient;
+	public GUIInfoMenu infoMenu;
+	public GUIInfoName infoName;
+	public GUINetNewClient.Table wTable;
+	public GWindowEditControl wEdit;
+	public GUIButton bSearch;
+	public GUIButton bJoin;
+	public GUIButton bExit;
+	public GWindow connectMessgeBox;
 	public java.lang.String serverAddress;
-	com.maddox.rts.NetChannel serverChannel;
+	NetChannel serverChannel;
 	public boolean bExistSearch;
-	private static com.maddox.rts.NetAddress broadcastAdr;
-	private static com.maddox.rts.NetMsgInput _netMsgInput = new NetMsgInput();
+	private static NetAddress broadcastAdr;
+	private static NetMsgInput _netMsgInput = new NetMsgInput();
 	
 	//TODO: |ZUTI| variables
 	//------------------------------------
@@ -36,29 +66,29 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 	GUIButton bZutiRemove;;
 	//------------------------------------
 	
-	public class DlgServerPassword extends com.maddox.gwindow.GWindowFramed
+	public class DlgServerPassword extends GWindowFramed
 	{
 
 		public void doOk()
 		{
-			long l = com.maddox.rts.Finger.incLong(0L, publicKey);
-			l = com.maddox.rts.Finger.incLong(l, pw.getValue());
-			((com.maddox.rts.NetControl) com.maddox.rts.NetEnv.cur().control).doAnswer("SP " + l);
+			long l = Finger.incLong(0L, publicKey);
+			l = Finger.incLong(l, pw.getValue());
+			((NetControl) NetEnv.cur().control).doAnswer("SP " + l);
 			doStartWaitDlg();
 		}
 
 		public void doCancel()
 		{
 			connectMessgeBox = null;
-			com.maddox.rts.NetEnv.cur().connect.joinBreak();
+			NetEnv.cur().connect.joinBreak();
 		}
 
 		public void afterCreated()
 		{
-			clientWindow = create(new com.maddox.gwindow.GWindowDialogClient()
+			clientWindow = create(new GWindowDialogClient()
 			{
 
-				public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+				public boolean notify(GWindow gwindow, int i, int j)
 				{
 					if (i != 2) return super.notify(gwindow, i, j);
 					if (gwindow == bOk)
@@ -80,7 +110,7 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 				}
 
 			});
-			com.maddox.gwindow.GWindowDialogClient gwindowdialogclient = (com.maddox.gwindow.GWindowDialogClient) clientWindow;
+			GWindowDialogClient gwindowdialogclient = (GWindowDialogClient) clientWindow;
 			gwindowdialogclient.addLabel(new GWindowLabel(gwindowdialogclient, 1.0F, 1.0F, 10F, 1.5F, i18n("netnc.Password") + " ", null));
 			gwindowdialogclient.addControl(pw = new GWindowEditControl(gwindowdialogclient, 12F, 1.0F, 8F, 1.5F, null));
 			pw.bPassword = true;
@@ -92,12 +122,12 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 			showModal();
 		}
 
-		com.maddox.gwindow.GWindowEditControl pw;
-		com.maddox.gwindow.GWindowButton bOk;
-		com.maddox.gwindow.GWindowButton bCancel;
+		GWindowEditControl pw;
+		GWindowButton bOk;
+		GWindowButton bCancel;
 		java.lang.String publicKey;
 
-		public DlgServerPassword(com.maddox.gwindow.GWindow gwindow, java.lang.String s)
+		public DlgServerPassword(GWindow gwindow, java.lang.String s)
 		{
 			bSizable = false;
 			publicKey = s;
@@ -112,10 +142,10 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 		}
 	}
 
-	public class DialogClient extends com.maddox.il2.gui.GUIDialogClient
+	public class DialogClient extends GUIDialogClient
 	{
 
-		public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+		public boolean notify(GWindow gwindow, int i, int j)
 		{
 			if (i != 2) return super.notify(gwindow, i, j);
 			//TODO: Added by |ZUTI|
@@ -145,19 +175,19 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 			{
 				if (!bExistSearch)
 				{
-					com.maddox.rts.CmdEnv.top().exec("socket LISTENER 0");
-					java.lang.String s = "socket udp CREATE LOCALPORT " + com.maddox.il2.engine.Config.cur.netLocalPort;
-					if (com.maddox.il2.engine.Config.cur.netLocalHost != null && com.maddox.il2.engine.Config.cur.netLocalHost.length() > 0) s = s + " LOCALHOST " + com.maddox.il2.engine.Config.cur.netLocalHost;
-					com.maddox.rts.CmdEnv.top().exec(s);
-					if (com.maddox.rts.NetEnv.socketsBlock().size() + com.maddox.rts.NetEnv.socketsNoBlock().size() <= 0) return true;
-					if (com.maddox.il2.gui.GUINetNewClient.broadcastAdr == null) try
+					CmdEnv.top().exec("socket LISTENER 0");
+					java.lang.String s = "socket udp CREATE LOCALPORT " + Config.cur.netLocalPort;
+					if (Config.cur.netLocalHost != null && Config.cur.netLocalHost.length() > 0) s = s + " LOCALHOST " + Config.cur.netLocalHost;
+					CmdEnv.top().exec(s);
+					if (NetEnv.socketsBlock().size() + NetEnv.socketsNoBlock().size() <= 0) return true;
+					if (GUINetNewClient.broadcastAdr == null) try
 					{
-						com.maddox.il2.gui.GUINetNewClient.broadcastAdr = new IPAddress();
-						com.maddox.il2.gui.GUINetNewClient.broadcastAdr.create("255.255.255.255");
+						GUINetNewClient.broadcastAdr = new IPAddress();
+						GUINetNewClient.broadcastAdr.create("255.255.255.255");
 					}
 					catch (java.lang.Exception exception)
 					{
-						com.maddox.il2.gui.GUINetNewClient.broadcastAdr = null;
+						GUINetNewClient.broadcastAdr = null;
 						java.lang.System.out.println(exception.getMessage());
 						exception.printStackTrace();
 						return true;
@@ -166,17 +196,17 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 					bSearch.hideWindow();
 					bExistSearch = true;
 					setPosSize();
-					com.maddox.rts.MsgAddListener.post(64, com.maddox.rts.NetEnv.cur(), com.maddox.il2.game.Main.state(), null);
+					MsgAddListener.post(64, NetEnv.cur(), Main.state(), null);
 					onMsgTimeout();
 				}
 				return true;
 			}
 			if (gwindow == bExit)
 			{
-				com.maddox.rts.CmdEnv.top().exec("socket LISTENER 0");
-				com.maddox.rts.CmdEnv.top().exec("socket udp DESTROY LOCALPORT " + com.maddox.il2.engine.Config.cur.netLocalPort);
-				((com.maddox.il2.net.NetUser) com.maddox.rts.NetEnv.host()).reset();
-				com.maddox.il2.game.Main.stateStack().pop();
+				CmdEnv.top().exec("socket LISTENER 0");
+				CmdEnv.top().exec("socket udp DESTROY LOCALPORT " + Config.cur.netLocalPort);
+				((NetUser) NetEnv.host()).reset();
+				Main.stateStack().pop();
 				return true;
 			}
 			else
@@ -189,10 +219,10 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 		{
 			super.render();
 			if (bExistSearch)
-				com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(368F), x1024(896F), 2.0F);
+				GUISeparate.draw(this, GColor.Gray, x1024(32F), y1024(368F), x1024(896F), 2.0F);
 			else
-				com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(208F), x1024(480F), 2.0F);
-			setCanvasColor(com.maddox.gwindow.GColor.Gray);
+				GUISeparate.draw(this, GColor.Gray, x1024(32F), y1024(208F), x1024(480F), 2.0F);
+			setCanvasColor(GColor.Gray);
 			setCanvasFont(0);
 			if (bExistSearch)
 			{
@@ -208,9 +238,9 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 			else
 			{
 				if (bSearch.isVisible()) draw(x1024(96F), y1024(32F), x1024(416F), y1024(48F), 0, i18n("netnc.Search"));
-				if (!com.maddox.il2.net.USGS.isUsed() && com.maddox.il2.game.Main.cur().netGameSpy == null) draw(x1024(96F), y1024(96F), x1024(352F), y1024(32F), 1, i18n("netnc.Server"));
+				if (!USGS.isUsed() && Main.cur().netGameSpy == null) draw(x1024(96F), y1024(96F), x1024(352F), y1024(32F), 1, i18n("netnc.Server"));
 				if (bJoin.isVisible()) draw(x1024(288F), y1024(240F), x1024(160F), y1024(48F), 2, i18n("netnc.Join"));
-				draw(x1024(96F), y1024(240F), x1024(136F), y1024(48F), 0, !com.maddox.il2.net.USGS.isUsed() && com.maddox.il2.game.Main.cur().netGameSpy == null ? i18n("netnc.MainMenu") : i18n("main.Quit"));
+				draw(x1024(96F), y1024(240F), x1024(136F), y1024(48F), 0, !USGS.isUsed() && Main.cur().netGameSpy == null ? i18n("netnc.MainMenu") : i18n("main.Quit"));
 				
 				//TODO: Added by |ZUTI|
 				//------------------------------------------------------------------------------
@@ -260,7 +290,7 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 		{}
 	}
 
-	public class Table extends com.maddox.gwindow.GWindowTable
+	public class Table extends GWindowTable
 	{
 
 		public int countRows()
@@ -277,7 +307,7 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 				draw(0.0F, 0.0F, f, f1, lookAndFeel().regionWhite);
 			}
 			java.lang.String s = (java.lang.String) adrList.get(i);
-			com.maddox.il2.gui.GUINetNewClient.Item item = (com.maddox.il2.gui.GUINetNewClient.Item) serverMap.get(s);
+			GUINetNewClient.Item item = (GUINetNewClient.Item) serverMap.get(s);
 			java.lang.String s1 = null;
 			int k = 0;
 			switch (j)
@@ -346,11 +376,11 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 			super.afterCreated();
 			bColumnsSizable = true;
 			bSelectRow = true;
-			addColumn(com.maddox.il2.game.I18N.gui("netnc.Address"), null);
-			addColumn(com.maddox.il2.game.I18N.gui("netnc.Name"), null);
-			addColumn(com.maddox.il2.game.I18N.gui("netnc.Ping"), null);
-			addColumn(com.maddox.il2.game.I18N.gui("netnc.Users"), null);
-			addColumn(com.maddox.il2.game.I18N.gui("netnc.Type"), null);
+			addColumn(I18N.gui("netnc.Address"), null);
+			addColumn(I18N.gui("netnc.Name"), null);
+			addColumn(I18N.gui("netnc.Ping"), null);
+			addColumn(I18N.gui("netnc.Users"), null);
+			addColumn(I18N.gui("netnc.Type"), null);
 			vSB.scroll = rowHeight(0);
 			getColumn(0).setRelativeDx(8F);
 			getColumn(1).setRelativeDx(10F);
@@ -372,7 +402,7 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 		public java.util.HashMap serverMap;
 		public java.util.ArrayList adrList;
 
-		public Table(com.maddox.gwindow.GWindow gwindow)
+		public Table(GWindow gwindow)
 		{
 			super(gwindow);
 			serverMap = new HashMap();
@@ -383,7 +413,7 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 	static class Item
 	{
 
-		public com.maddox.rts.NetAddress adr;
+		public NetAddress adr;
 		public int port;
 		public int ping;
 		public java.lang.String ver;
@@ -409,8 +439,8 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 		wTable.hideWindow();
 		wTable.adrList.clear();
 		wTable.serverMap.clear();
-		com.maddox.il2.game.Main.cur().netChannelListener = this;
-		if (com.maddox.il2.net.USGS.isUsed() || com.maddox.il2.game.Main.cur().netGameSpy != null)
+		Main.cur().netChannelListener = this;
+		if (USGS.isUsed() || Main.cur().netGameSpy != null)
 		{
 			bSearch.hideWindow();
 			//wEdit.hideWindow();
@@ -426,12 +456,12 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 		else
 		{
 			bSearch.showWindow();
-			//wEdit.setValue(com.maddox.il2.engine.Config.cur.netRemoteHost + ":" + com.maddox.il2.engine.Config.cur.netRemotePort, false);
+			//wEdit.setValue(Config.cur.netRemoteHost + ":" + Config.cur.netRemotePort, false);
 			//wEdit.showWindow();
 			
 			//Added by |ZUTI|
 			//--------------------------------------------------
-			wZutiServersList.setValue(com.maddox.il2.engine.Config.cur.netRemoteHost + ":" + com.maddox.il2.engine.Config.cur.netRemotePort, false);
+			wZutiServersList.setValue(Config.cur.netRemoteHost + ":" + Config.cur.netRemotePort, false);
 			wZutiServersList.showWindow();
 			bZutiRemove.showWindow();
 			//--------------------------------------------------
@@ -440,7 +470,7 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 		}
 		dialogClient.setPosSize();
 		client.activateWindow();
-		if (com.maddox.il2.net.USGS.isUsed() || com.maddox.il2.game.Main.cur().netGameSpy != null) new com.maddox.rts.MsgAction(64, com.maddox.rts.Time.real() + 500L)
+		if (USGS.isUsed() || Main.cur().netGameSpy != null) new MsgAction(64, Time.real() + 500L)
 		{
 
 			public void doAction()
@@ -449,14 +479,14 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 			}
 
 		};
-		((com.maddox.il2.net.NetUser) com.maddox.rts.NetEnv.host()).reset();
+		((NetUser) NetEnv.host()).reset();
 	}
 
 	public void _leave()
 	{
 		client.hideWindow();
-		com.maddox.il2.game.Main.cur().netChannelListener = null;
-		if (bExistSearch) com.maddox.rts.MsgRemoveListener.post(64, com.maddox.rts.NetEnv.cur(), this, null);
+		Main.cur().netChannelListener = null;
+		if (bExistSearch) MsgRemoveListener.post(64, NetEnv.cur(), this, null);
 	}
 
 	public void netChannelCanceled(java.lang.String s)
@@ -469,13 +499,13 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 		else
 		{
 			connectMessgeBox.hideWindow();
-			connectMessgeBox = new com.maddox.gwindow.GWindowMessageBox(client.root, 20F, true, i18n("netnc.NotConnect"), s, 3, 0.0F)
+			connectMessgeBox = new GWindowMessageBox(client.root, 20F, true, i18n("netnc.NotConnect"), s, 3, 0.0F)
 			{
 
 				public void result(int i)
 				{
 					connectMessgeBox = null;
-					if (com.maddox.il2.net.USGS.isUsed() || com.maddox.il2.game.Main.cur().netGameSpy != null) bJoin.showWindow();
+					if (USGS.isUsed() || Main.cur().netGameSpy != null) bJoin.showWindow();
 				}
 
 			};
@@ -483,7 +513,7 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 		}
 	}
 
-	public void netChannelCreated(com.maddox.rts.NetChannel netchannel)
+	public void netChannelCreated(NetChannel netchannel)
 	{
 		if (connectMessgeBox == null)
 		{
@@ -500,15 +530,15 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 	private void onChannelCreated()
 	{
 		connectMessgeBox.hideWindow();
-		connectMessgeBox = new com.maddox.gwindow.GWindowMessageBox(client.root, 20F, true, i18n("netnc.Connect"), i18n("netnc.ConnectSucc"), 3, 5F)
+		connectMessgeBox = new GWindowMessageBox(client.root, 20F, true, i18n("netnc.Connect"), i18n("netnc.ConnectSucc"), 3, 5F)
 		{
 
 			public void result(int i)
 			{
 				connectMessgeBox = null;
-				((com.maddox.il2.net.NetUser) com.maddox.rts.NetEnv.host()).onConnectReady(serverChannel);
-				com.maddox.il2.game.Main.stateStack().change(36);
-				com.maddox.il2.gui.GUI.chatDlg.showWindow();
+				((NetUser) NetEnv.host()).onConnectReady(serverChannel);
+				Main.stateStack().change(36);
+				GUI.chatDlg.showWindow();
 			}
 
 		};
@@ -517,7 +547,7 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 	public void netChannelRequest(java.lang.String s)
 	{
 		if (connectMessgeBox == null) return;
-		com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(s);
+		NumberTokenizer numbertokenizer = new NumberTokenizer(s);
 		java.lang.String s1 = numbertokenizer.next("_");
 		if ("SP".equals(s1))
 		{
@@ -525,36 +555,36 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 			connectMessgeBox.hideWindow();
 			connectMessgeBox = new DlgServerPassword(client.root, s2);
 		}
-		else if (com.maddox.il2.net.USGS.isUsed() && "NM".equals(s1)) ((com.maddox.rts.NetControl) com.maddox.rts.NetEnv.cur().control).doAnswer("NM \"" + com.maddox.rts.NetEnv.host().shortName() + '"');
+		else if (USGS.isUsed() && "NM".equals(s1)) ((NetControl) NetEnv.cur().control).doAnswer("NM \"" + NetEnv.host().shortName() + '"');
 	}
 
-	public void netChannelDestroying(com.maddox.rts.NetChannel netchannel, java.lang.String s)
+	public void netChannelDestroying(NetChannel netchannel, java.lang.String s)
 	{
 		netChannelCanceled(s);
 	}
 
 	public void onMsgTimeout()
 	{
-		if (!bExistSearch || com.maddox.il2.game.Main.state() != this) return;
-		if (com.maddox.rts.NetEnv.socketsBlock().size() + com.maddox.rts.NetEnv.socketsNoBlock().size() <= 0)
+		if (!bExistSearch || Main.state() != this) return;
+		if (NetEnv.socketsBlock().size() + NetEnv.socketsNoBlock().size() <= 0)
 		{
-			java.lang.String s = "socket udp CREATE LOCALPORT " + com.maddox.il2.engine.Config.cur.netLocalPort;
-			if (com.maddox.il2.engine.Config.cur.netLocalHost != null && com.maddox.il2.engine.Config.cur.netLocalHost.length() > 0) s = s + " LOCALHOST " + com.maddox.il2.engine.Config.cur.netLocalHost;
-			com.maddox.rts.CmdEnv.top().exec(s);
+			java.lang.String s = "socket udp CREATE LOCALPORT " + Config.cur.netLocalPort;
+			if (Config.cur.netLocalHost != null && Config.cur.netLocalHost.length() > 0) s = s + " LOCALHOST " + Config.cur.netLocalHost;
+			CmdEnv.top().exec(s);
 		}
-		if (com.maddox.rts.NetEnv.socketsBlock().size() + com.maddox.rts.NetEnv.socketsNoBlock().size() <= 0) return;
-		com.maddox.rts.NetSocket netsocket = null;
-		if (com.maddox.rts.NetEnv.socketsNoBlock().size() > 0)
-			netsocket = (com.maddox.rts.NetSocket) com.maddox.rts.NetEnv.socketsNoBlock().get(0);
+		if (NetEnv.socketsBlock().size() + NetEnv.socketsNoBlock().size() <= 0) return;
+		NetSocket netsocket = null;
+		if (NetEnv.socketsNoBlock().size() > 0)
+			netsocket = (NetSocket) NetEnv.socketsNoBlock().get(0);
 		else
-			netsocket = (com.maddox.rts.NetSocket) com.maddox.rts.NetEnv.socketsBlock().get(0);
-		com.maddox.rts.NetEnv.cur().postExtUTF((byte) 32, "rinfo " + com.maddox.rts.Time.currentReal(), netsocket, broadcastAdr, com.maddox.il2.engine.Config.cur.netRemotePort);
+			netsocket = (NetSocket) NetEnv.socketsBlock().get(0);
+		NetEnv.cur().postExtUTF((byte) 32, "rinfo " + Time.currentReal(), netsocket, broadcastAdr, Config.cur.netRemotePort);
 		(new MsgInvokeMethod("onMsgTimeout")).post(64, this, 1.0D);
 	}
 
-	public void msgNetExt(byte abyte0[], com.maddox.rts.NetSocket netsocket, com.maddox.rts.NetAddress netaddress, int i)
+	public void msgNetExt(byte abyte0[], NetSocket netsocket, NetAddress netaddress, int i)
 	{
-		if (!bExistSearch || com.maddox.il2.game.Main.state() != this) return;
+		if (!bExistSearch || Main.state() != this) return;
 		if (abyte0 == null || abyte0.length < 2) return;
 		if (abyte0[0] != 32) return;
 		java.lang.String s = "";
@@ -567,10 +597,10 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 		{
 			return;
 		}
-		com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(s);
+		NumberTokenizer numbertokenizer = new NumberTokenizer(s);
 		if (!numbertokenizer.hasMoreTokens()) return;
 		if (!"ainfo".equals(numbertokenizer.next())) return;
-		com.maddox.il2.gui.GUINetNewClient.Item item = new Item();
+		GUINetNewClient.Item item = new Item();
 		item.adr = netaddress;
 		item.port = i;
 		long l = -1L;
@@ -582,7 +612,7 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 		{
 			return;
 		}
-		item.ping = (int) (com.maddox.rts.Time.currentReal() - l);
+		item.ping = (int) (Time.currentReal() - l);
 		if (item.ping < 0) return;
 		item.ver = numbertokenizer.next("");
 		item.bServer = numbertokenizer.next(false);
@@ -616,22 +646,29 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 
 	public void doJoin()
 	{
-		if (com.maddox.il2.net.USGS.isUsed())
+		if (USGS.isUsed())
 		{
-			com.maddox.rts.NetEnv.cur();
-			com.maddox.rts.NetEnv.host().setShortName(com.maddox.il2.net.USGS.name);
-			serverAddress = com.maddox.il2.net.USGS.serverIP;
+			NetEnv.host().setShortName(USGS.name);
+			serverAddress = USGS.serverIP;
 		}
-		else if (com.maddox.il2.game.Main.cur().netGameSpy != null)
+		else if (Main.cur().netGameSpy != null)
 		{
-			com.maddox.rts.NetEnv.cur();
-			com.maddox.rts.NetEnv.host().setShortName(com.maddox.il2.game.Main.cur().netGameSpy.userName);
-			serverAddress = com.maddox.il2.game.Main.cur().netGameSpy.serverIP;
+			// TODO: +++ Override Online Callsign - by SAS~Storebror +++
+			if (Config.cur.bOverrideOnlineCallsign && Config.cur.sOnlineCallsign.length() > 0) {
+			    Main.cur().netGameSpy.userName = UnicodeTo8bit.load(Config.cur.sOnlineCallsign);
+			}
+            // TODO: --- Override Online Callsign - by SAS~Storebror ---
+			NetEnv.host().setShortName(Main.cur().netGameSpy.userName);
+			serverAddress = Main.cur().netGameSpy.serverIP;
 		}
 		else
 		{
-			com.maddox.rts.NetEnv.cur();
-			com.maddox.rts.NetEnv.host().setShortName(com.maddox.il2.ai.World.cur().userCfg.callsign);
+            // TODO: +++ Override Online Callsign - by SAS~Storebror +++
+            if (Config.cur.bOverrideOnlineCallsign && Config.cur.sOnlineCallsign.length() > 0) {
+                World.cur().userCfg.callsign = UnicodeTo8bit.load(Config.cur.sOnlineCallsign);
+            }
+            // TODO: --- Override Online Callsign - by SAS~Storebror ---
+			NetEnv.host().setShortName(World.cur().userCfg.callsign);
 			//serverAddress = wEdit.getValue();
 			
 			//TODO: Added by |ZUTI|
@@ -642,7 +679,7 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 		java.lang.String s = serverAddress;
 		if (s == null || s.length() == 0)
 			return;
-		int i = com.maddox.il2.engine.Config.cur.netRemotePort;
+		int i = Config.cur.netRemotePort;
 		int j = s.lastIndexOf(":");
 		if (j >= 0 && j < s.length() - 1)
 		{
@@ -657,20 +694,20 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 				s = serverAddress;
 			}
 		}
-		com.maddox.rts.CmdEnv.top().exec("socket LISTENER " + (com.maddox.il2.engine.Config.cur.netRouteChannels <= 0 ? 0 : 1));
-		int k = com.maddox.il2.engine.Config.cur.netRouteChannels;
+		CmdEnv.top().exec("socket LISTENER " + (Config.cur.netRouteChannels <= 0 ? 0 : 1));
+		int k = Config.cur.netRouteChannels;
 		if (k <= 0)
 			k = 1;
 		else
 			k++;
 		if (bExistSearch) 
-			com.maddox.rts.CmdEnv.top().exec("socket udp DESTROY LOCALPORT " + com.maddox.il2.engine.Config.cur.netLocalPort);
-		java.lang.String s2 = "socket udp JOIN LOCALPORT " + com.maddox.il2.engine.Config.cur.netLocalPort + " PORT " + i + " SPEED " + com.maddox.il2.engine.Config.cur.netSpeed + " CHANNELS " + k + " HOST " + s;
-		if (com.maddox.il2.engine.Config.cur.netLocalHost != null && com.maddox.il2.engine.Config.cur.netLocalHost.length() > 0)
-			s2 = s2 + " LOCALHOST " + com.maddox.il2.engine.Config.cur.netLocalHost;
-		com.maddox.rts.CmdEnv.top().exec(s2);
-		com.maddox.il2.engine.Config.cur.netRemoteHost = s;
-		com.maddox.il2.engine.Config.cur.netRemotePort = i;
+			CmdEnv.top().exec("socket udp DESTROY LOCALPORT " + Config.cur.netLocalPort);
+		java.lang.String s2 = "socket udp JOIN LOCALPORT " + Config.cur.netLocalPort + " PORT " + i + " SPEED " + Config.cur.netSpeed + " CHANNELS " + k + " HOST " + s;
+		if (Config.cur.netLocalHost != null && Config.cur.netLocalHost.length() > 0)
+			s2 = s2 + " LOCALHOST " + Config.cur.netLocalHost;
+		CmdEnv.top().exec(s2);
+		Config.cur.netRemoteHost = s;
+		Config.cur.netRemotePort = i;
 
 		//TODO: Added by |ZUTI|
 		//----------------------------------------------------------------
@@ -683,7 +720,7 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 	private void doStartWaitDlg()
 	{
 		if (connectMessgeBox != null) connectMessgeBox.close(false);
-		connectMessgeBox = new com.maddox.gwindow.GWindowMessageBox(dialogClient.root, 20F, true, i18n("netnc.Connect"), i18n("netnc.ConnectWait"), 5, 0.0F)
+		connectMessgeBox = new GWindowMessageBox(dialogClient.root, 20F, true, i18n("netnc.Connect"), i18n("netnc.ConnectWait"), 5, 0.0F)
 		{
 
 			public void result(int i)
@@ -691,7 +728,7 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 				if (i == 1 && connectMessgeBox != null)
 				{
 					connectMessgeBox = null;
-					com.maddox.rts.NetEnv.cur().connect.joinBreak();
+					NetEnv.cur().connect.joinBreak();
 					if (serverChannel != null)
 					{
 						serverChannel.destroy();
@@ -708,30 +745,30 @@ public class GUINetNewClient extends com.maddox.il2.game.GameState implements co
 		};
 	}
 
-	public GUINetNewClient(com.maddox.gwindow.GWindowRoot gwindowroot)
+	public GUINetNewClient(GWindowRoot gwindowroot)
 	{
 		super(34);
-		client = (com.maddox.il2.gui.GUIClient) gwindowroot.create(new GUIClient());
-		dialogClient = (com.maddox.il2.gui.GUINetNewClient.DialogClient) client.create(new DialogClient());
-		infoMenu = (com.maddox.il2.gui.GUIInfoMenu) client.create(new GUIInfoMenu());
+		client = (GUIClient) gwindowroot.create(new GUIClient());
+		dialogClient = (GUINetNewClient.DialogClient) client.create(new DialogClient());
+		infoMenu = (GUIInfoMenu) client.create(new GUIInfoMenu());
 		infoMenu.info = i18n("netnc.info");
-		infoName = (com.maddox.il2.gui.GUIInfoName) client.create(new GUIInfoName());
+		infoName = (GUIInfoName) client.create(new GUIInfoName());
 		wTable = new Table(dialogClient);
 		
-		//wEdit = (com.maddox.gwindow.GWindowEditControl) dialogClient.addControl(new GWindowEditControl(dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null));
+		//wEdit = (GWindowEditControl) dialogClient.addControl(new GWindowEditControl(dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null));
 
-		com.maddox.gwindow.GTexture gtexture = ((com.maddox.il2.gui.GUILookAndFeel) gwindowroot.lookAndFeel()).buttons2;
+		GTexture gtexture = ((GUILookAndFeel) gwindowroot.lookAndFeel()).buttons2;
 		
 		//TODO: Added by |ZUTI|
 		//----------------------------------------------------------------
-		wZutiServersList = (com.maddox.gwindow.GWindowComboControl)dialogClient.addControl(new GWindowComboControl(dialogClient, 0.0F, 0.0F, 50F ));
+		wZutiServersList = (GWindowComboControl)dialogClient.addControl(new GWindowComboControl(dialogClient, 0.0F, 0.0F, 50F ));
 		wZutiServersList.list = (ArrayList)ZutiSupportMethods_GUI.getDropDownServersList();
-		bZutiRemove = (com.maddox.il2.gui.GUIButton) dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+		bZutiRemove = (GUIButton) dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
 		//----------------------------------------------------------------
 		
-		bSearch = (com.maddox.il2.gui.GUIButton) dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
-		bJoin = (com.maddox.il2.gui.GUIButton) dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
-		bExit = (com.maddox.il2.gui.GUIButton) dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+		bSearch = (GUIButton) dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
+		bJoin = (GUIButton) dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
+		bExit = (GUIButton) dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
 		dialogClient.activateWindow();
 		client.hideWindow();
 	}

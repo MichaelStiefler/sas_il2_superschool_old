@@ -2,6 +2,7 @@
 package com.maddox.il2.game;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Map;
@@ -9,6 +10,8 @@ import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
 import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Tuple3d;
+import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.Army;
 import com.maddox.il2.ai.EventLog;
 import com.maddox.il2.ai.World;
@@ -29,6 +32,7 @@ import com.maddox.il2.game.order.ZutiOrder_Loadout;
 import com.maddox.il2.game.order.ZutiOrder_TransferControls;
 import com.maddox.il2.net.NetUser;
 import com.maddox.il2.objects.air.Aircraft;
+import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.air.ZutiSupportMethods_Air;
 import com.maddox.il2.objects.sounds.VoiceBase;
 import com.maddox.il2.objects.weapons.Torpedo;
@@ -42,9 +46,9 @@ import com.maddox.rts.RTSConf;
 import com.maddox.rts.Time;
 
 public class HUD {
-    private static final int  lenLogBuf   = 6;
-    private static final long logTimeLife = 10000L;
-    private static final long logTimeFire = 5000L;
+    private static final int  lenLogBuf             = 6;
+    private static final long logTimeLife           = 10000L;
+    private static final long logTimeFire           = 5000L;
 
     public boolean            bDrawAllMessages      = true;
     public boolean            bDrawVoiceMessages    = true;
@@ -122,6 +126,18 @@ public class HUD {
     private Mesh              meshNeedleMask;
     private TTFont            fntLcd;
 
+    // TODO: +++ Additional Player Info Mod for Admins by SAS~Storebror +++
+    private static boolean    adminMode             = false;
+
+    public static boolean isAdminMode() {
+        return adminMode;
+    }
+
+    public static void setAdminMode(boolean theAdminMode) {
+        adminMode = theAdminMode;
+    }
+    // TODO: --- Additional Player Info Mod for Admins by SAS~Storebror ---
+
     static class Ptr {
         float x;
         float y;
@@ -182,10 +198,17 @@ public class HUD {
     }
 
     private final void renderSpeed() {
+        // TODO: +++ Additional Player Info Mod for Admins by SAS~Storebror +++
+        TTFont ttfont = TTFont.font[1];
+        int i = ttfont.height();
+        int j = 0xc00000ff;
+        // TODO: --- Additional Player Info Mod for Admins by SAS~Storebror ---
         if (Actor.isValid(World.getPlayerAircraft()) && this.iDrawSpeed != 0 && this.bDrawAllMessages && (Main.cur().netServerParams == null || Main.cur().netServerParams.isShowSpeedBar())) {
-            TTFont ttfont = TTFont.font[1];
-            int i = ttfont.height();
-            int i_8_ = -1073741569;
+            // TODO: +++ Additional Player Info Mod for Admins by SAS~Storebror +++
+//            TTFont ttfont = TTFont.font[1];
+//            int i = ttfont.height();
+//            int i_8_ = -1073741569;
+            // TODO: --- Additional Player Info Mod for Admins by SAS~Storebror ---
             int i_9_ = (int) (World.getPlayerFM().Or.getYaw() + 0.5F);
             i_9_ = i_9_ > 90 ? 450 - i_9_ : 90 - i_9_;
             boolean bool = false;
@@ -247,14 +270,44 @@ public class HUD {
                     this.renderSpeedSubstrings[3][1] = "";
                 }
             }
-            ttfont.output(i_8_, 5.0F, 5.0F, 0.0F, (this.renderSpeedSubstrings[0][0] + " " + i_9_ + " " + this.renderSpeedSubstrings[0][1]));
+            ttfont.output(j, 5.0F, 5.0F, 0.0F, (this.renderSpeedSubstrings[0][0] + " " + i_9_ + " " + this.renderSpeedSubstrings[0][1]));
             if (!World.cur().diffCur.NoSpeedBar) {
-                ttfont.output(i_8_, 5.0F, 5 + i, 0.0F, (this.renderSpeedSubstrings[1][0] + " " + i_10_ + " " + this.renderSpeedSubstrings[1][1]));
-                ttfont.output(i_8_, 5.0F, 5 + i + i, 0.0F, (this.renderSpeedSubstrings[2][0] + " " + i_11_ + " " + this.renderSpeedSubstrings[2][1]));
+                ttfont.output(j, 5.0F, 5 + i, 0.0F, (this.renderSpeedSubstrings[1][0] + " " + i_10_ + " " + this.renderSpeedSubstrings[1][1]));
+                ttfont.output(j, 5.0F, 5 + i + i, 0.0F, (this.renderSpeedSubstrings[2][0] + " " + i_11_ + " " + this.renderSpeedSubstrings[2][1]));
                 if (bool)
-                    ttfont.output(i_8_, 5.0F, 5 + i + i + i, 0.0F, this.renderSpeedSubstrings[3][0]);
+                    ttfont.output(j, 5.0F, 5 + i + i + i, 0.0F, this.renderSpeedSubstrings[3][0]);
             }
         }
+        // TODO: +++ Additional Player Info Mod for Admins by SAS~Storebror +++
+        Actor actorCur = Main3D.cur3D().camera3D.pos.base();
+        if (this.iDrawSpeed != 0 && actorCur != null && actorCur instanceof Aircraft && isAdminMode()) {
+            Aircraft aircraftCur = (Aircraft) actorCur;
+            String eaInfo = "EA: ";
+            NetUser netuser = ((NetAircraft) aircraftCur).netUser();
+            if (netuser == null) {
+                eaInfo += "AI";
+            } else {
+                eaInfo += netuser.uniqueName();
+            }
+            DecimalFormat dfDegrees = new DecimalFormat("000");
+            DecimalFormat dfGs = new DecimalFormat("0.00");
+            eaInfo += " A" + (int) aircraftCur.FM.getAltitude();
+            eaInfo += " S" + (int) aircraftCur.FM.getSpeedKMH();
+            int direction = (int) (aircraftCur.FM.Or.getYaw() + 0.5F);
+            direction = direction > 90 ? 450 - direction : 90 - direction;
+            eaInfo += " D" + dfDegrees.format(direction);
+
+            Vector3d plAccel = new Vector3d();
+
+            plAccel.set(aircraftCur.FM.getAccel());
+            plAccel.scale(0.102D);
+            plAccel.z += 0.5D;
+            aircraftCur.FM.Or.transformInv(plAccel);
+            float f1 = 0.5F + (float) ((Tuple3d) (plAccel)).z;
+            eaInfo += " G" + dfGs.format(f1);
+            ttfont.output(j, 5F, 5 + i + i + i + i, 0.0F, eaInfo);
+        }
+        // TODO: --- Additional Player Info Mod for Admins by SAS~Storebror ---
     }
 
     public void clearSpeed() {
@@ -458,14 +511,14 @@ public class HUD {
             return;
         }
         float dropAltitude = Property.floatValue(theTorpedoClass, "dropAltitude");
-        float dropSpeed =  Property.floatValue(theTorpedoClass, "dropSpeed");
-        float impactSpeed =  Property.floatValue(theTorpedoClass, "impactSpeed");
+        float dropSpeed = Property.floatValue(theTorpedoClass, "dropSpeed");
+        float impactSpeed = Property.floatValue(theTorpedoClass, "impactSpeed");
         float impactAngleMin = Property.floatValue(theTorpedoClass, "impactAngleMin");
-        float impactAngleMax =  Property.floatValue(theTorpedoClass, "impactAngleMax");
-        
+        float impactAngleMax = Property.floatValue(theTorpedoClass, "impactAngleMax");
+
         String alt = "";
         String speed = "";
-        
+
         switch (this.iDrawSpeed) {
             default:
                 impactSpeed *= 3.6F;
@@ -487,7 +540,8 @@ public class HUD {
                 speed = "mph";
                 break;
         }
-        this.drawTorpedoParameter("h(drop)=" + (int)dropAltitude + alt + ", v(drop)=" + (int)dropSpeed + speed + ", v(impact)(max)=" + (int)impactSpeed + speed + ", impact°(min)=" + (int)impactAngleMin + "°, impact°(max)=" + (int)impactAngleMax + "°", i, j);
+        this.drawTorpedoParameter(
+                "h(drop)=" + (int) dropAltitude + alt + ", v(drop)=" + (int) dropSpeed + speed + ", v(impact)(max)=" + (int) impactSpeed + speed + ", impact°(min)=" + (int) impactAngleMin + "°, impact°(max)=" + (int) impactAngleMax + "°", i, j);
     }
 
     private void drawTorpedoParameter(String string, int i, int j) {
@@ -495,10 +549,10 @@ public class HUD {
         TTFont ttfont = TTFont.font[1];
         ttfont.output(color, i, j, 0.0F, string);
     }
-    
+
     public void logTorpedoImpact(float speedValue, float angle) {
-       String speed = "";
-       switch (this.iDrawSpeed) {
+        String speed = "";
+        switch (this.iDrawSpeed) {
             default:
                 speedValue *= 3.6F;
                 speed = "km/h";
@@ -512,7 +566,7 @@ public class HUD {
                 speed = "mph";
                 break;
         }
-        log("Torpedo impact: " + (int)speedValue + speed + ", " + (int)angle + "°");
+        log("Torpedo impact: " + (int) speedValue + speed + ", " + (int) angle + "°");
     }
 
     private void drawShipIDs(String string, int i, int i_23_) {

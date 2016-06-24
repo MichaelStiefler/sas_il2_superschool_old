@@ -1,5 +1,6 @@
 package com.maddox.il2.engine;
 
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import com.maddox.JGP.Vector2f;
@@ -74,10 +75,10 @@ public class Sun
             return -1E+009F;
     }
 
-    public static float cvt(float f, float f1, float f2, float f3, float f4)
+    public static float cvt(float inValue, float inMin, float inMax, float outMin, float outMax)
     {
-        f = Math.min(Math.max(f, f1), f2);
-        return f3 + ((f4 - f3) * (f - f1)) / (f2 - f1);
+        inValue = Math.min(Math.max(inValue, inMin), inMax);
+        return outMin + ((outMax - outMin) * (inValue - inMin)) / (inMax - inMin);
     }
 
     public void resetCalendar()
@@ -85,51 +86,43 @@ public class Sun
         missionDate = null;
     }
 
-    public void setAstronomic(int i, int j, int k, float f, float f1)
+    public void setAstronomic(int declination, int month, int day, float timeOfDay, float altitude)
     {
-//        System.out.println("setAstronomic(" + i + ", " + j + ", " + k + ", " + f + ", " + f1 + ")");
-//        Exception test = new Exception("TEST");
-//        test.printStackTrace();
-        float f3 = (float)(90 - i) * DEG2RAD;
-        float f4 = (float)Math.cos(f3);
-        float f5 = (float)Math.sin(f3);
-        float f2 = (float)((j * 30 + k) - 80) * DEG2RAD;
-        float f6 = (6.283185F * f) / 24F;
-        float f7 = (float)Math.sin(f6);
-        float f8 = (float)Math.cos(f6);
-        float f9 = (float)Math.sin(22.5F * DEG2RAD * (float)Math.sin(f2));
-        ToSun.x = f7;
-        ToSun.y = f8 * f4 + f9 * f5;
-        ToSun.z = f9 * f4 - f8 * f5;
+        float declinationRadians = (float)(90 - declination) * DEG2RAD;
+        float declinationCosinus = (float)Math.cos(declinationRadians);
+        float declinationSinus = (float)Math.sin(declinationRadians);
+        float dayRadians = (float)((month * 30 + day) - 80) * DEG2RAD;
+        float timeOfDayRadians = (float)Math.PI * timeOfDay / 12F;
+        float timeOfDaySinus = (float)Math.sin(timeOfDayRadians);
+        float timeOfDayCosinus = (float)Math.cos(timeOfDayRadians);
+        float elevationRadians = (float)Math.sin((float)Math.PI / 8F * (float)Math.sin(dayRadians));
+        ToSun.x = timeOfDaySinus;
+        ToSun.y = timeOfDayCosinus * declinationCosinus + elevationRadians * declinationSinus;
+        ToSun.z = elevationRadians * declinationCosinus - timeOfDayCosinus * declinationSinus;
         ToSun.normalize();
         SunV.x = -ToSun.x;
         SunV.y = -ToSun.y;
         SunV.z = -ToSun.z;
-        int l = Mission.curYear();
-        int i1 = (int)Math.floor(f);
-        int j1 = (int)((f - (float)i1) * 60F);
-        int k1 = 0;
+        int gregYear = Mission.curYear();
+        int gregHour = (int)Math.floor(timeOfDay);
+        int gregMinute = (int)((timeOfDay - (float)gregHour) * 60F);
+        int gregSecond = 0;
         if(missionDate == null)
-            missionDate = new GregorianCalendar(l, j - 1, k, i1, j1, k1);
+            missionDate = new GregorianCalendar(gregYear, month - 1, day, gregHour, gregMinute, gregSecond);
         else
-        if(f != tod)
-            missionDate.roll(13, true);
-        tod = f;
-        double ad[] = new double[10];
-        ad = MoonPhase.phase(missionDate);
-        moonPhase = (float)ad[0];
-        f2 = (float)((j * 30 + k) - 80) * DEG2RAD;
-        f6 = 6.283185F * (-moonPhase + f / 24F);
-        f7 = (float)Math.sin(f6);
-        f8 = (float)Math.cos(f6);
-        f9 = (float)Math.sin(22.5F * DEG2RAD * (float)Math.sin(f2));
-        ToMoon.x = f7;
-        ToMoon.y = f8 * f4 + f9 * f5;
-        ToMoon.z = f9 * f4 - f8 * f5;
+        if(timeOfDay != tod)
+            missionDate.roll(Calendar.SECOND, true);
+        tod = timeOfDay;
+        double moonPhaseArray[] = new double[10];
+        moonPhaseArray = MoonPhase.phase(missionDate);
+        moonPhase = (float)moonPhaseArray[0];
+        timeOfDayRadians = (float)Math.PI * 2F * (-moonPhase + timeOfDay / 24F);
+        timeOfDaySinus = (float)Math.sin(timeOfDayRadians);
+        timeOfDayCosinus = (float)Math.cos(timeOfDayRadians);
+        ToMoon.x = timeOfDaySinus;
+        ToMoon.y = timeOfDayCosinus * declinationCosinus + elevationRadians * declinationSinus;
+        ToMoon.z = elevationRadians * declinationCosinus - timeOfDayCosinus * declinationSinus;
         ToMoon.normalize();
-//        if (ToMoon.z < 0.8F) ToMoon.z = 0.8F; // TEST!!!
-//        moonPhase = 0.1F; // TEST!!!
-//        System.out.println("moonPhase=" + moonPhase + ", ToMoon.x=" + ToMoon.x + ", ToMoon.y=" + ToMoon.y + ", ToMoon.z=" + ToMoon.z);
         float f14 = 0.0F;
         if(ToMoon.z > -0.31F)
         {
@@ -149,42 +142,42 @@ public class Sun
         EffClouds effclouds = Main.cur().clouds;
         if(effclouds != null && effclouds.type() > 2)
         {
-            float f19 = effclouds.height();
-            float f21 = 0.0F;
+            float cloudsHeight = effclouds.height();
+            float cloudsFactor1 = 0.0F;
             switch(effclouds.type())
             {
             case 3:
-                clLow = f19 + 200F;
-                clHigh = f19 + 1000F;
-                f21 = 4.8F;
+                clLow = cloudsHeight + 200F;
+                clHigh = cloudsHeight + 1000F;
+                cloudsFactor1 = 4.8F;
                 break;
 
             case 4:
-                clLow = f19 + 200F;
-                clHigh = f19 + 1600F;
-                f21 = 8F;
+                clLow = cloudsHeight + 200F;
+                clHigh = cloudsHeight + 1600F;
+                cloudsFactor1 = 8F;
                 break;
 
             case 5:
-                clLow = f19 + 100F;
-                clHigh = f19 + 1900F;
-                f21 = 12.8F;
+                clLow = cloudsHeight + 100F;
+                clHigh = cloudsHeight + 1900F;
+                cloudsFactor1 = 12.8F;
                 break;
 
             case 6:
-                clLow = f19;
-                clHigh = f19 + 1200F;
-                f21 = 16F;
+                clLow = cloudsHeight;
+                clHigh = cloudsHeight + 1200F;
+                cloudsFactor1 = 16F;
                 break;
             }
-            f18 = cvt(f1, clLow, clHigh, f21, 0.0F);
+            f18 = cvt(altitude, clLow, clHigh, cloudsFactor1, 0.0F);
         }
         float f20 = f17 - f18;
         aiLow = (f20 >= 0.0F ? f20 : f20 / 6F) * 0.11F + 0.211F;
         aiLow = aiLow >= 0.0F ? aiLow <= 1.0F ? aiLow : 1.0F : 0.0F;
         aiHigh = (f17 >= 0.0F ? f17 : f17 / 6F) * 0.11F + 0.211F;
         aiHigh = aiHigh >= 0.0F ? aiHigh <= 1.0F ? aiHigh : 1.0F : 0.0F;
-        h0 = f1;
+        h0 = altitude;
         f20 = aiLow;
         float f22 = f20;
         float f23 = 0.0F;
@@ -193,12 +186,22 @@ public class Sun
         f22 -= f23;
         Diffuze = f22 * 1.4285F;
         Ambient = f23 * 1.4285F;
+        
+        // TODO: +++ Moonlight Customization Mod by SAS~Storebror +++
+        if(ToSun.z < 0F)
+        {
+            float moonPhaseDiff = cvt(Math.abs(0.5F - moonPhase), 0.0F, 0.5F, 1.0F, 0.15F) * (float)Config.cur.iDiffuse / (float)Config.MAX_NIGHT_SETTINGS;
+            Diffuze = cvt(moonPhaseDiff, 0.0F, 1.0F, Diffuze, 1.0F);
+        }
+        // TODO: --- Moonlight Customization Mod by SAS~Storebror ---
+        
         if(Ambient < 0.001F)
             Ambient = 0.001F;
         if(Specular < 0.01F)
             Specular = 0.01F;
         if(Diffuze < 0.001F)
             Diffuze = 0.001F;
+        
         float f24 = f16 / (f14 + f16 + 0.001076F);
         float f25 = 1.0F - f24;
         tRed = tGreen = tBlue = 1.0F;
@@ -228,7 +231,7 @@ public class Sun
         Green = tGreen * f24 + f25;
         Blue = tBlue * f24 + f25;
         float f27 = 1.0F / Math.max(Math.max(Red, Green), Blue);
-        f27 *= 1.0F - (1.0F - lightAtAlt(f1)) * 0.8F;
+        f27 *= 1.0F - (1.0F - lightAtAlt(altitude)) * 0.8F;
         Red *= f27;
         Green *= f27;
         Blue *= f27;
