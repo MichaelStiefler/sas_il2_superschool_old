@@ -3184,6 +3184,10 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 	public void missionStarting()
 	{
 		super.missionStarting();
+		// +++ Select Bomb mod
+		if (FM.CT.bHasBombSelect)
+			FM.CT.registerBombs();
+		// --- Select Bomb mod
 		if(this == World.getPlayerAircraft())
 			return;
 		boolean flag = false;
@@ -3599,6 +3603,11 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 				maneuver.AccountCoeff[i] = 0.0F;
 
 		}
+
+		// +++ Import from 4.13.2m
+		FM.CT.setBombModeDefaults();
+		FM.CT.setWeaponFireModeDefaults();
+		// --- Import from 4.13.2m
 	}
 
 	public static float cvt(float f, float f1, float f2, float f3, float f4)
@@ -4017,4 +4026,20 @@ implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListen
 		return 0.0F;
 	}
 
+		// +++ Import from 4.13.2m
+	public boolean hasIntervalometer() {
+		if (!World.cur().diffCur.Limited_Ammo)
+			return false;
+		else
+			return FM.actor instanceof TypeBomber;
+	}
+
+	public int[] getBombTrainDelayArray() {
+		return Controls.bombTrainDelays;
+	}
+
+	public int getBombTrainMaxAmount() {
+		return FM.CT.getWeaponCount(3);
+	}
+		// --- Import from 4.13.2m
 }

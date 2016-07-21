@@ -21,6 +21,7 @@ import com.maddox.il2.objects.vehicles.radios.*;
 import com.maddox.il2.objects.weapons.*;
 import com.maddox.rts.*;
 import com.maddox.sound.CmdMusic;
+import com.maddox.sas1946.il2.util.TrueRandom;
 import java.io.*;
 
 public class AircraftState
@@ -337,6 +338,10 @@ public class AircraftState
  	public static final int _AS_SELECTED_ROCKET_HOOK = 51;
  	public static final int _AS_WEAPON_FIRE_MODE = 52;
  	public static final int _AS_WEAPON_RELEASE_DELAY = 53;
+	// The following 1 net codes is importing 4.13.2m
+	public static final int _AS_BOMB_MODE_STATES = 54;
+	// The following 1 net codes is new by western0221
+	public static final int _AS_CURRENT_BOMB_SELECTED = 55;
  	// TODO: -- Added Code for Net Replication --
  	// -------------------------------------------------------------
     static class Item
@@ -385,7 +390,7 @@ public class AircraftState
         hayrakeCarrier = null;
         hayrakeCode = null;
         externalStoresDropped = false;
-        armingSeed = World.Rnd().nextInt(0, 65535);
+        armingSeed = TrueRandom.nextInt(0, 65535);
         bIsAboveCriticalSpeed = false;
         bIsAboveCondensateAlt = false;
         bIsOnInadequateAOA = false;
@@ -613,7 +618,7 @@ public class AircraftState
                     astateOilEffects[i][1] = Eff3DActor.New(actor, actor.findHook("_Engine" + (i + 1) + "Oil"), null, 1.0F, s, -1F);
                 }
                 catch(Exception exception1) { }
-            if(World.Rnd().nextFloat() < 0.25F)
+            if(TrueRandom.nextFloat() < 0.25F)
                 aircraft.FM.setReadyToReturn(true);
             break;
         }
@@ -813,7 +818,7 @@ public class AircraftState
 
     private void doHitTank(Actor actor1, int i)
     {
-        if((World.Rnd().nextInt(0, 99) < 75 || (actor instanceof Scheme1)) && astateTankStates[i] == 6)
+        if((TrueRandom.nextInt(0, 99) < 75 || (actor instanceof Scheme1)) && astateTankStates[i] == 6)
         {
             aircraft.FM.setReadyToDie(true);
             aircraft.FM.setTakenMortalDamage(true, actor1);
@@ -821,13 +826,13 @@ public class AircraftState
             Voice.speakMayday(aircraft);
             Aircraft.debugprintln(aircraft, "I'm on fire, going down!.");
             Explosions.generateComicBulb(actor, "OnFire", 12F);
-            if(World.Rnd().nextInt(0, 99) < 75 + aircraft.FM.subSkill)
+            if(TrueRandom.nextInt(0, 99) < 75 + aircraft.FM.subSkill)
             {
                 Aircraft.debugprintln(aircraft, "BAILING OUT - Tank " + i + " is on fire!.");
                 hitDaSilk();
             }
         } else
-        if(World.Rnd().nextInt(0, 99) < 12)
+        if(TrueRandom.nextInt(0, 99) < 12)
         {
             aircraft.FM.setReadyToReturn(true);
             Aircraft.debugprintln(aircraft, "Tank " + i + " hit, RTB..");
@@ -1041,7 +1046,7 @@ public class AircraftState
         f = (f / (float)j) * 25F;
         if(astateEngineStates[i] == 3)
         {
-            if(World.Rnd().nextFloat(0.0F, 100F - f) < 15F - (float)aircraft.FM.subSkill * 3F)
+            if(TrueRandom.nextFloat(0.0F, 100F - f) < 15F - (float)aircraft.FM.subSkill * 3F)
             {
                 aircraft.FM.setReadyToReturn(true);
                 Aircraft.debugprintln(aircraft, "Engines out, RTB..");
@@ -1050,7 +1055,7 @@ public class AircraftState
         } else
         if(astateEngineStates[i] == 4)
         {
-            if(World.Rnd().nextFloat(0.0F, 100F - f) < 30F - (float)aircraft.FM.subSkill * 3F)
+            if(TrueRandom.nextFloat(0.0F, 100F - f) < 30F - (float)aircraft.FM.subSkill * 3F)
             {
                 aircraft.FM.setReadyToReturn(true);
                 Aircraft.debugprintln(aircraft, "Engines out, RTB..");
@@ -1058,7 +1063,7 @@ public class AircraftState
             }
             if(actor instanceof Scheme1)
             {
-                if(World.Rnd().nextInt(0, 99) < 50 - aircraft.FM.subSkill * 3)
+                if(TrueRandom.nextInt(0, 99) < 50 - aircraft.FM.subSkill * 3)
                 {
                     Aircraft.debugprintln(aircraft, "BAILING OUT - Engine " + i + " is on fire..");
                     aircraft.hitDaSilk();
@@ -1067,7 +1072,7 @@ public class AircraftState
                 aircraft.FM.setTakenMortalDamage(true, actor1);
                 aircraft.FM.setCapableOfACM(false);
             } else
-            if(World.Rnd().nextFloat(0.0F, 100F - f) < 50F - (float)aircraft.FM.subSkill * 3F)
+            if(TrueRandom.nextFloat(0.0F, 100F - f) < 50F - (float)aircraft.FM.subSkill * 3F)
             {
                 aircraft.FM.setReadyToDie(true);
                 aircraft.FM.setTakenMortalDamage(true, actor1);
@@ -1758,56 +1763,28 @@ public class AircraftState
 
  	private void doSetDumpFuelState(boolean flag) {
  		bDumpFuel = flag;
- 		for (int i = 0; i < 2; i++)
+ 		for (int i = 0; i < 3; i++)
  			if (astateDumpFuelEffects[i] != null)
  				Eff3DActor.finish(astateDumpFuelEffects[i]);
 
  		if (flag)
  			// TODO: DBW version
  			if (actor instanceof TypeFuelDump) {
- 				for (int j = 0; j < 2; j++) {
- 					switch (j) {
- 					case 0:
- 						for (int k = 0; k < 2; k++) {
- 							try {
- 								if (actor.findHook("_FuelDump0" + (k + 1)) != null) {
- 									astateDumpFuelEffects[k] = Eff3DActor
- 											.New(actor,
- 													actor.findHook("_FuelDump0"
- 															+ (k + 1)),
- 															null,
- 															1.0F,
- 															"3DO/Effects/Aircraft/DumpFuelTSPD.eff",
- 															-1F);
- 								}
- 							} catch (java.lang.Exception exception) {
- 								break;
- 							}
- 						}
- 						if (astateDumpFuelEffects[0] != null)
- 							break;
- 					case 1:
- 						if (astateDumpFuelEffects[0] == null) {
- 							if (bWingTipLExists)
- 								astateDumpFuelEffects[0] = Eff3DActor
- 								.New(actor,
- 										actor.findHook("_WingTipL"),
- 										null,
- 										1.0F,
- 										"3DO/Effects/Aircraft/DumpFuelTSPD.eff",
- 										-1F);
- 							if (bWingTipRExists)
- 								astateDumpFuelEffects[1] = Eff3DActor
- 								.New(actor,
- 										actor.findHook("_WingTipR"),
- 										null,
- 										1.0F,
- 										"3DO/Effects/Aircraft/DumpFuelTSPD.eff",
- 										-1F);
- 						}
- 						break;
- 					}
- 				}
+				for (int k = 0; k < 3; k++) {
+					try {
+						if (actor.findHook("_FuelDump0" + (k + 1)) != null) {
+							astateDumpFuelEffects[k] = Eff3DActor.New(actor, actor.findHook("_FuelDump0" + (k + 1)), null, 1.0F, "3DO/Effects/Aircraft/DumpFuelTSPD.eff", -1F);
+						}
+					} catch (java.lang.Exception exception) {
+						break;
+					}
+				}
+				if (astateDumpFuelEffects[0] != null) return;
+
+				if (astateDumpFuelEffects[0] == null) {	// aircraft's 3D model doesn't have _FuelDump01 Hook
+					if (bWingTipLExists) astateDumpFuelEffects[0] = Eff3DActor.New(actor, actor.findHook("_WingTipL"), null, 1.0F, "3DO/Effects/Aircraft/DumpFuelTSPD.eff", -1F);
+					if (bWingTipRExists) astateDumpFuelEffects[1] = Eff3DActor.New(actor, actor.findHook("_WingTipR"), null, 1.0F, "3DO/Effects/Aircraft/DumpFuelTSPD.eff", -1F);
+				}
 
  			}
  	}
@@ -2369,7 +2346,7 @@ public class AircraftState
             break;
 
         case 1: // '\001'
-            if(World.Rnd().nextFloat() < 0.18F && j > 4 && !armsWounded)
+            if(TrueRandom.nextFloat() < 0.18F && j > 4 && !armsWounded)
             {
                 setPilotWound(actor1, i, true);
                 armsWounded = true;
@@ -2751,7 +2728,7 @@ public class AircraftState
                     break;
 
                 case 1: // '\001'
-                    if(World.Rnd().nextFloat(0.0F, 1.0F) < 0.0125F)
+                    if(TrueRandom.nextFloat(0.0F, 1.0F) < 0.0125F)
                     {
                         repairTank(j1);
                         Aircraft.debugprintln(aircraft, "Tank " + j1 + " protector clothes the hole - leak stops..");
@@ -2767,9 +2744,9 @@ public class AircraftState
                     break;
 
                 case 4: // '\004'
-                    if(World.Rnd().nextFloat(0.0F, 1.0F) < 0.06F)
+                    if(TrueRandom.nextFloat(0.0F, 1.0F) < 0.06F)
                         hitTank(aircraft, j1, 0);
-                    if(World.Rnd().nextFloat(0.0F, 1.0F) < 0.00333F)
+                    if(TrueRandom.nextFloat(0.0F, 1.0F) < 0.00333F)
                     {
                         hitTank(aircraft, j1, 1);
                         Aircraft.debugprintln(aircraft, "Tank " + j1 + " catches fire..");
@@ -2777,17 +2754,17 @@ public class AircraftState
                     break;
 
                 case 5: // '\005'
-                    if(aircraft.FM.getSpeed() > 90F && World.Rnd().nextFloat() < Aircraft.cvt(aircraft.FM.getSpeed(), 90F, 200F, 0.0F, 0.2F))
+                    if(aircraft.FM.getSpeed() > 90F && TrueRandom.nextFloat() < Aircraft.cvt(aircraft.FM.getSpeed(), 90F, 200F, 0.0F, 0.2F))
                     {
                         repairTank(j1);
                         Aircraft.debugprintln(aircraft, "Tank " + j1 + " cuts fire..");
                     }
-                    if(World.Rnd().nextFloat() < 0.0048F)
+                    if(TrueRandom.nextFloat() < 0.0048F)
                     {
                         Aircraft.debugprintln(aircraft, "Tank " + j1 + " fires up to the next stage..");
                         hitTank(aircraft, j1, 1);
                     }
-                    if(World.Rnd().nextFloat() < 0.002F)
+                    if(TrueRandom.nextFloat() < 0.002F)
                     {
                         Aircraft.debugprintln(aircraft, "Tank " + j1 + " EXPLODES!.");
                         explodeTank(aircraft, j1);
@@ -2806,12 +2783,12 @@ public class AircraftState
                     break;
 
                 case 6: // '\006'
-                    if(aircraft.FM.getSpeed() > 90F && World.Rnd().nextFloat() < Aircraft.cvt(aircraft.FM.getSpeed(), 90F, 200F, 0.0F, 0.1F))
+                    if(aircraft.FM.getSpeed() > 90F && TrueRandom.nextFloat() < Aircraft.cvt(aircraft.FM.getSpeed(), 90F, 200F, 0.0F, 0.1F))
                     {
                         repairTank(j1);
                         Aircraft.debugprintln(aircraft, "Tank " + j1 + " cuts fire..");
                     }
-                    if(World.Rnd().nextFloat() < 0.0075F)
+                    if(TrueRandom.nextFloat() < 0.0075F)
                     {
                         Aircraft.debugprintln(aircraft, "Tank " + j1 + " EXPLODES!.");
                         explodeTank(aircraft, j1);
@@ -2845,22 +2822,22 @@ public class AircraftState
                 switch(astateEngineStates[k1])
                 {
                 case 3: // '\003'
-                    if(l1 == 6 && World.Rnd().nextFloat() < Aircraft.cvt(aircraft.FM.EI.engines[k1].getEngineLoad(), 1.0F, 3F, 0.015F, 0.0F))
+                    if(l1 == 6 && TrueRandom.nextFloat() < Aircraft.cvt(aircraft.FM.EI.engines[k1].getEngineLoad(), 1.0F, 3F, 0.015F, 0.0F))
                     {
                         hitEngine(aircraft, k1, 1);
                         Aircraft.debugprintln(aircraft, "Engine " + k1 + " catches fire..");
                     } else
                     if(l1 > 0 && l1 < 6)
                     {
-                        if(World.Rnd().nextFloat() < 0.2F)
+                        if(TrueRandom.nextFloat() < 0.2F)
                             aircraft.FM.EI.engines[k1].setEngineDies(actor);
                     } else
-                    if(l1 != 6 && (double)World.Rnd().nextFloat() < 0.0074999999999999997D)
+                    if(l1 != 6 && (double)TrueRandom.nextFloat() < 0.0074999999999999997D)
                         repairEngine(k1);
                     break;
 
                 case 4: // '\004'
-                    if(aircraft.FM.getSpeed() > 80F && World.Rnd().nextFloat() < Aircraft.cvt(aircraft.FM.getSpeed(), 80F, 200F, 0.0F, 0.3F))
+                    if(aircraft.FM.getSpeed() > 80F && TrueRandom.nextFloat() < Aircraft.cvt(aircraft.FM.getSpeed(), 80F, 200F, 0.0F, 0.3F))
                     {
                         repairEngine(k1);
                         Aircraft.debugprintln(aircraft, "Engine " + k1 + " cuts fire..");
@@ -2882,10 +2859,10 @@ public class AircraftState
                             float f3 = Aircraft.cvt(aircraft.FM.EI.engines[k1].getEngineLoad(), 1.0F, 5F, 0.01F, 0.0F);
                             if(aircraft.FM.EI.engines[k1].getControlAfterburner())
                                 f3 *= 8F;
-                            if(World.Rnd().nextFloat() < f3)
+                            if(TrueRandom.nextFloat() < f3)
                                 if(actor instanceof Scheme1)
                                 {
-                                    if((double)World.Rnd().nextFloat() < 0.050000000000000003D)
+                                    if((double)TrueRandom.nextFloat() < 0.050000000000000003D)
                                     {
                                         Aircraft.debugprintln(aircraft, "Engine 0 detonates and explodes, fatal damage level forced..");
                                         aircraft.msgCollision(actor, "CF_D0", "CF_D0");
@@ -2902,16 +2879,16 @@ public class AircraftState
                         } else
                         if(l1 > 0 && l1 < 6)
                         {
-                            if(World.Rnd().nextFloat() < 0.3F)
+                            if(TrueRandom.nextFloat() < 0.3F)
                                 aircraft.FM.EI.engines[k1].setEngineDies(actor);
                         } else
-                        if(l1 != 6 && World.Rnd().nextFloat() < 0.15F)
+                        if(l1 != 6 && TrueRandom.nextFloat() < 0.15F)
                         {
                             repairEngine(k1);
                             Aircraft.debugprintln(aircraft, "Engine " + k1 + " cuts fire..");
                         }
                     } else
-                    if((actor instanceof Scheme1) && World.Rnd().nextFloat() < 0.05F)
+                    if((actor instanceof Scheme1) && TrueRandom.nextFloat() < 0.05F)
                     {
                         Aircraft.debugprintln(aircraft, "Engine 0 detonates and explodes, fatal damage level forced..");
                         aircraft.msgCollision(actor, "CF_D0", "CF_D0");
@@ -2928,7 +2905,7 @@ public class AircraftState
  				// TODO: Don't disable this statement and bailout. Else, you
  				// won't be able to bailout!
  				bailout();
- 	            if(World.Rnd().nextFloat() < 0.25F && !aircraft.FM.CT.saveWeaponControl[3])
+ 	            if(TrueRandom.nextFloat() < 0.25F && !aircraft.FM.CT.saveWeaponControl[3])
  	                if(aircraft.FM.isPlayers() && (aircraft.FM instanceof RealFlightModel) && ((RealFlightModel)aircraft.FM).isRealMode())
  	                {
  	                    if(!aircraft.FM.CT.bHasBayDoorControl)
@@ -2938,7 +2915,7 @@ public class AircraftState
  	                    aircraft.FM.CT.BayDoorControl = 0.0F;
  	            bailout();
  	        } else
- 	        if(!aircraft.FM.isPlayers() && World.Rnd().nextFloat() < 0.125F && !aircraft.FM.CT.saveWeaponControl[3] && (!(actor instanceof TypeBomber) || aircraft.FM.AP.way.curr().Action != 3))
+ 	        if(!aircraft.FM.isPlayers() && TrueRandom.nextFloat() < 0.125F && !aircraft.FM.CT.saveWeaponControl[3] && (!(actor instanceof TypeBomber) || aircraft.FM.AP.way.curr().Action != 3))
  	            aircraft.FM.CT.BayDoorControl = 0.0F;
  		}
     }
@@ -3060,7 +3037,7 @@ public class AircraftState
 
                   if (localHook != null)
                   {
-                    Loc localLoc = new Loc(0.0D, 0.0D, 0.0D, World.Rnd().nextFloat(-45.0F, 45.0F), 0.0F, 0.0F);
+                    Loc localLoc = new Loc(0.0D, 0.0D, 0.0D, TrueRandom.nextFloat(-45.0F, 45.0F), 0.0F, 0.0F);
 
                     localHook.computePos(this.actor, this.actor.pos.getAbs(), localLoc);
 
@@ -3322,6 +3299,19 @@ public class AircraftState
 					this.setWeaponReleaseDelay(actor1, releaseDelayLow + releaseDelayHigh, true);
 					break;
 					// TODO: -- Added Code for Net Replication --
+
+				// TODO: ++ Added Code for importing 4.13.2m ++
+				case _AS_BOMB_MODE_STATES:
+					this.setBombModeStates(actor1, k, i1, true);
+					break;
+				// TODO: -- Added Code for importing 4.13.2m --
+
+				// TODO: ++ Added Code for bomb select ++
+				case _AS_CURRENT_BOMB_SELECTED:
+					this.setCurrentBombSelected(actor1, k, true);
+					break;
+				// TODO: ++ Added Code for bomb select ++
+
                 }
             } else
             {
@@ -3537,18 +3527,30 @@ public class AircraftState
                 break;
                 
              // TODO: ++ Added Code for Net Replication ++
-             			case _AS_SELECTED_ROCKET_HOOK:
-             				this.doSetRocketHook(actor2, l);
-             				break;
-             			case _AS_WEAPON_FIRE_MODE:
-             				this.doSetWeaponFireMode(actor2, l);
-             				break;
-             			case _AS_WEAPON_RELEASE_DELAY:
-             				int releaseDelayLow = l;
-             				int releaseDelayHigh = j1 << 8;
-             				this.doSetWeaponReleaseDelay(actor2, releaseDelayLow + releaseDelayHigh);
-             				break;
-             				// TODO: -- Added Code for Net Replication --
+  			case _AS_SELECTED_ROCKET_HOOK:
+          	    this.doSetRocketHook(actor2, l);
+             	break;
+            case _AS_WEAPON_FIRE_MODE:
+            	this.doSetWeaponFireMode(actor2, l);
+            	break;
+            case _AS_WEAPON_RELEASE_DELAY:
+            	int releaseDelayLow = l;
+            	int releaseDelayHigh = j1 << 8;
+            	this.doSetWeaponReleaseDelay(actor2, releaseDelayLow + releaseDelayHigh);
+            	break;
+			// TODO: -- Added Code for Net Replication --
+
+			// TODO: ++ Added Code for importing 4.13.2m ++
+			case _AS_BOMB_MODE_STATES:
+				this.setBombModeStates(actor2, l, j1, true);
+				break;
+			// TODO: -- Added Code for importing 4.13.2m --
+
+			// TODO: ++ Added Code for bomb select ++
+			case _AS_CURRENT_BOMB_SELECTED:
+				this.doSetCurrentBombSelected(actor2, l);
+				break;
+			// TODO: -- Added Code for bomb select --
             }
         }
     }
@@ -3639,20 +3641,24 @@ public class AircraftState
         }
 
      // TODO
-     		netmsgguaranted.writeByte(iAirShowSmoke);
-     		netmsgguaranted.writeByte(bAirShowSmokeEnhanced ? 1 : 0);
-     		netmsgguaranted.writeByte(bDumpFuel ? 1 : 0);
-     		// TODO: ++ Added Code for Net Replication ++
-     		netmsgguaranted.writeByte(aircraft.FM.CT.rocketHookSelected);
-     		netmsgguaranted.writeByte(aircraft.FM.CT.weaponFireMode);
-     		int releaseDelayLow = (byte)aircraft.FM.CT.weaponReleaseDelay;
-     		int releaseDelayHigh = (byte)((int)aircraft.FM.CT.weaponReleaseDelay >> 8);
-     		netmsgguaranted.writeByte(releaseDelayLow);
-     		netmsgguaranted.writeByte(releaseDelayHigh);
-     		// TODO: -- Added Code for Net Replication --
-     		//TODO: Bay Doors
-             if(aircraft.FM.CT.bHasBayDoors)
-                 netmsgguaranted.writeByte((int)aircraft.FM.CT.BayDoorControl);
+ 		netmsgguaranted.writeByte(iAirShowSmoke);
+  		netmsgguaranted.writeByte(bAirShowSmokeEnhanced ? 1 : 0);
+  		netmsgguaranted.writeByte(bDumpFuel ? 1 : 0);
+   		// TODO: ++ Added Code for Net Replication ++
+   		netmsgguaranted.writeByte(aircraft.FM.CT.rocketHookSelected);
+   		netmsgguaranted.writeByte(aircraft.FM.CT.weaponFireMode);
+   		int releaseDelayLow = (byte)aircraft.FM.CT.weaponReleaseDelay;
+   		int releaseDelayHigh = (byte)((int)aircraft.FM.CT.weaponReleaseDelay >> 8);
+   		netmsgguaranted.writeByte(releaseDelayLow);
+   		netmsgguaranted.writeByte(releaseDelayHigh);
+   		// TODO: -- Added Code for Net Replication --
+   		// TODO: Bay Doors
+        if(aircraft.FM.CT.bHasBayDoors)
+            netmsgguaranted.writeByte((int)aircraft.FM.CT.BayDoorControl);
+        // TODO: importing 4.13.2m , changing not limited to PlayerAircraft
+		replicateBombModeStatesToNet();
+		// TODO: current Bomb Selected for bHasBombSelect
+		netmsgguaranted.writeByte(aircraft.FM.CT.curBombSelected);
     }
 
     public void netFirstUpdate(NetMsgInput netmsginput)
@@ -4106,6 +4112,35 @@ public class AircraftState
         }
     }
 
+			// TODO: ++ Added Code for importing 4.13.2m ++
+	public void replicateBombModeStatesToNet() {
+		int i = aircraft.FM.CT.bombReleaseMode & 0xf;
+		i <<= 4;
+		i += aircraft.FM.CT.bombTrainDelay & 0xf;
+		int j = aircraft.FM.CT.bombTrainAmount;
+		setBombModeStates(actor, i, j, false);
+	}
+
+	private void setBombModeStates(Actor actor1, int i, int j, boolean flag) {
+		if (!Actor.isValid(actor1))
+			return;
+		if (flag)
+			doSetBombModeStates(actor1, i, j);
+		if (bIsMaster)
+			netToMirrors(_AS_BOMB_MODE_STATES, i, j);
+		else
+			netToMaster(_AS_BOMB_MODE_STATES, i, j, actor1);
+	}
+
+	private void doSetBombModeStates(Actor actor1, int i, int j) {
+		int k = (i & 0xf0) >> 4;
+		int l = i & 0xf;
+		aircraft.FM.CT.bombReleaseMode = k;
+		aircraft.FM.CT.bombTrainDelay = l;
+		aircraft.FM.CT.bombTrainAmount = j;
+	}
+			// TODO: -- Added Code for importing 4.13.2m --
+
     private void doSetGearState(int i, int j)
     {
         int k = (i & 0xf0) >> 4;
@@ -4161,24 +4196,24 @@ public class AircraftState
         byte byte0 = 0;
         if(j == 12)
         {
-            hitGear(actor1, i, World.Rnd().nextInt(1, 10));
+            hitGear(actor1, i, TrueRandom.nextInt(1, 10));
             return;
         }
         if(j == 1)
         {
             byte0 = -125;
-            gearDamRecoveryStates[k] = (byte)World.Rnd().nextInt(0, 2);
+            gearDamRecoveryStates[k] = (byte)TrueRandom.nextInt(0, 2);
         } else
         if(j == 2)
         {
             byte0 = -2;
-            gearDamRecoveryStates[k] = (byte)World.Rnd().nextInt(0, 2);
+            gearDamRecoveryStates[k] = (byte)TrueRandom.nextInt(0, 2);
         } else
         if(j == 3)
         {
-            float f = World.Rnd().nextFloat(0.1F, 0.9F);
+            float f = TrueRandom.nextFloat(0.1F, 0.9F);
             byte0 = (byte)(int)(f * -128F);
-            gearDamRecoveryStates[k] = (byte)World.Rnd().nextInt(0, 3);
+            gearDamRecoveryStates[k] = (byte)TrueRandom.nextInt(0, 3);
         } else
         if(j == 4)
             byte0 = 124;
@@ -4188,7 +4223,7 @@ public class AircraftState
         else
         if(j == 6)
         {
-            float f1 = World.Rnd().nextFloat(0.2F, 0.8F);
+            float f1 = TrueRandom.nextFloat(0.2F, 0.8F);
             byte0 = (byte)(int)(f1 * 127F);
         } else
         if(j == 7)
@@ -4304,6 +4339,25 @@ public class AircraftState
 	private void doSetWeaponReleaseDelay(Actor theActor, long theWeaponReleaseDelay)
 	{
 		aircraft.FM.CT.doSetWeaponReleaseDelay(theWeaponReleaseDelay);
+	}
+
+	public void replicateCurrentBombSelectedToNet(int theCurrentBombSelected) {
+		setCurrentBombSelected(actor, theCurrentBombSelected, false);
+	}
+
+	private void setCurrentBombSelected(Actor theActor, int theCurrentBombSelected, boolean applySetting) {
+		if(!Actor.isValid(theActor))
+            return;
+		if(applySetting)
+            doSetWeaponFireMode(theActor, theCurrentBombSelected);
+		if(bIsMaster)
+            netToMirrors(_AS_CURRENT_BOMB_SELECTED, theCurrentBombSelected, 0);
+		else
+            netToMaster(_AS_CURRENT_BOMB_SELECTED, theCurrentBombSelected, 0, theActor);
+	}
+
+	private void doSetCurrentBombSelected(Actor theActor, int theCurrentBombSelected) {
+		aircraft.FM.CT.doSetCurrentBombSelected(theCurrentBombSelected);
 	}
 	// TODO: -- Added Code for Net Replication --
 }

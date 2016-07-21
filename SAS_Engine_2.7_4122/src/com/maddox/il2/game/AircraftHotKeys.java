@@ -58,19 +58,19 @@ public class AircraftHotKeys
     private static TreeMap namedAircraft = new TreeMap();
  // --------------------------------------------------------
 
- 	//TODO: New Parameters
- 	// --------------------------------------------------------
- 	protected boolean									bSpeedbarTAS				= false;
- 	private boolean									bSeparateGearUpDown			= false;
- 	private boolean									bSeparateHookUpDown			= false;
- 	private boolean									bSeparateRadiatorOpenClose	= false;
- 	private boolean									bMusicOn					= true;
- 	private boolean									bToggleMusic				= true;
- 	protected int										iAirShowSmoke				= 0;
- 	protected boolean									bAirShowSmokeEnhanced		= false;
- 	private int										COCKPIT_DOOR				= 1;
- 	private int										SIDE_DOOR					= 2;
- 	private boolean									bDumpFuel					= false;
+     //TODO: New Parameters
+     // --------------------------------------------------------
+     protected boolean                                    bSpeedbarTAS                = false;
+     private boolean                                    bSeparateGearUpDown            = false;
+     private boolean                                    bSeparateHookUpDown            = false;
+     private boolean                                    bSeparateRadiatorOpenClose    = false;
+     private boolean                                    bMusicOn                    = true;
+     private boolean                                    bToggleMusic                = true;
+     protected int                                        iAirShowSmoke                = 0;
+     protected boolean                                    bAirShowSmokeEnhanced        = false;
+     private int                                        COCKPIT_DOOR                = 1;
+     private int                                        SIDE_DOOR                    = 2;
+     private boolean                                    bDumpFuel                    = false;
     protected static final int BRAKE_RIGHT = 144;
     protected static final int BRAKE_LEFT = 145;
     private int flapIndex = 0;
@@ -81,7 +81,13 @@ public class AircraftHotKeys
     private float oldVarWingControl = 0.0F;
     private boolean useSmartAxisForPower2 = false;
     private boolean useSmartAxisForPitch2 = false;
- 	// --------------------------------------------------------
+
+        // TODO: ++ Added Code for importing 4.13.2m ++
+    protected static final int BOMB_RELEASE_MODE = 194;
+    protected static final int BOMB_RELEASE_TRAIN_AMOUNT = 195;
+    protected static final int BOMB_RELEASE_TRAIN_DELAY = 196;
+        // TODO: -- Added Code for importing 4.13.2m --
+     // --------------------------------------------------------
     
     public AircraftHotKeys()
     {
@@ -495,6 +501,8 @@ public class AircraftHotKeys
             case 140: 
             case 149: 
             case 150: 
+            case 195:    // importing 4.13.2m
+            case 196:    // importing 4.13.2m
                 doCmdPilotTick(i);
                 return;
 
@@ -549,6 +557,22 @@ public class AircraftHotKeys
                 bAAircraft.auxPressed(29);
                 return;
                 //TODO: -------------------------------
+            case 19:
+                // TODO: moved from non-flag-switch to here to keep bomb trigger=true , importing from 4.13.2m
+                if((FM instanceof RealFlightModel) && !FM.actor.net.isMirror()) {
+                    FM.CT.WeaponControl[3] = flag;
+                    hudWeapon(flag, 3);
+                    if((bAAircraft instanceof TypeHasToKG) && bAAircraft.FM.CT.Weapons[3] != null && (bAAircraft.FM.CT.Weapons[3][0] instanceof TorpedoGun) && bAAircraft.FM.CT.Weapons[3][0].haveBullets()) {
+                        bAAircraft.FM.AS.replicateGyroAngleToNet();
+                        bAAircraft.FM.AS.replicateSpreadAngleToNet();
+                    }
+                }
+                return;
+            case 194:
+                // TODO: BombsReleaseMode Hotkey importing from 4.13.2m
+                bAAircraft.FM.CT.toggleBombReleaseMode();
+                return;
+
             }
         if(!setPilot())
             return;
@@ -569,16 +593,6 @@ public class AircraftHotKeys
             //TODO: Rocket hotkey modified
             FM.CT.WeaponControl[FM.CT.rocketHookSelected] = flag;
             hudWeapon(flag, FM.CT.rocketHookSelected);
-            break;
-
-        case 19: // '\023'
-            FM.CT.WeaponControl[3] = flag;
-            hudWeapon(flag, 3);
-            if((aircraft instanceof TypeHasToKG) && FM.CT.Weapons[3] != null && (FM.CT.Weapons[3][0] instanceof TorpedoGun) && FM.CT.Weapons[3][0].haveBullets())
-            {
-                FM.AS.replicateGyroAngleToNet();
-                FM.AS.replicateSpreadAngleToNet();
-            }
             break;
 
         case 64: // '@'
@@ -728,6 +742,11 @@ public class AircraftHotKeys
                     ((TypeDockable)FM.actor).typeDockableAttemptDetach();
                 else
                     ((TypeDockable)FM.actor).typeDockableAttemptAttach();
+                break;
+
+            case 195: // importing 4.13.2m
+            case 196: 
+                bAAircraft.FM.AS.replicateBombModeStatesToNet();
                 break;
             }
             return;
@@ -1829,6 +1848,16 @@ public class AircraftHotKeys
             if(FM.CT.bHasRudderTrim && FM.CT.getTrimRudderControl() > -0.5F)
                 FM.CT.setTrimRudderControl(FM.CT.getTrimRudderControl() - 0.00625F);
             break;
+
+        case 195:
+            if(bAAircraft.hasIntervalometer())
+                bAAircraft.FM.CT.toggleBombTrainAmount();
+            return;
+
+        case 196: 
+            if(bAAircraft.hasIntervalometer())
+                bAAircraft.FM.CT.toggleBombTrainDelay();
+            return;
 
         case 117: // 'u'
             if(aircraft instanceof TypeBomber)
@@ -3115,11 +3144,16 @@ public class AircraftHotKeys
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced07", "SIGHT_ALT_MINUS", 122, 341));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced08", "SIGHT_SPD_PLUS", 123, 342));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced09", "SIGHT_SPD_MINUS", 124, 343));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced10", "Toggle Radar Mode", 138, 407));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced11", "Increase Scan Range", 139, 408));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced12", "Decrease Scan Range", 140, 409));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced13", "Increase Radar Gain", 141, 410));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced14", "Decrease Radar Gain", 142, 411));
+                // TODO: ++ Added Code for importing 4.13.2m ++
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced10", "BOMB_RELEASE_MODE", 194, 354));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced11", "BOMB_RELEASE_TRAIN_AMOUNT", 195, 355));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced12", "BOMB_RELEASE_TRAIN_DELAY", 196, 356));
+                // TODO: -- Added Code for importing 4.13.2m --
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced13", "Toggle Radar Mode", 138, 407));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced14", "Increase Scan Range", 139, 408));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced15", "Decrease Scan Range", 140, 409));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced16", "Increase Radar Gain", 141, 410));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced17", "Decrease Radar Gain", 142, 411));
     }
 
     private CockpitGunner getActiveCockpitGuner()
@@ -5738,7 +5772,7 @@ public class AircraftHotKeys
     // TODO: Custom flap settings. Parameters are defined in the flight model and allow for numerous different flap settings.
     public boolean SetVarWingHotKeys (int direction, RealFlightModel RFM)
     {
-        int i = direction % 2;	// even number >> 0 - flaps up, odd number >> 1 - flaps down
+        int i = direction % 2;    // even number >> 0 - flaps up, odd number >> 1 - flaps down
         switch (i) {
         case 0:
             if(RFM.CT.VarWingStage != null && RFM.CT.VarWingStageMax != -1.0F){
