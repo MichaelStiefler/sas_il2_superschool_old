@@ -153,6 +153,89 @@ class AdminCommandController {
         }
 
     }
+    
+  //--------------------------------------
+    //TODO: skylla: slap:
+    public static void adminCommandSlap(String name, String slapName) {
+    	String pilotToSlap = null;
+        String unicodeSlapName = slapName;
+        String asciiName = MainController.PILOTS.get(name).getAsciiTextName();
+        if (slapName.contains("\\u")) {
+            unicodeSlapName = UnicodeFormatter.convertAsciiStringToUnicode(slapName);
+        }
+        try {
+        	//You need kick privileges to slap someone:
+            if (AdminCommandController.adminCommandValidateAdmin(name, AdminCommands.KICK)) {
+            	//String asciiName = MainController.PILOTS.get(name).getAsciiTextName();
+                if (MainController.PILOTS.containsKey(unicodeSlapName)) {
+                    pilotToSlap = unicodeSlapName;
+                } else { 
+                    try {
+                        int socket = Integer.valueOf(slapName);
+                        Iterator<String> it = MainController.PILOTS.keySet().iterator();
+                        while (it.hasNext()) {
+                            String key = it.next();
+                            if (socket == MainController.PILOTS.get(key).getSocket()) {
+                                pilotToSlap = key;
+                                break;
+                            }
+                        }
+                    } catch (Exception ex) {
+                    	MainController.writeDebugLogFile(1, "AdminCommandController.slap: " + name + ": failed to slap (" + pilotToSlap + ")! Cannot Interpret Input!.");
+                    }
+                }
+                if (pilotToSlap != null) {
+                    if (!MainController.PILOTS.get(pilotToSlap).isAdmin() && !MainController.PILOTS.get(slapName).isAdmin() && !MainController.PILOTS.get(unicodeSlapName).isAdmin()) {
+                        PilotController.pilotSlap(pilotToSlap);
+                        MainController.writeDebugLogFile(1, "AdminCommandController.slap: " + name + " slapped (" + pilotToSlap + ")");
+                    }
+                    else {
+                        ServerCommandController.serverCommandSend("chat " + pilotToSlap + " is an Admin and cannot be slapped! TO \"" + asciiName + "\"");
+                        MainController.writeDebugLogFile(1, "AdminCommandController.slap: " + name + ": failed to slap (" + pilotToSlap + ")! Player is an admin.");
+                    }
+                } else {
+                    ServerCommandController.serverCommandSend("chat Cannot slap " + unicodeSlapName + ", not Found in player list TO \"" + asciiName + "\"");
+                }
+            } else {
+                    MainController.writeDebugLogFile(1, "AdminCommandController.slap: " + name + ": failed admin validation! Will now slap back!");
+                    if (name.contains("\\u")) {
+                        name = UnicodeFormatter.convertAsciiStringToUnicode(name);
+                    }
+                    if(name != null) {
+                    	ServerCommandController.serverCommandSend("chat No Admin .. no slapping! You can only receive .. TO \"" + asciiName + "\"");
+                    	PilotController.pilotSlap(name);
+                    }          	
+            }
+        } catch(Exception ex) {
+        	MainController.writeDebugLogFile(1, "AdminCommandController.slap - Error Unhandled Exception slapping Pilot (" + slapName + ") :" + ex);
+        }
+    }
+    
+    //TODO: skylla: implement multi-slap
+    public static void adminCommandMultiSlap(String name, String slapName, String slapNumber) {
+    	String asciiName = MainController.PILOTS.get(name).getAsciiTextName();
+    	if (AdminCommandController.adminCommandValidateAdmin(name, AdminCommands.KICK)) {
+    		int num;
+    		try {
+    			num = Integer.parseInt(slapNumber);
+    			if(num > 0 && num <= 60) {
+    				for(int i = 0; i<num; i++) {
+    					adminCommandSlap(name, slapName);
+    				}
+    			} else {
+    				ServerCommandController.serverCommandSend("chat Slap Number out of range: Min 1, Max 60 TO \"" + asciiName + "\"");
+        			MainController.writeDebugLogFile(1, "AdminCommandController.multiSlap - slap number too high!");
+    			}
+    		} catch (NumberFormatException e) {
+    			ServerCommandController.serverCommandSend("chat cannot interpret parameter two TO \"" + asciiName + "\"");
+    			MainController.writeDebugLogFile(1, "AdminCommandController.multiSlap - Cannot interpret slapNumber!");
+    		}
+    	} else {
+    		ServerCommandController.serverCommandSend("chat No Admin .. no slapping! You can only receive .. TO \"" + asciiName + "\"");
+        	PilotController.pilotSlap(name);
+    	}
+    }  
+  //--------------------------------------
 
     // Ban Add
     public static void adminCommandBanAdd(String name, String banName, int banTime) {

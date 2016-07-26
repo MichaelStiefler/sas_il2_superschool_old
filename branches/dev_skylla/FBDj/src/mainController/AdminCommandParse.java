@@ -42,11 +42,19 @@ class AdminCommandParse {
     // Update PlaneLimit
     private static final Pattern updatePlaneLimit    = Pattern.compile("^(?i)(?:update_plane|updplane)\\s+(.*)\\\\n$");
 
-    //--------------------------------------
+  //--------------------------------------
     //TODO: skylla: Admin-Veto
     private static final Pattern vetoTime			 = Pattern.compile("^(?i)veto\\s+(\\d+)\\\\n$");
     private static final Pattern veto				 = Pattern.compile("^(?i)veto\\\\n$");
-    //--------------------------------------
+    
+    //TODO: skylla: slap
+    private static final Pattern slap                = Pattern.compile("^(?i)(?:slap|s)\\s+(.*)\\\\n$");
+    
+    //TODO: skylla: destroy
+    //private static final Pattern multiSlap         = Pattern.compile("^(?i)(?:slap|s)\\s+(.*)(:)\\s+(.*)\\\\n$");
+    private static final Pattern multiSlap           = Pattern.compile("^(?i)(?:slap|s)\\s+(.*):(\\d+)\\\\n$");
+    
+  //--------------------------------------
     
     public static void parseAdminCommand(String name, String command) {
 //		System.out.println("ChatAdmin.parseAdminCommand: Received data from " + name + ": " + command);
@@ -78,6 +86,22 @@ class AdminCommandParse {
                 String kickName = m.group(1).trim();
                 AdminCommandController.adminCommandKick(name, kickName);
             }
+            
+          //--------------------------------------
+            //TODO: skylla: multi-slap:
+            else if ((m = multiSlap.matcher(command)).find()) {
+                String slapName = m.group(1).trim();
+                String slapNumber = m.group(2).trim();
+                AdminCommandController.adminCommandMultiSlap(name, slapName, slapNumber);
+            }
+            
+            //TODO: skylla: slap
+            else if ((m = slap.matcher(command)).find()) {
+                String slapName = m.group(1).trim();
+                AdminCommandController.adminCommandSlap(name, slapName);
+            }
+                        
+          //--------------------------------------            
 
             // Ban Add
             else if ((m = banAdd.matcher(command)).find()) {

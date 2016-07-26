@@ -114,6 +114,21 @@ class PilotController {
             MainController.writeDebugLogFile(1, "PilotController.kickPilot - Error kicking ( " + name + " ): " + ex);
         }
     }
+    
+  //---------------------------------------
+    //TODO: skylla: slap    
+    public static void pilotSlap(String name) {
+    	 try {
+             if (MainController.PILOTS.containsKey(name)) {
+            	 // We don't need all that stats crap from the kick-method; we only want to slap someone ..
+            	 ServerCommandController.serverCommandSend("slap \"" + UnicodeFormatter.convertUnicodeToString(name) + "\"");
+             }
+    	 } catch (Exception ex) {
+             MainController.writeDebugLogFile(1, "PilotController.slapPilot - Error slapping ( " + name + " ): " + ex);
+         }
+    }
+    
+  //---------------------------------------
 
     public static boolean pilotValidateLogon(Pilot pilot) {
         // Check for ban
