@@ -264,8 +264,8 @@ public class Controls {
 		dvCockpitDoor = 0.1F;
 		dvAirbrake = 0.5F;
 		electricPropDn = 0;
-		PowerControlArr = new float[6];
-		StepControlArr = new float[6];
+		//  PowerControlArr = new float[6];   --- stock code comment-out
+		//  StepControlArr = new float[6];   --- stock code comment-out
 		bDropWithPlayer = false;
 		dropWithPlayer = null;
 		bDropWithMe = false;
@@ -316,7 +316,6 @@ public class Controls {
 		bombClassArr = new Class[8];
 		bombClassNumber = 0;
 		curBombSelected = -1;
-		StepControlArr = new float[6];
 		// --------------------------------------------------------
 
 		// Import values from 4.13.2m
