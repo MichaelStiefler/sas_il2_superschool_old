@@ -1771,7 +1771,7 @@ public class Controls {
 		if (bHasBombSelect && curBombSelected > -1) {
 			String classnametemp = bombClassArr[curBombSelected].getName().substring(35);
 			int index = classnametemp.indexOf("_");
-			classname = classnametemp.substring(0, index);
+			classname = (index > 0) ? classnametemp.substring(0, index) : classnametemp;
 		}
 		switch(bombReleaseMode) {
 		case 0: // '\0'
