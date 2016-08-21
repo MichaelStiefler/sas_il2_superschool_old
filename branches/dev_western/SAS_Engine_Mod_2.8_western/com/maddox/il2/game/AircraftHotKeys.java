@@ -135,6 +135,7 @@ public class AircraftHotKeys {
 	private float oldVarWingControl = 0.0F;
 	private boolean useSmartAxisForPower2;
 	private boolean useSmartAxisForPitch2;
+	private boolean bStab4all = false;
 
 				// TODO: ++ Added Code for importing 4.13.2m ++
 	protected static final int BOMB_RELEASE_MODE = 194;
@@ -182,6 +183,7 @@ public class AircraftHotKeys {
 		if (Config.cur.ini.get("Mods", "SeparateHookUpDown", 0) > 0) bSeparateHookUpDown = true;
 		if (Config.cur.ini.get("Mods", "SeparateRadiatorOpenClose", 0) > 0) bSeparateRadiatorOpenClose = true;
 		if (Config.cur.ini.get("Mods", "ToggleMusic", 1) == 0) bToggleMusic = false;
+		if (Config.cur.ini.get("Mods", "Stab4all", 0) > 0) bStab4all = true;
 		// ---------------------------------
 	}
 
@@ -571,7 +573,7 @@ public class AircraftHotKeys {
 				break;
 
 			case 71: // 'G'
-				if ((aircraft instanceof TypeBomber) || (aircraft instanceof DO_335)) {
+				if (bStab4all || (aircraft instanceof TypeBomber) || (aircraft instanceof DO_335)) {
 					FM.CT.StabilizerControl = !FM.CT.StabilizerControl;
 					HUD.log("Stabilizer" + (FM.CT.StabilizerControl ? "On" : "Off"));
 				}
