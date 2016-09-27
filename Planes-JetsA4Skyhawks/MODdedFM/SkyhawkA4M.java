@@ -6,19 +6,21 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3f;
-import com.maddox.il2.ai.air.Maneuver;
-import com.maddox.il2.ai.air.Pilot;
+import com.maddox.il2.ai.*;
+import com.maddox.il2.ai.air.*;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
-import com.maddox.il2.objects.sounds.SndAircraft;
-//import com.maddox.il2.objects.weapons.RocketAIM9BUtils;
-//import com.maddox.il2.objects.weapons.RocketGun;
 import com.maddox.il2.objects.weapons.*;
 import com.maddox.rts.*;
+import com.maddox.util.HashMapInt;
 import java.io.IOException;
 import java.util.ArrayList;
-import com.maddox.util.HashMapInt;
+import com.maddox.sas1946.il2.util.Reflection;
+import com.maddox.il2.objects.sounds.SndAircraft;
+import com.maddox.il2.objects.weapons.GuidedMissileUtils;
+//import com.maddox.il2.objects.weapons.RocketAIM9BUtils;
+//import com.maddox.il2.objects.weapons.RocketGun;
 
 // Referenced classes of package com.maddox.il2.objects.air:
 //            Skyhawk, TypeAIM9Carrier, TypeStormovik, TypeBNZFighter, 
@@ -26,9 +28,176 @@ import com.maddox.util.HashMapInt;
 //            Cockpit, TypeGSuit
 
 public class SkyhawkA4M extends Skyhawk
-    implements /*TypeAIM9Carrier, */ TypeGuidedMissileCarrier, TypeStormovik, TypeBNZFighter, TypeFighterAceMaker
+    //implements /*TypeAIM9Carrier, */ TypeGuidedMissileCarrier, TypeStormovik, TypeBNZFighter, TypeFighterAceMaker
+    implements TypeGuidedMissileCarrier, TypeDockable, TypeCountermeasure, TypeThreatDetector    	   	
 {
 
+//By PAL, new Mthods for TRypeDockable:
+    public void missionStarting()
+    {
+        checkAsDrone();
+    }
+
+    private void checkAsDrone()
+    {
+        if(target_ == null)
+        {
+            if(((FlightModelMain) (super.FM)).AP.way.curr().getTarget() == null)
+                ((FlightModelMain) (super.FM)).AP.way.next();
+            target_ = ((FlightModelMain) (super.FM)).AP.way.curr().getTarget();
+            if(Actor.isValid(target_) && (target_ instanceof Wing))
+            {
+                Wing wing = (Wing)target_;
+                int i = aircIndex();
+                if(Actor.isValid(wing.airc[i / 2]))
+                    target_ = wing.airc[i / 2];
+                else
+                    target_ = null;
+            }
+        }
+        if(Actor.isValid(target_) && (target_ instanceof TypeTankerDrogue))
+        {
+            queen_last = target_;
+            queen_time = Time.current();
+            if(isNetMaster())
+                ((TypeDockable)target_).typeDockableRequestAttach(this, aircIndex() % 2, true);
+        }
+        bNeedSetup = false;
+        target_ = null;
+    }
+    
+    public int typeDockableGetDockport()
+    {
+        if(typeDockableIsDocked())
+            return dockport_;
+        else
+            return -1;
+    }
+
+    public Actor typeDockableGetQueen()
+    {
+        return queen_;
+    }
+
+    public boolean typeDockableIsDocked()
+    {
+        return Actor.isValid(queen_);
+    }
+
+    public void typeDockableAttemptAttach()
+    {
+        if(((FlightModelMain) (super.FM)).AS.isMaster() && !typeDockableIsDocked())
+        {
+            Aircraft aircraft = War.getNearestFriend(this);
+            if(aircraft instanceof TypeTankerDrogue)
+                ((TypeDockable)aircraft).typeDockableRequestAttach(this);
+        }
+    }
+
+    public void typeDockableAttemptDetach()
+    {
+        if(((FlightModelMain) (super.FM)).AS.isMaster() && typeDockableIsDocked() && Actor.isValid(queen_))
+            ((TypeDockable)queen_).typeDockableRequestDetach(this);
+    }
+
+    public void typeDockableRequestAttach(Actor actor)
+    {
+    }
+
+    public void typeDockableRequestDetach(Actor actor)
+    {
+    }
+
+    public void typeDockableRequestAttach(Actor actor, int i, boolean flag)
+    {
+    }
+
+    public void typeDockableRequestDetach(Actor actor, int i, boolean flag)
+    {
+    }
+
+    public void typeDockableDoAttachToDrone(Actor actor, int i)
+    {
+    }
+
+    public void typeDockableDoDetachFromDrone(int i)
+    {
+    }
+
+    public void typeDockableDoAttachToQueen(Actor actor, int i)
+    {
+        queen_ = actor;
+        dockport_ = i;
+        queen_last = queen_;
+        queen_time = 0L;
+        ((FlightModelMain) (super.FM)).EI.setEngineRunning();
+        ((FlightModelMain) (super.FM)).CT.setGearAirborne();
+        moveGear(0.0F);
+        FlightModel flightmodel = ((SndAircraft) ((Aircraft)queen_)).FM;
+        if(aircIndex() == 0 && (super.FM instanceof Maneuver) && (flightmodel instanceof Maneuver))
+        {
+            Maneuver maneuver = (Maneuver)flightmodel;
+            Maneuver maneuver1 = (Maneuver)super.FM;
+            if(maneuver.Group != null && maneuver1.Group != null && maneuver1.Group.numInGroup(this) == maneuver1.Group.nOfAirc - 1)
+            {
+                AirGroup airgroup = new AirGroup(maneuver1.Group);
+                maneuver1.Group.delAircraft(this);
+                airgroup.addAircraft(this);
+                airgroup.attachGroup(maneuver.Group);
+                airgroup.rejoinGroup = null;
+                airgroup.leaderGroup = null;
+                airgroup.clientGroup = maneuver.Group;
+            }
+        }
+    }
+
+    public void typeDockableDoDetachFromQueen(int i)
+    {
+        if(dockport_ == i)
+        {
+            queen_last = queen_;
+            queen_time = Time.current();
+            queen_ = null;
+            dockport_ = 0;
+        }
+    }
+
+    public void typeDockableReplicateToNet(NetMsgGuaranted netmsgguaranted)
+        throws IOException
+    {
+        if(typeDockableIsDocked())
+        {
+            netmsgguaranted.writeByte(1);
+            ActorNet actornet = null;
+            if(Actor.isValid(queen_))
+            {
+                actornet = queen_.net;
+                if(actornet.countNoMirrors() > 0)
+                    actornet = null;
+            }
+            netmsgguaranted.writeByte(dockport_);
+            netmsgguaranted.writeNetObj(actornet);
+        } else
+        {
+            netmsgguaranted.writeByte(0);
+        }
+    }
+
+    public void typeDockableReplicateFromNet(NetMsgInput netmsginput)
+        throws IOException
+    {
+        if(netmsginput.readByte() == 1)
+        {
+            dockport_ = netmsginput.readByte();
+            NetObj netobj = netmsginput.readNetObj();
+            if(netobj != null)
+            {
+                Actor actor = (Actor)netobj.superObj();
+                ((TypeDockable)actor).typeDockableDoAttachToDrone(this, dockport_);
+            }
+        }
+    }
+	
     public SkyhawkA4M()
     {
         guidedMissileUtils = null;
@@ -36,21 +205,13 @@ public class SkyhawkA4M extends Skyhawk
         trgtAI = null;
         bToFire = false;
         tX4Prev = 0L;
-        rocketsList = new ArrayList();
-        rocketsList.clear();
         trgtPk = 0.0F;
         trgtAI = null;
         k14Mode = 0;
         k14WingspanType = 0;
         k14Distance = 200F;
         steera = 0.0F;
-        lastRadarLockThreatActive = 0L;
-        intervalRadarLockThreat = 1000L;
-        lastMissileLaunchThreatActive = 0L;
-        intervalMissileLaunchThreat = 1000L;
-        rocketsList = new ArrayList();
-        //By PAL
-        guidedMissileUtils = new GuidedMissileUtils(this); //new RocketAIM9BUtils(this);
+//By PAL, from F100
         hasChaff = false;
         hasFlare = false;
         lastChaffDeployed = 0L;
@@ -59,6 +220,9 @@ public class SkyhawkA4M extends Skyhawk
         intervalCommonThreat = 1000L;
         lastRadarLockThreatActive = 0L;
         intervalRadarLockThreat = 1000L;
+        lastMissileLaunchThreatActive = 0L;
+        intervalMissileLaunchThreat = 1000L;
+        guidedMissileUtils = new GuidedMissileUtils(this);
     }
 
     public long getChaffDeployed()
@@ -134,17 +298,6 @@ public class SkyhawkA4M extends Skyhawk
         return guidedMissileUtils.getSelectedActorOffset();
     }
 
-    public boolean hasMissiles()
-    {
-        return !rocketsList.isEmpty();
-    }
-
-    public void shotMissile()
-    {
-        if(hasMissiles())
-            rocketsList.remove(0);
-    }
-
     public int getMissileLockState()
     {
         return guidedMissileUtils.getMissileLockState();
@@ -159,47 +312,13 @@ public class SkyhawkA4M extends Skyhawk
         return thePk;
     }
 
-    private void checkAIlaunchMissile()
-    {
-        if((super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode() || !(super.FM instanceof Pilot))
-            return;
-        if(rocketsList.isEmpty())
-            return;
-        Pilot pilot = (Pilot)super.FM;
-        if((pilot.get_maneuver() == 27 || pilot.get_maneuver() == 62 || pilot.get_maneuver() == 63) && ((Maneuver) (pilot)).target != null)
-        {
-            trgtAI = ((Interpolate) (((Maneuver) (pilot)).target)).actor;
-            if(!Actor.isValid(trgtAI) || !(trgtAI instanceof Aircraft))
-                return;
-            bToFire = false;
-            if(trgtPk > 25F && Actor.isValid(guidedMissileUtils.getMissileTarget()) && (guidedMissileUtils.getMissileTarget() instanceof Aircraft) && guidedMissileUtils.getMissileTarget().getArmy() != ((Interpolate) (super.FM)).actor.getArmy() && Time.current() > tX4Prev + 10000L)
-            {
-                bToFire = true;
-                tX4Prev = Time.current();
-                shootRocket();
-                bToFire = false;
-            }
-        }
-    }
-
-    public void shootRocket()
-    {
-        if(rocketsList.isEmpty())
-        {
-            return;
-        } else
-        {
-            ((RocketGun)rocketsList.get(0)).shots(1);
-            return;
-        }
-    }
-
     public void onAircraftLoaded()
     {
         super.onAircraftLoaded();
-        rocketsList.clear();
-        guidedMissileUtils.createMissileList(rocketsList);
-        if(super.thisWeaponsName.startsWith("2xAAMs"))
+
+        this.guidedMissileUtils.onAircraftLoaded();
+        
+         if(super.thisWeaponsName.startsWith("2xAAMs"))
         {
             hierMesh().chunkVisible("RailL1_D0", true);
             hierMesh().chunkVisible("RailR1_D0", true);
@@ -235,17 +354,78 @@ public class SkyhawkA4M extends Skyhawk
         return guidedMissileUtils;
     }
 
+//By PAL, original update
+//    public void update(float f)
+//    {
+//        super.update(f);
+//        trgtPk = getMissilePk();
+//        guidedMissileUtils.checkLockStatus();
+//        checkAIlaunchMissile();
+//        if(((FlightModelMain) (super.FM)).CT.saveWeaponControl[2])
+//        {
+//            hierMesh().chunkVisible("CapR_D0", false);
+//            hierMesh().chunkVisible("CapL_D0", false);
+//        }
+//    }
+
     public void update(float f)
     {
+        if(bNeedSetup)
+            checkAsDrone();
+        int i = aircIndex();
+        if(super.FM instanceof Maneuver)
+            if(typeDockableIsDocked())
+            {
+                if(!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode())
+                {
+                    ((Maneuver)super.FM).unblock();
+                    ((Maneuver)super.FM).set_maneuver(48);
+                    for(int j = 0; j < i; j++)
+                        ((Maneuver)super.FM).push(48);
+
+                    if(((FlightModelMain) (super.FM)).AP.way.curr().Action != 3)
+                        ((FlightModelMain) ((Maneuver)super.FM)).AP.way.setCur(((FlightModelMain) (((SndAircraft) ((Aircraft)queen_)).FM)).AP.way.Cur());
+                    ((Pilot)super.FM).setDumbTime(3000L);
+                }
+                if(((FlightModelMain) (super.FM)).M.fuel < ((FlightModelMain) (super.FM)).M.maxFuel)
+                    ((FlightModelMain) (super.FM)).M.fuel += 20F * f;
+            } else
+            if(!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode())
+            {
+                if(FM.CT.GearControl == 0.0F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 0)
+                    ((FlightModelMain) (super.FM)).EI.setEngineRunning();
+                if(dtime > 0L && ((Maneuver)super.FM).Group != null)
+                {
+                    ((Maneuver)super.FM).Group.leaderGroup = null;
+                    ((Maneuver)super.FM).set_maneuver(22);
+                    ((Pilot)super.FM).setDumbTime(3000L);
+                    if(Time.current() > dtime + 3000L)
+                    {
+                        dtime = -1L;
+                        ((Maneuver)super.FM).clear_stack();
+                        ((Maneuver)super.FM).set_maneuver(0);
+                        ((Pilot)super.FM).setDumbTime(0L);
+                    }
+                } else
+                if(((FlightModelMain) (super.FM)).AP.way.curr().Action == 0)
+                {
+                    Maneuver maneuver = (Maneuver)super.FM;
+                    if(maneuver.Group != null && maneuver.Group.airc[0] == this && maneuver.Group.clientGroup != null)
+                        maneuver.Group.setGroupTask(2);
+                }
+            }
+
         super.update(f);
-        trgtPk = getMissilePk();
-        guidedMissileUtils.checkLockStatus();
-        checkAIlaunchMissile();
+
+        this.guidedMissileUtils.update();
+        
+        //By PAL, from original Update        
+
         if(((FlightModelMain) (super.FM)).CT.saveWeaponControl[2])
         {
             hierMesh().chunkVisible("CapR_D0", false);
             hierMesh().chunkVisible("CapL_D0", false);
-        }
+        }                
     }
 
     public void moveCockpitDoor(float f)
@@ -258,11 +438,6 @@ public class SkyhawkA4M extends Skyhawk
                 Main3D.cur3D().cockpits[0].onDoorMoved(f);
             setDoorSnd(f);
         }
-    }
-
-    public void moveArrestorHook(float f)
-    {
-        hierMesh().chunkSetAngles("Hook1_D0", 0.0F, -70F * f, 0.0F);
     }
 
     public boolean typeFighterAceMakerToggleAutomation()
@@ -330,23 +505,28 @@ public class SkyhawkA4M extends Skyhawk
         k14Distance = netmsginput.readFloat();
     }
 
-    private long lastMissileLaunchThreatActive;
-    private long intervalMissileLaunchThreat;
     public int k14Mode;
     public int k14WingspanType;
     public float k14Distance;
     public Aircraft aircraft;
     public Actor actor;
     private float llpos;
-    public static boolean bChangedPit = false;
+    public /*static*/ boolean bChangedPit = false;
     public boolean bToFire;
-    private ArrayList rocketsList;
+
     private long tX4Prev;
     private float trgtPk;
     private Actor trgtAI;
     private float steera;
     //By PAL
-    //private RocketAIM9BUtils guidedMissileUtils;
+    private Actor queen_last;
+    private long queen_time;
+    private boolean bNeedSetup;
+    private long dtime;
+    private Actor target_;
+    private Actor queen_;
+    private int dockport_;
+
     private GuidedMissileUtils guidedMissileUtils;
     private boolean hasChaff;
     private boolean hasFlare;
@@ -356,6 +536,10 @@ public class SkyhawkA4M extends Skyhawk
     private long intervalCommonThreat;
     private long lastRadarLockThreatActive;
     private long intervalRadarLockThreat;
+    private long lastMissileLaunchThreatActive;
+    private long intervalMissileLaunchThreat;
+  
+    //private RocketAIM9BUtils guidedMissileUtils;
     private static final float NEG_G_TOLERANCE_FACTOR = 1F;
     private static final float NEG_G_TIME_FACTOR = 1F;
     private static final float NEG_G_RECOVERY_FACTOR = 1F;

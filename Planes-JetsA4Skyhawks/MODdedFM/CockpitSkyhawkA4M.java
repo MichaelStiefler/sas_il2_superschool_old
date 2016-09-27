@@ -121,8 +121,20 @@ public class CockpitSkyhawkA4M extends CockpitPilot
         super.limits6DoF = (new float[] {
             0.7F, 0.055F, -0.07F, 0.09F, 0.15F, -0.11F, 0.03F, -0.03F
         });
+    	loadBuzzerFX(); //By PAL, new       
     }
 
+ //BY PAL, new methods:
+   private int iLockState() {
+    if (!(super.aircraft() instanceof TypeGuidedMissileCarrier)) {
+      return 0;
+    }
+    return ((TypeGuidedMissileCarrier) super.aircraft()).getGuidedMissileUtils().getMissileLockState();
+  }
+
+  private float machNumber() {
+    return ((Skyhawk) super.aircraft()).calculateMach();
+  }   
     public void reflectWorldToInstruments(float f)
     {
         if((((FlightModelMain) (super.fm)).AS.astateCockpitState & 2) == 0)
