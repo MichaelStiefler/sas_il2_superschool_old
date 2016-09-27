@@ -8,24 +8,244 @@ package com.maddox.il2.objects.air;
 import com.maddox.JGP.*;
 import com.maddox.il2.ai.*;
 import com.maddox.il2.ai.air.Maneuver;
+import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
-import com.maddox.il2.objects.Wreckage;
+import com.maddox.il2.game.*;
 import com.maddox.il2.objects.sounds.SndAircraft;
+import com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric;
+import com.maddox.il2.objects.vehicles.cars.CarGeneric;
+import com.maddox.il2.objects.vehicles.stationary.StationaryGeneric;
+import com.maddox.il2.objects.vehicles.tanks.TankGeneric;
+import com.maddox.il2.objects.weapons.*;
+import com.maddox.il2.objects.Wreckage;
 import com.maddox.rts.*;
-import java.util.Random;
+import com.maddox.sas1946.il2.util.Reflection;
+import com.maddox.sound.SoundFX;
+import com.maddox.util.HashMapExt;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.*;
 
 //By PAL
-import com.maddox.sas1946.il2.util.Reflection;
-import com.maddox.il2.game.HUD;
+//import com.maddox.sas1946.il2.util.Reflection;
+//import com.maddox.il2.game.HUD;
 
 // Referenced classes of package com.maddox.il2.objects.air:
 //            Scheme1, TypeFighter, TypeSupersonic, PaintScheme, 
 //            AircraftLH, Aircraft, EjectionSeat
 
 public class Skyhawk extends Scheme1
-    implements TypeFighter, TypeSupersonic
+    //implements TypeFighter, TypeSupersonic
+    implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeFighterAceMaker, TypeRadarGunsight, TypeStormovik, TypeGSuit, TypeZBReceiver, TypeFuelDump, TypeFastJet
 {
+
+//By PAL, Missing methods
+    public float getFlowRate()
+    {
+        return FlowRate;
+    }
+
+    public float getFuelReserve()
+    {
+        return FuelReserve;
+    }
+    
+    public void getGFactors(TypeGSuit.GFactors gfactors)
+    {
+        gfactors.setGFactors(1.5F, 1.5F, 1.0F, 2.0F, 2.0F, 2.0F);
+    }
+
+    public boolean typeFighterAceMakerToggleAutomation()
+    {
+        k14Mode++;
+        if(k14Mode > 2)
+            k14Mode = 0;
+        if(k14Mode == 0)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Caged");
+        } else
+        if(k14Mode == 1)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Uncaged");
+        } else
+        if(k14Mode == 2 && FM.actor == World.getPlayerAircraft())
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Off");
+        return true;
+    }
+
+    public void typeFighterAceMakerAdjDistanceReset()
+    {
+    }
+
+    public void typeFighterAceMakerAdjDistancePlus()
+    {
+        k14Distance += 10F;
+        if(k14Distance > 800F)
+            k14Distance = 800F;
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerInc");
+    }
+
+    public void typeFighterAceMakerAdjDistanceMinus()
+    {
+        k14Distance -= 10F;
+        if(k14Distance < 200F)
+            k14Distance = 200F;
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerDec");
+    }
+
+    public void typeFighterAceMakerAdjSideslipReset()
+    {
+    }
+
+    public void typeFighterAceMakerAdjSideslipPlus()
+    {
+        k14WingspanType--;
+        if(k14WingspanType < 0)
+            k14WingspanType = 0;
+        if(k14WingspanType == 0)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: MiG-17/19/21");
+        } else
+        if(k14WingspanType == 1)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: MiG-15");
+        } else
+        if(k14WingspanType == 2)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Me-262");
+        } else
+        if(k14WingspanType == 3)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Pe-2");
+        } else
+        if(k14WingspanType == 4)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: 60ft");
+        } else
+        if(k14WingspanType == 5)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Canberra Bomber");
+        } else
+        if(k14WingspanType == 6)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Yak-28/Il-28");
+        } else
+        if(k14WingspanType == 7)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: C-47");
+        } else
+        if(k14WingspanType == 8)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Tu-16");
+        } else
+        if(k14WingspanType == 9 && FM.actor == World.getPlayerAircraft())
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Tu-4");
+    }
+
+    public void typeFighterAceMakerAdjSideslipMinus()
+    {
+        k14WingspanType++;
+        if(k14WingspanType > 9)
+            k14WingspanType = 9;
+        if(k14WingspanType == 0)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: MiG-17/19/21");
+        } else
+        if(k14WingspanType == 1)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: MiG-15");
+        } else
+        if(k14WingspanType == 2)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Me-262");
+        } else
+        if(k14WingspanType == 3)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Pe-2");
+        } else
+        if(k14WingspanType == 4)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: 60ft");
+        } else
+        if(k14WingspanType == 5)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Canberra Bomber");
+        } else
+        if(k14WingspanType == 6)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Yak-28/Il-28");
+        } else
+        if(k14WingspanType == 7)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: C-47");
+        } else
+        if(k14WingspanType == 8)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Tu-16");
+        } else
+        if(k14WingspanType == 9 && FM.actor == World.getPlayerAircraft())
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan Selected: Tu-4");
+    }
+
+    public void typeFighterAceMakerReplicateToNet(NetMsgGuaranted netmsgguaranted)
+        throws IOException
+    {
+        netmsgguaranted.writeByte(k14Mode);
+        netmsgguaranted.writeByte(k14WingspanType);
+        netmsgguaranted.writeFloat(k14Distance);
+    }
+
+    public void typeFighterAceMakerReplicateFromNet(NetMsgInput netmsginput)
+        throws IOException
+    {
+        k14Mode = netmsginput.readByte();
+        k14WingspanType = netmsginput.readByte();
+        k14Distance = netmsginput.readFloat();
+    }
+    
+    public void typeFighterAceMakerRangeFinder()
+    {
+        if(k14Mode == 2)
+            return;
+        if(!Config.isUSE_RENDER())
+            return;
+        hunted = Main3D.cur3D().getViewPadlockEnemy();
+        if(hunted == null)
+        {
+            k14Distance = 200F;
+            hunted = War.GetNearestEnemyAircraft(FM.actor, 2700F, 9);
+        }
+        if(hunted != null)
+        {
+            k14Distance = (float)FM.actor.pos.getAbsPoint().distance(hunted.pos.getAbsPoint());
+            if(k14Distance > 800F)
+                k14Distance = 800F;
+            else
+            if(k14Distance < 200F)
+                k14Distance = 200F;
+        }
+    }        
 
     public Skyhawk()
     {
@@ -45,10 +265,25 @@ public class Skyhawk extends Scheme1
         ejectComplete = false;
         lTimeNextEject = 0L;
         //By PAL
-        fSteer = 0.0F;
+        fSteer = 0.0F;                                
         //from Vega
         APmode1 = false;
-        APmode2 = false;        
+        APmode2 = false;
+        //By PAL, from Hydraulics
+        timeCounterRud9 = 0.0F;
+        timeCounterHyd9 = 0.0F;
+        timeRudder9 = 600F;
+        timeHydro9 = 600F;
+        timeCounterCrash9 = 0.0F;
+        timeCrash9 = 3F;
+        timeBrake19 = 10F;
+        timeBrake29 = 17F;
+        timeBrake39 = 2400F;
+        timeCounterBrake9 = 0.0F;
+        timeCounterBrake29 = 0.0F;
+        timeCounterBoost = 0.0F;
+        //By PAL
+        arrestor = 0.0F;                  
     }
 
     public void rareAction(float f, boolean flag)
@@ -89,6 +324,16 @@ public class Skyhawk extends Scheme1
             break;
         }
     }
+    
+//    private float getSteer()
+//    {
+//    	return fSteer;
+//    }
+
+	private void myMoveGear(HierMesh hiermesh, float f)
+	{
+		
+	} 
 
     public static void moveGear(HierMesh hiermesh, float f)
     {
@@ -97,17 +342,21 @@ public class Skyhawk extends Scheme1
         float f3 = Aircraft.cvt(f, 0.2F, 0.8F, 0.0F, -45F);
         float f4 = Aircraft.cvt(f, 0.2F, 0.8F, 0.0F, -90F);
         float f5 = Aircraft.cvt(f, 0.2F, 0.8F, 0.0F, -45F);
-        float f6 = Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, -90F);
+        float f6 = Aircraft.cvt(f, 0.2F, 0.6F, 0.0F, -90F); //By PAL, originally between 0 an 0.8
+        
         hiermesh.chunkSetAngles("GearC2_D0", 0.0F, f1, 0.0F);
+        
         hiermesh.chunkSetAngles("GearC4_D0", 0.0F, f2, 0.0F);
         //BY PAL, to center wheel when up
         if(f < 0.2F)
-        	hiermesh.chunkSetAngles("GearC3_D0", 0.0F, 0.0F, 0.0F); 
+        	hiermesh.chunkSetAngles("GearC3_D0", 0.0F, 0.0F, 0.0F);
         hiermesh.chunkSetAngles("GearC5_D0", 0.0F, f5, 0.0F);
         hiermesh.chunkSetAngles("GearC7_D0", 0.0F, -f3, 0.0F);
         hiermesh.chunkSetAngles("GearC8_D0", 0.0F, f3, 0.0F);
-        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, f4, 0.0F);
-        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, -f4, 0.0F);
+        
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, f4, 0.0F);  //By PAL, Rotation of Gear
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, -f4, 0.0F);  //By PAL, Rotation of Gear       
+        
         hiermesh.chunkSetAngles("GearL6_D0", 0.0F, f2, 0.0F);
         hiermesh.chunkSetAngles("GearR6_D0", 0.0F, f2, 0.0F);
         hiermesh.chunkSetAngles("GearL4_D0", 0.0F, f2, 0.0F);
@@ -124,66 +373,50 @@ public class Skyhawk extends Scheme1
     public void moveWheelSink()
     {
         //By PAL, Central    	
-        //float f = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[2], 0.0F, 0.19075F, 0.0F, 1.0F);
+        //float f = Aircraft.cvt(FM.Gears.gWheelSinking[2], 0.0F, 0.19075F, 0.0F, 1.0F);
         resetYPRmodifier();
-        xyz[0] = cvt(FM.Gears.gWheelSinking[2], 0.0F, 0.45F, 0.0F, -0.45F); //2405F); //-0.19075F * f;
+        float f60 = cvt(FM.Gears.gWheelSinking[2], 0.0F, /*fSinkF*/0.25F, 0.0F, -0.4F); //2405F); //-0.19075F * f;
+        xyz[0] = f60;
+        xyz[2] = 0.5F * f60; //By PAL, 0.5F component in the other axis to make it move aligned
         hierMesh().chunkSetLocate("GearC2b_D0", Aircraft.xyz, Aircraft.ypr);
         //hierMesh().chunkSetAngles("GearC3_D0", 0.0F, 0.0F, fSteer);               
         //By PAL, Main Gears:       
-        if(((FlightModelMain) (super.FM)).CT.GearControl > 0.8F)
-        {
-	        resetYPRmodifier();
-	        xyz[2] = cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.45F, 0.0F, -0.45F); //44F);
-	        ypr[0] = -90.0F; //-90F;
-	        hierMesh().chunkSetLocate("GearL5_D0", xyz, ypr);
-	        resetYPRmodifier();
-	        xyz[2] = cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 0.45F, 0.0F, -0.45F); //44F);
-	        ypr[0] = +90.0F; //90F;
-	        hierMesh().chunkSetLocate("GearR5_D0", xyz, ypr);                	
-        }
-        
-//        resetYPRmodifier();
-//        xyz[1] = cvt(FM.Gears.gWheelSinking[2], 0.0F, 0.24F, 0.0F, 0.2405F);
-//        ypr[1] = fSteer;
-//        hierMesh().chunkSetLocate("GearC3_D0", xyz, ypr);
-//        hierMesh().chunkSetAngles("GearC5_D0", 0.0F, cvt(FM.Gears.gWheelSinking[2], 0.0F, 0.24F, 0.0F, -72F), 0.0F);
-//        hierMesh().chunkSetAngles("GearC4_D0", 0.0F, cvt(FM.Gears.gWheelSinking[2], 0.0F, 0.24F, 0.0F, -40F), 0.0F);
-//        resetYPRmodifier();
-//        xyz[1] = cvt(FM.Gears.gWheelSinking[0], 0.0F, 0.115F, 0.0F, 0.11675F);
-//        hierMesh().chunkSetLocate("GearL3_D0", xyz, ypr);
-//        hierMesh().chunkSetAngles("GearL4_D0", 0.0F, cvt(FM.Gears.gWheelSinking[0], 0.0F, 0.115F, 0.0F, -15F), 0.0F);
-//        hierMesh().chunkSetAngles("GearL5_D0", 0.0F, cvt(FM.Gears.gWheelSinking[0], 0.0F, 0.115F, 0.0F, -27F), 0.0F);
-//        resetYPRmodifier();
-//        xyz[1] = cvt(FM.Gears.gWheelSinking[1], 0.0F, 0.115F, 0.0F, 0.11675F);
-//        hierMesh().chunkSetLocate("GearR3_D0", xyz, ypr);
-//        hierMesh().chunkSetAngles("GearR4_D0", 0.0F, cvt(FM.Gears.gWheelSinking[1], 0.0F, 0.115F, 0.0F, -15F), 0.0F);
-//        hierMesh().chunkSetAngles("GearR5_D0", 0.0F, cvt(FM.Gears.gWheelSinking[1], 0.0F, 0.115F, 0.0F, -27F), 0.0F);                                   
+        resetYPRmodifier();
+        float f6 = Aircraft.cvt(FM.CT.getGear(), 0.2F, 0.6F, 0.0F, 90F); //By PAL, originally between 0 an 0.8
+        xyz[2] = cvt(FM.Gears.gWheelSinking[0], 0.0F, /*fSinkR*/0.25F, 0.0F, -0.35F); //44F);
+        ypr[0] = -f6; //-90.0F; //-90F;
+        hierMesh().chunkSetLocate("GearL5_D0", xyz, ypr);
+        resetYPRmodifier();
+        xyz[2] = cvt(FM.Gears.gWheelSinking[1], 0.0F, /*fSinkR*/0.25F, 0.0F, -0.35F); //44F);
+        ypr[0] = f6; //+90.0F; //90F;
+        hierMesh().chunkSetLocate("GearR5_D0", xyz, ypr);                	                                  
     }   
 
 	public void moveSteering(float f)
 	{
-		//By PAL, moved to Rudder (Active Steering)        		        	          			
+		//By PAL, interpolate it		
+		fSteer += 0.075F * (f - fSteer);
+		//By PAL, Limit on -30...30
+		if(fSteer < -maxSteer) fSteer = -maxSteer;
+    		else
+		if(fSteer > maxSteer) fSteer = maxSteer;
+		FM.Gears.steerAngle = fSteer;
+    	//By PAL, to line up Gear when Up
+   		hierMesh().chunkSetAngles("GearC3_D0", 0.0F, 0.0F, fSteer * FM.CT.GearControl);	       		        		         		        	          			
 	} 
 
     protected void moveRudder(float f)
     {
         hierMesh().chunkSetAngles("Rudder1_D0", 0.0F, -30F * f, 0.0F);
         
-		//By PAL, Modern Skyhawks, Active Steering	
-        fSteer = f * -30F;
-//		//By PAL, limited to twist 30 degrees only (inverted), not necessary in Active Steering.
-//		if(fSteer < -30F)
-//			fSteer = -30F;
-//		else
-//		if(fSteer > 30F)
-//			fSteer = +30F;
-//		//By PAL, to center GearC when Up				
-		fSteer *= ((FlightModelMain) (super.FM)).CT.GearControl;
-		
-//        resetYPRmodifier();
-//        xyz[2] = cvt(FM.Gears.gWheelSinking[2], 0.0F, 0.24F, 0.0F, 0.2405F);
-//        hierMesh().chunkSetLocate("GearC2b_D0", Aircraft.xyz, Aircraft.ypr);
-        hierMesh().chunkSetAngles("GearC3_D0", 0.0F, 0.0F, fSteer);   			         
+		//By PAL, Modern Skyhawks, Active Steering when in ground       
+//        if(FM.Gears.getLandingState() > 0F)
+//        {
+//			fSteer += 0.075F * (-f  * maxSteer - fSteer);
+//			FM.Gears.steerAngle = fSteer;
+//	    	//By PAL, to line up Gear when Up
+//	   		hierMesh().chunkSetAngles("GearC3_D0", 0.0F, 0.0F, fSteer * FM.CT.GearControl);        	
+//        }            			         
     }
 
     protected void moveFlap(float f)
@@ -217,7 +450,7 @@ public class Skyhawk extends Scheme1
                 if(s.endsWith("g1"))
                 {
                     getEnergyPastArmor((double)World.Rnd().nextFloat(40F, 60F) / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot);
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 2);
+                    FM.AS.setCockpitState(shot.initiator, FM.AS.astateCockpitState | 2);
                     if(shot.power <= 0.0F)
                         doRicochetBack(shot);
                 }
@@ -233,7 +466,7 @@ public class Skyhawk extends Scheme1
                     if(World.Rnd().nextFloat() < 0.5F && getEnergyPastArmor(1.1F, shot) > 0.0F)
                     {
                         debuggunnery("Controls: Ailerones Controls: Out..");
-                        ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                        FM.AS.setControlsDamage(shot.initiator, 0);
                     }
                     break;
 
@@ -242,12 +475,12 @@ public class Skyhawk extends Scheme1
                     if(getEnergyPastArmor(World.Rnd().nextFloat(0.5F, 2.93F), shot) > 0.0F && World.Rnd().nextFloat() < 0.25F)
                     {
                         debuggunnery("Controls: Elevator Controls: Disabled / Strings Broken..");
-                        ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
+                        FM.AS.setControlsDamage(shot.initiator, 1);
                     }
                     if(getEnergyPastArmor(World.Rnd().nextFloat(0.5F, 2.93F), shot) > 0.0F && World.Rnd().nextFloat() < 0.25F)
                     {
                         debuggunnery("Controls: Rudder Controls: Disabled / Strings Broken..");
-                        ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
+                        FM.AS.setControlsDamage(shot.initiator, 2);
                     }
                     break;
                 }
@@ -257,24 +490,24 @@ public class Skyhawk extends Scheme1
                 debuggunnery("Engine Module: Hit..");
                 if(s.endsWith("bloc"))
                     getEnergyPastArmor((double)World.Rnd().nextFloat(0.0F, 60F) / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot);
-                if(s.endsWith("cams") && getEnergyPastArmor(0.45F, shot) > 0.0F && World.Rnd().nextFloat() < ((FlightModelMain) (super.FM)).EI.engines[0].getCylindersRatio() * 20F)
+                if(s.endsWith("cams") && getEnergyPastArmor(0.45F, shot) > 0.0F && World.Rnd().nextFloat() < FM.EI.engines[0].getCylindersRatio() * 20F)
                 {
-                    ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int)(shot.power / 4800F)));
-                    debuggunnery("Engine Module: Engine Cams Hit, " + ((FlightModelMain) (super.FM)).EI.engines[0].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[0].getCylinders() + " Left..");
+                    FM.EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int)(shot.power / 4800F)));
+                    debuggunnery("Engine Module: Engine Cams Hit, " + FM.EI.engines[0].getCylindersOperable() + "/" + FM.EI.engines[0].getCylinders() + " Left..");
                     if(World.Rnd().nextFloat() < shot.power / 24000F)
                     {
-                        ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
+                        FM.AS.hitEngine(shot.initiator, 0, 2);
                         debuggunnery("Engine Module: Engine Cams Hit - Engine Fires..");
                     }
                     if(shot.powerType == 3 && World.Rnd().nextFloat() < 0.75F)
                     {
-                        ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 1);
+                        FM.AS.hitEngine(shot.initiator, 0, 1);
                         debuggunnery("Engine Module: Engine Cams Hit (2) - Engine Fires..");
                     }
                 }
                 if(s.endsWith("eqpt") && World.Rnd().nextFloat() < shot.power / 24000F)
                 {
-                    ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 3);
+                    FM.AS.hitEngine(shot.initiator, 0, 3);
                     debuggunnery("Engine Module: Hit - Engine Fires..");
                 }
                 s.endsWith("exht");
@@ -285,7 +518,7 @@ public class Skyhawk extends Scheme1
                 if(getEnergyPastArmor(1.5F, shot) > 0.0F)
                 {
                     debuggunnery("Armament: Machine Gun (" + j + ") Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(0, j);
+                    FM.AS.setJamBullets(0, j);
                     getEnergyPastArmor(World.Rnd().nextFloat(0.5F, 23.325F), shot);
                 }
             } else
@@ -294,15 +527,15 @@ public class Skyhawk extends Scheme1
                 int k = s.charAt(6) - 49;
                 if(getEnergyPastArmor(0.1F, shot) > 0.0F && World.Rnd().nextFloat() < 0.25F)
                 {
-                    if(((FlightModelMain) (super.FM)).AS.astateTankStates[k] == 0)
+                    if(FM.AS.astateTankStates[k] == 0)
                     {
                         debuggunnery("Fuel Tank (" + k + "): Pierced..");
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, k, 1);
-                        ((FlightModelMain) (super.FM)).AS.doSetTankState(shot.initiator, k, 1);
+                        FM.AS.hitTank(shot.initiator, k, 1);
+                        FM.AS.doSetTankState(shot.initiator, k, 1);
                     }
                     if(shot.powerType == 3 && World.Rnd().nextFloat() < 0.075F)
                     {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, k, 2);
+                        FM.AS.hitTank(shot.initiator, k, 2);
                         debuggunnery("Fuel Tank (" + k + "): Hit..");
                     }
                 }
@@ -332,15 +565,15 @@ public class Skyhawk extends Scheme1
                 }
             } else
             if(s.startsWith("xxhyd"))
-                ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 3);
+                FM.AS.setInternalDamage(shot.initiator, 3);
             else
             if(s.startsWith("xxpnm"))
-                ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 1);
+                FM.AS.setInternalDamage(shot.initiator, 1);
         } else
         {
             if(s.startsWith("xcockpit"))
             {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 1);
+                FM.AS.setCockpitState(shot.initiator, FM.AS.astateCockpitState | 1);
                 getEnergyPastArmor(0.05F, shot);
             }
             if(s.startsWith("xcf"))
@@ -403,12 +636,12 @@ public class Skyhawk extends Scheme1
                 if(s.endsWith("1") && World.Rnd().nextFloat() < 0.05F)
                 {
                     debuggunnery("Hydro System: Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 0);
+                    FM.AS.setInternalDamage(shot.initiator, 0);
                 }
                 if(s.endsWith("2") && World.Rnd().nextFloat() < 0.1F && getEnergyPastArmor(World.Rnd().nextFloat(1.2F, 3.435F), shot) > 0.0F)
                 {
                     debuggunnery("Undercarriage: Stuck..");
-                    ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 3);
+                    FM.AS.setInternalDamage(shot.initiator, 3);
                 }
             } else
             if(s.startsWith("xpilot") || s.startsWith("xhead"))
@@ -437,8 +670,12 @@ public class Skyhawk extends Scheme1
     {
         switch(i)
         {
-        case 19: // '\023'
-            ((FlightModelMain) (super.FM)).EI.engines[0].setEngineDies(actor);
+//        //By PAL, taken from Do335, theorically to stabilize with the 
+//        case 3: // '\003'
+//            FM.setGCenter(-1.5F);
+//            break;      	
+       	case 19: // '\023'
+            FM.EI.engines[0].setEngineDies(actor);
             return super.cutFM(i, j, actor);
         }
         return super.cutFM(i, j, actor);
@@ -506,19 +743,19 @@ public class Skyhawk extends Scheme1
     private void bailout()
     {
         if(overrideBailout)
-            if(((FlightModelMain) (super.FM)).AS.astateBailoutStep >= 0 && ((FlightModelMain) (super.FM)).AS.astateBailoutStep < 2)
+            if(FM.AS.astateBailoutStep >= 0 && FM.AS.astateBailoutStep < 2)
             {
-                if(((FlightModelMain) (super.FM)).CT.cockpitDoorControl > 0.5F && ((FlightModelMain) (super.FM)).CT.getCockpitDoor() > 0.5F)
-                    ((FlightModelMain) (super.FM)).AS.astateBailoutStep = 11;
+                if(FM.CT.cockpitDoorControl > 0.5F && FM.CT.getCockpitDoor() > 0.5F)
+                    FM.AS.astateBailoutStep = 11;
                 else
-                    ((FlightModelMain) (super.FM)).AS.astateBailoutStep = 2;
+                    FM.AS.astateBailoutStep = 2;
             } else
-            if(((FlightModelMain) (super.FM)).AS.astateBailoutStep >= 2 && ((FlightModelMain) (super.FM)).AS.astateBailoutStep <= 3)
+            if(FM.AS.astateBailoutStep >= 2 && FM.AS.astateBailoutStep <= 3)
             {
-                switch(((FlightModelMain) (super.FM)).AS.astateBailoutStep)
+                switch(FM.AS.astateBailoutStep)
                 {
                 case 2: // '\002'
-                    if(((FlightModelMain) (super.FM)).CT.cockpitDoorControl < 0.5F)
+                    if(FM.CT.cockpitDoorControl < 0.5F)
                         doRemoveBlisters();
                     break;
 
@@ -526,25 +763,25 @@ public class Skyhawk extends Scheme1
                     lTimeNextEject = Time.current() + 1000L;
                     break;
                 }
-                if(((FlightModelMain) (super.FM)).AS.isMaster())
-                    ((FlightModelMain) (super.FM)).AS.netToMirrors(20, ((FlightModelMain) (super.FM)).AS.astateBailoutStep, 1, null);
-                ((FlightModelMain) (super.FM)).AS.astateBailoutStep = (byte)(((FlightModelMain) (super.FM)).AS.astateBailoutStep + 1);
-                if(((FlightModelMain) (super.FM)).AS.astateBailoutStep == 4)
-                    ((FlightModelMain) (super.FM)).AS.astateBailoutStep = 11;
+                if(FM.AS.isMaster())
+                    FM.AS.netToMirrors(20, FM.AS.astateBailoutStep, 1, null);
+                FM.AS.astateBailoutStep = (byte)(FM.AS.astateBailoutStep + 1);
+                if(FM.AS.astateBailoutStep == 4)
+                    FM.AS.astateBailoutStep = 11;
             } else
-            if(((FlightModelMain) (super.FM)).AS.astateBailoutStep >= 11 && ((FlightModelMain) (super.FM)).AS.astateBailoutStep <= 19)
+            if(FM.AS.astateBailoutStep >= 11 && FM.AS.astateBailoutStep <= 19)
             {
-                byte byte0 = ((FlightModelMain) (super.FM)).AS.astateBailoutStep;
-                if(((FlightModelMain) (super.FM)).AS.isMaster())
-                    ((FlightModelMain) (super.FM)).AS.netToMirrors(20, ((FlightModelMain) (super.FM)).AS.astateBailoutStep, 1, null);
-                ((FlightModelMain) (super.FM)).AS.astateBailoutStep = (byte)(((FlightModelMain) (super.FM)).AS.astateBailoutStep + 1);
+                byte byte0 = FM.AS.astateBailoutStep;
+                if(FM.AS.isMaster())
+                    FM.AS.netToMirrors(20, FM.AS.astateBailoutStep, 1, null);
+                FM.AS.astateBailoutStep = (byte)(FM.AS.astateBailoutStep + 1);
                 if((super.FM instanceof Maneuver) && ((Maneuver)super.FM).get_maneuver() != 44)
                 {
                     World.cur();
-                    if(((FlightModelMain) (super.FM)).AS.actor != World.getPlayerAircraft())
+                    if(FM.AS.actor != World.getPlayerAircraft())
                         ((Maneuver)super.FM).set_maneuver(44);
                 }
-                if(((FlightModelMain) (super.FM)).AS.astatePilotStates[byte0 - 11] < 99)
+                if(FM.AS.astatePilotStates[byte0 - 11] < 99)
                 {
                     if(byte0 == 11)
                     {
@@ -556,19 +793,19 @@ public class Skyhawk extends Scheme1
                     {
                         doRemoveBodyFromPlane(1);
                         doEjectCatapultInstructor();
-                        ((FlightModelMain) (super.FM)).AS.astateBailoutStep = 51;
+                        FM.AS.astateBailoutStep = 51;
                         super.FM.setTakenMortalDamage(true, null);
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[0] = false;
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[1] = false;
-                        ((FlightModelMain) (super.FM)).AS.astateBailoutStep = -1;
+                        FM.CT.WeaponControl[0] = false;
+                        FM.CT.WeaponControl[1] = false;
+                        FM.AS.astateBailoutStep = -1;
                         overrideBailout = false;
-                        ((FlightModelMain) (super.FM)).AS.bIsAboutToBailout = true;
+                        FM.AS.bIsAboutToBailout = true;
                         ejectComplete = true;
                     }
-                    ((FlightModelMain) (super.FM)).AS.astatePilotStates[byte0 - 11] = 99;
+                    FM.AS.astatePilotStates[byte0 - 11] = 99;
                 } else
                 {
-                    EventLog.type("astatePilotStates[" + (byte0 - 11) + "]=" + ((FlightModelMain) (super.FM)).AS.astatePilotStates[byte0 - 11]);
+                    EventLog.type("astatePilotStates[" + (byte0 - 11) + "]=" + FM.AS.astatePilotStates[byte0 - 11]);
                 }
             }
     }
@@ -632,62 +869,23 @@ public class Skyhawk extends Scheme1
     private final void doRemoveBlisters()
     {
         for(int i = 1; i < 10; i++)
-            if(hierMesh().chunkFindCheck("Blister" + i + "_D0") != -1 && ((FlightModelMain) (super.FM)).AS.getPilotHealth(i - 1) > 0.0F)
+            if(hierMesh().chunkFindCheck("Blister" + i + "_D0") != -1 && FM.AS.getPilotHealth(i - 1) > 0.0F)
             {
                 hierMesh().hideSubTrees("Blister" + i + "_D0");
                 Wreckage wreckage = new Wreckage(this, hierMesh().chunkFind("Blister" + i + "_D0"));
                 wreckage.collide(false);
                 Vector3d vector3d = new Vector3d();
-                vector3d.set(((FlightModelMain) (super.FM)).Vwld);
+                vector3d.set(FM.Vwld);
                 wreckage.setSpeed(vector3d);
             }
 
     }
 
-//    public void update(float f)
-//    {
-//        if(Config.isUSE_RENDER() && ((FlightModelMain) (super.FM)).AS.isMaster())
-//            if(((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput() > 0.8F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6)
-//            {
-//                if(((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput() > 0.95F)
-//                    ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 3);
-//                else
-//                    ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 2);
-//            } else
-//            {
-//                ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 0);
-//            }
-//        if(super.FM.getSpeedKMH() > 310F);
-//        if((double)calculateMach() < 0.78000000000000003D)
-//            critSpeed = 0.0F;
-//        if((((FlightModelMain) (super.FM)).AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && super.FM.getSpeedKMH() > 15F)
-//        {
-//            overrideBailout = true;
-//            ((FlightModelMain) (super.FM)).AS.bIsAboutToBailout = false;
-//            if(Time.current() > lTimeNextEject)
-//                bailout();
-//        }
-//        if(obsMove < obsMoveTot && !bObserverKilled && !((FlightModelMain) (super.FM)).AS.isPilotParatrooper(1))
-//        {
-//            if(obsMove < 0.2F || obsMove > obsMoveTot - 0.2F)
-//                obsMove += 0.29999999999999999D * (double)f;
-//            else
-//            if(obsMove < 0.1F || obsMove > obsMoveTot - 0.1F)
-//                obsMove += 0.15F;
-//            else
-//                obsMove += 1.2D * (double)f;
-//            obsLookAzimuth = Aircraft.cvt(obsMove, 0.0F, obsMoveTot, obsAzimuthOld, obsAzimuth);
-//            obsLookElevation = Aircraft.cvt(obsMove, 0.0F, obsMoveTot, obsElevationOld, obsElevation);
-//            hierMesh().chunkSetAngles("Head2_D0", 0.0F, obsLookAzimuth, obsLookElevation);
-//        }
-//        super.update(f);
-//    }
-
     public void update(float f)
     {
         computeCy();
         computeEngine();
-        super.update(f);
+        //super.update(f);       
         if(Config.isUSE_RENDER() && FM.AS.isMaster())
             if(FM.EI.engines[0].getPowerOutput() > 0.8F && FM.EI.engines[0].getStage() == 6)
             {
@@ -703,16 +901,146 @@ public class Skyhawk extends Scheme1
         if((double)calculateMach() < 0.78000000000000003D)
             critSpeed = 0.0F;
         if(super.FM.getAltitude() > 0.0F && (double)calculateMach() >= 0.96999999999999997D)
-            ((FlightModelMain) (super.FM)).Sq.dragParasiteCx += 0.001F;
-        if((((FlightModelMain) (super.FM)).AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && super.FM.getSpeedKMH() > 15F)
+            FM.Sq.dragParasiteCx += 0.001F;
+        if((FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && super.FM.getSpeedKMH() > 15F)
         {
             overrideBailout = true;
-            ((FlightModelMain) (super.FM)).AS.bIsAboutToBailout = false;
+            FM.AS.bIsAboutToBailout = false;
             if(Time.current() > lTimeNextEject)
                 bailout();
         }
         soundbarier();
-        super.update(f);
+        
+//By PAL, from Panther. Hydraulics???
+        if(FM.EI.engines[0].getStage() < 6 && (super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode())
+        {
+            if(FM.Gears.nOfGearsOnGr > 0)
+            {
+                FM.CT.bHasFlapsControl = false;
+                FM.CT.bHasAileronControl = false;
+                FM.CT.bHasElevatorControl = false;
+                FM.CT.bHasAirBrakeControl = false;
+                FM.CT.bHasRudderControl = true;
+                FM.CT.bHasGearControl = false;
+            } else
+            if(FM.Gears.nOfGearsOnGr == 0)
+            {
+                timeCounterHyd9 += f;
+                if(timeCounterHyd9 > timeHydro9)
+                {
+                    timeHydro9 = 0.0F;
+                    FM.CT.bHasFlapsControl = false;
+                    FM.CT.bHasAileronControl = false;
+                    FM.CT.bHasElevatorControl = false;
+                    FM.CT.bHasAirBrakeControl = false;
+                    FM.CT.bHasRudderControl = false;
+                    FM.CT.bHasGearControl = false;
+                }
+            }
+        } else
+        {
+            timeCounterHyd9 = 0.0F;
+            FM.CT.bHasFlapsControl = true;
+            FM.CT.bHasAileronControl = true;
+            FM.CT.bHasElevatorControl = true;
+            FM.CT.bHasAirBrakeControl = true;
+            FM.CT.bHasRudderControl = true;
+            FM.CT.bHasGearControl = true;
+        }
+        if(FM.EI.engines[0].getStage() == 6 && super.FM.getSpeedKMH() < 5F && FM.Gears.nOfGearsOnGr < 3 && (super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode())
+        {
+            timeCounterCrash9 += f;
+            if(timeCounterCrash9 > timeCrash9)
+            {
+                timeCounterCrash9 = 0.0F;
+                FM.AS.hitEngine(this, 0, 100);
+                FM.EI.engines[0].setEngineDies(this);
+            }
+        } else
+        {
+            timeCounterCrash9 = 0.0F;
+        }
+        if(FM.Gears.nOfGearsOnGr > 0 && (super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode())
+            if(FM.CT.bHasBrakeControl && FM.CT.BrakeControl > 0.2F)
+            {
+                if(super.FM.getSpeedKMH() >= 180F)
+                {
+                    timeCounterBrake9 += f;
+                    if(timeCounterBrake9 > timeBrake19)
+                    {
+                        FM.CT.BrakeControl = 0.0F;
+                        FM.CT.bHasBrakeControl = false;
+                    }
+                } else
+                if(super.FM.getSpeedKMH() < 180F && super.FM.getSpeedKMH() > 10F)
+                {
+                    timeCounterBrake9 += f;
+                    if(timeCounterBrake9 > timeBrake29)
+                    {
+                        FM.CT.BrakeControl = 0.0F;
+                        FM.CT.bHasBrakeControl = false;
+                    }
+                }
+            } else
+            {
+                timeCounterBrake9 = 0.0F;
+            }
+        if(!FM.CT.bHasBrakeControl && (super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode())
+        {
+            timeCounterBrake29 += f;
+            if(timeCounterBrake29 > timeBrake39)
+                FM.CT.bHasBrakeControl = true;
+        } else
+        {
+            timeCounterBrake29 = 0.0F;
+        }              
+
+        if(FM.CT.getArrestor() > 0.9F)
+            if(FM.Gears.arrestorVAngle != 0.0F)
+            {
+            	
+                float f1 = Aircraft.cvt(FM.Gears.arrestorVAngle, -50F, 7F, 1.0F, 0.0F);              
+                arrestor = 0.8F * arrestor + 0.2F * f1;      	
+                moveArrestorHook(arrestor);
+                if(FM.Gears.arrestorVAngle < -0.2F)// && FM.Gears.nOfGearsOnGr >= 1)
+                {
+                	//By PAL, to Stabilize plane on landing when catched by arrestor cables
+			        Orient or = new Orient();
+			        FM.actor.pos.getAbs(or);
+			        float fRoll = or.getRoll() - 360.0F;
+			        float fPitch = or.getPitch() - 360.0F;
+			        if(fRoll > -20F && fRoll < 20F)                	
+	                	FM.producedAM.x += 6000F * fRoll;
+	                if(fPitch > -20F && fPitch < 20F) 
+	                	FM.producedAM.y += 4500F * fPitch;               	
+                }     
+            } else
+            {
+                float f2 = (-33F * FM.Gears.arrestorVSink) / 57F;
+                if(f2 < 0.0F && FM.getSpeedKMH() > 60F)
+                    Eff3DActor.New(this, FM.Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
+                if(f2 > 0.0F && FM.CT.getArrestor() < 0.95F)
+                    f2 = 0.0F;
+                if(f2 > 0.2F)
+                    f2 = 0.2F;
+                if(f2 > 0.0F)
+                    arrestor = 0.7F * arrestor + 0.3F * (arrestor + f2);
+                else
+                    arrestor = 0.3F * arrestor + 0.7F * (arrestor + f2);
+                if(arrestor < 0.0F)
+                    arrestor = 0.0F;
+                else
+                if(arrestor > 1.0F)
+                    arrestor = 1.0F;
+                moveArrestorHook(arrestor);
+            }               
+        super.update(f);                         
+    }
+
+    public void moveArrestorHook(float f)
+    {
+        hierMesh().chunkSetAngles("Hook1_D0", 0.0F, -70F * f, 0.0F);
+       	arrestor = f;      
     }
 
     public void computeCy()
@@ -738,7 +1066,7 @@ public class Skyhawk extends Scheme1
     {
         float f = FM.getAltitude() / 1000F;
         float f1 = 0.0F;
-        if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
+        if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() > 5)
             if(calculateMach() < 0.0F);
         if((double)f > 13.5D)
         {
@@ -761,37 +1089,63 @@ public class Skyhawk extends Scheme1
             {
                 APmode1 = true;
                 HUD.log("Autopilot Mode: Altitude ON");
-                ((FlightModelMain) (super.FM)).AP.setStabAltitude(1000F);
+                FM.AP.setStabAltitude(1000F);
             } else
             if(APmode1)
             {
                 APmode1 = false;
                 HUD.log("Autopilot Mode: Altitude OFF");
-                ((FlightModelMain) (super.FM)).AP.setStabAltitude(false);
+                FM.AP.setStabAltitude(false);
             }
         if(i == 21)
             if(!APmode2)
             {
                 APmode2 = true;
                 HUD.log("Autopilot Mode: Direction ON");
-                ((FlightModelMain) (super.FM)).AP.setStabDirection(true);
-                ((FlightModelMain) (super.FM)).CT.bHasRudderControl = false;
+                FM.AP.setStabDirection(true);
+                FM.CT.bHasRudderControl = false;
             } else
             if(APmode2)
             {
                 APmode2 = false;
                 HUD.log("Autopilot Mode: Direction OFF");
-                ((FlightModelMain) (super.FM)).AP.setStabDirection(false);
-                ((FlightModelMain) (super.FM)).CT.bHasRudderControl = true;
+                FM.AP.setStabDirection(false);
+                FM.CT.bHasRudderControl = true;
             }
     }
 
-	//By PAL, fSteer added
+	//By PAL, fSteer added	
     private float fSteer;
+    private static final float maxSteer = 30.0F;
     //By PAL; from Vega
     public boolean APmode1;
     public boolean APmode2;
+    //By PAL, added for type
+    public static float FlowRate = 8.5F;
+    public static float FuelReserve = 1000F;
+    public int k14Mode;
+    public int k14WingspanType;
+    public float k14Distance;        
+    static Actor hunted = null;
     
+    //By PAL
+    private float arrestor;    
+    
+    //By PAL, for Hydraulics
+    private float timeCounterRud9;
+    private float timeCounterHyd9;
+    private float timeCounterBoost;
+    private float timeBoost;
+    private float timeRudder9;
+    private float timeHydro9;
+    private float timeCounterCrash9;
+    private float timeCrash9;
+    private float timeBrake19;
+    private float timeBrake29;
+    private float timeBrake39;
+    private float timeCounterBrake9;
+    private float timeCounterBrake29;    
+        
     private float critSpeed;
     private boolean overrideBailout;
     private boolean ejectComplete;
