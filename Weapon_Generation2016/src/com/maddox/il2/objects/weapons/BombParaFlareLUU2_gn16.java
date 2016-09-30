@@ -60,8 +60,9 @@ public class BombParaFlareLUU2_gn16 extends Bomb
             chute = new Chute(this);
             chute.collide(false);
             chute.mesh().setScale(0.5F);
-            chute.pos.setRel(new Point3d(0.5D, 0.0D, 0.0D), new Orient(0.0F, 90F, 0.0F));
+            chute.pos.setRel(new Point3d(0.5D, 0.0D, -0.06D), new Orient(0.0F, 90F, 0.0F));
         }
+
     }
 
     public void msgCollision(Actor actor, String s, String s1)
@@ -80,10 +81,12 @@ public class BombParaFlareLUU2_gn16 extends Bomb
     static 
     {
         Class class1 = com.maddox.il2.objects.weapons.BombParaFlareLUU2_gn16.class;
-        Property.set(class1, "mesh", "3DO/Arms/LUU2_ParaFlare_gn16/mono.sim");
+        Property.set(class1, "mesh", "3DO/Arms/LUU2_ParaFlare_gn16/mono_bomb.sim");
         Property.set(class1, "emitColor", new Color3f(1.0F, 1.0F, 0.95F));
         Property.set(class1, "emitLen", 250F);
         Property.set(class1, "emitMax", 10F);
+        Property.set(class1, "timeLife", 999F);
+        Property.set(class1, "timeFire", 600F);
         Property.set(class1, "radius", 0.01F);
         Property.set(class1, "power", 0.0F);
         Property.set(class1, "powerType", 1);
