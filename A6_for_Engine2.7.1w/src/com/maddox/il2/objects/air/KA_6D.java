@@ -42,6 +42,7 @@ public class KA_6D extends A_6
         bD704 = false;
         bUseD704 = false;
         ratdeg = 0F;
+        bEmpty = false;
     }
 
     public boolean isDrogueExtended()
@@ -193,6 +194,9 @@ public class KA_6D extends A_6
             hierMesh().chunkVisible("D704_iGreen", true);
             hierMesh().chunkVisible("D704_iYellow", true);
         }
+
+        if(thisWeaponsName.startsWith("none"))
+            bEmpty = true;
     }
 
     public void update(float f)
@@ -427,7 +431,7 @@ public class KA_6D extends A_6
         super.rareAction(f, flag);
     }
 
-    void RATrot()
+    private void RATrot()
     {
         if(FM.getSpeedKMH() < 250F)
             ratdeg -= 10F;
@@ -453,11 +457,11 @@ public class KA_6D extends A_6
         }
     }
 
-    void drogueRefuel(float f)
+    private void drogueRefuel(float f)
     {
         float ias = Pitot.Indicator((float) (((Tuple3d) ((FlightModelMain)FM).Loc).z), FM.getSpeed()) * 3.6F;
 
-        if(FM.getAltitude() < 1000F || FM.CT.getGear() > 0.0F || FM.CT.getArrestor() > 0.0F
+        if(bEmpty || FM.getAltitude() < 1000F || FM.CT.getGear() > 0.0F || FM.CT.getArrestor() > 0.0F
            || ias > 580F || ias < 325F || (double)(FM.M.fuel) < (double)(FM.M.maxFuel) * 0.20000000000000001D)
         {
 //            if(Time.current() > waitRefuelTimer)
@@ -598,6 +602,7 @@ public class KA_6D extends A_6
     private float ratdeg;
     private boolean bD704;
     private boolean bUseD704;
+    private boolean bEmpty;
 
     static 
     {

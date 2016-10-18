@@ -17,6 +17,7 @@ import java.util.StringTokenizer;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Tuple3d;
+import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.*;
 import com.maddox.il2.ai.air.*;
 import com.maddox.il2.engine.*;
@@ -31,6 +32,7 @@ import com.maddox.il2.net.*;
 import com.maddox.il2.objects.air.*;
 import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.il2.objects.sounds.Voice;
+import com.maddox.il2.objects.weapons.FuelTank;
 import com.maddox.il2.objects.weapons.Torpedo;
 import com.maddox.rts.*;
 import com.maddox.util.HashMapInt;
@@ -226,7 +228,7 @@ public class HUD {
 	}
   
 	private final void renderSpeed() {
-		if(!(main3d.viewActor() instanceof Aircraft)) // changed by western   //       if(!Actor.isValid(World.getPlayerAircraft()))
+		if(!(main3d.viewActor() instanceof Aircraft)) // changed by western   //	   if(!Actor.isValid(World.getPlayerAircraft()))
 			return;
 		if(!Actor.isValid((Aircraft)main3d.viewActor()))
 			return;
@@ -429,6 +431,7 @@ public class HUD {
 								float trEl = (int)((fm).CT.getTrimElevatorControl() * 10000F) / 100F;
 								float trRud = (int)((fm).CT.getTrimRudderControl() * 10000F) / 100F;
 								int flap = (int)((fm).CT.getFlap() * 100F);
+								int flapSw = (fm).CT.FlapsControlSwitch;
 								float fric = (float)(Math.floor(fm.Gears.fric_pub / 2D) * 2D);
 								float fricF = (float)(Math.floor(fm.Gears.fricF_pub / 2D) * 2D);
 								float fricR = (float)(Math.floor(fm.Gears.fricR_pub / 2D) * 2D);
@@ -439,6 +442,7 @@ public class HUD {
 								String temp = "";
 								String temp2 = "";
 								String throttle = "";
+								String proppitch = " , Pitch:";
 								for(int num = 0; num < fm.EI.getNum(); num++)
 								{
 									hp += fm.EI.engines[num].getw();
@@ -448,17 +452,44 @@ public class HUD {
 										temp = temp + ":";
 										temp2 = temp2 + ":";
 										throttle = throttle + "%:";
+										proppitch = proppitch + ":";
 									}
 									rpm = rpm + (int)(fm.EI.engines[num].getRPM() + 0.5F);
 									temp = temp + (bIsSI ? (int)(fm.EI.engines[num].tWaterOut + 0.5F) : (int)(fm.EI.engines[num].tWaterOut * 1.8F + 32.5F));
 									temp2 = temp2 + (bIsSI ? (int)(fm.EI.engines[num].tOilOut + 0.5F) : (int)(fm.EI.engines[num].tOilOut * 1.8F + 32.5F));
 									throttle = throttle + (int)(fm.EI.engines[num].getControlThrottle()*100);
+									proppitch = proppitch + (int)(fm.EI.engines[num].getControlProp() * 100F);
+								}
+
+								FuelTank fuelTanks[];
+								fuelTanks = fm.CT.getFuelTanks();
+								String droptank = "";
+								if(fuelTanks.length == 0 || fuelTanks[0] == null || fm.M.bFuelTanksDropped)
+									droptank = "No Droptanks";
+								else
+								{
+									droptank = "Droptank: ";
+									for(int num = 0; num < fuelTanks.length; num++)
+									{
+										if(num > 0)
+										{
+											droptank +=  " , ";
+										}
+										droptank += (float)(Math.floor(fuelTanks[num].checkFuel() * 100F)) / 100F + "kg / " + (float)(Math.floor((fuelTanks[num].checkFuel() + fuelTanks[num].checkFreeTankSpace()) * 100F)) / 100F;
+									}
 								}
 
 								fm.Sq.getClass();
 								float dragsta = (float)(Math.floor((fm.Sq.dragAirbrakeCx + 0.12F + fm.Sq.dragFuselageCx + fm.Sq.dragParasiteCx + fm.Sq.dragProducedCx + 0.06F) * 1000F ) / 1000F);
 								float dragdyn = (float)(Math.floor((fm.GearCX * fm.CT.getGearR() + fm.GearCX * fm.CT.getGearL() + 2.0F * fm.Sq.dragAirbrakeCx * fm.CT.getAirBrake() + fm.radiatorCX * (fm.EI.getRadiatorPos() + fm.CT.getCockpitDoor() + fm.CT.BayDoorControl) + fm.Sq.dragChuteCx * fm.CT.getDragChute() + 0.12F + fm.Sq.dragFuselageCx + fm.Sq.dragParasiteCx + fm.Sq.dragProducedCx + 0.06F) * 1000F ) / 1000F);
+								int brake = (int)(fm.CT.BrakeControl * 100F);
+								int brakeLeft = (int)(fm.CT.BrakeLeftControl * 100F);
+								int brakeRight = (int)(fm.CT.BrakeRightControl * 100F);
 								int weight = (int)((bIsSI ? fm.M.mass : (double)fm.M.mass * 2.2046000000000001D) + 0.5D);
+								int fuel = (int)(fm.M.fuel + 0.5D);
+								int maxfuel = (int)(fm.M.maxFuel + 0.5D);
+								int nitro = (int)(fm.M.nitro + 0.5D);
+								int maxnitro = (int)(fm.M.maxNitro + 0.5D);
 								int maneuver = (int)((Maneuver)fm).getmaneuver();
 								int submaneuver = (int)((Maneuver)fm).getsubmaneuver();
 								int speedMode = (int)((Maneuver)fm).getspeedMode();
@@ -470,18 +501,29 @@ public class HUD {
 								int roll = (int)((FlightModel) ((Aircraft)main3d.viewActor()).FM).Or.getRoll();
 								int locx = (int)((Maneuver) ((Aircraft)main3d.viewActor()).FM).getACx();
 								int locy = (int)((Maneuver) ((Aircraft)main3d.viewActor()).FM).getACy();
+								int locz = (int)fa;
 								int wayx = (int)((Maneuver) ((Aircraft)main3d.viewActor()).FM).getWAYPOINTx();
 								int wayy = (int)((Maneuver) ((Aircraft)main3d.viewActor()).FM).getWAYPOINTy();
 								int wayz = (int)((Maneuver) ((Aircraft)main3d.viewActor()).FM).getWAYPOINTz();
 								int wayspeed = (int)(Math.floor(((Maneuver) ((Aircraft)main3d.viewActor()).FM).getWAYPOINTspeed() * 3.6F));
 								int waycur = ((Maneuver) ((Aircraft)main3d.viewActor()).FM).getWAYPOINTcurrentnum();
 								int distance = (int)((Maneuver) ((Aircraft)main3d.viewActor()).FM).getWAYPOINTdistance();
+								Vector3d tvec = new Vector3d((double)(wayx - locx), (double)(wayy - locy) , 0.0D);
+								tvec.normalize();
+								Orient oTemp = new Orient();
+								oTemp.setAT0(tvec);
+								int thead = (int)(oTemp.getAzimut() + 90F);
+								for(; thead > 360; thead -= 360) ;
+								for(; thead < -360; thead += 360) ;
+								int theaddiff = thead - ((yaw > 90)? 450 - yaw : 90 - yaw);
+								if( theaddiff > 180 ) theaddiff -= 180;
+								if( theaddiff < -180 ) theaddiff += 180;
 								int rudder = (int)(((Maneuver) ((Aircraft)main3d.viewActor()).FM).CT.RudderControl * 100F);
 								int elevator = (int)(((Maneuver) ((Aircraft)main3d.viewActor()).FM).CT.ElevatorControl * 100F);
 								int aileron = (int)(((Maneuver) ((Aircraft)main3d.viewActor()).FM).CT.AileronControl * 100F);
 								if(sbLocWay >= 1.0F)
 								{
-									ttfont.output(j, 5F, 5 + (4 + (int)sbLocWay) * i, 0.0F, "Locate(" + locx + " , " + locy + ") - distance:" + distance);
+									ttfont.output(j, 5F, 5 + (4 + (int)sbLocWay) * i, 0.0F, "Locate(" + locx + " , " + locy + " , " + locz + ") - Distance:" + distance + " , Head:" + thead + " , HeadDiff:" + theaddiff);
 									ttfont.output(j, 5F, 5 + (3 + (int)sbLocWay) * i, 0.0F, "Waypoint(" + wayx + " , " + wayy + " , " + wayz + ") , Speed:" + wayspeed + "km/h , Cur:" + waycur);
 								}
 								if(sbAIManeuver >= 1.0F)
@@ -493,11 +535,11 @@ public class HUD {
 								if(sbHPSet >= 1.0F)
 									ttfont.output(j, 5F, 5 + (3 + (int)sbHPSet) * i, 0.0F, renderSpeedSubstrings[14][0] + " " + (int)(hp * 10F) + " " + renderSpeedSubstrings[14][1]);
 								if(sbWeightSet >= 1.0F)
-									ttfont.output(j, 5F, 5 + (3 + (int)sbWeightSet) * i, 0.0F, renderSpeedSubstrings[15][0] + " " + weight + " " + renderSpeedSubstrings[15][1]);
+									ttfont.output(j, 5F, 5 + (3 + (int)sbWeightSet) * i, 0.0F, renderSpeedSubstrings[15][0] + " " + weight + " " + renderSpeedSubstrings[15][1] + " (Fuel " + fuel + "kg / " + maxfuel + ", Nitro " + nitro + "kg / " + maxnitro + ")" );
 								if(sbDragSet >= 1.0F)
-									ttfont.output(j, 5F, 5 + (3 + (int)sbDragSet) * i, 0.0F, renderSpeedSubstrings[16][0] + " " + Float.toString(dragsta) + "Sta , " + Float.toString(dragdyn) + "Dyn " + renderSpeedSubstrings[16][1]);
+									ttfont.output(j, 5F, 5 + (3 + (int)sbDragSet) * i, 0.0F, renderSpeedSubstrings[16][0] + " " + Float.toString(dragsta) + "Sta , " + Float.toString(dragdyn) + "Dyn " + renderSpeedSubstrings[16][1] + " , Brake:" + brake + "(Left:" + brakeLeft + ",Right:" + brakeRight + ")");
 								if(sbFlapsSet >= 1.0F)
-									ttfont.output(j, 5F, 5 + (3 + (int)sbFlapsSet) * i, 0.0F, renderSpeedSubstrings[7][0] + " " + flap + " " + renderSpeedSubstrings[7][1] + " , fric=" + fric + ", fricF=" + fricF + ", fricR=" + fricR);
+									ttfont.output(j, 5F, 5 + (3 + (int)sbFlapsSet) * i, 0.0F, renderSpeedSubstrings[7][0] + " " + flap + " " + renderSpeedSubstrings[7][1] + ", FlapSw=" + flapSw + " , fric=" + fric + ", fricF=" + fricF + ", fricR=" + fricR);
 								if(sbVSpeedSet >= 1.0F)
 									ttfont.output(j, 5F, 5 + (3 + (int)sbVSpeedSet) * i, 0.0F, renderSpeedSubstrings[11][0] + " " + DecStr(vs) + " " + renderSpeedSubstrings[11][1] + ", " + DecStr(vs * 0.00328084F * 60F) + "ft/min");
 								if(sbAoASet >= 1.0F)
@@ -505,13 +547,18 @@ public class HUD {
 								if(sbTrimSet >= 1.0F)
 									ttfont.output(j, 5F, 5 + (3 + (int)sbTrimSet) * i, 0.0F, "Trim (" + renderSpeedSubstrings[4][0] + " " + trAil + renderSpeedSubstrings[4][1] + ", " + renderSpeedSubstrings[5][0] + " " + trEl + renderSpeedSubstrings[5][1] + ", " + renderSpeedSubstrings[6][0] + " " + trRud + renderSpeedSubstrings[6][1] + ")");
 								if(sbRPMSet >= 1.0F)
-									ttfont.output(j, 5F, 5 + (3 + (int)sbRPMSet) * i, 0.0F, renderSpeedSubstrings[12][0] + " " + rpm + " " + renderSpeedSubstrings[12][1]);
+									ttfont.output(j, 5F, 5 + (3 + (int)sbRPMSet) * i, 0.0F, renderSpeedSubstrings[12][0] + " " + rpm + " " + renderSpeedSubstrings[12][1] + proppitch);
 								if(sbTempSet >= 1.0F)
 									ttfont.output(j, 5F, 5 + (3 + (int)sbTempSet) * i, 0.0F, renderSpeedSubstrings[13][0] + " " + temp + " " + renderSpeedSubstrings[13][1] + ", " + temp2 + " " + renderSpeedSubstrings[13][1]);
 								if(sbIASTAS >= 1.0F)
 									ttfont.output(j, 5F, 5 + (3 + (int)sbIASTAS) * i, 0.0F, "TAS " + iTAS + speedunit + " (Mach " + Float.toString(machTAS) + ") ,  IAS " + iIAS + speedunit + " (Mach " + Float.toString(machIAS) + ")");
+								if(sbDroptank >= 1.0F)
+									ttfont.output(j, 5F, 5 + (3 + (int)sbDroptank) * i, 0.0F, droptank);
 							}
-							catch(Exception exception1) { }
+							catch(Exception exception1)
+							{
+							  //   exception1.printStackTrace();
+							}
 					}
 				}
 			}
@@ -1910,6 +1957,7 @@ public class HUD {
 		sbOrient = Config.cur.ini.get("Mods", "SpeedbarOrient", 0.0F);
 		sbLocWay = Config.cur.ini.get("Mods", "SpeedbarLocateWaypoint", 0.0F);
 		sbIASTAS = Config.cur.ini.get("Mods", "SpeedbarIASTAS", 0.0F);
+		sbDroptank = Config.cur.ini.get("Mods", "SpeedbarDroptank", 0.0F);
 	}
 
 	public boolean bDrawAllMessages;
@@ -2103,5 +2151,5 @@ public class HUD {
 	private float sbOrient;
 	private float sbLocWay;
 	private float sbIASTAS;
-
+	private float sbDroptank;
 }

@@ -44,6 +44,7 @@ public class A_6A_tanker extends A_6
         drones = new Actor[1];
         waitRefuelTimer = 0L;
         ratdeg = 0F;
+        bEmpty = false;
     }
 
     public boolean isDrogueExtended()
@@ -172,6 +173,9 @@ public class A_6A_tanker extends A_6
         ((FlightModelMain) FM).M.massEmpty += 370F;   // empty weight of D-704 Refuel Store
         ((FlightModelMain) FM).M.mass += 370F;
         ((FlightModelMain) FM).M.maxWeight += 1250F;
+
+        if(thisWeaponsName.startsWith("none"))
+            bEmpty = true;
     }
 
     public void update(float f)
@@ -386,7 +390,7 @@ public class A_6A_tanker extends A_6
         checkAmmo();
     }
 
-    void RATrot()
+    private void RATrot()
     {
         if(FM.getSpeedKMH() < 250F)
             ratdeg -= 10F;
@@ -412,11 +416,11 @@ public class A_6A_tanker extends A_6
         }
     }
 
-    void drogueRefuel(float f)
+    private void drogueRefuel(float f)
     {
         float ias = Pitot.Indicator((float) (((Tuple3d) ((FlightModelMain)FM).Loc).z), FM.getSpeed()) * 3.6F;
 
-        if(FM.getAltitude() < 1000F || FM.CT.getGear() > 0.0F || FM.CT.getArrestor() > 0.0F
+        if(bEmpty || FM.getAltitude() < 1000F || FM.CT.getGear() > 0.0F || FM.CT.getArrestor() > 0.0F
            || ias > 580F || ias < 325F || (double)(FM.M.fuel) < (double)(FM.M.maxFuel) * 0.20000000000000001D)
         {
 //            if(Time.current() > waitRefuelTimer)
@@ -534,6 +538,7 @@ public class A_6A_tanker extends A_6
     private float maxSendRefuel;
     private long waitRefuelTimer;
     private float ratdeg;
+    private boolean bEmpty;
 
     static 
     {
@@ -615,7 +620,7 @@ public class A_6A_tanker extends A_6
             a_lweaponslot[128] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "empty";
+            s = "none";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
             a_lweaponslot[0] = new Aircraft._WeaponSlot(9, "Pylon_F100_Outboard_gn16", 1);
             arraylist.add(s);

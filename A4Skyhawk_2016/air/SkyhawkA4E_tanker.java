@@ -37,6 +37,7 @@ public class SkyhawkA4E_tanker extends Skyhawk
         drones = new Actor[1];
         waitRefuelTimer = 0L;
         ratdeg = 0F;
+        bEmpty = false;
     }
 
     public boolean isDrogueExtended()
@@ -103,6 +104,9 @@ public class SkyhawkA4E_tanker extends Skyhawk
         ((FlightModelMain) FM).M.massEmpty += 370F;   // empty weight of D-704 Refuel Store
         ((FlightModelMain) FM).M.mass += 370F;
         ((FlightModelMain) FM).M.maxWeight += 1250F;
+
+        if(thisWeaponsName.startsWith("none"))
+            bEmpty = true;
     }
 
     public void update(float f)
@@ -316,7 +320,7 @@ public class SkyhawkA4E_tanker extends Skyhawk
 
     }
 
-    void RATrot()
+    private void RATrot()
     {
         if(FM.getSpeedKMH() < 250F)
             ratdeg -= 10F;
@@ -342,11 +346,11 @@ public class SkyhawkA4E_tanker extends Skyhawk
         }
     }
 
-    void drogueRefuel(float f)
+    private void drogueRefuel(float f)
     {
         float ias = Pitot.Indicator((float) (((Tuple3d) ((FlightModelMain)FM).Loc).z), FM.getSpeed()) * 3.6F;
 
-        if(FM.getAltitude() < 1000F || FM.CT.getGear() > 0.0F || FM.CT.getArrestor() > 0.0F
+        if(bEmpty || FM.getAltitude() < 1000F || FM.CT.getGear() > 0.0F || FM.CT.getArrestor() > 0.0F
            || ias > 580F || ias < 325F || (double)(FM.M.fuel) < (double)(FM.M.maxFuel) * 0.20000000000000001D)
         {
 //            if(Time.current() > waitRefuelTimer)
@@ -447,6 +451,7 @@ public class SkyhawkA4E_tanker extends Skyhawk
     private float maxSendRefuel;
     private long waitRefuelTimer;
     private float ratdeg;
+    private boolean bEmpty;
 
     static 
     {

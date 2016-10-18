@@ -4202,7 +4202,7 @@ public class A_6A extends A_6fuelReceiver
             a_lweaponslot[128] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "empty";
+            s = "none";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);

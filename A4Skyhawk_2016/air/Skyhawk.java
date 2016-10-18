@@ -422,6 +422,8 @@ public class Skyhawk extends Scheme1
         bTwoSeat = false;
         bObserverKilled = false;
         bNoSpoiler = false;
+        SpoilerBrakeControl = 0.0F;
+        spoilerBrake = 0.0F;
         overrideBailout = false;
         ejectComplete = false;
         lTimeNextEject = 0L;
@@ -465,10 +467,11 @@ public class Skyhawk extends Scheme1
         super.onAircraftLoaded();
 
         Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-        defaultSquareWing = FM.Sq.squareWing;
-        defaultLiftWingLMid = FM.Sq.liftWingLMid;
-        defaultLiftWingRMid = FM.Sq.liftWingRMid;
-        defaultCy0 = polares.Cy0_0;
+        stockSquareWing = FM.Sq.squareWing;
+        stockLiftWingLMid = FM.Sq.liftWingLMid;
+        stockLiftWingRMid = FM.Sq.liftWingRMid;
+        stockCy0 = polares.Cy0_0;
+        stockDragAirbrake = FM.Sq.dragAirbrakeCx;
     }
 
     public void rareAction(float f, boolean flag)
@@ -498,6 +501,33 @@ public class Skyhawk extends Scheme1
                 }
         if(!FM.isPlayers())
             bAntiColLight = FM.AS.bNavLightsOn;
+
+        if ((!FM.isPlayers() || !(FM instanceof RealFlightModel) || !((RealFlightModel) FM).isRealMode()) && (FM instanceof Maneuver))
+            if (FM.AP.way.isLanding() && FM.getSpeed() > FM.VmaxFLAPS && FM.getSpeed() > FM.AP.way.curr().getV() * 1.4F)
+            {
+                if (FM.CT.AirBrakeControl != 1.0F)
+                    FM.CT.AirBrakeControl = 1.0F;
+            }
+            else if (((Maneuver) FM).get_maneuver() == 25 && FM.AP.way.isLanding() && FM.getSpeed() < FM.VmaxFLAPS * 1.16F)
+            {
+                if (FM.getSpeed() > FM.VminFLAPS * 0.5F && FM.Gears.onGround())
+                {
+                    if (FM.CT.AirBrakeControl != 1.0F)
+                        FM.CT.AirBrakeControl = 1.0F;
+                }
+                else if (FM.CT.AirBrakeControl != 0.0F)
+                    FM.CT.AirBrakeControl = 0.0F;
+            }
+            else if (((Maneuver) FM).get_maneuver() == 66)
+            {
+                if (FM.CT.AirBrakeControl != 0.0F)
+                    FM.CT.AirBrakeControl = 0.0F;
+            }
+            else if (((Maneuver) FM).get_maneuver() == 7)
+            {
+                if (FM.CT.AirBrakeControl != 1.0F)
+                    FM.CT.AirBrakeControl = 1.0F;
+            }
     }
 
     public void doMurderPilot(int i)
@@ -926,6 +956,24 @@ public class Skyhawk extends Scheme1
         hierMesh().chunkSetAngles("FuBrake02_D0", 45F * f, 0.0F, 0.0F);
     }
 
+    public void checkSpolers(float f)
+    {
+        if(FM.Gears.nOfGearsOnGr > 1 && FM.CT.getPowerControl() < 0.70F)
+        {
+            SpoilerBrakeControl = FM.CT.AirBrakeControl;
+        }
+        else
+        {
+            SpoilerBrakeControl = 0.0F;
+        }
+
+        spoilerBrake = filter(f, SpoilerBrakeControl, spoilerBrake, 999.9F, FM.CT.dvAirbrake);
+        FM.Sq.dragAirbrakeCx = stockDragAirbrake + 0.20F * spoilerBrake;
+
+        hierMesh().chunkSetAngles("Brake01_D0", 0.0F, 0.0F, -45F * spoilerBrake);
+        hierMesh().chunkSetAngles("Brake02_D0", 0.0F, 0.0F, -45F * spoilerBrake);
+    }
+
     private void bailout()
     {
         if(overrideBailout)
@@ -1072,6 +1120,8 @@ public class Skyhawk extends Scheme1
         computeCy();
         computeEngine();
         computeSlat();
+        if(!bNoSpoiler)
+            checkSpolers(f);
         if(Config.isUSE_RENDER() && FM.AS.isMaster())
             if(FM.EI.engines[0].getPowerOutput() > 0.8F && FM.EI.engines[0].getStage() == 6)
             {
@@ -1110,10 +1160,10 @@ public class Skyhawk extends Scheme1
           Aircraft.cvt(FM.getAOA(), 4.9F, 12F, 0.0F, 1.0F));
         fSlat = (fSlat * 19F + slat) / 20F;
 
-        FM.Sq.squareWing = defaultSquareWing + SquareSlat * 2F * fSlat;
-        FM.Sq.liftWingLMid = defaultLiftWingLMid + SquareSlat * fSlat;
-        FM.Sq.liftWingRMid = defaultLiftWingRMid + SquareSlat * fSlat;
-        polares.Cy0_0 = defaultCy0 + Cy0AddSlat * fSlat;
+        FM.Sq.squareWing = stockSquareWing + SquareSlat * 2F * fSlat;
+        FM.Sq.liftWingLMid = stockLiftWingLMid + SquareSlat * fSlat;
+        FM.Sq.liftWingRMid = stockLiftWingRMid + SquareSlat * fSlat;
+        polares.Cy0_0 = stockCy0 + Cy0AddSlat * fSlat;
 
         resetYPRmodifier();
         xyz[2] = -0.30F * fSlat;
@@ -1337,7 +1387,7 @@ public class Skyhawk extends Scheme1
         }
     }
 
-    void anticollight()
+    private void anticollight()
     {
         if(bAntiColLight)
         {
@@ -1363,6 +1413,24 @@ public class Skyhawk extends Scheme1
         }
     }
 
+    private float filter(float f, float f1, float f2, float f3, float f4) {
+        float f5 = (float)Math.exp(-f / f3);
+        float f6 = f1 + (f2 - f1) * f5;
+        if (f6 < f1)
+        {
+            f6 += f4 * f;
+            if (f6 > f1)
+                f6 = f1;
+        }
+        else if (f6 > f1)
+        {
+            f6 -= f4 * f;
+            if (f6 < f1)
+                f6 = f1;
+        }
+        return f6;
+    }
+
     public int k14Mode;
     public int k14WingspanType;
     public float k14Distance;
@@ -1379,7 +1447,7 @@ public class Skyhawk extends Scheme1
 
     //By PAL
     private float arrestor;
-	//By PAL, fSteer added
+    //By PAL, fSteer added
     private float fSteer;
     private static final float maxSteer = 30.0F;
     //By PAL; from Vega
@@ -1433,14 +1501,17 @@ public class Skyhawk extends Scheme1
 
     //By western0221, classfy working ground spoiler (A-4F or later) or not (A-4E or earlier)
     public boolean bNoSpoiler;
+    private float stockDragAirbrake;
+    private float SpoilerBrakeControl;
+    private float spoilerBrake;
 
     //By western0221, slat value: 0.00=close, 1.00=full down
     private float fSlat;
-    private float defaultSquareWing;
-    private float defaultLiftWingLMid;
-    private float defaultLiftWingRMid;
+    private float stockSquareWing;
+    private float stockLiftWingLMid;
+    private float stockLiftWingRMid;
     private final float SquareSlat = 1.2F;
-    private float defaultCy0;
+    private float stockCy0;
     private final float Cy0AddSlat = 0.002F;
 
     // G Suit values
