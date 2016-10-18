@@ -234,24 +234,30 @@ public class SkyhawkFuelReceiver extends Skyhawk
             }
             FuelTank fuelTanks[];
             fuelTanks = FM.CT.getFuelTanks();
-            if(FM.M.fuel < FM.M.maxFuel - 4F)
+            if(FM.M.fuel < FM.M.maxFuel - fuelReceiveRate - 0.8F)
             {
                 float getFuel = ((TypeTankerDrogue) (queen_)).requestRefuel((Aircraft) this, fuelReceiveRate, f);
                 FM.M.fuel += getFuel;
             }
             else if(fuelTanks.length > 0 && fuelTanks[0] != null && !FM.M.bFuelTanksDropped)
             {
-                float getFuel = ((TypeTankerDrogue) (queen_)).requestRefuel((Aircraft) this, fuelReceiveRate, f);
                 float freeTankSum = 0F;
                 for(int num = 0; num < fuelTanks.length; num++)
                     freeTankSum += fuelTanks[num].checkFreeTankSpace();
-                if(freeTankSum < 4F)
+                if(freeTankSum < fuelReceiveRate - 0.8F)
+                {
                     typeDockableAttemptDetach();
+                    return;
+                }
+                float getFuel = ((TypeTankerDrogue) (queen_)).requestRefuel((Aircraft) this, fuelReceiveRate, f);
                 for(int num = 0; num < fuelTanks.length; num++)
                     fuelTanks[num].doRefuel(getFuel * (fuelTanks[num].checkFreeTankSpace() / freeTankSum));
             }
             else
+            {
                 typeDockableAttemptDetach();
+                return;
+            }
         } else
         if(!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode())
         {

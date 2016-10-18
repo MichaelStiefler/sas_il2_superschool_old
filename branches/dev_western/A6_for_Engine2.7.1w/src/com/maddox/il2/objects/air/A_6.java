@@ -2662,7 +2662,7 @@ public class A_6 extends Scheme2
         }
     }
 
-    void anticollight()
+    private void anticollight()
     {
         if(bAntiColLight)
         {

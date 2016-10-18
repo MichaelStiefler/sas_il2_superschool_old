@@ -204,7 +204,7 @@ public class EA_6B extends A_6fuelReceiver
         super.missionStarting();
     }
 
-    void RATrot()
+    private void RATrot()
     {
         if(FM.getSpeedKMH() < 250F)
             ratdeg += 10F;
@@ -349,7 +349,7 @@ public class EA_6B extends A_6fuelReceiver
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "PylonF100_Outboard", 1);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "empty";
+            s = "none";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
