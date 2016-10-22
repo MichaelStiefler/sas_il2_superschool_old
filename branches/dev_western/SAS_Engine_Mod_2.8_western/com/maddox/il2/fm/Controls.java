@@ -4,6 +4,7 @@
  * Changelog:
  * 2014.08.11: doSetRocketHook method changed to make this class independent from Guided Missile Mod
  * 2016.06.16: importing 4.13.2m's Bomb release mode codes and adding Select bomb function.
+ * 2016.10.22: By PAL, modified incorrect static variables
  */
 
 package com.maddox.il2.fm;
@@ -108,11 +109,13 @@ public class Controls {
 	public float PowerControlArr[];
 	public float StepControlArr[];
 	private FlightModelMain FM;
-	private static float tmpF;
+    //By PAL, static?
+	private /* static */ float tmpF;
 	public boolean bDropWithPlayer;
 	public Aircraft dropWithPlayer;
 	boolean bDropWithMe;
-	private static Vector3d tmpV3d = new Vector3d();
+    //By PAL, static?
+	private /* static */ Vector3d tmpV3d = new Vector3d();
 	// --------------------------------------------------------
 
 	// TODO: New parameters
@@ -1907,10 +1910,13 @@ public class Controls {
 
 	private void weaponReleaseCycle(int i, int j, int k, int l, boolean flag, boolean flag1) {
 		if (i == 3 && bHasBombSelect && curBombSelected > -1 && getWeaponCount(3, bombClassArr[curBombSelected]) == 0 &&  getWeaponCount(3) > 0)
-        {
+		{
 			String classnametemp = bombClassArr[curBombSelected].getName().substring(35);
 			int index = classnametemp.indexOf("_");
-			HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseEmptyName" , new Object[] { new String(classnametemp.substring(0, index)) });
+			if(index > 0)
+				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseEmptyName" , new Object[] { new String(classnametemp.substring(0, index)) });
+			else
+				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseEmptyName" , new Object[] { classnametemp });
 		}
 
 		for (int i1 = k; i1 < Weapons[i].length; i1 += l) {
@@ -1953,10 +1959,13 @@ public class Controls {
 			}
 
 			if (i == 3 && bHasBombSelect && curBombSelected > -1 && getWeaponCount(3, bombClassArr[curBombSelected]) == 0 && getWeaponCount(3) > 0)
-            {
+			{
 				String classnametemp = bombClassArr[curBombSelected].getName().substring(35);
 				int index = classnametemp.indexOf("_");
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseEmptyName" , new Object[] { new String(classnametemp.substring(0, index)) });
+				if(index > 0)
+					HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseEmptyName" , new Object[] { new String(classnametemp.substring(0, index)) });
+				else
+					HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseEmptyName" , new Object[] { classnametemp });
 			}
 
 			if ((Weapons[i][i1] instanceof BombGun) && !((BombGun)Weapons[i][i1]).isCassette() && j != 0)

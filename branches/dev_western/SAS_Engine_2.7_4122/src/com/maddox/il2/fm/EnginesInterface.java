@@ -1,4 +1,8 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*Modified EnginesInterface class for the SAS Engine Mod*/
+
+/*By PAL, removed effect and reverted to stock, to implement Diagonal extra force in Catapult*/
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 package com.maddox.il2.fm;
 
@@ -21,11 +25,12 @@ public class EnginesInterface extends FMMath {
         producedF = new Vector3d();
         producedM = new Vector3d();
         reference = null;
-        //TODO: +++ CTO Mod 4.12 +++
-        bCatapultArmed = false;
-        dCatapultForce = 0.0D;
-        iCatapultNumber = 0;
-        //TODO: --- CTO Mod 4.12 ---
+        //By PAL, removed from EI
+//        //TODO: +++ CTO Mod 4.12 +++
+//        bCatapultArmed = false;
+//        dCatapultForce = 0.0D;
+//        iCatapultNumber = 0;
+//        //TODO: --- CTO Mod 4.12 ---
     }
 
     public void load(FlightModel flightmodel, SectFile sectfile) {
@@ -265,40 +270,60 @@ public class EnginesInterface extends FMMath {
         }
     }
 
-    public void update(float f) {
-        //TODO: +++ CTO Mod 4.12 +++
-        if(Time.speed() == 0F) return;
-        if(bCatapultArmed && System.currentTimeMillis() > lCatapultStartTime + (long)(2500F / Time.speed()))
-        {
-            bCatapultArmed = false;
-            dCatapultForce = 0.0D;
-            iCatapultNumber = 0;
-        }
-        //TODO: --- CTO Mod 4.12 ---
+//    public void updateCatapult(float f) {
+//        //TODO: +++ CTO Mod 4.12 +++
+//        if(Time.speed() == 0F) return;
+//        if(bCatapultArmed && System.currentTimeMillis() > lCatapultStartTime + (long)(2500F / Time.speed()))
+//        {
+//            bCatapultArmed = false;
+//            dCatapultForce = 0.0D;
+//            iCatapultNumber = 0;
+//        }
+//        //TODO: --- CTO Mod 4.12 ---
+//        producedF.set(0.0D, 0.0D, 0.0D);
+//        producedM.set(0.0D, 0.0D, 0.0D);
+//        for (int i = 0; i < num; i++) {
+//            engines[i].update(f);
+//            //TODO: +++ CTO Mod 4.12 +++
+//            producedF.x += engines[i].getEngineForce().x + dCatapultForce / (double)num;
+//            producedF.y += engines[i].getEngineForce().y;
+//            //By PAL, Diagonal Force
+//            producedF.z += engines[i].getEngineForce().z - 0.3F * dCatapultForce / (double)num;;
+//            if(!bCatapultArmed)
+//            {
+//                producedM.x += engines[i].getEngineTorque().x;
+//                producedM.y += engines[i].getEngineTorque().y;
+//                producedM.z += engines[i].getEngineTorque().z;
+//            }
+////            producedF.x += engines[i].getEngineForce().x;
+////            producedF.y += engines[i].getEngineForce().y;
+////            producedF.z += engines[i].getEngineForce().z;
+////            producedM.x += engines[i].getEngineTorque().x;
+////            producedM.y += engines[i].getEngineTorque().y;
+////            producedM.z += engines[i].getEngineTorque().z;
+//            //TODO: --- CTO Mod 4.12 ---
+//        }
+//
+//    }
+
+    //By PAL, original update()
+    public void update(float f)
+    {
         producedF.set(0.0D, 0.0D, 0.0D);
         producedM.set(0.0D, 0.0D, 0.0D);
-        for (int i = 0; i < num; i++) {
+        for(int i = 0; i < num; i++)
+        {
             engines[i].update(f);
-            //TODO: +++ CTO Mod 4.12 +++
-            producedF.x += engines[i].getEngineForce().x + dCatapultForce / (double)num;
+            producedF.x += engines[i].getEngineForce().x;
             producedF.y += engines[i].getEngineForce().y;
             producedF.z += engines[i].getEngineForce().z;
-            if(!bCatapultArmed)
-            {
-                producedM.x += engines[i].getEngineTorque().x;
-                producedM.y += engines[i].getEngineTorque().y;
-                producedM.z += engines[i].getEngineTorque().z;
-            }
-//            producedF.x += engines[i].getEngineForce().x;
-//            producedF.y += engines[i].getEngineForce().y;
-//            producedF.z += engines[i].getEngineForce().z;
-//            producedM.x += engines[i].getEngineTorque().x;
-//            producedM.y += engines[i].getEngineTorque().y;
-//            producedM.z += engines[i].getEngineTorque().z;
-            //TODO: --- CTO Mod 4.12 ---
+            producedM.x += engines[i].getEngineTorque().x;
+            producedM.y += engines[i].getEngineTorque().y;
+            producedM.z += engines[i].getEngineTorque().z;
         }
 
     }
+
 
     public void netupdate(float f, boolean flag) {
         for (int i = 0; i < num; i++)
@@ -686,31 +711,32 @@ public class EnginesInterface extends FMMath {
     }
 
     // TODO: +++ CTO Mod 4.12 +++
-    public void setCatapult(float f, float f1, int i) {
-        if (f > 10000F)
-            f = 10000F;
-        dCatapultForce = f * f1;
-        lCatapultStartTime = System.currentTimeMillis();
-        bCatapultArmed = true;
-        iCatapultNumber = i;
-    }
-
-    public boolean getCatapult() {
-        return bCatapultArmed;
-    }
-
-    public int getCatapultNumber() {
-        return iCatapultNumber;
-    }
-
-    public void resetCatapultTime() {
-        lCatapultStartTime = System.currentTimeMillis();
-    }
-
-    private boolean bCatapultArmed;
-    private double dCatapultForce;
-    private long lCatapultStartTime;
-    private int iCatapultNumber;
+    //By PAL, removed from EI
+//    public void setCatapult(float f, float f1, int i) {
+//        if (f > 10000F)
+//            f = 10000F;
+//        dCatapultForce = f * f1;
+//        lCatapultStartTime = System.currentTimeMillis();
+//        bCatapultArmed = true;
+//        iCatapultNumber = i;
+//    }
+//
+//    public boolean getCatapult() {
+//        return bCatapultArmed;
+//    }
+//
+//    public int getCatapultNumber() {
+//        return iCatapultNumber;
+//    }
+//
+//    public void resetCatapultTime() {
+//        lCatapultStartTime = System.currentTimeMillis();
+//    }
+//
+//    private boolean bCatapultArmed;
+//    private double dCatapultForce;
+//    private long lCatapultStartTime;
+//    private int iCatapultNumber;
     // TODO: --- CTO Mod 4.12 ---
     public Motor engines[];
     public boolean bCurControl[];
