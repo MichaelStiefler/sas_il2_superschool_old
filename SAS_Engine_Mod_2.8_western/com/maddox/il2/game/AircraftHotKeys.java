@@ -1,5 +1,7 @@
 /*Modified AircraftHotKeys class for the SAS Engine Mod*/
 
+//By PAL, changes on precission of methods (flaps, etc.), previous errors and bouncing on operation
+
 package com.maddox.il2.game;
 
 import java.io.IOException;
@@ -331,6 +333,7 @@ public class AircraftHotKeys {
 			return false;
 		} else {
 			bAAircraft = (AircraftLH) flightmodel.actor;
+			// baFM = flightmodel; //By PAL, in 4.12.2
 			return true;
 		}
 	}
@@ -423,6 +426,9 @@ public class AircraftHotKeys {
 
 	private void hudWeapon(boolean flag, int i) {
 		boolean flag1 = false;
+		// boolean flag2 = false; //By PAL, in stock 4.12.2
+		// boolean flag3 = false; //By PAL, in stock 4.12.2
+		// boolean flag4 = false; //By PAL, in stock 4.12.2
 		BulletEmitter abulletemitter[] = FM.CT.Weapons[i];
 		if (abulletemitter == null) return;
 		int j = 0;
@@ -1329,7 +1335,7 @@ public class AircraftHotKeys {
 		case 53: // '5'
 			if (FM.CT.bHasFlapsControl) {
 				SetFlapsHotKeys(1, FM);
-				if (FM.CT.FlapStageMax != -1.0F && flapIndex < (FM.CT.nFlapStages - 1)) {
+				if (FM.CT.FlapStageMax != -1.0F && flapIndex < FM.CT.nFlapStages) {
 					flapIndex++;
 					oldFlapIndex = flapIndex;
 				}
@@ -1865,7 +1871,7 @@ public class AircraftHotKeys {
 						break;
 					}
 					else if (ff > 0.9F){
-						FM.CT.FlapsControlSwitch = FM.CT.nFlapStages;
+						FM.CT.FlapsControlSwitch = FM.CT.nFlapStages - 1;
 						if (oldFlapsControlSwitch != FM.CT.FlapsControlSwitch) {
 							if (FM.CT.FlapStageText != null)
 								HUD.log("Flaps: " + FM.CT.FlapStageText[FM.CT.FlapsControlSwitch]);
@@ -1876,8 +1882,8 @@ public class AircraftHotKeys {
 						break;
 					}
 					else {
-						float div = 1.0F / (FM.CT.nFlapStages + 1);
-						for (int ii = 1; ii<FM.CT.nFlapStages; ii++)
+						float div = 1.0F / FM.CT.nFlapStages;
+						for (int ii = 1; ii < FM.CT.nFlapStages - 1; ii++)
 						{
 							if (ff > div * ii && ff < div * (ii + 1))
 							{
@@ -1912,15 +1918,15 @@ public class AircraftHotKeys {
 						break;
 					}
 					else {
-						float div = 1.0F / (FM.CT.nFlapStages + 2);
-						for (int ii = 1; ii < FM.CT.nFlapStages + 1; ii++)
+						float div = 1.0F / (FM.CT.nFlapStages + 1);
+						for (int ii = 1; ii < FM.CT.nFlapStages; ii++)
 						{
 							if (ff > div * ii && ff < div * (ii + 1))
 							{
-								flapIndex = ii - 1;
-								if (oldFlapIndex != flapIndex || FM.CT.FlapsControl == 0.0F) {
+								flapIndex = ii;
+								if (oldFlapIndex != flapIndex) {
 									FM.CT.FlapsControl = FM.CT.FlapStage[flapIndex];
-									HUD.log("Flaps: " + (Math.floor((double)FM.CT.FlapStage[flapIndex] * FM.CT.FlapStageMax * 100F) / 100F) + " deg.");
+									HUD.log("Flaps: " + (Math.floor((double)FM.CT.FlapStage[flapIndex] * FM.CT.FlapStageMax * 100F + 0.05F) / 100F) + " deg.");
 									oldFlapIndex = flapIndex;
 								}
 								break;
@@ -2383,7 +2389,7 @@ public class AircraftHotKeys {
 								varWingIndex = ii - 1;
 								if (oldVarWingIndex != varWingIndex || FM.CT.VarWingControl == 0.0F) {
 									FM.CT.VarWingControl = FM.CT.VarWingStage[varWingIndex];
-									HUD.log("Wings: " + (Math.floor((double)FM.CT.VarWingStage[varWingIndex] * FM.CT.VarWingStageMax * 100F) / 100F) + " deg.");
+									HUD.log("Wings: " + (Math.floor((double)FM.CT.VarWingStage[varWingIndex] * FM.CT.VarWingStageMax * 100F + 0.05F) / 100F) + " deg.");
 									oldVarWingIndex = varWingIndex;
 									oldVarWingControl = FM.CT.VarWingControl;
 								}
@@ -2802,6 +2808,7 @@ public class AircraftHotKeys {
 				else aircraft.netCockpitAuto(aircraft, i, !cockpitgunner.isRealMode());
 			}
 			FlightModel flightmodel = World.getPlayerFM();
+			// AircraftState _tmp = flightmodel.AS;	//By PAL, in stock v4.12.2
 			String s = AircraftState.astateHUDPilotHits[flightmodel.AS.astatePilotFunctions[cockpitgunner.astatePilotIndx()]];
 			HUD.log(s + (cockpitgunner.isRealMode() ? "AIOFF" : "AION"));
 		}
@@ -3192,6 +3199,10 @@ public class AircraftHotKeys {
 
 		});
 	}
+
+	//By PAL, "16" used in GUIMenu class: HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "GameMenu", "16"){};
+
+	//By PAL, "17" used in GUIMenu class: HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "LeavePlane", "17"){};    
 
 	public void create_MiscHotKeys() {
 		String s = "$$$misc";
@@ -4350,7 +4361,7 @@ public class AircraftHotKeys {
 
 	private Actor nextStationaryCameraActor() {
 		if (Selector.isEnableTrackArgs()) return Selector.setCurRecordArg0(Selector.getTrackArg0());
-		World.getPlayerArmy();
+		int i = World.getPlayerArmy();  //By PAL, in stock v4.12.2, i not used anywhwere
 		namedAircraft.clear();
 		Actor actor = Main3D.cur3D().viewActor();
 		if (isViewed(actor)) namedAircraft.put(actor.name(), null);
@@ -4401,7 +4412,7 @@ public class AircraftHotKeys {
 			HotKeyEnv hotkeyenv = HotKeyEnv.env(as[i]);
 			HashMapInt hashmapint = hotkeyenv.all();
 			for (HashMapIntEntry hashmapintentry = hashmapint.nextEntry(null); hashmapintentry != null; hashmapintentry = hashmapint.nextEntry(hashmapintentry)) {
-				hashmapintentry.getKey();
+				int j = hashmapintentry.getKey();  //By PAL, in stock v4.12.2, j not used anywhwere
 				String s = (String) (String) hashmapintentry.getValue();
 				if (s.startsWith("-")) s = s.substring(1);
 				if (s.startsWith("power") && s.length() == 6) {
@@ -4519,14 +4530,13 @@ public class AircraftHotKeys {
 				else
 				{
 					if (RFM.CT.FlapStage != null && RFM.CT.FlapStageMax != -1.0F) {
-						if (RFM.CT.FlapsControl > RFM.CT.FlapStage[flapIndex]) {
-							RFM.CT.FlapsControl = RFM.CT.FlapStage[flapIndex];
-							HUD.log("Flaps: " + (Math.floor((double)RFM.CT.FlapStage[flapIndex] * RFM.CT.FlapStageMax * 100F) / 100F) + " deg.");
-							break;
-						}
-						else if (flapIndex == 0 && RFM.CT.FlapsControl > 0.0F) {
-							RFM.CT.FlapsControl = 0.0F;
-							HUD.log("FlapsRaised");
+						if (flapIndex > 0 && RFM.CT.FlapsControl > RFM.CT.FlapStage[flapIndex - 1] + 0.05F) { //By PAL, added 0.05F to avoid imprecissions
+							RFM.CT.FlapsControl = RFM.CT.FlapStage[flapIndex - 1];
+							if(RFM.CT.FlapsControl == 0.0F)
+								HUD.log("FlapsRaised");
+							else
+							//By western, floor and +0.05F to avoid imprecissions and show clean x.yy degrees display
+								HUD.log("Flaps: " + (Math.floor((double)RFM.CT.FlapsControl * RFM.CT.FlapStageMax * 100F + 0.05F) / 100F) + " deg.");
 							break;
 						}
 						break;
@@ -4559,14 +4569,14 @@ public class AircraftHotKeys {
 		case 1:
 			if (!RFM.CT.bHasFlapsControlRed) {
 				if (RFM.CT.bHasFlapsControlSwitch) {
-					if (RFM.CT.FlapsControlSwitch < RFM.CT.nFlapStages)
+					if (RFM.CT.FlapsControlSwitch < RFM.CT.nFlapStages - 1)
 					{
 						RFM.CT.FlapsControlSwitch++;
 						oldFlapsControlSwitch = RFM.CT.FlapsControlSwitch;
 						if (RFM.CT.FlapStageText != null)
 							HUD.log("Flaps: " + RFM.CT.FlapStageText[RFM.CT.FlapsControlSwitch]);
 						else
-							if (RFM.CT.FlapsControlSwitch == RFM.CT.nFlapStages) HUD.log("FlapsLanding");
+							if (RFM.CT.FlapsControlSwitch == RFM.CT.nFlapStages - 1) HUD.log("FlapsLanding");
 							else HUD.log("Flaps: 1 Down");
 					}
 					break;
@@ -4574,15 +4584,10 @@ public class AircraftHotKeys {
 				else
 				{
 					if (RFM.CT.FlapStage != null && RFM.CT.FlapStageMax != -1.0F) {
-						if (RFM.CT.FlapsControl < RFM.CT.FlapStage[flapIndex]) {
-							RFM.CT.FlapsControl = RFM.CT.FlapStage[flapIndex];
-							HUD.log("Flaps: " + (Math.floor((double)RFM.CT.FlapStage[flapIndex] * RFM.CT.FlapStageMax * 100F) / 100F) + " deg.");
-							break;
-						}
-						else if (flapIndex == (RFM.CT.nFlapStages - 1) && RFM.CT.FlapsControl < 1.0F) {
-							RFM.CT.FlapsControl = 1.0F;
-							HUD.log("Flaps: " + RFM.CT.FlapStageMax + " deg.");
-							break;
+						if (flapIndex < FM.CT.nFlapStages && RFM.CT.FlapsControl < RFM.CT.FlapStage[flapIndex + 1] - 0.05F) { //By PAL, added 0.05F to avoid imprecissions
+							RFM.CT.FlapsControl = RFM.CT.FlapStage[flapIndex + 1];
+							//By western, floor and +0.05F to avoid imprecissions and show clean x.yy degrees display
+							HUD.log("Flaps: " + (Math.floor((double)RFM.CT.FlapsControl * RFM.CT.FlapStageMax * 100F + 0.05F) / 100F) + " deg.");
 						}
 						break;
 					} else {
@@ -4630,9 +4635,10 @@ public class AircraftHotKeys {
 					oldVarWingControl = RFM.CT.VarWingControl;
 					break;
 				}
-				else if (RFM.CT.VarWingControl > RFM.CT.VarWingStage[varWingIndex]) {
+				else if (RFM.CT.VarWingControl > RFM.CT.VarWingStage[varWingIndex] + 0.05F) { //By PAL, added 0.05F to avoid imprecissions
 					RFM.CT.VarWingControl = RFM.CT.VarWingStage[varWingIndex];
-					HUD.log("Wings: " + (Math.floor((double)RFM.CT.VarWingStage[varWingIndex] * RFM.CT.VarWingStageMax * 100F) / 100F) + " deg.");
+                    //By western, floor and +0.05F to avoid imprecissions and show clean x.yy degrees display
+					HUD.log("Wings: " + (Math.floor((double)RFM.CT.VarWingStage[varWingIndex] * RFM.CT.VarWingStageMax * 100F + 0.05F) / 100F) + " deg.");
 					oldVarWingControl = RFM.CT.VarWingControl;
 					break;
 				}
@@ -4653,9 +4659,10 @@ public class AircraftHotKeys {
 					oldVarWingControl = RFM.CT.VarWingControl;
 					break;
 				}
-				else if (RFM.CT.VarWingControl < RFM.CT.VarWingStage[varWingIndex]) {
+				else if (RFM.CT.VarWingControl < RFM.CT.VarWingStage[varWingIndex] - 0.05F) { //By PAL, added 0.05F to avoid imprecissions
 					RFM.CT.VarWingControl = RFM.CT.VarWingStage[varWingIndex];
-					HUD.log("Wings: " + (Math.floor((double)RFM.CT.VarWingStage[varWingIndex] * RFM.CT.VarWingStageMax * 100F) / 100F) + " deg.");
+					//By western, floor and +0.05F to avoid imprecissions and show clean x.yy degrees display
+					HUD.log("Wings: " + (Math.floor((double)RFM.CT.VarWingStage[varWingIndex] * RFM.CT.VarWingStageMax * 100F + 0.05F) / 100F) + " deg.");
 					oldVarWingControl = RFM.CT.VarWingControl;
 					break;
 				}
@@ -4675,9 +4682,9 @@ public class AircraftHotKeys {
 
 
 	public void setFlapIndex(int i) {
-		if (i > FM.CT.nFlapStages - 1) i = FM.CT.nFlapStages - 1;
+		if (i >= FM.CT.nFlapStages) i = FM.CT.nFlapStages - 1;
 		if (i < 0 ) i = 0;
-		
+
 		flapIndex = i;
 	}
 
