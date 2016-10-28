@@ -3623,8 +3623,13 @@ public class Maneuver extends AIFlightModel {
 								double d6;
 								if (Gears.getCatapultAlreadySetNum() == -1) {
 									if (bCatapultAI) {
-										d3 = -((Tuple3d) (cellairfield.leftUpperCorner())).x - Gears.getCatapultOffsetX();
-										d6 = ((Tuple3d) (cellairfield.leftUpperCorner())).y - Gears.getCatapultOffsetY();
+										if (Gears.bCatapultHookExist[0]) {
+											d3 = Gears.catapults[0][0].getY();
+											d6 = Gears.catapults[0][0].getX();
+										} else {
+											d3 = -((Tuple3d) (cellairfield.leftUpperCorner())).x - Gears.getCatapultOffsetX();
+											d6 = ((Tuple3d) (cellairfield.leftUpperCorner())).y - Gears.getCatapultOffsetY();
+										}
 									} else {
 										d3 = -((Tuple3d) (cellairfield.leftUpperCorner())).x - (double) (cellairfield.getWidth() / 2 - 3);
 										d6 = brakeShoeLoc.getX() + (double) aircraft.getCellAirPlane().getHeight() + 4D;

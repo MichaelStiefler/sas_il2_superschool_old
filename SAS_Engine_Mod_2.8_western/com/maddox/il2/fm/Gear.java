@@ -174,6 +174,14 @@ public class Gear {
 	private double[] dCatapultYaw = new double[4];
 	private int iCatapults;
 
+	public Loc catapults[][] = {
+		{ new Loc(), new Loc() } ,
+		{ new Loc(), new Loc() } ,
+		{ new Loc(), new Loc() } ,
+		{ new Loc(), new Loc() }
+	};
+	public boolean[] bCatapultHookExist = new boolean[4];
+
 	public double fric_pub;
 	public double fricF_pub;
 	public double fricR_pub;
@@ -680,9 +688,17 @@ public class Gear {
 							Point3d point3d = L.getPoint();
 							CellAirField cellairfield = bigshipgeneric1.getCellTO();
 							for(int k1 = 0; k1 < iCatapults; k1++) {
-								if(dCatapultOffsetX[k1] != 0.0D && dCatapultOffsetY[k1] != 0.0D) {
-									double d5 = -cellairfield.leftUpperCorner().x - dCatapultOffsetX[k1];
-									double d6 = cellairfield.leftUpperCorner().y - dCatapultOffsetY[k1];
+								if((dCatapultOffsetX[k1] != 0.0D && dCatapultOffsetY[k1] != 0.0D)
+								|| bCatapultHookExist[k1]) {
+									double d5 = 0.0D;
+									double d6 = 0.0D;
+									if (bCatapultHookExist[k1]) {
+										d5 = catapults[k1][0].getY();
+										d6 = catapults[k1][0].getX();
+									} else {
+										d5 = -cellairfield.leftUpperCorner().x - dCatapultOffsetX[k1];
+										d6 = cellairfield.leftUpperCorner().y - dCatapultOffsetY[k1];
+									}
 									Loc loc1 = new Loc(d6, d5, 0.0D, 0.0F, 0.0F, 0.0F);
 									loc1.add(FM.brakeShoeLastCarrier.pos.getAbs());
 									Point3d point3d1 = loc1.getPoint();
@@ -854,18 +870,26 @@ public class Gear {
 //		}
 
 		//By PAL, Catapult Force Based on FullMass and VminFLAPS
-		float dist = (float)Math.abs(-cellairfield.leftUpperCorner().x - dCatapultOffsetX[i]) - 1F;
+		float dist = 0.0F;
+		if (bCatapultHookExist[i])
+			dist = (float)Math.sqrt((catapults[i][1].getY() - catapults[i][0].getY()) * (catapults[i][1].getY() - catapults[i][0].getY()) +
+									 (catapults[i][1].getX() - catapults[i][0].getX()) * (catapults[i][1].getX() - catapults[i][0].getX()));
+		else
+			dist = 46F;
+		//float dist = (float)Math.abs(-cellairfield.leftUpperCorner().x - dCatapultOffsetX[i]) - 1F;
 		//double dist = cellairfield.leftUpperCorner().y - dCatapultOffsetY[i] - 1F;
-		float mass = FM.M.getFullMass() * 0.05F; //By PAL, empiric factor
-		float vmin = FM.VminFLAPS * 1.2F;
+		float mass = FM.M.getFullMass() * (FM.isPlayers() ? 0.12F : 0.33F); //By PAL and western, empiric factor
+//		float mass = FM.M.getFullMass() * 0.05F; //By PAL, empiric factor
+		float vmin = FM.VminFLAPS * 1.25F;
 
-		dCatapultForce = mass * vmin * vmin / (2F * dist);
+		dCatapultForce = mass * vmin * vmin / dist;
+//		dCatapultForce = mass * vmin * vmin / (2F * dist);
 //		dCatapultForce = mass * mult;
 
 		iCatapultNumber = i;
 		bCatapultArmed = true;
 		//By PAL, Log Arming Catapult Parameters
-		System.out.println("*** Catapult No. " + iCatapultNumber + " armed with " + dCatapultForce + " Force! Distance: " + dist);
+		System.out.println("*** Catapult No. " + iCatapultNumber + " armed with " + dCatapultForce + " Force!  Distance: " + dist);
 	}
 
 	public void disarmCatapult() {
@@ -1796,7 +1820,58 @@ public class Gear {
 
 		bHasBlastDeflector = (bigshipgeneric instanceof TypeBlastDeflector);
 
+		HierMesh carrierhiermesh = bigshipgeneric.hierMesh();
+
+		int k = 0;
+		for (; k < 4; k++) {
+			if (findHook(carrierhiermesh, "_SCat" + (k + 1) + "_start", catapults[k][0])) {
+				if (findHook(carrierhiermesh, "_SCat" + (k + 1) + "_end", catapults[k][1])) {
+					dCatapultYaw[k] = Math.toDegrees(Math.atan((double) (catapults[k][1].getY() - catapults[k][0].getY()) / (double) (catapults[k][1].getX() - catapults[k][0].getX())));
+					bSteamCatapult = true;
+					bCatapultHookExist[k] = true;
+				} else {
+					System.out.println("Gear - 1831 : Hooks mismatching _SCat" + (k + 1) + "_start and _SCat" + k + 1 + "_end");
+					break;
+				}
+			}
+			else if (findHook(carrierhiermesh, "_Cat" + (k + 1) + "_start", catapults[k][0])) {
+				if (findHook(carrierhiermesh, "_Cat" + (k + 1) + "_end", catapults[k][1])) {
+					dCatapultYaw[k] = Math.toDegrees(Math.atan((double) (catapults[k][1].getY() - catapults[k][0].getY()) / (double) (catapults[k][1].getX() - catapults[k][0].getX())));
+					bSteamCatapult = false;
+					bCatapultHookExist[k] = true;
+				} else {
+					System.out.println("Gear - 1841 : Hooks mismatching _Cat" + (k + 1) + "_start and _Cat" + k + "_end");
+					break;
+				}
+			}
+			else break;
+		}
+
+		if (k > 0) {
+			iCatapults = k;
+			flag2 = true;
+			bCatapultAI = bCatapultAllowAI;
+		}
+
 		return flag2;
+	}
+
+	private boolean findHook(HierMesh hiermesh, String s, Loc loc1) {
+		int i = hiermesh.hookFind(s);
+		if(i == -1) {
+			return false;
+		} else {
+			Point3d pp = new Point3d();
+			Orient po = new Orient();
+			Matrix4d pm1 = new Matrix4d();
+			double ptmp[] = new double[3];
+			hiermesh.hookMatrix(i, pm1);
+			pm1.getEulers(ptmp);
+			po.setYPR(Geom.RAD2DEG((float)ptmp[0]), 360F - Geom.RAD2DEG((float)ptmp[1]), 360F - Geom.RAD2DEG((float)ptmp[2]));
+			pp.set(pm1.m03, pm1.m13, pm1.m23);
+			loc1.set(pp, po);
+			return true;
+		}
 	}
 
 	public double getCatapultOffsetX(int i) {

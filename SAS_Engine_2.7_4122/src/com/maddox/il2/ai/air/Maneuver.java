@@ -4051,14 +4051,17 @@ public class Maneuver extends AIFlightModel {
                         }
                         bAlreadyCheckedStage7 = true;
                     }
-                    if (!bCatapultAI) {
+                    if(!bCatapultAI)
+                    {
                         Po.set(this.Loc);
                         Vpl.set(60D, 0.0D, 0.0D);
                         fNearestDistance = 70F;
                         this.Or.transform(Vpl);
                         Po.add(Vpl);
                         Pd.set(Po);
-                    } else {
+                    }
+                    else
+                    {
                         Po.set(this.Loc);
                         Vpl.set(200D, 0.0D, 0.0D);
                         fNearestDistance = 210F;
@@ -4066,24 +4069,33 @@ public class Maneuver extends AIFlightModel {
                         Po.add(Vpl);
                         Pd.set(Po);
                     }
-                    if (canTakeoff) {
-                        if (!bStage7) {
-                            if (bStage6) {
-                                if (bFastLaunchAI || !CT.bHasWingControl || CT.bHasWingControl && CT.getWing() < 0.5F)
+                    if(canTakeoff)
+                    {
+                        if(!bStage7)
+                        {
+                            if(bStage6)
+                            {
+                                if(bFastLaunchAI || !CT.bHasWingControl || CT.bHasWingControl && CT.getWing() < 0.5F)
                                     bStage7 = true;
-                            } else if (bStage4) {
-                                if (CT.bHasWingControl && CT.getWing() > 0.001F) {
-                                    if (bFastLaunchAI)
+                            }
+                            else if(bStage4)
+                            {
+                                if(CT.bHasWingControl && CT.getWing() > 0.001F)
+                                {
+                                    if(bFastLaunchAI)
                                         CT.forceWing(0.0F);
                                     AS.setWingFold(actor, 0);
                                 }
-                                if (CT.bHasCockpitDoorControl && CT.bNoCarrierCanopyOpen) {
-                                    if (bFastLaunchAI)
+                                if(CT.bHasCockpitDoorControl && CT.bNoCarrierCanopyOpen)
+                                {
+                                    if(bFastLaunchAI)
                                         CT.forceCockpitDoor(0.0F);
                                     AS.setCockpitDoor(actor, 0);
                                 }
                                 bStage6 = true;
-                            } else if (bStage3) {
+                            }
+                            else if(bStage3)
+                            {
                                 Loc loc = new Loc();
                                 BigshipGeneric bigshipgeneric1 = (BigshipGeneric) brakeShoeLastCarrier;
                                 Aircraft aircraft = (Aircraft) actor;
@@ -4092,10 +4104,21 @@ public class Maneuver extends AIFlightModel {
                                 double d6;
                                 if(Gears.getCatapultAlreadySetNum() == -1)
                                 {
-                                    if (bCatapultAI) {
-                                        d3 = -((Tuple3d) (cellairfield.leftUpperCorner())).x - Gears.getCatapultOffsetX();
-                                        d6 = ((Tuple3d) (cellairfield.leftUpperCorner())).y - Gears.getCatapultOffsetY();
-                                    } else {
+                                    if(bCatapultAI)
+                                    {
+                                        if(Gears.bCatapultHookExist[0])
+                                        {
+                                            d3 = Gears.catapults[0][0].getY();
+                                            d6 = Gears.catapults[0][0].getX();
+										}
+                                        else
+                                        {
+                                            d3 = -((Tuple3d) (cellairfield.leftUpperCorner())).x - Gears.getCatapultOffsetX();
+                                            d6 = ((Tuple3d) (cellairfield.leftUpperCorner())).y - Gears.getCatapultOffsetY();
+                                        }
+                                    }
+                                    else
+                                    {
                                         d3 = -((Tuple3d) (cellairfield.leftUpperCorner())).x - (double) (cellairfield.getWidth() / 2 - 3);
                                         d6 = brakeShoeLoc.getX() + (double) aircraft.getCellAirPlane().getHeight() + 4D;
                                     }
@@ -4106,23 +4129,30 @@ public class Maneuver extends AIFlightModel {
                                     brakeShoeLoc.sub(brakeShoeLastCarrier.pos.getAbs());
                                 }
                                 bStage4 = true;
-                            } else {
+                            }
+                            else
+                            {
                                 CT.setPowerControl(1.0F);
                                 bStage3 = true;
                             }
-                        } else {
+                        }
+                        else
+                        {
                             // TODO: --- CTO Mod 4.12 ---
                             CT.setPowerControl(1.1F);
                             setSpeedMode(11);
                         }
-                    } else {
+                    }
+                    else
+                    {
                         setSpeedMode(8);
                         CT.BrakeControl = 1.0F;
                         boolean flag7 = true;
                         boolean flag9 = true;
-                        if (AP.way.first().waypointType == 2 || AP.way.first().waypointType == 3 || AP.way.first().waypointType == 4 || AP.way.first().waypointType == 5 || ((Aircraft) actor).stationarySpawnLocSet)
+                        if(AP.way.first().waypointType == 2 || AP.way.first().waypointType == 3 || AP.way.first().waypointType == 4 || AP.way.first().waypointType == 5 || ((Aircraft) actor).stationarySpawnLocSet)
                             flag9 = false;
-                        if (mn_time < 8F && flag9) {
+                        if(mn_time < 8F && flag9)
+                        {
                             flag7 = false;
                         }
                         //TODO: +++ CTO Mod 4.12 +++
