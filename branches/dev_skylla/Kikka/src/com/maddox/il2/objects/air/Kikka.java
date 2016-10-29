@@ -38,6 +38,8 @@ public class Kikka extends ME_262B {
 	 *  > [x] gun hooks [DONE]
 	 *  > [x] adjust bomb & pylon places [DONE]
 	 *  > [x] CockpitClass moveDoor [DONE]
+	 * rework notices:
+	 * 	> [-] reduce RATO burning time to 9 seconds.
 	**/
 	
 	
@@ -45,10 +47,13 @@ public class Kikka extends ME_262B {
 	protected boolean bHasBoosters;
 	protected long    boosterFireOutTime;
 	private boolean   gearMoved = false;
+	
+	private static final double boosterPower = 10000D;
+	private static final long boosterRunTime = 9000L;
 	   
 	public Kikka() {
 		this.bHasBoosters = true;
-	    this.boosterFireOutTime = -1L;;
+	    this.boosterFireOutTime = -1L;
 	}  
 	   
 	public void destroy() {
@@ -67,7 +72,7 @@ public class Kikka extends ME_262B {
 	public void doFireBoosters() {
 		for(int i = 0; i < booster.length; i++) {
 			//looks way better:
-			Eff3DActor.New(this, this.findHook("_Booster" + (i+1)), null, 1.0F, "3DO/Effects/Rocket/RocketSmokeWhite.eff", 30F);
+			Eff3DActor.New(this, this.findHook("_Booster" + (i+1)), null, 1.0F, "3DO/Effects/Rocket/RocketSmokeWhite.eff", (float)(boosterRunTime/1000));
 			//old / 4.12:
 			//Eff3DActor.New(this, this.findHook("_Booster" + (i+1)), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
 		}
@@ -110,15 +115,33 @@ public class Kikka extends ME_262B {
 			//if(FM.isPlayers())
 			//	HUD.log("Can't raise gear with boosters attached!"); 
 			if(this.FM.getAltitude() - World.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y) > 5F)
-				gearMoved = !gearMoved;
+				gearMoved = true;
 		} else {
 			super.moveGear(f);
 		}
 	}
 	
+	//TODO
 	protected void moveWingFold(HierMesh var1, float var2) {
-		var1.chunkSetAngles("WingLOut_D0", 0.0F, 135.0F * var2, 0.0F);
-		var1.chunkSetAngles("WingROut_D0", 0.0F, -135.0F * var2, 0.0F);
+		float offy = 2.87F; 	//static offset y
+		float offz = -3.60F; 	//static offset z
+		float offym = 0.18F;	//moving offset y
+		float offzm = 0.55F;	//moving offset z
+		float turndeg = 150.0F; //angle of wing movement in degree
+
+		//var1.chunkSetAngles("WingLOut_D0", 0.0F, 0.0F, -110.0F * var2);
+		float y = (float)Math.toRadians(Aircraft.cvt(var2, 0.0F, 1.0F, -90.0F, (-90.0F + turndeg)));
+		float z = (float)Math.toRadians(Aircraft.cvt(var2, 0.0F, 1.0F, 0.0F, turndeg));
+		Aircraft.ypr[2] =  Aircraft.cvt(var2, 0.0F, 1.0F, 0.0F, -turndeg);
+		Aircraft.xyz[1] =  offy*(float)Math.sin(y) - offym*(float)Math.cos(y) + offy;
+		Aircraft.xyz[2] =  offz*(float)Math.sin(z) + offzm*(float)Math.sin(Aircraft.cvt(var2, 0.0F, 1.0F, 0.0F, (float)Math.PI));
+		var1.chunkSetLocate("WingLOut_D0", Aircraft.xyz, Aircraft.ypr); 
+		
+		//var1.chunkSetAngles("WingROut_D0", 0.0F, 0.0F, +110.0F * var2);
+		y = (float)Math.toRadians(Aircraft.cvt(var2, 0.0F, 1.0F, -90.0F, (-90.0F + turndeg)));
+		Aircraft.ypr[2] =  Aircraft.cvt(var2, 0.0F, 1.0F, 0.0F, turndeg);
+		Aircraft.xyz[1] =  -offy*(float)Math.sin(y) + offym*(float)Math.cos(y) - offy;
+		var1.chunkSetLocate("WingROut_D0", Aircraft.xyz, Aircraft.ypr);
 	}
 	
 	public void moveWingFold(float var1) {
@@ -174,14 +197,14 @@ public class Kikka extends ME_262B {
 	               }	  
 	           }
 	           if (this.bHasBoosters && this.boosterFireOutTime == -1L && this.FM.Gears.onGround() && this.FM.EI.getPowerOutput() > 0.8F && this.FM.EI.engines[0].getStage() == 6 && this.FM.EI.engines[1].getStage() == 6 && this.FM.getSpeedKMH() > 20F) {
-	               this.boosterFireOutTime = Time.current() + 30000L;
+	               this.boosterFireOutTime = Time.current() + boosterRunTime;
 	               this.doFireBoosters();
 	               this.FM.AS.setGliderBoostOn();
 	           }
 	           if (this.bHasBoosters && this.boosterFireOutTime > 0L) {
 	               if (Time.current() < this.boosterFireOutTime)
 	            	   //booster thrust:
-	            	   this.FM.producedAF.x += 5000D * booster.length;  	   
+	            	   this.FM.producedAF.x += boosterPower * booster.length;  	   
 	               if (Time.current() > this.boosterFireOutTime + 10000L) {
 	                   this.doCutBoosters();
 	                   this.FM.AS.setGliderBoostOff();
@@ -237,7 +260,7 @@ public class Kikka extends ME_262B {
         Property.set(clazz, "PaintScheme", new PaintSchemeFMPar05());
         Property.set(clazz, "yearService", 1946.1f);
         Property.set(clazz, "yearExpired", 1946.5f);
-        Property.set(clazz, "FlightModel", "FlightModels/Me-262B-1a.fmd");
+        Property.set(clazz, "FlightModel", "FlightModels/Kikka.fmd");
         Property.set(clazz, "cockpitClass", new Class[] { CockpitKikka.class });
         Property.set(clazz, "LOSElevation", 0.7498f);
         Aircraft.weaponTriggersRegister(clazz, new int[] { 0, 0, 9, 3 });
