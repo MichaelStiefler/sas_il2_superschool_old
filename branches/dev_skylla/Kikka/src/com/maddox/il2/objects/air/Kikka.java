@@ -38,8 +38,9 @@ public class Kikka extends ME_262B {
 	 *  > [x] gun hooks [DONE]
 	 *  > [x] adjust bomb & pylon places [DONE]
 	 *  > [x] CockpitClass moveDoor [DONE]
-	 * rework notices:
-	 * 	> [-] reduce RATO burning time to 9 seconds.
+	 * 	> [-] reduce RATO burning time to 9 seconds, adjust power to equal 800kg.
+	 *  > [-] build new FM
+	 *  > [x] moveWingFold [DONE]
 	**/
 	
 	
@@ -121,7 +122,6 @@ public class Kikka extends ME_262B {
 		}
 	}
 	
-	//TODO
 	protected void moveWingFold(HierMesh var1, float var2) {
 		float offy = 2.87F; 	//static offset y
 		float offz = -3.60F; 	//static offset z
@@ -129,15 +129,14 @@ public class Kikka extends ME_262B {
 		float offzm = 0.55F;	//moving offset z
 		float turndeg = 150.0F; //angle of wing movement in degree
 
-		//var1.chunkSetAngles("WingLOut_D0", 0.0F, 0.0F, -110.0F * var2);
+		//left wing:
 		float y = (float)Math.toRadians(Aircraft.cvt(var2, 0.0F, 1.0F, -90.0F, (-90.0F + turndeg)));
 		float z = (float)Math.toRadians(Aircraft.cvt(var2, 0.0F, 1.0F, 0.0F, turndeg));
 		Aircraft.ypr[2] =  Aircraft.cvt(var2, 0.0F, 1.0F, 0.0F, -turndeg);
 		Aircraft.xyz[1] =  offy*(float)Math.sin(y) - offym*(float)Math.cos(y) + offy;
 		Aircraft.xyz[2] =  offz*(float)Math.sin(z) + offzm*(float)Math.sin(Aircraft.cvt(var2, 0.0F, 1.0F, 0.0F, (float)Math.PI));
 		var1.chunkSetLocate("WingLOut_D0", Aircraft.xyz, Aircraft.ypr); 
-		
-		//var1.chunkSetAngles("WingROut_D0", 0.0F, 0.0F, +110.0F * var2);
+		//right wing:
 		y = (float)Math.toRadians(Aircraft.cvt(var2, 0.0F, 1.0F, -90.0F, (-90.0F + turndeg)));
 		Aircraft.ypr[2] =  Aircraft.cvt(var2, 0.0F, 1.0F, 0.0F, turndeg);
 		Aircraft.xyz[1] =  -offy*(float)Math.sin(y) + offym*(float)Math.cos(y) - offy;
