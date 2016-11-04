@@ -120,6 +120,13 @@ public class Controls {
 
 	// TODO: New parameters
 	// --------------------------------------------------------
+	public boolean bHasCatLaunchBarControl;
+	public float CatLaunchBarControl;
+	public float dvCatLaunchBar;
+	private float catLaunchBar;
+	public boolean bHasAileronControlPowered;
+	public boolean bHasElevatorControlPowered;
+	public boolean bHasRudderControlPowered;
 	public int DiffBrakesType;
 	public float BrakeRightControl;
 	public float BrakeLeftControl;
@@ -140,8 +147,8 @@ public class Controls {
 	private float fSaveSideDoorControl;
 	public boolean bMoveSideDoor = false;
 	private int SIDE_DOOR = 2;
-	public int LEFT = 1;
-	public int RIGHT = 2;
+	public static final int LEFT = 1;
+	public static final int RIGHT = 2;
 	public int iToggleRocketSide = LEFT;
 	public int iToggleBombSide = LEFT;
 	public long lWeaponTime = System.currentTimeMillis();
@@ -286,6 +293,13 @@ public class Controls {
 
 		// TODO: New parameters
 		// --------------------------------------------------------
+		bHasCatLaunchBarControl = false;
+		CatLaunchBarControl = 0.0F;
+		dvCatLaunchBar = 0.5F;
+		catLaunchBar = 0.0F;
+		bHasAileronControlPowered = false;
+		bHasElevatorControlPowered = false;
+		bHasRudderControlPowered = false;
 		bHasDragChuteControl = false;
 		bHasRefuelControl = false;
 		DiffBrakesType = 0;
@@ -349,10 +363,19 @@ public class Controls {
 		dvCockpitDoor = controls.dvCockpitDoor;
 		dvAirbrake = controls.dvAirbrake;
 		// TODO: New parameters
+		DiffBrakesType = controls.DiffBrakesType;
+		BrakeRightControl = controls.BrakeRightControl;
+		BrakeLeftControl = controls.BrakeLeftControl;
+		dvCatLaunchBar = controls.dvCatLaunchBar;
+		CatLaunchBarControl = controls.CatLaunchBarControl;
 		dvDragchute = controls.dvDragchute;
+		DragChuteControl = controls.DragChuteControl;
 		dvRefuel = controls.dvRefuel;
+		RefuelControl = controls.RefuelControl;
 		dvVarWing = controls.dvVarWing;
+		VarWingControl = controls.VarWingControl;
 		dvBlownFlaps = controls.dvBlownFlaps;
+		BlownFlapsControl = controls.BlownFlapsControl;
 		FlapsControlSwitch = controls.FlapsControlSwitch;
 	}
 
@@ -374,6 +397,7 @@ public class Controls {
 		BayDoorControl = 0.0F;
 		AirBrakeControl = 0.0F;
 		// TODO: New parameter
+		CatLaunchBarControl = 0.0F;
 		DragChuteControl = 0.0F;
 		RefuelControl = 0.0F;
 		VarWingControl = VarWing = 0.0F;
@@ -734,6 +758,10 @@ public class Controls {
 		return BlownFlaps;
 	}
 
+	public float getCatLaunchBar() {
+		return catLaunchBar;
+	}
+
 	// --------------------------------------------------------
 
 	private float filter(float f, float f1, float f2, float f3, float f4) {
@@ -969,6 +997,8 @@ public class Controls {
 		// TODO: For drag chute, refuelling, variable geometry wings and blown
 		// flaps
 		// --------------------------------------------------------
+		if (bHasCatLaunchBarControl || flag1)
+			catLaunchBar = filter(f, CatLaunchBarControl, catLaunchBar, 999.9F, dvCatLaunchBar);
 		if (bHasDragChuteControl || flag1)
 			dragChute = filter(f, DragChuteControl, dragChute, 999.9F, dvDragchute);
 		if (bHasRefuelControl || flag1)

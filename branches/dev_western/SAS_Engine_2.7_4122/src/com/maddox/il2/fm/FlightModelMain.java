@@ -345,26 +345,30 @@ public class FlightModelMain extends FMMath
             throw new RuntimeException(s1);
         AIRBRAKE = j == 1;
         s2 = "Controls";
+        // 2nd bit (number 2) of CAileron, CElevator, CRudder means powered by hydro
         j = sectfile.get(s2, "CAileron", 0);
-        if(j != 0 && j != 1)
+        if(j != 0 && j != 1 && j != 3)
             throw new RuntimeException(s1);
-        CT.bHasAileronControl = j == 1;
+        CT.bHasAileronControl = (j & 1) == 1;
+        CT.bHasAileronControlPowered = (j & 2) == 2;
         j = sectfile.get(s2, "CAileronTrim", 0);
         if(j != 0 && j != 1)
             throw new RuntimeException(s1);
         CT.bHasAileronTrim = j == 1;
         j = sectfile.get(s2, "CElevator", 0);
-        if(j != 0 && j != 1)
+        if(j != 0 && j != 1 && j != 3)
             throw new RuntimeException(s1);
-        CT.bHasElevatorControl = j == 1;
+        CT.bHasElevatorControl = (j & 1) == 1;
+        CT.bHasElevatorControlPowered = (j & 2) == 2;
         j = sectfile.get(s2, "CElevatorTrim", 0);
         if(j != 0 && j != 1)
             throw new RuntimeException(s1);
         CT.bHasElevatorTrim = j == 1;
         j = sectfile.get(s2, "CRudder", 0);
-        if(j != 0 && j != 1)
+        if(j != 0 && j != 1 && j != 3)
             throw new RuntimeException(s1);
-        CT.bHasRudderControl = j == 1;
+        CT.bHasRudderControl = (j & 1) == 1;
+        CT.bHasRudderControlPowered = (j & 2) == 2;
         j = sectfile.get(s2, "CRudderTrim", 0);
         if(j != 0 && j != 1)
             throw new RuntimeException(s1);
@@ -469,6 +473,9 @@ public class FlightModelMain extends FMMath
         CT.bHasVarIncidence = j == 1;
         // --------------------------------------------------------
         //TODO: New entries for animated refuelling gear, drag chutes and bay doors
+        j = sectfile.get(s2, "CCatLaunchBar", 0);
+        if (j != 0 && j != 1) throw new RuntimeException(s1);
+        CT.bHasCatLaunchBarControl = j == 1;
         j = sectfile.get(s2, "CRefuel", 0);
         if(j != 0 && j != 1)
             throw new RuntimeException(s1);

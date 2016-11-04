@@ -3727,7 +3727,8 @@ public class Maneuver extends AIFlightModel {
 			AFo.setDeg(Or.getAzimut(), direction);
 			double d2 = AFo.getDiffRad();
 			if (EI.engines[0].getStage() == 6) {
-				CT.RudderControl = 8F * (float) d2;
+				if (!bCatapultAI) CT.RudderControl = 0.0F;  // TODO: CTO Mod 4.12 , canceling rudder diff on the catapult.
+				else CT.RudderControl = 8F * (float) d2;
 				if (d2 > -1D && d2 < 1.0D) {
 					if (flag8 && Actor.isAlive(AP.way.takeoffAirport) && CT.getPower() > 0.3F) {
 						double d4 = AP.way.takeoffAirport.shiftFromLine(this);
@@ -3736,7 +3737,8 @@ public class Maneuver extends AIFlightModel {
 						double d7 = 0.25D * d4 * d6;
 						if (d7 > 1.5D) d7 = 1.5D;
 						if (d7 < -1.5D) d7 = -1.5D;
-						if (!bCatapultAI) CT.RudderControl += (float) d7;  // TODO: CTO Mod 4.12 , canceling rudder diff on the catapult.
+						if (bCatapultAI) CT.RudderControl = 0.0F;  // TODO: CTO Mod 4.12 , canceling rudder diff on the catapult.
+						else CT.RudderControl += (float) d7;
 					}
 				} else {
 					CT.BrakeControl = 1.0F;
