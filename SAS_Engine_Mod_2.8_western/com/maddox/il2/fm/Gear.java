@@ -188,6 +188,10 @@ public class Gear {
 
 	//By PAL, new for Shock Absorber
 	public float shockAbsorber;
+
+	//By western, custom chock and catapult gear X position
+	public double dCustomChockX = 0.0D;
+	public double dCustomCatGearX = 0.0D;
 	// --------------------------------------------------------
 
 	private static class PlateFilter implements ActorFilter {
@@ -878,7 +882,7 @@ public class Gear {
 			dist = 46F;
 		//float dist = (float)Math.abs(-cellairfield.leftUpperCorner().x - dCatapultOffsetX[i]) - 1F;
 		//double dist = cellairfield.leftUpperCorner().y - dCatapultOffsetY[i] - 1F;
-		float mass = FM.M.getFullMass() * (FM.isPlayers() ? 0.12F : 0.33F); //By PAL and western, empiric factor
+		float mass = FM.M.getFullMass() * (FM.isPlayers() ? 0.16F : 0.35F); //By PAL and western, empiric factor
 //		float mass = FM.M.getFullMass() * 0.05F; //By PAL, empiric factor
 		float vmin = FM.VminFLAPS * 1.25F;
 
@@ -1955,13 +1959,29 @@ public class Gear {
 
 		if(isCatapult == bCatHook) {
 			if(bCatHook && CatH != null) {
+				Loc locGearC = new Loc();
+				Loc locTemp = new Loc();
+				Orientation orTemp = new Orientation();
+				locTemp.set(FM.Loc.x, FM.Loc.y, FM.Loc.z,
+						FM.Or.getAzimut(), FM.Or.getTangage(), FM.Or.getKren());
 				corn.set(FM.Loc);
 				corn1.set(FM.Loc);
 				corn1.z -= 20D;
 				Actor actor = Engine.collideEnv().getLine(corn, corn1, false, clipFilter, Pship);
 				//By PAL, why this is 0.5D over the collision line?
+				if (FM.CT.bHasCatLaunchBarControl) {
+					hookc = (HookNamed)FM.actor.findHook("_ClipCGear");
+					hookc.computePos(FM.actor, locTemp, locGearC);
+					locGearC.get(corn);
+					locGearC.get(corn1);
+					corn1.z -= 20D;
+					actor = Engine.collideEnv().getLine(corn, corn1, false, clipFilter, Pship);
+				}
 				Pship.z += 0.5D;
-				locCatH.set(Pship, FM.brakeShoeLastCarrier.pos.getAbsOrient());
+				Orient ori = new Orient();
+				ori = FM.brakeShoeLastCarrier.pos.getAbsOrient();
+				ori.setYaw(ori.getYaw() + (float)dCatapultYaw[getCatapultNumber()]);
+				locCatH.set(Pship, ori);
 				CatH.pos.setAbs(locCatH);
 			}
 			return;
@@ -1973,6 +1993,10 @@ public class Gear {
 			if(CatH != null) {
 				CatH.destroy();
 				CatH = null;
+				//By western, move Catapult launch bar
+				if (FM.CT.bHasCatLaunchBarControl) {
+					FM.CT.CatLaunchBarControl = 0.0F;
+				}
 				//System.out.println("Catapult Released...");
 			}
 		} else {
@@ -2023,9 +2047,40 @@ public class Gear {
 								0F, -Pitch, 0F);
 					locCatH.add(FM.actor.pos.getCurrent());
 					//By PAL, load Cable Hook for Catapult
-					CatH = new ActorSimpleMesh("3DO/Arms/CatHook/CableHook.sim");
-					CatH.pos.setAbs(FM.Loc, FM.Or);
-					CatH.mesh().setScaleXYZ(1F, H / 1.4F, H / 1.4F); //1.5F);
+					//By western, move Catapult launch bar and draw shuttle
+					Loc locGearC = new Loc();
+					Loc locTemp = new Loc();
+					Orientation orTemp = new Orientation();
+					locTemp.set(FM.Loc.x, FM.Loc.y, FM.Loc.z,
+							FM.Or.getAzimut(), FM.Or.getTangage(), FM.Or.getKren());
+					if (FM.CT.bHasCatLaunchBarControl) {
+						hookc.computePos(FM.actor, locTemp, locGearC);
+						locGearC.get(corn);
+						locGearC.get(corn1);
+						corn1.z -= 20D;
+						Actor actor = Engine.collideEnv().getLine(corn, corn1, false, clipFilter, Pship);
+						Pship.z += 0.5D;
+						Orient ori = new Orient();
+						ori = FM.brakeShoeLastCarrier.pos.getAbsOrient();
+						ori.setYaw(ori.getYaw() + (float)dCatapultYaw[getCatapultNumber()]);
+						locCatH.set(Pship, ori);
+						FM.CT.CatLaunchBarControl = 1.0F;
+						CatH = new ActorSimpleMesh("3DO/Arms/CatHook/Shuttle.sim");
+						CatH.pos.setAbs(locCatH);
+					} else {
+						corn.set(FM.Loc);
+						corn1.set(FM.Loc);
+						corn1.z -= 20D;
+						Actor actor = Engine.collideEnv().getLine(corn, corn1, false, clipFilter, Pship);
+						Pship.z += 0.5D;
+						Orient ori = new Orient();
+						ori = FM.brakeShoeLastCarrier.pos.getAbsOrient();
+						ori.setYaw(ori.getYaw() + (float)dCatapultYaw[getCatapultNumber()]);
+						locCatH.set(Pship, ori);
+						CatH = new ActorSimpleMesh("3DO/Arms/CatHook/CableHook.sim");
+						CatH.pos.setAbs(locCatH);
+						CatH.mesh().setScaleXYZ(1F, H / 1.4F, H / 1.4F); //1.5F);
+					}
 				}
 			}
 			catch (Exception e){}

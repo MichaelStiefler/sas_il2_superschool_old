@@ -233,6 +233,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	// --------------------------------------------------------
 	private float VarWing_;
 	private float Refuel_ = 0.0F;
+	private float CatLaunchBar_ = 0.0F;
 	// Expanded to allow for up to 8 props
 	protected float[] propPos = { 0.0F, 21.6F, 45.9F, 66.9F, 45.0F, 9.2F, 0.0F, 0.0F };
 	protected int[] oldProp = { 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -1442,6 +1443,9 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	protected void moveRefuel(float f) {
 	}
 
+	protected void moveCatLaunchBar(float f) {
+	}
+
 	public void moveSteering(float f) {
 	}
 
@@ -1625,6 +1629,11 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		if (Math.abs(Refuel_ - f5) > EpsSmooth_) {
 			moveRefuel(Refuel_ = f5);
 			if (Math.abs(Refuel_ - 0.5F) >= 0.48F) sfxAirBrake();
+		}
+		// TODO: Added for catapult launch bar on the nose gear
+		f5 = controls.getCatLaunchBar();
+		if (Math.abs(CatLaunchBar_ - f5) > EpsSmooth_) {
+			moveCatLaunchBar(CatLaunchBar_ = f5);
 		}
 		f5 = FM.Gears.getSteeringAngle();
 		if (Math.abs(Steering_ - f5) > 0.003F) moveSteering(Steering_ = f5);

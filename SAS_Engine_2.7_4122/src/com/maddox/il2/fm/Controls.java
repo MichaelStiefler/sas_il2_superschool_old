@@ -115,66 +115,73 @@ public class Controls
 
     // TODO: New parameters
     // --------------------------------------------------------
-    public int                     DiffBrakesType;
+    public boolean              bHasCatLaunchBarControl;
+    public float                CatLaunchBarControl;
+    public float                dvCatLaunchBar;
+    private float               catLaunchBar;
+    public boolean              bHasAileronControlPowered;
+    public boolean              bHasElevatorControlPowered;
+    public boolean              bHasRudderControlPowered;
+    public int                  DiffBrakesType;
     public float                BrakeRightControl;
     public float                BrakeLeftControl;
-    private float                BrakeRight;
-    private float                BrakeLeft;
-    public boolean                bHasDragChuteControl;
+    private float               BrakeRight;
+    private float               BrakeLeft;
+    public boolean              bHasDragChuteControl;
     public float                DragChuteControl;
     public float                dvDragchute;
-    private float                dragChute;
-    public boolean                bHasRefuelControl;
+    private float               dragChute;
+    public boolean              bHasRefuelControl;
     public float                RefuelControl;
     public float                dvRefuel;
-    private float                refuel;
-    public boolean                bHasBayDoors        = false;
-    private float                fSaveCockpitDoor;
-    private float                fSaveCockpitDoorControl;
-    private float                fSaveSideDoor;
-    private float                fSaveSideDoorControl;
-    public boolean                bMoveSideDoor        = false;
-    private int                    SIDE_DOOR            = 2;
-    public int                    LEFT                = 1;
-    public int                    RIGHT                = 2;
-    public int                    iToggleRocketSide    = LEFT;
-    public int                    iToggleBombSide        = LEFT;
-    public long                    lWeaponTime            = System.currentTimeMillis();
-    public static final int     WEAPON_FIRE_MODE_SALVO = 0;
+    private float               refuel;
+    public boolean              bHasBayDoors        = false;
+    private float               fSaveCockpitDoor;
+    private float               fSaveCockpitDoorControl;
+    private float               fSaveSideDoor;
+    private float               fSaveSideDoorControl;
+    public boolean              bMoveSideDoor       = false;
+    private int                 SIDE_DOOR           = 2;
+    public static int           LEFT                = 1;
+    public static int           RIGHT               = 2;
+    public int                  iToggleRocketSide   = LEFT;
+    public int                  iToggleBombSide     = LEFT;
+    public long                 lWeaponTime         = System.currentTimeMillis();
+    public static final int     WEAPON_FIRE_MODE_SALVO  = 0;
     public static final int     WEAPON_FIRE_MODE_SINGLE = 1;
-    public static final int     WEAPON_FIRE_MODE_PAIRS = 2;
-    public int                    weaponFireMode        = WEAPON_FIRE_MODE_PAIRS;
-    private int                    prevUserWeaponFireMode = weaponFireMode;
-    public long                    weaponReleaseDelay  = 33L;
-    public int                    rocketHookSelected     = 2;
-    public String                rocketNameSelected = null;
-    public int                     nFlapStages;
-    public float                 FlapStageMax;
-    public float[]                 FlapStage = null;
+    public static final int     WEAPON_FIRE_MODE_PAIRS  = 2;
+    public int                  weaponFireMode          = WEAPON_FIRE_MODE_PAIRS;
+    private int                 prevUserWeaponFireMode  = weaponFireMode;
+    public long                 weaponReleaseDelay  = 33L;
+    public int                  rocketHookSelected  = 2;
+    public String               rocketNameSelected  = null;
+    public int                  nFlapStages;
+    public float                FlapStageMax;
+    public float[]              FlapStage           = null;
     public float                VarWingControl;
-    private float                VarWing;
-    public int                     nVarWingStages;
-    public float                 VarWingStageMax;
-    public float[]                 VarWingStage = null;
+    private float               VarWing;
+    public int                  nVarWingStages;
+    public float                VarWingStageMax;
+    public float[]              VarWingStage        = null;
     public float                dvVarWing;
-    public boolean                bHasVarWingControl;
-    public boolean                bHasVarWingControlFree;
-    public boolean                bHasVarIncidence;
-    public boolean                 bHasStabilizerControl;
-    public boolean                bHasBlownFlaps;
+    public boolean              bHasVarWingControl;
+    public boolean              bHasVarWingControlFree;
+    public boolean              bHasVarIncidence;
+    public boolean              bHasStabilizerControl;
+    public boolean              bHasBlownFlaps;
     public float                BlownFlapsControl;
-    private float                BlownFlaps;
+    private float               BlownFlaps;
     public float                dvBlownFlaps;
-    public String                BlownFlapsType;
-    public boolean                bNoCarrierCanopyOpen;
-    public boolean                bHasSideDoor;
-    public int                    FlapsControlSwitch;
-    public boolean                bHasFlapsControlSwitch;
-    public String[]                FlapStageText = null;
-    public boolean                 bHasBombSelect;
+    public String               BlownFlapsType;
+    public boolean              bNoCarrierCanopyOpen;
+    public boolean              bHasSideDoor;
+    public int                  FlapsControlSwitch;
+    public boolean              bHasFlapsControlSwitch;
+    public String[]             FlapStageText       = null;
+    public boolean              bHasBombSelect;
     private Class[]             bombClassArr;
     private int                 bombClassNumber;
-    public int                     curBombSelected;
+    public int                  curBombSelected;
     // --------------------------------------------------------
 
     // Import values from 4.13.2m
@@ -281,6 +288,13 @@ public class Controls
 
         //TODO: New parameters
         // --------------------------------------------------------
+        bHasCatLaunchBarControl = false;
+        CatLaunchBarControl = 0.0F;
+        dvCatLaunchBar = 0.5F;
+        catLaunchBar = 0.0F;
+        bHasAileronControlPowered = false;
+        bHasElevatorControlPowered = false;
+        bHasRudderControlPowered = false;
         bHasDragChuteControl = false;
         bHasRefuelControl = false;
         DiffBrakesType = 0;
@@ -345,10 +359,19 @@ public class Controls
         dvCockpitDoor = controls.dvCockpitDoor;
         dvAirbrake = controls.dvAirbrake;
         //TODO: New parameters
+        DiffBrakesType = controls.DiffBrakesType;
+        BrakeRightControl = controls.BrakeRightControl;
+        BrakeLeftControl = controls.BrakeLeftControl;
+        dvCatLaunchBar = controls.dvCatLaunchBar;
+        CatLaunchBarControl = controls.CatLaunchBarControl;
         dvDragchute = controls.dvDragchute;
+        DragChuteControl = controls.DragChuteControl;
         dvRefuel = controls.dvRefuel;
+        RefuelControl = controls.RefuelControl;
         dvVarWing = controls.dvVarWing;
+        VarWingControl = controls.VarWingControl;
         dvBlownFlaps = controls.dvBlownFlaps;
+        BlownFlapsControl = controls.BlownFlapsControl;
         FlapsControlSwitch = controls.FlapsControlSwitch;
     }
 
@@ -372,6 +395,7 @@ public class Controls
         BayDoorControl = 0.0F;
         AirBrakeControl = 0.0F;
         //TODO: New parameter
+        CatLaunchBarControl = 0.0F;
         DragChuteControl = 0.0F;
         RefuelControl = 0.0F;
         VarWingControl = VarWing = 0.0F;
@@ -801,6 +825,11 @@ public class Controls
         return BlownFlaps;
     }
 
+    public float getCatLaunchBar()
+    {
+        return catLaunchBar;
+    }
+
     // --------------------------------------------------------
 
     private float filter(float f, float f1, float f2, float f3, float f4)
@@ -812,13 +841,13 @@ public class Controls
             f6 += f4 * f;
             if(f6 > f1)
                 f6 = f1;
-        } else
-            if(f6 > f1)
-            {
-                f6 -= f4 * f;
-                if(f6 < f1)
-                    f6 = f1;
-            }
+        }
+        else if(f6 > f1)
+        {
+            f6 -= f4 * f;
+            if(f6 < f1)
+                f6 = f1;
+        }
         return f6;
     }
 
@@ -962,12 +991,14 @@ public class Controls
                 if(flag)
                 {
                     Power = f6;
-                } else
+                }
+                else
                 {
                     Power = filter(f, f6, Power, 5F, 0.01F * f);
                     enginesinterface.setThrottle(Power);
                 }
-            } else
+            }
+            else
             {
                 PowerControl = clamp0115(PowerControl);
                 if(flag)
@@ -998,30 +1029,32 @@ public class Controls
                     if(enginesinterface.isSelectionAllowsAutoProp())
                     {
                         enginesinterface.setPropAuto(true);
-                    } else
+                    }
+                    else
                     {
                         enginesinterface.setPropAuto(false);
                         bStepControlAuto = false;
                     }
-                } else
-                    if(FM instanceof RealFlightModel)
+                }
+                else if(FM instanceof RealFlightModel)
+                {
+                    if(!bUseElectricProp)
                     {
-                        if(!bUseElectricProp)
+                        for(int j = 0; j < enginesinterface.getNum(); j++)
                         {
-                            for(int j = 0; j < enginesinterface.getNum(); j++)
-                            {
-                                StepControlArr[j] = clamp01(StepControlArr[j]);
-                                enginesinterface.engines[j].setControlPropAuto(false);
-                                enginesinterface.engines[j].setControlProp(StepControlArr[j]);
-                            }
-
+                            StepControlArr[j] = clamp01(StepControlArr[j]);
+                            enginesinterface.engines[j].setControlPropAuto(false);
+                            enginesinterface.engines[j].setControlProp(StepControlArr[j]);
                         }
-                    } else
-                    {
-                        Step = filter(f, StepControl, Step, 0.2F, 0.02F);
-                        enginesinterface.setPropAuto(false);
-                        enginesinterface.setProp(Step);
+
                     }
+                }
+                else
+                {
+                    Step = filter(f, StepControl, Step, 0.2F, 0.02F);
+                    enginesinterface.setPropAuto(false);
+                    enginesinterface.setProp(Step);
+                }
         }
         RadiatorControl = clamp01(RadiatorControl);
         radiator = filter(f, RadiatorControl, radiator, 999.9F, 0.2F);
@@ -1030,12 +1063,14 @@ public class Controls
             if(enginesinterface.isSelectionAllowsAutoRadiator())
             {
                 enginesinterface.updateRadiator(f);
-            } else
+            }
+            else
             {
                 enginesinterface.setRadiator(radiator);
                 bRadiatorControlAuto = false;
             }
-        } else
+        }
+        else
         {
             enginesinterface.setRadiator(radiator);
         }
@@ -1078,6 +1113,8 @@ public class Controls
             airBrake = filter(f, AirBrakeControl, airBrake, 999.9F, dvAirbrake);
         //TODO: For drag chute, refuelling, variable geometry wings and blown flaps
         // --------------------------------------------------------
+        if (bHasCatLaunchBarControl || flag1)
+            catLaunchBar = filter(f, CatLaunchBarControl, catLaunchBar, 999.9F, dvCatLaunchBar);
         if (bHasDragChuteControl || flag1)
             dragChute = filter(f, DragChuteControl, dragChute, 999.9F, dvDragchute);
         if (bHasRefuelControl || flag1)
@@ -1165,7 +1202,8 @@ public class Controls
                 Brake = Brake + 0.3F * f;
             else
                 Brake = BrakeControl;
-        } else
+        }
+        else
         {
             Brake = 0.0F;
         }
@@ -1237,7 +1275,8 @@ public class Controls
                     boolean flag3 = WeaponControl[i_19_];
                     if (!flag3)
                         break;
-                    if (bDropWithPlayer) {
+                    if (bDropWithPlayer)
+                    {
                         bDropWithMe = true;
                         bDropWithPlayer = false;
                     }
@@ -1272,7 +1311,8 @@ public class Controls
                                         {
                                             if(BayDoorControl < 0.9F)
                                                 break;
-                                        } else
+                                        }
+                                        else
                                         {
                                             BayDoorControl = 1.0F;
                                         }
@@ -1281,10 +1321,13 @@ public class Controls
                                     else
                                     {
                                         if(Weapons[i_19_][i_22_].getHookName().startsWith("_InternalRock"))
-                                            if (bHasBayDoorControl && isPlayers((Aircraft)FM.actor)) {
+                                            if (bHasBayDoorControl && isPlayers((Aircraft)FM.actor))
+                                            {
                                                 if (BayDoorControl < 0.9F)
                                                     break;
-                                            } else {
+                                            }
+                                            else
+                                            {
                                                 BayDoorControl = 1.0F;
                                             }
 
@@ -1300,7 +1343,8 @@ public class Controls
                                             {
                                                 if(BayDoorControl < 0.9F)
                                                     break;
-                                            } else
+                                            }
+                                            else
                                             {
                                                 BayDoorControl = 1.0F;
                                             }
@@ -1330,7 +1374,8 @@ public class Controls
                                         {
                                             if(BayDoorControl < 0.9F)
                                                 break;
-                                        } else
+                                        }
+                                        else
                                         {
                                             BayDoorControl = 1.0F;
 
@@ -1340,10 +1385,13 @@ public class Controls
                                     else
                                     {
                                         if(Weapons[i_19_][i_23_].getHookName().startsWith("_InternalRock"))
-                                            if (bHasBayDoorControl && isPlayers((Aircraft)FM.actor)) {
+                                            if (bHasBayDoorControl && isPlayers((Aircraft)FM.actor))
+                                            {
                                                 if (BayDoorControl < 0.9F)
                                                     break;
-                                            } else {
+                                            }
+                                            else
+                                            {
                                                 BayDoorControl = 1.0F;
                                             }
                                         if (weaponFireMode == 2 || (Weapons[i_19_][i_23_] instanceof RocketGun4andHalfInch)
@@ -1465,13 +1513,15 @@ public class Controls
 
             // TODO: Weapon counter with trigger number and its classname
             // --------------------------------------------------------
-    public int getWeaponCount(int i, Class class1) {
+    public int getWeaponCount(int i, Class class1)
+    {
         if (i >= Weapons.length || Weapons[i] == null)
             return 0;
         int l = Weapons[i].length;
         int k;
         int j = k = 0;
-        for (; k < l; k++) {
+        for (; k < l; k++)
+        {
             BulletEmitter bulletemitter = Weapons[i][k];
             if (bulletemitter == null || !(bulletemitter instanceof BombGun)) continue;
             if (((BombGun)bulletemitter).bulletClass() == class1)
@@ -1484,10 +1534,12 @@ public class Controls
 
             // TODO: Bomb class exist in the array?
             // --------------------------------------------------------
-    private boolean getBombClassExist(Class class1) {
+    private boolean getBombClassExist(Class class1)
+    {
         if (bombClassNumber == 0)
             return false;
-        for (int i = 0; i < bombClassNumber; i++) {
+        for (int i = 0; i < bombClassNumber; i++)
+        {
             if (bombClassArr[i] == class1)
                 return true;
         }
@@ -1497,7 +1549,8 @@ public class Controls
 
             // TODO: Add a new Bomb class to the array
             // --------------------------------------------------------
-    private boolean addBombClass(Class class1) {
+    private boolean addBombClass(Class class1)
+    {
         if (bombClassNumber == bombClassArr.length)
             return false;
         if (getBombClassExist(class1))
@@ -1510,7 +1563,8 @@ public class Controls
 
             // TODO: initialize register of the Bombs class array
             // --------------------------------------------------------
-    public boolean registerBombs() {
+    public boolean registerBombs()
+    {
         for (int i = 0; i < bombClassArr.length; i++)
             bombClassArr[i] = null;
         bombClassNumber = 0;
@@ -1518,13 +1572,15 @@ public class Controls
         if (Weapons[3] == null || Weapons[3].length == 0)
             return false;
 
-        for (int i = 0; i < Weapons[3].length; i++) {
+        for (int i = 0; i < Weapons[3].length; i++)
+        {
             if (Weapons[3][i] == null || Weapons[3][i] instanceof FuelTankGun || Weapons[3][i] instanceof BombGunNull || !(Weapons[3][i] instanceof BombGun))
                 continue;
 
             addBombClass(((BombGun)Weapons[3][i]).bulletClass());
         }
-        if (bombClassNumber > 0) {
+        if (bombClassNumber > 0)
+        {
             if (bombClassNumber == 1) curBombSelected = 0;
             else curBombSelected = -1;
             bombReleaseMode = 0;
@@ -1538,7 +1594,8 @@ public class Controls
 
             // TODO: number of the valid Bombs class array
             // --------------------------------------------------------
-    public int getNumberOfValidBombClass() {
+    public int getNumberOfValidBombClass()
+    {
         int count = 0;
         for (int i = 0; i < bombClassNumber; i++)
             if (getWeaponCount(3, bombClassArr[i]) > 0) count++;
@@ -1658,17 +1715,20 @@ public class Controls
 
     // TODO: ++ Added Code for Net Replication ++
     // functions to apply settings off- and online follow here
-    public boolean doSetRocketHook(int theRocketHook) {
+    public boolean doSetRocketHook(int theRocketHook)
+    {
         rocketHookSelected = theRocketHook;
         if (Weapons[rocketHookSelected] == null)
             return false;
         // TODO: ++ Added/changed Code Multiple Missile Type Selection ++
-        if (Weapons[rocketHookSelected][0] instanceof MissileGun) {
+        if (Weapons[rocketHookSelected][0] instanceof MissileGun)
+        {
             GuidedMissileUtils theGuidedMissileUtils = ((TypeGuidedMissileCarrier) FM.actor).getGuidedMissileUtils();
             Class theMissileClass = ((RocketGun) Weapons[rocketHookSelected][0]).bulletClass();
             theGuidedMissileUtils.changeMissileClass(theMissileClass);
             rocketNameSelected = theGuidedMissileUtils.getMissileName();
-        } else
+        }
+        else
             // TODO: -- Added/changed Code Multiple Missile Type Selection --
         {
             Class theRocketClass = ((RocketGun)Weapons[rocketHookSelected][0]).bulletClass();
@@ -1684,28 +1744,35 @@ public class Controls
 
     public boolean toggleRocketHook()
     {
-        if(rocketHookSelected == 2) {
+        if(rocketHookSelected == 2)
+        {
             if(Weapons[4] != null)
                 return doSetRocketHook(4);
             if(Weapons[5] != null)
                 return doSetRocketHook(5);
             if(Weapons[6] != null)
                 return doSetRocketHook(6);
-        } else if(rocketHookSelected == 4) {
+        }
+        else if(rocketHookSelected == 4)
+        {
             if(Weapons[5] != null)
                 return doSetRocketHook(5);
             if(Weapons[6] != null)
                 return doSetRocketHook(6);
             if(Weapons[2] != null)
                 return doSetRocketHook(2);
-        } else if(rocketHookSelected == 5) {
+        }
+        else if(rocketHookSelected == 5)
+        {
             if(Weapons[6] != null)
                 return doSetRocketHook(6);
             if(Weapons[2] != null)
                 return doSetRocketHook(2);
             if(Weapons[4] != null)
                 return doSetRocketHook(4);
-        } else if(rocketHookSelected == 6) {
+        }
+        else if(rocketHookSelected == 6)
+        {
             if(Weapons[2] != null)
                 return doSetRocketHook(2);
             if(Weapons[4] != null)
@@ -1723,9 +1790,11 @@ public class Controls
     {
         boolean canToggleWeaponFireMode = false;
         localHudLogWeaponId = hudLogWeaponId;
-        for (int i = 2; i < 7; i++) {
+        for (int i = 2; i < 7; i++)
+        {
             if (i == 3) continue;        // excluding Bombs with importing 4.13.2m's bombs release mode codes
-            if (Weapons[i] != null) {
+            if (Weapons[i] != null)
+            {
                 canToggleWeaponFireMode = true;
                 break;
             }
@@ -1733,7 +1802,8 @@ public class Controls
         // if (Weapons[2] == null && Weapons[3] == null) return;
         if (!canToggleWeaponFireMode)
             return;
-        switch (weaponFireMode) {
+        switch (weaponFireMode)
+        {
         case WEAPON_FIRE_MODE_SALVO:
             doSetWeaponFireMode(WEAPON_FIRE_MODE_SINGLE);
             HUD.log(hudLogWeaponId, "RocketReleaseSingle");
@@ -1754,19 +1824,23 @@ public class Controls
     }
 
         // +++ Import from 4.13.2m , PLUS , Select bomb mod by western
-    public void setWeaponFireModeDefaults() {
+    public void setWeaponFireModeDefaults()
+    {
         BulletEmitter abulletemitter[][] = Weapons;
         if (abulletemitter[rocketHookSelected] == null)
             return;
         for (int i = 0; i < abulletemitter[rocketHookSelected].length; i++)
-            if (abulletemitter[rocketHookSelected][i].haveBullets() && ((abulletemitter[rocketHookSelected][i] instanceof RocketGunX4) || (abulletemitter[rocketHookSelected][i] instanceof RemoteControlRocket))) {
+            if (abulletemitter[rocketHookSelected][i].haveBullets() && ((abulletemitter[rocketHookSelected][i] instanceof RocketGunX4) || (abulletemitter[rocketHookSelected][i] instanceof RemoteControlRocket)))
+            {
                 doSetWeaponFireMode(WEAPON_FIRE_MODE_SINGLE);
                 HUD.log(localHudLogWeaponId, "RocketReleaseSingle");
                 return;
             }
-            else if (prevUserWeaponFireMode != weaponFireMode && abulletemitter[rocketHookSelected][i].haveBullets()) {
+            else if (prevUserWeaponFireMode != weaponFireMode && abulletemitter[rocketHookSelected][i].haveBullets())
+            {
                 doSetWeaponFireMode(prevUserWeaponFireMode);
-                switch (prevUserWeaponFireMode) {
+                switch (prevUserWeaponFireMode)
+                {
                 case WEAPON_FIRE_MODE_SINGLE:
                     HUD.log(localHudLogWeaponId, "RocketReleaseSingle");
                     break;
@@ -1780,10 +1854,12 @@ public class Controls
             }
     }
 
-    public void toggleBombReleaseMode() {
+    public void toggleBombReleaseMode()
+    {
         if (isTrainStillDropping() || getWeaponCount(3) <= 1)
             return;
-        if (bHasBombSelect && getNumberOfValidBombClass() == 1) {
+        if (bHasBombSelect && getNumberOfValidBombClass() == 1)
+        {
             for (curBombSelected = 0; curBombSelected < bombClassNumber; curBombSelected++)
                 if (getWeaponCount(3, bombClassArr[curBombSelected]) > 0) break;
         }
@@ -1797,8 +1873,10 @@ public class Controls
                 i = 6;        // When rest amount of the bomb selected is only 1, Single/Pair/Train modes are ignored and go to next bomb class.
         if ((i == 2 || i == 4) && (flag1 != flag || bHasBombSelect))
             i++;
-        if (i > 5 || i == 5 && !((Aircraft)FM.actor).hasIntervalometer()) {
-            if (bHasBombSelect && getNumberOfValidBombClass() > 1) {
+        if (i > 5 || i == 5 && !((Aircraft)FM.actor).hasIntervalometer())
+        {
+            if (bHasBombSelect && getNumberOfValidBombClass() > 1)
+            {
                 curBombSelected++;
                 for (; curBombSelected < bombClassNumber; curBombSelected++)
                     if (getWeaponCount(3, bombClassArr[curBombSelected]) > 0) break;
@@ -1809,26 +1887,31 @@ public class Controls
 
             i = 0;
         }
-        if (i == 5) {
+        if (i == 5)
+        {
             bombsReleased = 0;
             timeOfLastBombRelease = -1L;
         }
         bombReleaseMode = i;
         FM.AS.replicateBombModeStatesToNet();
         String classname = null;
-        if (bHasBombSelect && curBombSelected > -1) {
+        if (bHasBombSelect && curBombSelected > -1)
+        {
             String classnametemp = bombClassArr[curBombSelected].getName().substring(35);
             int index = classnametemp.indexOf("_");
             classname = (index > 0) ? classnametemp.substring(0, index) : classnametemp;
         }
-        switch(bombReleaseMode) {
+        switch(bombReleaseMode)
+        {
         case 0: // '\0'
-            if (bHasBombSelect) {
+            if (bHasBombSelect)
+            {
                 if (curBombSelected == -1)
                     HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseSalvoAll");
                 else
                     HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseSalvoName" , new Object[] { new String(classname) });
-            } else
+            }
+            else
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseSalvo");
             return;
 
@@ -1865,25 +1948,30 @@ public class Controls
             return;
 
         case 5: // '\005'
-            if (bHasBombSelect) {
+            if (bHasBombSelect)
+            {
                 if (curBombSelected == -1)
                     HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseTrainAll");
                 else
                     HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseTrainName" , new Object[] { new String(classname) });
-            } else
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseTrain");
+            }
+            else
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseTrain");
             return;
         }
     }
 
-    private void autoSwitchToTrain() {
-        if (bombReleaseMode != 5) {
+    private void autoSwitchToTrain()
+    {
+        if (bombReleaseMode != 5)
+        {
             bombReleaseMode = 5;
             HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseTrain");
         }
     }
 
-    public void toggleBombTrainAmount() {
+    public void toggleBombTrainAmount()
+    {
         if (isTrainStillDropping() || getWeaponCount(3) <= 1)
             return;
         autoSwitchToTrain();
@@ -1905,7 +1993,8 @@ public class Controls
             });
     }
 
-    public void toggleBombTrainDelay() {
+    public void toggleBombTrainDelay()
+    {
         if (isTrainStillDropping() || getWeaponCount(3) <= 1)
             return;
         autoSwitchToTrain();
@@ -1917,43 +2006,55 @@ public class Controls
         });
     }
 
-    public float getBombTrainDelay() {
+    public float getBombTrainDelay()
+    {
         return (float)((Aircraft)FM.actor).getBombTrainDelayArray()[bombTrainDelay];
     }
 
-    public boolean isTrainStillDropping() {
+    public boolean isTrainStillDropping()
+    {
         return bombReleaseMode == 5 && bombsReleased > 0;
     }
 
-    private void doBombRelease() {
+    private void doBombRelease()
+    {
         byte byte0 = 3;
         if (isTrainStillDropping() && (float)Time.current() < (float)timeOfLastBombRelease + getBombTrainDelay())
             return;
         int i = bombsReleased;
-        if (bombReleaseMode == 4 || bombReleaseMode == 3) {
+        if (bombReleaseMode == 4 || bombReleaseMode == 3)
+        {
             boolean flag = hasWingBombs();
             boolean flag2 = hasFuselageBombs();
             weaponReleaseCycle(byte0, bombReleaseMode, 0, 2, flag, flag2);
             weaponReleaseCycle(byte0, bombReleaseMode, 1, 2, flag, flag2);
-        } else if (bombReleaseMode == 2 || bombReleaseMode == 1) {
+        }
+        else if (bombReleaseMode == 2 || bombReleaseMode == 1)
+        {
             boolean flag1 = hasWingBombs();
             boolean flag3 = hasFuselageBombs();
             weaponReleaseCycle(byte0, bombReleaseMode, 0, 1, flag1, flag3);
-        } else {
+        }
+        else
+        {
             weaponReleaseCycle(byte0, bombReleaseMode, 0, 1, false, false);
         }
-        if (bombReleaseMode != 5) {
+        if (bombReleaseMode != 5)
+        {
             WeaponControl[byte0] = false;
             bombsReleased = 0;
             timeOfLastBombRelease = -1L;
-        } else if (bombsReleased >= bombTrainAmount || i == bombsReleased) {
+        }
+        else if (bombsReleased >= bombTrainAmount || i == bombsReleased)
+        {
             WeaponControl[byte0] = false;
             bombsReleased = 0;
             timeOfLastBombRelease = -1L;
         }
     }
 
-    private void weaponReleaseCycle(int i, int j, int k, int l, boolean flag, boolean flag1) {
+    private void weaponReleaseCycle(int i, int j, int k, int l, boolean flag, boolean flag1)
+    {
         if (i == 3 && bHasBombSelect && curBombSelected > -1 && getWeaponCount(3, bombClassArr[curBombSelected]) == 0 &&  getWeaponCount(3) > 0)
         {
             String classnametemp = bombClassArr[curBombSelected].getName().substring(35);
@@ -1964,10 +2065,12 @@ public class Controls
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseEmptyName" , new Object[] { classnametemp });
         }
 
-        for (int i1 = k; i1 < Weapons[i].length; i1 += l) {
+        for (int i1 = k; i1 < Weapons[i].length; i1 += l)
+        {
             if (Weapons[i][i1] instanceof FuelTankGun)
                 continue;
-            if ((Weapons[i][i1] instanceof BombGunNull) && i == 3 && j != 4 && j != 3) {
+            if ((Weapons[i][i1] instanceof BombGunNull) && i == 3 && j != 4 && j != 3)
+            {
                 Weapons[i][i1].shots(1);
                 continue;
             }
@@ -1976,24 +2079,33 @@ public class Controls
             if (i == 3 && bHasBombSelect && curBombSelected > -1 && ((BombGun)Weapons[i][i1]).bulletClass() != bombClassArr[curBombSelected])
                 continue;
             if (Weapons[i][i1].getHookName().startsWith("_BombSpawn") && ((Aircraft)FM.actor).needsOpenBombBay())
-                if (bHasBayDoorControl && isPlayers((Aircraft)FM.actor)) {
+                if (bHasBayDoorControl && isPlayers((Aircraft)FM.actor))
+                {
                     if (BayDoorControl < 0.9F)
                         continue;
-                } else {
+                }
+                else
+                {
                     BayDoorControl = 1.0F;
                 }
-            if (j == 0 || j == 0) {
+            if (j == 0 || j == 0)
+            {
                 Weapons[i][i1].shots(Weapons[i][i1].countBullets());
-                if (i == 2) {
+                if (i == 2)
+                {
                     rocketsReleased++;
                     timeOfLastRocketRelease = Time.current();
                 }
-            } else {
+            }
+            else
+            {
                 if (i == 3 && j != 0 && j != 5 && (flag1 && (j == 4 || j == 2) && isWingBomb(Weapons[i][i1]) || flag && (j == 3 || j == 1) && isFuselageBomb(Weapons[i][i1])))
                     continue;
                 Weapons[i][i1].shots(1);
-                if (i == 3) {
-                    if (i1 < Weapons[i].length - 1 && Weapons[i][i1].getHookName().startsWith("_BombSpawn")) {
+                if (i == 3)
+                {
+                    if (i1 < Weapons[i].length - 1 && Weapons[i][i1].getHookName().startsWith("_BombSpawn"))
+                    {
                         int j1 = i1 + 1;
                         if (j1 < Weapons[i].length && Weapons[i][j1].getHookName().endsWith("a"))
                             Weapons[i][j1].shots(1);
@@ -2023,12 +2135,16 @@ public class Controls
 
     }
 
-    public void setBombModeDefaults() {
+    public void setBombModeDefaults()
+    {
         BulletEmitter abulletemitter[][] = Weapons;
-        if (abulletemitter[3] != null) {
+        if (abulletemitter[3] != null)
+        {
             for (int i = 0; i < abulletemitter[3].length; i++)
-                if (abulletemitter[3][i].haveBullets()) {
-                    if ((abulletemitter[3][i] instanceof RocketGunHS_293) || (abulletemitter[3][i] instanceof RocketGunFritzX) || (abulletemitter[3][i] instanceof RocketGunBat)) {
+                if (abulletemitter[3][i].haveBullets())
+                {
+                    if ((abulletemitter[3][i] instanceof RocketGunHS_293) || (abulletemitter[3][i] instanceof RocketGunFritzX) || (abulletemitter[3][i] instanceof RocketGunBat))
+                    {
                         bombReleaseMode = 1;
                         return;
                     }
@@ -2044,7 +2160,8 @@ public class Controls
         if ((FM.actor instanceof TypeBomber) && ((Aircraft)FM.actor).hasIntervalometer())
             bombReleaseMode = 5;
         int j = 0;
-        for (int k = 0; k < FM.AP.way.size(); k++) {
+        for (int k = 0; k < FM.AP.way.size(); k++)
+        {
             WayPoint waypoint = FM.AP.way.look_at_point(k);
             if (waypoint.Action == 3)
                 j++;
@@ -2054,7 +2171,8 @@ public class Controls
         if (bombTrainAmount == 0)
             bombTrainAmount = 1;
         int l = ((Aircraft)FM.actor).getBombTrainDelayArray().length;
-        for (int i1 = 0; i1 < l; i1++) {
+        for (int i1 = 0; i1 < l; i1++)
+        {
             if (((Aircraft)FM.actor).getBombTrainDelayArray()[i1] < 200)
                 continue;
             bombTrainDelay = i1;
@@ -2063,21 +2181,24 @@ public class Controls
 
     }
 
-    private boolean isWingBomb(BulletEmitter bulletemitter) {
+    private boolean isWingBomb(BulletEmitter bulletemitter)
+    {
         String s = bulletemitter.getHookName();
         Hook hook = FM.actor.findHook(s);
         String s1 = hook.chunkName();
         return s1.toLowerCase().startsWith("wing");
     }
 
-    private boolean isFuselageBomb(BulletEmitter bulletemitter) {
+    private boolean isFuselageBomb(BulletEmitter bulletemitter)
+    {
         String s = bulletemitter.getHookName();
         Hook hook = FM.actor.findHook(s);
         String s1 = hook.chunkName();
         return s1.toLowerCase().startsWith("cf");
     }
 
-    private boolean hasWingBombs() {
+    private boolean hasWingBombs()
+    {
         for (int i = 0; i < Weapons[3].length; i++)
             if (!(Weapons[3][i] instanceof FuelTankGun) && !(Weapons[3][i] instanceof BombGunNull) && Weapons[3][i].haveBullets() && isWingBomb(Weapons[3][i]))
                 return true;
@@ -2085,7 +2206,8 @@ public class Controls
         return false;
     }
 
-    private boolean hasFuselageBombs() {
+    private boolean hasFuselageBombs()
+    {
         for (int i = 0; i < Weapons[3].length; i++)
             if (!(Weapons[3][i] instanceof FuelTankGun) && !(Weapons[3][i] instanceof BombGunNull) && Weapons[3][i].haveBullets() && isFuselageBomb(Weapons[3][i]))
                 return true;
@@ -2093,7 +2215,8 @@ public class Controls
         return false;
     }
 
-    public void doSetCurrentBombSelected(int theCurrentBombSelected) {
+    public void doSetCurrentBombSelected(int theCurrentBombSelected)
+    {
         this.curBombSelected = theCurrentBombSelected;
     }
 
