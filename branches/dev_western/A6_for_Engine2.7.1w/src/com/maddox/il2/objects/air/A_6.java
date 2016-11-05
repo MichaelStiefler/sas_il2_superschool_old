@@ -2108,7 +2108,7 @@ public class A_6 extends Scheme2
     {
         if(FM.CT.GearControl > 0.5F && FM.Gears.onGround())
             hierMesh().chunkSetAngles("GearC5_D0", 0.0F, 0.0F, -1.0F * f);
-        if(FM.CT.GearControl < 0.5F)
+        if(FM.CT.GearControl < 0.5F || FM.Gears.isCatapultArmed())
             hierMesh().chunkSetAngles("GearC5_D0", 0.0F, 0.0F, 0.0F);
     }
 
@@ -2301,6 +2301,11 @@ public class A_6 extends Scheme2
             }
         }
         moveWingFold(hierMesh(), f);
+    }
+
+    protected void moveCatLaunchBar(float f)
+    {
+        hierMesh().chunkSetAngles("GearC51_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, -87F), 0.0F);
     }
 
     public void setExhaustFlame(int i, int j)
