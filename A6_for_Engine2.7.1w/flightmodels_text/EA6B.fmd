@@ -14,11 +14,11 @@
   Oil 20.81
   Fuel 8344.0
 [Controls]
-  CAileron 1
+  CAileron 3
   CAileronTrim 1
-  CElevator 1
+  CElevator 3
   CElevatorTrim 1
-  CRudder 1
+  CRudder 3
   CRudderTrim 1
   CFlap 1
   CFlapPos 2
@@ -31,6 +31,7 @@
   CVectoredThrust 0
   CUndercarriage 1
   CLockTailwheel 0
+  CCatLaunchBar 1
   CStabilizer 1
   CArrestorHook 1
   CWingFold 1
