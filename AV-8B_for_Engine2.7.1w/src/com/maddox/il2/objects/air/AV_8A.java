@@ -867,7 +867,7 @@ public class AV_8A extends AV_8
                 }
                 FuelTank fuelTanks[];
                 fuelTanks = FM.CT.getFuelTanks();
-                if(FM.M.fuel < FM.M.maxFuel - 4F)
+                if(FM.M.fuel < FM.M.maxFuel - 12F)
                 {
                     float getFuel = ((TypeTankerDrogue) (queen_)).requestRefuel((Aircraft) this, 11.101F, f);
                     FM.M.fuel += getFuel;
@@ -878,7 +878,7 @@ public class AV_8A extends AV_8
                     float freeTankSum = 0F;
                     for(int num = 0; num < fuelTanks.length; num++)
                         freeTankSum += fuelTanks[num].checkFreeTankSpace();
-                    if(freeTankSum < 4F)
+                    if(freeTankSum < 12F)
                         typeDockableAttemptDetach();
                     for(int num = 0; num < fuelTanks.length; num++)
                         fuelTanks[num].doRefuel(getFuel * (fuelTanks[num].checkFreeTankSpace() / freeTankSum));

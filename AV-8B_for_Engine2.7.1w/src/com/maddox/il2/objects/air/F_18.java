@@ -1964,8 +1964,8 @@ public class F_18 extends Scheme2
         {
             bForceFlapmodeAuto = false;
             float f1 = cvt(FM.getSpeedKMH(), 330F, 465F, 1.0F, 0.0F);
-            if(FM.CT.FlapsControlSwitch == 1 && f1 > FM.CT.FlapStage[0])
-                f1 = FM.CT.FlapStage[0];
+            if(FM.CT.FlapsControlSwitch == 1 && f1 > FM.CT.FlapStage[1])
+                f1 = FM.CT.FlapStage[1];
             FM.CT.FlapsControl = f1;
             if((double)FM.CT.FlapsControl > 0.59999999999999998D && FM.Gears.onGround())
             {
@@ -2541,6 +2541,11 @@ public class F_18 extends Scheme2
             radarmode = 0;
         HUD.log(AircraftHotKeys.hudLogWeaponId, "radar mode" + radarmode);
         return false;
+    }
+
+    protected void moveCatLaunchBar(float f)
+    {
+        hierMesh().chunkSetAngles("GearC24_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, -76F, -121F));
     }
 
     public float getFlowRate()
