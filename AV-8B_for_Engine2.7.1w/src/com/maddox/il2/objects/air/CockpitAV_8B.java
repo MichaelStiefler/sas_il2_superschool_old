@@ -1593,7 +1593,10 @@ public class CockpitAV_8B extends CockpitPilot
 
     protected void moveControls(float f)
     {
-        super.mesh.chunkSetAngles("Canopy", 0.0F, 0.0F, 20F * fm.CT.getCockpitDoor());
+        resetYPRmodifier();
+        Cockpit.xyz[1] = cvt(fm.CT.getCockpitDoor(), 0.2F, 0.99F, 0.0F, 0.6F);
+        Cockpit.xyz[2] = cvt(fm.CT.getCockpitDoor(), 0.2F, 0.99F, 0.0F, 0.08F);
+        super.mesh.chunkSetLocate("Canopy", Cockpit.xyz, Cockpit.ypr);
         super.mesh.chunkSetAngles("Z_Z_Stick", 0.0F, fm.CT.AileronControl * 10F, fm.CT.ElevatorControl * 10F);
         super.mesh.chunkSetAngles("Z_Z_Throttle1", 0.0F, 0.0F, -42F * interp(setNew.throttler, setOld.throttler, f));
         super.mesh.chunkSetAngles("Z_Z_Throttle2", 0.0F, 0.0F, -42F * interp(setNew.throttlel, setOld.throttlel, f));

@@ -119,6 +119,8 @@ public class AV_8 extends Scheme1
         h = 0.0F;
         Nvision = false;
         FL = false;
+        vtolSlipX = 0;
+        vtolSlipY = 0;
     }
 
     public float checkfuel(int i)
@@ -309,27 +311,52 @@ public class AV_8 extends Scheme1
 
     public void typeBomberAdjSideslipReset()
     {
+        vtolSlipY = 0;
     }
 
     public void typeBomberAdjSideslipPlus()
     {
-        if(FLIR)
+        if(nozzlemode == 1 && vtolvect > 0.74F)
+        {
+            vtolSlipY += 10;
+            if(vtolSlipY > 100)
+                vtolSlipY = 100;
+            if(vtolSlipY == 0)
+                HUD.log("Side Slip Thrust: Neutral");
+            else if(vtolSlipY > 0)
+                HUD.log("Side Slip Thrust: Right" + Math.abs(vtolSlipY));
+            else
+                HUD.log("Side Slip Thrust: Left" + Math.abs(vtolSlipY));
+        }
+        else if(FLIR)
         {
             tangate++;
             tf = Time.current();
-        } else
-        if(radartogle && lockmode == 0)
+        }
+        else if(radartogle && lockmode == 0)
             v += 0.0035F;
     }
 
     public void typeBomberAdjSideslipMinus()
     {
-        if(FLIR)
+        if(nozzlemode == 1 && vtolvect > 0.74F)
+        {
+            vtolSlipY -= 10;
+            if(vtolSlipY < -100)
+                vtolSlipY = -100;
+            if(vtolSlipY == 0)
+                HUD.log("Side Slip Thrust: Neutral");
+            else if(vtolSlipY > 0)
+                HUD.log("Side Slip Thrust: Right" + Math.abs(vtolSlipY));
+            else
+                HUD.log("Side Slip Thrust: Left" + Math.abs(vtolSlipY));
+        }
+        else if(FLIR)
         {
             tangate--;
             tf = Time.current();
-        } else
-        if(radartogle && lockmode == 0)
+        }
+        else if(radartogle && lockmode == 0)
             v -= 0.0035F;
     }
 
@@ -344,11 +371,24 @@ public class AV_8 extends Scheme1
 
     public void typeBomberAdjAltitudeReset()
     {
+        vtolSlipX = 0;
     }
 
     public void typeBomberAdjAltitudePlus()
     {
-        if(FLIR)
+        if(nozzlemode == 1 && vtolvect > 0.74F)
+        {
+            vtolSlipX += 10;
+            if(vtolSlipX > 100)
+                vtolSlipX = 100;
+            if(vtolSlipX == 0)
+                HUD.log("Forward Slip Thrust: Neutral");
+            else if(vtolSlipX > 0)
+                HUD.log("Forward Slip Thrust: " + Math.abs(vtolSlipX));
+            else
+                HUD.log("Backward Slip Thrust: " + Math.abs(vtolSlipX));
+        }
+        else if(FLIR)
             if(!APmode1)
             {
                 APmode1 = true;
@@ -365,6 +405,18 @@ public class AV_8 extends Scheme1
 
     public void typeBomberAdjAltitudeMinus()
     {
+        if(nozzlemode == 1 && vtolvect > 0.74F)
+        {
+            vtolSlipX -= 10;
+            if(vtolSlipX < -100)
+                vtolSlipX = -100;
+            if(vtolSlipX == 0)
+                HUD.log("Forward Slip Thrust: Neutral");
+            else if(vtolSlipX > 0)
+                HUD.log("Forward Slip Thrust: " + Math.abs(vtolSlipX));
+            else
+                HUD.log("Backward Slip Thrust: " + Math.abs(vtolSlipX));
+        }
     }
 
     public void typeBomberAdjSpeedReset()
@@ -1619,6 +1671,11 @@ label0:
                     if(hierMesh().isChunkVisible("Nose_CAP"))
                         FM.Or.increment(0.0F, -3F, 0.0F);
                     FM.getW().scale(0.79999999999999993D);
+                    if(FM.Gears.nOfGearsOnGr < 1)
+                    {
+                        FM.producedAF.x += (double)vtolSlipX * 200D;
+                        FM.producedAF.y -= (double)vtolSlipY * 200D;
+                    }
                 } else
                 {
                     if(FM.Gears.nOfGearsOnGr < 2)
@@ -1683,6 +1740,8 @@ label0:
         } else
         {
             nozzlemode = 0;
+            vtolSlipX = 0;
+            vtolSlipY = 0;
         }
         if(f < 0.1F)
         {
@@ -2163,6 +2222,8 @@ label0:
     private boolean oldbUseDroopAileron;
     public static float FlowRate = 10F;
     public static float FuelReserve = 1500F;
+    private int vtolSlipX;
+    private int vtolSlipY;
 
     static 
     {
