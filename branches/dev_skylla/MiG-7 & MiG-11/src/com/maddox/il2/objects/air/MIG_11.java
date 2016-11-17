@@ -14,19 +14,19 @@ import com.maddox.sas1946.il2.util.AircraftTools;
  * Momentan nur das Gerüst, zu mehr keine Zeit heute .. 
  * 
  * air.ini: 
- * 	MiG-7             air.MIG_7 1                           NOINFO  r01   SUMMER
+ * 	MiG-11            air.MIG_11 1                          NOINFO  r01   SUMMER
  * 
  * plane.properties:
  * 
- * 	MIG-7         MiG-7 '44
+ * 	MIG-11        MiG-11 '44
  * 
  * weapons.properties:
  * 
  *	#####################################################################
- *	# MIG-7
+ *	# MIG-11
  *	#####################################################################
- *	MIG-7.default         Default (2x 20mm ShVak)
- *	MIG-7.none            None
+ *	MIG-11.default         Default (2x 20mm ShVak)
+ *	MIG-11.none            None
  * 
  * Ich würde die (Grund)Entwicklung in UP3 bevorzugen, 4.12.2, 4.09 danach.
  * skin1o.tgb passt für uns Clowns natürlich nicht, muss auf 512x512 verkleinert werden.
@@ -47,7 +47,7 @@ import com.maddox.sas1946.il2.util.AircraftTools;
  * ------------------------------------------------------------------------------------------
 **/
 
-public class MIG_7 extends MIG_3 {
+public class MIG_11 extends MIG_3 {
     
     public static void moveGear(HierMesh hiermesh, float f, float f1, float f2)
     {
@@ -59,7 +59,7 @@ public class MIG_7 extends MIG_3 {
         hiermesh.chunkSetAngles("GearR3_D0", 0.0F, -78F * f1, 0.0F);
         hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 70F * f2, 0.0F);
         hiermesh.chunkSetAngles("GearC3_D0", 0.0F, -80F * f2, 0.0F);
-        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, -80F * f2, 0.0F);
+        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, 80F * f2, 0.0F);
     }
 
     protected void moveGear(float f, float f1, float f2)
@@ -87,21 +87,21 @@ public class MIG_7 extends MIG_3 {
     }
 
     static {
-	        final Class aircraftClass = MIG_7.class;
+	        final Class aircraftClass = MIG_11.class;
 	        new SPAWN(aircraftClass);
-	        Property.set(aircraftClass, "iconFar_shortClassName", "MiG-7");
-	        Property.set(aircraftClass, "meshName", "3DO/Plane/MiG-7/hier.him");
+	        Property.set(aircraftClass, "iconFar_shortClassName", "MiG-11");
+	        Property.set(aircraftClass, "meshName", "3DO/Plane/MiG-11/hier.him");
 	        Property.set(aircraftClass, "PaintScheme", new PaintSchemeFMPar01());
 	        //fictional, also 1946 ..
 	        //strike out the above, it's not fictional.
-	        //this is the Mikojan-Gurewitsch I-222, maiden flight was on 7 may 1944
+	        //this is the Mikojan-Gurewitsch I-224, maiden flight was on 20 october 1944
 	        Property.set(aircraftClass, "yearService", 1944.0f);
 	        //wäre in Korea noch verwendet worden .. 
 	        Property.set(aircraftClass, "yearExpired", 1953.5f); 
 	        Property.set(aircraftClass, "FlightModel", "FlightModels/MiG-3ud.fmd");
 	        Property.set(aircraftClass, "cockpitClass", new Class[] { CockpitMIG_7.class });
 	        //TODO: was macht denn dieser Wert?
-	        //DONE: Das ist die "Line Of Sight Elevation", die Angabe (in Meter), wie hoch Du über die Geschossbahn blickst.
+            //DONE: Das ist die "Line Of Sight Elevation", die Angabe (in Meter), wie hoch Du über die Geschossbahn blickst.
 	        Property.set(aircraftClass, "LOSElevation", 0.906f);
 	        //was soll die Krebserei mit Trigger 1? Es gibt nur eine Waffenart zum feuern, also Trigger 0!
 	        Aircraft.weaponTriggersRegister(aircraftClass, new int[] { 0, 0 });
