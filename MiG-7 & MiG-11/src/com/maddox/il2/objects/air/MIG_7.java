@@ -11,7 +11,6 @@ import com.maddox.sas1946.il2.util.AircraftTools;
  * @author SAS~Skylla, SAS~Storebror
  * @see CockpitMIG_7.java
  * 
- * Momentan nur das Gerüst, zu mehr keine Zeit heute .. 
  * 
  * air.ini: 
  * 	MiG-7             air.MIG_7 1                           NOINFO  r01   SUMMER
@@ -33,39 +32,70 @@ import com.maddox.sas1946.il2.util.AircraftTools;
  * 
  * -----------------------------------------------------------------------------------------
  * 
- * TODO ([-] ausstehend, [x] erledigt):
+ * TODO ([-] pending, [x] done):
  * 
- * 	> [-] Cockpitinstrumente 
+ * 	> [-] correct Cockpit Instruments 
  * 	> [-] move Cockpit Door
- * 	> [-] Fahrwerkanimation korrigieren
- * 	> [-] Loadouts in cod Format
- * 	> [-] FlightModel
- * 
- * Die Liste wird noch auf übersehene Baustellen erweitert!
- * 
+ * 	> [-] correct gear animation
+ * 	> [-] loadouts in cod format
+ * 	> [-] flightmodel 
  * 
  * ------------------------------------------------------------------------------------------
 **/
 
 public class MIG_7 extends MIG_3 {
     
-    public static void moveGear(HierMesh hiermesh, float f, float f1, float f2)
-    {
+	/*
+    public static void moveGear(HierMesh hiermesh, float f, float f1, float f2) {
         hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 88F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, -88F * f1, 0.0F);
         hiermesh.chunkSetAngles("GearL4_D0", 0.0F, 40F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, -40F * f1, 0.0F);
         hiermesh.chunkSetAngles("GearL3_D0", 0.0F, 78F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, +88F * f1, 0.0F);
         hiermesh.chunkSetAngles("GearR3_D0", 0.0F, -78F * f1, 0.0F);
+        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, -40F * f1, 0.0F);
         hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 70F * f2, 0.0F);
         hiermesh.chunkSetAngles("GearC3_D0", 0.0F, -80F * f2, 0.0F);
         hiermesh.chunkSetAngles("GearC4_D0", 0.0F, -80F * f2, 0.0F);
     }
 
-    protected void moveGear(float f, float f1, float f2)
-    {
+    protected void moveGear(float f, float f1, float f2) {
         moveGear(hierMesh(), f, f1, f2);
-    }
+    }*/
+	
+	public static void moveGear(HierMesh hiermesh, float f) {
+		//??? - disabled, maybe I'll be missing something later ..
+		//hiermesh.chunkSetAngles("GearL1_D0", 0.0F, 88F * f, 0.0F);
+		//left Gear
+		hiermesh.chunkSetAngles("GearL2_D0", 0.0F, +88F * f, 0.0F);
+		//outer left gear cover; TODO skylla: make these move ~ 30 - 40 deg to the back 
+		hiermesh.chunkSetAngles("GearL3_D0", -40.0F * f, 88.0F * f, 90.0F * f);
+		//???
+        //hiermesh.chunkSetAngles("GearL4_D0", 0.0F, 40F * f, 0.0F);
+        
+		
+		//???
+        //hiermesh.chunkSetAngles("GearR1_D0", 0.0F, +88F * f, 0.0F);
+		//right Gear
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, -88F * f, 0.0F);
+        //outer right gear cover
+        hiermesh.chunkSetAngles("GearR3_D0", 0.0F, -88F * f, 0.0F);
+        //???
+        //hiermesh.chunkSetAngles("GearR4_D0", 0.0F, -40F * f, 0.0F);
+        
+        
+        //???
+        //hiermesh.chunkSetAngles("GearC1_D0", 0.0F, 70F * f, 0.0F);
+        //back gear
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 70F * f, 0.0F);
+        //back gear door right
+        hiermesh.chunkSetAngles("GearC3_D0", 0.0F, -80F * f, 0.0F);
+        //back gear door left
+        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, +80F * f, 0.0F);
+	}
+	
+	protected void moveGear(float f) {
+		moveGear(hierMesh(), f);
+	}
     
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
@@ -73,8 +103,7 @@ public class MIG_7 extends MIG_3 {
         this.FM.CT.dvCockpitDoor = 1.0F;
     }
 	
-    public void moveCockpitDoor(float f)
-    {
+    public void moveCockpitDoor(float f) {
         resetYPRmodifier();
         Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 0.55F);
         hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
@@ -95,19 +124,20 @@ public class MIG_7 extends MIG_3 {
 	        //fictional, also 1946 ..
 	        //strike out the above, it's not fictional.
 	        //this is the Mikojan-Gurewitsch I-222, maiden flight was on 7 may 1944
+	        //sure, but was it used in combat? No? Then it's fictional imho ;)
 	        Property.set(aircraftClass, "yearService", 1944.0f);
-	        //wäre in Korea noch verwendet worden .. 
+	        //would have been used in Korea as well ..
 	        Property.set(aircraftClass, "yearExpired", 1953.5f); 
 	        Property.set(aircraftClass, "FlightModel", "FlightModels/MiG-3ud.fmd");
 	        Property.set(aircraftClass, "cockpitClass", new Class[] { CockpitMIG_7.class });
-	        //TODO: was macht denn dieser Wert?
+	        //solved: was macht denn dieser Wert?
 	        //DONE: Das ist die "Line Of Sight Elevation", die Angabe (in Meter), wie hoch Du über die Geschossbahn blickst.
 	        Property.set(aircraftClass, "LOSElevation", 0.906f);
-	        //was soll die Krebserei mit Trigger 1? Es gibt nur eine Waffenart zum feuern, also Trigger 0!
+	        //only one weapon trigger needed; let's make it 0 therefore.
 	        Aircraft.weaponTriggersRegister(aircraftClass, new int[] { 0, 0 });
 	        Aircraft.weaponHooksRegister(aircraftClass, new String[] { "_MGUN01", "_MGUN02" });
 	        AircraftTools.weaponsRegister(aircraftClass, "default", new String[] { "MGunShVAKs 100", "MGunShVAKs 100" });
 	        AircraftTools.weaponsRegister(aircraftClass, "none", new String[] { null, null });
-	    }
+    }
 
 }
