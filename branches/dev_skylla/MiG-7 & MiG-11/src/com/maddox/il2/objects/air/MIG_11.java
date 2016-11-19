@@ -1,8 +1,7 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.rts.Property;
-//temp:
-import com.maddox.sas1946.il2.util.AircraftTools;
+
 
 /**
  * @author SAS~Skylla, SAS~Storebror
@@ -61,7 +60,9 @@ public class MIG_11 extends MIG_7 {
 	        Property.set(aircraftClass, "LOSElevation", 0.906f);
 	        Aircraft.weaponTriggersRegister(aircraftClass, new int[] { 0, 0 });
 	        Aircraft.weaponHooksRegister(aircraftClass, new String[] { "_MGUN01", "_MGUN02" });
+/*			not necessary anymore:
 	        AircraftTools.weaponsRegister(aircraftClass, "default", new String[] { "MGunShVAKs 100", "MGunShVAKs 100" });
 	        AircraftTools.weaponsRegister(aircraftClass, "none", new String[] { null, null });
+*/
 	    }
 }
