@@ -52,10 +52,23 @@ public class MIG_7 extends MIG_3 {
     // New Gear Animation Code
     public static void moveGear(HierMesh hiermesh, float leftGearPos, float rightGearPos, float tailWheelPos) {
         //TODO: Need to pull back L2/R2 a bit to pass clear of CF_D0 on final retract / early extract.
-        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(leftGearPos, 0.01F, 0.89F, 0.0F, 88F), 0.0F);
-        //TODO skylla: make these move ~ 30 - 40 deg to the back <<-- wenn's denn ginge. Geht aber leider nicht, jedenfalls nicht ohne die Gear-Meshes zu ändern!
+        //hiermesh.chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(leftGearPos, 0.01F, 0.89F, 0.0F, 88F), 0.0F);
+        Aircraft.ypr[1] = Aircraft.cvt(leftGearPos, 0.01F, 0.89F, 0.0F, 88F);
+        if(leftGearPos <= 0.08F)
+        	Aircraft.xyz[0] = Aircraft.cvt(leftGearPos, 0.0F, 0.08F, 0.0F, 0.05F);
+        else if(leftGearPos > 0.08F)
+        	Aircraft.xyz[0] = Aircraft.cvt(leftGearPos, 0.13F, 0.23F, 0.05F, 0.0F);
+        hiermesh.chunkSetLocate("GearL2_D0", Aircraft.xyz, Aircraft.ypr);
+        //skylla: make these move ~ 30 - 40 deg to the back <<-- wenn's denn ginge. Geht aber leider nicht, jedenfalls nicht ohne die Gear-Meshes zu ändern!
+        //mist :(
         hiermesh.chunkSetAngles("GearL3_D0", 0.0F, Aircraft.cvt(leftGearPos, 0.01F, 0.89F, 0.0F, 82F), 0.0F);
-        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(rightGearPos, 0.1F, 0.99F, 0.0F, -88F), 0.0F);
+        //hiermesh.chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(rightGearPos, 0.1F, 0.99F, 0.0F, -88F), 0.0F);
+        Aircraft.ypr[1] = Aircraft.cvt(rightGearPos, 0.1F, 0.99F, 0.0F, -88F);
+        if(rightGearPos <= 0.17F)
+        	Aircraft.xyz[0] = Aircraft.cvt(rightGearPos, 0.09F, 0.17F, 0.0F, -0.05F);
+        else if(rightGearPos > 0.17F)
+        	Aircraft.xyz[0] = Aircraft.cvt(rightGearPos, 0.22F, 0.32F, -0.05F, 0.0F);
+        hiermesh.chunkSetLocate("GearR2_D0", Aircraft.xyz, Aircraft.ypr);
 //        hiermesh.chunkSetAngles("GearR3_D0", 0.0F, Aircraft.cvt(rightGearPos, 0.1F, 0.99F, 0.0F, -82F), 0.0F);
         hiermesh.chunkSetAngles("GearR3_D0", 0.0F, Aircraft.cvt(leftGearPos, 0.01F, 0.89F, 0.0F, -82F), 0.0F);
         hiermesh.chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(tailWheelPos, 0.4F, 0.89F, 0.0F, 70F), 0.0F);
