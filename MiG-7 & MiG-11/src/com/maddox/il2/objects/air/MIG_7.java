@@ -4,8 +4,6 @@ import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Property;
-//temp:
-import com.maddox.sas1946.il2.util.AircraftTools;
 
 /**
  * @author SAS~Skylla, SAS~Storebror
@@ -37,7 +35,7 @@ import com.maddox.sas1946.il2.util.AircraftTools;
  *  > [x] Cockpitinstrumente 
  *  > [x] move Cockpit Door
  *  > [-] Fahrwerkanimation korrigieren
- *  > [-] Loadouts in cod Format
+ *  > [x] Loadouts in cod Format
  *  > [x] FlightModel
  * 
  * Die Liste wird noch auf übersehene Baustellen erweitert!
@@ -115,8 +113,10 @@ public class MIG_7 extends MIG_3 {
 	        //only one weapon trigger needed; let's make it 0 therefore.s
 	        Aircraft.weaponTriggersRegister(aircraftClass, new int[] { 0, 0 });
 	        Aircraft.weaponHooksRegister(aircraftClass, new String[] { "_MGUN01", "_MGUN02" });
+/*			not necessary anymore:
 	        AircraftTools.weaponsRegister(aircraftClass, "default", new String[] { "MGunShVAKs 100", "MGunShVAKs 100" });
 	        AircraftTools.weaponsRegister(aircraftClass, "none", new String[] { null, null });
+*/
     }
 
 }
