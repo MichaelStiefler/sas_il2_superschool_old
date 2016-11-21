@@ -175,6 +175,10 @@ public class CockpitMIG_7 extends CockpitPilot {
 
     protected void reflectPlaneMats() {
         this.mesh.materialReplace("Gloss1D0o", this.aircraft().hierMesh().material(this.aircraft().hierMesh().materialFind("Gloss1D0o")));
+        if (this.aircraft() instanceof MIG_11)
+            this.mesh.materialReplace("RPanel", "RPanel_MiG11");
+        else if (this.aircraft() instanceof MIG_7)
+            this.mesh.materialReplace("RPanel", "RPanel_MiG7");
     }
 
     public void toggleLight() {
