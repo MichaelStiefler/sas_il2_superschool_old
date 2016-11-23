@@ -104,9 +104,11 @@ public class MIG_7 extends MIG_3 {
         } else if (leftGearPos > (rnd[0]+0.07F)) {
             Aircraft.xyz[0] = Aircraft.cvt(leftGearPos, 0.12F + rnd[0], 0.22F + rnd[0], 0.05F, 0.0F);
         }
-        hiermesh.chunkSetLocate("GearL2_D0", Aircraft.xyz, Aircraft.ypr);
+//        hiermesh.chunkSetLocate("GearL2_D0", Aircraft.xyz, Aircraft.ypr);
+        hiermesh.chunkSetLocate("GearL2_BASE", Aircraft.xyz, Aircraft.ypr);
+        hiermesh.chunkSetAngles("GearL2_D0", Aircraft.cvt(leftGearPos, 0.21F + rnd[0], 0.915F + rnd[0], 0.0F, 20F), 0.0F, Aircraft.cvt(rightGearPos, 0.21F + rnd[1], 0.915F + rnd[1], 0.0F, 6.05F));
         hiermesh.chunkSetAngles("GearL3_BASE", 0.0F, Aircraft.cvt(leftGearPos, 0.01F + rnd[0], 0.915F + rnd[0], 0.0F, 82F), 0.0F);
-        hiermesh.chunkSetAngles("GearL3_D0", Aircraft.cvt(leftGearPos, 0.21F + rnd[0], 0.915F + rnd[0], 0.0F, -35F), 0.0F, 0.0F);
+        hiermesh.chunkSetAngles("GearL3_D0", Aircraft.cvt(leftGearPos, 0.21F + rnd[0], 0.915F + rnd[0], 0.0F, -15F), 0.0F, 0.0F);
         
         Aircraft.ypr[1] = Aircraft.cvt(rightGearPos, 0.01F + rnd[1], 0.915F + rnd[1], 0.0F, -88F);
         if (rightGearPos <= (rnd[1]+0.07F)) {
@@ -114,9 +116,11 @@ public class MIG_7 extends MIG_3 {
         } else if (rightGearPos > (rnd[1]+0.07F)) {
             Aircraft.xyz[0] = Aircraft.cvt(rightGearPos, 0.12F + rnd[1], 0.22F + rnd[1], -0.05F, 0.0F);
         }
-        hiermesh.chunkSetLocate("GearR2_D0", Aircraft.xyz, Aircraft.ypr);
+//        hiermesh.chunkSetLocate("GearR2_D0", Aircraft.xyz, Aircraft.ypr);
+        hiermesh.chunkSetLocate("GearR2_BASE", Aircraft.xyz, Aircraft.ypr);
+        hiermesh.chunkSetAngles("GearR2_D0", Aircraft.cvt(rightGearPos, 0.21F + rnd[1], 0.915F + rnd[1], 0.0F, -20F), 0.0F, Aircraft.cvt(rightGearPos, 0.21F + rnd[1], 0.915F + rnd[1], 0.0F, 6.05F));
         hiermesh.chunkSetAngles("GearR3_BASE", 0.0F, Aircraft.cvt(rightGearPos, 0.01F + rnd[1], 0.915F + rnd[1], 0.0F, -82F), 0.0F);
-        hiermesh.chunkSetAngles("GearR3_D0", Aircraft.cvt(rightGearPos, 0.21F + rnd[1], 0.915F + rnd[1], 0.0F, 35F), 0.0F, 0.0F);
+        hiermesh.chunkSetAngles("GearR3_D0", Aircraft.cvt(rightGearPos, 0.21F + rnd[1], 0.915F + rnd[1], 0.0F, 15F), 0.0F, 0.0F);
         hiermesh.chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(tailWheelPos, 0.01F + rnd[2], 0.85F + rnd[2], 0.0F, 70F), 0.0F);
         hiermesh.chunkSetAngles("GearC3_D0", 0.0F, Aircraft.cvt(tailWheelPos, 0.01F + rnd[2], 0.47F + rnd[2], 0.0F, -80F), 0.0F);
         hiermesh.chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(tailWheelPos, 0.01F + rnd[2], 0.47F + rnd[2], 0.0F, 80F), 0.0F);
