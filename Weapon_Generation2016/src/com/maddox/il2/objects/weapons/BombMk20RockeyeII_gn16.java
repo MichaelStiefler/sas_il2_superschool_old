@@ -88,7 +88,7 @@ public class BombMk20RockeyeII_gn16 extends Bomb
         Property.set(class1, "power", 0.25F);
         Property.set(class1, "powerType", 0);
         Property.set(class1, "kalibr", 0.396F);
-        Property.set(class1, "massa", 430.9F);
+        Property.set(class1, "massa", 226.9F);
         Property.set(class1, "sound", "weapon.bomb_std");
     }
 }

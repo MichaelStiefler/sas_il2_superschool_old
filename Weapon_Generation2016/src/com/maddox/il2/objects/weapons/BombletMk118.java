@@ -21,9 +21,10 @@ public class BombletMk118 extends Bomb
     {
         Class class1 = com.maddox.il2.objects.weapons.BombletMk118.class;
         Property.set(class1, "mesh", "3do/arms/Mk118Bomlet/mono.sim");
-        Property.set(class1, "power", 0.200F);
-        Property.set(class1, "powerType", 1);
-        Property.set(class1, "kalibr", 0.054F);
+        Property.set(class1, "radius", 2.0F);
+        Property.set(class1, "power", 8.0F);
+        Property.set(class1, "powerType", 0);
+        Property.set(class1, "kalibr", 0.084F);
         Property.set(class1, "massa", 0.600F);
         Property.set(class1, "randomOrient", 1);
         Property.set(class1, "sound", "weapon.bomb_cassette");
