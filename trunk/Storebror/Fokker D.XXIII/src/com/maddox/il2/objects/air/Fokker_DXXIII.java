@@ -1,9 +1,11 @@
 package com.maddox.il2.objects.air;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
+import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
@@ -18,9 +20,19 @@ import com.maddox.util.HashMapInt;
 
 public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
 
+	private float [] rndgear = {0.0F, 0.0F, 0.0F};
+    private static float [] rndgearnull = {0.0F, 0.0F, 0.0F};
+	
     public Fokker_DXXIII() {
         this.bChangedPit = true;
         this.gyroDelta = 0.0F;
+        
+        //Random Gear Move .. made exclusively for those two who recon it ..
+	    SecureRandom secRandom = new SecureRandom();
+	    secRandom.setSeed(System.currentTimeMillis());
+	    RangeRandom rr = new RangeRandom(secRandom.nextLong());
+	    for (int i=0; i<rndgear.length; i++)
+	        rndgear[i] = rr.nextFloat(0.0F, 0.15F);
     }
 
     public void onAircraftLoaded() {
@@ -143,33 +155,49 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
             localWreckage.setSpeed(localVector3d);
         }
     }
-
-    public static void moveGear(HierMesh hiermesh, float f, float f1, float f2) {
-        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(f2, 0.21F, 0.63F, 3.0F, -115.5F), 0.0F);
-        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, 0.0F, 0.0F);
-        hiermesh.chunkSetAngles("GearC7_D0", 0.0F, Aircraft.cvt(f2, 0.21F, 0.63F, 0.0F, -137F), 0.0F);
-        hiermesh.chunkSetAngles("GearC8_D0", 0.0F, Aircraft.cvt(f2, 0.21F, 0.63F, 0.0F, -148.5F), 0.0F);
-        hiermesh.chunkSetAngles("GearC9_D0", 0.0F, Aircraft.cvt(f2, 0.21F, 0.63F, 0.0F, 1.0F), 0.0F);
-        Aircraft.xyz[0] = Aircraft.xyz[1] = Aircraft.xyz[2] = Aircraft.ypr[0] = Aircraft.ypr[1] = Aircraft.ypr[2] = 0.0F;
-        Aircraft.xyz[1] = Aircraft.cvt(f2, 0.21F, 0.63F, 0.0F, 0.09F);
+    
+    
+  //-------------------------------------------------------------------------------------------------------------------------------
+    
+    public static void moveGear(HierMesh hiermesh, float f, float f1, float f2, float [] rnd) {
+    	myResetYPRmodifier();	
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(f2, 0.1F+rnd[2], 0.85F+rnd[2], 3.0F, -115.5F), 0.0F);
+        hiermesh.chunkSetAngles("GearC7_D0", 0.0F, Aircraft.cvt(f2, 0.1F+rnd[2], 0.85F+rnd[2], 0.0F, -137F), 0.0F);
+        hiermesh.chunkSetAngles("GearC8_D0", 0.0F, Aircraft.cvt(f2, 0.1F+rnd[2], 0.85F+rnd[2], 0.0F, -148.5F), 0.0F);
+        hiermesh.chunkSetAngles("GearC9_D0", 0.0F, Aircraft.cvt(f2, 0.1F+rnd[2], 0.85F+rnd[2], 0.0F, 1.0F), 0.0F);
+        Aircraft.xyz[1] = Aircraft.cvt(f2, 0.1F+rnd[2], 0.85F+rnd[2], 0.0F, 0.09F);
         hiermesh.chunkSetLocate("GearC10_D0", Aircraft.xyz, Aircraft.ypr);
-
-        hiermesh.chunkSetAngles("GearC11_D0", 0.0F, Aircraft.cvt(f2, 0.21F, 0.26F, 0.0F, 100F), 0.0F);
-        hiermesh.chunkSetAngles("GearC12_D0", 0.0F, Aircraft.cvt(f2, 0.21F, 0.26F, 0.0F, -100F), 0.0F);
-
-        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(f, 0.12F, 0.75F, 0.0F, -86F), 0.0F);
-        Aircraft.xyz[0] = Aircraft.xyz[1] = Aircraft.xyz[2] = Aircraft.ypr[0] = Aircraft.ypr[1] = Aircraft.ypr[2] = 0.0F;
-        Aircraft.xyz[1] = Aircraft.cvt(f, 0.12F, 0.75F, 0.0F, 0.23F);
-        hiermesh.chunkSetAngles("GearL10_D0", 0.0F, Aircraft.cvt(f, 0.12F, 0.200325F, 0.0F, -85F), 0.0F);
-        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(f1, 0.03F, 0.95F, 0.0F, -86F), 0.0F);
-        Aircraft.xyz[0] = Aircraft.xyz[1] = Aircraft.xyz[2] = Aircraft.ypr[0] = Aircraft.ypr[1] = Aircraft.ypr[2] = 0.0F;
-        Aircraft.xyz[1] = Aircraft.cvt(f1, 0.03F, 0.95F, 0.0F, 0.23F);
-        hiermesh.chunkSetAngles("GearR10_D0", 0.0F, Aircraft.cvt(f1, 0.03F, 0.1473F, 0.0F, -85F), 0.0F);
+        hiermesh.chunkSetAngles("GearC11_D0", 0.0F, Aircraft.cvt(f2, 0.1F+rnd[2], 0.2F+rnd[2], 0.0F, 100F), 0.0F);
+        hiermesh.chunkSetAngles("GearC12_D0", 0.0F, Aircraft.cvt(f2, 0.1F+rnd[2], 0.2F+rnd[2], 0.0F, -100F), 0.0F);
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(f, 0.1F+rnd[0], 0.85F+rnd[0], 0.0F, -86F), 0.0F);
+        hiermesh.chunkSetAngles("GearL10_D0", 0.0F, Aircraft.cvt(f, 0.1F+rnd[0], 0.2071F+rnd[0], 0.0F, -110F), 0.0F);  
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(f1, 0.1F+rnd[1], 0.85F+rnd[1], 0.0F, -86F), 0.0F);
+        hiermesh.chunkSetAngles("GearR10_D0", 0.0F, Aircraft.cvt(f1, 0.1F+rnd[1], 0.2071F+rnd[1], 0.0F, -110F), 0.0F);
     }
-
+    
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        moveGear(this.hierMesh(), f, f1, f2, rndgear);
     }
+    
+	private static void myResetYPRmodifier() {
+	    Aircraft.xyz[0] = Aircraft.xyz[1] = Aircraft.xyz[2] = Aircraft.ypr[0] = Aircraft.ypr[1] = Aircraft.ypr[2] = 0.0F;
+	}
+    
+    //compatibility stuff:
+    
+    public static void moveGear(HierMesh hiermesh, float f, float f1, float f2) {
+    	moveGear(hiermesh,f,f1,f2,rndgearnull);
+    }
+    
+    public static void moveGear(HierMesh hiermesh, float gearPos) {
+        moveGear(hiermesh, gearPos, gearPos, gearPos,rndgearnull);
+    }
+
+    protected void moveGear(float gearPos) {
+        moveGear(this.hierMesh(), gearPos, gearPos, gearPos,rndgear);
+    }
+    
+  //end of gear move area ---------------------------------------------------------------------------------------------------------
 
     public void moveSteering(float f) {
         this.hierMesh().chunkSetAngles("GearC4_D0", 0.0F, -f, 0.0F);
@@ -584,7 +612,8 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
         Property.set(class1, "PaintScheme", new PaintSchemeFMPar05());
         Property.set(class1, "yearService", 1935F);
         Property.set(class1, "yearExpired", 1948F);
-        Property.set(class1, "FlightModel", "FlightModels/Do-335V-13.fmd");
+        //Property.set(class1, "FlightModel", "FlightModels/Do-335V-13.fmd");
+        Property.set(class1, "FlightModel", "FlightModels/Fokker_DXXIII.fmd:FOKKER_DXXIII_FM");
         Property.set(class1, "cockpitClass", new Class[] { CockpitFokker_DXXIII.class });
         Property.set(class1, "LOSElevation", 1.00705F);
         Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1 });
