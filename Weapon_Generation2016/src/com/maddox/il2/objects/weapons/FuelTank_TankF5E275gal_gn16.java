@@ -3,54 +3,52 @@
 /*
 * Base color is gray.
 
-* When you want two tone of dark and bright gray, add this code to mother Jets.
+* When you want to apply 2x different colors from the mother Jet's custom skin, add this code to the mother Jet class.
 
     public void missionStarting()
     {
+        super.missionStarting();
         checkChangeWeaponColors();
     }
 
     private void checkChangeWeaponColors()
     {
-        for(int i = 0; i < ((FlightModelMain) (super.FM)).CT.Weapons.length; i++)
-            if(((FlightModelMain) (super.FM)).CT.Weapons[i] != null)
+        Mat mat = hierMesh().material(hierMesh().materialFind("Gloss1D0o"));
+        Mat matp = hierMesh().material(hierMesh().materialFind("Gloss1D0p"));
+
+        for(int i = 0; i < FM.CT.Weapons.length; i++)
+            if(FM.CT.Weapons[i] != null)
             {
-                for(int j = 0; j < ((FlightModelMain) (super.FM)).CT.Weapons[i].length; j++)
+                for(int j = 0; j < FM.CT.Weapons[i].length; j++)
                 {
-                    if(((FlightModelMain) (super.FM)).CT.Weapons[i][j] instanceof FuelTankGun_TankF5E275gal_gn16)
-                        ((FuelTankGun_TankF5E275gal_gn16)((FlightModelMain) (super.FM)).CT.Weapons[i][j]).matTwoTone();
+                    if(FM.CT.Weapons[i][j] instanceof SkinnableOrdnance)
+                        ((SkinnableOrdnance)FM.CT.Weapons[i][j]).matPlane(mat, matp);
                 }
             }
     }
 
-* matGreen() is also prepared for Vietnum camo green.
 */
 
 
 package com.maddox.il2.objects.weapons;
 
+import com.maddox.il2.engine.Mat;
 import com.maddox.rts.Property;
 
 
 public class FuelTank_TankF5E275gal_gn16 extends FuelTank
+    implements SkinnableOrdnance
 {
 
     public FuelTank_TankF5E275gal_gn16()
     {
     }
 
-    public void matTwoTone()
+    public void matPlane(Mat mat, Mat matp)
     {
         setMesh(Property.stringValue(getClass(), "mesh"));
-        mesh.materialReplace("Tank_Gloss", "Tank_Gloss2t");
-        mesh.materialReplace("Tank_GlossP", "Tank_Gloss2tP");
-    }
-
-    public void matGreen()
-    {
-        setMesh(Property.stringValue(getClass(), "mesh"));
-        mesh.materialReplace("Tank_Gloss", "Tank_GlossGr");
-        mesh.materialReplace("Tank_GlossP", "Tank_GlossGrP");
+        mesh.materialReplace("Gloss1D0o", mat);
+        mesh.materialReplace("Gloss1D0p", matp);
     }
 
     static Class _mthclass$(String s)
