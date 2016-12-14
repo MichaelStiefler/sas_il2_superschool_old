@@ -22,6 +22,7 @@ import com.maddox.rts.CmdEnv;
 import com.maddox.rts.HotKeyEnv;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
+import com.maddox.sas1946.il2.util.BaseGameVersion;
 import com.maddox.sound.ReverbFXRoom;
 
 public class CockpitFokker_DXXIII extends CockpitPilot {
@@ -81,7 +82,13 @@ public class CockpitFokker_DXXIII extends CockpitPilot {
                 CockpitFokker_DXXIII.this.setOld.stbyPosition = CockpitFokker_DXXIII.this.setNew.stbyPosition;
             }
             CockpitFokker_DXXIII.this.setNew.altimeter = CockpitFokker_DXXIII.this.fm.getAltitude();
-            if (CockpitFokker_DXXIII.this.useRealisticNavigationInstruments()) {
+            boolean realisticInstruments = false;
+            if (BaseGameVersion.is410orLater()) { 
+                if (CockpitFokker_DXXIII.this.useRealisticNavigationInstruments()) {
+                    realisticInstruments = true;
+                }
+            }
+            if (realisticInstruments) {
                 CockpitFokker_DXXIII.this.setNew.azimuth.setDeg(CockpitFokker_DXXIII.this.setOld.azimuth.getDeg(1.0F), CockpitFokker_DXXIII.this.fm.Or.azimut() + CockpitFokker_DXXIII.this.ac.gyroDelta);
             } else {
                 CockpitFokker_DXXIII.this.setNew.azimuth.setDeg(CockpitFokker_DXXIII.this.setOld.azimuth.getDeg(1.0F), CockpitFokker_DXXIII.this.fm.Or.azimut());
@@ -533,9 +540,11 @@ public class CockpitFokker_DXXIII extends CockpitPilot {
         if (super.doFocusEnter()) {
             HookPilot hookpilot = HookPilot.current;
             hookpilot.doAim(false);
-            Point3d point3d = new Point3d();
-            point3d.set(0.2800000011920929D, 0.0D, 0.0D);
-            hookpilot.setTubeSight(point3d);
+            if (BaseGameVersion.is411orLater()) {
+                Point3d point3d = new Point3d();
+                point3d.set(0.28D, 0.0D, 0.0D);
+                hookpilot.setTubeSight(point3d);
+            }
             return true;
         } else {
             return false;
