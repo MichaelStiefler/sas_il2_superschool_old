@@ -83,7 +83,7 @@ public class CockpitFokker_DXXIII extends CockpitPilot {
             }
             CockpitFokker_DXXIII.this.setNew.altimeter = CockpitFokker_DXXIII.this.fm.getAltitude();
             boolean realisticInstruments = false;
-            if (BaseGameVersion.is410orLater()) { 
+            if (BaseGameVersion.is410orLater()) {
                 if (CockpitFokker_DXXIII.this.useRealisticNavigationInstruments()) {
                     realisticInstruments = true;
                 }
@@ -437,7 +437,7 @@ public class CockpitFokker_DXXIII extends CockpitPilot {
 // mesh.chunkVisible("CF_D0", hiermesh.isChunkVisible("CF_D0"));
 // mesh.chunkVisible("CF_D1", hiermesh.isChunkVisible("CF_D1"));
 // mesh.chunkVisible("CF_D2", hiermesh.isChunkVisible("CF_D2"));
-        if (this.ac.blisterRemoved) {
+        if (this.ac.blisterRemoved[Fokker_DXXIII.BLISTER_LEFT]) {
             this.mesh.chunkVisible("CanopyL1", false);
             this.mesh.chunkVisible("CanopyL2", false);
             this.mesh.chunkVisible("Z_sliding_window_L", false);

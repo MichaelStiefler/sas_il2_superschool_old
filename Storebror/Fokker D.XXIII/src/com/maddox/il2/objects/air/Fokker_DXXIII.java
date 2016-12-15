@@ -20,19 +20,25 @@ import com.maddox.util.HashMapInt;
 
 public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
 
-	private float [] rndgear = {0.0F, 0.0F, 0.0F};
-    private static float [] rndgearnull = {0.0F, 0.0F, 0.0F};
-	
+    private float[]        rndgear     = { 0.0F, 0.0F, 0.0F };
+    private static float[] rndgearnull = { 0.0F, 0.0F, 0.0F };
+
     public Fokker_DXXIII() {
+        this.canopyF = 0.0F;
+        this.tiltCanopyOpened = false;
+        this.slideCanopyOpened = false;
+        this.blisterRemoved = new boolean[2];
+        this.canopyMaxAngle = 0.8F;
         this.bChangedPit = true;
         this.gyroDelta = 0.0F;
-        
-        //Random Gear Move .. made exclusively for those two who recon it ..
-	    SecureRandom secRandom = new SecureRandom();
-	    secRandom.setSeed(System.currentTimeMillis());
-	    RangeRandom rr = new RangeRandom(secRandom.nextLong());
-	    for (int i=0; i<rndgear.length; i++)
-	        rndgear[i] = rr.nextFloat(0.0F, 0.15F);
+
+        // Random Gear Move .. made exclusively for those two who recon it ..
+        SecureRandom secRandom = new SecureRandom();
+        secRandom.setSeed(System.currentTimeMillis());
+        RangeRandom rr = new RangeRandom(secRandom.nextLong());
+        for (int i = 0; i < this.rndgear.length; i++) {
+            this.rndgear[i] = rr.nextFloat(0.0F, 0.15F);
+        }
     }
 
     public void onAircraftLoaded() {
@@ -78,7 +84,7 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
             }
         } else if (((this.FM.Gears.onGround()) && (this.FM.getSpeed() < 5.0F) && (!this.slideCanopyOpened)) || (this.tiltCanopyOpened)) {
             this.hierMesh().chunkSetAngles("Blister1L", 0.0F, -f * 155.0F, 0.0F);
-            if ((this.FM.getSpeed() > 50.0F) && (f < 0.6F) && (!this.blisterRemoved)) {
+            if ((this.FM.getSpeed() > 50.0F) && (f < 0.6F) && (!this.blisterRemoved[BLISTER_LEFT])) {
                 this.doRemoveBlisterLeft();
             }
             if (f == 0.0F) {
@@ -102,8 +108,15 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
             }
             this.setDoorSnd(f);
         }
-        if (!this.blisterRemoved) {
+        if (!this.blisterRemoved[BLISTER_LEFT]) {
             this.hierMesh().chunkVisible("Blister2L", this.canopyF < 0.99F);
+        }
+    }
+
+    public void hitDaSilk() {
+        super.hitDaSilk();
+        if ((!(this.blisterRemoved[BLISTER_LEFT] && this.blisterRemoved[BLISTER_RIGHT])) && (this.FM.AS.bIsAboutToBailout) && (!this.FM.AS.isPilotDead(0))) {
+            this.doRemoveBlisterFull();
         }
     }
 
@@ -114,90 +127,98 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
     }
 
     private final void doRemoveBlisterFull() {
-        this.blisterRemoved = true;
         if (this.hierMesh().chunkFindCheck("Blister1_D0") != -1) {
             this.hierMesh().hideSubTrees("Blister1_D0");
-            Wreckage localWreckage = new Wreckage(this, this.hierMesh().chunkFind("Blister1L"));
-            localWreckage.collide(true);
-            Vector3d localVector3d = new Vector3d();
-            localVector3d.set(this.FM.Vwld);
-            localWreckage.setSpeed(localVector3d);
-            localWreckage = new Wreckage(this, this.hierMesh().chunkFind("Blister2L"));
-            localWreckage.collide(true);
-            localVector3d = new Vector3d();
-            localVector3d.set(this.FM.Vwld);
-            localWreckage.setSpeed(localVector3d);
-            localWreckage = new Wreckage(this, this.hierMesh().chunkFind("Blister1R"));
-            localWreckage.collide(true);
-            localVector3d = new Vector3d();
-            localVector3d.set(this.FM.Vwld);
-            localWreckage.setSpeed(localVector3d);
+            Wreckage localWreckage;
+            Vector3d localVector3d;
+            if (!this.blisterRemoved[BLISTER_LEFT]) {
+                localWreckage = new Wreckage(this, this.hierMesh().chunkFind("Blister1L"));
+                localWreckage.collide(true);
+                localVector3d = new Vector3d();
+                localVector3d.set(this.FM.Vwld);
+                localWreckage.setSpeed(localVector3d);
+                localWreckage = new Wreckage(this, this.hierMesh().chunkFind("Blister2L"));
+                localWreckage.collide(true);
+                localVector3d = new Vector3d();
+                localVector3d.set(this.FM.Vwld);
+                localWreckage.setSpeed(localVector3d);
+                this.blisterRemoved[BLISTER_LEFT] = true;
+            }
+            if (!this.blisterRemoved[BLISTER_RIGHT]) {
+                localWreckage = new Wreckage(this, this.hierMesh().chunkFind("Blister1R"));
+                localWreckage.collide(true);
+                localVector3d = new Vector3d();
+                localVector3d.set(this.FM.Vwld);
+                localWreckage.setSpeed(localVector3d);
+                this.blisterRemoved[BLISTER_RIGHT] = true;
+            }
         }
     }
 
     private final void doRemoveBlisterLeft() {
-        this.blisterRemoved = true;
         this.FM.CT.bHasCockpitDoorControl = false;
         this.bChangedPit = true;
         Wreckage localWreckage;
         Vector3d localVector3d;
         if (this.hierMesh().chunkFindCheck("Blister1L") != -1) {
             this.hierMesh().hideSubTrees("Blister1L");
-            localWreckage = new Wreckage(this, this.hierMesh().chunkFind("Blister1L"));
-            localWreckage.collide(true);
-            localVector3d = new Vector3d();
-            localVector3d.set(this.FM.Vwld);
-            localWreckage.setSpeed(localVector3d);
-            localWreckage = new Wreckage(this, this.hierMesh().chunkFind("Blister2L"));
-            localWreckage.collide(true);
-            localVector3d = new Vector3d();
-            localVector3d.set(this.FM.Vwld);
-            localWreckage.setSpeed(localVector3d);
+            if (!this.blisterRemoved[BLISTER_LEFT]) {
+                localWreckage = new Wreckage(this, this.hierMesh().chunkFind("Blister1L"));
+                localWreckage.collide(true);
+                localVector3d = new Vector3d();
+                localVector3d.set(this.FM.Vwld);
+                localWreckage.setSpeed(localVector3d);
+                localWreckage = new Wreckage(this, this.hierMesh().chunkFind("Blister2L"));
+                localWreckage.collide(true);
+                localVector3d = new Vector3d();
+                localVector3d.set(this.FM.Vwld);
+                localWreckage.setSpeed(localVector3d);
+                this.blisterRemoved[BLISTER_LEFT] = true;
+            }
         }
     }
-    
-    
-  //-------------------------------------------------------------------------------------------------------------------------------
-    
-    public static void moveGear(HierMesh hiermesh, float f, float f1, float f2, float [] rnd) {
-    	myResetYPRmodifier();	
-        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(f2, 0.1F+rnd[2], 0.85F+rnd[2], 3.0F, -115.5F), 0.0F);
-        hiermesh.chunkSetAngles("GearC7_D0", 0.0F, Aircraft.cvt(f2, 0.1F+rnd[2], 0.85F+rnd[2], 0.0F, -137F), 0.0F);
-        hiermesh.chunkSetAngles("GearC8_D0", 0.0F, Aircraft.cvt(f2, 0.1F+rnd[2], 0.85F+rnd[2], 0.0F, -148.5F), 0.0F);
-        hiermesh.chunkSetAngles("GearC9_D0", 0.0F, Aircraft.cvt(f2, 0.1F+rnd[2], 0.85F+rnd[2], 0.0F, 1.0F), 0.0F);
-        Aircraft.xyz[1] = Aircraft.cvt(f2, 0.1F+rnd[2], 0.85F+rnd[2], 0.0F, 0.09F);
+
+    // -------------------------------------------------------------------------------------------------------------------------------
+
+    public static void moveGear(HierMesh hiermesh, float f, float f1, float f2, float[] rnd) {
+        myResetYPRmodifier();
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(f2, 0.1F + rnd[2], 0.85F + rnd[2], 3.0F, -115.5F), 0.0F);
+        hiermesh.chunkSetAngles("GearC7_D0", 0.0F, Aircraft.cvt(f2, 0.1F + rnd[2], 0.85F + rnd[2], 0.0F, -137F), 0.0F);
+        hiermesh.chunkSetAngles("GearC8_D0", 0.0F, Aircraft.cvt(f2, 0.1F + rnd[2], 0.85F + rnd[2], 0.0F, -148.5F), 0.0F);
+        hiermesh.chunkSetAngles("GearC9_D0", 0.0F, Aircraft.cvt(f2, 0.1F + rnd[2], 0.85F + rnd[2], 0.0F, 1.0F), 0.0F);
+        Aircraft.xyz[1] = Aircraft.cvt(f2, 0.1F + rnd[2], 0.85F + rnd[2], 0.0F, 0.09F);
         hiermesh.chunkSetLocate("GearC10_D0", Aircraft.xyz, Aircraft.ypr);
-        hiermesh.chunkSetAngles("GearC11_D0", 0.0F, Aircraft.cvt(f2, 0.1F+rnd[2], 0.2F+rnd[2], 0.0F, 100F), 0.0F);
-        hiermesh.chunkSetAngles("GearC12_D0", 0.0F, Aircraft.cvt(f2, 0.1F+rnd[2], 0.2F+rnd[2], 0.0F, -100F), 0.0F);
-        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(f, 0.1F+rnd[0], 0.85F+rnd[0], 0.0F, -86F), 0.0F);
-        hiermesh.chunkSetAngles("GearL10_D0", 0.0F, Aircraft.cvt(f, 0.1F+rnd[0], 0.2071F+rnd[0], 0.0F, -110F), 0.0F);  
-        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(f1, 0.1F+rnd[1], 0.85F+rnd[1], 0.0F, -86F), 0.0F);
-        hiermesh.chunkSetAngles("GearR10_D0", 0.0F, Aircraft.cvt(f1, 0.1F+rnd[1], 0.2071F+rnd[1], 0.0F, -110F), 0.0F);
+        hiermesh.chunkSetAngles("GearC11_D0", 0.0F, Aircraft.cvt(f2, 0.1F + rnd[2], 0.2F + rnd[2], 0.0F, 100F), 0.0F);
+        hiermesh.chunkSetAngles("GearC12_D0", 0.0F, Aircraft.cvt(f2, 0.1F + rnd[2], 0.2F + rnd[2], 0.0F, -100F), 0.0F);
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(f, 0.1F + rnd[0], 0.85F + rnd[0], 0.0F, -86F), 0.0F);
+        hiermesh.chunkSetAngles("GearL10_D0", 0.0F, Aircraft.cvt(f, 0.1F + rnd[0], 0.2071F + rnd[0], 0.0F, -110F), 0.0F);
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(f1, 0.1F + rnd[1], 0.85F + rnd[1], 0.0F, -86F), 0.0F);
+        hiermesh.chunkSetAngles("GearR10_D0", 0.0F, Aircraft.cvt(f1, 0.1F + rnd[1], 0.2071F + rnd[1], 0.0F, -110F), 0.0F);
     }
-    
+
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2, rndgear);
+        moveGear(this.hierMesh(), f, f1, f2, this.rndgear);
     }
-    
-	private static void myResetYPRmodifier() {
-	    Aircraft.xyz[0] = Aircraft.xyz[1] = Aircraft.xyz[2] = Aircraft.ypr[0] = Aircraft.ypr[1] = Aircraft.ypr[2] = 0.0F;
-	}
-    
-    //compatibility stuff:
-    
+
+    private static void myResetYPRmodifier() {
+        Aircraft.xyz[0] = Aircraft.xyz[1] = Aircraft.xyz[2] = Aircraft.ypr[0] = Aircraft.ypr[1] = Aircraft.ypr[2] = 0.0F;
+    }
+
+    // compatibility stuff:
+
     public static void moveGear(HierMesh hiermesh, float f, float f1, float f2) {
-    	moveGear(hiermesh,f,f1,f2,rndgearnull);
+        moveGear(hiermesh, f, f1, f2, rndgearnull);
     }
-    
+
     public static void moveGear(HierMesh hiermesh, float gearPos) {
-        moveGear(hiermesh, gearPos, gearPos, gearPos,rndgearnull);
+        moveGear(hiermesh, gearPos, gearPos, gearPos, rndgearnull);
     }
 
     protected void moveGear(float gearPos) {
-        moveGear(this.hierMesh(), gearPos, gearPos, gearPos,rndgear);
+        moveGear(this.hierMesh(), gearPos, gearPos, gearPos, this.rndgear);
     }
-    
-  //end of gear move area ---------------------------------------------------------------------------------------------------------
+
+    // end of gear move area ---------------------------------------------------------------------------------------------------------
 
     public void moveSteering(float f) {
         this.hierMesh().chunkSetAngles("GearC4_D0", 0.0F, -f, 0.0F);
@@ -222,7 +243,7 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
         } else {
             this.hierMesh().chunkVisible("HMask1_D0", this.hierMesh().isChunkVisible("Pilot1_D0"));
         }
-        if ((this.tiltCanopyOpened) && (!this.blisterRemoved) && (this.FM.getSpeed() > 75.0F)) {
+        if ((this.tiltCanopyOpened) && (!this.blisterRemoved[BLISTER_LEFT]) && (this.FM.getSpeed() > 75.0F)) {
             this.doRemoveBlisterLeft();
         }
         if ((this.FM.Or.getKren() < -10F) || (this.FM.Or.getKren() > 10F)) {
@@ -595,13 +616,16 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
         super.update(f);
     }
 
-    public float    canopyF           = 0.0F;
-    public boolean  tiltCanopyOpened  = false;
-    private boolean slideCanopyOpened = false;
-    public boolean  blisterRemoved    = false;
-    public float    canopyMaxAngle    = 0.8F;
-    public boolean  bChangedPit;
-    public float    gyroDelta;
+    protected static final int BLISTER_LEFT  = 0;
+    private static final int   BLISTER_RIGHT = 1;
+
+    public float               canopyF;
+    public boolean             tiltCanopyOpened;
+    private boolean            slideCanopyOpened;
+    public boolean             blisterRemoved[];
+    public float               canopyMaxAngle;
+    public boolean             bChangedPit;
+    public float               gyroDelta;
 
     static {
         Class class1 = Fokker_DXXIII.class;
@@ -612,7 +636,7 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
         Property.set(class1, "PaintScheme", new PaintSchemeFMPar05());
         Property.set(class1, "yearService", 1935F);
         Property.set(class1, "yearExpired", 1948F);
-        //Property.set(class1, "FlightModel", "FlightModels/Do-335V-13.fmd");
+        // Property.set(class1, "FlightModel", "FlightModels/Do-335V-13.fmd");
         Property.set(class1, "FlightModel", "FlightModels/Fokker_DXXIII.fmd:FOKKER_DXXIII_FM");
         Property.set(class1, "cockpitClass", new Class[] { CockpitFokker_DXXIII.class });
         Property.set(class1, "LOSElevation", 1.00705F);
