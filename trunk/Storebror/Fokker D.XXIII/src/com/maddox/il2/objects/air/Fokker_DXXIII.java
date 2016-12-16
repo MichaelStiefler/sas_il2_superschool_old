@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
@@ -13,10 +12,7 @@ import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.objects.Wreckage;
-import com.maddox.rts.Finger;
 import com.maddox.rts.Property;
-import com.maddox.sas1946.il2.util.Reflection;
-import com.maddox.util.HashMapInt;
 
 public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
 
@@ -39,16 +35,6 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
         for (int i = 0; i < this.rndgear.length; i++) {
             this.rndgear[i] = rr.nextFloat(0.0F, 0.15F);
         }
-    }
-
-    public void onAircraftLoaded() {
-        super.onAircraftLoaded();
-        Reflection.setBoolean(this.FM.EI.engines[0], "bHasPropControl", true);
-        Reflection.setBoolean(this.FM.EI.engines[1], "bHasPropControl", true);
-        Reflection.setBoolean(this.FM.EI.engines[0], "bHasMixControl", true);
-        Reflection.setBoolean(this.FM.EI.engines[1], "bHasMixControl", true);
-        this.FM.CT.bHasCockpitDoorControl = true;
-        this.FM.CT.dvCockpitDoor = 0.5F;
     }
 
     public void missionStarting() {
@@ -253,7 +239,7 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
 
     public void auxPlus(int i) {
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.gyroDelta++;
                 break;
         }
@@ -261,7 +247,7 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
 
     public void auxMinus(int i) {
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.gyroDelta--;
                 break;
         }
@@ -322,24 +308,24 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
                     default:
                         break;
 
-                    case 1: // '\001'
-                    case 4: // '\004'
+                    case 1:
+                    case 4:
                         if (this.getEnergyPastArmor(1.2F, shot) > 0.0F) {
                             this.FM.AS.setControlsDamage(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Aileron Controls: Control Crank Destroyed..");
                         }
                         break;
 
-                    case 2: // '\002'
-                    case 3: // '\003'
+                    case 2:
+                    case 3:
                         if ((this.getEnergyPastArmor(4D / (Math.abs(Aircraft.v1.x) + 0.0001D), shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
                             this.debuggunnery("Controls: Aileron Wiring Hit, Aileron Controls Disabled..");
                             this.FM.AS.setControlsDamage(shot.initiator, 0);
                         }
                         break;
 
-                    case 5: // '\005'
-                    case 6: // '\006'
+                    case 5:
+                    case 6:
                         if (this.getEnergyPastArmor(1.0F, shot) <= 0.0F) {
                             break;
                         }
@@ -612,10 +598,6 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
         }
     }
 
-    public void update(float f) {
-        super.update(f);
-    }
-
     protected static final int BLISTER_LEFT  = 0;
     private static final int   BLISTER_RIGHT = 1;
 
@@ -636,40 +618,10 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
         Property.set(class1, "PaintScheme", new PaintSchemeFMPar05());
         Property.set(class1, "yearService", 1935F);
         Property.set(class1, "yearExpired", 1948F);
-        // Property.set(class1, "FlightModel", "FlightModels/Do-335V-13.fmd");
         Property.set(class1, "FlightModel", "FlightModels/Fokker_DXXIII.fmd:FOKKER_DXXIII_FM");
         Property.set(class1, "cockpitClass", new Class[] { CockpitFokker_DXXIII.class });
         Property.set(class1, "LOSElevation", 1.00705F);
         Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
-        Aircraft.weaponsRegister(class1, "default", new String[] { "MGunBrowning303ki 1000", "MGunBrowning303ki 1000", "MGunBrowning50ki 500", "MGunBrowning50ki 500" });
-        Aircraft.weaponsRegister(class1, "none", new String[] { null, null, null, null });
-        String s = "unknown";
-        try {
-            ArrayList arraylist = new ArrayList();
-            Property.set(class1, "weaponsList", arraylist);
-            HashMapInt hashmapint = new HashMapInt();
-            Property.set(class1, "weaponsMap", hashmapint);
-            byte byte0 = 4;
-            s = "default";
-            Aircraft._WeaponSlot a_lweaponslot[] = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunBrowning303ki", 1000);
-            a_lweaponslot[1] = new Aircraft._WeaponSlot(0, "MGunBrowning303ki", 1000);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunBrowning50ki", 500);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunBrowning50ki", 500);
-            arraylist.add(s);
-            hashmapint.put(Finger.Int(s), a_lweaponslot);
-
-            s = "none";
-            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            for (int i = 0; i < byte0; i++) {
-                a_lweaponslot[i] = null;
-            }
-            arraylist.add(s);
-            hashmapint.put(Finger.Int(s), a_lweaponslot);
-        } catch (Exception exception) {
-            System.out.println("Error while creating weapon slot \"" + s + "\" for Me_262_HGIV!!!");
-            exception.printStackTrace();
-        }
     }
 }
