@@ -63,9 +63,9 @@
   Wing_Out 4.775
   GCenter 0.10
   GCenterZ 0.00
-  GC_AOA_Shift 0.20
-  GC_Flaps_Shift 0.45
-  GC_Gear_Shift 0.20
+  GC_AOA_Shift 0.40
+  GC_Flaps_Shift 0.15
+  GC_Gear_Shift -0.15
 [Toughness]
   AroneL 50
   AroneR 50
@@ -110,11 +110,11 @@
   Engine1Family WalterSagitta:FOKKER_DXXIII_FM
   Engine1SubModel I-SR_R
 [Gear]
-  H 1.614541
-  Pitch 11.842
+  H 0.0
+  Pitch 0.0
   SinkFactor 1000.0
-  SpringsStiffness 0.8
-  TailStiffness 0.7
+  SpringsStiffness 0.3
+  TailStiffness 0.3
 [Params]
   CriticalAOA 16.00
   CriticalCy 01.39
