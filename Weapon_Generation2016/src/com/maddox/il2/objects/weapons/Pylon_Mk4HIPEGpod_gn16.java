@@ -49,7 +49,7 @@ public class Pylon_Mk4HIPEGpod_gn16 extends Pylon
     static 
     {
         Class class1 = com.maddox.il2.objects.weapons.Pylon_Mk4HIPEGpod_gn16.class;
-        Property.set(class1, "mesh", "3DO/Arms/Mk4HIPEGpod_gn16/mono.sim");
+        Property.set(class1, "mesh", "3DO/Arms/Pylon_Mk4HIPEGpod_gn16/mono.sim");
         Property.set(class1, "massa", 359F);
         Property.set(class1, "dragCx", 0.039F);  // stock Pylons is +0.035F
     }
