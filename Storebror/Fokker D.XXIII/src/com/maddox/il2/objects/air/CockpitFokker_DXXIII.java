@@ -227,13 +227,15 @@ public class CockpitFokker_DXXIII extends CockpitPilot {
             this.reflectPlaneMats();
             this.bNeedSetUp = false;
         }
-        if (this.enteringAim) {
-            HookPilot hookpilot = HookPilot.current;
-            if (hookpilot.isAimReached()) {
-                this.enteringAim = false;
-                this.enter();
-            } else if (!hookpilot.isAim()) {
-                this.enteringAim = false;
+        if (BaseGameVersion.is411orLater()) {
+            if (this.enteringAim) {
+                HookPilot hookpilot = HookPilot.current;
+                if (hookpilot.isAimReached()) {
+                    this.enteringAim = false;
+                    this.enter();
+                } else if (!hookpilot.isAim()) {
+                    this.enteringAim = false;
+                }
             }
         }
         if (((Fokker_DXXIII) this.aircraft()).bChangedPit) {
