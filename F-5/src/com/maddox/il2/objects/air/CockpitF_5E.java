@@ -28,6 +28,7 @@ public class CockpitF_5E extends CockpitPilot
                 setNew.throttlel = 0.85F * setOld.throttlel + ((FlightModelMain) (fm)).EI.engines[0].getControlThrottle() * 0.15F;
                 setNew.throttler = 0.85F * setOld.throttler + ((FlightModelMain) (fm)).EI.engines[1].getControlThrottle() * 0.15F;
                 setNew.altimeter = fm.getAltitude();
+                setNew.flap = fm.CT.getFlap();
                 float nozzle = 100F;
                 float tr = ((FlightModelMain) (fm)).EI.engines[0].getControlThrottle();
                 if(tr > 1.00F)
@@ -99,14 +100,24 @@ public class CockpitF_5E extends CockpitPilot
                 setNew.beaconRange = (10F * setOld.beaconRange + getBeaconRange()) / 11F;
                 if(((FlightModelMain) (fm)).EI.engines[0].getStage() < 6)
                 {
-                    if(setNew.stbyPosition > 0.0F)
-                        setNew.stbyPosition = setOld.stbyPosition - 0.002F;
-                } else
-                if(setNew.stbyPosition < 1.0F)
-                    setNew.stbyPosition = setOld.stbyPosition + 0.002F;
+                    if(setNew.stbyPositionl > 0.0F)
+                        setNew.stbyPositionl = setOld.stbyPositionl - 0.002F;
+                }
+                else if(setNew.stbyPositionl < 1.0F)
+                    setNew.stbyPositionl = setOld.stbyPositionl + 0.002F;
+                if(((FlightModelMain) (fm)).EI.engines[1].getStage() < 6)
+                {
+                    if(setNew.stbyPositionr > 0.0F)
+                        setNew.stbyPositionr = setOld.stbyPositionr - 0.002F;
+                }
+                else if(setNew.stbyPositionr < 1.0F)
+                    setNew.stbyPositionr = setOld.stbyPositionr + 0.002F;
                 if(setNew.stbyPosition2 < 1.0F)
                     setNew.stbyPosition2 = setOld.stbyPosition2 + 0.002F;
             }
+
+            bHookDeployed |= (((FlightModelMain) (fm)).CT.getArrestor() > 0.9F);
+
             return true;
         }
 
@@ -124,6 +135,7 @@ public class CockpitF_5E extends CockpitPilot
         float vspeed;
         float nozzlel;
         float nozzler;
+        float flap;
         AnglesFork azimuth;
         AnglesFork waypointAzimuth;
         float beaconDirection;
@@ -133,7 +145,8 @@ public class CockpitF_5E extends CockpitPilot
         float k14x;
         float k14y;
         float k14w;
-        float stbyPosition;
+        float stbyPositionl;
+        float stbyPositionr;
         float stbyPosition2;
 
         private Variables()
@@ -163,7 +176,7 @@ public class CockpitF_5E extends CockpitPilot
         pictAiler = 0.0F;
         pictElev = 0.0F;
         super.cockpitNightMats = (new String[] {
-            "Sabre_Compass1", "Needles86", "Gaug86_01", "Gaug86_02", "Gaug86_03", "Gaug86_04", "Gaug86_05", "Gaug86_06"
+            "Sabre_Compass1", "Needles86", "Needles", "Needles2", "F5Gaug86_01", "F5Gaug86_02", "F5Gaug86_03", "Gaug86_03", "F5Gaug86_04", "F5Gaug86_05"
         });
         setNightMats(false);
         interpPut(new Interpolater(), null, Time.current(), null);
@@ -185,12 +198,15 @@ public class CockpitF_5E extends CockpitPilot
 
     public void reflectWorldToInstruments(float f)
     {
+        float AOAunits = ((FlightModelMain) (fm)).getAOA() * 1.84F + 4.28F;
+
         if((super.fm.AS.astateCockpitState & 2) == 0)
         {
-            if(F_5.hunted != null)
-                super.mesh.chunkVisible("Z_RadarTarget", true);
-            else
-                super.mesh.chunkVisible("Z_RadarTarget", false);
+// Not implemented msh nodes in F-5E
+//            if(F_5.hunted != null)
+//                super.mesh.chunkVisible("Z_RadarTarget", true);
+//            else
+//                super.mesh.chunkVisible("Z_RadarTarget", false);
             int i = ((F_5)aircraft()).k14Mode;
             super.mesh.chunkVisible("Z_Z_RETICLE", false);
             boolean flag = i < 2;
@@ -214,14 +230,15 @@ public class CockpitF_5E extends CockpitPilot
             if(i == 1)
             {
                 super.mesh.chunkSetAngles("Z_Z_RETICLE1", 0.0F, setNew.k14x, setNew.k14y);
-                super.mesh.chunkVisible("Z_CageSelect1", false);
-                super.mesh.chunkVisible("Z_CageSelect2", true);
+// Not implemented msh nodes in F-5E
+//                super.mesh.chunkVisible("Z_CageSelect1", false);
+//                super.mesh.chunkVisible("Z_CageSelect2", true);
             }
             if(i == 0)
             {
                 super.mesh.chunkSetAngles("Z_Z_RETICLE1", 0.0F, 0.0F, 0.0F);
-                super.mesh.chunkVisible("Z_CageSelect1", true);
-                super.mesh.chunkVisible("Z_CageSelect2", false);
+//                super.mesh.chunkVisible("Z_CageSelect1", true);
+//                super.mesh.chunkVisible("Z_CageSelect2", false);
             }
             if(!flag)
             {
@@ -241,11 +258,12 @@ public class CockpitF_5E extends CockpitPilot
         super.mesh.chunkSetAngles("Z_PedalLeft", -10F * super.fm.CT.getRudder(), 0.0F, 0.0F);
         super.mesh.chunkSetAngles("Z_Throtle86", 50F * setNew.throttlel, 0.0F, 0.0F);
         super.mesh.chunkSetAngles("Z_Throtle86-2", 50F * setNew.throttler, 0.0F, 0.0F);
-        super.mesh.chunkSetAngles("Z_Flaps1", -62F * super.fm.CT.FlapsControl, 0.0F, 0.0F);
+        super.mesh.chunkSetAngles("Z_Flaps1", -18F * super.fm.CT.FlapsControl, 0.0F, 0.0F);
         super.mesh.chunkSetAngles("Z_AirBrakes", 29F * super.fm.CT.AirBrakeControl, 0.0F, 0.0F);
-        super.mesh.chunkSetAngles("Z_Hydro-Pres86", 0.0F, cvt(interp(setNew.stbyPosition, setOld.stbyPosition, f), 0.0F, 1.0F, -253F, 10F), 0.0F);
-        super.mesh.chunkSetAngles("Z_Hydro-Pres86_2", 0.0F, cvt(interp(setNew.stbyPosition, setOld.stbyPosition, f), 0.0F, 1.0F, -253F, 10F), 0.0F);
-        super.mesh.chunkSetAngles("Z_Ammeter86", 0.0F, cvt(interp(setNew.stbyPosition2, setOld.stbyPosition2, f), 0.0F, 1.0F, -55F, 30F), 0.0F);
+        super.mesh.chunkSetAngles("Z_Hydro-Pres86", 0.0F, cvt(interp(setNew.stbyPositionl, setOld.stbyPositionl, f), 0.0F, 1.0F, -253F, 10F), 0.0F);
+        super.mesh.chunkSetAngles("Z_Hydro-Pres86_2", 0.0F, cvt(interp(setNew.stbyPositionr, setOld.stbyPositionr, f), 0.0F, 1.0F, -253F, 10F), 0.0F);
+// Not implemented msh nodes in F-5E
+//        super.mesh.chunkSetAngles("Z_Ammeter86", 0.0F, cvt(interp(setNew.stbyPositionl2, setOld.stbyPositionl2, f), 0.0F, 1.0F, -55F, 30F), 0.0F);
         resetYPRmodifier();
         float f1 = super.fm.EI.engines[0].getStage();
         if(f1 > 0.0F && f1 < 7F)
@@ -258,7 +276,8 @@ public class CockpitF_5E extends CockpitPilot
         resetYPRmodifier();
         if(super.fm.CT.saveWeaponControl[0])
             Cockpit.xyz[2] = -0.0029F;
-        super.mesh.chunkSetAngles("Z_Target1", -1.2F * setNew.k14wingspan, 0.0F, 0.0F);
+// Not implemented msh nodes in F-5E
+//        super.mesh.chunkSetAngles("Z_Target1", -1.2F * setNew.k14wingspan, 0.0F, 0.0F);
         if(machNumber() < 0.95F || machNumber() > 1.0F)
         {
             super.mesh.chunkSetAngles("Z_Speedometer86-1", floatindex(cvt(Pitot.Indicator((float)((Tuple3d) (super.fm.Loc)).z, super.fm.getSpeedKMH()) * 1.131F, 74.07994F, 1222.319F, 0.0F, 14F), speedometerScale), 0.0F, 0.0F);
@@ -302,22 +321,21 @@ public class CockpitF_5E extends CockpitPilot
         super.fm.Or.transform(w);
         super.mesh.chunkSetAngles("Z_Fuel86", cvt(super.fm.M.fuel, 0.0F, 1650F, -150F, 150F), 0.0F, 0.0F);
         super.mesh.chunkSetAngles("Z_G-Factor", cvt(super.fm.getOverload(), -4F, 12F, -80.5F, 241.5F), 0.0F, 0.0F);
-        super.mesh.chunkVisible("Z_Gear86Green1", super.fm.CT.getGear() > 0.95F);
-        super.mesh.chunkVisible("Z_Gear86Green2", super.fm.CT.getGear() > 0.95F);
-        super.mesh.chunkVisible("Z_Gear86Green3", super.fm.CT.getGear() > 0.95F);
-        super.mesh.chunkVisible("Z_Gear86Red1", super.fm.CT.getGear() < 0.05F || !super.fm.Gears.lgear || !super.fm.Gears.rgear);
-        super.mesh.chunkVisible("Z_Gear86Red2", super.fm.CT.getGear() < 0.05F || !super.fm.Gears.lgear || !super.fm.Gears.rgear);
-        super.mesh.chunkVisible("Z_Gear86Red3", super.fm.CT.getGear() < 0.05F || !super.fm.Gears.lgear || !super.fm.Gears.rgear);
+        super.mesh.chunkVisible("Z_Gear86Green1", super.fm.CT.getGearC() > 0.99F && super.fm.Gears.cgear);
+        super.mesh.chunkVisible("Z_Gear86Green2", super.fm.CT.getGearL() > 0.99F && super.fm.Gears.lgear);
+        super.mesh.chunkVisible("Z_Gear86Green3", super.fm.CT.getGearR() > 0.99F && super.fm.Gears.rgear);
         super.mesh.chunkVisible("Z_FuelLamp", super.fm.M.fuel < 200F);
-        if(super.fm.EI.engines[0].getRPM() > 50F)
-            super.mesh.chunkVisible("Z_TrimLamp", Math.abs(super.fm.CT.getTrimElevatorControl()) < 0.05F);
-        if(super.fm.EI.engines[0].getRPM() < 50F)
-            super.mesh.chunkVisible("Z_TrimLamp", false);
-        if(super.fm.Gears.nOfGearsOnGr < 3)
-            super.mesh.chunkVisible("Z_TrimLamp", false);
+// Not implemented msh nodes in F-5E
+//        if(super.fm.EI.engines[0].getRPM() > 50F)
+//            super.mesh.chunkVisible("Z_TrimLamp", Math.abs(super.fm.CT.getTrimElevatorControl()) < 0.05F);
+//        if(super.fm.EI.engines[0].getRPM() < 50F)
+//            super.mesh.chunkVisible("Z_TrimLamp", false);
+//        if(super.fm.Gears.nOfGearsOnGr < 3)
+//            super.mesh.chunkVisible("Z_TrimLamp", false);
         super.mesh.chunkVisible("Z_FireLamp1", super.fm.AS.astateEngineStates[0] > 2);
         super.mesh.chunkVisible("Z_FireLamp2", super.fm.AS.astateEngineStates[1] > 2);
         super.mesh.chunkSetAngles("Z_horizont1a", 0.0F, -super.fm.Or.getKren(), 0.0F);
+        super.mesh.chunkSetAngles("Z_horizont2b", 0.0F, super.fm.Or.getTangage(), 0.0F);
         resetYPRmodifier();
         Cockpit.xyz[2] = cvt(super.fm.Or.getTangage(), -45F, 45F, 0.0328F, -0.0328F);
         super.mesh.chunkSetLocate("Z_horizont1b", Cockpit.xyz, Cockpit.ypr);
@@ -327,6 +345,18 @@ public class CockpitF_5E extends CockpitPilot
             super.mesh.chunkSetAngles("Z_Azimuth86_2", setNew.waypointAzimuth.getDeg(f * 0.1F), 0.0F, 0.0F);
         super.mesh.chunkSetAngles("Z_Compass86_1", 0.0F, -setNew.azimuth.getDeg(f), 0.0F);
         super.mesh.chunkSetAngles("Z_AOA", cvt(super.fm.getAOA(), -10F, 35F, 180F, -50F), 0.0F, 0.0F);
+        if(super.fm.CT.getGear() == 1.0F)
+        {
+            mesh.chunkVisible("Z_AOALanding1", AOAunits > 19.499F);
+            mesh.chunkVisible("Z_AOALanding2", AOAunits < 20.100F && AOAunits > 17.900F);
+            mesh.chunkVisible("Z_AOALanding3", AOAunits < 18.500F);
+        }
+        else
+        {
+            mesh.chunkVisible("Z_AOALanding1", false);
+            mesh.chunkVisible("Z_AOALanding2", false);
+            mesh.chunkVisible("Z_AOALanding3", false);
+        }
         super.mesh.chunkSetAngles("Z_Azimuth86_1", -setNew.azimuth.getDeg(f) + setNew.waypointAzimuth.getDeg(f * 0.1F), 0.0F, 0.0F);
         resetYPRmodifier();
         Cockpit.xyz[1] = cvt(f1, 0.01F, 0.08F, 0.0F, 0.1F);
@@ -341,62 +371,46 @@ public class CockpitF_5E extends CockpitPilot
             super.mesh.chunkVisible("Canopy-Open4", false);
             super.mesh.chunkVisible("Canopy-Open5", false);
         }
-        if(super.fm.Gears.nOfGearsOnGr > 0)
+// Not implemented msh nodes in F-5E
+//        if(((Interpolate) (super.fm)).actor instanceof TypeGuidedMissileCarrier)
+//        {
+//            if(iLockState() == 2)
+//                super.mesh.chunkVisible("Z_Locked", true);
+//            else
+//                super.mesh.chunkVisible("Z_Locked", false);
+//            if(super.fm.getOverload() > 2.0F || super.fm.getOverload() < 0.0F)
+//                super.mesh.chunkVisible("Z_OverG", true);
+//            else
+//                super.mesh.chunkVisible("Z_OverG", false);
+//        }
+        int flapindex = 0;
+        if(setNew.stbyPositionl < 0.01F && setNew.stbyPositionr < 0.01F)
+            flapindex = 0;
+        else if(setNew.flap == 0.0F)
+            flapindex = 1;
+        else if(setNew.flap == 1.0F)
+            flapindex = 4;
+        else if(setNew.flap == setOld.flap)
+            flapindex = 3;
+        else
+            flapindex = 0;
+        super.mesh.chunkSetAngles("Z_FlapPosInd", 0.0F, (float)(-60 * flapindex), 0.0F);
+        if(setNew.stbyPositionl < 0.01F && setNew.stbyPositionr < 0.01F)
+            auxintakeindex = 0;
+        else if(super.fm.EI.engines[0].getStage() > 5 && super.fm.EI.engines[1].getStage() > 5)
         {
-            super.mesh.chunkVisible("ContactHydro1", true);
-            super.mesh.chunkVisible("ContactHydro2", false);
-        } else
-        if(super.fm.Gears.nOfGearsOnGr == 0)
-            if(super.fm.EI.engines[0].getStage() < 6)
-            {
-                super.mesh.chunkVisible("ContactHydro1", false);
-                super.mesh.chunkVisible("ContactHydro2", true);
-            } else
-            if(super.fm.EI.engines[0].getStage() > 0)
-            {
-                super.mesh.chunkVisible("ContactHydro1", true);
-                super.mesh.chunkVisible("ContactHydro2", false);
-            }
-        if(super.fm.EI.isSelectionHasControlExtinguisher())
-        {
-            super.mesh.chunkVisible("Extinguisher1", true);
-            super.mesh.chunkVisible("Extinguisher2", false);
+            if(super.fm.getSpeedKMH() > 470F)
+                auxintakeindex = 1;
+            else if(super.fm.getSpeedKMH() < 435F)
+                auxintakeindex = 2;
         }
-        if(!super.fm.EI.isSelectionHasControlExtinguisher())
-        {
-            super.mesh.chunkVisible("Extinguisher1", false);
-            super.mesh.chunkVisible("Extinguisher2", true);
-        }
-        if(super.fm.CT.cockpitDoorControl == 0.0F)
-        {
-            super.mesh.chunkVisible("Canopy_Contact2", false);
-            super.mesh.chunkVisible("Canopy_Contact1", true);
-        }
-        if(super.fm.CT.cockpitDoorControl == 1.0F)
-        {
-            super.mesh.chunkVisible("Canopy_Contact1", false);
-            super.mesh.chunkVisible("Canopy_Contact2", true);
-        }
-        if(((Interpolate) (super.fm)).actor instanceof TypeGuidedMissileCarrier)
-        {
-            super.mesh.chunkVisible("MissileControl", true);
-            super.mesh.chunkVisible("MissileControlRange", true);
-        } else
-        {
-            super.mesh.chunkVisible("MissileControl", false);
-            super.mesh.chunkVisible("MissileControlRange", false);
-        }
-        if(((Interpolate) (super.fm)).actor instanceof TypeGuidedMissileCarrier)
-        {
-            if(iLockState() == 2)
-                super.mesh.chunkVisible("Z_Locked", true);
-            else
-                super.mesh.chunkVisible("Z_Locked", false);
-            if(super.fm.getOverload() > 2.0F || super.fm.getOverload() < 0.0F)
-                super.mesh.chunkVisible("Z_OverG", true);
-            else
-                super.mesh.chunkVisible("Z_OverG", false);
-        }
+        else
+            auxintakeindex = 0;
+        super.mesh.chunkSetAngles("Z_AuxIntakeDoor", 0.0F, (float)(90 * auxintakeindex), 0.0F);
+        super.mesh.chunkVisible("Z_GearWarnLamp", (super.fm.CT.GearControl < 0.1F && setNew.altimeter < 2890F && super.fm.getSpeedKMH() < 390F
+                                && (super.fm.EI.engines[0].getPowerOutput() < 0.7F || super.fm.EI.engines[1].getPowerOutput() < 0.7F))
+                                || !super.fm.Gears.cgear || !super.fm.Gears.lgear || !super.fm.Gears.rgear);
+        super.mesh.chunkVisible("Z_ArrestorLamp", bHookDeployed);
     }
 
     public void reflectCockpitState()
@@ -524,6 +538,8 @@ public class CockpitF_5E extends CockpitPilot
     private float pictAiler;
     private float pictElev;
     private float pictGear;
+    private boolean bHookDeployed = false;
+    private int auxintakeindex = 0;
     private static final float speedometerScale[] = {
         0.0F, 22.5F, 45F, 67.5F, 90F, 112.5F, 135F, 157.5F, 180F, 202.5F, 
         225F, 247.5F, 270F, 292.5F, 315F, 336.5F, 360F
