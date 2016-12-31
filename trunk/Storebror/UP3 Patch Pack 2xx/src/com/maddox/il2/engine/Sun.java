@@ -81,6 +81,13 @@ public class Sun
         return outMin + ((outMax - outMin) * (inValue - inMin)) / (inMax - inMin);
     }
 
+    public static float cvtsin1(float inValue, float inMin, float inMax, float outMin, float outMax)
+    {
+        inValue = Math.min(Math.max(inValue, inMin), inMax);
+        float radians = (inValue-inMin) / (inMax-inMin) * (float)Math.PI / 2F;
+        return outMin + (outMax - outMin) * (float)Math.sin(radians);
+    }
+
     public void resetCalendar()
     {
         missionDate = null;
@@ -188,10 +195,11 @@ public class Sun
         Ambient = f23 * 1.4285F;
         
         // TODO: +++ Moonlight Customization Mod by SAS~Storebror +++
-        if(ToSun.z < 0F)
+        float DiffuzeMax = cvtsin1(ToSun.z, -0.2F, 0.0F, 0.3F, 0.9F);
+        if(ToSun.z < 0F && Diffuze < DiffuzeMax)
         {
-            float moonPhaseDiff = cvt(Math.abs(0.5F - moonPhase), 0.0F, 0.5F, 1.0F, 0.15F) * (float)Config.cur.iDiffuse / (float)Config.MAX_NIGHT_SETTINGS;
-            Diffuze = cvt(moonPhaseDiff, 0.0F, 1.0F, Diffuze, 1.0F);
+            float moonPhaseDiff = cvt(Math.abs(0.5F - moonPhase), 0.0F, 0.5F, 1.0F, 0.25F) * (float)Config.cur.iDiffuse / (float)Config.MAX_NIGHT_SETTINGS;
+            Diffuze = cvt(moonPhaseDiff + Diffuze, 0.35F, 1.0F, 0.20F, DiffuzeMax);
         }
         // TODO: --- Moonlight Customization Mod by SAS~Storebror ---
         
@@ -242,31 +250,9 @@ public class Sun
         
         // TODO: Ultrapack backward compatibility!
         if (Config.isUSE_RENDER()) {
-//            if(Main3D.cur3D().clouds != null && Main3D.cur3D().clouds.type() > 4)
-//            {
-//                float sunFactor = (ToSun.z + 0.11F) * 4F;
-//                float ambientFactor = 0.2F + sunFactor * 0.7F;
-//                Diffuze = 0.05F + sunFactor * 0.95F * 0.4F;
-//                Specular = 0.4F + sunFactor * 0.6F * 0.5F;
-//                Ambient = ambientFactor - Diffuze;
-//            }
-//            if(Engine.land().config.camouflage.equalsIgnoreCase("WINTER") && RenderContext.cfgHardwareShaders.get() > 0)
-//            {
-//                float sunFactor = (ToSun.z - 0.1F) * 7F;
-//                if(sunFactor < 0.0F)
-//                    sunFactor = 0.0F;
-//                if(sunFactor > 1.0F)
-//                    sunFactor = 1.0F;
-//                Ambient *= 1.0F * (1.0F - sunFactor) + 1.7F * sunFactor;
-//                Diffuze *= 1.0F * (1.0F - sunFactor) + 0.6F * sunFactor;
-//            }
             float moonPhaseFactor = 1.0F - 2.0F * Math.abs(moonPhase - 0.5F);
             darkness = 0.095F + moonPhaseFactor * 0.666F;
             sunMultiplier = cvt(ToSun.z, -0.6F, 0.0F, darkness, 1.0F);
-//            float specularFactor = cvt(sunMultiplier, darkness, 1.0F, 0.5F, 1.0F);
-//            Ambient *= f1 * sunMultiplier;
-//            Specular *= specularFactor;
-//            Diffuze *= sunMultiplier;
         }
     }
 

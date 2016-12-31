@@ -958,18 +958,38 @@ public class AircraftState {
     }
 
     private void doSetEngineReadyness(int paramInt1, int paramInt2) {
+     // +++ TODO: Storebror: Array boundary Checks added +++
+        if (paramInt1 < 0 || paramInt1 >= this.aircraft.FM.EI.engines.length)
+            System.out.println("Cannot set Engine Readyness for Engine No." + (paramInt1 + 1) + " of aircraft " + this.actor.name() + " to " + paramInt2 + "% since it only has " + this.aircraft.FM.EI.engines.length + " Engines.");
+        else
+     // --- TODO: Storebror: Array boundary Checks added ---
         this.aircraft.FM.EI.engines[paramInt1].doSetReadyness(0.01F * paramInt2);
     }
 
     private void doSetEngineStage(int paramInt1, int paramInt2) {
+        // +++ TODO: Storebror: Array boundary Checks added +++
+        if (paramInt1 < 0 || paramInt1 >= this.aircraft.FM.EI.engines.length)
+            System.out.println("Cannot set Engine Stage for Engine No." + (paramInt1 + 1) + " of aircraft " + this.actor.name() + " to " + paramInt2 + " since it only has " + this.aircraft.FM.EI.engines.length + " Engines.");
+        else
+        // --- TODO: Storebror: Array boundary Checks added ---
         this.aircraft.FM.EI.engines[paramInt1].doSetStage(paramInt2);
     }
 
     private void doSetEngineCylinderKnockOut(int paramInt1, int paramInt2) {
+        // +++ TODO: Storebror: Array boundary Checks added +++
+        if (paramInt1 < 0 || paramInt1 >= this.aircraft.FM.EI.engines.length)
+            System.out.println("Cannot set Engine Cylinder Knock Out for Engine No." + (paramInt1 + 1) + " of aircraft " + this.actor.name() + " to " + paramInt2 + "% since it only has " + this.aircraft.FM.EI.engines.length + " Engines.");
+        else
+        // --- TODO: Storebror: Array boundary Checks added ---
         this.aircraft.FM.EI.engines[paramInt1].doSetCyliderKnockOut(paramInt2);
     }
 
     private void doSetEngineMagnetoKnockOut(int paramInt1, int paramInt2) {
+        // +++ TODO: Storebror: Array boundary Checks added +++
+        if (paramInt1 < 0 || paramInt1 >= this.aircraft.FM.EI.engines.length)
+            System.out.println("Cannot set Engine Magneto Knock Out for Engine No." + (paramInt1 + 1) + " of aircraft " + this.actor.name() + " to " + paramInt2 + "% since it only has " + this.aircraft.FM.EI.engines.length + " Engines.");
+        else
+        // --- TODO: Storebror: Array boundary Checks added ---
         this.aircraft.FM.EI.engines[paramInt1].doSetMagnetoKnockOut(paramInt2);
     }
 
@@ -1419,7 +1439,7 @@ public class AircraftState {
         this.listenNDBeacon = false;
         this.listenRadioStation = false;
         this.aircraft.playBeaconCarrier(false, 0.0F);
-        CmdMusic.setCurrentVolume(0.0F);
+        CmdMusic.setCurrentVolume(0.001F);
     }
 
     public void startListeningNDBeacon() {
@@ -1428,7 +1448,7 @@ public class AircraftState {
         this.listenNDBeacon = true;
         this.listenRadioStation = false;
         stopListeningHayrake();
-        CmdMusic.setCurrentVolume(0.0F);
+        CmdMusic.setCurrentVolume(0.001F);
     }
 
     public void startListeningRadioStation(String paramString) {
@@ -1479,7 +1499,7 @@ public class AircraftState {
         this.listenRadioStation = false;
         stopListeningHayrake();
         this.aircraft.stopMorseSounds();
-        CmdMusic.setCurrentVolume(0.0F);
+        CmdMusic.setCurrentVolume(0.001F);
     }
 
     public void startListeningHayrake(Actor paramActor, String paramString) {
@@ -1490,7 +1510,7 @@ public class AircraftState {
         this.listenNDBeacon = false;
         this.listenRadioStation = false;
         this.aircraft.stopMorseSounds();
-        CmdMusic.setCurrentVolume(0.0F);
+        CmdMusic.setCurrentVolume(0.001F);
     }
 
     public void stopListeningHayrake() {
@@ -1505,7 +1525,7 @@ public class AircraftState {
         this.listenNDBeacon = false;
         this.listenRadioStation = false;
         this.aircraft.stopMorseSounds();
-        CmdMusic.setCurrentVolume(0.0F);
+        CmdMusic.setCurrentVolume(0.001F);
     }
 
     public void stopListeningLorenzBlindLanding() {
@@ -1684,8 +1704,12 @@ public class AircraftState {
                         HUD.log(astateHUDPilotHits[this.astatePilotFunctions[paramInt1]] + "BLEED1");
                 }
             } else {
-                i = 30000 / (int) this.astateBleedingNext[paramInt1];
-                long l2 = 30000 / (i + paramInt2);
+                //TODO: Implement 4.10.1 Codechanges +++
+//                i = 30000 / (int) this.astateBleedingNext[paramInt1];
+//                long l2 = 30000 / (i + paramInt2);
+                i = 120000 / (int) this.astateBleedingNext[paramInt1];
+                long l2 = 120000 / (i + paramInt2);
+                //TODO: Implement 4.10.1 Codechanges ---
                 if (l2 < 100L) {
                     l2 = 100L;
                 }

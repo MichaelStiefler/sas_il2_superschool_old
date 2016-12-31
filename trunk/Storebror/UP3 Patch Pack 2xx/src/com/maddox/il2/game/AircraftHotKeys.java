@@ -131,7 +131,7 @@ public class AircraftHotKeys {
     static final int        MOVE_TRIMHOR               = 8;
     static final int        MOVE_TRIMVER               = 9;
     static final int        MOVE_TRIMRUD               = 10;
-//	private int										cptdmg;
+// private int cptdmg;
     static final int        BRAKE                      = 0;
     static final int        RUDDER_LEFT                = 1;
     static final int        RUDDER_RIGHT               = 2;
@@ -257,8 +257,14 @@ public class AircraftHotKeys {
     private boolean         bAutoAutopilot;
     private int             switchToCockpitRequest;
     private HotKeyCmd[]     cmdFov;
+    // TODO: +++ Added by SAS~Storebor: Show Player Aircraft before any AI Actors! +++
     private static Object[] namedAll                   = new Object[1];
-    private static TreeMap  namedAircraft              = new TreeMap();
+    private static Object[] namedAllPlayer             = new Object[1];
+    private static Object[] namedAllAI                 = new Object[1];
+    private static TreeMap  namedAircraftPlayer        = new TreeMap();
+    private static TreeMap  namedAircraftAI            = new TreeMap();
+// private static TreeMap namedAircraft = new TreeMap();
+// TODO: --- Added by SAS~Storebor: Show Player Aircraft before any AI Actors! ---
     private boolean         bMissionModsSet            = false;
     private boolean         bSpeedbarTAS               = false;
     private boolean         bSeparateGearUpDown        = false;
@@ -272,12 +278,12 @@ public class AircraftHotKeys {
     private boolean         bBombBayDoors              = true;
     private boolean         bMusicOn                   = true;
     private int             iAirShowSmoke              = 0;
-//	private boolean									bAirShowSmokeEnhanced		= false;
+// private boolean bAirShowSmokeEnhanced = false;
     private boolean         bSideDoor                  = true;
     private int             COCKPIT_DOOR               = 1;
     private int             SIDE_DOOR                  = 2;
     private boolean         bAllowDumpFuel             = false;
-//	private boolean									bDumpFuel					= false;
+// private boolean bDumpFuel = false;
     private boolean         bExtViewEnemy              = false;
     private boolean         bExtViewFriendly           = false;
     private boolean         bExtViewSelf               = false;
@@ -289,7 +295,7 @@ public class AircraftHotKeys {
     private boolean         bPadlockFriendly           = false;
     private boolean         bExtPadlockEnemy           = false;
     private boolean         bExtPadlockFriendly        = false;
-//	private boolean									bMustangCompressorAuto		= true;
+// private boolean bMustangCompressorAuto = true;
 
     private float           lastPower2;
     private float           lastPower1;
@@ -301,7 +307,7 @@ public class AircraftHotKeys {
     private float           lastProp4;
     private float           lastRadiator;
     private AircraftLH      bAAircraft;
-//	private com.maddox.il2.fm.FlightModel			baFM;
+// private com.maddox.il2.fm.FlightModel baFM;
     static final int        MOVE_POWER1                = 15;
     static final int        MOVE_POWER2                = 16;
     static final int        MOVE_POWER3                = 17;
@@ -389,8 +395,7 @@ public class AircraftHotKeys {
             this.bAfterburner = bool;
             if (this.bAfterburner) {
                 boolean bool_4_ = false;
-                if (this.FM.actor instanceof Hurricane || (this.FM.actor instanceof A6M && !(this.FM.actor instanceof A6M7_62) && !(this.FM.actor instanceof A6M5C)) || this.FM.actor instanceof P_51 || this.FM.actor instanceof SPITFIRE
-                        || this.FM.actor instanceof MOSQUITO || this.FM.actor instanceof TEMPEST)
+                if (this.FM.actor instanceof Hurricane || (this.FM.actor instanceof A6M && !(this.FM.actor instanceof A6M7_62) && !(this.FM.actor instanceof A6M5C)) || this.FM.actor instanceof P_51 || this.FM.actor instanceof SPITFIRE || this.FM.actor instanceof MOSQUITO || this.FM.actor instanceof TEMPEST)
                     bool_4_ = true;
                 try {
                     // TODO: Disabled for 410 compatibility
@@ -441,9 +446,9 @@ public class AircraftHotKeys {
         this.lastProp3 = 1.5F;
         this.lastProp4 = 1.5F;
 
-//		bDumpFuel = false;
+// bDumpFuel = false;
         this.bMissionModsSet = false;
-//		bMustangCompressorAuto = true;
+// bMustangCompressorAuto = true;
     }
 
     private boolean setBombAimerAircraft() {
@@ -459,7 +464,7 @@ public class AircraftHotKeys {
             return false;
         } else {
             this.bAAircraft = (com.maddox.il2.objects.air.AircraftLH) flightmodel.actor;
-//			baFM = flightmodel;
+// baFM = flightmodel;
             return true;
         }
     }
@@ -706,15 +711,8 @@ public class AircraftHotKeys {
 
     private boolean hasBayDoors() {
         boolean bool = false;
-        if ((Aircraft) this.FM.actor instanceof A_20 || (Aircraft) this.FM.actor instanceof B_17 || (Aircraft) this.FM.actor instanceof B_24 || (Aircraft) this.FM.actor instanceof B_25 || (Aircraft) this.FM.actor instanceof B_29X
-                || (Aircraft) this.FM.actor instanceof Halifax || (Aircraft) this.FM.actor instanceof BLENHEIM || (Aircraft) this.FM.actor instanceof DO_335 || (Aircraft) this.FM.actor instanceof MOSQUITO || (Aircraft) this.FM.actor instanceof HE_111H2
-                || (Aircraft) this.FM.actor instanceof IL_10 || (Aircraft) this.FM.actor instanceof JU_88A4 || ((Aircraft) this.FM.actor instanceof ME_210 && !((Aircraft) this.FM.actor instanceof ME_210CA1ZSTR))
-                || (Aircraft) this.FM.actor instanceof PE_2 || (Aircraft) this.FM.actor instanceof PE_8 || (Aircraft) this.FM.actor instanceof R_10 || (Aircraft) this.FM.actor instanceof SB || (Aircraft) this.FM.actor instanceof SU_2
-                || (Aircraft) this.FM.actor instanceof TB_3 || (Aircraft) this.FM.actor instanceof IL_2 || (Aircraft) this.FM.actor instanceof IL_4 || (Aircraft) this.FM.actor instanceof FW_200 || (Aircraft) this.FM.actor instanceof KI_21
-                || (Aircraft) this.FM.actor instanceof YAK_9B || (Aircraft) this.FM.actor instanceof TU_2S || (Aircraft) this.FM.actor instanceof TBF || (Aircraft) this.FM.actor instanceof CantZ1007 || (Aircraft) this.FM.actor instanceof Do217_K1
-                || (Aircraft) this.FM.actor instanceof Halifax || (Aircraft) this.FM.actor instanceof JU_88C6 || (Aircraft) this.FM.actor instanceof MOSQUITO || (Aircraft) this.FM.actor instanceof LANCASTER || (Aircraft) this.FM.actor instanceof PZL37
-                || (Aircraft) this.FM.actor instanceof SM79 || (Aircraft) this.FM.actor instanceof CantZ1007bis || (Aircraft) this.FM.actor instanceof CantZ1007 || (Aircraft) this.FM.actor instanceof Do217_K1 || (Aircraft) this.FM.actor instanceof Do217
-                || (Aircraft) this.FM.actor instanceof Do217_K2)
+        if ((Aircraft) this.FM.actor instanceof A_20 || (Aircraft) this.FM.actor instanceof B_17 || (Aircraft) this.FM.actor instanceof B_24 || (Aircraft) this.FM.actor instanceof B_25 || (Aircraft) this.FM.actor instanceof B_29X || (Aircraft) this.FM.actor instanceof Halifax || (Aircraft) this.FM.actor instanceof BLENHEIM || (Aircraft) this.FM.actor instanceof DO_335 || (Aircraft) this.FM.actor instanceof MOSQUITO || (Aircraft) this.FM.actor instanceof HE_111H2 || (Aircraft) this.FM.actor instanceof IL_10 || (Aircraft) this.FM.actor instanceof JU_88A4 || ((Aircraft) this.FM.actor instanceof ME_210 && !((Aircraft) this.FM.actor instanceof ME_210CA1ZSTR)) || (Aircraft) this.FM.actor instanceof PE_2 || (Aircraft) this.FM.actor instanceof PE_8 || (Aircraft) this.FM.actor instanceof R_10 || (Aircraft) this.FM.actor instanceof SB || (Aircraft) this.FM.actor instanceof SU_2 || (Aircraft) this.FM.actor instanceof TB_3 || (Aircraft) this.FM.actor instanceof IL_2 || (Aircraft) this.FM.actor instanceof IL_4
+                || (Aircraft) this.FM.actor instanceof FW_200 || (Aircraft) this.FM.actor instanceof KI_21 || (Aircraft) this.FM.actor instanceof YAK_9B || (Aircraft) this.FM.actor instanceof TU_2S || (Aircraft) this.FM.actor instanceof TBF || (Aircraft) this.FM.actor instanceof CantZ1007 || (Aircraft) this.FM.actor instanceof Do217_K1 || (Aircraft) this.FM.actor instanceof Halifax || (Aircraft) this.FM.actor instanceof JU_88C6 || (Aircraft) this.FM.actor instanceof MOSQUITO || (Aircraft) this.FM.actor instanceof LANCASTER || (Aircraft) this.FM.actor instanceof PZL37 || (Aircraft) this.FM.actor instanceof SM79 || (Aircraft) this.FM.actor instanceof CantZ1007bis || (Aircraft) this.FM.actor instanceof CantZ1007 || (Aircraft) this.FM.actor instanceof Do217_K1 || (Aircraft) this.FM.actor instanceof Do217 || (Aircraft) this.FM.actor instanceof Do217_K2)
             bool = true;
         try {
             if ((Aircraft) this.FM.actor instanceof SM79)
@@ -758,7 +756,7 @@ public class AircraftHotKeys {
                 return;
             // ---------------------------------------------------------------------------
 
-//			boolean bool_12_ = false;
+// boolean bool_12_ = false;
             boolean bool_13_ = false;
             switch (i) {
                 case 16:
@@ -825,17 +823,17 @@ public class AircraftHotKeys {
                         // TODO: Storebror, get rid of "instanceof" name references crashing for missing dependencies,
                         // add conf.ini selectable "stabilizers for all aircraft"
 
-//						//TODO: Modified to ensure 410 compatibility
-//						if (aircraft instanceof TypeBomber || aircraft instanceof DO_335 /*
-//																						 * ||
-//																						 * aircraft
-//																						 * instanceof
-//																						 * F84G1
-//																						 * ||
-//																						 * aircraft
-//																						 * instanceof
-//																						 * F84G1
-//																						 */)
+// //TODO: Modified to ensure 410 compatibility
+// if (aircraft instanceof TypeBomber || aircraft instanceof DO_335 /*
+// * ||
+// * aircraft
+// * instanceof
+// * F84G1
+// * ||
+// * aircraft
+// * instanceof
+// * F84G1
+// */)
 
                         boolean canUseStabs = false;
                         do {
@@ -1795,11 +1793,17 @@ public class AircraftHotKeys {
                 return;
 
             case 139:
+                //TODO: Implement 4.10.1 Codechanges +++
+                if(!World.cur().diffCur.RealisticNavigationInstruments) return;
+                //TODO: Implement 4.10.1 Codechanges ---
                 this.bAAircraft.beaconPlus();
                 this.toTrackSign(i);
                 return;
 
             case 140:
+                //TODO: Implement 4.10.1 Codechanges +++
+                if(!World.cur().diffCur.RealisticNavigationInstruments) return;
+                //TODO: Implement 4.10.1 Codechanges ---
                 this.bAAircraft.beaconMinus();
                 this.toTrackSign(i);
                 return;
@@ -2266,7 +2270,8 @@ public class AircraftHotKeys {
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("1basic17", "AIRCRAFT_TRIM_R_MINUS", 51, 151));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("1basic18", "AIRCRAFT_TRIM_R_0", 49, 149));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("1basic19", "AIRCRAFT_TRIM_R_PLUS", 50, 150));
-        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$1", "1basic20") {});
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$1", "1basic20") {
+        });
         hudLogPowerId = HUD.makeIdLog();
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine01", "AIRCRAFT_TOGGLE_ENGINE", 70, 164));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine02", "AIRCRAFT_POWER_PLUS_5", 59, 159));
@@ -2283,7 +2288,8 @@ public class AircraftHotKeys {
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine13", "Power80", 28, 128));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine14", "Power90", 29, 129));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine15", "Power100", 30, 130));
-        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$2", "2engine16") {});
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$2", "2engine16") {
+        });
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine17", "Step0", 31, 131));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine18", "Step10", 32, 132));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine19", "Step20", 33, 133));
@@ -2298,7 +2304,8 @@ public class AircraftHotKeys {
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine28", "StepAuto", 42, 142));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine29", "StepPlus5", 73, 290));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine30", "StepMinus5", 74, 291));
-        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$3", "2engine31") {});
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$3", "2engine31") {
+        });
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine32", "Mix0", 75, 292));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine33", "Mix10", 76, 293));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine34", "Mix20", 77, 294));
@@ -2312,13 +2319,16 @@ public class AircraftHotKeys {
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine42", "Mix100", 85, 302));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine43", "MixPlus20", 86, 303));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine44", "MixMinus20", 87, 304));
-        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$4", "2engine45") {});
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$4", "2engine45") {
+        });
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine46", "MagnetoPlus", 88, 305));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine47", "MagnetoMinus", 89, 306));
-        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$5", "2engine48") {});
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$5", "2engine48") {
+        });
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine49", "CompressorPlus", 115, 334));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine50", "CompressorMinus", 116, 335));
-        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$6", "2engine51") {});
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$6", "2engine51") {
+        });
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine52", "EngineSelectAll", 90, 307));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine53", "EngineSelectNone", 91, 318));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine54", "EngineSelectLeft", 92, 316));
@@ -2342,10 +2352,12 @@ public class AircraftHotKeys {
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine72", "EngineToggle6", 110, 325));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine73", "EngineToggle7", 111, 326));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine74", "EngineToggle8", 112, 327));
-        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$7", "2engine75") {});
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$7", "2engine75") {
+        });
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine76", "EngineExtinguisher", 113, 330));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine77", "EngineFeather", 114, 333));
-        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$8", "2engine78") {});
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$8", "2engine78") {
+        });
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced01", "AIRCRAFT_FLAPS_NOTCH_UP", 52, 152));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced02", "AIRCRAFT_FLAPS_NOTCH_DOWN", 53, 153));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced03", "Gear", 9, 109));
@@ -2356,7 +2368,8 @@ public class AircraftHotKeys {
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced08", "Brake", 0, 100));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced09", "AIRCRAFT_TAILWHEELLOCK", 72, 166));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced10", "AIRCRAFT_DROP_TANKS", 62, 162));
-        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$9", "3advanced11") {});
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$9", "3advanced11") {
+        });
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced12", "AIRCRAFT_DOCK_UNDOCK", 126, 346));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced13", "WINGFOLD", 127, 347));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced14", "AIRCRAFT_CARRIERHOOK", 129, 349));
@@ -2368,7 +2381,8 @@ public class AircraftHotKeys {
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced17", "BombBayDoor", 131, 400));
         // -----------------------------------------------------------------------------
 
-        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$10", "3advanced18") {});
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$10", "3advanced18") {
+        });
         hudLogWeaponId = HUD.makeIdLog();
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic0", "Weapon0", 16, 116));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic1", "Weapon1", 17, 117));
@@ -2376,7 +2390,8 @@ public class AircraftHotKeys {
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic3", "Weapon3", 19, 119));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic4", "Weapon01", 64, 173));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic5", "GunPods", 15, 115));
-        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$+SIGHTCONTROLS", "4basic6") {});
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$+SIGHTCONTROLS", "4basic6") {
+        });
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced01", "SIGHT_AUTO_ONOFF", 125, 344));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced02", "SIGHT_DIST_PLUS", 117, 336));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced03", "SIGHT_DIST_MINUS", 118, 337));
@@ -2527,7 +2542,7 @@ public class AircraftHotKeys {
                         aircraft.netCockpitAuto(aircraft, i, !cockpitgunner.isRealMode());
                 }
                 com.maddox.il2.fm.FlightModel flightmodel = World.getPlayerFM();
-//				AircraftState aircraftstate = flightmodel.AS;
+// AircraftState aircraftstate = flightmodel.AS;
                 String string = (AircraftState.astateHUDPilotHits[(flightmodel.AS.astatePilotFunctions[cockpitgunner.astatePilotIndx()])]);
                 HUD.log(string + (cockpitgunner.isRealMode() ? "AIOFF" : "AION"));
             }
@@ -2603,7 +2618,7 @@ public class AircraftHotKeys {
             }
 
             public void begin() {
-//				Object object = null;
+// Object object = null;
                 Actor actor;
                 if (Main3D.cur3D().isDemoPlaying())
                     actor = Selector._getTrackArg0();
@@ -3264,7 +3279,7 @@ public class AircraftHotKeys {
                 float f = (Main3D.FOVX - 30.0F) * (Main3D.FOVX - 30.0F);
                 float f_373_ = (Main3D.FOVX - 70.0F) * (Main3D.FOVX - 70.0F);
                 float f_374_ = (Main3D.FOVX - 90.0F) * (Main3D.FOVX - 90.0F);
-//				boolean bool = false;
+// boolean bool = false;
                 int i;
                 if (f <= f_373_)
                     i = 70;
@@ -3789,8 +3804,7 @@ public class AircraftHotKeys {
             }
 
             public void begin() {
-                if (!Main3D.cur3D().isViewOutside() && AircraftHotKeys.this.isMiscValid() && Actor.isValid(Main3D.cur3D().cockpitCur) && !Main3D.cur3D().cockpitCur.isToggleAim() && World.getPlayerFM().CT.bHasCockpitDoorControl
-                        && (Main3D.cur3D().cockpitCur.isToggleUp() || (!(World.getPlayerFM().CT.cockpitDoorControl < 0.5F) && !(World.getPlayerFM().CT.getCockpitDoor() < 0.99F))))
+                if (!Main3D.cur3D().isViewOutside() && AircraftHotKeys.this.isMiscValid() && Actor.isValid(Main3D.cur3D().cockpitCur) && !Main3D.cur3D().cockpitCur.isToggleAim() && World.getPlayerFM().CT.bHasCockpitDoorControl && (Main3D.cur3D().cockpitCur.isToggleUp() || (!(World.getPlayerFM().CT.cockpitDoorControl < 0.5F) && !(World.getPlayerFM().CT.getCockpitDoor() < 0.99F))))
                     Main3D.cur3D().cockpitCur.doToggleUp(!Main3D.cur3D().cockpitCur.isToggleUp());
             }
         });
@@ -3903,7 +3917,7 @@ public class AircraftHotKeys {
         this.bAfterburner = false;
         this.lastPower = -0.5F;
         this.lastProp = 1.5F;
-//		cptdmg = 1;
+// cptdmg = 1;
         this.bAutoAutopilot = false;
         this.switchToCockpitRequest = -1;
         this.cmdFov = new HotKeyCmd[16];
@@ -3934,8 +3948,8 @@ public class AircraftHotKeys {
         this.iAirShowSmoke = Config.cur.ini.get("Mods", "AirShowSmoke", 0);
         if (this.iAirShowSmoke < 1 || this.iAirShowSmoke > 3)
             this.iAirShowSmoke = 0;
-//		if (Config.cur.ini.get("Mods", "AirShowSmokeEnhanced", 0) > 0)
-//			bAirShowSmokeEnhanced = true;
+// if (Config.cur.ini.get("Mods", "AirShowSmokeEnhanced", 0) > 0)
+// bAirShowSmokeEnhanced = true;
         if (Config.cur.ini.get("Mods", "DumpFuel", 0) > 0)
             this.bAllowDumpFuel = true;
     }
@@ -3949,85 +3963,162 @@ public class AircraftHotKeys {
         return Selector.setCurRecordArg0(World.getPlayerAircraft());
     }
 
+// private Actor nextViewActorOld(boolean bool) {
+// if (Selector.isEnableTrackArgs())
+// return Selector.setCurRecordArg0(Selector.getTrackArg0());
+// int i = World.getPlayerArmy();
+// namedAircraft.clear();
+// Actor actor = Main3D.cur3D().viewActor();
+// if (this.isViewed(actor))
+// namedAircraft.put(actor.name(), null);
+// for (Map.Entry entry = Engine.name2Actor().nextEntry(null); entry != null; entry = Engine.name2Actor().nextEntry(entry)) {
+// Actor actor_319_ = (Actor) entry.getValue();
+//
+// // TODO: Added by |ZUTI|: Disable showing of paratroopers! New difficulty setting?
+// // -------------------------------------------------
+// if (actor_319_ instanceof Paratrooper)
+// continue;
+// // -------------------------------------------------
+//
+// if (this.isViewed(actor_319_) && actor_319_ != actor) {
+// if (bool) {
+// if (actor_319_.getArmy() != i)
+// namedAircraft.put(actor_319_.name(), null);
+// } else if (actor_319_.getArmy() == i)
+// namedAircraft.put(actor_319_.name(), null);
+// }
+// }
+// if (namedAircraft.size() == 0)
+// return Selector.setCurRecordArg0(null);
+// if (!this.isViewed(actor))
+// return (Selector.setCurRecordArg0((Actor) Engine.name2Actor().get(namedAircraft.firstKey())));
+// if (namedAircraft.size() == 1 && this.isViewed(actor))
+// return Selector.setCurRecordArg0(null);
+// namedAll = namedAircraft.keySet().toArray(namedAll);
+// int i_320_ = 0;
+// String string = actor.name();
+// for (/**/; namedAll[i_320_] != null; i_320_++) {
+// if (string.equals(namedAll[i_320_]))
+// break;
+// }
+// if (namedAll[i_320_] == null)
+// return Selector.setCurRecordArg0(null);
+// i_320_++;
+// if (namedAll.length == i_320_ || namedAll[i_320_] == null)
+// i_320_ = 0;
+// return Selector.setCurRecordArg0((Actor) Engine.name2Actor().get(namedAll[i_320_]));
+// }
+
+    // TODO: +++ Added by SAS~Storebor: Show Player Aircraft before any AI Actors! +++
     private Actor nextViewActor(boolean showEnemy) {
         if (Selector.isEnableTrackArgs())
             return Selector.setCurRecordArg0(Selector.getTrackArg0());
         int playerArmyIndex = World.getPlayerArmy();
-        namedAircraft.clear();
+        namedAircraftPlayer.clear();
+        namedAircraftAI.clear();
         Actor viewActor = Main3D.cur3D().viewActor();
-        if (this.isViewed(viewActor))
-            namedAircraft.put(viewActor.name(), null);
-        // TODO: Added by SAS~Storebor: Show Player Aircraft before any AI Actors!
-        // -------------------------------------------------
+        TreeMap curTreeMap = null;
+        if (this.isViewed(viewActor)) {
+            NetUser netuser = null;
+            if (viewActor instanceof Aircraft) {
+                netuser = ((NetAircraft) viewActor).netUser();
+            } else if (viewActor instanceof Paratrooper) {
+                netuser = (NetUser) Reflection.getValue(viewActor, "driver");
+            }
+            curTreeMap = ((netuser == null) ? namedAircraftAI : namedAircraftPlayer);
+            curTreeMap.put(viewActor.name(), null);
+// System.out.println("Adding " + viewActor.name() + " to list of " + (curTreeMap == namedAircraftAI ? "AI" : "player") + " actors!");
+        }
         for (Map.Entry actorEntry = Engine.name2Actor().nextEntry(null); actorEntry != null; actorEntry = Engine.name2Actor().nextEntry(actorEntry)) {
             Actor curActor = (Actor) actorEntry.getValue();
             NetUser netuser = null;
             if (curActor instanceof Aircraft) {
                 netuser = ((NetAircraft) curActor).netUser();
             } else if (curActor instanceof Paratrooper) {
-                netuser = (NetUser)Reflection.getValue(curActor, "driver");
+                netuser = (NetUser) Reflection.getValue(curActor, "driver");
             }
-            if (netuser == null) continue; // skip any AI stuff at this stage...
+            curTreeMap = ((netuser == null) ? namedAircraftAI : namedAircraftPlayer);
 
-            // TODO: Added by |ZUTI|: Disable showing of paratroopers! New difficulty setting?
-            // -------------------------------------------------
-            if (curActor instanceof Paratrooper)
+            // Don't show AI Paratroopers, show only player Paratroopers.
+            if (curTreeMap == namedAircraftAI && curActor instanceof Paratrooper)
                 continue;
-            // -------------------------------------------------
 
             if (this.isViewed(curActor) && curActor != viewActor) {
                 if (showEnemy) {
-                    if (curActor.getArmy() != playerArmyIndex)
-                        namedAircraft.put(curActor.name(), null);
-                } else if (curActor.getArmy() == playerArmyIndex)
-                    namedAircraft.put(curActor.name(), null);
+                    if (curActor.getArmy() != playerArmyIndex) {
+// System.out.println("Adding " + curActor.name() + " to list of enemy " + (curTreeMap == namedAircraftAI ? "AI" : "player") + " actors!");
+                        curTreeMap.put(curActor.name(), null);
+                    }
+                } else if (curActor.getArmy() == playerArmyIndex) {
+// System.out.println("Adding " + curActor.name() + " to list of friendly " + (curTreeMap == namedAircraftAI ? "AI" : "player") + " actors!");
+                    curTreeMap.put(curActor.name(), null);
+                }
             }
         }
-        // -------------------------------------------------
-        
-        for (Map.Entry actorEntry = Engine.name2Actor().nextEntry(null); actorEntry != null; actorEntry = Engine.name2Actor().nextEntry(actorEntry)) {
-            Actor curActor = (Actor) actorEntry.getValue();
 
-            // TODO: Added by |ZUTI|: Disable showing of paratroopers! New difficulty setting?
-            // -------------------------------------------------
-            if (curActor instanceof Paratrooper) // TODO: Only AI Paratroopers get skipped now (added by SAS~Storebror)
-                continue;
-            // -------------------------------------------------
+        if (namedAircraftAI.size() + namedAircraftPlayer.size() == 0)
+            return Selector.setCurRecordArg0(null);
+        if (!this.isViewed(viewActor) && namedAircraftPlayer.size() != 0 && namedAircraftPlayer.firstKey() != null)
+            return (Selector.setCurRecordArg0((Actor) Engine.name2Actor().get(namedAircraftPlayer.firstKey())));
+        if (!this.isViewed(viewActor) && namedAircraftAI.size() != 0 && namedAircraftAI.firstKey() != null)
+            return (Selector.setCurRecordArg0((Actor) Engine.name2Actor().get(namedAircraftAI.firstKey())));
+        if (namedAircraftAI.size() + namedAircraftPlayer.size() == 1 && this.isViewed(viewActor))
+            return Selector.setCurRecordArg0(null);
 
-            // TODO: Added by SAS~Storebor: Show Player Aircraft before any AI Actors!
-            // -------------------------------------------------
-            if (curActor instanceof Aircraft)
-                if (((NetAircraft) curActor).netUser() != null) continue; // Skip Player Aircraft at this stage
-            // -------------------------------------------------
-            
-            if (this.isViewed(curActor) && curActor != viewActor) {
-                if (showEnemy) {
-                    if (curActor.getArmy() != playerArmyIndex)
-                        namedAircraft.put(curActor.name(), null);
-                } else if (curActor.getArmy() == playerArmyIndex)
-                    namedAircraft.put(curActor.name(), null);
-            }
-        }
-        if (namedAircraft.size() == 0)
-            return Selector.setCurRecordArg0(null);
-        if (!this.isViewed(viewActor))
-            return (Selector.setCurRecordArg0((Actor) Engine.name2Actor().get(namedAircraft.firstKey())));
-        if (namedAircraft.size() == 1 && this.isViewed(viewActor))
-            return Selector.setCurRecordArg0(null);
-        namedAll = namedAircraft.keySet().toArray(namedAll);
+// System.out.println("Initializing Arrays");
+// for (int i = 0; i < namedAllPlayer.length; i++) namedAllPlayer[i] = null;
+// for (int i = 0; i < namedAllAI.length; i++) namedAllAI[i] = null;
+// for (int i = 0; i < namedAll.length; i++) namedAll[i] = null;
+
+        namedAllPlayer = namedAircraftPlayer.keySet().toArray(namedAllPlayer);
+        namedAllAI = namedAircraftAI.keySet().toArray(namedAllAI);
+        namedAll = this.concat(namedAllPlayer, namedAllAI, namedAll);
+
+// // TEST
+// for (int i = 0; i < namedAll.length; i++) {
+// if (namedAll[i] != null)
+// System.out.println("namedAll[" + i + "]=" + namedAll[i].toString());
+// else
+// break;
+// }
+// // ---
+
         int viewIndex = 0;
         String string = viewActor.name();
+// System.out.println("viewActor.name()=" + string);
         for (; namedAll[viewIndex] != null; viewIndex++) {
             if (string.equals(namedAll[viewIndex]))
                 break;
         }
-        if (namedAll[viewIndex] == null)
+        if (namedAll[viewIndex] == null) {
+// System.out.println("viewIndex=" + viewIndex + ", namedAll[viewIndex]=null");
             return Selector.setCurRecordArg0(null);
+        }
+// System.out.println("viewIndex=" + viewIndex + ", namedAll[viewIndex]=" + namedAll[viewIndex].toString());
         viewIndex++;
         if (namedAll.length == viewIndex || namedAll[viewIndex] == null)
             viewIndex = 0;
+// System.out.println("viewIndex++=" + viewIndex + ", namedAll[viewIndex++]=" + namedAll[viewIndex].toString());
         return Selector.setCurRecordArg0((Actor) Engine.name2Actor().get(namedAll[viewIndex]));
     }
+
+    private Object[] concat(Object[] a, Object[] b, Object[] c) {
+        int aLen = 0;
+        for (aLen = 0; aLen < a.length; aLen++)
+            if (a[aLen] == null)
+                break;
+        int bLen = 0;
+        for (bLen = 0; bLen < b.length; bLen++)
+            if (b[bLen] == null)
+                break;
+        if (c.length < aLen + bLen + 1)
+            c = new Object[aLen + bLen + 1];
+        System.arraycopy(a, 0, c, 0, aLen);
+        System.arraycopy(b, 0, c, aLen, bLen);
+        c[aLen + bLen] = null;
+        return c;
+    }
+    // TODO: --- Added by SAS~Storebor: Show Player Aircraft before any AI Actors! ---
 
     private boolean isViewed(Actor actor) {
         if (!Actor.isValid(actor))

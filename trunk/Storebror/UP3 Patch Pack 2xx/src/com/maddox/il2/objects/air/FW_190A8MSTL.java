@@ -33,6 +33,7 @@ import com.maddox.sas1946.il2.util.Reflection;
 public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 
     public FW_190A8MSTL() {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL()");
         this.bNeedSetup = true;
         this.dtime = -1L;
         this.target_ = null;
@@ -41,6 +42,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
     }
 
     public Aircraft getDrone() {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL getDrone()");
         return this;
     }
 
@@ -51,6 +53,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
     }
 
     public void mistelExplosion() {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL mistelExplosion()");
         if (this.mistelQueen == null) {
             if (DEBUG >= 1)
                 System.out.println("FW_190A8MSTL mistelExplosion() mistelQueen=null");
@@ -76,11 +79,13 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
     }
 
     protected void finalize() {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL finalize()");
         super.finalize();
         NetMistel.removeNetMistelFromList(this);
     }
 
     protected void moveFan(float f) {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL moveFan("+ f + ")");
         int i = 0;
         for (int j = 0; j < 1; j++) {
             if (this.oldProp[j] < 2) {
@@ -112,6 +117,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
     }
 
     public static void moveGear(HierMesh hiermesh, float f) {
+        if (DEBUG_METHODS) System.out.println("FW_190A8MSTL moveGear("+ hiermesh.hashCode() + ", " + f + ")");
         hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 77F * f, 0.0F);
         hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 77F * f, 0.0F);
         hiermesh.chunkSetAngles("GearL3_D0", 0.0F, 157F * f, 0.0F);
@@ -124,6 +130,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
     }
 
     protected void moveGear(float f) {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL moveGear(" + f + ")");
         if (this.typeDockableIsDocked())
             moveGear(this.hierMesh(), 0.0F);
         else
@@ -131,6 +138,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
     }
 
     public void moveSteering(float f) {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL moveSteering(" + f + ")");
         if (this.FM.CT.getGear() < 0.98F) {
             return;
         } else {
@@ -140,6 +148,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
     }
 
     public void update(float f) {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL update(" + f + ")");
         if (this.bNeedSetup)
             this.checkAsDrone();
         if (this.FM instanceof Maneuver)
@@ -190,10 +199,20 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-
+        if (this.FM.AS.bNavLightsOn != this.navLightsOn) {
+            this.navLightsOn = this.FM.AS.bNavLightsOn;
+            if (this.queen_ != null) {
+                if (this.queen_ instanceof JU_88MSTL) {
+                    ((JU_88MSTL) this.queen_).cutFM(cutFMParams[this.nextCutIndex++], 0, Engine.actorLand());
+                    if (this.nextCutIndex >= cutFMParams.length)
+                        this.nextCutIndex = 0;
+                }
+            }
+        }
     }
 
     public void onAircraftLoaded() {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL onAircraftLoaded()");
         super.onAircraftLoaded();
         if (Mission.isCoop() && !Mission.isServer() && !this.isSpawnFromMission() && this.net.isMaster())
             new MsgAction(64, 0.0D, this) {
@@ -206,6 +225,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
     }
 
     private void onCoopMasterSpawned() {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL onCoopMasterSpawned()");
         Actor actor = null;
         String s = null;
         if (this.FM.AP.way.curr().getTargetName() == null)
@@ -231,10 +251,12 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
     }
 
     public void missionStarting() {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL missionStarting()");
         this.checkAsDrone();
     }
 
     private void checkAsDrone() {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL checkAsDrone()");
         if (this.target_ == null) {
             if (this.FM.AP.way.curr().getTarget() == null)
                 this.FM.AP.way.next();
@@ -249,6 +271,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
     }
 
     public int typeDockableGetDockport() {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL typeDockableGetDockport()");
         if (this.typeDockableIsDocked())
             return this.dockport_;
         else
@@ -256,14 +279,17 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
     }
 
     public Actor typeDockableGetQueen() {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL typeDockableGetQueen()");
         return this.queen_;
     }
 
     public boolean typeDockableIsDocked() {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL typeDockableIsDocked()");
         return Actor.isValid(this.queen_);
     }
 
     public void typeDockableAttemptAttach() {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL typeDockableAttemptAttach()");
         if (!this.FM.AS.isMaster())
             return;
         if (!this.typeDockableIsDocked()) {
@@ -274,6 +300,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
     }
 
     public void typeDockableAttemptDetach() {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL typeDockableAttemptDetach()");
         if (this.FM.AS.isMaster() && this.typeDockableIsDocked() && Actor.isValid(this.queen_))
             ((TypeDockable) this.queen_).typeDockableRequestDetach(this);
     }
@@ -291,6 +318,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
     public void typeDockableDoDetachFromDrone(int i) {}
 
     public void typeDockableDoAttachToQueen(Actor actor, int i) {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL typeDockableDoAttachToQueen(" + actor.hashCode() + ", " + i + ")");
         this.queen_ = actor;
         this.mistelQueen = actor;
         this.dockport_ = i;
@@ -340,6 +368,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
     }
 
     public void typeDockableDoDetachFromQueen(int i) {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL typeDockableDoDetachFromQueen(" + i + ")");
         if (this.dockport_ != i)
             return;
         this.queen_ = null;
@@ -369,6 +398,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
     }
 
     public void typeDockableReplicateToNet(NetMsgGuaranted netmsgguaranted) throws IOException {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL typeDockableReplicateToNet(" + netmsgguaranted.hashCode() + ")");
         if (this.typeDockableIsDocked()) {
             netmsgguaranted.writeByte(1);
             ActorNet actornet = null;
@@ -385,6 +415,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
     }
 
     public void typeDockableReplicateFromNet(NetMsgInput netmsginput) throws IOException {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL typeDockableReplicateFromNet(" + netmsginput.hashCode() + ")");
         if (netmsginput.readByte() == 1) {
             this.dockport_ = netmsginput.readByte();
             NetObj netobj = netmsginput.readNetObj();
@@ -396,11 +427,20 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
     }
 
     public boolean netGetGMsg(NetMsgInput netmsginput, boolean bool) throws IOException {
+        if (Debug_Methods()) System.out.println("FW_190A8MSTL netGetGMsg(" + netmsginput.hashCode() + ", " + bool + ")");
         if (!NetMistel.netGetGMsg(this, netmsginput, bool))
             return super.netGetGMsg(netmsginput, bool);
         return true;
     }
 
+    private boolean Debug_Methods() {
+        if (!DEBUG_METHODS) return false;
+        if (this.getQueen() == null) return false;
+        if (!(this.getQueen() instanceof JU_88MSTL)) return false;
+        if (!((JU_88MSTL)this.getQueen()).wasInCutFM) return false;
+        return true;
+    }
+    
     private boolean    bNeedSetup;
     private long       dtime;
     private Actor      target_;
@@ -408,6 +448,10 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
     private int        dockport_;
     private Actor      mistelQueen;
     private static int DEBUG = 1;
+    private static boolean DEBUG_METHODS = false;
+    private boolean navLightsOn = false;
+    private static int cutFMParams[] = {19, 37, 34, 10, 9};
+    private int nextCutIndex = 0;
 
     static {
         Class class1 = FW_190A8MSTL.class;

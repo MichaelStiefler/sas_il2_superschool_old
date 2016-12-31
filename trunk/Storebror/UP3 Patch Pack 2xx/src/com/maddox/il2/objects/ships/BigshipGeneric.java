@@ -79,6 +79,7 @@ import com.maddox.rts.NetChannelInStream;
 import com.maddox.rts.NetMsgFiltered;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
+import com.maddox.rts.ObjIO;
 import com.maddox.rts.ObjState;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
@@ -415,8 +416,10 @@ public class BigshipGeneric extends ActorHMesh implements MsgCollisionRequestLis
 				// Refresh front marker
 				ZutiSupportMethods_Ships.refreshShipsFrontMarkerPosition(BigshipGeneric.this, true);
 				// disable guns when ship is sinking/sunk
-				// if (path != null || !Mission.isDeathmatch())
-				if (path != null)
+                //TODO: Implement 4.10.1 Codechanges +++
+				if (path != null || !Mission.isDeathmatch())
+				//if (path != null)
+                //TODO: Implement 4.10.1 Codechanges ---
 				{
 					BigshipGeneric.this.eraseGuns();
 					return false;
@@ -512,7 +515,7 @@ public class BigshipGeneric extends ActorHMesh implements MsgCollisionRequestLis
 			if (netmsginput.isGuaranted())
 			{
 				int i = netmsginput.readUnsignedByte();
-				java.lang.System.out.println("MASTER NETINPUT: " + i);
+//				java.lang.System.out.println("MASTER NETINPUT: " + i);
 				if (i == 93)
 				{
 					com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser) netmsginput.readNetObj();
@@ -3735,19 +3738,19 @@ public class BigshipGeneric extends ActorHMesh implements MsgCollisionRequestLis
 	{
 		try
 		{
-			java.lang.Class class1 = com.maddox.rts.ObjIO.classForName(s);
-			java.lang.Object obj = class1.newInstance();
-			com.maddox.il2.objects.air.Aircraft aircraft = (com.maddox.il2.objects.air.Aircraft) obj;
+			Class class1 = ObjIO.classForName(s);
+			Object obj = class1.newInstance();
+			Aircraft aircraft = (Aircraft) obj;
 
-			java.lang.String s1 = com.maddox.rts.Property.stringValue(aircraft.getClass(), "FlightModel", null);
+			String s1 = Property.stringValue(aircraft.getClass(), "FlightModel", null);
 			aircraft.FM = new FlightModel(s1);
 			aircraft.FM.Gears.set(aircraft.hierMesh());
-			com.maddox.il2.objects.air.Aircraft.forceGear(aircraft.getClass(), aircraft.hierMesh(), 1.0F);
+			Aircraft.forceGear(aircraft.getClass(), aircraft.hierMesh(), 1.0F);
 			aircraft.FM.Gears.computePlaneLandPose(aircraft.FM);
-			com.maddox.il2.objects.air.Aircraft.forceGear(aircraft.getClass(), aircraft.hierMesh(), 0.0F);
+			Aircraft.forceGear(aircraft.getClass(), aircraft.hierMesh(), 0.0F);
 			if (airport != null)
 			{
-				com.maddox.il2.engine.Loc loc = airport.requestCell(aircraft);
+				Loc loc = airport.requestCell(aircraft);
 				postLocationToMirror(netuser, loc);
 			}
 			aircraft.FM = null;

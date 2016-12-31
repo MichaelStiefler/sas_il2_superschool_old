@@ -830,12 +830,16 @@ public class RocketryGeneric extends ActorMesh implements MsgCollisionListener, 
                 TrajSeg[] trajsegs = computeNormalTrajectory(rocketingames[i_59_].randseed);
                 if (trajsegs != null) {
                     RocketryRocket rocketryrocket = (new RocketryRocket(this, meshNames.rocket, rocketingames[i_59_].idR, rocketingames[i_59_].randseed, l - (long) (1000.0 * (double) (rocketingames[i_59_].timeAfterStartS)), l, trajsegs));
-                    if (rocketryrocket.isDamaged())
+                    
+                    //TODO: Implement 4.10.1 Codechanges +++
+                    
+                    if (rocketryrocket.isDamaged()) {
                         rocketryrocket.silentDeath();
-                    else {
+                        continue;
+                    } else {
                         // TODO: Edited by |ZUTI|: this is called if we are client
                         // ------------------------------------------------------------------------
-                        if (Mission.MDS_VARIABLES().zutiIcons_ShowRockets) {
+                        if (GUI.pad != null && Mission.MDS_VARIABLES().zutiIcons_ShowRockets) {
                             ZutiPadObject zo = new ZutiPadObject(rocketryrocket, Mission.MDS_VARIABLES().zutiRadar_RefreshInterval > 0);
                             zo.type = 3;
 
@@ -845,6 +849,23 @@ public class RocketryGeneric extends ActorMesh implements MsgCollisionListener, 
 
                         rs.add(rocketryrocket);
                     }
+
+//                    if (rocketryrocket.isDamaged())
+//                        rocketryrocket.silentDeath();
+//                    else {
+//                        // TODO: Edited by |ZUTI|: this is called if we are client
+//                        // ------------------------------------------------------------------------
+//                        if (Mission.MDS_VARIABLES().zutiIcons_ShowRockets) {
+//                            ZutiPadObject zo = new ZutiPadObject(rocketryrocket, Mission.MDS_VARIABLES().zutiRadar_RefreshInterval > 0);
+//                            zo.type = 3;
+//
+//                            GUI.pad.zutiPadObjects.put(new Integer(zo.hashCode()), zo);
+//                        }
+//                        // ------------------------------------------------------------------------
+//
+//                        rs.add(rocketryrocket);
+//                    }
+                    //TODO: Implement 4.10.1 Codechanges ---
                 }
             }
         }

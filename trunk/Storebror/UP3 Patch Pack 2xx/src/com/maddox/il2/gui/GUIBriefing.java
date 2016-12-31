@@ -929,9 +929,9 @@ public class GUIBriefing extends GUIBriefingGeneric
 		return findBornPlace(f, f_47_) >= 0;
 	}
 
-	protected void setBornPlace(float f, float f_48_)
+	protected void setBornPlace(float f, float f1)
 	{
-		int i = findBornPlace(f, f_48_);
+		int i = findBornPlace(f, f1);
 		if (i >= 0)
 		{
 			// Selected HomeBase is valid, change country markings to default. If user changes those in Arming screen, everything is ok! If not... defaults for him!

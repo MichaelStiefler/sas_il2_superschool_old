@@ -2,51 +2,71 @@ package com.maddox.rts;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.util.Calendar;
 
+import com.maddox.il2.engine.Config;
+
 class ConsoleLogFile implements ConsoleOut {
 
     public void flush() {
-        f.flush();
+        this.f.flush();
+        // TODO: +++ Instant Log by SAS~Storebror +++
+        if (!Config.cur.bInstantLog) {
+            return;
+        }
+        this.f.close();
+        try {
+            this.f = new PrintWriter(new FileOutputStream(HomePath.toFileSystemName(this.fileName, 0), true));
+        } catch (IOException theIOException) {
+        }
+        // TODO: --- Instant Log by SAS~Storebror ---
     }
 
     public void println(String s) {
-        f.println(s);
+        this.f.println(s);
+        // TODO: +++ Instant Log by SAS~Storebror +++
+        if (Config.cur.bInstantLog) this.flush();
+        // TODO: --- Instant Log by SAS~Storebror ---
     }
 
     public void type(String s) {
-//        if (NetEnv.isServer()) {
-//            if (s.startsWith("chat ")) return;
-//            if (s.startsWith("timeout ")) return;
-//            if (s.startsWith("Chat: Server: ")) return;
-//        }
         if (Console.bTypeTimeInLogFile) {
             Calendar calendar = Calendar.getInstance();
-            f.print("[" + shortDate.format(calendar.getTime()) + "]\t");
+            this.f.print("[" + this.shortDate.format(calendar.getTime()) + "]\t");
         }
-        f.print(s);
-//        if (!s.endsWith("\n"))
-//            f.println(); // Patch Pack 107, always add line break at end of log line!
+        this.f.print(s);
+        // TODO: +++ Instant Log by SAS~Storebror +++
+        if (Config.cur.bInstantLog) this.flush();
+        // TODO: --- Instant Log by SAS~Storebror ---
     }
 
     public void close() {
         Calendar calendar = Calendar.getInstance();
-        f.println("[" + longDate.format(calendar.getTime()) + "] -------------- END log session -------------");
-        f.close();
+        this.f.println();
+        this.f.println("[" + this.longDate.format(calendar.getTime()) + "] -------------- END log session -------------");
+        this.f.close();
     }
 
     public ConsoleLogFile(String s) throws FileNotFoundException {
-        f = new PrintWriter(new FileOutputStream(HomePath.toFileSystemName(s, 0), true));
+        // TODO: +++ Instant Log by SAS~Storebror +++
+        this.fileName = s;
+        // TODO: --- Instant Log by SAS~Storebror ---
+        this.f = new PrintWriter(new FileOutputStream(HomePath.toFileSystemName(s, 0), true));
         Calendar calendar = Calendar.getInstance();
-        longDate = DateFormat.getDateTimeInstance(2, 2);
-        shortDate = DateFormat.getTimeInstance(2);
-        f.println("[" + longDate.format(calendar.getTime()) + "] ------------ BEGIN log session -------------");
+        this.longDate = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
+        this.shortDate = DateFormat.getTimeInstance(DateFormat.MEDIUM);
+        this.f.println();
+        this.f.println("[" + this.longDate.format(calendar.getTime()) + "] ------------ BEGIN log session -------------");
+        this.f.println();
     }
 
-//    private static final boolean useCalendar = true;
     private PrintWriter f;
     private DateFormat  longDate;
     private DateFormat  shortDate;
+    // TODO: +++ Instant Log by SAS~Storebror +++
+    private String      fileName;
+    // TODO: --- Instant Log by SAS~Storebror ---
 }

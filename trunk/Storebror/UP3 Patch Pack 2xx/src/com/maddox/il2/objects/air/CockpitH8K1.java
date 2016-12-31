@@ -80,13 +80,8 @@ public class CockpitH8K1 extends CockpitPilot {
         if (super.doFocusEnter()) {
             this.aircraft().hierMesh().chunkVisible("Cockpit_D0", false);
             // TODO: +++ Fix outer frame parts appearing when aircraft is damaged
-            // aircraft().hierMesh().chunkVisible("CF_D0", false);
-            // ---
             this.aircraft().hierMesh().chunkVisible("Pilot2_D0", false);
-            // TODO: +++ Fix outer frame parts appearing when aircraft is damaged
             this.bNeedSetUp = true;
-//            this.damageIndex = this.aircraft().chunkDamageVisible("CF");
-//            this.aircraft().hierMesh().chunkVisible("CF_D" + this.damageIndex, false);
             // ---
             return true;
         } else {

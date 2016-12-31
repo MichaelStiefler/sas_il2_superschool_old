@@ -1305,7 +1305,7 @@ public class Pilot extends Maneuver {
     private FlightModel           oldTaskObject;
     private Actor                 oldGTarget;
     private boolean               continueManeuver;
-    private static final Vector3d MAIN_LOOK        = new Vector3d(0.34202013999999997D, 0.0D, 0.93969259999999999D);
+    private static final Vector3d MAIN_LOOK        = new Vector3d(0.34202014D, 0.0D, 0.9396926D);
     private static Vector3d       vecDanger        = new Vector3d();
     private static Vector3d       onMe             = new Vector3d();
     private static Vector3d       diffV            = new Vector3d();

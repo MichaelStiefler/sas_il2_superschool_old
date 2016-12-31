@@ -307,6 +307,10 @@ public class VisCheck {
     }
 
     private static boolean checkIfOwnPlaneBlocksVisibility(Aircraft aircraft, Aircraft aircraft1, boolean flag) {
+     // +++ TODO: Storebror: null Checks added +++
+        if (aircraft == null) return false;
+        if (aircraft.hierMesh() == null) return false;
+     // --- TODO: Storebror: null Checks added ---
         if (aircraft.hierMesh().chunkFindCheck("Head1_D0") == -1)
             return false;
         boolean flag1 = false;
@@ -341,6 +345,10 @@ public class VisCheck {
     }
 
     private static boolean checkPlaneBlocking(Aircraft aircraft, Aircraft aircraft1, boolean flag) {
+        // +++ TODO: Storebror: null Checks added +++
+        if (aircraft1 == null) return false;
+        if (aircraft1.pos == null) return false;
+     // --- TODO: Storebror: null Checks added ---
         tmpV3d.sub(aircraft1.pos.getAbsPoint(), pilotHeadLoc.getPoint());
         double d = tmpV3d.length();
         tmpV3d.normalize();

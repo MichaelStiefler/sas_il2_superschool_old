@@ -226,7 +226,8 @@ public class Mission implements Destroy {
             if (netmsgguaranted instanceof NetMsgSpawn)
                 this.msgCallback(netchanneloutstream, 0);
             else if (!(netmsgguaranted instanceof NetMsgDestroy)) {
-                while_0_: do {
+                while_0_:
+                do {
                     boolean bool;
                     try {
                         NetMsgInput netmsginput = new NetMsgInput();
@@ -811,7 +812,8 @@ public class Mission implements Destroy {
         // Reset player army
         try {
             ((NetUser) NetEnv.host()).setArmy(0);
-        } catch (Exception ex) {}
+        } catch (Exception ex) {
+        }
 
         // After both, mission and map files were read, load also born places and add them to friction plates, if they are set up like that
         ZutiSupportMethods.zutiAddHomeBasesAsFrictionDictators();
@@ -879,7 +881,8 @@ public class Mission implements Destroy {
                             continue;
 
                         ZutiSupportMethods_Engine.addAirfieldPoint_MisIni(line);
-                    } catch (Exception ex) {}
+                    } catch (Exception ex) {
+                    }
                 }
             }
         } catch (Exception ex) {
@@ -917,7 +920,7 @@ public class Mission implements Destroy {
         setDate(l, i1, j1);
 
         // TODO: +++ Mission Date Fix by SAS~Storebror +++
-//		World.land().LoadMap(string, is);
+// World.land().LoadMap(string, is);
         World.land().LoadMap(string, is, i1, j1);
         // TODO: --- Mission Date Fix by SAS~Storebror ---
 
@@ -1090,7 +1093,7 @@ public class Mission implements Destroy {
                     if (actor instanceof TypeHasRadioStation) {
                         hasRadioStations = true;
                         aircraft.FM.AS.preLoadRadioStation(actor);
-                        CmdMusic.setVolume(0.001F);
+                        CmdMusic.setCurrentVolume(0.001F);
                         radioStationsLoaded = true;
                     }
                 }
@@ -1365,26 +1368,28 @@ public class Mission implements Destroy {
     }
 
     public void recordNetFiles() {
-        if (!isDogfight()) {
-            int i = this.sectFile.sectionIndex("Wing");
-            if (i >= 0) {
-                int i_49_ = this.sectFile.vars(i);
-                for (int i_50_ = 0; i_50_ < i_49_; i_50_++) {
-                    try {
-                        String string = this.sectFile.var(i, i_50_);
-                        String string_51_ = this.sectFile.get(string, "Class", (String) null);
-                        Class var_class = ObjIO.classForName(string_51_);
-                        String string_52_ = (GUIAirArming.validateFileName(Property.stringValue(var_class, "keyName", null)));
-                        for (int i_53_ = 0; i_53_ < 4; i_53_++) {
-                            String string_54_ = this.sectFile.get(string, "skin" + i_53_, (String) null);
-                            if (string_54_ != null)
-                                this.recordNetFile(Main.cur().netFileServerSkin, string_52_ + "/" + string_54_);
-                            this.recordNetFile(Main.cur().netFileServerNoseart, this.sectFile.get(string, "noseart" + i_53_, (String) null));
-                            this.recordNetFile(Main.cur().netFileServerPilot, this.sectFile.get(string, "pilot" + i_53_, (String) null));
-                        }
-                    } catch (Exception exception) {
-                        exception.printStackTrace();
+        // TODO: Implement 4.10.1 Codechanges +++
+// if (isDogfight()) return;
+// TODO: Implement 4.10.1 Codechanges ---
+
+        int i = this.sectFile.sectionIndex("Wing");
+        if (i >= 0) {
+            int i1 = this.sectFile.vars(i);
+            for (int i2 = 0; i2 < i1; i2++) {
+                try {
+                    String string = this.sectFile.var(i, i2);
+                    String string1 = this.sectFile.get(string, "Class", (String) null);
+                    Class class1 = ObjIO.classForName(string1);
+                    String string2 = (GUIAirArming.validateFileName(Property.stringValue(class1, "keyName", null)));
+                    for (int i3 = 0; i3 < 4; i3++) {
+                        String string4 = this.sectFile.get(string, "skin" + i3, (String) null);
+                        if (string4 != null)
+                            this.recordNetFile(Main.cur().netFileServerSkin, string2 + "/" + string4);
+                        this.recordNetFile(Main.cur().netFileServerNoseart, this.sectFile.get(string, "noseart" + i3, (String) null));
+                        this.recordNetFile(Main.cur().netFileServerPilot, this.sectFile.get(string, "pilot" + i3, (String) null));
                     }
+                } catch (Exception exception) {
+                    exception.printStackTrace();
                 }
             }
         }
@@ -1744,8 +1749,7 @@ public class Mission implements Destroy {
                 try {
                     this.LOADING_STEP(80 + Math.round((float) i_88_ / (float) i_87_ * 5.0F), "task.Load_stationary_objects");
                     NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(i, i_88_));
-                    this.loadStationaryActor(null, numbertokenizer.next(""), numbertokenizer.next(0), numbertokenizer.next(0.0), numbertokenizer.next(0.0), numbertokenizer.next(0.0F), numbertokenizer.next(0.0F), numbertokenizer.next((String) null),
-                            numbertokenizer.next((String) null), numbertokenizer.next((String) null));
+                    this.loadStationaryActor(null, numbertokenizer.next(""), numbertokenizer.next(0), numbertokenizer.next(0.0), numbertokenizer.next(0.0), numbertokenizer.next(0.0F), numbertokenizer.next(0.0F), numbertokenizer.next((String) null), numbertokenizer.next((String) null), numbertokenizer.next((String) null));
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     System.out.println("Error when reading .mis Stationary section line " + i_88_ + " (" + ex.toString() + " )");
@@ -1762,8 +1766,7 @@ public class Mission implements Destroy {
                 try {
                     this.LOADING_STEP(85 + Math.round((float) i_90_ / (float) i_89_ * 5.0F), "task.Load_stationary_objects");
                     NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(i, i_90_));
-                    this.loadStationaryActor(numbertokenizer.next(""), numbertokenizer.next(""), numbertokenizer.next(0), numbertokenizer.next(0.0), numbertokenizer.next(0.0), numbertokenizer.next(0.0F), numbertokenizer.next(0.0F),
-                            numbertokenizer.next((String) null), numbertokenizer.next((String) null), numbertokenizer.next((String) null));
+                    this.loadStationaryActor(numbertokenizer.next(""), numbertokenizer.next(""), numbertokenizer.next(0), numbertokenizer.next(0.0), numbertokenizer.next(0.0), numbertokenizer.next(0.0F), numbertokenizer.next(0.0F), numbertokenizer.next((String) null), numbertokenizer.next((String) null), numbertokenizer.next((String) null));
                 } catch (Exception ex) {
                     System.out.println("Error when reading .mis NStationary section line " + i_90_ + " (" + ex.toString() + " )");
                 }
@@ -1903,84 +1906,84 @@ public class Mission implements Destroy {
                         boolean zutiPilotInVulnerableWhileOnTheDeck = false;
                         boolean zutiCaptureOnlyIfChiefPresent = false;
 
-//						int id = 0;
+// int id = 0;
                         try {
                             zutiSpawnHeight = numbertokenizer.next(1000, 0, 10000);
-//							id++;
+// id++;
                             zutiSpawnSpeed = numbertokenizer.next(200, 0, 500);
-//							id++;
+// id++;
                             zutiSpawnOrient = numbertokenizer.next(0, 0, 360);
-//							id++;
+// id++;
                             zutiMaxPilots = numbertokenizer.next(0, 0, 99999);
-//							id++;
+// id++;
                             if (numbertokenizer.next(0, 0, 1) == 1) {
                                 zutiCanThisHomeBaseBeCaptured = true;
-//								id++;
+// id++;
                             }
                             zutiRadarHeight_MIN = numbertokenizer.next(0, 0, 99999);
-//							id++;
+// id++;
                             zutiRadarHeight_MAX = numbertokenizer.next(5000, 0, 99999);
-//							id++;
+// id++;
                             zutiRadarRange = numbertokenizer.next(50, 1, 99999);
-//							id++;
+// id++;
                             if (numbertokenizer.next(0, 0, 1) == 1) {
                                 zutiAirspawnOnly = true;
-//								id++;
+// id++;
                             }
                             if (numbertokenizer.next(0, 0, 1) == 1) {
                                 zutiEnablePlaneLimits = true;
-//								id++;
+// id++;
                             }
                             if (numbertokenizer.next(0, 0, 1) == 1) {
                                 zutiDecreasingNumberOfPlanes = true;
-//								id++;
+// id++;
                             }
                             if (numbertokenizer.next(0, 0, 1) == 1) {
                                 zutiDisableSpawning = true;
-//								id++;
+// id++;
                             }
                             if (numbertokenizer.next(0, 0, 1) == 1) {
                                 zutiEnableFriction = true;
-//								id++;
+// id++;
                             }
                             zutiFriction = numbertokenizer.next(3.8D, 0.0D, 10.0D);
                             if (numbertokenizer.next(0, 0, 1) == 1) {
                                 zutiIncludeStaticPlanes = true;
-//								id++;
+// id++;
                             }
                             if (numbertokenizer.next(0, 0, 1) == 1) {
                                 zutiStaticPositionOnly = true;
-//								id++;
+// id++;
                             }
                             zutiCapturingRequiredParatroopers = numbertokenizer.next(100, 0, 99999);
-//							id++;
+// id++;
                             if (numbertokenizer.next(0, 0, 1) == 1) {
                                 zutiDisableRendering = true;
-//								id++;
+// id++;
                             }
                             zutiCarrierSpawnPlaces = numbertokenizer.next(0, 0, 99999);
-//							id++;
+// id++;
                             if (numbertokenizer.next(0, 0, 1) == 1) {
                                 zutiIsStandAloneBornPlace = true;
-//								id++;
+// id++;
                             }
                             if (numbertokenizer.next(0, 0, 1) == 1) {
                                 zutiEnableQueue = true;
-//								id++;
+// id++;
                             }
                             zutiDeckClearTimeout = numbertokenizer.next(30, 0, 99999);
-//							id++;
+// id++;
                             if (numbertokenizer.next(0, 0, 1) == 1) {
                                 zutiAirspawnIfQueueFull = true;
-//								id++;
+// id++;
                             }
                             if (numbertokenizer.next(0, 0, 1) == 1) {
                                 zutiPilotInVulnerableWhileOnTheDeck = true;
-//								id++;
+// id++;
                             }
                             if (numbertokenizer.next(0, 0, 1) == 1) {
                                 zutiCaptureOnlyIfChiefPresent = true;
-//								id++;
+// id++;
                             }
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -2350,12 +2353,11 @@ public class Mission implements Destroy {
         if (Main.cur().netServerParams != null)
             Main.cur().netServerParams.USGSupdate();
         // TODO: +++ Auto NTRK recording Mod by SAS~Storebror +++
-        if (NetMissionTrack.isPlaying()) return;
-        if(Config.cur.bAutoNtrkRecording) {
+        if (NetMissionTrack.isPlaying())
+            return;
+        if (Config.cur.bAutoNtrkRecording) {
             Calendar calendar = Calendar.getInstance();
-            String datetime = "" + calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-"
-                    + calendar.get(Calendar.DAY_OF_MONTH) + "_" + calendar.get(Calendar.HOUR_OF_DAY) + "-"
-                    + calendar.get(Calendar.MINUTE) + "-" + calendar.get(Calendar.SECOND);
+            String datetime = "" + calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DAY_OF_MONTH) + "_" + calendar.get(Calendar.HOUR_OF_DAY) + "-" + calendar.get(Calendar.MINUTE) + "-" + calendar.get(Calendar.SECOND);
             String autoNtrkFolder = Config.cur.ini.get("Mods", "AutoNtrkFolder", "records");
             String filename = autoNtrkFolder + "/" + sanitizeFilename(datetime + "_" + this.name() + ".ntrk");
             float timeparam = Config.cur.netSpeed / 1000F + 5F;
@@ -2393,8 +2395,8 @@ public class Mission implements Destroy {
                     if (Main3D.cur3D().guiManager != null)
                         Main3D.cur3D().guiManager.setTimeGameActive(false);
                     // TODO: +++ Auto NTRK recording Mod by SAS~Storebror +++
-//                    NetMissionTrack.stopRecording();
-                    // TODO: --- Auto NTRK recording Mod by SAS~Storebror ---
+// NetMissionTrack.stopRecording();
+// TODO: --- Auto NTRK recording Mod by SAS~Storebror ---
                     if (Main3D.cur3D().keyRecord != null) {
                         if (Main3D.cur3D().keyRecord.isPlaying()) {
                             Main3D.cur3D().keyRecord.stopPlay();
@@ -2752,9 +2754,7 @@ public class Mission implements Destroy {
                 HashMapIntEntry hashmapintentry = null;
                 while ((hashmapintentry = hashmapint.nextEntry(hashmapintentry)) != null) {
                     NetObj netobj = (NetObj) hashmapintentry.getValue();
-                    if (netobj != null && !netobj.isDestroyed() && !netobj.isCommon() && !netchannel.isMirrored(netobj) && netobj.masterChannel() != netchannel
-                            && (!(netchannel instanceof NetChannelOutStream) || (!(netobj instanceof NetControl) && (!(netobj instanceof NetUser) || !netobj.isMaster() || !NetMissionTrack.isPlaying())))
-                            && (!(netobj instanceof GameTrack) || !netobj.isMirror())) {
+                    if (netobj != null && !netobj.isDestroyed() && !netobj.isCommon() && !netchannel.isMirrored(netobj) && netobj.masterChannel() != netchannel && (!(netchannel instanceof NetChannelOutStream) || (!(netobj instanceof NetControl) && (!(netobj instanceof NetUser) || !netobj.isMaster() || !NetMissionTrack.isPlaying()))) && (!(netobj instanceof GameTrack) || !netobj.isMirror())) {
                         Object object_153_ = netobj.superObj();
                         if (!(object_153_ instanceof Destroy) || !((Destroy) object_153_).isDestroyed()) {
                             new MsgInvokeMethod_Object("trySendMsgStart", netchannel).post(72, this, 0.0);
@@ -2893,8 +2893,7 @@ public class Mission implements Destroy {
         for (int i = 0; i < arraylist.size(); i++) {
             if (arraylist.get(i) instanceof AirportGround) {
                 for (int i_193_ = 0; i_193_ < this.actors.size(); i_193_++) {
-                    if (this.actors.get(i_193_) instanceof SmokeGeneric
-                            && (this.actors.get(i_193_) instanceof Smoke.Smoke15 || this.actors.get(i_193_) instanceof Smoke.Smoke14 || this.actors.get(i_193_) instanceof Smoke.Smoke13 || this.actors.get(i_193_) instanceof Smoke.Smoke12)) {
+                    if (this.actors.get(i_193_) instanceof SmokeGeneric && (this.actors.get(i_193_) instanceof Smoke.Smoke15 || this.actors.get(i_193_) instanceof Smoke.Smoke14 || this.actors.get(i_193_) instanceof Smoke.Smoke13 || this.actors.get(i_193_) instanceof Smoke.Smoke12)) {
                         AirportGround airportground = (AirportGround) arraylist.get(i);
                         Actor actor = (Actor) this.actors.get(i_193_);
                         double d = (airportground.pos.getAbsPoint().x - actor.pos.getAbsPoint().x);
@@ -2975,7 +2974,8 @@ public class Mission implements Destroy {
                         try {
                             String s2 = actor.getClass().toString().substring(actor.getClass().toString().indexOf("$") + 1);
                             string_197_ = I18N.technic(s2);
-                        } catch (Exception exception) {}
+                        } catch (Exception exception) {
+                        }
                     }
 
                     int i_198_ = -1;
@@ -2993,8 +2993,7 @@ public class Mission implements Destroy {
                         if (string.length() == 12)
                             string_199_ = (string.substring(0, 3) + " / " + string.substring(3, 6) + " / " + string.substring(6, 9) + " / " + string.substring(9, 12));
                         else if (string.length() == 24)
-                            string_199_ = (string.substring(0, 2) + "-" + string.substring(2, 4) + "-" + string.substring(4, 6) + " / " + string.substring(6, 8) + "-" + string.substring(8, 10) + "-" + string.substring(10, 12) + " / "
-                                    + string.substring(12, 14) + "-" + string.substring(14, 16) + "-" + string.substring(16, 18) + " / " + string.substring(18, 20) + "-" + string.substring(20, 22) + "-" + string.substring(22, 24));
+                            string_199_ = (string.substring(0, 2) + "-" + string.substring(2, 4) + "-" + string.substring(4, 6) + " / " + string.substring(6, 8) + "-" + string.substring(8, 10) + "-" + string.substring(10, 12) + " / " + string.substring(12, 14) + "-" + string.substring(14, 16) + "-" + string.substring(16, 18) + " / " + string.substring(18, 20) + "-" + string.substring(20, 22) + "-" + string.substring(22, 24));
                         Main3D.cur3D().ordersTree.addShipIDs(i, i_198_, actor, string_197_, ("( " + string_199_ + " )"));
                     }
                     i++;

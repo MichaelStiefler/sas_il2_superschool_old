@@ -1,4 +1,4 @@
-UP3 RC4 Patch Pack v2.00 BETA 7
+UP3 RC4 Patch Pack v2.02
 
 Contents:
 - All fixes listed below
@@ -47,6 +47,7 @@ Included feature enhancements:
 - Nightly moonlight effect enhanced by default, can be disabled (and adjusted) by user in Mod GUI if this is desired
 - Auto Admin (for FBDj Admins) and Auto User (for reserved names in Online Gameplay) added to Mod GUI
 - User can select specific Username for Online Gameplay, e.g. to override the default Hyperlobby Username
+- Skin Download Notifications can be enabled/disabled in Mod Settings
 
 Included fixes:
 - Bf 109 Series Cockpit Code fix
@@ -170,13 +171,13 @@ DEBUG_GEAR=<0-2>           Gear enhanced debugging, default=0, 0=disable, 1=enab
 Installation:
 1.) Run JSGME.exe from your UP3 RC4 game folder and disable any of the following previously installed mods(packs), if applicable:
     * Any old Hotfix Pack (* see below)
-    * Any old Patch Pack (e.g. "#UP#_Patch_Pack_107")
+    * Any old Patch Pack (e.g. "#UP#_Patch_Pack_107" or "#UP#_Patch_Pack_201")
     * UP3 RC4 without obfuscation ("#UP#_Unobfuscated_MDS_for_UP3"), because this is integrated in this patch pack already
 2.) Check your enabled JSGME Mods, now there should only be:
     * #UP#_Enable_UP.3.0
     * Additional JSGME Mods not related to Fixes, Patches, unobfuscated UP etc.
 3.) Extract this Patch Pack to your UP3 RC4 game folder
-4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_200_BETA_7")
+4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_202")
 
 ********************
 
