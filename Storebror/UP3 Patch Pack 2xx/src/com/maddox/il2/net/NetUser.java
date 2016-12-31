@@ -134,11 +134,11 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
     // TODO: Storebror: Implement Patch Level Replication
     public static final byte   MSG_PATCHLEVEL         = 101;
     public static final byte   MSG_SELECTOR_VERSION   = 102;
-    public static final String MIN_PATCH_LEVEL        = "107";
-    public static final String PATCH_LEVEL            = "200";
+    public static final String MIN_PATCH_LEVEL        = "201";
+    public static final String PATCH_LEVEL            = "202";
     public static final String PATCH_LEVEL_TEST       = "102b1";
-    public static String[]     PATCHLEVEL_G           = { "200", "107" };
-    public static String[]     PATCHLEVEL_Y           = { "107RC3" };
+    public static String[]     PATCHLEVEL_G           = { "202" };
+    public static String[]     PATCHLEVEL_Y           = { "201", "200", "107" };
     private String             patchLevel             = "none";
     private String             selectorVersion        = "unknown";
     public static final long   UPDATE_CHAT_INTERVAL   = 60000L;
@@ -246,7 +246,12 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                 inthashtable.put(netchannel.id(), (int) (Time.current() & 0x7ffffffL));
                 return 1.0F;
             }
-            double d1 = NetUser.this.viewActor.pos.getAbsPoint().distance(actorpos.getAbsPoint());
+            // +++ TODO: Storebror: null Checks added +++
+            double d1 = 10000D;
+            if (NetUser.this.viewActor != null && actorpos != null)
+                d1 = NetUser.this.viewActor.pos.getAbsPoint().distance(actorpos.getAbsPoint());
+// double d1 = NetUser.this.viewActor.pos.getAbsPoint().distance(actorpos.getAbsPoint());
+// --- TODO: Storebror: null Checks added ---
             if (d1 > 10000D)
                 d1 = 10000D;
             if (d1 < 1.0D)
@@ -280,7 +285,8 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             return true;
         }
 
-        AircraftNetFilter() {}
+        AircraftNetFilter() {
+        }
     }
 
     static class SPAWN implements NetSpawn {
@@ -319,7 +325,8 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             }
         }
 
-        SPAWN() {}
+        SPAWN() {
+        }
     }
 
     public NetUserStat stat() {
@@ -338,6 +345,9 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
     }
 
     public String uniqueName() {
+//        Exception testExc = new Exception("NetUser uniqueName()");
+//        testExc.printStackTrace();
+//        System.out.println("uniqueName = \"" + this.uniqueName + "\"");
         return this.uniqueName;
     }
 
@@ -366,6 +376,8 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
     }
 
     private void makeUniqueName() {
+//        Exception testExc = new Exception("NetUser makeUniqueName()");
+//        testExc.printStackTrace();
         String s = this.shortName();
         ArrayList arraylist = new ArrayList(NetEnv.hosts());
         arraylist.add(NetEnv.host());
@@ -387,6 +399,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                 j++;
             } else {
                 this.uniqueName = s;
+//                System.out.println("uniqueName = \"" + this.uniqueName + "\"");
                 return;
             }
         } while (true);
@@ -418,6 +431,9 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
     }
 
     public void setArmy(int i) {
+// System.out.println("NetUser setArmy");
+// Exception e = new Exception("NetUser setArmy(" + i + ")");
+// e.printStackTrace();
         this.army = i;
         this.radio_onArmyChanged();
     }
@@ -681,44 +697,44 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
 
             // TODO: Storebror: Temporary "fix", don't change army at all when changing ac position!
 
-//            if (this.place >= 0) {
-//                // TODO: Added by |ZUTI|: don't change army if user is changing position in own ac!
-//                // TODO: Storebror: Gunner Switch TEST!
-////                if (!NetEnv.isServer() && !ZutiSupportMethods_Net.isInOwnAircraft(this, World.getPlayerAircraft())) {
-//                if (!ZutiSupportMethods_Net.isInOwnAircraft(this, World.getPlayerAircraft())) {
-//                    try {
-//                        // TODO: Storebror: Debugging Army switch on gunner pos switch bug
-////                        int iLogArmy = this.getArmy();
-////                        try {
-//////                            iLogArmy = GUINetAircraft.getItem(this.place).reg.getArmy();
-////                            GUINetAircraft.Item tempItem = GUINetAircraft.getItem(this.place);
-////                            if (tempItem == null) {
-////                                System.out.println("NetUser requestPlace(" + i + ") GUINetAircraft.getItem(" + this.place + ")==null");
-////                            } else {
-////                                Regiment tempRegiment = tempItem.reg;
-////                                if (tempRegiment == null) {
-////                                    System.out.println("NetUser requestPlace(" + i + ") GUINetAircraft.getItem(" + this.place + ").reg==null");
-////                                } else {
-////                                    iLogArmy = tempRegiment.getArmy();
-////                                }
-////                            }
-////                        } catch (Exception ex) {
-////                            ex.printStackTrace();
-////                        }
-////                        System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetUser.requestPlace NetUser " + this.uniqueName() + " place " + this.place + " setArmy(" + iLogArmy + ")");
-//                        this.setArmy(GUINetAircraft.getItem(this.place).reg.getArmy());
-////                        this.setArmy(iLogArmy);
-////                        String armyName = iLogArmy >= Army.amountNet()?"!!!NOT DEFINED!!!":Army.name(iLogArmy);
-////                        System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetUser " + this.uniqueName() + " changed to place " + this.place + ", which belongs to Army " + armyName + " (possible side switch SKIPPED in this Patch Pack!) ###");
-//                        // ...
-//                    } catch (Exception ex) {
-//                        // TODO: Storebror: Debugging Army switch on gunner pos switch bug
-////                        System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetUser.requestPlace NetUser " + this.uniqueName() + " place " + this.place + " ERROR ###");
-////                        ex.printStackTrace();
-//                        // ...
-//                    }
-//                }
-//            }
+// if (this.place >= 0) {
+// // TODO: Added by |ZUTI|: don't change army if user is changing position in own ac!
+// // TODO: Storebror: Gunner Switch TEST!
+//// if (!NetEnv.isServer() && !ZutiSupportMethods_Net.isInOwnAircraft(this, World.getPlayerAircraft())) {
+// if (!ZutiSupportMethods_Net.isInOwnAircraft(this, World.getPlayerAircraft())) {
+// try {
+// // TODO: Storebror: Debugging Army switch on gunner pos switch bug
+//// int iLogArmy = this.getArmy();
+//// try {
+////// iLogArmy = GUINetAircraft.getItem(this.place).reg.getArmy();
+//// GUINetAircraft.Item tempItem = GUINetAircraft.getItem(this.place);
+//// if (tempItem == null) {
+//// System.out.println("NetUser requestPlace(" + i + ") GUINetAircraft.getItem(" + this.place + ")==null");
+//// } else {
+//// Regiment tempRegiment = tempItem.reg;
+//// if (tempRegiment == null) {
+//// System.out.println("NetUser requestPlace(" + i + ") GUINetAircraft.getItem(" + this.place + ").reg==null");
+//// } else {
+//// iLogArmy = tempRegiment.getArmy();
+//// }
+//// }
+//// } catch (Exception ex) {
+//// ex.printStackTrace();
+//// }
+//// System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetUser.requestPlace NetUser " + this.uniqueName() + " place " + this.place + " setArmy(" + iLogArmy + ")");
+// this.setArmy(GUINetAircraft.getItem(this.place).reg.getArmy());
+//// this.setArmy(iLogArmy);
+//// String armyName = iLogArmy >= Army.amountNet()?"!!!NOT DEFINED!!!":Army.name(iLogArmy);
+//// System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetUser " + this.uniqueName() + " changed to place " + this.place + ", which belongs to Army " + armyName + " (possible side switch SKIPPED in this Patch Pack!) ###");
+// // ...
+// } catch (Exception ex) {
+// // TODO: Storebror: Debugging Army switch on gunner pos switch bug
+//// System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetUser.requestPlace NetUser " + this.uniqueName() + " place " + this.place + " ERROR ###");
+//// ex.printStackTrace();
+// // ...
+// }
+// }
+// }
             this.bWaitStartCoopMission = false;
             if (NetEnv.host().isMirrored()) {
                 List list = NetEnv.channels();
@@ -1133,7 +1149,9 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             // ---
             float f = netmsginput.readFloat();
             String s = netmsginput.read255();
+            s = getCleanedString(s);
             String s1 = netmsginput.read255();
+            s1 = getCleanedString(s1);
             byte byte1 = netmsginput.readByte();
             float f1 = netmsginput.readFloat();
             float f2 = netmsginput.readFloat();
@@ -1144,13 +1162,35 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
         }
     }
 
+    private String getCleanedString(String s) {
+        if (Main.cur().netServerParams == null || !Main.cur().netServerParams.filterUserNames)
+            return s;
+
+        StringBuffer stringbuffer = new StringBuffer();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (isCharValid(c))
+                stringbuffer.append(s.charAt(i));
+        }
+
+        return stringbuffer.toString();
+    }
+
+    private boolean isCharValid(int i) {
+        if (i >= 33 && i <= 160)
+            return true;
+
+        if (i >= 1025 && i <= 1119)
+            return true;
+        return i >= 1168 && i <= 1257;
+    }
+
     public boolean netInput(NetMsgInput netmsginput) throws IOException {
         if (super.netInput(netmsginput))
             return true;
 
         netmsginput.reset();
         byte byte0 = netmsginput.readByte();
-//        System.out.println("NetUser " + this.uniqueName() + " netInput byte0 = " + byte0);
 
         // TODO: Added by |ZUTI|
         // -----------------------------------------------
@@ -1179,32 +1219,26 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                     if (i >= 0 && Mission.cur() != null && Main.cur().missionLoading == null) {
                         try {
                             // TODO: Storebror: Debugging Army switch on gunner pos switch bug
-//                            int iLogArmy = 0;
-//                            try {
-//                                iLogArmy = GUINetAircraft.getItem(i).reg.getArmy();
-//                            } catch (Exception ex) {}
-//                            System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetUser.netInput NetUser " + netuser2.uniqueName() + " place " + i + " setArmy(" + iLogArmy + ")");
-                            // ...
-                            netuser2.setArmy(GUINetAircraft.getItem(i).reg.getArmy());
+                            // netuser2.setArmy(GUINetAircraft.getItem(i).reg.getArmy());
+                            // Set Army according to aircraft instead!
+                            Aircraft aircraft = netuser2.findAircraft();
+                            if (aircraft != null) {
+                                netuser2.setArmy(aircraft.getArmy());
+                            }
                         } catch (Exception ex) {
-//                            // TODO: Storebror: Debugging Army switch on gunner pos switch bug
-//                            ex.printStackTrace();
-//                            // ...
                         }
                     }
                     netuser2.bWaitStartCoopMission = false;
-                    // TODO: Storebror: Debugging Army switch on gunner pos switch bug - avoid mirroring mirrored position change!!!
-//                    if (this.isMirrored())
-//                        try {
-//                            NetMsgGuaranted netmsgguaranted4 = new NetMsgGuaranted();
-//                            netmsgguaranted4.writeByte(MSG_PLACE);
-//                            netmsgguaranted4.writeByte(i);
-//                            netmsgguaranted4.writeNetObj(netuser2);
-//                            this.post(netmsgguaranted4);
-//                        } catch (Exception exception2) {
-//                            NetObj.printDebug(exception2);
-//                        }
-                    // ---
+                    if (this.isMirrored())
+                        try {
+                            NetMsgGuaranted netmsgguaranted4 = new NetMsgGuaranted();
+                            netmsgguaranted4.writeByte(MSG_PLACE);
+                            netmsgguaranted4.writeByte(i);
+                            netmsgguaranted4.writeNetObj(netuser2);
+                            this.post(netmsgguaranted4);
+                        } catch (Exception exception2) {
+                            NetObj.printDebug(exception2);
+                        }
                     return true;
 
                 case MSG_WAIT_START:
@@ -1488,7 +1522,8 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                     int l = 0;
                     try {
                         l = Integer.parseInt(s2.substring(k - 2, k));
-                    } catch (Exception exception) {}
+                    } catch (Exception exception) {
+                    }
                     aircraft.preparePaintScheme(l);
                 }
             }
@@ -1896,7 +1931,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
 
     // TODO: Storebror: Implement Aircraft Control Surfaces and Pilot View Replication
     public void replicatePatchLevel(NetUser theNetUser) {
-//        replicatePatchLevel(null);
+// replicatePatchLevel(null);
         NetServerParams netserverparams = Main.cur().netServerParams;
         if (netserverparams == null)
             return;
@@ -1914,16 +1949,16 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
     }
 
     private void replicatePatchLevel(NetChannel netchannel, NetUser theNetUser) {
-//        System.out.println("replicatePatchLevel, " + (netchannel == null ? "netchannel == null" : "netchannel != null"));
+// System.out.println("replicatePatchLevel, " + (netchannel == null ? "netchannel == null" : "netchannel != null"));
         if (!this.isMirrored() && netchannel == null)
             return;
         try {
             NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
             netmsgguaranted.writeByte(MSG_PATCHLEVEL);
             netmsgguaranted.write255(theNetUser.getPatchLevel());
-//            if (!Config.isUSE_RENDER())
+// if (!Config.isUSE_RENDER())
             netmsgguaranted.writeNetObj(theNetUser);
-//            System.out.println("Replicating Patchlevel " + theNetUser.getPatchLevel() + " for user " + theNetUser.uniqueName() + " to " + (netchannel == null ? "all" : "Channel " + netchannel.id()));
+// System.out.println("Replicating Patchlevel " + theNetUser.getPatchLevel() + " for user " + theNetUser.uniqueName() + " to " + (netchannel == null ? "all" : "Channel " + netchannel.id()));
             if (netchannel == null)
                 this.post(netmsgguaranted);
             else
@@ -1934,7 +1969,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
     }
 
     public void replicateSelectorVersion(NetUser theNetUser) {
-//      replicateSelectorVersion(null);
+// replicateSelectorVersion(null);
         NetServerParams netserverparams = Main.cur().netServerParams;
         if (netserverparams == null)
             return;
@@ -1952,16 +1987,16 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
     }
 
     private void replicateSelectorVersion(NetChannel netchannel, NetUser theNetUser) {
-//      System.out.println("replicateSelectorVersion, " + (netchannel == null ? "netchannel == null" : "netchannel != null"));
+// System.out.println("replicateSelectorVersion, " + (netchannel == null ? "netchannel == null" : "netchannel != null"));
         if (!this.isMirrored() && netchannel == null)
             return;
         try {
             NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
             netmsgguaranted.writeByte(MSG_SELECTOR_VERSION);
             netmsgguaranted.write255(theNetUser.getSelectorVersion());
-//          if (!Config.isUSE_RENDER())
+// if (!Config.isUSE_RENDER())
             netmsgguaranted.writeNetObj(theNetUser);
-//            System.out.println("Replicating Selector Version " + theNetUser.getSelectorVersion() + " for user " + theNetUser.uniqueName() + " to " + (netchannel == null ? "all" : "Channel " + netchannel.id()));
+// System.out.println("Replicating Selector Version " + theNetUser.getSelectorVersion() + " for user " + theNetUser.uniqueName() + " to " + (netchannel == null ? "all" : "Channel " + netchannel.id()));
             if (netchannel == null)
                 this.post(netmsgguaranted);
             else
@@ -1997,7 +2032,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                 continue;
             ArrayList arraylist = new ArrayList(1);
             arraylist.add(netuser);
-//            System.out.println(this.uniqueName() + " sends Patch Update Message to " + netuser.uniqueName() + " (using Patch Level " + netuser.getPatchLevel() + ")");
+// System.out.println(this.uniqueName() + " sends Patch Update Message to " + netuser.uniqueName() + " (using Patch Level " + netuser.getPatchLevel() + ")");
             if (netuser.getPatchLevel().equalsIgnoreCase("none"))
                 Main.cur().chat.send(NetEnv.host(), "!! " + netuser.uniqueName() + " !! You've got no Patch Pack installed !!", arraylist, (byte) 0, false);
             else
@@ -2047,8 +2082,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
         if (this.localNoseartTga == null) {
             return;
         } else {
-            Aircraft.prepareMeshNoseart(netaircraft.hierMesh(), "PaintSchemes/Cache/Noseart0" + this.localNoseartTga + ".mat", "PaintSchemes/Cache/Noseart1" + this.localNoseartTga + ".mat", "PaintSchemes/Cache/Noseart0" + this.localNoseartTga + ".tga",
-                    "PaintSchemes/Cache/Noseart1" + this.localNoseartTga + ".tga", this.cacheNoseartMat);
+            Aircraft.prepareMeshNoseart(netaircraft.hierMesh(), "PaintSchemes/Cache/Noseart0" + this.localNoseartTga + ".mat", "PaintSchemes/Cache/Noseart1" + this.localNoseartTga + ".mat", "PaintSchemes/Cache/Noseart0" + this.localNoseartTga + ".tga", "PaintSchemes/Cache/Noseart1" + this.localNoseartTga + ".tga", this.cacheNoseartMat);
             return;
         }
     }
@@ -2357,11 +2391,11 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             }
             this.replicateDotRange(netchannel);
             // TODO: Storebror: Implement Patch Level Replication
-//            System.out.println("msgNetNewChannel replicate patch level");
+// System.out.println("msgNetNewChannel replicate patch level");
             this.replicatePatchLevel(netchannel, this); // Replicate own patch level
             this.replicateSelectorVersion(netchannel, this); // Replicate own selector version
-//            replicatePatchLevel(this.masterChannel()); // Replicate own patch level to server
-            // ---
+// replicatePatchLevel(this.masterChannel()); // Replicate own patch level to server
+// ---
 
         }
 
@@ -2402,8 +2436,8 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             if (this.selectorVersion.equalsIgnoreCase("N/A"))
                 this.selectorVersion = "unknown";
         }
-//        if (Config.isUSE_RENDER())
-//            this.patchLevel = PATCH_LEVEL_TEST;
+// if (Config.isUSE_RENDER())
+// this.patchLevel = PATCH_LEVEL_TEST;
         this.lastUpdateChatMessages = Time.real() - UPDATE_CHAT_INTERVAL + 10000L;
         // ---
     }
@@ -2436,7 +2470,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             // penalties...
             // ----------------------------------------------------------------------
             String IP = netchannel.remoteAddress().getHostAddress();
-//            System.out.println("NetUser - Checking if user >" + s + " [" + IP + "]< has any refly/KIA time penalties...");
+// System.out.println("NetUser - Checking if user >" + s + " [" + IP + "]< has any refly/KIA time penalties...");
             if (ZutiSupportMethods.isUserPenalized(s, IP)) {
                 this.kick(this);
                 System.out.println("User '" + s + "' [" + netchannel.remoteAddress().getHostAddress() + "] has refly time penalties pending!");
@@ -2478,8 +2512,8 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             if (this.selectorVersion.equalsIgnoreCase("N/A"))
                 this.selectorVersion = "unknown";
         }
-//        if (Config.isUSE_RENDER())
-//            this.patchLevel = PATCH_LEVEL_TEST;
+// if (Config.isUSE_RENDER())
+// this.patchLevel = PATCH_LEVEL_TEST;
         this.lastUpdateChatMessages = Time.real() - UPDATE_CHAT_INTERVAL + 10000L;
         // ---
         EventLog.onConnected(this.uniqueName());
@@ -2524,10 +2558,10 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
 
             if (theNetUser != null) {
                 theNetUser.setPatchLevel(thePatchLevel);
-//                System.out.println("MSG_PATCHLEVEL received (Master = " + isMasterChannel + ") for netuser " + theNetUser.uniqueName() + ", Patch Level is " + thePatchLevel);
+// System.out.println("MSG_PATCHLEVEL received (Master = " + isMasterChannel + ") for netuser " + theNetUser.uniqueName() + ", Patch Level is " + thePatchLevel);
                 this.replicatePatchLevel(theNetUser);
             } else {
-//                System.out.println("MSG_PATCHLEVEL received (Master = " + isMasterChannel + ") for netuser null, Patch Level is " + thePatchLevel);
+// System.out.println("MSG_PATCHLEVEL received (Master = " + isMasterChannel + ") for netuser null, Patch Level is " + thePatchLevel);
             }
             // this.setPatchLevel(netmsginput.read255());
         }
@@ -2561,10 +2595,10 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
 
             if (theNetUser != null) {
                 theNetUser.setSelectorVersion(theSelectorVersion);
-//                System.out.println("MSG_SELECTOR_VERSION received (Master = " + isMasterChannel + ") for netuser " + theNetUser.uniqueName() + ", Selector Version is " + theSelectorVersion);
+// System.out.println("MSG_SELECTOR_VERSION received (Master = " + isMasterChannel + ") for netuser " + theNetUser.uniqueName() + ", Selector Version is " + theSelectorVersion);
                 this.replicateSelectorVersion(theNetUser);
             } else {
-//                System.out.println("MSG_SELECTOR_VERSION received (Master = " + isMasterChannel + ") for netuser null, Selector Version is " + theSelectorVersion);
+// System.out.println("MSG_SELECTOR_VERSION received (Master = " + isMasterChannel + ") for netuser null, Selector Version is " + theSelectorVersion);
             }
             // this.setPatchLevel(netmsginput.read255());
         }
@@ -2594,15 +2628,15 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             Aircraft aircraft = this.findAircraft();
             if (!Actor.isValid(aircraft) || !Actor.isAlive(aircraft))
                 break;
-            if (Time.tickCounter() - this.lastSlapTickCount < TICK_DIVISOR) return;
+            if (Time.tickCounter() - this.lastSlapTickCount < TICK_DIVISOR)
+                return;
             this.lastSlapTickCount = Time.tickCounter();
             Point3d p = new Point3d(aircraft.net.actor().pos.getAbsPoint());
             Tuple3d t = slapPoint(aircraft, 20, 5);
             p.add(t);
             DecimalFormat twoDigits = new DecimalFormat("00.00");
             MsgExplosion.send(null, null, p, null, 100, 100, 1, 30, 0);
-            System.out.println("Slapping " + this.uniqueName() + " (aircraft:" + aircraft.netName() + "), slap point is " + twoDigits.format(Math.abs(t.x)) + "m " + (t.x > 0 ? "in front of" : "behind     ") + ", " + twoDigits.format(Math.abs(t.y)) + "m " + (t.y > 0 ? "right" : " left") + " of and " + twoDigits.format(Math.abs(t.z)) + "m "
-                    + (t.z > 0 ? "above" : "below") + " the aircraft. Remaining slaps: " + --this.remainingSlaps);
+            System.out.println("Slapping " + this.uniqueName() + " (aircraft:" + aircraft.netName() + "), slap point is " + twoDigits.format(Math.abs(t.x)) + "m " + (t.x > 0 ? "in front of" : "behind     ") + ", " + twoDigits.format(Math.abs(t.y)) + "m " + (t.y > 0 ? "right" : " left") + " of and " + twoDigits.format(Math.abs(t.z)) + "m " + (t.z > 0 ? "above" : "below") + " the aircraft. Remaining slaps: " + --this.remainingSlaps);
             return;
         } while (false);
         this.remainingSlaps = 0;

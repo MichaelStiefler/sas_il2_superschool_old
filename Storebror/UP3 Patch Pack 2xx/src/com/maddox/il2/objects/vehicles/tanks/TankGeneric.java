@@ -1805,29 +1805,23 @@ public abstract class TankGeneric extends ActorHMesh implements MsgCollisionRequ
 			hierMesh().chunkSetAngles("Head", headYaw, 0.0F, 0.0F);
 			hierMesh().chunkSetAngles("Gun", -gunPitch, 0.0F, 0.0F);
 			pos.inValidate(false);
+            return;
 		}
-		else
-		{
-			float f_74_ = aim.anglesYaw.getDeg(f);
-			pos.getAbs(o);
-			o.setYaw(f_74_);
-			if (mov != null && mov.normal != null)
-			{
-				if (mov.normal.z < 0.0F)
-				{
-					com.maddox.il2.engine.Engine.land().N(mov.srcPos.x, mov.srcPos.y, n);
-					o.orient(n);
-				}
-				else
-				{
-					o.orient(mov.normal);
-				}
-			}
-			pos.setAbs(o);
-			gunPitch = aim.anglesPitch.getDeg(f);
-			hierMesh().chunkSetAngles("Gun", -gunPitch, 0.0F, 0.0F);
-			pos.inValidate(false);
-		}
+        float f1 = aim.anglesYaw.getDeg(f);
+        pos.getAbs(o);
+        o.setYaw(f1);
+        if (mov != null && mov.normal != null) {
+            if (mov.normal.z < 0.0F) {
+                com.maddox.il2.engine.Engine.land().N(mov.srcPos.x, mov.srcPos.y, n);
+                o.orient(n);
+            } else {
+                o.orient(mov.normal);
+            }
+        }
+        pos.setAbs(o);
+        gunPitch = aim.anglesPitch.getDeg(f);
+        hierMesh().chunkSetAngles("Gun", -gunPitch, 0.0F, 0.0F);
+        pos.inValidate(false);
 	}
 
 	public Actor findEnemy(Aim aim)

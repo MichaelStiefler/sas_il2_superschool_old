@@ -214,9 +214,9 @@ public abstract class NetAircraft extends SndAircraft {
                 ((Maneuver) netaircraft.FM).Group.changeAircraft((Aircraft) netaircraft, (Aircraft) netaircraft_0_);
             netaircraft_0_.FM.CT.set(netaircraft.FM.CT);
             netaircraft_0_.FM.CT.forceGear(netaircraft_0_.FM.CT.GearControl);
-            if ((Aircraft) netaircraft_0_ != null) {
-                /* empty */
-            }
+//            if ((Aircraft) netaircraft_0_ != null) {
+//                /* empty */
+//            }
             Aircraft.forceGear(netaircraft_0_.getClass(), netaircraft_0_.hierMesh(), netaircraft_0_.FM.CT.getGear());
             netaircraft_0_.pos.setAbs(netaircraft.pos.getAbs());
             netaircraft_0_.pos.reset();

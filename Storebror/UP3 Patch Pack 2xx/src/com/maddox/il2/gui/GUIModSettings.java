@@ -10,8 +10,6 @@ import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowEditControl;
 import com.maddox.gwindow.GWindowHSliderInt;
 import com.maddox.gwindow.GWindowRoot;
-import com.maddox.il2.ai.DifficultySettings;
-import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.game.GameState;
 import com.maddox.il2.game.Main;
@@ -35,6 +33,7 @@ public class GUIModSettings extends GameState {
     public GWindowEditControl wUserPassword;
     public GUISwitchBox3      sOverrideOnlineCallsign;
     public GWindowEditControl wOnlineCallsign;
+    public GUISwitchBox3      sSkinDownloadNotifications;
 
     public GWindowHSliderInt  hsDarkness;
     public GWindowHSliderInt  hsDiffuse;
@@ -99,6 +98,8 @@ public class GUIModSettings extends GameState {
             y += 64F;
             this.draw(this.x1024(x), this.y1024(y), this.x1024(272.0F), this.y1024(48.0F), 2, "Custom Online Callsign");
             y += 64F;
+            this.draw(this.x1024(x), this.y1024(y), this.x1024(272.0F), this.y1024(48.0F), 2, "Skin Download Notifications");
+            y += 64F;
         }
 
         public void setPosSize() {
@@ -142,6 +143,8 @@ public class GUIModSettings extends GameState {
             y += 64F;
             GUIModSettings.this.wOnlineCallsign.set1024PosSize(x - xEditOffset, y - yEditOffset, xEditSize, yEditSize);
             y += 64F;
+            GUIModSettings.this.sSkinDownloadNotifications.setPosC(this.x1024(x), this.y1024(y));
+            y += 64F;
 
             GUIModSettings.this.bExit.setPosC(this.x1024(56.0F), this.y1024(602.0F));
         }
@@ -149,10 +152,6 @@ public class GUIModSettings extends GameState {
 
     public void enterPush(GameState gamestate) {
         this._enter();
-    }
-
-    protected DifficultySettings settings() {
-        return World.cur().diffUser;
     }
 
     public void _enter() {
@@ -169,6 +168,7 @@ public class GUIModSettings extends GameState {
         this.wUserPassword.setEnable(true);
         this.sOverrideOnlineCallsign.setEnable(true);
         this.wOnlineCallsign.setEnable(true);
+        this.sSkinDownloadNotifications.setEnable(true);
         this.hsDarkness.setEnable(true);
         this.hsDiffuse.setEnable(true);
         this.client.activateWindow();
@@ -187,6 +187,7 @@ public class GUIModSettings extends GameState {
         this.wUserPassword.setValue(Config.cur.sAutoUserPassword);
         this.sOverrideOnlineCallsign.setChecked(Config.cur.bOverrideOnlineCallsign, false);
         this.wOnlineCallsign.setValue(Config.cur.sOnlineCallsign);
+        this.sSkinDownloadNotifications.setChecked(Config.cur.bSkinDownloadNotifications, false);
         this.hsDarkness.setPos(Config.cur.iDarkness, false);
         this.hsDiffuse.setPos(Config.cur.iDiffuse, false);
     }
@@ -211,6 +212,7 @@ public class GUIModSettings extends GameState {
         Config.cur.sAutoUserPassword = this.wUserPassword.getValue();
         Config.cur.bOverrideOnlineCallsign = this.sOverrideOnlineCallsign.bChecked;
         Config.cur.sOnlineCallsign = this.wOnlineCallsign.getValue();
+        Config.cur.bSkinDownloadNotifications = this.sSkinDownloadNotifications.bChecked;
         Config.cur.iDarkness = this.hsDarkness.pos();
         Config.cur.iDiffuse = this.hsDiffuse.pos();
 
@@ -233,7 +235,7 @@ public class GUIModSettings extends GameState {
         this.client = (GUIClient) gwindowroot.create(new GUIClient());
         this.dialogClient = (DialogClient) this.client.create(new DialogClient());
         this.infoMenu = (GUIInfoMenu) this.client.create(new GUIInfoMenu());
-        this.infoMenu.info = this.i18n("diff.info");
+        this.infoMenu.info = "Mod Settings";
         this.infoName = (GUIInfoName) this.client.create(new GUIInfoName());
         GTexture gtexture = ((GUILookAndFeel) gwindowroot.lookAndFeel()).buttons2;
         this.bExit = (GUIButton) this.dialogClient.addEscape(new GUIButton(this.dialogClient, gtexture, 0.0F, 96.0F, 48.0F, 48.0F));
@@ -243,6 +245,7 @@ public class GUIModSettings extends GameState {
             this.sNewTIR = ((GUISwitchBox3) this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
         this.sAddDefaultCountryNone = ((GUISwitchBox3) this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
         this.sAutoNtrkRecording = ((GUISwitchBox3) this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
+        this.sSkinDownloadNotifications = ((GUISwitchBox3) this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
 
         this.sAutoAdminLogin = ((GUISwitchBox3) this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
         this.wAdminPassword = ((GWindowEditControl) this.dialogClient.addControl(new GWindowEditControl(this.dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null)));

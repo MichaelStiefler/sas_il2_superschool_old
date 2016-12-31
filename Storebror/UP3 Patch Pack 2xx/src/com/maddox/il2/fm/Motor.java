@@ -278,6 +278,7 @@ public class Motor extends FMMath
 	public static boolean tmpB;
 	public static float tmpF;
 	public int engineNoFuelHUDLogId = -1;
+	private static final boolean DEBUG = false;
 
 	//TODO: new variables in 410
 	//--------------------------------
@@ -3837,6 +3838,7 @@ public class Motor extends FMMath
 	}
 	
     public static void printDebug(String theMessage) {
+        if (!DEBUG) return;
         System.out.println(theMessage);
         Exception e = new Exception("Motor Debugger Stacktrace");
         System.out.println("Stacktrace follows:");

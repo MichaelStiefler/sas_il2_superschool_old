@@ -223,9 +223,13 @@ public class ShipGeneric extends ActorHMesh implements MsgCollisionRequestListen
 			}
 			if (dying == 2)
 			{
-				//TODO: Edited by |ZUTI|
-				// if (path != null || !Mission.isDeathmatch())
-				if (path != null)
+                //TODO: Implement 4.10.1 Codechanges +++
+			    // REVERT ZUTI CHANGE!
+			    // It's been vice versa in the code change 4.10 -> 4.10.1
+				////TODO: Edited by |ZUTI|
+				if (path != null || !Mission.isDeathmatch())
+				//if (path != null)
+	            //TODO: Implement 4.10.1 Codechanges ---
 				{
 					ShipGeneric.this.eraseGuns();
 					return false;

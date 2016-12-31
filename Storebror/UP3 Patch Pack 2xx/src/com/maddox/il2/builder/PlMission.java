@@ -401,6 +401,9 @@ public class PlMission extends Plugin {
                 int i_79_ = i_78_ * 1000;
                 if ((float) i_79_ > f_74_)
                     f_73_ = f_77_ + ((float) i_79_ - f_74_) * f_73_ / 18000.0F;
+                //TODO: Implement 4.10.1 Codechanges +++
+                else
+                //TODO: Implement 4.10.1 Codechanges ---
                 if ((float) i_79_ > f_75_)
                     f_73_ = f_76_ + ((float) i_79_ - f_75_) * f_73_ / 9000.0F;
                 else if ((float) i_79_ > 10.0F)

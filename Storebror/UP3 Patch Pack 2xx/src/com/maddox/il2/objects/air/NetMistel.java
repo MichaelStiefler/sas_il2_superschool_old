@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
+import com.maddox.rts.Time;
 
 public class NetMistel {
     public static final int          NETMSG_MISTEL                 = 92;
@@ -18,6 +19,30 @@ public class NetMistel {
     private static ArrayList         netMistelAircraftList;
     private static NetMistelAircraft netMistelAircraftOther        = new NetMistelAircraft();
     private static int               DEBUG                         = 1;
+    private static boolean           DEBUG_METHODS                 = false;
+
+    private static boolean Debug_Methods(Aircraft aircraft) {
+        if (!DEBUG_METHODS)
+            return false;
+        boolean retVal = false;
+        if (aircraft instanceof JU_88MSTL) {
+            if (((JU_88MSTL) aircraft).wasInCutFM)
+                retVal = true;
+        }
+        if (aircraft instanceof FW_190A8MSTL) {
+            if (((FW_190A8MSTL) aircraft).getQueen() != null) {
+                if (((JU_88MSTL) ((FW_190A8MSTL) aircraft).getQueen()).wasInCutFM)
+                    retVal = true;
+            }
+        }
+        if (aircraft instanceof BF_109F4MSTL) {
+            if (((BF_109F4MSTL) aircraft).getQueen() != null) {
+                if (((JU_88MSTL) ((BF_109F4MSTL) aircraft).getQueen()).wasInCutFM)
+                    retVal = true;
+            }
+        }
+        return retVal;
+    }
 
     static class NetMistelAircraft {
         private Aircraft aircraft;
@@ -29,6 +54,8 @@ public class NetMistel {
         private boolean  lastBrakeShoe;
 
         public NetMistelAircraft() {
+            if (Debug_Methods(aircraft))
+                System.out.println("NetMistelAircraft()");
             this.lastPowerControl = 0F;
             this.lastTailWheelLocked = false;
             this.lastBrake = 0F;
@@ -38,6 +65,8 @@ public class NetMistel {
         }
 
         public NetMistelAircraft(Aircraft aircraft) {
+            if (Debug_Methods(aircraft))
+                System.out.println("NetMistelAircraft NetMistelAircraft(" + aircraft.hashCode() + ")");
             this.aircraft = aircraft;
             this.lastPowerControl = 0F;
             this.lastTailWheelLocked = false;
@@ -48,6 +77,8 @@ public class NetMistel {
         }
 
         public int hashCode() {
+// if (Debug_Methods(aircraft))
+// System.out.println("NetMistelAircraft hashCode()");
             final int prime = 31;
             int result = 1;
             result = prime * result + ((this.aircraft == null) ? 0 : this.aircraft.hashCode());
@@ -55,6 +86,8 @@ public class NetMistel {
         }
 
         public boolean equals(Object obj) {
+// if (Debug_Methods(aircraft))
+// System.out.println("NetMistelAircraft equals(" + obj.hashCode() + ")");
             if (this == obj)
                 return true;
             if (obj == null)
@@ -71,63 +104,93 @@ public class NetMistel {
         }
 
         public Aircraft getAircraft() {
+            if (Debug_Methods(aircraft))
+                System.out.println("NetMistelAircraft getAircraft()");
             return this.aircraft;
         }
 
         public void setAircraft(Aircraft aircraft) {
+            if (Debug_Methods(aircraft))
+                System.out.println("NetMistelAircraft setAircraft(" + aircraft.hashCode() + ")");
             this.aircraft = aircraft;
         }
 
         public float getLastPowerControl() {
+            if (Debug_Methods(aircraft))
+                System.out.println("NetMistelAircraft getLastPowerControl()");
             return this.lastPowerControl;
         }
 
         public void setLastPowerControl(float lastPowerControl) {
+            if (Debug_Methods(aircraft))
+                System.out.println("NetMistelAircraft setLastPowerControl(" + lastPowerControl + ")");
             this.lastPowerControl = lastPowerControl;
         }
 
         public boolean isLastTailWheelLocked() {
+            if (Debug_Methods(aircraft))
+                System.out.println("NetMistelAircraft isLastTailWheelLocked()");
             return this.lastTailWheelLocked;
         }
 
         public void setLastTailWheelLocked(boolean lastTailWheelLocked) {
+            if (Debug_Methods(aircraft))
+                System.out.println("NetMistelAircraft setLastTailWheelLocked(" + lastTailWheelLocked + ")");
             this.lastTailWheelLocked = lastTailWheelLocked;
         }
 
         public float getLastBrake() {
+            if (Debug_Methods(aircraft))
+                System.out.println("NetMistelAircraft getLastBrake()");
             return this.lastBrake;
         }
 
         public void setLastBrake(float lastBrake) {
+            if (Debug_Methods(aircraft))
+                System.out.println("NetMistelAircraft setLastBrake(" + lastBrake + ")");
             this.lastBrake = lastBrake;
         }
 
         public float getLastBrakeLeft() {
+            if (Debug_Methods(aircraft))
+                System.out.println("NetMistelAircraft getLastBrakeLeft()");
             return this.lastBrakeLeft;
         }
 
         public void setLastBrakeLeft(float lastBrakeLeft) {
+            if (Debug_Methods(aircraft))
+                System.out.println("NetMistelAircraft setLastBrakeLeft(" + lastBrakeLeft + ")");
             this.lastBrakeLeft = lastBrakeLeft;
         }
 
         public float getLastBrakeRight() {
+            if (Debug_Methods(aircraft))
+                System.out.println("NetMistelAircraft getLastBrakeRight()");
             return this.lastBrakeRight;
         }
 
         public void setLastBrakeRight(float lastBrakeRight) {
+            if (Debug_Methods(aircraft))
+                System.out.println("NetMistelAircraft setLastBrakeRight(" + lastBrakeRight + ")");
             this.lastBrakeRight = lastBrakeRight;
         }
 
         public boolean isLastBrakeShoe() {
+            if (Debug_Methods(aircraft))
+                System.out.println("NetMistelAircraft isLastBrakeShoe()");
             return this.lastBrakeShoe;
         }
 
         public void setLastBrakeShoe(boolean lastBrakeShoe) {
+            if (Debug_Methods(aircraft))
+                System.out.println("NetMistelAircraft setLastBrakeShoe(" + lastBrakeShoe + ")");
             this.lastBrakeShoe = lastBrakeShoe;
         }
     }
 
     public static void netSendMsg(Aircraft aircraft, boolean bool, NetMsgGuaranted netmsgguaranted) throws IOException {
+        if (Debug_Methods(aircraft))
+            System.out.println("NetMistel netSendMsg(" + aircraft.hashCode() + ", " + bool + ", " + netmsgguaranted.hashCode() + ")");
         if (bool) {
             aircraft.net.postTo(aircraft.net.masterChannel(), netmsgguaranted);
         } else {
@@ -136,6 +199,8 @@ public class NetMistel {
     }
 
     public static boolean netGetGMsg(Aircraft aircraft, NetMsgInput netmsginput, boolean bool) throws IOException {
+        if (Debug_Methods(aircraft))
+            System.out.println("NetMistel netGetGMsg(" + aircraft.hashCode() + ", " + netmsginput.hashCode() + ", " + bool + ")");
         netmsginput.mark(netmsginput.available());
         int i = netmsginput.readUnsignedByte();
         if (i != NETMSG_MISTEL) {
@@ -173,6 +238,8 @@ public class NetMistel {
     }
 
     public static boolean netSendExplosionToDroneMaster(Aircraft aircraft) {
+        if (Debug_Methods(aircraft))
+            System.out.println("NetMistel netSendExplosionToDroneMaster(" + aircraft.hashCode() + ")");
         if (DEBUG >= 1)
             System.out.println("NetMistel netSendExplosionToDroneMaster(" + aircraft.getClass().getName() + " - " + aircraft.name() + ")");
         if (!aircraft.isNet())
@@ -219,6 +286,8 @@ public class NetMistel {
     }
 
     public static boolean netSendPowerControlToMirrors(Aircraft aircraft) {
+        if (Debug_Methods(aircraft))
+            System.out.println("NetMistel netSendPowerControlToMirrors(" + aircraft.hashCode() + ")");
         if (DEBUG >= 1)
             System.out.println("NetMistel netSendPowerControlToMirrors(" + aircraft.getClass().getName() + " - " + aircraft.name() + ") getPowerControl()=" + aircraft.FM.CT.getPowerControl());
         if (!aircraft.isNet())
@@ -256,6 +325,8 @@ public class NetMistel {
     }
 
     public static boolean netSendTailwheelLockToMirrors(Aircraft aircraft) {
+        if (Debug_Methods(aircraft))
+            System.out.println("NetMistel netSendTailwheelLockToMirrors(" + aircraft.hashCode() + ")");
         if (DEBUG >= 1)
             System.out.println("NetMistel netSendTailwheelLockToMirrors(" + aircraft.getClass().getName() + " - " + aircraft.name() + ") bTailwheelLocked=" + aircraft.FM.Gears.bTailwheelLocked);
         if (!aircraft.isNet())
@@ -293,9 +364,10 @@ public class NetMistel {
     }
 
     public static boolean netSendBrakesToMirrors(Aircraft aircraft) {
+        if (Debug_Methods(aircraft))
+            System.out.println("NetMistel netSendBrakesToMirrors(" + aircraft.hashCode() + ")");
         if (DEBUG >= 1)
-            System.out.println("NetMistel netSendBrakesToMirrors(" + aircraft.getClass().getName() + " - " + aircraft.name() + ") getBrake()=" + aircraft.FM.CT.getBrake() + ", getBrakeLeft()=" + aircraft.FM.CT.getBrakeLeft() + ", getBrakeRight()="
-                    + aircraft.FM.CT.getBrakeRight());
+            System.out.println("NetMistel netSendBrakesToMirrors(" + aircraft.getClass().getName() + " - " + aircraft.name() + ") getBrake()=" + aircraft.FM.CT.getBrake() + ", getBrakeLeft()=" + aircraft.FM.CT.getBrakeLeft() + ", getBrakeRight()=" + aircraft.FM.CT.getBrakeRight());
         if (!aircraft.isNet())
             return false;
         if (DEBUG >= 2)
@@ -333,6 +405,8 @@ public class NetMistel {
     }
 
     public static boolean netSendBrakeShoeToMirrors(Aircraft aircraft) {
+        if (Debug_Methods(aircraft))
+            System.out.println("NetMistel netSendBrakeShoeToMirrors(" + aircraft.hashCode() + ")");
         if (DEBUG >= 1)
             System.out.println("NetMistel netSendBrakeShoeToMirrors(" + aircraft.getClass().getName() + " - " + aircraft.name() + ") brakeShoe=" + aircraft.FM.brakeShoe);
         if (!aircraft.isNet())
@@ -370,6 +444,8 @@ public class NetMistel {
     }
 
     private static boolean receiveNetExploded(Aircraft aircraft, NetMsgInput netmsginput) throws IOException {
+        if (Debug_Methods(aircraft))
+            System.out.println("NetMistel receiveNetExploded(" + aircraft.hashCode() + ", " + netmsginput.hashCode() + ")");
         if (DEBUG >= 1)
             System.out.println("NetMistel receiveNetExploded(" + aircraft.getClass().getName() + " - " + aircraft.name() + ")");
         if (!(aircraft instanceof Mistel))
@@ -393,6 +469,8 @@ public class NetMistel {
     }
 
     private static boolean receivePowerControl(Aircraft aircraft, NetMsgInput netmsginput) throws IOException {
+        if (Debug_Methods(aircraft))
+            System.out.println("NetMistel receivePowerControl(" + aircraft.hashCode() + ", " + netmsginput.hashCode() + ")");
         if (DEBUG >= 1)
             System.out.println("NetMistel receivePowerControl(" + aircraft.getClass().getName() + " - " + aircraft.name() + ")");
         if (aircraft.net != netmsginput.readNetObj())
@@ -409,6 +487,8 @@ public class NetMistel {
     }
 
     private static boolean receiveTailWheelLocked(Aircraft aircraft, NetMsgInput netmsginput) throws IOException {
+        if (Debug_Methods(aircraft))
+            System.out.println("NetMistel receiveTailWheelLocked(" + aircraft.hashCode() + ", " + netmsginput.hashCode() + ")");
         if (DEBUG >= 1)
             System.out.println("NetMistel receiveTailWheelLocked(" + aircraft.getClass().getName() + " - " + aircraft.name() + ")");
         if (aircraft.net != netmsginput.readNetObj())
@@ -427,6 +507,8 @@ public class NetMistel {
     }
 
     private static boolean receiveBrakes(Aircraft aircraft, NetMsgInput netmsginput) throws IOException {
+        if (Debug_Methods(aircraft))
+            System.out.println("NetMistel receiveBrakes(" + aircraft.hashCode() + ", " + netmsginput.hashCode() + ")");
         if (DEBUG >= 1)
             System.out.println("NetMistel receiveBrakes(" + aircraft.getClass().getName() + " - " + aircraft.name() + ")");
         if (aircraft.net != netmsginput.readNetObj())
@@ -437,12 +519,13 @@ public class NetMistel {
         aircraft.FM.CT.BrakeLeftControl = netmsginput.readFloat();
         aircraft.FM.CT.BrakeRightControl = netmsginput.readFloat();
         if (DEBUG >= 1)
-            System.out.println("NetMistel receiveBrakes(" + aircraft.getClass().getName() + " - " + aircraft.name() + ") end, BrakeControl=" + aircraft.FM.CT.BrakeControl + ", BrakeLeftControl=" + aircraft.FM.CT.BrakeLeftControl + ", BrakeRightControl="
-                    + aircraft.FM.CT.BrakeRightControl);
+            System.out.println("NetMistel receiveBrakes(" + aircraft.getClass().getName() + " - " + aircraft.name() + ") end, BrakeControl=" + aircraft.FM.CT.BrakeControl + ", BrakeLeftControl=" + aircraft.FM.CT.BrakeLeftControl + ", BrakeRightControl=" + aircraft.FM.CT.BrakeRightControl);
         return true;
     }
 
     private static boolean receiveBrakeShoe(Aircraft aircraft, NetMsgInput netmsginput) throws IOException {
+        if (Debug_Methods(aircraft))
+            System.out.println("NetMistel receiveBrakeShoe(" + aircraft.hashCode() + ", " + netmsginput.hashCode() + ")");
         if (DEBUG >= 1)
             System.out.println("NetMistel receiveBrakeShoe(" + aircraft.getClass().getName() + " - " + aircraft.name() + ")");
         if (aircraft.net != netmsginput.readNetObj())
@@ -459,6 +542,8 @@ public class NetMistel {
     }
 
     public static void mistelToMirrors(Aircraft aircraft) {
+        if (Debug_Methods(aircraft))
+            System.out.println("NetMistel mistelToMirrors(" + aircraft.hashCode() + ")");
         NetMistelAircraft netMistelAircraft = null;
         netMistelAircraftOther.setAircraft(aircraft);
         if (!netMistelAircraftList.contains(netMistelAircraftOther)) {
@@ -483,14 +568,12 @@ public class NetMistel {
                     System.out.println("NetMistel bTailwheelLocked(" + netMistelAircraft.aircraft.getClass().getName() + " - " + netMistelAircraft.aircraft.name() + ") = " + netMistelAircraft.aircraft.FM.Gears.bTailwheelLocked);
                 netSendTailwheelLockToMirrors(netMistelAircraft.aircraft);
             }
-            if (netMistelAircraft.getLastBrake() != netMistelAircraft.aircraft.FM.CT.BrakeControl || netMistelAircraft.getLastBrakeLeft() != netMistelAircraft.aircraft.FM.CT.BrakeLeftControl
-                    || netMistelAircraft.getLastBrakeRight() != netMistelAircraft.aircraft.FM.CT.BrakeRightControl) {
+            if (netMistelAircraft.getLastBrake() != netMistelAircraft.aircraft.FM.CT.BrakeControl || netMistelAircraft.getLastBrakeLeft() != netMistelAircraft.aircraft.FM.CT.BrakeLeftControl || netMistelAircraft.getLastBrakeRight() != netMistelAircraft.aircraft.FM.CT.BrakeRightControl) {
                 netMistelAircraft.setLastBrake(netMistelAircraft.aircraft.FM.CT.BrakeControl);
                 netMistelAircraft.setLastBrakeLeft(netMistelAircraft.aircraft.FM.CT.BrakeLeftControl);
                 netMistelAircraft.setLastBrakeRight(netMistelAircraft.aircraft.FM.CT.BrakeRightControl);
                 if (DEBUG >= 2)
-                    System.out.println("NetMistel BrakeControl(" + netMistelAircraft.aircraft.getClass().getName() + " - " + netMistelAircraft.aircraft.name() + ") =" + netMistelAircraft.aircraft.FM.CT.BrakeControl + ", BrakeLeftControl="
-                            + netMistelAircraft.aircraft.FM.CT.BrakeLeftControl + ", BrakeRightControl=" + netMistelAircraft.aircraft.FM.CT.BrakeRightControl);
+                    System.out.println("NetMistel BrakeControl(" + netMistelAircraft.aircraft.getClass().getName() + " - " + netMistelAircraft.aircraft.name() + ") =" + netMistelAircraft.aircraft.FM.CT.BrakeControl + ", BrakeLeftControl=" + netMistelAircraft.aircraft.FM.CT.BrakeLeftControl + ", BrakeRightControl=" + netMistelAircraft.aircraft.FM.CT.BrakeRightControl);
                 netSendBrakesToMirrors(netMistelAircraft.aircraft);
             }
             if (netMistelAircraft.isLastBrakeShoe() != netMistelAircraft.aircraft.FM.brakeShoe) {
@@ -503,11 +586,35 @@ public class NetMistel {
     }
 
     public static void removeNetMistelFromList(Aircraft aircraft) {
+        if (Debug_Methods(aircraft))
+            System.out.println("NetMistel removeNetMistelFromList(" + aircraft.hashCode() + ")");
         if (netMistelAircraftList.contains(aircraft))
             netMistelAircraftList.remove(aircraft);
     }
 
     static {
         netMistelAircraftList = new ArrayList();
+
+        Thread thread = new Thread() {
+            private long lastCurrentTimeReal = 0L;
+
+            public void run() {
+                System.out.println("Thread Running");
+                do {
+                    try {
+                        Thread.sleep(10000);
+                        if (lastCurrentTimeReal == Time.currentReal()) {
+                            System.exit(0);
+                        }
+                        lastCurrentTimeReal = Time.currentReal();
+                        System.out.println("Current Time: " + lastCurrentTimeReal);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } while (true);
+            }
+        };
+
+        thread.start();
     }
 }

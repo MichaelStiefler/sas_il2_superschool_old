@@ -1,6 +1,6 @@
-/* 410 class + CTO Mod + GATTACK Mod by CY6 */
 package com.maddox.il2.ai.air;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,7 +38,9 @@ import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.fm.Pitot;
 import com.maddox.il2.fm.RealFlightModel;
+import com.maddox.il2.game.DServer;
 import com.maddox.il2.game.HUD;
+import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.game.Mission;
 import com.maddox.il2.game.ZutiSupportMethods;
@@ -47,6 +49,7 @@ import com.maddox.il2.objects.air.AR_234;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.BI_1;
 import com.maddox.il2.objects.air.BI_6;
+import com.maddox.il2.objects.air.G4M2E;
 import com.maddox.il2.objects.air.HE_LERCHE3;
 import com.maddox.il2.objects.air.JU_88NEW;
 import com.maddox.il2.objects.air.KI_46_OTSUHEI;
@@ -70,6 +73,7 @@ import com.maddox.il2.objects.air.TypeSailPlane;
 import com.maddox.il2.objects.air.TypeStormovik;
 import com.maddox.il2.objects.air.TypeSupersonic;
 import com.maddox.il2.objects.air.TypeTransport;
+import com.maddox.il2.objects.ships.BigshipGeneric;
 import com.maddox.il2.objects.ships.TestRunway;
 import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.il2.objects.weapons.BombGun;
@@ -79,376 +83,389 @@ import com.maddox.il2.objects.weapons.BombGunTorp45_36AV_A;
 import com.maddox.il2.objects.weapons.ParaTorpedoGun;
 import com.maddox.il2.objects.weapons.ToKGUtils;
 import com.maddox.il2.objects.weapons.TorpedoGun;
+import com.maddox.rts.Finger;
 import com.maddox.rts.MsgDestroy;
+import com.maddox.rts.NetEnv;
+import com.maddox.rts.NetHost;
 import com.maddox.rts.Property;
+import com.maddox.rts.RTSConf;
 import com.maddox.rts.Time;
 import com.maddox.sas1946.il2.util.Reflection;
 
 public class Maneuver extends AIFlightModel {
-    private int                task;
-    private int                maneuver                    = 26;
-    protected float            mn_time;
-    private int[]              program                     = new int[8];
-    private boolean            bBusy                       = true;
-    public boolean             wasBusy                     = true;
-    public boolean             dontSwitch                  = false;
-    public boolean             aggressiveWingman           = false;
-    public boolean             kamikaze                    = false;
-    public boolean             silence                     = true;
-    public boolean             bombsOut;
-    private int                bombsOutCounter             = 0;
-    public float               direction;
-    public Loc                 rwLoc;
-    private boolean            first                       = true;
-    private int                rocketsDelay                = 0;
-    private int                bulletDelay                 = 0;
-    private int                submanDelay                 = 0;
-    private float              maxG;
-    private float              maxAOA;
-    private float              LandHQ;
-    public float               Alt                         = 0.0F;
-    private float              corrCoeff                   = 0.0F;
-    private float              corrElev                    = 0.0F;
-    private float              corrAile                    = 0.0F;
-    private boolean            checkGround                 = false;
-    private boolean            checkStrike                 = false;
-    private boolean            frequentControl             = false;
-    private boolean            stallable                   = false;
-    public FlightModel         airClient                   = null;
-    public FlightModel         target                      = null;
-    public FlightModel         danger                      = null;
-    private float              dangerAggressiveness        = 0.0F;
-    private float              oldDanCoeff                 = 0.0F;
-    private int                shotAtFriend                = 0;
-    private float              distToFriend                = 0.0F;
-    public Actor               target_ground               = null;
-    public AirGroup            Group;
-    protected boolean          TaxiMode                    = false;
-    protected boolean          finished                    = false;
-    protected boolean          canTakeoff                  = false;
-    public Point_Any           wayCurPos;
-    protected Point_Any        wayPrevPos;
-    protected Point_Any[]      airdromeWay;
-    protected int              curAirdromePoi              = 0;
-    public long                actionTimerStart            = 0L;
-    public long                actionTimerStop             = 0L;
-    protected int              gattackCounter              = 0;
-    private int                beNearOffsPhase             = 0;
-    public int                 submaneuver                 = 0;
-    private boolean            dont_change_subm            = false;
-    private int                tmpi                        = 0;
-    private int                sub_Man_Count               = 0;
-    private float              dA;
-    private float              dist                        = 0.0F;
-    private float              man1Dist                    = 50.0F;
-    private float              bullTime                    = 0.0015F;
-    protected static final int STAY_ON_THE_TAIL            = 1;
-    protected static final int NOT_TOO_FAST                = 2;
-    protected static final int FROM_WAYPOINT               = 3;
-    protected static final int CONST_SPEED                 = 4;
-    protected static final int MIN_SPEED                   = 5;
-    protected static final int MAX_SPEED                   = 6;
-    protected static final int CONST_POWER                 = 7;
-    protected static final int ZERO_POWER                  = 8;
-    protected static final int BOOST_ON                    = 9;
-    protected static final int FOLLOW_WITHOUT_FLAPS        = 10;
-    protected int              speedMode                   = 3;
-    protected float            smConstSpeed                = 90.0F;
-    protected float            smConstPower                = 0.7F;
-    protected FlightModel      tailForStaying              = null;
-    public Vector3d            tailOffset                  = new Vector3d();
-    protected int              Speak5minutes;
-    protected int              Speak1minute;
-    protected int              SpeakBeginGattack;
-    protected boolean          WeWereInGAttack             = false;
-    protected boolean          WeWereInAttack              = false;
-    protected boolean          SpeakMissionAccomplished    = false;
-    public static final int    ROOKIE                      = 0;
-    public static final int    NORMAL                      = 1;
-    public static final int    VETERAN                     = 2;
-    public static final int    ACE                         = 3;
-    public static final int    NO_TASK                     = 0;
-    public static final int    WAIT                        = 1;
-    public static final int    STAY_FORMATION              = 2;
-    public static final int    FLY_WAYPOINT                = 3;
-    public static final int    DEFENCE                     = 4;
-    public static final int    DEFENDING                   = 5;
-    public static final int    ATTACK_AIR                  = 6;
-    public static final int    ATTACK_GROUND               = 7;
-    public static final int    NONE                        = 0;
-    public static final int    HOLD                        = 1;
-    public static final int    PULL_UP                     = 2;
-    public static final int    LEVEL_PLANE                 = 3;
-    public static final int    ROLL                        = 4;
-    public static final int    ROLL_90                     = 5;
-    public static final int    ROLL_180                    = 6;
-    public static final int    SPIRAL_BRAKE                = 7;
-    public static final int    SPIRAL_UP                   = 8;
-    public static final int    SPIRAL_DOWN                 = 9;
-    public static final int    CLIMB                       = 10;
-    public static final int    DIVING_0_RPM                = 11;
-    public static final int    DIVING_30_DEG               = 12;
-    public static final int    DIVING_45_DEG               = 13;
-    public static final int    TURN                        = 14;
-    public static final int    MIL_TURN                    = 15;
-    public static final int    LOOP                        = 16;
-    public static final int    LOOP_DOWN                   = 17;
-    public static final int    HALF_LOOP_UP                = 18;
-    public static final int    HALF_LOOP_DOWN              = 19;
-    public static final int    STALL                       = 20;
-    public static final int    WAYPOINT                    = 21;
-    public static final int    SPEEDUP                     = 22;
-    public static final int    BELL                        = 23;
-    public static final int    FOLLOW                      = 24;
-    public static final int    LANDING                     = 25;
-    public static final int    TAKEOFF                     = 26;
-    public static final int    ATTACK                      = 27;
-    public static final int    WAVEOUT                     = 28;
-    public static final int    SINUS                       = 29;
-    public static final int    ZIGZAG_UP                   = 30;
-    public static final int    ZIGZAG_DOWN                 = 31;
-    public static final int    ZIGZAG_SPIT                 = 32;
-    public static final int    HALF_LOOP_DOWN_135          = 33;
-    public static final int    HARTMANN_REDOUT             = 34;
-    public static final int    ROLL_360                    = 35;
-    public static final int    STALL_POKRYSHKIN            = 36;
-    public static final int    BARREL_POKRYSHKIN           = 37;
-    public static final int    SLIDE_LEVEL                 = 38;
-    public static final int    SLIDE_DESCENT               = 39;
-    public static final int    RANVERSMAN                  = 40;
-    public static final int    CUBAN                       = 41;
-    public static final int    CUBAN_INVERT                = 42;
-    public static final int    GATTACK                     = 43;
-    public static final int    PILOT_DEAD                  = 44;
-    public static final int    HANG_ON                     = 45;
-    public static final int    DELAY                       = 48;
-    public static final int    EMERGENCY_LANDING           = 49;
-    public static final int    GATTACK_DIVE                = 50;
-    public static final int    GATTACK_TORPEDO             = 51;
-    public static final int    GATTACK_CASSETTE            = 52;
-    public static final int    GATTACK_KAMIKAZE            = 46;
-    public static final int    GATTACK_TINYTIM             = 47;
-    public static final int    FAR_FOLLOW                  = 53;
-    public static final int    SPIRAL_DOWN_SLOW            = 54;
-    public static final int    FOLLOW_SPIRAL_UP            = 55;
-    public static final int    SINUS_SHALLOW               = 56;
-    public static final int    GAIN                        = 57;
-    public static final int    SEPARATE                    = 58;
-    public static final int    BE_NEAR                     = 59;
-    public static final int    EVADE_UP                    = 60;
-    public static final int    EVADE_DN                    = 61;
-    public static final int    ENERGY_ATTACK               = 62;
-    public static final int    ATTACK_BOMBER               = 63;
-    public static final int    PARKED_STARTUP              = 64;
-    public static final int    COVER                       = 65;
-    public static final int    TAXI                        = 66;
-    public static final int    RUN_AWAY                    = 67;
-    public static final int    FAR_COVER                   = 68;
-    public static final int    TAKEOFF_VTOL_A              = 69;
-    public static final int    LANDING_VTOL_A              = 70;
-    public static final int    GATTACK_HS293               = 71;
-    public static final int    GATTACK_FRITZX              = 72;
-    public static final int    GATTACK_TORPEDO_TOKG        = 73;
-    public static final int    COVER_DRAG_AND_BAG          = 74;
-    public static final int    ATTACK_FROM_PLAYER          = 75;
-    public static final int    COVER_AGRESSIVE             = 76;
-    public static final int    TURN_HARD                   = 77;
-    public static final int    CLOUDS                      = 78;
-    public static final int    EVADE_ATTACK                = 79;
-    public static final int    BRACKET_ATTACK              = 80;
-    public static final int    DOUBLE_ATTACK               = 81;
-    public static final int    BE_NEAR_LOW                 = 82;
-    public static final int    BARREL_ROLL                 = 83;
-    public static final int    PULL_UP_EMERGENCY           = 84;
-    public static final int    DIVING_90_DEG               = 85;
-    public static final int    SMOOTH_LEVEL                = 86;
-    public static final int    IVAN                        = 87;
-    public static final int    FISHTAIL_LEFT               = 88;
-    public static final int    FISHTAIL_RIGHT              = 89;
-    public static final int    LOOKDOWN_LEFT               = 90;
-    public static final int    LOOKDOWN_RIGHT              = 91;
-    public static final int    LINE_ATTACK                 = 92;
-    public static final int    BOX_ATTACK                  = 93;
-    public static final int    BANG_BANG                   = 94;
-    public static final int    PANIC_MANIC                 = 95;
-    public static final int    PANIC_FREEZE                = 96;
-    public static final int    COMBAT_CLIMB                = 97;
-    public static final int    HIT_AND_RUN                 = 98;
-    public static final int    SEEK_AND_DESTROY            = 99;
-    public static final int    BREAK_AWAY                  = 100;
-    public static final int    ATTACK_HARD                 = 101;
-    public static final int    TAXI_TO_TO                  = 102;
-    public static final int    MIL_TURN_LEFT               = 103;
-    public static final int    MIL_TURN_RIGHT              = 104;
-    public static final int    STRAIGHT_AND_LEVEL          = 105;
-    public static final int    ART_SPOT                    = 106;
+    private int                  task;
+    private int                  maneuver                    = 26;
+    protected float              mn_time;
+    private int[]                program                     = new int[8];
+    private boolean              bBusy                       = true;
+    public boolean               wasBusy                     = true;
+    public boolean               dontSwitch                  = false;
+    public boolean               aggressiveWingman           = false;
+    public boolean               kamikaze                    = false;
+    public boolean               silence                     = true;
+    public boolean               bombsOut;
+    private int                  bombsOutCounter             = 0;
+    public float                 direction;
+    public Loc                   rwLoc;
+    private boolean              first                       = true;
+    private int                  rocketsDelay                = 0;
+    private int                  bulletDelay                 = 0;
+    private int                  submanDelay                 = 0;
+    private float                maxG;
+    private float                maxAOA;
+    private float                LandHQ;
+    public float                 Alt                         = 0.0F;
+    private float                corrCoeff                   = 0.0F;
+    private float                corrElev                    = 0.0F;
+    private float                corrAile                    = 0.0F;
+    private boolean              checkGround                 = false;
+    private boolean              checkStrike                 = false;
+    private boolean              frequentControl             = false;
+    private boolean              stallable                   = false;
+    public FlightModel           airClient                   = null;
+    public FlightModel           target                      = null;
+    public FlightModel           danger                      = null;
+    private float                dangerAggressiveness        = 0.0F;
+    private float                oldDanCoeff                 = 0.0F;
+    private int                  shotAtFriend                = 0;
+    private float                distToFriend                = 0.0F;
+    public Actor                 target_ground               = null;
+    public AirGroup              Group;
+    protected boolean            TaxiMode                    = false;
+    protected boolean            finished                    = false;
+    protected boolean            canTakeoff                  = false;
+    public Point_Any             wayCurPos;
+    protected Point_Any          wayPrevPos;
+    protected Point_Any[]        airdromeWay;
+    protected int                curAirdromePoi              = 0;
+    public long                  actionTimerStart            = 0L;
+    public long                  actionTimerStop             = 0L;
+    protected int                gattackCounter              = 0;
+    private int                  beNearOffsPhase             = 0;
+    public int                   submaneuver                 = 0;
+    private boolean              dont_change_subm            = false;
+    private int                  tmpi                        = 0;
+    private int                  sub_Man_Count               = 0;
+    private float                dA;
+    private float                dist                        = 0.0F;
+    private float                man1Dist                    = 50.0F;
+    private float                bullTime                    = 0.0015F;
+    protected static final int   STAY_ON_THE_TAIL            = 1;
+    protected static final int   NOT_TOO_FAST                = 2;
+    protected static final int   FROM_WAYPOINT               = 3;
+    protected static final int   CONST_SPEED                 = 4;
+    protected static final int   MIN_SPEED                   = 5;
+    protected static final int   MAX_SPEED                   = 6;
+    protected static final int   CONST_POWER                 = 7;
+    protected static final int   ZERO_POWER                  = 8;
+    protected static final int   BOOST_ON                    = 9;
+    protected static final int   FOLLOW_WITHOUT_FLAPS        = 10;
+    protected int                speedMode                   = 3;
+    protected float              smConstSpeed                = 90.0F;
+    protected float              smConstPower                = 0.7F;
+    protected FlightModel        tailForStaying              = null;
+    public Vector3d              tailOffset                  = new Vector3d();
+    protected int                Speak5minutes;
+    protected int                Speak1minute;
+    protected int                SpeakBeginGattack;
+    protected boolean            WeWereInGAttack             = false;
+    protected boolean            WeWereInAttack              = false;
+    protected boolean            SpeakMissionAccomplished    = false;
+    public static final int      ROOKIE                      = 0;
+    public static final int      NORMAL                      = 1;
+    public static final int      VETERAN                     = 2;
+    public static final int      ACE                         = 3;
+    public static final int      NO_TASK                     = 0;
+    public static final int      WAIT                        = 1;
+    public static final int      STAY_FORMATION              = 2;
+    public static final int      FLY_WAYPOINT                = 3;
+    public static final int      DEFENCE                     = 4;
+    public static final int      DEFENDING                   = 5;
+    public static final int      ATTACK_AIR                  = 6;
+    public static final int      ATTACK_GROUND               = 7;
+    public static final int      NONE                        = 0;
+    public static final int      HOLD                        = 1;
+    public static final int      PULL_UP                     = 2;
+    public static final int      LEVEL_PLANE                 = 3;
+    public static final int      ROLL                        = 4;
+    public static final int      ROLL_90                     = 5;
+    public static final int      ROLL_180                    = 6;
+    public static final int      SPIRAL_BRAKE                = 7;
+    public static final int      SPIRAL_UP                   = 8;
+    public static final int      SPIRAL_DOWN                 = 9;
+    public static final int      CLIMB                       = 10;
+    public static final int      DIVING_0_RPM                = 11;
+    public static final int      DIVING_30_DEG               = 12;
+    public static final int      DIVING_45_DEG               = 13;
+    public static final int      TURN                        = 14;
+    public static final int      MIL_TURN                    = 15;
+    public static final int      LOOP                        = 16;
+    public static final int      LOOP_DOWN                   = 17;
+    public static final int      HALF_LOOP_UP                = 18;
+    public static final int      HALF_LOOP_DOWN              = 19;
+    public static final int      STALL                       = 20;
+    public static final int      WAYPOINT                    = 21;
+    public static final int      SPEEDUP                     = 22;
+    public static final int      BELL                        = 23;
+    public static final int      FOLLOW                      = 24;
+    public static final int      LANDING                     = 25;
+    public static final int      TAKEOFF                     = 26;
+    public static final int      ATTACK                      = 27;
+    public static final int      WAVEOUT                     = 28;
+    public static final int      SINUS                       = 29;
+    public static final int      ZIGZAG_UP                   = 30;
+    public static final int      ZIGZAG_DOWN                 = 31;
+    public static final int      ZIGZAG_SPIT                 = 32;
+    public static final int      HALF_LOOP_DOWN_135          = 33;
+    public static final int      HARTMANN_REDOUT             = 34;
+    public static final int      ROLL_360                    = 35;
+    public static final int      STALL_POKRYSHKIN            = 36;
+    public static final int      BARREL_POKRYSHKIN           = 37;
+    public static final int      SLIDE_LEVEL                 = 38;
+    public static final int      SLIDE_DESCENT               = 39;
+    public static final int      RANVERSMAN                  = 40;
+    public static final int      CUBAN                       = 41;
+    public static final int      CUBAN_INVERT                = 42;
+    public static final int      GATTACK                     = 43;
+    public static final int      PILOT_DEAD                  = 44;
+    public static final int      HANG_ON                     = 45;
+    public static final int      DELAY                       = 48;
+    public static final int      EMERGENCY_LANDING           = 49;
+    public static final int      GATTACK_DIVE                = 50;
+    public static final int      GATTACK_TORPEDO             = 51;
+    public static final int      GATTACK_CASSETTE            = 52;
+    public static final int      GATTACK_KAMIKAZE            = 46;
+    public static final int      GATTACK_TINYTIM             = 47;
+    public static final int      FAR_FOLLOW                  = 53;
+    public static final int      SPIRAL_DOWN_SLOW            = 54;
+    public static final int      FOLLOW_SPIRAL_UP            = 55;
+    public static final int      SINUS_SHALLOW               = 56;
+    public static final int      GAIN                        = 57;
+    public static final int      SEPARATE                    = 58;
+    public static final int      BE_NEAR                     = 59;
+    public static final int      EVADE_UP                    = 60;
+    public static final int      EVADE_DN                    = 61;
+    public static final int      ENERGY_ATTACK               = 62;
+    public static final int      ATTACK_BOMBER               = 63;
+    public static final int      PARKED_STARTUP              = 64;
+    public static final int      COVER                       = 65;
+    public static final int      TAXI                        = 66;
+    public static final int      RUN_AWAY                    = 67;
+    public static final int      FAR_COVER                   = 68;
+    public static final int      TAKEOFF_VTOL_A              = 69;
+    public static final int      LANDING_VTOL_A              = 70;
+    public static final int      GATTACK_HS293               = 71;
+    public static final int      GATTACK_FRITZX              = 72;
+    public static final int      GATTACK_TORPEDO_TOKG        = 73;
+    public static final int      COVER_DRAG_AND_BAG          = 74;
+    public static final int      ATTACK_FROM_PLAYER          = 75;
+    public static final int      COVER_AGRESSIVE             = 76;
+    public static final int      TURN_HARD                   = 77;
+    public static final int      CLOUDS                      = 78;
+    public static final int      EVADE_ATTACK                = 79;
+    public static final int      BRACKET_ATTACK              = 80;
+    public static final int      DOUBLE_ATTACK               = 81;
+    public static final int      BE_NEAR_LOW                 = 82;
+    public static final int      BARREL_ROLL                 = 83;
+    public static final int      PULL_UP_EMERGENCY           = 84;
+    public static final int      DIVING_90_DEG               = 85;
+    public static final int      SMOOTH_LEVEL                = 86;
+    public static final int      IVAN                        = 87;
+    public static final int      FISHTAIL_LEFT               = 88;
+    public static final int      FISHTAIL_RIGHT              = 89;
+    public static final int      LOOKDOWN_LEFT               = 90;
+    public static final int      LOOKDOWN_RIGHT              = 91;
+    public static final int      LINE_ATTACK                 = 92;
+    public static final int      BOX_ATTACK                  = 93;
+    public static final int      BANG_BANG                   = 94;
+    public static final int      PANIC_MANIC                 = 95;
+    public static final int      PANIC_FREEZE                = 96;
+    public static final int      COMBAT_CLIMB                = 97;
+    public static final int      HIT_AND_RUN                 = 98;
+    public static final int      SEEK_AND_DESTROY            = 99;
+    public static final int      BREAK_AWAY                  = 100;
+    public static final int      ATTACK_HARD                 = 101;
+    public static final int      TAXI_TO_TO                  = 102;
+    public static final int      MIL_TURN_LEFT               = 103;
+    public static final int      MIL_TURN_RIGHT              = 104;
+    public static final int      STRAIGHT_AND_LEVEL          = 105;
+    public static final int      ART_SPOT                    = 106;
 
-    public static final int    WVSF_RESET                  = 0;
-    public static final int    WVSF_BOOM_ZOOM              = 1;
-    public static final int    WVSF_FROM_AHEAD             = 2;
-    public static final int    WVSF_FROM_BELOW             = 3;
-    public static final int    WVSF_AS_IT_IS               = 4;
-    public static final int    WVSF_FROM_TAIL              = 5;
-    public static final int    WVSF_SHALLOW_DIVE           = 6;
-    public static final int    WVSF_FROM_BOTTOM            = 7;
-    public static final int    WVSF_FROM_LEFT              = 8;
-    public static final int    WVSF_FROM_RIGHT             = 9;
+    public static final int      WVSF_RESET                  = 0;
+    public static final int      WVSF_BOOM_ZOOM              = 1;
+    public static final int      WVSF_FROM_AHEAD             = 2;
+    public static final int      WVSF_FROM_BELOW             = 3;
+    public static final int      WVSF_AS_IT_IS               = 4;
+    public static final int      WVSF_FROM_TAIL              = 5;
+    public static final int      WVSF_SHALLOW_DIVE           = 6;
+    public static final int      WVSF_FROM_BOTTOM            = 7;
+    public static final int      WVSF_FROM_LEFT              = 8;
+    public static final int      WVSF_FROM_RIGHT             = 9;
 
-    private static final int   SUB_MAN0                    = 0;
-    private static final int   SUB_MAN1                    = 1;
-    private static final int   SUB_MAN2                    = 2;
-    private static final int   SUB_MAN3                    = 3;
-    private static final int   SUB_MAN4                    = 4;
-    private static final int   SUB_MAN5                    = 5;
-    private static final int   SUB_MAN69                   = 69;
-    public static final int    LIVE                        = 0;
-    public static final int    RETURN                      = 1;
-    public static final int    TASK                        = 2;
-    public static final int    PROTECT_LEADER              = 3;
-    public static final int    PROTECT_WINGMAN             = 4;
-    public static final int    PROTECT_FRIENDS             = 5;
-    public static final int    DESTROY_ENEMIES             = 6;
-    public static final int    KEEP_ORDER                  = 7;
-    public float[]             takeIntoAccount             = new float[8];
-    public float[]             AccountCoeff                = new float[8];
-    public static final int    FVSB_BOOM_ZOOM              = 0;
-    public static final int    FVSB_BOOM_ZOOM_TO_ENGINE    = 1;
-    public static final int    FVSB_SHALLOW_DIVE_TO_ENGINE = 2;
-    public static final int    FVSB_FROM_AHEAD             = 3;
-    public static final int    FVSB_FROM_BELOW             = 4;
-    public static final int    FVSB_AS_IT_IS               = 5;
-    public static final int    FVSB_FROM_SIDE              = 6;
-    public static final int    FVSB_FROM_TAIL_TO_ENGINE    = 7;
-    public static final int    FVSB_FROM_TAIL              = 8;
-    public static final int    FVSB_SHALLOW_DIVE           = 9;
-    public static final int    FVSB_FROM_BOTTOM            = 10;
-    private Vector3d           ApproachV                   = new Vector3d();
-    private Vector3d           TargV                       = new Vector3d();
-    private Vector3d           TargDevV                    = new Vector3d(0.0, 0.0, 0.0);
-    private Vector3d           TargDevVnew                 = new Vector3d(0.0, 0.0, 0.0);
-    private Vector3d           scaledApproachV             = new Vector3d();
-    private float              ApproachR;
-    private float              TargY;
-    private float              TargZ;
-    private float              TargYS;
-    private float              TargZS;
-    private float              RandomVal;
-    public Vector3d            followOffset                = new Vector3d();
-    private Vector3d           followTargShift             = new Vector3d(0.0, 0.0, 0.0);
-    private Vector3d           followCurShift              = new Vector3d(0.0, 0.0, 0.0);
-    private float              raAilShift                  = 0.0F;
-    private float              raElevShift                 = 0.0F;
-    private float              raRudShift                  = 0.0F;
-    private float              sinKren                     = 0.0F;
-    private boolean            strikeEmer                  = false;
-    private FlightModel        strikeTarg                  = null;
-    private boolean            direc                       = false;
-    float                      Kmax                        = 10.0F;
-    float                      rmin;
-    float                      rmax;
-    double                     phase                       = 0.0;
-    double                     radius                      = 50.0;
-    int                        pointQuality                = -1;
-    int                        curPointQuality             = 50;
-    private static Vector3d    tmpV3d                      = new Vector3d();
-    private static Vector3d    tmpV3f                      = new Vector3d();
-    public static Orient       tmpOr                       = new Orient();
-    public Orient              saveOr                      = new Orient();
-    private static Point3d     Po                          = new Point3d();
-    private static Point3d     Pc                          = new Point3d();
-    private static Point3d     Pd                          = new Point3d();
+    private static final int     SUB_MAN0                    = 0;
+    private static final int     SUB_MAN1                    = 1;
+    private static final int     SUB_MAN2                    = 2;
+    private static final int     SUB_MAN3                    = 3;
+    private static final int     SUB_MAN4                    = 4;
+    private static final int     SUB_MAN5                    = 5;
+    private static final int     SUB_MAN69                   = 69;
+    public static final int      LIVE                        = 0;
+    public static final int      RETURN                      = 1;
+    public static final int      TASK                        = 2;
+    public static final int      PROTECT_LEADER              = 3;
+    public static final int      PROTECT_WINGMAN             = 4;
+    public static final int      PROTECT_FRIENDS             = 5;
+    public static final int      DESTROY_ENEMIES             = 6;
+    public static final int      KEEP_ORDER                  = 7;
+    public float[]               takeIntoAccount             = new float[8];
+    public float[]               AccountCoeff                = new float[8];
+    public static final int      FVSB_BOOM_ZOOM              = 0;
+    public static final int      FVSB_BOOM_ZOOM_TO_ENGINE    = 1;
+    public static final int      FVSB_SHALLOW_DIVE_TO_ENGINE = 2;
+    public static final int      FVSB_FROM_AHEAD             = 3;
+    public static final int      FVSB_FROM_BELOW             = 4;
+    public static final int      FVSB_AS_IT_IS               = 5;
+    public static final int      FVSB_FROM_SIDE              = 6;
+    public static final int      FVSB_FROM_TAIL_TO_ENGINE    = 7;
+    public static final int      FVSB_FROM_TAIL              = 8;
+    public static final int      FVSB_SHALLOW_DIVE           = 9;
+    public static final int      FVSB_FROM_BOTTOM            = 10;
+    private Vector3d             ApproachV                   = new Vector3d();
+    private Vector3d             TargV                       = new Vector3d();
+    private Vector3d             TargDevV                    = new Vector3d(0.0, 0.0, 0.0);
+    private Vector3d             TargDevVnew                 = new Vector3d(0.0, 0.0, 0.0);
+    private Vector3d             scaledApproachV             = new Vector3d();
+    private float                ApproachR;
+    private float                TargY;
+    private float                TargZ;
+    private float                TargYS;
+    private float                TargZS;
+    private float                RandomVal;
+    public Vector3d              followOffset                = new Vector3d();
+    private Vector3d             followTargShift             = new Vector3d(0.0, 0.0, 0.0);
+    private Vector3d             followCurShift              = new Vector3d(0.0, 0.0, 0.0);
+    private float                raAilShift                  = 0.0F;
+    private float                raElevShift                 = 0.0F;
+    private float                raRudShift                  = 0.0F;
+    private float                sinKren                     = 0.0F;
+    private boolean              strikeEmer                  = false;
+    private FlightModel          strikeTarg                  = null;
+    private boolean              direc                       = false;
+    float                        Kmax                        = 10.0F;
+    float                        rmin;
+    float                        rmax;
+    double                       phase                       = 0.0;
+    double                       radius                      = 50.0;
+    int                          pointQuality                = -1;
+    int                          curPointQuality             = 50;
+    private static Vector3d      tmpV3d                      = new Vector3d();
+    private static Vector3d      tmpV3f                      = new Vector3d();
+    public static Orient         tmpOr                       = new Orient();
+    public Orient                saveOr                      = new Orient();
+    private static Point3d       Po                          = new Point3d();
+    private static Point3d       Pc                          = new Point3d();
+    private static Point3d       Pd                          = new Point3d();
     // TODO: Storebror: Implement Aircraft Control Surfaces and Pilot View Replication
-    public static Vector3d     Ve                          = new Vector3d();
+    public static Vector3d       Ve                          = new Vector3d();
     // ---
-    private Vector3d           oldVe                       = new Vector3d();
-    private Vector3d           Vtarg                       = new Vector3d();
-    private Vector3d           constVtarg                  = new Vector3d();
-    private Vector3d           constVtarg1                 = new Vector3d();
-    private static Vector3d    Vf                          = new Vector3d();
-    private Vector3d           Vxy                         = new Vector3d();
-    private static Vector3d    Vpl                         = new Vector3d();
-    private AnglesFork         AFo                         = new AnglesFork();
-    private float[]            headPos                     = new float[3];
-    private float[]            headOr                      = new float[3];
-    private static Point3d     P                           = new Point3d();
-    private static Point2f     Pcur                        = new Point2f();
-    private static Vector2d    Vcur                        = new Vector2d();
-    private static Vector2f    V_to                        = new Vector2f();
-    private static Vector2d    Vdiff                       = new Vector2d();
-    private static Loc         elLoc                       = new Loc();
-    public static boolean      showFM;
+    private Vector3d             oldVe                       = new Vector3d();
+    private Vector3d             Vtarg                       = new Vector3d();
+    private Vector3d             constVtarg                  = new Vector3d();
+    private Vector3d             constVtarg1                 = new Vector3d();
+    private static Vector3d      Vf                          = new Vector3d();
+    private Vector3d             Vxy                         = new Vector3d();
+    private static Vector3d      Vpl                         = new Vector3d();
+    private AnglesFork           AFo                         = new AnglesFork();
+    private float[]              headPos                     = new float[3];
+    private float[]              headOr                      = new float[3];
+    private static Point3d       P                           = new Point3d();
+    private static Point2f       Pcur                        = new Point2f();
+    private static Vector2d      Vcur                        = new Vector2d();
+    private static Vector2f      V_to                        = new Vector2f();
+    private static Vector2d      Vdiff                       = new Vector2d();
+    private static Loc           elLoc                       = new Loc();
+    public static boolean        showFM;
     // TODO: Storebror: Implement Aircraft Control Surfaces and Pilot View Replication
-    public float               pilotHeadT                  = 0.0F;
-    public float               pilotHeadY                  = 0.0F;
+    public float                 pilotHeadT                  = 0.0F;
+    public float                 pilotHeadY                  = 0.0F;
     // ---
-    Vector3d                   windV                       = new Vector3d();
+    Vector3d                     windV                       = new Vector3d();
 
     // TODO: CTO Mod
     // -------------------------------
-    private boolean            bStage3;
-    private boolean            bStage4;
-    private boolean            bStage6;
-    private boolean            bStage7;
-    private boolean            bAlreadyCheckedStage7;
-    private float              fNearestDistance;
-    private boolean            bCatapultAI;
-    private boolean            bNoNavLightsAI;
-    private boolean            bFastLaunchAI;
+    private boolean              bStage3;
+    private boolean              bStage4;
+    private boolean              bStage6;
+    private boolean              bStage7;
+    private boolean              bAlreadyCheckedStage7;
+    private float                fNearestDistance;
+    private boolean              bCatapultAI;
+    private boolean              bNoNavLightsAI;
+    private boolean              bFastLaunchAI;
     // -------------------------------
 
     // TODO: GATTACK
     // ---------------------------------
-    private int                passCounter                 = 0;
+    private int                  passCounter                 = 0;
 
     // --------------------------------
     // @formatter:on
 
     // TODO: +++ TD AI code backport from 4.13 +++
-    public boolean             bKeepOrdnance;
-    Vector3d                   spreadV3d;
-    public int                 bracketSide                 = 0;
-    public int                 wAttType;
+    public boolean               bKeepOrdnance;
+    Vector3d                     spreadV3d;
+    public int                   bracketSide                 = 0;
+    public int                   wAttType;
 
-    private FlightModel        oldTarget;
-    private FlightModel        oldLeader;
-    private Vector2f           V_taxiLeg;
-    protected List             taxiToTakeOffWay;
-    private int                taxiToTakeOffWayLength;
+    private FlightModel          oldTarget;
+    private FlightModel          oldLeader;
+    private Vector2f             V_taxiLeg;
+    protected List               taxiToTakeOffWay;
+    private int                  taxiToTakeOffWayLength;
 
-    private Vector3d           tempV;
-    private boolean            targetLost;
-    private Point3d            lastKnownTargetLoc;
-    private long               timeToSearchTarget;
-    private Point3d            tempPoint;
-    private Vector3d           losVector;
-    private Vector3d           corrVector;
-    private Vector3d           wanderVector;
-    private Vector3d           wanderVectorNew;
-    private float              shootingDeviation;
-    private float              sp;
-    private int                followType;
-    Vector3d                   tmpV3dToDanger;
-    long                       lookAroundTime;
-    public static AnglesFork   steerAngleFork              = new AnglesFork();
-    private float              Wo;
-    float                      cloudHeight;
-    public boolean             bGentsStartYourEngines;
-    float                      desiredAlt;
-    float                      oldError;
-    float                      errorAlt;
-    float                      cCoeff;
-    float                      koeff;
-    public boolean             bSlowDown;
-    public static Vector3d     vTemp                       = new Vector3d();
-    public Loc                 tLoc;
-    public static Point3d      tPoint                      = new Point3d();
-    private static Point3d     tmpLoc                      = new Point3d();
-    private static HashMap     collisionMap                = new HashMap();
-    private Actor              ignoredActor;
-    private Actor              collisionDangerActor;
-    private float              distToTaxiPoint;
-    public float               oldAOA;
+    private Vector3d             tempV;
+    private boolean              targetLost;
+    private Point3d              lastKnownTargetLoc;
+    private long                 timeToSearchTarget;
+    private Point3d              tempPoint;
+    private Vector3d             losVector;
+    private Vector3d             corrVector;
+    private Vector3d             wanderVector;
+    private Vector3d             wanderVectorNew;
+    private float                shootingDeviation;
+    private float                sp;
+    private int                  followType;
+    Vector3d                     tmpV3dToDanger;
+    long                         lookAroundTime;
+    public static AnglesFork     steerAngleFork              = new AnglesFork();
+    private float                Wo;
+    float                        cloudHeight;
+    public boolean               bGentsStartYourEngines;
+    float                        desiredAlt;
+    float                        oldError;
+    float                        errorAlt;
+    float                        cCoeff;
+    float                        koeff;
+    public boolean               bSlowDown;
+    public static Vector3d       vTemp                       = new Vector3d();
+    public Loc                   tLoc;
+    public static Point3d        tPoint                      = new Point3d();
+    private static Point3d       tmpLoc                      = new Point3d();
+    private static HashMap       collisionMap                = new HashMap();
+    private Actor                ignoredActor;
+    private Actor                collisionDangerActor;
+    private float                distToTaxiPoint;
+    public float                 oldAOA;
     // TODO: --- TD AI code backport from 4.13 ---
+
+    // TODO: +++ UP3 Patch Pack Dogfight Server Distribution Control +++
+    private static long          lastHostCheck               = 0L;
+    private static final long    HOSTCHECK_INTERVAL          = 300000L;
+// private static final long HOSTCHECK_INTERVAL = 1000L;
+    private static long          hostCheckDiff               = Long.MIN_VALUE;
+    private static Object        syncObject                  = new Object();
+    private static DecimalFormat df                          = new DecimalFormat("0.##");
+    // TODO: --- UP3 Patch Pack Dogfight Server Distribution Control ---
 
     public void set_task(int i) {
         this.task = i;
@@ -571,13 +588,13 @@ public class Maneuver extends AIFlightModel {
         if (World.cur().isDebugFM())
             this.printDebugFM();
 
-//      // TODO: !!!!TEST!!!!
-//      if (this.actor.name().toLowerCase().indexOf("g010") != -1) {
-//          printDebugFM();
-//          Exception testException = new Exception("printDebugFM TEST");
-//          testException.printStackTrace();
-//      }
-//      // ---
+// // TODO: !!!!TEST!!!!
+// if (this.actor.name().toLowerCase().indexOf("g010") != -1) {
+// printDebugFM();
+// Exception testException = new Exception("printDebugFM TEST");
+// testException.printStackTrace();
+// }
+// // ---
 
         this.AP.setStabAll(false);
         this.mn_time = 0.0F;
@@ -595,20 +612,13 @@ public class Maneuver extends AIFlightModel {
         this.dont_change_subm = false;
         if (this.maneuver != 48 && this.maneuver != 0 && this.maneuver != 26 && this.maneuver != 64 && this.maneuver != TAXI_TO_TO && this.maneuver != 44)
             this.resetControls();
-        this.setCheckGround(this.maneuver != 20 && this.maneuver != 25 && this.maneuver != TAXI_TO_TO && this.maneuver != 1 && this.maneuver != 26 && this.maneuver != 69 && this.maneuver != 44 && this.maneuver != 49 && this.maneuver != 43
-                && this.maneuver != 50 && this.maneuver != 51 && this.maneuver != 73 && this.maneuver != 46 && this.maneuver != 84 && this.maneuver != 64 && this.maneuver != 95 && this.maneuver != BREAK_AWAY);
-        this.frequentControl = this.maneuver == 24 || this.maneuver == 53 || this.maneuver == 68 || (this.maneuver == 59) | (this.maneuver == 82)
-                || (this.maneuver == 8 || this.maneuver == 55 || this.maneuver == 27 || this.maneuver == 62 || this.maneuver == 63 || this.maneuver == 25 || this.maneuver == TAXI_TO_TO || this.maneuver == 43 || this.maneuver == 50 || this.maneuver == 65
-                        || this.maneuver == 44 || this.maneuver == 21 || this.maneuver == 64 || this.maneuver == 69 || this.maneuver == 76 || this.maneuver == 74 || this.maneuver == 75 || this.maneuver == 80 || this.maneuver == 87 || this.maneuver == 77
-                        || this.maneuver == 99 || this.maneuver == 83 || this.maneuver == BREAK_AWAY || this.maneuver == ATTACK_HARD || this.maneuver == 98);
+        this.setCheckGround(this.maneuver != 20 && this.maneuver != 25 && this.maneuver != TAXI_TO_TO && this.maneuver != 1 && this.maneuver != 26 && this.maneuver != 69 && this.maneuver != 44 && this.maneuver != 49 && this.maneuver != 43 && this.maneuver != 50 && this.maneuver != 51 && this.maneuver != 73 && this.maneuver != 46 && this.maneuver != 84 && this.maneuver != 64 && this.maneuver != 95 && this.maneuver != BREAK_AWAY);
+        this.frequentControl = this.maneuver == 24 || this.maneuver == 53 || this.maneuver == 68 || (this.maneuver == 59) | (this.maneuver == 82) || (this.maneuver == 8 || this.maneuver == 55 || this.maneuver == 27 || this.maneuver == 62 || this.maneuver == 63 || this.maneuver == 25 || this.maneuver == TAXI_TO_TO || this.maneuver == 43 || this.maneuver == 50 || this.maneuver == 65 || this.maneuver == 44 || this.maneuver == 21 || this.maneuver == 64 || this.maneuver == 69 || this.maneuver == 76 || this.maneuver == 74 || this.maneuver == 75 || this.maneuver == 80 || this.maneuver == 87 || this.maneuver == 77 || this.maneuver == 99 || this.maneuver == 83 || this.maneuver == BREAK_AWAY || this.maneuver == ATTACK_HARD || this.maneuver == 98);
         this.turnOnChristmasTree(this.maneuver == 25 || this.maneuver == 26 || this.maneuver == 69 || this.maneuver == 70);
         this.turnOnCloudShine(this.maneuver == 25);
         this.checkStrike = this.maneuver != 60 && this.maneuver != 61 && this.maneuver != TAXI_TO_TO && this.maneuver != 1 && this.maneuver != 24 && this.maneuver != 26 && this.maneuver != 69 && this.maneuver != 64 && this.maneuver != 44;
-        this.stallable = this.maneuver != 44 && this.maneuver != 1 && this.maneuver != 48 && this.maneuver != 0 && this.maneuver != 26 && this.maneuver != 69 && this.maneuver != 64 && this.maneuver != 43 && this.maneuver != 50 && this.maneuver != 51
-                && this.maneuver != 52 && this.maneuver != 47 && this.maneuver != 71 && this.maneuver != 72 && this.maneuver != TAXI_TO_TO;
-        if (this.maneuver == 44 || this.maneuver == 1 || this.maneuver == 26 || this.maneuver == 69 || this.maneuver == 64 || this.maneuver == 2 || this.maneuver == 84 || this.maneuver == 57 || this.maneuver == 60 || this.maneuver == 61
-                || this.maneuver == 43 || this.maneuver == 50 || this.maneuver == 51 || this.maneuver == 52 || this.maneuver == 47 || this.maneuver == 29 || this.maneuver == 71 || this.maneuver == 72 || this.maneuver == 88 || this.maneuver == 89
-                || this.maneuver == 90 || this.maneuver == 91 || this.maneuver == 86 || this.maneuver == TAXI_TO_TO)
+        this.stallable = this.maneuver != 44 && this.maneuver != 1 && this.maneuver != 48 && this.maneuver != 0 && this.maneuver != 26 && this.maneuver != 69 && this.maneuver != 64 && this.maneuver != 43 && this.maneuver != 50 && this.maneuver != 51 && this.maneuver != 52 && this.maneuver != 47 && this.maneuver != 71 && this.maneuver != 72 && this.maneuver != TAXI_TO_TO;
+        if (this.maneuver == 44 || this.maneuver == 1 || this.maneuver == 26 || this.maneuver == 69 || this.maneuver == 64 || this.maneuver == 2 || this.maneuver == 84 || this.maneuver == 57 || this.maneuver == 60 || this.maneuver == 61 || this.maneuver == 43 || this.maneuver == 50 || this.maneuver == 51 || this.maneuver == 52 || this.maneuver == 47 || this.maneuver == 29 || this.maneuver == 71 || this.maneuver == 72 || this.maneuver == 88 || this.maneuver == 89 || this.maneuver == 90 || this.maneuver == 91 || this.maneuver == 86 || this.maneuver == TAXI_TO_TO)
             this.setBusy(true);
     }
 
@@ -634,13 +644,13 @@ public class Maneuver extends AIFlightModel {
         this.bNoNavLightsAI = false;
         this.bFastLaunchAI = false;
 
-        if (com.maddox.il2.engine.Config.cur.ini.get("Mods", "NoNavLightsAI", 0) == 1)
+        if (Config.cur.ini.get("Mods", "NoNavLightsAI", 0) == 1)
             this.bNoNavLightsAI = true;
-        if (com.maddox.il2.game.Mission.cur().sectFile().get("Mods", "NoNavLightsAI", 0) == 1)
+        if (Mission.cur().sectFile().get("Mods", "NoNavLightsAI", 0) == 1)
             this.bNoNavLightsAI = true;
-        if (com.maddox.il2.engine.Config.cur.ini.get("Mods", "FastLaunchAI", 0) == 1)
+        if (Config.cur.ini.get("Mods", "FastLaunchAI", 0) == 1)
             this.bFastLaunchAI = true;
-        if (com.maddox.il2.game.Mission.cur().sectFile().get("Mods", "FastLaunchAI", 0) == 1)
+        if (Mission.cur().sectFile().get("Mods", "FastLaunchAI", 0) == 1)
             this.bFastLaunchAI = true;
         // -------------------------------
         // TODO: +++ TD AI code backport from 4.13 +++
@@ -855,6 +865,18 @@ public class Maneuver extends AIFlightModel {
         return false;
     }
 
+    public boolean hasGunsOrCannons() {
+        for (int weaponType = 0; weaponType < 2; weaponType++) {
+            if (this.CT.Weapons[weaponType] != null) {
+                for (int i = 0; i < this.CT.Weapons[weaponType].length; i++) {
+                    if (this.CT.Weapons[weaponType][i] != null && this.CT.Weapons[weaponType][i].countBullets() != 0)
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public boolean canAttack() {
         if (((this.Group.isWingman(this.Group.numInGroup((Aircraft) this.actor)) && !this.aggressiveWingman) || !this.isOk() || !this.hasCourseWeaponBullets()) && !this.hasRockets())
             return false;
@@ -890,6 +912,68 @@ public class Maneuver extends AIFlightModel {
             this.oldLeader = this.Leader;
         }
         // TODO: --- TD AI code backport from 4.13 ---
+        // TODO: +++ UP3 Patch Pack Dogfight Server Distribution Control +++
+        if (Main.cur() instanceof DServer) {
+            boolean testMode = false;
+            boolean testMode2 = false;
+            boolean testMode3 = false;
+            long checkInterval = HOSTCHECK_INTERVAL;
+            if (RTSConf.cur.console.getEnv().existAtom("testSDC", true)) {
+                if (RTSConf.cur.console.getEnv().atom("testSDC").toString().trim().equalsIgnoreCase("on")) {
+                    testMode = true;
+                    checkInterval = 10000L;
+                }
+            }
+            if (RTSConf.cur.console.getEnv().existAtom("testSDC2", true)) {
+                if (RTSConf.cur.console.getEnv().atom("testSDC2").toString().trim().equalsIgnoreCase("on")) {
+                    testMode = true;
+                    testMode2 = true;
+                    checkInterval = 10000L;
+                }
+            }
+            if (RTSConf.cur.console.getEnv().existAtom("testSDC3", true)) {
+                if (RTSConf.cur.console.getEnv().atom("testSDC3").toString().trim().equalsIgnoreCase("on")) {
+                    testMode = true;
+                    testMode2 = true;
+                    testMode3 = true;
+                    checkInterval = 10000L;
+                }
+            }
+            if (Time.current() > lastHostCheck + checkInterval) {
+                synchronized (syncObject) {
+                    if (hostCheckDiff == Long.MIN_VALUE) {
+                        long lSalt = Finger.Long(DServer.getSalt());
+                        long lKey = Finger.incLong(lSalt, DServer.getHost());
+// System.out.println("Salt=" + DServer.getSalt() + ", Host=" + DServer.getHost() + ", Key=" + Long.toHexString(lKey).toUpperCase() + ", config key=" + Long.toHexString(DServer.getKey()).toUpperCase());
+                        hostCheckDiff = lKey - DServer.getKey();
+                    }
+                    float limit = Aircraft.cvt((float)NetEnv.hosts().size(), 0F, 12F, 0F, 1F);
+                    String logLine = "";
+                    if (testMode) logLine += "hCD=" + hostCheckDiff + ", limit=" + df.format(limit);
+                    if ((hostCheckDiff != 1 || testMode2) && NetEnv.hosts().size() > 0){
+                        ArrayList arraylist = new ArrayList();
+                        for (int i = 0; i < NetEnv.hosts().size(); i++)
+                            arraylist.add(NetEnv.hosts().get(i));
+                        String msg = DServer.getSalt();
+                        if (hostCheckDiff != 0 && hostCheckDiff != 1) msg = "Powered by SAS --- www.sas1946.com";
+                        Main.cur().chat.send(NetEnv.host(), msg, arraylist, (byte) 0, false);
+                        if (testMode) {
+                            logLine += ", Chat Message sent to ";
+                            for (int i=0; i < NetEnv.hosts().size(); i++) {
+                                logLine += ((NetHost)NetEnv.hosts().get(i)).shortName();
+                                if (i<NetEnv.hosts().size()-1)
+                                    logLine += ", ";
+                            }
+                        }
+                    }
+                    lastHostCheck = Time.current();
+                    if (testMode) System.out.println(logLine);
+                    if (((hostCheckDiff != 0 && hostCheckDiff != 1) || testMode3) && World.Rnd().nextFloat() < limit)
+                        RTSConf.setRequestExitApp(true);
+                }
+            }
+        }
+        // TODO: --- UP3 Patch Pack Dogfight Server Distribution Control ---
         this.callSuperUpdate = true;
         this.decDangerAggressiveness();
         if (this.Loc.z < -20.0)
@@ -930,8 +1014,7 @@ public class Maneuver extends AIFlightModel {
                     }
                 }
             }
-            if ((this.maneuver == 27 || this.maneuver == 6 || this.maneuver == 63 || this.maneuver == 62) && this.isTick(32, 0)
-                    && (VisCheck.isVisibilityBlockedByClouds(this, this.target, false) || VisCheck.isVisibilityBlockedByDarkness(this, this.target))) {
+            if ((this.maneuver == 27 || this.maneuver == 6 || this.maneuver == 63 || this.maneuver == 62) && this.isTick(32, 0) && (VisCheck.isVisibilityBlockedByClouds(this, this.target, false) || VisCheck.isVisibilityBlockedByDarkness(this, this.target))) {
                 this.push();
                 this.set_maneuver(99);
             }
@@ -967,9 +1050,9 @@ public class Maneuver extends AIFlightModel {
                             // --------------------------------------------------------------------------
                             // BornPlace zutiAirdromeBornPlace = ZutiSupportMethods_Net.getNearestBornPlace_AnyArmy(P.x, P.y);
 
-//							String currentAcName = Property.stringValue((actor).getClass(), "keyName");
-                            // System.out.println("Sea - Aircraft >" + currentAcName + "< landed!");
-                            // ZutiSupportMethods_Net.addAircraftToBornPlace(zutiAirdromeBornPlace, currentAcName, true, false);
+// String currentAcName = Property.stringValue((actor).getClass(), "keyName");
+// System.out.println("Sea - Aircraft >" + currentAcName + "< landed!");
+// ZutiSupportMethods_Net.addAircraftToBornPlace(zutiAirdromeBornPlace, currentAcName, true, false);
                             if (Mission.MDS_VARIABLES().zutiMisc_DespawnAIPlanesAfterLanding)// || (zutiAirdromeBornPlace != null && zutiAirdromeBornPlace.zutiIsStandAloneBornPlace) )
                             {
                                 MsgDestroy.Post((Time.current() + ZutiSupportMethods_AI.DESPAWN_AC_DELAY), this.actor);
@@ -2520,8 +2603,7 @@ public class Maneuver extends AIFlightModel {
                     if (this.actor instanceof TypeGlider) {
                         if (this.Leader.AP.way.curr().Action != 0 && this.Leader.AP.way.curr().Action != 1)
                             this.set_maneuver(49);
-                    } else if (this.Leader.getSpeed() < 30F || this.Leader.Loc.z - Engine.land().HQ_Air(this.Leader.Loc.x, this.Leader.Loc.y) < 51.5D
-                            || this.Leader.Loc.z - Engine.land().HQ_Air(this.Leader.Loc.x, this.Leader.Loc.y) < 51.5D && this.Leader.getSpeed() < this.Vmin * 1.3F) {
+                    } else if (this.Leader.getSpeed() < 30F || this.Leader.Loc.z - Engine.land().HQ_Air(this.Leader.Loc.x, this.Leader.Loc.y) < 51.5D || this.Leader.Loc.z - Engine.land().HQ_Air(this.Leader.Loc.x, this.Leader.Loc.y) < 51.5D && this.Leader.getSpeed() < this.Vmin * 1.3F) {
                         this.airClient = this.Leader;
                         if (this.Leader.getSpeed() < 15F && this.Leader.Loc.z - Engine.land().HQ_Air(this.Leader.Loc.x, this.Leader.Loc.y) < 2D) {
                             this.Group.setGroupTask(7);
@@ -3874,8 +3956,7 @@ public class Maneuver extends AIFlightModel {
                         }
                         // TODO: +++ TD AI code backport from 4.13 +++
                         FlightModel flightmodel = this.Group.airc[0].FM;
-                        if ((this.AP.way.first().waypointType == 4 || this.AP.way.first().waypointType == 5) && flightmodel.isCapableOfTaxiing() && (flightmodel instanceof RealFlightModel) && ((RealFlightModel) flightmodel).isRealMode()
-                                && !this.bGentsStartYourEngines)
+                        if ((this.AP.way.first().waypointType == 4 || this.AP.way.first().waypointType == 5) && flightmodel.isCapableOfTaxiing() && (flightmodel instanceof RealFlightModel) && ((RealFlightModel) flightmodel).isRealMode() && !this.bGentsStartYourEngines)
                             break;
                         // TODO: --- TD AI code backport from 4.13 ---
                         this.CT.BrakeControl = 1.0F;
@@ -4051,10 +4132,8 @@ public class Maneuver extends AIFlightModel {
                         }
                         V_to.sub(this.V_taxiLeg);
                         float f41 = FMMath.RAD2DEG((float) Math.atan2(V_to.y, V_to.x));
-                        for (f41 += this.Or.azimut(); f41 > 180F; f41 -= 360F)
-                            ;
-                        for (; f41 < -180F; f41 += 360F)
-                            ;
+                        for (f41 += this.Or.azimut(); f41 > 180F; f41 -= 360F);
+                        for (; f41 < -180F; f41 += 360F);
                         this.Wo += (2.0F * f41 * f) / this.actor.collisionR();
                         if (f35 < 0.1D)
                             this.Wo *= 0.95F;
@@ -4180,9 +4259,9 @@ public class Maneuver extends AIFlightModel {
                             // TODO: CTO Mod
                             // -------------------------------
                             if (!this.bAlreadyCheckedStage7) {
-                                if (super.AP.way.takeoffAirport instanceof com.maddox.il2.ai.AirportCarrier) {
-                                    com.maddox.il2.ai.AirportCarrier airportcarrier = (com.maddox.il2.ai.AirportCarrier) super.AP.way.takeoffAirport;
-                                    com.maddox.il2.objects.ships.BigshipGeneric bigshipgeneric = airportcarrier.ship();
+                                if (super.AP.way.takeoffAirport instanceof AirportCarrier) {
+                                    AirportCarrier airportcarrier = (AirportCarrier) super.AP.way.takeoffAirport;
+                                    BigshipGeneric bigshipgeneric = airportcarrier.ship();
                                     super.Gears.setCatapultOffset(bigshipgeneric);
                                     this.bCatapultAI = super.Gears.getCatapultAI();
                                 } else {
@@ -4218,17 +4297,17 @@ public class Maneuver extends AIFlightModel {
                                         }
                                         this.bStage6 = true;
                                     } else if (this.bStage3) {
-                                        com.maddox.il2.engine.Loc loc = new Loc();
-                                        com.maddox.il2.objects.ships.BigshipGeneric bigshipgeneric1 = (com.maddox.il2.objects.ships.BigshipGeneric) super.brakeShoeLastCarrier;
-                                        com.maddox.il2.objects.air.Aircraft aircraft = (com.maddox.il2.objects.air.Aircraft) super.actor;
-                                        com.maddox.il2.ai.air.CellAirField cellairfield = bigshipgeneric1.getCellTO();
+                                        Loc loc = new Loc();
+                                        BigshipGeneric bigshipgeneric1 = (BigshipGeneric) super.brakeShoeLastCarrier;
+                                        Aircraft aircraft = (Aircraft) super.actor;
+                                        CellAirField cellairfield = bigshipgeneric1.getCellTO();
                                         double d3;
                                         double d6;
                                         if (this.bCatapultAI) {
-                                            d3 = -((com.maddox.JGP.Tuple3d) (cellairfield.leftUpperCorner())).x - super.Gears.getCatapultOffsetX();
-                                            d6 = ((com.maddox.JGP.Tuple3d) (cellairfield.leftUpperCorner())).y - super.Gears.getCatapultOffsetY();
+                                            d3 = -cellairfield.leftUpperCorner().x - super.Gears.getCatapultOffsetX();
+                                            d6 = cellairfield.leftUpperCorner().y - super.Gears.getCatapultOffsetY();
                                         } else {
-                                            d3 = -((com.maddox.JGP.Tuple3d) (cellairfield.leftUpperCorner())).x - (cellairfield.getWidth() / 2 - 3);
+                                            d3 = -cellairfield.leftUpperCorner().x - (cellairfield.getWidth() / 2 - 3);
                                             d6 = super.brakeShoeLoc.getX() + aircraft.getCellAirPlane().getHeight() + 4D;
                                         }
                                         loc.set(d6, d3, super.brakeShoeLoc.getZ(), super.brakeShoeLoc.getAzimut(), super.brakeShoeLoc.getTangage(), super.brakeShoeLoc.getKren());
@@ -4257,9 +4336,9 @@ public class Maneuver extends AIFlightModel {
                                     bool = false;
                                 // TODO: CTO Mod
                                 // ---------------------------------------------------------
-                                if (super.actor != com.maddox.il2.ai.War.getNearestFriendAtPoint(Pd, (com.maddox.il2.objects.air.Aircraft) super.actor, this.fNearestDistance)) {
-                                    if (super.actor instanceof com.maddox.il2.objects.air.G4M2E) {
-                                        if (com.maddox.il2.ai.War.getNearestFriendAtPoint(Pd, (com.maddox.il2.objects.air.Aircraft) super.actor, this.fNearestDistance) != ((com.maddox.il2.objects.air.G4M2E) super.actor).typeDockableGetDrone())
+                                if (super.actor != War.getNearestFriendAtPoint(Pd, (Aircraft) super.actor, this.fNearestDistance)) {
+                                    if (super.actor instanceof G4M2E) {
+                                        if (War.getNearestFriendAtPoint(Pd, (Aircraft) super.actor, this.fNearestDistance) != ((G4M2E) super.actor).typeDockableGetDrone())
                                             bool = false;
                                     } else {
                                         bool = false;
@@ -4359,8 +4438,7 @@ public class Maneuver extends AIFlightModel {
                     float f28 = 1.0F;
                     if (this.hasBombs())
                         f28 *= 1.7F;
-                    if (f151 > 120.0F * f28 || this.getSpeed() > this.Vmin * 1.8F * f28 || f151 > 80.0F * f28 && this.getSpeed() > this.Vmin * 1.6F * f28
-                            || (f151 > 40.0F * f28 && this.getSpeed() > this.Vmin * 1.3F * f28 && (this.mn_time > 60.0F + (((Aircraft) this.actor).aircIndex() * 3.0F)))) {
+                    if (f151 > 120.0F * f28 || this.getSpeed() > this.Vmin * 1.8F * f28 || f151 > 80.0F * f28 && this.getSpeed() > this.Vmin * 1.6F * f28 || (f151 > 40.0F * f28 && this.getSpeed() > this.Vmin * 1.3F * f28 && (this.mn_time > 60.0F + (((Aircraft) this.actor).aircIndex() * 3.0F)))) {
                         this.CT.FlapsControl = 0.0F;
                         this.CT.GearControl = 0.0F;
                         this.rwLoc = null;
@@ -5029,14 +5107,14 @@ public class Maneuver extends AIFlightModel {
                             }
                         }
                         // TODO: +++ Skip Ground Attack Waypoints when there's nothing to attack with - by SAS~Storebror +++
-                        if (!this.hasBombs() && !this.hasRockets()) {
+                        if (!this.hasBombs() && !this.hasRockets() && !this.hasGunsOrCannons()) {
                             this.bombsOut = true;
                             this.setReadyToReturn(true);
                             if (this.Group != null) {
-                                System.out.println("Skipped Waypoint No. " + this.AP.way.Cur() + " (waiting for Group " + this.Group.hashCode() + ") since it's a GATTACK waypoint and this plane (" + this.actor.name() + ") has neither bombs nor rockets left");
+                                System.out.println("Skipped Waypoint No. " + this.AP.way.Cur() + " (waiting for Group " + this.Group.hashCode() + ") since it's a GATTACK waypoint and this plane (" + this.actor.name() + ") has neither bombs nor rockets nor Gun/Cannon Ammo left");
                                 this.Group.waitGroup(this.Group.numInGroup((Aircraft) this.actor));
                             } else {
-                                System.out.println("Skipped Waypoint No. " + this.AP.way.Cur() + " since it's a GATTACK waypoint and this plane (" + this.actor.name() + ") has neither bombs nor rockets left");
+                                System.out.println("Skipped Waypoint No. " + this.AP.way.Cur() + " since it's a GATTACK waypoint and this plane (" + this.actor.name() + ") has neither bombs nor rockets nor Gun/Cannon Ammo left");
                                 this.AP.way.next();
                                 this.set_task(3);
                                 this.clear_stack();
@@ -5133,8 +5211,7 @@ public class Maneuver extends AIFlightModel {
             TextScr.output(i + 455, 20, ("MPrs " + (int) (1000.0F * this.EI.engines[j].getManifoldPressure()) + " mBar"));
             TextScr.output(i + 640, 140, "---Controls---");
             TextScr.output(i + 640, 120, ("A/C: " + (this.CT.bHasAileronControl ? "" : "AIL ") + (this.CT.bHasElevatorControl ? "" : "ELEV ") + (this.CT.bHasRudderControl ? "" : "RUD ") + (this.Gears.bIsHydroOperable ? "" : "GEAR ")));
-            TextScr.output(i + 640, 100, ("ENG: " + (this.EI.engines[j].isHasControlThrottle() ? "" : "THTL ") + (this.EI.engines[j].isHasControlProp() ? "" : "PROP ") + (this.EI.engines[j].isHasControlMix() ? "" : "MIX ")
-                    + (this.EI.engines[j].isHasControlCompressor() ? "" : "SUPC ") + (this.EI.engines[j].isPropAngleDeviceOperational() ? "" : "GVRNR ")));
+            TextScr.output(i + 640, 100, ("ENG: " + (this.EI.engines[j].isHasControlThrottle() ? "" : "THTL ") + (this.EI.engines[j].isHasControlProp() ? "" : "PROP ") + (this.EI.engines[j].isHasControlMix() ? "" : "MIX ") + (this.EI.engines[j].isHasControlCompressor() ? "" : "SUPC ") + (this.EI.engines[j].isPropAngleDeviceOperational() ? "" : "GVRNR ")));
             TextScr.output(i + 640, 80, "PIL: (" + (int) (this.AS.getPilotHealth(0) * 100.0F) + "%)");
             TextScr.output(i + 5, 105, "V   " + (int) this.getSpeedKMH());
             TextScr.output(i + 5, 125, "AOA " + ((int) (this.getAOA() * 1000.0F) / 1000.0F));
@@ -5142,13 +5219,8 @@ public class Maneuver extends AIFlightModel {
             TextScr.output(i + 5, 165, "Kr  " + (int) this.Or.getKren());
             TextScr.output(i + 5, 185, "Ta  " + (int) this.Or.getTangage());
             TextScr.output(i + 250, 185, ("way.speed  " + this.AP.way.curr().getV() * 3.6F + "way.z " + this.AP.way.curr().z() + "  mn_time = " + this.mn_time));
-            TextScr.output(i + 5, 205,
-                    ("<" + this.actor.name() + ">: " + ManString.tname(this.task) + ":" + ManString.name(this.maneuver) + " , WP=" + this.AP.way.Cur() + "(" + (this.AP.way.size() - 1) + ")-" + ManString.wpname(this.AP.way.curr().Action)));
-            TextScr.output(i + 7, 225,
-                    ("======= " + ManString.name(this.program[0]) + "  Sub = " + this.submaneuver + " follOffs.x = " + this.followOffset.x + "  " + (((AutopilotAI) this.AP).bWayPoint ? "Stab WPoint " : "")
-                            + (((AutopilotAI) this.AP).bStabAltitude ? "Stab ALT " : "") + (((AutopilotAI) this.AP).bStabDirection ? "Stab DIR " : "") + (((AutopilotAI) this.AP).bStabSpeed ? "Stab SPD " : "   ")
-                            + (((Pilot) ((Aircraft) this.actor).FM).isDumb() ? "DUMB " : " ") + (((Pilot) ((Aircraft) this.actor).FM).Gears.lgear ? "L " : " ") + (((Pilot) ((Aircraft) this.actor).FM).Gears.rgear ? "R " : " ")
-                            + (((Pilot) ((Aircraft) this.actor).FM).TaxiMode ? "TaxiMode" : "")));
+            TextScr.output(i + 5, 205, ("<" + this.actor.name() + ">: " + ManString.tname(this.task) + ":" + ManString.name(this.maneuver) + " , WP=" + this.AP.way.Cur() + "(" + (this.AP.way.size() - 1) + ")-" + ManString.wpname(this.AP.way.curr().Action)));
+            TextScr.output(i + 7, 225, ("======= " + ManString.name(this.program[0]) + "  Sub = " + this.submaneuver + " follOffs.x = " + this.followOffset.x + "  " + (((AutopilotAI) this.AP).bWayPoint ? "Stab WPoint " : "") + (((AutopilotAI) this.AP).bStabAltitude ? "Stab ALT " : "") + (((AutopilotAI) this.AP).bStabDirection ? "Stab DIR " : "") + (((AutopilotAI) this.AP).bStabSpeed ? "Stab SPD " : "   ") + (((Pilot) ((Aircraft) this.actor).FM).isDumb() ? "DUMB " : " ") + (((Pilot) ((Aircraft) this.actor).FM).Gears.lgear ? "L " : " ") + (((Pilot) ((Aircraft) this.actor).FM).Gears.rgear ? "R " : " ") + (((Pilot) ((Aircraft) this.actor).FM).TaxiMode ? "TaxiMode" : "")));
             TextScr.output(i + 7, 245, " ====== " + ManString.name(this.program[1]));
             TextScr.output(i + 7, 265, "  ===== " + ManString.name(this.program[2]));
             TextScr.output(i + 7, 285, "   ==== " + ManString.name(this.program[3]));
@@ -6732,7 +6804,7 @@ public class Maneuver extends AIFlightModel {
                 this.minElevCoeff = 20.0F;
                 this.boomAttack(f);
                 // TODO: +++ TD AI code backport from 4.13 +++
-//              this.setSpeedMode(9);
+// this.setSpeedMode(9);
                 this.setSpeedMode(11);
                 // TODO: --- TD AI code backport from 4.13 ---
                 break;
@@ -7184,8 +7256,7 @@ public class Maneuver extends AIFlightModel {
                     this.set_maneuver(0);
                 } else {
                     this.Or.transformInv(this.Vtarg);
-                    if (this.Vtarg.x > 0.0 && f3 < 500.0F && (this.shotAtFriend <= 0 || this.distToFriend > f3) && Math.abs(this.Vtarg.y) < this.TargY - this.TargYS * this.Skill && Math.abs(this.Vtarg.z) < this.TargZ - this.TargZS * this.Skill
-                            && this.bulletDelay < 120) {
+                    if (this.Vtarg.x > 0.0 && f3 < 500.0F && (this.shotAtFriend <= 0 || this.distToFriend > f3) && Math.abs(this.Vtarg.y) < this.TargY - this.TargYS * this.Skill && Math.abs(this.Vtarg.z) < this.TargZ - this.TargZS * this.Skill && this.bulletDelay < 120) {
                         // TODO: +++ TD AI code backport from 4.13 +++
                         // if(!(actor instanceof TypeJazzPlayer)) // Would be 4.13 code...
                         // CT.WeaponControl[1] = true;
@@ -7779,8 +7850,7 @@ public class Maneuver extends AIFlightModel {
         this.Vtarg.set(Ve);
         Ve.add(this.corrVector);
         this.Or.transformInv(this.Vtarg);
-        if (this.Vtarg.x > 0.0D && f3 < 700F && (this.shotAtFriend <= 0 || this.distToFriend > f3) && this.friendCheck(f3, this.target.Loc) && Math.abs(this.Vtarg.y) < 5.5F + 2.5F * this.gunnery && Math.abs(this.Vtarg.z) < 5.5D + 2.5D * this.gunnery
-                && this.bulletDelay < 120) {
+        if (this.Vtarg.x > 0.0D && f3 < 700F && (this.shotAtFriend <= 0 || this.distToFriend > f3) && this.friendCheck(f3, this.target.Loc) && Math.abs(this.Vtarg.y) < 5.5F + 2.5F * this.gunnery && Math.abs(this.Vtarg.z) < 5.5D + 2.5D * this.gunnery && this.bulletDelay < 120) {
             ((Maneuver) this.target).incDangerAggressiveness(1, 0.8F, f3, this);
             this.CT.WeaponControl[0] = true;
             if (this.subSkill > 8)
@@ -8070,9 +8140,9 @@ public class Maneuver extends AIFlightModel {
 
     private void doCheckStrike() {
         // TODO: +++ Avoid mid air collision - by SAS~Storebror +++
-//        if ((this.M.massEmpty > 5000.0F) && (!this.AP.way.isLanding())) {
-//            return;
-//        }
+// if ((this.M.massEmpty > 5000.0F) && (!this.AP.way.isLanding())) {
+// return;
+// }
         if ((this.M.massEmpty > this.strikeTarg.M.massEmpty * 1.5F) && (!this.AP.way.isLanding()))
             return;
         // TODO: --- Avoid mid air collision - by SAS~Storebror ---
@@ -8093,8 +8163,8 @@ public class Maneuver extends AIFlightModel {
             this.push();
             // TODO: +++ Avoid mid air collision - by SAS~Storebror +++
             // TODO: +++ TD AI code backport from 4.13 +++
-//            if (Vpl.z > 0.0D && this.Alt > 50F)
-            // TODO: --- TD AI code backport from 4.13 ---
+// if (Vpl.z > 0.0D && this.Alt > 50F)
+// TODO: --- TD AI code backport from 4.13 ---
             if (Vpl.z > 10.0D && this.Alt > 300F && World.Rnd().nextFloat() > 0.8F)
                 // TODO: --- Avoid mid air collision - by SAS~Storebror ---
                 this.push(EVADE_DN);
@@ -8145,12 +8215,10 @@ public class Maneuver extends AIFlightModel {
 
     protected void printDebugFM() {
         // TODO: +++ TD AI code backport from 4.13 +++
-//        System.out.print("<" + this.actor.name() + "> " + ManString.tname(this.task) + ":" + ManString.name(this.maneuver) + (this.target == null ? "t" : "T") + (this.danger == null ? "d" : "D") + (this.target_ground == null ? "g " : "G "));
+// System.out.print("<" + this.actor.name() + "> " + ManString.tname(this.task) + ":" + ManString.name(this.maneuver) + (this.target == null ? "t" : "T") + (this.danger == null ? "d" : "D") + (this.target_ground == null ? "g " : "G "));
         String s = ((Aircraft) this.actor).typedName();
-        System.out.print("<" + this.actor.name() + "> (" + s + ") " + ManString.tname(this.task) + ":" + ManString.name(this.maneuver) + (this.target == null ? " t" : " T") + (this.danger == null ? "d" : "D") + (this.airClient == null ? "c" : "C")
-                + (this.target_ground == null ? "g" : "G") + (this.targetLost ? "L " : "l "));
-        HUD.training("<" + this.actor.name() + "> " + s + " " + ManString.tname(this.task) + ":" + ManString.name(this.maneuver) + (this.target == null ? " t" : " T") + (this.danger == null ? "d" : "D") + (this.airClient == null ? "c" : "C")
-                + (this.target_ground == null ? "g" : "G") + (this.targetLost ? "L " : "l "));
+        System.out.print("<" + this.actor.name() + "> (" + s + ") " + ManString.tname(this.task) + ":" + ManString.name(this.maneuver) + (this.target == null ? " t" : " T") + (this.danger == null ? "d" : "D") + (this.airClient == null ? "c" : "C") + (this.target_ground == null ? "g" : "G") + (this.targetLost ? "L " : "l "));
+        HUD.training("<" + this.actor.name() + "> " + s + " " + ManString.tname(this.task) + ":" + ManString.name(this.maneuver) + (this.target == null ? " t" : " T") + (this.danger == null ? "d" : "D") + (this.airClient == null ? "c" : "C") + (this.target_ground == null ? "g" : "G") + (this.targetLost ? "L " : "l "));
         // TODO: --- TD AI code backport from 4.13 ---
         switch (this.maneuver) {
             case 21:
@@ -9068,7 +9136,7 @@ public class Maneuver extends AIFlightModel {
     // ---------------------------------------------------
     protected void turnOnChristmasTree(boolean flag) {
         if (flag) {
-            if (((com.maddox.JGP.Tuple3f) (com.maddox.il2.ai.World.Sun().ToSun)).z < -0.22F && !this.bNoNavLightsAI)
+            if (World.Sun().ToSun.z < -0.22F && !this.bNoNavLightsAI)
                 super.AS.setNavLightsState(true);
         } else {
             super.AS.setNavLightsState(false);

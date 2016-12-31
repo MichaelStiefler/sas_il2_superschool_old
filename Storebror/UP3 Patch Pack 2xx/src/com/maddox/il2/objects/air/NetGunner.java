@@ -204,7 +204,9 @@ public class NetGunner extends com.maddox.il2.engine.Actor {
 //        System.out.println("### GUNNER POS SWITCH BUG DEBUG: NetGunner.checkAircraft aircraft.getArmy()=" + aircraft.getArmy() + ", getArmy()=" + getArmy());
         // ...
         setArmy(aircraft.getArmy());
-        user.setArmy(getArmy());
+        // TODO: Storebror: Debugging Army switch on gunner pos switch bug
+        user.setArmy(getArmy()); // Original
+//        user.setArmy(aircraft.getArmy()); // Test Modified
         setOwner(aircraft);
         if (isNetMaster() || user.isTrackWriter()) {
             com.maddox.il2.ai.World.cur().resetUser();

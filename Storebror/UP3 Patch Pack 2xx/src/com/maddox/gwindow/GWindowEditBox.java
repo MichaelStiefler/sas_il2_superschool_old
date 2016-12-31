@@ -2,7 +2,6 @@ package com.maddox.gwindow;
 
 import java.util.ArrayList;
 
-import com.maddox.il2.game.HUD;
 import com.maddox.rts.VK;
 
 public class GWindowEditBox extends GWindowDialogControl
@@ -307,7 +306,6 @@ public class GWindowEditBox extends GWindowDialogControl
 
     public void keyboardChar(char c)
     {
-        HUD.training("keyboardChar(" + (int)c + "), bE=" + this.bEnable + ", bCE=" + this.bCanEdit + ", bCD=" + this.bControlDown);
         // TODO: +++ Enable Right Alt key by SAS~Storebror +++
 //        if(bEnable && bCanEdit && !bControlDown)
         if(this.bEnable && this.bCanEdit && (!this.bControlDown || this.bControlDown && this.bAltDown))

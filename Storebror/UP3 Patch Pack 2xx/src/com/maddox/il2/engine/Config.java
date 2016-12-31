@@ -91,6 +91,9 @@ public class Config {
                 Provider.GLUload(gluLib);
             beforeLoadSound();
         }
+        // TODO: +++ Mods Settings GUI by SAS~Storebror +++
+        this.bInstantLog = ini.get("Mods", "InstantLog", 0) != 0;
+        // TODO: --- Mods Settings GUI by SAS~Storebror ---
     }
 
     public void save() {
@@ -119,6 +122,9 @@ public class Config {
             saveSound();
             saveEngine();
         }
+        // TODO: +++ Mods Settings GUI by SAS~Storebror +++
+        ini.setValue("Mods", "InstantLog", this.bInstantLog? "1" : "0");
+        // TODO: --- Mods Settings GUI by SAS~Storebror ---
         saveConsole();
         saveNet();
         ini.saveFile();
@@ -139,6 +145,7 @@ public class Config {
         this.sAutoUserPassword = ini.get("Mods", "netLoginUser", "");
         this.bOverrideOnlineCallsign = ini.get("Mods", "useNetCallsign", 0) != 0;
         this.sOnlineCallsign = ini.get("Mods", "netCallsign", "");
+        this.bSkinDownloadNotifications = ini.get("Mods", "SkinDownloadNotifications", 1) != 0;
         // TODO: +++ Override Online Callsign - by SAS~Storebror +++
         if (Main.cur().netGameSpy != null && this.bOverrideOnlineCallsign && this.sOnlineCallsign.length() > 0) {
             Main.cur().netGameSpy.userName = UnicodeTo8bit.load(this.sOnlineCallsign);
@@ -206,6 +213,7 @@ public class Config {
         ini.setValue("Mods", "netLoginUser", this.sAutoUserPassword);
         ini.setValue("Mods", "useNetCallsign", this.bOverrideOnlineCallsign ? "1" : "0");
         ini.setValue("Mods", "netCallsign", this.sOnlineCallsign);
+        ini.setValue("Mods", "SkinDownloadNotifications", this.bSkinDownloadNotifications ? "1" : "0");
      // TODO: --- Mods Settings GUI by SAS~Storebror ---
         
         ini.setValue("NET", "serverChannels", "" + netServerChannels);
@@ -676,6 +684,8 @@ public class Config {
     public String               sOnlineCallsign;
     public int                  iDarkness;
     public int                  iDiffuse;
+    public boolean              bSkinDownloadNotifications;
+    public boolean              bInstantLog;
     public static final int     MIN_NIGHT_SETTINGS = 0;
     public static final int     MAX_NIGHT_SETTINGS = 10;
  // TODO: --- Mods Settings GUI by SAS~Storebror ---

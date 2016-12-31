@@ -584,8 +584,11 @@ public class NetChannel implements Destroy {
             for (int k = j - 1; k >= 0; k--) {
                 NetObj netobj = (NetObj) list.get(k);
                 int l = getIndx(netobj);
-                if (l == -1)
-                    throw new NetException("Put Guaranted message referenced to NOT mirrored object [" + netmsgguaranted._sender + "] -> [" + netobj + "] (" + id() + ")");
+             // +++ TODO: Storebror: Avoid excessive logging of net messages that are being tried to send to not mirrored objects +++
+//                if (l == -1)
+//                    throw new NetException("Put Guaranted message referenced to NOT mirrored object [" + netmsgguaranted._sender + "] -> [" + netobj + "] (" + id() + ")");
+                if (l != -1)
+               // --- TODO: Storebror: Avoid excessive logging of net messages that are being tried to send to not mirrored objects ---
                 _tmpOut.writeShort(l);
             }
 

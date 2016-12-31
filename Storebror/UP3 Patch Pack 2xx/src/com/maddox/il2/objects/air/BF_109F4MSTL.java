@@ -38,6 +38,7 @@ import com.maddox.sas1946.il2.util.Reflection;
 public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
 
     public BF_109F4MSTL() {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL ()");
         this.cockpitDoor_ = 0.0F;
         this.fMaxKMHSpeedForOpenCanopy = 250F;
         this.kangle = 0.0F;
@@ -50,6 +51,7 @@ public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
     }
 
     public Aircraft getDrone() {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL getDrone()");
         return this;
     }
 
@@ -60,6 +62,7 @@ public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
     }
 
     public void mistelExplosion() {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL mistelExplosion()");
         if (this.mistelQueen == null) {
             if (DEBUG >= 1)
                 System.out.println("BF_109F4MSTL mistelExplosion() mistelQueen=null");
@@ -85,11 +88,13 @@ public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
     }
 
     protected void finalize() {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL finalize()");
         super.finalize();
         NetMistel.removeNetMistelFromList(this);
     }
 
     protected void moveFan(float f) {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL moveFan("+ f + ")");
         int i = 0;
         for (int j = 0; j < 1; j++) {
             if (super.oldProp[j] < 2) {
@@ -121,6 +126,7 @@ public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
     }
 
     public static void moveGear(HierMesh hiermesh, float f) {
+        if (DEBUG_METHODS) System.out.println("BF_109F4MSTL moveGear("+ hiermesh.hashCode() + ", " + f + ")");
         float f1 = 0.8F;
         float f2 = -0.5F * (float) Math.cos(f / f1 * 3.1415926535897931D) + 0.5F;
         if (f <= f1 || f == 1.0F) {
@@ -148,6 +154,7 @@ public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
     }
 
     protected void moveGear(float f) {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL moveGear(" + f + ")");
         if (this.typeDockableIsDocked())
             moveGear(this.hierMesh(), 0.0F);
         else
@@ -155,11 +162,13 @@ public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
     }
 
     public void moveSteering(float f) {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL moveSteering(" + f + ")");
         if (this.FM.CT.getGear() >= 0.98F)
             this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -f, 0.0F);
     }
 
     public void update(float f) {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL update(" + f + ")");
         if (this.FM.getSpeed() > 5F) {
             this.hierMesh().chunkSetAngles("SlatL_D0", 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F), 0.0F);
             this.hierMesh().chunkSetAngles("SlatR_D0", 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F), 0.0F);
@@ -259,6 +268,7 @@ public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
     }
 
     public void onAircraftLoaded() {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL onAircraftLoaded()");
         super.onAircraftLoaded();
         if (Mission.isCoop() && !Mission.isServer() && !this.isSpawnFromMission() && super.net.isMaster())
             new MsgAction(64, 0.0D, this) {
@@ -269,6 +279,7 @@ public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
     }
 
     private void onCoopMasterSpawned() {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL onCoopMasterSpawned()");
         Actor actor = null;
         if (this.FM.AP.way.curr().getTargetName() == null)
             this.FM.AP.way.next();
@@ -293,10 +304,12 @@ public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
     }
 
     public void missionStarting() {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL missionStarting()");
         this.checkAsDrone();
     }
 
     private void checkAsDrone() {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL checkAsDrone()");
         if (this.target_ == null) {
             if (this.FM.AP.way.curr().getTargetActorRandom() == null)
                 this.FM.AP.way.curr().getTargetActorRandom();
@@ -311,6 +324,7 @@ public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
     }
 
     public int typeDockableGetDockport() {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL typeDockableGetDockport()");
         if (this.typeDockableIsDocked())
             return this.dockport_;
         else
@@ -318,14 +332,17 @@ public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
     }
 
     public Actor typeDockableGetQueen() {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL typeDockableGetQueen()");
         return this.queen_;
     }
 
     public boolean typeDockableIsDocked() {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL typeDockableIsDocked()");
         return Actor.isValid(this.queen_);
     }
 
     public void typeDockableAttemptAttach() {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL typeDockableAttemptAttach()");
         if (this.FM.AS.isMaster() && !this.typeDockableIsDocked()) {
             Aircraft aircraft = War.getNearestFriend(this);
             if (aircraft instanceof JU_88MSTL)
@@ -334,6 +351,7 @@ public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
     }
 
     public void typeDockableAttemptDetach() {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL typeDockableAttemptDetach()");
         if (this.FM.AS.isMaster() && this.typeDockableIsDocked() && Actor.isValid(this.queen_))
             ((TypeDockable) this.queen_).typeDockableRequestDetach(this);
     }
@@ -351,6 +369,7 @@ public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
     public void typeDockableDoDetachFromDrone(int i) {}
 
     public void typeDockableDoAttachToQueen(Actor actor, int i) {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL typeDockableDoAttachToQueen(" + actor.hashCode() + ", " + i + ")");
         this.queen_ = actor;
         this.mistelQueen = actor;
         this.dockport_ = i;
@@ -399,6 +418,7 @@ public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
     }
 
     public void typeDockableDoDetachFromQueen(int i) {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL typeDockableDoDetachFromQueen(" + i + ")");
         if (this.dockport_ == i) {
             this.queen_ = null;
             this.dockport_ = 0;
@@ -428,6 +448,7 @@ public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
     }
 
     public void typeDockableReplicateToNet(NetMsgGuaranted netmsgguaranted) throws IOException {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL typeDockableReplicateToNet(" + netmsgguaranted.hashCode() + ")");
         if (this.typeDockableIsDocked()) {
             netmsgguaranted.writeByte(1);
             ActorNet actornet = null;
@@ -444,6 +465,7 @@ public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
     }
 
     public void typeDockableReplicateFromNet(NetMsgInput netmsginput) throws IOException {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL typeDockableReplicateFromNet(" + netmsginput.hashCode() + ")");
         if (netmsginput.readByte() == 1) {
             this.dockport_ = netmsginput.readByte();
             NetObj netobj = netmsginput.readNetObj();
@@ -455,6 +477,7 @@ public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
     }
 
     public void moveCockpitDoor(float f) {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL moveCockpitDoor(" + f + ")");
         if (this.bHasBlister) {
             this.resetYPRmodifier();
             this.hierMesh().chunkSetAngles("Blister1_D0", 0.0F, 100F * f, 0.0F);
@@ -467,8 +490,17 @@ public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
     }
 
     public boolean netGetGMsg(NetMsgInput netmsginput, boolean bool) throws IOException {
+        if (Debug_Methods()) System.out.println("BF_109F4MSTL netGetGMsg(" + netmsginput.hashCode() + ", " + bool + ")");
         if (!NetMistel.netGetGMsg(this, netmsginput, bool))
             return super.netGetGMsg(netmsginput, bool);
+        return true;
+    }
+
+    private boolean Debug_Methods() {
+        if (!DEBUG_METHODS) return false;
+        if (this.getQueen() == null) return false;
+        if (!(this.getQueen() instanceof JU_88MSTL)) return false;
+        if (!((JU_88MSTL)this.getQueen()).wasInCutFM) return false;
         return true;
     }
 
@@ -483,6 +515,7 @@ public class BF_109F4MSTL extends BF_109 implements TypeDockable, Mistel {
     private int        dockport_;
     private Actor      mistelQueen;
     private static int DEBUG = 1;
+    private static boolean DEBUG_METHODS = false;
 
     static {
         Class class1 = BF_109F4MSTL.class;

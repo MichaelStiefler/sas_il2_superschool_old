@@ -198,15 +198,15 @@ public abstract class Cockpit extends Actor
 					if (!Main3D.cur3D().isViewMirror())
 						System.out.println("*** Internal error: mirr isview");
 					String string = nameOfActiveMirrorSurfaceChunk();
-					String string_1_ = nameOfActiveMirrorBaseChunk();
+					String string1 = nameOfActiveMirrorBaseChunk();
 					if (string != null)
 					{
 						mesh.setCurChunk(string);
 						mesh.chunkVisible(false);
 					}
-					if (string_1_ != null)
+					if (string1 != null)
 					{
-						mesh.setCurChunk(string_1_);
+						mesh.setCurChunk(string1);
 						mesh.chunkVisible(true);
 					}
 					mesh.render();
@@ -273,10 +273,10 @@ public abstract class Cockpit extends Actor
 		Loc			aLoc		= new Loc();
 		boolean		bInCockpit;
 
-		private float computeMirroredCamera(Loc loc, Loc loc_4_, Point3f point3f, Point3f point3f_5_, int i, int i_6_, float f, Loc loc_7_, int[] is)
+		private float computeMirroredCamera(Loc loc, Loc loc1, Point3f point3f, Point3f point3f1, int i, int i1, float f, Loc loc2, int[] is)
 		{
 			loc.getMatrix(cam2w);
-			loc_4_.getMatrix(mir2w);
+			loc1.getMatrix(mir2w);
 			cam2mir.set(mir2w);
 			cam2mir.invert();
 			cam2mir.mul(cam2mir, cam2w);
@@ -299,124 +299,124 @@ public abstract class Cockpit extends Actor
 			cmm2w.mul(mir2w, cmm2mir);
 			mir2cmm.set(cmm2mir);
 			mir2cmm.invert();
-			float f_8_ = (float) -cmm2mir.m23;
-			if (f_8_ <= 0.0010F)
+			float f1 = (float) -cmm2mir.m23;
+			if (f1 <= 0.0010F)
 				return -1.0F;
-			float f_10_;
-			float f_11_;
-			float f_12_;
-			float f_9_ = f_10_ = f_11_ = f_12_ = 0.0F;
-			for (int i_13_ = 0; i_13_ < 8; i_13_++)
+			float f2;
+			float f3;
+			float f4;
+			float f5 = f2 = f3 = f4 = 0.0F;
+			for (int i2 = 0; i2 < 8; i2++)
 			{
-				switch (i_13_)
+				switch (i2)
 				{
 					case 0:
 						p.set((double) point3f.x, (double) point3f.y, (double) point3f.z);
 					break;
 					case 1:
-						p.set((double) point3f_5_.x, (double) point3f.y, (double) point3f.z);
+						p.set((double) point3f1.x, (double) point3f.y, (double) point3f.z);
 					break;
 					case 2:
-						p.set((double) point3f.x, (double) point3f_5_.y, (double) point3f.z);
+						p.set((double) point3f.x, (double) point3f1.y, (double) point3f.z);
 					break;
 					case 3:
-						p.set((double) point3f.x, (double) point3f.y, (double) point3f_5_.z);
+						p.set((double) point3f.x, (double) point3f.y, (double) point3f1.z);
 					break;
 					case 4:
-						p.set((double) point3f_5_.x, (double) point3f_5_.y, (double) point3f_5_.z);
+						p.set((double) point3f1.x, (double) point3f1.y, (double) point3f1.z);
 					break;
 					case 5:
-						p.set((double) point3f.x, (double) point3f_5_.y, (double) point3f_5_.z);
+						p.set((double) point3f.x, (double) point3f1.y, (double) point3f1.z);
 					break;
 					case 6:
-						p.set((double) point3f_5_.x, (double) point3f.y, (double) point3f_5_.z);
+						p.set((double) point3f1.x, (double) point3f.y, (double) point3f1.z);
 					break;
 					case 7:
-						p.set((double) point3f_5_.x, (double) point3f_5_.y, (double) point3f.z);
+						p.set((double) point3f1.x, (double) point3f1.y, (double) point3f.z);
 					break;
 				}
 				mir2cmm.transform(p);
-				float f_14_ = -(float) ((double) f_8_ * p.y / p.x);
-				float f_15_ = (float) ((double) f_8_ * p.z / p.x);
-				if (i_13_ == 0)
+				float f6 = -(float) ((double) f1 * p.y / p.x);
+				float f7 = (float) ((double) f1 * p.z / p.x);
+				if (i2 == 0)
 				{
-					f_9_ = f_10_ = f_14_;
-					f_11_ = f_12_ = f_15_;
+					f5 = f2 = f6;
+					f3 = f4 = f7;
 				}
 				else
 				{
-					if (f_14_ < f_9_)
-						f_9_ = f_14_;
-					if (f_14_ > f_10_)
-						f_10_ = f_14_;
-					if (f_15_ < f_11_)
-						f_11_ = f_15_;
-					if (f_15_ > f_12_)
-						f_12_ = f_15_;
+					if (f6 < f5)
+						f5 = f6;
+					if (f6 > f2)
+						f2 = f6;
+					if (f7 < f3)
+						f3 = f7;
+					if (f7 > f4)
+						f4 = f7;
 				}
 			}
-			float f_16_ = f_10_ - f_9_;
-			float f_17_ = f_12_ - f_11_;
-			if (f_16_ <= 0.0010F || f_17_ <= 0.0010F)
+			float f8 = f2 - f5;
+			float f9 = f4 - f3;
+			if (f8 <= 0.0010F || f9 <= 0.0010F)
 				return -1.0F;
-			f_9_ -= 0.0010F;
-			f_10_ += 0.0010F;
-			f_11_ -= 0.0010F;
-			f_12_ += 0.0010F;
-			f_16_ = f_10_ - f_9_;
-			f_17_ = f_12_ - f_11_;
-			float f_18_ = f_16_ / (float) i;
-			float f_19_ = f_18_ * f;
-			float f_20_ = f_19_ * (float) i_6_;
-			if (f_20_ > f_17_)
+			f5 -= 0.0010F;
+			f2 += 0.0010F;
+			f3 -= 0.0010F;
+			f4 += 0.0010F;
+			f8 = f2 - f5;
+			f9 = f4 - f3;
+			float f10 = f8 / (float) i;
+			float f11 = f10 * f;
+			float f12 = f11 * (float) i1;
+			if (f12 > f9)
 			{
-				f_17_ = f_20_;
-				f_11_ = (f_11_ + f_12_) * 0.5F - f_17_ * 0.5F;
-				f_12_ = f_11_ + f_17_;
+				f9 = f12;
+				f3 = (f3 + f4) * 0.5F - f9 * 0.5F;
+				f4 = f3 + f9;
 			}
 			else
 			{
-				f_16_ *= f_17_ / f_20_;
-				f_9_ = (f_9_ + f_10_) * 0.5F - f_16_ * 0.5F;
-				f_10_ = f_9_ + f_16_;
+				f8 *= f9 / f12;
+				f5 = (f5 + f2) * 0.5F - f8 * 0.5F;
+				f2 = f5 + f8;
 			}
-			float f_21_ = 2.0F * Math.max(Math.abs(f_9_), Math.abs(f_10_));
-			float f_22_ = 2.0F * Math.max(Math.abs(f_11_), Math.abs(f_12_));
-			int i_23_ = (int) (0.5F + (float) i * f_21_ / f_16_);
-			int i_24_ = (int) (0.5F + (float) i_6_ * f_22_ / f_17_);
-			float f_25_ = (2.0F * Geom.RAD2DEG((float) Math.atan2((double) (f_21_ * 0.5F), (double) f_8_)));
-			int i_26_ = (int) (-((f_9_ - -f_21_ / 2.0F) / f_21_) * (float) i_23_);
-			int i_27_ = (int) (-((f_11_ - -f_22_ / 2.0F) / f_22_) * (float) i_24_);
+			float f13 = 2.0F * Math.max(Math.abs(f5), Math.abs(f2));
+			float f14 = 2.0F * Math.max(Math.abs(f3), Math.abs(f4));
+			int i3 = (int) (0.5F + (float) i * f13 / f8);
+			int i4 = (int) (0.5F + (float) i1 * f14 / f9);
+			float f15 = (2.0F * Geom.RAD2DEG((float) Math.atan2((double) (f13 * 0.5F), (double) f1)));
+			int i5 = (int) (-((f5 - -f13 / 2.0F) / f13) * (float) i3);
+			int i6 = (int) (-((f3 - -f14 / 2.0F) / f14) * (float) i4);
 			cmm2w.getEulers(Eul);
-			Eul[0] *= -57.29577791868205;
-			Eul[1] *= -57.29577791868205;
-			Eul[2] *= 57.29577791868205;
-			loc_7_.set(cmm2w.m03, cmm2w.m13, cmm2w.m23, (float) Eul[0], (float) Eul[1], (float) Eul[2]);
-			is[0] = i_26_;
-			is[1] = i_27_;
-			is[2] = i_23_;
-			is[3] = i_24_;
-			resultNearClipDepth = f_8_;
-			return f_25_;
+			Eul[0] = -Math.toDegrees(Eul[0]);
+			Eul[1] = -Math.toDegrees(Eul[1]);
+			Eul[2] = Math.toDegrees(Eul[2]);
+			loc2.set(cmm2w.m03, cmm2w.m13, cmm2w.m23, (float) Eul[0], (float) Eul[1], (float) Eul[2]);
+			is[0] = i5;
+			is[1] = i6;
+			is[2] = i3;
+			is[3] = i4;
+			resultNearClipDepth = f1;
+			return f15;
 		}
 
-		public boolean computeRenderPos(Actor actor, Loc loc, Loc loc_28_)
+		public boolean computeRenderPos(Actor actor, Loc loc, Loc loc1)
 		{
-			computePos(actor, loc, loc_28_, true);
+			computePos(actor, loc, loc1, true);
 			return true;
 		}
 
-		public void computePos(Actor actor, Loc loc, Loc loc_29_)
+		public void computePos(Actor actor, Loc loc, Loc loc1)
 		{
-			computePos(actor, loc, loc_29_, false);
+			computePos(actor, loc, loc1, false);
 		}
 
-		public void computePos(Actor actor, Loc loc, Loc loc_30_, boolean bool)
+		public void computePos(Actor actor, Loc loc, Loc loc1, boolean bool)
 		{
 			if (Actor.isValid(Main3D.cur3D().cockpitCur) && Main3D.cur3D().cockpitCur.bExistMirror && Main3D.cur3D().isViewMirror() && Main3D.cur3D().cockpitCur.isFocused()
 					&& Actor.isValid(World.getPlayerAircraft()))
 			{
-				Loc loc_31_ = loc;
+				Loc loc2 = loc;
 				Main3D.cur3D().cockpitCur.mesh.setCurChunk(Main3D.cur3D().cockpitCur.nameOfActiveMirrorSurfaceChunk());
 				Main3D.cur3D().cockpitCur.mesh.getChunkLocObj(mir2w_loc);
 				if (bool)
@@ -432,7 +432,7 @@ public abstract class Cockpit extends Actor
 					World.getPlayerAircraft().pos.getAbs(aLoc);
 				mir2w_loc.add(mir2w_loc, aLoc);
 				Main3D.cur3D().cockpitCur.mesh.getChunkCurVisBoundBox(mirLowP, mirHigP);
-				float f = (computeMirroredCamera(loc_31_, mir2w_loc, mirLowP, mirHigP, Main3D.cur3D().mirrorWidth(), Main3D.cur3D().mirrorHeight(), 1.0F, loc_30_,
+				float f = (computeMirroredCamera(loc2, mir2w_loc, mirLowP, mirHigP, Main3D.cur3D().mirrorWidth(), Main3D.cur3D().mirrorHeight(), 1.0F, loc1,
 						(bInCockpit ? Main3D.cur3D().cockpitCur.cockpit_renderwin : Main3D.cur3D().cockpitCur.world_renderwin)));
 				if (bool)
 				{
@@ -458,15 +458,15 @@ public abstract class Cockpit extends Actor
 
 	public static class Camera3DMirror extends Camera3D
 	{
-		public boolean activate(float f, int i, int i_32_, int i_33_, int i_34_, int i_35_, int i_36_, int i_37_, int i_38_, int i_39_, int i_40_)
+		public boolean activate(float f, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7, int i8, int i9)
 		{
 			if (!Actor.isValid(Main3D.cur3D().cockpitCur))
-				return super.activate(f, i, i_32_, i_33_, i_34_, i_35_, i_36_, i_37_, i_38_, i_39_, i_40_);
+				return super.activate(f, i, i1, i2, i3, i4, i5, i6, i7, i8, i9);
 			pos.getRender(_tmpLoc);
 			int[] is = Main3D.cur3D().cockpitCur.world_renderwin;
 			if (this == Main3D.cur3D().cameraCockpitMirror)
 				is = Main3D.cur3D().cockpitCur.cockpit_renderwin;
-			return super.activate(f, i, i_32_, Main3D.cur3D().mirrorX0() + is[0], Main3D.cur3D().mirrorY0() + is[1], is[2], is[3], Main3D.cur3D().mirrorX0(), Main3D.cur3D().mirrorY0(), Main3D.cur3D()
+			return super.activate(f, i, i1, Main3D.cur3D().mirrorX0() + is[0], Main3D.cur3D().mirrorY0() + is[1], is[2], is[3], Main3D.cur3D().mirrorX0(), Main3D.cur3D().mirrorY0(), Main3D.cur3D()
 					.mirrorWidth(), Main3D.cur3D().mirrorHeight());
 		}
 	}
@@ -576,9 +576,9 @@ public abstract class Cockpit extends Actor
 		sfxClick(9);
 		for (int i = 0; i < cockpits.length; i++)
 		{
-			Cockpit cockpit_41_ = cockpits[i];
-			if (Actor.isValid(cockpit_41_))
-				cockpit_41_.toggleDim();
+			Cockpit cockpit1 = cockpits[i];
+			if (Actor.isValid(cockpit1))
+				cockpit1.toggleDim();
 		}
 	}
 
@@ -593,9 +593,9 @@ public abstract class Cockpit extends Actor
 		sfxClick(1);
 		for (int i = 0; i < cockpits.length; i++)
 		{
-			Cockpit cockpit_42_ = cockpits[i];
-			if (Actor.isValid(cockpit_42_))
-				cockpit_42_.toggleLight();
+			Cockpit cockpit1 = cockpits[i];
+			if (Actor.isValid(cockpit1))
+				cockpit1.toggleLight();
 		}
 	}
 
@@ -609,9 +609,9 @@ public abstract class Cockpit extends Actor
 		Cockpit[] cockpits = Main3D.cur3D().cockpits;
 		for (int i = 0; i < cockpits.length; i++)
 		{
-			Cockpit cockpit_43_ = cockpits[i];
-			if (Actor.isValid(cockpit_43_))
-				cockpit_43_.reflectCockpitState();
+			Cockpit cockpit1 = cockpits[i];
+			if (Actor.isValid(cockpit1))
+				cockpit1.reflectCockpitState();
 		}
 	}
 
@@ -621,15 +621,15 @@ public abstract class Cockpit extends Actor
 		{
 			for (int i = 0; i < cockpitNightMats.length; i++)
 			{
-				int i_44_ = mesh.materialFind(cockpitNightMats[i] + "_night");
-				if (i_44_ < 0)
+				int i1 = mesh.materialFind(cockpitNightMats[i] + "_night");
+				if (i1 < 0)
 				{
 					if (World.cur().isDebugFM())
 						System.out.println(" * * * * * did not find " + cockpitNightMats[i] + "_night");
 				}
 				else
 				{
-					Mat mat = mesh.material(i_44_);
+					Mat mat = mesh.material(i1);
 					if (mat.isValidLayer(0))
 					{
 						mat.setLayer(0);
@@ -644,22 +644,18 @@ public abstract class Cockpit extends Actor
 
 	public void reflectWorldToInstruments(float f)
 	{
-		/* empty */
 	}
 
 	public void toggleDim()
 	{
-		/* empty */
 	}
 
 	public void toggleLight()
 	{
-		/* empty */
 	}
 
 	public void reflectCockpitState()
 	{
-		/* empty */
 	}
 
 	public boolean isNullShow()
@@ -765,7 +761,6 @@ public abstract class Cockpit extends Actor
 
 	protected void doFocusLeave()
 	{
-		/* empty */
 	}
 
 	public boolean existPadlock()
@@ -794,17 +789,14 @@ public abstract class Cockpit extends Actor
 
 	public void stopPadlock()
 	{
-		/* empty */
 	}
 
 	public void endPadlock()
 	{
-		/* empty */
 	}
 
 	public void setPadlockForward(boolean bool)
 	{
-		/* empty */
 	}
 
 	public boolean isToggleAim()
@@ -816,7 +808,6 @@ public abstract class Cockpit extends Actor
 
 	public void doToggleAim(boolean bool)
 	{
-		/* empty */
 	}
 
 	public boolean isToggleUp()
@@ -828,7 +819,6 @@ public abstract class Cockpit extends Actor
 
 	public void doToggleUp(boolean bool)
 	{
-		/* empty */
 	}
 
 	public String nameOfActiveMirrorSurfaceChunk()
@@ -943,15 +933,15 @@ public abstract class Cockpit extends Actor
 		makeActorRealHashCode();
 	}
 
-	protected float cvt(float f, float f_49_, float f_50_, float f_51_, float f_52_)
+	protected float cvt(float f, float f1, float f2, float f3, float f4)
 	{
-		f = Math.min(Math.max(f, f_49_), f_50_);
-		return f_51_ + (f_52_ - f_51_) * (f - f_49_) / (f_50_ - f_49_);
+		f = Math.min(Math.max(f, f1), f2);
+		return f3 + (f4 - f3) * (f - f1) / (f2 - f1);
 	}
 
-	protected float interp(float f, float f_53_, float f_54_)
+	protected float interp(float f, float f1, float f2)
 	{
-		return f_53_ + (f - f_53_) * f_54_;
+		return f1 + (f - f1) * f2;
 	}
 
 	protected float floatindex(float f, float[] fs)
@@ -1032,23 +1022,16 @@ public abstract class Cockpit extends Actor
 		actor.pos.getAbs(tempPoint1);
 		aircraft.pos.getAbs(tempPoint2);
 		tempPoint2.sub(tempPoint1);
-		float f_55_ = 57.32484F * (float) Math.atan2(tempPoint2.x, tempPoint2.y);
-		f_55_ -= 180.0F;
-		for (f_55_ = (f_55_ + 180.0F) % 360.0F; f_55_ < 0.0F; f_55_ += 360.0F)
-		{
-			/* empty */
-		}
-		for (/**/; f_55_ >= 360.0F; f_55_ -= 360.0F)
-		{
-			/* empty */
-		}
-		float f_56_ = Math.abs(f - f_55_);
+		float f1 = (float) Math.toDegrees(Math.atan2(tempPoint2.x, tempPoint2.y)) % 360.0F;
+		while (f1 < 0.0F) f1 += 360.0F;
+        while (f1 >= 360.0F) f1 -= 360.0F;
+		float f2 = Math.abs(f - f1);
 		Point3d point3d = new Point3d();
 		point3d.x = actor.pos.getAbsPoint().x;
 		point3d.y = actor.pos.getAbsPoint().y;
 		point3d.z = actor.pos.getAbsPoint().z + 40.0;
-		float f_57_ = 15.0F;
-		if (f_56_ > f_57_)
+		float f3 = 15.0F;
+		if (f2 > f3)
 		{
 			BeaconGeneric.getSignalAttenuation(point3d, aircraft, false, false, true, true);
 			aircraft.playYEYGCarrier(false, 0.0F);
@@ -1056,11 +1039,11 @@ public abstract class Cockpit extends Actor
 		}
 		else
 		{
-			float f_58_ = BeaconGeneric.getSignalAttenuation(point3d, aircraft, false, false, true, false);
-			if (f_58_ != 1.0F)
+			float f4 = BeaconGeneric.getSignalAttenuation(point3d, aircraft, false, false, true, false);
+			if (f4 != 1.0F)
 			{
-				float f_59_ = (1.0F - f_58_) * ((f_57_ - f_56_) / f_57_);
-				aircraft.playYEYGCarrier(true, f_59_ * 0.5F);
+				float f5 = (1.0F - f4) * ((f3 - f2) / f3);
+				aircraft.playYEYGCarrier(true, f5 * 0.5F);
 				int i = (int) f;
 				if (i % 15 == 0)
 					clearToPlay = true;
@@ -1069,28 +1052,28 @@ public abstract class Cockpit extends Actor
 					if (bool)
 					{
 						String string = Beacon.getBeaconID(aircraft.FM.AS.getBeacon() - 1);
-						String string_60_ = "";
+						String string1 = "";
 						if (morseCharsPlayed % 2 == 0)
-							string_60_ = "" + string.charAt(0);
+							string1 = "" + string.charAt(0);
 						else
-							string_60_ = "" + string.charAt(1);
-						aircraft.morseSequenceStart(string_60_, f_59_);
+							string1 = "" + string.charAt(1);
+						aircraft.morseSequenceStart(string1, f5);
 						clearToPlay = false;
 						morseCharsPlayed++;
 					}
 					else
 					{
 						morseCharsPlayed = 0;
-						float f_61_ = 0.0F;
+						float f6 = 0.0F;
 						if (cs.length == 12)
-							f_61_ = 0.033333335F * f;
+							f6 = 0.033333335F * f;
 						else if (cs.length == 24)
-							f_61_ = 0.06666667F * f;
-						if (f_61_ >= (float) cs.length)
-							f_61_ = 0.0F;
-						char c = cs[(int) f_61_];
+							f6 = 0.06666667F * f;
+						if (f6 >= (float) cs.length)
+							f6 = 0.0F;
+						char c = cs[(int) f6];
 						String string = "" + c;
-						aircraft.morseSequenceStart(string, f_59_);
+						aircraft.morseSequenceStart(string, f5);
 						clearToPlay = false;
 					}
 				}
@@ -1108,38 +1091,38 @@ public abstract class Cockpit extends Actor
 		{
 			lorenzblbeacon.rideBeam(aircraft, blData);
 			float f = blData.blindLandingAzimuthBP;
-			float f_62_ = (float) Math.random() * (0.5F - blData.signalStrength);
-			float f_63_ = (cvt(blData.signalStrength * 2.0F, 0.0F, 0.75F, 0.0F, 1.2F) - f_62_);
-			float f_64_ = 12.0F;
-			float f_65_ = 0.3F;
-			float f_66_ = 0.0F;
-			float f_67_ = 0.0F;
-			if (f < f_65_ && f > -f_65_)
+			float f1 = (float) Math.random() * (0.5F - blData.signalStrength);
+			float f2 = (cvt(blData.signalStrength * 2.0F, 0.0F, 0.75F, 0.0F, 1.2F) - f1);
+			float f3 = 12.0F;
+			float f4 = 0.3F;
+			float f5 = 0.0F;
+			float f6 = 0.0F;
+			if (f < f4 && f > -f4)
 			{
 				aircraft.playLorenzDash(false, 0.0F);
 				aircraft.playLorenzDot(false, 0.0F);
-				aircraft.playLorenzSolid(true, f_63_);
+				aircraft.playLorenzSolid(true, f2);
 			}
 			else
 			{
-				if (f > f_64_)
+				if (f > f3)
 				{
-					f_66_ = 1.0F;
-					f_67_ = 0.0F;
+					f5 = 1.0F;
+					f6 = 0.0F;
 				}
-				else if (f < -f_64_)
+				else if (f < -f3)
 				{
-					f_67_ = 1.0F;
-					f_66_ = 0.0F;
+					f6 = 1.0F;
+					f5 = 0.0F;
 				}
 				else
 				{
-					f_66_ = cvt(f, -f_64_ / 2.0F, f_65_ * 10.0F, 0.0F, 1.0F);
-					f_67_ = cvt(f, -f_65_ * 10.0F, f_64_ / 2.0F, 1.0F, 0.0F);
+					f5 = cvt(f, -f3 / 2.0F, f4 * 10.0F, 0.0F, 1.0F);
+					f6 = cvt(f, -f4 * 10.0F, f3 / 2.0F, 1.0F, 0.0F);
 				}
 				aircraft.playLorenzSolid(true, 0.0F);
-				aircraft.playLorenzDash(true, f_67_ * f_63_);
-				aircraft.playLorenzDot(true, f_66_ * f_63_);
+				aircraft.playLorenzDash(true, f6 * f2);
+				aircraft.playLorenzDot(true, f5 * f2);
 			}
 		}
 	}
@@ -1174,24 +1157,24 @@ public abstract class Cockpit extends Actor
 
 	public float getGlidePath()
 	{
-		com.maddox.il2.objects.air.Aircraft aircraft1 = aircraft();
+		Aircraft aircraft1 = aircraft();
 		if (aircraft1.FM.AS.listenLorenzBlindLanding)
 		{
 			int i = fm.AS.getBeacon();
-			java.util.ArrayList arraylist = com.maddox.il2.game.Main.cur().mission.getBeacons(fm.actor.getArmy());
-			com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor) arraylist.get(i - 1);
+			ArrayList arraylist = Main.cur().mission.getBeacons(fm.actor.getArmy());
+			Actor actor = (Actor) arraylist.get(i - 1);
 			double d = actor.pos.getAbsPoint().z + 10D;
 
 			float f = (1.0F - blData.signalStrength) * 100F;
-			double d1 = java.lang.Math.abs(aircraft1.pos.getAbsPoint().x - actor.pos.getAbsPoint().x);
-			double d2 = java.lang.Math.abs(aircraft1.pos.getAbsPoint().y - actor.pos.getAbsPoint().y);
-			float f1 = 1700F + com.maddox.il2.ai.World.Rnd().nextFloat(-f, f);
-			double d3 = java.lang.Math.sqrt(d1 * d1 + d2 * d2) - (double) f1;
+			double d1 = Math.abs(aircraft1.pos.getAbsPoint().x - actor.pos.getAbsPoint().x);
+			double d2 = Math.abs(aircraft1.pos.getAbsPoint().y - actor.pos.getAbsPoint().y);
+			float f1 = 1700F + World.Rnd().nextFloat(-f, f);
+			double d3 = Math.sqrt(d1 * d1 + d2 * d2) - (double) f1;
 			double d4 = aircraft1.pos.getAbsPoint().z - d;
 
-			double d5 = java.lang.Math.asin(d4 / d3);
+			double d5 = Math.asin(d4 / d3);
 			double d6 = glideScopeInRads - d5;
-			float f2 = (float) java.lang.Math.toDegrees(d6) * blData.signalStrength + com.maddox.il2.ai.World.Rnd().nextFloat(-atmosphereInterference * 2.0F, atmosphereInterference * 2.0F);
+			float f2 = (float) Math.toDegrees(d6) * blData.signalStrength + World.Rnd().nextFloat(-atmosphereInterference * 2.0F, atmosphereInterference * 2.0F);
 			if (f2 > 1.0F)
 				f2 = 1.0F;
 			else if (f2 < -1F)
@@ -1223,18 +1206,18 @@ public abstract class Cockpit extends Actor
 		Actor actor = (Actor) arraylist.get(i - 1);
 		if (actor instanceof TypeHasYGBeacon || actor instanceof TypeHasHayRake)
 			return null;
-		ArrayList arraylist_72_ = Main.cur().mission.getMeacons(fm.actor.getArmy());
-		if (arraylist_72_.size() >= i && !(actor instanceof Beacon.LorenzBLBeacon))
+		ArrayList arraylist1 = Main.cur().mission.getMeacons(fm.actor.getArmy());
+		if (arraylist1.size() >= i && !(actor instanceof Beacon.LorenzBLBeacon))
 		{
-			Actor actor_73_ = (Actor) arraylist_72_.get(i - 1);
-			if (actor_73_.isAlive())
+			Actor actor1 = (Actor) arraylist1.get(i - 1);
+			if (actor1.isAlive())
 			{
-				distanceV.sub(actor_73_.pos.getAbsPoint(), fm.Loc);
+				distanceV.sub(actor1.pos.getAbsPoint(), fm.Loc);
 				double d = distanceV.length();
 				distanceV.sub(actor.pos.getAbsPoint(), fm.Loc);
-				double d_74_ = distanceV.length();
-				if (d < d_74_ || !actor.isAlive())
-					actor = actor_73_;
+				double d1 = distanceV.length();
+				if (d < d1 || !actor.isAlive())
+					actor = actor1;
 			}
 		}
 		return actor;
@@ -1248,7 +1231,7 @@ public abstract class Cockpit extends Actor
 			ndBeaconRange = 1.0F;
 			ndBeaconDirection = 0.0F;
 			if (bool)
-				CmdMusic.setVolume(0.0F);
+			    CmdMusic.setCurrentVolume(0.001F);
 			else
 				aircraft.playBeaconCarrier(false, 0.0F);
 		}
@@ -1259,58 +1242,51 @@ public abstract class Cockpit extends Actor
 			tempPoint1.z = actor.pos.getAbsPoint().z + 20.0;
 			aircraft.pos.getAbs(acPoint);
 			acPoint.sub(tempPoint1);
-			float f = aircraft.pos.getAbsOrient().getYaw() + 180.0F;
-			float f_75_ = 57.32484F * (float) Math.atan2(acPoint.y, acPoint.x) - f;
-			for (f_75_ = (f_75_ + 180.0F) % 360.0F; f_75_ < 0.0F; f_75_ += 360.0F)
-			{
-				/* empty */
-			}
-			for (/**/; f_75_ >= 360.0F; f_75_ -= 360.0F)
-			{
-				/* empty */
-			}
-			if (f_75_ > 270.0F)
-				f_75_ -= 360.0F;
-			if (f_75_ > 90.0F)
-				f_75_ = -(f_75_ - 180.0F);
+			float f1 = ((float) Math.toDegrees(Math.atan2(acPoint.y, acPoint.x)) - aircraft.pos.getAbsOrient().getYaw()) % 360.0F;
+			while (f1 < 0.0F) f1 += 360.0F;
+            while (f1 >= 360.0F) f1 -= 360.0F;
+			if (f1 > 270.0F)
+				f1 -= 360.0F;
+			if (f1 > 90.0F)
+				f1 = -(f1 - 180.0F);
 			ndBeaconRange = BeaconGeneric.getSignalAttenuation(tempPoint1, aircraft, !bool, bool, false, false);
 			if (Math.random() < 0.02)
 				terrainAndNightError = BeaconGeneric.getTerrainAndNightError(aircraft);
-			f_75_ += terrainAndNightError;
-			float f_76_ = floatindex(cvt(1.0F - ndBeaconRange, 0.0F, 1.0F, 0.0F, 9.0F), volumeLogScale);
-			float f_77_ = (float) AudioDevice.vMusic.get();
-			float f_78_ = (f_77_ + 1.0F) / 15.0F;
+			f1 += terrainAndNightError;
+			float f2 = floatindex(cvt(1.0F - ndBeaconRange, 0.0F, 1.0F, 0.0F, 9.0F), volumeLogScale);
+			float f3 = (float) AudioDevice.vMusic.get();
+			float f4 = (f3 + 1.0F) / 15.0F;
 			if (!bool)
 			{
-				float f_79_ = (float) Math.random() * ndBeaconRange;
-				float f_80_ = (float) Time.current() % 60000.0F;
-				if (f_80_ <= 500.0F && !aircraft.isMorseSequencePlaying())
+				float f5 = (float) Math.random() * ndBeaconRange;
+				float f6 = (float) Time.current() % 60000.0F;
+				if (f6 <= 500.0F && !aircraft.isMorseSequencePlaying())
 				{
 					String string = Beacon.getBeaconID(aircraft.FM.AS.getBeacon() - 1);
-					f_78_ = f_76_ * f_78_ * 0.75F;
-					aircraft.morseSequenceStart(string, f_78_);
+					f4 = f2 * f4 * 0.75F;
+					aircraft.morseSequenceStart(string, f4);
 				}
 				else
 				{
-					f_78_ = f_76_ * f_78_ * 0.75F - f_79_;
-					aircraft.playBeaconCarrier(true, f_78_);
+					f4 = f2 * f4 * 0.75F - f5;
+					aircraft.playBeaconCarrier(true, f4);
 				}
 			}
 			else
 			{
-				CmdMusic.setVolume(f_76_);
-				aircraft.playRadioStatic(true, ((-0.5F + (1.0F - f_76_ * f_78_)) * 2.0F));
+				CmdMusic.setCurrentVolume(f2);
+				aircraft.playRadioStatic(true, ((-0.5F + (1.0F - f2 * f4)) * 2.0F));
 			}
-			ndBeaconDirection = f_76_ * f_75_ + (((float) Math.random() - 0.5F) * ndBeaconRange);
+			ndBeaconDirection = f2 * f1 + (((float) Math.random() - 0.5F) * ndBeaconRange);
 		}
 	}
 
-	private float getRadioCompassWaypoint(boolean bool, boolean bool_81_, boolean bool_82_)
+	private float getRadioCompassWaypoint(boolean flag, boolean flag1, boolean flag2)
 	{
 		Actor actor = getBeacon();
 		if (actor == null || !actor.isAlive())
 		{
-			if (bool_82_)
+			if (flag2)
 			{
 				prevWaypointF = aircraft().FM.Or.azimut();
 				return prevWaypointF;
@@ -1324,34 +1300,17 @@ public abstract class Cockpit extends Actor
 		tempPoint1.z = actor.pos.getAbsPoint().z + 20.0;
 		V.sub(tempPoint1, fm.Loc);
 		float f;
-		if (bool)
+		if (flag)
 		{
-			if (bool_81_)
-			{
-				for (f = (float) (57.29577951308232 * Math.atan2(-V.y, V.x)); f <= -180.0F; f += 180.0F)
-				{
-					/* empty */
-				}
-			}
+			if (flag1)
+			    f = (float) Math.toDegrees(Math.atan2(-V.y, V.x));
 			else
-			{
-				for (f = (float) (57.29577951308232 * Math.atan2(V.y, V.x)); f <= -180.0F; f += 180.0F)
-				{
-					/* empty */
-				}
-			}
+                f = (float) Math.toDegrees(Math.atan2(V.y, V.x));
 		}
 		else
-		{
-			for (f = (float) (57.29577951308232 * Math.atan2(V.x, V.y)); f <= -180.0F; f += 180.0F)
-			{
-				/* empty */
-			}
-		}
-		for (/**/; f > 180.0F; f -= 180.0F)
-		{
-			/* empty */
-		}
+		    f = (float) Math.toDegrees(Math.atan2(V.x, V.y));
+        while (f <= -180.0F) f += 180.0F;
+        while (f > 180.0F) f -= 180.0F;
 		f += terrainAndNightError;
 		if ((double) ndBeaconRange > 0.99)
 			f = aircraft().FM.Or.azimut();
@@ -1360,20 +1319,20 @@ public abstract class Cockpit extends Actor
 		return f;
 	}
 
-	private float getWaypoint(boolean bool, boolean bool_83_, float f, boolean bool_84_)
+	private float getWaypoint(boolean flag, boolean flag1, float f, boolean flag2)
 	{
 		if (useRealisticNavigationInstruments())
 		{
-			if (bool_84_)
+			if (flag2)
 			{
 				if (Main.cur().mission.hasBeacons(fm.actor.getArmy()))
 				{
 					skip = !skip;
 					if (skip)
 						return prevWaypointF;
-					float f_85_ = getRadioCompassWaypoint(bool, bool_83_, bool_84_);
-					prevWaypointF = f_85_;
-					return f_85_;
+					float f1 = getRadioCompassWaypoint(flag, flag1, flag2);
+					prevWaypointF = f1;
+					return f1;
 				}
 				return aircraft().FM.Or.azimut();
 			}
@@ -1384,36 +1343,19 @@ public abstract class Cockpit extends Actor
 			return 0.0F;
 		waypoint.getP(P1);
 		V.sub(P1, fm.Loc);
-		float f_86_;
-		if (bool)
-		{
-			if (bool_83_)
-			{
-				for (f_86_ = (float) (57.29577951308232 * Math.atan2(-V.y, V.x)); f_86_ <= -180.0F; f_86_ += 180.0F)
-				{
-					/* empty */
-				}
-			}
-			else
-			{
-				for (f_86_ = (float) (57.29577951308232 * Math.atan2(V.y, V.x)); f_86_ <= -180.0F; f_86_ += 180.0F)
-				{
-					/* empty */
-				}
-			}
-		}
-		else
-		{
-			for (f_86_ = (float) (57.29577951308232 * Math.atan2(V.x, V.y)); f_86_ <= -180.0F; f_86_ += 180.0F)
-			{
-				/* empty */
-			}
-		}
-		for (/**/; f_86_ > 180.0F; f_86_ -= 180.0F)
-		{
-			/* empty */
-		}
-		return f_86_ + World.Rnd().nextFloat(-f, f);
+		float f2;
+        if (flag)
+        {
+            if (flag1)
+                f2 = (float) Math.toDegrees(Math.atan2(-V.y, V.x));
+            else
+                f2 = (float) Math.toDegrees(Math.atan2(V.y, V.x));
+        }
+        else
+            f2 = (float) Math.toDegrees(Math.atan2(V.x, V.y));
+        while (f2 <= -180.0F) f2 += 180.0F;
+        while (f2 > 180.0F) f2 -= 180.0F;
+		return f2 + World.Rnd().nextFloat(-f, f);
 	}
 
 	protected float waypointAzimuth()

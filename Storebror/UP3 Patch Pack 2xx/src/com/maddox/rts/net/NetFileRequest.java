@@ -1,5 +1,6 @@
 package com.maddox.rts.net;
 
+import com.maddox.il2.engine.Config;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.net.NetFileServerNoseart;
 import com.maddox.il2.net.NetFileServerPilot;
@@ -325,6 +326,7 @@ public class NetFileRequest {
 	}
 
 	private void hudLog(float fComplete) {
+	    if (!Config.cur.bSkinDownloadNotifications) return;
 		if (this.logID == -1) {
 			this.logID = HUD.makeIdLog();
 		}

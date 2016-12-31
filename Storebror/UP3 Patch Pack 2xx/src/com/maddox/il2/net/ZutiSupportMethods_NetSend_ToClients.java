@@ -767,6 +767,12 @@ public class ZutiSupportMethods_NetSend_ToClients
 			
 			if( user == null || Mission.isSingle() )
 			{
+			 // +++ TODO: Storebror: null Checks added +++
+			    if (World.getPlayerAircraft() == null) {
+	                System.out.println("spawnResources_ToClient - User and Player Aircraft are both null!");
+	                return;
+			    }
+			 // --- TODO: Storebror: null Checks added ---
 				Point3d pos = World.getPlayerAircraft().pos.getAbsPoint();
 				long availableBullets = ZutiSupportMethods_ResourcesManagement.getBulletsForPlayer(bullets, pos.x, pos.y);
 				int[] availableBombs = ZutiSupportMethods_ResourcesManagement.getBombsForPlayer(tmpBombs, pos.x, pos.y);
@@ -948,7 +954,10 @@ public class ZutiSupportMethods_NetSend_ToClients
 				if( netuser.uniqueName().equals(sender.uniqueName()) )
 					continue;
 				
-				NetEnv.host().postTo(netuser.masterChannel(), netmsgguaranted);
+				// +++ TODO: Storebror TEST: Net Check +++
+//				NetEnv.host().postTo(netuser.masterChannel(), netmsgguaranted);
+                NetEnv.host().postTo(netuser.masterChannel(), new NetMsgGuaranted(ZutiSupportMethods_NetSend.UPDATE_NET_PLACE));
+                // --- TODO: Storebror TEST: Net Check ---
 			}
 		}
 		catch(Exception ex)
