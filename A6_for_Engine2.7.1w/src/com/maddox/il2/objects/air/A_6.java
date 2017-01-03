@@ -2612,17 +2612,23 @@ public class A_6 extends Scheme2
 
     private void LimitMovings()
     {
-        if(FM.CT.FlapsControl > 0.01F)
+/*        if(FM.CT.FlapsControl > 0.01F)
         {
-            if(FM.CT.ElevatorControl < -0.0625F) FM.CT.ElevatorControl = -0.0625F;
-            if(FM.CT.trimElevator < -0.06F) FM.CT.trimElevator = -0.06F;
-            if(FM.CT.getTrimElevatorControl() < -0.06F) FM.CT.setTrimElevatorControl(-0.06F);
+            if(FM.CT.ElevatorControl < -0.125F) FM.CT.ElevatorControl = -0.125F;
+            if(FM.CT.trimElevator < -0.12F) FM.CT.trimElevator = -0.12F;
+            if(FM.CT.getTrimElevatorControl() < -0.12F) FM.CT.setTrimElevatorControl(-0.12F);
+//            if(FM.CT.ElevatorControl < -0.0625F) FM.CT.ElevatorControl = -0.0625F;
+//            if(FM.CT.trimElevator < -0.06F) FM.CT.trimElevator = -0.06F;
+//            if(FM.CT.getTrimElevatorControl() < -0.06F) FM.CT.setTrimElevatorControl(-0.06F);
         }
         else if(FM.Gears.nOfGearsOnGr > 2)
         {
-            if(FM.CT.ElevatorControl < -0.0625F) FM.CT.ElevatorControl = -0.0625F;
-            if(FM.CT.trimElevator < -0.06F) FM.CT.trimElevator = -0.06F;
-            if(FM.CT.getTrimElevatorControl() < -0.06F) FM.CT.setTrimElevatorControl(-0.06F);
+            if(FM.CT.ElevatorControl < -0.125F) FM.CT.ElevatorControl = -0.125F;
+            if(FM.CT.trimElevator < -0.12F) FM.CT.trimElevator = -0.12F;
+            if(FM.CT.getTrimElevatorControl() < -0.12F) FM.CT.setTrimElevatorControl(-0.12F);
+//            if(FM.CT.ElevatorControl < -0.0625F) FM.CT.ElevatorControl = -0.0625F;
+//            if(FM.CT.trimElevator < -0.06F) FM.CT.trimElevator = -0.06F;
+//            if(FM.CT.getTrimElevatorControl() < -0.06F) FM.CT.setTrimElevatorControl(-0.06F);
             if(FM.CT.ElevatorControl > 0.39584F) FM.CT.ElevatorControl = 0.39584F;
             if(FM.CT.trimElevator > 0.38F) FM.CT.trimElevator = 0.38F;
             if(FM.CT.getTrimElevatorControl() > 0.38F) FM.CT.setTrimElevatorControl(0.38F);
@@ -2635,14 +2641,17 @@ public class A_6 extends Scheme2
             if(FM.CT.RudderControl > 0.11429F) FM.CT.RudderControl = 0.11429F;
             if(FM.CT.trimRudder > 0.11F) FM.CT.trimRudder = 0.11F;
             if(FM.CT.getTrimRudderControl() > 0.11F) FM.CT.setTrimRudderControl(0.11F);
-            if(FM.CT.ElevatorControl < -0.0625F) FM.CT.ElevatorControl = -0.0625F;
-            if(FM.CT.trimElevator < -0.06F) FM.CT.trimElevator = -0.06F;
-            if(FM.CT.getTrimElevatorControl() < -0.06F) FM.CT.setTrimElevatorControl(-0.06F);
+            if(FM.CT.ElevatorControl < -0.125F) FM.CT.ElevatorControl = -0.125F;
+            if(FM.CT.trimElevator < -0.12F) FM.CT.trimElevator = -0.12F;
+            if(FM.CT.getTrimElevatorControl() < -0.12F) FM.CT.setTrimElevatorControl(-0.12F);
+//            if(FM.CT.ElevatorControl < -0.0625F) FM.CT.ElevatorControl = -0.0625F;
+//            if(FM.CT.trimElevator < -0.06F) FM.CT.trimElevator = -0.06F;
+//            if(FM.CT.getTrimElevatorControl() < -0.06F) FM.CT.setTrimElevatorControl(-0.06F);
             if(FM.CT.ElevatorControl > 0.39584F) FM.CT.ElevatorControl = 0.39584F;
             if(FM.CT.trimElevator > 0.39F) FM.CT.trimElevator = 0.39F;
             if(FM.CT.getTrimElevatorControl() > 0.39F) FM.CT.setTrimElevatorControl(0.39F);
         }
-
+*/
         if(FM.CT.getPowerControl() > 1.0F)
         {
             FM.CT.setPowerControl(1.0F);

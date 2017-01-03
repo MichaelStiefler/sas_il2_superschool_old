@@ -338,7 +338,34 @@ public class FlightModelMain extends FMMath {
 		j = sectfile.get(s2, "CRudderTrim", 0);
 		if (j != 0 && j != 1) throw new RuntimeException(s1);
 		CT.bHasRudderTrim = j == 1;
-		j = sectfile.get(s2, "CFlap", 0);  // By western, looking at 1st bit (1) and 2nd bit (2), enabling both is 3
+		j = sectfile.get(s2, "CLimitModeOfAilerons", 0);
+		// TODO: By western
+		// "CLimitModeOfAilerons" has 3 bits 1 / 2 / 4 and the value has to be composite of them .... from 0 to 7
+		// bit 1 : limit by higher flying speed
+		// bit 2 : limit by flaps retracted
+		// bit 4 : limit by gears retracted
+		// composite value means AND , in example 6 makes decision by both flaps and gears are retracted
+		if (j < 0 && j > 7) throw new RuntimeException(s1);
+		CT.limitModeOfAilerons = j;
+		if ((CT.limitModeOfAilerons & 1) ==1) {
+			float spd = sectfile.get(s2, "CLimitThresholdSpeedKMH", -1F);
+			if (spd < 0) throw new RuntimeException(s1);
+			CT.limitThresholdSpeedKMH = spd;
+		}
+		// TODO: By western
+		// each "CLimitRatioXXXX" has float 0.0 ~ 1.0 to limit those movings
+		// modern jets often have the always limit to minus elevator. CLimitRatioElevatorMinusALWAYS defines it.
+		float f = sectfile.get(s2, "CLimitRatioAileron", -1F);
+		if (f > 0.0F && f <= 1.0F) CT.limitRatioAileron = f;
+		f = sectfile.get(s2, "CLimitRatioElevatorPlus", -1F);
+		if (f > 0.0F && f <= 1.0F) CT.limitRatioElevatorPlus = f;
+		f = sectfile.get(s2, "CLimitRatioElevatorMinus", -1F);
+		if (f > 0.0F && f <= 1.0F) CT.limitRatioElevatorMinus = f;
+		f = sectfile.get(s2, "CLimitRatioElevatorMinusALWAYS", -1F);
+		if (f > 0.0F && f <= 1.0F) CT.limitRatioElevatorMinusALWAYS = f;
+		f = sectfile.get(s2, "CLimitRatioRudder", -1F);
+		if (f > 0.0F && f <= 1.0F) CT.limitRatioRudder = f;
+		j = sectfile.get(s2, "CFlap", 0);  // TODO: By western, looking at 1st bit (1) and 2nd bit (2), enabling both is 3
 		if (j != 0 && j != 1 && j != 3) throw new RuntimeException(s1);
 		CT.bHasFlapsControl = ((j & 1) != 0);
 		CT.bHasFlapsControlSwitch = ((j & 2) != 0);
@@ -352,7 +379,7 @@ public class FlightModelMain extends FMMath {
 		//By PAL, stock is j < 3, EngineMOD said j < 2. Kind of: ONLY ONE POSITION.
 		CT.bHasFlapsControlRed = j < 2;
 		if (CT.nFlapStages == -1) CT.nFlapStages = j;
-		float f = sectfile.get(s2, "CFlapStageMax", -1F);
+		f = sectfile.get(s2, "CFlapStageMax", -1F);
 		if (f > 0F) CT.FlapStageMax = f;
 		//By PAL, multiple Discrete Angle Specified Flap Stages
 		if (CT.nFlapStages != -1 && CT.FlapStageMax != 1) {
@@ -375,10 +402,9 @@ public class FlightModelMain extends FMMath {
 		{
 			CT.FlapStageText = new String[CT.nFlapStages];
 			String sst = sectfile.get(s2, "CFlapStageText", (String)null);
-			if(sst != null)
-			{
+			if (sst != null) {
 				StringTokenizer stringtokenizer = new StringTokenizer(sst, ",");
-				for(int ii = 0; ii < CT.nFlapStages; ii++)
+				for (int ii = 0; ii < CT.nFlapStages; ii++)
 					CT.FlapStageText[ii] = stringtokenizer.nextToken();
 			}
 		}
@@ -1898,13 +1924,13 @@ public class FlightModelMain extends FMMath {
 		//By PAL, from DiffFM, begin
 		String sDir = "gui/game/buttons";
 		int i = sName.indexOf(":"); //By PAL, specific FMD (DiffFM)
-		if(i > -1) { //It is not valid in first position either
+		if (i > -1) { //It is not valid in first position either
 			sDir = sName.substring(i + 1);
 			sName = sName.substring(0, i);
 			//Example: 'FlightModels/F-105D.fmd:F105' for plane FM
 			//Example: 'FlightModels/PWJ75:F105.emd' for Engine EMD, appears as
 			//	Engine0Family PWJ75:F105
-			if(sDir.endsWith(".emd")) {
+			if (sDir.endsWith(".emd")) {
 				sName = sName + ".emd";   //FlightModels/PWJ57 + .emd
 				sDir = sDir.substring(0, sDir.length() - 4);
 			}
@@ -1912,13 +1938,13 @@ public class FlightModelMain extends FMMath {
 		}
 
 		//By PAL, Option A: for Debug, not Encrypted, direct File Names. Only in Single Mission!!!
-		if(bDebugFM) {
+		if (bDebugFM) {
 			//By PAL, if not loading Mission or possitive it is a Single Mission
-			if(Main.cur().mission.isSingle())
+			if (Main.cur().mission.isSingle())
 				if (fileExists(sName)) {
 					   sectfile = new SectFile(sName, 0);
 					   System.out.println("**Debug FM loaded directly from '" + sName + "' File!!!'");
-					if(bDumpFM)
+					if (bDumpFM)
 						sectfile.saveFile(sDumpPath + sName);
 					   return sectfile;
 				}
@@ -1929,11 +1955,11 @@ public class FlightModelMain extends FMMath {
 			//By PAL, new: Object obj = Property.value(s, "stream", null);
 			Object obj = Property.value(sName, "stream", null);
 			InputStream inputstream = null;
-			if(obj != null) {
+			if (obj != null) {
 				inputstream = (InputStream)obj;
 			} else {
 			//By PAL, DiffFM begin
-				if(bPrintFM) {
+				if (bPrintFM) {
 					System.out.println("FM Requested = " + s);
 					System.out.println("*FM sDir	 = " + sDir);
 					System.out.println("*FM sName	= " + sName);
@@ -1941,16 +1967,16 @@ public class FlightModelMain extends FMMath {
 				}
 
 				//By PAL, first check if it is the last one or not. If so fmDir should be the same and not null.
-				if(!sDir.equalsIgnoreCase(fmLastDir)) { //By PAL, if different one, reopen it.
+				if (!sDir.equalsIgnoreCase(fmLastDir)) { //By PAL, if different one, reopen it.
 					fmDir = null;
 					fmLastDir = "EmptyFM"; //To be possitive that I'm not inheriting a wrong name.
 					int t = fmDirNames.size();
 					//By PAL, now check all the previous files I have opened.
-					for(int j = 0; j < t; j++) {
+					for (int j = 0; j < t; j++) {
 						String sAux = (String)fmDirNames.get(j);
-						if(sDir.equalsIgnoreCase(sAux)) {
+						if (sDir.equalsIgnoreCase(sAux)) {
 							fmDir = (InOutStreams)fmDirs.get(j);
-							if(bPrintFM)
+							if (bPrintFM)
 								System.out.println("Getting FM from Previous File: '" + sDir + "'");
 							fmLastDir = sDir;
 							break;
@@ -1958,14 +1984,14 @@ public class FlightModelMain extends FMMath {
 					}
 				}
 
-				if(fmDir == null) { //By PAL, it wasn't loaded before, load new one and add it to the list.
-					if(fileExists(sDir)) {
+				if (fmDir == null) { //By PAL, it wasn't loaded before, load new one and add it to the list.
+					if (fileExists(sDir)) {
 						fmDir = new InOutStreams();
 						fmDir.open(Finger.LongFN(0L, sDir));
-						if(fmDir != null) {
+						if (fmDir != null) {
 							fmDirs.add(fmDir); //By PAL, from DiffFM
 							fmDirNames.add(sDir); //By PAL, from DiffFM
-							if(bPrintFM)
+							if (bPrintFM)
 								System.out.println("Opening FM from New File: '" + sDir + "'");
 							fmLastDir = sDir;
 						}
@@ -1988,7 +2014,7 @@ public class FlightModelMain extends FMMath {
 					fmDir = new InOutStreams();
 					fmDir.open(Finger.LongFN(0L, "gui/game/buttons"));
 					//By PAL,
-					if(sName.endsWith(".emd")) {
+					if (sName.endsWith(".emd")) {
 						sName = "FlightModels/DB-600_Series.emd"; //By PAL, open PlaceHolder FM to avoid 60% CTD!!!
 						System.out.println("**Engine FM will be loaded from placeholder: '" + sName + "'! Not from the expected one.");
 					} else {
@@ -1999,7 +2025,7 @@ public class FlightModelMain extends FMMath {
 				}
 
 				//By PAL, now Read it with all the eventual encodings known.
-				if(fmDir != null) {
+				if (fmDir != null) {
 				//By PAL, if it didn't work with 4.09 / 4.11 / 4.12 Encoding:
 					if (inputstream == null)
 						inputstream = fmDir.openStream("" + Finger.Int(sName + "d2w0"));
@@ -2011,10 +2037,10 @@ public class FlightModelMain extends FMMath {
 						inputstream = fmDir.openStream("" + Finger.Int(sName + "d2w5"));
 				}
 
-				if(inputstream == null) { //By PAL, Error: no FM, Notify It!
+				if (inputstream == null) { //By PAL, Error: no FM, Notify It!
 					System.out.println("Error loading FM called '" + sName + "'!");
 					System.out.println("It Cannot be Loaded from '" + sDir + "' File");
-					if(sName.endsWith(".emd")) {
+					if (sName.endsWith(".emd")) {
 						System.out.println("*** This should have been the reason of the 'Explosion in the Air' when mission started ***");
 					} else {
 						System.out.println("*** This was the Reason of your 60% or 70% CTD ***");
@@ -2025,7 +2051,7 @@ public class FlightModelMain extends FMMath {
 			inputstream.mark(0);
 			sectfile = new SectFile(new InputStreamReader(new KryptoInputFilter(inputstream, getSwTbl(Finger.Int(sName + "ogh9"), inputstream.available())), "Cp1252"));
 			inputstream.reset();
-			if(obj == null)
+			if (obj == null)
 				//By PAL, new: Property.set(s, "stream", inputstream);
 				Property.set(sName, "stream", inputstream);
 		}
@@ -2033,7 +2059,7 @@ public class FlightModelMain extends FMMath {
 			//By PAL, tell the Reason of the Crash
 			System.out.println("FM Loading General Exception!\nWarning, the '" + s + "' cannot be loaded from '" + sDir + "' File");
 		}
-		if(bDumpFM)
+		if (bDumpFM)
 			sectfile.saveFile(sDumpPath + sName);
 		return sectfile;
 	}
