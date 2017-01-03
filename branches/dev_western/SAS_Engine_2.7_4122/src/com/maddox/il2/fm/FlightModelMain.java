@@ -373,8 +373,44 @@ public class FlightModelMain extends FMMath
         if(j != 0 && j != 1)
             throw new RuntimeException(s1);
         CT.bHasRudderTrim = j == 1;
+        j = sectfile.get(s2, "CLimitModeOfAilerons", 0);
+        // TODO: By western
+        // "CLimitModeOfAilerons" has 3 bits 1 / 2 / 4 and the value has to be composite of them .... from 0 to 7
+        // bit 1 : limit by higher flying speed
+        // bit 2 : limit by flaps retracted
+        // bit 4 : limit by gears retracted
+        // composite value means AND , in example 6 makes decision by both flaps and gears are retracted
+        if(j < 0 && j > 7)
+            throw new RuntimeException(s1);
+        CT.limitModeOfAilerons = j;
+        if((CT.limitModeOfAilerons & 1) ==1)
+        {
+            float spd = sectfile.get(s2, "CLimitThresholdSpeedKMH", -1F);
+            if(spd < 0)
+                throw new RuntimeException(s1);
+            CT.limitThresholdSpeedKMH = spd;
+        }
+        // TODO: By western
+        // each "CLimitRatioXXXX" has float 0.0 ~ 1.0 to limit those movings
+        // modern jets often have the always limit to minus elevator. CLimitRatioElevatorMinusALWAYS defines it.
+        float f = sectfile.get(s2, "CLimitRatioAileron", -1F);
+        if(f > 0.0F && f <= 1.0F)
+            CT.limitRatioAileron = f;
+        f = sectfile.get(s2, "CLimitRatioElevatorPlus", -1F);
+        if(f > 0.0F && f <= 1.0F)
+            CT.limitRatioElevatorPlus = f;
+        f = sectfile.get(s2, "CLimitRatioElevatorMinus", -1F);
+        if(f > 0.0F && f <= 1.0F)
+            CT.limitRatioElevatorMinus = f;
+        f = sectfile.get(s2, "CLimitRatioElevatorMinusALWAYS", -1F);
+        if(f > 0.0F && f <= 1.0F)
+            CT.limitRatioElevatorMinusALWAYS = f;
+        f = sectfile.get(s2, "CLimitRatioRudder", -1F);
+        if(f > 0.0F && f <= 1.0F)
+            CT.limitRatioRudder = f;
         j = sectfile.get(s2, "CFlap", 0);  // By western, looking at 1st bit (1) and 2nd bit (2), enabling both is 3
-        if (j != 0 && j != 1 && j != 3) throw new RuntimeException(s1);
+        if(j != 0 && j != 1 && j != 3)
+            throw new RuntimeException(s1);
         CT.bHasFlapsControl = ((j & 1) != 0);
         CT.bHasFlapsControlSwitch = ((j & 2) != 0);
 //        j = sectfile.get(s2, "CFlapPos", -1);                      // ignore stock code to avoid error
@@ -390,7 +426,7 @@ public class FlightModelMain extends FMMath
         CT.bHasFlapsControlRed = j < 2;
         if(CT.nFlapStages == -1)
             CT.nFlapStages = j;
-        float f = sectfile.get(s2, "CFlapStageMax", -1F);
+        f = sectfile.get(s2, "CFlapStageMax", -1F);
         if(f > 0F)
             CT.FlapStageMax = f;
         //By PAL, multiple Discrete Angle Specified Flap Stages
@@ -414,7 +450,7 @@ public class FlightModelMain extends FMMath
         }
         // By western, Flaps Control switch's real implement is done in each aircraft classes like F_18.class or AV_8.class
         // Those functions or meanings are completely different in each aircrafts and no common behaviors.
-        if (CT.bHasFlapsControlSwitch && CT.FlapStageText == null && CT.nFlapStages != -1)
+        if(CT.bHasFlapsControlSwitch && CT.FlapStageText == null && CT.nFlapStages != -1)
         {
             CT.FlapStageText = new String[CT.nFlapStages];
             String sst = sectfile.get(s2, "CFlapStageText", (String)null);
@@ -474,7 +510,7 @@ public class FlightModelMain extends FMMath
         // --------------------------------------------------------
         //TODO: New entries for animated refuelling gear, drag chutes and bay doors
         j = sectfile.get(s2, "CCatLaunchBar", 0);
-        if (j != 0 && j != 1) throw new RuntimeException(s1);
+        if(j != 0 && j != 1) throw new RuntimeException(s1);
         CT.bHasCatLaunchBarControl = j == 1;
         j = sectfile.get(s2, "CRefuel", 0);
         if(j != 0 && j != 1)
@@ -576,25 +612,25 @@ public class FlightModelMain extends FMMath
             CT.dvAirbrake = 1.0F / f;
         // --------------------------------------------------------
         //TODO: +++ Online Compatibility / Smoke Bug Fix +++
-        if (Mission.isNet())
+        if(Mission.isNet())
         {
             boolean bOnlineArrestor = sectfile.get(s2, "OnlineArrestorHook", CT.bHasArrestorControl?1:0) == 1;
             boolean bOnlineWingFold = sectfile.get(s2, "OnlineWingFold", CT.bHasWingControl?1:0) == 1;
             boolean bOnlineCockpitDoor = sectfile.get(s2, "OnlineCockpitDoor", CT.bHasCockpitDoorControl?1:0) == 1;
             boolean bOnlineBombBay = sectfile.get(s2, "OnlineBombBay", CT.bHasBayDoorControl?1:0) == 1;
 
-            if (Config.cur.ini.get("Mods", "ShowOnlineCompatibleFlightModelChanges", 0) == 1)
+            if(Config.cur.ini.get("Mods", "ShowOnlineCompatibleFlightModelChanges", 0) == 1)
             {
-                if (CT.bHasArrestorControl != bOnlineArrestor || CT.bHasWingControl != bOnlineWingFold || CT.bHasCockpitDoorControl != bOnlineCockpitDoor || CT.bHasBayDoorControl != bOnlineBombBay)
+                if(CT.bHasArrestorControl != bOnlineArrestor || CT.bHasWingControl != bOnlineWingFold || CT.bHasCockpitDoorControl != bOnlineCockpitDoor || CT.bHasBayDoorControl != bOnlineBombBay)
                 {
                     System.out.println("******************************************");
                     System.out.println("*** Online Mission active, Ensuring Stock");
                     System.out.println("*** Compatibility for " + s);
                     System.out.println("*** Parameter             Old    New");
-                    if (CT.bHasArrestorControl != bOnlineArrestor) System.out.println("*** HasArrestorControl    " + CT.bHasArrestorControl + " " + bOnlineArrestor);
-                    if (CT.bHasWingControl != bOnlineWingFold) System.out.println("*** HasWingControl        " + CT.bHasWingControl + " " + bOnlineWingFold);
-                    if (CT.bHasCockpitDoorControl != bOnlineCockpitDoor) System.out.println("*** HasCockpitDoorControl " + CT.bHasCockpitDoorControl + " " + bOnlineCockpitDoor);
-                    if (CT.bHasBayDoorControl != bOnlineBombBay) System.out.println("*** HasBayDoorControl     " + CT.bHasBayDoorControl + " " + bOnlineBombBay);
+                    if(CT.bHasArrestorControl != bOnlineArrestor) System.out.println("*** HasArrestorControl    " + CT.bHasArrestorControl + " " + bOnlineArrestor);
+                    if(CT.bHasWingControl != bOnlineWingFold) System.out.println("*** HasWingControl        " + CT.bHasWingControl + " " + bOnlineWingFold);
+                    if(CT.bHasCockpitDoorControl != bOnlineCockpitDoor) System.out.println("*** HasCockpitDoorControl " + CT.bHasCockpitDoorControl + " " + bOnlineCockpitDoor);
+                    if(CT.bHasBayDoorControl != bOnlineBombBay) System.out.println("*** HasBayDoorControl     " + CT.bHasBayDoorControl + " " + bOnlineBombBay);
                     System.out.println("******************************************");
                 }
             }
@@ -699,7 +735,8 @@ public class FlightModelMain extends FMMath
         {
             LimitLoad = sectfile.get(s2, "G_CLASS", 12F, 0.0F, 15F);
             LimitLoad = LimitLoad / 1.5F;
-        } else
+        }
+        else
         {
             LimitLoad = 12F;
         }
@@ -819,16 +856,19 @@ public class FlightModelMain extends FMMath
             Wing.setFlaps(0.0F);
             //TODO: +++ Check Mach Drag availability prior to loading Mach Params +++
             String machCheck = sectfile.get(s2, "mc3", "");
-            if (machCheck.length() > 8)
+            if(machCheck.length() > 8)
             {
                 Wing.loadMachParams(sectfile);
-            } else {
+            }
+            else
+            {
                 System.out.println("Flight Model File " + s + " contains no Mach Drag Parameters.");
                 Wing.mcMin = 999.0F;
             }
 //            Wing.loadMachParams(sectfile);
             //TODO: --- Check Mach Drag availability prior to loading Mach Params code ---
-        } else
+        }
+        else
         {
             throw new RuntimeException(s1);
         }
@@ -1159,12 +1199,14 @@ public class FlightModelMain extends FMMath
         if(actor.pos.base() == null)
         {
             actor.pos.setAbs(Loc, Or);
-        } else
+        }
+        else
         {
             if(actor.pos.base() instanceof Aircraft)
             {
                 Vwld.set(((Aircraft)actor.pos.base()).FM.Vwld);
-            } else
+            }
+            else
             {
                 actor.pos.speed(actVwld);
                 Vwld.x = (float)actVwld.x;
@@ -1330,7 +1372,8 @@ public class FlightModelMain extends FMMath
         if(flag)
         {
             flags0 |= 16L;
-        } else
+        }
+        else
         {
             flags0 &= -17L;
             if(!bDamaged)
@@ -1346,7 +1389,8 @@ public class FlightModelMain extends FMMath
         if(flag)
         {
             flags0 |= 64L;
-        } else
+        }
+        else
         {
             flags0 &= -65L;
             checkDamaged();
@@ -1367,7 +1411,8 @@ public class FlightModelMain extends FMMath
         {
             flags0 |= 4L;
             checkDamaged();
-        } else
+        }
+        else
         {
             flags0 &= -5L;
         }
@@ -1381,7 +1426,8 @@ public class FlightModelMain extends FMMath
         {
             flags0 |= 4L;
             checkDamaged();
-        } else
+        }
+        else
         {
             flags0 &= -5L;
         }
@@ -1420,7 +1466,8 @@ public class FlightModelMain extends FMMath
             if(!bDamaged && !Actor.isValid(damagedInitiator))
                 damagedInitiator = actor;
             checkDamaged();
-        } else
+        }
+        else
         {
             flags0 &= -9L;
         }
@@ -1441,7 +1488,8 @@ public class FlightModelMain extends FMMath
             flags0 |= 128L;
             EventLog.onAirLanded((Aircraft)actor);
             checkDamaged();
-        } else
+        }
+        else
         {
             flags0 &= -129L;
         }
@@ -1455,7 +1503,8 @@ public class FlightModelMain extends FMMath
         {
             flags0 |= 256L;
             checkDamaged();
-        } else
+        }
+        else
         {
             flags0 &= -257L;
         }
@@ -1519,7 +1568,8 @@ public class FlightModelMain extends FMMath
         {
             flags0 |= 32768L;
             checkDamaged();
-        } else
+        }
+        else
         {
             flags0 &= -32769L;
         }
@@ -1814,7 +1864,8 @@ public class FlightModelMain extends FMMath
             {
                 Sq.getClass();
                 Sq.dragProducedCx += 0.12F;
-            } else
+            }
+            else
             {
                 Sq.getClass();
                 Sq.dragProducedCx += 0.06F;
@@ -1834,7 +1885,8 @@ public class FlightModelMain extends FMMath
                     Sq.liftWingRIn *= 0.75F;
                     Sq.liftWingRMid *= 0.75F;
                     Sq.liftWingROut *= 0.75F;
-                } else
+                }
+                else
                 {
                     Sq.liftWingROut *= 0.75F;
                     Sq.liftWingRMid *= 0.75F;
@@ -1865,7 +1917,8 @@ public class FlightModelMain extends FMMath
             {
                 Sq.getClass();
                 Sq.dragProducedCx += 0.12F;
-            } else
+            }
+            else
             {
                 Sq.getClass();
                 Sq.dragProducedCx += 0.06F;
@@ -1885,7 +1938,8 @@ public class FlightModelMain extends FMMath
                     Sq.liftWingRIn *= 0.75F;
                     Sq.liftWingRMid *= 0.75F;
                     Sq.liftWingROut *= 0.75F;
-                } else
+                }
+                else
                 {
                     Sq.liftWingROut *= 0.75F;
                     Sq.liftWingRMid *= 0.75F;
@@ -1926,7 +1980,8 @@ public class FlightModelMain extends FMMath
             {
                 Sq.squareRudders *= 0.5F;
                 SensYaw *= 0.25F;
-            } else
+            }
+            else
             {
                 Sq.squareRudders *= 0.0F;
                 SensYaw *= 0.0F;
@@ -1953,7 +2008,8 @@ public class FlightModelMain extends FMMath
             {
                 Sq.squareRudders *= 0.5F;
                 SensYaw *= 0.25F;
-            } else
+            }
+            else
             {
                 Sq.squareRudders *= 0.0F;
                 SensYaw *= 0.0F;
@@ -2243,7 +2299,7 @@ public class FlightModelMain extends FMMath
         {
             //By PAL, if not loading Mission or possitive it is a Single Mission
             if(Main.cur().mission.isSingle())
-                if (fileExists(sName))
+                if(fileExists(sName))
                 {
                        sectfile = new SectFile(sName, 0);
                        System.out.println("**Debug FM loaded directly from '" + sName + "' File!!!'");
@@ -2317,10 +2373,10 @@ public class FlightModelMain extends FMMath
                 }
 
                 //By PAL, if it doesn't exist, load generic FM.
-                if (fmDir == null)
+                if(fmDir == null)
                 {
                     //By PAL, if Mission Loading, notify the user about the problem!!!
-                    if (Main.cur().missionLoading != null)
+                    if(Main.cur().missionLoading != null)
                     {
                         BackgroundTask.cancel("Mission Cancelled, Error in FM!!!" +
                             "\n\nThere was a problem loading FM called:\n'" + sName +
@@ -2349,13 +2405,13 @@ public class FlightModelMain extends FMMath
                 if(fmDir != null)
                 {
                 //By PAL, if it didn't work with 4.09 / 4.11 / 4.12 Encoding:
-                    if (inputstream == null)
+                    if(inputstream == null)
                         inputstream = fmDir.openStream("" + Finger.Int(sName + "d2w0"));
                 //By PAL, check with 4.10 Encoding:
-                    if (inputstream == null)
+                    if(inputstream == null)
                         inputstream = fmDir.openStream("" + Finger.Int(sName + "d2wO"));
                 //By PAL, check with HSFX Expert Encoding:
-                    if (inputstream == null)
+                    if(inputstream == null)
                         inputstream = fmDir.openStream("" + Finger.Int(sName + "d2w5"));
                 }
 

@@ -5,6 +5,7 @@
  * 2014.08.11: doSetRocketHook method changed to make this class independent from Guided Missile Mod
  * 2016.06.16: importing 4.13.2m's Bomb release mode codes and adding Select bomb function.
  * 2016.10.22: By PAL, modified incorrect static variables
+ * 2017.01.03: By western, implement limit Ailerons, debug Select bomb and Unlimited Ammo
  */
 
 package com.maddox.il2.fm;
@@ -109,12 +110,12 @@ public class Controls {
 	public float PowerControlArr[];
 	public float StepControlArr[];
 	private FlightModelMain FM;
-    //By PAL, static?
+	//By PAL, static?
 	private /* static */ float tmpF;
 	public boolean bDropWithPlayer;
 	public Aircraft dropWithPlayer;
 	boolean bDropWithMe;
-    //By PAL, static?
+	//By PAL, static?
 	private /* static */ Vector3d tmpV3d = new Vector3d();
 	// --------------------------------------------------------
 
@@ -127,6 +128,13 @@ public class Controls {
 	public boolean bHasAileronControlPowered;
 	public boolean bHasElevatorControlPowered;
 	public boolean bHasRudderControlPowered;
+	public int limitModeOfAilerons;
+	public float limitThresholdSpeedKMH;
+	public float limitRatioAileron;
+	public float limitRatioElevatorPlus;
+	public float limitRatioElevatorMinus;
+	public float limitRatioElevatorMinusALWAYS;
+	public float limitRatioRudder;
 	public int DiffBrakesType;
 	public float BrakeRightControl;
 	public float BrakeLeftControl;
@@ -207,6 +215,8 @@ public class Controls {
 	};
 	private int bombsReleased;
 	private long timeOfLastBombRelease;
+	private int bombsHangedNumber;  // for Unlimited Ammo
+	private int bombsHangedNumberByClass[];  // for Unlimited Ammo and select
 	private int rocketsReleased;
 	private long timeOfLastRocketRelease;
 	private int localHudLogWeaponId;
@@ -274,8 +284,8 @@ public class Controls {
 		dvCockpitDoor = 0.1F;
 		dvAirbrake = 0.5F;
 		electricPropDn = 0;
-		//  PowerControlArr = new float[6];   --- stock code comment-out
-		//  StepControlArr = new float[6];   --- stock code comment-out
+		//  PowerControlArr = new float[6];   --- stock code comment-out by western
+		//  StepControlArr = new float[6];   --- stock code comment-out by western
 		bDropWithPlayer = false;
 		dropWithPlayer = null;
 		bDropWithMe = false;
@@ -300,6 +310,13 @@ public class Controls {
 		bHasAileronControlPowered = false;
 		bHasElevatorControlPowered = false;
 		bHasRudderControlPowered = false;
+		limitModeOfAilerons = 0;
+		limitThresholdSpeedKMH = 440F;
+		limitRatioAileron = 1.0F;
+		limitRatioElevatorPlus = 1.0F;
+		limitRatioElevatorMinus = 1.0F;
+		limitRatioElevatorMinusALWAYS = 1.0F;
+		limitRatioRudder = 1.0F;
 		bHasDragChuteControl = false;
 		bHasRefuelControl = false;
 		DiffBrakesType = 0;
@@ -333,6 +350,8 @@ public class Controls {
 		bombClassArr = new Class[8];
 		bombClassNumber = 0;
 		curBombSelected = -1;
+		bombsHangedNumber = 0;
+		bombsHangedNumberByClass = new int[8];
 		// --------------------------------------------------------
 
 		// Import values from 4.13.2m
@@ -873,22 +892,22 @@ public class Controls {
 		}
 	}
 
-	public void update(float f, float f1, EnginesInterface enginesinterface, boolean flag, boolean flag1) {
+	public void update(float f, float fVflowx, EnginesInterface enginesinterface, boolean flag, boolean flag1) {
 		if (bHasBayDoors)
 			bHasBayDoorControl = true;
-		float f2 = 1.0F;
-		float f3 = 1.0F;
-		float f4 = 1.0F;
-		float f5 = f1 * f1;
-		if (f1 > AilThr)
-			f2 = Math.max(0.2F, AilThr3 / (f5 * f1));
-		if (f5 > RudThr2)
-			f3 = Math.max(0.2F, RudThr2 / f5);
-		if (f5 > ElevThr2)
-			f4 = Math.max(0.4F, ElevThr2 / f5);
-		f2 *= Sensitivity;
-		f3 *= Sensitivity;
-		f4 *= Sensitivity;
+		float fAilLimit = 1.0F;
+		float fRudLimit = 1.0F;
+		float fElevLimit = 1.0F;
+		float fVflowx2 = fVflowx * fVflowx;
+		if (fVflowx > AilThr && !bHasAileronControlPowered)
+			fAilLimit = Math.max(0.2F, AilThr3 / (fVflowx2 * fVflowx));
+		if (fVflowx2 > RudThr2 && !bHasRudderControlPowered)
+			fRudLimit = Math.max(0.2F, RudThr2 / fVflowx2);
+		if (fVflowx2 > ElevThr2 && !bHasElevatorControlPowered)
+			fElevLimit = Math.max(0.4F, ElevThr2 / fVflowx2);
+		fAilLimit *= Sensitivity;
+		fRudLimit *= Sensitivity;
+		fElevLimit *= Sensitivity;
 		if (!flag1)
 			if (FM instanceof RealFlightModel) {
 				float f6 = 0.0F;
@@ -970,25 +989,25 @@ public class Controls {
 		if (bHasGearControl || flag1) {
 			GearControl = clamp01(GearControl);
 			Gear = filter(f, GearControl, Gear, 999.9F, dvGear);
-			float f7 = FM.AS.gearStates[0];
-			float f9 = FM.AS.gearStates[1];
-			float f10 = FM.AS.gearStates[2];
-			if (f7 > 0.0F)
-				gearL = filter(f, f7, gearL, 999.9F, getDamMovSpd(FM.AS.gearDamType[0], 0));
-			else if (f7 < 0.0F)
-				gearL = filter(f, Math.min(GearControl, Math.abs(f7)), gearL, 999.9F, getDamMovSpd(FM.AS.gearDamType[0], 0));
+			float fGearStatL = FM.AS.gearStates[0];
+			float fGearStatR = FM.AS.gearStates[1];
+			float fGearStatC = FM.AS.gearStates[2];
+			if (fGearStatL > 0.0F)
+				gearL = filter(f, fGearStatL, gearL, 999.9F, getDamMovSpd(FM.AS.gearDamType[0], 0));
+			else if (fGearStatL < 0.0F)
+				gearL = filter(f, Math.min(GearControl, Math.abs(fGearStatL)), gearL, 999.9F, getDamMovSpd(FM.AS.gearDamType[0], 0));
 			else
 				gearL = filter(f, GearControl, gearL, 999.9F, dvGearL);
-			if (f9 > 0.0F)
-				gearR = filter(f, f9, gearR, 999.9F, getDamMovSpd(FM.AS.gearDamType[1], 1));
-			else if (f9 < 0.0F)
-				gearR = filter(f, Math.min(GearControl, Math.abs(f9)), gearR, 999.9F, getDamMovSpd(FM.AS.gearDamType[1], 1));
+			if (fGearStatR > 0.0F)
+				gearR = filter(f, fGearStatR, gearR, 999.9F, getDamMovSpd(FM.AS.gearDamType[1], 1));
+			else if (fGearStatR < 0.0F)
+				gearR = filter(f, Math.min(GearControl, Math.abs(fGearStatR)), gearR, 999.9F, getDamMovSpd(FM.AS.gearDamType[1], 1));
 			else
 				gearR = filter(f, GearControl, gearR, 999.9F, dvGearR);
-			if (f10 > 0.0F)
-				gearC = filter(f, f10, gearC, 999.9F, getDamMovSpd(FM.AS.gearDamType[2], 2));
-			else if (f10 < 0.0F)
-				gearC = filter(f, Math.min(GearControl, Math.abs(f10)), gearC, 999.9F, getDamMovSpd(FM.AS.gearDamType[2], 2));
+			if (fGearStatC > 0.0F)
+				gearC = filter(f, fGearStatC, gearC, 999.9F, getDamMovSpd(FM.AS.gearDamType[2], 2));
+			else if (fGearStatC < 0.0F)
+				gearC = filter(f, Math.min(GearControl, Math.abs(fGearStatC)), gearC, 999.9F, getDamMovSpd(FM.AS.gearDamType[2], 2));
 			else
 				gearC = filter(f, GearControl, gearC, 999.9F, dvGearC);
 		}
@@ -1023,7 +1042,7 @@ public class Controls {
 			arrestor = filter(f, arrestorControl, arrestor, 999.9F, 0.2F);
 		if (bHasFlapsControl || flag1) {
 			FlapsControl = clamp01(FlapsControl);
-			if (Flaps > FlapsControl){
+			if (Flaps > FlapsControl) {
 				if ((Aircraft)FM.actor instanceof TypeFastJet)
 					Flaps = filter(f, FlapsControl, Flaps, 999F, 0.25F);
 				else
@@ -1057,30 +1076,73 @@ public class Controls {
 			// System.out.print(" AOS=" + FM.AOS);
 			// System.out.println(" getW().z=" + FM.getW().z);
 		}
+		// TODO: +++ by western, limit Ailerons in high speed flight, simulating A-6 or F-5, etc.
+		boolean bLimitEnabled = false;
+		switch(limitModeOfAilerons) {
+		case 1:
+			if(FM.getSpeedKMH() > limitThresholdSpeedKMH) bLimitEnabled = true;
+			break;
+		case 2:
+			if(getFlap() < 0.01F) bLimitEnabled = true;
+			break;
+		case 3:
+			if(FM.getSpeedKMH() > limitThresholdSpeedKMH && getFlap() < 0.01F) bLimitEnabled = true;
+			break;
+		case 4:
+			if(getGear() < 0.01F) bLimitEnabled = true;
+			break;
+		case 5:
+			if(FM.getSpeedKMH() > limitThresholdSpeedKMH && getGear() < 0.01F) bLimitEnabled = true;
+			break;
+		case 6:
+			if(getFlap() < 0.01F && getGear() < 0.01F) bLimitEnabled = true;
+			break;
+		case 7:
+			if(FM.getSpeedKMH() > limitThresholdSpeedKMH && getFlap() < 0.01F && getGear() < 0.01F)
+				bLimitEnabled = true;
+			break;
+		default:
+			break;
+		}
+		// TODO: --- end of limit Ailerons
 		if (bHasAileronControl || flag1) {
 			trimAileron = filter(f, trimAileronControl, trimAileron, 999.9F, 0.25F);
 			AileronControl = clamp11(AileronControl);
-			tmpF = clampA(AileronControl, f2);
+			tmpF = clampA(AileronControl, fAilLimit);
 			Ailerons = filter(f, (1.0F + (trimAileron * tmpF <= 0.0F ? 1.0F : -1F) * Math.abs(trimAileron)) * tmpF
 					+ trimAileron, Ailerons, 0.2F * (1.0F + 0.3F * Math.abs(AileronControl)), 0.025F);
+			// TODO: by western
+			if(bLimitEnabled) Ailerons = clampA(Ailerons, limitRatioAileron);
 		}
 		if (bHasElevatorControl || flag1) {
 			trimElevator = filter(f, trimElevatorControl, trimElevator, 999.9F, 0.25F);
 			ElevatorControl = clamp11(ElevatorControl);
-			tmpF = clampA(ElevatorControl, f4);
+			tmpF = clampA(ElevatorControl, fElevLimit);
 			Ev = filter(f, (1.0F + (trimElevator * tmpF <= 0.0F ? 1.0F : -1F) * Math.abs(trimElevator)) * tmpF + trimElevator,
 					Ev, 0.3F * (1.0F + 0.3F * Math.abs(ElevatorControl)), 0.022F);
 			if (FM.actor instanceof SU_26M2)
 				Elevators = clamp11(Ev);
 			else
-				Elevators = clamp11(Ev - 0.25F * (1.0F - f4));
+				Elevators = clamp11(Ev - 0.25F * (1.0F - fElevLimit));
+			// TODO: by western
+			// Elevator can have different limit plus / minus
+			if(bLimitEnabled) {
+				if(Elevators < -limitRatioElevatorMinus) Elevators = -limitRatioElevatorMinus;
+				if(Elevators > limitRatioElevatorPlus) Elevators = limitRatioElevatorPlus;
+			} else {
+				// Elevator can have always minus limit to simulate A-6 etc.
+				if(Elevators < -limitRatioElevatorMinusALWAYS) Elevators = -limitRatioElevatorMinusALWAYS;
+			}
 		}
 		if (bHasRudderControl || flag1) {
 			trimRudder = filter(f, trimRudderControl, trimRudder, 999.9F, 0.25F);
 			RudderControl = clamp11(RudderControl);
-			tmpF = clampA(RudderControl, f3);
+			tmpF = clampA(RudderControl, fRudLimit);
 			Rudder = filter(f, (1.0F + (trimRudder * tmpF <= 0.0F ? 1.0F : -1F) * Math.abs(trimRudder)) * tmpF + trimRudder,
 					Rudder, 0.35F * (1.0F + 0.3F * Math.abs(RudderControl)), 0.025F);
+			// TODO: by western
+			// Rudder limitter becomes canceled when gears on the ground.
+			if(bLimitEnabled && FM.Gears.nOfGearsOnGr < 2) Rudder = clampA(Rudder, limitRatioRudder);
 		}
 		BrakeControl = clamp01(BrakeControl);
 		if (bHasBrakeControl || flag1) {
@@ -1438,6 +1500,7 @@ public class Controls {
 			if (bulletemitter != null && !(bulletemitter instanceof FuelTankGun))
 				j += bulletemitter.countBullets();
 		}
+		if (j < 0) j = -1;	// TODO: by western, debug Unlimited-Ammo
 
 		return j;
 	}
@@ -1456,6 +1519,7 @@ public class Controls {
 			if (((BombGun)bulletemitter).bulletClass() == class1)
 				j += bulletemitter.countBullets();
 		}
+		if (j < 0) j = -1;	// TODO: by western, debug Unlimited-Ammo
 
 		return j;
 	}
@@ -1472,6 +1536,17 @@ public class Controls {
 		}
 
 		return false;
+	}
+
+	private int getBombClassIndex(Class class1) {
+		if (bombClassNumber == 0)
+			return -1;
+		for (int i = 0; i < bombClassNumber; i++) {
+			if (bombClassArr[i] == class1)
+				return i;
+		}
+
+		return -1;
 	}
 
 			// TODO: Add a new Bomb class to the array
@@ -1502,6 +1577,8 @@ public class Controls {
 				continue;
 
 			addBombClass(((BombGun)Weapons[3][i]).bulletClass());
+			int index = getBombClassIndex(((BombGun)Weapons[3][i]).bulletClass());
+			if (index != -1) bombsHangedNumberByClass[index]++;
 		}
 		if (bombClassNumber > 0) {
 			if (bombClassNumber == 1) curBombSelected = 0;
@@ -1520,7 +1597,7 @@ public class Controls {
 	public int getNumberOfValidBombClass() {
 		int count = 0;
 		for (int i = 0; i < bombClassNumber; i++)
-			if (getWeaponCount(3, bombClassArr[i]) > 0) count++;
+			if (getWeaponCount(3, bombClassArr[i]) > 0 || (getWeaponCount(3, bombClassArr[i]) == -1 && !World.cur().diffCur.Limited_Ammo)) count++;
 
 		return count;
 	}
@@ -1766,30 +1843,31 @@ public class Controls {
 	}
 
 	public void toggleBombReleaseMode() {
-		if (isTrainStillDropping() || getWeaponCount(3) <= 1)
+		if (isTrainStillDropping() || (getWeaponCount(3) <= 1 && World.cur().diffCur.Limited_Ammo))
 			return;
 		if (bHasBombSelect && getNumberOfValidBombClass() == 1) {
 			for (curBombSelected = 0; curBombSelected < bombClassNumber; curBombSelected++)
-				if (getWeaponCount(3, bombClassArr[curBombSelected]) > 0) break;
+				if (getWeaponCount(3, bombClassArr[curBombSelected]) != 0) break;
 		}
-		boolean flag = hasWingBombs();
-		boolean flag1 = hasFuselageBombs();
+		boolean bHasWingB = hasWingBombs();
+		boolean bHasFuselB = hasFuselageBombs();
 		int i = bombReleaseMode + 1;
 		if (i == 1 && bHasBombSelect && curBombSelected == -1)
 			i = 5;		// When selected ALL bombs, Single/Pair modes are ignored.
 		if (bHasBombSelect && curBombSelected > -1)
-			if (getWeaponCount(3, bombClassArr[curBombSelected]) <= 1)
+			if (getWeaponCount(3, bombClassArr[curBombSelected]) == 1)
 				i = 6;		// When rest amount of the bomb selected is only 1, Single/Pair/Train modes are ignored and go to next bomb class.
-		if ((i == 2 || i == 4) && (flag1 != flag || bHasBombSelect))
+		if ((i == 2 || i == 4) && (bHasFuselB != bHasWingB || bHasBombSelect))
 			i++;
-		if (i > 5 || i == 5 && !((Aircraft)FM.actor).hasIntervalometer()) {
+		if (i > 5 || i == 5 && (!((Aircraft)FM.actor).hasIntervalometer() || !World.cur().diffCur.Limited_Ammo)) {
 			if (bHasBombSelect && getNumberOfValidBombClass() > 1) {
 				curBombSelected++;
 				for (; curBombSelected < bombClassNumber; curBombSelected++)
-					if (getWeaponCount(3, bombClassArr[curBombSelected]) > 0) break;
+					if (getWeaponCount(3, bombClassArr[curBombSelected]) != 0) break;
 
 				if (curBombSelected == bombClassNumber) curBombSelected = -1;
 				if (curBombSelected > -1 && bombTrainAmount > getWeaponCount(3, bombClassArr[curBombSelected])) bombTrainAmount = getWeaponCount(3, bombClassArr[curBombSelected]);
+				if (bombTrainAmount < 0) bombTrainAmount = 1;
 			}
 
 			i = 0;
@@ -1819,15 +1897,15 @@ public class Controls {
 
 		case 3: // '\003'
 			if (bHasBombSelect)
-					HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleasePairsName" , new Object[] { new String(classname) });
-			else if (flag && flag1)
+				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleasePairsName" , new Object[] { new String(classname) });
+			else if (bHasWingB && bHasFuselB)
 				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleasePairsWF");
 			else
 				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleasePairs");
 			return;
 
 		case 4: // '\004'
-			if (flag && flag1)
+			if (bHasWingB && bHasFuselB)
 				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleasePairsFF");
 			else
 				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleasePairs");
@@ -1835,15 +1913,15 @@ public class Controls {
 
 		case 1: // '\001'
 			if (bHasBombSelect)
-					HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseSingleName" , new Object[] { new String(classname) });
-			else if (flag && flag1)
+				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseSingleName" , new Object[] { new String(classname) });
+			else if (bHasWingB && bHasFuselB)
 				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseSingleWF");
 			else
 				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseSingle");
 			return;
 
 		case 2: // '\002'
-			if (flag && flag1)
+			if (bHasWingB && bHasFuselB)
 				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseSingleFF");
 			else
 				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseSingle");
@@ -1869,7 +1947,7 @@ public class Controls {
 	}
 
 	public void toggleBombTrainAmount() {
-		if (isTrainStillDropping() || getWeaponCount(3) <= 1)
+		if (isTrainStillDropping() || (getWeaponCount(3) <= 1 && World.cur().diffCur.Limited_Ammo))
 			return;
 		autoSwitchToTrain();
 		int i;
@@ -1891,7 +1969,7 @@ public class Controls {
 	}
 
 	public void toggleBombTrainDelay() {
-		if (isTrainStillDropping() || getWeaponCount(3) <= 1)
+		if (isTrainStillDropping() || (getWeaponCount(3) <= 1 && World.cur().diffCur.Limited_Ammo))
 			return;
 		autoSwitchToTrain();
 		bombTrainDelay++;
@@ -1938,8 +2016,8 @@ public class Controls {
 		}
 	}
 
-	private void weaponReleaseCycle(int i, int j, int k, int l, boolean flag, boolean flag1) {
-		if (i == 3 && bHasBombSelect && curBombSelected > -1 && getWeaponCount(3, bombClassArr[curBombSelected]) == 0 &&  getWeaponCount(3) > 0)
+	private void weaponReleaseCycle(int i, int relMode, int start, int unit, boolean bHasWingB, boolean bHasFuselB) {
+		if (i == 3 && bHasBombSelect && curBombSelected > -1 && getWeaponCount(3, bombClassArr[curBombSelected]) == 0 && getWeaponCount(3) > 0)
 		{
 			String classnametemp = bombClassArr[curBombSelected].getName().substring(35);
 			int index = classnametemp.indexOf("_");
@@ -1949,10 +2027,10 @@ public class Controls {
 				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseEmptyName" , new Object[] { classnametemp });
 		}
 
-		for (int i1 = k; i1 < Weapons[i].length; i1 += l) {
+		for (int i1 = start; i1 < Weapons[i].length; i1 += unit) {
 			if (Weapons[i][i1] instanceof FuelTankGun)
 				continue;
-			if ((Weapons[i][i1] instanceof BombGunNull) && i == 3 && j != 4 && j != 3) {
+			if ((Weapons[i][i1] instanceof BombGunNull) && i == 3 && relMode != 4 && relMode != 3) {
 				Weapons[i][i1].shots(1);
 				continue;
 			}
@@ -1967,14 +2045,16 @@ public class Controls {
 				} else {
 					BayDoorControl = 1.0F;
 				}
-			if (j == 0 || j == 0) {
-				Weapons[i][i1].shots(Weapons[i][i1].countBullets());
+			if (relMode == 0) {
+				if (World.cur().diffCur.Limited_Ammo) Weapons[i][i1].shots(Weapons[i][i1].countBullets());
+				else Weapons[i][i1].shots(1);
 				if (i == 2) {
 					rocketsReleased++;
 					timeOfLastRocketRelease = Time.current();
 				}
 			} else {
-				if (i == 3 && j != 0 && j != 5 && (flag1 && (j == 4 || j == 2) && isWingBomb(Weapons[i][i1]) || flag && (j == 3 || j == 1) && isFuselageBomb(Weapons[i][i1])))
+				if (i == 3 && relMode != 0 && relMode != 5 && !bHasBombSelect &&
+				(bHasFuselB && (relMode == 4 || relMode == 2) && isWingBomb(Weapons[i][i1]) || bHasWingB && (relMode == 3 || relMode == 1) && isFuselageBomb(Weapons[i][i1])))
 					continue;
 				Weapons[i][i1].shots(1);
 				if (i == 3) {
@@ -1998,7 +2078,7 @@ public class Controls {
 					HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseEmptyName" , new Object[] { classnametemp });
 			}
 
-			if ((Weapons[i][i1] instanceof BombGun) && !((BombGun)Weapons[i][i1]).isCassette() && j != 0)
+			if ((Weapons[i][i1] instanceof BombGun) && !((BombGun)Weapons[i][i1]).isCassette() && relMode != 0)
 				return;
 			if ((Weapons[i][i1] instanceof RocketGun) && !((RocketGun)Weapons[i][i1]).isCassette())
 				return;
@@ -2010,7 +2090,14 @@ public class Controls {
 
 	public void setBombModeDefaults() {
 		BulletEmitter abulletemitter[][] = Weapons;
+		bombsHangedNumber = 0;
 		if (abulletemitter[3] != null) {
+			for (int i = 0; i < abulletemitter[3].length; i++)
+				if (abulletemitter[3][i].haveBullets()) {
+					if ((abulletemitter[3][i] instanceof FuelTankGun) || (abulletemitter[3][i] instanceof BombGunNull) || !(abulletemitter[3][i] instanceof BombGun))
+						continue;
+					bombsHangedNumber++;
+				}
 			for (int i = 0; i < abulletemitter[3].length; i++)
 				if (abulletemitter[3][i].haveBullets()) {
 					if ((abulletemitter[3][i] instanceof RocketGunHS_293) || (abulletemitter[3][i] instanceof RocketGunFritzX) || (abulletemitter[3][i] instanceof RocketGunBat)) {
@@ -2026,7 +2113,7 @@ public class Controls {
 				}
 
 		}
-		if ((FM.actor instanceof TypeBomber) && ((Aircraft)FM.actor).hasIntervalometer())
+		if ((FM.actor instanceof TypeBomber) && ((Aircraft)FM.actor).hasIntervalometer() && World.cur().diffCur.Limited_Ammo)
 			bombReleaseMode = 5;
 		int j = 0;
 		for (int k = 0; k < FM.AP.way.size(); k++) {

@@ -37,6 +37,8 @@
 //By PAL, to avoid opening in Carriers by AI
   CCockpitDoor 2
   CockpitDoorPeriod 2.25
+//By western0221, A-4M has Drag chute
+  CDragChute 1
   CAileronThreshold 500.0
   CRudderThreshold 550.0
   CElevatorThreshold 500.0
