@@ -30,7 +30,7 @@ public class BombMk81_gn16 extends Bomb
         Property.set(class1, "radius", 50F);
         Property.set(class1, "power", 64F);
         Property.set(class1, "powerType", 0);
-        Property.set(class1, "kalibr", 0.32F);
+        Property.set(class1, "kalibr", 0.23F);
         Property.set(class1, "massa", 113F);
         Property.set(class1, "sound", "weapon.bomb_mid");
         Property.set(class1, "fuze", ((Object) (new Object[] {
