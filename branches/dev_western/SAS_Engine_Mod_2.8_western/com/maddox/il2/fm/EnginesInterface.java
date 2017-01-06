@@ -699,6 +699,23 @@ public class EnginesInterface extends FMMath {
 //	private long lCatapultStartTime;
 //	private int iCatapultNumber;
 //	// TODO: --- CTO Mod 4.12 ---
+
+	// Be western, warning for out of date message, keep backward comaptibility but no meaning return value
+	public boolean getCatapult() {
+		if(bWarnedCatapultCompatibility) return false;
+
+		try{
+			System.out.println("WARNING: FM.EI.getCatapult() method is now out of date. Its return value is fixed as false and no meanings to work.");
+			System.out.println("		 Some class (modded cockpit or airplane class) calling this method needs to be reworked!!");
+
+			throw new Exception();
+		} catch(Exception e) {
+			e.printStackTrace();
+			bWarnedCatapultCompatibility = true;
+		}
+		return false;
+	}
+
 	public Motor engines[];
 	public boolean bCurControl[];
 	private int num;
@@ -708,4 +725,6 @@ public class EnginesInterface extends FMMath {
 	private static Vector3d tmpV3d = new Vector3d();
 	private static int tmpI;
 
+	// By western, warned backward compatibility
+	private boolean bWarnedCatapultCompatibility = false;
 }
