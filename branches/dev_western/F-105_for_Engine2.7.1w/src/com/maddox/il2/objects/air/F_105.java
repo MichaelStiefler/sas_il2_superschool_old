@@ -845,7 +845,7 @@ public class F_105 extends Scheme1
     {
         f /= 1000F;
         int i = 0;
-        for (i = 0; i < TypeSupersonic.fMachAltX.length; i++)
+        for (i = 0; i < TypeSupersonic.fMachAltX.length - 1; i++)
             if (TypeSupersonic.fMachAltX[i] > f)
                 break;
 

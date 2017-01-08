@@ -1706,7 +1706,10 @@ public class F_18 extends Scheme2
     {
         f /= 1000F;
         int i = 0;
-        for(i = 0; i < TypeSupersonic.fMachAltX.length && TypeSupersonic.fMachAltX[i] <= f; i++);
+        for(i = 0; i < TypeSupersonic.fMachAltX.length - 1; i++)
+            if(TypeSupersonic.fMachAltX[i] > f)
+                break;
+
         if(i == 0)
         {
             return TypeSupersonic.fMachAltY[0];
