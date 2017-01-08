@@ -466,6 +466,8 @@ public class Skyhawk extends Scheme1
     {
         super.onAircraftLoaded();
 
+        FM.CT.bHasBombSelect = true;
+
         Polares polares = (Polares)Reflection.getValue(FM, "Wing");
         stockSquareWing = FM.Sq.squareWing;
         stockLiftWingLMid = FM.Sq.liftWingLMid;
@@ -901,7 +903,7 @@ public class Skyhawk extends Scheme1
     {
         f /= 1000F;
         int i = 0;
-        for(i = 0; i < TypeSupersonic.fMachAltX.length; i++)
+        for(i = 0; i < TypeSupersonic.fMachAltX.length - 1; i++)
             if(TypeSupersonic.fMachAltX[i] > f)
                 break;
 
@@ -1510,7 +1512,7 @@ public class Skyhawk extends Scheme1
     private float stockSquareWing;
     private float stockLiftWingLMid;
     private float stockLiftWingRMid;
-    private final float SquareSlat = 1.2F;
+    private final float SquareSlat = 0.98F;
     private float stockCy0;
     private final float Cy0AddSlat = 0.002F;
 

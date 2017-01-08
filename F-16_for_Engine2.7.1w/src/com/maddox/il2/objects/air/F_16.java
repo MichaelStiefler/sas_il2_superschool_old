@@ -1469,7 +1469,7 @@ label0:
     {
         f /= 1000F;
         int i = 0;
-        for(i = 0; i < TypeSupersonic.fMachAltX.length; i++)
+        for(i = 0; i < TypeSupersonic.fMachAltX.length - 1; i++)
             if(TypeSupersonic.fMachAltX[i] > f)
                 break;
 
@@ -1930,8 +1930,8 @@ label0:
         {
             bForceFlapmodeAuto = false;
             float f1 = Aircraft.cvt(FM.getSpeedKMH(), 330F, 465F, 1.0F, 0.0F);
-            if(FM.CT.FlapsControlSwitch == 1 && f1 > FM.CT.FlapStage[0])
-                f1 = FM.CT.FlapStage[0];
+            if(FM.CT.FlapsControlSwitch == 1 && f1 > FM.CT.FlapStage[1])
+                f1 = FM.CT.FlapStage[1];
             FM.CT.FlapsControl = f1;
             tflap = Time.current();
             if((double)FM.CT.FlapsControl > 0.59999999999999998D && FM.Gears.onGround())
