@@ -740,24 +740,66 @@ public class EnginesInterface extends FMMath {
     // TODO: --- CTO Mod 4.12 ---
 
     // Be western, warning for out of date message, keep backward comaptibility but no meaning return value
-    public boolean getCatapult()
+    public void setCatapult(float f, float f1, int i)
     {
-        if(bWarnedCatapultCompatibility)
-            return false;
-
-        try{
-            System.out.println("WARNING: FM.EI.getCatapult() method is now out of date. Its return value is fixed as false and no meanings to work.");
+        try {
+            System.out.println("WARNING: FM.EI.setCatapult(f, f1, i) method is now out of date. Do nothing!!");
             System.out.println("         Some class (modded cockpit or airplane class) calling this method needs to be reworked!!");
 
             throw new Exception();
-        }
-        catch(Exception e)
-        {
+        } catch(Exception e) {
             e.printStackTrace();
-            bWarnedCatapultCompatibility = true;
         }
-        return false;
     }
+
+    public boolean getCatapult()
+    {
+        if(!bWarnedCatapultCompatibility)
+        {
+            try{
+                System.out.println("WARNING: FM.EI.getCatapult() method is now out of date.");
+                System.out.println("         Some class (modded cockpit or airplane class) calling this method needs to be reworked!!");
+
+                throw new Exception();
+            } catch(Exception e) {
+                e.printStackTrace();
+                bWarnedCatapultCompatibility = true;
+            }
+        }
+
+        return this.reference.Gears.isCatapultArmed();
+    }
+
+    public int getCatapultNumber()
+    {
+        if(!bWarnedCatapultCompatibility)
+        {
+            try{
+                System.out.println("WARNING: FM.EI.getCatapultNumber() method is now out of date.");
+                System.out.println("         Some class (modded cockpit or airplane class) calling this method needs to be reworked!!");
+
+                throw new Exception();
+            } catch(Exception e) {
+                e.printStackTrace();
+                bWarnedCatapultCompatibility = true;
+            }
+        }
+
+        return this.reference.Gears.getCatapultNumber();
+    }
+
+    public void resetCatapultTime()
+    {
+        try{
+            System.out.println("WARNING: FM.EI.resetCatapultTime() method is now out of date. Do nothing!!");
+            System.out.println("         Some class (modded cockpit or airplane class) calling this method needs to be reworked!!");
+
+            throw new Exception();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public Motor engines[];
     public boolean bCurControl[];

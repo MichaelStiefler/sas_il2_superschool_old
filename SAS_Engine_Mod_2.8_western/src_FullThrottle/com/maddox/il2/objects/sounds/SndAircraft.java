@@ -371,7 +371,7 @@ public class SndAircraft extends ActorHMesh {
 	}
 
 	public void WepEffect() {
-		for (int e = 0; e < FM.Scheme; e++) {
+		for (int e = 0; e < FM.EI.getNum(); e++) {
 			int ty = FM.EI.engines[e].getType();
 			int i = World.Rnd().nextInt(0, 24);
 			if (ty == 0 || ty == 1) {

@@ -1,4 +1,5 @@
-// PAL-CockpitSoundsMod and Sani-Full Throttle Flame effect for 4.12.2m -- updated for SAS Engine MOD 2.8 on 11th/Jan./2016
+// PAL-CockpitSoundsMod and Sani-Full Throttle Flame effect for 4.12.2m -- updated for SAS Engine MOD 2.8 on 13th/Jan./2017
+// Based on PAL-CockpitSoundsMod version 25th/Dec./2016
 
 package com.maddox.il2.objects.sounds;
 
@@ -10,6 +11,7 @@ import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
 import com.maddox.il2.net.NetServerParams;
 import com.maddox.il2.objects.air.TypeSeaPlane;
+import com.maddox.il2.objects.air.TypeFastJet;
 import com.maddox.rts.*;
 import com.maddox.sound.*;
 import java.io.PrintStream;
@@ -47,12 +49,18 @@ public class SndAircraft extends ActorHMesh {
 	protected AudioStream sndFire;
 	protected AudioStream sndWind;
 	protected AudioStream sndBeat;
-	protected SoundFX fxScreams;
+	protected static SoundPreset screamPreset = null;
+	protected SoundFX fxScream[];
+	private static final int nScream = 3;
+	protected static SoundPreset stressPreset = null;
+	protected SoundFX fxStress[];
+	private static final int nStress = 5;
+	protected static SoundPreset maskPreset = null;
+	protected SoundFX fxMask[];
+	private static final int nMask = 5;
+	protected SoundFX fxTurrets[];
+	protected SoundFX fxShells[];
 	private static final int nTur = 8;
-	protected SoundFX fxTts[];
-	protected SoundFX fxShs[];
-	protected SoundFX fxStress;
-	protected SoundFX fxMask;
 	protected SoundFX smokeSound;
 	protected SoundFX doorSound;
 	private float dShake;
@@ -180,18 +188,15 @@ public class SndAircraft extends ActorHMesh {
 				if (sndBeat == null)
 					sndBeat = (new Sample(sectfile, "Beat")).get();
 				sndRoot.add(sndBeat);
-				if (fxMask == null) {
-					fxMask = newSound("Mask", false);
-					fxMask.setParent(sndRoot);
-				}
-				if (fxStress == null) {
-					fxStress = newSound("Stress", false);
-					fxStress.setParent(sndRoot);
-				}
-				if (fxScreams == null) {
-					fxScreams = newSound("Screams", false);
-					fxScreams.setParent(sndRoot);
-				}
+				if (screamPreset == null)
+					screamPreset = new SoundPreset("Scream");
+				fxScream = new SoundFX[3];
+				if (stressPreset == null)
+					stressPreset = new SoundPreset("Stress");
+				fxStress = new SoundFX[5];
+				if (maskPreset == null)
+					maskPreset = new SoundPreset("Mask");
+				fxMask = new SoundFX[5];
 			}
 		}
 		if (prsHit == null)
@@ -199,81 +204,109 @@ public class SndAircraft extends ActorHMesh {
 	}
 
 	public void sfxShellsPlay(int t, float v, Point3d p) {
-		if (fxShs[t] == null) {
-			fxShs[t] = newSound("Turrets", false);
-			fxShs[t].setParent(sndRoot);
-			if (fxShs[t] == null)
+		if (fxShells[t] == null) {
+			fxShells[t] = newSound("Turrets", false);
+			fxShells[t].setParent(sndRoot);
+			if (fxShells[t] == null)
 				return;
 		}
-		if (fxShs[t].isPlaying()) {
+		if (fxShells[t].isPlaying()) {
 			return;
 		} else {
-			fxShs[t].setUsrFlag(1);
-			fxShs[t].setVolume(v);
-			fxShs[t].setPitch(World.Rnd().nextFloat(0.9F, 1.2F));
-			fxShs[t].setPosition(p);
-			fxShs[t].setParent(sndRoot);
-			fxShs[t].play();
+			fxShells[t].setUsrFlag(1);
+			fxShells[t].setVolume(v);
+			fxShells[t].setPitch(World.Rnd().nextFloat(0.9F, 1.2F));
+			fxShells[t].setPosition(p);
+			fxShells[t].setParent(sndRoot);
+			fxShells[t].play();
 			return;
 		}
 	}
 
-	public void sfxTurPlay(int t, float v, Point3d p) {
-		if (fxTts[t] == null) {
-			fxTts[t] = newSound("Turrets", false);
-			if (fxTts[t] == null)
+	public void sfxTurretsPlay(int t, float v, Point3d p) {
+		if (fxTurrets[t] == null) {
+			fxTurrets[t] = newSound("Turrets", false);
+			if (fxTurrets[t] == null)
 				return;
 		}
-		if (fxTts[t].isPlaying()) {
+		if (fxTurrets[t].isPlaying()) {
 			return;
 		} else {
-			fxTts[t].setUsrFlag(0);
-			fxTts[t].setVolume(v);
-			fxTts[t].setPitch(World.Rnd().nextFloat(0.85F, 1.25F));
-			fxTts[t].setPosition(p);
-			fxTts[t].setParent(sndRoot);
-			fxTts[t].play();
+			fxTurrets[t].setUsrFlag(0);
+			fxTurrets[t].setVolume(v);
+			fxTurrets[t].setPitch(World.Rnd().nextFloat(0.85F, 1.25F));
+			fxTurrets[t].setPosition(p);
+			fxTurrets[t].setParent(sndRoot);
+			fxTurrets[t].play();
 			return;
 		}
 	}
 
-	public void sfxTurStop(int t) {
-		if (fxTts[t] != null && fxTts[t].isPlaying())
-			fxTts[t].stop();
+	public void sfxTurretsStop(int t) {
+		if (fxTurrets[t] != null && fxTurrets[t].isPlaying())
+			fxTurrets[t].stop();
 	}
 
 	public void sfxScream(int lvl, float vol, Point3d p) {
-		if (fxScreams != null) {
-			fxScreams.setUsrFlag(lvl);
-			fxScreams.setVolume(20F * vol);
-			fxScreams.setPitch(World.Rnd().nextFloat(0.95F, 1.05F));
-			fxScreams.setPosition(p);
-			fxScreams.setParent(sndRoot);
-			fxScreams.play();
+		// added by western, keep backward compatibility.
+		sfxScream(lvl, vol, true, p);
+	}
+
+	public void sfxScream(int lvl, float vol, boolean flag, Point3d p) {
+		if (fxScream != null && lvl < fxScream.length) {
+			SoundFX sound = fxScream[lvl];
+			if (sound == null) {
+				sound = newSound(screamPreset, false, false);
+				if (sound == null)
+					return;
+				sndRoot.add(sound);
+				fxScream[lvl] = sound;
+				sound.setUsrFlag(lvl);
+			}
+			sound.setPitch(World.Rnd().nextFloat(0.95F, 1.05F));
+			sound.setPosition(p);
+			sound.setPlay(flag);
 		}
 	}
 
 	public void sfxStressPlay(int lvl, float vol, Point3d p) {
-		if (fxStress != null) {
-			if (fxStress.isPlaying())
-				return;
-			fxStress.setUsrFlag(lvl);
-			fxStress.setPitch(World.Rnd().nextFloat(0.85F, 1.2F));
-			fxStress.setVolume(vol);
-			fxStress.setPosition(p);
-			fxStress.setParent(sndRoot);
-			fxStress.play();
+		// added by western, keep backward compatibility.
+		sfxStressPlay(lvl, vol, true, p);
+	}
+
+	public void sfxStressPlay(int lvl, float vol, boolean flag, Point3d p) {
+		if (fxStress != null && lvl < fxStress.length) {
+			SoundFX sound = fxStress[lvl];
+			if (sound == null) {
+				sound = newSound(stressPreset, false, false);
+				if (sound == null) return;
+				sndRoot.add(sound);
+				fxStress[lvl] = sound;
+				sound.setUsrFlag(lvl);
+			}
+			sound.setPitch(World.Rnd().nextFloat(0.85F, 1.2F));
+			sound.setPosition(p);
+			sound.setPlay(flag);
 		}
 	}
 
 	public void sfxMaskPlay(int l, float v, Point3d p) {
-		if (fxMask != null) {
-			if (fxMask.isPlaying())
-				return;
-			fxMask.setUsrFlag(l);
-			fxMask.setPitch(World.Rnd().nextFloat(0.97F, 1.03F));
-			fxMask.setParent(sndRoot);
-			fxMask.play();
+		// added by western, keep backward compatibility.
+		sfxMaskPlay(l, v, true, p);
+	}
+
+	public void sfxMaskPlay(int lvl, float vol, boolean flag, Point3d p) {
+		if (fxMask != null && lvl < fxMask.length) {
+			SoundFX sound = fxMask[lvl];
+			if (sound == null) {
+				sound = newSound(maskPreset, false, false);
+				if (sound == null) return;
+				sndRoot.add(sound);
+				fxMask[lvl] = sound;
+				sound.setUsrFlag(lvl);
+			}
+			sound.setPitch(World.Rnd().nextFloat(0.95F, 1.05F));
+			sound.setPlay(flag);
 		}
 	}
 
@@ -425,8 +458,6 @@ public class SndAircraft extends ActorHMesh {
 		if (Config.cur.ini.get("Mods", "WepEffect", 1) == 0) bWepEffect = false;
 		newPS = 0;
 		bMask = false;
-		fxTts = new SoundFX[8];
-		fxShs = new SoundFX[8];
 		FM = null;
 		sndRoot = null;
 		doorSndControl = 0.0F;
@@ -450,14 +481,6 @@ public class SndAircraft extends ActorHMesh {
 		sndBeat = null;
 		oldPS = new byte[9];
 		otu = new float[9];
-		for (int i = 0; i < 6; i++) {
-			fxTts[i] = null;
-			fxShs[i] = null;
-		}
-
-		fxScreams = null;
-		fxStress = null;
-		fxMask = null;
 		smokeSound = null;
 		doorSound = null;
 		dShake = 0.0F;
@@ -531,7 +554,9 @@ public class SndAircraft extends ActorHMesh {
 						motorSnd[j].update();
 
 				}
-				if (bMask)
+				if ((com.maddox.il2.objects.air.TypeFastJet.class).isAssignableFrom(((Interpolate) (FM)).actor.getClass()))
+					bMask = hierMesh().isChunkVisible("HMask1_D0") || FM.getSpeedKMH() > 300F;
+				else if (bMask)
 					bMask = FM.getAltitude() > 2850F;
 				else
 					bMask = FM.getAltitude() > 3150F;
@@ -555,11 +580,11 @@ public class SndAircraft extends ActorHMesh {
 										switch(FM.turret[c].tMode)
 										{
 										case 1: // '\001'
-											sfxTurPlay(c, v * vol, ((Actor) (Main3D.cur3D().cockpits[i])).pos.getAbsPoint());
+											sfxTurretsPlay(c, v * vol, ((Actor) (Main3D.cur3D().cockpits[i])).pos.getAbsPoint());
 											break;
 
 										case 5: // '\005'
-											sfxTurStop(c);
+											sfxTurretsStop(c);
 											break;
 										}
 									if (FM.turret[c].tMode == 2)
@@ -579,12 +604,12 @@ public class SndAircraft extends ActorHMesh {
 								if (newPS < 95)
 								{
 									if (i == FM.AS.astatePlayerIndex)
-										sfxScream(0, vol, ((Actor) (Main3D.cur3D().cockpits[i])).pos.getAbsPoint());
+										sfxScream(0, vol, true, ((Actor) (Main3D.cur3D().cockpits[i])).pos.getAbsPoint());
 									else
-										sfxScream(1, vol, ((Actor) (Main3D.cur3D().cockpits[i])).pos.getAbsPoint());
+										sfxScream(1, vol, true, ((Actor) (Main3D.cur3D().cockpits[i])).pos.getAbsPoint());
 								} else
 								{
-									sfxScream(2, vol, ((Actor) (Main3D.cur3D().cockpits[i])).pos.getAbsPoint());
+									sfxScream(2, vol, true, ((Actor) (Main3D.cur3D().cockpits[i])).pos.getAbsPoint());
 								}
 							oldPS[i] = newPS;
 						}
@@ -604,9 +629,9 @@ public class SndAircraft extends ActorHMesh {
 						if (f1 > 50)
 						{
 							if (bMask)
-								sfxMaskPlay(1, vol, ((Actor) (Main3D.cur3D().cockpitCur)).pos.getAbsPoint());
+								sfxMaskPlay(1, vol, true, ((Actor) (Main3D.cur3D().cockpitCur)).pos.getAbsPoint());
 							else
-								sfxMaskPlay(3, vol, ((Actor) (Main3D.cur3D().cockpitCur)).pos.getAbsPoint());
+								sfxMaskPlay(3, vol, true, ((Actor) (Main3D.cur3D().cockpitCur)).pos.getAbsPoint());
 						} else
 						if (!World.isPlayerDead())
 						{
@@ -616,16 +641,16 @@ public class SndAircraft extends ActorHMesh {
 							if (ld > 3.7F)
 							{
 								if (bMask)
-									sfxMaskPlay(2, vol, ((Actor) (Main3D.cur3D().cockpitCur)).pos.getAbsPoint());
+									sfxMaskPlay(2, vol, true, ((Actor) (Main3D.cur3D().cockpitCur)).pos.getAbsPoint());
 								else
-									sfxMaskPlay(4, vol, ((Actor) (Main3D.cur3D().cockpitCur)).pos.getAbsPoint());
+									sfxMaskPlay(4, vol, true, ((Actor) (Main3D.cur3D().cockpitCur)).pos.getAbsPoint());
 							} else
 							if (ld < -1.8F)
 							{
 								if (bMask)
-									sfxMaskPlay(1, vol, ((Actor) (Main3D.cur3D().cockpitCur)).pos.getAbsPoint());
+									sfxMaskPlay(1, vol, true, ((Actor) (Main3D.cur3D().cockpitCur)).pos.getAbsPoint());
 								else
-									sfxMaskPlay(3, vol, ((Actor) (Main3D.cur3D().cockpitCur)).pos.getAbsPoint());
+									sfxMaskPlay(3, vol, true, ((Actor) (Main3D.cur3D().cockpitCur)).pos.getAbsPoint());
 							} else
 							if (bMask)
 								sfxMaskPlay(0, vol, ((Actor) (Main3D.cur3D().cockpitCur)).pos.getAbsPoint());
@@ -634,19 +659,19 @@ public class SndAircraft extends ActorHMesh {
 								float ol = ld / World.getPlayerFM().getLimitLoad();
 								float v = World.Rnd().nextFloat(15F, 50F);
 								if (ol > 0.55F && ol < 0.57F)
-									sfxStressPlay(0, v * vol, new Point3d(World.Rnd().nextDouble(-4D, 4D), -4D, 0.0D));
+									sfxStressPlay(0, v * vol, true, new Point3d(World.Rnd().nextDouble(-4D, 4D), -4D, 0.0D));
 								else
 								if (ol > 0.62F && ol < 0.65F)
-									sfxStressPlay(1, v * vol, new Point3d(World.Rnd().nextDouble(-3D, 3D), -4D, 0.0D));
+									sfxStressPlay(1, v * vol, true, new Point3d(World.Rnd().nextDouble(-3D, 3D), -4D, 0.0D));
 								else
 								if (ol > 0.7F && ol < 0.775F)
-									sfxStressPlay(2, v * vol, new Point3d(World.Rnd().nextDouble(-2D, 2D), -4D, 0.0D));
+									sfxStressPlay(2, v * vol, true, new Point3d(World.Rnd().nextDouble(-2D, 2D), -4D, 0.0D));
 								else
 								if (ol > 0.8F && ol < 0.875F)
-									sfxStressPlay(3, v * vol, new Point3d(World.Rnd().nextDouble(-2D, 2D), -3D, -1D));
+									sfxStressPlay(3, v * vol, true, new Point3d(World.Rnd().nextDouble(-2D, 2D), -3D, -1D));
 								else
 								if (ol > 0.9F)
-									sfxStressPlay(4, v * vol, new Point3d(0.0D, World.Rnd().nextDouble(-2D, -4D), -1D));
+									sfxStressPlay(4, v * vol, true, new Point3d(0.0D, World.Rnd().nextDouble(-2D, -4D), -1D));
 							}
 						}
 						if (FM.AS.astateBailoutStep == 3)
@@ -692,7 +717,7 @@ public class SndAircraft extends ActorHMesh {
 	}
 
 	public void WepEffect() {
-		for (int e = 0; e < FM.Scheme; e++) {
+		for (int e = 0; e < FM.EI.getNum(); e++) {
 			int ty = FM.EI.engines[e].getType();
 			int i = World.Rnd().nextInt(0, 24);
 			if (ty == 0 || ty == 1) {
@@ -730,15 +755,26 @@ public class SndAircraft extends ActorHMesh {
 		if (sndFlaps != null) sndFlaps.cancel();
 		if (sndAirBrake != null) sndAirBrake.cancel();
 		if (smokeSound != null) smokeSound.cancel();
-		if (fxScreams != null) fxScreams.cancel();
-		if (fxStress != null) fxStress.cancel();
-		if (fxMask != null) fxMask.cancel();
-		for (int i = 0; i < 6; i++)
-		{
-			if (fxTts[i] != null) fxTts[i].cancel();
-			if (fxShs[i] != null) fxShs[i].cancel();
+		if (fxScream != null) {
+			for (int i = 0; i < fxScream.length; i++)
+				if (fxScream[i] != null) fxScream[i].cancel();
 		}
-
+		if (fxStress != null) {
+			for (int i = 0; i < fxStress.length; i++)
+				if (fxStress[i] != null) fxStress[i].cancel();
+		}
+		if (fxMask != null) {
+			for (int i = 0; i < fxMask.length; i++)
+				if (fxMask[i] != null) fxMask[i].cancel();
+		}
+		if (fxTurrets != null) {
+			for (int i = 0; i < fxTurrets.length; i++)
+				if (fxTurrets[i] != null) fxTurrets[i].cancel();
+		}
+		if (fxShells != null) {
+			for (int i = 0; i < fxShells.length; i++)
+				if (fxShells[i] != null) fxShells[i].cancel();
+		}
 		if (sndEject != null) sndEject.cancel();
 		if (sndEject2 != null) sndEject2.cancel();
 		if (sndEject3 != null) sndEject3.cancel();
@@ -1118,7 +1154,7 @@ public class SndAircraft extends ActorHMesh {
 
 	private void morseSequenceStart(int ai[], float f) {
 		currentMorse = 0;
-		if(ai.length == 0)
+		if (ai.length == 0)
 		{
 			return;
 		} else
