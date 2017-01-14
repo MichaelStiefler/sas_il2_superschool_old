@@ -6,6 +6,7 @@
  * 2016.06.16: importing 4.13.2m's Bomb release mode codes and adding Select bomb function.
  * 2016.10.22: By PAL, modified incorrect static variables
  * 2017.01.03: By western, implement limit Ailerons, debug Select bomb and Unlimited Ammo
+ * 2017.01.14: By western, implement Rocket mode Ripple (continuous Pairs)
  */
 
 package com.maddox.il2.fm;
@@ -163,6 +164,7 @@ public class Controls {
 	public static final int WEAPON_FIRE_MODE_SALVO = 0;
 	public static final int WEAPON_FIRE_MODE_SINGLE = 1;
 	public static final int WEAPON_FIRE_MODE_PAIRS = 2;
+	public static final int WEAPON_FIRE_MODE_RIPPLE = 3;
 	public int weaponFireMode = WEAPON_FIRE_MODE_PAIRS;
 	private int prevUserWeaponFireMode = weaponFireMode;
 	public long weaponReleaseDelay = 33L;
@@ -1247,7 +1249,9 @@ public class Controls {
 								}
 								WeaponControl[weaponTrigger] = false;
 								break;
+		// +++ add Ripple mode by western
 							case WEAPON_FIRE_MODE_PAIRS:
+							case WEAPON_FIRE_MODE_RIPPLE:
 								for (int i = 0; i < Weapons[weaponTrigger].length; i += 2) {
 									if (this.fireWeapon(weaponTrigger, i, false))
 										break;
@@ -1256,8 +1260,10 @@ public class Controls {
 									if (this.fireWeapon(weaponTrigger, i, false))
 										break;
 								}
-								WeaponControl[weaponTrigger] = false;
+								if(this.weaponFireMode == WEAPON_FIRE_MODE_PAIRS)
+									WeaponControl[weaponTrigger] = false;
 								break;
+		// --- add Ripple mode by western
 							}
 
 							//
@@ -1807,11 +1813,18 @@ public class Controls {
 			HUD.log(hudLogWeaponId, "RocketReleasePairs");
 			prevUserWeaponFireMode = WEAPON_FIRE_MODE_PAIRS;
 			break;
+		// +++ add Ripple mode by western
 		case WEAPON_FIRE_MODE_PAIRS:
+			doSetWeaponFireMode(WEAPON_FIRE_MODE_RIPPLE);
+			HUD.log(hudLogWeaponId, "RocketReleaseRipple");
+			prevUserWeaponFireMode = WEAPON_FIRE_MODE_RIPPLE;
+			break;
+		case WEAPON_FIRE_MODE_RIPPLE:
 			doSetWeaponFireMode(WEAPON_FIRE_MODE_SALVO);
 			HUD.log(hudLogWeaponId, "RocketReleaseSalvo");
 			prevUserWeaponFireMode = WEAPON_FIRE_MODE_SALVO;
 			break;
+		// --- add Ripple mode by western
 		}
 	}
 
@@ -1835,6 +1848,11 @@ public class Controls {
 				case WEAPON_FIRE_MODE_PAIRS:
 					HUD.log(localHudLogWeaponId, "RocketReleasePairs");
 					break;
+		// +++ add Ripple mode by western
+				case WEAPON_FIRE_MODE_RIPPLE:
+					HUD.log(localHudLogWeaponId, "RocketReleaseRipple");
+					break;
+		// --- add Ripple mode by western
 				case WEAPON_FIRE_MODE_SALVO:
 					HUD.log(localHudLogWeaponId, "RocketReleaseSalvo");
 					break;

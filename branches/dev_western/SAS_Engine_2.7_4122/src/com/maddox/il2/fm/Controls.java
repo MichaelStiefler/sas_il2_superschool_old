@@ -3,6 +3,7 @@
 /*By PAL, modified incorrect static variables*/
 /*By western, importing 4.13.2m's Bomb release mode codes and adding Select bomb function.*/
 /*By western, implement limit Ailerons*/
+/*By western, implement Rocket mode Ripple (continuous Pairs)*/
 
 package com.maddox.il2.fm;
 
@@ -159,6 +160,7 @@ public class Controls
     public static final int     WEAPON_FIRE_MODE_SALVO  = 0;
     public static final int     WEAPON_FIRE_MODE_SINGLE = 1;
     public static final int     WEAPON_FIRE_MODE_PAIRS  = 2;
+    public static final int     WEAPON_FIRE_MODE_RIPPLE = 3;
     public int                  weaponFireMode          = WEAPON_FIRE_MODE_PAIRS;
     private int                 prevUserWeaponFireMode  = weaponFireMode;
     public long                 weaponReleaseDelay  = 33L;
@@ -1406,13 +1408,16 @@ public class Controls
                                                 BayDoorControl = 1.0F;
                                             }
 
-                                        if(weaponFireMode == 2 || (Weapons[i_19_][i_22_] instanceof RocketGun4andHalfInch)
+        // +++ add Ripple mode by western
+                                        if(weaponFireMode == WEAPON_FIRE_MODE_PAIRS || weaponFireMode == WEAPON_FIRE_MODE_RIPPLE
+                                            || (Weapons[i_19_][i_22_] instanceof RocketGun4andHalfInch)
                                             || ((Weapons[i_19_][i_22_] instanceof RocketGun) && (iToggleRocketSide == LEFT))
                                             || ((Weapons[i_19_][i_22_] instanceof RocketBombGun) && (iToggleRocketSide == LEFT))
                                             || ((Weapons[i_19_][i_22_] instanceof BombGun) && (iToggleBombSide == LEFT)))
                                             {
                                                 Weapons[i_19_][i_22_].shots(i_20_);
                                             }
+        // --- add Ripple mode by western
                                         if(Weapons[i_19_][i_22_].getHookName().startsWith("_BombSpawn") && ((Aircraft)FM.actor).needsOpenBombBay())
                                             if(bHasBayDoorControl && isPlayers((Aircraft)FM.actor))
                                             {
@@ -1424,14 +1429,16 @@ public class Controls
                                                 BayDoorControl = 1.0F;
                                             }
                                     }
-                                    if(((Weapons[i_19_][i_22_] instanceof BombGun) && weaponFireMode == 0)
-                                            || ((Weapons[i_19_][i_22_] instanceof RocketGun) && !(Weapons[i_19_][i_22_] instanceof MissileGun)&& weaponFireMode == 0))
+        // +++ add Ripple mode by western
+                                    if(((Weapons[i_19_][i_22_] instanceof BombGun) && (weaponFireMode == WEAPON_FIRE_MODE_PAIRS || weaponFireMode == WEAPON_FIRE_MODE_RIPPLE))
+                                            || ((Weapons[i_19_][i_22_] instanceof RocketGun) && !(Weapons[i_19_][i_22_] instanceof MissileGun)&& weaponFireMode == WEAPON_FIRE_MODE_SALVO))
                                     {
                                         Weapons[i_19_][i_22_].shots(i_20_);
                                     }
+        // --- add Ripple mode by western
                                     else
-                                        if(((Weapons[i_19_][i_22_] instanceof BombGun) && !((BombGun) Weapons[i_19_][i_22_]).isCassette() && weaponFireMode != 0)
-                                                || ((Weapons[i_19_][i_22_] instanceof RocketGun) && !((RocketGun) Weapons[i_19_][i_22_]).isCassette() && weaponFireMode != 0))
+                                        if(((Weapons[i_19_][i_22_] instanceof BombGun) && !((BombGun) Weapons[i_19_][i_22_]).isCassette() && weaponFireMode != WEAPON_FIRE_MODE_SALVO)
+                                                || ((Weapons[i_19_][i_22_] instanceof RocketGun) && !((RocketGun) Weapons[i_19_][i_22_]).isCassette() && weaponFireMode != WEAPON_FIRE_MODE_SALVO))
                                         {
                                             i_21_ = i_22_;
                                             lWeaponTime = System.currentTimeMillis();
@@ -1469,23 +1476,26 @@ public class Controls
                                             {
                                                 BayDoorControl = 1.0F;
                                             }
-                                        if(weaponFireMode == 2 || (Weapons[i_19_][i_23_] instanceof RocketGun4andHalfInch)
+        // +++ add Ripple mode by western
+                                        if(weaponFireMode == WEAPON_FIRE_MODE_PAIRS || weaponFireMode == WEAPON_FIRE_MODE_RIPPLE
+                                            || (Weapons[i_19_][i_23_] instanceof RocketGun4andHalfInch)
                                             || ((Weapons[i_19_][i_23_] instanceof RocketGun) && (iToggleRocketSide == RIGHT))
-                                            || ((Weapons[i_19_][i_23_] instanceof RocketBombGun) && (iToggleRocketSide == LEFT))
+                                            || ((Weapons[i_19_][i_23_] instanceof RocketBombGun) && (iToggleRocketSide == RIGHT))
                                             || ((Weapons[i_19_][i_23_] instanceof BombGun) && (iToggleBombSide == RIGHT)))
                                             {
                                                 Weapons[i_19_][i_23_].shots(i_20_);
                                             }
+        // --- add Ripple mode by western
                                     }
-                                    if(((Weapons[i_19_][i_23_] instanceof BombGun) && weaponFireMode == 0)
-                                            || ((Weapons[i_19_][i_23_] instanceof RocketGun) && !(Weapons[i_19_][i_23_] instanceof MissileGun) && weaponFireMode == 0))
+                                    if(((Weapons[i_19_][i_23_] instanceof BombGun) && weaponFireMode == WEAPON_FIRE_MODE_SALVO)
+                                            || ((Weapons[i_19_][i_23_] instanceof RocketGun) && !(Weapons[i_19_][i_23_] instanceof MissileGun) && weaponFireMode == WEAPON_FIRE_MODE_SALVO))
                                     {
                                         Weapons[i_19_][i_23_].shots(i_20_);
                                     }
                                     else
-                                        if(((Weapons[i_19_][i_23_] instanceof BombGun) && !((BombGun) Weapons[i_19_][i_23_]).isCassette() && weaponFireMode != 0)
-                                                || ((Weapons[i_19_][i_23_] instanceof RocketGun) && !((RocketGun) Weapons[i_19_][i_23_]).isCassette() && weaponFireMode != 0)
-                                                || ((Weapons[i_19_][i_23_] instanceof RocketBombGun) && !((RocketBombGun) Weapons[i_19_][i_23_]).isCassette() && weaponFireMode != 0))
+                                        if(((Weapons[i_19_][i_23_] instanceof BombGun) && !((BombGun) Weapons[i_19_][i_23_]).isCassette() && weaponFireMode != WEAPON_FIRE_MODE_SALVO)
+                                                || ((Weapons[i_19_][i_23_] instanceof RocketGun) && !((RocketGun) Weapons[i_19_][i_23_]).isCassette() && weaponFireMode != WEAPON_FIRE_MODE_SALVO)
+                                                || ((Weapons[i_19_][i_23_] instanceof RocketBombGun) && !((RocketBombGun) Weapons[i_19_][i_23_]).isCassette() && weaponFireMode != WEAPON_FIRE_MODE_SALVO))
                                         {
                                             i_21_ = i_23_;
                                             lWeaponTime = System.currentTimeMillis();
@@ -1510,7 +1520,7 @@ public class Controls
                                         iToggleRocketSide = LEFT;
                                 }
                             }
-                            if(weaponFireMode == 2)
+                            if(weaponFireMode == WEAPON_FIRE_MODE_SINGLE || weaponFireMode == WEAPON_FIRE_MODE_PAIRS)
                                 WeaponControl[i_19_] = false;
                         }
                     }
@@ -1911,11 +1921,18 @@ public class Controls
             HUD.log(hudLogWeaponId, "RocketReleasePairs");
             prevUserWeaponFireMode = WEAPON_FIRE_MODE_PAIRS;
             break;
+        // +++ add Ripple mode by western
         case WEAPON_FIRE_MODE_PAIRS:
+            doSetWeaponFireMode(WEAPON_FIRE_MODE_RIPPLE);
+            HUD.log(hudLogWeaponId, "RocketReleaseRipple");
+            prevUserWeaponFireMode = WEAPON_FIRE_MODE_RIPPLE;
+            break;
+        case WEAPON_FIRE_MODE_RIPPLE:
             doSetWeaponFireMode(WEAPON_FIRE_MODE_SALVO);
             HUD.log(hudLogWeaponId, "RocketReleaseSalvo");
             prevUserWeaponFireMode = WEAPON_FIRE_MODE_SALVO;
             break;
+        // --- add Ripple mode by western
         }
     }
 
@@ -1943,6 +1960,11 @@ public class Controls
                 case WEAPON_FIRE_MODE_PAIRS:
                     HUD.log(localHudLogWeaponId, "RocketReleasePairs");
                     break;
+        // +++ add Ripple mode by western
+                case WEAPON_FIRE_MODE_RIPPLE:
+                    HUD.log(localHudLogWeaponId, "RocketReleaseRipple");
+                    break;
+        // --- add Ripple mode by western
                 case WEAPON_FIRE_MODE_SALVO:
                     HUD.log(localHudLogWeaponId, "RocketReleaseSalvo");
                     break;
