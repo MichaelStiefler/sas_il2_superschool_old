@@ -168,6 +168,8 @@ public class Gear {
 	private boolean bHasBlastDeflector;
 	private Eff3DActor catEff;
 	public ZutiAirfieldPoint zutiCurrentZAP;
+	private boolean bUseOldCatapultPowerProcedure;
+	private boolean bDebugCatapult;
 	// --------------------------------------------------------
 	private double[] dCatapultOffsetX = new double[4];
 	private double[] dCatapultOffsetY = new double[4];
@@ -297,6 +299,7 @@ public class Gear {
 		bSteamCatapult = false;
 		iCatapultAlreadySetNum = -1;
 		bHasBlastDeflector = false;
+		bUseOldCatapultPowerProcedure = true;
 
 		if (Mission.cur().sectFile().get("Mods", "CatapultAllow", 1) == 0) {
 			bCatapultAllow = false;
@@ -309,6 +312,8 @@ public class Gear {
 		if (Mission.cur().sectFile().get("Mods", "CatapultReferMissionYear", 0) == 1) bCatapultReferMissionYear = true;
 		if (Config.cur.ini.get("Mods", "StandardDeckCVL", 0) == 1) bStandardDeckCVL = true;
 		if (Mission.cur().sectFile().get("Mods", "StandardDeckCVL", 0) == 1) bStandardDeckCVL = true;
+		if (Config.cur.ini.get("Mods", "OldCatapultPowerCode", 1) == 0) bUseOldCatapultPowerProcedure = false;
+		if (Config.cur.ini.get("Mods", "DebugCatapult", 0) == 1) bDebugCatapult = true;
 		// TODO: --- CTO Mod 4.12 ---
 
 		//By PAL, for Chocks:
@@ -749,7 +754,7 @@ public class Gear {
 					}
 					//By PAL, Carrier MOD
 					bAlreadySetCatapult = false;
-					if (bHasBlastDeflector) {
+					if (bHasBlastDeflector && bCatapultArmed) {
 						((TypeBlastDeflector) bigshipgeneric1).setBlastDeflector(getCatapultNumber(), 0);
 					}
 					//By PAL, Catapult pull not in EI, and as a Direct Force
@@ -782,9 +787,9 @@ public class Gear {
 							//By PAL, to avoid excessive Catapult Stress!!!!!!!!!!!!!
 							if(FM.getLoadDiff() < FM.getLimitLoad() * 1.5F)
 								FM.producedAF.x += dCatapultForce;
-							//FM.producedAF.y += 0;
 							//By PAL, Diagonal Force towards ground (Catapult gear)
-							FM.producedAF.z -= 0.3F * dCatapultForce;
+							//By western, add limitter to avoid breaking gears or ordnances
+							FM.producedAF.z -= Math.min(0.3F * dCatapultForce, 2400D);
 							//System.out.println("Pushing...");
 						}
 					}
@@ -822,23 +827,25 @@ public class Gear {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// TODO: +++ CTO Mod 4.12 +++
 	public void setCatapult(CellAirField cellairfield, int i) {
-//		float mass = FM.M.getFullMass();
+		float mass = FM.M.getFullMass();
 ////		if(mass > 10000F)
 ////			mass = 10000F;
-//		float mult = 10.0F; //By PAL, default multiplier
-//		//By PAL, Western, Boost
-//		if(bCatapultBoost)
-//		{
-//			boolean bIsTypeSupersonic = false;
-//			boolean bIsTypeFastJet = false;
-//			boolean bIsJets = false;
-//			if(((Interpolate) (FM)).actor instanceof TypeSupersonic)
-//				bIsTypeSupersonic = true;
-//			if(((Interpolate) (FM)).actor instanceof TypeFastJet)
-//				bIsTypeFastJet = true;
-//			if(FM.EI.engines[0].getType() == 2)
-//				bIsJets = true;
-//
+		float mult = 10.0F; //By PAL, default multiplier
+		boolean bDoneAutoCalculate = false;
+		boolean bForceAutoCalculate = false;
+		//By PAL, Western, Boost ; reverting old code by request on 15th/Jan./2017
+		if(bCatapultBoost)
+		{
+			boolean bIsTypeSupersonic = false;
+			boolean bIsTypeFastJet = false;
+			boolean bIsJets = false;
+			if(((Interpolate) (FM)).actor instanceof TypeSupersonic)
+				bIsTypeSupersonic = true;
+			if(((Interpolate) (FM)).actor instanceof TypeFastJet)
+				bIsTypeFastJet = true;
+			if(FM.EI.engines[0].getType() == 2)
+				bIsJets = true;
+
 //			//By PAL, this didn't work. Attempt to Close Cockpit of Jets it they are open, case 128 from HotKeys:
 //			//if(!((RealFlightModel)FM).isRealMode())
 ////				if(FM.CT.bHasCockpitDoorControl)
@@ -852,54 +859,68 @@ public class Gear {
 ////						}
 ////					}
 ////				}
-//
-//			if((bIsTypeSupersonic || bIsTypeFastJet || bIsJets) && Mission.curYear() > 1945 && Mission.curYear() < 1953)
-//				mult = catapultPowerJets;
-//			else
-//			if((bIsTypeSupersonic || bIsTypeFastJet || bIsJets) && Mission.curYear() > 1952)
-//			{
-//				int l1 = (int)Math.ceil((((FM.M.getFullMass() - FM.M.massEmpty) / 900F) * catapultPowerJets) / 10F);
-//				mult = catapultPowerJets + (float)l1;
-//			}
-//			else
-//			if(Mission.curYear() < 1953)
-//			{
-//				mult = catapultPower;
-//			}
-//			else
-//			{
-//				int i2 = (int)Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 900F) * 2.0F);
-//				mult = catapultPower + (float)i2;
-//			}
-//		}
+
+			if (bCatapultReferMissionYear){
+				if (bIsTypeSupersonic || bIsTypeFastJet || bIsJets) {
+					mult = catapultPowerJets;
+					if (Mission.curYear() > 1952) {
+						int l1 = (int)Math.ceil((((mass - FM.M.massEmpty) / 1000F) * catapultPowerJets) / 10F);
+						mult = catapultPowerJets + (float)l1;
+					}
+				} else {
+					mult = catapultPower;
+					if (Mission.curYear() > 1952) {
+						int i2 = (int)Math.ceil(((mass - FM.M.massEmpty) / 1000F) * 2.0F);
+						mult = catapultPower + (float)i2;
+					}
+				}
+			} else {
+				if (bIsTypeSupersonic || bIsTypeFastJet || bIsJets) {
+					int l1 = (int)Math.ceil((((mass - FM.M.massEmpty) / 1000F) * catapultPowerJets) / 10F);
+					mult = catapultPowerJets + (float)l1;
+				} else {
+					int i2 = (int)Math.ceil(((mass - FM.M.massEmpty) / 1000F) * 2.0F);
+					mult = catapultPower + (float)i2;
+				}
+			}
+		}
 
 		//By PAL, Catapult Force Based on FullMass and VminFLAPS
 		float dist = 0.0F;
-		if (bCatapultHookExist[i])
+		if (bCatapultHookExist[i]) {
 			dist = (float)Math.sqrt((catapults[i][1].getY() - catapults[i][0].getY()) * (catapults[i][1].getY() - catapults[i][0].getY()) +
 									 (catapults[i][1].getX() - catapults[i][0].getX()) * (catapults[i][1].getX() - catapults[i][0].getX()));
+			if (catapultPower == 0.0F) bForceAutoCalculate = true;
+		}
 		else
 			dist = 46F;
-		//float dist = (float)Math.abs(-cellairfield.leftUpperCorner().x - dCatapultOffsetX[i]) - 1F;
-		//double dist = cellairfield.leftUpperCorner().y - dCatapultOffsetY[i] - 1F;
-		float mass = FM.M.getFullMass() * (FM.isPlayers() ? 0.16F : 0.35F); //By PAL and western, empiric factor
-//		float mass = FM.M.getFullMass() * 0.05F; //By PAL, empiric factor
+		float massX = FM.M.getFullMass() * (FM.isPlayers() ? 0.16F : 0.35F); //By PAL and western, empiric factor
 		float vmin = FM.VminFLAPS * 1.25F;
 
-		dCatapultForce = mass * vmin * vmin / dist;
-//		dCatapultForce = mass * vmin * vmin / (2F * dist);
-//		dCatapultForce = mass * mult;
+		double dForceAuto = massX * vmin * vmin / dist;
+		double dForceTrad = Math.min(mass, 10000F) * mult * (FM.isPlayers() ? 0.34F : 0.75F);
+		if (bForceAutoCalculate || !bUseOldCatapultPowerProcedure) {
+			dCatapultForce = dForceAuto;
+			bDoneAutoCalculate = true;
+		} else {
+			dCatapultForce = dForceTrad;
+			bDoneAutoCalculate = false;
+		}
 
 		iCatapultNumber = i;
 		bCatapultArmed = true;
 		//By PAL, Log Arming Catapult Parameters
-		System.out.println("*** Catapult No. " + iCatapultNumber + " armed with " + dCatapultForce + " Force!  Distance: " + dist);
+		if (bDebugCatapult) {
+			System.out.println("*** Catapult No. " + iCatapultNumber + " armed with " + dCatapultForce + " Force! calculated by " + (bDoneAutoCalculate? "Auto": "Traditional") + ", Distance: " + dist);
+			System.out.println("*** Catapult power compare: Auto=" + dForceAuto + ", Traditional=" + dForceTrad );
+		}
 	}
 
 	public void disarmCatapult() {
 		bCatapultArmed = false;
 		//By PAL, Log Finish of Catapult Effect
-		System.out.println("*** Catapult No. " + iCatapultNumber + " disarmed. Worked for " + (System.currentTimeMillis() - lCatapultStartTime) + "ms, Final V = " + FM.getSpeedKMH() + " km/h");
+		if (bDebugCatapult)
+			System.out.println("*** Catapult No. " + iCatapultNumber + " disarmed. Worked for " + (System.currentTimeMillis() - lCatapultStartTime) + "ms, Final V = " + FM.getSpeedKMH() + " km/h");
 		//By PAL, important to send a last refresh to Kill Catapult Object
 		showCatapult(true, false);
 	}
@@ -1834,7 +1855,7 @@ public class Gear {
 					bSteamCatapult = true;
 					bCatapultHookExist[k] = true;
 				} else {
-					System.out.println("Gear - 1831 : Hooks mismatching _SCat" + (k + 1) + "_start and _SCat" + k + 1 + "_end");
+					System.out.println("Gear - 1858 : Hooks mismatching _SCat" + (k + 1) + "_start and _SCat" + k + 1 + "_end");
 					break;
 				}
 			}
@@ -1844,7 +1865,7 @@ public class Gear {
 					bSteamCatapult = false;
 					bCatapultHookExist[k] = true;
 				} else {
-					System.out.println("Gear - 1841 : Hooks mismatching _Cat" + (k + 1) + "_start and _Cat" + k + "_end");
+					System.out.println("Gear - 1868 : Hooks mismatching _Cat" + (k + 1) + "_start and _Cat" + k + "_end");
 					break;
 				}
 			}

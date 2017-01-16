@@ -2301,11 +2301,11 @@ public class FlightModelMain extends FMMath
             if(Main.cur().mission.isSingle())
                 if(fileExists(sName))
                 {
-                       sectfile = new SectFile(sName, 0);
-                       System.out.println("**Debug FM loaded directly from '" + sName + "' File!!!'");
+                    sectfile = new SectFile(sName, 0);
+                    System.out.println("**Debug FM loaded directly from '" + sName + "' File!!!'");
                     if(bDumpFM)
                         sectfile.saveFile(sDumpPath + sName);
-                       return sectfile;
+                    return sectfile;
                 }
         }
 
