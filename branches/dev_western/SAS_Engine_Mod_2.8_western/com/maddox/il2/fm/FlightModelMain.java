@@ -1934,7 +1934,7 @@ public class FlightModelMain extends FMMath {
 				sName = sName + ".emd";   //FlightModels/PWJ57 + .emd
 				sDir = sDir.substring(0, sDir.length() - 4);
 			}
-			   System.out.println("*DiffFM '" + sName + "' being loaded from: '" + sDir + "'...");
+			System.out.println("*DiffFM '" + sName + "' being loaded from: '" + sDir + "'...");
 		}
 
 		//By PAL, Option A: for Debug, not Encrypted, direct File Names. Only in Single Mission!!!
@@ -1942,11 +1942,11 @@ public class FlightModelMain extends FMMath {
 			//By PAL, if not loading Mission or possitive it is a Single Mission
 			if (Main.cur().mission.isSingle())
 				if (fileExists(sName)) {
-					   sectfile = new SectFile(sName, 0);
-					   System.out.println("**Debug FM loaded directly from '" + sName + "' File!!!'");
+					sectfile = new SectFile(sName, 0);
+					System.out.println("**Debug FM loaded directly from '" + sName + "' File!!!'");
 					if (bDumpFM)
 						sectfile.saveFile(sDumpPath + sName);
-					   return sectfile;
+					return sectfile;
 				}
 		}
 
