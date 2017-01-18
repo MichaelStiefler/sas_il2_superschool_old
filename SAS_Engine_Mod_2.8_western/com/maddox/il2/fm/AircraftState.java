@@ -1510,7 +1510,7 @@ public class AircraftState {
 				HUD.log(hudLogBeaconId, "BeaconYE", new Object[] { s });
 				String s1 = Main.cur().mission.getHayrakeCodeOfCarrier(actor2);
 				startListeningHayrake(actor2, s1);
-			} else if (actor2 instanceof TypeHasLorenzBlindLanding) {
+			} else if (actor2 instanceof TypeHasLorenzBlindLanding && !(actor2 instanceof BigshipGeneric)) {
 				Main3D.cur3D().ordersTree.setFrequency(OrdersTree.FREQ_FRIENDLY);
 				HUD.log(hudLogBeaconId, "BeaconBA", new Object[] { s });
 				startListeningLorenzBlindLanding();
@@ -1518,6 +1518,12 @@ public class AircraftState {
 				isILSBL = false;
 				if (actor2 instanceof TypeHasAAFIAS) isAAFIAS = true;
 				if (actor2 instanceof TypeHasILSBlindLanding) isILSBL = true;
+			} else if (actor2 instanceof TypeHasILSBlindLanding && actor2 instanceof BigshipGeneric) {
+				Main3D.cur3D().ordersTree.setFrequency(OrdersTree.FREQ_FRIENDLY);
+				HUD.log(hudLogBeaconId, "BeaconBA", new Object[] { s });
+				startListeningLorenzBlindLanding();
+				isAAFIAS = false;
+				isILSBL = true;
 			} else if (actor2 instanceof TypeHasTACAN) {
 				Main3D.cur3D().ordersTree.setFrequency(OrdersTree.FREQ_FRIENDLY);
 				HUD.log(hudLogBeaconId, "BeaconTACAN", new Object[] { s });
