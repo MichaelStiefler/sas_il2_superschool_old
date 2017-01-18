@@ -7,7 +7,9 @@ import com.maddox.il2.ai.*;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
+import com.maddox.il2.objects.ships.CarrierShipILSGeneric;
 import com.maddox.il2.objects.vehicles.radios.*;
+import com.maddox.il2.objects.vehicles.radios.Beacon.LorenzBLBeacon;
 import com.maddox.opengl.gl;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
@@ -1091,23 +1093,42 @@ public abstract class Cockpit extends Actor
     private void listenLorenzBlindLanding(Aircraft aircraft1)
     {
         blData.reset();
-        com.maddox.il2.objects.vehicles.radios.Beacon.LorenzBLBeacon lorenzblbeacon = (com.maddox.il2.objects.vehicles.radios.Beacon.LorenzBLBeacon)getBeacon();
-        if(lorenzblbeacon == null || !lorenzblbeacon.isAlive())
+        LorenzBLBeacon lorenzblbeacon = null;
+        CarrierShipILSGeneric carrierilsbeacon = null;
+        boolean bListenLorenz = false;
+        if(getBeacon() instanceof LorenzBLBeacon)
+        {
+            lorenzblbeacon = (LorenzBLBeacon) getBeacon();
+            bListenLorenz = true;
+        }
+        else if(getBeacon() instanceof CarrierShipILSGeneric)
+            carrierilsbeacon = (CarrierShipILSGeneric) getBeacon();
+        if(bListenLorenz && (lorenzblbeacon == null || !lorenzblbeacon.isAlive())
+            || !bListenLorenz && (carrierilsbeacon == null || !carrierilsbeacon.isAlive()))
         {
             ndBeaconRange = 1.0F;
             ndBeaconDirection = 0.0F;
             aircraft1.stopMorseSounds();
             return;
         }
-        lorenzblbeacon.rideBeam(aircraft1, blData);
-        tempPoint1.x = lorenzblbeacon.pos.getAbsPoint().x;
-        tempPoint1.y = lorenzblbeacon.pos.getAbsPoint().y;
-        tempPoint1.z = lorenzblbeacon.pos.getAbsPoint().z + 20D;
+        if(bListenLorenz)
+        {
+            lorenzblbeacon.rideBeam(aircraft1, blData);
+            tempPoint1.x = lorenzblbeacon.pos.getAbsPoint().x;
+            tempPoint1.y = lorenzblbeacon.pos.getAbsPoint().y;
+            tempPoint1.z = lorenzblbeacon.pos.getAbsPoint().z + beaconAntennaHeight;
+        } else
+        {
+            carrierilsbeacon.rideBeam(aircraft1, blData);
+            tempPoint1.x = carrierilsbeacon.pos.getAbsPoint().x;
+            tempPoint1.y = carrierilsbeacon.pos.getAbsPoint().y;
+            tempPoint1.z = carrierilsbeacon.pos.getAbsPoint().z + beaconAntennaHeight;
+        }
         aircraft1.pos.getAbs(acPoint);
         acPoint.sub(tempPoint1);
         TACANBeaconDistance = (float)Math.sqrt(acPoint.x * acPoint.x + acPoint.y * acPoint.y + acPoint.z * acPoint.z);
         ndBeaconRange = BeaconGeneric.getSignalAttenuation(tempPoint1, aircraft1, true, false, false, false);
-        if(lorenzblbeacon instanceof TypeHasILSBlindLanding)
+        if(!bListenLorenz || (lorenzblbeacon instanceof TypeHasILSBlindLanding))
             return;
         if(Math.random() < 0.02D)
             terrainAndNightError = BeaconGeneric.getTerrainAndNightError(aircraft1);
@@ -1184,14 +1205,20 @@ public abstract class Cockpit extends Actor
             ArrayList arraylist = Main.cur().mission.getBeacons(fm.actor.getArmy());
             Actor actor = (Actor)arraylist.get(i - 1);
             double d = actor.pos.getAbsPoint().z + 10D;
-            if(actor instanceof TypeHasILSBlindLanding)
+            if(actor instanceof CarrierShipILSGeneric)
+                d += 8D;
+            else if(actor instanceof TypeHasILSBlindLanding)
                 d -= 150D;
             float f = (1.0F - blData.signalStrength) * 100F;
             double d1 = Math.abs(aircraft1.pos.getAbsPoint().x - actor.pos.getAbsPoint().x);
             double d2 = Math.abs(aircraft1.pos.getAbsPoint().y - actor.pos.getAbsPoint().y);
-            float f1 = 1700F + World.rnd().nextFloat(-f, f);
-            if(actor instanceof TypeHasILSBlindLanding)
-                f1 -= 3500F;
+            float f1 = World.rnd().nextFloat(-f, f);
+            if(actor instanceof CarrierShipILSGeneric)
+                f1 -= 6F;
+            else if(actor instanceof TypeHasILSBlindLanding)
+                f1 -= 1800F;
+            else
+                f1 += 1700F;
             double d3 = Math.sqrt(d1 * d1 + d2 * d2) - (double)f1;
             double d4 = aircraft1.pos.getAbsPoint().z - d;
             if(d3 < d4)

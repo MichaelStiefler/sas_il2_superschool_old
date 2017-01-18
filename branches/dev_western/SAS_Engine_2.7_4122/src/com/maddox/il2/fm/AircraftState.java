@@ -26,8 +26,8 @@ import java.io.*;
 
 public class AircraftState
 {
-	// TODO: Default Parameters
-	// -------------------------------------------------------------
+    // TODO: Default Parameters
+    // -------------------------------------------------------------
     public static final boolean __DEBUG_SPREAD__ = false;
     private static final Loc astateCondensateDispVector = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
     public static final int _AS_RESERVED = 0;
@@ -318,32 +318,32 @@ public class AircraftState
     public static final int astateEffectsDispOilfilters = 22;
     public static boolean bCheckPlayerAircraft = true;
     private Item itemsToMaster[];
-    private Item itemsToMirrors[];	
-	// -------------------------------------------------------------
+    private Item itemsToMirrors[];    
+    // -------------------------------------------------------------
 
- 	// TODO: New Parameters
- 	// -------------------------------------------------------------
-	private Eff3DActor astateDumpFuelEffects[] = { null, null, null };
- 	public int iAirShowSmoke;
- 	private boolean bAirShowSmokeEnhanced;
- 	private boolean bDumpFuel;
- 	private int COCKPIT_DOOR;
- 	private int SIDE_DOOR;
- 	// TODO: ++ Added Code for Net Replication ++
- 	// The following 3 net codes were in use before but undocumented
- 	public static final int _AS_AIRSHOW_SMOKE = 48;
- 	public static final int _AS_AIRSHOW_SMOKE_ENHANCED = 49;
- 	public static final int _AS_DUMP_FUEL = 50;
- 	// The following 3 net codes are new
- 	public static final int _AS_SELECTED_ROCKET_HOOK = 51;
- 	public static final int _AS_WEAPON_FIRE_MODE = 52;
- 	public static final int _AS_WEAPON_RELEASE_DELAY = 53;
-	// The following 1 net codes is importing 4.13.2m
-	public static final int _AS_BOMB_MODE_STATES = 54;
-	// The following 1 net codes is new by western0221
-	public static final int _AS_CURRENT_BOMB_SELECTED = 55;
- 	// TODO: -- Added Code for Net Replication --
- 	// -------------------------------------------------------------
+     // TODO: New Parameters
+     // -------------------------------------------------------------
+    private Eff3DActor astateDumpFuelEffects[] = { null, null, null };
+     public int iAirShowSmoke;
+     private boolean bAirShowSmokeEnhanced;
+     private boolean bDumpFuel;
+     private int COCKPIT_DOOR;
+     private int SIDE_DOOR;
+     // TODO: ++ Added Code for Net Replication ++
+     // The following 3 net codes were in use before but undocumented
+     public static final int _AS_AIRSHOW_SMOKE = 48;
+     public static final int _AS_AIRSHOW_SMOKE_ENHANCED = 49;
+     public static final int _AS_DUMP_FUEL = 50;
+     // The following 3 net codes are new
+     public static final int _AS_SELECTED_ROCKET_HOOK = 51;
+     public static final int _AS_WEAPON_FIRE_MODE = 52;
+     public static final int _AS_WEAPON_RELEASE_DELAY = 53;
+    // The following 1 net codes is importing 4.13.2m
+    public static final int _AS_BOMB_MODE_STATES = 54;
+    // The following 1 net codes is new by western0221
+    public static final int _AS_CURRENT_BOMB_SELECTED = 55;
+     // TODO: -- Added Code for Net Replication --
+     // -------------------------------------------------------------
     static class Item
     {
 
@@ -410,130 +410,130 @@ public class AircraftState
         itemsToMaster = null;
         itemsToMirrors = null;
         //TODO: New Parameters
-  		iAirShowSmoke = 0;
-  		bAirShowSmokeEnhanced = false;
-  		iAirShowSmoke = Config.cur.ini.get("Mods", "AirShowSmoke", 0);
-  		if(iAirShowSmoke < 1 || iAirShowSmoke > 3)
-  			iAirShowSmoke = 0;
-  		if(Config.cur.ini.get("Mods", "AirShowSmokeEnhanced", 0) > 0)
-  			bAirShowSmokeEnhanced = true;
-  		bDumpFuel = false;
-  		COCKPIT_DOOR = 1;
-  		SIDE_DOOR = 2;
-  		// TODO: ++ Added Code for Net Replication ++
- 		// apparently due to a mistake this array had a size of "2" before which caused a "NetAircraft error, ID_03:" error on each aircraft spawn.
- 		astateAirShowEffects = new Eff3DActor[3];
- 		// TODO: ++ Added Code for Net Replication --
- 		astateDumpFuelEffects = new Eff3DActor[3];
+          iAirShowSmoke = 0;
+          bAirShowSmokeEnhanced = false;
+          iAirShowSmoke = Config.cur.ini.get("Mods", "AirShowSmoke", 0);
+          if(iAirShowSmoke < 1 || iAirShowSmoke > 3)
+              iAirShowSmoke = 0;
+          if(Config.cur.ini.get("Mods", "AirShowSmokeEnhanced", 0) > 0)
+              bAirShowSmokeEnhanced = true;
+          bDumpFuel = false;
+          COCKPIT_DOOR = 1;
+          SIDE_DOOR = 2;
+          // TODO: ++ Added Code for Net Replication ++
+         // apparently due to a mistake this array had a size of "2" before which caused a "NetAircraft error, ID_03:" error on each aircraft spawn.
+         astateAirShowEffects = new Eff3DActor[3];
+         // TODO: ++ Added Code for Net Replication --
+         astateDumpFuelEffects = new Eff3DActor[3];
     }
 
-	public void set(Actor actor1, boolean flag) {
-		Loc loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-		Loc loc1 = new Loc();
-		actor = actor1;
-		if (actor1 instanceof Aircraft)
-			aircraft = (AircraftLH) actor1;
-		else
-			throw new RuntimeException(
-					"Can not cast aircraft structure into a non-aircraft entity.");
-		bIsMaster = flag;
-		for (int i = 0; i < 4; i++)
-			try {
-				astateEffectChunks[i + 0] = actor.findHook(
-						"_Tank" + (i + 1) + "Burn").chunkName();
-				astateEffectChunks[i + 0] = astateEffectChunks[i + 0]
-						.substring(0, astateEffectChunks[i + 0].length() - 1);
-				Aircraft.debugprintln(aircraft, "AS: Tank " + i
-						+ " FX attached to '" + astateEffectChunks[i + 0]
-								+ "' substring..");
-			} catch (Exception exception) {
-			} finally {
-			}
+    public void set(Actor actor1, boolean flag) {
+        Loc loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+        Loc loc1 = new Loc();
+        actor = actor1;
+        if (actor1 instanceof Aircraft)
+            aircraft = (AircraftLH) actor1;
+        else
+            throw new RuntimeException(
+                    "Can not cast aircraft structure into a non-aircraft entity.");
+        bIsMaster = flag;
+        for (int i = 0; i < 4; i++)
+            try {
+                astateEffectChunks[i + 0] = actor.findHook(
+                        "_Tank" + (i + 1) + "Burn").chunkName();
+                astateEffectChunks[i + 0] = astateEffectChunks[i + 0]
+                        .substring(0, astateEffectChunks[i + 0].length() - 1);
+                Aircraft.debugprintln(aircraft, "AS: Tank " + i
+                        + " FX attached to '" + astateEffectChunks[i + 0]
+                                + "' substring..");
+            } catch (Exception exception) {
+            } finally {
+            }
 
-		for (int j = 0; j < aircraft.FM.EI.getNum(); j++)
-			try {
-				astateEffectChunks[j + 4] = actor.findHook(
-						"_Engine" + (j + 1) + "Smoke").chunkName();
-				astateEffectChunks[j + 4] = astateEffectChunks[j + 4]
-						.substring(0, astateEffectChunks[j + 4].length() - 1);
-				Aircraft.debugprintln(aircraft, "AS: Engine " + j
-						+ " FX attached to '" + astateEffectChunks[j + 4]
-								+ "' substring..");
-			} catch (Exception exception2) {
-			} finally {
-			}
+        for (int j = 0; j < aircraft.FM.EI.getNum(); j++)
+            try {
+                astateEffectChunks[j + 4] = actor.findHook(
+                        "_Engine" + (j + 1) + "Smoke").chunkName();
+                astateEffectChunks[j + 4] = astateEffectChunks[j + 4]
+                        .substring(0, astateEffectChunks[j + 4].length() - 1);
+                Aircraft.debugprintln(aircraft, "AS: Engine " + j
+                        + " FX attached to '" + astateEffectChunks[j + 4]
+                                + "' substring..");
+            } catch (Exception exception2) {
+            } finally {
+            }
 
-		for (int k = 0; k < astateNavLightsEffects.length; k++)
-			try {
-				astateEffectChunks[k + 12] = actor.findHook("_NavLight" + k)
-						.chunkName();
-				astateEffectChunks[k + 12] = astateEffectChunks[k + 12]
-						.substring(0, astateEffectChunks[k + 12].length() - 1);
-				Aircraft.debugprintln(aircraft, "AS: Nav. Lamp #" + k
-						+ " attached to '" + astateEffectChunks[k + 12]
-								+ "' substring..");
-				HookNamed hooknamed = new HookNamed(aircraft, "_NavLight" + k);
-				loc1.set(1.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-				hooknamed.computePos(actor, loc, loc1);
-				Point3d point3d = loc1.getPoint();
-				astateNavLightsLights[k] = new LightPointActor(
-						new LightPoint(), point3d);
-				if (k < 2)
-					astateNavLightsLights[k].light.setColor(1.0F, 0.1F, 0.1F);
-				else if (k < 4)
-					astateNavLightsLights[k].light.setColor(0.0F, 1.0F, 0.0F);
-				else
-					astateNavLightsLights[k].light.setColor(0.7F, 0.7F, 0.7F);
-				astateNavLightsLights[k].light.setEmit(0.0F, 0.0F);
-				actor.draw.lightMap().put("_NavLight" + k,
-						astateNavLightsLights[k]);
-			} catch (Exception exception3) {
-			} finally {
-			}
+        for (int k = 0; k < astateNavLightsEffects.length; k++)
+            try {
+                astateEffectChunks[k + 12] = actor.findHook("_NavLight" + k)
+                        .chunkName();
+                astateEffectChunks[k + 12] = astateEffectChunks[k + 12]
+                        .substring(0, astateEffectChunks[k + 12].length() - 1);
+                Aircraft.debugprintln(aircraft, "AS: Nav. Lamp #" + k
+                        + " attached to '" + astateEffectChunks[k + 12]
+                                + "' substring..");
+                HookNamed hooknamed = new HookNamed(aircraft, "_NavLight" + k);
+                loc1.set(1.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+                hooknamed.computePos(actor, loc, loc1);
+                Point3d point3d = loc1.getPoint();
+                astateNavLightsLights[k] = new LightPointActor(
+                        new LightPoint(), point3d);
+                if (k < 2)
+                    astateNavLightsLights[k].light.setColor(1.0F, 0.1F, 0.1F);
+                else if (k < 4)
+                    astateNavLightsLights[k].light.setColor(0.0F, 1.0F, 0.0F);
+                else
+                    astateNavLightsLights[k].light.setColor(0.7F, 0.7F, 0.7F);
+                astateNavLightsLights[k].light.setEmit(0.0F, 0.0F);
+                actor.draw.lightMap().put("_NavLight" + k,
+                        astateNavLightsLights[k]);
+            } catch (Exception exception3) {
+            } finally {
+            }
 
-		for (int l = 0; l < 4; l++)
-			try {
-				astateEffectChunks[l + 18] = actor.findHook(
-						"_LandingLight0" + l).chunkName();
-				astateEffectChunks[l + 18] = astateEffectChunks[l + 18]
-						.substring(0, astateEffectChunks[l + 18].length() - 1);
-				Aircraft.debugprintln(aircraft, "AS: Landing Lamp #" + l
-						+ " attached to '" + astateEffectChunks[l + 18]
-								+ "' substring..");
-				HookNamed hooknamed1 = new HookNamed(aircraft, "_LandingLight0"
-						+ l);
-				loc1.set(1.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-				hooknamed1.computePos(actor, loc, loc1);
-				Point3d point3d1 = loc1.getPoint();
-				astateLandingLightLights[l] = new LightPointActor(
-						new LightPoint(), point3d1);
-				astateLandingLightLights[l].light.setColor(0.4941176F,
-						0.9098039F, 0.9607843F);
-				astateLandingLightLights[l].light.setEmit(0.0F, 0.0F);
-				actor.draw.lightMap().put("_LandingLight0" + l,
-						astateLandingLightLights[l]);
-			} catch (Exception exception5) {
-			} finally {
-			}
+        for (int l = 0; l < 4; l++)
+            try {
+                astateEffectChunks[l + 18] = actor.findHook(
+                        "_LandingLight0" + l).chunkName();
+                astateEffectChunks[l + 18] = astateEffectChunks[l + 18]
+                        .substring(0, astateEffectChunks[l + 18].length() - 1);
+                Aircraft.debugprintln(aircraft, "AS: Landing Lamp #" + l
+                        + " attached to '" + astateEffectChunks[l + 18]
+                                + "' substring..");
+                HookNamed hooknamed1 = new HookNamed(aircraft, "_LandingLight0"
+                        + l);
+                loc1.set(1.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+                hooknamed1.computePos(actor, loc, loc1);
+                Point3d point3d1 = loc1.getPoint();
+                astateLandingLightLights[l] = new LightPointActor(
+                        new LightPoint(), point3d1);
+                astateLandingLightLights[l].light.setColor(0.4941176F,
+                        0.9098039F, 0.9607843F);
+                astateLandingLightLights[l].light.setEmit(0.0F, 0.0F);
+                actor.draw.lightMap().put("_LandingLight0" + l,
+                        astateLandingLightLights[l]);
+            } catch (Exception exception5) {
+            } finally {
+            }
 
-		for (int i1 = 0; i1 < aircraft.FM.EI.getNum(); i1++)
-			try {
-				astateEffectChunks[i1 + 22] = actor.findHook(
-						"_Engine" + (i1 + 1) + "Oil").chunkName();
-				astateEffectChunks[i1 + 22] = astateEffectChunks[i1 + 22]
-						.substring(0, astateEffectChunks[i1 + 22].length() - 1);
-				Aircraft.debugprintln(aircraft, "AS: Oilfilter " + i1
-						+ " FX attached to '" + astateEffectChunks[i1 + 22]
-								+ "' substring..");
-			} catch (Exception exception6) {
-			} finally {
-			}
+        for (int i1 = 0; i1 < aircraft.FM.EI.getNum(); i1++)
+            try {
+                astateEffectChunks[i1 + 22] = actor.findHook(
+                        "_Engine" + (i1 + 1) + "Oil").chunkName();
+                astateEffectChunks[i1 + 22] = astateEffectChunks[i1 + 22]
+                        .substring(0, astateEffectChunks[i1 + 22].length() - 1);
+                Aircraft.debugprintln(aircraft, "AS: Oilfilter " + i1
+                        + " FX attached to '" + astateEffectChunks[i1 + 22]
+                                + "' substring..");
+            } catch (Exception exception6) {
+            } finally {
+            }
 
-		for (int j1 = 0; j1 < astateEffectChunks.length; j1++)
-			if (astateEffectChunks[j1] == null)
-				astateEffectChunks[j1] = "AChunkNameYouCanNeverFind";
+        for (int j1 = 0; j1 < astateEffectChunks.length; j1++)
+            if (astateEffectChunks[j1] == null)
+                astateEffectChunks[j1] = "AChunkNameYouCanNeverFind";
 
-	}
+    }
 
     public boolean isMaster()
     {
@@ -1685,110 +1685,110 @@ public class AircraftState
     }
 
  // TODO: Following methods used for airshow smoke
- 	public void setAirShowSmokeType(int i) {
- 		iAirShowSmoke = i;
- 	}
+     public void setAirShowSmokeType(int i) {
+         iAirShowSmoke = i;
+     }
 
- 	public void setAirShowSmokeEnhanced(boolean flag) {
- 		bAirShowSmokeEnhanced = flag;
- 	}
+     public void setAirShowSmokeEnhanced(boolean flag) {
+         bAirShowSmokeEnhanced = flag;
+     }
 
-	public void setAirShowState(boolean flag) {
-		if (bShowSmokesOn == flag)
-			return;
-		if (bIsMaster) {
-			if(iAirShowSmoke != 0)
-				iAirShowSmoke++;
-	        if(iAirShowSmoke > 3)
-	        	iAirShowSmoke = 1;
-			doSetAirShowState(flag);
-			netToMirrors(42, iAirShowSmoke, iAirShowSmoke);
-			netToMirrors(43, bAirShowSmokeEnhanced ? 1 : 0, bAirShowSmokeEnhanced ? 1 : 0);
-			netToMirrors(15, flag ? 1 : 0, flag ? 1 : 0);
-		}
-	}
+    public void setAirShowState(boolean flag) {
+        if (bShowSmokesOn == flag)
+            return;
+        if (bIsMaster) {
+            if(iAirShowSmoke != 0)
+                iAirShowSmoke++;
+            if(iAirShowSmoke > 3)
+                iAirShowSmoke = 1;
+            doSetAirShowState(flag);
+            netToMirrors(42, iAirShowSmoke, iAirShowSmoke);
+            netToMirrors(43, bAirShowSmokeEnhanced ? 1 : 0, bAirShowSmokeEnhanced ? 1 : 0);
+            netToMirrors(15, flag ? 1 : 0, flag ? 1 : 0);
+        }
+    }
 
-	private void doSetAirShowState(boolean flag) {
-		bShowSmokesOn = flag;
-		for (int i = 0; i < 3; i++)
-			if (astateAirShowEffects[i] != null)
-				Eff3DActor.finish(astateAirShowEffects[i]);
-		if (flag) {
-			Hook hook = null;
-			try {
-				hook = actor.findHook("_Engine1ES_01");
-			} catch (Exception exception) {
-				hook = null;
-			}
-			if (iAirShowSmoke < 1 || iAirShowSmoke > 3 || hook == null) {
-				if (bWingTipLExists)
-					astateAirShowEffects[0] = Eff3DActor.New(actor,	actor.findHook("_WingTipL"), null, 1.0F,"3DO/Effects/Aircraft/AirShowRedTSPD.eff", -1F);
-				if (bWingTipRExists)
-					astateAirShowEffects[1] = Eff3DActor.New(actor, actor.findHook("_WingTipR"), null, 1.0F,"3DO/Effects/Aircraft/AirShowGreenTSPD.eff", -1F);
-			} else if (iAirShowSmoke == 1) {
-				astateAirShowEffects[0] = Eff3DActor.New(actor, hook, null,	1.0F, "3DO/Effects/Aircraft/AirShowSmoke1.eff", -1F);
-				if (bAirShowSmokeEnhanced) {
-					astateAirShowEffects[1] = Eff3DActor.New(actor, hook, null, 1.0F, "3DO/Effects/Aircraft/AirShowSmoke1_2.eff",
-							-1F);
-					astateAirShowEffects[2] = Eff3DActor.New(actor, hook, null, 1.0F, "3DO/Effects/Aircraft/AirShowSmoke1_3.eff",
-							-1F);
-				}
-			} else if (iAirShowSmoke == 2) {
-				astateAirShowEffects[0] = Eff3DActor.New(actor, hook, null, 1.0F, "3DO/Effects/Aircraft/AirShowSmoke2.eff", -1F);
-				if (bAirShowSmokeEnhanced) {
-					astateAirShowEffects[1] = Eff3DActor.New(actor, hook, null,	1.0F, "3DO/Effects/Aircraft/AirShowSmoke2_2.eff",
-							-1F);
-					astateAirShowEffects[2] = Eff3DActor.New(actor, hook, null, 1.0F, "3DO/Effects/Aircraft/AirShowSmoke2_3.eff",
-							-1F);
-				}
-			} else {
-				astateAirShowEffects[0] = Eff3DActor.New(actor, hook, null,	1.0F, "3DO/Effects/Aircraft/AirShowSmoke3.eff", -1F);
-				if (bAirShowSmokeEnhanced) {
-					astateAirShowEffects[1] = Eff3DActor.New(actor, hook, null,	1.0F, "3DO/Effects/Aircraft/AirShowSmoke3_2.eff",
-							-1F);
-					astateAirShowEffects[2] = Eff3DActor.New(actor, hook, null,	1.0F, "3DO/Effects/Aircraft/AirShowSmoke3_3.eff",
-							-1F);
-				}
-			}
-		}
-	}
- 	public void setDumpFuelState(boolean flag) {
- 		if (bDumpFuel == flag)
- 			return;
- 		if (bIsMaster) {
- 			doSetDumpFuelState(flag);
- 			netToMirrors(50, flag ? 1 : 0, flag ? 1 : 0);
- 		}
- 	}
+    private void doSetAirShowState(boolean flag) {
+        bShowSmokesOn = flag;
+        for (int i = 0; i < 3; i++)
+            if (astateAirShowEffects[i] != null)
+                Eff3DActor.finish(astateAirShowEffects[i]);
+        if (flag) {
+            Hook hook = null;
+            try {
+                hook = actor.findHook("_Engine1ES_01");
+            } catch (Exception exception) {
+                hook = null;
+            }
+            if (iAirShowSmoke < 1 || iAirShowSmoke > 3 || hook == null) {
+                if (bWingTipLExists)
+                    astateAirShowEffects[0] = Eff3DActor.New(actor,    actor.findHook("_WingTipL"), null, 1.0F,"3DO/Effects/Aircraft/AirShowRedTSPD.eff", -1F);
+                if (bWingTipRExists)
+                    astateAirShowEffects[1] = Eff3DActor.New(actor, actor.findHook("_WingTipR"), null, 1.0F,"3DO/Effects/Aircraft/AirShowGreenTSPD.eff", -1F);
+            } else if (iAirShowSmoke == 1) {
+                astateAirShowEffects[0] = Eff3DActor.New(actor, hook, null,    1.0F, "3DO/Effects/Aircraft/AirShowSmoke1.eff", -1F);
+                if (bAirShowSmokeEnhanced) {
+                    astateAirShowEffects[1] = Eff3DActor.New(actor, hook, null, 1.0F, "3DO/Effects/Aircraft/AirShowSmoke1_2.eff",
+                            -1F);
+                    astateAirShowEffects[2] = Eff3DActor.New(actor, hook, null, 1.0F, "3DO/Effects/Aircraft/AirShowSmoke1_3.eff",
+                            -1F);
+                }
+            } else if (iAirShowSmoke == 2) {
+                astateAirShowEffects[0] = Eff3DActor.New(actor, hook, null, 1.0F, "3DO/Effects/Aircraft/AirShowSmoke2.eff", -1F);
+                if (bAirShowSmokeEnhanced) {
+                    astateAirShowEffects[1] = Eff3DActor.New(actor, hook, null,    1.0F, "3DO/Effects/Aircraft/AirShowSmoke2_2.eff",
+                            -1F);
+                    astateAirShowEffects[2] = Eff3DActor.New(actor, hook, null, 1.0F, "3DO/Effects/Aircraft/AirShowSmoke2_3.eff",
+                            -1F);
+                }
+            } else {
+                astateAirShowEffects[0] = Eff3DActor.New(actor, hook, null,    1.0F, "3DO/Effects/Aircraft/AirShowSmoke3.eff", -1F);
+                if (bAirShowSmokeEnhanced) {
+                    astateAirShowEffects[1] = Eff3DActor.New(actor, hook, null,    1.0F, "3DO/Effects/Aircraft/AirShowSmoke3_2.eff",
+                            -1F);
+                    astateAirShowEffects[2] = Eff3DActor.New(actor, hook, null,    1.0F, "3DO/Effects/Aircraft/AirShowSmoke3_3.eff",
+                            -1F);
+                }
+            }
+        }
+    }
+     public void setDumpFuelState(boolean flag) {
+         if (bDumpFuel == flag)
+             return;
+         if (bIsMaster) {
+             doSetDumpFuelState(flag);
+             netToMirrors(50, flag ? 1 : 0, flag ? 1 : 0);
+         }
+     }
 
- 	private void doSetDumpFuelState(boolean flag) {
- 		bDumpFuel = flag;
- 		for (int i = 0; i < 3; i++)
- 			if (astateDumpFuelEffects[i] != null)
- 				Eff3DActor.finish(astateDumpFuelEffects[i]);
+     private void doSetDumpFuelState(boolean flag) {
+         bDumpFuel = flag;
+         for (int i = 0; i < 3; i++)
+             if (astateDumpFuelEffects[i] != null)
+                 Eff3DActor.finish(astateDumpFuelEffects[i]);
 
- 		if (flag)
- 			// TODO: DBW version
- 			if (actor instanceof TypeFuelDump) {
-				for (int k = 0; k < 3; k++) {
-					try {
-						if (actor.findHook("_FuelDump0" + (k + 1)) != null) {
-							astateDumpFuelEffects[k] = Eff3DActor.New(actor, actor.findHook("_FuelDump0" + (k + 1)), null, 1.0F, "3DO/Effects/Aircraft/DumpFuelTSPD.eff", -1F);
-						}
-					} catch (java.lang.Exception exception) {
-						break;
-					}
-				}
-				if (astateDumpFuelEffects[0] != null) return;
+         if (flag)
+             // TODO: DBW version
+             if (actor instanceof TypeFuelDump) {
+                for (int k = 0; k < 3; k++) {
+                    try {
+                        if (actor.findHook("_FuelDump0" + (k + 1)) != null) {
+                            astateDumpFuelEffects[k] = Eff3DActor.New(actor, actor.findHook("_FuelDump0" + (k + 1)), null, 1.0F, "3DO/Effects/Aircraft/DumpFuelTSPD.eff", -1F);
+                        }
+                    } catch (java.lang.Exception exception) {
+                        break;
+                    }
+                }
+                if (astateDumpFuelEffects[0] != null) return;
 
-				if (astateDumpFuelEffects[0] == null) {	// aircraft's 3D model doesn't have _FuelDump01 Hook
-					if (bWingTipLExists) astateDumpFuelEffects[0] = Eff3DActor.New(actor, actor.findHook("_WingTipL"), null, 1.0F, "3DO/Effects/Aircraft/DumpFuelTSPD.eff", -1F);
-					if (bWingTipRExists) astateDumpFuelEffects[1] = Eff3DActor.New(actor, actor.findHook("_WingTipR"), null, 1.0F, "3DO/Effects/Aircraft/DumpFuelTSPD.eff", -1F);
-				}
+                if (astateDumpFuelEffects[0] == null) {    // aircraft's 3D model doesn't have _FuelDump01 Hook
+                    if (bWingTipLExists) astateDumpFuelEffects[0] = Eff3DActor.New(actor, actor.findHook("_WingTipL"), null, 1.0F, "3DO/Effects/Aircraft/DumpFuelTSPD.eff", -1F);
+                    if (bWingTipRExists) astateDumpFuelEffects[1] = Eff3DActor.New(actor, actor.findHook("_WingTipR"), null, 1.0F, "3DO/Effects/Aircraft/DumpFuelTSPD.eff", -1F);
+                }
 
- 			}
- 	}
- 	
+             }
+     }
+     
      public void setNavLightsState(boolean flag)
      {
          if(bNavLightsOn == flag)
@@ -1825,11 +1825,11 @@ public class AircraftState
                  {
                      bNavLightsOn = flag;
                    //TODO: Updated nav light code
- 					String s = "3DO/Effects/Fireworks/Flare" + (j <= 1 ? "Red" : j <= 3 ? "Green" : "White") + ".eff";
- 					astateNavLightsEffects[j] = Eff3DActor.New(actor,
- 							actor.findHook("_NavLight" + j), null, 1.0F, s,
- 							-1F, false);
- 					astateNavLightsLights[j].light.setEmit(0.35F, 8F);
+                     String s = "3DO/Effects/Fireworks/Flare" + (j <= 1 ? "Red" : j <= 3 ? "Green" : "White") + ".eff";
+                     astateNavLightsEffects[j] = Eff3DActor.New(actor,
+                             actor.findHook("_NavLight" + j), null, 1.0F, s,
+                             -1F, false);
+                     astateNavLightsLights[j].light.setEmit(0.35F, 8F);
                  }
              }
 
@@ -1957,7 +1957,7 @@ public class AircraftState
                 String s1 = Main.cur().mission.getHayrakeCodeOfCarrier(actor2);
                 startListeningHayrake(actor2, s1);
             } else
-            if(actor2 instanceof TypeHasLorenzBlindLanding)
+            if(actor2 instanceof TypeHasLorenzBlindLanding && !(actor2 instanceof BigshipGeneric))
             {
                 Main3D.cur3D().ordersTree.setFrequency(OrdersTree.FREQ_FRIENDLY);
                 HUD.log(hudLogBeaconId, "BeaconBA", new Object[] {
@@ -1970,6 +1970,16 @@ public class AircraftState
                     isAAFIAS = true;
                 if(actor2 instanceof TypeHasILSBlindLanding)
                     isILSBL = true;
+            } else
+            if (actor2 instanceof TypeHasILSBlindLanding && actor2 instanceof BigshipGeneric)
+            {
+                Main3D.cur3D().ordersTree.setFrequency(OrdersTree.FREQ_FRIENDLY);
+                HUD.log(hudLogBeaconId, "BeaconBA", new Object[] {
+                    s
+                });
+                startListeningLorenzBlindLanding();
+                isAAFIAS = false;
+                isILSBL = true;
             } else
             if(actor2 instanceof TypeHasTACAN)
             {
@@ -2597,37 +2607,37 @@ public class AircraftState
         aircraft.FM.CT.wingControl = i;
     }
 
-	//TODO: New door parameters
-	public void setCockpitDoor(Actor actor1, int i)
-	{
-		if(!Actor.isValid(actor1))
-			return;
-		if(actor1 != aircraft)
-			return;
-		if(!((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.bHasCockpitDoorControl)
-			return;
-		if(((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.cockpitDoorControl == (float)i)
-			return;
-		if(!bIsMaster)
-			return;
-		if(((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.bMoveSideDoor)
-		{
-			doSetCockpitDoor(i, SIDE_DOOR);
-			netToMirrors(44, SIDE_DOOR, i);
-		} else
-		{
-			doSetCockpitDoor(i, COCKPIT_DOOR);
-			netToMirrors(39, COCKPIT_DOOR, i);
-		}
-	}
+    //TODO: New door parameters
+    public void setCockpitDoor(Actor actor1, int i)
+    {
+        if(!Actor.isValid(actor1))
+            return;
+        if(actor1 != aircraft)
+            return;
+        if(!((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.bHasCockpitDoorControl)
+            return;
+        if(((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.cockpitDoorControl == (float)i)
+            return;
+        if(!bIsMaster)
+            return;
+        if(((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.bMoveSideDoor)
+        {
+            doSetCockpitDoor(i, SIDE_DOOR);
+            netToMirrors(44, SIDE_DOOR, i);
+        } else
+        {
+            doSetCockpitDoor(i, COCKPIT_DOOR);
+            netToMirrors(39, COCKPIT_DOOR, i);
+        }
+    }
 
-	private void doSetCockpitDoor(int i, int j)
-	{
-		((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.setActiveDoor(j);
-		((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.cockpitDoorControl = i;
-		if(i == 0 && (Main.cur() instanceof Main3D) && aircraft == World.getPlayerAircraft() && HookPilot.current != null)
-			HookPilot.current.doUp(false);
-	}
+    private void doSetCockpitDoor(int i, int j)
+    {
+        ((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.setActiveDoor(j);
+        ((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.cockpitDoorControl = i;
+        if(i == 0 && (Main.cur() instanceof Main3D) && aircraft == World.getPlayerAircraft() && HookPilot.current != null)
+            HookPilot.current.doUp(false);
+    }
 
     public void setArrestor(Actor actor1, int i)
     {
@@ -2713,13 +2723,13 @@ public class AircraftState
 
             aircraft.FM.M.requestFuel(f1 * 0.12F * f);
          // TODO: Disable for ModAct compatibility
- 			if (bDumpFuel && aircraft instanceof TypeFuelDump)
- 				if (aircraft.FM.M.fuel > ((TypeFuelDump) aircraft)
- 						.getFuelReserve())
- 					aircraft.FM.M.fuel -= ((TypeFuelDump) aircraft)
- 					.getFlowRate() * f;
- 				else
- 					setDumpFuelState(false);
+             if (bDumpFuel && aircraft instanceof TypeFuelDump)
+                 if (aircraft.FM.M.fuel > ((TypeFuelDump) aircraft)
+                         .getFuelReserve())
+                     aircraft.FM.M.fuel -= ((TypeFuelDump) aircraft)
+                     .getFlowRate() * f;
+                 else
+                     setDumpFuelState(false);
             for(int j1 = 0; j1 < 4; j1++)
                 switch(astateTankStates[j1])
                 {
@@ -2900,24 +2910,24 @@ public class AircraftState
             }
 
          // TODO: Edit allowing F-86D to keep rocket tray door open
- 			// indefinitely
- 			if (!((actor instanceof TypeFighter) && aircraft.FM.CT.bHasBayDoorControl)) {
- 				// TODO: Don't disable this statement and bailout. Else, you
- 				// won't be able to bailout!
- 				bailout();
- 	            if(TrueRandom.nextFloat() < 0.25F && !aircraft.FM.CT.saveWeaponControl[3])
- 	                if(aircraft.FM.isPlayers() && (aircraft.FM instanceof RealFlightModel) && ((RealFlightModel)aircraft.FM).isRealMode())
- 	                {
- 	                    if(!aircraft.FM.CT.bHasBayDoorControl)
- 	                        aircraft.FM.CT.BayDoorControl = 0.0F;
- 	                } else
- 	                if(!(actor instanceof TypeBomber) || aircraft.FM.isReadyToReturn())
- 	                    aircraft.FM.CT.BayDoorControl = 0.0F;
- 	            bailout();
- 	        } else
- 	        if(!aircraft.FM.isPlayers() && TrueRandom.nextFloat() < 0.125F && !aircraft.FM.CT.saveWeaponControl[3] && (!(actor instanceof TypeBomber) || aircraft.FM.AP.way.curr().Action != 3))
- 	            aircraft.FM.CT.BayDoorControl = 0.0F;
- 		}
+             // indefinitely
+             if (!((actor instanceof TypeFighter) && aircraft.FM.CT.bHasBayDoorControl)) {
+                 // TODO: Don't disable this statement and bailout. Else, you
+                 // won't be able to bailout!
+                 bailout();
+                 if(TrueRandom.nextFloat() < 0.25F && !aircraft.FM.CT.saveWeaponControl[3])
+                     if(aircraft.FM.isPlayers() && (aircraft.FM instanceof RealFlightModel) && ((RealFlightModel)aircraft.FM).isRealMode())
+                     {
+                         if(!aircraft.FM.CT.bHasBayDoorControl)
+                             aircraft.FM.CT.BayDoorControl = 0.0F;
+                     } else
+                     if(!(actor instanceof TypeBomber) || aircraft.FM.isReadyToReturn())
+                         aircraft.FM.CT.BayDoorControl = 0.0F;
+                 bailout();
+             } else
+             if(!aircraft.FM.isPlayers() && TrueRandom.nextFloat() < 0.125F && !aircraft.FM.CT.saveWeaponControl[3] && (!(actor instanceof TypeBomber) || aircraft.FM.AP.way.curr().Action != 3))
+                 aircraft.FM.CT.BayDoorControl = 0.0F;
+         }
     }
 
     private void bailout()
@@ -3285,32 +3295,32 @@ public class AircraftState
                     break;
                     
                  // TODO: ++ Added Code for Net Replication ++
-				case _AS_SELECTED_ROCKET_HOOK:
-					this.setRocketHook(actor1, k, true);
-					break;
+                case _AS_SELECTED_ROCKET_HOOK:
+                    this.setRocketHook(actor1, k, true);
+                    break;
 
-				case _AS_WEAPON_FIRE_MODE:
-					this.setWeaponFireMode(actor1, k, true);
-					break;
+                case _AS_WEAPON_FIRE_MODE:
+                    this.setWeaponFireMode(actor1, k, true);
+                    break;
 
-				case _AS_WEAPON_RELEASE_DELAY:
-					int releaseDelayLow = k;
-					int releaseDelayHigh = i1 << 8;
-					this.setWeaponReleaseDelay(actor1, releaseDelayLow + releaseDelayHigh, true);
-					break;
-					// TODO: -- Added Code for Net Replication --
+                case _AS_WEAPON_RELEASE_DELAY:
+                    int releaseDelayLow = k;
+                    int releaseDelayHigh = i1 << 8;
+                    this.setWeaponReleaseDelay(actor1, releaseDelayLow + releaseDelayHigh, true);
+                    break;
+                    // TODO: -- Added Code for Net Replication --
 
-				// TODO: ++ Added Code for importing 4.13.2m ++
-				case _AS_BOMB_MODE_STATES:
-					this.setBombModeStates(actor1, k, i1, true);
-					break;
-				// TODO: -- Added Code for importing 4.13.2m --
+                // TODO: ++ Added Code for importing 4.13.2m ++
+                case _AS_BOMB_MODE_STATES:
+                    this.setBombModeStates(actor1, k, i1, true);
+                    break;
+                // TODO: -- Added Code for importing 4.13.2m --
 
-				// TODO: ++ Added Code for bomb select ++
-				case _AS_CURRENT_BOMB_SELECTED:
-					this.setCurrentBombSelected(actor1, k, true);
-					break;
-				// TODO: ++ Added Code for bomb select ++
+                // TODO: ++ Added Code for bomb select ++
+                case _AS_CURRENT_BOMB_SELECTED:
+                    this.setCurrentBombSelected(actor1, k, true);
+                    break;
+                // TODO: ++ Added Code for bomb select ++
 
                 }
             } else
@@ -3527,30 +3537,30 @@ public class AircraftState
                 break;
                 
              // TODO: ++ Added Code for Net Replication ++
-  			case _AS_SELECTED_ROCKET_HOOK:
-          	    this.doSetRocketHook(actor2, l);
-             	break;
+              case _AS_SELECTED_ROCKET_HOOK:
+                  this.doSetRocketHook(actor2, l);
+                 break;
             case _AS_WEAPON_FIRE_MODE:
-            	this.doSetWeaponFireMode(actor2, l);
-            	break;
+                this.doSetWeaponFireMode(actor2, l);
+                break;
             case _AS_WEAPON_RELEASE_DELAY:
-            	int releaseDelayLow = l;
-            	int releaseDelayHigh = j1 << 8;
-            	this.doSetWeaponReleaseDelay(actor2, releaseDelayLow + releaseDelayHigh);
-            	break;
-			// TODO: -- Added Code for Net Replication --
+                int releaseDelayLow = l;
+                int releaseDelayHigh = j1 << 8;
+                this.doSetWeaponReleaseDelay(actor2, releaseDelayLow + releaseDelayHigh);
+                break;
+            // TODO: -- Added Code for Net Replication --
 
-			// TODO: ++ Added Code for importing 4.13.2m ++
-			case _AS_BOMB_MODE_STATES:
-				this.setBombModeStates(actor2, l, j1, true);
-				break;
-			// TODO: -- Added Code for importing 4.13.2m --
+            // TODO: ++ Added Code for importing 4.13.2m ++
+            case _AS_BOMB_MODE_STATES:
+                this.setBombModeStates(actor2, l, j1, true);
+                break;
+            // TODO: -- Added Code for importing 4.13.2m --
 
-			// TODO: ++ Added Code for bomb select ++
-			case _AS_CURRENT_BOMB_SELECTED:
-				this.doSetCurrentBombSelected(actor2, l);
-				break;
-			// TODO: -- Added Code for bomb select --
+            // TODO: ++ Added Code for bomb select ++
+            case _AS_CURRENT_BOMB_SELECTED:
+                this.doSetCurrentBombSelected(actor2, l);
+                break;
+            // TODO: -- Added Code for bomb select --
             }
         }
     }
@@ -3641,24 +3651,24 @@ public class AircraftState
         }
 
      // TODO
- 		netmsgguaranted.writeByte(iAirShowSmoke);
-  		netmsgguaranted.writeByte(bAirShowSmokeEnhanced ? 1 : 0);
-  		netmsgguaranted.writeByte(bDumpFuel ? 1 : 0);
-   		// TODO: ++ Added Code for Net Replication ++
-   		netmsgguaranted.writeByte(aircraft.FM.CT.rocketHookSelected);
-   		netmsgguaranted.writeByte(aircraft.FM.CT.weaponFireMode);
-   		int releaseDelayLow = (byte)aircraft.FM.CT.weaponReleaseDelay;
-   		int releaseDelayHigh = (byte)((int)aircraft.FM.CT.weaponReleaseDelay >> 8);
-   		netmsgguaranted.writeByte(releaseDelayLow);
-   		netmsgguaranted.writeByte(releaseDelayHigh);
-   		// TODO: -- Added Code for Net Replication --
-   		// TODO: Bay Doors
+         netmsgguaranted.writeByte(iAirShowSmoke);
+          netmsgguaranted.writeByte(bAirShowSmokeEnhanced ? 1 : 0);
+          netmsgguaranted.writeByte(bDumpFuel ? 1 : 0);
+           // TODO: ++ Added Code for Net Replication ++
+           netmsgguaranted.writeByte(aircraft.FM.CT.rocketHookSelected);
+           netmsgguaranted.writeByte(aircraft.FM.CT.weaponFireMode);
+           int releaseDelayLow = (byte)aircraft.FM.CT.weaponReleaseDelay;
+           int releaseDelayHigh = (byte)((int)aircraft.FM.CT.weaponReleaseDelay >> 8);
+           netmsgguaranted.writeByte(releaseDelayLow);
+           netmsgguaranted.writeByte(releaseDelayHigh);
+           // TODO: -- Added Code for Net Replication --
+           // TODO: Bay Doors
         if(aircraft.FM.CT.bHasBayDoors)
             netmsgguaranted.writeByte((int)aircraft.FM.CT.BayDoorControl);
         // TODO: importing 4.13.2m , changing not limited to PlayerAircraft
-		replicateBombModeStatesToNet();
-		// TODO: current Bomb Selected for bHasBombSelect
-		netmsgguaranted.writeByte(aircraft.FM.CT.curBombSelected);
+        replicateBombModeStatesToNet();
+        // TODO: current Bomb Selected for bHasBombSelect
+        netmsgguaranted.writeByte(aircraft.FM.CT.curBombSelected);
     }
 
     public void netFirstUpdate(NetMsgInput netmsginput)
@@ -3715,27 +3725,27 @@ public class AircraftState
             }
         }
       //TODO /Storebro's Update
-      		if (netmsginput.available() == 0)
-      			return;
-      		netmsginput.fixed();
-      		try {
-      			if (aircraft instanceof TypeBomber)
-      				((TypeBomber) aircraft).typeBomberReplicateFromNet(netmsginput);
-      		} catch (Exception e) {
-      			netmsginput.reset();
-      		}
-      		if (netmsginput.available() == 0)
-      			return;
-      		netmsginput.fixed();
-      		try {
-      			if (aircraft instanceof TypeDockable)
-      				((TypeDockable) aircraft)
-      				.typeDockableReplicateFromNet(netmsginput);
-      		} catch (Exception e) {
-      			netmsginput.reset();
-      		}
+              if (netmsginput.available() == 0)
+                  return;
+              netmsginput.fixed();
+              try {
+                  if (aircraft instanceof TypeBomber)
+                      ((TypeBomber) aircraft).typeBomberReplicateFromNet(netmsginput);
+              } catch (Exception e) {
+                  netmsginput.reset();
+              }
+              if (netmsginput.available() == 0)
+                  return;
+              netmsginput.fixed();
+              try {
+                  if (aircraft instanceof TypeDockable)
+                      ((TypeDockable) aircraft)
+                      .typeDockableReplicateFromNet(netmsginput);
+              } catch (Exception e) {
+                  netmsginput.reset();
+              }
 
-      		// /Storebro's Update
+              // /Storebro's Update
 
         if(aircraft.FM.CT.bHasWingControl)
         {
@@ -3809,19 +3819,19 @@ public class AircraftState
             int j4 = netmsginput.readUnsignedByte();
             doSetGearState(i4, j4);
         }
-		// TODO
-		setAirShowSmokeType(netmsginput.readUnsignedByte());
-		setAirShowSmokeEnhanced(netmsginput.readUnsignedByte() == 1);
-		doSetDumpFuelState(netmsginput.readUnsignedByte() == 1);
-		// TODO: ++ Added Code for Net Replication ++
-		if(netmsginput.available() == 0)
-			return;
-		this.doSetRocketHook(aircraft, netmsginput.readUnsignedByte());
-		this.doSetWeaponFireMode(aircraft, netmsginput.readUnsignedByte());
-		int releaseDelayLow = netmsginput.readUnsignedByte();
-		int releaseDelayHigh = netmsginput.readUnsignedByte() << 8;
-		this.doSetWeaponReleaseDelay(aircraft, releaseDelayLow + releaseDelayHigh);
-		// TODO: -- Added Code for Net Replication --
+        // TODO
+        setAirShowSmokeType(netmsginput.readUnsignedByte());
+        setAirShowSmokeEnhanced(netmsginput.readUnsignedByte() == 1);
+        doSetDumpFuelState(netmsginput.readUnsignedByte() == 1);
+        // TODO: ++ Added Code for Net Replication ++
+        if(netmsginput.available() == 0)
+            return;
+        this.doSetRocketHook(aircraft, netmsginput.readUnsignedByte());
+        this.doSetWeaponFireMode(aircraft, netmsginput.readUnsignedByte());
+        int releaseDelayLow = netmsginput.readUnsignedByte();
+        int releaseDelayHigh = netmsginput.readUnsignedByte() << 8;
+        this.doSetWeaponReleaseDelay(aircraft, releaseDelayLow + releaseDelayHigh);
+        // TODO: -- Added Code for Net Replication --
         if(aircraft.FM.CT.bHasBayDoorControl)
             aircraft.FM.CT.BayDoorControl = netmsginput.readUnsignedByte();
     }
@@ -4112,34 +4122,34 @@ public class AircraftState
         }
     }
 
-			// TODO: ++ Added Code for importing 4.13.2m ++
-	public void replicateBombModeStatesToNet() {
-		int i = aircraft.FM.CT.bombReleaseMode & 0xf;
-		i <<= 4;
-		i += aircraft.FM.CT.bombTrainDelay & 0xf;
-		int j = aircraft.FM.CT.bombTrainAmount;
-		setBombModeStates(actor, i, j, false);
-	}
+            // TODO: ++ Added Code for importing 4.13.2m ++
+    public void replicateBombModeStatesToNet() {
+        int i = aircraft.FM.CT.bombReleaseMode & 0xf;
+        i <<= 4;
+        i += aircraft.FM.CT.bombTrainDelay & 0xf;
+        int j = aircraft.FM.CT.bombTrainAmount;
+        setBombModeStates(actor, i, j, false);
+    }
 
-	private void setBombModeStates(Actor actor1, int i, int j, boolean flag) {
-		if (!Actor.isValid(actor1))
-			return;
-		if (flag)
-			doSetBombModeStates(actor1, i, j);
-		if (bIsMaster)
-			netToMirrors(_AS_BOMB_MODE_STATES, i, j);
-		else
-			netToMaster(_AS_BOMB_MODE_STATES, i, j, actor1);
-	}
+    private void setBombModeStates(Actor actor1, int i, int j, boolean flag) {
+        if (!Actor.isValid(actor1))
+            return;
+        if (flag)
+            doSetBombModeStates(actor1, i, j);
+        if (bIsMaster)
+            netToMirrors(_AS_BOMB_MODE_STATES, i, j);
+        else
+            netToMaster(_AS_BOMB_MODE_STATES, i, j, actor1);
+    }
 
-	private void doSetBombModeStates(Actor actor1, int i, int j) {
-		int k = (i & 0xf0) >> 4;
-		int l = i & 0xf;
-		aircraft.FM.CT.bombReleaseMode = k;
-		aircraft.FM.CT.bombTrainDelay = l;
-		aircraft.FM.CT.bombTrainAmount = j;
-	}
-			// TODO: -- Added Code for importing 4.13.2m --
+    private void doSetBombModeStates(Actor actor1, int i, int j) {
+        int k = (i & 0xf0) >> 4;
+        int l = i & 0xf;
+        aircraft.FM.CT.bombReleaseMode = k;
+        aircraft.FM.CT.bombTrainDelay = l;
+        aircraft.FM.CT.bombTrainAmount = j;
+    }
+            // TODO: -- Added Code for importing 4.13.2m --
 
     private void doSetGearState(int i, int j)
     {
@@ -4272,92 +4282,92 @@ public class AircraftState
         return false;
     }
     
-	// TODO: ++ Added Code for Net Replication ++
-	public void replicateRocketHookToNet(int theRocketHook)
-	{
-		setRocketHook(actor, theRocketHook, false);
-	}
+    // TODO: ++ Added Code for Net Replication ++
+    public void replicateRocketHookToNet(int theRocketHook)
+    {
+        setRocketHook(actor, theRocketHook, false);
+    }
 
-	private void setRocketHook(Actor theActor, int theRocketHook, boolean applySetting)
-	{
-		if(!Actor.isValid(theActor))
-			return;
-		if(applySetting)
-			doSetRocketHook(theActor, theRocketHook);
-		if(bIsMaster)
-			netToMirrors(_AS_SELECTED_ROCKET_HOOK, theRocketHook, 0);
-		else
-			netToMaster(_AS_SELECTED_ROCKET_HOOK, theRocketHook, 0, theActor);
-	}
-
-	private void doSetRocketHook(Actor theActor, int theRocketHook)
-	{
-		aircraft.FM.CT.doSetRocketHook(theRocketHook);
-	}
-
-	public void replicateWeaponFireModeToNet(int theWeaponFireMode)
-	{
-		setWeaponFireMode(actor, theWeaponFireMode, false);
-	}
-
-	private void setWeaponFireMode(Actor theActor, int theWeaponFireMode, boolean applySetting)
-	{
-		if(!Actor.isValid(theActor))
-			return;
-		if(applySetting)
-			doSetWeaponFireMode(theActor, theWeaponFireMode);
-		if(bIsMaster)
-			netToMirrors(_AS_WEAPON_FIRE_MODE, theWeaponFireMode, 0);
-		else
-			netToMaster(_AS_WEAPON_FIRE_MODE, theWeaponFireMode, 0, theActor);
-	}
-
-	private void doSetWeaponFireMode(Actor theActor, int theWeaponFireMode)
-	{
-		aircraft.FM.CT.doSetWeaponFireMode(theWeaponFireMode);
-	}
-
-	public void replicateWeaponReleaseDelay(long theWeaponReleaseDelay)
-	{
-		setWeaponReleaseDelay(actor, theWeaponReleaseDelay, false);
-	}
-
-	private void setWeaponReleaseDelay(Actor theActor, long theWeaponReleaseDelay, boolean applySetting)
-	{
-		if(!Actor.isValid(theActor))
-			return;
-		if(applySetting)
-			doSetWeaponReleaseDelay(theActor, theWeaponReleaseDelay);
-		int releaseDelayLow = (byte)aircraft.FM.CT.weaponReleaseDelay;
-		int releaseDelayHigh = (byte)((int)aircraft.FM.CT.weaponReleaseDelay >> 8);
-		if(bIsMaster)
-			netToMirrors(_AS_WEAPON_RELEASE_DELAY, releaseDelayLow, releaseDelayHigh);
-		else
-			netToMaster(_AS_WEAPON_RELEASE_DELAY, releaseDelayLow, releaseDelayHigh, theActor);
-	}
-
-	private void doSetWeaponReleaseDelay(Actor theActor, long theWeaponReleaseDelay)
-	{
-		aircraft.FM.CT.doSetWeaponReleaseDelay(theWeaponReleaseDelay);
-	}
-
-	public void replicateCurrentBombSelectedToNet(int theCurrentBombSelected) {
-		setCurrentBombSelected(actor, theCurrentBombSelected, false);
-	}
-
-	private void setCurrentBombSelected(Actor theActor, int theCurrentBombSelected, boolean applySetting) {
-		if(!Actor.isValid(theActor))
+    private void setRocketHook(Actor theActor, int theRocketHook, boolean applySetting)
+    {
+        if(!Actor.isValid(theActor))
             return;
-		if(applySetting)
-            doSetWeaponFireMode(theActor, theCurrentBombSelected);
-		if(bIsMaster)
-            netToMirrors(_AS_CURRENT_BOMB_SELECTED, theCurrentBombSelected, 0);
-		else
-            netToMaster(_AS_CURRENT_BOMB_SELECTED, theCurrentBombSelected, 0, theActor);
-	}
+        if(applySetting)
+            doSetRocketHook(theActor, theRocketHook);
+        if(bIsMaster)
+            netToMirrors(_AS_SELECTED_ROCKET_HOOK, theRocketHook, 0);
+        else
+            netToMaster(_AS_SELECTED_ROCKET_HOOK, theRocketHook, 0, theActor);
+    }
 
-	private void doSetCurrentBombSelected(Actor theActor, int theCurrentBombSelected) {
-		aircraft.FM.CT.doSetCurrentBombSelected(theCurrentBombSelected);
-	}
-	// TODO: -- Added Code for Net Replication --
+    private void doSetRocketHook(Actor theActor, int theRocketHook)
+    {
+        aircraft.FM.CT.doSetRocketHook(theRocketHook);
+    }
+
+    public void replicateWeaponFireModeToNet(int theWeaponFireMode)
+    {
+        setWeaponFireMode(actor, theWeaponFireMode, false);
+    }
+
+    private void setWeaponFireMode(Actor theActor, int theWeaponFireMode, boolean applySetting)
+    {
+        if(!Actor.isValid(theActor))
+            return;
+        if(applySetting)
+            doSetWeaponFireMode(theActor, theWeaponFireMode);
+        if(bIsMaster)
+            netToMirrors(_AS_WEAPON_FIRE_MODE, theWeaponFireMode, 0);
+        else
+            netToMaster(_AS_WEAPON_FIRE_MODE, theWeaponFireMode, 0, theActor);
+    }
+
+    private void doSetWeaponFireMode(Actor theActor, int theWeaponFireMode)
+    {
+        aircraft.FM.CT.doSetWeaponFireMode(theWeaponFireMode);
+    }
+
+    public void replicateWeaponReleaseDelay(long theWeaponReleaseDelay)
+    {
+        setWeaponReleaseDelay(actor, theWeaponReleaseDelay, false);
+    }
+
+    private void setWeaponReleaseDelay(Actor theActor, long theWeaponReleaseDelay, boolean applySetting)
+    {
+        if(!Actor.isValid(theActor))
+            return;
+        if(applySetting)
+            doSetWeaponReleaseDelay(theActor, theWeaponReleaseDelay);
+        int releaseDelayLow = (byte)aircraft.FM.CT.weaponReleaseDelay;
+        int releaseDelayHigh = (byte)((int)aircraft.FM.CT.weaponReleaseDelay >> 8);
+        if(bIsMaster)
+            netToMirrors(_AS_WEAPON_RELEASE_DELAY, releaseDelayLow, releaseDelayHigh);
+        else
+            netToMaster(_AS_WEAPON_RELEASE_DELAY, releaseDelayLow, releaseDelayHigh, theActor);
+    }
+
+    private void doSetWeaponReleaseDelay(Actor theActor, long theWeaponReleaseDelay)
+    {
+        aircraft.FM.CT.doSetWeaponReleaseDelay(theWeaponReleaseDelay);
+    }
+
+    public void replicateCurrentBombSelectedToNet(int theCurrentBombSelected) {
+        setCurrentBombSelected(actor, theCurrentBombSelected, false);
+    }
+
+    private void setCurrentBombSelected(Actor theActor, int theCurrentBombSelected, boolean applySetting) {
+        if(!Actor.isValid(theActor))
+            return;
+        if(applySetting)
+            doSetWeaponFireMode(theActor, theCurrentBombSelected);
+        if(bIsMaster)
+            netToMirrors(_AS_CURRENT_BOMB_SELECTED, theCurrentBombSelected, 0);
+        else
+            netToMaster(_AS_CURRENT_BOMB_SELECTED, theCurrentBombSelected, 0, theActor);
+    }
+
+    private void doSetCurrentBombSelected(Actor theActor, int theCurrentBombSelected) {
+        aircraft.FM.CT.doSetCurrentBombSelected(theCurrentBombSelected);
+    }
+    // TODO: -- Added Code for Net Replication --
 }
