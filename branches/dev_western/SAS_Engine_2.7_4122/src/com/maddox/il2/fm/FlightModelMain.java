@@ -863,7 +863,12 @@ public class FlightModelMain extends FMMath
             }
             else
             {
-                System.out.println("Flight Model File " + s + " contains no Mach Drag Parameters.");
+
+                //TODO: +++ log.lst Spam fighting by SAS~Storebror +++
+//                System.out.println("Flight Model File " + s + " contains no Mach Drag Parameters.");
+                logFmLoad("Flight Model File \"{0}\" contains no Mach Drag Parameters.", s, null, FM_LOGLEVEL_EVERYFM);
+                //TODO: --- log.lst Spam fighting by SAS~Storebror ---
+
                 Wing.mcMin = 999.0F;
             }
 //            Wing.loadMachParams(sectfile);
@@ -2277,9 +2282,6 @@ public class FlightModelMain extends FMMath
     {
         
         //TODO: +++ log.lst Spam fighting by SAS~Storebror +++
-        //TODO: --- log.lst Spam fighting by SAS~Storebror ---
-        
-        //TODO: +++ log.lst Spam fighting by SAS~Storebror +++
         if (logLevel == FM_LOGLEVEL_NOT_INITIALIZED) {
             logLevel = Config.cur.ini.get("Mods", "fmloglevel", FM_LOGLEVEL_ERROR);
             flightModelsLogged.clear();
@@ -2306,7 +2308,7 @@ public class FlightModelMain extends FMMath
             
             //TODO: +++ log.lst Spam fighting by SAS~Storebror +++
             //System.out.println("*DiffFM '" + sName + "' being loaded from: '" + sDir + "'...");
-            logFmLoad("*DiffFM '{0}' being loaded from: \"{1}\"...", sName, sDir, FM_LOGLEVEL_DIFFFM|FM_LOGLEVEL_EVERYFM);
+            logFmLoad("*DiffFM \"{0}\" being loaded from: \"{1}\"...", sName, sDir, FM_LOGLEVEL_DIFFFM|FM_LOGLEVEL_EVERYFM);
             //TODO: --- log.lst Spam fighting by SAS~Storebror ---
             
         }
