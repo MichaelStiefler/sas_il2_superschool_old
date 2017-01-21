@@ -28,6 +28,7 @@ public abstract class ShipkarCV extends Ship
     {
         super(paramString1, paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
         super.bHasBlastDeflectorControl = true;
+        super.bHasMirrorLA = true;
     }
 
     public void setBlastDeflector(int num, int z)
