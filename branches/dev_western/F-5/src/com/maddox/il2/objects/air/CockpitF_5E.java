@@ -397,13 +397,10 @@ public class CockpitF_5E extends CockpitPilot
         super.mesh.chunkSetAngles("Z_FlapPosInd", 0.0F, (float)(-60 * flapindex), 0.0F);
         if(setNew.stbyPositionl < 0.01F && setNew.stbyPositionr < 0.01F)
             auxintakeindex = 0;
-        else if(super.fm.EI.engines[0].getStage() > 5 && super.fm.EI.engines[1].getStage() > 5)
-        {
-            if(super.fm.getSpeedKMH() > 470F)
-                auxintakeindex = 1;
-            else if(super.fm.getSpeedKMH() < 435F)
-                auxintakeindex = 2;
-        }
+        else if(((F_5E)super.aircraft()).bOpenAuxIntakeL && ((F_5E)super.aircraft()).bOpenAuxIntakeR)
+            auxintakeindex = 2;
+        else if(!((F_5E)super.aircraft()).bOpenAuxIntakeL && !((F_5E)super.aircraft()).bOpenAuxIntakeR)
+            auxintakeindex = 1;
         else
             auxintakeindex = 0;
         super.mesh.chunkSetAngles("Z_AuxIntakeDoor", 0.0F, (float)(90 * auxintakeindex), 0.0F);
@@ -411,6 +408,24 @@ public class CockpitF_5E extends CockpitPilot
                                 && (super.fm.EI.engines[0].getPowerOutput() < 0.7F || super.fm.EI.engines[1].getPowerOutput() < 0.7F))
                                 || !super.fm.Gears.cgear || !super.fm.Gears.lgear || !super.fm.Gears.rgear);
         super.mesh.chunkVisible("Z_ArrestorLamp", bHookDeployed);
+        resetYPRmodifier();
+        if(super.fm.CT.DragChuteControl == 1.0F)
+            bChuteOnceDeployed = true;
+        if(bChuteOnceDeployed && !bChuteJettisoned)
+        {
+            if(super.fm.CT.DragChuteControl == 1.0F)
+            {
+                Cockpit.xyz[1] = -0.020F;
+                super.mesh.chunkSetLocate("Z_Dragchute", Cockpit.xyz, Cockpit.ypr);
+            }
+            else
+            {
+                Cockpit.xyz[1] = -0.030F;
+                Cockpit.ypr[1] = -60F;
+                super.mesh.chunkSetLocate("Z_Dragchute", Cockpit.xyz, Cockpit.ypr);
+                bChuteJettisoned = true;
+            }
+        }
     }
 
     public void reflectCockpitState()
@@ -538,6 +553,8 @@ public class CockpitF_5E extends CockpitPilot
     private float pictAiler;
     private float pictElev;
     private float pictGear;
+    private boolean bChuteOnceDeployed = false;
+    private boolean bChuteJettisoned = false;
     private boolean bHookDeployed = false;
     private int auxintakeindex = 0;
     private static final float speedometerScale[] = {
@@ -559,14 +576,6 @@ public class CockpitF_5E extends CockpitPilot
         8.911F, 9.111F, 9.384F, 9.554F, 9.787F, 9.928F, 9.992F, 10.282F, 10.381F, 10.513F, 
         10.603F, 10.704F, 10.739F, 10.782F, 10.789F
     };
-
-
-
-
-
-
-
-
 
 
 }

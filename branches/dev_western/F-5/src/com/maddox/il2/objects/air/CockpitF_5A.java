@@ -395,6 +395,24 @@ public class CockpitF_5A extends CockpitPilot
         super.mesh.chunkVisible("Z_GearWarnLamp", (super.fm.CT.GearControl < 0.1F && setNew.altimeter < 2890F && super.fm.getSpeedKMH() < 390F
                                 && (super.fm.EI.engines[0].getPowerOutput() < 0.7F || super.fm.EI.engines[1].getPowerOutput() < 0.7F))
                                 || !super.fm.Gears.cgear || !super.fm.Gears.lgear || !super.fm.Gears.rgear);
+        resetYPRmodifier();
+        if(super.fm.CT.DragChuteControl == 1.0F)
+            bChuteOnceDeployed = true;
+        if(bChuteOnceDeployed && !bChuteJettisoned)
+        {
+            if(super.fm.CT.DragChuteControl == 1.0F)
+            {
+                Cockpit.xyz[1] = -0.020F;
+                super.mesh.chunkSetLocate("Z_Dragchute", Cockpit.xyz, Cockpit.ypr);
+            }
+            else
+            {
+                Cockpit.xyz[1] = -0.030F;
+                Cockpit.ypr[1] = -60F;
+                super.mesh.chunkSetLocate("Z_Dragchute", Cockpit.xyz, Cockpit.ypr);
+                bChuteJettisoned = true;
+            }
+        }
     }
 
     public void reflectCockpitState()
@@ -522,6 +540,8 @@ public class CockpitF_5A extends CockpitPilot
     private float pictAiler;
     private float pictElev;
     private float pictGear;
+    private boolean bChuteOnceDeployed = false;
+    private boolean bChuteJettisoned = false;
     private static final float speedometerScale[] = {
         0.0F, 22.5F, 45F, 67.5F, 90F, 112.5F, 135F, 157.5F, 180F, 202.5F, 
         225F, 247.5F, 270F, 292.5F, 315F, 336.5F, 360F
@@ -541,14 +561,6 @@ public class CockpitF_5A extends CockpitPilot
         8.911F, 9.111F, 9.384F, 9.554F, 9.787F, 9.928F, 9.992F, 10.282F, 10.381F, 10.513F, 
         10.603F, 10.704F, 10.739F, 10.782F, 10.789F
     };
-
-
-
-
-
-
-
-
 
 
 }
