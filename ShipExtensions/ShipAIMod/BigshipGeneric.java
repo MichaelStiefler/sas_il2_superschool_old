@@ -2399,7 +2399,7 @@ label0:
             showExplode();
         if(flag && isNetMaster())
             send_DeathCommand(actor, null);
-        if(airport != null)
+        if(airport != null && zutiBornPlace != null)
             zutiBornPlace.army = -2;
         timeOfSailorsDisappear = SecsToTicks( 60.0f );
     }
