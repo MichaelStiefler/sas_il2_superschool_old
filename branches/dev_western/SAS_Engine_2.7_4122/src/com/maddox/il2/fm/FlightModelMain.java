@@ -407,6 +407,9 @@ public class FlightModelMain extends FMMath
         f = sectfile.get(s2, "CLimitRatioElevatorMinusALWAYS", -1F);
         if(f > 0.0F && f <= 1.0F)
             CT.limitRatioElevatorMinusALWAYS = f;
+        f = sectfile.get(s2, "CLimitRatioAITakeoffElevatorPlus", -1F);
+        if (f > 0.0F && f <= 1.0F)
+            CT.limitRatioAITakeoffElevatorPlus = f;
         f = sectfile.get(s2, "CLimitRatioRudder", -1F);
         if(f > 0.0F && f <= 1.0F)
             CT.limitRatioRudder = f;

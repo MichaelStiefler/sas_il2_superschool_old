@@ -135,6 +135,7 @@ public class Controls {
 	public float limitRatioElevatorPlus;
 	public float limitRatioElevatorMinus;
 	public float limitRatioElevatorMinusALWAYS;
+	public float limitRatioAITakeoffElevatorPlus;
 	public float limitRatioRudder;
 	public int DiffBrakesType;
 	public float BrakeRightControl;
@@ -318,6 +319,7 @@ public class Controls {
 		limitRatioElevatorPlus = 1.0F;
 		limitRatioElevatorMinus = 1.0F;
 		limitRatioElevatorMinusALWAYS = 1.0F;
+		limitRatioAITakeoffElevatorPlus = 1.0F;
 		limitRatioRudder = 1.0F;
 		bHasDragChuteControl = false;
 		bHasRefuelControl = false;
@@ -1147,6 +1149,8 @@ public class Controls {
 			if(bLimitEnabled && FM.Gears.nOfGearsOnGr < 2) Rudder = clampA(Rudder, limitRatioRudder);
 		}
 		BrakeControl = clamp01(BrakeControl);
+		BrakeLeftControl = clamp01(BrakeLeftControl);
+		BrakeRightControl = clamp01(BrakeRightControl);
 		if (bHasBrakeControl || flag1) {
 			if (BrakeControl > Brake)
 				Brake = Brake + 0.3F * f;

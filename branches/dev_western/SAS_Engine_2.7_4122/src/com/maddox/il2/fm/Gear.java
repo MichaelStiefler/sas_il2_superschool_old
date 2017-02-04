@@ -10,6 +10,7 @@ package com.maddox.il2.fm;
 import com.maddox.JGP.*;
 import com.maddox.il2.ai.*;
 import com.maddox.il2.ai.air.CellAirField;
+import com.maddox.il2.ai.air.Maneuver;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.game.*;
 import com.maddox.il2.net.BornPlace;
@@ -898,7 +899,7 @@ public class Gear
 //                        Point3d point3d1 = loc1.getPoint();
 //                        double d7 = Math.abs((point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y));
 
-                        //if (FM.brakeShoeLastCarrier.pos.getAbs().getX())
+                        //if(FM.brakeShoeLastCarrier.pos.getAbs().getX())
                         {
 //                            Orient planeO;
 //                            FM.Or.set(planeO);
@@ -908,8 +909,11 @@ public class Gear
 //                            FM.producedAMM.set(0D, 0D, 0D);
                              //TODO: +++ CTO Mod 4.12 +++
                             //By PAL, to avoid excessive Catapult Stress!!!!!!!!!!!!!
+                            float enginefc = 0F;
+                            for(int en = 0; en < FM.EI.getNum(); en++)
+                                enginefc += FM.EI.engines[en].getEngineForce().x;
                             if(FM.getLoadDiff() < FM.getLimitLoad() * 1.5F)
-                                FM.producedAF.x += dCatapultForce;
+                                FM.producedAF.x += (dCatapultForce - enginefc);
                             //By PAL, Diagonal Force towards ground (Catapult gear)
                             //By western, add limitter to avoid breaking gears or ordnances
                             FM.producedAF.z -= Math.min(0.3F * dCatapultForce, 2400D);
@@ -961,25 +965,21 @@ public class Gear
     // TODO: +++ CTO Mod 4.12 +++
     public void setCatapult(CellAirField cellairfield, int i)
     {
-        float mass = FM.M.getFullMass();
-////        if(mass > 10000F)
-////            mass = 10000F;
         float mult = 10.0F; //By PAL, default multiplier
         boolean bDoneAutoCalculate = false;
         boolean bForceAutoCalculate = false;
+        boolean bIsTypeSupersonic = false;
+        boolean bIsTypeFastJet = false;
+        boolean bIsJets = false;
+        if(((Interpolate) (FM)).actor instanceof TypeSupersonic)
+            bIsTypeSupersonic = true;
+        if(((Interpolate) (FM)).actor instanceof TypeFastJet)
+            bIsTypeFastJet = true;
+        if(FM.EI.engines[0].getType() == 2)
+            bIsJets = true;
         //By PAL, Western, Boost ; reverting old code by request on 15th/Jan./2017
         if(bCatapultBoost)
         {
-            boolean bIsTypeSupersonic = false;
-            boolean bIsTypeFastJet = false;
-            boolean bIsJets = false;
-            if(((Interpolate) (FM)).actor instanceof TypeSupersonic)
-                bIsTypeSupersonic = true;
-            if(((Interpolate) (FM)).actor instanceof TypeFastJet)
-                bIsTypeFastJet = true;
-            if(FM.EI.engines[0].getType() == 2)
-                bIsJets = true;
-
 //            //By PAL, this didn't work. Attempt to Close Cockpit of Jets it they are open, case 128 from HotKeys:
 //            //if(!((RealFlightModel)FM).isRealMode())
 ////                if(FM.CT.bHasCockpitDoorControl)
@@ -1001,7 +1001,7 @@ public class Gear
                     mult = catapultPowerJets;
                     if(Mission.curYear() > 1952)
                     {
-                        int l1 = (int)Math.ceil((((mass - FM.M.massEmpty) / 1000F) * catapultPowerJets) / 10F);
+                        int l1 = (int)Math.ceil((((FM.M.getFullMass() - FM.M.massEmpty) / 1000F) * catapultPowerJets) / 10F);
                         mult = catapultPowerJets + (float)l1;
                     }
                 }
@@ -1010,7 +1010,7 @@ public class Gear
                     mult = catapultPower;
                     if(Mission.curYear() > 1952)
                     {
-                        int i2 = (int)Math.ceil(((mass - FM.M.massEmpty) / 1000F) * 2.0F);
+                        int i2 = (int)Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 1000F) * 2.0F);
                         mult = catapultPower + (float)i2;
                     }
                 }
@@ -1019,18 +1019,18 @@ public class Gear
             {
                 if(bIsTypeSupersonic || bIsTypeFastJet || bIsJets)
                 {
-                    int l1 = (int)Math.ceil((((mass - FM.M.massEmpty) / 1000F) * catapultPowerJets) / 10F);
+                    int l1 = (int)Math.ceil((((FM.M.getFullMass() - FM.M.massEmpty) / 1000F) * catapultPowerJets) / 10F);
                     mult = catapultPowerJets + (float)l1;
                 }
                 else
                 {
-                    int i2 = (int)Math.ceil(((mass - FM.M.massEmpty) / 1000F) * 2.0F);
+                    int i2 = (int)Math.ceil(((FM.M.getFullMass() - FM.M.massEmpty) / 1000F) * 2.0F);
                     mult = catapultPower + (float)i2;
                 }
             }
         }
 
-        //By PAL, Catapult Force Based on FullMass and VminFLAPS
+        //By PAL and western , Catapult Force Based on FullMass and MassEmpty, VminFLAPS, Vmin
         float dist = 0.0F;
         if(bCatapultHookExist[i])
         {
@@ -1041,11 +1041,30 @@ public class Gear
         }
         else
             dist = 46F;
-        float massX = FM.M.getFullMass() * (FM.isPlayers() ? 0.16F : 0.35F); //By PAL and western, empiric factor
-        float vmin = FM.VminFLAPS * 1.25F;
+        float massX = FM.M.getFullMass();  //By PAL and western, empiric factor
+        massX *= Aircraft.cvt(Math.max(FM.CT.limitRatioAITakeoffElevatorPlus, FM.CT.trimElevator), 0.0F, 1.0F, 0.18F, 0.28F);
+        // target velocity m/s on catapult end (for empty loadout and fuel)
+        float vTarget = FM.Vmin * 0.65F + FM.VminFLAPS * 0.35F;
+        if(bIsTypeSupersonic || bIsTypeFastJet || bIsJets)
+        {
+            // keep at least 190km/h for vTarget of all Jets
+            if(vTarget < 53F)
+                vTarget = 53F;
+            // with heavy loadout, the aircraft needs higher take-off speed
+            vTarget += (FM.M.getFullMass() - FM.M.massEmpty) * 0.0020F;
+        }
+        else
+            vTarget += (FM.M.getFullMass() - FM.M.massEmpty) * 0.0013F;
+        if(vTarget > 85F)
+            vTarget = 85F;   // Limitter for 306km/h on the catapult's end
+        if(bDebugCatapult)
+        {
+            System.out.println("*** Catapult vTarget=" + vTarget + " m/s (" + (int)(vTarget * 3.6F) + "km/h) in auto calculation.");
+        }
 
-        double dForceAuto = massX * vmin * vmin / dist;
-        double dForceTrad = Math.min(mass, 10000F) * mult * (FM.isPlayers() ? 0.34F : 0.75F);
+        double dForceAuto = massX * vTarget * vTarget / dist;
+        double dForceTrad = Math.min(FM.M.getFullMass(), 10000F) * mult;
+        dForceTrad *= Aircraft.cvt(Math.max(FM.CT.limitRatioAITakeoffElevatorPlus, FM.CT.trimElevator), 0.0F, 1.0F, 0.38F, 0.77F);
         if(bForceAutoCalculate || !bUseOldCatapultPowerProcedure)
         {
             dCatapultForce = dForceAuto;
