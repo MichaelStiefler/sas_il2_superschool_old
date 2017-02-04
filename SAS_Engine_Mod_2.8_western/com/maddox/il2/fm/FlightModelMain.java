@@ -365,6 +365,8 @@ public class FlightModelMain extends FMMath {
 		if (f > 0.0F && f <= 1.0F) CT.limitRatioElevatorMinus = f;
 		f = sectfile.get(s2, "CLimitRatioElevatorMinusALWAYS", -1F);
 		if (f > 0.0F && f <= 1.0F) CT.limitRatioElevatorMinusALWAYS = f;
+		f = sectfile.get(s2, "CLimitRatioAITakeoffElevatorPlus", -1F);
+		if (f > 0.0F && f <= 1.0F) CT.limitRatioAITakeoffElevatorPlus = f;
 		f = sectfile.get(s2, "CLimitRatioRudder", -1F);
 		if (f > 0.0F && f <= 1.0F) CT.limitRatioRudder = f;
 		j = sectfile.get(s2, "CFlap", 0);  // TODO: By western, looking at 1st bit (1) and 2nd bit (2), enabling both is 3
