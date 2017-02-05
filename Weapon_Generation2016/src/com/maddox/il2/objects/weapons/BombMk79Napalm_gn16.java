@@ -13,13 +13,13 @@
 
     private void checkChangeWeaponColors()
     {
-        for(int i = 0; i < ((FlightModelMain) (super.FM)).CT.Weapons.length; i++)
-            if(((FlightModelMain) (super.FM)).CT.Weapons[i] != null)
+        for(int i = 0; i < FM.CT.Weapons.length; i++)
+            if(FM.CT.Weapons[i] != null)
             {
-                for(int j = 0; j < ((FlightModelMain) (super.FM)).CT.Weapons[i].length; j++)
+                for(int j = 0; j < FM.CT.Weapons[i].length; j++)
                 {
-                    if(((FlightModelMain) (super.FM)).CT.Weapons[i][j] instanceof BombGunMk79Napalm_gn16)
-                        ((BombGunMk79Napalm_gn16)((FlightModelMain) (super.FM)).CT.Weapons[i][j]).matRed();
+                    if(FM.CT.Weapons[i][j] instanceof BombGunMk79Napalm_gn16)
+                        ((BombGunMk79Napalm_gn16)FM.CT.Weapons[i][j]).matRed();
                 }
             }
     }

@@ -8,22 +8,23 @@
 
     public void missionStarting()
     {
+        super.missionStarting();
         checkChangeWeaponColors();
     }
 
     private void checkChangeWeaponColors()
     {
-        for(int i = 0; i < ((FlightModelMain) (super.FM)).CT.Weapons.length; i++)
-            if(((FlightModelMain) (super.FM)).CT.Weapons[i] != null)
+        for(int i = 0; i < FM.CT.Weapons.length; i++)
+            if(FM.CT.Weapons[i] != null)
             {
-                for(int j = 0; j < ((FlightModelMain) (super.FM)).CT.Weapons[i].length; j++)
+                for(int j = 0; j < FM.CT.Weapons[i].length; j++)
                 {
                   // Green case
-                    if(((FlightModelMain) (super.FM)).CT.Weapons[i][j] instanceof Pylon_LAU131_gn16)
-                        ((Pylon_LAU131_gn16)((FlightModelMain) (super.FM)).CT.Weapons[i][j]).matGreen();
+                    if(FM.CT.Weapons[i][j] instanceof Pylon_LAU131_gn16)
+                        ((Pylon_LAU131_gn16)FM.CT.Weapons[i][j]).matGreen();
                   // Brown case
-                    if(((FlightModelMain) (super.FM)).CT.Weapons[i][j] instanceof Pylon_LAU131_gn16)
-                        ((Pylon_LAU131_gn16)((FlightModelMain) (super.FM)).CT.Weapons[i][j]).matBrown();
+                    if(FM.CT.Weapons[i][j] instanceof Pylon_LAU131_gn16)
+                        ((Pylon_LAU131_gn16)FM.CT.Weapons[i][j]).matBrown();
                 }
             }
     }
