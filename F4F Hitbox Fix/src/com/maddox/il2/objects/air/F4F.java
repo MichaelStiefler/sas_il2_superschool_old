@@ -75,7 +75,7 @@ public abstract class F4F extends Scheme1 implements TypeFighter, TypeTNBFighter
     protected void moveGear(float f, float f1, float f2) {
         moveGear(this.hierMesh(), f, f1, f2);
     }
-    
+
     // +++ Helper Methods for compatibility with older IL-2 versions
     public static void moveGear(HierMesh hiermesh, float f) {
         moveGear(hiermesh, f, f, f);
@@ -179,6 +179,13 @@ public abstract class F4F extends Scheme1 implements TypeFighter, TypeTNBFighter
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
+                // +++
+                // Cockpit Gore Mod
+                if (!this.FM.AS.bIsAboutToBailout && World.cur().isHighGore()) {
+                    this.hierMesh().chunkVisible("Gore1_D0", true);
+                    this.hierMesh().chunkVisible("Gore2_D0", true);
+                }
+                // ---
                 break;
         }
     }
@@ -221,10 +228,10 @@ public abstract class F4F extends Scheme1 implements TypeFighter, TypeTNBFighter
                     // damaging the panel when armor gets hit is bollocks.
                     // front armor in all other IL-2 planes is used to reduce the bullet's power accordingly when it collides with the armor plate.
                     // We do so here now, too.
-//                    if ((this.getEnergyPastArmor(World.Rnd().nextFloat(8F, 12F) / (Math.abs(Aircraft.v1.x) + 0.0001D), shot) > 0.0F) && (point3d.y > -0.442D) && (point3d.y < 0.442D) && (point3d.z > 0.544D)) {
-//                        this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x40);
-//                    }
-                    
+// if ((this.getEnergyPastArmor(World.Rnd().nextFloat(8F, 12F) / (Math.abs(Aircraft.v1.x) + 0.0001D), shot) > 0.0F) && (point3d.y > -0.442D) && (point3d.y < 0.442D) && (point3d.z > 0.544D)) {
+// this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x40);
+// }
+
                     // Fix: Only reduce bullet power, nothing more, nothing less.
                     this.getEnergyPastArmor(World.Rnd().nextFloat(8F, 12F) / (Math.abs(Aircraft.v1.x) + 0.0001D), shot);
                     // ---
@@ -441,11 +448,11 @@ public abstract class F4F extends Scheme1 implements TypeFighter, TypeTNBFighter
                 this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 1);
             }
             // +++ Fix: Damage panel when certain section of "xcf1" is hit.
-            else if (s.startsWith("xcf1") && point3d.x > -0.2D && point3d.z > 0.1D) {
+            else if (s.startsWith("xcf1") && (point3d.x > -0.7D) && (point3d.z > 0.1D)) {
                 this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x40);
             }
             // ---
-            
+
             if ((point3d.x > -1.431D) && (point3d.x < -0.009D)) {
                 if (point3d.y > 0.0D) {
                     this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 8);
