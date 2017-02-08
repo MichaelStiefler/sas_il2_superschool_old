@@ -481,32 +481,55 @@ public class FlightModelMain extends FMMath
 
         //TODO: Variable geometry/incidence.
         // --------------------------------------------------------
-        j = sectfile.get(s2, "CVarWing", 0);  // By western, looking at 1st bit (1) and 2nd bit (2), enabling both is 3
-        if(j != 0 && j != 1 && j != 3)
+        // By western, looking at 1st bit (1) and 2nd bit (2), 3rd bit (4). 2nd and 3rd bits are exclusion.
+        // 9th bit (256) means using as Nozzle rotation for V/STOL.
+        // Capable integer value is 1, 3, 5 or 257, 259, 261
+        j = sectfile.get(s2, "CVarWing", 0);
+        int jj = (j & 255);
+        if (jj != 0 && jj != 1 && jj != 3 && jj != 5)
             throw new RuntimeException(s1);
-        CT.bHasVarWingControl = (j == 1 || j == 3);
-        CT.bHasVarWingControlFree = j == 3;   // By western, no step but free-stop var wing
-        j = sectfile.get(s2, "CVarWingPos", 0);
-        if(j < 0)
+        CT.bHasVarWingControl = ((jj & 1) != 0);
+        CT.bHasVarWingControlFree = jj == 3;     // By western, no step but free-stop var wing
+        CT.bHasVarWingControlSwitch = jj == 5;   // By western, VG wing is fully controlled by FBW
+        CT.bUseVarWingAsNozzleRot = ((j & 256) != 0);
+        j = sectfile.get(s2, "CVarWingPos", -1);
+        if (CT.bHasVarWingControl && j < 0)
             throw new RuntimeException(s1);
-        if(CT.nVarWingStages == -1)
-            CT.nVarWingStages = j - 1;
+        if (CT.nVarWingStages == -1)
+            CT.nVarWingStages = j;
         float fx = sectfile.get(s2, "CVarWingStageMax", -1F);
-        if(fx > 0F)
+        if (fx > 0F)
             CT.VarWingStageMax = fx;
-        if(CT.nVarWingStages != -1 && CT.VarWingStageMax != -1.0F)
+        if (CT.nVarWingStages != -1 && CT.VarWingStageMax != -1.0F)
         {
-            if(CT.VarWingStage == null &&  CT.nVarWingStages != -1)
-                CT.VarWingStage = new float[CT.nVarWingStages];
-            if(CT.VarWingStage.length > 0)
-                for(int k = 0; k < CT.VarWingStage.length; k++)
+            if (CT.VarWingStage == null && CT.nVarWingStages != -1)
+            {
+                CT.VarWingStage = new float[CT.nVarWingStages + 1];
+                CT.VarWingStage[0] = 0.0F;
+                CT.VarWingStage[CT.nVarWingStages] = 1.0F;
+            }
+            if (CT.VarWingStage.length > 2)
+                for (int k = 0; k < CT.VarWingStage.length - 2; k++)
                 {
-                    fx = sectfile.get(s2, "CVarWingStage" + k, -1F);
-                    if(fx != -1F)
+                    f = sectfile.get(s2, "CVarWingStage" + k, -1F);
+                    if (f != -1F)
                     {
-                        CT.VarWingStage[k] = fx / CT.VarWingStageMax;
+                        CT.VarWingStage[k + 1] = f / CT.VarWingStageMax;
                     }
                 }
+        }
+        // By western, VarWing Control switch's real implement is done in each aircraft classes like F_14.class
+        // Those functions or meanings are completely different in each aircrafts and no common behaviors.
+        if (CT.bHasVarWingControlSwitch && CT.VarWingStageText == null && CT.nVarWingStages != -1)
+        {
+            CT.VarWingStageText = new String[CT.nVarWingStages];
+            String sst = sectfile.get(s2, "CVarWingStageText", (String)null);
+            if (sst != null)
+            {
+                StringTokenizer stringtokenizer = new StringTokenizer(sst, ",");
+                for (int ii = 0; ii < CT.nVarWingStages; ii++)
+                    CT.VarWingStageText[ii] = stringtokenizer.nextToken();
+            }
         }
         j = sectfile.get(s2, "CVarIncidence", 0);
         if(j != 0 && j != 1)
@@ -1176,8 +1199,8 @@ public class FlightModelMain extends FMMath
                   if(CT.BlownFlapsType != null)
                       if(CT.BlownFlapsControl > 0.0F && CT.FlapsControl > 0.0F && EI.getThrustOutput() > 0.2F)
                       {
-                          Wing.Cy0_1 =+ CyBlownFlapsOff + (CyBlownFlapsOn * CT.BlownFlapsControl);
-                          producedAF.x -= (ThrustBlownFlaps*EI.getThrustOutput());
+                          Wing.Cy0_1 = CyBlownFlapsOff + (CyBlownFlapsOn * CT.BlownFlapsControl);
+                          producedAF.x -= (ThrustBlownFlaps * EI.getThrustOutput());
                       }
                       else
                       {
@@ -1187,7 +1210,7 @@ public class FlightModelMain extends FMMath
                       }
                   else if(CT.FlapsControl > 0.0F)
                   {
-                      Wing.Cy0_1 =+ CyBlownFlapsOff + (CyBlownFlapsOn * EI.getThrustOutput());
+                      Wing.Cy0_1 = CyBlownFlapsOff + (CyBlownFlapsOn * EI.getThrustOutput());
                   }
               }
     }
