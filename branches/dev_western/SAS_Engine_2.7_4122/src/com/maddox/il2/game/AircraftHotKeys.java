@@ -58,21 +58,21 @@ public class AircraftHotKeys
     private HotKeyCmd cmdFov[];
     private static Object namedAll[] = new Object[1];
     private static TreeMap namedAircraft = new TreeMap();
- // --------------------------------------------------------
+    // --------------------------------------------------------
 
-     //TODO: New Parameters
-     // --------------------------------------------------------
-     protected boolean                                    bSpeedbarTAS                = false;
-     private boolean                                    bSeparateGearUpDown            = false;
-     private boolean                                    bSeparateHookUpDown            = false;
-     private boolean                                    bSeparateRadiatorOpenClose    = false;
-     private boolean                                    bMusicOn                    = true;
-     private boolean                                    bToggleMusic                = true;
-     protected int                                        iAirShowSmoke                = 0;
-     protected boolean                                    bAirShowSmokeEnhanced        = false;
-     private int                                        COCKPIT_DOOR                = 1;
-     private int                                        SIDE_DOOR                    = 2;
-     private boolean                                    bDumpFuel                    = false;
+    //TODO: New Parameters
+    // --------------------------------------------------------
+    protected boolean          bSpeedbarTAS               = false;
+    private boolean            bSeparateGearUpDown        = false;
+    private boolean            bSeparateHookUpDown        = false;
+    private boolean            bSeparateRadiatorOpenClose = false;
+    private boolean            bMusicOn                   = true;
+    private boolean            bToggleMusic               = true;
+    protected int              iAirShowSmoke              = 0;
+    protected boolean          bAirShowSmokeEnhanced      = false;
+    private int                COCKPIT_DOOR               = 1;
+    private int                SIDE_DOOR                  = 2;
+    private boolean            bDumpFuel                  = false;
     protected static final int BRAKE_RIGHT = 144;
     protected static final int BRAKE_LEFT = 145;
     private int flapIndex = 0;
@@ -80,6 +80,7 @@ public class AircraftHotKeys
     private int oldFlapsControlSwitch = 0;
     private int varWingIndex = 0;
     private int oldVarWingIndex = 0;
+    private int oldVarWingControlSwitch = 0;
     private float oldVarWingControl = 0.0F;
     private boolean useSmartAxisForPower2 = false;
     private boolean useSmartAxisForPitch2 = false;
@@ -91,7 +92,7 @@ public class AircraftHotKeys
     protected static final int BOMB_RELEASE_TRAIN_DELAY = 196;
         // TODO: -- Added Code for importing 4.13.2m --
      // --------------------------------------------------------
-    
+
     public AircraftHotKeys()
     {
         bPropAuto = true;
@@ -127,21 +128,28 @@ public class AircraftHotKeys
         createTimeHotKeys();
         createCommonHotKeys();
         //TODO:------------------------------------
-        if (Config.cur.ini.get("Mods", "SpeedbarTAS", 0) > 0)
+        if(Config.cur.ini.get("Mods", "SpeedbarTAS", 0) > 0)
             bSpeedbarTAS = true;
-        if (Config.cur.ini.get("Mods", "SeparateGearUpDown", 0) > 0)
+        if(Config.cur.ini.get("Mods", "SeparateGearUpDown", 0) > 0)
             bSeparateGearUpDown = true;
-        if (Config.cur.ini.get("Mods", "SeparateHookUpDown", 0) > 0)
+        if(Config.cur.ini.get("Mods", "SeparateHookUpDown", 0) > 0)
             bSeparateHookUpDown = true;
-        if (Config.cur.ini.get("Mods", "SeparateRadiatorOpenClose", 0) > 0)
+        if(Config.cur.ini.get("Mods", "SeparateRadiatorOpenClose", 0) > 0)
             bSeparateRadiatorOpenClose = true;
-        if (Config.cur.ini.get("Mods", "ToggleMusic", 1) == 0)
+        if(Config.cur.ini.get("Mods", "ToggleMusic", 1) == 0)
             bToggleMusic = false;
-        if (Config.cur.ini.get("Mods", "Stab4all", 0) > 0)
+        if(Config.cur.ini.get("Mods", "Stab4all", 0) > 0)
             bStab4all = true;
+        flapIndex = 0;
+        oldFlapIndex = 0;
+        oldFlapsControlSwitch = 0;
+        varWingIndex = 0;
+        oldVarWingIndex = 0;
+        oldVarWingControlSwitch = 0;
+        oldVarWingControl = 0.0F;
         //---------------------------------
     }
-    
+
     class HotKeyCmdFireMove extends HotKeyCmdMove
     {
 
@@ -285,6 +293,15 @@ public class AircraftHotKeys
         lastProp3 = 1.5F;
         lastProp4 = 1.5F;
         checkSmartControlsUse();
+        // TODO:------------------------------------
+        flapIndex = 0;
+        oldFlapIndex = 0;
+        oldFlapsControlSwitch = 0;
+        varWingIndex = 0;
+        oldVarWingIndex = 0;
+        oldVarWingControlSwitch = 0;
+        oldVarWingControl = 0.0F;
+        // ---------------------------------
     }
 
     public void resetUser()
@@ -506,72 +523,81 @@ public class AircraftHotKeys
         if(flag)
             switch(i)
             {
-            case 139: 
-            case 140: 
-            case 149: 
-            case 150: 
+            case 139:
+            case 140:
+            case 149:
+            case 150:
             case 195:    // importing 4.13.2m
             case 196:    // importing 4.13.2m
                 doCmdPilotTick(i);
                 return;
 
-            case 157: 
+            case 157:
                 bAAircraft.auxPressed(1);
                 return;
 
-            case 158: 
+            case 158:
                 bAAircraft.auxPressed(2);
                 return;
 
-            case 159: 
+            case 159:
                 bAAircraft.auxPressed(3);
                 return;
 
-            case 160: 
+            case 160:
                 bAAircraft.auxPressed(4);
                 return;
 
-            case 161: 
+            case 161:
                 bAAircraft.auxPressed(5);
                 return;
-              //TODO: Addition of new Aux Keys  
-            case 300: 
+              //TODO: Addition of new Aux Keys
+            case 300:
                 bAAircraft.auxPressed(20);
                 return;
-            case 301: 
+            case 301:
                 bAAircraft.auxPressed(21);
                 return;
-            case 302: 
+            case 302:
                 bAAircraft.auxPressed(22);
                 return;
-            case 303: 
+            case 303:
                 bAAircraft.auxPressed(23);
                 return;
-            case 304: 
+            case 304:
                 bAAircraft.auxPressed(24);
                 return;
-            case 305: 
+            case 305:
                 bAAircraft.auxPressed(25);
                 return;
-            case 306: 
+            case 306:
                 bAAircraft.auxPressed(26);
                 return;
-            case 307: 
+            case 307:
                 bAAircraft.auxPressed(27);
                 return;
-            case 308: 
+            case 308:
                 bAAircraft.auxPressed(28);
                 return;
-            case 309: 
+            case 309:
                 bAAircraft.auxPressed(29);
+                return;
+            // By western, Formation lights and Anti-Collision lights
+            case 310:
+                bAAircraft.auxPressed(40);
+                return;
+            case 311:
+                bAAircraft.auxPressed(41);
                 return;
                 //TODO: -------------------------------
             case 19:
                 // TODO: moved from non-flag-switch to here to keep bomb trigger=true , importing from 4.13.2m
-                if((FM instanceof RealFlightModel) && !FM.actor.net.isMirror()) {
+                if((FM instanceof RealFlightModel) && !FM.actor.net.isMirror())
+                {
                     FM.CT.WeaponControl[3] = flag;
                     hudWeapon(flag, 3);
-                    if((bAAircraft instanceof TypeHasToKG) && bAAircraft.FM.CT.Weapons[3] != null && (bAAircraft.FM.CT.Weapons[3][0] instanceof TorpedoGun) && bAAircraft.FM.CT.Weapons[3][0].haveBullets()) {
+                    if((bAAircraft instanceof TypeHasToKG) && bAAircraft.FM.CT.Weapons[3] != null && (bAAircraft.FM.CT.Weapons[3][0] instanceof TorpedoGun) && bAAircraft.FM.CT.Weapons[3][0].haveBullets())
+                    {
                         bAAircraft.FM.AS.replicateGyroAngleToNet();
                         bAAircraft.FM.AS.replicateSpreadAngleToNet();
                     }
@@ -621,7 +647,7 @@ public class AircraftHotKeys
             FM.CT.WeaponControl[8] = flag;
             hudWeapon(flag, 8);
             break;
-            
+
         case 73: // 'I'
             FM.CT.setElectricPropUp(flag);
             break;
@@ -668,7 +694,7 @@ public class AircraftHotKeys
             case 0: // '\0'
                 FM.CT.BrakeControl = 0.0F;
                 break;
-                
+
               //TODO: PAS++
             case 144: // '\0'
                 FM.CT.BrakeRightControl = 0.0F;
@@ -678,7 +704,7 @@ public class AircraftHotKeys
                 FM.CT.BrakeLeftControl = 0.0F;
                 break;
                 //PAS--
-                
+
             case 3: // '\003'
             case 4: // '\004'
                 if(!FM.CT.StabilizerControl)
@@ -723,21 +749,21 @@ public class AircraftHotKeys
 
               //TODO:Drag chute control
             case 143:
-                if (FM.CT.bHasDragChuteControl)
+                if(FM.CT.bHasDragChuteControl)
                 {
                     FM.CT.DragChuteControl = FM.CT.DragChuteControl <= 0.5F ? 1.0F : 0.0F;
-                    HUD.log("Drag Chute " + (FM.CT.DragChuteControl != 0.0F ? "Deployed" : "Released"));
+                    HUD.log("Dragchute" + (FM.CT.DragChuteControl != 0.0F ? "Deployed" : "Released"));
                 }
                 break;
             case 136:
                 //TODO:Placeholder for 'Deploy Refuelling Device'
-                if (FM.CT.bHasRefuelControl)
+                if(FM.CT.bHasRefuelControl)
                 {
                     FM.CT.RefuelControl = FM.CT.RefuelControl <= 0.5F ? 1.0F : 0.0F;
                     HUD.log("Refuel" + (FM.CT.RefuelControl != 0.0F ? "ON" : "OFF"));
                 }
                 break;
-                
+
             case 70: // 'F'
                 if(World.cur().diffCur.SeparateEStart && FM.EI.getNumSelected() > 1 && FM.EI.getFirstSelected().getStage() == 0)
                     return;
@@ -754,7 +780,7 @@ public class AircraftHotKeys
                 break;
 
             case 195: // importing 4.13.2m
-            case 196: 
+            case 196:
                 bAAircraft.FM.AS.replicateBombModeStatesToNet();
                 break;
             }
@@ -794,14 +820,14 @@ public class AircraftHotKeys
 
             //TODO:
         case 7:
-            if (bSeparateRadiatorOpenClose)
+            if(bSeparateRadiatorOpenClose)
             {
-                if (FM.EI.isSelectionHasControlRadiator())
+                if(FM.EI.isSelectionHasControlRadiator())
                 {
-                    if (FM.CT.getRadiatorControlAuto())
+                    if(FM.CT.getRadiatorControlAuto())
                     {
                         FM.CT.setRadiatorControlAuto(false, FM.EI);
-                        if (World.cur().diffCur.ComplexEManagement)
+                        if(World.cur().diffCur.ComplexEManagement)
                         {
                             FM.CT.setRadiatorControl(0.0F);
                             HUD.log("RadiatorControl" + (int) (FM.CT.getRadiatorControl() * 10.0F));
@@ -812,11 +838,11 @@ public class AircraftHotKeys
                             HUD.log("RadiatorON");
                         }
                     }
-                    else if (World.cur().diffCur.ComplexEManagement)
+                    else if(World.cur().diffCur.ComplexEManagement)
                     {
-                        if (FM.CT.getRadiatorControl() != 1.0F)
+                        if(FM.CT.getRadiatorControl() != 1.0F)
                         {
-                            if (FM.actor instanceof MOSQUITO)
+                            if(FM.actor instanceof MOSQUITO)
                                 FM.CT.setRadiatorControl(1.0F);
                             else
                                 FM.CT.setRadiatorControl(FM.CT.getRadiatorControl() + 0.2F);
@@ -830,12 +856,12 @@ public class AircraftHotKeys
                     }
                 }
             }
-            else if (FM.EI.isSelectionHasControlRadiator())
+            else if(FM.EI.isSelectionHasControlRadiator())
             {
-                if (FM.CT.getRadiatorControlAuto())
+                if(FM.CT.getRadiatorControlAuto())
                 {
                     FM.CT.setRadiatorControlAuto(false, FM.EI);
-                    if (World.cur().diffCur.ComplexEManagement)
+                    if(World.cur().diffCur.ComplexEManagement)
                     {
                         FM.CT.setRadiatorControl(0.0F);
                         HUD.log("RadiatorControl" + (int) (FM.CT.getRadiatorControl() * 10.0F));
@@ -846,11 +872,11 @@ public class AircraftHotKeys
                         HUD.log("RadiatorON");
                     }
                 }
-                else if (World.cur().diffCur.ComplexEManagement)
+                else if(World.cur().diffCur.ComplexEManagement)
                 {
-                    if (FM.CT.getRadiatorControl() == 1.0F)
+                    if(FM.CT.getRadiatorControl() == 1.0F)
                     {
-                        if (FM.EI.isSelectionAllowsAutoRadiator())
+                        if(FM.EI.isSelectionAllowsAutoRadiator())
                         {
                             FM.CT.setRadiatorControlAuto(true, FM.EI);
                             HUD.log("RadiatorOFF");
@@ -863,7 +889,7 @@ public class AircraftHotKeys
                     }
                     else
                     {
-                        if (FM.actor instanceof MOSQUITO)
+                        if(FM.actor instanceof MOSQUITO)
                             FM.CT.setRadiatorControl(1.0F);
                         else
                             FM.CT.setRadiatorControl(FM.CT.getRadiatorControl() + 0.2F);
@@ -894,7 +920,7 @@ public class AircraftHotKeys
                 FM.CT.BrakeLeftControl = 1.0F;
             break;
             //PAS--
-            
+
         case 3: // '\003'
             if(!FM.CT.StabilizerControl)
                 FM.CT.ElevatorControl = -1F;
@@ -962,15 +988,15 @@ public class AircraftHotKeys
 
           //TODO:
         case 23:
-            if (bSeparateRadiatorOpenClose)
+            if(bSeparateRadiatorOpenClose)
             {
-                if (FM.EI.isSelectionHasControlRadiator() && !FM.CT.getRadiatorControlAuto())
+                if(FM.EI.isSelectionHasControlRadiator() && !FM.CT.getRadiatorControlAuto())
                 {
-                    if (World.cur().diffCur.ComplexEManagement)
+                    if(World.cur().diffCur.ComplexEManagement)
                     {
-                        if (FM.CT.getRadiatorControl() == 0.0F)
+                        if(FM.CT.getRadiatorControl() == 0.0F)
                         {
-                            if (FM.EI.isSelectionAllowsAutoRadiator())
+                            if(FM.EI.isSelectionAllowsAutoRadiator())
                             {
                                 FM.CT.setRadiatorControlAuto(true, FM.EI);
                                 HUD.log("RadiatorOFF");
@@ -978,7 +1004,7 @@ public class AircraftHotKeys
                         }
                         else
                         {
-                            if (FM.actor instanceof MOSQUITO)
+                            if(FM.actor instanceof MOSQUITO)
                                 FM.CT.setRadiatorControl(0.0F);
                             else
                                 FM.CT.setRadiatorControl(FM.CT.getRadiatorControl() - 0.2F);
@@ -1026,24 +1052,26 @@ public class AircraftHotKeys
 
         case 132: // '\026'
                 //TODO: Disabled for ModAct compatibility
-                if (aircraft instanceof TypeFuelDump)
+                if(aircraft instanceof TypeFuelDump)
                 {
-                    if (bDumpFuel){
+                    if(bDumpFuel)
+                    {
                         bDumpFuel = false;
-                        HUD.log(hudLogWeaponId, "Fuel Valve Closed");
+                        HUD.log(hudLogWeaponId, "DumpFuelOFF");
                     }
-                    else {
+                    else
+                    {
                         bDumpFuel = true;
-                        HUD.log(hudLogWeaponId, "Fuel Valve Open");
+                        HUD.log(hudLogWeaponId, "DumpFuelON");
                     }
                     FM.AS.setDumpFuelState(bDumpFuel);
 
                 }
             break;
         case 133:
-            if (bToggleMusic)
+            if(bToggleMusic)
             {
-                if (bMusicOn)
+                if(bMusicOn)
                 {
                     CmdMusic.setCurrentVolume(0.0F);
                     bMusicOn = false;
@@ -1059,38 +1087,38 @@ public class AircraftHotKeys
                 try
                 {
                     //TODO: Disabled for ModAct compatibility
-                    if ((Aircraft)FM.actor instanceof SPITFIRE)
+                    if((Aircraft)FM.actor instanceof SPITFIRE)
                         FM.CT.bHasSideDoor = true;
                 }
                 catch (Throwable throwable)
                 {
                     /* empty */
                 }
-                if (FM.CT.bHasSideDoor)
+                if(FM.CT.bHasSideDoor)
                 {
                     FM.CT.setActiveDoor(SIDE_DOOR);
-                    if (FM.CT.cockpitDoorControl < 0.5F && FM.CT.getCockpitDoor() < 0.01F)
+                    if(FM.CT.cockpitDoorControl < 0.5F && FM.CT.getCockpitDoor() < 0.01F)
                     {
                         FM.AS.setCockpitDoor(aircraft, 1);
                         HUD.log("Hatch Open");
                     }
-                    else if (FM.CT.cockpitDoorControl > 0.5F && FM.CT.getCockpitDoor() > 0.99F)
+                    else if(FM.CT.cockpitDoorControl > 0.5F && FM.CT.getCockpitDoor() > 0.99F)
                     {
                         FM.AS.setCockpitDoor(aircraft, 0);
                         HUD.log("Hatch Closed");
                     }
                 }
             break;
-        case 135: 
+        case 135:
             // TODO: ++ Added Code for Net Replication ++
             // Shifted this case part to Controls class where it belongs
-            if (FM.CT.toggleRocketHook()) HUD.log(hudLogWeaponId, FM.CT.rocketNameSelected + " Selected");
+            if(FM.CT.toggleRocketHook()) HUD.log(hudLogWeaponId, "RocketSelectedName" , new Object[] { new String(FM.CT.rocketNameSelected) });
             // Function call to net replication code, see AircraftState class
             FM.AS.replicateRocketHookToNet(FM.CT.rocketHookSelected);
             // TODO: -- Added Code for Net Replication --
             break;
 
-        case 137: 
+        case 137:
             // TODO: ++ Added Code for Net Replication ++
             // Shifted this case part to Controls class where it belongs
             FM.CT.toggleWeaponFireMode(hudLogWeaponId);
@@ -1099,7 +1127,7 @@ public class AircraftHotKeys
             // TODO: -- Added Code for Net Replication --
             break;
 
-        case 146: 
+        case 146:
             // TODO: ++ Added Code for Net Replication ++
             // Shifted this case part to Controls class where it belongs
             FM.CT.toggleWeaponReleaseDelay(hudLogWeaponId);
@@ -1151,7 +1179,7 @@ public class AircraftHotKeys
                 break;
             }
             break;
-            
+
         case 59: // ';'
             setPowerControl(FM.CT.PowerControl + 0.05F);
             break;
@@ -1317,35 +1345,35 @@ public class AircraftHotKeys
 
           //TODO:
         case 89:
-            if (!bSeparateGearUpDown)
+            if(!bSeparateGearUpDown)
             {
-                if (FM.EI.isSelectionHasControlMagnetos() && FM.EI.getFirstSelected() != null && (FM.EI.getFirstSelected().getControlMagnetos() > 0))
+                if(FM.EI.isSelectionHasControlMagnetos() && FM.EI.getFirstSelected() != null && (FM.EI.getFirstSelected().getControlMagnetos() > 0))
                 {
                     FM.CT.setMagnetoControl(FM.EI.getFirstSelected().getControlMagnetos() - 1);
                     HUD.log("MagnetoSetup" + FM.CT.getMagnetoControl());
                 }
             }
-            else if (FM.CT.bHasGearControl && !FM.Gears.onGround() && FM.Gears.isHydroOperable())
+            else if(FM.CT.bHasGearControl && !FM.Gears.onGround() && FM.Gears.isHydroOperable())
             {
-                if (FM.CT.GearControl > 0.5F && FM.CT.getGear() > 0.99F)
+                if(FM.CT.GearControl > 0.5F && FM.CT.getGear() > 0.99F)
                 {
                     FM.CT.GearControl = 0.0F;
                     HUD.log("GearUp");
                 }
-                if (FM.Gears.isAnyDamaged())
+                if(FM.Gears.isAnyDamaged())
                     HUD.log("GearDamaged");
             }
             break;
         case 88:
-            if (!bSeparateHookUpDown)
+            if(!bSeparateHookUpDown)
             {
-                if (FM.EI.isSelectionHasControlMagnetos() && FM.EI.getFirstSelected() != null && (FM.EI.getFirstSelected().getControlMagnetos() < 3))
+                if(FM.EI.isSelectionHasControlMagnetos() && FM.EI.getFirstSelected() != null && (FM.EI.getFirstSelected().getControlMagnetos() < 3))
                 {
                     FM.CT.setMagnetoControl(FM.EI.getFirstSelected().getControlMagnetos() + 1);
                     HUD.log("MagnetoSetup" + FM.CT.getMagnetoControl());
                 }
             }
-            else if (FM.CT.bHasArrestorControl && FM.CT.arrestorControl > 0.5F)
+            else if(FM.CT.bHasArrestorControl && FM.CT.arrestorControl > 0.5F)
             {
                 FM.AS.setArrestor(FM.actor, 0);
                 HUD.log("HookUp");
@@ -1454,7 +1482,7 @@ public class AircraftHotKeys
 
           //TODO: Next two cases added in to allow for toggling of engines 7 and 8
         case 200:
-            if (FM.Scheme != 0 && FM.Scheme != 1 && FM.EI.getNum() >= 7)
+            if(FM.Scheme != 0 && FM.Scheme != 1 && FM.EI.getNum() >= 7)
             {
                 FM.EI.setCurControlAll(false);
                 FM.EI.setCurControl(6, true);
@@ -1463,7 +1491,7 @@ public class AircraftHotKeys
             }
             break;
         case 201:
-            if (FM.Scheme != 0 && FM.Scheme != 1 && FM.EI.getNum() >= 8)
+            if(FM.Scheme != 0 && FM.Scheme != 1 && FM.EI.getNum() >= 8)
             {
                 FM.EI.setCurControlAll(false);
                 FM.EI.setCurControl(7, true);
@@ -1471,7 +1499,7 @@ public class AircraftHotKeys
                 break;
             }
             break;
-            
+
         case 102: // 'f'
             if(FM.Scheme == 0 || FM.Scheme == 1)
                 return;
@@ -1546,14 +1574,16 @@ public class AircraftHotKeys
         case 113: // 'q'
             if(!FM.EI.isSelectionHasControlExtinguisher())
                 break;
-            for (int k=0; k<FM.EI.getNum(); k++) {
+            for(int k=0; k<FM.EI.getNum(); k++)
+            {
                 if(FM.EI.getCurControl(k))
                     FM.EI.engines[k].setExtinguisherFire();
             }
 
           //TODO: Added flapIndex integer to following two keys to allow for custom flap settings
         case 53: // '5'
-            if(FM.CT.bHasFlapsControl){
+            if(FM.CT.bHasFlapsControl)
+            {
                 SetFlapsHotKeys(1, FM);
                 if(FM.CT.FlapStageMax != -1.0F && flapIndex < FM.CT.nFlapStages)
                 {
@@ -1563,7 +1593,8 @@ public class AircraftHotKeys
             }
             break;
         case 52: // '4'
-            if(FM.CT.bHasFlapsControl){
+            if(FM.CT.bHasFlapsControl)
+            {
                 SetFlapsHotKeys(0, FM);
                 if(FM.CT.FlapStageMax != -1.0F && flapIndex > 0)
                 {
@@ -1574,9 +1605,10 @@ public class AircraftHotKeys
             break;
             //TODO: New hotkeys for variable geometry/incidence wings
         case 202: // '5'
-            if(FM.CT.bHasVarWingControl){
+            if(FM.CT.bHasVarWingControl)
+            {
                 SetVarWingHotKeys(0, FM);
-                if(varWingIndex > 0)
+                if(FM.CT.VarWingStageMax != -1.0F && varWingIndex > 0)
                 {
                     varWingIndex--;
                     oldVarWingIndex = varWingIndex;
@@ -1584,9 +1616,10 @@ public class AircraftHotKeys
             }
             break;
         case 203: // '4'
-            if(FM.CT.bHasVarWingControl){
+            if(FM.CT.bHasVarWingControl)
+            {
                 SetVarWingHotKeys(1, FM);
-                if(varWingIndex < (FM.CT.nVarWingStages-1))
+                if(FM.CT.VarWingStageMax != -1.0F && varWingIndex < FM.CT.nVarWingStages)
                 {
                     varWingIndex++;
                     oldVarWingIndex = varWingIndex;
@@ -1594,7 +1627,7 @@ public class AircraftHotKeys
             }
             break;
             //TODO: Blown Flaps
-        case 204: 
+        case 204:
             if(((FlightModelMain) (FM)).CT.BlownFlapsType != null && ((FlightModelMain) (FM)).CT.bHasBlownFlaps && ((FlightModelMain) (FM)).CT.FlapsControl > 0.0F)
             {
                 ((FlightModelMain) (FM)).CT.BlownFlapsControl = ((FlightModelMain) (FM)).CT.BlownFlapsControl > 0.5F ? 0.0F : 1.0F;
@@ -1619,7 +1652,7 @@ public class AircraftHotKeys
                 HUD.log("GearDamaged");
             break;
 
-        case 129: 
+        case 129:
             if(!FM.CT.bHasArrestorControl)
                 break;
             if(FM.CT.arrestorControl > 0.5F)
@@ -1633,7 +1666,7 @@ public class AircraftHotKeys
             }
             break;
 
-        case 130: 
+        case 130:
             if(!FM.canChangeBrakeShoe || (FM.actor instanceof TypeSeaPlane) || (FM.actor instanceof HE_LERCHE3))
                 break;
             if(FM.brakeShoe)
@@ -1664,26 +1697,26 @@ public class AircraftHotKeys
             break;
 
         case 128:
-            if (FM.CT.bHasCockpitDoorControl)
+            if(FM.CT.bHasCockpitDoorControl)
             {
                     try
                     {
                         //TODO: Disabled for ModAct compatibility
-                        if ((Aircraft)FM.actor instanceof SPITFIRE)
+                        if((Aircraft)FM.actor instanceof SPITFIRE)
                             FM.CT.bHasSideDoor = true;
                     }
                     catch (Throwable throwable)
                     {
                         /* empty */
                     }
-                    if (FM.CT.bHasSideDoor)
+                    if(FM.CT.bHasSideDoor)
                         FM.CT.setActiveDoor(COCKPIT_DOOR);
-                if (FM.CT.cockpitDoorControl < 0.5F && FM.CT.getCockpitDoor() < 0.01F)
+                if(FM.CT.cockpitDoorControl < 0.5F && FM.CT.getCockpitDoor() < 0.01F)
                 {
                     FM.AS.setCockpitDoor(aircraft, 1);
                     HUD.log("CockpitDoorOPN");
                 }
-                else if (FM.CT.cockpitDoorControl > 0.5F && FM.CT.getCockpitDoor() > 0.99F)
+                else if(FM.CT.cockpitDoorControl > 0.5F && FM.CT.getCockpitDoor() > 0.99F)
                 {
                     FM.AS.setCockpitDoor(aircraft, 0);
                     HUD.log("CockpitDoorCLS");
@@ -1794,17 +1827,17 @@ public class AircraftHotKeys
             return;
         switch(i)
         {
-        case 149: 
+        case 149:
             bAAircraft.auxPlus(1);
             toTrackSign(i);
             return;
 
-        case 150: 
+        case 150:
             bAAircraft.auxMinus(1);
             toTrackSign(i);
             return;
 
-        case 139: 
+        case 139:
             if(World.cur().diffCur.RealisticNavigationInstruments)
             {
                 bAAircraft.beaconPlus();
@@ -1812,7 +1845,7 @@ public class AircraftHotKeys
             }
             return;
 
-        case 140: 
+        case 140:
             if(World.cur().diffCur.RealisticNavigationInstruments)
             {
                 bAAircraft.beaconMinus();
@@ -1863,7 +1896,7 @@ public class AircraftHotKeys
                 bAAircraft.FM.CT.toggleBombTrainAmount();
             return;
 
-        case 196: 
+        case 196:
             if(bAAircraft.hasIntervalometer())
                 bAAircraft.FM.CT.toggleBombTrainDelay();
             return;
@@ -2171,41 +2204,46 @@ public class AircraftHotKeys
             if(!FM.CT.bHasFlapsControlRed)
             {
                 float ff  = f * 0.5F + 0.5F;
-                if (FM.CT.bHasFlapsControlSwitch)
+                if(FM.CT.bHasFlapsControlSwitch)
                 {
-                    if (ff < 0.1F){
+                    if(ff < 0.1F)
+                    {
                         FM.CT.FlapsControlSwitch = 0;
-                        if (oldFlapsControlSwitch != FM.CT.FlapsControlSwitch)
+                        if(oldFlapsControlSwitch != FM.CT.FlapsControlSwitch)
                         {
-                            if (FM.CT.FlapStageText != null)
-                                HUD.log("Flaps: " + FM.CT.FlapStageText[FM.CT.FlapsControlSwitch]);
+                            if(FM.CT.FlapStageText != null)
+                                HUD.log("FlapsTEXT", new Object[] { new String(FM.CT.FlapStageText[FM.CT.FlapsControlSwitch]) });
                             else
-                                HUD.log("FlapsRaised");
+                                HUD.log("FlapsSTAGE", new Object[] { new Integer(FM.CT.FlapsControlSwitch) });
                             oldFlapsControlSwitch = FM.CT.FlapsControlSwitch;
                         }
                         break;
                     }
-                    else if (ff > 0.9F){
+                    else if(ff > 0.9F)
+                    {
                         FM.CT.FlapsControlSwitch = FM.CT.nFlapStages - 1;
-                        if (oldFlapsControlSwitch != FM.CT.FlapsControlSwitch) {
-                            if (FM.CT.FlapStageText != null)
-                                HUD.log("Flaps: " + FM.CT.FlapStageText[FM.CT.FlapsControlSwitch]);
+                        if(oldFlapsControlSwitch != FM.CT.FlapsControlSwitch)
+                        {
+                            if(FM.CT.FlapStageText != null)
+                                HUD.log("FlapsTEXT", new Object[] { new String(FM.CT.FlapStageText[FM.CT.FlapsControlSwitch]) });
                             else
-                                HUD.log("FlapsLanding");
+                                HUD.log("FlapsSTAGE", new Object[] { new Integer(FM.CT.FlapsControlSwitch) });
                             oldFlapsControlSwitch = FM.CT.FlapsControlSwitch;
                         }
                         break;
                     }
-                    else {
+                    else
+                    {
                         float div = 1.0F / (FM.CT.nFlapStages);
                         for(int ii = 1; ii < FM.CT.nFlapStages - 1; ii++)
                         {
                             if(ff > div * ii && ff < div * (ii + 1))
                             {
                                 FM.CT.FlapsControlSwitch = ii;
-                                if (oldFlapsControlSwitch != FM.CT.FlapsControlSwitch) {
-                                    if (FM.CT.FlapStageText != null)
-                                        HUD.log("Flaps: " + FM.CT.FlapStageText[FM.CT.FlapsControlSwitch]);
+                                if(oldFlapsControlSwitch != FM.CT.FlapsControlSwitch)
+                                {
+                                    if(FM.CT.FlapStageText != null)
+                                        HUD.log("FlapsTEXT", new Object[] { new String(FM.CT.FlapStageText[FM.CT.FlapsControlSwitch]) });
                                     oldFlapsControlSwitch = FM.CT.FlapsControlSwitch;
                                 }
                                 break;
@@ -2214,24 +2252,24 @@ public class AircraftHotKeys
                         break;
                     }
                 }
-                else if (FM.CT.FlapStage != null && FM.CT.FlapStageMax != -1.0F)
+                else if(FM.CT.FlapStage != null && FM.CT.FlapStageMax != -1.0F)
                 {
-                    if (ff < 0.1F)
+                    if(ff < 0.1F)
                     {
                         flapIndex = 0;
                         oldFlapIndex = flapIndex;
-                        if (FM.CT.FlapsControl != 0.0F)
+                        if(FM.CT.FlapsControl != 0.0F)
                             HUD.log("FlapsRaised");
                         FM.CT.FlapsControl = 0.0F;
                         break;
                     }
-                    else if (ff > 0.9F)
+                    else if(ff > 0.9F)
                     {
                         flapIndex = FM.CT.nFlapStages;
                         FM.CT.FlapsControl = 1.0F;
-                        if (oldFlapIndex != flapIndex)
+                        if(oldFlapIndex != flapIndex)
                         {
-                            HUD.log("Flaps: " + FM.CT.FlapStageMax + " deg.");
+                            HUD.log("FlapsDegree", new Object[] { new Float(FM.CT.FlapStageMax) });
                             oldFlapIndex = flapIndex;
                         }
                         break;
@@ -2244,10 +2282,10 @@ public class AircraftHotKeys
                             if(ff > div * ii && ff < div * (ii + 1))
                             {
                                 flapIndex = ii;
-                                if (oldFlapIndex != flapIndex)
+                                if(oldFlapIndex != flapIndex)
                                 {
                                     FM.CT.FlapsControl = FM.CT.FlapStage[flapIndex];
-                                    HUD.log("Flaps: " + (Math.floor((double)FM.CT.FlapStage[flapIndex] * FM.CT.FlapStageMax * 100F + 0.05F) / 100F) + " deg.");
+                                    HUD.log("FlapsDegree", new Object[] { new Float(((float)Math.floor((double)FM.CT.FlapsControl * FM.CT.FlapStageMax * 100D + 0.05D) / 100F)) });
                                     oldFlapIndex = flapIndex;
                                 }
                                 break;
@@ -2334,39 +2372,39 @@ public class AircraftHotKeys
                 break;
             lastPower1 = f3;
             flp12 = (lastPower1 + lastPower2) / 2.0F;
-            if (useSmartAxisForPower && FM.EI.engines.length == 3)
+            if(useSmartAxisForPower && FM.EI.engines.length == 3)
             {
                 setPowerControl(f3, 1);
                 setPowerControl(flp12, 2);
                 break;
             }
-            else if (useSmartAxisForPower && FM.EI.engines.length == 4)
+            else if(useSmartAxisForPower && FM.EI.engines.length == 4)
             {
                 setPowerControl(f3, 1);
                 setPowerControl(f3, 2);
                 break;
             }
-            else if (useSmartAxisForPower && FM.EI.engines.length == 5)
+            else if(useSmartAxisForPower && FM.EI.engines.length == 5)
             {
                 setPowerControl(f3, 1);
                 setPowerControl(f3, 2);
                 setPowerControl(flp12, 3);
                 break;
             }
-            else if (useSmartAxisForPower && FM.EI.engines.length == 6)
+            else if(useSmartAxisForPower && FM.EI.engines.length == 6)
             {
                 setPowerControl(f3, 1);
                 setPowerControl(f3, 2);
                 setPowerControl(f3, 3);
                 break;
             }
-            else if (useSmartAxisForPower2 && FM.EI.engines.length == 6)
+            else if(useSmartAxisForPower2 && FM.EI.engines.length == 6)
             {
                 setPowerControl(f3, 1);
                 setPowerControl(flp12, 2);
                 break;
             }
-            else if (useSmartAxisForPower && FM.EI.engines.length == 7)
+            else if(useSmartAxisForPower && FM.EI.engines.length == 7)
             {
                 setPowerControl(f3, 1);
                 setPowerControl(f3, 2);
@@ -2374,13 +2412,13 @@ public class AircraftHotKeys
                 setPowerControl(flp12, 4);
                 break;
             }
-            else if (useSmartAxisForPower2 && FM.EI.engines.length == 7)
+            else if(useSmartAxisForPower2 && FM.EI.engines.length == 7)
             {
                 setPowerControl(f3, 1);
                 setPowerControl(flp12, 2);
                 break;
             }
-            else if (useSmartAxisForPower && FM.EI.engines.length == 8)
+            else if(useSmartAxisForPower && FM.EI.engines.length == 8)
             {
                 setPowerControl(f3, 1);
                 setPowerControl(f3, 2);
@@ -2388,7 +2426,7 @@ public class AircraftHotKeys
                 setPowerControl(f3, 4);
                 break;
             }
-            else if (useSmartAxisForPower2 && FM.EI.engines.length == 8)
+            else if(useSmartAxisForPower2 && FM.EI.engines.length == 8)
             {
                 setPowerControl(f3, 1);
                 setPowerControl(f3, 2);
@@ -2402,50 +2440,50 @@ public class AircraftHotKeys
 
         case 16: // '\020'
             float f4 = f * 0.55F + 0.55F;
-            if (Math.abs(f4 - lastPower2) < 0.01F)
+            if(Math.abs(f4 - lastPower2) < 0.01F)
                 break;
             lastPower2 = f4;
             flp12 = (lastPower1 + lastPower2) / 2.0F;
             flp23 = (lastPower2 + lastPower3) / 2.0F;
-            if (useSmartAxisForPower && FM.EI.engines.length == 3)
+            if(useSmartAxisForPower && FM.EI.engines.length == 3)
             {
                 setPowerControl(f4, 3);
                 setPowerControl(flp12, 2);
                 break;
             }
-            else if (useSmartAxisForPower && FM.EI.engines.length == 4)
+            else if(useSmartAxisForPower && FM.EI.engines.length == 4)
             {
                 setPowerControl(f4, 3);
                 setPowerControl(f4, 4);
                 break;
             }
-            else if (useSmartAxisForPower && FM.EI.engines.length == 5)
+            else if(useSmartAxisForPower && FM.EI.engines.length == 5)
             {
                 setPowerControl(f4, 4);
                 setPowerControl(f4, 5);
                 setPowerControl(flp12, 3);
                 break;
             }
-            else if (useSmartAxisForPower2 && FM.EI.engines.length == 5)
+            else if(useSmartAxisForPower2 && FM.EI.engines.length == 5)
             {
                 setPowerControl(f4, 2);
                 setPowerControl(flp23, 3);
                 break;
             }
-            else if (useSmartAxisForPower && FM.EI.engines.length == 6)
+            else if(useSmartAxisForPower && FM.EI.engines.length == 6)
             {
                 setPowerControl(f4, 4);
                 setPowerControl(f4, 5);
                 setPowerControl(f4, 6);
                 break;
             }
-            else if (useSmartAxisForPower2 && FM.EI.engines.length == 6)
+            else if(useSmartAxisForPower2 && FM.EI.engines.length == 6)
             {
                 setPowerControl(f4, 3);
                 setPowerControl(flp12, 2);
                 break;
             }
-            else if (useSmartAxisForPower && FM.EI.engines.length == 7)
+            else if(useSmartAxisForPower && FM.EI.engines.length == 7)
             {
                 setPowerControl(f4, 5);
                 setPowerControl(f4, 6);
@@ -2453,14 +2491,14 @@ public class AircraftHotKeys
                 setPowerControl(flp12, 4);
                 break;
             }
-            else if (useSmartAxisForPower2 && FM.EI.engines.length == 7)
+            else if(useSmartAxisForPower2 && FM.EI.engines.length == 7)
             {
                 setPowerControl(f4, 3);
                 setPowerControl(flp12, 2);
                 setPowerControl(flp23, 4);
                 break;
             }
-            else if (useSmartAxisForPower && FM.EI.engines.length == 8)
+            else if(useSmartAxisForPower && FM.EI.engines.length == 8)
             {
                 setPowerControl(f4, 5);
                 setPowerControl(f4, 6);
@@ -2468,7 +2506,7 @@ public class AircraftHotKeys
                 setPowerControl(f4, 8);
                 break;
             }
-            else if (useSmartAxisForPower2 && FM.EI.engines.length == 8)
+            else if(useSmartAxisForPower2 && FM.EI.engines.length == 8)
             {
                 setPowerControl(f4, 3);
                 setPowerControl(f4, 4);
@@ -2482,31 +2520,31 @@ public class AircraftHotKeys
 
         case 17: // '\021'
             float f5 = f * 0.55F + 0.55F;
-            if (Math.abs(f5 - lastPower3) < 0.01F)
+            if(Math.abs(f5 - lastPower3) < 0.01F)
                 break;
             lastPower3 = f5;
             flp23 = (lastPower2 + lastPower3) / 2.0F;
             flp34 = (lastPower3 + lastPower4) / 2.0F;
-            if (useSmartAxisForPower2 && FM.EI.engines.length == 5)
+            if(useSmartAxisForPower2 && FM.EI.engines.length == 5)
             {
                 setPowerControl(f5, 4);
                 setPowerControl(flp23, 3);
                 break;
             }
-            else if (useSmartAxisForPower2 && FM.EI.engines.length == 6)
+            else if(useSmartAxisForPower2 && FM.EI.engines.length == 6)
             {
                 setPowerControl(f5, 4);
                 setPowerControl(flp34, 5);
                 break;
             }
-            else if (useSmartAxisForPower2 && FM.EI.engines.length == 7)
+            else if(useSmartAxisForPower2 && FM.EI.engines.length == 7)
             {
                 setPowerControl(f5, 5);
                 setPowerControl(flp23, 4);
                 setPowerControl(flp34, 6);
                 break;
             }
-            else if (useSmartAxisForPower2 && FM.EI.engines.length == 8)
+            else if(useSmartAxisForPower2 && FM.EI.engines.length == 8)
             {
                 setPowerControl(f5, 5);
                 setPowerControl(f5, 6);
@@ -2520,27 +2558,27 @@ public class AircraftHotKeys
 
         case 18: // '\022'
             float f6 = f * 0.55F + 0.55F;
-            if (Math.abs(f6 - lastPower4) < 0.01F) break;
+            if(Math.abs(f6 - lastPower4) < 0.01F) break;
             lastPower4 = f6;
             flp34 = (lastPower3 + lastPower4) / 2.0F;
-            if (useSmartAxisForPower2 && FM.EI.engines.length == 5)
+            if(useSmartAxisForPower2 && FM.EI.engines.length == 5)
             {
                 setPowerControl(f6, 5);
                 break;
             }
-            else if (useSmartAxisForPower2 && FM.EI.engines.length == 6)
+            else if(useSmartAxisForPower2 && FM.EI.engines.length == 6)
             {
                 setPowerControl(f6, 6);
                 setPowerControl(flp34, 5);
                 break;
             }
-            else if (useSmartAxisForPower2 && FM.EI.engines.length == 7)
+            else if(useSmartAxisForPower2 && FM.EI.engines.length == 7)
             {
                 setPowerControl(f6, 7);
                 setPowerControl(flp34, 6);
                 break;
             }
-            else if (useSmartAxisForPower2 && FM.EI.engines.length == 8)
+            else if(useSmartAxisForPower2 && FM.EI.engines.length == 8)
             {
                 setPowerControl(f6, 7);
                 setPowerControl(f6, 8);
@@ -2797,53 +2835,151 @@ public class AircraftHotKeys
             }
             break;
 
-        case 170: 
+        case 170:
             HookPilot.cur().leanForwardMove(f);
             break;
 
-        case 171: 
+        case 171:
             HookPilot.cur().leanSideMove(f);
             break;
 
-        case 172: 
+        case 172:
             HookPilot.cur().raiseMove(f);
             break;
 
         case 51:
-            if (!FM.CT.bHasVarWingControl)
+            if(!FM.CT.bHasVarWingControl)
                 break;
-            if (FM.CT.bHasVarWingControlFree)
+            if(FM.CT.bHasVarWingControlFree)
             {
                 FM.CT.VarWingControl = f * 0.5F + 0.5F;
-                if (FM.CT.VarWingControl > 0.95F && oldVarWingControl <= 0.95F)
-                    HUD.log("Wings: Extended");
-                else if (FM.CT.VarWingControl < 0.05F && oldVarWingControl >= 0.05F)
-                    HUD.log("Wings: Retracted");
+                if(FM.CT.VarWingControl > 0.95F && oldVarWingControl <= 0.95F)
+                {
+                    if(FM.CT.bUseVarWingAsNozzleRot)
+                        HUD.log("NozzleFullRotated");
+                    else
+                        HUD.log("VGWingExtended");
+                }
+                else if(FM.CT.VarWingControl < 0.05F && oldVarWingControl >= 0.05F)
+                {
+                    if(FM.CT.bUseVarWingAsNozzleRot)
+                        HUD.log("NozzleStraight");
+                    else
+                        HUD.log("VGWingRetracted");
+                }
                 oldVarWingControl = FM.CT.VarWingControl;
                 break;
             }
             else
             {
                 float ff  = f * 0.5F + 0.5F;
-                if (FM.CT.VarWingStage != null && FM.CT.VarWingStageMax != -1.0F)
+                if(FM.CT.bHasVarWingControlSwitch)
                 {
-                    if (ff < 0.1F)
+                    if(ff < 0.1F)
+                    {
+                        FM.CT.VarWingControlSwitch = 0;
+                        if(oldVarWingControlSwitch != FM.CT.VarWingControlSwitch)
+                        {
+                            if(FM.CT.VarWingStageText != null)
+                            {
+                                if(FM.CT.bUseVarWingAsNozzleRot)
+                                    HUD.log("NozzleTEXT", new Object[] { new String(FM.CT.VarWingStageText[FM.CT.VarWingControlSwitch]) });
+                                else
+                                    HUD.log("VGWingTEXT", new Object[] { new String(FM.CT.VarWingStageText[FM.CT.VarWingControlSwitch]) });
+                            }
+                            else
+                            {
+                                if(FM.CT.bUseVarWingAsNozzleRot)
+                                    HUD.log("NozzleStraight");
+                                else
+                                    HUD.log("VGWingRetracted");
+                            }
+                            oldVarWingControlSwitch = FM.CT.VarWingControlSwitch;
+                        }
+                        break;
+                    }
+                    else if(ff > 0.9F)
+                    {
+                        FM.CT.VarWingControlSwitch = FM.CT.nVarWingStages - 1;
+                        if(oldVarWingControlSwitch != FM.CT.VarWingControlSwitch)
+                        {
+                            if(FM.CT.VarWingStageText != null)
+                            {
+                                if(FM.CT.bUseVarWingAsNozzleRot)
+                                    HUD.log("NozzleTEXT", new Object[] { new String(FM.CT.VarWingStageText[FM.CT.VarWingControlSwitch]) });
+                                else
+                                    HUD.log("VGWingTEXT", new Object[] { new String(FM.CT.VarWingStageText[FM.CT.VarWingControlSwitch]) });
+                            }
+                            else
+                            {
+                                if(FM.CT.bUseVarWingAsNozzleRot)
+                                    HUD.log("NozzleFullRotated");
+                                else
+                                    HUD.log("VGWingExtended");
+                            }
+                            oldVarWingControlSwitch = FM.CT.VarWingControlSwitch;
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        float div = 1.0F / FM.CT.nVarWingStages;
+                        for(int ii = 1; ii < FM.CT.nVarWingStages - 1; ii++)
+                        {
+                            if(ff > div * ii && ff < div * (ii + 1))
+                            {
+                                FM.CT.VarWingControlSwitch = ii;
+                                if(oldVarWingControlSwitch != FM.CT.VarWingControlSwitch)
+                                {
+                                    if(FM.CT.VarWingStageText != null)
+                                    {
+                                        if(FM.CT.bUseVarWingAsNozzleRot)
+                                            HUD.log("NozzleTEXT", new Object[] { new String(FM.CT.VarWingStageText[FM.CT.VarWingControlSwitch]) });
+                                        else
+                                            HUD.log("VGWingTEXT", new Object[] { new String(FM.CT.VarWingStageText[FM.CT.VarWingControlSwitch]) });
+                                    }
+                                    else
+                                    {
+                                        if(FM.CT.bUseVarWingAsNozzleRot)
+                                            HUD.log("NozzleSTAGE", new Object[] { new Integer(FM.CT.VarWingControlSwitch) });
+                                        else
+                                            HUD.log("VGWingSTAGE", new Object[] { new Integer(FM.CT.VarWingControlSwitch) });
+                                    }
+                                    oldVarWingControlSwitch = FM.CT.VarWingControlSwitch;
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+                else if(FM.CT.VarWingStage != null && FM.CT.VarWingStageMax != -1.0F)
+                {
+                    if(ff < 0.1F)
                     {
                         varWingIndex = 0;
                         oldVarWingIndex = varWingIndex;
-                        if (FM.CT.VarWingControl != 0.0F)
-                            HUD.log("Wings: Retracted");
+                        if(FM.CT.VarWingControl != 0.0F)
+                        {
+                            if(FM.CT.bUseVarWingAsNozzleRot)
+                                HUD.log("NozzleStraight");
+                            else
+                                HUD.log("VGWingRetracted");
+                        }
                         FM.CT.VarWingControl = 0.0F;
                         oldVarWingControl = FM.CT.VarWingControl;
                         break;
                     }
-                    else if (ff > 0.9F)
+                    else if(ff > 0.9F)
                     {
                         varWingIndex = FM.CT.nVarWingStages;
                         FM.CT.VarWingControl = 1.0F;
-                        if (oldVarWingIndex != varWingIndex || oldVarWingControl == 0.0F)
+                        if(oldVarWingIndex != varWingIndex)
                         {
-                            HUD.log("Wings: " + FM.CT.VarWingStageMax + " deg.");
+                            if(FM.CT.bUseVarWingAsNozzleRot)
+                                HUD.log("NozzleRotate", new Object[] { new Float(FM.CT.VarWingStageMax) });
+                            else
+                                HUD.log("VGWingExtend", new Object[] { new Float(FM.CT.VarWingStageMax) });
                             oldVarWingIndex = varWingIndex;
                             oldVarWingControl = FM.CT.VarWingControl;
                         }
@@ -2851,16 +2987,19 @@ public class AircraftHotKeys
                     }
                     else
                     {
-                        float div = 1.0F / (FM.CT.nVarWingStages + 2);
-                        for(int ii = 1; ii < FM.CT.nVarWingStages + 1; ii++)
+                        float div = 1.0F / (FM.CT.nVarWingStages + 1);
+                        for(int ii = 1; ii < FM.CT.nVarWingStages; ii++)
                         {
                             if(ff > div * ii && ff < div * (ii + 1))
                             {
-                                varWingIndex = ii - 1;
-                                if (oldVarWingIndex != varWingIndex || FM.CT.VarWingControl == 0.0F)
+                                varWingIndex = ii;
+                                if(oldVarWingIndex != varWingIndex)
                                 {
                                     FM.CT.VarWingControl = FM.CT.VarWingStage[varWingIndex];
-                                    HUD.log("Wings: " + (Math.floor((double)FM.CT.VarWingStage[varWingIndex] * FM.CT.VarWingStageMax * 100F + 0.05F) / 100F) + " deg.");
+                                    if(FM.CT.bUseVarWingAsNozzleRot)
+                                        HUD.log("NozzleRotate", new Object[] { new Float(((float)Math.floor((double)FM.CT.VarWingStage[varWingIndex] * FM.CT.VarWingStageMax * 100D + 0.05D) / 100F)) });
+                                    else
+                                        HUD.log("VGWingExtend", new Object[] { new Float(((float)Math.floor((double)FM.CT.VarWingStage[varWingIndex] * FM.CT.VarWingStageMax * 100D + 0.05D) / 100F)) });
                                     oldVarWingIndex = varWingIndex;
                                     oldVarWingControl = FM.CT.VarWingControl;
                                 }
@@ -2965,6 +3104,9 @@ public class AircraftHotKeys
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ72", "Misc_8", 307, 389));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ73", "Misc_9", 308, 390));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ74", "Misc_10", 309, 391));
+        // TODO: Engine MOD 2.7.3w New light keys by western
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ75", "toggleFormationLights", 310, 392));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ76", "toggleAntiColLights", 311, 393));
     }
 
     public void createPilotHotKeys()
@@ -3098,21 +3240,21 @@ public class AircraftHotKeys
 );
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced01", "AIRCRAFT_FLAPS_NOTCH_UP", 52, 152));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced02", "AIRCRAFT_FLAPS_NOTCH_DOWN", 53, 153));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced021", "Toggle Blown Flaps", 204, 429));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced021", "AIRCRAFT_BLOWN_FLAPS", 204, 429));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced03", "Gear", 9, 109));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced04", "AIRCRAFT_GEAR_UP_MANUAL", 54, 154));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced05", "AIRCRAFT_GEAR_DOWN_MANUAL", 55, 155));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced06", "Radiator", 7, 107));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced07", "AIRCRAFT_TOGGLE_AIRBRAKE", 63, 163));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced08", "Brake", 0, 100));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced081", "Brakes Left", 145, 352));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced082", "Brakes Right", 144, 351));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced081", "Brake_Left", 145, 352));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced082", "Brake_Right", 144, 351));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced09", "AIRCRAFT_TAILWHEELLOCK", 72, 166));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced10", "AIRCRAFT_DROP_TANKS", 62, 162));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced11", "Deploy Drag Chute", 143, 412));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced12", "Deploy Refuelling Device", 136, 405));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced121", "Decrease Wing Sweep/Incidence", 202, 154));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced122", "Increase Wing Sweep/Incidence", 203, 155));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced11", "Deploy_DragChute", 143, 412));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced12", "Deploy_RefuelDevice", 136, 405));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced121", "WING_SWEEP_MINUS", 202, 154));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced122", "WING_SWEEP_PLUS", 203, 155));
         HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$9", "3advanced13") {
 
         }
@@ -3122,8 +3264,8 @@ public class AircraftHotKeys
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced16", "AIRCRAFT_CARRIERHOOK", 129, 349));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced17", "AIRCRAFT_BRAKESHOE", 130, 350));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced18", "COCKPITDOOR", 128, 348));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced19", "Open/Close Side Hatch", 134, 403));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced20", "Toggle Fuel Dump", 132, 401));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced19", "COCKPITSIDEDOOR", 134, 403));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced20", "AIRCRAFT_FUEL_DUMP", 132, 401));
         HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$10", "3advanced21") {
 
         }
@@ -3135,11 +3277,11 @@ public class AircraftHotKeys
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic3", "Weapon3", 19, 119));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic4", "Weapon01", 64, 173));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic5", "GunPods", 15, 115));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic6", "Deploy Flares", 65, 174));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic7", "Deploy Chaff", 66, 175));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic9", "Select Missile/Rocket", 135, 404));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic91", "Weapon Salvo Size", 137, 406));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic92", "Weapon Release Delay", 146, 353));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic6", "DeployFlare", 65, 174));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic7", "DeployChaff", 66, 175));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic9", "ROCKET_SELECT", 135, 404));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic91", "ROCKET_SALVO_SIZE", 137, 406));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic92", "ROCKET_RELEASE_DELAY", 146, 353));
         HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$+SIGHTCONTROLS", "4basic93") {
 
         }
@@ -3158,11 +3300,11 @@ public class AircraftHotKeys
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced11", "BOMB_RELEASE_TRAIN_AMOUNT", 195, 355));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced12", "BOMB_RELEASE_TRAIN_DELAY", 196, 356));
                 // TODO: -- Added Code for importing 4.13.2m --
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced13", "Toggle Radar Mode", 138, 407));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced14", "Increase Scan Range", 139, 408));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced15", "Decrease Scan Range", 140, 409));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced16", "Increase Radar Gain", 141, 410));
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced17", "Decrease Radar Gain", 142, 411));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced13", "RADER_MODE_TOGGLE", 138, 407));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced14", "RADAR_RANGE_PLUS", 139, 408));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced15", "RADAR_RANGE_MINUS", 140, 409));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced16", "RADAR_GAIN_PLUS", 141, 410));
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced17", "RADAR_GAIN_MINUS", 142, 411));
     }
 
     private CockpitGunner getActiveCockpitGuner()
@@ -3271,7 +3413,7 @@ public class AircraftHotKeys
 
             CockpitGunner coc;
 
-            
+
             {
                 coc = null;
             }
@@ -3341,7 +3483,7 @@ public class AircraftHotKeys
                     aircraft.netCockpitAuto(aircraft, i, !cockpitgunner.isRealMode());
             }
             FlightModel flightmodel = World.getPlayerFM();
-            // AircraftState _tmp = flightmodel.AS;	//By PAL, in stock v4.12.2
+            // AircraftState _tmp = flightmodel.AS;    //By PAL, in stock v4.12.2
             String s = AircraftState.astateHUDPilotHits[flightmodel.AS.astatePilotFunctions[cockpitgunner.astatePilotIndx()]];
             HUD.log(s + (cockpitgunner.isRealMode() ? "AIOFF" : "AION"));
         }
@@ -3865,7 +4007,7 @@ public class AircraftHotKeys
 
     //By PAL, "16" used in GUIMenu class: HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "GameMenu", "16"){};
 
-    //By PAL, "17" used in GUIMenu class: HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "LeavePlane", "17"){};    
+    //By PAL, "17" used in GUIMenu class: HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "LeavePlane", "17"){};
 
     public void create_MiscHotKeys()
     {
@@ -5662,52 +5804,60 @@ public class AircraftHotKeys
         else
             return "fov " + getFoVInt(f);
     }
-    
+
     // TODO: Custom flap settings. Parameters are defined in the flight model and allow for numerous different flap settings.
-    public boolean SetFlapsHotKeys(int direction, RealFlightModel RFM) {
+    public boolean SetFlapsHotKeys(int direction, RealFlightModel RFM)
+    {
         int i = direction % 2; // even number >> 0 - flaps up, odd number >> 1 - flaps down
         switch (i) {
         case 0:
-            if (!RFM.CT.bHasFlapsControlRed) {
-                if (RFM.CT.bHasFlapsControlSwitch) {
-                    if (RFM.CT.FlapsControlSwitch > 0)
+            if(!RFM.CT.bHasFlapsControlRed)
+            {
+                if(RFM.CT.bHasFlapsControlSwitch)
+                {
+                    if(RFM.CT.FlapsControlSwitch > 0)
                     {
                         RFM.CT.FlapsControlSwitch--;
                         oldFlapsControlSwitch = RFM.CT.FlapsControlSwitch;
-                        if (RFM.CT.FlapStageText != null)
-                            HUD.log("Flaps: " + RFM.CT.FlapStageText[RFM.CT.FlapsControlSwitch]);
+                        if(RFM.CT.FlapStageText != null)
+                            HUD.log("FlapsTEXT", new Object[] { new String(RFM.CT.FlapStageText[RFM.CT.FlapsControlSwitch]) });
                         else
-                            if (RFM.CT.FlapsControlSwitch == 0) HUD.log("FlapsRaised");
-                            else HUD.log("Flaps: 1 Up");
+                            HUD.log("FlapsSTAGE", new Object[] { new Integer(RFM.CT.FlapsControlSwitch) });
                     }
                     break;
                 }
                 else
                 {
-                    if (RFM.CT.FlapStage != null && RFM.CT.FlapStageMax != -1.0F) {
-                        if (flapIndex > 0 && RFM.CT.FlapsControl > RFM.CT.FlapStage[flapIndex - 1] + 0.05F)  //By PAL, added 0.05F to avoid imprecissions
+                    if(RFM.CT.FlapStage != null && RFM.CT.FlapStageMax != -1.0F)
+                    {
+                        if(flapIndex > 0 && RFM.CT.FlapsControl > RFM.CT.FlapStage[flapIndex - 1] + 0.05F)  //By PAL, added 0.05F to avoid imprecissions
                         {
                             RFM.CT.FlapsControl = RFM.CT.FlapStage[flapIndex - 1];
                             if(RFM.CT.FlapsControl == 0.0F)
                                 HUD.log("FlapsRaised");
                             else
                             //By western, floor and +0.05F to avoid imprecissions and show clean x.yy degrees display
-                                HUD.log("Flaps: " + (Math.floor((double)RFM.CT.FlapsControl * RFM.CT.FlapStageMax * 100F + 0.05F) / 100F) + " deg.");
+                                HUD.log("FlapsDegree", new Object[] { new Float(((float)Math.floor((double)RFM.CT.FlapsControl * RFM.CT.FlapStageMax * 100D + 0.05D) / 100F)) });
                             break;
                         }
                         break;
-                    } else {
-                        if (RFM.CT.FlapsControl > 0.33F) {
+                    }
+                    else
+                    {
+                        if(RFM.CT.FlapsControl > 0.33F)
+                        {
                             RFM.CT.FlapsControl = 0.33F;
                             HUD.log("FlapsTakeOff");
                             break;
                         }
-                        if (RFM.CT.FlapsControl > 0.2F && RFM.CT.nFlapStages > 1) {
+                        if(RFM.CT.FlapsControl > 0.2F && RFM.CT.nFlapStages > 1)
+                        {
                             RFM.CT.FlapsControl = 0.2F;
                             HUD.log("FlapsCombat");
                             break;
                         }
-                        if (RFM.CT.FlapsControl > 0.0F) {
+                        if(RFM.CT.FlapsControl > 0.0F)
+                        {
                             RFM.CT.FlapsControl = 0.0F;
                             HUD.log("FlapsRaised");
                         }
@@ -5716,51 +5866,56 @@ public class AircraftHotKeys
                 }
             }
 
-            if (RFM.CT.FlapsControl > 0.5F) {
+            if(RFM.CT.FlapsControl > 0.5F)
+            {
                 RFM.CT.FlapsControl = 0.0F;
                 HUD.log("FlapsRaised");
             }
             break;
 
         case 1:
-            if (!RFM.CT.bHasFlapsControlRed) {
-                if (RFM.CT.bHasFlapsControlSwitch) {
-                    if (RFM.CT.FlapsControlSwitch < RFM.CT.nFlapStages - 1)
+            if(!RFM.CT.bHasFlapsControlRed)
+            {
+                if(RFM.CT.bHasFlapsControlSwitch)
+                {
+                    if(RFM.CT.FlapsControlSwitch < RFM.CT.nFlapStages - 1)
                     {
                         RFM.CT.FlapsControlSwitch++;
                         oldFlapsControlSwitch = RFM.CT.FlapsControlSwitch;
-                        if (RFM.CT.FlapStageText != null)
-                            HUD.log("Flaps: " + RFM.CT.FlapStageText[RFM.CT.FlapsControlSwitch]);
+                        if(RFM.CT.FlapStageText != null)
+                            HUD.log("FlapsTEXT", new Object[] { new String(RFM.CT.FlapStageText[RFM.CT.FlapsControlSwitch]) });
                         else
-                            if (RFM.CT.FlapsControlSwitch == RFM.CT.nFlapStages - 1) HUD.log("FlapsLanding");
-                            else HUD.log("Flaps: 1 Down");
+                            HUD.log("FlapsSTAGE", new Object[] { new Integer(RFM.CT.FlapsControlSwitch) });
                     }
                     break;
                 }
                 else
                 {
-                    if (RFM.CT.FlapStage != null && RFM.CT.FlapStageMax != -1.0F)
+                    if(RFM.CT.FlapStage != null && RFM.CT.FlapStageMax != -1.0F)
                     {
-                        if (flapIndex < FM.CT.nFlapStages && RFM.CT.FlapsControl < RFM.CT.FlapStage[flapIndex + 1] - 0.05F) //By PAL, added 0.05F to avoid imprecissions
+                        if(flapIndex < FM.CT.nFlapStages && RFM.CT.FlapsControl < RFM.CT.FlapStage[flapIndex + 1] - 0.05F) //By PAL, added 0.05F to avoid imprecissions
                         {
                             RFM.CT.FlapsControl = RFM.CT.FlapStage[flapIndex + 1];
                             //By western, floor and +0.05F to avoid imprecissions and show clean x.yy degrees display
-                            HUD.log("Flaps: " + (Math.floor((double)RFM.CT.FlapsControl * RFM.CT.FlapStageMax * 100F + 0.05F) / 100F) + " deg.");
+                            HUD.log("FlapsDegree", new Object[] { new Float(((float)Math.floor((double)RFM.CT.FlapsControl * RFM.CT.FlapStageMax * 100D + 0.05D) / 100F)) });
                         }
                         break;
                     } else
                     {
-                        if (RFM.CT.FlapsControl < 0.2F && RFM.CT.nFlapStages > 1) {
+                        if(RFM.CT.FlapsControl < 0.2F && RFM.CT.nFlapStages > 1)
+                        {
                             RFM.CT.FlapsControl = 0.2F;
                             HUD.log("FlapsCombat");
                             break;
                         }
-                        if (RFM.CT.FlapsControl < 0.33F) {
+                        if(RFM.CT.FlapsControl < 0.33F)
+                        {
                             RFM.CT.FlapsControl = 0.33F;
                             HUD.log("FlapsTakeOff");
                             break;
                         }
-                        if (RFM.CT.FlapsControl < 1.0F) {
+                        if(RFM.CT.FlapsControl < 1.0F)
+                        {
                             RFM.CT.FlapsControl = 1.0F;
                             HUD.log("FlapsLanding");
                         }
@@ -5768,7 +5923,8 @@ public class AircraftHotKeys
                     }
                 }
             }
-            if (RFM.CT.FlapsControl < 0.5F) {
+            if(RFM.CT.FlapsControl < 0.5F)
+            {
                 RFM.CT.FlapsControl = 1.0F;
                 HUD.log("FlapsLanding");
             }
@@ -5781,61 +5937,99 @@ public class AircraftHotKeys
 
     // PAS--
 
-    // TODO: Custom flap settings. Parameters are defined in the flight model and allow for numerous different flap settings.
-    public boolean SetVarWingHotKeys (int direction, RealFlightModel RFM)
+    // TODO: Custom variable wing settings. Parameters are defined in the flight model and allow for numerous different v-wing settings.
+    public boolean SetVarWingHotKeys(int direction, RealFlightModel RFM)
     {
-        int i = direction % 2;    // even number >> 0 - flaps up, odd number >> 1 - flaps down
+        int i = direction % 2; // even number >> 0 - var-wings retract, odd number >> 1 - var-wings extend
         switch (i) {
         case 0:
-            if(RFM.CT.VarWingStage != null && RFM.CT.VarWingStageMax != -1.0F){
-                if(RFM.CT.nVarWingStages == 0)
+            if(RFM.CT.bHasVarWingControlSwitch)
+            {
+                if(RFM.CT.VarWingControlSwitch > 0)
                 {
-                    RFM.CT.VarWingControl = 0.0F;
-                    if (oldVarWingControl > 0.0F)
-                        HUD.log("Wings: Retracted");
-                    oldVarWingControl = RFM.CT.VarWingControl;
-                    break;
+                    RFM.CT.VarWingControlSwitch--;
+                    oldVarWingControlSwitch = RFM.CT.VarWingControlSwitch;
+                    if(RFM.CT.VarWingStageText != null)
+                    {
+                        if(RFM.CT.bUseVarWingAsNozzleRot)
+                            HUD.log("NozzleTEXT", new Object[] { new String(RFM.CT.VarWingStageText[RFM.CT.VarWingControlSwitch]) });
+                        else
+                            HUD.log("VGWingTEXT", new Object[] { new String(RFM.CT.VarWingStageText[RFM.CT.VarWingControlSwitch]) });
+                    }
+                    else
+                    {
+                        if(RFM.CT.bUseVarWingAsNozzleRot)
+                            HUD.log("NozzleSTAGE", new Object[] { new Integer(RFM.CT.VarWingControlSwitch) });
+                        else
+                            HUD.log("VGWingSTAGE", new Object[] { new Integer(RFM.CT.VarWingControlSwitch) });
+                    }
                 }
-                else if(RFM.CT.VarWingControl > RFM.CT.VarWingStage[varWingIndex] + 0.05F) //By PAL, added 0.05F to avoid imprecissions
+                break;
+            }
+            else
+            {
+                if(RFM.CT.VarWingStage != null && RFM.CT.VarWingStageMax != -1.0F)
                 {
-                    RFM.CT.VarWingControl = RFM.CT.VarWingStage[varWingIndex];
-                    //By western, floor and +0.05F to avoid imprecissions and show clean x.yy degrees display
-                    HUD.log("Wings: " + (Math.floor((double)RFM.CT.VarWingStage[varWingIndex] * RFM.CT.VarWingStageMax * 100F + 0.05F) / 100F) + " deg.");
-                    oldVarWingControl = RFM.CT.VarWingControl;
-                    break;
-                }
-                else if(varWingIndex == 0 && RFM.CT.VarWingControl >  0.0F)
-                {
-                    RFM.CT.VarWingControl = 0.0F;
-                    HUD.log("Wings: Retracted");
-                    oldVarWingControl = RFM.CT.VarWingControl;
-                    break;
+                    if(varWingIndex > 0 && RFM.CT.VarWingControl > RFM.CT.VarWingStage[varWingIndex - 1] + 0.05F)  //By PAL, added 0.05F to avoid imprecissions
+                    {
+                        RFM.CT.VarWingControl = RFM.CT.VarWingStage[varWingIndex - 1];
+                        if(RFM.CT.VarWingControl == 0.0F)
+                        {
+                            if(RFM.CT.bUseVarWingAsNozzleRot)
+                                HUD.log("NozzleStraight");
+                            else
+                                HUD.log("VGWingRetracted");
+                        }
+                        else
+                        {
+                        //By western, floor and +0.05F to avoid imprecissions and show clean x.yy degrees display
+                            if(RFM.CT.bUseVarWingAsNozzleRot)
+                                   HUD.log("NozzleRotate", new Object[] { new Float(((float)Math.floor((double)RFM.CT.VarWingControl * RFM.CT.VarWingStageMax * 100D + 0.05D) / 100F)) });
+                            else
+                                HUD.log("VGWingExtend", new Object[] { new Float(((float)Math.floor((double)RFM.CT.VarWingControl * RFM.CT.VarWingStageMax * 100D + 0.05D) / 100F)) });
+                        }
+                        break;
+                    }
                 }
                 break;
             }
         case 1:
-            if(RFM.CT.VarWingStage != null && RFM.CT.VarWingStageMax != -1.0F){
-                if(RFM.CT.nVarWingStages == 0)
+            if(RFM.CT.bHasVarWingControlSwitch)
+            {
+                if(RFM.CT.VarWingControlSwitch < RFM.CT.nVarWingStages - 1)
                 {
-                    RFM.CT.VarWingControl = 1.0F;
-                    if (oldVarWingControl < 1.0F)
-                        HUD.log("Wings: " + RFM.CT.VarWingStageMax + " deg.");
-                    oldVarWingControl = RFM.CT.VarWingControl;
-                    break;
+                    RFM.CT.VarWingControlSwitch++;
+                    oldVarWingControlSwitch = RFM.CT.VarWingControlSwitch;
+                    if(RFM.CT.VarWingStageText != null)
+                    {
+                        if(RFM.CT.bUseVarWingAsNozzleRot)
+                            HUD.log("NozzleTEXT", new Object[] { new String(RFM.CT.VarWingStageText[RFM.CT.VarWingControlSwitch]) });
+                        else
+                            HUD.log("VGWingTEXT", new Object[] { new String(RFM.CT.VarWingStageText[RFM.CT.VarWingControlSwitch]) });
+                    }
+                    else
+                    {
+                        if(RFM.CT.bUseVarWingAsNozzleRot)
+                            HUD.log("NozzleSTAGE", new Object[] { new Integer(RFM.CT.VarWingControlSwitch) });
+                        else
+                            HUD.log("VGWingSTAGE", new Object[] { new Integer(RFM.CT.VarWingControlSwitch) });
+                    }
                 }
-                else if(RFM.CT.VarWingControl < RFM.CT.VarWingStage[varWingIndex] - 0.05F) //By PAL, added 0.05F to avoid imprecissions
+                break;
+            }
+            else
+            {
+                if(RFM.CT.VarWingStage != null && RFM.CT.VarWingStageMax != -1.0F)
                 {
-                    RFM.CT.VarWingControl = RFM.CT.VarWingStage[varWingIndex];
-                    //By western, floor and +0.05F to avoid imprecissions and show clean x.yy degrees display
-                    HUD.log("Wings: " + (Math.floor((double)RFM.CT.VarWingStage[varWingIndex] * RFM.CT.VarWingStageMax * 100F + 0.05F) / 100F) + " deg.");
-                    oldVarWingControl = RFM.CT.VarWingControl;
-                    break;
-                }
-                else if(varWingIndex == (RFM.CT.nVarWingStages - 1) && RFM.CT.VarWingControl <  1.0F)
-                {
-                    RFM.CT.VarWingControl = 1.0F;
-                    HUD.log("Wings: " + RFM.CT.VarWingStageMax + " deg.");
-                    oldVarWingControl = RFM.CT.VarWingControl;
+                    if(varWingIndex < RFM.CT.nVarWingStages && RFM.CT.VarWingControl < RFM.CT.VarWingStage[varWingIndex + 1] - 0.05F)  //By PAL, added 0.05F to avoid imprecissions
+                    {
+                        RFM.CT.VarWingControl = RFM.CT.VarWingStage[varWingIndex + 1];
+                        //By western, floor and +0.05F to avoid imprecissions and show clean x.yy degrees display
+                        if(RFM.CT.bUseVarWingAsNozzleRot)
+                            HUD.log("NozzleRotate", new Object[] { new Float(((float)Math.floor((double)RFM.CT.VarWingControl * RFM.CT.VarWingStageMax * 100D + 0.05D) / 100F)) });
+                        else
+                            HUD.log("VGWingExtend", new Object[] { new Float(((float)Math.floor((double)RFM.CT.VarWingControl * RFM.CT.VarWingStageMax * 100D + 0.05D) / 100F)) });
+                    }
                     break;
                 }
                 break;
@@ -5847,13 +6041,24 @@ public class AircraftHotKeys
     }
 
 
-    public void setFlapIndex(int i) {
+    public void setFlapIndex(int i)
+    {
         if(i >= FM.CT.nFlapStages)
             i = FM.CT.nFlapStages - 1;
         if(i < 0 )
             i = 0;
 
         flapIndex = i;
+    }
+
+    public void setVarWingIndex(int i)
+    {
+        if(i >= FM.CT.nVarWingStages)
+            i = FM.CT.nVarWingStages - 1;
+        if(i < 0 )
+            i = 0;
+
+        varWingIndex = i;
     }
 
 }

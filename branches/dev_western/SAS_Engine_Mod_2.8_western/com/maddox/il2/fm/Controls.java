@@ -7,6 +7,7 @@
  * 2016.10.22: By PAL, modified incorrect static variables
  * 2017.01.03: By western, implement limit Ailerons, debug Select bomb and Unlimited Ammo
  * 2017.01.14: By western, implement Rocket mode Ripple (continuous Pairs)
+ * 2017.02.07: By western, implement Formation lights and Anti-Collision lights
  */
 
 package com.maddox.il2.fm;
@@ -174,6 +175,9 @@ public class Controls {
 	public int nFlapStages;
 	public float FlapStageMax;
 	public float[] FlapStage = null;
+	public int FlapsControlSwitch;
+	public boolean bHasFlapsControlSwitch;
+	public String[] FlapStageText = null;
 	public float VarWingControl;
 	private float VarWing;
 	public int nVarWingStages;
@@ -182,7 +186,11 @@ public class Controls {
 	public float dvVarWing;
 	public boolean bHasVarWingControl;
 	public boolean bHasVarWingControlFree;
+	public boolean bUseVarWingAsNozzleRot;
 	public boolean bHasVarIncidence;
+	public int VarWingControlSwitch;
+	public boolean bHasVarWingControlSwitch;
+	public String[] VarWingStageText = null;
 	public boolean bHasStabilizerControl;
 	public boolean bHasBlownFlaps;
 	public float BlownFlapsControl;
@@ -191,13 +199,14 @@ public class Controls {
 	public String BlownFlapsType;
 	public boolean bNoCarrierCanopyOpen;
 	public boolean bHasSideDoor;
-	public int FlapsControlSwitch;
-	public boolean bHasFlapsControlSwitch;
-	public String[] FlapStageText = null;
 	public boolean bHasBombSelect;
 	private Class[] bombClassArr;
 	private int bombClassNumber;
 	public int curBombSelected;
+	public boolean bHasFormationLights;
+	public boolean bFormationLights;
+	public boolean bHasAntiColLights;
+	public boolean bAntiColLights;
 
 	// --------------------------------------------------------
 
@@ -329,13 +338,20 @@ public class Controls {
 		nFlapStages = -1;
 		FlapStageMax = -1.0F;
 		FlapStage = null;
+		FlapsControlSwitch = 0;
+		bHasFlapsControlSwitch = false;
+		FlapStageText = null;
 		bHasVarWingControl = false;
 		bHasVarWingControlFree = false;
+		bUseVarWingAsNozzleRot = false;
 		bHasVarIncidence = false;
 		VarWingControl = 0.0F;
 		nVarWingStages = -1;
 		VarWingStageMax = -1.0F;
 		VarWingStage = null;
+		VarWingControlSwitch = 0;
+		bHasVarWingControlSwitch = false;
+		VarWingStageText = null;
 		bHasStabilizerControl = false;
 		DragChuteControl = 0.0F;
 		RefuelControl = 0.0F;
@@ -347,9 +363,6 @@ public class Controls {
 		dvBlownFlaps = 0.5F;
 		bNoCarrierCanopyOpen = false;
 		bHasSideDoor = false;
-		FlapsControlSwitch = 0;
-		bHasFlapsControlSwitch = false;
-		FlapStageText = null;
 		bHasBombSelect = false;
 		bombClassArr = new Class[8];
 		bombClassNumber = 0;
@@ -397,6 +410,7 @@ public class Controls {
 		RefuelControl = controls.RefuelControl;
 		dvVarWing = controls.dvVarWing;
 		VarWingControl = controls.VarWingControl;
+		VarWingControlSwitch = controls.VarWingControlSwitch;
 		dvBlownFlaps = controls.dvBlownFlaps;
 		BlownFlapsControl = controls.BlownFlapsControl;
 		FlapsControlSwitch = controls.FlapsControlSwitch;
@@ -424,6 +438,7 @@ public class Controls {
 		DragChuteControl = 0.0F;
 		RefuelControl = 0.0F;
 		VarWingControl = VarWing = 0.0F;
+		VarWingControlSwitch = 0;
 		BlownFlapsControl = BlownFlaps = 0.0F;
 		FlapsControlSwitch = 0;
 	}
@@ -680,10 +695,11 @@ public class Controls {
 		ElevatorControl = FMMath.interpolate(ElevatorControl, controls.ElevatorControl, f);
 		RudderControl = FMMath.interpolate(RudderControl, controls.RudderControl, f);
 		BrakeControl = FMMath.interpolate(BrakeControl, controls.BrakeControl, f);
-		// TODO: TAK++
+		// TODO: Engine mod
 		BrakeRightControl = FMMath.interpolate(BrakeRightControl, controls.BrakeRightControl, f);
 		BrakeLeftControl = FMMath.interpolate(BrakeLeftControl, controls.BrakeLeftControl, f);
-		// TAK--
+		VarWingControl = FMMath.interpolate(VarWingControl, controls.VarWingControl, f);
+		// ---- Engine mod
 	}
 
 	public float getGearL() {
