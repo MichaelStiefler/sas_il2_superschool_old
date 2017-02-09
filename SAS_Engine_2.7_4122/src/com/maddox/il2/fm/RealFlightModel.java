@@ -1279,6 +1279,15 @@ public class RealFlightModel extends Pilot
 
     private void calcOverLoad(float f, boolean flag)
     {
+        // GSuit Implementation added by SAS~Storebror 2015-02-26
+        TypeGSuit.GFactors theGFactors = new TypeGSuit.GFactors();
+        float fGPosLimit = this.getAltitude();
+        float fGNegLimit = this.Negative_G_Limit;
+        if(actor instanceof TypeGSuit)
+            ((TypeGSuit)actor).getGFactors(theGFactors);
+        fGPosLimit *= theGFactors.getPosGToleranceFactor();
+        fGNegLimit *= theGFactors.getNegGToleranceFactor();
+
         if(f > 1.0F)
             f = 1.0F;
         if(Gears.onGround() || !flag)
@@ -1298,13 +1307,13 @@ public class RealFlightModel extends Pilot
         if(f1 > 2.2F)
             deep = f1 - 2.2F;
         if(knockDnTime > 0.0F)
-            knockDnTime -= f;
+            knockDnTime -= f * theGFactors.getPosGRecoveryFactor();
         if(knockUpTime > 0.0F)
-            knockUpTime -= f;
-        if(indiffDnTime < 4F)
-            indiffDnTime += f;
-        if(indiffUpTime < 4F)
-            indiffUpTime += 0.3F * f;
+            knockUpTime -= f * theGFactors.getNegGRecoveryFactor();
+        if(indiffDnTime < 4F * theGFactors.getPosGTimeFactor())
+            indiffDnTime += f * theGFactors.getPosGRecoveryFactor();
+        if(indiffUpTime < 4F * theGFactors.getNegGTimeFactor())
+            indiffUpTime += 0.3F * f * theGFactors.getNegGRecoveryFactor();
         if(deep > 0.0F)
         {
             if(indiffDnTime > 0.0F)
