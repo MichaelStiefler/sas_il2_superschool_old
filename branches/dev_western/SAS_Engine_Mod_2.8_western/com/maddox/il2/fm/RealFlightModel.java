@@ -25,10 +25,7 @@ import com.maddox.il2.engine.TextScr;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.game.Mission;
-import com.maddox.il2.objects.air.Aircraft;
-import com.maddox.il2.objects.air.F4U;
-import com.maddox.il2.objects.air.TypeBomber;
-import com.maddox.il2.objects.air.TypeSupersonic;
+import com.maddox.il2.objects.air.*;
 import com.maddox.il2.objects.effects.ForceFeedback;
 import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.rts.CmdEnv;
@@ -1045,6 +1042,15 @@ public class RealFlightModel extends Pilot {
 	}
 
 	private void calcOverLoad(float f, boolean flag) {
+        // GSuit Implementation added by SAS~Storebror 2015-02-26
+        TypeGSuit.GFactors theGFactors = new TypeGSuit.GFactors();
+        float fGPosLimit = this.getAltitude();
+        float fGNegLimit = this.Negative_G_Limit;
+        if(actor instanceof TypeGSuit)
+            ((TypeGSuit)actor).getGFactors(theGFactors);
+        fGPosLimit *= theGFactors.getPosGToleranceFactor();
+        fGNegLimit *= theGFactors.getNegGToleranceFactor();
+
 		if (f > 1.0F) f = 1.0F;
 		if (Gears.onGround() || !flag) {
 			plAccel.set(0.0D, 0.0D, 0.0D);
@@ -1058,10 +1064,12 @@ public class RealFlightModel extends Pilot {
 		deep = 0.0F;
 		if (f1 < -0.6F) deep = f1 + 0.6F;
 		if (f1 > 2.2F) deep = f1 - 2.2F;
-		if (knockDnTime > 0.0F) knockDnTime -= f;
-		if (knockUpTime > 0.0F) knockUpTime -= f;
-		if (indiffDnTime < 4F) indiffDnTime += f;
-		if (indiffUpTime < 4F) indiffUpTime += 0.3F * f;
+		if (knockDnTime > 0.0F) knockDnTime -= f * theGFactors.getPosGRecoveryFactor();
+		if (knockUpTime > 0.0F) knockUpTime -= f * theGFactors.getNegGRecoveryFactor();
+		if (indiffDnTime < 4F * theGFactors.getPosGTimeFactor())
+            indiffDnTime += f * theGFactors.getPosGRecoveryFactor();
+		if (indiffUpTime < 4F * theGFactors.getNegGTimeFactor())
+            indiffUpTime += 0.3F * f * theGFactors.getNegGRecoveryFactor();
 		if (deep > 0.0F) {
 			if (indiffDnTime > 0.0F) indiffDnTime -= 0.8F * deep * f;
 			if (deep > 2.3F && knockDnTime < 18.4F) knockDnTime += 0.75F * deep * f;
