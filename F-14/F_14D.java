@@ -16,13 +16,13 @@ import com.maddox.util.HashMapInt;
 import java.util.*;
 
 // Referenced classes of package com.maddox.il2.objects.air:
-//            F_4, Aircraft, TypeFighterAceMaker, TypeRadarGunsight, 
-//            Chute, PaintSchemeFMPar05, TypeGuidedMissileCarrier, TypeCountermeasure, 
-//            TypeThreatDetector, TypeGSuit, TypeAcePlane, TypeFuelDump, 
+//            F_4, Aircraft, TypeFighterAceMaker, TypeRadarGunsight,
+//            PaintSchemeFMPar05, TypeGuidedMissileCarrier, TypeCountermeasure,
+//            TypeThreatDetector, TypeGSuit, TypeAcePlane
 //            TypeFastJet, NetAircraft
 
 public class F_14D extends F_14
-    implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeFuelDump
+    implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector
 {
 
     public F_14D()
@@ -39,57 +39,15 @@ public class F_14D extends F_14
         lastMissileLaunchThreatActive = 0L;
         intervalMissileLaunchThreat = 1000L;
         guidedMissileUtils = new GuidedMissileUtils(this);
-        removeChuteTimer = -1L;
-        bDynamoOperational = true;
-        dynamoOrient = 0.0F;
-        bDynamoRotary = false;
-        g1 = null;
         engineSFX = null;
         engineSTimer = 0x98967f;
         outCommand = new NetMsgFiltered();
-        myArmy = getArmy();
         tX4Prev = 0L;
         deltaAzimuth = 0.0F;
         deltaTangage = 0.0F;
         counter = 0;
         freq = 800;
         Timer1 = Timer2 = freq;
-    }
-
-    public float getFlowRate()
-    {
-        return FlowRate;
-    }
-
-    public float getFuelReserve()
-    {
-        return FuelReserve;
-    }
-
-    public void moveArrestorHook(float f)
-    {
-        hierMesh().chunkSetAngles("Hook1_D0", 0.0F, 0.0F, 70F * f);
-    }
-
-    protected void moveWingFold(HierMesh hiermesh, float f)
-    {
-        hiermesh.chunkSetAngles("WingLOut_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 85F), 0.0F);
-        hiermesh.chunkSetAngles("WingROut_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, -85F), 0.0F);
-    }
-
-    public void moveWingFold(float f)
-    {
-        if(f < 0.001F)
-        {
-            setGunPodsOn(true);
-            hideWingWeapons(false);
-        } else
-        {
-            setGunPodsOn(false);
-            ((FlightModelMain) (super.FM)).CT.WeaponControl[0] = false;
-            hideWingWeapons(false);
-        }
-        moveWingFold(hierMesh(), f);
     }
 
     public long getChaffDeployed()
@@ -150,7 +108,7 @@ public class F_14D extends F_14
     {
     }
 
-    
+
 
     public GuidedMissileUtils getGuidedMissileUtils()
     {
@@ -162,296 +120,16 @@ public class F_14D extends F_14
         super.onAircraftLoaded();
         guidedMissileUtils.onAircraftLoaded();
         FM.Skill = 3;
-        ((FlightModelMain) (super.FM)).CT.bHasDragChuteControl = true;
-        bHasDeployedDragChute = false;
-        if(((FlightModelMain) (super.FM)).CT.Weapons[0] != null)
-            g1 = ((FlightModelMain) (super.FM)).CT.Weapons[0][0];
     }
 
     public void update(float f)
     {
         guidedMissileUtils.update();
         this.computeF110GE400_AB();
-        if(FM.CT.getArrestor() > 0.2F)
-            if(FM.Gears.arrestorVAngle != 0.0F)
-            {
-                float f1 = Aircraft.cvt(FM.Gears.arrestorVAngle, -50F, 7F, 1.0F, 0.0F);
-                arrestor = 0.8F * arrestor + 0.2F * f1;
-                moveArrestorHook(arrestor);
-            } else
-            {
-                float f2 = (-33F * FM.Gears.arrestorVSink) / 57F;
-                if(f2 < 0.0F && FM.getSpeedKMH() > 60F)
-                    Eff3DActor.New(this, FM.Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
-                if(f2 > 0.0F && FM.CT.getArrestor() < 0.95F)
-                    f2 = 0.0F;
-                if(f2 > 0.2F)
-                    f2 = 0.2F;
-                if(f2 > 0.0F)
-                    arrestor = 0.7F * arrestor + 0.3F * (arrestor + f2);
-                else
-                    arrestor = 0.3F * arrestor + 0.7F * (arrestor + f2);
-                if(arrestor < 0.0F)
-                    arrestor = 0.0F;
-                else
-                if(arrestor > 1.0F)
-                    arrestor = 1.0F;
-                moveArrestorHook(arrestor);
-            }
-        if(((FlightModelMain) (super.FM)).CT.FlapsControl > 0.2F)
-            ((FlightModelMain) (super.FM)).CT.BlownFlapsControl = 1.0F;
-        else
-            ((FlightModelMain) (super.FM)).CT.BlownFlapsControl = 0.0F;
         super.update(f);
-        if(((FlightModelMain) (super.FM)).CT.DragChuteControl > 0.0F && !bHasDeployedDragChute)
-        {
-            chute = new Chute(this);
-            chute.setMesh("3do/plane/ChuteF-4/mono.sim");
-            chute.collide(true);
-            chute.mesh().setScale(0.8F);
-            ((Actor) (chute)).pos.setRel(new Point3d(-8D, 0.0D, 0.5D), new Orient(0.0F, 90F, 0.0F));
-            bHasDeployedDragChute = true;
-        } else
-        if(bHasDeployedDragChute && ((FlightModelMain) (super.FM)).CT.bHasDragChuteControl)
-            if(((FlightModelMain) (super.FM)).CT.DragChuteControl == 1.0F && super.FM.getSpeedKMH() > 600F || ((FlightModelMain) (super.FM)).CT.DragChuteControl < 1.0F)
-            {
-                if(chute != null)
-                {
-                    chute.tangleChute(this);
-                    ((Actor) (chute)).pos.setRel(new Point3d(-10D, 0.0D, 1.0D), new Orient(0.0F, 80F, 0.0F));
-                }
-                ((FlightModelMain) (super.FM)).CT.DragChuteControl = 0.0F;
-                ((FlightModelMain) (super.FM)).CT.bHasDragChuteControl = false;
-                ((FlightModelMain) (super.FM)).Sq.dragChuteCx = 0.0F;
-                removeChuteTimer = Time.current() + 250L;
-            } else
-            if(((FlightModelMain) (super.FM)).CT.DragChuteControl == 1.0F && super.FM.getSpeedKMH() < 20F)
-            {
-                if(chute != null)
-                    chute.tangleChute(this);
-                ((Actor) (chute)).pos.setRel(new Orient(0.0F, 100F, 0.0F));
-                ((FlightModelMain) (super.FM)).CT.DragChuteControl = 0.0F;
-                ((FlightModelMain) (super.FM)).CT.bHasDragChuteControl = false;
-                ((FlightModelMain) (super.FM)).Sq.dragChuteCx = 0.0F;
-                removeChuteTimer = Time.current() + 10000L;
-            }
-        if(removeChuteTimer > 0L && !((FlightModelMain) (super.FM)).CT.bHasDragChuteControl && Time.current() > removeChuteTimer)
-            chute.destroy();
-        if(super.FM.getSpeed() > 5F)
-        {
-            hierMesh().chunkSetAngles("SlatL_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, 14.5F), 0.0F);
-            hierMesh().chunkSetAngles("SlatR_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, -14.5F), 0.0F);
-            hierMesh().chunkSetAngles("SlatL_Out", 0.0F, 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, -20.5F));
-            hierMesh().chunkSetAngles("SlatR_Out", 0.0F, 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 15F, 0.0F, -20.5F));
-        }
     }
 
-    public void moveFan(float f)
-    {
-        if(g1 != null && g1.isShots() && oldbullets != g1.countBullets())
-        {
-            oldbullets = g1.countBullets();
-            if(dynamoOrient == 360F)
-                dynamoOrient = 0.0F;
-            dynamoOrient = dynamoOrient + 30F;
-            hierMesh().chunkSetAngles("6x20mm_C", 0.0F, dynamoOrient, 0.0F);
-            hierMesh().chunkSetAngles("6x20mm_L", 0.0F, dynamoOrient, 0.0F);
-            hierMesh().chunkSetAngles("6x20mm_R", 0.0F, dynamoOrient, 0.0F);
-        }
-        super.moveFan(f);
-    }
-    
-    public void setExhaustFlame(int i, int j)
-    {
-        if(j == 0)
-            switch(i)
-            {
-            case 0: // '\0'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
-                hierMesh().chunkVisible("Exhaust1b", false);
-                hierMesh().chunkVisible("Exhaust2b", false);
-                hierMesh().chunkVisible("Exhaust3b", false);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
 
-            case 1: // '\001'
-                hierMesh().chunkVisible("Exhaust1", true);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
-                hierMesh().chunkVisible("Exhaust1b", true);
-                hierMesh().chunkVisible("Exhaust2b", false);
-                hierMesh().chunkVisible("Exhaust3b", false);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
-
-            case 2: // '\002'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", true);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
-                hierMesh().chunkVisible("Exhaust1b", false);
-                hierMesh().chunkVisible("Exhaust2b", true);
-                hierMesh().chunkVisible("Exhaust3b", false);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
-
-            case 3: // '\003'
-                hierMesh().chunkVisible("Exhaust1", true);
-                hierMesh().chunkVisible("Exhaust2", true);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
-                hierMesh().chunkVisible("Exhaust1b", true);
-                hierMesh().chunkVisible("Exhaust2b", true);
-                hierMesh().chunkVisible("Exhaust3b", false);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                // fall through
-
-            case 4: // '\004'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", true);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
-                hierMesh().chunkVisible("Exhaust1b", false);
-                hierMesh().chunkVisible("Exhaust2b", false);
-                hierMesh().chunkVisible("Exhaust3b", true);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
-
-            case 5: // '\005'
-                hierMesh().chunkVisible("Exhaust1", true);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", true);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
-                hierMesh().chunkVisible("Exhaust1b", true);
-                hierMesh().chunkVisible("Exhaust2b", false);
-                hierMesh().chunkVisible("Exhaust3b", true);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
-
-            case 6: // '\006'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", true);
-                hierMesh().chunkVisible("Exhaust3", true);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
-                hierMesh().chunkVisible("Exhaust1b", false);
-                hierMesh().chunkVisible("Exhaust2b", true);
-                hierMesh().chunkVisible("Exhaust3b", true);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
-
-            case 7: // '\007'
-                hierMesh().chunkVisible("Exhaust1", true);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", true);
-                hierMesh().chunkVisible("Exhaust5", false);
-                hierMesh().chunkVisible("Exhaust1b", true);
-                hierMesh().chunkVisible("Exhaust2b", false);
-                hierMesh().chunkVisible("Exhaust3b", false);
-                hierMesh().chunkVisible("Exhaust4b", true);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
-
-            case 8: // '\b'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", true);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", true);
-                hierMesh().chunkVisible("Exhaust5", false);
-                hierMesh().chunkVisible("Exhaust1b", false);
-                hierMesh().chunkVisible("Exhaust2b", true);
-                hierMesh().chunkVisible("Exhaust3b", false);
-                hierMesh().chunkVisible("Exhaust4b", true);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
-
-            case 9: // '\t'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", true);
-                hierMesh().chunkVisible("Exhaust4", true);
-                hierMesh().chunkVisible("Exhaust5", false);
-                hierMesh().chunkVisible("Exhaust1b", false);
-                hierMesh().chunkVisible("Exhaust2b", false);
-                hierMesh().chunkVisible("Exhaust3b", true);
-                hierMesh().chunkVisible("Exhaust4b", true);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
-
-            case 10: // '\n'
-                hierMesh().chunkVisible("Exhaust1", true);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", true);
-                hierMesh().chunkVisible("Exhaust1b", true);
-                hierMesh().chunkVisible("Exhaust2b", false);
-                hierMesh().chunkVisible("Exhaust3b", false);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", true);
-                break;
-
-            case 11: // '\013'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", true);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", true);
-                hierMesh().chunkVisible("Exhaust1b", false);
-                hierMesh().chunkVisible("Exhaust2b", true);
-                hierMesh().chunkVisible("Exhaust3b", false);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", true);
-                break;
-
-            case 12: // '\f'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", true);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", true);
-                hierMesh().chunkVisible("Exhaust1b", false);
-                hierMesh().chunkVisible("Exhaust2b", false);
-                hierMesh().chunkVisible("Exhaust3b", true);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", true);
-                break;
-
-            default:
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
-                hierMesh().chunkVisible("Exhaust1b", false);
-                hierMesh().chunkVisible("Exhaust2b", false);
-                hierMesh().chunkVisible("Exhaust3b", false);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
-            }
-    }
-
-    
-    
     public void rareAction(float f, boolean flag)
     {
         if(counter++ % 5 == 0)
@@ -632,7 +310,7 @@ public class F_14D extends F_14
 
         return true;
     }
-    
+
 
     private boolean IRST()
     {
@@ -829,7 +507,7 @@ public class F_14D extends F_14
         Timer1 = f;
         Timer2 = f;
     }
-    
+
     public void missionStarting()
     {
         super.missionStarting();
@@ -850,41 +528,39 @@ public class F_14D extends F_14
             }
     }
 
-
-
     public void computeF110GE400_AB()
-       { 
-        if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-           ((FlightModelMain) (super.FM)).producedAF.x += 40600D;
-        if(((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-           ((FlightModelMain) (super.FM)).producedAF.x += 40600D;
-        if(((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5 && (double)calculateMach() > 0.85D)
-           ((FlightModelMain) (super.FM)).producedAF.x += 12000D;
-        if(((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput() > 1.001F && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5 && (double)calculateMach() > 0.85D)
-           ((FlightModelMain) (super.FM)).producedAF.x += 12000D;  
+    {
+        if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() > 5)
+            FM.producedAF.x += 40600D;
+        if(FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() > 5)
+            FM.producedAF.x += 40600D;
+        if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() > 5 && (double)calculateMach() > 0.85D)
+            FM.producedAF.x += 12000D;
+        if(FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() > 5 && (double)calculateMach() > 0.85D)
+            FM.producedAF.x += 12000D;
         float x = FM.getAltitude() / 1000F;
         float thrustDegradation = 0.0F;
         if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() == 6)
-        if(FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() == 6)
-        if (x > 19) 
-	{
-	thrustDegradation = 20.0F;
-	} else{ 
-		float x2 = x * x; 
-		float x3 = x2 * x; 
-		float x4 = x3 * x;
-		float x5 = x4 * x;
-		float x6 = x5 * x;
-             	float x7 = x6 * x;
-             	thrustDegradation = -(17077F*x6/142443000F) + (13553F*x5/2374050F) - (13203787F*x4/142443000F) + (434033F*x3/698250F) - (71389321F*x2/35610750F) + (1247081F*x/339150F);	
-		//{{0,0},{2,3},{5,4},{7,0},{12,-30},{17,7},{19,25}}
-		//thrustDegradation = (3401F*x4/720720F) - (44399F*x3/360360F) + (633091F*x2/720720F) - (829459F*x/360360F);
-		//{{0,0},{2,-2},{5,-2},{7,-4},{18,20}}  		
-	}
-	FM.producedAF.x -=  thrustDegradation * 1000F;
-         }
+            if(FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() == 6)
+                if (x > 19)
+                {
+                    thrustDegradation = 20.0F;
+                } else {
+                float x2 = x * x;
+                float x3 = x2 * x;
+                float x4 = x3 * x;
+                float x5 = x4 * x;
+                float x6 = x5 * x;
+                 float x7 = x6 * x;
+                 thrustDegradation = -(17077F*x6/142443000F) + (13553F*x5/2374050F) - (13203787F*x4/142443000F) + (434033F*x3/698250F) - (71389321F*x2/35610750F) + (1247081F*x/339150F);
+        //{{0,0},{2,3},{5,4},{7,0},{12,-30},{17,7},{19,25}}
+        //thrustDegradation = (3401F*x4/720720F) - (44399F*x3/360360F) + (633091F*x2/720720F) - (829459F*x/360360F);
+        //{{0,0},{2,-2},{5,-2},{7,-4},{18,20}}
+                }
+        FM.producedAF.x -=  thrustDegradation * 1000F;
+    }
 
-    
+
     private GuidedMissileUtils guidedMissileUtils;
     private boolean bRadarWarning;
     private boolean hasChaff;
@@ -897,26 +573,8 @@ public class F_14D extends F_14
     private long intervalRadarLockThreat;
     private long lastMissileLaunchThreatActive;
     private long intervalMissileLaunchThreat;
-    public static float FlowRate = 10F;
-    public static float FuelReserve = 1500F;
-    public boolean bToFire;
-    private boolean bHasDeployedDragChute;
-    private Chute chute;
-    private long removeChuteTimer;
-    private float arrestor;
-    private BulletEmitter g1;
-    private int oldbullets;
-    private boolean bDynamoOperational;
-    private float dynamoOrient;
-    private boolean bDynamoRotary;
-    private int pk;
     protected SoundFX engineSFX;
     protected int engineSTimer;
-    private int myArmy;
-    private static Point3d p = new Point3d();
-    private static Orient o = new Orient();
-    private static Vector3f n = new Vector3f();
-    private static Vector3d tmpv = new Vector3d();
     private NetMsgFiltered outCommand;
     private long tX4Prev;
     private float deltaAzimuth;
@@ -938,26 +596,26 @@ public class F_14D extends F_14
     };
     private static String irstPlaneDisplay[] =
     {
-        "Skyraider", "BirdDog", "A-6",       "A-7",       "A-7",    "A-7",    "A-7",     "A-10",         "A-26",   "Harrier", 
-        "B-29",      "C-123",   "F-4",       "F-5",       "F-8",    "F9F",    "F-14",    "F-15",         "F-16",   "F-18", 
-        "F-84",      "F-86",    "F-100",     "F-104",     "F-105",  "Hunter", "IL-28",   "KC-10",        "L-39",   "Meteor", 
-        "MiG-15",    "MiG-17",  "MiG-19",    "MiG-21",    "MiG-23", "MiG-29", "Mirage",  "Mi-24",        "Mi-8",   "F-80", 
+        "Skyraider", "BirdDog", "A-6",       "A-7",       "A-7",    "A-7",    "A-7",     "A-10",         "A-26",   "Harrier",
+        "B-29",      "C-123",   "F-4",       "F-5",       "F-8",    "F9F",    "F-14",    "F-15",         "F-16",   "F-18",
+        "F-84",      "F-86",    "F-100",     "F-104",     "F-105",  "Hunter", "IL-28",   "KC-10",        "L-39",   "Meteor",
+        "MiG-15",    "MiG-17",  "MiG-19",    "MiG-21",    "MiG-23", "MiG-29", "Mirage",  "Mi-24",        "Mi-8",   "F-80",
         "Skyhawk",   "Fitter",  "Fishpot",   "Fishpot",   "Su-25",  "Su-27",  "Tucano",  "Tupolev Bear", "Yak-36", "Vampire" ,
         "F-80" ,     "T-33" ,   "Skyraider", "Skyraider", "F-86" ,  "F-86" ,  "Neptune", "OV-1/10",      "Tu-4" ,  "MiG-19" ,
         "MiG-21" ,   "L-39" ,   "SeaHawk" ,  "Canberra"
     };
     private static double irstMaxDistance[] =
     {
-        60000D , 40000D , 70000D , 60000D , 60000D , 60000D , 60000D , 60000D , 80000D , 60000D , 
-       100000D ,110000D , 75000D , 55000D , 55000D , 50000D , 75000D , 75000D , 55000D , 65000D , 
-        50000D , 50000D , 60000D , 50000D , 80000D , 55000D , 90000D ,110000D , 50000D , 55000D , 
-        50000D , 50000D , 55000D , 55000D , 65000D , 70000D , 60000D , 65000D , 65000D , 50000D , 
-        50000D , 75000D , 75000D , 75000D , 70000D , 75000D , 40000D ,110000D , 50000D , 50000D , 
-        50000D , 50000D , 60000D , 60000D , 50000D , 50000D ,100000D , 60000D ,100000D , 55000D , 
+        60000D , 40000D , 70000D , 60000D , 60000D , 60000D , 60000D , 60000D , 80000D , 60000D ,
+       100000D ,110000D , 75000D , 55000D , 55000D , 50000D , 75000D , 75000D , 55000D , 65000D ,
+        50000D , 50000D , 60000D , 50000D , 80000D , 55000D , 90000D ,110000D , 50000D , 55000D ,
+        50000D , 50000D , 55000D , 55000D , 65000D , 70000D , 60000D , 65000D , 65000D , 50000D ,
+        50000D , 75000D , 75000D , 75000D , 70000D , 75000D , 40000D ,110000D , 50000D , 50000D ,
+        50000D , 50000D , 60000D , 60000D , 50000D , 50000D ,100000D , 60000D ,100000D , 55000D ,
         55000D , 50000D , 50000D , 60000D
     };
 
-    static 
+    static
     {
         Class class1 = CLASS.THIS();
         new NetAircraft.SPAWN(class1);
@@ -973,16 +631,16 @@ public class F_14D extends F_14
         Property.set(class1, "LOSElevation", 0.965F);
         Aircraft.weaponTriggersRegister(class1, new int[] {
             0, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 9, 9, 2, 
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
-            2, 3, 3, 3, 3, 9, 9, 7, 8  
+            2, 2, 2, 2, 2, 2, 2, 9, 9, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 3, 3, 3, 3, 9, 9, 7, 8
         });
         Aircraft.weaponHooksRegister(class1, new String[] {
            "_CANNON01", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_Rock05", "_Rock06", "_Rock07", "_Rock08","_ExternalRock09",
            "_ExternalRock10", "_ExternalRock11", "_ExternalRock12", "_ExternalRock13", "_ExternalRock14", "_ExternalRock15", "_ExternalRock16", "_ExternalDev01", "_ExternalDev02","_ExternalRock17",
            "_ExternalRock18", "_ExternalRock19", "_ExternalRock20", "_ExternalRock21", "_ExternalRock22", "_ExternalRock23", "_ExternalRock24", "_ExternalRock25", "_ExternalRock26", "_ExternalRock27",
-           "_ExternalRock28", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalDev03", "_ExternalDev04", "_ExternalRock29", "_ExternalRock30" 
-              
+           "_ExternalRock28", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalDev03", "_ExternalDev04", "_ExternalRock29", "_ExternalRock30"
+
         });
         try
         {
@@ -1332,7 +990,7 @@ public class F_14D extends F_14
             a_lweaponslot[37] = new Aircraft._WeaponSlot(7, "RocketGunFlare_gn16", 30);
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
-            hashmapint.put(Finger.Int(s), a_lweaponslot);       
+            hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "Fighter: 4xAIM54A+4xAIM9L";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
             a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
@@ -1649,7 +1307,7 @@ public class F_14D extends F_14
             a_lweaponslot[37] = new Aircraft._WeaponSlot(7, "RocketGunFlare_gn16", 30);
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
-            hashmapint.put(Finger.Int(s), a_lweaponslot);       
+            hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "Fighter: 4xAIM54A+4xAIM9L IRIAF";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
             a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
@@ -1891,7 +1549,7 @@ public class F_14D extends F_14
             a_lweaponslot[37] = new Aircraft._WeaponSlot(7, "RocketGunFlare_gn16", 30);
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
-            hashmapint.put(Finger.Int(s), a_lweaponslot);       
+            hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "Fighter: 4xAIM54C+4xAIM9L";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
             a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
