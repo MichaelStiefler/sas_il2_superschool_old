@@ -504,10 +504,6 @@ public class AV_8 extends Scheme1
         actl = FM.SensRoll;
         ectl = FM.SensPitch;
         rctl = FM.SensYaw;
-        FM.CT.DiffBrakesType = 0;
-        System.out.println("*** Diff Brakes Set to Type: " + FM.CT.DiffBrakesType);
-        FM.CT.bHasCockpitDoorControl = true;
-        FM.CT.dvCockpitDoor = 1.0F;
         FM.CT.bHasAntiColLights = true;
         FM.CT.bHasFormationLights = true;
     }
@@ -2191,12 +2187,12 @@ label0:
     private float gearTargetAngle;
     private float gearCurrentAngle;
     public boolean hasHydraulicPressure;
-    private static final float NEG_G_TOLERANCE_FACTOR = 1.5F;
+    private static final float NEG_G_TOLERANCE_FACTOR = 3.5F;
     private static final float NEG_G_TIME_FACTOR = 1.5F;
-    private static final float NEG_G_RECOVERY_FACTOR = 1F;
-    private static final float POS_G_TOLERANCE_FACTOR = 9F;
+    private static final float NEG_G_RECOVERY_FACTOR = 2.5F;
+    private static final float POS_G_TOLERANCE_FACTOR = 8.2F;
     private static final float POS_G_TIME_FACTOR = 3F;
-    private static final float POS_G_RECOVERY_FACTOR = 3F;
+    private static final float POS_G_RECOVERY_FACTOR = 3.5F;
     public int radarmode;
     public int targetnum;
     public float lockrange;
