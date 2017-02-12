@@ -410,12 +410,12 @@ public class CockpitAV_8B extends CockpitPilot
 
     private void RWR()
     {
-        if(((AV_8A)aircraft()).bMissileWarning == true)
+        if(((AV_8B)aircraft()).bMissileWarning == true)
         {
             super.mesh.chunkVisible("Z_Z_RWR_M", true);
             super.mesh.chunkVisible("L_AI", true);
             resetYPRmodifier();
-            float f = ((AV_8A)aircraft()).misslebrg;
+            float f = ((AV_8B)aircraft()).misslebrg;
             Cockpit.xyz[0] = -(float) Math.sin(Math.toRadians(f)) * 0.01F;
             Cockpit.xyz[2] = (float) Math.cos(Math.toRadians(f)) * 0.01F;
             super.mesh.chunkSetLocate("Z_Z_RWR_M", Cockpit.xyz, Cockpit.ypr);
@@ -424,12 +424,12 @@ public class CockpitAV_8B extends CockpitPilot
             super.mesh.chunkVisible("Z_Z_RWR_M", false);
             super.mesh.chunkVisible("L_AI", false);
         }
-        if(((AV_8A)aircraft()).bRadarWarning == true)
+        if(((AV_8B)aircraft()).bRadarWarning == true)
         {
             super.mesh.chunkVisible("Z_Z_RWR_U", true);
             super.mesh.chunkVisible("L_AI", true);
             resetYPRmodifier();
-            float f = ((AV_8A)aircraft()).aircraftbrg;
+            float f = ((AV_8B)aircraft()).aircraftbrg;
             Cockpit.xyz[0] = -(float) Math.sin(Math.toRadians(f)) * 0.02F;
             Cockpit.xyz[2] = (float) Math.cos(Math.toRadians(f)) * 0.02F;
             super.mesh.chunkSetLocate("Z_Z_RWR_U", Cockpit.xyz, Cockpit.ypr);
@@ -1039,7 +1039,7 @@ public class CockpitAV_8B extends CockpitPilot
                         {
                             radarLock.add(pointOrtho);
                             victim.add(actor);
-                          //  ((AV_8A)aircraft()).target.set(pointOrtho);
+                          //  ((AV_8B)aircraft()).target.set(pointOrtho);
                         }
                     }
                 }
@@ -1226,7 +1226,7 @@ public class CockpitAV_8B extends CockpitPilot
                             victim.add(actor);
                             range = (float) ((Tuple3d) (pointOrtho)).x;
                             ((AV_8) aircraft()).lockmode = 1;
-                            //  ((AV_8A)aircraft()).target.set(pointOrtho);
+                            //  ((AV_8B)aircraft()).target.set(pointOrtho);
                         }
                     }
                 }

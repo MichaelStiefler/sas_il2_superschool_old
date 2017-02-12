@@ -24,11 +24,11 @@ import java.util.*;
 //            TypeFastJet, F_18, NetAircraft, Chute, 
 //            TypeTankerDrogue
 
-public class AV_8A extends AV_8
+public class AV_8B extends AV_8
     implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeDockable
 {
 
-    public AV_8A()
+    public AV_8B()
     {
         lastCommonThreatActive = 0L;
         intervalCommonThreat = 1000L;
@@ -225,7 +225,7 @@ public class AV_8A extends AV_8
             int ii = (int)(-((double)((Actor) (aircraft)).pos.getAbsOrient().getYaw() - 90D));
             if(ii < 0)
                 ii += 360;
-            if(SPIKE && actor == World.getPlayerAircraft() && (actor instanceof F_18))
+            if(SPIKE && actor == World.getPlayerAircraft() && (actor instanceof AV_8))
             {
                 super.pos.getAbs(point3d);
                 double d31 = Main3D.cur3D().land2D.worldOfsX() + ((Tuple3d) (((Actor) (spike)).pos.getAbsPoint())).x;
