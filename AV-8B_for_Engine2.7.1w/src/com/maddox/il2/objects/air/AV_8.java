@@ -115,12 +115,12 @@ public class AV_8 extends Scheme1
         tf = 0L;
         APmode1 = false;
         radartogle = false;
-        v = 0.0F;
-        h = 0.0F;
+//        v = 0.0F;
+//        h = 0.0F;
         Nvision = false;
-        FL = false;
         vtolSlipX = 0;
         vtolSlipY = 0;
+        antiColLight = new Eff3DActor[6];
     }
 
     public float checkfuel(int i)
@@ -223,16 +223,6 @@ public class AV_8 extends Scheme1
                 ILS = false;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "ILS OFF");
             }
-        if(i == 28)
-            if(!FL)
-            {
-                FL = true;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "FL ON");
-            } else
-            {
-                FL = false;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "FL OFF");
-            }
     }
 
     private void laser(Point3d point3d)
@@ -255,7 +245,7 @@ public class AV_8 extends Scheme1
                 Point3d point3d = new Point3d();
                 Orient orient = new Orient();
                 actor.pos.getAbs(point3d, orient);
-                l.set(point3d, orient);
+                flirloc.set(point3d, orient);
                 Eff3DActor eff3dactor = Eff3DActor.New(actor, null, new Loc(), 1.0F, "effects/Explodes/Air/Zenitka/Germ_88mm/Glow.eff", 1.0F);
                 eff3dactor.postDestroy(Time.current() + 1500L);
                 LightPointActor lightpointactor = new LightPointActor(new LightPointWorld(), new Point3d());
@@ -295,7 +285,7 @@ public class AV_8 extends Scheme1
             tf = Time.current();
         } else
         if(radartogle && lockmode == 0)
-            h += 0.0035F;
+            radarhol += 0.0035F;
     }
 
     public void typeBomberAdjDistanceMinus()
@@ -306,7 +296,7 @@ public class AV_8 extends Scheme1
             tf = Time.current();
         } else
         if(radartogle && lockmode == 0)
-            h -= 0.0035F;
+            radarhol -= 0.0035F;
     }
 
     public void typeBomberAdjSideslipReset()
@@ -334,7 +324,7 @@ public class AV_8 extends Scheme1
             tf = Time.current();
         }
         else if(radartogle && lockmode == 0)
-            v += 0.0035F;
+            radarvrt += 0.0035F;
     }
 
     public void typeBomberAdjSideslipMinus()
@@ -357,7 +347,7 @@ public class AV_8 extends Scheme1
             tf = Time.current();
         }
         else if(radartogle && lockmode == 0)
-            v -= 0.0035F;
+            radarvrt -= 0.0035F;
     }
 
     public void updatecontrollaser()
@@ -518,6 +508,8 @@ public class AV_8 extends Scheme1
         System.out.println("*** Diff Brakes Set to Type: " + FM.CT.DiffBrakesType);
         FM.CT.bHasCockpitDoorControl = true;
         FM.CT.dvCockpitDoor = 1.0F;
+        FM.CT.bHasAntiColLights = true;
+        FM.CT.bHasFormationLights = true;
     }
 
     public void checkHydraulicStatus()
@@ -1447,7 +1439,6 @@ label0:
         moveHydraulics(f);
         soundbarier();
         super.update(f);
-        formationlights();
         pullingvapor();
         VTOL();
         if(FM.getSpeed() > 300F)
@@ -1456,6 +1447,10 @@ label0:
             hierMesh().chunkSetAngles("Eflap" + i, 0.0F, 0.0F, Aircraft.cvt(150F - FM.getSpeedKMH(), -200F, 0.0F, 0.0F, 30F));
 
         computeflightmodel();
+        formationlights();
+        if(!FM.isPlayers())
+            FM.CT.bAntiColLights = FM.AS.bNavLightsOn;
+        anticollights();
     }
 
     private void computeflightmodel()
@@ -1602,6 +1597,32 @@ label0:
         }
     }
 
+    private void anticollights()
+    {
+        if(FM.CT.bAntiColLights)
+        {
+            for(int i = 0; i < 6; i++)
+            {
+                if(antiColLight[i] == null)
+                {
+                    try
+                    {
+                        antiColLight[i] = Eff3DActor.New(this, findHook("_AntiColLight" + Integer.toString(i + 1)), new Loc(), 1.0F, "3DO/Effects/Fireworks/FlareRedFlash2.eff", -1.0F, false);
+                    } catch(Exception excp) {}
+                }
+            }
+        }
+        else
+        {
+            for(int i = 0; i < 6; i++)
+              if(antiColLight[i] != null)
+              {
+                  Eff3DActor.finish(antiColLight[i]);
+                  antiColLight[i] = null;
+              }
+        }
+    }
+
     private void formationlights()
     {
         Mission.cur();
@@ -1609,16 +1630,16 @@ label0:
         Mission.cur();
         float we = Mission.curCloudsHeight() + 500F;
         if((World.getTimeofDay() <= 6.5F || World.getTimeofDay() > 18F || ws > 4 && FM.getAltitude() < we) && !FM.isPlayers())
-            FL = true;
+            FM.CT.bFormationLights = true;
         if((World.getTimeofDay() > 6.5F && World.getTimeofDay() <= 18F && ws <= 4 || World.getTimeofDay() > 6.5F && World.getTimeofDay() <= 18F && FM.getAltitude() > we) && !FM.isPlayers())
-            FL = false;
-        hierMesh().chunkVisible("SlightNose", FL);
-        hierMesh().chunkVisible("SlightTail", FL);
-        hierMesh().chunkVisible("SlightWTopL", FL);
-        hierMesh().chunkVisible("SlightWTopR", FL);
-        hierMesh().chunkVisible("SlightKeel", FL);
-        hierMesh().chunkVisible("SlightWTipL", FL);
-        hierMesh().chunkVisible("SlightWTipR", FL);
+            FM.CT.bFormationLights = false;
+        hierMesh().chunkVisible("SlightNose", FM.CT.bFormationLights);
+        hierMesh().chunkVisible("SlightTail", FM.CT.bFormationLights);
+        hierMesh().chunkVisible("SlightWTopL", FM.CT.bFormationLights);
+        hierMesh().chunkVisible("SlightWTopR", FM.CT.bFormationLights);
+        hierMesh().chunkVisible("SlightKeel", FM.CT.bFormationLights);
+        hierMesh().chunkVisible("SlightWTipL", FM.CT.bFormationLights);
+        hierMesh().chunkVisible("SlightWTipR", FM.CT.bFormationLights);
     }
 
     private void VTOL()
@@ -2114,8 +2135,8 @@ label0:
     public float azimult;
     public float tangate;
     public long tf;
-    public float v;
-    public float h;
+    public float radarvrt;
+    public float radarhol;
     public int nozzlemode;
     public long tvect;
     private boolean bDynamoOperational;
@@ -2123,7 +2144,6 @@ label0:
     private boolean bDynamoRotary;
     private int pk;
     float vtolvect;
-    public boolean FL;
     private long tnozzle;
     private boolean nozzleswitch;
     private boolean flapswitch;
@@ -2147,10 +2167,10 @@ label0:
     private float ft;
     private LightPointWorld lLight[];
     private Hook lLightHook[];
-    private static Loc lLightLoc1 = new Loc();
-    private static Point3d lLightP1 = new Point3d();
-    private static Point3d lLightP2 = new Point3d();
-    private static Point3d lLightPL = new Point3d();
+    private Loc lLightLoc1 = new Loc();
+    private Point3d lLightP1 = new Point3d();
+    private Point3d lLightP2 = new Point3d();
+    private Point3d lLightPL = new Point3d();
     private boolean ictl;
     private static float mteb = 1.0F;
     private float mn;
@@ -2161,12 +2181,12 @@ label0:
     private float ectl;
     private boolean ts;
     private float H1;
-    public static boolean bChangedPit = false;
+    public boolean bChangedPit = false;
     private float SonicBoom;
     private Eff3DActor shockwave;
     private boolean isSonic;
-    public static int LockState = 0;
-    static Actor hunted = null;
+//    public static int LockState = 0;
+    Actor hunted = null;
     private float engineSurgeDamage;
     private float gearTargetAngle;
     private float gearCurrentAngle;
@@ -2205,7 +2225,7 @@ label0:
     public float fSightCurSpeed;
     public float fSightCurReadyness;
     public boolean FLIR;
-    private static Loc l = new Loc();
+    private static Loc flirloc = new Loc();
     public int clipBoardPage_;
     public boolean showClipBoard_;
     private ArrayList missilesList;
@@ -2224,6 +2244,7 @@ label0:
     public static float FuelReserve = 1500F;
     private int vtolSlipX;
     private int vtolSlipY;
+    private Eff3DActor antiColLight[];
 
     static 
     {

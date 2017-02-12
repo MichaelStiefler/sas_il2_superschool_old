@@ -939,12 +939,6 @@ public class AV_8A extends AV_8
     private long intervalRadarLockThreat;
     private long lastMissileLaunchThreatActive;
     private long intervalMissileLaunchThreat;
-    private static final float NEG_G_TOLERANCE_FACTOR = 1.5F;
-    private static final float NEG_G_TIME_FACTOR = 1.5F;
-    private static final float NEG_G_RECOVERY_FACTOR = 1F;
-    private static final float POS_G_TOLERANCE_FACTOR = 2F;
-    private static final float POS_G_TIME_FACTOR = 2F;
-    private static final float POS_G_RECOVERY_FACTOR = 2F;
     public boolean bToFire;
     private boolean bHasDeployedDragChute;
     private Chute chute;
