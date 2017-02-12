@@ -121,8 +121,8 @@ public class F_18 extends Scheme2
         tf = 0L;
         APmode1 = false;
         radartogle = false;
-        v = 0.0F;
-        h = 0.0F;
+        radarvrt = 0.0F;
+        radarhol = 0.0F;
         lockmode = 0;
         radargunsight = 0;
         leftscreen = 2;
@@ -137,10 +137,10 @@ public class F_18 extends Scheme2
         MissileSoundPlaying = false;
         misslebrg = 0.0F;
         aircraftbrg = 0.0F;
-        FL = false;
         thrustMaxField = new Field[2];
         bHasCenterTank = false;
         bHasWingTank = false;
+        antiColLight = new Eff3DActor[6];
     }
 
     private static final float toMeters(float f)
@@ -261,16 +261,6 @@ public class F_18 extends Scheme2
             {
                 ILS = false;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "ILS OFF");
-            }
-        if(i == 28)
-            if(!FL)
-            {
-                FL = true;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "FL ON");
-            } else
-            {
-                FL = false;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "FL OFF");
             }
     }
 
@@ -522,7 +512,7 @@ public class F_18 extends Scheme2
             tf = Time.current();
         } else
         if(radartogle && lockmode == 0)
-            h += 0.0035F;
+            radarhol += 0.0035F;
     }
 
     public void typeBomberAdjDistanceMinus()
@@ -533,7 +523,7 @@ public class F_18 extends Scheme2
             tf = Time.current();
         } else
         if(radartogle && lockmode == 0)
-            h -= 0.0035F;
+            radarhol -= 0.0035F;
     }
 
     public void typeBomberAdjSideslipReset()
@@ -548,7 +538,7 @@ public class F_18 extends Scheme2
             tf = Time.current();
         } else
         if(radartogle && lockmode == 0)
-            v += 0.0035F;
+            radarvrt += 0.0035F;
     }
 
     public void typeBomberAdjSideslipMinus()
@@ -559,7 +549,7 @@ public class F_18 extends Scheme2
             tf = Time.current();
         } else
         if(radartogle && lockmode == 0)
-            v -= 0.0035F;
+            radarvrt -= 0.0035F;
     }
 
     public void updatecontrollaser()
@@ -698,7 +688,7 @@ public class F_18 extends Scheme2
             Point3d point3d = new Point3d();
             Orient orient = new Orient();
             actor.pos.getAbs(point3d, orient);
-            l.set(point3d, orient);
+            flirloc.set(point3d, orient);
             Eff3DActor eff3dactor = Eff3DActor.New(actor, null, new Loc(), 1.0F, "effects/Explodes/Air/Zenitka/Germ_88mm/Glow.eff", 1.0F);
             eff3dactor.postDestroy(Time.current() + 1500L);
             LightPointActor lightpointactor = new LightPointActor(new LightPointWorld(), new Point3d());
@@ -794,9 +784,11 @@ public class F_18 extends Scheme2
         FM.Skill = 3;
         FM.Sq.dragChuteCx = 6F;
         bHasDeployedDragChute = false;
+        FM.CT.bHasAntiColLights = true;
+        FM.CT.bHasFormationLights = true;
         t1 = Time.current();
         if(FM instanceof RealFlightModel)
-            Reflection.genericInvokeMethod(FM, "init_G_Limits");
+            Reflection.invokeMethod(FM, "init_G_Limits");
         FM.CT.toggleRocketHook();
         if((FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
         {
@@ -1861,28 +1853,20 @@ public class F_18 extends Scheme2
         }
         if(FM.AS.isMaster() && Config.isUSE_RENDER())
         {
-            if(FM.EI.engines[0].getPowerOutput() > 1.001F && FM.EI.engines[0].getStage() == 6)
+            for(int en = 0; en < 2; en++)
             {
-                if(World.getTimeofDay() >= 18F || World.getTimeofDay() <= 6F)
-                    FM.AS.setSootState(this, 0, 5);
-                else
-                    FM.AS.setSootState(this, 0, 3);
-            } else
-            {
-                FM.AS.setSootState(this, 0, 0);
+                if(FM.EI.engines[en].getPowerOutput() > 1.001F && FM.EI.engines[en].getStage() == 6)
+                {
+                    if(World.getTimeofDay() >= 18F || World.getTimeofDay() <= 6F)
+                        FM.AS.setSootState(this, en, 5);
+                    else
+                        FM.AS.setSootState(this, en, 3);
+                } else
+                {
+                    FM.AS.setSootState(this, en, 0);
+                }
+                setExhaustFlame(Math.round(Aircraft.cvt(FM.EI.engines[en].getThrustOutput(), 0.7F, 0.87F, 0.0F, 12F)), en);
             }
-            setExhaustFlame(Math.round(Aircraft.cvt(FM.EI.engines[0].getThrustOutput(), 0.7F, 0.87F, 0.0F, 12F)), 0);
-            if(FM.EI.engines[1].getPowerOutput() > 1.001F && FM.EI.engines[1].getStage() == 6)
-            {
-                if(World.getTimeofDay() >= 18F || World.getTimeofDay() <= 6F)
-                    FM.AS.setSootState(this, 1, 5);
-                else
-                    FM.AS.setSootState(this, 1, 3);
-            } else
-            {
-                FM.AS.setSootState(this, 1, 0);
-            }
-            setExhaustFlame1(Math.round(Aircraft.cvt(FM.EI.engines[1].getThrustOutput(), 0.7F, 0.87F, 0.0F, 12F)), 0);
             if(FM instanceof RealFlightModel)
                 umn();
         }
@@ -1946,6 +1930,10 @@ public class F_18 extends Scheme2
         updateSlatsVisual();
         computeflightmodel();
         updateDragChute();
+        formationlights();
+        if(!FM.isPlayers())
+            FM.CT.bAntiColLights = FM.AS.bNavLightsOn;
+        anticollights();
     }
 
     private void computeflightmodel()
@@ -1979,7 +1967,6 @@ public class F_18 extends Scheme2
             else if(Time.current() > tflap + 1500L && bForceTakeoffElTrim)
                 FM.CT.setTrimElevatorControl(cvt(((FM.Or.getPitch() > 180F)? FM.Or.getPitch() - 360F : FM.Or.getPitch()), 5F, 13F, 0.3F, -0.4F));
         }
-        formationlights();
         if(FM.getAOA() > 28F || FM.getSpeedKMH() < 469F && FM.CT.FlapsControl > 0.16F && FM.CT.getGear() < 0.8F || FM.getOverload() >= 6F)
             FM.CT.AirBrakeControl = 0.0F;
         restoreElevatorControl();
@@ -2047,6 +2034,32 @@ public class F_18 extends Scheme2
         updateControlsVisuals();
     }
 
+    private void anticollights()
+    {
+        if(FM.CT.bAntiColLights)
+        {
+            for(int i = 0; i < 6; i++)
+            {
+                if(antiColLight[i] == null)
+                {
+                    try
+                    {
+                        antiColLight[i] = Eff3DActor.New(this, findHook("_AntiColLight" + Integer.toString(i + 1)), new Loc(), 1.0F, "3DO/Effects/Fireworks/FlareRedFlash2.eff", -1.0F, false);
+                    } catch(Exception excp) {}
+                }
+            }
+        }
+        else
+        {
+            for(int i = 0; i < 6; i++)
+              if(antiColLight[i] != null)
+              {
+                  Eff3DActor.finish(antiColLight[i]);
+                  antiColLight[i] = null;
+              }
+        }
+    }
+
     private void formationlights()
     {
         Mission.cur();
@@ -2054,13 +2067,13 @@ public class F_18 extends Scheme2
         Mission.cur();
         float f = Mission.curCloudsHeight() + 500F;
         if((World.getTimeofDay() <= 6.5F || World.getTimeofDay() > 18F || i > 4 && FM.getAltitude() < f) && !FM.isPlayers())
-            FL = true;
+            FM.CT.bFormationLights = true;
         if((World.getTimeofDay() > 6.5F && World.getTimeofDay() <= 18F && i <= 4 || World.getTimeofDay() > 6.5F && World.getTimeofDay() <= 18F && FM.getAltitude() > f) && !FM.isPlayers())
-            FL = false;
-        hierMesh().chunkVisible("SSlightstabr", FL);
-        hierMesh().chunkVisible("SSlightstabl", FL);
-        hierMesh().chunkVisible("SSlightnose", FL);
-        hierMesh().chunkVisible("SSlighttail", FL);
+            FM.CT.bFormationLights = false;
+        hierMesh().chunkVisible("SSlightstabr", FM.CT.bFormationLights);
+        hierMesh().chunkVisible("SSlightstabl", FM.CT.bFormationLights);
+        hierMesh().chunkVisible("SSlightnose", FM.CT.bFormationLights);
+        hierMesh().chunkVisible("SSlighttail", FM.CT.bFormationLights);
     }
 
     public void updateHook()
@@ -2115,240 +2128,124 @@ public class F_18 extends Scheme2
 
     public void setExhaustFlame(int i, int j)
     {
-        if(j == 0)
-            switch(i)
-            {
+        String pfl = "";
+        if(j == 1)
+            pfl = "b";
+
+        switch(i)
+        {
             case 0: // '\0'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("Exhaust1" + pfl, false);
+                hierMesh().chunkVisible("Exhaust2" + pfl, false);
+                hierMesh().chunkVisible("Exhaust3" + pfl, false);
+                hierMesh().chunkVisible("Exhaust4" + pfl, false);
+                hierMesh().chunkVisible("Exhaust5" + pfl, false);
                 break;
 
             case 1: // '\001'
-                hierMesh().chunkVisible("Exhaust1", true);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("Exhaust1" + pfl, true);
+                hierMesh().chunkVisible("Exhaust2" + pfl, false);
+                hierMesh().chunkVisible("Exhaust3" + pfl, false);
+                hierMesh().chunkVisible("Exhaust4" + pfl, false);
+                hierMesh().chunkVisible("Exhaust5" + pfl, false);
                 break;
 
             case 2: // '\002'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", true);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("Exhaust1" + pfl, false);
+                hierMesh().chunkVisible("Exhaust2" + pfl, true);
+                hierMesh().chunkVisible("Exhaust3" + pfl, false);
+                hierMesh().chunkVisible("Exhaust4" + pfl, false);
+                hierMesh().chunkVisible("Exhaust5" + pfl, false);
                 break;
 
             case 3: // '\003'
-                hierMesh().chunkVisible("Exhaust1", true);
-                hierMesh().chunkVisible("Exhaust2", true);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("Exhaust1" + pfl, true);
+                hierMesh().chunkVisible("Exhaust2" + pfl, true);
+                hierMesh().chunkVisible("Exhaust3" + pfl, false);
+                hierMesh().chunkVisible("Exhaust4" + pfl, false);
+                hierMesh().chunkVisible("Exhaust5" + pfl, false);
                 // fall through
 
             case 4: // '\004'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", true);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("Exhaust1" + pfl, false);
+                hierMesh().chunkVisible("Exhaust2" + pfl, false);
+                hierMesh().chunkVisible("Exhaust3" + pfl, true);
+                hierMesh().chunkVisible("Exhaust4" + pfl, false);
+                hierMesh().chunkVisible("Exhaust5" + pfl, false);
                 break;
 
             case 5: // '\005'
-                hierMesh().chunkVisible("Exhaust1", true);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", true);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("Exhaust1" + pfl, true);
+                hierMesh().chunkVisible("Exhaust2" + pfl, false);
+                hierMesh().chunkVisible("Exhaust3" + pfl, true);
+                hierMesh().chunkVisible("Exhaust4" + pfl, false);
+                hierMesh().chunkVisible("Exhaust5" + pfl, false);
                 break;
 
             case 6: // '\006'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", true);
-                hierMesh().chunkVisible("Exhaust3", true);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("Exhaust1" + pfl, false);
+                hierMesh().chunkVisible("Exhaust2" + pfl, true);
+                hierMesh().chunkVisible("Exhaust3" + pfl, true);
+                hierMesh().chunkVisible("Exhaust4" + pfl, false);
+                hierMesh().chunkVisible("Exhaust5" + pfl, false);
                 break;
 
             case 7: // '\007'
-                hierMesh().chunkVisible("Exhaust1", true);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", true);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("Exhaust1" + pfl, true);
+                hierMesh().chunkVisible("Exhaust2" + pfl, false);
+                hierMesh().chunkVisible("Exhaust3" + pfl, false);
+                hierMesh().chunkVisible("Exhaust4" + pfl, true);
+                hierMesh().chunkVisible("Exhaust5" + pfl, false);
                 break;
 
             case 8: // '\b'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", true);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", true);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("Exhaust1" + pfl, false);
+                hierMesh().chunkVisible("Exhaust2" + pfl, true);
+                hierMesh().chunkVisible("Exhaust3" + pfl, false);
+                hierMesh().chunkVisible("Exhaust4" + pfl, true);
+                hierMesh().chunkVisible("Exhaust5" + pfl, false);
                 break;
 
             case 9: // '\t'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", true);
-                hierMesh().chunkVisible("Exhaust4", true);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("Exhaust1" + pfl, false);
+                hierMesh().chunkVisible("Exhaust2" + pfl, false);
+                hierMesh().chunkVisible("Exhaust3" + pfl, true);
+                hierMesh().chunkVisible("Exhaust4" + pfl, true);
+                hierMesh().chunkVisible("Exhaust5" + pfl, false);
                 break;
 
             case 10: // '\n'
-                hierMesh().chunkVisible("Exhaust1", true);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", true);
+                hierMesh().chunkVisible("Exhaust1" + pfl, true);
+                hierMesh().chunkVisible("Exhaust2" + pfl, false);
+                hierMesh().chunkVisible("Exhaust3" + pfl, false);
+                hierMesh().chunkVisible("Exhaust4" + pfl, false);
+                hierMesh().chunkVisible("Exhaust5" + pfl, true);
                 break;
 
             case 11: // '\013'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", true);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", true);
+                hierMesh().chunkVisible("Exhaust1" + pfl, false);
+                hierMesh().chunkVisible("Exhaust2" + pfl, true);
+                hierMesh().chunkVisible("Exhaust3" + pfl, false);
+                hierMesh().chunkVisible("Exhaust4" + pfl, false);
+                hierMesh().chunkVisible("Exhaust5" + pfl, true);
                 break;
 
             case 12: // '\f'
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", true);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", true);
+                hierMesh().chunkVisible("Exhaust1" + pfl, false);
+                hierMesh().chunkVisible("Exhaust2" + pfl, false);
+                hierMesh().chunkVisible("Exhaust3" + pfl, true);
+                hierMesh().chunkVisible("Exhaust4" + pfl, false);
+                hierMesh().chunkVisible("Exhaust5" + pfl, true);
                 break;
 
             default:
-                hierMesh().chunkVisible("Exhaust1", false);
-                hierMesh().chunkVisible("Exhaust2", false);
-                hierMesh().chunkVisible("Exhaust3", false);
-                hierMesh().chunkVisible("Exhaust4", false);
-                hierMesh().chunkVisible("Exhaust5", false);
+                hierMesh().chunkVisible("Exhaust1" + pfl, false);
+                hierMesh().chunkVisible("Exhaust2" + pfl, false);
+                hierMesh().chunkVisible("Exhaust3" + pfl, false);
+                hierMesh().chunkVisible("Exhaust4" + pfl, false);
+                hierMesh().chunkVisible("Exhaust5" + pfl, false);
                 break;
-            }
-    }
-
-    public void setExhaustFlame1(int i, int j)
-    {
-        if(j == 0)
-            switch(i)
-            {
-            case 0: // '\0'
-                hierMesh().chunkVisible("Exhaust1b", false);
-                hierMesh().chunkVisible("Exhaust2b", false);
-                hierMesh().chunkVisible("Exhaust3b", false);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
-
-            case 1: // '\001'
-                hierMesh().chunkVisible("Exhaust1b", true);
-                hierMesh().chunkVisible("Exhaust2b", false);
-                hierMesh().chunkVisible("Exhaust3b", false);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
-
-            case 2: // '\002'
-                hierMesh().chunkVisible("Exhaust1b", false);
-                hierMesh().chunkVisible("Exhaust2b", true);
-                hierMesh().chunkVisible("Exhaust3b", false);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
-
-            case 3: // '\003'
-                hierMesh().chunkVisible("Exhaust1b", true);
-                hierMesh().chunkVisible("Exhaust2b", true);
-                hierMesh().chunkVisible("Exhaust3b", false);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                // fall through
-
-            case 4: // '\004'
-                hierMesh().chunkVisible("Exhaust1b", false);
-                hierMesh().chunkVisible("Exhaust2b", false);
-                hierMesh().chunkVisible("Exhaust3b", true);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
-
-            case 5: // '\005'
-                hierMesh().chunkVisible("Exhaust1b", true);
-                hierMesh().chunkVisible("Exhaust2b", false);
-                hierMesh().chunkVisible("Exhaust3b", true);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
-
-            case 6: // '\006'
-                hierMesh().chunkVisible("Exhaust1b", false);
-                hierMesh().chunkVisible("Exhaust2b", true);
-                hierMesh().chunkVisible("Exhaust3b", true);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
-
-            case 7: // '\007'
-                hierMesh().chunkVisible("Exhaust1b", true);
-                hierMesh().chunkVisible("Exhaust2b", false);
-                hierMesh().chunkVisible("Exhaust3b", false);
-                hierMesh().chunkVisible("Exhaust4b", true);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
-
-            case 8: // '\b'
-                hierMesh().chunkVisible("Exhaust1b", false);
-                hierMesh().chunkVisible("Exhaust2b", true);
-                hierMesh().chunkVisible("Exhaust3b", false);
-                hierMesh().chunkVisible("Exhaust4b", true);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
-
-            case 9: // '\t'
-                hierMesh().chunkVisible("Exhaust1b", false);
-                hierMesh().chunkVisible("Exhaust2b", false);
-                hierMesh().chunkVisible("Exhaust3b", true);
-                hierMesh().chunkVisible("Exhaust4b", true);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
-
-            case 10: // '\n'
-                hierMesh().chunkVisible("Exhaust1b", true);
-                hierMesh().chunkVisible("Exhaust2b", false);
-                hierMesh().chunkVisible("Exhaust3b", false);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", true);
-                break;
-
-            case 11: // '\013'
-                hierMesh().chunkVisible("Exhaust1b", false);
-                hierMesh().chunkVisible("Exhaust2b", true);
-                hierMesh().chunkVisible("Exhaust3b", false);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", true);
-                break;
-
-            case 12: // '\f'
-                hierMesh().chunkVisible("Exhaust1b", false);
-                hierMesh().chunkVisible("Exhaust2b", false);
-                hierMesh().chunkVisible("Exhaust3b", true);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", true);
-                break;
-
-            default:
-                hierMesh().chunkVisible("Exhaust1b", false);
-                hierMesh().chunkVisible("Exhaust2b", false);
-                hierMesh().chunkVisible("Exhaust3b", false);
-                hierMesh().chunkVisible("Exhaust4b", false);
-                hierMesh().chunkVisible("Exhaust5b", false);
-                break;
-            }
+        }
     }
 
     private void bailout()
@@ -2573,12 +2470,11 @@ public class F_18 extends Scheme2
     public int lockmode;
     private boolean APmode1;
     public boolean ILS;
-    public boolean FL;
     public float azimult;
     public float tangate;
     public long tf;
-    public float v;
-    public float h;
+    public float radarvrt;
+    public float radarhol;
     public float misslebrg;
     public float aircraftbrg;
     public boolean backfire;
@@ -2596,20 +2492,20 @@ public class F_18 extends Scheme2
     private float ft;
     private LightPointWorld lLight[];
     private Hook lLightHook[];
-    private static Loc lLightLoc1 = new Loc();
-    private static Point3d lLightP1 = new Point3d();
-    private static Point3d lLightP2 = new Point3d();
-    private static Point3d lLightPL = new Point3d();
+    private Loc lLightLoc1 = new Loc();
+    private Point3d lLightP1 = new Point3d();
+    private Point3d lLightP2 = new Point3d();
+    private Point3d lLightPL = new Point3d();
     private boolean ictl;
     private float mn;
     private static float lteb = 0.92F;
     private boolean ts;
-    public static boolean bChangedPit = false;
+    public boolean bChangedPit = false;
     private float SonicBoom;
     private Eff3DActor shockwave;
     private boolean isSonic;
-    public static int LockState = 0;
-    static Actor hunted = null;
+//    public static int LockState = 0;
+    Actor hunted = null;
     private float engineSurgeDamage;
     private static final float NEG_G_TOLERANCE_FACTOR = 3.5F;
     private static final float NEG_G_TIME_FACTOR = 2.5F;
@@ -2636,7 +2532,7 @@ public class F_18 extends Scheme2
     private boolean isGuidingBomb;
     private boolean isMasterAlive;
     public boolean needUpdateHook;
-    private static Loc l = new Loc();
+    private static Loc flirloc = new Loc();
     public boolean FLIR;
     private SoundFX fxRWR;
     private Sample smplRWR;
@@ -2675,6 +2571,7 @@ public class F_18 extends Scheme2
     private float oldTrimElevator;
     public boolean bHasCenterTank;
     public boolean bHasWingTank;
+    private Eff3DActor antiColLight[];
 
     static 
     {
