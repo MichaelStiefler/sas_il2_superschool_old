@@ -140,7 +140,6 @@ public class F_100F extends F_100
     private long intervalRadarLockThreat;
     private long lastMissileLaunchThreatActive;
     private long intervalMissileLaunchThreat;
-    public static boolean bChangedPit = false;
 
     static 
     {

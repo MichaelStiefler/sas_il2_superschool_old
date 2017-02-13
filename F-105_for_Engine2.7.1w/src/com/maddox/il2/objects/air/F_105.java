@@ -2306,10 +2306,10 @@ public class F_105 extends Scheme1
     private float                ft;
     private LightPointWorld      lLight[];
     private Hook                 lLightHook[];
-    private static Loc           lLightLoc1             = new Loc();
-    private static Point3d       lLightP1               = new Point3d();
-    private static Point3d       lLightP2               = new Point3d();
-    private static Point3d       lLightPL               = new Point3d();
+    private Loc           lLightLoc1             = new Loc();
+    private Point3d       lLightP1               = new Point3d();
+    private Point3d       lLightP2               = new Point3d();
+    private Point3d       lLightPL               = new Point3d();
     private boolean              ictl;
     private static float         mteb                   = 1.0F;
     private float                mn;
@@ -2319,12 +2319,12 @@ public class F_105 extends Scheme1
     private float                rctl;
     private float                ectl;
     private boolean              ts;
-    public static boolean        bChangedPit            = false;
+    public boolean               bChangedPit            = false;
     private float                SonicBoom;
     private Eff3DActor           shockwave;
     private boolean              isSonic;
-    public static int            LockState              = 0;
-    static Actor                 hunted                 = null;
+    public int                   LockState              = 0;
+    Actor                        hunted                 = null;
     private float                engineSurgeDamage;
     public boolean               hasHydraulicPressure;
     private static final float   NEG_G_TOLERANCE_FACTOR = 1.5F;
@@ -2375,7 +2375,7 @@ public class F_105 extends Scheme1
     private Chute chute;
     private long openChuteTimer = 0L;
     private long removeChuteTimer;
-    private static Orient o = new Orient();
+//    private Orient o = new Orient();
     private boolean bTwoSeat;
     private float fAirbrakeCx;
     private long lTimeLastHydraulicPressureRecover;
@@ -2389,8 +2389,6 @@ public class F_105 extends Scheme1
     private float obsMove;
     private float obsMoveTot;
     boolean bObserverKilled;
-
-
 
     static {
         Class class1 = com.maddox.il2.objects.air.F_105.class;
