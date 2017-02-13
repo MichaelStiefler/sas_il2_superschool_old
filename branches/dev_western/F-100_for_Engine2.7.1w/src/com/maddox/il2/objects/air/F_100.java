@@ -578,7 +578,28 @@ public class F_100 extends Scheme1
 
     public static void moveGear(HierMesh hiermesh, float f)
     {
+        // By western, once deleting GearFX function to avoid "static" conflicting.
+        // recovering it ... is a future plan.
         if(Math.abs(f) < 0.27F)
+        {
+            hiermesh.chunkSetAngles("GearL6_D0", 0.0F, Aircraft.cvt(f, 0.15F, 0.26F, 0.0F, -90F), 0.0F);
+            hiermesh.chunkSetAngles("GearR6_D0", 0.0F, Aircraft.cvt(f, 0.09F, 0.22F, 0.0F, -90F), 0.0F);
+            hiermesh.chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(f, 0.0F, 0.11F, 0.0F, -90F), 0.0F);
+        } else
+        {
+            hiermesh.chunkSetAngles("GearL6_D0", 0.0F, Aircraft.cvt(f, 0.65F, 0.74F, -90F, 0.0F), 0.0F);
+            hiermesh.chunkSetAngles("GearR6_D0", 0.0F, Aircraft.cvt(f, 0.67F, 0.78F, -90F, 0.0F), 0.0F);
+            hiermesh.chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(f, 0.89F, 0.99F, -90F, 0.0F), 0.0F);
+        }
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(f, 0.23F, 0.65F, 0.0F, -85F), 0.0F);
+        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(f, 0.23F, 0.65F, 0.0F, -85F), 0.0F);
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(f, 0.28F, 0.7F, 0.0F, -85F), 0.0F);
+        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(f, 0.28F, 0.7F, 0.0F, -85F), 0.0F);
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(f, 0.63F, 0.99F, 0.0F, -105F), 0.0F);
+        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, Aircraft.cvt(f, 0.63F, 0.99F, 0.0F, -95F), 0.0F);
+
+        // By western, original GearFX codes are here.
+/*        if(Math.abs(f) < 0.27F)
         {
             hiermesh.chunkSetAngles("GearL6_D0", 0.0F, Aircraft.cvt(f * kl, 0.15F, 0.26F, 0.0F, -90F), 0.0F);
             hiermesh.chunkSetAngles("GearR6_D0", 0.0F, Aircraft.cvt(f * kr, 0.09F, 0.22F, 0.0F, -90F), 0.0F);
@@ -595,11 +616,31 @@ public class F_100 extends Scheme1
         hiermesh.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(f * kr, 0.28F, 0.7F, 0.0F, -85F), 0.0F);
         hiermesh.chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(f * kc, 0.63F, 0.99F, 0.0F, -105F), 0.0F);
         hiermesh.chunkSetAngles("GearC5_D0", 0.0F, Aircraft.cvt(f * kc, 0.63F, 0.99F, 0.0F, -95F), 0.0F);
+*/
     }
 
     protected void moveGear(float f)
     {
         moveGear(hierMesh(), f);
+        // By western, if possible, want to move gear animation codes into here. But today it doesn't work as planned.
+/*        if(Math.abs(f) < 0.27F)
+        {
+            hierMesh().chunkSetAngles("GearL6_D0", 0.0F, Aircraft.cvt(f * kl, 0.15F, 0.26F, 0.0F, -90F), 0.0F);
+            hierMesh().chunkSetAngles("GearR6_D0", 0.0F, Aircraft.cvt(f * kr, 0.09F, 0.22F, 0.0F, -90F), 0.0F);
+            hierMesh().chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(f * kc, 0.0F, 0.11F, 0.0F, -90F), 0.0F);
+        } else
+        {
+            hierMesh().chunkSetAngles("GearL6_D0", 0.0F, Aircraft.cvt(f * kl, 0.65F, 0.74F, -90F, 0.0F), 0.0F);
+            hierMesh().chunkSetAngles("GearR6_D0", 0.0F, Aircraft.cvt(f * kl, 0.67F, 0.78F, -90F, 0.0F), 0.0F);
+            hierMesh().chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(f * kl, 0.89F, 0.99F, -90F, 0.0F), 0.0F);
+        }
+        hierMesh().chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(f * kl, 0.23F, 0.65F, 0.0F, -85F), 0.0F);
+        hierMesh().chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(f * kl, 0.23F, 0.65F, 0.0F, -85F), 0.0F);
+        hierMesh().chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(f * kr, 0.28F, 0.7F, 0.0F, -85F), 0.0F);
+        hierMesh().chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(f * kr, 0.28F, 0.7F, 0.0F, -85F), 0.0F);
+        hierMesh().chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(f * kc, 0.63F, 0.99F, 0.0F, -105F), 0.0F);
+        hierMesh().chunkSetAngles("GearC5_D0", 0.0F, Aircraft.cvt(f * kc, 0.63F, 0.99F, 0.0F, -95F), 0.0F);
+*/
         if(FM.CT.getGear() >= 0.9985F)
         {
             kl = 1.0F;
@@ -2052,10 +2093,10 @@ public class F_100 extends Scheme1
     private Hook lLightHook[] = {
         null, null, null, null
     };
-    private static Loc lLightLoc1 = new Loc();
-    private static Point3d lLightP1 = new Point3d();
-    private static Point3d lLightP2 = new Point3d();
-    private static Point3d lLightPL = new Point3d();
+    private Loc lLightLoc1 = new Loc();
+    private Point3d lLightP1 = new Point3d();
+    private Point3d lLightP2 = new Point3d();
+    private Point3d lLightPL = new Point3d();
     private boolean ictl;
     private static float mteb = 1.0F;
     private float mn;
@@ -2066,19 +2107,19 @@ public class F_100 extends Scheme1
     private float ectl;
     private boolean ts;
     private float H1;
-    public static boolean bChangedPit = false;
+    public boolean bChangedPit = false;
     private float SonicBoom;
     private Eff3DActor shockwave;
     private boolean isSonic;
-    public static int LockState = 0;
-    static Actor hunted = null;
+    public int LockState = 0;
+    Actor hunted = null;
     private float engineSurgeDamage;
     protected float gearTargetAngle;
     private float gearCurrentAngle;
     public boolean hasHydraulicPressure;
-    private static float kl = 1.0F;
-    private static float kr = 1.0F;
-    private static float kc = 1.0F;
+    private float kl = 1.0F;
+    private float kr = 1.0F;
+    private float kc = 1.0F;
     public static float FlowRate = 8.5F;
     public static float FuelReserve = 1000F;
     private boolean bHasDeployedDragChute;
