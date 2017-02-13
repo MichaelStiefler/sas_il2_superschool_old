@@ -36,7 +36,7 @@ public class Skyhawk extends Scheme1
 
     public void getGFactors(TypeGSuit.GFactors theGFactors)
     {
-        theGFactors.setGFactors(1.0F, 1.0F, 1.0F, 1.8F, 1.5F, 1.0F);
+        theGFactors.setGFactors(NEG_G_TOLERANCE_FACTOR, NEG_G_TIME_FACTOR, NEG_G_RECOVERY_FACTOR, POS_G_TOLERANCE_FACTOR, POS_G_TIME_FACTOR, POS_G_RECOVERY_FACTOR);
     }
 
     private static final float toMeters(float f)
@@ -1436,7 +1436,7 @@ public class Skyhawk extends Scheme1
     public int k14Mode;
     public int k14WingspanType;
     public float k14Distance;
-    static Actor hunted = null;
+    Actor hunted = null;
 
     private boolean bSightAutomation;
     private boolean bSightBombDump;
