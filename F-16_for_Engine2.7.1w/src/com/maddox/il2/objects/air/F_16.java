@@ -121,8 +121,8 @@ public class F_16 extends Scheme1
         tf = 0L;
         APmode1 = false;
         radartogle = false;
-        v = 0.0F;
-        h = 0.0F;
+        radarvrt = 0.0F;
+        radarhol = 0.0F;
         lockmode = 0;
         radargunsight = 0;
         leftscreen = 2;
@@ -539,7 +539,7 @@ public class F_16 extends Scheme1
             tf = Time.current();
         } else
         if(radartogle && lockmode == 0)
-            h += 0.0035F;
+            radarhol += 0.0035F;
     }
 
     public void typeBomberAdjDistanceMinus()
@@ -550,7 +550,7 @@ public class F_16 extends Scheme1
             tf = Time.current();
         } else
         if(radartogle && lockmode == 0)
-            h -= 0.0035F;
+            radarhol -= 0.0035F;
     }
 
     public void typeBomberAdjSideslipReset()
@@ -565,7 +565,7 @@ public class F_16 extends Scheme1
             tf = Time.current();
         } else
         if(radartogle && lockmode == 0)
-            v += 0.0035F;
+            radarvrt += 0.0035F;
     }
 
     public void typeBomberAdjSideslipMinus()
@@ -576,7 +576,7 @@ public class F_16 extends Scheme1
             tf = Time.current();
         } else
         if(radartogle && lockmode == 0)
-            v -= 0.0035F;
+            radarvrt -= 0.0035F;
     }
 
     public void updatecontrollaser()
@@ -715,7 +715,7 @@ public class F_16 extends Scheme1
                 Point3d point3d = new Point3d();
                 Orient orient = new Orient();
                 actor.pos.getAbs(point3d, orient);
-                l.set(point3d, orient);
+                flirloc.set(point3d, orient);
                 Eff3DActor eff3dactor = Eff3DActor.New(actor, null, new Loc(), 1.0F, "effects/Explodes/Air/Zenitka/Germ_88mm/Glow.eff", 1.0F);
                 eff3dactor.postDestroy(Time.current() + 1500L);
                 LightPointActor lightpointactor = new LightPointActor(new LightPointWorld(), new Point3d());
@@ -2618,10 +2618,10 @@ label0:
     private float ft;
     private LightPointWorld lLight[];
     private Hook lLightHook[];
-    private static Loc lLightLoc1 = new Loc();
-    private static Point3d lLightP1 = new Point3d();
-    private static Point3d lLightP2 = new Point3d();
-    private static Point3d lLightPL = new Point3d();
+    private Loc lLightLoc1 = new Loc();
+    private Point3d lLightP1 = new Point3d();
+    private Point3d lLightP2 = new Point3d();
+    private Point3d lLightPL = new Point3d();
     private boolean ictl;
     private static float mteb = 1.0F;
     private float mn;
@@ -2632,23 +2632,23 @@ label0:
     private float ectl;
     private boolean ts;
     private float H1;
-    public static boolean bChangedPit = false;
+    public boolean bChangedPit = false;
     private float SonicBoom;
     private Eff3DActor shockwave;
     private boolean isSonic;
-    public static int LockState = 0;
-    static Actor hunted = null;
+//    public int LockState = 0;
+    Actor hunted = null;
     private float engineSurgeDamage;
     private float gearTargetAngle;
     private float gearCurrentAngle;
     private float gearCurrentSteer;
     public boolean hasHydraulicPressure;
-    private static final float NEG_G_TOLERANCE_FACTOR = 2.5F;
-    private static final float NEG_G_TIME_FACTOR = 2.5F;
-    private static final float NEG_G_RECOVERY_FACTOR = 2F;
-    private static final float POS_G_TOLERANCE_FACTOR = 9.5F;
+    private static final float NEG_G_TOLERANCE_FACTOR = 3.5F;
+    private static final float NEG_G_TIME_FACTOR = 1.5F;
+    private static final float NEG_G_RECOVERY_FACTOR = 2.5F;
+    private static final float POS_G_TOLERANCE_FACTOR = 8.2F;
     private static final float POS_G_TIME_FACTOR = 3F;
-    private static final float POS_G_RECOVERY_FACTOR = 3F;
+    private static final float POS_G_RECOVERY_FACTOR = 3.5F;
     private Eff3DActor pull1;
     private Eff3DActor pull2;
     private boolean bSightAutomation;
@@ -2660,7 +2660,7 @@ label0:
     public float fSightCurSpeed;
     public float fSightCurReadyness;
     public boolean FLIR;
-    private static Loc l = new Loc();
+    private Loc flirloc = new Loc();
     public int clipBoardPage_;
     public boolean showClipBoard_;
     private ArrayList missilesList;
@@ -2677,8 +2677,8 @@ label0:
     public float azimult;
     public float tangate;
     public long tf;
-    public float v;
-    public float h;
+    public float radarvrt;
+    public float radarhol;
     public boolean hold;
     private long t1;
     public boolean radartogle;

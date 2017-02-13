@@ -1,10 +1,18 @@
 
 package com.maddox.il2.objects.air;
 
+import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Tuple3d;
+import com.maddox.JGP.Vector3d;
+import com.maddox.il2.ai.BulletEmitter;
+import com.maddox.il2.engine.*;
+import com.maddox.il2.fm.*;
+import com.maddox.il2.game.AircraftHotKeys;
+import com.maddox.il2.game.HUD;
+import com.maddox.il2.game.Mission;
 import com.maddox.rts.*;
 import com.maddox.JGP.*;
 import com.maddox.il2.ai.AnglesFork;
-import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
@@ -16,6 +24,7 @@ import com.maddox.il2.objects.vehicles.cars.CarGeneric;
 import com.maddox.il2.objects.vehicles.stationary.StationaryGeneric;
 import com.maddox.il2.objects.vehicles.tanks.TankGeneric;
 import com.maddox.il2.objects.weapons.GuidedMissileUtils;
+import com.maddox.rts.Time;
 import com.maddox.sound.Acoustics;
 import com.maddox.sound.ReverbFXRoom;
 import com.maddox.util.HashMapExt;
@@ -413,11 +422,11 @@ public class CockpitF16FLIR extends CockpitGunner
     public Point3d spot1;
     public Point3d spot2;
     private Hook[] LaserHook = { null, null, null, null };
-    private static Loc LaserLoc1 = new Loc();
-    private static Point3d LaserP1 = new Point3d();
-    private static Point3d LaserP2 = new Point3d();
-    private static Point3d LaserPL = new Point3d();
-    private static Point3d LaserP3 = new Point3d();
+    private Loc LaserLoc1 = new Loc();
+    private Point3d LaserP1 = new Point3d();
+    private Point3d LaserP2 = new Point3d();
+    private Point3d LaserPL = new Point3d();
+    private Point3d LaserP3 = new Point3d();
     
 
     static 
