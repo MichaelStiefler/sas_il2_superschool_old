@@ -50,20 +50,8 @@ public class CockpitFW_190A5 extends CockpitPilot
     static /* synthetic */ Class class$com$maddox$il2$objects$air$CockpitFW_190A5;
     
   //------------------------------------------------------------------------
-    /* skylla: Schusszaehler fix: for more info please see class CockpitFW_190A4
-     * @author: SAS~Skylla
-     * @params: int bullets: number of bullets still in the gun;
-     * 			float offset: offset at which the ammocounter shows zero bullets left (-0.018f for outer, -0.045f for inner)
-     * 			int counterrange: number of bullets the counter can display (100 for outer, 500 for inner)
-     */
-    private static int mg17lbullets = 0;
-    private static int mg17rbullets = 0;
-    
-    private static float ammoCounter(int bullets, float offset, int counterrange) {
-    	float f = (0.026f - offset) / counterrange;
-    	bullets = Math.min(bullets, counterrange);
-    	return (f * bullets + offset);
-    } 
+    // TODO skylla: Schusszaehler fix:    
+    private static int[] oldammo = {0,0,0,0,0,0};
   //------------------------------------------------------------------------
     
     protected float waypointAzimuth() {
@@ -181,60 +169,131 @@ public class CockpitFW_190A5 extends CockpitPilot
         this.resetYPRmodifier();
         
       //------------------------------------------------------------------------
-        // skylla: Schusszaehler Fix: for more info please see class CockpitFW_190A4 
-        if (this.gun[0] != null) {
-            Cockpit.xyz[0] = this.cvt(this.gun[0].countBullets(), 0.0f, 500.0f, -0.044f, 0.0f);
-            this.mesh.chunkVisible("XLampMG17_1", !this.gun[0].haveBullets());
-            if(this.gun[0].haveBullets() && this.gun[0].isShots() && this.gun[0].countBullets() != mg17lbullets) {
-            	this.mesh.chunkVisible("XLampMG17_1", true);
-            	mg17lbullets = this.gun[0].countBullets();
-            }
+        // TODO skylla: Schusszaehler Fix: new code
+        for(int i = 0; i<6; i++){
+        	if(gun[i] != null && oldammo[i] == 0 && gun[i].countBullets() != 0) {
+        		oldammo[i] = gun[i].countBullets();
+        	}
         }
-        if (this.gun[1] != null) {
-            this.mesh.chunkVisible("XLampMG17_2", !this.gun[1].haveBullets());
-            if(this.gun[1].haveBullets() && this.gun[1].isShots() && this.gun[1].countBullets() != mg17rbullets) {
-            	this.mesh.chunkVisible("XLampMG17_2", true);
-            	mg17rbullets = this.gun[1].countBullets();
-            }
-        }
-        if (this.gun[4] != null) {
-        	Cockpit.xyz[0] = this.cvt(this.gun[4].countBullets(), 0.0f, 500.0f, -0.045f, 0.0f); 
-        	//Cockpit.xyz[0] = ammoCounter(this.gun[4].countBullets(), -0.045f, 500); 
+        int gun0;
+        int gun1;
+        int gun2;
+        int gun3;
+        int gun4;
+        int gun5;
+      
+        if(gun[0] == null)
+        	gun0 = 0;
+        else
+        	gun0 = gun[0].countBullets();
+        if(gun[1] == null)
+        	gun1 = 0;
+        else
+        	gun1 = gun[1].countBullets();
+        if(gun[2] == null)
+        	gun2 = 0;
+        else
+        	gun2 = gun[2].countBullets();
+        if(gun[3] == null)
+        	gun3 = 0;
+        else
+        	gun3 = gun[3].countBullets();
+        if(gun[4] == null)
+        	gun4 = 0;
+        else
+        	gun4 = gun[4].countBullets();
+        if(gun[5] == null)
+        	gun5 = 0;
+        else
+        	gun5 = gun[5].countBullets();
+        
+        if(gun[4] != null) {
+        	Cockpit.xyz[0] = this.cvt((oldammo[4]-gun4 > 5) ? oldammo[4] : gun4, 0.0f, 500.0f, -0.045f, 0.0f); 
             this.mesh.chunkSetLocate("RC_MG17_L", Cockpit.xyz, Cockpit.ypr);
         }
-        if (this.gun[5] != null) {
-        	Cockpit.xyz[0] = this.cvt(this.gun[5].countBullets(), 0.0f, 500.0f, -0.045f, 0.0f); 
-        	//Cockpit.xyz[0] = ammoCounter(this.gun[5].countBullets(), -0.045f, 500); 
+        if(gun[5] != null) {
+        	Cockpit.xyz[0] = this.cvt((oldammo[5]-gun5 > 5) ? oldammo[5] : gun5, 0.0f, 500.0f, -0.045f, 0.0f); 
             this.mesh.chunkSetLocate("RC_MG17_R", Cockpit.xyz, Cockpit.ypr);
         }
-        if (this.gun[2] != null) {
-        	Cockpit.xyz[0] = ammoCounter(this.gun[2].countBullets(), -0.018f, 100); // <- new code with CockpitFW_190A4.ammoCounter(); see Cockpit class of FW-190A4 for more details
-            this.mesh.chunkSetLocate("RC_MG151_L", Cockpit.xyz, Cockpit.ypr);
+        if(gun[2] != null) {
+        	Cockpit.xyz[0] = this.cvt((oldammo[2]-gun2 > 5) ? oldammo[2] : gun2, 0.0f, 500.0f, -0.018f, 0.026f);
+        	this.mesh.chunkSetLocate("RC_MG151_L", Cockpit.xyz, Cockpit.ypr);
         }
-        if (this.gun[3] != null) {
-            Cockpit.xyz[0] = ammoCounter(this.gun[3].countBullets(), -0.018f, 100); // <- new code with CockpitFW_190A4.ammoCounter(); see Cockpit class of FW-190A4 for more details
-            this.mesh.chunkSetLocate("RC_MG151_R", Cockpit.xyz, Cockpit.ypr);
+        if(gun[3] != null) {
+        	Cockpit.xyz[0] = this.cvt((oldammo[3]-gun3 > 5) ? oldammo[3] : gun3, 0.0f, 500.0f, -0.018f, 0.026f);
+        	this.mesh.chunkSetLocate("RC_MG151_R", Cockpit.xyz, Cockpit.ypr);
         }
-        /* old code:
-        if (this.gun[0] != null) {
-            Cockpit.xyz[0] = this.cvt(this.gun[0].countBullets(), 0.0f, 500.0f, -0.044f, 0.0f);
-            this.mesh.chunkSetLocate("RC_MG17_L", Cockpit.xyz, Cockpit.ypr);
-            this.mesh.chunkVisible("XLampMG17_1", !this.gun[0].haveBullets());
+        if(this.fm.CT.WeaponControl[0]) {
+        	if(gun1 == 0 || gun0 == oldammo[0]-1) {
+        		this.mesh.chunkVisible("XLampMG17_1", true);
+        	} else if(gun0 == oldammo[0]-2) {
+        		this.mesh.chunkVisible("XLampMG17_1", false);
+        		oldammo[0] = gun0;
+        	} else {
+        		this.mesh.chunkVisible("XLampMG17_1", false);
+        	}
+        	
+        	if(gun1 == 0 || gun1 == oldammo[1]-1) {
+        		this.mesh.chunkVisible("XLampMG17_2", true);
+        	} else if(gun1 == oldammo[1]-2) {
+        		this.mesh.chunkVisible("XLampMG17_2", false);
+        		oldammo[1] = gun1;
+        	} else {
+        		this.mesh.chunkVisible("XLampMG17_2", false);
+        	}
+        	
+        	if(gun4 == 0 || gun4 == oldammo[4]-1) {
+        		//SPINNER
+        	} else if(gun4 == oldammo[4]-2) {
+        		//SPINNER
+        		oldammo[4] = gun4;
+        	} else {
+        		//SPINNER
+        	}
+        	
+        	if(gun5 == 0 || gun5 == oldammo[5]-1) {
+        		//SPINNER
+        	} else if(gun5 == oldammo[5]-2) {
+        		//SPINNER
+        		oldammo[5] = gun5;
+        	} else {
+        		//SPINNER
+        	}
+        	
+        } else {
+        	if(gun0 == 0) {
+        		this.mesh.chunkVisible("XLampMG17_1", true);
+        	} else {
+        		this.mesh.chunkVisible("XLampMG17_1", false);
+        	}
+        	if(gun1 == 0) {
+        		this.mesh.chunkVisible("XLampMG17_2", true);
+        	} else {
+        		this.mesh.chunkVisible("XLampMG17_2", false);
+        	}
+        	//SPINNER
         }
-        if (this.gun[1] != null) {
-            Cockpit.xyz[0] = this.cvt(this.gun[1].countBullets(), 0.0f, 500.0f, -0.044f, 0.0f);
-            this.mesh.chunkSetLocate("RC_MG17_R", Cockpit.xyz, Cockpit.ypr);
-            this.mesh.chunkVisible("XLampMG17_2", !this.gun[1].haveBullets());
+        if(this.fm.CT.WeaponControl[1]) {
+        	if(gun2 == 0 || gun2 == oldammo[2]-1) {
+        		//SPINNER
+        	} else if(gun2 == oldammo[2]-2) {
+        		//SPINNER
+        		oldammo[2] = gun2;
+        	} else {
+        		//SPINNER
+        	}
+        	
+        	if(gun3 == 0 || gun3 == oldammo[3]-1) {
+        		//SPINNER
+        	} else if(gun3 == oldammo[3]-2) {
+        		//SPINNER
+        		oldammo[3] = gun3;
+        	} else {
+        		//SPINNER
+        	}
+        } else {
+        	//SPINNER
         }
-        if (this.gun[4] != null) {
-            Cockpit.xyz[0] = this.cvt(this.gun[4].countBullets(), 0.0f, 200.0f, -0.017f, 0.0f);
-            this.mesh.chunkSetLocate("RC_MG151_L", Cockpit.xyz, Cockpit.ypr);
-        }
-        if (this.gun[5] != null) {
-            Cockpit.xyz[0] = this.cvt(this.gun[5].countBullets(), 0.0f, 200.0f, -0.017f, 0.0f);
-            this.mesh.chunkSetLocate("RC_MG151_R", Cockpit.xyz, Cockpit.ypr);
-        }
-        */
       //------------------------------------------------------------------------
         if (this.t1 < Time.current()) {
             this.t1 = Time.current() + 500L;
