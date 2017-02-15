@@ -27,11 +27,11 @@
   CFlapStageMax 35
   CVarwing 5
   CVarwingPos 5
-  CVarwingStage0 10
-  CVarwingStage1 22
-  CVarwingStage2 35
-  CVarwingStage3 48
-  CVarwingStageMax 48
+  CVarwingStage0 15
+  CVarwingStage1 35
+  CVarwingStage2 48
+  CVarwingStage3 55
+  CVarwingStageMax 55
   CVarwingStageText AUTO,Extend,Keep,Retract,BOMB
   CVarIncidence 1
   CDiveBrake 1
@@ -39,9 +39,10 @@
   CEngine 1
   CVectoredThrust 0
   CUndercarriage 1
+  CCatLaunchBar 1
   CLockTailwheel 1
   CStabilizer 1
-  CRefuel 1
+  CRefuel 0
   CArrestorHook 1
   CWingFold 1
   WingPeriod 6.0
