@@ -4,7 +4,10 @@
 
 package com.maddox.il2.objects.air;
 
+import java.security.SecureRandom;
+
 import com.maddox.il2.ai.AnglesFork;
+import com.maddox.il2.ai.RangeRandom;
 import com.maddox.JGP.Tuple3f;
 import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.engine.InterpolateRef;
@@ -47,7 +50,7 @@ public class CockpitFW_190A4 extends CockpitPilot //implements typeAmmocounter .
     static /* synthetic */ Class class$com$maddox$il2$objects$air$CockpitFW_190A4;
     
   //------------------------------------------------------------------------
-    //skylla: Schusszaehler fix
+    //TODO skylla: Schusszaehler fix
     private static int [] oldammo = {0,0,0,0,0,0};
   //------------------------------------------------------------------------
     
@@ -84,6 +87,23 @@ public class CockpitFW_190A4 extends CockpitPilot //implements typeAmmocounter .
         this.interpPut(new Interpolater(), null, Time.current(), null);
         AircraftLH.printCompassHeading = true;
     }
+    
+  //------------------------------------------------------------------------
+    //TODO skylla: Schusszaehler:
+    /**
+     * PLEASE NOTE: This is still under construction. Method calls disabled
+     * now as the files addressed aren't ready yet. 
+    **/
+    private void showSpinner(int i, boolean b) {
+    	if(i < 0 || i > 4)
+    		return;
+    	SecureRandom secRandom = new SecureRandom();
+	    secRandom.setSeed(System.currentTimeMillis());
+	    RangeRandom rr = new RangeRandom(secRandom.nextLong());
+	    float r = rr.nextFloat(-6.0F, 6.0F);
+    	mesh.chunkSetAngles("SC"+i, b?0.0F+r:60.0F+r, 0.0F, 0.0F);
+    }
+  //------------------------------------------------------------------------
     
     public void reflectWorldToInstruments(final float f_54_) {
         if (this.gun[0] == null) {
@@ -127,7 +147,7 @@ public class CockpitFW_190A4 extends CockpitPilot //implements typeAmmocounter .
       //------------------------------------------------------------------------
         // TODO skylla: Schusszaehler Fix: new code
         for(int i = 0; i<6; i++){
-        	if(gun[i] != null && oldammo[i] == 0 && gun[i].countBullets() != 0) {
+        	if((gun[i] != null && oldammo[i] == 0 && gun[i].countBullets() != 0) || (oldammo[i]-3 > gun[i].countBullets() && gun[i].countBullets() != 0)) {
         		oldammo[i] = gun[i].countBullets();
         	}
         }
@@ -198,22 +218,22 @@ public class CockpitFW_190A4 extends CockpitPilot //implements typeAmmocounter .
         		this.mesh.chunkVisible("XLampMG17_2", false);
         	}
         	
-        	if(gun4 == 0 || gun4 == oldammo[4]-1) {
-        		//SPINNER
+        	if(gun4 == oldammo[4]-1) {
+        		//showSpinner(2,false);
         	} else if(gun4 == oldammo[4]-2) {
-        		//SPINNER
+        		//showSpinner(2,true);
         		oldammo[4] = gun4;
         	} else {
-        		//SPINNER
+        		//showSpinner(2,true);
         	}
         	
-        	if(gun5 == 0 || gun5 == oldammo[5]-1) {
-        		//SPINNER
+        	if(gun5 == oldammo[5]-1) {
+        		//showSpinner(3,false);
         	} else if(gun5 == oldammo[5]-2) {
-        		//SPINNER
+        		//showSpinner(3,true);
         		oldammo[5] = gun5;
         	} else {
-        		//SPINNER
+        		//showSpinner(3,true);
         	}
         	
         } else {
@@ -227,28 +247,46 @@ public class CockpitFW_190A4 extends CockpitPilot //implements typeAmmocounter .
         	} else {
         		this.mesh.chunkVisible("XLampMG17_2", false);
         	}
-        	//SPINNER
+        	if(oldammo[4]-gun4 > 5) {
+        		//showSpinner(2,false);
+        	} else {
+        		//showSpinner(2,true);
+        	}
+        	if(oldammo[5]-gun5 > 5) {
+        		//showSpinner(3,false);
+        	} else {
+        		//showSpinner(3,true);
+        	}
         }
         if(this.fm.CT.WeaponControl[1]) {
-        	if(gun2 == 0 || gun2 == oldammo[2]-1) {
-        		//SPINNER
+        	if(gun2 == oldammo[2]-1) {
+        		//showSpinner(1,false);
         	} else if(gun2 == oldammo[2]-2) {
-        		//SPINNER
+        		//showSpinner(1,true);
         		oldammo[2] = gun2;
         	} else {
-        		//SPINNER
+        		//showSpinner(1,true);
         	}
         	
-        	if(gun3 == 0 || gun3 == oldammo[3]-1) {
-        		//SPINNER
+        	if(gun3 == oldammo[3]-1) {
+        		//showSpinner(4,false);
         	} else if(gun3 == oldammo[3]-2) {
-        		//SPINNER
+        		//showSpinner(4,true);
         		oldammo[3] = gun3;
         	} else {
-        		//SPINNER
+        		//showSpinner(4,true);
         	}
         } else {
-        	//SPINNER
+        	if(oldammo[2]-gun2 > 5) {
+        		//showSpinner(1,false);
+        	} else {
+        		//showSpinner(1,true);
+        	}
+        	if(oldammo[3]-gun3 > 5) {
+        		//showSpinner(4,false);
+        	} else {
+        		//showSpinner(4,true);
+        	}
         }
       //------------------------------------------------------------------------
                 
