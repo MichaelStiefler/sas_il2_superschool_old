@@ -84,11 +84,11 @@ public class BigshipGeneric extends ActorHMesh
             mesh.render();
         }
 
-        private static Loc lRender = new Loc();
-        private static Loc l = new Loc();
-        private static Vector3d tmpVector = new Vector3d();
-        private static Point3d p0 = new Point3d();
-        private static Point3d p1 = new Point3d();
+        private Loc lRender = new Loc();
+        private Loc l = new Loc();
+        private Vector3d tmpVector = new Vector3d();
+        private Point3d p0 = new Point3d();
+        private Point3d p1 = new Point3d();
 
 
         public TowStringMeshDraw(ActorDraw actordraw)
@@ -180,11 +180,11 @@ public class BigshipGeneric extends ActorHMesh
         public CellAirField cellTO;
         public CellAirField cellLDG;
         private boolean bInited;
-        private static Loc loc = new Loc();
-        private static Point3d p = new Point3d();
-        private static Orient o = new Orient();
-        private static Matrix4d m1 = new Matrix4d();
-        private static double tmp[] = new double[3];
+        private Loc loc = new Loc();
+        private Point3d p = new Point3d();
+        private Orient o = new Orient();
+        private Matrix4d m1 = new Matrix4d();
+        private double tmp[] = new double[3];
 
 
         public AirportProperties(Class class1)
@@ -5497,8 +5497,9 @@ label0:
 
     private void MlaCutLightOff()
     {
-        for(int i=0; i<4; i++)
-            Eff3DActor.finish(effcut[i]);
+        if(cutlighton)
+            for(int i=0; i<4; i++)
+                Eff3DActor.finish(effcut[i]);
     }
 
     private void MlaCutLightOn()
@@ -5511,8 +5512,9 @@ label0:
 
     private void MlaWaveoffOff()
     {
-        for(int i=0; i<4; i++)
-            Eff3DActor.finish(effwaveoff[i]);
+        if(waveofflighton)
+            for(int i=0; i<4; i++)
+                Eff3DActor.finish(effwaveoff[i]);
     }
 
     private void MlaWaveoffOn()
@@ -5585,8 +5587,9 @@ label0:
 
     private void FRFlolsCutLightOff()
     {
-        for(int i=0; i<2; i++)
-            Eff3DActor.finish(effcut[i]);
+        if(cutlighton)
+            for(int i=0; i<2; i++)
+                Eff3DActor.finish(effcut[i]);
     }
 
     private void FRFlolsCutLightOn()
@@ -5597,8 +5600,9 @@ label0:
 
     private void FRFlolsWaveoffOff()
     {
-        for(int i=0; i<4; i++)
-            Eff3DActor.finish(effwaveoff[i]);
+        if(waveofflighton)
+            for(int i=0; i<4; i++)
+                Eff3DActor.finish(effwaveoff[i]);
     }
 
     private void FRFlolsWaveoffOn()
@@ -5611,8 +5615,9 @@ label0:
 
     private void FRFlolsEmergencyWaveoffOff()
     {
-        for(int i=0; i<2; i++)
-            Eff3DActor.finish(effemgwaveoff[i]);
+        if(waveofflighton)
+            for(int i=0; i<2; i++)
+                Eff3DActor.finish(effemgwaveoff[i]);
     }
 
     private void FRFlolsEmergencyWaveoffOn()
@@ -5837,26 +5842,32 @@ label0:
                 effwaveoff[i]._setIntesity(1.0F);
             for(int i=0; i<2; i++)
                 effemgwaveoff[i]._setIntesity(1.0F);
-            for(int i=0; i<2; i++)
-                effreserve1[i]._setIntesity(1.0F);
-            for(int i=0; i<2; i++)
-                effreserve2[i]._setIntesity(1.0F);
+//            for(int i=0; i<2; i++)
+//                effreserve1[i]._setIntesity(1.0F);
+//            for(int i=0; i<2; i++)
+//                effreserve2[i]._setIntesity(1.0F);
         }
         else
         {
             MlaMeatballOff();
             for(int i=0; i<12; i++)
                 effdatum[i]._setIntesity(0.0F);
-            for(int i=0; i<4; i++)
-                effcut[i]._setIntesity(0.0F);
-            for(int i=0; i<4; i++)
-                effwaveoff[i]._setIntesity(0.0F);
-            for(int i=0; i<2; i++)
-                effemgwaveoff[i]._setIntesity(0.0F);
-            for(int i=0; i<2; i++)
-                effreserve1[i]._setIntesity(0.0F);
-            for(int i=0; i<2; i++)
-                effreserve2[i]._setIntesity(0.0F);
+            if(cutlighton)
+                for(int i=0; i<4; i++)
+                    effcut[i]._setIntesity(0.0F);
+            cutlighton = false;
+            if(waveofflighton)
+                for(int i=0; i<4; i++)
+                    effwaveoff[i]._setIntesity(0.0F);
+            waveofflighton = false;
+            if(emgwaveofflighton)
+                for(int i=0; i<2; i++)
+                    effemgwaveoff[i]._setIntesity(0.0F);
+            emgwaveofflighton = false;
+//            for(int i=0; i<2; i++)
+//                effreserve1[i]._setIntesity(0.0F);
+//            for(int i=0; i<2; i++)
+//                effreserve2[i]._setIntesity(0.0F);
         }
     }
 
@@ -5879,12 +5890,18 @@ label0:
             IflolsMeatballOff();
             for(int i=0; i<12; i++)
                 effdatum[i]._setIntesity(0.0F);
-            for(int i=0; i<4; i++)
-                effcut[i]._setIntesity(0.0F);
-            for(int i=0; i<4; i++)
-                effwaveoff[i]._setIntesity(0.0F);
-            for(int i=0; i<2; i++)
-                effemgwaveoff[i]._setIntesity(0.0F);
+            if(cutlighton)
+                for(int i=0; i<4; i++)
+                    effcut[i]._setIntesity(0.0F);
+            cutlighton = false;
+            if(waveofflighton)
+                for(int i=0; i<4; i++)
+                    effwaveoff[i]._setIntesity(0.0F);
+            waveofflighton = false;
+            if(emgwaveofflighton)
+                for(int i=0; i<2; i++)
+                    effemgwaveoff[i]._setIntesity(0.0F);
+            emgwaveofflighton = false;
         }
     }
 
@@ -5907,12 +5924,18 @@ label0:
             IflolsMeatballOff();
             for(int i=0; i<14; i++)
                 effdatum[i]._setIntesity(0.0F);
-            for(int i=0; i<2; i++)
-                effcut[i]._setIntesity(0.0F);
-            for(int i=0; i<4; i++)
-                effwaveoff[i]._setIntesity(0.0F);
-            for(int i=0; i<2; i++)
-                effemgwaveoff[i]._setIntesity(0.0F);
+            if(cutlighton)
+                for(int i=0; i<2; i++)
+                    effcut[i]._setIntesity(0.0F);
+            cutlighton = false;
+            if(waveofflighton)
+                for(int i=0; i<4; i++)
+                    effwaveoff[i]._setIntesity(0.0F);
+            waveofflighton = false;
+            if(emgwaveofflighton)
+                for(int i=0; i<2; i++)
+                    effemgwaveoff[i]._setIntesity(0.0F);
+            emgwaveofflighton = false;
         }
     }
 
@@ -6108,11 +6131,11 @@ label0:
     private static final int NETSEND_MAX_DELAY_MS_PARTSSTATE = 1100;
     private long netsendPartsState_lasttimeMS;
     private boolean netsendPartsState_needtosend;
-    private static float netsendDrown_pitch = 0.0F;
-    private static float netsendDrown_roll = 0.0F;
-    private static float netsendDrown_depth = 0.0F;
-    private static float netsendDrown_timeS = 0.0F;
-    private static int netsendDrown_nparts = 0;
+    private float netsendDrown_pitch = 0.0F;
+    private float netsendDrown_roll = 0.0F;
+    private float netsendDrown_depth = 0.0F;
+    private float netsendDrown_timeS = 0.0F;
+    private int netsendDrown_nparts = 0;
     private static final int NETSEND_MIN_DELAY_MS_FIRE = 40;
     private static final int NETSEND_MAX_DELAY_MS_FIRE = 85;
     private static final long NETSEND_MIN_BYTECODEDDELTATIME_MS_FIRE = -2000L;
@@ -6178,16 +6201,16 @@ label0:
     private Eff3DActor tail;
     private static ShipProperties constr_arg1 = null;
     private static ActorSpawnArg constr_arg2 = null;
-    private static Point3d p = new Point3d();
-    private static Point3d p1 = new Point3d();
-    private static Point3d p2 = new Point3d();
+    private Point3d p = new Point3d();
+    private Point3d p1 = new Point3d();
+    private Point3d p2 = new Point3d();
     private Orient o;
-    private static Vector3f tmpvf = new Vector3f();
-    private static Vector3d tmpvd = new Vector3d();
-    private static float tmpYPR[] = new float[3];
-    private static float tmpf6[] = new float[6];
-    private static Loc tmpL = new Loc();
-    private static byte tmpBitsState[] = new byte[32];
+    private Vector3f tmpvf = new Vector3f();
+    private Vector3d tmpvd = new Vector3d();
+    private float tmpYPR[] = new float[3];
+    private float tmpf6[] = new float[6];
+    private Loc tmpL = new Loc();
+    private byte tmpBitsState[] = new byte[32];
     private float rollAmp;
     private int rollPeriod;
     private double rollWAmp;
@@ -6205,7 +6228,7 @@ label0:
     public Aircraft towAircraft;
     public int towPortNum;
     public HookNamed towHook;
-    private static Vector3d tmpDir = new Vector3d();
+    private Vector3d tmpDir = new Vector3d();
     public static String ZUTI_RADAR_SHIPS[] = {
         "CV", "Marat", "Kirov", "BB", "Niobe", "Illmarinen", "Vainamoinen", "Tirpitz", "Aurora", "Carrier0", 
         "Carrier1"
@@ -6242,6 +6265,7 @@ label0:
     private boolean insideOfGlidepath = false;
     private boolean cutlighton = false;
     private boolean waveofflighton = false;
+    private boolean emgwaveofflighton = false;
     private boolean bMlaVisible = true;
 
     public boolean bHasMirrorLA = false;
