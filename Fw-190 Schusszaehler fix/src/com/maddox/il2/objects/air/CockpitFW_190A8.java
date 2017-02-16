@@ -166,7 +166,7 @@ public class CockpitFW_190A8 extends CockpitPilot
         //------------------------------------------------------------------------
         // TODO skylla: Schusszaehler Fix: new code
         for(int i = 0; i<6; i++){
-        	if(gun[i] != null && oldammo[i] == 0 && gun[i].countBullets() != 0) {
+        	if((gun[i] != null && oldammo[i] == 0 && gun[i].countBullets() != 0) || (oldammo[i]-3 > gun[i].countBullets() && gun[i].countBullets() != 0)) {
         		oldammo[i] = gun[i].countBullets();
         	}
         }
