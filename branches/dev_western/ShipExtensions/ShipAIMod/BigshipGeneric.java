@@ -5733,7 +5733,7 @@ label0:
         if(newmeatballpos == meatballpos)  return;
         Meatballxyz[0] = 0.0F;
         Meatballxyz[1] = 0.0F;
-        Meatballxyz[2] = newmeatballpos * 0.22092F;
+        Meatballxyz[2] = newmeatballpos * 0.146624F;
         hierMesh().chunkSetLocate("meatball_red", Meatballxyz, Meatballypr);
         hierMesh().chunkSetLocate("meatball_yellow", Meatballxyz, Meatballypr);
         switch(newmeatballpos)
