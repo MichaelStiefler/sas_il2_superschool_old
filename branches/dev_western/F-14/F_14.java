@@ -1621,7 +1621,8 @@ public class F_14 extends Scheme2
 
     public void moveArrestorHook(float f)
     {
-        hierMesh().chunkSetAngles("Hook1_D0", 0.0F, 0.0F, 70F * f);
+        hierMesh().chunkSetAngles("Hook1_D0", 0.0F, -70F * f, 0.0F);
+        arrestor = f;
     }
 
     private void calculateArrestor()
