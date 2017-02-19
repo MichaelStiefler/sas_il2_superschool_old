@@ -11,18 +11,6 @@ public class BombFAB1000M43_gn16 extends Bomb
     {
     }
 
-    static Class _mthclass$(String s)
-    {
-        try
-        {
-            return Class.forName(s);
-        }
-        catch(ClassNotFoundException classnotfoundexception)
-        {
-            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
-        }
-    }
-
     static 
     {
         Class class1 = com.maddox.il2.objects.weapons.BombFAB1000M43_gn16.class;

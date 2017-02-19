@@ -11,18 +11,6 @@ public class BombMk82_gn16 extends Bomb
     {
     }
 
-    static Class _mthclass$(String s)
-    {
-        try
-        {
-            return Class.forName(s);
-        }
-        catch(ClassNotFoundException classnotfoundexception)
-        {
-            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
-        }
-    }
-
     static 
     {
         Class class1 = com.maddox.il2.objects.weapons.BombMk82_gn16.class;
