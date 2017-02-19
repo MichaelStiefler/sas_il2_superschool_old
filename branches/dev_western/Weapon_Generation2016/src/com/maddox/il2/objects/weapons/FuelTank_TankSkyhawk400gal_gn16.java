@@ -46,18 +46,6 @@ public class FuelTank_TankSkyhawk400gal_gn16 extends FuelTank
         mesh.materialReplace("Tank_GlossQ", "Tank_GlossHVQ");
     }
 
-    static Class _mthclass$(String s)
-    {
-        try
-        {
-            return Class.forName(s);
-        }
-        catch(ClassNotFoundException classnotfoundexception)
-        {
-            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
-        }
-    }
-
     static 
     {
         Class class1 = com.maddox.il2.objects.weapons.FuelTank_TankSkyhawk400gal_gn16.class;

@@ -51,18 +51,6 @@ public class FuelTank_TankF5A150galH2_gn16 extends FuelTank
         mesh.materialReplace("Gloss1D0p", matp);
     }
 
-    static Class _mthclass$(String s)
-    {
-        try
-        {
-            return Class.forName(s);
-        }
-        catch(ClassNotFoundException classnotfoundexception)
-        {
-            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
-        }
-    }
-
     static 
     {
         Class class1 = com.maddox.il2.objects.weapons.FuelTank_TankF5A150galH2_gn16.class;

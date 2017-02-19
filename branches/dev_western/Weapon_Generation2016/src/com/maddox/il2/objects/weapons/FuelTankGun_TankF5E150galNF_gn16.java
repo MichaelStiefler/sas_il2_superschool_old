@@ -49,18 +49,6 @@ public class FuelTankGun_TankF5E150galNF_gn16 extends FuelTankGun
         ((SkinnableOrdnance) bomb).matPlane(mat, matp);
     }
 
-    static Class _mthclass$(String s)
-    {
-        try
-        {
-            return Class.forName(s);
-        }
-        catch(ClassNotFoundException classnotfoundexception)
-        {
-            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
-        }
-    }
-
     static 
     {
         Class class1 = com.maddox.il2.objects.weapons.FuelTankGun_TankF5E150galNF_gn16.class;

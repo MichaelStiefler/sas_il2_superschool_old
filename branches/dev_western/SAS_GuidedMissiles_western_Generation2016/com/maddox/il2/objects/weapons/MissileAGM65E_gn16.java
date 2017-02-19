@@ -109,7 +109,7 @@ public class MissileAGM65E_gn16 extends Missile {
         pos.setAbs(p, or);
         return false;
     }
-    
+
     private void checklaser()
     {
         laseron = false;
@@ -121,89 +121,90 @@ public class MissileAGM65E_gn16 extends Missile {
             if((actor instanceof TypeLaserSpotter) && actor.pos.getAbsPoint().distance(pos.getAbsPoint()) < 20000D && actor == World.getPlayerAircraft())
             {
                 Point3d point3d = new Point3d();
-                TypeLaserSpotter _tmp = (TypeLaserSpotter)actor;
-                point3d = TypeLaserSpotter.spot;
-                if(pos.getAbsPoint().distance(point3d) >= 15000D);
-                pT.set(point3d);
-                laseron = true;
+                point3d = ((TypeLaserSpotter)actor).spot;
+                if(pos.getAbsPoint().distance(point3d) < 15000D)
+                {
+                    pT.set(point3d);
+                    laseron = true;
+                }
             }
         }
 
     }
-	
-  static class SPAWN extends Missile.SPAWN {
 
-    public void doSpawn(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f) {
-      new MissileAGM65E_gn16(actor, netchannel, i, point3d, orient, f);
+    static class SPAWN extends Missile.SPAWN {
+
+        public void doSpawn(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f) {
+            new MissileAGM65E_gn16(actor, netchannel, i, point3d, orient, f);
+        }
     }
-  }
 
-  public MissileAGM65E_gn16(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f) {
-    this.MissileInit(actor, netchannel, i, point3d, orient, f);
-    fm = null;
-    tStart = 0L;
-    pos.setAbs(point3d, orient);
-    pos.reset();
-    pos.setBase(actor, (Hook)null, true);
-    doStart(-1F);
-    v.set(1.0D, 0.0D, 0.0D);
-    orient.transform(v);
-    v.scale(f);
-    setSpeed(v);
-    collide(false);
-  }
+    public MissileAGM65E_gn16(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f) {
+        this.MissileInit(actor, netchannel, i, point3d, orient, f);
+        fm = null;
+        tStart = 0L;
+        pos.setAbs(point3d, orient);
+        pos.reset();
+        pos.setBase(actor, (Hook)null, true);
+        doStart(-1F);
+        v.set(1.0D, 0.0D, 0.0D);
+        orient.transform(v);
+        v.scale(f);
+        setSpeed(v);
+        collide(false);
+    }
 
-  public MissileAGM65E_gn16() {
-      victim = null;
-      fm = null;
-      tStart = 0L;
-      deltaAzimuth = 0.0F;
-      deltaTangage = 0.0F;
-      setMesh(Property.stringValue(getClass(), "mesh"));
-      mesh.materialReplace("Maverick", "MaverickE");
-      mesh.materialReplace("Maverickp", "MaverickEp");
-      mesh.materialReplace("Maverickq", "MaverickEq");
-  }
-  
-  public void start(float f, int i)
-  {
-      Actor actor = pos.base();
-      if(Actor.isValid(actor) && (actor instanceof Aircraft))
-      {
-          if(actor.isNetMirror())
-          {
-              destroy();
-              return;
-          }
-      }
-      doStart(f);
-      setMesh(Property.stringValue(getClass(), "mesh"));
-      mesh.materialReplace("Maverick", "MaverickE");
-      mesh.materialReplace("Maverickp", "MaverickEp");
-      mesh.materialReplace("Maverickq", "MaverickEq");
-  }
+    public MissileAGM65E_gn16() {
+        victim = null;
+        fm = null;
+        tStart = 0L;
+        deltaAzimuth = 0.0F;
+        deltaTangage = 0.0F;
+        setMesh(Property.stringValue(getClass(), "mesh"));
+        mesh.materialReplace("Maverick", "MaverickE");
+        mesh.materialReplace("Maverickp", "MaverickEp");
+        mesh.materialReplace("Maverickq", "MaverickEq");
+    }
 
-  private void doStart(float f)
-  {
-      super.start(-1F, 0);
-      fm = ((Aircraft)getOwner()).FM;
-      tStart = Time.current();
-      pos.getAbs(p, or);
-      or.setYPR(or.getYaw(), or.getPitch(), 0.0F);
-      pos.setAbs(p, or);
-  }
+    public void start(float f, int i)
+    {
+        Actor actor = pos.base();
+        if(Actor.isValid(actor) && (actor instanceof Aircraft))
+        {
+            if(actor.isNetMirror())
+            {
+                destroy();
+                return;
+            }
+        }
+        doStart(f);
+        setMesh(Property.stringValue(getClass(), "mesh"));
+        mesh.materialReplace("Maverick", "MaverickE");
+        mesh.materialReplace("Maverickp", "MaverickEp");
+        mesh.materialReplace("Maverickq", "MaverickEq");
+    }
 
-  
-  private boolean laseron;
-  private FlightModel fm;
-  private static Orient or = new Orient();
-  private static Point3d p = new Point3d();
-  private static Point3d pT = new Point3d();
-  private static Vector3d v = new Vector3d();
-  private long tStart;
-  private float deltaAzimuth;
-  private float deltaTangage;
-  //private Actor victim;
+    private void doStart(float f)
+    {
+        super.start(-1F, 0);
+        fm = ((Aircraft)getOwner()).FM;
+        tStart = Time.current();
+        pos.getAbs(p, or);
+        or.setYPR(or.getYaw(), or.getPitch(), 0.0F);
+        pos.setAbs(p, or);
+    }
+
+
+    private boolean laseron;
+    private FlightModel fm;
+    private Orient or = new Orient();
+    private Point3d p = new Point3d();
+    private Point3d pT = new Point3d();
+    private Vector3d v = new Vector3d();
+    private long tStart;
+    private float deltaAzimuth;
+    private float deltaTangage;
+    //private Actor victim;
 
   static {
     Class class1 = com.maddox.il2.objects.weapons.MissileAGM65E_gn16.class;

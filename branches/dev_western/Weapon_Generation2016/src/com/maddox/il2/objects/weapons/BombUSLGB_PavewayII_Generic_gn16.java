@@ -106,7 +106,7 @@ public class BombUSLGB_PavewayII_Generic_gn16 extends Bomb
             if((actor instanceof TypeLaserSpotter) && actor.pos.getAbsPoint().distance(super.pos.getAbsPoint()) < 20000D && actor == World.getPlayerAircraft())
             {
                 Point3d point3d = new Point3d();
-                point3d = TypeLaserSpotter.spot;
+                point3d = ((TypeLaserSpotter)actor).spot;
                 if(super.pos.getAbsPoint().distance(point3d) < 15000D);
                 pT.set(point3d);
                 laseron = true;
@@ -115,17 +115,17 @@ public class BombUSLGB_PavewayII_Generic_gn16 extends Bomb
 
     }
 
-    private static Orient or = new Orient();
-    private static Point3d p = new Point3d();
-    private static Point3d pT = new Point3d();
-    private static Vector3d v = new Vector3d();
+    private Orient or = new Orient();
+    private Point3d p = new Point3d();
+    private Point3d pT = new Point3d();
+    private Vector3d v = new Vector3d();
     private long tStart;
     private float deltaAzimuth;
     private float deltaTangage;
     private float deltaX;
     private Actor victim;
-    private static AirGroup airgroup = null;
-    private static Pilot pilot = null;
+    private AirGroup airgroup = null;
+    private Pilot pilot = null;
     private double lastdist;
     private boolean evade;
     private double range;

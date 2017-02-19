@@ -101,18 +101,6 @@ public class BombCBU24_gn16 extends Bomb
         postDestroy();
     }
 
-    static Class _mthclass$(String s)
-    {
-        try
-        {
-            return Class.forName(s);
-        }
-        catch(ClassNotFoundException classnotfoundexception)
-        {
-            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
-        }
-    }
-
     private long t1;
 
     static 
