@@ -22,9 +22,9 @@
   CRudderTrim 1
   CLimitModeOfAilerons 2
   CLimitRatioAileron 1.0
-  CLimitRatioElevatorPlus 0.39584
-  CLimitRatioElevatorMinus 0.125
-  CLimitRatioElevatorMinusALWAYS 0.125
+  CLimitRatioElevatorPlus 0.423
+  CLimitRatioElevatorMinus 0.22
+  CLimitRatioElevatorMinusALWAYS 0.22
   CLimitRatioRudder 0.11429
   CFlap 1
   CFlapPos 2
@@ -55,10 +55,10 @@
   Wing 49.15
   Aileron 1.72
   Flap 14.54
-  Stabilizer 0.4
-  Elevator 12.2
+  Stabilizer 4.4
+  Elevator 8.0
   Keel 6.1
-  Rudder 1.1
+  Rudder 1.5
   Wing_In 5.32
   Wing_Mid 7.1
   Wing_Out 12.15
@@ -75,7 +75,7 @@
   Wing_Mid 1.8
   Wing_Out 3.3
   Wing_V 1.6
-  GCenter  0.35
+  GCenter  0.25
   GCenterZ 0.00
   GC_AOA_Shift -1.00
   GC_Flaps_Shift 0.08

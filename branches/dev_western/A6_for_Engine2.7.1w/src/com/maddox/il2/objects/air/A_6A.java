@@ -190,10 +190,10 @@ public class A_6A extends A_6fuelReceiver
 
     public void onAircraftLoaded()
     {
+        super.noFL = true;
         super.onAircraftLoaded();
         guidedMissileUtils.onAircraftLoaded();
         FM.Skill = 3;
-        super.noFL = true;
         super.fuelReceiveRate = 10.093F;
     }
 
