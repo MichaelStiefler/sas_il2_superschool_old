@@ -1,7 +1,3 @@
-// Decompiled by DJ v3.10.10.93 Copyright 2007 Atanas Neshkov  Date: 2015/12/06 16:48:07
-// Home Page: http://members.fortunecity.com/neshkov/dj.html  http://www.neshkov.com/dj.html - Check often for new version!
-// Decompiler options: packimports(3) 
-// Source File Name:   CockpitA_6FLIR.java
 
 package com.maddox.il2.objects.air;
 
@@ -23,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // Referenced classes of package com.maddox.il2.objects.air:
-//            CockpitGunner, A_6, F_16, Cockpit, 
+//            CockpitGunner, A_6, Cockpit, 
 //            TypeLaserSpotter
 
 public class CockpitA_6FLIR extends CockpitGunner
@@ -67,35 +63,35 @@ public class CockpitA_6FLIR extends CockpitGunner
             super.mesh.chunkVisible("Screen", true);
             super.mesh.chunkVisible("Dark", false);
         }
-        float f = cvt(orient.getYaw(), -120F, 120F, -0.25F, 0.25F);
+        float yaw = cvt(orient.getYaw(), -120F, 120F, -0.25F, 0.25F);
         resetYPRmodifier();
-        Cockpit.xyz[0] = f;
+        Cockpit.xyz[0] = yaw;
         super.mesh.chunkSetLocate("Z_Z_FLIR_HDG", Cockpit.xyz, Cockpit.ypr);
         resetYPRmodifier();
-        float f1 = cvt(orient.getPitch(), 270F, 360F, -0.5F, 0.0F);
-        Cockpit.xyz[1] = f1;
+        float pitch = cvt(orient.getPitch(), 270F, 360F, -0.5F, 0.0F);
+        Cockpit.xyz[1] = pitch;
         super.mesh.chunkSetLocate("Z_Z_FLIR_VERT", Cockpit.xyz, Cockpit.ypr);
         Orient orient2 = new Orient();
         Point3d point3d = new Point3d();
         ((A_6)aircraft()).pos.getAbs(point3d, orient2);
-        float f2 = orient2.getRoll();
-        float f3 = 360F - f2;
-        if(f3 > 180F)
-            f3 -= 360F;
-        float f4 = orient2.getPitch();
-        float f5 = orient.getPitch();
-        if(f4 > 90F)
-            f5 = orient.getPitch() - 360F;
-        if(f4 < 90F)
-            f5 = orient.getPitch();
-        if(f4 > 90F)
-            f1 = (f4 - 360F) + f5;
-        if(f4 < 90F)
-            f1 = f4 - f5;
-        super.mesh.chunkSetAngles("Z_Z_FLIR_BRG", 0.0F, f3, 0.0F);
+        float roll = orient2.getRoll();
+        float antiroll = 360F - roll;
+        if(antiroll > 180F)
+            antiroll -= 360F;
+        float fn = orient2.getPitch();
+        float r = orient.getPitch();
+        if(fn > 90F)
+            r = orient.getPitch() - 360F;
+        if(fn < 90F)
+            r = orient.getPitch();
+        if(fn > 90F)
+            pitch = (fn - 360F) + r;
+        if(fn < 90F)
+            pitch = fn - r;
+        super.mesh.chunkSetAngles("Z_Z_FLIR_BRG", 0.0F, antiroll, 0.0F);
         resetYPRmodifier();
-        f1 = cvt(f1, 0.0F, -180F, 0.0F, 0.15F);
-        Cockpit.xyz[1] = f1;
+        pitch = cvt(pitch, 0.0F, -180F, 0.0F, 0.15F);
+        Cockpit.xyz[1] = pitch;
         super.mesh.chunkSetLocate("Z_Z_FLIR_BRG2", Cockpit.xyz, Cockpit.ypr);
     }
 
@@ -104,14 +100,14 @@ public class CockpitA_6FLIR extends CockpitGunner
         Orient orient2 = new Orient();
         Point3d point3d = new Point3d();
         ((A_6)aircraft()).pos.getAbs(point3d, orient2);
-        float f = orient2.getRoll();
-        float f1 = orient2.getPitch();
-        float f2 = 0.0F;
-        if(f1 > 90F)
-            f2 = f1 - 360F;
-        if(f1 < 90F)
-            f2 = f1;
-        super.mesh.chunkSetAngles("baseflir", 0.0F, -f2, f);
+        float roll = orient2.getRoll();
+        float fn = orient2.getPitch();
+        float pitch = 0.0F;
+        if(fn > 90F)
+            pitch = fn - 360F;
+        if(fn < 90F)
+            pitch = fn;
+        super.mesh.chunkSetAngles("baseflir", 0.0F, -pitch, roll);
         if(!((A_6)aircraft()).hold)
         {
             LaserHook[1] = new HookNamed(mesh, "_Laser1");
@@ -127,8 +123,7 @@ public class CockpitA_6FLIR extends CockpitGunner
             {
                 LaserPL.z -= 0.94999999999999996D;
                 LaserP2.interpolate(LaserP1, LaserPL, 1.0F);
-                A_6 _tmp = (A_6)aircraft();
-                TypeLaserSpotter.spot.set(LaserP2);
+                ((TypeLaserSpotter)aircraft()).spot.set(LaserP2);
                 Eff3DActor eff3dactor = Eff3DActor.New(null, null, new Loc(LaserP2.x, LaserP2.y, LaserP2.z, 0.0F, 0.0F, 0.0F), 1.0F, "3DO/Effects/Fireworks/FlareWhiteWide.eff", 0.1F);
             }
             super.mesh.chunkSetAngles("Turret1A", orient.getYaw(), 180F, 180F);
@@ -152,17 +147,13 @@ public class CockpitA_6FLIR extends CockpitGunner
                 {
                     Point3d point3d4 = new Point3d();
                     point3d4.set(actor.pos.getAbsPoint());
-                    A_6 _tmp1 = (A_6)aircraft();
-                    if(((Tuple3d) (point3d4)).x > TypeLaserSpotter.spot.x - 8D)
+                    if(((Tuple3d) (point3d4)).x > ((TypeLaserSpotter)aircraft()).spot.x - 8D)
                     {
-                        A_6 _tmp2 = (A_6)aircraft();
-                        if(((Tuple3d) (point3d4)).x < TypeLaserSpotter.spot.x + 8D)
+                        if(((Tuple3d) (point3d4)).x < ((TypeLaserSpotter)aircraft()).spot.x + 8D)
                         {
-                            A_6 _tmp3 = (A_6)aircraft();
-                            if(((Tuple3d) (point3d4)).y < TypeLaserSpotter.spot.y + 8D)
+                            if(((Tuple3d) (point3d4)).y < ((TypeLaserSpotter)aircraft()).spot.y + 8D)
                             {
-                                A_6 _tmp4 = (A_6)aircraft();
-                                if(((Tuple3d) (point3d4)).y > TypeLaserSpotter.spot.y - 8D)
+                                if(((Tuple3d) (point3d4)).y > ((TypeLaserSpotter)aircraft()).spot.y - 8D)
                                     autotrack.add(point3d4);
                             }
                         }
@@ -175,15 +166,13 @@ public class CockpitA_6FLIR extends CockpitGunner
                 super.mesh.chunkVisible("Z_Z_FLIR_Tracking", true);
                 Point3d point3d2 = new Point3d();
                 point3d2.set((Point3d)autotrack.get(0));
-                A_6 _tmp5 = (A_6)aircraft();
-                TypeLaserSpotter.spot.set(point3d2);
+                ((TypeLaserSpotter)aircraft()).spot.set(point3d2);
             } else
             {
                 super.mesh.chunkVisible("Z_Z_FLIR_Tracking", false);
             }
             Point3d point3d3 = new Point3d();
-            A_6 _tmp6 = (A_6)aircraft();
-            point3d3.set(TypeLaserSpotter.spot);
+            point3d3.set(((TypeLaserSpotter)aircraft()).spot);
             point3d3.sub(point3d);
             double d = ((Tuple3d) (point3d3)).y;
             double d1 = ((Tuple3d) (point3d3)).x;
@@ -224,7 +213,7 @@ public class CockpitA_6FLIR extends CockpitGunner
     {
         Orient orient2 = new Orient();
         Point3d point3d = new Point3d();
-        ((F_16)aircraft()).pos.getAbs(point3d, orient2);
+        ((A_6)aircraft()).pos.getAbs(point3d, orient2);
         float f = orient2.getRoll();
         float f1 = orient2.getPitch();
         float f2 = 360F - f;
@@ -281,8 +270,7 @@ public class CockpitA_6FLIR extends CockpitGunner
         float f10 = 0.0F;
         float f11 = 0.0F;
         Point3d point3d2 = new Point3d();
-        A_6 _tmp = (A_6)aircraft();
-        point3d2.set(TypeLaserSpotter.spot);
+        point3d2.set(((TypeLaserSpotter)aircraft()).spot);
         point3d2.sub(point3d);
         double d3 = ((Tuple3d) (point3d2)).y;
         double d4 = ((Tuple3d) (point3d2)).x;
@@ -313,8 +301,7 @@ public class CockpitA_6FLIR extends CockpitGunner
         HUD.log(AircraftHotKeys.hudLogWeaponId, "x " + Math.round(spot1.x) + "y " + Math.round(spot1.y) + "z " + Math.round(spot1.z));
         if(!((A_6)aircraft()).hold)
         {
-            A_6 _tmp1 = (A_6)aircraft();
-            TypeLaserSpotter.spot.set(spot1);
+            ((TypeLaserSpotter)aircraft()).spot.set(spot1);
             v = 0.0F;
             h = 0.0F;
             v1 = 0.0F;
@@ -324,10 +311,8 @@ public class CockpitA_6FLIR extends CockpitGunner
         }
         if(((A_6)aircraft()).hold)
         {
-            A_6 _tmp2 = (A_6)aircraft();
-            TypeLaserSpotter.spot.y += -f9;
-            A_6 _tmp3 = (A_6)aircraft();
-            TypeLaserSpotter.spot.x += f8;
+            ((TypeLaserSpotter)aircraft()).spot.y += -f9;
+            ((TypeLaserSpotter)aircraft()).spot.x += f8;
             autotrack.clear();
             List list = Engine.targets();
             int i = list.size();
@@ -338,21 +323,16 @@ public class CockpitA_6FLIR extends CockpitGunner
                 {
                     Point3d point3d3 = new Point3d();
                     point3d3.set(actor.pos.getAbsPoint());
-                    A_6 _tmp4 = (A_6)aircraft();
-                    if(((Tuple3d) (point3d3)).x > TypeLaserSpotter.spot.x - 10D)
+                    if(((Tuple3d) (point3d3)).x > ((TypeLaserSpotter)aircraft()).spot.x - 10D)
                     {
-                        A_6 _tmp5 = (A_6)aircraft();
-                        if(((Tuple3d) (point3d3)).x < TypeLaserSpotter.spot.x + 10D)
+                        if(((Tuple3d) (point3d3)).x < ((TypeLaserSpotter)aircraft()).spot.x + 10D)
                         {
-                            A_6 _tmp6 = (A_6)aircraft();
-                            if(((Tuple3d) (point3d3)).y < TypeLaserSpotter.spot.y + 10D)
+                            if(((Tuple3d) (point3d3)).y < ((TypeLaserSpotter)aircraft()).spot.y + 10D)
                             {
-                                A_6 _tmp7 = (A_6)aircraft();
-                                if(((Tuple3d) (point3d3)).y > TypeLaserSpotter.spot.y - 10D)
+                                if(((Tuple3d) (point3d3)).y > ((TypeLaserSpotter)aircraft()).spot.y - 10D)
                                 {
                                     autotrack.add(point3d3);
-                                    A_6 _tmp8 = (A_6)aircraft();
-                                    TypeLaserSpotter.spot.set(point3d3);
+                                    ((TypeLaserSpotter)aircraft()).spot.set(point3d3);
                                 }
                             }
                         }
@@ -433,18 +413,6 @@ public class CockpitA_6FLIR extends CockpitGunner
         v = 0.0F;
     }
 
-    static Class _mthclass$(String s)
-    {
-        try
-        {
-            return Class.forName(s);
-        }
-        catch(ClassNotFoundException classnotfoundexception)
-        {
-            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
-        }
-    }
-
     private float h;
     private float v;
     private float v1;
@@ -462,11 +430,11 @@ public class CockpitA_6FLIR extends CockpitGunner
     private Hook LaserHook[] = {
         null, null, null, null
     };
-    private static Loc LaserLoc1 = new Loc();
-    private static Point3d LaserP1 = new Point3d();
-    private static Point3d LaserP2 = new Point3d();
-    private static Point3d LaserPL = new Point3d();
-    private static Point3d LaserP3 = new Point3d();
+    private Loc LaserLoc1 = new Loc();
+    private Point3d LaserP1 = new Point3d();
+    private Point3d LaserP2 = new Point3d();
+    private Point3d LaserPL = new Point3d();
+    private Point3d LaserP3 = new Point3d();
 
     static 
     {

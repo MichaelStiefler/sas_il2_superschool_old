@@ -125,7 +125,7 @@ public class A_6 extends Scheme2
         fxMissileWarning = newSound("aircraft.MissileMissile", false);
         misslebrg = 0.0F;
         aircraftbrg = 0.0F;
-        bFL = false;
+//        bFL = false;
         noFL = false;
         thrustMaxField = new Field[2];
         lTimeNextEject = 0L;
@@ -141,7 +141,7 @@ public class A_6 extends Scheme2
         bObserverKilled = false;
         Flaps = false;
         antiColLight = new Eff3DActor[6];
-        bAntiColLight = false;
+//        bAntiColLight = false;
         arrestor = 0.0F;
     }
 
@@ -153,6 +153,11 @@ public class A_6 extends Scheme2
     private static final float toMetersPerSecond(float f)
     {
         return 0.4470401F * f;
+    }
+
+    public void getGFactors(TypeGSuit.GFactors gfactors)
+    {
+        gfactors.setGFactors(NEG_G_TOLERANCE_FACTOR, NEG_G_TIME_FACTOR, NEG_G_RECOVERY_FACTOR, POS_G_TOLERANCE_FACTOR, POS_G_TIME_FACTOR, POS_G_RECOVERY_FACTOR);
     }
 
     public void auxPressed(int i)
@@ -201,29 +206,29 @@ public class A_6 extends Scheme2
                 t1 = Time.current();
             }
         }
-        if(i == 28)
-            if(!noFL)
-            {
-                if(!bFL)
-                {
-                    bFL = true;
-                    HUD.log(AircraftHotKeys.hudLogWeaponId, "FL ON");
-                } else
-                {
-                    bFL = false;
-                    HUD.log(AircraftHotKeys.hudLogWeaponId, "FL OFF");
-                }
-            }
-        if(i == 29)
-            if(!bAntiColLight)
-            {
-                bAntiColLight = true;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Anti-Col Lights ON");
-            } else
-            {
-                bAntiColLight = false;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Anti-Col Lights OFF");
-            }
+//        if(i == 28)
+//            if(!noFL)
+//            {
+//                if(!bFL)
+//                {
+//                    bFL = true;
+//                    HUD.log(AircraftHotKeys.hudLogWeaponId, "FL ON");
+//                } else
+//                {
+//                    bFL = false;
+//                    HUD.log(AircraftHotKeys.hudLogWeaponId, "FL OFF");
+//                }
+//            }
+//        if(i == 29)
+//            if(!bAntiColLight)
+//            {
+//                bAntiColLight = true;
+//                HUD.log(AircraftHotKeys.hudLogWeaponId, "Anti-Col Lights ON");
+//            } else
+//            {
+//                bAntiColLight = false;
+//                HUD.log(AircraftHotKeys.hudLogWeaponId, "Anti-Col Lights OFF");
+//            }
     }
 
     private boolean RWRWarning()
@@ -650,7 +655,6 @@ public class A_6 extends Scheme2
                 Point3d point3d = new Point3d();
                 Orient orient = new Orient();
                 actor.pos.getAbs(point3d, orient);
-                l.set(point3d, orient);
                 Eff3DActor eff3dactor = Eff3DActor.New(actor, null, new Loc(), 1.0F, "effects/Explodes/Air/Zenitka/Germ_88mm/Glow.eff", 1.0F);
                 eff3dactor.postDestroy(Time.current() + 1500L);
                 LightPointActor lightpointactor = new LightPointActor(new LightPointWorld(), new Point3d());
@@ -668,11 +672,6 @@ public class A_6 extends Scheme2
 
     }
 
-    public void getGFactors(TypeGSuit.GFactors gfactors)
-    {
-        gfactors.setGFactors(2.5F, 2.5F, 2.0F, 9.5F, 3F, 3F);
-    }
-
     public void onAircraftLoaded()
     {
         super.onAircraftLoaded();
@@ -681,6 +680,9 @@ public class A_6 extends Scheme2
         FM.CT.toggleRocketHook();
         FM.CT.bHasBombSelect = true;
         FM.CT.bHasSideDoor = false;
+        FM.CT.bHasAntiColLights = true;
+        if(!noFL)
+            FM.CT.bHasFormationLights = true;
         if(this instanceof com.maddox.il2.objects.air.A_6A || this instanceof com.maddox.il2.objects.air.A_6A_tanker || this instanceof com.maddox.il2.objects.air.KA_6D)
             bGen1st = true;
         else
@@ -934,7 +936,7 @@ public class A_6 extends Scheme2
 
         formationlights();
         if(!FM.isPlayers())
-            bAntiColLight = FM.AS.bNavLightsOn;
+            FM.CT.bAntiColLights = FM.AS.bNavLightsOn;
     }
 
     private final void UpdateLightIntensity()
@@ -1616,7 +1618,7 @@ public class A_6 extends Scheme2
             hierMesh().chunkSetAngles("Head2_D0", 0.0F, obsLookAzimuth, obsLookElevation);
         }
         if(FLIR)
-            laser(TypeLaserSpotter.spot);
+            laser(spot);
         updatecontrollaser();
         engineSurge(f);
         typeFighterAceMakerRangeFinder();
@@ -2678,7 +2680,7 @@ public class A_6 extends Scheme2
 
     private void anticollight()
     {
-        if(bAntiColLight)
+        if(FM.CT.bAntiColLights)
         {
             for(int i = 0; i < 6; i++)
             {
@@ -2714,15 +2716,15 @@ public class A_6 extends Scheme2
         float we = Mission.cur().curCloudsHeight() + 500F;
         if((World.getTimeofDay() <= 6.5F || World.getTimeofDay() > 18F || (ws > 4 && FM.getAltitude()<we)) && !FM.isPlayers())
         {
-            bFL = true;
+            FM.CT.bFormationLights = true;
         }
         if(((World.getTimeofDay() > 6.5F && World.getTimeofDay() <= 18F && ws <= 4) || (World.getTimeofDay() > 6.5F && World.getTimeofDay() <= 18F && FM.getAltitude()>we)) && !FM.isPlayers())
         {
-            bFL = false;
+            FM.CT.bFormationLights = false;
         }
-        hierMesh().chunkVisible("SSlightcf", bFL);
-        hierMesh().chunkVisible("SSlightwL", bFL);
-        hierMesh().chunkVisible("SSlightwR", bFL);
+        hierMesh().chunkVisible("SSlightcf", FM.CT.bFormationLights);
+        hierMesh().chunkVisible("SSlightwL", FM.CT.bFormationLights);
+        hierMesh().chunkVisible("SSlightwR", FM.CT.bFormationLights);
     }
 
     private static void resetXYZYPR()
@@ -2821,10 +2823,10 @@ public class A_6 extends Scheme2
     private float ft;
     private LightPointWorld lLight[];
     private Hook lLightHook[];
-    private static Loc lLightLoc1 = new Loc();
-    private static Point3d lLightP1 = new Point3d();
-    private static Point3d lLightP2 = new Point3d();
-    private static Point3d lLightPL = new Point3d();
+    private Loc lLightLoc1 = new Loc();
+    private Point3d lLightP1 = new Point3d();
+    private Point3d lLightP2 = new Point3d();
+    private Point3d lLightPL = new Point3d();
     private boolean ictl;
     private static float mteb = 1.0F;
     private float mn;
@@ -2835,20 +2837,20 @@ public class A_6 extends Scheme2
     private float ectl;
     private boolean ts;
     private float H1;
-    public static boolean bChangedPit = false;
+    public boolean bChangedPit = false;
     private float SonicBoom;
     private Eff3DActor shockwave;
     private boolean isSonic;
-    public static int LockState = 0;
+    public int LockState = 0;
     static Actor hunted = null;
     private float engineSurgeDamage;
     public boolean hasHydraulicPressure;
-    private static final float NEG_G_TOLERANCE_FACTOR = 1.5F;
-    private static final float NEG_G_TIME_FACTOR = 1.5F;
-    private static final float NEG_G_RECOVERY_FACTOR = 1F;
-    private static final float POS_G_TOLERANCE_FACTOR = 2F;
-    private static final float POS_G_TIME_FACTOR = 2F;
-    private static final float POS_G_RECOVERY_FACTOR = 2F;
+    private static final float NEG_G_TOLERANCE_FACTOR = 2.5F;
+    private static final float NEG_G_TIME_FACTOR = 2.5F;
+    private static final float NEG_G_RECOVERY_FACTOR = 2.0F;
+    private static final float POS_G_TOLERANCE_FACTOR = 9.5F;
+    private static final float POS_G_TIME_FACTOR = 3F;
+    private static final float POS_G_RECOVERY_FACTOR = 3F;
     private Eff3DActor pull1;
     private Eff3DActor pull2;
     private boolean bSightAutomation;
@@ -2860,7 +2862,6 @@ public class A_6 extends Scheme2
     public float fSightCurSpeed;
     public float fSightCurReadyness;
     public boolean FLIR;
-    private static Loc l = new Loc();
     public int clipBoardPage_;
     public boolean showClipBoard_;
     private ArrayList missilesList;
@@ -2873,7 +2874,7 @@ public class A_6 extends Scheme2
     public int lockmode;
     private boolean APmode1;
     private boolean APmode2;
-    public boolean bFL;
+//    public boolean bFL;
     public boolean noFL;
     public float azimult;
     public float tangate;
@@ -2915,7 +2916,7 @@ public class A_6 extends Scheme2
     private boolean bEA6B;
     private float stockDragAirbrake;
     private Eff3DActor antiColLight[];
-    private boolean bAntiColLight;
+//    private boolean bAntiColLight;
     public static float FlowRate = 10F;
     public static float FuelReserve = 1500F;
     private float arrestor;

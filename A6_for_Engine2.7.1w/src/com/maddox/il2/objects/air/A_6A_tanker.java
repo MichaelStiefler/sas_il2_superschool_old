@@ -163,10 +163,10 @@ public class A_6A_tanker extends A_6
 
     public void onAircraftLoaded()
     {
+        super.noFL = true;
         super.onAircraftLoaded();
         guidedMissileUtils.onAircraftLoaded();
         FM.Skill = 3;
-        super.noFL = true;
 
         ((FlightModelMain) FM).M.maxFuel += 880F;  // additional fuel 300gal in D-704 Refuel Store
         ((FlightModelMain) FM).M.fuel += 880F;
