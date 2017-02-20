@@ -49,6 +49,11 @@ public class F_14B extends F_14
         Timer1 = Timer2 = freq;
     }
 
+    public static String getSkinPrefix(String s, Regiment regiment)
+    {
+        return "F14B_";
+    }
+
     public long getChaffDeployed()
     {
         if(hasChaff)

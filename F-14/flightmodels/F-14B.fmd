@@ -167,7 +167,7 @@
   VmaxH 2500.0
   HofVmax 12190.0
   VminFLAPS 210.0
-  VmaxFLAPS 600.0
+  VmaxFLAPS 750.0
   Vz_climb 150.96134
   V_climb 718.00494
   T_turn 23.715391
@@ -193,12 +193,12 @@
   CyCritL_0 -0.75
   CxMin_0 0.0340
   parabCxCoeff_0 4.0E-4
-  Cy0_1 0.35
+  Cy0_1 0.40
   AOACritH_1 36.0
   AOACritL_1 -22.0
   CyCritH_1 1.5
   CyCritL_1 -0.7
-  CxMin_1 0.09
+  CxMin_1 0.10
   parabCxCoeff_1 5.0E-4
   parabAngle 6.0
   Decline 0.004
