@@ -142,18 +142,27 @@ public class F_14 extends Scheme2
         bHasCenterTank = false;
         bHasWingTank = false;
         bTakeoffFlapAssist = false;
+        bSpawnedAsAI = false;
+        bTakeoffAIAssist = false;
+        bStableAIGround = false;
         arrestor = 0.0F;
         autoEng = false;
         curFlaps = 0.0F;
         desiredPosition = 0.0F;
         bFlapsOutFixed = false;
         bFlapsInFixed = false;
-        stockCy0_0 = 0.15F;
-        stockCy0_1 = 0.65F;
-        stockCxMin_0 = 0.026F;
-        stockCxMin_1 = 0.09F;
-        stockparabCxCoeff_0 = 0.0008F;
-        stockparabCxCoeff_1 = 0.0025F;
+        stockCy0_0 = 0.12F;
+        stockCy0_1 = 0.60F;
+        stockCxMin_0 = 0.039F;
+        stockCxMin_1 = 0.10F;
+        stockCyCritH_0 = 1.4F;
+        stockGCenter = 0.0F;
+        stockDefaultElevatorTrim = 0.0F;
+        stockparabCxCoeff_0 = 0.0004F;
+        stockparabCxCoeff_1 = 0.0005F;
+        stockSqWing = 54.5F;
+        stockSqWingOut = 13.25F;
+        stockSqFlaps = 13.3F;
         antiColLight = new Eff3DActor[3];
     }
 
@@ -842,14 +851,15 @@ public class F_14 extends Scheme2
         stockCy0_1 = polares.Cy0_1;
         stockCxMin_0 = polares.CxMin_0;
         stockCxMin_1 = polares.CxMin_1;
+        stockCyCritH_0 = polares.CyCritH_0;
+        stockGCenter = Reflection.getFloat(FM, "GCenter");
+        stockDefaultElevatorTrim = Reflection.getFloat(FM, "DefaultElevatorTrim");
         stockparabCxCoeff_0 = polares.parabCxCoeff_0;
         stockparabCxCoeff_1 = polares.parabCxCoeff_1;
+        stockSqWing = FM.Sq.squareWing;
+        stockSqWingOut = FM.Sq.liftWingLOut;
+        stockSqFlaps = FM.Sq.squareFlaps;
         FM.CT.toggleRocketHook();
-        if((FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
-        {
-            FM.Sq.squareElevators += 2.0F;
-            FM.Sq.liftStab += 2.0F;
-        }
         if(thisWeaponsName.startsWith("Fighter: 4xAIM54"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
@@ -960,6 +970,8 @@ public class F_14 extends Scheme2
     {
         super.missionStarting();
         checkDroptanks();
+        if(!(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
+            bSpawnedAsAI = true;
     }
 
     public void updateLLights()
@@ -1273,6 +1285,7 @@ public class F_14 extends Scheme2
         FM.CT.bHasAileronControl = false;
         FM.CT.bHasRudderControl = false;
         FM.CT.bHasElevatorControl = false;
+        FM.CT.bHasVarWingControl = false;
     }
 
     public void checkHydraulicStatus()
@@ -1342,6 +1355,8 @@ public class F_14 extends Scheme2
         hiermesh.chunkSetAngles("GearC71c_D0", 0.0F, -0.54F * fH + 19.7F, 0.0F);
         hiermesh.chunkSetAngles("GearC71d_D0", 0.0F, -fL - fH + 84F, 0.0F);
         hiermesh.chunkSetAngles("GearC51_D0", 0.0F, Aircraft.cvt(f2, 0.4F, 0.8F, 0.0F, 125F), 0.0F);
+        if(f2 < 0.7F)
+            hiermesh.chunkSetAngles("GearC22_D0", 0.0F, 0.0F, 0.0F);
 
         resetXYZYPR();
         if(f < 0.5F)
@@ -1451,7 +1466,8 @@ public class F_14 extends Scheme2
             double lenS = 0.408D;  // Length of GearC71c : Side
             float f = FM.Gears.gWheelSinking[2];
             resetYPRmodifier();
-            Aircraft.xyz[0] = Aircraft.cvt(f, 0.0F, 0.22F, 0.0F, 0.22F) + 0.04F;
+            Aircraft.xyz[0] = Aircraft.cvt(f, 0.0F, 0.22F, 0.0F, 0.22F) + 0.065F;
+//            Aircraft.xyz[0] = Aircraft.cvt(f, 0.0F, 0.22F, 0.0F, 0.22F) + 0.04F;
             hierMesh().chunkSetLocate("GearC6_D0", Aircraft.xyz, Aircraft.ypr);
             double contraH = ((double)Aircraft.xyz[0] + 0.178D) * lenH / (lenH + lenL);
             double contraL = ((double)Aircraft.xyz[0] + 0.178D) * lenL / (lenH + lenL);
@@ -1494,9 +1510,9 @@ public class F_14 extends Scheme2
 
     public void moveSteering(float f)
     {
-        if(FM.CT.GearControl < 0.5F || FM.Gears.isCatapultArmed())
+        if(FM.CT.GearControl < 0.7F || FM.Gears.isCatapultArmed())
             hierMesh().chunkSetAngles("GearC22_D0", 0.0F, 0.0F, 0.0F);
-        else if(FM.CT.GearControl > 0.5F && FM.Gears.onGround())
+        else if(FM.CT.GearControl > 0.7F && FM.Gears.onGround())
             hierMesh().chunkSetAngles("GearC22_D0", 0.0F, 0.0F, -1.0F * f);
     }
 
@@ -1530,14 +1546,10 @@ public class F_14 extends Scheme2
         {
             hierMesh().chunkSetAngles("VatorL_D0", 0.0F, 0.0F, 0.0F);
             hierMesh().chunkSetAngles("VatorR_D0", 0.0F, 0.0F, 0.0F);
-        } else if(FM.getSpeedKMH() > 590F)
-        {
-            hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -30F * FM.CT.getElevator() + 27F * FM.CT.getAileron(), 0.0F);
-            hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -30F * FM.CT.getElevator() - 27F * FM.CT.getAileron(), 0.0F);
         } else
         {
-            hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -17F * FM.CT.getElevator() + 10F * FM.CT.getAileron(), 0.0F);
-            hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -17F * FM.CT.getElevator() - 10F * FM.CT.getAileron(), 0.0F);
+            hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -35F * FM.CT.getElevator() + 27F * FM.CT.getAileron(), 0.0F);
+            hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -35F * FM.CT.getElevator() - 27F * FM.CT.getAileron(), 0.0F);
         }
     }
 
@@ -2515,6 +2527,7 @@ public class F_14 extends Scheme2
                         super.FM.setTakenMortalDamage(true, null);
                         FM.CT.WeaponControl[0] = false;
                         FM.CT.WeaponControl[1] = false;
+                        FM.CT.bHasVarWingControl = false;
                         FM.AS.astateBailoutStep = -1;
                         overrideBailout = false;
                         FM.AS.bIsAboutToBailout = true;
@@ -2582,25 +2595,37 @@ public class F_14 extends Scheme2
         {
             Main3D.cur3D().aircraftHotKeys.setFlapIndex(1);
             FM.CT.FlapsControl = 0.2857F;
+            if((FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() && (FM instanceof Pilot))
+                HUD.log("FlapsDegree", new Object[] { new Float(((float)Math.floor((double)FM.CT.FlapsControl * FM.CT.FlapStageMax * 100D + 0.06D) / 100F)) });
         }
 
     // Only Leading Edge Slats working in any speed and any VG-wing degree
         if(FM.getSpeedKMH() > 740F && !bFlapsOutFixed)
         {
-            Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-            polares.Cy0_1 = 0.8F * stockCy0_0 + 0.2F * stockCy0_1;
-            polares.CxMin_1 = 0.8F * stockCxMin_0 + 0.2F * stockCxMin_1;
-            polares.parabCxCoeff_1 = 0.8F * stockparabCxCoeff_0 + 0.2F * stockparabCxCoeff_1;
+            if(!bStableAIGround)
+            {
+                Polares polares = (Polares)Reflection.getValue(FM, "Wing");
+                polares.Cy0_1 = 0.8F * stockCy0_0 + 0.2F * stockCy0_1;
+                polares.CxMin_1 = 0.8F * stockCxMin_0 + 0.2F * stockCxMin_1;
+                polares.parabCxCoeff_1 = 0.8F * stockparabCxCoeff_0 + 0.2F * stockparabCxCoeff_1;
+                Reflection.setValue(FM, "Wing", polares);
+                FM.Sq.squareFlaps = 0.35F * stockSqFlaps;
+            }
             bFlapsOutFixed = true;
             bFlapsInFixed = true;
             bTakeoffFlapAssist = false;
         }
         else if(FM.getSpeedKMH() <= 740F && bFlapsOutFixed)
         {
-            Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-            polares.Cy0_1 = stockCy0_1;
-            polares.CxMin_1 = stockCxMin_1;
-            polares.parabCxCoeff_1 = stockparabCxCoeff_1;
+            if(!bStableAIGround)
+            {
+                Polares polares = (Polares)Reflection.getValue(FM, "Wing");
+                polares.Cy0_1 = stockCy0_1;
+                polares.CxMin_1 = stockCxMin_1;
+                polares.parabCxCoeff_1 = stockparabCxCoeff_1;
+                Reflection.setValue(FM, "Wing", polares);
+                FM.Sq.squareFlaps = stockSqFlaps;
+            }
             bFlapsOutFixed = false;
         }
 
@@ -2610,19 +2635,29 @@ public class F_14 extends Scheme2
         {
             if(FM.CT.getVarWing() > 0.02F && !bFlapsInFixed)
             {
-                Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-                polares.Cy0_1 = 0.14F * stockCy0_0 + 0.86F * stockCy0_1;
-                polares.CxMin_1 = 0.14F * stockCxMin_0 + 0.86F * stockCxMin_1;
-                polares.parabCxCoeff_1 = 0.14F * stockparabCxCoeff_0 + 0.86F * stockparabCxCoeff_1;
+                if(!bStableAIGround)
+                {
+                    Polares polares = (Polares)Reflection.getValue(FM, "Wing");
+                    polares.Cy0_1 = 0.14F * stockCy0_0 + 0.86F * stockCy0_1;
+                    polares.CxMin_1 = 0.14F * stockCxMin_0 + 0.86F * stockCxMin_1;
+                    polares.parabCxCoeff_1 = 0.14F * stockparabCxCoeff_0 + 0.86F * stockparabCxCoeff_1;
+                    Reflection.setValue(FM, "Wing", polares);
+                    FM.Sq.squareFlaps = 0.90F * stockSqFlaps;
+                }
                 bFlapsInFixed = true;
                 bTakeoffFlapAssist = false;
             }
             else if(FM.CT.getVarWing() <= 0.02F && !bTakeoffFlapAssist && bFlapsInFixed)
             {
-                Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-                polares.Cy0_1 = stockCy0_1;
-                polares.CxMin_1 = stockCxMin_1;
-                polares.parabCxCoeff_1 = stockparabCxCoeff_1;
+                if(!bStableAIGround)
+                {
+                    Polares polares = (Polares)Reflection.getValue(FM, "Wing");
+                    polares.Cy0_1 = stockCy0_1;
+                    polares.CxMin_1 = stockCxMin_1;
+                    polares.parabCxCoeff_1 = stockparabCxCoeff_1;
+                    Reflection.setValue(FM, "Wing", polares);
+                    FM.Sq.squareFlaps = stockSqFlaps;
+                }
                 bFlapsInFixed = false;
             }
         }
@@ -2652,7 +2687,8 @@ public class F_14 extends Scheme2
             Lift = -0.00131671F * x7 - 0.0157775F * x6 + 0.163077F * x5 - 0.499096F * x4 + 0.687484F * x3 - 0.464434F * x2 + 0.119124F * x + 0.1F;
             //{{0.0, 0.1},{0.2, 0.11}, {0.6, 0.1},{0.97, 0.09}, {1.4, 0.07},{1.7, 0.05}, {2.0, 0.035}, {2.2, 0.03}}
             }
-        polares.lineCyCoeff= Lift;
+        polares.lineCyCoeff= Lift;  // westerntemp
+        Reflection.setValue(FM, "Wing", polares);
     }
 
 
@@ -2701,18 +2737,6 @@ public class F_14 extends Scheme2
          }
     }
 
-    public void computeBrake()
-    {
-            if(FM.EI.engines[0].getStage() < 6 && FM.EI.engines[1].getStage() < 6 && FM.EI.engines[2].getStage() < 6 && FM.Gears.onGround() && FM.EI.engines[0].getThrustOutput() < 0.01F)
-            {
-                FM.brakeShoe = true;
-            }
-            if(FM.EI.engines[0].getStage() > 5 && FM.EI.engines[1].getStage() > 5 && FM.EI.engines[2].getStage() > 5 && FM.Gears.onGround() && FM.EI.engines[0].getThrustOutput() > 0.01F && calculateMach() > 0.01F)
-            {
-                FM.brakeShoe = false;
-            }
-    }
-
     protected void moveVarWing(float f)
     {
         float f1 = 55F * f;
@@ -2723,209 +2747,182 @@ public class F_14 extends Scheme2
 
     public void computeVarWing()
     {
+        if(FM == null || !(FM instanceof Pilot) || !FM.CT.bHasVarWingControl)
+            return;
+
         Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-        if((double)calculateMach() > 0.8D && FM.EI.engines[0].getThrustOutput() > 1.001F && FM.getAltitude() <=2500F)
+
+        if((!(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode()) && (FM instanceof Maneuver))
         {
-            FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
-            Reflection.setFloat(FM, "GCenter", Reflection.getFloat(FM, "GCenter")  -2.0F);
-            Reflection.setFloat(FM, "DefaultElevatorTrim", Reflection.getFloat(FM, "DefaultElevatorTrim")  -14.0F);
-            polares.CxMin_0 = 0.033F;
-            polares.CyCritH_0 = 1.1F;
+            //When AI goes 'GAttack' waypoint, set VarWingControlSwitch = "BOMB". Others "AUTO".
+            if(FM.AP.way.curr().Action == 3 || (((Maneuver)FM).Group != null && ((Maneuver)FM).Group.grTask == 4) || ((Maneuver)FM).get_task() == 4)
+                FM.CT.VarWingControlSwitch = 4;
+            else 
+                FM.CT.VarWingControlSwitch = 0;
         }
-        if((double)calculateMach() > 0.88D && FM.getAltitude() <=2500F && FM.EI.engines[0].getThrustOutput() < 1.001F)
+
+        // VarWing degree decision part
+        switch(FM.CT.VarWingControlSwitch)
         {
-            FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
-            Reflection.setFloat(FM, "GCenter", Reflection.getFloat(FM, "GCenter")  -2.0F);
-            Reflection.setFloat(FM, "DefaultElevatorTrim", Reflection.getFloat(FM, "DefaultElevatorTrim")  -14.0F);
-            polares.CxMin_0 = 0.033F;
-            polares.CyCritH_0 = 1.1F;
+        default:
+        case 0:   // AUTO
+            if((double)calculateMach() > 0.8D && FM.EI.engines[0].getThrustOutput() > 1.001F && FM.getAltitude() <=2500F)
+                FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
+            if((double)calculateMach() > 0.88D && FM.getAltitude() <=2500F && FM.EI.engines[0].getThrustOutput() < 1.001F)
+                FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
+            if((double)calculateMach() > 0.75D && (double)calculateMach() < 0.88D && FM.getAltitude() <=2500F && FM.EI.engines[0].getThrustOutput() < 1.001F)
+                FM.CT.VarWingControl = Math.max(0.64F, FM.CT.getWing());
+            if((double)calculateMach() > 0.65D && (double)calculateMach() < 0.75D && FM.getAltitude() <=2500F)
+                FM.CT.VarWingControl = Math.max(0.4F, FM.CT.getWing());
+            if((double)calculateMach() > 0.55D && (double)calculateMach() < 0.65D && FM.getAltitude() <=2500F)
+                FM.CT.VarWingControl = Math.max(0.24F, FM.CT.getWing());
+            if((double)calculateMach() < 0.55D && FM.getAltitude() <=2500F && FM.EI.engines[0].getStage() >=6)
+                FM.CT.VarWingControl = Math.max(0.0F, FM.CT.getWing());
+            if((double)calculateMach() > 0.9D && FM.getAltitude() >2500F)
+                FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
+            if((double)calculateMach() > 0.85D && (double)calculateMach() < 0.9D && FM.getAltitude() >2500F)
+                FM.CT.VarWingControl = Math.max(0.64F, FM.CT.getWing());
+            if((double)calculateMach() > 0.75D && (double)calculateMach() < 0.85D && FM.getAltitude() >2500F)
+                FM.CT.VarWingControl = Math.max(0.4F, FM.CT.getWing());
+            if((double)calculateMach() > 0.7D && (double)calculateMach() < 0.78D && FM.getAltitude() >2500F)
+                FM.CT.VarWingControl = Math.max(0.24F, FM.CT.getWing());
+            if((double)calculateMach() < 0.6D && FM.getAltitude() >2500F)
+                FM.CT.VarWingControl = Math.max(0.0F, FM.CT.getWing());
+            if((double)calculateMach() > 0.95D && FM.getAltitude() >5000F)
+                FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
+            if((double)calculateMach() > 0.9D && (double)calculateMach() < 0.95D && FM.getAltitude() >5000F)
+                FM.CT.VarWingControl = Math.max(0.64F, FM.CT.getWing());
+            if((double)calculateMach() > 0.8D && (double)calculateMach() < 0.9D && FM.getAltitude() >5000F)
+                FM.CT.VarWingControl = Math.max(0.4F, FM.CT.getWing());
+            if((double)calculateMach() > 0.7D && (double)calculateMach() < 0.8D && FM.getAltitude() >5000F)
+                FM.CT.VarWingControl = Math.max(0.24F, FM.CT.getWing());
+            if((double)calculateMach() < 0.7D && FM.getAltitude() >5000F)
+                FM.CT.VarWingControl = Math.max(0.0F, FM.CT.getWing());
+            if((double)calculateMach() > 1.0D && FM.getAltitude() >7500F)
+                FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
+            if((double)calculateMach() > 0.95D && (double)calculateMach() < 1.0D && FM.getAltitude() >7500F)
+                FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
+            if((double)calculateMach() > 0.9D && (double)calculateMach() < 0.95D && FM.getAltitude() >7500F)
+                FM.CT.VarWingControl = Math.max(0.4F, FM.CT.getWing());
+            if((double)calculateMach() > 0.8D && (double)calculateMach() < 0.9D && FM.getAltitude() >7500F)
+                FM.CT.VarWingControl = Math.max(0.24F, FM.CT.getWing());
+            if((double)calculateMach() < 0.8D && FM.getAltitude() >7500F)
+                FM.CT.VarWingControl = Math.max(0.0F, FM.CT.getWing());
+            if((double)calculateMach() > 1.05D && FM.getAltitude() >10000F)
+                FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
+            if((double)calculateMach() > 1.0D && (double)calculateMach() < 1.05D && FM.getAltitude() >10000F)
+                FM.CT.VarWingControl = Math.max(0.64F, FM.CT.getWing());
+            if((double)calculateMach() > 0.95D && (double)calculateMach() < 1.0D && FM.getAltitude() >10000F)
+                FM.CT.VarWingControl = Math.max(0.4F, FM.CT.getWing());
+            if((double)calculateMach() > 0.85D && (double)calculateMach() < 0.95D && FM.getAltitude() >10000F)
+                FM.CT.VarWingControl = Math.max(0.24F, FM.CT.getWing());
+            if((double)calculateMach() < 0.85D && FM.getAltitude() >10000F)
+                FM.CT.VarWingControl = Math.max(0.0F, FM.CT.getWing());
+            break;
+        case 1:   // Extend
+            FM.CT.VarWingControl -= 0.005F;
+            if(FM.CT.VarWingControl < 0.0F)
+                FM.CT.VarWingControl = 0.0F;
+            FM.CT.VarWingControl = Math.max(FM.CT.VarWingControl, FM.CT.getWing());
+            break;
+        case 2:   // Keep
+            FM.CT.VarWingControl = Math.max(FM.CT.VarWingControl, FM.CT.getWing());
+            if(FM.CT.getWing() < 0.8F && FM.CT.VarWingControl > 0.8F)
+                FM.CT.VarWingControl = 0.8F;
+            break;
+        case 3:   // Retract
+            FM.CT.VarWingControl += 0.005F;
+            FM.CT.VarWingControl = Math.max(FM.CT.VarWingControl, FM.CT.getWing());
+            if(FM.CT.getWing() < 0.8F && FM.CT.VarWingControl > 0.8F)
+                FM.CT.VarWingControl = 0.8F;
+            break;
+        case 4:   // BOMB; fixed 55 degrees
+            FM.CT.VarWingControl = 0.6034F;
+            FM.CT.VarWingControl = Math.max(FM.CT.VarWingControl, FM.CT.getWing());
+            break;
         }
-        if((double)calculateMach() > 0.75D && (double)calculateMach() < 0.88D && FM.getAltitude() <=2500F && FM.EI.engines[0].getThrustOutput() < 1.001F)
+
+        // VarWing flight charactoristic part
+        if(!bStableAIGround)
         {
-            FM.CT.VarWingControl = Math.max(0.64F, FM.CT.getWing());
-            Reflection.setFloat(FM, "GCenter", Reflection.getFloat(FM, "GCenter")  -1.4F);
-            Reflection.setFloat(FM, "DefaultElevatorTrim", Reflection.getFloat(FM, "DefaultElevatorTrim")  -4.0F);
-            polares.CxMin_0 = 0.035F;
-            polares.CyCritH_0 = 1.15F;
-        }
-        if((double)calculateMach() > 0.65D && (double)calculateMach() < 0.75D && FM.getAltitude() <=2500F)
-        {
-            FM.CT.VarWingControl = Math.max(0.4F, FM.CT.getWing());
-            Reflection.setFloat(FM, "GCenter", Reflection.getFloat(FM, "GCenter")  -0.7F);
-            polares.CxMin_0 = 0.036F;
-            polares.CyCritH_0 = 1.2F;
-        }
-        if((double)calculateMach() > 0.55D && (double)calculateMach() < 0.65D && FM.getAltitude() <=2500F)
-        {
-            FM.CT.VarWingControl = Math.max(0.24F, FM.CT.getWing());
-            polares.CxMin_0 = 0.037F;
-            polares.CyCritH_0 = 1.3F;
-        }
-        if((double)calculateMach() < 0.55D && FM.getAltitude() <=2500F && FM.EI.engines[0].getStage() >=6)
-        {
-            FM.CT.VarWingControl = Math.max(0.0F, FM.CT.getWing());
-            polares.CxMin_0 = 0.039F;
-            polares.CyCritH_0 = 1.40F;
-        }
-        if((double)calculateMach() > 0.9D && FM.getAltitude() >2500F)
-        {
-            FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
-            Reflection.setFloat(FM, "GCenter", Reflection.getFloat(FM, "GCenter")  -2.0F);
-            Reflection.setFloat(FM, "DefaultElevatorTrim", Reflection.getFloat(FM, "DefaultElevatorTrim")  -14.0F);
-            polares.CxMin_0 = 0.033F;
-            polares.CyCritH_0 = 1.1F;
-        }
-        if((double)calculateMach() > 0.85D && (double)calculateMach() < 0.9D && FM.getAltitude() >2500F)
-        {
-            FM.CT.VarWingControl = Math.max(0.64F, FM.CT.getWing());
-            Reflection.setFloat(FM, "GCenter", Reflection.getFloat(FM, "GCenter")  -1.4F);
-            Reflection.setFloat(FM, "DefaultElevatorTrim", Reflection.getFloat(FM, "DefaultElevatorTrim")  -4.0F);
-            polares.CxMin_0 = 0.035F;
-            polares.CyCritH_0 = 1.15F;
-        }
-        if((double)calculateMach() > 0.75D && (double)calculateMach() < 0.85D && FM.getAltitude() >2500F)
-        {
-            FM.CT.VarWingControl = Math.max(0.4F, FM.CT.getWing());
-            Reflection.setFloat(FM, "GCenter", Reflection.getFloat(FM, "GCenter")  -0.7F);
-            polares.CxMin_0 = 0.036F;
-            polares.CyCritH_0 = 1.2F;
-        }
-        if((double)calculateMach() > 0.7D && (double)calculateMach() < 0.78D && FM.getAltitude() >2500F)
-        {
-            FM.CT.VarWingControl = Math.max(0.24F, FM.CT.getWing());
-            polares.CxMin_0 = 0.037F;
-            polares.CyCritH_0 = 1.3F;
-        }
-        if((double)calculateMach() < 0.6D && FM.getAltitude() >2500F)
-        {
-            FM.CT.VarWingControl = Math.max(0.0F, FM.CT.getWing());
-            polares.CxMin_0 = 0.039F;
-            polares.CyCritH_0 = 1.4F;
-        }
-        if((double)calculateMach() > 0.95D && FM.getAltitude() >5000F)
-        {
-            FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
-            Reflection.setFloat(FM, "GCenter", Reflection.getFloat(FM, "GCenter")  -2.0F);
-            Reflection.setFloat(FM, "DefaultElevatorTrim", Reflection.getFloat(FM, "DefaultElevatorTrim")  -14.0F);
-            polares.CxMin_0 = 0.033F;
-            polares.CyCritH_0 = 1.1F;
-        }
-        if((double)calculateMach() > 0.9D && (double)calculateMach() < 0.95D && FM.getAltitude() >5000F)
-        {
-            FM.CT.VarWingControl = Math.max(0.64F, FM.CT.getWing());
-            Reflection.setFloat(FM, "GCenter", Reflection.getFloat(FM, "GCenter")  -1.4F);
-            Reflection.setFloat(FM, "DefaultElevatorTrim", Reflection.getFloat(FM, "DefaultElevatorTrim")  -4.0F);
-            polares.CxMin_0 = 0.035F;
-            polares.CyCritH_0 = 1.15F;
-        }
-        if((double)calculateMach() > 0.8D && (double)calculateMach() < 0.9D && FM.getAltitude() >5000F)
-        {
-            FM.CT.VarWingControl = Math.max(0.4F, FM.CT.getWing());
-            Reflection.setFloat(FM, "GCenter", Reflection.getFloat(FM, "GCenter")  -0.7F);
-            polares.CxMin_0 = 0.036F;
-            polares.CyCritH_0 = 1.2F;
-        }
-        if((double)calculateMach() > 0.7D && (double)calculateMach() < 0.8D && FM.getAltitude() >5000F)
-        {
-            FM.CT.VarWingControl = Math.max(0.24F, FM.CT.getWing());
-            polares.CxMin_0 = 0.037F;
-            polares.CyCritH_0 = 1.3F;
-        }
-        if((double)calculateMach() < 0.7D && FM.getAltitude() >5000F)
-        {
-            FM.CT.VarWingControl = Math.max(0.0F, FM.CT.getWing());
-            polares.CxMin_0 = 0.039F;
-            polares.CyCritH_0 = 1.4F;
-        }
-        if((double)calculateMach() > 1.0D && FM.getAltitude() >7500F)
-        {
-            FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
-            Reflection.setFloat(FM, "GCenter", Reflection.getFloat(FM, "GCenter")  -2.0F);
-            Reflection.setFloat(FM, "DefaultElevatorTrim", Reflection.getFloat(FM, "DefaultElevatorTrim")  -14.0F);
-            polares.CxMin_0 = 0.033F;
-            polares.CyCritH_0 = 1.1F;
-        }
-        if((double)calculateMach() > 0.95D && (double)calculateMach() < 1.0D && FM.getAltitude() >7500F)
-        {
-            FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
-            Reflection.setFloat(FM, "GCenter", Reflection.getFloat(FM, "GCenter")  -1.4F);
-            Reflection.setFloat(FM, "DefaultElevatorTrim", Reflection.getFloat(FM, "DefaultElevatorTrim")  -4.0F);
-            polares.CxMin_0 = 0.035F;
-            polares.CyCritH_0 = 1.15F;
-        }
-        if((double)calculateMach() > 0.9D && (double)calculateMach() < 0.95D && FM.getAltitude() >7500F)
-        {
-            FM.CT.VarWingControl = Math.max(0.4F, FM.CT.getWing());
-            Reflection.setFloat(FM, "GCenter", Reflection.getFloat(FM, "GCenter")  -0.7F);
-            polares.CxMin_0 = 0.036F;
-            polares.CyCritH_0 = 1.2F;
-        }
-        if((double)calculateMach() > 0.8D && (double)calculateMach() < 0.9D && FM.getAltitude() >7500F)
-        {
-            FM.CT.VarWingControl = Math.max(0.24F, FM.CT.getWing());
-            polares.CxMin_0 = 0.037F;
-            polares.CyCritH_0 = 1.3F;
-        }
-        if((double)calculateMach() < 0.8D && FM.getAltitude() >7500F)
-        {
-            FM.CT.VarWingControl = Math.max(0.0F, FM.CT.getWing());
-            polares.CxMin_0 = 0.039F;
-            polares.CyCritH_0 = 1.4F;
-        }
-        if((double)calculateMach() > 1.05D && FM.getAltitude() >10000F)
-        {
-            FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
-            Reflection.setFloat(FM, "GCenter", Reflection.getFloat(FM, "GCenter")  -2.0F);
-            Reflection.setFloat(FM, "DefaultElevatorTrim", Reflection.getFloat(FM, "DefaultElevatorTrim")  -14.0F);
-            polares.CxMin_0 = 0.033F;
-            polares.CyCritH_0 = 1.1F;
-        }
-        if((double)calculateMach() > 1.0D && (double)calculateMach() < 1.05D && FM.getAltitude() >10000F)
-        {
-            FM.CT.VarWingControl = Math.max(0.64F, FM.CT.getWing());
-            Reflection.setFloat(FM, "GCenter", Reflection.getFloat(FM, "GCenter")  -1.4F);
-            Reflection.setFloat(FM, "DefaultElevatorTrim", Reflection.getFloat(FM, "DefaultElevatorTrim")  -4.0F);
-            polares.CxMin_0 = 0.035F;
-            polares.CyCritH_0 = 1.15F;
-        }
-        if((double)calculateMach() > 0.95D && (double)calculateMach() < 1.0D && FM.getAltitude() >10000F)
-        {
-            FM.CT.VarWingControl = Math.max(0.4F, FM.CT.getWing());
-            Reflection.setFloat(FM, "GCenter", Reflection.getFloat(FM, "GCenter")  -0.7F);
-            polares.CxMin_0 = 0.036F;
-            polares.CyCritH_0 = 1.2F;
-        }
-        if((double)calculateMach() > 0.85D && (double)calculateMach() < 0.95D && FM.getAltitude() >10000F)
-        {
-            FM.CT.VarWingControl = Math.max(0.24F, FM.CT.getWing());
-            polares.CxMin_0 = 0.037F;
-            polares.CyCritH_0 = 1.3F;
-        }
-        if((double)calculateMach() < 0.85D && FM.getAltitude() >10000F)
-        {
-            FM.CT.VarWingControl = Math.max(0.0F, FM.CT.getWing());
-            polares.CxMin_0 = 0.039F;
-            polares.CyCritH_0 = 1.4F;
+            float fsweep = 0F;
+            if(FM.CT.getVarWing() < 0.24F)
+                fsweep = cvt(FM.CT.getVarWing(), 0.0F, 0.24F, 0.0F, 1.0F);
+            else if(FM.CT.getVarWing() < 0.4F)
+                fsweep = cvt(FM.CT.getVarWing(), 0.24F, 0.4F, 1.0F, 2.0F);
+            else if(FM.CT.getVarWing() < 0.64F)
+                fsweep = cvt(FM.CT.getVarWing(), 0.4F, 0.64F, 2.0F, 3.0F);
+            else
+                fsweep = cvt(FM.CT.getVarWing(), 0.64F, 0.8F, 3.0F, 4.0F);
+            Reflection.setFloat(FM, "GCenter", stockGCenter + floatindex(fsweep, gcenterScale));
+            Reflection.setFloat(FM, "DefaultElevatorTrim", stockDefaultElevatorTrim + floatindex(fsweep, defaultelevtrimScale));
+            polares.CxMin_0 = floatindex(fsweep, cxmin0Scale);
+            polares.Cy0_0 = floatindex(fsweep, cy00Scale);
+            polares.CyCritH_0 = floatindex(fsweep, cycrith0Scale);
+            Reflection.setValue(FM, "Wing", polares);
+            FM.Sq.squareWing = stockSqWing - floatindex(fsweep, wingsquredecScale) * 2F;
+            FM.Sq.liftWingLOut = FM.Sq.liftWingROut = stockSqWingOut - floatindex(fsweep, wingsquredecScale);
+            FM.Wingspan = floatindex(fsweep, wingspanScale);
         }
     }
 
 
     private void FlapAssistTakeoff()
     {
+        Polares polares = (Polares)Reflection.getValue(FM, "Wing");
+
+        if(bSpawnedAsAI)
+        {
+            if(FM.Gears.onGround() && FM.getSpeedKMH() < 160F && !bStableAIGround)
+            {
+                polares.Cy0_0 = stockCy0_0 * 0.01F;
+                polares.Cy0_1 = stockCy0_1 * 0.1F;
+                Reflection.setValue(FM, "Wing", polares);
+                Reflection.setFloat(FM, "GCenter", stockGCenter);
+                FM.Sq.liftStab -= 3.0F;
+                FM.Sq.squareElevators -= 6.1F;
+                bStableAIGround = true;
+            }
+            if(FM.getSpeedKMH() > 160F && bStableAIGround)
+            {
+                polares.Cy0_0 = stockCy0_0;
+                polares.Cy0_1 = stockCy0_1;
+                Reflection.setValue(FM, "Wing", polares);
+                Reflection.setFloat(FM, "GCenter", stockGCenter);
+                FM.Sq.liftStab += 3.0F;
+                FM.Sq.squareElevators += 6.1F;
+                bStableAIGround = false;
+            }
+
+            if(FM.Gears.nearGround() && FM.getSpeedKMH() > 220F && !bTakeoffAIAssist)
+            {
+                FM.Sq.liftStab += 1.5F;
+                FM.Sq.squareElevators += 3.0F;
+                bTakeoffAIAssist = true;
+            }
+            else if(bTakeoffAIAssist)
+            {
+                FM.Sq.liftStab -= 1.5F;
+                FM.Sq.squareElevators -= 3.0F;
+                bTakeoffAIAssist = false;
+            }
+        }
+
         if(bFlapsOutFixed)
             return;
 
-        Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-        if(FM.EI.engines[0].getThrustOutput() > 0.97F && FM.EI.engines[1].getThrustOutput() > 0.97F && (double)calculateMach() < 0.29D && FM.Gears.onGround() && !bTakeoffFlapAssist)
+        if(FM.EI.engines[0].getThrustOutput() > 0.97F && FM.EI.engines[1].getThrustOutput() > 0.97F && ((double)calculateMach() < 0.32D || FM.Gears.onGround()) && !bTakeoffFlapAssist && !bStableAIGround)
         {
-            polares.Cy0_1 += 1.25D;
+            polares.Cy0_1 += (bSpawnedAsAI ? 1.8D : 0.8D);
+            Reflection.setValue(FM, "Wing", polares);
             bTakeoffFlapAssist = true;
         }
-        if(bTakeoffFlapAssist && !FM.Gears.onGround())
+        if(bTakeoffFlapAssist && !FM.Gears.nearGround())
         {
-            if((FM.EI.engines[0].getThrustOutput() < 0.97F && FM.EI.engines[1].getThrustOutput() < 0.97F) || (double)calculateMach() >= 0.29D)
+            if((FM.EI.engines[0].getThrustOutput() < 0.97F && FM.EI.engines[1].getThrustOutput() < 0.97F) || (double)calculateMach() >= 0.32D)
             {
-                polares.Cy0_1 -= 1.25D;
+                polares.Cy0_1 -= (bSpawnedAsAI ? 1.8D : 0.8D);
+                Reflection.setValue(FM, "Wing", polares);
                 bTakeoffFlapAssist = false;
             }
         }
@@ -3137,11 +3134,14 @@ public class F_14 extends Scheme2
     private float oldTrimElevator;
     public boolean bHasCenterTank;
     public boolean bHasWingTank;
+    private boolean bSpawnedAsAI;
     private float actl;
     private float rctl;
     private float ectl;
     public boolean hasHydraulicPressure;
     private boolean bTakeoffFlapAssist;
+    private boolean bTakeoffAIAssist;
+    private boolean bStableAIGround;
     private float arrestor;
     private boolean autoEng;
     private float curFlaps;
@@ -3152,11 +3152,44 @@ public class F_14 extends Scheme2
     private float stockCy0_1;
     private float stockCxMin_0;
     private float stockCxMin_1;
+    private float stockCyCritH_0;
+    private float stockGCenter;
+    private float stockDefaultElevatorTrim;
     private float stockparabCxCoeff_0;
     private float stockparabCxCoeff_1;
+    private float stockSqWing;
+    private float stockSqWingOut;
+    private float stockSqFlaps;
     private Eff3DActor antiColLight[];
 
 
+    private static final float gcenterScale[] = {
+        0.0F, 0.0F, -0.7F, -1.4F, -2F
+    };
+
+    private static final float defaultelevtrimScale[] = {
+        0.0F, 0.0F, 0.0F, -4F, -14F
+    };
+
+    private static final float cxmin0Scale[] = {
+        0.04F, 0.035F, 0.032F, 0.030F, 0.028F
+    };
+
+    private static final float cy00Scale[] = {
+        0.13F, 0.07F, 0.04F, 0.02F, 0.011F
+    };
+
+    private static final float cycrith0Scale[] = {
+        1.4F, 1.3F, 1.2F, 1.15F, 1.1F
+    };
+
+    private static final float wingspanScale[] = {
+        19.55F, 17.6F, 16.1F, 13.5F, 11.7F
+    };
+
+    private static final float wingsquredecScale[] = {
+        0.0F, 0.4F, 1.0F, 2.0F, 2.8F
+    };
 
     static
     {
