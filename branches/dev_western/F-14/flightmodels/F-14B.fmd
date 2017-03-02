@@ -20,6 +20,7 @@
   CElevatorTrim 1
   CRudder 3
   CRudderTrim 1
+  CLimitRatioElevatorMinusALWAYS 0.60
   CFlap 1
   CFlapPos 3
   CFlapStage0 10
@@ -42,7 +43,7 @@
   CCatLaunchBar 1
   CLockTailwheel 1
   CStabilizer 1
-  CRefuel 1
+  CRefuel 0
   CArrestorHook 1
   CWingFold 1
   WingPeriod 6.0
@@ -57,14 +58,14 @@
 [Squares]
   Wing 54.5
   Aileron 1.42
-  Flap 4.8
-  Stabilizer 2.20
-  Elevator 2.00
-  Keel 6.1
-  Rudder 0.7
+  Flap 13.3
+  Stabilizer 4.25
+  Elevator 8.10
+  Keel 9.2
+  Rudder 2.3
   Wing_In 7.0
   Wing_Mid 7.0
-  Wing_Out 7.0
+  Wing_Out 13.25
   FuselageCxS 0.001
   AirbrakeCxS 0.15
 [Arm]
@@ -186,19 +187,19 @@
 [Polares]
   lineCyCoeff 0.092
   AOAMinCx_Shift 1.0
-  Cy0_0 0.011
+  Cy0_0 0.13
   AOACritH_0 36.0
   AOACritL_0 -16.0
   CyCritH_0 1.1
   CyCritL_0 -0.75
-  CxMin_0 0.0340
+  CxMin_0 0.040
   parabCxCoeff_0 4.0E-4
-  Cy0_1 0.40
+  Cy0_1 0.64
   AOACritH_1 36.0
   AOACritL_1 -22.0
   CyCritH_1 1.5
   CyCritL_1 -0.7
-  CxMin_1 0.10
+  CxMin_1 0.11
   parabCxCoeff_1 5.0E-4
   parabAngle 6.0
   Decline 0.004
@@ -211,7 +212,7 @@
 [Supersonic]
   VminMach 0.92
   VsoundMach1 0.98
-  CfsoundMach1 1.57
+  CfsoundMach1 1.6
   VsoundMach2 1.25
   CfsoundMach2 1.57
   VmaxMach 1.3
