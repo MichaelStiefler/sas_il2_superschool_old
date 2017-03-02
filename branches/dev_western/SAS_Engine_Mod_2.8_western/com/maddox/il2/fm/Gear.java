@@ -819,7 +819,8 @@ public class Gear {
 			showChocks(false, false);
 			if ((FM.actor instanceof TypeSeaPlane) || (FM.actor instanceof HE_LERCHE3)) FM.canChangeBrakeShoe = false;
 			//By PAL, to indicate if Catapult is not armed anymore (when it left Carrier Deck)
-			if(!bUnderDeck && bCatapultArmed) disarmCatapult();
+			if((!bUnderDeck || FM.getSpeed() > FM.Vmin * 1.2F || FM.getSpeedKMH() > 340F) && bCatapultArmed)
+				disarmCatapult();
 		}
 		if (!bIsMaster) return;
 		if (onGround && !isWater) processingCollisionEffect();
