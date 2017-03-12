@@ -168,6 +168,7 @@ public class Gear {
 	private int iCatapultAlreadySetNum;
 	private boolean bHasBlastDeflector;
 	private Eff3DActor catEff;
+	private float carrierSpeedKMH;
 	public ZutiAirfieldPoint zutiCurrentZAP;
 	private boolean bUseOldCatapultPowerProcedure;
 	private boolean bDebugCatapult;
@@ -559,7 +560,7 @@ public class Gear {
 							double dist = 10D;
 							//double dist = cellairfield.leftUpperCorner().y - dCatapultOffsetY[i] - 1F;
 							double mass = FM.M.getFullMass() * 0.01F;
-							double vmin = FM.VminFLAPS;
+							double vmin = FM.VminFLAPS * 1.1D;
 
 							double d4 = mass * vmin * vmin / (2F * dist);
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -819,7 +820,11 @@ public class Gear {
 			showChocks(false, false);
 			if ((FM.actor instanceof TypeSeaPlane) || (FM.actor instanceof HE_LERCHE3)) FM.canChangeBrakeShoe = false;
 			//By PAL, to indicate if Catapult is not armed anymore (when it left Carrier Deck)
-			if((!bUnderDeck || FM.getSpeed() > FM.Vmin * 1.2F || FM.getSpeedKMH() > 340F) && bCatapultArmed)
+			float Vfly;
+			if(FM.Vmin < 56F) Vfly = 69.5F;  // 250km/h static when Vmin < 200km/h
+			else if(FM.Vmin < 61.1F) Vfly = FM.Vmin + 13.9F;  // Vmin + 50km/h when Vmin < 220km/h
+			else Vfly = FM.Vmin * 1.25F;
+			if((!bUnderDeck || FM.getSpeed() - carrierSpeedKMH / 3.6F > Vfly || FM.getSpeedKMH() - carrierSpeedKMH > 340F) && bCatapultArmed)
 				disarmCatapult();
 		}
 		if (!bIsMaster) return;
@@ -897,37 +902,38 @@ public class Gear {
 		else
 			dist = 46F;
 		float massX = FM.M.getFullMass();  // Math.min(FM.M.getFullMass(), 20000F); //By PAL and western, empiric factor
-		massX *= Aircraft.cvt(Math.max(FM.CT.limitRatioAITakeoffElevatorPlus, FM.CT.trimElevator), 0.0F, 1.0F, 0.18F, 0.28F);
+		massX *= Aircraft.cvt(Math.max(FM.CT.limitRatioAITakeoffElevatorPlus, FM.CT.trimElevator), 0.0F, 1.0F, 0.20F, 0.28F);
 //		massX *= Aircraft.cvt(Math.max(FM.CT.limitRatioAITakeoffElevatorPlus, FM.CT.trimElevator), 0.0F, 1.0F, 0.25F, 0.40F);
-//        if ((!this.FM.isPlayers() || !(this.FM instanceof RealFlightModel) || !((RealFlightModel)this.FM).isRealMode()) && (this.FM instanceof Maneuver)) {
+//		if ((!this.FM.isPlayers() || !(this.FM instanceof RealFlightModel) || !((RealFlightModel)this.FM).isRealMode()) && (this.FM instanceof Maneuver)) {
 //			massX *= 0.35F;
-//       } else {
-//            massX *= 0.16F;
-//        }
+//	   } else {
+//			massX *= 0.16F;
+//		}
 		// target velocity m/s on catapult end (for empty loadout and fuel)
-		float vTarget = FM.Vmin * 0.65F + FM.VminFLAPS * 0.35F;
-//		float vTarget = FM.Vmin * 0.8F + FM.VminFLAPS * 0.2F;
+		float vTarget = FM.Vmin * 0.7F + FM.VminFLAPS * 0.3F;
 		if (bIsTypeSupersonic || bIsTypeFastJet || bIsJets) {
-			// keep at least 190km/h for vTarget of all Jets
-			if (vTarget < 53F) vTarget = 53F;
+            // When Vmin < 201km/h, vTarget = 240km/h static for all Jets
+			if (vTarget < 56F) vTarget = 66.7F;
 			// with heavy loadout, the aircraft needs higher take-off speed
 			vTarget += (FM.M.getFullMass() - FM.M.massEmpty) * 0.0020F;
 		}
 		else
 			vTarget += (FM.M.getFullMass() - FM.M.massEmpty) * 0.0013F;
 		if(vTarget > 85F) vTarget = 85F;   // Limitter for 306km/h on the catapult's end
+		carrierSpeedKMH = FM.getSpeedKMH();
 		if (bDebugCatapult) {
-			System.out.println("*** Catapult vTarget=" + vTarget + " m/s (" + (int)(vTarget * 3.6F) + "km/h) in auto calculation.");
+			System.out.println("*** Catapult vTarget=" + vTarget + " m/s (" + (int)(vTarget * 3.6F) + " km/h) in auto calculation.");
+			System.out.println("*** Carrier running speed is " + (int)(carrierSpeedKMH / 3.6F) + "m/s (" + (int)carrierSpeedKMH + "km/h) --- saved into carrierSpeedKMH.");
 		}
 
 		double dForceAuto = massX * vTarget * vTarget / dist;
 		double dForceTrad = Math.min(FM.M.getFullMass(), 10000F) * mult;
-		dForceTrad *= Aircraft.cvt(Math.max(FM.CT.limitRatioAITakeoffElevatorPlus, FM.CT.trimElevator), 0.0F, 1.0F, 0.38F, 0.77F);
-//        if ((!this.FM.isPlayers() || !(this.FM instanceof RealFlightModel) || !((RealFlightModel)this.FM).isRealMode()) && (this.FM instanceof Maneuver)) {
+		dForceTrad *= Aircraft.cvt(Math.max(FM.CT.limitRatioAITakeoffElevatorPlus, FM.CT.trimElevator), 0.0F, 1.0F, 0.42F, 0.77F);
+//		if ((!this.FM.isPlayers() || !(this.FM instanceof RealFlightModel) || !((RealFlightModel)this.FM).isRealMode()) && (this.FM instanceof Maneuver)) {
 //			dForceTrad *= 0.75F;
-//        } else {
-//            dForceTrad *= 0.34F;
-//        }
+//		} else {
+//			dForceTrad *= 0.34F;
+//		}
 		if (bForceAutoCalculate || !bUseOldCatapultPowerProcedure) {
 			dCatapultForce = dForceAuto;
 			bDoneAutoCalculate = true;
