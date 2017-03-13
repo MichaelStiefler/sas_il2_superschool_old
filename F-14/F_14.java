@@ -14,18 +14,15 @@ import com.maddox.il2.objects.vehicles.cars.CarGeneric;
 import com.maddox.il2.objects.vehicles.stationary.StationaryGeneric;
 import com.maddox.il2.objects.vehicles.tanks.TankGeneric;
 import com.maddox.il2.objects.weapons.*;
-import com.maddox.il2.objects.weapons.Missile;
-import com.maddox.il2.objects.weapons.MissileSAM;
 import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.rts.*;
-import com.maddox.sas1946.il2.util.Reflection;
 import com.maddox.sound.Sample;
 import com.maddox.sound.SoundFX;
 import com.maddox.util.HashMapExt;
+import com.maddox.sas1946.il2.util.Reflection;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 // Referenced classes of package com.maddox.il2.objects.air:
 //            Scheme2, Aircraft, TypeFighterAceMaker, TypeSupersonic,
@@ -347,18 +344,14 @@ public class F_14 extends Scheme2
                 double d4 = Main3D.cur3D().land2D.worldOfsX() + ((Actor) (aircraft1)).pos.getAbsPoint().x;
                 double d6 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (aircraft1)).pos.getAbsPoint().y;
                 double d8 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (aircraft1)).pos.getAbsPoint().z;
-                new String();
-                new String();
                 int k = (int)(Math.floor(((Actor) (aircraft1)).pos.getAbsPoint().z * 0.10000000000000001D) * 10D);
                 int i1 = (int)(Math.floor((aircraft1.getSpeed(vector3d) * 60D * 60D) / 10000D) * 10D);
                 double d10 = (int)(Math.ceil((d2 - d8) / 10D) * 10D);
                 boolean flag2 = false;
-                Engine.land();
                 int k1 = Landscape.getPixelMapT(Engine.land().WORLD2PIXX(((Actor) (aircraft1)).pos.getAbsPoint().x), Engine.land().WORLD2PIXY(((Actor) (aircraft1)).pos.getAbsPoint().y));
                 float f = Mission.cur().sectFile().get("Weather", "WindSpeed", 0.0F);
                 if(k1 >= 28 && k1 < 32 && f < 7.5F)
                     flag2 = true;
-                new String();
                 double d14 = d4 - d;
                 double d16 = d6 - d1;
                 float f1 = 57.32484F * (float)Math.atan2(d16, -d14);
@@ -420,7 +413,6 @@ public class F_14 extends Scheme2
                     s = " low";
                 if((d9 - d13) + 500D < 0.0D)
                     s = " high";
-                new String();
                 double d17 = d11 - d5;
                 double d18 = d12 - d7;
                 float f2 = 57.32484F * (float)Math.atan2(d18, -d17);
@@ -501,7 +493,6 @@ public class F_14 extends Scheme2
                     s = " LOW";
                 if((d2 - d5) + 500D < 0.0D)
                     s = " HIGH";
-                new String();
                 double d7 = d3 - d;
                 double d8 = d4 - d1;
                 float f = 57.32484F * (float)Math.atan2(d8, -d7);
@@ -896,7 +887,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon3R", true);
             FM.Sq.dragParasiteCx += 0.00007F;
         }
-        if(thisWeaponsName.startsWith("GAttackLGB: 1xAN"))
+        if(thisWeaponsName.startsWith("GAttackFLIR: 1xAN"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
             hierMesh().chunkVisible("Pylon1R", true);
@@ -912,7 +903,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon3R", true);
             FM.Sq.dragParasiteCx += 0.00007F;
         }
-        if(thisWeaponsName.startsWith("GAttackLGB: 2xGBU"))
+        if(thisWeaponsName.startsWith("GAttackFLIR: 2xGBU"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
             hierMesh().chunkVisible("Pylon1R", true);
@@ -952,7 +943,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon4R", true);
             FM.Sq.dragParasiteCx += 0.0001F;
         }
-        if(thisWeaponsName.startsWith("GAttackLGB: 4xGBU"))
+        if(thisWeaponsName.startsWith("GAttackFLIR: 4xGBU"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
             hierMesh().chunkVisible("Pylon1R", true);
@@ -1007,7 +998,6 @@ public class F_14 extends Scheme2
                     lLightLoc1.set(2000D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
                     lLightHook[j].computePos(this, Actor._tmpLoc, lLightLoc1);
                     lLightLoc1.get(lLightP2);
-                    Engine.land();
                     if(Landscape.rayHitHQ(lLightP1, lLightP2, lLightPL))
                     {
                         lLightPL.z++;
@@ -2155,6 +2145,7 @@ public class F_14 extends Scheme2
         computeCombatFlaps(f);
         computeEnergy();
         computeSupersonicLimiter();
+        computeSubsonicLimiter();
         FlapAssistTakeoff();
         RWRLaunchWarning();
         if((FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
@@ -2684,8 +2675,8 @@ public class F_14 extends Scheme2
             float x6 = x5 * x;
             float x7 = x6 * x;
             float x8 = x7 * x;
-            Lift = -0.00131671F * x7 - 0.0157775F * x6 + 0.163077F * x5 - 0.499096F * x4 + 0.687484F * x3 - 0.464434F * x2 + 0.119124F * x + 0.1F;
-            //{{0.0, 0.1},{0.2, 0.11}, {0.6, 0.1},{0.97, 0.09}, {1.4, 0.07},{1.7, 0.05}, {2.0, 0.035}, {2.2, 0.03}}
+            Lift = 0.00458079F * x7 - 0.0605523F * x6 + 0.294479F * x5 - 0.685669F * x4 + 0.821472F * x3 - 0.508206F * x2 + 0.123823F * x + 0.1F;
+            //{{0.0, 0.1},{0.2, 0.11}, {0.6, 0.1},{0.97, 0.09}, {1.4, 0.07},{1.9, 0.04}, {2.2, 0.03}, {2.5, 0.02}}
             }
         polares.lineCyCoeff= Lift;  // westerntemp
         Reflection.setValue(FM, "Wing", polares);
@@ -2730,8 +2721,8 @@ public class F_14 extends Scheme2
             else
             {
                 float x2 = x * x;
-                Drag = 0.0005F - 0.0002F * x;
-                //{{0,0.0005},{2.5, 0}}
+                Drag = 0.0008F - 0.00032F * x;
+                //{{0,0.0008},{2.5, 0}}
             }
             FM.Sq.dragParasiteCx += Drag;
          }
@@ -2865,6 +2856,22 @@ public class F_14 extends Scheme2
             FM.Wingspan = floatindex(fsweep, wingspanScale);
         }
     }
+    
+    public void computeSubsonicLimiter()
+       { 
+        float x = this.calculateMach();
+        float Drag = 0.0F;
+        if(FM.EI.engines[0].getThrustOutput() < 1.001F && FM.EI.engines[0].getStage() == 6 && (double)calculateMach() >= 0.9 && this instanceof com.maddox.il2.objects.air.F_14A) 
+        if (x > 0.97) 
+	{
+	Drag = 0.0025F;
+	} else{ 
+		float x2 = x * x; 
+		Drag = 0.0285714F * x - 0.0252143F;
+		//{{0.9,0.0005},{0.97, 0.0025}}
+	}
+	((FlightModelMain) (super.FM)).Sq.dragParasiteCx += Drag;
+         }
 
 
     private void FlapAssistTakeoff()

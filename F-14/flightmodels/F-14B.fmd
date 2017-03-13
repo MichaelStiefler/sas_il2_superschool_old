@@ -212,8 +212,8 @@
 [Supersonic]
   VminMach 0.92
   VsoundMach1 0.98
-  CfsoundMach1 1.6
+  CfsoundMach1 1.65
   VsoundMach2 1.25
-  CfsoundMach2 1.57
+  CfsoundMach2 1.6
   VmaxMach 1.3
-  CfmaxMach 1.36
+  CfmaxMach 1.2
