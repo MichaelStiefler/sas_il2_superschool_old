@@ -424,10 +424,10 @@ public class FlightModelMain extends FMMath {
 		// TODO: Variable geometry/incidence.
 		// --------------------------------------------------------
 		// By western, looking at 1st bit (1) and 2nd bit (2), 3rd bit (4). 2nd and 3rd bits are exclusion.
-        // 9th bit (256) means using as Nozzle rotation for V/STOL.
+		// 9th bit (256) means using as Nozzle rotation for V/STOL.
 		// Capable integer value is 1, 3, 5 or 257, 259, 261
 		j = sectfile.get(s2, "CVarWing", 0);
-        int jj = (j & 255);
+		int jj = (j & 255);
 		if (jj != 0 && jj != 1 && jj != 3 && jj != 5) throw new RuntimeException(s1);
 		CT.bHasVarWingControl = ((jj & 1) != 0);
 		CT.bHasVarWingControlFree = jj == 3;	 // By western, no step but free-stop var wing
@@ -538,8 +538,14 @@ public class FlightModelMain extends FMMath {
 		j = sectfile.get(s2, "cElectricProp", 0);
 		CT.bUseElectricProp = j == 1;
 		// TODO: Deleted float prefix
+		// TODO: apply individual R/L/C periods
 		f = sectfile.get(s2, "GearPeriod", -999F);
-		if (f != -999F) CT.dvGear = 1.0F / f;
+		if (f != -999F) {
+			CT.dvGear = 1.0F / f;
+			CT.dvGearR = CT.dvGear * 0.95F;
+			CT.dvGearL = CT.dvGear * 1.05F;
+			CT.dvGearC = CT.dvGear * 1.11F;
+		}
 		f = sectfile.get(s2, "WingPeriod", -999F);
 		if (f != -999F) CT.dvWing = 1.0F / f;
 		f = sectfile.get(s2, "CockpitDoorPeriod", -999F);

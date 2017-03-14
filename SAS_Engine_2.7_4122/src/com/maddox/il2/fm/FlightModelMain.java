@@ -624,9 +624,15 @@ public class FlightModelMain extends FMMath
         j = sectfile.get(s2, "cElectricProp", 0);
         CT.bUseElectricProp = j == 1;
         //TODO: Deleted float prefix
+		// TODO: apply individual R/L/C periods
         f = sectfile.get(s2, "GearPeriod", -999F);
-        if(f != -999F)
+        if (f != -999F)
+        {
             CT.dvGear = 1.0F / f;
+            CT.dvGearR = CT.dvGear * 0.95F;
+            CT.dvGearL = CT.dvGear * 1.05F;
+            CT.dvGearC = CT.dvGear * 1.11F;
+        }
         f = sectfile.get(s2, "WingPeriod", -999F);
         if(f != -999F)
             CT.dvWing = 1.0F / f;
