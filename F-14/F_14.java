@@ -887,7 +887,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon3R", true);
             FM.Sq.dragParasiteCx += 0.00007F;
         }
-        if(thisWeaponsName.startsWith("GAttackFLIR: 1xAN"))
+        if(thisWeaponsName.startsWith("GAttackFLIR: ALQ"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
             hierMesh().chunkVisible("Pylon1R", true);
@@ -895,7 +895,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon3R", true);
             FM.Sq.dragParasiteCx += 0.00007F;
         }
-        if(thisWeaponsName.startsWith("Recon: 1xAN"))
+        if(thisWeaponsName.startsWith("Recon: ALQ"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
             hierMesh().chunkVisible("Pylon1R", true);
