@@ -1,3 +1,4 @@
+// US Laser targeting pod AN/AAQ-14 or AN/AAQ-25 (same 3D shape), a part of "LANTIRN".
 
 package com.maddox.il2.objects.weapons;
 
