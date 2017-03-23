@@ -457,7 +457,6 @@ public class Skyhawk extends Scheme1
         k14WingspanType = 0;
         k14Distance = 200F;
         antiColLight = new Eff3DActor[6];
-        bAntiColLight = false;
         arrestor = 0.0F;
         fSlat = 0.0F;
     }
@@ -467,6 +466,7 @@ public class Skyhawk extends Scheme1
         super.onAircraftLoaded();
 
         FM.CT.bHasBombSelect = true;
+        FM.CT.bHasAntiColLights = true;
 
         Polares polares = (Polares)Reflection.getValue(FM, "Wing");
         stockSquareWing = FM.Sq.squareWing;
@@ -501,8 +501,6 @@ public class Skyhawk extends Scheme1
                 {
                     obsLookTime--;
                 }
-        if(!FM.isPlayers())
-            bAntiColLight = FM.AS.bNavLightsOn;
 
         if ((!FM.isPlayers() || !(FM instanceof RealFlightModel) || !((RealFlightModel) FM).isRealMode()) && (FM instanceof Maneuver))
             if (FM.AP.way.isLanding() && FM.getSpeed() > FM.VmaxFLAPS && FM.getSpeed() > FM.AP.way.curr().getV() * 1.4F)
@@ -1151,7 +1149,9 @@ public class Skyhawk extends Scheme1
         if(FM.CT.getArrestor() > 0.2F)
             calculateArrestor();
         super.update(f);
-        anticollight();
+        if(!FM.isPlayers())
+            FM.CT.bAntiColLights = FM.AS.bNavLightsOn;
+        anticollights();
     }
 
     public void computeSlat()
@@ -1249,16 +1249,6 @@ public class Skyhawk extends Scheme1
                 HUD.log("Autopilot Mode: Direction OFF");
                 FM.AP.setStabDirection(false);
                 FM.CT.bHasRudderControl = true;
-            }
-        if(i == 29)
-            if(!bAntiColLight)
-            {
-                bAntiColLight = true;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Anti-Col Lights ON");
-            } else
-            {
-                bAntiColLight = false;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Anti-Col Lights OFF");
             }
     }
 
@@ -1389,9 +1379,9 @@ public class Skyhawk extends Scheme1
         }
     }
 
-    private void anticollight()
+    private void anticollights()
     {
-        if(bAntiColLight)
+        if(FM.CT.bAntiColLights)
         {
             for(int i = 0; i < 6; i++)
             {
@@ -1499,7 +1489,6 @@ public class Skyhawk extends Scheme1
 
     //By western0221, Anti collision light
     private Eff3DActor antiColLight[];
-    private boolean bAntiColLight;
 
     //By western0221, classfy working ground spoiler (A-4F or later) or not (A-4E or earlier)
     public boolean bNoSpoiler;

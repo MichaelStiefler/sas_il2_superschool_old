@@ -438,11 +438,11 @@ public class CockpitA4MLaser extends CockpitGunner
     public Point3d spot1;
     public Point3d spot2;
     private Hook LaserHook[];
-    private static Loc LaserLoc1 = new Loc();
-    private static Point3d LaserP1 = new Point3d();
-    private static Point3d LaserP2 = new Point3d();
-    private static Point3d LaserPL = new Point3d();
-    private static Point3d LaserP3 = new Point3d();
+    private Loc LaserLoc1 = new Loc();
+    private Point3d LaserP1 = new Point3d();
+    private Point3d LaserP2 = new Point3d();
+    private Point3d LaserPL = new Point3d();
+    private Point3d LaserP3 = new Point3d();
 
     static 
     {
