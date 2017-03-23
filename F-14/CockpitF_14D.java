@@ -409,8 +409,8 @@ public class CockpitF_14D extends CockpitPilot
             super.mesh.chunkVisible("L_AI", true);
             resetYPRmodifier();
             float f = ((F_14)aircraft()).misslebrg;
-            Cockpit.xyz[0] = -(float)Math.sin(Math.toRadians(f)) * 0.01F;
-            Cockpit.xyz[2] = (float)Math.cos(Math.toRadians(f)) * 0.01F;
+            Cockpit.xyz[0] = -(float)Math.sin(Math.toRadians(f)) * 0.013333F;
+            Cockpit.xyz[2] = (float)Math.cos(Math.toRadians(f)) * 0.013333F;
             super.mesh.chunkSetLocate("Z_Z_RWR_M", Cockpit.xyz, Cockpit.ypr);
         } else
         {
@@ -423,8 +423,8 @@ public class CockpitF_14D extends CockpitPilot
             super.mesh.chunkVisible("L_AI", true);
             resetYPRmodifier();
             float f1 = ((F_14)aircraft()).aircraftbrg;
-            Cockpit.xyz[0] = -(float)Math.sin(Math.toRadians(f1)) * 0.02F;
-            Cockpit.xyz[2] = (float)Math.cos(Math.toRadians(f1)) * 0.02F;
+            Cockpit.xyz[0] = -(float)Math.sin(Math.toRadians(f1)) * 0.026666F;
+            Cockpit.xyz[2] = (float)Math.cos(Math.toRadians(f1)) * 0.026666F;
             super.mesh.chunkSetLocate("Z_Z_RWR_U", Cockpit.xyz, Cockpit.ypr);
         } else
         {
@@ -622,8 +622,8 @@ public class CockpitF_14D extends CockpitPilot
         else
             super.mesh.chunkVisible("Z_Z_lockgate", true);
         resetYPRmodifier();
-        Cockpit.xyz[1] = -((F_14)aircraft()).v;
-        Cockpit.xyz[2] = ((F_14)aircraft()).h * (float)((F_14)aircraft()).radarrange;
+        Cockpit.xyz[1] = -((F_14)aircraft()).v * 1.3333F;
+        Cockpit.xyz[2] = ((F_14)aircraft()).h * (float)((F_14)aircraft()).radarrange * 1.3333F;
         super.mesh.chunkSetLocate("Z_Z_lockgate", Cockpit.xyz, Cockpit.ypr);
         boolean flag1 = false;
         if(((F_14)aircraft()).radarmode == 0 && ((F_14)aircraft()).lockmode == 0)
@@ -736,9 +736,9 @@ public class CockpitF_14D extends CockpitPilot
             }
             resetYPRmodifier();
             if(((F_14)aircraft()).lockmode == 0 || ((F_14)aircraft()).radarmode == 1)
-                Cockpit.xyz[0] = x;
+                Cockpit.xyz[0] = x * 1.3333F;
             if(((F_14)aircraft()).lockmode == 1 && ((F_14)aircraft()).radarmode == 0)
-                Cockpit.xyz[0] = x - ((F_14)aircraft()).v / 4F;
+                Cockpit.xyz[0] = (x - ((F_14)aircraft()).v / 4F) * 1.3333F;
             super.mesh.chunkSetLocate("Z_Z_Scan_1", Cockpit.xyz, Cockpit.ypr);
         } else
         if(((F_14)aircraft()).radarmode == 2)
@@ -808,18 +808,18 @@ public class CockpitF_14D extends CockpitPilot
                 int i = radarLock.size();
                 if(i > 0)
                 {
-                    int j = 0;
+                    int nt = 0;
                     int k = 0;
                     if(i > 0)
                     {
-                        double d = ((Tuple3d) ((Point3d)radarLock.get(k))).x;
-                        if(d > (double)RClose && j <= nTgts)
+                        double x1 = ((Tuple3d) ((Point3d)radarLock.get(k))).x;
+                        if(x1 > (double)RClose && nt <= nTgts)
                         {
-                            FOV = 300D / d;
-                            double d1 = -((Tuple3d) ((Point3d)radarLock.get(k))).y * FOV;
-                            double d3 = ((Tuple3d) ((Point3d)radarLock.get(k))).z * FOV;
-                            float f = FOrigX + (float)(d1 * 0.0099999997764825821D) + (float)Math.sin(Math.toRadians(fm.Or.getKren())) * 0.011F;
-                            float f2 = FOrigY + (float)(d3 * 0.0099999997764825821D);
+                            FOV = 300D / x1; // distance relationship, to adjust the deviation of radar mark when getting closer to target planes
+                            double NewX = -((Tuple3d) ((Point3d)radarLock.get(k))).y * FOV; // spanning
+                            double NewY = ((Tuple3d) ((Point3d)radarLock.get(k))).z * FOV; //distance
+                            float f = FOrigX + (float)(NewX * 0.0099999997764825821D) + (float)Math.sin(Math.toRadians(fm.Or.getKren())) * 0.011F;
+                            float f2 = FOrigY + (float)(NewY * 0.0099999997764825821D);
                             if(f2 > 0.3F)
                                 f2 = 0.3F;
                             if(f2 < -0.3F)
@@ -842,18 +842,18 @@ public class CockpitF_14D extends CockpitPilot
                             else
                                 super.mesh.chunkVisible("Z_Z_missilelock", false);
                         }
-                        if(d > (double)RClose && j <= nTgts)
+                        if(x1 > (double)RClose && nt <= nTgts)
                         {
-                            FOV = 300D / d;
-                            double d2 = -((Tuple3d) ((Point3d)radarLock.get(k))).y * FOV;
-                            double d4 = ((Tuple3d) ((Point3d)radarLock.get(k))).z * FOV;
-                            float f1 = FOrigX + (float)(d2 * 9.9999997764825814E-005D) + (float)Math.sin(Math.toRadians(fm.Or.getKren())) * 0.011F;
-                            float f3 = FOrigY + (float)(d4 * 9.9999997764825814E-005D);
+                            FOV = 300D / x1; // distance relationship, to adjust the deviation of radar mark when getting closer to target planes
+                            double NewX = -((Tuple3d) ((Point3d)radarLock.get(k))).y * FOV; // spanning
+                            double NewY = ((Tuple3d) ((Point3d)radarLock.get(k))).z * FOV; //distance
+                            float f1 = FOrigX + (float)(NewX * 9.9999997764825814E-005D) + (float)Math.sin(Math.toRadians(fm.Or.getKren())) * 0.011F;
+                            float f3 = FOrigY + (float)(NewY * 9.9999997764825814E-005D);
                             String s1 = "Z_Z_RADAR_TBRG";
                             super.mesh.setCurChunk(s1);
                             resetYPRmodifier();
-                            Cockpit.xyz[0] = -f1;
-                            Cockpit.xyz[2] = f3;
+                            Cockpit.xyz[0] = -f1 * 1.3333F;
+                            Cockpit.xyz[2] = f3 * 1.3333F;
                             super.mesh.chunkSetLocate(Cockpit.xyz, Cockpit.ypr);
                             super.mesh.render();
                             if(!super.mesh.isChunkVisible(s1))
@@ -861,7 +861,7 @@ public class CockpitF_14D extends CockpitPilot
                         }
                     }
                 } else
-                {
+                {    // hide everything when there's no enemy
                     if(super.mesh.isChunkVisible("Z_Z_radarlock"))
                         super.mesh.chunkVisible("Z_Z_radarlock", false);
                     if(super.mesh.isChunkVisible("Z_Z_missilelock"))
@@ -937,8 +937,8 @@ public class CockpitF_14D extends CockpitPilot
                             String s2 = "Z_Z_RadarMark" + l;
                             super.mesh.setCurChunk(s2);
                             resetYPRmodifier();
-                            Cockpit.xyz[1] = -f1;
-                            Cockpit.xyz[2] = f2;
+                            Cockpit.xyz[1] = -f1 * 1.3333F;
+                            Cockpit.xyz[2] = f2 * 1.3333F;
                             super.mesh.chunkSetLocate(Cockpit.xyz, Cockpit.ypr);
                             super.mesh.render();
                             if(f1 >= 0.18F || f1 <= -0.18F || f2 > 0.36F)
@@ -1091,8 +1091,8 @@ public class CockpitF_14D extends CockpitPilot
                         String s = "Z_Z_lockgate";
                         super.mesh.setCurChunk(s);
                         resetYPRmodifier();
-                        Cockpit.xyz[1] = -f11;
-                        Cockpit.xyz[2] = f13;
+                        Cockpit.xyz[1] = -f11 * 1.3333F;
+                        Cockpit.xyz[2] = f13 * 1.3333F;
                         super.mesh.chunkSetLocate(Cockpit.xyz, Cockpit.ypr);
                         super.mesh.render();
                         if(f11 >= 0.18F || f11 <= -0.18F || f13 > 0.36F)
@@ -1113,8 +1113,8 @@ public class CockpitF_14D extends CockpitPilot
                         String s1 = "Z_Z_RadarMark0";
                         super.mesh.setCurChunk(s1);
                         resetYPRmodifier();
-                        Cockpit.xyz[1] = -f12;
-                        Cockpit.xyz[2] = f14;
+                        Cockpit.xyz[1] = -f12 * 1.3333F;
+                        Cockpit.xyz[2] = f14 * 1.3333F;
                         super.mesh.chunkSetLocate(Cockpit.xyz, Cockpit.ypr);
                         super.mesh.render();
                         if(f12 >= 0.18F || f12 <= -0.18F || f14 > 0.36F)
@@ -1275,8 +1275,8 @@ public class CockpitF_14D extends CockpitPilot
                         String s = "Z_Z_lockgate";
                         super.mesh.setCurChunk(s);
                         resetYPRmodifier();
-                        Cockpit.xyz[1] = -f10;
-                        Cockpit.xyz[2] = f12;
+                        Cockpit.xyz[1] = -f10 * 1.3333F;
+                        Cockpit.xyz[2] = f12 * 1.3333F;
                         super.mesh.chunkSetLocate(Cockpit.xyz, Cockpit.ypr);
                         super.mesh.render();
                         if(f10 >= 0.18F || f10 <= -0.18F || f12 > 0.36F)
@@ -1297,8 +1297,8 @@ public class CockpitF_14D extends CockpitPilot
                         String s1 = "Z_Z_RadarMark0";
                         super.mesh.setCurChunk(s1);
                         resetYPRmodifier();
-                        Cockpit.xyz[1] = -f11;
-                        Cockpit.xyz[2] = f13;
+                        Cockpit.xyz[1] = -f11 * 1.3333F;
+                        Cockpit.xyz[2] = f13 * 1.3333F;
                         super.mesh.chunkSetLocate(Cockpit.xyz, Cockpit.ypr);
                         super.mesh.render();
                         if(f11 >= 0.18F || f11 <= -0.18F || f13 > 0.36F)
@@ -1401,8 +1401,8 @@ public class CockpitF_14D extends CockpitPilot
                             String s2 = "Z_Z_RadarMark" + l;
                             super.mesh.setCurChunk(s2);
                             resetYPRmodifier();
-                            Cockpit.xyz[1] = -f1;
-                            Cockpit.xyz[2] = f2;
+                            Cockpit.xyz[1] = -f1 * 1.3333F;
+                            Cockpit.xyz[2] = f2 * 1.3333F;
                             super.mesh.chunkSetLocate(Cockpit.xyz, Cockpit.ypr);
                             super.mesh.render();
                             if(f1 >= 0.18F || f1 <= -0.18F || f2 > 0.36F)
@@ -1506,8 +1506,8 @@ public class CockpitF_14D extends CockpitPilot
                         String s = "Z_Z_lockgate";
                         super.mesh.setCurChunk(s);
                         resetYPRmodifier();
-                        Cockpit.xyz[1] = -f8;
-                        Cockpit.xyz[2] = f10;
+                        Cockpit.xyz[1] = -f8 * 1.3333F;
+                        Cockpit.xyz[2] = f10 * 1.3333F;
                         super.mesh.chunkSetLocate(Cockpit.xyz, Cockpit.ypr);
                         super.mesh.render();
                         if(f8 >= 0.18F || f8 <= -0.18F || f10 > 0.36F)
@@ -1528,8 +1528,8 @@ public class CockpitF_14D extends CockpitPilot
                         String s1 = "Z_Z_RadarMark0";
                         super.mesh.setCurChunk(s1);
                         resetYPRmodifier();
-                        Cockpit.xyz[1] = -f9;
-                        Cockpit.xyz[2] = f11;
+                        Cockpit.xyz[1] = -f9 * 1.3333F;
+                        Cockpit.xyz[2] = f11 * 1.3333F;
                         super.mesh.chunkSetLocate(Cockpit.xyz, Cockpit.ypr);
                         super.mesh.render();
                         if(f9 >= 0.18F || f9 <= -0.18F || f11 > 0.36F)
@@ -1734,109 +1734,109 @@ public class CockpitF_14D extends CockpitPilot
     protected void movescreenfuel()
     {
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.046F;
-        Cockpit.xyz[1] = -0.0062F;
-        Cockpit.xyz[2] = 0.04F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM21_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.06133F;
+        Cockpit.xyz[1] = -0.00827F;
+        Cockpit.xyz[2] = 0.05333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM21_1", Cockpit.xyz, Cockpit.ypr); //TOTAL 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.037F;
-        Cockpit.xyz[1] = -0.0062F;
-        Cockpit.xyz[2] = 0.04F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM31_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.04933F;
+        Cockpit.xyz[1] = -0.00827F;
+        Cockpit.xyz[2] = 0.05333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM31_1", Cockpit.xyz, Cockpit.ypr); //TOTAL 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.031F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.007F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM32_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.05600F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.00933F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM32_1", Cockpit.xyz, Cockpit.ypr); //L WING
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.042F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.007F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM33_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.04133F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.00933F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM33_1", Cockpit.xyz, Cockpit.ypr); //R WING
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.007F;
-        Cockpit.xyz[1] = -0.0065F;
-        Cockpit.xyz[2] = -0.011F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM22_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.00933F;
+        Cockpit.xyz[1] = -0.00866F;
+        Cockpit.xyz[2] = -0.01466F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM22_1", Cockpit.xyz, Cockpit.ypr); //TANK 4 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.001F;
-        Cockpit.xyz[1] = -0.0065F;
-        Cockpit.xyz[2] = -0.011F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM23_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.00133F;
+        Cockpit.xyz[1] = -0.00866F;
+        Cockpit.xyz[2] = -0.01466F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM23_1", Cockpit.xyz, Cockpit.ypr); //TANK 4 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.005F;
-        Cockpit.xyz[1] = -0.007F;
-        Cockpit.xyz[2] = -0.04F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM34_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.00666F;
+        Cockpit.xyz[1] = -0.009333F;
+        Cockpit.xyz[2] = -0.05333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM34_1", Cockpit.xyz, Cockpit.ypr); //EXTERNAL CENTER 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.007F;
-        Cockpit.xyz[1] = -0.007F;
-        Cockpit.xyz[2] = -0.04F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM212_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.009333F;
+        Cockpit.xyz[1] = -0.009333F;
+        Cockpit.xyz[2] = -0.05333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM212_1", Cockpit.xyz, Cockpit.ypr); //EXTERNAL CENTER 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.021F;
-        Cockpit.xyz[1] = -0.007F;
-        Cockpit.xyz[2] = -0.04F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM35_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.0280F;
+        Cockpit.xyz[1] = -0.009333F;
+        Cockpit.xyz[2] = -0.05333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM35_1", Cockpit.xyz, Cockpit.ypr); //EXTERNAL RIGHT 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.033F;
-        Cockpit.xyz[1] = -0.007F;
-        Cockpit.xyz[2] = -0.04F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM37_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.0440F;
+        Cockpit.xyz[1] = -0.009333F;
+        Cockpit.xyz[2] = -0.05333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM37_1", Cockpit.xyz, Cockpit.ypr); //EXTERNAL RIGHT 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.032F;
-        Cockpit.xyz[1] = -0.007F;
-        Cockpit.xyz[2] = -0.039F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM36_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.042665F;
+        Cockpit.xyz[1] = -0.009333F;
+        Cockpit.xyz[2] = -0.0520F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM36_1", Cockpit.xyz, Cockpit.ypr); //EXTERNAL LEFT 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.02F;
-        Cockpit.xyz[1] = -0.007F;
-        Cockpit.xyz[2] = -0.039F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM38_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.026666F;
+        Cockpit.xyz[1] = -0.009333F;
+        Cockpit.xyz[2] = -0.0520F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM38_1", Cockpit.xyz, Cockpit.ypr); //EXTERNAL LEFT 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.007F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.007F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM24_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.009333F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.009333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM24_1", Cockpit.xyz, Cockpit.ypr); //FEED R 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.002F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.007F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM25_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.0026666F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.009333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM25_1", Cockpit.xyz, Cockpit.ypr); //FEED R 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.007F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.021F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM26_1", Cockpit.xyz, Cockpit.ypr);
-        Cockpit.xyz[0] = -0.002F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.021F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM27_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.009333F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.0280F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM26_1", Cockpit.xyz, Cockpit.ypr); //FEED L 1
+        Cockpit.xyz[0] = -0.00266F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.0280F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM27_1", Cockpit.xyz, Cockpit.ypr); //FEED L 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.037F;
-        Cockpit.xyz[1] = -0.0062F;
-        Cockpit.xyz[2] = 0.039F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM28_1", Cockpit.xyz, Cockpit.ypr);
-        Cockpit.xyz[0] = -0.044F;
-        Cockpit.xyz[1] = -0.0062F;
-        Cockpit.xyz[2] = 0.039F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM29_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.049332F;
+        Cockpit.xyz[1] = -0.008266F;
+        Cockpit.xyz[2] = 0.0520F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM28_1", Cockpit.xyz, Cockpit.ypr); //BINGO 1
+        Cockpit.xyz[0] = -0.05866F;
+        Cockpit.xyz[1] = -0.008266F;
+        Cockpit.xyz[2] = 0.0520F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM29_1", Cockpit.xyz, Cockpit.ypr); //BINGO 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.007F;
-        Cockpit.xyz[1] = -0.0062F;
-        Cockpit.xyz[2] = 0.04F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM210_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.009333F;
+        Cockpit.xyz[1] = -0.008266F;
+        Cockpit.xyz[2] = 0.05333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM210_1", Cockpit.xyz, Cockpit.ypr); //TANK 1 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.002F;
-        Cockpit.xyz[1] = -0.0062F;
-        Cockpit.xyz[2] = 0.04F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM211_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.002666F;
+        Cockpit.xyz[1] = -0.008266F;
+        Cockpit.xyz[2] = 0.05333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM211_1", Cockpit.xyz, Cockpit.ypr); //TANK 1 2
         float f = 0.0F;
-        float f1 = (fm.M.fuel / 1000F) * 2.204623F;
-        float f2 = 0.0F;
-        if(f1 > 10.115F)
-            f2 = (f1 - 10.115F) / 2.0F;
-        float f3 = (float)((int)(f2 * 10F) % 10) * 36F;
+        totalfuelInt = (fm.M.fuel / 1000F) * 2.204623F;  // 1000 lbs unit
+        float tankW = 0.0F;  // Tank Wing (one side)
+        if(totalfuelInt > 12.2F)
+            tankW = (totalfuelInt - 12.2F) / 2.0F;
+        float f3 = (float)((int)(tankW * 10F) % 10) * 36F;
         if(f3 == 0.0F)
         {
             super.mesh.chunkVisible("Z_Z_HDD_NUM32_2", false);
@@ -1848,7 +1848,7 @@ public class CockpitF_14D extends CockpitPilot
         }
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM32_2", 0.0F, 0.0F, f3);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM33_2", 0.0F, 0.0F, f3);
-        float f4 = (float)((int)(f2 * 100F) % 10) * 36F;
+        float f4 = (float)((int)(tankW * 100F) % 10) * 36F;
         if(f4 == 0.0F && f3 == 0.0F && f == 0.0F)
         {
             super.mesh.chunkVisible("Z_Z_HDD_NUM32_3", false);
@@ -1860,95 +1860,107 @@ public class CockpitF_14D extends CockpitPilot
         }
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM32_3", 0.0F, 0.0F, f4);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM33_3", 0.0F, 0.0F, f4);
-        float f5 = (float)((int)(f2 * 1000F) % 10) * 36F;
+        float f5 = (float)((int)(tankW * 1000F) % 10) * 36F;
         super.mesh.chunkVisible("Z_Z_HDD_NUM32_4", true);
         super.mesh.chunkVisible("Z_Z_HDD_NUM33_4", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM32_4", 0.0F, 0.0F, f5);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM33_4", 0.0F, 0.0F, f5);
-        float f6 = 0.0F;
-        if(f1 > 6.03F)
-            f6 = f1 - 6.03F;
-        if(f6 > 4.085F)
-            f6 = 4.085F;
-        f = (float)(int)f6 * 36F;
+        float tank1 = 0F;  // tank1, forward fuselage
+        float tank4 = 0F;  // tank4, aft fuselage
+        if(totalfuelInt > 12.2F)
+        {
+            tank1 = 4.7F;
+            tank4 = 4.4F;
+        }
+        else if(totalfuelInt > 11.9F)
+        {
+            tank1 = 4.7F - (totalfuelInt - 11.9F);
+            tank4 = 4.4F;
+        }
+        else if(totalfuelInt > 3.1F)
+        {
+            tank1 = tank4 = (totalfuelInt - 3.1F) / 2F;
+        }
+        f = (float)(int)tank4 * 36F;
         if(f == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM22_2", false);
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM22_2", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM22_2", 0.0F, 0.0F, f);
-        f3 = (float)((int)(f6 * 10F) % 10) * 36F;
+        f3 = (float)((int)(tank4 * 10F) % 10) * 36F;
         if(f3 == 0.0F && f == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM22_3", false);
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM22_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM22_3", 0.0F, 0.0F, f3);
-        f4 = (float)((int)(f6 * 100F) % 10) * 36F;
+        f4 = (float)((int)(tank4 * 100F) % 10) * 36F;
         if(f4 == 0.0F && f3 == 0.0F && f == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM23_2", false);
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM23_2", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM23_2", 0.0F, 0.0F, f4);
-        f5 = (float)((int)(f6 * 1000F) % 10) * 36F;
-        super.mesh.chunkVisible("Z_Z_HDD_NUM22_2", true);
+        f5 = (float)((int)(tank4 * 1000F) % 10) * 36F;
+        super.mesh.chunkVisible("Z_Z_HDD_NUM23_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM23_3", 0.0F, 0.0F, f5);
-        float f7 = f1 - 3.19F;
-        if(f1 > 3.19F)
-            f7 = f1 - 3.19F;
-        if(f7 > 2.84F)
-            f7 = 2.84F;
-        f = (float)(int)f7 * 36F;
+        f = (float)(int)tank1 * 36F;
         if(f == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM210_2", false);
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM210_2", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM210_2", 0.0F, 0.0F, f);
-        f3 = (float)((int)(f7 * 10F) % 10) * 36F;
+        f3 = (float)((int)(tank1 * 10F) % 10) * 36F;
         if(f3 == 0.0F && f == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM210_3", false);
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM210_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM210_3", 0.0F, 0.0F, f3);
-        f4 = (float)((int)(f7 * 100F) % 10) * 36F;
+        f4 = (float)((int)(tank1 * 100F) % 10) * 36F;
         if(f4 == 0.0F && f3 == 0.0F && f == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM211_2", false);
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM211_2", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM211_2", 0.0F, 0.0F, f4);
-        f5 = (float)((int)(f7 * 1000F) % 10) * 36F;
+        f5 = (float)((int)(tank1 * 1000F) % 10) * 36F;
         super.mesh.chunkVisible("Z_Z_HDD_NUM211_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM211_3", 0.0F, 0.0F, f5);
-        float f8 = 0.0F;
-        if(((F_14)aircraft()).bHasCenterTank && !fm.M.bFuelTanksDropped)
-            f8 = (((F_14)aircraft()).checkfuel(0) / 1000F) * 2.204623F;
-        f = (float)(int)f8 * 36F;
-        if(f == 0.0F)
-            super.mesh.chunkVisible("Z_Z_HDD_NUM34_2", false);
-        else
-            super.mesh.chunkVisible("Z_Z_HDD_NUM34_2", true);
-        super.mesh.chunkSetAngles("Z_Z_HDD_NUM34_2", 0.0F, 0.0F, f);
-        f3 = (float)((int)(f8 * 10F) % 10) * 36F;
-        if(f3 == 0.0F && f == 0.0F)
-            super.mesh.chunkVisible("Z_Z_HDD_NUM34_3", false);
-        else
-            super.mesh.chunkVisible("Z_Z_HDD_NUM34_3", true);
-        super.mesh.chunkSetAngles("Z_Z_HDD_NUM34_3", 0.0F, 0.0F, f3);
-        f4 = (float)((int)(f8 * 100F) % 10) * 36F;
-        if(f4 == 0.0F && f3 == 0.0F && f == 0.0F)
-            super.mesh.chunkVisible("Z_Z_HDD_NUM34_4", false);
-        else
-            super.mesh.chunkVisible("Z_Z_HDD_NUM34_4", true);
-        super.mesh.chunkSetAngles("Z_Z_HDD_NUM34_4", 0.0F, 0.0F, f4);
-        f5 = (float)((int)(f8 * 1000F) % 10) * 36F;
-        super.mesh.chunkVisible("Z_Z_HDD_NUM212_2", true);
-        super.mesh.chunkSetAngles("Z_Z_HDD_NUM212_2", 0.0F, 0.0F, f5);
+        // NO Center external Droptank
+        super.mesh.chunkVisible("Z_Z_HDD_NUM34_2", false);
+        super.mesh.chunkVisible("Z_Z_HDD_NUM34_3", false);
+        super.mesh.chunkVisible("Z_Z_HDD_NUM34_4", false);
+        super.mesh.chunkVisible("Z_Z_HDD_NUM212_2", false);
         super.mesh.chunkVisible("Z_Z_HDD_NUM212_3", false);
-        float f9 = 0.0F;
+//        float f8 = 0.0F;
+//        if(((F_14)aircraft()).bHasCenterTank && !fm.M.bFuelTanksDropped)
+//            f8 = (((F_14)aircraft()).checkfuel(0) / 1000F) * 2.204623F;
+//        f = (float)(int)f8 * 36F;
+//        if(f == 0.0F)
+//            super.mesh.chunkVisible("Z_Z_HDD_NUM34_2", false);
+//        else
+//            super.mesh.chunkVisible("Z_Z_HDD_NUM34_2", true);
+//        super.mesh.chunkSetAngles("Z_Z_HDD_NUM34_2", 0.0F, 0.0F, f);
+//        f3 = (float)((int)(f8 * 10F) % 10) * 36F;
+//        if(f3 == 0.0F && f == 0.0F)
+//            super.mesh.chunkVisible("Z_Z_HDD_NUM34_3", false);
+//        else
+//            super.mesh.chunkVisible("Z_Z_HDD_NUM34_3", true);
+//        super.mesh.chunkSetAngles("Z_Z_HDD_NUM34_3", 0.0F, 0.0F, f3);
+//        f4 = (float)((int)(f8 * 100F) % 10) * 36F;
+//        if(f4 == 0.0F && f3 == 0.0F && f == 0.0F)
+//            super.mesh.chunkVisible("Z_Z_HDD_NUM34_4", false);
+//        else
+//            super.mesh.chunkVisible("Z_Z_HDD_NUM34_4", true);
+//        super.mesh.chunkSetAngles("Z_Z_HDD_NUM34_4", 0.0F, 0.0F, f4);
+//        f5 = (float)((int)(f8 * 1000F) % 10) * 36F;
+//        super.mesh.chunkVisible("Z_Z_HDD_NUM212_2", true);
+//        super.mesh.chunkSetAngles("Z_Z_HDD_NUM212_2", 0.0F, 0.0F, f5);
+//        super.mesh.chunkVisible("Z_Z_HDD_NUM212_3", false);
+        float tankExL = 0.0F;  // Wing external Droptank (one side)
         if(((F_14)aircraft()).bHasWingTank && !fm.M.bFuelTanksDropped)
-            if(((F_14)aircraft()).bHasCenterTank)
-                f9 = (((F_14)aircraft()).checkfuel(1) / 1000F) * 2.204623F;
-            else
-                f9 = (((F_14)aircraft()).checkfuel(0) / 1000F) * 2.204623F;
-        f = (float)(int)f9 * 36F;
+//            if(((F_14)aircraft()).bHasCenterTank)
+//                f9 = (((F_14)aircraft()).checkfuel(1) / 1000F) * 2.204623F;
+//            else
+                tankExL = (((F_14)aircraft()).checkfuel(0) / 1000F) * 2.204623F;
+        f = (float)(int)tankExL * 36F;
         if(f == 0.0F)
         {
             super.mesh.chunkVisible("Z_Z_HDD_NUM35_2", false);
@@ -1960,7 +1972,7 @@ public class CockpitF_14D extends CockpitPilot
         }
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM35_2", 0.0F, 0.0F, f);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM36_2", 0.0F, 0.0F, f);
-        f3 = (float)((int)(f9 * 10F) % 10) * 36F;
+        f3 = (float)((int)(tankExL * 10F) % 10) * 36F;
         if(f3 == 0.0F && f == 0.0F)
         {
             super.mesh.chunkVisible("Z_Z_HDD_NUM35_3", false);
@@ -1972,7 +1984,7 @@ public class CockpitF_14D extends CockpitPilot
         }
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM35_3", 0.0F, 0.0F, f3);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM36_3", 0.0F, 0.0F, f3);
-        f4 = (float)((int)(f9 * 100F) % 10) * 36F;
+        f4 = (float)((int)(tankExL * 100F) % 10) * 36F;
         if(f4 == 0.0F && f3 == 0.0F && f == 0.0F)
         {
             super.mesh.chunkVisible("Z_Z_HDD_NUM35_4", false);
@@ -1984,7 +1996,7 @@ public class CockpitF_14D extends CockpitPilot
         }
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM35_4", 0.0F, 0.0F, f4);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM36_4", 0.0F, 0.0F, f4);
-        f5 = (float)((int)(f9 * 1000F) % 10) * 36F;
+        f5 = (float)((int)(tankExL * 1000F) % 10) * 36F;
         super.mesh.chunkVisible("Z_Z_HDD_NUM37_2", true);
         super.mesh.chunkVisible("Z_Z_HDD_NUM38_2", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM37_2", 0.0F, 0.0F, f5);
@@ -1993,86 +2005,91 @@ public class CockpitF_14D extends CockpitPilot
         super.mesh.chunkVisible("Z_Z_HDD_NUM38_3", false);
         super.mesh.chunkVisible("Z_Z_HDD_NUM37_4", false);
         super.mesh.chunkVisible("Z_Z_HDD_NUM38_4", false);
-        float f10 = 1.79F;
-        if(f1 < 3.19F)
-            f10 = f1 - 1.4F;
-        if(f10 < 0.0F)
-            f10 = 0.0F;
-        f = (float)(int)f10 * 36F;
+        float feedL = 1.5F;  // Feed tank Left
+        if(totalfuelInt < 3.0F)
+            feedL = totalfuelInt / 2F;
+        if(feedL < 0.0F)
+            feedL = 0.0F;
+        f = (float)(int)feedL * 36F;
         if(f == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM26_2", false);
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM26_2", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM26_2", 0.0F, 0.0F, f);
-        f3 = (float)((int)(f10 * 10F) % 10) * 36F;
+        f3 = (float)((int)(feedL * 10F) % 10) * 36F;
         if(f3 == 0.0F && f == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM26_3", false);
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM26_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM26_3", 0.0F, 0.0F, f3);
-        f4 = (float)((int)(f10 * 100F) % 10) * 36F;
+        f4 = (float)((int)(feedL * 100F) % 10) * 36F;
         if(f4 == 0.0F && f3 == 0.0F && f == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM27_2", false);
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM27_2", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM27_2", 0.0F, 0.0F, f4);
-        f5 = (float)((int)(f10 * 1000F) % 10) * 36F;
+        f5 = (float)((int)(feedL * 1000F) % 10) * 36F;
         super.mesh.chunkVisible("Z_Z_HDD_NUM27_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM27_3", 0.0F, 0.0F, f5);
-        float f11 = 1.4F;
-        if(f1 < 3.19F)
-            f11 = f1 - 1.79F;
-        if(f11 < 0.0F)
-            f11 = 0.0F;
-        f = (float)(int)f11 * 36F;
+        float feedR = 1.6F;  // Feed tank Right
+        if(totalfuelInt < 3.1F)
+        {
+            if(totalfuelInt > 3.0F)
+                feedR = totalfuelInt - 1.5F;
+            else
+                feedR = totalfuelInt / 2F;
+        }
+        if(feedR < 0.0F)
+            feedR = 0.0F;
+        f = (float)(int)feedR * 36F;
         if(f == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM24_2", false);
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM24_2", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM24_2", 0.0F, 0.0F, f);
-        f3 = (float)((int)(f11 * 10F) % 10) * 36F;
+        f3 = (float)((int)(feedR * 10F) % 10) * 36F;
         if(f3 == 0.0F && f == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM24_3", false);
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM24_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM24_3", 0.0F, 0.0F, f3);
-        f4 = (float)((int)(f11 * 100F) % 10) * 36F;
+        f4 = (float)((int)(feedR * 100F) % 10) * 36F;
         if(f4 == 0.0F && f3 == 0.0F && f == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM25_2", false);
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM25_2", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM25_2", 0.0F, 0.0F, f4);
-        f5 = (float)((int)(f11 * 1000F) % 10) * 36F;
+        f5 = (float)((int)(feedR * 1000F) % 10) * 36F;
         super.mesh.chunkVisible("Z_Z_HDD_NUM25_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM25_3", 0.0F, 0.0F, f5);
-        f1 = ((fm.M.fuel / 1000F) * 2.204623F + f9 * 2.0F + f8) / 10F;
-        totalfuel = f1;
+//        totalfuelExt = totalfuelInt + tankExL * 2.0F + tankExC;
+        totalfuelExt = totalfuelInt + tankExL * 2.0F;
         timefuel = Time.current();
-        f = (float)(int)f1 * 36F;
+        f = (float)(int)(totalfuelExt / 10F) * 36F;
         if(f == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM21_2", false);
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM21_2", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM21_2", 0.0F, 0.0F, f);
-        f3 = (float)((int)(f1 * 10F) % 10) * 36F;
+        f3 = (float)((int)(totalfuelExt) % 10) * 36F;
         if(f3 == 0.0F && f == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM21_3", false);
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM21_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM21_3", 0.0F, 0.0F, f3);
-        f4 = (float)((int)(f1 * 100F) % 10) * 36F;
+        f4 = (float)((int)(totalfuelExt * 10F) % 10) * 36F;
         if(f4 == 0.0F && f3 == 0.0F && f == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM31_2", false);
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM31_2", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM31_2", 0.0F, 0.0F, f4);
-        f5 = (float)((int)(f1 * 1000F) % 10) * 36F;
+        f5 = (float)((int)(totalfuelExt * 100F) % 10) * 36F;
         if(f4 == 0.0F && f3 == 0.0F && f == 0.0F && f5 == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM31_3", false);
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM31_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM31_3", 0.0F, 0.0F, f5);
-        float f12 = (float)((int)(f1 * 10000F) % 10) * 36F;
+        float f12 = (float)((int)(totalfuelExt * 1000F) % 10) * 36F;
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM31_4", 0.0F, 0.0F, f12);
         float f13 = (float)((F_14)aircraft()).Bingofuel / 1000F;
         f = (float)(int)f13 * 36F;
@@ -2094,124 +2111,125 @@ public class CockpitF_14D extends CockpitPilot
     protected void movescreenfuelflow()
     {
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.007F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.03F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM21_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.009333F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.0400F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM21_1", Cockpit.xyz, Cockpit.ypr); //BINGO RANGE 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.001F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.03F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM31_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.001333F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.0400F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM31_1", Cockpit.xyz, Cockpit.ypr); //BINGO RANGE 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.025F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.03F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM22_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.03333F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.0400F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM22_1", Cockpit.xyz, Cockpit.ypr); //BINGO DURATION 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.033F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.03F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM23_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.0440F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.0400F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM23_1", Cockpit.xyz, Cockpit.ypr); //BINGO DURATION 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.007F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.025F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM24_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.00933F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.03333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM24_1", Cockpit.xyz, Cockpit.ypr); //BEST M RANGE 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.001F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.025F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM32_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.001333F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.03333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM32_1", Cockpit.xyz, Cockpit.ypr); //BEST M RANGE 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.025F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.025F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM25_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.03333F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.03333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM25_1", Cockpit.xyz, Cockpit.ypr); //BEST M ENDURANCE 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.033F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.025F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM26_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.04400F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.03333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM26_1", Cockpit.xyz, Cockpit.ypr); //BEST M ENDURANCE 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.025F;
-        Cockpit.xyz[1] = -0.0064F;
-        Cockpit.xyz[2] = 0.004F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM27_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.03333F;
+        Cockpit.xyz[1] = -0.008533F;
+        Cockpit.xyz[2] = 0.005333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM27_1", Cockpit.xyz, Cockpit.ypr); //TIME 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.017F;
-        Cockpit.xyz[1] = -0.0064F;
-        Cockpit.xyz[2] = 0.004F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM28_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.022666F;
+        Cockpit.xyz[1] = -0.008533F;
+        Cockpit.xyz[2] = 0.005333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM28_1", Cockpit.xyz, Cockpit.ypr); //TIME 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.001F;
-        Cockpit.xyz[1] = -0.0064F;
-        Cockpit.xyz[2] = 0.004F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM29_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.001333F;
+        Cockpit.xyz[1] = -0.008533F;
+        Cockpit.xyz[2] = 0.005333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM29_1", Cockpit.xyz, Cockpit.ypr); //FUEL REMAIN 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.007F;
-        Cockpit.xyz[1] = -0.0064F;
-        Cockpit.xyz[2] = 0.004F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM33_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.009333F;
+        Cockpit.xyz[1] = -0.008533F;
+        Cockpit.xyz[2] = 0.005333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM33_1", Cockpit.xyz, Cockpit.ypr); //FUEL REMAIN 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.013F;
-        Cockpit.xyz[1] = -0.0067F;
-        Cockpit.xyz[2] = -0.015F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM210_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.017333F;
+        Cockpit.xyz[1] = -0.008933F;
+        Cockpit.xyz[2] = -0.0200F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM210_1", Cockpit.xyz, Cockpit.ypr); //BASIC 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.005F;
-        Cockpit.xyz[1] = -0.0067F;
-        Cockpit.xyz[2] = -0.015F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM34_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.006666F;
+        Cockpit.xyz[1] = -0.008933F;
+        Cockpit.xyz[2] = -0.0200F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM34_1", Cockpit.xyz, Cockpit.ypr); //BASIC 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.013F;
-        Cockpit.xyz[1] = -0.0067F;
-        Cockpit.xyz[2] = -0.022F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM211_1", Cockpit.xyz, Cockpit.ypr);
-        Cockpit.xyz[0] = 0.005F;
-        Cockpit.xyz[1] = -0.0067F;
-        Cockpit.xyz[2] = -0.022F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM35_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.017333F;
+        Cockpit.xyz[1] = -0.008933F;
+        Cockpit.xyz[2] = -0.02933F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM211_1", Cockpit.xyz, Cockpit.ypr); //FUEL 1
+        Cockpit.xyz[0] = 0.006666F;
+        Cockpit.xyz[1] = -0.008933F;
+        Cockpit.xyz[2] = -0.02933F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM35_1", Cockpit.xyz, Cockpit.ypr); //FUEL 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.013F;
-        Cockpit.xyz[1] = -0.0067F;
-        Cockpit.xyz[2] = -0.027F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM212_1", Cockpit.xyz, Cockpit.ypr);
-        Cockpit.xyz[0] = 0.005F;
-        Cockpit.xyz[1] = -0.0067F;
-        Cockpit.xyz[2] = -0.027F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM36_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.01733F;
+        Cockpit.xyz[1] = -0.008933F;
+        Cockpit.xyz[2] = -0.03600F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM212_1", Cockpit.xyz, Cockpit.ypr); //STORE 1
+        Cockpit.xyz[0] = 0.00666F;
+        Cockpit.xyz[1] = -0.008933F;
+        Cockpit.xyz[2] = -0.03600F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM36_1", Cockpit.xyz, Cockpit.ypr); //STORE 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.013F;
-        Cockpit.xyz[1] = -0.007F;
-        Cockpit.xyz[2] = -0.037F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM37_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.01733F;
+        Cockpit.xyz[1] = -0.009333F;
+        Cockpit.xyz[2] = -0.04933F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM37_1", Cockpit.xyz, Cockpit.ypr); //TOTAL 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.005F;
-        Cockpit.xyz[1] = -0.007F;
-        Cockpit.xyz[2] = -0.037F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM38_1", Cockpit.xyz, Cockpit.ypr);
-        float f = 0.0F;
+        Cockpit.xyz[0] = 0.00666F;
+        Cockpit.xyz[1] = -0.009333F;
+        Cockpit.xyz[2] = -0.04933F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM38_1", Cockpit.xyz, Cockpit.ypr); //TOTAL 2
+        float tankExL = 0.0F;
         if(((F_14)aircraft()).bHasWingTank && !fm.M.bFuelTanksDropped)
-            if(((F_14)aircraft()).bHasCenterTank)
-                f = (((F_14)aircraft()).checkfuel(1) / 1000F) * 2.204623F;
-            else
-                f = (((F_14)aircraft()).checkfuel(0) / 1000F) * 2.204623F;
-        float f1 = 0.0F;
-        if(((F_14)aircraft()).bHasCenterTank && !fm.M.bFuelTanksDropped)
-            f1 = (((F_14)aircraft()).checkfuel(0) / 1000F) * 2.204623F;
-        float f2 = ((fm.M.fuel / 1000F) * 2.204623F + f * 2.0F + f1) / 10F;
-        float f3 = (f2 * 10000F) / 2.204623F;
-        float f4 = ((totalfuel * 10000F) / 2.204623F - f3) / (float)((Time.current() - timefuel) / 1000L);
-        float f5 = becondistance / 1000F;
-        float f6 = f3 / f4 / 36000F;
-        float f7 = f6 * 10F * fm.getSpeedKMH();
-        float f8 = f7 - f5;
-        if(f8 < 0.0F)
-            f8 = 0.0F;
-        f6 = f8 / (fm.getSpeedKMH() * 10F);
-        f2 = f6 * f4 * 36000F;
-        float f9 = (f2 / 10000F) * 2.204623F;
+//            if(((F_14)aircraft()).bHasCenterTank)
+//                tankExL = (((F_14)aircraft()).checkfuel(1) / 1000F) * 2.204623F;
+//            else
+                tankExL = (((F_14)aircraft()).checkfuel(0) / 1000F) * 2.204623F;
+//        float tankExC = 0.0F;
+//        if(((F_14)aircraft()).bHasCenterTank && !fm.M.bFuelTanksDropped)
+//            tankExC = (((F_14)aircraft()).checkfuel(0) / 1000F) * 2.204623F;
+//        float Sumfuel = ((fm.M.fuel / 1000F) * 2.204623F + f * 2.0F + f1) / 10F;
+        float Sumfuel = ((fm.M.fuel / 1000F) * 2.204623F + tankExL * 2.0F) / 10F;
+        float Sfuel = (Sumfuel * 10000F) / 2.204623F;
+        float flowrate = ((totalfuelInt * 10000F) / 2.204623F - Sfuel) / (float)((Time.current() - timefuel) / 1000L);
+        float distance = becondistance / 1000F;
+        float Duration = Sfuel / flowrate / 36000F;
+        float Currange = Duration * 10F * fm.getSpeedKMH();
+        float rangeremain = Currange - distance;
+        if(rangeremain < 0.0F)
+            rangeremain = 0.0F;
+        Duration = rangeremain / (fm.getSpeedKMH() * 10F);
+        Sumfuel = Duration * flowrate * 36000F;
+        float f9 = (Sumfuel / 10000F) * 2.204623F;
         float f10 = (float)((int)f9 % 10) * 36F;
         if(f10 == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM29_2", false);
@@ -2238,10 +2256,10 @@ public class CockpitF_14D extends CockpitPilot
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM33_3", 0.0F, 0.0F, f13);
         float f14 = (float)((int)(f9 * 10000F) % 10) * 36F;
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM33_4", 0.0F, 0.0F, f14);
-        float f15 = f5 / fm.getSpeedKMH();
-        f9 = f15;
-        if(f15 < 0.0F)
-            f15 = 0.0F;
+        float clock = (distance / fm.getSpeedKMH()); //Clock
+        f9 = clock;
+        if(clock < 0.0F)
+            clock = 0.0F;
         f10 = (float)((int)f9 % 10) * 36F;
         super.mesh.chunkVisible("Z_Z_HDD_NUM27_2", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM27_2", 0.0F, 0.0F, f10);
@@ -2256,11 +2274,11 @@ public class CockpitF_14D extends CockpitPilot
         f13 = (float)((int)f12 % 10) * 36F;
         super.mesh.chunkVisible("Z_Z_HDD_NUM28_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM28_3", 0.0F, 0.0F, f13);
-        float f16 = (float)((F_14)aircraft()).Bingofuel / 2.204623F;
-        f6 = (f3 - f16) / f4 / 36000F;
-        if(f6 < 0.0F)
-            f6 = 0.0F;
-        f9 = f6;
+        float bingo = (float)((F_14)aircraft()).Bingofuel / 2.204623F;
+        Duration = ((Sfuel - bingo) / flowrate) / 36000F;
+        if(Duration < 0F)
+            Duration = 0F;
+        f9 = Duration;
         f10 = (float)((int)f9 % 10) * 36F;
         super.mesh.chunkVisible("Z_Z_HDD_NUM22_2", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM22_2", 0.0F, 0.0F, f10);
@@ -2275,8 +2293,8 @@ public class CockpitF_14D extends CockpitPilot
         f13 = (float)(int)f12 * 36F;
         super.mesh.chunkVisible("Z_Z_HDD_NUM23_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM23_3", 0.0F, 0.0F, f13);
-        f7 = f6 * 10F * fm.getSpeedKMH() * 0.5399568F;
-        f9 = f7 / 10000F;
+        Currange = Duration * 10F * fm.getSpeedKMH() * 0.539956803455F; //Bingo Range
+        f9 = Currange / 10000F;
         f10 = (float)((int)f9 % 10) * 36F;
         if(f10 == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM21_2", false);
@@ -2303,12 +2321,12 @@ public class CockpitF_14D extends CockpitPilot
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM31_3", 0.0F, 0.0F, f13);
         f14 = (float)((int)(f9 * 10000F) % 10) * 36F;
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM31_4", 0.0F, 0.0F, f14);
-        float f17 = 700F * cvt(fm.getAltitude(), 0.0F, 10000F, 1.0F, 1.3F);
-        float f18 = cvt(fm.getAltitude(), 0.0F, 10000F, 1.0F, 0.7F);
-        float f19 = cvt(f17, 600F, 800F, 0.35F, 0.5F) * f18;
-        float f20 = cvt(f19, 0.0F, 1.0F, 0.09F, 1.2F);
-        f6 = (f3 - f16) / f20 / 36000F;
-        f9 = f6;
+        float duspeed = 700F * cvt(fm.getAltitude(), 0F, 10000F, 1.0F, 1.3F);
+        float thrustCo = cvt(fm.getAltitude(), 0F, 10000F, 1.0F, 0.7F);
+        float duthrust = cvt(duspeed, 600F, 800F, 0.35F, 0.50F) * thrustCo;
+        float fuelflowvalue = cvt(duthrust, 0.0F , 1.00F, 0.09F, 1.20F);
+        Duration = (Sfuel - bingo) / fuelflowvalue/36000; //best mach duration
+        f9 = Duration;
         f10 = (float)((int)f9 % 10) * 36F;
         super.mesh.chunkVisible("Z_Z_HDD_NUM25_2", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM25_2", 0.0F, 0.0F, f10);
@@ -2323,8 +2341,8 @@ public class CockpitF_14D extends CockpitPilot
         f13 = (float)((int)f12 % 10) * 36F;
         super.mesh.chunkVisible("Z_Z_HDD_NUM26_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM26_3", 0.0F, 0.0F, f13);
-        f7 = f6 * 10F * f17 * 0.5399568F;
-        f9 = f7 / 10000F;
+        Currange = Duration * 10F * duspeed * 0.539956803455F; //best mach range
+        f9 = Currange / 10000F;
         f10 = (float)((int)f9 % 10) * 36F;
         if(f10 == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM24_2", false);
@@ -2351,8 +2369,8 @@ public class CockpitF_14D extends CockpitPilot
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM32_3", 0.0F, 0.0F, f13);
         f14 = (float)((int)(f9 * 10000F) % 10) * 36F;
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM32_4", 0.0F, 0.0F, f14);
-        float f21 = fm.M.massEmpty;
-        f9 = (f21 * 2.204623F) / 10000F;
+        float basic = fm.M.massEmpty; // basic weight
+        f9 = (basic * 2.204623F) / 10000F;
         f10 = (float)((int)f9 % 10) * 36F;
         if(f10 == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM210_2", false);
@@ -2379,8 +2397,8 @@ public class CockpitF_14D extends CockpitPilot
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM34_3", 0.0F, 0.0F, f13);
         f14 = (float)((int)(f9 * 10000F) % 10) * 36F;
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM34_4", 0.0F, 0.0F, f14);
-        float f22 = fm.M.fuel;
-        f9 = (f22 * 2.204623F) / 10000F;
+        float fuel = fm.M.fuel; // fuel internal
+        f9 = (fuel * 2.204623F) / 10000F;
         f10 = (float)((int)f9 % 10) * 36F;
         if(f10 == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM211_2", false);
@@ -2407,8 +2425,8 @@ public class CockpitF_14D extends CockpitPilot
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM35_3", 0.0F, 0.0F, f13);
         f14 = (float)((int)(f9 * 10000F) % 10) * 36F;
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM35_4", 0.0F, 0.0F, f14);
-        float f23 = fm.M.mass - f21 - f22;
-        f9 = (f23 * 2.204623F) / 10000F;
+        float store = fm.M.mass - basic - fuel; //store
+        f9 = (store * 2.204623F) / 10000F;
         f10 = (float)((int)f9 % 10) * 36F;
         if(f10 == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM212_2", false);
@@ -2436,8 +2454,8 @@ public class CockpitF_14D extends CockpitPilot
         f14 = (float)((int)(f9 * 10000F) % 10) * 36F;
         super.mesh.chunkVisible("Z_Z_HDD_NUM38_4", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM36_4", 0.0F, 0.0F, f14);
-        float f24 = f21 + f22 + f23;
-        f9 = (f24 * 2.204623F) / 10000F;
+        float total = fm.M.mass; //total
+        f9 = (total * 2.204623F) / 10000F;
         f10 = (float)((int)f9 % 10) * 36F;
         if(f10 == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM37_2", false);
@@ -2471,106 +2489,106 @@ public class CockpitF_14D extends CockpitPilot
     protected void movescreenengines()
     {
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.034F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.03F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM21_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.04533F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.03999F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM21_1", Cockpit.xyz, Cockpit.ypr); //Inlet Temp 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.034F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.03F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM22_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.04533F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.03999F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM22_1", Cockpit.xyz, Cockpit.ypr); //Inlet Temp 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.034F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.025F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM23_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.04533F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.03333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM23_1", Cockpit.xyz, Cockpit.ypr); //N1 RPM 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.034F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.025F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM24_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.04533F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.03333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM24_1", Cockpit.xyz, Cockpit.ypr); //N1 RPM 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.034F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.02F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM25_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.04533F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.026666F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM25_1", Cockpit.xyz, Cockpit.ypr); //N2 RPM 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.034F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.02F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM26_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.04533F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.026666F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM26_1", Cockpit.xyz, Cockpit.ypr); //N2 RPM 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.034F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.015F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM31_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.04533F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.020F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM31_1", Cockpit.xyz, Cockpit.ypr); //EGT 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.034F;
-        Cockpit.xyz[1] = -0.0063F;
-        Cockpit.xyz[2] = 0.015F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM32_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.04533F;
+        Cockpit.xyz[1] = -0.00840F;
+        Cockpit.xyz[2] = 0.020F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM32_1", Cockpit.xyz, Cockpit.ypr); //EGT 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.034F;
-        Cockpit.xyz[1] = -0.0064F;
-        Cockpit.xyz[2] = 0.01F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM33_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.04533F;
+        Cockpit.xyz[1] = -0.008533F;
+        Cockpit.xyz[2] = 0.013333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM33_1", Cockpit.xyz, Cockpit.ypr); //FF 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.034F;
-        Cockpit.xyz[1] = -0.0064F;
-        Cockpit.xyz[2] = 0.01F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM34_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.04533F;
+        Cockpit.xyz[1] = -0.008533F;
+        Cockpit.xyz[2] = 0.013333F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM34_1", Cockpit.xyz, Cockpit.ypr); //FF 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.034F;
-        Cockpit.xyz[1] = -0.0064F;
-        Cockpit.xyz[2] = 0.005F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM27_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.04533F;
+        Cockpit.xyz[1] = -0.008533F;
+        Cockpit.xyz[2] = 0.006666F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM27_1", Cockpit.xyz, Cockpit.ypr); //NOZ POS 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.034F;
-        Cockpit.xyz[1] = -0.0064F;
-        Cockpit.xyz[2] = 0.005F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM28_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.04533F;
+        Cockpit.xyz[1] = -0.008533F;
+        Cockpit.xyz[2] = 0.006666F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM28_1", Cockpit.xyz, Cockpit.ypr); //NOZ POS 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.034F;
-        Cockpit.xyz[1] = -0.0064F;
+        Cockpit.xyz[0] = 0.04533F;
+        Cockpit.xyz[1] = -0.008533F;
         Cockpit.xyz[2] = 0.0F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM29_1", Cockpit.xyz, Cockpit.ypr);
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM29_1", Cockpit.xyz, Cockpit.ypr); //OIL PRES 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.034F;
-        Cockpit.xyz[1] = -0.0064F;
+        Cockpit.xyz[0] = -0.04533F;
+        Cockpit.xyz[1] = -0.008533F;
         Cockpit.xyz[2] = 0.0F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM210_1", Cockpit.xyz, Cockpit.ypr);
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM210_1", Cockpit.xyz, Cockpit.ypr); //OIL PRES 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.038F;
-        Cockpit.xyz[1] = -0.0067F;
-        Cockpit.xyz[2] = -0.005F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM211_1", Cockpit.xyz, Cockpit.ypr);
-        Cockpit.xyz[0] = 0.03F;
-        Cockpit.xyz[1] = -0.0067F;
-        Cockpit.xyz[2] = -0.005F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM35_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.05066F;
+        Cockpit.xyz[1] = -0.008933F;
+        Cockpit.xyz[2] = -0.006666F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM211_1", Cockpit.xyz, Cockpit.ypr); //THRUST 1
+        Cockpit.xyz[0] = 0.03999F;
+        Cockpit.xyz[1] = -0.008933F;
+        Cockpit.xyz[2] = -0.006666F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM35_1", Cockpit.xyz, Cockpit.ypr); //THRUST 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.03F;
-        Cockpit.xyz[1] = -0.0067F;
-        Cockpit.xyz[2] = -0.005F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM212_1", Cockpit.xyz, Cockpit.ypr);
-        Cockpit.xyz[0] = -0.038F;
-        Cockpit.xyz[1] = -0.0067F;
-        Cockpit.xyz[2] = -0.005F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM36_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = -0.03999F;
+        Cockpit.xyz[1] = -0.008933F;
+        Cockpit.xyz[2] = -0.006666F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM212_1", Cockpit.xyz, Cockpit.ypr); //THRUST2 1
+        Cockpit.xyz[0] = -0.05066F;
+        Cockpit.xyz[1] = -0.008933F;
+        Cockpit.xyz[2] = -0.006666F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM36_1", Cockpit.xyz, Cockpit.ypr); //THRUST2 2
         resetYPRmodifier();
-        Cockpit.xyz[0] = 0.034F;
-        Cockpit.xyz[1] = -0.0066F;
-        Cockpit.xyz[2] = -0.008F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM37_1", Cockpit.xyz, Cockpit.ypr);
+        Cockpit.xyz[0] = 0.04533F;
+        Cockpit.xyz[1] = -0.00880F;
+        Cockpit.xyz[2] = -0.010666F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM37_1", Cockpit.xyz, Cockpit.ypr); //FAN VIB 1
         resetYPRmodifier();
-        Cockpit.xyz[0] = -0.034F;
-        Cockpit.xyz[1] = -0.0066F;
-        Cockpit.xyz[2] = -0.008F;
-        super.mesh.chunkSetLocate("Z_Z_HDD_NUM38_1", Cockpit.xyz, Cockpit.ypr);
-        float f = Atmosphere.temperature(fm.getAltitude());
-        float f1 = f;
-        float f2 = f / 10F;
+        Cockpit.xyz[0] = -0.04533F;
+        Cockpit.xyz[1] = -0.00880F;
+        Cockpit.xyz[2] = -0.010666F;
+        super.mesh.chunkSetLocate("Z_Z_HDD_NUM38_1", Cockpit.xyz, Cockpit.ypr); //FAN VIB 2
+        float inlettempL = Atmosphere.temperature(fm.getAltitude());
+        float inlettempR = inlettempL;
+        float f2 = inlettempL / 10F;
         float f3 = (float)((int)f2 % 10) * 36F;
         if(f3 == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM21_2", false);
@@ -2595,10 +2613,10 @@ public class CockpitF_14D extends CockpitPilot
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM22_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM22_3", 0.0F, 0.0F, f4);
-        float f5 = fm.EI.engines[0].tWaterOut;
-        float f6 = fm.EI.engines[1].tWaterOut;
-        float f7 = cvt(fm.EI.engines[0].getRPM(), 0.0F, 4080F, 0.0F, 100F);
-        f2 = f7 / 10F;
+        float fuelinteltempL = fm.EI.engines[0].tWaterOut;
+        float fuelinteltempR = fm.EI.engines[1].tWaterOut;
+        float N1L = cvt(fm.EI.engines[0].getRPM(), 0.0F, 4080F, 0.0F, 100F);
+        f2 = N1L / 10F;
         if(f2 > 9.9F)
             f2 = 9.9F;
         f3 = (float)(int)f2 * 36F;
@@ -2613,8 +2631,8 @@ public class CockpitF_14D extends CockpitPilot
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM23_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM23_3", 0.0F, 0.0F, f4);
-        float f8 = cvt(fm.EI.engines[1].getRPM(), 0.0F, 4080F, 0.0F, 100F);
-        f2 = f8 / 10F;
+        float N1R = cvt(fm.EI.engines[1].getRPM(), 0.0F, 4080F, 0.0F, 100F);
+        f2 = N1R / 10F;
         if(f2 > 9.9F)
             f2 = 9.9F;
         f3 = (float)(int)f2 * 36F;
@@ -2629,8 +2647,8 @@ public class CockpitF_14D extends CockpitPilot
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM24_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM24_3", 0.0F, 0.0F, f4);
-        float f9 = cvt(fm.EI.engines[0].getRPM() * 0.8529412F, 0.0F, 3480F, 0.0F, 100F);
-        f2 = f9 / 10F;
+        float N2L = cvt(fm.EI.engines[0].getRPM() * 0.8529412F, 0.0F, 3480F, 0.0F, 100F);
+        f2 = N2L / 10F;
         if(f2 > 9.9F)
             f2 = 9.9F;
         f3 = (float)(int)f2 * 36F;
@@ -2661,8 +2679,8 @@ public class CockpitF_14D extends CockpitPilot
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM26_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM26_3", 0.0F, 0.0F, f4);
-        float f11 = cvt(fm.EI.engines[0].tOilOut, 0.0F, 120F, 10F, 838F);
-        f2 = f11 / 100F;
+        float extempL = cvt(fm.EI.engines[0].tOilOut, 0.0F, 120F, 10F, 838F);
+        f2 = extempL / 100F;
         f3 = (float)(int)f2 * 36F;
         if(f3 == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM31_2", false);
@@ -2681,8 +2699,8 @@ public class CockpitF_14D extends CockpitPilot
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM31_4", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM31_4", 0.0F, 0.0F, f12);
-        float f13 = cvt(fm.EI.engines[1].tOilOut, 0.0F, 120F, 10F, 838F);
-        f2 = f13 / 100F;
+        float extempR = cvt(fm.EI.engines[1].tOilOut, 0.0F, 120F, 10F, 838F);
+        f2 = extempR / 100F;
         f3 = (float)(int)f2 * 36F;
         if(f3 == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM32_2", false);
@@ -2701,9 +2719,8 @@ public class CockpitF_14D extends CockpitPilot
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM32_4", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM32_4", 0.0F, 0.0F, f12);
-        Motor motor = fm.EI.engines[0];
-        float f14 = Motor.tmpF;
-        f2 = f14 * 100F;
+        float FFL = fm.EI.engines[0].tmpF;
+        f2 = FFL * 100F;
         f3 = (float)((int)f2 % 10) * 36F;
         if(f3 == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM33_2", false);
@@ -2722,9 +2739,8 @@ public class CockpitF_14D extends CockpitPilot
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM33_4", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM33_4", 0.0F, 0.0F, f12);
-        Motor motor1 = fm.EI.engines[1];
-        float f15 = Motor.tmpF;
-        f2 = f15 * 100F;
+        float FFR = fm.EI.engines[1].tmpF;
+        f2 = FFR * 100F;
         f3 = (float)((int)f2 % 10) * 36F;
         if(f3 == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM34_2", false);
@@ -2763,8 +2779,8 @@ public class CockpitF_14D extends CockpitPilot
         f4 = (float)((int)(f2 * 10F) % 10) * 36F;
         super.mesh.chunkVisible("Z_Z_HDD_NUM28_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM28_3", 0.0F, 0.0F, f4);
-        float f16 = 1.0F + 0.05F * fm.EI.engines[0].tOilOut * fm.EI.engines[0].getReadyness();
-        f2 = f16;
+        float oilpressL = 1.0F + 0.05F * fm.EI.engines[0].tOilOut * fm.EI.engines[0].getReadyness();
+        f2 = oilpressL;
         f3 = (float)(int)f2 * 36F;
         if(f3 == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM29_2", false);
@@ -2777,8 +2793,8 @@ public class CockpitF_14D extends CockpitPilot
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM29_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM29_3", 0.0F, 0.0F, f4);
-        float f17 = 1.0F + 0.05F * fm.EI.engines[1].tOilOut * fm.EI.engines[1].getReadyness();
-        f2 = f17;
+        float oilpressR = 1.0F + 0.05F * fm.EI.engines[1].tOilOut * fm.EI.engines[1].getReadyness();
+        f2 = oilpressR;
         f3 = (float)(int)f2 * 36F;
         if(f3 == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM210_2", false);
@@ -2791,8 +2807,8 @@ public class CockpitF_14D extends CockpitPilot
         else
             super.mesh.chunkVisible("Z_Z_HDD_NUM210_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM210_3", 0.0F, 0.0F, f4);
-        float f18 = fm.EI.engines[0].getPowerOutput() < 1.0F ? cvt(fm.EI.engines[0].getPowerOutput(), 0.0F, 1.0F, 0.0F, 4800F) : cvt(fm.EI.engines[0].getPowerOutput(), 1.0F, 1.1F, 4800F, 7950F);
-        f2 = f18 / 10000F;
+        float thrustL = fm.EI.engines[0].getPowerOutput() < 1.0F ? cvt(fm.EI.engines[0].getPowerOutput(), 0.0F, 1.0F, 0.0F, 4800F) : cvt(fm.EI.engines[0].getPowerOutput(), 1.0F, 1.1F, 4800F, 7950F);
+        f2 = thrustL / 10000F;
         f3 = (float)(int)f2 * 36F;
         if(f3 == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM211_2", false);
@@ -2820,8 +2836,8 @@ public class CockpitF_14D extends CockpitPilot
         float f20 = (float)((int)(f2 * 10000F) % 10) * 36F;
         super.mesh.chunkVisible("Z_Z_HDD_NUM35_4", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM35_4", 0.0F, 0.0F, f20);
-        float f21 = fm.EI.engines[1].getPowerOutput() < 1.0F ? cvt(fm.EI.engines[1].getPowerOutput(), 0.0F, 1.0F, 0.0F, 4800F) : cvt(fm.EI.engines[1].getPowerOutput(), 1.0F, 1.1F, 4800F, 7950F);
-        f2 = f21 / 10000F;
+        float thrustR = fm.EI.engines[1].getPowerOutput() < 1.0F ? cvt(fm.EI.engines[1].getPowerOutput(), 0.0F, 1.0F, 0.0F, 4800F) : cvt(fm.EI.engines[1].getPowerOutput(), 1.0F, 1.1F, 4800F, 7950F);
+        f2 = thrustR / 10000F;
         f3 = (float)(int)f2 * 36F;
         if(f3 == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM212_2", false);
@@ -2849,9 +2865,9 @@ public class CockpitF_14D extends CockpitPilot
         f20 = (float)((int)(f2 * 10000F) % 10) * 36F;
         super.mesh.chunkVisible("Z_Z_HDD_NUM36_4", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM36_4", 0.0F, 0.0F, f20);
-        float f22 = (fm.EI.engines[0].w / fm.EI.engines[0].wMax) * fm.EI.engines[0].thrustMax * (float)Math.sqrt(fm.getSpeed() / 94F);
-        float f23 = cvt(f22, 0.0F, fm.EI.engines[0].thrustMax, 0.05F, 0.21F);
-        f2 = f23 * 10F;
+        float shake = (fm.EI.engines[0].w / fm.EI.engines[0].wMax) * fm.EI.engines[0].thrustMax * (float)Math.sqrt(fm.getSpeed() / 94F);
+        float enginevibL = cvt(shake, 0.0F, fm.EI.engines[0].thrustMax, 0.05F, 0.21F);
+        f2 = enginevibL * 10F;
         f3 = (float)(int)f2 * 36F;
         if(f3 == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM37_2", false);
@@ -2862,9 +2878,9 @@ public class CockpitF_14D extends CockpitPilot
         super.mesh.chunkVisible("Z_Z_HDD_NUM37_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM37_3", 0.0F, 0.0F, f4);
         super.mesh.chunkVisible("Z_Z_HDD_NUM37_4", false);
-        f22 = (fm.EI.engines[1].w / fm.EI.engines[1].wMax) * fm.EI.engines[1].thrustMax * (float)Math.sqrt(fm.getSpeed() / 94F);
-        float f24 = cvt(f22, 0.0F, fm.EI.engines[1].thrustMax, 0.05F, 0.21F);
-        f2 = f24 * 10F;
+        shake = (fm.EI.engines[1].w / fm.EI.engines[1].wMax) * fm.EI.engines[1].thrustMax * (float)Math.sqrt(fm.getSpeed() / 94F);
+        float enginevibR = cvt(shake, 0.0F, fm.EI.engines[1].thrustMax, 0.05F, 0.21F);
+        f2 = enginevibR * 10F;
         f3 = (float)(int)f2 * 36F;
         if(f3 == 0.0F)
             super.mesh.chunkVisible("Z_Z_HDD_NUM38_2", false);
@@ -2875,10 +2891,10 @@ public class CockpitF_14D extends CockpitPilot
         super.mesh.chunkVisible("Z_Z_HDD_NUM38_3", true);
         super.mesh.chunkSetAngles("Z_Z_HDD_NUM38_3", 0.0F, 0.0F, f4);
         super.mesh.chunkVisible("Z_Z_HDD_NUM38_4", false);
-        float f25 = fm.EI.engines[0].getManifoldPressure();
-        float f26 = fm.EI.engines[1].getManifoldPressure();
-        float f27 = fm.EI.engines[0].getControlCompressor();
-        float f28 = fm.EI.engines[1].getControlCompressor();
+        float CPRL = fm.EI.engines[0].getManifoldPressure();
+        float CPRR = fm.EI.engines[1].getManifoldPressure();
+        float TDPL = fm.EI.engines[0].getControlCompressor();
+        float TDPR = fm.EI.engines[1].getControlCompressor();
     }
 
     protected void Navscreen(float f)
@@ -3496,7 +3512,8 @@ public class CockpitF_14D extends CockpitPilot
     protected float offset;
     protected int targetnum;
     private long ts;
-    private float totalfuel;
+    private float totalfuelInt;  // Total fuel Internal
+    private float totalfuelExt;  // Total fuel Internal + External Droptanks
     private long timefuel;
     private float becondistance;
     private Variables setOld;

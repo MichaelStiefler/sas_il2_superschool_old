@@ -407,7 +407,7 @@ public class CockpitF_14FLIR extends CockpitGunner
 
     public CockpitF_14FLIR()
     {
-        super("3DO/Cockpit/F-14FLIR/F-14FLIR.him", "he111_gunner");
+        super("3DO/Cockpit/US_Common_FLIR/F-14FLIR.him", "he111_gunner");
         autotrack = new ArrayList();
         dY = 0.0D;
         dX = 0.0D;
