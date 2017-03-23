@@ -58,7 +58,6 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
         azimult = 0.0F;
         tf = 0L;
         bLASER = false;
-        bNvision = false;
     }
 
     public void auxPressed(int i)
@@ -79,16 +78,6 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
                 t1 = Time.current();
             }
         }
-        if(i == 27)
-            if(!bILS)
-            {
-                bILS = true;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "ILS ON");
-            } else
-            {
-                bILS = false;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "ILS OFF");
-            }
     }
 
     public void typeBomberAdjDistancePlus()
@@ -172,7 +161,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             Point3d point3d = new Point3d();
             Orient orient = new Orient();
             actor.pos.getAbs(point3d, orient);
-            locate.set(point3d, orient);
+//            locate.set(point3d, orient);
             Eff3DActor eff3dactor = Eff3DActor.New(actor, null, new Loc(), 1.0F, "effects/Explodes/Air/Zenitka/Germ_88mm/Glow.eff", 1.0F);
             eff3dactor.postDestroy(Time.current() + 1500L);
             LightPointActor lightpointactor = new LightPointActor(new LightPointWorld(), new Point3d());
@@ -459,8 +448,6 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
     private long lastMissileLaunchThreatActive;
     private long intervalMissileLaunchThreat;
     private boolean bHasLAUcaps;
-    public boolean bNvision;
-    public boolean bILS;
     public float azimult;
     public float tangate;
     public long tf;
@@ -474,7 +461,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
     private long removeChuteTimer;
     private boolean isGuidingBomb;
     private boolean isMasterAlive;
-    private static Loc locate = new Loc();
+//    private static Loc locate = new Loc();
     public boolean bLASER;
 
     static 
@@ -488,7 +475,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
         Property.set(class1, "yearExpired", 1999F);
         Property.set(class1, "FlightModel", "FlightModels/a4m.fmd:SKYHAWKS");
         Property.set(class1, "cockpitClass", new Class[] {
-            com.maddox.il2.objects.air.CockpitSkyhawkA4M.class, com.maddox.il2.objects.air.CockpitA4MLaser.class
+            com.maddox.il2.objects.air.CockpitSkyhawkA4F.class
         });
         Property.set(class1, "LOSElevation", 0.965F);
         Aircraft.weaponTriggersRegister(class1, new int[] {
