@@ -9,7 +9,7 @@ import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Property;
 
-public class F7F_3N extends F7F {
+public class F7F_3N extends F7F implements TypeFighter, TypeBNZFighter, TypeStormovik {
 	
 	  public void moveCockpitDoor(float f) {
 	      this.resetYPRmodifier();
