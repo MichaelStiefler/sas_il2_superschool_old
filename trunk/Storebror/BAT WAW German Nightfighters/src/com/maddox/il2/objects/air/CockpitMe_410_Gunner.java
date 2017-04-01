@@ -143,7 +143,7 @@ public class CockpitMe_410_Gunner extends CockpitGunner {
 
     public boolean isEnableFocusing() {
         if (!this.aircraft().thisWeaponsName.toLowerCase().startsWith("nj")) {
-            return true;
+            return super.isEnableFocusing();
         }
         HotKeyCmd.exec("aircraftView", "cockpitSwitch3"); // Switch to Pilot Cockpit if Night Fighter
         return false;

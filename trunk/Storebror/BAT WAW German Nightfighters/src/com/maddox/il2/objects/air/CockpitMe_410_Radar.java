@@ -76,7 +76,7 @@ public class CockpitMe_410_Radar extends CockpitPilot {
 
     public boolean isEnableFocusing() {
         if (this.aircraft().thisWeaponsName.toLowerCase().startsWith("nj")) {
-            return true;
+            return super.isEnableFocusing();
         }
         HotKeyCmd.exec("aircraftView", "cockpitSwitch3"); // Switch to Gunner Cockpit if not Night Fighter
         return false;
