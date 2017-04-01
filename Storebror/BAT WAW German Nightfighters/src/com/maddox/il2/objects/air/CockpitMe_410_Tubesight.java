@@ -104,7 +104,7 @@ public class CockpitMe_410_Tubesight extends CockpitPilot {
 
     public boolean isEnableFocusing() {
         if (this.aircraft().thisWeaponsName.toLowerCase().startsWith("zfr4")) {
-            return true;
+            return super.isEnableFocusing();
         }
         HotKeyCmd.exec("aircraftView", "cockpitSwitch3"); // Switch to Radar Cockpit if not equipped with Tubesight
         return false;
