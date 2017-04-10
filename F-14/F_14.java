@@ -1612,10 +1612,6 @@ public class F_14 extends Scheme2
         }
     }
 
-    protected void moveFan(float f)
-    {
-    }
-
     public void moveArrestorHook(float f)
     {
         hierMesh().chunkSetAngles("Hook1_D0", 0.0F, -70F * f, 0.0F);
@@ -1669,6 +1665,23 @@ public class F_14 extends Scheme2
     public void moveWingFold(float f)
     {
         moveWingFold(hierMesh(), f);
+    }
+
+    private void moveInletRamps()
+    {
+        hierMesh().chunkSetAngles("IntakeDoor_Lf", 0.0F, 0.0F, cvt(calculateMach(), 1.1F, 2.2F, 0.0F, 13.2F));
+        hierMesh().chunkSetAngles("IntakeDoor_Rf", 0.0F, 0.0F, cvt(calculateMach(), 1.1F, 2.2F, 0.0F, 13.2F));
+        float fRamp3rd = 0.0F;
+        if(calculateMach() < 1.2F)
+            fRamp3rd = cvt(calculateMach(), 0.9F, 1.2F, 0.0F, -4.22F);
+        else if(calculateMach() < 1.6F)
+            fRamp3rd = cvt(calculateMach(), 1.2F, 1.4F, -4.22F, -9.85F);
+        else if(calculateMach() < 2.0F)
+            fRamp3rd = cvt(calculateMach(), 1.6F, 1.9F, -9.85F, -16.87F);
+        else 
+            fRamp3rd = cvt(calculateMach(), 2.0F, 2.3F, -16.87F, -22.5F);
+        hierMesh().chunkSetAngles("IntakeDoor_Lr", 0.0F, 0.0F, fRamp3rd);
+        hierMesh().chunkSetAngles("IntakeDoor_Rr", 0.0F, 0.0F, fRamp3rd);
     }
 
     protected void hitBone(String s, Shot shot, Point3d point3d)
@@ -2165,6 +2178,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkSetAngles("Head2_D0", 0.0F, obsLookAzimuth, obsLookElevation);
         }
         gearlimit();
+        moveInletRamps();
         super.update(f);
         if(FM.CT.getArrestor() > 0.2F)
             calculateArrestor();
