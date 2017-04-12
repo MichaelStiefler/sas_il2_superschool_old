@@ -18,8 +18,8 @@ public class Bomb750lbsM117Daisy_gn16 extends Bomb
     {
         super.interpolateTick();
         super.pos.getRel(Bomb.P, Bomb.Or);
-        if(((Tuple3d) (Bomb.P)).z >= 2D + World.land().HQ(((Tuple3d) (Bomb.P)).x, ((Tuple3d) (Bomb.P)).y));
-        doExplosion(this, "M117");
+        if(((Tuple3d) (Bomb.P)).z < 2D + World.land().HQ(((Tuple3d) (Bomb.P)).x, ((Tuple3d) (Bomb.P)).y))
+            doExplosion(this, "M117");
     }
 
     static 
