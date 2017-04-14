@@ -12,6 +12,8 @@ import com.maddox.il2.objects.Wreckage;
 import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric;
 import com.maddox.il2.objects.vehicles.cars.CarGeneric;
+import com.maddox.il2.objects.ships.BigshipGeneric;
+import com.maddox.il2.objects.ships.ShipGeneric;
 import com.maddox.il2.objects.vehicles.stationary.StationaryGeneric;
 import com.maddox.il2.objects.vehicles.tanks.TankGeneric;
 import com.maddox.il2.objects.weapons.*;
@@ -141,6 +143,15 @@ public class F_18 extends Scheme2
         bHasCenterTank = false;
         bHasWingTank = false;
         antiColLight = new Eff3DActor[6];
+        stockCy0_0 = 0.011F;
+        stockCy0_1 = 0.40F;
+        stockCxMin_0 = 0.034F;
+        stockCxMin_1 = 0.091F;
+        stockCyCritH_0 = 1.4F;
+        stockSqFlaps = 5.726F;
+        stockSqAileron = 4.646F;
+        stockSqliftStab = 3.20F;
+        stockSqElevators = 3.00F;
     }
 
     private static final float toMeters(float f)
@@ -181,7 +192,8 @@ public class F_18 extends Scheme2
                 radartogle = true;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar ON");
                 radarmode = 0;
-            } else
+            }
+            else
             {
                 radartogle = false;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar OFF");
@@ -191,7 +203,8 @@ public class F_18 extends Scheme2
             {
                 Nvision = true;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Nvision ON");
-            } else
+            }
+            else
             {
                 Nvision = false;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Nvision OFF");
@@ -209,11 +222,11 @@ public class F_18 extends Scheme2
                 radargunsight = 0;
             if(radargunsight == 0)
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: funnel");
-            if(radargunsight == 1)
+            else if(radargunsight == 1)
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Radar ranging");
-            if(radargunsight == 2)
+            else if(radargunsight == 2)
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Unguided Rocket");
-            if(radargunsight == 3)
+            else if(radargunsight == 3)
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Ground");
         }
         if(i == 24)
@@ -223,11 +236,9 @@ public class F_18 extends Scheme2
                 leftscreen = 0;
             if(leftscreen == 0)
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Left screen: Fuel");
-            else
-            if(leftscreen == 1)
+            else if(leftscreen == 1)
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Left screen: FPAS");
-            else
-            if(leftscreen == 2)
+            else if(leftscreen == 2)
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Left screen: Engine");
         }
         if(i == 25)
@@ -257,7 +268,8 @@ public class F_18 extends Scheme2
             {
                 ILS = true;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "ILS ON");
-            } else
+            }
+            else
             {
                 ILS = false;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "ILS OFF");
@@ -343,7 +355,8 @@ public class F_18 extends Scheme2
                     flag1 = true;
                 else
                     flag1 = false;
-            } else
+            }
+            else
             {
                 flag1 = false;
             }
@@ -386,20 +399,23 @@ public class F_18 extends Scheme2
                 {
                     bRadarWarning = false;
                     playRWRWarning();
-                } else
+                }
+                else
                 {
                     bRadarWarning = d23 <= 8000D && d23 >= 500D && Math.sqrt(d15 * d15) <= 6000D;
                     aircraftbrg = cvt(l2, 0.0F, 12F, 0.0F, 360F);
                     HUD.log(AircraftHotKeys.hudLogWeaponId, "Enemy at " + l2 + " o'clock" + s + "!");
                 }
                 playRWRWarning();
-            } else
+            }
+            else
             {
                 bRadarWarning = false;
                 playRWRWarning();
                 aircraftbrg = 0.0F;
             }
-        } else
+        }
+        else
         {
             bRadarWarning = false;
             playRWRWarning();
@@ -472,7 +488,8 @@ public class F_18 extends Scheme2
                 }
                 if((!FM.isPlayers() || !(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode()) && (FM instanceof Maneuver))
                     backfire = true;
-            } else
+            }
+            else
             {
                 bMissileWarning = false;
                 playRWRWarning();
@@ -488,15 +505,14 @@ public class F_18 extends Scheme2
     {
         if(bRadarWarning && !fxRWR.isPlaying())
             fxRWR.start();
-        else
-        if(!bRadarWarning && fxRWR.isPlaying())
+        else if(!bRadarWarning && fxRWR.isPlaying())
             fxRWR.stop();
         if(bMissileWarning && !fxMissileWarning.isPlaying())
         {
             fxMissileWarning.start();
             fxRWR.stop();
-        } else
-        if(!bMissileWarning && fxMissileWarning.isPlaying())
+        }
+        else if(!bMissileWarning && fxMissileWarning.isPlaying())
             fxMissileWarning.stop();
     }
 
@@ -510,8 +526,8 @@ public class F_18 extends Scheme2
         {
             azimult++;
             tf = Time.current();
-        } else
-        if(radartogle && lockmode == 0)
+        }
+        else if(radartogle && lockmode == 0)
             radarhol += 0.0035F;
     }
 
@@ -521,8 +537,8 @@ public class F_18 extends Scheme2
         {
             azimult--;
             tf = Time.current();
-        } else
-        if(radartogle && lockmode == 0)
+        }
+        else if(radartogle && lockmode == 0)
             radarhol -= 0.0035F;
     }
 
@@ -536,8 +552,8 @@ public class F_18 extends Scheme2
         {
             tangate++;
             tf = Time.current();
-        } else
-        if(radartogle && lockmode == 0)
+        }
+        else if(radartogle && lockmode == 0)
             radarvrt += 0.0035F;
     }
 
@@ -547,8 +563,8 @@ public class F_18 extends Scheme2
         {
             tangate--;
             tf = Time.current();
-        } else
-        if(radartogle && lockmode == 0)
+        }
+        else if(radartogle && lockmode == 0)
             radarvrt -= 0.0035F;
     }
 
@@ -573,8 +589,8 @@ public class F_18 extends Scheme2
                 APmode1 = true;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Altitude Hold Engaged");
                 ((FlightModelMain) FM).AP.setStabAltitude(2000F);
-            } else
-            if(APmode1)
+            }
+            else if(APmode1)
             {
                 APmode1 = false;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Altitude Hold Released");
@@ -616,8 +632,7 @@ public class F_18 extends Scheme2
         }
         if(fSightCurReadyness < 1.0F)
             fSightCurReadyness += 0.0333333F * f;
-        else
-        if(bSightAutomation)
+        else if(bSightAutomation)
         {
             fSightCurDistance -= toMetersPerSecond(fSightCurSpeed) * f;
             if(fSightCurDistance < 0.0F)
@@ -636,7 +651,8 @@ public class F_18 extends Scheme2
                         FM.CT.WeaponControl[3] = true;
                         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
                     }
-                } else
+                }
+                else
                 {
                     FM.CT.WeaponControl[3] = false;
                 }
@@ -683,20 +699,19 @@ public class F_18 extends Scheme2
         for(int j = 0; j < i; j++)
         {
             Actor actor = (Actor)list.get(j);
-            if(!(actor instanceof Aircraft) && !(actor instanceof ArtilleryGeneric) && !(actor instanceof CarGeneric) && !(actor instanceof TankGeneric) || (actor instanceof StationaryGeneric) || (actor instanceof TypeLaserSpotter) || actor.pos.getAbsPoint().distance(pos.getAbsPoint()) >= 20000D)
+            if(!(actor instanceof Aircraft) && !(actor instanceof ArtilleryGeneric) && !(actor instanceof CarGeneric) && !(actor instanceof TankGeneric) && !(actor instanceof ShipGeneric) && !(actor instanceof BigshipGeneric) || (actor instanceof StationaryGeneric) || (actor instanceof TypeLaserSpotter) || actor.pos.getAbsPoint().distance(pos.getAbsPoint()) >= 20000D)
                 continue;
             Point3d point3d = new Point3d();
             Orient orient = new Orient();
             actor.pos.getAbs(point3d, orient);
-            flirloc.set(point3d, orient);
+//            flirloc.set(point3d, orient);
             Eff3DActor eff3dactor = Eff3DActor.New(actor, null, new Loc(), 1.0F, "effects/Explodes/Air/Zenitka/Germ_88mm/Glow.eff", 1.0F);
             eff3dactor.postDestroy(Time.current() + 1500L);
             LightPointActor lightpointactor = new LightPointActor(new LightPointWorld(), new Point3d());
             lightpointactor.light.setColor(1.0F, 0.9F, 0.5F);
             if(actor instanceof Aircraft)
                 lightpointactor.light.setEmit(8F, 50F);
-            else
-            if(!(actor instanceof ArtilleryGeneric))
+            else if(!(actor instanceof ArtilleryGeneric))
                 lightpointactor.light.setEmit(5F, 30F);
             else
                 lightpointactor.light.setEmit(3F, 10F);
@@ -774,7 +789,7 @@ public class F_18 extends Scheme2
 
     public void getGFactors(TypeGSuit.GFactors gfactors)
     {
-        gfactors.setGFactors(3.5F, 2.5F, 1.0F, 7F, 3F, 5F);
+        gfactors.setGFactors(NEG_G_TOLERANCE_FACTOR, NEG_G_TIME_FACTOR, NEG_G_RECOVERY_FACTOR, POS_G_TOLERANCE_FACTOR, POS_G_TIME_FACTOR, POS_G_RECOVERY_FACTOR);
     }
 
     public void onAircraftLoaded()
@@ -782,19 +797,32 @@ public class F_18 extends Scheme2
         super.onAircraftLoaded();
         FM.AS.wantBeaconsNet(true);
         FM.Skill = 3;
+        FM.CT.bHasDragChuteControl = true;
+        FM.turret[0].bIsAIControlled = false;
         FM.Sq.dragChuteCx = 6F;
         bHasDeployedDragChute = false;
+        FM.CT.bHasBombSelect = true;
         FM.CT.bHasAntiColLights = true;
         FM.CT.bHasFormationLights = true;
         t1 = Time.current();
-        if(FM instanceof RealFlightModel)
-            Reflection.invokeMethod(FM, "init_G_Limits");
+        Polares polares = (Polares)Reflection.getValue(FM, "Wing");
+        stockCy0_0 = polares.Cy0_0;
+        stockCy0_1 = polares.Cy0_1;
+        stockCxMin_0 = polares.CxMin_0;
+        stockCxMin_1 = polares.CxMin_1;
+        stockCyCritH_0 = polares.CyCritH_0;
+        stockSqFlaps = FM.Sq.squareFlaps;
+        stockSqAileron = FM.Sq.squareAilerons;
+        stockSqliftStab = FM.Sq.liftStab;
+        stockSqElevators = FM.Sq.squareElevators;
+//        if(FM instanceof RealFlightModel)
+//            Reflection.invokeMethod(FM, "init_G_Limits");
         FM.CT.toggleRocketHook();
-        if((FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
-        {
-            FM.Sq.squareElevators += 2.0F;
-            FM.Sq.liftStab += 2.0F;
-        }
+//        if((FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
+//        {
+//            FM.Sq.squareElevators += 2.0F;
+//            FM.Sq.liftStab += 2.0F;
+//        }
     }
 
     public void missionStarting()
@@ -824,7 +852,8 @@ public class F_18 extends Scheme2
                 }
 
             }
-        } else
+        }
+        else
         {
             for(int j = 0; j < 4; j++)
             {
@@ -846,7 +875,8 @@ public class F_18 extends Scheme2
                         float f1 = f * 0.5F + 60F;
                         float f2 = 0.7F - (0.8F * f * lightTime) / 2000F;
                         lLight[j].setEmit(f2, f1);
-                    } else
+                    }
+                    else
                     {
                         lLight[j].setEmit(0.0F, 0.0F);
                     }
@@ -888,12 +918,14 @@ public class F_18 extends Scheme2
                 {
                     obsAzimuth = 0.0F;
                     obsElevation = 0.0F;
-                } else
+                }
+                else
                 {
                     obsAzimuth = World.Rnd().nextFloat() * 140F - 70F;
                     obsElevation = World.Rnd().nextFloat() * 50F - 20F;
                 }
-            } else
+            }
+            else
             {
                 obsLookTime--;
             }
@@ -929,8 +961,7 @@ public class F_18 extends Scheme2
         if(!FM.isPlayers())
             if(((Maneuver)FM).get_maneuver() == 25 && ((FlightModelMain) FM).AP.way.isLanding())
                 FM.CT.FlapsControlSwitch = 2;
-            else
-            if(((Maneuver)FM).get_maneuver() == 26)
+            else if(((Maneuver)FM).get_maneuver() == 26)
                 FM.CT.FlapsControlSwitch = 1;
             else
                 FM.CT.FlapsControlSwitch = 0;
@@ -940,11 +971,9 @@ public class F_18 extends Scheme2
     {
         if(World.getTimeofDay() >= 6F && World.getTimeofDay() < 7F)
             lightTime = Aircraft.cvt(World.getTimeofDay(), 6F, 7F, 1.0F, 0.1F);
-        else
-        if(World.getTimeofDay() >= 18F && World.getTimeofDay() < 19F)
+        else if(World.getTimeofDay() >= 18F && World.getTimeofDay() < 19F)
             lightTime = Aircraft.cvt(World.getTimeofDay(), 18F, 19F, 0.1F, 1.0F);
-        else
-        if(World.getTimeofDay() >= 7F && World.getTimeofDay() < 18F)
+        else if(World.getTimeofDay() >= 7F && World.getTimeofDay() < 18F)
             lightTime = 0.1F;
         else
             lightTime = 1.0F;
@@ -959,13 +988,13 @@ public class F_18 extends Scheme2
         {
             if(((Interpolate) (FM)).actor == World.getPlayerAircraft())
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Bomb");
-        } else
-        if(k14Mode == 1)
+        }
+        else if(k14Mode == 1)
         {
             if(((Interpolate) (FM)).actor == World.getPlayerAircraft())
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Gunnery");
-        } else
-        if(k14Mode == 2 && ((Interpolate) (FM)).actor == World.getPlayerAircraft())
+        }
+        else if(k14Mode == 2 && ((Interpolate) (FM)).actor == World.getPlayerAircraft())
             HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Navigation");
         return true;
     }
@@ -1120,40 +1149,40 @@ public class F_18 extends Scheme2
         }
     }
 
-    public static void moveGear(HierMesh hiermesh, float f)
+    public static void moveGear(HierMesh hiermesh, float fgl, float fgr, float fgc)
     {
-        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.11F, 0.3F, 0.0F, -95F));
-        hiermesh.chunkSetAngles("GearC24_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.11F, 0.3F, 0.0F, -76F));
-        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, -75F), 0.0F);
-        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, 75F), 0.0F);
-        hiermesh.chunkSetAngles("GearC6_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, -95F), 0.0F);
-        hiermesh.chunkSetAngles("GearC9_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.11F, 0.3F, 0.0F, -33.4F));
-        hiermesh.chunkSetAngles("GearR252_D0", 0.0F, Aircraft.cvt(f, 0.11F, 0.13F, 0.0F, 20F), 0.0F);
-        hiermesh.chunkSetAngles("GearL252_D0", 0.0F, Aircraft.cvt(f, 0.11F, 0.13F, 0.0F, 20F), 0.0F);
-        hiermesh.chunkSetAngles("GearR25_D0", Aircraft.cvt(f, 0.11F, 0.3F, 0.0F, -93.84F), Aircraft.cvt(f, 0.11F, 0.3F, 0.0F, -19.1F), Aircraft.cvt(f, 0.3F, 0.35F, 0.0F, 35F));
-        hiermesh.chunkSetAngles("GearL25_D0", Aircraft.cvt(f, 0.11F, 0.3F, 0.0F, -93.84F), Aircraft.cvt(f, 0.11F, 0.3F, 0.0F, -19.1F), Aircraft.cvt(f, 0.3F, 0.35F, 0.0F, 35F));
-        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.3F, 0.35F, 0.0F, -20.45F));
-        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.3F, 0.35F, 0.0F, -20.45F));
-        hiermesh.chunkSetAngles("GearR221_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.3F, 0.35F, 0.0F, 39.06F));
-        hiermesh.chunkSetAngles("GearL221_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.3F, 0.35F, 0.0F, 39.06F));
-        hiermesh.chunkSetAngles("GearR32_D0", Aircraft.cvt(f, 0.3F, 0.4F, 0.0F, 43.53F), 0.0F, Aircraft.cvt(f, 0.3F, 0.4F, 0.0F, -17.53F));
-        hiermesh.chunkSetAngles("GearL32_D0", Aircraft.cvt(f, 0.3F, 0.4F, 0.0F, 43.53F), 0.0F, Aircraft.cvt(f, 0.3F, 0.4F, 0.0F, -18.53F));
-        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, -55F), 0.0F);
-        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, 55F), 0.0F);
-        hiermesh.chunkSetAngles("GearL5_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, -92F), 0.0F);
-        hiermesh.chunkSetAngles("GearR5_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, 92F), 0.0F);
-        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, 100F), 0.0F);
-        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, -100F), 0.0F);
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 0.0F, Aircraft.cvt(fgc, 0.275F, 0.75F, 0.0F, -95F));
+        hiermesh.chunkSetAngles("GearC24_D0", 0.0F, 0.0F, Aircraft.cvt(fgc, 0.275F, 0.75F, 0.0F, -76F));
+        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(fgc, 0.01F, 0.275F, 0.0F, -75F), 0.0F);
+        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, Aircraft.cvt(fgc, 0.01F, 0.275F, 0.0F, 75F), 0.0F);
+        hiermesh.chunkSetAngles("GearC6_D0", 0.0F, Aircraft.cvt(fgc, 0.01F, 0.275F, 0.0F, -95F), 0.0F);
+        hiermesh.chunkSetAngles("GearC9_D0", 0.0F, 0.0F, Aircraft.cvt(fgc, 0.275F, 0.75F, 0.0F, -33.4F));
+        hiermesh.chunkSetAngles("GearR252_D0", 0.0F, Aircraft.cvt(fgr, 0.275F, 0.325F, 0.0F, 20F), 0.0F);
+        hiermesh.chunkSetAngles("GearL252_D0", 0.0F, Aircraft.cvt(fgl, 0.275F, 0.325F, 0.0F, 20F), 0.0F);
+        hiermesh.chunkSetAngles("GearR25_D0", Aircraft.cvt(fgr, 0.275F, 0.75F, 0.0F, -93.84F), Aircraft.cvt(fgr, 0.275F, 0.75F, 0.0F, -19.1F), Aircraft.cvt(fgr, 0.75F, 0.875F, 0.0F, 35F));
+        hiermesh.chunkSetAngles("GearL25_D0", Aircraft.cvt(fgl, 0.275F, 0.75F, 0.0F, -93.84F), Aircraft.cvt(fgl, 0.275F, 0.75F, 0.0F, -19.1F), Aircraft.cvt(fgl, 0.75F, 0.875F, 0.0F, 35F));
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 0.0F, Aircraft.cvt(fgr, 0.75F, 0.875F, 0.0F, -20.45F));
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 0.0F, Aircraft.cvt(fgl, 0.75F, 0.875F, 0.0F, -20.45F));
+        hiermesh.chunkSetAngles("GearR221_D0", 0.0F, 0.0F, Aircraft.cvt(fgr, 0.75F, 0.875F, 0.0F, 39.06F));
+        hiermesh.chunkSetAngles("GearL221_D0", 0.0F, 0.0F, Aircraft.cvt(fgl, 0.75F, 0.875F, 0.0F, 39.06F));
+        hiermesh.chunkSetAngles("GearR32_D0", Aircraft.cvt(fgr, 0.75F, 0.99F, 0.0F, 43.53F), 0.0F, Aircraft.cvt(fgr, 0.75F, 0.99F, 0.0F, -17.53F));
+        hiermesh.chunkSetAngles("GearL32_D0", Aircraft.cvt(fgl, 0.75F, 0.99F, 0.0F, 43.53F), 0.0F, Aircraft.cvt(fgl, 0.75F, 0.99F, 0.0F, -18.53F));
+        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(fgl, 0.01F, 0.275F, 0.0F, -55F), 0.0F);
+        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(fgr, 0.01F, 0.275F, 0.0F, 55F), 0.0F);
+        hiermesh.chunkSetAngles("GearL5_D0", 0.0F, Aircraft.cvt(fgl, 0.01F, 0.275F, 0.0F, -92F), 0.0F);
+        hiermesh.chunkSetAngles("GearR5_D0", 0.0F, Aircraft.cvt(fgr, 0.01F, 0.275F, 0.0F, 92F), 0.0F);
+        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, Aircraft.cvt(fgl, 0.01F, 0.275F, 0.0F, 100F), 0.0F);
+        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, Aircraft.cvt(fgr, 0.01F, 0.275F, 0.0F, -100F), 0.0F);
     }
 
-    protected void moveGear(float f)
+    protected void moveGear(float fgl, float fgr, float fgc)
     {
-        moveGear(hierMesh(), f);
+        moveGear(hierMesh(), fgl, fgr, fgc);
         resetYPRmodifier();
-        Aircraft.xyz[1] = Aircraft.cvt(f, 0.11F, 0.3F, 0.0F, 0.73F);
+        Aircraft.xyz[1] = Aircraft.cvt(fgc, 0.275F, 0.75F, 0.0F, 0.73F);
         hierMesh().chunkSetLocate("GearC25_D0", Aircraft.xyz, Aircraft.ypr);
         resetYPRmodifier();
-        Aircraft.xyz[1] = Aircraft.cvt(f, 0.12F, 0.4F, 0.0F, -0.39F);
+        Aircraft.xyz[1] = Aircraft.cvt(fgc, 0.3F, 0.99F, 0.0F, -0.39F);
         hierMesh().chunkSetLocate("GearC3_D0", Aircraft.xyz, Aircraft.ypr);
     }
 
@@ -1208,6 +1237,8 @@ public class F_18 extends Scheme2
     {
         if(FM.CT.getGear() > 0.8F)
             hierMesh().chunkSetAngles("GearC33_D0", 0.0F, 1.2F * f, 0.0F);
+        else
+            hierMesh().chunkSetAngles("GearC33_D0", 0.0F, 0.0F, 0.0F);
     }
 
     private final void updateControlsVisuals()
@@ -1216,7 +1247,8 @@ public class F_18 extends Scheme2
         {
             hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -30F * FM.CT.getElevator() + 27F * FM.CT.getAileron(), 0.0F);
             hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -30F * FM.CT.getElevator() - 27F * FM.CT.getAileron(), 0.0F);
-        } else
+        }
+        else
         {
             hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -17F * FM.CT.getElevator() + 10F * FM.CT.getAileron(), 0.0F);
             hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -17F * FM.CT.getElevator() - 10F * FM.CT.getAileron(), 0.0F);
@@ -1229,7 +1261,8 @@ public class F_18 extends Scheme2
         {
             hierMesh().chunkSetAngles("RudderL_D0", 35F * FM.CT.getRudder() - 35F * FM.CT.getAileron(), 0.0F, 0.0F);
             hierMesh().chunkSetAngles("RudderR_D0", 35F * FM.CT.getRudder() - 35F * FM.CT.getAileron(), 0.0F, 0.0F);
-        } else
+        }
+        else
         {
             hierMesh().chunkSetAngles("RudderL_D0", 25F * FM.CT.getRudder() - 20F * FM.CT.getAileron(), 0.0F, 0.0F);
             hierMesh().chunkSetAngles("RudderR_D0", 25F * FM.CT.getRudder() - 20F * FM.CT.getAileron(), 0.0F, 0.0F);
@@ -1249,7 +1282,8 @@ public class F_18 extends Scheme2
         {
             hierMesh().chunkSetAngles("AroneL2_D0", 0.0F, 40F * f, 0.0F);
             hierMesh().chunkSetAngles("AroneR2_D0", 0.0F, -40F * f, 0.0F);
-        } else
+        }
+        else
         {
             hierMesh().chunkSetAngles("AroneL2_D0", 0.0F, 20F * f, 0.0F);
             hierMesh().chunkSetAngles("AroneR2_D0", 0.0F, -20F * f, 0.0F);
@@ -1258,15 +1292,16 @@ public class F_18 extends Scheme2
 
     protected void moveFlap(float f)
     {
-        hierMesh().chunkSetAngles("Flap1_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 55F), 0.0F);
-        hierMesh().chunkSetAngles("Flap2_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 55F), 0.0F);
+        hierMesh().chunkSetAngles("Flap1_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 45F), 0.0F);
+        hierMesh().chunkSetAngles("Flap2_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 45F), 0.0F);
         if(FM.CT.getWing() < 0.01F)
         {
-            hierMesh().chunkSetAngles("AroneL_D0", 0.0F, Aircraft.cvt(f, 0.25F, 0.29F, 0.0F, 17F), 0.0F);
-            hierMesh().chunkSetAngles("AroneR_D0", 0.0F, Aircraft.cvt(f, 0.25F, 0.29F, 0.0F, 17F), 0.0F);
-            hierMesh().chunkSetAngles("AroneL1_D0", 0.0F, Aircraft.cvt(f, 0.29F, 0.99F, 0.0F, 38F), 0.0F);
-            hierMesh().chunkSetAngles("AroneR1_D0", 0.0F, Aircraft.cvt(f, 0.29F, 0.99F, 0.0F, 38F), 0.0F);
-        } else
+            hierMesh().chunkSetAngles("AroneL_D0", 0.0F, Aircraft.cvt(f, 0.25F, 0.29F, 0.0F, 15F), 0.0F);
+            hierMesh().chunkSetAngles("AroneR_D0", 0.0F, Aircraft.cvt(f, 0.25F, 0.29F, 0.0F, 15F), 0.0F);
+            hierMesh().chunkSetAngles("AroneL1_D0", 0.0F, Aircraft.cvt(f, 0.29F, 0.99F, 0.0F, 30F), 0.0F);
+            hierMesh().chunkSetAngles("AroneR1_D0", 0.0F, Aircraft.cvt(f, 0.29F, 0.99F, 0.0F, 30F), 0.0F);
+        }
+        else
         {
             hierMesh().chunkSetAngles("AroneL_D0", 0.0F, 0.0F, 0.0F);
             hierMesh().chunkSetAngles("AroneR_D0", 0.0F, 0.0F, 0.0F);
@@ -1277,36 +1312,31 @@ public class F_18 extends Scheme2
 
     private void updateSlatsVisual()
     {
+        float fSlatDegree = 0.0F;
         if(FM.Gears.onGround())
         {
-            hierMesh().chunkSetAngles("SlatLIn_D0", 0.0F, Aircraft.cvt(FM.CT.getFlap(), 0.02F, 0.12F, 0.0F, -14.5F), 0.0F);
-            hierMesh().chunkSetAngles("SlatRIn_D0", 0.0F, Aircraft.cvt(FM.CT.getFlap(), 0.02F, 0.12F, 0.0F, -14.5F), 0.0F);
-            hierMesh().chunkSetAngles("SlatLOut_D0", 0.0F, Aircraft.cvt(FM.CT.getFlap(), 0.02F, 0.12F, 0.0F, -14.5F), 0.0F);
-            hierMesh().chunkSetAngles("SlatROut_D0", 0.0F, Aircraft.cvt(FM.CT.getFlap(), 0.02F, 0.12F, 0.0F, -14.5F), 0.0F);
-        } else
+            fSlatDegree = Aircraft.cvt(FM.CT.getFlap(), 0.02F, 0.12F, 0.0F, 14.5F);
+        }
+        else
         {
             if(FM.getSpeed() > 20F)
-            {
-                hierMesh().chunkSetAngles("SlatLIn_D0", 0.0F, Aircraft.cvt(FM.getAOA(), 6.8F, 15F, 0.0F, -30.5F), 0.0F);
-                hierMesh().chunkSetAngles("SlatRIn_D0", 0.0F, Aircraft.cvt(FM.getAOA(), 6.8F, 15F, 0.0F, -30.5F), 0.0F);
-                hierMesh().chunkSetAngles("SlatLOut_D0", 0.0F, Aircraft.cvt(FM.getAOA(), 6.8F, 15F, 0.0F, -30.5F), 0.0F);
-                hierMesh().chunkSetAngles("SlatROut_D0", 0.0F, Aircraft.cvt(FM.getAOA(), 6.8F, 15F, 0.0F, -30.5F), 0.0F);
-            }
+                fSlatDegree = Aircraft.cvt(FM.getAOA(), 6.8F, 15F, 0.0F, 30.5F);
             else if(FM.getSpeed() > 10F)
-            {
-                hierMesh().chunkSetAngles("SlatLIn_D0", 0.0F, Aircraft.cvt(FM.getAOA(), 6.8F, 15F, 0.0F, -20.5F), 0.0F);
-                hierMesh().chunkSetAngles("SlatRIn_D0", 0.0F, Aircraft.cvt(FM.getAOA(), 6.8F, 15F, 0.0F, -20.5F), 0.0F);
-                hierMesh().chunkSetAngles("SlatLOut_D0", 0.0F, Aircraft.cvt(FM.getAOA(), 6.8F, 15F, 0.0F, -20.5F), 0.0F);
-                hierMesh().chunkSetAngles("SlatROut_D0", 0.0F, Aircraft.cvt(FM.getAOA(), 6.8F, 15F, 0.0F, -20.5F), 0.0F);
-            }
+                fSlatDegree = Aircraft.cvt(FM.getAOA(), 6.8F, 15F, 0.0F, 20.5F);
             else if(FM.getSpeed() > 5F)
-            {
-                hierMesh().chunkSetAngles("SlatLIn_D0", 0.0F, Aircraft.cvt(FM.getAOA(), 6.8F, 15F, 0.0F, -14.5F), 0.0F);
-                hierMesh().chunkSetAngles("SlatRIn_D0", 0.0F, Aircraft.cvt(FM.getAOA(), 6.8F, 15F, 0.0F, -14.5F), 0.0F);
-                hierMesh().chunkSetAngles("SlatLOut_D0", 0.0F, Aircraft.cvt(FM.getAOA(), 6.8F, 15F, 0.0F, -14.5F), 0.0F);
-                hierMesh().chunkSetAngles("SlatROut_D0", 0.0F, Aircraft.cvt(FM.getAOA(), 6.8F, 15F, 0.0F, -14.5F), 0.0F);
-            }
+                fSlatDegree = Aircraft.cvt(FM.getAOA(), 6.8F, 15F, 0.0F, 14.5F);
+
+            if(FM.CT.FlapsControlSwitch > 0 && !bForceFlapmodeAuto && fSlatDegree < 14.5F)
+                fSlatDegree = Math.max(fSlatDegree, Aircraft.cvt(FM.CT.getFlap(), 0.02F, 0.12F, 0.0F, 14.5F));
         }
+        hierMesh().chunkSetAngles("SlatLIn_D0", 0.0F, -fSlatDegree, 0.0F);
+        hierMesh().chunkSetAngles("SlatRIn_D0", 0.0F, -fSlatDegree, 0.0F);
+        hierMesh().chunkSetAngles("SlatLOut_D0", 0.0F, -fSlatDegree, 0.0F);
+        hierMesh().chunkSetAngles("SlatROut_D0", 0.0F, -fSlatDegree, 0.0F);
+
+        Polares polares = (Polares)Reflection.getValue(FM, "Wing");
+        polares.Cy0_0 = stockCy0_0 + 0.0036F * fSlatDegree;
+        polares.CxMin_0 = stockCxMin_0 + 5.256E-4F * fSlatDegree;
     }
 
     private void updateDragChute()
@@ -1314,13 +1344,13 @@ public class F_18 extends Scheme2
         if(FM.CT.DragChuteControl > 0.0F && !bHasDeployedDragChute)
         {
             chute = new Chute(this);
-            chute.setMesh("3do/plane/ChuteF86/mono.sim");
+            chute.setMesh("3do/plane/ChuteF18/mono.sim");
             chute.collide(true);
             chute.mesh().setScale(0.8F);
             ((Actor) (chute)).pos.setRel(new Point3d(-8D, 0.0D, 0.5D), new Orient(0.0F, 90F, 0.0F));
             bHasDeployedDragChute = true;
-        } else
-        if(bHasDeployedDragChute && FM.CT.bHasDragChuteControl)
+        }
+        else if(bHasDeployedDragChute && FM.CT.bHasDragChuteControl)
             if(FM.CT.DragChuteControl == 1.0F && FM.getSpeedKMH() > 600F || FM.CT.DragChuteControl < 1.0F)
             {
                 if(chute != null)
@@ -1332,8 +1362,8 @@ public class F_18 extends Scheme2
                 FM.CT.bHasDragChuteControl = false;
                 FM.Sq.dragChuteCx = 0.0F;
                 removeChuteTimer = Time.current() + 250L;
-            } else
-            if(FM.CT.DragChuteControl == 1.0F && FM.getSpeedKMH() < 20F)
+            }
+            else if(FM.CT.DragChuteControl == 1.0F && FM.getSpeedKMH() < 20F)
             {
                 if(chute != null)
                     chute.tangleChute(this);
@@ -1345,6 +1375,26 @@ public class F_18 extends Scheme2
             }
         if(removeChuteTimer > 0L && !FM.CT.bHasDragChuteControl && Time.current() > removeChuteTimer)
             chute.destroy();
+    }
+
+    public void moveArrestorHook(float f)
+    {
+        hierMesh().chunkSetAngles("Tailhook_D0", 0.0F, 0.0F, 70F * f);
+    }
+
+    public void moveRefuel(float f)
+    {
+        hierMesh().chunkSetAngles("fueldoor_D0", 0.0F, Aircraft.cvt(f, 0.2F, 0.8F, 0.0F, 35F), 0.0F);
+        hierMesh().chunkSetAngles("fueldoor2_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.2F, 0.0F, 90F));
+        hierMesh().chunkSetAngles("fueldoor3_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.8F, 1.0F, 0.0F, -90F));
+        hierMesh().chunkSetAngles("rod2", 0.0F, Aircraft.cvt(f, 0.2F, 0.8F, 0.0F, -85F), 0.0F);
+    }
+
+    protected void moveWingFold(HierMesh hiermesh, float f)
+    {
+        hiermesh.chunkSetAngles("WingLOut_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 92F), 0.0F);
+        hiermesh.chunkSetAngles("WingROut_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, -92F), 0.0F);
+        moveFlap(FM.CT.getFlap());
     }
 
     protected void hitBone(String s, Shot shot, Point3d point3d)
@@ -1359,19 +1409,18 @@ public class F_18 extends Scheme2
                     getEnergyPastArmor(13.350000381469727D / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot);
                     if(shot.power <= 0.0F)
                         doRicochetBack(shot);
-                } else
-                if(s.endsWith("p2"))
+                }
+                else if(s.endsWith("p2"))
                     getEnergyPastArmor(8.770001F, shot);
-                else
-                if(s.endsWith("g1"))
+                else if(s.endsWith("g1"))
                 {
                     getEnergyPastArmor((double)World.Rnd().nextFloat(40F, 60F) / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot);
                     FM.AS.setCockpitState(shot.initiator, FM.AS.astateCockpitState | 2);
                     if(shot.power <= 0.0F)
                         doRicochetBack(shot);
                 }
-            } else
-            if(s.startsWith("xxcontrols"))
+            }
+            else if(s.startsWith("xxcontrols"))
             {
                 debuggunnery("Controls: Hit..");
                 int i = s.charAt(10) - 48;
@@ -1400,8 +1449,8 @@ public class F_18 extends Scheme2
                     }
                     break;
                 }
-            } else
-            if(s.startsWith("xxeng1"))
+            }
+            else if(s.startsWith("xxeng1"))
             {
                 debuggunnery("Engine Module: Hit..");
                 if(s.endsWith("bloc"))
@@ -1427,8 +1476,8 @@ public class F_18 extends Scheme2
                     debuggunnery("Engine Module: Hit - Engine Fires..");
                 }
                 s.endsWith("exht");
-            } else
-            if(s.startsWith("xxeng2"))
+            }
+            else if(s.startsWith("xxeng2"))
             {
                 debuggunnery("Engine Module: Hit..");
                 if(s.endsWith("bloc"))
@@ -1454,8 +1503,8 @@ public class F_18 extends Scheme2
                     debuggunnery("Engine Module: Hit - Engine Fires..");
                 }
                 s.endsWith("exht");
-            } else
-            if(s.startsWith("xxmgun0"))
+            }
+            else if(s.startsWith("xxmgun0"))
             {
                 int j = s.charAt(7) - 49;
                 if(getEnergyPastArmor(1.5F, shot) > 0.0F)
@@ -1464,8 +1513,8 @@ public class F_18 extends Scheme2
                     FM.AS.setJamBullets(0, j);
                     getEnergyPastArmor(World.Rnd().nextFloat(0.5F, 23.325F), shot);
                 }
-            } else
-            if(s.startsWith("xxtank"))
+            }
+            else if(s.startsWith("xxtank"))
             {
                 int k = s.charAt(6) - 49;
                 if(getEnergyPastArmor(0.1F, shot) > 0.0F && World.Rnd().nextFloat() < 0.25F)
@@ -1482,8 +1531,8 @@ public class F_18 extends Scheme2
                         debuggunnery("Fuel Tank (" + k + "): Hit..");
                     }
                 }
-            } else
-            if(s.startsWith("xxspar"))
+            }
+            else if(s.startsWith("xxspar"))
             {
                 debuggunnery("Spar Construction: Hit..");
                 if(s.startsWith("xxsparlm") && chunkDamageVisible("WingLMid") > 2 && getEnergyPastArmor(16.5F * World.Rnd().nextFloat(1.0F, 1.5F), shot) > 0.0F)
@@ -1506,13 +1555,13 @@ public class F_18 extends Scheme2
                     debuggunnery("Spar Construction: WingROut Spars Damaged..");
                     nextDMGLevels(1, 2, "WingROut_D3", shot.initiator);
                 }
-            } else
-            if(s.startsWith("xxhyd"))
+            }
+            else if(s.startsWith("xxhyd"))
                 FM.AS.setInternalDamage(shot.initiator, 3);
-            else
-            if(s.startsWith("xxpnm"))
+            else if(s.startsWith("xxpnm"))
                 FM.AS.setInternalDamage(shot.initiator, 1);
-        } else
+        }
+        else
         {
             if(s.startsWith("xcockpit"))
             {
@@ -1523,44 +1572,40 @@ public class F_18 extends Scheme2
             {
                 hitChunk("CF", shot);
                 hitChunk("CF2", shot);
-            } else
-            if(s.startsWith("xnose"))
+            }
+            else if(s.startsWith("xnose"))
                 hitChunk("Nose1", shot);
-            else
-            if(s.startsWith("xBody"))
+            else if(s.startsWith("xBody"))
                 hitChunk("Body", shot);
-            else
-            if(s.startsWith("xtail"))
+            else if(s.startsWith("xtail"))
             {
                 if(chunkDamageVisible("Tail1") < 3)
                     hitChunk("Tail1", shot);
-            } else
-            if(s.startsWith("xkeel"))
+            }
+            else if(s.startsWith("xkeel"))
             {
                 if(chunkDamageVisible("Keel1") < 2)
                     hitChunk("Keel1", shot);
-            } else
-            if(s.startsWith("xrudderl"))
+            }
+            else if(s.startsWith("xrudderl"))
                 hitChunk("RudderL", shot);
-            else
-            if(s.startsWith("xrudderr"))
+            else if(s.startsWith("xrudderr"))
                 hitChunk("RudderR", shot);
-            else
-            if(s.startsWith("xstab"))
+            else if(s.startsWith("xstab"))
             {
                 if(s.startsWith("xstabl") && chunkDamageVisible("StabL") < 2)
                     hitChunk("StabL", shot);
                 if(s.startsWith("xstabr") && chunkDamageVisible("StabR") < 1)
                     hitChunk("StabR", shot);
-            } else
-            if(s.startsWith("xvator"))
+            }
+            else if(s.startsWith("xvator"))
             {
                 if(s.startsWith("xvatorl"))
                     hitChunk("VatorL", shot);
                 if(s.startsWith("xvatorr"))
                     hitChunk("VatorR", shot);
-            } else
-            if(s.startsWith("xwing"))
+            }
+            else if(s.startsWith("xwing"))
             {
                 if(s.startsWith("xwinglin") && chunkDamageVisible("WingLIn") < 3)
                     hitChunk("WingLIn", shot);
@@ -1574,22 +1619,22 @@ public class F_18 extends Scheme2
                     hitChunk("WingLOut", shot);
                 if(s.startsWith("xwingrout") && chunkDamageVisible("WingROut") < 3)
                     hitChunk("WingROut", shot);
-            } else
-            if(s.startsWith("xarone"))
+            }
+            else if(s.startsWith("xarone"))
             {
                 if(s.startsWith("xaronel"))
                     hitChunk("AroneL", shot);
                 if(s.startsWith("xaroner"))
                     hitChunk("AroneR", shot);
-            } else
-            if(s.startsWith("xflap"))
+            }
+            else if(s.startsWith("xflap"))
             {
                 if(s.startsWith("xflap1"))
                     hitChunk("Flap1", shot);
                 if(s.startsWith("xflap2"))
                     hitChunk("Flap2", shot);
-            } else
-            if(s.startsWith("xgear"))
+            }
+            else if(s.startsWith("xgear"))
             {
                 if(s.endsWith("1") && World.Rnd().nextFloat() < 0.05F)
                 {
@@ -1601,8 +1646,8 @@ public class F_18 extends Scheme2
                     debuggunnery("Undercarriage: Stuck..");
                     FM.AS.setInternalDamage(shot.initiator, 3);
                 }
-            } else
-            if(s.startsWith("xpilot") || s.startsWith("xhead"))
+            }
+            else if(s.startsWith("xpilot") || s.startsWith("xhead"))
             {
                 byte byte0 = 0;
                 int i1;
@@ -1610,12 +1655,13 @@ public class F_18 extends Scheme2
                 {
                     byte0 = 1;
                     i1 = s.charAt(6) - 49;
-                } else
-                if(s.endsWith("b"))
+                }
+                else if(s.endsWith("b"))
                 {
                     byte0 = 2;
                     i1 = s.charAt(6) - 49;
-                } else
+                }
+                else
                 {
                     i1 = s.charAt(5) - 49;
                 }
@@ -1637,8 +1683,8 @@ public class F_18 extends Scheme2
                 if((double)World.Rnd().nextFloat(0.0F, 1.0F) < 0.48999999999999999D)
                     FM.EI.engines[0].setEngineDies(actor);
                 FM.EI.engines[1].setEngineDies(actor);
-            } else
-            if((double)f > 0.55000000000000004D)
+            }
+            else if((double)f > 0.55000000000000004D)
                 FM.EI.engines[0].setEngineDies(actor);
             FM.EI.engines[1].setEngineDies(actor);
             return super.cutFM(i, j, actor);
@@ -1705,7 +1751,8 @@ public class F_18 extends Scheme2
         if(i == 0)
         {
             return TypeSupersonic.fMachAltY[0];
-        } else
+        }
+        else
         {
             float f1 = TypeSupersonic.fMachAltY[i - 1];
             float f2 = TypeSupersonic.fMachAltY[i] - f1;
@@ -1792,8 +1839,8 @@ public class F_18 extends Scheme2
                             if(((Interpolate) (FM)).actor == World.getPlayerAircraft())
                                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Engine Flameout!");
                             FM.EI.engines[i].setEngineStops(this);
-                        } else
-                        if(((Interpolate) (FM)).actor == World.getPlayerAircraft())
+                        }
+                        else if(((Interpolate) (FM)).actor == World.getPlayerAircraft())
                             HUD.log(AircraftHotKeys.hudLogWeaponId, "Fans Surge!!!");
                     }
                 }
@@ -1822,8 +1869,8 @@ public class F_18 extends Scheme2
             f6 += f4 * f;
             if(f6 > f1)
                 f6 = f1;
-        } else
-        if(f6 > f1)
+        }
+        else if(f6 > f1)
         {
             f6 -= f4 * f;
             if(f6 < f1)
@@ -1846,7 +1893,8 @@ public class F_18 extends Scheme2
             {
                 if(Time.current() > lTimeNextEject)
                     bailout();
-            } else
+            }
+            else
             {
                 bailout();
             }
@@ -1861,7 +1909,8 @@ public class F_18 extends Scheme2
                         FM.AS.setSootState(this, en, 5);
                     else
                         FM.AS.setSootState(this, en, 3);
-                } else
+                }
+                else
                 {
                     FM.AS.setSootState(this, en, 0);
                 }
@@ -1898,6 +1947,8 @@ public class F_18 extends Scheme2
             updateHook();
             needUpdateHook = false;
         }
+        if(FM.CT.getArrestor() > 0.2F)
+            calculateArrestor();
         super.update(f);
         for(int i = 1; i < 33; i++)
         {
@@ -1929,6 +1980,8 @@ public class F_18 extends Scheme2
             FM.CT.cockpitDoorControl = 0.0F;
         updateSlatsVisual();
         computeflightmodel();
+        computeElevators();
+        FlapAssistTakeoff();
         updateDragChute();
         formationlights();
         if(!FM.isPlayers())
@@ -1951,7 +2004,8 @@ public class F_18 extends Scheme2
                 FM.CT.setTrimElevatorControl(0.0F);
                 bForceTakeoffElTrim = false;
             }
-        } else
+        }
+        else
         {
             bForceFlapmodeAuto = false;
             float f1 = cvt(FM.getSpeedKMH(), 330F, 465F, 1.0F, 0.0F);
@@ -1976,8 +2030,7 @@ public class F_18 extends Scheme2
     {
         if(f < -1F)
             f = -1F;
-        else
-        if(f > 1.0F)
+        else if(f > 1.0F)
             f = 1.0F;
         return f;
     }
@@ -1993,7 +2046,8 @@ public class F_18 extends Scheme2
         if(!(FM instanceof RealFlightModel))
         {
             return;
-        } else
+        }
+        else
         {
             computeElevators();
             return;
@@ -2032,6 +2086,70 @@ public class F_18 extends Scheme2
         }
         catch(IllegalAccessException illegalaccessexception) { }
         updateControlsVisuals();
+    }
+
+    private void FlapAssistTakeoff()
+    {
+        Polares polares = (Polares)Reflection.getValue(FM, "Wing");
+
+        if(FM.CT.getWing() < 0.01F && FM.CT.getFlap() > 0.25F)
+        {
+            if(FM.EI.engines[0].getThrustOutput() > 0.97F && FM.EI.engines[1].getThrustOutput() > 0.97F && FM.getSpeedKMH() > 220F && (calculateMach() < 0.32F || FM.Gears.nearGround()))
+            {
+                polares.Cy0_1 = stockCy0_1 + 1.0F;
+                polares.CxMin_1 = stockCxMin_1 + 0.010F;
+                FM.Sq.liftStab = stockSqliftStab + 1.2F;
+                FM.Sq.squareElevators = stockSqElevators + 2.4F;
+            }
+            else
+            {
+                polares.Cy0_1 = stockCy0_1 + 0.1F;
+                polares.CxMin_1 = stockCxMin_1 + 0.007F;
+                FM.Sq.liftStab = stockSqliftStab;
+                FM.Sq.squareElevators = stockSqElevators;
+            }
+            FM.Sq.squareFlaps = stockSqFlaps + fSqFlaperon;
+            FM.Sq.squareAilerons = stockSqAileron - fSqFlaperon * 0.25F;
+        }
+        else
+        {
+            polares.Cy0_1 = stockCy0_1;
+            polares.CxMin_1 = stockCxMin_1;
+            FM.Sq.squareFlaps = stockSqFlaps;
+            FM.Sq.squareAilerons = stockSqAileron;
+            FM.Sq.liftStab = stockSqliftStab;
+            FM.Sq.squareElevators = stockSqElevators;
+        }
+        return;
+    }
+
+    private void calculateArrestor()
+    {
+        if(FM.Gears.arrestorVAngle != 0.0F)
+        {
+            float f1 = Aircraft.cvt(FM.Gears.arrestorVAngle, -50F, 7F, 1.0F, 0.0F);
+            arrestor = 0.8F * arrestor + 0.2F * f1;
+            moveArrestorHook(arrestor);
+        }
+        else
+        {
+            float f2 = (-33F * FM.Gears.arrestorVSink) / 57F;
+            if(f2 < 0.0F && FM.getSpeedKMH() > 60F)
+                Eff3DActor.New(this, FM.Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
+            if(f2 > 0.0F && FM.CT.getArrestor() < 0.95F)
+                f2 = 0.0F;
+            if(f2 > 0.2F)
+                f2 = 0.2F;
+            if(f2 > 0.0F)
+                arrestor = 0.7F * arrestor + 0.3F * (arrestor + f2);
+            else
+                arrestor = 0.3F * arrestor + 0.7F * (arrestor + f2);
+            if(arrestor < 0.0F)
+                arrestor = 0.0F;
+            else if(arrestor > 1.0F)
+                arrestor = 1.0F;
+            moveArrestorHook(arrestor);
+        }
     }
 
     private void anticollights()
@@ -2258,12 +2376,13 @@ public class F_18 extends Scheme2
                     FM.AS.astateBailoutStep = 11;
                     if(FM.crew < 2)
                         doRemoveBlisters(2, 10);
-                } else
+                }
+                else
                 {
                     FM.AS.astateBailoutStep = 2;
                 }
-            } else
-            if(FM.AS.astateBailoutStep >= 2 && FM.AS.astateBailoutStep <= 3)
+            }
+            else if(FM.AS.astateBailoutStep >= 2 && FM.AS.astateBailoutStep <= 3)
             {
                 switch(FM.AS.astateBailoutStep)
                 {
@@ -2287,8 +2406,8 @@ public class F_18 extends Scheme2
                 FM.AS.astateBailoutStep = (byte)(FM.AS.astateBailoutStep + 1);
                 if(FM.AS.astateBailoutStep == 4)
                     FM.AS.astateBailoutStep = 11;
-            } else
-            if(FM.AS.astateBailoutStep >= 11 && FM.AS.astateBailoutStep <= 19)
+            }
+            else if(FM.AS.astateBailoutStep >= 11 && FM.AS.astateBailoutStep <= 19)
             {
                 byte byte0 = FM.AS.astateBailoutStep;
                 if(FM.AS.isMaster())
@@ -2302,8 +2421,8 @@ public class F_18 extends Scheme2
                         if((FM instanceof Maneuver) && ((Maneuver)FM).get_maneuver() != 44 && FM.AS.actor != World.getPlayerAircraft())
                             ((Maneuver)FM).set_maneuver(44);
                     }
-                } else
-                if((FM instanceof Maneuver) && ((Maneuver)FM).get_maneuver() != 44 && FM.AS.actor != World.getPlayerAircraft())
+                }
+                else if((FM instanceof Maneuver) && ((Maneuver)FM).get_maneuver() != 44 && FM.AS.actor != World.getPlayerAircraft())
                     ((Maneuver)FM).set_maneuver(44);
                 if(FM.AS.astatePilotStates[byte0 - 11] < 99)
                 {
@@ -2316,7 +2435,8 @@ public class F_18 extends Scheme2
                             doRemoveBodyFromPlane(2);
                             doEjectCatapultStudent();
                             lTimeNextEject = Time.current() + 1000L;
-                        } else
+                        }
+                        else
                         {
                             doEjectCatapult();
                             FM.setTakenMortalDamage(true, null);
@@ -2327,8 +2447,8 @@ public class F_18 extends Scheme2
                             FM.AS.bIsAboutToBailout = true;
                             ejectComplete = true;
                         }
-                    } else
-                    if(FM.crew > 1 && byte0 == 12)
+                    }
+                    else if(FM.crew > 1 && byte0 == 12)
                     {
                         doRemoveBodyFromPlane(1);
                         doEjectCatapult();
@@ -2343,7 +2463,8 @@ public class F_18 extends Scheme2
                     }
                     if(FM.crew > 1)
                         FM.AS.astatePilotStates[byte0 - 11] = 99;
-                } else
+                }
+                else
                 {
                     EventLog.type("astatePilotStates[" + (byte0 - 11) + "]=" + FM.AS.astatePilotStates[byte0 - 11]);
                 }
@@ -2532,7 +2653,7 @@ public class F_18 extends Scheme2
     private boolean isGuidingBomb;
     private boolean isMasterAlive;
     public boolean needUpdateHook;
-    private static Loc flirloc = new Loc();
+//    private Loc flirloc = new Loc();
     public boolean FLIR;
     private SoundFX fxRWR;
     private Sample smplRWR;
@@ -2571,7 +2692,19 @@ public class F_18 extends Scheme2
     private float oldTrimElevator;
     public boolean bHasCenterTank;
     public boolean bHasWingTank;
+    private float arrestor;
     private Eff3DActor antiColLight[];
+
+    private float stockCy0_0;
+    private float stockCy0_1;
+    private float stockCxMin_0;
+    private float stockCxMin_1;
+    private float stockCyCritH_0;
+    private float stockSqFlaps;
+    private float stockSqAileron;
+    private float stockSqliftStab;
+    private float stockSqElevators;
+    private static float fSqFlaperon = 2.646F;
 
     static 
     {

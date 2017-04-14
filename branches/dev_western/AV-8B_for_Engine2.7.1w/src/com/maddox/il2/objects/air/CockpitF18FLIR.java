@@ -212,7 +212,7 @@ public class CockpitF18FLIR extends CockpitGunner
     {
         Orient orient2 = new Orient();
         Point3d point3d = new Point3d();
-        (F_18)aircraft()).pos.getAbs(point3d, orient2);
+        ((F_18)aircraft()).pos.getAbs(point3d, orient2);
         float roll = orient2.getRoll();
         float fn = orient2.getPitch();
         float antiroll = 360F - roll;
@@ -398,7 +398,7 @@ public class CockpitF18FLIR extends CockpitGunner
 
     public CockpitF18FLIR()
     {
-        super("3DO/Cockpit/AV8FLIR/AV8FLIR.him", "he111_gunner");
+        super("3DO/Cockpit/US_Common_FLIR/AV8FLIR.him", "he111_gunner");
         autotrack = new ArrayList();
         LaserHook = new Hook[4];
         dY = 0.0D;

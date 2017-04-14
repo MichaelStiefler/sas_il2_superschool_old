@@ -290,7 +290,7 @@ public class CockpitAV8FLIR extends CockpitGunner
 
     public CockpitAV8FLIR()
     {
-        super("3DO/Cockpit/AV8FLIR/AV8FLIR.him", "he111_gunner");
+        super("3DO/Cockpit/US_Common_FLIR/AV8FLIR.him", "he111_gunner");
         dY = 0.0D;
         dX = 0.0D;
         point3d1 = new Point3d();
