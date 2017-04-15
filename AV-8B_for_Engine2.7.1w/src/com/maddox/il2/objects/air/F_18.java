@@ -448,6 +448,14 @@ public class F_18 extends Scheme2
             i = 360 + i;
         List list = Engine.missiles();
         int j = list.size();
+        if(j == 0 && (bMissileWarning || backfire))
+        {
+            bMissileWarning = false;
+            playRWRWarning();
+            backfire = false;
+            misslebrg = 0.0F;
+            return false;
+        }
         for(int k = 0; k < j; k++)
         {
             Actor actor = (Actor)list.get(k);
