@@ -58,6 +58,8 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
         azimult = 0.0F;
         tf = 0L;
         bLASER = false;
+        counterFlareList = new ArrayList();
+        counterChaffList = new ArrayList();
     }
 
     public void auxPressed(int i)
@@ -234,6 +236,11 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
                         bHasLAUcaps = true;
                     else if(FM.CT.Weapons[i][j] instanceof Pylon_LAU131_Cap_gn16)
                         bHasLAUcaps = true;
+
+                    if(FM.CT.Weapons[i][j] instanceof RocketGunFlare_gn16)
+                        counterFlareList.add(FM.CT.Weapons[i][j]);
+                    else if(FM.CT.Weapons[i][j] instanceof RocketGunChaff_gn16)
+                        counterChaffList.add(FM.CT.Weapons[i][j]);
                 }
             }
     }
@@ -254,6 +261,36 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
                             ((Pylon_LAU131_Cap_gn16)FM.CT.Weapons[i][j]).jettisonCap();
                 }
             bHasLAUcaps = false;
+        }
+    }
+
+    public void backFire()
+    {
+        if(counterFlareList.isEmpty())
+            hasFlare = false;
+        else
+        {
+            if(Time.current() > lastFlareDeployed + 700L)
+            {
+                ((RocketGunFlare_gn16)counterFlareList.get(0)).shots(1);
+                hasFlare = true;
+                lastFlareDeployed = Time.current();
+                if(!((RocketGunFlare_gn16)counterFlareList.get(0)).haveBullets())
+                    counterFlareList.remove(0);
+            }
+        }
+        if(counterChaffList.isEmpty())
+            hasChaff = false;
+        else
+        {
+            if(Time.current() > lastChaffDeployed + 1300L)
+            {
+                ((RocketGunChaff_gn16)counterChaffList.get(0)).shots(1);
+                hasChaff = true;
+                lastChaffDeployed = Time.current();
+                if(!((RocketGunChaff_gn16)counterChaffList.get(0)).haveBullets())
+                    counterChaffList.remove(0);
+            }
         }
     }
 
@@ -368,6 +405,8 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             checkDeleteLAUcaps();
         super.update(f);
         guidedMissileUtils.update();
+        if(super.backfire)
+            backFire();
         if(bLASER)
             laser(spot);
         updatecontrollaser();
@@ -419,18 +458,6 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             chute.destroy();
     }
 
-    static Class _mthclass$(String x0)
-    {
-        try
-        {
-            return Class.forName(x0);
-        }
-        catch(ClassNotFoundException x1)
-        {
-            throw new NoClassDefFoundError(x1.getMessage());
-        }
-    }
-
     private float llpos;
     public boolean bChangedPit;
     public boolean bToFire;
@@ -463,6 +490,8 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
     private boolean isMasterAlive;
 //    private static Loc locate = new Loc();
     public boolean bLASER;
+    private ArrayList counterFlareList;
+    private ArrayList counterChaffList;
 
     static 
     {

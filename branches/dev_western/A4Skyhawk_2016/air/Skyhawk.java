@@ -4,14 +4,17 @@ package com.maddox.il2.objects.air;
 import com.maddox.JGP.*;
 import com.maddox.il2.ai.*;
 import com.maddox.il2.ai.air.Maneuver;
+import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
 import com.maddox.il2.objects.Wreckage;
 import com.maddox.il2.objects.sounds.SndAircraft;
+import com.maddox.il2.objects.weapons.*;
 import com.maddox.rts.*;
 import com.maddox.sas1946.il2.util.Reflection;
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 
 // Referenced classes of package com.maddox.il2.objects.air:
@@ -459,6 +462,9 @@ public class Skyhawk extends Scheme1
         antiColLight = new Eff3DActor[6];
         arrestor = 0.0F;
         fSlat = 0.0F;
+        bHasRWR = false;
+        misslebrg = 0.0F;
+        aircraftbrg = 0.0F;
     }
 
     public void onAircraftLoaded()
@@ -468,12 +474,242 @@ public class Skyhawk extends Scheme1
         FM.CT.bHasBombSelect = true;
         FM.CT.bHasAntiColLights = true;
 
+        if((this instanceof SkyhawkA4E) || (this instanceof SkyhawkA4M) || 
+           (this instanceof SkyhawkA4F) || (this instanceof SkyhawkA4F_late))
+            bHasRWR = true;
+
         Polares polares = (Polares)Reflection.getValue(FM, "Wing");
         stockSquareWing = FM.Sq.squareWing;
         stockLiftWingLMid = FM.Sq.liftWingLMid;
         stockLiftWingRMid = FM.Sq.liftWingRMid;
         stockCy0 = polares.Cy0_0;
         stockDragAirbrake = FM.Sq.dragAirbrakeCx;
+    }
+
+    private boolean RWRWarning()
+    {
+        boolean flag = false;
+        Point3d point3d = new Point3d();
+        super.pos.getAbs(point3d);
+        Vector3d vector3d = new Vector3d();
+        Aircraft aircraft = War.getNearestEnemy(this, 6000F);
+        if(aircraft != null)
+        {
+            double d = Main3D.cur3D().land2D.worldOfsX() + ((Actor) (aircraft)).pos.getAbsPoint().x;
+            double d1 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (aircraft)).pos.getAbsPoint().y;
+            double d2 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (aircraft)).pos.getAbsPoint().z;
+            double d3 = d2 - (double)Landscape.Hmin((float)((Actor) (aircraft)).pos.getAbsPoint().x, (float)((Actor) (aircraft)).pos.getAbsPoint().y);
+            if(d3 < 0.0D)
+                d3 = 0.0D;
+            int i = (int)(-((double)((Actor) (aircraft)).pos.getAbsOrient().getYaw() - 90D));
+            if(i < 0)
+                i = 360 + i;
+            int j = (int)(-((double)((Actor) (aircraft)).pos.getAbsOrient().getPitch() - 90D));
+            if(j < 0)
+                j = 360 + j;
+            Aircraft aircraft1 = War.getNearestEnemy(aircraft, 6000F);
+            boolean flag1;
+            if((aircraft1 instanceof Aircraft) && aircraft.getArmy() != World.getPlayerArmy() && (aircraft instanceof TypeFighterAceMaker) && ((aircraft instanceof TypeSupersonic) || (aircraft instanceof TypeFastJet)) && aircraft1 == World.getPlayerAircraft() && aircraft1.getSpeed(vector3d) > 20D)
+            {
+                pos.getAbs(point3d);
+                double d4 = Main3D.cur3D().land2D.worldOfsX() + ((Actor) (aircraft1)).pos.getAbsPoint().x;
+                double d6 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (aircraft1)).pos.getAbsPoint().y;
+                double d8 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (aircraft1)).pos.getAbsPoint().z;
+                new String();
+                new String();
+                int k = (int)(Math.floor(((Actor) (aircraft1)).pos.getAbsPoint().z * 0.10000000000000001D) * 10D);
+                int i1 = (int)(Math.floor((aircraft1.getSpeed(vector3d) * 60D * 60D) / 10000D) * 10D);
+                double d10 = (int)(Math.ceil((d2 - d8) / 10D) * 10D);
+                boolean flag2 = false;
+                Engine.land();
+                int k1 = Landscape.getPixelMapT(Engine.land().WORLD2PIXX(((Actor) (aircraft1)).pos.getAbsPoint().x), Engine.land().WORLD2PIXY(((Actor) (aircraft1)).pos.getAbsPoint().y));
+                float f = Mission.cur().sectFile().get("Weather", "WindSpeed", 0.0F);
+                if(k1 >= 28 && k1 < 32 && f < 7.5F)
+                    flag2 = true;
+                new String();
+                double d14 = d4 - d;
+                double d16 = d6 - d1;
+                float f1 = 57.32484F * (float)Math.atan2(d16, -d14);
+                int l1 = (int)(Math.floor((int)f1) - 90D);
+                if(l1 < 0)
+                    l1 = 360 + l1;
+                int i2 = l1 - i;
+                double d19 = d - d4;
+                double d20 = d1 - d6;
+                Random random = new Random();
+                float f3 = ((float)random.nextInt(20) - 10F) / 100F + 1.0F;
+                int i3 = random.nextInt(6) - 3;
+                float f4 = 19000F;
+                float f5 = f4;
+                if(d3 < 1200D)
+                    f5 = (float)(d3 * 0.80000001192092896D * 3D);
+                int j3 = (int)(Math.ceil(Math.sqrt((d20 * d20 + d19 * d19) * (double)f3) / 10D) * 10D);
+                if((float)j3 > f4)
+                    j3 = (int)(Math.ceil(Math.sqrt(d20 * d20 + d19 * d19) / 10D) * 10D);
+                float f6 = 57.32484F * (float)Math.atan2(j3, d10);
+                int k3 = (int)(Math.floor((int)f6) - 90D);
+                int l3 = (k3 - (90 - j)) + i3;
+                int i4 = (int)f4;
+                if((float)j3 < f4)
+                    if(j3 > 1150)
+                        i4 = (int)(Math.ceil((double)j3 / 900D) * 900D);
+                    else
+                        i4 = (int)(Math.ceil((double)j3 / 500D) * 500D);
+                int j4 = i2 + i3;
+                int k4 = j4;
+                if(k4 < 0)
+                    k4 += 360;
+                float f7 = (float)((double)f5 + Math.sin(Math.toRadians(Math.sqrt(i2 * i2) * 3D)) * ((double)f5 * 0.25D));
+                int l4 = (int)((double)f7 * Math.cos(Math.toRadians(l3)));
+                if((double)j3 <= (double)l4 && (double)j3 <= 14000D && (double)j3 >= 200D && l3 >= -30 && l3 <= 30 && Math.sqrt(j4 * j4) <= 60D)
+                    flag1 = true;
+                else
+                    flag1 = false;
+            }
+            else
+            {
+                flag1 = false;
+            }
+            Aircraft aircraft2 = World.getPlayerAircraft();
+            double d5 = Main3D.cur3D().land2D.worldOfsX() + ((Actor) (aircraft1)).pos.getAbsPoint().x;
+            double d7 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (aircraft1)).pos.getAbsPoint().y;
+            double d9 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (aircraft1)).pos.getAbsPoint().z;
+            int j1 = (int)(-((double)((Actor) (aircraft2)).pos.getAbsOrient().getYaw() - 90D));
+            if(j1 < 0)
+                j1 = 360 + j1;
+            if(flag1 && aircraft1 == World.getPlayerAircraft() && (aircraft1 instanceof Skyhawk))
+            {
+                pos.getAbs(point3d);
+                double d11 = Main3D.cur3D().land2D.worldOfsX() + aircraft.pos.getAbsPoint().x;
+                double d12 = Main3D.cur3D().land2D.worldOfsY() + aircraft.pos.getAbsPoint().y;
+                double d13 = Main3D.cur3D().land2D.worldOfsY() + aircraft.pos.getAbsPoint().z;
+                double d15 = (int)(Math.ceil((d9 - d13) / 10D) * 10D);
+                String s = "";
+                if(d9 - d13 - 500D >= 0.0D)
+                    s = " low";
+                if((d9 - d13) + 500D < 0.0D)
+                    s = " high";
+                new String();
+                double d17 = d11 - d5;
+                double d18 = d12 - d7;
+                float f2 = 57.32484F * (float)Math.atan2(d18, -d17);
+                int j2 = (int)(Math.floor((int)f2) - 90D);
+                if(j2 < 0)
+                    j2 = 360 + j2;
+                int k2 = j2 - j1;
+                if(k2 < 0)
+                    k2 = 360 + k2;
+                int l2 = (int)(Math.ceil((double)(k2 + 15) / 30D) - 1.0D);
+                if(l2 < 1)
+                    l2 = 12;
+                double d21 = d5 - d11;
+                double d22 = d7 - d12;
+                double d23 = Math.ceil(Math.sqrt(d22 * d22 + d21 * d21) / 10D) * 10D;
+                if(bMissileWarning)
+                {
+                    bRadarWarning = false;
+                }
+                else
+                {
+                    bRadarWarning = d23 <= 8000D && d23 >= 500D && Math.sqrt(d15 * d15) <= 6000D;
+                    aircraftbrg = cvt(l2, 0.0F, 12F, 0.0F, 360F);
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Enemy at " + l2 + " o'clock" + s + "!");
+                }
+            }
+            else
+            {
+                bRadarWarning = false;
+                aircraftbrg = 0.0F;
+            }
+        }
+        else
+        {
+            bRadarWarning = false;
+            aircraftbrg = 0.0F;
+        }
+        return true;
+    }
+
+    private boolean RWRLaunchWarning()
+    {
+        Point3d point3d = new Point3d();
+        pos.getAbs(point3d);
+        Vector3d vector3d = new Vector3d();
+        Object obj;
+        if((FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
+            obj = World.getPlayerAircraft();
+        else
+            obj = this;
+        super.pos.getAbs(point3d);
+        Object obj1;
+        if((FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
+            obj1 = World.getPlayerAircraft();
+        else
+            obj1 = this;
+        double d = Main3D.cur3D().land2D.worldOfsX() + ((Actor) (obj)).pos.getAbsPoint().x;
+        double d1 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (obj)).pos.getAbsPoint().y;
+        double d2 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (obj)).pos.getAbsPoint().z;
+        int i = (int)(-((double)((Actor) (obj1)).pos.getAbsOrient().getYaw() - 90D));
+        if(i < 0)
+            i = 360 + i;
+        List list = Engine.missiles();
+        int j = list.size();
+        if(j == 0 && (bMissileWarning || backfire))
+        {
+            bMissileWarning = false;
+            backfire = false;
+            misslebrg = 0.0F;
+            return false;
+        }
+        for(int k = 0; k < j; k++)
+        {
+            Actor actor = (Actor)list.get(k);
+            if(((actor instanceof Missile) || (actor instanceof MissileSAM)) && actor.getSpeed(vector3d) > 20D && ((Missile)actor).getMissileTarget() == this)
+            {
+                pos.getAbs(point3d);
+                double d3 = Main3D.cur3D().land2D.worldOfsX() + actor.pos.getAbsPoint().x;
+                double d4 = Main3D.cur3D().land2D.worldOfsY() + actor.pos.getAbsPoint().y;
+                double d5 = Main3D.cur3D().land2D.worldOfsY() + actor.pos.getAbsPoint().z;
+                double d6 = (int)(Math.ceil((d2 - d5) / 10D) * 10D);
+                String s = "";
+                if(d2 - d5 - 500D >= 0.0D)
+                    s = " LOW";
+                if((d2 - d5) + 500D < 0.0D)
+                    s = " HIGH";
+                new String();
+                double d7 = d3 - d;
+                double d8 = d4 - d1;
+                float f = 57.32484F * (float)Math.atan2(d8, -d7);
+                int i1 = (int)(Math.floor((int)f) - 90D);
+                if(i1 < 0)
+                    i1 = 360 + i1;
+                int j1 = i1 - i;
+                if(j1 < 0)
+                    j1 = 360 + j1;
+                int k1 = (int)(Math.ceil((double)(j1 + 15) / 30D) - 1.0D);
+                if(k1 < 1)
+                    k1 = 12;
+                double d9 = d - d3;
+                double d10 = d1 - d4;
+                double d11 = Math.ceil(Math.sqrt(d10 * d10 + d9 * d9) / 10D) * 10D;
+                bMissileWarning = true;
+                if((FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
+                {
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "MISSILE AT " + k1 + " O'CLOCK" + s + "!!!" + misslebrg);
+                    misslebrg = cvt(k1, 0.0F, 12F, 0.0F, 360F);
+                }
+                if((!FM.isPlayers() || !(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode()) && (FM instanceof Maneuver))
+                    backfire = true;
+            }
+            else
+            {
+                bMissileWarning = false;
+                backfire = false;
+                misslebrg = 0.0F;
+            }
+        }
+
+        return true;
     }
 
     public void rareAction(float f, boolean flag)
@@ -1145,6 +1381,10 @@ public class Skyhawk extends Scheme1
                 bailout();
         }
         soundbarier();
+        if(bHasRWR)
+            RWRLaunchWarning();
+        if(bHasRWR && (FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
+            RWRWarning();
         HydroGearCounter(f);
         if(FM.CT.getArrestor() > 0.2F)
             calculateArrestor();
@@ -1489,6 +1729,14 @@ public class Skyhawk extends Scheme1
 
     //By western0221, Anti collision light
     private Eff3DActor antiColLight[];
+
+    //By western0221, classfy has Radar Warning Receiver (A-4E or later)
+    private boolean bHasRWR;
+    public boolean bRadarWarning;
+    public boolean bMissileWarning;
+    public float misslebrg;
+    public float aircraftbrg;
+    public boolean backfire;
 
     //By western0221, classfy working ground spoiler (A-4F or later) or not (A-4E or earlier)
     public boolean bNoSpoiler;
