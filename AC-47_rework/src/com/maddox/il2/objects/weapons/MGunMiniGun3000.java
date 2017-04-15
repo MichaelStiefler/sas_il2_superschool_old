@@ -4,27 +4,103 @@
 
 package com.maddox.il2.objects.weapons;
 
+import com.maddox.il2.ai.World;
+import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.BulletProperties;
 import com.maddox.JGP.Color3f;
+import com.maddox.JGP.Vector3d;
 import com.maddox.il2.engine.GunProperties;
+import com.maddox.il2.fm.RealFlightModel;
+import com.maddox.il2.objects.air.Aircraft;
 
 /**
  * This class was modified by SAS~Skylla in the course of the AC-47 rework.
+ * @see AC_47, MGunMiniGun6000
 **/
 
 public class MGunMiniGun3000 extends MGunAircraftGeneric {
 		
+	protected float rpm;
+	
+	private static final float RECOIL_FACTOR = 0.083F;
+    private Vector3d vtemp = new Vector3d();
+    private Vector3d vwldtemp = new Vector3d();
+    private float ftemp;
+	
+	public MGunMiniGun3000() {
+		this.rpm = 4000F;
+	}
+	
+  //Alterable RPM: -------------------------------------------------------------------------------------
+	
+	public float incRPM() {
+		if(rpm + 2000F <= 4000F) {
+			rpm += 2000F;
+		}
+		return rpm;
+	}
+	
+	public float decRPM() {
+		if(rpm - 2000F >= 2000F) {
+			rpm -= 2000F;
+		}
+		return rpm;
+	}
+	
+	public float resRPM() {
+		this.rpm = 4000F;
+		return rpm;
+	}
+	
+	public void shots(int i, float f) {
+		this._shotStep = (float)prop.bulletsCluster / (rpm/60.0F);
+		super.shots(i,f);
+	}
+	
+  //Reduced Recoil: -----------------------------------------------------------------------------------
+	
+	public void doStartBullet(double d) {
+		Actor actor = getOwner();
+		boolean modifyAM = false;
+        if(actor == World.getPlayerAircraft()) {
+            if(World.cur().diffCur.Realistic_Gunnery && (((Aircraft)actor).FM instanceof RealFlightModel))
+            {
+            	modifyAM = true;
+            }
+        }
+        if (modifyAM) {
+        	this.vtemp.set(((RealFlightModel)((Aircraft)actor).FM).producedAM);
+        	this.vwldtemp.set(((Aircraft)actor).FM.Vwld);
+        	this.ftemp = ((RealFlightModel)((Aircraft)actor).FM).producedShakeLevel;
+        }
+		super.doStartBullet(d);
+        if (modifyAM) {
+        	((RealFlightModel)((Aircraft)actor).FM).producedAM.set(factorizedVector(((RealFlightModel)((Aircraft)actor).FM).producedAM, this.vtemp, RECOIL_FACTOR));
+        	((Aircraft)actor).FM.Vwld.set(factorizedVector(((Aircraft)actor).FM.Vwld, this.vwldtemp, RECOIL_FACTOR));
+        	((RealFlightModel)((Aircraft)actor).FM).producedShakeLevel = ((RealFlightModel)((Aircraft)actor).FM).producedShakeLevel * RECOIL_FACTOR + this.ftemp * (1F -RECOIL_FACTOR);
+        }
+	}
+	
+	private Vector3d factorizedVector(Vector3d v1, Vector3d v2, float factor) {
+	  v1.x = v1.x * factor + v2.x * (1F - factor);
+	  v1.y = v1.y * factor + v2.y * (1F - factor);
+	  v1.z = v1.z * factor + v2.z * (1F - factor);
+	  return v1;
+	}
+	
+  //---------------------------------------------------------------------------------------------------
+	
     public GunProperties createProperties() {
         final GunProperties properties = super.createProperties();
         properties.bCannon = false;
         properties.bUseHookAsRel = true;
+        properties.bEnablePause = true;
         properties.fire = null;
         properties.shells = null;
         properties.sound = "weapon.MiniGun";
         properties.shotFreq = 50.0f;
         properties.bullets = 8000;
-      //TODO Streuung:
-        properties.maxDeltaAngle = 0.458F; //default = 0.229;    
+        properties.maxDeltaAngle = 0.255F; //default = 0.229F;
         properties.fireMesh = "3DO/Effects/GunFire/12mm/mono.sim";
         properties.sprite = "3DO/Effects/GunFire/12mm/GunFlare.eff";
         properties.smoke = "effects/smokes/MachineGun.eff";
@@ -37,7 +113,8 @@ public class MGunMiniGun3000 extends MGunAircraftGeneric {
         properties.weaponType = -1;
         properties.traceFreq = 2;
         properties.bulletsCluster = 2;
-        final int bl = 9;
+        int bl = 2;
+        bl = bl * 5 + 4;
         properties.bullet = new BulletProperties[bl];
         for(int j = 0; j < bl; j++) {
         	properties.bullet[j] =  new BulletProperties();
@@ -148,7 +225,6 @@ public class MGunMiniGun3000 extends MGunAircraftGeneric {
                 this.bulletKV[i] = 0.0f;
             }
         }
-        System.out.println("SKYLLA MINIGUN: maxDeltaAngle = " + this.prop.maxDeltaAngle);
 	}
     */
 }
