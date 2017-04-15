@@ -386,11 +386,6 @@ public class CockpitF_14D extends CockpitPilot
             bNeedSetUp = false;
         }
         ((F_14)aircraft()).bWantBeaconKeys = true;
-        ((AircraftLH)aircraft()).bWantBeaconKeys = true;
-        AircraftLH aircraftlh = (AircraftLH)aircraft();
-        AircraftLH aircraftlh1 = aircraftlh;
-        AircraftLH.printCompassHeading = true;
-        resetYPRmodifier();
         moveControls(f);
         HUD(f);
         drawSound(f);

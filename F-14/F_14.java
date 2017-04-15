@@ -478,6 +478,14 @@ public class F_14 extends Scheme2
             i = 360 + i;
         List list = Engine.missiles();
         int j = list.size();
+        if(j == 0 && (bMissileWarning || backfire))
+        {
+            bMissileWarning = false;
+            playRWRWarning();
+            backfire = false;
+            misslebrg = 0.0F;
+            return false;
+        }
         for(int k = 0; k < j; k++)
         {
             Actor actor = (Actor)list.get(k);
@@ -828,6 +836,7 @@ public class F_14 extends Scheme2
         super.onAircraftLoaded();
         FM.AS.wantBeaconsNet(true);
         FM.Skill = 3;
+        FM.turret[0].bIsAIControlled = false;
         FM.CT.bHasBombSelect = true;
         actl = FM.SensRoll;
         ectl = FM.SensPitch;
@@ -2613,7 +2622,6 @@ public class F_14 extends Scheme2
                 polares.Cy0_1 = 0.8F * stockCy0_0 + 0.2F * stockCy0_1;
                 polares.CxMin_1 = 0.8F * stockCxMin_0 + 0.2F * stockCxMin_1;
                 polares.parabCxCoeff_1 = 0.8F * stockparabCxCoeff_0 + 0.2F * stockparabCxCoeff_1;
-                Reflection.setValue(FM, "Wing", polares);
                 FM.Sq.squareFlaps = 0.35F * stockSqFlaps;
             }
             bFlapsOutFixed = true;
@@ -2628,7 +2636,6 @@ public class F_14 extends Scheme2
                 polares.Cy0_1 = stockCy0_1;
                 polares.CxMin_1 = stockCxMin_1;
                 polares.parabCxCoeff_1 = stockparabCxCoeff_1;
-                Reflection.setValue(FM, "Wing", polares);
                 FM.Sq.squareFlaps = stockSqFlaps;
             }
             bFlapsOutFixed = false;
@@ -2646,7 +2653,6 @@ public class F_14 extends Scheme2
                     polares.Cy0_1 = 0.14F * stockCy0_0 + 0.86F * stockCy0_1;
                     polares.CxMin_1 = 0.14F * stockCxMin_0 + 0.86F * stockCxMin_1;
                     polares.parabCxCoeff_1 = 0.14F * stockparabCxCoeff_0 + 0.86F * stockparabCxCoeff_1;
-                    Reflection.setValue(FM, "Wing", polares);
                     FM.Sq.squareFlaps = 0.90F * stockSqFlaps;
                 }
                 bFlapsInFixed = true;
@@ -2660,7 +2666,6 @@ public class F_14 extends Scheme2
                     polares.Cy0_1 = stockCy0_1;
                     polares.CxMin_1 = stockCxMin_1;
                     polares.parabCxCoeff_1 = stockparabCxCoeff_1;
-                    Reflection.setValue(FM, "Wing", polares);
                     FM.Sq.squareFlaps = stockSqFlaps;
                 }
                 bFlapsInFixed = false;
@@ -2693,7 +2698,6 @@ public class F_14 extends Scheme2
             //{{0.0, 0.1},{0.2, 0.11}, {0.6, 0.1},{0.97, 0.09}, {1.4, 0.07},{1.9, 0.04}, {2.2, 0.03}, {2.5, 0.02}}
             }
         polares.lineCyCoeff= Lift;  // westerntemp
-        Reflection.setValue(FM, "Wing", polares);
     }
 
 
@@ -2864,7 +2868,6 @@ public class F_14 extends Scheme2
             polares.CxMin_0 = floatindex(fsweep, cxmin0Scale);
             polares.Cy0_0 = floatindex(fsweep, cy00Scale);
             polares.CyCritH_0 = floatindex(fsweep, cycrith0Scale);
-            Reflection.setValue(FM, "Wing", polares);
             FM.Sq.squareWing = stockSqWing - floatindex(fsweep, wingsquredecScale) * 2F;
             FM.Sq.liftWingLOut = FM.Sq.liftWingROut = stockSqWingOut - floatindex(fsweep, wingsquredecScale);
             FM.Wingspan = floatindex(fsweep, wingspanScale);
@@ -2898,7 +2901,6 @@ public class F_14 extends Scheme2
             {
                 polares.Cy0_0 = stockCy0_0 * 0.01F;
                 polares.Cy0_1 = stockCy0_1 * 0.1F;
-                Reflection.setValue(FM, "Wing", polares);
                 Reflection.setFloat(FM, "GCenter", stockGCenter);
                 FM.Sq.liftStab -= 3.0F;
                 FM.Sq.squareElevators -= 6.1F;
@@ -2908,7 +2910,6 @@ public class F_14 extends Scheme2
             {
                 polares.Cy0_0 = stockCy0_0;
                 polares.Cy0_1 = stockCy0_1;
-                Reflection.setValue(FM, "Wing", polares);
                 Reflection.setFloat(FM, "GCenter", stockGCenter);
                 FM.Sq.liftStab += 3.0F;
                 FM.Sq.squareElevators += 6.1F;
@@ -2935,7 +2936,6 @@ public class F_14 extends Scheme2
         if(FM.EI.engines[0].getThrustOutput() > 0.97F && FM.EI.engines[1].getThrustOutput() > 0.97F && ((double)calculateMach() < 0.32D || FM.Gears.onGround()) && !bTakeoffFlapAssist && !bStableAIGround)
         {
             polares.Cy0_1 += (bSpawnedAsAI ? 1.8D : 0.8D);
-            Reflection.setValue(FM, "Wing", polares);
             bTakeoffFlapAssist = true;
         }
         if(bTakeoffFlapAssist && !FM.Gears.nearGround())
@@ -2943,7 +2943,6 @@ public class F_14 extends Scheme2
             if((FM.EI.engines[0].getThrustOutput() < 0.97F && FM.EI.engines[1].getThrustOutput() < 0.97F) || (double)calculateMach() >= 0.32D)
             {
                 polares.Cy0_1 -= (bSpawnedAsAI ? 1.8D : 0.8D);
-                Reflection.setValue(FM, "Wing", polares);
                 bTakeoffFlapAssist = false;
             }
         }
