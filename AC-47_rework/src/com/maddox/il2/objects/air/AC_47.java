@@ -217,7 +217,6 @@ public class AC_47 extends Scheme2 implements TypeTransport, TypeBomber
 				if(!e[i].isPause())
 					active++;
 			} else {
-				System.out.println("SKYLLA MINIGUNS: AC_47.setGunsActive returns due to NULL!");
 				return;
 			}
 		}
