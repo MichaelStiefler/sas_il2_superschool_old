@@ -104,17 +104,27 @@ public class F_18C extends F_18
             hasFlare = false;
         else
         {
-            ((RocketGunFlare_gn16)counterFlareList.remove(0)).shots(1);
-            hasFlare = true;
-            lastFlareDeployed = Time.current();
+            if(Time.current() > lastFlareDeployed + 700L)
+            {
+                ((RocketGunFlare_gn16)counterFlareList.get(0)).shots(1);
+                hasFlare = true;
+                lastFlareDeployed = Time.current();
+                if(!((RocketGunFlare_gn16)counterFlareList.get(0)).haveBullets())
+                    counterFlareList.remove(0);
+            }
         }
         if(counterChaffList.isEmpty())
             hasChaff = false;
         else
         {
-            ((RocketGunChaff_gn16)counterChaffList.remove(0)).shots(1);
-            hasChaff = true;
-            lastChaffDeployed = Time.current();
+            if(Time.current() > lastChaffDeployed + 900L)
+            {
+                ((RocketGunChaff_gn16)counterChaffList.get(0)).shots(1);
+                hasChaff = true;
+                lastChaffDeployed = Time.current();
+                if(!((RocketGunChaff_gn16)counterChaffList.get(0)).haveBullets())
+                    counterChaffList.remove(0);
+            }
         }
     }
 
