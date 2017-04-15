@@ -7,7 +7,6 @@ import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
 import com.maddox.il2.objects.weapons.*;
-import com.maddox.il2.objects.weapons.GuidedMissileUtils;
 import com.maddox.rts.*;
 import com.maddox.sound.Sample;
 import com.maddox.sound.SoundFX;
@@ -49,12 +48,60 @@ public class F_14D extends F_14
         counter = 0;
         freq = 800;
         Timer1 = Timer2 = freq;
-         error=0;
+        error = 0;
+        counterFlareList = new ArrayList();
+        counterChaffList = new ArrayList();
     }
 
     public static String getSkinPrefix(String s, Regiment regiment)
     {
         return "F14D_";
+    }
+
+    private void checkAmmo()
+    {
+        for(int i = 0; i < FM.CT.Weapons.length; i++)
+            if(FM.CT.Weapons[i] != null)
+            {
+                for(int j = 0; j < FM.CT.Weapons[i].length; j++)
+                    if(FM.CT.Weapons[i][j].haveBullets())
+                    {
+                        if(FM.CT.Weapons[i][j] instanceof RocketGunFlare_gn16)
+                            counterFlareList.add(FM.CT.Weapons[i][j]);
+                        else if(FM.CT.Weapons[i][j] instanceof RocketGunChaff_gn16)
+                            counterChaffList.add(FM.CT.Weapons[i][j]);
+                    }
+            }
+    }
+
+    public void backFire()
+    {
+        if(counterFlareList.isEmpty())
+            hasFlare = false;
+        else
+        {
+            if(Time.current() > lastFlareDeployed + 1200L)
+            {
+                ((RocketGunFlare_gn16)counterFlareList.get(0)).shots(1);
+                hasFlare = true;
+                lastFlareDeployed = Time.current();
+                if(!((RocketGunFlare_gn16)counterFlareList.get(0)).haveBullets())
+                    counterFlareList.remove(0);
+            }
+        }
+        if(counterChaffList.isEmpty())
+            hasChaff = false;
+        else
+        {
+            if(Time.current() > lastChaffDeployed + 1500L)
+            {
+                ((RocketGunChaff_gn16)counterChaffList.get(0)).shots(1);
+                hasChaff = true;
+                lastChaffDeployed = Time.current();
+                if(!((RocketGunChaff_gn16)counterChaffList.get(0)).haveBullets())
+                    counterChaffList.remove(0);
+            }
+        }
     }
 
     public long getChaffDeployed()
@@ -125,8 +172,8 @@ public class F_14D extends F_14
     public void onAircraftLoaded()
     {
         super.onAircraftLoaded();
+        checkAmmo();
         guidedMissileUtils.onAircraftLoaded();
-        FM.Skill = 3;
     }
 
     public void update(float f)
@@ -134,6 +181,8 @@ public class F_14D extends F_14
         guidedMissileUtils.update();
         this.computeF110GE400_AB();
         super.update(f);
+        if(super.backfire)
+            backFire();
     }
 
 
@@ -811,6 +860,8 @@ public class F_14D extends F_14
     private int counter;
     private int error;
     private long raretimer;
+    private ArrayList counterFlareList;
+    private ArrayList counterChaffList;
 
     private static String irstPlaneName[] =
     {
