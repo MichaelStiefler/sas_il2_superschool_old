@@ -4,14 +4,37 @@
 
 package com.maddox.il2.objects.air;
 
+import java.io.IOException;
+
+import com.maddox.rts.NetMsgGuaranted;
+import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 import com.maddox.il2.engine.Actor;
+import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.engine.HierMesh;
+import com.maddox.il2.game.HUD;
+import com.maddox.il2.objects.weapons.MGunMiniGun3000;
 import com.maddox.sas1946.il2.util.AircraftTools;
 
-public class AC_47 extends Scheme2 implements TypeTransport
+/**
+ * This class was modified by SAS~Skylla in the course of the AC-47 rework.
+ * @see MGunMiniGun3000, MGunMiniGun6000
+ * 
+ * Modifications:
+ *  - Imported new 3D by SAS~GJE52 from here: http://www.sas1946.com/main/index.php/topic,32003.0.html
+ *  - Reduced Recoil on the miniguns
+ *  - Added the option to select the rpm-values on the miniguns: 
+ *     + MGunMiniGun3000 can be set to 2000rpm / 4000rpm
+ *     + MGunMiniGun6000 can be set to 3000rpm / 6000rpm
+ *  - Reworked the Minigun belt: After 2 belts normal .50cal there is one 0.50cal APIT ammo
+ *  - Added the opion to select either 1, 2 or all three guns when firing
+ *  - Moved to flare drop position to the open cargo door.
+ *  
+**/
+
+public class AC_47 extends Scheme2 implements TypeTransport, TypeBomber
 {
     static /* synthetic */ Class class$com$maddox$il2$objects$air$AC_47;
     static /* synthetic */ Class class$com$maddox$il2$objects$air$CockpitAC47;
@@ -147,4 +170,131 @@ public class AC_47 extends Scheme2 implements TypeTransport
         //AircraftTools.weaponsRegister(clazz, "3000rpm", new String[] { "BombGunFlareLight 45", "MGunMiniGun3000 8000", "MGunMiniGun3000 8000", "MGunMiniGun3000 8000" });
         //AircraftTools.weaponsRegister(clazz, "none", new String[] { null, null, null, null });
     }
+
+  //MinigunRPM ---------------------------------------------------------------------------
+    
+    private void setRPM(int dir) {
+    	float f = -1.0F;
+		for(int i = 0; i<3; i++) {
+			BulletEmitter e = this.getBulletEmitterByHookName("_MGUN0" + (i+1));
+			if(e instanceof MGunMiniGun3000) {
+				MGunMiniGun3000 m = (MGunMiniGun3000) e;
+				switch(dir) {
+				case -1: f = m.decRPM(); break;
+				case 0: m.resRPM(); break;
+				case 1: f = m.incRPM(); break;
+				default: return;
+				}
+			} else {
+				return;
+			}
+		}
+		if(f > 0) {
+			HUD.log("Current Rate of Fire: " + (int)f + "rpm");
+		}
+    }
+    
+	public void typeBomberAdjSpeedMinus() {
+		setRPM(-1);
+	}
+
+	public void typeBomberAdjSpeedPlus() {
+		setRPM(1);
+	}
+    
+	public void typeBomberAdjSpeedReset() {
+		setRPM(0);
+	}
+
+  //Selectable Miniguns: -----------------------------------------------------------------
+	
+	private void setGunsActive(int dir) {
+		BulletEmitter [] e = new BulletEmitter[3];
+		int active = 0;
+		for(int i = 0; i < e.length; i++) {
+			e[i] = getBulletEmitterByHookName("_MGUN0" + (i+1));
+			if(e[i] != null) {
+				if(!e[i].isPause())
+					active++;
+			} else {
+				System.out.println("SKYLLA MINIGUNS: AC_47.setGunsActive returns due to NULL!");
+				return;
+			}
+		}
+		if(active + dir > 0 && active + dir < 4) {
+			active += dir;
+		}
+		switch(active) {
+		case 1: 
+			e[0].setPause(false);
+			e[1].setPause(true);
+			e[2].setPause(true);
+			break;
+		case 2: 
+			e[0].setPause(false);
+			e[1].setPause(false);
+			e[2].setPause(true);
+			break;
+		default:
+			e[0].setPause(false);
+			e[1].setPause(false);
+			e[2].setPause(false);
+		}
+		HUD.log("Active Guns: " + active);
+	}
+	
+	public void typeBomberAdjAltitudeMinus() {
+		setGunsActive(-1);
+	}
+
+	public void typeBomberAdjAltitudePlus() {
+		setGunsActive(+1);
+	}
+
+  //--------------------------------------------------------------------------------------
+	
+	public void typeBomberAdjAltitudeReset() {
+		
+	}
+
+	public void typeBomberAdjDistanceMinus() {
+		
+	}
+
+	public void typeBomberAdjDistancePlus() {
+		
+	}
+
+	public void typeBomberAdjDistanceReset() {
+		
+	}
+
+	public void typeBomberAdjSideslipMinus() {
+		
+	}
+
+	public void typeBomberAdjSideslipPlus() {
+		
+	}
+
+	public void typeBomberAdjSideslipReset() {
+		
+	}
+
+
+	public void typeBomberReplicateFromNet(NetMsgInput arg0) throws IOException {
+		
+	}
+
+	public void typeBomberReplicateToNet(NetMsgGuaranted arg0) throws IOException {
+		
+	}
+
+	public boolean typeBomberToggleAutomation() {
+		return false;
+	}
+
+	public void typeBomberUpdate(float arg0) {
+		
+	}
 }
