@@ -42,6 +42,8 @@ public class SkyhawkA4F extends SkyhawkFuelReceiver
         intervalMissileLaunchThreat = 1000L;
         guidedMissileUtils = new GuidedMissileUtils(this);
         bHasLAUcaps = false;
+        counterFlareList = new ArrayList();
+        counterChaffList = new ArrayList();
     }
 
     private void checkChangeWeaponColors()
@@ -80,6 +82,11 @@ public class SkyhawkA4F extends SkyhawkFuelReceiver
                         bHasLAUcaps = true;
                     else if(FM.CT.Weapons[i][j] instanceof Pylon_LAU131_Cap_gn16)
                         bHasLAUcaps = true;
+
+                    if(FM.CT.Weapons[i][j] instanceof RocketGunFlare_gn16)
+                        counterFlareList.add(FM.CT.Weapons[i][j]);
+                    else if(FM.CT.Weapons[i][j] instanceof RocketGunChaff_gn16)
+                        counterChaffList.add(FM.CT.Weapons[i][j]);
                 }
             }
     }
@@ -189,6 +196,36 @@ public class SkyhawkA4F extends SkyhawkFuelReceiver
         }
     }
 
+    public void backFire()
+    {
+        if(counterFlareList.isEmpty())
+            hasFlare = false;
+        else
+        {
+            if(Time.current() > lastFlareDeployed + 700L)
+            {
+                ((RocketGunFlare_gn16)counterFlareList.get(0)).shots(1);
+                hasFlare = true;
+                lastFlareDeployed = Time.current();
+                if(!((RocketGunFlare_gn16)counterFlareList.get(0)).haveBullets())
+                    counterFlareList.remove(0);
+            }
+        }
+        if(counterChaffList.isEmpty())
+            hasChaff = false;
+        else
+        {
+            if(Time.current() > lastChaffDeployed + 1300L)
+            {
+                ((RocketGunChaff_gn16)counterChaffList.get(0)).shots(1);
+                hasChaff = true;
+                lastChaffDeployed = Time.current();
+                if(!((RocketGunChaff_gn16)counterChaffList.get(0)).haveBullets())
+                    counterChaffList.remove(0);
+            }
+        }
+    }
+
     public long getChaffDeployed()
     {
         if(hasChaff)
@@ -288,6 +325,8 @@ public class SkyhawkA4F extends SkyhawkFuelReceiver
             checkDeleteLAUcaps();
         super.update(f);
         guidedMissileUtils.update();
+        if(super.backfire)
+            backFire();
     }
 
     public void missionStarting()
@@ -359,6 +398,8 @@ public class SkyhawkA4F extends SkyhawkFuelReceiver
     private boolean bHasLAUcaps;
     private byte hasMk7Nuke = 0;
     private byte hasMk12Nuke = 0;
+    private ArrayList counterFlareList;
+    private ArrayList counterChaffList;
 
     static 
     {
@@ -3609,6 +3650,39 @@ public class SkyhawkA4F extends SkyhawkFuelReceiver
             a_lweaponslot[35] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[56] = new Aircraft._WeaponSlot(2, "RocketGunFFARMk4_gn16", 7);
             a_lweaponslot[57] = new Aircraft._WeaponSlot(2, "RocketGunFFARMk4_gn16", 7);
+            arraylist.add(s);
+            hashmapint.put(Finger.Int(s), a_lweaponslot);
+            s = "2xAGM12E+2xMk82+1x300Dt";
+            a_lweaponslot = GenerateDefaultConfig(byte0);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawkNF_gn16", 1);
+            a_lweaponslot[14] = new Aircraft._WeaponSlot(3, "BombGunMk82_gn16", 1);
+            a_lweaponslot[15] = new Aircraft._WeaponSlot(3, "BombGunMk82_gn16", 1);
+            a_lweaponslot[32] = new Aircraft._WeaponSlot(4, "RocketGunAGM12E_gn16", 1);
+            a_lweaponslot[33] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
+            a_lweaponslot[34] = new Aircraft._WeaponSlot(4, "RocketGunAGM12E_gn16", 1);
+            a_lweaponslot[35] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
+            arraylist.add(s);
+            hashmapint.put(Finger.Int(s), a_lweaponslot);
+            s = "2xAGM12E+2xMk20+1x300Dt";
+            a_lweaponslot = GenerateDefaultConfig(byte0);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawkNF_gn16", 1);
+            a_lweaponslot[14] = new Aircraft._WeaponSlot(3, "BombGunMk20RockeyeII_gn16", 1);
+            a_lweaponslot[15] = new Aircraft._WeaponSlot(3, "BombGunMk20RockeyeII_gn16", 1);
+            a_lweaponslot[32] = new Aircraft._WeaponSlot(4, "RocketGunAGM12E_gn16", 1);
+            a_lweaponslot[33] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
+            a_lweaponslot[34] = new Aircraft._WeaponSlot(4, "RocketGunAGM12E_gn16", 1);
+            a_lweaponslot[35] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
+            arraylist.add(s);
+            hashmapint.put(Finger.Int(s), a_lweaponslot);
+            s = "2xAGM12E+2xMk77m1+1x300Dt";
+            a_lweaponslot = GenerateDefaultConfig(byte0);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawkNF_gn16", 1);
+            a_lweaponslot[14] = new Aircraft._WeaponSlot(3, "BombGunMk77NapalmMod1_gn16", 1);
+            a_lweaponslot[15] = new Aircraft._WeaponSlot(3, "BombGunMk77NapalmMod1_gn16", 1);
+            a_lweaponslot[32] = new Aircraft._WeaponSlot(4, "RocketGunAGM12E_gn16", 1);
+            a_lweaponslot[33] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
+            a_lweaponslot[34] = new Aircraft._WeaponSlot(4, "RocketGunAGM12E_gn16", 1);
+            a_lweaponslot[35] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "1xMk7nuke8kt+2x300Dt";
