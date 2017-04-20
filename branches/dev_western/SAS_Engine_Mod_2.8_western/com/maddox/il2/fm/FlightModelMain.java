@@ -4,6 +4,7 @@
 /*By PAL, implemented methods to load plain debug FM*/
 /*By western, merge new function and clean-up on 19th/Oct./2016*/
 /*By Storebror, FM log spam filter on 19th/Jan./2017*/
+/*By Storebror, fix DiffFM loading error on 18th/Apr./2017*/
 package com.maddox.il2.fm;
 
 import java.io.BufferedWriter;
@@ -70,10 +71,10 @@ public class FlightModelMain extends FMMath {
 	private static final long FMFLAGS_NETSENTWINGNOTE = 4096L;
 	private static final long FMFLAGS_NETSENTBURYNOTE = 16384L;
 	private static final long FMFLAGS_NETSENTCTRLSDMG = 32768L;
-	private static final long FMFLAGS_NETSENT4 = 0x10000L;
-	private static final long FMFLAGS_NETSENT5 = 0x20000L;
-	private static final long FMFLAGS_NETSENT6 = 0x40000L;
-	private static final long FMFLAGS_NETSENT7 = 0x80000L;
+//	private static final long FMFLAGS_NETSENT4 = 0x10000L;
+//	private static final long FMFLAGS_NETSENT5 = 0x20000L;
+//	private static final long FMFLAGS_NETSENT6 = 0x40000L;
+//	private static final long FMFLAGS_NETSENT7 = 0x80000L;
 	public static final int FMSFX_NOOP = 0;
 	public static final int FMSFX_DROP_WINGFOLDED = 1;
 	public static final int FMSFX_DROP_LEFTWING = 2;
@@ -178,9 +179,9 @@ public class FlightModelMain extends FMMath {
 	public float refM;
 	public float SafetyFactor;
 	public float ReferenceForce;
-	private String aircrName;
-	private String engineFamily;
-	private String engineModel;
+//	private String aircrName;
+//	private String engineFamily;
+//	private String engineModel;
 	String turnFile;
 	String speedFile;
 	String craftFile;
@@ -755,7 +756,7 @@ public class FlightModelMain extends FMMath {
 		Wing.P_Vmax = EI.forcePropAOA(Wing.V_max, 0.0F, 1.1F, true);
 		Wing.S = f22;
 		Wing.G = f21;
-		float f23 = Atmosphere.density(0.0F);
+//		float f23 = Atmosphere.density(0.0F);
 		s2 = "Polares";
 		f = sectfile.get(s2, "lineCyCoeff", -999F);
 		if (f != -999F) {
@@ -1149,59 +1150,59 @@ public class FlightModelMain extends FMMath {
 	}
 
 	public final boolean isCapableOfACM() {
-		return (flags0 & 32L) != 0L;
+		return (flags0 & FMFLAGS_CAPABLEACM) != 0L;
 	}
 
 	public final boolean isCapableOfBMP() {
-		return (flags0 & 16L) != 0L;
+		return (flags0 & FMFLAGS_CAPABLEAIRWORTHY) != 0L;
 	}
 
 	public final boolean isCapableOfTaxiing() {
-		return (flags0 & 64L) != 0L;
+		return (flags0 & FMFLAGS_CAPABLETAXI) != 0L;
 	}
 
 	public final boolean isReadyToDie() {
-		return (flags0 & 4L) != 0L;
+		return (flags0 & FMFLAGS_READYTODIE) != 0L;
 	}
 
 	public final boolean isReadyToReturn() {
-		return (flags0 & 2L) != 0L;
+		return (flags0 & FMFLAGS_READYTORETURN) != 0L;
 	}
 
 	public final boolean isTakenMortalDamage() {
-		return (flags0 & 8L) != 0L;
+		return (flags0 & FMFLAGS_TAKENMORTALDAMAGE) != 0L;
 	}
 
 	public final boolean isStationedOnGround() {
-		return (flags0 & 128L) != 0L;
+		return (flags0 & FMFLAGS_STATIONEDONGROUND) != 0L;
 	}
 
 	public final boolean isCrashedOnGround() {
-		return (flags0 & 256L) != 0L;
+		return (flags0 & FMFLAGS_CRASHEDONGROUND) != 0L;
 	}
 
 	public final boolean isNearAirdrome() {
-		return (flags0 & 512L) != 0L;
+		return (flags0 & FMFLAGS_NEARAIRDROME) != 0L;
 	}
 
 	public final boolean isCrossCountry() {
-		return (flags0 & 1024L) != 0L;
+		return (flags0 & FMFLAGS_ISCROSSCOUNTRY) != 0L;
 	}
 
 	public final boolean isWasAirborne() {
-		return (flags0 & 2048L) != 0L;
+		return (flags0 & FMFLAGS_WASAIRBORNE) != 0L;
 	}
 
 	public final boolean isSentWingNote() {
-		return (flags0 & 4096L) != 0L;
+		return (flags0 & FMFLAGS_NETSENTWINGNOTE) != 0L;
 	}
 
 	public final boolean isSentBuryNote() {
-		return (flags0 & 16384L) != 0L;
+		return (flags0 & FMFLAGS_NETSENTBURYNOTE) != 0L;
 	}
 
 	public final boolean isSentControlsOutNote() {
-		return (flags0 & 32768L) != 0L;
+		return (flags0 & FMFLAGS_NETSENTCTRLSDMG) != 0L;
 	}
 
 	public boolean isOk() {
@@ -1222,17 +1223,17 @@ public class FlightModelMain extends FMMath {
 
 	public final void setCapableOfACM(boolean flag) {
 		if (isCapableOfACM() == flag) return;
-		if (flag) flags0 |= 32L;
-		else flags0 &= -33L;
+		if (flag) flags0 |= FMFLAGS_CAPABLEACM;
+		else flags0 &= -FMFLAGS_CAPABLEACM - 1L;
 	}
 
 	public final void setCapableOfBMP(boolean flag, Actor actor) {
 		if (isCapableOfBMP() == flag) return;
 		if (isCapableOfBMP() && World.Rnd().nextInt(0, 99) < 25) Voice.speakMayday((Aircraft) this.actor);
 		if (flag) {
-			flags0 |= 16L;
+			flags0 |= FMFLAGS_CAPABLEAIRWORTHY;
 		} else {
-			flags0 &= -17L;
+			flags0 &= -FMFLAGS_CAPABLEAIRWORTHY - 1L;
 			if (!bDamaged) damagedInitiator = actor;
 			checkDamaged();
 		}
@@ -1241,9 +1242,9 @@ public class FlightModelMain extends FMMath {
 	public final void setCapableOfTaxiing(boolean flag) {
 		if (isCapableOfTaxiing() == flag) return;
 		if (flag) {
-			flags0 |= 64L;
+			flags0 |= FMFLAGS_CAPABLETAXI;
 		} else {
-			flags0 &= -65L;
+			flags0 &= -FMFLAGS_CAPABLETAXI - 1L;
 			checkDamaged();
 		}
 	}
@@ -1255,45 +1256,45 @@ public class FlightModelMain extends FMMath {
 			Explosions.generateComicBulb(actor, "OnFire", 9F);
 		}
 		if (flag) {
-			flags0 |= 4L;
+			flags0 |= FMFLAGS_READYTODIE;
 			checkDamaged();
 		} else {
-			flags0 &= -5L;
+			flags0 &= -FMFLAGS_READYTODIE - 1L;
 		}
 	}
 
 	public final void setReadyToDieSoftly(boolean flag) {
 		if (isReadyToDie() == flag) return;
 		if (flag) {
-			flags0 |= 4L;
+			flags0 |= FMFLAGS_READYTODIE;
 			checkDamaged();
 		} else {
-			flags0 &= -5L;
+			flags0 &= -FMFLAGS_READYTODIE - 1L;
 		}
 	}
 
 	public final void setReadyToReturn(boolean flag) {
 		if (isReadyToReturn() == flag) return;
 		if (!isReadyToReturn()) Explosions.generateComicBulb(actor, "RTB", 9F);
-		if (flag) flags0 |= 2L;
-		else flags0 &= -3L;
+		if (flag) flags0 |= FMFLAGS_READYTORETURN;
+		else flags0 &= -FMFLAGS_READYTORETURN - 1L;
 		Voice.speakToReturn((Aircraft) actor);
 	}
 
 	public final void setReadyToReturnSoftly(boolean flag) {
 		if (isReadyToReturn() == flag) return;
-		if (flag) flags0 |= 2L;
-		else flags0 &= -3L;
+		if (flag) flags0 |= FMFLAGS_READYTORETURN;
+		else flags0 &= -FMFLAGS_READYTORETURN - 1L;
 	}
 
 	public final void setTakenMortalDamage(boolean flag, Actor actor) {
 		if (isTakenMortalDamage() == flag) return;
 		if (flag) {
-			flags0 |= 8L;
+			flags0 |= FMFLAGS_TAKENMORTALDAMAGE;
 			if (!bDamaged && !Actor.isValid(damagedInitiator)) damagedInitiator = actor;
 			checkDamaged();
 		} else {
-			flags0 &= -9L;
+			flags0 &= -FMFLAGS_TAKENMORTALDAMAGE - 1L;
 		}
 		if (flag && this.actor != World.getPlayerAircraft() && ((Aircraft) this.actor).FM.turret.length > 0) {
 			for (int i = 0; i < ((Aircraft) this.actor).FM.turret.length; i++)
@@ -1305,61 +1306,61 @@ public class FlightModelMain extends FMMath {
 	public final void setStationedOnGround(boolean flag) {
 		if (isStationedOnGround() == flag) return;
 		if (flag) {
-			flags0 |= 128L;
+			flags0 |= FMFLAGS_STATIONEDONGROUND;
 			EventLog.onAirLanded((Aircraft) actor);
 			checkDamaged();
 		} else {
-			flags0 &= -129L;
+			flags0 &= -FMFLAGS_STATIONEDONGROUND - 1L;
 		}
 	}
 
 	public final void setCrashedOnGround(boolean flag) {
 		if (isCrashedOnGround() == flag) return;
 		if (flag) {
-			flags0 |= 256L;
+			flags0 |= FMFLAGS_CRASHEDONGROUND;
 			checkDamaged();
 		} else {
-			flags0 &= -257L;
+			flags0 &= -FMFLAGS_CRASHEDONGROUND - 1L;
 		}
 	}
 
 	public final void setNearAirdrome(boolean flag) {
 		if (isNearAirdrome() == flag) return;
-		if (flag) flags0 |= 512L;
-		else flags0 &= -513L;
+		if (flag) flags0 |= FMFLAGS_NEARAIRDROME;
+		else flags0 &= -FMFLAGS_NEARAIRDROME - 1L;
 	}
 
 	public final void setCrossCountry(boolean flag) {
 		if (isCrossCountry() == flag) return;
-		if (flag) flags0 |= 1024L;
-		else flags0 &= -1025L;
+		if (flag) flags0 |= FMFLAGS_ISCROSSCOUNTRY;
+		else flags0 &= -FMFLAGS_ISCROSSCOUNTRY - 1L;
 	}
 
 	public final void setWasAirborne(boolean flag) {
 		if (isWasAirborne() == flag) return;
-		if (flag) flags0 |= 2048L;
-		else flags0 &= -2049L;
+		if (flag) flags0 |= FMFLAGS_WASAIRBORNE;
+		else flags0 &= -FMFLAGS_WASAIRBORNE - 1L;
 	}
 
 	public final void setSentWingNote(boolean flag) {
 		if (isSentWingNote() == flag) return;
-		if (flag) flags0 |= 4096L;
-		else flags0 &= -4097L;
+		if (flag) flags0 |= FMFLAGS_NETSENTWINGNOTE;
+		else flags0 &= -FMFLAGS_NETSENTWINGNOTE - 1L;
 	}
 
 	public final void setSentBuryNote(boolean flag) {
 		if (isSentBuryNote() == flag) return;
-		if (flag) flags0 |= 16384L;
-		else flags0 &= -16385L;
+		if (flag) flags0 |= FMFLAGS_NETSENTBURYNOTE;
+		else flags0 &= -FMFLAGS_NETSENTBURYNOTE - 1L;
 	}
 
 	public final void setSentControlsOutNote(boolean flag) {
 		if (isSentControlsOutNote() == flag) return;
 		if (flag) {
-			flags0 |= 32768L;
+			flags0 |= FMFLAGS_NETSENTCTRLSDMG;
 			checkDamaged();
 		} else {
-			flags0 &= -32769L;
+			flags0 &= -FMFLAGS_NETSENTCTRLSDMG - 1L;
 		}
 	}
 
@@ -1507,7 +1508,7 @@ public class FlightModelMain extends FMMath {
 			break;
 
 		case 3: // '\003'
-			if (Sq.dragEngineCx[0] < 0.15F) Sq.dragEngineCx[0] += 0.050000000000000003D;
+			if (Sq.dragEngineCx[0] < 0.15F) Sq.dragEngineCx[0] += 0.050D;
 			if (World.Rnd().nextFloat() < 0.12F) setReadyToReturn(true);
 			break;
 
@@ -1970,12 +1971,12 @@ public class FlightModelMain extends FMMath {
 		String sName = s.toLowerCase();
 		//By PAL, from DiffFM, begin
 		String sDir = "gui/game/buttons";
-		int i = sName.indexOf(":"); //By PAL, specific FMD (DiffFM)
-		if (i > -1) { //It is not valid in first position either
-			sDir = sName.substring(i + 1);
-			sName = sName.substring(0, i);
+		int diffFMSeparatorPos = sName.indexOf(":"); //By PAL, specific FMD (DiffFM)
+		if (diffFMSeparatorPos > -1) { //It is not valid in first position either
+			sDir = sName.substring(diffFMSeparatorPos + 1);
+			sName = sName.substring(0, diffFMSeparatorPos);
 			//Example: 'FlightModels/F-105D.fmd:F105' for plane FM
-			//Example: 'FlightModels/PWJ75:F105.emd' for Engine EMD, appears as
+			//Example: 'FlightModels/PWJ75.emd:F105' for Engine EMD, appears as
 			//	Engine0Family PWJ75:F105
 			if (sDir.endsWith(".emd")) {
 				sName = sName + ".emd";   //FlightModels/PWJ57 + .emd
@@ -2011,7 +2012,13 @@ public class FlightModelMain extends FMMath {
 		//By PAL, Option C: Check DiffFM or Normal Loading
 		try {
 			//By PAL, new: Object obj = Property.value(s, "stream", null);
-			Object obj = Property.value(sName, "stream", null);
+//			Object obj = Property.value(sName, "stream", null);
+
+			// TODO: Changed by SAS~Storebror, DiffFM file name added to Property Name if applicable to avoid overlapping buttons/DiffFM 
+			String propertyName = sName;
+			if(diffFMSeparatorPos > -1) propertyName += ":" + sDir;
+			Object obj = Property.value(propertyName, "stream", null);
+
 			InputStream inputstream = null;
 			if (obj != null) {
 				inputstream = (InputStream)obj;
@@ -2136,9 +2143,10 @@ public class FlightModelMain extends FMMath {
 			inputstream.mark(0);
 			sectfile = new SectFile(new InputStreamReader(new KryptoInputFilter(inputstream, getSwTbl(Finger.Int(sName + "ogh9"), inputstream.available())), "Cp1252"));
 			inputstream.reset();
-			if (obj == null)
+			if (obj == null) {
 				//By PAL, new: Property.set(s, "stream", inputstream);
-				Property.set(sName, "stream", inputstream);
+				Property.set(propertyName, "stream", inputstream); // TODO: DiffFM file name added to Property Name if applicable to avoid overlapping buttons/DiffFM names
+			}
 		}
 		catch(Exception exception) {
 			//By PAL, tell the Reason of the Crash
