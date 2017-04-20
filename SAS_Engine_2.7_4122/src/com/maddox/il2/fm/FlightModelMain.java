@@ -4,6 +4,7 @@
 /*By PAL, implemented methods to load plain debug FM*/
 /*By western, merge new function and clean-up on 19th/Oct./2016*/
 /*By Storebror, FM log spam filter on 19th/Jan./2017*/
+/*By Storebror, fix DiffFM loading error on 18th/Apr./2017*/
 package com.maddox.il2.fm;
 
 import java.io.BufferedWriter;
@@ -71,10 +72,10 @@ public class FlightModelMain extends FMMath
     private static final long FMFLAGS_NETSENTWINGNOTE = 4096L;
     private static final long FMFLAGS_NETSENTBURYNOTE = 16384L;
     private static final long FMFLAGS_NETSENTCTRLSDMG = 32768L;
-    private static final long FMFLAGS_NETSENT4 = 0x10000L;
-    private static final long FMFLAGS_NETSENT5 = 0x20000L;
-    private static final long FMFLAGS_NETSENT6 = 0x40000L;
-    private static final long FMFLAGS_NETSENT7 = 0x80000L;
+//    private static final long FMFLAGS_NETSENT4 = 0x10000L;
+//    private static final long FMFLAGS_NETSENT5 = 0x20000L;
+//    private static final long FMFLAGS_NETSENT6 = 0x40000L;
+//    private static final long FMFLAGS_NETSENT7 = 0x80000L;
     public static final int FMSFX_NOOP = 0;
     public static final int FMSFX_DROP_WINGFOLDED = 1;
     public static final int FMSFX_DROP_LEFTWING = 2;
@@ -179,9 +180,9 @@ public class FlightModelMain extends FMMath
     public float refM;
     public float SafetyFactor;
     public float ReferenceForce;
-    private String aircrName;
-    private String engineFamily;
-    private String engineModel;
+//    private String aircrName;
+//    private String engineFamily;
+//    private String engineModel;
     String turnFile;
     String speedFile;
     String craftFile;
@@ -624,7 +625,7 @@ public class FlightModelMain extends FMMath
         j = sectfile.get(s2, "cElectricProp", 0);
         CT.bUseElectricProp = j == 1;
         //TODO: Deleted float prefix
-		// TODO: apply individual R/L/C periods
+        //TODO: apply individual R/L/C periods
         f = sectfile.get(s2, "GearPeriod", -999F);
         if (f != -999F)
         {
@@ -679,8 +680,8 @@ public class FlightModelMain extends FMMath
         default:
             throw new RuntimeException("Invalid Plane Scheme (Can't Get There!)..");
 
-        case 0: // '\0'
-        case 1: // '\001'
+        case 0:
+        case 1:
             float f1 = Length * 0.35F;
             f1 *= f1;
             float f11 = Length * 0.125F;
@@ -694,7 +695,7 @@ public class FlightModelMain extends FMMath
             J0.x = f16 * 0.6F + f6 * 0.4F;
             break;
 
-        case 2: // '\002'
+        case 2:
             float f2 = Length * 0.35F;
             f2 *= f2;
             float f12 = Length * 0.125F;
@@ -708,7 +709,7 @@ public class FlightModelMain extends FMMath
             J0.x = f17 * 0.3F + f7 * 0.7F;
             break;
 
-        case 3: // '\003'
+        case 3:
             float f3 = Length * 0.35F;
             f3 *= f3;
             float f13 = Length * 0.125F;
@@ -722,9 +723,9 @@ public class FlightModelMain extends FMMath
             J0.x = f18 * 0.2F + f8 * 0.8F;
             break;
 
-        case 4: // '\004'
-        case 5: // '\005'
-        case 7: // '\007'
+        case 4:
+        case 5:
+        case 7:
             float f4 = Length * 0.35F;
             f4 *= f4;
             float f14 = Length * 0.125F;
@@ -738,7 +739,7 @@ public class FlightModelMain extends FMMath
             J0.x = f19 * 0.4F + f9 * 0.6F;
             break;
 
-        case 6: // '\006'
+        case 6:
             float f5 = Length * 0.35F;
             f5 *= f5;
             float f15 = Length * 0.125F;
@@ -799,7 +800,7 @@ public class FlightModelMain extends FMMath
         VmaxFLAPS *= 0.2777778F;
         VminFLAPS *= 0.2416667F;
         VmaxAllowed *= 0.2777778F;
-        float f23 = Atmosphere.density(0.0F);
+//        float f23 = Atmosphere.density(0.0F);
         s2 = "Polares";
         Fusel.lineCyCoeff = 0.02F;
         Fusel.AOAMinCx_Shift = 0.0F;
@@ -1301,72 +1302,72 @@ public class FlightModelMain extends FMMath
 
     public final boolean isCapableOfACM()
     {
-        return (flags0 & 32L) != 0L;
+        return (flags0 & FMFLAGS_CAPABLEACM) != 0L;
     }
 
     public final boolean isCapableOfBMP()
     {
-        return (flags0 & 16L) != 0L;
+        return (flags0 & FMFLAGS_CAPABLEAIRWORTHY) != 0L;
     }
 
     public final boolean isCapableOfTaxiing()
     {
-        return (flags0 & 64L) != 0L;
+        return (flags0 & FMFLAGS_CAPABLETAXI) != 0L;
     }
 
     public final boolean isReadyToDie()
     {
-        return (flags0 & 4L) != 0L;
+        return (flags0 & FMFLAGS_READYTODIE) != 0L;
     }
 
     public final boolean isReadyToReturn()
     {
-        return (flags0 & 2L) != 0L;
+        return (flags0 & FMFLAGS_READYTORETURN) != 0L;
     }
 
     public final boolean isTakenMortalDamage()
     {
-        return (flags0 & 8L) != 0L;
+        return (flags0 & FMFLAGS_TAKENMORTALDAMAGE) != 0L;
     }
 
     public final boolean isStationedOnGround()
     {
-        return (flags0 & 128L) != 0L;
+        return (flags0 & FMFLAGS_STATIONEDONGROUND) != 0L;
     }
 
     public final boolean isCrashedOnGround()
     {
-        return (flags0 & 256L) != 0L;
+        return (flags0 & FMFLAGS_CRASHEDONGROUND) != 0L;
     }
 
     public final boolean isNearAirdrome()
     {
-        return (flags0 & 512L) != 0L;
+        return (flags0 & FMFLAGS_NEARAIRDROME) != 0L;
     }
 
     public final boolean isCrossCountry()
     {
-        return (flags0 & 1024L) != 0L;
+        return (flags0 & FMFLAGS_ISCROSSCOUNTRY) != 0L;
     }
 
     public final boolean isWasAirborne()
     {
-        return (flags0 & 2048L) != 0L;
+        return (flags0 & FMFLAGS_WASAIRBORNE) != 0L;
     }
 
     public final boolean isSentWingNote()
     {
-        return (flags0 & 4096L) != 0L;
+        return (flags0 & FMFLAGS_NETSENTWINGNOTE) != 0L;
     }
 
     public final boolean isSentBuryNote()
     {
-        return (flags0 & 16384L) != 0L;
+        return (flags0 & FMFLAGS_NETSENTBURYNOTE) != 0L;
     }
 
     public final boolean isSentControlsOutNote()
     {
-        return (flags0 & 32768L) != 0L;
+        return (flags0 & FMFLAGS_NETSENTCTRLSDMG) != 0L;
     }
 
     public boolean isOk()
@@ -1395,9 +1396,9 @@ public class FlightModelMain extends FMMath
         if(isCapableOfACM() == flag)
             return;
         if(flag)
-            flags0 |= 32L;
+            flags0 |= FMFLAGS_CAPABLEACM;
         else
-            flags0 &= -33L;
+            flags0 &= -FMFLAGS_CAPABLEACM - 1L;
     }
 
     public final void setCapableOfBMP(boolean flag, Actor actor)
@@ -1408,11 +1409,11 @@ public class FlightModelMain extends FMMath
             Voice.speakMayday((Aircraft)this.actor);
         if(flag)
         {
-            flags0 |= 16L;
+            flags0 |= FMFLAGS_CAPABLEAIRWORTHY;
         }
         else
         {
-            flags0 &= -17L;
+            flags0 &= -FMFLAGS_CAPABLEAIRWORTHY - 1L;
             if(!bDamaged)
                 damagedInitiator = actor;
             checkDamaged();
@@ -1425,11 +1426,11 @@ public class FlightModelMain extends FMMath
             return;
         if(flag)
         {
-            flags0 |= 64L;
+            flags0 |= FMFLAGS_CAPABLETAXI;
         }
         else
         {
-            flags0 &= -65L;
+            flags0 &= -FMFLAGS_CAPABLETAXI - 1L;
             checkDamaged();
         }
     }
@@ -1446,12 +1447,12 @@ public class FlightModelMain extends FMMath
         }
         if(flag)
         {
-            flags0 |= 4L;
+            flags0 |= FMFLAGS_READYTODIE;
             checkDamaged();
         }
         else
         {
-            flags0 &= -5L;
+            flags0 &= -FMFLAGS_READYTODIE - 1L;
         }
     }
 
@@ -1461,12 +1462,12 @@ public class FlightModelMain extends FMMath
             return;
         if(flag)
         {
-            flags0 |= 4L;
+            flags0 |= FMFLAGS_READYTODIE;
             checkDamaged();
         }
         else
         {
-            flags0 &= -5L;
+            flags0 &= -FMFLAGS_READYTODIE - 1L;
         }
     }
 
@@ -1477,9 +1478,9 @@ public class FlightModelMain extends FMMath
         if(!isReadyToReturn())
             Explosions.generateComicBulb(actor, "RTB", 9F);
         if(flag)
-            flags0 |= 2L;
+            flags0 |= FMFLAGS_READYTORETURN;
         else
-            flags0 &= -3L;
+            flags0 &= -FMFLAGS_READYTORETURN - 1L;
         Voice.speakToReturn((Aircraft)actor);
     }
 
@@ -1488,9 +1489,9 @@ public class FlightModelMain extends FMMath
         if(isReadyToReturn() == flag)
             return;
         if(flag)
-            flags0 |= 2L;
+            flags0 |= FMFLAGS_READYTORETURN;
         else
-            flags0 &= -3L;
+            flags0 &= -FMFLAGS_READYTORETURN - 1L;
     }
 
     public final void setTakenMortalDamage(boolean flag, Actor actor)
@@ -1499,14 +1500,14 @@ public class FlightModelMain extends FMMath
             return;
         if(flag)
         {
-            flags0 |= 8L;
+            flags0 |= FMFLAGS_TAKENMORTALDAMAGE;
             if(!bDamaged && !Actor.isValid(damagedInitiator))
                 damagedInitiator = actor;
             checkDamaged();
         }
         else
         {
-            flags0 &= -9L;
+            flags0 &= -FMFLAGS_TAKENMORTALDAMAGE - 1L;
         }
         if(flag && this.actor != World.getPlayerAircraft() && ((Aircraft)this.actor).FM.turret.length > 0)
         {
@@ -1522,13 +1523,13 @@ public class FlightModelMain extends FMMath
             return;
         if(flag)
         {
-            flags0 |= 128L;
+            flags0 |= FMFLAGS_STATIONEDONGROUND;
             EventLog.onAirLanded((Aircraft)actor);
             checkDamaged();
         }
         else
         {
-            flags0 &= -129L;
+            flags0 &= -FMFLAGS_STATIONEDONGROUND - 1L;
         }
     }
 
@@ -1538,12 +1539,12 @@ public class FlightModelMain extends FMMath
             return;
         if(flag)
         {
-            flags0 |= 256L;
+            flags0 |= FMFLAGS_CRASHEDONGROUND;
             checkDamaged();
         }
         else
         {
-            flags0 &= -257L;
+            flags0 &= -FMFLAGS_CRASHEDONGROUND - 1L;
         }
     }
 
@@ -1552,9 +1553,9 @@ public class FlightModelMain extends FMMath
         if(isNearAirdrome() == flag)
             return;
         if(flag)
-            flags0 |= 512L;
+            flags0 |= FMFLAGS_NEARAIRDROME;
         else
-            flags0 &= -513L;
+            flags0 &= -FMFLAGS_NEARAIRDROME - 1L;
     }
 
     public final void setCrossCountry(boolean flag)
@@ -1562,9 +1563,9 @@ public class FlightModelMain extends FMMath
         if(isCrossCountry() == flag)
             return;
         if(flag)
-            flags0 |= 1024L;
+            flags0 |= FMFLAGS_ISCROSSCOUNTRY;
         else
-            flags0 &= -1025L;
+            flags0 &= -FMFLAGS_ISCROSSCOUNTRY - 1L;
     }
 
     public final void setWasAirborne(boolean flag)
@@ -1572,9 +1573,9 @@ public class FlightModelMain extends FMMath
         if(isWasAirborne() == flag)
             return;
         if(flag)
-            flags0 |= 2048L;
+            flags0 |= FMFLAGS_WASAIRBORNE;
         else
-            flags0 &= -2049L;
+            flags0 &= -FMFLAGS_WASAIRBORNE - 1L;
     }
 
     public final void setSentWingNote(boolean flag)
@@ -1582,9 +1583,9 @@ public class FlightModelMain extends FMMath
         if(isSentWingNote() == flag)
             return;
         if(flag)
-            flags0 |= 4096L;
+            flags0 |= FMFLAGS_NETSENTWINGNOTE;
         else
-            flags0 &= -4097L;
+            flags0 &= -FMFLAGS_NETSENTWINGNOTE - 1L;
     }
 
     public final void setSentBuryNote(boolean flag)
@@ -1592,9 +1593,9 @@ public class FlightModelMain extends FMMath
         if(isSentBuryNote() == flag)
             return;
         if(flag)
-            flags0 |= 16384L;
+            flags0 |= FMFLAGS_NETSENTBURYNOTE;
         else
-            flags0 &= -16385L;
+            flags0 &= -FMFLAGS_NETSENTBURYNOTE - 1L;
     }
 
     public final void setSentControlsOutNote(boolean flag)
@@ -1603,12 +1604,12 @@ public class FlightModelMain extends FMMath
             return;
         if(flag)
         {
-            flags0 |= 32768L;
+            flags0 |= FMFLAGS_NETSENTCTRLSDMG;
             checkDamaged();
         }
         else
         {
-            flags0 &= -32769L;
+            flags0 &= -FMFLAGS_NETSENTCTRLSDMG - 1L;
         }
     }
 
@@ -1623,84 +1624,84 @@ public class FlightModelMain extends FMMath
             bReal = false;
         switch(i)
         {
-        case 2: // '\002'
-        case 7: // '\007'
-        case 8: // '\b'
-        case 9: // '\t'
-        case 10: // '\n'
-        case 14: // '\016'
-        case 21: // '\025'
-        case 22: // '\026'
-        case 23: // '\027'
-        case 24: // '\030'
-        case 25: // '\031'
-        case 26: // '\032'
-        case 27: // '\033'
-        case 28: // '\034'
-        case 29: // '\035'
-        case 30: // '\036'
+        case 2:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 14:
+        case 21:
+        case 22:
+        case 23:
+        case 24:
+        case 25:
+        case 26:
+        case 27:
+        case 28:
+        case 29:
+        case 30:
         default:
             break;
 
-        case 13: // '\r'
+        case 13:
             Sq.dragFuselageCx = Sq.dragFuselageCx <= 0.08F ? 0.08F : Sq.dragFuselageCx * 2.0F;
             break;
 
-        case 0: // '\0'
+        case 0:
             Sq.liftWingLOut *= 0.95F;
             SensRoll *= 0.68F;
             break;
 
-        case 1: // '\001'
+        case 1:
             Sq.liftWingROut *= 0.95F;
             SensRoll *= 0.68F;
             break;
 
-        case 17: // '\021'
+        case 17:
             Sq.liftStab *= 0.68F;
             Sq.getClass();
             Sq.dragProducedCx += 0.12F;
             break;
 
-        case 18: // '\022'
+        case 18:
             Sq.liftStab *= 0.68F;
             Sq.getClass();
             Sq.dragProducedCx += 0.12F;
             break;
 
-        case 31: // '\037'
+        case 31:
             Sq.squareElevators *= 0.68F;
             SensPitch *= 0.68F;
             break;
 
-        case 32: // ' '
+        case 32:
             Sq.squareElevators *= 0.68F;
             SensPitch *= 0.68F;
             break;
 
-        case 11: // '\013'
+        case 11:
             Sq.liftKeel *= 0.68F;
             Sq.getClass();
             Sq.dragProducedCx += 0.12F;
             break;
 
-        case 12: // '\f'
+        case 12:
             Sq.liftKeel *= 0.68F;
             Sq.getClass();
             Sq.dragProducedCx += 0.12F;
             break;
 
-        case 15: // '\017'
+        case 15:
             Sq.squareRudders *= 0.5F;
             SensYaw *= 0.68F;
             break;
 
-        case 16: // '\020'
+        case 16:
             Sq.squareRudders *= 0.5F;
             SensYaw *= 0.68F;
             break;
 
-        case 33: // '!'
+        case 33:
             if(bReal)
                 setDmgLoadLimit(0.6F, 2);
             Sq.getClass();
@@ -1713,7 +1714,7 @@ public class FlightModelMain extends FMMath
                 setCapableOfACM(false);
             break;
 
-        case 36: // '$'
+        case 36:
             if(bReal)
                 setDmgLoadLimit(0.6F, 3);
             Sq.getClass();
@@ -1726,7 +1727,7 @@ public class FlightModelMain extends FMMath
                 setCapableOfACM(false);
             break;
 
-        case 34: // '"'
+        case 34:
             if(bReal)
                 setDmgLoadLimit(0.7F, 1);
             Sq.getClass();
@@ -1739,7 +1740,7 @@ public class FlightModelMain extends FMMath
                 setCapableOfACM(false);
             break;
 
-        case 37: // '%'
+        case 37:
             if(bReal)
                 setDmgLoadLimit(0.7F, 4);
             Sq.getClass();
@@ -1752,7 +1753,7 @@ public class FlightModelMain extends FMMath
                 setCapableOfACM(false);
             break;
 
-        case 35: // '#'
+        case 35:
             if(bReal)
                 setDmgLoadLimit(0.8F, 0);
             Sq.getClass();
@@ -1765,7 +1766,7 @@ public class FlightModelMain extends FMMath
                 setCapableOfACM(false);
             break;
 
-        case 38: // '&'
+        case 38:
             if(bReal)
                 setDmgLoadLimit(0.8F, 5);
             Sq.getClass();
@@ -1778,36 +1779,36 @@ public class FlightModelMain extends FMMath
                 setCapableOfACM(false);
             break;
 
-        case 3: // '\003'
+        case 3:
             if(Sq.dragEngineCx[0] < 0.15F)
-                Sq.dragEngineCx[0] += 0.050000000000000003D;
+                Sq.dragEngineCx[0] += 0.05D;
             if(World.Rnd().nextFloat() < 0.12F)
                 setReadyToReturn(true);
             break;
 
-        case 4: // '\004'
+        case 4:
             if(Sq.dragEngineCx[1] < 0.15F)
                 Sq.dragEngineCx[1] += 0.05F;
             if(World.Rnd().nextFloat() < 0.12F)
                 setReadyToReturn(true);
             break;
 
-        case 5: // '\005'
+        case 5:
             if(Sq.dragEngineCx[2] < 0.15F)
                 Sq.dragEngineCx[2] += 0.05F;
             if(World.Rnd().nextFloat() < 0.12F)
                 setReadyToReturn(true);
             break;
 
-        case 6: // '\006'
+        case 6:
             if(Sq.dragEngineCx[3] < 0.15F)
                 Sq.dragEngineCx[3] += 0.05F;
             if(World.Rnd().nextFloat() < 0.12F)
                 setReadyToReturn(true);
             break;
 
-        case 19: // '\023'
-        case 20: // '\024'
+        case 19:
+        case 20:
             if(bReal)
                 setDmgLoadLimit(0.5F, 6);
             break;
@@ -1827,43 +1828,43 @@ public class FlightModelMain extends FMMath
         cutOp(i);
         switch(i)
         {
-        case 8: // '\b'
-        case 14: // '\016'
-        case 21: // '\025'
-        case 22: // '\026'
-        case 23: // '\027'
-        case 24: // '\030'
-        case 25: // '\031'
-        case 26: // '\032'
-        case 27: // '\033'
-        case 28: // '\034'
-        case 29: // '\035'
-        case 30: // '\036'
+        case 8:
+        case 14:
+        case 21:
+        case 22:
+        case 23:
+        case 24:
+        case 25:
+        case 26:
+        case 27:
+        case 28:
+        case 29:
+        case 30:
         default:
             break;
 
-        case 13: // '\r'
+        case 13:
             setCapableOfBMP(false, actor);
             setCapableOfACM(false);
             Sq.dragFuselageCx = Sq.dragFuselageCx <= 0.24F ? 0.24F : Sq.dragFuselageCx * 2.0F;
             break;
 
-        case 9: // '\t'
+        case 9:
             setCapableOfTaxiing(false);
             Gears.hitLeftGear();
             break;
 
-        case 10: // '\n'
+        case 10:
             setCapableOfTaxiing(false);
             Gears.hitRightGear();
             break;
 
-        case 7: // '\007'
+        case 7:
             setCapableOfTaxiing(false);
             Gears.hitCentreGear();
             break;
 
-        case 2: // '\002'
+        case 2:
             setCapableOfACM(false);
             setCapableOfBMP(false, actor);
             setCapableOfTaxiing(false);
@@ -1875,8 +1876,8 @@ public class FlightModelMain extends FMMath
             cutOp(20);
             // fall through
 
-        case 19: // '\023'
-        case 20: // '\024'
+        case 19:
+        case 20:
             setCapableOfACM(false);
             setCapableOfBMP(false, actor);
             setReadyToDie(true);
@@ -1891,7 +1892,7 @@ public class FlightModelMain extends FMMath
             cut(12, j, actor);
             break;
 
-        case 17: // '\021'
+        case 17:
             if(World.Rnd().nextInt(-1, 8) < Skill)
                 setReadyToReturn(true);
             if(World.Rnd().nextInt(-1, 16) < Skill)
@@ -1936,7 +1937,7 @@ public class FlightModelMain extends FMMath
             cutOp(31);
             // fall through
 
-        case 31: // '\037'
+        case 31:
             setCapableOfACM(false);
             if(Op(32) == 0.0F)
                 setReadyToDie(true);
@@ -1944,7 +1945,7 @@ public class FlightModelMain extends FMMath
             SensPitch *= 0.5F * Op(32);
             break;
 
-        case 18: // '\022'
+        case 18:
             if(World.Rnd().nextInt(-1, 8) < Skill)
                 setReadyToReturn(true);
             if(World.Rnd().nextInt(-1, 16) < Skill)
@@ -1989,7 +1990,7 @@ public class FlightModelMain extends FMMath
             cutOp(32);
             // fall through
 
-        case 32: // ' '
+        case 32:
             setCapableOfACM(false);
             if(Op(31) == 0.0F)
                 setReadyToDie(true);
@@ -1997,7 +1998,7 @@ public class FlightModelMain extends FMMath
             SensPitch *= 0.5F * Op(31);
             break;
 
-        case 11: // '\013'
+        case 11:
             if(World.Rnd().nextInt(-1, 8) < Skill)
                 setReadyToReturn(true);
             if(World.Rnd().nextInt(-1, 16) < Skill)
@@ -2009,7 +2010,7 @@ public class FlightModelMain extends FMMath
             cutOp(15);
             // fall through
 
-        case 15: // '\017'
+        case 15:
             setCapableOfACM(false);
             if(World.Rnd().nextInt(-1, 8) < Skill)
                 setReadyToReturn(true);
@@ -2025,7 +2026,7 @@ public class FlightModelMain extends FMMath
             }
             break;
 
-        case 12: // '\f'
+        case 12:
             if(World.Rnd().nextInt(-1, 8) < Skill)
                 setReadyToReturn(true);
             if(World.Rnd().nextInt(-1, 16) < Skill)
@@ -2037,7 +2038,7 @@ public class FlightModelMain extends FMMath
             cutOp(16);
             // fall through
 
-        case 16: // '\020'
+        case 16:
             setCapableOfACM(false);
             if(World.Rnd().nextInt(-1, 8) < Skill)
                 setReadyToReturn(true);
@@ -2053,7 +2054,7 @@ public class FlightModelMain extends FMMath
             }
             break;
 
-        case 33: // '!'
+        case 33:
             Sq.liftWingLIn *= 0.25F;
             ((ActorHMesh)this.actor).destroyChildFiltered(com.maddox.il2.objects.weapons.BombGun.class);
             ((ActorHMesh)this.actor).destroyChildFiltered(com.maddox.il2.objects.weapons.RocketBombGun.class);
@@ -2061,7 +2062,7 @@ public class FlightModelMain extends FMMath
             cutOp(34);
             // fall through
 
-        case 34: // '"'
+        case 34:
             setTakenMortalDamage(true, actor);
             setReadyToDie(true);
             Sq.liftWingLMid *= 0.0F;
@@ -2070,7 +2071,7 @@ public class FlightModelMain extends FMMath
             cutOp(35);
             // fall through
 
-        case 35: // '#'
+        case 35:
             setCapableOfBMP(false, actor);
             setCapableOfACM(false);
             AS.bWingTipLExists = false;
@@ -2085,14 +2086,14 @@ public class FlightModelMain extends FMMath
             cutOp(0);
             // fall through
 
-        case 0: // '\0'
+        case 0:
             if(Op(1) == 0.0F)
                 setCapableOfACM(false);
             Sq.squareAilerons *= 0.5F;
             SensRoll *= 0.5F * Op(1);
             break;
 
-        case 36: // '$'
+        case 36:
             Sq.liftWingRIn *= 0.25F;
             ((ActorHMesh)this.actor).destroyChildFiltered(com.maddox.il2.objects.weapons.BombGun.class);
             ((ActorHMesh)this.actor).destroyChildFiltered(com.maddox.il2.objects.weapons.RocketBombGun.class);
@@ -2100,7 +2101,7 @@ public class FlightModelMain extends FMMath
             cutOp(37);
             // fall through
 
-        case 37: // '%'
+        case 37:
             setTakenMortalDamage(true, actor);
             setReadyToDie(true);
             Sq.liftWingRMid *= 0.0F;
@@ -2109,7 +2110,7 @@ public class FlightModelMain extends FMMath
             cutOp(38);
             // fall through
 
-        case 38: // '&'
+        case 38:
             setCapableOfBMP(false, actor);
             setCapableOfACM(false);
             AS.bWingTipRExists = false;
@@ -2124,14 +2125,14 @@ public class FlightModelMain extends FMMath
             cutOp(1);
             // fall through
 
-        case 1: // '\001'
+        case 1:
             if(Op(0) == 0.0F)
                 setCapableOfACM(false);
             Sq.squareAilerons *= 0.5F;
             SensRoll *= 0.5F * Op(0);
             break;
 
-        case 3: // '\003'
+        case 3:
             if(EI.engines.length <= 0)
                 break;
             setCapableOfTaxiing(false);
@@ -2142,7 +2143,7 @@ public class FlightModelMain extends FMMath
             Sq.dragEngineCx[0] = 0.15F;
             break;
 
-        case 4: // '\004'
+        case 4:
             if(EI.engines.length > 1)
             {
                 setCapableOfTaxiing(false);
@@ -2152,7 +2153,7 @@ public class FlightModelMain extends FMMath
             }
             break;
 
-        case 5: // '\005'
+        case 5:
             if(EI.engines.length > 2)
             {
                 setCapableOfTaxiing(false);
@@ -2162,7 +2163,7 @@ public class FlightModelMain extends FMMath
             }
             break;
 
-        case 6: // '\006'
+        case 6:
             if(EI.engines.length > 3)
             {
                 setCapableOfTaxiing(false);
@@ -2239,19 +2240,19 @@ public class FlightModelMain extends FMMath
         default:
             break;
 
-        case 0: // '\0'
+        case 0:
             fmsfxCurrentType = i;
             break;
 
-        case 1: // '\001'
+        case 1:
             fmsfxCurrentType = i;
             fmsfxPrevValue = (float)j * 0.01F;
             if(fmsfxPrevValue < 0.05F)
                 fmsfxCurrentType = 0;
             break;
 
-        case 2: // '\002'
-        case 3: // '\003'
+        case 2:
+        case 3:
             fmsfxCurrentType = i;
             fmsfxTimeDisable = Time.current() + (long)((float)(100 * j) / (Wingspan * Wingspan));
             break;
@@ -2324,13 +2325,13 @@ public class FlightModelMain extends FMMath
         String sName = s.toLowerCase();
         //By PAL, from DiffFM, begin
         String sDir = "gui/game/buttons";
-        int i = sName.indexOf(":"); //By PAL, specific FMD (DiffFM)
-        if(i > -1) //It is not valid in first position either
+        int diffFMSeparatorPos = sName.indexOf(":"); //By PAL, specific FMD (DiffFM)
+        if(diffFMSeparatorPos > -1) //It is not valid in first position either
         {
-            sDir = sName.substring(i + 1);
-            sName = sName.substring(0, i);
+            sDir = sName.substring(diffFMSeparatorPos + 1);
+            sName = sName.substring(0, diffFMSeparatorPos);
             //Example: 'FlightModels/F-105D.fmd:F105' for plane FM
-            //Example: 'FlightModels/PWJ75:F105.emd' for Engine EMD, appears as
+            //Example: 'FlightModels/PWJ75.emd:F105' for Engine EMD, appears as
             //    Engine0Family PWJ75:F105
             if(sDir.endsWith(".emd"))
             {
@@ -2370,7 +2371,13 @@ public class FlightModelMain extends FMMath
         try
         {
             //By PAL, new: Object obj = Property.value(s, "stream", null);
-            Object obj = Property.value(sName, "stream", null);
+//            Object obj = Property.value(sName, "stream", null);
+
+            // TODO: Changed by SAS~Storebror, DiffFM file name added to Property Name if applicable to avoid overlapping buttons/DiffFM
+            String propertyName = sName;
+            if(diffFMSeparatorPos > -1) propertyName += ":" + sDir;
+            Object obj = Property.value(propertyName, "stream", null);
+
             InputStream inputstream = null;
             if(obj != null)
             {
@@ -2520,8 +2527,11 @@ public class FlightModelMain extends FMMath
             sectfile = new SectFile(new InputStreamReader(new KryptoInputFilter(inputstream, getSwTbl(Finger.Int(sName + "ogh9"), inputstream.available())), "Cp1252"));
             inputstream.reset();
             if(obj == null)
+            {
                 //By PAL, new: Property.set(s, "stream", inputstream);
-                Property.set(sName, "stream", inputstream);
+                //Property.set(sName, "stream", inputstream);
+                Property.set(propertyName, "stream", inputstream); // TODO: DiffFM file name added to Property Name if applicable to avoid overlapping buttons/DiffFM names
+            }
         }
         catch(Exception exception)
         {

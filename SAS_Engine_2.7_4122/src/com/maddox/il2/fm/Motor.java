@@ -1,4 +1,5 @@
 /*Modified Motor class for the SAS Engine Mod*/
+/*By Storebror, fix decompiling error 18th/Apr./2017*/
 
 package com.maddox.il2.fm;
 
@@ -15,8 +16,8 @@ import java.io.IOException;
 
 public class Motor extends FMMath
 {
-	//TODO: Default variables, modified by |ZUTI|: changed all private variables to protected
-	// --------------------------------------------------------
+    //TODO: Default variables, modified by |ZUTI|: changed all private variables to protected
+    // --------------------------------------------------------
     protected static final boolean ___debug___ = false;
     public static final int _E_TYPE_INLINE = 0;
     public static final int _E_TYPE_RADIAL = 1;
@@ -26,7 +27,8 @@ public class Motor extends FMMath
     public static final int _E_TYPE_TOW = 5;
     public static final int _E_TYPE_PVRD = 6;
     public static final int _E_TYPE_HELO_INLINE = 7;
-    public static final int _E_TYPE_UNIDENTIFIED = 8;
+    public static final int _E_TYPE_UNKNOWN = 8;
+    public static final int _E_TYPE_AZURE = 8;
     public static final int _E_PROP_DIR_LEFT = 0;
     public static final int _E_PROP_DIR_RIGHT = 1;
     public static final int _E_STAGE_NULL = 0;
@@ -271,23 +273,27 @@ public class Motor extends FMMath
     public static float tmpF;
     protected int engineNoFuelHUDLogId;
  // --------------------------------------------------------
-	
- 	//TODO: New Parameters
- 	// --------------------------------------------------------
+
+     //TODO: New Parameters
+     // --------------------------------------------------------
     public static final int _S_TYPE_INERTIA = 0;
-	public static final int _S_TYPE_MANUAL = 1;
-	public static final int _S_TYPE_ELECTRIC = 2;
-	public static final int _S_TYPE_CARTRIDGE = 3;
-	public static final int _S_TYPE_PNEUMATIC = 4;
-	public static final int _S_TYPE_BOSCH = 5;
-	public static final int _E_TYPE_ROTARY = 9;
-	public static final int _E_TYPE_TURBOPROP = 10;
-	
-	// Storebror's starter code tuning
-	private static String[] starterTypes = {"Inertia", "Manual", "Electric", "Cartridge", "Pneumatic", "Bosch"};
- 	private int starter; // this property field must not be static, otherwise all engines share the same starter type (namely the latest one being loaded)
- 	//New boolean to cause instant engine shutdown if prop is struck
- 	public boolean bPropHit = false;
+    public static final int _S_TYPE_MANUAL = 1;
+    public static final int _S_TYPE_ELECTRIC = 2;
+    public static final int _S_TYPE_CARTRIDGE = 3;
+    public static final int _S_TYPE_PNEUMATIC = 4;
+    public static final int _S_TYPE_BOSCH = 5;
+    public static final int _E_TYPE_ROTARY = 9;
+    public static final int _E_TYPE_TURBOPROP = 10;
+
+    // Storebror's starter code tuning
+    private static String[] starterTypes = {"Inertia", "Manual", "Electric", "Cartridge", "Pneumatic", "Bosch"};
+     private int starter; // this property field must not be static, otherwise all engines share the same starter type (namely the latest one being loaded)
+     //New boolean to cause instant engine shutdown if prop is struck
+     public boolean bPropHit = false;
+
+    //TODO: Edits here to add new engine types
+    private static final String[] ENGINE_TYPE_NAMES = {"Inline", "Radial", "Jet", "Rocket", "RocketBoost", "Tow", "PVRD", "HeloI", "Unknown", "Azure", "Rotary", "Turboprop" };
+    private static final int[] ENGINE_TYPES = {_E_TYPE_INLINE, _E_TYPE_RADIAL, _E_TYPE_JET, _E_TYPE_ROCKET, _E_TYPE_ROCKETBOOST, _E_TYPE_TOW, _E_TYPE_PVRD, _E_TYPE_HELO_INLINE, _E_TYPE_UNKNOWN, _E_TYPE_AZURE, _E_TYPE_ROTARY, _E_TYPE_TURBOPROP};
 
     public Motor()
     {
@@ -299,7 +305,7 @@ public class Motor extends FMMath
         emdName = null;
         emdSubName = null;
         number = 0;
-        type = 0;
+        type = _E_TYPE_INLINE;
         cylinders = 12;
         engineMass = 900F;
         wMin = 20F;
@@ -441,8 +447,8 @@ public class Motor extends FMMath
         updateLast = 0.0F;
         fricCoeffT = 1.0F;
         engineNoFuelHUDLogId = -1;
-		//TODO: New starter variable
-		starter = 0;
+        //TODO: New starter variable
+        starter = _S_TYPE_INERTIA;
     }
 
     public void load(FlightModel flightmodel, String s, String s1, int i)
@@ -456,14 +462,14 @@ public class Motor extends FMMath
         resolveFromFile(sectfile, "Generic");
         resolveFromFile(sectfile, s1);
         calcAfterburnerCompressorFactor();
-		//TODO: Initializes new engine types
-		if(type == 0 || type == 1 || type == 7 || type == 9)
-			initializeInline(((FlightModelMain) (flightmodel)).Vmax);
-		if(type == 2)
-			initializeJet(((FlightModelMain) (flightmodel)).Vmax);
-		if(type == 10)
-			//initializeTurboprop(((FlightModelMain) (flightmodel)).Vmax);
-			initializeJet(((FlightModelMain) (flightmodel)).Vmax);
+        //TODO: Initializes new engine types
+        if(type == _E_TYPE_INLINE || type == _E_TYPE_RADIAL || type == _E_TYPE_HELO_INLINE || type == _E_TYPE_ROTARY)
+            initializeInline(((FlightModelMain) (flightmodel)).Vmax);
+        if(type == _E_TYPE_JET)
+            initializeJet(((FlightModelMain) (flightmodel)).Vmax);
+        if(type == _E_TYPE_TURBOPROP)
+            //initializeTurboprop(((FlightModelMain) (flightmodel)).Vmax);
+            initializeJet(((FlightModelMain) (flightmodel)).Vmax);
     }
 
     private void resolveFromFile(SectFile sectfile, String s)
@@ -472,61 +478,26 @@ public class Motor extends FMMath
         propName = sectfile.get(s, "PropName", propName);
         startStopName = sectfile.get(s, "StartStopName", startStopName);
         Aircraft.debugprintln(reference.actor, "Resolving submodel " + s + " from file '" + sectfile.toString() + "'....");
-      //TODO: Edits here to add new engine types
-      		// --------------------------------------------------------
-              String s1 = sectfile.get(s, "Type");
-      		if(s1 != null)
-      			if(s1.endsWith("Inline"))
-      				type = 0;
-      			else
-      				if(s1.endsWith("Radial"))
-      					type = 1;
-      				else
-      					if(s1.endsWith("Jet"))
-      						type = 2;
-      					else
-      						if(s1.endsWith("RocketBoost"))
-      							type = 4;
-      						else
-      							if(s1.endsWith("Rocket"))
-      								type = 3;
-      							else
-      								if(s1.endsWith("Tow"))
-      									type = 5;
-      								else
-      									if(s1.endsWith("PVRD"))
-      										type = 6;
-      									else
-      										if(s1.endsWith("Unknown"))
-      											type = 8;
-      										else
-      											if(s1.endsWith("Azure"))
-      												type = 8;
-      											else
-      												if(s1.endsWith("HeloI"))
-      													type = 7;
-      												else
-      													if(s1.endsWith("Rotary"))
-      														type = 9;
-      													else
-      														if(s1.endsWith("Turboprop"))
-      															type = 10;
-      		if(type == 0 || type == 1 || type == 7 || type == 9)
-      		{
-      			int i = sectfile.get(s, "Cylinders", 0xfffe7961);
-      			if(i != 0xfffe7961)
-      			{
-      				cylinders = i;
-      				cylindersOperable = cylinders;
-      			}
-      		}
-      		// --------------------------------------------------------
-        s1 = sectfile.get(s, "Direction");
-        if(s1 != null)
-            if(s1.endsWith("Left"))
+
+        //TODO: Changed by SAS~Storebror, new simplified case-insensitive Engine Type identification
+        String emdParameter = sectfile.get(s, "Type");
+        if(emdParameter != null)
+        {
+            for (int engineTypeIndex = 0; engineTypeIndex < ENGINE_TYPE_NAMES.length; engineTypeIndex++)
+            {
+                if (emdParameter.equalsIgnoreCase(ENGINE_TYPE_NAMES[engineTypeIndex]))
+                {
+                    type = ENGINE_TYPES[engineTypeIndex];
+                    break;
+                }
+            }
+        }
+          // --------------------------------------------------------
+        emdParameter = sectfile.get(s, "Direction");
+        if(emdParameter != null)
+            if(emdParameter.endsWith("Left"))
                 propDirection = 0;
-            else
-            if(s1.endsWith("Right"))
+            else if(emdParameter.endsWith("Right"))
                 propDirection = 1;
         float f = sectfile.get(s, "RPMMin", -99999F);
         if(f != -99999F)
@@ -556,44 +527,57 @@ public class Motor extends FMMath
         f = sectfile.get(s, "Reductor", -99999F);
         if(f != -99999F)
             propReductor = f;
-      //TODO: New engine types
-  		// --------------------------------------------------------
-  		if(type == 0 || type == 1 || type == 7 || type == 9)
-  		{
-  			f = sectfile.get(s, "HorsePowers", -99999F);
-  			if(f != -99999F)
-  				horsePowers = f;
-  		// --------------------------------------------------------
-  			//TODO: New variable starter
-  			// --------------------------------------------------------
-		s1 = sectfile.get(s, "Starter");
-		
-		// Storebror's starter code tuning
-		do {
-			if (s1 == null) break;
-			s1= s1.trim(); // make sure to remove trailing/leading spaces etc.
-			starter = -1; // initialize starter type to invalid value, this is used as a type of flag to indicate whether the starter type has been found yet.
-			for (int starterTypeIndex = 0; starterTypeIndex < starterTypes.length; starterTypeIndex++) { // parse starterTypes array for the given starter type
-				if (s1.indexOf(starterTypes[starterTypeIndex]) != -1) { // check for occurance of the given string, don't use "endsWith" here as the string might contain trailing garbage.
-					starter = starterTypeIndex; // starter type found!
-					break;
-				}
-			}
-			if (starter != -1) break; // Starter Type has been found in starterTypes array
-			if (type == 9) starter = 1;
-			if (starter < 0) starter = 0; // Default back to Inertia Starter default in case none of the above checks managed to resolve the starter type.			
-		} while (false); // we don't really want to loop here. The do-while statement was used just to avoid excessive if-then-else nesting.
-    	System.out.println("Motor resolveFromFile starter = " + starter);
-		// --------------------------------------------------------
-            int j = sectfile.get(s, "Carburetor", 0xfffe7961);
-            if(j != 0xfffe7961)
+        //TODO: New engine types
+        // --------------------------------------------------------
+        if(type == _E_TYPE_INLINE || type == _E_TYPE_RADIAL || type == _E_TYPE_HELO_INLINE || type == _E_TYPE_ROTARY)
+        {
+            int i = sectfile.get(s, "Cylinders", -99999);
+            if(i != -99999)
+            {
+                cylinders = i;
+                cylindersOperable = cylinders;
+            }
+            f = sectfile.get(s, "HorsePowers", -99999F);
+            if(f != -99999F)
+                horsePowers = f;
+            // --------------------------------------------------------
+            //TODO: New variable starter
+            // --------------------------------------------------------
+            emdParameter = sectfile.get(s, "Starter");
+            // Storebror's starter code tuning
+            do
+            {
+                if (emdParameter == null)
+                    break;
+                emdParameter= emdParameter.trim(); // make sure to remove trailing/leading spaces etc.
+                starter = -1; // initialize starter type to invalid value, this is used as a type of flag to indicate whether the starter type has been found yet.
+                for (int starterTypeIndex = 0; starterTypeIndex < starterTypes.length; starterTypeIndex++)  // parse starterTypes array for the given starter type
+                {
+                    if (emdParameter.indexOf(starterTypes[starterTypeIndex]) != -1)  // check for occurance of the given string, don't use "endsWith" here as the string might contain trailing garbage.
+                    {
+                        starter = starterTypeIndex; // starter type found!
+                        break;
+                    }
+                }
+                if (starter != -1)
+                    break; // Starter Type has been found in starterTypes array
+                if (type == _E_TYPE_ROTARY)
+                    starter = 1;
+                if (starter < 0)
+                    starter = 0; // Default back to Inertia Starter default in case none of the above checks managed to resolve the starter type.
+            } while (false); // we don't really want to loop here. The do-while statement was used just to avoid excessive if-then-else nesting.
+//        System.out.println("Motor resolveFromFile starter = " + starter); // TODO: Changed by SAS~Storebror: Kick out that useless debug log line. It has been kicked out thousands of times before, but always made it back in because some "clever" guys worked on decompiled sources. DON'T. Listen and repeat: DON'T!
+            // --------------------------------------------------------
+            int j = sectfile.get(s, "Carburetor", -99999);
+            if(j != -99999)
                 engineCarburetorType = j;
             f = sectfile.get(s, "Mass", -99999F);
             if(f != -99999F)
                 engineMass = f;
             else
                 engineMass = horsePowers * 0.6F;
-        } else
+        }
+        else
         {
             f = sectfile.get(s, "Thrust", -99999F);
             if(f != -99999F)
@@ -605,14 +589,14 @@ public class Motor extends FMMath
         f = sectfile.get(s, "WEPBoostFactor", -99999F);
         if(f != -99999F)
             engineAfterburnerBoostFactor = f;
-        if(type == 2)
+        if(type == _E_TYPE_JET)
         {
             FuelConsumptionP0 = 0.075F;
             FuelConsumptionP05 = 0.075F;
             FuelConsumptionP1 = 0.1F;
             FuelConsumptionPMAX = 0.11F;
         }
-        if(type == 6)
+        if(type == _E_TYPE_PVRD)
         {
             FuelConsumptionP0 = 0.835F;
             FuelConsumptionP05 = 0.835F;
@@ -633,71 +617,62 @@ public class Motor extends FMMath
             FuelConsumptionPMAX = f;
         fuelConsumption0M = (FuelConsumptionP0 - FuelConsumptionP05) * 4F;
         fuelConsumption1M = (FuelConsumptionP1 - FuelConsumptionP05) * 4F;
-        int k = sectfile.get(s, "Autonomous", 0xfffe7961);
-        if(k != 0xfffe7961)
+        int k = sectfile.get(s, "Autonomous", -99999);
+        if(k != -99999)
             if(k == 0)
                 bIsAutonomous = false;
-            else
-            if(k == 1)
+            else if(k == 1)
                 bIsAutonomous = true;
-        k = sectfile.get(s, "cThrottle", 0xfffe7961);
-        if(k != 0xfffe7961)
+        k = sectfile.get(s, "cThrottle", -99999);
+        if(k != -99999)
             if(k == 0)
                 bHasThrottleControl = false;
-            else
-            if(k == 1)
+            else if(k == 1)
                 bHasThrottleControl = true;
-        k = sectfile.get(s, "cAfterburner", 0xfffe7961);
-        if(k != 0xfffe7961)
+        k = sectfile.get(s, "cAfterburner", -99999);
+        if(k != -99999)
             if(k == 0)
                 bHasAfterburnerControl = false;
-            else
-            if(k == 1)
+            else if(k == 1)
                 bHasAfterburnerControl = true;
-        k = sectfile.get(s, "cProp", 0xfffe7961);
-        if(k != 0xfffe7961)
+        k = sectfile.get(s, "cProp", -99999);
+        if(k != -99999)
             if(k == 0)
                 bHasPropControl = false;
-            else
-            if(k == 1)
+            else if(k == 1)
                 bHasPropControl = true;
-        k = sectfile.get(s, "cMix", 0xfffe7961);
-        if(k != 0xfffe7961)
+        k = sectfile.get(s, "cMix", -99999);
+        if(k != -99999)
             if(k == 0)
                 bHasMixControl = false;
-            else
-            if(k == 1)
+            else if(k == 1)
                 bHasMixControl = true;
-        k = sectfile.get(s, "cMagneto", 0xfffe7961);
-        if(k != 0xfffe7961)
+        k = sectfile.get(s, "cMagneto", -99999);
+        if(k != -99999)
             if(k == 0)
                 bHasMagnetoControl = false;
-            else
-            if(k == 1)
+            else if(k == 1)
                 bHasMagnetoControl = true;
-        k = sectfile.get(s, "cCompressor", 0xfffe7961);
-        if(k != 0xfffe7961)
+        k = sectfile.get(s, "cCompressor", -99999);
+        if(k != -99999)
             if(k == 0)
                 bHasCompressorControl = false;
-            else
-            if(k == 1)
+            else if(k == 1)
                 bHasCompressorControl = true;
-        k = sectfile.get(s, "cFeather", 0xfffe7961);
-        if(k != 0xfffe7961)
+        k = sectfile.get(s, "cFeather", -99999);
+        if(k != -99999)
             if(k == 0)
                 bHasFeatherControl = false;
-            else
-            if(k == 1)
+            else if(k == 1)
                 bHasFeatherControl = true;
-        k = sectfile.get(s, "cRadiator", 0xfffe7961);
-        if(k != 0xfffe7961)
+        k = sectfile.get(s, "cRadiator", -99999);
+        if(k != -99999)
             if(k == 0)
                 bHasRadiatorControl = false;
-            else
-            if(k == 1)
+            else if(k == 1)
                 bHasRadiatorControl = true;
-        k = sectfile.get(s, "Extinguishers", 0xfffe7961);
-        if(k != 0xfffe7961)
+        k = sectfile.get(s, "Extinguishers", -99999);
+        if(k != -99999)
         {
             extinguishers = k;
             if(k != 0)
@@ -714,8 +689,8 @@ public class Motor extends FMMath
             propMass = f;
         propI = propMass * propDiameter * propDiameter * 0.083F;
         bWepRpmInLowGear = false;
-        k = sectfile.get(s, "PropAnglerType", 0xfffe7961);
-        if(k != 0xfffe7961)
+        k = sectfile.get(s, "PropAnglerType", -99999);
+        if(k != -99999)
         {
             if(k > 255)
             {
@@ -758,7 +733,8 @@ public class Motor extends FMMath
                 propAngleDeviceAfterburnerParam = (float)Math.toRadians(propAngleDeviceAfterburnerParam);
             if(propAngleDeviceType == 1 || propAngleDeviceType == 2 || propAngleDeviceType == 7 || propAngleDeviceType == 8 || propAngleDeviceType == 9)
                 propAngleDeviceAfterburnerParam = toRadianPerSecond(propAngleDeviceAfterburnerParam);
-        } else
+        }
+        else
         {
             wWEP = wMax;
         }
@@ -783,14 +759,14 @@ public class Motor extends FMMath
         f = sectfile.get(s, "PropAoA0", -99999F);
         if(f != -99999F)
             propAoA0 = (float)Math.toRadians(f);
-        k = sectfile.get(s, "CompressorType", 0xfffe7961);
-        if(k != 0xfffe7961)
+        k = sectfile.get(s, "CompressorType", -99999);
+        if(k != -99999)
             compressorType = k;
         f = sectfile.get(s, "CompressorPMax", -99999F);
         if(f != -99999F)
             compressorPMax = f;
-        k = sectfile.get(s, "CompressorSteps", 0xfffe7961);
-        if(k != 0xfffe7961)
+        k = sectfile.get(s, "CompressorSteps", -99999);
+        if(k != -99999)
         {
             compressorMaxStep = k - 1;
             if(compressorMaxStep < 0)
@@ -877,11 +853,11 @@ public class Motor extends FMMath
             if(nOfCompPoints > 15 || i1 > 15)
                 flag = false;
         } while(true);
-        k = sectfile.get(s, "AfterburnerType", 0xfffe7961);
-        if(k != 0xfffe7961)
+        k = sectfile.get(s, "AfterburnerType", -99999);
+        if(k != -99999)
             afterburnerType = k;
-        k = sectfile.get(s, "MixerType", 0xfffe7961);
-        if(k != 0xfffe7961)
+        k = sectfile.get(s, "MixerType", -99999);
+        if(k != -99999)
             mixerType = k;
         f = sectfile.get(s, "MixerAltitude", -99999F);
         if(f != -99999F)
@@ -953,10 +929,10 @@ public class Motor extends FMMath
 
     private void initializeJet(float f)
     {
-        if(type == 10)
+        if(type == _E_TYPE_TURBOPROP)
             propSEquivalent = 0.26F * propr * propr;
         else
-        	propSEquivalent = ((float)(cylinders * cylinders) * (2.0F * thrustMax)) / (getFanCy(propAoA0) * Atmosphere.ro0() * wMax * wMax * propr * propr);
+            propSEquivalent = ((float)(cylinders * cylinders) * (2.0F * thrustMax)) / (getFanCy(propAoA0) * Atmosphere.ro0() * wMax * wMax * propr * propr);
         computePropForces(wMax, 0.0F, 0.0F, propAoA0, 0.0F);
         engineMomentMax = propMoment;
     }
@@ -1015,17 +991,18 @@ public class Motor extends FMMath
             }
             if((double)f3 < 0.10000000000000001D)
                 f2 = Atmosphere.pressure((float)reference.Loc.z) * _1_P0;
-            else
-            if(f3 >= compressorRPM[nOfCompPoints - 1])
+            else if(f3 >= compressorRPM[nOfCompPoints - 1])
             {
                 f2 = compressorATA[nOfCompPoints - 1];
-            } else
+            }
+            else
             {
                 if(f3 < compressorRPM[0])
                 {
                     i = 0;
                     j = 1;
-                } else
+                }
+                else
                 {
                     int k = 0;
                     do
@@ -1047,7 +1024,8 @@ public class Motor extends FMMath
                 f2 = compressorATA[i] + ((f3 - compressorRPM[i]) * (compressorATA[j] - compressorATA[i])) / f4;
             }
             afterburnerCompressorFactor = f1 / f2;
-        } else
+        }
+        else
         {
             afterburnerCompressorFactor = 1.0F;
         }
@@ -1066,13 +1044,15 @@ public class Motor extends FMMath
         if(f >= compressorRPM[nOfCompPoints - 1])
         {
             f1 = compressorATA[nOfCompPoints - 1];
-        } else
+        }
+        else
         {
             if(f < compressorRPM[0])
             {
                 i = 0;
                 j = 1;
-            } else
+            }
+            else
             {
                 int k = 0;
                 do
@@ -1104,7 +1084,8 @@ public class Motor extends FMMath
             if(updateLast >= updateStep)
             {
                 f = updateLast;
-            } else
+            }
+            else
             {
                 engineForce.set(old_engineForce);
                 engineTorque.set(old_engineTorque);
@@ -1118,16 +1099,13 @@ public class Motor extends FMMath
         {
             reference.CT.setPowerControl(1.0F);
             if(reference.isPlayers() && (reference instanceof RealFlightModel) && ((RealFlightModel)reference).isRealMode())
-                HUD.log(AircraftHotKeys.hudLogPowerId, "Power", new Object[] {
-                    new Integer(100)
-                });
+                HUD.log(AircraftHotKeys.hudLogPowerId, "Power", new Object[] { new Integer(100) });
         }
         computeForces(f);
         computeStage(f);
         if(stage > 0 && stage < 6)
             engineForce.set(0.0F, 0.0F, 0.0F);
-        else
-        if(stage == 8)
+        else if(stage == 8)
             rpm = w = 0.0F;
         if(reference.isPlayers())
         {
@@ -1139,7 +1117,8 @@ public class Motor extends FMMath
             }
             if(World.cur().diffCur.Limited_Fuel)
                 computeFuel(f);
-        } else
+        }
+        else
         {
             computeFuel(f);
             if(bIsMaster && reference.isTick(32, 0))
@@ -1235,7 +1214,8 @@ public class Motor extends FMMath
         if(isHasControlMagnetos() && getMagnetoMultiplier() < 0.1F)
         {
             return;
-        } else
+        }
+        else
         {
             reference.AS.setEngineStarts(number);
             return;
@@ -1244,9 +1224,9 @@ public class Motor extends FMMath
 
     public void doSetEngineStarts()
     {
-		//TODO: Modified by |ZUTI|: disabled position check. 
-		//if ((Airport.distToNearestAirport(reference.Loc) < 1200.0) && reference.isStationedOnGround())
-		if( reference.isStationedOnGround() )
+        //TODO: Modified by |ZUTI|: disabled position check.
+        //if ((Airport.distToNearestAirport(reference.Loc) < 1200.0) && reference.isStationedOnGround())
+        if( reference.isStationedOnGround() )
         {
             reference.CT.setMagnetoControl(3);
             setControlMagneto(3);
@@ -1255,42 +1235,44 @@ public class Motor extends FMMath
             timer = Time.current();
             return;
         }
-		/* TODO: here I've tried to solve that start after windmilling issue...w is used to calculate rpm's,so try to play with that */
-		if(stage == 0) 
-		{
-			if(type == 9 && bRan){
-				if(w > 10)
-				{
-					stage = 5;
-				} else    
-					if(w > 150)
-					{
-						stage = 6;
-					} else
-					{
-						((FlightModelMain) (reference)).CT.setMagnetoControl(3);
-						setControlMagneto(3);	
-						stage = 1;
-						timer = Time.current();
-					}
-			}
-			else	
-				if((type == 0 || type == 1 || type == 7) && bRan){
-					if(w > 20)
-					{
-						stage = 5;
-					} else    
-						if(w > 150)
-						{
-							stage = 6;
-						}
-				}
-				else
-					((FlightModelMain) (reference)).CT.setMagnetoControl(3);
-			setControlMagneto(3);
-			stage = 1;
-			timer = Time.current();
-		}
+        /* TODO: here I've tried to solve that start after windmilling issue...w is used to calculate rpm's,so try to play with that */
+        if(stage == 0)
+        {
+            if(type == _E_TYPE_ROTARY && bRan)
+            {
+                if(w > 10)
+                {
+                    stage = 5;
+                }
+                else if(w > 150)
+                {
+                    stage = 6;
+                }
+                else
+                {
+                    ((FlightModelMain) (reference)).CT.setMagnetoControl(3);
+                    setControlMagneto(3);
+                    stage = 1;
+                    timer = Time.current();
+                }
+            }
+            else if((type == _E_TYPE_INLINE || type == _E_TYPE_RADIAL || type == _E_TYPE_HELO_INLINE) && bRan)
+            {
+                if(w > 20)
+                {
+                    stage = 5;
+                }
+                else if(w > 150)
+                {
+                    stage = 6;
+                }
+            }
+            else
+                ((FlightModelMain) (reference)).CT.setMagnetoControl(3);
+            setControlMagneto(3);
+            stage = 1;
+            timer = Time.current();
+        }
     }
 
     public void setEngineStops(Actor actor)
@@ -1300,7 +1282,8 @@ public class Motor extends FMMath
         if(stage < 1 || stage > 6)
         {
             return;
-        } else
+        }
+        else
         {
             reference.AS.setEngineStops(number);
             return;
@@ -1322,7 +1305,8 @@ public class Motor extends FMMath
         if(stage > 6)
         {
             return;
-        } else
+        }
+        else
         {
             reference.AS.setEngineDies(reference.actor, number);
             return;
@@ -1361,7 +1345,8 @@ public class Motor extends FMMath
         if(!bIsMaster || !Actor.isAlive(actor))
         {
             return;
-        } else
+        }
+        else
         {
             reference.AS.setEngineRunning(number);
             return;
@@ -1448,8 +1433,7 @@ public class Motor extends FMMath
         if(bIsMaster)
             if(getCylindersRatio() < 0.12F)
                 setEngineDies(reference.actor);
-            else
-            if(getCylindersRatio() < getReadyness())
+            else if(getCylindersRatio() < getReadyness())
                 setReadyness(reference.actor, getCylindersRatio());
     }
 
@@ -1543,8 +1527,8 @@ public class Motor extends FMMath
                         HUD.logRightBottom(null);
                     }
                 }
-            } else
-            if(afterburnerType == 8)
+            }
+            else if(afterburnerType == 8)
             {
                 if(f > 1.0F && controlThrottle <= 1.0F)
                 {
@@ -1566,8 +1550,8 @@ public class Motor extends FMMath
                         HUD.logRightBottom(null);
                     }
                 }
-            } else
-            if(afterburnerType == 10)
+            }
+            else if(afterburnerType == 10)
             {
                 if(f > 1.0F && controlThrottle <= 1.0F)
                 {
@@ -1710,8 +1694,7 @@ public class Motor extends FMMath
             reference.AS.setEngineSpecificDamage(reference.actor, number, 5);
             if(reference.AS.astateEngineStates[number] > 2)
                 reference.AS.setEngineState(reference.actor, number, World.Rnd().nextInt(1, 2));
-            else
-            if(reference.AS.astateEngineStates[number] > 0)
+            else if(reference.AS.astateEngineStates[number] > 0)
                 reference.AS.setEngineState(reference.actor, number, 0);
         }
     }
@@ -1745,82 +1728,81 @@ public class Motor extends FMMath
 
     private void computeStage(float f)
     {
-        if(stage == 6)
+        if(stage == _E_STAGE_NOMINAL)
             return;
         bTFirst = false;
         float f1 = 20F;
         long l = Time.current() - timer;
-        if(stage > 0 && stage < 6 && l > given)
-		{
-			stage++;
-			/*TODO:  This part controls hiccups during startup. 
-			 * -Rotary and radial engines more prone to hiccups due to greater mass
-			 * -Manual cranked engines (starter = 1) less likely to start first go
-			 * -Electric type (starter = 2) is less liking to fail as can be primed during wind-up. 
-			 * -Meanwhile other types such as cartridge (starter = 3) and inertia (starter = 0) won't start if engine isn't properly primed
-			 * - To change how prone an engine type is to hiccups, increase the nextFloat values
-			 */
-			//Inline engines
-			if((type == 0 || type == 7) && starter != 1){
-				//Electric type start is less liking to fail as can be primed during wind-up. Other types can fail to start
-				if(starter == 2 && stage > 3 && World.Rnd().nextFloat(0.0F,10.0F) < 2F){
-						stage = 3;
-				}
-				if((starter == 0 || starter == 3 || starter == 5) && stage > 3){
-					if(World.Rnd().nextFloat(0.0F,10.0F) < 0.25F && reference.isStationedOnGround())
-						stage = 0;
-					else
-					if(World.Rnd().nextFloat(0.0F,10.0F) < 3F)
-						stage = 3;
-				}
-			}
-			//Radial engines
-			if(type == 1 && starter != 1)
-			{
-				if(starter == 2 ){
-				if(stage == 3 && World.Rnd().nextFloat(0.0F,10.0F) < 2F)
-					stage = 2;
-				else
-					if(stage > 3 && World.Rnd().nextFloat(0.0F,10.0F) < 3F)
-						stage = 3;
-				}
-				if(starter == 0 || starter == 3 || starter == 5){
-					if(stage > 3 && World.Rnd().nextFloat(0.0F,10.0F) < 0.25F && reference.isStationedOnGround())
-						stage = 0;
-					else
-					if(stage == 3 && World.Rnd().nextFloat(0.0F,10.0F) < 1F)
-						stage = 2;
-					else
-					if(stage > 3 && World.Rnd().nextFloat(0.0F,10.0F) < 3F)
-						stage = 3;
-				}
-			}
-			//Rotary and hand-cranked engines
-			if((starter == 1) || (type == 9))
-			{
-				if(stage > 3 && World.Rnd().nextFloat(0.0F,10.0F) < 2F && reference.isStationedOnGround())
-					stage = 0;
-				else
-				if(stage == 3 && World.Rnd().nextFloat(0.0F,10.0F) < 2F)
-					stage = 2;
-				else
-				if(stage > 3 && World.Rnd().nextFloat(0.0F,10.0F) < 3F)
-					stage = 3;
-			}
+        if(stage > _E_STAGE_NULL && stage < _E_STAGE_NOMINAL && l > given)
+        {
+            stage++;
+            /*TODO:  This part controls hiccups during startup.
+             * -Rotary and radial engines more prone to hiccups due to greater mass
+             * -Manual cranked engines (starter = 1) less likely to start first go
+             * -Electric type (starter = 2) is less liking to fail as can be primed during wind-up.
+             * -Meanwhile other types such as cartridge (starter = 3) and inertia (starter = 0) won't start if engine isn't properly primed
+             * - To change how prone an engine type is to hiccups, increase the nextFloat values
+             */
+            //Inline engines
+            if((type == _E_TYPE_INLINE || type == _E_TYPE_HELO_INLINE) && starter != _S_TYPE_MANUAL)
+            {
+                //Electric type start is less liking to fail as can be primed during wind-up. Other types can fail to start
+                if(starter == _S_TYPE_ELECTRIC && stage > _E_STAGE_CATCH_UP && World.Rnd().nextFloat(0.0F,10.0F) < 2F)
+                {
+                        stage = _E_STAGE_CATCH_UP;
+                }
+                if((starter == _S_TYPE_INERTIA || starter == _S_TYPE_CARTRIDGE || starter == _S_TYPE_BOSCH) && stage > _E_STAGE_CATCH_UP)
+                {
+                    if(World.Rnd().nextFloat(0.0F,10.0F) < 0.25F && reference.isStationedOnGround())
+                        stage = _E_STAGE_NULL;
+                    else if(World.Rnd().nextFloat(0.0F,10.0F) < 3F)
+                        stage = _E_STAGE_CATCH_UP;
+                }
+            }
+            //Radial engines
+            if(type == _E_TYPE_RADIAL && starter != _S_TYPE_MANUAL)
+            {
+                if(starter == _S_TYPE_ELECTRIC )
+                {
+                    if(stage == _E_STAGE_CATCH_UP && World.Rnd().nextFloat(0.0F,10.0F) < 2F)
+                        stage = _E_STAGE_STARTER_ROLL;
+                    else if(stage > _E_STAGE_CATCH_UP && World.Rnd().nextFloat(0.0F,10.0F) < 3F)
+                        stage = _E_STAGE_CATCH_UP;
+                }
+                if(starter == _S_TYPE_INERTIA || starter == _S_TYPE_CARTRIDGE || starter == _S_TYPE_BOSCH)
+                {
+                    if(stage > _E_STAGE_CATCH_UP && World.Rnd().nextFloat(0.0F,10.0F) < 0.25F && reference.isStationedOnGround())
+                        stage = _E_STAGE_NULL;
+                    else if(stage == _E_STAGE_CATCH_UP && World.Rnd().nextFloat(0.0F,10.0F) < 1F)
+                        stage = _E_STAGE_STARTER_ROLL;
+                    else if(stage > _E_STAGE_CATCH_UP && World.Rnd().nextFloat(0.0F,10.0F) < 3F)
+                        stage = _E_STAGE_CATCH_UP;
+                }
+            }
+            //Rotary and hand-cranked engines
+            if((starter == _S_TYPE_MANUAL) || (type == _E_TYPE_ROTARY))
+            {
+                if(stage > _E_STAGE_CATCH_UP && World.Rnd().nextFloat(0.0F,10.0F) < 2F && reference.isStationedOnGround())
+                    stage = _E_STAGE_NULL;
+                else if(stage == _E_STAGE_CATCH_UP && World.Rnd().nextFloat(0.0F,10.0F) < 2F)
+                    stage = _E_STAGE_STARTER_ROLL;
+                else if(stage > _E_STAGE_CATCH_UP && World.Rnd().nextFloat(0.0F,10.0F) < 3F)
+                    stage = _E_STAGE_CATCH_UP;
+            }
 
-			timer = Time.current();
-			l = 0L;
-		}
+            timer = Time.current();
+            l = 0L;
+        }
         if(oldStage != stage)
         {
             bTFirst = true;
             oldStage = stage;
         }
-        if(stage > 0 && stage < 6)
+        if(stage > _E_STAGE_NULL && stage < _E_STAGE_NOMINAL)
             setControlThrottle(0.2F);
         switch(stage)
         {
-        case 0: // '\0'
+        case _E_STAGE_NULL:
             if(bTFirst)
             {
                 given = 0x3fffffffffffffffL;
@@ -1830,61 +1812,63 @@ public class Motor extends FMMath
                 isnd.onEngineState(stage);
             break;
 
-        case 1: // '\001'
+        case _E_STAGE_WAKE_UP:
             if(bTFirst)
             {
                 if(bIsStuck)
                 {
-                    stage = 8;
+                    stage = _E_STAGE_STUCK;
                     return;
                 }
-                if(type == 3 || type == 4 || type == 6)
+                if(type == _E_TYPE_ROCKET || type == _E_TYPE_ROCKETBOOST || type == _E_TYPE_PVRD)
                 {
-                    stage = 5;
+                    stage = _E_STAGE_CATCH_FIRE;
                     if(reference.isPlayers())
                         HUD.log("Starting_Engine");
                     return;
                 }
                 //TODO:
-                if(type == 0 || type == 1 || type == 7 || type == 9)
+                if(type == _E_TYPE_INLINE || type == _E_TYPE_RADIAL || type == _E_TYPE_HELO_INLINE || type == _E_TYPE_ROTARY)
                 {
                     if(w > wMin)
                     {
-                        stage = 3;
+                        stage = _E_STAGE_CATCH_UP;
                         if(reference.isPlayers())
                             HUD.log("Starting_Engine");
                         return;
                     }
                     if(!bIsAutonomous)
                     {
-						//TODO: Modified by |ZUTI|: disabled position check. 
-						//if ((Airport.distToNearestAirport(reference.Loc) < 1200.0) && reference.isStationedOnGround())
-						if( reference.isStationedOnGround() )
+                        //TODO: Modified by |ZUTI|: disabled position check.
+                        //if ((Airport.distToNearestAirport(reference.Loc) < 1200.0) && reference.isStationedOnGround())
+                        if( reference.isStationedOnGround() )
                         {
                             setControlMagneto(3);
                             if(reference.isPlayers())
                                 HUD.log("Starting_Engine");
-                        } else
+                        }
+                        else
                         {
                             doSetEngineStops();
                             if(reference.isPlayers())
                                 HUD.log("EngineI0");
                             return;
                         }
-                    } else
-                    if(reference.isPlayers())
+                    }
+                    else if(reference.isPlayers())
                         HUD.log("Starting_Engine");
-                } else
-                if(!bIsAutonomous)
+                }
+                else if(!bIsAutonomous)
                 {
-					//TODO: Modified by |ZUTI|: disabled position check. 
-					//if ((Airport.distToNearestAirport(reference.Loc) < 1200.0) && reference.isStationedOnGround())
-					if( reference.isStationedOnGround() )
+                    //TODO: Modified by |ZUTI|: disabled position check.
+                    //if ((Airport.distToNearestAirport(reference.Loc) < 1200.0) && reference.isStationedOnGround())
+                    if( reference.isStationedOnGround() )
                     {
                         setControlMagneto(3);
                         if(reference.isPlayers())
                             HUD.log("Starting_Engine");
-                    } else
+                    }
+                    else
                     {
                         if(reference.getSpeedKMH() < 350F)
                         {
@@ -1896,134 +1880,113 @@ public class Motor extends FMMath
                         if(reference.isPlayers())
                             HUD.log("Starting_Engine");
                     }
-                } else
-                if(reference.isPlayers())
+                }
+                else if(reference.isPlayers())
                     HUD.log("Starting_Engine");
-                /*TODO:   editing "given" in each stage will give you different starting times....test these planes and see the difference  */ 
-				if(type == 9)
-				{
-					given = (long)(50F * World.Rnd().nextFloat(1.0F, 2.0F));
-				}
-				else
-				if(type == 0 || type == 7){
-					if(starter == 0)
-					{
-						given = (long)(1500F * World.Rnd().nextFloat(1.0F, 2.0F));
-					} else
-						if(starter == 1)
-						{
-							given = (long)(50F * World.Rnd().nextFloat(1.0F, 2.0F));
-						}
-						else
-						if(starter == 2)
-						{
-							given = (long)(50F * World.Rnd().nextFloat(1.0F, 2.0F));
-						} else	
-							if(starter == 3)
-							{
-								given = (long)(50F * World.Rnd().nextFloat(1.0F, 2.0F));
-							}
-							else
-								if(starter == 5)
-								{
-									given = (long)(1500F * World.Rnd().nextFloat(1.0F, 2.0F));
-								}
-				}
-				else
-					if(type == 1){
-						if(starter == 0)
-						{
-							given = (long)(2000F * World.Rnd().nextFloat(1.0F, 2.0F));
-						} else
-							if(starter == 1)
-							{
-								given = (long)(50F * World.Rnd().nextFloat(1.0F, 2.0F));
-							}
-							else
-							if(starter == 2)
-							{
-								given = (long)(50F * World.Rnd().nextFloat(1.0F, 2.0F));
-							} else	
-								if(starter == 3)
-								{
-									given = (long)(50F * World.Rnd().nextFloat(1.0F, 2.0F));
-								}
-								else
-									if(starter == 5)
-									{
-										given = (long)(5000F * World.Rnd().nextFloat(1.0F, 2.0F));
-									}
-					}
-					else
-						given = (long)(1000F * World.Rnd().nextFloat(1.0F, 2.0F));
+                /*TODO:   editing "given" in each stage will give you different starting times....test these planes and see the difference  */
+                switch (type)
+                {
+                case _E_TYPE_ROTARY:
+                    given = (long)(50F * World.Rnd().nextFloat(1.0F, 2.0F));
+                    break;
+                case _E_TYPE_INLINE:
+                case _E_TYPE_HELO_INLINE:
+                    switch (starter)
+                    {
+                    case _S_TYPE_INERTIA:
+                    case _S_TYPE_BOSCH:
+                        given = (long)(1500F * World.Rnd().nextFloat(1.0F, 2.0F));
+                        break;
+                    case _S_TYPE_MANUAL:
+                    case _S_TYPE_ELECTRIC:
+                    case _S_TYPE_CARTRIDGE:
+                        given = (long)(50F * World.Rnd().nextFloat(1.0F, 2.0F));;
+                        break;
+                    default:
+                        break;
+                    }
+                    break;
+                case _E_TYPE_RADIAL:
+                    switch (starter)
+                    {
+                    case _S_TYPE_INERTIA:
+                        given = (long)(2000F * World.Rnd().nextFloat(1.0F, 2.0F));
+                        break;
+                    case _S_TYPE_BOSCH:
+                        given = (long)(5000F * World.Rnd().nextFloat(1.0F, 2.0F));
+                        break;
+                    case _S_TYPE_MANUAL:
+                    case _S_TYPE_ELECTRIC:
+                    case _S_TYPE_CARTRIDGE:
+                        given = (long)(50F * World.Rnd().nextFloat(1.0F, 2.0F));;
+                        break;
+                    default:
+                        break;
+                    }
+                    break;
+                default:
+                    given = (long)(1000F * World.Rnd().nextFloat(1.0F, 2.0F));
+                    break;
+                }
             }
             if(isnd != null)
                 isnd.onEngineState(stage);
             reference.CT.setMagnetoControl(3);
             setControlMagneto(3);
-			if(starter == 5)
-				w = 0;
-			else
-				w = (0.1047F * ((20F * (float)l) / (float)given));
+            if(starter == _S_TYPE_BOSCH)
+                w = 0;
+            else
+                w = (0.1047F * ((20F * (float)l) / (float)given));
             setControlThrottle(0.0F);
             break;
 
-        case 2: // '\002'
+        case _E_STAGE_STARTER_ROLL:
             if(bTFirst)
             {
-            	if(type == 9)
-				{
-					given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-				} else
-					if(type == 0 || type == 7){
-						if(starter == 0)
-						{
-							given = (long)(5000F * World.Rnd().nextFloat(1.0F, 2.0F));
-						} else
-							if(starter == 1)
-							{
-								given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-							} else
-							if(starter == 2)
-							{
-								given = (long)(1500F * World.Rnd().nextFloat(1.0F, 2.0F));
-							} else
-								if(starter == 3)
-								{
-									given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-								}
-								else
-									if(starter == 5)
-									{
-										given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-									}
-					}
-					else
-						if(type == 1){
-							if(starter == 0)
-							{
-								given = (long)(8000F * World.Rnd().nextFloat(1.0F, 2.0F));
-							} else
-								if(starter == 1)
-								{
-									given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else
-								if(starter == 2)
-								{
-									given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else	
-									if(starter == 3)
-									{
-										given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-									}
-									else
-										if(starter == 5)
-										{
-											given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-										}
-						}
-						else
-							given = (long)(8000F * World.Rnd().nextFloat(1.0F, 2.0F));
+                switch (type)
+                {
+                case _E_TYPE_ROTARY:
+                    given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+                    break;
+                case _E_TYPE_INLINE:
+                case _E_TYPE_HELO_INLINE:
+                    switch (starter)
+                    {
+                    case _S_TYPE_INERTIA:
+                        given = (long)(5000F * World.Rnd().nextFloat(1.0F, 2.0F));
+                        break;
+                    case _S_TYPE_ELECTRIC:
+                        given = (long)(1500F * World.Rnd().nextFloat(1.0F, 2.0F));
+                        break;
+                    case _S_TYPE_BOSCH:
+                    case _S_TYPE_MANUAL:
+                    case _S_TYPE_CARTRIDGE:
+                        given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));;
+                        break;
+                    default:
+                        break;
+                    }
+                    break;
+                case _E_TYPE_RADIAL:
+                    switch (starter)
+                    {
+                    case _S_TYPE_INERTIA:
+                        given = (long)(8000F * World.Rnd().nextFloat(1.0F, 2.0F));
+                        break;
+                    case _S_TYPE_BOSCH:
+                    case _S_TYPE_MANUAL:
+                    case _S_TYPE_ELECTRIC:
+                    case _S_TYPE_CARTRIDGE:
+                        given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));;
+                        break;
+                    default:
+                        break;
+                    }
+                    break;
+                default:
+                    given = (long)(8000F * World.Rnd().nextFloat(1.0F, 2.0F));
+                    break;
+                }
                 if(bRan)
                 {
                     given = (long)(100F + ((tOilOutMaxRPM - tOilOut) / (tOilOutMaxRPM - f1)) * 7900F * World.Rnd().nextFloat(2.0F, 4.2F));
@@ -2036,20 +1999,21 @@ public class Motor extends FMMath
                     }
                 }
             }
-			float spin = 0.1047F * (20F + (7F * (float)l) / (float)given);
-			if(w > spin)
-			{
-				/*float divider = 0.0F;
-            divider += 0.5F;*/
-				w = 12.564F - (0.3547F * (20F + (7F * (float)l) / (float)given)); 
-			} else
-				w = spin;
+            float spin = 0.1047F * (20F + (7F * (float)l) / (float)given);
+            if(w > spin)
+            {
+                /*float divider = 0.0F;
+                divider += 0.5F;*/
+                w = 12.564F - (0.3547F * (20F + (7F * (float)l) / (float)given));
+            }
+            else
+                w = spin;
             setControlThrottle(0.0F);
             if(isnd != null)
                 isnd.onEngineState(stage);
             break;
 
-        case 3: // '\003'
+        case _E_STAGE_CATCH_UP:
             if(bTFirst)
             {
                 if(isnd != null)
@@ -2060,67 +2024,59 @@ public class Motor extends FMMath
                     doSetEngineDies();
                     return;
                 }
-                if(type == 9)
-				{
-					given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-				} else
-					if(type == 0 || type == 7){
-						if(starter == 0)
-						{
-							given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-						} else
-							if(starter == 1)
-							{
-								given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-							} else
-							if(starter == 2)
-							{
-								given = (long)(200F * World.Rnd().nextFloat(1.0F, 2.0F));
-							} else
-								if(starter == 3)
-								{
-									given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-								}
-								else
-									if(starter == 5)
-									{
-										given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-									}
-					}
-					else
-						if(type == 1){
-							if(starter == 0)
-							{
-								given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-							} else
-								if(starter == 1)
-								{
-									given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else
-								if(starter == 2)
-								{
-									given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else	
-									if(starter == 3)
-									{
-										given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-									}
-									else
-										if(starter == 5)
-										{
-											given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-										}
-						}
-						else
-							given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+                switch (type)
+                {
+                case _E_TYPE_ROTARY:
+                    given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+                    break;
+                case _E_TYPE_INLINE:
+                case _E_TYPE_HELO_INLINE:
+                    switch (starter)
+                    {
+                    case _S_TYPE_MANUAL:
+                        given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+                        break;
+                    case _S_TYPE_ELECTRIC:
+                        given = (long)(200F * World.Rnd().nextFloat(1.0F, 2.0F));
+                        break;
+                    case _S_TYPE_INERTIA:
+                    case _S_TYPE_BOSCH:
+                    case _S_TYPE_CARTRIDGE:
+                        given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));;
+                        break;
+                    default:
+                        break;
+                    }
+                    break;
+                case _E_TYPE_RADIAL:
+                    switch (starter)
+                    {
+                    case _S_TYPE_MANUAL:
+                        given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+                        break;
+                    case _S_TYPE_INERTIA:
+                    case _S_TYPE_BOSCH:
+                    case _S_TYPE_ELECTRIC:
+                    case _S_TYPE_CARTRIDGE:
+                        given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));;
+                        break;
+                    default:
+                        break;
+                    }
+                    break;
+                default:
+                    given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
+                    break;
+                }
                 if(bIsMaster && World.Rnd().nextFloat() < 0.12F && (tOilOutMaxRPM - tOilOut) / (tOilOutMaxRPM - f1) < 0.75F)
                     reference.AS.setEngineStops(number);
             }
             w = 0.1047F * (60F + (60F * (float)l) / (float)given);
             setControlThrottle(0.0F);
-			if(reference == null || type == 2 || type == 3 || type == 4 || type == 6 || type == 5 || type == 10)
+            if(reference == null || type == _E_TYPE_JET || type == _E_TYPE_ROCKET || type == _E_TYPE_ROCKETBOOST || type == _E_TYPE_PVRD || type == _E_TYPE_TOW || type == _E_TYPE_TURBOPROP)
                 break;
-			for (int i=1; i<32; i++) {
+            for (int i=1; i<32; i++)
+            {
                 try
                 {
                     com.maddox.il2.engine.Hook hook = reference.actor.findHook("_Engine" + (number + 1) + "EF_" + (i >= 10 ? "" + i : "0" + i));
@@ -2129,138 +2085,117 @@ public class Motor extends FMMath
                 }
                 catch(Exception exception) { }
             }
+            break;
 
-        case 4: // '\004'
+        case _E_STAGE_CATCH_ROLL:
             if(bTFirst)
-            	if(bTFirst)
-					if(type == 9)
-					{
-						given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-					} else
-						if(type == 0 || type == 7){
-							if(starter == 0)
-							{
-								given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-							} else
-								if(starter == 1)
-								{
-									given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else
-								if(starter == 2)
-								{
-									given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else
-									if(starter == 3)
-									{
-										given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-									}
-									else
-										if(starter == 5)
-										{
-											given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-										}
-						}
-						else
-							if(type == 1){
-								if(starter == 0)
-								{
-									given = (long)(1200F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else
-									if(starter == 1)
-									{
-										given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-									} else
-									if(starter == 2)
-									{
-										given = (long)(1200F * World.Rnd().nextFloat(1.0F, 2.0F));
-									} else	
-										if(starter == 3)
-										{
-											given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-										}
-										else
-											if(starter == 5)
-											{
-												given = (long)(1200F * World.Rnd().nextFloat(1.0F, 2.0F));
-											}
-							}
-							else
-								given = (long)(1000F * World.Rnd().nextFloat(1.0F, 2.0F));
+                switch (type)
+                {
+                case _E_TYPE_ROTARY:
+                    given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+                    break;
+                case _E_TYPE_INLINE:
+                case _E_TYPE_HELO_INLINE:
+                    switch (starter)
+                    {
+                    case _S_TYPE_MANUAL:
+                    case _S_TYPE_CARTRIDGE:
+                        given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+                        break;
+                    case _S_TYPE_ELECTRIC:
+                    case _S_TYPE_INERTIA:
+                    case _S_TYPE_BOSCH:
+                        given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));;
+                        break;
+                    default:
+                        break;
+                    }
+                    break;
+                case _E_TYPE_RADIAL:
+                    switch (starter)
+                    {
+                    case _S_TYPE_MANUAL:
+                    case _S_TYPE_CARTRIDGE:
+                        given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+                        break;
+                    case _S_TYPE_INERTIA:
+                    case _S_TYPE_BOSCH:
+                    case _S_TYPE_ELECTRIC:
+                        given = (long)(1200F * World.Rnd().nextFloat(1.0F, 2.0F));;
+                        break;
+                    default:
+                        break;
+                    }
+                    break;
+                default:
+                    given = (long)(1000F * World.Rnd().nextFloat(1.0F, 2.0F));
+                    break;
+                }
             w = 12.564F;
             setControlThrottle(0.0F);
             if(isnd != null)
                 isnd.onEngineState(stage);
             break;
 
-        case 5: // '\005'
+        case _E_STAGE_CATCH_FIRE:
             if(bTFirst)
             {
-            	if(type == 9)
-				{
-					given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-				} else
-					if(type == 0 || type == 7){
-						if(starter == 0)
-						{
-							given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-						} else	
-							if(starter == 1)
-							{
-								given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-							} else
-							if(starter == 2)
-							{
-								given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-							} else
-								if(starter == 3)
-								{
-									given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-								}
-								else
-									if(starter == 5)
-									{
-										given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));
-									}
-					}
-					else
-						if(type == 1){
-							if(starter == 0)
-							{
-								given = (long)(800F * World.Rnd().nextFloat(1.0F, 2.0F));
-							} else
-								if(starter == 1)
-								{
-									given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else
-								if(starter == 2)
-								{
-									given = (long)(800F * World.Rnd().nextFloat(1.0F, 2.0F));
-								} else	
-									if(starter == 3)
-									{
-										given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
-									}
-									else
-										if(starter == 5)
-										{
-											given = (long)(800F * World.Rnd().nextFloat(1.0F, 2.0F));
-										}
-						}
-						else
-							given = (long)(500F * World.Rnd().nextFloat(1.0F, 2.0F));
-                if(bRan && (type == 0 || type == 1 || type == 7 || type == 9))
+                switch (type)
+                {
+                case _E_TYPE_ROTARY:
+                    given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+                    break;
+                case _E_TYPE_INLINE:
+                case _E_TYPE_HELO_INLINE:
+                    switch (starter)
+                    {
+                    case _S_TYPE_MANUAL:
+                    case _S_TYPE_CARTRIDGE:
+                         given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+                         break;
+                            case _S_TYPE_ELECTRIC:
+                    case _S_TYPE_INERTIA:
+                    case _S_TYPE_BOSCH:
+                        given = (long)(100F * World.Rnd().nextFloat(1.0F, 2.0F));;
+                        break;
+                    default:
+                        break;
+                    }
+                    break;
+                case _E_TYPE_RADIAL:
+                    switch (starter)
+                    {
+                    case _S_TYPE_MANUAL:
+                    case _S_TYPE_CARTRIDGE:
+                        given = (long)(25F * World.Rnd().nextFloat(1.0F, 2.0F));
+                        break;
+                    case _S_TYPE_INERTIA:
+                    case _S_TYPE_BOSCH:
+                    case _S_TYPE_ELECTRIC:
+                        given = (long)(800F * World.Rnd().nextFloat(1.0F, 2.0F));;
+                        break;
+                    default:
+                        break;
+                    }
+                    break;
+                default:
+                    given = (long)(500F * World.Rnd().nextFloat(1.0F, 2.0F));
+                    break;
+                }
+                if(bRan && (type == _E_TYPE_INLINE || type == _E_TYPE_RADIAL || type == _E_TYPE_HELO_INLINE || type == _E_TYPE_ROTARY))
                 {
                     if((tOilOutMaxRPM - tOilOut) / (tOilOutMaxRPM - f1) > 0.75F)
-                        if(type == 0 || type == 7)
+                        if(type == _E_TYPE_INLINE || type == _E_TYPE_HELO_INLINE)
                         {
                             if(bIsMaster && getReadyness() > 0.75F && World.Rnd().nextFloat() < 0.25F)
                                 setReadyness(getReadyness() - 0.05F);
-                        } else
+                        }
+                        else
                         //TODO: Stops random engine deaths on startup
-                        	//if(type == 1 && bIsMaster && World.Rnd().nextFloat() < 0.1F)
+                            //if(type == _E_TYPE_RADIAL && bIsMaster && World.Rnd().nextFloat() < 0.1F)
                             //reference.AS.setEngineDies(reference.actor, number);
-                    if(bIsMaster && World.Rnd().nextFloat() < 0.1F)
-                        reference.AS.setEngineStops(number);
+                        if(bIsMaster && World.Rnd().nextFloat() < 0.1F)
+                            reference.AS.setEngineStops(number);
                 }
                 bRan = true;
             }
@@ -2270,7 +2205,7 @@ public class Motor extends FMMath
                 isnd.onEngineState(stage);
             break;
 
-        case 6: // '\006'
+        case _E_STAGE_NOMINAL:
             if(bTFirst)
             {
                 given = -1L;
@@ -2280,8 +2215,8 @@ public class Motor extends FMMath
                 isnd.onEngineState(stage);
             break;
 
-        case 7: // '\007'
-        case 8: // '\b'
+        case _E_STAGE_DEAD:
+        case _E_STAGE_STUCK:
             if(bTFirst)
                 given = -1L;
             setReadyness(0.0F);
@@ -2304,9 +2239,9 @@ public class Motor extends FMMath
             double d;
             switch(type)
             {
-            case 0: // '\0'
-            case 1: // '\001'
-            case 7: // '\007'
+            case _E_TYPE_INLINE:
+            case _E_TYPE_RADIAL:
+            case _E_TYPE_HELO_INLINE:
                 d = momForFuel * (double)w * 0.0010499999999999999D;
                 f1 = (float)d / horsePowers;
                 if(d < (double)horsePowers * 0.050000000000000003D)
@@ -2326,12 +2261,13 @@ public class Motor extends FMMath
             {
                 d1 = f1 - 0.5F;
                 d1 = d1 * d1 * (double)fuelConsumption0M + (double)FuelConsumptionP05;
-            } else
-            if((double)f1 <= 1.0D)
+            }
+            else if((double)f1 <= 1.0D)
             {
                 d1 = f1 - 0.5F;
                 d1 = d1 * d1 * (double)fuelConsumption1M + (double)FuelConsumptionP05;
-            } else
+            }
+            else
             {
                 float f3 = f1 - 1.0F;
                 if(f3 > 0.1F)
@@ -2342,13 +2278,13 @@ public class Motor extends FMMath
             d1 /= 3600D;
             switch(type)
             {
-            case 5: // '\005'
+            case _E_TYPE_TOW:
             default:
                 break;
 
-            case 0: // '\0'
-            case 1: // '\001'
-            case 7: // '\007'
+            case _E_TYPE_INLINE:
+            case _E_TYPE_RADIAL:
+            case _E_TYPE_HELO_INLINE:
                 d1 *= 0.8F + (0.2F * w) / wWEP;
                 float f4 = (float)(d1 * d);
                 tmpF = f4 * f;
@@ -2359,15 +2295,15 @@ public class Motor extends FMMath
                 Ptermo = (float)(d2 - d - d4);
                 break;
 
-            case 2: // '\002'
-                tmpF = (float)(d1 * d * (double)f);
-                break;
-                
-            case 10: // '\002'
+            case _E_TYPE_JET:
                 tmpF = (float)(d1 * d * (double)f);
                 break;
 
-            case 3: // '\003'
+            case _E_TYPE_TURBOPROP:
+                tmpF = (float)(d1 * d * (double)f);
+                break;
+
+            case _E_TYPE_ROCKET:
                 if((reference.actor instanceof BI_1) || (reference.actor instanceof BI_6))
                 {
                     tmpF = 1.8F * getPowerOutput() * f;
@@ -2379,7 +2315,7 @@ public class Motor extends FMMath
                     tmpF = 2.5777F * getPowerOutput() * f;
                 break;
 
-            case 4: // '\004'
+            case _E_TYPE_ROCKETBOOST:
                 tmpF = 1.432056F * getPowerOutput() * f;
                 tmpB = reference.M.requestNitro(tmpF);
                 tmpF = 0.0F;
@@ -2393,7 +2329,7 @@ public class Motor extends FMMath
                 }
                 return;
 
-            case 6: // '\006'
+            case _E_TYPE_PVRD:
                 tmpF = (float)(d1 * d * (double)f);
                 tmpB = reference.M.requestNitro(tmpF);
                 tmpF = 0.0F;
@@ -2423,31 +2359,31 @@ public class Motor extends FMMath
         if(controlAfterburner)
             switch(afterburnerType)
             {
-            case 3: // '\003'
-            case 6: // '\006'
-            case 7: // '\007'
-            case 8: // '\b'
+            case _E_AFTERBURNER_FIRECHAMBER:
+            case _E_AFTERBURNER_FUEL_INJECTION:
+            case _E_AFTERBURNER_FUEL_ILA5:
+            case _E_AFTERBURNER_FUEL_ILA5AUTO:
             default:
                 break;
 
-            case 1: // '\001'
+            case _E_AFTERBURNER_MW50:
                 if(controlThrottle > 1.0F && !reference.M.requestNitro(0.044872F * f) && reference.isPlayers() && (reference instanceof RealFlightModel) && ((RealFlightModel)reference).isRealMode() && World.cur().diffCur.Vulnerability)
                     setReadyness(reference.actor, getReadyness() - 0.01F * f);
                 break;
 
-            case 2: // '\002'
+            case _E_AFTERBURNER_GM1:
                 if(reference.M.requestNitro(0.044872F * f));
                 break;
 
-            case 5: // '\005'
+            case _E_AFTERBURNER_NO2:
                 if(reference.M.requestNitro(0.044872F * f));
                 break;
 
-            case 9: // '\t'
+            case _E_AFTERBURNER_WATERMETHANOL:
                 if(reference.M.requestNitro(0.044872F * f));
                 break;
 
-            case 4: // '\004'
+            case _E_AFTERBURNER_WATER:
                 if(reference.M.requestNitro(0.044872F * f))
                     break;
                 reference.CT.setAfterburnerControl(false);
@@ -2481,7 +2417,8 @@ public class Motor extends FMMath
                 {
                     reference.AS.hitEngine(reference.actor, number, 3);
                     Aircraft.debugprintln(reference.actor, "Malfunction #" + number + " - smoke");
-                } else
+                }
+                else
                 {
                     setCyliderKnockOut(reference.actor, World.Rnd().nextInt(0, 3));
                     Aircraft.debugprintln(reference.actor, "Malfunction #" + number + " - power loss");
@@ -2489,9 +2426,9 @@ public class Motor extends FMMath
             }
             break;
 
-        case 0: // '\0'
-        case 1: // '\001'
-        case 7: // '\007'
+        case _E_TYPE_INLINE:
+        case _E_TYPE_RADIAL:
+        case _E_TYPE_HELO_INLINE:
             zatizeni = coolMult * f1;
             zatizeni *= w / wWEP;
             zatizeni = zatizeni * zatizeni;
@@ -2512,7 +2449,8 @@ public class Motor extends FMMath
                 {
                     reference.AS.setEngineMagnetoKnockOut(reference.actor, number, 0);
                     Aircraft.debugprintln(reference.actor, "Malfunction #" + number + " - mag1");
-                } else
+                }
+                else
                 {
                     reference.AS.setEngineMagnetoKnockOut(reference.actor, number, 1);
                     Aircraft.debugprintln(reference.actor, "Malfunction #" + number + " - mag2");
@@ -2535,7 +2473,8 @@ public class Motor extends FMMath
             {
                 setKillPropAngleDevice(reference.actor);
                 Aircraft.debugprintln(reference.actor, "Malfunction #" + number + " - propAngler");
-            } else
+            }
+            else
             {
                 reference.AS.hitOil(reference.actor, number);
                 Aircraft.debugprintln(reference.actor, "Malfunction #" + number + " - oil");
@@ -2559,7 +2498,7 @@ public class Motor extends FMMath
         if(!controlAfterburner && engineAfterburnerBoostFactor > 1.0F && afterburnerType != 1 && afterburnerType != 9 && afterburnerType != 4)
             f4 /= engineAfterburnerBoostFactor;
         float f7 = f4;
-        if(type == 0 || type == 1 || type == 7)
+        if(type == _E_TYPE_INLINE || type == _E_TYPE_RADIAL || type == _E_TYPE_HELO_INLINE)
             f6 = 0.45F / Atmosphere.density((float)reference.Loc.z);
         float f8 = coolMult * f4;
         if(World.cur().diffCur.ComplexEManagement && reference.isPlayers() && ((RealFlightModel)reference).isRealMode())
@@ -2572,11 +2511,12 @@ public class Motor extends FMMath
             tOilOut += (f9 - tOilOut) * f * tChangeSpeed;
             float f13 = tOilOut * 0.8F;
             tOilIn += (f13 - tOilIn) * f * 0.5F;
-            if(type == 2)
+            if(type == _E_TYPE_JET)
                 f6 = 0.35F + 0.1F / Atmosphere.density((float)reference.Loc.z);
             f13 = f2 + tWaterMaxRPM * (1.0F - 0.15F * controlRadiator) * (0.65F + f6) * (0.6F + 0.4F * f7) * (0.1F + 1.1F * f8) * f5 * (1.1F - 0.1F * controlMix);
             tWaterOut += (f13 - tWaterOut) * f * tChangeSpeed;
-        } else
+        }
+        else
         {
             float f10 = f2;
             tOilOut += (f10 - tOilOut) * f * tChangeSpeed * (0.2F + 0.2F * controlRadiator);
@@ -2607,16 +2547,17 @@ public class Motor extends FMMath
                         {
                             reference.AS.hitEngine(reference.actor, number, 3);
                             Aircraft.debugprintln(reference.actor, "Malfunction #" + number + " - smoke");
-                        } else
+                        }
+                        else
                         {
                             setCyliderKnockOut(reference.actor, World.Rnd().nextInt(0, 3));
                             Aircraft.debugprintln(reference.actor, "Malfunction #" + number + " - power loss");
                         }
                         break;
 
-                    case 0: // '\0'
-                    case 1: // '\001'
-                    case 7: // '\007'
+                    case _E_TYPE_INLINE:
+                    case _E_TYPE_RADIAL:
+                    case _E_TYPE_HELO_INLINE:
                         int k = World.Rnd().nextInt(0, 99);
                         if(k < 50)
                         {
@@ -2672,7 +2613,8 @@ public class Motor extends FMMath
                         {
                             reference.AS.setEngineDies(reference.actor, number);
                             Aircraft.debugprintln(reference.actor, "Malfunction #" + number + " - dead");
-                        } else
+                        }
+                        else
                         {
                             reference.AS.setEngineStuck(reference.actor, number);
                             Aircraft.debugprintln(reference.actor, "Malfunction #" + number + " - stuck");
@@ -2694,16 +2636,17 @@ public class Motor extends FMMath
                         {
                             reference.AS.hitEngine(reference.actor, number, 3);
                             Aircraft.debugprintln(reference.actor, "Malfunction #" + number + " - smoke");
-                        } else
+                        }
+                        else
                         {
                             setCyliderKnockOut(reference.actor, World.Rnd().nextInt(0, 3));
                             Aircraft.debugprintln(reference.actor, "Malfunction #" + number + " - power loss");
                         }
                         break;
 
-                    case 0: // '\0'
-                    case 1: // '\001'
-                    case 7: // '\007'
+                    case _E_TYPE_INLINE:
+                    case _E_TYPE_RADIAL:
+                    case _E_TYPE_HELO_INLINE:
                         int l = World.Rnd().nextInt(0, 99);
                         if(l < 10)
                         {
@@ -2740,7 +2683,8 @@ public class Motor extends FMMath
                         {
                             reference.AS.setEngineDies(reference.actor, number);
                             Aircraft.debugprintln(reference.actor, "Malfunction #" + number + " - dead");
-                        } else
+                        }
+                        else
                         {
                             reference.AS.setEngineStuck(reference.actor, number);
                             Aircraft.debugprintln(reference.actor, "Malfunction #" + number + " - stuck");
@@ -2765,7 +2709,8 @@ public class Motor extends FMMath
                 controlRadiator += 0.1F * f;
                 if(controlRadiator > 1.0F)
                     controlRadiator = 1.0F;
-            } else
+            }
+            else
             {
                 controlRadiator = 1.0F - reference.getSpeed() / reference.VmaxH;
                 if(controlRadiator < 0.0F)
@@ -2804,14 +2749,15 @@ public class Motor extends FMMath
                 controlRadiator -= 0.15F * f;
                 if(controlRadiator < 0.0F)
                     controlRadiator = 0.0F;
-            } else
+            }
+            else
             {
                 controlRadiator += 0.15F * f;
             }
             break;
 
         case 8: // '\b'
-            if(type == 0)
+            if(type == _E_TYPE_INLINE)
             {
                 if(tOilOut > tOilOutMaxRPM)
                 {
@@ -2832,7 +2778,8 @@ public class Motor extends FMMath
                 controlRadiator -= 0.15F * f;
                 if(controlRadiator < 0.0F)
                     controlRadiator = 0.0F;
-            } else
+            }
+            else
             {
                 controlRadiator += 0.15F * f;
             }
@@ -2857,20 +2804,19 @@ public class Motor extends FMMath
     {
         switch(type)
         {
-        case 0: // '\0'
-        case 1: // '\001'
-        	//TODO: Next case needed for rotary engines to work
-        case 9: // '\009'
-        case 7: // '\007'
+        case _E_TYPE_INLINE:
+        case _E_TYPE_RADIAL:
+            //TODO: Next case needed for rotary engines to work
+        case _E_TYPE_ROTARY:
+        case _E_TYPE_HELO_INLINE:
             if(Math.abs(w) < 1E-005F)
                 propPhiW = 1.570796F;
-            else
-            if(type == 7)
+            else if(type == _E_TYPE_HELO_INLINE)
                 propPhiW = (float)Math.atan(Math.abs(reference.Vflow.x) / (double)(w * propReductor * propr));
             else
                 propPhiW = (float)Math.atan(reference.Vflow.x / (double)(w * propReductor * propr));
             propAoA = propPhi - propPhiW;
-            if(type == 7)
+            if(type == _E_TYPE_HELO_INLINE)
                 computePropForces(w * propReductor, (float)Math.abs(reference.Vflow.x), propPhi, propAoA, reference.getAltitude());
             else
                 computePropForces(w * propReductor, (float)reference.Vflow.x, propPhi, propAoA, reference.getAltitude());
@@ -2888,8 +2834,8 @@ public class Motor extends FMMath
                         propTarget = propPhiW + propAoA0;
                     else
                         propTarget = propPhiMax - controlProp * (propPhiMax - propPhiMin);
-                } else
-                if(propAngleDeviceType == 3)
+                }
+                else if(propAngleDeviceType == 3)
                     propTarget = 0.0F;
                 else
                     propTarget = 3.141593F;
@@ -2904,8 +2850,7 @@ public class Motor extends FMMath
                     controlProp += ((float)controlPropDirection * f) / 5F;
                     if(controlProp > 1.0F)
                         controlProp = 1.0F;
-                    else
-                    if(controlProp < 0.0F)
+                    else if(controlProp < 0.0F)
                         controlProp = 0.0F;
                     float f21 = propAngleDeviceMinParam + (f15 - propAngleDeviceMinParam) * controlProp;
                     float f25 = controlThrottle;
@@ -2918,7 +2863,8 @@ public class Motor extends FMMath
                         {
                             f21 = Math.min(1.0F, 0.01F * (f21 - w) - 0.012F * aw);
                             propTarget -= f21 * getPropAngleDeviceSpeed() * f;
-                        } else
+                        }
+                        else
                         {
                             f21 = Math.min(1.0F, 0.01F * (w - f21) + 0.012F * aw);
                             propTarget += f21 * getPropAngleDeviceSpeed() * f;
@@ -2929,19 +2875,20 @@ public class Motor extends FMMath
                             if(propPhi < propTarget)
                                 propPhi += 0.2F * f;
                         }
-                    } else
+                    }
+                    else
                     {
                         propTarget = propPhi;
                     }
-                } else
+                }
+                else
                 {
                     compressorManifoldThreshold = 0.5F + (compressorRPMtoWMaxATA - 0.5F) * (controlThrottle <= 1.0F ? controlThrottle : 1.0F);
                     propTarget = propPhi;
                     if(isPropAngleDeviceOperational())
                         if(controlPropDirection > 0)
                             propTarget = propPhiMin;
-                        else
-                        if(controlPropDirection < 0)
+                        else if(controlPropDirection < 0)
                             propTarget = propPhiMax;
                 }
                 break;
@@ -2967,7 +2914,8 @@ public class Motor extends FMMath
                     {
                         f1 = Math.min(1.0F, 0.01F * (f1 - w) - 0.012F * aw);
                         propTarget -= f1 * getPropAngleDeviceSpeed() * f;
-                    } else
+                    }
+                    else
                     {
                         f1 = Math.min(1.0F, 0.01F * (w - f1) + 0.012F * aw);
                         propTarget += f1 * getPropAngleDeviceSpeed() * f;
@@ -2978,8 +2926,8 @@ public class Motor extends FMMath
                         if(propPhi < propTarget)
                             propPhi += 0.2F * f;
                     }
-                } else
-                if(propAngleDeviceType == 1)
+                }
+                else if(propAngleDeviceType == 1)
                     propTarget = 0.0F;
                 else
                     propTarget = 1.5708F;
@@ -2995,7 +2943,8 @@ public class Motor extends FMMath
                     {
                         if(controlThrottle > 1.0F)
                             f17 = propAngleDeviceMaxParam + 10F * (controlThrottle - 1.0F) * (propAngleDeviceAfterburnerParam - propAngleDeviceMaxParam);
-                    } else
+                    }
+                    else
                     {
                         f17 = propAngleDeviceAfterburnerParam;
                     }
@@ -3011,7 +2960,8 @@ public class Motor extends FMMath
                         {
                             f2 = Math.min(1.0F, 0.01F * (f2 - w) - 0.012F * aw);
                             propTarget -= f2 * getPropAngleDeviceSpeed() * f;
-                        } else
+                        }
+                        else
                         {
                             f2 = Math.min(1.0F, 0.01F * (w - f2) + 0.012F * aw);
                             propTarget += f2 * getPropAngleDeviceSpeed() * f;
@@ -3024,7 +2974,8 @@ public class Motor extends FMMath
                         }
                         if(propTarget < propPhiMin + (float)Math.toRadians(3D))
                             propTarget = propPhiMin + (float)Math.toRadians(3D);
-                    } else
+                    }
+                    else
                     {
                         propTarget = (1.0F - f * 0.1F) * propTarget + f * 0.1F * (propPhiMax - controlProp * (propPhiMax - propPhiMin));
                         if(w > 1.02F * wMax)
@@ -3051,7 +3002,8 @@ public class Motor extends FMMath
                     {
                         if(controlThrottle > 1.0F)
                             f18 = propAngleDeviceMaxParam + 10F * (controlThrottle - 1.0F) * (propAngleDeviceAfterburnerParam - propAngleDeviceMaxParam);
-                    } else
+                    }
+                    else
                     {
                         f18 = propAngleDeviceAfterburnerParam;
                     }
@@ -3066,7 +3018,8 @@ public class Motor extends FMMath
                     {
                         f3 = Math.min(1.0F, 0.01F * (f3 - w) - 0.012F * aw);
                         propTarget -= f3 * getPropAngleDeviceSpeed() * f;
-                    } else
+                    }
+                    else
                     {
                         f3 = Math.min(1.0F, 0.01F * (w - f3) + 0.012F * aw);
                         propTarget += f3 * getPropAngleDeviceSpeed() * f;
@@ -3095,7 +3048,8 @@ public class Motor extends FMMath
                         {
                             f4 = Math.min(1.0F, 0.01F * (f4 - w) - 0.012F * aw);
                             propTarget -= f4 * getPropAngleDeviceSpeed() * f;
-                        } else
+                        }
+                        else
                         {
                             f4 = Math.min(1.0F, 0.01F * (w - f4) + 0.012F * aw);
                             propTarget += f4 * getPropAngleDeviceSpeed() * f;
@@ -3111,7 +3065,8 @@ public class Motor extends FMMath
                             controlProp = 0.0F;
                         if(controlProp > 1.0F)
                             controlProp = 1.0F;
-                    } else
+                    }
+                    else
                     {
                         propTarget = propAngleDeviceMaxParam - controlProp * (propAngleDeviceMaxParam - propAngleDeviceMinParam);
                     }
@@ -3129,7 +3084,8 @@ public class Motor extends FMMath
                             controlProp = -controlThrottle;
                         else
                             controlProp = -Aircraft.cvt(reference.getSpeed(), reference.Vmin, reference.Vmax, 0.0F, 1.0F);
-                    } else
+                    }
+                    else
                     {
                         controlProp = -Aircraft.cvt(reference.getSpeed(), reference.Vmin, reference.Vmax, 0.0F, 1.0F);
                     }
@@ -3143,21 +3099,19 @@ public class Motor extends FMMath
             {
                 float f5 = Math.min(1.0F, 157.2958F * (propPhi - propTarget));
                 propPhi -= f5 * getPropAngleDeviceSpeed() * f;
-            } else
-            if(propPhi < propTarget)
+            }
+            else if(propPhi < propTarget)
             {
                 float f6 = Math.min(1.0F, 157.2958F * (propTarget - propPhi));
                 propPhi += f6 * getPropAngleDeviceSpeed() * f;
             }
             if(propTarget > propPhiMax)
                 propTarget = propPhiMax;
-            else
-            if(propTarget < propPhiMin)
+            else if(propTarget < propPhiMin)
                 propTarget = propPhiMin;
             if(propPhi > propPhiMax && controlFeather == 0)
                 propPhi = propPhiMax;
-            else
-            if(propPhi < propPhiMin)
+            else if(propPhi < propPhiMin)
                 propPhi = propPhiMin;
             engineMoment = getN();
             float f14 = getCompressorMultiplier(f);
@@ -3183,8 +3137,8 @@ public class Motor extends FMMath
             {
                 if(w < 10F * fricCoeffT)
                     w = 0.0F;
-            } else
-            if(w < 2.0F * fricCoeffT)
+            }
+            else if(w < 2.0F * fricCoeffT)
                 w = 0.0F;
             if(reference.isPlayers() && World.cur().diffCur.Torque_N_Gyro_Effects && (reference instanceof RealFlightModel) && ((RealFlightModel)reference).isRealMode())
             {
@@ -3197,12 +3151,14 @@ public class Motor extends FMMath
                 {
                     engineTorque.x += propMoment;
                     engineTorque.x += f24;
-                } else
+                }
+                else
                 {
                     engineTorque.x -= propMoment;
                     engineTorque.x -= f24;
                 }
-            } else
+            }
+            else
             {
                 engineTorque.set(0.0F, 0.0F, 0.0F);
             }
@@ -3216,13 +3172,13 @@ public class Motor extends FMMath
             if(d < 1.0D)
                 d = 1.0D;
             double d1 = 1.0D / ((double)(Atmosphere.density(reference.getAltitude()) * 6F) * d);
-            addVflow = 0.94999999999999996D * addVflow + 0.050000000000000003D * (double)propForce * d1;
-            addVside = 0.94999999999999996D * addVside + 0.050000000000000003D * (double)(propMoment / propr) * d1;
+            addVflow = 0.95D * addVflow + 0.05D * (double)propForce * d1;
+            addVside = 0.95D * addVside + 0.05D * (double)(propMoment / propr) * d1;
             if(addVside < 0.0D)
                 addVside = 0.0D;
             break;
-           
-        case 2: // '\002'
+
+        case _E_TYPE_JET:
             engineMoment = propAngleDeviceMinParam + getControlThrottle() * (propAngleDeviceMaxParam - propAngleDeviceMinParam);
             engineMoment /= propAngleDeviceMaxParam;
             engineMoment *= engineMomentMax;
@@ -3251,9 +3207,9 @@ public class Motor extends FMMath
             engineTorque.cross(enginePos, engineForce);
             rpm = toRPM(w);
             break;
-            
+
           //TODO
-        case 10: // '\002'
+        case _E_TYPE_TURBOPROP:
             engineMoment = propAngleDeviceMinParam + getControlThrottle() * (propAngleDeviceMaxParam - propAngleDeviceMinParam);
             controlProp = 0.75F + 0.25F * controlThrottle;
             if(Math.abs(w) < 1E-005F)
@@ -3266,11 +3222,12 @@ public class Motor extends FMMath
             {
                 if(w < engineMoment)
                 {
-                	engineMoment = Math.min(1.0F, 0.01F * (engineMoment - w) - 0.012F * aw);
+                    engineMoment = Math.min(1.0F, 0.01F * (engineMoment - w) - 0.012F * aw);
                     propTarget -= engineMoment * getPropAngleDeviceSpeed() * f;
-                } else
+                }
+                else
                 {
-                	engineMoment = Math.min(1.0F, 0.01F * (w - engineMoment) + 0.012F * aw);
+                    engineMoment = Math.min(1.0F, 0.01F * (w - engineMoment) + 0.012F * aw);
                     propTarget += engineMoment * getPropAngleDeviceSpeed() * f;
                 }
                 if(stage == 6 && propTarget < propPhiW - 0.12F)
@@ -3279,7 +3236,8 @@ public class Motor extends FMMath
                     if(propPhi < propTarget)
                         propPhi += 0.2F * f;
                 }
-            } else
+            }
+            else
             {
                 propTarget = 0.0F;
             }
@@ -3310,9 +3268,9 @@ public class Motor extends FMMath
             engineTorque.cross(enginePos, engineForce);
             rpm = toRPM(w);
             break;
-            
-        case 3: // '\003'
-        case 4: // '\004'
+
+        case _E_TYPE_ROCKET:
+        case _E_TYPE_ROCKETBOOST:
             w = wMin + (wMax - wMin) * controlThrottle;
             if(w < wMin || w < 0.0F || reference.M.fuel == 0.0F || stage != 6)
                 w = 0.0F;
@@ -3325,7 +3283,7 @@ public class Motor extends FMMath
             rpm = toRPM(w);
             break;
 
-        case 6: // '\006'
+        case _E_TYPE_PVRD: // '\006'
             w = wMin + (wMax - wMin) * controlThrottle;
             if(w < wMin || w < 0.0F || stage != 6)
                 w = 0.0F;
@@ -3354,7 +3312,7 @@ public class Motor extends FMMath
                 realflightmodel.producedShakeLevel = f7;
             break;
 
-        case 5: // '\005'
+        case _E_TYPE_TOW:
             engineForce.set(engineVector);
             engineForce.scale(propForce);
             engineTorque.cross(enginePos, engineForce);
@@ -3407,7 +3365,8 @@ public class Motor extends FMMath
             if(reference.isPlayers())
                 HUD.log("EngineI0");
             return;
-        } else
+        }
+        else
         {
             return;
         }
@@ -3493,7 +3452,7 @@ public class Motor extends FMMath
     {
         return type;
     }
-    
+
     //TODO
     public int getStarter() // no static method but class method, following the non-static "starter" property!
     {
@@ -3634,10 +3593,11 @@ public class Motor extends FMMath
                 return true;
 
             case 8: // '\b'
-                return type == 0;
+                return type == _E_TYPE_INLINE;
             }
             return false;
-        } else
+        }
+        else
         {
             return true;
         }
@@ -3758,136 +3718,135 @@ public class Motor extends FMMath
         return forcePropAOA(f, f1, f2, flag, 1.0F);
     }
 
-    public float forcePropAOA(float f, float f1, float f2, boolean flag, float f3)
+    public float forcePropAOA(float fSpeed, float fAltitude, float fThrottle, boolean isWEP, float fRPMfactor)
     {
         switch(type)
         {
         default:
             return -1F;
 
-        case 0: // '\0'
-        case 1: // '\001'
-        case 7: // '\007'
-            float f4;
-            boolean flag1;
-            int i;
-            boolean flag3;
-            {
-                f4 = controlThrottle;
-                flag1 = controlAfterburner;
-                i = stage;
+        case _E_TYPE_INLINE:
+        case _E_TYPE_RADIAL:
+        case _E_TYPE_HELO_INLINE:
+            float fOldThrottle = controlThrottle;;
+            boolean oldIsWEP = controlAfterburner;
+            int oldStage = stage;;
+//            boolean flag3;
+//            {
                 safeLoc.set(reference.Loc);
                 safeVwld.set(reference.Vwld);
                 safeVflow.set(reference.Vflow);
-                if(flag)
+                if(isWEP)
                     w = wWEP;
                 else
                     w = wMax;
-                w *= f3;
-                controlThrottle = f2;
+                w *= fRPMfactor;
+                controlThrottle = fThrottle;
                 if((double)engineBoostFactor <= 1.0D && controlThrottle > 1.0F)
                     controlThrottle = 1.0F;
-                if(afterburnerType > 0 && flag)
+                if(afterburnerType > 0 && isWEP)
                     controlAfterburner = true;
-                stage = 6;
+                stage = _E_STAGE_NOMINAL;
                 fastATA = true;
-                reference.Loc.set(0.0D, 0.0D, f1);
-                reference.Vwld.set(f, 0.0D, 0.0D);
-                reference.Vflow.set(f, 0.0D, 0.0D);
-                pressureExtBar = Atmosphere.pressure(reference.getAltitude()) + compressorSpeedManifold * 0.5F * Atmosphere.density(reference.getAltitude()) * f * f;
-                pressureExtBar *= 9.8716682999999996E-006D;
-                maxMoment = getCompressorMultiplier(0.033F);
-                maxMoment *= getN();
-                if(flag && bWepRpmInLowGear && controlCompressor == compressorMaxStep)
+                reference.Loc.set(0.0D, 0.0D, fAltitude);
+                reference.Vwld.set(fSpeed, 0.0D, 0.0D);
+                reference.Vflow.set(fSpeed, 0.0D, 0.0D);
+                pressureExtBar = 9.8716683E-006F * Atmosphere.pressure(reference.getAltitude()) + compressorSpeedManifold * 0.5F * Atmosphere.density(reference.getAltitude()) * fSpeed * fSpeed; // Pa (N/m2) to atmosphere conversion
+                maxMoment = getCompressorMultiplier(0.033F) * getN();
+                if(isWEP && bWepRpmInLowGear && controlCompressor == compressorMaxStep)
                 {
-                    w = wMax * f3;
+                    w = wMax * fRPMfactor;
                     float f5 = getCompressorMultiplier(0.033F);
                     f5 *= getN();
                     maxMoment = f5;
                 }
                 maxW = w;
-                float f6 = propPhiMin;
-                float f7 = -1E+008F;
-                flag3 = false;
+                float propPhiTemp = propPhiMin;
+                float propForceNew = -1E+008F;
+                boolean isTypeTwoPitchProp = false;
                 if((Aircraft)(Aircraft)reference.actor instanceof TypeTwoPitchProp)
-                    flag3 = true;
-                while (propAngleDeviceType == 0 || flag3)
+                    isTypeTwoPitchProp = true;
+                while (propAngleDeviceType == _E_PROP_FIXED || isTypeTwoPitchProp)
                 {
-                    float f8 = 2.0F;
+                    int propMomentDivider = 0;
                     int j = 0;
-                    float f10 = 0.1F;
-                    float f12 = 0.5F;
+                    float wFactorOffset = 0.1F;
+                    float wFactor = 0.5F;
                     do
                     {
-                        if(flag)
-                            w = wWEP * f12;
+                        if(isWEP)
+                            w = wWEP * wFactor;
                         else
-                            w = wMax * f12;
-                        float f15 = (float)Math.sqrt(f * f + w * propr * propReductor * w * propr * propReductor);
-                        float f16 = f6 - (float)Math.asin(f / f15);
-                        computePropForces(w * propReductor, f, 0.0F, f16, f1);
+                            w = wMax * wFactor;
+                        float fanFlow = (float)Math.sqrt(fSpeed * fSpeed + w * propr * propReductor * w * propr * propReductor);
+                        float fanPhiRadians = propPhiTemp - (float)Math.asin(fSpeed / fanFlow);
+                        computePropForces(w * propReductor, fSpeed, 0.0F, fanPhiRadians, fAltitude);
                         maxMoment = getN() * getCompressorMultiplier(0.033F);
                         maxW = w;
-                        if(j > 32 || (double)f10 <= 1.0000000000000001E-005D)
+                        if(j > 32 || wFactorOffset <= 1E-005F)
                             break;
                         if(propMoment < maxMoment)
                         {
-                            if(f8 == 1.0F)
-                                f10 /= 2.0F;
-                            f12 *= 1.0F + f10;
-                            f8 = 0.0F;
-                        } else
+                            if(propMomentDivider == 1)
+                                wFactorOffset /= 2.0F;
+                            wFactor *= 1.0F + wFactorOffset;
+                            propMomentDivider = -1;
+                        }
+                        else
                         {
-                            if(f8 == 0.0F)
-                                f10 /= 2.0F;
-                            f12 /= 1.0F + f10;
-                            f8 = 1.0F;
+                            if(propMomentDivider == -1)
+                                wFactorOffset /= 2.0F;
+                            wFactor /= 1.0F + wFactorOffset;
+                            propMomentDivider = 1;
                         }
                         j++;
                     } while(true);
-                    if(!flag3) break;
-                    if(f6 != propPhiMin)
+                    if(!isTypeTwoPitchProp)
                         break;
-                    f7 = propForce;
-                    f6 = propPhiMax;
+                    if(propPhiTemp == propPhiMin)
+                    {
+                        propForceNew = propForce;
+                        propPhiTemp = propPhiMax;
+                    }
+                    else
+                    {
+                        if(propForceNew > propForce)
+                            propForce = propForceNew;
+                        break;
+                    }
                 }
-                if(f7 > propForce)
-                    propForce = f7;
-            }
-            controlThrottle = f4;
-            controlAfterburner = flag1;
-            stage = i;
+//            }
+            controlThrottle = fOldThrottle;
+            controlAfterburner = oldIsWEP;
+            stage = oldStage;
             reference.Loc.set(safeLoc);
             reference.Vwld.set(safeVwld);
             reference.Vflow.set(safeVflow);
             fastATA = false;
             w = 0.0F;
-            if(flag3 || propAngleDeviceType == 0)
-                return propForce;
-            float f9 = 1.5F;
-            float f11 = -0.06F;
+            if(isTypeTwoPitchProp || propAngleDeviceType == _E_PROP_FIXED)
+                return this.propForce;
+            float fTempPropMax = 1.5F;
+            float fTempPropMin = -0.06F;
             int k = 0;
             do
             {
-                float f14 = 0.5F * (f9 + f11);
-                if(flag && (!bWepRpmInLowGear || controlCompressor != compressorMaxStep))
-                    computePropForces(wWEP * f3 * propReductor, f, 0.0F, f14, f1);
+                float fTempProp = 0.5F * (fTempPropMax + fTempPropMin);
+                if(isWEP && (!bWepRpmInLowGear || controlCompressor != compressorMaxStep))
+                    computePropForces(wWEP * fRPMfactor * propReductor, fSpeed, 0.0F, fTempProp, fAltitude);
                 else
-                    computePropForces(wMax * f3 * propReductor, f, 0.0F, f14, f1);
-                if((propForce <= 0.0F || Math.abs(propMoment - maxMoment) >= 1E-005F) && k <= 32)
-                {
-                    if(propForce > 0.0F && propMoment > maxMoment)
-                        f9 = f14;
-                    else
-                        f11 = f14;
-                    k++;
-                } else
-                {
-                    return propForce;
-                }
+                    computePropForces(wMax * fRPMfactor * propReductor, fSpeed, 0.0F, fTempProp, fAltitude);
+                if ((this.propForce > 0.0F && Math.abs(this.propMoment - this.maxMoment) < 1E-005F) || k > 32)
+                    break;
+                if(this.propForce > 0.0F && propMoment > maxMoment)
+                    fTempPropMax = fTempProp;
+                else
+                    fTempPropMin = fTempProp;
+                k++;
             } while(true);
-        case 10:
-        	 float f5 = getCompressorMultiplier(0.033F);
+            return this.propForce;
+        case _E_TYPE_TURBOPROP:
+             float f5 = getCompressorMultiplier(0.033F);
              f5 *= getN();
              w = 0.0F;
              float f7 = 1.5F;
@@ -3896,10 +3855,10 @@ public class Motor extends FMMath
              do
              {
                  float f13 = 0.5F * (f7 + f9x);
-                 if(flag)
-                     computePropForces(wWEP * propReductor, f, 0.0F, f13, f1);
+                 if(isWEP)
+                     computePropForces(wWEP * propReductor, fSpeed, 0.0F, f13, fAltitude);
                  else
-                     computePropForces(wMax * propReductor, f, 0.0F, f13, f1);
+                     computePropForces(wMax * propReductor, fSpeed, 0.0F, f13, fAltitude);
                  if((propForce <= 0.0F || Math.abs(propMoment - f5) >= 1E-005F) && kx <= 32)
                  {
                      if(propForce > 0.0F && propMoment > f5)
@@ -3907,37 +3866,38 @@ public class Motor extends FMMath
                      else
                          f9x = f13;
                      kx++;
-                 } else
+                 }
+                 else
                  {
-                	 //TODO
-                     propForce = (float)Math.toDegrees(Math.atan(f / (wMax * propReductor * propr)) + (double)f13);
+                     //TODO
+                     propForce = (float)Math.toDegrees(Math.atan(fSpeed / (wMax * propReductor * propr)) + (double)f13);
                      return propForce;
                  }
              } while(true);
 
-        case 2: // '\002'
-            pressureExtBar = Atmosphere.pressure(f1) + compressorSpeedManifold * 0.5F * Atmosphere.density(f1) * f * f;
+        case _E_TYPE_JET:
+            pressureExtBar = Atmosphere.pressure(fAltitude) + compressorSpeedManifold * 0.5F * Atmosphere.density(fAltitude) * fSpeed * fSpeed;
             pressureExtBar *= 9.8716682999999996E-006D;
             float f17 = pressureExtBar;
-            float f18 = 1.0F - 0.006F * (Atmosphere.temperature(f1) - 290F);
-            float f19 = 1.0F - 0.0011F * f;
+            float f18 = 1.0F - 0.006F * (Atmosphere.temperature(fAltitude) - 290F);
+            float f19 = 1.0F - 0.0011F * fSpeed;
             propForce = thrustMax * f17 * f18 * f19;
-            if(f2 > 1.0F)
-                f2 = 1.0F;
-            propForce *= f2;
+            if(fThrottle > 1.0F)
+                fThrottle = 1.0F;
+            propForce *= fThrottle;
             return propForce;
 
-        case 3: // '\003'
-        case 4: // '\004'
-        case 6: // '\006'
+        case _E_TYPE_ROCKET:
+        case _E_TYPE_ROCKETBOOST:
+        case _E_TYPE_PVRD:
             propForce = thrustMax;
-            propForce *= compressorPMax / (compressorPMax + 1E-005F * Atmosphere.pressure(f1));
+            propForce *= compressorPMax / (compressorPMax + 1E-005F * Atmosphere.pressure(fAltitude));
             return propForce;
 
-        case 5: // '\005'
+        case _E_TYPE_TOW:
             return thrustMax;
 
-        case 8: // '\b'
+        case _E_TYPE_AZURE:
             return -1F;
         }
     }
@@ -4001,14 +3961,15 @@ public class Motor extends FMMath
                     tmpF *= f10;
                     if(reference.isPlayers() && (reference instanceof RealFlightModel) && ((RealFlightModel)reference).isRealMode() && bIsMaster && neg_G_Counter > World.Rnd().nextFloat(5F, 8F))
                         setEngineStops(reference.actor);
-                } else
-                if(reference.getOverload() >= 0.0F && neg_G_Counter > 0.0F)
+                }
+                else if(reference.getOverload() >= 0.0F && neg_G_Counter > 0.0F)
                 {
                     neg_G_Counter -= 0.015F;
                     producedDistabilisation += 10F + 5F * neg_G_Counter;
                     tmpF *= f10;
                     bFloodCarb = true;
-                } else
+                }
+                else
                 {
                     bFloodCarb = false;
                     neg_G_Counter = 0.0F;
@@ -4046,7 +4007,8 @@ public class Motor extends FMMath
                         bFullT = true;
                     else
                         bFullT = false;
-                } else
+                }
+                else
                 {
                     f7 = w / (wNom * f3);
                     bFullT = false;
@@ -4066,27 +4028,28 @@ public class Motor extends FMMath
                     {
                         producedDistabilisation += 15F + 5F * neg_G_Counter;
                         tmpF *= 0.52F - neg_G_Counter;
-                    } else
-                    if(bFullT && neg_G_Counter >= 0.5F && neg_G_Counter <= 0.8F)
+                    }
+                    else if(bFullT && neg_G_Counter >= 0.5F && neg_G_Counter <= 0.8F)
                     {
                         neg_G_Counter = 0.51F;
                         bFloodCarb = false;
-                    } else
-                    if(bFullT && neg_G_Counter > 0.8F)
+                    }
+                    else if(bFullT && neg_G_Counter > 0.8F)
                     {
                         neg_G_Counter -= 0.045F;
                         producedDistabilisation += 10F + 5F * neg_G_Counter;
                         tmpF *= f11;
                         bFloodCarb = true;
-                    } else
+                    }
+                    else
                     {
                         producedDistabilisation += 10F + 5F * neg_G_Counter;
                         tmpF *= f11;
                         if(reference.isPlayers() && (reference instanceof RealFlightModel) && ((RealFlightModel)reference).isRealMode() && bIsMaster && neg_G_Counter > World.Rnd().nextFloat(7.5F, 9.5F))
                             setEngineStops(reference.actor);
                     }
-                } else
-                if(reference.getOverload() >= 0.0F && neg_G_Counter > 0.0F)
+                }
+                else if(reference.getOverload() >= 0.0F && neg_G_Counter > 0.0F)
                 {
                     neg_G_Counter -= 0.03F;
                     if(!bFullT)
@@ -4095,7 +4058,8 @@ public class Motor extends FMMath
                         tmpF *= f11;
                     }
                     bFloodCarb = true;
-                } else
+                }
+                else
                 {
                     neg_G_Counter = 0.0F;
                     bFloodCarb = false;
@@ -4108,12 +4072,13 @@ public class Motor extends FMMath
                 {
                     if(controlThrottle > 1.0F && reference.M.nitro > 0.0F)
                         tmpF *= engineAfterburnerBoostFactor;
-                } else
-                if(afterburnerType == 8 || afterburnerType == 7)
+                }
+                else if(afterburnerType == 8 || afterburnerType == 7)
                 {
                     if(controlCompressor < compressorMaxStep)
                         tmpF *= engineAfterburnerBoostFactor;
-                } else
+                }
+                else
                 {
                     tmpF *= engineAfterburnerBoostFactor;
                 }
@@ -4148,7 +4113,8 @@ public class Motor extends FMMath
         {
             float f = 1.0F - getCylindersRatio();
             return engineDistAM * w * w + engineDistBM * w + engineDistCM + 9.25F * f * f + producedDistabilisation;
-        } else
+        }
+        else
         {
             return 11.25F;
         }
@@ -4162,32 +4128,32 @@ public class Motor extends FMMath
         float f18;
         switch(propAngleDeviceType)
         {
-        case 1: // '\001'
-        case 2: // '\002'
-        case 7: // '\007'
-        case 8: // '\b'
-            f18 = getATA(toRPM(propAngleDeviceMinParam + (propAngleDeviceMaxParam - propAngleDeviceMinParam) * f24));
-            break;
+            case 1:
+            case 2:
+            case 7:
+            case 8:
+                f18 = getATA(toRPM(propAngleDeviceMinParam + (propAngleDeviceMaxParam - propAngleDeviceMinParam) * f24));
+                break;
 
-        case 3: // '\003'
-        case 4: // '\004'
-        case 5: // '\005'
-        case 6: // '\006'
-        default:
-            f18 = compressorRPMtoWMaxATA * (0.55F + 0.45F * f24);
-            break;
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            default:
+                f18 = compressorRPMtoWMaxATA * (0.55F + 0.45F * f24);
+                break;
         }
         coolMult = 1.0F;
         compressorManifoldThreshold = f18;
         switch(compressorType)
         {
-        case 0: // '\0'
+        case 0:
             float f1 = Atmosphere.pressure(reference.getAltitude()) + 0.5F * Atmosphere.density(reference.getAltitude()) * reference.getSpeed() * reference.getSpeed();
             float f25 = f1 / Atmosphere.P0();
             coolMult = f25;
             return f25;
 
-        case 1: // '\001'
+        case 1:
             float f2 = pressureExtBar;
             if((!bHasCompressorControl || !reference.isPlayers() || !(reference instanceof RealFlightModel) || !((RealFlightModel)reference).isRealMode() || !World.cur().diffCur.ComplexEManagement || fastATA) && (reference.isTick(128, 0) || fastATA))
             {
@@ -4221,7 +4187,8 @@ public class Motor extends FMMath
                                 f57 *= compressorBaseMultipliers[controlCompressor] * compressorAltMultipliers[controlCompressor];
 
                         f36 = f57 + (f52 / f46) * (compressorAltMultipliers[controlCompressor] - f57);
-                    } else
+                    }
+                    else
                     {
                         f36 = compressorAltMultipliers[controlCompressor];
                     }
@@ -4258,14 +4225,21 @@ public class Motor extends FMMath
                 }
 
                 f26 = f29;
+                if(i < 0)
+                    i = 0;
                 controlCompressor = i;
-            } else
+            }
+            else
             {
                 float f37 = f18;
                 if(controlAfterburner)
                     f37 *= afterburnerCompressorFactor;
                 do
                 {
+                    if (controlCompressor < 0)
+                        controlCompressor = 0;
+                    else if (controlCompressor >= compressorPressure.length)
+                        controlCompressor = compressorPressure.length - 1;
                     float f6 = compressorPressure[controlCompressor];
                     float f42 = 1.0F;
                     float f47 = 1.0F;
@@ -4284,7 +4258,8 @@ public class Motor extends FMMath
 
                         f42 = f62 + (f58 / f53) * (compressorAltMultipliers[controlCompressor] - f62);
                         f47 = f42;
-                    } else
+                    }
+                    else
                     {
                         f42 = compressorAltMultipliers[controlCompressor];
                         f47 = (f42 * f2 * f18 * (compressorPAt0 + (1.0F - compressorPAt0) * w * _1_wMax)) / (f6 * f37);
@@ -4337,7 +4312,7 @@ public class Motor extends FMMath
                 compressorManifoldPressure *= getMixMultiplier();
             return f26;
 
-        case 2: // '\002'
+        case 2:
             float f3 = pressureExtBar;
             if((!bHasCompressorControl || !reference.isPlayers() || !(reference instanceof RealFlightModel) || !((RealFlightModel)reference).isRealMode() || !World.cur().diffCur.ComplexEManagement || fastATA) && (reference.isTick(128, 0) || fastATA))
             {
@@ -4372,7 +4347,8 @@ public class Motor extends FMMath
                                 f59 *= compressorBaseMultipliers[controlCompressor] * compressorAltMultipliers[controlCompressor];
 
                         f48 = f59 + (f65 / f63) * (compressorAltMultipliers[controlCompressor] - f59);
-                    } else
+                    }
+                    else
                     {
                         f48 = compressorAltMultipliers[controlCompressor];
                     }
@@ -4411,7 +4387,8 @@ public class Motor extends FMMath
 
                 f27 = f30;
                 controlCompressor = j;
-            } else
+            }
+            else
             {
                 float f39 = f18;
                 if(controlAfterburner)
@@ -4437,11 +4414,13 @@ public class Motor extends FMMath
                             f44 *= compressorBaseMultipliers[1] * compressorAltMultipliers[1];
                         f64 = f44 + (f49 / f68) * (compressorAltMultipliers[1] - f44);
                         f64 += ((compressorAltMultipliers[0] - f64) * (f70 - 1.0F)) / ((f55 * f39) / f9 - 1.0F);
-                    } else
+                    }
+                    else
                     {
                         f64 = compressorAltMultipliers[controlCompressor];
                     }
-                } else
+                }
+                else
                 {
                     controlCompressor = 0;
                     float f69 = 1.0F - f55;
@@ -4479,7 +4458,7 @@ public class Motor extends FMMath
                 compressorManifoldPressure = f3 * (1.0F - w * 0.03F);
             return f27;
 
-        case 3: // '\003'
+        case 3:
             float f4 = pressureExtBar;
             controlCompressor = 0;
             float f35 = -1F;
@@ -4496,7 +4475,8 @@ public class Motor extends FMMath
                     f56 = 0.0F;
                 float f61 = 1.0F;
                 f40 = f61 + (f56 / f50) * (compressorAltMultipliers[controlCompressor] - f61);
-            } else
+            }
+            else
             {
                 f40 = compressorAltMultipliers[controlCompressor];
             }
@@ -4589,7 +4569,8 @@ public class Motor extends FMMath
                     if(f > (pressureExtBar - f4) * 0.25F)
                     {
                         return 1.0F;
-                    } else
+                    }
+                    else
                     {
                         float f2 = f / ((pressureExtBar - f4) * 0.25F);
                         return f2;
@@ -4632,54 +4613,58 @@ public class Motor extends FMMath
     {
         float f1 = 0.0F;
         if(!bPropHit && (bIsInoperable || stage == 0 || controlMagneto == 0))
-		{
-			/*TODO:   ok,this is spindown stuff :)    */
-			if((((Interpolate) (reference)).actor instanceof BF_109) || (((Interpolate) (reference)).actor instanceof BF_110) || (((Interpolate) (reference)).actor instanceof JU_87) || (((Interpolate) (reference)).actor instanceof JU_88) || (((Interpolate) (reference)).actor instanceof JU_88NEW) || ((((Interpolate) (reference)).actor instanceof FW_190) && type == 0))
-			{
-				fricCoeffT += 0.09F * f;     /*  this value determines how fast will propeller loose speed when engine is turned off   */
-				if(fricCoeffT > 0.25F)    /*   this one affects windmilling...lower the valuse more windmilling...and oposite   */
-					fricCoeffT = 0.25F;
-			} else
-				if((((Interpolate) (reference)).actor instanceof P_51) || (((Interpolate) (reference)).actor instanceof P_47) || (((Interpolate) (reference)).actor instanceof P_38) || (((Interpolate) (reference)).actor instanceof P_39) || (((Interpolate) (reference)).actor instanceof P_40) || (((Interpolate) (reference)).actor instanceof P_40SUKAISVOLOCH) || (((Interpolate) (reference)).actor instanceof SPITFIRE) || (((Interpolate) (reference)).actor instanceof Hurricane) || ((((Interpolate) (reference)).actor instanceof FW_190) && type == 1) || type == 1)
-				{
-					fricCoeffT += 0.08F * f;
-					if(fricCoeffT > 0.2F)
-						fricCoeffT = 0.2F;
-				} else
-					if(type == 9) //TODO: Spin-down behaviour for rotaries. Great rotating inertial mass, hence longer spin-down
-					{
-						fricCoeffT += 0.07F * f;
-						if(fricCoeffT > 0.05F)
-							fricCoeffT = 0.05F;
-					} else
-					{
-						fricCoeffT += 0.09F * f;
-						if(fricCoeffT > 0.3F)
-							fricCoeffT = 0.3F;    
-					}
-			float f2 = w * _1_wMax;
-			f1 = (-fricCoeffT * (6F + 3.8F * f2) * (propI + engineI)) / f;
-			float f3 = (-0.99F * w * (propI + engineI)) / f;
-			if(f1 < f3)
-				f1 = f3;
-		} else if(bPropHit && (bIsInoperable || stage == 0 || controlMagneto == 0))
-		{
-			fricCoeffT += 0.2F * f;
-			if(fricCoeffT > 2.0F)
-				fricCoeffT = 2.0F;
-			float f2 = w * _1_wMax;
-			f1 = (-fricCoeffT * (6F + 3.8F * f2) * (propI + engineI)) / f;
-			float f3 = (-0.99F * w * (propI + engineI)) / f;
-			if(f1 < f3)
-				f1 = f3;
-		} else
-		{
-			fricCoeffT = 0.0F;
-		}
-	if(stage == 0 && w > wMaxAllowed)
-	{
-		doSetEngineStuck();      /*   I've put this in just so you can't overrev engine with windmilling   */
-	}
+        {
+            /*TODO:   ok,this is spindown stuff :)    */
+            if((((Interpolate) (reference)).actor instanceof BF_109) || (((Interpolate) (reference)).actor instanceof BF_110) || (((Interpolate) (reference)).actor instanceof JU_87) || (((Interpolate) (reference)).actor instanceof JU_88) || (((Interpolate) (reference)).actor instanceof JU_88NEW) || ((((Interpolate) (reference)).actor instanceof FW_190) && type == _E_TYPE_INLINE))
+            {
+                fricCoeffT += 0.09F * f;     /*  this value determines how fast will propeller loose speed when engine is turned off   */
+                if(fricCoeffT > 0.25F)    /*   this one affects windmilling...lower the valuse more windmilling...and oposite   */
+                    fricCoeffT = 0.25F;
+            }
+            else if((((Interpolate) (reference)).actor instanceof P_51) || (((Interpolate) (reference)).actor instanceof P_47) || (((Interpolate) (reference)).actor instanceof P_38) || (((Interpolate) (reference)).actor instanceof P_39) || (((Interpolate) (reference)).actor instanceof P_40) || (((Interpolate) (reference)).actor instanceof P_40SUKAISVOLOCH) || (((Interpolate) (reference)).actor instanceof SPITFIRE) || (((Interpolate) (reference)).actor instanceof Hurricane) || ((((Interpolate) (reference)).actor instanceof FW_190) && type == _E_TYPE_RADIAL) || type == _E_TYPE_RADIAL)
+            {
+                fricCoeffT += 0.08F * f;
+                if(fricCoeffT > 0.2F)
+                    fricCoeffT = 0.2F;
+            }
+            else if(type == _E_TYPE_ROTARY) //TODO: Spin-down behaviour for rotaries. Great rotating inertial mass, hence longer spin-down
+            {
+                fricCoeffT += 0.07F * f;
+                if(fricCoeffT > 0.05F)
+                    fricCoeffT = 0.05F;
+            }
+            else
+            {
+                fricCoeffT += 0.09F * f;
+                if(fricCoeffT > 0.3F)
+                    fricCoeffT = 0.3F;
+            }
+            float f2 = w * _1_wMax;
+            f1 = (-fricCoeffT * (6F + 3.8F * f2) * (propI + engineI)) / f;
+            float f3 = (-0.99F * w * (propI + engineI)) / f;
+            if(f1 < f3)
+                f1 = f3;
+        }
+        else if(bPropHit && (bIsInoperable || stage == 0 || controlMagneto == 0))
+        {
+            fricCoeffT += 0.2F * f;
+            if(fricCoeffT > 2.0F)
+                fricCoeffT = 2.0F;
+            float f2 = w * _1_wMax;
+            f1 = (-fricCoeffT * (6F + 3.8F * f2) * (propI + engineI)) / f;
+            float f3 = (-0.99F * w * (propI + engineI)) / f;
+            if(f1 < f3)
+                f1 = f3;
+        }
+        else
+        {
+            fricCoeffT = 0.0F;
+        }
+
+        if(stage == 0 && w > wMaxAllowed)
+        {
+            doSetEngineStuck();      /*   I've put this in just so you can't overrev engine with windmilling   */
+        }
         return f1;
     }
 
@@ -4742,8 +4727,8 @@ public class Motor extends FMMath
         return (f * 60F) / 2.0F / 3.141593F;
     }
 
-	//TODO: Altered by |ZUTI|: from private to public.
-	public float getKforH(float f, float f1, float f2)
+    //TODO: Altered by |ZUTI|: from private to public.
+    public float getKforH(float f, float f1, float f2)
     {
         float f3 = (Atmosphere.density(f2) * (f1 * f1)) / (Atmosphere.density(0.0F) * (f * f));
         if(type != 2)
