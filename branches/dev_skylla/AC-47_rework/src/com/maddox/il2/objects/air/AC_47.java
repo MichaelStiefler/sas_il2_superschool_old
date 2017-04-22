@@ -2,6 +2,7 @@ package com.maddox.il2.objects.air;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -11,12 +12,14 @@ import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.engine.HierMesh;
+import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.game.HUD;
-import com.maddox.il2.objects.weapons.MGunMiniGun3000;
+import com.maddox.il2.net.NetMissionTrack;
+import com.maddox.il2.objects.weapons.MGunAdjustableMiniGun;
 
 /**
  * This class was modified by SAS~Skylla in the course of the AC-47 rework.
- * @see MGunMiniGun3000, MGunMiniGun6000
+ * @see MGunAdjustableMiniGun, MGunMiniGun3000, MGunMiniGun6000
  * 
  * Modifications:
  *  - Imported new 3D by SAS~GJE52 from here: http://www.sas1946.com/main/index.php/topic,32003.0.html
@@ -45,19 +48,19 @@ public class AC_47 extends Scheme2 implements TypeTransport, TypeBomber {
 	    secRandom.setSeed(System.currentTimeMillis());
 	    RangeRandom rr = new RangeRandom(secRandom.nextLong());
 	    for (int i=0; i<rndgear.length; i++) {
-	        rndgear[i] = rr.nextFloat(0.0F, 0.15F);
+	        rndgear[i] = rr.nextFloat(0.0F, 0.25F);
 	    }
 	}
     
   //Gear Code: ---------------------------------------------------------------------------
 	
 	public static void moveGear(HierMesh h, float l, float r, float t, float [] rnd) {
-		h.chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(l, 0.01F+rnd[0], 0.84F+rnd[0], 0.0F, -45.0F), 0.0F);
-		h.chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(r, 0.01F+rnd[1], 0.84F+rnd[1], 0.0F, -45.0F), 0.0F);
-		h.chunkSetAngles("GearL3_D0", 0.0F, Aircraft.cvt(l, 0.01F+rnd[0], 0.84F+rnd[0], 0.0F, 20.0F), 0.0F);
-		h.chunkSetAngles("GearR3_D0", 0.0F, Aircraft.cvt(r, 0.01F+rnd[1], 0.84F+rnd[1], 0.0F, 20.0F), 0.0F);
-		h.chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(l, 0.01F+rnd[0], 0.84F+rnd[0], 0.0F, -120.0F), 0.0F);
-		h.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(r, 0.01F+rnd[1], 0.84F+rnd[1], 0.0F, -120.0F), 0.0F);
+		h.chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(l, 0.01F+rnd[0], 0.74F+rnd[0], 0.0F, -45.0F), 0.0F);
+		h.chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(r, 0.01F+rnd[1], 0.74F+rnd[1], 0.0F, -45.0F), 0.0F);
+		h.chunkSetAngles("GearL3_D0", 0.0F, Aircraft.cvt(l, 0.01F+rnd[0], 0.74F+rnd[0], 0.0F, 20.0F), 0.0F);
+		h.chunkSetAngles("GearR3_D0", 0.0F, Aircraft.cvt(r, 0.01F+rnd[1], 0.74F+rnd[1], 0.0F, 20.0F), 0.0F);
+		h.chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(l, 0.01F+rnd[0], 0.74F+rnd[0], 0.0F, -120.0F), 0.0F);
+		h.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(r, 0.01F+rnd[1], 0.74F+rnd[1], 0.0F, -120.0F), 0.0F);
 	}
 	
     public static void moveGear(HierMesh hiermesh, float leftGearPos, float rightGearPos, float tailWheelPos) {
@@ -77,7 +80,7 @@ public class AC_47 extends Scheme2 implements TypeTransport, TypeBomber {
     }
     
     protected void moveGear(final float n) {
-        moveGear(this.hierMesh(), n);
+        moveGear(this.hierMesh(), n, rndgear);
     }
     
   //--------------------------------------------------------------------------------------
@@ -145,6 +148,9 @@ public class AC_47 extends Scheme2 implements TypeTransport, TypeBomber {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
             }
         }
+      //Net Replication: ---------------------------------------------------------------------
+        replicateGunStateToNet();
+      //--------------------------------------------------------------------------------------
     }
     
     protected boolean cutFM(final int n, final int n2, final Actor actor) {
@@ -197,8 +203,8 @@ public class AC_47 extends Scheme2 implements TypeTransport, TypeBomber {
     	float f = -1.0F;
 		for(int i = 0; i<3; i++) {
 			BulletEmitter e = this.getBulletEmitterByHookName("_MGUN0" + (i+1));
-			if(e instanceof MGunMiniGun3000) {
-				MGunMiniGun3000 m = (MGunMiniGun3000) e;
+			if(e instanceof MGunAdjustableMiniGun) {
+				MGunAdjustableMiniGun m = (MGunAdjustableMiniGun) e;
 				switch(dir) {
 				case -1: f = m.decRPM(); break;
 				case 0: m.resRPM(); break;
@@ -219,14 +225,17 @@ public class AC_47 extends Scheme2 implements TypeTransport, TypeBomber {
     
 	public void typeBomberAdjSpeedMinus() {
 		setGunsRPM(-1);
+		replicateGunStateToNet();
 	}
 
 	public void typeBomberAdjSpeedPlus() {
 		setGunsRPM(1);
+		replicateGunStateToNet();
 	}
     
 	public void typeBomberAdjSpeedReset() {
 		setGunsRPM(0);
+		replicateGunStateToNet();
 	}
 
   //Selectable Miniguns: -----------------------------------------------------------------
@@ -270,30 +279,38 @@ public class AC_47 extends Scheme2 implements TypeTransport, TypeBomber {
 	
 	public void typeBomberAdjAltitudeMinus() {
 		setGunsActive(-1);
+		replicateGunStateToNet();
 	}
 
 	public void typeBomberAdjAltitudePlus() {
 		setGunsActive(+1);
+		replicateGunStateToNet();
 	}
 
   //Net Replication: ---------------------------------------------------------------------
 	
-	public void typeBomberReplicateToNet(final NetMsgGuaranted msg) throws IOException {
-		msg.writeInt(this.gunsRPM);
-		msg.writeInt(this.gunsActive);
-	}
-	
-	public void typeBomberReplicateFromNet(final NetMsgInput msg) throws IOException {
-		final int tmpRPM = msg.readInt();
-		final int tmpActive = msg.readInt();
-		while(this.gunsRPM != tmpRPM) {
+    public void update(float f) {
+    	super.update(f);
+    	replicateGunStateFromNet();
+    }
+    
+	private void replicateGunStateFromNet() {
+		if(this == World.getPlayerAircraft() && !NetMissionTrack.isPlaying()) {
+			return;
+		}
+		int fromNet = this.FM.AS.torpedoGyroAngle;
+		int tmpRPM = (fromNet/10)*10;
+		fromNet -= tmpRPM;
+		int tmpActive = fromNet;
+		
+		for(int i = 0; (this.gunsRPM != tmpRPM) && i < 100; i++) {
 			if(gunsRPM < tmpRPM) {
 				setGunsRPM(+1);
 			} else if(gunsRPM > tmpRPM){
 				setGunsRPM(-1);
 			}
 		}
-		while(this.gunsActive != tmpActive) {
+		for(int i = 0; (this.gunsActive != tmpActive) && i < 4; i++) {
 			if(gunsActive < tmpActive) {
 				setGunsActive(+1);
 			} else if(gunsActive > tmpActive) {
@@ -302,8 +319,68 @@ public class AC_47 extends Scheme2 implements TypeTransport, TypeBomber {
 		}
 	}
 	
+	private void replicateGunStateToNet() {
+		if (!this.FM.AS.isMaster() || NetMissionTrack.isPlaying()) {
+			return;
+		}
+		int toSend = 0;
+		if(gunsActive < 4 && gunsActive > 1) {
+			toSend += gunsActive;
+		}
+		if(gunsRPM > 10 && gunsRPM < 60000) {
+			toSend += gunsRPM;
+		}
+		int byte1 = (toSend & 0xFF00) >> 8;
+		int byte2 = toSend & 0xFF;
+		this.FM.AS.netToMirrors(AircraftState._AS_GYROANGLE, byte1, byte2, null);
+	}
+	
+	/* alternative coarse Version only using 1 byte.
+    private void replicateGunStateToNet() {
+    	if (!this.FM.AS.isMaster() || NetMissionTrack.isPlaying()) {
+			return;
+		}
+    	byte toSend = (byte)(gunsActive & 0x03);
+    	toSend |= ((gunsRPM / 1000) & 0x0F) << 2;
+    	this.FM.AS.netToMirrors(AircraftState._AS_GYROANGLE, toSend, 0, null);
+    }
+    
+    private void replicateGunStateFromNet() {
+		if(this == World.getPlayerAircraft() && !NetMissionTrack.isPlaying()) {
+			return;
+		}
+		byte data = (byte) this.FM.AS.torpedoGyroAngle;
+		int tmpActive = (int)(data & 0x03);
+		int tmpRPM = (((int)data >> 2) & 0x0F)*1000;
+		
+		
+		for(int i = 0; (this.gunsRPM != tmpRPM) && i < 100; i++) {
+			if(gunsRPM < tmpRPM) {
+				setGunsRPM(+1);
+			} else if(gunsRPM > tmpRPM){
+				setGunsRPM(-1);
+			}
+		}
+		for(int i = 0; (this.gunsActive != tmpActive) && i < 4; i++) {
+			if(gunsActive < tmpActive) {
+				setGunsActive(+1);
+			} else if(gunsActive > tmpActive) {
+				setGunsActive(-1);
+			}
+		}
+    }
+    */
+	
   //--------------------------------------------------------------------------------------
 
+	public void typeBomberReplicateToNet(final NetMsgGuaranted msg) throws IOException {
+		
+	}
+	
+	public void typeBomberReplicateFromNet(final NetMsgInput msg) throws IOException {
+		
+	}
+	
 	public void typeBomberAdjAltitudeReset() {
 		
 	}
@@ -339,4 +416,5 @@ public class AC_47 extends Scheme2 implements TypeTransport, TypeBomber {
 	public void typeBomberUpdate(float f) {
 		
 	}
+
 }
