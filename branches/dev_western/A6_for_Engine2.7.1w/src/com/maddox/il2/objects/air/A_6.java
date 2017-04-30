@@ -125,7 +125,6 @@ public class A_6 extends Scheme2
         fxMissileWarning = newSound("aircraft.MissileMissile", false);
         misslebrg = 0.0F;
         aircraftbrg = 0.0F;
-//        bFL = false;
         noFL = false;
         thrustMaxField = new Field[2];
         lTimeNextEject = 0L;
@@ -141,8 +140,8 @@ public class A_6 extends Scheme2
         bObserverKilled = false;
         Flaps = false;
         antiColLight = new Eff3DActor[6];
-//        bAntiColLight = false;
         arrestor = 0.0F;
+        engineOilPressurePSI = new float[2];
     }
 
     private static final float toMeters(float f)
@@ -206,29 +205,6 @@ public class A_6 extends Scheme2
                 t1 = Time.current();
             }
         }
-//        if(i == 28)
-//            if(!noFL)
-//            {
-//                if(!bFL)
-//                {
-//                    bFL = true;
-//                    HUD.log(AircraftHotKeys.hudLogWeaponId, "FL ON");
-//                } else
-//                {
-//                    bFL = false;
-//                    HUD.log(AircraftHotKeys.hudLogWeaponId, "FL OFF");
-//                }
-//            }
-//        if(i == 29)
-//            if(!bAntiColLight)
-//            {
-//                bAntiColLight = true;
-//                HUD.log(AircraftHotKeys.hudLogWeaponId, "Anti-Col Lights ON");
-//            } else
-//            {
-//                bAntiColLight = false;
-//                HUD.log(AircraftHotKeys.hudLogWeaponId, "Anti-Col Lights OFF");
-//            }
     }
 
     private boolean RWRWarning()
@@ -701,6 +677,26 @@ public class A_6 extends Scheme2
     //    }
     }
 
+    public void missionStarting()
+    {
+        super.missionStarting();
+
+        if((this instanceof EA_6B) || (this instanceof EA_6BicapII))
+            OxygenMiliLitter = 30000F;
+        else
+            OxygenMiliLitter = 10000F;
+        bOxygenUsing = false;
+        LastOxygenUseTime = -1L;
+
+        for(int i = 0; i < 2; i++)
+        {
+            if(FM.CT.GearControl > 0F)
+                engineOilPressurePSI[i] = 0F;
+            else
+                engineOilPressurePSI[i] = 40F;
+        }
+    }
+
     public void checkSpolers(boolean forceFlag)
     {
         boolean SpoilerAsAileron = (FM.CT.getAileron() < -0.008F || FM.CT.getAileron() > 0.008F);
@@ -937,6 +933,14 @@ public class A_6 extends Scheme2
         formationlights();
         if(!FM.isPlayers())
             FM.CT.bAntiColLights = FM.AS.bNavLightsOn;
+
+        if(FM.getAltitude() > 1500F && OxygenMiliLitter > 0F)
+            checkOxygenUse();
+        else
+        {
+            bOxygenUsing = false;
+            LastOxygenUseTime = -1L;
+        }
     }
 
     private final void UpdateLightIntensity()
@@ -1643,6 +1647,7 @@ public class A_6 extends Scheme2
         else
             FM.CT.bHasCockpitDoorControl = true;
         anticollight();
+        computeEngineOilPressure();
     }
 
     public void doMurderPilot(int i)
@@ -2788,15 +2793,48 @@ public class A_6 extends Scheme2
         }
     }
 
-    static Class _mthclass$(String s)
+    void checkOxygenUse()
     {
-        try
+        if(OxygenMiliLitter <= 0F)
         {
-            return Class.forName(s);
+            OxygenMiliLitter = 0F;
+            bOxygenUsing = false;
+            LastOxygenUseTime = -1L;
+            return;
         }
-        catch(ClassNotFoundException classnotfoundexception)
+
+        if(!bOxygenUsing)
         {
-            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+            bOxygenUsing = true;
+            LastOxygenUseTime = Time.current();
+            return;
+        }
+
+        long calculatetime = Time.current() - LastOxygenUseTime;
+        OxygenMiliLitter -= OxygenConsumption * FM.crew * (float)calculatetime;
+        if(OxygenMiliLitter < 0F)
+            OxygenMiliLitter = 0F;
+        bOxygenUsing = true;
+        LastOxygenUseTime = Time.current();
+    }
+
+    private void computeEngineOilPressure()
+    {
+        float targetPress = 0F;
+
+        for(int i= 0; i < 2; i++)
+        {
+            if(FM.EI.engines[i].getRPM() < 1000F)
+                targetPress = cvt(FM.EI.engines[i].getRPM(), 0F, 1000F, 0F, 40F);
+            else if(FM.EI.engines[i].getRPM() < 4000F)
+                targetPress = cvt(FM.EI.engines[i].getRPM(), 1000F, 4000F, 40F, 50F);
+            else
+                targetPress = cvt(FM.EI.engines[i].getRPM(), 4000F, 7000F, 50F, 70F);
+
+            if(targetPress > engineOilPressurePSI[i])
+                engineOilPressurePSI[i] += Math.min((targetPress - engineOilPressurePSI[i]) * 0.1F, 0.1F);
+            else
+                engineOilPressurePSI[i] -= Math.min((engineOilPressurePSI[i]- targetPress) * 0.06F, 0.06F);
         }
     }
 
@@ -2874,7 +2912,6 @@ public class A_6 extends Scheme2
     public int lockmode;
     private boolean APmode1;
     private boolean APmode2;
-//    public boolean bFL;
     public boolean noFL;
     public float azimult;
     public float tangate;
@@ -2916,10 +2953,14 @@ public class A_6 extends Scheme2
     private boolean bEA6B;
     private float stockDragAirbrake;
     private Eff3DActor antiColLight[];
-//    private boolean bAntiColLight;
     public static float FlowRate = 10F;
     public static float FuelReserve = 1500F;
     private float arrestor;
+    public float OxygenMiliLitter = 10000F;
+    private boolean bOxygenUsing = false;
+    private long LastOxygenUseTime = -1L;
+    static private float OxygenConsumption = 0.000301932F;
+    public float engineOilPressurePSI[];
 
     static 
     {
