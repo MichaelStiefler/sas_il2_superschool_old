@@ -191,7 +191,7 @@ public class CockpitA_6_Bombardier extends CockpitPilot
             exception1.printStackTrace();
         }
         interpPut(new Interpolater(), null, Time.current(), null);
-        AircraftLH.printCompassHeading = true;
+        printCompassHeading = true;
     }
 
     public void reflectWorldToInstruments(float f)

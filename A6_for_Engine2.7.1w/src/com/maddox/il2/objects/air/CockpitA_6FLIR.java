@@ -399,7 +399,7 @@ public class CockpitA_6FLIR extends CockpitGunner
 
     public CockpitA_6FLIR()
     {
-        super("3DO/Cockpit/AV8FLIR/AV8FLIR.him", "he111_gunner");
+        super("3DO/Cockpit/US_Common_FLIR/A-6FLIR.him", "he111_gunner");
         autotrack = new ArrayList();
         dY = 0.0D;
         dX = 0.0D;

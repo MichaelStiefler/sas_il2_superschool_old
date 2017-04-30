@@ -273,7 +273,7 @@ public class EA_6BicapII extends A_6fuelReceiver
         Class class1 = CLASS.THIS();
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "EA-6B");
-        Property.set(class1, "meshName", "3DO/Plane/EA-6B/hier.him");
+        Property.set(class1, "meshName", "3DO/Plane/EA-6B_icap2/hier.him");
         Property.set(class1, "PaintScheme", new PaintSchemeFMPar05());
         Property.set(class1, "yearService", 1985F);
         Property.set(class1, "yearExpired", 2016F);
@@ -284,11 +284,11 @@ public class EA_6BicapII extends A_6fuelReceiver
         Property.set(class1, "LOSElevation", 0.965F);
         Aircraft.weaponTriggersRegister(class1, new int[] {
             9, 9, 9, 9, 9, 9, 2, 2, 2, 2, 
-            2, 2, 2, 2, 7, 7, 8, 8
+            2, 2, 2, 2, 7, 8
         });
         Aircraft.weaponHooksRegister(class1, new String[] {
-            "_ExternalDev01",  "_ExternalDev02",  "_ExternalDev03",  "_ExternalDev04",  "_ExternalDev05",  "_ExternalDev06",  "_ExternalRock01", "_ExternalRock01", "_ExternalRock02", "_ExternalRock02",
-            "_ExternalRock03", "_ExternalRock03", "_ExternalRock04", "_ExternalRock04", "_Flare01",        "_Flare02",        "_Chaff01",        "_Chaff02"
+            "_ExternalDev06",  "_ExternalDev01",  "_ExternalDev02",  "_ExternalDev03",  "_ExternalDev04",  "_ExternalDev05",  "_ExternalRock35", "_ExternalRock35", "_ExternalRock36", "_ExternalRock36",
+            "_ExternalRock37", "_ExternalRock37", "_ExternalRock38", "_ExternalRock38", "_Flare01",        "_Chaff01"
         });
         String s = "";
         try
@@ -297,56 +297,66 @@ public class EA_6BicapII extends A_6fuelReceiver
             Property.set(class1, "weaponsList", arraylist);
             HashMapInt hashmapint = new HashMapInt();
             Property.set(class1, "weaponsMap", hashmapint);
-            char c = 18;
+            char c = 16;
             Aircraft._WeaponSlot a_lweaponslot[] = new Aircraft._WeaponSlot[c];
             s = "default";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[14] = new Aircraft._WeaponSlot(7, "RocketGunFlareNEW", 20);
-            a_lweaponslot[15] = new Aircraft._WeaponSlot(7, "RocketGunFlareNEW", 20);
-            a_lweaponslot[16] = new Aircraft._WeaponSlot(8, "RocketGunChaff", 20);
-            a_lweaponslot[17] = new Aircraft._WeaponSlot(8, "RocketGunChaff", 20);
+            a_lweaponslot[14] = new Aircraft._WeaponSlot(7, "RocketGunFlare_gn16", 30);
+            a_lweaponslot[15] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "1x330galDroptank";
+            s = "1x300Dt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "PylonF100_Outboard", 1);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(9, "Pylon_F100_Outboard_gn16", 1);
+            a_lweaponslot[1] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawkNF_gn16", 1);
+            a_lweaponslot[14] = new Aircraft._WeaponSlot(7, "RocketGunFlare_gn16", 30);
+            a_lweaponslot[15] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "3x330galDroptank";
+            s = "3x300Dt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
-            a_lweaponslot[1] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "PylonF100_Outboard", 1);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(9, "Pylon_F100_Outboard_gn16", 1);
+            a_lweaponslot[1] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawkNF_gn16", 1);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawkU1_gn16", 1);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawkU1_gn16", 1);
+            a_lweaponslot[14] = new Aircraft._WeaponSlot(7, "RocketGunFlare_gn16", 30);
+            a_lweaponslot[15] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "5x330galDroptank";
+            s = "5x300Dt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
-            a_lweaponslot[1] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "PylonF100_Outboard", 1);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(9, "Pylon_F100_Outboard_gn16", 1);
+            a_lweaponslot[1] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawkNF_gn16", 1);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawkU1_gn16", 1);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawkU1_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawkU1_gn16", 1);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawkU1_gn16", 1);
+            a_lweaponslot[14] = new Aircraft._WeaponSlot(7, "RocketGunFlare_gn16", 30);
+            a_lweaponslot[15] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "1x330galDroptank + 4x AN_ALQ99__ALQ4";
+            s = "2x300Dt+3xAN_ALQ99__ALQ3";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "PylonF100_Outboard", 1);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(9, "Pylon_F100_Outboard_gn16", 1);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawkU1_gn16", 1);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawkU1_gn16", 1);
+            a_lweaponslot[14] = new Aircraft._WeaponSlot(7, "RocketGunFlare_gn16", 30);
+            a_lweaponslot[15] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "2x330galDroptank + 3x AN_ALQ99__ALQ3";
+            s = "1x300Dt+4xAN_ALQ99__ALQ4";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[1] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "PylonF100_Outboard", 1);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(9, "Pylon_F100_Outboard_gn16", 1);
+            a_lweaponslot[1] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawkNF_gn16", 1);
+            a_lweaponslot[14] = new Aircraft._WeaponSlot(7, "RocketGunFlare_gn16", 30);
+            a_lweaponslot[15] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "5x AN_ALQ99__ALQ5";
+            s = "5xAN_ALQ99__ALQ5";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "PylonF100_Outboard", 1);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(9, "Pylon_F100_Outboard_gn16", 1);
+            a_lweaponslot[14] = new Aircraft._WeaponSlot(7, "RocketGunFlare_gn16", 30);
+            a_lweaponslot[15] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "none";
