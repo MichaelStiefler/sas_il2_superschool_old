@@ -11,6 +11,11 @@ import com.maddox.sound.ReverbFXRoom;
 
 public class CockpitA_37 extends CockpitPilot {
 	
+	/**
+	 * @author SAS~Skylla
+	 * @see A_37A, CockpitA_37
+	**/
+	
     class Interpolater extends InterpolateRef {
 
         public boolean tick() {

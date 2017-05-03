@@ -7,6 +7,11 @@ import com.maddox.sas1946.il2.util.AircraftTools;
 
 public class A_37A extends A_37 {
 
+	/**
+	 * @author SAS~Skylla
+	 * @see A_37A, CockpitA_37
+	**/
+	
     public A_37A() {
     	super();
     }
