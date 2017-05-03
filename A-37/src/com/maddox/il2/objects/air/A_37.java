@@ -1,11 +1,13 @@
 package com.maddox.il2.objects.air;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Tuple3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.EventLog;
+import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Maneuver;
@@ -30,6 +32,31 @@ import com.maddox.rts.Property;
 
 public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighter, TypeFighterAceMaker{
 
+	/**
+	 * @author SAS~Skylla
+	 * @see A_37A, CockpitA_37 
+	**/
+	
+    private float oldthrl;
+    private float curthrl;
+    private float engineSurgeDamage;
+    private boolean overrideBailout;
+    private boolean ejectComplete;
+    public static boolean bChangedPit = false;
+    private float arrestor2;
+    public float AirBrakeControl;
+    public int k14Mode;
+    public int k14WingspanType;
+    public float k14Distance;
+    
+    private float [] rndgear = {0.0F, 0.0F, 0.0F};
+    private static float [] rndgearnull = {0.0F, 0.0F, 0.0F};
+
+    static  {
+        Class class1 = A_37.class;
+        Property.set(class1, "originCountry", PaintScheme.countryUSA);
+    }
+	
     public A_37() {
         oldthrl = -1F;
         curthrl = -1F;
@@ -40,6 +67,12 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
         k14Distance = 200F;
         overrideBailout = false;
         ejectComplete = false;
+        SecureRandom secRandom = new SecureRandom();
+	    secRandom.setSeed(System.currentTimeMillis());
+	    RangeRandom rr = new RangeRandom(secRandom.nextLong());
+	    for (int i=0; i<rndgear.length; i++) {
+	        rndgear[i] = rr.nextFloat(0.0F, 0.25F);
+	    }
     }
 
     public void rareAction(float f, boolean flag) {
@@ -112,11 +145,6 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
         k14Distance = netmsginput.readFloat();
     }
 
-    public void moveArrestorHook(float f) {
-        hierMesh().chunkSetAngles("Hook1_D0", 0.0F, 12.2F * f, 0.0F);
-        hierMesh().chunkSetAngles("Hook2_D0", 0.0F, 0.0F, 0.0F);
-    }
-
     public void doMurderPilot(int i) {
         switch(i) {
         case 0:
@@ -127,11 +155,32 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
             break;
         }
     }
+    
+ // FIXME --------------------------------------------------------------------------------------------------------------------
+    
+    protected void moveAirBrake(float f) {
+        hierMesh().chunkSetAngles("Flap03_D0", 0.0F, 0.0F, 60F * f);
+        hierMesh().chunkSetAngles("Flap04_D0", 0.0F, 0.0F, 60F * f);
+    }
 
+    public void moveCockpitDoor(float f) {
+        myResetYPRmodifier();   
+        Aircraft.ypr[2] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 35.0F);
+        //Aircraft.xyz[0] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 1.0F);
+        hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
+        if(Config.isUSE_RENDER()) {
+            if(Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null)
+                Main3D.cur3D().cockpits[0].onDoorMoved(f);
+            setDoorSnd(f);
+        }
+    }
+    
     protected void moveWingFold(HierMesh hiermesh, float f) {
         hiermesh.chunkSetAngles("WingLMid_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 70F), 0.0F);
         hiermesh.chunkSetAngles("WingRMid_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, -70F), 0.0F);
     }
+    
+ // Wing Code: --------------------------------------------------------------------------------------------------------------------
 
     public void moveWingFold(float f) {
         if(f < 0.001F) {
@@ -142,34 +191,64 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
             FM.CT.WeaponControl[0] = false;
             hideWingWeapons(true);
         }
-        moveWingFold(hierMesh(), f);
+        moveWingFold(this.hierMesh(), f);
+    }
+    
+    public void moveArrestorHook(float f) {
+        hierMesh().chunkSetAngles("Hook1_D0", 0.0F, 12.2F * f, 0.0F);
+        hierMesh().chunkSetAngles("Hook2_D0", 0.0F, 0.0F, 0.0F);
     }
 
-    public static void moveGear(HierMesh hiermesh, float f) {
-        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, -100F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearC3_D0", 0.0F, -40F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearC7_D0", 0.0F, 0.0F, 0.0F);
-        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, 0.0F, 80F * f);
-        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, 0.0F, -80F * f);
-        hiermesh.chunkSetAngles("GearC7_D0", 0.0F, 0.0F, 0.0F);
-        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 90F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, -90F * f, 0.0F);
-        if(f < 0.5F) {
-            hiermesh.chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(f, 0.02F, 0.5F, 0.0F, -90F), 0.0F);
-        } else {
-            hiermesh.chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(f, 0.72F, 0.98F, -90F, 0.0F), 0.0F);
-        }
-        if(f < 0.5F) {
-            hiermesh.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(f, 0.02F, 0.4F, 0.0F, 90F), 0.0F);
-        } else {
-            hiermesh.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(f, 0.72F, 0.98F, 90F, 0.0F), 0.0F);
-        }
-        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, 90F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, -90F * f, 0.0F);
+  // Gear code  ----------------------------------------------------------------------------------------------------------------------
+    
+    public static void moveGear(HierMesh hiermesh, float l, float r, float c, float [] rnd) {
+    	//hiermesh.chunkSetAngles("GearC7_D0", 0.0F, 0.0F, 0.0F); Rad
+    	myResetYPRmodifier();
+    	Aircraft.ypr[1] = Aircraft.cvt(c, 0.18F+rnd[0], 0.74F+rnd[0], 0.0F, -106F);
+    	Aircraft.xyz[0] = Aircraft.cvt(c, 0.18F+rnd[0], 0.74F+rnd[0], 0.5F, 0.0F);
+    	hiermesh.chunkSetLocate("GearC2_D0", Aircraft.xyz, Aircraft.ypr);
+        //hiermesh.chunkSetAngles("GearC3_D0", 0.0F, Aircraft.cvt(c, 0.18F+rnd[0], 0.74F+rnd[0], 0.0F, -100F), 0.0F);         
+        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, 0.0F, Aircraft.cvt(c, 0.01F+rnd[0], 0.26F+rnd[0], 0.0F, 80F));
+        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, 0.0F, Aircraft.cvt(c, 0.01F+rnd[0], 0.26F+rnd[0], 0.0F, -80F));
+        
+        myResetYPRmodifier();
+        Aircraft.ypr[1] = Aircraft.cvt(l, 0.15F+rnd[1], 0.70F+rnd[1], 0.0F, 90F);
+        Aircraft.xyz[0] = Aircraft.cvt(l, 0.15F+rnd[1], 0.70F+rnd[1], -0.22F, 0.0F);
+        hiermesh.chunkSetLocate("GearL2_D0", Aircraft.xyz, Aircraft.ypr);
+        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, Aircraft.cvt(l, 0.15F+rnd[1], 0.70F+rnd[1], 0.0F, 95F), 0.0F);
+        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(l, 0.01F+rnd[1], 0.29F+rnd[1], 0.0F, -93F), 0.0F);
+        
+        myResetYPRmodifier();
+        Aircraft.ypr[1] = Aircraft.cvt(r, 0.15F+rnd[2], 0.70F+rnd[2], 0.0F, -90F);
+        Aircraft.xyz[0] = Aircraft.cvt(r, 0.15F+rnd[2], 0.70F+rnd[2], 0.22F, 0.0F);
+        Aircraft.xyz[2] = Aircraft.cvt(r, 0.15F+rnd[2], 0.20F+rnd[2], 0.01F, -0.02F);
+        hiermesh.chunkSetLocate("GearR2_D0", Aircraft.xyz, Aircraft.ypr);
+        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, Aircraft.cvt(r, 0.15F+rnd[2], 0.70F+rnd[2], 0.0F, -95F), 0.0F);
+        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(r, 0.01F+rnd[2], 0.29F+rnd[2], 0.0F, 93.0F), 0.0F);
     }
 
-    protected void moveGear(float f) {
-        moveGear(hierMesh(), f);
+	private static void myResetYPRmodifier() {
+	    Aircraft.xyz[0] = Aircraft.xyz[1] = Aircraft.xyz[2] = Aircraft.ypr[0] = Aircraft.ypr[1] = Aircraft.ypr[2] = 0.0F;
+	}
+    
+    public static void moveGear(HierMesh hiermesh, float leftGearPos, float rightGearPos, float tailWheelPos) {
+        moveGear(hiermesh, leftGearPos, rightGearPos, tailWheelPos, rndgearnull);
+    }
+    
+	public static void moveGear(final HierMesh h, final float n, float [] rnd) {
+		moveGear(h,n,n,n,rnd);
+    }
+    
+    public static void moveGear(final HierMesh h, final float n) {
+    	moveGear(h,n,rndgearnull);
+    }
+    
+    protected void moveGear(float l, float r, float t) {
+        moveGear(this.hierMesh(), l, r, t, rndgear);
+    }
+    
+    protected void moveGear(final float n) {
+        moveGear(this.hierMesh(), n, rndgear);
     }
 
     public void moveWheelSink() {
@@ -178,7 +257,9 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
         Aircraft.xyz[0] = -0.19075F * f;
         hierMesh().chunkSetLocate("GearC6_D0", Aircraft.xyz, Aircraft.ypr);
     }
-
+    
+  //--------------------------------------------------------------------------------------------------------------------------------
+    
     protected void moveRudder(float f) {
         hierMesh().chunkSetAngles("Rudder1_D0", 30F * f, 0.0F, 0.0F);
     }
@@ -475,26 +556,6 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
         super.update(f);
     }
 
-    protected void moveAirBrake(float f) {
-        hierMesh().chunkSetAngles("Flap03_D0", 0.0F, 0.0F, 60F * f);
-        hierMesh().chunkSetAngles("Flap04_D0", 0.0F, 0.0F, 60F * f);
-    }
-
-    public void moveCockpitDoor(float f) {
-        resetYPRmodifier();
-        Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.95F, 0.0F, 0.9F);
-        Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.95F, 0.0F, 0.07F);
-        hierMesh().chunkSetLocate("Blister2_D0", Aircraft.xyz, Aircraft.ypr);
-        float f1 = (float)Math.sin(Aircraft.cvt(f, 0.4F, 0.99F, 0.0F, 3.141593F));
-        hierMesh().chunkSetAngles("Pilot1_D0", 0.0F, 0.0F, 9F * f1);
-        hierMesh().chunkSetAngles("Head1_D0", 14F * f1, 0.0F, 0.0F);
-        if(Config.isUSE_RENDER()) {
-            if(Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null)
-                Main3D.cur3D().cockpits[0].onDoorMoved(f);
-            setDoorSnd(f);
-        }
-    }
-
     private void bailout() {
         if(overrideBailout)
             if(this.FM.AS.astateBailoutStep >= 0 && this.FM.AS.astateBailoutStep < 2) {
@@ -597,22 +658,4 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
             }
         
     }
-
-    private float oldthrl;
-    private float curthrl;
-    private float engineSurgeDamage;
-    private boolean overrideBailout;
-    private boolean ejectComplete;
-    public static boolean bChangedPit = false;
-    private float arrestor2;
-    public float AirBrakeControl;
-    public int k14Mode;
-    public int k14WingspanType;
-    public float k14Distance;
-
-    static  {
-        Class class1 = A_37.class;
-        Property.set(class1, "originCountry", PaintScheme.countryUSA);
-    }
-
 }
