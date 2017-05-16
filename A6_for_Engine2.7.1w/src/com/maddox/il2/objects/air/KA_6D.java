@@ -31,8 +31,8 @@ public class KA_6D extends A_6
         lastMissileLaunchThreatActive = 0L;
         intervalMissileLaunchThreat = 1000L;
         guidedMissileUtils = new GuidedMissileUtils(this);
-        backfireList = new ArrayList();
-        backfire = false;
+        counterFlareList = new ArrayList();
+        counterChaffList = new ArrayList();
         bDrogueExtended = true;
         bInRefueling = false;
         maxSendRefuel = 10.093F;      // max send rate = 200gal per 1minute 
@@ -58,22 +58,12 @@ public class KA_6D extends A_6
                 for(int j = 0; j < FM.CT.Weapons[i].length; j++)
                     if(FM.CT.Weapons[i][j].haveBullets())
                     {
-                        if(FM.CT.Weapons[i][j] instanceof RocketGunFlare)
-                            backfireList.add(FM.CT.Weapons[i][j]);
+                        if(FM.CT.Weapons[i][j] instanceof RocketGunFlare_gn16)
+                            counterFlareList.add(FM.CT.Weapons[i][j]);
+                        else if(FM.CT.Weapons[i][j] instanceof RocketGunChaff_gn16)
+                            counterChaffList.add(FM.CT.Weapons[i][j]);
                     }
             }
-    }
-
-    public void backFire()
-    {
-        if(backfireList.isEmpty())
-        {
-            return;
-        } else
-        {
-            ((RocketGunFlare)backfireList.remove(0)).shots(3);
-            return;
-        }
     }
 
     private void checkChangeWeaponColors()
@@ -105,6 +95,36 @@ public class KA_6D extends A_6
                         ((FuelTankGun_TankSkyhawkV2_gn16)FM.CT.Weapons[i][j]).matHighvis();
                 }
             }
+    }
+
+    public void backFire()
+    {
+        if(counterFlareList.isEmpty())
+            hasFlare = false;
+        else
+        {
+            if(Time.current() > lastFlareDeployed + 700L)
+            {
+                ((RocketGunFlare_gn16)counterFlareList.get(0)).shots(1);
+                hasFlare = true;
+                lastFlareDeployed = Time.current();
+                if(!((RocketGunFlare_gn16)counterFlareList.get(0)).haveBullets())
+                    counterFlareList.remove(0);
+            }
+        }
+        if(counterChaffList.isEmpty())
+            hasChaff = false;
+        else
+        {
+            if(Time.current() > lastChaffDeployed + 900L)
+            {
+                ((RocketGunChaff_gn16)counterChaffList.get(0)).shots(1);
+                hasChaff = true;
+                lastChaffDeployed = Time.current();
+                if(!((RocketGunChaff_gn16)counterChaffList.get(0)).haveBullets())
+                    counterChaffList.remove(0);
+            }
+        }
     }
 
     public long getChaffDeployed()
@@ -592,8 +612,8 @@ public class KA_6D extends A_6
     private long intervalRadarLockThreat;
     private long lastMissileLaunchThreatActive;
     private long intervalMissileLaunchThreat;
-    private ArrayList backfireList;
-    private boolean backfire;
+    private ArrayList counterFlareList;
+    private ArrayList counterChaffList;
     private boolean bDrogueExtended;
     private boolean bInRefueling;
     private Actor drones[];
