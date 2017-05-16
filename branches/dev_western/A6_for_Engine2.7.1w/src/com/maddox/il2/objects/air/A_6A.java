@@ -36,8 +36,8 @@ public class A_6A extends A_6fuelReceiver
         guidedMissileUtils = new GuidedMissileUtils(this);
         missilesList = new ArrayList();
         tX4Prev = 0L;
-        backfireList = new ArrayList();
-        backfire = false;
+        counterFlareList = new ArrayList();
+        counterChaffList = new ArrayList();
         bHasLAUcaps = false;
     }
 
@@ -50,23 +50,41 @@ public class A_6A extends A_6fuelReceiver
                 for(int j = 0; j < FM.CT.Weapons[i].length; j++)
                     if(FM.CT.Weapons[i][j].haveBullets())
                     {
-                        if(FM.CT.Weapons[i][j] instanceof RocketGunFlare)
-                            backfireList.add(FM.CT.Weapons[i][j]);
-                        else
-                            missilesList.add(FM.CT.Weapons[i][j]);
+                        if(FM.CT.Weapons[i][j] instanceof RocketGunFlare_gn16)
+                            counterFlareList.add(FM.CT.Weapons[i][j]);
+                        else if(FM.CT.Weapons[i][j] instanceof RocketGunChaff_gn16)
+                            counterChaffList.add(FM.CT.Weapons[i][j]);
                     }
             }
     }
 
     public void backFire()
     {
-        if(backfireList.isEmpty())
+        if(counterFlareList.isEmpty())
+            hasFlare = false;
+        else
         {
-            return;
-        } else
+            if(Time.current() > lastFlareDeployed + 700L)
+            {
+                ((RocketGunFlare_gn16)counterFlareList.get(0)).shots(1);
+                hasFlare = true;
+                lastFlareDeployed = Time.current();
+                if(!((RocketGunFlare_gn16)counterFlareList.get(0)).haveBullets())
+                    counterFlareList.remove(0);
+            }
+        }
+        if(counterChaffList.isEmpty())
+            hasChaff = false;
+        else
         {
-            ((RocketGunFlare)backfireList.remove(0)).shots(3);
-            return;
+            if(Time.current() > lastChaffDeployed + 900L)
+            {
+                ((RocketGunChaff_gn16)counterChaffList.get(0)).shots(1);
+                hasChaff = true;
+                lastChaffDeployed = Time.current();
+                if(!((RocketGunChaff_gn16)counterChaffList.get(0)).haveBullets())
+                    counterChaffList.remove(0);
+            }
         }
     }
 
@@ -222,18 +240,6 @@ public class A_6A extends A_6fuelReceiver
         super.rareAction(f, flag);
     }
 
-    static Class _mthclass$(String s)
-    {
-        try
-        {
-            return Class.forName(s);
-        }
-        catch(ClassNotFoundException classnotfoundexception)
-        {
-            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
-        }
-    }
-
     private GuidedMissileUtils guidedMissileUtils;
     private boolean hasChaff;
     private boolean hasFlare;
@@ -247,8 +253,8 @@ public class A_6A extends A_6fuelReceiver
     private long intervalMissileLaunchThreat;
     private long tX4Prev;
     private ArrayList missilesList;
-    private ArrayList backfireList;
-    private boolean backfire;
+    private ArrayList counterFlareList;
+    private ArrayList counterChaffList;
 //    public BulletEmitter Weapons[][];
     private float deltaAzimuth;
     private float deltaTangage;
