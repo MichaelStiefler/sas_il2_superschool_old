@@ -372,7 +372,10 @@ public class AV_8B extends AV_8
                     misslebrg = Aircraft.cvt(l11, 0.0F, 12F, 0.0F, 360F);
                 }
                 if((!FM.isPlayers() || !(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode()) && (super.FM instanceof Maneuver))
+                {
+                    backfire = true;
                     backFire();
+                }
             }
             else
             {
@@ -410,7 +413,6 @@ public class AV_8B extends AV_8
         super.onAircraftLoaded();
         guidedMissileUtils.onAircraftLoaded();
         FM.Skill = 3;
-        checkAmmoDroptank();
         FM.CT.bHasDragChuteControl = true;
         bHasDeployedDragChute = false;
         FM.turret[0].bIsAIControlled = false;
@@ -440,6 +442,10 @@ public class AV_8B extends AV_8
                             counterFlareList.add(FM.CT.Weapons[i][j]);
                         else if(FM.CT.Weapons[i][j] instanceof RocketGunChaff_gn16)
                             counterChaffList.add(FM.CT.Weapons[i][j]);
+                        else if(FM.CT.Weapons[i][j] instanceof BombGunGBU10_Mk84LGB_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof BombGunGBU12_Mk82LGB_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof BombGunGBU16_Mk83LGB_gn16)
+                            super.bHasPaveway = true;
                         else
                             missilesList.add(FM.CT.Weapons[i][j]);
                     }
@@ -576,6 +582,7 @@ public class AV_8B extends AV_8
     public void missionStarting()
     {
         super.missionStarting();
+        checkAmmoDroptank();
         checkAsDrone();
     }
 
@@ -772,12 +779,12 @@ public class AV_8B extends AV_8
                 }
                 else if(fuelTanks.length > 0 && fuelTanks[0] != null && !FM.M.bFuelTanksDropped)
                 {
-                    float getFuel = ((TypeTankerDrogue) (queen_)).requestRefuel((Aircraft) this, 11.101F, f);
                     float freeTankSum = 0F;
                     for(int num = 0; num < fuelTanks.length; num++)
                         freeTankSum += fuelTanks[num].checkFreeTankSpace();
                     if(freeTankSum < 12F)
                         typeDockableAttemptDetach();
+                    float getFuel = ((TypeTankerDrogue) (queen_)).requestRefuel((Aircraft) this, 11.101F, f);
                     for(int num = 0; num < fuelTanks.length; num++)
                         fuelTanks[num].doRefuel(getFuel * (fuelTanks[num].checkFreeTankSpace() / freeTankSum));
                 }

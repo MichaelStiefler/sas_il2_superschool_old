@@ -12,24 +12,23 @@ import com.maddox.il2.objects.Wreckage;
 import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric;
 import com.maddox.il2.objects.vehicles.cars.CarGeneric;
+import com.maddox.il2.objects.ships.BigshipGeneric;
+import com.maddox.il2.objects.ships.ShipGeneric;
 import com.maddox.il2.objects.vehicles.stationary.StationaryGeneric;
 import com.maddox.il2.objects.vehicles.tanks.TankGeneric;
-import com.maddox.il2.objects.weapons.FuelTank;
+import com.maddox.il2.objects.weapons.*;
 import com.maddox.rts.*;
+import com.maddox.sound.Sample;
+import com.maddox.sound.SoundFX;
 import com.maddox.util.HashMapExt;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.*;
 import com.maddox.sas1946.il2.util.Reflection;
 
-// Referenced classes of package com.maddox.il2.objects.air:
-//            Scheme1, TypeSupersonic, TypeFighter, TypeFighterAceMaker, 
-//            TypeGSuit, TypeFastJet, TypeRadar, TypeBomber, 
-//            TypeX4Carrier, TypeLaserSpotter, TypeStormovikArmored, TypeGroundRadar, 
-//            PaintScheme, AircraftLH, Aircraft, Cockpit, 
-//            EjectionSeat
 
 public class AV_8 extends Scheme1
-    implements TypeSupersonic, TypeFighter, TypeFighterAceMaker, TypeAcePlane, TypeGSuit, TypeFastJet, TypeRadar, TypeBomber, TypeX4Carrier, TypeLaserSpotter, TypeStormovikArmored, TypeGroundRadar, TypeFuelDump
+    implements TypeSupersonic, TypeFighter, TypeFighterAceMaker, TypeAcePlane, TypeGSuit, TypeFastJet, TypeBomber, TypeStormovikArmored, TypeLaserDesignator, TypeRadar, TypeSemiRadar, TypeGroundRadar, TypeFuelDump
 {
 
     public float getDragForce(float f, float f1, float f2, float f3)
@@ -95,8 +94,6 @@ public class AV_8 extends Scheme1
         fSightCurAltitude = 3000F;
         fSightCurSpeed = 200F;
         fSightCurReadyness = 0.0F;
-        clipBoardPage_ = 1;
-        showClipBoard_ = false;
         missilesList = new ArrayList();
         lockmode = 0;
         deltaAzimuth = 0.0F;
@@ -119,6 +116,18 @@ public class AV_8 extends Scheme1
         vtolSlipX = 0;
         vtolSlipY = 0;
         antiColLight = new Eff3DActor[6];
+        laserSpotPos = new Point3d();
+        laserTimer = -1L;
+    }
+
+    private static final float toMeters(float f)
+    {
+        return 0.3048F * f;
+    }
+
+    private static final float toMetersPerSecond(float f)
+    {
+        return 0.4470401F * f;
     }
 
     public float checkfuel(int i)
@@ -170,11 +179,11 @@ public class AV_8 extends Scheme1
                 radargunsight = 0;
             if(radargunsight == 0)
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: funnel");
-            if(radargunsight == 1)
+            else if(radargunsight == 1)
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Radar ranging");
-            if(radargunsight == 2)
+            else if(radargunsight == 2)
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Unguided Rocket");
-            if(radargunsight == 3)
+            else if(radargunsight == 3)
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Ground");
         }
         if(i == 24)
@@ -184,11 +193,9 @@ public class AV_8 extends Scheme1
                 leftscreen = 0;
             if(leftscreen == 0)
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Left screen: Fuel");
-            else
-            if(leftscreen == 1)
+            else if(leftscreen == 1)
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Left screen: FPAS");
-            else
-            if(leftscreen == 2)
+            else if(leftscreen == 2)
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Left screen: Engine");
         }
         if(i == 25)
@@ -203,17 +210,41 @@ public class AV_8 extends Scheme1
             if(hold && t1 + 200L < Time.current() && FLIR)
             {
                 hold = false;
-                HUD.log("Lazer Unlock");
+                holdFollow = false;
+                HUD.log("Laser Pos Unlock");
                 t1 = Time.current();
             }
             if(!hold && t1 + 200L < Time.current() && FLIR)
             {
                 hold = true;
-                HUD.log("Lazer Lock");
+                holdFollow = false;
+                actorFollowing = null;
+                HUD.log("Laser Pos Lock");
+                t1 = Time.current();
+            }
+            if(!FLIR)
+                setLaserOn(false);
+        }
+        if(i == 27)
+        {
+            if(holdFollow && t1 + 200L < Time.current() && FLIR)
+            {
+                hold = false;
+                holdFollow = false;
+                actorFollowing = null;
+                HUD.log("Laser Track Unlock");
+                t1 = Time.current();
+            }
+            if(!holdFollow && t1 + 200L < Time.current() && FLIR)
+            {
+                hold = false;
+                holdFollow = true;
+                actorFollowing = null;
+                HUD.log("Laser Track Lock");
                 t1 = Time.current();
             }
         }
-        if(i == 27)
+        if(i == 28)
             if(!ILS)
             {
                 ILS = true;
@@ -228,20 +259,19 @@ public class AV_8 extends Scheme1
 
     private void laser(Point3d point3d)
     {
-        point3d.z = World.land().HQ(((Tuple3d) (point3d)).x, ((Tuple3d) (point3d)).y);
-        Eff3DActor eff3dactor = Eff3DActor.New(null, null, new Loc(((Tuple3d) (point3d)).x, ((Tuple3d) (point3d)).y, ((Tuple3d) (point3d)).z, 0.0F, 0.0F, 0.0F), 1.0F, "3DO/Effects/Fireworks/FlareWhiteWide.eff", 0.1F);
+        point3d.z = World.land().HQ(point3d.x, point3d.y);
+        Eff3DActor eff3dactor = Eff3DActor.New(null, null, new Loc(point3d.x, point3d.y, point3d.z, 0.0F, 0.0F, 0.0F), 1.0F, "3DO/Effects/Fireworks/FlareWhiteWide.eff", 0.1F);
         eff3dactor.postDestroy(Time.current() + 1500L);
     }
 
     private void FLIR()
     {
-        Vector3d vector3d = new Vector3d();
         List list = Engine.targets();
         int i = list.size();
         for(int j = 0; j < i; j++)
         {
             Actor actor = (Actor)list.get(j);
-            if(((actor instanceof Aircraft) || (actor instanceof ArtilleryGeneric) || (actor instanceof CarGeneric) || (actor instanceof TankGeneric)) && !(actor instanceof StationaryGeneric) && !(actor instanceof TypeLaserSpotter) && actor.pos.getAbsPoint().distance(super.pos.getAbsPoint()) < 30000D)
+            if(((actor instanceof Aircraft) || (actor instanceof ArtilleryGeneric) || (actor instanceof CarGeneric) || (actor instanceof TankGeneric)) && !(actor instanceof StationaryGeneric) && !(actor instanceof TypeLaserDesignator) && actor.pos.getAbsPoint().distance(super.pos.getAbsPoint()) < 30000D)
             {
                 Point3d point3d = new Point3d();
                 Orient orient = new Orient();
@@ -261,16 +291,6 @@ public class AV_8 extends Scheme1
             }
         }
 
-    }
-
-    private static final float toMeters(float f)
-    {
-        return 0.3048F * f;
-    }
-
-    private static final float toMetersPerSecond(float f)
-    {
-        return 0.4470401F * f;
     }
 
     public void typeBomberAdjDistanceReset()
@@ -357,6 +377,153 @@ public class AV_8 extends Scheme1
             tangate = 0.0F;
             azimult = 0.0F;
         }
+
+        if(!FLIR && laserTimer > 0L && Time.current() > laserTimer && getLaserOn())
+        {
+            setLaserOn(false);
+        }
+
+        if(bHasPaveway)
+            checkgroundlaser();
+    }
+
+    private void checkgroundlaser()
+    {
+        boolean laseron = false;
+        double targetDistance = 0.0D;
+        float targetAngle = 0.0F;
+        float targetBait = 0.0F;
+        float maxTargetBait = 0.0F;
+        // superior the Laser spot of this Paveway's owner than others'
+        while(getLaserOn())
+        {
+            Point3d point3d = new Point3d();
+            point3d = getLaserSpot();
+            if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F)
+                break;
+            targetDistance = this.pos.getAbsPoint().distance(point3d);
+            if (targetDistance > maxPavewayDistance)
+                break;
+            targetAngle = angleBetween(this, point3d);
+            if (targetAngle > maxPavewayFOVfrom)
+                break;
+
+            laseron = true;
+            break;
+        }
+        // seak other Laser designator spots when Paveway's owner doesn't spot Laser
+        if(!laseron)
+        {
+            List list = Engine.targets();
+            int i = list.size();
+            for(int j = 0; j < i; j++)
+            {
+                Actor actor = (Actor)list.get(j);
+                if((actor instanceof TypeLaserDesignator) && ((TypeLaserDesignator) actor).getLaserOn() && actor.getArmy() == this.getArmy())
+                {
+                    Point3d point3d = new Point3d();
+                    point3d = ((TypeLaserDesignator)actor).getLaserSpot();
+                    // Not target about objects behind of clouds from the Paveway's seaker.
+                    if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F)
+                        continue;
+                    targetDistance = this.pos.getAbsPoint().distance(point3d);
+                    if (targetDistance > maxPavewayDistance)
+                        continue;
+                    targetAngle = angleBetween(this, point3d);
+                    if (targetAngle > maxPavewayFOVfrom)
+                        continue;
+
+                    targetBait = 1 / targetAngle / (float) (targetDistance * targetDistance);
+                    if (targetBait <= maxTargetBait)
+                        continue;
+
+                    maxTargetBait = targetBait;
+                    laseron = true;
+                }
+            }
+        }
+        setLaserArmEngaged(laseron);
+    }
+
+    private static float angleBetween(Actor actorFrom, Point3d pointTo) {
+        float angleRetVal = 180.1F;
+        double angleDoubleTemp = 0.0D;
+        Loc angleActorLoc = new Loc();
+        Point3d angleActorPos = new Point3d();
+        Vector3d angleTargRayDir = new Vector3d();
+        Vector3d angleNoseDir = new Vector3d();
+        actorFrom.pos.getAbs(angleActorLoc);
+        angleActorLoc.get(angleActorPos);
+        angleTargRayDir.sub(pointTo, angleActorPos);
+        angleDoubleTemp = angleTargRayDir.length();
+        angleTargRayDir.scale(1.0D / angleDoubleTemp);
+        angleNoseDir.set(1.0D, 0.0D, 0.0D);
+        angleActorLoc.transform(angleNoseDir);
+        angleDoubleTemp = angleNoseDir.dot(angleTargRayDir);
+        angleRetVal = Geom.RAD2DEG((float) Math.acos(angleDoubleTemp));
+        return angleRetVal;
+    }
+
+    public Point3d getLaserSpot()
+    {
+        return laserSpotPos;
+    }
+
+    public boolean setLaserSpot(Point3d p3d)
+    {
+        laserSpotPos = p3d;
+        return true;
+    }
+
+    public boolean getLaserOn()
+    {
+        return bLaserOn;
+    }
+
+    public boolean setLaserOn(boolean flag)
+    {
+        if(bLaserOn != flag)
+        {
+            if(bLaserOn == false)
+            {
+                if(FM.actor == World.getPlayerAircraft())
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser: ON");
+            }
+            else
+            {
+                if(FM.actor == World.getPlayerAircraft())
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser: OFF");
+                hold = false;
+                holdFollow = false;
+                actorFollowing = null;
+            }
+        }
+
+        return bLaserOn = flag;
+    }
+
+    public boolean getLaserArmEngaged()
+    {
+        return bLGBengaged;
+    }
+
+    public boolean setLaserArmEngaged(boolean flag)
+    {
+        if(bLGBengaged != flag)
+        {
+            if(bLGBengaged == false)
+            {
+                if(this == World.getPlayerAircraft())
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser Bomb: Engaged");
+            }
+            else
+            {
+                if(this == World.getPlayerAircraft())
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser Bomb: Disengaged");
+            }
+        }
+
+        return bLGBengaged = flag;
     }
 
     public void typeBomberAdjAltitudeReset()
@@ -507,6 +674,17 @@ public class AV_8 extends Scheme1
         FM.CT.bHasBombSelect = true;
         FM.CT.bHasAntiColLights = true;
         FM.CT.bHasFormationLights = true;
+        t1 = Time.current();
+    }
+
+    public void missionStarting()
+    {
+        super.missionStarting();
+//        checkDroptanks();
+
+        laserTimer = -1L;
+        bLaserOn = false;
+        FLIR = false;
     }
 
     public void checkHydraulicStatus()
@@ -1431,7 +1609,7 @@ label0:
                 umn();
         }
         if(FLIR)
-            laser(TypeLaserSpotter.spot);
+            laser(getLaserSpot());
         updatecontrollaser();
         engineSurge(f);
         typeFighterAceMakerRangeFinder();
@@ -2028,61 +2206,6 @@ label0:
         return true;
     }
 
-    public boolean typeGuidedBombCisMasterAlive()
-    {
-        return isMasterAlive;
-    }
-
-    public void typeGuidedBombCsetMasterAlive(boolean flag)
-    {
-        isMasterAlive = flag;
-    }
-
-    public boolean typeGuidedBombCgetIsGuiding()
-    {
-        return isGuidingBomb;
-    }
-
-    public void typeGuidedBombCsetIsGuiding(boolean flag)
-    {
-        isGuidingBomb = flag;
-    }
-
-    public void typeX4CAdjSidePlus()
-    {
-        deltaAzimuth = 0.002F;
-    }
-
-    public void typeX4CAdjSideMinus()
-    {
-        deltaAzimuth = -0.002F;
-    }
-
-    public void typeX4CAdjAttitudePlus()
-    {
-        deltaTangage = 0.002F;
-    }
-
-    public void typeX4CAdjAttitudeMinus()
-    {
-        deltaTangage = -0.002F;
-    }
-
-    public void typeX4CResetControls()
-    {
-        deltaAzimuth = deltaTangage = 0.0F;
-    }
-
-    public float typeX4CgetdeltaAzimuth()
-    {
-        return deltaAzimuth;
-    }
-
-    public float typeX4CgetdeltaTangage()
-    {
-        return deltaTangage;
-    }
-
     public float getFlowRate()
     {
         return FlowRate;
@@ -2179,6 +2302,8 @@ label0:
     private boolean APmode1;
     public boolean ILS;
     public boolean hold;
+    public boolean holdFollow;
+    public Actor actorFollowing;
     public long t1;
     public float azimult;
     public float tangate;
@@ -2199,6 +2324,9 @@ label0:
     private float vectorthrustx;
     public int radarrange;
     private long twait;
+    public float misslebrg;
+    public float aircraftbrg;
+    public boolean backfire;
     protected boolean bSlatsOff;
     private float oldctl;
     private float curctl;
@@ -2274,13 +2402,9 @@ label0:
     public float fSightCurReadyness;
     public boolean FLIR;
 //    private static Loc flirloc = new Loc();
-    public int clipBoardPage_;
-    public boolean showClipBoard_;
     private ArrayList missilesList;
     private float deltaAzimuth;
     private float deltaTangage;
-    private boolean isGuidingBomb;
-    private boolean isMasterAlive;
     private Eff3DActor jet1;
     private Eff3DActor jet2;
     public int radargunsight;
@@ -2293,6 +2417,14 @@ label0:
     private int vtolSlipX;
     private int vtolSlipY;
     private Eff3DActor antiColLight[];
+
+    private Point3d laserSpotPos;
+    private boolean bLaserOn = false;
+    public long laserTimer;
+    private boolean bLGBengaged = false;
+    public boolean bHasPaveway = false;
+    private static float maxPavewayFOVfrom = 45.0F;
+    private static double maxPavewayDistance = 20000D;
 
     static 
     {
