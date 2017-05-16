@@ -9,7 +9,7 @@ import com.maddox.rts.NetChannel;
 import com.maddox.rts.Property;
 import com.maddox.rts.Spawn;
 
-public class MissileAGM65B_gn16 extends Missile {
+public class MissileAGM65B_gn16 extends Missile  implements MissileInterceptable {
 	static class SPAWN extends Missile.SPAWN {
 
 		SPAWN() {
@@ -44,33 +44,34 @@ public class MissileAGM65B_gn16 extends Missile {
 		Property.set(class1, "kalibr", 0.305F);
 		Property.set(class1, "massa", 208F);
 		Property.set(class1, "massaEnd", 150F);
-		Property.set(class1, "stepMode", 0);
-		Property.set(class1, "launchType", 1);
-		Property.set(class1, "detectorType", 2);
+		Property.set(class1, "stepMode", Missile.STEP_MODE_HOMING);
+		Property.set(class1, "launchType", Missile.LAUNCH_TYPE_STRAIGHT);
+		Property.set(class1, "detectorType", Missile.DETECTOR_TYPE_IMAGE_EOTV);
+		Property.set(class1, "sunBrightThreshold", 0.08F);
 		Property.set(class1, "sunRayAngle", 0.0F);
-		Property.set(class1, "multiTrackingCapable", 0);
+		Property.set(class1, "multiTrackingCapable", 1);
 		Property.set(class1, "canTrackSubs", 0);
 		Property.set(class1, "minPkForAI", 25F);
 		Property.set(class1, "timeForNextLaunchAI", 10000L);
 		Property.set(class1, "engineDelayTime", -100L);
-		Property.set(class1, "attackDecisionByAI", 2);
+		Property.set(class1, "attackDecisionByAI", Missile.ATTACK_DECISION_BY_AI_WAYPOINT);
 		Property.set(class1, "targetType", Missile.TARGET_GROUND + Missile.TARGET_SHIP);
 		Property.set(class1, "shotFreq", 0.01D);
-		Property.set(class1, "groundTrackFactor", 3.402823E+038F);
+		Property.set(class1, "groundTrackFactor", 64F);
 		Property.set(class1, "flareLockTime", 1000L);
 		Property.set(class1, "trackDelay", 1000L);
 		Property.set(class1, "failureRate", 20F);
 		Property.set(class1, "maxLockGForce", 6F);
 		Property.set(class1, "maxFOVfrom", 30F);
 		Property.set(class1, "maxFOVto", 360F);
-		Property.set(class1, "PkMaxFOVfrom", 35F);
-		Property.set(class1, "PkMaxFOVto", 3.402823E+038F);
+		Property.set(class1, "PkMaxFOVfrom", 25F);
+		Property.set(class1, "PkMaxFOVto", 360F);
 		Property.set(class1, "PkDistMin", 1000F);
-		Property.set(class1, "PkDistOpt", 3000F);
-		Property.set(class1, "PkDistMax", 4000F);
+		Property.set(class1, "PkDistOpt", 4000F);
+		Property.set(class1, "PkDistMax", 5000F);
 		Property.set(class1, "leadPercent", 0.0F);
-		Property.set(class1, "maxGForce", 3F);
-		Property.set(class1, "stepsForFullTurn", 8);
+		Property.set(class1, "maxGForce", 4F);
+		Property.set(class1, "stepsForFullTurn", 12);
 		Property.set(class1, "fxLock", "weapon.F4.lock");
 		Property.set(class1, "fxNoLock", "weapon.F4.nolock");
 		Property.set(class1, "smplLock", "F4_lock.wav");

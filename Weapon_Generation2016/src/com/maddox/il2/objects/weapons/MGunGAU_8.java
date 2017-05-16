@@ -70,7 +70,7 @@ public class MGunGAU_8 extends MGunAircraftGeneric
         gunproperties.bullet[0].massa = 1.1F;
         gunproperties.bullet[0].kalibr = 0.00075F;
         gunproperties.bullet[0].speed = 1100F;
-        gunproperties.bullet[0].power = 7.4F;
+        gunproperties.bullet[0].power = 7.65F;
         gunproperties.bullet[0].powerType = 0;
         gunproperties.bullet[0].powerRadius = 0.2F;
         gunproperties.bullet[0].traceMesh = "3do/effects/tracers/20mmYellow/mono.sim";

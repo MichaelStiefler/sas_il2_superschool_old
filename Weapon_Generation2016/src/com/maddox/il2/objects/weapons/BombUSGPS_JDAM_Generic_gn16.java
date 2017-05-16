@@ -2,396 +2,282 @@
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.*;
-import com.maddox.il2.ai.MsgExplosion;
+import com.maddox.il2.ai.*;
+import com.maddox.il2.ai.air.*;
 import com.maddox.il2.ai.ground.*;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
+import com.maddox.il2.game.*;
 import com.maddox.il2.objects.air.Aircraft;
-import com.maddox.il2.objects.air.TypeX4Carrier;
 import com.maddox.il2.objects.bridges.BridgeSegment;
-import com.maddox.il2.objects.sounds.SndAircraft;
-import com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric;
-import com.maddox.il2.objects.vehicles.stationary.StationaryGeneric;
+import com.maddox.il2.objects.bridges.LongBridge;
 import com.maddox.rts.*;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 
-// Referenced classes of package com.maddox.il2.objects.weapons:
-//            RocketBomb
 
-public class BombUSGPS_JDAM_Generic_gn16 extends RocketBomb
+public class BombUSGPS_JDAM_Generic_gn16 extends Bomb
 {
-    class Master extends ActorNet
-        implements NetUpdate
-    {
-
-        public void msgNetNewChannel(NetChannel netchannel)
-        {
-            if(!Actor.isValid(actor()))
-                return;
-            if(netchannel.isMirrored(this))
-                return;
-            try
-            {
-                if(netchannel.userState == 0)
-                {
-                    NetMsgSpawn netmsgspawn = actor().netReplicate(netchannel);
-                    if(netmsgspawn != null)
-                    {
-                        postTo(netchannel, netmsgspawn);
-                        actor().netFirstUpdate(netchannel);
-                    }
-                }
-            }
-            catch(Exception exception)
-            {
-                NetObj.printDebug(exception);
-            }
-        }
-
-        public boolean netInput(NetMsgInput netmsginput)
-            throws IOException
-        {
-            return false;
-        }
-
-        public void netUpdate()
-        {
-            try
-            {
-                out.unLockAndClear();
-                getSpeed(((BombUSGPS_JDAM_Generic_gn16)actor()).v);
-                out.writeFloat((float)((Tuple3d) (((BombUSGPS_JDAM_Generic_gn16)actor()).v)).x);
-                out.writeFloat((float)((Tuple3d) (((BombUSGPS_JDAM_Generic_gn16)actor()).v)).y);
-                out.writeFloat((float)((Tuple3d) (((BombUSGPS_JDAM_Generic_gn16)actor()).v)).z);
-                post(Time.current(), out);
-            }
-            catch(Exception exception)
-            {
-                NetObj.printDebug(exception);
-            }
-        }
-
-        NetMsgFiltered out;
-
-        public Master(Actor actor)
-        {
-            super(actor);
-            out = new NetMsgFiltered();
-        }
-    }
-
-    class Mirror extends ActorNet
-    {
-
-        public void msgNetNewChannel(NetChannel netchannel)
-        {
-            if(!Actor.isValid(actor()))
-                return;
-            if(netchannel.isMirrored(this))
-                return;
-            try
-            {
-                if(netchannel.userState == 0)
-                {
-                    NetMsgSpawn netmsgspawn = actor().netReplicate(netchannel);
-                    if(netmsgspawn != null)
-                    {
-                        postTo(netchannel, netmsgspawn);
-                        actor().netFirstUpdate(netchannel);
-                    }
-                }
-            }
-            catch(Exception exception)
-            {
-                NetObj.printDebug(exception);
-            }
-        }
-
-        public boolean netInput(NetMsgInput netmsginput)
-            throws IOException
-        {
-            if(netmsginput.isGuaranted())
-                return false;
-            if(isMirrored())
-            {
-                out.unLockAndSet(netmsginput, 0);
-                postReal(Message.currentTime(true), out);
-            }
-            ((BombUSGPS_JDAM_Generic_gn16)actor()).v.x = netmsginput.readFloat();
-            ((BombUSGPS_JDAM_Generic_gn16)actor()).v.y = netmsginput.readFloat();
-            ((BombUSGPS_JDAM_Generic_gn16)actor()).v.z = netmsginput.readFloat();
-            setSpeed(((BombUSGPS_JDAM_Generic_gn16)actor()).v);
-            return true;
-        }
-
-        NetMsgFiltered out;
-
-        public Mirror(Actor actor, NetChannel netchannel, int i)
-        {
-            super(actor, netchannel, i);
-            out = new NetMsgFiltered();
-        }
-    }
-
-    static class SPAWN
-        implements NetSpawn
-    {
-
-        public void netSpawn(int i, NetMsgInput netmsginput)
-        {
-            NetObj netobj = netmsginput.readNetObj();
-            if(netobj == null)
-                return;
-            try
-            {
-                Actor actor = (Actor)netobj.superObj();
-                Point3d point3d = new Point3d(netmsginput.readFloat(), netmsginput.readFloat(), netmsginput.readFloat());
-                Orient orient = new Orient(netmsginput.readFloat(), netmsginput.readFloat(), 0.0F);
-                float f = netmsginput.readFloat();
-                BombUSGPS_JDAM_Generic_gn16 jdamgeneric = new BombUSGPS_JDAM_Generic_gn16(actor, netmsginput.channel(), i, point3d, orient, f);
-            }
-            catch(Exception exception)
-            {
-                System.out.println(exception.getMessage());
-                exception.printStackTrace();
-            }
-        }
-
-        SPAWN()
-        {
-        }
-    }
-
-
-    public boolean interpolateStep()
-    {
-        float f = Time.tickLenFs();
-        super.pos.getAbs(p, or);
-        if(first)
-            first = false;
-        if(Actor.isValid(getOwner()))
-        {
-            ((TypeX4Carrier)((Interpolate) (fm)).actor).typeX4CResetControls();
-            if(target != null)
-            {
-                pT = target.pos.getAbsPoint();
-                Point3d point3d = new Point3d();
-                point3d.x = ((Tuple3d) (pT)).x;
-                point3d.y = ((Tuple3d) (pT)).y;
-                point3d.z = ((Tuple3d) (pT)).z + 2.5D;
-                point3d.sub(p);
-                or.transformInv(point3d);
-                if(((Tuple3d) (point3d)).x > -10D)
-                {
-                    double d;
-                    if((target instanceof ArtilleryGeneric) || (target instanceof StationaryGeneric))
-                        d = Aircraft.cvt(((FlightModelMain) (fm)).Skill, 0.0F, 3F, 4F / targetRCSMax, 1.0F / targetRCSMax);
-                    else
-                        d = Aircraft.cvt(((FlightModelMain) (fm)).Skill, 0.0F, 3F, 20F, 4F);
-                    if(((Tuple3d) (point3d)).y > d)
-                        ((TypeX4Carrier)((Interpolate) (fm)).actor).typeX4CAdjSideMinus();
-                    if(((Tuple3d) (point3d)).y < -d)
-                        ((TypeX4Carrier)((Interpolate) (fm)).actor).typeX4CAdjSidePlus();
-                    if(((Tuple3d) (point3d)).z < -d)
-                        ((TypeX4Carrier)((Interpolate) (fm)).actor).typeX4CAdjAttitudeMinus();
-                    if(((Tuple3d) (point3d)).z > d)
-                        ((TypeX4Carrier)((Interpolate) (fm)).actor).typeX4CAdjAttitudePlus();
-                }
-            }
-            getSpeed(RocketBomb.spd);
-            float f1 = (float)RocketBomb.spd.length();
-            Vector3d vector3d = new Vector3d(0.0D, 0.0D, 0.0D);
-            vector3d.y = -azimuthControlScaleFact * (double)f1 * (double)((TypeX4Carrier)((Interpolate) (fm)).actor).typeX4CgetdeltaAzimuth();
-            vector3d.z = tangageControlScaleFact * (double)f1 * (double)((TypeX4Carrier)((Interpolate) (fm)).actor).typeX4CgetdeltaTangage();
-            if(((Tuple3d) (vector3d)).y != 0.0D || ((Tuple3d) (vector3d)).z != 0.0D)
-                f1 *= 0.9992F;
-            super.pos.getAbs(RocketBomb.Or);
-            RocketBomb.Or.transform(vector3d);
-            vector3d.z += (double)f1 * 0.0070000000000000001D * (double)f * (double)Atmosphere.g();
-            RocketBomb.spd.add(vector3d);
-            float f2 = (float)RocketBomb.spd.length();
-            float f3 = f1 / f2;
-            RocketBomb.spd.scale(f3);
-            setSpeed(RocketBomb.spd);
-            ((TypeX4Carrier)((Interpolate) (fm)).actor).typeX4CResetControls();
-        }
-        if(!Actor.isValid(getOwner()) || !(getOwner() instanceof Aircraft))
-        {
-            doExplosionAir();
-            postDestroy();
-            collide(false);
-            drawing(false);
-            return true;
-        } else
-        {
-            return true;
-        }
-    }
-
     public BombUSGPS_JDAM_Generic_gn16()
     {
-        first = true;
-        targetRCSMax = 0.0F;
-        fm = null;
-        tStart = 0L;
-        prevd = 1000F;
+        bGPScatch = false;
+        t1 = -1L;
     }
 
-    public BombUSGPS_JDAM_Generic_gn16(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f)
+    public void start()
     {
-        first = true;
-        targetRCSMax = 0.0F;
-        fm = null;
-        tStart = 0L;
-        prevd = 1000F;
-        super.net = new Mirror(this, netchannel, i);
-        super.pos.setAbs(point3d, orient);
-        super.pos.reset();
-        super.pos.setBase(actor, null, true);
-        doStart(-1F);
-        v.set(1.0D, 0.0D, 0.0D);
-        orient.transform(v);
-        v.scale(f);
-        setSpeed(v);
-        collide(false);
+        super.start();
+        drawing(true);
+        checkGPS();
+        t1 = Time.current() + 1600L;
     }
 
-    public void start(float f)
+    public void interpolateTick()
     {
-        Actor actor = super.pos.base();
-        if(Actor.isValid(actor) && (actor instanceof Aircraft))
+        if(Time.current() > t1)
         {
-            if(actor.isNetMirror())
+            if(bGPScatch)
             {
-                destroy();
+                Point3d pTemp = new Point3d();
+                pTemp.set(pT);
+                float tlfs = Time.tickLenFs();
+                float speedms = (float)getSpeed(null);
+                speedms += (200F - speedms) * 0.1F * tlfs;
+                super.pos.getAbs(p, or);
+                v.set(1.0D, 0.0D, 0.0D);
+                or.transform(v);
+                v.scale(speedms);
+                setSpeed(v);
+                p.x += ((Tuple3d) (v)).x * (double)tlfs;
+                p.y += ((Tuple3d) (v)).y * (double)tlfs;
+                p.z += ((Tuple3d) (v)).z * (double)tlfs - 0.011D;
+                pTemp.sub(p);
+                or.transformInv(pTemp);
+                float f2 = 0.05F;
+                if(p.distance(pTemp) > 0.0D)
+                {
+                    if(((Tuple3d) (pTemp)).y > 0.10000000000000001D)
+                        deltaAzimuth = -f2;
+                    if(((Tuple3d) (pTemp)).y < -0.10000000000000001D)
+                        deltaAzimuth = f2;
+                    if(((Tuple3d) (pTemp)).z < -0.10000000000000001D)
+                        deltaTangage = -f2;
+                    if(((Tuple3d) (pTemp)).z > 0.10000000000000001D)
+                        deltaTangage = f2;
+                    or.increment(70F * f2 * deltaAzimuth, 70F * f2 * deltaTangage, 0.0F);
+                    deltaAzimuth = deltaTangage = 0.0F;
+                }
+                super.pos.setAbs(p, or);
+                updateSound();
+            }
+            else
+            {
+                super.curTm += Time.tickLenFs();
+                Ballistics.updateBomb(this, super.M, super.S, super.J, super.DistFromCMtoStab);
+                updateSound();
+            }
+        }
+        else
+        {
+            super.curTm += Time.tickLenFs();
+            Ballistics.updateBomb(this, super.M, super.S, super.J, super.DistFromCMtoStab);
+            updateSound();
+        }
+    }
+
+    private void checkGPS()
+    {
+        Point3d point3d = new Point3d();
+        Aircraft aircraft = (Aircraft) getOwner();
+        Actor actorTarget = null;
+        // when the aircraft is under ground attacking , set GPS pos its target pos.
+        if(aircraft.FM != null && ((Maneuver)aircraft.FM).target_ground != null)
+        {
+            point3d = ((Maneuver)aircraft.FM).target_ground.pos.getAbsPoint();
+            if(aircraft.pos.getAbsPoint().distance(point3d) < maxDistance)
+            {
+                pT.set(point3d);
+                bGPScatch = true;
                 return;
             }
-            super.net = new Master(this);
         }
-        doStart(f);
-    }
-
-    private void doStart(float f)
-    {
-        super.start(-1F);
-        tStart = Time.current();
-        super.pos.getAbs(p, or);
-        or.setYPR(or.getYaw(), or.getPitch(), 0.0F);
-        super.pos.setAbs(p, or);
-        fm = ((SndAircraft) ((Aircraft)getOwner())).FM;
-        List list = Engine.targets();
-        int i = list.size();
-        float f1 = 0.0F;
-        Actor actor = null;
-        for(int j = 0; j < i; j++)
+        // when the mission waypoint is GATTACK , set GPS pos its target pos or waypoint pos.
+        if(aircraft.FM != null && aircraft.FM.AP.way != null && aircraft.FM.AP.way.curr().Action == 3)
         {
-            Actor actor1 = (Actor)list.get(j);
-            if((actor1 instanceof ArtilleryGeneric) || (actor1 instanceof StationaryGeneric) || (actor1 instanceof BridgeSegment))
+            actorTarget = aircraft.FM.AP.way.curr().getTarget();
+            if(actorTarget != null)
+                actorTarget.pos.getAbs(point3d);
+            else
+                point3d = aircraft.FM.AP.way.curr().getP();
+            if(aircraft.pos.getAbsPoint().distance(point3d) < maxDistance)
             {
-                Point3d point3d = new Point3d();
-                Point3d point3d1 = actor1.pos.getAbsPoint();
-                point3d.x = ((Tuple3d) (point3d1)).x;
-                point3d.y = ((Tuple3d) (point3d1)).y;
-                point3d.z = ((Tuple3d) (point3d1)).z;
-                super.pos.getAbs(p, or);
-                point3d.sub(p);
-                or.transformInv(point3d);
-                float f2 = antennaPattern(point3d, actor1);
-                if(f2 > f1 && (double)f2 > 0.001D)
-                {
-                    f1 = f2;
-                    actor = actor1;
-                    targetRCSMax = estimateRCS(actor);
-                }
+                pT.set(point3d);
+                bGPScatch = true;
+                return;
             }
         }
-
-        target = actor;
-    }
-
-    private float antennaPattern(Point3d point3d, Actor actor)
-    {
-        float f = (float)Math.sqrt(((Tuple3d) (point3d)).x * ((Tuple3d) (point3d)).x + ((Tuple3d) (point3d)).y * ((Tuple3d) (point3d)).y + ((Tuple3d) (point3d)).z * ((Tuple3d) (point3d)).z);
-        if(f > 32000F)
-            return 0.0F;
-        float f1 = (float)Math.atan2(((Tuple3d) (point3d)).y, ((Tuple3d) (point3d)).x);
-        float f2 = (float)Math.sqrt(((Tuple3d) (point3d)).x * ((Tuple3d) (point3d)).x + ((Tuple3d) (point3d)).y * ((Tuple3d) (point3d)).y);
-        float f3 = (float)Math.atan2(((Tuple3d) (point3d)).z, f2);
-        f3 += 0.2617992F;
-        f /= 1000F;
-        double d;
-        if(Math.cos(f1) > 0.0D && Math.cos(f3) > 0.0D)
-            d = (Math.cos(f1) * Math.cos(f3)) / (double)(f * f);
-        else
-            d = 0.0D;
-        if(d > 0.0D && (actor instanceof ArtilleryGeneric) || (actor instanceof StationaryGeneric))
+        // Automatic stationary ground target search
+        // search AAA
+        actorTarget = nearestEnemyInRange(aircraft, com.maddox.il2.ai.ground.TgtFlak.class);
+        if(actorTarget != null)
         {
-            float f4 = estimateRCS(actor);
-            d *= f4;
+            actorTarget.pos.getAbs(point3d);
+            pT.set(point3d);
+            bGPScatch = true;
+            return;
         }
-        return (float)d;
+        // search Tank
+        actorTarget = nearestEnemyInRange(aircraft, com.maddox.il2.ai.ground.TgtTank.class);
+        if(actorTarget != null)
+        {
+            actorTarget.pos.getAbs(point3d);
+            pT.set(point3d);
+            bGPScatch = true;
+            return;
+        }
+        // search Vehicle
+        actorTarget = nearestEnemyInRange(aircraft, com.maddox.il2.ai.ground.TgtVehicle.class);
+        if(actorTarget != null)
+        {
+            actorTarget.pos.getAbs(point3d);
+            pT.set(point3d);
+            bGPScatch = true;
+            return;
+        }
+        // search Train
+        actorTarget = nearestEnemyInRange(aircraft, com.maddox.il2.ai.ground.TgtTrain.class);
+        if(actorTarget != null)
+        {
+            actorTarget.pos.getAbs(point3d);
+            pT.set(point3d);
+            bGPScatch = true;
+            return;
+        }
+        // search Bridge
+        actorTarget = nearestBridgeInRange(aircraft);
+        if(actorTarget != null)
+        {
+            actorTarget.pos.getAbs(point3d);
+            pT.set(point3d);
+            bGPScatch = true;
+            return;
+        }
+        // search Ship
+        actorTarget = nearestEnemyInRange(aircraft, com.maddox.il2.ai.ground.TgtShip.class);
+        if(actorTarget != null)
+        {
+            actorTarget.pos.getAbs(point3d);
+            pT.set(point3d);
+            bGPScatch = true;
+            return;
+        }
     }
 
-    private float estimateRCS(Actor actor)
+    private Actor nearestEnemyInRange(Aircraft aircraft, Class class1)
     {
-        float f = 0.0F;
-        f = actor.collisionR();
-        if(f < 5F)
-            f = 5F;
-        return f / 5F;
+        double targetDistance = 0.0D;
+        float targetAngle = 0.0F;
+        float targetBait = 0.0F;
+        float maxTargetBait = 0.0F;
+        Actor actorsave = null;
+
+        List list = Engine.targets();
+        int i = list.size();
+        for(int j = 0; j < i; j++)
+        {
+            Actor actor = (Actor)list.get(j);
+            if(class1.isInstance(actor) && actor.getArmy() != aircraft.getArmy())
+            {
+                Point3d point3d = actor.pos.getAbsPoint();
+                targetDistance = aircraft.pos.getAbsPoint().distance(point3d);
+                if (targetDistance > maxDistance)
+                    continue;
+                targetAngle = angleBetween(aircraft, point3d);
+                if (targetAngle > maxFOVfrom)
+                    continue;
+
+                targetBait = 1 / targetAngle / (float) (targetDistance * targetDistance);
+                if (targetBait <= maxTargetBait)
+                    continue;
+
+                maxTargetBait = targetBait;
+                actorsave = actor;
+            }
+        }
+        return actorsave;
     }
 
-    public void destroy()
+    private Actor nearestBridgeInRange(Aircraft aircraft)
     {
-        if(isNet() && isNetMirror())
-            doExplosionAir();
-        super.destroy();
+        double targetDistance = 0.0D;
+        float targetAngle = 0.0F;
+        float targetBait = 0.0F;
+        float maxTargetBait = 0.0F;
+        ArrayList arraylist = World.cur().statics.bridges;
+        int j = arraylist.size();
+        double d1 = maxDistance * maxDistance;
+        LongBridge longbridge = null;
+        for(int l = 0; l < j; l++)
+        {
+            LongBridge longbridge1 = (LongBridge)arraylist.get(l);
+            if(!longbridge1.isAlive())
+                continue;
+            Point3d point3d = longbridge1.pos.getAbsPoint();
+            targetDistance = aircraft.pos.getAbsPoint().distance(point3d);
+            if (targetDistance > maxDistance)
+                continue;
+            targetAngle = angleBetween(aircraft, point3d);
+            if (targetAngle > maxFOVfrom)
+                continue;
+
+            targetBait = 1 / targetAngle / (float) (targetDistance * targetDistance);
+            if (targetBait <= maxTargetBait)
+                continue;
+
+            maxTargetBait = targetBait;
+            longbridge = longbridge1;
+        }
+
+        if(longbridge == null)
+        {
+            return null;
+        }
+        else
+        {
+            int k = longbridge.NumStateBits() / 2;
+            return BridgeSegment.getByIdx(longbridge.bridgeIdx(), World.Rnd().nextInt(k));
+        }
     }
 
-    protected void doExplosionAir()
-    {
-        super.pos.getTime(Time.current(), p);
-        MsgExplosion.send(null, null, p, getOwner(), 45F, 2.0F, 1, 550F);
-        super.doExplosionAir();
+    public static float angleBetween(Actor actorFrom, Point3d pointTo) {
+        float angleRetVal = 180.1F;
+        double angleDoubleTemp = 0.0D;
+        Loc angleActorLoc = new Loc();
+        Point3d angleActorPos = new Point3d();
+        Vector3d angleTargRayDir = new Vector3d();
+        Vector3d angleNoseDir = new Vector3d();
+        actorFrom.pos.getAbs(angleActorLoc);
+        angleActorLoc.get(angleActorPos);
+        angleTargRayDir.sub(pointTo, angleActorPos);
+        angleDoubleTemp = angleTargRayDir.length();
+        angleTargRayDir.scale(1.0D / angleDoubleTemp);
+        angleNoseDir.set(1.0D, 0.0D, 0.0D);
+        angleActorLoc.transform(angleNoseDir);
+        angleDoubleTemp = angleNoseDir.dot(angleTargRayDir);
+        angleRetVal = Geom.RAD2DEG((float) Math.acos(angleDoubleTemp));
+        return angleRetVal;
     }
 
-    public NetMsgSpawn netReplicate(NetChannel netchannel)
-        throws IOException
-    {
-        NetMsgSpawn netmsgspawn = super.netReplicate(netchannel);
-        netmsgspawn.writeNetObj(getOwner().net);
-        Point3d point3d = super.pos.getAbsPoint();
-        netmsgspawn.writeFloat((float)((Tuple3d) (point3d)).x);
-        netmsgspawn.writeFloat((float)((Tuple3d) (point3d)).y);
-        netmsgspawn.writeFloat((float)((Tuple3d) (point3d)).z);
-        Orient orient = super.pos.getAbsOrient();
-        netmsgspawn.writeFloat(orient.azimut());
-        netmsgspawn.writeFloat(orient.tangage());
-        float f = (float)getSpeed(null);
-        netmsgspawn.writeFloat(f);
-        return netmsgspawn;
-    }
-
-    protected void mydebug(String s1)
-    {
-    }
-
-    private FlightModel fm;
-    private Actor target;
     private Orient or = new Orient();
     private Point3d p = new Point3d();
     private Point3d pT = new Point3d();
     private Vector3d v = new Vector3d();
-    private Vector3d pOld = new Vector3d();
-    private Vector3d pNew = new Vector3d();
-    private Actor hunted = null;
-    private long tStart;
-    private float prevd;
-    private static double azimuthControlScaleFact = 0.90500000000000003D;
-    private static double tangageControlScaleFact = 0.90500000000000003D;
-    private boolean first;
-    private float targetRCSMax;
+    private float deltaAzimuth;
+    private float deltaTangage;
+    private float deltaX;
+    private long t1;
+    private boolean bGPScatch;
+    private static float maxFOVfrom = 120.0F;
+    private static double maxDistance = 27700D;
 
 }
