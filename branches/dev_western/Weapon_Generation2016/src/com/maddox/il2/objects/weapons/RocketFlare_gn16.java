@@ -8,6 +8,7 @@ import com.maddox.il2.engine.*;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 import java.util.List;
+import com.maddox.sas1946.il2.util.TrueRandom;
 
 
 public class RocketFlare_gn16 extends RocketFlare
@@ -22,29 +23,17 @@ public class RocketFlare_gn16 extends RocketFlare
         float f1 = 30F;
         super.start(f1, i);
         getOwner().getSpeed(speed);
-        speed.x *= 0.98D;
-        speed.z -= 8D;
+        speed.x *= (0.969D + TrueRandom.nextDouble(0.00D, 0.012D));
+        speed.y += TrueRandom.nextDouble(-0.8D, 0.8D);
+        speed.z -= (7.8D + TrueRandom.nextDouble(0.0D, 0.4D));
         setSpeed(speed);
-        Eff3DActor.New(this, null, new Loc(), 1.0F, "3do/Effects/Fireworks/Piropatron.eff", f1);
-        Eff3DActor.New(this, null, new Loc(), 0.8F, "3DO/Effects/Tracers/Piropatron/Smokeflare.eff", f1);
-        Engine.countermeasures().add(this);
+//        Eff3DActor.New(this, null, new Loc(), 1.0F, "3do/Effects/Fireworks/Piropatron.eff", f1);
+//        Eff3DActor.New(this, null, new Loc(), 0.8F, "3do/Effects/Tracers/Piropatron/Smokeflare.eff", f1);
     }
 
     protected void doExplosion(Actor actor, String s)
     {
-        pos.getTime(Time.current(), p);
-        Class class1 = getClass();
-        float f = Property.floatValue(class1, "power", 1000F);
-        int i = Property.intValue(class1, "powerType", 0);
-        float f1 = Property.floatValue(class1, "radius", 0.0F);
-        getSpeed(speed);
-        Vector3f vector3f = new Vector3f(speed);
-        vector3f.normalize();
-        vector3f.scale(850F);
-        MsgShot.send(actor, s, p, vector3f, M, getOwner(), (float)((double)(0.5F * M) * speed.lengthSquared()), 3, 0.0D);
-        MsgExplosion.send(actor, s, p, getOwner(), M, f, i, f1);
-        destroy();
-        Engine.countermeasures().remove(this);
+        super.doExplosion(actor, s);
     }
 
     protected void doExplosionAir()

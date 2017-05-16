@@ -1,5 +1,6 @@
 // Source File Name: Missile.java
-// Author:           Storebror
+// Author:		   Storebror
+// Edit:			western0221 on 08th/May/2017
 package com.maddox.il2.objects.weapons;
 
 import java.io.IOException;
@@ -32,6 +33,7 @@ import com.maddox.il2.objects.ActorSimpleMesh;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.TypeFighter;
 import com.maddox.il2.objects.air.TypeGuidedMissileCarrier;
+import com.maddox.il2.objects.air.TypeLaserDesignator;
 import com.maddox.rts.Message;
 import com.maddox.rts.NetChannel;
 import com.maddox.rts.NetMsgFiltered;
@@ -170,7 +172,7 @@ public class Missile extends Rocket {
 		SPAWN() {
 		}
 
-		public void doSpawn(com.maddox.il2.engine.Actor actor, NetChannel netchannel, int i, com.maddox.JGP.Point3d point3d, com.maddox.il2.engine.Orient orient, float f) {
+		public void doSpawn(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f) {
 		}
 
 		public void netSpawn(int i, NetMsgInput netmsginput) {
@@ -183,9 +185,9 @@ public class Missile extends Rocket {
 				Orient orient = new Orient(netmsginput.readFloat(), netmsginput.readFloat(), netmsginput.readFloat());
 				float f = netmsginput.readFloat();
 				this.doSpawn(actor, netmsginput.channel(), i, point3d, orient, f);
-				if (actor instanceof com.maddox.il2.objects.air.TypeGuidedMissileCarrier) {
+				if (actor instanceof TypeGuidedMissileCarrier) {
 					// EventLog.type("netSpawn 1");
-					((com.maddox.il2.objects.air.TypeGuidedMissileCarrier) actor).getGuidedMissileUtils().shotMissile();
+					((TypeGuidedMissileCarrier) actor).getGuidedMissileUtils().shotMissile();
 				}
 			} catch (Exception exception) {
 				System.out.println(exception.getMessage());
@@ -200,7 +202,7 @@ public class Missile extends Rocket {
 		this.trajectoryVector3d = new Vector3d();
 		this.victimSpeed = new Vector3d();
 		this.victimOffsetOrient = new Orient();
-		this.victimOffsetPoint3d = new Point3f();
+		this.victimOffsetPoint3d = new Point3d();
 		this.MissileInit();
 		return;
 	}
@@ -664,10 +666,8 @@ public class Missile extends Rocket {
 		if (this instanceof MissileInterceptable) {
 			Engine.targets().remove(this);
 		}
-		// TODO: For RWR 
-		try {
-			Engine.missiles().remove(this);
-		} catch (Exception e) {}
+		// TODO: For RWR
+		Engine.missiles().remove(this);
 		super.destroy();
 	}
 
@@ -905,6 +905,9 @@ public class Missile extends Rocket {
 		} else {
 			this.massLossPerTick = 0.0F;
 		}
+		int iDetectorType = Property.intValue(localClass, "detectorType", DETECTOR_TYPE_MANUAL);
+		if (iDetectorType == DETECTOR_TYPE_LASER) bLaserHoming = true;
+		else  bLaserHoming = false;
 	}
 
 	private int getNumExhausts() {
@@ -1219,6 +1222,7 @@ public class Missile extends Rocket {
 
 	private void setMissileVictim() {
 		this.victim = null;
+		if (bLaserHoming) return;
 		try {
 			if (this.ownerIsAI()) {
 				if (this.getOwner() instanceof TypeGuidedMissileCarrier) {
@@ -1247,8 +1251,7 @@ public class Missile extends Rocket {
 					}
 				}
 			}
-		} catch (Exception exception) {
-		}
+		} catch (Exception exception) {	}
 	}
 
 	private void setSmokeSpriteFlames() {
@@ -1347,13 +1350,16 @@ public class Missile extends Rocket {
 
 	public void startEngineDone() {
 		this.releaseTime = Time.current();
+	   	// TODO: For RWR and intercept
+		// "MissileInterceptable" is also recorded as a target,
+		// able to shoot down by AAMs or SAMs.
+		// Other missiles are recorded only as missiles,
+		// possible only countermeasure -- no shooting down.
 		if (this instanceof MissileInterceptable) {
 			Engine.targets().add(this);
 		}
-		// TODO: For RWR 
-		try {
-			Engine.missiles().add(this);
-		} catch (Exception e) {}
+
+		Engine.missiles().add(this);
 	}
 
 	public void startMissile(float paramFloat, int paramInt) {
@@ -1574,7 +1580,7 @@ public class Missile extends Rocket {
 				double victimAdvance = victimDistance * Math.sin(Geom.DEG2RAD((float) alpha)) / Math.sin(Geom.DEG2RAD((float) beta)); // track made good by target until impact
 				victimAdvance -= 5.0D; // impact point 10m aft of engine (track exhaust).
 				double timeToTarget = victimAdvance / theVictimSpeed; // time until calculated impact
-	
+
 				this.victimSpeed.scale(timeToTarget * (this.leadPercent / 100.0F));
 				this.targetPoint3d.add(this.victimSpeed);
 			}
@@ -1604,6 +1610,30 @@ public class Missile extends Rocket {
 			}
 
 			this.computeMissilePath(missileSpeed, 0.0F, 0.0F, angleAzimuth, angleTangage);
+		} else if (bLaserHoming && (this.getOwner() instanceof TypeLaserDesignator)) {
+			if(((TypeLaserDesignator) this.getOwner()).getLaserOn()) {
+				this.targetPoint3d.set(((TypeLaserDesignator) this.getOwner()).getLaserSpot());
+
+				this.targetPoint3d.sub(this.missilePoint3d); // relative Position to target
+				this.missileOrient.transformInv(this.targetPoint3d); // set coordinate system according to A/C POV
+
+				// Calculate angle to target.
+				float angleAzimuth = (float) Math.toDegrees(Math.atan(this.targetPoint3d.y / this.targetPoint3d.x));
+				float angleTangage = (float) Math.toDegrees(Math.atan(this.targetPoint3d.z / this.targetPoint3d.x));
+
+				if (this.getFailState() == FAIL_TYPE_REFLEX) {
+					angleAzimuth += 180F;
+					angleTangage += 180F;
+					if (angleAzimuth > 180F) {
+						angleAzimuth = 180F - angleAzimuth;
+					}
+					if (angleTangage > 180F) {
+						angleTangage = 180F - angleTangage;
+					}
+				}
+
+				this.computeMissilePath(missileSpeed, 0.0F, 0.0F, angleAzimuth, angleTangage);
+			}
 		}// else {
 			// missileOrient.setYPR(missileOrient.getYaw(), missileOrient.getPitch(), this.getRoll());
 			// }
@@ -1615,23 +1645,25 @@ public class Missile extends Rocket {
 	public int WeaponsMask() {
 		return -1;
 	}
-	
-	// TODO: For Countermeasures 
+
+	// TODO: For Countermeasures
 	public Actor getMissileTarget() {
 		return this.victim;
 	}
-  
+
 	private void checkChaffFlareLock() {
+		if ((this.victim instanceof RocketFlare) || (this.victim instanceof RocketChaff))
+			return;
+
 		List theCountermeasures = null;
 		try {
 			theCountermeasures = Engine.countermeasures();
-		} catch (Exception e) {
-		}
-		
+		} catch (Exception e) { }
+
 		if (theCountermeasures == null) return;
-	    int lockType = ((TypeGuidedMissileCarrier) getOwner()).getGuidedMissileUtils().getDetectorType();
-//	    Random random = new Random();
-	    int lockTime = TrueRandom.nextInt((int)flareLockTime + 1000); //  World.rnd().nextInt((int) (flareLockTime + 1000));
+		int lockType = ((TypeGuidedMissileCarrier) getOwner()).getGuidedMissileUtils().getDetectorType();
+//		Random random = new Random();
+		int lockTime = TrueRandom.nextInt((int)flareLockTime + 1000); //  World.rnd().nextInt((int) (flareLockTime + 1000));
 	  	double flareDistance = 0.0D;
 //	  	double victim1Distance = 0.0D;
 	  	int counterMeasureSize = theCountermeasures.size();
@@ -1639,20 +1671,25 @@ public class Missile extends Rocket {
 	  		Actor flarechaff = (Actor) theCountermeasures.get(counterMeasureIndex);
 	  		flareDistance = GuidedMissileUtils.distanceBetween(this, flarechaff);
 //	  		victim1Distance = GuidedMissileUtils.distanceBetween(this, victim);
-	  		if(lockType == DETECTOR_TYPE_INFRARED && flarechaff instanceof RocketFlare && flareLockTime < lockTime && flareDistance < 200D && (double) (GuidedMissileUtils.angleActorBetween(victim, this)) > 30)
-	  		{
+	  		if (lockType == DETECTOR_TYPE_INFRARED && flarechaff instanceof RocketFlare && flareLockTime < lockTime && flareDistance < 200D && (double) (GuidedMissileUtils.angleActorBetween(victim, this)) > 30)
 	  			this.victim = flarechaff;
-	  		} else { if(flarechaff instanceof RocketChaff &&  flareLockTime < lockTime && flareDistance < 500D && (double) (GuidedMissileUtils.angleActorBetween(victim, this)) > 30)
+			else if ((lockType == DETECTOR_TYPE_RADAR_HOMING || lockType == DETECTOR_TYPE_RADAR_BEAMRIDING || lockType == DETECTOR_TYPE_RADAR_TRACK_VIA_MISSILE) && flarechaff instanceof RocketChaff && flareLockTime < lockTime && flareDistance < 500D && (double) (GuidedMissileUtils.angleActorBetween(victim, this)) > 30)
 	  			this.victim = flarechaff;
-	  		}
+			else if (lockType == DETECTOR_TYPE_IMAGE_IR && flarechaff instanceof RocketFlare && flareLockTime < lockTime && flareDistance < 500D && (double) (GuidedMissileUtils.angleActorBetween(victim, this)) > 30 && TrueRandom.nextFloat() < 0.1F)
+	  			this.victim = flarechaff;
 	  	}
 	}
-	
-	protected static final int DETECTOR_TYPE_INFRARED = 1;
+
 	protected static final int DETECTOR_TYPE_MANUAL = 0;
-	protected static final int DETECTOR_TYPE_RADAR_BEAMRIDING = 3;
+	protected static final int DETECTOR_TYPE_INFRARED = 1;
 	protected static final int DETECTOR_TYPE_RADAR_HOMING = 2;
+	protected static final int DETECTOR_TYPE_RADAR_BEAMRIDING = 3;
 	protected static final int DETECTOR_TYPE_RADAR_TRACK_VIA_MISSILE = 4;
+	protected static final int DETECTOR_TYPE_ANTI_RADIATION = 5;
+	protected static final int DETECTOR_TYPE_ANTI_RADIATION_LOCREC = 6;
+	protected static final int DETECTOR_TYPE_IMAGE_EOTV = 7;
+	protected static final int DETECTOR_TYPE_IMAGE_IR = 8;
+	protected static final int DETECTOR_TYPE_LASER = 9;
 	protected static final int FAIL_TYPE_CONTROL_BLOCKED = 6;
 	protected static final int FAIL_TYPE_ELECTRONICS = 1;
 	protected static final int FAIL_TYPE_ENGINE = 3;
@@ -1673,6 +1710,9 @@ public class Missile extends Rocket {
 	protected static final int TARGET_GROUND = 0x0010;
 	protected static final int TARGET_LOCATE = 0x0020;
 	protected static final int TARGET_SHIP = 0x0100;
+	protected static final int ATTACK_DECISION_BY_AI_NO = 0;
+	protected static final int ATTACK_DECISION_BY_AI_YES = 1;
+	protected static final int ATTACK_DECISION_BY_AI_WAYPOINT = 2;
 	private float deltaAzimuth = 0.0F;
 	private float deltaTangage = 0.0F;
 	private float dragCoefficient = 0.3F;
@@ -1749,9 +1789,8 @@ public class Missile extends Rocket {
 	// private static RangeRandom theRangeRandom;
 
 	private Orient victimOffsetOrient = null;
-
-	private Point3f victimOffsetPoint3d = null;
-
+	private Point3d victimOffsetPoint3d = null;
 	private Vector3d victimSpeed = null;
 
+	private boolean bLaserHoming = false;
 }
