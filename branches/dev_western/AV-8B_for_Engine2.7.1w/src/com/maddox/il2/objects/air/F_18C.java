@@ -64,6 +64,10 @@ public class F_18C extends F_18
                             counterFlareList.add(FM.CT.Weapons[i][j]);
                         else if(FM.CT.Weapons[i][j] instanceof RocketGunChaff_gn16)
                             counterChaffList.add(FM.CT.Weapons[i][j]);
+                        else if(FM.CT.Weapons[i][j] instanceof BombGunGBU10_Mk84LGB_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof BombGunGBU12_Mk82LGB_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof BombGunGBU16_Mk83LGB_gn16)
+                            super.bHasPaveway = true;
                         else
                             missilesList.add(FM.CT.Weapons[i][j]);
                         if(FM.CT.Weapons[i][j] instanceof RocketBombGun)
@@ -79,7 +83,8 @@ public class F_18C extends F_18
         if(missilesList.isEmpty())
         {
             return;
-        } else
+        }
+        else
         {
             ((RocketGunAGM65L)missilesList.remove(0)).shots(1);
             return;
@@ -91,7 +96,8 @@ public class F_18C extends F_18
         if(missilesList.isEmpty())
         {
             return;
-        } else
+        }
+        else
         {
             ((RocketBombGun)missilesList.remove(0)).shots(1);
             return;
@@ -194,11 +200,11 @@ public class F_18C extends F_18
     public void onAircraftLoaded()
     {
         super.onAircraftLoaded();
-        checkAmmo();
         guidedMissileUtils.onAircraftLoaded();
         bulletEmitters = new BulletEmitter[weaponHookArray.length];
         for(int i = 0; i < weaponHookArray.length; i++)
             bulletEmitters[i] = getBulletEmitterByHookName(weaponHookArray[i]);
+        FM.turret[0].bIsAIControlled = false;
     }
 
     public void update(float f)
@@ -240,7 +246,8 @@ public class F_18C extends F_18
                     }
                 }
                 setSpeed(vector3d);
-            } else
+            }
+            else
             if(!missilesList.isEmpty() && Time.current() > tX4Prev + 500L + (IR ? 10000L : 0L))
             {
                 Pilot pilot1 = (Pilot)FM;
@@ -277,7 +284,8 @@ public class F_18C extends F_18
             if(f > 17.3F)
             {
                 f1 = 20F;
-            } else
+            }
+            else
             {
                 float f2 = f * f;
                 float f3 = f2 * f;
@@ -297,7 +305,8 @@ public class F_18C extends F_18
         if(f > 2.25F)
         {
             f1 = 0.12F;
-        } else
+        }
+        else
         {
             float f2 = f * f;
             float f3 = f2 * f;
@@ -320,7 +329,8 @@ public class F_18C extends F_18
         if(f >= 10F)
         {
             f1 = 0.085F;
-        } else
+        }
+        else
         {
             float f2 = f * f;
             float f3 = f2 * f;
@@ -341,7 +351,8 @@ public class F_18C extends F_18
         if(f > 13.5F)
         {
             f1 = 1.5F;
-        } else
+        }
+        else
         {
             float f2 = f * f;
             float f3 = f2 * f;
@@ -362,6 +373,7 @@ public class F_18C extends F_18
     public void missionStarting()
     {
         super.missionStarting();
+        checkAmmo();
         checkAsDrone();
     }
 
@@ -504,7 +516,8 @@ public class F_18C extends F_18
             }
             netmsgguaranted.writeByte(dockport_);
             netmsgguaranted.writeNetObj(actornet);
-        } else
+        }
+        else
         {
             netmsgguaranted.writeByte(0);
         }
@@ -561,7 +574,8 @@ public class F_18C extends F_18
             if(FM.CT.getRefuel() < 0.9F)
             {
                 typeDockableAttemptDetach();
-            } else
+            }
+            else
             {
                 if(!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode())
                 {
@@ -595,8 +609,8 @@ public class F_18C extends F_18
                 else
                     typeDockableAttemptDetach();
             }
-        } else
-        if(!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode())
+        }
+        else if(!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode())
         {
             if(FM.CT.GearControl == 0.0F && FM.EI.engines[0].getStage() == 0)
                 FM.EI.setEngineRunning();
@@ -612,8 +626,8 @@ public class F_18C extends F_18
                     ((Maneuver)super.FM).set_maneuver(0);
                     ((Pilot)FM).setDumbTime(0L);
                 }
-            } else
-            if(FM.AP.way.curr().Action == 0)
+            }
+            else if(FM.AP.way.curr().Action == 0)
             {
                 Maneuver maneuver = (Maneuver)super.FM;
                 if(maneuver.Group != null && maneuver.Group.airc[0] == this && maneuver.Group.clientGroup != null)
@@ -4362,8 +4376,8 @@ public class F_18C extends F_18
             a_lweaponslot[65] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[66] = new Aircraft._WeaponSlot(2, "RocketGunAGM123A_gn16", 1);
             a_lweaponslot[67] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
-            a_lweaponslot[92] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuniMk71_gn16", 4);
-            a_lweaponslot[94] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuniMk71_gn16", 4);
+            a_lweaponslot[92] = new Aircraft._WeaponSlot(5, "RocketGun5inchZuniMk71_gn16", 4);
+            a_lweaponslot[94] = new Aircraft._WeaponSlot(5, "RocketGun5inchZuniMk71_gn16", 4);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "1xAGM123+1xGBU16+2xMk82+Zuni+2xAIM9+1xDt";
@@ -4379,8 +4393,8 @@ public class F_18C extends F_18
             a_lweaponslot[39] = new Aircraft._WeaponSlot(9, "LAZERPOD", 1);
             a_lweaponslot[64] = new Aircraft._WeaponSlot(2, "RocketGunAGM123A_gn16", 1);
             a_lweaponslot[65] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
-            a_lweaponslot[92] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuniMk71_gn16", 4);
-            a_lweaponslot[94] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuniMk71_gn16", 4);
+            a_lweaponslot[92] = new Aircraft._WeaponSlot(5, "RocketGun5inchZuniMk71_gn16", 4);
+            a_lweaponslot[94] = new Aircraft._WeaponSlot(5, "RocketGun5inchZuniMk71_gn16", 4);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xAGM123+1xMk83+2xAIM9+2xDt";
@@ -4479,10 +4493,10 @@ public class F_18C extends F_18
             a_lweaponslot = GenerateCenterTankConfig(byte0);
             a_lweaponslot[37] = new Aircraft._WeaponSlot(9, "FLIRPOD", 1);
             a_lweaponslot[39] = new Aircraft._WeaponSlot(9, "LAZERPOD", 1);
-            a_lweaponslot[64] = new Aircraft._WeaponSlot(2, "RocketGunAGM84D_gn16", 1);
-            a_lweaponslot[65] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
-            a_lweaponslot[66] = new Aircraft._WeaponSlot(2, "RocketGunAGM84D_gn16", 1);
-            a_lweaponslot[67] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
+            a_lweaponslot[64] = new Aircraft._WeaponSlot(5, "RocketGunAGM84D_gn16", 1);
+            a_lweaponslot[65] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
+            a_lweaponslot[66] = new Aircraft._WeaponSlot(5, "RocketGunAGM84D_gn16", 1);
+            a_lweaponslot[67] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[68] = new Aircraft._WeaponSlot(2, "RocketGunAGM123A_gn16", 1);
             a_lweaponslot[69] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[70] = new Aircraft._WeaponSlot(2, "RocketGunAGM123A_gn16", 1);

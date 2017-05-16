@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Tuple3d;
-import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
@@ -18,8 +17,6 @@ import com.maddox.rts.*;
 import java.util.ArrayList;
 import java.util.List;
 
-// Referenced classes of package com.maddox.il2.objects.air:
-//            CockpitGunner, Cockpit, F_18, TypeLaserSpotter
 
 public class CockpitF18FLIR extends CockpitGunner
 {
@@ -29,6 +26,7 @@ public class CockpitF18FLIR extends CockpitGunner
         if(super.doFocusEnter())
         {
             ((F_18)aircraft()).FLIR = true;
+            ((TypeLaserDesignator)aircraft()).setLaserOn(true);
             CmdEnv.top().exec("fov 33.3");
             return true;
         } else
@@ -41,6 +39,7 @@ public class CockpitF18FLIR extends CockpitGunner
     {
         super.doFocusLeave();
         ((F_18)aircraft()).FLIR = false;
+        ((F_18)aircraft()).laserTimer = Time.current() + 180000L;  // Laser Auto OFF after 180 sec.
     }
 
     public void moveGun(Orient orient)
@@ -107,28 +106,6 @@ public class CockpitF18FLIR extends CockpitGunner
         if(fn < 90F)
             pitch = fn;
         super.mesh.chunkSetAngles("baseflir", 0.0F, -pitch, roll);
-        if(!((F_18)aircraft()).hold)
-        {
-            LaserHook[1] = new HookNamed(super.mesh, "_Laser1");
-            ((F_18)aircraft()).pos.getRender(Actor._tmpLoc);
-            LaserLoc1.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-            LaserHook[1].computePos(this, Actor._tmpLoc, LaserLoc1);
-            LaserLoc1.get(LaserP1);
-            LaserLoc1.set(40000D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-            LaserHook[1].computePos(this, Actor._tmpLoc, LaserLoc1);
-            LaserLoc1.get(LaserP2);
-            Engine.land();
-            if(Landscape.rayHitHQ(LaserP1, LaserP2, LaserPL))
-            {
-                LaserPL.z -= 0.94999999999999996D;
-                LaserP2.interpolate(LaserP1, LaserPL, 1.0F);
-                ((TypeLaserSpotter)aircraft()).spot.set(LaserP2);
-                Eff3DActor eff3dactor1 = Eff3DActor.New(null, null, new Loc(((Tuple3d) (LaserP2)).x, ((Tuple3d) (LaserP2)).y, ((Tuple3d) (LaserP2)).z, 0.0F, 0.0F, 0.0F), 1.0F, "3DO/Effects/Fireworks/FlareWhiteWide.eff", 0.1F);
-            }
-            super.mesh.chunkSetAngles("Turret1A", orient.getYaw(), 180F, 180F);
-            super.mesh.chunkSetAngles("Turret1B", 180F, -orient.getPitch(), 180F);
-            super.mesh.chunkVisible("Z_Z_FLIR_Lock", false);
-        } else
         if(((F_18)aircraft()).hold)
         {
             super.mesh.chunkVisible("Z_Z_FLIR_Lock", true);
@@ -146,13 +123,13 @@ public class CockpitF18FLIR extends CockpitGunner
                 {
                     Point3d pointOrtho = new Point3d();
                     pointOrtho.set(actor.pos.getAbsPoint());
-                    if(((Tuple3d) (pointOrtho)).x > (((TypeLaserSpotter)aircraft()).spot).x - 8D)
+                    if(((Tuple3d) (pointOrtho)).x > ((TypeLaserDesignator)aircraft()).getLaserSpot().x - 8D)
                     {
-                        if(((Tuple3d) (pointOrtho)).x < (((TypeLaserSpotter)aircraft()).spot).x + 8D)
+                        if(((Tuple3d) (pointOrtho)).x < ((TypeLaserDesignator)aircraft()).getLaserSpot().x + 8D)
                         {
-                            if(((Tuple3d) (pointOrtho)).y < (((TypeLaserSpotter)aircraft()).spot).y + 8D)
+                            if(((Tuple3d) (pointOrtho)).y < ((TypeLaserDesignator)aircraft()).getLaserSpot().y + 8D)
                             {
-                                if(((Tuple3d) (pointOrtho)).y > (((TypeLaserSpotter)aircraft()).spot).y - 8D)
+                                if(((Tuple3d) (pointOrtho)).y > ((TypeLaserDesignator)aircraft()).getLaserSpot().y - 8D)
                                     autotrack.add(pointOrtho);
                             }
                         }
@@ -163,15 +140,15 @@ public class CockpitF18FLIR extends CockpitGunner
             if(autotrack.size() > 0)
             {
                 super.mesh.chunkVisible("Z_Z_FLIR_Tracking", true);
-                Point3d victim = new Point3d();
-                victim.set((Point3d)autotrack.get(0));
-                ((TypeLaserSpotter)aircraft()).spot.set(victim);
+                Point3d victimPos = new Point3d();
+                victimPos.set((Point3d)autotrack.get(0));
+                ((TypeLaserDesignator)aircraft()).setLaserSpot(victimPos);
             } else
             {
                 super.mesh.chunkVisible("Z_Z_FLIR_Tracking", false);
             }
             Point3d laser = new Point3d();
-            laser.set(((TypeLaserSpotter)aircraft()).spot);
+            laser.set(((TypeLaserDesignator)aircraft()).getLaserSpot());
             laser.sub(point3d);
             double d1 = ((Tuple3d) (laser)).y;
             double d2 = ((Tuple3d) (laser)).x;
@@ -206,142 +183,29 @@ public class CockpitF18FLIR extends CockpitGunner
             super.mesh.chunkSetAngles("Turret1A", y, 180F, 180F);
             super.mesh.chunkSetAngles("Turret1B", 180F, -t, 180F);
         }
-    }
-
-    public void laser(Orient orient)
-    {
-        Orient orient2 = new Orient();
-        Point3d point3d = new Point3d();
-        ((F_18)aircraft()).pos.getAbs(point3d, orient2);
-        float roll = orient2.getRoll();
-        float fn = orient2.getPitch();
-        float antiroll = 360F - roll;
-        if(antiroll > 180F)
-            antiroll -= 360F;
-        float r = cvt(antiroll, -90F, 90F, -1.001F, 1.001F);
-        float pitch = 0.0F;
-        if(fn > 90F)
-            pitch = fn - 360F;
-        if(fn < 90F)
-            pitch = fn;
-        super.mesh.chunkSetAngles("baseflir", 0.0F, -pitch, roll);
-        float f = (orient.getYaw() - orient2.getYaw()) + 90F + r * pitch * 10F;
-        if(f > 360F)
-            f -= 360F;
         else
-        if(f < 0.0F)
-            f += 360F;
-        float f1 = f;
-        if(f > 90F && f <= 180F)
-            f = (float)Math.sqrt(Math.pow(f - 180F, 2D));
-        else
-        if(f > 180F && f <= 270F)
-            f -= 180F;
-        else
-        if(f > 270F && f <= 360F)
-            f = (float)Math.sqrt(Math.pow(f - 360F, 2D));
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "roll " + r * pitch * 10F + " " + f);
-        float f2 = orient.getPitch() - orient2.getPitch() * 0.01F - 270F;
-        if(f2 > 360F)
-            f2 -= 360F;
-        else
-        if(f2 < 0.0F)
-            f2 += 360F;
-        f2 *= 0.01745329F;
-        f *= 0.01745329F;
-        double trueposz = ((Tuple3d) (point3d)).z - 0.5D;
-        double trupposx = ((Tuple3d) (point3d)).x + 2D;
-        double d = Math.tan(f2) * (trueposz - 0.5D);
-        dY = Math.sin(f) * d;
-        dX = Math.cos(f) * d;
-        float aa = ((F_18)aircraft()).azimult;
-        float ta = ((F_18)aircraft()).tangate;
-        if(f1 > 0.0F && f1 <= 90F)
-            spot1.set(trupposx + dY, ((Tuple3d) (point3d)).y + dX, 0.0D);
-        else
-        if(f1 > 90F && f1 <= 180F)
-            spot1.set(trupposx + dY, ((Tuple3d) (point3d)).y - dX, 0.0D);
-        else
-        if(f1 > 180F && f1 <= 270F)
-            spot1.set(trupposx - dY, ((Tuple3d) (point3d)).y - dX, 0.0D);
-        else
-            spot1.set(trupposx - dY, ((Tuple3d) (point3d)).y + dX, 0.0D);
-        float y = 0.0F;
-        float t = 0.0F;
-        Point3d laser = new Point3d();
-        laser.set(((TypeLaserSpotter)aircraft()).spot);
-        laser.sub(point3d);
-        double d1 = ((Tuple3d) (laser)).y;
-        double d2 = ((Tuple3d) (laser)).x;
-        double d3 = ((Tuple3d) (laser)).z;
-        double radius = Math.abs(Math.sqrt(d1 * d1 + d2 * d2));
-        t = (267.8F - (float)Math.toDegrees(Math.atan(radius / d3))) + 1.9F;
-        float te = 0.0F;
-        float x = orient2.getYaw();
-        if(x <= 0.0F)
-            te = 180F + x;
-        if(x > 0.0F)
-            te = x + 180F;
-        if(f1 > 90F && f1 <= 180F)
-            y = -(float)Math.toDegrees(Math.atan(d1 / d2)) + orient2.getYaw();
-        else
-        if(f1 > 180F && f1 <= 270F)
-            y = -(float)Math.toDegrees(Math.atan(d1 / d2)) + te;
-        else
-        if(f1 > 270F && f1 <= 360F)
-            y = -(float)Math.toDegrees(Math.atan(d1 / d2)) + te;
-        else
-        if(f1 > 0.0F && f1 <= 90F)
-            y = -(float)Math.toDegrees(Math.atan(d1 / d2)) + orient2.getYaw();
-        if(y > 100F && y < 180F)
-            y = 100F;
-        if(y < 260F && y > 180F)
-            y = 260F;
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "x " + Math.round(((Tuple3d) (spot1)).x) + "y " + Math.round(((Tuple3d) (spot1)).y) + "z " + Math.round(((Tuple3d) (spot1)).z));
-        if(!((F_18)aircraft()).hold)
         {
-            ((TypeLaserSpotter)aircraft()).spot.set(spot1);
-            v = 0.0F;
-            h = 0.0F;
-            v1 = 0.0F;
-            h1 = 0.0F;
-            ((F_18)aircraft()).azimult = 0.0F;
-            ((F_18)aircraft()).tangate = 0.0F;
-        }
-        if(((F_18)aircraft()).hold)
-        {
-            ((TypeLaserSpotter)aircraft()).spot.y += -ta;
-            ((TypeLaserSpotter)aircraft()).spot.x += aa;
-            autotrack.clear();
-            List list = Engine.targets();
-            int i = list.size();
-            for(int j = 0; j < i; j++)
+            LaserHook[1] = new HookNamed(super.mesh, "_Laser1");
+            ((F_18)aircraft()).pos.getRender(Actor._tmpLoc);
+            LaserLoc1.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+            LaserHook[1].computePos(this, Actor._tmpLoc, LaserLoc1);
+            LaserLoc1.get(LaserP1);
+            LaserLoc1.set(40000D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+            LaserHook[1].computePos(this, Actor._tmpLoc, LaserLoc1);
+            LaserLoc1.get(LaserP2);
+            Engine.land();
+            if(Landscape.rayHitHQ(LaserP1, LaserP2, LaserPL))
             {
-                Actor actor = (Actor)list.get(j);
-                if(((actor instanceof CarGeneric) || (actor instanceof TankGeneric) || (actor instanceof ShipGeneric) || (actor instanceof BridgeSegment)) && !(actor instanceof StationaryGeneric) && actor != World.getPlayerAircraft() && actor.getArmy() != World.getPlayerArmy())
-                {
-                    Point3d pointOrtho = new Point3d();
-                    pointOrtho.set(actor.pos.getAbsPoint());
-                    if(((Tuple3d) (pointOrtho)).x > ((Tuple3d) (((TypeLaserSpotter)aircraft()).spot)).x - 10D)
-                    {
-                        if(((Tuple3d) (pointOrtho)).x < ((Tuple3d) (((TypeLaserSpotter)aircraft()).spot)).x + 10D)
-                        {
-                            if(((Tuple3d) (pointOrtho)).y < ((Tuple3d) (((TypeLaserSpotter)aircraft()).spot)).y + 10D)
-                            {
-                                if(((Tuple3d) (pointOrtho)).y > ((Tuple3d) (((TypeLaserSpotter)aircraft()).spot)).y - 10D)
-                                {
-                                    autotrack.add(pointOrtho);
-                                    ((TypeLaserSpotter)aircraft()).spot.set(pointOrtho);
-                                }
-                            }
-                        }
-                    }
-                }
+                LaserPL.z -= 0.94999999999999996D;
+                LaserP2.interpolate(LaserP1, LaserPL, 1.0F);
+                ((TypeLaserDesignator)aircraft()).setLaserSpot(LaserP2);
+                Eff3DActor eff3dactor1 = Eff3DActor.New(null, null, new Loc(((Tuple3d) (LaserP2)).x, ((Tuple3d) (LaserP2)).y, ((Tuple3d) (LaserP2)).z, 0.0F, 0.0F, 0.0F), 1.0F, "3DO/Effects/Fireworks/FlareWhiteWide.eff", 0.1F);
             }
-
+            super.mesh.chunkSetAngles("Turret1A", orient.getYaw(), 180F, 180F);
+            super.mesh.chunkSetAngles("Turret1B", 180F, -orient.getPitch(), 180F);
+            super.mesh.chunkVisible("Z_Z_FLIR_Lock", false);
+            super.mesh.chunkVisible("Z_Z_FLIR_Tracking", false);
         }
-        super.mesh.chunkSetAngles("Turret1A", y, 180F, 180F);
-        super.mesh.chunkSetAngles("Turret1B", 180F, -t, 180F);
     }
 
     public void clipAnglesGun(Orient orient)
@@ -390,9 +254,9 @@ public class CockpitF18FLIR extends CockpitGunner
 
     public void reflectCockpitState()
     {
-        if((((FlightModelMain) (super.fm)).AS.astateCockpitState & 4) != 0)
+        if((fm.AS.astateCockpitState & 4) != 0)
             super.mesh.chunkVisible("Z_Holes1_D1", true);
-        if((((FlightModelMain) (super.fm)).AS.astateCockpitState & 0x10) != 0)
+        if((fm.AS.astateCockpitState & 0x10) != 0)
             super.mesh.chunkVisible("Z_Holes2_D1", true);
     }
 
@@ -409,14 +273,8 @@ public class CockpitF18FLIR extends CockpitGunner
         bNeedSetUp = true;
         prevTime = -1L;
         prevA0 = 0.0F;
-        h = 0.0F;
-        v = 0.0F;
     }
 
-    private float h;
-    private float v;
-    private float v1;
-    private float h1;
     private ArrayList autotrack;
     private double dY;
     private double dX;
@@ -434,7 +292,8 @@ public class CockpitF18FLIR extends CockpitGunner
     private Point3d LaserPL = new Point3d();
     private Point3d LaserP3 = new Point3d();
 
-    static 
+
+    static
     {
         Property.set(com.maddox.il2.objects.air.CockpitF18FLIR.class, "weaponControlNum", 10);
         Property.set(com.maddox.il2.objects.air.CockpitF18FLIR.class, "astatePilotIndx", 0);
