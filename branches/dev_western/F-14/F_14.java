@@ -24,16 +24,9 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 
-// Referenced classes of package com.maddox.il2.objects.air:
-//            Scheme2, Aircraft, TypeFighterAceMaker, TypeSupersonic,
-//            TypeFastJet, TypeLaserSpotter, TypeFighter,
-//            TypeBNZFighter, TypeGSuit, TypeX4Carrier, TypeGuidedBombCarrier,
-//            TypeBomber, TypeStormovikArmored, TypeAcePlane, TypeRadar,
-//            TypeSemiRadar, TypeGroundRadar, TypeFuelDump, Cockpit,
-//            PaintScheme
 
 public class F_14 extends Scheme2
-    implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeX4Carrier, TypeGuidedBombCarrier, TypeBomber, TypeStormovikArmored, TypeAcePlane, TypeLaserSpotter, TypeRadar, TypeSemiRadar, TypeGroundRadar, TypeFuelDump
+    implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeBomber, TypeStormovikArmored, TypeAcePlane, TypeLaserDesignator, TypeRadar, TypeSemiRadar, TypeGroundRadar, TypeFuelDump
 {
 
     public float getDragForce(float f, float f1, float f2, float f3)
@@ -83,8 +76,6 @@ public class F_14 extends Scheme2
         ictl = false;
         engineSurgeDamage = 0.0F;
         hasHydraulicPressure = true;
-        clipBoardPage_ = 1;
-        showClipBoard_ = false;
         super.bWantBeaconKeys = true;
         lTimeNextEject = 0L;
         obsLookTime = 0;
@@ -100,7 +91,6 @@ public class F_14 extends Scheme2
         bToFire = false;
         deltaAzimuth = 0.0F;
         deltaTangage = 0.0F;
-        isGuidingBomb = false;
         bSightAutomation = false;
         bSightBombDump = false;
         fSightCurDistance = 0.0F;
@@ -146,6 +136,8 @@ public class F_14 extends Scheme2
         autoEng = false;
         curFlaps = 0.0F;
         desiredPosition = 0.0F;
+        tVarWingInput = -1L;
+        oldVarWingControlSwitch = 0;
         bFlapsOutFixed = false;
         bFlapsInFixed = false;
         stockCy0_0 = 0.12F;
@@ -161,6 +153,8 @@ public class F_14 extends Scheme2
         stockSqWingOut = 13.25F;
         stockSqFlaps = 13.3F;
         antiColLight = new Eff3DActor[3];
+        laserSpotPos = new Point3d();
+        laserTimer = -1L;
     }
 
     private static final float toMeters(float f)
@@ -265,38 +259,50 @@ public class F_14 extends Scheme2
             if(hold && t1 + 200L < Time.current() && FLIR)
             {
                 hold = false;
-                HUD.log("Lazer Unlock");
+                holdFollow = false;
+                HUD.log("Laser Pos Unlock");
                 t1 = Time.current();
             }
             if(!hold && t1 + 200L < Time.current() && FLIR)
             {
                 hold = true;
-                HUD.log("Lazer Lock");
+                holdFollow = false;
+                actorFollowing = null;
+                HUD.log("Laser Pos Lock");
+                t1 = Time.current();
+            }
+            if(!FLIR)
+                setLaserOn(false);
+        }
+        if(i == 27)
+        {
+            if(holdFollow && t1 + 200L < Time.current() && FLIR)
+            {
+                hold = false;
+                holdFollow = false;
+                actorFollowing = null;
+                HUD.log("Laser Track Unlock");
+                t1 = Time.current();
+            }
+            if(!holdFollow && t1 + 200L < Time.current() && FLIR)
+            {
+                hold = false;
+                holdFollow = true;
+                actorFollowing = null;
+                HUD.log("Laser Track Lock");
                 t1 = Time.current();
             }
         }
-        if(i == 27)
+        if(i == 28)
             if(!ILS)
             {
                 ILS = true;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "ILS ON");
-            } else
+            }
+            else
             {
                 ILS = false;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "ILS OFF");
-            }
-            if(i == 29)
-            if(!APmode1)
-            {
-                APmode1 = true;
-                HUD.log("Autopilot Mode: Altitude ON");
-                FM.AP.setStabAltitude(1000F);
-            } else
-            if(APmode1)
-            {
-                APmode1 = false;
-                HUD.log("Autopilot Mode: Altitude OFF");
-                FM.AP.setStabAltitude(false);
             }
         if(i == 30)
             if(!APmode2)
@@ -612,6 +618,153 @@ public class F_14 extends Scheme2
             tangate = 0.0F;
             azimult = 0.0F;
         }
+
+        if(!FLIR && laserTimer > 0L && Time.current() > laserTimer && getLaserOn())
+        {
+            setLaserOn(false);
+        }
+
+        if(bHasPaveway)
+            checkgroundlaser();
+    }
+
+    private void checkgroundlaser()
+    {
+        boolean laseron = false;
+        double targetDistance = 0.0D;
+        float targetAngle = 0.0F;
+        float targetBait = 0.0F;
+        float maxTargetBait = 0.0F;
+        // superior the Laser spot of this Paveway's owner than others'
+        while(getLaserOn())
+        {
+            Point3d point3d = new Point3d();
+            point3d = getLaserSpot();
+            if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F)
+                break;
+            targetDistance = this.pos.getAbsPoint().distance(point3d);
+            if (targetDistance > maxPavewayDistance)
+                break;
+            targetAngle = angleBetween(this, point3d);
+            if (targetAngle > maxPavewayFOVfrom)
+                break;
+
+            laseron = true;
+            break;
+        }
+        // seak other Laser designator spots when Paveway's owner doesn't spot Laser
+        if(!laseron)
+        {
+            List list = Engine.targets();
+            int i = list.size();
+            for(int j = 0; j < i; j++)
+            {
+                Actor actor = (Actor)list.get(j);
+                if((actor instanceof TypeLaserDesignator) && ((TypeLaserDesignator) actor).getLaserOn() && actor.getArmy() == this.getArmy())
+                {
+                    Point3d point3d = new Point3d();
+                    point3d = ((TypeLaserDesignator)actor).getLaserSpot();
+                    // Not target about objects behind of clouds from the Paveway's seaker.
+                    if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F)
+                        continue;
+                    targetDistance = this.pos.getAbsPoint().distance(point3d);
+                    if (targetDistance > maxPavewayDistance)
+                        continue;
+                    targetAngle = angleBetween(this, point3d);
+                    if (targetAngle > maxPavewayFOVfrom)
+                        continue;
+
+                    targetBait = 1 / targetAngle / (float) (targetDistance * targetDistance);
+                    if (targetBait <= maxTargetBait)
+                        continue;
+
+                    maxTargetBait = targetBait;
+                    laseron = true;
+                }
+            }
+        }
+        setLaserArmEngaged(laseron);
+    }
+
+    private static float angleBetween(Actor actorFrom, Point3d pointTo) {
+        float angleRetVal = 180.1F;
+        double angleDoubleTemp = 0.0D;
+        Loc angleActorLoc = new Loc();
+        Point3d angleActorPos = new Point3d();
+        Vector3d angleTargRayDir = new Vector3d();
+        Vector3d angleNoseDir = new Vector3d();
+        actorFrom.pos.getAbs(angleActorLoc);
+        angleActorLoc.get(angleActorPos);
+        angleTargRayDir.sub(pointTo, angleActorPos);
+        angleDoubleTemp = angleTargRayDir.length();
+        angleTargRayDir.scale(1.0D / angleDoubleTemp);
+        angleNoseDir.set(1.0D, 0.0D, 0.0D);
+        angleActorLoc.transform(angleNoseDir);
+        angleDoubleTemp = angleNoseDir.dot(angleTargRayDir);
+        angleRetVal = Geom.RAD2DEG((float) Math.acos(angleDoubleTemp));
+        return angleRetVal;
+    }
+
+    public Point3d getLaserSpot()
+    {
+        return laserSpotPos;
+    }
+
+    public boolean setLaserSpot(Point3d p3d)
+    {
+        laserSpotPos = p3d;
+        return true;
+    }
+
+    public boolean getLaserOn()
+    {
+        return bLaserOn;
+    }
+
+    public boolean setLaserOn(boolean flag)
+    {
+        if(bLaserOn != flag)
+        {
+            if(bLaserOn == false)
+            {
+                if(FM.actor == World.getPlayerAircraft())
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser: ON");
+            }
+            else
+            {
+                if(FM.actor == World.getPlayerAircraft())
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser: OFF");
+                hold = false;
+                holdFollow = false;
+                actorFollowing = null;
+            }
+        }
+
+        return bLaserOn = flag;
+    }
+
+    public boolean getLaserArmEngaged()
+    {
+        return bLGBengaged;
+    }
+
+    public boolean setLaserArmEngaged(boolean flag)
+    {
+        if(bLGBengaged != flag)
+        {
+            if(bLGBengaged == false)
+            {
+                if(this == World.getPlayerAircraft())
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser Bomb: Engaged");
+            }
+            else
+            {
+                if(this == World.getPlayerAircraft())
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser Bomb: Disengaged");
+            }
+        }
+
+        return bLGBengaged = flag;
     }
 
     public void typeBomberAdjAltitudeReset()
@@ -736,7 +889,7 @@ public class F_14 extends Scheme2
         for(int j = 0; j < i; j++)
         {
             Actor actor = (Actor)list.get(j);
-            if(!(actor instanceof Aircraft) && !(actor instanceof ArtilleryGeneric) && !(actor instanceof CarGeneric) && !(actor instanceof TankGeneric) || (actor instanceof StationaryGeneric) || (actor instanceof TypeLaserSpotter) || actor.pos.getAbsPoint().distance(pos.getAbsPoint()) >= 20000D)
+            if(!(actor instanceof Aircraft) && !(actor instanceof ArtilleryGeneric) && !(actor instanceof CarGeneric) && !(actor instanceof TankGeneric) || (actor instanceof StationaryGeneric) || (actor instanceof TypeLaserDesignator) || actor.pos.getAbsPoint().distance(pos.getAbsPoint()) >= 20000D)
                 continue;
             Point3d point3d = new Point3d();
             Orient orient = new Orient();
@@ -758,70 +911,8 @@ public class F_14 extends Scheme2
 
     }
 
-    public boolean typeGuidedBombCisMasterAlive()
-    {
-        return isMasterAlive;
-    }
-
-    public void typeGuidedBombCsetMasterAlive(boolean flag)
-    {
-        isMasterAlive = flag;
-    }
-
-    public boolean typeGuidedBombCgetIsGuiding()
-    {
-        return isGuidingBomb;
-    }
-
-    public void typeGuidedBombCsetIsGuiding(boolean flag)
-    {
-        isGuidingBomb = flag;
-    }
-
-    public void typeX4CAdjSidePlus()
-    {
-        deltaAzimuth = 0.002F;
-    }
-
-    public void typeX4CAdjSideMinus()
-    {
-        deltaAzimuth = -0.002F;
-    }
-
-    public void typeX4CAdjAttitudePlus()
-    {
-        deltaTangage = 0.002F;
-    }
-
-    public void typeX4CAdjAttitudeMinus()
-    {
-        deltaTangage = -0.002F;
-    }
-
-    public void typeX4CResetControls()
-    {
-        deltaAzimuth = deltaTangage = 0.0F;
-    }
-
-    public float typeX4CgetdeltaAzimuth()
-    {
-        return deltaAzimuth;
-    }
-
-    public float typeX4CgetdeltaTangage()
-    {
-        return deltaTangage;
-    }
-
     public boolean typeDiveBomberToggleAutomation()
     {
-        if(FM.crew < 2)
-            return false;
-        showClipBoard_ = !showClipBoard_;
-        if(showClipBoard_)
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "ClipBoard Visible");
-        else
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "ClipBoard Hide");
         return true;
     }
 
@@ -860,6 +951,7 @@ public class F_14 extends Scheme2
         stockSqWingOut = FM.Sq.liftWingLOut;
         stockSqFlaps = FM.Sq.squareFlaps;
         FM.CT.toggleRocketHook();
+        bCarryLaserpod = false;
         if(thisWeaponsName.startsWith("Fighter: 4xAIM54"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
@@ -903,6 +995,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon3L", true);
             hierMesh().chunkVisible("Pylon3R", true);
             FM.Sq.dragParasiteCx += 0.00007F;
+            bCarryLaserpod = true;
         }
         if(thisWeaponsName.startsWith("Recon: ALQ"))
         {
@@ -919,6 +1012,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon3L", true);
             hierMesh().chunkVisible("Pylon3R", true);
             FM.Sq.dragParasiteCx += 0.00007F;
+            bCarryLaserpod = true;
         }
         if(thisWeaponsName.startsWith("GAttack: 2xCBU"))
         {
@@ -963,6 +1057,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon4L", true);
             hierMesh().chunkVisible("Pylon4R", true);
             FM.Sq.dragParasiteCx += 0.0001F;
+            bCarryLaserpod = true;
         }
     }
 
@@ -972,6 +1067,11 @@ public class F_14 extends Scheme2
         checkDroptanks();
         if(!(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
             bSpawnedAsAI = true;
+
+        tVarWingInput = -1L;
+        laserTimer = -1L;
+        bLaserOn = false;
+        FLIR = false;
     }
 
     public void updateLLights()
@@ -2156,7 +2256,8 @@ public class F_14 extends Scheme2
                 umn();
         }
         if(FLIR)
-            laser(spot);
+            laser(getLaserSpot());
+        updatecontrollaser();
         engineSurge(f);
         typeFighterAceMakerRangeFinder();
         soundbarier();
@@ -2172,7 +2273,6 @@ public class F_14 extends Scheme2
         RWRLaunchWarning();
         if((FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
             RWRWarning();
-        updatecontrollaser();
         if(FM.crew > 1 && obsMove < obsMoveTot && !bObserverKilled && !FM.AS.isPilotParatrooper(1))
         {
             if(obsMove < 0.2F || obsMove > obsMoveTot - 0.2F)
@@ -2191,19 +2291,33 @@ public class F_14 extends Scheme2
         super.update(f);
         if(FM.CT.getArrestor() > 0.2F)
             calculateArrestor();
+        if(this instanceof F_14A)
+        {
+            int step;
+
+            fNozzleOpenL = FM.EI.engines[0].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[0].getPowerOutput(), 0.0F, 0.92F, 0F, 0.9999F) : cvt(FM.EI.engines[0].getPowerOutput(), 0.92F, 1.1F, 0.9999F, 0F);
+            step = (int)Math.floor(fNozzleOpenL * 10F);
+            for(int i = 0; i < 10; i++)
+                hierMesh().chunkVisible("ExhaustL" + i, i == step);
+
+            fNozzleOpenR = FM.EI.engines[1].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[1].getPowerOutput(), 0.0F, 0.92F, 0F, 0.9999F) : cvt(FM.EI.engines[1].getPowerOutput(), 0.92F, 1.1F, 0.9999F, 0F);
+            step = (int)Math.floor(fNozzleOpenR * 10F);
+            for(int i = 0; i < 10; i++)
+                hierMesh().chunkVisible("ExhaustR" + i, i == step);
+        }
         if((this instanceof F_14B) || (this instanceof F_14D))
         {
-            for(int i = 1; i < 33; i++)
-            {
-                fNozzleOpenL = FM.EI.engines[0].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[0].getPowerOutput(), 0.0F, 0.92F, -9F, 0.0F) : cvt(FM.EI.engines[0].getPowerOutput(), 0.92F, 1.1F, 0.0F, -9F);
-                hierMesh().chunkSetAngles("Eflap" + i, fNozzleOpenL, 0.0F, 0.0F);
-            }
+            float deg;
 
+            fNozzleOpenL = FM.EI.engines[0].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[0].getPowerOutput(), 0.0F, 0.92F, 0.0F, 1.0F) : cvt(FM.EI.engines[0].getPowerOutput(), 0.92F, 1.1F, 1.0F, 0.0F);
+            deg = -9F * (1F - fNozzleOpenL);
+            for(int i = 1; i < 33; i++)
+                hierMesh().chunkSetAngles("Eflap" + i, deg, 0.0F, 0.0F);
+
+            fNozzleOpenR = FM.EI.engines[1].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[1].getPowerOutput(), 0.0F, 0.92F, 0.0F, 1.0F) : cvt(FM.EI.engines[1].getPowerOutput(), 0.92F, 1.1F, 1.0F, 0.0F);
+            deg = -9F * (1F - fNozzleOpenR);
             for(int j = 33; j > 32 && j < 65; j++)
-            {
-                fNozzleOpenR = FM.EI.engines[1].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[1].getPowerOutput(), 0.0F, 0.92F, -9F, 0.0F) : cvt(FM.EI.engines[1].getPowerOutput(), 0.92F, 1.1F, 0.0F, -9F);
-                hierMesh().chunkSetAngles("Eflap" + j, fNozzleOpenR, 0.0F, 0.0F);
-            }
+                hierMesh().chunkSetAngles("Eflap" + j, deg, 0.0F, 0.0F);
         }
 
         float f1 = cvt(FM.getSpeedKMH(), 500F, 1000F, 0.999F, 0.601F);
@@ -2770,86 +2884,100 @@ public class F_14 extends Scheme2
                 FM.CT.VarWingControlSwitch = 0;
         }
 
+        float target_value = 0.0F;
+      
         // VarWing degree decision part
         switch(FM.CT.VarWingControlSwitch)
         {
         default:
         case 0:   // AUTO
-            if((double)calculateMach() > 0.8D && FM.EI.engines[0].getThrustOutput() > 1.001F && FM.getAltitude() <=2500F)
-                FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
-            if((double)calculateMach() > 0.88D && FM.getAltitude() <=2500F && FM.EI.engines[0].getThrustOutput() < 1.001F)
-                FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
-            if((double)calculateMach() > 0.75D && (double)calculateMach() < 0.88D && FM.getAltitude() <=2500F && FM.EI.engines[0].getThrustOutput() < 1.001F)
-                FM.CT.VarWingControl = Math.max(0.64F, FM.CT.getWing());
-            if((double)calculateMach() > 0.65D && (double)calculateMach() < 0.75D && FM.getAltitude() <=2500F)
-                FM.CT.VarWingControl = Math.max(0.4F, FM.CT.getWing());
-            if((double)calculateMach() > 0.55D && (double)calculateMach() < 0.65D && FM.getAltitude() <=2500F)
-                FM.CT.VarWingControl = Math.max(0.24F, FM.CT.getWing());
-            if((double)calculateMach() < 0.55D && FM.getAltitude() <=2500F && FM.EI.engines[0].getStage() >=6)
-                FM.CT.VarWingControl = Math.max(0.0F, FM.CT.getWing());
-            if((double)calculateMach() > 0.9D && FM.getAltitude() >2500F)
-                FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
-            if((double)calculateMach() > 0.85D && (double)calculateMach() < 0.9D && FM.getAltitude() >2500F)
-                FM.CT.VarWingControl = Math.max(0.64F, FM.CT.getWing());
-            if((double)calculateMach() > 0.75D && (double)calculateMach() < 0.85D && FM.getAltitude() >2500F)
-                FM.CT.VarWingControl = Math.max(0.4F, FM.CT.getWing());
-            if((double)calculateMach() > 0.7D && (double)calculateMach() < 0.78D && FM.getAltitude() >2500F)
-                FM.CT.VarWingControl = Math.max(0.24F, FM.CT.getWing());
-            if((double)calculateMach() < 0.6D && FM.getAltitude() >2500F)
-                FM.CT.VarWingControl = Math.max(0.0F, FM.CT.getWing());
-            if((double)calculateMach() > 0.95D && FM.getAltitude() >5000F)
-                FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
-            if((double)calculateMach() > 0.9D && (double)calculateMach() < 0.95D && FM.getAltitude() >5000F)
-                FM.CT.VarWingControl = Math.max(0.64F, FM.CT.getWing());
-            if((double)calculateMach() > 0.8D && (double)calculateMach() < 0.9D && FM.getAltitude() >5000F)
-                FM.CT.VarWingControl = Math.max(0.4F, FM.CT.getWing());
-            if((double)calculateMach() > 0.7D && (double)calculateMach() < 0.8D && FM.getAltitude() >5000F)
-                FM.CT.VarWingControl = Math.max(0.24F, FM.CT.getWing());
-            if((double)calculateMach() < 0.7D && FM.getAltitude() >5000F)
-                FM.CT.VarWingControl = Math.max(0.0F, FM.CT.getWing());
-            if((double)calculateMach() > 1.0D && FM.getAltitude() >7500F)
-                FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
-            if((double)calculateMach() > 0.95D && (double)calculateMach() < 1.0D && FM.getAltitude() >7500F)
-                FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
-            if((double)calculateMach() > 0.9D && (double)calculateMach() < 0.95D && FM.getAltitude() >7500F)
-                FM.CT.VarWingControl = Math.max(0.4F, FM.CT.getWing());
-            if((double)calculateMach() > 0.8D && (double)calculateMach() < 0.9D && FM.getAltitude() >7500F)
-                FM.CT.VarWingControl = Math.max(0.24F, FM.CT.getWing());
-            if((double)calculateMach() < 0.8D && FM.getAltitude() >7500F)
-                FM.CT.VarWingControl = Math.max(0.0F, FM.CT.getWing());
-            if((double)calculateMach() > 1.05D && FM.getAltitude() >10000F)
-                FM.CT.VarWingControl = Math.max(0.8F, FM.CT.getWing());
-            if((double)calculateMach() > 1.0D && (double)calculateMach() < 1.05D && FM.getAltitude() >10000F)
-                FM.CT.VarWingControl = Math.max(0.64F, FM.CT.getWing());
-            if((double)calculateMach() > 0.95D && (double)calculateMach() < 1.0D && FM.getAltitude() >10000F)
-                FM.CT.VarWingControl = Math.max(0.4F, FM.CT.getWing());
-            if((double)calculateMach() > 0.85D && (double)calculateMach() < 0.95D && FM.getAltitude() >10000F)
-                FM.CT.VarWingControl = Math.max(0.24F, FM.CT.getWing());
-            if((double)calculateMach() < 0.85D && FM.getAltitude() >10000F)
-                FM.CT.VarWingControl = Math.max(0.0F, FM.CT.getWing());
+            if(calculateMach() < 0.435F)
+                target_value = 0F;   // 20 deg.
+            else if(calculateMach() < 0.55F)
+                target_value = 0.036364F;   // 22 deg.
+            else if(calculateMach() < 0.97F)
+            {
+                if(FM.getAltitude() > 6090F)   // over 20000 feet
+                {
+                    if(calculateMach() < 0.64F)
+                        target_value = 0.036364F;   // 22 deg.
+                    else if(calculateMach() < 0.7F)
+                        target_value = cvt(calculateMach(), 0.64F, 0.7F, 0.036364F, 0.0964F);   // 22 ~ 25.88 deg.
+                    else if(calculateMach() < 0.738F)
+                        target_value = cvt(calculateMach(), 0.7F, 0.738F, 0.0964F, 0.1396F);   // 25.88 ~ 28.53 deg.
+                    else if(calculateMach() < 0.776F)
+                        target_value = cvt(calculateMach(), 0.738F, 0.776F, 0.1396F, 0.2045F);   // 28.53 ~ 32.5 deg.
+                    else if(calculateMach() < 0.8F)
+                        target_value = cvt(calculateMach(), 0.7776F, 0.8F, 0.2045F, 0.3F);   // 32.5 ~ 37.869 deg.
+                    else if(calculateMach() < 0.87222F)
+                        target_value = cvt(calculateMach(), 0.8F, 0.87222F, 0.3F, 0.49F);   // 37.869 ~ 50 deg.
+                    else
+                        target_value = cvt(calculateMach(), 0.87222F, 0.97F, 0.49F, 0.6555F);   // 50 ~ 60 deg.
+                }
+                else   // below 20000 feet
+                {
+                    if(calculateMach() < 0.6F)
+                        target_value = cvt(calculateMach(), 0.55F, 0.6F, 0.036364F, 0.0964F);   // 22 ~ 25.88 deg.
+                    else if(calculateMach() < 0.66F)
+                        target_value = cvt(calculateMach(), 0.6F, 0.66F, 0.0964F, 0.1636F);   // 25.88 ~ 30 deg.
+                    else if(calculateMach() < 0.75F)
+                        target_value = cvt(calculateMach(), 0.66F, 0.75F, 0.1636F, 0.2636F);   // 30 ~ 36.11 deg.
+                    else if(calculateMach() < 0.8F)
+                        target_value = cvt(calculateMach(), 0.75F, 0.8F, 0.2636F, 0.3272F);   // 36.11 ~ 40 deg.
+                    else if(calculateMach() < 0.87222F)
+                        target_value = cvt(calculateMach(), 0.8F, 0.87222F, 0.3272F, 0.49F);   // 40 ~ 50 deg.
+                    else
+                        target_value = cvt(calculateMach(), 0.87222F, 0.97F, 0.49F, 0.6555F);   // 50 ~ 60 deg.
+                }
+            }
+            else if(calculateMach() < 1.1F)
+                target_value = cvt(calculateMach(), 0.97F, 1.1F, 0.6555F, 0.7373F);   // 60 ~ 65 deg.
+            else
+                target_value = cvt(calculateMach(), 1.1F, 1.2F, 0.7373F, 0.8F);   // 65 ~ 68 deg.
+            oldVarWingControlSwitch = 0;
             break;
         case 1:   // Extend
-            FM.CT.VarWingControl -= 0.005F;
-            if(FM.CT.VarWingControl < 0.0F)
-                FM.CT.VarWingControl = 0.0F;
-            FM.CT.VarWingControl = Math.max(FM.CT.VarWingControl, FM.CT.getWing());
+            if(oldVarWingControlSwitch != 1)
+                tVarWingInput = Time.current();
+            if(Time.current() > tVarWingInput + 400L)
+            {
+                target_value = FM.CT.VarWingControl - 0.005F;
+                if(target_value < 0.0F)
+                    target_value = 0.0F;
+            }
+            else
+                target_value = FM.CT.VarWingControl;
+            oldVarWingControlSwitch = 1;
             break;
         case 2:   // Keep
-            FM.CT.VarWingControl = Math.max(FM.CT.VarWingControl, FM.CT.getWing());
-            if(FM.CT.getWing() < 0.8F && FM.CT.VarWingControl > 0.8F)
-                FM.CT.VarWingControl = 0.8F;
+            target_value = FM.CT.VarWingControl;
+            if(calculateMach() < 0.97F && target_value > 0.65549F)
+                target_value = 0.65549F;
+            oldVarWingControlSwitch = 2;
             break;
         case 3:   // Retract
-            FM.CT.VarWingControl += 0.005F;
-            FM.CT.VarWingControl = Math.max(FM.CT.VarWingControl, FM.CT.getWing());
-            if(FM.CT.getWing() < 0.8F && FM.CT.VarWingControl > 0.8F)
-                FM.CT.VarWingControl = 0.8F;
+            if(oldVarWingControlSwitch != 3)
+                tVarWingInput = Time.current();
+            if(Time.current() > tVarWingInput + 400L)
+            {
+                target_value = FM.CT.VarWingControl + 0.005F;
+                if(FM.CT.getWing() < 0.8F && target_value > 0.8F)
+                    target_value = 0.8F;
+                if(calculateMach() < 0.97F && FM.CT.getWing() < 0.65549F && target_value > 0.65549F)
+                    target_value = 0.65549F;
+            }
+            else
+                target_value = FM.CT.VarWingControl;
+            oldVarWingControlSwitch = 3;
             break;
         case 4:   // BOMB; fixed 55 degrees
-            FM.CT.VarWingControl = 0.6034F;
-            FM.CT.VarWingControl = Math.max(FM.CT.VarWingControl, FM.CT.getWing());
+            target_value = 0.6034F;
+            oldVarWingControlSwitch = 4;
             break;
         }
+        if(target_value < varWingExtendLimitter())
+            target_value = varWingExtendLimitter();
+        FM.CT.VarWingControl = Math.max(target_value, FM.CT.getWing());
 
         // VarWing flight charactoristic part
         if(!bStableAIGround)
@@ -2873,7 +3001,28 @@ public class F_14 extends Scheme2
             FM.Wingspan = floatindex(fsweep, wingspanScale);
         }
     }
-    
+
+    private float varWingExtendLimitter()
+    {
+        float limit = 0F;
+        if(calculateMach() < 0.435F)
+            limit = 0F;   // 20 deg.
+        else if(calculateMach() < 0.75F)
+            limit = 0.036364F;   // 22 deg.
+        else if(calculateMach() < 0.8F)
+            limit = cvt(calculateMach(), 0.75F, 0.8F, 0.036364F, 0.3F);   // 22 ~ 37.869 deg.
+        else if(calculateMach() < 0.87222F)
+            limit = cvt(calculateMach(), 0.8F, 0.87222F, 0.3F, 0.49F);   // 37.869 ~ 50 deg.
+        else if(calculateMach() < 0.97F)
+            limit = cvt(calculateMach(), 0.87222F, 0.97F, 0.49F, 0.6555F);   // 50 ~ 60 deg.
+        else if(calculateMach() < 1.1F)
+            limit = cvt(calculateMach(), 0.97F, 1.1F, 0.6555F, 0.7373F);   // 60 ~ 65 deg.
+        else
+            limit = cvt(calculateMach(), 1.1F, 1.2F, 0.7373F, 0.8F);   // 65 ~ 68 deg.
+
+        return limit;
+    }
+  
     public void computeSubsonicLimiter()
        { 
         float x = this.calculateMach();
@@ -3110,13 +3259,9 @@ public class F_14 extends Scheme2
     private float obsMove;
     private float obsMoveTot;
     boolean bObserverKilled;
-    public int clipBoardPage_;
-    public boolean showClipBoard_;
     public boolean bToFire;
     private float deltaAzimuth;
     private float deltaTangage;
-    private boolean isGuidingBomb;
-    private boolean isMasterAlive;
 //    private static Loc l = new Loc();
     public boolean FLIR;
     private SoundFX fxRWR;
@@ -3128,6 +3273,8 @@ public class F_14 extends Scheme2
     public boolean bRadarWarning;
     public boolean bMissileWarning;
     public boolean hold;
+    public boolean holdFollow;
+    public Actor actorFollowing;
     private Eff3DActor pull01;
     private Eff3DActor pull02;
     private Eff3DActor pull03;
@@ -3158,6 +3305,8 @@ public class F_14 extends Scheme2
     private float actl;
     private float rctl;
     private float ectl;
+    private long tVarWingInput;
+    private int oldVarWingControlSwitch;
     public boolean hasHydraulicPressure;
     private boolean bTakeoffFlapAssist;
     private boolean bTakeoffAIAssist;
@@ -3181,6 +3330,15 @@ public class F_14 extends Scheme2
     private float stockSqWingOut;
     private float stockSqFlaps;
     private Eff3DActor antiColLight[];
+
+    public boolean bCarryLaserpod = false;
+    private Point3d laserSpotPos;
+    private boolean bLaserOn = false;
+    public long laserTimer;
+    private boolean bLGBengaged = false;
+    public boolean bHasPaveway = false;
+    private static float maxPavewayFOVfrom = 45.0F;
+    private static double maxPavewayDistance = 20000D;
 
 
     private static final float gcenterScale[] = {

@@ -65,6 +65,10 @@ public class F_14A extends F_14
                             counterFlareList.add(FM.CT.Weapons[i][j]);
                         else if(FM.CT.Weapons[i][j] instanceof RocketGunChaff_gn16)
                             counterChaffList.add(FM.CT.Weapons[i][j]);
+                        else if(FM.CT.Weapons[i][j] instanceof BombGunGBU10_Mk84LGB_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof BombGunGBU12_Mk82LGB_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof BombGunGBU16_Mk83LGB_gn16)
+                            super.bHasPaveway = true;
                     }
             }
     }
