@@ -200,39 +200,15 @@ public class SkyhawkA4F_late extends SkyhawkFuelReceiver
     {
     }
 
-    public Actor getMissileTarget()
+    public GuidedMissileUtils getGuidedMissileUtils()
     {
-        return guidedMissileUtils.getMissileTarget();
-    }
-
-    public Point3f getMissileTargetOffset()
-    {
-        return guidedMissileUtils.getSelectedActorOffset();
-    }
-
-    public int getMissileLockState()
-    {
-        return guidedMissileUtils.getMissileLockState();
-    }
-
-    private float getMissilePk()
-    {
-        float thePk = 0.0F;
-        guidedMissileUtils.setMissileTarget(guidedMissileUtils.lookForGuidedMissileTarget(((Interpolate) (super.FM)).actor, guidedMissileUtils.getMaxPOVfrom(), guidedMissileUtils.getMaxPOVto(), guidedMissileUtils.getPkMaxDist()));
-        if(Actor.isValid(guidedMissileUtils.getMissileTarget()))
-            thePk = guidedMissileUtils.Pk(((Interpolate) (super.FM)).actor, guidedMissileUtils.getMissileTarget());
-        return thePk;
+        return guidedMissileUtils;
     }
 
     public void onAircraftLoaded()
     {
         super.onAircraftLoaded();
         guidedMissileUtils.onAircraftLoaded();
-    }
-
-    public GuidedMissileUtils getGuidedMissileUtils()
-    {
-        return guidedMissileUtils;
     }
 
     public void update(float f)
@@ -3866,6 +3842,23 @@ public class SkyhawkA4F_late extends SkyhawkFuelReceiver
             a_lweaponslot[97] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[98] = new Aircraft._WeaponSlot(4, "RocketGunAGM65B_gn16", 1);
             a_lweaponslot[99] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
+            a_lweaponslot[100] = new Aircraft._WeaponSlot(4, "RocketGunAGM65B_gn16", 1);
+            a_lweaponslot[101] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
+            a_lweaponslot[102] = new Aircraft._WeaponSlot(4, "RocketGunAGM65B_gn16", 1);
+            a_lweaponslot[103] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
+            arraylist.add(s);
+            hashmapint.put(Finger.Int(s), a_lweaponslot);
+            s = "2xAGM65B+2xZuni+1x400Dt";
+            a_lweaponslot = GenerateDefaultConfig(byte0);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk400gal_gn16", 1);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
+            a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
+            a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU10_gn16", 1);
+            a_lweaponslot[8] = new Aircraft._WeaponSlot(9, "Pylon_LAU10_gn16", 1);
+            a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon_LAU10_Cap_gn16", 1);
+            a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "Pylon_LAU10_Cap_gn16", 1);
+            a_lweaponslot[61] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuniAP_gn16", 4);
+            a_lweaponslot[62] = new Aircraft._WeaponSlot(2, "RocketGun5inchZuniAP_gn16", 4);
             a_lweaponslot[100] = new Aircraft._WeaponSlot(4, "RocketGunAGM65B_gn16", 1);
             a_lweaponslot[101] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[102] = new Aircraft._WeaponSlot(4, "RocketGunAGM65B_gn16", 1);
