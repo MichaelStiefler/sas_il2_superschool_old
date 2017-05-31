@@ -284,30 +284,6 @@ public class SkyhawkA4F extends SkyhawkFuelReceiver
     {
     }
 
-    public Actor getMissileTarget()
-    {
-        return guidedMissileUtils.getMissileTarget();
-    }
-
-    public Point3f getMissileTargetOffset()
-    {
-        return guidedMissileUtils.getSelectedActorOffset();
-    }
-
-    public int getMissileLockState()
-    {
-        return guidedMissileUtils.getMissileLockState();
-    }
-
-    private float getMissilePk()
-    {
-        float thePk = 0.0F;
-        guidedMissileUtils.setMissileTarget(guidedMissileUtils.lookForGuidedMissileTarget(((Interpolate) (super.FM)).actor, guidedMissileUtils.getMaxPOVfrom(), guidedMissileUtils.getMaxPOVto(), guidedMissileUtils.getPkMaxDist()));
-        if(Actor.isValid(guidedMissileUtils.getMissileTarget()))
-            thePk = guidedMissileUtils.Pk(((Interpolate) (super.FM)).actor, guidedMissileUtils.getMissileTarget());
-        return thePk;
-    }
-
     public void onAircraftLoaded()
     {
         super.onAircraftLoaded();
