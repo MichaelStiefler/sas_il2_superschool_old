@@ -912,7 +912,7 @@ public class Gear {
 		// target velocity m/s on catapult end (for empty loadout and fuel)
 		float vTarget = FM.Vmin * 0.7F + FM.VminFLAPS * 0.3F;
 		if (bIsTypeSupersonic || bIsTypeFastJet || bIsJets) {
-            // When Vmin < 201km/h, vTarget = 240km/h static for all Jets
+			// When Vmin < 201km/h, vTarget = 240km/h static for all Jets
 			if (vTarget < 56F) vTarget = 66.7F;
 			// with heavy loadout, the aircraft needs higher take-off speed
 			vTarget += (FM.M.getFullMass() - FM.M.massEmpty) * 0.0020F;
@@ -1869,7 +1869,8 @@ public class Gear {
 				}
 
 				catapultPower = theSectFile.get(strSection, "catapultPower", 0.0F);
-				catapultPowerJets = theSectFile.get(strSection, "catapultPowerJets", 0.0F);
+				catapultPowerJets = theSectFile.get(strSection, "catapultPowerJets", -1.0F);
+				if (catapultPowerJets == -1.0F) catapultPowerJets = catapultPower;
 				if (theSectFile.get(strSection, "bSteamCatapult", 0) == 1) bSteamCatapult = true;
 				if (iCatapults > 0) {
 					flag2 = true;

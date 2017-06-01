@@ -2272,7 +2272,9 @@ public class Gear
                 }
 
                 catapultPower = theSectFile.get(strSection, "catapultPower", 0.0F);
-                catapultPowerJets = theSectFile.get(strSection, "catapultPowerJets", 0.0F);
+                catapultPowerJets = theSectFile.get(strSection, "catapultPowerJets", -1.0F);
+                if(catapultPowerJets == -1.0F)
+                    catapultPowerJets = catapultPower;
                 if(theSectFile.get(strSection, "bSteamCatapult", 0) == 1)
                       bSteamCatapult = true;
                 if(iCatapults > 0)
