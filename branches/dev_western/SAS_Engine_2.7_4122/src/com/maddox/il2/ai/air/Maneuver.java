@@ -577,7 +577,8 @@ public class Maneuver extends AIFlightModel {
             resetControls();
         setCheckGround(maneuver != 20 && maneuver != 25 && maneuver != 102 && maneuver != 1 && maneuver != 26 && maneuver != 69 && maneuver != 44 && maneuver != 49 && maneuver != 43 && maneuver != 50 && maneuver != 51 && maneuver != 73 && maneuver != 46 && maneuver != 84 && maneuver != 64 && maneuver != 95 && maneuver != 100);
         frequentControl = maneuver == 24 || maneuver == 53 || maneuver == 68 || (maneuver == 59) | (maneuver == 82) || (maneuver == 8 || maneuver == 55 || maneuver == 27 || maneuver == 62 || maneuver == 63 || maneuver == 25 || maneuver == 102 || maneuver == 43 || maneuver == 50 || maneuver == 65 || maneuver == 44 || maneuver == 21 || maneuver == 64 || maneuver == 69 || maneuver == 76 || maneuver == 74 || maneuver == 75 || maneuver == 80 || maneuver == 87 || maneuver == 77 || maneuver == 99 || maneuver == 83 || maneuver == 100 || maneuver == 101 || maneuver == 98);
-        turnOnChristmasTree(maneuver == 25 || maneuver == 26 || maneuver == 69 || maneuver == 70);
+        turnOnChristmasTree(maneuver == 25 || maneuver == 26 || maneuver == 69 || maneuver == 70
+                        || (maneuver == 21 && AP.way.isLanding() && (super.actor instanceof TypeFastJet)));
         turnOnCloudShine(maneuver == 25);
         checkStrike = maneuver != 60 && maneuver != 61 && maneuver != 102 && maneuver != 1 && maneuver != 24 && maneuver != 26 && maneuver != 69 && maneuver != 64 && maneuver != 44;
         stallable = maneuver != 44 && maneuver != 1 && maneuver != 48 && maneuver != 0 && maneuver != 26 && maneuver != 69 && maneuver != 64 && maneuver != 43 && maneuver != 50 && maneuver != 51 && maneuver != 52 && maneuver != 47 && maneuver != 71 && maneuver != 72 && maneuver != 102;
@@ -900,7 +901,6 @@ public class Maneuver extends AIFlightModel {
                     Group.delAircraft((Aircraft) actor);
                 if ((actor instanceof TypeGlider) || (actor instanceof TypeSeaPlane))
                     break;
-                World.cur();
                 if (actor != World.getPlayerAircraft())
                     if (Airport.distToNearestAirport(Loc) > 900D)
                         ((Aircraft) actor).postEndAction(60D, actor, 3, null);
@@ -2325,9 +2325,7 @@ public class Maneuver extends AIFlightModel {
             if (isTick(256, 0) && !actor.isTaskComplete() && (AP.way.isLast() && AP.getWayPointDistance() < 1500F || AP.way.isLanding()))
                 World.onTaskComplete(actor);
             if (((Aircraft) actor).aircIndex() == 0 && !isReadyToReturn()) {
-                World.cur();
                 if (World.getPlayerAircraft() != null) {
-                    World.cur();
                     if (((Aircraft) actor).getRegiment() == World.getPlayerAircraft().getRegiment()) {
                         float f20 = 1E+012F;
                         if(AP.way.curr().Action == 3)
@@ -3449,9 +3447,9 @@ public class Maneuver extends AIFlightModel {
                     AP.setWayPoint(true);
                     doDumpBombsPassively();
                     submaneuver = 0;
-                    if ((super.actor instanceof TypeFastJet) && !CT.bHasFlapsControlSwitch && CT.nFlapStages > 0){
-                        if(CT.FlapStageMax > 0F && CT.FlapStage != null) CT.FlapsControl = CT.FlapStage[CT.nFlapStages - 1];
-                        else CT.FlapsControl = 0.33F;
+                    if ((super.actor instanceof TypeFastJet) && !CT.bHasFlapsControlSwitch){
+                        CT.FlapsControl = 1.0F;
+                        if (CT.bHasBlownFlaps) CT.BlownFlapsControl = 1.0F;
                     }
                 }
                 if ((actor instanceof HE_LERCHE3) && Alt < 50F)
@@ -3603,9 +3601,7 @@ public class Maneuver extends AIFlightModel {
                         if(CT.nFlapStages == 0) CT.FlapsControl = 1.0F;
                         else CT.FlapsControl = 0.33F;
                     }
-                    if ((super.actor instanceof TypeFastJet) && !CT.bHasFlapsControlSwitch)
-                        CT.FlapsControl = 1.0F;
-                     //TODO: Blown Flaps
+                    //TODO: Blown Flaps
                     if(CT.bHasBlownFlaps)
                     	CT.BlownFlapsControl = 1.0F;
                     	}
@@ -3644,7 +3640,7 @@ public class Maneuver extends AIFlightModel {
                         if (AP.way.isLandingOnShip()) {
                             if (CT.getFlap() < 0.001F)
                                 AS.setWingFold(actor, 1);
-                            if (CT.bHasCockpitDoorControl && CT.bNoCarrierCanopyOpen)
+                            if (CT.bHasCockpitDoorControl)
                                 AS.setCockpitDoor(actor, 1);
                             CT.BrakeControl = 1.0F;
                             if (CT.arrestorControl == 1.0F && Gears.onGround())
@@ -3653,7 +3649,6 @@ public class Maneuver extends AIFlightModel {
                         } else {
                             EI.setEngineStops();
                             if (EI.engines[0].getPropw() < 1.0F) {
-                                World.cur();
                                 if (actor != World.getPlayerAircraft())
                                     MsgDestroy.Post(Time.current() + 12000L, actor);
                             }
@@ -4188,7 +4183,12 @@ public class Maneuver extends AIFlightModel {
                 setSpeedMode(11);
             }
             if (CT.FlapsControl == 0.0F && CT.getWing() < 0.001F && !CT.bHasFlapsControlSwitch && CT.nFlapStages > 0){
-                if(CT.FlapStageMax > 0F && CT.FlapStage != null) CT.FlapsControl = CT.FlapStage[CT.nFlapStages -1];
+                if (Actor.isAlive(AP.way.takeoffAirport) && (AP.way.takeoffAirport instanceof AirportCarrier) && CT.FlapTakeoffCarrier > 0F)
+                    CT.FlapsControl = CT.FlapTakeoffCarrier;
+                else if(CT.FlapTakeoffGround > 0F)
+                    CT.FlapsControl = CT.FlapTakeoffGround;
+                else if(CT.FlapStageMax > 0F && CT.FlapStage != null)
+                    CT.FlapsControl = CT.FlapStage[CT.nFlapStages -1];
                 else CT.FlapsControl = 0.33F;
             }
             if (EI.engines[0].getStage() == 6 && CT.getPower() > f39) {
@@ -8851,7 +8851,6 @@ public class Maneuver extends AIFlightModel {
             CT.BrakeControl = 0.2F;
             if (Vwld.length() < 0.30000001192092896D && World.Rnd().nextInt(0, 99) < 4) {
                 setStationedOnGround(true);
-                World.cur();
                 if (actor != World.getPlayerAircraft()) {
                     push(44);
                     safe_pop();
@@ -8867,7 +8866,6 @@ public class Maneuver extends AIFlightModel {
                     Group.delAircraft((Aircraft) actor);
                 if ((actor instanceof TypeGlider) || (actor instanceof TypeSeaPlane))
                     return;
-                World.cur();
                 if (actor != World.getPlayerAircraft())
                     if (Airport.distToNearestAirport(Loc) > 900D)
                         ((Aircraft) actor).postEndAction(60D, actor, 4, null);
@@ -8990,7 +8988,6 @@ public class Maneuver extends AIFlightModel {
         if (World.wind().noWind) return;
 
         double d = Ve.length();
-        World.cur();
         World.wind().getVectorAI(actor.pos.getAbsPoint(), windV);
         windV.scale(-1D);
         Ve.normalize();
