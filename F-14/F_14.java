@@ -26,7 +26,7 @@ import java.util.*;
 
 
 public class F_14 extends Scheme2
-    implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeBomber, TypeStormovikArmored, TypeAcePlane, TypeLaserDesignator, TypeRadar, TypeSemiRadar, TypeGroundRadar, TypeFuelDump
+    implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeBomber, TypeStormovikArmored, TypeAcePlane, TypeLaserDesignator, TypeRadar, TypeFuelDump
 {
 
     public float getDragForce(float f, float f1, float f2, float f3)
@@ -1230,15 +1230,15 @@ public class F_14 extends Scheme2
             k14Mode = 0;
         if(k14Mode == 0)
         {
-            if(((Interpolate) (FM)).actor == World.getPlayerAircraft())
+            if(FM.actor == World.getPlayerAircraft())
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Bomb");
         } else
         if(k14Mode == 1)
         {
-            if(((Interpolate) (FM)).actor == World.getPlayerAircraft())
+            if(FM.actor == World.getPlayerAircraft())
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Gunnery");
         } else
-        if(k14Mode == 2 && ((Interpolate) (FM)).actor == World.getPlayerAircraft())
+        if(k14Mode == 2 && FM.actor == World.getPlayerAircraft())
             HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Navigation");
         return true;
     }
@@ -2065,11 +2065,11 @@ public class F_14 extends Scheme2
         if(hunted == null)
         {
             k14Distance = 500F;
-            hunted = War.GetNearestEnemyAircraft(((Interpolate) (FM)).actor, 2700F, 9);
+            hunted = War.GetNearestEnemyAircraft(FM.actor, 2700F, 9);
         }
         if(hunted != null)
         {
-            k14Distance = (float)((Interpolate) (FM)).actor.pos.getAbsPoint().distance(hunted.pos.getAbsPoint());
+            k14Distance = (float)FM.actor.pos.getAbsPoint().distance(hunted.pos.getAbsPoint());
             if(k14Distance > 1500F)
                 k14Distance = 1500F;
             else
@@ -2149,7 +2149,7 @@ public class F_14 extends Scheme2
         {
             super.playSound("aircraft.SonicBoom", true);
             super.playSound("aircraft.SonicBoomInternal", true);
-            if(((Interpolate) (FM)).actor == World.getPlayerAircraft())
+            if(FM.actor == World.getPlayerAircraft())
                 HUD.log(AircraftHotKeys.hudLogPowerId, "Mach 1 Exceeded!");
             if(Config.isUSE_RENDER() && World.Rnd().nextFloat() < getAirDensityFactor(FM.getAltitude()))
                 shockwave = Eff3DActor.New(this, findHook("_Shockwave"), null, 1.0F, "3DO/Effects/Aircraft/Condensation.eff", -1F);
@@ -2175,7 +2175,7 @@ public class F_14 extends Scheme2
                 {
                     if((curthrl - oldthrl) / f > 35F && FM.EI.engines[i].getRPM() < 3200F && FM.EI.engines[i].getStage() == 6 && World.Rnd().nextFloat() < 0.4F)
                     {
-                        if(((Interpolate) (FM)).actor == World.getPlayerAircraft())
+                        if(FM.actor == World.getPlayerAircraft())
                             HUD.log(AircraftHotKeys.hudLogWeaponId, "Fans Surge!!!");
                         super.playSound("weapon.MGunMk108s", true);
                         engineSurgeDamage += 0.01D * (double)(FM.EI.engines[i].getRPM() / 1000F);
@@ -2192,11 +2192,11 @@ public class F_14 extends Scheme2
                         FM.EI.engines[i].doSetReadyness(FM.EI.engines[i].getReadyness() - engineSurgeDamage);
                         if(World.Rnd().nextFloat() < 0.4F && (FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode())
                         {
-                            if(((Interpolate) (FM)).actor == World.getPlayerAircraft())
+                            if(FM.actor == World.getPlayerAircraft())
                                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Engine Flameout!");
                             FM.EI.engines[i].setEngineStops(this);
                         } else
-                        if(((Interpolate) (FM)).actor == World.getPlayerAircraft())
+                        if(FM.actor == World.getPlayerAircraft())
                             HUD.log(AircraftHotKeys.hudLogWeaponId, "Fans Surge!!!");
                     }
                 }
@@ -2721,10 +2721,12 @@ public class F_14 extends Scheme2
         // when flap position is above 10 degrees, force 10 degrees Combat mode automatically.
         if(FM.CT.FlapsControl > 0.30F && FM.getSpeedKMH() > 550F)
         {
-            Main3D.cur3D().aircraftHotKeys.setFlapIndex(1);
-            FM.CT.FlapsControl = 0.2857F;
             if((FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() && (FM instanceof Pilot))
+            {
+                Main3D.cur3D().aircraftHotKeys.setFlapIndex(1);
                 HUD.log("FlapsDegree", new Object[] { new Float(((float)Math.floor((double)FM.CT.FlapsControl * FM.CT.FlapStageMax * 100D + 0.06D) / 100F)) });
+            }
+            FM.CT.FlapsControl = 0.2857F;
         }
 
     // Only Leading Edge Slats working in any speed and any VG-wing degree
