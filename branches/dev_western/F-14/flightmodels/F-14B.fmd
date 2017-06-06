@@ -22,10 +22,11 @@
   CRudderTrim 1
   CLimitRatioElevatorMinusALWAYS 0.60
   CFlap 1
-  CFlapPos 3
+  CFlapPos 2
   CFlapStage0 10
-  CFlapStage1 25
   CFlapStageMax 35
+  CFlapTakeoffGroundRatio 1.0
+  CFlapTakeoffCarrierRatio 1.0
   CVarwing 5
   CVarwingPos 5
   CVarwingStage0 15
@@ -162,7 +163,7 @@
   SpinTailAlpha 17.00
   SpinCxLoss 0.10
   SpinCyLoss 0.05
-  Vmin 250
+  Vmin 280
   Vmax 1400.0
   VmaxAllowed 2700.0
   VmaxH 2500.0

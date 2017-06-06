@@ -875,7 +875,13 @@ public class F_14D extends F_14
         "Mig_15" , "Mig_17",  "Mig_19",  "MIG_21", "MIG_23" ,  "MIG_29", "MIRAGE", "Mi24" , "MI8MT" , "P_80" ,
         "Skyhawk", "Su_7" ,   "Su_9" ,   "Su_11" , "Su_25" ,   "Su_27" , "Tucano", "TU_95", "Yak_36", "Vampire" ,
         "F_80" ,   "T_33" ,   "A1H" ,    "A1J" ,  "CAC_Sabre", "FJ_3M" , "P2V" ,   "OV_" ,  "TU_4" ,  "SM_12" ,
-        "MIG21" ,  "L_159" ,  "SeaHawk", "Canberra"
+        "MIG21" ,  "L_159" ,  "SeaHawk", "Canberra", "F_102",  "F_106",  "Tu_22",  "Tu_26", "T_37",   "A_3",
+        "A_5",     "B_1",     "B_52",    "B_36",   "B_45",     "B_47",   "B_58",   "C_119", "EE_Lightning", "Tornado",
+        "C_121",   "C_130",   "C_141",   "C_17",   "C_5",      "F2H",    "F3H",    "F4D",   "F3D",    "F11F",
+        "F_22",    "F_35",    "Su_50",   "F_89",   "F_101",    "F_93",   "F_111",  "P_3",   "S_3",    "E_2",
+        "IL_76",   "An_12",   "An_22",   "An_124", "An_225",   "747",    "707",    "G_222", "G_91",   "MB_326",
+        "Yak_28",  "Tu_160",  "Su_24",   "M_4",    "Typhoon",  "Rafale", "Gripen", "MIRAGE_F1", "MIRAGE_2000", "Jaguar"
+         
     };
     private static String irstPlaneDisplay[] =
     {
@@ -885,7 +891,12 @@ public class F_14D extends F_14
         "MiG-15",    "MiG-17",  "MiG-19",    "MiG-21",    "MiG-23", "MiG-29", "Mirage",  "Mi-24",        "Mi-8",   "F-80",
         "Skyhawk",   "Fitter",  "Fishpot",   "Fishpot",   "Su-25",  "Su-27",  "Tucano",  "Tupolev Bear", "Yak-36", "Vampire" ,
         "F-80" ,     "T-33" ,   "Skyraider", "Skyraider", "F-86" ,  "F-86" ,  "Neptune", "OV-1/10",      "Tu-4" ,  "MiG-19" ,
-        "MiG-21" ,   "L-39" ,   "SeaHawk" ,  "Canberra"
+        "MiG-21" ,   "L-39" ,   "SeaHawk" ,  "Canberra",  "F-102",  "F-106",  "Tu-22",   "Tu-26",        "T-37",   "A-3",
+        "A-5",       "B-1",     "B-52",      "B-36",      "B-45",   "B-47",   "B-58",    "C-119",    "EE-Lightning", "Tornado",
+        "C-121",     "C-130",   "C-141",     "C-17",      "C-5",    "F2H",    "F3H",     "F4D",          "F3D",    "F11F",
+        "F-22",      "F-35",    "Su-50",     "F-89",      "F-101",  "F-93",   "F-111",   "P-3",          "S-3",    "E-2",
+        "IL-76",     "An-12",   "An-22",     "An-124",    "An-225", "747",    "707",     "G-222",        "G-91",   "MB-326",
+        "Yak-28",    "Tu-160",  "Su-24",     "Bison",     "Typhoon","Gripen", "MIRAGE-F1", "Jaguar"
     };
     private static double irstMaxDistance[] =
     {
@@ -895,7 +906,12 @@ public class F_14D extends F_14
         50000D , 50000D , 55000D , 55000D , 65000D , 70000D , 60000D , 65000D , 65000D , 50000D ,
         50000D , 75000D , 75000D , 75000D , 70000D , 75000D , 40000D ,110000D , 50000D , 50000D ,
         50000D , 50000D , 60000D , 60000D , 50000D , 50000D ,100000D , 60000D ,100000D , 55000D ,
-        55000D , 50000D , 50000D , 60000D
+        55000D , 50000D , 50000D , 60000D , 70000D , 70000D , 90000D , 90000D , 40000D , 80000D ,
+        75000D , 90000D, 120000D, 130000D, 100000D, 100000D, 100000D , 100000D, 60000D , 65000D ,
+        110000D, 100000D, 130000D, 130000D, 150000D, 60000D , 60000D , 60000D , 60000D , 60000D ,
+        50000D , 50000D , 55000D , 70000D , 70000D , 60000D , 85000D , 90000D , 60000D , 90000D ,
+        100000D, 85000D, 130000D, 150000D, 150000D, 150000D, 105000D , 90000D , 55000D , 50000D ,
+        80000D, 110000D , 85000D, 110000D , 55000D , 55000D , 55000D , 60000D , 60000D , 60000D
     };
 
     static

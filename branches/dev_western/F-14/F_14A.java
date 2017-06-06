@@ -691,7 +691,7 @@ public class F_14A extends F_14
         Property.set(class1, "yearExpired", 1990F);
         Property.set(class1, "FlightModel", "FlightModels/F-14A.fmd:F14_FM");
         Property.set(class1, "cockpitClass", new Class[] {
-            com.maddox.il2.objects.air.CockpitF_14.class, com.maddox.il2.objects.air.CockpitF_14FLIR.class, com.maddox.il2.objects.air.CockpitF_14Bombsight.class
+            com.maddox.il2.objects.air.CockpitF_14.class, com.maddox.il2.objects.air.CockpitF_14FLIR.class
         });
         Property.set(class1, "LOSElevation", 0.965F);
         Aircraft.weaponTriggersRegister(class1, new int[] {
