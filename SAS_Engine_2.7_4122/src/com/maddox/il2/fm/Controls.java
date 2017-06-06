@@ -171,6 +171,8 @@ public class Controls
     public int                  nFlapStages;
     public float                FlapStageMax;
     public float[]              FlapStage           = null;
+    public float                FlapTakeoffGround;
+    public float                FlapTakeoffCarrier;
     public int                  FlapsControlSwitch;
     public boolean              bHasFlapsControlSwitch;
     public String[]             FlapStageText       = null;
@@ -335,6 +337,8 @@ public class Controls
         nFlapStages = -1;
         FlapStageMax = -1.0F;
         FlapStage = null;
+        FlapTakeoffGround = -1.0F;
+        FlapTakeoffCarrier = -1.0F;
         FlapsControlSwitch = 0;
         bHasFlapsControlSwitch = false;
         FlapStageText = null;

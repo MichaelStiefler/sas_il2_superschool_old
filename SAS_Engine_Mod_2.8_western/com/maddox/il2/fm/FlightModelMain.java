@@ -402,6 +402,16 @@ public class FlightModelMain extends FMMath {
 					}
 				}
 		}
+		f = sectfile.get(s2, "CFlapTakeoffGroundRatio", -1F);
+		if (f > 0F) {
+			if (f > 1.0F) f = 1.0F;
+			CT.FlapTakeoffGround = f;
+		}
+		f = sectfile.get(s2, "CFlapTakeoffCarrierRatio", -1F);
+		if (f > 0F) {
+			if (f > 1.0F) f = 1.0F;
+			CT.FlapTakeoffCarrier = f;
+		}
 		// By western, Flaps Control switch's real implement is done in each aircraft classes like F_18.class or AV_8.class
 		// Those functions or meanings are completely different in each aircrafts and no common behaviors.
 		if (CT.bHasFlapsControlSwitch && CT.FlapStageText == null && CT.nFlapStages != -1)

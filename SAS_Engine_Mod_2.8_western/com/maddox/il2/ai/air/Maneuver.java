@@ -570,7 +570,8 @@ public class Maneuver extends AIFlightModel {
 				| (maneuver == 82)
 				|| (maneuver == 8 || maneuver == 55 || maneuver == 27 || maneuver == 62 || maneuver == 63 || maneuver == 25 || maneuver == 102 || maneuver == 43 || maneuver == 50 || maneuver == 65 || maneuver == 44 || maneuver == 21 || maneuver == 64
 						|| maneuver == 69 || maneuver == 76 || maneuver == 74 || maneuver == 75 || maneuver == 80 || maneuver == 87 || maneuver == 77 || maneuver == 99 || maneuver == 83 || maneuver == 100 || maneuver == 101 || maneuver == 98);
-		turnOnChristmasTree(maneuver == 25 || maneuver == 26 || maneuver == 69 || maneuver == 70);
+		turnOnChristmasTree(maneuver == 25 || maneuver == 26 || maneuver == 69 || maneuver == 70
+						|| (maneuver == 21 && AP.way.isLanding() && (super.actor instanceof TypeFastJet)));
 		turnOnCloudShine(maneuver == 25);
 		checkStrike = maneuver != 60 && maneuver != 61 && maneuver != 102 && maneuver != 1 && maneuver != 24 && maneuver != 26 && maneuver != 69 && maneuver != 64 && maneuver != 44;
 		stallable = maneuver != 44 && maneuver != 1 && maneuver != 48 && maneuver != 0 && maneuver != 26 && maneuver != 69 && maneuver != 64 && maneuver != 43 && maneuver != 50 && maneuver != 51 && maneuver != 52 && maneuver != 47 && maneuver != 71
@@ -845,26 +846,25 @@ public class Maneuver extends AIFlightModel {
 		default:
 			break;
 
-		case 0: // '\0'
+		case 0: // '\0'  // NONE
 			target_ground = null;
 			if (mn_time > 2.0F) set_maneuver(21);
 			break;
 
-		case 1: // '\001'
+		case 1: // '\001'  // HOLD
 			dryFriction = 8F;
 			if(!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
 			CT.BrakeControl = 1.0F;
 			break;
 
-		case 48: // '0'
+		case 48: // '0'  // DELAY
 			if (mn_time >= World.Rnd().nextFloat(1.0F, 1.0F + 2.0F / (float) (1 + subSkill))) pop();
 			break;
 
-		case 44: // ','
+		case 44: // ','  // PILOT_DEAD
 			if (Gears.onGround() && Vwld.length() < 0.30000001192092896D && World.Rnd().nextInt(0, 99) < 4) {
 				if (Group != null) Group.delAircraft((Aircraft) actor);
 				if ((actor instanceof TypeGlider) || (actor instanceof TypeSeaPlane)) break;
-				World.cur();
 				if (actor != World.getPlayerAircraft()) if (Airport.distToNearestAirport(Loc) > 900D) ((Aircraft) actor).postEndAction(60D, actor, 3, null);
 				else MsgDestroy.Post(Time.current() + 30000L, actor);
 			}
@@ -875,7 +875,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 7: // '\007'
+		case 7: // '\007'  // SPIRAL_BRAKE
 			wingman(false);
 			setSpeedMode(9);
 			if (getW().x <= 0.0D) {
@@ -898,7 +898,7 @@ public class Maneuver extends AIFlightModel {
 			if ((danger instanceof Pilot) && ((Maneuver) danger).target == this && Loc.distance(danger.Loc) > (double) (400F + World.Rnd().nextFloat(0.0F, 250F))) pop();
 			break;
 
-		case 8: // '\b'
+		case 8: // '\b'  // SPIRAL_UP
 			if (first && !isCapableOfACM()) {
 				if (Skill > 0) pop();
 				if (Skill > 1) setReadyToReturn(true);
@@ -914,7 +914,7 @@ public class Maneuver extends AIFlightModel {
 			if (Alt > 250F && mn_time > 8F || mn_time > 120F) pop();
 			break;
 
-		case 55: // '7'
+		case 55: // '7' // FOLLOW_SPIRAL_UP
 			if (first && !isCapableOfACM()) {
 				if (Skill > 0) pop();
 				if (Skill > 1) setReadyToReturn(true);
@@ -941,7 +941,7 @@ public class Maneuver extends AIFlightModel {
 			if (Alt > 250F && mn_time > 8F || mn_time > 120F) pop();
 			break;
 
-		case 45: // '-'
+		case 45: // '-'  // HANG_ON
 			setSpeedMode(7);
 			smConstPower = 0.8F;
 			dA = Or.getKren();
@@ -957,7 +957,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 106: // 'j'
+		case 106: // 'j'  // ART_SPOT
 			setSpeedMode(7);
 			smConstPower = 0.8F;
 			switch (submaneuver) {
@@ -1014,11 +1014,11 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 54: // '6'
+		case 54: // '6'  // SPIRAL_DOWN_SLOW
 			if (Vwld.length() > (double) (VminFLAPS * 2.0F)) Vwld.scale(0.99500000476837158D);
 			// fall through
 
-		case 9: // '\t'
+		case 9: // '\t'  // SPIRAL_DOWN
 			if (first && !isCapableOfACM()) {
 				if (Skill > 0) pop();
 				if (Skill > 1) setReadyToReturn(true);
@@ -1042,7 +1042,7 @@ public class Maneuver extends AIFlightModel {
 			if (mn_time > 5F) pop();
 			break;
 
-		case 14: // '\016'
+		case 14: // '\016'  // TURN
 			setSpeedMode(6);
 			if (first) AP.setStabAltitude(true);
 			dA = Or.getKren();
@@ -1056,7 +1056,7 @@ public class Maneuver extends AIFlightModel {
 			if (mn_time > 5F) pop();
 			break;
 
-		case 77: // 'M'
+		case 77: // 'M'  // TURN_HARD
 			minElevCoeff = 20F;
 			if (first) AP.setStabAltitude(true);
 			dA = Or.getKren();
@@ -1125,7 +1125,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 101: // 'e'
+		case 101: // 'e'  // ATTACK_HARD
 			minElevCoeff = 20F;
 			if (target != null) {
 				Ve.sub(target.Loc, Loc);
@@ -1173,7 +1173,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 87: // 'W'
+		case 87: // 'W'  // IVAN
 			minElevCoeff = 20F;
 			switch (submaneuver) {
 			case 0: // '\0'
@@ -1231,7 +1231,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 58: // ':'
+		case 58: // ':'  // SEPARATE
 			setSpeedMode(11);
 			CT.setPowerControl(1.1F);
 			if (first) {
@@ -1265,7 +1265,7 @@ public class Maneuver extends AIFlightModel {
 			if (mn_time > 20F) pop();
 			break;
 
-		case 4: // '\004'
+		case 4: // '\004'  // ROLL
 			CT.AileronControl = getW().x <= 0.0D ? -1F : 1.0F;
 			CT.ElevatorControl = 0.1F * (float) Math.cos(DEG2RAD(Or.getKren()));
 			CT.RudderControl = 0.0F;
@@ -1276,7 +1276,7 @@ public class Maneuver extends AIFlightModel {
 			if (mn_time > 7F) pop();
 			break;
 
-		case 2: // '\002'
+		case 2: // '\002'  // PULL_UP
 			minElevCoeff = 20F;
 			if (first) {
 				wingman(false);
@@ -1306,7 +1306,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 84: // 'T'
+		case 84: // 'T'  // PULL_UP_EMERGENCY
 			if (sub_Man_Count == 0) {
 				tmpi = World.Rnd().nextBoolean() ? -1 : 1;
 				koeff = M.getFullMass() / (Sq.squareWing * Wing.CyCritH_0);
@@ -1410,20 +1410,20 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 60: // '<'
+		case 60: // '<'  // EVADE_UP
 			setSpeedMode(11);
 			CT.RudderControl = 0.0F;
 			CT.ElevatorControl = 1.0F;
 			if (mn_time > 0.15F) pop();
 			break;
 
-		case 61: // '='
+		case 61: // '='  // EVADE_DN
 			CT.RudderControl = 0.0F;
 			CT.ElevatorControl = -0.4F;
 			if (mn_time > 0.2F) pop();
 			break;
 
-		case 3: // '\003'
+		case 3: // '\003'  // LEVEL_PLANE
 			if (first && program[0] == 49) pop();
 			setSpeedMode(6);
 			CT.AileronControl = -0.04F * Or.getKren();
@@ -1436,7 +1436,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 86: // 'V'
+		case 86: // 'V'  // SMOOTH_LEVEL
 			setSpeedMode(8);
 			CT.AileronControl = -0.04F * Or.getKren();
 			dA = -((float) Vwld.z / (Math.abs(getSpeed()) + 1.0F) + 0.07F);
@@ -1449,7 +1449,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 10: // '\n'
+		case 10: // '\n'  // CLIMB
 			AP.setStabAll(false);
 			setSpeedMode(6);
 			CT.AileronControl = -0.04F * Or.getKren();
@@ -1466,7 +1466,7 @@ public class Maneuver extends AIFlightModel {
 			if (Alt > 250F && mn_time > 6F || mn_time > 20F) pop();
 			break;
 
-		case 97: // 'a'
+		case 97: // 'a'  // COMBAT_CLIMB
 			AP.setStabAll(false);
 			setSpeedMode(11);
 			CT.AileronControl = -0.04F * Or.getKren();
@@ -1478,7 +1478,7 @@ public class Maneuver extends AIFlightModel {
 			if (mn_time > 20F || dangerAggressiveness > 0.65F) pop();
 			break;
 
-		case 96: // '`'
+		case 96: // '`'  // PANIC_FREEZE
 			CT.AileronControl = -0.04F * Or.getKren();
 			CT.ElevatorControl = -0.04F * Or.getTangage();
 			CT.RudderControl = 0.0F;
@@ -1492,7 +1492,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 95: // '_'
+		case 95: // '_'  // PANIC_MANIC
 			setSpeedMode(7);
 			smConstPower = 0.98F;
 			dA = Or.getKren();
@@ -1517,7 +1517,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 57: // '9'
+		case 57: // '9'  // GAIN
 			AP.setStabAll(false);
 			minElevCoeff = 20F;
 			setSpeedMode(9);
@@ -1531,7 +1531,7 @@ public class Maneuver extends AIFlightModel {
 			if (Alt > 150F || Alt > 100F && mn_time > 2.0F || mn_time > 3F) pop();
 			break;
 
-		case 78: // 'N'
+		case 78: // 'N'  // CLOUDS
 			switch (submaneuver) {
 			case 0: // '\0'
 				cloudHeight = Mission.curCloudsHeight();
@@ -1588,7 +1588,7 @@ public class Maneuver extends AIFlightModel {
 			if (Alt < 120F || mn_time > 50F) pop();
 			break;
 
-		case 11: // '\013'
+		case 11: // '\013'  // DIVING_0_RPM
 			setSpeedMode(8);
 			if (Math.abs(Or.getKren()) < 90F) {
 				CT.AileronControl = -0.04F * Or.getKren();
@@ -1605,7 +1605,7 @@ public class Maneuver extends AIFlightModel {
 			if (Alt < 120F || mn_time > 4F) pop();
 			break;
 
-		case 12: // '\f'
+		case 12: // '\f'  // DIVING_30_DEG
 			setSpeedMode(4);
 			smConstSpeed = 80F;
 			CT.AileronControl = -0.04F * Or.getKren();
@@ -1616,7 +1616,7 @@ public class Maneuver extends AIFlightModel {
 			if (mn_time > 5F || Alt < 200F) pop();
 			break;
 
-		case 13: // '\r'
+		case 13: // '\r'  // DIVING_45_DEG
 			if (first) {
 				AP.setStabAll(false);
 				submaneuver = (actor instanceof TypeFighter) ? 0 : 2;
@@ -1655,7 +1655,7 @@ public class Maneuver extends AIFlightModel {
 			if (Alt < 200F) pop();
 			break;
 
-		case 85: // 'U'
+		case 85: // 'U'  // DIVING_90_DEG
 			if (first) {
 				AP.setStabAll(false);
 				submaneuver = (actor instanceof TypeFighter) ? 0 : 2;
@@ -1694,7 +1694,7 @@ public class Maneuver extends AIFlightModel {
 			if (Alt < 200F) pop();
 			break;
 
-		case 5: // '\005'
+		case 5: // '\005'  // ROLL_90
 			dA = Or.getKren();
 			if (dA < 0.0F) dA -= 270F;
 			else dA -= 90F;
@@ -1704,7 +1704,7 @@ public class Maneuver extends AIFlightModel {
 			if (mn_time > 5F || Math.abs(Math.abs(Or.getKren()) - 90F) < 1.0F) pop();
 			break;
 
-		case 6: // '\006'
+		case 6: // '\006'  // ROLL_180
 			dA = Or.getKren() - 180F;
 			if (dA < -180F) dA += 360F;
 			CT.AileronControl = (float) ((double) (-0.04F * dA) - 0.5D * getW().x);
@@ -1714,7 +1714,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 35: // '#'
+		case 35: // '#'  // ROLL_360
 			if (first) {
 				AP.setStabAll(false);
 				direction = Or.getKren();
@@ -1736,7 +1736,7 @@ public class Maneuver extends AIFlightModel {
 			if (tmpi == 1 && (submaneuver > 0 ? Or.getKren() > direction : Or.getKren() < direction) || mn_time > 17.5F) pop();
 			break;
 
-		case 83: // 'S'
+		case 83: // 'S'  // BARREL_ROLL
 			minElevCoeff = 20F;
 			if (first || sub_Man_Count == 0) {
 				sub_Man_Count++;
@@ -1770,7 +1770,7 @@ public class Maneuver extends AIFlightModel {
 			if (mn_time > direction || Alt < 100F) pop();
 			break;
 
-		case 22: // '\026'
+		case 22: // '\026'  // SPEEDUP
 			setSpeedMode(11);
 			CT.AileronControl = -0.04F * Or.getKren();
 			CT.ElevatorControl = -0.04F * (Or.getTangage() + 5F);
@@ -1778,7 +1778,7 @@ public class Maneuver extends AIFlightModel {
 			if (getSpeed() > Vmax || mn_time > 30F) pop();
 			break;
 
-		case 79: // 'O'
+		case 79: // 'O'  // EVADE_ATTACK
 			setSpeedMode(11);
 			CT.setPowerControl(1.1F);
 			minElevCoeff = 18F;
@@ -1801,7 +1801,7 @@ public class Maneuver extends AIFlightModel {
 			if (danger != null && danger.Loc.distance(Loc) < 850D || mn_time > 50F) pop();
 			break;
 
-		case 67: // 'C'
+		case 67: // 'C'  // RUN_AWAY
 			minElevCoeff = 18F;
 			if (first) {
 				sub_Man_Count = 0;
@@ -1832,7 +1832,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 16: // '\020'
+		case 16: // '\020'  // LOOP
 			if (first) {
 				if (!isCapableOfACM()) pop();
 				AP.setStabAll(false);
@@ -1894,7 +1894,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 17: // '\021'
+		case 17: // '\021'  // LOOP_DOWN
 			if (first) {
 				if (Alt < 1000F) pop();
 				else if (getSpeed() < Vmin * 1.2F) {
@@ -1911,7 +1911,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 19: // '\023'
+		case 19: // '\023'  // HALF_LOOP_DOWN
 			if (first) {
 				if (Alt < 1000F) {
 					pop();
@@ -1955,7 +1955,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 18: // '\022'
+		case 18: // '\022'  // HALF_LOOP_UP
 			if (first) {
 				if (!isCapableOfACM()) pop();
 				if (getSpeed() < Vmax * 0.75F) {
@@ -2007,7 +2007,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 15: // '\017'
+		case 15: // '\017'  // MIL_TURN
 			if (first && getSpeed() < 0.35F * (Vmin + Vmax)) {
 				pop();
 			} else {
@@ -2017,7 +2017,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 103: // 'g'
+		case 103: // 'g'  // MIL_TURN_LEFT
 			setTurn(1000F, 130F, 200F);
 			if (mn_time > 4F || dangerAggressiveness > 0.7F) {
 				mn_time = 0.0F;
@@ -2025,7 +2025,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 104: // 'h'
+		case 104: // 'h'  // MIL_TURN_RIGHT
 			setTurn(1000F, -130F, 200F);
 			if (mn_time > 4F || dangerAggressiveness > 0.7F) {
 				mn_time = 0.0F;
@@ -2033,7 +2033,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 20: // '\024'
+		case 20: // '\024'  // STALL
 			if (first) {
 				wingman(false);
 				setSpeedMode(6);
@@ -2050,16 +2050,14 @@ public class Maneuver extends AIFlightModel {
 			if (mn_time > 14F - (float) Skill * 4F || Alt < 50F) pop();
 			break;
 
-		case 21: // '\025'
+		case 21: // '\025'  // WAYPOINT
 			AP.setWayPoint(true);
 			// TODO: DBW AI Mod Edits
 			if (getAltitude() < super.AP.way.curr().z() - 100F && (super.actor instanceof TypeSupersonic)) super.CT.ElevatorControl += 0.025F;
 			if (mn_time > 300F) pop();
 			if (isTick(256, 0) && !actor.isTaskComplete() && (AP.way.isLast() && AP.getWayPointDistance() < 1500F || AP.way.isLanding())) World.onTaskComplete(actor);
 			if (((Aircraft) actor).aircIndex() == 0 && !isReadyToReturn()) {
-				World.cur();
 				if (World.getPlayerAircraft() != null) {
-					World.cur();
 					if (((Aircraft) actor).getRegiment() == World.getPlayerAircraft().getRegiment()) {
 						float f20 = 1E+012F;
 						if (AP.way.curr().Action == 3) {
@@ -2125,7 +2123,7 @@ public class Maneuver extends AIFlightModel {
 			if (isTick(256, 0)) checkBlindSpots();
 			break;
 
-		case 23: // '\027'
+		case 23: // '\027'  // BELL
 			if (first) {
 				wingman(false);
 				if (getSpeedKMH() < Vmin * 1.25F) {
@@ -2143,7 +2141,7 @@ public class Maneuver extends AIFlightModel {
 			if (Vwld.z < 1.0D) pop();
 			break;
 
-		case 24: // '\030'
+		case 24: // '\030'  // FOLLOW
 			if (Leader == null || !Actor.isAlive(Leader.actor) || !Leader.isOk() || ((Maneuver) Leader).isBusy() && (!(Leader instanceof RealFlightModel) || !((RealFlightModel) Leader).isRealMode())) {
 				if (Group.grTask == 7) {
 					push();
@@ -2243,7 +2241,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 65: // 'A'
+		case 65: // 'A'  // COVER
 			if ((!(this instanceof RealFlightModel) || !((RealFlightModel) this).isRealMode()) && !bKeepOrdnance) {
 				bombsOut = true;
 				CT.dropFuelTanks();
@@ -2278,7 +2276,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 76: // 'L'
+		case 76: // 'L'  // COVER_AGRESSIVE
 			if ((!(this instanceof RealFlightModel) || !((RealFlightModel) this).isRealMode()) && !bKeepOrdnance) {
 				bombsOut = true;
 				CT.dropFuelTanks();
@@ -2314,7 +2312,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 53: // '5'
+		case 53: // '5'  // FAR_FOLLOW
 			if (airClient == null || !Actor.isAlive(airClient.actor) || !isOk()) {
 				airClient = null;
 				set_maneuver(0);
@@ -2348,7 +2346,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 68: // 'D'
+		case 68: // 'D'  // FAR_COVER
 			if (airClient == null || !Actor.isAlive(airClient.actor) || !isOk()) {
 				set_maneuver(0);
 			} else {
@@ -2389,7 +2387,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 74: // 'J'
+		case 74: // 'J'  COVER_DRAG_AND_BAG
 			if (airClient == null || !Actor.isAlive(airClient.actor) || !isOk()) {
 				set_maneuver(0);
 			} else {
@@ -2426,7 +2424,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 75: // 'K'
+		case 75: // 'K'  // ATTACK_FROM_PLAYER
 			if ((!(this instanceof RealFlightModel) || !((RealFlightModel) this).isRealMode()) && !bKeepOrdnance) {
 				bombsOut = true;
 				CT.dropFuelTanks();
@@ -2460,7 +2458,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 82: // 'R'
+		case 82: // 'R'  // BE_NEAR_LOW
 			if (airClient == null || !Actor.isValid(airClient.actor) || !isOk()) {
 				airClient = null;
 				set_maneuver(0);
@@ -2495,7 +2493,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 59: // ';'
+		case 59: // ';'  // BE_NEAR
 			if (airClient == null || !Actor.isValid(airClient.actor) || !isOk()) {
 				airClient = null;
 				set_maneuver(0);
@@ -2530,7 +2528,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 63: // '?'
+		case 63: // '?'  // ATTACK_BOMBER
 			if ((!(this instanceof RealFlightModel) || !((RealFlightModel) this).isRealMode()) && !bKeepOrdnance) {
 				bombsOut = true;
 				CT.dropFuelTanks();
@@ -2563,7 +2561,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 27: // '\033'
+		case 27: // '\033'  // ATTACK
 			if ((!(this instanceof RealFlightModel) || !((RealFlightModel) this).isRealMode()) && !bKeepOrdnance) {
 				bombsOut = true;
 				CT.dropFuelTanks();
@@ -2608,7 +2606,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 62: // '>'
+		case 62: // '>'  // ENERGY_ATTACK
 			if (target == null || !Actor.isValid(target.actor) || target.isTakenMortalDamage() || target.actor.getArmy() == actor.getArmy() || !hasCourseWeaponBullets()) {
 				if (((Aircraft) actor).aircIndex() == 0) Group.chooseTargetGroup();
 				target = null;
@@ -2639,7 +2637,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 80: // 'P'
+		case 80: // 'P'  // BRACKET_ATTACK
 			if ((!(this instanceof RealFlightModel) || !((RealFlightModel) this).isRealMode()) && !bKeepOrdnance) {
 				bombsOut = true;
 				CT.dropFuelTanks();
@@ -2694,7 +2692,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 98: // 'b'
+		case 98: // 'b'  // HIT_AND_RUN
 			if (submaneuver == 1 && (target == null || !Actor.isValid(target.actor) || target.isTakenMortalDamage() || target.actor.getArmy() == actor.getArmy() || !hasCourseWeaponBullets())) {
 				target = null;
 				clear_stack();
@@ -2722,14 +2720,14 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 81: // 'Q'
+		case 81: // 'Q'  // DOUBLE_ATTACK
 			wingman(false);
 			target = Group.setAAttackObject(((Aircraft) actor).aircIndex());
 			clear_stack();
 			set_maneuver(27);
 			break;
 
-		case 92: // '\\'
+		case 92: // '\\'  // LINE_ATTACK
 			if (target == null || !Actor.isValid(target.actor) || target.isTakenMortalDamage() || target.actor.getArmy() == actor.getArmy() || !hasCourseWeaponBullets()) {
 				target = null;
 				clear_stack();
@@ -2759,7 +2757,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			// fall through
 
-		case 93: // ']'
+		case 93: // ']'  // BOX_ATTACK
 			if (maneuver == 93) {
 				if (target == null || !Actor.isValid(target.actor) || target.isTakenMortalDamage() || target.actor.getArmy() == actor.getArmy() || !hasCourseWeaponBullets()) {
 					target = null;
@@ -2799,7 +2797,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			// fall through
 
-		case 94: // '^'
+		case 94: // '^'  // BANG_BANG
 			if ((!(this instanceof RealFlightModel) || !((RealFlightModel) this).isRealMode()) && !bKeepOrdnance) {
 				bombsOut = true;
 				CT.dropFuelTanks();
@@ -2834,13 +2832,13 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 105: // 'i'
+		case 105: // 'i'  // STRAIGHT_AND_LEVEL
 			CT.setPowerControl(1.1F);
 			setTurn(500F, 0.0F, 0.0F);
 			if (mn_time > 715F / Vmax) pop();
 			break;
 
-		case 99: // 'c'
+		case 99: // 'c'  // SEEK_AND_DESTROY
 			if (target == null || !Actor.isValid(target.actor) || target.isTakenMortalDamage() || target.actor.getArmy() == actor.getArmy() || !hasCourseWeaponBullets()) {
 				target = null;
 				clear_stack();
@@ -3018,7 +3016,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 70: // 'F'
+		case 70: // 'F'  // LANDING_VTOL_A
 			checkGround = false;
 			checkStrike = false;
 			frequentControl = true;
@@ -3071,7 +3069,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 25: // '\031'
+		case 25: // '\031'  // LANDING
 			wingman(false);
 			if (AP.way.isLanding()) {
 				if (AP.way.isLandingOnShip()) {
@@ -3082,9 +3080,9 @@ public class Maneuver extends AIFlightModel {
 					AP.setWayPoint(true);
 					doDumpBombsPassively();
 					submaneuver = 0;
-					if ((super.actor instanceof TypeFastJet) && !CT.bHasFlapsControlSwitch && CT.nFlapStages > 0){
-						if(CT.FlapStageMax > 0F && CT.FlapStage != null) CT.FlapsControl = CT.FlapStage[CT.nFlapStages - 1];
-						else CT.FlapsControl = 0.33F;
+					if ((super.actor instanceof TypeFastJet) && !CT.bHasFlapsControlSwitch) {
+						CT.FlapsControl = 1.0F;
+						if (CT.bHasBlownFlaps) CT.BlownFlapsControl = 1.0F;
 					}
 				}
 				if ((actor instanceof HE_LERCHE3) && Alt < 50F) maneuver = 70;
@@ -3209,8 +3207,6 @@ public class Maneuver extends AIFlightModel {
 						if(CT.nFlapStages == 0) CT.FlapsControl = 1.0F;
 						else CT.FlapsControl = 0.33F;
 					}
-					if ((super.actor instanceof TypeFastJet) && !CT.bHasFlapsControlSwitch)
-						CT.FlapsControl = 1.0F;
 					// TODO: Blown Flaps
 					if (CT.bHasBlownFlaps) CT.BlownFlapsControl = 1.0F;
 				} else if (!(super.actor instanceof TypeFastJet) && !CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
@@ -3238,14 +3234,13 @@ public class Maneuver extends AIFlightModel {
 						setSpeedMode(8);
 						if (AP.way.isLandingOnShip()) {
 							if (CT.getFlap() < 0.001F) AS.setWingFold(actor, 1);
-							if (CT.bHasCockpitDoorControl && CT.bNoCarrierCanopyOpen) AS.setCockpitDoor(actor, 1);
+							if (CT.bHasCockpitDoorControl) AS.setCockpitDoor(actor, 1);
 							CT.BrakeControl = 1.0F;
 							if (CT.arrestorControl == 1.0F && Gears.onGround()) AS.setArrestor(actor, 0);
 							MsgDestroy.Post(Time.current() + 25000L, actor);
 						} else {
 							EI.setEngineStops();
 							if (EI.engines[0].getPropw() < 1.0F) {
-								World.cur();
 								if (actor != World.getPlayerAircraft()) MsgDestroy.Post(Time.current() + 12000L, actor);
 							}
 						}
@@ -3317,14 +3312,14 @@ public class Maneuver extends AIFlightModel {
 			AP.way.curr().getP(Po);
 			return;
 
-		case 66: // 'B'
+		case 66: // 'B'  // TAXI
 			return;
 
-		case 49: // '1'
+		case 49: // '1'  // EMERGENCY_LANDING
 			emergencyLanding(f);
 			break;
 
-		case 64: // '@'
+		case 64: // '@'  // PARKED_STARTUP
 			if (actor instanceof TypeGlider) {
 				pop();
 				break;
@@ -3336,7 +3331,11 @@ public class Maneuver extends AIFlightModel {
 			FlightModel flightmodel = Group.airc[0].FM;
 			if ((AP.way.first().waypointType == 4 || AP.way.first().waypointType == 5) && flightmodel.isCapableOfTaxiing() && (flightmodel instanceof RealFlightModel) && ((RealFlightModel) flightmodel).isRealMode() && !bGentsStartYourEngines) break;
 			CT.BrakeControl = 1.0F;
-			CT.ElevatorControl = 0.5F;
+			// TODO: By western, to avoid bouncing 
+			if (Gears.bFrontWheel)
+				CT.ElevatorControl = 0.0F;
+			else
+				CT.ElevatorControl = 0.5F;
 			CT.setPowerControl(0.0F);
 			EI.setCurControlAll(false);
 			setSpeedMode(0);
@@ -3365,7 +3364,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 102: // 'f'
+		case 102: // 'f'  // TAXI_TO_TO
 			if (Group != null && actor != null) {
 				int j1 = 5 + Group.numInGroup((Aircraft) actor) * 8;
 				if (mn_time >= (float) j1) {
@@ -3518,7 +3517,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 26: // '\032'
+		case 26: // '\032'  // TAKEOFF
 			Po.set(Loc);
 			if ((long) AP.way.first().delayTimer * 60000L > Time.current()) return;
 			int l1 = ((Aircraft) actor).aircIndex();
@@ -3690,7 +3689,10 @@ public class Maneuver extends AIFlightModel {
 				setSpeedMode(11);
 			}
 			if (CT.FlapsControl == 0.0F && CT.getWing() < 0.001F && !CT.bHasFlapsControlSwitch && CT.nFlapStages > 0){
-				if(CT.FlapStageMax > 0F && CT.FlapStage != null) CT.FlapsControl = CT.FlapStage[CT.nFlapStages -1];
+				if (Actor.isAlive(AP.way.takeoffAirport) && (AP.way.takeoffAirport instanceof AirportCarrier) && CT.FlapTakeoffCarrier > 0F)
+					CT.FlapsControl = CT.FlapTakeoffCarrier;
+				else if(CT.FlapTakeoffGround > 0F) CT.FlapsControl = CT.FlapTakeoffGround;
+				else if(CT.FlapStageMax > 0F && CT.FlapStage != null) CT.FlapsControl = CT.FlapStage[CT.nFlapStages -1];
 				else CT.FlapsControl = 0.33F;
 			}
 			if (EI.engines[0].getStage() == 6 && CT.getPower() > f39) {
@@ -3718,10 +3720,27 @@ public class Maneuver extends AIFlightModel {
 				}
 				if (Or.getTangage() < f46) dA = -0.7F * (Or.getTangage() - f46) + f48 * (float) getW().y + 0.5F * (float) getAW().y;
 				else dA = -0.1F * (Or.getTangage() - f46) + f48 * (float) getW().y + 0.5F * (float) getAW().y;
+		// === western once revert to old code
 				CT.ElevatorControl += (dA - CT.ElevatorControl) * 3F * f;
 			} else {
 				CT.ElevatorControl = 1.0F;
 			}
+		// === western once revert to old code
+/*			// +++ Engine MOD By western, limit elevator plus for FBW modern Jets
+				if (CT.ElevatorControl > CT.limitRatioAITakeoffElevatorPlus && CT.GearControl > 0.05F) CT.ElevatorControl = CT.limitRatioAITakeoffElevatorPlus;
+				if (Gears.bFrontWheel && getSpeed() < VminFLAPS && !(AP.way.takeoffAirport instanceof AirportCarrier))
+					CT.ElevatorControl = 0.0F;
+				else if (CT.ElevatorControl + (dA - CT.ElevatorControl) * 3F * f < CT.limitRatioAITakeoffElevatorPlus || CT.GearControl < 0.05F)
+					CT.ElevatorControl += (dA - CT.ElevatorControl) * 3F * f;
+				else
+					CT.ElevatorControl = CT.limitRatioAITakeoffElevatorPlus;
+			} else {
+				if (CT.GearControl > 0.05F)
+					CT.ElevatorControl = Math.min(1.0F, CT.limitRatioAITakeoffElevatorPlus);
+				else
+					CT.ElevatorControl = 1.0F;
+			}
+			// --- Engine MOD By western, limit elevator plus for FBW modern Jets  */
 			boolean flag8 = true;
 			if (AP.way.first().waypointType == 2 || AP.way.first().waypointType == 3 || AP.way.first().waypointType == 5 || AP.way.first().waypointType == 4 || ((Aircraft) actor).stationarySpawnLocSet) flag8 = false;
 			AFo.setDeg(Or.getAzimut(), direction);
@@ -3772,7 +3791,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 69: // 'E'
+		case 69: // 'E'  // TAKEOFF_VTOL_A
 			float f36 = Alt;
 			float f40 = 0.4F;
 			CT.BrakeControl = 1.0F;
@@ -3822,7 +3841,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 28: // '\034'
+		case 28: // '\034'  // WAVEOUT
 			if (first) {
 				direction = World.Rnd().nextFloat(-25F, 25F);
 				AP.setStabAll(false);
@@ -3858,7 +3877,7 @@ public class Maneuver extends AIFlightModel {
 			if (mn_time > 3F) pop();
 			break;
 
-		case 29: // '\035'
+		case 29: // '\035'  // SINUS
 			minElevCoeff = 17F;
 			if (first) {
 				AP.setStabAll(false);
@@ -3904,7 +3923,7 @@ public class Maneuver extends AIFlightModel {
 			if (mn_time > 10F) pop();
 			break;
 
-		case 56: // '8'
+		case 56: // '8'  // SINUS_SHALLOW
 			if (first) {
 				submaneuver = World.Rnd().nextInt(0, 1);
 				direction = World.Rnd().nextFloat(-20F, -10F);
@@ -3950,19 +3969,19 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 30: // '\036'
+		case 30: // '\036'  // ZIGZAG_UP
 			push(14);
 			push(18);
 			pop();
 			break;
 
-		case 31: // '\037'
+		case 31: // '\037'  // ZIGZAG_DOWN
 			push(14);
 			push(19);
 			pop();
 			break;
 
-		case 32: // ' '
+		case 32: // ' '  // ZIGZAG_SPIT
 			if (!isCapableOfACM() && World.Rnd().nextInt(-2, 9) < Skill) ((Aircraft) actor).hitDaSilk();
 			if (first) {
 				AP.setStabAll(false);
@@ -4048,7 +4067,7 @@ public class Maneuver extends AIFlightModel {
 			if ((double) Alt < -7D * Vwld.z) pop();
 			break;
 
-		case 33: // '!'
+		case 33: // '!'  // HALF_LOOP_DOWN_135
 			if (first) {
 				if (Alt < 1000F) {
 					pop();
@@ -4097,7 +4116,7 @@ public class Maneuver extends AIFlightModel {
 			if ((double) Alt < -7D * Vwld.z) pop();
 			break;
 
-		case 34: // '"'
+		case 34: // '"'  // HARTMANN_REDOUT
 			if (first) {
 				if (Alt < 500F) {
 					pop();
@@ -4113,8 +4132,8 @@ public class Maneuver extends AIFlightModel {
 			if (direction > Or.getTangage() + 45F || Or.getTangage() < -60F || mn_time > 4F) pop();
 			break;
 
-		case 36: // '$'
-		case 37: // '%'
+		case 36: // '$'  // STALL_POKRYSHKIN
+		case 37: // '%'  // BARREL_POKRYSHKIN
 			if (first) {
 				if (!isCapableOfACM()) pop();
 				if (getSpeed() < Vmax * 0.5F) {
@@ -4150,7 +4169,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 38: // '&'
+		case 38: // '&'  // SLIDE_LEVEL
 			if (first) CT.RudderControl = Or.getKren() > 0.0F ? 1.0F : -1F;
 			CT.AileronControl += -0.02F * Or.getKren();
 			if (CT.AileronControl > 0.1F) CT.AileronControl = 0.1F;
@@ -4160,7 +4179,7 @@ public class Maneuver extends AIFlightModel {
 			if (mn_time > 3.5F) pop();
 			break;
 
-		case 39: // '\''
+		case 39: // '\''  // SLIDE_DESCENT
 			setSpeedMode(6);
 			CT.AileronControl = -0.04F * Or.getKren();
 			CT.ElevatorControl = -0.04F * (Or.getTangage() + 10F);
@@ -4170,7 +4189,7 @@ public class Maneuver extends AIFlightModel {
 			if (getSpeed() > Vmax || mn_time > 7F) pop();
 			break;
 
-		case 89: // 'Y'
+		case 89: // 'Y'  // FISHTAIL_RIGHT
 			CT.AileronControl = -0.04F * Or.getKren();
 			if (Alt > 50F) {
 				dA = (getSpeedKMH() - 180F - Or.getTangage() * 10F - getVertSpeed() * 5F) * 0.004F;
@@ -4182,7 +4201,7 @@ public class Maneuver extends AIFlightModel {
 			if (Leader != null) Vwld.z = Leader.Vwld.z;
 			break;
 
-		case 88: // 'X'
+		case 88: // 'X'  // FISHTAIL_LEFT
 			CT.AileronControl = -0.04F * Or.getKren();
 			if (Alt > 50F) {
 				dA = (getSpeedKMH() - 180F - Or.getTangage() * 10F - getVertSpeed() * 5F) * 0.004F;
@@ -4194,7 +4213,7 @@ public class Maneuver extends AIFlightModel {
 			if (Leader != null) Vwld.z = Leader.Vwld.z;
 			break;
 
-		case 90: // 'Z'
+		case 90: // 'Z'  // LOOKDOWN_LEFT
 			setSpeedMode(6);
 			CT.RudderControl = 1.0F;
 			if (Math.abs(Or.getRoll() - 360F) > 90F) CT.AileronControl = 0.0F;
@@ -4212,7 +4231,7 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 91: // '['
+		case 91: // '['  // LOOKDOWN_RIGHT
 			setSpeedMode(6);
 			CT.RudderControl = -1F;
 			if (Math.abs(Or.getRoll() - 360F) > 90F) CT.AileronControl = 0.0F;
@@ -4230,25 +4249,25 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 40: // '('
+		case 40: // '('  // RANVERSMAN
 			push(39);
 			push(57);
 			pop();
 			break;
 
-		case 41: // ')'
+		case 41: // ')'  // CUBAN
 			push(13);
 			push(18);
 			pop();
 			break;
 
-		case 42: // '*'
+		case 42: // '*'  // CUBAN_INVERT
 			push(19);
 			push(57);
 			pop();
 			break;
 
-		case 100: // 'd'
+		case 100: // 'd'  // BREAK_AWAY
 			setSpeedMode(6);
 			if (getSpeed() < Vmax * 0.7F || Or.getPitch() > 360F) setSpeedMode(11);
 			else setSpeedMode(8);
@@ -4265,7 +4284,7 @@ public class Maneuver extends AIFlightModel {
 			if (mn_time > 1.5F + World.Rnd().nextFloat(0.0F, 2.0F)) pop();
 			break;
 
-		case 46: // '.'
+		case 46: // '.'  // GATTACK_KAMIKAZE
 			if (target_ground == null || target_ground.pos == null) {
 				if (Group != null) {
 					dont_change_subm = true;
@@ -4297,14 +4316,14 @@ public class Maneuver extends AIFlightModel {
 			groundAttackKamikaze(target_ground, f);
 			break;
 
-		case 43: // '+'
-		case 47: // '/'
-		case 50: // '2'
-		case 51: // '3'
-		case 52: // '4'
-		case 71: // 'G'
-		case 72: // 'H'
-		case 73: // 'I'
+		case 43: // '+'  // GATTACK
+		case 47: // '/'  // GATTACK_TINYTIM
+		case 50: // '2'  // GATTACK_DIVE
+		case 51: // '3'  // GATTACK_TORPEDO
+		case 52: // '4'  // GATTACK_CASSETTE
+		case 71: // 'G'  // GATTACK_HS293
+		case 72: // 'H'  // GATTACK_FRITZX
+		case 73: // 'I'  // GATTACK_TORPEDO_TOKG
 			if (first && !isCapableOfACM()) {
 				bombsOut = true;
 				setReadyToReturn(true);
@@ -4373,12 +4392,12 @@ public class Maneuver extends AIFlightModel {
 			default:
 				break;
 
-			case 43: // '+'
+			case 43: // '+'  // GATTACK
 				groundAttack(target_ground, f);
 				if (mn_time > 120F) set_maneuver(0);
 				break;
 
-			case 50: // '2'
+			case 50: // '2'  // GATTACK_DIVE
 				groundAttackDiveBomber(target_ground, f);
 				if (mn_time > 120F) {
 					setSpeedMode(6);
@@ -4390,31 +4409,31 @@ public class Maneuver extends AIFlightModel {
 				}
 				break;
 
-			case 51: // '3'
+			case 51: // '3'  // GATTACK_TORPEDO
 				groundAttackTorpedo(target_ground, f);
 				break;
 
-			case 73: // 'I'
+			case 73: // 'I'  // GATTACK_TORPEDO_TOKG
 				groundAttackTorpedoToKG(target_ground, f);
 				break;
 
-			case 52: // '4'
+			case 52: // '4'  // GATTACK_CASSETTE
 				groundAttackCassette(target_ground, f);
 				break;
 
-			case 46: // '.'
+			case 46: // '.'  // GATTACK_KAMIKAZE
 				groundAttackKamikaze(target_ground, f);
 				break;
 
-			case 47: // '/'
+			case 47: // '/'  // GATTACK_TINYTIM
 				groundAttackTinyTim(target_ground, f);
 				break;
 
-			case 71: // 'G'
+			case 71: // 'G'  // GATTACK_HS293
 				groundAttackHS293(target_ground, f);
 				break;
 
-			case 72: // 'H'
+			case 72: // 'H'  // GATTACK_FRITZX
 				groundAttackFritzX(target_ground, f);
 				break;
 			}
@@ -7768,7 +7787,6 @@ public class Maneuver extends AIFlightModel {
 			CT.BrakeControl = 0.2F;
 			if (Vwld.length() < 0.30000001192092896D && World.Rnd().nextInt(0, 99) < 4) {
 				setStationedOnGround(true);
-				World.cur();
 				if (actor != World.getPlayerAircraft()) {
 					push(44);
 					safe_pop();
@@ -7781,7 +7799,6 @@ public class Maneuver extends AIFlightModel {
 				}
 				if (Group != null) Group.delAircraft((Aircraft) actor);
 				if ((actor instanceof TypeGlider) || (actor instanceof TypeSeaPlane)) return;
-				World.cur();
 				if (actor != World.getPlayerAircraft()) if (Airport.distToNearestAirport(Loc) > 900D) ((Aircraft) actor).postEndAction(60D, actor, 4, null);
 				else MsgDestroy.Post(Time.current() + 30000L, actor);
 			}
@@ -7879,7 +7896,6 @@ public class Maneuver extends AIFlightModel {
 		if (World.wind().noWind) return;
 
 		double d = Ve.length();
-		World.cur();
 		World.wind().getVectorAI(actor.pos.getAbsPoint(), windV);
 		windV.scale(-1D);
 		Ve.normalize();

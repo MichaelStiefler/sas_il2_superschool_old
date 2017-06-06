@@ -236,12 +236,19 @@ public class AutopilotAI extends Autopilotage {
 						if(!FM.CT.bHasFlapsControlSwitch) FM.CT.FlapsControl = 0.0F;
 						way.setCur(1);
 					}
-					if (way.Cur() == 4 && ((Aircraft) FM.actor) instanceof TypeFastJet) {
-						if(!FM.CT.bHasFlapsControlSwitch){
-							if(FM.CT.FlapStage != null && FM.CT.FlapStageMax != -1.0F)
-								FM.CT.FlapsControl = FM.CT.FlapStage[FM.CT.nFlapStages - 1];
+					if (((Aircraft) FM.actor) instanceof TypeFastJet && !FM.CT.bHasFlapsControlSwitch) {
+						if (way.Cur() == 2 || way.Cur() == 3) {
+							if(FM.CT.FlapStage != null && FM.CT.FlapStageMax != -1.0F) {
+								if (FM.CT.FlapStage[FM.CT.nFlapStages - 1] < 0.33F) FM.CT.FlapsControl = 1.0F;
+								else FM.CT.FlapsControl = FM.CT.FlapStage[FM.CT.nFlapStages - 1];
+							}
 							else
 								FM.CT.FlapsControl = 0.33F;
+							if (FM.CT.bHasBlownFlaps) FM.CT.BlownFlapsControl = 1.0F;
+						}
+						else if (way.Cur() == 4 || way.Cur() == 5) {
+							FM.CT.FlapsControl = 1.0F;
+							if (FM.CT.bHasBlownFlaps) FM.CT.BlownFlapsControl = 1.0F;
 						}
 					}
 					if (way.Cur() == 5) {
@@ -263,7 +270,8 @@ public class AutopilotAI extends Autopilotage {
 							FM.pop();
 							if (!Mission.isDogfight() || !Main.cur().mission.zutiMisc_DisableAIRadioChatter) Voice.speakGoAround((Aircraft) FM.actor);
 							if(!FM.CT.bHasFlapsControlSwitch){
-								if(FM.CT.FlapStage != null && FM.CT.FlapStageMax != -1.0F)
+								if(FM.CT.FlapTakeoffGround > 0F) FM.CT.FlapsControl = FM.CT.FlapTakeoffGround;
+								else if(FM.CT.FlapStage != null && FM.CT.FlapStageMax != -1.0F)
 									FM.CT.FlapsControl = FM.CT.FlapStage[FM.CT.nFlapStages - 1];
 								else
 									FM.CT.FlapsControl = 0.33F;
@@ -286,7 +294,8 @@ public class AutopilotAI extends Autopilotage {
 								FM.push(2);
 								FM.pop();
 								if(!FM.CT.bHasFlapsControlSwitch){
-									if(FM.CT.FlapStage != null && FM.CT.FlapStageMax != -1.0F)
+									if(FM.CT.FlapTakeoffGround > 0F) FM.CT.FlapsControl = FM.CT.FlapTakeoffGround;
+									else if(FM.CT.FlapStage != null && FM.CT.FlapStageMax != -1.0F)
 										FM.CT.FlapsControl = FM.CT.FlapStage[FM.CT.nFlapStages - 1];
 									else
 										FM.CT.FlapsControl = 0.33F;
