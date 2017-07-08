@@ -846,35 +846,44 @@ public class Maneuver extends AIFlightModel {
     }
 
     public boolean hasBombs() {
-        if (this.CT.Weapons[3] != null) {
-            for (int i = 0; i < this.CT.Weapons[3].length; i++) {
-                if (this.CT.Weapons[3][i] != null && this.CT.Weapons[3][i].countBullets() != 0)
-                    return true;
-            }
-        }
-        return false;
+        // TODO: Storebror: +++ Bomb Release Bug hunting
+//        if (this.CT.Weapons[3] != null) {
+//            for (int i = 0; i < this.CT.Weapons[3].length; i++) {
+//                if (this.CT.Weapons[3][i] != null && this.CT.Weapons[3][i].countBullets() != 0)
+//                    return true;
+//            }
+//        }
+//        return false;
+        return this.CT.hasBulletsLeftOnTrigger(3);
+        // TODO: Storebror: --- Bomb Release Bug hunting
     }
 
     public boolean hasRockets() {
-        if (this.CT.Weapons[2] != null) {
-            for (int i = 0; i < this.CT.Weapons[2].length; i++) {
-                if (this.CT.Weapons[2][i] != null && this.CT.Weapons[2][i].countBullets() != 0)
-                    return true;
-            }
-        }
-        return false;
+        // TODO: Storebror: +++ Bomb Release Bug hunting
+//        if (this.CT.Weapons[2] != null) {
+//            for (int i = 0; i < this.CT.Weapons[2].length; i++) {
+//                if (this.CT.Weapons[2][i] != null && this.CT.Weapons[2][i].countBullets() != 0)
+//                    return true;
+//            }
+//        }
+//        return false;
+        // TODO: Storebror: --- Bomb Release Bug hunting
+        return this.CT.hasBulletsLeftOnTrigger(2);
     }
 
     public boolean hasGunsOrCannons() {
-        for (int weaponType = 0; weaponType < 2; weaponType++) {
-            if (this.CT.Weapons[weaponType] != null) {
-                for (int i = 0; i < this.CT.Weapons[weaponType].length; i++) {
-                    if (this.CT.Weapons[weaponType][i] != null && this.CT.Weapons[weaponType][i].countBullets() != 0)
-                        return true;
-                }
-            }
-        }
-        return false;
+        // TODO: Storebror: +++ Bomb Release Bug hunting
+//        for (int weaponType = 0; weaponType < 2; weaponType++) {
+//            if (this.CT.Weapons[weaponType] != null) {
+//                for (int i = 0; i < this.CT.Weapons[weaponType].length; i++) {
+//                    if (this.CT.Weapons[weaponType][i] != null && this.CT.Weapons[weaponType][i].countBullets() != 0)
+//                        return true;
+//                }
+//            }
+//        }
+//        return false;
+        // TODO: Storebror: --- Bomb Release Bug hunting
+        return this.CT.hasBulletsLeftOnTrigger(0) || this.CT.hasBulletsLeftOnTrigger(1);
     }
 
     public boolean canAttack() {
@@ -2549,7 +2558,10 @@ public class Maneuver extends AIFlightModel {
                         if (d < 0.0)
                             d = 0.0;
                         if ((this.AP.getWayPointDistance() < (this.getSpeed() * Math.sqrt(d * 0.2038699984550476))) && !this.bombsOut) {
-                            if (this.CT.Weapons[3] != null && this.CT.Weapons[3][0] != null && this.CT.Weapons[3][0].countBullets() != 0 && !(this.CT.Weapons[3][0] instanceof BombGunPara))
+                            // TODO: Storebror: +++ Bomb Release Bug hunting
+//                            if (this.CT.Weapons[3] != null && this.CT.Weapons[3][0] != null && this.CT.Weapons[3][0].countBullets() != 0 && !(this.CT.Weapons[3][0] instanceof BombGunPara))
+                            if (this.CT.hasBulletsLeftOnTrigger(3) && !(this.CT.firstGunOnTrigger(3) instanceof BombGunPara))
+                            // TODO: Storebror: +++ Bomb Release Bug hunting
                                 Voice.airSpeaks((Aircraft) this.actor, 85, 1);
                             this.bombsOut = true;
                             this.AP.way.curr().Action = 0;
@@ -5438,7 +5450,10 @@ public class Maneuver extends AIFlightModel {
                             this.CT.WeaponControl[0] = true;
                         if (f5 < 700F && this.Group.getAaaNum() > 10F || f5 < 550F)
                             this.CT.WeaponControl[1] = true;
-                        if (this.CT.Weapons[2] != null && this.CT.Weapons[2][0] != null && this.CT.Weapons[2][this.CT.Weapons[2].length - 1].countBullets() != 0 && this.rocketsDelay < 1 && f5 < 570F) {
+                        // TODO: Storebror: +++ Bomb Release Bug hunting
+//                        if (this.CT.Weapons[2] != null && this.CT.Weapons[2][0] != null && this.CT.Weapons[2][this.CT.Weapons[2].length - 1].countBullets() != 0 && this.rocketsDelay < 1 && f5 < 570F) {
+                        if (this.CT.hasBulletsLeftOnTrigger(2) && this.rocketsDelay < 1 && f5 < 570F) {
+                        // TODO: Storebror: --- Bomb Release Bug hunting
                             this.CT.WeaponControl[2] = true;
                             Voice.speakAttackByRockets((Aircraft) this.actor);
                             if (this.Group.getAaaNum() > 2.0F)
@@ -5479,19 +5494,32 @@ public class Maneuver extends AIFlightModel {
         this.setSpeedMode(4);
         this.smConstSpeed = 120F;
         float f3 = this.Vwld.z <= 0.0D ? 4F : 3F;
-        boolean flag = false;
-        boolean flag1 = false;
-        if (this.CT.Weapons[3] != null && this.CT.Weapons[3][0] != null && this.CT.Weapons[3][0].countBullets() != 0) {
-            flag = true;
-            if (this.CT.Weapons[3][0] instanceof ParaTorpedoGun)
-                flag1 = true;
+        boolean hasBombs = false;
+        boolean isParaTorp = false;
+        // TODO: Storebror: +++ Bomb Release Bug hunting
+//        if (this.CT.Weapons[3] != null && this.CT.Weapons[3][0] != null && this.CT.Weapons[3][0].countBullets() != 0) {
+//            hasBombs = true;
+//            if (this.CT.Weapons[3][0] instanceof ParaTorpedoGun)
+//                isParaTorp = true;
+//        } else if (!(this.actor instanceof TypeStormovik) && !(this.actor instanceof TypeFighter) && !(this.actor instanceof TypeDiveBomber)) {
+//            this.set_maneuver(0);
+//            return;
+//        }
+        if (this.CT.hasBulletsLeftOnTrigger(3)) {
+            hasBombs = true;
+            if (this.CT.firstGunOnTrigger(3) instanceof ParaTorpedoGun)
+                isParaTorp = true;
         } else if (!(this.actor instanceof TypeStormovik) && !(this.actor instanceof TypeFighter) && !(this.actor instanceof TypeDiveBomber)) {
             this.set_maneuver(0);
             return;
         }
+        // TODO: Storebror: --- Bomb Release Bug hunting
         Ve.set(actor.pos.getAbsPoint());
-        if (flag1)
-            if (this.CT.Weapons[3][0] instanceof BombGunTorp45_36AV_A)
+        if (isParaTorp)
+            // TODO: Storebror: +++ Bomb Release Bug hunting
+//            if (this.CT.Weapons[3][0] instanceof BombGunTorp45_36AV_A)
+            if (this.CT.firstGunOnTrigger(3) instanceof BombGunTorp45_36AV_A)
+            // TODO: Storebror: --- Bomb Release Bug hunting
                 Ve.z = (this.Loc.z - 100D) + World.Rnd().nextDouble() * 50D;
             else
                 Ve.z = (this.Loc.z - 200D) + World.Rnd().nextDouble() * 50D;
@@ -5509,19 +5537,19 @@ public class Maneuver extends AIFlightModel {
             return;
         }
         float f6 = 0.5F;
-        if (flag)
+        if (hasBombs)
             f6 = (f5 + 5F) * 0.33333F;
         this.Vtarg.x = (float) tmpV3d.x * f6 * this.Skill;
         this.Vtarg.y = (float) tmpV3d.y * f6 * this.Skill;
         this.Vtarg.z = (float) tmpV3d.z * f6 * this.Skill;
         Ve.add(this.Vtarg);
         Ve.sub(this.Loc);
-        if (flag)
+        if (hasBombs)
             this.addWindCorrection();
         Ve.add(0.0D, 0.0D, -0.5F + World.Rnd().nextFloat(-2F, 0.8F));
         Vf.set(Ve);
         float f1 = (float) Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y);
-        if (flag) {
+        if (hasBombs) {
             float f7 = this.getSpeed() * f5 + 500F;
             if (f1 > f7)
                 Ve.z += 200D;
@@ -5531,7 +5559,7 @@ public class Maneuver extends AIFlightModel {
         this.Vtarg.set(Ve);
         this.Vtarg.normalize();
         this.Or.transformInv(Ve);
-        if (!flag) {
+        if (!hasBombs) {
             this.groundAttackGuns(actor, f);
             return;
         }
@@ -5550,7 +5578,10 @@ public class Maneuver extends AIFlightModel {
         if (f1 + 4F * f5 < this.getSpeed() * f5 && Ve.x > 0.0D && Vpl.dot(this.Vtarg) > 0.98D) {
             if (!this.bombsOut) {
                 this.bombsOut = true;
-                if (this.CT.Weapons[3] != null && this.CT.Weapons[3][0] != null && this.CT.Weapons[3][0].countBullets() != 0 && !(this.CT.Weapons[3][0] instanceof BombGunPara))
+                // TODO: Storebror: +++ Bomb Release Bug hunting
+//                if (this.CT.Weapons[3] != null && this.CT.Weapons[3][0] != null && this.CT.Weapons[3][0].countBullets() != 0 && !(this.CT.Weapons[3][0] instanceof BombGunPara))
+                if (this.CT.hasBulletsLeftOnTrigger(3) && !(this.CT.firstGunOnTrigger(3) instanceof BombGunPara))
+                // TODO: Storebror: --- Bomb Release Bug hunting
                     Voice.speakAttackByBombs((Aircraft) this.actor);
             }
             this.push(0);
@@ -5978,6 +6009,7 @@ public class Maneuver extends AIFlightModel {
         Ve.x += (float) tmpV3d.x;
         Ve.y += (float) tmpV3d.y;
         Ve.z += (float) tmpV3d.z;
+        
         // TODO: +++ Ground Attack Mod Backport re-implementation by SAS~Storebror +++
         if (f5 >= f2 && (this.passCounter == 0))
         // TODO: --- Ground Attack Mod Backport re-implementation by SAS~Storebror ---
@@ -6173,8 +6205,12 @@ public class Maneuver extends AIFlightModel {
         float f5 = 0.0F;
         this.setSpeedMode(4);
         Class class1 = null;
-        if (this.CT.Weapons[3][0] instanceof TorpedoGun) {
-            TorpedoGun torpedogun = (TorpedoGun) this.CT.Weapons[3][0];
+        // TODO: Storebror: +++ Bomb Release Bug hunting
+//        if (this.CT.Weapons[3][0] instanceof TorpedoGun) {
+//            TorpedoGun torpedogun = (TorpedoGun) this.CT.Weapons[3][0];
+        if (this.CT.firstGunOnTrigger(3) instanceof TorpedoGun) {
+            TorpedoGun torpedogun = (TorpedoGun) this.CT.firstGunOnTrigger(3);
+            // TODO: Storebror: --- Bomb Release Bug hunting
             class1 = (Class) Property.value(torpedogun.getClass(), "bulletClass", null);
         }
         this.smConstSpeed = 100F;
@@ -6345,8 +6381,12 @@ public class Maneuver extends AIFlightModel {
         this.maxAOA = 8F;
         this.setSpeedMode(4);
         Class class1 = null;
-        if (this.CT.Weapons[3][0] instanceof TorpedoGun) {
-            TorpedoGun torpedogun = (TorpedoGun) this.CT.Weapons[3][0];
+        // TODO: Storebror: +++ Bomb Release Bug hunting
+//        if (this.CT.Weapons[3][0] instanceof TorpedoGun) {
+//            TorpedoGun torpedogun = (TorpedoGun) this.CT.Weapons[3][0];
+        if (this.CT.firstGunOnTrigger(3) instanceof TorpedoGun) {
+            TorpedoGun torpedogun = (TorpedoGun) this.CT.firstGunOnTrigger(3);
+        // TODO: Storebror: --- Bomb Release Bug hunting
             class1 = (Class) Property.value(torpedogun.getClass(), "bulletClass", null);
         }
         this.smConstSpeed = 100F;
@@ -7272,7 +7312,10 @@ public class Maneuver extends AIFlightModel {
                                 i = 60;
                             this.bulletDelay += World.Rnd().nextInt(i * this.Skill, 2 * i * this.Skill);
                         }
-                        if (this.CT.Weapons[2] != null && this.CT.Weapons[2][0] != null && this.CT.Weapons[2][this.CT.Weapons[2].length - 1].countBullets() != 0 && this.rocketsDelay < 1) {
+                        // TODO: Storebror: +++ Bomb Release Bug hunting
+//                        if (this.CT.Weapons[2] != null && this.CT.Weapons[2][0] != null && this.CT.Weapons[2][this.CT.Weapons[2].length - 1].countBullets() != 0 && this.rocketsDelay < 1) {
+                        if (this.CT.hasBulletsLeftOnTrigger(2) && this.rocketsDelay < 1) {
+                        // TODO: Storebror: --- Bomb Release Bug hunting
                             tmpV3f.sub(this.target.Vwld, this.Vwld);
                             this.Or.transformInv(tmpV3f);
                             if ((Math.abs(tmpV3f.y) < this.TargY - this.TargYS * this.Skill) && (Math.abs(tmpV3f.z) < this.TargZ - this.TargZS * this.Skill))
@@ -7750,7 +7793,10 @@ public class Maneuver extends AIFlightModel {
                 }
                 if (f3 < this.convAI + (4 - this.Skill) * 75) {
                     this.CT.WeaponControl[1] = true;
-                    if (f3 < 100F && this.CT.Weapons[2] != null && this.CT.Weapons[2][0] != null && this.CT.Weapons[2][this.CT.Weapons[2].length - 1].countBullets() != 0 && this.rocketsDelay < 1) {
+                    // TODO: Storebror: +++ Bomb Release Bug hunting
+//                    if (f3 < 100F && this.CT.Weapons[2] != null && this.CT.Weapons[2][0] != null && this.CT.Weapons[2][this.CT.Weapons[2].length - 1].countBullets() != 0 && this.rocketsDelay < 1) {
+                    if (f3 < 100F && this.CT.hasBulletsLeftOnTrigger(2) && this.rocketsDelay < 1) {
+                    // TODO: Storebror: --- Bomb Release Bug hunting
                         tmpV3f.sub(this.target.Vwld, this.Vwld);
                         this.Or.transformInv(tmpV3f);
                         if (Math.abs(tmpV3f.y) < 4D && Math.abs(tmpV3f.z) < 4D)
@@ -7869,7 +7915,10 @@ public class Maneuver extends AIFlightModel {
                 this.gattackCounter++;
             if (f3 < this.convAI + (4 - this.Skill) * 50) {
                 this.CT.WeaponControl[1] = true;
-                if (f3 < 100F && this.CT.Weapons[2] != null && this.CT.Weapons[2][0] != null && this.CT.Weapons[2][this.CT.Weapons[2].length - 1].countBullets() != 0 && this.rocketsDelay < 1) {
+                // TODO: Storebror: +++ Bomb Release Bug hunting
+//                if (f3 < 100F && this.CT.Weapons[2] != null && this.CT.Weapons[2][0] != null && this.CT.Weapons[2][this.CT.Weapons[2].length - 1].countBullets() != 0 && this.rocketsDelay < 1) {
+                if (f3 < 100F && this.CT.hasBulletsLeftOnTrigger(2) && this.rocketsDelay < 1) {
+                // TODO: Storebror: +++ Bomb Release Bug hunting
                     tmpV3f.sub(this.target.Vwld, this.Vwld);
                     this.Or.transformInv(tmpV3f);
                     if (Math.abs(tmpV3f.y) < 4D && Math.abs(tmpV3f.z) < 4D)
@@ -8363,6 +8412,9 @@ public class Maneuver extends AIFlightModel {
         this.CT.WeaponControl[2] = false;
         this.CT.WeaponControl[3] = false;
         if (this.bombsOut) {
+            // TODO: Storebror: +++ Bomb Release Bug hunting
+            if (!this.CT.isBombReleaseReady()) return;
+            // TODO: Storebror: --- Bomb Release Bug hunting
             this.bombsOutCounter++;
             if (this.bombsOutCounter > 128) {
                 this.bombsOutCounter = 0;
@@ -8372,7 +8424,10 @@ public class Maneuver extends AIFlightModel {
                 this.CT.WeaponControl[3] = true;
             else
                 this.bombsOut = false;
-            if (this.CT.Weapons[3] != null && this.CT.Weapons[3][0] != null) {
+            // TODO: Storebror: +++ Bomb Release Bug hunting
+//            if (this.CT.Weapons[3] != null && this.CT.Weapons[3][0] != null) {
+            if (this.CT.firstGunOnTrigger(3) != null) {
+            // TODO: Storebror: --- Bomb Release Bug hunting
                 int i = 0;
                 for (int j = 0; j < this.CT.Weapons[3].length; j++)
                     i += this.CT.Weapons[3][j].countBullets();

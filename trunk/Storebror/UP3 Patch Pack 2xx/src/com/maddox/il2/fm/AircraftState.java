@@ -11,6 +11,7 @@ import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.EventLog;
 import com.maddox.il2.ai.MsgExplosion;
 import com.maddox.il2.ai.RangeRandom;
+import com.maddox.il2.ai.UserCfg;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Maneuver;
 import com.maddox.il2.engine.Actor;
@@ -63,8 +64,10 @@ import com.maddox.il2.objects.vehicles.radios.TypeHasHayRake;
 import com.maddox.il2.objects.vehicles.radios.TypeHasLorenzBlindLanding;
 import com.maddox.il2.objects.vehicles.radios.TypeHasRadioStation;
 import com.maddox.il2.objects.vehicles.radios.TypeHasYGBeacon;
+import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.BombGun;
 import com.maddox.il2.objects.weapons.MGunAircraftGeneric;
+import com.maddox.il2.objects.weapons.RocketBombGun;
 import com.maddox.il2.objects.weapons.RocketGun;
 import com.maddox.il2.objects.weapons.TorpedoGun;
 import com.maddox.rts.MsgDestroy;
@@ -325,6 +328,18 @@ public class AircraftState {
         else
             throw new RuntimeException("Can not cast aircraft structure into a non-aircraft entity.");
         this.bIsMaster = paramBoolean;
+        
+        // TODO: Storebror: +++ Bomb/Rocket Fuze/Delay Replication
+        if (this.aircraft == World.getPlayerAircraft()) { // own Aircraft has User Settings
+            this.fUserBombFuze = World.cur().userBombFuze;
+            this.fUserBombDelay = World.cur().userBombDelay;
+            this.fUserRocketDelay = World.cur().userRocketDelay;
+        } else if (this.isMaster()) { // locally controlled AI Aircraft have 0.5 seconds bomb delay
+            this.fUserBombFuze = AI_BOMB_FUZE;
+            this.fUserBombDelay = AI_BOMB_DELAY;
+            this.fUserRocketDelay = AI_ROCKET_DELAY;
+        }
+        // TODO: Storebror: --- Bomb/Rocket Fuze/Delay Replication
 
         for (int i = 0; i < 4; i++)
             try {
@@ -2665,7 +2680,7 @@ public class AircraftState {
         }
     }
 
-    public void netReplicate(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
+    public void netReplicate(NetMsgGuaranted netMsgGuaranted) throws IOException {
         int j;
         if ((this.aircraft instanceof FW_190A8MSTL))
             j = 1;
@@ -2673,61 +2688,61 @@ public class AircraftState {
             j = this.aircraft.FM.EI.getNum();
         }
         for (int i = 0; i < j; i++) {
-            this.aircraft.FM.EI.engines[i].replicateToNet(paramNetMsgGuaranted);
-            paramNetMsgGuaranted.writeByte(this.astateEngineStates[i]);
+            this.aircraft.FM.EI.engines[i].replicateToNet(netMsgGuaranted);
+            netMsgGuaranted.writeByte(this.astateEngineStates[i]);
         }
 
         for (int i = 0; i < 4; i++) {
-            paramNetMsgGuaranted.writeByte(this.astateTankStates[i]);
+            netMsgGuaranted.writeByte(this.astateTankStates[i]);
         }
 
         for (int i = 0; i < j; i++) {
-            paramNetMsgGuaranted.writeByte(this.astateOilStates[i]);
+            netMsgGuaranted.writeByte(this.astateOilStates[i]);
         }
 
-        paramNetMsgGuaranted.writeByte((this.bShowSmokesOn ? 1 : 0) | (this.bNavLightsOn ? 2 : 0) | (this.bLandingLightOn ? 4 : 0));
+        netMsgGuaranted.writeByte((this.bShowSmokesOn ? 1 : 0) | (this.bNavLightsOn ? 2 : 0) | (this.bLandingLightOn ? 4 : 0));
 
-        paramNetMsgGuaranted.writeByte(this.astateCockpitState);
+        netMsgGuaranted.writeByte(this.astateCockpitState);
 
-        paramNetMsgGuaranted.writeByte(this.astateBailoutStep);
+        netMsgGuaranted.writeByte(this.astateBailoutStep);
 
         if ((this.aircraft instanceof TypeBomber)) {
-            ((TypeBomber) this.aircraft).typeBomberReplicateToNet(paramNetMsgGuaranted);
+            ((TypeBomber) this.aircraft).typeBomberReplicateToNet(netMsgGuaranted);
         }
         if ((this.aircraft instanceof TypeDockable)) {
-            ((TypeDockable) this.aircraft).typeDockableReplicateToNet(paramNetMsgGuaranted);
+            ((TypeDockable) this.aircraft).typeDockableReplicateToNet(netMsgGuaranted);
         }
 
         if (this.aircraft.FM.CT.bHasWingControl) {
-            paramNetMsgGuaranted.writeByte((int) this.aircraft.FM.CT.wingControl);
-            paramNetMsgGuaranted.writeByte((int) (this.aircraft.FM.CT.getWing() * 255.0F));
+            netMsgGuaranted.writeByte((int) this.aircraft.FM.CT.wingControl);
+            netMsgGuaranted.writeByte((int) (this.aircraft.FM.CT.getWing() * 255.0F));
         }
 
         if (this.aircraft.FM.CT.bHasCockpitDoorControl) {
-            paramNetMsgGuaranted.writeByte((int) this.aircraft.FM.CT.cockpitDoorControl);
+            netMsgGuaranted.writeByte((int) this.aircraft.FM.CT.cockpitDoorControl);
         }
 
-        paramNetMsgGuaranted.writeByte(this.bIsEnableToBailout ? 1 : 0);
+        netMsgGuaranted.writeByte(this.bIsEnableToBailout ? 1 : 0);
 
         if (this.aircraft.FM.CT.bHasArrestorControl) {
-            paramNetMsgGuaranted.writeByte((int) this.aircraft.FM.CT.arrestorControl);
-            paramNetMsgGuaranted.writeByte((int) (this.aircraft.FM.CT.getArrestor() * 255.0F));
+            netMsgGuaranted.writeByte((int) this.aircraft.FM.CT.arrestorControl);
+            netMsgGuaranted.writeByte((int) (this.aircraft.FM.CT.getArrestor() * 255.0F));
         }
 
         for (int i = 0; i < j; i++) {
-            paramNetMsgGuaranted.writeByte(this.astateSootStates[i]);
+            netMsgGuaranted.writeByte(this.astateSootStates[i]);
         }
 
         if (this.bWantBeaconsNet) {
-            paramNetMsgGuaranted.writeByte(this.beacon);
+            netMsgGuaranted.writeByte(this.beacon);
         }
 
         if ((this.aircraft instanceof TypeHasToKG)) {
-            paramNetMsgGuaranted.writeByte(this.torpedoGyroAngle);
-            paramNetMsgGuaranted.writeByte(this.torpedoSpreadAngle);
+            netMsgGuaranted.writeByte(this.torpedoGyroAngle);
+            netMsgGuaranted.writeByte(this.torpedoSpreadAngle);
         }
 
-        paramNetMsgGuaranted.writeShort(this.aircraft.armingSeed);
+        netMsgGuaranted.writeShort(this.aircraft.armingSeed);
 
         setArmingSeeds(this.aircraft.armingSeed);
 
@@ -2735,22 +2750,32 @@ public class AircraftState {
             int k = (int) Math.sqrt(World.cur().userCoverMashineGun - 100.0F) / 6;
             k += 6 * ((int) Math.sqrt(World.cur().userCoverCannon - 100.0F) / 6);
             k += 36 * ((int) Math.sqrt(World.cur().userCoverRocket - 100.0F) / 6);
-
-            paramNetMsgGuaranted.writeByte(k);
+            netMsgGuaranted.writeByte(k);
         }
 
         if (this.externalStoresDropped) {
-            paramNetMsgGuaranted.writeByte(1);
+            netMsgGuaranted.writeByte(1);
         } else {
-            paramNetMsgGuaranted.writeByte(0);
+            netMsgGuaranted.writeByte(0);
         }
 
         // TODO: Added by |ZUTI|: added for multicrew
         // -------------------------------------------------
-        paramNetMsgGuaranted.writeBoolean(bzutiIsMultiCrew);
-        paramNetMsgGuaranted.writeBoolean(bzutiIsMultiCrewAnytime);
+        netMsgGuaranted.writeBoolean(bzutiIsMultiCrew);
+        netMsgGuaranted.writeBoolean(bzutiIsMultiCrewAnytime);
         // -------------------------------------------------
 
+        // TODO: Storebror: +++ Bomb/Rocket Fuze/Delay Replication
+        if (this.aircraft.isNetPlayer() || this.isMaster()) {
+            short sUserBombFuze = (short)((this.fUserBombFuze - UserCfg.BOMB_FUZE_MIN) / (UserCfg.BOMB_FUZE_MAX - UserCfg.BOMB_FUZE_MIN) * 255F);
+            short sUserBombDelay = (short)((this.fUserBombDelay - UserCfg.BOMB_DELAY_MIN) / (UserCfg.BOMB_DELAY_MAX - UserCfg.BOMB_DELAY_MIN) * 255F);
+            short sUserRocketDelay = (short)((this.fUserRocketDelay - UserCfg.ROCKET_DELAY_MIN) / (UserCfg.ROCKET_DELAY_MAX - UserCfg.ROCKET_DELAY_MIN) * 255F);
+            Bomb.printDebug(this.aircraft, "Replicating Weapon Timing: Bomb Fuze: " + this.fUserBombFuze + " seconds (~Byte:" + sUserBombFuze + "~), Bomb Delay: " + this.fUserBombDelay + " seconds (~Byte:" + sUserBombDelay + "~), Rocket Life Time: " + this.fUserRocketDelay + " seconds (~Byte:" + sUserRocketDelay + "~).");
+            netMsgGuaranted.writeByte(sUserBombFuze);
+            netMsgGuaranted.writeByte(sUserBombDelay);
+            netMsgGuaranted.writeByte(sUserRocketDelay);
+        }
+        // TODO: Storebror: --- Bomb/Rocket Fuze/Delay Replication
     }
 
     public void netFirstUpdate(NetMsgInput paramNetMsgInput) throws IOException {
@@ -2904,6 +2929,24 @@ public class AircraftState {
             ZutiSupportMethods_Multicrew.updateNetUsersCrewPlaces();
         }
         // ----------------------------------------------------
+        
+        // TODO: Storebror: +++ Bomb/Rocket Fuze/Delay Replication
+        if (paramNetMsgInput.available() < 1) {
+            Bomb.printDebug(this.aircraft, "No Weapon Timing Data available");
+            return;
+        }
+        if (this.aircraft.isNetPlayer() || !this.isMaster()) {
+            short sUserBombFuze = (short) (paramNetMsgInput.readByte() & 0xFF);
+            short sUserBombDelay = (short) (paramNetMsgInput.readByte() & 0xFF);
+            short sUserRocketDelay = (short) (paramNetMsgInput.readByte() & 0xFF);
+            this.fUserBombFuze = (float)sUserBombFuze / 255F * (UserCfg.BOMB_FUZE_MAX - UserCfg.BOMB_FUZE_MIN) + UserCfg.BOMB_FUZE_MIN;
+            this.fUserBombDelay = (float)sUserBombDelay / 255F * (UserCfg.BOMB_DELAY_MAX - UserCfg.BOMB_DELAY_MIN) + UserCfg.BOMB_DELAY_MIN;
+            this.fUserRocketDelay = (float)sUserRocketDelay / 255F * (UserCfg.ROCKET_DELAY_MAX - UserCfg.ROCKET_DELAY_MIN) + UserCfg.ROCKET_DELAY_MIN;
+            
+            Bomb.printDebug(this.aircraft, "Bomb Fuze: " + this.fUserBombFuze + " seconds, Bomb Delay: " + this.fUserBombDelay + " seconds, Rocket Life Time: " + this.fUserRocketDelay + " seconds.");
+            this.updWeaponTiming(this.fUserBombFuze, this.fUserBombDelay, this.fUserRocketDelay);
+        }
+        // TODO: Storebror: --- Bomb/Rocket Fuze/Delay Replication
     }
 
     void updConvDist(int i, int j, float f) {
@@ -2926,6 +2969,33 @@ public class AircraftState {
             exception.printStackTrace();
         }
     }
+    
+    // TODO: Storebror: +++ Bomb/Rocket Fuze/Delay Replication
+    void updWeaponTiming(float bombFuze, float bombDelay, float rocketDelay) {
+        try {
+            if (aircraft.FM.CT.Weapons[2] != null) {
+                for (int weaponsIndex = 0; weaponsIndex < aircraft.FM.CT.Weapons[2].length; weaponsIndex++) {
+                    if (aircraft.FM.CT.Weapons[2][weaponsIndex] instanceof RocketGun)
+                        ((RocketGun)aircraft.FM.CT.Weapons[2][weaponsIndex]).setRocketTimeLife(rocketDelay);
+                    else if (aircraft.FM.CT.Weapons[2][weaponsIndex] instanceof RocketBombGun)
+                        ((RocketBombGun)aircraft.FM.CT.Weapons[2][weaponsIndex]).setRocketTimeLife(rocketDelay);
+                }
+            }
+            
+            if (aircraft.FM.CT.Weapons[3] != null) {
+                for (int weaponsIndex = 0; weaponsIndex < aircraft.FM.CT.Weapons[3].length; weaponsIndex++) {
+                    if (aircraft.FM.CT.Weapons[3][weaponsIndex] instanceof BombGun) {
+                        ((BombGun) aircraft.FM.CT.Weapons[3][weaponsIndex]).setBombDelay(bombDelay);
+                        ((BombGun) aircraft.FM.CT.Weapons[3][weaponsIndex]).setArmingTime((long)(bombFuze * 1000F));
+                    }
+                }
+            }
+        } catch (java.lang.Exception exception) {
+            System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+    // TODO: Storebror: -- Bomb/Rocket Fuze/Delay Replication
 
     void setArmingSeeds(int armingSeed) {
 //        System.out.println("setArmingSeeds(" + armingSeed + ")");
@@ -3202,4 +3272,13 @@ public class AircraftState {
             return isPilotDead(0);
     }
  // TODO: --- TD AI code backport from 4.13 ---
+    
+ // TODO: Storebror: +++ Bomb/Rocket Fuze/Delay Replication
+    private static final float AI_BOMB_FUZE = 0F;
+    private static final float AI_BOMB_DELAY = 0.5F;
+    private static final float AI_ROCKET_DELAY = 60F;
+    private float fUserBombFuze = 0F;
+    private float fUserBombDelay = 0F;
+    private float fUserRocketDelay = 60F;
+ // TODO: Storebror: --- Bomb/Rocket Fuze/Delay Replication
 }

@@ -3429,6 +3429,8 @@ public class Motor extends FMMath
 						f_159_ *= afterburnerCompressorFactor;
 					do
 					{
+					    if (controlCompressor < 0) controlCompressor = 0;
+                        if (controlCompressor >= compressorPressure.length) controlCompressor = compressorPressure.length - 1;
 						float f_160_ = compressorPressure[controlCompressor];
 						float f_161_ = compressorRPMtoWMaxATA / f_160_;
 						float f_162_ = 1.0F;

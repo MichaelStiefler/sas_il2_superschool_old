@@ -134,11 +134,11 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
     // TODO: Storebror: Implement Patch Level Replication
     public static final byte   MSG_PATCHLEVEL         = 101;
     public static final byte   MSG_SELECTOR_VERSION   = 102;
-    public static final String MIN_PATCH_LEVEL        = "201";
-    public static final String PATCH_LEVEL            = "202";
+    public static final String MIN_PATCH_LEVEL        = "210";
+    public static final String PATCH_LEVEL            = "211";
     public static final String PATCH_LEVEL_TEST       = "102b1";
-    public static String[]     PATCHLEVEL_G           = { "202" };
-    public static String[]     PATCHLEVEL_Y           = { "201", "200", "107" };
+    public static String[]     PATCHLEVEL_G           = { "211", "210" };
+    public static String[]     PATCHLEVEL_Y           = { "202" };
     private String             patchLevel             = "none";
     private String             selectorVersion        = "unknown";
     public static final long   UPDATE_CHAT_INTERVAL   = 60000L;
@@ -1363,11 +1363,13 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                     }
 
                 case MSG_DOT_RANGE_FRIENDLY:
+//                    System.out.println("MSG_DOT_RANGE_FRIENDLY 01");
                     Main.cur().dotRangeFriendly.netInput(netmsginput);
                     this.replicateDotRange(true);
                     return true;
 
                 case MSG_DOT_RANGE_FOE:
+//                    System.out.println("MSG_DOT_RANGE_FOE 01");
                     Main.cur().dotRangeFoe.netInput(netmsginput);
                     this.replicateDotRange(false);
                     return true;
@@ -1385,18 +1387,18 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
             }
         }
         switch (byte0) {
-            case 13:
+            case MSG_REQUEST_PLACE:
                 int k = netmsginput.readUnsignedByte();
                 if (k == 255)
                     k = -1;
                 this.requestPlace(k);
                 return true;
 
-            case 15:
+            case MSG_REQUEST_WAIT_START:
                 this.doWaitStartCoopMission();
                 return true;
 
-            case 3:
+            case MSG_AIRDROMESTAY:
                 int l = netmsginput.readUnsignedByte();
                 if (l == 255)
                     l = -1;
@@ -1408,17 +1410,17 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                         this.airdromeStay = l1;
                 return true;
 
-            case 4:
-            case 6:
+            case MSG_STAT:
+            case MSG_CURSTAT:
                 this.getStat(netmsginput, byte0 == 6);
                 return true;
 
-            case 5:
-            case 7:
+            case MSG_STAT_INC:
+            case MSG_CURSTAT_INC:
                 this.getIncStat(netmsginput, byte0 == 7);
                 return true;
 
-            case 9:
+            case MSG_PING_INC:
                 int i1 = 0;
                 if (netmsginput.available() == 4)
                     i1 = netmsginput.readInt();
@@ -1438,7 +1440,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                 }
                 return true;
 
-            case 8:
+            case MSG_PING:
                 int j1 = netmsginput.readInt();
                 NetUser netuser3 = (NetUser) netmsginput.readNetObj();
                 if (netuser3 != null) {
@@ -1451,27 +1453,27 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                 }
                 return true;
 
-            case 24:
+            case MSG_HOUSE_DIE:
                 if (World.cur().statics != null)
                     World.cur().statics.netMsgHouseDie(this, netmsginput);
                 return true;
 
-            case 25:
+            case MSG_HOUSE_SYNC:
                 if (World.cur().statics != null)
                     World.cur().statics.netMsgHouseSync(netmsginput);
                 return true;
 
-            case 26:
+            case MSG_BRIDGE_RDIE:
                 if (World.cur().statics != null)
                     World.cur().statics.netMsgBridgeRDie(netmsginput);
                 return true;
 
-            case 27:
+            case MSG_BRIDGE_DIE:
                 if (World.cur().statics != null)
                     World.cur().statics.netMsgBridgeDie(this, netmsginput);
                 return true;
 
-            case 28:
+            case MSG_BRIDGE_SYNC:
                 if (World.cur().statics != null)
                     World.cur().statics.netMsgBridgeSync(netmsginput);
                 return true;
@@ -1480,22 +1482,30 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                 this.getEventLog(netmsginput);
                 return true;
 
-            case 10:
-            case 11:
-            case 12:
-            case 14:
-            case 16:
-            case 17:
-            case 18:
-            case 19:
-            case 20:
-            case 21:
-            case 22:
-            case 23:
-            case 29:
-            case 30:
+//            case 10:
+//            case 11:
+//            case 12:
+//            case 14:
+//            case 16:
+//            case 17:
+//            case 18:
+//            case 19:
+//            case 20:
+//            case 21:
+//            case 22:
+//            case 23:
+//            case 29:
+//            case 30:
 
-                // TODO: Storebror: Implement Patch Level Replication
+//            case MSG_DOT_RANGE_FRIENDLY:
+//                System.out.println("MSG_DOT_RANGE_FRIENDLY 02");
+//                return false;
+//
+//            case MSG_DOT_RANGE_FOE:
+//                System.out.println("MSG_DOT_RANGE_FOE 02");
+//                return false;
+
+            // TODO: Storebror: Implement Patch Level Replication
             case MSG_PATCHLEVEL:
                 this.readPatchLevel(netmsginput, false);
                 return true;

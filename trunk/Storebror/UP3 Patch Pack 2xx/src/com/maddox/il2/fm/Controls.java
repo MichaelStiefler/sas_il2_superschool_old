@@ -13,7 +13,6 @@ import com.maddox.il2.objects.weapons.BombGun;
 import com.maddox.il2.objects.weapons.FuelTank;
 import com.maddox.il2.objects.weapons.FuelTankGun;
 import com.maddox.il2.objects.weapons.RocketGun;
-import com.maddox.il2.objects.weapons.RocketGun4andHalfInch;
 import com.maddox.rts.Time;
 
 public class Controls {
@@ -120,8 +119,8 @@ public class Controls {
     public int               RIGHT             = 2;
     public int               iToggleRocketSide = this.LEFT;
     public int               iToggleBombSide   = this.LEFT;
-    public long              lWeaponTime       = System.currentTimeMillis();
-    public boolean           bIsMustang        = false;
+//    public long              lWeaponTime       = System.currentTimeMillis();
+//    public boolean           bIsMustang        = false;
 
     // --------------------------------------------------------
 
@@ -788,173 +787,180 @@ public class Controls {
             this.WCT &= 0xfc;
             this.TWCT &= 0xfc;
             
-            // +++ Bomb Release Bug hunting
-            NetAircraft.restorePendingWeaponDropReplication(this.FM.actor);
-            if (this.WeaponControl[2]) {
-                if (NetAircraft.hasBullets(this.FM.actor, 2))
-                    NetAircraft.printDebugMessage(this.FM.actor, "Rocket Trigger pressed!");
-                else
-                    this.WeaponControl[2] = false;
-            }
-            if (this.WeaponControl[3]){
-                if (NetAircraft.hasBullets(this.FM.actor, 3))
-                    NetAircraft.printDebugMessage(this.FM.actor, "Bomb Trigger pressed!");
-                else
-                    this.WeaponControl[3] = false;
-            }
-            // --- Bomb Release Bug hunting
-            
-            int i = 0;
-            for (int i_17_ = 1; i < this.WeaponControl.length && i_17_ < 256; i_17_ <<= 1) {
-                if (this.WeaponControl[i]) {
-                    this.WCT |= i_17_;
-                    this.TWCT |= i_17_;
+            int wctIndex = 0;
+            for (int wctBitMask = 1; wctIndex < this.WeaponControl.length && wctBitMask < 256; wctBitMask <<= 1) {
+                if (this.WeaponControl[wctIndex]) {
+                    // TODO: Storebror: +++ Bomb Release Bug hunting
+                    if ((wctIndex==2 || wctIndex==3) && (this.FM.actor instanceof NetAircraft) && this.hasBulletsLeftOnTrigger(wctIndex)) {
+                        NetAircraft netaircraft = (NetAircraft)this.FM.actor;
+                        
+                        // The following Trigger Checks only apply to the sender aka the "Master" of Net Replication.
+                        // Receivers aka "Mirrors" just process the Trigger messages as they are received instead.
+                        if (netaircraft.isNetMaster()) {
+                            NetAircraft.printDebugMessage(netaircraft, "Controls update() NetMaster " + NetAircraft.TRIGGER_NAMES[wctIndex-2] + " Trigger pressed!");
+                            
+                            // If this plane is an AI plane controlled by the Server, make sure it doesn't release bombs faster than they could be replicated across the net!
+                            if (!(this.FM instanceof RealFlightModel)) {
+                                if (!this.isReleaseReady(wctIndex - 2)) { // Trigger has been pressed too quick again!
+                                    NetAircraft.printDebugMessage(this.FM.actor, "Controls " + NetAircraft.TRIGGER_NAMES[wctIndex-2] + " Trigger forcibly released, current Tick is " + Time.tickCounter() + ", next possible Trigger is at Tick No." + this.getNextReleaseReady(wctIndex - 2) + " !");
+                                    this.WeaponControl[wctIndex] = false; // Unset Trigger
+                                    // Clear Trigger from Weapon Control Bitmask used for Net Replication.
+                                    // This is just to be on the safe side, it should not be set at this point anyway.
+                                    this.WCT &= ~wctBitMask;
+                                    // Clear Trigger from Weapon Control Bitmask used for Track Recording.
+                                    // This is just to be on the safe side, it should not be set at this point anyway.
+                                    this.TWCT &= ~wctBitMask;
+                                    continue; // Skip further processing of this Trigger.
+                                }
+                            }
+                            netaircraft.incUpdatePending(NetAircraft.UPDATE_MASTER);
+                        }
+                    }
+                    // TODO: Storebror: --- Bomb Release Bug hunting
+                    this.WCT |= wctBitMask;
+                    this.TWCT |= wctBitMask;
                 }
-                i++;
+                wctIndex++;
             }
-            for (int i_18_ = 0; i_18_ < 4; i_18_++)
-                this.saveWeaponControl[i_18_] = this.WeaponControl[i_18_];
-            for (int i_19_ = 0; i_19_ < this.Weapons.length; i_19_++) {
-                if (this.Weapons[i_19_] != null) {
-                    switch (i_19_) {
+            for (wctIndex = 0; wctIndex < 4; wctIndex++)
+                this.saveWeaponControl[wctIndex] = this.WeaponControl[wctIndex];
+            for (wctIndex = 0; wctIndex < this.Weapons.length; wctIndex++) {
+                if (this.Weapons[wctIndex] != null) {
+                    switch (wctIndex) {
                         case 2:
                         case 3: {
-                            int i_20_ = this.WeaponControl[i_19_] ? 1 : 0;
-                            if (i_20_ != 0) {
-                             // TODO: +++ TD AI code backport from 4.13 +++
-                                if(bDropWithPlayer)
-                                {
+                            // TODO: Storebror: +++ Bomb Release Bug hunting
+//                            if (this.WeaponControl[wctIndex]) {
+                            if (this.WeaponControl[wctIndex] && this.hasBulletsLeftOnTrigger(wctIndex)) {
+                                boolean weaponReleased = false;
+                                NetAircraft.printDebugMessage(this.FM.actor, "Controls Weapon Trigger " + wctIndex + " pressed!");
+                                // TODO: Storebror: --- Bomb Release Bug hunting
+
+                                // TODO: +++ TD AI code backport from 4.13 +++
+                                if (bDropWithPlayer) {
                                     bDropWithMe = true;
                                     bDropWithPlayer = false;
                                 }
-                             // TODO: --- TD AI code backport from 4.13 ---
+                                // TODO: --- TD AI code backport from 4.13 ---
                                 // TODO: Added by |ZUTI|
                                 // ----------------------------------------------------------------
                                 Aircraft ac = (Aircraft) this.FM.actor;
-                                if (i_19_ == 3 && ac instanceof TypeBomber && this.zutiBombsightAutomationStatus && ZutiSupportMethods_Multicrew.mustSyncACOperation((Aircraft) this.FM.actor)) {
+                                if (wctIndex == 3 && ac instanceof TypeBomber && this.zutiBombsightAutomationStatus && ZutiSupportMethods_Multicrew.mustSyncACOperation((Aircraft) this.FM.actor)) {
                                     // Can we drop bombs at all? If not, send data to the one that can!
                                     // This check is put here also because us gunsight automation.
                                     ZutiSupportMethods_NetSend.bombardierReleasedOrdinance_ToServer(ac.name(), true, this.FM.CT.bHasBayDoors);
+                                    // TODO: Storebror: +++ Bomb Release Bug hunting
+                                    NetAircraft.printDebugMessage(this.FM.actor, "Multicrew.mustSyncACOperation == true ! Skipping Bomb Release...");
+                                    // TODO: Storebror: --- Bomb Release Bug hunting
                                     return;
-                                    // System.out.println("  Speed=" + ((FM.getSpeed() + 50F) * 0.5F) + ", f=" + f + ", f10=" + f_10_ + ", bool=" + bool + ", bool11=" + bool_11_);
                                 }
                                 // ----------------------------------------------------------------
 
-                                try {
-                                    // TODO: Disabled for 410 compatibility
-                                    /*
-                                     * if ((Aircraft)FM.actor instanceof
-                                     * P_51Mustang)
-                                     * bIsMustang = true;
-                                     */
-                                } catch (Throwable throwable) {
-                                    /* empty */
-                                }
-                                if (!this.bIsMustang || (System.currentTimeMillis() > (this.lWeaponTime + 250L / (long) Time.speed()))) {
-                                    int i_21_ = -1;
-                                    for (int i_22_ = 0; i_22_ < this.Weapons[i_19_].length; i_22_ += 2) {
-                                        if (!(this.Weapons[i_19_][i_22_] instanceof FuelTankGun) && this.Weapons[i_19_][i_22_].haveBullets()) {
-                                            if (this.bHasBayDoors && this.Weapons[i_19_][i_22_].getHookName().startsWith("_BombSpawn")) {
-                                                if (this.BayDoorControl == 1.0F) {
-                                                    this.Weapons[i_19_][i_22_].shots(i_20_);
-                                                    // +++ Bomb Release Bug hunting
-                                                    NetAircraft.ensureWeaponDropReplication(this.FM.actor, i_19_);
-                                                    NetAircraft.printDebugMessage(this.FM.actor, (i_19_ == 2? "Rocket ":"Bomb ") + this.Weapons[i_19_][i_22_].getClass().getName() + " dropped!");
-                                                    // --- Bomb Release Bug hunting
-                                                    // TODO:Added by |ZUTI|
-                                                    // System.out.println("INTERNAL: i19=" + i_19_ + ", i22=" + i_22_ + ", i20=" + i_20_);
-                                                    ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, i_19_, i_22_, i_20_);
-                                                }
-                                            } else {
-                                                if (!this.bIsMustang || (this.Weapons[i_19_][i_22_] instanceof RocketGun4andHalfInch) || ((this.Weapons[i_19_][i_22_] instanceof RocketGun) && (this.iToggleRocketSide == this.LEFT))
-                                                        || ((this.Weapons[i_19_][i_22_] instanceof BombGun) && (this.iToggleBombSide == this.LEFT))) {
-                                                    this.Weapons[i_19_][i_22_].shots(i_20_);
-                                                    // +++ Bomb Release Bug hunting
-                                                    NetAircraft.ensureWeaponDropReplication(this.FM.actor, i_19_);
-                                                    NetAircraft.printDebugMessage(this.FM.actor, (i_19_ == 2? "Rocket ":"Bomb ") + this.Weapons[i_19_][i_22_].getClass().getName() + " dropped!");
-                                                    // --- Bomb Release Bug hunting
-                                                    // TODO:Added by |ZUTI|
-                                                    // System.out.println("EXTERNAL: i19=" + i_19_ + ", i22=" + i_22_ + ", i20=" + i_20_);
-                                                    ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, i_19_, i_22_, i_20_);
-                                                }
-                                                if (this.Weapons[i_19_][i_22_].getHookName().startsWith("_BombSpawn"))
-                                                    this.BayDoorControl = 1.0F;
-                                            }
-                                            if (((this.Weapons[i_19_][i_22_] instanceof BombGun) && !((BombGun) this.Weapons[i_19_][i_22_]).isCassette())
-                                                    || ((this.Weapons[i_19_][i_22_] instanceof RocketGun) && !((RocketGun) this.Weapons[i_19_][i_22_]).isCassette())) {
-                                                i_21_ = i_22_;
-                                                this.lWeaponTime = System.currentTimeMillis();
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    for (int i_23_ = 1; i_23_ < this.Weapons[i_19_].length; i_23_ += 2) {
-                                        if (!(this.Weapons[i_19_][i_23_] instanceof FuelTankGun) && this.Weapons[i_19_][i_23_].haveBullets()) {
-                                            if (this.bHasBayDoors && this.Weapons[i_19_][i_23_].getHookName().startsWith("_BombSpawn")) {
-                                                if (this.BayDoorControl == 1.0F) {
-                                                    this.Weapons[i_19_][i_23_].shots(i_20_);
-                                                    // +++ Bomb Release Bug hunting
-                                                    NetAircraft.ensureWeaponDropReplication(this.FM.actor, i_19_);
-                                                    NetAircraft.printDebugMessage(this.FM.actor, (i_19_ == 2? "Rocket ":"Bomb ") + this.Weapons[i_19_][i_23_].getClass().getName() + " dropped!");
-                                                    // --- Bomb Release Bug hunting
-                                                    // TODO:Added by |ZUTI|
-                                                    ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, i_19_, i_23_, i_20_);
-                                                }
-                                            } else if (!this.bIsMustang || (this.Weapons[i_19_][i_23_] instanceof RocketGun4andHalfInch) || ((this.Weapons[i_19_][i_23_] instanceof RocketGun) && (this.iToggleRocketSide == this.RIGHT))
-                                                    || ((this.Weapons[i_19_][i_23_] instanceof BombGun) && (this.iToggleBombSide == this.RIGHT))) {
-                                                this.Weapons[i_19_][i_23_].shots(i_20_);
-                                                // +++ Bomb Release Bug hunting
-                                                NetAircraft.ensureWeaponDropReplication(this.FM.actor, i_19_);
-                                                NetAircraft.printDebugMessage(this.FM.actor, (i_19_ == 2? "Rocket ":"Bomb ") + this.Weapons[i_19_][i_23_].getClass().getName() + " dropped!");
-                                                // --- Bomb Release Bug hunting
+                                for (int weaponIndexLeft = 0; weaponIndexLeft < this.Weapons[wctIndex].length; weaponIndexLeft += 2) {
+                                    if (!(this.Weapons[wctIndex][weaponIndexLeft] instanceof FuelTankGun) && this.Weapons[wctIndex][weaponIndexLeft].haveBullets()) {
+                                        if (this.bHasBayDoors && this.Weapons[wctIndex][weaponIndexLeft].getHookName().startsWith("_BombSpawn")) {
+                                            if (this.BayDoorControl == 1.0F) {
+                                                // TODO: Storebror: +++ Bomb Release Bug hunting
+                                                NetAircraft.printDebugMessage(this.FM.actor, "\"Left Internal\" " + NetAircraft.TRIGGER_NAMES[wctIndex-2] + " from Emitter No. " + weaponIndexLeft + "= " + NetAircraft.simpleClassName(this.Weapons[wctIndex][weaponIndexLeft]) + " release through open Baydoor!");
+                                                weaponReleased = true;
+                                                this.setNextReleaseReady(wctIndex-2);
+                                                // TODO: Storebror: --- Bomb Release Bug hunting
+                                                this.Weapons[wctIndex][weaponIndexLeft].shots(1);
                                                 // TODO:Added by |ZUTI|
-                                                ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, i_19_, i_23_, i_20_);
+                                                ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, wctIndex, weaponIndexLeft, 1);
                                             }
-                                            if (((this.Weapons[i_19_][i_23_] instanceof BombGun) && !((BombGun) this.Weapons[i_19_][i_23_]).isCassette())
-                                                    || ((this.Weapons[i_19_][i_23_] instanceof RocketGun) && !((RocketGun) this.Weapons[i_19_][i_23_]).isCassette())) {
-                                                i_21_ = i_23_;
-                                                this.lWeaponTime = System.currentTimeMillis();
-                                                break;
-                                            }
+                                        } else {
+                                            // TODO: Storebror: +++ Bomb Release Bug hunting
+                                            NetAircraft.printDebugMessage(this.FM.actor, "\"Left External\" " + NetAircraft.TRIGGER_NAMES[wctIndex-2] + " from Emitter No. " + weaponIndexLeft + "= " + NetAircraft.simpleClassName(this.Weapons[wctIndex][weaponIndexLeft]) + " release!");
+                                            weaponReleased = true;
+                                            this.setNextReleaseReady(wctIndex-2);
+                                            // TODO: Storebror: --- Bomb Release Bug hunting
+                                            this.Weapons[wctIndex][weaponIndexLeft].shots(1);
+                                            // TODO:Added by |ZUTI|
+                                            ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, wctIndex, weaponIndexLeft, 1);
+                                            if (this.Weapons[wctIndex][weaponIndexLeft].getHookName().startsWith("_BombSpawn"))
+                                                this.BayDoorControl = 1.0F;
+                                        }
+                                        if (((this.Weapons[wctIndex][weaponIndexLeft] instanceof BombGun) && !((BombGun) this.Weapons[wctIndex][weaponIndexLeft]).isCassette()) || ((this.Weapons[wctIndex][weaponIndexLeft] instanceof RocketGun) && !((RocketGun) this.Weapons[wctIndex][weaponIndexLeft]).isCassette())) {
+                                            break;
                                         }
                                     }
-                                    if (i_21_ != -1) {
-                                        if (this.Weapons[i_19_][i_21_] instanceof BombGun) {
-                                            if (this.iToggleBombSide == this.LEFT)
-                                                this.iToggleBombSide = this.RIGHT;
-                                            else
-                                                this.iToggleBombSide = this.LEFT;
-                                        } else if (!(this.Weapons[i_19_][i_21_] instanceof RocketGun4andHalfInch)) {
-                                            if (this.iToggleRocketSide == this.LEFT)
-                                                this.iToggleRocketSide = this.RIGHT;
-                                            else
-                                                this.iToggleRocketSide = this.LEFT;
-                                        }
-                                    }
-                                    if (!this.bIsMustang)
-                                        this.WeaponControl[i_19_] = false;
                                 }
+                                for (int weaponIndexRight = 1; weaponIndexRight < this.Weapons[wctIndex].length; weaponIndexRight += 2) {
+                                    if (!(this.Weapons[wctIndex][weaponIndexRight] instanceof FuelTankGun) && this.Weapons[wctIndex][weaponIndexRight].haveBullets()) {
+                                        if (this.bHasBayDoors && this.Weapons[wctIndex][weaponIndexRight].getHookName().startsWith("_BombSpawn")) {
+                                            if (this.BayDoorControl == 1.0F) {
+                                                // TODO: Storebror: +++ Bomb Release Bug hunting
+                                                NetAircraft.printDebugMessage(this.FM.actor, "\"Right Internal\" " + NetAircraft.TRIGGER_NAMES[wctIndex-2] + " from Emitter No. " + weaponIndexRight + "= " + NetAircraft.simpleClassName(this.Weapons[wctIndex][weaponIndexRight]) + " release through open Baydoor!");
+                                                weaponReleased = true;
+                                                this.setNextReleaseReady(wctIndex-2);
+                                                // TODO: Storebror: --- Bomb Release Bug hunting
+                                                this.Weapons[wctIndex][weaponIndexRight].shots(1);
+                                                // TODO:Added by |ZUTI|
+                                                ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, wctIndex, weaponIndexRight, 1);
+                                            }
+                                        } else {
+                                            // TODO: Storebror: +++ Bomb Release Bug hunting
+                                            NetAircraft.printDebugMessage(this.FM.actor, "\"Right External\" " + NetAircraft.TRIGGER_NAMES[wctIndex-2] + " from Emitter No. " + weaponIndexRight + "= " + NetAircraft.simpleClassName(this.Weapons[wctIndex][weaponIndexRight]) + " release!");
+                                            weaponReleased = true;
+                                            this.setNextReleaseReady(wctIndex-2);
+                                            // TODO: Storebror: --- Bomb Release Bug hunting
+                                            this.Weapons[wctIndex][weaponIndexRight].shots(1);
+                                            // TODO:Added by |ZUTI|
+                                            ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, wctIndex, weaponIndexRight, 1);
+                                        }
+                                        if (((this.Weapons[wctIndex][weaponIndexRight] instanceof BombGun) && !((BombGun) this.Weapons[wctIndex][weaponIndexRight]).isCassette()) || ((this.Weapons[wctIndex][weaponIndexRight] instanceof RocketGun) && !((RocketGun) this.Weapons[wctIndex][weaponIndexRight]).isCassette())) {
+                                            break;
+                                        }
+                                    }
+                                }
+                                this.WeaponControl[wctIndex] = false;
+                                // TODO: Storebror: +++ Bomb Release Bug hunting
+                                if (!weaponReleased) {
+                                    NetAircraft.printDebugMessage(this.FM.actor, "Controls Weapon Trigger " + wctIndex + " pressed but no weapon released!");
+                                }
+                                // TODO: Storebror: --- Bomb Release Bug hunting
                             }
                             break;
                         }
                         default:
                             boolean flag2 = false;
-                            for (int i2 = 0; i2 < this.Weapons[i_19_].length; i2++) {
-                                this.Weapons[i_19_][i2].shots(this.WeaponControl[i_19_] ? -1 : 0);
-                                flag2 = flag2 || this.Weapons[i_19_][i2].haveBullets();
+                            for (int i2 = 0; i2 < this.Weapons[wctIndex].length; i2++) {
+                                this.Weapons[wctIndex][i2].shots(this.WeaponControl[wctIndex] ? -1 : 0);
+                                flag2 = flag2 || this.Weapons[wctIndex][i2].haveBullets();
                             }
 
-                            if (this.WeaponControl[i_19_] && !flag2 && this.FM.isPlayers())
-                                com.maddox.il2.objects.effects.ForceFeedback.fxTriggerShake(i_19_, false);
+                            if (this.WeaponControl[wctIndex] && !flag2 && this.FM.isPlayers())
+                                com.maddox.il2.objects.effects.ForceFeedback.fxTriggerShake(wctIndex, false);
                             break;
                     }
                 }
             }
-            // +++ Bomb Release Bug hunting
-            NetAircraft.resetPendingWeaponDropReplication(this.FM.actor);
-            // --- Bomb Release Bug hunting
+            // TODO: Storebror: +++ Bomb Release Bug hunting
+// NetAircraft.resetPendingWeaponDropReplication(this.FM.actor);
+// TODO: Storebror: --- Bomb Release Bug hunting
         }
+//        // TODO: Storebror: +++ Bomb Release Bug hunting
+//        else {
+//            if (this.WeaponControl[2])
+//                NetAircraft.printDebugMessage(this.FM.actor, "CONTROLS: Rocket Trigger pressed, but this.tick == Time.tickCounter()");
+//            else if (this.WeaponControl[3])
+//                NetAircraft.printDebugMessage(this.FM.actor, "CONTROLS: Bomb Trigger pressed, but this.tick == Time.tickCounter()");
+//            else return;
+//            if (Time.currentReal() > lastTimeControlTickSkip + 5000L) {
+//                Exception e = new Exception("CONTROLS: Trigger pressed, but this.tick == Time.tickCounter()");
+//                e.printStackTrace();
+//                System.out.println("### PREVIOUS Update's Stack Trace:");
+//                System.out.println(lastTimeControlTickSkipStackTrace);
+//                lastTimeControlTickSkip = Time.currentReal();
+//            }
+//        }
+//        // TODO: Storebror: --- Bomb Release Bug hunting
     }
+//    // TODO: Storebror: +++ Bomb Release Bug hunting
+//    private static long lastTimeControlTickSkip = 0L;
+//    private static String lastTimeControlTickSkipStackTrace="";
+//    // TODO: Storebror: --- Bomb Release Bug hunting
 
     public boolean dropExternalStores(boolean flag) {
         boolean flag1 = ((com.maddox.il2.objects.air.Aircraft) this.FM.actor).dropExternalStores(flag);
@@ -1094,6 +1100,61 @@ public class Controls {
         return this.BrakeLeft;
     }
     // ------------------------------------------------------------
+    
+    // TODO: Storebror: +++ Bomb Release Bug hunting
+    public boolean hasBulletsLeftOnTrigger(int Trigger) {
+        BulletEmitter[] be = this.FM.CT.Weapons[Trigger];
+        if (be == null) return false;
+        for (int i=0; i<be.length; i++) {
+            if (be[i] != null && be[i].haveBullets()) return true;
+        }
+        return false;
+    }
+    
+    public BulletEmitter firstGunOnTrigger(int Trigger) {
+        BulletEmitter[] be = this.FM.CT.Weapons[Trigger];
+        if (be == null) return null;
+        for (int i=0; i<be.length; i++) {
+            if (be[i] != null && be[i].haveBullets()) return be[i];
+        }
+        return null;
+    }
+    
+    private int[] nextReleaseReady = {0, 0};
+    private static final int RELEASE_INTERVAL = 3;
+    
+    public boolean isReleaseReady(int trigger) {
+        if (!(this.FM.actor instanceof NetAircraft)) return true;
+        NetAircraft netaircraft = (NetAircraft)this.FM.actor;
+        if (!netaircraft.isNetMaster()) return true;
+//        if (!this.hasBulletsLeftOnTrigger(trigger)) return false;
+        return Time.tickCounter() >= this.getNextReleaseReady(trigger);
+    }
+    public boolean isRocketReleaseReady() {
+        return this.isReleaseReady(0);
+    }
+    public boolean isBombReleaseReady() {
+        return this.isReleaseReady(1);
+    }
+    public int getNextReleaseReady(int trigger) {
+        return this.nextReleaseReady[trigger] + 1;
+    }
+    public int getNextRocketReleaseReady() {
+        return this.getNextReleaseReady(0);
+    }
+    public int getNextBombReleaseReady() {
+        return this.getNextReleaseReady(1);
+    }
+    public void setNextReleaseReady(int trigger) {
+        this.nextReleaseReady[trigger] = Time.tickCounter() + RELEASE_INTERVAL + 1;
+    }
+    public void setNextRocketReleaseReady(int nextReleaseReady) {
+        this.setNextReleaseReady(0);
+    }
+    public void setNextBombReleaseReady(int nextReleaseReady) {
+        this.setNextReleaseReady(1);
+    }
+    // TODO: Storebror: --- Bomb Release Bug hunting
     
     // TODO: +++ TD AI code backport from 4.13 +++ 
     public boolean isShooting()

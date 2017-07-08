@@ -623,10 +623,6 @@ public abstract class NetAircraft extends SndAircraft {
             this.tlag = 0L;
         }
 
-        // +++ Bomb Release Bug hunting
-        int iFMTrackMirror = -1;
-        // --- Bomb Release Bug hunting
-
         public boolean netInput(NetMsgInput netmsginput) throws IOException {
             if (netmsginput.isGuaranted())
                 return NetAircraft.this.netGetGMsg(netmsginput, false);
@@ -645,29 +641,26 @@ public abstract class NetAircraft extends SndAircraft {
             this.bGround = (i & 0x20) != 0;
             this.bUnderDeck = (i & 0x40) != 0;
             if (NetAircraft.this.isFMTrackMirror()) {
-                // +++ Bomb Release Bug hunting
-                if (iFMTrackMirror != 1) {
-                    iFMTrackMirror = 1;
+                // TODO: Storebror: +++ Bomb Release Bug hunting
+                if (NetAircraft.this.iFMTrackMirror != 1) {
+                    NetAircraft.this.iFMTrackMirror = 1;
                     printDebugMessage(NetAircraft.this, "isFMTrackMirror() = true");
                 }
-                // --- Bomb Release Bug hunting
+                // TODO: Storebror: --- Bomb Release Bug hunting
                 netmsginput.readUnsignedByte();
                 netmsginput.readUnsignedByte();
             } else {
-                // +++ Bomb Release Bug hunting
-                if (iFMTrackMirror != 0) {
-                    iFMTrackMirror = 0;
+                // TODO: Storebror: +++ Bomb Release Bug hunting
+                if (NetAircraft.this.iFMTrackMirror != 0) {
+                    NetAircraft.this.iFMTrackMirror = 0;
                     printDebugMessage(NetAircraft.this, "isFMTrackMirror() = false");
                 }
-                // --- Bomb Release Bug hunting
+                // TODO: Storebror: --- Bomb Release Bug hunting
                 this.netControls(netmsginput.readUnsignedByte());
                 this.netWeaponControl(netmsginput.readUnsignedByte());
                 if (this.bFirstUpdate) {
                     Aircraft aircraft = (Aircraft) this.superObj();
                     aircraft.FM.CT.forceGear(aircraft.FM.CT.GearControl);
-//                    if (aircraft != null) {
-//                        /* empty */
-//                    }
                     Aircraft.forceGear(aircraft.getClass(), aircraft.hierMesh(), aircraft.FM.CT.getGear());
                 }
             }
@@ -932,7 +925,15 @@ public abstract class NetAircraft extends SndAircraft {
                     } else if (NetAircraft.this.FM.Vwld.length() < 1.0)
                         NetAircraft.this.FM.setStationedOnGround(true);
                 }
+                // TODO: Storebror: +++ Bomb Release Bug hunting
+                NetAircraft.this.decUpdatePending(UPDATE_MIRROR);
+                // TODO: Storebror: --- Bomb Release Bug hunting
             }
+//            // TODO: Storebror: +++ Bomb Release Bug hunting
+//            else {
+//                NetAircraft.printDebugMessage(NetAircraft.this, "MIRROR: (Time.tickNext() - this.tcur) * 0.0010F < 0.0010F !!");
+//            }
+//            // TODO: Storebror: --- Bomb Release Bug hunting
         }
 
         public void netControls(int i) {
@@ -944,37 +945,40 @@ public abstract class NetAircraft extends SndAircraft {
             NetAircraft.this.FM.CT.AirBrakeControl = (i & 0x20) != 0 ? 1.0F : 0.0F;
         }
 
-        public void netWeaponControl(int i) {
-            int i_61_ = NetAircraft.this.FM.CT.WeaponControl.length;
-            int i_62_ = 0;
-            for (int i_63_ = 1; i_62_ < i_61_ && i_63_ < 256; i_63_ <<= 1) {
-                NetAircraft.this.FM.CT.WeaponControl[i_62_] = (i & i_63_) != 0;
-                // +++ Bomb Release Bug hunting
-                if (i_62_ == 2 || i_62_ == 3) {
-                    if (NetAircraft.this.FM.CT.WeaponControl[i_62_]) {
-                        if (NetAircraft.hasBullets(NetAircraft.this, i_62_)) {
-                            printDebugMessage(NetAircraft.this, "WeaponControl[" + i_62_ + "] = true");
-                            if (i_62_ == 2)
-                                mirrorRocketReleasePending = true;
-                            if (i_62_ == 3)
-                                mirrorBombReleasePending = true;
+        public void netWeaponControl(int netWeaponBits) {
+            int wCTLlength = NetAircraft.this.FM.CT.WeaponControl.length;
+            int wCTLindex = 0;
+            for (int bitMask = 1; wCTLindex < wCTLlength && bitMask < 256; bitMask <<= 1) {
+                NetAircraft.this.FM.CT.WeaponControl[wCTLindex] = (netWeaponBits & bitMask) != 0;
+                // TODO: Storebror: +++ Bomb Release Bug hunting
+                
+                if ((wCTLindex == 2 || wCTLindex == 3)) {
+                    if (NetAircraft.this.FM.CT.WeaponControl[wCTLindex] && NetAircraft.this.hasBulletsLeftOnTrigger(wCTLindex)) {
+                        printDebugMessage(NetAircraft.this, "MIRROR: " + NetAircraft.TRIGGER_NAMES[wCTLindex - 2] + " Trigger pressed!");
+                        NetAircraft.this.incUpdatePending(UPDATE_MIRROR);
+                        NetAircraft.this.setTriggerActive(TRIGGER_MIRROR, wCTLindex - 2, true);
+                    } else if (NetAircraft.this.isTriggerActive(TRIGGER_MIRROR, wCTLindex - 2)) {
+                        printDebugMessage(NetAircraft.this, "MIRROR: " + NetAircraft.TRIGGER_NAMES[wCTLindex - 2] + " Trigger released!");
+                        if (NetAircraft.this.isUpdatePending(UPDATE_MIRROR) && NetAircraft.this.hasBulletsLeftOnTrigger(wCTLindex)) {
+                            NetAircraft.this.FM.CT.WeaponControl[wCTLindex] = true;
+                            printDebugMessage(NetAircraft.this, "MIRROR: " + NetAircraft.TRIGGER_NAMES[wCTLindex - 2] + " Trigger restored to \"pressed\" because fmUpdate was pending!");
                         } else {
-                            NetAircraft.this.FM.CT.WeaponControl[i_62_] = false;
+                            NetAircraft.this.setTriggerActive(TRIGGER_MIRROR, wCTLindex - 2, false);
                         }
                     }
                 }
-                // --- Bomb Release Bug hunting
-                i_62_++;
+                
+                // TODO: Storebror: --- Bomb Release Bug hunting
+                wCTLindex++;
             }
         }
-
+        
         public Mirror(Actor actor, NetChannel netchannel, int i) {
             super(actor, netchannel, i);
             try {
                 this.out.setIncludeTime(true);
                 this.out.setFilterArg(actor);
             } catch (Exception exception) {
-                /* empty */
             }
         }
     }
@@ -1021,24 +1025,41 @@ public abstract class NetAircraft extends SndAircraft {
         }
 
         public void netUpdate() {
-            if (Time.tickCounter() <= 2)
-                return;
+            // TODO: Storebror: +++ Bomb Release Bug hunting
+//            if (Time.tickCounter() <= 2)
+//                return;
+            if (Time.tickCounter() <= 2) {
+                if (NetAircraft.this.isUpdatePending(UPDATE_MASTER)) {
+                    printDebugMessage(NetAircraft.this, "Master netUpdate() Time.tickCounter()=" + Time.tickCounter() +", enforcing Update since number of Master Updates pending is " + NetAircraft.this.getUpdatePending(UPDATE_MASTER));
+                } else {
+                    return;
+                }
+            }
+            // TODO: Storebror: --- Bomb Release Bug hunting
             if (this.netUser == null && NetAircraft.this.FM.brakeShoe) {
                 int i = NetAircraft.this.FM.actor.hashCode() & 0xf;
                 if ((this.countUpdates++ & 0xf) != i)
+                    // TODO: Storebror: +++ Bomb Release Bug hunting
+                    if (NetAircraft.this.isUpdatePending(UPDATE_MASTER)) {
+                        printDebugMessage(NetAircraft.this, "Master netUpdate() NetAircraft.this.FM.actor.hashCode() & 0xf=" + (NetAircraft.this.FM.actor.hashCode() & 0xf) +", this.countUpdates=" + this.countUpdates + ", enforcing Update since number of Master Updates pending is " + NetAircraft.this.getUpdatePending(UPDATE_MASTER));
+                    } else
+                    // TODO: Storebror: --- Bomb Release Bug hunting
                     return;
             } else
                 this.countUpdates = 0;
-            // +++ Bomb Release Bug hunting
+            // TODO: Storebror: +++ Bomb Release Bug hunting
             if (this.weaponsIsEmpty) {
                 if (NetAircraft.this.FM.CT.WCT != 0) {
-                    printDebugMessage(NetAircraft.this, "!!! WCT RESET TO ZERO !!!");
+                    if (!NetAircraft.this.wctResetLogged) {
+                        printDebugMessage(NetAircraft.this, "Master netUpdate() !!! WCT RESET TO ZERO !!! - this will be the only time logging this issue, but it might happen multiple times hereafter.");
+                        NetAircraft.this.wctResetLogged = true;
+                    }
                 }
                 NetAircraft.this.FM.CT.WCT = (byte) 0;
             }
 //            if (this.weaponsIsEmpty)
 //                NetAircraft.this.FM.CT.WCT = (byte) 0;
-            // --- Bomb Release Bug hunting
+            // TODO: Storebror: --- Bomb Release Bug hunting
             boolean bool = (NetAircraft.this.FM.CT.WCT & 0xf) != 0;
             try {
                 this.out.unLockAndClear();
@@ -1092,21 +1113,31 @@ public abstract class NetAircraft extends SndAircraft {
                     i_71_ = 255;
                 this.out.writeByte(i_71_);
                 this.out.writeByte(NetAircraft.this.FM.CT.CTL);
-                // +++ Bomb Release Bug hunting
-                if (NetAircraft.this.masterRocketReleasePending)
-                    NetAircraft.this.FM.CT.WCT |= 0x04;
-                if (NetAircraft.this.masterBombReleasePending)
-                    NetAircraft.this.FM.CT.WCT |= 0x08;
-                // --- Bomb Release Bug hunting
+                
                 this.out.writeByte(NetAircraft.this.FM.CT.WCT);
-                // +++ Bomb Release Bug hunting
-//              if ((NetAircraft.this.FM.CT.WCT & 0x0c) != 0)
-//                  printDebugMessage("WCT = " + NetAircraft.this.FM.CT.WCT);
-                // --- Bomb Release Bug hunting
+                
+                // TODO: Storebror: +++ Bomb Release Bug hunting
+                for (int wctlIndex = 2; wctlIndex <= 3; wctlIndex++) {
+                    boolean triggerPressed = ((NetAircraft.this.FM.CT.WCT & (1 << wctlIndex)) != 0);
+                    if (triggerPressed) {
+                        if (NetAircraft.this.hasBulletsLeftOnTrigger(wctlIndex)) {
+                            printDebugMessage(NetAircraft.this, "Master netUpdate(): " + NetAircraft.TRIGGER_NAMES[wctlIndex - 2] + " Trigger pressed!");
+                            NetAircraft.this.setTriggerActive(TRIGGER_MASTER, wctlIndex - 2, true);
+                            NetAircraft.this.setLastBulletLogged(wctlIndex - 2, false);
+                        } else if (!NetAircraft.this.isLastBulletLogged(wctlIndex - 2)){
+                            printDebugMessage(NetAircraft.this, "Master netUpdate(): " + NetAircraft.TRIGGER_NAMES[wctlIndex - 2] + " Trigger pressed!");
+                            NetAircraft.this.setTriggerActive(TRIGGER_MASTER, wctlIndex - 2, true);
+                            NetAircraft.this.setLastBulletLogged(wctlIndex - 2, true);
+                        }
+                    } else if (NetAircraft.this.isTriggerActive(TRIGGER_MASTER, wctlIndex - 2)) {
+                        printDebugMessage(NetAircraft.this, "Master netUpdate(): " + NetAircraft.TRIGGER_NAMES[wctlIndex - 2] + " Trigger released!");
+                        NetAircraft.this.setTriggerActive(TRIGGER_MASTER, wctlIndex - 2, false);
+                    }
+                }
+                NetAircraft.this.decUpdatePending(UPDATE_MASTER);
+                // TODO: Storebror: --- Bomb Release Bug hunting
 
-                // +++ Bomb Release Bug hunting
-//              NetAircraft.this.FM.CT.WCT &= 0x3;
-                // --- Bomb Release Bug hunting
+                NetAircraft.this.FM.CT.WCT &= 0x3;
                 NetAircraft.this.pos.getAbs(this.p, this.o);
                 this.out.writeFloat((float) this.p.x);
                 this.out.writeFloat((float) this.p.y);
@@ -1182,36 +1213,34 @@ public abstract class NetAircraft extends SndAircraft {
             } catch (Exception exception) {
                 NetObj.printDebug(exception);
             }
-            if (this.weaponsCheck && Time.current() > this.weaponsSyncTime) {
-                // +++ Bomb Release Bug hunting
-                if (NetAircraft.this.masterRocketReleasePending || NetAircraft.this.masterBombReleasePending) {
-                    this.weaponsSyncTime = Time.current() + 1000L;
+            // TODO: Storebror: +++ Bomb Release Bug hunting
+//            if (this.weaponsCheck && Time.current() > this.weaponsSyncTime) {
+//                this.weaponsSyncTime = Time.current() + 5000L;
+//                this.weaponsCheck = false;
+//                if (NetAircraft.this.isWeaponsChanged(this.weaponsBitStates)) {
+//                    this.weaponsBitStates = NetAircraft.this.getWeaponsBitStates(this.weaponsBitStates);
+//                    NetAircraft.this.netPutWeaponsBitStates(this.weaponsBitStates);
+//                    this.weaponsIsEmpty = NetAircraft.this.isWeaponsAllEmpty();
+//                }
+//            }
+            if ((this.weaponsCheck && Time.current() > this.weaponsSyncTime) || NetAircraft.this.netPutWeaponsBitStatesPending) {
+                if (NetAircraft.this.isUpdatePending(NetAircraft.UPDATE_MASTER)) {
+                    NetAircraft.this.netPutWeaponsBitStatesPending = true;
+                    printDebugMessage(NetAircraft.this, "Master netUpdate() deferring weaponsBitStates replication because Master Update is pending!");
                 } else {
-                    // --- Bomb Release Bug hunting
                     this.weaponsSyncTime = Time.current() + 5000L;
                     this.weaponsCheck = false;
                     if (NetAircraft.this.isWeaponsChanged(this.weaponsBitStates)) {
                         this.weaponsBitStates = NetAircraft.this.getWeaponsBitStates(this.weaponsBitStates);
                         NetAircraft.this.netPutWeaponsBitStates(this.weaponsBitStates);
-                        // +++ Bomb Release Bug hunting
-                        boolean oldWeaponsIsEmpty = this.weaponsIsEmpty;
-                        // --- Bomb Release Bug hunting
                         this.weaponsIsEmpty = NetAircraft.this.isWeaponsAllEmpty();
-                        // +++ Bomb Release Bug hunting
-                        if (oldWeaponsIsEmpty != this.weaponsIsEmpty) {
-                            printDebugMessage(NetAircraft.this, "!!! weaponsIsEmpty = " + this.weaponsIsEmpty + " !!!");
-                        }
                     }
-                    // --- Bomb Release Bug hunting
+                NetAircraft.this.netPutWeaponsBitStatesPending = false;
                 }
             }
+            // TODO: Storebror: --- Bomb Release Bug hunting
             if (bool)
                 this.weaponsCheck = true;
-            // +++ Bomb Release Bug hunting
-            NetAircraft.this.masterRocketReleasePending = false;
-            NetAircraft.this.masterBombReleasePending = false;
-            NetAircraft.this.FM.CT.WCT &= 0x3;
-            // --- Bomb Release Bug hunting
         }
 
         int packSY(float f) {
@@ -1554,33 +1583,49 @@ public abstract class NetAircraft extends SndAircraft {
     }
 
     private void setWeaponsBitStates(byte[] is) {
+        // TODO: Storebror: +++ Bomb Release Bug hunting
+        printDebugMessage(NetAircraft.this, "NetAircraft setWeaponsBitStates(" + bytesToHex(is) + ")");
+        this.dumpWeaponsBitStates(is);
+        // TODO: Storebror: --- Bomb Release Bug hunting
+
         int i = 0;
-        int i_101_ = this.FM.CT.Weapons.length;
-        for (int i_102_ = 0; i_102_ < i_101_; i_102_++) {
-            BulletEmitter[] bulletemitters = this.FM.CT.Weapons[i_102_];
+        for (int weaponsIndex = 0; weaponsIndex < this.FM.CT.Weapons.length; weaponsIndex++) {
+            BulletEmitter[] bulletemitters = this.FM.CT.Weapons[weaponsIndex];
             if (bulletemitters != null) {
-                for (int i_103_ = 0; i_103_ < bulletemitters.length; i_103_++) {
-                    if (bulletemitters[i_103_] != null) {
+                for (int beIndex = 0; beIndex < bulletemitters.length; beIndex++) {
+                    if (bulletemitters[beIndex] != null) {
                         if ((is[i / 8] & 1 << i % 8) == 0) {
-                            // +++ Bomb Release Bug hunting
-                            if (i_102_ == 2 && this.mirrorRocketReleasePending) {
-                                printDebugMessage(this, "skipped setWeaponsBitStates remove " + bulletemitters[i_103_].getClass().getName() + " [" + i + "] because rocketReleasePending = true");
-                            } else if (i_102_ == 3 && this.mirrorBombReleasePending) {
-                                printDebugMessage(this, "skipped setWeaponsBitStates remove " + bulletemitters[i_103_].getClass().getName() + " [" + i + "] because bombReleasePending = true");
-                            } else {
-                                printDebugMessage(this, "setWeaponsBitStates remove " + bulletemitters[i_103_].getClass().getName() + " [" + i + "]");
-                                bulletemitters[i_103_]._loadBullets(0);
-                            }
-//                            bulletemitters[i_103_]._loadBullets(0);
-                            // --- Bomb Release Bug hunting
+                            // TODO: Storebror: +++ Bomb Release Bug hunting
+                            do {
+                                if (this.isNetMirror() && (weaponsIndex == 2 || weaponsIndex == 3) && !this.isNetSpawnSetWeaponsBitStates()) {
+    
+                                    if (this.isUpdatePending(UPDATE_MIRROR)) {
+                                        printDebugMessage(NetAircraft.this, "MIRROR: Emptying Request for " + NetAircraft.TRIGGER_NAMES[weaponsIndex - 2] + " Emitter No." + beIndex + " (" + simpleClassName(bulletemitters[beIndex]) + ") skipped, fmUpdate is pending!");
+                                        break;
+                                    } else if (bulletemitters[beIndex].haveBullets()) {
+                                        int numBullets = bulletemitters[beIndex].countBullets();
+                                        printDebugMessage(NetAircraft.this, "MIRROR: Emptying Request for " + NetAircraft.TRIGGER_NAMES[weaponsIndex - 2] + " Emitter No." + beIndex + " (" + simpleClassName(bulletemitters[beIndex]) + ") skipped, >>> releasing ordnance (" + numBullets + ") instead! <<<");
+                                        bulletemitters[beIndex].shots(numBullets);
+                                        break;
+                                    }
+    
+                                }
+                                bulletemitters[beIndex]._loadBullets(0);
+                            } while (false);
+//                          bulletemitters[beIndex]._loadBullets(0);
+                            // TODO: Storebror: --- Bomb Release Bug hunting
                         }
                         i++;
                     }
                 }
             }
         }
+        
+        // TODO: Storebror: +++ Bomb Release Bug hunting
+        this.setNetSpawnSetWeaponsBitStates(false);
+        // TODO: Storebror: --- Bomb Release Bug hunting
     }
-
+    
     private boolean isWeaponsChanged(byte[] is) {
         if (this.getWeaponsAmount() == 0)
             return false;
@@ -1604,6 +1649,12 @@ public abstract class NetAircraft extends SndAircraft {
     }
 
     private void netPutWeaponsBitStates(byte[] is) {
+        // TODO: Storebror: +++ Bomb Release Bug hunting
+        NetAircraft.printDebugMessage(this, "NetAircraft netPutWeaponsBitStates this.isNet()=" + this.isNet() + ", this.net.countMirrors()=" + (this.isNet()?this.net.countMirrors():0));
+        this.dumpWeaponsBitStates(is);
+//        Exception e = new Exception("NetAircraft netPutWeaponsBitStates");
+//        e.printStackTrace();
+        // TODO: Storebror: --- Bomb Release Bug hunting
         if (this.isNet() && this.net.countMirrors() != 0) {
             try {
                 NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
@@ -2502,6 +2553,9 @@ public abstract class NetAircraft extends SndAircraft {
         if (is != null) {
             for (int i_175_ = 0; i_175_ < is.length; i_175_++)
                 is[i_175_] = (byte) netmsginput.readUnsignedByte();
+            // TODO: Storebror: +++ Bomb Release Bug hunting
+            netaircraft.setNetSpawnSetWeaponsBitStates(true);
+            // TODO: Storebror: --- Bomb Release Bug hunting
             netaircraft.setWeaponsBitStates(is);
         }
         // TODO: Added by |ZUTI|: added try/catch block here to catch exception on server side, if player takes on a plane that is not available
@@ -2767,15 +2821,87 @@ public abstract class NetAircraft extends SndAircraft {
     }
 
     // ---
-    // +++ Bomb Release Bug hunting
+    // TODO: Storebror: +++ Bomb Release Bug hunting
     int                      iFMTrackMirror             = -1;
-    public boolean           mirrorRocketReleasePending = false;
-    public boolean           mirrorBombReleasePending   = false;
-    public boolean           masterRocketReleasePending = false;
-    public boolean           masterBombReleasePending   = false;
-
+    
+    private boolean [][] triggerActive = {{false, false}, {false, false}};
+    private boolean [] lastBulletLogged = {false, false};
+    public static final int TRIGGER_ROCKET = 0;
+    public static final int TRIGGER_BOMB = 1;
+    public static final int TRIGGER_MASTER = 0;
+    public static final int TRIGGER_MIRROR = 1;
+    
+    private int [] updatePending = {0, 0};
+    public static final int UPDATE_MASTER = 0;
+    public static final int UPDATE_MIRROR = 1;
+    
+    public static final String [] TRIGGER_NAMES = {"ROCKET", "BOMB"};
+    public static final String [] UPDATE_NAMES = {"MASTER", "MIRROR"};
+    
+    private boolean netPutWeaponsBitStatesPending = false;
+    private boolean netSpawnSetWeaponsBitStates = false;
+    private boolean wctResetLogged = false;
+    
     private static int       debugLevel                 = Integer.MIN_VALUE;
     private static final int DEBUG_DEFAULT              = 0;
+    
+    public void setLastBulletLogged(int triggerType, boolean isLastBulletLogged) {
+        this.lastBulletLogged[triggerType] = isLastBulletLogged;
+    }
+
+    public boolean isLastBulletLogged(int triggerType) {
+        return this.lastBulletLogged[triggerType];
+    }
+
+    public void setTriggerActive(int triggerSource, int triggerType, boolean isActive) {
+        this.triggerActive[triggerSource][triggerType] = isActive;
+    }
+
+    public boolean isTriggerActive(int triggerSource, int triggerType) {
+        return this.triggerActive[triggerSource][triggerType];
+    }
+    
+    public void setUpdatePending(int updateSource, int numPending) {
+        this.updatePending[updateSource] = numPending;
+    }
+    
+    public void incUpdatePending(int updateSource) {
+        this.updatePending[updateSource]++;
+//        printDebugMessage(this, "Updates Pending for " + UPDATE_NAMES[updateSource] + " = " + this.updatePending[updateSource]);
+    }
+
+    public void decUpdatePending(int updateSource) {
+        this.updatePending[updateSource]--;
+        if (this.updatePending[updateSource] < 0)
+            this.updatePending[updateSource] = 0;
+//        else
+//            printDebugMessage(this, "Updates Pending for " + UPDATE_NAMES[updateSource] + " = " + this.updatePending[updateSource]);
+    }
+
+    public int getUpdatePending(int updateSource) {
+        return this.updatePending[updateSource];
+    }
+
+    public boolean isUpdatePending(int updateSource) {
+        return this.updatePending[updateSource] > 0;
+    }
+    
+    private boolean hasBulletsLeftOnTrigger(int Trigger) {
+        BulletEmitter[] be = this.FM.CT.Weapons[Trigger];
+        if (be == null) return false;
+        for (int i=0; i<be.length; i++) {
+            if (be[i] != null && be[i].haveBullets()) return true;
+        }
+        return false;
+    }
+
+    public boolean isNetSpawnSetWeaponsBitStates() {
+        return netSpawnSetWeaponsBitStates;
+    }
+
+    public void setNetSpawnSetWeaponsBitStates(boolean netSpawnSetWeaponsBitStates) {
+        this.netSpawnSetWeaponsBitStates = netSpawnSetWeaponsBitStates;
+    }
 
     private static int curDebugLevel() {
         if (debugLevel == Integer.MIN_VALUE)
@@ -2786,13 +2912,15 @@ public abstract class NetAircraft extends SndAircraft {
     public static void printDebugMessage(Actor actor, String theMessage) {
         if (curDebugLevel() == 0)
             return;
-        if (!(actor instanceof NetAircraft))
+        if (!(actor instanceof NetAircraft)) {
+            System.out.println("[DEBUG_NETAIRCRAFT] " + actor.name() + " (" + simpleClassName(actor) + ") " + theMessage);
             return;
+        }
         NetAircraft netAircraft = (NetAircraft) actor;
         if (netAircraft.netUser() != null) {
-            System.out.println("§§§§§§§§§§ " + netAircraft.netUser().uniqueName() + " " + theMessage + " §§§§§§§§§§");
+            System.out.println("[DEBUG_NETAIRCRAFT] " + netAircraft.netUser().uniqueName() + " (" + simpleClassName(actor) + ") " + theMessage);
         } else {
-            System.out.println("§§§§§§§§§§ " + netAircraft.name() + " " + theMessage + " §§§§§§§§§§");
+            System.out.println("[DEBUG_NETAIRCRAFT] " + netAircraft.name() + " (" + simpleClassName(actor) + ") " + theMessage);
         }
 
     }
@@ -2804,64 +2932,58 @@ public abstract class NetAircraft extends SndAircraft {
         System.out.println(exception.getMessage());
         exception.printStackTrace();
     }
-
-    public static void ensureWeaponDropReplication(Actor actor, int trigger) {
-        if (!(actor instanceof NetAircraft))
-            return;
-        NetAircraft netAircraft = (NetAircraft) actor;
-        if (!(netAircraft.net.isMaster() || netAircraft.netUser() != null && netAircraft.netUser().isTrackWriter()))
-            return;
-        if (trigger == 2)
-            netAircraft.masterRocketReleasePending = true;
-        if (trigger == 3)
-            netAircraft.masterBombReleasePending = true;
+    
+    private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    public static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for ( int j = 0; j < bytes.length; j++ ) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+    
+    public static String toBinary( byte[] bytes )
+    {
+        String retVal = "";
+        for( int i = 0; i < 8 * bytes.length; i++ )
+            retVal += "" + ((bytes[i / 8] << i % 8 & 0x80) == 0 ? '0' : '1');
+        return retVal;
     }
 
-    public static void restorePendingWeaponDropReplication(Actor actor) {
-        if (!(actor instanceof NetAircraft))
-            return;
-        NetAircraft netAircraft = (NetAircraft) actor;
-        if (!netAircraft.net.isMirror())
-            return;
-        if (netAircraft.mirrorRocketReleasePending)
-            netAircraft.FM.CT.WeaponControl[2] = true;
-        if (netAircraft.mirrorBombReleasePending)
-            netAircraft.FM.CT.WeaponControl[3] = true;
+    public static String toBinaryLittleEndian( byte[] bytes )
+    {
+        String retVal = "";
+        for( int i = 0; i < 8 * bytes.length; i++ )
+            retVal += "" + ((bytes[i / 8] >> i % 8 & 0x01) == 0 ? '0' : '1');
+        return retVal;
+    }
+    
+    public static String simpleClassName(Object o) {
+        String fullClassName = o.getClass().getName();
+        return fullClassName.substring(fullClassName.lastIndexOf('.') + 1);
     }
 
-    public static void resetPendingWeaponDropReplication(Actor actor) {
-        if (!(actor instanceof NetAircraft))
-            return;
-        NetAircraft netAircraft = (NetAircraft) actor;
-        if (!netAircraft.net.isMirror())
-            return;
-        netAircraft.mirrorRocketReleasePending = false;
-        netAircraft.mirrorBombReleasePending = false;
-    }
-
-    public static boolean hasBullets(Actor actor, int trigger) {
-        if (!(actor instanceof NetAircraft))
-            return false;
-        NetAircraft netAircraft = (NetAircraft) actor;
-        // TODO: +++ RRR Bug hunting
-        if (netAircraft.FM == null)
-            return false;
-        if (netAircraft.FM.CT == null)
-            return false;
-        if (netAircraft.FM.CT.Weapons == null)
-            return false;
-        if (netAircraft.FM.CT.Weapons.length <= trigger)
-            return false;
-        if (netAircraft.FM.CT.Weapons[trigger] == null)
-            return false;
-        // --- RRR Bug hunting
-        for (int wi = 0; wi < netAircraft.FM.CT.Weapons[trigger].length; wi++) {
-            if (netAircraft.FM.CT.Weapons[trigger][wi].haveBullets()) {
-                return true;
+    private void dumpWeaponsBitStates(byte[] is) {
+        printDebugMessage(NetAircraft.this, "NetAircraft setWeaponsBitStates(" + bytesToHex(is) + " = " + toBinaryLittleEndian(is) + ") :");
+        int i = 0;
+        String bulletEmitterStates = "";
+        for (int weaponsIndex = 0; weaponsIndex < this.FM.CT.Weapons.length; weaponsIndex++) {
+            BulletEmitter[] bulletemitters = this.FM.CT.Weapons[weaponsIndex];
+            if (bulletemitters != null) {
+                for (int beIndex = 0; beIndex < bulletemitters.length; beIndex++) {
+                    if (bulletemitters[beIndex] != null) {
+                        if ( i>0 ) bulletEmitterStates += ", ";
+                        bulletEmitterStates += simpleClassName(bulletemitters[beIndex]) + "=" + ((is[i / 8] & (1 << i % 8)) != 0);
+                        i++;
+                    }
+                }
             }
         }
-        return false;
+        printDebugMessage(NetAircraft.this, bulletEmitterStates);
     }
-    // --- Bomb Release Bug hunting
+
+    // TODO: Storebror: --- Bomb Release Bug hunting
 
 }

@@ -87,6 +87,9 @@ public class World {
     public float                userCoverRocket         = 500.0F;
     public float                userRocketDelay         = 10.0F;
     public float                userBombDelay           = 0.0F;
+ // TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+    public float                userBombFuze           = 0.0F;
+ // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
     private boolean             bArcade                 = false;
     private boolean             bHighGore               = false;
     private boolean             bHakenAllowed           = false;
@@ -191,6 +194,9 @@ public class World {
         userCoverRocket = userCfg.coverRocket;
         userRocketDelay = userCfg.rocketDelay;
         userBombDelay = userCfg.bombDelay;
+        // TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+        userBombFuze = userCfg.bombFuze;
+        // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
     }
 
     public boolean isArcade() {
@@ -790,6 +796,9 @@ public class World {
         // TODO: +++ 4.11+ TrackIR implementation by SAS~Storebror +++
             if (Config.isUSE_RENDER()) System.out.println("Using new TrackIR: " + TrackIRWin.isUseNewTrackIR());
         // TODO: --- 4.11+ TrackIR implementation by SAS~Storebror ---
+        // FIXME: Storebror: +++ TEST Bomb/Rocket Fuze/Delay Replication
+            else this.userBombDelay = 0.5F;
+        // FIXME: Storebror: --- TEST Bomb/Rocket Fuze/Delay Replication
     }
 
     public static float getTimeofDay() {

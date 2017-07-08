@@ -2141,6 +2141,9 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
     }
 
     public int HitbyMask() {
+        // TODO: Add null checks
+        if (FM == null) return -25;
+        if (FM.Vwld == null) return -25;
         return FM.Vwld.length() < 2.0 ? -1 : -25;
     }
 

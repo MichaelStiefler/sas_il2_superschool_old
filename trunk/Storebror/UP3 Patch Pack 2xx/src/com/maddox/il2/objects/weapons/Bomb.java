@@ -10,6 +10,7 @@ import com.maddox.il2.net.Chat;
 import com.maddox.il2.objects.ActorCrater;
 import com.maddox.il2.objects.ActorLand;
 import com.maddox.il2.objects.air.Aircraft;
+import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.buildings.Plate;
 import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.rts.*;
@@ -146,6 +147,9 @@ public class Bomb extends ActorMesh implements MsgCollisionRequestListener, MsgC
             }
         }
         if (delayExplosion > 0.0F) {
+            // TODO: Storebror: +++ Bomb/Rocket Fuze/Delay Replication
+            Bomb.printDebug(this.getOwner(), "Bomb " + Bomb.simpleClassName(this) + " msgCollision, delayExplosion=" + delayExplosion);
+            // TODO: Storebror: --- Bomb/Rocket Fuze/Delay Replication
             pos.getTime(Time.current(), loc);
             collide(false);
             drawing(false);
@@ -194,6 +198,9 @@ public class Bomb extends ActorMesh implements MsgCollisionRequestListener, MsgC
 
     public void doDelayExplosion(Object obj) {
         DelayParam delayparam = (DelayParam) obj;
+        // TODO: Storebror: +++ Bomb/Rocket Fuze/Delay Replication
+        Bomb.printDebug(this.getOwner(), "Bomb " + Bomb.simpleClassName(this) + " doDelayExplosion");
+        // TODO: Storebror: --- Bomb/Rocket Fuze/Delay Replication
         if (Actor.isValid(delayparam.other)) {
             delayparam.other.pos.getTime(Time.current(), __loc);
             delayparam.loc.add(__loc);
@@ -204,6 +211,9 @@ public class Bomb extends ActorMesh implements MsgCollisionRequestListener, MsgC
     }
 
     protected void doExplosion(Actor actor, String s) {
+        // TODO: Storebror: +++ Bomb/Rocket Fuze/Delay Replication
+        Bomb.printDebug(this.getOwner(), "Bomb " + Bomb.simpleClassName(this) + " doExplosion w/o Point3d");
+        // TODO: Storebror: --- Bomb/Rocket Fuze/Delay Replication
         pos.getTime(Time.current(), p);
         if (isArmed()) {
             doExplosion(actor, s, p);
@@ -220,6 +230,9 @@ public class Bomb extends ActorMesh implements MsgCollisionRequestListener, MsgC
     }
 
     protected void doExplosion(Actor actor, String s, Point3d point3d) {
+        // TODO: Storebror: +++ Bomb/Rocket Fuze/Delay Replication
+        Bomb.printDebug(this.getOwner(), "Bomb " + Bomb.simpleClassName(this) + " doExplosion w/ Point3d");
+        // TODO: Storebror: --- Bomb/Rocket Fuze/Delay Replication
         Class class1 = getClass();
         float f = Property.floatValue(class1, "power", 1000F);
         int i = Property.intValue(class1, "powerType", 0);
@@ -464,4 +477,46 @@ public class Bomb extends ActorMesh implements MsgCollisionRequestListener, MsgC
     RangeRandom                  rnd;
     public int                   seed;
     // ------------------------------------
+    
+    // TODO: Storebror: +++ Bomb/Rocket Fuze/Delay Replication
+    private static int       debugLevel                 = Integer.MIN_VALUE;
+    private static final int DEBUG_DEFAULT              = 0;
+
+    private static int curDebugLevel() {
+        if (debugLevel == Integer.MIN_VALUE)
+            debugLevel = Config.cur.ini.get("Mods", "DEBUG_BOMB", DEBUG_DEFAULT);
+        return debugLevel;
+    }
+
+    public static void printDebug(Actor actor, String theMessage) {
+        if (curDebugLevel() == 0)
+            return;
+        if (actor == null) {
+            System.out.println("[DEBUG_BOMB] (null) " + theMessage);
+            return;
+        }
+        if (!(actor instanceof NetAircraft)) {
+            System.out.println("[DEBUG_BOMB] " + actor.name() + " (" + simpleClassName(actor) + ") " + theMessage);
+            return;
+        }
+        NetAircraft netAircraft = (NetAircraft) actor;
+        if (netAircraft.netUser() != null) {
+            System.out.println("[DEBUG_BOMB] " + netAircraft.netUser().uniqueName() + " (" + simpleClassName(actor) + ") " + theMessage);
+        } else {
+            System.out.println("[DEBUG_BOMB] " + netAircraft.name() + " (" + simpleClassName(actor) + ") " + theMessage);
+        }
+
+    }
+
+    public static void printDebug(String theMessage) {
+        if (curDebugLevel() == 0)
+            return;
+        System.out.println("[DEBUG_BOMB] " + theMessage);
+    }
+    
+    public static String simpleClassName(Object o) {
+        String fullClassName = o.getClass().getName();
+        return fullClassName.substring(fullClassName.lastIndexOf('.') + 1);
+    }
+    // TODO: Storebror: --- Bomb/Rocket Fuze/Delay Replication
 }

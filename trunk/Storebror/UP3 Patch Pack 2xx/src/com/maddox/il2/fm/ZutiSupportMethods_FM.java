@@ -9,7 +9,6 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.builder.ZutiSupportMethods_Builder;
 import com.maddox.il2.engine.GunGeneric;
 import com.maddox.il2.engine.ZutiSupportMethods_Engine;
-import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Mission;
 import com.maddox.il2.game.ZutiAcWithReleasedOrdinance;
@@ -38,7 +37,6 @@ import com.maddox.il2.objects.ships.ZutiSupportMethods_Ships;
 import com.maddox.il2.objects.weapons.BombGun;
 import com.maddox.il2.objects.weapons.FuelTankGun;
 import com.maddox.il2.objects.weapons.RocketGun;
-import com.maddox.il2.objects.weapons.RocketGun4andHalfInch;
 import com.maddox.rts.NetEnv;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
@@ -496,102 +494,51 @@ public class ZutiSupportMethods_FM
 	 * Call this method when data was received that bombardier dropped bombs from AI aircraft! AI ONLY!!!
 	 * Method was created to allow bombardiers on AI plane to drop bombs in pairs only and not all at once.
 	 */
-	public static void executeDropBombs(FlightModel FM)
-	{
-		if( FM == null || FM.actor == null )
-		{
-			return;
-		}
-		
-		if (!FM.CT.bIsMustang || (System.currentTimeMillis() > (FM.CT.lWeaponTime + 250L / (long)Time.speed())))
-		{
-			int i_21_ = -1;
-			for (int i_22_ = 0; i_22_ < FM.CT.Weapons[3].length; i_22_ += 2)
-			{
-				if (!(FM.CT.Weapons[3][i_22_] instanceof FuelTankGun) && FM.CT.Weapons[3][i_22_].haveBullets())
-				{
-					if (FM.CT.bHasBayDoors && FM.CT.Weapons[3][i_22_].getHookName().startsWith("_BombSpawn"))
-					{
-						if (FM.CT.BayDoorControl == 1.0F)
-						{
-							FM.CT.Weapons[3][i_22_].shots(1);
-							//TODO:Added by |ZUTI|
-							//System.out.println("INTERNAL: slot=3" + ", bay=" + i_22_ + ", bombs dropped=" + 1);
-							ZutiSupportMethods_FM.executeOnbombDropped(FM.CT.zutiOwnerAircraftName, 3, i_22_, 1);
-						}
-					}
-					else
-					{
-						if (!FM.CT.bIsMustang || (FM.CT.Weapons[3][i_22_] instanceof RocketGun4andHalfInch) || ((FM.CT.Weapons[3][i_22_] instanceof RocketGun) && (FM.CT.iToggleRocketSide == FM.CT.LEFT))
-								|| ((FM.CT.Weapons[3][i_22_] instanceof BombGun) && (FM.CT.iToggleBombSide == FM.CT.LEFT)))
-						{
-							FM.CT.Weapons[3][i_22_].shots(1);
-							//TODO:Added by |ZUTI|
-							//System.out.println("INTERNAL: slot=3" + ", bay=" + i_22_ + ", bombs dropped=" + 1);
-							ZutiSupportMethods_FM.executeOnbombDropped(FM.CT.zutiOwnerAircraftName, 3, i_22_, 1);
-						}
-						if (FM.CT.Weapons[3][i_22_].getHookName().startsWith("_BombSpawn"))
-							FM.CT.BayDoorControl = 1.0F;
-					}
-					if (((FM.CT.Weapons[3][i_22_] instanceof BombGun) && !((BombGun)FM.CT.Weapons[3][i_22_]).isCassette()) || ((FM.CT.Weapons[3][i_22_] instanceof RocketGun) && !((RocketGun)FM.CT.Weapons[3][i_22_]).isCassette()))
-					{
-						i_21_ = i_22_;
-						FM.CT.lWeaponTime = System.currentTimeMillis();
-						break;
-					}
-				}
-			}
-			for (int i_23_ = 1; i_23_ < FM.CT.Weapons[3].length; i_23_ += 2)
-			{
-				if (!(FM.CT.Weapons[3][i_23_] instanceof FuelTankGun) && FM.CT.Weapons[3][i_23_].haveBullets())
-				{
-					if (FM.CT.bHasBayDoors && FM.CT.Weapons[3][i_23_].getHookName().startsWith("_BombSpawn"))
-					{
-						if (FM.CT.BayDoorControl == 1.0F)
-						{													
-							FM.CT.Weapons[3][i_23_].shots(1);
-							//TODO:Added by |ZUTI|
-							//System.out.println("INTERNAL: slot=3" + ", bay=" + i_23_ + ", bombs dropped=" + 1);
-							ZutiSupportMethods_FM.executeOnbombDropped(FM.CT.zutiOwnerAircraftName, 3, i_23_, 1);
-						}
-					}
-					else if (!FM.CT.bIsMustang || (FM.CT.Weapons[3][i_23_] instanceof RocketGun4andHalfInch) || ((FM.CT.Weapons[3][i_23_] instanceof RocketGun) && (FM.CT.iToggleRocketSide == FM.CT.RIGHT))
-							|| ((FM.CT.Weapons[3][i_23_] instanceof BombGun) && (FM.CT.iToggleBombSide == FM.CT.RIGHT)))
-					{													
-						FM.CT.Weapons[3][i_23_].shots(1);
-						//TODO:Added by |ZUTI|
-						//System.out.println("INTERNAL: slot=3" + ", bay=" + i_23_ + ", bombs dropped=" + 1);
-						ZutiSupportMethods_FM.executeOnbombDropped(FM.CT.zutiOwnerAircraftName, 3, i_23_, 1);
-					}
-					if (((FM.CT.Weapons[3][i_23_] instanceof BombGun) && !((BombGun)FM.CT.Weapons[3][i_23_]).isCassette()) || ((FM.CT.Weapons[3][i_23_] instanceof RocketGun) && !((RocketGun)FM.CT.Weapons[3][i_23_]).isCassette()))
-					{
-						i_21_ = i_23_;
-						FM.CT.lWeaponTime = System.currentTimeMillis();
-						break;
-					}
-				}
-			}
-			if (i_21_ != -1)
-			{
-				if (FM.CT.Weapons[3][i_21_] instanceof BombGun)
-				{
-					if (FM.CT.iToggleBombSide == FM.CT.LEFT)
-						FM.CT.iToggleBombSide = FM.CT.RIGHT;
-					else
-						FM.CT.iToggleBombSide = FM.CT.LEFT;
-				}
-				else if (!(FM.CT.Weapons[3][i_21_] instanceof RocketGun4andHalfInch))
-				{
-					if (FM.CT.iToggleRocketSide == FM.CT.LEFT)
-						FM.CT.iToggleRocketSide = FM.CT.RIGHT;
-					else
-						FM.CT.iToggleRocketSide = FM.CT.LEFT;
-				}
-			}
-			if (!FM.CT.bIsMustang)
-				FM.CT.WeaponControl[3] = false;
-		}
-	}
+    public static void executeDropBombs(FlightModel FM) {
+        if (FM == null || FM.actor == null) {
+            return;
+        }
+
+        for (int weaponIndex = 0; weaponIndex < FM.CT.Weapons[3].length; weaponIndex += 2) {
+            if (!(FM.CT.Weapons[3][weaponIndex] instanceof FuelTankGun) && FM.CT.Weapons[3][weaponIndex].haveBullets()) {
+                if (FM.CT.bHasBayDoors && FM.CT.Weapons[3][weaponIndex].getHookName().startsWith("_BombSpawn")) {
+                    if (FM.CT.BayDoorControl == 1.0F) {
+                        FM.CT.Weapons[3][weaponIndex].shots(1);
+                        // TODO:Added by |ZUTI|
+                        ZutiSupportMethods_FM.executeOnbombDropped(FM.CT.zutiOwnerAircraftName, 3, weaponIndex, 1);
+                    }
+                } else {
+                    FM.CT.Weapons[3][weaponIndex].shots(1);
+                    // TODO:Added by |ZUTI|
+                    ZutiSupportMethods_FM.executeOnbombDropped(FM.CT.zutiOwnerAircraftName, 3, weaponIndex, 1);
+                    if (FM.CT.Weapons[3][weaponIndex].getHookName().startsWith("_BombSpawn"))
+                        FM.CT.BayDoorControl = 1.0F;
+                }
+                if (((FM.CT.Weapons[3][weaponIndex] instanceof BombGun) && !((BombGun) FM.CT.Weapons[3][weaponIndex]).isCassette()) || ((FM.CT.Weapons[3][weaponIndex] instanceof RocketGun) && !((RocketGun) FM.CT.Weapons[3][weaponIndex]).isCassette())) {
+                    break;
+                }
+            }
+        }
+        for (int weaponIndex = 1; weaponIndex < FM.CT.Weapons[3].length; weaponIndex += 2) {
+            if (!(FM.CT.Weapons[3][weaponIndex] instanceof FuelTankGun) && FM.CT.Weapons[3][weaponIndex].haveBullets()) {
+                if (FM.CT.bHasBayDoors && FM.CT.Weapons[3][weaponIndex].getHookName().startsWith("_BombSpawn")) {
+                    if (FM.CT.BayDoorControl == 1.0F) {
+                        FM.CT.Weapons[3][weaponIndex].shots(1);
+                        // TODO:Added by |ZUTI|
+                        ZutiSupportMethods_FM.executeOnbombDropped(FM.CT.zutiOwnerAircraftName, 3, weaponIndex, 1);
+                    }
+                } else {
+                    FM.CT.Weapons[3][weaponIndex].shots(1);
+                    // TODO:Added by |ZUTI|
+                    ZutiSupportMethods_FM.executeOnbombDropped(FM.CT.zutiOwnerAircraftName, 3, weaponIndex, 1);
+                }
+                if (((FM.CT.Weapons[3][weaponIndex] instanceof BombGun) && !((BombGun) FM.CT.Weapons[3][weaponIndex]).isCassette()) || ((FM.CT.Weapons[3][weaponIndex] instanceof RocketGun) && !((RocketGun) FM.CT.Weapons[3][weaponIndex]).isCassette())) {
+                    break;
+                }
+            }
+        }
+        FM.CT.WeaponControl[3] = false;
+    }
 	
 	/**
 	 * Aircraft released bomb. Notify other users about this event.

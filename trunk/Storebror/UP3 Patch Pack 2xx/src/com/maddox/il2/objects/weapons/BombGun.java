@@ -3,6 +3,7 @@ package com.maddox.il2.objects.weapons;
 import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.engine.Actor;
+import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.HookNamed;
 import com.maddox.il2.engine.Interpolate;
@@ -23,7 +24,13 @@ public class BombGun extends Interpolate implements BulletEmitter {
         bCassette = false;
         bulletClass = null;
         bombDelay = 0.0F;
-        armingTime = 2000L;
+        // TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+//        armingTime = 2000L;
+        armingTime = 0L;
+        // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
+        // FIXME: Storebror: +++ TEST Bomb/Rocket Fuze/Delay Replication
+        if (!Config.isUSE_RENDER()) bombDelay = 0.5F;
+        // FIXME: Storebror: --- TEST Bomb/Rocket Fuze/Delay Replication
         bulletMassa = 0.048F;
         numBombs = 0;
     }
@@ -243,6 +250,9 @@ public class BombGun extends Interpolate implements BulletEmitter {
             bomb.pos.setUpdateEnable(false);
             bomb.delayExplosion = bombDelay;
             bomb.armingTime = armingTime;
+            // TODO: Storebror: +++ Bomb/Rocket Fuze/Delay Replication
+            Bomb.printDebug(this.actor, "BombGun " + Bomb.simpleClassName(this) + " newBomb, bombDelay=" + bombDelay + ", armingTime=" + armingTime);
+            // TODO: Storebror: --- Bomb/Rocket Fuze/Delay Replication
         } catch (Exception exception) {}
     }
 
@@ -292,6 +302,9 @@ public class BombGun extends Interpolate implements BulletEmitter {
     }
 
     public void setArmingTime(long l) {
+        // TODO: Storebror: +++ Bomb/Rocket Fuze/Delay Replication
+        Bomb.printDebug(this.actor, "BombGun " + Bomb.simpleClassName(this) + " setArmingTime(" + l + ")");
+        // TODO: Storebror: --- Bomb/Rocket Fuze/Delay Replication
         armingTime = l;
         if (bomb != null)
             bomb.armingTime = l;
