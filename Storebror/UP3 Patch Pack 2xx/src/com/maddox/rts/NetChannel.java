@@ -665,10 +665,13 @@ public class NetChannel implements Destroy {
                 netmsgguaranted.lockDec();
                 if (netmsgguaranted.isRequiredAsk())
                     MsgNetAskNak.postReal(Time.currentReal(), netmsgguaranted._sender, false, netmsgguaranted, this);
-                System.err.println(" " + netmsgguaranted.toString() + " (" + netmsgguaranted._sender.toString() + ")");
+                System.err.print(" " + netmsgguaranted.toString() + " (" + netmsgguaranted._sender.toString() + ") Data:");
+                for (int k=0; k<netmsgguaranted.dataLength(); k++) System.err.print(" " + Integer.toHexString(netmsgguaranted.data()[k]));
+                System.err.println();
             }
 
             holdGMsgs.clear();
+            //return;
             throw new IOException("Cycled guaranted messages");
         } else {
             return;

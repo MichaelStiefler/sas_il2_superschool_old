@@ -1048,7 +1048,9 @@ public class NetServerParams extends NetObj implements NetUpdate {
                     int i = list.size();
                     for (int i_20_ = 0; i_20_ < i; i_20_++) {
                         Actor actor = (Actor) list.get(i_20_);
-                        if (actor instanceof Aircraft && Actor.isAlive(actor) && !actor.net.isMaster()) {
+                        
+                        // TODO: Add null check for "actor.net" to avoid exceptions here
+                        if (actor instanceof Aircraft && Actor.isAlive(actor) && actor.net != null && !actor.net.isMaster()) {
                             NetUser netuser = ((Aircraft) actor).netUser();
                             if (netuser != null) {
                                 if (netuser.netMaxLag == null)

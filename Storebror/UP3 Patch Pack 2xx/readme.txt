@@ -1,10 +1,11 @@
-UP3 RC4 Patch Pack v2.02
+UP3 RC4 Patch Pack v2.10
 
 Contents:
 - All fixes listed below
 - All feature enhancements listed below
 - UP3 RC4 without obfuscation
 - SAS Common Utils v1.09
+- SFS AutoMount
 
 Included feature enhancements:
 - Replication of aircraft control surfaces movement over the net and through NTRK recordings
@@ -120,6 +121,17 @@ Included fixes:
 - AI doesn't proceed to further Ground Attack waypoints anymore when there's nothing left to attack with
 - AI avoids collisions also when flying heavy planes, as long as they're not much heavier than the plane they're about to collide with.
   In the latter case it's the smaller plane's responsibility to avoid the collision.
+- FM2 weapon hooks fixed, bombs and rockets separated and bomb loadout options corrected
+- Hs-123 patched by Loku
+- TBF/TBM Gunsight fixed by Loku
+- F2A series flight model update by Loku
+- A6M2-N "Rufe" and Blenheim Nav light fixes by Loku
+- A6M Engine Texture update by Loku
+- Fw-190 Schusszähler Fix by SAS~Skylla
+- Gyro Gunsight Patch for F-51D30NA, Fw-190D-9 late, P-47D late, P-51D20/25/30 NA/NT, P-80, Spitfire Mk.16 & LF.Mk.14, Ta-152C-1, Ta-183 by SAS~Skylla
+- Fw-189 gunner patch by SAS~Skylla
+- Random Radio Broadcast patch by SAS~Skylla
+- CR.32 Patch by Gubi
 
 (*) Me-262V3 flight model:
     Like in real life, you have to tap the brakes in order to get the 262V3 off the ground.
@@ -171,13 +183,13 @@ DEBUG_GEAR=<0-2>           Gear enhanced debugging, default=0, 0=disable, 1=enab
 Installation:
 1.) Run JSGME.exe from your UP3 RC4 game folder and disable any of the following previously installed mods(packs), if applicable:
     * Any old Hotfix Pack (* see below)
-    * Any old Patch Pack (e.g. "#UP#_Patch_Pack_107" or "#UP#_Patch_Pack_201")
+    * Any old Patch Pack (e.g. "#UP#_Patch_Pack_202")
     * UP3 RC4 without obfuscation ("#UP#_Unobfuscated_MDS_for_UP3"), because this is integrated in this patch pack already
 2.) Check your enabled JSGME Mods, now there should only be:
     * #UP#_Enable_UP.3.0
     * Additional JSGME Mods not related to Fixes, Patches, unobfuscated UP etc.
 3.) Extract this Patch Pack to your UP3 RC4 game folder
-4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_202")
+4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_210")
 
 ********************
 
@@ -202,6 +214,15 @@ Several other Hotfixes installed directly into the #UP# folder are to be removed
 - Fw-190_Schusszaehler_fix_v1.3
 - UP3 ##BAILOUT SPEED FIX##
 - UP3 ##EXPLOSIONS FIX##
+- 0_F2A_series_update
+- 0_up_fix_Hs-123_update
+- Hawks_GearDoorNOTMod
+- FM-2 Loadout Fix
+- FW 190 Schusszähler Fix
+- !Flak Burst Flash
+- TB3_G4M2_JU88_Parasite_Fix
+etc...
+
 
 IMPORTANT: If you have PA_Jeronimo's Engine Cowling Mod installed in your game, please make sure to Rename the folder
            3do/plane/Me-262V-3

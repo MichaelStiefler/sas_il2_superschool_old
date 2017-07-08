@@ -94,6 +94,11 @@ public class Config {
         // TODO: +++ Mods Settings GUI by SAS~Storebror +++
         this.bInstantLog = ini.get("Mods", "InstantLog", 0) != 0;
         // TODO: --- Mods Settings GUI by SAS~Storebror ---
+        // TODO: +++ Additional Log Settings by SAS~Storebror +++
+        this.bLogDate = ini.get("Mods", "LogDate", 0) != 0;
+        this.bLogMilliseconds = ini.get("Mods", "LogMilliseconds", 0) != 0;
+        this.bLogTicks = ini.get("Mods", "LogTicks", 0) != 0;
+        // TODO: --- Additional Log Settings by SAS~Storebror ---
     }
 
     public void save() {
@@ -689,5 +694,9 @@ public class Config {
     public static final int     MIN_NIGHT_SETTINGS = 0;
     public static final int     MAX_NIGHT_SETTINGS = 10;
  // TODO: --- Mods Settings GUI by SAS~Storebror ---
-
+ // TODO: +++ Additional Log Settings by SAS~Storebror +++
+    public boolean              bLogDate;
+    public boolean              bLogMilliseconds;
+    public boolean              bLogTicks;
+ // TODO: --- Additional Log Settings by SAS~Storebror ---
 }

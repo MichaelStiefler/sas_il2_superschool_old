@@ -63,6 +63,9 @@ public class GUIAirArming extends GameState
 	public GWindowEditControl wRocket;
 	public GWindowEditControl wRocketDelay;
 	public GWindowEditControl wBombDelay;
+	// TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+    public GWindowEditControl wBombFuze;
+    // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 	public GWindowComboControl cFuel;
 	public GWindowComboControl cAircraft;
 	public GWindowComboControl cWeapon;
@@ -398,14 +401,21 @@ public class GUIAirArming extends GameState
 			}
 			if (gwindow == wRocketDelay)
 			{
-				usercfg.rocketDelay = clampValue(wRocketDelay, usercfg.rocketDelay, 1.0F, 60F);
+				usercfg.rocketDelay = clampValue(wRocketDelay, usercfg.rocketDelay, UserCfg.ROCKET_DELAY_MIN, UserCfg.ROCKET_DELAY_MAX);
 				return true;
 			}
 			if (gwindow == wBombDelay)
 			{
-				usercfg.bombDelay = clampValue(wBombDelay, usercfg.bombDelay, 0.0F, 10F);
+				usercfg.bombDelay = clampValue(wBombDelay, usercfg.bombDelay, UserCfg.BOMB_DELAY_MIN, UserCfg.BOMB_DELAY_MAX);
 				return true;
 			}
+			// TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+            if (gwindow == wBombFuze)
+            {
+                usercfg.bombFuze = clampValue(wBombFuze, usercfg.bombFuze, UserCfg.BOMB_FUZE_MIN, UserCfg.BOMB_FUZE_MAX);
+                return true;
+            }
+            // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 			if (gwindow == cFuel)
 			{
 				if (bEnableWeaponChange)
@@ -472,6 +482,9 @@ public class GUIAirArming extends GameState
 							wRocket.showWindow();
 							wRocketDelay.showWindow();
 							wBombDelay.showWindow();
+							// TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+                            wBombFuze.showWindow();
+							// TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 						}
 						else
 						{
@@ -480,6 +493,9 @@ public class GUIAirArming extends GameState
 							wRocket.hideWindow();
 							wRocketDelay.hideWindow();
 							wBombDelay.hideWindow();
+                            // TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+                            wBombFuze.hideWindow();
+                            // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 						}
 						sNumberOn.setChecked(quikNumberOn[quikCurPlane], false);
 						fillSkins();
@@ -553,7 +569,10 @@ public class GUIAirArming extends GameState
 			}
 			else
 			{
-				draw(x1024(628F), y1024(480F), x1024(220F), y1024(32F), 0, i18n("neta.NumberOn"));
+                // TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+//				draw(x1024(628F), y1024(480F), x1024(220F), y1024(32F), 0, i18n("neta.NumberOn"));
+                draw(x1024(628F), y1024(458F), x1024(220F), y1024(48F), 0, i18n("neta.NumberOn"));
+                // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 			}
 			GUILookAndFeel guilookandfeel = (GUILookAndFeel)lookAndFeel();
 			if (GUIAirArming.stateId != 4 || quikPlayer && quikCurPlane == 0)
@@ -569,9 +588,17 @@ public class GUIAirArming extends GameState
 				draw(x1024(560F), y1024(592F), x1024(48F), y1024(32F), 0, " " + i18n("neta.sec."));
 				draw(x1024(608F), y1024(544F), x1024(224F), y1024(32F), 2, i18n("neta.BombDelay") + " ");
 				draw(x1024(928F) - guilookandfeel.getVScrollBarW(), y1024(544F), x1024(48F), y1024(32F), 0, " " + i18n("neta.sec."));
+				// TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+	            draw(x1024(608F), y1024(592F), x1024(224F), y1024(32F), 2, bombFuzeCaption + ": ");
+	            draw(x1024(928F) - guilookandfeel.getVScrollBarW(), y1024(592F), x1024(48F), y1024(32F), 0, " " + i18n("neta.sec."));
+				// TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 			}
-			draw(x1024(608F), y1024(592F), x1024(224F), y1024(32F), 2, i18n("neta.FuelQuantity") + " ");
-			draw(x1024(928F), y1024(592F), x1024(48F), y1024(32F), 0, " %");
+			// TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+//			draw(x1024(608F), y1024(592F), x1024(224F), y1024(32F), 2, i18n("neta.FuelQuantity") + " ");
+//			draw(x1024(928F), y1024(592F), x1024(48F), y1024(32F), 0, " %");
+            draw(x1024(608F), y1024(656F), x1024(224F), y1024(32F), 2, i18n("neta.FuelQuantity") + " ");
+            draw(x1024(928F), y1024(656F), x1024(48F), y1024(32F), 0, " %");
+            // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 			draw(x1024(96F), y1024(656F), x1024(320F), y1024(48F), 0, i18n("neta.Apply"));
 			// MW Modified BEGIN: New button text position
 			draw(x1024(396F), y1024(656F), x1024(620F), y1024(48F), 0, i18n("neta.Joystick"));
@@ -586,7 +613,10 @@ public class GUIAirArming extends GameState
 			//-------------------------------------------------
 			
 			if (cNoseart.isVisible())
-				draw(x1024(292F), y1024(656F), x1024(320F), y1024(48F), 2, i18n("neta.Noseart"));
+	            // TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+				//draw(x1024(292F), y1024(656F), x1024(320F), y1024(48F), 2, i18n("neta.Noseart"));
+                draw(x1024(292F), y1024(505F), x1024(320F), y1024(32F), 2, i18n("neta.Noseart"));
+                // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 			setCanvasColorWHITE();
 			guilookandfeel.drawBevel(this, x1024(32F), y1024(32F), x1024(564F), y1024(432F), guilookandfeel.bevelComboDown, guilookandfeel.basicelements);
 		}
@@ -600,7 +630,11 @@ public class GUIAirArming extends GameState
 			wRocketDelay.set1024PosSize(480F, 592F, 80F, 32F);
 			GUILookAndFeel guilookandfeel = (GUILookAndFeel)lookAndFeel();
 			wBombDelay.setPosSize(x1024(832F), y1024(544F), x1024(96F) - guilookandfeel.getVScrollBarW(), y1024(32F));
-			cFuel.set1024PosSize(832F, 592F, 96F, 32F);
+			// TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+            wBombFuze.setPosSize(x1024(832F), y1024(592F), x1024(96F) - guilookandfeel.getVScrollBarW(), y1024(32F));
+//			cFuel.set1024PosSize(832F, 592F, 96F, 32F);
+            cFuel.set1024PosSize(832F, 656F, 96F, 32F);
+            // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 			if (GUIAirArming.stateId == 4)
 				cAircraft.set1024PosSize(628F, 64F, 298F, 32F);
 			else
@@ -613,8 +647,11 @@ public class GUIAirArming extends GameState
 			cPilot.set1024PosSize(628F, 416F, 364F, 32F);
 			wNumber.set1024PosSize(628F, 480F, 112F, 32F);
 			cSquadron.set1024PosSize(896F, 480F, 96F, 32F);
-			sNumberOn.setPosC(x1024(944F), y1024(496F));
-			cNoseart.set1024PosSize(628F, 664F, 364F, 32F);
+            // TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+//			sNumberOn.setPosC(x1024(944F), y1024(496F));
+            sNumberOn.setPosC(x1024(944F), y1024(480F));
+			cNoseart.set1024PosSize(628F, 500F, 364F, 32F);
+            // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 			GUILookAndFeel guilookandfeel1 = (GUILookAndFeel)lookAndFeel();
 			GBevel gbevel = guilookandfeel1.bevelComboDown;
 			renders.setPosSize(x1024(32F) + gbevel.L.dx, y1024(32F) + gbevel.T.dy, x1024(564F) - gbevel.L.dx - gbevel.R.dx, y1024(432F) - gbevel.T.dy - gbevel.B.dy);
@@ -723,6 +760,24 @@ public class GUIAirArming extends GameState
 			this.wRocket.setValue("" + localUserCfg.coverRocket, false);
 			this.wRocketDelay.setValue("" + localUserCfg.rocketDelay, false);
 			this.wBombDelay.setValue("" + localUserCfg.bombDelay, false);
+			// TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+            this.wBombFuze.setValue("" + localUserCfg.bombFuze, false);
+            if("ru".equalsIgnoreCase(RTSConf.cur.locale.getLanguage())) {
+                bombFuzeCaption = "\\u041F\\u0440\\u0435\\u0434\\u043E\\u0445\\u0440\\u0430\\u043D\\u0438\\u0442\\u0435\\u043B\\u044C \\u0431\\u043E\\u043C\\u0431\\u044B";
+            } else if("cs".equalsIgnoreCase(RTSConf.cur.locale.getLanguage())) {
+                bombFuzeCaption = "Bombov\\u00E1 pojistka";
+            } else if("de".equalsIgnoreCase(RTSConf.cur.locale.getLanguage())) {
+                bombFuzeCaption = "Bombensicherung";
+            } else if("fr".equalsIgnoreCase(RTSConf.cur.locale.getLanguage())) {
+                bombFuzeCaption = "Fus\\u00E9e de Bombe";
+            } else if("hu".equalsIgnoreCase(RTSConf.cur.locale.getLanguage())) {
+                bombFuzeCaption = "Bomba biztos\\u00EDt\\u00E9k";
+            } else if("pl".equalsIgnoreCase(RTSConf.cur.locale.getLanguage())) {
+                bombFuzeCaption = "Bezpiecznik Bomba";
+            } else {
+                bombFuzeCaption = "Bomb Fuze";
+            }
+			// TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 			
 			SectFile localSectFile = Main.cur().currentMissionFile;
 			if (localSectFile == null)
@@ -755,6 +810,9 @@ public class GUIAirArming extends GameState
 					this.wRocket.showWindow();
 					this.wRocketDelay.showWindow();
 					this.wBombDelay.showWindow();
+					// TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+                    this.wBombFuze.showWindow();
+					// TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 					this.cPlane.hideWindow();
 					this.wNumber.hideWindow();
 					this.cSquadron.hideWindow();
@@ -804,6 +862,9 @@ public class GUIAirArming extends GameState
 					this.wRocket.showWindow();
 					this.wRocketDelay.showWindow();
 					this.wBombDelay.showWindow();
+					// TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+                    this.wBombFuze.showWindow();
+					// TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 					this.cPlane.hideWindow();
 					this.wNumber.hideWindow();
 					this.cSquadron.hideWindow();
@@ -851,6 +912,9 @@ public class GUIAirArming extends GameState
 						this.wRocket.showWindow();
 						this.wRocketDelay.showWindow();
 						this.wBombDelay.showWindow();
+						// TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+                        this.wBombFuze.showWindow();
+						// TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 						this.cPlane.hideWindow();
 						this.wNumber.showWindow();
 						this.cSquadron.showWindow();
@@ -1140,6 +1204,9 @@ public class GUIAirArming extends GameState
 						this.wRocket.showWindow();
 						this.wRocketDelay.showWindow();
 						this.wBombDelay.showWindow();
+						// TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+                        this.wBombFuze.showWindow();
+						// TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 					}
 					else
 					{
@@ -1148,6 +1215,9 @@ public class GUIAirArming extends GameState
 						this.wRocket.hideWindow();
 						this.wRocketDelay.hideWindow();
 						this.wBombDelay.hideWindow();
+                        // TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+                        this.wBombFuze.hideWindow();
+                        // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 					}
 					this.cPlane.showWindow();
 					this.wNumber.hideWindow();
@@ -2076,6 +2146,11 @@ public class GUIAirArming extends GameState
 		wBombDelay = (GWindowEditControl)dialogClient.addControl(new GWindowEditControl(dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null));
 		wBombDelay.bNumericOnly = wBombDelay.bNumericFloat = true;
 		wBombDelay.bDelayedNotify = true;
+		// TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+        wBombFuze = (GWindowEditControl)dialogClient.addControl(new GWindowEditControl(dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null));
+        wBombFuze.bNumericOnly = wBombFuze.bNumericFloat = true;
+        wBombFuze.bDelayedNotify = true;
+		// TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 		wNumber = (GWindowEditControl)dialogClient.addControl(new GWindowEditControl(dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null)
 		{
 			
@@ -2147,4 +2222,7 @@ public class GUIAirArming extends GameState
 	public GUISwitchBox3 sZutiMultiCrew;
 	public GUISwitchBox3 sZutiMultiCrewAnytime;
 	//------------------------------------------------------------------------
+	// TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+	private static String bombFuzeCaption = "Bomb Fuze";
+	// TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 }

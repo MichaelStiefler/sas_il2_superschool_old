@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
-import com.maddox.rts.Time;
 
 public class NetMistel {
     public static final int          NETMSG_MISTEL                 = 92;
@@ -594,27 +593,27 @@ public class NetMistel {
 
     static {
         netMistelAircraftList = new ArrayList();
-
-        Thread thread = new Thread() {
-            private long lastCurrentTimeReal = 0L;
-
-            public void run() {
-                System.out.println("Thread Running");
-                do {
-                    try {
-                        Thread.sleep(10000);
-                        if (lastCurrentTimeReal == Time.currentReal()) {
-                            System.exit(0);
-                        }
-                        lastCurrentTimeReal = Time.currentReal();
-                        System.out.println("Current Time: " + lastCurrentTimeReal);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } while (true);
-            }
-        };
-
-        thread.start();
+//
+//        Thread thread = new Thread() {
+//            private long lastCurrentTimeReal = 0L;
+//
+//            public void run() {
+//                System.out.println("Thread Running");
+//                do {
+//                    try {
+//                        Thread.sleep(10000);
+//                        if (lastCurrentTimeReal == Time.currentReal()) {
+//                            System.exit(0);
+//                        }
+//                        lastCurrentTimeReal = Time.currentReal();
+////                        System.out.println("Current Time: " + lastCurrentTimeReal);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                } while (true);
+//            }
+//        };
+//
+//        thread.start();
     }
 }
