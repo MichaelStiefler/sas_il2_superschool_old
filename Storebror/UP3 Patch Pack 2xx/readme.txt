@@ -1,11 +1,12 @@
-UP3 RC4 Patch Pack v2.10
+UP3 RC4 Patch Pack v2.11 BETA
 
 Contents:
 - All fixes listed below
 - All feature enhancements listed below
 - UP3 RC4 without obfuscation
 - SAS Common Utils v1.09
-- SFS AutoMount
+- SFS AutoMount v2
+- IL-2 Selector 3.2.0
 
 Included feature enhancements:
 - Replication of aircraft control surfaces movement over the net and through NTRK recordings
@@ -49,6 +50,10 @@ Included feature enhancements:
 - Auto Admin (for FBDj Admins) and Auto User (for reserved names in Online Gameplay) added to Mod GUI
 - User can select specific Username for Online Gameplay, e.g. to override the default Hyperlobby Username
 - Skin Download Notifications can be enabled/disabled in Mod Settings
+- Bomb Fuze (arming time) can be set in arming screen
+- New AC-47 Minigun Mod by SAS~Skylla
+- Enhanced WrfGr.21 explosion damage Mod by SAS~Skylla
+- IL-2 1941 Fieldmod Gunner Cockpit by Loku
 
 Included fixes:
 - Bf 109 Series Cockpit Code fix
@@ -132,6 +137,9 @@ Included fixes:
 - Fw-189 gunner patch by SAS~Skylla
 - Random Radio Broadcast patch by SAS~Skylla
 - CR.32 Patch by Gubi
+- Texture file loading bug (core game bug since day one) fixed
+- TBF/TBM Gunsight Fix by Loku
+- P-40E/P-40M Cockpit Fuel Gauge Fix by Loku
 
 (*) Me-262V3 flight model:
     Like in real life, you have to tap the brakes in order to get the 262V3 off the ground.
@@ -177,19 +185,28 @@ DEBUG_TORPEDO=<0/1>        Torpedo enhanced debugging, default=0, 0=disable, 1=e
 DEBUG_ZSM_GAMEORDER=<0/1>  ZutiSupportMethods_GameOrder enhanced debugging, default=0, 0=disable, 1=enable
 DEBUG_ZSM_ENGINE=<0/1>     ZutiSupportMethods_Engine enhanced debugging, default=0, 0=disable, 1=enable
 DEBUG_GEAR=<0-2>           Gear enhanced debugging, default=0, 0=disable, 1=enable, 2=detailed, useful for carrier takeoff mod debugging
+DEBUG_NETAIRCRAFT=<0/1>    NetAircraft debugging, default=0, 0=disable, 1=enable, useful e.g. for weapon trigger replication
+DEBUG_BOMB=<0/1>           Bomb debugging, default=0, 0=disable, 1=enable, useful e.g. for Bomb Fuze / Delay replication (also for Torps and Rockets)
+
+Additionally implemented Logfile Switches:
+You can adjust log.lst Date/Time output by setting the following values in the conf.ini [Mods] section:
+
+LogDate=<0/1>              Date output in log.lst, default=0, 0=disable, 1=enable
+LogMilliseconds=<0/1>      Milliseconds in time output in log.lst, default=0, 0=disable, 1=enable
+LogTicks=<0/1>             "Tick Delta" output in log.lst, default=0, 0=disable, 1=enable, this is the time difference between two log lines in game's internal "Ticks"
 
 ********************
 
 Installation:
 1.) Run JSGME.exe from your UP3 RC4 game folder and disable any of the following previously installed mods(packs), if applicable:
     * Any old Hotfix Pack (* see below)
-    * Any old Patch Pack (e.g. "#UP#_Patch_Pack_202")
+    * Any old Patch Pack (e.g. "#UP#_Patch_Pack_210")
     * UP3 RC4 without obfuscation ("#UP#_Unobfuscated_MDS_for_UP3"), because this is integrated in this patch pack already
 2.) Check your enabled JSGME Mods, now there should only be:
     * #UP#_Enable_UP.3.0
     * Additional JSGME Mods not related to Fixes, Patches, unobfuscated UP etc.
 3.) Extract this Patch Pack to your UP3 RC4 game folder
-4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_210")
+4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_211")
 
 ********************
 
