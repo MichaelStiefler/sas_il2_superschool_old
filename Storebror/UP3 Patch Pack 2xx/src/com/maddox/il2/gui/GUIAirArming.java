@@ -1,18 +1,26 @@
 /*4.10.1 class*/
 package com.maddox.il2.gui;
 
-import com.maddox.il2.ai.Regiment;
-import com.maddox.il2.ai.UserCfg;
-import com.maddox.il2.ai.World;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
+import java.util.TreeMap;
+
+import com.maddox.JGP.Color4f;
+import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Vector3f;
 import com.maddox.gwindow.GBevel;
 import com.maddox.gwindow.GColor;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowComboControl;
 import com.maddox.gwindow.GWindowEditControl;
 import com.maddox.gwindow.GWindowRoot;
-import com.maddox.JGP.Color4f;
-import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Vector3f;
+import com.maddox.il2.ai.Regiment;
+import com.maddox.il2.ai.UserCfg;
+import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorHMesh;
 import com.maddox.il2.engine.ActorMesh;
@@ -44,13 +52,6 @@ import com.maddox.rts.RTSConf;
 import com.maddox.rts.SFSInputStream;
 import com.maddox.rts.SectFile;
 import com.maddox.util.HashMapExt;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
-import java.util.TreeMap;
 
 public class GUIAirArming extends GameState
 {
@@ -551,17 +552,23 @@ public class GUIAirArming extends GameState
 		public void render()
 		{
 			super.render();
-			GUISeparate.draw(this, GColor.Gray, x1024(628F), y1024(176F), x1024(364F), 2.0F);
-			GUISeparate.draw(this, GColor.Gray, x1024(628F), y1024(320F), x1024(364F), 2.0F);
+            // TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+//			GUISeparate.draw(this, GColor.Gray, x1024(628F), y1024(176F), x1024(364F), 2.0F);
+//			GUISeparate.draw(this, GColor.Gray, x1024(628F), y1024(320F), x1024(364F), 2.0F);
+            GUISeparate.draw(this, GColor.Gray, x1024(624F), y1024(140F), x1024(372F), 2.0F);
+            GUISeparate.draw(this, GColor.Gray, x1024(624F), y1024(264F), x1024(372F), 2.0F);
+            GUISeparate.draw(this, GColor.Gray, x1024(624F), y1024(444F), x1024(372F), 2.0F);
+            // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 			GUISeparate.draw(this, GColor.Gray, x1024(32F), y1024(640F), x1024(962F), 2.0F);
 			setCanvasColor(GColor.Gray);
 			setCanvasFont(0);
-			draw(x1024(644F), y1024(32F), x1024(332F), y1024(32F), 1, i18n("neta.Aircraft"));
-			draw(x1024(644F), y1024(96F), x1024(332F), y1024(32F), 1, i18n("neta.WeaponLoadout"));
-			draw(x1024(644F), y1024(176F), x1024(332F), y1024(32F), 1, i18n("neta.Country"));
-			draw(x1024(644F), y1024(240F), x1024(332F), y1024(32F), 1, i18n("neta.Regiment"));
-			draw(x1024(644F), y1024(320F), x1024(332F), y1024(32F), 1, i18n("neta.Skin"));
-			draw(x1024(644F), y1024(384F), x1024(332F), y1024(32F), 1, i18n("neta.Pilot"));
+            // TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+//			draw(x1024(644F), y1024(32F), x1024(332F), y1024(32F), 1, i18n("neta.Aircraft"));
+//			draw(x1024(644F), y1024(96F), x1024(332F), y1024(32F), 1, i18n("neta.WeaponLoadout"));
+//			draw(x1024(644F), y1024(176F), x1024(332F), y1024(32F), 1, i18n("neta.Country"));
+//			draw(x1024(644F), y1024(240F), x1024(332F), y1024(32F), 1, i18n("neta.Regiment"));
+//			draw(x1024(644F), y1024(320F), x1024(332F), y1024(32F), 1, i18n("neta.Skin"));
+//			draw(x1024(644F), y1024(384F), x1024(332F), y1024(32F), 1, i18n("neta.Pilot"));
 			if (GUIAirArming.stateId == 2)
 			{
 				draw(x1024(628F), y1024(448F), x1024(220F), y1024(32F), 0, i18n("neta.Number"));
@@ -569,11 +576,15 @@ public class GUIAirArming extends GameState
 			}
 			else
 			{
-                // TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
-//				draw(x1024(628F), y1024(480F), x1024(220F), y1024(32F), 0, i18n("neta.NumberOn"));
-                draw(x1024(628F), y1024(458F), x1024(220F), y1024(48F), 0, i18n("neta.NumberOn"));
-                // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
+				draw(x1024(628F), y1024(480F), x1024(220F), y1024(32F), 0, i18n("neta.NumberOn"));
 			}
+            draw(x1024(644F), y1024(20F), x1024(332F), y1024(32F), 1, i18n("neta.Aircraft"));
+            draw(x1024(644F), y1024(76F), x1024(332F), y1024(32F), 1, i18n("neta.WeaponLoadout"));
+            draw(x1024(644F), y1024(144F), x1024(332F), y1024(32F), 1, i18n("neta.Country"));
+            draw(x1024(644F), y1024(200F), x1024(332F), y1024(32F), 1, i18n("neta.Regiment"));
+            draw(x1024(644F), y1024(268F), x1024(332F), y1024(32F), 1, i18n("neta.Skin"));
+            draw(x1024(644F), y1024(324F), x1024(332F), y1024(32F), 1, i18n("neta.Pilot"));
+            // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 			GUILookAndFeel guilookandfeel = (GUILookAndFeel)lookAndFeel();
 			if (GUIAirArming.stateId != 4 || quikPlayer && quikCurPlane == 0)
 			{
@@ -611,12 +622,15 @@ public class GUIAirArming extends GameState
 			draw(x1024(320F), y1024(460F), x1024(220F), y1024(48F), 0, i18n("arming.multiCrewAnytime"));
 			//draw(x1024(700F), y1024(656F), x1024(220F), y1024(48F), 0, i18n("Crew Can Join Anytime:"));
 			//-------------------------------------------------
-			
-			if (cNoseart.isVisible())
-	            // TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+
+			// TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+//			if (cNoseart.isVisible())
+            if (cNoseart.isEnable())
 				//draw(x1024(292F), y1024(656F), x1024(320F), y1024(48F), 2, i18n("neta.Noseart"));
-                draw(x1024(292F), y1024(505F), x1024(320F), y1024(32F), 2, i18n("neta.Noseart"));
-                // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
+                draw(x1024(644F), y1024(380F), x1024(332F), y1024(32F), 1, i18n("neta.Noseart"));
+            else
+                draw(x1024(644F), y1024(380F), x1024(332F), y1024(32F), 1, i18n("neta.Noseart") + " (" + i18n("neta.None") + ")");
+            // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 			setCanvasColorWHITE();
 			guilookandfeel.drawBevel(this, x1024(32F), y1024(32F), x1024(564F), y1024(432F), guilookandfeel.bevelComboDown, guilookandfeel.basicelements);
 		}
@@ -635,23 +649,32 @@ public class GUIAirArming extends GameState
 //			cFuel.set1024PosSize(832F, 592F, 96F, 32F);
             cFuel.set1024PosSize(832F, 656F, 96F, 32F);
             // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
-			if (GUIAirArming.stateId == 4)
-				cAircraft.set1024PosSize(628F, 64F, 298F, 32F);
-			else
-				cAircraft.set1024PosSize(628F, 64F, 364F, 32F);
-			cPlane.set1024PosSize(932F, 64F, 60F, 32F);
-			cWeapon.set1024PosSize(628F, 128F, 364F, 32F);
-			cCountry.set1024PosSize(628F, 208F, 364F, 32F);
-			cRegiment.set1024PosSize(628F, 272F, 364F, 32F);
-			cSkin.set1024PosSize(628F, 352F, 364F, 32F);
-			cPilot.set1024PosSize(628F, 416F, 364F, 32F);
+            // TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+//			if (GUIAirArming.stateId == 4)
+//				cAircraft.set1024PosSize(628F, 64F, 298F, 32F);
+//			else
+//				cAircraft.set1024PosSize(628F, 64F, 364F, 32F);
+//			cPlane.set1024PosSize(932F, 64F, 60F, 32F);
+//			cWeapon.set1024PosSize(628F, 128F, 364F, 32F);
+//			cCountry.set1024PosSize(628F, 208F, 364F, 32F);
+//			cRegiment.set1024PosSize(628F, 272F, 364F, 32F);
+//			cSkin.set1024PosSize(628F, 352F, 364F, 32F);
+//			cPilot.set1024PosSize(628F, 416F, 364F, 32F);
+            if (GUIAirArming.stateId == 4)
+                cAircraft.set1024PosSize(628F, 46F, 298F, 32F);
+            else
+                cAircraft.set1024PosSize(628F, 46F, 364F, 32F);
+            cPlane.set1024PosSize(932F, 46F, 60F, 32F);
+            cWeapon.set1024PosSize(628F, 102F, 364F, 32F);
+            cCountry.set1024PosSize(628F, 170F, 364F, 32F);
+            cRegiment.set1024PosSize(628F, 226F, 364F, 32F);
+            cSkin.set1024PosSize(628F, 294F, 364F, 32F);
+            cPilot.set1024PosSize(628F, 350F, 364F, 32F);
+            cNoseart.set1024PosSize(628F, 406F, 364F, 32F);
+            // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 			wNumber.set1024PosSize(628F, 480F, 112F, 32F);
 			cSquadron.set1024PosSize(896F, 480F, 96F, 32F);
-            // TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
-//			sNumberOn.setPosC(x1024(944F), y1024(496F));
-            sNumberOn.setPosC(x1024(944F), y1024(480F));
-			cNoseart.set1024PosSize(628F, 500F, 364F, 32F);
-            // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
+			sNumberOn.setPosC(x1024(944F), y1024(496F));
 			GUILookAndFeel guilookandfeel1 = (GUILookAndFeel)lookAndFeel();
 			GBevel gbevel = guilookandfeel1.bevelComboDown;
 			renders.setPosSize(x1024(32F) + gbevel.L.dx, y1024(32F) + gbevel.T.dy, x1024(564F) - gbevel.L.dx - gbevel.R.dx, y1024(432F) - gbevel.T.dy - gbevel.B.dy);
@@ -1713,11 +1736,13 @@ public class GUIAirArming extends GameState
 				break;
 			}
 			
-			cNoseart.showWindow();
+//			cNoseart.showWindow();
+            cNoseart.setEnable(true);
 		}
 		else
 		{
-			cNoseart.hideWindow();
+//			cNoseart.hideWindow();
+            cNoseart.setEnable(false);
 		}
 		if (cNoseart.getSelected() < 0)
 		{
