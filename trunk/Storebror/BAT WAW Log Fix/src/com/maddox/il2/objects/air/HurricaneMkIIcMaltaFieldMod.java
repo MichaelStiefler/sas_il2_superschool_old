@@ -30,47 +30,52 @@ public class HurricaneMkIIcMaltaFieldMod extends Hurricane implements TypeFighte
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (FM.getAltitude() < 3000F)
-            hierMesh().chunkVisible("HMask1_D0", false);
-        else
-            hierMesh().chunkVisible("HMask1_D0", hierMesh().isChunkVisible("Pilot1_D0"));
-        if ((FM instanceof RealFlightModel) && ((RealFlightModel) FM).isRealMode() || !flag || !(FM instanceof Pilot))
+        if (this.FM.getAltitude() < 3000F) {
+            this.hierMesh().chunkVisible("HMask1_D0", false);
+        } else {
+            this.hierMesh().chunkVisible("HMask1_D0", this.hierMesh().isChunkVisible("Pilot1_D0"));
+        }
+        if (((this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode()) || !flag || !(this.FM instanceof Pilot)) {
             return;
-        Pilot pilot = (Pilot) FM;
-        this.FM.AS.setCockpitDoor(this,
-                pilot.get_maneuver() == 25 // Maneuver.LANDING
-                        || pilot.get_maneuver() == 26 // Maneuver.TAKEOFF
-                        || pilot.get_maneuver() == 49 // Maneuver.EMERGENCY_LANDING
-                        || pilot.get_maneuver() == 64 // Maneuver.PARKED_STARTUP
-                        || pilot.get_maneuver() == 66 // Maneuver.TAXI
-                        || pilot.Gears.onGround() ? 1 : 0);
+        }
+        Pilot pilot = (Pilot) this.FM;
+        this.FM.AS.setCockpitDoor(this, (pilot.get_maneuver() == 25 // Maneuver.LANDING
+        ) || (pilot.get_maneuver() == 26 // Maneuver.TAKEOFF
+        ) || (pilot.get_maneuver() == 49 // Maneuver.EMERGENCY_LANDING
+        ) || (pilot.get_maneuver() == 64 // Maneuver.PARKED_STARTUP
+        ) || (pilot.get_maneuver() == 66 // Maneuver.TAXI
+        ) || pilot.Gears.onGround() ? 1 : 0);
     }
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (this != World.getPlayerAircraft())
+        if (this != World.getPlayerAircraft()) {
             return;
+        }
         if (this.hierMesh().chunkFindCheck(cps) >= 0) {
             System.out.println(cpm);
             this.FM.M.massEmpty += 1000;
         }
         this.Mk2Distance = Math.round(World.cur().userCoverMashineGun / 54.6805F) * 50F;
-        if (this.Mk2Distance < 150F)
+        if (this.Mk2Distance < 150F) {
             this.Mk2Distance = 150F;
-        if (this.Mk2Distance > 700F)
+        }
+        if (this.Mk2Distance > 700F) {
             this.Mk2Distance = 700F;
+        }
     }
 
     // Opening Canopy Code
     public void moveCockpitDoor(float f) {
-        resetYPRmodifier();
+        this.resetYPRmodifier();
         Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 0.65F);
         Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 0.0F);
-        hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
+        this.hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
         if (Config.isUSE_RENDER()) {
-            if (Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null)
+            if ((Main3D.cur3D().cockpits != null) && (Main3D.cur3D().cockpits[0] != null)) {
                 Main3D.cur3D().cockpits[0].onDoorMoved(f);
-            setDoorSnd(f);
+            }
+            this.setDoorSnd(f);
         }
     }
 
@@ -79,23 +84,27 @@ public class HurricaneMkIIcMaltaFieldMod extends Hurricane implements TypeFighte
         return true;
     }
 
-    public void typeFighterAceMakerAdjDistanceReset() {}
+    public void typeFighterAceMakerAdjDistanceReset() {
+    }
 
     public void typeFighterAceMakerAdjDistancePlus() {
         this.Mk2Distance += 50F;
-        if (this.Mk2Distance > 700F)
+        if (this.Mk2Distance > 700F) {
             this.Mk2Distance = 700F;
+        }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "Target distance: " + (int) this.Mk2Distance + " yds.");
     }
 
     public void typeFighterAceMakerAdjDistanceMinus() {
         this.Mk2Distance -= 50F;
-        if (this.Mk2Distance < 150F)
+        if (this.Mk2Distance < 150F) {
             this.Mk2Distance = 150F;
+        }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "Target distance: " + (int) this.Mk2Distance + " yds.");
     }
 
-    public void typeFighterAceMakerAdjSideslipReset() {}
+    public void typeFighterAceMakerAdjSideslipReset() {
+    }
 
     private void hudLogTargetType(int mk2WingspanType) {
         if (mk2WingspanType >= Mk2TargetWingspanText.length) {
@@ -113,15 +122,17 @@ public class HurricaneMkIIcMaltaFieldMod extends Hurricane implements TypeFighte
 
     public void typeFighterAceMakerAdjSideslipPlus() {
         this.Mk2WingspanType++;
-        if (this.Mk2WingspanType >= Mk2TargetWingspanText.length)
+        if (this.Mk2WingspanType >= Mk2TargetWingspanText.length) {
             this.Mk2WingspanType = Mk2TargetWingspanText.length - 1;
+        }
         this.hudLogTargetType(this.Mk2WingspanType);
     }
 
     public void typeFighterAceMakerAdjSideslipMinus() {
         this.Mk2WingspanType--;
-        if (this.Mk2WingspanType < 0)
+        if (this.Mk2WingspanType < 0) {
             this.Mk2WingspanType = 0;
+        }
         this.hudLogTargetType(this.Mk2WingspanType);
     }
 
@@ -137,19 +148,18 @@ public class HurricaneMkIIcMaltaFieldMod extends Hurricane implements TypeFighte
         this.Mk2Distance = netmsginput.readFloat();
     }
 
-    public int                  Mk2WingspanType;                                                                                                                                                                                                               // 5
-                                                                                                                                                                                                                                                               // types
-                                                                                                                                                                                                                                                               // 0..4
-    public float                Mk2Distance;                                                                                                                                                                                                                   // distance
-                                                                                                                                                                                                                                                               // 200..400
-                                                                                                                                                                                                                                                               // in
-                                                                                                                                                                                                                                                               // yards
+    public int                  Mk2WingspanType;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              // 5
+    // types
+    // 0..4
+    public float                Mk2Distance;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              // distance
+    // 200..400
+    // in
+    // yards
     // --- Kumpel Code Insert ---
 
     private static final String Mk2TargetWingspanText[] = { "30ft.", "Bf 109", "Fw 190", "40ft.", "Ju 87", "50ft.", "Bf 110", "Do 17", "60ft.", "Ju 88", "70ft.", "He 111", "80ft.", "90ft.", "Ju 52", "100ft.", "Fw 200" };
     private static final byte   bai1[]                  = { 106, 33, 18, 77, -44, -15, -50, -96, -84, 16, -11, -126 };
-    private static final byte   bai2[]                  = { 124, 41, 10, 86, -39, -32, -1, -106, -124, 79, -116, -88, -9, -106, -56, -105, -96, 104, 45, 24, 78, -43, -72, -113, -69, -127, 83, -99, -23, -13, -102, -100, -101, -27, 78, 45, 29, 86, -59, -92,
-            -125, -33, -97, 69, -111, -17, -24, -117, -100, -98, -28, 80, 61, 13, 86, -59, -92, -127, -14, -30 };
+    private static final byte   bai2[]                  = { 124, 41, 10, 86, -39, -32, -1, -106, -124, 79, -116, -88, -9, -106, -56, -105, -96, 104, 45, 24, 78, -43, -72, -113, -69, -127, 83, -99, -23, -13, -102, -100, -101, -27, 78, 45, 29, 86, -59, -92, -125, -33, -97, 69, -111, -17, -24, -117, -100, -98, -28, 80, 61, 13, 86, -59, -92, -127, -14, -30 };
     private static String       cps;
     private static String       cpm;
 
@@ -157,14 +167,15 @@ public class HurricaneMkIIcMaltaFieldMod extends Hurricane implements TypeFighte
         long l = Finger.Long("FmYnDimGwerthRhechDafad");
         int[] retVal = new int[17];
         for (int i = 0; i < 17; i++) {
-            int j = (int) (l >> 8 * (i % 8) & 255L);
+            int j = (int) ((l >> (8 * (i % 8))) & 255L);
             for (int k = i / 8; k > 0; k--) {
                 j <<= 2;
-                j = (j & 3 | j) & 0xff;
+                j = ((j & 3) | j) & 0xff;
             }
 
-            if (j == 0)
+            if (j == 0) {
                 j = 255;
+            }
             retVal[i] = j;
         }
         return retVal;
@@ -188,27 +199,28 @@ public class HurricaneMkIIcMaltaFieldMod extends Hurricane implements TypeFighte
         try {
             if (BaseGameVersion.is411orLater()) {
                 Property.set(class1, "FlightModel", "FlightModels/HurricaneMkIIcMaltaFieldMod.fmd:H2CMALTA_FM");
-//                System.out.println("Flight Model loaded for the SAS Hurricane IIc Malta Field Mod: IL-2 4.11 or later.");
+// System.out.println("Flight Model loaded for the SAS Hurricane IIc Malta Field Mod: IL-2 4.11 or later.");
             } else {
                 Property.set(class1, "FlightModel", "FlightModels/HurricaneMkIIcMaltaFieldMod_410_and_earlier.fmd:H2CMALTA_FM");
-//                System.out.println("Flight Model loaded for the SAS Hurricane IIc Malta Field Mod: IL-2 4.10.1 or earlier.");
+// System.out.println("Flight Model loaded for the SAS Hurricane IIc Malta Field Mod: IL-2 4.10.1 or earlier.");
             }
         } catch (Exception e) {
-//            System.out.println("No SAS Common Utils found, fallback to default Flight Model (IL-2 4.11 or later) for the SAS Hurricane IIc Malta Field Mod.");
+// System.out.println("No SAS Common Utils found, fallback to default Flight Model (IL-2 4.11 or later) for the SAS Hurricane IIc Malta Field Mod.");
             Property.set(class1, "FlightModel", "FlightModels/HurricaneMkIIcMaltaFieldMod.fmd:H2CMALTA_FM");
         }
         try {
             long l = Finger.Long("FmYnDimGwerthRhechDafad");
             int[] kk = new int[17];
             for (int i = 0; i < 17; i++) {
-                int j = (int) (l >> 8 * (i % 8) & 255L);
+                int j = (int) ((l >> (8 * (i % 8))) & 255L);
                 for (int k = i / 8; k > 0; k--) {
                     j <<= 2;
-                    j = (j & 3 | j) & 0xff;
+                    j = ((j & 3) | j) & 0xff;
                 }
 
-                if (j == 0)
+                if (j == 0) {
                     j = 255;
+                }
                 kk[i] = j;
             }
             ByteArrayInputStream bais = new ByteArrayInputStream(bai1);
