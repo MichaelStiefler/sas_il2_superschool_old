@@ -3641,7 +3641,11 @@ public class Motor extends FMMath {
                 this.reference.Loc.set(0.0D, 0.0D, fAltitude);
                 this.reference.Vwld.set(fSpeed, 0.0D, 0.0D);
                 this.reference.Vflow.set(fSpeed, 0.0D, 0.0D);
-                this.pressureExtBar = (9.8716683E-006F * Atmosphere.pressure(this.reference.getAltitude())) + (this.compressorSpeedManifold * 0.5F * Atmosphere.density(this.reference.getAltitude()) * fSpeed * fSpeed); // Pa (N/m2) to atmosphere conversion
+                
+                // Fix by SAS~Storebror: Wrong parentheses fixed.
+//                this.pressureExtBar = (9.8716683E-006F * Atmosphere.pressure(this.reference.getAltitude())) + (this.compressorSpeedManifold * 0.5F * Atmosphere.density(this.reference.getAltitude()) * fSpeed * fSpeed); // Pa (N/m2) to atmosphere conversion
+                this.pressureExtBar = 9.8716683E-006F * (Atmosphere.pressure(this.reference.getAltitude()) + (this.compressorSpeedManifold * 0.5F * Atmosphere.density(this.reference.getAltitude()) * fSpeed * fSpeed)); // Pa (N/m2) to atmosphere conversion
+                
                 this.maxMoment = this.getCompressorMultiplier(0.033F) * this.getN();
                 if (isWEP && this.bWepRpmInLowGear && (this.controlCompressor == this.compressorMaxStep)) {
                     this.w = this.wMax * fRPMfactor;
