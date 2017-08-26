@@ -48,6 +48,7 @@ import com.maddox.il2.engine.MsgCollisionRequestListener;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.game.Mission;
 import com.maddox.il2.net.NetMissionTrack;
+import com.maddox.il2.objects.ObjectsLogLevel;
 import com.maddox.il2.objects.Statics;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.bridges.BridgeSegment;
@@ -99,10 +100,13 @@ public abstract class TankGeneric extends ActorHMesh
             if(s2 == null || s2.length() <= 0)
             {
                 // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//                System.out.print("Tank: Parameter [" + s + "]:<" + s1 + "> ");
-//                System.out.println(s2 != null ? "is empty" : "not found");
-//                throw new RuntimeException("Can't set property");
-                System.out.println("Tank \"" + s + "\" is not (correctly) declared in technics.ini file!");
+                if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL) {
+                    System.out.print("Tank: Parameter [" + s + "]:<" + s1 + "> ");
+                    System.out.println(s2 != null ? "is empty" : "not found");
+                    throw new RuntimeException("Can't set property");
+                } else if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_SHORT) {
+                    System.out.println("Tank \"" + s + "\" is not (correctly) declared in technics.ini file!");
+                }
                 return null;
                 // ---
             } else
@@ -124,7 +128,7 @@ public abstract class TankGeneric extends ActorHMesh
         {
             // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
             String checkMesh = getS(sectfile, s, "MeshSummer");
-            if (checkMesh == null || checkMesh.length() == 0) return null;
+            if ((ObjectsLogLevel.getObjectsLogLevel() < ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL) && (checkMesh == null || checkMesh.length() == 0)) return null;
             // TODO: ---
             TankProperties tankproperties = new TankProperties();
             String s1 = getS(sectfile, s, "PanzerType", null);
@@ -147,7 +151,8 @@ public abstract class TankGeneric extends ActorHMesh
             {
                 System.out.println("Tank: Uncomplete set of damage meshes for '" + s + "'");
                 // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//                throw new RuntimeException("Can't register tank object");
+                if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                    throw new RuntimeException("Can't register tank object");
                 return null;
                 // ---
             }
@@ -205,7 +210,8 @@ public abstract class TankGeneric extends ActorHMesh
                 {
                     System.out.println("Tank: Can't find gun class '" + s5 + "'");
                     // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//                    throw new RuntimeException("Can't register tank object");
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                        throw new RuntimeException("Can't register tank object");
                     return null;
                     // ---
                 }
@@ -214,7 +220,8 @@ public abstract class TankGeneric extends ActorHMesh
                 {
                     System.out.println("Tank: Undefined weapon type in gun class '" + s5 + "'");
                     // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//                    throw new RuntimeException("Can't register tank object");
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                        throw new RuntimeException("Can't register tank object");
                     return null;
                     // ---
                 }
@@ -337,7 +344,7 @@ public abstract class TankGeneric extends ActorHMesh
                 proper = LoadTankProperties(Statics.getTechnicsFile(), s1, class1);
                 
                 // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-                if (proper == null) return;
+                if (ObjectsLogLevel.getObjectsLogLevel() < ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL && proper == null) return;
                 // TODO: ---
                 
             }
