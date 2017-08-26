@@ -38,6 +38,7 @@ import com.maddox.il2.gui.GUIAirArming;
 import com.maddox.il2.net.NetFilesTrack;
 import com.maddox.il2.net.NetMissionTrack;
 import com.maddox.il2.objects.ActorAlign;
+import com.maddox.il2.objects.ObjectsLogLevel;
 import com.maddox.il2.objects.Statics;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.PaintScheme;
@@ -86,10 +87,13 @@ public abstract class PlaneGeneric extends ActorHMesh
             if(s2 == null || s2.length() <= 0)
             {
                 // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//                System.out.print("Plane: Parameter [" + s + "]:<" + s1 + "> ");
-//                System.out.println(s2 != null ? "is empty" : "not found");
-//                throw new RuntimeException("Can't set property");
-                System.out.println("Plane \"" + s + "\" is not (correctly) declared in technics.ini file!");
+                if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL) {
+                    System.out.print("Plane: Parameter [" + s + "]:<" + s1 + "> ");
+                    System.out.println(s2 != null ? "is empty" : "not found");
+                    throw new RuntimeException("Can't set property");
+                } else if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_SHORT) {
+                    System.out.println("Plane \"" + s + "\" is not (correctly) declared in technics.ini file!");
+                }
                 // TODO: ---
             }
             return s2;
@@ -112,7 +116,7 @@ public abstract class PlaneGeneric extends ActorHMesh
             String s1 = getS(sectfile, s, "Class");
             
             // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-            if (s1 == null || s1.length() == 0) return null;
+            if ((ObjectsLogLevel.getObjectsLogLevel() < ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL) && (s1 == null || s1.length() == 0)) return null;
             // TODO: ---
             
             planeproperties.clazz = null;
@@ -123,8 +127,10 @@ public abstract class PlaneGeneric extends ActorHMesh
             catch(Exception exception)
             {
                 // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-                //System.out.println("*** Plane: class '" + s1 + "' not found");
-                System.out.println("Plane: Class \"" + s1 + "\" does not exist. The plane is declared in technics.ini but it's classfiles are missing.");
+                if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                  System.out.println("*** Plane: class '" + s1 + "' not found");
+                else if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_SHORT)
+                  System.out.println("Plane: Class \"" + s1 + "\" does not exist. The plane is declared in technics.ini but it's classfiles are missing.");
                 // TODO: ---
                 
                 return null;
@@ -181,7 +187,7 @@ public abstract class PlaneGeneric extends ActorHMesh
                 proper = LoadPlaneProperties(Statics.getTechnicsFile(), s1, class1);
                 
                 // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-                if (proper == null) return;
+                if (ObjectsLogLevel.getObjectsLogLevel() < ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL && proper == null) return;
                 // TODO: ---
                 
             }

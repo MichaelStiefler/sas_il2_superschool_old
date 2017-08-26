@@ -24,6 +24,7 @@ import com.maddox.il2.engine.BulletProperties;
 import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.objects.ActorAlign;
+import com.maddox.il2.objects.ObjectsLogLevel;
 import com.maddox.il2.objects.Statics;
 import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.il2.objects.vehicles.tanks.TankGeneric;
@@ -67,10 +68,13 @@ public abstract class StationaryGeneric extends ActorHMesh
             if(s2 == null || s2.length() <= 0)
             {
                 // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//                System.out.print("Stationary: Parameter [" + s + "]:<" + s1 + "> ");
-//                System.out.println(s2 != null ? "is empty" : "not found");
-//                throw new RuntimeException("Can't set property");
-                System.out.println("Stationary \"" + s + "\" is not (correctly) declared in technics.ini file!");
+                if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL) {
+                    System.out.print("Stationary: Parameter [" + s + "]:<" + s1 + "> ");
+                    System.out.println(s2 != null ? "is empty" : "not found");
+                    throw new RuntimeException("Can't set property");
+                } else if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_SHORT) {
+                    System.out.println("Stationary \"" + s + "\" is not (correctly) declared in technics.ini file!");
+                }
                 // TODO: ---
             }
             return s2;
@@ -89,7 +93,7 @@ public abstract class StationaryGeneric extends ActorHMesh
         {
             // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
             String checkMesh = getS(sectfile, s, "MeshSummer");
-            if (checkMesh == null || checkMesh.length() == 0) return null;
+            if ((ObjectsLogLevel.getObjectsLogLevel() < ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL) && (checkMesh == null || checkMesh.length() == 0)) return null;
             // TODO: ---
             StationaryProperties stationaryproperties = new StationaryProperties();
             String s1 = getS(sectfile, s, "PanzerType", null);
@@ -112,7 +116,8 @@ public abstract class StationaryGeneric extends ActorHMesh
             {
                 System.out.println("Stationary: Uncomplete set of damage meshes for '" + s + "'");
                 // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//                throw new RuntimeException("Can't register stationary object");
+                if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                    throw new RuntimeException("Can't register stationary object");
                 return null;
                 // ---
             }
@@ -200,7 +205,7 @@ public abstract class StationaryGeneric extends ActorHMesh
                 proper = LoadStationaryProperties(Statics.getTechnicsFile(), s1, class1);
                 
                 // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-                if (proper == null) return;
+                if (ObjectsLogLevel.getObjectsLogLevel() < ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL && proper == null) return;
                 // TODO: ---
                 
             }

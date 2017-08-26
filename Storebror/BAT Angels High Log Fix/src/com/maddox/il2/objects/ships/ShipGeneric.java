@@ -47,6 +47,7 @@ import com.maddox.il2.engine.VisibilityLong;
 import com.maddox.il2.game.Mission;
 import com.maddox.il2.net.NetServerParams;
 import com.maddox.il2.objects.ActorAlign;
+import com.maddox.il2.objects.ObjectsLogLevel;
 import com.maddox.il2.objects.Statics;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.bridges.BridgeSegment;
@@ -93,9 +94,12 @@ public class ShipGeneric extends ActorHMesh
             if(s2 == null || s2.length() <= 0)
             {
                 // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//                System.out.print("Ship: Value of [" + s + "]:<" + s1 + "> not found");
-//                throw new RuntimeException("Can't set property");
-                System.out.println("Ship \"" + s + "\" is not (correctly) declared in ships.ini file!");
+                if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL) {
+                    System.out.print("Ship: Value of [" + s + "]:<" + s1 + "> not found");
+                    throw new RuntimeException("Can't set property");
+                } else if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_SHORT) {
+                    System.out.println("Ship \"" + s + "\" is not (correctly) declared in ships.ini file!");
+                }
                 return null;
                 // ---
             } else
@@ -117,7 +121,7 @@ public class ShipGeneric extends ActorHMesh
         {
             // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
             String checkMesh = getS(sectfile, s, "Mesh");
-            if (checkMesh == null || checkMesh.length() == 0) return null;
+            if ((ObjectsLogLevel.getObjectsLogLevel() < ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL) && (checkMesh == null || checkMesh.length() == 0)) return null;
             // TODO: ---
             ShipProperties shipproperties = new ShipProperties();
             // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
@@ -148,7 +152,8 @@ public class ShipGeneric extends ActorHMesh
                 {
                     System.out.println("Ship: Can't find gun class '" + s2 + "'");
                     // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//                    throw new RuntimeException("Can't register Ship object");
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                      throw new RuntimeException("Can't register Ship object");
                     return null;
                     // ---
                 }
@@ -157,7 +162,8 @@ public class ShipGeneric extends ActorHMesh
                 {
                     System.out.println("Ship: Undefined weapon type in gun class '" + s2 + "'");
                     // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//                    throw new RuntimeException("Can't register Ship object");
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                      throw new RuntimeException("Can't register Ship object");
                     return null;
                     // ---
                 }
@@ -191,7 +197,8 @@ public class ShipGeneric extends ActorHMesh
                 {
                     System.out.println("Ship: Wrong yaw angles in gun #" + j + " of '" + s + "'");
                     // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//                    throw new RuntimeException("Can't register Ship object");
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                      throw new RuntimeException("Can't register Ship object");
                     return null;
                     // ---
                 }
@@ -258,7 +265,7 @@ public class ShipGeneric extends ActorHMesh
                 proper = LoadShipProperties(Statics.getTechnicsFile(), s1, class1);
                 
                 // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-                if (proper == null) return;
+                if (ObjectsLogLevel.getObjectsLogLevel() < ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL && proper == null) return;
                 // TODO: ---
                 
             }
