@@ -62,6 +62,7 @@ import com.maddox.il2.net.BornPlace;
 import com.maddox.il2.net.NetServerParams;
 import com.maddox.il2.net.NetUser;
 import com.maddox.il2.objects.ActorAlign;
+import com.maddox.il2.objects.ObjectsLogLevel;
 import com.maddox.il2.objects.Statics;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.bridges.BridgeSegment;
@@ -272,9 +273,12 @@ public class BigshipGeneric extends ActorHMesh
             if(s2 == null || s2.length() <= 0)
             {
                 // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//              System.out.print("Ship: Value of [" + s + "]:<" + s1 + "> not found");
-//              throw new RuntimeException("Can't set property");
-              System.out.println("Bigship \"" + s + "\" is not (correctly) declared in ships.ini file!");
+                if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL) {
+                  System.out.print("Ship: Value of [" + s + "]:<" + s1 + "> not found");
+                  throw new RuntimeException("Can't set property");
+                } else if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_SHORT) {
+                    System.out.println("Bigship \"" + s + "\" is not (correctly) declared in ships.ini file!");
+                }
               return null;
               // ---
             } else
@@ -355,7 +359,7 @@ public class BigshipGeneric extends ActorHMesh
         {
             // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
             String checkMesh = getS(sectfile, s, "Mesh");
-            if (checkMesh == null || checkMesh.length() == 0) return null;
+            if ((ObjectsLogLevel.getObjectsLogLevel() < ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL) && (checkMesh == null || checkMesh.length() == 0)) return null;
             // TODO: ---
             ShipProperties shipproperties = new ShipProperties();
             // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
@@ -379,7 +383,8 @@ public class BigshipGeneric extends ActorHMesh
             {
                 System.out.println("BigShip: No part sections for '" + s + "'");
                 // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//                throw new RuntimeException("Can't register BigShip object");
+                if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                    throw new RuntimeException("Can't register BigShip object");
                 return null;
                 // ---
             }
@@ -387,7 +392,8 @@ public class BigshipGeneric extends ActorHMesh
             {
                 System.out.println("BigShip: Too many parts in " + s + ".");
                 // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//                throw new RuntimeException("Can't register BigShip object");
+                if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                    throw new RuntimeException("Can't register BigShip object");
                 return null;
                 // ---
             }
@@ -405,7 +411,8 @@ public class BigshipGeneric extends ActorHMesh
                 {
                     System.out.println("BigShip: Too many addcollischunks in '" + s1 + "'");
                     // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//                    throw new RuntimeException("Can't register BigShip object");
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                        throw new RuntimeException("Can't register BigShip object");
                     return null;
                     // ---
                 }
@@ -418,7 +425,8 @@ public class BigshipGeneric extends ActorHMesh
                     s2 = getS(sectfile, s1, "strengthBasedOnThisSection");
                 if(!shippartproperties.stre.read("Bigship", sectfile, s2, s1)) {
                     // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//                    throw new RuntimeException("Can't register Bigship object");
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                        throw new RuntimeException("Can't register Bigship object");
                     return null;
                     // ---
                 }
@@ -450,7 +458,8 @@ public class BigshipGeneric extends ActorHMesh
                 {
                     System.out.println("BigShip: Too many guns in " + s + ".");
                     // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//                    throw new RuntimeException("Can't register BigShip object");
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                        throw new RuntimeException("Can't register BigShip object");
                     return null;
                     // ---
                 }
@@ -483,7 +492,8 @@ public class BigshipGeneric extends ActorHMesh
                 {
                     System.out.println("BigShip: Not enough 'gun' data  in '" + s1 + "'");
                     // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//                    throw new RuntimeException("Can't register BigShip object");
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                        throw new RuntimeException("Can't register BigShip object");
                     return null;
                     // ---
                 }
@@ -492,7 +502,8 @@ public class BigshipGeneric extends ActorHMesh
                 {
                     System.out.println("BigShip: Undefined weapon type in gun class '" + shippartproperties.gunClass.getName() + "'");
                     // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//                    throw new RuntimeException("Can't register BigShip object");
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                        throw new RuntimeException("Can't register BigShip object");
                     return null;
                     // ---
                 }
@@ -500,7 +511,8 @@ public class BigshipGeneric extends ActorHMesh
                 {
                     System.out.println("BigShip: Wrong yaw angles in gun " + s1 + ".");
                     // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-//                    throw new RuntimeException("Can't register BigShip object");
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                        throw new RuntimeException("Can't register BigShip object");
                     return null;
                     // ---
                 }
@@ -566,7 +578,7 @@ public class BigshipGeneric extends ActorHMesh
                 proper = LoadShipProperties(Statics.getShipsFile(), s1, class1);
                 
                 // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
-                if (proper == null) return;
+                if (ObjectsLogLevel.getObjectsLogLevel() < ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL && proper == null) return;
                 // TODO: ---
                 
             }
