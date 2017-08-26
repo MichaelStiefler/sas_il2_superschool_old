@@ -26,6 +26,8 @@ package com.maddox.rts.cmd;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 import com.maddox.il2.engine.Config;
@@ -90,6 +92,7 @@ public class CmdSFSAutoMount extends Cmd {
 		File[] theSFSFileList = CreateFileList(theSFSFolder);
 		if (theSFSFileList.length < 1)
 			return;
+		Arrays.sort(theSFSFileList); // TODO: Storebror 2017-08-26: Ensure alphabetical order for mounting!
 		if ((logLevel & SFS_LOGLEVEL_SUCCESS) != 0) System.out.println("AutoMounting SFS files from folder " + theSFSFolder.getPath() + " now...");
 		for (int i = 0; i < theSFSFileList.length; i++) {
 			try {
@@ -110,6 +113,7 @@ public class CmdSFSAutoMount extends Cmd {
 		}
 		if ((logLevel & SFS_LOGLEVEL_SUCCESS) != 0) System.out.println("AutoMounting SFS files from folder " + theSFSFolder.getPath() + " finished.");
 		File[] theSFSSubfolderList = CreateSubFolderList(theSFSFolder);
+        Arrays.sort(theSFSSubfolderList); // TODO: Storebror 2017-08-26: Ensure alphabetical order for mounting!
 		for (int i = 0; i < theSFSSubfolderList.length; i++) {
 			try {
 				if (theSFSSubfolderList[i].getName().startsWith("-")) {
@@ -133,6 +137,7 @@ public class CmdSFSAutoMount extends Cmd {
 		File[] theSFSFileList = CreateFileList(theSFSFolder);
 		if (theSFSFileList.length < 1)
 			return;
+        Arrays.sort(theSFSFileList, Collections.reverseOrder()); // TODO: Storebror 2017-08-26: Ensure reverse alphabetical order for unmounting!
 		if ((logLevel & SFS_LOGLEVEL_SUCCESS) != 0) System.out.println("AutoUnMounting SFS files from folder " + theSFSFolder.getPath() + " now...");
 		for (int i = 0; i < theSFSFileList.length; i++) {
 			try {
@@ -151,6 +156,7 @@ public class CmdSFSAutoMount extends Cmd {
 		}
 		if ((logLevel & SFS_LOGLEVEL_SUCCESS) != 0) System.out.println("AutoUnMounting SFS files from folder " + theSFSFolder.getPath() + " finished.");
 		File[] theSFSSubfolderList = CreateSubFolderList(theSFSFolder);
+        Arrays.sort(theSFSSubfolderList, Collections.reverseOrder()); // TODO: Storebror 2017-08-26: Ensure reverse alphabetical order for unmounting!
 		for (int i = 0; i < theSFSSubfolderList.length; i++) {
 			try {
 				if (theSFSSubfolderList[i].getName().startsWith("-")) {
