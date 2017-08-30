@@ -4,6 +4,8 @@ import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.WayPoint;
 import com.maddox.il2.ai.World;
+import com.maddox.il2.engine.Hook;
+import com.maddox.il2.engine.HookNamed;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.fm.Pitot;
 import com.maddox.rts.Property;
@@ -49,6 +51,16 @@ public class CockpitYB40_FGunner extends CockpitGunner {
                 this.bGunFire = false;
             }
             this.fm.CT.WeaponControl[this.weaponControlNum()] = this.bGunFire;
+            if (this.bGunFire) {
+                if (this.hook1 == null) {
+                    this.hook1 = new HookNamed(this.aircraft(), "_MGUN01");
+                }
+                this.doHitMasterAircraft(this.aircraft(), this.hook1, "_MGUN01");
+                if (this.hook2 == null) {
+                    this.hook2 = new HookNamed(this.aircraft(), "_MGUN02");
+                }
+                this.doHitMasterAircraft(this.aircraft(), this.hook2, "_MGUN02");
+            }
         }
     }
 
@@ -67,6 +79,8 @@ public class CockpitYB40_FGunner extends CockpitGunner {
         super("3DO/Cockpit/YB-40-FGun/hier.him", "bf109");
         this.cockpitNightMats = (new String[] { "textrbm9", "texture25" });
         this.setNightMats(false);
+        this.hook1 = null;
+        this.hook2 = null;
     }
 
     public void reflectCockpitState() {
@@ -120,6 +134,8 @@ public class CockpitYB40_FGunner extends CockpitGunner {
     private static final float speedometerScale[] = { 0.0F, 2.5F, 54F, 104F, 154.5F, 205.5F, 224F, 242F, 259.5F, 277.5F, 296.25F, 314F, 334F, 344.5F };
     private static Point3d     P1                 = new Point3d();
     private static Vector3d    V                  = new Vector3d();
+    private Hook    hook1;
+    private Hook    hook2;
 
     static {
         Property.set(CockpitYB40_FGunner.class, "aiTuretNum", 0);

@@ -1,6 +1,8 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
+import com.maddox.il2.engine.Hook;
+import com.maddox.il2.engine.HookNamed;
 import com.maddox.il2.engine.Mat;
 import com.maddox.il2.engine.Orient;
 import com.maddox.rts.Property;
@@ -81,6 +83,16 @@ public class CockpitYB40_AGunner extends CockpitGunner {
                 this.bGunFire = false;
             }
             this.fm.CT.WeaponControl[this.weaponControlNum()] = this.bGunFire;
+            if (this.bGunFire) {
+                if (this.hook1 == null) {
+                    this.hook1 = new HookNamed(this.aircraft(), "_MGUN11");
+                }
+                this.doHitMasterAircraft(this.aircraft(), this.hook1, "_MGUN11");
+                if (this.hook2 == null) {
+                    this.hook2 = new HookNamed(this.aircraft(), "_MGUN12");
+                }
+                this.doHitMasterAircraft(this.aircraft(), this.hook2, "_MGUN12");
+            }
         }
     }
 
@@ -98,13 +110,17 @@ public class CockpitYB40_AGunner extends CockpitGunner {
     public CockpitYB40_AGunner() {
         super("3DO/Cockpit/YB-40-AGun/hier.him", "bf109");
         this.bNeedSetUp = true;
+        this.hook1 = null;
+        this.hook2 = null;
     }
 
     private boolean bNeedSetUp;
+    private Hook    hook1;
+    private Hook    hook2;
 
     static {
         Property.set(CockpitYB40_AGunner.class, "aiTuretNum", 7);
         Property.set(CockpitYB40_AGunner.class, "weaponControlNum", 17);
-        Property.set(CockpitYB40_AGunner.class, "astatePilotIndx", 4);
+        Property.set(CockpitYB40_AGunner.class, "astatePilotIndx", 8);
     }
 }

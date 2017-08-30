@@ -73,9 +73,13 @@ public class CockpitYB40_RGunner extends CockpitGunner {
             this.fm.CT.WeaponControl[this.weaponControlNum()] = this.bGunFire;
             if (this.bGunFire) {
                 if (this.hook1 == null) {
-                    this.hook1 = new HookNamed(this.aircraft(), "_MGUN12");
+                    this.hook1 = new HookNamed(this.aircraft(), "_MGUN09");
                 }
-                this.doHitMasterAircraft(this.aircraft(), this.hook1, "_MGUN12");
+                this.doHitMasterAircraft(this.aircraft(), this.hook1, "_MGUN09");
+                if (this.hook2 == null) {
+                    this.hook2 = new HookNamed(this.aircraft(), "_MGUN09a");
+                }
+                this.doHitMasterAircraft(this.aircraft(), this.hook2, "_MGUN09a");
             }
         }
     }
@@ -94,6 +98,7 @@ public class CockpitYB40_RGunner extends CockpitGunner {
     public CockpitYB40_RGunner() {
         super("3DO/Cockpit/YB-40-RGun/RGunnerYB40.him", "he111_gunner");
         this.hook1 = null;
+        this.hook2 = null;
     }
 
     public void reflectWorldToInstruments(float f) {
@@ -122,10 +127,11 @@ public class CockpitYB40_RGunner extends CockpitGunner {
     }
 
     private Hook hook1;
+    private Hook hook2;
 
     static {
         Property.set(CockpitYB40_RGunner.class, "aiTuretNum", 6);
         Property.set(CockpitYB40_RGunner.class, "weaponControlNum", 15);
-        Property.set(CockpitYB40_RGunner.class, "astatePilotIndx", 6);
+        Property.set(CockpitYB40_RGunner.class, "astatePilotIndx", 7);
     }
 }
