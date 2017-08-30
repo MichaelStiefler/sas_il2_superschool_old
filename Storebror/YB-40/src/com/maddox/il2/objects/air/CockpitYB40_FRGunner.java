@@ -14,7 +14,7 @@ public class CockpitYB40_FRGunner extends CockpitGunner {
             this.aircraft().hierMesh().chunkVisible("CF_D0", false);
             this.aircraft().hierMesh().chunkVisible("Turret3B_D0", false);
             if (this.aircraft() == World.getPlayerAircraft()) {
-                ((CockpitGunner) Main3D.cur3D().cockpits[3]).setRealMode(false);
+                ((CockpitGunner) Main3D.cur3D().cockpits[2]).setRealMode(false);
             }
             return true;
         } else {
@@ -68,9 +68,9 @@ public class CockpitYB40_FRGunner extends CockpitGunner {
             this.fm.CT.WeaponControl[this.weaponControlNum()] = this.bGunFire;
             if (this.bGunFire) {
                 if (this.hook1 == null) {
-                    this.hook1 = new HookNamed(this.aircraft(), "_MGUN06");
+                    this.hook1 = new HookNamed(this.aircraft(), "_MGUN04");
                 }
-                this.doHitMasterAircraft(this.aircraft(), this.hook1, "_MGUN06");
+                this.doHitMasterAircraft(this.aircraft(), this.hook1, "_MGUN04");
             }
         }
     }
@@ -117,6 +117,6 @@ public class CockpitYB40_FRGunner extends CockpitGunner {
     static {
         Property.set(CockpitYB40_FRGunner.class, "aiTuretNum", 2);
         Property.set(CockpitYB40_FRGunner.class, "weaponControlNum", 12);
-        Property.set(CockpitYB40_FRGunner.class, "astatePilotIndx", 1);
+        Property.set(CockpitYB40_FRGunner.class, "astatePilotIndx", 3);
     }
 }

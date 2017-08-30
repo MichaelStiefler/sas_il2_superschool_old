@@ -138,6 +138,6 @@ public class CockpitYB40_BGunner extends CockpitGunner {
     static {
         Property.set(CockpitYB40_BGunner.class, "aiTuretNum", 4);
         Property.set(CockpitYB40_BGunner.class, "weaponControlNum", 14);
-        Property.set(CockpitYB40_BGunner.class, "astatePilotIndx", 7);
+        Property.set(CockpitYB40_BGunner.class, "astatePilotIndx", 5);
     }
 }
