@@ -74,7 +74,6 @@ FILE *g_cachedListFile = NULL;
 
 static TCHAR	szHashString[32],
           szBuf[MAX_PATH],
-		  szBuf2[MAX_PATH],
 	      ExeName[MAX_PATH],
           ExePath[MAX_PATH],
           FilesFolder[MAX_PATH],
@@ -851,23 +850,19 @@ void ListFiles(LPCTSTR lpParent, LPCTSTR lpRoot, LPCTSTR lpAddFront)
 				int foundLen = _tcslen(FindFileData.cFileName);
 				if (isHashedClass(foundItem, FindFileData.cFileName)) // Fixed 2017-08-30, no need to double-hash files
 					MyStruct->hash = _tcstoull(FindFileData.cFileName, NULL, 16);
-				else if (foundLen > 6 && _tcsnicmp(&FindFileData.cFileName[foundLen - 6], L".class", 6) == 0) {
+				else if (foundLen > 6 && _tcsnicmp(&FindFileData.cFileName[foundLen - 6], L".class", 6) == 0) { // New 2017-08-30, read clearname class files
 					memset(szBuf, 0, sizeof(szBuf));
 					foundItemFromRoot[_tcslen(foundItemFromRoot) - 6] = '\0';
-					//_tcsncpy(szBuf, foundItemFromRoot, _tcslen(foundItemFromRoot) - 6);
 					_tcsreplace(foundItemFromRoot, L'\\', L'.');
 				    _tcsreplace(foundItemFromRoot, L'/', L'.');
 					_stprintf(szBuf, L"sdw%scwc2w9e", foundItemFromRoot);
-//					memset(szBuf2, 0, sizeof(szBuf2));
-//					_stprintf(szBuf2, L"sdw%scwc2w9e", szBuf);
-					UINT32 hashInt = IntFN(0, szBuf);
-					_stprintf(szBuf, L"cod/%d", hashInt);
+					_stprintf(szBuf, L"cod/%d", IntFN(0, szBuf));
 					MyStruct->hash = LongFN(0, szBuf);
 				} else
 					MyStruct->hash = SFS_hashW(0, foundItemUpperCase, _tcslen(foundItemUpperCase));
                 MyStruct->dwIndex = g_dwIndex++;
                 FileList.push_back(MyStruct);
-				//if (g_bDumpFileAccess)
+				if (g_bDumpFileAccess)
  					TRACE("ListFiles added: %s, %016I64X, %d\r\n", MyStruct->filePath, MyStruct->hash, MyStruct->dwIndex);
 
                 if(g_cachedListFile != NULL) {
@@ -1036,10 +1031,6 @@ SASIL2WRAPPER_C_API int __cdecl __SFS_openf(const unsigned __int64 hash, const i
 		_stprintf(szHashString, L"%016I64X", hash);
 		hash2 = SFS_hashW(0, szHashString, _tcslen(szHashString));
 		listPos = binarySearchFileList(hash2);
-
-		// TEST!
-		if (listPos != -1) TRACE(L"__SFS_openf(%016I64X, %016I32X): hash2=%016I64X, listPos=%d, filePointer=%016I32X, isInSFS=%d \r\n", hash, flags, hash2, listPos, filePointer, isInSFS);
-
 	}
 
 	if(listPos != -1) {

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6F2B3A9E-7767-442C-8EE5-96F44CF4708D}"
 	ProjectSection(SolutionItems) = preProject
@@ -17,6 +17,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SAS IL-2 Wrapper", "SAS IL-2 Wrapper\SAS IL-2 Wrapper.vcxproj", "{20B2D485-DCD9-4C59-9724-DFC4F8AF68BE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SAS IL-2 Watchdog", "SAS IL-2 Watchdog\SAS IL-2 Watchdog.vcxproj", "{6B04FBC3-9F0D-49DC-BAB3-0BD0445709CC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "il2fb.exe Server Placeholder", "il2fb.exe Placeholder\il2fb.exe Placeholder.vcxproj", "{C7E77F7E-C699-4997-88BC-21053DBF0D6D}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -48,11 +50,16 @@ Global
 		{6B04FBC3-9F0D-49DC-BAB3-0BD0445709CC}.Debug|Win32.Build.0 = Debug|Win32
 		{6B04FBC3-9F0D-49DC-BAB3-0BD0445709CC}.Release|Win32.ActiveCfg = Release|Win32
 		{6B04FBC3-9F0D-49DC-BAB3-0BD0445709CC}.Release|Win32.Build.0 = Release|Win32
+		{C7E77F7E-C699-4997-88BC-21053DBF0D6D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C7E77F7E-C699-4997-88BC-21053DBF0D6D}.Debug|Win32.Build.0 = Debug|Win32
+		{C7E77F7E-C699-4997-88BC-21053DBF0D6D}.Release|Win32.ActiveCfg = Release|Win32
+		{C7E77F7E-C699-4997-88BC-21053DBF0D6D}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		VisualSVNWorkingCopyRoot = .
+		SolutionGuid = {AFDEAC90-9116-4BEF-9A55-1FC2C4089967}
 	EndGlobalSection
 EndGlobal
