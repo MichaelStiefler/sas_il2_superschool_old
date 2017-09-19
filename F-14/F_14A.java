@@ -625,30 +625,32 @@ public class F_14A extends F_14
             FM.producedAF.x += 33200D;
         if(FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() > 5)
             FM.producedAF.x += 33200D;
-        if(FM.EI.engines[0].getThrustOutput() > 1.001F && calculateMach() > 1.3F)
+        if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() > 5 && calculateMach() > 1.3F)
             FM.producedAF.x -= 20000D;
-        if(FM.EI.engines[1].getThrustOutput() > 1.001F && calculateMach() > 1.3F)
+        if(FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() > 5 && calculateMach() > 1.3F)
             FM.producedAF.x -= 20000D;
         float x = FM.getAltitude() / 1000F;
         float thrustDegradation = 0.0F;
-        if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() == 6)
-            if(FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() == 6)
-                if (x > 19)
-                {
-                    thrustDegradation = 20.0F;
-                } else{
-                    float x2 = x * x;
-                    float x3 = x2 * x;
-                    float x4 = x3 * x;
-                    float x5 = x4 * x;
-                    float x6 = x5 * x;
-                    float x7 = x6 * x;
-                    thrustDegradation = -0.000281394F*x6 + 0.0135257F*x5 - 0.227697F*x4 + 1.62839F*x3 - 5.10746F*x2 + 6.31553F*x;
+        if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() == 6
+          && FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() == 6)
+            if (x > 19F)
+            {
+                thrustDegradation = 20.0F;
+            }
+            else
+            {
+                float x2 = x * x;
+                float x3 = x2 * x;
+                float x4 = x3 * x;
+                float x5 = x4 * x;
+                float x6 = x5 * x;
+                float x7 = x6 * x;
+                thrustDegradation = -0.000281394F*x6 + 0.0135257F*x5 - 0.227697F*x4 + 1.62839F*x3 - 5.10746F*x2 + 6.31553F*x;
         //{{0,0},{2,2},{5,3},{7,0},{10,-25},{15,-20},{18.5,37}}
         //thrustDegradation = (3401F*x4/720720F) - (44399F*x3/360360F) + (633091F*x2/720720F) - (829459F*x/360360F);
         //{{0,0},{2,-2},{5,-2},{7,-4},{18,20}}
-                }
-        FM.producedAF.x -=  thrustDegradation * 1000F;
+            }
+        FM.producedAF.x -= thrustDegradation * 1000F;
     }
 
 
@@ -707,6 +709,7 @@ public class F_14A extends F_14
            "_ExternalRock28", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalDev03", "_ExternalDev04", "_ExternalRock29", "_ExternalRock30"
 
         });
+        String s = "";
         try
         {
             ArrayList arraylist = new ArrayList();
@@ -715,16 +718,16 @@ public class F_14A extends F_14
             Property.set(class1, "weaponsMap", hashmapint);
             char c = '\50';
             Aircraft._WeaponSlot a_lweaponslot[] = new Aircraft._WeaponSlot[c];
-            String s = "default";
+            s = "default";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[37] = new Aircraft._WeaponSlot(7, "RocketGunFlare_gn16", 30);
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM9D";
+            s = "Fighter_4xAIM9D";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(2, "RocketGunAIM9D_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(2, "RocketGunAIM9D_gn16", 1);
@@ -737,9 +740,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM9L";
+            s = "Fighter_4xAIM9L";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L_gn16", 1);
@@ -752,9 +755,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM7E";
+            s = "Fighter_4xAIM7E";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[1] = new Aircraft._WeaponSlot(2, "RocketGunAIM7E_gn16", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(2, "RocketGunAIM7E_gn16", 1);
@@ -767,9 +770,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM7M";
+            s = "Fighter_4xAIM7M";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[1] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
@@ -782,9 +785,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM7E+4xAIM9D";
+            s = "Fighter_4xAIM7E+4xAIM9D";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[1] = new Aircraft._WeaponSlot(2, "RocketGunAIM7E_gn16", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(2, "RocketGunAIM7E_gn16", 1);
@@ -806,9 +809,9 @@ public class F_14A extends F_14
             arraylist.add(s);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM7M+4xAIM9L";
+            s = "Fighter_4xAIM7M+4xAIM9L";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[1] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
@@ -829,9 +832,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM9D+2xDt";
+            s = "Fighter_4xAIM9D+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(2, "RocketGunAIM9D_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(2, "RocketGunAIM9D_gn16", 1);
@@ -846,9 +849,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM9L+2xDt";
+            s = "Fighter_4xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L_gn16", 1);
@@ -863,9 +866,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM7E+2xDt";
+            s = "Fighter_4xAIM7E+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[1] = new Aircraft._WeaponSlot(2, "RocketGunAIM7E_gn16", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(2, "RocketGunAIM7E_gn16", 1);
@@ -880,9 +883,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM7M+2xDt";
+            s = "Fighter_4xAIM7M+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[1] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
@@ -897,9 +900,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM7E+4xAIM9D+2xDt";
+            s = "Fighter_4xAIM7E+4xAIM9D+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[1] = new Aircraft._WeaponSlot(2, "RocketGunAIM7E_gn16", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(2, "RocketGunAIM7E_gn16", 1);
@@ -922,9 +925,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM7M+4xAIM9L+2xDt";
+            s = "Fighter_4xAIM7M+4xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[1] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
@@ -947,9 +950,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 2xAIM54A";
+            s = "Fighter_2xAIM54A";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(2, "RocketGunAIM54A_gn16", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[25] = new Aircraft._WeaponSlot(2, "RocketGunAIM54A_gn16", 1);
@@ -958,9 +961,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 2xAIM54A+4xAIM9L";
+            s = "Fighter_2xAIM54A+4xAIM9L";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
@@ -977,9 +980,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 2xAIM54A+2xAIM7M+2xAIM9L";
+            s = "Fighter_2xAIM54A+2xAIM7M+2xAIM9L";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
@@ -996,9 +999,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 2xAIM54A+4xAIM9L+2xDt";
+            s = "Fighter_2xAIM54A+4xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
@@ -1017,9 +1020,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 2xAIM54A+2xAIM7M+2xAIM9L+2xDt";
+            s = "Fighter_2xAIM54A+2xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
@@ -1038,9 +1041,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM54A";
+            s = "Fighter_4xAIM54A";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[19] = new Aircraft._WeaponSlot(2, "RocketGunAIM54A_gn16", 1);
             a_lweaponslot[20] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[21] = new Aircraft._WeaponSlot(2, "RocketGunAIM54A_gn16", 1);
@@ -1053,9 +1056,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM54A+4xAIM9L";
+            s = "Fighter_4xAIM54A+4xAIM9L";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
@@ -1076,9 +1079,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM54A+2xAIM7M+2xAIM9L";
+            s = "Fighter_4xAIM54A+2xAIM7M+2xAIM9L";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
@@ -1099,9 +1102,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM54A+4xAIM9L+2xDt";
+            s = "Fighter_4xAIM54A+4xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
@@ -1124,9 +1127,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM54A+2xAIM7M+2xAIM9L+2xDt";
+            s = "Fighter_4xAIM54A+2xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
@@ -1149,9 +1152,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM9L IRIAF";
+            s = "Fighter_4xAIM9L_IRIAF";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L_gn16", 1);
@@ -1164,9 +1167,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM7M IRIAF";
+            s = "Fighter_4xAIM7M_IRIAF";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[1] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
@@ -1179,9 +1182,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM7M+4xAIM9L IRIAF";
+            s = "Fighter_4xAIM7M+4xAIM9L_IRIAF";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[1] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
@@ -1202,9 +1205,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM9L+2xDt IRIAF";
+            s = "Fighter_4xAIM9L+2xDt_IRIAF";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(2, "RocketGunAIM9L_gn16", 1);
@@ -1219,9 +1222,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM7M+2xDt IRIAF";
+            s = "Fighter_4xAIM7M+2xDt_IRIAF";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[1] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
@@ -1236,9 +1239,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM7M+4xAIM9L+2xDt IRIAF";
+            s = "Fighter_4xAIM7M+4xAIM9L+2xDt_IRIAF";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[1] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
@@ -1261,9 +1264,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 2xAIM54A IRIAF";
+            s = "Fighter_2xAIM54A_IRIAF";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(2, "RocketGunAIM54A_gn16", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[25] = new Aircraft._WeaponSlot(2, "RocketGunAIM54A_gn16", 1);
@@ -1272,9 +1275,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 2xAIM54A+4xAIM9L IRIAF";
+            s = "Fighter_2xAIM54A+4xAIM9L_IRIAF";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
@@ -1291,9 +1294,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 2xAIM54A+2xAIM7M+2xAIM9L IRIAF";
+            s = "Fighter_2xAIM54A+2xAIM7M+2xAIM9L_IRIAF";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
@@ -1310,9 +1313,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 2xAIM54A+4xAIM9L+2xDt IRIAF";
+            s = "Fighter_2xAIM54A+4xAIM9L+2xDt_IRIAF";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
@@ -1331,9 +1334,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 2xAIM54A+2xAIM7M+2xAIM9L+2xDt IRIAF";
+            s = "Fighter_2xAIM54A+2xAIM7M+2xAIM9L+2xDt_IRIAF";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
@@ -1352,9 +1355,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM54A IRIAF";
+            s = "Fighter_4xAIM54A_IRIAF";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[19] = new Aircraft._WeaponSlot(2, "RocketGunAIM54A_gn16", 1);
             a_lweaponslot[20] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[21] = new Aircraft._WeaponSlot(2, "RocketGunAIM54A_gn16", 1);
@@ -1367,9 +1370,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM54A+4xAIM9L IRIAF";
+            s = "Fighter_4xAIM54A+4xAIM9L_IRIAF";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
@@ -1390,9 +1393,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM54A+2xAIM7M+2xAIM9L IRIAF";
+            s = "Fighter_4xAIM54A+2xAIM7M+2xAIM9L_IRIAF";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
@@ -1413,9 +1416,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM54A+4xAIM9L+2xDt IRIAF";
+            s = "Fighter_4xAIM54A+4xAIM9L+2xDt_IRIAF";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
@@ -1438,9 +1441,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM54A+2xAIM7M+2xAIM9L+2xDt IRIAF";
+            s = "Fighter_4xAIM54A+2xAIM7M+2xAIM9L+2xDt_IRIAF";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
@@ -1463,9 +1466,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 6xAIM54A";
+            s = "Fighter_6xAIM54A";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[19] = new Aircraft._WeaponSlot(2, "RocketGunAIM54A_gn16", 1);
             a_lweaponslot[20] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[21] = new Aircraft._WeaponSlot(2, "RocketGunAIM54A_gn16", 1);
@@ -1482,9 +1485,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 6xAIM54A+2xDt";
+            s = "Fighter_6xAIM54A+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[17] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankF14L_gn16", 1);
             a_lweaponslot[18] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankF14R_gn16", 1);
             a_lweaponslot[19] = new Aircraft._WeaponSlot(2, "RocketGunAIM54A_gn16", 1);
@@ -1503,9 +1506,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 2xAIM54C";
+            s = "Fighter_2xAIM54C";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[23] = new Aircraft._WeaponSlot(2, "RocketGunAIM54C_gn16", 1);
             a_lweaponslot[24] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[25] = new Aircraft._WeaponSlot(2, "RocketGunAIM54C_gn16", 1);
@@ -1514,9 +1517,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 2xAIM54C+4xAIM9L";
+            s = "Fighter_2xAIM54C+4xAIM9L";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
@@ -1533,9 +1536,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 2xAIM54C+2xAIM7M+2xAIM9L";
+            s = "Fighter_2xAIM54C+2xAIM7M+2xAIM9L";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
@@ -1552,9 +1555,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 2xAIM54C+4xAIM9L+2xDt";
+            s = "Fighter_2xAIM54C+4xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
@@ -1573,9 +1576,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 2xAIM54C+2xAIM7M+2xAIM9L+2xDt";
+            s = "Fighter_2xAIM54C+2xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
@@ -1594,9 +1597,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM54C";
+            s = "Fighter_4xAIM54C";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[19] = new Aircraft._WeaponSlot(2, "RocketGunAIM54C_gn16", 1);
             a_lweaponslot[20] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[21] = new Aircraft._WeaponSlot(2, "RocketGunAIM54C_gn16", 1);
@@ -1609,9 +1612,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM54C+4xAIM9L";
+            s = "Fighter_4xAIM54C+4xAIM9L";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
@@ -1632,9 +1635,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM54C+2xAIM7M+2xAIM9L";
+            s = "Fighter_4xAIM54C+2xAIM7M+2xAIM9L";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
@@ -1655,9 +1658,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM54C+4xAIM9L+2xDt";
+            s = "Fighter_4xAIM54C+4xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
@@ -1680,9 +1683,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 4xAIM54C+2xAIM7M+2xAIM9L+2xDt";
+            s = "Fighter_4xAIM54C+2xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
@@ -1705,9 +1708,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 6xAIM54C";
+            s = "Fighter_6xAIM54C";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[19] = new Aircraft._WeaponSlot(2, "RocketGunAIM54C_gn16", 1);
             a_lweaponslot[20] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[21] = new Aircraft._WeaponSlot(2, "RocketGunAIM54C_gn16", 1);
@@ -1724,9 +1727,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Fighter: 6xAIM54C+2xDt";
+            s = "Fighter_6xAIM54C+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[17] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankF14L_gn16", 1);
             a_lweaponslot[18] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankF14R_gn16", 1);
             a_lweaponslot[19] = new Aircraft._WeaponSlot(2, "RocketGunAIM54C_gn16", 1);
@@ -1745,9 +1748,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "GAttack: 2xMk83+3xAIM7M+2xAIM9L+2xDt";
+            s = "GAttack_2xMk83+3xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
@@ -1766,9 +1769,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "GAttack: 2xMk83Ballute+3xAIM7M+2xAIM9L+2xDt";
+            s = "GAttack_2xMk83Ballute+3xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
@@ -1787,9 +1790,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "GAttack: 2xMk84+3xAIM7M+2xAIM9L+2xDt";
+            s = "GAttack_2xMk84+3xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
@@ -1808,9 +1811,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "GAttack: 2xMk84Ballute+3xAIM7M+2xAIM9L+2xDt";
+            s = "GAttack_2xMk84Ballute+3xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
@@ -1829,9 +1832,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "GAttack: 2xCBU100+3xAIM7M+2xAIM9L+2xDt";
+            s = "GAttack_2xCBU100+3xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
@@ -1850,9 +1853,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "GAttack: 4xMk83+2xAIM7M+2xAIM9L+2xDt";
+            s = "GAttack_4xMk83+2xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
@@ -1871,9 +1874,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "GAttack: 4xMk83Ballute+2xAIM7M+2xAIM9L+2xDt";
+            s = "GAttack_4xMk83Ballute+2xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
@@ -1892,9 +1895,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "GAttack: 4xMk84+2xAIM7M+2xAIM9L+2xDt";
+            s = "GAttack_4xMk84+2xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
@@ -1913,9 +1916,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "GAttack: 4xMk84Ballute+2xAIM7M+2xAIM9L+2xDt";
+            s = "GAttack_4xMk84Ballute+2xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
@@ -1934,9 +1937,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "GAttack: 4xCBU100+2xAIM7M+2xAIM9L+2xDt";
+            s = "GAttack_4xCBU100+2xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
@@ -1955,9 +1958,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "GAttackFLIR: 2xGBU12+2xAIM7M+2xAIM9L+2xDt";
+            s = "GAttackFLIR_2xGBU12+2xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
@@ -1975,9 +1978,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "GAttackFLIR: 2xGBU16+2xAIM7M+2xAIM9L+2xDt";
+            s = "GAttackFLIR_2xGBU16+2xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
@@ -1995,9 +1998,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "GAttackFLIR: 2xGBU10+2xAIM7M+2xAIM9L+2xDt";
+            s = "GAttackFLIR_2xGBU10+2xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
@@ -2015,9 +2018,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "GAttackFLIR: 2xGBU12+1xAIM54A+1xAIM7M+2xAIM9L+2xDt";
+            s = "GAttackFLIR_2xGBU12+1xAIM54A+1xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
@@ -2035,9 +2038,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "GAttackFLIR: 2xGBU16+1xAIM54A+1xAIM7M+2xAIM9L+2xDt";
+            s = "GAttackFLIR_2xGBU16+1xAIM54A+1xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
@@ -2055,9 +2058,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "GAttackFLIR: 2xGBU10+1xAIM54A+1xAIM7M+2xAIM9L+2xDt";
+            s = "GAttackFLIR_2xGBU10+1xAIM54A+1xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
@@ -2075,9 +2078,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "GAttackFLIR: 2xGBU12+1xAIM54C+1xAIM7M+2xAIM9L+2xDt";
+            s = "GAttackFLIR_2xGBU12+1xAIM54C+1xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
@@ -2095,9 +2098,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "GAttackFLIR: 2xGBU16+1xAIM54C+1xAIM7M+2xAIM9L+2xDt";
+            s = "GAttackFLIR_2xGBU16+1xAIM54C+1xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
@@ -2115,9 +2118,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "GAttackFLIR: 2xGBU10+1xAIM54C+1xAIM7M+2xAIM9L+2xDt";
+            s = "GAttackFLIR_2xGBU10+1xAIM54C+1xAIM7M+2xAIM9L+2xDt";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
@@ -2135,9 +2138,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Recon: 2xAIM7M+4xAIM9L+2xDt+TARPS";
+            s = "Recon_2xAIM7M+4xAIM9L+2xDt+TARPS";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[1] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(2, "RocketGunNull", 1);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(2, "RocketGunAIM7M_gn16", 1);
@@ -2157,9 +2160,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Recon: 2xAIM54A+4xAIM9L+2xDt+TARPS";
+            s = "Recon_2xAIM54A+4xAIM9L+2xDt+TARPS";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
@@ -2179,9 +2182,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Recon: 2xAIM54A+2xAIM7M+2xAIM9L+2xDt+TARPS";
+            s = "Recon_2xAIM54A+2xAIM7M+2xAIM9L+2xDt+TARPS";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
@@ -2201,9 +2204,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Recon: 2xAIM54C+4xAIM9L+2xDt+TARPS";
+            s = "Recon_2xAIM54C+4xAIM9L+2xDt+TARPS";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM9L_gn16", 1);
@@ -2223,9 +2226,9 @@ public class F_14A extends F_14
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "Recon: 2xAIM54C+2xAIM7M+2xAIM9L+2xDt+TARPS";
+            s = "Recon_2xAIM54C+2xAIM7M+2xAIM9L+2xDt+TARPS";
             a_lweaponslot = new Aircraft._WeaponSlot[c];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61", 650);
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunM61_A1", 650);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(5, "RocketGunAIM9L_gn16", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(5, "RocketGunNull", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(4, "RocketGunAIM7M_gn16", 1);
@@ -2251,6 +2254,10 @@ public class F_14A extends F_14
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
         }
-        catch(Exception exception) { }
+         catch(Exception exception) {
+            System.out.println("Weapon register error - F_14A : " + s);
+            System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
     }
 }

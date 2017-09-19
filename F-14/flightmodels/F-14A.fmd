@@ -183,7 +183,7 @@
   G_CLASS_COEFF 20.0
   G_CLASS 14
   SensYaw 0.35
-  SensPitch 0.66
+  SensPitch 0.7
   SensRoll 0.25
 [Polares]
   lineCyCoeff 0.092
@@ -193,7 +193,7 @@
   AOACritL_0 -16.0
   CyCritH_0 1.1
   CyCritL_0 -0.75
-  CxMin_0 0.040
+  CxMin_0 0.030
   parabCxCoeff_0 4.0E-4
   Cy0_1 0.64
   AOACritH_1 36.0
@@ -213,8 +213,8 @@
 [Supersonic]
   VminMach 0.92
   VsoundMach1 0.98
-  CfsoundMach1 1.43
+  CfsoundMach1 1.7
   VsoundMach2 1.25
-  CfsoundMach2 1.4
+  CfsoundMach2 1.7
   VmaxMach 1.3
   CfmaxMach 1.2

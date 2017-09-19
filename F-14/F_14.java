@@ -952,7 +952,7 @@ public class F_14 extends Scheme2
         stockSqFlaps = FM.Sq.squareFlaps;
         FM.CT.toggleRocketHook();
         bCarryLaserpod = false;
-        if(thisWeaponsName.startsWith("Fighter: 4xAIM54"))
+        if(thisWeaponsName.startsWith("Fighter_4xAIM54"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
             hierMesh().chunkVisible("Pylon1R", true);
@@ -960,7 +960,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon2R", true);
             FM.Sq.dragParasiteCx += 0.0001F;
         }
-        if(thisWeaponsName.startsWith("Fighter: 6xAIM54"))
+        if(thisWeaponsName.startsWith("Fighter_6xAIM54"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
             hierMesh().chunkVisible("Pylon1R", true);
@@ -968,19 +968,19 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon2R", true);
             FM.Sq.dragParasiteCx += 0.0001F;
         }
-        if(thisWeaponsName.startsWith("Fighter: 2xAIM54"))
+        if(thisWeaponsName.startsWith("Fighter_2xAIM54"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
             hierMesh().chunkVisible("Pylon1R", true);
             FM.Sq.dragParasiteCx += 0.00007F;
         }
-        if(thisWeaponsName.startsWith("Recon: 2xAIM54"))
+        if(thisWeaponsName.startsWith("Recon_2xAIM54"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
             hierMesh().chunkVisible("Pylon1R", true);
             FM.Sq.dragParasiteCx += 0.00007F;
         }
-        if(thisWeaponsName.startsWith("GAttack: 2xMk"))
+        if(thisWeaponsName.startsWith("GAttack_2xMk"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
             hierMesh().chunkVisible("Pylon1R", true);
@@ -988,7 +988,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon3R", true);
             FM.Sq.dragParasiteCx += 0.00007F;
         }
-        if(thisWeaponsName.startsWith("GAttackFLIR: ALQ"))
+        if(thisWeaponsName.startsWith("GAttackFLIR_ALQ"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
             hierMesh().chunkVisible("Pylon1R", true);
@@ -997,7 +997,7 @@ public class F_14 extends Scheme2
             FM.Sq.dragParasiteCx += 0.00007F;
             bCarryLaserpod = true;
         }
-        if(thisWeaponsName.startsWith("Recon: ALQ"))
+        if(thisWeaponsName.startsWith("Recon_ALQ"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
             hierMesh().chunkVisible("Pylon1R", true);
@@ -1005,7 +1005,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon3R", true);
             FM.Sq.dragParasiteCx += 0.00007F;
         }
-        if(thisWeaponsName.startsWith("GAttackFLIR: 2xGBU"))
+        if(thisWeaponsName.startsWith("GAttackFLIR_2xGBU"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
             hierMesh().chunkVisible("Pylon1R", true);
@@ -1014,7 +1014,7 @@ public class F_14 extends Scheme2
             FM.Sq.dragParasiteCx += 0.00007F;
             bCarryLaserpod = true;
         }
-        if(thisWeaponsName.startsWith("GAttack: 2xCBU"))
+        if(thisWeaponsName.startsWith("GAttack_2xCBU"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
             hierMesh().chunkVisible("Pylon1R", true);
@@ -1022,7 +1022,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon3R", true);
             FM.Sq.dragParasiteCx += 0.00007F;
         }
-        if(thisWeaponsName.startsWith("GAttack: 4xMk"))
+        if(thisWeaponsName.startsWith("GAttack_4xMk"))
          {
             hierMesh().chunkVisible("Pylon1L", true);
             hierMesh().chunkVisible("Pylon1R", true);
@@ -1034,7 +1034,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon4R", true);
             FM.Sq.dragParasiteCx += 0.0001F;
         }
-        if(thisWeaponsName.startsWith("GAttack: 4xCBU"))
+        if(thisWeaponsName.startsWith("GAttack_4xCBU"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
             hierMesh().chunkVisible("Pylon1R", true);
@@ -1046,7 +1046,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon4R", true);
             FM.Sq.dragParasiteCx += 0.0001F;
         }
-        if(thisWeaponsName.startsWith("GAttackFLIR: 4xGBU"))
+        if(thisWeaponsName.startsWith("GAttackFLIR_4xGBU"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
             hierMesh().chunkVisible("Pylon1R", true);
@@ -2266,7 +2266,6 @@ public class F_14 extends Scheme2
         computeVarWing();
         computeFlapsFixing();
         computeCombatFlaps(f);
-        computeEnergy();
         computeSupersonicLimiter();
         computeSubsonicLimiter();
         FlapAssistTakeoff();
@@ -2795,49 +2794,22 @@ public class F_14 extends Scheme2
     public void computeLift()
     {
         Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-        float x = this.calculateMach();
-        if(this.calculateMach() >= 0.0F);
-        float Lift = 0.0F;
-        if((double)x > 2.2F)
+        float x = calculateMach();
+        if(x < 0.9F)
         {
-            Lift = 0.03F;
-        } else
+            polares.lineCyCoeff = 0.08F;
+        }
+        else if(x < 2.3F)
         {
             float x2 = x * x;
             float x3 = x2 * x;
             float x4 = x3 * x;
-            float x5 = x4 * x;
-            float x6 = x5 * x;
-            float x7 = x6 * x;
-            float x8 = x7 * x;
-            Lift = 0.00458079F * x7 - 0.0605523F * x6 + 0.294479F * x5 - 0.685669F * x4 + 0.821472F * x3 - 0.508206F * x2 + 0.123823F * x + 0.1F;
-            //{{0.0, 0.1},{0.2, 0.11}, {0.6, 0.1},{0.97, 0.09}, {1.4, 0.07},{1.9, 0.04}, {2.2, 0.03}, {2.5, 0.02}}
-            }
-        polares.lineCyCoeff= Lift;  // westerntemp
-    }
-
-
-    public void computeEnergy()
-    {
-        float x = this.FM.getOverload();
-        if(this.FM.getOverload() < 4.5F)
+            polares.lineCyCoeff = 0.0348639F*x4 - 0.271173F*x3 + 0.785774F*x2 - 1.02525F*x + 0.541057F;
+    // {{0.9, 0.08}, {1.3, 0.04},{1.6, 0.03},{2.1, 0.02}, {2.3, 0.016}}                                           
+        }
+        else
         {
-            float Energy = 0.0F;
-            if((double)x >=10F)
-            {
-                Energy = 0.07F;
-            } else
-            {
-                float x2 = x * x;
-                float x3 = x2 * x;
-                float x4 = x3 * x;
-                float x5 = x4 * x;
-                float x6 = x5 * x;
-                Energy = 0.0000006734F * x5 + 0.000000987654F * x4 - 0.00000757583F * x3 + 0.00000222222F * x2 + 0.0000170512F * x;
-            //{{-3,0.0001},{-1.5,0.00001},{0,0},{1.5,0.00001},{3,0.0001},{10,0.07}}
-
-            }
-            FM.Sq.dragParasiteCx += Energy;
+            polares.lineCyCoeff = 0.016F;
         }
     }
 
@@ -2846,20 +2818,20 @@ public class F_14 extends Scheme2
     {
         float x = FM.getAltitude() / 1000F;
         float Drag = 0.0F;
-        if(this.calculateMach() >= 1.19F)
+        if(((FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() == 6)
+         || (FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() == 6)) && calculateMach() >= 1.12F)
         {
-            if(x > 2.5F)
-            {
+            if (x > 4F)
+	        {
                 Drag = 0.0F;
             }
             else
             {
-                float x2 = x * x;
-                Drag = 0.0008F - 0.00032F * x;
-                //{{0,0.0008},{2.5, 0}}
-            }
-            FM.Sq.dragParasiteCx += Drag;
-         }
+                Drag = 0.00045F - 0.0001125F*x;
+		//{{0,0.00045},{4, 0.0}}
+	        }
+	        FM.Sq.dragParasiteCx += Drag;
+        }
     }
 
     protected void moveVarWing(float f)
@@ -2868,7 +2840,6 @@ public class F_14 extends Scheme2
         hierMesh().chunkSetAngles("WingPivotL", 0.0F, f1, 0.0F);
         hierMesh().chunkSetAngles("WingPivotR", 0.0F, f1, 0.0F);
     }
-
 
     public void computeVarWing()
     {
@@ -3027,7 +2998,7 @@ public class F_14 extends Scheme2
   
     public void computeSubsonicLimiter()
        { 
-        float x = this.calculateMach();
+        float x = calculateMach();
         float Drag = 0.0F;
         if(FM.EI.engines[0].getThrustOutput() < 1.001F && FM.EI.engines[0].getStage() == 6 && (double)calculateMach() >= 0.9 && this instanceof com.maddox.il2.objects.air.F_14A) 
         if (x > 0.97) 
@@ -3352,7 +3323,7 @@ public class F_14 extends Scheme2
     };
 
     private static final float cxmin0Scale[] = {
-        0.04F, 0.035F, 0.032F, 0.030F, 0.028F
+        0.03F, 0.028F, 0.025F, 0.023F, 0.021F
     };
 
     private static final float cy00Scale[] = {
@@ -3360,7 +3331,7 @@ public class F_14 extends Scheme2
     };
 
     private static final float cycrith0Scale[] = {
-        1.4F, 1.3F, 1.2F, 1.15F, 1.1F
+        1.7F, 1.45F, 1.2F, 1.15F, 1.1F
     };
 
     private static final float wingspanScale[] = {
