@@ -63,7 +63,7 @@
   CompressorRPMP0 1600.0
   CompressorRPMPMax 3480.0
   CompressorMaxATARPM 5.0
-  CompressorSpeedManifold 1.5
+  CompressorSpeedManifold 1.0
   DisP0x 3480
   DisP0y 0
   DisP1x 0
