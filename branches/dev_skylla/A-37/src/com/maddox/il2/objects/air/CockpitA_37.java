@@ -11,11 +11,6 @@ import com.maddox.sound.ReverbFXRoom;
 
 public class CockpitA_37 extends CockpitPilot {
 	
-	/**
-	 * @author SAS~Skylla
-	 * @see A_37A, CockpitA_37
-	**/
-	
     class Interpolater extends InterpolateRef {
 
         public boolean tick() {
@@ -97,7 +92,7 @@ public class CockpitA_37 extends CockpitPilot {
 
 
     public CockpitA_37() {
-        super("3DO/Cockpit/Seahawk/Seahawk.him", "bf109");
+        super("3DO/Cockpit/A-37/A-37.him", "bf109");
         setOld = new Variables(null);
         setNew = new Variables(null);
         w = new Vector3f();
