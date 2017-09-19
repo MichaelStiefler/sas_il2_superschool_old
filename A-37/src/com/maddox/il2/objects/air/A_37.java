@@ -6,7 +6,9 @@ import java.security.SecureRandom;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Tuple3d;
 import com.maddox.JGP.Vector3d;
+import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.ai.EventLog;
+import com.maddox.il2.ai.Explosion;
 import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
@@ -25,21 +27,23 @@ import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.objects.Wreckage;
 import com.maddox.il2.objects.sounds.SndAircraft;
+import com.maddox.il2.objects.weapons.FuelTankGun_Tank100gal_A37;
+import com.maddox.il2.objects.weapons.Gun;
 import com.maddox.rts.MsgAction;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
+import com.maddox.rts.Time;
 
-public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighter, TypeFighterAceMaker{
-
-	/**
-	 * @author SAS~Skylla
-	 * @see A_37A, CockpitA_37 
-	**/
+//TODO add missing interfaces
+public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighter, TypeStormovik, TypeFighterAceMaker {
 	
-    private float oldthrl;
-    private float curthrl;
-    private float engineSurgeDamage;
+	//temp
+	private float [] eOut = {-1F, -1F};
+	
+    private float [] oldthrl = {-1F, -1F};
+    private float [] curthrl = {-1F, -1F};
+    private float engineSurgeDamage [] = new float [2];
     private boolean overrideBailout;
     private boolean ejectComplete;
     public static boolean bChangedPit = false;
@@ -50,7 +54,10 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
     public float k14Distance;
     
     private float [] rndgear = {0.0F, 0.0F, 0.0F};
+	private float fMaxKMHSpeedForOpenCanopy = 120;
+	private boolean bHasBlister = true;
     private static float [] rndgearnull = {0.0F, 0.0F, 0.0F};
+    private boolean [] tanks = {false, false, false, false};
 
     static  {
         Class class1 = A_37.class;
@@ -58,8 +65,6 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
     }
 	
     public A_37() {
-        oldthrl = -1F;
-        curthrl = -1F;
         arrestor2 = 0.0F;
         AirBrakeControl = 0.0F;
         k14Mode = 0;
@@ -74,7 +79,63 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
 	        rndgear[i] = rr.nextFloat(0.0F, 0.25F);
 	    }
     }
-
+    
+  //TODO: ---------------------------------------------------------------------------------------------------------------
+    
+    public void onAircraftLoaded() {
+    	super.onAircraftLoaded();
+    	if(super.thisWeaponsName.compareToIgnoreCase("none") == 0) {
+    		for(int i = 0; i<4; i++) {
+    			hierMesh().chunkVisible("Pylon_L" + i + "_D0", false);
+    			hierMesh().chunkVisible("Pylon_R" + i + "_D0", false);
+    		}
+    	}
+    	loadTanks();
+    }
+    
+    protected void loadTanks() {
+    	if(super.thisWeaponsName.compareToIgnoreCase("none") == 0) {
+    		hierMesh().chunkVisible("TankL_D0", false);
+    		hierMesh().chunkVisible("TankR_D0", false);
+    		return;
+    	}
+    	for(int i = 0; i<4; i++) {
+    		BulletEmitter e = this.getBulletEmitterByHookName("_ExternalDev0" + (2*i+3));
+    		tanks[i] = ((e != null)?(e instanceof FuelTankGun_Tank100gal_A37):false);
+    		hierMesh().chunkVisible("Tank_L"+(i+1)+"_D0", tanks[i]);
+    		hierMesh().chunkVisible("Tank_R"+(i+1)+"_D0", tanks[i]);
+    		/*
+    		System.out.print("SKYLLA A-37 debug: Is hook \"_ExternalDev0" + (2*i+3) + "\" != null? " + (e != null));
+    		if(e != null)
+    			System.out.print("; Is e instanceof FuelTankGun_Tank100gal_A37? " + (e instanceof FuelTankGun_Tank100gal_A37));
+    		System.out.println("; (e != null)?(e instanceof FuelTankGun_Tank100gal_A37):false = " + ((e != null)?(e instanceof FuelTankGun_Tank100gal_A37):false));
+    		System.out.println("");
+    		*/
+    	}
+    }
+  
+    public void dropTanks() {
+    	for(int i = 0; i<4; i++) {
+    		if(!tanks[i])
+    			continue;
+			Wreckage w1 = new Wreckage(this, hierMesh().chunkFind("Tank_L"+(i+1)+"_D0"));
+			Wreckage w2 = new Wreckage(this, hierMesh().chunkFind("Tank_R"+(i+1)+"_D0"));
+			//this.hierMesh().hideSubTrees(meshName);
+			w1.collide(true);
+			w2.collide(true);
+			Vector3d v = new Vector3d();
+			this.getSpeed(v);
+			v.z -= 10d;
+			v.set(v);
+			w1.setSpeed(v);
+			w2.setSpeed(v);
+			hierMesh().chunkVisible("Tank_L"+(i+1)+"_D0",false);
+			hierMesh().chunkVisible("Tank_R"+(i+1)+"_D0",false);
+			tanks[i] = false;
+		}
+    }
+  //---------------------------------------------------------------------------------------------------------------------
+    
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         if(this.FM.Gears.nearGround() || this.FM.Gears.onGround() && this.FM.CT.getCockpitDoor() == 1.0F)
@@ -87,8 +148,23 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
             } else if(FM.AP.way.isLanding() && (double)super.FM.getSpeed() < (double)(FM.VmaxFLAPS * 1.5D)) {
                 FM.CT.AirBrakeControl = 0.0F;
             }
+        //remove blister if too fast:
+        if(FM.isPlayers() && super.FM instanceof RealFlightModel && ((RealFlightModel)super.FM).isRealMode()) {
+        	if(super.FM.CT.getCockpitDoor() > 0.2 && this.bHasBlister && super.FM.getSpeedKMH() > this.fMaxKMHSpeedForOpenCanopy && this.hierMesh().chunkFindCheck("Blister1_D0") != -1) {
+        		doRemoveBlisters();
+        		myResetYPRmodifier();
+        		hierMesh().chunkSetLocate("Piston1_D0", Aircraft.xyz, Aircraft.ypr);
+        		super.FM.setGCenter(-0.2f);
+        		this.FM.CT.bHasCockpitDoorControl = false;
+        	}
+        }
+        if(this.FM.AS.bNavLightsOn) {
+    		doEvilStuff();
+    	}
     }
 
+  //Methods from TypeFighterAceMaker; those will be removed ---------------------------------------------------------
+    
     public boolean typeFighterAceMakerToggleAutomation() {
         k14Mode++;
         if(k14Mode > 2)
@@ -144,6 +220,8 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
         k14WingspanType = netmsginput.readByte();
         k14Distance = netmsginput.readFloat();
     }
+    
+  //---------------------------------------------------------------------------------------------------------------------
 
     public void doMurderPilot(int i) {
         switch(i) {
@@ -158,30 +236,19 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
     
  // FIXME --------------------------------------------------------------------------------------------------------------------
     
+    //airbrake are currently the flaps. This is of course not correct, but the airbrakes are not part of the 3D model (yet?)
     protected void moveAirBrake(float f) {
-        hierMesh().chunkSetAngles("Flap03_D0", 0.0F, 0.0F, 60F * f);
-        hierMesh().chunkSetAngles("Flap04_D0", 0.0F, 0.0F, 60F * f);
-    }
-
-    public void moveCockpitDoor(float f) {
-        myResetYPRmodifier();   
-        Aircraft.ypr[2] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 35.0F);
-        //Aircraft.xyz[0] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 1.0F);
-        hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
-        if(Config.isUSE_RENDER()) {
-            if(Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null)
-                Main3D.cur3D().cockpits[0].onDoorMoved(f);
-            setDoorSnd(f);
-        }
+        //hierMesh().chunkSetAngles("Flap03_D0", 0.0F, 0.0F, 60F * f);
+        //hierMesh().chunkSetAngles("Flap04_D0", 0.0F, 0.0F, 60F * f);
     }
     
+    //disable via FM
     protected void moveWingFold(HierMesh hiermesh, float f) {
-        hiermesh.chunkSetAngles("WingLMid_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 70F), 0.0F);
-        hiermesh.chunkSetAngles("WingRMid_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, -70F), 0.0F);
+        //hiermesh.chunkSetAngles("WingLIn_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 70F), 0.0F);
+        //hiermesh.chunkSetAngles("WingRIn_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, -70F), 0.0F);
     }
     
- // Wing Code: --------------------------------------------------------------------------------------------------------------------
-
+    //disable via FM
     public void moveWingFold(float f) {
         if(f < 0.001F) {
             setGunPodsOn(true);
@@ -194,9 +261,40 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
         moveWingFold(this.hierMesh(), f);
     }
     
+    //disable via FM
     public void moveArrestorHook(float f) {
-        hierMesh().chunkSetAngles("Hook1_D0", 0.0F, 12.2F * f, 0.0F);
-        hierMesh().chunkSetAngles("Hook2_D0", 0.0F, 0.0F, 0.0F);
+        //hierMesh().chunkSetAngles("Hook1_D0", 0.0F, 12.2F * f, 0.0F);
+        //hierMesh().chunkSetAngles("Hook2_D0", 0.0F, 0.0F, 0.0F);
+    }
+    
+ // --------------------------------------------------------------------------------------------------------------------
+
+    public void moveCockpitDoor(float f) {
+    	if(this.FM.AS.bIsAboutToBailout) {
+    		return;
+    	} else if(super.FM instanceof RealFlightModel && ((RealFlightModel)super.FM).isRealMode() && (!this.FM.Gears.onGround() || this.FM.getSpeedKMH() > 80F)) {
+    		/*
+    		if(this == World.getPlayerAircraft()) {
+    			this.FM.CT.cockpitDoorControl = 0.0F;
+    			HUD.log("Cannot move canopy: " + (!this.FM.Gears.onGround()?"Plane is airborne!":"Plane is too fast!"));
+    		}
+    		return;
+    		*/
+    	}
+        myResetYPRmodifier();   
+        Aircraft.ypr[2] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F,  44.0F);
+        Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, -0.32F);
+        Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F,  0.1F);
+        hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
+        
+        myResetYPRmodifier();
+        Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F,  0.6F);
+        hierMesh().chunkSetLocate("Piston1_D0", Aircraft.xyz, Aircraft.ypr);
+        if(Config.isUSE_RENDER()) {
+            if(Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null)
+                Main3D.cur3D().cockpits[0].onDoorMoved(f);
+            setDoorSnd(f);
+        }
     }
 
   // Gear code  ----------------------------------------------------------------------------------------------------------------------
@@ -280,11 +378,35 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
         hierMesh().chunkSetAngles("Flap04_D0", 0.0F, 0.0F, f1);
     }
 
+    //TODO
     protected void moveFan(float f) {
     	
     }
 
+  //TODO: for damage testing; remove afterwards --------------------------------------------------------------------------
+    private int evilstep = 0;
+    
+    private void doEvilStuff() {
+    	Point3d p = new Point3d();
+    	Shot s = new Shot();
+    	s.chunkName = "WingLIn";
+    	s.tickOffset = Time.tickOffset();
+    	s.initiator = (new Explosion()).initiator;
+    	switch(evilstep) {
+    	case 0: hitBone("xwinglin", s, p);  break;
+    	case 1: break;
+    	case 2: break;
+    	case 3: break;
+    	case 4: break;
+    	default: break;
+    	}
+    	evilstep++;
+    }
+    
+    //TODO remove pylons & detonate loadouts if wings fall off; check the rest if it works
     protected void hitBone(String s, Shot shot, Point3d point3d) {
+    	System.out.println("hitBone called!");
+    	System.out.println(s);
         if(s.startsWith("xx")) {
             if(s.startsWith("xxarmor")) {
                 debuggunnery("Armor: Hit..");
@@ -483,54 +605,77 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
     }
 
     public void engineSurge(float f) {
-        if(this.FM.AS.isMaster())
-            if(curthrl == -1F) {
-                curthrl = oldthrl = this.FM.EI.engines[0].getControlThrottle();
-            } else {
-                curthrl = this.FM.EI.engines[0].getControlThrottle();
-                if(curthrl < 1.05F) {
-                    if((curthrl - oldthrl) / f > 20F && this.FM.EI.engines[0].getRPM() < 3200F && this.FM.EI.engines[0].getStage() == 6 && World.Rnd().nextFloat() < 0.4F) {
-                        if(this.FM.actor == World.getPlayerAircraft())
-                            HUD.log(AircraftHotKeys.hudLogWeaponId, "Compressor Stall!");
-                        super.playSound("weapon.MGunMk108s", true);
-                        engineSurgeDamage += 0.01D * (double)(this.FM.EI.engines[0].getRPM() / 1000F);
-                        this.FM.EI.engines[0].doSetReadyness(this.FM.EI.engines[0].getReadyness() - engineSurgeDamage);
-                        if(World.Rnd().nextFloat() < 0.05F && (super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode())
-                            this.FM.AS.hitEngine(this, 0, 100);
-                        if(World.Rnd().nextFloat() < 0.05F && (super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode())
-                            this.FM.EI.engines[0].setEngineDies(this);
-                    }
-                    if((curthrl - oldthrl) / f < -20F && (curthrl - oldthrl) / f > -100F && this.FM.EI.engines[0].getRPM() < 3200F && this.FM.EI.engines[0].getStage() == 6) {
-                        super.playSound("weapon.MGunMk108s", true);
-                        engineSurgeDamage += 0.001D * (double)(this.FM.EI.engines[0].getRPM() / 1000F);
-                        this.FM.EI.engines[0].doSetReadyness(this.FM.EI.engines[0].getReadyness() - engineSurgeDamage);
-                        if(World.Rnd().nextFloat() < 0.4F && (super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode()) {
-                            if(this.FM.actor == World.getPlayerAircraft())
-                                HUD.log(AircraftHotKeys.hudLogWeaponId, "Engine Flameout!");
-                            this.FM.EI.engines[0].setEngineStops(this);
-                        } else if(this.FM.actor == World.getPlayerAircraft())
-                            HUD.log(AircraftHotKeys.hudLogWeaponId, "Compressor Stall!");
-                    }
-                }
-                oldthrl = curthrl;
-            }
+        if(this.FM.AS.isMaster()) {
+        	for(int i = 0; i<2; i++) {
+        		if(curthrl[i] == -1F) {
+                	curthrl[i] = oldthrl[i] = this.FM.EI.engines[i].getControlThrottle();
+            	} else {
+                	curthrl[i] = this.FM.EI.engines[i].getControlThrottle();
+                	if(curthrl[i] < 1.05F) {
+                    	if((curthrl[i] - oldthrl[i]) / f > 20F && this.FM.EI.engines[i].getRPM() < 3200F && this.FM.EI.engines[i].getStage() == 6 && World.Rnd().nextFloat() < 0.4F) {
+                        	if(this.FM.actor == World.getPlayerAircraft())
+                            	HUD.log(AircraftHotKeys.hudLogWeaponId, "Compressor Stall!");
+                        	super.playSound("weapon.MGunMk108s", true);
+                        	engineSurgeDamage[i] += 0.01D * (double)(this.FM.EI.engines[i].getRPM() / 1000F);
+                        	this.FM.EI.engines[i].doSetReadyness(this.FM.EI.engines[i].getReadyness() - engineSurgeDamage[i]);
+                        	if(World.Rnd().nextFloat() < 0.05F && (super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode())
+                            	this.FM.AS.hitEngine(this, i, 100);
+                        	if(World.Rnd().nextFloat() < 0.05F && (super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode())
+                            	this.FM.EI.engines[i].setEngineDies(this);
+                    	}
+                    	if((curthrl[i] - oldthrl[i]) / f < -20F && (curthrl[i] - oldthrl[i]) / f > -100F && this.FM.EI.engines[i].getRPM() < 3200F && this.FM.EI.engines[i].getStage() == 6) {
+                        	super.playSound("weapon.MGunMk108s", true);
+                        	engineSurgeDamage[i] += 0.001D * (double)(this.FM.EI.engines[i].getRPM() / 1000F);
+                        	this.FM.EI.engines[i].doSetReadyness(this.FM.EI.engines[i].getReadyness() - engineSurgeDamage[i]);
+                        	if(World.Rnd().nextFloat() < 0.4F && (super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode()) {
+                            	if(this.FM.actor == World.getPlayerAircraft())
+                                	HUD.log(AircraftHotKeys.hudLogWeaponId, "Engine Flameout!");
+                            	this.FM.EI.engines[i].setEngineStops(this);
+                        	} else if(this.FM.actor == World.getPlayerAircraft())
+                            	HUD.log(AircraftHotKeys.hudLogWeaponId, "Compressor Stall!");
+                    	}
+                	}
+                	oldthrl[i] = curthrl[i];
+            	}
+        	}
+        }
     }
-
+    
+  //---------------------------------------------------------------------------------------------------------------------
+    
     public void update(float f) {
+    	//temp
+    	for(int i = 0; i<2; i++) {
+    		if(eOut[i] != this.FM.EI.engines[i].getPowerOutput()) {
+    			eOut[i] = this.FM.EI.engines[i].getPowerOutput();
+    			System.out.print(">>>>> A-37 <<<<< Engine " + i + ": getPowerOutput() = " + eOut[i]);
+    			System.out.print("; getStage() = " + this.FM.EI.engines[i].getStage() + "\n");
+    		}
+    	}
+    	
+    	
         if((this.FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && super.FM.getSpeedKMH() > 15F) {
             overrideBailout = true;
             this.FM.AS.bIsAboutToBailout = false;
             bailout();
         }
-        if(this.FM.AS.isMaster() && Config.isUSE_RENDER())
-            if(this.FM.EI.engines[0].getPowerOutput() > 0.5F && this.FM.EI.engines[0].getStage() == 6) {
-                if(this.FM.EI.engines[0].getPowerOutput() > 0.75F)
-                    this.FM.AS.setSootState(this, 0, 3);
-                else
-                    this.FM.AS.setSootState(this, 0, 2);
-            } else {
-                this.FM.AS.setSootState(this, 0, 0);
-            }
+        if(this.FM.AS.isMaster() && Config.isUSE_RENDER()) {
+        	for(int i = 0; i<2; i++) {
+        		if(this.FM.EI.engines[i].getPowerOutput() > 0.5F && this.FM.EI.engines[i].getStage() == 6) {
+                	if(this.FM.EI.engines[i].getPowerOutput() > 0.75F) {
+                		this.FM.AS.setSootState(this, i, 3);
+                		//TEST:
+                		//this.doSetSootState(i,3);
+                	} else {
+                    	this.FM.AS.setSootState(this, i, 2);
+                    	//this.doSetSootState(i,2);
+                	}
+            	} else {
+                	this.FM.AS.setSootState(this, i, 0);
+                	//this.doSetSootState(i,0);
+            	}
+        	}
+        }
         if(this.FM.CT.getArrestor() > 0.9F)
             if(this.FM.Gears.arrestorVAngle != 0.0F) {
                 arrestor2 = Aircraft.cvt(this.FM.Gears.arrestorVAngle, -65F, 3F, 45F, -23F);
@@ -556,6 +701,8 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
         super.update(f);
     }
 
+ // bailout routines --------------------------------------------------------------------------------------------------------------------
+    
     private void bailout() {
         if(overrideBailout)
             if(this.FM.AS.astateBailoutStep >= 0 && this.FM.AS.astateBailoutStep < 2) {
@@ -616,7 +763,7 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
             }
     }
 
-
+    //fixed
     public void doEjectCatapult() {
         new MsgAction(false, this) {
             public void doAction(Object obj) {
@@ -624,7 +771,7 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
                 if(Actor.isValid(aircraft)) {
                     Loc loc = new Loc();
                     Loc loc1 = new Loc();
-                    Vector3d vector3d = new Vector3d(0.0D, 0.0D, 10D);
+                    Vector3d vector3d = new Vector3d(0.0D, 0.0D, 30.0D);
                     HookNamed hooknamed = new HookNamed(aircraft, "_ExternalSeat01");
                     ((Actor) (aircraft)).pos.getAbs(loc1);
                     hooknamed.computePos(aircraft, loc1, loc);
@@ -632,7 +779,7 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
                     vector3d.x += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).x;
                     vector3d.y += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).y;
                     vector3d.z += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).z;
-                    new EjectionSeat(1, loc, vector3d, aircraft);
+                    new EjectionSeat(4, loc, vector3d, aircraft);
                 }
             }
 
@@ -647,7 +794,22 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
     }
 
     private final void doRemoveBlisters() {
-        for(int i = 2; i < 10; i++)
+    	String s = "Blister1_D0";
+    	if(hierMesh().chunkFindCheck(s) != -1 && bHasBlister) {
+    		Wreckage w = new Wreckage(this, hierMesh().chunkFind(s));
+    		w.collide(true);
+    		Vector3d v = new Vector3d();
+    		getSpeed(v);
+    		v.z += 10F;
+    		w.setSpeed(v);
+    		hierMesh().chunkVisible(s, false);
+    		myResetYPRmodifier();
+    		Aircraft.xyz[2] = 0.6F;
+    		hierMesh().chunkSetLocate("Piston1_D0", Aircraft.xyz, Aircraft.ypr);
+    		bHasBlister = false;
+    	}
+    	/*
+        for(int i = 2; i < 10; i++) {
             if(hierMesh().chunkFindCheck("Blister" + i + "_D0") != -1 && this.FM.AS.getPilotHealth(i - 1) > 0.0F) {
                 hierMesh().hideSubTrees("Blister" + i + "_D0");
                 Wreckage wreckage = new Wreckage(this, hierMesh().chunkFind("Blister" + i + "_D0"));
@@ -656,6 +818,11 @@ public abstract class A_37 extends Scheme2 implements TypeFighter, TypeBNZFighte
                 vector3d.set(this.FM.Vwld);
                 wreckage.setSpeed(vector3d);
             }
-        
+        	System.out.println("SKYLLA A-37: hierMesh().chunkFindCheck(\"Blister" + i + "_D0\") = " + hierMesh().chunkFindCheck("Blister" + i + "_D0"));
+        	System.out.println("SKYLLA A-37: this.FM.AS.getPilotHealth("+(i-1)+") = " + this.FM.AS.getPilotHealth(i - 1));
+        }
+    	*/
     }
+    
+ //---------------------------------------------------------------------------------------------------------------------------
 }
