@@ -2717,7 +2717,9 @@ public class Mission implements Destroy {
                 }
                 break;
             case 11:
-                if (!(this.net instanceof Master) && netmsginput.channel() == this.net.masterChannel()) {
+                // TODO: By SAS~Storebror, let Time of Day Changes appear in Net Playback as well!
+                //if (!(this.net instanceof Master) && netmsginput.channel() == this.net.masterChannel()) {
+                if(NetMissionTrack.isPlaying() || (!(this.net instanceof Master) && netmsginput.channel() == this.net.masterChannel())) {
                     float f = netmsginput.readFloat();
                     World.setTimeofDay(f);
                     World.land().cubeFullUpdate();

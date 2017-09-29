@@ -248,7 +248,8 @@ public class Bomb extends ActorMesh implements MsgCollisionRequestListener, MsgC
         if (isArmed()) {
             MsgExplosion.send(actor, s, point3d, getOwner(), M, f, i, f1, k);
             ActorCrater.initOwner = getOwner();
-            Explosions.generate(actor, point3d, f, i, f1, !Mission.isNet(), j);
+           // Explosions.generate(actor, point3d, f, i, f1, !Mission.isNet(), j);
+            Explosions.generate(actor, point3d, f, i, f1, false, j);
             ActorCrater.initOwner = null;
             destroy();
         } else {
@@ -333,7 +334,7 @@ public class Bomb extends ActorMesh implements MsgCollisionRequestListener, MsgC
             World.wind().getVectorWeapon(point3d, vector3d);
             speed.add(-vector3d.x, -vector3d.y, 0.0D);
         }
-        S = (float) ((3.1415926535897931D * (double) f * (double) f) / 4D);
+        S = (float) ((Math.PI * (double) f * (double) f) / 4D);
         M = f1;
         // TODO: Storebror: Bomb Spread Replication
         // ------------------------------------

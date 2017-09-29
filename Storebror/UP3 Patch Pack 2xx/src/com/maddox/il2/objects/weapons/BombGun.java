@@ -29,7 +29,7 @@ public class BombGun extends Interpolate implements BulletEmitter {
         armingTime = 0L;
         // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
         // FIXME: Storebror: +++ TEST Bomb/Rocket Fuze/Delay Replication
-        if (!Config.isUSE_RENDER()) bombDelay = 0.5F;
+        if (!Config.isUSE_RENDER()) bombDelay = 0.0F;
         // FIXME: Storebror: --- TEST Bomb/Rocket Fuze/Delay Replication
         bulletMassa = 0.048F;
         numBombs = 0;
@@ -113,6 +113,17 @@ public class BombGun extends Interpolate implements BulletEmitter {
         if (bomb != null)
             bomb.delayExplosion = bombDelay;
     }
+
+    // TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+    public void setBombDelay(float bombDelay, float bombFuze) {
+        this.bombDelay = bombDelay;
+        this.armingTime = (long)(bombFuze * 1000F);
+        if (bomb != null) {
+            bomb.delayExplosion = bombDelay;
+            bomb.armingTime = this.armingTime;
+        }
+    }
+    // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
 
     public boolean isExternal() {
         return bExternal;

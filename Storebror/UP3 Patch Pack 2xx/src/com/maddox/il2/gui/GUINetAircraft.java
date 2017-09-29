@@ -966,7 +966,7 @@ public class GUINetAircraft extends GameState {
     private static boolean ZUTI_IS_GAME_DF = false;
     protected boolean      zutiIsDSConsole = false;
     protected ArrayList    zutiItems       = null;
-
+    
     // New constructor for DS server
     public GUINetAircraft() {
         super(44);
