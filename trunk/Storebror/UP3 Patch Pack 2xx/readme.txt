@@ -1,4 +1,4 @@
-UP3 RC4 Patch Pack v2.11 BETA
+UP3 RC4 Patch Pack v2.14
 
 Contents:
 - All fixes listed below
@@ -6,7 +6,7 @@ Contents:
 - UP3 RC4 without obfuscation
 - SAS Common Utils v1.09
 - SFS AutoMount v2
-- IL-2 Selector 3.2.0
+- IL-2 Selector 3.3.0
 
 Included feature enhancements:
 - Replication of aircraft control surfaces movement over the net and through NTRK recordings
@@ -54,6 +54,9 @@ Included feature enhancements:
 - New AC-47 Minigun Mod by SAS~Skylla
 - Enhanced WrfGr.21 explosion damage Mod by SAS~Skylla
 - IL-2 1941 Fieldmod Gunner Cockpit by Loku
+- Enhanced damage code, explosion effects and subammo release code for German "AB" bomb containers
+- Enhanced bomb trajectory for german SD2 / SD4 / B2.2EZ bomblets
+- 10 seconds minimum delay implemented between subsequent Net Mission Spawns to avoid multi-spawn-crashes
 
 Included fixes:
 - Bf 109 Series Cockpit Code fix
@@ -140,6 +143,7 @@ Included fixes:
 - Texture file loading bug (core game bug since day one) fixed
 - TBF/TBM Gunsight Fix by Loku
 - P-40E/P-40M Cockpit Fuel Gauge Fix by Loku
+- "Request Runway Lights" command restored (some menu structures had to be changed to achieve this)
 
 (*) Me-262V3 flight model:
     Like in real life, you have to tap the brakes in order to get the 262V3 off the ground.
@@ -206,7 +210,7 @@ Installation:
     * #UP#_Enable_UP.3.0
     * Additional JSGME Mods not related to Fixes, Patches, unobfuscated UP etc.
 3.) Extract this Patch Pack to your UP3 RC4 game folder
-4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_211")
+4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_214")
 
 ********************
 

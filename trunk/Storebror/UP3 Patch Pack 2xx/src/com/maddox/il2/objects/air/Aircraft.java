@@ -2485,7 +2485,10 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
                             break;
                         case 3:
                             if (bulletemitter instanceof BombGun && World.getPlayerAircraft() == aircraft)
-                                ((BombGun) bulletemitter).setBombDelay(World.cur().userBombDelay);
+                                // TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+                                //((BombGun) bulletemitter).setBombDelay(World.cur().userBombDelay);
+                                ((BombGun) bulletemitter).setBombDelay(World.cur().userBombDelay, World.cur().userBombFuze);
+                                // TODO: --- Bomb Fuze Setting by SAS~Storebror ---
                             break;
                     }
                 } else

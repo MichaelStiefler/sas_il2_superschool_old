@@ -20,6 +20,7 @@ import com.maddox.rts.CmdEnv;
 import com.maddox.rts.NetEnv;
 import com.maddox.rts.Property;
 import com.maddox.rts.RTSConf;
+import com.maddox.rts.Time;
 
 public class GUINetClientDBrief extends GUIBriefing
 {
@@ -182,9 +183,24 @@ public class GUINetClientDBrief extends GUIBriefing
 		}
 	}
 
-	protected void doNext()
+    // TODO: Added by SAS~Storebror, avoid multiple klicks on "Fly" button!
+    private static long lastFly = 0L;
+    private static final long TIME_BETWEEN_FLY_KLICKS = 10000L;
+
+    protected void doNext()
 	{
-		//TODO: Modified by |ZUTI|: check if aircraft is available
+        // TODO: Added by SAS~Storebror, avoid multiple klicks on "Fly" button!
+        if (Time.currentReal() - lastFly < TIME_BETWEEN_FLY_KLICKS) {
+            long secondsLeft = (TIME_BETWEEN_FLY_KLICKS - Time.currentReal() + lastFly + 500L) / 1000L;
+            GWindowMessageBox gwindowmessagebox = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, "Patience Please!", "Minimum time between two\nclicks on \"Fly\" button\nis " + TIME_BETWEEN_FLY_KLICKS/1000L + " seconds!\n\nPlease wait another " + secondsLeft + " second" + (secondsLeft>1L?"s.":".") , 3, 0.0F);
+            GUINetClientGuard guinetclientguard = (GUINetClientGuard) Main.cur().netChannelListener;
+            if (guinetclientguard != null)
+                guinetclientguard.curMessageBox = gwindowmessagebox;
+            return;
+        }
+        lastFly = Time.currentReal();
+
+        //TODO: Modified by |ZUTI|: check if aircraft is available
 		int result = ZutiSupportMethods_GUI.isValidArming();
 		if (result != -1)
 		{
