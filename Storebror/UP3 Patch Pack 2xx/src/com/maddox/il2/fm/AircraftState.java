@@ -177,7 +177,8 @@ public class AircraftState {
     public String                 hayrakeCode;
     public static int             hudLogBeaconId                = HUD.makeIdLog();
     public boolean                externalStoresDropped;
-    private static final String[] astateOilStrings              = { "3DO/Effects/Aircraft/BlackMediumSPD.eff", "3DO/Effects/Aircraft/BlackMediumTSPD.eff", null, null };
+    // TODO: +++ Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects +++
+    /*    private static final String[] astateOilStrings              = { "3DO/Effects/Aircraft/BlackMediumSPD.eff", "3DO/Effects/Aircraft/BlackMediumTSPD.eff", null, null };
 
     private static final String[] astateTankStrings = { null, null, null, "3DO/Effects/Aircraft/RedLeakTSPD.eff", null, null, "3DO/Effects/Aircraft/RedLeakTSPD.eff", null, null, "3DO/Effects/Aircraft/BlackMediumSPD.eff",
             "3DO/Effects/Aircraft/BlackMediumTSPD.eff", null, "3DO/Effects/Aircraft/BlackHeavySPD.eff", "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", null, "3DO/Effects/Aircraft/FireSPD.eff", "3DO/Effects/Aircraft/BlackHeavySPD.eff",
@@ -188,7 +189,23 @@ public class AircraftState {
     private static final String[] astateEngineStrings = { null, null, null, "3DO/Effects/Aircraft/GraySmallSPD.eff", "3DO/Effects/Aircraft/GraySmallTSPD.eff", null, "3DO/Effects/Aircraft/BlackMediumSPD.eff", "3DO/Effects/Aircraft/BlackMediumTSPD.eff",
             null, "3DO/Effects/Aircraft/BlackHeavySPD.eff", "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", null, "3DO/Effects/Aircraft/FireSPD.eff", "3DO/Effects/Aircraft/BlackHeavySPD.eff", "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", null, null, null,
             "3DO/Effects/Aircraft/GraySmallGND.eff", null, null, "3DO/Effects/Aircraft/BlackMediumGND.eff", null, null, "3DO/Effects/Aircraft/BlackHeavyGND.eff", null, null, "3DO/Effects/Aircraft/FireGND.eff", "3DO/Effects/Aircraft/BlackHeavyGND.eff",
-            null };
+            null };*/
+    private static final String astateOilStrings[] = {
+            "3DO/Effects/Aircraft/OilBlackMediumSPD.eff", "3DO/Effects/Aircraft/OilBlackMediumTSPD.eff", null, null
+        };
+    private static final String astateTankStrings[] = {
+            null, null, null, "3DO/Effects/Aircraft/RedLeakTSPD.eff", null, null, "3DO/Effects/Aircraft/RedLeakTSPD.eff", null, null, "3DO/Effects/Aircraft/TankBlackMediumSPD.eff", 
+            "3DO/Effects/Aircraft/TankBlackMediumTSPD.eff", null, "3DO/Effects/Aircraft/BlackHeavySPD.eff", "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", null, "3DO/Effects/Aircraft/FireSPD.eff", "3DO/Effects/Aircraft/BlackHeavySPD.eff", "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", "3DO/Effects/Aircraft/FireSPDLong.eff", "3DO/Effects/Aircraft/BlackHeavySPD.eff", 
+            "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", null, null, null, "3DO/Effects/Aircraft/RedLeakGND.eff", null, null, "3DO/Effects/Aircraft/RedLeakGND.eff", null, null, 
+            "3DO/Effects/Aircraft/BlackMediumGND.eff", null, null, "3DO/Effects/Aircraft/BlackHeavyGND.eff", null, null, "3DO/Effects/Aircraft/FireGND.eff", "3DO/Effects/Aircraft/BlackHeavyGND.eff", null, "3DO/Effects/Aircraft/FireGND.eff", 
+            "3DO/Effects/Aircraft/BlackHeavyGND.eff", null
+        };
+        private static final String astateEngineStrings[] = {
+            null, null, null, "3DO/Effects/Aircraft/GraySmallSPD.eff", "3DO/Effects/Aircraft/GraySmallTSPD.eff", null, "3DO/Effects/Aircraft/EngineBlackMediumSPD.eff", "3DO/Effects/Aircraft/EngineBlackMediumTSPD.eff", null, "3DO/Effects/Aircraft/BlackHeavySPD.eff", 
+            "3DO/Effects/Aircraft/EngineBlackHeavyTSPD.eff", null, "3DO/Effects/Aircraft/FireSPD.eff", "3DO/Effects/Aircraft/BlackHeavySPD.eff", "3DO/Effects/Aircraft/EngineBlackHeavyTSPD.eff", null, null, null, "3DO/Effects/Aircraft/GraySmallGND.eff", null, 
+            null, "3DO/Effects/Aircraft/BlackMediumGND.eff", null, null, "3DO/Effects/Aircraft/BlackHeavyGND.eff", null, null, "3DO/Effects/Aircraft/FireGND.eff", "3DO/Effects/Aircraft/BlackHeavyGND.eff", null
+        };
+    // TODO: --- Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects ---
 
     private static final String[] astateCondensateStrings = { null, "3DO/Effects/Aircraft/CondensateTSPD.eff" };
 
@@ -239,6 +256,11 @@ public class AircraftState {
     public static boolean     bCheckPlayerAircraft           = true;
     private Item[]            itemsToMaster;
     private Item[]            itemsToMirrors;
+    
+    // TODO: +++ Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects +++
+    private LightPointActor[] astateTankBurnLights;
+    private LightPointActor[] astateEngineBurnLights;
+    // TODO: --- Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects ---
     
     public AircraftState() {
         this.bleedingTime = 0L;
@@ -316,6 +338,11 @@ public class AircraftState {
 
         this.itemsToMaster = null;
         this.itemsToMirrors = null;
+        
+        // TODO: +++ Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects +++
+        this.astateTankBurnLights = new LightPointActor[] { null, null, null, null };
+        this.astateEngineBurnLights = new LightPointActor[] { null, null, null, null, null, null };
+        // TODO: --- Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects ---
     }
 
     public void set(Actor paramActor, boolean paramBoolean) {
@@ -534,7 +561,8 @@ public class AircraftState {
             setTankState(this.actor, paramInt, this.astateTankStates[paramInt] - 1);
     }
 
-    public boolean doSetTankState(Actor paramActor, int paramInt1, int paramInt2) {
+    // TODO: +++ Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects +++
+/*    public boolean doSetTankState(Actor paramActor, int paramInt1, int paramInt2) {
         boolean bool = this.aircraft.isChunkAnyDamageVisible(this.astateEffectChunks[(paramInt1 + 0)]);
         Aircraft.debugprintln(this.aircraft, "Stating Tank " + paramInt1 + " to state " + paramInt2 + (bool ? ".." : " rejected (missing part).."));
         if (!bool) {
@@ -574,7 +602,144 @@ public class AircraftState {
         }
         this.aircraft.sfxSmokeState(2, paramInt1, paramInt2 > 4);
         return true;
+    }*/
+    
+    public boolean doSetTankState(Actor tankOwner, int tankNo, int newTankState)
+    {
+        boolean isTankDamageVisible = aircraft.isChunkAnyDamageVisible(astateEffectChunks[tankNo + 0]);
+        Aircraft.debugprintln(aircraft, "Stating Tank " + tankNo + " to state " + newTankState + (isTankDamageVisible ? ".." : " rejected (missing part).."));
+        if(!isTankDamageVisible)
+            return false;
+        if(World.getPlayerAircraft() == actor)
+        {
+            if(astateTankStates[tankNo] == 0 && (newTankState == 1 || newTankState == 2))
+                HUD.log("FailedTank");
+            if(astateTankStates[tankNo] < 5 && newTankState >= 5)
+                HUD.log("FailedTankOnFire");
+        }
+        byte oldTankState = astateTankStates[tankNo];
+        astateTankStates[tankNo] = (byte)newTankState;
+        boolean isTankSmoking = false;
+        boolean isTankBurning = false;
+        if(newTankState == 5 && oldTankState < 4)
+            isTankSmoking = true;
+        if(newTankState == 4 && oldTankState == 4)
+            isTankBurning = true;
+        if(newTankState == 4 && oldTankState < 3)
+        {
+            isTankBurning = true;
+            isTankSmoking = true;
+        }
+        if(astateTankStates[tankNo] < 5 && newTankState >= 5)
+        {
+            aircraft.FM.setTakenMortalDamage(true, tankOwner);
+            aircraft.FM.setCapableOfACM(false);
+        }
+        if(newTankState < 4 && aircraft.FM.isCapableOfBMP())
+            aircraft.FM.setTakenMortalDamage(false, tankOwner);
+        byte tankStateStringIndex = 0;
+        if(!bIsAboveCriticalSpeed)
+            tankStateStringIndex = 21;
+        for(int tankStateEffectIndex = 0; tankStateEffectIndex < 3; tankStateEffectIndex++)
+        {
+            if(astateTankEffects[tankNo][tankStateEffectIndex] != null)
+                Eff3DActor.finish(astateTankEffects[tankNo][tankStateEffectIndex]);
+            astateTankEffects[tankNo][tankStateEffectIndex] = null;
+            String tankStateEffectName = astateTankStrings[tankStateStringIndex + tankStateEffectIndex + newTankState * 3];
+            if(isTankBurning && tankStateEffectName == null)
+                tankStateEffectName = "3DO/Effects/Aircraft/FireSPDShort.eff";
+            if(tankStateEffectName != null)
+            {
+                if(newTankState > 2)
+                {
+                    boolean isWingTank = false;
+                    Hook tankBurnHook = actor.findHook("_Tank" + (tankNo + 1) + "Burn");
+                    String tankBurnHookChunkName = tankBurnHook.chunkName();
+                    if(tankBurnHookChunkName.toLowerCase().startsWith("wing"))
+                    {
+                        isWingTank = true;
+                        if(aircraft.hierMesh().isChunkVisible(tankBurnHookChunkName) && newTankState == 5)
+                            isTankSmoking = true;
+                    }
+                    if(tankStateEffectName.equals("3DO/Effects/Aircraft/FireSPD.eff"))
+                    {
+                        if(isWingTank)
+                            tankStateEffectName = "3DO/Effects/Aircraft/FireSPDWing.eff";
+                    } else
+                    if(tankStateEffectName.equals("3DO/Effects/Aircraft/FireSPDLong.eff"))
+                    {
+                        if(isWingTank)
+                            tankStateEffectName = "3DO/Effects/Aircraft/FireSPDWingLong.eff";
+                    } else
+                    if(tankStateEffectName.equals("3DO/Effects/Aircraft/BlackHeavySPD.eff"))
+                    {
+                        if(isTankSmoking)
+                            tankStateEffectName = null;
+                        else
+                        if(isWingTank)
+                            tankStateEffectName = "3DO/Effects/Aircraft/BlackHeavySPDWing.eff";
+                    } else
+                    if(tankStateEffectName.equals("3DO/Effects/Aircraft/BlackHeavyTSPD.eff") && isTankSmoking && !isTankBurning)
+                        tankStateEffectName = null;
+                    if(tankStateEffectName != null)
+                        astateTankEffects[tankNo][tankStateEffectIndex] = Eff3DActor.New(actor, tankBurnHook, null, 1.0F, tankStateEffectName, -1F);
+                } else
+                {
+                    astateTankEffects[tankNo][tankStateEffectIndex] = Eff3DActor.New(actor, actor.findHook("_Tank" + (tankNo + 1) + "Leak"), null, 1.0F, tankStateEffectName, -1F);
+                }
+                if(newTankState > 4)
+                {
+                    Hook tankBurnHook = actor.findHook("_Tank" + (tankNo + 1) + "Burn");
+                    Point3d tankBurnLightPos = aircraft.getTankBurnLightPoint(tankNo, tankBurnHook);
+                    boolean showTankBurnLight = true;
+                    for(int tankBurnLightsIndex = 0; tankBurnLightsIndex < astateTankBurnLights.length; tankBurnLightsIndex++)
+                    {
+                        if(astateTankBurnLights[tankBurnLightsIndex] == null)
+                            continue;
+                        Point3d tankBurnLightRelPos = astateTankBurnLights[tankBurnLightsIndex].relPos;
+                        double tankBurnLightDistanceToRel = tankBurnLightPos.distance(tankBurnLightRelPos);
+                        if(tankBurnLightDistanceToRel >= 1.0D)
+                            continue;
+                        showTankBurnLight = false;
+                        break;
+                    }
+
+                    if(showTankBurnLight)
+                    {
+                        for(int engineBurnLightsIndex = 0; engineBurnLightsIndex < astateEngineBurnLights.length; engineBurnLightsIndex++)
+                        {
+                            if(astateEngineBurnLights[engineBurnLightsIndex] == null)
+                                continue;
+                            Point3d engineBurnLightsPos = astateEngineBurnLights[engineBurnLightsIndex].relPos;
+                            double tankBurnLightDistanceToEngine = tankBurnLightPos.distance(engineBurnLightsPos);
+                            if(tankBurnLightDistanceToEngine >= 1.0D)
+                                continue;
+                            showTankBurnLight = false;
+                            break;
+                        }
+
+                    }
+                    if(showTankBurnLight)
+                    {
+                        astateTankBurnLights[tankNo] = new LightPointActor(new LightPoint(), tankBurnLightPos);
+                        astateTankBurnLights[tankNo].light.setColor(1.0F, 0.9F, 0.5F);
+                        astateTankBurnLights[tankNo].light.setEmit(5F, 5F);
+                        actor.draw.lightMap().put("_TankBurnLight" + tankNo, astateTankBurnLights[tankNo]);
+                    }
+                } else
+                if(astateTankBurnLights[tankNo] != null)
+                {
+                    actor.draw.lightMap().remove("_TankBurnLight" + tankNo);
+                    astateTankBurnLights[tankNo].destroy();
+                    astateTankBurnLights[tankNo] = null;
+                }
+            }
+        }
+
+        aircraft.sfxSmokeState(2, tankNo, newTankState > 4);
+        return true;
     }
+    // TODO: --- Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects ---
 
     private void doHitTank(Actor paramActor, int paramInt) {
         if (((World.Rnd().nextInt(0, 99) < 75) || ((this.actor instanceof Scheme1))) && (this.astateTankStates[paramInt] == 6)) {
@@ -595,14 +760,34 @@ public class AircraftState {
         }
     }
 
-    public void changeTankEffectBase(int paramInt, Actor paramActor) {
+    // TODO: +++ Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects +++
+    /*public void changeTankEffectBase(int paramInt, Actor paramActor) {
         for (int i = 0; i < 3; i++) {
             if (this.astateTankEffects[paramInt][i] != null) {
                 this.astateTankEffects[paramInt][i].pos.changeBase(paramActor, null, true);
             }
         }
         this.aircraft.sfxSmokeState(2, paramInt, false);
+    }*/
+    
+    public void changeTankEffectBase(int tankNo, Actor tankOwner)
+    {
+        if(tankOwner != null)
+        {
+            for(int tankEffectNo = 0; tankEffectNo < 3; tankEffectNo++)
+                if(astateTankEffects[tankNo][tankEffectNo] != null)
+                    astateTankEffects[tankNo][tankEffectNo].pos.changeBase(tankOwner, null, true);
+
+        }
+        if(astateTankBurnLights[tankNo] != null)
+        {
+            actor.draw.lightMap().remove("_TankBurnLight" + tankNo);
+            astateTankBurnLights[tankNo].destroy();
+            astateTankBurnLights[tankNo] = null;
+        }
+        aircraft.sfxSmokeState(2, tankNo, false);
     }
+    // TODO: --- Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects ---
 
     public void explodeTank(Actor paramActor, int paramInt) {
         if (!Actor.isValid(paramActor))
@@ -691,7 +876,8 @@ public class AircraftState {
             setEngineState(this.actor, paramInt, this.astateEngineStates[paramInt] - 1);
     }
 
-    public boolean doSetEngineState(Actor paramActor, int paramInt1, int paramInt2) {
+    // TODO: +++ Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects +++
+    /*public boolean doSetEngineState(Actor paramActor, int paramInt1, int paramInt2) {
         Aircraft.debugprintln(this.aircraft, "AS: Checking '" + this.astateEffectChunks[(paramInt1 + 4)] + "' visibility..");
         boolean bool = this.aircraft.isChunkAnyDamageVisible(this.astateEffectChunks[(paramInt1 + 4)]);
         Aircraft.debugprintln(this.aircraft, "AS: '" + this.astateEffectChunks[(paramInt1 + 4)] + "' is " + (bool ? "visible" : "invisible") + "..");
@@ -728,7 +914,100 @@ public class AircraftState {
         }
         this.aircraft.sfxSmokeState(1, paramInt1, paramInt2 > 3);
         return true;
+    }*/
+
+    public boolean doSetEngineState(Actor engineOwner, int engineIndex, int newEngineState)
+    {
+        Aircraft.debugprintln(aircraft, "AS: Checking '" + astateEffectChunks[engineIndex + 4] + "' visibility..");
+        boolean isEngineDamageVisible = aircraft.isChunkAnyDamageVisible(astateEffectChunks[engineIndex + 4]);
+        Aircraft.debugprintln(aircraft, "AS: '" + astateEffectChunks[engineIndex + 4] + "' is " + (isEngineDamageVisible ? "visible" : "invisible") + "..");
+        Aircraft.debugprintln(aircraft, "Stating Engine " + engineIndex + " to state " + newEngineState + (isEngineDamageVisible ? ".." : " rejected (missing part).."));
+        if(!isEngineDamageVisible)
+            return false;
+        if(astateEngineStates[engineIndex] < 4 && newEngineState >= 4)
+        {
+            if(World.getPlayerAircraft() == actor)
+                HUD.log("FailedEngineOnFire");
+            if(aircraft.isDestroyed() || aircraft.FM.Gears.isUnderDeck() || aircraft.FM.Gears.getWheelsOnGround() || aircraft.FM.Gears.onGround())
+            {
+                aircraft.FM.setTakenMortalDamage(true, engineOwner);
+                aircraft.FM.setCapableOfACM(false);
+            }
+            if(aircraft.FM.EI.getNum() < 4)
+                aircraft.FM.setCapableOfACM(false);
+            aircraft.FM.setCapableOfTaxiing(false);
+        }
+        astateEngineStates[engineIndex] = (byte)newEngineState;
+        if(newEngineState < 2 && aircraft.FM.isCapableOfBMP())
+            aircraft.FM.setTakenMortalDamage(false, engineOwner);
+        byte engineStringOffset = 0;
+        if(!bIsAboveCriticalSpeed)
+            engineStringOffset = 15;
+        for(int engineStateIndex = 0; engineStateIndex < 3; engineStateIndex++)
+        {
+            if(astateEngineEffects[engineIndex][engineStateIndex] != null)
+                Eff3DActor.finish(astateEngineEffects[engineIndex][engineStateIndex]);
+            astateEngineEffects[engineIndex][engineStateIndex] = null;
+            String engineStateEffectName = astateEngineStrings[engineStringOffset + engineStateIndex + newEngineState * 3];
+            if(engineStateEffectName != null)
+            {
+                Hook engineSmokeHook = actor.findHook("_Engine" + (engineIndex + 1) + "Smoke");
+                astateEngineEffects[engineIndex][engineStateIndex] = Eff3DActor.New(actor, engineSmokeHook, null, 1.0F, engineStateEffectName, -1F);
+                if(newEngineState > 3)
+                {
+                    Loc engineBurnLightLoc = aircraft.getEngineBurnLightLoc(engineIndex);
+                    Loc engineSmokeLoc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+                    engineSmokeHook.computePos(actor, engineBurnLightLoc, engineSmokeLoc);
+                    Point3d engineSmokePos = engineSmokeLoc.getPoint();
+                    boolean showEngineBurnLight = true;
+                    for(int tankBurnLightIndex = 0; tankBurnLightIndex < astateTankBurnLights.length; tankBurnLightIndex++)
+                    {
+                        if(astateTankBurnLights[tankBurnLightIndex] == null)
+                            continue;
+                        Point3d tankBurnLightPos = astateTankBurnLights[tankBurnLightIndex].relPos;
+                        double engineSmokeDistanceToTankBurnLight = engineSmokePos.distance(tankBurnLightPos);
+                        if(engineSmokeDistanceToTankBurnLight >= 1.0D)
+                            continue;
+                        showEngineBurnLight = false;
+                        break;
+                    }
+
+                    if(showEngineBurnLight)
+                    {
+                        for(int engineBurnLightIndex = 0; engineBurnLightIndex < astateEngineBurnLights.length; engineBurnLightIndex++)
+                        {
+                            if(astateEngineBurnLights[engineBurnLightIndex] == null)
+                                continue;
+                            Point3d engineBurnLightPos = astateEngineBurnLights[engineBurnLightIndex].relPos;
+                            double engineSmokeDistanceToEngineBurnLight = engineSmokePos.distance(engineBurnLightPos);
+                            if(engineSmokeDistanceToEngineBurnLight >= 1.0D)
+                                continue;
+                            showEngineBurnLight = false;
+                            break;
+                        }
+
+                    }
+                    if(showEngineBurnLight)
+                    {
+                        astateEngineBurnLights[engineIndex] = new LightPointActor(new LightPoint(), engineSmokePos);
+                        astateEngineBurnLights[engineIndex].light.setColor(1.0F, 0.9F, 0.5F);
+                        astateEngineBurnLights[engineIndex].light.setEmit(5F, 5F);
+                        actor.draw.lightMap().put("_EngineBurnLight" + engineIndex, astateEngineBurnLights[engineIndex]);
+                    }
+                } else
+                if(astateEngineBurnLights[engineIndex] != null)
+                {
+                    actor.draw.lightMap().remove("_EngineBurnLight" + engineIndex);
+                    astateEngineBurnLights[engineIndex].destroy();
+                    astateEngineBurnLights[engineIndex] = null;
+                }
+            }
+        }
+
+        aircraft.sfxSmokeState(1, engineIndex, newEngineState > 3);
+        return true;
     }
+    // TODO: --- Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects ---
 
     private void doHitEngine(Actor paramActor, int paramInt) {
         if (World.Rnd().nextInt(0, 99) < 12) {
@@ -760,14 +1039,34 @@ public class AircraftState {
             }
     }
 
-    public void changeEngineEffectBase(int paramInt, Actor paramActor) {
+    // TODO: +++ Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects +++
+    /*public void changeEngineEffectBase(int paramInt, Actor paramActor) {
         for (int i = 0; i < 3; i++) {
             if (this.astateEngineEffects[paramInt][i] != null) {
                 this.astateEngineEffects[paramInt][i].pos.changeBase(paramActor, null, true);
             }
         }
         this.aircraft.sfxSmokeState(1, paramInt, false);
+    }*/
+    public void changeEngineEffectBase(int engineIndex, Actor engineOwner)
+    {
+        if(engineOwner != null)
+        {
+            for(int engineEffectIndex = 0; engineEffectIndex < 3; engineEffectIndex++)
+                if(astateEngineEffects[engineIndex][engineEffectIndex] != null)
+                    astateEngineEffects[engineIndex][engineEffectIndex].pos.changeBase(engineOwner, null, true);
+
+        }
+        if(astateEngineBurnLights[engineIndex] != null)
+        {
+            actor.draw.lightMap().remove("_EngineBurnLight" + engineIndex);
+            astateEngineBurnLights[engineIndex].destroy();
+            astateEngineBurnLights[engineIndex] = null;
+        }
+        aircraft.sfxSmokeState(1, engineIndex, false);
+        astateEngineStates[engineIndex] = 0;
     }
+    // TODO: --- Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects ---
 
     public void explodeEngine(Actor paramActor, int paramInt) {
         if (!Actor.isValid(paramActor))
