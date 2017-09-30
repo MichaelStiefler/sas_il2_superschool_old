@@ -3150,6 +3150,35 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
         return bombScoreOwner;
     }
     
+    // TODO: +++ Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects +++
+    public Point3d getTankBurnLightPoint(int i, Hook hook)
+    {
+        Loc loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+        Loc loc1 = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+        if(hook.chunkName().toLowerCase().startsWith("cf"))
+        {
+            hook.computePos(this, loc, loc1);
+            Point3d point3d = loc1.getPoint();
+            if(point3d.z > 0.0D)
+                loc = new Loc(0.0D, 0.0D, 0.5D, 0.0F, 0.0F, 0.0F);
+            else
+                loc = new Loc(0.0D, 0.0D, -0.75D, 0.0F, 0.0F, 0.0F);
+            loc1 = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+        } else
+        {
+            loc = new Loc(-1D, 0.0D, 0.5D, 0.0F, 0.0F, 0.0F);
+        }
+        hook.computePos(this, loc, loc1);
+        Point3d point3d1 = loc1.getPoint();
+        return point3d1;
+    }
+
+    public Loc getEngineBurnLightLoc(int i)
+    {
+        return engineBurnLightLoc;
+    }
+    // TODO: --- Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects ---
+
     public float[] getTurretRestOrient(int paramInt)
     {
       return defTurretRest;
@@ -3161,6 +3190,11 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
     public static List    playerTaxingWay            = null;
     public boolean        bSpotter;
     // TODO: --- TD AI code backport from 4.13 ---
+    
+    // TODO: +++ Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects +++
+    private static final Loc engineBurnLightLoc = new Loc(0.0D, 0.0D, 1.5D, 0.0F, 0.0F, 0.0F);
+    // TODO: --- Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects ---
+
 
     // TODO: |ZUTI| variables
     // -------------------------------------------------------------------------------------------
