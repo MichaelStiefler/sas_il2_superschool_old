@@ -153,6 +153,7 @@ public class Bomb extends ActorMesh implements MsgCollisionRequestListener, MsgC
             pos.getTime(Time.current(), loc);
             collide(false);
             drawing(false);
+            this.speed.set(0,0,0);
             DelayParam delayparam = new DelayParam(actor, s1, loc);
             if (p.z < Engine.land().HQ(p.x, p.y) + 5D) {
                 if (Engine.land().isWater(p.x, p.y)) {

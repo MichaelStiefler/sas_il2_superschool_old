@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -114,11 +115,11 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
     public RangeRandom                   armingRnd;
 
     static {
-        planesWithZBReceiver = (new java.lang.Class[] { com.maddox.il2.objects.air.F4U.class, com.maddox.il2.objects.air.F4F.class, com.maddox.il2.objects.air.TBF.class, com.maddox.il2.objects.air.SBD.class, com.maddox.il2.objects.air.PBYX.class,
-                com.maddox.il2.objects.air.F6F.class, com.maddox.il2.objects.air.F2A2.class, com.maddox.il2.objects.air.SEAFIRE3.class, com.maddox.il2.objects.air.SEAFIRE3F.class, com.maddox.il2.objects.air.Fulmar.class,
-                com.maddox.il2.objects.air.Swordfish.class, com.maddox.il2.objects.air.MOSQUITO.class, com.maddox.il2.objects.air.B_25.class, com.maddox.il2.objects.air.A_20.class, com.maddox.il2.objects.air.B_17.class,
-                com.maddox.il2.objects.air.B_24.class, com.maddox.il2.objects.air.B_29.class, com.maddox.il2.objects.air.BEAU.class, com.maddox.il2.objects.air.P_80.class, com.maddox.il2.objects.air.P_39.class, com.maddox.il2.objects.air.P_51.class,
-                com.maddox.il2.objects.air.P_47.class, com.maddox.il2.objects.air.P_40.class, com.maddox.il2.objects.air.P_38.class, com.maddox.il2.objects.air.P_36.class, com.maddox.il2.objects.air.A_20.class, com.maddox.il2.objects.air.C_47.class });
+        planesWithZBReceiver = (new java.lang.Class[] { F4U.class, F4F.class, TBF.class, SBD.class, PBYX.class,
+                F6F.class, F2A2.class, SEAFIRE3.class, SEAFIRE3F.class, Fulmar.class,
+                Swordfish.class, MOSQUITO.class, B_25.class, A_20.class, B_17.class,
+                B_24.class, B_29.class, BEAU.class, P_80.class, P_39.class, P_51.class,
+                P_47.class, P_40.class, P_38.class, P_36.class, A_20.class, C_47.class });
     }
 
     public long                    tmSearchlighted;
@@ -1763,6 +1764,11 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
         bSpotter = false;
         bombScoreOwner = null;
         // TODO: --- TD AI code backport from 4.13 ---
+        
+        // TODO: +++ Enhanced Ordnance View by SAS~Storebror +++
+        this.activeOrdnance = new LinkedList();
+        this.lastSelectedOrdnance = null;
+        // TODO: --- Enhanced Ordnance View by SAS~Storebror ---
     }
 
     private void checkLoadingCountry() {
@@ -2364,13 +2370,13 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
         } else {
             com.maddox.util.HashMapInt hashmapint = (com.maddox.util.HashMapInt) obj;
             int i = com.maddox.rts.Finger.Int(s);
-            boolean flag = com.maddox.il2.objects.air.Aircraft.isWeaponDateOk(class1, s);
+            boolean flag = Aircraft.isWeaponDateOk(class1, s);
             return hashmapint.containsKey(i) && flag;
         }
     }
 
     public static boolean isWeaponDateOk(java.lang.Class class1, java.lang.String s) {
-        com.maddox.util.HashMapInt hashmapint = com.maddox.il2.objects.air.Aircraft.weaponsMapProperty(class1);
+        com.maddox.util.HashMapInt hashmapint = Aircraft.weaponsMapProperty(class1);
         int i = com.maddox.rts.Finger.Int(s);
         if (!hashmapint.containsKey(i))
             return true;
@@ -2383,7 +2389,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
         } catch (java.lang.Exception exception) {
             return true;
         }
-        java.lang.String as[] = com.maddox.il2.objects.air.Aircraft.getWeaponHooksRegistered(class1);
+        java.lang.String as[] = Aircraft.getWeaponHooksRegistered(class1);
         _WeaponSlot a_lweaponslot[] = (_WeaponSlot[]) (_WeaponSlot[]) hashmapint.get(i);
         for (int k = 0; k < as.length; k++) {
             if (a_lweaponslot[k] == null)
@@ -3084,12 +3090,12 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 
     public void blisterRemoved(int i) {}
 
-    public static boolean hasPlaneZBReceiver(com.maddox.il2.objects.air.Aircraft aircraft) {
+    public static boolean hasPlaneZBReceiver(Aircraft aircraft) {
         for (int i = 0; i < planesWithZBReceiver.length; i++) {
             if (!planesWithZBReceiver[i].isInstance(aircraft))
                 continue;
             java.lang.String s = aircraft.getRegiment().country();
-            if (s.equals(com.maddox.il2.objects.air.PaintScheme.countryBritain) || s.equals(com.maddox.il2.objects.air.PaintScheme.countryUSA) || s.equals(com.maddox.il2.objects.air.PaintScheme.countryNewZealand))
+            if (s.equals(PaintScheme.countryBritain) || s.equals(PaintScheme.countryUSA) || s.equals(PaintScheme.countryNewZealand))
                 return true;
         }
 
@@ -3179,6 +3185,42 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
     }
     // TODO: --- Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects ---
 
+    // TODO: +++ Enhanced Ordnance View by SAS~Storebror +++
+    public Actor getNextOrdnance()
+    {
+        if (this.activeOrdnance.isEmpty()) return null; // No Ordnance available
+        if (this.lastSelectedOrdnance == null) {
+            this.lastSelectedOrdnance = (Actor)this.activeOrdnance.getFirst(); // Select first available Ordnance if nothing was selected before
+        } else {
+            int lastSelectedOrdnanceIndex = this.activeOrdnance.indexOf(this.lastSelectedOrdnance);
+            if (lastSelectedOrdnanceIndex == -1) {
+                this.lastSelectedOrdnance = (Actor)this.activeOrdnance.getFirst(); // Select first available Ordnance if last selected doesn't exist anymore
+            } else {
+                if (lastSelectedOrdnanceIndex < this.activeOrdnance.size() - 1) {
+                    lastSelectedOrdnanceIndex++; // Select next Ordnance after last selected if available
+                } else {
+                    lastSelectedOrdnanceIndex = 0; // Otherwise, switch to first one
+                }
+                this.lastSelectedOrdnance = (Actor)this.activeOrdnance.get(lastSelectedOrdnanceIndex);
+            }
+        }
+        return this.lastSelectedOrdnance;
+    }
+    
+    public void setLastSelectedOrdnance(Actor newLastSelectedOrdnance) {
+        this.lastSelectedOrdnance = newLastSelectedOrdnance;
+    }
+    
+    public void addOrdnance(Actor newOrdnance) {
+//        System.out.println("addOrdnance " + newOrdnance.getClass().getName());
+        this.activeOrdnance.addLast(newOrdnance);
+    }
+    
+    public void removeOrdnance(Actor ordnanceToRemove) {
+        this.activeOrdnance.remove(ordnanceToRemove);
+    }
+    // TODO: --- Enhanced Ordnance View by SAS~Storebror ---
+    
     public float[] getTurretRestOrient(int paramInt)
     {
       return defTurretRest;
@@ -3207,4 +3249,9 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
     // that and speed difference is not there to trigger auto unfolding
     protected int         zutiUnfoldCheckRepeatCount = 10;
     // -------------------------------------------------------------------------------------------
+    
+    // TODO: +++ Enhanced Ordnance View by SAS~Storebror +++
+    private LinkedList activeOrdnance;
+    private Actor lastSelectedOrdnance;
+    // TODO: --- Enhanced Ordnance View by SAS~Storebror ---
 }
