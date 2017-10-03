@@ -1,11 +1,9 @@
 package com.maddox.il2.objects.weapons;
 
-import java.text.DecimalFormat;
-
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.MsgExplosion;
 import com.maddox.il2.engine.Actor;
+import com.maddox.il2.engine.Orient;
 import com.maddox.il2.objects.ActorLand;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.effects.Explosions;
@@ -21,20 +19,17 @@ public class BombSD2A extends Bomb {
     protected boolean haveSound() {
         return index % 10 == 0;
     }
+    
+    private float rotation = 0F;
 
     public void interpolateTick() {
         super.interpolateTick();
-        getSpeed(v3d);
+        this.rotation += Aircraft.cvt(Time.current() - this.lStart, 0L, 500L, 0F, -30F);
+        this.rotation %= 360F;
+        Orient or = this.pos.getAbsOrient();
+        or.setYPR(or.getYaw(), or.getTangage(), this.rotation);
+        this.pos.setAbs(or);
         this.S = Aircraft.cvt(Time.current() - this.lStart, 0L, 500L, this.bombS, this.bombS * 40F);
-        
-//        if (hudLogBomb == null || Time.currentReal() - lastHudLogBomb > 1000L) {
-//            hudLogBomb = this;
-//            lastHudLogBomb = Time.currentReal();
-//        }
-//        if (hudLogBomb == this) {
-//            getSpeed(v3d);
-//            HUD.training("x:" + df.format(v3d.x) + " y:" + df.format(v3d.y) + " z:" + df.format(v3d.z) + " S:" + df.format(this.S));
-//        }
     }
 
     public void start() {
@@ -44,7 +39,6 @@ public class BombSD2A extends Bomb {
     }
 
     protected void doExplosion(Actor actor, String s) {
-//        System.out.println("BombSD2A doExplosion(" + actor.getClass().getName() + ", " + s + ")");
         Class class1 = getClass();
         Point3d point3d = new Point3d();
         pos.getTime(Time.current(), point3d);
@@ -59,7 +53,6 @@ public class BombSD2A extends Bomb {
     }
 
     protected void doExplosion(Actor actor, String s, Point3d point3d) {
-//        System.out.println("BombSD2A doExplosion(" + actor.getClass().getName() + ", " + s + ")");
         Class class1 = getClass();
         float f = Property.floatValue(class1, "power", 0.0F);
         int i = Property.intValue(class1, "powerType", 0);
@@ -71,10 +64,6 @@ public class BombSD2A extends Bomb {
         super.doExplosion(actor, s, point3d);
     }
 
-    private static Vector3d v3d = new Vector3d();
-//    private static Bomb hudLogBomb = null;
-//    private static long lastHudLogBomb = 0L;
-    DecimalFormat df = new DecimalFormat("#.##");
     private long lStart;
     private float bombS;
 

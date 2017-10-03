@@ -3808,7 +3808,145 @@ public class AircraftHotKeys {
                     Main3D.cur3D().cockpitCur.doToggleUp(!Main3D.cur3D().cockpitCur.isToggleUp());
             }
         });
+
+        // TODO: +++ Stationary Camera and Ordnance View Backport from 4.13.4 by SAS~Storebror +++
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "StationaryCameraView", "51") {
+
+            public void created()
+            {
+                setRecordId(245);
+            }
+
+            public void begin()
+            {
+                if(World.cur().diffCur.No_Outside_Views)
+                    return;
+                Actor actor = nextStationaryCameraActor();
+                if(Actor.isValid(actor))
+                {
+                    boolean flag = !Main3D.cur3D().isViewOutside();
+                    Main3D.cur3D().setViewFlow10(actor, false);
+                    if(flag)
+                        switchToAIGunner();
+                }
+            }
+
+        }
+);
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "OrdinanceView", "52") {
+
+            public void created()
+            {
+                setRecordId(246);
+            }
+
+            public void begin()
+            {
+                if(World.cur().diffCur.No_Outside_Views)
+                    return;
+                //Actor actor = myLatestReleasedOrdinance();
+                Actor actor = getOrdnanceToFollow();
+//                System.out.println("OrdinanceView actor=" + (actor==null?"null":actor.getClass().getName()));
+                if(Actor.isValid(actor))
+                {
+                    boolean flag = !Main3D.cur3D().isViewOutside();
+                    Main3D.cur3D().setViewFlow10(actor, false);
+                    if(flag)
+                        switchToAIGunner();
+                }
+            }
+
+        }
+);
     }
+    
+    private Actor getOrdnanceToFollow()
+    {
+        Actor viewActor = Main3D.cur3D().viewActor();
+        if (!Actor.isValid(viewActor)) 
+            viewActor = Actor.isValid(lastViewAircraft)?lastViewAircraft:World.getPlayerAircraft();
+        else if (!(viewActor instanceof Aircraft)) {
+            if (Actor.isValid(lastViewAircraft) && viewActor.getOwner() instanceof Aircraft && viewActor.getOwner() == lastViewAircraft)
+                viewActor = lastViewAircraft;
+            else
+                viewActor = World.getPlayerAircraft();
+        }
+//        System.out.println("viewActor=" + (viewActor==null?"null":viewActor.getClass().getName()));
+        if (!Actor.isValid(viewActor)) return null;
+        Aircraft viewAircraft = (Aircraft)viewActor;
+        if (lastViewAircraft != viewAircraft) viewAircraft.setLastSelectedOrdnance(null);
+        lastViewAircraft = viewAircraft;
+        return viewAircraft.getNextOrdnance();
+    }
+    
+//    private Actor myLatestReleasedOrdinance()
+//    {
+//        if(Selector.isEnableTrackArgs()) {
+//            return Selector.setCurRecordArg0(Selector.getTrackArg0());
+//        }
+//        Aircraft aircraft = World.getPlayerAircraft();
+//        for(int i = Engine.ordinances().size() - 1; i >= 0; i--)
+//        {
+//            Actor actor = (Actor)Engine.ordinances().get(i);
+//            if(actor != null && actor.getOwner() == aircraft)
+//                return Selector.setCurRecordArg0(actor);
+//        }
+//
+//        return Selector.setCurRecordArg0(null);
+//    }
+
+    private static Actor lastViewAircraft = null;
+    private static TreeMap namedAircraft = new TreeMap();
+
+    private Actor nextStationaryCameraActor()
+    {
+        if(Selector.isEnableTrackArgs())
+            return Selector.setCurRecordArg0(Selector.getTrackArg0());
+//        int i = World.getPlayerArmy();
+        namedAircraft.clear();
+        Actor actor = Main3D.cur3D().viewActor();
+        if(isViewed(actor))
+            namedAircraft.put(actor.name(), null);
+        for(java.util.Map.Entry entry = Engine.name2Actor().nextEntry(null); entry != null; entry = Engine.name2Actor().nextEntry(entry))
+        {
+            Actor actor1 = (Actor)entry.getValue();
+            if(actor1 instanceof ActorViewPoint)
+            {
+//                ActorViewPoint actorviewpoint = (ActorViewPoint)actor1;
+//                int k = World.getPlayerAircraft().getArmy();
+                namedAircraft.put(actor1.name(), null);
+//                if(actorviewpoint.getArmy() == 0)
+//                    namedAircraft.put(actor1.name(), null);
+//                else
+//                if(actorviewpoint.getArmy() == k && !World.cur().diffCur.NoFriendlyViews)
+//                    namedAircraft.put(actor1.name(), null);
+//                else
+//                if(actorviewpoint.getArmy() != k && !World.cur().diffCur.NoEnemyViews)
+//                    namedAircraft.put(actor1.name(), null);
+            }
+        }
+
+        if(namedAircraft.size() == 0)
+            return Selector.setCurRecordArg0(null);
+        if(!isViewed(actor))
+            return Selector.setCurRecordArg0((Actor)Engine.name2Actor().get((String)namedAircraft.firstKey()));
+        if(namedAircraft.size() == 1 && isViewed(actor))
+            return Selector.setCurRecordArg0(null);
+        namedAll = namedAircraft.keySet().toArray(namedAll);
+        int j = 0;
+        String s = actor.name();
+        for(; namedAll[j] != null; j++)
+            if(s.equals(namedAll[j]))
+                break;
+
+        if(namedAll[j] == null)
+            return Selector.setCurRecordArg0(null);
+        j++;
+        if(namedAll.length == j || namedAll[j] == null)
+            j = 0;
+        return Selector.setCurRecordArg0((Actor)Engine.name2Actor().get((String)namedAll[j]));
+    }
+    // TODO: --- Stationary Camera and Ordnance View Backport from 4.13.4 by SAS~Storebror ---
 
     public void createTimeHotKeys() {
         String string = "timeCompression";
