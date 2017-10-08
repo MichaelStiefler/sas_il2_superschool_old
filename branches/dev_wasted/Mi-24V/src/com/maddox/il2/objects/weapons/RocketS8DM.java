@@ -39,11 +39,11 @@ public class RocketS8DM extends Rocket
         Property.set(class1, "emitLen", 50F);
         Property.set(class1, "emitMax", 2.0F);
         Property.set(class1, "sound", "weapon.rocket_132");
-        Property.set(class1, "radius", 4.5F);
+        Property.set(class1, "radius", 6.5F);
         Property.set(class1, "timeLife", 60F);
         Property.set(class1, "timeFire", 1.1F);
         Property.set(class1, "force", 4000F);
-        Property.set(class1, "power", 1.0F);
+        Property.set(class1, "power", 0.38F);
         Property.set(class1, "powerType", 2);
         Property.set(class1, "kalibr", 0.080F);
         Property.set(class1, "massa", 11.6F);

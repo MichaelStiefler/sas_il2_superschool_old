@@ -13,8 +13,50 @@ import com.maddox.rts.*;
 // Referenced classes of package com.maddox.il2.objects.air:
 //            CockpitGunner
 
-public class CockpitMi24_TGunner extends CockpitGunner {
+public class CockpitMi24_GUNNER extends CockpitGunner {
 
+	
+	protected boolean doFocusEnter()
+    {
+        if(super.doFocusEnter())
+        {
+            aircraft().hierMesh().chunkVisible("CF_D0", true);
+            aircraft().hierMesh().chunkVisible("Blister_D0", true);
+            aircraft().hierMesh().chunkVisible("Door2_D0", true);
+            aircraft().hierMesh().chunkVisible("Pitot_D0", true);
+            aircraft().hierMesh().chunkVisible("Turret1A_D0", true);
+            aircraft().hierMesh().chunkVisible("Turret1B_D0", true);
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    protected void doFocusLeave()
+    {
+    	aircraft().hierMesh().chunkVisible("CF_D0", true);
+        aircraft().hierMesh().chunkVisible("Blister_D0", true);
+        aircraft().hierMesh().chunkVisible("Door2_D0", true);
+        aircraft().hierMesh().chunkVisible("Pitot_D0", true);
+        aircraft().hierMesh().chunkVisible("Turret1A_D0", true);
+        aircraft().hierMesh().chunkVisible("Turret1B_D0", true);
+        super.doFocusLeave();
+    }
+    
+    protected void reflectPlaneToModel()
+    {
+        HierMesh hiermesh = aircraft().hierMesh();
+        mesh.chunkVisible("CF_D0", hiermesh.isChunkVisible("CF_D0"));
+        mesh.chunkVisible("Blister_D0", hiermesh.isChunkVisible("Blister_D0"));
+        mesh.chunkVisible("Door2_D0", hiermesh.isChunkVisible("Door2_D0"));
+        mesh.chunkVisible("Pitot_D0", hiermesh.isChunkVisible("Pitot_D0"));
+        mesh.chunkVisible("Turret1A_D0", hiermesh.isChunkVisible("Turret1A_D0"));
+        mesh.chunkVisible("Turret1B_D0", hiermesh.isChunkVisible("Turret1B_D0"));
+    }
+
+
+	
 	public void moveGun(Orient orient) {
 		super.moveGun(orient);
 		mesh.chunkSetAngles("Body", 0.0F, 0.0F, -1F);
@@ -33,26 +75,30 @@ public class CockpitMi24_TGunner extends CockpitGunner {
 					f = -60F;
 				if (f > 60F)
 					f = 60F;
-				if (f1 > 20F)
-					f1 = 20F;
-				if (f1 < -80F)
-					f1 = -80F;
+				if (f1 > 60F)
+					f1 = 60F;
+				if (f1 < -60F)
+					f1 = -60F;
 				orient.setYPR(f, f1, 0.0F);
 				orient.wrap();
 			}
 	}
 
 	protected void interpTick() {
+		
+
+
+		
 		if (isRealMode()) {
 			if (emitter == null || !emitter.haveBullets()
 					|| !aiTurret().bIsOperable)
 				bGunFire = false;
 			fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
-			if (bGunFire) {
-				if (hook1 == null)
-					hook1 = new HookNamed(aircraft(), "_MGUN01");
-				doHitMasterAircraft(aircraft(), hook1, "_MGUN01");
-			}
+//			if (bGunFire) {
+//				if (hook1 == null)
+//					hook1 = new HookNamed(aircraft(), "_MGUN03");
+//				doHitMasterAircraft(aircraft(), hook1, "_MGUN03");
+//			}
 		}
 	}
 
@@ -74,13 +120,18 @@ public class CockpitMi24_TGunner extends CockpitGunner {
 			mesh.chunkVisible("Z_Holes2_D1", true);
 	}
 
-	public CockpitMi24_TGunner() {
+	public CockpitMi24_GUNNER() {
 		super("3DO/Cockpit/A-20G-TGun/TGunnerMi24.him", "he111_gunner");
 		bNeedSetUp = true;
 		prevTime = -1L;
 		prevA0 = 0.0F;
 		hook1 = null;
 	}
+	
+	public void reflectWorldToInstruments(float f)
+    {
+		 reflectPlaneToModel();
+    }
 
 	private boolean bNeedSetUp;
 	private long prevTime;

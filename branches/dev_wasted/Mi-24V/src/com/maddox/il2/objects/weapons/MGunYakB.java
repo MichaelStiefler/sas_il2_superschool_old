@@ -1,8 +1,22 @@
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Color3f;
+import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Vector3d;
+import com.maddox.il2.ai.World;
+import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.BulletProperties;
+import com.maddox.il2.engine.Camera3D;
+import com.maddox.il2.engine.Config;
+import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.GunProperties;
+import com.maddox.il2.engine.Loc;
+import com.maddox.il2.engine.Orient;
+import com.maddox.il2.fm.RealFlightModel;
+import com.maddox.il2.game.Main3D;
+import com.maddox.il2.objects.air.Aircraft;
+import com.maddox.il2.objects.air.NetGunner;
+import com.maddox.rts.Time;
 
 // Referenced classes of package com.maddox.il2.objects.weapons:
 //            MGunAircraftGeneric
@@ -13,6 +27,16 @@ public class MGunYakB extends MGunAircraftGeneric
     public MGunYakB()
     {
     }
+    
+    public void doStartBullet(double paramDouble) {   
+    	super.doStartBullet(paramDouble);
+    	Actor localActor = getOwner();
+    	localActor.getSpeed(v);
+    	v1.add(v);
+    }
+    
+    private static Vector3d v = new Vector3d();
+    private static Vector3d v1 = new Vector3d();
 
     public GunProperties createProperties()
     {
@@ -24,7 +48,7 @@ public class MGunYakB extends MGunAircraftGeneric
         gunproperties.sprite = "3DO/Effects/GunFire/7mm/GunFlare.eff";
         gunproperties.smoke = "effects/smokes/MachineGun.eff";
         gunproperties.shells = "3DO/Effects/GunShells/GunShells.eff";
-        gunproperties.sound = "weapon.mgun_07_1500";
+        gunproperties.sound = "weapon.MiniGun";
         gunproperties.emitColor = new Color3f(1.0F, 1.0F, 0.0F);
         gunproperties.emitI = 10F;
         gunproperties.emitR = 3F;

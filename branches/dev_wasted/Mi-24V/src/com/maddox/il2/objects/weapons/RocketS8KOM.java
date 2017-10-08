@@ -43,7 +43,7 @@ public class RocketS8KOM extends Rocket
         Property.set(class1, "timeLife", 60F);
         Property.set(class1, "timeFire", 2.1F);
         Property.set(class1, "force", 4000F);
-        Property.set(class1, "power", 50.0F);
+        Property.set(class1, "power", 0.741F);
         Property.set(class1, "powerType", 0);
         Property.set(class1, "kalibr", 0.080F);
         Property.set(class1, "massa", 11.3F);

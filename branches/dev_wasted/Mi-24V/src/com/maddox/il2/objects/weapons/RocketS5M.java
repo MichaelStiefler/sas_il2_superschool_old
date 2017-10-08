@@ -43,10 +43,10 @@ public class RocketS5M extends Rocket
         Property.set(class1, "timeLife", 60F);
         Property.set(class1, "timeFire", 1.1F);
         Property.set(class1, "force", 1300F);
-        Property.set(class1, "power", 1.08F);
+        Property.set(class1, "power", 0.108F);
         Property.set(class1, "powerType", 0);
         Property.set(class1, "kalibr", 0.055F);
         Property.set(class1, "massa", 3.86F);
-        Property.set(class1, "massaEnd", 3F);
+        Property.set(class1, "massaEnd", 2.97F);
     }
 }
