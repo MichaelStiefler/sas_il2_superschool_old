@@ -1,4 +1,4 @@
-UP3 RC4 Patch Pack v2.14
+UP3 RC4 Patch Pack v2.16
 
 Contents:
 - All fixes listed below
@@ -57,6 +57,10 @@ Included feature enhancements:
 - Enhanced damage code, explosion effects and subammo release code for German "AB" bomb containers
 - Enhanced bomb trajectory for german SD2 / SD4 / B2.2EZ bomblets
 - 10 seconds minimum delay implemented between subsequent Net Mission Spawns to avoid multi-spawn-crashes
+- "Semi Self Illumination" backported from 4.13.4 and enhanced for UP3
+- Enhanced "Ordnance View" mode implemented - this is the "Ordnance View" from 4.13 as it should always have been!
+- "Camera Mod" implemented
+- Optional upgraded 3D and Textures for default Ordnance (use JGSME to activate, courtesy of VPMedia)
 
 Included fixes:
 - Bf 109 Series Cockpit Code fix
@@ -144,6 +148,9 @@ Included fixes:
 - TBF/TBM Gunsight Fix by Loku
 - P-40E/P-40M Cockpit Fuel Gauge Fix by Loku
 - "Request Runway Lights" command restored (some menu structures had to be changed to achieve this)
+- Ballistics bug fixed where the radicand of a square root calculation could become zero, causing JVM 1.3.1 to create page faults in memory
+- HookView bug fixed where no minimum object radius was taken into consideration (or at least: Not correctly) when switching to Ordnance View
+- BombGunNull/BombNull bug fixed
 
 (*) Me-262V3 flight model:
     Like in real life, you have to tap the brakes in order to get the 262V3 off the ground.
@@ -204,13 +211,13 @@ LogTicks=<0/1>             "Tick Delta" output in log.lst, default=0, 0=disable,
 Installation:
 1.) Run JSGME.exe from your UP3 RC4 game folder and disable any of the following previously installed mods(packs), if applicable:
     * Any old Hotfix Pack (* see below)
-    * Any old Patch Pack (e.g. "#UP#_Patch_Pack_210")
+    * Any old Patch Pack (e.g. "#UP#_Patch_Pack_215")
     * UP3 RC4 without obfuscation ("#UP#_Unobfuscated_MDS_for_UP3"), because this is integrated in this patch pack already
 2.) Check your enabled JSGME Mods, now there should only be:
     * #UP#_Enable_UP.3.0
     * Additional JSGME Mods not related to Fixes, Patches, unobfuscated UP etc.
 3.) Extract this Patch Pack to your UP3 RC4 game folder
-4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_214")
+4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_216")
 
 ********************
 

@@ -153,7 +153,9 @@ public class Bomb extends ActorMesh implements MsgCollisionRequestListener, MsgC
             pos.getTime(Time.current(), loc);
             collide(false);
             drawing(false);
+            // TODO: Storebror: +++ Make Bomb stop moving after impact when delayed explosion is set
             this.speed.set(0,0,0);
+            // TODO: Storebror: --- Make Bomb stop moving after impact when delayed explosion is set
             DelayParam delayparam = new DelayParam(actor, s1, loc);
             if (p.z < Engine.land().HQ(p.x, p.y) + 5D) {
                 if (Engine.land().isWater(p.x, p.y)) {

@@ -234,7 +234,7 @@ public abstract class Actor extends ObjState
             if(((this instanceof Bomb) || (this instanceof Rocket) || (this instanceof RocketBomb)) && !(this instanceof BombNull) && !(this instanceof RocketNull)) {
 //                System.out.println("old owner=" + (owner==null?"null":owner.getClass().getName()) + ", new owner=" + (actor==null?"null":actor.getClass().getName()));
                 if (owner instanceof Aircraft) {
-                    ((Aircraft) owner).removeOrdnance(this);
+                    ((Aircraft) owner).removeOrdnance(this); // just in case... this ordnance had another owner before, so let's remove it from that owner's ordnance list first.
                 }
                 if (actor instanceof Aircraft) {
                     ((Aircraft) actor).addOrdnance(this);
