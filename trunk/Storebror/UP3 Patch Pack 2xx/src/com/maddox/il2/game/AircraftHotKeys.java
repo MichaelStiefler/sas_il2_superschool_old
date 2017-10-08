@@ -3,6 +3,7 @@ package com.maddox.il2.game;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import com.maddox.il2.ai.BulletEmitter;
@@ -90,6 +91,7 @@ import com.maddox.rts.HotKeyCmdMouseMove;
 import com.maddox.rts.HotKeyCmdMove;
 import com.maddox.rts.HotKeyEnv;
 import com.maddox.rts.Joy;
+import com.maddox.rts.LDRres;
 import com.maddox.rts.MsgAction;
 import com.maddox.rts.NetEnv;
 import com.maddox.rts.NetMsgGuaranted;
@@ -3810,7 +3812,24 @@ public class AircraftHotKeys {
         });
 
         // TODO: +++ Stationary Camera and Ordnance View Backport from 4.13.4 by SAS~Storebror +++
-        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "StationaryCameraView", "51") {
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("i18n/controls", RTSConf.cur.locale, LDRres.loader());
+        String stationaryCameraViewName = "StationaryCameraView";
+        String ordinanceViewName = "OrdinanceView";
+        if (resourceBundle != null) {
+            try {
+                stationaryCameraViewName = resourceBundle.getString("StationaryCameraView");
+            } catch (Exception e) {};
+            try {
+                ordinanceViewName = resourceBundle.getString("OrdinanceView");
+            } catch (Exception e) {};
+        }
+        if (stationaryCameraViewName.equalsIgnoreCase("StationaryCameraView"))
+            stationaryCameraViewName = "Stationary Camera View";
+        
+        if (ordinanceViewName.equalsIgnoreCase("OrdinanceView"))
+            ordinanceViewName = "Ordnance Camera View";
+
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, stationaryCameraViewName, "51") {
 
             public void created()
             {
@@ -3833,7 +3852,8 @@ public class AircraftHotKeys {
 
         }
 );
-        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "OrdinanceView", "52") {
+        
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(true, ordinanceViewName, "52") {
 
             public void created()
             {
@@ -3858,8 +3878,10 @@ public class AircraftHotKeys {
 
         }
 );
+        // TODO: --- Stationary Camera and Ordnance View Backport from 4.13.4 by SAS~Storebror ---
     }
     
+    // TODO: +++ Stationary Camera and Ordnance View Backport from 4.13.4 by SAS~Storebror +++
     private Actor getOrdnanceToFollow()
     {
         Actor viewActor = Main3D.cur3D().viewActor();

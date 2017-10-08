@@ -264,7 +264,8 @@ public class BombGun extends Interpolate implements BulletEmitter {
             // TODO: Storebror: +++ Bomb/Rocket Fuze/Delay Replication
             Bomb.printDebug(this.actor, "BombGun " + Bomb.simpleClassName(this) + " newBomb, bombDelay=" + bombDelay + ", armingTime=" + armingTime);
             // TODO: Storebror: --- Bomb/Rocket Fuze/Delay Replication
-        } catch (Exception exception) {}
+        } catch (Exception e) {
+        }
     }
 
     public String getHookName() {

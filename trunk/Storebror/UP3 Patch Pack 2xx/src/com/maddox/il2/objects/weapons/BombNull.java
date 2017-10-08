@@ -5,12 +5,12 @@ import com.maddox.il2.engine.Actor;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
-public class BombNull extends Rocket
+public class BombNull extends Bomb
 {
 
-    public void start(float f, int i)
+    public void start()
     {
-        super.start(f, i);
+        super.start();
         drawing(false);
         this.lStart = Time.current();
     }
