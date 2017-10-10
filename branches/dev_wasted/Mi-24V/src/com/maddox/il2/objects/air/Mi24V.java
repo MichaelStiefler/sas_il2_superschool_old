@@ -1360,10 +1360,10 @@ public class Mi24V extends Scheme2
         Vector3d vFlow = super.FM.getVflow();
         double sinkRate = ((Tuple3d) (vFlow)).z;
         float airDensity = Atmosphere.density((float)((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z);
-        double rotorSurface = 20D;
+        double rotorSurface = 30D;
         double rotorSurface_cyclic = 10D;
         double tailRotorSurface = 1.3500000000000001D;
-        double rotorCy = 2.3D;
+        double rotorCy = 4.3D;
         double rotorCx = 0.0014D;
         double rotorCx_dyn = 0.00050000000000000001D;
         double rotorLineCx = 0.00050000000000000001D * (double)(aPitch * aPitch * 15F * 15F);
@@ -1558,14 +1558,14 @@ public class Mi24V extends Scheme2
         if(i == 20)
         	HUD.log(AircraftHotKeys.hudLogWeaponId, "Trim: Set");
             getTrim = true;
-            float ctrlZ = ((FlightModelMain) (super.FM)).CT.getRudder();
-            float trimZ = ((FlightModelMain) (super.FM)).CT.getTrimRudderControl();
-            ((FlightModelMain) (super.FM)).CT.setTrimRudderControl(ctrlZ - trimZ);
+//            float ctrlZ = ((FlightModelMain) (super.FM)).CT.getRudder();
+//            float trimZ = ((FlightModelMain) (super.FM)).CT.getTrimRudderControl();
+//            ((FlightModelMain) (super.FM)).CT.setTrimRudderControl(ctrlZ - trimZ);
         if(i == 21)
         {
             forceTrim_x = 0.0D;
             forceTrim_y = 0.0D;
-            ((FlightModelMain) (super.FM)).CT.setTrimRudderControl(0.0F);
+            forceTrim_z = 0.0D;
             HUD.log(AircraftHotKeys.hudLogWeaponId, "Trim: Reset");
         }
     	if(i == 24){	
