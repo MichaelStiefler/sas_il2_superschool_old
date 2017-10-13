@@ -42,12 +42,7 @@ public class F_14A extends F_14
         engineSFX = null;
         engineSTimer = 0x98967f;
         outCommand = new NetMsgFiltered();
-        tX4Prev = 0L;
-        deltaAzimuth = 0.0F;
-        deltaTangage = 0.0F;
         counter = 0;
-        freq = 800;
-        Timer1 = Timer2 = freq;
         error = 0;
         counterFlareList = new ArrayList();
         counterChaffList = new ArrayList();
@@ -182,7 +177,8 @@ public class F_14A extends F_14
     public void update(float f)
     {
         guidedMissileUtils.update();
-        this.computeTF30_AB();
+        computeTF30_AB();
+        computeSubsonicLimiter();
         super.update(f);
         if(super.backfire)
             backFire();
@@ -606,29 +602,15 @@ public class F_14A extends F_14
         return true;
     }
 
-    public void setTimer(int i)
+    private void computeTF30_AB()
     {
-        Random random = new Random();
-        Timer1 = (float)((double)random.nextInt(i) * 0.10000000000000001D);
-        Timer2 = (float)((double)random.nextInt(i) * 0.10000000000000001D);
-    }
-
-    public void resetTimer(float f)
-    {
-        Timer1 = f;
-        Timer2 = f;
-    }
-
-    public void computeTF30_AB()
-    {
-        if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() > 5)
-            FM.producedAF.x += 33200D;
-        if(FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() > 5)
-            FM.producedAF.x += 33200D;
-        if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() > 5 && calculateMach() > 1.3F)
-            FM.producedAF.x -= 20000D;
-        if(FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() > 5 && calculateMach() > 1.3F)
-            FM.producedAF.x -= 20000D;
+        for(int en = 0; en < 2; en++)
+        {
+            if(FM.EI.engines[en].getThrustOutput() > 1.001F && FM.EI.engines[en].getStage() > 5)
+                FM.producedAF.x += 33200D;
+            if(FM.EI.engines[en].getThrustOutput() > 1.001F && FM.EI.engines[en].getStage() > 5 && calculateMach() > 1.3F)
+                FM.producedAF.x -= 20000D;
+        }
         float x = FM.getAltitude() / 1000F;
         float thrustDegradation = 0.0F;
         if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() == 6
@@ -644,13 +626,32 @@ public class F_14A extends F_14
                 float x4 = x3 * x;
                 float x5 = x4 * x;
                 float x6 = x5 * x;
-                float x7 = x6 * x;
                 thrustDegradation = -0.000281394F*x6 + 0.0135257F*x5 - 0.227697F*x4 + 1.62839F*x3 - 5.10746F*x2 + 6.31553F*x;
         //{{0,0},{2,2},{5,3},{7,0},{10,-25},{15,-20},{18.5,37}}
-        //thrustDegradation = (3401F*x4/720720F) - (44399F*x3/360360F) + (633091F*x2/720720F) - (829459F*x/360360F);
-        //{{0,0},{2,-2},{5,-2},{7,-4},{18,20}}
             }
         FM.producedAF.x -= thrustDegradation * 1000F;
+    }
+
+
+    private void computeSubsonicLimiter()
+    {       // only for TF30's F-14A
+        float x = calculateMach();
+        float Drag = 0.0F;
+        if(!(FM.EI.engines[0].getThrustOutput() > 1.00F && FM.EI.engines[0].getStage() == 6 &&
+             FM.EI.engines[1].getThrustOutput() > 1.00F && FM.EI.engines[1].getStage() == 6)
+           && calculateMach() >= 0.9F)
+        {
+            if(x > 0.97F)
+            {
+                Drag = 0.00025F;
+            }
+            else
+            {
+                Drag = 0.00285714F * x - 0.00252143F;
+        //{{0.9,0.00005},{0.97, 0.00025}}
+            }
+            FM.Sq.dragParasiteCx += Drag;
+        }
     }
 
 
@@ -670,12 +671,6 @@ public class F_14A extends F_14
     protected SoundFX engineSFX;
     protected int engineSTimer;
     private NetMsgFiltered outCommand;
-    private long tX4Prev;
-    private float deltaAzimuth;
-    private float deltaTangage;
-    public float Timer1;
-    public float Timer2;
-    private int freq;
     private int counter;
     private int error;
     private long raretimer;
@@ -806,7 +801,6 @@ public class F_14A extends F_14
             a_lweaponslot[16] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[37] = new Aircraft._WeaponSlot(7, "RocketGunFlare_gn16", 30);
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
-            arraylist.add(s);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "Fighter_4xAIM7M+4xAIM9L";

@@ -42,12 +42,7 @@ public class F_14B extends F_14
         engineSFX = null;
         engineSTimer = 0x98967f;
         outCommand = new NetMsgFiltered();
-        tX4Prev = 0L;
-        deltaAzimuth = 0.0F;
-        deltaTangage = 0.0F;
         counter = 0;
-        freq = 800;
-        Timer1 = Timer2 = freq;
         error = 0;
         counterFlareList = new ArrayList();
         counterChaffList = new ArrayList();
@@ -182,7 +177,7 @@ public class F_14B extends F_14
     public void update(float f)
     {
         guidedMissileUtils.update();
-        this.computeF110GE400_AB();
+        computeF110GE400_AB();
         super.update(f);
         if(super.backfire)
             backFire();
@@ -599,59 +594,6 @@ public class F_14B extends F_14
     }
 
 
-    public void setTimer(int i)
-    {
-        Random random = new Random();
-        Timer1 = (float)((double)random.nextInt(i) * 0.10000000000000001D);
-        Timer2 = (float)((double)random.nextInt(i) * 0.10000000000000001D);
-    }
-
-    public void resetTimer(float f)
-    {
-        Timer1 = f;
-        Timer2 = f;
-    }
-
-
-    public void computeF110GE400_AB()
-    {
-        if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() > 5)
-            FM.producedAF.x += 40600D;
-        if(FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() > 5)
-            FM.producedAF.x += 40600D;
-        if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() > 5 && calculateMach() > 0.85F)
-            FM.producedAF.x += 12000D;
-        if(FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() > 5 && calculateMach() > 0.85F)
-            FM.producedAF.x += 12000D;
-        if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() > 5 && calculateMach() > 1.3F)
-            FM.producedAF.x -= 34000D;
-        if(FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() > 5 && calculateMach() > 1.3F)
-            FM.producedAF.x -= 34000D;
-        float x = FM.getAltitude() / 1000F;
-        float thrustDegradation = 0.0F;
-        if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() == 6
-         && FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() == 6)
-            if (x > 19.0F)
-            {
-                thrustDegradation = 20.0F;
-            }
-            else
-            {
-                float x2 = x * x;
-                float x3 = x2 * x;
-                float x4 = x3 * x;
-                float x5 = x4 * x;
-                float x6 = x5 * x;
-                float x7 = x6 * x;
-                thrustDegradation = -(17077F*x6/142443000F) + (13553F*x5/2374050F) - (13203787F*x4/142443000F) + (434033F*x3/698250F) - (71389321F*x2/35610750F) + (1247081F*x/339150F);
-        //{{0,0},{2,3},{5,4},{7,0},{12,-30},{17,7},{19,25}}
-        //thrustDegradation = (3401F*x4/720720F) - (44399F*x3/360360F) + (633091F*x2/720720F) - (829459F*x/360360F);
-        //{{0,0},{2,-2},{5,-2},{7,-4},{18,20}}
-            }
-        FM.producedAF.x -=  thrustDegradation * 1000F;
-    }
-
-
     private GuidedMissileUtils guidedMissileUtils;
     private boolean hasChaff;
     private boolean hasFlare;
@@ -667,12 +609,6 @@ public class F_14B extends F_14
     protected SoundFX engineSFX;
     protected int engineSTimer;
     private NetMsgFiltered outCommand;
-    private long tX4Prev;
-    private float deltaAzimuth;
-    private float deltaTangage;
-    public float Timer1;
-    public float Timer2;
-    private int freq;
     private int counter;
     private SoundFX fxRWR;
     private Sample smplRWR;
@@ -685,54 +621,51 @@ public class F_14B extends F_14
 
     private static String irstPlaneName[] =
     {
-        "AD" ,     "BirdDog", "A_6" ,    "A_7A" ,  "A_7B" ,    "A_7D" ,  "A_7E" ,   "A_10" ,  "A_26" ,  "AV_8" ,
-        "B_29" ,   "C_123" ,  "F_4" ,    "F_5" ,   "F_8E" ,    "F9F" ,   "F_14" ,   "F_15" ,  "F_16" ,  "F_18" ,
-        "F84" ,    "F_86" ,   "F_100" ,  "F_104" , "F_105" ,   "Hunter", "IL_28" ,  "KC_10",  "L_39" ,  "Meteor" ,
-        "Mig_15" , "Mig_17",  "Mig_19",  "MIG_21", "MIG_23" ,  "MIG_29", "MIRAGE",  "Mi24" ,  "MI8MT" , "P_80" ,
-        "Skyhawk", "Su_7B" ,  "Su_9B" , "Su_11_8M", "Su_25" ,  "Su_27" , "Tucano",  "TU_95",  "Yak_36", "Vampire" ,
-        "F_80" ,   "T_33" ,   "A1H" ,    "A1J" ,  "CAC_Sabre", "FJ_3M" , "P2V" ,    "OV_" ,   "TU_4" ,  "SM_12" ,
-        "MIG21" ,  "L_159" ,  "SeaHawk", "Canberra", "F_102",  "F_106",  "Tu_22",   "Tu_26",  "T_37",   "A_3",
-        "A_5",     "B_1",     "B_52",    "B_36",   "B_45",     "B_47",   "B_58",    "C_119",  "EE_Lightning", "Tornado",
-        "C_121",   "C_130",   "C_141",   "C_17",   "C_5",      "F2H",    "F3H",     "F4D",    "F3D",    "F11F",
-        "F_22",    "F_35",    "Su_50",   "F_89",   "F_101",    "F_93",   "F_111",   "P_3",    "S_3",    "E_2",
-        "IL_76",   "An_12",   "An_22",   "An_124", "An_225",   "747",    "707",     "G_222",  "G_91",   "MB_326",
-        "Yak_28",  "Tu_160",  "Su_24",   "M_4",    "Typhoon",  "Rafale", "Gripen", "MIRAGE_F1", "MIRAGE_2000", "Jaguar",
-        "Su_7U",  "Su_7BMK", "Su_7BKL",  "Su_17M", "Su_17M2", "Su_17M3", "Su_17M4", "Su_17UM", "Su_20", "Su_22",
-        "Su_22M", "Su_22M3", "Su_22M4",  "Su_22U", "F_8A",     "RF_8A",  "A_7",    "MB_326X", "G_91R",  "G_91Y"
+        "AD" ,     "BirdDog", "A_6" ,    "A_7" ,   "A_10" ,   "A_26" ,   "AV_8" ,   "B_29" ,   "C_123" ,  "F_4" ,
+        "F_5" ,    "F_8" ,    "F9F" ,    "F_14" ,  "F_15" ,   "F_16" ,   "F_18" ,   "F84" ,    "F_86" ,   "F_100" ,
+        "F_104" ,  "F_105" ,  "Hunter",  "IL_28" , "KC_10",   "DC_10",   "L_39" ,   "Meteor" , "Mig_15" , "Mig_17",
+        "Mig_19",  "MIG_21",  "MIG_23" , "MIG_29", "MIRAGE",  "Mi24" ,   "MI8MT" ,  "P_80" ,   "Skyhawk", "Su_7" ,
+        "Su_9B" , "Su_11_8M", "Su_25" ,  "Su_27" , "Tucano",  "TU_95",  "Yak_36",  "Vampire",  "F_80" ,   "T_33" ,
+        "A1H" ,    "A1J" ,  "CAC_Sabre", "FJ_3M" , "P2V" ,    "OV_" ,    "TU_4" ,   "SM_12" ,  "MIG21" ,  "L_159" ,
+        "SeaHawk", "Canberra", "F_102",  "F_106",  "Tu_22",   "Tu_26",   "T_37",    "A_3",     "A_5",     "B_1",
+        "B_52",    "B_36",    "B_45",    "B_47",   "B_58",    "C_119", "EE_Lightning", "Tornado", "C_121",  "C_130",
+        "C_141",   "C_17",    "C_5",     "F2H",    "F3H",     "F4D",     "F3D",     "F11F",    "F_22",    "F_35",
+        "Su_50",   "F_89",    "F_101",   "F_93",   "F_111",   "P_3",     "S_3",     "E_2",     "IL_76",   "An_12",
+        "An_22",   "An_124",  "An_225",  "747",    "707",     "G_222",   "G_91",   "MB_326",   "Yak_28",  "Tu_160",
+        "Su_24",   "M_4",   "Typhoon", "Rafale", "Gripen", "MIRAGE_F1", "MIRAGE_2000", "Jaguar", "Su_17", "Su_20",
+        "Su_22",   "MiG_25",  "MB_326",  "G_91",   "MB_339"
     };
     private static String irstPlaneDisplay[] =
     {
-        "Skyraider", "BirdDog", "A-6",       "A-7",       "A-7",    "A-7",    "A-7",     "A-10",         "A-26",   "Harrier",
-        "B-29",      "C-123",   "F-4",       "F-5",       "F-8",    "F9F",    "F-14",    "F-15",         "F-16",   "F-18",
-        "F-84",      "F-86",    "F-100",     "F-104",     "F-105",  "Hunter", "IL-28",   "KC-10",        "L-39",   "Meteor",
-        "MiG-15",    "MiG-17",  "MiG-19",    "MiG-21",    "MiG-23", "MiG-29", "Mirage",  "Mi-24",        "Mi-8",   "F-80",
-        "Skyhawk",   "Su-7",    "Fishpot",   "Fishpot",   "Su-25",  "Su-27",  "Tucano",  "Tupolev Bear", "Yak-36", "Vampire" ,
-        "F-80" ,     "T-33" ,   "Skyraider", "Skyraider", "F-86" ,  "F-86" ,  "Neptune", "OV-1/10",      "Tu-4" ,  "MiG-19" ,
-        "MiG-21" ,   "L-39" ,   "SeaHawk" ,  "Canberra",  "F-102",  "F-106",  "Tu-22",   "Tu-26",        "T-37",   "A-3",
-        "A-5",       "B-1",     "B-52",      "B-36",      "B-45",   "B-47",   "B-58",    "C-119",    "EE-Lightning", "Tornado",
-        "C-121",     "C-130",   "C-141",     "C-17",      "C-5",    "F2H",    "F3H",     "F4D",          "F3D",    "F11F",
-        "F-22",      "F-35",    "Su-50",     "F-89",      "F-101",  "F-93",   "F-111",   "P-3",          "S-3",    "E-2",
-        "IL-76",     "An-12",   "An-22",     "An-124",    "An-225", "747",    "707",     "G-222",        "G-91",   "MB-326",
-        "Yak-28",    "Tu-160",  "Su-24",     "Bison",    "Typhoon","Rafale", "Gripen", "MIRAGE-F1", "MIRAGE-2000", "Jaguar",
-        "Su-7",      "Su-7",    "Su-7",      "Su-17",     "Su-17",  "Su-17",  "Su-17",   "Su-17",        "Su-17",  "Su-17", 
-        "Su-17",     "Su-17",   "Su-17",     "Su-17",     "F-8",    "F-8",    "A-7",     "MB-326",       "G-91",   "G-91"
+        "Skyraider", "BirdDog",   "A-6",    "A-7",    "A-10",    "A-26",         "Harrier", "B-29",     "C-123",    "F-4",
+        "F-5",       "F-8",       "F9F",    "F-14",   "F-15",    "F-16",         "F-18",    "F-84",     "F-86",     "F-100",
+        "F-104",     "F-105",   "Hunter",   "IL-28",  "KC-10",   "DC-10",        "L-39",    "Meteor",   "MiG-15",   "MiG-17",
+        "MiG-19",    "MiG-21",    "MiG-23", "MiG-29", "Mirage",  "Mi-24",        "Mi-8",    "F-80" ,    "Skyhawk",  "Su-7",
+        "Fishpot",   "Fishpot",   "Su-25",  "Su-27",  "Tucano",  "Tupolev Bear", "Yak-36", "Vampire" ,  "F-80" ,    "T-33" ,
+        "Skyraider", "Skyraider", "F-86" ,  "F-86" ,  "Neptune", "OV-1/10",      "Tu-4",   "MiG-19" ,   "MiG-21" ,  "L-39" ,
+        "SeaHawk",   "Canberra",  "F-102",  "F-106",  "Tu-22",   "Tu-26",        "T-37",    "A-3",      "A-5",      "B-1",
+        "B-52",      "B-36",      "B-45",   "B-47",   "B-58",    "C-119",  "EE-Lightning", "Tornado",   "C-121",    "C-130",
+        "C-141",     "C-17",      "C-5",    "F2H",    "F3H",     "F4D",          "F3D",    "F11F",      "F-22",     "F-35",
+        "Su-50",     "F-89",      "F-101",  "F-93",   "F-111",   "P-3",          "S-3",    "E-2",       "IL-76",    "An-12",
+        "An-22",     "An-124",    "An-225", "747",    "707",     "G-222",        "G-91",   "MB-326",    "Yak-28",   "Tu-160",
+        "Su-24",     "Bison",   "Typhoon", "Rafale", "Gripen", "MIRAGE-F1", "MIRAGE-2000", "Jaguar",    "Su-17",    "Su-17",
+        "Su-17",     "MiG-25",   "MB-326",  "G-91",   "MB-339"
     };
     private static double irstMaxDistance[] =
     {
-        40000D , 30000D , 50000D , 40000D , 40000D , 40000D , 40000D , 40000D , 60000D , 40000D ,
-        90000D , 90000D , 55000D , 35000D , 35000D , 30000D , 55000D , 55000D , 35000D , 45000D ,
-        30000D , 30000D , 40000D , 30000D , 60000D , 35000D , 65000D, 110000D , 30000D , 35000D ,
-        30000D , 30000D , 35000D , 35000D , 45000D , 50000D , 40000D , 45000D , 45000D , 30000D ,
-        30000D , 55000D , 55000D , 55000D , 50000D , 55000D , 20000D, 100000D , 35000D , 30000D ,
-        30000D , 30000D , 40000D , 40000D , 30000D , 30000D , 90000D , 40000D , 90000D , 35000D ,
-        35000D , 30000D , 30000D , 40000D , 55000D , 55000D , 70000D , 70000D , 35000D , 60000D ,
-        60000D , 70000D, 100000D, 110000D , 80000D , 80000D , 80000D , 80000D , 40000D , 45000D ,
-        90000D , 80000D, 110000D, 110000D, 130000D , 40000D , 40000D , 40000D , 40000D , 40000D ,
-        30000D , 30000D , 35000D , 50000D , 50000D , 40000D , 65000D , 70000D , 40000D , 70000D ,
-        80000D , 65000D, 110000D, 130000D, 130000D, 130000D , 85000D , 70000D , 35000D , 30000D ,
-        60000D , 90000D , 65000D , 90000D , 35000D , 35000D , 35000D , 45000D , 45000D , 45000D ,
-        55000D , 55000D , 55000D , 55000D , 55000D , 55000D , 55000D , 55000D , 55000D , 55000D ,
-        55000D , 55000D , 55000D , 55000D , 35000D , 35000D , 35000D , 30000D , 35000D , 35000D
+        40000D , 30000D , 50000D , 40000D , 40000D , 60000D , 40000D , 90000D , 90000D , 55000D ,
+        35000D , 35000D , 30000D , 55000D , 55000D , 35000D , 45000D , 30000D , 30000D , 40000D ,
+        30000D , 60000D , 35000D , 65000D, 110000D, 110000D , 30000D , 35000D , 30000D , 30000D ,
+        35000D , 35000D , 45000D , 50000D , 40000D , 45000D , 45000D , 30000D , 30000D , 55000D ,
+        55000D , 55000D , 50000D , 55000D , 20000D, 100000D , 35000D , 30000D , 30000D , 30000D ,
+        40000D , 40000D , 30000D , 30000D , 90000D , 40000D , 90000D , 35000D , 35000D , 30000D ,
+        30000D , 40000D , 55000D , 55000D , 70000D , 70000D , 35000D , 60000D , 60000D , 70000D ,
+       100000D, 110000D , 80000D , 80000D , 80000D , 80000D , 40000D , 45000D , 90000D , 80000D ,
+       110000D, 110000D, 130000D , 40000D , 40000D , 40000D , 40000D , 40000D , 30000D , 30000D ,
+        35000D , 50000D , 50000D , 40000D , 65000D , 70000D , 40000D , 70000D , 80000D , 65000D ,
+       110000D, 130000D, 130000D, 130000D , 85000D , 70000D , 35000D , 30000D , 60000D , 90000D ,
+        65000D , 90000D , 35000D , 35000D , 35000D , 45000D , 45000D , 45000D , 55000D , 55000D ,
+        55000D , 65000D , 35000D , 35000D , 30000D
     };
 
     static
@@ -859,7 +792,6 @@ public class F_14B extends F_14
             a_lweaponslot[16] = new Aircraft._WeaponSlot(4, "RocketGunNull", 1);
             a_lweaponslot[37] = new Aircraft._WeaponSlot(7, "RocketGunFlare_gn16", 30);
             a_lweaponslot[38] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
-            arraylist.add(s);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "Fighter_4xAIM7M+4xAIM9L";
