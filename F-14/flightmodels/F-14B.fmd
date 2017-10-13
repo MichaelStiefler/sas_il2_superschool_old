@@ -52,7 +52,7 @@
   CockpitDoorPeriod 1.5
   CAileronThreshold 550.0
   CRudderThreshold 600.0
-  CElevatorThreshold 800.0
+  CElevatorThreshold 700.0
   DefaultAileronTrim 0.000
   DefaultElevatorTrim 0.000
   DefaultRudderTrim 0.000
@@ -82,7 +82,7 @@
   Wing_V 1.5
   GCenter  0.0
   GCenterZ 0.00
-  GC_AOA_Shift -0.7
+  GC_AOA_Shift -1.0
   GC_Flaps_Shift 0.0
   GC_Gear_Shift  0.0
 [Toughness]
@@ -183,7 +183,7 @@
   G_CLASS_COEFF 20.0
   G_CLASS 14
   SensYaw 0.35
-  SensPitch 0.7
+  SensPitch 0.75
   SensRoll 0.25
 [Polares]
   lineCyCoeff 0.092
@@ -194,14 +194,14 @@
   CyCritH_0 1.1
   CyCritL_0 -0.75
   CxMin_0 0.030
-  parabCxCoeff_0 4.0E-4
-  Cy0_1 0.64
+  parabCxCoeff_0 9.0E-4
+  Cy0_1 0.85
   AOACritH_1 36.0
   AOACritL_1 -22.0
   CyCritH_1 1.5
   CyCritL_1 -0.7
   CxMin_1 0.11
-  parabCxCoeff_1 5.0E-4
+  parabCxCoeff_1 10.0E-4
   parabAngle 6.0
   Decline 0.004
   maxDistAng 40.0

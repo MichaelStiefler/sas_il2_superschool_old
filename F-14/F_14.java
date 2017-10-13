@@ -140,10 +140,10 @@ public class F_14 extends Scheme2
         oldVarWingControlSwitch = 0;
         bFlapsOutFixed = false;
         bFlapsInFixed = false;
-        stockCy0_0 = 0.12F;
-        stockCy0_1 = 0.60F;
-        stockCxMin_0 = 0.039F;
-        stockCxMin_1 = 0.10F;
+        stockCy0_0 = 0.13F;
+        stockCy0_1 = 0.85F;
+        stockCxMin_0 = 0.030F;
+        stockCxMin_1 = 0.11F;
         stockCyCritH_0 = 1.4F;
         stockGCenter = 0.0F;
         stockDefaultElevatorTrim = 0.0F;
@@ -155,6 +155,8 @@ public class F_14 extends Scheme2
         antiColLight = new Eff3DActor[3];
         laserSpotPos = new Point3d();
         laserTimer = -1L;
+        freq = 800;
+        Timer1 = Timer2 = freq;
     }
 
     private static final float toMeters(float f)
@@ -1154,16 +1156,18 @@ public class F_14 extends Scheme2
                 obsMove = 0.0F;
                 obsAzimuthOld = obsAzimuth;
                 obsElevationOld = obsElevation;
-                if((double)World.Rnd().nextFloat() > 0.80000000000000004D)
+                if(World.Rnd().nextFloat() > 0.80F)
                 {
                     obsAzimuth = 0.0F;
                     obsElevation = 0.0F;
-                } else
+                }
+                else
                 {
                     obsAzimuth = World.Rnd().nextFloat() * 140F - 70F;
                     obsElevation = World.Rnd().nextFloat() * 50F - 20F;
                 }
-            } else
+            }
+            else
             {
                 obsLookTime--;
             }
@@ -1172,9 +1176,8 @@ public class F_14 extends Scheme2
             Vector3d vector3d = FM.getVflow();
             mn = (float)vector3d.lengthSquared();
             mn = (float)Math.sqrt(mn);
-            World.cur().getClass();
             mn /= Atmosphere.sonicSpeed((float)((Tuple3d) (FM.Loc)).z);
-            if(mn >= 0.9F && (double)mn < 1.1000000000000001D)
+            if(mn >= 0.90F && mn < 1.10F)
                 ts = true;
             else
                 ts = false;
@@ -1392,8 +1395,6 @@ public class F_14 extends Scheme2
         if(FM.EI.engines[0].getStage() < 6 && FM.Gears.nOfGearsOnGr > 0)
         {
             hasHydraulicPressure = false;
-            if(FM.CT.getWing() == 0.0F)
-                FM.CT.VarWingControl = 0.8F;
             FM.CT.bHasFlapsControl = false;
             FM.CT.bHasAileronControl = false;
             FM.CT.bHasElevatorControl = false;
@@ -1404,8 +1405,6 @@ public class F_14 extends Scheme2
         if(!hasHydraulicPressure)
         {
             hasHydraulicPressure = true;
-            if(FM.CT.getWing() == 0.0F)
-                FM.CT.VarWingControl = 0.0F;
             FM.CT.bHasFlapsControl = true;
             FM.CT.bHasAileronControl = true;
             if(FM.CT.getWing() > 0.3F)
@@ -1787,7 +1786,7 @@ public class F_14 extends Scheme2
             fRamp3rd = cvt(calculateMach(), 1.2F, 1.4F, -4.22F, -9.85F);
         else if(calculateMach() < 2.0F)
             fRamp3rd = cvt(calculateMach(), 1.6F, 1.9F, -9.85F, -16.87F);
-        else 
+        else
             fRamp3rd = cvt(calculateMach(), 2.0F, 2.3F, -16.87F, -22.5F);
         hierMesh().chunkSetAngles("IntakeDoor_Lr", 0.0F, 0.0F, fRamp3rd);
         hierMesh().chunkSetAngles("IntakeDoor_Rr", 0.0F, 0.0F, fRamp3rd);
@@ -2039,11 +2038,11 @@ public class F_14 extends Scheme2
             if(f < 0.1F)
             {
                 FM.AS.hitEngine(this, 0, 100);
-                if((double)World.Rnd().nextFloat(0.0F, 1.0F) < 0.48999999999999999D)
+                if(World.Rnd().nextFloat(0.0F, 1.0F) < 0.49F)
                     FM.EI.engines[0].setEngineDies(actor);
                 FM.EI.engines[1].setEngineDies(actor);
-            } else
-            if((double)f > 0.55000000000000004D)
+            }
+            else if(f > 0.55F)
                 FM.EI.engines[0].setEngineDies(actor);
             FM.EI.engines[1].setEngineDies(actor);
             return super.cutFM(i, j, actor);
@@ -2132,13 +2131,13 @@ public class F_14 extends Scheme2
         float f1 = FM.getSpeedKMH() - getMachForAlt(FM.getAltitude());
         if(f1 < 0.5F)
             f1 = 0.5F;
-        if((double)calculateMach() <= 1.0D)
+        if(calculateMach() <= 1.0F)
         {
             FM.VmaxAllowed = FM.getSpeedKMH() + f;
             SonicBoom = 0.0F;
             isSonic = false;
         }
-        if((double)calculateMach() >= 1.0D)
+        else
         {
             FM.VmaxAllowed = FM.getSpeedKMH() + f1;
             isSonic = true;
@@ -2155,7 +2154,7 @@ public class F_14 extends Scheme2
                 shockwave = Eff3DActor.New(this, findHook("_Shockwave"), null, 1.0F, "3DO/Effects/Aircraft/Condensation.eff", -1F);
             SonicBoom = 1.0F;
         }
-        if((double)calculateMach() > 1.01D || (double)calculateMach() < 1.0D)
+        if(calculateMach() > 1.01F || calculateMach() < 1.0F)
             Eff3DActor.finish(shockwave);
     }
 
@@ -2217,7 +2216,6 @@ public class F_14 extends Scheme2
     }
 
 
-
     public void update(float f)
     {
         if((FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && FM.getSpeedKMH() > 15F)
@@ -2267,7 +2265,6 @@ public class F_14 extends Scheme2
         computeFlapsFixing();
         computeCombatFlaps(f);
         computeSupersonicLimiter();
-        computeSubsonicLimiter();
         FlapAssistTakeoff();
         RWRLaunchWarning();
         if((FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
@@ -2275,12 +2272,12 @@ public class F_14 extends Scheme2
         if(FM.crew > 1 && obsMove < obsMoveTot && !bObserverKilled && !FM.AS.isPilotParatrooper(1))
         {
             if(obsMove < 0.2F || obsMove > obsMoveTot - 0.2F)
-                obsMove += 0.29999999999999999D * (double)f;
+                obsMove += 0.3F * f;
             else
             if(obsMove < 0.1F || obsMove > obsMoveTot - 0.1F)
                 obsMove += 0.15F;
             else
-                obsMove += 1.2D * (double)f;
+                obsMove += 1.2F * f;
             obsLookAzimuth = Aircraft.cvt(obsMove, 0.0F, obsMoveTot, obsAzimuthOld, obsAzimuth);
             obsLookElevation = Aircraft.cvt(obsMove, 0.0F, obsMoveTot, obsElevationOld, obsElevation);
             hierMesh().chunkSetAngles("Head2_D0", 0.0F, obsLookAzimuth, obsLookElevation);
@@ -2795,7 +2792,12 @@ public class F_14 extends Scheme2
     {
         Polares polares = (Polares)Reflection.getValue(FM, "Wing");
         float x = calculateMach();
-        if(x < 0.9F)
+        if(x < 0.7F)
+        {
+            polares.lineCyCoeff = floatindex(cvt(x, 0.0F, 0.7F, 0.0F, 14.0F), linecycoeffScale0007);
+            //{{0,0.15},{0.3,0.14},{0.5,0.13},{0.7,0.08}}
+        }
+        else if(x < 0.9F)
         {
             polares.lineCyCoeff = 0.08F;
         }
@@ -2805,7 +2807,7 @@ public class F_14 extends Scheme2
             float x3 = x2 * x;
             float x4 = x3 * x;
             polares.lineCyCoeff = 0.0348639F*x4 - 0.271173F*x3 + 0.785774F*x2 - 1.02525F*x + 0.541057F;
-    // {{0.9, 0.08}, {1.3, 0.04},{1.6, 0.03},{2.1, 0.02}, {2.3, 0.016}}                                           
+    // {{0.9, 0.08}, {1.3, 0.04},{1.6, 0.03},{2.1, 0.02}, {2.3, 0.016}}
         }
         else
         {
@@ -2822,15 +2824,15 @@ public class F_14 extends Scheme2
          || (FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() == 6)) && calculateMach() >= 1.12F)
         {
             if (x > 4F)
-	        {
+            {
                 Drag = 0.0F;
             }
             else
             {
                 Drag = 0.00045F - 0.0001125F*x;
-		//{{0,0.00045},{4, 0.0}}
-	        }
-	        FM.Sq.dragParasiteCx += Drag;
+        //{{0,0.00045},{4, 0.0}}
+            }
+            FM.Sq.dragParasiteCx += Drag;
         }
     }
 
@@ -2853,12 +2855,12 @@ public class F_14 extends Scheme2
             //When AI goes 'GAttack' waypoint, set VarWingControlSwitch = "BOMB". Others "AUTO".
             if(FM.AP.way.curr().Action == 3 || (((Maneuver)FM).Group != null && ((Maneuver)FM).Group.grTask == 4) || ((Maneuver)FM).get_task() == 4)
                 FM.CT.VarWingControlSwitch = 4;
-            else 
+            else
                 FM.CT.VarWingControlSwitch = 0;
         }
 
         float target_value = 0.0F;
-      
+
         // VarWing degree decision part
         switch(FM.CT.VarWingControlSwitch)
         {
@@ -2950,6 +2952,8 @@ public class F_14 extends Scheme2
         }
         if(target_value < varWingExtendLimitter())
             target_value = varWingExtendLimitter();
+        if(!hasHydraulicPressure)
+            target_value = 0.8F;  // ground parking
         FM.CT.VarWingControl = Math.max(target_value, FM.CT.getWing());
 
         // VarWing flight charactoristic part
@@ -2995,22 +2999,39 @@ public class F_14 extends Scheme2
 
         return limit;
     }
-  
-    public void computeSubsonicLimiter()
-       { 
-        float x = calculateMach();
-        float Drag = 0.0F;
-        if(FM.EI.engines[0].getThrustOutput() < 1.001F && FM.EI.engines[0].getStage() == 6 && (double)calculateMach() >= 0.9 && this instanceof com.maddox.il2.objects.air.F_14A) 
-        if (x > 0.97) 
-	{
-	Drag = 0.0025F;
-	} else{ 
-		float x2 = x * x; 
-		Drag = 0.0285714F * x - 0.0252143F;
-		//{{0.9,0.0005},{0.97, 0.0025}}
-	}
-	((FlightModelMain) (super.FM)).Sq.dragParasiteCx += Drag;
-         }
+
+
+    public void computeF110GE400_AB()
+    {
+        for(int en = 0; en < 2; en++)
+        {
+            if(FM.EI.engines[en].getThrustOutput() > 1.001F && FM.EI.engines[en].getStage() > 5)
+                FM.producedAF.x += 40600D;
+            if(FM.EI.engines[en].getThrustOutput() > 1.001F && FM.EI.engines[en].getStage() > 5 && calculateMach() > 0.85F)
+                FM.producedAF.x += 12000D;
+            if(FM.EI.engines[en].getThrustOutput() > 1.001F && FM.EI.engines[en].getStage() > 5 && calculateMach() > 1.3F)
+                FM.producedAF.x -= 34000D;
+        }
+        float x = FM.getAltitude() / 1000F;
+        float thrustDegradation = 0.0F;
+        if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() == 6
+         && FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() == 6)
+            if (x > 19.0F)
+            {
+                thrustDegradation = 20.0F;
+            }
+            else
+            {
+                float x2 = x * x;
+                float x3 = x2 * x;
+                float x4 = x3 * x;
+                float x5 = x4 * x;
+                float x6 = x5 * x;
+                thrustDegradation = -(17077F*x6/142443000F) + (13553F*x5/2374050F) - (13203787F*x4/142443000F) + (434033F*x3/698250F) - (71389321F*x2/35610750F) + (1247081F*x/339150F);
+        //{{0,0},{2,3},{5,4},{7,0},{12,-30},{17,7},{19,25}}
+            }
+        FM.producedAF.x -=  thrustDegradation * 1000F;
+    }
 
 
     private void FlapAssistTakeoff()
@@ -3055,14 +3076,14 @@ public class F_14 extends Scheme2
         if(bFlapsOutFixed)
             return;
 
-        if(FM.EI.engines[0].getThrustOutput() > 0.97F && FM.EI.engines[1].getThrustOutput() > 0.97F && ((double)calculateMach() < 0.32D || FM.Gears.onGround()) && !bTakeoffFlapAssist && !bStableAIGround)
+        if(FM.EI.engines[0].getThrustOutput() > 0.97F && FM.EI.engines[1].getThrustOutput() > 0.97F && (calculateMach() < 0.32F || FM.Gears.onGround()) && !bTakeoffFlapAssist && !bStableAIGround)
         {
             polares.Cy0_1 += (bSpawnedAsAI ? 1.8D : 0.8D);
             bTakeoffFlapAssist = true;
         }
         if(bTakeoffFlapAssist && !FM.Gears.nearGround())
         {
-            if((FM.EI.engines[0].getThrustOutput() < 0.97F && FM.EI.engines[1].getThrustOutput() < 0.97F) || (double)calculateMach() >= 0.32D)
+            if((FM.EI.engines[0].getThrustOutput() < 0.97F && FM.EI.engines[1].getThrustOutput() < 0.97F) || calculateMach() >= 0.32F)
             {
                 polares.Cy0_1 -= (bSpawnedAsAI ? 1.8D : 0.8D);
                 bTakeoffFlapAssist = false;
@@ -3164,6 +3185,19 @@ public class F_14 extends Scheme2
         hierMesh().chunkVisible("SlightKeelR", FM.CT.bFormationLights);
         hierMesh().chunkVisible("SlightWTipL", FM.CT.bFormationLights);
         hierMesh().chunkVisible("SlightWTipR", FM.CT.bFormationLights);
+    }
+
+    public void setTimer(int i)
+    {
+        Random random = new Random();
+        Timer1 = (float)(random.nextInt(i) * 0.100F);
+        Timer2 = (float)(random.nextInt(i) * 0.100F);
+    }
+
+    public void resetTimer(float f)
+    {
+        Timer1 = f;
+        Timer2 = f;
     }
 
 
@@ -3275,6 +3309,9 @@ public class F_14 extends Scheme2
     public boolean bHasCenterTank;
     public boolean bHasWingTank;
     private boolean bSpawnedAsAI;
+    public int freq;
+    public float Timer1;
+    public float Timer2;
     private float actl;
     private float rctl;
     private float ectl;
@@ -3340,6 +3377,11 @@ public class F_14 extends Scheme2
 
     private static final float wingsquredecScale[] = {
         0.0F, 0.4F, 1.0F, 2.0F, 2.8F
+    };
+
+    private static final float linecycoeffScale0007[] = {
+        0.1500F, 0.1490F, 0.1480F, 0.1460F, 0.1440F, 0.1420F, 0.1400F, 0.1380F, 0.1355F, 0.1330F,
+        0.1300F, 0.1220F, 0.1100F, 0.0960F, 0.0800F
     };
 
     static
