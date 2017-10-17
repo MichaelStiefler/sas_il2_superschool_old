@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Von Microsoft Visual C++ generierte Includedatei.
-// Verwendet durch asciiexp.rc
+// Verwendet durch asciiexp_2018.rc
 //
 #define IDS_VERSION                     1
 #define IDS_ASCIIEXP                    1

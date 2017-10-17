@@ -1,6 +1,6 @@
 // Microsoft Visual C++ generated resource script.
 //
-#include "resource.h"
+#include "resource_2015.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ END
 
 1 TEXTINCLUDE 
 BEGIN
-    "resource.h\0"
+    "resource_2015.h\0"
 END
 
 2 TEXTINCLUDE 
@@ -158,7 +158,7 @@ BEGIN
     IDS_VERSIONSTRING       "1.00"
     IDS_LIBDESCRIPTION      "IL-2 Full Exporter (SAS)"
     IDS_AUTHORNAME          "6S.Maraz & SAS~Storebror"
-    IDS_VALIDVERSIONS       "2012"
+    IDS_VALIDVERSIONS       "2015&2016"
     IDS_EXTENSION2          "cfg"
 END
 
