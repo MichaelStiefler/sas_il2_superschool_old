@@ -18,7 +18,8 @@ HINSTANCE hInstance;
 
 static BOOL showPrompts;
 static BOOL exportSelected;
-static TCHAR szExt[128];
+static TCHAR szExt1[128];
+static TCHAR szExt2[128];
 
 // Class ID. These must be unique and randomly generated!!
 // If you use this as a sample project, this is the first thing
@@ -35,7 +36,8 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL,ULONG fdwReason,LPVOID lpvReserved)
    {
       hInstance = hinstDLL; 
       DisableThreadLibraryCalls(hInstance);
-	  _tcscpy_s(szExt, sizeof(szExt) / sizeof(TCHAR), GetString(IDS_EXTENSION1));
+	  _tcscpy_s(szExt1, sizeof(szExt1) / sizeof(TCHAR), GetString(IDS_EXTENSION1));
+	  _tcscpy_s(szExt2, sizeof(szExt2) / sizeof(TCHAR), GetString(IDS_EXTENSION2));
    }
 
 	return (TRUE);
@@ -132,7 +134,7 @@ AsciiExp::~AsciiExp()
 
 int AsciiExp::ExtCount()
 {
-	return 1;
+	return 2;
 }
 
 const TCHAR * AsciiExp::Ext(int n)
@@ -141,8 +143,10 @@ const TCHAR * AsciiExp::Ext(int n)
 	case 0:
 		// This cause a static string buffer overwrite
 		// Fixed by SAS~Storebror: This issue only occurs if you dynamically load the string resource at this point :))
-		return szExt;
+		return szExt1;
 		//return _T("prj");
+	case 1:
+		return szExt2;
 	}
 	return _T("");
 }
@@ -641,15 +645,20 @@ void AsciiExp::ExportNode( INode *currNode, char *LOD_string )
    /*************** read faces ****************/   
    /*******************************************/
    
-   //Get the material from node
+   // TODO: +++ Added by SAS~Storebror +++
+   // If Node has no material, export with stand-in material name
+	BOOL isFakeMaterial = FALSE;
+	
+	//Get the material from node
    Mtl* nodemtl = currNode->GetMtl();
    if (!nodemtl)
    {
-      fprintf( pStream, "no material applied to node!\n" );
-      return; //No material applied          
+      //fprintf( pStream, "no material applied to node!\n" );
+      //return; //No material applied          
+	  isFakeMaterial = TRUE;
    }
  
-   if ( nodemtl->IsMultiMtl() ) 
+   if ( !isFakeMaterial && nodemtl->IsMultiMtl() )
    {
 		multimtl = static_cast<MultiMtl*>(nodemtl);
 		NumSubMaterials = multimtl->NumSubs();
@@ -679,7 +688,12 @@ void AsciiExp::ExportNode( INode *currNode, char *LOD_string )
 		fflush( pStream );
 #endif 
         //Get the ID in this face (apply the modulo)
-		if ( nodemtl->IsMultiMtl() )
+		if (isFakeMaterial)
+		{
+			ID = 0;
+			strcpy(materialName[ID], "<Manual Edit required: Set Material Name here!>");
+		}
+		else if ( nodemtl->IsMultiMtl() )
 		{
 			ID = mesh->getFaceMtlIndex(i) % NumSubMaterials;
 	        mtl = multimtl->GetSubMtl(ID);
@@ -727,7 +741,11 @@ void AsciiExp::ExportNode( INode *currNode, char *LOD_string )
 #endif 
 
         //Get the ID in this face (apply the modulo)
-		if ( nodemtl->IsMultiMtl() )
+		if (isFakeMaterial)
+		{
+			ID = 0;
+		}
+		else if ( nodemtl->IsMultiMtl() )
 		{
 			ID = mesh->getFaceMtlIndex(i) % NumSubMaterials;
 			
@@ -1479,7 +1497,7 @@ int AsciiExp::DoExport(const TCHAR *name,ExpInterface *ei,Interface *i, BOOL sup
 	exportSelected = (options & SCENE_EXPORT_SELECTED) ? TRUE : FALSE;
 	char prjFileName[MAX_PATH], objName[80], objFullName[80], dummystr[80], dmgString[10], hierFileName[MAX_PATH];
 	int k, j, numObjects, numDamage;
-	FILE *prjFile;
+	FILE *prjFile = NULL;
 
 	numErrors = 0;
 	numWarnings = 0;
@@ -1512,70 +1530,95 @@ int AsciiExp::DoExport(const TCHAR *name,ExpInterface *ei,Interface *i, BOOL sup
         return(0);
     }
 
-	// Open project file
-	LPSTR lpBuf = UnicodeToAnsi(name);
-	strcpy( prjFileName, lpBuf );
-	delete(lpBuf);
-    prjFile = fopen( prjFileName, "r" );
-    if( prjFile == NULL )
-    {
-        fprintf( logFile, "error opening project file %s \n", prjFileName );
-		fflush( logFile );
-		return 1;		
-    }
-
 	char* oldLocale = setlocale(LC_ALL, "");
 	setlocale(LC_ALL, "en-US");
 	setlocale(LC_NUMERIC, "C");
 	Sleep(0);
 
-	fscanf( prjFile, "%s %d %c %f", dummystr, &numObjects, &dmgChar, &scaleFact );
-	fprintf( logFile, " Read num objects = %d, dmgChar %c scale Factor %f\n", numObjects, dmgChar, scaleFact );
 
-	// Open hier file in REWRITE mode
-	sprintf(hierFileName, "hier.him");
-	hierFile = fopen(hierFileName, "wt");
-	if (hierFile == NULL)
-	{
-		fprintf(logFile, "****** ERROR: Error opening file %s\n", hierFileName);
-		numErrors++;
-		return 1;
-	}
-	fclose(hierFile);
 
-	for( k = 0; k < numObjects; k++ )
-	{
-		if( k > 1000){ fclose( logFile); return 1; }
-		if (fscanf(prjFile, "%s %d", objName, &numDamage) < 2) continue;
-		fprintf( logFile, "read objName = %s, numDmg = %d\n", objName, numDamage );
+	// Open project file
+	LPSTR lpBuf = UnicodeToAnsi(name);
 
-		if( numDamage == 0) // NO DAMAGE e.g. CAPs
-		{
-			dmgLevel = -1;
-			fprintf( logFile, "**************************************** Exporting object %s\n", objName );
-			szBuf = AnsiToUnicode(objName);
-			DoNodeExport( szBuf, ip );
-			delete(szBuf);
-			fprintf( logFile, "**************************************** Done\n" );
-		}
+	if (EndsWith(lpBuf, ".cfg")) {
+		// This is a single mesh export!
+		dmgLevel = -1;
+		scaleFact = 0.0F;
+		char *ptr = strrchr(lpBuf, '\\');
+		if (ptr != NULL)
+			strncpy_s(objName, sizeof(objName), ptr + 1, strlen(lpBuf) - 5 - (ptr - lpBuf));
 		else
-			for ( j = 0; j < numDamage; j++ )
+			strncpy_s(objName, sizeof(objName), lpBuf, strlen(lpBuf) - 4);
+		delete(lpBuf);
+		fprintf(logFile, "**************************************** Exporting single Mesh %s\n", objName);
+		szBuf = AnsiToUnicode(objName);
+
+		DoNodeExport(szBuf, ip);
+		delete(szBuf);
+		fprintf(logFile, "**************************************** Done\n");
+	}
+	else {
+
+
+		strcpy(prjFileName, lpBuf);
+		delete(lpBuf);
+		prjFile = fopen(prjFileName, "r");
+		if (prjFile == NULL)
+		{
+			fprintf(logFile, "error opening project file %s \n", prjFileName);
+			fflush(logFile);
+			return 1;
+		}
+
+
+		fscanf(prjFile, "%s %d %c %f", dummystr, &numObjects, &dmgChar, &scaleFact);
+		fprintf(logFile, " Read num objects = %d, dmgChar %c scale Factor %f\n", numObjects, dmgChar, scaleFact);
+
+		// Open hier file in REWRITE mode
+		sprintf(hierFileName, "hier.him");
+		hierFile = fopen(hierFileName, "wt");
+		if (hierFile == NULL)
+		{
+			fprintf(logFile, "****** ERROR: Error opening file %s\n", hierFileName);
+			numErrors++;
+			return 1;
+		}
+		fclose(hierFile);
+
+		for (k = 0; k < numObjects; k++)
+		{
+			if (k > 1000) { fclose(logFile); return 1; }
+			if (fscanf(prjFile, "%s %d", objName, &numDamage) < 2) continue;
+			fprintf(logFile, "read objName = %s, numDmg = %d\n", objName, numDamage);
+
+			if (numDamage == 0) // NO DAMAGE e.g. CAPs
 			{
-				dmgLevel = j;
-				if( j > 10 ) { fclose( logFile); return 1; }
-				sprintf( objFullName, "%s_%c%d", objName, dmgChar, dmgLevel );
-				sprintf( dmgString, "_%c%d", dmgChar, j );
-				fprintf( logFile, "**************************************** Exporting object %s D%d\n", objFullName, j );
+				dmgLevel = -1;
+				fprintf(logFile, "**************************************** Exporting object %s\n", objName);
 				szBuf = AnsiToUnicode(objName);
-				DoNodeExport( szBuf, ip );
+				DoNodeExport(szBuf, ip);
 				delete(szBuf);
-				fprintf( logFile, "**************************************** Done\n" );
+				fprintf(logFile, "**************************************** Done\n");
 			}
+			else
+				for (j = 0; j < numDamage; j++)
+				{
+					dmgLevel = j;
+					if (j > 10) { fclose(logFile); return 1; }
+					sprintf(objFullName, "%s_%c%d", objName, dmgChar, dmgLevel);
+					sprintf(dmgString, "_%c%d", dmgChar, j);
+					fprintf(logFile, "**************************************** Exporting object %s D%d\n", objFullName, j);
+					szBuf = AnsiToUnicode(objName);
+					DoNodeExport(szBuf, ip);
+					delete(szBuf);
+					fprintf(logFile, "**************************************** Done\n");
+				}
+		}
 	}
 
 	fprintf( logFile, "%d errors, %d warnings\n", numErrors, numWarnings );
 	fclose( logFile );
-	fclose( prjFile );
+	if (prjFile != NULL) fclose( prjFile );
 	if (pStream != NULL) {
 		fflush(pStream);
 		fclose(pStream);
@@ -1739,7 +1782,12 @@ int AsciiExp::DoNodeExport(const TCHAR *name ,Interface *i )
 	// SCALE FACT FROM FILE NO LONGER USED
 	// read left for compatibility only
 	// read scale factor from cfg file
-    fscanf( cfgFile, "%s %f", dummystr, &dummyFloat ); 
+	// TODO: Changed by SAS~Storebror - Read Scale Factor in case of Single Mesh export
+	// and in case it was not set (correctly) in project file
+	if (scaleFact == 0.0F)
+		fscanf( cfgFile, "%s %f", dummystr, &scaleFact);
+	else
+		fscanf(cfgFile, "%s %f", dummystr, &dummyFloat);
 #ifdef DEBUG_LOD  
          fprintf( logFile, "Scale Factor: %f \n", scaleFact ); 
 		 fflush( logFile ) ;
@@ -2390,6 +2438,22 @@ void AsciiExp::WriteConfig()
 	_putw(GetPrecision(),			cfgStream);
 
 	fclose(cfgStream);
+}
+
+BOOL AsciiExp::EndsWith(const char* haystack, const char* needle)
+{
+	size_t haystacklen = strlen(haystack);
+	size_t needlelen = strlen(needle);
+	if (needlelen > haystacklen) return false;
+	return (strcmp(haystack + haystacklen - needlelen, needle) == 0) ? TRUE : FALSE;
+}
+
+BOOL AsciiExp::StartsWith(const char* haystack, const char* needle)
+{
+	size_t haystacklen = strlen(haystack);
+	size_t needlelen = strlen(needle);
+	if (needlelen > haystacklen) return false;
+	return (strncmp(haystack, needle, needlelen) == 0) ? TRUE : FALSE;
 }
 
 BOOL AsciiExp::FileExists(const char* fileName)

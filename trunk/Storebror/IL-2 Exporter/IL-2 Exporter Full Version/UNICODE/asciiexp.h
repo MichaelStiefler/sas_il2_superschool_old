@@ -169,7 +169,8 @@ public:
 	TSTR	GetCfgFilename();
 	BOOL	ReadConfig();
 	void	WriteConfig();
-
+	BOOL    EndsWith(const char* haystack, const char* needle);
+	BOOL    StartsWith(const char* haystack, const char* needle);
 	BOOL FileExists(const char* fileName);
 	
 	// Interface to member variables
