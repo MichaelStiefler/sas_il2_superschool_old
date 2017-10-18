@@ -131,18 +131,25 @@ public class Controls {
     // --------------------------------------------------------
 
   // +++++ TODO skylla: different weapon fire modes +++++
-    public int		weaponFireMode		= 0;
-    public long		lastWeaponTime = System.currentTimeMillis();
-    public long		weaponReleaseDelay  = 250L;
+    public int	rocketFireMode	   = 0;
+    public int  bombDropMode       = 0;
+    public long	lastRocketTime 	   = System.currentTimeMillis();
+    public long lastBombTime       = System.currentTimeMillis();
+    public long rocketReleaseDelay = 250L;
+    public long bombReleaseDelay = 250L;
     
     public boolean rocketShootLeft = true;
+    public boolean bombDropLeft    = true;
     
     private static final int defaultFire = 0;
-    private static final int singleFire = 2;
-    private static final int fullSalvo = 1;
+    private static final int singleFire  = 2;
+    private static final int fullSalvo   = 1;
     
-    private LinkedList ar;
+    private LinkedList availableRockets;
+    private LinkedList ab;
+    
     private Class selectedRocket = RocketGun.class;
+    private Class selectedBomb   = BombGun.class;
   // ----- todo skylla: different weapon fire modes -----
 
   // ++++++++++ TODO skylla: different weapon fire modes +++++++++
@@ -166,42 +173,44 @@ public class Controls {
     	if(selectedRocket == RocketGun.class)
     		return;
     	if(!ordnanceAvailable(selectedRocket)) {
-        	if(ar.indexOf(selectedRocket) > 0) {
-    			ar.remove(selectedRocket);
+        	if(availableRockets.indexOf(selectedRocket) > 0) {
+    			availableRockets.remove(selectedRocket);
     		}
-    		selectedRocket = (Class) ar.get(0);
+    		selectedRocket = (Class) availableRockets.get(0);
+    		if(rocketFireMode == fullSalvo)
+    			this.WeaponControl[2] = false;
     	}
     }
     
     private void listRockets() {
-    	ar = new LinkedList();
-    	if(ar.size() > 0) {
+    	if(availableRockets.size() > 0) {
     		return;
     	}
-    	ar.addFirst(RocketGun.class);
+    	availableRockets = new LinkedList();
+    	availableRockets.addFirst(RocketGun.class);
     	for(int i = 0; i<Weapons[2].length; i++) {
     		BulletEmitter e = Weapons[2][i];
     		boolean isCandidate = e instanceof RocketGun && !(e instanceof RocketGunNull) && e.haveBullets();
-    		if(isCandidate && !ar.contains(e.getClass())) {
-    			ar.add(e.getClass());
+    		if(isCandidate && !availableRockets.contains(e.getClass())) {
+    			availableRockets.add(e.getClass());
     		}
     	}
     }
     
     public void toggleRocketHook() {
     	listRockets();
-    	int i = ar.indexOf(selectedRocket);
+    	int i = availableRockets.indexOf(selectedRocket);
     	if(i == -1) {
     		selectedRocket = RocketGun.class;
     		toggleRocketHook();
     		return;
-    	} else if((i+1) >= ar.size()) {
+    	} else if((i+1) >= availableRockets.size()) {
     		//selectedRocket = (Class) ar.getFirst();
     		i = 0;
     	} else {
     		i++;
     	}
-    	selectedRocket = (Class) ar.get(i);
+    	selectedRocket = (Class) availableRockets.get(i);
     }
     
     public void toggleRocketHookHUD(int hudLogWeaponId) {
@@ -210,25 +219,25 @@ public class Controls {
     	if(name.endsWith("RocketGun")) 
     		name = "All";
     	else if(name.startsWith("com.maddox.il2.objects.weapons.RocketGun") && name.length() > 40)
-    		name = name.substring(40);
-    	if(ar.size() > 2)
+    		name = name.substring(40);    	
+    	if(availableRockets.size() > 2)
     		HUD.log(hudLogWeaponId, "Rocket Selected: " + name);
     }
     
     public void toggleRocketSide() {
-    	if(weaponFireMode < 2)
+    	if(rocketFireMode < 2)
     		return;
     	rocketShootLeft = !rocketShootLeft;
     }
     
     public void setWeaponFireMode(int theWeaponFireMode) {
-		this.weaponFireMode = theWeaponFireMode;
+		this.rocketFireMode = theWeaponFireMode;
 	}
     
 	public void toggleWeaponFireMode(int hudLogWeaponId) {
 		if(Weapons[2] == null && Weapons[3] == null) 
 			return;
-		switch (weaponFireMode) {
+		switch (rocketFireMode) {
 		case 0:
 			setWeaponFireMode(2);
 			HUD.log(hudLogWeaponId, "Single Fire Selected");
@@ -245,68 +254,83 @@ public class Controls {
 	}
 	
 	public void setWeaponReleaseDelay(long delay) {
-		this.weaponReleaseDelay = delay;
+		this.rocketReleaseDelay = delay;
 	}
 	
 	public void toggleWeaponReleaseDelay() {
-		switch((int)weaponReleaseDelay) {
-		case 33: weaponReleaseDelay = 125L; break;
-		case 125: weaponReleaseDelay = 250L; break;
-		case 250: weaponReleaseDelay = 500L; break;
-		case 500: weaponReleaseDelay = 1000L; break;
-		default: weaponReleaseDelay = 33L;
+		switch((int)rocketReleaseDelay) {
+		case 33: rocketReleaseDelay = 125L; break;
+		case 125: rocketReleaseDelay = 250L; break;
+		case 250: rocketReleaseDelay = 500L; break;
+		case 500: rocketReleaseDelay = 1000L; break;
+		default: rocketReleaseDelay = 33L;
 		}
 	}
 	
 	public void toggleWeaponReleaseDelayHUD(int hudLogWeaponId) {
 		toggleWeaponReleaseDelay();
-		HUD.log(hudLogWeaponId, "Release Delay: " + (float)weaponReleaseDelay / 1000F + " sec");
+		HUD.log(hudLogWeaponId, "Release Delay: " + (float)rocketReleaseDelay / 1000F + " sec");
 	}
 	
-	private void doNextRocketRelease(int side) {
+	private boolean doNextRocketRelease(int side) {
+		boolean rocketReleased = false;
 		int shot;
 		switch(side) {
-			case 0: shot = (rocketShootLeft || (weaponFireMode < singleFire)) ? 1 : 0; break;
-			case 1: shot = (!rocketShootLeft || (weaponFireMode < singleFire)) ? 1 : 0; break;
+			case 0: shot = (rocketShootLeft || (rocketFireMode < singleFire)) ? 1 : 0; break;
+			case 1: shot = (!rocketShootLeft || (rocketFireMode < singleFire)) ? 1 : 0; break;
 			default: {
 				System.out.println(this.getClass() + ".doNextRocketRelase(int side) received illegal Argument: " + side + ". Will now try to fire the next rocket in the queue.");
-				doNextRocketRelease(rocketShootLeft?0:1);
-				return;
+				return doNextRocketRelease(rocketShootLeft?0:1);
 			}
 		}
 		for(int i = side; i<Weapons[2].length; i+=2) {
 			checkSelectedRocketAvailable();
+			if(!this.WeaponControl[2]) {
+				break;
+			}
 			BulletEmitter e = Weapons[2][i];
 			if(e == null)
 				continue;
-			else if(!e.haveBullets()) 
+			else if(!e.haveBullets() || (this.bHasBayDoors && this.Weapons[2][i].getHookName().startsWith("_BombSpawn") && this.BayDoorControl != 1.0F)) {
 				continue;
-			else if(e instanceof RocketGunNull || e instanceof BombGunNull) {
+			} else if(e instanceof RocketGunNull || e instanceof BombGunNull) {
 				e.shots(1);
-				System.out.print("SKYLLA: fired a BombGunNull/RocketGunNull from " + ((side == 0)?"left ":"right ") + "side, weaponFireMode = " + weaponFireMode + " and will now ");
-				if(weaponFireMode == singleFire) {
-					System.out.print("fire a rocket from the other side and then ");
+				//System.out.print("SKYLLA: fired a BombGunNull/RocketGunNull from " + ((side == 0)?"left ":"right ") + "side, weaponFireMode = " + weaponFireMode + " and will now ");
+				if(rocketFireMode == singleFire) {
+					//System.out.print("fire a rocket from the other side and then ");
 					if(shot == 1)
 						toggleRocketSide();
-					doNextRocketRelease((side==0)?1:0);
-				} else if(weaponFireMode == fullSalvo) {
-					System.out.println("continue!");
+					rocketReleased = doNextRocketRelease((side==0)?1:0);
+				} else if(rocketFireMode == fullSalvo) {
+					//System.out.println("continue!");
 					continue;
 				}
-				System.out.println("break!");
 				break;
 			} else if(!(e instanceof RocketGun) || (selectedRocket != RocketGun.class && e.getClass() != selectedRocket)) {
 				continue;
 			}
-			e.shots(shot);
-			if(weaponFireMode != fullSalvo) {
+			if(shot == 1) {
+				this.setNextReleaseReady(0);
+				rocketReleased = true;
+				e.shots(shot);
+				ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, 0, i, 1);	
+				if(this.Weapons[2][i].getHookName().startsWith("_BombSpawn")) {
+					if(!this.bHasBayDoors)
+						this.BayDoorControl = 1.0F;
+					NetAircraft.printDebugMessage(this.FM.actor, "\"" + (side == 0?"Left":"Right") + " Internal\" " + NetAircraft.TRIGGER_NAMES[2-2] + " from Emitter No. " + i + "= " + NetAircraft.simpleClassName(e) + " release through open Baydoor!");
+				} else {
+					NetAircraft.printDebugMessage(this.FM.actor, "\"" + (side == 0?"Left":"Right") + " External\" " + NetAircraft.TRIGGER_NAMES[2-2] + " from Emitter No. " + i + "= " + NetAircraft.simpleClassName(e) + " release!");
+				}
+			}
+			if(rocketFireMode != fullSalvo) {
 				break;
 			}
 			//System.out.println("SKYLLA: did NOT break after firing "+ ((side == 0)?"left ":"right ") + " side " + e.getClass() + ", weaponFireMode = " + weaponFireMode);
 			if((i+2)>= Weapons[2].length) {
-				System.out.println("SKYLLA: depleted all rockets on the "+ ((side == 0)?"left":"right") + " side!");
+				//System.out.println("SKYLLA: depleted all rockets on the "+ ((side == 0)?"left":"right") + " side!");
 			}
-		}		
+		}	
+		return rocketReleased;
 	}
 	
   //---------- todo skylla: different weapon fire modes ----------
@@ -1013,22 +1037,32 @@ public class Controls {
                 this.saveWeaponControl[wctIndex] = this.WeaponControl[wctIndex];
             
           //++++++++++ TODO skylla: weapon salvo etc ++++++++++
-            long delay = weaponReleaseDelay;
+            long delay = rocketReleaseDelay;
             delay *= (long) 1/Time.speed();
             for (wctIndex = 0; wctIndex < this.Weapons.length; wctIndex++) {
                 if (this.Weapons[wctIndex] != null) {
                     switch (wctIndex) {
                         case 2: {
-                        	if(lastWeaponTime + delay < System.currentTimeMillis() && this.WeaponControl[wctIndex] && this.hasBulletsLeftOnTrigger(wctIndex)) {
-                        		doNextRocketRelease(0);
-                        		doNextRocketRelease(1);
-                    			toggleRocketSide();
-                    			lastWeaponTime = System.currentTimeMillis();
+                        	NetAircraft.printDebugMessage(this.FM.actor, "Controls Weapon Trigger " + wctIndex + " pressed!");
+                        	if (bDropWithPlayer) {
+                                bDropWithMe = true;
+                                bDropWithPlayer = false;
+                            }
+                        	if(lastRocketTime + delay < System.currentTimeMillis() && this.WeaponControl[wctIndex] && this.hasBulletsLeftOnTrigger(wctIndex)) {
+                        		boolean weaponReleasedL = doNextRocketRelease(0);
+                        		boolean weaponReleasedR = doNextRocketRelease(1);
+                     			toggleRocketSide();
+                    			lastRocketTime = System.currentTimeMillis();
+                    			if(rocketFireMode == defaultFire)
+                    				this.WeaponControl[wctIndex] = false;
+                    			if(!weaponReleasedL && !weaponReleasedR) {
+                    				 NetAircraft.printDebugMessage(this.FM.actor, "Controls Weapon Trigger " + wctIndex + " pressed but no weapon released!");
+                    			}
                         	}
                         	break;
                         }
                         case 3: {
-                        	if(lastWeaponTime + delay < System.currentTimeMillis()) {
+                        	if(lastRocketTime + delay < System.currentTimeMillis()) {
                             // T-ODO: Storebror: +++ Bomb Release Bug hunting
 //                            if (this.WeaponControl[wctIndex]) {
                             if (this.WeaponControl[wctIndex] && this.hasBulletsLeftOnTrigger(wctIndex)) {
