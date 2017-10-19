@@ -1076,23 +1076,40 @@ public class AircraftHotKeys {
                         break;
                     }
                     // ----------------------------------------------
+                    
                   // +++++ TODO skylla: salvo selection ++++++
-                    //select weapon:
+                    //select rocket:
                     case 132: {
-                    	FM.CT.toggleRocketHookHUD(hudLogWeaponId);
+                    	FM.CT.toggleRocketSelectedHUD(hudLogWeaponId);
                     	break;
                     }
-                    //weapon salvo size:
+                    //rocket salvo size:
                     case 133: {
-                    	FM.CT.toggleWeaponFireMode(hudLogWeaponId);
+                    	FM.CT.toggleRocketFireMode(hudLogWeaponId);
                     	break;
                     }
-                    //weapon release delay:
+                    //rocket release delay:
                     case 134: {
-                    	FM.CT.toggleWeaponReleaseDelayHUD(hudLogWeaponId);
+                    	FM.CT.toggleRocketReleaseDelayHUD(hudLogWeaponId);
+                    	break;
+                    }
+                    //select bomb:
+                    case 135: {
+                    	FM.CT.toggleBombSelectedHUD(hudLogWeaponId);
+                    	break;
+                    }
+                    //bomb salvo size:
+                    case 136: {
+                    	FM.CT.toggleBombDropMode(hudLogWeaponId);
+                    	break;
+                    }
+                    //bomb release delay:
+                    case 137: {
+                    	FM.CT.toggleBombReleaseDelayHUD(hudLogWeaponId);
                     	break;
                     }
                   // ----- todo skylla: salvo selection -----
+                    
                     case 21:
                         this.setPowerControl(0.1F);
                         break;
@@ -2409,37 +2426,63 @@ public class AircraftHotKeys {
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic3", "Weapon3", 19, 119));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic4", "Weapon01", 64, 173));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic5", "GunPods", 15, 115));
+        
       //++++++ TODO skylla: Salvo selection ++++++
         ResourceBundle resourceBundle = ResourceBundle.getBundle("i18n/controls", RTSConf.cur.locale, LDRres.loader());
-        String selectWeaponName = "SelectMissile";
-        String weaponSalvoSizeName = "WeaponSalvoSize";
-        String weaponReleaseDelayName = "WeaponReleaseDelay";
+        String selectRocketName       = "SelectMissile";
+        String rocketSalvoSizeName    = "RocketSalvoSize";
+        String rocketReleaseDelayName = "RocketReleaseDelay";
+        String selectBombName         = "SelectBomb";
+        String bombSalvoSizeName      = "BombSalvoSize";
+        String bombReleaseDelayName   = "BombReleaseDelay";
         if (resourceBundle != null) {
             try {
-            	selectWeaponName = resourceBundle.getString(selectWeaponName);
+            	selectRocketName = resourceBundle.getString(selectRocketName);
             } catch (Exception e) {};
             try {
-            	weaponSalvoSizeName = resourceBundle.getString(weaponSalvoSizeName);
+            	rocketSalvoSizeName = resourceBundle.getString(rocketSalvoSizeName);
             } catch (Exception e) {};
             try {
-            	weaponReleaseDelayName = resourceBundle.getString(weaponReleaseDelayName);
+            	rocketReleaseDelayName = resourceBundle.getString(rocketReleaseDelayName);
+            } catch (Exception e) {};
+            try {
+            	selectBombName = resourceBundle.getString(selectRocketName);
+            } catch (Exception e) {};
+            try {
+            	bombSalvoSizeName = resourceBundle.getString(rocketSalvoSizeName);
+            } catch (Exception e) {};
+            try {
+            	bombReleaseDelayName = resourceBundle.getString(rocketReleaseDelayName);
             } catch (Exception e) {};
         }
-        if (selectWeaponName.equalsIgnoreCase("SelectMissile")) {
-        	selectWeaponName = "Select Missile/Rocket";
+        if (selectRocketName.equalsIgnoreCase("SelectMissile")) {
+        	selectRocketName = "Select Missile/Rocket";
         }
-        if (weaponSalvoSizeName.equalsIgnoreCase("WeaponSalvoSize")) {
-        	weaponSalvoSizeName = "Weapon Salvo Size";
+        if (rocketSalvoSizeName.equalsIgnoreCase("RocketSalvoSize")) {
+        	rocketSalvoSizeName = "Rocket Salvo Size";
         }
-        if (weaponReleaseDelayName.equalsIgnoreCase("WeaponReleaseDelay")) {
-        	weaponReleaseDelayName = "Weapon Release Delay";
+        if (rocketReleaseDelayName.equalsIgnoreCase("RocketReleaseDelay")) {
+        	rocketReleaseDelayName = "Rocket Release Delay";
         }
-        HotKeyCmdEnv.addCmd(new HotKeyCmdFire(/*"4basic6"*/ "4basic6", selectWeaponName,       132, 401));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire(/*"4basic61"*/"4basic7", weaponSalvoSizeName,    133, 402));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire(/*"4basic62"*/"4basic8", weaponReleaseDelayName, 134, 403));
-		
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$+SIGHTCONTROLS", "4basic9") {});
+        if (selectBombName.equalsIgnoreCase("SelectBomb")) {
+        	selectBombName = "Select Bomb";
+        }
+        if (bombSalvoSizeName.equalsIgnoreCase("BombSalvoSize")) {
+        	bombSalvoSizeName = "Bomb Salvo Size";
+        }
+        if (bombReleaseDelayName.equalsIgnoreCase("BombReleaseDelay")) {
+        	bombReleaseDelayName = "Bomb Release Delay";
+        }
+        HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$11", "4basic6") {});
+        HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic61",  selectRocketName,       132, 401));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic62",  rocketSalvoSizeName,    133, 402));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic63",  rocketReleaseDelayName, 134, 403));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic64",  selectBombName,         135, 404));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic65", bombSalvoSizeName,      136, 405));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic66", bombReleaseDelayName,   137, 406));
+		HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$+SIGHTCONTROLS", "4basic7") {});
 	  //------ todo skylla: Salvo selection ------
+		
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced01", "SIGHT_AUTO_ONOFF", 125, 344));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced02", "SIGHT_DIST_PLUS", 117, 336));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced03", "SIGHT_DIST_MINUS", 118, 337));
