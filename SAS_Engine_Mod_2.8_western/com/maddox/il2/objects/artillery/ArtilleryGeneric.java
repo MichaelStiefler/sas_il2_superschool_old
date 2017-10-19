@@ -43,6 +43,7 @@ import com.maddox.il2.engine.MsgCollisionRequestListener;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.ActorAlign;
+import com.maddox.il2.objects.ObjectsLogLevel;
 import com.maddox.il2.objects.Statics;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.effects.Explosions;
@@ -120,15 +121,26 @@ public abstract class ArtilleryGeneric extends ActorHMesh implements MsgCollisio
 			return f_2_;
 		}
 
-		private static String getS(SectFile sectfile, String string, String string_3_) {
-			String string_4_ = sectfile.get(string, string_3_);
-			if (string_4_ == null || string_4_.length() <= 0) {
-				System.out.print("Artillery: Parameter [" + string + "]:<" + string_3_ + "> ");
-				System.out.println(string_4_ == null ? "not found" : "is empty");
-				throw new RuntimeException("Can't set property");
-			}
-			return string_4_;
-		}
+        private static String getS(SectFile sectfile, String s, String s1)
+        {
+            String s2 = sectfile.get(s, s1);
+            if(s2 == null || s2.length() <= 0)
+            {
+                // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL) {
+                    System.out.print("Artillery: Parameter [" + s + "]:<" + s1 + "> ");
+                    System.out.println(s2 != null ? "is empty" : "not found");
+                    throw new RuntimeException("Can't set property");
+                } else if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_SHORT) {
+                    System.out.println("Artillery \"" + s + "\" is not (correctly) declared in technics.ini file!");
+                }
+                return null;
+                // ---
+            } else
+            {
+                return s2;
+            }
+        }
 
 		private static String getS(SectFile sectfile, String string, String string_5_, String string_6_) {
 			String string_7_ = sectfile.get(string, string_5_);
@@ -137,13 +149,20 @@ public abstract class ArtilleryGeneric extends ActorHMesh implements MsgCollisio
 		}
 
 		private static ArtilleryProperties LoadArtilleryProperties(SectFile sectfile, String string, Class var_class) {
+            // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+            String checkMesh = getS(sectfile, string, "MeshSummer");
+            if ((ObjectsLogLevel.getObjectsLogLevel() < ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL) && (checkMesh == null || checkMesh.length() == 0)) return null;
+            // TODO: ---
 			ArtilleryProperties artilleryproperties = new ArtilleryProperties();
 			String string_8_ = getS(sectfile, string, "PanzerType", null);
 			if (string_8_ == null) string_8_ = "Tank";
 			artilleryproperties.fnShotPanzer = TableFunctions.GetFunc2(string_8_ + "ShotPanzer");
 			artilleryproperties.fnExplodePanzer = TableFunctions.GetFunc2(string_8_ + "ExplodePanzer");
 			artilleryproperties.PANZER_TNT_TYPE = getF(sectfile, string, "PanzerSubtype", 0.0F, 100.0F);
-			artilleryproperties.meshSummer = getS(sectfile, string, "MeshSummer");
+            // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+//          artilleryproperties.meshSummer = getS(sectfile, string, "MeshSummer");
+            artilleryproperties.meshSummer = checkMesh;
+            // TODO: ---
 			artilleryproperties.meshDesert = getS(sectfile, string, "MeshDesert", artilleryproperties.meshSummer);
 			artilleryproperties.meshWinter = getS(sectfile, string, "MeshWinter", artilleryproperties.meshSummer);
 			artilleryproperties.meshSummer1 = getS(sectfile, string, "MeshSummerDamage", null);
@@ -152,7 +171,11 @@ public abstract class ArtilleryGeneric extends ActorHMesh implements MsgCollisio
 			int i = ((artilleryproperties.meshSummer1 == null ? 1 : 0) + (artilleryproperties.meshDesert1 == null ? 1 : 0) + (artilleryproperties.meshWinter1 == null ? 1 : 0));
 			if (i != 0 && i != 3) {
 				System.out.println("Artillery: Uncomplete set of damage meshes for '" + string + "'");
-				throw new RuntimeException("Can't register artillery object");
+                // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                  throw new RuntimeException("Can't register artillery object");
+                return null;
+                // ---
 			}
 			artilleryproperties.PANZER_BODY_FRONT = getF(sectfile, string, "PanzerBodyFront", 0.0010F, 9.999F);
 			if (sectfile.get(string, "PanzerBodyBack", -9865.345F) == -9865.345F) {
@@ -193,12 +216,20 @@ public abstract class ArtilleryGeneric extends ActorHMesh implements MsgCollisio
 					artilleryproperties.gunProperties[i_11_].gunClass = Class.forName(string_14_);
 				} catch (Exception exception) {
 					System.out.println("Artillery: Can't find gun class '" + string_14_ + "'");
-					throw new RuntimeException("Can't register artillery object");
+                    // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                      throw new RuntimeException("Can't register artillery object");
+                    return null;
+                    // ---
 				}
 				artilleryproperties.gunProperties[i_11_].WEAPONS_MASK = (Gun.getProperties(artilleryproperties.gunProperties[i_11_].gunClass).weaponType);
 				if (artilleryproperties.gunProperties[i_11_].WEAPONS_MASK == 0) {
 					System.out.println("Artillery: Undefined weapon type in gun class '" + string_14_ + "'");
-					throw new RuntimeException("Can't register artillery object");
+                    // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                      throw new RuntimeException("Can't register artillery object");
+                    return null;
+                    // ---
 				}
 				artilleryproperties.gunProperties[i_11_].ATTACK_FAST_TARGETS = true;
 				float f_15_ = sectfile.get(string, "FireFastTargets" + string_13_, -9865.345F);
@@ -246,6 +277,11 @@ public abstract class ArtilleryGeneric extends ActorHMesh implements MsgCollisio
 				if (i < i_22_) i = i_22_;
 				String string_23_ = string.substring(i + 1);
 				proper = LoadArtilleryProperties(Statics.getTechnicsFile(), string_23_, var_class);
+
+                // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                if (ObjectsLogLevel.getObjectsLogLevel() < ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL && proper == null) return;
+                // TODO: ---
+
 			} catch (Exception exception) {
 				System.out.println(exception.getMessage());
 				exception.printStackTrace();
