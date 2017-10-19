@@ -7,6 +7,7 @@ import com.maddox.il2.ai.ground.Prey;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.objects.ActorAlign;
+import com.maddox.il2.objects.ObjectsLogLevel;
 import com.maddox.il2.objects.Statics;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.effects.Explosions;
@@ -183,9 +184,16 @@ public abstract class BeaconGeneric extends ActorHMesh
             String s2 = sectfile.get(s, s1);
             if(s2 == null || s2.length() <= 0)
             {
-                System.out.print("Stationary: Parameter [" + s + "]:<" + s1 + "> ");
-                System.out.println(s2 != null ? "is empty" : "not found");
-                throw new RuntimeException("Can't set property");
+                // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL) {
+                    System.out.print("Stationary: Parameter [" + s + "]:<" + s1 + "> ");
+                    System.out.println(s2 == null ? "not found" : "is empty");
+                    throw new RuntimeException("Can't set property");
+                } else if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_SHORT) {
+                    System.out.println("Radio \"" + s + "\" is not (correctly) declared in technics.ini file!");
+                }
+                return null;
+                // ---
             } else
             {
                 return s2;
@@ -203,6 +211,10 @@ public abstract class BeaconGeneric extends ActorHMesh
 
         public static BeaconProperties LoadStationaryProperties(SectFile sectfile, String s, Class class1)
         {
+            // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+            String checkMesh = getS(sectfile, s, "MeshSummer");
+            if ((ObjectsLogLevel.getObjectsLogLevel() < ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL) && (checkMesh == null || checkMesh.length() == 0)) return null;
+            // TODO: ---
             BeaconProperties beaconproperties = new BeaconProperties();
             String s1 = getS(sectfile, s, "PanzerType", null);
             if(s1 == null)
@@ -213,14 +225,21 @@ public abstract class BeaconGeneric extends ActorHMesh
             beaconproperties.meshSummer = getS(sectfile, s, "MeshSummer");
             beaconproperties.meshDesert = getS(sectfile, s, "MeshDesert", beaconproperties.meshSummer);
             beaconproperties.meshWinter = getS(sectfile, s, "MeshWinter", beaconproperties.meshSummer);
-            beaconproperties.meshSummer1 = getS(sectfile, s, "MeshSummerDamage", null);
+            // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+//          beaconproperties.meshSummer = getS(sectfile, s, "MeshSummer");
+            beaconproperties.meshSummer = checkMesh;
+            // TODO: ---
             beaconproperties.meshDesert1 = getS(sectfile, s, "MeshDesertDamage", beaconproperties.meshSummer1);
             beaconproperties.meshWinter1 = getS(sectfile, s, "MeshWinterDamage", beaconproperties.meshSummer1);
             int i = (beaconproperties.meshSummer1 != null ? 0 : 1) + (beaconproperties.meshDesert1 != null ? 0 : 1) + (beaconproperties.meshWinter1 != null ? 0 : 1);
             if(i != 0 && i != 3)
             {
                 System.out.println("Stationary: Uncomplete set of damage meshes for '" + s + "'");
-                throw new RuntimeException("Can't register beacon object");
+                // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                    throw new RuntimeException("Can't register beacon object");
+                return null;
+                // ---
             }
             beaconproperties.explodeName = getS(sectfile, s, "Explode", "Stationary");
             beaconproperties.PANZER_BODY_FRONT = getF(sectfile, s, "PanzerBodyFront", 0.001F, 9.999F);
@@ -317,6 +336,11 @@ public abstract class BeaconGeneric extends ActorHMesh
                     i = j;
                 String s1 = s.substring(i + 1);
                 proper = LoadStationaryProperties(Statics.getTechnicsFile(), s1, class1);
+
+                // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                if (ObjectsLogLevel.getObjectsLogLevel() < ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL && proper == null) return;
+                // TODO: ---
+
             }
             catch(Exception exception)
             {

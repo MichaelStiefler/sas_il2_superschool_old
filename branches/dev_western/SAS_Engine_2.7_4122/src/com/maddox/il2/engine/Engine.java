@@ -56,6 +56,11 @@ public class Engine
         return cur.dreamEnv;
     }
 
+    public static List ordinances()
+    {
+        return cur.ordinances;
+    }
+
     public static List targets()
     {
         return cur.targets;
@@ -235,6 +240,7 @@ public class Engine
         drawEnv = new DrawEnvXY();
         collideEnv = new CollideEnvXY();
         dreamEnv = new DreamEnvXY();
+        ordinances = new ArrayList();
         targets = new ArrayList();
         missiles = new ArrayList();
         countermeasures = new ArrayList();
@@ -271,6 +277,7 @@ public class Engine
     public DrawEnv drawEnv;
     public CollideEnv collideEnv;
     public DreamEnv dreamEnv;
+    protected ArrayList ordinances;
     protected ArrayList targets;
     protected ArrayList missiles;
     protected ArrayList countermeasures;

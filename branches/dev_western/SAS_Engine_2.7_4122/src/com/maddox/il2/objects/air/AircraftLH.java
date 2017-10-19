@@ -44,10 +44,12 @@ public abstract class AircraftLH extends Aircraft
     private static float fStartupShakeLevel = 0.5F; // Max. Startup Shake Level in range 0.0F - 1.0F
     private float[] fEngineShakeLevel = null;       // Array of current shake levels per engine
     public static boolean printCompassHeading = false;
+    private boolean initialFuzeSynced;
     //----------------------------------------------------------
 
     public AircraftLH()
     {
+        initialFuzeSynced = false;
         bWantBeaconKeys = false;
         headPos = new float[3];
         headOr = new float[3];
@@ -210,6 +212,17 @@ public abstract class AircraftLH extends Aircraft
     public void rareAction(float f, boolean flag)
     {
         super.rareAction(f, flag);
+        // TODO: Fixed by SAS~Storebror: Private Method from "Aircraft" Class shifted here...
+        //if(Mission.isCoop() && !initialFuzeSynced && (this == World.getPlayerAircraft() || Aircraft.isPlayersWing(this)))
+        if(Mission.isCoop() && !initialFuzeSynced && (this == World.getPlayerAircraft() || isPlayersWing(this)))
+        {
+            UserCfg usercfg = World.cur().userCfg;
+            int i = usercfg.fuzeType;
+            float f1 = usercfg.bombDelay;
+            this.FM.AS.replicateFuzeStatesToNet(i, 1, f1);
+            initialFuzeSynced = true;
+        }
+        //...
         if(this == World.getPlayerAircraft())
         {
             if(!World.cur().diffCur.No_Outside_Views && World.cur().diffCur.NoOwnPlayerViews && Main3D.cur3D().isViewOutside() && Main3D.cur3D().viewActor() == World.getPlayerAircraft() && !Aircraft.isPlayerTaxing())
@@ -453,4 +466,34 @@ public abstract class AircraftLH extends Aircraft
             wreckage.setSpeed(vector3d);
         }
     }
+    
+    // TODO: Fixed by SAS~Storebror: Private Method from "Aircraft" Class shifted here...
+    public static boolean isPlayersWing(Aircraft aircraft)
+    {
+        try
+        {
+            Wing wing = aircraft.getWing();
+            if (wing == null)
+            {
+              return false;
+            }
+            for (int i = 0; i < wing.airc.length; i++)
+            {
+                Aircraft aircraft2 = wing.airc[i];
+                if (aircraft2 == World.getPlayerAircraft())
+                {
+                    return true;
+                }
+                if ((aircraft2.isNetPlayer()) || (aircraft2.isNetMaster()))
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+        catch (Exception e) {}
+        return false;
+    }
+    //...
+
 }
