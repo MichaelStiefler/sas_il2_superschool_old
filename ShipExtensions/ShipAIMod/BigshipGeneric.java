@@ -11,6 +11,7 @@ import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
 import com.maddox.il2.net.*;
 import com.maddox.il2.objects.ActorAlign;
+import com.maddox.il2.objects.ObjectsLogLevel;
 import com.maddox.il2.objects.Statics;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.bridges.BridgeSegment;
@@ -219,8 +220,15 @@ public class BigshipGeneric extends ActorHMesh
             String s2 = sectfile.get(s, s1);
             if(s2 == null || s2.length() <= 0)
             {
-                System.out.print("Ship: Value of [" + s + "]:<" + s1 + "> not found");
-                throw new RuntimeException("Can't set property");
+                // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL) {
+                    System.out.print("Ship: Value of [" + s + "]:<" + s1 + "> not found");
+                    throw new RuntimeException("Can't set property");
+                } else if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_SHORT) {
+                    System.out.println("Bigship \"" + s + "\" is not (correctly) declared in ships.ini file!");
+                }
+                return null;
+                // ---
             } else
             {
                 return new String(s2);
@@ -415,8 +423,15 @@ public class BigshipGeneric extends ActorHMesh
 
         private static ShipProperties LoadShipProperties(SectFile sectfile, String s, Class class1)
         {
+            // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+            String checkMesh = getS(sectfile, s, "Mesh");
+            if ((ObjectsLogLevel.getObjectsLogLevel() < ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL) && (checkMesh == null || checkMesh.length() == 0)) return null;
+            // TODO: ---
             ShipProperties shipproperties = new ShipProperties();
-            shipproperties.meshName = getS(sectfile, s, "Mesh");
+            // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+//            shipproperties.meshName = getS(sectfile, s, "Mesh");
+            shipproperties.meshName = checkMesh;
+            // TODO: ---
             shipproperties.soundName = getS(sectfile, s, "SoundMove");
             if(shipproperties.soundName.equalsIgnoreCase("none"))
                 shipproperties.soundName = null;
@@ -435,13 +450,20 @@ public class BigshipGeneric extends ActorHMesh
             for(i = 0; sectfile.sectionIndex(s + ":Part" + i) >= 0; i++);
             if(i <= 0)
             {
-                System.out.println("BigShip: No part sections for '" + s + "'");
-                throw new RuntimeException("Can't register BigShip object");
+                // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                    throw new RuntimeException("Can't register BigShip object");
+                return null;
+                // ---
             }
             if(i >= MAX_PARTS)
             {
                 System.out.println("BigShip: Too many parts in " + s + ".");
-                throw new RuntimeException("Can't register BigShip object");
+                // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                  throw new RuntimeException("Can't register BigShip object");
+                return null;
+                // ---
             }
 //            bLogDetail = (Config.cur.ini.get("Console", "LOGDetailShip", 0) == 1);
             if( bLogDetail )
@@ -460,7 +482,11 @@ public class BigshipGeneric extends ActorHMesh
                 if(l > MAX_USER_ADDITIONAL_COLLISION_CHUNKS)
                 {
                     System.out.println("BigShip: Too many addcollischunks in '" + s1 + "'");
-                    throw new RuntimeException("Can't register BigShip object");
+                    // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                      throw new RuntimeException("Can't register BigShip object");
+                    return null;
+                    // ---
                 }
                 shippartproperties.additCollisChunkName = new String[l];
                 for(int i1 = 0; i1 < l; i1++)
@@ -470,7 +496,15 @@ public class BigshipGeneric extends ActorHMesh
                 if(sectfile.exist(s1, "strengthBasedOnThisSection"))
                     s2 = getS(sectfile, s1, "strengthBasedOnThisSection");
                 if(!shippartproperties.stre.read("Bigship", sectfile, s2, s1))
-                    throw new RuntimeException("Can't register Bigship object");
+                {
+                    // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL) {
+                        System.out.println("BigShip: Error in part properties for '" + s + "'");
+                        throw new RuntimeException("Can't register Bigship object");
+                    }
+                    return null;
+                    // ---
+                }
                 if(sectfile.exist(s1, "Vital"))
                 {
                     shippartproperties.dmgDepth = getF(sectfile, s1, "damageDepth", 0.0F, 99F);
@@ -505,7 +539,11 @@ public class BigshipGeneric extends ActorHMesh
                     if(shipproperties.nRadars > MAX_GUNS)
                     {
                         System.out.println("BigShip: Too many radars in " + s + ".");
-                        throw new RuntimeException("Can't register BigShip object");
+                        // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                        if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                          throw new RuntimeException("Can't register BigShip object");
+                        return null;
+                        // ---
                     }
                     shippartproperties.NOW_RADAR = true;
                     shippartproperties.HEAD_MAX_YAW_SPEED = -1000F;
@@ -520,7 +558,11 @@ public class BigshipGeneric extends ActorHMesh
                     if(shippartproperties.HEAD_MAX_YAW_SPEED <= -1000F || shippartproperties.headChunkName == null)
                     {
                         System.out.println("BigShip: Not enough 'radar' data  in '" + s1 + "'");
-                        throw new RuntimeException("Can't register BigShip object");
+                        // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                        if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                          throw new RuntimeException("Can't register BigShip object");
+                        return null;
+                        // ---
                     }
                     if( bLogDetail )
                         System.out.println("BigShip: read NowRadar in Part:" + j + ", as Radar No." + shippartproperties.radar_idx + ".");
@@ -533,7 +575,11 @@ public class BigshipGeneric extends ActorHMesh
                     if(shipproperties.nGuns > MAX_GUNS)
                     {
                         System.out.println("BigShip: Too many guns in " + s + ".");
-                        throw new RuntimeException("Can't register BigShip object");
+                        // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                        if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                          throw new RuntimeException("Can't register BigShip object");
+                        return null;
+                        // ---
                     }
 
                     shippartproperties.gunClass = null;
@@ -597,23 +643,39 @@ public class BigshipGeneric extends ActorHMesh
                             System.out.println("BigShip: gunShellStartHookName:" + shippartproperties.gunShellStartHookName);
                         }
                         System.out.println("BigShip: Not enough 'missile' data  in '" + s1 + "'");
-                        throw new RuntimeException("Can't register BigShip object");
+                        // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                        if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                          throw new RuntimeException("Can't register BigShip object");
+                        return null;
+                        // ---
                     }
                     shippartproperties.WEAPONS_MASK = 4;
                     if(shippartproperties.WEAPONS_MASK == 0)
                     {
                         System.out.println("BigShip: Undefined weapon type in gun class '" + shippartproperties.gunClass.getName() + "'");
-                        throw new RuntimeException("Can't register BigShip object");
+                        // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                        if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                          throw new RuntimeException("Can't register BigShip object");
+                        return null;
+                        // ---
                     }
                     if(shippartproperties._HEAD_MIN_YAW > shippartproperties._HEAD_MAX_YAW)
                     {
                         System.out.println("BigShip: Wrong yaw angles in missile " + s1 + ".");
-                        throw new RuntimeException("Can't register BigShip object");
+                        // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                        if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                          throw new RuntimeException("Can't register BigShip object");
+                        return null;
+                        // ---
                     }
                     if(shippartproperties._NOFIRE_MIN_YAW > shippartproperties._NOFIRE_MAX_YAW)
                     {
                         System.out.println("BigShip: Wrong NoFire yaw angles in missile " + s1 + ".");
-                        throw new RuntimeException("Can't register BigShip object");
+                        // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                        if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                          throw new RuntimeException("Can't register BigShip object");
+                        return null;
+                        // ---
                     }
                     shippartproperties.HEAD_STD_YAW = 0.0F;
                     shippartproperties.HEAD_YAW_RANGE.set(shippartproperties._HEAD_MIN_YAW, shippartproperties._HEAD_MAX_YAW);
@@ -648,7 +710,11 @@ public class BigshipGeneric extends ActorHMesh
                     if(shipproperties.nGuns > MAX_GUNS)
                     {
                         System.out.println("BigShip: Too many guns in " + s + ".");
-                        throw new RuntimeException("Can't register BigShip object");
+                    // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                      throw new RuntimeException("Can't register BigShip object");
+                    return null;
+                    // ---
                     }
 
                     shippartproperties.gunClass = null;
@@ -691,23 +757,39 @@ public class BigshipGeneric extends ActorHMesh
                     if(shippartproperties.gunClass == null || shippartproperties.ATTACK_MAX_DISTANCE <= -1000F || shippartproperties.ATTACK_MAX_RADIUS <= -1000F || shippartproperties.ATTACK_MAX_HEIGHT <= -1000F || shippartproperties._HEAD_MIN_YAW <= -1000F || shippartproperties._HEAD_MAX_YAW <= -1000F || shippartproperties.GUN_MIN_PITCH <= -1000F || shippartproperties.GUN_MAX_PITCH <= -1000F || shippartproperties.HEAD_MAX_YAW_SPEED <= -1000F || shippartproperties.GUN_MAX_PITCH_SPEED <= -1000F || shippartproperties.DELAY_AFTER_SHOOT <= -1000F || shippartproperties.CHAINFIRE_TIME <= -1000F || shippartproperties.headChunkName == null || shippartproperties.gunChunkName == null || shippartproperties.gunShellStartHookName == null)
                     {
                         System.out.println("BigShip: Not enough 'gun' data  in '" + s1 + "'");
-                        throw new RuntimeException("Can't register BigShip object");
+                    // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                      throw new RuntimeException("Can't register BigShip object");
+                    return null;
+                    // ---
                     }
                     shippartproperties.WEAPONS_MASK = Gun.getProperties(shippartproperties.gunClass).weaponType;
                     if(shippartproperties.WEAPONS_MASK == 0)
                     {
                         System.out.println("BigShip: Undefined weapon type in gun class '" + shippartproperties.gunClass.getName() + "'");
-                        throw new RuntimeException("Can't register BigShip object");
+                    // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                      throw new RuntimeException("Can't register BigShip object");
+                    return null;
+                    // ---
                     }
                     if(shippartproperties._HEAD_MIN_YAW > shippartproperties._HEAD_MAX_YAW)
                     {
                         System.out.println("BigShip: Wrong yaw angles in gun " + s1 + ".");
-                        throw new RuntimeException("Can't register BigShip object");
+                    // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                      throw new RuntimeException("Can't register BigShip object");
+                    return null;
+                    // ---
                     }
                     if(shippartproperties._NOFIRE_MIN_YAW > shippartproperties._NOFIRE_MAX_YAW)
                     {
                         System.out.println("BigShip: Wrong NoFire yaw angles in gun " + s1 + ".");
-                        throw new RuntimeException("Can't register BigShip object");
+                    // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                    if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+                      throw new RuntimeException("Can't register BigShip object");
+                    return null;
+                    // ---
                     }
                     shippartproperties.HEAD_STD_YAW = 0.0F;
                     shippartproperties.HEAD_YAW_RANGE.set(shippartproperties._HEAD_MIN_YAW, shippartproperties._HEAD_MAX_YAW);
@@ -773,6 +855,11 @@ public class BigshipGeneric extends ActorHMesh
                     i = j;
                 String s1 = s.substring(i + 1);
                 proper = LoadShipProperties(Statics.getShipsFile(), s1, class1);
+
+                // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
+                if (ObjectsLogLevel.getObjectsLogLevel() < ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL && proper == null) return;
+                // TODO: ---
+
             }
             catch(Exception exception)
             {
@@ -1016,7 +1103,7 @@ public class BigshipGeneric extends ActorHMesh
                     out.setIncludeTime(true);
                     postReal(Message.currentRealTime(), out);
                 }
-                while(--k2 >= 0) 
+                while(--k2 >= 0)
                 {
                     int k4 = netmsginput.readUnsignedByte();
                     com.maddox.rts.NetObj netobj1 = netmsginput.readNetObj();
@@ -1024,7 +1111,7 @@ public class BigshipGeneric extends ActorHMesh
                     int j6 = netmsginput.readUnsignedByte();
                     Track_Mirror(k4, actor1, j6);
                 }
-                while(--i4 >= 0) 
+                while(--i4 >= 0)
                 {
                     int l4 = netmsginput.readUnsignedByte();
                     int j5 = netmsginput.readUnsignedByte();
@@ -1297,7 +1384,7 @@ public class BigshipGeneric extends ActorHMesh
                 timeOfSailorsDisappear--;
                 if( bSailorsDisappear == false && timeOfSailorsDisappear < 0 )
                     disappearSailorsMats();
- 
+
                 if(bHasMirrorLA)
                     MlaSetVisible(false);
                 if(bHasUSIflols)
@@ -2974,7 +3061,7 @@ label0:
             hideTransparentRunwayRed();
 
         for(int iii=0; iii<4; iii++)
-        { 
+        {
             BlastDeflectorControl[iii] = 0.0F;
             blastDeflector[iii] = 0.0F;
             blastDeflector_[iii] = 0.0F;
@@ -3556,7 +3643,7 @@ label0:
         }
         if(l > segment.timeOut)
         {
-            while(cachedSeg + 1 < path.size()) 
+            while(cachedSeg + 1 < path.size())
             {
                 Segment segment1 = (Segment)path.get(++cachedSeg);
                 if(l <= segment1.timeIn)
@@ -3576,7 +3663,7 @@ label0:
             setMovablePosition(1.0F);
             return;
         }
-        while(cachedSeg > 0) 
+        while(cachedSeg > 0)
         {
             Segment segment2 = (Segment)path.get(--cachedSeg);
             if(l >= segment2.timeOut)
@@ -4005,6 +4092,9 @@ label0:
         }
         catch(IOException e){
             System.out.println("BigShip: netmsgfiltered.writeByte(224 + k)");
+            // TODO: +++ Resource Leak fixed by SAS~Storebror
+            closeNetMsgFiltered(netmsgfiltered);
+            // ---
             throw new RuntimeException("Can't register BigShip object");
         }
         for(int j1 = 0; j1 < j; j1++)
@@ -4017,6 +4107,9 @@ label0:
                 }
                 catch(IOException e){
                     System.out.println("BigShip: netmsgfiltered.writeByte(netsendFire_tmpbuff[j1].gun_idx)");
+                    // TODO: +++ Resource Leak fixed by SAS~Storebror
+                    closeNetMsgFiltered(netmsgfiltered);
+                    // ---
                     throw new RuntimeException("Can't register BigShip object");
                 }
                 try{
@@ -4024,6 +4117,9 @@ label0:
                 }
                 catch(IOException e){
                     System.out.println("BigShip: netmsgfiltered.writeNetObj(netsendFire_tmpbuff[j1].enemy.net)");
+                    // TODO: +++ Resource Leak fixed by SAS~Storebror
+                    closeNetMsgFiltered(netmsgfiltered);
+                    // ---
                     throw new RuntimeException("Can't register BigShip object");
                 }
                 try{
@@ -4031,6 +4127,9 @@ label0:
                 }
                 catch(IOException e){
                     System.out.println("BigShip: netmsgfiltered.writeByte(netsendFire_tmpbuff[j1].shotpointIdx)");
+                    // TODO: +++ Resource Leak fixed by SAS~Storebror
+                    closeNetMsgFiltered(netmsgfiltered);
+                    // ---
                     throw new RuntimeException("Can't register BigShip object");
                 }
                 k--;
@@ -4040,6 +4139,9 @@ label0:
         if(k != 0)
         {
             System.out.println("*** BigShip internal error #5");
+            // TODO: +++ Resource Leak fixed by SAS~Storebror
+            closeNetMsgFiltered(netmsgfiltered);
+            // ---
             return;
         }
         try
@@ -4076,8 +4178,24 @@ label0:
             System.out.println(exception.getMessage());
             exception.printStackTrace();
         }
-        return;
+        // TODO: +++ Resource Leak fixed by SAS~Storebror
+        finally
+        {
+            closeNetMsgFiltered(netmsgfiltered);
+        }
+        // ---
     }
+
+    // TODO: +++ Resource Leak fixed by SAS~Storebror
+    private static void closeNetMsgFiltered(NetMsgFiltered netmsgfiltered) {
+        try {
+            netmsgfiltered.close();
+        } catch (IOException e) {
+            // e.printStackTrace();
+        }
+    }
+    // ---
+
 
     private void send_bufferized_PartsState()
     {
@@ -4444,7 +4562,7 @@ label0:
             }
             else
             {
-                actor = NearestEnemies.getAFoundEnemyShipInHeading(pos.getAbsPoint(), shippartproperties.ATTACK_MAX_RADIUS, getArmy(), 
+                actor = NearestEnemies.getAFoundEnemyShipInHeading(pos.getAbsPoint(), shippartproperties.ATTACK_MAX_RADIUS, getArmy(),
                         o, shippartproperties.SELF_YAW_RANGE, shippartproperties.NOSELF_YAW_RANGE, shippartproperties.NOHEADING_FLAG,
                         shippartproperties.ATTACK_MIN_DISTANCE);
             }
@@ -6230,7 +6348,7 @@ label0:
     public HookNamed towHook;
     private Vector3d tmpDir = new Vector3d();
     public static String ZUTI_RADAR_SHIPS[] = {
-        "CV", "Marat", "Kirov", "BB", "Niobe", "Illmarinen", "Vainamoinen", "Tirpitz", "Aurora", "Carrier0", 
+        "CV", "Marat", "Kirov", "BB", "Niobe", "Illmarinen", "Vainamoinen", "Tirpitz", "Aurora", "Carrier0",
         "Carrier1"
     };
     public static String ZUTI_RADAR_SHIPS_SMALL[] = {
@@ -6275,7 +6393,7 @@ label0:
     public boolean bHasFRFlols = false;
     public boolean bInitDoneFRFlols = false;
 
-    static 
+    static
     {
         netsendFire_tmpbuff = new TmpTrackOrFireInfo[31];
         for(int i = 0; i < netsendFire_tmpbuff.length; i++)
