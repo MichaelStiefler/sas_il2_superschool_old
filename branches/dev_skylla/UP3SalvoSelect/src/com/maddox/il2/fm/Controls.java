@@ -151,6 +151,9 @@ public class Controls {
     private static final int fullSalvo   = 0;
     private static final int singleFire  = 1;
     
+    private int bombsDropped = 0;
+    private boolean isGroupRelease = false;
+    
     private LinkedList availableRockets;
     private LinkedList ab;
     
@@ -422,11 +425,11 @@ public class Controls {
 			case 0: shot = ( bombDropLeft || (bombDropMode < singleFire) || (bombDropMode%2 == 0)) ? 1 : 0; break;
 			case 1: shot = (!bombDropLeft || (bombDropMode < singleFire) || (bombDropMode%2 == 0)) ? 1 : 0; break;
 			default: {
-				System.out.println(this.getClass() + ".doNextBombRelase(int side) received illegal Argument: " + side + ". Will now try to drop the next bomb in the queue.");
+				//System.out.println(this.getClass() + ".doNextBombRelase(int side) received illegal Argument: " + side + ". Will now try to drop the next bomb in the queue.");
 				return doNextBombRelease(bombDropLeft?0:1);
 			}
 		}
-		System.out.println("SKYLLA: doNextBombRelease(): Input Value=" + side + "; (bombDropMode < singleFire)=" + (bombDropMode < singleFire) + "; bombDropLeft=" + bombDropLeft + "; (bombDropMode%2 == 0)=" + (bombDropMode%2 == 0) + "; shot=" + shot);
+		//System.out.println("SKYLLA: doNextBombRelease(): Input Value=" + side + "; (bombDropMode < singleFire)=" + (bombDropMode < singleFire) + "; bombDropLeft=" + bombDropLeft + "; (bombDropMode%2 == 0)=" + (bombDropMode%2 == 0) + "; shot=" + shot);
 		for(int i = side; i<Weapons[3].length; i+=2) {
 			checkSelectedBombAvailable();
 			if(!this.WeaponControl[3]) {
@@ -435,7 +438,10 @@ public class Controls {
 			BulletEmitter e = Weapons[3][i];
 			if(e == null)
 				continue;
-			else if(!e.haveBullets() || (this.bHasBayDoors && e.getHookName().startsWith("_BombSpawn") && this.BayDoorControl != 1.0F)) {
+			else if(!e.haveBullets()) {
+				continue;
+			} else if(this.bHasBayDoors && e.getHookName().startsWith("_BombSpawn") && this.BayDoorControl != 1.0F) {
+				toggleBombSide();
 				continue;
 			} else if(e instanceof RocketGunNull || e instanceof BombGunNull) {
 				this.setNextReleaseReady(1);
@@ -1261,6 +1267,7 @@ public class Controls {
                         	break;
                         }
                         case 3: {
+                        	//TODO fix full salvo for more "bullets" on one BulletEmitter; do drop in groups
                         	long delay = bombReleaseDelay;
                         	delay *= (long) 1/Time.speed();
                         	if(lastBombTime + delay < System.currentTimeMillis()) {
@@ -1300,7 +1307,7 @@ public class Controls {
                         				NetAircraft.printDebugMessage(this.FM.actor, "Controls Weapon Trigger " + wctIndex + " pressed but no weapon released!");
                         			}
                         			System.out.println("SKYLLA: weaponReleasedL=" + weaponReleasedL + "; weaponReleasedR=" + weaponReleasedR);
-                        			break;
+                        			//break;
 //FIXME entfernen. (Ist nur wegen der farbigen Variablenmarkierung noch nicht auskommentiert) -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /*
                                 for (int weaponIndexLeft = 0; weaponIndexLeft < this.Weapons[wctIndex].length; weaponIndexLeft += 2) {
@@ -1372,9 +1379,9 @@ public class Controls {
                                 // T-ODO: Storebror: --- Bomb Release Bug hunting
 */
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
-                            }
-                            break;
-                        }
+                        		}
+                        	}
+                        	break;
                         }
                         default:
                             boolean flag2 = false;
