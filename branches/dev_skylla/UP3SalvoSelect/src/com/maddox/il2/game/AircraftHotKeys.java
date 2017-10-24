@@ -2459,19 +2459,19 @@ public class AircraftHotKeys {
         	selectRocketName = "Select Missile/Rocket";
         }
         if (rocketSalvoSizeName.equalsIgnoreCase("RocketSalvoSize")) {
-        	rocketSalvoSizeName = "Rocket Salvo Size";
+        	rocketSalvoSizeName = "Select Rocket Salvo Size";
         }
         if (rocketReleaseDelayName.equalsIgnoreCase("RocketReleaseDelay")) {
-        	rocketReleaseDelayName = "Rocket Release Delay";
+        	rocketReleaseDelayName = "Select Rocket Release Delay";
         }
         if (selectBombName.equalsIgnoreCase("SelectBomb")) {
         	selectBombName = "Select Bomb";
         }
         if (bombSalvoSizeName.equalsIgnoreCase("BombSalvoSize")) {
-        	bombSalvoSizeName = "Bomb Salvo Size";
+        	bombSalvoSizeName = "Select Bomb Salvo Size";
         }
         if (bombReleaseDelayName.equalsIgnoreCase("BombReleaseDelay")) {
-        	bombReleaseDelayName = "Bomb Release Delay";
+        	bombReleaseDelayName = "Select Bomb Release Delay";
         }
         HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$11", "4basic6") {});
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic61",  selectRocketName,       132, 401));

@@ -163,6 +163,11 @@ public class Controls {
 
   // ++++++++++ TODO skylla: different weapon fire modes +++++++++    
     
+    private void resetGroupDrop() {
+    	bombsDropped = 0;
+    	isGroupRelease = false;
+    }
+    
     private boolean ordnanceAvailable(Class ordnanceClass) {
     	for(int i = 0; i < Weapons.length; i++) {
     		if(Weapons[i] == null)
@@ -187,7 +192,7 @@ public class Controls {
     		BulletEmitter e = Weapons[3][i];
     		if(e == null)
     			continue;
-    		else if((e.getClass() == bombClass || bombClass == BombGun.class && e instanceof BombGun && !(e instanceof BombGunNull) || bombClass == RocketGun.class && e instanceof RocketGun && !(e instanceof RocketGunNull)) && e.countBullets() > 0) {
+    		else if((e.getClass() == bombClass || bombClass == BombGun.class && e instanceof BombGun && !(e instanceof BombGunNull) || bombClass == BombGun.class && e instanceof RocketGun && !(e instanceof RocketGunNull)) && e.countBullets() > 0) {
     			num += e.countBullets();
     		}
     	}
@@ -202,8 +207,10 @@ public class Controls {
     			ab.remove(selectedBomb);
     		}
     		selectedBomb = (Class) ab.get(0);
-    		if(bombDropMode == fullSalvo) 
+    		if(bombDropMode == fullSalvo) {
     			this.WeaponControl[3] = false;
+    			isGroupRelease = false;
+    		}
     	}
     }
     
@@ -267,6 +274,10 @@ public class Controls {
     		i++;
     	}
     	selectedBomb = (Class) ab.get(i);
+    	if(bombDropMode > singleFire) {
+    		bombDropMode = defaultFire;
+    		resetGroupDrop();
+    	}
     }
     
     public void toggleRocketSelected() {
@@ -296,7 +307,7 @@ public class Controls {
     		name = name.substring(38);
     	}
     	if(ab.size() > 2)
-    		HUD.log(hudLogWeaponId, "Bomb Selected: " + name);
+    		HUD.log(hudLogWeaponId, "Bomb Selected: " + name);    	
     }
     
     public void toggleRocketSelectedHUD(int hudLogWeaponId) {
@@ -311,7 +322,8 @@ public class Controls {
     }
     
     public void toggleBombSide() {
-    	if(bombDropMode < singleFire || bombDropMode%2 == 0) {
+    	//don't toggle ordnance side when not needed, as that would f**** up one sided drops if seleced thereafter
+    	if(bombDropMode < singleFire /*|| bombDropMode%2 == 0*/) {
     		return;
     	}
     	bombDropLeft = !bombDropLeft;
@@ -416,14 +428,13 @@ public class Controls {
 		toggleRocketReleaseDelay();
 		HUD.log(hudLogWeaponId, "Rocket Release Delay: " + (float)rocketReleaseDelay / 1000F + " sec");
 	}
-	
-	//TODO
+
 	private boolean doNextBombRelease(int side) {
 		boolean bombReleased = false;
 		int shot;
 		switch(side) {
-			case 0: shot = ( bombDropLeft || (bombDropMode < singleFire) || (bombDropMode%2 == 0)) ? 1 : 0; break;
-			case 1: shot = (!bombDropLeft || (bombDropMode < singleFire) || (bombDropMode%2 == 0)) ? 1 : 0; break;
+			case 0: shot = ( bombDropLeft || (bombDropMode < singleFire) /*|| (bombDropMode%2 == 0)*/) ? 1 : 0; break;
+			case 1: shot = (!bombDropLeft || (bombDropMode < singleFire) /*|| (bombDropMode%2 == 0)*/) ? 1 : 0; break;
 			default: {
 				//System.out.println(this.getClass() + ".doNextBombRelase(int side) received illegal Argument: " + side + ". Will now try to drop the next bomb in the queue.");
 				return doNextBombRelease(bombDropLeft?0:1);
@@ -432,7 +443,7 @@ public class Controls {
 		//System.out.println("SKYLLA: doNextBombRelease(): Input Value=" + side + "; (bombDropMode < singleFire)=" + (bombDropMode < singleFire) + "; bombDropLeft=" + bombDropLeft + "; (bombDropMode%2 == 0)=" + (bombDropMode%2 == 0) + "; shot=" + shot);
 		for(int i = side; i<Weapons[3].length; i+=2) {
 			checkSelectedBombAvailable();
-			if(!this.WeaponControl[3]) {
+			if(!this.WeaponControl[3] && !isGroupRelease) {
 				break;
 			}
 			BulletEmitter e = Weapons[3][i];
@@ -446,7 +457,7 @@ public class Controls {
 			} else if(e instanceof RocketGunNull || e instanceof BombGunNull) {
 				this.setNextReleaseReady(1);
 				e.shots(1);
-				System.out.println("SKYLLA: Dropped BombGunNull / RocketGunNull!");
+				//System.out.println("SKYLLA: Dropped BombGunNull / RocketGunNull!");
 				ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, 3, i, 1);
 				if(bombDropMode == singleFire) {
 					if(shot == 1)
@@ -459,7 +470,7 @@ public class Controls {
 			} else if(!(e instanceof RocketGun) && !(e instanceof BombGun) || (selectedBomb != BombGun.class && e.getClass() != selectedBomb)) {
 				continue;
 			} else if(shot == 1) {
-				System.out.println("SKYLLA: side=" + side + "; shot=" + shot);
+				//System.out.println("SKYLLA: side=" + side + "; shot=" + shot);
 				this.setNextReleaseReady(1);
 				bombReleased = true;
 				e.shots(shot);
@@ -471,6 +482,10 @@ public class Controls {
 				NetAircraft.printDebugMessage(this.FM.actor, "\"" + (side == 0?"Left":"Right") + " " + (bombbay?"In":"Ex") + "ternal\" " + NetAircraft.TRIGGER_NAMES[3-2] + " from Emitter No. " + i + "= " + NetAircraft.simpleClassName(e) + " release" + (bombbay?" through open Baydoor":"") + "!");
 				if(bombDropMode != fullSalvo) {
 					break;
+				} else if(bombbay && i+2 <Weapons[3].length) {
+					if(Weapons[3][i+2].getHookName().startsWith("_BombSpawn")) {
+						break;
+					}
 				}
 			}
 		}
@@ -1267,13 +1282,12 @@ public class Controls {
                         	break;
                         }
                         case 3: {
-                        	//TODO fix full salvo for more "bullets" on one BulletEmitter; do drop in groups
                         	long delay = bombReleaseDelay;
                         	delay *= (long) 1/Time.speed();
                         	if(lastBombTime + delay < System.currentTimeMillis()) {
                         		// T-ODO: Storebror: +++ Bomb Release Bug hunting
 //                            	if (this.WeaponControl[wctIndex]) {
-                        		if (this.WeaponControl[wctIndex] && this.hasBulletsLeftOnTrigger(wctIndex)) {
+                        		if ((this.WeaponControl[wctIndex] || (bombDropMode > 1 && bombDropMode > bombsDropped && isGroupRelease) || (bombDropMode == fullSalvo && isGroupRelease)) && this.hasBulletsLeftOnTrigger(wctIndex)) {
                         			//boolean weaponReleased = false;
                         			NetAircraft.printDebugMessage(this.FM.actor, "Controls Weapon Trigger " + wctIndex + " pressed!");
                         			// T-ODO: Storebror: --- Bomb Release Bug hunting
@@ -1301,84 +1315,31 @@ public class Controls {
                         			boolean weaponReleasedR = doNextBombRelease(1);
                         			toggleBombSide();
                         			lastBombTime = System.currentTimeMillis();
-                        			if(bombDropMode == defaultFire)
+                        			if(bombDropMode > 1) {
+                        				if(bombsDropped == 0) {
+                        					isGroupRelease = true;
+                        				}
+                        				bombsDropped += (weaponReleasedL ? 1 : 0) + (weaponReleasedR ? 1 : 0);
+                        			} else if(bombDropMode == defaultFire) {
                         				this.WeaponControl[wctIndex] = false;
+                        			} else if(bombDropMode == fullSalvo && this.hasBulletsLeftOnTrigger(wctIndex)) {
+                        				bombReleaseDelay = 33L;
+                        				isGroupRelease = true;
+                        			}
+                        			if(isGroupRelease && (!this.hasBulletsLeftOnTrigger(wctIndex) || bombDropMode > 1 && bombsDropped >= bombDropMode )) {
+                        				resetGroupDrop();
+                        				int bombs = countBombsAvailable(selectedBomb);
+                        				if(bombs == 0) {
+                        					toggleBombSelected();
+                        					bombDropMode = defaultFire;
+                        				} else if(bombs > bombDropMode) {
+                        					bombDropMode = bombs;
+                        				}
+                        			}
                         			if(!weaponReleasedL && !weaponReleasedR) {
                         				NetAircraft.printDebugMessage(this.FM.actor, "Controls Weapon Trigger " + wctIndex + " pressed but no weapon released!");
                         			}
-                        			System.out.println("SKYLLA: weaponReleasedL=" + weaponReleasedL + "; weaponReleasedR=" + weaponReleasedR);
-                        			//break;
-//FIXME entfernen. (Ist nur wegen der farbigen Variablenmarkierung noch nicht auskommentiert) -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/*
-                                for (int weaponIndexLeft = 0; weaponIndexLeft < this.Weapons[wctIndex].length; weaponIndexLeft += 2) {
-                                    if (!(this.Weapons[wctIndex][weaponIndexLeft] instanceof FuelTankGun) && this.Weapons[wctIndex][weaponIndexLeft].haveBullets()) {
-                                        if (this.bHasBayDoors && this.Weapons[wctIndex][weaponIndexLeft].getHookName().startsWith("_BombSpawn")) {
-                                            if (this.BayDoorControl == 1.0F) {
-                                            		// T-ODO: Storebror: +++ Bomb Release Bug hunting
-                                            		NetAircraft.printDebugMessage(this.FM.actor, "\"Left Internal\" " + NetAircraft.TRIGGER_NAMES[wctIndex-2] + " from Emitter No. " + weaponIndexLeft + "= " + NetAircraft.simpleClassName(this.Weapons[wctIndex][weaponIndexLeft]) + " release through open Baydoor!");
-                                                	weaponReleased = true;
-                                                	this.setNextReleaseReady(wctIndex-2);
-                                                	// T-ODO: Storebror: --- Bomb Release Bug hunting
-                                                	this.Weapons[wctIndex][weaponIndexLeft].shots(1);
-                                                	// T-ODO:Added by |ZUTI|
-                                                	ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, wctIndex, weaponIndexLeft, 1);
-                                            }
-                                        } else {
-                                        		// T-ODO: Storebror: +++ Bomb Release Bug hunting
-                                        		NetAircraft.printDebugMessage(this.FM.actor, "\"Left External\" " + NetAircraft.TRIGGER_NAMES[wctIndex-2] + " from Emitter No. " + weaponIndexLeft + "= " + NetAircraft.simpleClassName(this.Weapons[wctIndex][weaponIndexLeft]) + " release!");
-                                            	weaponReleased = true;
-                                            	this.setNextReleaseReady(wctIndex-2);
-                                            	// T-ODO: Storebror: --- Bomb Release Bug hunting
-                                            	this.Weapons[wctIndex][weaponIndexLeft].shots(1);
-                                            	// T-ODO:Added by |ZUTI|
-                                            	ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, wctIndex, weaponIndexLeft, 1);
-                                            	if (this.Weapons[wctIndex][weaponIndexLeft].getHookName().startsWith("_BombSpawn"))
-                                            		this.BayDoorControl = 1.0F;
-                                        }
-                                        if (((this.Weapons[wctIndex][weaponIndexLeft] instanceof BombGun) && !((BombGun) this.Weapons[wctIndex][weaponIndexLeft]).isCassette()) || ((this.Weapons[wctIndex][weaponIndexLeft] instanceof RocketGun) && !((RocketGun) this.Weapons[wctIndex][weaponIndexLeft]).isCassette())) {
-                                            break;
-                                        }
-                                    }
-                                }
-                                for (int weaponIndexRight = 1; weaponIndexRight < this.Weapons[wctIndex].length; weaponIndexRight += 2) {
-                                    if (!(this.Weapons[wctIndex][weaponIndexRight] instanceof FuelTankGun) && this.Weapons[wctIndex][weaponIndexRight].haveBullets()) {
-                                        if (this.bHasBayDoors && this.Weapons[wctIndex][weaponIndexRight].getHookName().startsWith("_BombSpawn")) {
-                                            if (this.BayDoorControl == 1.0F) {
-                                            		// T-ODO: Storebror: +++ Bomb Release Bug hunting
-                                            		NetAircraft.printDebugMessage(this.FM.actor, "\"Right Internal\" " + NetAircraft.TRIGGER_NAMES[wctIndex-2] + " from Emitter No. " + weaponIndexRight + "= " + NetAircraft.simpleClassName(this.Weapons[wctIndex][weaponIndexRight]) + " release through open Baydoor!");
-                                                	weaponReleased = true;
-                                                	this.setNextReleaseReady(wctIndex-2);
-                                                	// T-ODO: Storebror: --- Bomb Release Bug hunting
-                                                	this.Weapons[wctIndex][weaponIndexRight].shots(1);
-                                                	// T-ODO:Added by |ZUTI|
-                                                	ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, wctIndex, weaponIndexRight, 1);
-                                            }
-                                        } else {
-                                        		// T-ODO: Storebror: +++ Bomb Release Bug hunting
-                                        		NetAircraft.printDebugMessage(this.FM.actor, "\"Right External\" " + NetAircraft.TRIGGER_NAMES[wctIndex-2] + " from Emitter No. " + weaponIndexRight + "= " + NetAircraft.simpleClassName(this.Weapons[wctIndex][weaponIndexRight]) + " release!");
-                                            	weaponReleased = true;
-                                            	this.setNextReleaseReady(wctIndex-2);
-                                            	// T-ODO: Storebror: --- Bomb Release Bug hunting
-                                            	this.Weapons[wctIndex][weaponIndexRight].shots(1);
-                                            	// T-ODO:Added by |ZUTI|
-                                            	ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, wctIndex, weaponIndexRight, 1);
-                                        }
-                                        if (((this.Weapons[wctIndex][weaponIndexRight] instanceof BombGun) && !((BombGun) this.Weapons[wctIndex][weaponIndexRight]).isCassette()) || ((this.Weapons[wctIndex][weaponIndexRight] instanceof RocketGun) && !((RocketGun) this.Weapons[wctIndex][weaponIndexRight]).isCassette())) {
-                                            break;
-                                        }
-                                    }
-                                }
-                                this.WeaponControl[wctIndex] = false;
-                                // T-ODO: Storebror: +++ Bomb Release Bug hunting
-
-                                if (!weaponReleased) {
-                                    NetAircraft.printDebugMessage(this.FM.actor, "Controls Weapon Trigger " + wctIndex + " pressed but no weapon released!");
-                                } else {
-                                	
-                                }
-                                // T-ODO: Storebror: --- Bomb Release Bug hunting
-*/
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+                        			//System.out.println("SKYLLA: weaponReleasedL=" + weaponReleasedL + "; weaponReleasedR=" + weaponReleasedR);
                         		}
                         	}
                         	break;
