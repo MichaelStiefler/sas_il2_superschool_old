@@ -262,6 +262,17 @@ public class AircraftState {
     private LightPointActor[] astateEngineBurnLights;
     // T-ODO: --- Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects ---
     
+  //++++++++++ TODO skylla: different weapon fire modes ++++++++++
+    
+	public void replicateWeaponReleaseDelayToNet(long theWeaponReleaseDelay) {
+		setWeaponReleaseDelay(actor, theWeaponReleaseDelay, false);
+	}
+	
+	private void setWeaponReleaseDelay(Actor theActor, long theWeaponReleaseDelay, boolean applySetting) {
+		
+	}
+    
+  //---------- todo skylla: different weapon fire modes ----------
     public AircraftState() {
         this.bleedingTime = 0L;
         this.astateBleedingTimes = new long[9];
