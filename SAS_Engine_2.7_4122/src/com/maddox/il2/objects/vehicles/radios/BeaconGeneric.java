@@ -222,13 +222,13 @@ public abstract class BeaconGeneric extends ActorHMesh
             beaconproperties.fnShotPanzer = TableFunctions.GetFunc2(s1 + "ShotPanzer");
             beaconproperties.fnExplodePanzer = TableFunctions.GetFunc2(s1 + "ExplodePanzer");
             beaconproperties.PANZER_TNT_TYPE = getF(sectfile, s, "PanzerSubtype", 0.0F, 100F);
-            beaconproperties.meshSummer = getS(sectfile, s, "MeshSummer");
-            beaconproperties.meshDesert = getS(sectfile, s, "MeshDesert", beaconproperties.meshSummer);
-            beaconproperties.meshWinter = getS(sectfile, s, "MeshWinter", beaconproperties.meshSummer);
             // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
 //          beaconproperties.meshSummer = getS(sectfile, s, "MeshSummer");
             beaconproperties.meshSummer = checkMesh;
             // TODO: ---
+            beaconproperties.meshDesert = getS(sectfile, s, "MeshDesert", beaconproperties.meshSummer);
+            beaconproperties.meshWinter = getS(sectfile, s, "MeshWinter", beaconproperties.meshSummer);
+            beaconproperties.meshSummer1 = getS(sectfile, s, "MeshSummerDamage", null);
             beaconproperties.meshDesert1 = getS(sectfile, s, "MeshDesertDamage", beaconproperties.meshSummer1);
             beaconproperties.meshWinter1 = getS(sectfile, s, "MeshWinterDamage", beaconproperties.meshSummer1);
             int i = (beaconproperties.meshSummer1 != null ? 0 : 1) + (beaconproperties.meshDesert1 != null ? 0 : 1) + (beaconproperties.meshWinter1 != null ? 0 : 1);
