@@ -921,6 +921,7 @@ public class Controls {
                         			boolean weaponReleasedR = doNextBombRelease(1);
                         			toggleBombSide();
                         			lastBombTime = System.currentTimeMillis();
+                        			System.out.println("SKYLLA: weaponReleasedL=" + weaponReleasedL + "; weaponReleasedR=" + weaponReleasedR + "; isGroupRelease=" + isGroupRelease + "; bombsDropped=" + bombsDropped + "; bombReleaseDelay=" + bombReleaseDelay);
                         			if(bombDropMode > 1) {
                         				if(bombsDropped == 0 && (weaponReleasedR || weaponReleasedL)) {
                         					isGroupRelease = true;
@@ -929,10 +930,21 @@ public class Controls {
                         			} else if(bombDropMode == defaultFire) {
                         				this.WeaponControl[wctIndex] = false;
                         			} else if(bombDropMode == fullSalvo && this.hasBulletsLeftOnTrigger(wctIndex) && (weaponReleasedR || weaponReleasedL)) {
+                        				System.out.println("SKYLLA: Full Salvo active, but we didn't release all bombs yet. Retry in next update call!");
                         				bombReleaseDelay = 33L;
                         				isGroupRelease = true;
                         			}
                         			if(isGroupRelease && (!this.hasBulletsLeftOnTrigger(wctIndex) || bombDropMode > 1 && bombsDropped >= bombDropMode )) {
+                        				//FIXME remove
+                        				String toAdd = "";
+                        				if(isGroupRelease && (!this.hasBulletsLeftOnTrigger(wctIndex))) {
+                        					toAdd += " no shots left on trigger";
+                        				}
+                        				if(bombDropMode > 1 && bombsDropped >= bombDropMode ) {
+                        					toAdd += " we're in a special bomb drop mode and the dropped bombs exceed the limit";
+                        				}
+                        				System.out.println("SKYLLA: reset group drop because" + toAdd);
+                        				
                         				resetGroupDrop();
                         				int bombs = countBombsAvailable(selectedBomb);
                         				if(bombs == 0) {
@@ -940,6 +952,9 @@ public class Controls {
                         					bombDropMode = defaultFire;
                         				} else if(bombs > bombDropMode) {
                         					bombDropMode = bombs;
+                        				}
+                        				if(ac instanceof TypeBomber && this.zutiBombsightAutomationStatus) {
+                        					((TypeBomber)ac).typeBomberToggleAutomation();
                         				}
                         			}
                         			if(!weaponReleasedL && !weaponReleasedR) {
@@ -1608,6 +1623,7 @@ public class Controls {
 				e.shots(shot);
 				ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, 3, i, 1);	
 				boolean bombbay = e.getHookName().startsWith("_BombSpawn");
+				System.out.println("SKYLLA: Released ordnance of type '" + e.getClass() + "' from " + (side==0?"left":"right") + " side" + (bombbay?" through bomb bay doors" : ""));
 				if(bombbay && !this.bHasBayDoors) {
 					this.BayDoorControl = 1.0F;
 				}
