@@ -3,6 +3,7 @@ package com.maddox.sas1946.il2.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.InvalidParameterException;
 
 /**
  * "Reflection" Class of the "SAS Common Utils"
@@ -10,7 +11,7 @@ import java.lang.reflect.Method;
  * This Class is mainly used to gain access to fields and methods of other classes where the access modifier (private/protected/(none)/public) prohibits access to that field/method.
  * <p>
  * 
- * @version 1.0.6
+ * @version 1.1.0
  * @since 1.0.1
  * @author SAS~Storebror
  */
@@ -63,12 +64,32 @@ public class Reflection {
 	 *            The arguments for calling the Method
 	 * @return The return value of the Method
 	 * @since 1.0.4
+     * @deprecated As of release 1.1.0, replaced by {@link #invokeMethod(Object obj, String methodName, Class[] classParams, Object[] params)}
 	 */
 	public static final Object invokeMethod(Object obj, String methodName, Object[] params) {
 		return doGenericInvokeMethod(obj, methodName, params);
 	}
 
-	/**
+    /**
+     * Searches for the <b><i>Instance Method</i></b> specified by "methodName" within the given Object "obj" back through it's inheritance chain.<br>
+     * Once found, the method will be called (with given arguments from "params") and the return value will be returned to the caller.
+     *
+     * @param obj
+     *            The instance Object where (or in which's inherited objects) the regarding Method resides in
+     * @param methodName
+     *            The name of the Method
+     * @param classParams
+     *            Class Types of the arguments for calling the Method, e.g. Actor.class, float.class, int.class
+     * @param params
+     *            The arguments for calling the Method
+     * @return The return value of the Method
+     * @since 1.1.0
+     */
+    public static final Object invokeMethod(Object obj, String methodName, Class[] classParams, Object[] params) {
+        return doGenericInvokeMethod(obj, methodName, classParams, params);
+    }
+
+    /**
 	 * Searches for the <b><i>Static Method</i></b> specified by "methodName" within the given Class "declaringClass".<br>
 	 * Once found, the method will be called (with no arguments) and the return value will be returned to the caller.
 	 *
@@ -95,12 +116,32 @@ public class Reflection {
 	 *            The arguments for calling the Method
 	 * @return The return value of the Method
 	 * @since 1.0.4
-	 */
+     * @deprecated As of release 1.1.0, replaced by {@link #invokeMethod(Class declaringClass, String methodName, Class[] classParams, Object[] params)}
+     */
 	public static final Object invokeMethod(Class declaringClass, String methodName, Object[] params) {
 		return doGenericInvokeMethod(declaringClass, methodName, params);
 	}
 
-	/**
+    /**
+     * Searches for the <b><i>Static Method</i></b> specified by "methodName" within the given Class "declaringClass".<br>
+     * Once found, the method will be called (with given arguments from "params") and the return value will be returned to the caller.
+     *
+     * @param declaringClass
+     *            The class where the Method resides in
+     * @param methodName
+     *            The name of the Method
+     * @param classParams
+     *            Class Types of the arguments for calling the Method, e.g. Actor.class, float.class, int.class
+     * @param params
+     *            The arguments for calling the Method
+     * @return The return value of the Method
+     * @since 1.1.0
+     */
+    public static final Object invokeMethod(Class declaringClass, String methodName, Class[] classParams, Object[] params) {
+        return doGenericInvokeMethod(declaringClass, methodName, classParams, params);
+    }
+
+    /**
 	 * Calls the <b><i>Instance Method</i></b> "method" which must exist in the inheritance chain of the Object "obj".<br>
 	 * If the method exists, it will be called (with given arguments from "params") and the return value will be returned to the caller.
 	 *
@@ -117,7 +158,7 @@ public class Reflection {
 		return doGenericInvokeMethod(method, obj, params);
 	}
 
-	/**
+    /**
 	 * Calls the <b><i>Static Method</i></b> "method" (with no arguments), the return value will be returned to the caller.
 	 *
 	 * @param method
@@ -143,7 +184,7 @@ public class Reflection {
 		return doGenericInvokeMethod(method, (Object) null, params);
 	}
 
-	/**
+    /**
 	 * Searches for the <b><i>Instance Method</i></b> specified by "methodName" within the given Object "obj" back through it's inheritance chain.<br>
 	 * Once found, the method will be returned to the caller.
 	 *
@@ -170,12 +211,30 @@ public class Reflection {
 	 *            The arguments for calling the Method
 	 * @return The Method found
 	 * @since 1.0.4
+     * @deprecated As of release 1.1.0, replaced by {@link #getMethod(Object obj, String methodName, Class[] classParams)}
 	 */
 	public static final Method getMethod(Object obj, String methodName, Object[] params) {
 		return doGenericGetMethod(obj, null, methodName, params);
 	}
 
-	/**
+    /**
+     * Searches for the <b><i>Instance Method</i></b> specified by "methodName" within the given Object "obj" back through it's inheritance chain.<br>
+     * Once found, the method will be returned to the caller.
+     *
+     * @param obj
+     *            The instance Object where (or in which's inherited objects) the regarding Method resides in
+     * @param methodName
+     *            The name of the Method
+     * @param classParams
+     *            Class Types of the arguments for calling the Method, e.g. Actor.class, float.class, int.class
+     * @return The Method found
+     * @since 1.1.0
+     */
+    public static final Method getMethod(Object obj, String methodName, Class[] classParams) {
+        return doGenericGetMethod(obj, null, methodName, classParams);
+    }
+
+    /**
 	 * Searches for the <b><i>Static Method</i></b> specified by "methodName" within the given Class "declaringClass".<br>
 	 * Once found, the method will be returned to the caller.
 	 *
@@ -202,12 +261,30 @@ public class Reflection {
 	 *            The arguments for calling the Method
 	 * @return The Method found
 	 * @since 1.0.4
+     * @deprecated As of release 1.1.0, replaced by {@link #getMethod(Class declaringClass, String methodName, Class[] classParams)}
 	 */
 	public static final Method getMethod(Class declaringClass, String methodName, Object[] params) {
 		return doGenericGetMethod(null, declaringClass, methodName, params);
 	}
 
-	/**
+    /**
+     * Searches for the <b><i>Static Method</i></b> specified by "methodName" within the given Class "declaringClass".<br>
+     * Once found, the method will be returned to the caller.
+     *
+     * @param declaringClass
+     *            The class where the Method resides in
+     * @param methodName
+     *            The name of the Method
+     * @param classParams
+     *            Class Types of the arguments for calling the Method, e.g. Actor.class, float.class, int.class
+     * @return The Method found
+     * @since 1.1.0
+     */
+    public static final Method getMethod(Class declaringClass, String methodName, Class[] classParams) {
+        return doGenericGetMethod(null, declaringClass, methodName, classParams);
+    }
+
+    /**
 	 * Searches for an <b><i>Instance Field</i></b> specified by "fieldName" within the given Object "obj" back through it's inheritance chain.<br>
 	 * Once found, the Field will be returned to the caller.
 	 *
@@ -1745,15 +1822,42 @@ public class Reflection {
 		return doGenericInvokeMethod(obj, null, methodName, params);
 	}
 
-	private static Object doGenericInvokeMethod(Class declaringClass, String methodName, Object[] params) {
+    private static Object doGenericInvokeMethod(Object obj, String methodName, Class[] classParams, Object[] params) {
+        if (classParams.length != params.length) {
+            InvalidParameterException ipe = new InvalidParameterException("Class Array length doesn't match Parameter Array length!");
+            ipe.printStackTrace();
+            return null;
+        }
+        return doGenericInvokeMethod(obj, null, methodName, classParams, params);
+    }
+
+    private static Object doGenericInvokeMethod(Class declaringClass, String methodName, Object[] params) {
 		return doGenericInvokeMethod(null, declaringClass, methodName, params);
 	}
 
-	private static Object doGenericInvokeMethod(Object obj, Class declaringClass, String methodName, Object[] params) {
+    private static Object doGenericInvokeMethod(Class declaringClass, String methodName, Class[] classParams, Object[] params) {
+        if (classParams.length != params.length) {
+            InvalidParameterException ipe = new InvalidParameterException("Class Array length doesn't match Parameter Array length!");
+            ipe.printStackTrace();
+            return null;
+        }
+        return doGenericInvokeMethod(null, declaringClass, methodName, classParams, params);
+    }
+
+    private static Object doGenericInvokeMethod(Object obj, Class declaringClass, String methodName, Object[] params) {
 		return doGenericInvokeMethod(doGenericGetMethod(obj, declaringClass, methodName, params), obj, params);
 	}
 
-	private static Object doGenericInvokeMethod(Method method, Object obj, Object[] params) {
+    private static Object doGenericInvokeMethod(Object obj, Class declaringClass, String methodName, Class[] classParams, Object[] params) {
+        if (classParams.length != params.length) {
+            InvalidParameterException ipe = new InvalidParameterException("Class Array length doesn't match Parameter Array length!");
+            ipe.printStackTrace();
+            return null;
+        }
+        return doGenericInvokeMethod(doGenericGetMethod(obj, declaringClass, methodName, classParams), obj, params);
+    }
+
+    private static Object doGenericInvokeMethod(Method method, Object obj, Object[] params) {
 		Object requiredObj = null;
 		if (method != null) {
 			try {
@@ -1798,7 +1902,32 @@ public class Reflection {
 		return method;
 	}
 
-	private static Field doGenericGetField(Object obj, String methodName) {
+    private static Method doGenericGetMethod(Object obj, Class declaringClass, String methodName, Class[] classParams) {
+        Method method = null;
+        if (obj != null) {
+            Class objClass = obj.getClass();
+            do {
+                if (objClass == null) {
+                    break;
+                }
+                try {
+                    method = objClass.getDeclaredMethod(methodName, classParams);
+                    method.setAccessible(true);
+                } catch (Exception e) {
+                }
+                objClass = objClass.getSuperclass();
+            } while (method == null);
+        } else if (declaringClass != null) {
+            try {
+                method = declaringClass.getDeclaredMethod(methodName, classParams);
+                method.setAccessible(true);
+            } catch (Exception e) {
+            }
+        }
+        return method;
+    }
+
+    private static Field doGenericGetField(Object obj, String methodName) {
 		return doGenericGetField(obj, null, methodName);
 	}
 

@@ -12,7 +12,7 @@ import com.maddox.il2.ai.World;
  * This Class is used to provide "true" randomized numbers for IL-2 Sturmovik 1946, in opposite to the reproduceable "pseudo" random numbers being available in the stock game.
  * <p>
  * 
- * @version 1.0.6
+ * @version 1.1.0
  * @since 1.0.3
  * @author SAS~Storebror
  */
@@ -50,9 +50,11 @@ public class TrueRandom {
 		int saveCountAccess = World.cur().rnd.countAccess();
 		World.cur().rnd = new RangeRandom(secRandom.nextLong());
 		Reflection.setInt(World.cur().rnd, "countAccess", saveCountAccess);
-		saveCountAccess = World.cur().rnd2.countAccess();
-		World.cur().rnd2 = new RangeRandom(secRandom.nextLong());
-		Reflection.setInt(World.cur().rnd2, "countAccess", saveCountAccess);
+        if (BaseGameVersion.is412orLater()) {
+    		saveCountAccess = World.cur().rnd2.countAccess();
+    		World.cur().rnd2 = new RangeRandom(secRandom.nextLong());
+    		Reflection.setInt(World.cur().rnd2, "countAccess", saveCountAccess);
+        }
 	}
 
 	/**
