@@ -9,7 +9,7 @@ import com.maddox.il2.objects.air.CockpitPilot;
  * This Class provides helper functions for Cross Version Compatible coding of IL-2 1946 mods.
  * <p>
  *
- * @version 1.0.6
+ * @version 1.1.0
  * @since 1.0.2
  * @author SAS~Storebror
  */

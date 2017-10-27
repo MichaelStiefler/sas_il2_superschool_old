@@ -1,7 +1,5 @@
 package com.maddox.sas1946.il2.util;
 
-import java.util.StringTokenizer;
-
 import com.maddox.il2.engine.Config;
 
 /**
@@ -12,7 +10,7 @@ import com.maddox.il2.engine.Config;
  * This Class is intended to be used with other classes of this package, e.g. the "Reflection" class e.g. in order to get access to fields which are not part of the base game version a mod is currently compiled against.
  * <p>
  * 
- * @version 1.0.6
+ * @version 1.1.0
  * @since 1.0.2
  * @author SAS~Storebror
  */
@@ -155,6 +153,66 @@ public class BaseGameVersion {
 	public static final boolean is413() {
 		return (ConfigVersionToFloat() > 4.1299F && ConfigVersionToFloat() < 4.1399F);
 	}
+
+    /**
+     * Checks whether the running game is IL-2 4.13.RC4m
+     * 
+     * @return true if the running game is IL-2 4.13.RC4m
+     * @since 1.1.0
+     */
+    public static final boolean is4130() {
+        return (ConfigVersionToFloat() > 4.1299F && ConfigVersionToFloat() < 4.1309F);
+    }
+
+    /**
+     * Checks whether the running game is IL-2 4.13.RC4m
+     * 
+     * @return true if the running game is IL-2 4.13.RC4m
+     * @since 1.1.0
+     */
+    public static final boolean is413RC4() {
+        return (ConfigVersionToFloat() > 4.1299F && ConfigVersionToFloat() < 4.1309F);
+    }
+
+    /**
+     * Checks whether the running game is IL-2 4.13.1m
+     * 
+     * @return true if the running game is IL-2 4.13.1m
+     * @since 1.1.0
+     */
+    public static final boolean is4131() {
+        return (ConfigVersionToFloat() > 4.1309F && ConfigVersionToFloat() < 4.1319F);
+    }
+
+    /**
+     * Checks whether the running game is IL-2 4.13.2m
+     * 
+     * @return true if the running game is IL-2 4.13.2m
+     * @since 1.1.0
+     */
+    public static final boolean is4132() {
+        return (ConfigVersionToFloat() > 4.1319F && ConfigVersionToFloat() < 4.1329F);
+    }
+
+    /**
+     * Checks whether the running game is IL-2 4.13.3m
+     * 
+     * @return true if the running game is IL-2 4.13.3m
+     * @since 1.1.0
+     */
+    public static final boolean is4133() {
+        return (ConfigVersionToFloat() > 4.1329F && ConfigVersionToFloat() < 4.1339F);
+    }
+
+    /**
+     * Checks whether the running game is IL-2 4.13.4m
+     * 
+     * @return true if the running game is IL-2 4.13.4m
+     * @since 1.1.0
+     */
+    public static final boolean is4134() {
+        return (ConfigVersionToFloat() > 4.1339F && ConfigVersionToFloat() < 4.1349F);
+    }
 
 	/**
 	 * Checks whether the running game is IL-2 4.14m or IL-2 4.14.xm
@@ -346,6 +404,66 @@ public class BaseGameVersion {
 		return (ConfigVersionToFloat() > 4.1299F);
 	}
 
+    /**
+     * Checks whether the running game is IL-2 4.13.RC4m or later
+     * 
+     * @return true if the running game is IL-2 4.13.RC4m or later
+     * @since 1.1.0
+     */
+    public static final boolean is4130orLater() {
+        return (ConfigVersionToFloat() > 4.1299F);
+    }
+
+    /**
+     * Checks whether the running game is IL-2 4.13.RC4m or later
+     * 
+     * @return true if the running game is IL-2 4.13.RC4m or later
+     * @since 1.1.0
+     */
+    public static final boolean is413RC4orLater() {
+        return (ConfigVersionToFloat() > 4.1299F);
+    }
+
+    /**
+     * Checks whether the running game is IL-2 4.13.1m or later
+     * 
+     * @return true if the running game is IL-2 4.13.1m or later
+     * @since 1.1.0
+     */
+    public static final boolean is4131orLater() {
+        return (ConfigVersionToFloat() > 4.1309F);
+    }
+
+    /**
+     * Checks whether the running game is IL-2 4.13.2m or later
+     * 
+     * @return true if the running game is IL-2 4.13.2m or later
+     * @since 1.1.0
+     */
+    public static final boolean is4132orLater() {
+        return (ConfigVersionToFloat() > 4.1319F);
+    }
+
+    /**
+     * Checks whether the running game is IL-2 4.13.3m or later
+     * 
+     * @return true if the running game is IL-2 4.13.3m or later
+     * @since 1.1.0
+     */
+    public static final boolean is4133orLater() {
+        return (ConfigVersionToFloat() > 4.1329F);
+    }
+
+    /**
+     * Checks whether the running game is IL-2 4.13.4m or later
+     * 
+     * @return true if the running game is IL-2 4.13.4m or later
+     * @since 1.1.0
+     */
+    public static final boolean is4134orLater() {
+        return (ConfigVersionToFloat() > 4.1339F);
+    }
+
 	/**
 	 * Checks whether the running game is IL-2 4.14m or later
 	 * 
@@ -416,6 +534,73 @@ public class BaseGameVersion {
 		return (ConfigVersionToFloat() > 4.1999F);
 	}
 
+    /**
+     * This function returns a given information from the IL-2 Selector used to run the IL-2 game.<BR>
+     * In order to use this function, a suitable IL-2 Selector Version 3.1.4 or later must be installed.<BR>
+     *
+     * @param infoRequested
+     *            The int value "infoRequested" holding the type of information requested from the IL-2 Selector.<BR>
+     *            This can be any of the following values:<BR>
+     *            BaseGameVersion.SELECTOR_INFO_FILE_VERSION:    A preformatted string giving information about the IL-2 Selector File Version, e.g. "3.1.4.2 Build 15062901"<BR>
+     *            BaseGameVersion.SELECTOR_INFO_PRODUCT_VERSION: A preformatted string giving information about the IL-2 Selector Product Version, e.g. "3.1.4"<BR>
+     *            BaseGameVersion.SELECTOR_INFO_FILEVERSION:     The raw String showing the IL-2 Selector File Version, e.g. "3.1.4.2"<BR>
+     *            BaseGameVersion.SELECTOR_INFO_PRODUCTVERSION:  The raw String showing the IL-2 Selector Product Version, e.g. "3.1.4.2"<BR>
+     *            BaseGameVersion.SELECTOR_INFO_SPECIAL_BUILD:   A string describing a special build type, e.g. "Vista June 2015 Patch Comctl32.dll bugfix"<BR>
+     *            BaseGameVersion.SELECTOR_INFO_COPYRIGHT:       The IL-2 Selector Copyright String, e.g. "(C) SAS June 2015"<BR>
+     *            
+     * @return A String representing the information requested from the IL-2 Selector.
+     * @since 1.0.8
+     */
+    public static final String selectorInfo(int infoRequested) {
+        try {
+            if (libLoaded)
+                return getSelectorInfo(infoRequested);
+        } catch (UnsatisfiedLinkError e) {}
+        return "N/A";
+    }
+    
+    /**
+     * This Parameter is used by the {@link #selectorInfo(int) selectorInfo} method.<BR>
+     * It returns a preformatted string giving information about the IL-2 Selector File Version, e.g. "3.1.4.2 Build 15062901"
+     * @since 1.0.8
+     */
+    public static final int SELECTOR_INFO_FILE_VERSION     = 1;
+    
+    /**
+     * This Parameter is used by the {@link #selectorInfo(int) selectorInfo} method.<BR>
+     * It returns a preformatted string giving information about the IL-2 Selector Product Version, e.g. "3.1.4"
+     * @since 1.0.8
+     */
+    public static final int SELECTOR_INFO_PRODUCT_VERSION  = 2;
+    
+    /**
+     * This Parameter is used by the {@link #selectorInfo(int) selectorInfo} method.<BR>
+     * It returns the raw String showing the IL-2 Selector File Version, e.g. "3.1.4.2"
+     * @since 1.0.8
+     */
+    public static final int SELECTOR_INFO_FILEVERSION      = 3;
+    
+    /**
+     * This Parameter is used by the {@link #selectorInfo(int) selectorInfo} method.<BR>
+     * It returns the raw String showing the IL-2 Selector Product Version, e.g. "3.1.4.2"
+     * @since 1.0.8
+     */
+    public static final int SELECTOR_INFO_PRODUCTVERSION   = 4;
+    
+    /**
+     * This Parameter is used by the {@link #selectorInfo(int) selectorInfo} method.<BR>
+     * It returns a string describing a special build type, e.g. "Vista June 2015 Patch Comctl32.dll bugfix"
+     * @since 1.0.8
+     */
+    public static final int SELECTOR_INFO_SPECIAL_BUILD    = 5;
+    
+    /**
+     * This Parameter is used by the {@link #selectorInfo(int) selectorInfo} method.<BR>
+     * It returns the IL-2 Selector Copyright String, e.g. "(C) SAS June 2015"
+     * @since 1.0.8
+     */
+    public static final int SELECTOR_INFO_COPYRIGHT        = 6;
+    
 	// *****************************************************************************************************************************************************************************************************
 	// Private implementation section.
 	// Do whatever you like here but keep it private to this class.
@@ -433,20 +618,51 @@ public class BaseGameVersion {
 			e.printStackTrace();
 			return fConfigVersion;
 		}
-		StringTokenizer versionParts = new StringTokenizer(theVersion.trim(), "\\.");
-		if (versionParts.countTokens() < 1) return 0.0F;
-		if (versionParts.countTokens() < 2) return Float.parseFloat(versionParts.nextToken());
-		String versionToParse = versionParts.nextToken() + ".";
-		while (versionParts.hasMoreTokens()) {
-			versionToParse += versionParts.nextToken();
+		String versionToParse = "";
+		boolean digitSet = false;
+		theVersion = theVersion.trim();
+		for (int pos=0; pos<theVersion.length(); pos++) {
+			if (Character.isDigit(theVersion.charAt(pos)))
+				versionToParse+=theVersion.charAt(pos);
+			else if (theVersion.charAt(pos) == '.') {
+				if (digitSet) continue;
+				digitSet = true;
+				versionToParse+=theVersion.charAt(pos);
+			} else break;
 		}
-		if (versionToParse.endsWith("m")) {
-			versionToParse = versionToParse.substring(0, versionToParse.length() - 1);
-		}
-		versionToParse += "F";
+//		StringTokenizer versionParts = new StringTokenizer(theVersion.trim(), "\\.");
+//		if (versionParts.countTokens() < 1) return 0.0F;
+//		if (versionParts.countTokens() < 2) return Float.parseFloat(versionParts.nextToken());
+//		String versionToParse = versionParts.nextToken() + ".";
+//		while (versionParts.hasMoreTokens()) {
+//			versionToParse += versionParts.nextToken();
+//		}
+//		if (versionToParse.endsWith("m")) {
+//			versionToParse = versionToParse.substring(0, versionToParse.length() - 1);
+//		}
+		versionToParse += 'F';
 		fConfigVersion = Float.parseFloat(versionToParse);
 		System.out.println("SAS Common Utils Game Version = " + fConfigVersion);
 		return fConfigVersion;
 	}
 
+    private static final native String getSelectorInfo(int infoRequested);
+    private static boolean libLoaded = false;
+    
+    private static final void loadNative()
+    {
+      if (!libLoaded) {
+        System.loadLibrary("dinput");
+        libLoaded = true;
+        System.out.println(" *** IL-2 Selector " + selectorInfo(SELECTOR_INFO_FILE_VERSION) + " loaded *** ");
+      }
+    }
+
+    static {
+        try{
+            loadNative(); 
+        } catch (Exception e) {
+            System.out.println(" *** no suitable IL-2 Selector found *** ");
+        }
+    }
 }
