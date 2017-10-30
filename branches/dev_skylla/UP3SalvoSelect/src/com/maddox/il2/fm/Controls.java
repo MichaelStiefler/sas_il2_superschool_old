@@ -1,6 +1,7 @@
 /* 4.10.1 class made compatible with clean UP. Contains BombBayDoor code. + TAK brake controls */
 package com.maddox.il2.fm;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 import com.maddox.JGP.Vector3d;
@@ -12,6 +13,8 @@ import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.air.SU_26M2;
 import com.maddox.il2.objects.air.TypeBomber;
+import com.maddox.il2.objects.air.TypeEnhancedWeaponOptionControl;
+import com.maddox.il2.objects.air.TypeLimitedWeaponOptionControl;
 import com.maddox.il2.objects.weapons.BombGun;
 import com.maddox.il2.objects.weapons.BombGunNull;
 import com.maddox.il2.objects.weapons.FuelTank;
@@ -130,12 +133,25 @@ public class Controls {
 
     // --------------------------------------------------------
 
-  // +++++ TODO skylla: different weapon fire modes +++++
+  // +++++ TODO skylla: enhanced weapon release control +++++
     /**
-     * This class got modified for the "Weapon Release Options for UP3" - Mod by SAS~Skylla in 10/17. 
+     * This class got modified for the 'Enhanced Weapon Release Control for UP3' - Mod by SAS~Skylla in 10/17. 
      * Other classes affected:
      * @see AircraftHotkeys, AircraftState
     **/
+    
+    //private boolean hasToInitiateEnhancedWeaponOptions = true; <- not needed anymore with static bombGroupDropLimit
+    
+   	public static final long releaseDelayMIN = 33L;
+   	public static final long releaseDelayMAX = 15000L;
+   	
+   	public static final int bombGroupDropLimit = 50;
+    
+    private int [] bombSalvoSizeOptions;
+    private int [] rocketSalvoSizeOptions;
+    
+    private long[] bombReleaseDelayOptions;
+    private long[] rocketReleaseDelayOptions;
     
     private int	rocketFireMode      = defaultFire;
     private int bombDropMode        = defaultFire;
@@ -159,7 +175,7 @@ public class Controls {
     
     private Class selectedRocket = RocketGun.class;
     private Class selectedBomb   = BombGun.class;
-  // ----- todo skylla: different weapon fire modes -----
+ // ----- todo skylla: enhanced weapon release control -----
     
     public Controls(FlightModelMain flightmodelmain) {
         this.Sensitivity = 1.0F;
@@ -232,6 +248,12 @@ public class Controls {
         dropWithPlayer = null;
         bDropWithMe = false;
         // T-ODO: --- TD AI code backport from 4.13 ---
+        
+     // +++++ TODO skylla: enhanced weapon release control +++++
+        //cannot place this here, as my counting of the available bombs does not work here yet.
+        //^irrelevant when using static maximum group drop number.
+        initiateEnhancedWeaponOptions();
+     // ----- todo skylla: enhanced weapon release control -----
     }
 
     public void set(Controls controls_0_) {
@@ -637,6 +659,15 @@ public class Controls {
     }
 
     public void update(float f, float f_10_, EnginesInterface enginesinterface, boolean bool, boolean bool_11_) {
+    	
+     // +++++ todo skylla: enhanced weapon release control +++++
+    	// not needed anymore with static bomb group limit.
+    	//if(hasToInitiateEnhancedWeaponOptions) {
+    	//	this.initiateEnhancedWeaponOptions();
+    	//	hasToInitiateEnhancedWeaponOptions = false;
+    	//}
+     // ----- todo skylla: enhanced weapon release control -----
+    	
         float f_12_ = 1.0F;
         float f_13_ = 1.0F;
         float f_14_ = 1.0F;
@@ -862,7 +893,7 @@ public class Controls {
             for (wctIndex = 0; wctIndex < 4; wctIndex++)
                 this.saveWeaponControl[wctIndex] = this.WeaponControl[wctIndex];
             
-          //++++++++++ TODO skylla: weapon salvo etc ++++++++++
+         // +++++ TODO skylla: enhanced weapon release control +++++
             for (wctIndex = 0; wctIndex < this.Weapons.length; wctIndex++) {
                 if (this.Weapons[wctIndex] != null) {
                     switch (wctIndex) {
@@ -935,27 +966,18 @@ public class Controls {
                         				isGroupRelease = true;
                         			}
                         			if(isGroupRelease && (!this.hasBulletsLeftOnTrigger(wctIndex) || bombDropMode > 1 && bombsDropped >= bombDropMode )) {
-                        				//FIXME remove
-                        				String toAdd = "";
-                        				if(isGroupRelease && (!this.hasBulletsLeftOnTrigger(wctIndex))) {
-                        					toAdd += " no shots left on trigger";
-                        				}
-                        				if(bombDropMode > 1 && bombsDropped >= bombDropMode ) {
-                        					toAdd += " we're in a special bomb drop mode and the dropped bombs exceed the limit";
-                        				}
-                        				System.out.println("SKYLLA: reset group drop because" + toAdd);
-                        				
                         				resetGroupDrop();
                         				int bombs = countBombsAvailable(selectedBomb);
                         				if(bombs == 0) {
                         					toggleBombSelected();
                         					bombDropMode = defaultFire;
-                        				} else if(bombs > bombDropMode) {
+                        				} else if(bombDropMode > bombs) {
                         					bombDropMode = bombs;
                         				}
                         				if(ac instanceof TypeBomber && this.zutiBombsightAutomationStatus) {
                         					((TypeBomber)ac).typeBomberToggleAutomation();
                         				}
+                        				this.WeaponControl[wctIndex] = false;
                         			}
                         			if(!weaponReleasedL && !weaponReleasedR) {
                         				NetAircraft.printDebugMessage(this.FM.actor, "Controls Weapon Trigger " + wctIndex + " pressed but no weapon released!");
@@ -977,7 +999,7 @@ public class Controls {
                             break;
                     }
                 }
-              //---------- todo skylla: weapon salvo etc ----------
+             // ----- todo skylla: enhanced weapon release control -----
             }
             // T-ODO: Storebror: +++ Bomb Release Bug hunting
 // NetAircraft.resetPendingWeaponDropReplication(this.FM.actor);
@@ -1224,13 +1246,188 @@ public class Controls {
     boolean bDropWithMe;
  // T-ODO: --- TD AI code backport from 4.13 ---
     
-  // ++++++++++ TODO skylla: different weapon fire modes +++++++++    
+ // +++++ TODO skylla: enhanced weapon release control +++++
     
+  //reset method to be used after executing RRR
+    public void resetAvailableBombs() {
+    	availableBombs.clear();
+    	availableBombs = null;
+    }
+    
+  //reset method to be used after executing RRR
+    public void resetAvailableRockets() {
+    	availableRockets.clear();
+    	availableRockets = null;
+    }
+    
+   /* 
+    * This method must be called before any other.
+    * It will sanitize input from possible TypeEnhancedWeaponOptionControl-Planes or 
+    * initialize default values for weapon salvo size & release delay.
+    */
+    private void initiateEnhancedWeaponOptions() {
+    	Aircraft _ac = (Aircraft) this.FM.actor;
+    	int [] tmpBs = null;
+		int [] tmpRs = null;
+		long[] tmpBd = null;
+		long[] tmpRd = null;
+    	if(_ac instanceof TypeEnhancedWeaponOptionControl) {
+    		TypeEnhancedWeaponOptionControl ac = ((TypeEnhancedWeaponOptionControl)_ac);
+    		tmpBs = ac.getPossibleBombSalvoSizeOptions();
+			tmpRs = ac.getPossibleRocketSalvoSizeOptions();
+			tmpBd = ac.getPossibleBombReleaseDelayOptions();
+			tmpRd = ac.getPossibleBombReleaseDelayOptions();
+			Arrays.sort(tmpBs);
+			Arrays.sort(tmpRs);
+			Arrays.sort(tmpBd);
+			Arrays.sort(tmpRd);
+    	}
+    	
+    	int validB = 0;
+    	int validR = 0;
+    	
+    	//not needed anymore, using static level to prevent RRR issues.
+    	//final int bombs = countBombsAvailable(BombGun.class);
+    	//System.out.println("SKYLLA: Number of bombs available on this sortie: " + bombs);
+    	
+    	if(tmpBs != null) {
+    		boolean b = Arrays.binarySearch(tmpBs, -1) < 0;
+    		bombSalvoSizeOptions = new int[tmpBs.length];
+    		for(int i = 0; i<tmpBs.length; i++) {
+    			if(tmpBs[i] >= -1 && tmpBs[i] <= bombGroupDropLimit) {
+    				if(i-1 > -1) {
+    					if(tmpBs[i] > tmpBs[i-1]) {
+    						bombSalvoSizeOptions[i-(i-validB)] = tmpBs[i];
+    						validB++;
+    					}
+    				} else {
+    					bombSalvoSizeOptions[i-(i-validB)] = tmpBs[i];
+						validB++;
+    				}
+    			}
+    		}    		
+    		if(validB > 0) {
+    			tmpBs = bombSalvoSizeOptions;
+    			if(b) {
+    				bombSalvoSizeOptions = new int[validB+1];
+    				bombSalvoSizeOptions[0] = -1;
+    				for(int i=0; i<validB; i++) {
+    					bombSalvoSizeOptions[i+1] = tmpBs[i];
+    				}
+    			} else {
+    				bombSalvoSizeOptions = new int[validB];
+    				for(int i=0; i<validB; i++) {
+    					bombSalvoSizeOptions[i] = tmpBs[i];
+    				}
+    			}
+    		}    		
+    	}
+    	if(tmpBs == null && validB == 0){
+    		this.bombSalvoSizeOptions = new int [bombGroupDropLimit];
+    		for(int i = 0; i<bombSalvoSizeOptions.length; i++) {
+    			bombSalvoSizeOptions[i] = i-1;
+    		}
+    	}
+    	
+    	if(tmpRs != null) {
+    		boolean b = Arrays.binarySearch(tmpRs, -1) < 0;
+    		rocketSalvoSizeOptions = new int[b?tmpRs.length+1:tmpRs.length];
+    		if(b) {
+    			rocketSalvoSizeOptions[0] = -1;
+    			validR++;
+    		}
+    		if(rocketSalvoSizeOptions.length > 2) {
+    			rocketSalvoSizeOptions[1] = 0;
+    			rocketSalvoSizeOptions[2] = 1;
+    			validR += 2;
+    		} else if(rocketSalvoSizeOptions.length == 2) {
+    			rocketSalvoSizeOptions[1] = (Arrays.binarySearch(tmpRs, 0) >= 0)? 0 : 1;
+    			validR++;
+    		}
+    	}
+    	if(tmpRs == null && validR == 0){
+    		this.rocketSalvoSizeOptions = new int[3];
+    		for(int i = 0; i<3; i++) {
+    			rocketSalvoSizeOptions[i] = i-1;
+    		}
+    	}
+    	
+    	validB = 0;
+    	if(tmpBd != null) {
+    		bombReleaseDelayOptions = new long[tmpBd.length];
+    		for(int i = 0; i<tmpBd.length; i++) {
+    			if(tmpBd[i]>releaseDelayMIN && tmpBd[i]<releaseDelayMAX) {
+    				if(i-1 >= -1) {
+    					if(tmpBd[i] > tmpBd[i-1]) {
+    	    				bombReleaseDelayOptions[i-(i-validB)] = tmpBd[i];
+    	    				validB++;
+    					}
+    				} else {
+        				bombReleaseDelayOptions[i-(i-validB)] = tmpBd[i];
+        				validB++;
+    				}
+    			}
+    		}
+    		//sorry for that .. I didn't know that Arrays.copy() requires at least Java 1.6 :(
+    		if(validB > 0) {
+    			tmpBd = bombReleaseDelayOptions;
+    			bombReleaseDelayOptions = new long[validB];
+    			for(int i=0; i<validB; i++) {
+    				bombReleaseDelayOptions[i] = tmpBd[i];
+    			}
+    		}
+    	}
+    	if(tmpBd == null && validB == 0) {
+    		this.bombReleaseDelayOptions = new long[5];
+    		bombReleaseDelayOptions[0] = 33L;
+    		bombReleaseDelayOptions[1] = 125L;
+    		bombReleaseDelayOptions[2] = 250L;
+    		bombReleaseDelayOptions[3] = 500L;
+    		bombReleaseDelayOptions[4] = 1000L;
+    	}
+    	
+    	validR = 0;
+    	if(tmpRd != null) {
+    		rocketReleaseDelayOptions = new long[tmpRd.length];
+    		for(int i = 0; i<tmpRd.length; i++) {
+    			if(tmpRd[i]>releaseDelayMIN && tmpRd[i]<releaseDelayMAX) {
+    				if(i-1 >= 0) {
+    					if(tmpRd[i] > tmpRd[i-1]) {
+    	    				rocketReleaseDelayOptions[i-(i-validR)] = tmpRd[i];
+    	    				validR++;
+    					}
+    				} else {
+    					rocketReleaseDelayOptions[i-(i-validR)] = tmpRd[i];
+    					validR++;
+    				}
+    			}
+    		}
+    		//sorry for that .. I didn't know that Arrays.copy() requires at least Java 1.6 :(
+    		if(validR > 0) {
+    			tmpRd = rocketReleaseDelayOptions;
+    			rocketReleaseDelayOptions = new long[validR];
+    			for(int i=0; i<validR; i++) {
+    				rocketReleaseDelayOptions[i] = tmpRd[i];
+    			}    		
+    		}
+    	}
+    	if(tmpRd == null && validR == 0) {
+    		this.rocketReleaseDelayOptions = new long[5];
+    		rocketReleaseDelayOptions[0] = 33L;
+    		rocketReleaseDelayOptions[1] = 125L;
+    		rocketReleaseDelayOptions[2] = 250L;
+    		rocketReleaseDelayOptions[3] = 500L;
+    		rocketReleaseDelayOptions[4] = 1000L;
+    	}
+    }
+    
+    //to be used after all bombs of a group drop are released.
     private void resetGroupDrop() {
     	bombsDropped = 0;
     	isGroupRelease = false;
     }
     
+    //checks if any ordnance is available
     private boolean ordnanceAvailable(Class ordnanceClass) {
     	for(int i = 0; i < Weapons.length; i++) {
     		if(Weapons[i] == null)
@@ -1246,6 +1443,7 @@ public class Controls {
     	return false;
     }
     
+    //counts all instances of BombGun, RocketGun and RocketBombGun on Trigger 3.
     private int countBombsAvailable(Class bombClass) {
     	int num = 0;
     	if(Weapons[3] == null) {
@@ -1283,7 +1481,7 @@ public class Controls {
     			availableBombs.remove(selectedBomb);
     		}
     		selectedBomb = (Class) availableBombs.get(0);
-    		if(bombDropMode == fullSalvo) {
+    		if(bombDropMode >= fullSalvo ) {
     			this.WeaponControl[3] = false;
     			isGroupRelease = false;
     		}
@@ -1298,7 +1496,7 @@ public class Controls {
     			availableRockets.remove(selectedRocket);
     		}
     		selectedRocket = (Class) availableRockets.get(0);
-    		if(rocketFireMode == fullSalvo)
+    		if(rocketFireMode >= fullSalvo)
     			this.WeaponControl[2] = false;
     	}
     }
@@ -1341,7 +1539,14 @@ public class Controls {
     	}
     }
     
+  //silent worker method; gets called within toggleBombtSelectedHUD()
     public void toggleBombSelected() {
+    	Aircraft ac = (Aircraft) this.FM.actor;
+    	if(ac instanceof TypeLimitedWeaponOptionControl) {
+    		if(!((TypeLimitedWeaponOptionControl)ac).canSelectBomb()) {
+    			return;
+    		}
+    	}
     	listBombs();
     	int i = availableBombs.indexOf(selectedBomb);
     	if(i == -1) {
@@ -1358,8 +1563,12 @@ public class Controls {
     		bombDropMode = defaultFire;
     		resetGroupDrop();
     	}
+    	checkSelectedBombAvailable();
     }
     
+    /* setter method for external access (for instance: net replication):
+     * has to sanitize the input, but will falsify the input as little as possible
+     */
     public void setBombSelected(int listIndex) {
     	if(listIndex < 0 || listIndex>= availableBombs.size())
     		listIndex = 0;
@@ -1376,7 +1585,14 @@ public class Controls {
     	return i;
     }
     
+    //silent worker method; gets called within toggleRocketSelectedHUD()
     public void toggleRocketSelected() {
+    	Aircraft ac = (Aircraft) this.FM.actor;
+    	if(ac instanceof TypeLimitedWeaponOptionControl) {
+    		if(!((TypeLimitedWeaponOptionControl)ac).canSelectRocket()) {
+    			return;
+    		}
+    	}
     	listRockets();
     	int i = availableRockets.indexOf(selectedRocket);
     	if(i == -1) {
@@ -1390,8 +1606,12 @@ public class Controls {
     		i++;
     	}
     	selectedRocket = (Class) availableRockets.get(i);
+    	checkSelectedRocketAvailable();
     }
     
+    /* setter method for external access (for instance: net replication):
+     * has to sanitize the input, but will falsify the input as little as possible
+     */
     public void setRocketSelected(int index) {
     	if(index < 0 || index>= availableRockets.size())
     		index = 0;
@@ -1408,11 +1628,12 @@ public class Controls {
     	return i;
     }
     
+    //called from AircraftHotKeys
     public void toggleBombSelectedHUD(int hudLogWeaponId) {
     	toggleBombSelected();
     	String name = selectedBomb.getName();
     	if(name.endsWith("RocketGun") || name.endsWith("BombGun")) {
-    		name = "All";
+    		name = "Default / All";
     	} else if(name.startsWith("com.maddox.il2.objects.weapons.RocketGun") && name.length() > 40) {
     		name = name.substring(40);
     	} else if(name.startsWith("com.maddox.il2.objects.weapons.BombGun") && name.length() > 38) {
@@ -1422,17 +1643,19 @@ public class Controls {
     		HUD.log(hudLogWeaponId, "Bomb Selected: " + name);    	
     }
     
+    //called from AircraftHotkeys
     public void toggleRocketSelectedHUD(int hudLogWeaponId) {
     	toggleRocketSelected();
     	String name = selectedRocket.getName();
     	if(name.endsWith("RocketGun")) 
-    		name = "All";
+    		name = "Default / All";
     	else if(name.startsWith("com.maddox.il2.objects.weapons.RocketGun") && name.length() > 40)
     		name = name.substring(40);    	
     	if(availableRockets.size() > 2)
     		HUD.log(hudLogWeaponId, "Rocket Selected: " + name);
     }
     
+    //must be called after each single side bomb drop
     public void toggleBombSide() {
     	//don't toggle ordnance side when not needed, as that would f**** up one sided drops if seleced thereafter
     	if(bombDropMode < singleFire /*|| bombDropMode%2 == 0*/) {
@@ -1441,12 +1664,16 @@ public class Controls {
     	bombDropLeft = !bombDropLeft;
     }
     
+    //must be called after each single side rocket release 
     public void toggleRocketSide() {
     	if(rocketFireMode < singleFire)
     		return;
     	rocketShootLeft = !rocketShootLeft;
     }
     
+    /* setter method for external access (for instance: net replication):
+     * has to sanitize the input, but will falsify the input as little as possible
+     */
     public void setBombDropMode(int theBombDropMode) {
     	if(theBombDropMode < defaultFire) {
     		theBombDropMode = defaultFire;
@@ -1458,6 +1685,9 @@ public class Controls {
     	return bombDropMode;
     }
     
+    /* setter method for external access (for instance: net replication):
+     * has to sanitize the input, but will falsify the input as little as possible
+     */
     public void setRocketFireMode(int theRocketFireMode) {
     	if(theRocketFireMode > singleFire || theRocketFireMode < defaultFire) {
     		theRocketFireMode = defaultFire;
@@ -1469,98 +1699,133 @@ public class Controls {
     	return rocketFireMode;
     }
     
+    //gets called from AircraftHotKeys and produces HUD log output. Net Replication etc should use the setter!
     public void toggleBombDropMode(int hudLogWeaponId) {
     	if(Weapons[3] == null) 
     		return;
+    	Aircraft ac = (Aircraft) this.FM.actor;
+    	if(ac instanceof TypeLimitedWeaponOptionControl) {
+    		if(!((TypeLimitedWeaponOptionControl)ac).canSelectBombSalvoSize())
+    			return;
+    	}
     	switch(bombDropMode) {
     	case defaultFire:
-			setBombDropMode(singleFire);
-			HUD.log(hudLogWeaponId, "Bombs: Single Drop Selected");
-			break;
+    		if(Arrays.binarySearch(bombSalvoSizeOptions, singleFire) >= 0) {
+    			System.out.println("Entered defaultFire setting area");
+    			setBombDropMode(singleFire);
+    			HUD.log(hudLogWeaponId, "Bombs: Single Drop Selected");
+    			break;
+    		}
+		default:
+			int num = countBombsAvailable(selectedBomb);
+			boolean isSet = false;
+			if((bombDropMode+1) <= num && Arrays.binarySearch(bombSalvoSizeOptions, (bombDropMode+1)) >= 0) {
+				setBombDropMode(bombDropMode+1);
+				HUD.log(hudLogWeaponId, "Bomb Salvo Size: " + bombDropMode + (bombDropMode == num?" (All)":""));
+				isSet = true;
+			} else if(Arrays.binarySearch(bombSalvoSizeOptions, fullSalvo) >= 0) {
+				setBombDropMode(fullSalvo);
+				HUD.log(hudLogWeaponId, "Bombs: Full Salvo Selected");
+				isSet = true;
+			}
+			if(isSet) {
+				break;
+			}
 		case fullSalvo:
 			setBombDropMode(defaultFire);
 			HUD.log(hudLogWeaponId, "Bombs: Default Drop Selected");
 			break;
-		default:
-			int num = countBombsAvailable(selectedBomb);
-			if((bombDropMode+1) <= num) {
-				setBombDropMode(bombDropMode+1);
-				HUD.log(hudLogWeaponId, "Bomb Salvo Size: " + bombDropMode + (bombDropMode == num?" (All)":""));
-			} else {
-				setBombDropMode(fullSalvo);
-				HUD.log(hudLogWeaponId, "Bombs: Full Salvo Selected");
-			}
-			break;
     	}
     }
     
+    //gets called from within AircraftHotKeys and produces HUD log output. Net Replication etc should use the regarding setter!
 	public void toggleRocketFireMode(int hudLogWeaponId) {
 		if(Weapons[2] == null) 
 			return;
+		Aircraft ac = (Aircraft) this.FM.actor;
+    	if(ac instanceof TypeLimitedWeaponOptionControl) {
+    		if(!((TypeLimitedWeaponOptionControl)ac).canSelectRocketSalvoSize())
+    			return;
+    	}
 		switch(rocketFireMode) {
 		case defaultFire:
-			setRocketFireMode(singleFire);
-			HUD.log(hudLogWeaponId, "Rockets: Single Fire Selected");
-			break;
+			if(Arrays.binarySearch(rocketSalvoSizeOptions, singleFire) >= 0) {
+				setRocketFireMode(singleFire);
+				HUD.log(hudLogWeaponId, "Rockets: Single Fire Selected");
+				break;
+			}
+		default:
+			if(Arrays.binarySearch(rocketSalvoSizeOptions, fullSalvo) >= 0) {
+				setRocketFireMode(fullSalvo);
+				HUD.log(hudLogWeaponId, "Rockets: Full Salvo Selected");
+				break;
+			}
 		case fullSalvo:
 			setRocketFireMode(defaultFire);
 			HUD.log(hudLogWeaponId, "Rockets: Default Fire Selected");
 			break;
-		default:
-			setRocketFireMode(fullSalvo);
-			HUD.log(hudLogWeaponId, "Rockets: Full Salvo Selected");
-			break;
 		}
 	}
 	
+	/* setter method for external access (for instance: net replication):
+     * has to sanitize the input, but will falsify the input as little as possible
+     */
 	public void setBombReleaseDelay(long delay) {
-		switch((int)delay) {
-		case 125:
-		case 250:
-		case 500:
-		case 1000: this.bombReleaseDelay = delay; break;
-		default: this.bombReleaseDelay = 0L;
-		}
+		if(delay < releaseDelayMIN)
+			delay = releaseDelayMIN;
+		else if(delay > releaseDelayMAX)
+			delay = releaseDelayMAX;
+		bombReleaseDelay = delay;
 	}
 	
 	public long getBombReleaseDelay() {
 		return bombReleaseDelay;
 	}
 	
+	/* setter method for external access (for instance: net replication):
+     * has to sanitize the input, but will falsify the input as little as possible
+     */
 	public void setRocketReleaseDelay(long delay) {
-		switch((int)delay) {
-		case 125:
-		case 250:
-		case 500:
-		case 1000: this.rocketReleaseDelay = delay; break;
-		default: this.rocketReleaseDelay = 0L;
-		}
+		if(delay < releaseDelayMIN)
+			delay = releaseDelayMIN;
+		else if(delay > releaseDelayMAX)
+			delay = releaseDelayMAX;
+		this.rocketReleaseDelay = delay;
 	}
 	
 	public long getRocketReleaseDelay() {
 		return rocketReleaseDelay;
 	}
 	
+	//silent worker method 
 	public void toggleBombReleaseDelay() {
-		switch((int)bombReleaseDelay) {
-		case 33: bombReleaseDelay = 125L; break;
-		case 125: bombReleaseDelay = 250L; break;
-		case 250: bombReleaseDelay = 500L; break;
-		case 500: bombReleaseDelay = 1000L; break;
-		default: bombReleaseDelay = 33L;
+		if(bombReleaseDelay >= bombReleaseDelayOptions[bombReleaseDelayOptions.length-1]) {
+			bombReleaseDelay = bombReleaseDelayOptions[0];
+			return;
+		}
+		for(int i = 0; i<bombReleaseDelayOptions.length; i++) {
+			if(bombReleaseDelay < bombReleaseDelayOptions[i]) {
+				bombReleaseDelay = bombReleaseDelayOptions[i];
+				break;
+			}
 		}
 	}
 	
+	//silent worker method 
 	public void toggleRocketReleaseDelay() {
-		switch((int)rocketReleaseDelay) {
-		case 33: rocketReleaseDelay = 125L; break;
-		case 125: rocketReleaseDelay = 250L; break;
-		case 250: rocketReleaseDelay = 500L; break;
-		case 500: rocketReleaseDelay = 1000L; break;
-		default: rocketReleaseDelay = 33L;
+		if(rocketReleaseDelay >= rocketReleaseDelayOptions[bombReleaseDelayOptions.length-1]) {
+			rocketReleaseDelay = rocketReleaseDelayOptions[0];
+			return;
+		}
+		for(int i = 0; i<rocketReleaseDelayOptions.length; i++) {
+			if(rocketReleaseDelay < rocketReleaseDelayOptions[i]) {
+				rocketReleaseDelay = rocketReleaseDelayOptions[i];
+				break;
+			}
 		}
 	}
 	
+	//gets called from AircraftHotKeys
 	public void toggleBombReleaseDelayHUD(int hudLogWeaponId) {
 		if(Weapons[3] == null) 
 			return;
@@ -1568,6 +1833,7 @@ public class Controls {
 		HUD.log(hudLogWeaponId, "Bomb Release Delay: " + (float)bombReleaseDelay / 1000F + " sec");
 	}
 	
+	//gets called from AircraftHotKeys
 	public void toggleRocketReleaseDelayHUD(int hudLogWeaponId) {
 		if(Weapons[2] == null) 
 			return;
@@ -1575,6 +1841,7 @@ public class Controls {
 		HUD.log(hudLogWeaponId, "Rocket Release Delay: " + (float)rocketReleaseDelay / 1000F + " sec");
 	}
 
+	//main bomb release method.
 	private boolean doNextBombRelease(int side) {
 		boolean bombReleased = false;
 		int shot;
@@ -1640,6 +1907,7 @@ public class Controls {
 		return bombReleased;
 	}
 	
+	//main rocket release method
 	private boolean doNextRocketRelease(int side) {
 		boolean rocketReleased = false;
 		int shot;
@@ -1701,6 +1969,6 @@ public class Controls {
 		return rocketReleased;
 	}
 	
-  //---------- todo skylla: different weapon fire modes ----------
+ // ----- todo skylla: enhanced weapon release control -----
 
 }

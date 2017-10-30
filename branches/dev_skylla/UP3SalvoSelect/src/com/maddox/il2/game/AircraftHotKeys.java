@@ -1077,7 +1077,7 @@ public class AircraftHotKeys {
                     }
                     // ----------------------------------------------
                     
-                  // +++++ TODO skylla: salvo selection ++++++
+                  // +++++ TODO skylla: enhanced weapon release control ++++++
                     //select rocket:
                     case 132: {
                     	FM.CT.toggleRocketSelectedHUD(hudLogWeaponId);
@@ -1108,7 +1108,7 @@ public class AircraftHotKeys {
                     	FM.CT.toggleBombReleaseDelayHUD(hudLogWeaponId);
                     	break;
                     }
-                  // ----- todo skylla: salvo selection -----
+                  // ----- todo skylla: enhanced weapon release control -----
                     
                     case 21:
                         this.setPowerControl(0.1F);
@@ -2427,7 +2427,7 @@ public class AircraftHotKeys {
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic4", "Weapon01", 64, 173));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic5", "GunPods", 15, 115));
         
-      //++++++ TODO skylla: Salvo selection ++++++
+     // +++++ TODO skylla: enhanced weapon release control +++++
         ResourceBundle resourceBundle = ResourceBundle.getBundle("i18n/controls", RTSConf.cur.locale, LDRres.loader());
         String selectRocketName       = "SelectMissile";
         String rocketSalvoSizeName    = "RocketSalvoSize";
@@ -2481,7 +2481,7 @@ public class AircraftHotKeys {
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic65", bombSalvoSizeName,      136, 405));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("4basic66", bombReleaseDelayName,   137, 406));
 		HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$+SIGHTCONTROLS", "4basic7") {});
-	  //------ todo skylla: Salvo selection ------
+	 // ----- todo skylla: enhanced weapon release control -----
 		
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced01", "SIGHT_AUTO_ONOFF", 125, 344));
         HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced02", "SIGHT_DIST_PLUS", 117, 336));
