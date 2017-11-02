@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.JGP.Vector3f;
-import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorHMesh;
 import com.maddox.il2.engine.ActorNet;
@@ -21,6 +20,7 @@ import com.maddox.rts.NetMsgFiltered;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
+import com.maddox.sas1946.il2.util.TrueRandom;
 import com.maddox.sound.SoundFX;
 
 public abstract class CandCGeneric extends ActorHMesh implements ActorAlign {
@@ -104,8 +104,8 @@ public abstract class CandCGeneric extends ActorHMesh implements ActorAlign {
 
     public void setTimer(int i) {
 //        Random random = new Random(); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
-        this.Timer1 = (float) (World.Rnd().nextInt(i) * 0.1D); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
-        this.Timer2 = (float) (World.Rnd().nextInt(i) * 0.1D); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
+        this.Timer1 = (float) (TrueRandom.nextInt(i) * 0.1D); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
+        this.Timer2 = (float) (TrueRandom.nextInt(i) * 0.1D); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
     }
 
     public void resetTimer(float f) {
@@ -114,19 +114,19 @@ public abstract class CandCGeneric extends ActorHMesh implements ActorAlign {
     }
 
     public static double Rnd(double d, double d1) {
-        return World.Rnd().nextDouble(d, d1);
+        return TrueRandom.nextDouble(d, d1);
     }
 
     public static float Rnd(float f, float f1) {
-        return World.Rnd().nextFloat(f, f1);
+        return TrueRandom.nextFloat(f, f1);
     }
 
     public boolean RndB(float f) {
-        return World.Rnd().nextFloat(0.0F, 1.0F) < f;
+        return TrueRandom.nextFloat(0.0F, 1.0F) < f;
     }
 
     public static long SecsToTicks(float f) {
-        long l = (long) (0.5D + f / Time.tickLenFs());
+        long l = (long) (0.5D + (f / Time.tickLenFs()));
         return l < 1L ? 1L : l;
     }
 

@@ -20,6 +20,7 @@ import com.maddox.il2.objects.air.TypeFighter;
 import com.maddox.il2.objects.air.TypeStormovik;
 import com.maddox.il2.objects.bridges.BridgeSegment;
 import com.maddox.il2.objects.bridges.LongBridge;
+import com.maddox.sas1946.il2.util.TrueRandom;
 
 public class NearestRadarTargets {
 
@@ -106,7 +107,7 @@ public class NearestRadarTargets {
             if (targetDistance > maxDistance) {
                 continue;
             }
-            if (targetType == TARGET_TYPE_AIRCRAFT && target.getSpeed(null) <= 10D) {
+            if ((targetType == TARGET_TYPE_AIRCRAFT) && (target.getSpeed(null) <= 10D)) {
                 continue; // potential target is an aircraft, but apparently it's not flying!
             }
             radarContacts.add(new Contact(target, targetDistance));
@@ -292,7 +293,7 @@ public class NearestRadarTargets {
 //                return getBridge(j, point3d, d);
 //            else
 //                return null;
-//        Actor actor1 = nearAct[i1 == 1 ? 0 : World.Rnd().nextInt(i1)];
+//        Actor actor1 = nearAct[i1 == 1 ? 0 : TrueRandom.nextInt(i1)];
 //        for(int l1 = 0; l1 < i1; l1++)
 //            nearAct[l1] = null;
 //
@@ -323,7 +324,7 @@ public class NearestRadarTargets {
             return null;
         } else {
             int l = longbridge.NumStateBits() / 2;
-            return BridgeSegment.getByIdx(longbridge.bridgeIdx(), World.Rnd().nextInt(l));
+            return BridgeSegment.getByIdx(longbridge.bridgeIdx(), TrueRandom.nextInt(l));
         }
     }
 
