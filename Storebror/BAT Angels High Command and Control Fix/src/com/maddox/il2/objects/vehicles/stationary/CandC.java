@@ -66,6 +66,7 @@ import com.maddox.il2.objects.vehicles.tanks.TankGeneric;
 import com.maddox.rts.ObjState;
 import com.maddox.rts.Time;
 import com.maddox.sas1946.il2.util.Reflection;
+import com.maddox.sas1946.il2.util.TrueRandom;
 
 public abstract class CandC {
     public static class DynamicStrikeUnit extends CandCGeneric {
@@ -120,7 +121,7 @@ public abstract class CandC {
                 List list = Engine.targets();
                 int i = list.size();
                 // // Random random = new Random();
-                int j = World.Rnd().nextInt(i);
+                int j = TrueRandom.nextInt(i);
                 Actor actor1 = (Actor) list.get(j);
                 if ((actor1 != null) && !(actor1 instanceof Aircraft) && ((actor1 instanceof TgtVehicle) || (actor1 instanceof TgtTank) || (actor1 instanceof TgtTrain)) && (actor1 instanceof StationaryGeneric) && !(actor1 instanceof BigshipGeneric)) {
                     if (actor1.getArmy() == actor.getArmy()) {
@@ -145,7 +146,7 @@ public abstract class CandC {
                 List list = Engine.targets();
                 int i = list.size();
                 // // Random random = new Random();
-                int j = World.Rnd().nextInt(i);
+                int j = TrueRandom.nextInt(i);
                 Actor actor1 = (Actor) list.get(j);
                 if (((actor1 instanceof TgtVehicle) || (actor1 instanceof TgtTank) || (actor1 instanceof TgtTrain)) && (actor1 instanceof StationaryGeneric)) {
                     if (flag) {
@@ -166,7 +167,7 @@ public abstract class CandC {
             Point3d point3d1 = new Point3d();
             pilot.AP.way.curr().getP(point3d1);
             // // Random random = new Random();
-            int i = ((int) f + World.Rnd().nextInt(1000)) - 500;
+            int i = ((int) f + TrueRandom.nextInt(1000)) - 500;
             Point3d point3d2 = new Point3d(point3d.x, point3d.y, i);
             Point3d point3d3 = new Point3d(point3d2.x - 5000D, point3d2.y, i);
             if ((point3d1.x - point3d2.x) > 0.0D) {
@@ -245,7 +246,7 @@ public abstract class CandC {
                 }
                 if ((actor != null) && (actor instanceof TypeFighter) && (actor.getArmy() == this.myArmy)) {
                     // // Random random = new Random();
-                    int j = World.Rnd().nextInt(100);
+                    int j = TrueRandom.nextInt(100);
                     if (j > 50) {
                         this.findtarget(actor);
                     } else {
@@ -266,10 +267,10 @@ public abstract class CandC {
                 List list = Engine.targets();
                 int i = list.size();
                 // // Random random = new Random();
-                int j = World.Rnd().nextInt(i);
+                int j = TrueRandom.nextInt(i);
                 Actor actor1 = (Actor) list.get(j);
                 if ((actor1 instanceof Stationary.Wagon8) && (actor1.getArmy() != this.myArmy) && !flag) {
-//                    int k = World.Rnd().nextInt(100);
+//                    int k = TrueRandom.nextInt(100);
                     Point3d point3d = new Point3d();
                     actor1.pos.getAbs(point3d);
                     falsetarget = point3d;
@@ -295,7 +296,7 @@ public abstract class CandC {
                 List list = Engine.targets();
                 int i = list.size();
                 // // Random random = new Random();
-                int j = World.Rnd().nextInt(i);
+                int j = TrueRandom.nextInt(i);
                 Actor actor1 = (Actor) list.get(j);
                 if ((actor1 instanceof Stationary.OpelBlitz6700A_fuel) && (actor1.getArmy() != this.myArmy) && !flag) {
                     actor1.pos.getAbs(falsetarget);
@@ -322,9 +323,9 @@ public abstract class CandC {
             Point3d point3d1 = new Point3d();
             pilot.AP.way.curr().getP(point3d1);
             // // Random random = new Random();
-            int i = World.Rnd().nextInt(4000) - 2000;
-            int j = World.Rnd().nextInt(4000) - 2000;
-            int k = (3000 + World.Rnd().nextInt(2000)) - 1000;
+            int i = TrueRandom.nextInt(4000) - 2000;
+            int j = TrueRandom.nextInt(4000) - 2000;
+            int k = (3000 + TrueRandom.nextInt(2000)) - 1000;
             Point3d point3d2 = new Point3d(point3d.x + i, point3d.y + j, k);
             Point3d point3d3 = new Point3d(point3d2.x - 10000D, point3d2.y, k);
             if ((point3d1.x - point3d2.x) > 0.0D) {
@@ -372,9 +373,9 @@ public abstract class CandC {
             Point3d point3d1 = new Point3d();
             pilot.AP.way.curr().getP(point3d1);
             // // Random random = new Random();
-            int i = World.Rnd().nextInt(4000) - 2000;
-            int j = World.Rnd().nextInt(4000) - 2000;
-            int k = (6000 + World.Rnd().nextInt(2000)) - 1000;
+            int i = TrueRandom.nextInt(4000) - 2000;
+            int j = TrueRandom.nextInt(4000) - 2000;
+            int k = (6000 + TrueRandom.nextInt(2000)) - 1000;
             Point3d point3d2 = new Point3d(point3d.x + i, point3d.y + j, k);
             Point3d point3d3 = new Point3d(point3d2.x - 10000D, point3d2.y, k);
             if ((point3d1.x - point3d2.x) > 0.0D) {
@@ -571,14 +572,14 @@ public abstract class CandC {
                 while ((this.counter <= 100) && !flag) {
                     // TODO: Fixed by SAS~Storebror: Replace that crap!
                     // // Random random = new Random();
-//                    int i = World.Rnd().nextInt(3000);
+//                    int i = TrueRandom.nextInt(3000);
 //                    float f = i - 1500;
-//                    i = World.Rnd().nextInt(3000);
+//                    i = TrueRandom.nextInt(3000);
 //                    float f1 = i - 1500;
 //                    Engine.land();
 
-                    double d0 = World.Rnd().nextDouble(-1500D, 1500D);
-                    double d1 = World.Rnd().nextDouble(-1500D, 1500D);
+                    double d0 = TrueRandom.nextDouble(-1500D, 1500D);
+                    double d1 = TrueRandom.nextDouble(-1500D, 1500D);
 
                     int j = Landscape.getPixelMapT(Engine.land().WORLD2PIXX(this.point3d.x + d0), Engine.land().WORLD2PIXY(this.point3d.y + d1));
 //                    float f2 = (float)(World.land().HQ(point3d.x + (double)f, point3d.y + (double)f1) - point3d.z);
@@ -617,7 +618,7 @@ public abstract class CandC {
                     Actor actor = (Actor) entry.getValue();
                     if (Actor.isAlive(actor) && (actor instanceof ArtilleryCY6.ProneInfantry)) {
                         // // Random random = new Random();
-                        int i = World.Rnd().nextInt(360);
+                        int i = TrueRandom.nextInt(360);
                         new Soldier(this, this.getArmy(), new Loc(actor.pos.getAbsPoint().x, actor.pos.getAbsPoint().y, actor.pos.getAbsPoint().z, i, 0.0F, 0.0F));
                         super.setTimer(500);
                     }
@@ -643,7 +644,7 @@ public abstract class CandC {
             Aircraft aircraft = World.getPlayerAircraft();
             if (aircraft.pos.getAbsPoint().distance(this.point3d) < 10000D) {
                 // // Random random = new Random();
-                int i = World.Rnd().nextInt(360);
+                int i = TrueRandom.nextInt(360);
                 new Soldier(this, this.getArmy(), new Loc(this.pos.getAbsPoint().x, this.pos.getAbsPoint().y, this.pos.getAbsPoint().z, i, 0.0F, 0.0F));
                 super.setTimer(500);
             }
@@ -674,15 +675,15 @@ public abstract class CandC {
 //                    Point3d point3d = new Point3d();
                     this.actor.pos.getAbs(this.point3d);
                     // Random random = new Random();
-                    int i = World.Rnd().nextInt(400);
+                    int i = TrueRandom.nextInt(400);
                     int j = i - 200;
                     this.point3d.x += j;
-                    i = World.Rnd().nextInt(400);
+                    i = TrueRandom.nextInt(400);
                     j = i - 200;
                     this.point3d.y += j;
                     float f = 25F;
                     float f1 = 136F;
-                    i = World.Rnd().nextInt(100);
+                    i = TrueRandom.nextInt(100);
                     if (i > 50) {
                         f = 50F;
                         f1 = 210F;
@@ -692,14 +693,11 @@ public abstract class CandC {
                 }
                 if ((this.counter >= 43) && (this.counter < 45)) {
                     HUD.logCenter("                                                                             Splash!");
-                }
-                else if ((this.counter > 21) && (this.counter < 25)) {
+                } else if ((this.counter > 21) && (this.counter < 25)) {
                     HUD.logCenter("                                                                             Rounds Complete.");
-                }
-                else if ((this.counter > 15) && (this.counter < 25)) {
+                } else if ((this.counter > 15) && (this.counter < 25)) {
                     HUD.logCenter("                                                                             Firing.");
-                }
-                else if ((this.counter > 5) && (this.counter < 10)) {
+                } else if ((this.counter > 5) && (this.counter < 10)) {
                     HUD.logCenter("                                                                             Target Received.");
                 }
                 this.counter++;
@@ -742,10 +740,10 @@ public abstract class CandC {
 //                    Point3d point3d = new Point3d();
                     this.actor.pos.getAbs(this.point3d);
                     // Random random = new Random();
-                    int i = World.Rnd().nextInt(200);
+                    int i = TrueRandom.nextInt(200);
                     int j = i - 100;
                     this.point3d.x += j;
-                    i = World.Rnd().nextInt(200);
+                    i = TrueRandom.nextInt(200);
                     j = i - 100;
                     this.point3d.y += j;
                     Explosions.generate(this.actor, this.point3d, 7F, 0, 30F, !Mission.isNet());
@@ -753,14 +751,11 @@ public abstract class CandC {
                 }
                 if ((this.counter >= 43) && (this.counter < 45)) {
                     HUD.logCenter("                                                                             Splash!" + s1);
-                }
-                else if ((this.counter > 21) && (this.counter < 25)) {
+                } else if ((this.counter > 21) && (this.counter < 25)) {
                     HUD.logCenter("                                                                             Rounds Complete.");
-                }
-                else if ((this.counter > 15) && (this.counter < 25)) {
+                } else if ((this.counter > 15) && (this.counter < 25)) {
                     HUD.logCenter("                                                                             Firing.");
-                }
-                else if ((this.counter > 5) && (this.counter < 10)) {
+                } else if ((this.counter > 5) && (this.counter < 10)) {
                     HUD.logCenter("                                                                             Target Received.");
                 }
                 this.counter++;
@@ -800,15 +795,15 @@ public abstract class CandC {
             if (this.counter > 10) {
                 this.counter = 0;
                 // TODO: Fix by SAS~Storebror: Strip that crappy double type casting and work with doubles where they're due!
-//                startpoint.set(point3d.x + (double)(World.Rnd().nextInt(1000) - 500), point3d.y + (double)(World.Rnd().nextInt(1000) - 500), point3d.z);
-                startpoint.set(this.point3d.x + World.Rnd().nextDouble(-500D, 500D), this.point3d.y + World.Rnd().nextDouble(-500D, 500D), this.point3d.z);
+//                startpoint.set(point3d.x + (double)(TrueRandom.nextInt(1000) - 500), point3d.y + (double)(TrueRandom.nextInt(1000) - 500), point3d.z);
+                startpoint.set(this.point3d.x + TrueRandom.nextDouble(-500D, 500D), this.point3d.y + TrueRandom.nextDouble(-500D, 500D), this.point3d.z);
             }
             if ((aircraft != null) && (aircraft instanceof TypeBomber) && (aircraft.getArmy() != this.myArmy)) {
 //                World.MaxVisualDistance = 50000F; // TODO: Fixed by SAS~Storebror: WTF???!??
                 this.counter++;
                 String s = "weapon.bomb_std";
-                startpoint.x += World.Rnd().nextInt(40) - 20;
-                startpoint.y += World.Rnd().nextInt(40) - 20;
+                startpoint.x += TrueRandom.nextInt(40) - 20;
+                startpoint.y += TrueRandom.nextInt(40) - 20;
                 Explosions.generate(this, startpoint, 7F, 0, 30F, !Mission.isNet());
                 startpoint.z = World.land().HQ(startpoint.x, startpoint.y);
                 MsgExplosion.send(this, s, startpoint, this.getOwner(), 0.0F, 7F, 0, 30F);
@@ -847,13 +842,13 @@ public abstract class CandC {
             if (aircraft.pos.getAbsPoint().distance(this.point3d) < 10000D) {
                 String s = "weapon.bomb_std";
                 // Random random = new Random();
-                int i = World.Rnd().nextInt(200);
+                int i = TrueRandom.nextInt(200);
                 int j = i - 100;
                 this.point3d.x += j;
-                i = World.Rnd().nextInt(200);
+                i = TrueRandom.nextInt(200);
                 j = i - 100;
                 this.point3d.y += j;
-                i = World.Rnd().nextInt(5);
+                i = TrueRandom.nextInt(5);
                 this.point3d.z += i;
                 Explosions.generate(this, this.point3d, 7F, 0, 30F, !Mission.isNet());
                 MsgExplosion.send(this, s, this.point3d, this.getOwner(), 0.0F, 7F, 0, 30F);
@@ -886,18 +881,18 @@ public abstract class CandC {
                     String s = "weapon.bomb_std";
                     // Random random = new Random();
                     // TODO: Fix by SAS~Storebror: Strip that crappy double type casting and work with doubles where they're due!
-//                    int k = World.Rnd().nextInt(1000);
+//                    int k = TrueRandom.nextInt(1000);
 //                    int i1 = k - 500;
 //                    point3d.x += i1;
-//                    k = World.Rnd().nextInt(1000);
+//                    k = TrueRandom.nextInt(1000);
 //                    i1 = k - 500;
 //                    point3d.y += i1;
-//                    k = World.Rnd().nextInt(300);
+//                    k = TrueRandom.nextInt(300);
 //                    i1 = k - 150;
 //                    point3d.z += actor.pos.getAbsPoint().z + (double)i1;
-                    this.point3d.x += World.Rnd().nextDouble(-500D, 500D);
-                    this.point3d.y += World.Rnd().nextDouble(-500D, 500D);
-                    this.point3d.z += actor.pos.getAbsPoint().z + World.Rnd().nextDouble(-150D, 150D);
+                    this.point3d.x += TrueRandom.nextDouble(-500D, 500D);
+                    this.point3d.y += TrueRandom.nextDouble(-500D, 500D);
+                    this.point3d.z += actor.pos.getAbsPoint().z + TrueRandom.nextDouble(-150D, 150D);
 
                     Explosions.AirFlak(this.point3d, 1);
                     MsgExplosion.send(this, s, this.point3d, this.getOwner(), 0.0F, 0.9F, 0, 30F);
@@ -993,7 +988,7 @@ public abstract class CandC {
                             l = 0;
                         }
                         // Random random = new Random();
-                        int i1 = World.Rnd().nextInt(100);
+                        int i1 = TrueRandom.nextInt(100);
                         if (i1 <= (3 + l)) {
                             flag3 = true;
                         }
@@ -1035,7 +1030,7 @@ public abstract class CandC {
             int i = 1000;
             int j = 1000;
             // Random random = new Random();
-            int k = World.Rnd().nextInt(140);
+            int k = TrueRandom.nextInt(140);
             int l = k + 10;
 //            Object obj = null;
             if (Mission.cur() != null) {
@@ -1185,7 +1180,7 @@ public abstract class CandC {
     public static class StormFrontUnit extends CandCGeneric {
 
         public boolean danger() {
-            if (Time.current() < Mission.cur().sectFile().get("Mods", "StormFrontDelay", 0) * 60) {
+            if (Time.current() < (Mission.cur().sectFile().get("Mods", "StormFrontDelay", 0) * 60)) {
                 return false;
             }
 //            Point3d point3d = new Point3d();
@@ -1271,7 +1266,7 @@ public abstract class CandC {
                         flag1 = true;
                     }
 //                    // Random random = new Random();
-//                    int j = World.Rnd().nextInt(100);
+//                    int j = TrueRandom.nextInt(100);
                     if (flag1) {
                         d8 = 1500D - (d2 - d5);
                     }
@@ -1353,7 +1348,7 @@ public abstract class CandC {
             List list = Engine.targets();
             int j = list.size();
             while (!flag) {
-                int i = World.Rnd().nextInt(j);
+                int i = TrueRandom.nextInt(j);
                 Actor actor1 = (Actor) list.get(i);
                 if ((actor1 instanceof Stationary.Motorcycle) && (actor1.getArmy() == this.myArmy)) {
                     int k = 0;
@@ -1361,7 +1356,7 @@ public abstract class CandC {
                     int l = Landscape.getPixelMapT(Engine.land().WORLD2PIXX(actor1.pos.getAbsPoint().x), Engine.land().WORLD2PIXY(actor1.pos.getAbsPoint().y));
                     for (; (k <= j) && !flag; k++) {
                         Actor actor2 = (Actor) list.get(k);
-                        int i1 = World.Rnd().nextInt(100);
+                        int i1 = TrueRandom.nextInt(100);
                         boolean flag3 = false;
                         if (((actor2 instanceof ShipGeneric) || (actor2 instanceof BigshipGeneric)) && (l >= 28) && (l <= 32)) {
                             flag3 = true;
@@ -1372,11 +1367,11 @@ public abstract class CandC {
                         if ((i1 < 33) && (actor2.pos.getAbsPoint().distance(this.point3d) < 500D) && flag3 && (actor2.getArmy() == this.myArmy)) {
                             Point3d point3d1 = new Point3d();
                             actor1.pos.getAbs(point3d1);
-                            int j1 = World.Rnd().nextInt(1000) - 500;
+                            int j1 = TrueRandom.nextInt(1000) - 500;
                             point3d1.x += j1;
-                            j1 = World.Rnd().nextInt(1000) - 500;
+                            j1 = TrueRandom.nextInt(1000) - 500;
                             point3d1.y += j1;
-                            j1 = World.Rnd().nextInt(30) - 15;
+                            j1 = TrueRandom.nextInt(30) - 15;
                             CandCGeneric.o.setYPR(actor1.pos.getAbsOrient().getYaw() + j1, 0.0F, 0.0F);
                             Engine.land();
                             int k1 = Landscape.getPixelMapT(Engine.land().WORLD2PIXX(point3d1.x), Engine.land().WORLD2PIXY(point3d1.y));
@@ -1426,9 +1421,9 @@ public abstract class CandC {
                 if ((actor1 instanceof ArtilleryGeneric) && (actor1.pos.getAbsPoint().distance(this.point3d) > 5000D) && (actor1.getArmy() == ambushunit.getArmy())) {
                     Point3d point3d1 = new Point3d();
                     point3d1 = this.point3d;
-                    int k = World.Rnd().nextInt(200) - 100;
+                    int k = TrueRandom.nextInt(200) - 100;
                     point3d1.x += k;
-                    k = World.Rnd().nextInt(200) - 100;
+                    k = TrueRandom.nextInt(200) - 100;
                     point3d1.y += k;
                     actor1.pos.setRel(point3d1, CandCGeneric.o);
                     actor1.pos = new ActorPosMove(actor1.pos);
@@ -1497,14 +1492,12 @@ public abstract class CandC {
                     String s = "level with us";
                     if ((d2 - d6 - 300D) >= 0.0D) {
                         s = "below us";
-                    }
-                    else if (((d2 - d6) + 300D) <= 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (((d2 - d6) + 300D) <= 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s = "above us";
                     }
                     if (((d2 - d6 - 300D) < 0.0D) && ((d2 - d6 - 150D) >= 0.0D)) {
                         s = "slightly below";
-                    }
-                    else if ((((d2 - d6) + 300D) > 0.0D) && (((d2 - d6) + 150D) < 0.0D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((((d2 - d6) + 300D) > 0.0D) && (((d2 - d6) + 150D) < 0.0D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s = "slightly above";
                     }
                     // new String();
@@ -1519,15 +1512,15 @@ public abstract class CandC {
                     double d10 = d - d4;
                     double d11 = d1 - d5;
                     // Random random = new Random();
-                    float f2 = ((World.Rnd().nextInt(20) - 10F) / 100F) + 1.0F;
-                    int l1 = World.Rnd().nextInt(6) - 3;
+                    float f2 = ((TrueRandom.nextInt(20) - 10F) / 100F) + 1.0F;
+                    int l1 = TrueRandom.nextInt(6) - 3;
                     float f3 = 4000F;
                     float f4 = f3;
-                    if ((d3 < 1.25F * f3) && !flag1) {
+                    if ((d3 < (1.25F * f3)) && !flag1) {
                         f4 = (float) d3 * 0.8F;
                     }
-                    if ((d3 < 1.25F * f3) && flag1) {
-                        if (d3 <= 1.25F * f3 * 0.5F) {
+                    if ((d3 < (1.25F * f3)) && flag1) {
+                        if (d3 <= (1.25F * f3 * 0.5F)) {
                             f4 = (float) (d3 * 0.8D * 2D);
                         } else {
                             f4 = f3;
@@ -1551,115 +1544,81 @@ public abstract class CandC {
                     String s1 = "  ";
                     if (j3 < 5) {
                         s1 = "Dead ahead, ";
-                    }
-                    else if ((j3 >= 5) && (j3 < 8)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 >= 5) && (j3 < 8)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 5, ";
-                    }
-                    else if ((j3 > 7) && (j3 < 13)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 7) && (j3 < 13)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 10, ";
-                    }
-                    else if ((j3 > 12) && (j3 < 18)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 12) && (j3 < 18)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 15, ";
-                    }
-                    else if ((j3 > 17) && (j3 <= 25)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 17) && (j3 <= 25)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 20, ";
-                    }
-                    else if ((j3 > 25) && (j3 <= 35)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 25) && (j3 <= 35)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 30, ";
-                    }
-                    else if ((j3 > 35) && (j3 <= 45)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 35) && (j3 <= 45)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 40, ";
-                    }
-                    else if ((j3 > 45) && (j3 <= 60)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 45) && (j3 <= 60)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Turn right, ";
-                    }
-                    else if (j3 > 355) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (j3 > 355) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Dead ahead, ";
-                    }
-                    else if ((j3 <= 355) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 <= 355) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 5, ";
-                    }
-                    else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 10, ";
-                    }
-                    else if ((j3 < 348) && (j3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 348) && (j3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 15, ";
-                    }
-                    else if ((j3 < 343) && (j3 >= 335)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 343) && (j3 >= 335)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 20, ";
-                    }
-                    else if ((j3 < 335) && (j3 >= 325)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 335) && (j3 >= 325)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 30, ";
-                    }
-                    else if ((j3 < 325) && (j3 >= 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 325) && (j3 >= 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 40, ";
-                    }
-                    else if ((j3 < 345) && (j3 >= 300)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 345) && (j3 >= 300)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Turn left, ";
                     }
                     String s2 = "  ";
                     if (k2 < -10) {
                         s2 = "nose down";
-                    }
-                    else if ((k2 >= -10) && (k2 <= -5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 >= -10) && (k2 <= -5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "down a bit";
-                    }
-                    else if ((k2 > -5) && (k2 < 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 > -5) && (k2 < 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "level";
-                    }
-                    else if ((k2 <= 10) && (k2 >= 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 <= 10) && (k2 >= 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "up a bit";
-                    }
-                    else if (k2 > 10) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (k2 > 10) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "pull up";
                     }
                     String s3 = "  ";
                     if (j3 < 5) {
                         s3 = "dead ahead, ";
-                    }
-                    else if ((j3 >= 5) && (j3 < 8)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 >= 5) && (j3 < 8)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "right by 5\260, ";
-                    }
-                    else if ((j3 > 7) && (j3 < 13)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 7) && (j3 < 13)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "right by 10\260, ";
-                    }
-                    else if ((j3 > 12) && (j3 < 18)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 12) && (j3 < 18)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "right by 15\260, ";
-                    }
-                    else if ((j3 > 17) && (j3 <= 25)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 17) && (j3 <= 25)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "right by 20\260, ";
-                    }
-                    else if ((j3 > 25) && (j3 <= 35)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 25) && (j3 <= 35)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "right by 30\260, ";
-                    }
-                    else if ((j3 > 35) && (j3 <= 45)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 35) && (j3 <= 45)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "right by 40\260, ";
-                    }
-                    else if ((j3 > 45) && (j3 <= 60)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 45) && (j3 <= 60)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "off our right, ";
-                    }
-                    else if (j3 > 355) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (j3 > 355) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "dead ahead, ";
-                    }
-                    else if ((j3 <= 355) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 <= 355) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "left by 5\260, ";
-                    }
-                    else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "left by 10\260, ";
-                    }
-                    else if ((j3 < 348) && (j3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 348) && (j3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "left by 15\260, ";
-                    }
-                    else if ((j3 < 343) && (j3 >= 335)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 343) && (j3 >= 335)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "left by 20\260, ";
-                    }
-                    else if ((j3 < 335) && (j3 >= 325)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 335) && (j3 >= 325)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "left by 30\260, ";
-                    }
-                    else if ((j3 < 325) && (j3 >= 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 325) && (j3 >= 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "left by 40\260, ";
-                    }
-                    else if ((j3 < 345) && (j3 >= 300)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 345) && (j3 >= 300)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "off our left, ";
                     }
                     if ((i2 <= k3) && (i2 > 1500) && (k2 >= -50) && (k2 <= 50) && (Math.abs(i3) <= 60)) // TODO: Fixed by SAS~Storebror: Useless double conversion removed
@@ -1738,14 +1697,12 @@ public abstract class CandC {
                     String s = "level with us";
                     if ((d2 - d6 - 300D) >= 0.0D) {
                         s = "below us";
-                    }
-                    else if (((d2 - d6) + 300D) <= 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (((d2 - d6) + 300D) <= 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s = "above us";
                     }
                     if (((d2 - d6 - 300D) < 0.0D) && ((d2 - d6 - 150D) >= 0.0D)) {
                         s = "slightly below";
-                    }
-                    else if ((((d2 - d6) + 300D) > 0.0D) && (((d2 - d6) + 150D) < 0.0D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((((d2 - d6) + 300D) > 0.0D) && (((d2 - d6) + 150D) < 0.0D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s = "slightly above";
                     }
                     // new String();
@@ -1760,15 +1717,15 @@ public abstract class CandC {
                     double d10 = d - d4;
                     double d11 = d1 - d5;
                     // Random random = new Random();
-                    float f2 = ((World.Rnd().nextInt(20) - 10F) / 100F) + 1.0F;
-                    int l1 = World.Rnd().nextInt(6) - 3;
+                    float f2 = ((TrueRandom.nextInt(20) - 10F) / 100F) + 1.0F;
+                    int l1 = TrueRandom.nextInt(6) - 3;
                     float f3 = 4000F;
                     float f4 = f3;
-                    if ((d3 < 1.25F * f3) && !flag1) {
+                    if ((d3 < (1.25F * f3)) && !flag1) {
                         f4 = (float) d3 * 0.8F;
                     }
-                    if ((d3 < 1.25F * f3) && flag1) {
-                        if (d3 <= 1.25F * f3 * 0.5F) {
+                    if ((d3 < (1.25F * f3)) && flag1) {
+                        if (d3 <= (1.25F * f3 * 0.5F)) {
                             f4 = (float) (d3 * 0.8D * 2D);
                         } else {
                             f4 = f3;
@@ -1792,115 +1749,81 @@ public abstract class CandC {
                     String s1 = "  ";
                     if (j3 < 5) {
                         s1 = "Dead ahead, ";
-                    }
-                    else if ((j3 > 4) && (j3 < 8)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 4) && (j3 < 8)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 5, ";
-                    }
-                    else if ((j3 > 7) && (j3 < 13)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 7) && (j3 < 13)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 10, ";
-                    }
-                    else if ((j3 > 12) && (j3 < 18)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 12) && (j3 < 18)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 15, ";
-                    }
-                    else if ((j3 > 17) && (j3 < 26)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 17) && (j3 < 26)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 20, ";
-                    }
-                    else if ((j3 > 25) && (j3 < 36)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 25) && (j3 < 36)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 30, ";
-                    }
-                    else if ((j3 > 35) && (j3 < 46)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 35) && (j3 < 46)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 40, ";
-                    }
-                    else if ((j3 > 45) && (j3 < 61)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 45) && (j3 < 61)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Turn right, ";
-                    }
-                    else if (j3 > 355) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (j3 > 355) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Dead ahead, ";
-                    }
-                    else if ((j3 < 356) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 356) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 5, ";
-                    }
-                    else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 10, ";
-                    }
-                    else if ((j3 < 348) && (j3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 348) && (j3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 15, ";
-                    }
-                    else if ((j3 < 343) && (j3 > 334)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 343) && (j3 > 334)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 20, ";
-                    }
-                    else if ((j3 < 335) && (j3 > 324)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 335) && (j3 > 324)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 30, ";
-                    }
-                    else if ((j3 < 325) && (j3 > 314)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 325) && (j3 > 314)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 40, ";
-                    }
-                    else if ((j3 < 345) && (j3 > 299)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 345) && (j3 > 299)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Turn left, ";
                     }
                     String s2 = "  ";
                     if (k2 < -10) {
                         s2 = "nose down";
-                    }
-                    else if ((k2 >= -10) && (k2 <= -5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 >= -10) && (k2 <= -5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "down a bit";
-                    }
-                    else if ((k2 > -5) && (k2 < 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 > -5) && (k2 < 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "level";
-                    }
-                    else if ((k2 <= 10) && (k2 >= 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 <= 10) && (k2 >= 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "up a bit";
-                    }
-                    else if (k2 > 10) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (k2 > 10) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "pull up";
                     }
                     String s3 = "  ";
                     if (j3 < 5) {
                         s3 = "dead ahead, ";
-                    }
-                    else if ((j3 > 4) && (j3 < 8)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 4) && (j3 < 8)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "right by 5\260, ";
-                    }
-                    else if ((j3 > 7) && (j3 < 13)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 7) && (j3 < 13)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "right by 10\260, ";
-                    }
-                    else if ((j3 > 12) && (j3 < 18)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 12) && (j3 < 18)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "right by 15\260, ";
-                    }
-                    else if ((j3 > 17) && (j3 < 26)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 17) && (j3 < 26)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "right by 20\260, ";
-                    }
-                    else if ((j3 > 25) && (j3 < 36)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 25) && (j3 < 36)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "right by 30\260, ";
-                    }
-                    else if ((j3 > 35) && (j3 < 46)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 35) && (j3 < 46)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "right by 40\260, ";
-                    }
-                    else if ((j3 > 45) && (j3 < 61)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 45) && (j3 < 61)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "off our right, ";
-                    }
-                    else if (j3 > 355) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (j3 > 355) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "dead ahead, ";
-                    }
-                    else if ((j3 < 356) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 356) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "left by 5\260, ";
-                    }
-                    else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "left by 10\260, ";
-                    }
-                    else if ((j3 < 348) && (j3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 348) && (j3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "left by 15\260, ";
-                    }
-                    else if ((j3 < 343) && (j3 > 334)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 343) && (j3 > 334)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "left by 20\260, ";
-                    }
-                    else if ((j3 < 335) && (j3 >= 325)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 335) && (j3 >= 325)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "left by 30\260, ";
-                    }
-                    else if ((j3 < 325) && (j3 >= 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 325) && (j3 >= 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "left by 40\260, ";
-                    }
-                    else if ((j3 < 345) && (j3 >= 300)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 345) && (j3 >= 300)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "off our left, ";
                     }
                     if ((i2 <= k3) && (i2 > 1500) && (k2 >= -50) && (k2 <= 50) && (Math.abs(i3) <= 60)) // TODO: Fixed by SAS~Storebror: Useless double conversion removed
@@ -2015,7 +1938,7 @@ public abstract class CandC {
     public static class SARUnit extends CandCGeneric {
 
         public boolean danger() {
-            if (Time.current() < Mission.cur().sectFile().get("Mods", "SARDelay", 0) * 60) {
+            if (Time.current() < (Mission.cur().sectFile().get("Mods", "SARDelay", 0) * 60)) {
                 return false;
             }
 //            Point3d point3d = new Point3d();
@@ -2122,7 +2045,7 @@ public abstract class CandC {
     public static class RESCAPUnit extends CandCGeneric {
 
         public boolean danger() {
-            if (Time.current() < Mission.cur().sectFile().get("Mods", "RESCAPDelay", 0) * 60) {
+            if (Time.current() < (Mission.cur().sectFile().get("Mods", "RESCAPDelay", 0) * 60)) {
                 return false;
             }
 //            Point3d point3d = new Point3d();
@@ -2190,14 +2113,11 @@ public abstract class CandC {
                     String s2 = "east";
                     if ((i < 316) && (i > 224)) {
                         s2 = "south";
-                    }
-                    else if ((i < 136) && (i > 44)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((i < 136) && (i > 44)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "north";
-                    }
-                    else if ((i < 45) && (i > 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((i < 45) && (i > 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "east";
-                    }
-                    else if ((i < 225) && (i > 135)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((i < 225) && (i > 135)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "west";
                     }
                     // new String();
@@ -2327,14 +2247,11 @@ public abstract class CandC {
                     String s2 = "east";
                     if ((j < 316) && (j > 224)) {
                         s2 = "south";
-                    }
-                    else if ((j < 136) && (j > 44)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j < 136) && (j > 44)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "north";
-                    }
-                    else if ((j < 45) && (j > 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j < 45) && (j > 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "east";
-                    }
-                    else if ((j < 225) && (j > 135)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j < 225) && (j > 135)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "west";
                     }
                     // new String();
@@ -2623,13 +2540,13 @@ public abstract class CandC {
 //            boolean flag = false;
             this.counter++;
             if ((actor != null) && (actor instanceof TypeBomber) && (((Maneuver) ((Aircraft) actor).FM).Skill == 2) && ((Maneuver) ((Aircraft) actor).FM).hasBombs()) {
-                int i = World.Rnd().nextInt(10);
+                int i = TrueRandom.nextInt(10);
                 if (i == 1) {
                     mainforce = actor;
                     this.mainforcefound = true;
                 }
             } else if ((actor != null) && (actor instanceof TypeBomber) && (((Maneuver) ((Aircraft) actor).FM).Skill == 3) && ((Maneuver) ((Aircraft) actor).FM).hasBombs()) {
-                int j = World.Rnd().nextInt(10);
+                int j = TrueRandom.nextInt(10);
                 if (j == 1) {
                     spoof = actor;
                     this.mainforcewrong = true;
@@ -2668,8 +2585,8 @@ public abstract class CandC {
 
         public boolean danger() {
             // Random random = new Random();
-            int i = World.Rnd().nextInt(5);
-            int j = World.Rnd().nextInt(1500) + 500;
+            int i = TrueRandom.nextInt(5);
+            int j = TrueRandom.nextInt(1500) + 500;
             Mission.createClouds(i, j);
 //            destroy(); // TODO: Fixed by SAS~Storebror, don't destroy objects in Interpolater tick() method!!!
             this.postDestroy();
@@ -2699,7 +2616,7 @@ public abstract class CandC {
                     int i = (int) Math.ceil(Math.sqrt((d5 * d5) + (d4 * d4)));
                     if (i <= 1000) {
                         // Random random = new Random();
-                        int j = World.Rnd().nextInt(100);
+                        int j = TrueRandom.nextInt(100);
                         if (j >= 50) {
                             //                            ObjState.destroy(actor); // TODO: Fixed by SAS~Storebror, don't destroy objects in Interpolater tick() method!!!
                             actor.postDestroy();
@@ -2729,7 +2646,7 @@ public abstract class CandC {
 //            Vector3d vector3d = new Vector3d();
             // Random random = new Random();
             if (!this.sprung && (this.counter < 1)) {
-                this.randomInt = World.Rnd().nextInt(100);
+                this.randomInt = TrueRandom.nextInt(100);
             }
             if (this.randomInt > 50) {
                 this.sprung = true;
@@ -2784,7 +2701,7 @@ public abstract class CandC {
 //            Vector3d vector3d = new Vector3d();
             // Random random = new Random();
             if (!this.sprung && (this.counter < 1)) {
-                this.randomInt = World.Rnd().nextInt(100);
+                this.randomInt = TrueRandom.nextInt(100);
             }
             if (this.randomInt > 50) {
                 this.sprung = true;
@@ -2836,7 +2753,7 @@ public abstract class CandC {
         public boolean danger() {
             float f = World.getTimeofDay();
             // Random random = new Random();
-            int i = World.Rnd().nextInt(6) - 3;
+            int i = TrueRandom.nextInt(6) - 3;
             f += i;
             if (f > 24D) {
                 f = (float) (f - 24D);
@@ -2869,7 +2786,7 @@ public abstract class CandC {
                 if ((actor instanceof TypeFighter) && (actor.getArmy() == this.myArmy) && (((Maneuver) ((Aircraft) actor).FM).Skill == 1)) {
                     byte byte0 = 1;
                     // Random random = new Random();
-                    int i = World.Rnd().nextInt(100);
+                    int i = TrueRandom.nextInt(100);
                     if (i <= 20) {
                         byte0 = 0;
                     }
@@ -2907,7 +2824,7 @@ public abstract class CandC {
 //            Vector3d vector3d = new Vector3d();
             // Random random = new Random();
             if (!this.sprung && (this.counter < 1)) {
-                this.randomInt = World.Rnd().nextInt(100);
+                this.randomInt = TrueRandom.nextInt(100);
             }
             if (this.randomInt > 50) {
                 this.sprung = true;
@@ -2972,7 +2889,7 @@ public abstract class CandC {
                     int i = (int) Math.ceil(Math.sqrt((d5 * d5) + (d4 * d4)));
                     if (i <= 1000) {
                         // Random random = new Random();
-                        int j = World.Rnd().nextInt(2);
+                        int j = TrueRandom.nextInt(2);
                         if (j != 0) {
                             //                            ObjState.destroy(actor); // TODO: Fixed by SAS~Storebror, don't destroy objects in Interpolater tick() method!!!
                             actor.postDestroy();
@@ -3011,7 +2928,7 @@ public abstract class CandC {
 //                    double d5 = d3 - d1;
 //                    int i = (int)Math.ceil(Math.sqrt(d5 * d5 + d4 * d4));
                     // Random random = new Random();
-                    int j = World.Rnd().nextInt(100);
+                    int j = TrueRandom.nextInt(100);
                     if (j >= 50) {
                         //                        ObjState.destroy(actor); // TODO: Fixed by SAS~Storebror, don't destroy objects in Interpolater tick() method!!!
                         actor.postDestroy();
@@ -3040,7 +2957,7 @@ public abstract class CandC {
 //            Vector3d vector3d = new Vector3d();
             // Random random = new Random();
             if (!this.sprung && (this.counter < 1)) {
-                this.randomInt = World.Rnd().nextInt(100);
+                this.randomInt = TrueRandom.nextInt(100);
             }
             if (this.randomInt > 50) {
                 this.sprung = true;
@@ -3108,7 +3025,7 @@ public abstract class CandC {
                     int i = (int) Math.ceil(Math.sqrt((d5 * d5) + (d4 * d4)));
                     if (i <= 1000) {
                         // Random random = new Random();
-                        int j = World.Rnd().nextInt(100);
+                        int j = TrueRandom.nextInt(100);
                         if (j >= 50) {
                             //                            ObjState.destroy(actor); // TODO: Fixed by SAS~Storebror, don't destroy objects in Interpolater tick() method!!!
                             actor.postDestroy();
@@ -3189,7 +3106,7 @@ public abstract class CandC {
                         double d9 = d - d3;
                         double d10 = d1 - d4;
                         // Random random = new Random();
-                        int l = World.Rnd().nextInt(100);
+                        int l = TrueRandom.nextInt(100);
                         int i1 = (int) Math.ceil(Math.sqrt((d10 * d10) + (d9 * d9)));
                         if ((i1 <= 650D) && (Math.sqrt(d6 * d6) <= 650D) && flag2 && flag && (l <= 50)) {
                             HUD.logCenter("                                          Nightfighter! Break " + s + "!");
@@ -3326,20 +3243,15 @@ public abstract class CandC {
                 String s = "<<<";
                 if (d16 > 60D) {
                     s = ">>>";
-                }
-                else if (d16 > 30D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                } else if (d16 > 30D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                     s = ">>";
-                }
-                else if (d16 > 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                } else if (d16 > 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                     s = ">";
-                }
-                else if (d16 < -60D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                } else if (d16 < -60D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                     s = "<<<";
-                }
-                else if (d16 < -30D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                } else if (d16 < -30D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                     s = "<<";
-                }
-                else if (d16 < 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                } else if (d16 < 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                     s = "<";
                 }
                 double d17 = d6 * Math.sqrt(d15 * 0.20386999845504761D);
@@ -3441,7 +3353,7 @@ public abstract class CandC {
 //                    int i2 = l1 - j;
                     // Random random = new Random();
                     boolean flag1 = false;
-                    if (World.Rnd().nextInt(100) < 10) {
+                    if (TrueRandom.nextInt(100) < 10) {
                         flag1 = true;
                     }
                     if (Mission.cur().sectFile().get("Mods", "NaxosLate", 0) != 1) {
@@ -3485,11 +3397,11 @@ public abstract class CandC {
                 int i = this.error + (Mission.cur().sectFile().get("Main", "CloudType", 2) * 2);
                 int j = i;
                 // Random random = new Random();
-                int k = World.Rnd().nextInt(100);
+                int k = TrueRandom.nextInt(100);
                 if (k > 50) {
                     i -= i * 2;
                 }
-                k = World.Rnd().nextInt(100);
+                k = TrueRandom.nextInt(100);
                 if (k > 50) {
                     j -= j * 2;
                 }
@@ -3693,25 +3605,25 @@ public abstract class CandC {
                             Pilot pilot = (Pilot) aircraft.FM;
                             AirGroup airgroup = ((Maneuver) aircraft.FM).Group;
                             // Random random = new Random();
-                            int l = World.Rnd().nextInt(100);
+                            int l = TrueRandom.nextInt(100);
                             if (l < 10) {
 //                                if(airgroup.grTask == 3)
                                 if ((pilot.Group != null) && (airgroup.grTask == 3)) {
                                     pilot.Group.setGroupTask(1);
                                 }
                                 if (aircraft == World.getPlayerAircraft()) {
-                                    int i1 = World.Rnd().nextInt(360);
+                                    int i1 = TrueRandom.nextInt(360);
                                     int j1 = (int) (actor.pos.getAbsPoint().z * 0.1D) * 10;
-                                    int k1 = World.Rnd().nextInt(100);
-                                    int l1 = World.Rnd().nextInt(360);
+                                    int k1 = TrueRandom.nextInt(100);
+                                    int l1 = TrueRandom.nextInt(360);
                                     if (Mission.cur().sectFile().get("Mods", "JammerMode", 0) == 1) {
-                                        int i2 = World.Rnd().nextInt(50) + 30;
+                                        int i2 = TrueRandom.nextInt(50) + 30;
                                         int j2 = i2;
-                                        int k2 = World.Rnd().nextInt(100);
+                                        int k2 = TrueRandom.nextInt(100);
                                         if (k2 > 50) {
                                             i2 -= i2 * 2;
                                         }
-                                        k2 = World.Rnd().nextInt(100);
+                                        k2 = TrueRandom.nextInt(100);
                                         if (k2 > 50) {
                                             j2 -= j2 * 2;
                                         }
@@ -3791,7 +3703,7 @@ public abstract class CandC {
                 double d11 = d4 - d1;
                 double d12 = Math.sqrt((d11 * d11) + (d10 * d10));
                 // Random random = new Random();
-                int k = World.Rnd().nextInt(100);
+                int k = TrueRandom.nextInt(100);
                 Engine.land();
                 int l = Landscape.getPixelMapT(Engine.land().WORLD2PIXX(aircraft.pos.getAbsPoint().x), Engine.land().WORLD2PIXY(aircraft.pos.getAbsPoint().y));
                 if (d12 <= 5000D) {
@@ -3881,15 +3793,15 @@ public abstract class CandC {
                     double d10 = d - d4;
                     double d11 = d1 - d5;
                     // Random random = new Random();
-                    float f2 = ((World.Rnd().nextInt(20) - 10F) / 100F) + 1.0F;
-                    int l1 = World.Rnd().nextInt(6) - 3;
+                    float f2 = ((TrueRandom.nextInt(20) - 10F) / 100F) + 1.0F;
+                    int l1 = TrueRandom.nextInt(6) - 3;
                     float f3 = 4000F;
                     float f4 = f3;
-                    if ((d3 < 1.25F * f3) && !flag1) {
+                    if ((d3 < (1.25F * f3)) && !flag1) {
                         f4 = (float) d3 * 0.8F;
                     }
-                    if ((d3 < 1.25F * f3) && flag1) {
-                        if (d3 <= 1.25F * f3 * 0.5F) {
+                    if ((d3 < (1.25F * f3)) && flag1) {
+                        if (d3 <= (1.25F * f3 * 0.5F)) {
                             f4 = (float) (d3 * 0.8D * 2D);
                         } else {
                             f4 = f3;
@@ -4000,7 +3912,7 @@ public abstract class CandC {
                         flag = true;
                     }
                     // Random random = new Random();
-                    int i1 = World.Rnd().nextInt(100);
+                    int i1 = TrueRandom.nextInt(100);
                     if (!flag && (d13 <= 6000D) && (d13 >= 500D) && (Math.sqrt(d8 * d8) <= 2000D)) {
                         HUD.logCenter("                                          " + s1 + "at " + l + " o'clock" + s + "!");
                     }
@@ -4036,7 +3948,7 @@ public abstract class CandC {
             boolean flag = false;
 //            float f = 1000F;
             // Random random = new Random();
-            int i = World.Rnd().nextInt(140);
+            int i = TrueRandom.nextInt(140);
             int j = i + 10;
             Aircraft aircraft1 = World.getPlayerAircraft();
             if (aircraft1 == null) {
@@ -4045,7 +3957,7 @@ public abstract class CandC {
 
             // Get rid of endless recursion through all game's target list (a few hundred times)
             // New method introduced to get the same result with on single target list search!
-            Aircraft aircraft = GetNearestEnemyInSteps(aircraft1, 1000F, (float)this.maxrange * 1000F, 1000F, 9);
+            Aircraft aircraft = GetNearestEnemyInSteps(aircraft1, 1000F, this.maxrange * 1000F, 1000F, 9);
 
 ////            Aircraft aircraft = NearestRadarTargets.GetNearestEnemyEcho(aircraft1, 1000F, 9); // TODO: Fixed by SAS~Storebror, avoid missing dependencies!
 //            Aircraft aircraft = GetNearestEnemy(aircraft1, 1000F, 9);
@@ -4187,14 +4099,12 @@ public abstract class CandC {
                     String s = "level with us";
                     if ((d2 - d6 - 300D) >= 0.0D) {
                         s = "below us";
-                    }
-                    else if (((d2 - d6) + 300D) <= 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (((d2 - d6) + 300D) <= 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s = "above us";
                     }
                     if (((d2 - d6 - 300D) < 0.0D) && ((d2 - d6 - 150D) >= 0.0D)) {
                         s = "slightly below";
-                    }
-                    else if ((((d2 - d6) + 300D) > 0.0D) && (((d2 - d6) + 150D) < 0.0D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((((d2 - d6) + 300D) > 0.0D) && (((d2 - d6) + 150D) < 0.0D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s = "slightly above";
                     }
                     // new String();
@@ -4209,8 +4119,8 @@ public abstract class CandC {
                     double d10 = d - d4;
                     double d11 = d1 - d5;
                     // Random random = new Random();
-                    float f2 = ((World.Rnd().nextInt(20) - 10F) / 100F) + 1.0F;
-                    int l1 = World.Rnd().nextInt(6) - 3;
+                    float f2 = ((TrueRandom.nextInt(20) - 10F) / 100F) + 1.0F;
+                    int l1 = TrueRandom.nextInt(6) - 3;
                     float f3 = 3000F;
                     float f4 = f3;
                     if (d3 < 1250D) {
@@ -4242,40 +4152,29 @@ public abstract class CandC {
                     String s2 = "  ";
                     if (j3 < 3) {
                         s1 = "Dead ahead, ";
-                    }
-                    else if ((j3 > 2) && (j3 < 8)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 2) && (j3 < 8)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 5, ";
-                    }
-                    else if ((j3 > 7) && (j3 < 13)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 7) && (j3 < 13)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 10, ";
-                    }
-                    else if ((j3 > 12) && (j3 < 18)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 12) && (j3 < 18)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 15, ";
-                    }
-                    else if ((j3 > 17) && (j3 < 23)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 17) && (j3 < 23)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 20, ";
-                    }
-                    else if ((j3 > 22) && (j3 <= 30)) // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 22) && (j3 <= 30)) // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                     {
                         s1 = "Right 25, ";
                         s2 = ", evading";
-                    }
-                    else if (j3 > 357) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (j3 > 357) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Dead ahead, ";
-                    }
-                    else if ((j3 < 358) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 358) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 5, ";
-                    }
-                    else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 10, ";
-                    }
-                    else if ((j3 < 348) && (j3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 348) && (j3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 15, ";
-                    }
-                    else if ((j3 < 343) && (j3 > 332)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 343) && (j3 > 332)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 20, ";
-                    }
-                    else if ((j3 < 333) && (j3 >= 330)) // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 333) && (j3 >= 330)) // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                     {
                         s1 = "Left 25, ";
                         s2 = ", evading";
@@ -4283,54 +4182,39 @@ public abstract class CandC {
                     String s3 = "  ";
                     if (k2 < -10) {
                         s3 = "nose down";
-                    }
-                    else if ((k2 >= -10) && (k2 <= -5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 >= -10) && (k2 <= -5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "down a bit";
-                    }
-                    else if ((k2 > -5) && (k2 < 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 > -5) && (k2 < 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "level";
-                    }
-                    else if ((k2 <= 10) && (k2 >= 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 <= 10) && (k2 >= 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "up a bit";
-                    }
-                    else if (k2 > 10) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (k2 > 10) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "pull up";
                     }
                     String s4 = "  ";
                     if (j3 < 3) {
                         s4 = "dead ahead, ";
-                    }
-                    else if ((j3 > 2) && (j3 < 8)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 2) && (j3 < 8)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "right by 5\260, ";
-                    }
-                    else if ((j3 > 7) && (j3 < 13)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 7) && (j3 < 13)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "right by 10\260, ";
-                    }
-                    else if ((j3 > 12) && (j3 < 18)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 12) && (j3 < 18)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "right by 15\260, ";
-                    }
-                    else if ((j3 > 17) && (j3 < 23)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 17) && (j3 < 23)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "right by 20\260, ";
-                    }
-                    else if ((j3 > 22) && (j3 <= 30)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 22) && (j3 <= 30)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "right by 25\260, ";
-                    }
-                    else if (j3 > 357) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (j3 > 357) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "dead ahead, ";
-                    }
-                    else if ((j3 < 358) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 358) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "left by 5\260, ";
-                    }
-                    else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "left by 10\260, ";
-                    }
-                    else if ((j3 < 348) && (j3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 348) && (j3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "left by 15\260, ";
-                    }
-                    else if ((j3 < 343) && (j3 > 332)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 343) && (j3 > 332)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "left by 20\260, ";
-                    }
-                    else if ((j3 < 333) && (j3 >= 330)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 333) && (j3 >= 330)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "left by 25\260, ";
                     }
                     if ((i2 <= k3) && (i2 > 1500) && (k2 >= -30) && (k2 <= 30) && (Math.abs(i3) <= 30)) // TODO: Fixed by SAS~Storebror: Useless double conversion removed
@@ -4412,14 +4296,12 @@ public abstract class CandC {
                     String s = "level with us";
                     if ((d2 - d6 - 300D) >= 0.0D) {
                         s = "below us";
-                    }
-                    else if (((d2 - d6) + 300D) <= 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (((d2 - d6) + 300D) <= 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s = "above us";
                     }
                     if (((d2 - d6 - 300D) < 0.0D) && ((d2 - d6 - 150D) >= 0.0D)) {
                         s = "slightly below";
-                    }
-                    else if ((((d2 - d6) + 300D) > 0.0D) && (((d2 - d6) + 150D) < 0.0D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((((d2 - d6) + 300D) > 0.0D) && (((d2 - d6) + 150D) < 0.0D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s = "slightly above";
                     }
                     // new String();
@@ -4434,8 +4316,8 @@ public abstract class CandC {
                     double d10 = d - d4;
                     double d11 = d1 - d5;
                     // Random random = new Random();
-                    float f2 = ((World.Rnd().nextInt(20) - 10F) / 100F) + 1.0F;
-                    int l1 = World.Rnd().nextInt(6) - 3;
+                    float f2 = ((TrueRandom.nextInt(20) - 10F) / 100F) + 1.0F;
+                    int l1 = TrueRandom.nextInt(6) - 3;
                     float f3 = 3500F;
                     float f4 = f3;
                     if (d3 < 1000D) {
@@ -4460,97 +4342,71 @@ public abstract class CandC {
                     String s2 = "  ";
                     if (j3 < 3) {
                         s1 = "Dead ahead, ";
-                    }
-                    else if ((j3 > 2) && (j3 < 8)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 2) && (j3 < 8)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 5, ";
-                    }
-                    else if ((j3 > 7) && (j3 < 13)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 7) && (j3 < 13)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 10, ";
-                    }
-                    else if ((j3 > 12) && (j3 < 18)) // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 12) && (j3 < 18)) // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                     {
                         s1 = "Right 15, ";
                         s2 = ", evading";
-                    }
-                    else if ((j3 > 17) && (j3 < 26)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 17) && (j3 < 26)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 20, ";
-                    }
-                    else if ((j3 > 25) && (j3 < 36)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 25) && (j3 < 36)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 30, ";
                         s2 = ", evading";
-                    }
-                    else if (j3 > 357) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (j3 > 357) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Dead ahead, ";
-                    }
-                    else if ((j3 < 358) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 358) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 5, ";
-                    }
-                    else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 10, ";
-                    }
-                    else if ((j3 < 348) && (j3 > 342)) // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 348) && (j3 > 342)) // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                     {
                         s1 = "Left 15, ";
                         s2 = ", evading";
-                    }
-                    else if ((j3 < 343) && (j3 > 334)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 343) && (j3 > 334)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 20, ";
-                    }
-                    else if ((j3 < 335) && (j3 > 324)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 335) && (j3 > 324)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 30, ";
                         s2 = ", evading";
                     }
                     String s3 = "  ";
                     if (k2 < -10) {
                         s3 = "nose down";
-                    }
-                    else if ((k2 > -11) && (k2 < -4)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 > -11) && (k2 < -4)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "down a bit";
-                    }
-                    else if ((k2 > -5) && (k2 < 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 > -5) && (k2 < 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "level";
-                    }
-                    else if ((k2 < 11) && (k2 > 4)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 < 11) && (k2 > 4)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "up a bit";
-                    }
-                    else if (k2 > 10) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (k2 > 10) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "pull up";
                     }
                     String s4 = "  ";
                     if (j3 < 3) {
                         s4 = "dead ahead, ";
-                    }
-                    else if ((j3 > 2) && (j3 < 8)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 2) && (j3 < 8)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "right by 5\260, ";
-                    }
-                    else if ((j3 > 7) && (j3 < 13)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 7) && (j3 < 13)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "right by 10\260, ";
-                    }
-                    else if ((j3 > 12) && (j3 < 18)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 12) && (j3 < 18)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "right by 15\260, ";
-                    }
-                    else if ((j3 > 17) && (j3 < 26)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 17) && (j3 < 26)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "right by 20\260, ";
-                    }
-                    else if ((j3 > 25) && (j3 < 36)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 25) && (j3 < 36)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "right by 30\260, ";
-                    }
-                    else if (j3 > 357) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (j3 > 357) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "dead ahead, ";
-                    }
-                    else if ((j3 < 358) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 358) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "left by 5\260, ";
-                    }
-                    else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "left by 10\260, ";
-                    }
-                    else if ((j3 < 348) && (j3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 348) && (j3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "left by 15\260, ";
-                    }
-                    else if ((j3 < 343) && (j3 > 334)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 343) && (j3 > 334)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "left by 20\260, ";
-                    }
-                    else if ((j3 < 335) && (j3 > 324)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 335) && (j3 > 324)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "left by 30\260, ";
                     }
                     if ((i2 <= k3) && (i2 > 1500) && (k2 >= -35) && (k2 <= 35) && (Math.abs(i3) < 36)) // TODO: Fixed by SAS~Storebror: Useless double conversion removed
@@ -4630,14 +4486,12 @@ public abstract class CandC {
                     String s = "level with us";
                     if ((d2 - d6 - 300D) >= 0.0D) {
                         s = "below us";
-                    }
-                    else if (((d2 - d6) + 300D) <= 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (((d2 - d6) + 300D) <= 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s = "above us";
                     }
                     if (((d2 - d6 - 300D) < 0.0D) && ((d2 - d6 - 150D) >= 0.0D)) {
                         s = "slightly below";
-                    }
-                    else if ((((d2 - d6) + 300D) > 0.0D) && (((d2 - d6) + 150D) < 0.0D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((((d2 - d6) + 300D) > 0.0D) && (((d2 - d6) + 150D) < 0.0D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s = "slightly above";
                     }
                     // new String();
@@ -4652,15 +4506,15 @@ public abstract class CandC {
                     double d10 = d - d4;
                     double d11 = d1 - d5;
                     // Random random = new Random();
-                    float f2 = ((World.Rnd().nextInt(20) - 10F) / 100F) + 1.0F;
-                    int l1 = World.Rnd().nextInt(6) - 3;
+                    float f2 = ((TrueRandom.nextInt(20) - 10F) / 100F) + 1.0F;
+                    int l1 = TrueRandom.nextInt(6) - 3;
                     float f3 = 5000F;
                     float f4 = f3;
-                    if ((d3 < 1.25F * f3) && !flag1) {
+                    if ((d3 < (1.25F * f3)) && !flag1) {
                         f4 = (float) d3 * 0.8F;
                     }
-                    if ((d3 < 1.25F * f3) && flag1) {
-                        if (d3 <= 1.25F * f3 * 0.5F) {
+                    if ((d3 < (1.25F * f3)) && flag1) {
+                        if (d3 <= (1.25F * f3 * 0.5F)) {
                             f4 = (float) (d3 * 0.8D * 2D);
                         } else {
                             f4 = f3;
@@ -4684,115 +4538,81 @@ public abstract class CandC {
                     String s1 = "  ";
                     if (j3 < 5) {
                         s1 = "Dead ahead, ";
-                    }
-                    else if ((j3 >= 5) && (j3 <= 7)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 >= 5) && (j3 <= 7)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 5, ";
-                    }
-                    else if ((j3 > 7) && (j3 <= 12)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 7) && (j3 <= 12)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 10, ";
-                    }
-                    else if ((j3 > 12) && (j3 <= 17)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 12) && (j3 <= 17)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 15, ";
-                    }
-                    else if ((j3 > 17) && (j3 <= 25)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 17) && (j3 <= 25)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 20, ";
-                    }
-                    else if ((j3 > 25) && (j3 <= 35)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 25) && (j3 <= 35)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 30, ";
-                    }
-                    else if ((j3 > 35) && (j3 <= 45)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 35) && (j3 <= 45)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Right 40, ";
-                    }
-                    else if ((j3 > 45) && (j3 <= 60)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 45) && (j3 <= 60)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Turn right, ";
-                    }
-                    else if (j3 > 355) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (j3 > 355) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Dead ahead, ";
-                    }
-                    else if ((j3 <= 355) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 <= 355) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 5, ";
-                    }
-                    else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 10, ";
-                    }
-                    else if ((j3 < 348) && (j3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 348) && (j3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 15, ";
-                    }
-                    else if ((j3 < 343) && (j3 >= 335)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 343) && (j3 >= 335)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 20, ";
-                    }
-                    else if ((j3 < 335) && (j3 >= 325)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 335) && (j3 >= 325)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 30, ";
-                    }
-                    else if ((j3 < 325) && (j3 >= 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 325) && (j3 >= 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Left 40, ";
-                    }
-                    else if ((j3 < 345) && (j3 >= 300)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 345) && (j3 >= 300)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s1 = "Turn left, ";
                     }
                     String s2 = "  ";
                     if (k2 < -10) {
                         s2 = "nose down";
-                    }
-                    else if ((k2 >= -10) && (k2 <= -5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 >= -10) && (k2 <= -5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "down a bit";
-                    }
-                    else if ((k2 > -5) && (k2 < 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 > -5) && (k2 < 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "level";
-                    }
-                    else if ((k2 <= 10) && (k2 >= 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 <= 10) && (k2 >= 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "up a bit";
-                    }
-                    else if (k2 > 10) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (k2 > 10) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "pull up";
                     }
                     String s3 = "  ";
                     if (j3 < 5) {
                         s3 = "dead ahead, ";
-                    }
-                    else if ((j3 >= 5) && (j3 <= 7)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 >= 5) && (j3 <= 7)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "right by 5\260, ";
-                    }
-                    else if ((j3 > 7) && (j3 <= 12)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 7) && (j3 <= 12)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "right by 10\260, ";
-                    }
-                    else if ((j3 > 12) && (j3 <= 17)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 12) && (j3 <= 17)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "right by 15\260, ";
-                    }
-                    else if ((j3 > 17) && (j3 <= 25)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 17) && (j3 <= 25)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "right by 20\260, ";
-                    }
-                    else if ((j3 > 25) && (j3 <= 35)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 25) && (j3 <= 35)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "right by 30\260, ";
-                    }
-                    else if ((j3 > 35) && (j3 <= 45)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 35) && (j3 <= 45)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "right by 40\260, ";
-                    }
-                    else if ((j3 > 45) && (j3 <= 60)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 > 45) && (j3 <= 60)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "off our right, ";
-                    }
-                    else if (j3 > 355) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (j3 > 355) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "dead ahead, ";
-                    }
-                    else if ((j3 <= 355) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 <= 355) && (j3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "left by 5\260, ";
-                    }
-                    else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 353) && (j3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "left by 10\260, ";
-                    }
-                    else if ((j3 < 348) && (j3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 348) && (j3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "left by 15\260, ";
-                    }
-                    else if ((j3 < 343) && (j3 >= 335)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 343) && (j3 >= 335)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "left by 20\260, ";
-                    }
-                    else if ((j3 < 335) && (j3 >= 325)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 335) && (j3 >= 325)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "left by 30\260, ";
-                    }
-                    else if ((j3 < 325) && (j3 >= 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 325) && (j3 >= 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "left by 40\260, ";
-                    }
-                    else if ((j3 < 345) && (j3 >= 300)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j3 < 345) && (j3 >= 300)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "off our left, ";
                     }
                     if ((i2 <= k3) && (i2 > 1500) && (k2 >= -60) && (k2 <= 60) && (Math.abs(i3) <= 60D)) // TODO: Fixed by SAS~Storebror: Useless double conversion removed
@@ -4918,13 +4738,13 @@ public abstract class CandC {
                 Actor actor = (Actor) list.get(j);
                 if (!flag && (actor.pos.getAbsPoint().distance(this.point3d) < 10000D) && (actor instanceof TypeBomber) && (actor.getArmy() != this.myArmy)) {
                     // Random random = new Random();
-                    int k = World.Rnd().nextInt(500);
+                    int k = TrueRandom.nextInt(500);
                     int l = k - 250;
-                    k = World.Rnd().nextInt(500);
+                    k = TrueRandom.nextInt(500);
                     int i1 = k - 250;
                     Eff3DActor.New(this, null, new Loc(l, i1, 0.0D, 0.0F, 90F, 0.0F), 1.0F, "Effects/Smokes/CityFire.eff", 600F);
                     flag = true;
-                    int j1 = World.Rnd().nextInt(10);
+                    int j1 = TrueRandom.nextInt(10);
                     this.wait = (float) (1.0D + (j1 * 0.1D));
                 }
             }
@@ -5076,14 +4896,11 @@ public abstract class CandC {
                     String s2 = "west";
                     if ((j <= 315) && (j >= 225)) {
                         s2 = "north";
-                    }
-                    else if ((j <= 135) && (j >= 45)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j <= 135) && (j >= 45)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "south";
-                    }
-                    else if ((j <= 44) && (j >= 316)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j <= 44) && (j >= 316)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "west";
-                    }
-                    else if ((j <= 224) && (j >= 136)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((j <= 224) && (j >= 136)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "east";
                     }
                     // new String();
@@ -5113,17 +4930,13 @@ public abstract class CandC {
                     int k = Landscape.getPixelMapT(Engine.land().WORLD2PIXX(actor1.pos.getAbsPoint().x), Engine.land().WORLD2PIXY(actor1.pos.getAbsPoint().y));
                     if ((k >= 28) && (k < 32)) {
                         s5 = ", near the water";
-                    }
-                    else if ((k >= 16) && (k < 20)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k >= 16) && (k < 20)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s5 = ", in the town";
-                    }
-                    else if ((k >= 24) && (k < 29)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k >= 24) && (k < 29)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s5 = ", near the treeline";
-                    }
-                    else if (((k >= 32) && (k < 64)) || (k >= 128)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (((k >= 32) && (k < 64)) || (k >= 128)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s5 = ", near the road";
-                    }
-                    else if ((k >= 64) && (k < 128)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k >= 64) && (k < 128)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s5 = ", near the tracks";
                     }
                     String s6 = "";
@@ -5310,7 +5123,7 @@ public abstract class CandC {
             int i = Mission.cur().sectFile().get("Main", "DWInterval", 20) * 60;
             this.resetTimer(i);
             // Random random = new Random();
-            int j = World.Rnd().nextInt(100);
+            int j = TrueRandom.nextInt(100);
             if (j <= 33) {
                 this.clouds++;
             }
@@ -5323,17 +5136,14 @@ public abstract class CandC {
             if (this.clouds > this.worstclouds) {
                 this.clouds = this.worstclouds;
             }
-            j = World.Rnd().nextInt(100);
+            j = TrueRandom.nextInt(100);
             if (j <= 33) {
                 this.height += 200;
-            }
-            else if ((j > 33) && (j < 66)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+            } else if ((j > 33) && (j < 66)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                 this.height -= 200;
-            }
-            else if (this.height < 200) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+            } else if (this.height < 200) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                 this.height = 200;
-            }
-            else if (this.height > 2000) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+            } else if (this.height > 2000) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                 this.height = 2000;
             }
             if ((Mission.cur() != null) && this.start) {
@@ -5629,7 +5439,7 @@ public abstract class CandC {
 //                        double d9 = d - d3;
 //                        double d10 = d1 - d4;
                         // Random random = new Random();
-                        int l = World.Rnd().nextInt(100);
+                        int l = TrueRandom.nextInt(100);
                         if ((actor.pos.getAbsPoint().distance(aircraft.pos.getAbsPoint()) <= 500D) && (l <= 10) && flag && (d6 < 300D)) {
                             if (actor != World.getPlayerAircraft()) {
                                 ((Pilot) ((Aircraft) actor).FM).AP.setWayPoint(false);
@@ -6000,8 +5810,7 @@ public abstract class CandC {
                     String s = ", level with us";
                     if ((d2 - d5 - 200D) >= 0.0D) {
                         s = ", below us";
-                    }
-                    else if (((d2 - d5) + 200D) < 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (((d2 - d5) + 200D) < 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s = ", above us";
                     }
                     // new String();
@@ -6183,7 +5992,7 @@ public abstract class CandC {
                     }
                     // Random random = new Random();
                     int i = Mission.cur().sectFile().get("Mods", "AimpointError", 300);
-                    this.randomInt = World.Rnd().nextInt(i);
+                    this.randomInt = TrueRandom.nextInt(i);
                     if ((Mission.cur() != null) && (Mission.cur().sectFile().get("Mods", "AimpointNoMark", 0) == 1)) {
                         this.error = 0.0F;
                     }
@@ -6267,14 +6076,12 @@ public abstract class CandC {
                     String s = "level with us";
                     if ((d2 - d6 - 300D) >= 0.0D) {
                         s = "below us";
-                    }
-                    else if (((d2 - d6) + 300D) <= 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (((d2 - d6) + 300D) <= 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s = "above us";
                     }
                     if (((d2 - d6 - 300D) < 0.0D) && ((d2 - d6 - 150D) >= 0.0D)) {
                         s = "slightly below";
-                    }
-                    else if ((((d2 - d6) + 300D) > 0.0D) && (((d2 - d6) + 150D) < 0.0D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((((d2 - d6) + 300D) > 0.0D) && (((d2 - d6) + 150D) < 0.0D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s = "slightly above";
                     }
                     // new String();
@@ -6289,8 +6096,8 @@ public abstract class CandC {
                     double d10 = d - d4;
                     double d11 = d1 - d5;
                     // Random random = new Random();
-                    float f2 = ((World.Rnd().nextInt(10) - 5F) / 100F) + 1.0F;
-                    int l1 = World.Rnd().nextInt(6) - 3;
+                    float f2 = ((TrueRandom.nextInt(10) - 5F) / 100F) + 1.0F;
+                    int l1 = TrueRandom.nextInt(6) - 3;
                     int i2 = (int) (Math.ceil(Math.sqrt((d11 * d11) + (d10 * d10)) / 10D) * 10D * f2);
                     float f3 = 57.32484F * (float) Math.atan2(i2, d7);
                     int j2 = (int) (Math.floor((int) f3) - 90D);
@@ -6332,63 +6139,44 @@ public abstract class CandC {
                     String s3 = "  ";
                     if (l3 <= 2) {
                         s2 = "Dead ahead, ";
-                    }
-                    else if ((l3 > 2) && (l3 <= 7)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 2) && (l3 <= 7)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 5, ";
-                    }
-                    else if ((l3 > 7) && (l3 <= 12)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 7) && (l3 <= 12)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 10, ";
-                    }
-                    else if ((l3 > 12) && (l3 <= 17)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 12) && (l3 <= 17)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 15, ";
-                    }
-                    else if ((l3 > 17) && (l3 <= 25)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 17) && (l3 <= 25)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 20, ";
-                    }
-                    else if ((l3 > 25) && (l3 <= 35)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 25) && (l3 <= 35)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 30, ";
-                    }
-                    else if ((l3 > 35) && (l3 <= 45)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 35) && (l3 <= 45)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 40, ";
-                    }
-                    else if ((l3 > 45) && (l3 <= 55)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 45) && (l3 <= 55)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 50, ";
-                    }
-                    else if ((l3 > 55) && (l3 <= 65)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 55) && (l3 <= 65)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 60, ";
-                    }
-                    else if ((l3 > 65) && (l3 <= 75)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 65) && (l3 <= 75)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 70, ";
                         s3 = ", evading";
-                    }
-                    else if (l3 > 357) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (l3 > 357) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Dead ahead, ";
-                    }
-                    else if ((l3 < 358) && (l3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 358) && (l3 > 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 5, ";
-                    }
-                    else if ((l3 < 353) && (l3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 353) && (l3 > 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 10, ";
-                    }
-                    else if ((l3 < 348) && (l3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 348) && (l3 > 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 15, ";
-                    }
-                    else if ((l3 < 343) && (l3 >= 335)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 343) && (l3 >= 335)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 20, ";
-                    }
-                    else if ((l3 < 335) && (l3 >= 325)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 335) && (l3 >= 325)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 30, ";
-                    }
-                    else if ((l3 < 325) && (l3 >= 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 325) && (l3 >= 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 40, ";
-                    }
-                    else if ((l3 < 315) && (l3 >= 305)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 315) && (l3 >= 305)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 50, ";
-                    }
-                    else if ((l3 < 305) && (l3 >= 295)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 305) && (l3 >= 295)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 60, ";
-                    }
-                    else if ((l3 < 295) && (l3 >= 285)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 295) && (l3 >= 285)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 70, ";
                         s3 = ", evading";
                     }
@@ -6397,41 +6185,33 @@ public abstract class CandC {
                     {
                         s4 = "down 12, ";
                         s3 = ", evading";
-                    }
-                    else if ((k2 > -11) && (k2 < -7)) // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 > -11) && (k2 < -7)) // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                     {
                         s4 = "down 9, ";
                         s3 = ", evading";
-                    }
-                    else if ((k2 >= -7) && (k2 < -4)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 >= -7) && (k2 < -4)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "down 6, ";
-                    }
-                    else if ((k2 >= -4) && (k2 < -1)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 >= -4) && (k2 < -1)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "down 3, ";
-                    }
-                    else if ((k2 >= -1) && (k2 <= 2)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 >= -1) && (k2 <= 2)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "level, ";
-                    }
-                    else if ((k2 <= 12) && (k2 > 10)) // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 <= 12) && (k2 > 10)) // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                     {
                         s4 = "up 12, ";
                         s3 = ", evading";
-                    }
-                    else if ((k2 < 11) && (k2 > 7)) // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 < 11) && (k2 > 7)) // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                     {
                         s4 = "up 9, ";
                         s3 = ", evading";
-                    }
-                    else if ((k2 < 8) && (k2 > 4)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 < 8) && (k2 > 4)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "up 6, ";
-                    }
-                    else if ((k2 < 5) && (k2 > 1)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 < 5) && (k2 > 1)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "up 3, ";
                     }
                     if (((j > f7) && !flag1) || ((d3 < 1524D) && (d6 < d2) && !flag1)) {
                         s3 = ", ground returns";
                     }
-                    if (j - 40 > f7) {
+                    if ((j - 40) > f7) {
                         s3 = ", ground clutter";
                     }
                     if (((double) i2 <= (double) f8) && (j3 > 0) && (k2 >= -12) && (k2 <= 12) && (Math.abs(k3) <= 75)) {
@@ -6509,14 +6289,12 @@ public abstract class CandC {
                     String s = "level with us";
                     if ((d2 - d6 - 300D) >= 0.0D) {
                         s = "below us";
-                    }
-                    else if (((d2 - d6) + 300D) <= 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (((d2 - d6) + 300D) <= 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s = "above us";
                     }
                     if (((d2 - d6 - 300D) < 0.0D) && ((d2 - d6 - 150D) >= 0.0D)) {
                         s = "slightly below";
-                    }
-                    else if ((((d2 - d6) + 300D) > 0.0D) && (((d2 - d6) + 150D) < 0.0D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((((d2 - d6) + 300D) > 0.0D) && (((d2 - d6) + 150D) < 0.0D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s = "slightly above";
                     }
                     // new String();
@@ -6531,8 +6309,8 @@ public abstract class CandC {
                     double d10 = d - d4;
                     double d11 = d1 - d5;
                     // Random random = new Random();
-                    float f2 = ((World.Rnd().nextInt(10) - 5F) / 100F) + 1.0F;
-                    int l1 = World.Rnd().nextInt(6) - 3;
+                    float f2 = ((TrueRandom.nextInt(10) - 5F) / 100F) + 1.0F;
+                    int l1 = TrueRandom.nextInt(6) - 3;
                     int i2 = (int) (Math.ceil(Math.sqrt((d11 * d11) + (d10 * d10)) / 10D) * 10D * f2);
                     float f3 = 57.32484F * (float) Math.atan2(i2, d7);
                     int j2 = (int) (Math.floor((int) f3) - 90D);
@@ -6571,131 +6349,91 @@ public abstract class CandC {
                     String s2 = "  ";
                     if ((i >= 348.75D) && (i < 11.25D)) {
                         s2 = ", heading north";
-                    }
-                    else if ((i >= 11.25D) && (i < 33.75D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((i >= 11.25D) && (i < 33.75D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = ", heading NNE";
-                    }
-                    else if ((i >= 33.75D) && (i < 56.25D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((i >= 33.75D) && (i < 56.25D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = ", heading NE";
-                    }
-                    else if ((i >= 56.25D) && (i < 78.75D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((i >= 56.25D) && (i < 78.75D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = ", heading ENE";
-                    }
-                    else if ((i >= 78.75D) && (i < 101.25D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((i >= 78.75D) && (i < 101.25D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = ", heading east";
-                    }
-                    else if ((i >= 101.25D) && (i < 123.75D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((i >= 101.25D) && (i < 123.75D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = ", heading ESE";
-                    }
-                    else if ((i >= 123.75D) && (i < 146.25D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((i >= 123.75D) && (i < 146.25D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = ", heading SE";
-                    }
-                    else if ((i >= 146.25D) && (i < 168.75D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((i >= 146.25D) && (i < 168.75D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = ", heading SSE";
-                    }
-                    else if ((i >= 168.75D) && (i < 191.25D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((i >= 168.75D) && (i < 191.25D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = ", heading south";
-                    }
-                    else if ((i >= 191.25D) && (i < 213.75D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((i >= 191.25D) && (i < 213.75D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = ", heading SSW";
-                    }
-                    else if ((i >= 213.75D) && (i < 236.25D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((i >= 213.75D) && (i < 236.25D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = ", heading SW";
-                    }
-                    else if ((i >= 236.25D) && (i < 258.75D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((i >= 236.25D) && (i < 258.75D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = ", heading WSW";
-                    }
-                    else if ((i >= 258.75D) && (i < 281.25D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((i >= 258.75D) && (i < 281.25D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = ", heading west";
-                    }
-                    else if ((i >= 281.25D) && (i < 303.75D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((i >= 281.25D) && (i < 303.75D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = ", heading WNW";
-                    }
-                    else if ((i >= 303.75D) && (i < 326.25D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((i >= 303.75D) && (i < 326.25D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = ", heading NW";
-                    }
-                    else if ((i >= 326.25D) && (i < 348.75D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((i >= 326.25D) && (i < 348.75D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = ", heading NNW";
                     }
                     String s3 = "  ";
                     String s4 = "  ";
                     if (k3 <= 3) {
                         s3 = "Dead ahead, ";
-                    }
-                    else if ((k3 > 3) && (k3 <= 7)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 > 3) && (k3 <= 7)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Right 5, ";
-                    }
-                    else if ((k3 > 7) && (k3 <= 12)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 > 7) && (k3 <= 12)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Right 10, ";
-                    }
-                    else if ((k3 > 12) && (k3 <= 17)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 > 12) && (k3 <= 17)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Right 15, ";
-                    }
-                    else if ((k3 > 17) && (k3 <= 22)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 > 17) && (k3 <= 22)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Right 20, ";
-                    }
-                    else if ((k3 > 22) && (k3 <= 27)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 > 22) && (k3 <= 27)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Right 25, ";
-                    }
-                    else if ((k3 > 27) && (k3 <= 32)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 > 27) && (k3 <= 32)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Right 30, ";
-                    }
-                    else if ((k3 > 32) && (k3 <= 37)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 > 32) && (k3 <= 37)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Right 35, ";
-                    }
-                    else if ((k3 > 37) && (k3 <= 42)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 > 37) && (k3 <= 42)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Right 40, ";
-                    }
-                    else if ((k3 > 42) && (k3 <= 47)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 > 42) && (k3 <= 47)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Right 45, ";
-                    }
-                    else if ((k3 > 47) && (k3 <= 55)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 > 47) && (k3 <= 55)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Right 50, ";
-                    }
-                    else if ((k3 > 55) && (k3 <= 65)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 > 55) && (k3 <= 65)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Right 60, ";
-                    }
-                    else if ((k3 > 65) && (k3 <= 75)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 > 65) && (k3 <= 75)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Right 70, ";
                         s4 = ", evading";
-                    }
-                    else if (k3 >= 357) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (k3 >= 357) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Dead ahead, ";
-                    }
-                    else if ((k3 < 357) && (k3 >= 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 < 357) && (k3 >= 352)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Left 5, ";
-                    }
-                    else if ((k3 < 352) && (k3 >= 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 < 352) && (k3 >= 347)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Left 10, ";
-                    }
-                    else if ((k3 < 347) && (k3 >= 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 < 347) && (k3 >= 342)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Left 15, ";
-                    }
-                    else if ((k3 < 342) && (k3 >= 337)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 < 342) && (k3 >= 337)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Left 20, ";
-                    }
-                    else if ((k3 < 337) && (k3 >= 332)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 < 337) && (k3 >= 332)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Left 25, ";
-                    }
-                    else if ((k3 < 332) && (k3 >= 327)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 < 332) && (k3 >= 327)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Left 30, ";
-                    }
-                    else if ((k3 < 327) && (k3 >= 322)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 < 327) && (k3 >= 322)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Left 35, ";
-                    }
-                    else if ((k3 < 322) && (k3 >= 317)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 < 322) && (k3 >= 317)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Left 40, ";
-                    }
-                    else if ((k3 < 317) && (k3 >= 312)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 < 317) && (k3 >= 312)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Left 45, ";
-                    }
-                    else if ((k3 < 312) && (k3 >= 305)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 < 312) && (k3 >= 305)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Left 50, ";
-                    }
-                    else if ((k3 < 305) && (k3 >= 295)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 < 305) && (k3 >= 295)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Left 60, ";
-                    }
-                    else if ((k3 < 295) && (k3 >= 285)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k3 < 295) && (k3 >= 285)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "Left 70, ";
                         s4 = ", evading";
                     }
@@ -6703,40 +6441,31 @@ public abstract class CandC {
                     if ((k2 >= -5) && (k2 <= -3)) {
                         s5 = "down a bit, ";
                         s4 = ", evading";
-                    }
-                    else if ((k2 >= -3) && (k2 <= 3)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 >= -3) && (k2 <= 3)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s5 = "level, ";
-                    }
-                    else if ((k2 <= 40) && (k2 >= 37)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 <= 40) && (k2 >= 37)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s5 = "up 40, ";
                         s4 = ", evading";
-                    }
-                    else if ((k2 <= 37) && (k2 > 33)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 <= 37) && (k2 > 33)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s5 = "up 35, ";
-                    }
-                    else if ((k2 <= 33) && (k2 > 27)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 <= 33) && (k2 > 27)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s5 = "up 30, ";
-                    }
-                    else if ((k2 <= 27) && (k2 > 23)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 <= 27) && (k2 > 23)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s5 = "up 25, ";
-                    }
-                    else if ((k2 <= 23) && (k2 > 17)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 <= 23) && (k2 > 17)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s5 = "up 20, ";
-                    }
-                    else if ((k2 <= 17) && (k2 > 13)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 <= 17) && (k2 > 13)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s5 = "up 15, ";
-                    }
-                    else if ((k2 <= 13) && (k2 > 7)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 <= 13) && (k2 > 7)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s5 = "up 10, ";
-                    }
-                    else if ((k2 < 7) && (k2 > 3)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 < 7) && (k2 > 3)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s5 = "up a bit, ";
                     }
                     if (((j > f8) && !flag1) || ((d3 < 2130D) && (d6 < d2) && !flag1)) {
                         s4 = ", ground returns";
                         s2 = ", ground returns";
                     }
-                    if (j - 40 > f8) {
+                    if ((j - 40) > f8) {
                         s4 = ", ground clutter";
                         s2 = ", ground clutter";
                     }
@@ -6815,14 +6544,12 @@ public abstract class CandC {
                     String s = "level with us";
                     if ((d2 - d6 - 300D) >= 0.0D) {
                         s = "below us";
-                    }
-                    else if (((d2 - d6) + 300D) <= 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (((d2 - d6) + 300D) <= 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s = "above us";
                     }
                     if (((d2 - d6 - 300D) < 0.0D) && ((d2 - d6 - 150D) >= 0.0D)) {
                         s = "slightly below";
-                    }
-                    else if ((((d2 - d6) + 300D) > 0.0D) && (((d2 - d6) + 150D) < 0.0D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((((d2 - d6) + 300D) > 0.0D) && (((d2 - d6) + 150D) < 0.0D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s = "slightly above";
                     }
                     // new String();
@@ -6837,8 +6564,8 @@ public abstract class CandC {
                     double d10 = d - d4;
                     double d11 = d1 - d5;
                     // Random random = new Random();
-                    float f2 = ((World.Rnd().nextInt(10) - 5F) / 100F) + 1.0F;
-                    int l1 = World.Rnd().nextInt(2) - 1;
+                    float f2 = ((TrueRandom.nextInt(10) - 5F) / 100F) + 1.0F;
+                    int l1 = TrueRandom.nextInt(2) - 1;
                     int i2 = (int) (Math.ceil(Math.sqrt((d11 * d11) + (d10 * d10)) / 10D) * 10D * f2);
                     float f3 = 57.32484F * (float) Math.atan2(i2, d7);
                     int j2 = (int) (Math.floor((int) f3) - 90D);
@@ -6883,63 +6610,44 @@ public abstract class CandC {
                     String s3 = "  ";
                     if (l3 == 0) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed
                         s2 = "Dead ahead, ";
-                    }
-                    else if (l3 == 1) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (l3 == 1) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 1, ";
-                    }
-                    else if (l3 == 2) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (l3 == 2) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 2, ";
-                    }
-                    else if (l3 == 3) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (l3 == 3) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 3, ";
-                    }
-                    else if (l3 == 4) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (l3 == 4) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 4, ";
-                    }
-                    else if ((l3 > 4) && (l3 < 8)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 4) && (l3 < 8)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 5, ";
-                    }
-                    else if ((l3 > 7) && (l3 <= 15)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 7) && (l3 <= 15)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 10, ";
-                    }
-                    else if ((l3 > 15) && (l3 <= 25)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 15) && (l3 <= 25)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 20, ";
-                    }
-                    else if ((l3 > 25) && (l3 <= 35)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 25) && (l3 <= 35)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 30, ";
-                    }
-                    else if ((l3 > 35) && (l3 <= 45)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 35) && (l3 <= 45)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 40, ";
                         s3 = ", evading";
-                    }
-                    else if (l3 > 359) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (l3 > 359) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Dead ahead, ";
-                    }
-                    else if (l3 == 359) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (l3 == 359) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 1, ";
-                    }
-                    else if (l3 == 358) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (l3 == 358) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 2, ";
-                    }
-                    else if (l3 == 357) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (l3 == 357) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 3, ";
-                    }
-                    else if (l3 == 356) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (l3 == 356) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 4, ";
-                    }
-                    else if ((l3 < 356) && (l3 >= 353)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 356) && (l3 >= 353)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 5, ";
-                    }
-                    else if ((l3 < 353) && (l3 >= 345)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 353) && (l3 >= 345)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 10, ";
-                    }
-                    else if ((l3 < 345) && (l3 >= 335)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 345) && (l3 >= 335)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 20, ";
-                    }
-                    else if ((l3 < 335) && (l3 >= 325)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 335) && (l3 >= 325)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 30, ";
-                    }
-                    else if ((l3 < 325) && (l3 >= 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 325) && (l3 >= 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 40, ";
                         s3 = ", evading";
                     }
@@ -6947,66 +6655,48 @@ public abstract class CandC {
                     if ((k2 >= -45) && (k2 < -35)) {
                         s4 = "down 40, ";
                         s3 = ", evading";
-                    }
-                    else if ((k2 >= -35) && (k2 < -25)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 >= -35) && (k2 < -25)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "down 30, ";
-                    }
-                    else if ((k2 >= -25) && (k2 < -15)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 >= -25) && (k2 < -15)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "down 20, ";
-                    }
-                    else if ((k2 >= -15) && (k2 < -5)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 >= -15) && (k2 < -5)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "down 10, ";
-                    }
-                    else if (k2 == -5) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (k2 == -5) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "down 5, ";
-                    }
-                    else if (k2 == -4) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (k2 == -4) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "down 4, ";
-                    }
-                    else if (k2 == -3) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (k2 == -3) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "down 3, ";
-                    }
-                    else if (k2 == -2) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (k2 == -2) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "down 2, ";
-                    }
-                    else if (k2 == -1) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (k2 == -1) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "down 1, ";
-                    }
-                    else if (k2 == 0) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (k2 == 0) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "level, ";
-                    }
-                    else if ((k2 <= 45) && (k2 > 35)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 <= 45) && (k2 > 35)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "up 40, ";
                         s3 = ", evading";
-                    }
-                    else if ((k2 <= 35) && (k2 > 25)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 <= 35) && (k2 > 25)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "up 30, ";
-                    }
-                    else if ((k2 <= 25) && (k2 > 15)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 <= 25) && (k2 > 15)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "up 20, ";
-                    }
-                    else if ((k2 <= 15) && (k2 > 5)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 <= 15) && (k2 > 5)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "up 10, ";
-                    }
-                    else if (k2 == 5) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (k2 == 5) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "up 5, ";
-                    }
-                    else if (k2 == 4) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (k2 == 4) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "up 4, ";
-                    }
-                    else if (k2 == 3) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (k2 == 3) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "up 3, ";
-                    }
-                    else if (k2 == 2) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (k2 == 2) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "up 2, ";
-                    }
-                    else if (k2 == 1) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (k2 == 1) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "up 1, "; // TODO: Fixed by SAS~Storebror: Useless double conversion removed
                     }
                     if (((j > f7) && !flag1) || ((d3 < 2000D) && (d6 < d2) && !flag1)) {
                         s3 = ", ground returns";
                     }
-                    if (j - 40 > f7) {
+                    if ((j - 40) > f7) {
                         s3 = ", ground clutter";
                     }
                     if (((double) i2 <= (double) f9) && (j3 > 0) && (k2 >= -45) && (k2 <= 45) && (Math.abs(k3) <= 45)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed
@@ -7084,14 +6774,12 @@ public abstract class CandC {
                     String s = "level with us";
                     if ((d2 - d6 - 300D) >= 0.0D) {
                         s = "below us";
-                    }
-                    else if (((d2 - d6) + 300D) <= 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (((d2 - d6) + 300D) <= 0.0D) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s = "above us";
                     }
                     if (((d2 - d6 - 300D) < 0.0D) && ((d2 - d6 - 150D) >= 0.0D)) {
                         s = "slightly below";
-                    }
-                    else if ((((d2 - d6) + 300D) > 0.0D) && (((d2 - d6) + 150D) < 0.0D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((((d2 - d6) + 300D) > 0.0D) && (((d2 - d6) + 150D) < 0.0D)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s = "slightly above";
                     }
                     // new String();
@@ -7106,15 +6794,15 @@ public abstract class CandC {
                     double d10 = d - d4;
                     double d11 = d1 - d5;
                     // Random random = new Random();
-                    float f2 = ((World.Rnd().nextInt(20) - 10F) / 100F) + 1.0F;
-                    int l1 = World.Rnd().nextInt(6) - 3;
+                    float f2 = ((TrueRandom.nextInt(20) - 10F) / 100F) + 1.0F;
+                    int l1 = TrueRandom.nextInt(6) - 3;
                     float f3 = 5630F;
                     float f4 = f3;
-                    if ((d3 < 1.25F * f3) && !flag1) {
+                    if ((d3 < (1.25F * f3)) && !flag1) {
                         f4 = (float) d3 * 0.8F;
                     }
-                    if ((d3 < 1.25F * f3) && flag1) {
-                        if (d3 <= 1.25F * f3 * 0.5F) {
+                    if ((d3 < (1.25F * f3)) && flag1) {
+                        if (d3 <= (1.25F * f3 * 0.5F)) {
                             f4 = (float) (d3 * 0.8D * 2D);
                         } else {
                             f4 = f3;
@@ -7146,121 +6834,87 @@ public abstract class CandC {
                     String s2 = "  ";
                     if (l3 < 5) {
                         s2 = "Dead ahead, ";
-                    }
-                    else if ((l3 >= 5) && (l3 <= 7)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 >= 5) && (l3 <= 7)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 5, ";
-                    }
-                    else if ((l3 > 7) && (l3 <= 12)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 7) && (l3 <= 12)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 10, ";
-                    }
-                    else if ((l3 > 12) && (l3 <= 17)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 12) && (l3 <= 17)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 15, ";
-                    }
-                    else if ((l3 > 17) && (l3 <= 25)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 17) && (l3 <= 25)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 20, ";
-                    }
-                    else if ((l3 > 25) && (l3 <= 35)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 25) && (l3 <= 35)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 30, ";
-                    }
-                    else if ((l3 > 35) && (l3 <= 45)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 35) && (l3 <= 45)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Right 40, ";
-                    }
-                    else if ((l3 > 45) && (l3 <= 70)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 45) && (l3 <= 70)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Turn right, ";
-                    }
-                    else if (l3 > 355) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (l3 > 355) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Dead ahead, ";
-                    }
-                    else if ((l3 <= 355) && (l3 >= 352)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 <= 355) && (l3 >= 352)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 5, ";
-                    }
-                    else if ((l3 < 352) && (l3 >= 347)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 352) && (l3 >= 347)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 10, ";
-                    }
-                    else if ((l3 < 347) && (l3 >= 342)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 347) && (l3 >= 342)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 15, ";
-                    }
-                    else if ((l3 < 342) && (l3 >= 335)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 342) && (l3 >= 335)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 20, ";
-                    }
-                    else if ((l3 < 335) && (l3 >= 325)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 335) && (l3 >= 325)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 30, ";
-                    }
-                    else if ((l3 < 325) && (l3 >= 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 325) && (l3 >= 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Left 40, ";
-                    }
-                    else if ((l3 < 345) && (l3 >= 290)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 345) && (l3 >= 290)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s2 = "Turn left, ";
                     }
                     String s3 = "  ";
                     if (k2 < -10) {
                         s3 = "nose down";
-                    }
-                    else if ((k2 >= -10) && (k2 <= -5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 >= -10) && (k2 <= -5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "down a bit";
-                    }
-                    else if ((k2 > -5) && (k2 < 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 > -5) && (k2 < 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "level";
-                    }
-                    else if ((k2 <= 10) && (k2 >= 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k2 <= 10) && (k2 >= 5)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "up a bit";
-                    }
-                    else if (k2 > 10) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (k2 > 10) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s3 = "pull up";
                     }
                     String s4 = "  ";
                     if (l3 < 5) {
                         s4 = "dead ahead, ";
-                    }
-                    else if ((l3 >= 5) && (l3 <= 7)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 >= 5) && (l3 <= 7)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "right by 5\260, ";
-                    }
-                    else if ((l3 > 7) && (l3 <= 12)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 7) && (l3 <= 12)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "right by 10\260, ";
-                    }
-                    else if ((l3 > 12) && (l3 <= 17)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 12) && (l3 <= 17)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "right by 15\260, ";
-                    }
-                    else if ((l3 > 17) && (l3 <= 25)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 17) && (l3 <= 25)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "right by 20\260, ";
-                    }
-                    else if ((l3 > 25) && (l3 <= 35)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 25) && (l3 <= 35)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "right by 30\260, ";
-                    }
-                    else if ((l3 > 35) && (l3 <= 45)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 35) && (l3 <= 45)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "right by 40\260, ";
-                    }
-                    else if ((l3 > 45) && (l3 <= 70)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 > 45) && (l3 <= 70)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "off our right, ";
-                    }
-                    else if (l3 > 355) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (l3 > 355) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "dead ahead, ";
-                    }
-                    else if ((l3 <= 355) && (l3 >= 352)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 <= 355) && (l3 >= 352)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "left by 5\260, ";
-                    }
-                    else if ((l3 < 352) && (l3 >= 347)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 352) && (l3 >= 347)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "left by 10\260, ";
-                    }
-                    else if ((l3 < 347) && (l3 >= 342)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 347) && (l3 >= 342)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "left by 15\260, ";
-                    }
-                    else if ((l3 < 342) && (l3 >= 335)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 342) && (l3 >= 335)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "left by 20\260, ";
-                    }
-                    else if ((l3 < 335) && (l3 >= 325)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 335) && (l3 >= 325)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "left by 30\260, ";
-                    }
-                    else if ((l3 < 325) && (l3 >= 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 325) && (l3 >= 315)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "left by 40\260, ";
-                    }
-                    else if ((l3 < 345) && (l3 >= 290)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((l3 < 345) && (l3 >= 290)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = "off our left, ";
                     }
-                    if (( i2 <=  i4) && (j3 > 0) && (k2 >= -20) && (k2 <= 20) && (Math.abs(k3) <= 70)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed
+                    if ((i2 <= i4) && (j3 > 0) && (k2 >= -20) && (k2 <= 20) && (Math.abs(k3) <= 70)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed
                         HUD.logCenter("                                          RO: Contact " + s4 + s + ", " + l2 + s1);
                         this.freq = 6F;
-                    } else if (( i2 <=  i4) && (j3 < 1) && (i2 >= 120) && (k2 >= -20) && (k2 <= 20) && (Math.abs(k3) <= 70)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed
+                    } else if ((i2 <= i4) && (j3 < 1) && (i2 >= 120) && (k2 >= -20) && (k2 <= 20) && (Math.abs(k3) <= 70)) { // TODO: Fixed by SAS~Storebror: Useless double conversion removed
                         HUD.logCenter("                                          RO: " + s2 + s3 + ", " + i3 + s1);
                         this.freq = 4F;
                     } else {
@@ -7300,9 +6954,9 @@ public abstract class CandC {
             boolean flag = false;
 //            float f = 1000F;
             // Random random = new Random();
-//            int i = World.Rnd().nextInt(140);
+//            int i = TrueRandom.nextInt(140);
 //            int j = i + 10;
-            double randomMaxHeight = World.Rnd().nextDouble(10D, 150D);
+            double randomMaxHeight = TrueRandom.nextDouble(10D, 150D);
             Aircraft aircraft1 = World.getPlayerAircraft();
             if (aircraft1 == null) {
                 return true; // TODO: Fixed By SAS~Storebror, avoid Null Pointer Exceptions!
@@ -7311,7 +6965,7 @@ public abstract class CandC {
             // TODO: Fix by SAS~Storebror:
             // Get rid of endless recursion through all game's target list (a few hundred times)
             // New method introduced to get the same result with on single target list search!
-            Aircraft aircraft = GetNearestEnemyInSteps(aircraft1, 1000F, (float)this.maxrange * 1000F, 1000F, 9);
+            Aircraft aircraft = GetNearestEnemyInSteps(aircraft1, 1000F, this.maxrange * 1000F, 1000F, 9);
 
 ////            Aircraft aircraft = NearestRadarTargets.GetNearestEnemyEcho(aircraft1, 1000F, 9); // TODO: Fixed by SAS~Storebror, avoid missing dependencies!
 //            Aircraft aircraft = GetNearestEnemy(aircraft1, 1000F, 9);
@@ -7485,17 +7139,13 @@ public abstract class CandC {
                     int k = Landscape.getPixelMapT(Engine.land().WORLD2PIXX(actor.pos.getAbsPoint().x), Engine.land().WORLD2PIXY(actor.pos.getAbsPoint().y));
                     if ((k >= 28) && (k < 32)) {
                         s4 = ", near the water";
-                    }
-                    else if ((k >= 16) && (k < 20)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k >= 16) && (k < 20)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = ", in the town";
-                    }
-                    else if ((k >= 24) && (k < 29)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k >= 24) && (k < 29)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = ", near the treeline";
-                    }
-                    else if (((k >= 32) && (k < 64)) || (k >= 128)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if (((k >= 32) && (k < 64)) || (k >= 128)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = ", near the road";
-                    }
-                    else if ((k >= 64) && (k < 128)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
+                    } else if ((k >= 64) && (k < 128)) { // TODO: Fixed by SAS~Storebror: Avoid unnecessary "if" clauses, add "else" clause!
                         s4 = ", near the tracks";
                     }
                     String s5 = "";
