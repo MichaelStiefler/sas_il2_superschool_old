@@ -26,6 +26,8 @@ public interface TypeEnhancedWeaponOptionControl extends TypeLimitedWeaponOption
 	 *  If a value is in this list, it can be selected by the pilot. Please note that 'default fire' must be always available. 
 	 *  
 	 *  Please note that 'bombs' refers to instances of 'RocketGun', 'BombGun' or 'RocketBombGun' fired from Trigger 3.
+	 *  
+	 *  The maximal possible length of the field returned is 256
 	**/
 	public int[] getPossibleBombSalvoSizeOptions();
 	
@@ -37,6 +39,8 @@ public interface TypeEnhancedWeaponOptionControl extends TypeLimitedWeaponOption
 	 *  If a value is in this list, it can be selected by the pilot. Please note that 'default fire' must be always available. 
 	 *  
 	 *  Please note that 'rockets' refers to instances of 'RocketGun' fired from Trigger 2.
+	 *  
+	 *  The maximal possible length of the field returned is 256
 	**/
 	public int[] getPossibleRocketSalvoSizeOptions();
 	
@@ -48,6 +52,8 @@ public interface TypeEnhancedWeaponOptionControl extends TypeLimitedWeaponOption
 	 *  The values returned here will show no effect if the inherited canSelectBombReleaseDelay() method returns 'false'.
 	 *  
 	 *  Please note that 'bombs' refers to instances of 'RocketGun', 'BombGun' or 'RocketBombGun' fired from Trigger 3.
+	 *  
+	 *  The maximal possible length of the field returned is 256
 	**/
 	public long[] getPossibleBombReleaseDelayOptions();
 	
@@ -59,6 +65,8 @@ public interface TypeEnhancedWeaponOptionControl extends TypeLimitedWeaponOption
 	 *  The values returned here will show no effect if the inherited canSelectRocketReleaseDelay() method returns 'false'.
 	 *  
 	 *  Please note that 'rockets' refers to instances of 'RocketGun' fired from Trigger 2.
+	 *  
+	 *  The maximal possible length of the field returned is 256
 	**/
 	public long[] getPossibleRocketReleaseDelayOptions();
 }

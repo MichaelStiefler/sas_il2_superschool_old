@@ -1248,16 +1248,104 @@ public class Controls {
     
  // +++++ TODO skylla: enhanced weapon release control +++++
     
+  //+++ getter and setter methods for field index net replication +++
+    public int getSelectedBombReleaseDelayIndex() {
+    	return Arrays.binarySearch(this.bombReleaseDelayOptions, this.bombReleaseDelay);
+    }
+    
+    public void setBombReleaseDelayByIndex(int index) {
+    	if(index < 0 || index >= bombReleaseDelayOptions.length) {
+    		System.out.println(this.getClass() + ".setBombReleaseDelayByIndex() received an off value (" + index + ") and will ignore it. This may be responsible for weird occurances involving ordnance releases!");
+    		return;
+    	}
+    	bombReleaseDelay = bombReleaseDelayOptions[index];
+    }
+    
+    public int getSelectedRocketReleaseDelayIndex() {
+    	return Arrays.binarySearch(this.rocketReleaseDelayOptions, this.rocketReleaseDelay);
+    }
+    
+    public void setRocketReleaseDelayByIndex(int index) {
+    	if(index < 0 || index >= rocketReleaseDelayOptions.length) {
+    		System.out.println(this.getClass() + ".setRocketReleaseDelayByIndex() received an off value (" + index + ") and will ignore it. This may be responsible for weird occurances involving ordnance releases!");
+    		return;
+    	}
+    	rocketReleaseDelay = rocketReleaseDelayOptions[index];
+    }
+    
+    public int getSelectedBombSalvoSizeIndex() {
+    	return Arrays.binarySearch(this.bombSalvoSizeOptions, this.bombDropMode);
+    }
+    
+    public void setBombSalvoSizeByIndex(int index) {
+    	if(index >= bombSalvoSizeOptions.length || index < 0) {
+    		System.out.println(this.getClass() + ".setBombSalvoSizeByIndex() received an off value (" + index + ") and will ignore it. This may be responsible for weird occurances involving ordnance releases!");
+    		return;
+    	}
+    	this.bombDropMode = bombSalvoSizeOptions[index];
+    }
+    
+    public int getSelectedRocketSalvoSizeIndex() {
+    	return Arrays.binarySearch(this.rocketSalvoSizeOptions, rocketFireMode);
+    }
+    
+    public void setRocketSalvoSizeByIndex(int index) {
+    	if(index >= rocketSalvoSizeOptions.length || index < 0) {
+    		System.out.println(this.getClass() + ".setRocketSalvoSizeByIndex() received an off value (" + index + ") and will ignore it. This may be responsible for weird occurances involving ordnance releases!");
+    		return;
+    	}
+    	this.rocketFireMode = rocketSalvoSizeOptions[index];
+    }
+    
+    public void setBombSelected(int index) {
+    	if(index < 0 || index>= availableBombs.size()) {
+    		System.out.println(this.getClass() + ".setRocketSelected() received an off value (" + index + ") and will ignore it. This may be responsible for weird occurances involving ordnance releases!");
+    		return;
+    	}
+    	selectedBomb = (Class) availableBombs.get(index);
+    	checkSelectedBombAvailable();
+    }
+    
+    public int getBombIndexSelected() {
+    	int i = availableBombs.indexOf(selectedBomb);
+    	if(i == -1) {
+    		checkSelectedBombAvailable();
+    		i = 0;
+    	}
+    	return i;
+    }
+    
+    public void setRocketSelected(int index) {
+    	if(index < 0 || index>= availableRockets.size()) {
+    		System.out.println(this.getClass() + ".setRocketSelected() received an off value (" + index + ") and will ignore it. This may be responsible for weird occurances involving ordnance releases!");
+    		return;
+    	}
+    	selectedRocket = (Class) availableRockets.get(index);
+    	checkSelectedRocketAvailable();
+    }
+    
+    public int getRocketIndexSelected() {
+    	int i = availableRockets.indexOf(selectedRocket);
+    	if(i == -1) {
+    		checkSelectedRocketAvailable();
+    		i = 0;
+    	}
+    	return i;
+    }
+  //--- getter and setter methods for field index net replication ---
+    
   //reset method to be used after executing RRR
     public void resetAvailableBombs() {
     	availableBombs.clear();
     	availableBombs = null;
+    	initiateEnhancedWeaponOptions();
     }
     
   //reset method to be used after executing RRR
     public void resetAvailableRockets() {
     	availableRockets.clear();
     	availableRockets = null;
+    	initiateEnhancedWeaponOptions();
     }
     
    /* 
@@ -1328,6 +1416,9 @@ public class Controls {
     			bombSalvoSizeOptions[i] = i-1;
     		}
     	}
+    	if(bombSalvoSizeOptions.length > 256) {
+    		throw new IllegalArgumentException(this.getClass() + ".bombSalvoSizeOptions.length must not be greater than 256! In order to fix this error, please modify the field returned by " + _ac.getClass() + ".getPossibleBombSalvoSizeOptions() accordingly!");
+    	}    	
     	
     	if(tmpRs != null) {
     		boolean b = Arrays.binarySearch(tmpRs, -1) < 0;
@@ -1350,6 +1441,9 @@ public class Controls {
     		for(int i = 0; i<3; i++) {
     			rocketSalvoSizeOptions[i] = i-1;
     		}
+    	}
+    	if(rocketSalvoSizeOptions.length > 256) {
+    		throw new IllegalArgumentException(this.getClass() + ".rocketSalvoSizeOptions.length must not be greater than 256! In order to fix this error, please modify the field returned by " + _ac.getClass() + ".getPossibleRocketSalvoSizeOptions() accordingly!");
     	}
     	
     	validB = 0;
@@ -1385,6 +1479,9 @@ public class Controls {
     		bombReleaseDelayOptions[3] = 500L;
     		bombReleaseDelayOptions[4] = 1000L;
     	}
+    	if(bombReleaseDelayOptions.length > 256) {
+    		throw new IllegalArgumentException(this.getClass() + ".bombReleaseDelayOptions.length must not be greater than 256! In order to fix this error, please modify the field returned by " + _ac.getClass() + ".getPossibleBombReleaseDelayOptions() accordingly!");
+    	}
     	
     	validR = 0;
     	if(tmpRd != null) {
@@ -1418,6 +1515,9 @@ public class Controls {
     		rocketReleaseDelayOptions[2] = 250L;
     		rocketReleaseDelayOptions[3] = 500L;
     		rocketReleaseDelayOptions[4] = 1000L;
+    	}
+    	if(rocketReleaseDelayOptions.length > 256) {
+    		throw new IllegalArgumentException(this.getClass() + ".rocketReleaseDelayOptions.length must not be greater than 256! In order to fix this error, please modify the field returned by " + _ac.getClass() + ".getPossibleRocketReleaseDelayOptions() accordingly!");
     	}
     }
     
@@ -1566,25 +1666,6 @@ public class Controls {
     	checkSelectedBombAvailable();
     }
     
-    /* setter method for external access (for instance: net replication):
-     * has to sanitize the input, but will falsify the input as little as possible
-     */
-    public void setBombSelected(int listIndex) {
-    	if(listIndex < 0 || listIndex>= availableBombs.size())
-    		listIndex = 0;
-    	selectedBomb = (Class) availableBombs.get(listIndex);
-    	checkSelectedBombAvailable();
-    }
-    
-    public int getBombIndexSelected() {
-    	int i = availableBombs.indexOf(selectedBomb);
-    	if(i == -1) {
-    		checkSelectedBombAvailable();
-    		i = 0;
-    	}
-    	return i;
-    }
-    
     //silent worker method; gets called within toggleRocketSelectedHUD()
     public void toggleRocketSelected() {
     	Aircraft ac = (Aircraft) this.FM.actor;
@@ -1607,25 +1688,6 @@ public class Controls {
     	}
     	selectedRocket = (Class) availableRockets.get(i);
     	checkSelectedRocketAvailable();
-    }
-    
-    /* setter method for external access (for instance: net replication):
-     * has to sanitize the input, but will falsify the input as little as possible
-     */
-    public void setRocketSelected(int index) {
-    	if(index < 0 || index>= availableRockets.size())
-    		index = 0;
-    	selectedRocket = (Class) availableRockets.get(index);
-    	checkSelectedRocketAvailable();
-    }
-    
-    public int getRocketIndexSelected() {
-    	int i = availableRockets.indexOf(selectedRocket);
-    	if(i == -1) {
-    		checkSelectedRocketAvailable();
-    		i = 0;
-    	}
-    	return i;
     }
     
     //called from AircraftHotKeys
