@@ -131,6 +131,17 @@ public class AircraftState {
     public static final int     _AS_SPREADANGLE                        = 45;
     public static final int     _AS_PILOT_WOUNDED                      = 46;
     public static final int     _AS_PILOT_BLEEDING                     = 47;
+    
+ // +++++ TODO skylla: enhanced weapon release control +++++
+    public static final int     _AS_ROCKET_SELECTED                    = 48;
+    public static final int     _AS_ROCKET_RELEASE_DELAY               = 49;
+    public static final int     _AS_ROCKET_RELEASE_MODE                = 50;    
+    
+    public static final int     _AS_BOMB_SELECTED                      = 51;
+    public static final int     _AS_BOMB_RELEASE_DELAY                 = 52;
+    public static final int     _AS_BOMB_RELEASE_MODE                  = 53;
+ // ----- todo skylla: enhanced weapon release control -----
+    
     public static final int       _AS_COCKPIT_GLASS             = 1;
     public static final int       _AS_COCKPIT_ARMORGLASS        = 2;
     public static final int       _AS_COCKPIT_LEFT1             = 4;
@@ -262,17 +273,6 @@ public class AircraftState {
     private LightPointActor[] astateEngineBurnLights;
     // T-ODO: --- Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn Effects ---
     
-  //+++++ TODO skylla: enhanced weapon release control +++++
-    
-	public void replicateWeaponReleaseDelayToNet(long theWeaponReleaseDelay) {
-		setWeaponReleaseDelay(actor, theWeaponReleaseDelay, false);
-	}
-	
-	private void setWeaponReleaseDelay(Actor theActor, long theWeaponReleaseDelay, boolean applySetting) {
-		
-	}
-    
-  // ----- todo skylla: enhanced weapon release control -----
     public AircraftState() {
         this.bleedingTime = 0L;
         this.astateBleedingTimes = new long[9];
@@ -2813,7 +2813,34 @@ public class AircraftState {
                     case 45:
                         setSpreadAngle(localActor, j, k, true);
                         break;
-                                                
+                              
+                 // +++++ TODO skylla: enhanced weapon release control +++++
+                    case _AS_ROCKET_SELECTED: {
+                    	this.setRocketSelected(localActor, j, true);
+                    	break;
+                    }                        
+                    case _AS_ROCKET_RELEASE_DELAY: {
+                    	this.setRocketReleaseDelay(localActor, j, true);
+                    	break;
+                    }
+                    case _AS_ROCKET_RELEASE_MODE: {
+                        this.setRocketReleaseMode(localActor, j, true);
+                    	break;
+                    }
+                    case _AS_BOMB_SELECTED: {
+                    	this.setBombSelected(localActor, j, true);
+                    	break;
+                    }
+                    case _AS_BOMB_RELEASE_DELAY: {
+                    	this.setBombReleaseDelay(localActor, j, true);
+                    	break;
+                    }
+                    case _AS_BOMB_RELEASE_MODE: {
+                    	this.setBombReleaseMode(localActor, j, true);
+                    	break;
+                    }
+                 // ----- todo skylla: enhanced weapon release control ----- 
+                    
                     case 36:
                     case 38:
                     case 39:
@@ -2984,6 +3011,33 @@ public class AircraftState {
                     doSetSpreadAngle(localActor, j, k);
                     break;
                     
+             // +++++ TODO skylla: enhanced weapon release control +++++
+                case _AS_ROCKET_SELECTED: {
+                	this.setRocketSelected(localActor, j, true);
+                	break;
+                }                        
+                case _AS_ROCKET_RELEASE_DELAY: {
+                	this.setRocketReleaseDelay(localActor, j, true);
+                	break;
+                }
+                case _AS_ROCKET_RELEASE_MODE: {
+                    this.setRocketReleaseMode(localActor, j, true);
+                	break;
+                }
+                case _AS_BOMB_SELECTED: {
+                	this.setBombSelected(localActor, j, true);
+                	break;
+                }
+                case _AS_BOMB_RELEASE_DELAY: {
+                	this.setBombReleaseDelay(localActor, j, true);
+                	break;
+                }
+                case _AS_BOMB_RELEASE_MODE: {
+                	this.setBombReleaseMode(localActor, j, true);
+                	break;
+                }
+             // ----- todo skylla: enhanced weapon release control ----- 
+                
                 case 41:
                 case 43:
             }
@@ -3591,4 +3645,171 @@ public class AircraftState {
     private float fUserBombDelay = 0F;
     private float fUserRocketDelay = 60F;
  // T-ODO: Storebror: --- Bomb/Rocket Fuze/Delay Replication
+    
+  //+++++ TODO skylla: enhanced weapon release control +++++
+    
+    public void replicateRocketSelectedToNet(int listIndex) {
+    	setRocketSelected(actor, listIndex, false);
+    }
+    
+    /**
+     * @param listIndex
+     * 	value range: 0 to 255
+    **/
+    private void setRocketSelected(Actor actor, int listIndex, boolean applySetting) {
+    	if(!Actor.isValid(actor))
+			return;
+		if(applySetting)
+			doSetRocketSelected(actor, listIndex);	
+		if(listIndex > 255 || listIndex < 0) {
+			System.out.println(this.getClass() + ".setRocketSelected() received a off 'listIndex' value (" + listIndex + "). This may be responsible for weird occurances when firing rockets!");
+		}
+		if(bIsMaster) {
+			netToMirrors(_AS_ROCKET_SELECTED, listIndex, 0);
+		} else {
+			netToMaster(_AS_ROCKET_SELECTED, listIndex, 0, actor);
+		}
+    }
+    
+    private void doSetRocketSelected(Actor actor, int listIndex) {
+    	aircraft.FM.CT.setRocketSelected(listIndex);
+    }
+    
+	public void replicateRocketReleaseDelayToNet(int delayIndex) {
+		setRocketReleaseDelay(actor, delayIndex, false);
+	}
+	
+	/**
+	 * @param delayIndex
+	 * 	value range: 0 to 255
+	 */
+	private void setRocketReleaseDelay(Actor actor, int delayIndex, boolean applySetting) {
+		if(!Actor.isValid(actor))
+			return;
+		if(applySetting)
+			doSetRocketReleaseDelay(actor, delayIndex);
+		if(delayIndex > 255 || delayIndex < 0) {
+			System.out.println(this.getClass() + ".setRocketReleaseDelay() received a off 'delayIndex' value (" + delayIndex + "). This may be responsible for weird occurances when firing rockets!");
+		}
+		if(bIsMaster) {
+			netToMirrors(_AS_ROCKET_RELEASE_DELAY, delayIndex, 0);
+		} else {
+			netToMaster(_AS_ROCKET_RELEASE_DELAY, delayIndex, 0, actor);
+		}
+	}
+	
+	private void doSetRocketReleaseDelay(Actor actor, int delayIndex) {
+		aircraft.FM.CT.setRocketReleaseDelayByIndex(delayIndex);
+	}
+	
+	public void replicateRocketReleaseModeToNet(int releaseModeIndex) {
+		setRocketReleaseMode(actor, releaseModeIndex, false);
+	}
+	
+	/**
+	 * @param releaseModeIndex
+	 * 	value range: 0 to 2
+	 */
+	private void setRocketReleaseMode(Actor actor, int releaseModeIndex, boolean applySetting) {
+		if(!Actor.isValid(actor))
+			return;
+		if(applySetting)
+			doSetRocketReleaseMode(actor, releaseModeIndex);
+		if(releaseModeIndex > 255 || releaseModeIndex < 0) {
+			System.out.println(this.getClass() + ".setRocketReleaseMode() received a off 'releaseModeIndex' value (" + releaseModeIndex + "). This may be responsible for weird occurances when firing rockets!");
+		}
+		if(bIsMaster) {
+			netToMirrors(_AS_ROCKET_RELEASE_MODE, releaseModeIndex, 0);
+		} else {
+			netToMaster(_AS_ROCKET_RELEASE_MODE, releaseModeIndex, 0, actor);
+		}
+	}
+	
+	private void doSetRocketReleaseMode(Actor actor, int releaseModeIndex) {
+		aircraft.FM.CT.setRocketSalvoSizeByIndex(releaseModeIndex);
+	}	
+	
+    public void replicateBombSelectedToNet(int listIndex) {
+    	setBombSelected(actor, listIndex, false);
+    }
+    
+    /**
+     * @param listIndex
+     * 	value range: 0 to 255
+    **/
+    private void setBombSelected(Actor actor, int listIndex, boolean applySetting) {
+    	if(!Actor.isValid(actor))
+			return;
+		if(applySetting)
+			doSetBombSelected(actor, listIndex);
+		if(listIndex > 255 || listIndex < 0) {
+			System.out.println(this.getClass() + ".setBombSelected() received a off 'listIndex' value (" + listIndex + "). This may be responsible for weird occurances when releasing bombs!");
+		}
+		if(bIsMaster) {
+			netToMirrors(_AS_BOMB_SELECTED, listIndex, 0);
+		} else {
+			netToMaster(_AS_BOMB_SELECTED, listIndex, 0, actor);
+		}
+    }
+    
+    private void doSetBombSelected(Actor actor, int listIndex) {
+    	aircraft.FM.CT.setBombSelected(listIndex);
+    }
+	
+	public void replicateBombReleaseDelayToNet(int delayIndex) {
+		setBombReleaseDelay(actor, delayIndex, false);
+	}
+	
+	/**
+	 * @param delayIndex
+	 * 	value range: 0 to 255
+	 */
+	private void setBombReleaseDelay(Actor actor, int delayIndex, boolean applySetting) {
+		if(!Actor.isValid(actor))
+			return;
+		if(applySetting)
+			doSetBombReleaseDelay(actor, delayIndex);
+		if(delayIndex > 255 || delayIndex < 0) {
+			System.out.println(this.getClass() + ".setBombReleaseDelay() received a off 'delayIndex' value (" + delayIndex + "). This may be responsible for weird occurances when releasing bombs!");
+		}
+		if(bIsMaster) {
+			netToMirrors(_AS_BOMB_RELEASE_DELAY, delayIndex, 0);
+		} else {
+			netToMaster(_AS_BOMB_RELEASE_DELAY, delayIndex, 0, actor);
+		}
+	}
+	
+	private void doSetBombReleaseDelay(Actor actor, int delayIndex) {
+		aircraft.FM.CT.setBombReleaseDelayByIndex(delayIndex);
+	}
+	
+	public void replicateBombReleaseModeToNet(int releaseModeIndex) {
+		setBombReleaseMode(actor, releaseModeIndex, false);
+	}
+	
+	/**
+	 * @param releaseModeIndex
+	 * 	value range: 0 to 255
+	 */
+	private void setBombReleaseMode(Actor actor, int releaseModeIndex, boolean applySetting) {
+		if(!Actor.isValid(actor))
+			return;
+		if(applySetting)
+			doSetBombReleaseMode(actor, releaseModeIndex);
+		if(releaseModeIndex > 255 || releaseModeIndex < 0) {
+			System.out.println(this.getClass() + ".setBombReleaseMode() received a off 'releaseModeIndex' value (" + releaseModeIndex + "). This may be responsible for weird occurances when releasing bombs!");
+		}
+		if(bIsMaster) {
+			netToMirrors(_AS_BOMB_RELEASE_MODE, releaseModeIndex, 0);
+		} else {
+			netToMaster(_AS_BOMB_RELEASE_MODE, releaseModeIndex, 0, actor);
+		}
+	}
+	
+	private void doSetBombReleaseMode(Actor actor, int releaseModeIndex) {
+		aircraft.FM.CT.setBombSalvoSizeByIndex(releaseModeIndex);
+	}
+    
+  // ----- todo skylla: enhanced weapon release control -----
+	
 }

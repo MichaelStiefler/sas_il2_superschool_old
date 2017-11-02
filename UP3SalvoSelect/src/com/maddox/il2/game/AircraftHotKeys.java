@@ -1081,31 +1081,37 @@ public class AircraftHotKeys {
                     //select rocket:
                     case 132: {
                     	FM.CT.toggleRocketSelectedHUD(hudLogWeaponId);
+                    	FM.AS.replicateRocketSelectedToNet(FM.CT.getRocketIndexSelected());
                     	break;
                     }
                     //rocket salvo size:
                     case 133: {
                     	FM.CT.toggleRocketFireMode(hudLogWeaponId);
+                    	FM.AS.replicateRocketReleaseModeToNet(FM.CT.getSelectedRocketSalvoSizeIndex());
                     	break;
                     }
                     //rocket release delay:
                     case 134: {
                     	FM.CT.toggleRocketReleaseDelayHUD(hudLogWeaponId);
+                    	FM.AS.replicateRocketReleaseDelayToNet(FM.CT.getSelectedRocketReleaseDelayIndex());
                     	break;
                     }
                     //select bomb:
                     case 135: {
                     	FM.CT.toggleBombSelectedHUD(hudLogWeaponId);
+                    	FM.AS.replicateBombSelectedToNet(FM.CT.getBombIndexSelected());
                     	break;
                     }
                     //bomb salvo size:
                     case 136: {
                     	FM.CT.toggleBombDropMode(hudLogWeaponId);
+                    	FM.AS.replicateBombReleaseModeToNet(FM.CT.getSelectedBombSalvoSizeIndex());
                     	break;
                     }
                     //bomb release delay:
                     case 137: {
                     	FM.CT.toggleBombReleaseDelayHUD(hudLogWeaponId);
+                    	FM.AS.replicateBombReleaseDelayToNet(FM.CT.getSelectedBombReleaseDelayIndex());
                     	break;
                     }
                   // ----- todo skylla: enhanced weapon release control -----
