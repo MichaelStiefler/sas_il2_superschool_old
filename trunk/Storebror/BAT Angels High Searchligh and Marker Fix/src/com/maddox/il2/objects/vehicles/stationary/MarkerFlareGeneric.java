@@ -11,7 +11,6 @@ import com.maddox.il2.ai.Explosion;
 import com.maddox.il2.ai.MsgExplosionListener;
 import com.maddox.il2.ai.MsgShotListener;
 import com.maddox.il2.ai.Shot;
-import com.maddox.il2.ai.War;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorHMesh;
@@ -27,22 +26,19 @@ import com.maddox.il2.objects.ActorAlign;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.bridges.BridgeSegment;
 import com.maddox.il2.objects.weapons.RocketFlareBall;
-import com.maddox.il2.objects.weapons.RocketFlareBallGreen;
-import com.maddox.il2.objects.weapons.RocketFlareBallRed;
-import com.maddox.il2.objects.weapons.RocketFlareBallWhite;
 import com.maddox.rts.Message;
 import com.maddox.rts.NetChannel;
 import com.maddox.rts.NetMsgFiltered;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
+import com.maddox.sas1946.il2.util.TrueRandom;
 import com.maddox.sound.SoundFX;
 
 public abstract class MarkerFlareGeneric extends ActorHMesh implements ActorAlign, MsgExplosionListener, MsgShotListener {
     public static class SPAWN implements ActorSpawn {
 
         public Actor actorSpawn(ActorSpawnArg actorspawnarg) {
-            // System.out.println("MarkerFlareGeneric SPAWN actorSpawn");
             MarkerFlareGeneric markerflaregeneric = null;
             try {
                 MarkerFlareGeneric.constr_arg2 = actorspawnarg;
@@ -61,7 +57,6 @@ public abstract class MarkerFlareGeneric extends ActorHMesh implements ActorAlig
         public Class cls;
 
         public SPAWN(Class class1) {
-            // System.out.println("MarkerFlareGeneric SPAWN");
             Property.set(class1, "iconName", "icons/unknown.mat");
             Property.set(class1, "meshName", MarkerFlareGeneric.mesh_name);
             this.cls = class1;
@@ -72,7 +67,6 @@ public abstract class MarkerFlareGeneric extends ActorHMesh implements ActorAlig
     class Mirror extends ActorNet {
 
         public boolean netInput(NetMsgInput netmsginput) throws IOException {
-            // System.out.println("MarkerFlareGeneric Mirror netInput");
             return true;
         }
 
@@ -80,7 +74,6 @@ public abstract class MarkerFlareGeneric extends ActorHMesh implements ActorAlig
 
         public Mirror(Actor actor1, NetChannel netchannel1, int i) {
             super(actor1, netchannel1, i);
-            // System.out.println("MarkerFlareGeneric Mirror");
             this.out = new NetMsgFiltered();
         }
     }
@@ -88,31 +81,22 @@ public abstract class MarkerFlareGeneric extends ActorHMesh implements ActorAlig
     class Master extends ActorNet {
 
         public boolean netInput(NetMsgInput netmsginput) throws IOException {
-            // System.out.println("MarkerFlareGeneric Master netInput");
             return true;
         }
 
         public Master(Actor actor1) {
             super(actor1);
-            // System.out.println("MarkerFlareGeneric Master");
         }
     }
 
     class Move extends Interpolate {
 
         public boolean tick() {
-//           // System.out.println("MarkerFlareGeneric Move tick()");
-//            //FIXME
-//            if (1==1) return true;
             if (MarkerFlareGeneric.this.engineSFX != null) {
                 if (MarkerFlareGeneric.this.engineSTimer >= 0) {
-//                    float f = (float)(Math.random() + 1.0D);
-//                    Random random = new Random();
-//                    int i = random.nextInt(5);
-//                    int i = TrueRandom.nextInt(5);
                     if (--MarkerFlareGeneric.this.engineSTimer <= 0) {
                         float f = (float) (Math.random() + 1.0D);
-                        int i = World.Rnd().nextInt(5);
+                        int i = TrueRandom.nextInt(5);
                         MarkerFlareGeneric.this.engineSTimer = (int) MarkerFlareGeneric.SecsToTicks(MarkerFlareGeneric.Rnd(10 + i + f, 10 + i + f));
                         if (!MarkerFlareGeneric.this.danger()) {
                             MarkerFlareGeneric.this.engineSTimer = -MarkerFlareGeneric.this.engineSTimer;
@@ -129,38 +113,27 @@ public abstract class MarkerFlareGeneric extends ActorHMesh implements ActorAlig
         }
 
         Move() {
-            // System.out.println("MarkerFlareGeneric Move");
         }
     }
 
     public static final double Rnd(double d, double d1) {
-        // System.out.println("MarkerFlareGeneric Rnd(double d, double d1)");
-        return World.Rnd().nextDouble(d, d1);
+        return TrueRandom.nextDouble(d, d1);
     }
 
     public static final float Rnd(float f, float f1) {
-        // System.out.println("MarkerFlareGeneric Rnd(float f, float f1)");
-        return World.Rnd().nextFloat(f, f1);
+        return TrueRandom.nextFloat(f, f1);
     }
 
-//    private boolean RndB(float f)
-//    {
-//        return World.Rnd().nextFloat(0.0F, 1.0F) < f;
-//    }
-
     private static final long SecsToTicks(float f) {
-        // System.out.println("MarkerFlareGeneric SecsToTicks(float f)");
         long l = (long) (0.5F + (f / Time.tickLenFs()));
         return l >= 1L ? l : 1L;
     }
 
     public void destroy() {
-        // System.out.println("MarkerFlareGeneric destroy()");
         if (this.isDestroyed()) {
             return;
         } else {
             this.engineSFX = null;
-//            engineSTimer = -1E+008F;
             this.engineSTimer = 0xfa0a1f01;
             this.breakSounds();
             super.destroy();
@@ -169,32 +142,23 @@ public abstract class MarkerFlareGeneric extends ActorHMesh implements ActorAlig
     }
 
     public Object getSwitchListener(Message message) {
-        // System.out.println("MarkerFlareGeneric getSwitchListener(Message message)");
         return this;
     }
 
     public boolean isStaticPos() {
-        // System.out.println("MarkerFlareGeneric isStaticPos()");
         return true;
     }
 
     protected MarkerFlareGeneric() {
         this(constr_arg2);
-        // System.out.println("MarkerFlareGeneric MarkerFlareGeneric()");
     }
 
     private MarkerFlareGeneric(ActorSpawnArg actorspawnarg) {
         super(mesh_name);
-        // System.out.println("MarkerFlareGeneric MarkerFlareGeneric(ActorSpawnArg actorspawnarg)");
-//        this.nextFlareTime = Time.current() + 10000L;
-        this.nextFlareTime = Time.current();// FIXME
-//        counter = 0;
-//        hadtarget = false;
+        this.nextFlareTime = Time.current() + 10000L;
         this.actor = null;
         this.engineSFX = null;
-//        engineSTimer = 9999999F;
-        this.engineSTimer = 0x98967f;
-//        outCommand = new NetMsgFiltered();
+        this.engineSTimer = 9999999;
         actorspawnarg.setStationary(this);
         this.myArmy = this.getArmy();
         this.collide(false);
@@ -204,14 +168,14 @@ public abstract class MarkerFlareGeneric extends ActorHMesh implements ActorAlig
         this.Align();
         this.startMove();
         this.nearestBornPlace = BornPlace.getCurrentBornPlace(this.pos.getAbsPoint().x, this.pos.getAbsPoint().y);
-        if (this.nearestBornPlace == null)
+        if (this.nearestBornPlace == null) {
             System.out.println("No Bornplace close to this Marker Flare!");
-        else
+        } else {
             System.out.println("Marker Bornplace x=" + this.nearestBornPlace.place.x + ", y=" + this.nearestBornPlace.place.y + ", r=" + this.nearestBornPlace.r);
+        }
     }
 
     public void startMove() {
-        // System.out.println("MarkerFlareGeneric startMove()");
         if (!this.interpEnd("move")) {
             this.interpPut(new Move(), "move", Time.current(), null);
             this.engineSFX = this.newSound("objects.siren", false);
@@ -220,7 +184,6 @@ public abstract class MarkerFlareGeneric extends ActorHMesh implements ActorAlig
     }
 
     private void Align() {
-        // System.out.println("MarkerFlareGeneric Align()");
         this.pos.getAbs(p);
         p.z = Engine.land().HQ(p.x, p.y) + this.heightAboveLandSurface;
         o.setYPR(this.pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
@@ -230,30 +193,27 @@ public abstract class MarkerFlareGeneric extends ActorHMesh implements ActorAlig
     }
 
     public void align() {
-        // System.out.println("MarkerFlareGeneric align()");
         this.Align();
     }
-    
-    private static float angleBetween(Actor angleActor, Point3d targetPoint)
-    {
-      float f = 180.10001F;
-      double d1 = 0.0D;
-      Loc localLoc = new Loc();
-      Point3d localPoint3d1 = new Point3d();
-      Vector3d localVector3d1 = new Vector3d();
-      Vector3d localVector3d2 = new Vector3d();
-      angleActor.pos.getAbs(localLoc);
-      localLoc.get(localPoint3d1);
-      localVector3d1.sub(targetPoint, localPoint3d1);
-      d1 = localVector3d1.length();
-      localVector3d1.scale(1.0D / d1);
-      localVector3d2.set(1.0D, 0.0D, 0.0D);
-      localLoc.transform(localVector3d2);
-      d1 = localVector3d2.dot(localVector3d1);
-      f = Geom.RAD2DEG((float)Math.acos(d1));
-      return f;
-    }
 
+    private static float angleBetween(Actor angleActor, Point3d targetPoint) {
+        float f = 180.10001F;
+        double d1 = 0.0D;
+        Loc localLoc = new Loc();
+        Point3d localPoint3d1 = new Point3d();
+        Vector3d localVector3d1 = new Vector3d();
+        Vector3d localVector3d2 = new Vector3d();
+        angleActor.pos.getAbs(localLoc);
+        localLoc.get(localPoint3d1);
+        localVector3d1.sub(targetPoint, localPoint3d1);
+        d1 = localVector3d1.length();
+        localVector3d1.scale(1.0D / d1);
+        localVector3d2.set(1.0D, 0.0D, 0.0D);
+        localLoc.transform(localVector3d2);
+        d1 = localVector3d2.dot(localVector3d1);
+        f = Geom.RAD2DEG((float) Math.acos(d1));
+        return f;
+    }
 
     private boolean danger() {
         List targetList = Engine.targets();
@@ -262,8 +222,9 @@ public abstract class MarkerFlareGeneric extends ActorHMesh implements ActorAlig
         boolean waitingForTakeoff = false;
 
         for (int targetListIndex = 0; targetListIndex < targetList.size(); targetListIndex++) {
-            if (incomingEnemy && incomingFriendly && waitingForTakeoff)
+            if (incomingEnemy && incomingFriendly && waitingForTakeoff) {
                 break;
+            }
             Actor target = (Actor) targetList.get(targetListIndex);
             if (target instanceof BridgeSegment) {
                 continue; // potential target is a Bridge Segment, we're searching for all kind of actors but this explicitely does not include Bridges!
@@ -279,81 +240,81 @@ public abstract class MarkerFlareGeneric extends ActorHMesh implements ActorAlig
             }
 
             if (this.nearestBornPlace != null) {
-                point3d.set(this.nearestBornPlace.place);
+                this.point3d.set(this.nearestBornPlace.place);
             } else {
-                point3d.set(this.pos.getAbsPoint());
+                this.point3d.set(this.pos.getAbsPoint());
             }
-            if (!incomingEnemy && targetArmy != this.myArmy) { // This is an enemy actor...
-                System.out.println("Target " + target.getClass().getName() + " (Hash: " + target.hashCode() + ") distance=" + targetDistance + ", max visual distance=" + World.MaxVisualDistance + ", Angle=" + angleBetween(target, point3d) + " is Enemy");
-                if (angleBetween(target, point3d) < 100F) {
-                    System.out.println("is incoming");
+            if (!incomingEnemy && (targetArmy != this.myArmy)) { // This is an enemy actor...
+//                System.out.println("Target " + target.getClass().getName() + " (Hash: " + target.hashCode() + ") distance=" + targetDistance + ", max visual distance=" + World.MaxVisualDistance + ", Angle=" + angleBetween(target, point3d) + " is Enemy");
+                if (angleBetween(target, this.point3d) < 100F) {
+//                    System.out.println("is incoming");
                     incomingEnemy = true; // Enemy is (potentially) approaching this Marker or it's Homebase!
                 }
             } else { // A friendly fellow...
-                if (target instanceof Aircraft && (!waitingForTakeoff || !incomingFriendly)) { // We are interested in friendly Aircraft only.
-                    System.out.print("Target " + target.getClass().getName() + " (Hash: " + target.hashCode() + ") distance=" + targetDistance + ", max visual distance=" + World.MaxVisualDistance + ", Angle=" + angleBetween(target, point3d) + " is friendly Aircraft");
+                if ((target instanceof Aircraft) && (!waitingForTakeoff || !incomingFriendly)) { // We are interested in friendly Aircraft only.
+//                    System.out.print("Target " + target.getClass().getName() + " (Hash: " + target.hashCode() + ") distance=" + targetDistance + ", max visual distance=" + World.MaxVisualDistance + ", Angle=" + angleBetween(target, point3d) + " is friendly Aircraft");
                     Aircraft friendlyAircraft = (Aircraft) target;
                     if (!waitingForTakeoff && friendlyAircraft.FM.Gears.onGround()) {
-                        System.out.print(", Gears are on Ground");
+//                        System.out.print(", Gears are on Ground");
                         if (friendlyAircraft.FM.getSpeedKMH() < 50F) {
-                            System.out.print(", Speed is less than 50 km/h");
+//                            System.out.print(", Speed is less than 50 km/h");
                             if (this.nearestBornPlace != null) {
                                 if (BornPlace.isLandedOnHomeBase(friendlyAircraft.FM, this.nearestBornPlace)) {
-                                    System.out.print(", is on Homebase");
+//                                    System.out.print(", is on Homebase");
                                     waitingForTakeoff = true;
                                 }
                             } else {
-                                if (point3d.distance(friendlyAircraft.pos.getAbsPoint()) < 2000D) { // No Homebase, but close to Marker
-                                    System.out.print(", is close to Marker");
+                                if (this.point3d.distance(friendlyAircraft.pos.getAbsPoint()) < 2000D) { // No Homebase, but close to Marker
+//                                    System.out.print(", is close to Marker");
                                     waitingForTakeoff = true;
                                 }
                             }
                         }
                     } else if (!incomingFriendly) {
-                        System.out.print(", Gears are not on Ground");
-                        float friendlyAircraftDistance = (float) point3d.distance(friendlyAircraft.pos.getAbsPoint());
+//                        System.out.print(", Gears are not on Ground");
+                        float friendlyAircraftDistance = (float) this.point3d.distance(friendlyAircraft.pos.getAbsPoint());
                         float minDistance = 1000F;
                         if (this.nearestBornPlace != null) {
                             minDistance = this.nearestBornPlace.r;
                         }
                         if (friendlyAircraftDistance > minDistance) {
-                            System.out.print(", out of Homebase/Marker radius");
-                            if (angleBetween(friendlyAircraft, point3d) < 100F) {
-                                System.out.print(", approaching");
+//                            System.out.print(", out of Homebase/Marker radius");
+                            if (angleBetween(friendlyAircraft, this.point3d) < 100F) {
+//                                System.out.print(", approaching");
                                 float friendlyAltitude = (float) (friendlyAircraft.pos.getAbsPoint().z - World.land().HQ(friendlyAircraft.pos.getAbsPoint().x, friendlyAircraft.pos.getAbsPoint().y));
-                                if (friendlyAircraft.FM.getSpeedKMH() > 50F && friendlyAltitude > 10F) {
-                                    System.out.print(", fast and high enough");
+                                if ((friendlyAircraft.FM.getSpeedKMH() > 50F) && (friendlyAltitude > 10F)) {
+//                                    System.out.print(", fast and high enough");
                                     incomingFriendly = true; // Friendly Aircraft is (potentially) approaching this Marker or it's Homebase!
                                 }
                             }
                         }
                     }
-                    System.out.println();
+//                    System.out.println();
                 }
             }
 
         }
-        
+
         this.pos.getAbs(this.point3d, this.orient);
-        this.orient.setYPR(this.orient.getYaw(), this.orient.getPitch() + World.Rnd().nextFloat(87F, 90F), this.orient.getRoll() + World.Rnd().nextFloat(-180F, 180F));
+        this.orient.setYPR(this.orient.getYaw(), this.orient.getPitch() + TrueRandom.nextFloat(87F, 90F), this.orient.getRoll() + TrueRandom.nextFloat(-180F, 180F));
         if (Time.current() > this.nextFlareTime) {
             RocketFlareBall rocketflareball = null;
             if (incomingEnemy) {
-                rocketflareball = new RocketFlareBallRed(this, this.point3d, this.orient);
-                this.lastFlareType = FLARE_TYPE_RED;
+                rocketflareball = new RocketFlareBall(this, this.point3d, this.orient, RocketFlareBall.FLARE_COLOR_RED);
+                this.lastFlareType = RocketFlareBall.FLARE_COLOR_RED;
             }
-            if (rocketflareball == null && incomingFriendly && (!waitingForTakeoff || this.lastFlareType != FLARE_TYPE_WHITE)) {
-                rocketflareball = new RocketFlareBallWhite(this, this.point3d, this.orient);
-                this.lastFlareType = FLARE_TYPE_WHITE;
+            if ((rocketflareball == null) && incomingFriendly && (!waitingForTakeoff || (this.lastFlareType != RocketFlareBall.FLARE_COLOR_WHITE))) {
+                rocketflareball = new RocketFlareBall(this, this.point3d, this.orient, RocketFlareBall.FLARE_COLOR_WHITE);
+                this.lastFlareType = RocketFlareBall.FLARE_COLOR_WHITE;
             }
-            if (rocketflareball == null && waitingForTakeoff && (!incomingFriendly || this.lastFlareType != FLARE_TYPE_GREEN)) {
-                rocketflareball = new RocketFlareBallGreen(this, this.point3d, this.orient);
-                this.lastFlareType = FLARE_TYPE_GREEN;
+            if ((rocketflareball == null) && waitingForTakeoff && (!incomingFriendly || (this.lastFlareType != RocketFlareBall.FLARE_COLOR_GREEN))) {
+                rocketflareball = new RocketFlareBall(this, this.point3d, this.orient, RocketFlareBall.FLARE_COLOR_GREEN);
+                this.lastFlareType = RocketFlareBall.FLARE_COLOR_GREEN;
             }
             if (rocketflareball != null) {
                 rocketflareball.start(30F, 0);
-                //long nextFlareTimeout = World.rnd().nextLong(45000L, 75000L); // FIXME!
-                long nextFlareTimeout = World.rnd().nextLong(5000L, 10000L);
+                long nextFlareTimeout = TrueRandom.nextLong(45000L, 75000L); // FIXME!
+                //long nextFlareTimeout = TrueRandom.nextLong(5000L, 10000L);
                 if (incomingFriendly && waitingForTakeoff) {
                     nextFlareTimeout /= 2L;
                 }
@@ -363,59 +324,7 @@ public abstract class MarkerFlareGeneric extends ActorHMesh implements ActorAlig
         return true;
     }
 
-    private boolean dangerOld() {
-//      System.out.println("MarkerFlareGeneric danger()");
-//      World.MaxVisualDistance = 20000F; // WHAT THE FUCKING FUCK???
-      Aircraft aircraft = World.getPlayerAircraft();
-//      double playerAltitude = Main3D.cur3D().land2D.worldOfsY() + aircraft.pos.getAbsPoint().z;
-      float playerAltitude = (float) (aircraft.pos.getAbsPoint().z - World.land().HQ(aircraft.pos.getAbsPoint().x, aircraft.pos.getAbsPoint().y));
-      int i = aircraft.getArmy();
-      boolean isForceShow = true;
-      if (i == this.myArmy) {
-          isForceShow = false;
-      }
-//      Point3d point3d = new Point3d();
-//      Orient orient = new Orient();
-      this.pos.getAbs(this.point3d, this.orient);
-      //Random random = new Random();
-      int j = World.Rnd().nextInt(3);
-      float f = 90F - j;
-      int k = World.Rnd().nextInt(360) - 180;
-      this.orient.setYPR(this.orient.getYaw(), this.orient.getPitch() + f, this.orient.getRoll() + k);
-//      if(aircraft.FM.Gears.onGround()) // FIXME
-//          this.nextFlareTime = Time.current() + World.rnd().nextLong(30000L, 60000L);
-      boolean isShow = false;
-      float playerDistance = (float) aircraft.pos.getAbsPoint().distance(this.point3d);
-      //if(playerDistance < 20000D && playerAltitude <= 1500D && playerDistance > 2000D)
-//      if(playerDistance < (World.MaxVisualDistance - 100F) && playerAltitude <= 2500F && playerDistance > 500F)
-      if(true) // FIXME
-      {
-          if (isForceShow) {
-              isShow = true;
-          }
-          if (!isForceShow) {
-              // System.out.println("MarkerFlareGeneric danger() War.GetNearestEnemy");
-//              Actor enemyInSight = War.GetNearestEnemy(aircraft, -1, 12000F, 16);
-              Actor enemyInSight = War.GetNearestEnemy(this, -1, World.MaxVisualDistance - 100F, 0);
-              if ((enemyInSight == null) || (enemyInSight.getArmy() == this.myArmy)) {
-                  isShow = true;
-              }
-          }
-//          if(isShow && Time.current() > this.nextFlareTime && !aircraft.FM.Gears.onGround())
-          if(Time.current() > this.nextFlareTime) // FIXME
-          {
-//              System.out.println("MarkerFlareGeneric danger() new RocketFlareBall");
-              RocketFlareBall rocketflareball = new RocketFlareBallWhite(this, this.point3d, this.orient);
-              rocketflareball.start(30F, 0);
-//              this.nextFlareTime = Time.current() + World.rnd().nextLong(45000L, 75000L); // FIXME
-              this.nextFlareTime = Time.current() + 10000L;
-          }
-      }
-      return true;
-  }
-
     public void createNetObject(NetChannel netchannel1, int i) {
-        // System.out.println("MarkerFlareGeneric createNetObject(NetChannel netchannel1, int i)");
         if (netchannel1 == null) {
             this.net = new Master(this);
         } else {
@@ -424,34 +333,26 @@ public abstract class MarkerFlareGeneric extends ActorHMesh implements ActorAlig
     }
 
     public void netFirstUpdate(NetChannel netchannel1) throws IOException {
-        // System.out.println("MarkerFlareGeneric netFirstUpdate(NetChannel netchannel1)");
     }
 
     public abstract void msgExplosion(Explosion explosion);
 
     public abstract void msgShot(Shot shot);
 
-    private static String        mesh_name   = "3do/primitive/siren/mono.sim";
-    public static final int FLARE_TYPE_WHITE = 0;
-    public static final int FLARE_TYPE_GREEN = 1;
-    public static final int FLARE_TYPE_RED = 2;
+    private static String        mesh_name        = "3do/primitive/siren/mono.sim";
     private float                heightAboveLandSurface;
     protected SoundFX            engineSFX;
     protected int                engineSTimer;
-//    protected float engineSTimer;
     private int                  myArmy;
-    private static ActorSpawnArg constr_arg2 = null;
-    private static Point3d       p           = new Point3d();
-    private static Orient        o           = new Orient();
-    private static Vector3f      n           = new Vector3f();
-//    private NetMsgFiltered outCommand;
+    private static ActorSpawnArg constr_arg2      = null;
+    private static Point3d       p                = new Point3d();
+    private static Orient        o                = new Orient();
+    private static Vector3f      n                = new Vector3f();
     public NetChannel            netchannel;
-//    private int counter;
-//    private boolean hadtarget;
     private long                 nextFlareTime;
     Actor                        actor;
-    private Point3d              point3d     = new Point3d();
-    private Orient               orient      = new Orient();
+    private Point3d              point3d          = new Point3d();
+    private Orient               orient           = new Orient();
     private BornPlace            nearestBornPlace = null;
-    private int                  lastFlareType = FLARE_TYPE_WHITE;
+    private int                  lastFlareType    = RocketFlareBall.FLARE_COLOR_WHITE;
 }

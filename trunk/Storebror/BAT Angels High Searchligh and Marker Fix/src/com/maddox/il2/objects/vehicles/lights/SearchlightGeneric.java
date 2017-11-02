@@ -56,6 +56,7 @@ import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Spawn;
 import com.maddox.rts.Time;
+import com.maddox.sas1946.il2.util.TrueRandom;
 import com.maddox.util.HashMapExt;
 import com.maddox.util.TableFunction2;
 
@@ -790,19 +791,19 @@ public abstract class SearchlightGeneric extends ActorHMesh implements MsgCollis
     }
 
     public static final double Rnd(double d, double d1) {
-        return World.Rnd().nextDouble(d, d1);
+        return TrueRandom.nextDouble(d, d1);
     }
 
     public static final float Rnd(float f, float f1) {
-        return World.Rnd().nextFloat(f, f1);
+        return TrueRandom.nextFloat(f, f1);
     }
 
     private boolean RndB(float f) {
-        return World.Rnd().nextFloat(0.0F, 1.0F) < f;
+        return TrueRandom.nextFloat(0.0F, 1.0F) < f;
     }
 
     private static final long SecsToTicks(float f) {
-        long l = (long) (0.5D + f / Time.tickLenFs());
+        long l = (long) (0.5D + (f / Time.tickLenFs()));
         return l >= 1L ? l : 1L;
     }
 
@@ -932,16 +933,16 @@ public abstract class SearchlightGeneric extends ActorHMesh implements MsgCollis
     private float[] computeDeathPose(short word0) {
 //        RangeRandom rangerandom = new RangeRandom(word0); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
         float af[] = new float[10];
-        af[0] = this.headYaw + World.Rnd().nextFloat(-15F, 15F);
-        af[1] = (World.Rnd().nextBoolean() ? 1.0F : -1F) * World.Rnd().nextFloat(4F, 9F); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
-        af[2] = (World.Rnd().nextBoolean() ? 1.0F : -1F) * World.Rnd().nextFloat(4F, 9F); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
-        af[3] = -this.gunPitch + World.Rnd().nextFloat(-15F, 15F);
-        af[4] = (World.Rnd().nextBoolean() ? 1.0F : -1F) * World.Rnd().nextFloat(2.0F, 5F); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
-        af[5] = (World.Rnd().nextBoolean() ? 1.0F : -1F) * World.Rnd().nextFloat(5F, 9F); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
+        af[0] = this.headYaw + TrueRandom.nextFloat(-15F, 15F);
+        af[1] = (TrueRandom.nextInt(2) == 1 ? 1.0F : -1F) * TrueRandom.nextFloat(4F, 9F); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
+        af[2] = (TrueRandom.nextInt(2) == 1 ? 1.0F : -1F) * TrueRandom.nextFloat(4F, 9F); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
+        af[3] = -this.gunPitch + TrueRandom.nextFloat(-15F, 15F);
+        af[4] = (TrueRandom.nextInt(2) == 1 ? 1.0F : -1F) * TrueRandom.nextFloat(2.0F, 5F); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
+        af[5] = (TrueRandom.nextInt(2) == 1 ? 1.0F : -1F) * TrueRandom.nextFloat(5F, 9F); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
         af[6] = 0.0F;
-        af[7] = (World.Rnd().nextBoolean() ? 1.0F : -1F) * World.Rnd().nextFloat(4F, 8F); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
-        af[8] = (World.Rnd().nextBoolean() ? 1.0F : -1F) * World.Rnd().nextFloat(7F, 12F); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
-        af[9] = this.heightAboveLandSurface - World.Rnd().nextFloat(0.0F, 0.25F); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
+        af[7] = (TrueRandom.nextInt(2) == 1 ? 1.0F : -1F) * TrueRandom.nextFloat(4F, 8F); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
+        af[8] = (TrueRandom.nextInt(2) == 1 ? 1.0F : -1F) * TrueRandom.nextFloat(7F, 12F); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
+        af[9] = this.heightAboveLandSurface - TrueRandom.nextFloat(0.0F, 0.25F); // TODO: Fixed by SAS~Storebror: Don't create new Random Classes all the time!!!
         return af;
     }
 
