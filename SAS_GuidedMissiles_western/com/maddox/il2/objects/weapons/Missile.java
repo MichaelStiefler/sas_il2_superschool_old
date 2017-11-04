@@ -1,6 +1,6 @@
 // Source File Name: Missile.java
 // Author:		   Storebror
-// Edit:			western0221 on 08th/May/2017
+// Edit:			western0221 on 03rd/Nov/2017
 package com.maddox.il2.objects.weapons;
 
 import java.io.IOException;
@@ -26,6 +26,7 @@ import com.maddox.il2.engine.LightPointWorld;
 import com.maddox.il2.engine.MeshShared;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.fm.FlightModel;
+import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.game.Selector;
@@ -34,6 +35,7 @@ import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.TypeFighter;
 import com.maddox.il2.objects.air.TypeGuidedMissileCarrier;
 import com.maddox.il2.objects.air.TypeLaserDesignator;
+import com.maddox.il2.objects.air.TypeSemiRadar;
 import com.maddox.rts.Message;
 import com.maddox.rts.NetChannel;
 import com.maddox.rts.NetMsgFiltered;
@@ -908,6 +910,7 @@ public class Missile extends Rocket {
 		int iDetectorType = Property.intValue(localClass, "detectorType", DETECTOR_TYPE_MANUAL);
 		if (iDetectorType == DETECTOR_TYPE_LASER) bLaserHoming = true;
 		else  bLaserHoming = false;
+		this.bRealisticRadarSelect = Config.cur.ini.get("Mods", "RealisticRadarSelect", 0) != 0;
 	}
 
 	private int getNumExhausts() {
@@ -974,6 +977,20 @@ public class Missile extends Rocket {
 		if (Time.current() > this.startTime + this.trackDelay) {
 			if (this.isSunTracking() || this.isGroundTracking()) {
 				this.victim = null;
+			}
+			int lockType = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getDetectorType();
+			if (bRealisticRadarSelect && lockType == DETECTOR_TYPE_RADAR_HOMING && this.victim != null) {
+				if (!Actor.isValid(this.getOwner())) {
+					this.victim = null;
+				} else {
+					FlightModelMain ownerfm = ((Aircraft)this.getOwner()).FM;
+					if (this.getOwner() instanceof TypeSemiRadar &&
+						(((ownerfm instanceof RealFlightModel)) && (((RealFlightModel) ownerfm).isRealMode()) && (ownerfm instanceof Pilot))) {
+						if (!((TypeSemiRadar) this.getOwner()).getSemiActiveRadarOn() || ((TypeSemiRadar) this.getOwner()).getSemiActiveRadarLockedActor() != this.victim) {
+							this.victim = null;
+                        }
+					}
+				}
 			}
 		}
 		// float fSpeed = (float) this.getSpeed((Vector3d) null) * 3.6F;
@@ -1610,7 +1627,7 @@ public class Missile extends Rocket {
 			}
 
 			this.computeMissilePath(missileSpeed, 0.0F, 0.0F, angleAzimuth, angleTangage);
-		} else if (bLaserHoming && (this.getOwner() instanceof TypeLaserDesignator)) {
+		} else if (bLaserHoming) {
 			if(((TypeLaserDesignator) this.getOwner()).getLaserOn()) {
 				this.targetPoint3d.set(((TypeLaserDesignator) this.getOwner()).getLaserSpot());
 
@@ -1793,4 +1810,6 @@ public class Missile extends Rocket {
 	private Vector3d victimSpeed = null;
 
 	private boolean bLaserHoming = false;
+
+	private boolean bRealisticRadarSelect = false;
 }
