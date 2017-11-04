@@ -139,6 +139,7 @@ public class AircraftHotKeys {
 	private boolean useSmartAxisForPower2;
 	private boolean useSmartAxisForPitch2;
 	private boolean bStab4all = false;
+    private static int max_drawspeed = -1;
 
 				// TODO: ++ Added Code for importing 4.13.2m ++
 	protected static final int BOMB_RELEASE_MODE = 194;
@@ -2764,7 +2765,7 @@ public class AircraftHotKeys {
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced11", "BOMB_RELEASE_TRAIN_AMOUNT", 195, 355));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced12", "BOMB_RELEASE_TRAIN_DELAY", 196, 356));
 				// TODO: -- Added Code for importing 4.13.2m --
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced13", "RADER_MODE_TOGGLE", 138, 407));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced13", "RADAR_MODE_TOGGLE", 138, 407));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced14", "RADAR_RANGE_PLUS", 139, 408));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced15", "RADAR_RANGE_MINUS", 140, 409));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced16", "RADAR_GAIN_PLUS", 141, 410));
@@ -3259,7 +3260,15 @@ public class AircraftHotKeys {
 		HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "showPositionHint", "13") {
 
 			public void begin() {
-				HUD.setDrawSpeed((HUD.drawSpeed() + 1) % 4);
+                if(max_drawspeed < 0)
+                {
+                    try{
+                        max_drawspeed = HUD.drawSpeedMax();
+                    }catch (NoSuchMethodError err) {
+                        max_drawspeed = 3;
+			        }
+                }
+				HUD.setDrawSpeed((HUD.drawSpeed() + 1) % (max_drawspeed + 1));
 			}
 
 			public void created() {
