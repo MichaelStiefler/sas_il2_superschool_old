@@ -22,6 +22,8 @@ import com.maddox.il2.engine.Loc;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.Atmosphere;
+import com.maddox.il2.fm.EnginesInterface;
+import com.maddox.il2.fm.Motor;
 import com.maddox.il2.fm.Polares;
 import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.game.AircraftHotKeys;
@@ -34,6 +36,7 @@ import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
+import com.maddox.sas1946.il2.util.AircraftTools;
 import com.maddox.sas1946.il2.util.Reflection;
 import com.maddox.sas1946.il2.util.TrueRandom;
 
@@ -110,6 +113,8 @@ public class F_102 extends Scheme1 implements TypeSupersonic, TypeFighter, TypeB
         this.lastMissileLaunchThreatActive = 0L;
         this.intervalMissileLaunchThreat = 1000L;
         this.guidedMissileUtils = new GuidedMissileUtils(this);
+
+        // Tracking Code Consolidation
         this.freq = 800;
         this.Timer1 = this.Timer2 = this.freq;
     }
@@ -518,19 +523,23 @@ public class F_102 extends Scheme1 implements TypeSupersonic, TypeFighter, TypeB
     protected void moveAileron(float f) {
         this.aileronPos = f; // Just store desired position, movement will be done in update()/moveElevon() methods
     }
-    
+
     protected void moveElevon() {
         float elevonLeft = this.elevatorPos + this.aileronPos;
         float elevonRight = this.elevatorPos - this.aileronPos;
-        if (elevonLeft > 1.0F) elevonLeft = 1.0F;
-        if (elevonLeft < -1.0F) elevonLeft = -1.0F;
-        if (elevonRight > 1.0F) elevonRight = 1.0F;
-        if (elevonRight < -1.0F) elevonRight = -1.0F;
+        if (elevonLeft > 1.0F)
+            elevonLeft = 1.0F;
+        if (elevonLeft < -1.0F)
+            elevonLeft = -1.0F;
+        if (elevonRight > 1.0F)
+            elevonRight = 1.0F;
+        if (elevonRight < -1.0F)
+            elevonRight = -1.0F;
         float speedFactor = Aircraft.cvt(this.FM.getSpeedKMH(), ELEVON_LIMIT_SPEED_LOW, ELEVON_LIMIT_SPEED_HIGH, ELEVON_LIMIT_LOW, ELEVON_LIMIT_HIGH);
         this.hierMesh().chunkSetAngles("AroneL_D0", 0.0F, 0.0F, elevonLeft * speedFactor);
         this.hierMesh().chunkSetAngles("AroneR_D0", 0.0F, 0.0F, elevonRight * speedFactor);
     }
-    
+
     protected void moveFan(float f) {
     }
 
@@ -1661,148 +1670,159 @@ public class F_102 extends Scheme1 implements TypeSupersonic, TypeFighter, TypeB
         this.FM.producedAF.x -= f1 * 1000F;
     }
 
-    boolean M_3_10() {
-        super.pos.getAbs(this.point3d);
-        boolean flag1 = false;
+    String AltitudeDifferenceToString(double ownAltitude, double targetAltitude) {
+        String retVal = "level with us";
+        //@formatter:off
+        if (ownAltitude - targetAltitude - 300D >= 0.0D) retVal = "below us";
+        else if (ownAltitude - targetAltitude + 300D <= 0.0D) retVal = "above us";
+        else if (ownAltitude - targetAltitude - 150D >= 0.0D) retVal = "slightly below";
+        else if (ownAltitude - targetAltitude + 150D < 0.0D) retVal = "slightly above";
+        //@formatter:on
+        return retVal;
+    }
+
+    String TrackOffsetToString(int trackOffset) {
+        String retVal = "  ";
+        //@formatter:off
+        if (trackOffset < 5 || trackOffset > 355) retVal = "dead ahead, ";
+        else if (trackOffset < 8) retVal = "right by 5\260, ";
+        else if (trackOffset < 13) retVal = "right by 10\260, ";
+        else if (trackOffset < 18) retVal = "right by 15\260, ";
+        else if (trackOffset < 26) retVal = "right by 20\260, ";
+        else if (trackOffset < 36) retVal = "right by 30\260, ";
+        else if (trackOffset < 46) retVal = "right by 40\260, ";
+        else if (trackOffset <= 60) retVal = "off our right, ";
+        else if (trackOffset > 352) retVal = "left by 5\260, ";
+        else if (trackOffset > 347) retVal = "left by 10\260, ";
+        else if (trackOffset > 342) retVal = "left by 15\260, ";
+        else if (trackOffset > 334) retVal = "left by 20\260, ";
+        else if (trackOffset > 324) retVal = "left by 30\260, ";
+        else if (trackOffset > 314) retVal = "left by 40\260, ";
+        else if (trackOffset >= 300) retVal = "off our left, ";
+        //@formatter:on
+        return retVal;
+    }
+
+    private int MtargetDistance(int trackingRange, int targetDistance) {
+        int retVal = 0;
+        if (targetDistance < trackingRange)
+            if (targetDistance > 1150)
+                retVal = (int) (Math.ceil(targetDistance / 900D) * 900D);
+            else
+                retVal = (int) (Math.ceil(targetDistance / 500D) * 500D);
+        return retVal;
+    }
+
+    private int IRSTtargetDistance(Actor target) {
+        double dRetVal = 0D;
+        EnginesInterface enginesinterface = ((Aircraft) target).FM.EI;
+        for (int engineIndex = 0; engineIndex < enginesinterface.engines.length; engineIndex++) {
+            float enginePowerLevel = 0.0F;
+            if ((enginesinterface.engines[engineIndex].getType() == Motor._E_TYPE_JET) || (enginesinterface.engines[engineIndex].getType() == Motor._E_TYPE_ROCKET)) {
+                enginePowerLevel = enginesinterface.engines[engineIndex].thrustMax;
+                if (enginesinterface.engines[engineIndex].getPowerOutput() > 1.0F)
+                    enginePowerLevel *= enginesinterface.engines[engineIndex].getPowerOutput() * 1.22F;
+                else
+                    enginePowerLevel *= (enginesinterface.engines[engineIndex].getPowerOutput() * 0.8F) + 0.2F;
+            } else {
+                enginePowerLevel = Reflection.getFloat(enginesinterface.engines[engineIndex], "horsePowers") * ((enginesinterface.engines[engineIndex].getPowerOutput() * 0.9F) + 0.1F) * 0.36F;
+            }
+            dRetVal += enginePowerLevel;
+        }
+
+        if (enginesinterface.engines.length > 4)
+            dRetVal *= 2D / enginesinterface.engines.length;
+        else
+            dRetVal /= Math.sqrt(enginesinterface.engines.length);
+        dRetVal *= 1.5D;
+        return (int) dRetVal;
+    }
+
+    boolean TrackingSystem(int trackingMode, int trackingRange, int minAGL) {
+        boolean retVal = false;
         Aircraft aircraft = World.getPlayerAircraft();
-        double d = Main3D.cur3D().land2D.worldOfsX() + aircraft.pos.getAbsPoint().x;
-        double d1 = Main3D.cur3D().land2D.worldOfsY() + aircraft.pos.getAbsPoint().y;
-        double d2 = Main3D.cur3D().land2D.worldOfsY() + aircraft.pos.getAbsPoint().z;
-        double d3 = d2 - Landscape.Hmin((float) aircraft.pos.getAbsPoint().x, (float) aircraft.pos.getAbsPoint().y);
-        if (aircraft instanceof F_102A_Early) {
-            flag1 = true;
-        }
-        if (d3 < 0.0D) {
-            d3 = 0.0D;
-        }
-        int i = (int) (-(aircraft.pos.getAbsOrient().getYaw() - 90D));
-        if (i < 0) {
-            i += 360;
-        }
-        int j = (int) (-(aircraft.pos.getAbsOrient().getPitch() - 90D));
-        if (j < 0) {
-            j += 360;
-        }
+        if (!(aircraft instanceof F_102))
+            return retVal;
+        double playerX = Main3D.cur3D().land2D.worldOfsX() + aircraft.pos.getAbsPoint().x;
+        double playerY = Main3D.cur3D().land2D.worldOfsY() + aircraft.pos.getAbsPoint().y;
+        double playerAltitude = aircraft.pos.getAbsPoint().z;
+        double playerAGL = playerAltitude - World.land().HQ(aircraft.pos.getAbsPoint().x, aircraft.pos.getAbsPoint().y);
+        if (playerAGL < 0.0D)
+            playerAGL = 0.0D;
+        int playerCourseAbs = (int) (-(aircraft.pos.getAbsOrient().getYaw() - 90D));
+        while (playerCourseAbs < 0)
+            playerCourseAbs += 360;
+        int playerPitchAbs = (int) (-(aircraft.pos.getAbsOrient().getPitch() - 90D));
+        while (playerPitchAbs < 0)
+            playerPitchAbs += 360;
         for (Entry entry = Engine.name2Actor().nextEntry(null); entry != null; entry = Engine.name2Actor().nextEntry(entry)) {
-            Actor actor = (Actor) entry.getValue();
-            if (flag1 && (actor instanceof Aircraft) && (actor.getArmy() != World.getPlayerArmy()) && (actor != World.getPlayerAircraft()) && (actor.getSpeed(this.vector3d) > 20D)) {
-                super.pos.getAbs(this.point3d);
-                double d4 = Main3D.cur3D().land2D.worldOfsX() + actor.pos.getAbsPoint().x;
-                double d5 = Main3D.cur3D().land2D.worldOfsY() + actor.pos.getAbsPoint().y;
-                double d6 = Main3D.cur3D().land2D.worldOfsY() + actor.pos.getAbsPoint().z;
-                double d7 = Math.ceil((d2 - d6) / 10D) * 10D;
-                String s = "level with us";
-                if ((d2 - d6 - 300D) >= 0.0D) {
-                    s = "below us";
+            Actor trackingTarget = (Actor) entry.getValue();
+            if ((trackingTarget instanceof Aircraft) && (trackingTarget.getArmy() != World.getPlayerArmy()) && (trackingTarget != World.getPlayerAircraft()) && (trackingTarget.getSpeed(null) > 20D)) {
+                double trackingTargetX = Main3D.cur3D().land2D.worldOfsX() + trackingTarget.pos.getAbsPoint().x;
+                double trackingTargetY = Main3D.cur3D().land2D.worldOfsY() + trackingTarget.pos.getAbsPoint().y;
+                double trackingTargetAGL = trackingTarget.pos.getAbsPoint().z - World.land().HQ(trackingTarget.pos.getAbsPoint().x, trackingTarget.pos.getAbsPoint().y);
+                double deltaAGLby10m = Math.ceil((playerAltitude - trackingTargetAGL) / 10D) * 10D;
+                String altitudeDifference = AltitudeDifferenceToString(playerAltitude, trackingTargetAGL);
+                double xDiff = playerX - trackingTargetX;
+                double yDiff = trackingTargetY - playerY;
+                double diffSquared = (yDiff * yDiff) + (xDiff * xDiff);
+                int targetCourseAbs = (int) (Math.floor(Math.toDegrees(Math.atan2(yDiff, xDiff))) - 90D);
+                while (targetCourseAbs < 0)
+                    targetCourseAbs += 360;
+                int targetCourseRel = targetCourseAbs - playerCourseAbs;
+                float trackingRangeAtAltitude = trackingRange;
+                if (playerAGL < minAGL)
+                    trackingRangeAtAltitude = (float) (playerAGL * 0.8D * 3D);
+                int distanceForAltitudeOffset = (int) (Math.ceil(Math.sqrt(diffSquared * TrueRandom.nextDouble(0.9D, 1.1D)) / 10D) * 10D);
+                if (distanceForAltitudeOffset > trackingRange)
+                    distanceForAltitudeOffset = (int) (Math.ceil(Math.sqrt(diffSquared) / 10D) * 10D);
+                int verticalDirectionAbs = (int) (Math.floor(Math.toDegrees(Math.atan2(distanceForAltitudeOffset, deltaAGLby10m))) - 90D);
+                int verticalDirectionRel = (verticalDirectionAbs - (90 - playerPitchAbs)) + TrueRandom.nextInt(-3, 3);
+
+                int detectedRange = 0;
+                switch (trackingMode) {
+                    case TRACKING_SYSTEM_M3:
+                    case TRACKING_SYSTEM_M10:
+                    default:
+                        detectedRange = MtargetDistance(trackingRange, distanceForAltitudeOffset);
+                        break;
+                    case TRACKING_SYSTEM_IRST:
+                        detectedRange = IRSTtargetDistance(trackingTarget);
+                        break;
                 }
-                if (((d2 - d6) + 300D) <= 0.0D) {
-                    s = "above us";
-                }
-                if (((d2 - d6 - 300D) < 0.0D) && ((d2 - d6 - 150D) >= 0.0D)) {
-                    s = "slightly below";
-                }
-                if ((((d2 - d6) + 300D) > 0.0D) && (((d2 - d6) + 150D) < 0.0D)) {
-                    s = "slightly above";
-                }
-                double d8 = d4 - d;
-                double d9 = d5 - d1;
-                float f = 57.32484F * (float) Math.atan2(d9, -d8);
-                int k = (int) (Math.floor(f) - 90D);
-                if (k < 0) {
-                    k += 360;
-                }
-                int l = k - i;
-                double d10 = d - d4;
-                double d11 = d1 - d5;
-                float f1 = ((TrueRandom.nextFloat(20F) - 10F) / 100F) + 1.0F;
-                int i1 = TrueRandom.nextInt(6) - 3;
-                float f2 = 20000F;
-                float f3 = f2;
-                if (d3 < 600D) {
-                    f3 = (float) (d3 * 0.8D * 3D);
-                }
-                int j1 = (int) (Math.ceil(Math.sqrt(((d11 * d11) + (d10 * d10)) * f1) / 10D) * 10D);
-                if (j1 > f2) {
-                    j1 = (int) (Math.ceil(Math.sqrt((d11 * d11) + (d10 * d10)) / 10D) * 10D);
-                }
-                float f4 = 57.32484F * (float) Math.atan2(j1, d7);
-                int k1 = (int) (Math.floor((int) f4) - 90D);
-                int l1 = (k1 - (90 - j)) + i1;
-                int i2 = (int) f2;
-                if (j1 < f2) {
-                    if (j1 > 1150) {
-                        i2 = (int) (Math.ceil(j1 / 900D) * 900D);
-                    } else {
-                        i2 = (int) (Math.ceil(j1 / 500D) * 500D);
-                    }
-                }
-                int j2 = l + i1;
-                int k2 = j2;
-                if (k2 < 0) {
-                    k2 += 360;
-                }
-                float f5 = (float) (f3 + (Math.sin(Math.toRadians(Math.abs(l) * 3)) * (f3 * 0.25D)));
-                int l2 = (int) (f5 * Math.cos(Math.toRadians(l1)));
-                String s3 = "  ";
-                if (k2 < 5) {
-                    s3 = "dead ahead, ";
-                }
-                if ((k2 >= 5) && (k2 < 8)) {
-                    s3 = "right by 5\260, ";
-                }
-                if ((k2 > 7) && (k2 < 13)) {
-                    s3 = "right by 10\260, ";
-                }
-                if ((k2 > 12) && (k2 < 18)) {
-                    s3 = "right by 15\260, ";
-                }
-                if ((k2 > 17) && (k2 < 26)) {
-                    s3 = "right by 20\260, ";
-                }
-                if ((k2 > 25) && (k2 < 36)) {
-                    s3 = "right by 30\260, ";
-                }
-                if ((k2 > 35) && (k2 < 46)) {
-                    s3 = "right by 40\260, ";
-                }
-                if ((k2 > 45) && (k2 <= 60)) {
-                    s3 = "off our right, ";
-                }
-                if (k2 > 355) {
-                    s3 = "dead ahead, ";
-                }
-                if ((k2 <= 355) && (k2 > 352)) {
-                    s3 = "left by 5\260, ";
-                }
-                if ((k2 < 353) && (k2 > 347)) {
-                    s3 = "left by 10\260, ";
-                }
-                if ((k2 < 348) && (k2 > 342)) {
-                    s3 = "left by 15\260, ";
-                }
-                if ((k2 < 343) && (k2 > 334)) {
-                    s3 = "left by 20\260, ";
-                }
-                if ((k2 < 335) && (k2 > 324)) {
-                    s3 = "left by 30\260, ";
-                }
-                if ((k2 < 325) && (k2 > 314)) {
-                    s3 = "left by 40\260, ";
-                }
-                if ((k2 < 345) && (k2 >= 300)) {
-                    s3 = "off our left, ";
-                }
-                if ((j1 <= l2) && (j1 > 300) && (l1 >= -20) && (l1 <= 20) && (Math.abs(j2) <= 60)) {
-                    HUD.log(AircraftHotKeys.hudLogWeaponId, this.mSystem + ": Contact " + s3 + s + ", " + i2 + "m");
-                    this.freq = 1;
-                } else {
-                    this.freq = 7;
+
+                int targetCourseRelRand = targetCourseRel + TrueRandom.nextInt(-3, 3);
+                int targetCourseRelRand360 = targetCourseRelRand;
+                while (targetCourseRelRand360 < 0)
+                    targetCourseRelRand360 += 360;
+                float trackingVertLimit = (float) (trackingRangeAtAltitude + (Math.sin(Math.toRadians(Math.abs(targetCourseRel) * 3)) * (trackingRangeAtAltitude * 0.25D)));
+                int distanceForAltitudeLimit = (int) (trackingVertLimit * Math.cos(Math.toRadians(verticalDirectionRel)));
+                String trackOffset = TrackOffsetToString(targetCourseRelRand360);
+
+                switch (trackingMode) {
+                    case TRACKING_SYSTEM_M3:
+                    case TRACKING_SYSTEM_M10:
+                    default:
+                        if (distanceForAltitudeOffset <= distanceForAltitudeLimit && distanceForAltitudeOffset > 300 && Math.abs(verticalDirectionRel) <= 20 && (Math.abs(targetCourseRelRand) <= 60)) {
+                            HUD.log(AircraftHotKeys.hudLogWeaponId, TRACKING_SYSTEM_MESSAGE[trackingMode] + " " + trackOffset + altitudeDifference + ", " + detectedRange + "m");
+                            this.freq = 1;
+                            retVal = true;
+                        } else {
+                            this.freq = 7;
+                        }
+                        break;
+                    case TRACKING_SYSTEM_IRST:
+                        if (distanceForAltitudeOffset <= distanceForAltitudeLimit && Math.abs(verticalDirectionRel) <= 20 && Math.abs(targetCourseRelRand) <= 60 && distanceForAltitudeOffset < detectedRange) {
+                            HUD.log(AircraftHotKeys.hudLogWeaponId, TRACKING_SYSTEM_MESSAGE[trackingMode] + " " + trackOffset + altitudeDifference);
+                            this.freq = 1;
+                            retVal = true;
+                        }
+                        break;
                 }
                 this.setTimer(this.freq);
             }
         }
-
-        return true;
+        return retVal;
     }
 
     void setTimer(int i) {
@@ -1811,19 +1831,19 @@ public class F_102 extends Scheme1 implements TypeSupersonic, TypeFighter, TypeB
     }
 
     // Values required for control surface animation
-    private static final float ELEVON_LIMIT_SPEED_LOW = 500F;
-    private static final float ELEVON_LIMIT_SPEED_HIGH = 800F;
-    private static final float ELEVON_LIMIT_LOW = 30F;
-    private static final float ELEVON_LIMIT_HIGH = 20F;
-    private static final float RUDDER_LIMIT_SPEED_LOW = 200F;
-    private static final float RUDDER_LIMIT_SPEED_HIGH = 800F;
-    private static final float RUDDER_LIMIT_LOW = 45F;
-    private static final float RUDDER_LIMIT_HIGH = 20F;
-    private static final float CONTROLS_NEUTRAL_FACTOR = 0.98F;
-    private float elevatorPos = 0F;
-    private float aileronPos = 0F;
-    private float rudderPos = 0F;
-    private float airbrakePos = 0F;
+    private static final float ELEVON_LIMIT_SPEED_LOW    = 500F;
+    private static final float ELEVON_LIMIT_SPEED_HIGH   = 800F;
+    private static final float ELEVON_LIMIT_LOW          = 30F;
+    private static final float ELEVON_LIMIT_HIGH         = 20F;
+    private static final float RUDDER_LIMIT_SPEED_LOW    = 200F;
+    private static final float RUDDER_LIMIT_SPEED_HIGH   = 800F;
+    private static final float RUDDER_LIMIT_LOW          = 45F;
+    private static final float RUDDER_LIMIT_HIGH         = 20F;
+    private static final float CONTROLS_NEUTRAL_FACTOR   = 0.98F;
+    private float              elevatorPos               = 0F;
+    private float              aileronPos                = 0F;
+    private float              rudderPos                 = 0F;
+    private float              airbrakePos               = 0F;
 
     // Values carried back from inherited F_102A_Early and F_102A classes to F_102 superclass
     private GuidedMissileUtils guidedMissileUtils;
@@ -1837,12 +1857,15 @@ public class F_102 extends Scheme1 implements TypeSupersonic, TypeFighter, TypeB
     private long               intervalRadarLockThreat;
     private long               lastMissileLaunchThreatActive;
     private long               intervalMissileLaunchThreat;
+
+    // Tracking Code Consolidation
     public float               Timer1;
     public float               Timer2;
     int                        freq;
-    private Point3d            point3d                = new Point3d();
-    private Vector3d           vector3d               = new Vector3d();
-    String                     mSystem                = "M-3";
+    static final int   TRACKING_SYSTEM_M3        = 0;
+    static final int   TRACKING_SYSTEM_M10       = 1;
+    static final int   TRACKING_SYSTEM_IRST      = 2;
+    private static String      TRACKING_SYSTEM_MESSAGE[] = { "M-3: Contact", "M-10: Contact", "IR Tracking!" };
 
     private boolean            bSightAutomation;
     private boolean            bSightBombDump;
@@ -1867,30 +1890,30 @@ public class F_102 extends Scheme1 implements TypeSupersonic, TypeFighter, TypeB
     private float              lightTime;
     private LightPointWorld    lLight[];
     private Hook               lLightHook[];
-    private static Loc         lLightLoc1             = new Loc();
-    private static Point3d     lLightP1               = new Point3d();
-    private static Point3d     lLightP2               = new Point3d();
-    private static Point3d     lLightPL               = new Point3d();
+    private static Loc         lLightLoc1                = new Loc();
+    private static Point3d     lLightP1                  = new Point3d();
+    private static Point3d     lLightP2                  = new Point3d();
+    private static Point3d     lLightPL                  = new Point3d();
     private boolean            ictl;
     private float              mn;
-    private static float       lteb                   = 0.92F;
+    private static float       lteb                      = 0.92F;
     private boolean            ts;
-    public static boolean      bChangedPit            = false;
+    public static boolean      bChangedPit               = false;
     private float              SonicBoom;
     private Eff3DActor         shockwave;
     private boolean            isSonic;
-    public static int          LockState              = 0;
-    static Actor               hunted                 = null;
+    public static int          LockState                 = 0;
+    static Actor               hunted                    = null;
     private float              engineSurgeDamage;
     private float              gearTargetAngle;
     private float              gearCurrentAngle;
     public boolean             hasHydraulicPressure;
-    private static final float NEG_G_TOLERANCE_FACTOR = 2.5F;
-    private static final float NEG_G_TIME_FACTOR      = 2.5F;
-    private static final float NEG_G_RECOVERY_FACTOR  = 2F;
-    private static final float POS_G_TOLERANCE_FACTOR = 6.5F;
-    private static final float POS_G_TIME_FACTOR      = 3F;
-    private static final float POS_G_RECOVERY_FACTOR  = 3F;
+    private static final float NEG_G_TOLERANCE_FACTOR    = 2.5F;
+    private static final float NEG_G_TIME_FACTOR         = 2.5F;
+    private static final float NEG_G_RECOVERY_FACTOR     = 2F;
+    private static final float POS_G_TOLERANCE_FACTOR    = 6.5F;
+    private static final float POS_G_TIME_FACTOR         = 3F;
+    private static final float POS_G_RECOVERY_FACTOR     = 3F;
     public int                 radarmode;
     public int                 targetnum;
     public float               lockrange;
@@ -1905,6 +1928,29 @@ public class F_102 extends Scheme1 implements TypeSupersonic, TypeFighter, TypeB
     private boolean            bHasDeployedDragChute;
     private Chute              chute;
     private long               removeChuteTimer;
+    
+    static void initCommon(Class f102Class) {
+        new NetAircraft.SPAWN(f102Class);
+        Property.set(f102Class, "iconFar_shortClassName", "F-102A");
+        Property.set(f102Class, "PaintScheme", new PaintSchemeFMPar05());
+        Property.set(f102Class, "yearService", 1955F);
+        Property.set(f102Class, "yearExpired", 1970F);
+        Property.set(f102Class, "FlightModel", "FlightModels/F-102.fmd:F102");
+        Property.set(f102Class, "cockpitClass", new Class[] { CockpitF_102.class });
+        Property.set(f102Class, "LOSElevation", 0.965F);
+        Aircraft.weaponTriggersRegister(f102Class, new int[] { 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 9, 9 });
+        Aircraft.weaponHooksRegister(f102Class, new String[] { "_CANNON01", "_InternalRock01", "_InternalRock02", "_InternalRock03", "_InternalRock04", "_InternalRock05", "_InternalRock05", "_InternalRock06", "_InternalRock06", "_InternalRock07", "_InternalRock07", "_InternalRock08", "_InternalRock08", "_InternalRock09", "_InternalRock09", "_InternalRock10", "_InternalRock10", "_ExternalDev01", "_ExternalDev02" });
+        
+        AircraftTools.weaponsRegister(f102Class, "Default", new String[] {"0 MGunNull 250", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null});
+        AircraftTools.weaponsRegister(f102Class, "24x70mmRockets", new String[] {"0 MGunNull 250", "2 RocketGunFFARMk4_gn16 6", "2 RocketGunFFARMk4_gn16 6", "2 RocketGunFFARMk4_gn16 6", "2 RocketGunFFARMk4_gn16 6", null, null, null, null, null, null, null, null, null, null, null, null, null, null});
+        AircraftTools.weaponsRegister(f102Class, "3xAIM4A+3xAIM4C", new String[] {"0 MGunNull 250", null, null, null, null, "4 RocketGunAIM4A 1", "4 RocketGunNull 1", "4 RocketGunAIM4A 1", "4 RocketGunNull 1", "4 RocketGunAIM4A 1", "4 RocketGunNull 1", "2 RocketGunAIM4C 1", "2 RocketGunNull 1", "2 RocketGunAIM4C 1", "2 RocketGunNull 1", "2 RocketGunAIM4C 1", "2 RocketGunNull 1", null, null});
+        AircraftTools.weaponsRegister(f102Class, "3xAIM4A+3xAIM4C+24x70mmRockets", new String[] {"0 MGunNull 250", "5 RocketGunFFARMk4_gn16 6", "5 RocketGunFFARMk4_gn16 6", "5 RocketGunFFARMk4_gn16 6", "5 RocketGunFFARMk4_gn16 6", "4 RocketGunAIM4A 1", "4 RocketGunNull 1", "4 RocketGunAIM4A 1", "4 RocketGunNull 1", "4 RocketGunAIM4A 1", "4 RocketGunNull 1", "2 RocketGunAIM4C 1", "2 RocketGunNull 1", "2 RocketGunAIM4C 1", "2 RocketGunNull 1", "2 RocketGunAIM4C 1", "2 RocketGunNull 1", null, null});
+        AircraftTools.weaponsRegister(f102Class, "2xDroptanks", new String[] {"0 MGunNull 250", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "9 FuelTankGun_TankF102 1", "9 FuelTankGun_TankF102 1"});
+        AircraftTools.weaponsRegister(f102Class, "24x70mmRockets+2xDroptanks", new String[] {"0 MGunNull 250", "2 RocketGunFFARMk4_gn16 6", "2 RocketGunFFARMk4_gn16 6", "2 RocketGunFFARMk4_gn16 6", "2 RocketGunFFARMk4_gn16 6", null, null, null, null, null, null, null, null, null, null, null, null, "9 FuelTankGun_TankF102 1", "9 FuelTankGun_TankF102 1"});
+        AircraftTools.weaponsRegister(f102Class, "3xAIM4A+3xAIM4C+2xDroptanks", new String[] {"0 MGunNull 250", null, null, null, null, "4 RocketGunAIM4A 1", "4 RocketGunNull 1", "4 RocketGunAIM4A 1", "4 RocketGunNull 1", "4 RocketGunAIM4A 1", "4 RocketGunNull 1", "2 RocketGunAIM4C 1", "2 RocketGunNull 1", "2 RocketGunAIM4C 1", "2 RocketGunNull 1", "2 RocketGunAIM4C 1", "2 RocketGunNull 1", "9 FuelTankGun_TankF102 1", "9 FuelTankGun_TankF102 1"});
+        AircraftTools.weaponsRegister(f102Class, "3xAIM4A+3xAIM4C+24x70mmRockets+2xDroptanks", new String[] {"0 MGunNull 250", "5 RocketGunFFARMk4_gn16 6", "5 RocketGunFFARMk4_gn16 6", "5 RocketGunFFARMk4_gn16 6", "5 RocketGunFFARMk4_gn16 6", "4 RocketGunAIM4A 1", "4 RocketGunNull 1", "4 RocketGunAIM4A 1", "4 RocketGunNull 1", "4 RocketGunAIM4A 1", "4 RocketGunNull 1", "2 RocketGunAIM4C 1", "2 RocketGunNull 1", "2 RocketGunAIM4C 1", "2 RocketGunNull 1", "2 RocketGunAIM4C 1", "2 RocketGunNull 1", "9 FuelTankGun_TankF102 1", "9 FuelTankGun_TankF102 1"});
+        AircraftTools.weaponsRegister(f102Class, "none", new String[] {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null});
+    }
 
     static {
         Class class1 = F_102.class;
