@@ -314,7 +314,7 @@ public class Gear {
 		if (Mission.cur().sectFile().get("Mods", "CatapultReferMissionYear", 0) == 1) bCatapultReferMissionYear = true;
 		if (Config.cur.ini.get("Mods", "StandardDeckCVL", 0) == 1) bStandardDeckCVL = true;
 		if (Mission.cur().sectFile().get("Mods", "StandardDeckCVL", 0) == 1) bStandardDeckCVL = true;
-		if (Config.cur.ini.get("Mods", "OldCatapultPowerCode", 1) == 0) bUseOldCatapultPowerProcedure = false;
+		if (Config.cur.ini.get("Mods", "OldCatapultPowerCode", 0) == 0) bUseOldCatapultPowerProcedure = false;
 		if (Config.cur.ini.get("Mods", "DebugCatapult", 0) == 1) bDebugCatapult = true;
 		// TODO: --- CTO Mod 4.12 ---
 
