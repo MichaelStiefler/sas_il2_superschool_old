@@ -1,6 +1,6 @@
 package com.maddox.il2.objects.air;
 
-public interface TypeEnhancedWeaponOptionControl extends TypeLimitedWeaponOptionControl {
+public interface TypeEnhancedWeaponReleaseControl extends TypeLimitedWeaponReleaseControl {
 
 	/**
 	 * This class was introduced to UP3 in order of the 'Enhanced Weapon Release Control' Mod by

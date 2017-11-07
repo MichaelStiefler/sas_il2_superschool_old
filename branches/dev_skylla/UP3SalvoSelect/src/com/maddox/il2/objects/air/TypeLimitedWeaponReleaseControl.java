@@ -1,6 +1,6 @@
 package com.maddox.il2.objects.air;
 
-public interface TypeLimitedWeaponOptionControl {
+public interface TypeLimitedWeaponReleaseControl {
 
 	/**
 	 * This class was introduced to UP3 in order of the 'Enhanced Weapon Release Control for UP3' Mod by
