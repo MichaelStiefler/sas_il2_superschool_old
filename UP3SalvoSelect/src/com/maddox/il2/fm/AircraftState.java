@@ -3664,6 +3664,7 @@ public class AircraftState {
 		if(listIndex > 255 || listIndex < 0) {
 			System.out.println(this.getClass() + ".setRocketSelected() received a off 'listIndex' value (" + listIndex + "). This may be responsible for weird occurances when firing rockets!");
 		}
+		System.out.println("SKYLLA: setRocketSelected " + (applySetting?"received":"sent") + " the following listIndex: " + listIndex);
 		if(bIsMaster) {
 			netToMirrors(_AS_ROCKET_SELECTED, listIndex, 0);
 		} else {
@@ -3691,6 +3692,7 @@ public class AircraftState {
 		if(delayIndex > 255 || delayIndex < 0) {
 			System.out.println(this.getClass() + ".setRocketReleaseDelay() received a off 'delayIndex' value (" + delayIndex + "). This may be responsible for weird occurances when firing rockets!");
 		}
+		System.out.println("SKYLLA: setRocketReleaseDelay " + (applySetting?"received":"sent") + " the following listIndex: " + delayIndex);
 		if(bIsMaster) {
 			netToMirrors(_AS_ROCKET_RELEASE_DELAY, delayIndex, 0);
 		} else {
@@ -3718,6 +3720,7 @@ public class AircraftState {
 		if(releaseModeIndex > 255 || releaseModeIndex < 0) {
 			System.out.println(this.getClass() + ".setRocketReleaseMode() received a off 'releaseModeIndex' value (" + releaseModeIndex + "). This may be responsible for weird occurances when firing rockets!");
 		}
+		System.out.println("SKYLLA: setRocketReleaseMode " + (applySetting?"received":"sent") + " the following listIndex: " + releaseModeIndex);
 		if(bIsMaster) {
 			netToMirrors(_AS_ROCKET_RELEASE_MODE, releaseModeIndex, 0);
 		} else {
@@ -3745,6 +3748,7 @@ public class AircraftState {
 		if(listIndex > 255 || listIndex < 0) {
 			System.out.println(this.getClass() + ".setBombSelected() received a off 'listIndex' value (" + listIndex + "). This may be responsible for weird occurances when releasing bombs!");
 		}
+		System.out.println("SKYLLA: setBombSelected " + (applySetting?"received":"sent") + " the following listIndex: " + listIndex);
 		if(bIsMaster) {
 			netToMirrors(_AS_BOMB_SELECTED, listIndex, 0);
 		} else {
@@ -3772,6 +3776,7 @@ public class AircraftState {
 		if(delayIndex > 255 || delayIndex < 0) {
 			System.out.println(this.getClass() + ".setBombReleaseDelay() received a off 'delayIndex' value (" + delayIndex + "). This may be responsible for weird occurances when releasing bombs!");
 		}
+		System.out.println("SKYLLA: setBombReleaseDelay " + (applySetting?"received":"sent") + " the following listIndex: " + delayIndex);
 		if(bIsMaster) {
 			netToMirrors(_AS_BOMB_RELEASE_DELAY, delayIndex, 0);
 		} else {
@@ -3799,6 +3804,7 @@ public class AircraftState {
 		if(releaseModeIndex > 255 || releaseModeIndex < 0) {
 			System.out.println(this.getClass() + ".setBombReleaseMode() received a off 'releaseModeIndex' value (" + releaseModeIndex + "). This may be responsible for weird occurances when releasing bombs!");
 		}
+		System.out.println("SKYLLA: setBombReleaseMode " + (applySetting?"received":"sent") + " the following listIndex: " + releaseModeIndex);
 		if(bIsMaster) {
 			netToMirrors(_AS_BOMB_RELEASE_MODE, releaseModeIndex, 0);
 		} else {
