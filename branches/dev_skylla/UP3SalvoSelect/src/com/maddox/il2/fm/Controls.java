@@ -140,6 +140,9 @@ public class Controls {
      * @see AircraftHotkeys, AircraftState
     **/
     
+    private boolean hasLetGoBTriggerMeanwhile = false;
+    private boolean hasLetGoRTriggerMeanwhile = false;
+    
     private boolean hasToInitiateEnhancedWeaponOptions = true;
     
    	public static final long releaseDelayMIN = 33L;
@@ -914,6 +917,8 @@ public class Controls {
                      				this.WeaponControl[wctIndex] = false;
                     			if(!weaponReleasedL && !weaponReleasedR) {
                     				 NetAircraft.printDebugMessage(this.FM.actor, "Controls Weapon Trigger " + wctIndex + " pressed but no weapon released!");
+                    			} else {
+                    				hasLetGoRTriggerMeanwhile = false;
                     			}
                         	}
                         	break;
@@ -981,6 +986,8 @@ public class Controls {
                         			}
                         			if(!weaponReleasedL && !weaponReleasedR) {
                         				NetAircraft.printDebugMessage(this.FM.actor, "Controls Weapon Trigger " + wctIndex + " pressed but no weapon released!");
+                        			} else {
+                        				hasLetGoBTriggerMeanwhile = false;
                         			}
                         			//System.out.println("SKYLLA: weaponReleasedL=" + weaponReleasedL + "; weaponReleasedR=" + weaponReleasedR);
                         		}
@@ -998,7 +1005,7 @@ public class Controls {
                                 com.maddox.il2.objects.effects.ForceFeedback.fxTriggerShake(wctIndex, false);
                             break;
                     }
-                }
+                }                
              // ----- todo skylla: enhanced weapon release control -----
             }
             // T-ODO: Storebror: +++ Bomb Release Bug hunting
@@ -1021,6 +1028,13 @@ public class Controls {
 //            }
 //        }
 //        // T-ODO: Storebror: --- Bomb Release Bug hunting
+        
+     // +++++ TODO skylla: enhanced weapon release control +++++
+        if(!WeaponControl[2] && !hasLetGoRTriggerMeanwhile)
+        	hasLetGoRTriggerMeanwhile = true;
+        if(!WeaponControl[3] && !hasLetGoBTriggerMeanwhile)
+        	hasLetGoBTriggerMeanwhile = true;
+     // ----- todo skylla: enhanced weapon release control -----
     }
 //    // T-ODO: Storebror: +++ Bomb Release Bug hunting
 //    private static long lastTimeControlTickSkip = 0L;
@@ -1248,13 +1262,6 @@ public class Controls {
     
  // +++++ TODO skylla: enhanced weapon release control +++++
     
-    public void typeEnhancedWeaponReleaseControlHasToReinitiateWeaponReleaseOptions(TypeEnhancedWeaponReleaseControl ac) {
-    	if(ac != this.FM.actor) {
-    		return;
-    	}
-    	this.hasToInitiateEnhancedWeaponOptions = true;
-    }
-    
   //+++ getter and setter methods for field index net replication +++
     public int getSelectedBombReleaseDelayIndex() {
     	return Arrays.binarySearch(this.bombReleaseDelayOptions, this.bombReleaseDelay);
@@ -1344,15 +1351,15 @@ public class Controls {
   //reset method to be used after executing RRR
     public void resetAvailableBombs() {
     	availableBombs.clear();
-    	availableBombs = null;
     	initiateEnhancedWeaponOptions();
+    	listBombs();
     }
     
   //reset method to be used after executing RRR
     public void resetAvailableRockets() {
     	availableRockets.clear();
-    	availableRockets = null;
     	initiateEnhancedWeaponOptions();
+    	listRockets();
     }
     
    /* 
@@ -1435,10 +1442,7 @@ public class Controls {
     	if(tmpRs != null) {
     		boolean b = Arrays.binarySearch(tmpRs, -1) < 0;
     		rocketSalvoSizeOptions = new int[b?tmpRs.length+1:tmpRs.length];
-    		if(b) {
-    			rocketSalvoSizeOptions[0] = -1;
-    			validR++;
-    		}
+    		rocketSalvoSizeOptions[0] = -1;
     		if(rocketSalvoSizeOptions.length > 2) {
     			rocketSalvoSizeOptions[1] = 0;
     			rocketSalvoSizeOptions[2] = 1;
@@ -1531,6 +1535,8 @@ public class Controls {
     	if(rocketReleaseDelayOptions.length > 256) {
     		throw new IllegalArgumentException(this.getClass() + ".rocketReleaseDelayOptions.length must not be greater than 256! In order to fix this error, please modify the field returned by " + _ac.getClass() + ".getPossibleRocketReleaseDelayOptions() accordingly!");
     	}
+    	listRockets();
+    	listBombs();
     }
     
     //to be used after all bombs of a group drop are released.
@@ -1593,13 +1599,14 @@ public class Controls {
     			availableBombs.remove(selectedBomb);
     		}
     		selectedBomb = (Class) availableBombs.get(0);
-    		if(bombDropMode >= fullSalvo ) {
+    		if(bombDropMode >= fullSalvo && !hasLetGoBTriggerMeanwhile /*&& lastBombTime + ((2*bombReleaseDelay+30L)*(long) 1/Time.speed()) > System.currentTimeMillis()*/) {
     			this.WeaponControl[3] = false;
     			isGroupRelease = false;
     		}
     	}
     }
     
+    //FIXME
     private void checkSelectedRocketAvailable() {
     	if(selectedRocket == RocketGun.class)
     		return;
@@ -1608,8 +1615,9 @@ public class Controls {
     			availableRockets.remove(selectedRocket);
     		}
     		selectedRocket = (Class) availableRockets.get(0);
-    		if(rocketFireMode >= fullSalvo)
+    		if(rocketFireMode >= fullSalvo && !hasLetGoRTriggerMeanwhile/*&& lastRocketTime + ((5*rocketReleaseDelay+30L)*(long) 1/Time.speed()) > System.currentTimeMillis()*/) {
     			this.WeaponControl[2] = false;
+    		}
     	}
     }
     
@@ -1969,6 +1977,7 @@ public class Controls {
 				continue;
 			} else if(this.bHasBayDoors && e.getHookName().startsWith("_BombSpawn") && this.BayDoorControl != 1.0F) {
 				toggleBombSide();
+				//continue in order to find a bomb that may not be within bomb bay and can be released.
 				continue;
 			} else if(e instanceof RocketGunNull || e instanceof BombGunNull) {
 				this.setNextReleaseReady(1);
@@ -2006,6 +2015,12 @@ public class Controls {
 					}
 				}
 			}
+			/*
+			if(i+2 >= Weapons[3].length && !bombReleased && selectedBomb != BombGun.class && shot == 1) {
+				//checkSelectedBombAvailable();
+				i = side;
+			}
+			*/
 		}
 		return bombReleased;
 	}
@@ -2068,6 +2083,12 @@ public class Controls {
 			if((i+2)>= Weapons[2].length) {
 				//System.out.println("SKYLLA: depleted all rockets on the "+ ((side == 0)?"left":"right") + " side!");
 			}
+			/*
+			if(i+2 >= Weapons[2].length && !rocketReleased && selectedRocket != RocketGun.class && shot == 1) {
+				//checkSelectedRocketAvailable();
+				i = side;
+			}
+			*/
 		}	
 		return rocketReleased;
 	}
