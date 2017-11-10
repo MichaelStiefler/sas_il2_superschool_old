@@ -1,6 +1,6 @@
 // Source File Name: Missile.java
 // Author:		   Storebror
-// Edit:			western0221 on 03rd/Nov/2017
+// Edit:			western0221 on 10th/Nov/2017
 package com.maddox.il2.objects.weapons;
 
 import java.io.IOException;
@@ -248,7 +248,7 @@ public class Missile extends Rocket {
 					f2Future = 0F;
 				}
 				if (((this.victim instanceof Aircraft) || (this.victim instanceof MissileInterceptable)) && (f2Future > f2 * 5F || f2 > this.previousDistance) && this.previousDistance != 1000F) {
-					if (f2 < 50F) {
+					if ( f2 > 0F && f2 < this.missileProximityFuzeRadius) {
 						// Time.setPause(true); // Test detonation distance!
 						// HUD.log("MD:" + twoPlaces.format(f2) + "/" + twoPlaces.format(f2Future) + "/" + twoPlaces.format(previousDistance));
 						this.doExplosionAir();
@@ -290,21 +290,46 @@ public class Missile extends Rocket {
 		float millisecondsFromStart = Time.current() - this.startTime;
 
 		if (millisecondsFromStart > this.rocketMotorOperationTime + this.rocketMotorSustainedOperationTime) {
-			this.flameActive = false;
-			this.smokeActive = false;
-			this.spriteActive = false;
-			this.endSmoke();
+			if (!this.noSmokeFlameSustain && (flameActive || smokeActive || spriteActive)) {
+				this.flameActive = false;
+				this.smokeActive = false;
+				this.spriteActive = false;
+				this.endSmoke();
+			}
+			if (this.noSmokeFlameSustain && this.playingSustainMotorSound) {
+				this.stopSounds();
+				this.playingSustainMotorSound = false;
+			}
 			this.missileMass = this.massaEnd;
 			this.missileForce = 0.0F;
 		} else if (millisecondsFromStart > this.rocketMotorOperationTime) {
+			if (this.noSmokeFlameSustain && (flameActive || smokeActive || spriteActive)) {
+				this.flameActive = false;
+				this.smokeActive = false;
+				this.spriteActive = false;
+				this.endSmoke();
+			}
+
 			theForce = this.missileSustainedForce;
+
+			if (this.waitingMeshSustain) {
+				setMesh(MeshShared.get(this.mshSustain));
+				this.waitingMeshSustain = false;
+			}
+			if (!this.noSmokeFlameSustain && !this.playingSustainMotorSound && this.soundNameSustain != null) {
+				this.stopSounds();
+			}
+			if (!this.playingSustainMotorSound && this.soundNameSustain != null) {
+				this.newSound(this.soundNameSustain, true);
+				this.playingSustainMotorSound = true;
+			}
 		} else {
 			if (this.missileForceRunUpTime > 0.001F) {
 				if (millisecondsFromStart < this.missileForceRunUpTime) {
 					float runUpTimeFactor = millisecondsFromStart / this.missileForceRunUpTime;
-					if (runUpTimeFactor > 1.0F) {
+					if (runUpTimeFactor > 1.0F)
 						runUpTimeFactor = 1.0F;
-					}
+
 					this.setAllSmokeIntensities(runUpTimeFactor);
 					this.setAllSpriteIntensities(runUpTimeFactor);
 					theForce *= (this.initialMissileForce + ((100.0F - this.initialMissileForce) * runUpTimeFactor)) / 100.0F;
@@ -890,6 +915,11 @@ public class Missile extends Rocket {
 		this.effSprite = Property.stringValue(localClass, "sprite", null);
 		this.simFlame = Property.stringValue(localClass, "flame", null);
 		float failureRate = Property.floatValue(localClass, "failureRate", 10.0F);
+		this.noSmokeFlameSustain = (Property.intValue(localClass, "noSmokeFlameSustain", 0) == 1);
+		this.soundNameSustain = Property.stringValue(localClass, "soundSustain", null);
+		this.mshSustain = Property.stringValue(localClass, "mshSustain", null);
+		if (this.mshSustain != null)
+			this.waitingMeshSustain = true;
 		if (TrueRandom.nextFloat(0, 100.0F) < failureRate) {
 			this.setFailState();
 			float randFail = TrueRandom.nextFloat();
@@ -910,6 +940,9 @@ public class Missile extends Rocket {
 		int iDetectorType = Property.intValue(localClass, "detectorType", DETECTOR_TYPE_MANUAL);
 		if (iDetectorType == DETECTOR_TYPE_LASER) bLaserHoming = true;
 		else  bLaserHoming = false;
+		this.missileProximityFuzeRadius = Property.floatValue(localClass, "proximityFuzeRadius", 50.0F);
+		// When proximityFuzeRadius = 0F set, means no Proximity Fuze. So, working as Contact Fuze or Time Fuze (reaching timeLife).
+
 		this.bRealisticRadarSelect = Config.cur.ini.get("Mods", "RealisticRadarSelect", 0) != 0;
 	}
 
@@ -988,7 +1021,7 @@ public class Missile extends Rocket {
 						(((ownerfm instanceof RealFlightModel)) && (((RealFlightModel) ownerfm).isRealMode()) && (ownerfm instanceof Pilot))) {
 						if (!((TypeSemiRadar) this.getOwner()).getSemiActiveRadarOn() || ((TypeSemiRadar) this.getOwner()).getSemiActiveRadarLockedActor() != this.victim) {
 							this.victim = null;
-                        }
+						}
 					}
 				}
 			}
@@ -1315,7 +1348,7 @@ public class Missile extends Rocket {
 	}
 
 	public void startEngine() {
-		if(this.engineRunning)
+		if (this.engineRunning)
 			return;
 		// EventLog.type("startEngine");
 
@@ -1628,7 +1661,7 @@ public class Missile extends Rocket {
 
 			this.computeMissilePath(missileSpeed, 0.0F, 0.0F, angleAzimuth, angleTangage);
 		} else if (bLaserHoming) {
-			if(((TypeLaserDesignator) this.getOwner()).getLaserOn()) {
+			if (((TypeLaserDesignator) this.getOwner()).getLaserOn()) {
 				this.targetPoint3d.set(((TypeLaserDesignator) this.getOwner()).getLaserSpot());
 
 				this.targetPoint3d.sub(this.missilePoint3d); // relative Position to target
@@ -1788,6 +1821,11 @@ public class Missile extends Rocket {
 	private Eff3DActor[] smokes = null;
 	private boolean spriteActive = true;
 	private Eff3DActor[] sprites = null;
+	private boolean noSmokeFlameSustain = false;
+	private String soundNameSustain = null;
+	private boolean playingSustainMotorSound = false;
+	private String mshSustain = null;
+	private boolean waitingMeshSustain = false;
 	private long startTime = 0L;
 	private boolean startTimeIsSet = false;
 	private int stepMode = 0;
@@ -1799,6 +1837,7 @@ public class Missile extends Rocket {
 	private Vector3d trajectoryVector3d = null;
 	private float turnDiffMax = 0F;
 	private float attackMaxDistance = 5000F;
+	private float missileProximityFuzeRadius = 50F;
 	DecimalFormat twoPlaces = new DecimalFormat("+000.00;-000.00"); // only required for debugging
 
 	public Actor victim = null;
