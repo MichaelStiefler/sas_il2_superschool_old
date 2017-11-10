@@ -2816,26 +2816,32 @@ public class AircraftState {
                               
                  // +++++ TODO skylla: enhanced weapon release control +++++
                     case _AS_ROCKET_SELECTED: {
+                    	System.out.println("SKYLLA: received index '" + j + "' for 'Rocket Selected'!");
                     	this.setRocketSelected(localActor, j, true);
                     	break;
                     }                        
                     case _AS_ROCKET_RELEASE_DELAY: {
+                    	System.out.println("SKYLLA: received index '" + j + "' for 'Rocket Release Delay'!");
                     	this.setRocketReleaseDelay(localActor, j, true);
                     	break;
                     }
                     case _AS_ROCKET_RELEASE_MODE: {
+                    	System.out.println("SKYLLA: received index '" + j + "' for 'Rocket Release Mode'!");
                         this.setRocketReleaseMode(localActor, j, true);
                     	break;
                     }
                     case _AS_BOMB_SELECTED: {
+                    	System.out.println("SKYLLA: received index '" + j + "' for 'Bomb Selected'!");
                     	this.setBombSelected(localActor, j, true);
                     	break;
                     }
                     case _AS_BOMB_RELEASE_DELAY: {
+                    	System.out.println("SKYLLA: received index '" + j + "' for 'Bomb Release Delay'!");
                     	this.setBombReleaseDelay(localActor, j, true);
                     	break;
                     }
                     case _AS_BOMB_RELEASE_MODE: {
+                    	System.out.println("SKYLLA: received index '" + j + "' for 'Bomb Release Mode'!");
                     	this.setBombReleaseMode(localActor, j, true);
                     	break;
                     }
@@ -3013,26 +3019,32 @@ public class AircraftState {
                     
              // +++++ TODO skylla: enhanced weapon release control +++++
                 case _AS_ROCKET_SELECTED: {
+                	System.out.println("SKYLLA: received index '" + j + "' for 'Rocket Selected'!");
                 	this.setRocketSelected(localActor, j, true);
                 	break;
                 }                        
                 case _AS_ROCKET_RELEASE_DELAY: {
+                	System.out.println("SKYLLA: received index '" + j + "' for 'Rocket Release Delay'!");
                 	this.setRocketReleaseDelay(localActor, j, true);
                 	break;
                 }
                 case _AS_ROCKET_RELEASE_MODE: {
+                	System.out.println("SKYLLA: received index '" + j + "' for 'Rocket Release Mode'!");
                     this.setRocketReleaseMode(localActor, j, true);
                 	break;
                 }
                 case _AS_BOMB_SELECTED: {
+                	System.out.println("SKYLLA: received index '" + j + "' for 'Bomb Selected'!");
                 	this.setBombSelected(localActor, j, true);
                 	break;
                 }
                 case _AS_BOMB_RELEASE_DELAY: {
+                	System.out.println("SKYLLA: received index '" + j + "' for 'Bomb Release Delay'!");
                 	this.setBombReleaseDelay(localActor, j, true);
                 	break;
                 }
                 case _AS_BOMB_RELEASE_MODE: {
+                	System.out.println("SKYLLA: received index '" + j + "' for 'Bomb Release Mode'!");
                 	this.setBombReleaseMode(localActor, j, true);
                 	break;
                 }
@@ -3659,8 +3671,9 @@ public class AircraftState {
     private void setRocketSelected(Actor actor, int listIndex, boolean applySetting) {
     	if(!Actor.isValid(actor))
 			return;
-		if(applySetting)
+		if(applySetting) {
 			doSetRocketSelected(actor, listIndex);	
+		}
 		if(listIndex > 255 || listIndex < 0) {
 			System.out.println(this.getClass() + ".setRocketSelected() received a off 'listIndex' value (" + listIndex + "). This may be responsible for weird occurances when firing rockets!");
 		}
@@ -3673,6 +3686,7 @@ public class AircraftState {
     }
     
     private void doSetRocketSelected(Actor actor, int listIndex) {
+    	System.out.println("SKYLLA: setting 'Rocket Selected' to the value indexed with " + listIndex);
     	aircraft.FM.CT.setRocketSelected(listIndex);
     }
     
@@ -3701,6 +3715,7 @@ public class AircraftState {
 	}
 	
 	private void doSetRocketReleaseDelay(Actor actor, int delayIndex) {
+		System.out.println("SKYLLA: setting 'Rocket Release Delay' to the value indexed with " + delayIndex);
 		aircraft.FM.CT.setRocketReleaseDelayByIndex(delayIndex);
 	}
 	
@@ -3729,6 +3744,7 @@ public class AircraftState {
 	}
 	
 	private void doSetRocketReleaseMode(Actor actor, int releaseModeIndex) {
+		System.out.println("SKYLLA: setting 'Rocket Release Mode' to the value indexed with " + releaseModeIndex);
 		aircraft.FM.CT.setRocketSalvoSizeByIndex(releaseModeIndex);
 	}	
 	
@@ -3757,6 +3773,7 @@ public class AircraftState {
     }
     
     private void doSetBombSelected(Actor actor, int listIndex) {
+    	System.out.println("SKYLLA: setting 'Bomb Selected' to the value indexed with " + listIndex);
     	aircraft.FM.CT.setBombSelected(listIndex);
     }
 	
@@ -3785,6 +3802,7 @@ public class AircraftState {
 	}
 	
 	private void doSetBombReleaseDelay(Actor actor, int delayIndex) {
+		System.out.println("SKYLLA: setting 'Bomb Release Delay' to the value indexed with " + delayIndex);
 		aircraft.FM.CT.setBombReleaseDelayByIndex(delayIndex);
 	}
 	
@@ -3813,6 +3831,7 @@ public class AircraftState {
 	}
 	
 	private void doSetBombReleaseMode(Actor actor, int releaseModeIndex) {
+		System.out.println("SKYLLA: setting 'Bomb Release Mode' to the value indexed with " + releaseModeIndex);
 		aircraft.FM.CT.setBombSalvoSizeByIndex(releaseModeIndex);
 	}
     
