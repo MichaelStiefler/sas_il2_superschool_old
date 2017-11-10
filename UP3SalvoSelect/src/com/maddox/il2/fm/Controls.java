@@ -255,6 +255,7 @@ public class Controls {
      // +++++ TODO skylla: enhanced weapon release control +++++
         //cannot place this here, as my counting of the available bombs does not work here yet.
         //^irrelevant when using static maximum group drop number.
+        //^true, but I still get no reasonable return value for the methods introduced in the TypeEnhancedWeaponReleaseControl interface. => Therefore, @see update()
         //initiateEnhancedWeaponOptions();
      // ----- todo skylla: enhanced weapon release control -----
     }
@@ -665,6 +666,7 @@ public class Controls {
     	
      // +++++ TODO skylla: enhanced weapon release control +++++
     	// not needed anymore with static bomb group limit.
+    	// ^true, but it _is_ needed in order to get reasonable return values from the methods introduced with the TypeEnhancedWeaponReleaseControl interface!
     	if(hasToInitiateEnhancedWeaponOptions) {
     		this.initiateEnhancedWeaponOptions();
     		hasToInitiateEnhancedWeaponOptions = false;
@@ -918,6 +920,12 @@ public class Controls {
                     			if(!weaponReleasedL && !weaponReleasedR) {
                     				 NetAircraft.printDebugMessage(this.FM.actor, "Controls Weapon Trigger " + wctIndex + " pressed but no weapon released!");
                     			} else {
+                    				/*this is here in order to circumvent a bug that will occur when using singleFire and only one type of rocket is selected (Type 1). 
+                    				  If the rocket of Type 1 runs out of ammo, we must set WeaponControl[2] to false as we do not want the player to waste any rockets of Type 2 (as they're not selected they can't be fired!).
+                    				  If the player fires the rockets with continuous fire - that means without releasing the trigger - then this works fine, but if the player does press 
+                    				  the trigger button again for every rocket there will be one press that shows no effect at all after firing the last rocket of Type 1. As we must suggest that 
+                    				  player wants to fire the next rocket, this is a no-go. 
+                    				*/
                     				hasLetGoRTriggerMeanwhile = false;
                     			}
                         	}
@@ -957,7 +965,7 @@ public class Controls {
                         			boolean weaponReleasedR = doNextBombRelease(1);
                         			toggleBombSide();
                         			lastBombTime = System.currentTimeMillis();
-                        			System.out.println("SKYLLA: weaponReleasedL=" + weaponReleasedL + "; weaponReleasedR=" + weaponReleasedR + "; isGroupRelease=" + isGroupRelease + "; bombsDropped=" + bombsDropped + "; bombReleaseDelay=" + bombReleaseDelay);
+                        			//System.out.println("SKYLLA: weaponReleasedL=" + weaponReleasedL + "; weaponReleasedR=" + weaponReleasedR + "; isGroupRelease=" + isGroupRelease + "; bombsDropped=" + bombsDropped + "; bombReleaseDelay=" + bombReleaseDelay);
                         			if(bombDropMode >= singleFire) {
                         				if(bombsDropped == 0 && (weaponReleasedR || weaponReleasedL)) {
                         					isGroupRelease = true;
@@ -1397,7 +1405,7 @@ public class Controls {
     	//System.out.println("SKYLLA: Number of bombs available on this sortie: " + bombs);
     	
     	if(tmpBs != null) {
-    		System.out.println("SKYLLA: entered check clause for bomb salvo size options");
+    		//System.out.println("SKYLLA: entered check clause for bomb salvo size options");
     		boolean b = Arrays.binarySearch(tmpBs, -1) < 0;
     		bombSalvoSizeOptions = new int[tmpBs.length];
     		for(int i = 0; i<tmpBs.length; i++) {
@@ -1478,7 +1486,7 @@ public class Controls {
     				}
     			}
     		}
-    		//sorry for that .. I didn't know that Arrays.copy() requires at least Java 1.6 :(
+    		//I didn't know that Arrays.copy() requires at least Java 1.6 :(
     		if(validB > 0) {
     			tmpBd = bombReleaseDelayOptions;
     			bombReleaseDelayOptions = new long[validB];
@@ -1515,7 +1523,7 @@ public class Controls {
     				}
     			}
     		}
-    		//sorry for that .. I didn't know that Arrays.copy() requires at least Java 1.6 :(
+    		//I didn't know that Arrays.copy() requires at least Java 1.6 :(
     		if(validR > 0) {
     			tmpRd = rocketReleaseDelayOptions;
     			rocketReleaseDelayOptions = new long[validR];
@@ -1599,7 +1607,7 @@ public class Controls {
     			availableBombs.remove(selectedBomb);
     		}
     		selectedBomb = (Class) availableBombs.get(0);
-    		if(bombDropMode >= fullSalvo && !hasLetGoBTriggerMeanwhile /*&& lastBombTime + ((2*bombReleaseDelay+30L)*(long) 1/Time.speed()) > System.currentTimeMillis()*/) {
+    		if(bombDropMode >= fullSalvo && !hasLetGoBTriggerMeanwhile) {
     			this.WeaponControl[3] = false;
     			isGroupRelease = false;
     		}
@@ -1614,7 +1622,7 @@ public class Controls {
     			availableRockets.remove(selectedRocket);
     		}
     		selectedRocket = (Class) availableRockets.get(0);
-    		if(rocketFireMode >= fullSalvo && !hasLetGoRTriggerMeanwhile/*&& lastRocketTime + ((5*rocketReleaseDelay+30L)*(long) 1/Time.speed()) > System.currentTimeMillis()*/) {
+    		if(rocketFireMode >= fullSalvo && !hasLetGoRTriggerMeanwhile) {
     			this.WeaponControl[2] = false;
     		}
     	}
@@ -1799,7 +1807,18 @@ public class Controls {
     		}
 		default:
 			int num = countBombsAvailable(selectedBomb);
-			boolean isSet = false;
+			boolean isSet = false;		
+			/* works only if bombSalvoSizeOptions elements increment by one! Therefore remove; see new implementation below!
+			if((bombDropMode+1) <= num && Arrays.binarySearch(bombSalvoSizeOptions, (bombDropMode+1)) >= 0) {
+				setBombDropMode(bombDropMode+1);
+				HUD.log(hudLogWeaponId, "Bomb Salvo Size: " + bombDropMode + (bombDropMode == num?" (All)":""));
+				isSet = true;
+			} else if(Arrays.binarySearch(bombSalvoSizeOptions, fullSalvo) >= 0) {
+				setBombDropMode(fullSalvo);
+				HUD.log(hudLogWeaponId, "Bombs: Full Salvo Selected");
+				isSet = true;
+			}
+			*/
 			int cIndex = Arrays.binarySearch(bombSalvoSizeOptions, bombDropMode);
 			if((cIndex+1) < bombSalvoSizeOptions.length) {
 				if(bombSalvoSizeOptions[cIndex+1] <= num) {
@@ -1813,17 +1832,6 @@ public class Controls {
 				HUD.log(hudLogWeaponId, "Bombs: Full Salvo Selected");
 				isSet = true;
 			}
-			/* works only if bombSalvoSizeOptions elements increment by one!
-			if((bombDropMode+1) <= num && Arrays.binarySearch(bombSalvoSizeOptions, (bombDropMode+1)) >= 0) {
-				setBombDropMode(bombDropMode+1);
-				HUD.log(hudLogWeaponId, "Bomb Salvo Size: " + bombDropMode + (bombDropMode == num?" (All)":""));
-				isSet = true;
-			} else if(Arrays.binarySearch(bombSalvoSizeOptions, fullSalvo) >= 0) {
-				setBombDropMode(fullSalvo);
-				HUD.log(hudLogWeaponId, "Bombs: Full Salvo Selected");
-				isSet = true;
-			}
-			*/
 			if(isSet) {
 				break;
 			}
@@ -1992,7 +2000,7 @@ public class Controls {
 				}
 				break;
 			} else if(!(e instanceof RocketGun) && !(e instanceof BombGun) && !(e instanceof RocketBombGun) || (selectedBomb != BombGun.class && e.getClass() != selectedBomb)) {
-				System.out.println("SKYLLA: Skipping bomb release; index=" + i + "; drop candidate = " + e.getClass());
+				//System.out.println("SKYLLA: Skipping bomb release; index=" + i + "; drop candidate = " + e.getClass());
 				continue;
 			} else if(shot == 1) {
 				//System.out.println("SKYLLA: side=" + side + "; shot=" + shot);
@@ -2001,7 +2009,7 @@ public class Controls {
 				e.shots(shot);
 				ZutiSupportMethods_FM.executeOnbombDropped(this.zutiOwnerAircraftName, 3, i, 1);	
 				boolean bombbay = e.getHookName().startsWith("_BombSpawn");
-				System.out.println("SKYLLA: Released ordnance of type '" + e.getClass() + "' from " + (side==0?"left":"right") + " side" + (bombbay?" through bomb bay doors" : ""));
+				//System.out.println("SKYLLA: Released ordnance of type '" + e.getClass() + "' from " + (side==0?"left":"right") + " side" + (bombbay?" through bomb bay doors" : ""));
 				if(bombbay && !this.bHasBayDoors) {
 					this.BayDoorControl = 1.0F;
 				}
