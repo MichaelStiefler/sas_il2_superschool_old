@@ -958,7 +958,7 @@ public class Controls {
                         			toggleBombSide();
                         			lastBombTime = System.currentTimeMillis();
                         			System.out.println("SKYLLA: weaponReleasedL=" + weaponReleasedL + "; weaponReleasedR=" + weaponReleasedR + "; isGroupRelease=" + isGroupRelease + "; bombsDropped=" + bombsDropped + "; bombReleaseDelay=" + bombReleaseDelay);
-                        			if(bombDropMode > 1) {
+                        			if(bombDropMode >= singleFire) {
                         				if(bombsDropped == 0 && (weaponReleasedR || weaponReleasedL)) {
                         					isGroupRelease = true;
                         				}
@@ -966,11 +966,11 @@ public class Controls {
                         			} else if(bombDropMode == defaultFire) {
                         				this.WeaponControl[wctIndex] = false;
                         			} else if(bombDropMode == fullSalvo && this.hasBulletsLeftOnTrigger(wctIndex) && (weaponReleasedR || weaponReleasedL)) {
-                        				System.out.println("SKYLLA: Full Salvo active, but we didn't release all bombs yet. Retry in next update call!");
+                        				//System.out.println("SKYLLA: Full Salvo active, but we didn't release all bombs yet. Retry in next update call!");
                         				bombReleaseDelay = 33L;
                         				isGroupRelease = true;
                         			}
-                        			if(isGroupRelease && (!this.hasBulletsLeftOnTrigger(wctIndex) || bombDropMode > 1 && bombsDropped >= bombDropMode )) {
+                        			if(isGroupRelease && (!this.hasBulletsLeftOnTrigger(wctIndex) || bombDropMode >= singleFire && bombsDropped >= bombDropMode )) {
                         				resetGroupDrop();
                         				int bombs = countBombsAvailable(selectedBomb);
                         				if(bombs == 0) {
@@ -1378,7 +1378,7 @@ public class Controls {
     		tmpBs = ac.getPossibleBombSalvoSizeOptions();
 			tmpRs = ac.getPossibleRocketSalvoSizeOptions();
 			tmpBd = ac.getPossibleBombReleaseDelayOptions();
-			tmpRd = ac.getPossibleBombReleaseDelayOptions();
+			tmpRd = ac.getPossibleRocketReleaseDelayOptions();
 			if(tmpBs != null)
 				Arrays.sort(tmpBs);
 			if(tmpRs != null)
@@ -1606,7 +1606,6 @@ public class Controls {
     	}
     }
     
-    //FIXME
     private void checkSelectedRocketAvailable() {
     	if(selectedRocket == RocketGun.class)
     		return;
@@ -1923,7 +1922,7 @@ public class Controls {
     			return false;
     		}
     	}
-		if(rocketReleaseDelay >= rocketReleaseDelayOptions[bombReleaseDelayOptions.length-1]) {
+		if(rocketReleaseDelay >= rocketReleaseDelayOptions[rocketReleaseDelayOptions.length-1]) {
 			rocketReleaseDelay = rocketReleaseDelayOptions[0];
 			return true;
 		}
