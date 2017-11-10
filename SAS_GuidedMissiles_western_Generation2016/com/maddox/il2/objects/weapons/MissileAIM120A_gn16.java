@@ -1,4 +1,3 @@
-// AIM-120A 'Hot Launch' version for LAU-127 rail launcher.
 // Source File Name: MissileAIM120A_gn16.java
 // Author:           western0221
 // Last Modified by: western0221 2017-11-10
@@ -12,16 +11,16 @@ import com.maddox.rts.NetChannel;
 import com.maddox.rts.Property;
 import com.maddox.rts.Spawn;
 
-public class MissileAIM120Ahl_gn16 extends Missile {
+public class MissileAIM120A_gn16 extends Missile {
 	static class SPAWN extends Missile.SPAWN {
 
 		public void doSpawn(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f) {
-			new MissileAIM120Ahl_gn16(actor, netchannel, i, point3d, orient, f);
+			new MissileAIM120A_gn16(actor, netchannel, i, point3d, orient, f);
 		}
 	}
 
 	static {
-		Class class1 = MissileAIM120Ahl_gn16.class;
+		Class class1 = MissileAIM120A_gn16.class;
 		Property.set(class1, "mesh", "3do/arms/AIM120A_gn16/mono.sim");
 		Property.set(class1, "sprite", "3do/Effects/RocketSidewinder/RocketSidewinderSmoke.eff");
 		Property.set(class1, "flame", "3do/Effects/RocketSidewinder/RocketSidewinderFlame.sim");
@@ -46,7 +45,7 @@ public class MissileAIM120Ahl_gn16 extends Missile {
 		Property.set(class1, "massa", 150.0F); // Missile Weight at Launch time
 		Property.set(class1, "massaEnd", 101.0F); // Missile Weight when Booster burned out
 		Property.set(class1, "stepMode", Missile.STEP_MODE_HOMING); // target tracking mode
-		Property.set(class1, "launchType", Missile.LAUNCH_TYPE_STRAIGHT); // launch pattern
+		Property.set(class1, "launchType", Missile.LAUNCH_TYPE_DROP); // launch pattern
 		Property.set(class1, "detectorType", Missile.DETECTOR_TYPE_RADAR_TRACK_VIA_MISSILE); // detector type
 		Property.set(class1, "sunRayAngle", 0.0F); // max. Angle at which the missile will track Sun Ray, zero disables Sun Ray tracking (only valid for IR detector missiles)
 		Property.set(class1, "multiTrackingCapable", 1); // set whether or not this type of missile can fight multiple different targets simultaneously. Usually "1" for IR missiles and "0" for others.
@@ -86,10 +85,10 @@ public class MissileAIM120Ahl_gn16 extends Missile {
 		Spawn.add(class1, new SPAWN());
 	}
 
-	public MissileAIM120Ahl_gn16() {
+	public MissileAIM120A_gn16() {
 	}
 
-	public MissileAIM120Ahl_gn16(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f) {
+	public MissileAIM120A_gn16(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f) {
 		this.MissileInit(actor, netchannel, i, point3d, orient, f);
 	}
 }

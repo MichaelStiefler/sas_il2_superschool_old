@@ -1,3 +1,6 @@
+// Source File Name: MissileAIM54C_gn16.java
+// Author:           western0221
+// Last Modified by: western0221 2017-11-10
 
 package com.maddox.il2.objects.weapons;
 
@@ -67,6 +70,7 @@ public class MissileAIM54C_gn16 extends Missile
         Property.set(class1, "powerType", 0);
         Property.set(class1, "power", 60.7F);
         Property.set(class1, "radius", 100F);
+        Property.set(class1, "proximityFuzeRadius", 70F);
         Property.set(class1, "kalibr", 0.4F);
         Property.set(class1, "massa", 470F);
         Property.set(class1, "massaEnd", 300F);
