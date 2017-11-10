@@ -1,6 +1,6 @@
-// Source File Name: MissileAIM9E.java
+// Source File Name: MissileAIM9E_gn16.java
 // Author:           western0221
-// Last Modified by: western0221 2016-07-14
+// Last Modified by: western0221 2017-11-10
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Color3f;
@@ -41,6 +41,7 @@ public class MissileAIM9E_gn16 extends Missile {
 		Property.set(class1, "powerType", 0); // Type of Explosion. 0="Splash", 1="Splinters", 2="Napalm"
 		Property.set(class1, "power", 0.54F); // RL Data: 4.5kg HE warhead, for realism reduced to 1/10th of it's RL weight
 		Property.set(class1, "radius", 7.45F); // Radius of Explosion Effect
+        Property.set(class1, "proximityFuzeRadius", 18F); // Exploding decition Radius of Proximity Fuze
 		Property.set(class1, "kalibr", 0.127F); // Diameter of Missile Body
 		Property.set(class1, "massa", 74.5F); // Missile Weight at Launch time
 		Property.set(class1, "massaEnd", 50.5F); // Missile Weight when Booster burned out
