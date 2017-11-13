@@ -5,7 +5,7 @@ package com.maddox.il2.objects.weapons;
 
 import com.maddox.rts.Property;
 
-public class RocketGunAIM4D_gn16 extends RocketGunAIM4generic_gn16 {
+public class RocketGunAIM4D_gn16 extends MissileGun {
 	static {
 		Class class1 = RocketGunAIM4D_gn16.class;
 		Property.set(class1, "bulletClass", (Object) MissileAIM4D_gn16.class);
