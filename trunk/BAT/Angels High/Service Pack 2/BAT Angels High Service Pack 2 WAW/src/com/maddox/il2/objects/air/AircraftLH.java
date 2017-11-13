@@ -60,10 +60,10 @@ public abstract class AircraftLH extends Aircraft {
 
     //TODO: New Parameters
     //----------------------------------------------------------
-    private static float       fShakeThreshold          = 0.2F;                                                                                                                                                                            // Shake Threshold, apply no shake if shake level would be lower than this value
-    private static float       fMaxShake                = 0.4F;                                                                                                                                                                                  // Maximum Shake Level
-    private static float       fStartupShakeLevel       = 0.5F;                                                                                                                                                                         // Max. Startup Shake Level in range 0.0F - 1.0F
-    private float[]            fEngineShakeLevel        = null;                                                                                                                                                                               // Array of current shake levels per engine
+    private static float       fShakeThreshold          = 0.2F;                                                                                                                                                                                                                                                                // Shake Threshold, apply no shake if shake level would be lower than this value
+    private static float       fMaxShake                = 0.4F;                                                                                                                                                                                                                                                                      // Maximum Shake Level
+    private static float       fStartupShakeLevel       = 0.5F;                                                                                                                                                                                                                                                             // Max. Startup Shake Level in range 0.0F - 1.0F
+    private float[]            fEngineShakeLevel        = null;                                                                                                                                                                                                                                                                   // Array of current shake levels per engine
     public static boolean      printCompassHeading      = false;
     private boolean            initialFuzeSynced;
     //----------------------------------------------------------
