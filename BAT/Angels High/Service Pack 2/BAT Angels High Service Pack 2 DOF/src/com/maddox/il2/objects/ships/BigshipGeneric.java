@@ -1252,7 +1252,7 @@ public class BigshipGeneric extends ActorHMesh implements MsgCollisionRequestLis
     }
 
     private static final long SecsToTicks(float f) {
-        long l = (long) (0.5D + f / Time.tickLenFs());
+        long l = (long) (0.5D + (f / Time.tickLenFs()));
         return l >= 1L ? l : 1L;
     }
 
@@ -3858,7 +3858,7 @@ public class BigshipGeneric extends ActorHMesh implements MsgCollisionRequestLis
         }
         if (actor instanceof Aircraft) {
             aim.scaleAimingError(0.73F);
-            f2 = (float) (f2 * (0.5D + Aim.AngleErrorKoefForSkill[this.SKILL_IDX] * 0.75F));
+            f2 = (float) (f2 * (0.5D + (Aim.AngleErrorKoefForSkill[this.SKILL_IDX] * 0.75F)));
         } else if (aim.getAimingError().length() > 1.1100000143051147D) {
             aim.scaleAimingError(0.973F);
         }
@@ -4056,7 +4056,7 @@ public class BigshipGeneric extends ActorHMesh implements MsgCollisionRequestLis
             return super.getSpeed(vector3d);
         }
         long l = NetServerParams.getServerTime();
-        if (l > Time.tickLen() * 4) {
+        if (l > (Time.tickLen() * 4)) {
             return super.getSpeed(vector3d);
         }
         Segment segment = (Segment) this.path.get(0);
