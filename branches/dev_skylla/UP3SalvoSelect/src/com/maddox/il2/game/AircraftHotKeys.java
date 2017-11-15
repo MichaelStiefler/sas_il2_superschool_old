@@ -4026,7 +4026,7 @@ public class AircraftHotKeys {
         if(namedAircraft.size() == 0)
             return Selector.setCurRecordArg0(null);
         if(!isViewed(actor))
-            return Selector.setCurRecordArg0((Actor)Engine.name2Actor().get((String)namedAircraft.firstKey()));
+            return Selector.setCurRecordArg0((Actor)Engine.name2Actor().get(namedAircraft.firstKey()));
         if(namedAircraft.size() == 1 && isViewed(actor))
             return Selector.setCurRecordArg0(null);
         namedAll = namedAircraft.keySet().toArray(namedAll);
@@ -4041,7 +4041,7 @@ public class AircraftHotKeys {
         j++;
         if(namedAll.length == j || namedAll[j] == null)
             j = 0;
-        return Selector.setCurRecordArg0((Actor)Engine.name2Actor().get((String)namedAll[j]));
+        return Selector.setCurRecordArg0((Actor)Engine.name2Actor().get(namedAll[j]));
     }
     // T-ODO: --- Stationary Camera and Ordnance View Backport from 4.13.4 by SAS~Storebror ---
 

@@ -166,7 +166,7 @@ public class ZutiWeaponsManagement
 		
         for(int i = 0; i < aobj.length; i++)
 		{
-			Object object = (Object)aobj[i];
+			Object object = aobj[i];
 			//System.out.println("NetAircraft - " + o);
 			
 			if(object instanceof Pylon)
@@ -192,7 +192,7 @@ public class ZutiWeaponsManagement
 		{
 			if( i == loadoutId )
 			{
-				prepareWeapons( (Aircraft)ac, selectedLoadout );
+				prepareWeapons( ac, selectedLoadout );
 			}
 		}
 	}
@@ -209,7 +209,7 @@ public class ZutiWeaponsManagement
 			return;
         }
 		
-		_WeaponSlot a_lweaponslot[] = (_WeaponSlot[])(_WeaponSlot[])hashmapint.get(weaponId);
+		_WeaponSlot a_lweaponslot[] = (_WeaponSlot[])hashmapint.get(weaponId);
 		String as[] = Aircraft.getWeaponHooksRegistered(aircraft.getClass());
 		
 		for (int j = 0; j < as.length; j++)
@@ -387,7 +387,7 @@ public class ZutiWeaponsManagement
                         // T-ODO: +++ RRR Bug hunting
                         ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiWeaponsManagement loading BombGun weapons[" + i + "][" + j + "], className="+ className + ", weaponClass=" + weaponClass.getName() + " with " + loadBombs + " bullets!");
                         // --- RRR Bug hunting
-						((BombGun)weapons[i][j]).loadBullets((int)loadBombs);
+						((BombGun)weapons[i][j]).loadBullets(loadBombs);
                         // T-ODO: +++ RRR Bug hunting
                         ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiWeaponsManagement BombGun weapons[" + i + "][" + j + "], className="+ className + ", weaponClass=" + weaponClass.getName() + " loaded with " + loadBombs + " bombs!");
                         // --- RRR Bug hunting
@@ -635,21 +635,21 @@ public class ZutiWeaponsManagement
 			if( bp.army == 0 && targetArmy == 0 )
 			{
 				double r = bp.r * bp.r;
-				double tmpDistance = (((x - (double) bp.place.x) * (x - (double) bp.place.x)) + ((y - (double) bp.place.y) * (y - (double) bp.place.y)));
+				double tmpDistance = (((x - bp.place.x) * (x - bp.place.x)) + ((y - bp.place.y) * (y - bp.place.y)));
 				if( tmpDistance < r )
 					return true;
 			}
 			else if( army == bp.army && targetArmy == 1 )
 			{
 				double r = bp.r * bp.r;
-				double tmpDistance = (((x - (double) bp.place.x) * (x - (double) bp.place.x)) + ((y - (double) bp.place.y) * (y - (double) bp.place.y)));
+				double tmpDistance = (((x - bp.place.x) * (x - bp.place.x)) + ((y - bp.place.y) * (y - bp.place.y)));
 				if( tmpDistance < r )
 					return true;
 			}
 			else if( army != bp.army && targetArmy == 2 )
 			{
 				double r = bp.r * bp.r;
-				double tmpDistance = (((x - (double) bp.place.x) * (x - (double) bp.place.x)) + ((y - (double) bp.place.y) * (y - (double) bp.place.y)));
+				double tmpDistance = (((x - bp.place.x) * (x - bp.place.x)) + ((y - bp.place.y) * (y - bp.place.y)));
 				if( tmpDistance < r )
 					return true;
 			}
