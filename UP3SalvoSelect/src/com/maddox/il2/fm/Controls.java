@@ -904,7 +904,7 @@ public class Controls {
                     switch (wctIndex) {
                         case 2: {
                         	long delay = rocketReleaseDelay;
-                            delay *= (long) 1/Time.speed();
+                            delay *= 1/Time.speed();
                             NetAircraft.printDebugMessage(this.FM.actor, "Controls Weapon Trigger " + wctIndex + " pressed!");
                             if((lastRocketTime + delay < System.currentTimeMillis() || rocketFireMode == defaultFire) && this.WeaponControl[wctIndex] && this.hasBulletsLeftOnTrigger(wctIndex)) {
                             	if (bDropWithPlayer) {
@@ -933,7 +933,7 @@ public class Controls {
                         }
                         case 3: {
                         	long delay = bombReleaseDelay;
-                        	delay *= (long) 1/Time.speed();
+                        	delay *= (long)(delay/Time.speed());
                         	if(lastBombTime + delay < System.currentTimeMillis() || bombDropMode == defaultFire) {
                         		// T-ODO: Storebror: +++ Bomb Release Bug hunting
 //                            	if (this.WeaponControl[wctIndex]) {
@@ -1948,7 +1948,7 @@ public class Controls {
 		if(Weapons[3] == null) 
 			return;
 		if(toggleBombReleaseDelay())
-			HUD.log(hudLogWeaponId, "Bomb Release Delay: " + (float)bombReleaseDelay / 1000F + " sec");
+			HUD.log(hudLogWeaponId, "Bomb Release Delay: " + bombReleaseDelay / 1000F + " sec");
 	}
 	
 	//gets called from AircraftHotKeys
@@ -1956,7 +1956,7 @@ public class Controls {
 		if(Weapons[2] == null) 
 			return;
 		if(toggleRocketReleaseDelay())
-			HUD.log(hudLogWeaponId, "Rocket Release Delay: " + (float)rocketReleaseDelay / 1000F + " sec");
+			HUD.log(hudLogWeaponId, "Rocket Release Delay: " + rocketReleaseDelay / 1000F + " sec");
 	}
 
 	//main bomb release method.
@@ -2004,6 +2004,9 @@ public class Controls {
 				continue;
 			} else if(shot == 1) {
 				//System.out.println("SKYLLA: side=" + side + "; shot=" + shot);
+				if(e.isShots()) {
+					return false;
+				}
 				this.setNextReleaseReady(1);
 				bombReleased = true;
 				e.shots(shot);
@@ -2072,6 +2075,9 @@ public class Controls {
 			} else if(!(e instanceof RocketGun) || (selectedRocket != RocketGun.class && e.getClass() != selectedRocket)) {
 				continue;
 			} else if(shot == 1) {
+				if(e.isShots()) {
+					return false;
+				}
 				this.setNextReleaseReady(0);
 				rocketReleased = true;
 				e.shots(shot);
