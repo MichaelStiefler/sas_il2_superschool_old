@@ -524,6 +524,9 @@ public class HUD {
                                 String temp2 = "";
                                 String throttle = "";
                                 String proppitch = " , Pitch:";
+                                String enginestage = " , Stage:";
+                                String thrust = " , Thrust:";
+                                String readyness = " , Ready:";
                                 for(int num = 0; num < fm.EI.getNum(); num++)
                                 {
                                     hp += fm.EI.engines[num].getw();
@@ -534,12 +537,18 @@ public class HUD {
                                         temp2 = temp2 + ":";
                                         throttle = throttle + "%:";
                                         proppitch = proppitch + ":";
+                                        enginestage = enginestage + ":";
+                                        thrust = thrust + ":";
+                                        readyness = readyness + ":";
                                     }
                                     rpm = rpm + (int)(fm.EI.engines[num].getRPM() + 0.5F);
                                     temp = temp + (bIsSI ? (int)(fm.EI.engines[num].tWaterOut + 0.5F) : (int)(fm.EI.engines[num].tWaterOut * 1.8F + 32.5F));
                                     temp2 = temp2 + (bIsSI ? (int)(fm.EI.engines[num].tOilOut + 0.5F) : (int)(fm.EI.engines[num].tOilOut * 1.8F + 32.5F));
                                     throttle = throttle + (int)(fm.EI.engines[num].getControlThrottle()*100);
                                     proppitch = proppitch + (int)(fm.EI.engines[num].getControlProp() * 100F);
+                                    enginestage = enginestage + fm.EI.engines[num].getStage();
+                                    thrust = thrust + (int)(fm.EI.engines[num].getThrustOutput() * 100F);
+                                    readyness = readyness + (int)(fm.EI.engines[num].getReadyness() * 100F);
                                 }
 
                                 FuelTank fuelTanks[];
@@ -556,7 +565,7 @@ public class HUD {
                                         {
                                             droptank +=  " , ";
                                         }
-                                        droptank += (float)(Math.floor(fuelTanks[num].checkFuel() * 100F)) / 100F + "kg / " + (float)(Math.floor((fuelTanks[num].checkFuel() + fuelTanks[num].checkFreeTankSpace()) * 100F)) / 100F;
+                                        droptank += (float)(Math.floor(fuelTanks[num].checkFuel() * 10F)) / 10F + "kg / " + (float)(Math.floor((fuelTanks[num].checkFuel() + fuelTanks[num].checkFreeTankSpace()) * 10F)) / 10F;
                                     }
                                 }
                                 Polares polares = (Polares)Reflection.getValue(fm, "Wing");
@@ -565,6 +574,8 @@ public class HUD {
 //                                fm.Sq.getClass();
                                 float dragsta = (float)(Math.floor((fm.Sq.dragAirbrakeCx + 0.12F + fm.Sq.dragFuselageCx + fm.Sq.dragParasiteCx + fm.Sq.dragProducedCx + 0.06F) * 1000F ) / 1000F);
                                 float dragdyn = (float)(Math.floor((fm.GearCX * fm.CT.getGearR() + fm.GearCX * fm.CT.getGearL() + 2.0F * fm.Sq.dragAirbrakeCx * fm.CT.getAirBrake() + fm.radiatorCX * (fm.EI.getRadiatorPos() + fm.CT.getCockpitDoor() + fm.CT.BayDoorControl) + fm.Sq.dragChuteCx * fm.CT.getDragChute() + 0.12F + fm.Sq.dragFuselageCx + fm.Sq.dragParasiteCx + fm.Sq.dragProducedCx + 0.06F) * 1000F ) / 1000F);
+                                int airbrakecon = (int)(fm.CT.AirBrakeControl * 100F);
+                                int airbrake = (int)(fm.CT.getAirBrake() * 100F);
                                 int brakecon = (int)(fm.CT.BrakeControl * 100F);
                                 int brake = (int)(fm.CT.getBrake() * 100F);
                                 int brakeLeftcon = (int)(fm.CT.BrakeLeftControl * 100F);
@@ -624,11 +635,11 @@ public class HUD {
                                 if(sbOrient >= 1.0F)
                                     ttfont.output(col, 5F, 5 + (3 + (int)sbOrient) * i, 0.0F, "Yaw:" +  ((yaw > 90)? 450 - yaw : 90 - yaw) + ", Pitch:" + ((pitch > 180)? pitch - 360 : pitch) + ", Roll:" + (360 - roll));
                                 if(sbHPSet >= 1.0F)
-                                    ttfont.output(col, 5F, 5 + (3 + (int)sbHPSet) * i, 0.0F, renderSpeedSubstrings[14][0] + " " + (int)(hp * 10F) + " " + renderSpeedSubstrings[14][1]);
+                                    ttfont.output(col, 5F, 5 + (3 + (int)sbHPSet) * i, 0.0F, renderSpeedSubstrings[14][0] + " " + (int)(hp * 10F) + " " + renderSpeedSubstrings[14][1] + thrust + readyness);
                                 if(sbWeightSet >= 1.0F)
                                     ttfont.output(col, 5F, 5 + (3 + (int)sbWeightSet) * i, 0.0F, renderSpeedSubstrings[15][0] + " " + weight + " " + renderSpeedSubstrings[15][1] + " (Fuel " + fuel + "kg / " + maxfuel + ", Nitro " + nitro + "kg / " + maxnitro + ")" );
                                 if(sbDragSet >= 1.0F)
-                                    ttfont.output(col, 5F, 5 + (3 + (int)sbDragSet) * i, 0.0F, renderSpeedSubstrings[16][0] + " " + Float.toString(dragsta) + "Sta , " + Float.toString(dragdyn) + "Dyn " + renderSpeedSubstrings[16][1] + " , Brake:" + brake + "/" + brakecon + " (Left:" + brakeLeft + "/" + brakeLeftcon + ", Right:" + brakeRight + "/" + brakeRightcon + ")" + (brakeShoe ? " CHOCK" : ""));
+                                    ttfont.output(col, 5F, 5 + (3 + (int)sbDragSet) * i, 0.0F, renderSpeedSubstrings[16][0] + " " + Float.toString(dragsta) + "Sta , " + Float.toString(dragdyn) + "Dyn " + renderSpeedSubstrings[16][1] + " , AirBrake:" + airbrake + "/" + airbrakecon + " , WheelBrake:" + brake + "/" + brakecon + " (Left:" + brakeLeft + "/" + brakeLeftcon + ", Right:" + brakeRight + "/" + brakeRightcon + ")" + (brakeShoe ? " CHOCK" : ""));
                                 if(sbFlapsSet >= 1.0F)
                                     ttfont.output(col, 5F, 5 + (3 + (int)sbFlapsSet) * i, 0.0F, renderSpeedSubstrings[7][0] + " " + flap + " " + renderSpeedSubstrings[7][1] + ", FlapSw=" + flapSw + " , fric=" + fric + ", fricF=" + fricF + ", fricR=" + fricR);
                                 if(sbVSpeedSet >= 1.0F)
@@ -638,7 +649,7 @@ public class HUD {
                                 if(sbTrimSet >= 1.0F)
                                     ttfont.output(col, 5F, 5 + (3 + (int)sbTrimSet) * i, 0.0F, "Trim (" + renderSpeedSubstrings[4][0] + " " + trAil + renderSpeedSubstrings[4][1] + ", " + renderSpeedSubstrings[5][0] + " " + trEl + renderSpeedSubstrings[5][1] + ", " + renderSpeedSubstrings[6][0] + " " + trRud + renderSpeedSubstrings[6][1] + ")");
                                 if(sbRPMSet >= 1.0F)
-                                    ttfont.output(col, 5F, 5 + (3 + (int)sbRPMSet) * i, 0.0F, renderSpeedSubstrings[12][0] + " " + rpm + " " + renderSpeedSubstrings[12][1] + proppitch);
+                                    ttfont.output(col, 5F, 5 + (3 + (int)sbRPMSet) * i, 0.0F, renderSpeedSubstrings[12][0] + " " + rpm + " " + renderSpeedSubstrings[12][1] + proppitch + enginestage);
                                 if(sbTempSet >= 1.0F)
                                     ttfont.output(col, 5F, 5 + (3 + (int)sbTempSet) * i, 0.0F, renderSpeedSubstrings[13][0] + " " + temp + " " + renderSpeedSubstrings[13][1] + ", " + temp2 + " " + renderSpeedSubstrings[13][1]);
                                 if(sbIASTAS >= 1.0F)
