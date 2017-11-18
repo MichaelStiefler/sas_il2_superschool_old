@@ -1,6 +1,6 @@
 // Source File Name: GuidedMissileUtils.java
-// Author:		   Storebror
-// Edit:			western0221 on 03rd/Nov/2017
+// Author:	Storebror
+// Edit:	western0221 on 16th/Nov/2017
 package com.maddox.il2.objects.weapons;
 
 import java.util.ArrayList;
@@ -56,7 +56,7 @@ public class GuidedMissileUtils {
 		private float minDist;
 		private float optDist;
 		private float maxDist;
-	
+
 		public int getTriggerNum() {
 			return this.triggerNum;
 		}
@@ -278,7 +278,7 @@ public class GuidedMissileUtils {
 	}
 
 	public void changeMissileClass(Class theNewMissileClass) { // new function to switch missile types
-		if(this.iDebugLogLevel > 0)
+		if (this.iDebugLogLevel > 0)
 			System.out.println("changeMissileClass to " + theNewMissileClass.getName());
 		this.cancelMissileGrowl(); // stop
 		this.rocketsList.clear();
@@ -326,13 +326,13 @@ public class GuidedMissileUtils {
 
 		if (pilot.target != null) {
 			this.trgtAI = pilot.target.actor;
-			if(this.iDebugLogLevel > 2)
+			if (this.iDebugLogLevel > 2)
 				System.out.println("AI is targetting victim " + this.trgtAI.hashCode());
 
 			GuidedMissileUtils.checkAllActiveMissilesValidity();
 			for (int activeMissileIndex = 0; activeMissileIndex < this.getActiveMissilesSize(); activeMissileIndex++) {
 				ActiveMissile theActiveMissile = (ActiveMissile) this.getActiveMissile(activeMissileIndex);
-				if(this.iDebugLogLevel > 2)
+				if (this.iDebugLogLevel > 2)
 					System.out.println("AI isAI=" + theActiveMissile.isAI()
 					+ " owner army=" + ownerAircraft.FM.actor.getArmy()
 					+ " missily army=" + theActiveMissile.getOwnerArmy()
@@ -354,7 +354,7 @@ public class GuidedMissileUtils {
 
 		if (this.trgtAI == null) {
 			this.trgtAI = this.getMissileTarget();
-			if(this.iDebugLogLevel > 2)
+			if (this.iDebugLogLevel > 2)
 				System.out.println("AI getMissileTarget victim=" + ((this.getMissileTarget()==null)?0:this.getMissileTarget().hashCode()));
 		}
 		if (this.trgtAI != null) {
@@ -364,7 +364,7 @@ public class GuidedMissileUtils {
 				return;
 			}
 		}
-	
+
 		// if ((!Actor.isValid(this.trgtAI)) || (!(this.trgtAI instanceof Aircraft))) return;
 		// this.setMissileTarget(this.trgtAI);
 		if ((targetType & Missile.TARGET_AIR) != 0) {
@@ -396,7 +396,7 @@ public class GuidedMissileUtils {
 //		if (ownerAircraft == World.getPlayerAircraft())
 //			HUD.training("TRG=" + ownerAircraft.FM.CT.rocketHookSelected + " Pk="+trgtPk);
 
-//				
+//
 		if ((this.trgtPk > this.getMinPkForAttack()) && this.iDetectorMode == Missile.DETECTOR_TYPE_LASER && this.iMissileLockState == 2 && (Actor.isValid(this.getMissileTarget())) && (this.getMissileTarget().getArmy() == ownerAircraft.FM.actor.getArmy())
 				&& (Time.current() > this.tMissilePrev + this.getMillisecondsBetweenMissileLaunchAI()) && (GuidedMissileUtils.noLaunchSince(minTimeBetweenAIMissileLaunch, ownerAircraft.FM.actor.getArmy()))
 				&& (missilesLeft(ownerAircraft.FM.CT.Weapons[ownerAircraft.FM.CT.rocketHookSelected]))) {
@@ -406,7 +406,7 @@ public class GuidedMissileUtils {
 			if (ownerAircraft.FM.AP instanceof AutopilotAI) {
 				((AutopilotAI) ownerAircraft.FM.AP).setOverrideMissileControl(ownerAircraft.FM.CT, true);
 			}
-			if(this.iDebugLogLevel > 2)
+			if (this.iDebugLogLevel > 2)
 				System.out.println("Owner " + ownerAircraft.hashCode() + " missile launch against victim=" + this.getMissileTarget().hashCode() + " (" + this.getMissileTarget().getClass().getName() + ")");
 			// HUD.log("AI missile launch (" + ownerAircraft.FM.CT.rocketHookSelected + "/" + Missile.getActiveMissilesSize() + ")");
 		}
@@ -421,7 +421,7 @@ public class GuidedMissileUtils {
 			if (ownerAircraft.FM.AP instanceof AutopilotAI) {
 				((AutopilotAI) ownerAircraft.FM.AP).setOverrideMissileControl(ownerAircraft.FM.CT, true);
 			}
-			if(this.iDebugLogLevel > 2)
+			if (this.iDebugLogLevel > 2)
 				System.out.println("Owner " + ownerAircraft.hashCode() + " missile launch against victim=" + this.getMissileTarget().hashCode() + " (" + this.getMissileTarget().getClass().getName() + ")");
 			// HUD.log("AI missile launch (" + ownerAircraft.FM.CT.rocketHookSelected + "/" + Missile.getActiveMissilesSize() + ")");
 		}
@@ -591,16 +591,16 @@ public class GuidedMissileUtils {
 
 	private void checkPendingMissiles() {
 		if (this.rocketsList.isEmpty()) {
-			if(this.iDebugLogLevel > 2)
+			if (this.iDebugLogLevel > 2)
 				if (this.missileOwner == World.getPlayerAircraft()) System.out.println("checkPendingMissiles this.rocketsList.isEmpty()=true");
 			return;
 		}
 		if (this.rocketsList.get(0) instanceof RocketGunWithDelay) {
-			if(this.iDebugLogLevel > 2)
+			if (this.iDebugLogLevel > 2)
 				if (this.missileOwner == World.getPlayerAircraft()) System.out.println("checkPendingMissiles this.rocketsList.get(0) instanceof RocketGunWithDelay=true, hash=" + ((RocketGunWithDelay) this.rocketsList.get(0)).hashCode());
 			((RocketGunWithDelay) this.rocketsList.get(0)).checkPendingWeaponRelease();
 		} else {
-			if(this.iDebugLogLevel > 2)
+			if (this.iDebugLogLevel > 2)
 				if (this.missileOwner == World.getPlayerAircraft()) System.out.println("checkPendingMissiles this.rocketsList.get(0) instanceof RocketGunWithDelay=false, hash=" + this.rocketsList.get(0).hashCode());
 		}
 	}
@@ -754,7 +754,7 @@ public class GuidedMissileUtils {
 		float thePk = 0.0F;
 		if (Actor.isValid(this.getMissileTarget())) {
 			if (this.iDetectorMode == Missile.DETECTOR_TYPE_LASER)
-				thePk = this.Pk(this.missileOwner, this.trgtAI.pos.getAbsPoint());
+				thePk = this.Pk(this.missileOwner, this.getMissileTargetPos());
 			else
 				thePk = this.Pk(this.missileOwner, this.getMissileTarget());
 		}
@@ -796,6 +796,10 @@ public class GuidedMissileUtils {
 
 	public Point3d getMissileTargetPos() {
 		return this.trgtPosMissile;
+	}
+
+	public Actor getMissileTargetPosOwner() {
+		return this.trgtPosOwner;
 	}
 
 	public Point3d getMissileTargetOffset() {
@@ -884,7 +888,7 @@ public class GuidedMissileUtils {
 			this.setSmplMissileNoLock(Property.stringValue(this.myMissileClass, "smplNoLock", null));
 		}
 		this.lockTonesInitialized = true;
-		if(this.iDebugLogLevel > 2)
+		if (this.iDebugLogLevel > 2)
 			System.out.println("initLockTones finished");
 	}
 
@@ -954,12 +958,12 @@ public class GuidedMissileUtils {
 		} else if (((targetType & Missile.TARGET_GROUND) != 0) && ((targetType & Missile.TARGET_SHIP) != 0)) {
 			Actor actorTargetG = this.lookForGuidedMissileTargetGround(actor, maxFOVfrom, maxFOVto, maxDistance);
 			Actor actorTargetS = this.lookForGuidedMissileTargetShip(actor, maxFOVfrom, maxFOVto, maxDistance);
-			if(actorTargetG != null && actorTargetS == null) actorTarget = actorTargetG;
-			if(actorTargetG == null && actorTargetS != null) actorTarget = actorTargetS;
-			if(actorTargetG != null && actorTargetS != null) {
+			if (actorTargetG != null && actorTargetS == null) actorTarget = actorTargetG;
+			if (actorTargetG == null && actorTargetS != null) actorTarget = actorTargetS;
+			if (actorTargetG != null && actorTargetS != null) {
 				double distanceG = distanceBetween(actor, actorTargetG);
 				double distanceS = distanceBetween(actor, actorTargetS);
-				if(distanceG < distanceS) actorTarget = actorTargetG;
+				if (distanceG < distanceS) actorTarget = actorTargetG;
 				else actorTarget = actorTargetS;
 			}
 		} else if ((targetType & Missile.TARGET_GROUND) != 0) {
@@ -983,20 +987,17 @@ public class GuidedMissileUtils {
 
 		if (this.iDetectorMode == Missile.DETECTOR_TYPE_MANUAL) return selectedActor;
 
-        FlightModelMain ownerfm = ((Aircraft)actor).FM;
+		FlightModelMain ownerfm = ((Aircraft)actor).FM;
 		if (this.bRealisticRadarSelect && actor instanceof TypeSemiRadar &&
-            (this.iDetectorMode == Missile.DETECTOR_TYPE_RADAR_HOMING || this.iDetectorMode == Missile.DETECTOR_TYPE_RADAR_TRACK_VIA_MISSILE) &&
-            (((ownerfm instanceof RealFlightModel)) && (((RealFlightModel) ownerfm).isRealMode()) && (ownerfm instanceof Pilot)))
-        {
-            if (!((TypeSemiRadar) actor).getSemiActiveRadarOn() || ((TypeSemiRadar) actor).getSemiActiveRadarLockedActor() == null)
-            {
- 		        if(this.iDebugLogLevel > 2)
-                    System.out.println("Semi-Active Radar is OFF. Missile target is made null.");
-                return null;
-            }
-            else
-            {
-                Actor theTarget1 = ((TypeSemiRadar) actor).getSemiActiveRadarLockedActor();
+			(this.iDetectorMode == Missile.DETECTOR_TYPE_RADAR_HOMING || this.iDetectorMode == Missile.DETECTOR_TYPE_RADAR_TRACK_VIA_MISSILE) &&
+			(((ownerfm instanceof RealFlightModel)) && (((RealFlightModel) ownerfm).isRealMode()) && (ownerfm instanceof Pilot))) {
+			if (!((TypeSemiRadar) actor).getSemiActiveRadarOn() || ((TypeSemiRadar) actor).getSemiActiveRadarLockedActor() == null) {
+ 				if (this.iDebugLogLevel > 2)
+					System.out.println("Semi-Active Radar is OFF. Missile target is made null.");
+				return null;
+			}
+			else {
+				Actor theTarget1 = ((TypeSemiRadar) actor).getSemiActiveRadarLockedActor();
 				if ((theTarget1 instanceof Aircraft) || (theTarget1 instanceof MissileInterceptable)) {
 					targetDistance = distanceBetween(actor, theTarget1);
 					if (targetDistance > maxDistance) {
@@ -1024,14 +1025,14 @@ public class GuidedMissileUtils {
 						if (theTarget1 instanceof Aircraft) {
 							theSelectedActorOffset.set(0, 0, 0);
 						}
-                        return selectedActor;
+						return selectedActor;
 					}
-                    else
-                        return null;
+					else
+						return null;
 				}
 
-            }
-        }
+			}
+		}
 
 		try {
 			List list = Engine.targets();
@@ -1166,21 +1167,21 @@ public class GuidedMissileUtils {
 			EventLog.type(e.toString());
 			EventLog.type(e.getMessage());
 		}
-		if(this.iDebugLogLevel > 2)
+		if (this.iDebugLogLevel > 2)
 			if (selectedActor != null) System.out.println("Owner " + actor.hashCode() +" selected target " + selectedActor.hashCode() + "(" + selectedActor.getClass().getName() + ")");
 
 
 		if (actor instanceof Aircraft && selectedActor != null) {
 			Aircraft ownerAircraft = (Aircraft)actor;
-			if(!ownerAircraft.FM.isPlayers() || !(ownerAircraft.FM instanceof RealFlightModel) || !((RealFlightModel)ownerAircraft.FM).isRealMode()) {
-				if(this.iDebugLogLevel > 2)
+			if (!ownerAircraft.FM.isPlayers() || !(ownerAircraft.FM instanceof RealFlightModel) || !((RealFlightModel)ownerAircraft.FM).isRealMode()) {
+				if (this.iDebugLogLevel > 2)
 					System.out.println("Active Missiles before check: " + this.getActiveMissilesSize());
 				GuidedMissileUtils.checkAllActiveMissilesValidity();
-				if(this.iDebugLogLevel > 2)
+				if (this.iDebugLogLevel > 2)
 					System.out.println("Active Missiles after check: " + this.getActiveMissilesSize());
 				for (int activeMissileIndex = 0; activeMissileIndex < this.getActiveMissilesSize(); activeMissileIndex++) {
 					ActiveMissile theActiveMissile = (ActiveMissile) this.getActiveMissile(activeMissileIndex);
-					if(this.iDebugLogLevel > 2)
+					if (this.iDebugLogLevel > 2)
 						System.out.println("isAI=" + theActiveMissile.isAI()
 								+ " owner army=" + ownerAircraft.FM.actor.getArmy()
 								+ " missily army=" + theActiveMissile.getOwnerArmy()
@@ -1189,7 +1190,7 @@ public class GuidedMissileUtils {
 					if (theActiveMissile.isAI()) {
 						if (ownerAircraft.FM.actor.getArmy() == theActiveMissile.getOwnerArmy()) {
 							if (theActiveMissile.getVictim() == selectedActor) {
-								if(this.iDebugLogLevel > 2)
+								if (this.iDebugLogLevel > 2)
 									System.out.println("Skipping target " + selectedActor.hashCode() + "(" + selectedActor.getClass().getName() + ")");
 								selectedActor = null;
 								break;
@@ -1199,7 +1200,7 @@ public class GuidedMissileUtils {
 				}
 			}
 		}
-			
+
 		this.selectedActorOffset.set(theSelectedActorOffset);
 		return selectedActor;
 	}
@@ -1228,16 +1229,14 @@ public class GuidedMissileUtils {
 		   )
 			return selectedActor;
 
-        FlightModelMain ownerfm = ((Aircraft)actor).FM;
+		FlightModelMain ownerfm = ((Aircraft)actor).FM;
 		if (this.bRealisticRadarSelect && actor instanceof TypeGroundRadar &&
-            (this.iDetectorMode == Missile.DETECTOR_TYPE_IMAGE_EOTV || this.iDetectorMode == Missile.DETECTOR_TYPE_IMAGE_IR) &&
-            (((ownerfm instanceof RealFlightModel)) && (((RealFlightModel) ownerfm).isRealMode()) && (ownerfm instanceof Pilot)))
-        {
-            if (((TypeGroundRadar) actor).getGroundRadarOn() && ((TypeGroundRadar) actor).getGroundRadarLockedActor() != null)
-            {
-                Actor theTarget1 = ((TypeGroundRadar) actor).getGroundRadarLockedActor();
+			(this.iDetectorMode == Missile.DETECTOR_TYPE_IMAGE_EOTV || this.iDetectorMode == Missile.DETECTOR_TYPE_IMAGE_IR) &&
+			(((ownerfm instanceof RealFlightModel)) && (((RealFlightModel) ownerfm).isRealMode()) && (ownerfm instanceof Pilot))) {
+			if (((TypeGroundRadar) actor).getGroundRadarOn() && ((TypeGroundRadar) actor).getGroundRadarLockedActor() != null) {
+				Actor theTarget1 = ((TypeGroundRadar) actor).getGroundRadarLockedActor();
 				if (((theTarget1 instanceof TgtFlak) || (theTarget1 instanceof TgtTank) || (theTarget1 instanceof TgtTrain) || (theTarget1 instanceof TgtVehicle)) &&
-                    (Main.cur().clouds == null || Main.cur().clouds.getVisibility(theTarget1.pos.getAbsPoint(), actor.pos.getAbsPoint()) >= 1.0F)) {
+					(Main.cur().clouds == null || Main.cur().clouds.getVisibility(theTarget1.pos.getAbsPoint(), actor.pos.getAbsPoint()) >= 1.0F)) {
 					targetDistance = distanceBetween(actor, theTarget1);
 					targetAngle = angleBetween(actor, theTarget1);
 					targetBait = 1 / targetAngle / (float) (targetDistance * targetDistance);
@@ -1252,8 +1251,8 @@ public class GuidedMissileUtils {
 					}
 				}
 
-            }
-        }
+			}
+		}
 
 		try {
 			ArrayList arraylist = World.cur().statics.bridges;
@@ -1261,11 +1260,11 @@ public class GuidedMissileUtils {
 			LongBridge longbridge = null;
 			Actor target_bridge = null;
 			double longbridgeDistance = maxDistance;
-			for(int ll = 0; ll < jj; ll++) {
+			for (int ll = 0; ll < jj; ll++) {
 				LongBridge longbridge1 = (LongBridge)arraylist.get(ll);
-				if(!longbridge1.isAlive()) continue;
+				if (!longbridge1.isAlive()) continue;
 				// Not target about objects behind of clouds from the missile's seaker.
-				if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(longbridge1.pos.getAbsPoint(), actor.pos.getAbsPoint()) < 1.0F)
+				if (Main.cur().clouds != null && Main.cur().clouds.getVisibility(longbridge1.pos.getAbsPoint(), actor.pos.getAbsPoint()) < 1.0F)
 					continue;
 				targetDistance = distanceBetween(actor, longbridge1);
 				if (targetDistance > maxDistance) {
@@ -1280,12 +1279,12 @@ public class GuidedMissileUtils {
 					longbridgeDistance = targetDistance;
 				}
 			}
-		
-			if(longbridge != null) {
+
+			if (longbridge != null) {
 				int kk = longbridge.NumStateBits() / 2;
 				target_bridge = BridgeSegment.getByIdx(longbridge.bridgeIdx(), World.Rnd().nextInt(kk));
 			}
-		
+
 			List list = Engine.targets();
 			int k = list.size();
 			for (int i1 = 0; i1 < k; i1++) {
@@ -1293,7 +1292,7 @@ public class GuidedMissileUtils {
 				if ((theTarget1 instanceof TgtFlak) || (theTarget1 instanceof TgtTank) || (theTarget1 instanceof TgtTrain) || (theTarget1 instanceof TgtVehicle)) {
 					// EventLog.type("Checking Target " + theTarget1.getClass().getName());
 					// Not target about objects behind of clouds from the missile's seaker.
-					if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(theTarget1.pos.getAbsPoint(), actor.pos.getAbsPoint()) < 1.0F)
+					if (Main.cur().clouds != null && Main.cur().clouds.getVisibility(theTarget1.pos.getAbsPoint(), actor.pos.getAbsPoint()) < 1.0F)
 						continue;
 					targetDistance = distanceBetween(actor, theTarget1);
 					// EventLog.type("distance " + targetDistance + " max " + maxDistance);
@@ -1344,8 +1343,8 @@ public class GuidedMissileUtils {
 
 			}
 
-			if(target_bridge != null){
-				if(longbridgeDistance < distanceBetween(actor, selectedActor)){
+			if (target_bridge != null){
+				if (longbridgeDistance < distanceBetween(actor, selectedActor)){
 					selectedActor = target_bridge;
 					theSelectedActorOffset.set(0.0F, 0.0F, 3.0F);
 				}
@@ -1358,8 +1357,7 @@ public class GuidedMissileUtils {
 		}
 		this.selectedActorOffset.set(theSelectedActorOffset);
 		if (selectedActor != null)
-			if(this.iDebugLogLevel > 2)
-			{
+			if (this.iDebugLogLevel > 2) {
 				System.out.print("Target=" + selectedActor.getClass().getName());
 				System.out.print(" Army=" + selectedActor.getArmy());
 				System.out.print(" Distance=" + distanceBetween(actor, selectedActor));
@@ -1382,16 +1380,14 @@ public class GuidedMissileUtils {
 		if (!(actor instanceof Aircraft) || (this.iDetectorMode == Missile.DETECTOR_TYPE_MANUAL)) return selectedActor;
 		try {
 			Autopilotage AP = ((Aircraft)(actor)).FM.AP;
-		
+
 			int wcu = AP.way.Cur();
 			boolean flag = false;
 			Actor target = null;
 			do{
-				if (AP.way.curr().Action == 3 || AP.way.curr().getTarget() != null)
-				{
+				if (AP.way.curr().Action == 3 || AP.way.curr().getTarget() != null) {
 					target = AP.way.curr().getTarget();
-					if (target.getSpeed(null) < 1D)
-					{
+					if (target.getSpeed(null) < 1D) {
 						targetDistance = distanceBetween(actor, target);
 						if (targetDistance <= maxDistance) {
 							flag = true;
@@ -1405,10 +1401,10 @@ public class GuidedMissileUtils {
 				AP.way.next();
 			} while(true);
 			AP.way.setCur(wcu);
-		
-			if(flag)
+
+			if (flag)
 				selectedActor = target;
-			if(selectedActor instanceof Bridge)
+			if (selectedActor instanceof Bridge)
 				theSelectedActorOffset = new Point3f(0.0F, 0.0F, 3.0F);
 
 		} catch (Exception e) {
@@ -1448,7 +1444,7 @@ public class GuidedMissileUtils {
 				if (theTarget1 instanceof TgtShip) {
 					// EventLog.type("Checking Target " + theTarget1.getClass().getName());
 					// Not target about objects behind of clouds from the missile's seaker.
-					if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(theTarget1.pos.getAbsPoint(), actor.pos.getAbsPoint()) < 1.0F)
+					if (Main.cur().clouds != null && Main.cur().clouds.getVisibility(theTarget1.pos.getAbsPoint(), actor.pos.getAbsPoint()) < 1.0F)
 						continue;
 					targetDistance = distanceBetween(actor, theTarget1);
 					// EventLog.type("distance " + targetDistance + " max " + maxDistance);
@@ -1549,66 +1545,64 @@ public class GuidedMissileUtils {
 
 		if (!(actor instanceof Aircraft) || (this.iDetectorMode != Missile.DETECTOR_TYPE_LASER)) return null;
 
-        // superior the Laser spot of this Paveway's owner than others'
-        while((actor instanceof TypeLaserDesignator) && ((TypeLaserDesignator) actor).getLaserOn())
-        {
-            Point3d point3d = new Point3d();
-            point3d = ((TypeLaserDesignator)actor).getLaserSpot();
-            if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, actor.pos.getAbsPoint()) < 1.0F)
-                break;
-            targetDistance = actor.pos.getAbsPoint().distance(point3d);
-            if (targetDistance > maxDistance)
-                break;
-            targetAngle = angleBetween(actor, point3d);
-            if (targetAngle > maxFOVfrom)
-                break;
+		// superior the Laser spot of this missile's owner than others'
+		while ((actor instanceof TypeLaserDesignator) && ((TypeLaserDesignator) actor).getLaserOn()) {
+			Point3d point3d = new Point3d();
+			point3d = ((TypeLaserDesignator)actor).getLaserSpot();
+			if (Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, actor.pos.getAbsPoint()) < 1.0F)
+				break;
+			targetDistance = actor.pos.getAbsPoint().distance(point3d);
+			if (targetDistance > maxDistance)
+				break;
+			targetAngle = angleBetween(actor, point3d);
+			if (targetAngle > maxFOVfrom)
+				break;
 
-            selectedPos = point3d;
-            bFound = true;
-            break;
-        }
-        // seak other Laser designator spots when Paveway's owner doesn't spot Laser
-        if(!bFound)
-        {
-            List list = Engine.targets();
-            int i = list.size();
-            for(int j = 0; j < i; j++)
-            {
+			selectedPos = point3d;
+			bFound = true;
+			this.trgtPosOwner = actor;
+			break;
+		}
+		// seek other Laser designator spots when missle's owner doesn't spot Laser
+		if (!bFound) {
+			List list = Engine.targets();
+			int i = list.size();
+			for (int j = 0; j < i; j++) {
 				Actor theOwner1 = (Actor)list.get(j);
-                if((theOwner1 instanceof TypeLaserDesignator) && ((TypeLaserDesignator) theOwner1).getLaserOn() && theOwner1.getArmy() == actor.getArmy())
-                {
-                    Point3d point3d = new Point3d();
-                    point3d = ((TypeLaserDesignator)theOwner1).getLaserSpot();
-                    // Not target about objects behind of clouds from the Paveway's seaker.
-                    if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, actor.pos.getAbsPoint()) < 1.0F)
-                        continue;
-                    targetDistance = actor.pos.getAbsPoint().distance(point3d);
-                    if (targetDistance > maxDistance)
-                        continue;
-                    targetAngle = angleBetween(actor, point3d);
-                    if (targetAngle > maxFOVfrom)
-                        continue;
+				if ((theOwner1 instanceof TypeLaserDesignator) && ((TypeLaserDesignator) theOwner1).getLaserOn() && theOwner1.getArmy() == actor.getArmy()) {
+					Point3d point3d = new Point3d();
+					point3d = ((TypeLaserDesignator)theOwner1).getLaserSpot();
+					// Not target about objects behind of clouds from the missile's seaker.
+					if (Main.cur().clouds != null &&
+						(   Main.cur().clouds.getVisibility(point3d, actor.pos.getAbsPoint()) < 1.0F
+						 || Main.cur().clouds.getVisibility(point3d, theOwner1.pos.getAbsPoint()) < 1.0F))
+						continue;
+					targetDistance = actor.pos.getAbsPoint().distance(point3d);
+					if (targetDistance > maxDistance)
+						continue;
+					targetAngle = angleBetween(actor, point3d);
+					if (targetAngle > maxFOVfrom)
+						continue;
 
-                    targetBait = 1 / targetAngle / (float) (targetDistance * targetDistance);
+					targetBait = 1 / targetAngle / (float) (targetDistance * targetDistance);
 					GuidedMissileUtils.checkAllActiveMissilesValidity();
 					for (int activeMissileIndex = 0; activeMissileIndex < this.getActiveMissilesSize(); activeMissileIndex++) {
 						ActiveMissile theActiveMissile = (ActiveMissile) this.getActiveMissile(activeMissileIndex);
 					}
 
-                    if (targetBait <= maxTargetBait)
-                        continue;
+					if (targetBait <= maxTargetBait)
+						continue;
 
-                    maxTargetBait = targetBait;
-                    selectedPos = point3d;
-                    bFound = true;
-                }
-            }
-        }
+					maxTargetBait = targetBait;
+					selectedPos = point3d;
+					bFound = true;
+					this.trgtPosOwner = theOwner1;
+				}
+			}
+		}
 		this.selectedActorOffset.set(theSelectedActorOffset);
-		if(this.iDebugLogLevel > 2)
-		{
-			if(bFound)
-			{
+		if (this.iDebugLogLevel > 2) {
+			if (bFound) {
 				System.out.print("TargetPos=" + selectedPos);
 				System.out.print(" Distance=" + actor.pos.getAbsPoint().distance(selectedPos));
 				System.out.println(" Angle=" + angleBetween(actor, selectedPos));
@@ -1620,10 +1614,12 @@ public class GuidedMissileUtils {
 //		EventLog.type("Chosen Target " + selectedActor.getClass().getName());
 //		 else
 //		 EventLog.type("Chosen Target none");
-		if(bFound)
+		if (bFound)
 			return selectedPos;
-		else
+		else {
+			this.trgtPosOwner = null;
 			return null;
+		}
 	}
 
 	public void onAircraftLoaded() {
@@ -1641,14 +1637,14 @@ public class GuidedMissileUtils {
 			this.missileDataForPk = new ArrayList();
 		else
 			this.missileDataForPk.clear();
-	
+
 		Aircraft ownerAircraft = (Aircraft)this.missileOwner;
 		BulletEmitter ownerAircraftEmitters [][] = ownerAircraft.FM.CT.Weapons;
 		for (int weaponTrigger = 0; weaponTrigger < ownerAircraftEmitters.length; weaponTrigger++) {
 			if (weaponTrigger < 2) continue;
 			if (weaponTrigger > 7) continue;
 			if (ownerAircraftEmitters[weaponTrigger] == null) continue;
-			if(ownerAircraft.FM.isPlayers() && (ownerAircraft.FM instanceof RealFlightModel) && ((RealFlightModel)ownerAircraft.FM).isRealMode())
+			if (ownerAircraft.FM.isPlayers() && (ownerAircraft.FM instanceof RealFlightModel) && ((RealFlightModel)ownerAircraft.FM).isRealMode())
 				if (weaponTrigger != ownerAircraft.FM.CT.rocketHookSelected) continue;
 
 			for (int weaponIndex = 0; weaponIndex<ownerAircraftEmitters[weaponTrigger].length; weaponIndex++) {
@@ -1686,15 +1682,15 @@ public class GuidedMissileUtils {
 				this.fMaxG *= 2; // double Max. Launch load for AI.
 			}
 		}
-	
+
 		Aircraft ownerAircraft = (Aircraft)this.missileOwner;
 		int bestMissileTrigger = ownerAircraft.FM.CT.rocketHookSelected;
-	
+
 		for (int missileIndex = 0; missileIndex<this.missileDataForPk.size(); missileIndex++) {
 			float fPkRetTemp = 100.0F;
 			float fTemp = 0.0F;
 			MissileDataForPk theMissileDataForPk = (MissileDataForPk)this.missileDataForPk.get(missileIndex);
-			if(this.iDebugLogLevel > 2)
+			if (this.iDebugLogLevel > 2)
 				System.out.println("Checking Missile Data: Trigger=" + theMissileDataForPk.getTriggerNum() +
 						", maxG=" + theMissileDataForPk.getMaxLaunchLoad() +
 						", Angle=" + theMissileDataForPk.getMaxAngleToTarget() +
@@ -1726,13 +1722,13 @@ public class GuidedMissileUtils {
 				fPkRet = fPkRetTemp;
 			}
 		}
-	
+
 		if (bestMissileTrigger != ownerAircraft.FM.CT.rocketHookSelected) {
 			ownerAircraft.FM.CT.doSetRocketHook(bestMissileTrigger);
 		}
-	
+
 //		HUD.training("" + bestMissileTrigger + "=" + fPkRet);
-	
+
 		return fPkRet;
 	}
 
@@ -1751,15 +1747,15 @@ public class GuidedMissileUtils {
 				this.fMaxG *= 2; // double Max. Launch load for AI.
 			}
 		}
-	
+
 		Aircraft ownerAircraft = (Aircraft)this.missileOwner;
 		int bestMissileTrigger = ownerAircraft.FM.CT.rocketHookSelected;
-	
+
 		for (int missileIndex = 0; missileIndex<this.missileDataForPk.size(); missileIndex++) {
 			float fPkRetTemp = 100.0F;
 			float fTemp = 0.0F;
 			MissileDataForPk theMissileDataForPk = (MissileDataForPk)this.missileDataForPk.get(missileIndex);
-			if(this.iDebugLogLevel > 2)
+			if (this.iDebugLogLevel > 2)
 				System.out.println("Checking Missile Data: Trigger=" + theMissileDataForPk.getTriggerNum() +
 						", maxG=" + theMissileDataForPk.getMaxLaunchLoad() +
 						", Angle=" + theMissileDataForPk.getMaxAngleToTarget() +
@@ -1791,13 +1787,13 @@ public class GuidedMissileUtils {
 				fPkRet = fPkRetTemp;
 			}
 		}
-	
+
 		if (bestMissileTrigger != ownerAircraft.FM.CT.rocketHookSelected) {
 			ownerAircraft.FM.CT.doSetRocketHook(bestMissileTrigger);
 		}
-	
+
 //		HUD.training("" + bestMissileTrigger + "=" + fPkRet);
-	
+
 		return fPkRet;
 	}
 
@@ -2025,6 +2021,10 @@ public class GuidedMissileUtils {
 		this.trgtPosMissile = p3d;
 	}
 
+	public void setMissileTargetPosOwner(Actor theOwner) {
+		this.trgtPosOwner = theOwner;
+	}
+
 	public void setMultiTrackingCapable(boolean theMultiTrackingCapable) {
 		this.multiTrackingCapable = theMultiTrackingCapable;
 	}
@@ -2129,7 +2129,7 @@ public class GuidedMissileUtils {
 			if (ownerAircraft.FM.CT.Weapons[ownerAircraft.FM.CT.rocketHookSelected] == null) ownerAircraft.FM.CT.toggleRocketHook();
 		}
 
-		if(this.iDetectorMode == Missile.DETECTOR_TYPE_LASER)
+		if (this.iDetectorMode == Missile.DETECTOR_TYPE_LASER)
 			this.setMissileTargetPos(this.lookForGuidedMissileTargetPos(this.missileOwner, this.getMaxPOVfrom(), this.getMaxPOVto(), this.getPkMaxDist(), this.targetType));
 		else
 			this.setMissileTarget(this.lookForGuidedMissileTarget(this.missileOwner, this.getMaxPOVfrom(), this.getMaxPOVto(), this.getPkMaxDist(), this.targetType));
@@ -2180,7 +2180,7 @@ public class GuidedMissileUtils {
 
 	public static int getActiveMissilesSize() {
 		if (checkActiveMissileInit()) return 0;
-		return activeMissiles.size();	
+		return activeMissiles.size();
 	}
 
 	public static ActiveMissile getActiveMissile(int index) {
@@ -2221,7 +2221,7 @@ public class GuidedMissileUtils {
 	}
 
 	public static boolean missilesLeft(BulletEmitter[] missileHook) {
-		for(int index=0; index<missileHook.length; index++) {
+		for (int index=0; index<missileHook.length; index++) {
 			if (missileHook[index] != null) {
 				if (missileHook[index] instanceof MissileGun) {
 					if (missileHook[index].haveBullets()) return true;
@@ -2252,7 +2252,7 @@ public class GuidedMissileUtils {
 				targetsHandledByAiAlready.remove(hashKey);
 				return false;
 			}
-			return true;		
+			return true;
 		}
 		return false;
 	}
@@ -2341,6 +2341,7 @@ public class GuidedMissileUtils {
 
 	private Actor trgtMissile = null;
 	private Point3d trgtPosMissile = null;
+	private Actor trgtPosOwner = null;
 
 	private float trgtPk = 0.0F;
 
