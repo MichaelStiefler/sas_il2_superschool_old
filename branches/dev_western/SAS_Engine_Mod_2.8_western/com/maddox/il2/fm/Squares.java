@@ -4,6 +4,8 @@
  * Changelog:
  * 2014.08.11: doSetRocketHook method changed to make this class independent from Guided Missile Mod
  * 2016.04.11: reading Pylons' dragCx property
+ * 2017.11.18: recover broken 4.12.2m kalibr calculation
+ * 2017.11.18: low drag bombs or rockets consider
  */
 
 package com.maddox.il2.fm;
@@ -12,31 +14,13 @@ import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.GuidedMissileInterop;
 import com.maddox.il2.objects.air.Aircraft;
-import com.maddox.il2.objects.weapons.BombGun;
-import com.maddox.il2.objects.weapons.BombGunNull;
-import com.maddox.il2.objects.weapons.BombGunSC50;
-import com.maddox.il2.objects.weapons.BombGunSC70;
-import com.maddox.il2.objects.weapons.FuelTankGun;
-import com.maddox.il2.objects.weapons.Pylon;
-import com.maddox.il2.objects.weapons.PylonHS129BK37;
-import com.maddox.il2.objects.weapons.PylonHS129BK75;
-import com.maddox.il2.objects.weapons.PylonMG15120Internal;
-import com.maddox.il2.objects.weapons.PylonP38RAIL3FL;
-import com.maddox.il2.objects.weapons.PylonP38RAIL3FR;
-import com.maddox.il2.objects.weapons.PylonP38RAIL3WL;
-import com.maddox.il2.objects.weapons.PylonP38RAIL3WR;
-import com.maddox.il2.objects.weapons.PylonP38RAIL5;
-import com.maddox.il2.objects.weapons.PylonP38RAILS;
-import com.maddox.il2.objects.weapons.PylonPE8_FAB100;
-import com.maddox.il2.objects.weapons.PylonPE8_FAB250;
-import com.maddox.il2.objects.weapons.PylonRO_82_1;
-import com.maddox.il2.objects.weapons.PylonRO_82_3;
-import com.maddox.il2.objects.weapons.PylonRO_WfrGr21;
-import com.maddox.il2.objects.weapons.PylonRO_WfrGr21Dual;
-import com.maddox.il2.objects.weapons.RocketBombGun;
-import com.maddox.il2.objects.weapons.RocketGun;
-import com.maddox.il2.objects.weapons.RocketGunR4M;
+import com.maddox.il2.objects.weapons.*;
+import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
+import java.io.PrintStream;
+
+// Referenced classes of package com.maddox.il2.fm:
+//			Controls
 
 public class Squares {
 
@@ -135,44 +119,45 @@ public class Squares {
 			if (abulletemitter[i] == null || abulletemitter[i].length <= 0)
 				continue;
 			for (int j = 0; j < abulletemitter[i].length; j++) {
-				if (abulletemitter[i][j] instanceof RocketGun) {
-					Class theBulletClass = ((RocketGun)abulletemitter[i][j]).bulletClass();
-
-					// TODO: ++ Changed Code to make Engine Mod independent of Guided Missiles Mod ++
-					if (GuidedMissileInterop.getGuidedMissileModExists() && GuidedMissileInterop.getMissileGunClass().isInstance(theBulletClass)) {
-						continue;
-					}
-					// if (Missile.class.isAssignableFrom(theBulletClass)) {
-					// continue;
-					// }
-					// TODO: -- Added/changed Code Multiple Missile Type Selection --
-				}
-				if (abulletemitter[i][j] instanceof BombGunNull)
+				if ((abulletemitter[i][j] instanceof BombGunNull) || (abulletemitter[i][j] instanceof RocketGunNull))
 					continue;
-				if (((abulletemitter[i][j] instanceof BombGun) || (abulletemitter[i][j] instanceof RocketBombGun))
-						&& abulletemitter[i][j].haveBullets() && abulletemitter[i][j].getHookName().startsWith("_External")
-						&& dragParasiteCx < 0.704F)
-					if ((abulletemitter[i][j] instanceof BombGunSC50) || (abulletemitter[i][j] instanceof BombGunSC70)
-							|| (abulletemitter[i][j] instanceof FuelTankGun))
-						dragParasiteCx += 0.02F;
-					else
-						dragParasiteCx += 0.06F;
-				if ((abulletemitter[i][j] instanceof RocketGun) && abulletemitter[i][j].haveBullets()
-						&& !(abulletemitter[i][j] instanceof RocketGunR4M)
-						&& abulletemitter[i][j].getHookName().startsWith("_External")) {
-					dragParasiteCx += 0.02F;
+				if (((abulletemitter[i][j] instanceof BombGun) || (abulletemitter[i][j] instanceof RocketBombGun) || (abulletemitter[i][j] instanceof TorpedoGun))
+					&& abulletemitter[i][j].haveBullets() && (abulletemitter[i][j].getHookName().startsWith("_External") || abulletemitter[i][j].getHookName().startsWith("_Static"))
+					&& dragParasiteCx < 0.704F) {
+					float f = 0.125F;
+					if (abulletemitter[i][j] instanceof FuelTankGun)
+						f = 0.05F;
+					Class class2 = (Class)Property.value(abulletemitter[i][j].getClass(), "bulletClass", null);
+					float kalibr = Property.floatValue(class2, "kalibr", 0.10F); // change default from 0.0F into 0.10F to avoit f4 made 0.0F
+					float dragCf = Property.floatValue(class2, "dragCoefficient", 1.0F);
+					if (dragCf < 0.01F) dragCf = 0.01F;
+					if (dragCf > 100.0F) dragCf = 100.0F;
+					float f4 = (float)(3.1415926535897931D * (double)kalibr * (double)kalibr * (double)f * (double)dragCf);
+					dragParasiteCx += f4;
+				}
+				if ((abulletemitter[i][j] instanceof RocketGun) && abulletemitter[i][j].haveBullets() && abulletemitter[i][j].getHookName().startsWith("_External")) {
+					Class class1 = (Class)Property.value(abulletemitter[i][j].getClass(), "bulletClass", null);
+					float kalibr = Property.floatValue(class1, "kalibr", 0.0F);
+					float dragCf = Property.floatValue(class1, "dragCoefficient", 1.0F);
+					if (dragCf < 0.01F) dragCf = 0.01F;
+					if (dragCf > 100.0F) dragCf = 100.0F;
+				// TODO: ++ Changed Code to make Engine Mod independent of Guided Missiles Mod ++
+					if (GuidedMissileInterop.getGuidedMissileModExists() && GuidedMissileInterop.getMissileGunClass().isInstance(class1)) {
+						dragCf *= 0.50F;
+					}
+				// TODO: -- Changed Code to make Engine Mod independent of Guided Missiles Mod ++
+					float f3 = (float)(3.1415926535897931D * (double)kalibr * (double)kalibr * 0.11999999731779099D * (double)dragCf);
+					dragParasiteCx += f3;
 				}
 				if (!(abulletemitter[i][j] instanceof Pylon) || (abulletemitter[i][j] instanceof PylonRO_82_1)
-						|| (abulletemitter[i][j] instanceof PylonRO_82_3) || (abulletemitter[i][j] instanceof PylonPE8_FAB100)
-						|| (abulletemitter[i][j] instanceof PylonPE8_FAB250)
-						|| (abulletemitter[i][j] instanceof PylonP38RAIL3FL)
-						|| (abulletemitter[i][j] instanceof PylonP38RAIL3FR)
-						|| (abulletemitter[i][j] instanceof PylonP38RAIL3WL)
-						|| (abulletemitter[i][j] instanceof PylonP38RAIL3WR) || (abulletemitter[i][j] instanceof PylonP38RAIL5)
-						|| (abulletemitter[i][j] instanceof PylonP38RAILS)
-						|| (abulletemitter[i][j] instanceof PylonMG15120Internal))
+					|| (abulletemitter[i][j] instanceof PylonRO_82_3) || (abulletemitter[i][j] instanceof PylonPE8_FAB100)
+					|| (abulletemitter[i][j] instanceof PylonPE8_FAB250)
+					|| (abulletemitter[i][j] instanceof PylonP38RAIL3FL) || (abulletemitter[i][j] instanceof PylonP38RAIL3FR)
+					|| (abulletemitter[i][j] instanceof PylonP38RAIL3WL) || (abulletemitter[i][j] instanceof PylonP38RAIL3WR)
+					|| (abulletemitter[i][j] instanceof PylonP38RAIL5) || (abulletemitter[i][j] instanceof PylonP38RAILS)
+					|| (abulletemitter[i][j] instanceof PylonF6FPLN2) || (abulletemitter[i][j] instanceof PylonMG15120Internal))
 					continue;
-        // +++ Engine MOD counting Pylon's specific dragCx
+			// +++ Engine MOD counting Pylon's specific dragCx
 				if(((Pylon) abulletemitter[i][j]).getDragCx() > 0F) {
 					if(((Pylon) abulletemitter[i][j]).isMinusDrag())
 						dragParasiteCx -= ((Pylon) abulletemitter[i][j]).getDragCx();
@@ -181,7 +166,7 @@ public class Squares {
 
 					continue;
 				}
-        // --- Engine MOD counting Pylon's specific dragCx
+			// --- Engine MOD counting Pylon's specific dragCx
 				dragParasiteCx += 0.035F;
 				if ((abulletemitter[i][j] instanceof PylonHS129BK75) || (abulletemitter[i][j] instanceof PylonHS129BK37))
 					dragParasiteCx += 0.45F;
@@ -189,10 +174,13 @@ public class Squares {
 					dragParasiteCx += 0.015F;
 				if (abulletemitter[i][j] instanceof PylonRO_WfrGr21Dual)
 					dragParasiteCx += 0.02F;
+				if (abulletemitter[i][j] instanceof PylonVAP250)
+					dragParasiteCx += 0.02F;
 			}
 
 		}
-		dragParasiteCx += 0.02F * controls.getRefuel();
+
+		dragParasiteCx += 0.015F * controls.getRefuel();
 		dragParasiteCx += 0.02F * controls.getCockpitDoor();
 		if (controls.bHasBayDoorControl)
 			dragParasiteCx += 0.02F * controls.getBayDoor();
