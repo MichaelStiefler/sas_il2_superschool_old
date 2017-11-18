@@ -1,4 +1,4 @@
-// US QRC-160 ECM Pod , carried by F-105, F-4 or others
+// US QRC-160-1A (later AN/ALQ-71) ECM Pod , carried by F-105, F-4 or others
 
 package com.maddox.il2.objects.weapons;
 
@@ -17,7 +17,7 @@ public class Pylon_QRC160_gn16 extends Pylon
     {
         Class class1 = com.maddox.il2.objects.weapons.Pylon_QRC160_gn16.class;
         Property.set(class1, "mesh", "3DO/Arms/QRC160_gn16/mono.sim");
-        Property.set(class1, "massa", 98.0F);
+        Property.set(class1, "massa", 91.0F);
         Property.set(class1, "dragCx", 0.015F);  // stock Pylons is +0.035F
     }
 }

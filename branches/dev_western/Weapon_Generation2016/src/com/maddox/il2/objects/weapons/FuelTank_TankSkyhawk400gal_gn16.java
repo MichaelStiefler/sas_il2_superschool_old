@@ -52,5 +52,6 @@ public class FuelTank_TankSkyhawk400gal_gn16 extends FuelTank
         Property.set(class1, "mesh", "3DO/Arms/TankSkyhawk400gal_gn16/mono.sim");
         Property.set(class1, "kalibr", 0.707F);
         Property.set(class1, "massa", 1535F);
+		Property.set(class1, "dragCoefficient", 0.46F); // Aerodynamic Drag Coefficient, Stock WWII droptanks=1.0F
     }
 }
