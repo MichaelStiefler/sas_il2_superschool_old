@@ -8,6 +8,7 @@
  * 2017.01.03: By western, implement limit Ailerons, debug Select bomb and Unlimited Ammo
  * 2017.01.14: By western, implement Rocket mode Ripple (continuous Pairs)
  * 2017.02.07: By western, implement Formation lights and Anti-Collision lights
+ * 2017.11.18: By western, No Jettison external Fueltanks
  */
 
 package com.maddox.il2.fm;
@@ -209,6 +210,7 @@ public class Controls {
 	public boolean bFormationLights;
 	public boolean bHasAntiColLights;
 	public boolean bAntiColLights;
+	public boolean bDroptanksDropped;
 
 	// --------------------------------------------------------
 
@@ -224,7 +226,7 @@ public class Controls {
 	public int bombTrainDelay;
 	public int bombTrainAmount;
 	public static final int bombTrainDelays[] = {
-		50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 
+		50, 100, 200, 300, 400, 500, 600, 700, 800, 900,
 		1000
 	};
 	private int bombsReleased;
@@ -373,6 +375,7 @@ public class Controls {
 		curBombSelected = -1;
 		bombsHangedNumber = 0;
 		bombsHangedNumberByClass = new int[8];
+		bDroptanksDropped = false;
 		// --------------------------------------------------------
 
 		// Import values from 4.13.2m
@@ -1633,20 +1636,29 @@ public class Controls {
 	}
 			// --------------------------------------------------------
 
+	// By western0221: NoJettison flag tanks are ignored to drop. For F-80's wingtip tanks etc.
 	public boolean dropFuelTanks() {
+		if (bDroptanksDropped) return false;
+
 		boolean flag = false;
 		for (int i = 0; i < Weapons.length; i++) {
 			if (Weapons[i] == null)
 				continue;
-			for (int j = 0; j < Weapons[i].length; j++)
+			for (int j = 0; j < Weapons[i].length; j++) {
 				if ((Weapons[i][j] instanceof FuelTankGun) && Weapons[i][j].haveBullets()) {
+					if (Weapons[i][j].getHookName().startsWith("_StaticTank")
+						|| ((FuelTankGun) Weapons[i][j]).isNoJettison())
+						continue;
+
 					Weapons[i][j].shots(1);
 					flag = true;
 				}
+			}
 
 		}
 
 		if (flag) {
+			bDroptanksDropped = true;
 			((Aircraft)FM.actor).replicateDropFuelTanks();
 			FM.M.onFuelTanksChanged();
 		}
@@ -1667,9 +1679,15 @@ public class Controls {
 		for (int i = 0; i < Weapons.length; i++) {
 			if (Weapons[i] == null)
 				continue;
-			for (int k = 0; k < Weapons[i].length; k++)
-				if (Weapons[i][k] instanceof FuelTankGun)
-					i1++;
+			for (int k = 0; k < Weapons[i].length; k++) {
+				if ((Weapons[i][k] instanceof FuelTankGun) && Weapons[i][k].haveBullets()) {
+					if (!bDroptanksDropped
+						|| Weapons[i][k].getHookName().startsWith("_StaticTank")
+						|| ((FuelTankGun) Weapons[i][k]).isNoJettison()) {
+						i1++;
+					}
+				}
+			}
 
 		}
 
@@ -1679,8 +1697,13 @@ public class Controls {
 			if (Weapons[j] == null)
 				continue;
 			for (int l = 0; l < Weapons[j].length; l++)
-				if (Weapons[j][l] instanceof FuelTankGun)
-					afueltank[j1++] = ((FuelTankGun)Weapons[j][l]).getFuelTank();
+				if ((Weapons[j][l] instanceof FuelTankGun) && Weapons[j][l].haveBullets()) {
+					if (!bDroptanksDropped
+						|| Weapons[j][l].getHookName().startsWith("_StaticTank")
+						|| ((FuelTankGun) Weapons[j][l]).isNoJettison()) {
+						afueltank[j1++] = ((FuelTankGun)Weapons[j][l]).getFuelTank();
+					}
+				}
 
 		}
 
