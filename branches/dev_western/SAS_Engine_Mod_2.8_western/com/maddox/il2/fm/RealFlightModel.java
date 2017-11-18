@@ -995,7 +995,7 @@ public class RealFlightModel extends Pilot {
 			}
 
 			for (int i1 = 0; i1 < 3; i1++) {
-				Gears.gWheelAngles[i1] = (Gears.gWheelAngles[i1] + (float) Math.toDegrees(Math.atan((Gears.gVelocity[i1] * (double) f) / 0.375D))) % 360F;
+				Gears.gWheelAngles[i1] = (Gears.gWheelAngles[i1] + (float) Math.toDegrees(Math.atan((Gears.gVelocity[i1] * (double) f) / Gears.gWheelRadius[i1]))) % 360F;
 				Gears.gVelocity[i1] *= 0.94999998807907104D;
 			}
 

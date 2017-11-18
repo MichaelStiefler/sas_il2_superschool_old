@@ -1,3 +1,7 @@
+// Source File Name: FuelTank
+// Author:		   western0221
+// Last Modified by: western0221 2016-Aug.-21
+// add functions of checkfuel, refuel, checkFreeTankSpace.
 
 package com.maddox.il2.objects.weapons;
 
@@ -8,8 +12,7 @@ import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.rts.*;
 
 
-public class FuelTank extends Bomb
-{
+public class FuelTank extends Bomb {
 
 	public FuelTank() {
 		Class class1 = getClass();
@@ -19,7 +22,7 @@ public class FuelTank extends Bomb
 	protected void doExplosion(Actor actor, String s) {
 		MsgDestroy.Post(Time.current(), this);
 		pos.getTime(Time.current(), p);
-		if(World.land().isWater(p.x, p.y))
+		if (World.land().isWater(p.x, p.y))
 			Explosions.WreckageDrop_Water(p);
 	}
 

@@ -196,6 +196,12 @@ public class Gear {
 	//By western, custom chock and catapult gear X position
 	public double dCustomChockX = 0.0D;
 	public double dCustomCatGearX = 0.0D;
+
+	//By western, tune wheels rotation speed using custom wheel radius bigger or smaller than stock 375mm.
+	public double gWheelRadius[] = { 0.375D, 0.375D, 0.375D };
+
+	//By western, max steering degree of nose gear
+	public double gMaxNGearSteeringDegree = -1.0D;
 	// --------------------------------------------------------
 
 	private static class PlateFilter implements ActorFilter {
@@ -1753,6 +1759,17 @@ public class Gear {
 			}
 
 		}
+
+		// By western0221: set each wheels radius values
+		double dtemp = (double) sectfile.get("Gear", "WheelDiameterLR", -1.0F);
+		if(dtemp > 0D)
+			gWheelRadius[0] = gWheelRadius[1] = dtemp * 0.5D;
+		dtemp = (double) sectfile.get("Gear", "WheelDiameterC", -1.0F);
+		if(dtemp > 0D)
+			gWheelRadius[2] = dtemp * 0.5D;
+
+		// By western0221: set max nose gear steering degree for realistic ground turn
+		gMaxNGearSteeringDegree = (double) sectfile.get("Gear", "NoseGearMaxSteer", -1.0F);
 	}
 
 	public float getLandingState() {
