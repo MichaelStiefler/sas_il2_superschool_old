@@ -89,5 +89,6 @@ public class BombCBU87_gn16 extends Bomb
         Property.set(class1, "kalibr", 0.396F);
         Property.set(class1, "massa", 430.9F);
         Property.set(class1, "sound", "weapon.bomb_std");
+ 		Property.set(class1, "dragCoefficient", 0.42F); // Aerodynamic Drag Coefficient, Stock WWII bombs=1.0F
     }
 }

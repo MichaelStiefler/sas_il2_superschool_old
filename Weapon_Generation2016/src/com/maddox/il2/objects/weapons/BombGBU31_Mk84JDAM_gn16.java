@@ -26,6 +26,7 @@ public class BombGBU31_Mk84JDAM_gn16 extends BombUSGPS_JDAM_Generic_gn16
         Property.set(class1, "fuze", ((Object) (new Object[] {
             com.maddox.il2.objects.weapons.Fuze_AN_M100.class, com.maddox.il2.objects.weapons.Fuze_M115.class, com.maddox.il2.objects.weapons.Fuze_M112.class
         })));
+ 		Property.set(class1, "dragCoefficient", 0.38F); // Aerodynamic Drag Coefficient, Stock WWII bombs=1.0F
     }
 
 }

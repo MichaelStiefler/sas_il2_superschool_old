@@ -93,5 +93,6 @@ public class BombParaFlareLUU2_gn16 extends Bomb
         Property.set(class1, "kalibr", 0.12F);
         Property.set(class1, "massa", 13.6F);
         Property.set(class1, "sound", "weapon.bomb_phball");
+		Property.set(class1, "dragCoefficient", 1.0F); // Aerodynamic Drag Coefficient, Stock WWII bombs=1.0F
     }
 }

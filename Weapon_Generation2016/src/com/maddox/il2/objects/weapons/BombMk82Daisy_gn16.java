@@ -35,5 +35,7 @@ public class BombMk82Daisy_gn16 extends Bomb
         Property.set(class1, "fuze", ((Object) (new Object[] {
             com.maddox.il2.objects.weapons.Fuze_AN_M100.class, com.maddox.il2.objects.weapons.Fuze_M115.class, com.maddox.il2.objects.weapons.Fuze_M112.class
         })));
+  		Property.set(class1, "dragCoefficient", 0.33F); // Aerodynamic Drag Coefficient, Stock WWII bombs=1.0F
+        Property.set(class1, "groupLeader", "BombMk82_gn16"); // used by Bomb Select
     }
 }
