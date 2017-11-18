@@ -1,6 +1,6 @@
 // Source File Name: Missile.java
-// Author:		   Storebror
-// Edit:			western0221 on 10th/Nov/2017
+// Author:	Storebror
+// Edit:	western0221 on 17th/Nov/2017
 package com.maddox.il2.objects.weapons;
 
 import java.io.IOException;
@@ -25,11 +25,8 @@ import com.maddox.il2.engine.LightPointActor;
 import com.maddox.il2.engine.LightPointWorld;
 import com.maddox.il2.engine.MeshShared;
 import com.maddox.il2.engine.Orient;
-import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.fm.FlightModelMain;
-import com.maddox.il2.fm.RealFlightModel;
-import com.maddox.il2.game.Main3D;
-import com.maddox.il2.game.Selector;
+import com.maddox.il2.fm.*;
+import com.maddox.il2.game.*;
 import com.maddox.il2.objects.ActorSimpleMesh;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.TypeFighter;
@@ -201,6 +198,7 @@ public class Missile extends Rocket {
 
 	public Missile() {
 		this.targetPoint3d = new Point3d();
+		this.targetPoint3dAbs = new Point3d();
 		this.trajectoryVector3d = new Vector3d();
 		this.victimSpeed = new Vector3d();
 		this.victimOffsetOrient = new Orient();
@@ -937,9 +935,10 @@ public class Missile extends Rocket {
 		} else {
 			this.massLossPerTick = 0.0F;
 		}
-		int iDetectorType = Property.intValue(localClass, "detectorType", DETECTOR_TYPE_MANUAL);
+		this.iDetectorType = Property.intValue(localClass, "detectorType", DETECTOR_TYPE_MANUAL);
 		if (iDetectorType == DETECTOR_TYPE_LASER) bLaserHoming = true;
 		else  bLaserHoming = false;
+		this.lTargetType = Property.longValue(localClass, "targetType", TARGET_AIR);
 		this.missileProximityFuzeRadius = Property.floatValue(localClass, "proximityFuzeRadius", 50.0F);
 		// When proximityFuzeRadius = 0F set, means no Proximity Fuze. So, working as Contact Fuze or Time Fuze (reaching timeLife).
 
@@ -992,6 +991,27 @@ public class Missile extends Rocket {
 
 	public long getStartTime() {
 		return this.startTime;
+	}
+
+	// TODO: For Countermeasures
+	public Actor getMissileTarget() {
+		return this.victim;
+	}
+
+	public Point3d getMissileTargetPoint3d() {
+		return this.targetPoint3d;
+	}
+
+	public Point3d getMissileTargetPoint3dAbs() {
+		return this.targetPoint3dAbs;
+	}
+
+	public int getDetectorType() {
+		return this.iDetectorType;
+	}
+
+	public long getTargetType() {
+		return this.lTargetType;
 	}
 
 	public int HitbyMask() {
@@ -1272,7 +1292,27 @@ public class Missile extends Rocket {
 
 	private void setMissileVictim() {
 		this.victim = null;
-		if (bLaserHoming) return;
+
+		if (bLaserHoming) {
+			if (!this.ownerIsAI()) {
+				if (this.getFM().getOverload() > this.maxLaunchG) {
+					this.targetPoint3d = null;
+					this.targetPoint3dAbs = null;
+					this.laserOwner = null;
+					return;
+				}
+			}
+			if (this.getOwner() instanceof TypeGuidedMissileCarrier) {
+				this.targetPoint3dAbs = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetPos();
+				this.laserOwner = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetPosOwner();
+				this.victimOffsetPoint3d = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetOffset();
+				this.safeVictimOffset.set(this.victimOffsetPoint3d);
+				this.targetPoint3d.set(this.targetPoint3dAbs);
+				this.targetPoint3d.sub(this.missilePoint3d); // relative Position to target
+			}
+			return;
+		}
+
 		try {
 			if (this.ownerIsAI()) {
 				if (this.getOwner() instanceof TypeGuidedMissileCarrier) {
@@ -1661,32 +1701,91 @@ public class Missile extends Rocket {
 
 			this.computeMissilePath(missileSpeed, 0.0F, 0.0F, angleAzimuth, angleTangage);
 		} else if (bLaserHoming) {
-			if (((TypeLaserDesignator) this.getOwner()).getLaserOn()) {
-				this.targetPoint3d.set(((TypeLaserDesignator) this.getOwner()).getLaserSpot());
+			double targetDistance = 0.0D;
+			float targetAngle = 0.0F;
+			float targetBait = 0.0F;
+			float maxTargetBait = 0.0F;
 
-				this.targetPoint3d.sub(this.missilePoint3d); // relative Position to target
-				this.missileOrient.transformInv(this.targetPoint3d); // set coordinate system according to A/C POV
+			if (laserOwner == null) {
+				while ((this.getOwner() instanceof TypeLaserDesignator) && (((TypeLaserDesignator) this.getOwner()).getLaserOn())) {
+					Point3d point3d = new Point3d();
+					point3d.set(((TypeLaserDesignator) this.getOwner()).getLaserSpot());
+					if (Main.cur().clouds != null &&
+						(   Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F
+						 || Main.cur().clouds.getVisibility(point3d, this.getOwner().pos.getAbsPoint()) < 1.0F))
+						break;
+					targetDistance = this.pos.getAbsPoint().distance(point3d);
+					if (targetDistance > attackMaxDistance)
+						break;
+					targetAngle = GuidedMissileUtils.angleBetween(this, point3d);
+					if (targetAngle > this.maxFOVfrom)
+						break;
+					laserOwner = this.getOwner();
+					break;
+				}
+				if (laserOwner == null) {
+					List list = Engine.targets();
+					int i = list.size();
+					for (int j = 0; j < i; j++) {
+						Actor theOwner1 = (Actor)list.get(j);
+						if ((theOwner1 instanceof TypeLaserDesignator) && ((TypeLaserDesignator) theOwner1).getLaserOn() && theOwner1.getArmy() == this.getOwner().getArmy()) {
+							Point3d point3d = new Point3d();
+							point3d = ((TypeLaserDesignator)theOwner1).getLaserSpot();
+							// Not target about objects behind of clouds from the missile's seeker.
+							if (Main.cur().clouds != null &&
+								(   Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F)
+								 || Main.cur().clouds.getVisibility(point3d, theOwner1.pos.getAbsPoint()) < 1.0F)
+								continue;
+							targetDistance = theOwner1.pos.getAbsPoint().distance(point3d);
+							if (targetDistance > attackMaxDistance)
+								continue;
+							targetAngle = GuidedMissileUtils.angleBetween(theOwner1, point3d);
+							if (targetAngle > maxFOVfrom)
+								continue;
 
-				// Calculate angle to target.
-				float angleAzimuth = (float) Math.toDegrees(Math.atan(this.targetPoint3d.y / this.targetPoint3d.x));
-				float angleTangage = (float) Math.toDegrees(Math.atan(this.targetPoint3d.z / this.targetPoint3d.x));
+							targetBait = 1 / targetAngle / (float) (targetDistance * targetDistance);
 
-				if (this.getFailState() == FAIL_TYPE_REFLEX) {
-					angleAzimuth += 180F;
-					angleTangage += 180F;
-					if (angleAzimuth > 180F) {
-						angleAzimuth = 180F - angleAzimuth;
-					}
-					if (angleTangage > 180F) {
-						angleTangage = 180F - angleTangage;
+							if (targetBait <= maxTargetBait)
+								continue;
+
+							maxTargetBait = targetBait;
+							laserOwner = theOwner1;
+						}
 					}
 				}
-
-				this.computeMissilePath(missileSpeed, 0.0F, 0.0F, angleAzimuth, angleTangage);
 			}
-		}// else {
-			// missileOrient.setYPR(missileOrient.getYaw(), missileOrient.getPitch(), this.getRoll());
-			// }
+			if (laserOwner != null) {
+				if (((TypeLaserDesignator) laserOwner).getLaserOn()) {
+					Point3d point3d = new Point3d();
+					point3d.set(((TypeLaserDesignator) laserOwner).getLaserSpot());
+
+					this.targetPoint3d.set(this.targetPoint3dAbs);
+					this.targetPoint3d.sub(this.missilePoint3d); // relative Position to target
+					this.missileOrient.transformInv(this.targetPoint3d); // set coordinate system according to A/C POV
+
+					// Calculate angle to target.
+					float angleAzimuth = (float) Math.toDegrees(Math.atan(this.targetPoint3d.y / this.targetPoint3d.x));
+					float angleTangage = (float) Math.toDegrees(Math.atan(this.targetPoint3d.z / this.targetPoint3d.x));
+
+					if (this.getFailState() == FAIL_TYPE_REFLEX) {
+						angleAzimuth += 180F;
+						angleTangage += 180F;
+						if (angleAzimuth > 180F) {
+							angleAzimuth = 180F - angleAzimuth;
+						}
+						if (angleTangage > 180F) {
+							angleTangage = 180F - angleTangage;
+						}
+					}
+
+					if (Main.cur().clouds == null ||
+						(   Main.cur().clouds.getVisibility(this.targetPoint3dAbs, this.pos.getAbsPoint()) >= 0.99F)
+						 && Main.cur().clouds.getVisibility(this.targetPoint3dAbs, laserOwner.pos.getAbsPoint()) >= 0.99F) {
+						this.computeMissilePath(missileSpeed, 0.0F, 0.0F, angleAzimuth, angleTangage);
+					}
+				}
+			}
+		}
 
 		return this.computeFuzeState();
 
@@ -1694,11 +1793,6 @@ public class Missile extends Rocket {
 
 	public int WeaponsMask() {
 		return -1;
-	}
-
-	// TODO: For Countermeasures
-	public Actor getMissileTarget() {
-		return this.victim;
 	}
 
 	private void checkChaffFlareLock() {
@@ -1828,10 +1922,13 @@ public class Missile extends Rocket {
 	private boolean waitingMeshSustain = false;
 	private long startTime = 0L;
 	private boolean startTimeIsSet = false;
+	private int iDetectorType = 0;
+	private long lTargetType = 0L;
 	private int stepMode = 0;
 	private float stepsForFullTurn = 10; // update steps for maximum control surface output, higher value means slower reaction and smoother flight, lower value means higher agility
 	private float sunRayAngle = 0.0F;
 	private Point3d targetPoint3d = null;
+	private Point3d targetPoint3dAbs = null;
 	private long timeToFailure = 0L;
 	private long trackDelay = 1000L;
 	private Vector3d trajectoryVector3d = null;
@@ -1840,7 +1937,7 @@ public class Missile extends Rocket {
 	private float missileProximityFuzeRadius = 50F;
 	DecimalFormat twoPlaces = new DecimalFormat("+000.00;-000.00"); // only required for debugging
 
-	public Actor victim = null;
+	private Actor victim = null;
 
 	// private static RangeRandom theRangeRandom;
 
@@ -1849,6 +1946,7 @@ public class Missile extends Rocket {
 	private Vector3d victimSpeed = null;
 
 	private boolean bLaserHoming = false;
+	private Actor laserOwner = null;
 
 	private boolean bRealisticRadarSelect = false;
 }
