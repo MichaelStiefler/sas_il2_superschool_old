@@ -933,8 +933,8 @@ public class Controls {
                         }
                         case 3: {
                         	long delay = bombReleaseDelay;
-                        	delay *= (long)(delay/Time.speed());
-                        	if(lastBombTime + delay < System.currentTimeMillis() || bombDropMode == defaultFire) {
+                        	delay = (long)(delay/Time.speed());                        	
+                        	if(lastBombTime + delay < System.currentTimeMillis() || bombDropMode == defaultFire || bombDropMode == fullSalvo && isGroupRelease) {
                         		// T-ODO: Storebror: +++ Bomb Release Bug hunting
 //                            	if (this.WeaponControl[wctIndex]) {
                         		if ((this.WeaponControl[wctIndex] || (bombDropMode > 1 && bombDropMode > bombsDropped && isGroupRelease) || (bombDropMode == fullSalvo && isGroupRelease)) && this.hasBulletsLeftOnTrigger(wctIndex)) {
@@ -1323,8 +1323,13 @@ public class Controls {
     	if(index < 0 || index>= availableBombs.size()) {
     		System.out.println(this.getClass() + ".setRocketSelected() received an off value (" + index + ") and will ignore it. This may be responsible for weird occurances involving ordnance releases!");
     		return;
+    	} 
+    	Class tmp = (Class) availableBombs.get(index);
+    	if(selectedBomb == tmp) {
+    		return;
     	}
-    	selectedBomb = (Class) availableBombs.get(index);
+    	System.out.println("SKYLLA: Apply selected Rocket");
+    	selectedBomb = tmp;
     	checkSelectedBombAvailable();
     }
     
@@ -1342,7 +1347,12 @@ public class Controls {
     		System.out.println(this.getClass() + ".setRocketSelected() received an off value (" + index + ") and will ignore it. This may be responsible for weird occurances involving ordnance releases!");
     		return;
     	}
-    	selectedRocket = (Class) availableRockets.get(index);
+    	Class tmp = (Class) availableRockets.get(index);
+    	if(selectedRocket == tmp) {
+    		return;
+    	}
+    	System.out.println("SKYLLA: Apply selected Rocket");
+    	selectedRocket = tmp;
     	checkSelectedRocketAvailable();
     }
     
@@ -1800,7 +1810,6 @@ public class Controls {
     	switch(bombDropMode) {
     	case defaultFire:
     		if(Arrays.binarySearch(bombSalvoSizeOptions, singleFire) >= 0) {
-    			System.out.println("Entered defaultFire setting area");
     			setBombDropMode(singleFire);
     			HUD.log(hudLogWeaponId, "Bombs: Single Drop Selected");
     			break;
@@ -1987,6 +1996,10 @@ public class Controls {
 				//continue in order to find a bomb that may not be within bomb bay and can be released.
 				continue;
 			} else if(e instanceof RocketGunNull || e instanceof BombGunNull) {
+				if(e.isShots()) {
+					System.out.println("SKYLLA: Entered isShots() clause for BombGunNull .. aborting release!");
+					return false;
+				}
 				this.setNextReleaseReady(1);
 				e.shots(1);
 				//System.out.println("SKYLLA: Dropped BombGunNull / RocketGunNull!");
@@ -2005,6 +2018,7 @@ public class Controls {
 			} else if(shot == 1) {
 				//System.out.println("SKYLLA: side=" + side + "; shot=" + shot);
 				if(e.isShots()) {
+					System.out.println("SKYLLA: Entered isShots() clause for valid bomb release .. aborting release!");
 					return false;
 				}
 				this.setNextReleaseReady(1);
