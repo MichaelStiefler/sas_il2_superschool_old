@@ -1081,37 +1081,37 @@ public class AircraftHotKeys {
                     //select rocket:
                     case 132: {
                     	FM.CT.toggleRocketSelectedHUD(hudLogWeaponId);
-                    	FM.AS.replicateRocketSelectedToNet(FM.CT.getRocketIndexSelected());
+                    	replicateEWRCSettingsToNet();
                     	break;
                     }
                     //rocket salvo size:
                     case 133: {
                     	FM.CT.toggleRocketFireMode(hudLogWeaponId);
-                    	FM.AS.replicateRocketReleaseModeToNet(FM.CT.getSelectedRocketSalvoSizeIndex());
+                    	replicateEWRCSettingsToNet();
                     	break;
                     }
                     //rocket release delay:
                     case 134: {
                     	FM.CT.toggleRocketReleaseDelayHUD(hudLogWeaponId);
-                    	FM.AS.replicateRocketReleaseDelayToNet(FM.CT.getSelectedRocketReleaseDelayIndex());
+                    	replicateEWRCSettingsToNet();
                     	break;
                     }
                     //select bomb:
                     case 135: {
                     	FM.CT.toggleBombSelectedHUD(hudLogWeaponId);
-                    	FM.AS.replicateBombSelectedToNet(FM.CT.getBombIndexSelected());
+                    	replicateEWRCSettingsToNet();
                     	break;
                     }
                     //bomb salvo size:
                     case 136: {
                     	FM.CT.toggleBombDropMode(hudLogWeaponId);
-                    	FM.AS.replicateBombReleaseModeToNet(FM.CT.getSelectedBombSalvoSizeIndex());
+                    	replicateEWRCSettingsToNet();
                     	break;
                     }
                     //bomb release delay:
                     case 137: {
                     	FM.CT.toggleBombReleaseDelayHUD(hudLogWeaponId);
-                    	FM.AS.replicateBombReleaseDelayToNet(FM.CT.getSelectedBombReleaseDelayIndex());
+                    	replicateEWRCSettingsToNet();
                     	break;
                     }
                   // ----- todo skylla: enhanced weapon release control -----
@@ -4368,4 +4368,18 @@ public class AircraftHotKeys {
     public FlightModel zutiGetFM() {
         return this.FM;
     }
+    
+  // +++++ TODO skylla: enhanced weapon release control ++++++
+    
+    //must replicate all EWRC settings at once, as switching one setting may affect the others as well!
+    private void replicateEWRCSettingsToNet() {
+    	FM.AS.replicateRocketSelectedToNet(FM.CT.getRocketIndexSelected());
+    	FM.AS.replicateRocketReleaseModeToNet(FM.CT.getSelectedRocketSalvoSizeIndex());
+    	FM.AS.replicateRocketReleaseDelayToNet(FM.CT.getSelectedRocketReleaseDelayIndex());
+    	FM.AS.replicateBombSelectedToNet(FM.CT.getBombIndexSelected());
+    	FM.AS.replicateBombReleaseModeToNet(FM.CT.getSelectedBombSalvoSizeIndex());
+    	FM.AS.replicateBombReleaseDelayToNet(FM.CT.getSelectedBombReleaseDelayIndex());
+    }
+
+  // ----- todo skylla: enhanced weapon release control ------
 }
