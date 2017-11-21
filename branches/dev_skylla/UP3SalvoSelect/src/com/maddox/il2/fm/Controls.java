@@ -934,7 +934,7 @@ public class Controls {
                         case 3: {
                         	long delay = bombReleaseDelay;
                         	delay = (long)(delay/Time.speed());                        	
-                        	if(lastBombTime + delay < System.currentTimeMillis() || bombDropMode == defaultFire || bombDropMode == fullSalvo && isGroupRelease) {
+                        	if(lastBombTime + delay < System.currentTimeMillis() || bombDropMode == defaultFire) {
                         		// T-ODO: Storebror: +++ Bomb Release Bug hunting
 //                            	if (this.WeaponControl[wctIndex]) {
                         		if ((this.WeaponControl[wctIndex] || (bombDropMode > 1 && bombDropMode > bombsDropped && isGroupRelease) || (bombDropMode == fullSalvo && isGroupRelease)) && this.hasBulletsLeftOnTrigger(wctIndex)) {
@@ -1506,12 +1506,13 @@ public class Controls {
     		}
     	}
     	if(tmpBd == null || validB == 0) {
-    		this.bombReleaseDelayOptions = new long[5];
+    		this.bombReleaseDelayOptions = new long[6];
     		bombReleaseDelayOptions[0] = 33L;
     		bombReleaseDelayOptions[1] = 125L;
     		bombReleaseDelayOptions[2] = 250L;
     		bombReleaseDelayOptions[3] = 500L;
     		bombReleaseDelayOptions[4] = 1000L;
+    		bombReleaseDelayOptions[5] = 2000L;
     	}
     	if(bombReleaseDelayOptions.length > 256) {
     		throw new IllegalArgumentException(this.getClass() + ".bombReleaseDelayOptions.length must not be greater than 256! In order to fix this error, please modify the field returned by " + _ac.getClass() + ".getPossibleBombReleaseDelayOptions() accordingly!");
@@ -1543,12 +1544,13 @@ public class Controls {
     		}
     	}
     	if(tmpRd == null || validR == 0) {
-    		this.rocketReleaseDelayOptions = new long[5];
+    		this.rocketReleaseDelayOptions = new long[6];
     		rocketReleaseDelayOptions[0] = 33L;
     		rocketReleaseDelayOptions[1] = 125L;
-    		rocketReleaseDelayOptions[2] = 250L;
-    		rocketReleaseDelayOptions[3] = 500L;
-    		rocketReleaseDelayOptions[4] = 1000L;
+    		rocketReleaseDelayOptions[2] = 190L;
+    		rocketReleaseDelayOptions[3] = 250L;
+    		rocketReleaseDelayOptions[4] = 500L;
+    		rocketReleaseDelayOptions[5] = 1000L;
     	}
     	if(rocketReleaseDelayOptions.length > 256) {
     		throw new IllegalArgumentException(this.getClass() + ".rocketReleaseDelayOptions.length must not be greater than 256! In order to fix this error, please modify the field returned by " + _ac.getClass() + ".getPossibleRocketReleaseDelayOptions() accordingly!");
@@ -1696,7 +1698,7 @@ public class Controls {
     		i++;
     	}
     	selectedBomb = (Class) availableBombs.get(i);
-    	if(bombDropMode > singleFire) {
+    	if(bombDropMode != defaultFire && availableBombs.size() > 2) {
     		bombDropMode = defaultFire;
     		resetGroupDrop();
     	}
@@ -1997,8 +1999,11 @@ public class Controls {
 				continue;
 			} else if(e instanceof RocketGunNull || e instanceof BombGunNull) {
 				if(e.isShots()) {
-					System.out.println("SKYLLA: Entered isShots() clause for BombGunNull .. aborting release!");
-					return false;
+					//System.out.println("SKYLLA: Entered isShots() clause for BombGunNull .. aborting release!");
+					if(bombDropMode != fullSalvo)
+						continue;
+					else 
+						return false;
 				}
 				this.setNextReleaseReady(1);
 				e.shots(1);
@@ -2018,8 +2023,11 @@ public class Controls {
 			} else if(shot == 1) {
 				//System.out.println("SKYLLA: side=" + side + "; shot=" + shot);
 				if(e.isShots()) {
-					System.out.println("SKYLLA: Entered isShots() clause for valid bomb release .. aborting release!");
-					return false;
+					//System.out.println("SKYLLA: Entered isShots() clause for valid bomb release .. aborting release!");
+					if(bombDropMode != fullSalvo)
+						continue;
+					else 
+						return false;
 				}
 				this.setNextReleaseReady(1);
 				bombReleased = true;
