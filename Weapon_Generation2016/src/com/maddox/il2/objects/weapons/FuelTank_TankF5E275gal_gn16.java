@@ -57,6 +57,6 @@ public class FuelTank_TankF5E275gal_gn16 extends FuelTank
         Property.set(class1, "mesh", "3DO/Arms/TankF5E275gal_gn16/mono.sim");
         Property.set(class1, "kalibr", 0.65F);
         Property.set(class1, "massa", 1000.4F);
-		Property.set(class1, "dragCoefficient", 0.6F); // Aerodynamic Drag Coefficient, Stock WWII droptanks=1.0F
+		Property.set(class1, "dragCoefficient", 0.42F); // Aerodynamic Drag Coefficient, Stock WWII droptanks=1.0F
     }
 }

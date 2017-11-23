@@ -62,6 +62,6 @@ public class BombMk79Napalm_gn16 extends BombNapalmGeneric_gn16
         Property.set(class1, "kalibr", 0.50F);
         Property.set(class1, "massa", 453.6F);
         Property.set(class1, "sound", "weapon.bomb_std");
- 		Property.set(class1, "dragCoefficient", 0.44F); // Aerodynamic Drag Coefficient, Stock WWII bombs=1.0F
+ 		Property.set(class1, "dragCoefficient", 0.31F); // Aerodynamic Drag Coefficient, Stock WWII bombs=1.0F
     }
 }

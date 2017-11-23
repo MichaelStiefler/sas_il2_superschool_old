@@ -51,6 +51,6 @@ public class BombMk7nuke22kt_gn16 extends Bomb
         Property.set(class1, "fuze", ((Object) (new Object[] {
             com.maddox.il2.objects.weapons.Fuze_USnukeDelay.class, com.maddox.il2.objects.weapons.Fuze_USnukeLowAlt.class, com.maddox.il2.objects.weapons.Fuze_AN_M100.class, com.maddox.il2.objects.weapons.Fuze_USnukeAir.class
         })));
- 		Property.set(class1, "dragCoefficient", 1.0F); // Aerodynamic Drag Coefficient, Stock WWII bombs=1.0F
+ 		Property.set(class1, "dragCoefficient", 0.7F); // Aerodynamic Drag Coefficient, Stock WWII bombs=1.0F
     }
 }
