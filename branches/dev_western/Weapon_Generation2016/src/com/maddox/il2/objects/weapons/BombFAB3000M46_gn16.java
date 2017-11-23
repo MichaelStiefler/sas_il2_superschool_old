@@ -23,6 +23,6 @@ public class BombFAB3000M46_gn16 extends Bomb
         Property.set(class1, "fuze", ((Object) (new Object[] {
             com.maddox.il2.objects.weapons.Fuze_APUV.class, com.maddox.il2.objects.weapons.Fuze_APUV_M.class, com.maddox.il2.objects.weapons.Fuze_APUV_1.class, com.maddox.il2.objects.weapons.Fuze_AV_1du.class, com.maddox.il2.objects.weapons.Fuze_AV_1.class, com.maddox.il2.objects.weapons.Fuze_AV_87.class
         })));
- 		Property.set(class1, "dragCoefficient", 0.50F); // Aerodynamic Drag Coefficient, Stock WWII bombs=1.0F
+ 		Property.set(class1, "dragCoefficient", 0.40F); // Aerodynamic Drag Coefficient, Stock WWII bombs=1.0F
     }
 }
