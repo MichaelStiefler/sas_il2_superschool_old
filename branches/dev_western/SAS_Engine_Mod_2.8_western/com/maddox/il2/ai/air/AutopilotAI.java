@@ -7,6 +7,7 @@ import com.maddox.il2.ai.Airport;
 import com.maddox.il2.ai.WayPoint;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
+import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.Orientation;
 import com.maddox.il2.fm.Autopilotage;
@@ -228,17 +229,19 @@ public class AutopilotAI extends Autopilotage {
 				}
 				if (way.isLanding()) {
 					FM.getLoc(P);
+					if (((Aircraft) FM.actor) instanceof TypeFastJet)
+						turnOnAINavLights(true);
 					if (way.Cur() > 3 && P.z > (WPoint.z + ((((Aircraft) FM.actor) instanceof TypeFastJet) ? 600D : 500D))) {
-						if(!FM.CT.bHasFlapsControlSwitch) FM.CT.FlapsControl = 0.0F;
+						flapsGoaround();
 						way.setCur(1);
 					}
 					if (way.Cur() > 3 && FM.getSpeed() > way.curr().getV() * 1.8F && ((Aircraft) FM.actor) instanceof TypeFastJet) {
-						if(!FM.CT.bHasFlapsControlSwitch) FM.CT.FlapsControl = 0.0F;
+						flapsGoaround();
 						way.setCur(1);
 					}
 					if (((Aircraft) FM.actor) instanceof TypeFastJet && !FM.CT.bHasFlapsControlSwitch) {
 						if (way.Cur() == 2 || way.Cur() == 3) {
-							if(FM.CT.FlapStage != null && FM.CT.FlapStageMax != -1.0F) {
+							if (FM.CT.FlapStage != null && FM.CT.FlapStageMax != -1.0F) {
 								if (FM.CT.FlapStage[FM.CT.nFlapStages - 1] < 0.33F) FM.CT.FlapsControl = 1.0F;
 								else FM.CT.FlapsControl = FM.CT.FlapStage[FM.CT.nFlapStages - 1];
 							}
@@ -269,13 +272,7 @@ public class AutopilotAI extends Autopilotage {
 							FM.push(2);
 							FM.pop();
 							if (!Mission.isDogfight() || !Main.cur().mission.zutiMisc_DisableAIRadioChatter) Voice.speakGoAround((Aircraft) FM.actor);
-							if(!FM.CT.bHasFlapsControlSwitch){
-								if(FM.CT.FlapTakeoffGround > 0F) FM.CT.FlapsControl = FM.CT.FlapTakeoffGround;
-								else if(FM.CT.FlapStage != null && FM.CT.FlapStageMax != -1.0F)
-									FM.CT.FlapsControl = FM.CT.FlapStage[FM.CT.nFlapStages - 1];
-								else
-									FM.CT.FlapsControl = 0.33F;
-							}
+							flapsGoaround();
 							FM.CT.GearControl = 0.0F;
 							return;
 						}
@@ -293,13 +290,7 @@ public class AutopilotAI extends Autopilotage {
 								FM.push(2);
 								FM.push(2);
 								FM.pop();
-								if(!FM.CT.bHasFlapsControlSwitch){
-									if(FM.CT.FlapTakeoffGround > 0F) FM.CT.FlapsControl = FM.CT.FlapTakeoffGround;
-									else if(FM.CT.FlapStage != null && FM.CT.FlapStageMax != -1.0F)
-										FM.CT.FlapsControl = FM.CT.FlapStage[FM.CT.nFlapStages - 1];
-									else
-										FM.CT.FlapsControl = 0.33F;
-								}
+								flapsGoaround();
 								FM.CT.GearControl = 0.0F;
 								Aircraft.debugprintln(FM.actor, "Going around!.");
 								return;
@@ -482,10 +473,10 @@ public class AutopilotAI extends Autopilotage {
 			else FM.CT.AileronControl = Ail;
 			float newelev = FM.CT.ElevatorControl + (Math.abs(f2) * 0.004F * f + ((bflagFIXED) ? 0.08F : 0F));
 			/*
-			 * if(FM.getAltitude() < way.curr().z() - 50F)
+			 * if (FM.getAltitude() < way.curr().z() - 50F)
 			 * newelev += 0.20F;
-			 * if(FM.getSpeed() > 0 && FM.getVertSpeed() < -0.9F && (((Aircraft)FM.actor) instanceof TypeFastJet))
-			 * if(getWayPointDistance() / FM.getSpeed() * FM.getVertSpeed() < (float)d - Math.min((SA * 0.05F), 50F))
+			 * if (FM.getSpeed() > 0 && FM.getVertSpeed() < -0.9F && (((Aircraft)FM.actor) instanceof TypeFastJet))
+			 * if (getWayPointDistance() / FM.getSpeed() * FM.getVertSpeed() < (float)d - Math.min((SA * 0.05F), 50F))
 			 * newelev -= (getWayPointDistance() / FM.getSpeed() * FM.getVertSpeed() - (float)d) / 200F;
 			 */
 			if (newelev > 1.0F) newelev = 1.0F;
@@ -512,5 +503,32 @@ public class AutopilotAI extends Autopilotage {
 	public void setOverrideMissileControl(Controls theControls, boolean overrideMissile) {
 		this.theMissileControls = theControls;
 		this.overrideMissileControl = overrideMissile;
+	}
+
+	protected void turnOnAINavLights(boolean flag) {
+		boolean bNoNavLightsAI = false;
+		if (Config.cur.ini.get("Mods", "NoNavLightsAI", 0) == 1) bNoNavLightsAI = true;
+		if (Mission.cur().sectFile().get("Mods", "NoNavLightsAI", 0) == 1) bNoNavLightsAI = true;
+		if (flag) {
+			if (World.Sun().ToSun.z < -0.22F || bNoNavLightsAI) FM.AS.setNavLightsState(true);
+		} else {
+			FM.AS.setNavLightsState(false);
+		}
+	}
+
+	private void flapsGoaround() {
+		if (!FM.CT.bHasFlapsControlSwitch){
+			if (FM.getSpeed() > FM.Vmin * 1.2F)
+				FM.CT.FlapsControl = 0.0F;
+			else if (FM.getSpeed() < FM.Vmin * 1.01F)
+				FM.CT.FlapsControl = 1.0F;
+			else if (FM.CT.FlapTakeoffGround > 0F) FM.CT.FlapsControl = FM.CT.FlapTakeoffGround;
+			else if (FM.CT.FlapStage != null && FM.CT.FlapStageMax != -1.0F) {
+				if (FM.CT.FlapStage[FM.CT.nFlapStages - 1] < 0.33F) FM.CT.FlapsControl = 1.0F;
+				else FM.CT.FlapsControl = FM.CT.FlapStage[FM.CT.nFlapStages - 1];
+			}
+			else
+				FM.CT.FlapsControl = 0.33F;
+		}
 	}
 }
