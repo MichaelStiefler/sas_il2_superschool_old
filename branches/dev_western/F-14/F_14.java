@@ -62,8 +62,6 @@ public class F_14 extends Scheme2
         elevatorsField = null;
         lLightHook = new Hook[4];
         SonicBoom = 0.0F;
-        oldthrl = -1F;
-        curthrl = -1F;
         k14Mode = 2;
         k14WingspanType = 0;
         k14Distance = 200F;
@@ -74,7 +72,6 @@ public class F_14 extends Scheme2
         mn = 0.0F;
         ts = false;
         ictl = false;
-        engineSurgeDamage = 0.0F;
         hasHydraulicPressure = true;
         super.bWantBeaconKeys = true;
         lTimeNextEject = 0L;
@@ -142,8 +139,8 @@ public class F_14 extends Scheme2
         bFlapsInFixed = false;
         stockCy0_0 = 0.13F;
         stockCy0_1 = 0.85F;
-        stockCxMin_0 = 0.030F;
-        stockCxMin_1 = 0.11F;
+        stockCxMin_0 = 0.032F;
+        stockCxMin_1 = 0.10F;
         stockCyCritH_0 = 1.4F;
         stockGCenter = 0.0F;
         stockDefaultElevatorTrim = 0.0F;
@@ -151,7 +148,7 @@ public class F_14 extends Scheme2
         stockparabCxCoeff_1 = 0.0005F;
         stockSqWing = 54.5F;
         stockSqWingOut = 13.25F;
-        stockSqFlaps = 13.3F;
+        stockSqFlaps = 13.5F;
         antiColLight = new Eff3DActor[3];
         laserSpotPos = new Point3d();
         laserTimer = -1L;
@@ -976,12 +973,6 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon1R", true);
             FM.Sq.dragParasiteCx += 0.00007F;
         }
-        if(thisWeaponsName.startsWith("Recon_2xAIM54"))
-        {
-            hierMesh().chunkVisible("Pylon1L", true);
-            hierMesh().chunkVisible("Pylon1R", true);
-            FM.Sq.dragParasiteCx += 0.00007F;
-        }
         if(thisWeaponsName.startsWith("GAttack_2xMk"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
@@ -1074,6 +1065,13 @@ public class F_14 extends Scheme2
         laserTimer = -1L;
         bLaserOn = false;
         FLIR = false;
+
+        for(int i = 0; i < 2; i++)
+        {
+            oldthrl[i] = -1.0F;
+            curthrl[i] = -1.0F;
+            engineSurgeDamage[i] = 0.0F;
+        }
     }
 
     public void updateLLights()
@@ -2164,31 +2162,31 @@ public class F_14 extends Scheme2
         {
             for(int i = 0; i < 2; i++)
             {
-                if(curthrl == -1F)
+                if(curthrl[1] == -1F)
                 {
-                    curthrl = oldthrl = FM.EI.engines[i].getControlThrottle();
+                    curthrl[i] = oldthrl[i] = FM.EI.engines[i].getControlThrottle();
                     continue;
                 }
-                curthrl = FM.EI.engines[i].getControlThrottle();
-                if(curthrl < 1.05F)
+                curthrl[i] = FM.EI.engines[i].getControlThrottle();
+                if(curthrl[i] < 1.05F)
                 {
-                    if((curthrl - oldthrl) / f > 35F && FM.EI.engines[i].getRPM() < 3200F && FM.EI.engines[i].getStage() == 6 && World.Rnd().nextFloat() < 0.4F)
+                    if((curthrl[i] - oldthrl[i]) / f > 35F && FM.EI.engines[i].getRPM() < 3200F && FM.EI.engines[i].getStage() == 6 && World.Rnd().nextFloat() < 0.4F)
                     {
                         if(FM.actor == World.getPlayerAircraft())
                             HUD.log(AircraftHotKeys.hudLogWeaponId, "Fans Surge!!!");
                         super.playSound("weapon.MGunMk108s", true);
-                        engineSurgeDamage += 0.01D * (double)(FM.EI.engines[i].getRPM() / 1000F);
-                        FM.EI.engines[i].doSetReadyness(FM.EI.engines[i].getReadyness() - engineSurgeDamage);
+                        engineSurgeDamage[i] += 0.01D * (double)(FM.EI.engines[i].getRPM() / 1000F);
+                        FM.EI.engines[i].doSetReadyness(FM.EI.engines[i].getReadyness() - engineSurgeDamage[i]);
                         if(World.Rnd().nextFloat() < 0.05F && (FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode())
                             FM.AS.hitEngine(this, i, 100);
                         if(World.Rnd().nextFloat() < 0.05F && (FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode())
                             FM.EI.engines[i].setEngineDies(this);
                     }
-                    if((curthrl - oldthrl) / f < -35F && (curthrl - oldthrl) / f > -100F && FM.EI.engines[i].getRPM() < 3200F && FM.EI.engines[i].getStage() == 6)
+                    if((curthrl[i] - oldthrl[i]) / f < -35F && (curthrl[i] - oldthrl[i]) / f > -100F && FM.EI.engines[i].getRPM() < 3200F && FM.EI.engines[i].getStage() == 6)
                     {
                         super.playSound("weapon.MGunMk108s", true);
-                        engineSurgeDamage += 0.001D * (double)(FM.EI.engines[i].getRPM() / 1000F);
-                        FM.EI.engines[i].doSetReadyness(FM.EI.engines[i].getReadyness() - engineSurgeDamage);
+                        engineSurgeDamage[i] += 0.001D * (double)(FM.EI.engines[i].getRPM() / 1000F);
+                        FM.EI.engines[i].doSetReadyness(FM.EI.engines[i].getReadyness() - engineSurgeDamage[i]);
                         if(World.Rnd().nextFloat() < 0.4F && (FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode())
                         {
                             if(FM.actor == World.getPlayerAircraft())
@@ -2199,7 +2197,7 @@ public class F_14 extends Scheme2
                             HUD.log(AircraftHotKeys.hudLogWeaponId, "Fans Surge!!!");
                     }
                 }
-                oldthrl = curthrl;
+                oldthrl[i] = curthrl[i];
             }
 
         }
@@ -3094,24 +3092,24 @@ public class F_14 extends Scheme2
 
     private void AiAirbrakeOperation()
     {
-        if(FM.AP.way.isLanding() && FM.getSpeed() > FM.VmaxFLAPS && FM.getSpeed() > FM.AP.way.curr().getV() * 1.4F)
+        if(((Maneuver)super.FM).get_maneuver() == 21)
         {
-            if(FM.CT.AirBrakeControl != 1.0F)
-                FM.CT.AirBrakeControl = 1.0F;
-        } else
-        if(((Maneuver)super.FM).get_maneuver() == 25 && FM.AP.way.isLanding() && FM.getSpeed() < FM.VmaxFLAPS * 1.2F)
-        {
-            if(FM.getSpeed() > FM.VminFLAPS * 0.5F && FM.Gears.nearGround())
+            if(FM.getSpeed() > FM.VmaxFLAPS && FM.getSpeed() > FM.AP.way.curr().Speed * 1.4F && FM.getAltitude() > FM.AP.way.curr().z() + 20F
+               && FM.EI.engines[0].getControlThrottle() < 0.85F && FM.EI.engines[0].getControlThrottle() < 0.85F)
             {
-                if(FM.Gears.onGround())
-                {
-                    if(FM.CT.AirBrakeControl != 1.0F)
-                        FM.CT.AirBrakeControl = 1.0F;
-                } else
                 if(FM.CT.AirBrakeControl != 1.0F)
                     FM.CT.AirBrakeControl = 1.0F;
-            } else
-            if(FM.CT.AirBrakeControl != 0.0F)
+            }
+            if(FM.getSpeed() < FM.AP.way.curr().Speed * 1.05F || FM.getAltitude() < FM.AP.way.curr().z()
+               || FM.EI.engines[0].getControlThrottle() > 0.96F || FM.EI.engines[0].getControlThrottle() > 0.96F)
+                if(FM.CT.AirBrakeControl != 0.0F)
+                    FM.CT.AirBrakeControl = 0.0F;
+        } else
+        if(FM.Gears.onGround() && ((Maneuver)FM).get_maneuver() == 25 && FM.AP.way.isLanding() && !FM.AP.way.isLandingOnShip())
+        {
+            if(FM.getSpeedKMH() > 120F)
+                FM.CT.AirBrakeControl = 1.0F;
+            else
                 FM.CT.AirBrakeControl = 0.0F;
         } else
         if(((Maneuver)super.FM).get_maneuver() == 66)
@@ -3223,8 +3221,8 @@ public class F_14 extends Scheme2
     public float misslebrg;
     public float aircraftbrg;
     public boolean backfire;
-    private float oldthrl;
-    private float curthrl;
+    private float oldthrl[] = { -1.0F, -1.0F };
+    private float curthrl[] = { -1.0F, -1.0F };
     public int k14Mode;
     public int k14WingspanType;
     public float k14Distance;
@@ -3248,7 +3246,7 @@ public class F_14 extends Scheme2
     private boolean isSonic;
     public int LockState = 0;
     public Actor hunted = null;
-    private float engineSurgeDamage;
+    private float engineSurgeDamage[] = { 0.0F, 0.0F };
     private static final float NEG_G_TOLERANCE_FACTOR = 3.5F;
     private static final float NEG_G_TIME_FACTOR = 2.5F;
     private static final float NEG_G_RECOVERY_FACTOR = 1F;
@@ -3360,7 +3358,7 @@ public class F_14 extends Scheme2
     };
 
     private static final float cxmin0Scale[] = {
-        0.03F, 0.028F, 0.025F, 0.023F, 0.021F
+        0.032F, 0.029F, 0.026F, 0.023F, 0.021F
     };
 
     private static final float cy00Scale[] = {
