@@ -436,7 +436,76 @@ public class HUD {
             int locy = (int)location.y;
             int locz = (int)fa;
             if(sbLocWay >= 1.0F)
-                ttfont.output(COLOR_SPD_REDo, 5F, 5 + (4 + (int)sbLocWay) * i, 0.0F, "Locate(" + locx + " , " + locy + " , " + locz + ")");
+            {
+                boolean bMissile = (main3d.viewActor() instanceof Missile);
+                boolean bGuidedBomb = false;
+
+                if(bMissile)
+                {
+                    Missile misact = (Missile)main3d.viewActor();
+                    int theaddiff = 0;
+                    int distance = 0;
+
+                    if(misact.getMissileTarget() != null)
+                    {
+                        Orientation vorient = new Orientation();
+                        Point3d vlocation = new Point3d();
+                        Actor vc = misact.getMissileTarget();
+                        vc.pos.getAbs(vlocation, vorient);
+                        int tgtx = (int)vlocation.x;
+                        int tgty = (int)vlocation.y;
+                        int tgtz = (int)vlocation.z;
+                        int tgtspeed = (int) (vc.getSpeed((Vector3d) null) * 3.6F);
+                        int tgthead = (int)vorient.getYaw();
+                        tgthead = ((tgthead > 90)? 450 - tgthead : 90 - tgthead);
+                        Vector3d tvec = new Vector3d((double)(tgtx - locx), (double)(tgty - locy) , 0.0D);
+                        tvec.normalize();
+                        Orient oTemp = new Orient();
+                        oTemp.setAT0(tvec);
+                        int thead = (int)(oTemp.getAzimut() + 90F);
+                        for(; thead > 360; thead -= 360) ;
+                        for(; thead < -360; thead += 360) ;
+                        theaddiff = thead - ((yaw > 90)? 450 - yaw : 90 - yaw);
+                        if( theaddiff > 180 ) theaddiff -= 360;
+                        if( theaddiff < -180 ) theaddiff += 360;
+                        distance = (int) location.distance(vlocation);
+                        String classnameFull = vc.getClass().getName();
+                        int idot = classnameFull.lastIndexOf('.');
+                        int idol = classnameFull.lastIndexOf('$');
+                        if (idot < idol) idot = idol;
+                        String classnameSection = classnameFull.substring(idot + 1);
+                        ttfont.output(COLOR_SPD_REDo, 5F, 5 + (3 + (int)sbLocWay) * i, 0.0F, "Target(" + tgtx + " , " + tgty + " , " + tgtz + ") , Head:" + tgthead + " , Speed:" + tgtspeed + "km/h , Class:" + classnameSection);
+                    }
+                    else
+                    if(misact.getMissileTargetPoint3dAbs() != null && misact.getDetectorType() == 9)
+                    {                   // because of "Missile.DETECTOR_TYPE_LASER = 9" is protected
+                        int tgtx = (int) misact.getMissileTargetPoint3dAbs().x;
+                        int tgty = (int) misact.getMissileTargetPoint3dAbs().y;
+                        int tgtz = (int) misact.getMissileTargetPoint3dAbs().z;
+                        Vector3d tvec = new Vector3d((double)(tgtx - locx), (double)(tgty - locy) , 0.0D);
+                        tvec.normalize();
+                        Orient oTemp = new Orient();
+                        oTemp.setAT0(tvec);
+                        int thead = (int)(oTemp.getAzimut() + 90F);
+                        for(; thead > 360; thead -= 360) ;
+                        for(; thead < -360; thead += 360) ;
+                        theaddiff = thead - ((yaw > 90)? 450 - yaw : 90 - yaw);
+                        if( theaddiff > 180 ) theaddiff -= 360;
+                        if( theaddiff < -180 ) theaddiff += 360;
+                        distance = (int) location.distance(misact.getMissileTargetPoint3dAbs());
+                        ttfont.output(COLOR_SPD_REDo, 5F, 5 + (3 + (int)sbLocWay) * i, 0.0F, "Target(" + tgtx + " , " + tgty + " , " + tgtz + ")");
+                    }
+                    else
+                    {
+                        ttfont.output(COLOR_SPD_REDo, 5F, 5 + (3 + (int)sbLocWay) * i, 0.0F, "Target: None");
+                    }
+                    ttfont.output(COLOR_SPD_REDo, 5F, 5 + (4 + (int)sbLocWay) * i, 0.0F, "Locate(" + locx + " , " + locy + " , " + locz + ") - Distance:" + distance + " , HeadDiff:" + theaddiff);
+                }
+                else
+                {
+                    ttfont.output(COLOR_SPD_REDo, 5F, 5 + (4 + (int)sbLocWay) * i, 0.0F, "Locate(" + locx + " , " + locy + " , " + locz + ")");
+                }
+            }
             if(sbOrient >= 1.0F)
                 ttfont.output(COLOR_SPD_REDo, 5F, 5 + (3 + (int)sbOrient) * i, 0.0F, "Yaw:" +  ((yaw > 90)? 450 - yaw : 90 - yaw) + ", Pitch:" + pitch + ", Roll:" + (360 - roll));
             if(sbIASTAS >= 1.0F)
