@@ -58,17 +58,17 @@
   DefaultRudderTrim 0.000
 [Squares]
   Wing 54.5
-  Aileron 1.42
-  Flap 13.3
-  Stabilizer 4.25
+  Aileron 5.00  // Wing 2.29 + StabiDiff 2.71
+  Flap 13.5    // containing leading edge slats
+  Stabilizer 5.35
   Elevator 8.10
   Keel 9.2
   Rudder 2.3
   Wing_In 7.0
   Wing_Mid 7.0
   Wing_Out 13.25
-  FuselageCxS 0.001
-  AirbrakeCxS 0.15
+  FuselageCxS 0.0006
+  AirbrakeCxS 0.18
 [Arm]
   Aileron 3.5
   Flap 2.6
@@ -151,8 +151,11 @@
   H 1.614541
   Pitch 11.842
   SinkFactor 400.0
-  SpringsStiffness 0.7 
+  SpringsStiffness 0.7
   TailStiffness 0.4
+  WheelDiameterLR 0.92
+  WheelDiameterC 0.56
+  NoseGearMaxSteer 70.0
 [Params]
   CriticalAOA 30.00
   CriticalCy 00.7
@@ -170,6 +173,9 @@
   HofVmax 12190.0
   VminFLAPS 210.0
   VmaxFLAPS 750.0
+  Vlanding 235.0
+  VtakeoffRot 250.0
+  VminAI 420
   Vz_climb 150.96134
   V_climb 718.00494
   T_turn 23.715391
@@ -183,8 +189,8 @@
   G_CLASS_COEFF 20.0
   G_CLASS 14
   SensYaw 0.35
-  SensPitch 0.75
-  SensRoll 0.25
+  SensPitch 0.68
+  SensRoll 0.20
 [Polares]
   lineCyCoeff 0.092
   AOAMinCx_Shift 1.0
@@ -193,14 +199,14 @@
   AOACritL_0 -16.0
   CyCritH_0 1.1
   CyCritL_0 -0.75
-  CxMin_0 0.030
+  CxMin_0 0.032
   parabCxCoeff_0 9.0E-4
   Cy0_1 0.85
   AOACritH_1 36.0
   AOACritL_1 -22.0
   CyCritH_1 1.5
   CyCritL_1 -0.7
-  CxMin_1 0.11
+  CxMin_1 0.10
   parabCxCoeff_1 10.0E-4
   parabAngle 6.0
   Decline 0.004
