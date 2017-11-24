@@ -5,6 +5,7 @@
 /*By western, merge new function and clean-up on 19th/Oct./2016*/
 /*By Storebror, FM log spam filter on 19th/Jan./2017*/
 /*By Storebror, fix DiffFM loading error on 18th/Apr./2017*/
+/*By western, new FM properties Vlanding and VtakeoffRot on 20th/Nov./2017*/
 package com.maddox.il2.fm;
 
 import java.io.BufferedWriter;
@@ -200,6 +201,9 @@ public class FlightModelMain extends FMMath {
 	private float CyBlownFlapsOff;
 	private double ThrustBlownFlaps;
 	public float WingspanFolded;
+	public float Vlanding;
+	public float VtakeoffRot;
+	public float VminAI;
 	// --------------------------------------------------------
 
 	//By PAL, required for FMDiff
@@ -696,6 +700,9 @@ public class FlightModelMain extends FMMath {
 		HofVmax = sectfile.get(s2, "HofVmax", 1.0F);
 		VmaxFLAPS = sectfile.get(s2, "VmaxFLAPS", 1.0F);
 		VminFLAPS = sectfile.get(s2, "VminFLAPS", 1.0F);
+		Vlanding = sectfile.get(s2, "Vlanding", -1.0F);
+		VtakeoffRot = sectfile.get(s2, "VtakeoffRot", -1.0F);
+		VminAI = sectfile.get(s2, "VminAI", -1.0F);
 		SensYaw = sectfile.get(s2, "SensYaw", 1.0F);
 		SensPitch = sectfile.get(s2, "SensPitch", 1.0F);
 		SensRoll = sectfile.get(s2, "SensRoll", 1.0F);
@@ -709,6 +716,9 @@ public class FlightModelMain extends FMMath {
 		VmaxFLAPS *= 0.2777778F;
 		VminFLAPS *= 0.2416667F;
 		VmaxAllowed *= 0.2777778F;
+		if(Vlanding > 0F) Vlanding *= 0.2777778F;
+		if(VtakeoffRot > 0F) VtakeoffRot *= 0.2777778F;
+		if(VminAI > 0F) VminAI *= 0.2777778F;
 		Fusel.lineCyCoeff = 0.02F;
 		Fusel.AOAMinCx_Shift = 0.0F;
 		Fusel.Cy0_0 = 0.0F;
@@ -1032,6 +1042,9 @@ public class FlightModelMain extends FMMath {
 		CyBlownFlapsOn = 0.0F;
 		CyBlownFlapsOff = 0.0F;
 		ThrustBlownFlaps = 0.0F;
+		Vlanding = -1.0F;
+		VtakeoffRot = -1.0F;
+		VminAI = -1.0F;
 		// --------------------------------------------------------
 		Arms = new Arm();
 		Gears = new Gear();
