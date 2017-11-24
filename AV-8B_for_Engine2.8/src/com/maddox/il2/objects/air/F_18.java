@@ -67,13 +67,9 @@ public class F_18 extends Scheme2
         needUpdateHook = false;
         SonicBoom = 0.0F;
         bSlatsOff = false;
-        oldthrl = -1F;
-        curthrl = -1F;
         k14Mode = 2;
         k14WingspanType = 0;
         k14Distance = 200F;
-        AirBrakeControl = 0.0F;
-        DragChuteControl = 0.0F;
         overrideBailout = false;
         ejectComplete = false;
         lightTime = 0.0F;
@@ -81,7 +77,6 @@ public class F_18 extends Scheme2
         mn = 0.0F;
         ts = false;
         ictl = false;
-        engineSurgeDamage = 0.0F;
         super.bWantBeaconKeys = true;
         lTimeNextEject = 0L;
         obsLookTime = 0;
@@ -1075,6 +1070,13 @@ public class F_18 extends Scheme2
         bLaserOn = false;
         FLIR = false;
         iDebugLogLevel = Config.cur.ini.get("Mods", "GuidedMissileDebugLog", 0);
+
+        for(int i = 0; i < 2; i++)
+        {
+            oldthrl[i] = -1.0F;
+            curthrl[i] = -1.0F;
+            engineSurgeDamage[i] = 0.0F;
+        }
     }
 
     public void updateLLights()
@@ -1205,7 +1207,8 @@ public class F_18 extends Scheme2
         if(FLIR)
             FLIR();
         if(!FM.isPlayers())
-            if(((Maneuver)FM).get_maneuver() == 25 && ((FlightModelMain) FM).AP.way.isLanding())
+            if((((Maneuver)FM).get_maneuver() == 21 || ((Maneuver)FM).get_maneuver() == 25)
+               && FM.AP.way.isLanding() && (FM.Gears.nOfGearsOnGr < 3 || FM.getSpeedKMH() > 80F))
                 FM.CT.FlapsControlSwitch = 2;
             else if(((Maneuver)FM).get_maneuver() == 26)
                 FM.CT.FlapsControlSwitch = 1;
@@ -2059,42 +2062,42 @@ public class F_18 extends Scheme2
         {
             for(int i = 0; i < 2; i++)
             {
-                if(curthrl == -1F)
+                if(curthrl[i] == -1F)
                 {
-                    curthrl = oldthrl = FM.EI.engines[i].getControlThrottle();
+                    curthrl[i] = oldthrl[i] = FM.EI.engines[i].getControlThrottle();
                     continue;
                 }
-                curthrl = FM.EI.engines[i].getControlThrottle();
-                if(curthrl < 1.05F)
+                curthrl[i] = FM.EI.engines[i].getControlThrottle();
+                if(curthrl[i] < 1.05F)
                 {
-                    if((curthrl - oldthrl) / f > 35F && FM.EI.engines[i].getRPM() < 3200F && FM.EI.engines[i].getStage() == 6 && World.Rnd().nextFloat() < 0.4F)
+                    if((curthrl[i] - oldthrl[i]) / f > 35F && FM.EI.engines[i].getRPM() < 3200F && FM.EI.engines[i].getStage() == 6 && World.Rnd().nextFloat() < 0.4F)
                     {
-                        if(((Interpolate) (FM)).actor == World.getPlayerAircraft())
+                        if(FM.actor == World.getPlayerAircraft())
                             HUD.log(AircraftHotKeys.hudLogWeaponId, "Fans Surge!!!");
                         super.playSound("weapon.MGunMk108s", true);
-                        engineSurgeDamage += 0.01D * (double)(FM.EI.engines[i].getRPM() / 1000F);
-                        FM.EI.engines[i].doSetReadyness(FM.EI.engines[i].getReadyness() - engineSurgeDamage);
+                        engineSurgeDamage[i] += 0.01D * (double)(FM.EI.engines[i].getRPM() / 1000F);
+                        FM.EI.engines[i].doSetReadyness(FM.EI.engines[i].getReadyness() - engineSurgeDamage[i]);
                         if(World.Rnd().nextFloat() < 0.05F && (FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode())
                             FM.AS.hitEngine(this, i, 100);
                         if(World.Rnd().nextFloat() < 0.05F && (FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode())
                             FM.EI.engines[i].setEngineDies(this);
                     }
-                    if((curthrl - oldthrl) / f < -35F && (curthrl - oldthrl) / f > -100F && FM.EI.engines[i].getRPM() < 3200F && FM.EI.engines[i].getStage() == 6)
+                    if((curthrl[i] - oldthrl[i]) / f < -35F && (curthrl[i] - oldthrl[i]) / f > -100F && FM.EI.engines[i].getRPM() < 3200F && FM.EI.engines[i].getStage() == 6)
                     {
                         super.playSound("weapon.MGunMk108s", true);
-                        engineSurgeDamage += 0.001D * (double)(FM.EI.engines[i].getRPM() / 1000F);
-                        FM.EI.engines[i].doSetReadyness(FM.EI.engines[i].getReadyness() - engineSurgeDamage);
+                        engineSurgeDamage[i] += 0.001D * (double)(FM.EI.engines[i].getRPM() / 1000F);
+                        FM.EI.engines[i].doSetReadyness(FM.EI.engines[i].getReadyness() - engineSurgeDamage[i]);
                         if(World.Rnd().nextFloat() < 0.4F && (FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode())
                         {
-                            if(((Interpolate) (FM)).actor == World.getPlayerAircraft())
+                            if(FM.actor == World.getPlayerAircraft())
                                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Engine Flameout!");
                             FM.EI.engines[i].setEngineStops(this);
                         }
-                        else if(((Interpolate) (FM)).actor == World.getPlayerAircraft())
+                        else if(FM.actor == World.getPlayerAircraft())
                             HUD.log(AircraftHotKeys.hudLogWeaponId, "Fans Surge!!!");
                     }
                 }
-                oldthrl = curthrl;
+                oldthrl[i] = curthrl[i];
             }
 
         }
@@ -2269,6 +2272,25 @@ public class F_18 extends Scheme2
         }
         if(FM.getAOA() > 28F || FM.getSpeedKMH() < 469F && FM.CT.FlapsControl > 0.16F && FM.CT.getGear() < 0.8F || FM.getOverload() >= 6F)
             FM.CT.AirBrakeControl = 0.0F;
+        if((!(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode()) && (FM instanceof Maneuver))
+        {
+            if(FM.Gears.onGround() && ((Maneuver)FM).get_maneuver() == 25 && FM.AP.way.isLanding() && !FM.AP.way.isLandingOnShip())
+            {
+                if(FM.getSpeedKMH() > 120F)
+                    FM.CT.AirBrakeControl = 1.0F;
+                else
+                    FM.CT.AirBrakeControl = 0.0F;
+            }
+            if(((Maneuver)FM).get_maneuver() == 21)
+            {
+                if(FM.getSpeed() > FM.AP.way.curr().Speed * 1.2F && FM.getAltitude() > FM.AP.way.curr().z() + 20F
+                   && FM.EI.engines[0].getControlThrottle() < 0.85F && FM.EI.engines[0].getControlThrottle() < 0.85F)
+                    FM.CT.AirBrakeControl = 1.0F;
+                if(FM.getSpeed() < FM.AP.way.curr().Speed * 1.05F || FM.getAltitude() < FM.AP.way.curr().z()
+                   || FM.EI.engines[0].getControlThrottle() > 0.96F || FM.EI.engines[0].getControlThrottle() > 0.96F)
+                    FM.CT.AirBrakeControl = 0.0F;
+            }
+        }
         restoreElevatorControl();
     }
 
@@ -2844,13 +2866,11 @@ public class F_18 extends Scheme2
     public float aircraftbrg;
     public boolean backfire;
     protected boolean bSlatsOff;
-    private float oldthrl;
-    private float curthrl;
+    private float oldthrl[] = { -1.0F, -1.0F };
+    private float curthrl[] = { -1.0F, -1.0F };
     public int k14Mode;
     public int k14WingspanType;
     public float k14Distance;
-    public float AirBrakeControl;
-    public float DragChuteControl;
     private boolean overrideBailout;
     private boolean ejectComplete;
     private float lightTime;
@@ -2871,7 +2891,7 @@ public class F_18 extends Scheme2
     private boolean isSonic;
 //    public static int LockState = 0;
     Actor hunted = null;
-    private float engineSurgeDamage;
+    private float engineSurgeDamage[] = { 0.0F, 0.0F };
     private static final float NEG_G_TOLERANCE_FACTOR = 3.5F;
     private static final float NEG_G_TIME_FACTOR = 2.5F;
     private static final float NEG_G_RECOVERY_FACTOR = 1F;

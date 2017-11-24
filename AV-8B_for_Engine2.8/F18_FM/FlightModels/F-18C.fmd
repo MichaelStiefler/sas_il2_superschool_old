@@ -148,6 +148,9 @@
   SpringsStiffness 0.28
   TailStiffness 0.35
   ShockAbsorber 0.8
+  WheelDiameterLR 0.76
+  WheelDiameterC 0.56
+  NoseGearMaxSteer 75.0
 [Params]
   CriticalAOA 30.00
   CriticalCy 00.7
@@ -165,6 +168,8 @@
   HofVmax 12190.0
   VminFLAPS 210.0
   VmaxFLAPS 600.0
+  Vlanding 243.0
+  VtakeoffRot 250.0
   Vz_climb 150.96134
   V_climb 718.00494
   T_turn 23.715391
