@@ -24,6 +24,7 @@ import com.maddox.il2.engine.Interpolate;
 import com.maddox.il2.engine.Loc;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.fm.Motor;
+import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.net.BornPlace;
 import com.maddox.il2.objects.ActorAlign;
 import com.maddox.il2.objects.air.Aircraft;
@@ -265,7 +266,8 @@ public abstract class MarkerFlareGeneric extends ActorHMesh implements ActorAlig
                 this.point3d.set(this.pos.getAbsPoint());
             }
             if (!incomingEnemy && (targetArmy != this.myArmy)) { // This is an enemy actor...
-                if (angleBetween(target, this.point3d) < 100F) {
+//                if (angleBetween(target, this.point3d) < 100F) {
+                if (angleBetween(target, this.point3d) < 135F) { // Service Pack 3 directional limitation fix
                     incomingEnemy = true; // Enemy is (potentially) approaching this Marker or it's Homebase!
                 }
             } else { // A friendly fellow...
@@ -278,12 +280,19 @@ public abstract class MarkerFlareGeneric extends ActorHMesh implements ActorAlig
                             isNearHomebaseOrMarker = true;
                         }
                     } else {
-                        if (this.point3d.distance(friendlyAircraft.pos.getAbsPoint()) < 2000D) { // No Homebase, but close to Marker
+                        //if (this.point3d.distance(friendlyAircraft.pos.getAbsPoint()) < 2000D) { // No Homebase, but close to Marker
+                        if ((float)this.point3d.distance(friendlyAircraft.pos.getAbsPoint()) < World.MaxLongVisualDistance) { // Service Pack 3 distance fix
                             isNearHomebaseOrMarker = true;
                         }
                     }
                     if (isNearHomebaseOrMarker) {
-                        if (friendlyAircraft.FM instanceof Maneuver) {
+                        //if (friendlyAircraft.FM instanceof Maneuver) { // Service Pack 3 distinguish between player and AI flight model fix +++
+                        boolean isAI = false;
+                        if (friendlyAircraft.FM instanceof Maneuver) isAI = true;
+                        if (friendlyAircraft.FM instanceof RealFlightModel) {
+                            if (((RealFlightModel)friendlyAircraft.FM).isRealMode()) isAI = false;
+                        }
+                        if (isAI) { // Service Pack 3 distinguish between player and AI flight model fix ---
                             Maneuver maneuver = (Maneuver) friendlyAircraft.FM;
                             if ((maneuver.AP != null) && (maneuver.AP.way != null)) {
                                 if (maneuver.AP.way.curr().Action == WayPoint.TAKEOFF || maneuver.get_maneuver() == Maneuver.TAKEOFF || maneuver.get_maneuver() == Maneuver.PARKED_STARTUP || maneuver.get_maneuver() == 69 /*Maneuver.TAKEOFF_VTOL_A*/ || maneuver.get_maneuver() == Maneuver.TAXI_TO_TO) {
@@ -303,7 +312,8 @@ public abstract class MarkerFlareGeneric extends ActorHMesh implements ActorAlig
                                         float friendlyAircraftDistance = (float) this.point3d.distance(friendlyAircraft.pos.getAbsPoint());
                                         float minDistance = 1000F;
                                         if (this.nearestBornPlace != null) {
-                                            minDistance = Math.min(this.nearestBornPlace.r, 2000F);
+//                                            minDistance = Math.min(this.nearestBornPlace.r, 2000F);
+                                            minDistance = Math.min(this.nearestBornPlace.r / 2F, 1000F); // Service Pack 3 distance fix
                                         }
                                         if (friendlyAircraftDistance > minDistance) {
                                             float friendlyAltitude = (float) (friendlyAircraft.pos.getAbsPoint().z - World.land().HQ(friendlyAircraft.pos.getAbsPoint().x, friendlyAircraft.pos.getAbsPoint().y));
@@ -325,15 +335,17 @@ public abstract class MarkerFlareGeneric extends ActorHMesh implements ActorAlig
                                         }
                                     }
                                 }
-                            } 
+                            }
                             if (!incomingFriendly) {
                                 float friendlyAircraftDistance = (float) this.point3d.distance(friendlyAircraft.pos.getAbsPoint());
                                 float minDistance = 1000F;
                                 if (this.nearestBornPlace != null) {
-                                    minDistance = Math.min(this.nearestBornPlace.r, 2000F);
+//                                    minDistance = Math.min(this.nearestBornPlace.r, 2000F);
+                                    minDistance = Math.min(this.nearestBornPlace.r / 2F, 1000F); // Service Pack 3 distance fix
                                 }
                                 if (friendlyAircraftDistance > minDistance) {
-                                    if (angleBetween(friendlyAircraft, this.point3d) < 100F) {
+//                                    if (angleBetween(friendlyAircraft, this.point3d) < 100F) {
+                                    if (angleBetween(friendlyAircraft, this.point3d) < 135F) { // Service Pack 3 directional limitation fix
                                         float friendlyAltitude = (float) (friendlyAircraft.pos.getAbsPoint().z - World.land().HQ(friendlyAircraft.pos.getAbsPoint().x, friendlyAircraft.pos.getAbsPoint().y));
                                         if ((friendlyAircraft.FM.getSpeedKMH() > 50F) && (friendlyAltitude > 10F)) {
                                             incomingFriendly = true; // Friendly Aircraft is (potentially) approaching this Marker or it's Homebase!
