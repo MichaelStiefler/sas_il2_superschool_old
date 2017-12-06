@@ -1,4 +1,4 @@
-// 300 gal. Fueltank for A-4 Skyhawk and A-6 Intruder , AV-8B Harrier with 1x left tailfin
+// 300 gal. Fueltank for A-7 Corsair II with 3x T style tailfin
 
 /*
 * Base color is low visibility dark gray for 1980s and later.
@@ -18,8 +18,8 @@
             {
                 for(int j = 0; j < FM.CT.Weapons[i].length; j++)
                 {
-                    if(FM.CT.Weapons[i][j] instanceof FuelTankGun_TankSkyhawkL1_gn16)
-                        ((FuelTankGun_TankSkyhawkL1_gn16)FM.CT.Weapons[i][j]).matHighvis();
+                    if(FM.CT.Weapons[i][j] instanceof FuelTankGun_TankSkyhawkT3_gn16)
+                        ((FuelTankGun_TankSkyhawkT3_gn16)FM.CT.Weapons[i][j]).matHighvis();
                 }
             }
     }
@@ -32,10 +32,10 @@ package com.maddox.il2.objects.weapons;
 import com.maddox.rts.Property;
 
 
-public class FuelTank_TankSkyhawkL1_gn16 extends FuelTank
+public class FuelTank_TankSkyhawkT3_gn16 extends FuelTank
 {
 
-    public FuelTank_TankSkyhawkL1_gn16()
+    public FuelTank_TankSkyhawkT3_gn16()
     {
     }
 
@@ -57,8 +57,8 @@ public class FuelTank_TankSkyhawkL1_gn16 extends FuelTank
 
     static 
     {
-        Class class1 = com.maddox.il2.objects.weapons.FuelTank_TankSkyhawkL1_gn16.class;
-        Property.set(class1, "mesh", "3DO/Arms/TankSkyhawk_gn16/monol1.sim");
+        Class class1 = com.maddox.il2.objects.weapons.FuelTank_TankSkyhawkT3_gn16.class;
+        Property.set(class1, "mesh", "3DO/Arms/TankSkyhawk_gn16/monot3.sim");
         Property.set(class1, "kalibr", 0.6F);
         Property.set(class1, "massa", 1150F);
 		Property.set(class1, "dragCoefficient", 0.32F); // Aerodynamic Drag Coefficient, Stock WWII droptanks=1.0F
