@@ -432,6 +432,7 @@ public class Maneuver extends AIFlightModel {
 	private long brakingtimer = 0L;
 //	private boolean bLogDetail = true;
 	private float maxThrottleAITakeoffavoidOH = 0.0F;
+	private float fRunwayHeight = 0.0F;
 
 	// --------------------------------
 
@@ -842,6 +843,7 @@ public class Maneuver extends AIFlightModel {
 			push();
 			set_maneuver(99);
 		}
+		boolean bFJ = (super.actor instanceof TypeFastJet);
 		switch (maneuver) {
 		default:
 			break;
@@ -2056,7 +2058,9 @@ public class Maneuver extends AIFlightModel {
 		case 21: // '\025'  // WAYPOINT
 			AP.setWayPoint(true);
 			// TODO: DBW AI Mod Edits
-			if (getAltitude() < super.AP.way.curr().z() - 100F && (super.actor instanceof TypeSupersonic)) super.CT.ElevatorControl += 0.025F;
+//            if (getAltitude() < super.AP.way.curr().z() - 100F && (super.actor instanceof TypeSupersonic)) {
+//                super.CT.ElevatorControl += 0.025F;
+//            }
 			if (mn_time > 300F) pop();
 			if (isTick(256, 0) && !actor.isTaskComplete() && (AP.way.isLast() && AP.getWayPointDistance() < 1500F || AP.way.isLanding())) World.onTaskComplete(actor);
 			if (((Aircraft) actor).aircIndex() == 0 && !isReadyToReturn()) {
@@ -3074,7 +3078,6 @@ public class Maneuver extends AIFlightModel {
 
 		case 25: // '\031'  // LANDING
 			wingman(false);
-			boolean bFJ = (super.actor instanceof TypeFastJet);
 			if (AP.way.isLanding()) {
 				if (AP.way.isLandingOnShip()) {
 					AP.way.landingAirport.rebuildLandWay(this);
@@ -3238,7 +3241,9 @@ public class Maneuver extends AIFlightModel {
 				minElevCoeff = 15F;
 				if (AP.way.Cur() >= 6 || AP.way.Cur() == 0) {
 					if (Or.getTangage() < -5F) Or.increment(0.0F, -Or.getTangage() - 5F, 0.0F);
-					if (Or.getTangage() > Gears.Pitch + 10F) Or.increment(0.0F, -(Or.getTangage() - (Gears.Pitch + 10F)), 0.0F);
+					float gp = Gears.Pitch;
+					if (gp > 180F) gp -= 360F;
+					if (Or.getTangage() > gp + (bFJ ? 5F : 10F)) Or.increment(0.0F, -(Or.getTangage() - (Gears.Pitch + (bFJ ? 5F : 10F))), 0.0F);
 				}
 				// TODO: Blown Flaps
 				if (CT.bHasBlownFlaps) CT.BlownFlapsControl = 1.0F;
@@ -3264,7 +3269,7 @@ public class Maneuver extends AIFlightModel {
 					}
 				}
 				if (getSpeed() < VmaxFLAPS * 0.21F && !CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
-				if (Vrel.length() < (double) (bFJ ? (Math.min(35F, VminFLAPS * 0.50F)) : (VmaxFLAPS * 0.25F)) && wayCurPos == null && !AP.way.isLandingOnShip() && isEnableToTaxi()) {
+				if (Vrel.length() < (double) (bFJ ? (Math.min(16F, VminFLAPS * 0.50F)) : (VmaxFLAPS * 0.25F)) && wayCurPos == null && !AP.way.isLandingOnShip() && isEnableToTaxi()) {
 					TaxiMode = true;
 					AP.way.setCur(0);
 					return;
@@ -3315,7 +3320,8 @@ public class Maneuver extends AIFlightModel {
 					if (Gears.nOfGearsOnGr == 3 && !AP.way.isLandingOnShip()) {
 						if (brakingtimer == 0L) brakingtimer = Time.current();
 						CT.ElevatorControl = 0.0F;
-						if (getSpeedKMH() > 75F && Time.current() > brakingtimer + 4000L && bFJ) CT.BrakeControl = 0.25F;
+						if (getSpeedKMH() > 58F && Time.current() > brakingtimer + 2500L && bFJ)
+							CT.BrakeControl = Aircraft.cvt(M.getFullMass(), 30000F, 100000F, 0.25F, 0.95F);
 						else CT.BrakeControl = 0.0F;
 					}
 					if (!TaxiMode) {
@@ -3540,18 +3546,22 @@ public class Maneuver extends AIFlightModel {
 			int l1 = ((Aircraft) actor).aircIndex();
 			if (l1 == -1) l1 = 0;
 			float f35 = Alt;
-			float f39 = 0.4F;
+			boolean bCarrierTakeoff = false;
+			AirportCarrier airportcarrier = null;
+			// +++ Engine2.8.1 TypeFastJet release brakes in reaching more thrust to make take-off length shorter
+			float f39 = (bFJ ? 0.75F : 0.4F);
 			if (Actor.isAlive(AP.way.takeoffAirport) && (AP.way.takeoffAirport instanceof AirportCarrier)) {
-				AirportCarrier airportcarrier = (AirportCarrier) AP.way.takeoffAirport;
-				if (!(airportcarrier.ship() instanceof TestRunway)) {
-					f35 -= ((AirportCarrier) AP.way.takeoffAirport).height();
-					if (Alt < 9F && Vwld.z < 0.0D) Vwld.z *= 0.84999999999999998D;
-					// +++ Engine2.7 use afterburner enough in taking-off
-					f39 = (EI.engines[0].getBoostFactor() > 1.0F) ? 1.0599F : 0.97F;
-					if (maxThrottleAITakeoffavoidOH > 0.1F && f39 > maxThrottleAITakeoffavoidOH * 0.98F) f39 = maxThrottleAITakeoffavoidOH * 0.98F;
-					// --- Engine2.7
-					if (CT.bHasCockpitDoorControl && !bStage6) AS.setCockpitDoor(actor, 1);
-				}
+				airportcarrier = (AirportCarrier) AP.way.takeoffAirport;
+				if (!(airportcarrier.ship() instanceof TestRunway)) bCarrierTakeoff = true;
+			}
+			if (bCarrierTakeoff) {
+				f35 -= ((AirportCarrier) AP.way.takeoffAirport).height();
+				if (Alt < 9F && Vwld.z < 0.0D) Vwld.z *= 0.84999999999999998D;
+				// +++ Engine2.7 use afterburner enough in taking-off
+				f39 = (EI.engines[0].getBoostFactor() > 1.0F) ? 1.0599F : 0.97F;
+				if (maxThrottleAITakeoffavoidOH > 0.1F && f39 > maxThrottleAITakeoffavoidOH * 0.98F) f39 = maxThrottleAITakeoffavoidOH * 0.98F;
+				// --- Engine2.7
+				if (CT.bHasCockpitDoorControl && !bStage6) AS.setCockpitDoor(actor, 1);
 			}
 			if (first) {
 				setCheckGround(false);
@@ -3571,6 +3581,12 @@ public class Maneuver extends AIFlightModel {
 					maneuver = 69;
 					break;
 				}
+					// +++ Engine2.8 get enough altitude before retracting gears
+				if (Gears.onGround()) {
+					if (bCarrierTakeoff) fRunwayHeight = 0.50F;
+					else fRunwayHeight = (float) Loc.z;
+				}
+					// --- Engine2.8 get enough altitude before retracting gears
 			}
 			if (Gears.onGround()) {
 				if (EI.engines[0].getStage() == 0) {
@@ -3591,7 +3607,6 @@ public class Maneuver extends AIFlightModel {
 					// TODO: +++ CTO Mod 4.12 +++
 					if (!bAlreadyCheckedStage7) {
 						if (this.AP.way.takeoffAirport instanceof AirportCarrier) {
-							AirportCarrier airportcarrier = (AirportCarrier) this.AP.way.takeoffAirport;
 							BigshipGeneric bigshipgeneric = airportcarrier.ship();
 							// TODO: Edited to make use of new Catapults.ini
 							super.Gears.setCatapultOffset(bigshipgeneric, new SectFile("com/maddox/il2/objects/Catapults.ini"));
@@ -3706,7 +3721,7 @@ public class Maneuver extends AIFlightModel {
 				setSpeedMode(11);
 			}
 			if (CT.FlapsControl == 0.0F && CT.getWing() < 0.001F && !CT.bHasFlapsControlSwitch && CT.nFlapStages > 0){
-				if (Actor.isAlive(AP.way.takeoffAirport) && (AP.way.takeoffAirport instanceof AirportCarrier) && CT.FlapTakeoffCarrier > 0F)
+				if (bCarrierTakeoff && CT.FlapTakeoffCarrier > 0F)
 					CT.FlapsControl = CT.FlapTakeoffCarrier;
 				else if (CT.FlapTakeoffGround > 0F) CT.FlapsControl = CT.FlapTakeoffGround;
 				else if (CT.FlapStageMax > 0F && CT.FlapStage != null) CT.FlapsControl = CT.FlapStage[CT.nFlapStages -1];
@@ -3718,30 +3733,45 @@ public class Maneuver extends AIFlightModel {
 				float f43 = (float) ((double) ((Vmin + VminFLAPS) * 0.5F) * Math.sqrt(M.getFullMass() / M.referenceWeight));
 				float f46 = (AOA_Crit - 2.0F) * (getSpeed() / f43);
 				if (Gears.bIsSail) f46 *= 2.0F;
-				if (Gears.bFrontWheel) f46 = Gears.Pitch + 4F;
+				float gp = Gears.Pitch;
+				if (gp > 180F) gp -= 360F;
+				if (Gears.bFrontWheel) {
+					f46 = gp + (bFJ ? 6F : 4F);
+					if (f35 > (float) fRunwayHeight + 6F || (CT.getGearL() == 0.0F && CT.getGearR() == 0.0F && CT.getGearC() == 0.0F)) f46 += 2F;
+				}
 				if (f46 < 1.0F) f46 = 1.0F;
 				if (f46 > AOA_Crit - 2.0F) f46 = AOA_Crit - 2.0F;
 				float f48 = 1.5F;
-				if (Actor.isAlive(AP.way.takeoffAirport) && (AP.way.takeoffAirport instanceof AirportCarrier)) {
-					AirportCarrier airportcarrier1 = (AirportCarrier) AP.way.takeoffAirport;
-					if (!(airportcarrier1.ship() instanceof TestRunway) && !Gears.isUnderDeck()) {
-						CT.GearControl = 0.0F;
-						if (f35 < 0.0F) {
-							f46 = 18F;
-							f48 = 0.05F;
-						} else {
-							f46 = 14F;
-							f48 = 0.3F;
-						}
+				if (bCarrierTakeoff && !Gears.isUnderDeck()) {
+					CT.GearControl = 0.0F;
+					if (f35 < 0.0F) {
+						f46 = 18F;
+						f48 = 0.05F;
+					} else {
+						f46 = 14F;
+						f48 = 0.3F;
 					}
 				}
 				if (Or.getTangage() < f46) dA = -0.7F * (Or.getTangage() - f46) + f48 * (float) getW().y + 0.5F * (float) getAW().y;
 				else dA = -0.1F * (Or.getTangage() - f46) + f48 * (float) getW().y + 0.5F * (float) getAW().y;
-		// === western once revert to old code
-				CT.ElevatorControl += (dA - CT.ElevatorControl) * 3F * f;
+		// === western trial v2
+				if (bFJ && !bCarrierTakeoff) {
+					if (getSpeed() > VminFLAPS * 1.15F || f35 > (float) fRunwayHeight + 8F)
+						CT.ElevatorControl += (dA - CT.ElevatorControl) * 3F * f;
+					else if (getSpeed() > VminFLAPS * 1.08F)
+						CT.ElevatorControl = 1.0F;
+					else CT.ElevatorControl = 0.0F;
+				}
+				else CT.ElevatorControl += (dA - CT.ElevatorControl) * 3F * f;
 			} else {
-				CT.ElevatorControl = 1.0F;
+				if (bFJ && !bCarrierTakeoff) CT.ElevatorControl = 0.0F;
+				else CT.ElevatorControl = 1.0F;
 			}
+		// === western trial v2
+//				CT.ElevatorControl += (dA - CT.ElevatorControl) * 3F * f;
+//			} else {
+//				CT.ElevatorControl = 1.0F;
+//			}
 		// === western once revert to old code
 /*			// +++ Engine MOD By western, limit elevator plus for FBW modern Jets
 				if (CT.ElevatorControl > CT.limitRatioAITakeoffElevatorPlus && CT.GearControl > 0.05F) CT.ElevatorControl = CT.limitRatioAITakeoffElevatorPlus;
@@ -3781,7 +3811,7 @@ public class Maneuver extends AIFlightModel {
 				}
 			}
 			CT.AileronControl = -0.05F * Or.getKren() + 0.3F * (float) getW().y;
-			if (f35 > 5F && !Gears.isUnderDeck()) CT.GearControl = 0.0F;
+			if (f35 > (float) fRunwayHeight + 5F && !Gears.isUnderDeck()) CT.GearControl = 0.0F;
 			float f49 = 1.0F;
 			if (hasBombs() || !flag8) f49 *= 1.7F;
 			if (f35 > 120F * f49 || getSpeed() > Vmin * 1.8F * f49 || f35 > 80F * f49 && getSpeed() > Vmin * 1.6F * f49 || f35 > 40F * f49 && getSpeed() > Vmin * 1.3F * f49 && mn_time > 60F + (float) ((Aircraft) actor).aircIndex() * 3F) {
@@ -7397,7 +7427,11 @@ public class Maneuver extends AIFlightModel {
 		if (CT.AileronControl < -1F) CT.AileronControl = -1F;
 		if (CT.ElevatorControl > 1.0F) CT.ElevatorControl = 1.0F;
 		if (CT.ElevatorControl < -1F) CT.ElevatorControl = -1F;
-		float f4 = 0.0003F * M.getFullMass();
+		float f4 = Aircraft.cvt(M.mass, 35000F, 200000F, 0.0003F, 0.00004F) * M.mass;
+		if ((super.actor instanceof TypeFastJet) && Alt > 1000D && getVertSpeed() > -10.0F) {
+			float fmulti = Aircraft.cvt(getVertSpeed(), 0.02F, 15.0F, 0.02F, 0.70F) * Aircraft.cvt(getVertSpeed(), -10.0F, 0.02F, 0.0F, 1.0F);
+			if(f4 > 6F) f4 = 6F * fmulti + f4 * (1.0F - fmulti);  // considered as mass = 20 ton
+		}
 		float f5 = 10F;
 		float f6 = 80F;
 		if (maneuver == 24) {
@@ -7416,7 +7450,7 @@ public class Maneuver extends AIFlightModel {
 		if (f7 > Alt || Alt < f6 || f8 > 0.0F) {
 			if (Alt < 0.001F) Alt = 0.001F;
 			f1 = (f7 - Alt) / Alt;
-			Math.max(0.016670000000000001D * (double) (f6 - Alt), f1);
+			f1= Math.max(0.016670F * (f6 - Alt), f1);
 			if (f1 > 1.0F) f1 = 1.0F;
 			if (f1 < 0.0F) f1 = 0.0F;
 			if (f1 < f8) f1 = f8;
@@ -7449,7 +7483,9 @@ public class Maneuver extends AIFlightModel {
 			if (corrAile > f3) corrAile *= 1.0D - (double) (f9 * f);
 		}
 		CT.AileronControl = corrCoeff * corrAile + (1.0F - corrCoeff) * CT.AileronControl;
-		CT.ElevatorControl = corrCoeff * corrElev + (1.0F - corrCoeff) * CT.ElevatorControl;
+		if (!(maneuver == 21 && AP.way.isLanding() && AP.way.Cur() > 4 && (super.actor instanceof TypeFastJet))) {
+			CT.ElevatorControl = corrCoeff * corrElev + (1.0F - corrCoeff) * CT.ElevatorControl;
+		}
 		if (Alt < 15F && Vwld.z < 0.0D) Vwld.z *= 0.85000002384185791D;
 		if (-Vwld.z * 2.5D > (double) Alt || Alt < 20F / (float) (Skill + 1)) {
 			if (maneuver == 27 || maneuver == 43 || maneuver == 21 || maneuver == 24 || maneuver == 68 || maneuver == 53 || maneuver == 65 || maneuver == 76 || maneuver == 74 || maneuver == 75) push();
@@ -7533,16 +7569,20 @@ public class Maneuver extends AIFlightModel {
 			f1 = 0.2F + 0.8F * (float) Math.pow(f19, 1.5D);
 			fthrincr = 0.1F * (AP.way.curr().Speed - Pitot.Indicator((float) Loc.z, getSpeed())) - 3F * getForwAccel();
 			if (getAltitude() < AP.way.curr().z() - 70F) fthrincr += AP.way.curr().z() - 70F - getAltitude();
-            if (super.actor instanceof TypeFastJet && fthrincr > 0F)
+			if (super.actor instanceof TypeFastJet && fthrincr > 0F)
 				fthrincr *= 1.0F + CT.getFlap() * 0.4F;
 			f1 += fthrincr;
 			if (bSlowDown && f1 > 0.7F) f1 = 0.7F;
-            if (super.actor instanceof TypeFastJet)
+			if (super.actor instanceof TypeFastJet)
 				if (f1 > 0.96F) f1 = 0.96F;
-            else
+			else
 				if (f1 > 0.9F) f1 = 0.9F;
 			if (f1 > 0.5F && AP.way.isLanding() && AP.way.Cur() > 1 && (super.actor instanceof TypeFastJet)
-                && getSpeed() > AP.way.curr().Speed && Loc.z > AP.way.curr().z()) f1 = 0.5F;
+				&& getSpeed() > AP.way.curr().Speed && Loc.z > AP.way.curr().z()) f1 = 0.5F;
+			if (f1 > 0.4F && AP.way.isLanding() && AP.way.Cur() > 3 && (super.actor instanceof TypeFastJet)
+				&& getSpeed() > AP.way.curr().Speed && Loc.z > AP.way.curr().z() + 80D) f1 = 0.4F;
+			if (f1 > 0.4F && AP.way.isLanding() && AP.way.Cur() > 2 && (super.actor instanceof TypeFastJet)
+				&& getSpeed() > AP.way.curr().Speed + 30F && Loc.z > AP.way.curr().z() + 100D) f1 = 0.36F;
 			if (f1 < 0.35F && !AP.way.isLanding()) f1 = 0.35F;
 			break;
 
@@ -7783,6 +7823,9 @@ public class Maneuver extends AIFlightModel {
 	}
 
 	private void emergencyLanding(float f) {
+		float gp = Gears.Pitch;
+		if (gp > 180F) gp -= 360F;
+
 		if (first) {
 			Kmax = Wing.new_Cya(5F) / Wing.new_Cxa(5F);
 			if (Kmax > 14F) Kmax = 14F;
@@ -7834,8 +7877,8 @@ public class Maneuver extends AIFlightModel {
 			CT.RudderControl = 0.0F;
 			if ((actor instanceof BI_1) || (actor instanceof ME_163B1A)) CT.GearControl = 1.0F;
 			float f1;
-			if (Gears.Pitch < 10F) f1 = (40F * (getSpeed() - VminFLAPS * 1.15F) - 60F * (Or.getTangage() + 3F) - 240F * (getVertSpeed() + 1.0F) - 120F * ((float) getAccel().z - 1.0F)) * 0.004F;
-			else f1 = (40F * (getSpeed() - VminFLAPS * 1.15F) - 60F * ((Or.getTangage() - Gears.Pitch) + 10F) - 240F * (getVertSpeed() + 1.0F) - 120F * ((float) getAccel().z - 1.0F)) * 0.004F;
+			if (gp < 10F) f1 = (40F * (getSpeed() - VminFLAPS * 1.15F) - 60F * (Or.getTangage() + 3F) - 240F * (getVertSpeed() + 1.0F) - 120F * ((float) getAccel().z - 1.0F)) * 0.004F;
+			else f1 = (40F * (getSpeed() - VminFLAPS * 1.15F) - 60F * ((Or.getTangage() - gp) + 10F) - 240F * (getVertSpeed() + 1.0F) - 120F * ((float) getAccel().z - 1.0F)) * 0.004F;
 			if (Alt > 0.0F) {
 				float f2 = 0.01666F * Alt;
 				dA = dA * f2 + f1 * (1.0F - f2);
@@ -7880,7 +7923,7 @@ public class Maneuver extends AIFlightModel {
 			if (Or.getTangage() > -1F) dA -= 0.1F * (Or.getTangage() + 1.0F);
 			if (Or.getTangage() < -10F) dA -= 0.1F * (Or.getTangage() + 10F);
 		}
-		if (Alt < 2.0F || Gears.onGround()) dA = -2F * (Or.getTangage() - Gears.Pitch);
+		if (Alt < 2.0F || Gears.onGround()) dA = -2F * (Or.getTangage() - gp);
 		double d1 = Vwld.length() / (double) Vmin;
 		if (d1 > 1.0D) d1 = 1.0D;
 		CT.ElevatorControl += (double) ((dA - CT.ElevatorControl) * 3.33F * f) + 1.5D * getW().y * d1 + 0.5D * getAW().y * d1;

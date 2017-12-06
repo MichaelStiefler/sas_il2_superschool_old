@@ -307,7 +307,7 @@ public abstract class AirportStatic extends Airport {
 	private static float y[] = { 0.0F, 0.0F, 0.0F, 0.0F, -500F, -2000F, -4000F, -4000F, -4000F };
 	private static float yFJ[] = { 0.0F, 0.0F, 0.0F, 0.0F, -1000F, -4000F, -8000F, -8000F, -8000F };
 	private static float z[] = { 0.0F, 6F, 20F, 160F, 500F, 600F, 700F, 700F, 700F };
-	private static float zFJ[] = { 0.0F, 6F, 20F, 320F, 800F, 1000F, 1100F, 1100F, 1100F };
+	private static float zFJ[] = { 0.0F, 6F, 20F, 320F, 650F, 900F, 1100F, 1100F, 1100F };
 	private static float v[] = { 0.0F, 180F, 220F, 240F, 270F, 280F, 300F, 300F, 300F };
 	private static float vFJ[] = { 0.0F, 250F, 280F, 300F, 330F, 350F, 370F, 390F, 400F };
 	private static float ry[] = { 0.0F, 0.0F, 0.0F, 0.0F, 500F, 2000F, 4000F, 4000F, 4000F };
@@ -321,7 +321,7 @@ public abstract class AirportStatic extends Airport {
 	private static float siy[] = { 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F };
 	private static float siyFJ[] = { 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F };
 	private static float siz[] = { 0.0F, 6F, 20F, 160F, 500F, 600F, 700F, 700F, 700F };
-	private static float sizFJ[] = { 0.0F, 6F, 20F, 320F, 1000F, 1200F, 1400F, 1400F, 1400F };
+	private static float sizFJ[] = { 0.0F, 6F, 20F, 320F, 500F, 680F, 860F, 1000F, 1100F };
 	private static Point3d pWay = new Point3d();
 	private static Point3d pd = new Point3d();
 	private static Point3f pf = new Point3f();
