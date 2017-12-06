@@ -44,6 +44,11 @@ public class FuelTankGun_TankSkyhawkL1_gn16 extends FuelTankGun
         ((FuelTank_TankSkyhawkL1_gn16) bomb).matHighvis();
     }
 
+    public void matSEAcamo()
+    {
+        ((FuelTank_TankSkyhawkL1_gn16) bomb).matSEAcamo();
+    }
+
     static 
     {
         Class class1 = com.maddox.il2.objects.weapons.FuelTankGun_TankSkyhawkL1_gn16.class;

@@ -46,6 +46,13 @@ public class FuelTank_TankSkyhawk_gn16 extends FuelTank
         mesh.materialReplace("Tank_GlossQ", "Tank_GlossHVQ");
     }
 
+    public void matSEAcamo()
+    {
+        setMesh(Property.stringValue(getClass(), "mesh"));
+        mesh.materialReplace("Tank_Gloss", "Tank_GlossSEA");
+        mesh.materialReplace("Tank_GlossP", "Tank_GlossSEAP");
+        mesh.materialReplace("Tank_GlossQ", "Tank_GlossSEAQ");
+    }
     static 
     {
         Class class1 = com.maddox.il2.objects.weapons.FuelTank_TankSkyhawk_gn16.class;
