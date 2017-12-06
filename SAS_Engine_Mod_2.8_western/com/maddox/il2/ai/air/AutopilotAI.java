@@ -182,14 +182,15 @@ public class AutopilotAI extends Autopilotage {
 		}
 		FM.getLoc(PlLoc);
 		boolean bEV = false;
+		boolean bFJ = ((Aircraft) FM.actor) instanceof TypeFastJet;
 		SA = (float) Math.max(StabAltitude, Engine.land().HQ_Air(PlLoc.x, PlLoc.y) + 5D);
 		if (((Maneuver) (FM)).Group != null && ((Maneuver) (FM)).Group.getAaaNum() > 3F && ((Aircraft) FM.actor).aircIndex() == 0 && FM.isTick(165, 0)) avoidance = (float) (1 - World.Rnd().nextInt(0, 1) * 2) * World.Rnd().nextFloat(15F, 30F);
 		if (this.bWayPoint) {
 			boolean bReached = false;
-			if ((((Aircraft) FM.actor) instanceof TypeFastJet) && FM.getSpeed() > 155F) bReached = way.isReachedFastJet(PlLoc);
+			if (bFJ && FM.getSpeed() > 155F) bReached = way.isReachedFastJet(PlLoc);
 			else bReached = way.isReached(PlLoc);
 			if (WWPoint != way.auto(PlLoc) || bReached) {
-				WWPoint = ((((Aircraft) FM.actor) instanceof TypeFastJet) && FM.getSpeed() > 155F) ? way.autoFastJet(PlLoc) : way.auto(PlLoc);
+				WWPoint = (bFJ && FM.getSpeed() > 155F) ? way.autoFastJet(PlLoc) : way.auto(PlLoc);
 				WWPoint.getP(WPoint);
 				if (((Aircraft) FM.actor).aircIndex() == 0 && !way.isLanding()) {
 					voiceCommand(WPoint, PlLoc);
@@ -229,17 +230,17 @@ public class AutopilotAI extends Autopilotage {
 				}
 				if (way.isLanding()) {
 					FM.getLoc(P);
-					if (((Aircraft) FM.actor) instanceof TypeFastJet)
+					if (bFJ)
 						turnOnAINavLights(true);
-					if (way.Cur() > 3 && P.z > (WPoint.z + ((((Aircraft) FM.actor) instanceof TypeFastJet) ? 600D : 500D))) {
+					if (way.Cur() > 3 && P.z > (WPoint.z + (bFJ ? 600D : 500D))) {
 						flapsGoaround();
 						way.setCur(1);
 					}
-					if (way.Cur() > 3 && FM.getSpeed() > way.curr().getV() * 1.8F && ((Aircraft) FM.actor) instanceof TypeFastJet) {
+					if (way.Cur() > 3 && FM.getSpeed() > way.curr().getV() * 1.8F && bFJ) {
 						flapsGoaround();
 						way.setCur(1);
 					}
-					if (((Aircraft) FM.actor) instanceof TypeFastJet && !FM.CT.bHasFlapsControlSwitch) {
+					if (bFJ && !FM.CT.bHasFlapsControlSwitch) {
 						if (way.Cur() == 2 || way.Cur() == 3) {
 							if (FM.CT.FlapStage != null && FM.CT.FlapStageMax != -1.0F) {
 								if (FM.CT.FlapStage[FM.CT.nFlapStages - 1] < 0.33F) FM.CT.FlapsControl = 1.0F;
@@ -348,11 +349,19 @@ public class AutopilotAI extends Autopilotage {
 				d1 = Math.min(FM.getAOA() - f4, FM.Or.getTangage() - 1.0F) * 1.0F * f + 0.5F * FM.getForwAccel();
 			}
 			if (d < 50D) {
-				float f5 = -15F + FM.M.mass * 0.00033F;
+				float f5 = -15F + FM.M.mass * Aircraft.cvt(FM.M.mass, 50000F, 300000F, 0.00033F, 0.00005F) * Aircraft.cvt(FM.CT.getFlap(), 0.0F, 1.0F, 1.0F, 0.2F);
+				if (bFJ && d < -20D && FM.getVertSpeed() > -10.0F) {
+					if (Math.abs(FM.Or.getRoll() - 360F) < 10F) {
+						float fmulti = Aircraft.cvt((float)d, -50F, -600F, 0.10F, 1.50F) * Aircraft.cvt(FM.getVertSpeed(), 0.005F, 15.0F, 0.04F, 0.35F) * Aircraft.cvt(FM.getVertSpeed(), -10.0F, 0.005F, 0.0F, 1.0F);
+						if (fmulti > 0.75F) fmulti = 0.75F;
+						if(f5 > -8.4F) f5 = -8.4F * fmulti + f5 * (1.0F - fmulti);  // considered as mass = 20 ton
+					}
+					f5 += Aircraft.cvt((float) d, -1600F, -200F, -16F, 0F) * Aircraft.cvt(FM.getVertSpeed(), -10.0F, -5.0F, 0.0F, 1.0F);
+				}
 				if (f5 < -4F) f5 = -4F;
 				d2 = (FM.Or.getTangage() - f5) * 0.8F * f;
 			}
-			if (d <= -50D || d >= 50D || !(((Aircraft) FM.actor) instanceof TypeFastJet)) bEV = true;
+			if (d <= -50D || d >= 50D || !bFJ) bEV = true;
 			double d3 = 0.01D * (d + 50D);
 			if (d3 > 1.0D) d3 = 1.0D;
 			if (d3 < 0.0D) d3 = 0.0D;
@@ -361,25 +370,37 @@ public class AutopilotAI extends Autopilotage {
 				Ev += 1.0D * FM.getW().y + 0.5D * FM.getAW().y;
 				if (FM.getSpeed() < 1.3F * FM.VminFLAPS) Ev -= 0.004F * f;
 			}
-			if (d > -50D && FM.getSpeed() > 30F && (((Aircraft) FM.actor) instanceof TypeFastJet)) {
+			if (d > -50D && FM.getSpeed() > 30F && bFJ) {
 				if (FM.getVertSpeed() < -0.0F) {
 					if (getWayPointDistance() / FM.getSpeed() * FM.getVertSpeed() < (float) d - Math.min((SA * 0.05F), 50F)) {
 						newEv = (((float) d / (getWayPointDistance() / FM.getSpeed())) - FM.getVertSpeed()) * 0.05F;
 						if (newEv > 0.6F) newEv = 0.6F;
-						if (newEv < 0.0F) newEv = 0.0F;
+						if (way.isLanding()) {
+							if (newEv < -0.1F) newEv = -0.1F;
+						} else {
+							if (newEv < -0.01F) newEv = -0.01F;
+						}
 					} else {
 						if (newEv < 0F) newEv += 0.002F;
 						if (newEv > 0F) newEv = 0F;
 					}
-				} else if (FM.getVertSpeed() > 4.0F) newEv *= 0.98F;
-				else if (FM.getVertSpeed() > 2.0F) newEv *= 0.996F;
+				} else if (FM.getVertSpeed() > 4.0F) newEv *= 0.99F;
+				else if (FM.getVertSpeed() > 2.0F) newEv *= 0.998F;
 				Ev = newEv;
 			}
 			float f6 = (9F * FM.getSpeed()) / FM.VminFLAPS;
 			if (FM.VminFLAPS < 28F) f6 = 10F;
 			if (f6 > 25F) f6 = 25F;
 			float f7 = (f6 - FM.Or.getTangage()) * 0.1F;
-			float f8 = -15F + FM.M.mass * 0.00033F;
+			float f8 = -15F + FM.M.mass * Aircraft.cvt(FM.M.mass, 50000F, 300000F, 0.00033F, 0.00005F) * Aircraft.cvt(FM.CT.getFlap(), 0.0F, 1.0F, 1.0F, 0.2F);
+			if (bFJ && d < -20D && FM.getVertSpeed() > -10.0F) {
+				if (Math.abs(FM.Or.getRoll() - 360F) < 10F) {
+					float fmulti = Aircraft.cvt((float)d, -50F, -600F, 0.10F, 1.50F) * Aircraft.cvt(FM.getVertSpeed(), 0.005F, 15.0F, 0.04F, 0.35F) * Aircraft.cvt(FM.getVertSpeed(), -10.0F, 0.005F, 0.0F, 1.0F);
+					if (fmulti > 0.75F) fmulti = 0.75F;
+					if(f8 > -8.4F) f8 = -8.4F * fmulti + f8 * (1.0F - fmulti);  // considered as mass = 20 ton
+				}
+				f8 += Aircraft.cvt((float) d, -1600F, -200F, -16F, 0F) * Aircraft.cvt(FM.getVertSpeed(), -10.0F, -5.0F, 0.0F, 1.0F);
+			}
 			if (f8 < -4F) f8 = -4F;
 			float f9 = (f8 - FM.Or.getTangage()) * 0.2F;
 			if (FM.getVertSpeed() < 0 && FM.Alt / -FM.getVertSpeed() < 40F && FM.getAOA() < 15F && !(way.isLanding() && way.Cur() > 2)) f9 = 0.50F;
@@ -389,7 +410,7 @@ public class AutopilotAI extends Autopilotage {
 		}
 		float f1 = 0.0F;
 		if (bStabDirection || bWayPoint) {
-//			double d = SA - FM.getAltitude();
+			double d = SA - FM.getAltitude();
 			f1 = FM.Or.getAzimut();
 			float f2 = FM.Or.getKren();
 			if (((Maneuver) (FM)).Group.getAaaNum() > 3F && ((Aircraft) FM.actor).aircIndex() == 0) f1 = (float) ((double) f1 - (StabDirection + (double) avoidance));
@@ -481,7 +502,9 @@ public class AutopilotAI extends Autopilotage {
 			 */
 			if (newelev > 1.0F) newelev = 1.0F;
 			if (newelev < -1.0F) newelev = -1.0F;
-			FM.CT.ElevatorControl = newelev;
+			if (d > -50D && getWayPointDistance() / FM.getSpeed() * FM.getVertSpeed() < (float) d + 50F) {
+				FM.CT.ElevatorControl = newelev;
+			}
 			FM.CT.RudderControl -= FM.getAOS() * 0.04F * f;
 		}
 		if (bWayPoint && way.isLanding()) {
@@ -497,6 +520,7 @@ public class AutopilotAI extends Autopilotage {
 			if (FM.Vwld.z > -10D) FM.Vwld.z -= 1.0F * f;
 		} else if (FM.Vwld.z < 10D) FM.Vwld.z += 1.0F * f;
 		if (FM.getAOA() > 11F && FM.CT.ElevatorControl > -0.3F) FM.CT.ElevatorControl -= 0.3F * f;
+
 	}
 
 	// TODO:
