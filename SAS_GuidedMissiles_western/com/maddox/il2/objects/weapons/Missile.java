@@ -699,7 +699,10 @@ public class Missile extends Rocket {
 	private void doStart(float f) {
 		this.startEngineDone();
 		// super.start(-1F, 0);
-		setMesh(MeshShared.get(Property.stringValue(getClass(), "meshFly", Property.stringValue(getClass(), "mesh", null))));
+        if (this.waitingMeshFly) {
+			setMesh(MeshShared.get(this.mshFly));
+			this.waitingMeshFly = false;
+        }
 		this.startMissile(-1F, 0);
 		this.setMissileEffects();
 		this.setMissileStartParams();
@@ -915,7 +918,10 @@ public class Missile extends Rocket {
 		float failureRate = Property.floatValue(localClass, "failureRate", 10.0F);
 		this.noSmokeFlameSustain = (Property.intValue(localClass, "noSmokeFlameSustain", 0) == 1);
 		this.soundNameSustain = Property.stringValue(localClass, "soundSustain", null);
-		this.mshSustain = Property.stringValue(localClass, "mshSustain", null);
+		this.mshFly = Property.stringValue(localClass, "meshFly", null);
+		if (this.mshFly != null)
+			this.waitingMeshFly = true;
+		this.mshSustain = Property.stringValue(localClass, "meshSustain", null);
 		if (this.mshSustain != null)
 			this.waitingMeshSustain = true;
 		if (TrueRandom.nextFloat(0, 100.0F) < failureRate) {
@@ -1918,6 +1924,8 @@ public class Missile extends Rocket {
 	private boolean noSmokeFlameSustain = false;
 	private String soundNameSustain = null;
 	private boolean playingSustainMotorSound = false;
+	private String mshFly = null;
+	private boolean waitingMeshFly = false;
 	private String mshSustain = null;
 	private boolean waitingMeshSustain = false;
 	private long startTime = 0L;
