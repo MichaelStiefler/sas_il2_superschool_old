@@ -51,7 +51,7 @@ public class MissileAspideMk1_gn16 extends Missile {
 		Property.set(class1, "launchType", Missile.LAUNCH_TYPE_DROP); // launch pattern
 		Property.set(class1, "detectorType", Missile.DETECTOR_TYPE_RADAR_HOMING); // detector type
 		Property.set(class1, "sunRayAngle", 0.0F); // max. Angle at which the missile will track Sun Ray, zero disables Sun Ray tracking (only valid for IR detector missiles)
-		Property.set(class1, "multiTrackingCapable", 1); // set whether or not this type of missile can fight multiple different targets simultaneously. Usually "1" for IR missiles and "0" for others.
+		Property.set(class1, "multiTrackingCapable", 0); // set whether or not this type of missile can fight multiple different targets simultaneously. Usually "1" for IR missiles and "0" for others.
 		Property.set(class1, "canTrackSubs", 0); // set whether or not submerged objects can be tracked
 		Property.set(class1, "minPkForAI", 25.0F); // min. Kill Probability for AI to launch a missile
 		Property.set(class1, "timeForNextLaunchAI", 10000L); // time between two Missile launches for AI

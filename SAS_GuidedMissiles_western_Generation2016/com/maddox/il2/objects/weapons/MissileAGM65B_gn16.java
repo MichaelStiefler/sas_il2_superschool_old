@@ -87,14 +87,6 @@ public class MissileAGM65B_gn16 extends Missile  implements MissileInterceptable
         mesh.materialReplace("Maverickq", "MaverickBq");
 	}
 
-	public void startMissile(float paramFloat, int paramInt) {
-        super.startMissile(paramFloat, paramInt);
-		setMesh(Property.stringValue(getClass(), "mesh"));
-        mesh.materialReplace("Maverick", "MaverickB");
-        mesh.materialReplace("Maverickp", "MaverickBp");
-        mesh.materialReplace("Maverickq", "MaverickBq");
-	}
-
     public MissileAGM65B_gn16(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f) {
 		this.MissileInit(actor, netchannel, i, point3d, orient, f);
 	}
