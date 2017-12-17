@@ -301,7 +301,7 @@ public abstract class IflolsGeneric extends VisualLandingAidGeneric
         if(newmeatballpos == meatballpos)  return;
         Meatballxyz[0] = 0.0F;
         Meatballxyz[1] = 0.0F;
-        Meatballxyz[2] = newmeatballpos * 0.11046F;
+        Meatballxyz[2] = newmeatballpos * 0.22092F;
         hierMesh().chunkSetLocate("meatball_red", Meatballxyz, Meatballypr);
         hierMesh().chunkSetLocate("meatball_yellow", Meatballxyz, Meatballypr);
         switch(newmeatballpos)

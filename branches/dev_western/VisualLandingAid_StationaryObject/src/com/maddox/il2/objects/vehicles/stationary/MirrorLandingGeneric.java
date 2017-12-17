@@ -301,8 +301,8 @@ public abstract class MirrorLandingGeneric extends VisualLandingAidGeneric
     private void MeatballSet(float horiz, float vert)
     {
         Meatballxyz[0] = 0.0F;
-        Meatballxyz[1] = horiz * -0.3F;
-        Meatballxyz[2] = vert * -0.3F;
+        Meatballxyz[1] = horiz * -0.6F;
+        Meatballxyz[2] = vert * -0.6F;
         hierMesh().chunkSetLocate("Meatball", Meatballxyz, Meatballypr);
         if(Time.current() % 100F == 0F)
         {
