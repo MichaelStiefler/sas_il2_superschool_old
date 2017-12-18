@@ -6,6 +6,7 @@
  * 2016.04.11: reading Pylons' dragCx property
  * 2017.11.18: recover broken 4.12.2m kalibr calculation
  * 2017.11.18: low drag bombs or rockets consider
+ * 2017.12.17: decrease drag of missiles
  */
 
 package com.maddox.il2.fm;
@@ -132,21 +133,21 @@ public class Squares {
 					float dragCf = Property.floatValue(class2, "dragCoefficient", 1.0F);
 					if (dragCf < 0.01F) dragCf = 0.01F;
 					if (dragCf > 100.0F) dragCf = 100.0F;
-					float f4 = (float)(3.1415926535897931D * (double)kalibr * (double)kalibr * (double)f * (double)dragCf);
+					float f4 = (float)(3.1415926535897931D * (double) kalibr * (double) kalibr * (double) f * (double) dragCf);
 					dragParasiteCx += f4;
 				}
 				if ((abulletemitter[i][j] instanceof RocketGun) && abulletemitter[i][j].haveBullets() && abulletemitter[i][j].getHookName().startsWith("_External")) {
-					Class class1 = (Class)Property.value(abulletemitter[i][j].getClass(), "bulletClass", null);
+					Class class1 = (Class) Property.value(abulletemitter[i][j].getClass(), "bulletClass", null);
 					float kalibr = Property.floatValue(class1, "kalibr", 0.0F);
 					float dragCf = Property.floatValue(class1, "dragCoefficient", 1.0F);
 					if (dragCf < 0.01F) dragCf = 0.01F;
 					if (dragCf > 100.0F) dragCf = 100.0F;
 				// TODO: ++ Changed Code to make Engine Mod independent of Guided Missiles Mod ++
-					if (GuidedMissileInterop.getGuidedMissileModExists() && GuidedMissileInterop.getMissileGunClass().isInstance(class1)) {
-						dragCf *= 0.50F;
+					if (GuidedMissileInterop.getGuidedMissileModExists() && (abulletemitter[i][j] instanceof MissileGun)) {
+						dragCf *= 0.10F;
 					}
-				// TODO: -- Changed Code to make Engine Mod independent of Guided Missiles Mod ++
-					float f3 = (float)(3.1415926535897931D * (double)kalibr * (double)kalibr * 0.11999999731779099D * (double)dragCf);
+				// TODO: -- Changed Code to make Engine Mod independent of Guided Missiles Mod --
+					float f3 = (float)(3.1415926535897931D * (double) kalibr * (double) kalibr * 0.11999999731779099D * (double) dragCf);
 					dragParasiteCx += f3;
 				}
 				if (!(abulletemitter[i][j] instanceof Pylon) || (abulletemitter[i][j] instanceof PylonRO_82_1)
