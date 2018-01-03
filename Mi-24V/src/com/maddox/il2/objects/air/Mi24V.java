@@ -1136,10 +1136,11 @@ public class Mi24V extends Scheme2
         double tailRotorDiameter = 4;       //same for tail rotor
         double rotorRPM_max = 240;            //main rotor max RPM for the simplified code
         double rotor_tailRPM_max=1112;        //tail rotor max RPM
-        double rotorRPM = aThrust*rotorRPM_max/60;   
+        double rotorRPM = (aThrust*rotorRPM_max/60)*(1-(aPitch*0.05));   
         /*max thrust is 1.0, meaning if thrust is max, revolutions are max too
          * it is impossible to fly the helicopter on one engine now, because the thrust value is average!
          * I should have done some square (or square root) average instead*/
+        /*the RPM get decreased at higher collective*/
         double hubDirection_x = Math.toRadians(0);
         double hubDirection_y = Math.toRadians(5);
         /*default rotur hub direction, now 5° forward*/
@@ -1239,35 +1240,40 @@ public class Mi24V extends Scheme2
         //double balanceMoment_G_z =0;// Math.sin(Math.toRadians(kren))*G * (/*Math.sqrt(4.25)*/0*Math.sin(Math.toRadians(/*14+*/tang)));
         
         if(sinkRate>=0){
-        antiSinkForce = -(float) (0.5*rotorCy * rotorSurface * airDensity * sinkRate * sinkRate);
+        antiSinkForce = -(float) (rotorCy * rotorSurface * airDensity * sinkRate * sinkRate);
         } /*force caused by flow perpendicular to rotor as helicopter sinks (or climbs)*/
         else
         {
-        	antiSinkForce = (float) (0.5*rotorCy * rotorSurface * airDensity * sinkRate * sinkRate);
+        	antiSinkForce = (float) (rotorCy * rotorSurface * airDensity * sinkRate * sinkRate);
         };
         
         /**drag caused by flow in X axis on the main rotor*/
         /*it also produces a moment around Y axis*/
+        
+        /**These are all multiplied by 2 to better simulate:
+         * loss of AoA when going up/down
+         * dihedral of the rotor
+         * fuselage drag*/
         if(vFlow.x>=0){
-            headOnForce = -(float) (0.5*(rotorCx+rotorLineCx) * rotorSurface * airDensity * vFlow.x * vFlow.x);
-            dragMoment_y =  -(float) 2*(0.5*(rotorCx+rotorLineCx) * rotorSurface * airDensity * vFlow.x * vFlow.x);
+            headOnForce = -(float) ((rotorCx+rotorLineCx) * rotorSurface * airDensity * vFlow.x * vFlow.x);
+            dragMoment_y =  -(float) 2*((rotorCx+rotorLineCx) * rotorSurface * airDensity * vFlow.x * vFlow.x);
             }
             else
             {
-            	headOnForce = (float) (0.5*(rotorCx+rotorLineCx) * rotorSurface * airDensity * vFlow.x * vFlow.x);
-            	dragMoment_y =  (float) 2*(0.5*(rotorCx+rotorLineCx) * rotorSurface * airDensity * vFlow.x * vFlow.x);
+            	headOnForce = (float) ((rotorCx+rotorLineCx) * rotorSurface * airDensity * vFlow.x * vFlow.x);
+            	dragMoment_y =  (float) 2*((rotorCx+rotorLineCx) * rotorSurface * airDensity * vFlow.x * vFlow.x);
             };
          /**similar*/
             if(vFlow.y>=0){
-                sideForce = -(float) (0.5*(rotorCx+rotorLineCx+1) * rotorSurface * airDensity * vFlow.y * vFlow.y);
-                tailRotorMoment = (float) (0.5*rotorCy * tailRotorSurface * airDensity * vFlow.y * vFlow.y)*10;
-                dragMoment_x =  (float) 2*(0.5*(rotorCx+rotorLineCx) * rotorSurface * airDensity * vFlow.y * vFlow.y);
+                sideForce = -(float) ((rotorCx+rotorLineCx+1) * rotorSurface * airDensity * vFlow.y * vFlow.y);
+                tailRotorMoment = (float) (rotorCy * tailRotorSurface * airDensity * vFlow.y * vFlow.y)*10;
+                dragMoment_x =  (float) 2*((rotorCx+rotorLineCx) * rotorSurface * airDensity * vFlow.y * vFlow.y);
                 }
                 else
                 {
-                	sideForce = (float) (0.5*(rotorCx+rotorLineCx+1) * rotorSurface * airDensity * vFlow.y * vFlow.y);
-                	tailRotorMoment = -(float) (0.5*rotorCy * tailRotorSurface * airDensity * vFlow.y * vFlow.y)*10;
-                	dragMoment_x =  -(float) 2*(0.5*(rotorCx+rotorLineCx) * rotorSurface * airDensity * vFlow.y * vFlow.y);
+                	sideForce = (float) ((rotorCx+rotorLineCx+1) * rotorSurface * airDensity * vFlow.y * vFlow.y);
+                	tailRotorMoment = -(float) (rotorCy * tailRotorSurface * airDensity * vFlow.y * vFlow.y)*10;
+                	dragMoment_x =  -(float) 2*((rotorCx+rotorLineCx) * rotorSurface * airDensity * vFlow.y * vFlow.y);
                 };
                 
             /** code distributing lift forces into all three axes as the hub rotates*/
