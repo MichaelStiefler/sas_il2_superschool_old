@@ -1258,7 +1258,10 @@ public class ShipGeneric extends ActorHMesh
             StringTokenizer stringtokenizer = new StringTokenizer(sectfile.line(i, k));
             float f1 = Float.valueOf(stringtokenizer.nextToken()).floatValue();
             float f2 = Float.valueOf(stringtokenizer.nextToken()).floatValue();
+            // TODO: By SAS~Storebror - ATTENTION: f4 is unused, but the Token index still must be pushed forward!
 //            float f4 = Float.valueOf(stringtokenizer.nextToken()).floatValue();
+            stringtokenizer.nextToken();
+            // ---
             double d = 0.0D;
             float f7 = 0.0F;
             if(stringtokenizer.hasMoreTokens())
