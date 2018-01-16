@@ -313,7 +313,7 @@ public class Skyhawk extends Scheme1
 
     public void typeBomberUpdate(float f)
     {
-        if((double)Math.abs(FM.Or.getKren()) > 4.5D)
+        if(Math.abs(FM.Or.getKren()) > 4.5F)
         {
             fSightCurReadyness -= 0.0666666F * f;
             if(fSightCurReadyness < 0.0F)
@@ -331,7 +331,7 @@ public class Skyhawk extends Scheme1
                 typeBomberToggleAutomation();
             }
             fSightCurForwardAngle = (float)Math.toDegrees(Math.atan(fSightCurDistance / toMeters(fSightCurAltitude)));
-            if((double)fSightCurDistance < (double)toMetersPerSecond(fSightCurSpeed) * Math.sqrt(toMeters(fSightCurAltitude) * 0.2038736F))
+            if(fSightCurDistance < toMetersPerSecond(fSightCurSpeed) * Math.sqrt(toMeters(fSightCurAltitude) * 0.2038736F))
                 bSightBombDump = true;
             if(bSightBombDump)
                 if(FM.isTick(3, 0))
@@ -465,6 +465,11 @@ public class Skyhawk extends Scheme1
         bHasRWR = false;
         misslebrg = 0.0F;
         aircraftbrg = 0.0F;
+        stockSquareWing = 24.11F;
+        stockLiftWingLMid = 4.60F;
+        stockLiftWingRMid = 4.60F;
+        stockCy0 = 0.009F;
+        stockDragAirbrake = 0.095F;
     }
 
     public void onAircraftLoaded()
@@ -474,7 +479,7 @@ public class Skyhawk extends Scheme1
         FM.CT.bHasBombSelect = true;
         FM.CT.bHasAntiColLights = true;
 
-        if((this instanceof SkyhawkA4E) || (this instanceof SkyhawkA4M) || 
+        if((this instanceof SkyhawkA4E) || (this instanceof SkyhawkA4E_tanker) || (this instanceof SkyhawkA4M) || 
            (this instanceof SkyhawkA4F) || (this instanceof SkyhawkA4F_late))
             bHasRWR = true;
 
@@ -724,7 +729,7 @@ public class Skyhawk extends Scheme1
                     obsMove = 0.0F;
                     obsAzimuthOld = obsAzimuth;
                     obsElevationOld = obsElevation;
-                    if((double)World.Rnd().nextFloat() > 0.80000000000000004D)
+                    if(World.Rnd().nextFloat() > 0.80F)
                     {
                         obsAzimuth = 0.0F;
                         obsElevation = 0.0F;
@@ -788,30 +793,56 @@ public class Skyhawk extends Scheme1
         }
     }
 
+    public static void moveGear(HierMesh hiermesh, float fL, float fR, float fC)
+    {
+        float fc2 = Aircraft.cvt(fC, 0.25F, 0.9F, 0.0F, -113F);
+        float fc4 = Aircraft.cvt(fC, 0.0F, 0.2F, 0.0F, -90F);
+        float fc5 = Aircraft.cvt(fC, 0.25F, 0.9F, 0.0F, -43F);
+        float fc7 = Aircraft.cvt(fC, 0.25F, 0.9F, 0.0F, -45F);
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, fc2, 0.0F);
+        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, fc4, 0.0F);
+        if(fC < 0.2F)
+            hiermesh.chunkSetAngles("GearC3_D0", 0.0F, 0.0F, 0.0F);
+        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, fc5, 0.0F);
+        hiermesh.chunkSetAngles("GearC7_D0", 0.0F, -fc7, 0.0F);
+
+        float fl2 = Aircraft.cvt(fL, 0.25F, 0.9F, 0.0F, -94F);
+        float fl3 = Aircraft.cvt(fL, 0.25F, 0.9F, 0.0F, -42F);
+        float fl3b = Aircraft.cvt(fL, 0.32F, 0.90F, 0.0F, 172F);
+        float fl4 = Aircraft.cvt(fL, 0.0F, 0.2F, 0.0F, -83F);
+        float fl5 = Aircraft.cvt(fL, 0.3F, 0.7F, 0.0F, -90F);
+        float fl6 = Aircraft.cvt(fL, 0.0F, 0.2F, 0.0F, -90F);
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, fl2, 0.0F);
+        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, fl6, 0.0F);
+        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, fl4, 0.0F);
+        hiermesh.chunkSetAngles("GearL5_D0", fl5, 0.0F, 0.0F);
+        hiermesh.chunkSetAngles("GearL3_D0", 0.0F, fl3, 0.0F);
+        hiermesh.chunkSetAngles("GearL3b_D0", 0.0F, fl3b, 0.0F);
+
+        float fr2 = Aircraft.cvt(fR, 0.25F, 0.9F, 0.0F, -94F);
+        float fr3 = Aircraft.cvt(fR, 0.25F, 0.9F, 0.0F, -42F);
+        float fr3b = Aircraft.cvt(fR, 0.32F, 0.90F, 0.0F, 172F);
+        float fr4 = Aircraft.cvt(fR, 0.0F, 0.2F, 0.0F, -83F);
+        float fr5 = Aircraft.cvt(fR, 0.3F, 0.7F, 0.0F, -90F);
+        float fr6 = Aircraft.cvt(fR, 0.0F, 0.2F, 0.0F, -90F);
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, -fr2, 0.0F);
+        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, fr6, 0.0F);
+        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, fr4, 0.0F);
+        hiermesh.chunkSetAngles("GearR5_D0", -fr5, 0.0F, 0.0F);
+        hiermesh.chunkSetAngles("GearR3_D0", 0.0F, fr3, 0.0F);
+        hiermesh.chunkSetAngles("GearR3b_D0", 0.0F, fr3b, 0.0F);
+    }
+
+    protected void moveGear(float f, float f1, float f2)
+    {
+        moveGear(hierMesh(), f, f1, f2);
+    }
+
+    // ************************************************************************************************
+    // Gear code for backward compatibility, older base game versions don't indepently move their gears
     public static void moveGear(HierMesh hiermesh, float f)
     {
-        float f1 = Aircraft.cvt(f, 0.2F, 0.8F, 0.0F, -117F);
-        float f2 = Aircraft.cvt(f, 0.0F, 0.2F, 0.0F, -90F);
-        float f2a = Aircraft.cvt(f, 0.0F, 0.2F, 0.0F, -83F);
-        float f3 = Aircraft.cvt(f, 0.2F, 0.8F, 0.0F, -45F);
-        float f4 = Aircraft.cvt(f, 0.2F, 0.8F, 0.0F, -90F);
-        float f5 = Aircraft.cvt(f, 0.2F, 0.8F, 0.0F, -45F);
-        float f6 = Aircraft.cvt(f, 0.2F, 0.6F, 0.0F, -90F);
-        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, f1, 0.0F);
-        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, f2, 0.0F);
-        if(f < 0.2F)
-            hiermesh.chunkSetAngles("GearC3_D0", 0.0F, 0.0F, 0.0F);
-        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, f5, 0.0F);
-        hiermesh.chunkSetAngles("GearC7_D0", 0.0F, -f3, 0.0F);
-        hiermesh.chunkSetAngles("GearC8_D0", 0.0F, f3, 0.0F);
-        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, f4, 0.0F);
-        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, -f4, 0.0F);
-        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, f2, 0.0F);
-        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, f2, 0.0F);
-        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, f2a, 0.0F);
-        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, f2a, 0.0F);
-        hiermesh.chunkSetAngles("GearL5_D0", f6, 0.0F, 0.0F);
-        hiermesh.chunkSetAngles("GearR5_D0", -f6, 0.0F, 0.0F);
+        moveGear(hiermesh, f, f, f); // re-route old style function calls to new code
     }
 
     protected void moveGear(float f)
@@ -1353,7 +1384,7 @@ public class Skyhawk extends Scheme1
 
     public void update(float f)
     {
-        computeCy();
+        computeLift();
         computeEngine();
         computeSlat();
         if(!bNoSpoiler)
@@ -1369,10 +1400,10 @@ public class Skyhawk extends Scheme1
             {
                 FM.AS.setSootState(this, 0, 0);
             }
-        if((double)calculateMach() < 0.78000000000000003D)
+        if(calculateMach() < 0.780F)
             critSpeed = 0.0F;
-        if(FM.getAltitude() > 0.0F && (double)calculateMach() >= 0.96999999999999997D)
-            FM.Sq.dragParasiteCx += 0.001F;
+        if(FM.getAltitude() > 0.0F && calculateMach() >= 0.935F && FM.isTick(44, 0))  //  speed limiter, added by Vega
+            FM.Sq.dragParasiteCx += 0.002F;
         if((FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && FM.getSpeedKMH() > 15F)
         {
             overrideBailout = true;
@@ -1408,45 +1439,57 @@ public class Skyhawk extends Scheme1
         polares.Cy0_0 = stockCy0 + Cy0AddSlat * fSlat;
 
         resetYPRmodifier();
-        xyz[2] = -0.30F * fSlat;
-        xyz[0] = -0.06F * fSlat;
-        ypr[0] = -2.2F * fSlat;
-        ypr[2] = -4F * fSlat;
+        xyz[1] = -0.264F * fSlat;
+        xyz[2] = -0.12F * fSlat;
+        if(fSlat < 0.8F)
+            xyz[0] = -0.032F * Aircraft.cvt(fSlat, 0.4F, 0.8F, 0.0F, 0.5F);
+        else
+            xyz[0] = -0.032F * Aircraft.cvt(fSlat, 0.8F, 1.0F, 0.5F, 1.0F);
+        ypr[0] = -6.6F * fSlat;
+        ypr[1] = -4.4F * fSlat;
         hierMesh().chunkSetLocate("SlatL_D0", Aircraft.xyz, Aircraft.ypr);
         resetYPRmodifier();
-        xyz[2] = -0.30F * fSlat;
-        xyz[0] = -0.06F * fSlat;
-        ypr[0] = 2.2F * fSlat;
-        ypr[2] = 4F * fSlat;
+        xyz[1] = 0.264F * fSlat;
+        xyz[2] = -0.12F * fSlat;
+        if(fSlat < 0.8F)
+            xyz[0] = -0.032F * Aircraft.cvt(fSlat, 0.4F, 0.8F, 0.0F, 0.5F);
+        else
+            xyz[0] = -0.032F * Aircraft.cvt(fSlat, 0.8F, 1.0F, 0.5F, 1.0F);
+        ypr[0] = 6.6F * fSlat;
+        ypr[1] = -4.4F * fSlat;
         hierMesh().chunkSetLocate("SlatR_D0", Aircraft.xyz, Aircraft.ypr);
     }
 
-    public void computeCy()
+    public void computeLift() // added by Vega instead old method computeCy
     {
         Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-        float f = calculateMach();
-        if(calculateMach() >= 0.0F);
-        float f1 = 0.0F;
-        if((double)f > 1.0D)
+        float x = calculateMach();
+        if(x < 0.9F)
         {
-            f1 = 0.6F;
-        } else
-        {
-            float f2 = f * f;
-            float f3 = f2 * f;
-            float f4 = f3 * f;
-            f1 = ((9500F * f3 - 21285F * f2) + 8833F * f + 4752F) / 3600F;
+            polares.lineCyCoeff = 0.08F;
         }
-        polares.CyCritH_0 = f1;
+        else if(x < 1.25F)
+        {
+            float x2 = x * x;
+            polares.lineCyCoeff = 0.114286F*x2 - 0.417143F*x + 0.362857F;
+    // {{0.9, 0.08}, {1.0, 0.06}, {1.25, 0.02}}
+        }
+        else
+        {
+            polares.lineCyCoeff = 0.02F;
+        }
     }
 
     public void computeEngine()
     {
+//     broken original code do nothing, by bad decompiled
+//        if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() > 5)
+//            if(calculateMach() >= 0.0F);
+        if(FM.EI.engines[0].getStage() < 6 || calculateMach() < 0.0F)
+            return;
         float f = FM.getAltitude() / 1000F;
         float f1 = 0.0F;
-        if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() > 5)
-            if(calculateMach() >= 0.0F);
-        if((double)f > 13.5D)
+        if(f > 13.5F)
         {
             f1 = 11F;
         } else
@@ -1467,7 +1510,7 @@ public class Skyhawk extends Scheme1
             {
                 APmode1 = true;
                 HUD.log("Autopilot Mode: Altitude ON");
-                FM.AP.setStabAltitude(1000F);
+                FM.AP.setStabAltitude(FM.getAltitude());
             } else
             if(APmode1)
             {
@@ -1681,7 +1724,7 @@ public class Skyhawk extends Scheme1
     private float arrestor;
     //By PAL, fSteer added
     private float fSteer;
-    private static final float maxSteer = 30.0F;
+    private static final float maxSteer = 45.0F;
     //By PAL; from Vega
     public boolean APmode1;
     public boolean APmode2;
@@ -1749,7 +1792,7 @@ public class Skyhawk extends Scheme1
     private float stockSquareWing;
     private float stockLiftWingLMid;
     private float stockLiftWingRMid;
-    private final float SquareSlat = 0.98F;
+    private final float SquareSlat = 1.08F;
     private float stockCy0;
     private final float Cy0AddSlat = 0.002F;
 
@@ -1757,7 +1800,7 @@ public class Skyhawk extends Scheme1
     private static final float NEG_G_TOLERANCE_FACTOR = 1F;
     private static final float NEG_G_TIME_FACTOR = 1F;
     private static final float NEG_G_RECOVERY_FACTOR = 1F;
-    private static final float POS_G_TOLERANCE_FACTOR = 1.8F;
+    private static final float POS_G_TOLERANCE_FACTOR = 4.5F;
     private static final float POS_G_TIME_FACTOR = 1.5F;
     private static final float POS_G_RECOVERY_FACTOR = 1F;
 
