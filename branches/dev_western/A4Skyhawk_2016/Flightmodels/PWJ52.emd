@@ -35,7 +35,7 @@
   StartStopName J-47
 [A4-P6A]
   HorsePowers 1.0
-  BoostFactor 1.02
+  BoostFactor 1.0
   TowFactor 1.0
   Thrust 3700.0
   EngineI 10.0
@@ -82,7 +82,7 @@
   FuelConsumptionPMAX 0.0625
 [A4-P8A]
   HorsePowers 1.0
-  BoostFactor 1.02
+  BoostFactor 1.0
   TowFactor 1.0
   Thrust 3980.0
   EngineI 10.0
@@ -129,7 +129,7 @@
   FuelConsumptionPMAX 0.0625
 [A4-P408]
   HorsePowers 1.0
-  BoostFactor 1.02
+  BoostFactor 1.0
   TowFactor 1.0
   Thrust 4670.0
   EngineI 10.0

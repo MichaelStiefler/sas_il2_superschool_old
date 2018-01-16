@@ -30,6 +30,8 @@ public class SkyhawkA4E_tanker extends Skyhawk
         hasFlare = false;
         lastChaffDeployed = 0L;
         lastFlareDeployed = 0L;
+        counterFlareList = new ArrayList();
+        counterChaffList = new ArrayList();
         bDrogueExtended = true;
         bInRefueling = false;
         maxSendRefuel = 10.093F;      // max send rate = 200gal per 1minute 
@@ -74,8 +76,43 @@ public class SkyhawkA4E_tanker extends Skyhawk
                         ((FuelTankGun_TankSkyhawk400gal_gn16)FM.CT.Weapons[i][j]).matHighvis();
                     else if(FM.CT.Weapons[i][j] instanceof Pylon_Mk4HIPEGpod_gn16)
                         ((Pylon_Mk4HIPEGpod_gn16)FM.CT.Weapons[i][j]).matHighvis();
+
+                    if(FM.CT.Weapons[i][j] instanceof RocketGunFlare_gn16)
+                        counterFlareList.add(FM.CT.Weapons[i][j]);
+                    else if(FM.CT.Weapons[i][j] instanceof RocketGunChaff_gn16)
+                        counterChaffList.add(FM.CT.Weapons[i][j]);
                 }
             }
+    }
+
+    public void backFire()
+    {
+        if(counterFlareList.isEmpty())
+            hasFlare = false;
+        else
+        {
+            if(Time.current() > lastFlareDeployed + 700L)
+            {
+                ((RocketGunFlare_gn16)counterFlareList.get(0)).shots(1);
+                hasFlare = true;
+                lastFlareDeployed = Time.current();
+                if(!((RocketGunFlare_gn16)counterFlareList.get(0)).haveBullets())
+                    counterFlareList.remove(0);
+            }
+        }
+        if(counterChaffList.isEmpty())
+            hasChaff = false;
+        else
+        {
+            if(Time.current() > lastChaffDeployed + 1300L)
+            {
+                ((RocketGunChaff_gn16)counterChaffList.get(0)).shots(1);
+                hasChaff = true;
+                lastChaffDeployed = Time.current();
+                if(!((RocketGunChaff_gn16)counterChaffList.get(0)).haveBullets())
+                    counterChaffList.remove(0);
+            }
+        }
     }
 
     public long getChaffDeployed()
@@ -117,6 +154,8 @@ public class SkyhawkA4E_tanker extends Skyhawk
             RATrot();
 
         super.update(f);
+        if(super.backfire)
+            backFire();
     }
 
     public void missionStarting()
@@ -349,9 +388,11 @@ public class SkyhawkA4E_tanker extends Skyhawk
     private void drogueRefuel(float f)
     {
         float ias = Pitot.Indicator((float) (((Tuple3d) ((FlightModelMain)FM).Loc).z), FM.getSpeed()) * 3.6F;
+        Aircraft enemy1 = War.GetNearestEnemyAircraft(this, 5000F, 9);
+        Aircraft enemy2 = War.GetNearestEnemyAircraft(this, 6000F, 9);
 
         if(bEmpty || FM.getAltitude() < 1000F || FM.CT.getGear() > 0.0F || FM.CT.getArrestor() > 0.0F
-           || ias > 580F || ias < 325F || (double)(FM.M.fuel) < (double)(FM.M.maxFuel) * 0.20000000000000001D)
+           || ias > 580F || ias < 325F || FM.M.fuel < FM.M.maxFuel * 0.20F || enemy1 != null)
         {
 //            if(Time.current() > waitRefuelTimer)
 //            {
@@ -371,7 +412,7 @@ public class SkyhawkA4E_tanker extends Skyhawk
                     bInRefueling = false;
                 }
 //            }
-        } else
+        } else if(enemy2 == null)
         {
 //            if(Time.current() > waitRefuelTimer)
 //            {
@@ -439,12 +480,13 @@ public class SkyhawkA4E_tanker extends Skyhawk
         }
     }
 
-    private float llpos;
     public boolean bChangedPit;
     private boolean hasChaff;
     private boolean hasFlare;
     private long lastChaffDeployed;
     private long lastFlareDeployed;
+    private ArrayList counterFlareList;
+    private ArrayList counterChaffList;
     private boolean bDrogueExtended;
     private boolean bInRefueling;
     private Actor drones[];

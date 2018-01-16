@@ -36,13 +36,12 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
     {
         bChangedPit = false;
         guidedMissileUtils = null;
-        bToFire = false;
-        trgtPk = 0.0F;
-        trgtAI = null;
         hasChaff = false;
         hasFlare = false;
         lastChaffDeployed = 0L;
         lastFlareDeployed = 0L;
+        counterFlareList = new ArrayList();
+        counterChaffList = new ArrayList();
         lastCommonThreatActive = 0L;
         intervalCommonThreat = 1000L;
         lastRadarLockThreatActive = 0L;
@@ -52,16 +51,13 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
         guidedMissileUtils = new GuidedMissileUtils(this);
         bHasLAUcaps = false;
         removeChuteTimer = -1L;
-        counterFlareList = new ArrayList();
-        counterChaffList = new ArrayList();
-        t1 = 0L;
-        tangate = 0;
-        azimult = 0;
-        tangateOffset = 0;
-        azimultOffset = 0;
+        tLastLaserLockKeyInput = 0L;
+        tangateLaserHead = 0;
+        azimultLaserHead = 0;
+        tangateLaserHeadOffset = 0;
+        azimultLaserHeadOffset = 0;
         laserSpotPos = new Point3d();
         laserSpotPosSaveHold = new Point3d();
-        laserTimer = -1L;
     }
 
     public void auxPressed(int i)
@@ -69,23 +65,24 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
         super.auxPressed(i);
         if(i == 26 && getLaserOn())
         {
-            if(hold && t1 + 200L < Time.current())
+            if(holdLaser && tLastLaserLockKeyInput + 200L < Time.current())
             {
-                hold = false;
-                holdFollow = false;
-                tangateOffset = 0;
-                azimultOffset = 0;
+                holdLaser = false;
+                holdFollowLaser = false;
+                actorFollowing = null;
+                tangateLaserHeadOffset = 0;
+                azimultLaserHeadOffset = 0;
                 HUD.log("Laser Pos Unlock");
-                t1 = Time.current();
+                tLastLaserLockKeyInput = Time.current();
             }
-            if(!hold && t1 + 200L < Time.current())
+            if(!holdLaser && tLastLaserLockKeyInput + 200L < Time.current())
             {
-                hold = true;
-                holdFollow = false;
+                holdLaser = true;
+                holdFollowLaser = false;
                 actorFollowing = null;
                 laserSpotPosSaveHold.set(getLaserSpot());
                 HUD.log("Laser Pos Lock");
-                t1 = Time.current();
+                tLastLaserLockKeyInput = Time.current();
             }
         }
         if(i == 29)
@@ -94,36 +91,36 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
         }
     }
 
-    public void typeBomberAdjDistancePlus()
+    public void typeBomberAdjAltitudePlus()
     {
         if(bLaserOn)
         {
-            if(hold)
+            if(holdLaser)
             {
-                tangateOffset = 4;
+                tangateLaserHeadOffset = 4;
             }
             else
             {
-                tangate += 5;
-                if(tangate > 500)
-                    tangate = 500;
+                tangateLaserHead += 5;
+                if(tangateLaserHead > 500)
+                    tangateLaserHead = 500;
             }
         }
     }
 
-    public void typeBomberAdjDistanceMinus()
+    public void typeBomberAdjAltitudeMinus()
     {
         if(bLaserOn)
         {
-            if(hold)
+            if(holdLaser)
             {
-                tangateOffset = -4;
+                tangateLaserHeadOffset = -4;
             }
             else
             {
-                tangate -= 5;
-                if(tangate < -1000)
-                    tangate = -1000;
+                tangateLaserHead -= 5;
+                if(tangateLaserHead < -1000)
+                    tangateLaserHead = -1000;
             }
         }
     }
@@ -132,15 +129,15 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
     {
         if(bLaserOn)
         {
-            if(hold)
+            if(holdLaser)
             {
-                azimultOffset = 4;
+                azimultLaserHeadOffset = 4;
             }
             else
             {
-                azimult += 5;
-                if(azimult > 1000)
-                    azimult = 1000;
+                azimultLaserHead += 5;
+                if(azimultLaserHead > 1000)
+                    azimultLaserHead = 1000;
             }
         }
     }
@@ -149,15 +146,15 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
     {
         if(bLaserOn)
         {
-            if(hold)
+            if(holdLaser)
             {
-                azimultOffset = -4;
+                azimultLaserHeadOffset = -4;
             }
             else
             {
-                azimult -= 5;
-                if(azimult < -1000)
-                    azimult = -1000;
+                azimultLaserHead -= 5;
+                if(azimultLaserHead < -1000)
+                    azimultLaserHead = -1000;
             }
         }
     }
@@ -178,13 +175,13 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             roll += 360F;
         float rollCounter = cvt(roll, -50F, 50F, 50F, -50F);
 
-        if(hold)
+        if(holdLaser)
         {
             float fn = orient2.getPitch();
             float pitch = 0.0F;
             if(fn > 90F)
                 pitch = fn - 360F;
-            if(fn < 90F)
+            else
                 pitch = fn;
             Point3d laser = new Point3d();
             laser.set(laserSpotPosSaveHold);
@@ -207,20 +204,20 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
                 y -= 360F;
             if(y < -180F)
                 y += 360F;
-            azimult = (int)(y / 0.03F) + azimultOffset;
-            if(azimult > 1000)
-                azimult = 1000;
-            if(azimult < -1000)
-                azimult = -1000;
-            tangate = (int)(t / 0.03F) + tangateOffset;
-            if(tangate > 500)
-                tangate = 500;
-            if(tangate < -1000)
-                tangate = -1000;
+            azimultLaserHead = (int)(y / 0.03F) + azimultLaserHeadOffset;
+            if(azimultLaserHead > 1000)
+                azimultLaserHead = 1000;
+            if(azimultLaserHead < -1000)
+                azimultLaserHead = -1000;
+            tangateLaserHead = (int)(t / 0.03F) + tangateLaserHeadOffset;
+            if(tangateLaserHead > 500)
+                tangateLaserHead = 500;
+            if(tangateLaserHead < -1000)
+                tangateLaserHead = -1000;
         }
 
         hierMesh().chunkSetAngles("LaserMshRoll_D0", 0.0F, 0.0F, rollCounter);
-        hierMesh().chunkSetAngles("LaserMsh_D0", -(float)tangate * 0.03F, -(float)azimult * 0.03F, 0.0F);
+        hierMesh().chunkSetAngles("LaserMsh_D0", -(float)tangateLaserHead * 0.03F, -(float)azimultLaserHead * 0.03F, 0.0F);
         super.pos.setUpdateEnable(true);
         super.pos.getRender(Actor._tmpLoc);
         LaserHook = new HookNamed(this, "_Laser1");
@@ -232,15 +229,16 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
         LaserLoc1.get(LaserP2);
         if(Landscape.rayHitHQ(LaserP1, LaserP2, LaserPL))
         {
-            LaserPL.z -= 0.94999999999999996D;
+            LaserPL.z -= 0.95D;
             LaserP2.interpolate(LaserP1, LaserPL, 1.0F);
             setLaserSpot(LaserP2);
             Eff3DActor eff3dactor = Eff3DActor.New(null, null, new Loc(LaserP2.x, LaserP2.y, LaserP2.z, 0.0F, 0.0F, 0.0F), 1.0F, "3DO/Effects/Fireworks/FlareWhiteWide.eff", 0.1F);
+            eff3dactor.postDestroy(Time.current() + 1500L);
         }
-        if(azimultOffset != 0 || tangateOffset != 0)
+        if(azimultLaserHeadOffset != 0 || tangateLaserHeadOffset != 0)
         {
-            azimultOffset = 0;
-            tangateOffset = 0;
+            azimultLaserHeadOffset = 0;
+            tangateLaserHeadOffset = 0;
             laserSpotPosSaveHold.set(LaserP2);
         }
     }
@@ -303,7 +301,8 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
         setLaserArmEngaged(laseron);
     }
 
-    private static float angleBetween(Actor actorFrom, Point3d pointTo) {
+    private static float angleBetween(Actor actorFrom, Point3d pointTo)
+    {
         float angleRetVal = 180.1F;
         double angleDoubleTemp = 0.0D;
         Loc angleActorLoc = new Loc();
@@ -322,6 +321,9 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
         return angleRetVal;
     }
 
+
+// ---- TypeLaserDesignator implements .... begin ----
+
     public Point3d getLaserSpot()
     {
         return laserSpotPos;
@@ -329,7 +331,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
 
     public boolean setLaserSpot(Point3d p3d)
     {
-        laserSpotPos = p3d;
+        laserSpotPos.set(p3d);
         return true;
     }
 
@@ -346,22 +348,25 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             {
                 if(this == World.getPlayerAircraft())
                     HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser: ON");
-                tangate = 0;
-                azimult = 0;
-                tangateOffset = 0;
-                azimultOffset = 0;
+                holdLaser = false;
+                holdFollowLaser = false;
+                actorFollowing = null;
+                tangateLaserHead = 0;
+                azimultLaserHead = 0;
+                tangateLaserHeadOffset = 0;
+                azimultLaserHeadOffset = 0;
             }
             else
             {
                 if(this == World.getPlayerAircraft())
                     HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser: OFF");
-                hold = false;
-                holdFollow = false;
+                holdLaser = false;
+                holdFollowLaser = false;
                 actorFollowing = null;
-                tangate = 0;
-                azimult = 0;
-                tangateOffset = 0;
-                azimultOffset = 0;
+                tangateLaserHead = 0;
+                azimultLaserHead = 0;
+                tangateLaserHeadOffset = 0;
+                azimultLaserHeadOffset = 0;
             }
         }
 
@@ -392,29 +397,8 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
         return bLGBengaged = flag;
     }
 
-    public void typeBomberAdjAltitudePlus()
-    {
-        if(bLaserOn)
-            if(!APmode1)
-            {
-                APmode1 = true;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Altitude Hold Engaged");
-                ((FlightModelMain) FM).AP.setStabAltitude(2000F);
-            } else
-            if(APmode1)
-            {
-                APmode1 = false;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Altitude Hold Released");
-                ((FlightModelMain) FM).AP.setStabAltitude(false);
-            }
-    }
+// ---- TypeLaserDesignator implements .... end ----
 
-    private void laser(Point3d point3d)
-    {
-        point3d.z = World.land().HQ(point3d.x, point3d.y);
-        Eff3DActor eff3dactor = Eff3DActor.New(null, null, new Loc(point3d.x, point3d.y, point3d.z, 0.0F, 0.0F, 0.0F), 1.0F, "3DO/Effects/Fireworks/FlareWhiteWide.eff", 0.1F);
-        eff3dactor.postDestroy(Time.current() + 1500L);
-    }
 
     private void checkChangeWeaponColors()
     {
@@ -427,6 +411,8 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
                         ((Pylon_USTER_gn16)FM.CT.Weapons[i][j]).matHighvis();
                     else if(FM.CT.Weapons[i][j] instanceof Pylon_USMERfw_gn16)
                         ((Pylon_USMERfw_gn16)FM.CT.Weapons[i][j]).matHighvis();
+                    else if(FM.CT.Weapons[i][j] instanceof Pylon_USMERmd_gn16)
+                        ((Pylon_USMERmd_gn16)FM.CT.Weapons[i][j]).matHighvis();
                     else if(FM.CT.Weapons[i][j] instanceof Pylon_LAU10_gn16)
                         ((Pylon_LAU10_gn16)FM.CT.Weapons[i][j]).matHighvis();
                     else if(FM.CT.Weapons[i][j] instanceof Pylon_LAU10_Cap_gn16)
@@ -578,7 +564,6 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
         guidedMissileUtils.onAircraftLoaded();
         FM.Sq.dragChuteCx = 3.2F;
         bHasDeployedDragChute = false;
-        t1 = Time.current();
         FM.CT.bHasBombSelect = true;
     }
 
@@ -608,7 +593,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
 
         if(((!FM.isPlayers() || !(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode()) && (FM instanceof Maneuver)))
         {
-            if( bHasPaveway && FM.AP.way.curr().Action == 3 && ((Maneuver)FM).hasBombs())
+            if(bHasPaveway && FM.AP.way.curr().Action == 3 && ((Maneuver)FM).hasBombs())
             {
                 if(getLaserArmEngaged())
                 {
@@ -627,13 +612,12 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
         checkChangeWeaponColors();
 
         bLaserOn = false;
-        t1 = 0L;
-        tangate = 0;
-        azimult = 0;
-        tangateOffset = 0;
-        azimultOffset = 0;
+        tLastLaserLockKeyInput = 0L;
+        tangateLaserHead = 0;
+        azimultLaserHead = 0;
+        tangateLaserHeadOffset = 0;
+        azimultLaserHeadOffset = 0;
         tLastLaserUpdate = -1L;
-        laserTimer = -1L;
     }
 
     private void updateDragChute()
@@ -674,16 +658,14 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             chute.destroy();
     }
 
-    private float llpos;
     public boolean bChangedPit;
-    public boolean bToFire;
-    private float trgtPk;
-    private Actor trgtAI;
     private GuidedMissileUtils guidedMissileUtils;
     private boolean hasChaff;
     private boolean hasFlare;
     private long lastChaffDeployed;
     private long lastFlareDeployed;
+    private ArrayList counterFlareList;
+    private ArrayList counterChaffList;
     private long lastCommonThreatActive;
     private long intervalCommonThreat;
     private long lastRadarLockThreatActive;
@@ -691,27 +673,22 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
     private long lastMissileLaunchThreatActive;
     private long intervalMissileLaunchThreat;
     private boolean bHasLAUcaps;
-    public long tf;
-    public float v;
-    public float h;
-    private long t1;
     private boolean bHasDeployedDragChute;
     private Chute chute;
     private long removeChuteTimer;
-    private ArrayList counterFlareList;
-    private ArrayList counterChaffList;
 
     private Hook LaserHook;
     private Loc LaserLoc1 = new Loc();
     private Point3d LaserP1 = new Point3d();
     private Point3d LaserP2 = new Point3d();
     private Point3d LaserPL = new Point3d();
-    public int azimult;
-    public int tangate;
-    public int azimultOffset;
-    public int tangateOffset;
-    public boolean hold;
-    public boolean holdFollow;
+    private long tLastLaserLockKeyInput;
+    public int azimultLaserHead;
+    public int tangateLaserHead;
+    public int azimultLaserHeadOffset;
+    public int tangateLaserHeadOffset;
+    public boolean holdLaser;
+    public boolean holdFollowLaser;
     public Actor actorFollowing;
     private Point3d laserSpotPos;
     private Point3d laserSpotPosSaveHold;
@@ -719,7 +696,6 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
     private boolean bLGBengaged = false;
     public boolean bHasPaveway = false;
     private long tLastLaserUpdate = -1L;
-    private long laserTimer;
     private static float maxPavewayFOVfrom = 45.0F;
     private static double maxPavewayDistance = 20000D;
 
@@ -875,7 +851,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "12xMk82";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(3, "BombGunMk82_gn16", 1);
@@ -894,7 +870,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "12xMk82HD";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(3, "BombGunMk82SnakeEye_gn16", 1);
@@ -913,7 +889,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "10xMk82+2xZuni";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU10_gn16", 1);
@@ -936,7 +912,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "10xMk82+2xLAU61";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU130_TC_gn16", 1);
@@ -959,7 +935,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "10xMk82HD+2xZuni";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU10_gn16", 1);
@@ -982,7 +958,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "10xMk82HD+2xLAU61";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU130_TC_gn16", 1);
@@ -1005,7 +981,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "6xMk20";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[26] = new Aircraft._WeaponSlot(3, "BombGunMk20RockeyeII_gn16", 1);
             a_lweaponslot[27] = new Aircraft._WeaponSlot(3, "BombGunMk20RockeyeII_gn16", 1);
             a_lweaponslot[28] = new Aircraft._WeaponSlot(3, "BombGunMk20RockeyeII_gn16", 1);
@@ -1016,7 +992,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "10xMk20";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(3, "BombGunMk20RockeyeII_gn16", 1);
             a_lweaponslot[15] = new Aircraft._WeaponSlot(3, "BombGunMk20RockeyeII_gn16", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(3, "BombGunMk20RockeyeII_gn16", 1);
@@ -1031,7 +1007,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "8xMk20+2xZuni";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU10_gn16", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(9, "Pylon_LAU10_gn16", 1);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon_LAU10_Cap_gn16", 1);
@@ -1050,7 +1026,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "8xMk20+2xLAU61";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU130_TC_gn16", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(9, "Pylon_LAU130_TC_gn16", 1);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon_LAU130_Cap_gn16", 1);
@@ -1147,7 +1123,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xLAU61+2xLAU68+6xMk82";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU131_TC_gn16", 1);
@@ -1178,7 +1154,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xLAU61+2xLAU68+6xMk82HD";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU131_TC_gn16", 1);
@@ -1209,7 +1185,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xLAU61+2xLAU68+6xMk20";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU131_TC_gn16", 1);
@@ -1306,7 +1282,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xLAU61+8xMk82";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(3, "BombGunMk82_gn16", 1);
@@ -1333,7 +1309,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xLAU61+8xMk82HD";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(3, "BombGunMk82SnakeEye_gn16", 1);
@@ -1360,7 +1336,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xLAU61+8xMk20";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(3, "BombGunMk20RockeyeII_gn16", 1);
@@ -1903,7 +1879,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "6xMk82+2xZuni+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU10_gn16", 1);
@@ -1922,7 +1898,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "6xMk82+2xLAU61+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU130_TC_gn16", 1);
@@ -1941,7 +1917,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "6xMk82HD+2xZuni+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU10_gn16", 1);
@@ -1960,7 +1936,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "6xMk82HD+2xLAU61+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU130_TC_gn16", 1);
@@ -1979,7 +1955,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "6xMk82HD+2xMk77m1+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(3, "BombGunMk77NapalmMod1_gn16", 1);
@@ -1994,7 +1970,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xCBU24+2xZuni+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU10_gn16", 1);
@@ -2011,7 +1987,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "8xMk82+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(3, "BombGunMk82_gn16", 1);
@@ -2026,7 +2002,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "8xMk82HD+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(3, "BombGunMk82SnakeEye_gn16", 1);
@@ -2128,7 +2104,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "8xMk20+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(3, "BombGunMk20RockeyeII_gn16", 1);
@@ -2143,7 +2119,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "6xMk20+2xZuni+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU10_gn16", 1);
@@ -2162,7 +2138,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "6xMk20+2xLAU61+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU130_TC_gn16", 1);
@@ -2181,7 +2157,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xMk77Napalm+2xMk82+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(3, "BombGunMk82_gn16", 1);
@@ -2192,7 +2168,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xMk77Napalm+2xZuni+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU10_gn16", 1);
@@ -2207,7 +2183,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xMk77Napalm+2xLAU61+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU130_gn16", 1);
@@ -2403,7 +2379,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(0, "MGunUSMk4HIPEG20mm4000rpm", 750);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(0, "MGunUSMk4HIPEG20mm4000rpm", 750);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_Mk4HIPEGpod_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_Mk4HIPEGpod_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(3, "BombGunMk82_gn16", 1);
@@ -2420,7 +2396,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(0, "MGunUSMk4HIPEG20mm4000rpm", 750);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(0, "MGunUSMk4HIPEG20mm4000rpm", 750);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_Mk4HIPEGpod_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_Mk4HIPEGpod_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(3, "BombGunMk82SnakeEye_gn16", 1);
@@ -2437,7 +2413,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(0, "MGunUSMk4HIPEG20mm4000rpm", 750);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(0, "MGunUSMk4HIPEG20mm4000rpm", 750);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_Mk4HIPEGpod_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_Mk4HIPEGpod_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(3, "BombGunMk20RockeyeII_gn16", 1);
@@ -2450,7 +2426,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(0, "MGunUSMk4HIPEG20mm4000rpm", 750);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(0, "MGunUSMk4HIPEG20mm4000rpm", 750);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_Mk4HIPEGpod_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_Mk4HIPEGpod_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(3, "BombGunMk20RockeyeII_gn16", 1);
@@ -2482,7 +2458,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(0, "MGunUSMk4HIPEG20mm4000rpm", 750);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(0, "MGunUSMk4HIPEG20mm4000rpm", 750);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_Mk4HIPEGpod_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_Mk4HIPEGpod_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU131_TC_gn16", 1);
@@ -2499,7 +2475,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(0, "MGunUSMk4HIPEG20mm4000rpm", 750);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(0, "MGunUSMk4HIPEG20mm4000rpm", 750);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_Mk4HIPEGpod_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_Mk4HIPEGpod_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU131_TC_gn16", 1);
@@ -2520,7 +2496,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(0, "MGunUSMk4HIPEG20mm4000rpm", 750);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(0, "MGunUSMk4HIPEG20mm4000rpm", 750);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_Mk4HIPEGpod_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_Mk4HIPEGpod_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU131_TC_gn16", 1);
@@ -2541,7 +2517,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot[2] = new Aircraft._WeaponSlot(0, "MGunUSMk4HIPEG20mm4000rpm", 750);
             a_lweaponslot[3] = new Aircraft._WeaponSlot(0, "MGunUSMk4HIPEG20mm4000rpm", 750);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_Mk4HIPEGpod_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_Mk4HIPEGpod_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU131_TC_gn16", 1);
@@ -2797,7 +2773,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "10xMk82+2xAIM9L";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU7_gn16", 1);
@@ -2820,7 +2796,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "10xMk82HD+2xAIM9L";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_USTER_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU7_gn16", 1);
@@ -2903,7 +2879,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "6xMk82+2xAIM9L+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU7_gn16", 1);
@@ -2922,7 +2898,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "6xMk82HD+2xAIM9L+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU7_gn16", 1);
@@ -2997,7 +2973,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xCBU24+2xAIM9L+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU7_gn16", 1);
@@ -3014,7 +2990,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "6xMk20+2xAIM9L+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU7_gn16", 1);
@@ -3033,7 +3009,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xMk77Napalm+2xAIM9L+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU7_gn16", 1);
@@ -3048,7 +3024,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "6xMk82+2x300Dt+Flare";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_SUU25Flare_gn16", 1);
@@ -3065,7 +3041,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "6xMk82HD+2x300Dt+Flare";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_SUU25Flare_gn16", 1);
@@ -3118,7 +3094,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xCBU24+2x300Dt+Flare";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_SUU25Flare_gn16", 1);
@@ -3133,7 +3109,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "6xMk20+2x300Dt+Flare";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_SUU25Flare_gn16", 1);
@@ -3150,7 +3126,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xMk77Napalm+2x300Dt+Flare";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_SUU25Flare_gn16", 1);
@@ -3257,7 +3233,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xAGM65B+6xMk82";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
@@ -3280,7 +3256,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xAGM65B+6xMk82HD";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
@@ -3303,7 +3279,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xAGM65B+6xMk20";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
@@ -3426,7 +3402,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xAGM65B+6xMk82+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
@@ -3445,7 +3421,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xAGM65B+6xMk82HD+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
@@ -3464,7 +3440,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xAGM65B+6xMk20+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
@@ -3553,7 +3529,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xAGM65D+6xMk82+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
@@ -3572,7 +3548,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xAGM65D+6xMk82HD+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
@@ -3591,7 +3567,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xAGM65D+6xMk20+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
@@ -3710,7 +3686,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xAGM65E+6xMk82+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
@@ -3729,7 +3705,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xAGM65E+6xMk82HD+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
@@ -3748,7 +3724,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xAGM65E+6xMk20+2x300Dt";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERfw_gn16", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_USMERmd_gn16", 1);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_LAU117_gn16", 1);
