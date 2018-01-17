@@ -696,16 +696,16 @@ public class Gear {
 						FM.Or.set(L.getOrient());
 					//By PAL, Carrier MOD
 					//By PAL, Section to Set the Catapult from .ini, etc. (Western + PAL)
-						if(!bAlreadySetCatapult) {
+						if (!bAlreadySetCatapult) {
 							bCatapultSet = setCatapultOffset(bigshipgeneric1, new SectFile("com/maddox/il2/objects/Catapults.ini"));
 							bAlreadySetCatapult = true;
 						}
-						if(bCatapultAllow && !bCatapultArmed && bCatapultSet) {
+						if (bCatapultAllow && !bCatapultArmed && bCatapultSet) {
 							bigshipgeneric1.getAirport().pos.getCurrent();
 							Point3d point3d = L.getPoint();
 							CellAirField cellairfield = bigshipgeneric1.getCellTO();
-							for(int k1 = 0; k1 < iCatapults; k1++) {
-								if((dCatapultOffsetX[k1] != 0.0D && dCatapultOffsetY[k1] != 0.0D)
+							for (int k1 = 0; k1 < iCatapults; k1++) {
+								if ((dCatapultOffsetX[k1] != 0.0D && dCatapultOffsetY[k1] != 0.0D)
 								|| bCatapultHookExist[k1]) {
 									double d5 = 0.0D;
 									double d6 = 0.0D;
@@ -720,7 +720,7 @@ public class Gear {
 									loc1.add(FM.brakeShoeLastCarrier.pos.getAbs());
 									Point3d point3d1 = loc1.getPoint();
 									double d7 = Math.abs((point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y));
-									if(d7 <= 100D) {
+									if (d7 <= 100D) {
 										L.set(d6, d5, FM.brakeShoeLoc.getZ(), FM.brakeShoeLoc.getAzimut(), FM.brakeShoeLoc.getTangage(), FM.brakeShoeLoc.getKren());
 										L.add(FM.brakeShoeLastCarrier.pos.getAbs());
 										FM.Loc.set(L.getPoint());
@@ -731,7 +731,7 @@ public class Gear {
 										FM.brakeShoeLoc.set(FM.actor.pos.getAbs());
 										FM.brakeShoeLoc.sub(FM.brakeShoeLastCarrier.pos.getAbs());
 										iCatapultAlreadySetNum = k1;
-										if(bHasBlastDeflector) {
+										if (bHasBlastDeflector) {
 											((TypeBlastDeflector)bigshipgeneric1).setBlastDeflector(k1, 1);
 										}
 										break;
@@ -751,11 +751,11 @@ public class Gear {
 						FM.brakeShoe = false;
 					}
 					//By PAL, to later report how long has been working the Catapult
-					if(bCatapultArmed && FM.canChangeBrakeShoe && FM.brakeShoe)
+					if (bCatapultArmed && FM.canChangeBrakeShoe && FM.brakeShoe)
 						lCatapultStartTime = System.currentTimeMillis();
 				} else {
 				//By PAL, this block is else if(FM.brakeShoe)
-					if(nOfGearsOnGr == 3 && nP == 3 && FM.Vrel.lengthSquared() < 1.0D) {
+					if (nOfGearsOnGr == 3 && nP == 3 && FM.Vrel.lengthSquared() < 1.0D) {
 						FM.brakeShoeLoc.set(FM.actor.pos.getCurrent());
 						FM.brakeShoeLoc.sub(FM.brakeShoeLastCarrier.pos.getCurrent());
 						FM.canChangeBrakeShoe = true;
@@ -766,7 +766,7 @@ public class Gear {
 						((TypeBlastDeflector) bigshipgeneric1).setBlastDeflector(getCatapultNumber(), 0);
 					}
 					//By PAL, Catapult pull not in EI, and as a Direct Force
-					if(bCatapultArmed) {
+					if (bCatapultArmed) {
 						//By PAL, this sets orientation of the plane (aligned with catapult)
 						FM.Or.setYPR(FM.brakeShoeLastCarrier.pos.getAbsOrient().getYaw() + (float)dCatapultYaw[getCatapultNumber()],
 									FM.Or.getPitch(),//FM.brakeShoeLastCarrier.pos.getAbsOrient().getPitch() + Pitch + 2.0F, //FM.Or.getPitch() < 5.0F ? FM.Or.getPitch(): 5.0F,
@@ -794,9 +794,9 @@ public class Gear {
 							 //TODO: +++ CTO Mod 4.12 +++
 							//By PAL, to avoid excessive Catapult Stress!!!!!!!!!!!!!
 							float enginefc = 0F;
-							for(int en = 0; en < FM.EI.getNum(); en++)
+							for (int en = 0; en < FM.EI.getNum(); en++)
 								enginefc += FM.EI.engines[en].getEngineForce().x;
-							if(FM.getLoadDiff() < FM.getLimitLoad() * 1.5F)
+							if (FM.getLoadDiff() < FM.getLimitLoad() * 1.5F)
 								FM.producedAF.x += (dCatapultForce - enginefc);
 //								FM.producedAF.x += dCatapultForce;
 							//By PAL, Diagonal Force towards ground (Catapult gear)
@@ -827,10 +827,10 @@ public class Gear {
 			if ((FM.actor instanceof TypeSeaPlane) || (FM.actor instanceof HE_LERCHE3)) FM.canChangeBrakeShoe = false;
 			//By PAL, to indicate if Catapult is not armed anymore (when it left Carrier Deck)
 			float Vfly;
-			if(FM.Vmin < 56F) Vfly = 69.5F;  // 250km/h static when Vmin < 200km/h
-			else if(FM.Vmin < 61.1F) Vfly = FM.Vmin + 13.9F;  // Vmin + 50km/h when Vmin < 220km/h
+			if (FM.Vmin < 56F) Vfly = 69.5F;  // 250km/h static when Vmin < 200km/h
+			else if (FM.Vmin < 61.1F) Vfly = FM.Vmin + 13.9F;  // Vmin + 50km/h when Vmin < 220km/h
 			else Vfly = FM.Vmin * 1.25F;
-			if((!bUnderDeck || FM.getSpeed() - carrierSpeedKMH / 3.6F > Vfly || FM.getSpeedKMH() - carrierSpeedKMH > 340F) && bCatapultArmed)
+			if ((!bUnderDeck || FM.getSpeed() - carrierSpeedKMH / 3.6F > Vfly || FM.getSpeedKMH() - carrierSpeedKMH > 340F) && bCatapultArmed)
 				disarmCatapult();
 		}
 		if (!bIsMaster) return;
@@ -850,14 +850,14 @@ public class Gear {
 		boolean bIsTypeSupersonic = false;
 		boolean bIsTypeFastJet = false;
 		boolean bIsJets = false;
-		if(((Interpolate) (FM)).actor instanceof TypeSupersonic)
+		if (((Interpolate) (FM)).actor instanceof TypeSupersonic)
 			bIsTypeSupersonic = true;
-		if(((Interpolate) (FM)).actor instanceof TypeFastJet)
+		if (((Interpolate) (FM)).actor instanceof TypeFastJet)
 			bIsTypeFastJet = true;
-		if(FM.EI.engines[0].getType() == 2)
+		if (FM.EI.engines[0].getType() == 2)
 			bIsJets = true;
 		//By PAL, Western, Boost ; reverting old code by request on 15th/Jan./2017
-		if(bCatapultBoost)
+		if (bCatapultBoost)
 		{
 //			//By PAL, this didn't work. Attempt to Close Cockpit of Jets it they are open, case 128 from HotKeys:
 //			//if(!((RealFlightModel)FM).isRealMode())
@@ -925,7 +925,7 @@ public class Gear {
 		}
 		else
 			vTarget += (FM.M.getFullMass() - FM.M.massEmpty) * 0.0013F;
-		if(vTarget > 85F) vTarget = 85F;   // Limitter for 306km/h on the catapult's end
+		if (vTarget > 85F) vTarget = 85F;   // Limitter for 306km/h on the catapult's end
 		carrierSpeedKMH = FM.getSpeedKMH();
 		if (bDebugCatapult) {
 			System.out.println("*** Catapult vTarget=" + vTarget + " m/s (" + (int)(vTarget * 3.6F) + " km/h) in auto calculation.");
@@ -1111,7 +1111,7 @@ public class Gear {
 	//  By PAL, Shock Absorber Effect (Vs.z typically between -1..-3 when landing
 	/////////////////////////////////////////////////////////////////////////////////////
 		d1 -= 40000D * NormalVPrj;
-		if(Vs.z > 0.0F) {
+		if (Vs.z > 0.0F) {
 			float abs = gWheelSinking[i] * shockAbsorber;
 			if (abs > 1.0F) abs = 1.0F;
 			Tn.scale(d1 * (1.0F - abs), Normal);
@@ -1119,7 +1119,7 @@ public class Gear {
 		}
 		else Tn.scale(d1, Normal);
 		double d5 = 0.0001D * d1;
-		if(d5 > 3.3D)
+		if (d5 > 3.3D)
 			d5 = 3.3D;  // TODO: Limiter to avoid heavy planes bouncing on the ground
 		double d6 = FM.CT.getBrake();
 		double d7 = FM.CT.getRudder();
@@ -1165,7 +1165,7 @@ public class Gear {
 					break;
 				case 3: // diff - toe brakes (By PAL, if not real independent control I will use Rudder)
 					//By PAL, if Pedal Brakes enough strong and no Diff, use only Rudder Control (not Real Diff)
-					if(db > 0.25F && Math.abs(da) < 0.1F) {
+					if (db > 0.25F && Math.abs(da) < 0.1F) {
 						if (d7 > 0.1D)
 							db += d8 * db * (d7 - 0.1D);
 						if (d7 < -0.1D)
@@ -1284,7 +1284,7 @@ public class Gear {
 					// msg1 = false;}
 					boolean bTaxing = FM.Vwld.length() < 8.33F;  // (now taxing, speed < 30km/h)
 					gVelocity[i] = ForwardVPrj;
-					if(bTaxing)
+					if (bTaxing)
 						tmpV.set(1.0D, -1.04D * (double) FM.CT.getRudder(), 0.0D); // taxing
 					else
 						tmpV.set(1.0D, -0.5D * (double) FM.CT.getRudder(), 0.0D); // stock
@@ -1302,13 +1302,13 @@ public class Gear {
 					if (d19 < 0.01D) d19 = 0.01D;
 					maxFric = bTaxing ? (double)Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, 4400F, 6000F) : 4000F;
 					fricF = -100D * ForwardVPrj;
-					if(bTaxing)
+					if (bTaxing)
 						fricR = (double)Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, -550F, -2500F) * RightVPrj;  // taxing
 					else
 						fricR = -500D * RightVPrj;  // stock
 					if (fricR > maxFric) fricR = maxFric;
 					if (fricR < -maxFric) fricR = -maxFric;
-					if(bTaxing)
+					if (bTaxing)
 						fricF -= Math.abs(fricR / (double)Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, 8.0F, 2.8F));   // braking effect in taxing turn
 					if (fricF > maxFric) fricF = maxFric;
 					if (fricF < -maxFric) fricF = -maxFric;
@@ -1609,7 +1609,7 @@ public class Gear {
 
 		//  By PAL, CatapultSteam introduced originally by PAL, Multileveled by Western
 		//  By western, steam density is controlled by temperature and weather for artistic screenshot or movie
-		if(bCatapultArmed && isUnderDeck() && !FM.brakeShoe) {
+		if (bCatapultArmed && isUnderDeck() && !FM.brakeShoe) {
 			if (FM.brakeShoeLastCarrier != null && catEff == null && bSteamCatapult) {
 				FM.actor.pos.getAbs(Aircraft.tmpLoc1);
 				FM.brakeShoeLoc.get(Pn);
@@ -1762,10 +1762,10 @@ public class Gear {
 
 		// By western0221: set each wheels radius values
 		double dtemp = (double) sectfile.get("Gear", "WheelDiameterLR", -1.0F);
-		if(dtemp > 0D)
+		if (dtemp > 0D)
 			gWheelRadius[0] = gWheelRadius[1] = dtemp * 0.5D;
 		dtemp = (double) sectfile.get("Gear", "WheelDiameterC", -1.0F);
-		if(dtemp > 0D)
+		if (dtemp > 0D)
 			gWheelRadius[2] = dtemp * 0.5D;
 
 		// By western0221: set max nose gear steering degree for realistic ground turn
@@ -1908,7 +1908,7 @@ public class Gear {
 					bSteamCatapult = true;
 					bCatapultHookExist[k] = true;
 				} else {
-					System.out.println("Gear - 1858 : Hooks mismatching _SCat" + (k + 1) + "_start and _SCat" + k + 1 + "_end");
+					System.out.println("Gear - 1911 : Hooks mismatching _SCat" + (k + 1) + "_start and _SCat" + k + 1 + "_end");
 					break;
 				}
 			}
@@ -1918,7 +1918,7 @@ public class Gear {
 					bSteamCatapult = false;
 					bCatapultHookExist[k] = true;
 				} else {
-					System.out.println("Gear - 1868 : Hooks mismatching _Cat" + (k + 1) + "_start and _Cat" + k + "_end");
+					System.out.println("Gear - 1921 : Hooks mismatching _Cat" + (k + 1) + "_start and _Cat" + k + "_end");
 					break;
 				}
 			}
@@ -1936,7 +1936,7 @@ public class Gear {
 
 	private boolean findHook(HierMesh hiermesh, String s, Loc loc1) {
 		int i = hiermesh.hookFind(s);
-		if(i == -1) {
+		if (i == -1) {
 			return false;
 		} else {
 			Point3d pp = new Point3d();
@@ -2027,12 +2027,12 @@ public class Gear {
 	//By PAL, for Chocks, show them
 	private void showCatapult(boolean isCarrier, boolean isCatapult) {
 		//By PAL, if not activated, don't do anything.
-		if(!bShowCatGear) return;
+		if (!bShowCatGear) return;
 
-		if(!isCarrier) return;
+		if (!isCarrier) return;
 
-		if(isCatapult == bCatHook) {
-			if(bCatHook && CatH != null) {
+		if (isCatapult == bCatHook) {
+			if (bCatHook && CatH != null) {
 				Loc locGearC = new Loc();
 				Loc locTemp = new Loc();
 				Orientation orTemp = new Orientation();
@@ -2062,9 +2062,9 @@ public class Gear {
 		}
 		bCatHook = isCatapult;
 		//By PAL, now I check status of Catapult
-		if(!bCatHook) {
+		if (!bCatHook) {
 			//By PAL, this will destroy Catapult Hook
-			if(CatH != null) {
+			if (CatH != null) {
 				CatH.destroy();
 				CatH = null;
 				//By western, move Catapult launch bar
@@ -2075,7 +2075,7 @@ public class Gear {
 			}
 		} else {
 			//By PAL, this will destroy Catapult Hook
-			if(CatH != null) {
+			if (CatH != null) {
 				CatH.destroy();
 				CatH = null;
 			}
@@ -2084,8 +2084,8 @@ public class Gear {
 			HierMesh hiermesh = actorhmesh.hierMesh();
 
 			//By PAL, new in Test, pose Hooks
-			for(int i = 0; i < 3; i++)
-				if(pnti[i] < 0) return;
+			for (int i = 0; i < 3; i++)
+				if (pnti[i] < 0) return;
 			//By PAL, Left Wheel
 			HM.hookMatrix(pnti[0], M4);
 			double PosLx = M4.m03;
@@ -2106,11 +2106,12 @@ public class Gear {
 			try {
 				//By PAL, I'm working based on the Wheel Hook now.
 				hookc = (HookNamed)FM.actor.findHook("_ClipCGear");
-				if(hookc == null)
-					System.out.println("_ClipCGear not found!");
+				if (hookc == null)
+					System.out.println("_ClipCGear not found! on " + this);
 				else {
 					//By PAL, the wheel could be: hiermesh.chunkFind("GearL4_D0") / "GearL3_D0" / "GearL2_D0" / "GearL1_D0"
-					System.out.println("Chunk Central Landing Gear: '" + hookc.chunkName() + "'");
+					if (bDebugCatapult)
+						System.out.println("Chunk Central Landing Gear: '" + hookc.chunkName() + "' on " + this);
 					//By PAL, set the one where the Hook is
 					hiermesh.setCurChunk(hookc.chunkNum());
 					hiermesh.getChunkLocObj(locCatH);
@@ -2153,7 +2154,7 @@ public class Gear {
 						locCatH.set(Pship, ori);
 						CatH = new ActorSimpleMesh("3DO/Arms/CatHook/CableHook.sim");
 						CatH.pos.setAbs(locCatH);
-						CatH.mesh().setScaleXYZ(1F, H / 1.4F, H / 1.4F); //1.5F);
+//						CatH.mesh().setScaleXYZ(1F, H / 1.4F, H / 1.4F); //1.5F);
 					}
 				}
 			}
@@ -2163,17 +2164,17 @@ public class Gear {
 
 	private void showChocks(boolean isCarrier, boolean isCatapult) {
 		//By PAL, if not activated, don't do anything.
-		if(!bShowChocks) return;
+		if (!bShowChocks) return;
 
 		//By PAL, with Catapultit shouldn't show any Chock
-		if(isCatapult) {
+		if (isCatapult) {
 			//By PAL, this will destroy Chock
-			if(ChL != null) {
+			if (ChL != null) {
 				ChL.destroy();
 				ChL = null;
 			}
 			//By PAL, this will destroy Chock
-			if(ChR != null) {
+			if (ChR != null) {
 				ChR.destroy();
 				ChR = null;
 			}
@@ -2181,13 +2182,13 @@ public class Gear {
 		}
 
 		//By PAL, if brakeShoe doesn't change, don't do anything.
-		if(FM.brakeShoe == bChocks)
+		if (FM.brakeShoe == bChocks)
 			return;
 		bChocks = FM.brakeShoe;
-		if(!bChocks) {
+		if (!bChocks) {
 			//By PAL, this will destroy Chock and start Land Auxiliar (if it was not a carrier)
-			if(ChL != null) {
-				if(!isCarrier) {
+			if (ChL != null) {
+				if (!isCarrier) {
 					ChL.pos.getAbs(locL); //By PAL, recupero la posición actual del Chock L.
 					Orient otemp = new Orient();
 					otemp.set(locL.getOrient()); //FM.actor.pos.getAbs()
@@ -2196,7 +2197,7 @@ public class Gear {
 					opar.wrap360();
 					otemp.increment(90F, 0F, 0F); //By PAL, perpendicular
 					//By PAL, for single engines, some degrees in advance
-					if(FM.EI.engines.length == 1)
+					if (FM.EI.engines.length == 1)
 						otemp.increment(30F, 0F, 0F);
 					otemp.wrap360();
 					locL.set(otemp);
@@ -2207,8 +2208,8 @@ public class Gear {
 			}
 
 			//By PAL, this will destroy Chock and start Land Auxiliar (if it was not a carrier)
-			if(ChR != null) {
-				if(!isCarrier) {
+			if (ChR != null) {
+				if (!isCarrier) {
 					ChR.pos.getAbs(locR); //By PAL, recupero la posición actual del Chock R.
 					Orient otemp = new Orient();
 					otemp.set(locR.getOrient()); //FM.actor.pos.getAbs()
@@ -2218,7 +2219,7 @@ public class Gear {
 					//By PAL, perpendicular
 					otemp.increment(90F, 0F, 0F);
 					//By PAL, for single engines, some degrees in advance
-					if(FM.EI.engines.length == 1)
+					if (FM.EI.engines.length == 1)
 						otemp.increment(-30F, 0F, 0F);
 					otemp.wrap360();
 					locR.set(otemp);
@@ -2230,23 +2231,20 @@ public class Gear {
 		} else {
 		//By PAL, if chocks are set in front of the Catapult, I don't have to show them!
 			ActorHMesh actorhmesh = (ActorHMesh)FM.actor;
-			if(!Actor.isValid(actorhmesh)) {
+			if (!Actor.isValid(actorhmesh)) {
 				System.out.println("Not valid Actor Mesh for Chocks");
 				return;
 			}
 			HierMesh hiermesh = actorhmesh.hierMesh();
 
 			//By PAL, new in Test, pose Hooks
-			for(int i = 0; i < 3; i++)
-				if(pnti[i] < 0) return;
+			for (int i = 0; i < 3; i++)
+				if (pnti[i] < 0) return;
 			//By PAL, Left Wheel
 			HM.hookMatrix(pnti[0], M4);
 			Point3d pLgr = new Point3d(M4.m03, M4.m13, M4.m23);
 			//By PAL, Right Wheel
 			HM.hookMatrix(pnti[1], M4);
-			double PosRx = M4.m03;
-			double PosRy = M4.m13;
-			double PosRz = M4.m23;
 			Point3d pRgr = new Point3d(M4.m03, M4.m13, M4.m23);
 			//By PAL, ***********create Chocks for Left Wheel***********
 			try {
@@ -2257,34 +2255,38 @@ public class Gear {
 				}
 				//By PAL, I'm working based on the Wheel Hook now.
 				hookl = (HookNamed)FM.actor.findHook("_ClipLGear");
-				if(hookl == null)
-					System.out.println("_ClipLGear not found!");
+				if (hookl == null)
+					System.out.println("_ClipLGear not found! on " + this + " .... cannot set Chock 3d msh!");
 				else {
-					int il = hiermesh.chunkFind("GearL2_D0");
-					hiermesh.setCurChunk(il);
-					hiermesh.getChunkLocObj(locL0);
-					Point3f po1 = new Point3f();
-					Point3f po2 = new Point3f();
-					hiermesh.getChunkCurVisBoundBox(po1, po2);
-					double zAx = locL0.getZ();
-					float eY = Math.abs(po1.y - po2.y) * 2F;// + 0.5F;
+//					int il = hiermesh.chunkFind("GearL2_D0");
+//					hiermesh.setCurChunk(il);
+//					hiermesh.getChunkLocObj(locL0);
+//					Point3f po1 = new Point3f();
+//					Point3f po2 = new Point3f();
+//					hiermesh.getChunkCurVisBoundBox(po1, po2);
+//					double zAx = locL0.getZ();
+//					float eY = Math.abs(po1.y - po2.y) * 2F;// + 0.5F;
 					Orient tempO = new Orient(0F, Pitch, 0F);
 					Point3d tempP = new Point3d(0D, 0D, gWheelSinking[0]);
 					tempO.transform(tempP);
 					pLgr.add(tempP);
 					locL.set(pLgr);
 					locL.set(new Orient(180F, Pitch, 0F));
-					Point3d pGear =   locL0.getPoint();
-					Point3d pGround = locL.getPoint();
-					float r = (float)Math.abs(pGround.distance(pGear)); //By PAL, radius.
-					float eX = r;
+					if (Pitch > 0.8D && Pitch < 310D) {
+						tempP.set(-Pitch * 0.006D, 0D, Pitch * 0.006D * Math.tan(Math.toRadians(Pitch)));
+						locL.add(tempP);
+					}
+//					Point3d pGear =   locL0.getPoint();
+//					Point3d pGround = locL.getPoint();
+//					float r = (float)Math.abs(pGround.distance(pGear)); //By PAL, radius.
+//					float eX = r;
 					locL.add(FM.actor.pos.getCurrent());
-					ChL = new ActorSimpleMesh(bUnderDeck ? "3DO/Arms/ChocksNavy/mono.sim" : "3DO/Arms/Chocks/mono.sim");
-					ChL.pos.setBase(FM.actor, hookl, false);//.setAbs(locL);
+					ChL = getChockMesh();
+					ChL.pos.setBase(FM.actor, hookl, false);
 					ChL.pos.setAbs(locL);
 					ChL.pos.changeHookToRel();
 					ChL.pos.resetAsBase();
-					ChL.mesh().setScaleXYZ(eX, eY, eX);
+//					ChL.mesh().setScaleXYZ(eX, eY, eX);
 				}
 			}
 			catch (Exception e){}
@@ -2298,34 +2300,64 @@ public class Gear {
 				}
 				//By PAL, I'm working based on the Wheel Hook now.
 				hookr = (HookNamed)FM.actor.findHook("_ClipRGear");
-				if(hookr == null)
-					System.out.println("_ClipRGear not found!");
+				if (hookr == null)
+					System.out.println("_ClipRGear not found! on " + this + " .... cannot set Chock 3d msh!");
 				else {
-					int ir = hiermesh.chunkFind("GearR2_D0");
-					hiermesh.setCurChunk(ir);
-					hiermesh.getChunkLocObj(locR0);
-					Point3f po1 = new Point3f();
-					Point3f po2 = new Point3f();
-					hiermesh.getChunkCurVisBoundBox(po1, po2);
+//					int ir = hiermesh.chunkFind("GearR2_D0");
+//					hiermesh.setCurChunk(ir);
+//					hiermesh.getChunkLocObj(locR0);
+//					Point3f po1 = new Point3f();
+//					Point3f po2 = new Point3f();
+//					hiermesh.getChunkCurVisBoundBox(po1, po2);
 					//double zF = locR.getZ() - Math.abs(po1.z - po2.z) / 2D;
-					double zAx = locR0.getZ();
-					double zGr = PosRz; //Engine.land().HQ(locR0.getX(), locR0.getY());
-					float eX = (float)Math.abs(zAx - zGr);// / 0.45F;// + (float)(Math.abs(zAx - zGr) / ((Math.abs(po1.x - po2.x) / 2F))); //   Math.abs(po1.x - po2.x) * 0.9F;
-					float eY = Math.abs(po1.y - po2.y) * 2F;// + 0.5F;
-					locR.set(PosRx, PosRy, PosRz + gWheelSinking[1], 0F, -Pitch, 0F);
-					//locR.set(Pnt[1].x, Pnt[1].y, Pnt[1].z + gWheelSinking[1], 0F, -Pitch, 0F);
+//					double zAx = locR0.getZ();
+//					double zGr = PosRz; //Engine.land().HQ(locR0.getX(), locR0.getY());
+//					float eX = (float)Math.abs(zAx - zGr);// / 0.45F;// + (float)(Math.abs(zAx - zGr) / ((Math.abs(po1.x - po2.x) / 2F))); //   Math.abs(po1.x - po2.x) * 0.9F;
+//					float eY = Math.abs(po1.y - po2.y) * 2F;// + 0.5F;
+					Orient tempO = new Orient(0F, Pitch, 0F);
+					Point3d tempP = new Point3d(0D, 0D, gWheelSinking[1]);
+					tempO.transform(tempP);
+					pRgr.add(tempP);
+					locR.set(pRgr);
+					locR.set(new Orient(0F, -Pitch, 0F));
+					if (Pitch > 0.8D && Pitch < 310D) {
+						tempP.set(-Pitch * 0.006D, 0D, Pitch * 0.006D * Math.tan(Math.toRadians(Pitch)));
+						locR.add(tempP);
+					}
 					locR.add(FM.actor.pos.getCurrent());
-					//ChR = new ActorSimpleMesh("3DO/Arms/Chocks/mono.sim", locR);//  "3DO/Arms/Chock/mono.sim", false, locL, 0F, p1, p1 /*+ 2F*/, 0F, 1F, p2);
-					ChR = new ActorSimpleMesh(bUnderDeck ? "3DO/Arms/ChocksNavy/mono.sim" : "3DO/Arms/Chocks/mono.sim");
-					ChR.pos.setBase(FM.actor, hookr, false);//.setAbs(locL);
+					ChR = getChockMesh();
+					ChR.pos.setBase(FM.actor, hookr, false);
 					ChR.pos.setAbs(locR);
 					ChR.pos.changeHookToRel();
 					ChR.pos.resetAsBase();
-					ChR.mesh().setScaleXYZ(eX, eY, eX);
+//					ChR.mesh().setScaleXYZ(eX, eY, eX);
 				}
 			}
 			catch (Exception e){}
 		}
 	}
 
+	private ActorSimpleMesh getChockMesh() {
+		ActorSimpleMesh asm = null;
+		if (bUnderDeck) {
+			String s = ((BigshipGeneric) FM.brakeShoeLastCarrier).getClass().getName();
+			int i = s.lastIndexOf('.');
+			int j = s.lastIndexOf('$');
+			if (i < j) i = j;
+			String sShipName = s.substring(i + 1);
+			if (sShipName.startsWith("USS"))
+				asm = new ActorSimpleMesh("3DO/Arms/ChocksUSN/mono.sim");
+			else
+				asm = new ActorSimpleMesh("3DO/Arms/ChocksNavy/mono.sim");
+			}
+		else {
+			float fyS = Property.floatValue(FM.actor.getClass(), "yearService", 0.0F);
+			String soC = Property.stringValue(FM.actor.getClass(), "originCountry", null);
+			if (soC != null && soC.equals(PaintScheme.countryUSA) && fyS > 1950.0F)
+				asm = new ActorSimpleMesh("3DO/Arms/ChocksUSJet/mono.sim");
+			else
+				asm = new ActorSimpleMesh("3DO/Arms/Chocks/mono.sim");
+		}
+		return asm;
+	}
 }
