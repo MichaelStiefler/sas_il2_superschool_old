@@ -539,32 +539,7 @@ public class Gear {
 ///////////////////////////////////////////////////////////////////////////////////////////
 // By PAL, arrestor cable Effect, multiplied!
 ///////////////////////////////////////////////////////////////////////////////////////////
-//							double d4 = 1000D;
-//							Class theTypeSupersonicClass = null;
-//							Class theTypeFastJetClass = null;
-//							try
-//							{
-//								theTypeSupersonicClass = Class.forName("com.maddox.il2.objects.air.TypeSupersonic");
-//							}
-//							catch(Exception exception) { }
-//							try
-//							{
-//								theTypeFastJetClass = Class.forName("com.maddox.il2.objects.air.TypeFastJet");
-//							}
-//							catch(Exception exception1) { }
-//							if(Mission.curYear() > 1948)
-//							{
-//								if(theTypeSupersonicClass != null && FM.actor != null && FM.actor.getClass().isInstance(theTypeSupersonicClass))
-//									d4 = 3000D;
-//								if(theTypeFastJetClass != null && FM.actor != null && FM.actor.getClass().isInstance(theTypeFastJetClass))
-//									d4 = 3000D;
-//							}
-//							if(FM.Vmin > 190F)
-//								d4 += (FM.Vmin - 190F) * 50F;
-//							if(FM.M.getFullMass() > 4500F)
-//								d4 += FM.M.getFullMass() - 4500F;
 							double dist = 10D;
-							//double dist = cellairfield.leftUpperCorner().y - dCatapultOffsetY[i] - 1F;
 							double mass = FM.M.getFullMass() * 0.01F;
 							double vmin = FM.VminFLAPS * 1.1D;
 
@@ -773,37 +748,19 @@ public class Gear {
 										FM.brakeShoeLastCarrier.pos.getAbsOrient().getRoll());
 
 						//By PAL, if Catapult is Set, Chocks is not set, then give impulse to it
-						//if(nOfGearsOnGr == 3 && nP == 3)
-//						bigshipgeneric1.getAirport().pos.getCurrent();
-//						CellAirField cellairfield = bigshipgeneric1.getCellTO();
-//						double d5 = -cellairfield.leftUpperCorner().x - dCatapultOffsetX[iCatapultNumber];
-//						double d6 = cellairfield.leftUpperCorner().y - dCatapultOffsetY[iCatapultNumber];
-//						Loc loc1 = new Loc(d6, d5, 0.0D, 0.0F, 0.0F, 0.0F);
-//						loc1.add(FM.brakeShoeLastCarrier.pos.getAbs());
-//						Point3d point3d1 = loc1.getPoint();
-//						double d7 = Math.abs((point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y));
 
-						//if (FM.brakeShoeLastCarrier.pos.getAbs().getX())
-						{
-//							Orient planeO;
-//							FM.Or.set(planeO);
-//							if(planeO.getKren() > 5.0F)
-//								planeO.set(planeO.getAzimut(), 5F, planeO.getTangage());
-//							FM.producedAM.set(0D, 0D, 0D);
-//							FM.producedAMM.set(0D, 0D, 0D);
-							 //TODO: +++ CTO Mod 4.12 +++
-							//By PAL, to avoid excessive Catapult Stress!!!!!!!!!!!!!
-							float enginefc = 0F;
-							for (int en = 0; en < FM.EI.getNum(); en++)
-								enginefc += FM.EI.engines[en].getEngineForce().x;
-							if (FM.getLoadDiff() < FM.getLimitLoad() * 1.5F)
-								FM.producedAF.x += (dCatapultForce - enginefc);
-//								FM.producedAF.x += dCatapultForce;
-							//By PAL, Diagonal Force towards ground (Catapult gear)
-							//By western, add limitter to avoid breaking gears or ordnances
-							FM.producedAF.z -= Math.min(0.3F * dCatapultForce, 2400D);
-							//System.out.println("Pushing...");
-						}
+						 //TODO: +++ CTO Mod 4.12 +++
+						//By PAL, to avoid excessive Catapult Stress!!!!!!!!!!!!!
+						float enginefc = 0F;
+						for (int en = 0; en < FM.EI.getNum(); en++)
+							enginefc += FM.EI.engines[en].getEngineForce().x;
+						if (FM.getLoadDiff() < FM.getLimitLoad() * 1.5F)
+							FM.producedAF.x += (dCatapultForce - enginefc);
+//							FM.producedAF.x += dCatapultForce;
+						//By PAL, Diagonal Force towards ground (Catapult gear)
+						//By western, add limitter to avoid breaking gears or ordnances
+						FM.producedAF.z -= Math.min(0.3F * dCatapultForce, 2400D);
+						//System.out.println("Pushing...");
 					}
 					//By PAL, End of Carrier MOD
 				}
@@ -2258,14 +2215,6 @@ public class Gear {
 				if (hookl == null)
 					System.out.println("_ClipLGear not found! on " + this + " .... cannot set Chock 3d msh!");
 				else {
-//					int il = hiermesh.chunkFind("GearL2_D0");
-//					hiermesh.setCurChunk(il);
-//					hiermesh.getChunkLocObj(locL0);
-//					Point3f po1 = new Point3f();
-//					Point3f po2 = new Point3f();
-//					hiermesh.getChunkCurVisBoundBox(po1, po2);
-//					double zAx = locL0.getZ();
-//					float eY = Math.abs(po1.y - po2.y) * 2F;// + 0.5F;
 					Orient tempO = new Orient(0F, Pitch, 0F);
 					Point3d tempP = new Point3d(0D, 0D, gWheelSinking[0]);
 					tempO.transform(tempP);
@@ -2276,17 +2225,12 @@ public class Gear {
 						tempP.set(-Pitch * 0.006D, 0D, Pitch * 0.006D * Math.tan(Math.toRadians(Pitch)));
 						locL.add(tempP);
 					}
-//					Point3d pGear =   locL0.getPoint();
-//					Point3d pGround = locL.getPoint();
-//					float r = (float)Math.abs(pGround.distance(pGear)); //By PAL, radius.
-//					float eX = r;
 					locL.add(FM.actor.pos.getCurrent());
 					ChL = getChockMesh();
 					ChL.pos.setBase(FM.actor, hookl, false);
 					ChL.pos.setAbs(locL);
 					ChL.pos.changeHookToRel();
 					ChL.pos.resetAsBase();
-//					ChL.mesh().setScaleXYZ(eX, eY, eX);
 				}
 			}
 			catch (Exception e){}
@@ -2303,17 +2247,6 @@ public class Gear {
 				if (hookr == null)
 					System.out.println("_ClipRGear not found! on " + this + " .... cannot set Chock 3d msh!");
 				else {
-//					int ir = hiermesh.chunkFind("GearR2_D0");
-//					hiermesh.setCurChunk(ir);
-//					hiermesh.getChunkLocObj(locR0);
-//					Point3f po1 = new Point3f();
-//					Point3f po2 = new Point3f();
-//					hiermesh.getChunkCurVisBoundBox(po1, po2);
-					//double zF = locR.getZ() - Math.abs(po1.z - po2.z) / 2D;
-//					double zAx = locR0.getZ();
-//					double zGr = PosRz; //Engine.land().HQ(locR0.getX(), locR0.getY());
-//					float eX = (float)Math.abs(zAx - zGr);// / 0.45F;// + (float)(Math.abs(zAx - zGr) / ((Math.abs(po1.x - po2.x) / 2F))); //   Math.abs(po1.x - po2.x) * 0.9F;
-//					float eY = Math.abs(po1.y - po2.y) * 2F;// + 0.5F;
 					Orient tempO = new Orient(0F, Pitch, 0F);
 					Point3d tempP = new Point3d(0D, 0D, gWheelSinking[1]);
 					tempO.transform(tempP);
@@ -2330,7 +2263,6 @@ public class Gear {
 					ChR.pos.setAbs(locR);
 					ChR.pos.changeHookToRel();
 					ChR.pos.resetAsBase();
-//					ChR.mesh().setScaleXYZ(eX, eY, eX);
 				}
 			}
 			catch (Exception e){}
