@@ -699,10 +699,10 @@ public class Missile extends Rocket {
 	private void doStart(float f) {
 		this.startEngineDone();
 		// super.start(-1F, 0);
-        if (this.waitingMeshFly) {
+		if (this.waitingMeshFly) {
 			setMesh(MeshShared.get(this.mshFly));
 			this.waitingMeshFly = false;
-        }
+		}
 		this.startMissile(-1F, 0);
 		this.setMissileEffects();
 		this.setMissileStartParams();
@@ -1312,6 +1312,10 @@ public class Missile extends Rocket {
 				this.targetPoint3dAbs = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetPos();
 				this.laserOwner = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetPosOwner();
 				this.victimOffsetPoint3d = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetOffset();
+
+				if (this.targetPoint3dAbs == null || this.laserOwner == null || this.victimOffsetPoint3d == null)
+					return;
+
 				this.safeVictimOffset.set(this.victimOffsetPoint3d);
 				this.targetPoint3d.set(this.targetPoint3dAbs);
 				this.targetPoint3d.sub(this.missilePoint3d); // relative Position to target
