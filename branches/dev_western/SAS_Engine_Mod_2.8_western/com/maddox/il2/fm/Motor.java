@@ -2007,9 +2007,9 @@ public class Motor extends FMMath
 						if(type == _E_TYPE_INLINE || type == _E_TYPE_HELO_INLINE) {
 							if(bIsMaster && getReadyness() > 0.75F && World.Rnd().nextFloat() < 0.25F)
 								setReadyness(getReadyness() - 0.05F);
-						} else
+						}
 						//TODO: Stops random engine deaths on startup
-							//if(type == _E_TYPE_RADIAL && bIsMaster && World.Rnd().nextFloat() < 0.1F)
+							//else if(type == _E_TYPE_RADIAL && bIsMaster && World.Rnd().nextFloat() < 0.1F)
 							//reference.AS.setEngineDies(reference.actor, number);
 					if(bIsMaster && World.Rnd().nextFloat() < 0.1F)
 						reference.AS.setEngineStops(number);
