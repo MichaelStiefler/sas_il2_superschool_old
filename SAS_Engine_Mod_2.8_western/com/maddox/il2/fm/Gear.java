@@ -193,15 +193,24 @@ public class Gear {
 	//By PAL, new for Shock Absorber
 	public float shockAbsorber;
 
-	//By western, custom chock and catapult gear X position
-	public double dCustomChockX = 0.0D;
-	public double dCustomCatGearX = 0.0D;
-
 	//By western, tune wheels rotation speed using custom wheel radius bigger or smaller than stock 375mm.
 	public double gWheelRadius[] = { 0.375D, 0.375D, 0.375D };
+	private boolean bLoadedWheelRadius;
 
 	//By western, max steering degree of nose gear
 	public double gMaxNGearSteeringDegree = -1.0D;
+
+	//By western, custom catapult gear X position and CatGear msh
+	public double gCustomCatGearX = 0.0D;
+	private String gCatGearMeshName = null;
+
+	//By western, set Chock Offset and Special msh
+	private double gChockLOffset[] = { -100.0D, -100.0D };
+	private double gChockCOffset[] = { -100.0D, -100.0D };
+	private String gChockLMeshName = null;
+	private String gChockCMeshName = null;
+	private String gChockCarrierLMeshName = null;
+	private String gChockCarrierCMeshName = null;
 	// --------------------------------------------------------
 
 	private static class PlateFilter implements ActorFilter {
@@ -328,6 +337,8 @@ public class Gear {
 		bShowChocks = Config.cur.ini.get("Mods", "PALShowChocks", 0) == 1;
 		//By PAL, for Catapult Cables, etc:
 		bShowCatGear = Config.cur.ini.get("Mods", "PALShowCatGear", 0) == 1;
+
+		bLoadedWheelRadius = false;
 	}
 
 	public boolean onGround() {
@@ -428,6 +439,9 @@ public class Gear {
 		sgx = (float) d4;
 		mgh = (float) Math.sqrt(mgx * mgx + mgy * mgy);
 		mgalpha = (float) Math.atan2(mgx, mgy);
+
+		if (!bLoadedWheelRadius)
+			loadWheelRadius((Aircraft) FM.actor);
 	}
 
 	public void set(Gear gear) {
@@ -1717,16 +1731,35 @@ public class Gear {
 
 		}
 
-		// By western0221: set each wheels radius values
+		// By western: set each wheels radius values
 		double dtemp = (double) sectfile.get("Gear", "WheelDiameterLR", -1.0F);
-		if (dtemp > 0D)
+		if (dtemp > 0D) {
 			gWheelRadius[0] = gWheelRadius[1] = dtemp * 0.5D;
+			bLoadedWheelRadius = true;
+		}
 		dtemp = (double) sectfile.get("Gear", "WheelDiameterC", -1.0F);
-		if (dtemp > 0D)
+		if (dtemp > 0D) {
 			gWheelRadius[2] = dtemp * 0.5D;
+			bLoadedWheelRadius = true;
+		}
 
-		// By western0221: set max nose gear steering degree for realistic ground turn
+		// By western: set max nose gear steering degree for realistic ground turn
 		gMaxNGearSteeringDegree = (double) sectfile.get("Gear", "NoseGearMaxSteer", -1.0F);
+
+		// By western: custom catapult gear X position and CatGear msh
+		gCustomCatGearX = (double) sectfile.get("Gear", "CatGearOffsetX", 0.0F);
+		gCatGearMeshName = getS(sectfile, "Gear", "CatGearMesh", null);
+
+		// By western: set Chock Offset and Special msh
+		gChockLOffset[0] = (double) sectfile.get("Gear", "ChockLOffsetX", -100.0F);
+		gChockLOffset[1] = (double) sectfile.get("Gear", "ChockLOffsetY", -100.0F);
+		gChockCOffset[0] = (double) sectfile.get("Gear", "ChockCOffsetX", -100.0F);
+		gChockCOffset[1] = (double) sectfile.get("Gear", "ChockCOffsetY", -100.0F);
+		gChockLMeshName = getS(sectfile, "Gear", "ChockLMesh", null);
+		gChockCMeshName = getS(sectfile, "Gear", "ChockCMesh", null);
+		gChockCarrierLMeshName = getS(sectfile, "Gear", "ChockCarrierLMesh", null);
+		gChockCarrierCMeshName = getS(sectfile, "Gear", "ChockCarrierCMesh", null);
+
 	}
 
 	public float getLandingState() {
@@ -1967,11 +2000,13 @@ public class Gear {
 	static private boolean bShowCatGear = false;
 	private ActorSimpleMesh ChL = null;
 	private ActorSimpleMesh ChR = null;
+	private ActorSimpleMesh ChC = null;
 	private ActorSimpleMesh CatH = null;
 	private Loc locL = new Loc();
 	private Loc locL0 = new Loc();
 	private Loc locR = new Loc();
 	private Loc locR0 = new Loc();
+	private Loc locC = new Loc();
 	private Loc locCatH = new Loc();
 	private LandAux laL = null;
 	private LandAux laR = null;
@@ -2125,15 +2160,18 @@ public class Gear {
 
 		//By PAL, with Catapultit shouldn't show any Chock
 		if (isCatapult) {
-			//By PAL, this will destroy Chock
+			//By PAL and western, this will destroy Chock
 			if (ChL != null) {
 				ChL.destroy();
 				ChL = null;
 			}
-			//By PAL, this will destroy Chock
 			if (ChR != null) {
 				ChR.destroy();
 				ChR = null;
+			}
+			if (ChC != null) {
+				ChC.destroy();
+				ChC = null;
 			}
 			return;
 		}
@@ -2185,6 +2223,11 @@ public class Gear {
 				ChR.destroy();
 				ChR = null;
 			}
+			//By western, this will destroy Chock , but no Land Auxiliar for center gear's Chock
+			if (ChC != null) {
+				ChC.destroy();
+				ChC = null;
+			}
 		} else {
 		//By PAL, if chocks are set in front of the Catapult, I don't have to show them!
 			ActorHMesh actorhmesh = (ActorHMesh)FM.actor;
@@ -2203,6 +2246,10 @@ public class Gear {
 			//By PAL, Right Wheel
 			HM.hookMatrix(pnti[1], M4);
 			Point3d pRgr = new Point3d(M4.m03, M4.m13, M4.m23);
+			//By PAL and western, Center Wheel
+			HM.hookMatrix(pnti[2], M4);
+			Point3d pCgr = new Point3d(M4.m03, M4.m13, M4.m23);
+
 			//By PAL, ***********create Chocks for Left Wheel***********
 			try {
 				//By PAL, if the Land Auxiliar still exists, destroy it
@@ -2221,8 +2268,16 @@ public class Gear {
 					pLgr.add(tempP);
 					locL.set(pLgr);
 					locL.set(new Orient(180F, Pitch, 0F));
-					if (Pitch > 0.8D && Pitch < 310D) {
+					if (gChockLOffset[0] != -100.0D) {
+						tempP.set(gChockLOffset[0], 0D, -gChockLOffset[0] * Math.tan(Math.toRadians(Pitch)));
+						locL.add(tempP);
+					}
+					else if (Pitch > 0.8D && Pitch < 310D) {
 						tempP.set(-Pitch * 0.006D, 0D, Pitch * 0.006D * Math.tan(Math.toRadians(Pitch)));
+						locL.add(tempP);
+					}
+					if (gChockLOffset[1] != -100.0D) {
+						tempP.set(0D, gChockLOffset[1], 0D);
 						locL.add(tempP);
 					}
 					locL.add(FM.actor.pos.getCurrent());
@@ -2253,8 +2308,16 @@ public class Gear {
 					pRgr.add(tempP);
 					locR.set(pRgr);
 					locR.set(new Orient(0F, -Pitch, 0F));
-					if (Pitch > 0.8D && Pitch < 310D) {
+					if (gChockLOffset[0] != -100.0D) {
+						tempP.set(gChockLOffset[0], 0D, -gChockLOffset[0] * Math.tan(Math.toRadians(Pitch)));
+						locR.add(tempP);
+					}
+					else if (Pitch > 0.8D && Pitch < 310D) {
 						tempP.set(-Pitch * 0.006D, 0D, Pitch * 0.006D * Math.tan(Math.toRadians(Pitch)));
+						locR.add(tempP);
+					}
+					if (gChockLOffset[1] != -100.0D) {
+						tempP.set(0D, -gChockLOffset[1], 0D);
 						locR.add(tempP);
 					}
 					locR.add(FM.actor.pos.getCurrent());
@@ -2266,30 +2329,162 @@ public class Gear {
 				}
 			}
 			catch (Exception e){}
+
+			//By PAL and western, **********create Center Wheel Chocks when MeshName is defined**********
+			if (gChockCMeshName != null) {
+				try {
+					//By PAL, I'm working based on the Wheel Hook now.
+					hookc = (HookNamed)FM.actor.findHook("_ClipCGear");
+					if (hookc == null)
+						System.out.println("_ClipCGear not found! on " + this + " .... cannot set Chock 3d msh!");
+					else {
+						Orient tempO = new Orient(0F, Pitch, 0F);
+						Point3d tempP = new Point3d(0D, 0D, gWheelSinking[2]);
+						tempO.transform(tempP);
+						pCgr.add(tempP);
+						locC.set(pCgr);
+						locC.set(new Orient(0F, -Pitch, 0F));
+						if (gChockCOffset[0] != -100.0D) {
+							tempP.set(gChockCOffset[0], 0D, -gChockCOffset[0] * Math.tan(Math.toRadians(Pitch)));
+							locC.add(tempP);
+						}
+						else if (Pitch > 0.8D && Pitch < 310D) {
+							tempP.set(-Pitch * 0.006D, 0D, Pitch * 0.006D * Math.tan(Math.toRadians(Pitch)));
+							locC.add(tempP);
+						}
+						if (gChockCOffset[1] != -100.0D) {
+							tempP.set(0D, gChockCOffset[1], 0D);
+							locC.add(tempP);
+						}
+						locC.add(FM.actor.pos.getCurrent());
+						ChC = new ActorSimpleMesh(gChockCMeshName);
+						ChC.pos.setBase(FM.actor, hookc, false);
+						ChC.pos.setAbs(locC);
+						ChC.pos.changeHookToRel();
+						ChC.pos.resetAsBase();
+					}
+				}
+				catch (Exception e){}
+			}
 		}
 	}
 
 	private ActorSimpleMesh getChockMesh() {
 		ActorSimpleMesh asm = null;
 		if (bUnderDeck) {
+			if (gChockCarrierLMeshName != null) {
+				asm = new ActorSimpleMesh(gChockCarrierLMeshName);
+				return asm;
+			}
 			String s = ((BigshipGeneric) FM.brakeShoeLastCarrier).getClass().getName();
 			int i = s.lastIndexOf('.');
 			int j = s.lastIndexOf('$');
 			if (i < j) i = j;
 			String sShipName = s.substring(i + 1);
-			if (sShipName.startsWith("USS"))
-				asm = new ActorSimpleMesh("3DO/Arms/ChocksUSN/mono.sim");
-			else
-				asm = new ActorSimpleMesh("3DO/Arms/ChocksNavy/mono.sim");
+			if (sShipName.startsWith("USS")) {
+				if (gWheelRadius[0] > 0.40D)
+					asm = new ActorSimpleMesh("3DO/Arms/ChocksUSN/monoL.sim");
+				else
+					asm = new ActorSimpleMesh("3DO/Arms/ChocksUSN/mono.sim");
+			} else {
+				if (gWheelRadius[0] > 0.50D)
+					asm = new ActorSimpleMesh("3DO/Arms/ChocksNavy/monoL.sim");
+				else
+					asm = new ActorSimpleMesh("3DO/Arms/ChocksNavy/mono.sim");
 			}
-		else {
+		} else {
+			if (gChockLMeshName != null) {
+				asm = new ActorSimpleMesh(gChockLMeshName);
+				return asm;
+			}
 			float fyS = Property.floatValue(FM.actor.getClass(), "yearService", 0.0F);
 			String soC = Property.stringValue(FM.actor.getClass(), "originCountry", null);
 			if (soC != null && soC.equals(PaintScheme.countryUSA) && fyS > 1950.0F)
 				asm = new ActorSimpleMesh("3DO/Arms/ChocksUSJet/mono.sim");
-			else
-				asm = new ActorSimpleMesh("3DO/Arms/Chocks/mono.sim");
+			else {
+				if (gWheelRadius[0] > 0.50D)
+					asm = new ActorSimpleMesh("3DO/Arms/Chocks/monoL.sim");
+				else
+					asm = new ActorSimpleMesh("3DO/Arms/Chocks/mono.sim");
+			}
 		}
 		return asm;
+	}
+
+	private void loadWheelRadius(Aircraft aircraft) {
+		if (aircraft instanceof A_20) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.565D;  // main Tire Diameter 44.5"
+			gWheelRadius[2] = 0.325D;					// aux Tire Diameter 25.61"
+			gChockLOffset[0] = -0.20D;
+		}
+		else if (aircraft instanceof B_17) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.718D;  // main Tire Diameter 56.56"
+			gWheelRadius[2] = 0.325D;					// aux Tire Diameter 25.61"
+			gChockLOffset[0] = -0.28D;
+		}
+		else if (aircraft instanceof B_24) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.718D;  // main Tire Diameter 56.56"
+			gWheelRadius[2] = 0.459D;					// aux Tire Diameter 36.15"
+		}
+		else if (aircraft instanceof B_25) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.468D;  // main Tire Diameter 36.86"
+			gWheelRadius[2] = 0.468D;					// aux Tire Diameter 36.86"
+		}
+		else if (aircraft instanceof B_29X) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.718D;  // main Tire Diameter 56.56"
+			gWheelRadius[2] = 0.459D;					// aux Tire Diameter 36.15"
+			gChockLOffset[0] = -0.17D;
+		}
+		else if (aircraft instanceof F6F) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.389D;  // main Tire Diameter 30.69"
+			gWheelRadius[2] = 0.156D;					// aux Tire Diameter 12.35"
+			gChockLOffset[0] = -0.05D;
+			gChockLOffset[1] = 0.16D;
+		}
+		else if (aircraft instanceof P_38) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.459D;  // main Tire Diameter 36.15"
+			gWheelRadius[2] = 0.349D;					// aux Tire Diameter 27.5"
+			gChockLOffset[0] = 0.04D;
+			gChockLOffset[1] = 0.01D;
+		}
+		else if ((aircraft instanceof P_40) || (aircraft instanceof P_40SUKAISVOLOCH)) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.349D;  // main Tire Diameter 27.5"
+			gWheelRadius[2] = 0.156D;					// aux Tire Diameter 12.29"
+			gChockLOffset[0] = -0.02D;
+			gChockLOffset[1] = 0.09D;
+		}
+		else if (aircraft instanceof P_47) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.421D;  // main Tire Diameter 33.20"
+			gWheelRadius[2] = 0.183D;					// aux Tire Diameter 14.48"
+			gChockLOffset[0] = -0.20D;
+		}
+		else if (aircraft instanceof P_51) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.349D;  // main Tire Diameter 27.5"
+			gWheelRadius[2] = 0.156D;					// aux Tire Diameter 12.35"
+			gChockLOffset[0] = -0.17D;
+		}
+		else if ((aircraft instanceof JU_88) || (aircraft instanceof JU_88NEW)) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.570D;  // main Tire Diameter 44.94"
+			gWheelRadius[2] = 0.260D;					// aux Tire Diameter 20.48"
+		}
+		else if (aircraft instanceof MOSQUITO) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.546D;  // main Tire Diameter 43"
+			gWheelRadius[2] = 0.239D;					// aux Tire Diameter 18.85"
+		}
+		else if (aircraft instanceof Wellington) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.648D;  // main Tire Diameter 51"
+			gWheelRadius[2] = 0.238D;					// aux Tire Diameter 18.75"
+		}
+		bLoadedWheelRadius = true;
+//  System.out.println("Gear - " + aircraft + " 's gWheelRadius= " + gWheelRadius[0] + ", " + gWheelRadius[1] + ", " + gWheelRadius[2]);
+		return;
+	}
+
+	private static String getS(SectFile sectfile, String s, String s1, String s2) {
+		String s3 = sectfile.get(s, s1);
+		if (s3 == null || s3.length() <= 0)
+			return s2;
+		else
+			return new String(s3);
 	}
 }
