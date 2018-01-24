@@ -1898,7 +1898,7 @@ public class Gear {
 					bSteamCatapult = true;
 					bCatapultHookExist[k] = true;
 				} else {
-					System.out.println("Gear - 1911 : Hooks mismatching _SCat" + (k + 1) + "_start and _SCat" + k + 1 + "_end");
+					System.out.println("Gear - 1901 : Hooks mismatching _SCat" + (k + 1) + "_start and _SCat" + k + 1 + "_end");
 					break;
 				}
 			}
@@ -1908,7 +1908,7 @@ public class Gear {
 					bSteamCatapult = false;
 					bCatapultHookExist[k] = true;
 				} else {
-					System.out.println("Gear - 1921 : Hooks mismatching _Cat" + (k + 1) + "_start and _Cat" + k + "_end");
+					System.out.println("Gear - 1911 : Hooks mismatching _Cat" + (k + 1) + "_start and _Cat" + k + "_end");
 					break;
 				}
 			}
@@ -2401,6 +2401,8 @@ public class Gear {
 			String soC = Property.stringValue(FM.actor.getClass(), "originCountry", null);
 			if (soC != null && soC.equals(PaintScheme.countryUSA) && fyS > 1950.0F)
 				asm = new ActorSimpleMesh("3DO/Arms/ChocksUSJet/mono.sim");
+			else if (soC != null && soC.equals(PaintScheme.countryRussia) && fyS > 1950.0F)
+				asm = new ActorSimpleMesh("3DO/Arms/ChocksRusJet1950/mono.sim");
 			else {
 				if (gWheelRadius[0] > 0.50D)
 					asm = new ActorSimpleMesh("3DO/Arms/Chocks/monoL.sim");
@@ -2476,7 +2478,6 @@ public class Gear {
 			gWheelRadius[2] = 0.238D;					// aux Tire Diameter 18.75"
 		}
 		bLoadedWheelRadius = true;
-//  System.out.println("Gear - " + aircraft + " 's gWheelRadius= " + gWheelRadius[0] + ", " + gWheelRadius[1] + ", " + gWheelRadius[2]);
 		return;
 	}
 

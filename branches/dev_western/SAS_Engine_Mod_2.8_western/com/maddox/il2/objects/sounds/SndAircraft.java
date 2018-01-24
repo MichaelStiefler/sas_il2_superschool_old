@@ -391,13 +391,14 @@ public class SndAircraft extends ActorHMesh {
 
 	private void updateMorseSequence() {
 		if (morseSequence == null || morseSequence.length <= 0) return;
-		if (!isMorsePlaying(morseSequence[currentMorse])) if (currentMorse < morseSequence.length - 1) {
-			currentMorse++;
-			playMorseEffect(morseSequence[currentMorse], true, morseSequenceVolume);
-		} else {
-			morseSequence = null;
-			if (World.cur().showMorseAsText) HUD.training("");
-		}
+		if (!isMorsePlaying(morseSequence[currentMorse]))
+			if (currentMorse < morseSequence.length - 1) {
+				currentMorse++;
+				playMorseEffect(morseSequence[currentMorse], true, morseSequenceVolume);
+			} else {
+				morseSequence = null;
+				if (World.cur().showMorseAsText) HUD.training("");
+			}
 	}
 
 	public boolean isMorseSequencePlaying() {
