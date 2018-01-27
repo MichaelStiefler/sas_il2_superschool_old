@@ -1,7 +1,7 @@
 // AIM-7M 'Hot Launch' version for LAU-115 rail launcher.
 // Source File Name: MissileAIM7M_gn16.java
 // Author:           western0221
-// Last Modified by: western0221 2017-11-10
+// Last Modified by: western0221 2018-01-26
 
 package com.maddox.il2.objects.weapons;
 
@@ -27,15 +27,16 @@ public class MissileAIM7Mhl_gn16 extends Missile {
 		Property.set(class1, "sprite", "3do/Effects/RocketSidewinder/RocketSidewinderSmoke.eff");
 		Property.set(class1, "flame", "3do/Effects/RocketSidewinder/RocketSidewinderFlame.sim");
 		Property.set(class1, "smoke", "EFFECTS/Smokes/SmokeBlack_missiles.eff");
+		Property.set(class1, "smokeTrail", "3do/Effects/RocketSidewinder/RocketShutdownTrail2.eff");
 		Property.set(class1, "emitColor", new Color3f(1.0F, 1.0F, 0.5F));
 		Property.set(class1, "emitLen", 50F); // Emitted Smoke length
 		Property.set(class1, "emitMax", 0.4F); // Amount of emitted Smoke
 		Property.set(class1, "sound", "weapon.rocket_132"); // Sound of Rocket Motor
 		Property.set(class1, "timeLife", 120F); // Rocket life time in Seconds
-		Property.set(class1, "timeFire", 3.5F); // Rocket Booster Burn time in Seconds
-		Property.set(class1, "force", 50000F); // Rocket Booster Power (in Newton)
-		Property.set(class1, "timeSustain", 12.5F); // Rocket Sustained Motor Burn time in Seconds (0 for single stage rockets)
-		Property.set(class1, "forceSustain", 18726.59F); // Rocket Sustained Power (in Newton)
+		Property.set(class1, "timeFire", 3.0F); // Rocket Booster Burn time in Seconds
+		Property.set(class1, "force", 49500F); // Rocket Booster Power (in Newton)
+		Property.set(class1, "timeSustain", 13.0F); // Rocket Sustained Motor Burn time in Seconds (0 for single stage rockets)
+		Property.set(class1, "forceSustain", 18700F); // Rocket Sustained Power (in Newton)
 		Property.set(class1, "forceT1", 0.5F); // Time1, i.e. time until Rocket Engine force output maximum reached (in Seconds), 0 disables this feature
 		Property.set(class1, "forceP1", 0.0F); // Power1, i.e. Rocket Engine force output at beginning (in Percent)
 		Property.set(class1, "dragCoefficient", 0.3F); // Aerodynamic Drag Coefficient

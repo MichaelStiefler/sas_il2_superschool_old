@@ -1,6 +1,6 @@
 // Source File Name: MissileAIM54C_gn16.java
 // Author:           western0221
-// Last Modified by: western0221 2017-11-10
+// Last Modified by: western0221 2018-01-26
 
 package com.maddox.il2.objects.weapons;
 
@@ -55,15 +55,16 @@ public class MissileAIM54C_gn16 extends Missile
         Property.set(class1, "sprite", "3do/Effects/RocketSidewinder/RocketSidewinderSmoke.eff");
         Property.set(class1, "flame", "3do/Effects/RocketSidewinder/RocketSidewinderFlame.sim");
         Property.set(class1, "smoke", "EFFECTS/Smokes/SmokeMissilessmall.eff");
+		Property.set(class1, "smokeTrail", "3do/Effects/RocketSidewinder/RocketShutdownTrail.eff");
         Property.set(class1, "emitColor", new Color3f(1.0F, 1.0F, 0.5F));
         Property.set(class1, "emitLen", 50F);
         Property.set(class1, "emitMax", 0.4F);
         Property.set(class1, "sound", "weapon.rocket_132");
         Property.set(class1, "timeLife", 150F);
-        Property.set(class1, "timeFire", 0.7F);
-        Property.set(class1, "force", 300000F);
-        Property.set(class1, "timeSustain", 100.3F);
-        Property.set(class1, "forceSustain", 19230.77F);
+        Property.set(class1, "timeFire", 3.4F);
+        Property.set(class1, "force", 200000F);
+        Property.set(class1, "timeSustain", 100.0F);
+        Property.set(class1, "forceSustain", 51000F);
         Property.set(class1, "forceT1", 0.5F);
         Property.set(class1, "forceP1", 0.0F);
         Property.set(class1, "dragCoefficient", 0.3F);
