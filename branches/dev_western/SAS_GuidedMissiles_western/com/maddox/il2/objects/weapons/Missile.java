@@ -1,6 +1,6 @@
 // Source File Name: Missile.java
 // Author:	Storebror
-// Edit:	western0221 on 17th/Nov/2017
+// Edit:	western0221 on 26th/Jan/2018
 package com.maddox.il2.objects.weapons;
 
 import java.io.IOException;
@@ -298,6 +298,14 @@ public class Missile extends Rocket {
 				this.stopSounds();
 				this.playingSustainMotorSound = false;
 			}
+			if (this.playingMotorSound) {
+				this.stopSounds();
+				this.playingMotorSound = false;
+			}
+            if (!this.showingTrailSmoke && this.effSmokeTrail != null) {
+				this.afterFireEngineTrail();
+				this.showingTrailSmoke = true;
+            }
 			this.missileMass = this.massaEnd;
 			this.missileForce = 0.0F;
 		} else if (millisecondsFromStart > this.rocketMotorOperationTime) {
@@ -314,8 +322,21 @@ public class Missile extends Rocket {
 				setMesh(MeshShared.get(this.mshSustain));
 				this.waitingMeshSustain = false;
 			}
-			if (!this.noSmokeFlameSustain && !this.playingSustainMotorSound && this.soundNameSustain != null) {
+			if (!this.noSmokeFlameSustain && !this.showingSustainSmokeFlame && this.effSmokeSustain != null) {
+				this.flameActive = false;
+				this.smokeActive = false;
+				this.spriteActive = false;
+				this.endSmoke();
+				this.sustainEngine();
+				this.showingSustainSmokeFlame = true;
+			}
+			if (this.noSoundSustain && this.playingMotorSound) {
 				this.stopSounds();
+				this.playingMotorSound = false;
+			}
+			if (!this.noSmokeFlameSustain && !this.playingSustainMotorSound && this.soundNameSustain != null && this.playingMotorSound) {
+				this.stopSounds();
+				this.playingMotorSound = false;
 			}
 			if (!this.playingSustainMotorSound && this.soundNameSustain != null) {
 				this.newSound(this.soundNameSustain, true);
@@ -561,14 +582,15 @@ public class Missile extends Rocket {
 		// this.deltaAzimuth = this.deltaTangage = this.oldDeltaAzimuth = this.oldDeltaTangage = 0.0F;
 	}
 
-	private void createAdditionalFlames() {
+	private void createAdditionalFlames(int stage) {
 		this.flames = new Actor[this.exhausts];
 		this.flames[0] = this.flame;
-		if (this.simFlame == null) return;
+		if (stage == 0 && this.simFlame == null) return;
+		if (stage == 1 && this.simFlameSustain == null) return;
 		Hook theHook = null;
 		for (int i = 1; i < this.exhausts; i++) {
 			theHook = this.findHook("_SMOKE" + i);
-			this.flames[i] = new ActorSimpleMesh(this.simFlame);
+			this.flames[i] = new ActorSimpleMesh((stage == 0) ? this.simFlame : this.simFlameSustain);
 			if (this.flames[i] != null) {
 				((ActorSimpleMesh) this.flames[i]).mesh().setScale(1.0F);
 				this.flames[i].pos.setBase(this, theHook, false);
@@ -580,28 +602,44 @@ public class Missile extends Rocket {
 		}
 	}
 
-	private void createAdditionalSmokes() {
+	private void createAdditionalSmokes(int stage) {
 		this.smokes = new Eff3DActor[this.exhausts];
 		this.smokes[0] = this.smoke;
-		if (this.effSmoke == null) return;
+		if (stage == 0 && this.effSmoke == null) return;
+		if (stage == 1 && this.effSmokeSustain == null) return;
+		if (stage == 2 && this.effSmokeTrail == null) return;
 		Hook theHook = null;
+        String ssm = null;
+        switch(stage) {
+        default:
+        case 0:
+            ssm = this.effSmoke;
+            break;
+        case 1:
+            ssm = this.effSmokeSustain;
+            break;
+        case 2:
+            ssm = this.effSmokeTrail;
+            break;
+        }
 		for (int i = 1; i < this.exhausts; i++) {
 			theHook = this.findHook("_SMOKE" + i);
 			if (theHook == null) {
 				this.smokes[i] = null;
 				continue;
 			}
-			this.smokes[i] = Eff3DActor.New(this, theHook, null, 1.0F, this.effSmoke, -1F);
+			this.smokes[i] = Eff3DActor.New(this, theHook, null, 1.0F, ssm, -1F);
 			if (this.smokes[i] != null) {
 				this.smokes[i].pos.changeHookToRel();
 			}
 		}
 	}
 
-	private void createAdditionalSprites() {
+	private void createAdditionalSprites(int stage) {
 		this.sprites = new Eff3DActor[this.exhausts];
 		this.sprites[0] = this.sprite;
-		if (this.effSprite == null) return;
+		if (stage == 0 && this.effSprite == null) return;
+		if (stage == 1 && this.effSpriteSustain == null) return;
 		Hook theHook = null;
 		for (int i = 1; i < this.exhausts; i++) {
 			theHook = this.findHook("_SMOKE" + i);
@@ -609,10 +647,9 @@ public class Missile extends Rocket {
 				this.sprites[i] = null;
 				continue;
 			}
-			this.sprites[i] = Eff3DActor.New(this, theHook, null, this.missileKalibr, this.effSprite, -1F);
+			this.sprites[i] = Eff3DActor.New(this, theHook, null, this.missileKalibr, (stage == 0) ? this.effSprite : this.effSpriteSustain, -1F);
 			if (this.sprites[i] != null) {
 				this.sprites[i].pos.changeHookToRel();
-			} else {
 			}
 		}
 	}
@@ -680,6 +717,7 @@ public class Missile extends Rocket {
 		this.flameActive = false;
 		this.smokeActive = false;
 		this.spriteActive = false;
+		this.showingTrailSmoke = false;
 		this.endSmoke();
 		this.victim = null;
 		this.startTime = 0L;
@@ -917,7 +955,12 @@ public class Missile extends Rocket {
 		this.simFlame = Property.stringValue(localClass, "flame", null);
 		float failureRate = Property.floatValue(localClass, "failureRate", 10.0F);
 		this.noSmokeFlameSustain = (Property.intValue(localClass, "noSmokeFlameSustain", 0) == 1);
+		this.noSoundSustain = (Property.intValue(localClass, "noSoundSustain", 0) == 1);
 		this.soundNameSustain = Property.stringValue(localClass, "soundSustain", null);
+		this.effSmokeSustain = Property.stringValue(localClass, "smokeSustain", null);
+		this.effSpriteSustain = Property.stringValue(localClass, "spriteSustain", null);
+		this.simFlameSustain = Property.stringValue(localClass, "flameSustain", null);
+		this.effSmokeTrail = Property.stringValue(localClass, "smokeTrail", null);
 		this.mshFly = Property.stringValue(localClass, "meshFly", null);
 		if (this.mshFly != null)
 			this.waitingMeshFly = true;
@@ -1354,16 +1397,16 @@ public class Missile extends Rocket {
 		} catch (Exception exception) {	}
 	}
 
-	private void setSmokeSpriteFlames() {
+	private void setSmokeSpriteFlames(int stage) {
 		if (this.exhausts > 1) {
 			if (this.smoke != null) {
-				this.createAdditionalSmokes();
+				this.createAdditionalSmokes(stage);
 			}
 			if (this.sprite != null) {
-				this.createAdditionalSprites();
+				this.createAdditionalSprites(stage);
 			}
 			if (this.flame != null) {
-				this.createAdditionalFlames();
+				this.createAdditionalFlames(stage);
 			}
 		}
 	}
@@ -1405,7 +1448,7 @@ public class Missile extends Rocket {
 		Class localClass = this.getClass();
 
 		Hook localHook = null;
-		String str = Property.stringValue(localClass, "sprite", null);
+		String str = this.effSprite;
 		if (str != null) {
 			if (localHook == null) {
 				localHook = this.findHook("_SMOKE");
@@ -1415,7 +1458,7 @@ public class Missile extends Rocket {
 				this.sprite.pos.changeHookToRel();
 			}
 		}
-		str = Property.stringValue(localClass, "flame", null);
+		str = this.simFlame;
 		if (str != null) {
 			if (localHook == null) {
 				localHook = this.findHook("_SMOKE");
@@ -1430,7 +1473,7 @@ public class Missile extends Rocket {
 					this.flame.drawing(true);
 			}
 		}
-		str = Property.stringValue(localClass, "smoke", null);
+		str = this.effSmoke;
 		if (str != null) {
 			if (localHook == null) {
 				localHook = this.findHook("_SMOKE");
@@ -1440,10 +1483,11 @@ public class Missile extends Rocket {
 				this.smoke.pos.changeHookToRel();
 			}
 		}
-		setSmokeSpriteFlames();
+		setSmokeSpriteFlames(0);
 		this.soundName = Property.stringValue(localClass, "sound", null);
 		if (this.soundName != null) {
 			this.newSound(this.soundName, true);
+			playingMotorSound = true;
 		}
 		this.engineRunning = true;
 	}
@@ -1460,6 +1504,73 @@ public class Missile extends Rocket {
 		}
 
 		Engine.missiles().add(this);
+	}
+
+	public void sustainEngine() {
+		// EventLog.type("sustainEngine");
+
+		Class localClass = this.getClass();
+
+		Hook localHook = null;
+		String str = this.effSpriteSustain;
+		if (str != null) {
+			if (localHook == null) {
+				localHook = this.findHook("_SMOKE");
+			}
+			this.sprite = Eff3DActor.New(this, localHook, null, 1.0F, str, -1.0F);
+			if (this.sprite != null) {
+				this.sprite.pos.changeHookToRel();
+				this.spriteActive = true;
+			}
+		}
+		str = this.simFlameSustain;
+		if (str != null) {
+			if (localHook == null) {
+				localHook = this.findHook("_SMOKE");
+			}
+			this.flame = new ActorSimpleMesh(str);
+			if (this.flame != null) {
+				((ActorSimpleMesh) this.flame).mesh().setScale(1.0F);
+				this.flame.pos.setBase(this, localHook, false);
+				this.flame.pos.changeHookToRel();
+				this.flame.pos.resetAsBase();
+				this.flameActive = true;
+				if (Config.isUSE_RENDER())
+					this.flame.drawing(true);
+			}
+		}
+		str = this.effSmokeSustain;
+		if (str != null) {
+			if (localHook == null) {
+				localHook = this.findHook("_SMOKE");
+			}
+			this.smoke = Eff3DActor.New(this, localHook, null, 1.0F, str, -1.0F);
+			if (this.smoke != null) {
+				this.smoke.pos.changeHookToRel();
+				this.smokeActive = true;
+			}
+		}
+		setSmokeSpriteFlames(1);
+	}
+
+	public void afterFireEngineTrail() {
+		// EventLog.type("afterFireEngineTrail");
+
+		Class localClass = this.getClass();
+
+		Hook localHook = null;
+		String str = this.effSmokeTrail;
+		if (str != null) {
+			if (localHook == null) {
+				localHook = this.findHook("_SMOKE");
+			}
+			this.smoke = Eff3DActor.New(this, localHook, null, 1.0F, str, -1.0F);
+			if (this.smoke != null) {
+				this.smoke.pos.changeHookToRel();
+				this.smokeActive = true;
+			}
+		}
+		setSmokeSpriteFlames(2);
 	}
 
 	public void startMissile(float paramFloat, int paramInt) {
@@ -1926,8 +2037,16 @@ public class Missile extends Rocket {
 	private boolean spriteActive = true;
 	private Eff3DActor[] sprites = null;
 	private boolean noSmokeFlameSustain = false;
+	private boolean playingMotorSound = false;
+	private boolean noSoundSustain = false;
 	private String soundNameSustain = null;
 	private boolean playingSustainMotorSound = false;
+	private String effSmokeSustain = null;
+	private String effSpriteSustain = null;
+	private String simFlameSustain = null;
+	private boolean showingSustainSmokeFlame = false;
+	private String effSmokeTrail = null;
+	private boolean showingTrailSmoke = false;
 	private String mshFly = null;
 	private boolean waitingMeshFly = false;
 	private String mshSustain = null;
