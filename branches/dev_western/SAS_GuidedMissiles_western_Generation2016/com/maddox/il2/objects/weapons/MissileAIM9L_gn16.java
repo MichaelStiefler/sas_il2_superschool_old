@@ -1,6 +1,6 @@
 // Source File Name: MissileAIM9L_gn16.java
 // Author:           western0221
-// Last Modified by: western0221 2017-11-10
+// Last Modified by: western0221 2018-01-26
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Color3f;
@@ -25,6 +25,7 @@ public class MissileAIM9L_gn16 extends Missile {
 		Property.set(class1, "sprite", "3do/Effects/RocketSidewinder/RocketSidewinderSmoke.eff");
 		Property.set(class1, "flame", "3do/Effects/RocketSidewinder/RocketSidewinderFlame.sim");
 		Property.set(class1, "smoke", "EFFECTS/Smokes/SmokeMissilessmall.eff");
+		Property.set(class1, "smokeTrail", "3do/Effects/RocketSidewinder/RocketShutdownTrail2.eff");
 		Property.set(class1, "emitColor", new Color3f(1.0F, 1.0F, 0.5F));
 		Property.set(class1, "emitLen", 50F); // Emitted Smoke length
 		Property.set(class1, "emitMax", 0.4F); // Amount of emitted Smoke

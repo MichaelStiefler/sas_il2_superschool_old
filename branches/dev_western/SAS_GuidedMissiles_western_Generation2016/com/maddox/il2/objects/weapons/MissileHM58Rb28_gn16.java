@@ -95,14 +95,6 @@ public class MissileHM58Rb28_gn16 extends Missile {
         mesh.materialReplace("Ordnance1q", "OrdnanceRb28q");
 	}
 
-	public void startMissile(float paramFloat, int paramInt) {
-        super.startMissile(paramFloat, paramInt);
-		setMesh(Property.stringValue(getClass(), "mesh"));
-        mesh.materialReplace("Ordnance1", "OrdnanceRb28");
-        mesh.materialReplace("Ordnance1p", "OrdnanceRb28p");
-        mesh.materialReplace("Ordnance1q", "OrdnanceRb28q");
-	}
-
 	public MissileHM58Rb28_gn16(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f) {
 		this.MissileInit(actor, netchannel, i, point3d, orient, f);
 	}
