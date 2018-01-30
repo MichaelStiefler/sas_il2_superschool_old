@@ -323,7 +323,7 @@ public class KC_130H extends C_130X
         float ias = Pitot.Indicator((float) (((Tuple3d) ((FlightModelMain)FM).Loc).z), FM.getSpeed()) * 3.6F;
 
         if(bEmpty || FM.getAltitude() < 1000F || FM.CT.getGear() > 0.0F
-           || ias > 580F || (ias < 250F && !bFirstTime) || (double)(FM.M.fuel) < (double)(FM.M.maxFuel) * 0.120D)
+           || ias > 580F || (ias < 250F && !bFirstTime) || FM.M.fuel < FM.M.maxFuel * 0.120F)
         {
 //            if(Time.current() > waitRefuelTimer)
 //            {
@@ -384,7 +384,7 @@ public class KC_130H extends C_130X
 //            }
         }
 
-        if(bDrogueExtended && ((FlightModelMain) FM).AS.isMaster())
+        if(bDrogueExtended && FM.AS.isMaster())
         {
             for(int i = 0; i < drones.length; i++)
             {
@@ -414,7 +414,7 @@ public class KC_130H extends C_130X
 
     public final float requestRefuel(Aircraft aircraft, float req, float f)
     {
-        if(bDrogueExtended && ((FlightModelMain) FM).AS.isMaster())
+        if(bDrogueExtended && FM.AS.isMaster())
         {
             for(int i = 0; i < drones.length; i++)
                 if(Actor.isValid(drones[i]) && drones[i] == (Actor)aircraft)
