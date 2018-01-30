@@ -7,9 +7,7 @@ import com.maddox.il2.ai.air.*;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
-import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.il2.objects.weapons.FuelTank;
-import com.maddox.il2.objects.weapons.GuidedMissileUtils;
 import com.maddox.rts.*;
 import com.maddox.util.HashMapInt;
 import java.io.IOException;
@@ -23,6 +21,16 @@ import java.util.ArrayList;
 public class SkyhawkFuelReceiver extends Skyhawk
     implements TypeDockable
 {
+    public SkyhawkFuelReceiver()
+    {
+        queen_last = null;
+        queen_time = 0L;
+        bNeedSetup = true;
+        dtime = -1L;
+        target_ = null;
+        queen_ = null;
+        fuelReceiveRate = 10.093F;
+    }
 
     public void missionStarting()
     {
@@ -30,18 +38,11 @@ public class SkyhawkFuelReceiver extends Skyhawk
         checkAsDrone();
     }
 
-
-    public SkyhawkFuelReceiver()
-    {
-        bNeedSetup = true;
-        fuelReceiveRate = 10.093F;
-    }
-
     public void update(float f)
     {
         if(bNeedSetup)
             checkAsDrone();
-        if(super.FM instanceof Maneuver)
+        if(FM instanceof Maneuver)
             receivingRefuel(f);
 
         super.update(f);
@@ -150,12 +151,12 @@ public class SkyhawkFuelReceiver extends Skyhawk
         queen_time = 0L;
         FM.EI.setEngineRunning();
         FM.CT.setGearAirborne();
-        moveGear(0.0F);
-        FlightModel flightmodel = ((SndAircraft) ((Aircraft)queen_)).FM;
-        if(aircIndex() == 0 && (super.FM instanceof Maneuver) && (flightmodel instanceof Maneuver))
+        moveGear(0.0F, 0.0F, 0.0F);
+        FlightModel flightmodel = ((Aircraft)queen_).FM;
+        if(aircIndex() == 0 && (FM instanceof Maneuver) && (flightmodel instanceof Maneuver))
         {
             Maneuver maneuver = (Maneuver)flightmodel;
-            Maneuver maneuver1 = (Maneuver)super.FM;
+            Maneuver maneuver1 = (Maneuver)FM;
             if(maneuver.Group != null && maneuver1.Group != null && maneuver1.Group.numInGroup(this) == maneuver1.Group.nOfAirc - 1)
             {
                 AirGroup airgroup = new AirGroup(maneuver1.Group);
@@ -221,16 +222,16 @@ public class SkyhawkFuelReceiver extends Skyhawk
         int i = aircIndex();
         if(typeDockableIsDocked())
         {
-            if(!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode())
+            if(!(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode())
             {
-                ((Maneuver)super.FM).unblock();
-                ((Maneuver)super.FM).set_maneuver(48);
+                ((Maneuver)FM).unblock();
+                ((Maneuver)FM).set_maneuver(48);
                 for(int j = 0; j < i; j++)
-                    ((Maneuver)super.FM).push(48);
+                    ((Maneuver)FM).push(48);
 
                 if(FM.AP.way.curr().Action != 3)
-                    ((FlightModelMain) ((Maneuver)super.FM)).AP.way.setCur(((FlightModelMain) (((SndAircraft) ((Aircraft)queen_)).FM)).AP.way.Cur());
-                ((Pilot)super.FM).setDumbTime(3000L);
+                    ((Maneuver)FM).AP.way.setCur(((Aircraft)queen_).FM.AP.way.Cur());
+                ((Pilot)FM).setDumbTime(3000L);
             }
             FuelTank fuelTanks[];
             fuelTanks = FM.CT.getFuelTanks();
@@ -259,26 +260,26 @@ public class SkyhawkFuelReceiver extends Skyhawk
                 return;
             }
         } else
-        if(!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode())
+        if(!(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode())
         {
             if(FM.CT.GearControl == 0.0F && FM.EI.engines[0].getStage() == 0)
                 FM.EI.setEngineRunning();
-            if(dtime > 0L && ((Maneuver)super.FM).Group != null)
+            if(dtime > 0L && ((Maneuver)FM).Group != null)
             {
-                ((Maneuver)super.FM).Group.leaderGroup = null;
-                ((Maneuver)super.FM).set_maneuver(22);
-                ((Pilot)super.FM).setDumbTime(3000L);
+                ((Maneuver)FM).Group.leaderGroup = null;
+                ((Maneuver)FM).set_maneuver(22);
+                ((Pilot)FM).setDumbTime(3000L);
                 if(Time.current() > dtime + 3000L)
                 {
                     dtime = -1L;
-                    ((Maneuver)super.FM).clear_stack();
-                    ((Maneuver)super.FM).set_maneuver(0);
-                    ((Pilot)super.FM).setDumbTime(0L);
+                    ((Maneuver)FM).clear_stack();
+                    ((Maneuver)FM).set_maneuver(0);
+                    ((Pilot)FM).setDumbTime(0L);
                 }
             } else
             if(FM.AP.way.curr().Action == 0)
             {
-                Maneuver maneuver = (Maneuver)super.FM;
+                Maneuver maneuver = (Maneuver)FM;
                 if(maneuver.Group != null && maneuver.Group.airc[0] == this && maneuver.Group.clientGroup != null)
                     maneuver.Group.setGroupTask(2);
             }
