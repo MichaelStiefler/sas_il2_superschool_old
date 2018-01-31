@@ -54,7 +54,7 @@ public class KC_130H extends C_130X
 
     public void update(float f)
     {
-        drogueRefuel(f);
+        drogueRefuel();
 
         super.update(f);
     }
@@ -135,7 +135,9 @@ public class KC_130H extends C_130X
 
     public void typeDockableRequestAttach(Actor actor, int i, boolean flag)
     {
-        if(i >= 0 && i <= 1)
+        if(bFirstTime)
+            drogueRefuel();
+        if(i >= 0 && i <= 1 && bDrogueExtended)
             if(flag)
             {
                 if(FM.AS.isMaster())
@@ -318,12 +320,12 @@ public class KC_130H extends C_130X
             bChangedPit = true;
     }
 
-    private void drogueRefuel(float f)
+    private void drogueRefuel()
     {
         float ias = Pitot.Indicator((float) (((Tuple3d) ((FlightModelMain)FM).Loc).z), FM.getSpeed()) * 3.6F;
 
-        if(bEmpty || FM.getAltitude() < 1000F || FM.CT.getGear() > 0.0F
-           || ias > 580F || (ias < 250F && !bFirstTime) || FM.M.fuel < FM.M.maxFuel * 0.120F)
+        if(bEmpty || (FM.getAltitude() < 1000F && FM.getAltitude() != 0.0F && !bFirstTime) || FM.CT.getGear() > 0.0F
+           || ias > 580F || (ias < 250F && ias != 0.0F && !bFirstTime) || FM.M.fuel < FM.M.maxFuel * 0.120F)
         {
 //            if(Time.current() > waitRefuelTimer)
 //            {
@@ -409,7 +411,8 @@ public class KC_130H extends C_130X
             }
         }
 
-        bFirstTime = false;
+        if(bFirstTime && !(FM.getAltitude() == 0.0F && ias == 0.0F))
+            bFirstTime = false;
     }
 
     public final float requestRefuel(Aircraft aircraft, float req, float f)
