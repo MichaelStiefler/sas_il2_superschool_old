@@ -904,7 +904,7 @@ public class Controls {
                     switch (wctIndex) {
                         case 2: {
                         	long delay = rocketReleaseDelay;
-                            delay *= 1/Time.speed();
+                        	delay = (long)(delay/Time.speed());   
                             NetAircraft.printDebugMessage(this.FM.actor, "Controls Weapon Trigger " + wctIndex + " pressed!");
                             if((lastRocketTime + delay < System.currentTimeMillis() || rocketFireMode == defaultFire) && this.WeaponControl[wctIndex] && this.hasBulletsLeftOnTrigger(wctIndex)) {
                             	if (bDropWithPlayer) {
