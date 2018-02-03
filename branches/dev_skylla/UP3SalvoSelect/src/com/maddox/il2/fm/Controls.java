@@ -137,7 +137,7 @@ public class Controls {
     /**
      * This class got modified for the 'Enhanced Weapon Release Control for UP3' - Mod by SAS~Skylla in 10/17. 
      * Other classes affected:
-     * @see AircraftHotkeys, AircraftState
+     * @see AircraftHotkeys, AircraftState, ZutiWeaponsManagement, TypeEnhancedWeaponReleaseControl, TypeLimitedWeaponReleaseControl
     **/
     
     private boolean hasLetGoBTriggerMeanwhile = false;
@@ -1042,6 +1042,16 @@ public class Controls {
         	hasLetGoRTriggerMeanwhile = true;
         if(!WeaponControl[3] && !hasLetGoBTriggerMeanwhile)
         	hasLetGoBTriggerMeanwhile = true;
+        
+        /*
+        if(!this.hasBulletsLeftOnTrigger(2) && WeaponControl[2]) {
+        	WeaponControl[2] = false;
+        }
+        if(!this.hasBulletsLeftOnTrigger(3) && WeaponControl[3]) {
+        	WeaponControl[3] = false;
+        	isGroupRelease = false;
+        }
+        */
      // ----- todo skylla: enhanced weapon release control -----
     }
 //    // T-ODO: Storebror: +++ Bomb Release Bug hunting
@@ -1368,6 +1378,9 @@ public class Controls {
     
   //reset method to be used after executing RRR
     public void resetAvailableBombs() {
+    	WeaponControl[3] = false;
+    	isGroupRelease = false;
+    	
     	availableBombs.clear();
     	initiateEnhancedWeaponOptions();
     	listBombs();
@@ -1375,6 +1388,8 @@ public class Controls {
     
   //reset method to be used after executing RRR
     public void resetAvailableRockets() {
+    	WeaponControl[2] = false;
+    	
     	availableRockets.clear();
     	initiateEnhancedWeaponOptions();
     	listRockets();
