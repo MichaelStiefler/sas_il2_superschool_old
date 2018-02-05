@@ -77,6 +77,7 @@ import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.NetObj;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
+import com.maddox.sas1946.il2.util.Reflection;
 import com.maddox.sound.CmdMusic;
 
 public class AircraftState {
@@ -140,8 +141,10 @@ public class AircraftState {
     public static final int     _AS_BOMB_SELECTED                      = 51;
     public static final int     _AS_BOMB_RELEASE_DELAY                 = 52;
     public static final int     _AS_BOMB_RELEASE_MODE                  = 53;
- // ----- todo skylla: enhanced weapon release control -----
     
+    public static final int     _AS_LENGTH                             = 54;    
+ // ----- todo skylla: enhanced weapon release control -----
+        
     public static final int       _AS_COCKPIT_GLASS             = 1;
     public static final int       _AS_COCKPIT_ARMORGLASS        = 2;
     public static final int       _AS_COCKPIT_LEFT1             = 4;
@@ -3416,7 +3419,7 @@ public class AircraftState {
             if (!this.aircraft.netNewAState_isEnable(true))
                 return;
             if (this.itemsToMaster == null)
-                this.itemsToMaster = new Item[41];
+                this.itemsToMaster = new Item[_AS_LENGTH];
             if (sendedMsg(this.itemsToMaster, paramInt1, paramInt2, paramInt3, paramActor))
                 return;
             try {
@@ -3448,7 +3451,7 @@ public class AircraftState {
         if (!this.aircraft.netNewAState_isEnable(false))
             return;
         if (this.itemsToMirrors == null)
-            this.itemsToMirrors = new Item[41];
+            this.itemsToMirrors = new Item[_AS_LENGTH];
         if (sendedMsg(this.itemsToMirrors, paramInt1, paramInt2, paramInt3, paramActor))
             return;
         try {
@@ -3682,8 +3685,10 @@ public class AircraftState {
     	}
 		//System.out.println("SKYLLA: setRocketSelected " + (applySetting?"received":"sent") + " the following listIndex: " + listIndex);
 		if(bIsMaster) {
+			this.ClearSendedItems(_AS_ROCKET_SELECTED, this.itemsToMirrors);
 			netToMirrors(_AS_ROCKET_SELECTED, listIndex, 0, actor);
 		} else {
+			this.ClearSendedItems(_AS_ROCKET_SELECTED, this.itemsToMaster);
 			netToMaster(_AS_ROCKET_SELECTED, listIndex, 0, actor);
 		}
     }
@@ -3716,8 +3721,10 @@ public class AircraftState {
     	}
 		//System.out.println("SKYLLA: setRocketReleaseDelay " + (applySetting?"received":"sent") + " the following listIndex: " + delayIndex);
 		if(bIsMaster) {
+			this.ClearSendedItems(_AS_ROCKET_RELEASE_DELAY, this.itemsToMirrors);
 			netToMirrors(_AS_ROCKET_RELEASE_DELAY, delayIndex, 0, actor);
 		} else {
+			this.ClearSendedItems(_AS_ROCKET_RELEASE_DELAY, this.itemsToMaster);
 			netToMaster(_AS_ROCKET_RELEASE_DELAY, delayIndex, 0, actor);
 		}
 	}
@@ -3750,8 +3757,10 @@ public class AircraftState {
     	}
 		//System.out.println("SKYLLA: setRocketReleaseMode " + (applySetting?"received":"sent") + " the following listIndex: " + releaseModeIndex);
 		if(bIsMaster) {
+			this.ClearSendedItems(_AS_ROCKET_RELEASE_MODE, this.itemsToMirrors);
 			netToMirrors(_AS_ROCKET_RELEASE_MODE, releaseModeIndex, 0, actor);
 		} else {
+			this.ClearSendedItems(_AS_ROCKET_RELEASE_MODE, this.itemsToMaster);
 			netToMaster(_AS_ROCKET_RELEASE_MODE, releaseModeIndex, 0, actor);
 		}
 	}
@@ -3784,8 +3793,10 @@ public class AircraftState {
     	}
 		//System.out.println("SKYLLA: setBombSelected " + (applySetting?"received":"sent") + " the following listIndex: " + listIndex);
 		if(bIsMaster) {
+			this.ClearSendedItems(_AS_BOMB_SELECTED, this.itemsToMirrors);
 			netToMirrors(_AS_BOMB_SELECTED, listIndex, 0, actor);
 		} else {
+			this.ClearSendedItems(_AS_BOMB_SELECTED, this.itemsToMaster);
 			netToMaster(_AS_BOMB_SELECTED, listIndex, 0, actor);
 		}
     }
@@ -3818,8 +3829,10 @@ public class AircraftState {
     	}
 		//System.out.println("SKYLLA: setBombReleaseDelay " + (applySetting?"received":"sent") + " the following listIndex: " + delayIndex);
 		if(bIsMaster) {
+			this.ClearSendedItems(_AS_BOMB_RELEASE_DELAY, this.itemsToMirrors);
 			netToMirrors(_AS_BOMB_RELEASE_DELAY, delayIndex, 0, actor);
 		} else {
+			this.ClearSendedItems(_AS_BOMB_RELEASE_DELAY, this.itemsToMaster);
 			netToMaster(_AS_BOMB_RELEASE_DELAY, delayIndex, 0, actor);
 		}
 	}
@@ -3852,8 +3865,10 @@ public class AircraftState {
     	}
 		//System.out.println("SKYLLA: setBombReleaseMode " + (applySetting?"received":"sent") + " the following listIndex: " + releaseModeIndex);
 		if(bIsMaster) {
+			this.ClearSendedItems(_AS_BOMB_RELEASE_MODE, this.itemsToMirrors);
 			netToMirrors(_AS_BOMB_RELEASE_MODE, releaseModeIndex, 0, actor);
 		} else {
+			this.ClearSendedItems(_AS_BOMB_RELEASE_MODE, this.itemsToMaster);
 			netToMaster(_AS_BOMB_RELEASE_MODE, releaseModeIndex, 0, actor);
 		}
 	}
@@ -3868,4 +3883,34 @@ public class AircraftState {
     
   // ----- todo skylla: enhanced weapon release control -----
 	
+  // +++++ TODO Storebror: fixing the loss of fast repeated net replication messages +++++
+	
+    public void ClearSendedItems(int asMessageIndex, Item[] items) {
+        if (items == null) return;
+        if (items.length <= asMessageIndex) return;
+        if (items[asMessageIndex] == null) return;
+        items[asMessageIndex] = null;
+    }
+    
+    protected static void AircraftStateClearSendedItemsToMaster(AircraftState as, int asMessageIndex) {
+        AircraftStateClearSendedItems(as, asMessageIndex, "itemsToMaster");
+    }
+   
+    protected static void AircraftStateClearSendedItemsToMirrors(AircraftState as, int asMessageIndex) {
+        AircraftStateClearSendedItems(as, asMessageIndex, "itemsToMirrors");
+    }
+
+    protected static void AircraftStateClearSendedItems(AircraftState as, int asMessageIndex, String fieldName) {
+        Object[] itemsToMaster = (Object[])Reflection.getValue(as, fieldName);
+        if (itemsToMaster == null) return;
+        if (itemsToMaster.length <= asMessageIndex) {
+            System.out.println("[AircraftState Helper] cannot clear " + fieldName + "[" + asMessageIndex + "], " + fieldName + " length is " + itemsToMaster.length);
+            return;
+        }
+        if (itemsToMaster[asMessageIndex] == null) return;
+        itemsToMaster[asMessageIndex] = null;
+    }
+    
+ // ----- todo Storebror: fixing the loss of fast repeated net replication messages -----
+    
 }
