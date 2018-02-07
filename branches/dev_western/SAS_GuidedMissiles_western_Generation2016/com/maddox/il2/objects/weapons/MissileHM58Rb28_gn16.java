@@ -1,7 +1,7 @@
 // Source File Name: MissileHM58Rb28_gn16.java
 // Exported US AIM-4C, Swiss HM-58 and Sweden Rb 28, only texture different
 // Author:           western0221
-// Last Modified by: western0221 2017-11-09
+// Last Modified by: western0221 2018-02-07
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Color3f;
@@ -27,6 +27,7 @@ public class MissileHM58Rb28_gn16 extends Missile {
 		Property.set(class1, "sprite", "3do/effects/RocketSidewinder/RocketSidewinderSpriteBlack.eff");
 		Property.set(class1, "flame", "3do/Effects/RocketSidewinder/RocketSidewinderFlame.sim");
 		Property.set(class1, "smoke", "3do/Effects/RocketSidewinder/RocketSidewinderSmoke.eff");
+		Property.set(class1, "smokeTrail", "3do/Effects/RocketSidewinder/RocketShutdownTrail.eff");
 		Property.set(class1, "emitColor", new Color3f(1.0F, 1.0F, 0.5F));
 		Property.set(class1, "emitLen", 50F); // Emitted Smoke length
 		Property.set(class1, "emitMax", 0.4F); // Amount of emitted Smoke

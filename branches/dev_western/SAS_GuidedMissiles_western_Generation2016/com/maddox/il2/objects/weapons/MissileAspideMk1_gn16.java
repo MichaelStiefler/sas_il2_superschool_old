@@ -1,6 +1,6 @@
 // Source File Name: MissileAspideMk1_gn16.java
 // Author:           western0221
-// Last Modified by: western0221 2018-01-26
+// Last Modified by: western0221 2018-02-03
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Color3f;
@@ -27,7 +27,8 @@ public class MissileAspideMk1_gn16 extends Missile {
 		Property.set(class1, "mesh", "3do/arms/AspideMk1_gn16/mono.sim");
 		Property.set(class1, "sprite", "3do/effects/RocketSidewinder/RocketSidewinderSpriteBlack.eff");
 		Property.set(class1, "flame", "3do/Effects/RocketSidewinder/RocketSidewinderFlame.sim");
-		Property.set(class1, "smoke", "EFFECTS/Smokes/SmokeBlack_missiles.eff");
+		Property.set(class1, "flame", "3do/Effects/RocketSidewinder/RocketSparrowFlame.sim");
+		Property.set(class1, "smoke", "3do/Effects/RocketSidewinder/RocketSparrowSmokeBlack.eff");
 		Property.set(class1, "smokeTrail", "3do/Effects/RocketSidewinder/RocketShutdownTrail.eff");
 		Property.set(class1, "emitColor", new Color3f(1.0F, 1.0F, 0.5F));
 		Property.set(class1, "emitLen", 50F); // Emitted Smoke length

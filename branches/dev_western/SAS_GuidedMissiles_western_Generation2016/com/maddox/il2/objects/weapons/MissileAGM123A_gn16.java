@@ -24,8 +24,9 @@ public class MissileAGM123A_gn16 extends Missile  implements MissileInterceptabl
 		Property.set(class1, "mesh", "3do/arms/AGM123A_gn16/mono.sim");
 		Property.set(class1, "meshFly", "3do/arms/AGM123A_gn16/mono_open.sim");
 		Property.set(class1, "sprite", "3do/Effects/RocketSidewinder/RocketSidewinderSmoke.eff");
-		Property.set(class1, "flame", "3do/Effects/RocketSidewinder/RocketSidewinderFlame.sim");
-		Property.set(class1, "smoke", "3do/Effects/RocketSidewinder/RocketSidewinderSmoke.eff");
+        Property.set(class1, "flame", "3do/Effects/RocketSidewinder/RocketMaverickFlame.sim");
+		Property.set(class1, "smoke", "3do/Effects/RocketSidewinder/RocketSparrowSmoke.eff");
+		Property.set(class1, "smokeTrail", "3do/Effects/RocketSidewinder/RocketShutdownTrail.eff");
 		Property.set(class1, "emitColor", new Color3f(1.0F, 1.0F, 0.5F));
 		Property.set(class1, "emitLen", 50F);
 		Property.set(class1, "emitMax", 0.4F);
