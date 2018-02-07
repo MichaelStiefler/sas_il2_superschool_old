@@ -25,7 +25,7 @@ public class MissileAGM84J_gn16 extends Missile implements MissileInterceptable 
 		Property.set(class1, "emitColor", new Color3f(0.1F, 0.1F, 0.05F));
 		Property.set(class1, "emitLen", 50F);
 		Property.set(class1, "emitMax", 0.4F);
-		Property.set(class1, "sound", "weapon.rocket_132");
+		Property.set(class1, "sound", "weapon.missile_agm84jet");
 		Property.set(class1, "timeLife", 800F);
 		Property.set(class1, "timeFire", 12F);
 		Property.set(class1, "force", 3200F);
