@@ -1,4 +1,4 @@
-UP3 RC4 Patch Pack v2.16
+UP3 RC4 Patch Pack v3.01 RC1
 
 Contents:
 - All fixes listed below
@@ -61,6 +61,9 @@ Included feature enhancements:
 - Enhanced "Ordnance View" mode implemented - this is the "Ordnance View" from 4.13 as it should always have been!
 - "Camera Mod" implemented
 - Optional upgraded 3D and Textures for default Ordnance (use JGSME to activate, courtesy of VPMedia)
+- MXY-7 Ohka causes realistic damage on impact
+- SPB (TB-3, I-16 Type 5 and 24) improved, including automatic docking mechanism
+- Enhanced Weapon Release Control mod by SAS~Skylla integrated
 
 Included fixes:
 - Bf 109 Series Cockpit Code fix
@@ -211,13 +214,13 @@ LogTicks=<0/1>             "Tick Delta" output in log.lst, default=0, 0=disable,
 Installation:
 1.) Run JSGME.exe from your UP3 RC4 game folder and disable any of the following previously installed mods(packs), if applicable:
     * Any old Hotfix Pack (* see below)
-    * Any old Patch Pack (e.g. "#UP#_Patch_Pack_215")
+    * Any old Patch Pack (e.g. "#UP#_Patch_Pack_216")
     * UP3 RC4 without obfuscation ("#UP#_Unobfuscated_MDS_for_UP3"), because this is integrated in this patch pack already
 2.) Check your enabled JSGME Mods, now there should only be:
     * #UP#_Enable_UP.3.0
     * Additional JSGME Mods not related to Fixes, Patches, unobfuscated UP etc.
 3.) Extract this Patch Pack to your UP3 RC4 game folder
-4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_216")
+4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_301_RC1")
 
 ********************
 
