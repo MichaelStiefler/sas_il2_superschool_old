@@ -1,4 +1,4 @@
-UP3 RC4 Patch Pack v3.01 RC1
+UP3 RC4 Patch Pack v3.01 RC2
 
 Contents:
 - All fixes listed below
@@ -154,6 +154,8 @@ Included fixes:
 - Ballistics bug fixed where the radicand of a square root calculation could become zero, causing JVM 1.3.1 to create page faults in memory
 - HookView bug fixed where no minimum object radius was taken into consideration (or at least: Not correctly) when switching to Ordnance View
 - BombGunNull/BombNull bug fixed
+- Old/New TrackIR code compatibility bug fixed
+- P-40M Flight Model fixed, vertical stabilizer and rudder arm values adjusted according to the lengthened fuselage
 
 (*) Me-262V3 flight model:
     Like in real life, you have to tap the brakes in order to get the 262V3 off the ground.
@@ -220,7 +222,7 @@ Installation:
     * #UP#_Enable_UP.3.0
     * Additional JSGME Mods not related to Fixes, Patches, unobfuscated UP etc.
 3.) Extract this Patch Pack to your UP3 RC4 game folder
-4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_301_RC1")
+4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_301_RC2")
 
 ********************
 

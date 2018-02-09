@@ -10,4 +10,7 @@ public interface MsgTrackIRListener {
     // TODO: +++ 4.11+ TrackIR implementation by SAS~Storebror +++
     public abstract void msgTrackIRAngles(float yaw, float pitch, float roll, float headX, float headY, float headZ);
     // TODO: --- 4.11+ TrackIR implementation by SAS~Storebror ---
+    
+    // Original 4.10 (UP3) method
+    public abstract void msgTrackIRAngles(float yaw, float pitch, float roll);
 }

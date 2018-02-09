@@ -19,6 +19,8 @@ public class TrackIR implements MsgAddListenerListener, MsgRemoveListenerListene
         angles[0] = this.yaw;
         angles[1] = this.pitch;
         angles[2] = this.roll;
+        // for 4.10 backward compatibility
+        if (angles.length < 4) return;
         angles[3] = this.headX;
         angles[4] = this.headY;
         angles[5] = this.headZ;
@@ -93,6 +95,11 @@ public class TrackIR implements MsgAddListenerListener, MsgRemoveListenerListene
         }
     }
     // TODO: --- 4.11+ TrackIR implementation by SAS~Storebror ---
+
+    // Original 4.10/UP3 method for backward compatibility 
+    protected void setAngles(float yaw, float pitch, float roll) {
+        this.setAngles(yaw, pitch, roll, 0F, 0F, 0F);
+    }
 
     protected TrackIR(IniFile inifile, String dummy) {
         this.bExist = false;
