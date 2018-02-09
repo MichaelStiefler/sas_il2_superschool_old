@@ -94,6 +94,11 @@ public class HotKey implements MsgKeyboardListener, MsgMouseListener, MsgJoyList
     }
     // TODO: --- 4.11+ TrackIR implementation by SAS~Storebror ---
 
+    // Original 4.10/UP3 method for backward compatibility
+    public void msgTrackIRAngles(float yaw, float pitch, float roll) {
+        this.msgTrackIRAngles(yaw, pitch, roll, 0F, 0F, 0F);
+    }
+
     public void msgTimeOut(Object obj) {
         if (Message.current().isRealTime()) {
             HotKeyEnv.tick(true);

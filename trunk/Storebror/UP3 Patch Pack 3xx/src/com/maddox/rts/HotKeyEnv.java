@@ -414,6 +414,11 @@ public class HotKeyEnv {
     }
     // TODO: --- 4.11+ TrackIR implementation by SAS~Storebror ---
 
+    // Original 4.10/UP3 method for backward compatibility
+    public static final void trackIRAngles(boolean flag, float yaw, float pitch, float roll) {
+        trackIRAngles(flag, yaw, pitch, roll, 0F, 0F, 0F);
+    }
+
     public HotKeyCmdEnv hotKeyCmdEnv() {
         return this.hotKeyCmdEnv;
     }

@@ -20,6 +20,11 @@ public abstract class HotKeyCmdTrackIRAngles extends HotKeyCmd {
         this._headZ = headZ;
     }
 
+    // Original 4.10/UP3 method for backward compatibility 
+    public final void setAngles(float yaw, float pitch, float roll) {
+        this.setAngles(yaw, pitch, roll, 0F, 0F, 0F);
+    }
+
     public final void doAngles() {
         this.bActive = true;
         if (TrackIRWin.isUseNewTrackIR())
@@ -41,6 +46,11 @@ public abstract class HotKeyCmdTrackIRAngles extends HotKeyCmd {
         super(isRealTime, name);
     }
 
+    // Original 4.10/UP3 method for backward compatibility 
+    public void _exec(float yaw, float pitch, float roll) {
+        this._exec(yaw, pitch, roll, 0F, 0F, 0F);
+    }
+    
     public void _exec(float yaw, float pitch, float roll, float headX, float headY, float headZ) {
         if (Time.isPaused() && !this.isRealTime())
             return;
