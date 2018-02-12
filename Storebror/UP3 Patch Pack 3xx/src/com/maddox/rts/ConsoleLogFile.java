@@ -39,7 +39,6 @@ class ConsoleLogFile implements ConsoleOut {
             this.checkInit();
             // TODO: --- Additional Log Settings by SAS~Storebror ---
             Calendar calendar = Calendar.getInstance();
-//            GregorianCalendar calendar = new GregorianCalendar(TimeZone.getDefault());
             this.f.print("[" + this.shortDate.format(calendar.getTime()) + "]\t");
             // TODO: +++ Additional Log Settings by SAS~Storebror +++
             if (Config.cur.bLogTicks) {

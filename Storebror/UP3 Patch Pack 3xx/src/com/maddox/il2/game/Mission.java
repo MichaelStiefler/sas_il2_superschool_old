@@ -2165,32 +2165,34 @@ public class Mission implements Destroy {
     }
 
     private void loadViewPoint(SectFile sectfile) {
-        int i = sectfile.sectionIndex("StaticCamera");
-        if (i >= 0) {
-            int i_116_ = sectfile.vars(i);
-            for (int i_117_ = 0; i_117_ < i_116_; i_117_++) {
-                NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(i, i_117_));
-                float f = numbertokenizer.next(0);
-                float f_118_ = numbertokenizer.next(0);
-                float f_119_ = numbertokenizer.next(100, 2, 10000);
-                ActorViewPoint actorviewpoint = new ActorViewPoint();
-                double d = f;
-                double d_120_ = f_118_;
-                float f_121_ = f_119_;
-                World.land();
-                Point3d point3d = new Point3d(d, d_120_, f_121_ + Landscape.HQ_Air(f, f_118_));
-                Point3d point3d_122_ = point3d;
-                actorviewpoint.pos.setAbs(point3d_122_);
-                actorviewpoint.pos.reset();
-                actorviewpoint.dreamFire(true);
-                actorviewpoint.setName("StaticCamera_" + i_117_);
-                if (this.net.isMirror()) {
+        int sectionIndex = sectfile.sectionIndex("StaticCamera");
+        if (sectionIndex < 0)
+            return;
+        int numVars = sectfile.vars(sectionIndex);
+        for (int varIndex = 0; varIndex < numVars; varIndex++) {
+            NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(sectionIndex, varIndex));
+            float f = numbertokenizer.next(0);
+            float f_118_ = numbertokenizer.next(0);
+            float f_119_ = numbertokenizer.next(100, 2, 10000);
+            ActorViewPoint actorviewpoint = new ActorViewPoint();
+            double d = f;
+            double d_120_ = f_118_;
+            float f_121_ = f_119_;
+            World.land();
+            Point3d point3d = new Point3d(d, d_120_, f_121_ + Landscape.HQ_Air(f, f_118_));
+            Point3d point3d_122_ = point3d;
+            actorviewpoint.pos.setAbs(point3d_122_);
+            actorviewpoint.pos.reset();
+            actorviewpoint.dreamFire(true);
+            actorviewpoint.setName("StaticCamera_" + varIndex);
+            if (this.net.isMirror()) {
+                if (this.curActor < this.actors.size()) { // TODO: Added by Storebror, check index vs. ArrayList size first
                     actorviewpoint.createNetObject(this.net.masterChannel(), ((Integer) this.actors.get(this.curActor)).intValue());
                     this.actors.set(this.curActor++, actorviewpoint);
-                } else {
-                    actorviewpoint.createNetObject(null, 0);
-                    this.actors.add(actorviewpoint);
                 }
+            } else {
+                actorviewpoint.createNetObject(null, 0);
+                this.actors.add(actorviewpoint);
             }
         }
     }

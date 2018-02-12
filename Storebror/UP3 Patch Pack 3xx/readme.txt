@@ -1,4 +1,4 @@
-UP3 RC4 Patch Pack v3.01 RC2
+UP3 RC4 Patch Pack v3.01
 
 Contents:
 - All fixes listed below
@@ -222,7 +222,7 @@ Installation:
     * #UP#_Enable_UP.3.0
     * Additional JSGME Mods not related to Fixes, Patches, unobfuscated UP etc.
 3.) Extract this Patch Pack to your UP3 RC4 game folder
-4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_301_RC2")
+4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_301")
 
 ********************
 
