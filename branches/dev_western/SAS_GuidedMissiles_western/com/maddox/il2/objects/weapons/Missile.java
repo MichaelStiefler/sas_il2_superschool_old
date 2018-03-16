@@ -1,6 +1,6 @@
 // Source File Name: Missile.java
 // Author:	Storebror
-// Edit:	western0221 on 07th/Feb/2018
+// Edit:	western0221 on 16th/Feb/2018
 package com.maddox.il2.objects.weapons;
 
 import java.io.IOException;
@@ -302,10 +302,10 @@ public class Missile extends Rocket {
 				this.stopSounds();
 				this.playingMotorSound = false;
 			}
-            if (!this.showingTrailSmoke && this.effSmokeTrail != null) {
+			if (!this.showingTrailSmoke && this.effSmokeTrail != null) {
 				this.afterFireEngineTrail();
 				this.showingTrailSmoke = true;
-            }
+			}
 			this.missileMass = this.massaEnd;
 			this.missileForce = 0.0F;
 		} else if (millisecondsFromStart > this.rocketMotorOperationTime) {
@@ -609,19 +609,19 @@ public class Missile extends Rocket {
 		if (stage == 1 && this.effSmokeSustain == null) return;
 		if (stage == 2 && this.effSmokeTrail == null) return;
 		Hook theHook = null;
-        String ssm = null;
-        switch(stage) {
-        default:
-        case 0:
-            ssm = this.effSmoke;
-            break;
-        case 1:
-            ssm = this.effSmokeSustain;
-            break;
-        case 2:
-            ssm = this.effSmokeTrail;
-            break;
-        }
+		String ssm = null;
+		switch(stage) {
+		default:
+		case 0:
+			ssm = this.effSmoke;
+			break;
+		case 1:
+			ssm = this.effSmokeSustain;
+			break;
+		case 2:
+			ssm = this.effSmokeTrail;
+			break;
+		}
 		for (int i = 1; i < this.exhausts; i++) {
 			theHook = this.findHook("_SMOKE" + i);
 			if (theHook == null) {
@@ -774,6 +774,7 @@ public class Missile extends Rocket {
 		}
 		this.stopSounds();
 		this.endedFlame = true;
+		this.bRocketFiring = false;
 	}
 
 	private void endAllSmoke() {
@@ -1061,6 +1062,10 @@ public class Missile extends Rocket {
 
 	public long getTargetType() {
 		return this.lTargetType;
+	}
+
+	public boolean getRocketFiring() {
+		return this.bRocketFiring;
 	}
 
 	public int HitbyMask() {
@@ -1472,6 +1477,7 @@ public class Missile extends Rocket {
 				if (Config.isUSE_RENDER())
 					this.flame.drawing(true);
 			}
+			this.bRocketFiring = true;
 		}
 		str = this.effSmoke;
 		if (str != null) {
@@ -1538,6 +1544,7 @@ public class Missile extends Rocket {
 				if (Config.isUSE_RENDER())
 					this.flame.drawing(true);
 			}
+			this.bRocketFiring = true;
 		}
 		str = this.effSmokeSustain;
 		if (str != null) {
@@ -2081,6 +2088,7 @@ public class Missile extends Rocket {
 	private Orient victimOffsetOrient = null;
 	private Point3d victimOffsetPoint3d = null;
 	private Vector3d victimSpeed = null;
+	private boolean bRocketFiring = false;
 
 	private boolean bLaserHoming = false;
 	private Actor laserOwner = null;

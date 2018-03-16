@@ -1,6 +1,6 @@
 // Source File Name: GuidedMissileUtils.java
 // Author:	Storebror
-// Edit:	western0221 on 16th/Nov/2017
+// Edit:	western0221 on 07th/Mar/2018
 package com.maddox.il2.objects.weapons;
 
 import java.util.ArrayList;
@@ -35,6 +35,7 @@ import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.TypeLaserDesignator;
 import com.maddox.il2.objects.air.TypeSemiRadar;
 import com.maddox.il2.objects.air.TypeGroundRadar;
+import com.maddox.il2.objects.air.TypeRadarWarningReceiver;
 import com.maddox.il2.objects.bridges.Bridge;
 import com.maddox.il2.objects.bridges.BridgeSegment;
 import com.maddox.il2.objects.bridges.LongBridge;
@@ -395,11 +396,13 @@ public class GuidedMissileUtils {
 		}
 //		if (ownerAircraft == World.getPlayerAircraft())
 //			HUD.training("TRG=" + ownerAircraft.FM.CT.rocketHookSelected + " Pk="+trgtPk);
+		if (this.trgtPk > this.getMinPkForAttack() && (this.iDetectorMode == Missile.DETECTOR_TYPE_RADAR_HOMING || this.iDetectorMode == Missile.DETECTOR_TYPE_RADAR_BEAMRIDING || this.iDetectorMode == Missile.DETECTOR_TYPE_RADAR_TRACK_VIA_MISSILE) && Actor.isValid(this.getMissileTarget())
+			&& (this.getMissileTarget() instanceof TypeRadarWarningReceiver) && this.getMissileTarget().getArmy() != ownerAircraft.FM.actor.getArmy())
+			((TypeRadarWarningReceiver) this.getMissileTarget()).myRadarLockYou(ownerAircraft.FM.actor);
 
-//
-		if ((this.trgtPk > this.getMinPkForAttack()) && this.iDetectorMode == Missile.DETECTOR_TYPE_LASER && this.iMissileLockState == 2 && (Actor.isValid(this.getMissileTarget())) && (this.getMissileTarget().getArmy() == ownerAircraft.FM.actor.getArmy())
-				&& (Time.current() > this.tMissilePrev + this.getMillisecondsBetweenMissileLaunchAI()) && (GuidedMissileUtils.noLaunchSince(minTimeBetweenAIMissileLaunch, ownerAircraft.FM.actor.getArmy()))
-				&& (missilesLeft(ownerAircraft.FM.CT.Weapons[ownerAircraft.FM.CT.rocketHookSelected]))) {
+		if (this.trgtPk > this.getMinPkForAttack() && this.iDetectorMode == Missile.DETECTOR_TYPE_LASER && Actor.isValid(this.getMissileTarget()) && this.getMissileTarget().getArmy() != ownerAircraft.FM.actor.getArmy()
+			&& Time.current() > this.tMissilePrev + this.getMillisecondsBetweenMissileLaunchAI() && GuidedMissileUtils.noLaunchSince(minTimeBetweenAIMissileLaunch, ownerAircraft.FM.actor.getArmy())
+			&& missilesLeft(ownerAircraft.FM.CT.Weapons[ownerAircraft.FM.CT.rocketHookSelected])) {
 			this.tMissilePrev = Time.current();
 			// lastAIMissileLaunch = Time.current();
 			ownerAircraft.FM.CT.WeaponControl[ownerAircraft.FM.CT.rocketHookSelected] = true;
@@ -410,9 +413,9 @@ public class GuidedMissileUtils {
 				System.out.println("Owner " + ownerAircraft.hashCode() + " missile launch against victim=" + this.getMissileTarget().hashCode() + " (" + this.getMissileTarget().getClass().getName() + ")");
 			// HUD.log("AI missile launch (" + ownerAircraft.FM.CT.rocketHookSelected + "/" + Missile.getActiveMissilesSize() + ")");
 		}
-		else if ((this.trgtPk > this.getMinPkForAttack()) && (Actor.isValid(this.getMissileTarget())) && (this.getMissileTarget().getArmy() != ownerAircraft.FM.actor.getArmy())
-				&& (Time.current() > this.tMissilePrev + this.getMillisecondsBetweenMissileLaunchAI()) && (GuidedMissileUtils.noLaunchSince(minTimeBetweenAIMissileLaunch, ownerAircraft.FM.actor.getArmy()))
-				&& (missilesLeft(ownerAircraft.FM.CT.Weapons[ownerAircraft.FM.CT.rocketHookSelected]))) {
+		else if (this.trgtPk > this.getMinPkForAttack() && Actor.isValid(this.getMissileTarget()) && this.getMissileTarget().getArmy() != ownerAircraft.FM.actor.getArmy()
+				&& Time.current() > this.tMissilePrev + this.getMillisecondsBetweenMissileLaunchAI() && GuidedMissileUtils.noLaunchSince(minTimeBetweenAIMissileLaunch, ownerAircraft.FM.actor.getArmy())
+				&& missilesLeft(ownerAircraft.FM.CT.Weapons[ownerAircraft.FM.CT.rocketHookSelected])) {
 			if (isTargetHandledByAi(ownerAircraft.FM.actor.getArmy(), this.getMissileTarget())) return;
 			addTargetHandledByAi(ownerAircraft.FM.actor.getArmy(), this.getMissileTarget());
 			this.tMissilePrev = Time.current();
@@ -955,7 +958,7 @@ public class GuidedMissileUtils {
 		Actor actorTarget = null;
 		if ((targetType & Missile.TARGET_AIR) != 0) {
 			actorTarget = this.lookForGuidedMissileTargetAircraft(actor, maxFOVfrom, maxFOVto, maxDistance);
-		} else if (((targetType & Missile.TARGET_GROUND) != 0) && ((targetType & Missile.TARGET_SHIP) != 0)) {
+		} else if ((targetType & Missile.TARGET_GROUND) != 0 && (targetType & Missile.TARGET_SHIP) != 0) {
 			Actor actorTargetG = this.lookForGuidedMissileTargetGround(actor, maxFOVfrom, maxFOVto, maxDistance);
 			Actor actorTargetS = this.lookForGuidedMissileTargetShip(actor, maxFOVfrom, maxFOVto, maxDistance);
 			if (actorTargetG != null && actorTargetS == null) actorTarget = actorTargetG;
@@ -990,7 +993,7 @@ public class GuidedMissileUtils {
 		FlightModelMain ownerfm = ((Aircraft)actor).FM;
 		if (this.bRealisticRadarSelect && actor instanceof TypeSemiRadar &&
 			(this.iDetectorMode == Missile.DETECTOR_TYPE_RADAR_HOMING || this.iDetectorMode == Missile.DETECTOR_TYPE_RADAR_TRACK_VIA_MISSILE) &&
-			(((ownerfm instanceof RealFlightModel)) && (((RealFlightModel) ownerfm).isRealMode()) && (ownerfm instanceof Pilot))) {
+			((ownerfm instanceof RealFlightModel) && ((RealFlightModel) ownerfm).isRealMode() && (ownerfm instanceof Pilot))) {
 			if (!((TypeSemiRadar) actor).getSemiActiveRadarOn() || ((TypeSemiRadar) actor).getSemiActiveRadarLockedActor() == null) {
  				if (this.iDebugLogLevel > 2)
 					System.out.println("Semi-Active Radar is OFF. Missile target is made null.");
@@ -1232,7 +1235,7 @@ public class GuidedMissileUtils {
 		FlightModelMain ownerfm = ((Aircraft)actor).FM;
 		if (this.bRealisticRadarSelect && actor instanceof TypeGroundRadar &&
 			(this.iDetectorMode == Missile.DETECTOR_TYPE_IMAGE_EOTV || this.iDetectorMode == Missile.DETECTOR_TYPE_IMAGE_IR) &&
-			(((ownerfm instanceof RealFlightModel)) && (((RealFlightModel) ownerfm).isRealMode()) && (ownerfm instanceof Pilot))) {
+			(ownerfm instanceof RealFlightModel) && ((RealFlightModel) ownerfm).isRealMode() && (ownerfm instanceof Pilot)) {
 			if (((TypeGroundRadar) actor).getGroundRadarOn() && ((TypeGroundRadar) actor).getGroundRadarLockedActor() != null) {
 				Actor theTarget1 = ((TypeGroundRadar) actor).getGroundRadarLockedActor();
 				if (((theTarget1 instanceof TgtFlak) || (theTarget1 instanceof TgtTank) || (theTarget1 instanceof TgtTrain) || (theTarget1 instanceof TgtVehicle)) &&
@@ -1842,7 +1845,7 @@ public class GuidedMissileUtils {
 			if (this.fxMissileToneNoLock != null) {
 				this.fxMissileToneNoLock.setPlay(false);
 			}
-			if ((this.fxMissileToneLock != null) && (this.smplMissileLock != null)) {
+			if (this.fxMissileToneLock != null && this.smplMissileLock != null) {
 				this.fxMissileToneLock.play(this.smplMissileLock);
 			}
 			this.fxMissileToneLock.setPlay(true);
@@ -1850,7 +1853,7 @@ public class GuidedMissileUtils {
 			if (this.fxMissileToneLock != null) {
 				this.fxMissileToneLock.setPlay(false);
 			}
-			if ((this.fxMissileToneNoLock != null) && (this.smplMissileNoLock != null)) {
+			if (this.fxMissileToneNoLock != null && this.smplMissileNoLock != null) {
 				this.fxMissileToneNoLock.play(this.smplMissileNoLock);
 			}
 			this.fxMissileToneNoLock.setPlay(true);
