@@ -229,7 +229,7 @@ public class F_18D extends F_18
                 getSpeed(vector3d);
                 Point3d point3d1 = new Point3d();
                 super.pos.getAbs(point3d1);
-                float f3 = (float)((double)FM.getAltitude() - World.land().HQ(point3d1.x, point3d1.y));
+                float f3 = FM.getAltitude() - (float)World.land().HQ(point3d1.x, point3d1.y);
                 if(f3 < 55F && vector3d.z < 0.0D)
                     vector3d.z = 0.0D;
                 else

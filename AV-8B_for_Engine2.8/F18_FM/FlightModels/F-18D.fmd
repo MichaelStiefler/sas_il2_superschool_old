@@ -151,6 +151,8 @@
   WheelDiameterLR 0.76
   WheelDiameterC 0.56
   NoseGearMaxSteer 75.0
+  ChockLOffsetX -0.20
+  ChockLOffsetY 0.10
 [Params]
   CriticalAOA 30.00
   CriticalCy 00.7
