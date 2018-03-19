@@ -405,10 +405,10 @@ public class AV_8 extends Scheme1
             if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F)
                 break;
             targetDistance = this.pos.getAbsPoint().distance(point3d);
-            if (targetDistance > maxPavewayDistance)
+            if(targetDistance > maxPavewayDistance)
                 break;
             targetAngle = angleBetween(this, point3d);
-            if (targetAngle > maxPavewayFOVfrom)
+            if(targetAngle > maxPavewayFOVfrom)
                 break;
 
             laseron = true;
@@ -430,14 +430,14 @@ public class AV_8 extends Scheme1
                     if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F)
                         continue;
                     targetDistance = this.pos.getAbsPoint().distance(point3d);
-                    if (targetDistance > maxPavewayDistance)
+                    if(targetDistance > maxPavewayDistance)
                         continue;
                     targetAngle = angleBetween(this, point3d);
-                    if (targetAngle > maxPavewayFOVfrom)
+                    if(targetAngle > maxPavewayFOVfrom)
                         continue;
 
                     targetBait = 1 / targetAngle / (float) (targetDistance * targetDistance);
-                    if (targetBait <= maxTargetBait)
+                    if(targetBait <= maxTargetBait)
                         continue;
 
                     maxTargetBait = targetBait;
@@ -553,7 +553,7 @@ public class AV_8 extends Scheme1
                     String classnameFull = actor.getClass().getName();
                     int idot = classnameFull.lastIndexOf('.');
                     int idol = classnameFull.lastIndexOf('$');
-                    if (idot < idol) idot = idol;
+                    if(idot < idol) idot = idol;
                     String classnameSection = classnameFull.substring(idot + 1);
                     HUD.log("Semi-Active Radar lock-on " + classnameSection);
                 }
@@ -616,7 +616,7 @@ public class AV_8 extends Scheme1
                     String classnameFull = actor.getClass().getName();
                     int idot = classnameFull.lastIndexOf('.');
                     int idol = classnameFull.lastIndexOf('$');
-                    if (idot < idol) idot = idol;
+                    if(idot < idol) idot = idol;
                     String classnameSection = classnameFull.substring(idot + 1);
                     HUD.log("Ground Radar lock-on " + classnameSection);
                 }
@@ -729,7 +729,7 @@ public class AV_8 extends Scheme1
 
     public void typeBomberUpdate(float f)
     {
-        if((double)Math.abs(FM.Or.getKren()) > 4.5D)
+        if(Math.abs(FM.Or.getKren()) > 4.5F)
         {
             fSightCurReadyness -= 0.0666666F * f;
             if(fSightCurReadyness < 0.0F)
@@ -746,7 +746,7 @@ public class AV_8 extends Scheme1
                 typeBomberToggleAutomation();
             }
             fSightCurForwardAngle = (float)Math.toDegrees(Math.atan(fSightCurDistance / toMeters(fSightCurAltitude)));
-            if((double)fSightCurDistance < (double)toMetersPerSecond(fSightCurSpeed) * Math.sqrt(toMeters(fSightCurAltitude) * 0.2038736F))
+            if(fSightCurDistance < toMetersPerSecond(fSightCurSpeed) * (float)Math.sqrt(toMeters(fSightCurAltitude) * 0.2038736F))
                 bSightBombDump = true;
             if(bSightBombDump)
                 if(FM.isTick(3, 0))
@@ -942,8 +942,8 @@ public class AV_8 extends Scheme1
             AV_8 av_8 = this;
             float f1 = mn;
             World.cur().getClass();
-            av_8.mn = f1 / Atmosphere.sonicSpeed((float)((Tuple3d) (FM.Loc)).z);
-            if(mn >= 0.9F && (double)mn < 1.1000000000000001D)
+            av_8.mn = f1 / Atmosphere.sonicSpeed((float)FM.Loc.z);
+            if(mn >= 0.9F && mn < 1.1F)
                 ts = true;
             else
                 ts = false;
@@ -1467,11 +1467,11 @@ label0:
                 if(f < 0.1F)
                 {
                     FM.AS.hitEngine(this, k, 100);
-                    if((double)World.Rnd().nextFloat() < 0.48999999999999999D)
+                    if(World.Rnd().nextFloat() < 0.49F)
                         FM.EI.engines[k].setEngineDies(actor);
                     break label0;
                 }
-                if((double)f > 0.55000000000000004D)
+                if(f > 0.55F)
                     FM.EI.engines[k].setEngineDies(actor);
             }
 
@@ -1582,13 +1582,13 @@ label0:
         float f1 = FM.getSpeedKMH() - getMachForAlt(FM.getAltitude());
         if(f1 < 0.5F)
             f1 = 0.5F;
-        if((double)calculateMach() <= 1.0D)
+        if(calculateMach() <= 1.0F)
         {
             FM.VmaxAllowed = FM.getSpeedKMH() + f;
             SonicBoom = 0.0F;
             isSonic = false;
         }
-        if((double)calculateMach() >= 1.0D)
+        if(calculateMach() > 1.0F)
         {
             FM.VmaxAllowed = FM.getSpeedKMH() + f1;
             isSonic = true;
@@ -1605,7 +1605,7 @@ label0:
                 shockwave = Eff3DActor.New(this, findHook("_Shockwave"), null, 1.0F, "3DO/Effects/Aircraft/Condensation.eff", -1F);
             SonicBoom = 1.0F;
         }
-        if((double)calculateMach() > 1.01D || (double)calculateMach() < 1.0D)
+        if(calculateMach() > 1.01F || calculateMach() < 1.0F)
             Eff3DActor.finish(shockwave);
     }
 
@@ -1628,7 +1628,7 @@ label0:
                             if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
                                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Compressor Stall!");
                             super.playSound("weapon.MGunMk108s", true);
-                            engineSurgeDamage += 0.01D * (double)(FM.EI.engines[i].getRPM() / 1000F);
+                            engineSurgeDamage += 0.01F * (FM.EI.engines[i].getRPM() / 1000F);
                             FM.EI.engines[i].doSetReadyness(FM.EI.engines[i].getReadyness() - engineSurgeDamage);
                             if(World.Rnd().nextFloat() < 0.05F && (super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode())
                                 FM.AS.hitEngine(this, i, 100);
@@ -1638,7 +1638,7 @@ label0:
                         if((curthrl - oldthrl) / f < -20F && (curthrl - oldthrl) / f > -100F && FM.EI.engines[i].getRPM() < 3200F && FM.EI.engines[i].getStage() == 6)
                         {
                             super.playSound("weapon.MGunMk108s", true);
-                            engineSurgeDamage += 0.001D * (double)(FM.EI.engines[i].getRPM() / 1000F);
+                            engineSurgeDamage += 0.001F * (FM.EI.engines[i].getRPM() / 1000F);
                             FM.EI.engines[i].doSetReadyness(FM.EI.engines[i].getReadyness() - engineSurgeDamage);
                             if(World.Rnd().nextFloat() < 0.4F && (super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode())
                             {
@@ -1823,7 +1823,7 @@ label0:
     {
         if(FM.getSpeed() > 7F && World.Rnd().nextFloat() < getAirDensityFactor(FM.getAltitude()))
         {
-            if((double)FM.getOverload() > 6.5D + (double)getAirDensityFactor(FM.getAltitude()) * 0.10000000000000001D)
+            if(FM.getOverload() > 6.5F + getAirDensityFactor(FM.getAltitude()) * 0.10F)
             {
                 if(World.Rnd().nextFloat(0.1F, 1.5F) > 0.1F)
                     pull1 = Eff3DActor.New(this, findHook("_Pull1"), null, 1.0F, "3DO/Effects/Aircraft/Pullingvaporyak.eff", -1F);
@@ -1985,7 +1985,7 @@ label0:
                         FM.producedAF.x -= 10000D;
                 }
                 if(FM.getAltitude() > 0.0F && FM.EI.engines[0].getStage() > 5)
-                    FM.producedAF.z -= (double)FM.getAltitude() * 3D * (double)FM.EI.engines[0].getPowerOutput();
+                    FM.producedAF.z -= FM.getAltitude() * 3F * FM.EI.engines[0].getPowerOutput();
                 float avW = FM.EI.engines[0].getw() / 2.0F;
                 if(avW > 60F)
                 {
@@ -2019,7 +2019,7 @@ label0:
                     getSpeed(vector3d);
                     Point3d point3d = new Point3d();
                     super.pos.getAbs(point3d);
-                    float f1 = (float)((double)FM.getAltitude() - World.land().HQ(((Tuple3d) (point3d)).x, ((Tuple3d) (point3d)).y));
+                    float f1 = FM.getAltitude() - (float)World.land().HQ(((Tuple3d) (point3d)).x, ((Tuple3d) (point3d)).y);
                     if(f1 < 10F && FM.getSpeedKMH() < 60F && ((Tuple3d) (vector3d)).z < -1D)
                     {
                         vector3d.z *= 0.70000000000000007D;
@@ -2456,9 +2456,6 @@ label0:
     private float vectorthrustx;
     public int radarrange;
     private long twait;
-    public float misslebrg;
-    public float aircraftbrg;
-    public boolean backfire;
     protected boolean bSlatsOff;
     private float oldctl;
     private float curctl;
