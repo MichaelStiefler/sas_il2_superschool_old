@@ -1375,8 +1375,6 @@ public class RadarWarningReceiverUtils {
 	private boolean bRadarSearchedWarning = false;
 	private boolean bRadarLockedWarning = false;
 	private boolean bMissileWarning = false;
-	private float misslebrg = 0.0F;
-	private float aircraftbrg = 0.0F;
 	private FlightModelMain FM = null;
 	private long lastRWRUpdateTime = -1L;
 	private boolean backfire = false;
