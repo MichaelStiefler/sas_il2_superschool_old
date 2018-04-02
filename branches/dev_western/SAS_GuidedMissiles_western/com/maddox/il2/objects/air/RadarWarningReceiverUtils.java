@@ -1,6 +1,6 @@
 // Source File Name: RadarWarningReceiverUtils.java
 // Author:		   western0221
-// Last Modified by: western0221 on 16th/Mar/2018
+// Last Modified by: western0221 on 31st/Mar/2018
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.*;
@@ -29,6 +29,8 @@ public class RadarWarningReceiverUtils {
 		double distance;
 		long firstDetectTime;
 		long lastDetectTime;
+		double lastDetectDistance;
+		float lastDetectDirection;
 		boolean bFinalWarned;
 
 		public RWRdata() {
@@ -36,6 +38,8 @@ public class RadarWarningReceiverUtils {
 			distance = -1.0D;
 			firstDetectTime = -1L;
 			lastDetectTime = -1L;
+			lastDetectDistance = -1.0D;
+			lastDetectDirection = 360.1F;
 			bFinalWarned = false;
 		}
 
@@ -152,6 +156,30 @@ public class RadarWarningReceiverUtils {
 
 	public static float angleBetween(Actor actorFrom, Vector3f targetVector) {
 		return angleBetween(actorFrom, new Vector3d(targetVector));
+	}
+
+	public static float pitchBetweenPnM(Actor actorFrom, Actor actorTo) {
+		float angleRetVal = 360.1F;
+		if(!(Actor.isValid(actorFrom)) || !(Actor.isValid(actorTo))) return angleRetVal;
+		double angleDoubleTemp = 0.0D;
+
+		double pitch = actorFrom.pos.getAbsOrient().getPitch();
+		if(pitch < 0D) pitch += 360D;
+		if(pitch > 360D) pitch -= 360D;
+		double x = actorTo.pos.getAbsPoint().x - actorFrom.pos.getAbsPoint().x;
+		double y = actorTo.pos.getAbsPoint().y - actorFrom.pos.getAbsPoint().y;
+		double xx = Math.sqrt(x * x + y * y);
+		double z = actorTo.pos.getAbsPoint().z - actorFrom.pos.getAbsPoint().z;
+
+		double deg = Math.toDegrees(Math.atan2(z, xx));
+		if(deg < 0D) deg += 360D;
+		if(deg > 360D) deg -= 360D;
+		double degNew = deg - pitch;
+		if(degNew < -180D) degNew += 360D;
+		if(degNew > 180D) degNew -= 360D;
+
+		angleRetVal = (float)degNew;
+		return angleRetVal;
 	}
 
 	public static double distanceBetween(Actor actorFrom, Actor actorTo) {
@@ -542,7 +570,11 @@ public class RadarWarningReceiverUtils {
 					{
 						tempRrwrdata = (RWRdata)this.RHmissiles.get(j);
 						if(tempDistance < tempRrwrdata.distance)
+						{
 							tempRrwrdata.lastDetectTime = Time.current();  // when missile passing away, no update lDT
+							tempRrwrdata.lastDetectDistance = tempDistance;
+							tempRrwrdata.lastDetectDirection = angle360Between(this.rwrOwner, actor);
+						}
 						tempRrwrdata.distance = tempDistance;
 						this.RHmissiles.set(j, tempRrwrdata);
 						bInserted = true;
@@ -556,6 +588,8 @@ public class RadarWarningReceiverUtils {
 					tempNrwrdata.distance = tempDistance;
 					tempNrwrdata.firstDetectTime = Time.current();
 					tempNrwrdata.lastDetectTime = Time.current();
+					tempNrwrdata.lastDetectDistance = tempDistance;
+					tempNrwrdata.lastDetectDirection = angle360Between(this.rwrOwner, actor);
 					this.RHmissiles.add(tempNrwrdata);
 					if((this.iDebugLogLevel & 1) > 0)
 						System.out.println(sDebugPlaneName + "RWRUtils: new this.RHmissiles.add(" + actorString((Actor)missile) + ") , size()=" + this.RHmissiles.size());
@@ -601,7 +635,11 @@ public class RadarWarningReceiverUtils {
 					{
 						tempRrwrdata = (RWRdata)this.IRmissiles.get(j);
 						if(tempDistance < tempRrwrdata.distance)
+						{
 							tempRrwrdata.lastDetectTime = Time.current();  // when missile passing away, no update lDT
+							tempRrwrdata.lastDetectDistance = tempDistance;
+							tempRrwrdata.lastDetectDirection = angle360Between(this.rwrOwner, actor);
+						}
 						tempRrwrdata.distance = tempDistance;
 						this.IRmissiles.set(j, tempRrwrdata);
 						bInserted = true;
@@ -615,6 +653,8 @@ public class RadarWarningReceiverUtils {
 					tempNrwrdata.distance = tempDistance;
 					tempNrwrdata.firstDetectTime = Time.current();
 					tempNrwrdata.lastDetectTime = Time.current();
+					tempNrwrdata.lastDetectDistance = tempDistance;
+					tempNrwrdata.lastDetectDirection = angle360Between(this.rwrOwner, actor);
 					this.IRmissiles.add(tempNrwrdata);
 					if((this.iDebugLogLevel & 2) > 0)
 						System.out.println(sDebugPlaneName + "RWRUtils: new this.IRmissiles.add(" + actorString((Actor)missile) + ") , size()=" + this.IRmissiles.size());
@@ -812,11 +852,12 @@ public class RadarWarningReceiverUtils {
 		Actor actor = null;
 		for(int i = 0; i < list.size(); i++)
 		{
+			boolean bRecorded = false;
    			actor = (Actor)list.get(i);
 			if((actor instanceof TypeGuidedMissileCarrier) && actor.getArmy() != this.rwrOwner.getArmy())
 			{
 				if((this.iDebugLogLevel & 4) > 0)
-					System.out.println(sDebugPlaneName + "RWRUtils: RWRRadarLockWarning() - enemy TypeGuidedMissileCarrier "+ actorString(actor) + " found");
+					System.out.println(sDebugPlaneName + "RWRUtils: RWRRadarLockWarning() - enemy TypeGuidedMissileCarrier " + actorString(actor) + " found");
 				GuidedMissileUtils gmu = ((TypeGuidedMissileCarrier)actor).getGuidedMissileUtils();
 				if(gmu.getMissileTarget() == this.rwrOwner && gmu.getMissileLockState() == 2
 				   && (gmu.getDetectorType() == 2 || gmu.getDetectorType() == 3 ||gmu.getDetectorType() == 4))
@@ -825,8 +866,29 @@ public class RadarWarningReceiverUtils {
 				// DETECTOR_TYPE_RADAR_TRACK_VIA_MISSILE = 4
 				{
 					radarLockMe.add(actor);
+					bRecorded = true;
 					if((this.iDebugLogLevel & 4) > 0)
-						System.out.println(sDebugPlaneName + "RWRUtils: RWRRadarLockWarning() - enemy TypeGuidedMissileCarrier "+ actorString(actor) + " lock me !");
+						System.out.println(sDebugPlaneName + "RWRUtils: RWRRadarLockWarning() - enemy TypeGuidedMissileCarrier " + actorString(actor) + " lock me !");
+				}
+			}
+			if(!bRecorded && actor.getArmy() != this.rwrOwner.getArmy() && distanceBetween(actor, this.rwrOwner) < 3000D)
+			{
+				boolean bEquipRadar = false;
+				if((actor instanceof TypeRadar) && !(actor instanceof TypeSemiRadar))
+					bEquipRadar = true;
+				else if((actor instanceof TypeSemiRadar) && ((TypeSemiRadar)actor).getSemiActiveRadarOn())
+					bEquipRadar = true;
+				if(bEquipRadar)
+				{
+					if((this.iDebugLogLevel & 4) > 0)
+						System.out.println(sDebugPlaneName + "RWRUtils: RWRRadarLockWarning() - enemy TypeRadar or TypeSemiRadar " + actorString(actor) + " found in 3000m. (angle=" + (int)angleBetween(actor, this.rwrOwner) + ", pitch=" + (int)pitchBetweenPnM(actor, this.rwrOwner) + ")");
+					if(angleBetween(actor, this.rwrOwner) < 30F && Math.abs(pitchBetweenPnM(actor, this.rwrOwner)) < 30F)
+					{
+						radarLockMe.add(actor);
+						bRecorded = true;
+						if((this.iDebugLogLevel & 4) > 0)
+							System.out.println(sDebugPlaneName + "RWRUtils: RWRRadarLockWarning() - enemy TypeRadar " + actorString(actor) + " may lock me (dest=" + (int)distanceBetween(actor, this.rwrOwner) + ", angle=" + (int)angleBetween(actor, this.rwrOwner) + ", pitch=" + (int)pitchBetweenPnM(actor, this.rwrOwner) + ") !");
+					}
 				}
 			}
 		}
@@ -862,7 +924,11 @@ public class RadarWarningReceiverUtils {
 				{
 					tempRrwrdata = (RWRdata)this.radarsLock.get(j);
 					if(Actor.isValid(tact))
+					{
 						tempRrwrdata.lastDetectTime = Time.current();
+						tempRrwrdata.lastDetectDistance = tempDistance;
+						tempRrwrdata.lastDetectDirection = angle360Between(this.rwrOwner, actor);
+					}
 					tempRrwrdata.distance = tempDistance;
 					this.radarsLock.set(j, tempRrwrdata);
 					bInserted = true;
@@ -876,6 +942,8 @@ public class RadarWarningReceiverUtils {
 				tempNrwrdata.distance = tempDistance;
 				tempNrwrdata.firstDetectTime = Time.current();
 				tempNrwrdata.lastDetectTime = Time.current();
+				tempNrwrdata.lastDetectDistance = tempDistance;
+				tempNrwrdata.lastDetectDirection = angle360Between(this.rwrOwner, actor);
 				this.radarsLock.add(tempNrwrdata);
 				if((this.iDebugLogLevel & 4) > 0)
 					System.out.println(sDebugPlaneName + "RWRUtils: new this.radarsLock.add(" + actorString(tact) + ") , size()=" + this.radarsLock.size());
@@ -1008,7 +1076,11 @@ public class RadarWarningReceiverUtils {
 			{
 				tempRrwrdata = (RWRdata)this.radarsLock.get(j);
 				if(Actor.isValid(actor))
+				{
 					tempRrwrdata.lastDetectTime = Time.current();
+					tempRrwrdata.lastDetectDistance = tempDistance;
+					tempRrwrdata.lastDetectDirection = angle360Between(this.rwrOwner, actor);
+				}
 				tempRrwrdata.distance = tempDistance;
 				this.radarsLock.set(j, tempRrwrdata);
 				bInserted = true;
@@ -1022,6 +1094,8 @@ public class RadarWarningReceiverUtils {
 			tempNrwrdata.distance = tempDistance;
 			tempNrwrdata.firstDetectTime = Time.current();
 			tempNrwrdata.lastDetectTime = Time.current();
+			tempNrwrdata.lastDetectDistance = tempDistance;
+			tempNrwrdata.lastDetectDirection = angle360Between(this.rwrOwner, actor);
 			this.radarsLock.add(tempNrwrdata);
 			if((this.iDebugLogLevel & 4) > 0)
 				System.out.println(sDebugPlaneName + "RWRUtils: new this.radarsLock.add(" + actorString(actor) + ") , size()=" + this.radarsLock.size());
@@ -1079,7 +1153,11 @@ public class RadarWarningReceiverUtils {
 			{
 				tempRrwrdata = (RWRdata)this.radars.get(j);
 				if(Actor.isValid(actor))
+				{
 					tempRrwrdata.lastDetectTime = Time.current();
+					tempRrwrdata.lastDetectDistance = tempDistance;
+					tempRrwrdata.lastDetectDirection = angle360Between(this.rwrOwner, actor);
+				}
 				tempRrwrdata.distance = tempDistance;
 				this.radars.set(j, tempRrwrdata);
 				bInserted = true;
@@ -1093,6 +1171,8 @@ public class RadarWarningReceiverUtils {
 			tempNrwrdata.distance = tempDistance;
 			tempNrwrdata.firstDetectTime = Time.current();
 			tempNrwrdata.lastDetectTime = Time.current();
+			tempNrwrdata.lastDetectDistance = tempDistance;
+			tempNrwrdata.lastDetectDirection = angle360Between(this.rwrOwner, actor);
 			this.radars.add(tempNrwrdata);
 			if((this.iDebugLogLevel & 8) > 0)
 				System.out.println(sDebugPlaneName + "RWRUtils: new this.radars.add(" + actorString(actor) + ") , size()=" + this.radars.size());
@@ -1330,21 +1410,21 @@ public class RadarWarningReceiverUtils {
 	private float CrewHealthSummary(int iStart) {
 		float health = 0.0F;
 		for(int i = iStart; i < Math.min(this.FM.crew, 4); i++)
-        {
-            float f = (float)this.FM.AS.astatePilotStates[i] * 0.01F;
-            if(f > 1.0F) f = 1.0F;
+		{
+			float f = (float)this.FM.AS.astatePilotStates[i] * 0.01F;
+			if(f > 1.0F) f = 1.0F;
 			health += (1.0F - f);
-        }
+		}
 		return health;
 	}
 
 	private float CrewHealthSummaryContainPilot() {
-        return CrewHealthSummary(0);
-    }
+		return CrewHealthSummary(0);
+	}
 
 	private float CrewHealthSummaryWithoutPilot() {
-        return CrewHealthSummary(1);
-    }
+		return CrewHealthSummary(1);
+	}
 
 	private boolean lockTonesInitialized = false;
 	private SoundFX fxRwrToneLock = null;
