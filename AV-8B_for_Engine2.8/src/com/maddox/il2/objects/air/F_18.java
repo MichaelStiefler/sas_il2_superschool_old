@@ -107,7 +107,7 @@ public class F_18 extends Scheme2
         azimult = 0.0F;
         tf = 0L;
         APmode1 = false;
-        radartogle = false;
+        radartoggle = false;
         radarvrt = 0.0F;
         radarhol = 0.0F;
         lockmode = 0;
@@ -141,7 +141,7 @@ public class F_18 extends Scheme2
         groundradartarget = null;
         if(Config.cur.ini.get("Mods", "RWRTextStop", 0) > 0) bRWR_Show_Text_Warning = false;
         rwrUtils = new RadarWarningReceiverUtils(this, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning);
-//        rwrUtils = new RadarWarningReceiverUtils(this, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning, 2, "F18- ");
+//        rwrUtils = new RadarWarningReceiverUtils(this, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning, 4, "F18- ");
         iDebugLogLevel = 0;
     }
 
@@ -178,15 +178,15 @@ public class F_18 extends Scheme2
     {
         super.auxPressed(i);
         if(i == 20)
-            if(!radartogle)
+            if(!radartoggle)
             {
-                radartogle = true;
+                radartoggle = true;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar ON");
                 radarmode = 0;
             }
             else
             {
-                radartogle = false;
+                radartoggle = false;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar OFF");
             }
         if(i == 21)
@@ -302,7 +302,7 @@ public class F_18 extends Scheme2
             azimult++;
             tf = Time.current();
         }
-        else if(radartogle && lockmode == 0)
+        else if(radartoggle && lockmode == 0)
             radarhol += 0.0035F;
     }
 
@@ -313,7 +313,7 @@ public class F_18 extends Scheme2
             azimult--;
             tf = Time.current();
         }
-        else if(radartogle && lockmode == 0)
+        else if(radartoggle && lockmode == 0)
             radarhol -= 0.0035F;
     }
 
@@ -328,7 +328,7 @@ public class F_18 extends Scheme2
             tangate++;
             tf = Time.current();
         }
-        else if(radartogle && lockmode == 0)
+        else if(radartoggle && lockmode == 0)
             radarvrt += 0.0035F;
     }
 
@@ -339,7 +339,7 @@ public class F_18 extends Scheme2
             tangate--;
             tf = Time.current();
         }
-        else if(radartogle && lockmode == 0)
+        else if(radartoggle && lockmode == 0)
             radarvrt -= 0.0035F;
     }
 
@@ -539,7 +539,7 @@ public class F_18 extends Scheme2
 
     public boolean getSemiActiveRadarOn()
     {
-        if(radartogle && (radarmode == 0 || radarmode == 1))
+        if(radartoggle && (radarmode == 0 || radarmode == 1))
             return true;
         else
             return false;
@@ -549,13 +549,13 @@ public class F_18 extends Scheme2
     {
         if(flag)
         {
-            radartogle = true;
+            radartoggle = true;
             if(radarmode == 2)
                 radarmode = 0;
         }
         else
         {
-            radartogle = false;
+            radartoggle = false;
         }
 
         return flag;
@@ -602,7 +602,7 @@ public class F_18 extends Scheme2
 
     public boolean getGroundRadarOn()
     {
-        if(radartogle && radarmode == 2)
+        if(radartoggle && radarmode == 2)
             return true;
         else
             return false;
@@ -612,13 +612,13 @@ public class F_18 extends Scheme2
     {
         if(flag)
         {
-            radartogle = true;
+            radartoggle = true;
             if(radarmode != 2)
                 radarmode = 2;
         }
         else
         {
-            radartogle = false;
+            radartoggle = false;
         }
 
         return flag;
@@ -988,6 +988,18 @@ public class F_18 extends Scheme2
         if(!FM.isPlayers())
             FM.CT.bAntiColLights = FM.AS.bNavLightsOn;
         anticollights();
+        if(!FM.isPlayers())
+            if(((Maneuver)FM).get_maneuver() == 25 || ((Maneuver)FM).get_maneuver() == 26
+               || ((Maneuver)FM).get_maneuver() == 64 || ((Maneuver)FM).get_maneuver() == 66 || ((Maneuver)FM).get_maneuver() == 102)
+            {
+                // LANDING, TAKEOFF, PARKED_STARTUP, TAXI, TAXI_TO_TO
+                radartoggle = false;
+            }
+            else
+            {
+                radartoggle = true;
+                radarmode = 0;
+            }
     }
 
     private final void UpdateLightIntensity()
@@ -2617,7 +2629,7 @@ public class F_18 extends Scheme2
     }
 
     public float Fuelamount;
-    public boolean radartogle;
+    public boolean radartoggle;
     public int radarmode;
     public int targetnum;
     public float lockrange;

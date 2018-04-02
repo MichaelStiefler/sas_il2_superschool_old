@@ -581,7 +581,7 @@ public class CockpitAV_8B extends CockpitPilot
     {
         ScY = 0.0000045F * ((AV_8) aircraft()).radarrange;
         boolean radar = false;
-        if(!setNew.isBatteryOn && !setNew.isGeneratorAllive || ((AV_8) aircraft()).radartogle == false)
+        if(!setNew.isBatteryOn && !setNew.isGeneratorAllive || ((AV_8) aircraft()).radartoggle == false)
         {
             radar = false;
             start = false;
