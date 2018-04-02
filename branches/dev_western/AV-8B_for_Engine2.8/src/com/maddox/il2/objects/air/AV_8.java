@@ -111,7 +111,7 @@ public class AV_8 extends Scheme1
         azimult = 0.0F;
         tf = 0L;
         APmode1 = false;
-        radartogle = false;
+        radartoggle = false;
         Nvision = false;
         vtolSlipX = 0;
         vtolSlipY = 0;
@@ -147,15 +147,15 @@ public class AV_8 extends Scheme1
     {
         super.auxPressed(i);
         if(i == 20)
-            if(!radartogle)
+            if(!radartoggle)
             {
-                radartogle = true;
+                radartoggle = true;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar ON");
                 radarmode = 0;
             }
             else
             {
-                radartogle = false;
+                radartoggle = false;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar OFF");
             }
         if(i == 21)
@@ -307,7 +307,7 @@ public class AV_8 extends Scheme1
             azimult++;
             tf = Time.current();
         }
-        else if(radartogle && lockmode == 0)
+        else if(radartoggle && lockmode == 0)
             radarhol += 0.0035F;
     }
 
@@ -318,7 +318,7 @@ public class AV_8 extends Scheme1
             azimult--;
             tf = Time.current();
         }
-        else if(radartogle && lockmode == 0)
+        else if(radartoggle && lockmode == 0)
             radarhol -= 0.0035F;
     }
 
@@ -346,7 +346,7 @@ public class AV_8 extends Scheme1
             tangate++;
             tf = Time.current();
         }
-        else if(radartogle && lockmode == 0)
+        else if(radartoggle && lockmode == 0)
             radarvrt += 0.0035F;
     }
 
@@ -369,7 +369,7 @@ public class AV_8 extends Scheme1
             tangate--;
             tf = Time.current();
         }
-        else if(radartogle && lockmode == 0)
+        else if(radartoggle && lockmode == 0)
             radarvrt -= 0.0035F;
     }
 
@@ -570,7 +570,7 @@ public class AV_8 extends Scheme1
 
     public boolean getSemiActiveRadarOn()
     {
-        if(radartogle && (radarmode == 0 || radarmode == 1))
+        if(radartoggle && (radarmode == 0 || radarmode == 1))
             return true;
         else
             return false;
@@ -580,13 +580,13 @@ public class AV_8 extends Scheme1
     {
         if(flag)
         {
-            radartogle = true;
+            radartoggle = true;
             if(radarmode == 2)
                 radarmode = 0;
         }
         else
         {
-            radartogle = false;
+            radartoggle = false;
         }
 
         return flag;
@@ -633,7 +633,7 @@ public class AV_8 extends Scheme1
 
     public boolean getGroundRadarOn()
     {
-        if(radartogle && radarmode == 2)
+        if(radartoggle && radarmode == 2)
             return true;
         else
             return false;
@@ -643,13 +643,13 @@ public class AV_8 extends Scheme1
     {
         if(flag)
         {
-            radartogle = true;
+            radartoggle = true;
             if(radarmode != 2)
                 radarmode = 2;
         }
         else
         {
-            radartogle = false;
+            radartoggle = false;
         }
 
         return flag;
@@ -813,6 +813,7 @@ public class AV_8 extends Scheme1
         super.missionStarting();
 //        checkDroptanks();
 
+        FM.CT.FlapsControlSwitch = 1;
         laserTimer = -1L;
         bLaserOn = false;
         FLIR = false;
@@ -962,12 +963,26 @@ public class AV_8 extends Scheme1
         if(!FLIR)
             FM.AP.setStabAltitude(false);
         if(!FM.isPlayers())
-            if(((Maneuver)super.FM).get_maneuver() == 25 && FM.AP.way.isLanding())
+            if(((Maneuver)super.FM).get_maneuver() == 21 && FM.AP.way.isLanding())
                 FM.CT.FlapsControlSwitch = 2;
-            else if(((Maneuver)super.FM).get_maneuver() == 26)
+            else if(((Maneuver)super.FM).get_maneuver() == 25 || ((Maneuver)super.FM).get_maneuver() == 26)
                 FM.CT.FlapsControlSwitch = 2;
+            else if(calculateMach() > 0.7F || FM.getSpeedKMH() > 680F)
+                FM.CT.FlapsControlSwitch = 0;
             else
                 FM.CT.FlapsControlSwitch = 1;
+        if(!FM.isPlayers())
+            if(((Maneuver)FM).get_maneuver() == 25 || ((Maneuver)FM).get_maneuver() == 26
+               || ((Maneuver)FM).get_maneuver() == 64 || ((Maneuver)FM).get_maneuver() == 66 || ((Maneuver)FM).get_maneuver() == 102)
+            {
+                // LANDING, TAKEOFF, PARKED_STARTUP, TAXI, TAXI_TO_TO
+                radartoggle = false;
+            }
+            else
+            {
+                radartoggle = true;
+                radarmode = 0;
+            }
     }
 
     private final void UpdateLightIntensity()
@@ -2428,7 +2443,7 @@ label0:
     }
 
     public float Fuelamount;
-    public boolean radartogle;
+    public boolean radartoggle;
     public boolean Nvision;
     public int lockmode;
     private boolean APmode1;

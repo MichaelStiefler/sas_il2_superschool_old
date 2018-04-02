@@ -582,7 +582,7 @@ public class CockpitF_18C extends CockpitPilot
     {
         ScY = 0.0000045F * ((F_18) aircraft()).radarrange;
         boolean radar = false;
-        if(!setNew.isBatteryOn && !setNew.isGeneratorAllive || !((F_18) aircraft()).radartogle)
+        if(!setNew.isBatteryOn && !setNew.isGeneratorAllive || !((F_18) aircraft()).radartoggle)
         {
             radar = false;
             start = false;
