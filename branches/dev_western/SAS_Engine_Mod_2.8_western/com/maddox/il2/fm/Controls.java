@@ -8,7 +8,8 @@
  * 2017.01.03: By western, implement limit Ailerons, debug Select bomb and Unlimited Ammo
  * 2017.01.14: By western, implement Rocket mode Ripple (continuous Pairs)
  * 2017.02.07: By western, implement Formation lights and Anti-Collision lights
- * 2017.11.18: By western, No Jettison external Fueltanks
+ * 2017.11.18: By western, add No Jettison variant of external Fueltanks
+ * 2018.04.03: By western, add AI take-off rotation and climb pitch target values
  */
 
 package com.maddox.il2.fm;
@@ -211,6 +212,8 @@ public class Controls {
 	public boolean bHasAntiColLights;
 	public boolean bAntiColLights;
 	public boolean bDroptanksDropped;
+	public float targetDegreeAITakeoffRotation;
+	public float targetDegreeAITakeoffClimb;
 
 	// --------------------------------------------------------
 
@@ -376,6 +379,8 @@ public class Controls {
 		bombsHangedNumber = 0;
 		bombsHangedNumberByClass = new int[8];
 		bDroptanksDropped = false;
+		targetDegreeAITakeoffRotation = -1.0F;
+		targetDegreeAITakeoffClimb = -1.0F;
 		// --------------------------------------------------------
 
 		// Import values from 4.13.2m

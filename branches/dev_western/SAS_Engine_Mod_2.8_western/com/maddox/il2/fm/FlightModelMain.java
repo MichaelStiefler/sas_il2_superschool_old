@@ -569,6 +569,13 @@ public class FlightModelMain extends FMMath {
 		// --------------------------------------------------------
 		f = sectfile.get(s2, "AirBrakePeriod", -999F);
 		if (f != -999F) CT.dvAirbrake = 1.0F / f;
+		// TODO: New FM parameter - AI Take-off pitch up target degrees in rotation and continuous climb
+		// example: short gear leg jets - Rotation=5 deg, Climb=15 deg. Common jets - Rotation=10 deg, Climb=15 deg.
+		// --------------------------------------------------------
+		f = sectfile.get(s2, "CTargetPitchDegreeAITakeoffRotation", -1F);
+		if (f > 0.0F && f <= 30.0F) CT.targetDegreeAITakeoffRotation = f;
+		f = sectfile.get(s2, "CTargetPitchDegreeAITakeoffClimb", -1F);
+		if (f > 0.0F && f <= 30.0F) CT.targetDegreeAITakeoffClimb = f;
 		// --------------------------------------------------------
 		// TODO: +++ Online Compatibility / Smoke Bug Fix +++
 		if (Mission.isNet()) {
