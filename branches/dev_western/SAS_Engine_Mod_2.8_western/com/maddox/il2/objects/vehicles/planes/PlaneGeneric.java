@@ -1,3 +1,5 @@
+// By SAS~Storebror 09th/Nov./2017 , to avoid excessive logfile output
+// By western0221 12th/Apr./2018 , show Chock 3d when enabled in conf.ini
 package com.maddox.il2.objects.vehicles.planes;
 
 import java.io.IOException;
@@ -5,57 +7,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.maddox.JGP.Geom;
-import com.maddox.JGP.Line2f;
-import com.maddox.JGP.Matrix4d;
-import com.maddox.JGP.Point2f;
-import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Vector3f;
-import com.maddox.il2.ai.Explosion;
-import com.maddox.il2.ai.MsgExplosionListener;
-import com.maddox.il2.ai.MsgShotListener;
-import com.maddox.il2.ai.RangeRandom;
-import com.maddox.il2.ai.Regiment;
-import com.maddox.il2.ai.Shot;
-import com.maddox.il2.ai.TableFunctions;
-import com.maddox.il2.ai.World;
-import com.maddox.il2.ai.ground.Obstacle;
-import com.maddox.il2.ai.ground.Prey;
-import com.maddox.il2.engine.Actor;
-import com.maddox.il2.engine.ActorHMesh;
-import com.maddox.il2.engine.ActorNet;
-import com.maddox.il2.engine.ActorSpawn;
-import com.maddox.il2.engine.ActorSpawnArg;
-import com.maddox.il2.engine.BulletProperties;
-import com.maddox.il2.engine.Engine;
-import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.engine.Loc;
-import com.maddox.il2.engine.Orient;
-import com.maddox.il2.fm.FlightModelMain;
-import com.maddox.il2.game.I18N;
-import com.maddox.il2.game.Main;
+import com.maddox.JGP.*;
+import com.maddox.il2.ai.*;
+import com.maddox.il2.ai.ground.*;
+import com.maddox.il2.engine.*;
+import com.maddox.il2.fm.*;
+import com.maddox.il2.game.*;
 import com.maddox.il2.gui.GUIAirArming;
 import com.maddox.il2.net.NetFilesTrack;
 import com.maddox.il2.net.NetMissionTrack;
-import com.maddox.il2.objects.ActorAlign;
-import com.maddox.il2.objects.ObjectsLogLevel;
-import com.maddox.il2.objects.Statics;
-import com.maddox.il2.objects.air.Aircraft;
-import com.maddox.il2.objects.air.PaintScheme;
+import com.maddox.il2.objects.*;
+import com.maddox.il2.objects.air.*;
 import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.il2.objects.vehicles.tanks.TankGeneric;
-import com.maddox.rts.Finger;
-import com.maddox.rts.Message;
-import com.maddox.rts.NetChannel;
-import com.maddox.rts.NetChannelInStream;
-import com.maddox.rts.NetMsgFiltered;
-import com.maddox.rts.NetMsgGuaranted;
-import com.maddox.rts.NetMsgInput;
-import com.maddox.rts.ObjIO;
-import com.maddox.rts.Property;
-import com.maddox.rts.SectFile;
-import com.maddox.rts.Spawn;
-import com.maddox.rts.Time;
+import com.maddox.rts.*;
 import com.maddox.util.TableFunction2;
 
 public abstract class PlaneGeneric extends ActorHMesh
@@ -114,11 +79,11 @@ public abstract class PlaneGeneric extends ActorHMesh
             planeproperties.fnShotPanzer = TableFunctions.GetFunc2("PlaneShotPanzer");
             planeproperties.fnExplodePanzer = TableFunctions.GetFunc2("PlaneExplodePanzer");
             String s1 = getS(sectfile, s, "Class");
-            
+
             // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
             if ((ObjectsLogLevel.getObjectsLogLevel() < ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL) && (s1 == null || s1.length() == 0)) return null;
             // TODO: ---
-            
+
             planeproperties.clazz = null;
             try
             {
@@ -132,7 +97,7 @@ public abstract class PlaneGeneric extends ActorHMesh
                 else if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_SHORT)
                   System.out.println("Plane: Class \"" + s1 + "\" does not exist. The plane is declared in technics.ini but it's classfiles are missing.");
                 // TODO: ---
-                
+
                 return null;
             }
             Property.set(class1, "airClass", (Object)planeproperties.clazz);
@@ -185,11 +150,11 @@ public abstract class PlaneGeneric extends ActorHMesh
                     i = j;
                 String s1 = s.substring(i + 1);
                 proper = LoadPlaneProperties(Statics.getTechnicsFile(), s1, class1);
-                
+
                 // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
                 if (ObjectsLogLevel.getObjectsLogLevel() < ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL && proper == null) return;
                 // TODO: ---
-                
+
             }
             catch(Exception exception)
             {
@@ -513,6 +478,25 @@ public abstract class PlaneGeneric extends ActorHMesh
             return;
         } else
         {
+            if(bChocks)
+            {
+                if (ChL != null)
+                {
+                    ChL.destroy();
+                    ChL = null;
+                }
+                if (ChR != null)
+                {
+                    ChR.destroy();
+                    ChR = null;
+                }
+                if (ChC != null)
+                {
+                    ChC.destroy();
+                    ChC = null;
+                }
+                bChocks = false;
+            }
             super.destroy();
             return;
         }
@@ -540,11 +524,65 @@ public abstract class PlaneGeneric extends ActorHMesh
         isGenericSpawnPoint = false;
         bmpSkin = null;
         useMarkings = true;
+
+        // +++ By western, load conf.ini settings for Chocks
+        bShowChocks = (Config.cur.ini.get("Mods", "PALShowChocks", 0) == 1 || Config.cur.ini.get("Mods", "PALShowChocks", 0) == 2 || Config.cur.ini.get("Mods", "PALShowChocks", 0) == 3 || Config.cur.ini.get("Mods", "PALShowChocks", 0) == 11 || Config.cur.ini.get("Mods", "PALShowChocks", 0) == 12 || Config.cur.ini.get("Mods", "PALShowChocks", 0) == 13);
+        bUseChocksParking = (Config.cur.ini.get("Mods", "PALShowChocks", 0) == 11 || Config.cur.ini.get("Mods", "PALShowChocks", 0) == 12 || Config.cur.ini.get("Mods", "PALShowChocks", 0) == 13);
+        bLoadedWheelRadius = false;
+        // ---
+
         prop = planeproperties;
         actorspawnarg.setStationary(this);
         branch = actorspawnarg.country;
         setUseMarkings(actorspawnarg.bNumberOn);
         setSkin(actorspawnarg.paramFileName);
+
+        // +++
+        // By western, load each wheels radius values from FM when exist
+        if(!bLoadedWheelRadius)
+        {
+            String s = Property.stringValue(prop.clazz, "FlightModel", null);
+            SectFile sectfile = FlightModelMain.sectFile(s);
+            double dtemp = (double) sectfile.get("Gear", "WheelDiameterLR", -1.0F);
+            if (dtemp > 0D)
+            {
+                gWheelRadius[0] = gWheelRadius[1] = dtemp * 0.5D;
+                bLoadedWheelRadius = true;
+            }
+            dtemp = (double) sectfile.get("Gear", "WheelDiameterC", -1.0F);
+            if (dtemp > 0D)
+            {
+                gWheelRadius[2] = dtemp * 0.5D;
+                bLoadedWheelRadius = true;
+            }
+        }
+
+        // By western, load each chock values from FM when exist
+        if(!bLoadedChockProperties)
+        {
+            String s = Property.stringValue(prop.clazz, "FlightModel", null);
+            SectFile sectfile = FlightModelMain.sectFile(s);
+            gChockLOffset[0] = (double) sectfile.get("Gear", "ChockLOffsetX", -100.0F);
+            gChockLOffset[1] = (double) sectfile.get("Gear", "ChockLOffsetY", -100.0F);
+            gChockCOffset[0] = (double) sectfile.get("Gear", "ChockCOffsetX", -100.0F);
+            gChockCOffset[1] = (double) sectfile.get("Gear", "ChockCOffsetY", -100.0F);
+            gChockLMeshName = getS(sectfile, "Gear", "ChockLMesh", null);
+            gChockCMeshName = getS(sectfile, "Gear", "ChockCMesh", null);
+            bLoadedChockProperties = true;
+        }
+
+        // By western, set generic wheels radius values when not exist specific FM fields
+        if(!bLoadedWheelRadius)
+        {
+            Class clazz = prop.clazz;
+            try {
+                Aircraft aircraft = (Aircraft)clazz.newInstance();
+                loadWheelRadius(aircraft);
+                aircraft.destroy();
+            } catch(Exception exception) { }
+        }
+        // ---
+
         try
         {
             activateMesh(true);
@@ -589,6 +627,7 @@ public abstract class PlaneGeneric extends ActorHMesh
                 prop.pitch = sectfile.get("Gear", "Pitch", -0.5F);
             }
         }
+
         if(actorspawnarg.skill == 0)
             setAllowSpawnUse(false);
         else
@@ -651,6 +690,14 @@ public abstract class PlaneGeneric extends ActorHMesh
 
         if(isNetMaster())
             send_SetVisibleCommand(flag);
+
+        // By western, Chocks
+        if (ChL != null)
+            ChL.drawing(flag);
+        if (ChR != null)
+            ChR.drawing(flag);
+        if (ChC != null)
+            ChC.drawing(flag);
     }
 
     public void setNewLocation(Loc loc)
@@ -760,8 +807,135 @@ label0:
 
         }
         Aircraft.forceGear(prop.clazz, hierMesh(), 1.0F);
+
+        // By western, display Parking Style like close variable wing or drop slats, airbrakes
+        Aircraft.forceParkingStyle(prop.clazz, hierMesh());
+
         if(!flag)
             mesh().makeAllMaterialsDarker(0.32F, 0.45F);
+
+        // +++ By western, display Chock 3d models
+        if(bUseChocksParking && !(this instanceof Plane.GenericSpawnPointPlane))
+        {
+            if(flag)
+            {
+                pnti[0] = hierMesh().hookFind("_ClipLGear");
+                pnti[1] = hierMesh().hookFind("_ClipRGear");
+                pnti[2] = hierMesh().hookFind("_ClipCGear");
+                if(pnti[0] >= 0 && pnti[1] >= 0 && pnti[2] >= 0)
+                {
+                    hierMesh().hookMatrix(pnti[0], M4);
+                    Point3d pLgr = new Point3d(M4.m03, M4.m13, M4.m23);
+                    hierMesh().hookMatrix(pnti[1], M4);
+                    Point3d pRgr = new Point3d(M4.m03, M4.m13, M4.m23);
+                    hierMesh().hookMatrix(pnti[2], M4);
+                    Point3d pCgr = new Point3d(M4.m03, M4.m13, M4.m23);
+
+                    // Chock of Left wheel
+                    Point3d tempP = new Point3d(0D, 0D, 0D);
+                    hookl = (HookNamed)this.findHook("_ClipLGear");
+                    locL.set(pLgr);
+                    locL.set(new Orient(180F, prop.pitch, 0F));
+                    if (gChockLOffset[0] != -100.0D) {
+                        tempP.set(gChockLOffset[0], 0D, -gChockLOffset[0] * Math.tan(Math.toRadians(prop.pitch)));
+                        locL.add(tempP);
+                    }
+                    else if (prop.pitch > 0.8D && prop.pitch < 310D) {
+                        tempP.set(-prop.pitch * 0.006D, 0D, prop.pitch * 0.006D * Math.tan(Math.toRadians(prop.pitch)));
+                        locL.add(tempP);
+                    }
+                    if (gChockLOffset[1] != -100.0D) {
+                        tempP.set(0D, gChockLOffset[1], 0D);
+                        locL.add(tempP);
+                    }
+                    locL.add(this.pos.getCurrent());
+                    if(!Engine.cur.land.isWater(locL.getX(), locL.getY()))
+                    {
+                        ChL = getChockMesh();
+                        ChL.pos.setBase(this, hookl, false);
+                        ChL.pos.setAbs(locL);
+                        ChL.pos.changeHookToRel();
+                        ChL.pos.resetAsBase();
+                    }
+
+                    // Chock of Right wheel
+                    hookr = (HookNamed)this.findHook("_ClipRGear");
+                    locR.set(pRgr);
+                    locR.set(new Orient(0F, -prop.pitch, 0F));
+                    if (gChockLOffset[0] != -100.0D) {
+                        tempP.set(gChockLOffset[0], 0D, -gChockLOffset[0] * Math.tan(Math.toRadians(prop.pitch)));
+                        locR.add(tempP);
+                    }
+                    else if (prop.pitch > 0.8D && prop.pitch < 310D) {
+                        tempP.set(-prop.pitch * 0.006D, 0D, prop.pitch * 0.006D * Math.tan(Math.toRadians(prop.pitch)));
+                        locR.add(tempP);
+                    }
+                    if (gChockLOffset[1] != -100.0D) {
+                        tempP.set(0D, -gChockLOffset[1], 0D);
+                        locR.add(tempP);
+                    }
+                    locR.add(this.pos.getCurrent());
+                    if(!Engine.cur.land.isWater(locR.getX(), locR.getY()))
+                    {
+                        ChR = getChockMesh();
+                        ChR.pos.setBase(this, hookr, false);
+                        ChR.pos.setAbs(locR);
+                        ChR.pos.changeHookToRel();
+                        ChR.pos.resetAsBase();
+                    }
+
+                    // Chock of Center wheel
+                    if (gChockCMeshName != null) {
+                        hookc = (HookNamed)this.findHook("_ClipCGear");
+                        locC.set(pCgr);
+                        locC.set(new Orient(0F, -prop.pitch, 0F));
+                        if (gChockCOffset[0] != -100.0D) {
+                            tempP.set(gChockCOffset[0], 0D, -gChockCOffset[0] * Math.tan(Math.toRadians(prop.pitch)));
+                            locC.add(tempP);
+                        }
+                        else if (prop.pitch > 0.8D && prop.pitch < 310D) {
+                            tempP.set(-prop.pitch * 0.006D, 0D, prop.pitch * 0.006D * Math.tan(Math.toRadians(prop.pitch)));
+                            locC.add(tempP);
+                        }
+                        if (gChockCOffset[1] != -100.0D) {
+                            tempP.set(0D, -gChockCOffset[1], 0D);
+                            locC.add(tempP);
+                        }
+                        locC.add(this.pos.getCurrent());
+                        if(!Engine.cur.land.isWater(locC.getX(), locC.getY()))
+                        {
+                            ChC = new ActorSimpleMesh(gChockCMeshName);
+                            ChC.pos.setBase(this, hookc, false);
+                            ChC.pos.setAbs(locC);
+                            ChC.pos.changeHookToRel();
+                            ChC.pos.resetAsBase();
+                        }
+                    }
+
+                    bChocks = true;
+                }
+            }
+            else
+            {
+                if (ChL != null)
+                {
+                    ChL.destroy();
+                    ChL = null;
+                }
+                if (ChR != null)
+                {
+                    ChR.destroy();
+                    ChR = null;
+                }
+                if (ChC != null)
+                {
+                    ChC.destroy();
+                    ChC = null;
+                }
+                bChocks = false;
+            }
+        }
+        // ---
     }
 
     private void Align(boolean flag, boolean flag1)
@@ -985,6 +1159,122 @@ label0:
         drawing(false);
     }
 
+    // +++ By western, Chock mod part
+    private ActorSimpleMesh getChockMesh()
+    {
+        ActorSimpleMesh asm = null;
+        if (gChockLMeshName != null)
+        {
+            asm = new ActorSimpleMesh(gChockLMeshName);
+            return asm;
+        }
+        float fyS = Property.floatValue(prop.clazz, "yearService", 0.0F);
+        String soC = Property.stringValue(prop.clazz, "originCountry", null);
+        if (soC != null && soC.equals(PaintScheme.countryUSA) && fyS > 1950.0F)
+            asm = new ActorSimpleMesh("3DO/Arms/ChocksUSJet/mono.sim");
+        else if (soC != null && soC.equals(PaintScheme.countryRussia) && fyS > 1950.0F)
+            asm = new ActorSimpleMesh("3DO/Arms/ChocksRusJet1950/mono.sim");
+        else {
+            if (gWheelRadius[0] > 0.50D)
+                asm = new ActorSimpleMesh("3DO/Arms/Chocks/monoL.sim");
+            else
+                asm = new ActorSimpleMesh("3DO/Arms/Chocks/mono.sim");
+        }
+        return asm;
+    }
+
+    private void loadWheelRadius(Aircraft aircraft)
+    {
+        if (aircraft instanceof A_20)
+        {
+            gWheelRadius[0] = gWheelRadius[1] = 0.565D;  // main Tire Diameter 44.5"
+            gWheelRadius[2] = 0.325D;                    // aux Tire Diameter 25.61"
+            gChockLOffset[0] = -0.20D;
+        }
+        else if (aircraft instanceof B_17)
+        {
+            gWheelRadius[0] = gWheelRadius[1] = 0.718D;  // main Tire Diameter 56.56"
+            gWheelRadius[2] = 0.325D;                    // aux Tire Diameter 25.61"
+            gChockLOffset[0] = -0.28D;
+        }
+        else if (aircraft instanceof B_24)
+        {
+            gWheelRadius[0] = gWheelRadius[1] = 0.718D;  // main Tire Diameter 56.56"
+            gWheelRadius[2] = 0.459D;                    // aux Tire Diameter 36.15"
+        }
+        else if (aircraft instanceof B_25)
+        {
+            gWheelRadius[0] = gWheelRadius[1] = 0.468D;  // main Tire Diameter 36.86"
+            gWheelRadius[2] = 0.468D;                    // aux Tire Diameter 36.86"
+        }
+        else if (aircraft instanceof B_29X)
+        {
+            gWheelRadius[0] = gWheelRadius[1] = 0.718D;  // main Tire Diameter 56.56"
+            gWheelRadius[2] = 0.459D;                    // aux Tire Diameter 36.15"
+            gChockLOffset[0] = -0.17D;
+        }
+        else if (aircraft instanceof F6F)
+        {
+            gWheelRadius[0] = gWheelRadius[1] = 0.389D;  // main Tire Diameter 30.69"
+            gWheelRadius[2] = 0.156D;                    // aux Tire Diameter 12.35"
+            gChockLOffset[0] = -0.05D;
+            gChockLOffset[1] = 0.16D;
+        }
+        else if (aircraft instanceof P_38)
+        {
+            gWheelRadius[0] = gWheelRadius[1] = 0.459D;  // main Tire Diameter 36.15"
+            gWheelRadius[2] = 0.349D;                    // aux Tire Diameter 27.5"
+            gChockLOffset[0] = 0.04D;
+            gChockLOffset[1] = 0.01D;
+        }
+        else if ((aircraft instanceof P_40) || (aircraft instanceof P_40SUKAISVOLOCH))
+        {
+            gWheelRadius[0] = gWheelRadius[1] = 0.349D;  // main Tire Diameter 27.5"
+            gWheelRadius[2] = 0.156D;                    // aux Tire Diameter 12.29"
+            gChockLOffset[0] = -0.02D;
+            gChockLOffset[1] = 0.09D;
+        }
+        else if (aircraft instanceof P_47)
+        {
+            gWheelRadius[0] = gWheelRadius[1] = 0.421D;  // main Tire Diameter 33.20"
+            gWheelRadius[2] = 0.183D;                    // aux Tire Diameter 14.48"
+            gChockLOffset[0] = -0.20D;
+        }
+        else if (aircraft instanceof P_51)
+        {
+            gWheelRadius[0] = gWheelRadius[1] = 0.349D;  // main Tire Diameter 27.5"
+            gWheelRadius[2] = 0.156D;                    // aux Tire Diameter 12.35"
+            gChockLOffset[0] = -0.17D;
+        }
+        else if ((aircraft instanceof JU_88) || (aircraft instanceof JU_88NEW))
+        {
+            gWheelRadius[0] = gWheelRadius[1] = 0.570D;  // main Tire Diameter 44.94"
+            gWheelRadius[2] = 0.260D;                    // aux Tire Diameter 20.48"
+        }
+        else if (aircraft instanceof MOSQUITO)
+        {
+            gWheelRadius[0] = gWheelRadius[1] = 0.546D;  // main Tire Diameter 43"
+            gWheelRadius[2] = 0.239D;                    // aux Tire Diameter 18.85"
+        }
+        else if (aircraft instanceof Wellington)
+        {
+            gWheelRadius[0] = gWheelRadius[1] = 0.648D;  // main Tire Diameter 51"
+            gWheelRadius[2] = 0.238D;                    // aux Tire Diameter 18.75"
+        }
+        bLoadedWheelRadius = true;
+        return;
+    }
+    // ---
+
+    private static String getS(SectFile sectfile, String s, String s1, String s2)
+    {
+        String s3 = sectfile.get(s, s1);
+        if (s3 == null || s3.length() <= 0)
+            return s2;
+        else
+            return new String(s3);
+    }
+
     private PlaneProperties prop;
     public String branch;
     private int dying;
@@ -1006,4 +1296,32 @@ label0:
     private static Map visiblePartsMap = new HashMap();
     private static int pnti[] = new int[3];
     private static Matrix4d M4 = new Matrix4d();
+
+    //By western, tune wheels rotation speed using custom wheel radius bigger or smaller than stock 375mm.
+    private double gWheelRadius[] = { 0.375D, 0.375D, 0.375D };
+    private boolean bLoadedWheelRadius;
+
+    //By western, set Chock Offset and Special msh
+    private boolean bLoadedChockProperties;
+    private double gChockLOffset[] = { -100.0D, -100.0D };
+    private double gChockCOffset[] = { -100.0D, -100.0D };
+    private String gChockLMeshName = null;
+    private String gChockCMeshName = null;
+    private String gChockCarrierLMeshName = null;
+    private String gChockCarrierCMeshName = null;
+
+    //By western, Chock functions
+    private boolean bChocks = false;
+    static private boolean bShowChocks = false;
+    static public boolean bUseChocksParking = false;
+    private ActorSimpleMesh ChL = null;
+    private ActorSimpleMesh ChR = null;
+    private ActorSimpleMesh ChC = null;
+    private Loc locL = new Loc();
+    private Loc locR = new Loc();
+    private Loc locC = new Loc();
+    private HookNamed hookl = null;
+    private HookNamed hookr = null;
+    private HookNamed hookc = null;
+
 }

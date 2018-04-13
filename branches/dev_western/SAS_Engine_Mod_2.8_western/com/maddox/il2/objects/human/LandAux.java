@@ -1,5 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 //	By PAL, Land Auxiliar, to be invoked from Gear class
+//  By western, updated not to conflict with side line-up wingmans, 10th/Apr./2018
 //////////////////////////////////////////////////////////////////////////////////
 
 package com.maddox.il2.objects.humans;
@@ -9,6 +10,7 @@ import com.maddox.il2.ai.*;
 import com.maddox.il2.ai.ground.Prey;
 import com.maddox.il2.ai.ground.UnitInterface;
 import com.maddox.il2.engine.*;
+import com.maddox.il2.fm.*;
 import com.maddox.rts.Message;
 import com.maddox.rts.Time;
 
@@ -67,8 +69,20 @@ public class LandAux extends ActorMesh
 				LandAux.p.scaleAdd(Time.tickLenFs(), speed, LandAux.p);
 				LandAux.p.z = Engine.land().HQ(LandAux.p.x, LandAux.p.y);
 				pos.setAbs(LandAux.p);
-				if(l / RUN_CYCLE_TIME >= (long)nRunCycles || World.land().isWater(LandAux.p.x, LandAux.p.y))
+				//By western, add quit decision non owner aircraft becomes nearer than owner to avoid conflict.
+				if(l / RUN_CYCLE_TIME >= (long)nRunCycles || World.land().isWater(LandAux.p.x, LandAux.p.y)
+				   || War.getNearestFriendAtPoint(LandAux.p, (Aircraft)getOwner(), 30F) != getOwner())
 				{
+					//By western, avoid disturbing AI's taxi to Take-off Go/Stop decision.
+					if(getOwner() instanceof Aircraft)
+					{
+						Autopilotage AP = ((Aircraft)getOwner()).FM.AP;
+						if(AP.way.first().waypointType == 4 || AP.way.first().waypointType == 5)
+						{
+							postDestroy();
+							return false;
+						}
+					}
 				//By PAL, Stop soldier
 					st = ST_RUN_PARALLEL;
 					o.set(oPar); //By PAL, he has to run parallel to the runway //o.set(pos.getAbsOrient());
@@ -394,8 +408,9 @@ public class LandAux extends ActorMesh
 		st = ST_FLY;
 		animStartTime = Time.tick() + (long)World.Rnd().nextInt(0, 2300);
 		dying = DYING_NONE;
-		//By PAL, scale it, to make different size persons
-		this.mesh().setScaleXYZ(1F, World.Rnd().nextFloat(0.85F, 1.15F), World.Rnd().nextFloat(0.85F, 1.15F));
+		//By PAL, scale it, to make different size persons. By western, skip it by conf.ini setting to avoid shadow error lines in log.lst .
+		if (!((Aircraft)getOwner()).FM.Gears.bShowChocksLandAuxiliarFIXsize)
+			this.mesh().setScaleXYZ(1F, World.Rnd().nextFloat(0.85F, 1.15F), World.Rnd().nextFloat(0.85F, 1.15F));
 
 		collide(true);
 		draw = new AuxDraw();
