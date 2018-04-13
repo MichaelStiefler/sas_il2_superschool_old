@@ -56,6 +56,8 @@
   DefaultAileronTrim 0.000
   DefaultElevatorTrim 0.000
   DefaultRudderTrim 0.000
+  CTargetPitchDegreeAITakeoffRotation 8.0
+  CTargetPitchDegreeAITakeoffClimb 12.0
 [Squares]
   Wing 54.5
   Aileron 5.00  // Wing 2.29 + StabiDiff 2.71
@@ -149,7 +151,7 @@
   Vector1z 0.0
 [Gear]
   H 1.614541
-  Pitch 11.842
+  Pitch 0.01
   SinkFactor 400.0
   SpringsStiffness 0.7
   TailStiffness 0.4

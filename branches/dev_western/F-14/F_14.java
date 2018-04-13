@@ -1570,6 +1570,12 @@ public class F_14 extends Scheme2
         hierMesh().chunkSetAngles("IntakeDoor_Rr", 0.0F, 0.0F, fRamp3rd);
     }
 
+	public static void forceParkingStyle(HierMesh hiermesh) {
+        float f1 = 55F * 0.8F;  // var-wing parking position.
+        hiermesh.chunkSetAngles("WingPivotL", 0.0F, f1, 0.0F);
+        hiermesh.chunkSetAngles("WingPivotR", 0.0F, f1, 0.0F);
+	}
+
     protected void hitBone(String s, Shot shot, Point3d point3d)
     {
         int i = part(s);
