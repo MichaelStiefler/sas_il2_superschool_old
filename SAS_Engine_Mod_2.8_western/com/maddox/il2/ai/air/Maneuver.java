@@ -572,7 +572,9 @@ public class Maneuver extends AIFlightModel {
 				| (maneuver == 82)
 				|| (maneuver == 8 || maneuver == 55 || maneuver == 27 || maneuver == 62 || maneuver == 63 || maneuver == 25 || maneuver == 102 || maneuver == 43 || maneuver == 50 || maneuver == 65 || maneuver == 44 || maneuver == 21 || maneuver == 64
 						|| maneuver == 69 || maneuver == 76 || maneuver == 74 || maneuver == 75 || maneuver == 80 || maneuver == 87 || maneuver == 77 || maneuver == 99 || maneuver == 83 || maneuver == 100 || maneuver == 101 || maneuver == 98);
+		// By western: TurnOn NavLight time added -- taxing, taxi to take-off, FastJet approaching
 		turnOnChristmasTree(maneuver == 25 || maneuver == 26 || maneuver == 69 || maneuver == 70
+						|| maneuver == 66 || maneuver == 102
 						|| (maneuver == 21 && AP.way.isLanding() && (super.actor instanceof TypeFastJet)));
 		turnOnCloudShine(maneuver == 25);
 		checkStrike = maneuver != 60 && maneuver != 61 && maneuver != 102 && maneuver != 1 && maneuver != 24 && maneuver != 26 && maneuver != 69 && maneuver != 64 && maneuver != 44;
@@ -858,6 +860,8 @@ public class Maneuver extends AIFlightModel {
 			dryFriction = 8F;
 			if (!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
 			CT.BrakeControl = 1.0F;
+			// TODO By western: set Chocks for Parking with conf.ini custom setting
+			if (Gears.bUseChocksParking) brakeShoe = true;
 			break;
 
 		case 48: // '0'  // DELAY
@@ -3270,7 +3274,7 @@ public class Maneuver extends AIFlightModel {
 					}
 				}
 				if (getSpeed() < VmaxFLAPS * 0.21F && !CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
-				if (Vrel.length() < (double) (bFJ ? (Math.min(16F, VminFLAPS * 0.50F)) : (VmaxFLAPS * 0.25F)) && wayCurPos == null && !AP.way.isLandingOnShip() && isEnableToTaxi()) {
+				if (Vrel.length() < (double) (bFJ ? (Math.min(15F, VminFLAPS * 0.50F)) : (VmaxFLAPS * 0.25F)) && wayCurPos == null && !AP.way.isLandingOnShip() && isEnableToTaxi()) {
 					TaxiMode = true;
 					AP.way.setCur(0);
 					return;
@@ -3321,7 +3325,7 @@ public class Maneuver extends AIFlightModel {
 					if (Gears.nOfGearsOnGr == 3 && !AP.way.isLandingOnShip()) {
 						if (brakingtimer == 0L) brakingtimer = Time.current();
 						CT.ElevatorControl = 0.0F;
-						if (getSpeedKMH() > 58F && Time.current() > brakingtimer + 2500L && bFJ)
+						if (getSpeedKMH() > 55F && Time.current() > brakingtimer + 2500L && bFJ)
 							CT.BrakeControl = Aircraft.cvt(M.getFullMass(), 30000F, 100000F, 0.25F, 0.95F);
 						else CT.BrakeControl = 0.0F;
 					}
@@ -3355,7 +3359,9 @@ public class Maneuver extends AIFlightModel {
 			FlightModel flightmodel = Group.airc[0].FM;
 			if ((AP.way.first().waypointType == 4 || AP.way.first().waypointType == 5) && flightmodel.isCapableOfTaxiing() && (flightmodel instanceof RealFlightModel) && ((RealFlightModel) flightmodel).isRealMode() && !bGentsStartYourEngines) break;
 			CT.BrakeControl = 1.0F;
-			// TODO: By western, to avoid bouncing 
+			// TODO By western: open canopy soon after spawned
+			if (CT.bHasCockpitDoorControl) AS.setCockpitDoor(actor, 1);
+			// TODO By western: to avoid bouncing
 			if (Gears.bFrontWheel)
 				CT.ElevatorControl = 0.0F;
 			else
@@ -3406,7 +3412,6 @@ public class Maneuver extends AIFlightModel {
 						if (Leader.Vwld.lengthSquared() < 25D) return;
 					}
 					if (wayCurPos == null) {
-						if (CT.bHasCockpitDoorControl) AS.setCockpitDoor(actor, 1);
 						int k1 = 0;
 						WayPoint waypoint = AP.way.look_at_point(k1);
 						if (waypoint.waypointType == 4) k1 = 1;
@@ -3440,6 +3445,9 @@ public class Maneuver extends AIFlightModel {
 						P.z = Loc.z;
 						CT.setPowerControl(0.0F);
 						EI.setCurControlAll(true);
+						// TODO By western: get rid of Chocks, close Canopy
+						brakeShoe = false;
+						if (CT.bHasCockpitDoorControl && CT.bNoCarrierCanopyOpen) AS.setCockpitDoor(actor, 0);
 						CT.BrakeControl = 0.0F;
 						setSpeedMode(8);
 					}
@@ -3620,6 +3628,12 @@ public class Maneuver extends AIFlightModel {
 							bCatapultAI = this.Gears.getCatapultAI();
 						} else {
 							bStage7 = true;
+							// TODO By western: get rid of Chocks, close Canopy
+							brakeShoe = false;
+							if (CT.bHasCockpitDoorControl) {
+								if (bFastLaunchAI) CT.forceCockpitDoor(0.0F);
+								AS.setCockpitDoor(actor, 0);
+							}
 						}
 						bAlreadyCheckedStage7 = true;
 					}
@@ -3745,8 +3759,10 @@ public class Maneuver extends AIFlightModel {
 				if (Gears.bFrontWheel) {
 					if (CT.targetDegreeAITakeoffRotation > 0.0F)
 						fPitchTarget = CT.targetDegreeAITakeoffRotation;
-					else
-						fPitchTarget = gp + (bFJ ? 6F : 4F);
+					else {
+						fPitchTarget = Math.min(gp, 8F) + (bFJ ? 6F : 4F);
+						if(fPitchTarget > 10F) fPitchTarget = 10F;
+					}
 					if (fAlt > fCenterZDiff + 6F || (float) Loc.z > fRunwayHeight + 6F || (CT.getGearL() == 0.0F && CT.getGearR() == 0.0F && CT.getGearC() == 0.0F)) {
 						if (CT.targetDegreeAITakeoffClimb > 0.0F)
 							fPitchTarget = CT.targetDegreeAITakeoffClimb;
@@ -3773,10 +3789,16 @@ public class Maneuver extends AIFlightModel {
 				else dA = -0.1F * (Or.getTangage() - fPitchTarget) + f48 * (float) getW().y + 0.5F * (float) getAW().y;
 		// === western trial v2
 				if (bFJ && !bCarrierTakeoff) {
-					if (getSpeed() > VminFLAPS * 1.3F || fAlt > fCenterZDiff + 8F || (float) Loc.z > fRunwayHeight + 8F)
-						CT.ElevatorControl += (dA - CT.ElevatorControl) * 3F * f;
-					else if (getSpeed() > VminFLAPS * 1.2F)
-						CT.ElevatorControl = 1.0F;
+					boolean bBeginRotation = false;
+					boolean bKeepPitchup = false;
+					if (fAlt > fCenterZDiff + 8F || (float) Loc.z > fRunwayHeight + 8F) bKeepPitchup = true;
+					if (VtakeoffRot > 0.0F && getSpeed() > VtakeoffRot) bKeepPitchup = true;
+					if (VtakeoffRot < 0.0F && getSpeed() > VminFLAPS * 1.3F) bKeepPitchup = true;
+					if (VtakeoffRot > 0.0F && getSpeed() > VtakeoffRot * 0.95F) bBeginRotation = true;
+					if (VtakeoffRot < 0.0F && getSpeed() > VminFLAPS * 1.2F) bBeginRotation = true;
+
+					if (bKeepPitchup) CT.ElevatorControl += (dA - CT.ElevatorControl) * 3F * f;
+					else if (bBeginRotation) CT.ElevatorControl = 1.0F;
 					else CT.ElevatorControl = 0.0F;
 				}
 				else CT.ElevatorControl += (dA - CT.ElevatorControl) * 3F * f;
@@ -8339,9 +8361,15 @@ public class Maneuver extends AIFlightModel {
 		farTurnToDirection(10F);
 	}
 
+	// By western: add checking nose gear about FrontWheel planes
 	private boolean isEnableToTaxi() {
-		if (CT.bHasGearControl) return CT.getGearL() == 1.0F && CT.getGearR() == 1.0F;
-		else return true;
+		if (Gears.bFrontWheel) {
+			if (CT.bHasGearControl) return CT.getGearL() == 1.0F && CT.getGearR() == 1.0F && CT.getGearC() == 1.0F;
+			else return true;
+		} else {
+			if (CT.bHasGearControl) return CT.getGearL() == 1.0F && CT.getGearR() == 1.0F;
+			else return true;
+		}
 	}
 
 	// TODO: +++ CTO Mod 4.12 +++

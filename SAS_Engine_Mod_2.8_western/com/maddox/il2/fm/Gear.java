@@ -334,7 +334,10 @@ public class Gear {
 		// TODO: --- CTO Mod 4.12 ---
 
 		//By PAL, for Chocks:
-		bShowChocks = Config.cur.ini.get("Mods", "PALShowChocks", 0) == 1;
+		bShowChocks = (Config.cur.ini.get("Mods", "PALShowChocks", 0) == 1 || Config.cur.ini.get("Mods", "PALShowChocks", 0) == 2 || Config.cur.ini.get("Mods", "PALShowChocks", 0) == 3 || Config.cur.ini.get("Mods", "PALShowChocks", 0) == 11 || Config.cur.ini.get("Mods", "PALShowChocks", 0) == 12 || Config.cur.ini.get("Mods", "PALShowChocks", 0) == 13);
+		bShowChocksLandAuxiliar = (Config.cur.ini.get("Mods", "PALShowChocks", 0) == 1 || Config.cur.ini.get("Mods", "PALShowChocks", 0) == 2 || Config.cur.ini.get("Mods", "PALShowChocks", 0) == 11 || Config.cur.ini.get("Mods", "PALShowChocks", 0) == 12);
+		bShowChocksLandAuxiliarFIXsize = (Config.cur.ini.get("Mods", "PALShowChocks", 0) == 2 || Config.cur.ini.get("Mods", "PALShowChocks", 0) == 12);
+		bUseChocksParking = (Config.cur.ini.get("Mods", "PALShowChocks", 0) == 11 || Config.cur.ini.get("Mods", "PALShowChocks", 0) == 12 || Config.cur.ini.get("Mods", "PALShowChocks", 0) == 13);
 		//By PAL, for Catapult Cables, etc:
 		bShowCatGear = Config.cur.ini.get("Mods", "PALShowCatGear", 0) == 1;
 
@@ -1997,6 +2000,9 @@ public class Gear {
 	private boolean bChocks = false;
 	private boolean bCatHook = false;
 	static private boolean bShowChocks = false;
+	static private boolean bShowChocksLandAuxiliar = false;
+	static public boolean bShowChocksLandAuxiliarFIXsize = false;
+	static public boolean bUseChocksParking = false;
 	static private boolean bShowCatGear = false;
 	private ActorSimpleMesh ChL = null;
 	private ActorSimpleMesh ChR = null;
@@ -2183,7 +2189,7 @@ public class Gear {
 		if (!bChocks) {
 			//By PAL, this will destroy Chock and start Land Auxiliar (if it was not a carrier)
 			if (ChL != null) {
-				if (!isCarrier) {
+				if (!isCarrier && bShowChocksLandAuxiliar) {
 					ChL.pos.getAbs(locL); //By PAL, recupero la posición actual del Chock L.
 					Orient otemp = new Orient();
 					otemp.set(locL.getOrient()); //FM.actor.pos.getAbs()
@@ -2204,7 +2210,7 @@ public class Gear {
 
 			//By PAL, this will destroy Chock and start Land Auxiliar (if it was not a carrier)
 			if (ChR != null) {
-				if (!isCarrier) {
+				if (!isCarrier && bShowChocksLandAuxiliar) {
 					ChR.pos.getAbs(locR); //By PAL, recupero la posición actual del Chock R.
 					Orient otemp = new Orient();
 					otemp.set(locR.getOrient()); //FM.actor.pos.getAbs()

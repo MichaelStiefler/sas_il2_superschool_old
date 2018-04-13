@@ -1,3 +1,4 @@
+// Last edited 09th/Apr./2018 By western: Add custom Runway Lights keep seconds function
 package com.maddox.il2.ai;
 
 import java.util.*;
@@ -19,8 +20,8 @@ public class AirportGround extends AirportStatic
     private boolean canTurnOnLights;
     private int randomDelay;
     private long timeOfLightsOn;
-    private static final long MAX_LIGHTS_ON_TIME_MS = 180000L;  // default 90000;
-    
+    private static long MAX_LIGHTS_ON_TIME_MS = 180000L;  // default 90000;
+
     public AirportGround() {
         super();
         this.runwayLights = null;
@@ -42,15 +43,21 @@ public class AirportGround extends AirportStatic
                 this.net = new Mirror(this, netMasterChannel, unitNetIdRemote);
             }
         }
+        // By western: custom Runway Lights keep seconds
+        int sec = Config.cur.ini.get("Mods", "RunwayLightsKeepOnSeconds", -1);
+        if (sec > 1800)
+            sec = 1800;
+        if (sec >= 60)
+            MAX_LIGHTS_ON_TIME_MS = (long) sec * 1000L;
     }
-    
+
     public void destroy() {
         if (this.runwayLights != null) {
             this.runwayLights.clear();
         }
         super.destroy();
     }
-    
+
     protected void update() {
         super.update();
         if (Mission.cur() == null) {
@@ -107,11 +114,11 @@ public class AirportGround extends AirportStatic
             }
         }
     }
-    
+
     public boolean hasLights() {
         return this.runwayLights != null && this.runwayLights.size() > 0;
     }
-    
+
     public void addLights(final SmokeGeneric smokeGeneric) {
         if (runwayLights == null) {
             runwayLights = new ArrayList();
@@ -119,7 +126,7 @@ public class AirportGround extends AirportStatic
         runwayLights.add(smokeGeneric);
         smokeGeneric.setArmy(0);
     }
-    
+
     public void addLights(VisualLandingAidGeneric vlageneric)
     {
         if(runwayLights == null)
@@ -147,7 +154,7 @@ public class AirportGround extends AirportStatic
             }
         }
     }
-    
+
     public void turnOnLights(final Aircraft acThatRequestedLights) {
         if (this.net.isMirror()) {
             this.mirror_sendLights(acThatRequestedLights);
@@ -164,7 +171,7 @@ public class AirportGround extends AirportStatic
         }
         this.randomDelay = 200 + World.Rnd().nextInt(200);
     }
-    
+
     public void netFirstUpdate(final NetChannel netChannel) throws IOException {
         try {
             final NetMsgGuaranted netMsgGuaranted = new NetMsgGuaranted();
@@ -178,7 +185,7 @@ public class AirportGround extends AirportStatic
             throw new RuntimeException("Airport lights: NetFirstUpdate failed");
         }
     }
-    
+
     private boolean master_sendLights(final boolean b) {
         if (this.net.isMirror()) {
             return false;
@@ -196,7 +203,7 @@ public class AirportGround extends AirportStatic
             return false;
         }
     }
-    
+
     private boolean mirror_sendLights(final Aircraft aircraft) {
         if (!this.net.isMirror() || this.net.masterChannel() instanceof NetChannelInStream) {
             return false;
@@ -215,13 +222,13 @@ public class AirportGround extends AirportStatic
             return false;
         }
     }
-    
+
     class Master extends ActorNet
     {
         public Master(final Actor actor) {
             super(actor);
         }
-        
+
         public boolean netInput(final NetMsgInput netMsgInput) throws IOException {
             if (netMsgInput.isGuaranted()) {
                 return true;
@@ -235,16 +242,16 @@ public class AirportGround extends AirportStatic
             return false;
         }
     }
-    
+
     class Mirror extends ActorNet
     {
         NetMsgFiltered out;
-        
+
         public Mirror(final Actor actor, final NetChannel netChannel, final int n) {
             super(actor, netChannel, n);
             this.out = new NetMsgFiltered();
         }
-        
+
         public boolean netInput(final NetMsgInput netMsgInput) throws IOException {
             if (netMsgInput.isGuaranted()) {
                 if (netMsgInput.readUnsignedByte() == 80) {

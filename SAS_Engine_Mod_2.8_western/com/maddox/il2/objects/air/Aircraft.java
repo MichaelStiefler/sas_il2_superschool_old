@@ -1405,6 +1405,19 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		}
 	}
 
+	public static void forceParkingStyle(Class class1, HierMesh hiermesh) {
+		try {
+			Method method = class1.getMethod("forceParkingStyle", new Class[] { com.maddox.il2.engine.HierMesh.class });
+			method.invoke(null, new Object[] { hiermesh });
+		} catch (Exception exception) {
+			System.out.println(exception.getMessage());
+			exception.printStackTrace();
+		}
+	}
+
+	public static void forceParkingStyle(HierMesh hiermesh) {
+	}
+
 	public void moveArrestorHook(float f) {
 	}
 
@@ -2045,6 +2058,8 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 			pos.reset();
 		}
 		if (vector3d != null) setSpeed(vector3d);
+		// TODO: By western, forcing set Chocks when customized in conf.ini
+		if (FM.Gears.bUseChocksParking && FM.Vwld.length() < 0.1D) FM.brakeShoe = true;
 	}
 
 	public void load(SectFile sectfile, String s, int i, NetChannel netchannel, int j) throws Exception {
