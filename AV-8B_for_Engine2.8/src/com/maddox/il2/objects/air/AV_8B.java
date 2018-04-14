@@ -4,6 +4,7 @@ package com.maddox.il2.objects.air;
 import com.maddox.JGP.*;
 import com.maddox.il2.ai.*;
 import com.maddox.il2.ai.air.*;
+import com.maddox.il2.ai.ground.TgtShip;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
@@ -18,10 +19,10 @@ import java.io.IOException;
 import java.util.*;
 
 // Referenced classes of package com.maddox.il2.objects.air:
-//            AV_8, TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, 
-//            TypeGSuit, TypeAcePlane, TypeFuelDump, TypeDockable, 
-//            PaintSchemeFMPar05, Aircraft, TypeFighterAceMaker, TypeSupersonic, 
-//            TypeFastJet, F_18, NetAircraft, Chute, 
+//            AV_8, TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector,
+//            TypeGSuit, TypeAcePlane, TypeFuelDump, TypeDockable,
+//            PaintSchemeFMPar05, Aircraft, TypeFighterAceMaker, TypeSupersonic,
+//            TypeFastJet, F_18, NetAircraft, Chute,
 //            TypeTankerDrogue
 
 public class AV_8B extends AV_8
@@ -48,15 +49,12 @@ public class AV_8B extends AV_8
         intervalMissileLaunchThreat = 1000L;
         guidedMissileUtils = new GuidedMissileUtils(this);
         removeChuteTimer = -1L;
-        trgtlongAI = null;
-        missilesList = new ArrayList();
-        hasIR = false;
-        hasPRHM = false;
-        a2a = false;
-        IR = false;
-        tX4Prev = 0L;
         counterFlareList = new ArrayList();
         counterChaffList = new ArrayList();
+        bHasAGM = false;
+        bHasAShM = false;
+        bHasUGR = false;
+        lastAGMcheck = -1L;
         backfire = false;
         if(Config.cur.ini.get("Mods", "RWRTextStop", 0) > 0) bRWR_Show_Text_Warning = false;
         rwrUtils = new RadarWarningReceiverUtils(this, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning);
@@ -182,26 +180,20 @@ public class AV_8B extends AV_8
         rwrUtils.setLockTone("", "aircraft.RWR2", "aircraft.MissileMissile", "", "RWR2.wav", "MissileMissile.wav");
     }
 
-    private void checkAmmoDroptank()
+    private void checkAmmo()
     {
-        missilesList.clear();
+        counterFlareList.clear();
+        counterChaffList.clear();
+        super.bHasPaveway = false;
+        bHasAGM = false;
+        bHasAShM = false;
+        bHasUGR = false;
         for(int i = 0; i < FM.CT.Weapons.length; i++)
             if(FM.CT.Weapons[i] != null)
             {
                 for(int j = 0; j < FM.CT.Weapons[i].length; j++)
                     if(FM.CT.Weapons[i][j].haveBullets())
                     {
-                        if(FM.CT.Weapons[i][j] instanceof RocketGunAIM9L)
-                            hasIR = true;
-                        if(FM.CT.Weapons[i][j] instanceof RocketGunAIM120A)
-                            hasPRHM = true;
-                        if((FM.CT.Weapons[i][j] instanceof RocketGunAGM65L) || (FM.CT.Weapons[i][j] instanceof BombGunMk82LGB))
-                            HasAGM = true;
-                        if(FM.CT.Weapons[i][j] instanceof RocketGunAGM65Ds)
-                        {
-                            IR = true;
-                            missilesList.add(FM.CT.Weapons[i][j]);
-                        }
                         if(FM.CT.Weapons[i][j] instanceof RocketGunFlare_gn16)
                             counterFlareList.add(FM.CT.Weapons[i][j]);
                         else if(FM.CT.Weapons[i][j] instanceof RocketGunChaff_gn16)
@@ -210,30 +202,73 @@ public class AV_8B extends AV_8
                                 FM.CT.Weapons[i][j] instanceof BombGunGBU12_Mk82LGB_gn16 ||
                                 FM.CT.Weapons[i][j] instanceof BombGunGBU16_Mk83LGB_gn16)
                             super.bHasPaveway = true;
-                        else
-                            missilesList.add(FM.CT.Weapons[i][j]);
+                        else if(FM.CT.Weapons[i][j] instanceof RocketGunAGM65E_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof RocketGunAGM84E_gn16)
+                            bHasAGM = true;
+                        else if(FM.CT.Weapons[i][j] instanceof RocketGunAGM84D_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof RocketGunAGM84J_gn16)
+                            bHasAShM = true;
+                        else if(FM.CT.Weapons[i][j] instanceof RocketGun5inchZuniMk71_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof RocketGun5inchZuniMk71AP_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof RocketGunHYDRA_gn16)
+                            bHasUGR = true;
                     }
 
             }
 
     }
 
-    public void launchMsl()
+    private void checkAIAGMrest()
     {
-        if(missilesList.isEmpty())
-        {
-            return;
-        }
-        else
-        {
-            ((RocketGunAGM65Ds)missilesList.remove(0)).shots(1);
-            return;
-        }
+        bHasAGM = false;
+        bHasAShM = false;
+        bHasUGR = false;
+        for(int i = 0; i < FM.CT.Weapons.length; i++)
+            if(FM.CT.Weapons[i] != null)
+            {
+                for(int j = 0; j < FM.CT.Weapons[i].length; j++)
+                    if(FM.CT.Weapons[i][j].haveBullets())
+                    {
+                        if(FM.CT.Weapons[i][j] instanceof RocketGunAGM65E_gn16 ||
+                           FM.CT.Weapons[i][j] instanceof RocketGunAGM84E_gn16)
+                            bHasAGM = true;
+                        else if(FM.CT.Weapons[i][j] instanceof RocketGunAGM84D_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof RocketGunAGM84J_gn16)
+                            bHasAShM = true;
+                        else if(FM.CT.Weapons[i][j] instanceof RocketGun5inchZuniMk71_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof RocketGun5inchZuniMk71AP_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof RocketGunHYDRA_gn16)
+                            bHasUGR = true;
+                    }
+            }
     }
 
     public void rareAction(float f, boolean flag)
     {
         super.rareAction(f, flag);
+
+        if((!(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode())
+           && !((Maneuver)super.FM).hasBombs() && FM.AP.way.curr().Action == 3)
+        {
+            if(!bHasAGM && !bHasAShM && !bHasUGR)
+                FM.AP.way.next();
+            else if(!bHasAGM && !bHasUGR && bHasAShM && (FM.AP.way.curr().getTarget() == null || !(FM.AP.way.curr().getTarget() instanceof TgtShip)))
+                FM.AP.way.next();
+            else if(!bHasAGM && bHasUGR && !bHasAShM && FM.CT.rocketNameSelected != "Zuni" && FM.CT.rocketNameSelected != "Hydra")
+            {
+                for(int i = 0; i < 4; i++)
+                {
+                    if(FM.CT.rocketNameSelected == "Zuni" || FM.CT.rocketNameSelected == "Hydra")
+                        break;
+                    FM.CT.toggleRocketHook();
+                }
+            }
+            else if(Time.current() > lastAGMcheck + 30000L)
+            {
+                checkAIAGMrest();
+                lastAGMcheck = Time.current();
+            }
+        }
     }
 
     public void update(float f)
@@ -251,53 +286,6 @@ public class AV_8B extends AV_8
         if(backfire)
             backFire();
         updateDragChute();
-        if((!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode()) && (super.FM instanceof Maneuver) && ((Maneuver)super.FM).get_task() == 7 && !FM.AP.way.isLanding())
-            if(missilesList.isEmpty() && !((Maneuver)super.FM).hasBombs())
-            {
-                Pilot pilot = (Pilot)super.FM;
-                Vector3d vector3d = new Vector3d();
-                getSpeed(vector3d);
-                Point3d point3d = new Point3d();
-                super.pos.getAbs(point3d);
-                float f1 = FM.getAltitude() - (float)World.land().HQ(((Tuple3d) (point3d)).x, ((Tuple3d) (point3d)).y);
-                if(f1 < 55F && vector3d.z < 0.0D)
-                    vector3d.z = 0.0D;
-                else if(pilot != null && Actor.isAlive(((Maneuver) (pilot)).target_ground))
-                {
-                    Point3d point3d2 = new Point3d();
-                    ((Maneuver) (pilot)).target_ground.pos.getAbs(point3d2);
-                    pilot.set_maneuver(43);
-                    if(super.pos.getAbsPoint().distance(point3d2) < 2000D)
-                    {
-                        point3d2.sub(FM.Loc);
-                        FM.Or.transformInv(point3d2);
-                        FM.CT.PowerControl = 0.55F;
-                    }
-                }
-                setSpeed(vector3d);
-            }
-            else if(!missilesList.isEmpty() && Time.current() > tX4Prev + 500L + (IR ? 10000L : 0L))
-            {
-                Pilot pilot = (Pilot)super.FM;
-                if(pilot.get_maneuver() == 43 && ((Maneuver) (pilot)).target_ground != null)
-                {
-                    Point3d point3d = new Point3d();
-                    ((Maneuver) (pilot)).target_ground.pos.getAbs(point3d);
-                    point3d.sub(FM.Loc);
-                    FM.Or.transformInv(point3d);
-                    if(((Tuple3d) (point3d)).x > 1000D && ((Tuple3d) (point3d)).x < (IR ? 2250D : 1250D) + 250D * (double)FM.Skill)
-                    {
-                        if(!IR)
-                            point3d.x /= 2 - FM.Skill / 3;
-                        if(((Tuple3d) (point3d)).y < ((Tuple3d) (point3d)).x && ((Tuple3d) (point3d)).y > -((Tuple3d) (point3d)).x && ((Tuple3d) (point3d)).z * 1.5D < ((Tuple3d) (point3d)).x && ((Tuple3d) (point3d)).z * 1.5D > -((Tuple3d) (point3d)).x)
-                        {
-                            launchMsl();
-                            tX4Prev = Time.current();
-                            Voice.speakAttackByRockets(this);
-                        }
-                    }
-                }
-            }
     }
 
     private void updateDragChute()
@@ -348,7 +336,7 @@ public class AV_8B extends AV_8
     public void missionStarting()
     {
         super.missionStarting();
-        checkAmmoDroptank();
+        checkAmmo();
         checkAsDrone();
     }
 
@@ -602,11 +590,6 @@ public class AV_8B extends AV_8
         return a_lweaponslot;
     }
 
-    private boolean HasAGM;
-    private long tfire;
-    public BulletEmitter Weapons[][];
-    private boolean hasIR;
-    private boolean hasPRHM;
     private GuidedMissileUtils guidedMissileUtils;
     private boolean hasChaff;
     private boolean hasFlare;
@@ -618,7 +601,6 @@ public class AV_8B extends AV_8
     private long intervalRadarLockThreat;
     private long lastMissileLaunchThreatActive;
     private long intervalMissileLaunchThreat;
-    public boolean bToFire;
     private boolean bHasDeployedDragChute;
     private Chute chute;
     private long removeChuteTimer;
@@ -629,14 +611,13 @@ public class AV_8B extends AV_8
     private Actor target_;
     private Actor queen_;
     private int dockport_;
-    private ArrayList missilesList;
     private ArrayList counterFlareList;
     private ArrayList counterChaffList;
-    private Actor trgtlongAI;
-    private long tX4Prev;
-    private boolean a2a;
-    private boolean IR;
-  
+    private boolean bHasAGM;
+    private boolean bHasAShM;
+    private boolean bHasUGR;
+    private long lastAGMcheck;
+
     private RadarWarningReceiverUtils rwrUtils;
     public float misslebrg;
     public float aircraftbrg;
@@ -651,7 +632,7 @@ public class AV_8B extends AV_8
     private static final boolean RWR_DETECT_ELEVATION = false;
     private boolean bRWR_Show_Text_Warning = true;
 
-    static 
+    static
     {
         Class class1 = CLASS.THIS();
         new NetAircraft.SPAWN(class1);
