@@ -4,6 +4,7 @@ package com.maddox.il2.objects.air;
 import com.maddox.JGP.*;
 import com.maddox.il2.ai.*;
 import com.maddox.il2.ai.air.*;
+import com.maddox.il2.ai.ground.TgtShip;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.objects.sounds.SndAircraft;
@@ -17,9 +18,9 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 
 // Referenced classes of package com.maddox.il2.objects.air:
-//            F_18, Aircraft, TypeTankerDrogue, TypeDockable, 
-//            PaintSchemeFMPar05, TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, 
-//            TypeGSuit, TypeAcePlane, TypeFuelDump, TypeStormovikArmored, 
+//            F_18, Aircraft, TypeTankerDrogue, TypeDockable,
+//            PaintSchemeFMPar05, TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector,
+//            TypeGSuit, TypeAcePlane, TypeFuelDump, TypeStormovikArmored,
 //            NetAircraft
 
 public class F_18C extends F_18
@@ -42,24 +43,28 @@ public class F_18C extends F_18
         guidedMissileUtils = new GuidedMissileUtils(this);
         bulletEmitters = null;
         wingFoldValue = 0.0F;
-        IR = false;
-        missilesList = new ArrayList();
         counterFlareList = new ArrayList();
         counterChaffList = new ArrayList();
-        tX4Prev = 0L;
+        bHasAGM = false;
+        bHasAShM = false;
+        bHasUGR = false;
+        lastAGMcheck = -1L;
     }
 
     private void checkAmmo()
     {
-        missilesList.clear();
+        counterFlareList.clear();
+        counterChaffList.clear();
+        super.bHasPaveway = false;
+        bHasAGM = false;
+        bHasAShM = false;
+        bHasUGR = false;
         for(int i = 0; i < FM.CT.Weapons.length; i++)
             if(FM.CT.Weapons[i] != null)
             {
                 for(int j = 0; j < FM.CT.Weapons[i].length; j++)
                     if(FM.CT.Weapons[i][j].haveBullets())
                     {
-                        if(FM.CT.Weapons[i][j] instanceof RocketGunAGM65Ds)
-                            IR = true;
                         if(FM.CT.Weapons[i][j] instanceof RocketGunFlare_gn16)
                             counterFlareList.add(FM.CT.Weapons[i][j]);
                         else if(FM.CT.Weapons[i][j] instanceof RocketGunChaff_gn16)
@@ -68,40 +73,47 @@ public class F_18C extends F_18
                                 FM.CT.Weapons[i][j] instanceof BombGunGBU12_Mk82LGB_gn16 ||
                                 FM.CT.Weapons[i][j] instanceof BombGunGBU16_Mk83LGB_gn16)
                             super.bHasPaveway = true;
-                        else
-                            missilesList.add(FM.CT.Weapons[i][j]);
-                        if(FM.CT.Weapons[i][j] instanceof RocketBombGun)
-                            IR = true;
+                        else if(FM.CT.Weapons[i][j] instanceof RocketGunAGM65B_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof RocketGunAGM65E_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof RocketGunAGM65F_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof RocketGunAGM123A_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof RocketGunAGM84E_gn16)
+                            bHasAGM = true;
+                        else if(FM.CT.Weapons[i][j] instanceof RocketGunAGM84D_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof RocketGunAGM84J_gn16)
+                            bHasAShM = true;
+                        else if(FM.CT.Weapons[i][j] instanceof RocketGun5inchZuniMk71_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof RocketGun5inchZuniMk71AP_gn16)
+                            bHasUGR = true;
                     }
-
             }
-
     }
 
-    public void launchMsl()
+    private void checkAIAGMrest()
     {
-        if(missilesList.isEmpty())
-        {
-            return;
-        }
-        else
-        {
-            ((RocketGunAGM65L)missilesList.remove(0)).shots(1);
-            return;
-        }
-    }
-
-    public void launchbmb()
-    {
-        if(missilesList.isEmpty())
-        {
-            return;
-        }
-        else
-        {
-            ((RocketBombGun)missilesList.remove(0)).shots(1);
-            return;
-        }
+        bHasAGM = false;
+        bHasAShM = false;
+        bHasUGR = false;
+        for(int i = 0; i < FM.CT.Weapons.length; i++)
+            if(FM.CT.Weapons[i] != null)
+            {
+                for(int j = 0; j < FM.CT.Weapons[i].length; j++)
+                    if(FM.CT.Weapons[i][j].haveBullets())
+                    {
+                        if(FM.CT.Weapons[i][j] instanceof RocketGunAGM65B_gn16 ||
+                           FM.CT.Weapons[i][j] instanceof RocketGunAGM65E_gn16 ||
+                           FM.CT.Weapons[i][j] instanceof RocketGunAGM65F_gn16 ||
+                           FM.CT.Weapons[i][j] instanceof RocketGunAGM123A_gn16 ||
+                           FM.CT.Weapons[i][j] instanceof RocketGunAGM84E_gn16)
+                            bHasAGM = true;
+                        else if(FM.CT.Weapons[i][j] instanceof RocketGunAGM84D_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof RocketGunAGM84J_gn16)
+                            bHasAShM = true;
+                        else if(FM.CT.Weapons[i][j] instanceof RocketGun5inchZuniMk71_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof RocketGun5inchZuniMk71AP_gn16)
+                            bHasUGR = true;
+                    }
+            }
     }
 
     public void backFire()
@@ -221,55 +233,6 @@ public class F_18C extends F_18
         super.update(f);
         if(super.backfire)
             backFire();
-        if((!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode()) && (super.FM instanceof Maneuver) && ((Maneuver)super.FM).get_task() == 7 && !FM.AP.way.isLanding())
-            if(missilesList.isEmpty() && !((Maneuver)super.FM).hasBombs())
-            {
-                Pilot pilot = (Pilot)FM;
-                Vector3d vector3d = new Vector3d();
-                getSpeed(vector3d);
-                Point3d point3d1 = new Point3d();
-                super.pos.getAbs(point3d1);
-                float f3 = FM.getAltitude() - (float)World.land().HQ(point3d1.x, point3d1.y);
-                if(f3 < 55F && vector3d.z < 0.0D)
-                    vector3d.z = 0.0D;
-                else
-                if(pilot != null && Actor.isAlive(((Maneuver) (pilot)).target_ground))
-                {
-                    Point3d point3d2 = new Point3d();
-                    ((Maneuver) (pilot)).target_ground.pos.getAbs(point3d2);
-                    pilot.set_maneuver(43);
-                    if(super.pos.getAbsPoint().distance(point3d2) < 2000D)
-                    {
-                        point3d2.sub(FM.Loc);
-                        FM.Or.transformInv(point3d2);
-                        FM.CT.PowerControl = 0.55F;
-                    }
-                }
-                setSpeed(vector3d);
-            }
-            else
-            if(!missilesList.isEmpty() && Time.current() > tX4Prev + 500L + (IR ? 10000L : 0L))
-            {
-                Pilot pilot1 = (Pilot)FM;
-                if(pilot1.get_maneuver() == 43 && ((Maneuver) (pilot1)).target_ground != null)
-                {
-                    Point3d point3d = new Point3d();
-                    ((Maneuver) (pilot1)).target_ground.pos.getAbs(point3d);
-                    point3d.sub(FM.Loc);
-                    FM.Or.transformInv(point3d);
-                    if(point3d.x > 1000D && point3d.x < (IR ? 2250D : 1250D) + 250D * (double)FM.Skill)
-                    {
-                        if(!IR)
-                            point3d.x /= 2 - FM.Skill / 3;
-                        if(point3d.y < point3d.x && point3d.y > -point3d.x && point3d.z * 1.5D < point3d.x && point3d.z * 1.5D > -point3d.x)
-                        {
-                            launchMsl();
-                            tX4Prev = Time.current();
-                            Voice.speakAttackByRockets(this);
-                        }
-                    }
-                }
-            }
     }
 
     public void computeF404_AB()
@@ -541,6 +504,29 @@ public class F_18C extends F_18
     public void rareAction(float f, boolean flag)
     {
         super.rareAction(f, flag);
+
+        if((!(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode())
+           && !((Maneuver)super.FM).hasBombs() && FM.AP.way.curr().Action == 3)
+        {
+            if(!bHasAGM && !bHasAShM && !bHasUGR)
+                FM.AP.way.next();
+            else if(!bHasAGM && !bHasUGR && bHasAShM && (FM.AP.way.curr().getTarget() == null || !(FM.AP.way.curr().getTarget() instanceof TgtShip)))
+                FM.AP.way.next();
+            else if(!bHasAGM && bHasUGR && !bHasAShM && FM.CT.rocketNameSelected != "Zuni")
+            {
+                for(int i = 0; i < 4; i++)
+                {
+                    if(FM.CT.rocketNameSelected == "Zuni")
+                        break;
+                    FM.CT.toggleRocketHook();
+                }
+            }
+            else if(Time.current() > lastAGMcheck + 30000L)
+            {
+                checkAIAGMrest();
+                lastAGMcheck = Time.current();
+            }
+        }
     }
 
     public void updateHook()
@@ -768,13 +754,13 @@ public class F_18C extends F_18
     private long intervalRadarLockThreat;
     private long lastMissileLaunchThreatActive;
     private long intervalMissileLaunchThreat;
-    public boolean bToFire;
     private float wingFoldValue;
-    private long tX4Prev;
-    private boolean IR;
-    private ArrayList missilesList;
     private ArrayList counterFlareList;
     private ArrayList counterChaffList;
+    private boolean bHasAGM;
+    private boolean bHasAShM;
+    private boolean bHasUGR;
+    private long lastAGMcheck;
     private Actor queen_last;
     private long queen_time;
     private boolean bNeedSetup;
@@ -783,7 +769,7 @@ public class F_18C extends F_18
     private Actor queen_;
     private int dockport_;
 
-    static 
+    static
     {
         Class class1 = CLASS.THIS();
         new NetAircraft.SPAWN(class1);

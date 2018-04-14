@@ -126,6 +126,9 @@ public class F_18 extends Scheme2
         bHasCenterTank = false;
         bHasWingTank = false;
         antiColLight = new Eff3DActor[6];
+        isHydraulicAlive = false;
+        isGeneratorAlive = false;
+        isBatteryOn = false;
         stockCy0_0 = 0.011F;
         stockCy0_1 = 0.40F;
         stockCxMin_0 = 0.034F;
@@ -172,6 +175,16 @@ public class F_18 extends Scheme2
             bHasCenterTank = true;
         if(afueltank.length == 2 || afueltank.length == 3)
             bHasWingTank = true;
+    }
+
+    private void checkHydraulicControls(boolean flag)
+    {
+        FM.CT.bHasWingControl = flag;
+        FM.CT.bHasArrestorControl = flag;
+        FM.CT.bHasFlapsControl = flag;
+        FM.CT.bHasAileronControl = flag;
+        FM.CT.bHasRudderControl = flag;
+        FM.CT.bHasAirBrakeControl = flag;
     }
 
     public void auxPressed(int i)
@@ -839,6 +852,7 @@ public class F_18 extends Scheme2
         laserTimer = -1L;
         bLaserOn = false;
         FLIR = false;
+        isBatteryOn = true;
         iDebugLogLevel = Config.cur.ini.get("Mods", "GuidedMissileDebugLog", 0);
 
         for(int i = 0; i < 2; i++)
@@ -924,6 +938,17 @@ public class F_18 extends Scheme2
     public void rareAction(float f, boolean flag)
     {
         super.rareAction(f, flag);
+        if(FM.EI.engines[0].getRPM() > 200F || FM.EI.engines[1].getRPM() > 200F || FM.getSpeedKMH() > 160F)
+        {
+            isGeneratorAlive = true;
+            isHydraulicAlive = true;
+        }
+        else
+        {
+            isGeneratorAlive = false;
+            isHydraulicAlive = false;
+        }
+        checkHydraulicControls(isHydraulicAlive);
         if(FM.crew > 1 && !bObserverKilled)
             if(obsLookTime == 0)
             {
@@ -976,7 +1001,7 @@ public class F_18 extends Scheme2
         }
         if(FLIR)
             FLIR();
-        if(!FM.isPlayers())
+        if(!FM.isPlayers() && isGeneratorAlive)
             if((((Maneuver)FM).get_maneuver() == 21 || ((Maneuver)FM).get_maneuver() == 25)
                && FM.AP.way.isLanding() && (FM.Gears.nOfGearsOnGr < 3 || FM.getSpeedKMH() > 80F))
                 FM.CT.FlapsControlSwitch = 2;
@@ -2107,6 +2132,8 @@ public class F_18 extends Scheme2
 
     public void computeElevators()
     {
+        if(!isHydraulicAlive)
+            return;
         if(FM.CT.StabilizerControl)
             return;
         if(FM.Gears.onGround() && FM.CT.FlapsControl > 0.68F)
@@ -2125,6 +2152,52 @@ public class F_18 extends Scheme2
         float f2 = FM.getOverload() - f1;
         f -= f2 / Math.max(FM.getSpeedKMH() / 0.7F, 200F);
         f = clamp11(f);
+        float pitch = (FM.Or.getPitch() > 180F)? FM.Or.getPitch() - 360F : FM.Or.getPitch();
+        if((!(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode())
+           && ((Maneuver)FM).get_maneuver() != 25 && ((Maneuver)FM).get_maneuver() != 26)
+        {
+            float alt = (float) (this.pos.getAbsPoint().z - World.land().HQ(this.pos.getAbsPoint().x, this.pos.getAbsPoint().y));
+            float tgtpitchmin = cvt(alt, 200F, 600F, -4.0F, -30.0F);
+            float tgtpitchmaxWPz = cvt(FM.getAltitude() - FM.AP.way.curr().z(), 100F, 300F, 30.0F, 4.0F);
+            float tgtpitchmaxWPs = cvt(FM.getSpeed() - FM.AP.way.curr().Speed, -30F, 30F, 12.0F, 30.0F);
+            float tgtpitchmax = 30F;
+            if(FM.getSpeedKMH() < 600F)
+                tgtpitchmax = cvt(FM.getSpeedKMH(), 400F, 600F, 6.0F, 20.0F);
+            else
+                tgtpitchmax = cvt(FM.getSpeedKMH(), 600F, 700F, 20.0F, 30.0F);
+            float tgtpitchminWPz = cvt(FM.getAltitude() - FM.AP.way.curr().z(), -200F, 100F, 0.0F, -30.0F);
+
+            tgtpitchmax = Math.min(tgtpitchmax, tgtpitchmaxWPz);
+            tgtpitchmax = Math.min(tgtpitchmax, tgtpitchmaxWPs);
+            tgtpitchmin = Math.max(tgtpitchmin, tgtpitchminWPz);
+            if(tgtpitchmax == 0.0F) tgtpitchmax = 0.001F;
+            if(tgtpitchmin == 0.0F) tgtpitchmin = -0.001F;
+
+            if(tgtpitchmin > tgtpitchmax)
+            {
+                float ftemp = tgtpitchmax;
+                tgtpitchmax = tgtpitchmin;
+                tgtpitchmin = ftemp;
+            }
+
+            if(pitch > tgtpitchmax * 1.1F)
+            {
+                if(f > cvt(pitch - tgtpitchmax * 1.1F, 0F, 50F, -0.2F, -1.0F))
+                    f = cvt(pitch - tgtpitchmax * 1.1F, 0F, 50F, -0.2F, -1.0F);
+            }
+            else if(pitch > tgtpitchmax)
+            {
+                f = Math.min(f, cvt(pitch, tgtpitchmax, tgtpitchmax * 1.1F, -0.1F, -0.2F));
+            }
+            else if(pitch > tgtpitchmax * 0.9F)
+            {
+                f = Math.min(f, cvt(pitch, tgtpitchmax * 0.9F, tgtpitchmax, 0.0F, -0.1F));
+            }
+            else if(pitch > tgtpitchmax * 0.75F)
+            {
+                if(f > 0.0F) f *= cvt(pitch / tgtpitchmax, 0.75F, 0.9F, 1.0F, 0.8F);
+            }
+        }
         FM.CT.bHasElevatorControl = false;
         if(elevatorsField == null)
         {
@@ -2205,7 +2278,7 @@ public class F_18 extends Scheme2
 
     private void anticollights()
     {
-        if(FM.CT.bAntiColLights)
+        if(FM.CT.bAntiColLights && isGeneratorAlive)
         {
             for(int i = 0; i < 6; i++)
             {
@@ -2728,6 +2801,9 @@ public class F_18 extends Scheme2
     public boolean bHasWingTank;
     private float arrestor;
     private Eff3DActor antiColLight[];
+    public boolean isHydraulicAlive;
+    public boolean isGeneratorAlive;
+    public boolean isBatteryOn;
 
     private float stockCy0_0;
     private float stockCy0_1;
