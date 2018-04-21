@@ -20,7 +20,7 @@
   CElevatorTrim 1
   CRudder 3
   CRudderTrim 1
-  CLimitRatioElevatorMinusALWAYS 0.60
+  CLimitRatioElevatorMinusALWAYS 0.30
   CFlap 1
   CFlapPos 2
   CFlapStage0 10
