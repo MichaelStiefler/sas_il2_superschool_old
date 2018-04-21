@@ -26,8 +26,9 @@ import java.util.*;
 
 
 public class F_14 extends Scheme2
-    implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeFighterAceMaker, TypeGSuit, TypeFastJet, TypeBomber, TypeStormovikArmored, TypeAcePlane, TypeLaserDesignator, TypeRadar, TypeFuelDump, TypeRadarWarningReceiver
+    implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeGSuit, TypeFastJet, TypeBomber, TypeStormovikArmored, TypeAcePlane, TypeLaserDesignator, TypeRadar, TypeFuelDump, TypeRadarWarningReceiver
 {
+    // delete TypeFighterAceMaker, 
 
     public float getDragForce(float f, float f1, float f2, float f3)
     {
@@ -102,6 +103,8 @@ public class F_14 extends Scheme2
         tangate = 0.0F;
         azimult = 0.0F;
         tf = 0L;
+        bDLCengaged = false;
+        iDLCcommand = 0;
         APmode1 = false;
         APmode2 = false;
         APmode3 = false;
@@ -141,6 +144,9 @@ public class F_14 extends Scheme2
         stockSqWing = 54.5F;
         stockSqWingOut = 13.25F;
         stockSqFlaps = 13.5F;
+        stockDragAirbrake = 0.18F;
+        SpoilerBrakeControl = 0.0F;
+        oldSpoilerBrakeControl = 0.0F;
         antiColLight = new Eff3DActor[3];
         laserSpotPos = new Point3d();
         laserTimer = -1L;
@@ -296,6 +302,22 @@ public class F_14 extends Scheme2
             {
                 ILS = false;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "ILS OFF");
+            }
+        if(i == 29)
+            if(!bDLCengaged)
+            {
+                if(FM.CT.getFlap() > 0.715F && FM.EI.engines[0].getControlThrottle() < 0.97F && FM.EI.engines[1].getControlThrottle() < 0.97F)
+                {
+                    bDLCengaged = true;
+                    iDLCcommand = 0;
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "DLC engaged");
+                }
+            }
+            else
+            {
+                bDLCengaged = false;
+                iDLCcommand = 0;
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "DLC stowed");
             }
         if(i == 30)
             if(!APmode2)
@@ -524,10 +546,26 @@ public class F_14 extends Scheme2
 
     public void typeBomberAdjAltitudeReset()
     {
+        if(bDLCengaged)
+        {
+            iDLCcommand = 0;
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "DLC neutral");
+        }
     }
 
     public void typeBomberAdjAltitudePlus()
     {
+        if(bDLCengaged)
+        {
+            iDLCcommand++;
+            if(iDLCcommand >= 10)
+            {
+                iDLCcommand = 10;
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "DLC plus Max");
+            }
+            if(iDLCcommand == 0)
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "DLC neutral");
+        } else
         if(FLIR)
             if(!APmode3)
             {
@@ -545,6 +583,17 @@ public class F_14 extends Scheme2
 
     public void typeBomberAdjAltitudeMinus()
     {
+        if(bDLCengaged)
+        {
+            iDLCcommand--;
+            if(iDLCcommand <= -10)
+            {
+                iDLCcommand = -10;
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "DLC minus Max");
+            }
+            if(iDLCcommand == 0)
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "DLC neutral");
+        }
     }
 
     public void typeBomberAdjSpeedReset()
@@ -719,6 +768,7 @@ public class F_14 extends Scheme2
         stockSqWing = FM.Sq.squareWing;
         stockSqWingOut = FM.Sq.liftWingLOut;
         stockSqFlaps = FM.Sq.squareFlaps;
+        stockDragAirbrake = FM.Sq.dragAirbrakeCx;
         FM.CT.toggleRocketHook();
         bCarryLaserpod = false;
         if(thisWeaponsName.startsWith("Fighter_4xAIM54"))
@@ -1016,7 +1066,7 @@ public class F_14 extends Scheme2
         return true;
     }
 
-    public boolean typeFighterAceMakerToggleAutomation()
+/*    public boolean typeFighterAceMakerToggleAutomation()
     {
         return true;
     }
@@ -1067,7 +1117,7 @@ public class F_14 extends Scheme2
         k14Mode = netmsginput.readByte();
         k14WingspanType = netmsginput.readByte();
         k14Distance = netmsginput.readFloat();
-    }
+    } */
 
     public void doMurderPilot(int i)
     {
@@ -1416,24 +1466,44 @@ public class F_14 extends Scheme2
             hierMesh().chunkSetAngles("VatorR_D0", 0.0F, 0.0F, 0.0F);
         } else
         {
-            hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -35F * FM.CT.getElevator() + 27F * FM.CT.getAileron(), 0.0F);
-            hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -35F * FM.CT.getElevator() - 27F * FM.CT.getAileron(), 0.0F);
+            hierMesh().chunkSetAngles("VatorL_D0", 0.0F, Math.max(-33F, Math.min(10F, -33F * FM.CT.getElevator() + 20F * FM.CT.getAileron())), 0.0F);
+            hierMesh().chunkSetAngles("VatorR_D0", 0.0F, Math.max(-33F, Math.min(10F, -33F * FM.CT.getElevator() - 20F * FM.CT.getAileron())), 0.0F);
         }
     }
 
 
     protected void moveFlap(float f)
     {
-        resetYPRmodifier();
-        Aircraft.xyz[0] = Aircraft.cvt(f, 0.01F, 0.5F, 0.0F, -0.087F);
-        Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.5F, 0.0F, -0.03F);
-        Aircraft.ypr[1] = Aircraft.cvt(f, 0.01F, 0.5F, 0.0F, 34F);
-        hierMesh().chunkSetLocate("SlatL_D0", Aircraft.xyz, Aircraft.ypr);
-        resetYPRmodifier();
-        Aircraft.xyz[0] = Aircraft.cvt(f, 0.01F, 0.5F, 0.0F, 0.087F);
-        Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.5F, 0.0F, -0.03F);
-        Aircraft.ypr[1] = Aircraft.cvt(f, 0.01F, 0.5F, 0.0F, -34F);
-        hierMesh().chunkSetLocate("SlatR_D0", Aircraft.xyz, Aircraft.ypr);
+        if(f < 0.286F)
+        {  // Combat Flap area 0 ~ 10 deg.
+            resetYPRmodifier();
+            Aircraft.xyz[0] = Aircraft.cvt(f, 0.01F, 0.05F, 0.0F, -0.086F);
+            Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.05F, 0.0F, -0.01F);
+            Aircraft.ypr[0] = Aircraft.cvt(f, 0.01F, 0.05F, 0.0F, 0.036F);
+            Aircraft.ypr[1] = Aircraft.cvt(f, 0.01F, 0.05F, 0.0F, 7F);
+            hierMesh().chunkSetLocate("SlatL_D0", Aircraft.xyz, Aircraft.ypr);
+            resetYPRmodifier();
+            Aircraft.xyz[0] = Aircraft.cvt(f, 0.01F, 0.05F, 0.0F, 0.086F);
+            Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.05F, 0.0F, -0.01F);
+            Aircraft.ypr[0] = Aircraft.cvt(f, 0.01F, 0.05F, 0.0F, -0.036F);
+            Aircraft.ypr[1] = Aircraft.cvt(f, 0.01F, 0.05F, 0.0F, -7F);
+            hierMesh().chunkSetLocate("SlatR_D0", Aircraft.xyz, Aircraft.ypr);
+        }
+        else
+        {  // Full Flap area 10 ~ 35 deg.
+            resetYPRmodifier();
+            Aircraft.xyz[0] = Aircraft.cvt(f, 0.3F, 0.5F, -0.086F, -0.17F);
+            Aircraft.xyz[2] = Aircraft.cvt(f, 0.3F, 0.5F, -0.01F, -0.048F);
+            Aircraft.ypr[0] = Aircraft.cvt(f, 0.3F, 0.5F, 0.036F, 1F);
+            Aircraft.ypr[1] = Aircraft.cvt(f, 0.3F, 0.5F, 7F, 17F);
+            hierMesh().chunkSetLocate("SlatL_D0", Aircraft.xyz, Aircraft.ypr);
+            resetYPRmodifier();
+            Aircraft.xyz[0] = Aircraft.cvt(f, 0.3F, 0.5F, 0.086F, 0.17F);
+            Aircraft.xyz[2] = Aircraft.cvt(f, 0.3F, 0.5F, -0.01F, -0.048F);
+            Aircraft.ypr[0] = Aircraft.cvt(f, 0.3F, 0.5F, -0.036F, -1F);
+            Aircraft.ypr[1] = Aircraft.cvt(f, 0.3F, 0.5F, -7F, -17F);
+            hierMesh().chunkSetLocate("SlatR_D0", Aircraft.xyz, Aircraft.ypr);
+        }
 
         if(bFlapsOutFixed || FM.CT.getVarWing() > 0.6F)
         {
@@ -1441,12 +1511,16 @@ public class F_14 extends Scheme2
             hierMesh().chunkSetAngles("Flap01u_D0", 0.0F, 0.0F, 0.0F);
             hierMesh().chunkSetAngles("Flap02_D0", 0.0F, 0.0F, 0.0F);
             hierMesh().chunkSetAngles("Flap02u_D0", 0.0F, 0.0F, 0.0F);
+            hierMesh().chunkSetAngles("WingLCoveDoorO_D0", 0.0F, 0.0F, 0.0F);
+            hierMesh().chunkSetAngles("WingRCoveDoorO_D0", 0.0F, 0.0F, 0.0F);
         } else
         {
             hierMesh().chunkSetAngles("Flap01_D0", 0.0F, -35 * f, 0.0F);
             hierMesh().chunkSetAngles("Flap01u_D0", 0.0F, 16 * Aircraft.cvt(f, 0.40F, 0.75F, 0.0F, 1.0F), 0.0F);
             hierMesh().chunkSetAngles("Flap02_D0", 0.0F, -35 * f, 0.0F);
             hierMesh().chunkSetAngles("Flap02u_D0", 0.0F, 16 * Aircraft.cvt(f, 0.40F, 0.75F, 0.0F, 1.0F), 0.0F);
+            hierMesh().chunkSetAngles("WingLCoveDoorO_D0", 0.0F, 0.0F, -45 * Aircraft.cvt(f, 0.40F, 0.50F, 0.0F, 1.0F));
+            hierMesh().chunkSetAngles("WingRCoveDoorO_D0", 0.0F, 0.0F, -45 * Aircraft.cvt(f, 0.40F, 0.50F, 0.0F, 1.0F));
         }
 
         if(bFlapsInFixed || FM.CT.getVarWing() > 0.6F)
@@ -1455,12 +1529,16 @@ public class F_14 extends Scheme2
             hierMesh().chunkSetAngles("Flap03u_D0", 0.0F, 0.0F, 0.0F);
             hierMesh().chunkSetAngles("Flap04_D0", 0.0F, 0.0F, 0.0F);
             hierMesh().chunkSetAngles("Flap04u_D0", 0.0F, 0.0F, 0.0F);
+            hierMesh().chunkSetAngles("WingLCoveDoorI_D0", 0.0F, 0.0F, 0.0F);
+            hierMesh().chunkSetAngles("WingRCoveDoorI_D0", 0.0F, 0.0F, 0.0F);
         } else
         {
             hierMesh().chunkSetAngles("Flap03_D0", 0.0F, -35 * f, 0.0F);
             hierMesh().chunkSetAngles("Flap03u_D0", 0.0F, 16 * Aircraft.cvt(f, 0.40F, 0.75F, 0.0F, 1.0F), 0.0F);
             hierMesh().chunkSetAngles("Flap04_D0", 0.0F, -35 * f, 0.0F);
             hierMesh().chunkSetAngles("Flap04u_D0", 0.0F, 16 * Aircraft.cvt(f, 0.40F, 0.75F, 0.0F, 1.0F), 0.0F);
+            hierMesh().chunkSetAngles("WingLCoveDoorI_D0", 0.0F, 0.0F, -45 * Aircraft.cvt(f, 0.40F, 0.50F, 0.0F, 1.0F));
+            hierMesh().chunkSetAngles("WingRCoveDoorI_D0", 0.0F, 0.0F, -45 * Aircraft.cvt(f, 0.40F, 0.50F, 0.0F, 1.0F));
         }
 
         updateAileronVisuals();
@@ -1468,34 +1546,110 @@ public class F_14 extends Scheme2
 
     private final void updateAileronVisuals()
     {
-        boolean bflapDep = FM.CT.getFlap() > 0.329F;
-        boolean bflapDepMax = FM.CT.getFlap() > 0.8F;
+        float spodegLI = 0.0F;
+        float spodegLO = 0.0F;
+        float spodegRI = 0.0F;
+        float spodegRO = 0.0F;
+        float spodegDLC = -4.5F;  // spoiler -4.5 deg. when DLC is not engaged in flap deployed over 25 deg.
+
+        boolean bflapDep = FM.CT.getFlap() > 0.29F;      // over 10 deg. of main flaps down.
+        boolean bflapDepMax = FM.CT.getFlap() > 0.715F;  // over 25 deg. of main flaps down. "Direct Lift Control" engage possible in the Power Approach mode.
+
+        if(bDLCengaged && (!bflapDepMax || FM.EI.engines[0].getControlThrottle() > 0.97F || FM.EI.engines[1].getControlThrottle() > 0.97F))
+        {
+            bDLCengaged = false;
+            iDLCcommand = 0;
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "DLC stowed");
+        }
+
+        if(bDLCengaged)
+        {
+            if(iDLCcommand > 0)
+            {
+                spodegDLC = 17.5F + 3.75F * (float)iDLCcommand;  // 17.5 deg. ~ 55 deg.
+            }
+            else if(iDLCcommand < 0)
+            {
+                spodegDLC = 17.5F + 2.2F * (float)iDLCcommand;   // 17.5 deg. ~ -4.5 deg.
+            }
+            else
+            {
+                spodegDLC = 17.5F;
+            }
+        }
+
         if(FM.CT.getAileron() < 0F)
         {
             if(bflapDep && !bFlapsOutFixed && FM.CT.getVarWing() < 0.6F)
             {
-                hierMesh().chunkSetAngles("AroneL_D0", 0.0F, Math.max(-55F * FM.CT.getAileron(), (bflapDepMax ? 17.5F : 4.5F)), 0.0F);
-                hierMesh().chunkSetAngles("AroneR_D0", 0.0F, -(bflapDepMax ? 17.5F : 4.5F), 0.0F);
+                spodegLI = Math.max(-59.5F * FM.CT.getAileron() - 4.5F, spodegDLC);
+                spodegRI = -spodegDLC;
+                spodegLO = Math.max(-59.5F * FM.CT.getAileron() - 4.5F, -4.5F);
+                spodegRO = 4.5F;
             }
             else
             {
-                hierMesh().chunkSetAngles("AroneL_D0", 0.0F, -55F * FM.CT.getAileron(), 0.0F);
-                hierMesh().chunkSetAngles("AroneR_D0", 0.0F, 0.0F, 0.0F);
+                spodegLI = -55F * FM.CT.getAileron();
+                spodegRI = 0.0F;
+                spodegLO = -55F * FM.CT.getAileron();
+                spodegRO = 0.0F;
             }
         }
         else
         {
             if(bflapDep && !bFlapsOutFixed && FM.CT.getVarWing() < 0.6F)
             {
-                hierMesh().chunkSetAngles("AroneL_D0", 0.0F, (bflapDepMax ? 17.5F : 4.5F), 0.0F);
-                hierMesh().chunkSetAngles("AroneR_D0", 0.0F, Math.min(-55F * FM.CT.getAileron(), -(bflapDepMax ? 17.5F : 4.5F)), 0.0F);
+                spodegLI = spodegDLC;
+                spodegRI = Math.min(-59.5F * FM.CT.getAileron() + 4.5F, -spodegDLC);
+                spodegLO = -4.5F;
+                spodegRO = Math.min(-59.5F * FM.CT.getAileron() + 4.5F, 4.5F);
             }
             else
             {
-                hierMesh().chunkSetAngles("AroneL_D0", 0.0F, 0.0F, 0.0F);
-                hierMesh().chunkSetAngles("AroneR_D0", 0.0F, -55F * FM.CT.getAileron(), 0.0F);
+                spodegLI = 0.0F;
+                spodegRI = -55F * FM.CT.getAileron();
+                spodegLO = 0.0F;
+                spodegRO = -55F * FM.CT.getAileron();
             }
         }
+
+        if(bflapDep)
+        {
+            spodegLI = Math.max(59.5F * SpoilerBrakeControl - 4.5F, spodegLI);
+            spodegRI = Math.min(-59.5F * SpoilerBrakeControl + 4.5F, spodegRI);
+            spodegLO = Math.max(59.5F * SpoilerBrakeControl - 4.5F, spodegLO);
+            spodegRO = Math.min(-59.5F * SpoilerBrakeControl + 4.5F, spodegRO);
+        }
+        else
+        {
+            spodegLI = Math.max(55F * SpoilerBrakeControl, spodegLI);
+            spodegRI = Math.min(-55F * SpoilerBrakeControl, spodegRI);
+            spodegLO = Math.max(55F * SpoilerBrakeControl, spodegLO);
+            spodegRO = Math.min(-55F * SpoilerBrakeControl, spodegRO);
+        }
+
+        hierMesh().chunkSetAngles("AroneL_D0", 0.0F, spodegLI, 0.0F);
+        hierMesh().chunkSetAngles("AroneR_D0", 0.0F, spodegRI, 0.0F);
+        hierMesh().chunkSetAngles("AroneL2_D0", 0.0F, spodegLO, 0.0F);
+        hierMesh().chunkSetAngles("AroneR2_D0", 0.0F, spodegRO, 0.0F);
+    }
+
+    public void checkSpoilers()
+    {
+        if(FM.Gears.nOfGearsOnGr > 1 && FM.EI.engines[0].getControlThrottle() < 0.02F && FM.EI.engines[1].getControlThrottle() < 0.02F)
+        {
+            SpoilerBrakeControl = FM.CT.getAirBrake();
+            FM.Sq.dragAirbrakeCx = stockDragAirbrake * 2.0F;
+        }
+        else
+        {
+            SpoilerBrakeControl = 0.0F;
+            FM.Sq.dragAirbrakeCx = stockDragAirbrake;
+        }
+
+        if(SpoilerBrakeControl != oldSpoilerBrakeControl)
+            updateAileronVisuals();
+        oldSpoilerBrakeControl = SpoilerBrakeControl;
     }
 
     public void moveArrestorHook(float f)
@@ -1810,6 +1964,23 @@ public class F_14 extends Scheme2
                 hitFlesh(i1, shot, byte0);
             }
         }
+
+        hierMesh().chunkVisible("AroneL2_D0", hierMesh().isChunkVisible("AroneL_D0"));
+        hierMesh().chunkVisible("AroneL2_D1", hierMesh().isChunkVisible("AroneL_D1"));
+        hierMesh().chunkVisible("AroneR2_D0", hierMesh().isChunkVisible("AroneR_D0"));
+        hierMesh().chunkVisible("AroneR2_D1", hierMesh().isChunkVisible("AroneR_D1"));
+        hierMesh().chunkVisible("WingLCoveDoorI_D0", hierMesh().isChunkVisible("WingLOut_D0"));
+        hierMesh().chunkVisible("WingLCoveDoorI_D2", hierMesh().isChunkVisible("WingLOut_D1") || hierMesh().isChunkVisible("WingLOut_D2"));
+        hierMesh().chunkVisible("WingLCoveDoorO_D0", hierMesh().isChunkVisible("WingLOut_D0"));
+        hierMesh().chunkVisible("WingLCoveDoorO_D2", hierMesh().isChunkVisible("WingLOut_D1") || hierMesh().isChunkVisible("WingLOut_D2"));
+        hierMesh().chunkVisible("WingRCoveDoorI_D0", hierMesh().isChunkVisible("WingROut_D0"));
+        hierMesh().chunkVisible("WingRCoveDoorI_D2", hierMesh().isChunkVisible("WingROut_D1") || hierMesh().isChunkVisible("WingROut_D2"));
+        hierMesh().chunkVisible("WingRCoveDoorO_D0", hierMesh().isChunkVisible("WingROut_D0"));
+        hierMesh().chunkVisible("WingRCoveDoorO_D2", hierMesh().isChunkVisible("WingROut_D1") || hierMesh().isChunkVisible("WingROut_D2"));
+        hierMesh().chunkVisible("SlatL_D0", hierMesh().isChunkVisible("WingLOut_D0"));
+        hierMesh().chunkVisible("SlatL_D2", hierMesh().isChunkVisible("WingLOut_D1") || hierMesh().isChunkVisible("WingLOut_D2"));
+        hierMesh().chunkVisible("SlatR_D0", hierMesh().isChunkVisible("WingROut_D0"));
+        hierMesh().chunkVisible("SlatR_D2", hierMesh().isChunkVisible("WingROut_D1") || hierMesh().isChunkVisible("WingROut_D2"));
     }
 
     protected boolean cutFM(int i, int j, Actor actor)
@@ -1839,7 +2010,7 @@ public class F_14 extends Scheme2
         return super.cutFM(i, j, actor);
     }
 
-
+/*
     public void typeFighterAceMakerRangeFinder()
     {
         if(k14Mode == 2)
@@ -1859,7 +2030,7 @@ public class F_14 extends Scheme2
             if(k14Distance < 20F)
                 k14Distance = 20F;
         }
-    }
+    } */
 
     public float getAirPressure(float f)
     {
@@ -2041,7 +2212,7 @@ public class F_14 extends Scheme2
             laser(getLaserSpot());
         updatecontrollaser();
         engineSurge(f);
-        typeFighterAceMakerRangeFinder();
+//        typeFighterAceMakerRangeFinder();
         soundbarier();
         rwrUtils.update();
         backfire = rwrUtils.getBackfire();
@@ -2069,6 +2240,7 @@ public class F_14 extends Scheme2
         }
         gearlimit();
         moveInletRamps();
+        checkSpoilers();
         super.update(f);
         if(FM.CT.getArrestor() > 0.2F)
             calculateArrestor();
@@ -2121,6 +2293,13 @@ public class F_14 extends Scheme2
         }
         if(FM.getSpeedKMH() > 300F)
             FM.CT.cockpitDoorControl = 0.0F;
+        if(bDLCengaged && !FM.Gears.onGround())
+        {
+            if(iDLCcommand > 0)
+                FM.producedAF.z -= (double)((float)iDLCcommand * FM.getSpeedKMH());
+            else
+                FM.producedAF.z += (double)((float)iDLCcommand * FM.getSpeedKMH() * 0.6F);
+        }
     }
 
 
@@ -2882,13 +3061,13 @@ public class F_14 extends Scheme2
         if(((Maneuver)super.FM).get_maneuver() == 21)
         {
             if(FM.getSpeed() > FM.VmaxFLAPS && FM.getSpeed() > FM.AP.way.curr().Speed * 1.4F && FM.getAltitude() > FM.AP.way.curr().z() + 20F
-               && FM.EI.engines[0].getControlThrottle() < 0.85F && FM.EI.engines[0].getControlThrottle() < 0.85F)
+               && FM.EI.engines[0].getControlThrottle() < 0.85F && FM.EI.engines[1].getControlThrottle() < 0.85F)
             {
                 if(FM.CT.AirBrakeControl != 1.0F)
                     FM.CT.AirBrakeControl = 1.0F;
             }
             if(FM.getSpeed() < FM.AP.way.curr().Speed * 1.05F || FM.getAltitude() < FM.AP.way.curr().z()
-               || FM.EI.engines[0].getControlThrottle() > 0.96F || FM.EI.engines[0].getControlThrottle() > 0.96F)
+               || FM.EI.engines[0].getControlThrottle() > 0.96F || FM.EI.engines[1].getControlThrottle() > 0.96F)
                 if(FM.CT.AirBrakeControl != 0.0F)
                     FM.CT.AirBrakeControl = 0.0F;
         } else
@@ -2985,6 +3164,17 @@ public class F_14 extends Scheme2
         Timer2 = f;
     }
 
+    private float clampF(float fv, float fLimit)
+    {
+        if(fLimit < 0.0F)
+            fLimit *= -1.0F;
+        if(fv > fLimit)
+            fv = fLimit;
+        if(fv < -fLimit)
+            fv = -fLimit;
+        return fv;
+    }
+
 
     public float Fuelamount;
     public boolean radartogle;
@@ -3000,6 +3190,8 @@ public class F_14 extends Scheme2
     private boolean APmode2;
     private boolean APmode3;
     public boolean ILS;
+    public boolean bDLCengaged;
+    private int iDLCcommand;  // from -10 ~ +10
     public float azimult;
     public float tangate;
     public long tf;
@@ -3113,6 +3305,9 @@ public class F_14 extends Scheme2
     private float stockSqWing;
     private float stockSqWingOut;
     private float stockSqFlaps;
+    private float stockDragAirbrake;
+    private float SpoilerBrakeControl;
+    private float oldSpoilerBrakeControl;
     private Eff3DActor antiColLight[];
 
     public boolean bCarryLaserpod = false;
