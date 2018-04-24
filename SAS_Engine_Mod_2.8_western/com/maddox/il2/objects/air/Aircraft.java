@@ -2059,7 +2059,9 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		}
 		if (vector3d != null) setSpeed(vector3d);
 		// TODO: By western, forcing set Chocks when customized in conf.ini
-		if (FM.Gears.bUseChocksParking && FM.Vwld.length() < 0.1D) FM.brakeShoe = true;
+		Vector3d vtemp = new Vector3d();
+		FM.actor.pos.speed(vtemp);
+		if (FM.Gears.bUseChocksParking && vtemp.length() == 0.0D && !(FM.actor instanceof TypeSeaPlane)) FM.brakeShoe = true;
 	}
 
 	public void load(SectFile sectfile, String s, int i, NetChannel netchannel, int j) throws Exception {

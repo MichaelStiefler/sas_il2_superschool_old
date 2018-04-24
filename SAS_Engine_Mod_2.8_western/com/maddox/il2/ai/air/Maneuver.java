@@ -542,8 +542,11 @@ public class Maneuver extends AIFlightModel {
 
 	private void resetControls() {
 		// TODO: Added in blown flaps control
-		CT.AileronControl = CT.BrakeControl = CT.ElevatorControl = CT.FlapsControl = CT.BlownFlapsControl = CT.RudderControl = 0.0F;
+		CT.AileronControl = CT.BrakeControl = CT.ElevatorControl = CT.RudderControl = 0.0F;
 		CT.AirBrakeControl = 0.0F;
+		CT.BlownFlapsControl = 0.0F;
+		if (!CT.bHasFlapsControlSwitch)
+			CT.FlapsControl = 0.0F;
 	}
 
 	private void set_flags() {
@@ -575,7 +578,7 @@ public class Maneuver extends AIFlightModel {
 		// By western: TurnOn NavLight time added -- taxing, taxi to take-off, FastJet approaching
 		turnOnChristmasTree(maneuver == 25 || maneuver == 26 || maneuver == 69 || maneuver == 70
 						|| maneuver == 66 || maneuver == 102
-						|| (maneuver == 21 && AP.way.isLanding() && (super.actor instanceof TypeFastJet)));
+						|| ((maneuver == 21 || maneuver == 2 || maneuver == 57) && AP.way.isLanding() && (super.actor instanceof TypeFastJet)));
 		turnOnCloudShine(maneuver == 25);
 		checkStrike = maneuver != 60 && maneuver != 61 && maneuver != 102 && maneuver != 1 && maneuver != 24 && maneuver != 26 && maneuver != 69 && maneuver != 64 && maneuver != 44;
 		stallable = maneuver != 44 && maneuver != 1 && maneuver != 48 && maneuver != 0 && maneuver != 26 && maneuver != 69 && maneuver != 64 && maneuver != 43 && maneuver != 50 && maneuver != 51 && maneuver != 52 && maneuver != 47 && maneuver != 71
@@ -861,7 +864,9 @@ public class Maneuver extends AIFlightModel {
 			if (!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
 			CT.BrakeControl = 1.0F;
 			// TODO By western: set Chocks for Parking with conf.ini custom setting
-			if (Gears.bUseChocksParking) brakeShoe = true;
+			Vector3d vtemp = new Vector3d();
+			this.actor.pos.speed(vtemp);
+			if (Gears.bUseChocksParking && vtemp.length() == 0.0D && !(actor instanceof TypeSeaPlane)) brakeShoe = true;
 			break;
 
 		case 48: // '0'  // DELAY
@@ -2063,9 +2068,9 @@ public class Maneuver extends AIFlightModel {
 		case 21: // '\025'  // WAYPOINT
 			AP.setWayPoint(true);
 			// TODO: DBW AI Mod Edits
-//            if (getAltitude() < super.AP.way.curr().z() - 100F && (super.actor instanceof TypeSupersonic)) {
-//                super.CT.ElevatorControl += 0.025F;
-//            }
+//			if (getAltitude() < super.AP.way.curr().z() - 100F && (super.actor instanceof TypeSupersonic)) {
+//				super.CT.ElevatorControl += 0.025F;
+//			}
 			if (mn_time > 300F) pop();
 			if (isTick(256, 0) && !actor.isTaskComplete() && (AP.way.isLast() && AP.getWayPointDistance() < 1500F || AP.way.isLanding())) World.onTaskComplete(actor);
 			if (((Aircraft) actor).aircIndex() == 0 && !isReadyToReturn()) {
@@ -4540,7 +4545,7 @@ public class Maneuver extends AIFlightModel {
 
 	void OutCT(int i) {
 		if (actor != Main3D.cur3D().viewActor()) return;
-		TextScr.output(i + 5, 45, "Alt(MSL)  " + (int) Loc.z + "    " + (CT.BrakeControl <= 0.0F ? "" : "BRAKE"));
+		TextScr.output(i + 5, 45, "Alt(MSL)  " + (int) Loc.z + "	" + (CT.BrakeControl <= 0.0F ? "" : "BRAKE"));
 		TextScr.output(i + 5, 65, "Alt(AGL)  " + (int) (Loc.z - Engine.land().HQ_Air(Loc.x, Loc.y)));
 		int j = 0;
 		TextScr.output(i + 225, 140, "---ENGINES (" + EI.getNum() + ")---" + EI.engines[j].getStage());
@@ -4574,9 +4579,9 @@ public class Maneuver extends AIFlightModel {
 		TextScr.output(i + 7, 245, " ====== " + ManString.name(program[1]));
 		TextScr.output(i + 7, 265, "  ===== " + ManString.name(program[2]));
 		TextScr.output(i + 7, 285, "   ==== " + ManString.name(program[3]));
-		TextScr.output(i + 7, 305, "    === " + ManString.name(program[4]));
-		TextScr.output(i + 7, 325, "     == " + ManString.name(program[5]));
-		TextScr.output(i + 7, 345, "      = " + ManString.name(program[6]) + "  " + (target != null ? "TARGET  " : "") + (target_ground != null ? "GROUND  " : "") + (danger != null ? "DANGER  " : ""));
+		TextScr.output(i + 7, 305, "	=== " + ManString.name(program[4]));
+		TextScr.output(i + 7, 325, "	 == " + ManString.name(program[5]));
+		TextScr.output(i + 7, 345, "	  = " + ManString.name(program[6]) + "  " + (target != null ? "TARGET  " : "") + (target_ground != null ? "GROUND  " : "") + (danger != null ? "DANGER  " : ""));
 		if (target != null && Actor.isValid(target.actor)) TextScr.output(i + 1, 365, " AT: (" + target.actor.name() + ") " + ((target.actor instanceof Aircraft) ? "" : target.actor.getClass().getName()));
 		if (target_ground != null && Actor.isValid(target_ground)) TextScr.output(i + 1, 385, " GT: (" + target_ground.name() + ") ..." + target_ground.getClass().getName());
 		TextScr.output(400, 500, "+");
