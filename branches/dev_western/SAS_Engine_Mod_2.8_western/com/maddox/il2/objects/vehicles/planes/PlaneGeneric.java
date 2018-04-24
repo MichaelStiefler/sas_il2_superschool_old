@@ -555,6 +555,7 @@ public abstract class PlaneGeneric extends ActorHMesh
                 gWheelRadius[2] = dtemp * 0.5D;
                 bLoadedWheelRadius = true;
             }
+            bSeaPlane = (sectfile.get("Aircraft", "Seaplane", 0) == 1);
         }
 
         // By western, load each chock values from FM when exist
@@ -815,7 +816,7 @@ label0:
             mesh().makeAllMaterialsDarker(0.32F, 0.45F);
 
         // +++ By western, display Chock 3d models
-        if(bUseChocksParking && !(this instanceof Plane.GenericSpawnPointPlane))
+        if(bUseChocksParking && !(this instanceof Plane.GenericSpawnPointPlane) && !bSeaPlane)
         {
             if(flag)
             {
@@ -1312,6 +1313,7 @@ label0:
 
     //By western, Chock functions
     private boolean bChocks = false;
+    private boolean bSeaPlane = false;
     static private boolean bShowChocks = false;
     static public boolean bUseChocksParking = false;
     private ActorSimpleMesh ChL = null;

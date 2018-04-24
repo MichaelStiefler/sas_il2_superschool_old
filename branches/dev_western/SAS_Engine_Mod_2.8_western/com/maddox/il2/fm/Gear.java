@@ -2164,6 +2164,9 @@ public class Gear {
 		//By PAL, if not activated, don't do anything.
 		if (!bShowChocks) return;
 
+		//By western, if SeaPlane variants, don't do anything.
+		if (FM.actor instanceof TypeSeaPlane) return;
+
 		//By PAL, with Catapultit shouldn't show any Chock
 		if (isCatapult) {
 			//By PAL and western, this will destroy Chock
@@ -2287,11 +2290,14 @@ public class Gear {
 						locL.add(tempP);
 					}
 					locL.add(FM.actor.pos.getCurrent());
-					ChL = getChockMesh();
-					ChL.pos.setBase(FM.actor, hookl, false);
-					ChL.pos.setAbs(locL);
-					ChL.pos.changeHookToRel();
-					ChL.pos.resetAsBase();
+					if(!Engine.cur.land.isWater(locL.getX(), locL.getY()))
+					{
+						ChL = getChockMesh();
+						ChL.pos.setBase(FM.actor, hookl, false);
+						ChL.pos.setAbs(locL);
+						ChL.pos.changeHookToRel();
+						ChL.pos.resetAsBase();
+					}
 				}
 			}
 			catch (Exception e){}
@@ -2327,11 +2333,14 @@ public class Gear {
 						locR.add(tempP);
 					}
 					locR.add(FM.actor.pos.getCurrent());
-					ChR = getChockMesh();
-					ChR.pos.setBase(FM.actor, hookr, false);
-					ChR.pos.setAbs(locR);
-					ChR.pos.changeHookToRel();
-					ChR.pos.resetAsBase();
+					if(!Engine.cur.land.isWater(locR.getX(), locR.getY()))
+					{
+						ChR = getChockMesh();
+						ChR.pos.setBase(FM.actor, hookr, false);
+						ChR.pos.setAbs(locR);
+						ChR.pos.changeHookToRel();
+						ChR.pos.resetAsBase();
+					}
 				}
 			}
 			catch (Exception e){}
@@ -2363,11 +2372,14 @@ public class Gear {
 							locC.add(tempP);
 						}
 						locC.add(FM.actor.pos.getCurrent());
-						ChC = new ActorSimpleMesh(gChockCMeshName);
-						ChC.pos.setBase(FM.actor, hookc, false);
-						ChC.pos.setAbs(locC);
-						ChC.pos.changeHookToRel();
-						ChC.pos.resetAsBase();
+						if(!Engine.cur.land.isWater(locC.getX(), locC.getY()))
+						{
+							ChC = new ActorSimpleMesh(gChockCMeshName);
+							ChC.pos.setBase(FM.actor, hookc, false);
+							ChC.pos.setAbs(locC);
+							ChC.pos.changeHookToRel();
+							ChC.pos.resetAsBase();
+						}
 					}
 				}
 				catch (Exception e){}
