@@ -1,6 +1,6 @@
 // Source File Name: GuidedMissileUtils.java
 // Author:	Storebror
-// Edit:	western0221 on 07th/Mar/2018
+// Edit:	western0221 on 24th/Apr/2018
 package com.maddox.il2.objects.weapons;
 
 import java.util.ArrayList;
@@ -134,9 +134,9 @@ public class GuidedMissileUtils {
 
 	public static float angleBetween(Actor actorFrom, Point3d pointTo) {
 		float angleRetVal = 180.1F;
-		// if (!((actorFrom instanceof Aircraft) && (actorTo instanceof Aircraft))) {
-		// return angleRetVal;
-		// }
+		if (actorFrom == null || !Actor.isValid(actorFrom) || pointTo == null) {
+			return angleRetVal;
+		}
 		double angleDoubleTemp = 0.0D;
 		Loc angleActorLoc = new Loc();
 		Point3d angleActorPos = new Point3d();
@@ -1737,7 +1737,7 @@ public class GuidedMissileUtils {
 
 	public float Pk(Actor actorFrom, Point3d pointTo) {
 		float fPkRet = 0.0F;
-		if (!(this.missileOwner instanceof Aircraft)) {
+		if (!(this.missileOwner instanceof Aircraft) || pointTo == null) {
 			return fPkRet;
 		}
 		this.generateMissileDataForPk();

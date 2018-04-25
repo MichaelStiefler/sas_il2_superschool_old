@@ -1,6 +1,6 @@
 // Source File Name: Missile.java
 // Author:	Storebror
-// Edit:	western0221 on 16th/Feb/2018
+// Edit:	western0221 on 24th/Apr/2018
 package com.maddox.il2.objects.weapons;
 
 import java.io.IOException;
@@ -228,7 +228,7 @@ public class Missile extends Rocket {
 	}
 
 	public int chooseShotpoint(BulletProperties bulletproperties) {
-		return -1;
+		return (this instanceof MissileInterceptable) ? 0 : -1;
 	}
 
 	private boolean computeFuzeState() {
@@ -749,6 +749,9 @@ public class Missile extends Rocket {
 		this.setMissileVictim();
 		this.myActiveMissile = new ActiveMissile(this, this.getOwner(), this.victim, (Actor.isValid(this.getOwner())) ? this.getOwner().getArmy() : Integer.MAX_VALUE, (Actor.isValid(this.victim)) ? this.victim.getArmy() : Integer.MAX_VALUE, this.ownerIsAI());
 		GuidedMissileUtils.addActiveMissile(this.myActiveMissile);
+
+		if ( bLogDetail && Actor.isValid(this) ) System.out.println("Missile(" + actorString(this) + ") - doStart(f), recording new ActiveMissile(): getOwner()=" + actorString(this.getOwner()) + "; " + (Actor.isValid(this.getOwner()) ? ("Valid getOwner().getArmy()=" + getOwner().getArmy()) : "Invalid"));
+
 //		if (this.victim == null)
 //			System.out.println("Owner " + this.getOwner().hashCode() + " Active Missile added for victim=null");
 //		else
@@ -862,6 +865,8 @@ public class Missile extends Rocket {
 	}
 
 	public int getArmy() {
+		if ( bLogDetail && Actor.isValid(this) ) System.out.println("Missile(" + actorString(this) + ") - getArmy(): getOwner()=" + actorString(this.getOwner()) + "; " + (Actor.isValid(this.getOwner()) ? ("Valid getOwner().getArmy()=" + getOwner().getArmy()) : "Invalid"));
+
 		if (Actor.isValid(this.getOwner())) return this.getOwner().getArmy();
 		return 0;
 	}
@@ -1958,6 +1963,21 @@ public class Missile extends Rocket {
 	  	}
 	}
 
+	private static String actorString(Actor actor) {
+		if(!Actor.isValid(actor)) return "(InvalidActor)";
+		String s;
+		try {
+			s = actor.getClass().getName();
+		} catch(Exception e) {
+			System.out.println("Missile - actorString(): Cannot resolve class name of " + actor);
+			return "(NoClassnameActor)";
+		}
+		int i = s.lastIndexOf('.');
+		String strSection = s.substring(i + 1);
+		strSection =  strSection + '@' + Integer.toHexString(actor.hashCode());
+		return strSection;
+	}
+
 	protected static final int DETECTOR_TYPE_MANUAL = 0;
 	protected static final int DETECTOR_TYPE_INFRARED = 1;
 	protected static final int DETECTOR_TYPE_RADAR_HOMING = 2;
@@ -2094,4 +2114,6 @@ public class Missile extends Rocket {
 	private Actor laserOwner = null;
 
 	private boolean bRealisticRadarSelect = false;
+
+	private static boolean bLogDetail = false;
 }

@@ -1,3 +1,5 @@
+/*Modified TankGeneric class for the SAS Engine Mod*/
+/*By western, Add radar search and missile interceptable flags about firing enemies on 24th/Apr./2018*/
 package com.maddox.il2.objects.vehicles.artillery;
 
 import java.io.IOException;
@@ -51,6 +53,7 @@ import com.maddox.il2.objects.humans.Soldier;
 import com.maddox.il2.objects.vehicles.tanks.TankGeneric;
 import com.maddox.il2.objects.weapons.CannonMidrangeGeneric;
 import com.maddox.il2.objects.weapons.Gun;
+import com.maddox.il2.objects.weapons.MissileInterceptable;
 import com.maddox.rts.Message;
 import com.maddox.rts.NetChannel;
 import com.maddox.rts.NetChannelInStream;
@@ -235,6 +238,16 @@ public abstract class ArtilleryGeneric extends ActorHMesh implements MsgCollisio
 				float f_15_ = sectfile.get(string, "FireFastTargets" + string_13_, -9865.345F);
 				if (f_15_ != -9865.345F) artilleryproperties.gunProperties[i_11_].ATTACK_FAST_TARGETS = f_15_ > 0.5F;
 				else if (string_8_.equals("Tank")) artilleryproperties.gunProperties[i_11_].ATTACK_FAST_TARGETS = false;
+                // +++ By western, expanded for flags Intercept missiles and Radar use
+                artilleryproperties.gunProperties[i_11_].ATTACK_MISSILES = false;
+                float f_22_ = sectfile.get(string, "InterceptMissiles", -9865.345F);
+                if(f_22_ != -9865.345F)
+                    artilleryproperties.gunProperties[i_11_].ATTACK_MISSILES = f_22_ > 0.5F;
+                artilleryproperties.gunProperties[i_11_].USE_RADAR_SEARCH = false;
+                float f_23_ = sectfile.get(string, "RadarSearch", -9865.345F);
+                if(f_23_ != -9865.345F)
+                    artilleryproperties.gunProperties[i_11_].USE_RADAR_SEARCH = f_23_ > 0.5F;
+                // ---
 				artilleryproperties.gunProperties[i_11_].ATTACK_MAX_DISTANCE = getF(sectfile, string, "AttackMaxDistance" + string_13_, 6.0F, 60000.0F);
 				artilleryproperties.gunProperties[i_11_].ATTACK_MAX_RADIUS = getF(sectfile, string, "AttackMaxRadius" + string_13_, 6.0F, 60000.0F);
 				artilleryproperties.gunProperties[i_11_].ATTACK_MAX_HEIGHT = getF(sectfile, string, "AttackMaxHeight" + string_13_, 6.0F, 18000.0F);
@@ -531,6 +544,10 @@ public abstract class ArtilleryGeneric extends ActorHMesh implements MsgCollisio
 		public float ATTACK_MAX_RADIUS;
 		public float ATTACK_MAX_HEIGHT;
 		public boolean ATTACK_FAST_TARGETS;
+        // +++ By western, expanded for flags Intercept missiles and Radar use
+        public boolean ATTACK_MISSILES;
+        public boolean USE_RADAR_SEARCH;
+        // ---
 		public float FAST_TARGETS_ANGLE_ERROR;
 		public AnglesRange HEAD_YAW_RANGE;
 		public float HEAD_STD_YAW;
@@ -1141,9 +1158,10 @@ public abstract class ArtilleryGeneric extends ActorHMesh implements MsgCollisio
 				return null;
 			}
 		}
-		if (prop.gunProperties[i].ATTACK_FAST_TARGETS) NearestEnemies.set(prop.gunProperties[i].WEAPONS_MASK);
+		if (prop.gunProperties[i].ATTACK_FAST_TARGETS) NearestEnemies.set(prop.gunProperties[i].WEAPONS_MASK, prop.gunProperties[i].ATTACK_MISSILES, prop.gunProperties[i].USE_RADAR_SEARCH);
 		else NearestEnemies.set(prop.gunProperties[i].WEAPONS_MASK, -9999.9F, KmHourToMSec(100.0F));
-		if (!isSpotterAcGuided) actor = NearestEnemies.getAFoundEnemy(pos.getAbsPoint(), (double) AttackMaxRadius(aim), getArmy());
+		if (!isSpotterAcGuided) actor = NearestEnemies.getAFoundEnemy(pos.getAbsPoint(), (double) AttackMaxRadius(aim), getArmy(), (Actor) this);
+        if ( bLogDetail ) System.out.println("ArtilleryGeneric(" + actorString(this) + ") - findEnemy(aim) - GetNearestEnemy()=" + actorString(actor));
 		if (actor == null) return null;
 		if (!(actor instanceof Prey)) {
 			System.out.println("arti: nearest enemies: non-Prey");
@@ -1157,17 +1175,22 @@ public abstract class ArtilleryGeneric extends ActorHMesh implements MsgCollisio
 		BulletProperties bulletproperties = null;
 		if (arms[i].gun.prop != null) {
 			int i_52_ = ((Prey) actor).chooseBulletType(arms[i].gun.prop.bullet);
+            if ( bLogDetail ) System.out.println("ArtilleryGeneric(" + actorString(this) + ") - findEnemy(aim) - chooseBulletType i_52_=" + i_52_);
 			if (i_52_ < 0) return null;
 			bulletproperties = arms[i].gun.prop.bullet[i_52_];
 		}
 		int i_53_ = ((Prey) actor).chooseShotpoint(bulletproperties);
+        if ( bLogDetail ) System.out.println("ArtilleryGeneric(" + actorString(this) + ") - findEnemy(aim) - chooseShotpoint i_53_=" + i_53_);
 		if (i_53_ < 0) return null;
 		arms[i].aim.shotpoint_idx = i_53_;
 		double d = distance(actor);
 		d /= (double) AttackMaxDistance(aim);
 		aim.setAimingError(World.Rnd().nextFloat(-1.0F, 1.0F), World.Rnd().nextFloat(-1.0F, 1.0F), 0.0F);
-		if (actor instanceof Aircraft) d *= 0.25;
+		if ((actor instanceof Aircraft) || (actor instanceof MissileInterceptable)) d *= 0.25;
 		aim.scaleAimingError((float) ((double) spotterCorrection * d));
+
+        if( bLogDetail ) System.out.println("ArtilleryGeneric(" + actorString(this) + ") - findEnemy(aim) - return actor=" + actorString(actor));
+
 		return actor;
 	}
 
@@ -1383,6 +1406,32 @@ public abstract class ArtilleryGeneric extends ActorHMesh implements MsgCollisio
 		}
 	}
 
+    public boolean getHasRadar()
+    {
+        boolean bHasRadar = false;
+
+        for(int i = 0; i < arms.length; i++)
+            if(prop.gunProperties[i].USE_RADAR_SEARCH)
+                bHasRadar = true;
+
+        return bHasRadar;
+    }
+
+    private static String actorString(Actor actor) {
+        if(!Actor.isValid(actor)) return "(InvalidActor)";
+        String s;
+        try {
+            s = actor.getClass().getName();
+        } catch(Exception e) {
+            System.out.println("Missile - actorString(): Cannot resolve class name of " + actor);
+            return "(NoClassnameActor)";
+        }
+        int i = s.lastIndexOf('.');
+        String strSection = s.substring(i + 1);
+        strSection =  strSection + '@' + Integer.toHexString(actor.hashCode());
+        return strSection;
+    }
+
 //	/* synthetic */static long access$610(ArtilleryGeneric artillerygeneric) {
 //		return artillerygeneric.respawnDelay--;
 //	}
@@ -1390,4 +1439,6 @@ public abstract class ArtilleryGeneric extends ActorHMesh implements MsgCollisio
 //	/* synthetic */static long access$804(ArtilleryGeneric artillerygeneric) {
 //		return ++artillerygeneric.hideTmr;
 //	}
+
+    private static boolean bLogDetail = false;
 }
