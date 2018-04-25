@@ -1913,7 +1913,7 @@ public class Controls {
 	}
 
 	public void toggleBombReleaseMode() {
-		if (isTrainStillDropping() || (getWeaponCount(3) <= 1 && World.cur().diffCur.Limited_Ammo))
+		if (isTrainStillDropping() || (getWeaponCount(3) < 1 && World.cur().diffCur.Limited_Ammo))
 			return;
 		if (bHasBombSelect && getNumberOfValidBombClass() == 1) {
 			for (curBombSelected = 0; curBombSelected < bombClassNumber; curBombSelected++)

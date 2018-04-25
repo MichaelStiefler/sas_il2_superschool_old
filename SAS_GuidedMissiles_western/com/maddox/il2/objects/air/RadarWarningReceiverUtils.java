@@ -1,6 +1,6 @@
 // Source File Name: RadarWarningReceiverUtils.java
 // Author:		   western0221
-// Last Modified by: western0221 on 31st/Mar/2018
+// Last Modified by: western0221 on 25th/Apr/2018
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.*;
@@ -12,6 +12,8 @@ import com.maddox.il2.game.*;
 import com.maddox.il2.net.NetMissionTrack;
 import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.il2.objects.sounds.Voice;
+import com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric;
+import com.maddox.il2.objects.vehicles.tanks.TankGeneric;
 import com.maddox.il2.objects.weapons.GuidedMissileUtils;
 import com.maddox.il2.objects.weapons.Missile;
 import com.maddox.il2.objects.weapons.MissileSAM;
@@ -680,7 +682,7 @@ public class RadarWarningReceiverUtils {
 		for(int j = 0; j < this.RHmissiles.size(); j++)
 		{
 			tempRrwrdata = (RWRdata)this.RHmissiles.get(j);
-			if(tempRrwrdata.lastDetectTime != Time.current()) {
+			if(tempRrwrdata.lastDetectTime != Time.current() && Actor.isValid(tempRrwrdata.actor)) {
 				tempRrwrdata.distance = distanceBetween(this.rwrOwner, tempRrwrdata.actor);
 				this.RHmissiles.set(j, tempRrwrdata);
 			}
@@ -689,7 +691,7 @@ public class RadarWarningReceiverUtils {
 		for(int j = 0; j < this.IRmissiles.size(); j++)
 		{
 			tempRrwrdata = (RWRdata)this.IRmissiles.get(j);
-			if(tempRrwrdata.lastDetectTime != Time.current()) {
+			if(tempRrwrdata.lastDetectTime != Time.current() && Actor.isValid(tempRrwrdata.actor)) {
 				tempRrwrdata.distance = distanceBetween(this.rwrOwner, tempRrwrdata.actor);
 				this.IRmissiles.set(j, tempRrwrdata);
 			}
@@ -968,7 +970,7 @@ public class RadarWarningReceiverUtils {
 		for(int j = 0; j < this.radarsLock.size(); j++)
 		{
 			tempRrwrdata = (RWRdata)this.radarsLock.get(j);
-			if(tempRrwrdata.lastDetectTime != Time.current()) {
+			if(tempRrwrdata.lastDetectTime != Time.current() && Actor.isValid(tempRrwrdata.actor)) {
 				tempRrwrdata.distance = distanceBetween(this.rwrOwner, tempRrwrdata.actor);
 				this.radarsLock.set(j, tempRrwrdata);
 			}
@@ -1007,7 +1009,7 @@ public class RadarWarningReceiverUtils {
 		for(int j = 0; j < this.radars.size(); j++)
 		{
 			tempRrwrdata = (RWRdata)this.radars.get(j);
-			if(tempRrwrdata.lastDetectTime != Time.current()) {
+			if(tempRrwrdata.lastDetectTime != Time.current() && Actor.isValid(tempRrwrdata.actor)) {
 				tempRrwrdata.distance = distanceBetween(this.rwrOwner, tempRrwrdata.actor);
 				this.radars.set(j, tempRrwrdata);
 			}
@@ -1023,7 +1025,7 @@ public class RadarWarningReceiverUtils {
 		if((this.iDebugLogLevel & 8) > 0)
 		{
 			for(int ii = 0; ii < this.radars.size(); ii++)
-				System.out.println(sDebugPlaneName + "RWRUtils: this.radars(" + ii + "): " + actorString(((RWRdata)this.radarsLock.get(ii)).actor) + ", d=" + ((RWRdata)this.radarsLock.get(ii)).distance + ", lDT=" + ((RWRdata)this.radarsLock.get(ii)).lastDetectTime);
+				System.out.println(sDebugPlaneName + "RWRUtils: this.radars(" + ii + "): " + actorString(((RWRdata)this.radars.get(ii)).actor) + ", d=" + ((RWRdata)this.radars.get(ii)).distance + ", lDT=" + ((RWRdata)this.radars.get(ii)).lastDetectTime);
 		}
 
 		if(this.radars.size() > 0)
@@ -1045,11 +1047,15 @@ public class RadarWarningReceiverUtils {
 		if((this.iDebugLogLevel & 4) > 0)
 			System.out.println(sDebugPlaneName + "RWRUtils: entering recordRadarLocked(" + actorString(actor) + ")");
 
-		if(!(actor instanceof TypeGuidedMissileCarrier) || actor.getArmy() == this.rwrOwner.getArmy())
+		if(!((actor instanceof TypeGuidedMissileCarrier)
+             || ((actor instanceof ArtilleryGeneric) && ((ArtilleryGeneric)actor).getHasRadar()) || ((actor instanceof TankGeneric) && ((TankGeneric)actor).getHasRadar()))
+           || actor.getArmy() == this.rwrOwner.getArmy())
 			return;
-		GuidedMissileUtils gmu = ((TypeGuidedMissileCarrier)actor).getGuidedMissileUtils();
-		if(!(gmu.getDetectorType() == 2 || gmu.getDetectorType() == 3 ||gmu.getDetectorType() == 4))
-			return;
+		if(actor instanceof TypeGuidedMissileCarrier) {
+			GuidedMissileUtils gmu = ((TypeGuidedMissileCarrier)actor).getGuidedMissileUtils();
+			if(!(gmu.getDetectorType() == 2 || gmu.getDetectorType() == 3 ||gmu.getDetectorType() == 4))
+				return;
+		}
 
 		Point3d point3d = new Point3d();
 		this.rwrOwner.pos.getAbs(point3d);
@@ -1125,7 +1131,8 @@ public class RadarWarningReceiverUtils {
 
 		if(actor.getArmy() == this.rwrOwner.getArmy())
 			return;
-		if(!((actor instanceof TypeGuidedMissileCarrier) || (actor instanceof TypeRadar) || (actor instanceof TypeSemiRadar)))
+		if(!((actor instanceof TypeGuidedMissileCarrier) || (actor instanceof TypeRadar) || (actor instanceof TypeSemiRadar)
+            || ((actor instanceof ArtilleryGeneric) && ((ArtilleryGeneric)actor).getHasRadar()) || ((actor instanceof TankGeneric) && ((TankGeneric)actor).getHasRadar())))
 			return;
 
 		Point3d point3d = new Point3d();
@@ -1139,7 +1146,7 @@ public class RadarWarningReceiverUtils {
 		if(tempDistance > 0D) {
 			zDiff = actor.pos.getAbsPoint().z - this.FM.Loc.z;
 			elevDegree = Math.toDegrees(Math.atan(Math.abs(zDiff) / tempDistance));
-			if((this.iDebugLogLevel & 4) > 0)
+			if((this.iDebugLogLevel & 8) > 0)
 				System.out.println(sDebugPlaneName + "RWRUtils: " + actorString(actor) + " 's elevation=" + Math.floor(elevDegree * 1000D) * 0.001D + " deg.");
 			if(elevDegree > this.receiveElevationDegrees) return;
 		}

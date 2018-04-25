@@ -1,3 +1,5 @@
+/*Modified TankGeneric class for the SAS Engine Mod*/
+/*By western, Add radar search and missile interceptable flags about firing enemies on 24th/Apr./2018*/
 package com.maddox.il2.objects.vehicles.tanks;
 
 import java.io.IOException;
@@ -51,6 +53,7 @@ import com.maddox.il2.net.NetMissionTrack;
 import com.maddox.il2.objects.ObjectsLogLevel;
 import com.maddox.il2.objects.Statics;
 import com.maddox.il2.objects.air.Aircraft;
+import com.maddox.il2.objects.air.TypeRadarWarningReceiver;
 import com.maddox.il2.objects.bridges.BridgeSegment;
 import com.maddox.il2.objects.bridges.LongBridge;
 import com.maddox.il2.objects.effects.Explosions;
@@ -230,6 +233,16 @@ public abstract class TankGeneric extends ActorHMesh
                 float f1 = sectfile.get(s, "FireFastTargets", -9865.345F);
                 if(f1 != -9865.345F)
                     tankproperties.gunProperties[j].ATTACK_FAST_TARGETS = f1 > 0.5F;
+                // +++ By western, expanded for flags Intercept missiles and Radar use
+                tankproperties.gunProperties[j].ATTACK_MISSILES = false;
+                float f7 = sectfile.get(s, "InterceptMissiles", -9865.345F);
+                if(f7 != -9865.345F)
+                    tankproperties.gunProperties[j].ATTACK_MISSILES = f7 > 0.5F;
+                tankproperties.gunProperties[j].USE_RADAR_SEARCH = false;
+                float f8 = sectfile.get(s, "RadarSearch", -9865.345F);
+                if(f8 != -9865.345F)
+                    tankproperties.gunProperties[j].USE_RADAR_SEARCH = f8 > 0.5F;
+                // ---
                 tankproperties.gunProperties[j].ATTACK_MAX_DISTANCE = getF(sectfile, s, "AttackMaxDistance" + s4, 6F, 12000F);
                 tankproperties.gunProperties[j].ATTACK_MAX_RADIUS = getF(sectfile, s, "AttackMaxRadius" + s4, 6F, 12000F);
                 tankproperties.gunProperties[j].ATTACK_MAX_HEIGHT = getF(sectfile, s, "AttackMaxHeight" + s4, 6F, 12000F);
@@ -342,11 +355,11 @@ public abstract class TankGeneric extends ActorHMesh
                     i = j;
                 String s1 = s.substring(i + 1);
                 proper = LoadTankProperties(Statics.getTechnicsFile(), s1, class1);
-                
+
                 // TODO: +++ Modified by SAS~Storebror to avoid excessive logfile output in BAT
                 if (ObjectsLogLevel.getObjectsLogLevel() < ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL && proper == null) return;
                 // TODO: ---
-                
+
             }
             catch(Exception exception)
             {
@@ -782,6 +795,10 @@ public abstract class TankGeneric extends ActorHMesh
         public float ATTACK_MAX_RADIUS;
         public float ATTACK_MAX_HEIGHT;
         public boolean ATTACK_FAST_TARGETS;
+        // +++ By western, expanded for flags Intercept missiles and Radar use
+        public boolean ATTACK_MISSILES;
+        public boolean USE_RADAR_SEARCH;
+        // ---
         public float FAST_TARGETS_ANGLE_ERROR;
         public AnglesRange HEAD_YAW_RANGE;
         public float HEAD_STD_YAW;
@@ -1039,7 +1056,7 @@ public abstract class TankGeneric extends ActorHMesh
             Die(shot.initiator, false);
     }
 
-    public static boolean splintersKill(Explosion explosion, TableFunction2 tablefunction2, float f, float f1, ActorMesh actormesh, float f2, float f3, float f4, 
+    public static boolean splintersKill(Explosion explosion, TableFunction2 tablefunction2, float f, float f1, ActorMesh actormesh, float f2, float f3, float f4,
             float f5, float f6, float f7, float f8, float f9)
     {
         if(explosion.power <= 0.0F)
@@ -1072,13 +1089,13 @@ public abstract class TankGeneric extends ActorHMesh
         if(f13 < 1000F)
         {
             float f16 = 1.0F / f13;
-            while(k-- > 0) 
+            while(k-- > 0)
                 f15 += (1.0F - f15) * f16;
         }
         if(f14 < 1000F)
         {
             float f17 = 1.0F / f14;
-            while(j-- > 0) 
+            while(j-- > 0)
                 f15 += (1.0F - f15) * f17;
         }
         return f15 > 0.001F && f15 >= f1;
@@ -2095,7 +2112,7 @@ public abstract class TankGeneric extends ActorHMesh
     public void gunInMove(boolean flag, Aim aim)
     {
         int i = 0;
-        for (int j = 0; j < this.arms.length; j++) { 
+        for (int j = 0; j < this.arms.length; j++) {
             if(j >= arms.length)
                 break;
             if(aim.equals(arms[j].aim))
@@ -2158,7 +2175,10 @@ public abstract class TankGeneric extends ActorHMesh
         {
             if(((ChiefGround) (obj)).getCodeOfBridgeSegment(this) >= 0)
                 return null;
-            actor = ((ChiefGround) (obj)).GetNearestEnemy(pos.getAbsPoint(), AttackMaxDistance(aim), WeaponsMask(), prop.gunProperties[i].ATTACK_FAST_TARGETS ? -1F : KmHourToMSec(100F));
+            // By western, expanded for flags Intercept missiles and Radar use
+            actor = ((ChiefGround) (obj)).GetNearestEnemy(pos.getAbsPoint(), AttackMaxDistance(aim), WeaponsMask(), prop.gunProperties[i].ATTACK_FAST_TARGETS ? -1F : KmHourToMSec(100F), prop.gunProperties[i].ATTACK_MISSILES, prop.gunProperties[i].USE_RADAR_SEARCH, (Actor)this);
+
+            if( bLogDetail ) System.out.println("TankGeneric(" + actorString(this) + ") - findEnemy(aim) - GetNearestEnemy()=" + actorString(actor));
         }
         if(actor == null)
             return null;
@@ -2166,11 +2186,13 @@ public abstract class TankGeneric extends ActorHMesh
         if(arms[i].gun.prop != null)
         {
             int k = ((Prey)actor).chooseBulletType(arms[i].gun.prop.bullet);
+            if( bLogDetail ) System.out.println("TankGeneric(" + actorString(this) + ") - findEnemy(aim) - chooseBulletType k=" + k);
             if(k < 0)
                 return null;
             obj = arms[i].gun.prop.bullet[k];
         }
         int l = ((Prey)actor).chooseShotpoint(((BulletProperties) (obj)));
+        if( bLogDetail ) System.out.println("TankGeneric(" + actorString(this) + ") - findEnemy(aim) - chooseShotpoint l=" + l);
         if(l < 0)
         {
             return null;
@@ -2181,6 +2203,13 @@ public abstract class TankGeneric extends ActorHMesh
             d /= AttackMaxDistance(aim);
             aim.setAimingError(World.Rnd().nextFloat(-1F, 1.0F), World.Rnd().nextFloat(-1F, 1.0F), 0.0F);
             aim.scaleAimingError((float)(211.25999450683594D * d));
+
+            if( bLogDetail ) System.out.println("TankGeneric(" + actorString(this) + ") - findEnemy(aim) - return actor=" + actorString(actor));
+
+            // By western, Notice to the RadarWarningReceiver plane when Radar is used
+            if(prop.gunProperties[i].USE_RADAR_SEARCH && (actor instanceof TypeRadarWarningReceiver))
+                 ((TypeRadarWarningReceiver)actor).myRadarLockYou((Actor)this);
+
             return actor;
         }
     }
@@ -2426,6 +2455,32 @@ public abstract class TankGeneric extends ActorHMesh
         } while(true);
     }
 
+    public boolean getHasRadar()
+    {
+        boolean bHasRadar = false;
+
+        for(int i = 0; i < arms.length; i++)
+            if(prop.gunProperties[i].USE_RADAR_SEARCH)
+                bHasRadar = true;
+
+        return bHasRadar;
+    }
+
+    private static String actorString(Actor actor) {
+        if(!Actor.isValid(actor)) return "(InvalidActor)";
+        String s;
+        try {
+            s = actor.getClass().getName();
+        } catch(Exception e) {
+            System.out.println("Missile - actorString(): Cannot resolve class name of " + actor);
+            return "(NoClassnameActor)";
+        }
+        int i = s.lastIndexOf('.');
+        String strSection = s.substring(i + 1);
+        strSection =  strSection + '@' + Integer.toHexString(actor.hashCode());
+        return strSection;
+    }
+
     /*private*/ static float Thicknesses[] = null;
     /*private*/ static float Energies[] = null;
     /*private*/ static float NumShots_Thickness_Energy[][] = (float[][])null;
@@ -2462,32 +2517,5 @@ public abstract class TankGeneric extends ActorHMesh
     private static Vector3d tmpv = new Vector3d();
     private NetMsgFiltered outCommand;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    private static boolean bLogDetail = false;
 }
