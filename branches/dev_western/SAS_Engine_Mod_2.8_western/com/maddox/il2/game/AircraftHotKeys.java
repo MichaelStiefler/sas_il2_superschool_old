@@ -1,6 +1,7 @@
 /*Modified AircraftHotKeys class for the SAS Engine Mod*/
 
 //By PAL, changes on precission of methods (flaps, etc.), previous errors and bouncing on operation
+//By western, on 26th/Apr./2018, expanded for 8x Engines / Scheme8 aircrafts
 
 package com.maddox.il2.game;
 
@@ -139,7 +140,7 @@ public class AircraftHotKeys {
 	private boolean useSmartAxisForPower2;
 	private boolean useSmartAxisForPitch2;
 	private boolean bStab4all = false;
-    private static int max_drawspeed = -1;
+	private static int max_drawspeed = -1;
 
 				// TODO: ++ Added Code for importing 4.13.2m ++
 	protected static final int BOMB_RELEASE_MODE = 194;
@@ -733,8 +734,6 @@ public class AircraftHotKeys {
 		case 71: // 'G'
 		case 100: // 'd'
 		case 101: // 'e'
-		case 111: // 'o'
-		case 112: // 'p'
 		case 126: // '~'
 		default:
 			break;
@@ -949,10 +948,10 @@ public class AircraftHotKeys {
 				FM.CT.setActiveDoor(SIDE_DOOR);
 				if (FM.CT.cockpitDoorControl < 0.5F && FM.CT.getCockpitDoor() < 0.01F) {
 					FM.AS.setCockpitDoor(aircraft, 1);
-					HUD.log("Hatch Open");
+					HUD.log("HatchOpen");
 				} else if (FM.CT.cockpitDoorControl > 0.5F && FM.CT.getCockpitDoor() > 0.99F) {
 					FM.AS.setCockpitDoor(aircraft, 0);
-					HUD.log("Hatch Closed");
+					HUD.log("HatchClosed");
 				}
 			}
 			break;
@@ -1348,6 +1347,19 @@ public class AircraftHotKeys {
 			if (FM.Scheme == 0 || FM.Scheme == 1) return;
 			FM.EI.setCurControl(5, !FM.EI.getCurControl(5));
 			HUD.log("EngineSelect6" + (FM.EI.getCurControl(5) ? "" : "OFF"));
+			break;
+
+		// TODO: Next two cases added in to allow for toggling of engines 7 and 8
+		case 111:
+			if (FM.Scheme == 0 || FM.Scheme == 1) return;
+			FM.EI.setCurControl(6, !FM.EI.getCurControl(6));
+			HUD.log("EngineSelect7" + (FM.EI.getCurControl(6) ? "" : "OFF"));
+			break;
+
+		case 112:
+			if (FM.Scheme == 0 || FM.Scheme == 1) return;
+			FM.EI.setCurControl(7, !FM.EI.getCurControl(7));
+			HUD.log("EngineSelect8" + (FM.EI.getCurControl(7) ? "" : "OFF"));
 			break;
 
 		case 113: // 'q'
@@ -3260,14 +3272,13 @@ public class AircraftHotKeys {
 		HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "showPositionHint", "13") {
 
 			public void begin() {
-                if(max_drawspeed < 0)
-                {
-                    try{
-                        max_drawspeed = HUD.drawSpeedMax();
-                    }catch (NoSuchMethodError err) {
-                        max_drawspeed = 3;
-			        }
-                }
+				if(max_drawspeed < 0) {
+					try {
+						max_drawspeed = HUD.drawSpeedMax();
+					} catch (NoSuchMethodError err) {
+						max_drawspeed = 3;
+					}
+				}
 				HUD.setDrawSpeed((HUD.drawSpeed() + 1) % (max_drawspeed + 1));
 			}
 

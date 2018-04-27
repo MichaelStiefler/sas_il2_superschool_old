@@ -253,7 +253,8 @@ public class AircraftState {
 	private Eff3DActor astateNavLightsEffects[] = { null, null, null, null, null, null };
 	private LightPointActor astateNavLightsLights[] = { null, null, null, null, null, null };
 	private LightPointActor astateTankBurnLights[] = { null, null, null, null };
-	private LightPointActor astateEngineBurnLights[] = { null, null, null, null, null, null };
+	// By western, expanded astateEngineBurnLights[] from stock 6 to modded 8.
+	private LightPointActor astateEngineBurnLights[] = { null, null, null, null, null, null, null, null };
 	public Eff3DActor astateLandingLightEffects[] = { null, null, null, null };
 	private LightPointActor astateLandingLightLights[] = { null, null, null, null };
 	public String astateEffectChunks[] = { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null };

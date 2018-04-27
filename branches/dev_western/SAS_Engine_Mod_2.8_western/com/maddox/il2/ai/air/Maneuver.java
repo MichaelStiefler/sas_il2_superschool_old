@@ -52,6 +52,7 @@ import com.maddox.il2.objects.air.MXY_7;
 import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.air.SM79;
 import com.maddox.il2.objects.air.Scheme4;
+import com.maddox.il2.objects.air.Scheme8;
 import com.maddox.il2.objects.air.Swordfish;
 import com.maddox.il2.objects.air.TA_152C;
 import com.maddox.il2.objects.air.TA_183;
@@ -2121,7 +2122,7 @@ public class Maneuver extends AIFlightModel {
 					}
 				}
 			}
-			if (((actor instanceof TypeBomber) || (actor instanceof TypeTransport)) && AP.way.curr() != null && AP.way.curr().Action == 3 && (AP.way.curr().getTarget() == null || (actor instanceof Scheme4))) {
+			if (((actor instanceof TypeBomber) || (actor instanceof TypeTransport)) && AP.way.curr() != null && AP.way.curr().Action == 3 && (AP.way.curr().getTarget() == null || (actor instanceof Scheme4) || (actor instanceof Scheme8))) {
 				double d = Loc.z - World.land().HQ(Loc.x, Loc.y);
 				if (d < 0.0D) d = 0.0D;
 				if ((double) AP.getWayPointDistance() < (double) getSpeed() * Math.sqrt(d * 0.20386999845504761D) && !bombsOut) {

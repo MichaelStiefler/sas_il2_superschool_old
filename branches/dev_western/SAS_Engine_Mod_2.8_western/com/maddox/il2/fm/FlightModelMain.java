@@ -6,6 +6,7 @@
 /*By Storebror, FM log spam filter on 19th/Jan./2017*/
 /*By Storebror, fix DiffFM loading error on 18th/Apr./2017*/
 /*By western, new FM properties Vlanding and VtakeoffRot on 20th/Nov./2017*/
+/*By western, add Scheme=8 case for 8x engines aircrafts on 26th/Apr./2018*/
 package com.maddox.il2.fm;
 
 import java.io.BufferedWriter;
@@ -653,6 +654,7 @@ public class FlightModelMain extends FMMath {
 		case 4: // '\004'
 		case 5: // '\005'
 		case 7: // '\007'
+		case 8: // '\008'
 			float f4 = Length * 0.35F;
 			f4 *= f4;
 			float f14 = Length * 0.125F;
