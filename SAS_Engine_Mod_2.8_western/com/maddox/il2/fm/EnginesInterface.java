@@ -2,6 +2,7 @@
 /*Modified EnginesInterface class for the SAS Engine Mod*/
 
 /*By PAL, removed effect and reverted to stock, to implement Diagonal extra force in Catapult*/
+/*By western on 26th/Apr./2018, add 8x Engines decisions */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 package com.maddox.il2.fm;
@@ -387,11 +388,13 @@ public class EnginesInterface extends FMMath {
 	public int[] getSublist(int i, int j) {
 		int ai[] = null;
 		if (j == 1) switch (i) {
+		// note; "case 3" means 2x engines Fw 189 , instead of 3x engines
 		case 2: // '\002'
 		case 3: // '\003'
 			ai = (new int[] { 0 });
 			break;
 
+		// note; "case 6" means 3x engines Ju 52 or others , instead of 6x engines
 		case 6: // '\006'
 			ai = (new int[] { 0 });
 			break;
@@ -404,16 +407,24 @@ public class EnginesInterface extends FMMath {
 			ai = (new int[] { 0, 1 });
 			break;
 
+		// note; "case 7" means 6x engines Me323 , instead of 7x engines
 		case 7: // '\007'
 			ai = (new int[] { 0, 1, 2 });
 			break;
+
+		// By western, add 8x engines decision
+		case 8: // '\008'
+			ai = (new int[] { 0, 1, 2, 3 });
+			break;
 		}
 		else if (j == 2) switch (i) {
+		// note; "case 3" means 2x engines Fw 189 , instead of 3x engines
 		case 2: // '\002'
 		case 3: // '\003'
 			ai = (new int[] { 1 });
 			break;
 
+		// note; "case 6" means 3x engines Ju 52 or others , instead of 6x engines
 		case 6: // '\006'
 			ai = (new int[] { 2 });
 			break;
@@ -426,8 +437,14 @@ public class EnginesInterface extends FMMath {
 			ai = (new int[] { 3, 4 });
 			break;
 
+		// note; "case 7" means 6x engines Me323 , instead of 7x engines
 		case 7: // '\007'
 			ai = (new int[] { 3, 4, 5 });
+			break;
+
+		// By western, 8x engines decision
+		case 8: // '\008'
+			ai = (new int[] { 4, 5, 6, 7 });
 			break;
 		}
 		return ai;

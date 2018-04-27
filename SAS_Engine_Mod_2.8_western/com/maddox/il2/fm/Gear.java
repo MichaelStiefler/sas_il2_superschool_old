@@ -1483,6 +1483,7 @@ public class Gear {
 
 			case 4: // '\004'
 			case 5: // '\005'
+			case 8: // '\008'  // By western, add 8x engines case
 				((Aircraft) FM.actor).hitProp(i - 3, 0, Engine.actorLand());
 				break;
 
