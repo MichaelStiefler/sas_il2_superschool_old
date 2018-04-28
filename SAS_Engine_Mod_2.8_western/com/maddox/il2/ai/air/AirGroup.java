@@ -1132,20 +1132,20 @@ Label_3414:
                 maneuver.clear_stack();
                 switch (maneuver.Skill) {
                 case 0:
-                    ((RealFlightModel)maneuver).wingmanAttacks(1);
+                    ((Pilot)maneuver).wingmanAttacks(1);
                     break Label_3414;
                 case 1:
-                    ((RealFlightModel)maneuver).wingmanAttacks(1);
+                    ((Pilot)maneuver).wingmanAttacks(1);
                     break Label_3414;
                 case 2:
-                    ((RealFlightModel)maneuver).wingmanAttacks(1);
+                    ((Pilot)maneuver).wingmanAttacks(1);
                     break Label_3414;
                 case 3:
-                    ((RealFlightModel)maneuver).wingmanAttacks(1);
+                    ((Pilot)maneuver).wingmanAttacks(1);
                     break Label_3414;
                 default:
                     maneuver.followOffset.set(200.0D, 0.0D, 20.0D);
-                    ((RealFlightModel)maneuver).wingmanAttacks(1);
+                    ((Pilot)maneuver).wingmanAttacks(1);
                     break Label_3414;
                 }
             }
@@ -1235,10 +1235,10 @@ Label_3414:
                     }
                     else {
                         if (maneuver.target.actor instanceof TypeStormovik) {
-                            ((RealFlightModel)maneuver).attackStormoviks();
+                            ((Pilot)maneuver).attackStormoviks();
                             break;
                         }
-                        ((RealFlightModel)maneuver).attackBombers();
+                        ((Pilot)maneuver).attackBombers();
                         break;
                     }
                 }

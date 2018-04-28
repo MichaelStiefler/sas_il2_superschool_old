@@ -266,6 +266,55 @@ public class EnginesInterface extends FMMath {
 			engines[5].setVector(vector3f);
 			break;
 
+		case 8: // By western, added 8x engines
+			point3d.x = 0.25F * (af[0][0] + af[1][0] + af[2][0] + af[3][0]);
+			point3d.y = af[0][1];
+			point3d.z = 0.25F * (af[0][2] + af[1][2] + af[2][2] + af[3][2]);
+			engines[0].setPropPos(point3d);
+			point3d.y = 0.3333F * (2 * af[0][1] + af[1][1]);
+			engines[1].setPropPos(point3d);
+			point3d.y = 0.3333F * (af[0][1] + 2 * af[1][1]);
+			engines[2].setPropPos(point3d);
+			point3d.y = af[1][1];
+			engines[3].setPropPos(point3d);
+          
+			point3d.y = af[2][1];
+			engines[4].setPropPos(point3d);
+			point3d.y = 0.3333F * (2 * af[2][1] + af[3][1]);
+			engines[5].setPropPos(point3d);
+			point3d.y = 0.3333F * (af[2][1] + 2* af[3][1]);
+			engines[6].setPropPos(point3d);
+			point3d.y = af[3][1];
+			engines[7].setPropPos(point3d);
+          
+			point3d.x = 0.125F * (af1[0][0] + af1[1][0] + af1[2][0] + af1[3][0] + af1[4][0] + af1[5][0] + af1[6][0] + af1[7][0]);
+			point3d.y = af1[0][1];
+			point3d.z = 0.125F * (af1[0][2] + af1[1][2] + af1[2][2] + af1[3][2] + af1[4][2] + af1[5][2] + af1[6][2] + af1[7][2]);
+			engines[0].setPos(point3d);
+			point3d.y = af1[1][1];
+			engines[1].setPos(point3d);
+			point3d.y = af1[2][1];
+			engines[2].setPos(point3d);
+			point3d.y = af1[3][1];
+			engines[3].setPos(point3d);
+			point3d.y = af1[4][1];
+			engines[4].setPos(point3d);
+			point3d.y = af1[5][1];
+			engines[5].setPos(point3d);
+			point3d.y = af1[6][1];
+			engines[6].setPos(point3d);
+			point3d.y = af1[7][1];
+			engines[7].setPos(point3d);
+			engines[0].setVector(vector3f);
+			engines[1].setVector(vector3f);
+			engines[2].setVector(vector3f);
+			engines[3].setVector(vector3f);
+			engines[4].setVector(vector3f);
+			engines[5].setVector(vector3f);
+			engines[6].setVector(vector3f);
+			engines[7].setVector(vector3f);
+			break;
+
 		default:
 			throw new RuntimeException("UNIDENTIFIED ENGINE DISTRIBUTION.");
 		}
