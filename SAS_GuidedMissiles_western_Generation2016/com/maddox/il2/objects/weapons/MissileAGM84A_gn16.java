@@ -22,6 +22,7 @@ public class MissileAGM84A_gn16 extends Missile implements MissileInterceptable 
 	static {
 		Class class1 = MissileAGM84A_gn16.class;
 		Property.set(class1, "mesh", "3do/arms/AGM84ADJ_gn16/mono.sim");
+		Property.set(class1, "meshDamage", "3do/arms/AGM84ADJ_gn16/mono_d.sim");
 		Property.set(class1, "sprite", (String) null);
 		Property.set(class1, "flame", (String) null);
 		Property.set(class1, "smoke", "3DO/Effects/Aircraft/BlackMediumWtTSPD.eff");
