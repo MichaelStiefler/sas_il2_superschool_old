@@ -2370,8 +2370,8 @@ public class F_18C extends F_18
             a_lweaponslot[39] = new Aircraft._WeaponSlot(6, "RocketGunNull", 1);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "4xMk82+1xMk83+Zuni+2xAIM9+1xDt";
-            a_lweaponslot = GenerateCenterTankConfig(byte0);
+            s = "4xMk82+1xMk83+Zuni+2xAIM9";
+            a_lweaponslot = GenerateCenterPylonConfig(byte0);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(9, "Pylon_BRU33A_CVER_gn16", 1);
             a_lweaponslot[7] = new Aircraft._WeaponSlot(9, "Pylon_BRU33A_CVER_gn16", 1);
             a_lweaponslot[8] = new Aircraft._WeaponSlot(9, "Pylon_BRU33A_CVER_gn16", 1);
