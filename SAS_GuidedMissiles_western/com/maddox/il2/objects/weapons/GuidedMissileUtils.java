@@ -1,6 +1,6 @@
 // Source File Name: GuidedMissileUtils.java
 // Author:	Storebror
-// Edit:	western0221 on 24th/Apr/2018
+// Edit:	western0221 on 07th/May/2018
 package com.maddox.il2.objects.weapons;
 
 import java.util.ArrayList;
@@ -41,6 +41,7 @@ import com.maddox.il2.objects.bridges.BridgeSegment;
 import com.maddox.il2.objects.bridges.LongBridge;
 import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.il2.objects.sounds.Voice;
+import com.maddox.il2.objects.vehicles.artillery.RocketryRocket;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 import com.maddox.sas1946.il2.util.Conversion;
@@ -369,7 +370,7 @@ public class GuidedMissileUtils {
 		// if ((!Actor.isValid(this.trgtAI)) || (!(this.trgtAI instanceof Aircraft))) return;
 		// this.setMissileTarget(this.trgtAI);
 		if ((targetType & Missile.TARGET_AIR) != 0) {
-			if (Actor.isValid(this.trgtAI) && ((this.trgtAI instanceof Aircraft) || (this.trgtAI instanceof MissileInterceptable))) {
+			if (Actor.isValid(this.trgtAI) && ((this.trgtAI instanceof Aircraft) || (this.trgtAI instanceof com.maddox.il2.objects.vehicles.artillery.RocketryRocket) || (this.trgtAI instanceof MissileInterceptable))) {
 				this.setMissileTarget(this.trgtAI);
 				this.trgtPk = this.getMissilePk();
 			} else {
@@ -649,6 +650,8 @@ public class GuidedMissileUtils {
 	}
 
 	private int engineHeatSpreadType(Actor theActor) {
+		if (theActor instanceof com.maddox.il2.objects.vehicles.artillery.RocketryRocket) return HEAT_SPREAD_AFT;
+		if (theActor instanceof MissileInterceptable) return HEAT_SPREAD_AFT;
 		if (!(theActor instanceof Aircraft)) return HEAT_SPREAD_360;
 		EnginesInterface checkEI = ((FlightModelMain) (((SndAircraft) (theActor)).FM)).EI;
 		int iRetVal = HEAT_SPREAD_NONE;
@@ -1001,7 +1004,7 @@ public class GuidedMissileUtils {
 			}
 			else {
 				Actor theTarget1 = ((TypeSemiRadar) actor).getSemiActiveRadarLockedActor();
-				if ((theTarget1 instanceof Aircraft) || (theTarget1 instanceof MissileInterceptable)) {
+				if ((theTarget1 instanceof Aircraft) || (theTarget1 instanceof com.maddox.il2.objects.vehicles.artillery.RocketryRocket) || (theTarget1 instanceof MissileInterceptable)) {
 					targetDistance = distanceBetween(actor, theTarget1);
 					if (targetDistance > maxDistance) {
 						return null;
@@ -1015,7 +1018,7 @@ public class GuidedMissileUtils {
 					if (theTarget1 instanceof Aircraft) {
 						Mass theM = ((FlightModelMain) (((SndAircraft) (theTarget1)).FM)).M;
 						fACMass = theM.getFullMass();
-					} else if (theTarget1 instanceof MissileInterceptable) {
+					} else if ((theTarget1 instanceof com.maddox.il2.objects.vehicles.artillery.RocketryRocket) || (theTarget1 instanceof MissileInterceptable)) {
 						fACMass = Property.floatValue(theTarget1.getClass(), "massa", 1000F);
 					}
 					targetBait = fACMass / targetAngle / (float) (targetDistance * targetDistance);
@@ -1042,7 +1045,7 @@ public class GuidedMissileUtils {
 			int k = list.size();
 			for (int i1 = 0; i1 < k; i1++) {
 				Actor theTarget1 = (Actor) list.get(i1);
-				if ((theTarget1 instanceof Aircraft) || (theTarget1 instanceof MissileInterceptable)) {
+				if ((theTarget1 instanceof Aircraft) || (theTarget1 instanceof com.maddox.il2.objects.vehicles.artillery.RocketryRocket) || (theTarget1 instanceof MissileInterceptable)) {
 					targetDistance = distanceBetween(actor, theTarget1);
 					if (targetDistance > maxDistance) {
 						continue;
@@ -1082,7 +1085,7 @@ public class GuidedMissileUtils {
 									maxEngineForceEngineNo = i;
 								}
 							}
-						} else if (theTarget1 instanceof MissileInterceptable) {
+						} else if ((theTarget1 instanceof com.maddox.il2.objects.vehicles.artillery.RocketryRocket) || (theTarget1 instanceof MissileInterceptable)) {
 							maxEngineForce = Property.floatValue(theTarget1.getClass(), "force", 1000F);
 						}
 						targetBait = maxEngineForce / targetAngle / (float) (targetDistance * targetDistance);
@@ -1117,7 +1120,7 @@ public class GuidedMissileUtils {
 						if (theTarget1 instanceof Aircraft) {
 							Mass theM = ((FlightModelMain) (((SndAircraft) (theTarget1)).FM)).M;
 							fACMass = theM.getFullMass();
-						} else if (theTarget1 instanceof MissileInterceptable) {
+						} else if ((theTarget1 instanceof com.maddox.il2.objects.vehicles.artillery.RocketryRocket) || (theTarget1 instanceof MissileInterceptable)) {
 							fACMass = Property.floatValue(theTarget1.getClass(), "massa", 1000F);
 						}
 						targetBait = fACMass / targetAngle / (float) (targetDistance * targetDistance);
@@ -2118,7 +2121,7 @@ public class GuidedMissileUtils {
 			if ((World.cur().diffCur.Limited_Ammo) || (ownerAircraft != World.getPlayerAircraft())) {
 				 if (((RocketGun) this.rocketsList.get(0)).bullets() == 1) {
 					this.rocketsList.remove(0);
-				 }
+				}
 			}
 			if (ownerAircraft != World.getPlayerAircraft()) {
 				Voice.speakAttackByRockets(ownerAircraft);

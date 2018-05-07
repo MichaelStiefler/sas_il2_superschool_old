@@ -1,17 +1,22 @@
 // Source File Name: Missile.java
 // Author:	Storebror
-// Edit:	western0221 on 24th/Apr/2018
+// Edit:	western0221 on 07th/May/2018
 package com.maddox.il2.objects.weapons;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.ArrayList;
 
 import com.maddox.JGP.Color3f;
 import com.maddox.JGP.Geom;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Point3f;
 import com.maddox.JGP.Vector3d;
+import com.maddox.il2.ai.Explosion;
+import com.maddox.il2.ai.MsgExplosionListener;
+import com.maddox.il2.ai.MsgShotListener;
+import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.Actor;
@@ -33,6 +38,7 @@ import com.maddox.il2.objects.air.TypeFighter;
 import com.maddox.il2.objects.air.TypeGuidedMissileCarrier;
 import com.maddox.il2.objects.air.TypeLaserDesignator;
 import com.maddox.il2.objects.air.TypeSemiRadar;
+import com.maddox.il2.objects.vehicles.artillery.RocketryRocket;
 import com.maddox.rts.Message;
 import com.maddox.rts.NetChannel;
 import com.maddox.rts.NetMsgFiltered;
@@ -46,7 +52,8 @@ import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 import com.maddox.sas1946.il2.util.TrueRandom;
 
-public class Missile extends Rocket {
+public class Missile extends Rocket
+	implements MsgExplosionListener, MsgShotListener {
 
 	class Master extends ActorNet implements NetUpdate {
 
@@ -245,8 +252,15 @@ public class Missile extends Rocket {
 				if (f2Future < 0F) {
 					f2Future = 0F;
 				}
-				if (((this.victim instanceof Aircraft) || (this.victim instanceof MissileInterceptable)) && (f2Future > f2 * 5F || f2 > this.previousDistance) && this.previousDistance != 1000F) {
+				if (((this.victim instanceof Aircraft) || (this.victim instanceof com.maddox.il2.objects.vehicles.artillery.RocketryRocket) || (this.victim instanceof MissileInterceptable)) && (f2Future > f2 * 5F || f2 > this.previousDistance) && this.previousDistance != 1000F) {
 					if ( f2 > 0F && f2 < this.missileProximityFuzeRadius) {
+						if ( bLogDetail ) {
+							ArrayList lst = new ArrayList();
+							Point3d point3d = new Point3d();
+							this.pos.getAbs(point3d);
+							Engine.collideEnv().getSphere(lst, point3d, this.missileProximityFuzeRadius * 2F);
+							System.out.println("Missile(" + actorString(this) + ") - entering doExplosionAir(); - f2=" + f2 + " < FuzeRadius=" + this.missileProximityFuzeRadius + " , lst.size()=" + lst.size() + " , lst=" + lst);
+						}
 						// Time.setPause(true); // Test detonation distance!
 						// HUD.log("MD:" + twoPlaces.format(f2) + "/" + twoPlaces.format(f2Future) + "/" + twoPlaces.format(previousDistance));
 						this.doExplosionAir();
@@ -280,6 +294,7 @@ public class Missile extends Rocket {
 		float missileSpeed = (float) this.getSpeed(null);
 		if (this.getFailState() == FAIL_TYPE_ENGINE) {
 			this.rocketMotorOperationTime = 0.0F;
+			this.rocketMotorSustainedOperationTime = 0.0F;
 		}
 		this.pos.getAbs(this.missilePoint3d, this.missileOrient);
 		this.missileOrient.wrap();
@@ -448,15 +463,23 @@ public class Missile extends Rocket {
 				}
 			}
 		} else if (this.getFailState() == FAIL_TYPE_MIRROR) {
-			if (TrueRandom.nextFloat() < 0.5F) {
-				this.deltaAzimuth = turnStepMax;
+			if (!this.bMirrorValueSet || RndB(0.02F)) {
+				if (RndB(0.5F)) {
+					this.deltaAzimuth = turnStepMax;
+				} else {
+					this.deltaAzimuth = -turnStepMax;
+				}
+				if (RndB(0.5F)) {
+					this.deltaTangage = turnStepMax;
+				} else {
+					this.deltaTangage = -turnStepMax;
+				}
+				this.bMirrorValueSet = true;
+				this.mirrorAzimuth = this.deltaAzimuth;
+				this.mirrorTangage = this.deltaTangage;
 			} else {
-				this.deltaAzimuth = -turnStepMax;
-			}
-			if (TrueRandom.nextFloat() < 0.5F) {
-				this.deltaTangage = turnStepMax;
-			} else {
-				this.deltaTangage = -turnStepMax;
+				if (RndB(0.9F)) this.deltaAzimuth = this.mirrorAzimuth;
+				if (RndB(0.9F)) this.deltaTangage = this.mirrorTangage;
 			}
 		} else if (this.getFailState() == FAIL_TYPE_CONTROL_BLOCKED) {
 			this.deltaAzimuth = this.oldDeltaAzimuth;
@@ -750,8 +773,7 @@ public class Missile extends Rocket {
 		this.myActiveMissile = new ActiveMissile(this, this.getOwner(), this.victim, (Actor.isValid(this.getOwner())) ? this.getOwner().getArmy() : Integer.MAX_VALUE, (Actor.isValid(this.victim)) ? this.victim.getArmy() : Integer.MAX_VALUE, this.ownerIsAI());
 		GuidedMissileUtils.addActiveMissile(this.myActiveMissile);
 
-		if ( bLogDetail && Actor.isValid(this) ) System.out.println("Missile(" + actorString(this) + ") - doStart(f), recording new ActiveMissile(): getOwner()=" + actorString(this.getOwner()) + "; " + (Actor.isValid(this.getOwner()) ? ("Valid getOwner().getArmy()=" + getOwner().getArmy()) : "Invalid"));
-
+		if ( bLogDetail && Actor.isValid(this) ) System.out.println("Missile(" + actorString(this) + ") - doStart(f), recording new ActiveMissile(): getOwner()=" + actorString(this.getOwner()) + "; " + (Actor.isValid(this.getOwner()) ? ("Valid getOwner().getArmy()=" + getOwner().getArmy()) : "Invalid") + " - collisionR()=" + this.mesh().collisionR() + " , visibilityR()=" + this.mesh().visibilityR());
 //		if (this.victim == null)
 //			System.out.println("Owner " + this.getOwner().hashCode() + " Active Missile added for victim=null");
 //		else
@@ -881,10 +903,10 @@ public class Missile extends Rocket {
 		}
 		if (this.failState == FAIL_TYPE_ELECTRONICS) {
 			float fRand = TrueRandom.nextFloat();
-			if (fRand < 0.01) return FAIL_TYPE_WARHEAD;
-			if (fRand < 0.02) return FAIL_TYPE_REFLEX;
-			if (fRand < 0.2) return FAIL_TYPE_MIRROR;
-			if (fRand < 0.5) return FAIL_TYPE_CONTROL_BLOCKED;
+			if (fRand < 0.01F) return FAIL_TYPE_WARHEAD;
+			if (fRand < 0.02F) return FAIL_TYPE_REFLEX;
+			if (fRand < 0.2F) return FAIL_TYPE_MIRROR;
+			if (fRand < 0.5F) return FAIL_TYPE_CONTROL_BLOCKED;
 			return FAIL_TYPE_IVAN;
 		}
 		return this.failState;
@@ -968,6 +990,7 @@ public class Missile extends Rocket {
 		this.simFlameSustain = Property.stringValue(localClass, "flameSustain", null);
 		this.effSmokeTrail = Property.stringValue(localClass, "smokeTrail", null);
 		this.mshFly = Property.stringValue(localClass, "meshFly", null);
+		this.mshDamage = Property.stringValue(localClass, "meshDamage", null);
 		if (this.mshFly != null)
 			this.waitingMeshFly = true;
 		this.mshSustain = Property.stringValue(localClass, "meshSustain", null);
@@ -998,6 +1021,27 @@ public class Missile extends Rocket {
 		// When proximityFuzeRadius = 0F set, means no Proximity Fuze. So, working as Contact Fuze or Time Fuze (reaching timeLife).
 
 		this.bRealisticRadarSelect = Config.cur.ini.get("Mods", "RealisticRadarSelect", 0) != 0;
+
+		if (this instanceof MissileInterceptable) {
+			// damage parameters borrowing from House.class -- Body=FuelSmall
+			this.damage_MAT_TYPE = MAT_STEEL;
+			this.damage_EXPL_TYPE = 0;
+			this.damage_EFF_BODY_MATERIAL = 2;
+			this.damage_PANZER = 0.001F;
+			this.damage_MIN_TNT = 0.2F * (this.damage_PANZER / 0.002F);
+			this.damage_MAX_TNT = this.damage_MIN_TNT * 1.7F;
+			this.damage_PROBAB_DEATH_WHEN_EXPLOSION = 0.04F;  // make 4x bigger from 0.01F of house -- Body=FuelSmall
+			this.flags &= 0xffffffdf;  // make moving collide enabled
+		} else {
+			// almost Immortal
+			this.damage_MAT_TYPE = MAT_BRICK;
+			this.damage_EXPL_TYPE = 4;
+			this.damage_EFF_BODY_MATERIAL = 4;
+			this.damage_PANZER = 50F;
+			this.damage_MIN_TNT = 300F * (this.damage_PANZER / 0.48F);
+			this.damage_MAX_TNT = this.damage_MIN_TNT * 1.7F;
+			this.damage_PROBAB_DEATH_WHEN_EXPLOSION = 0.001F;
+		}
 	}
 
 	private int getNumExhausts() {
@@ -1505,7 +1549,7 @@ public class Missile extends Rocket {
 
 	public void startEngineDone() {
 		this.releaseTime = Time.current();
-	   	// TODO: For RWR and intercept
+		// TODO: For RWR and intercept
 		// "MissileInterceptable" is also recorded as a target,
 		// able to shoot down by AAMs or SAMs.
 		// Other missiles are recorded only as missiles,
@@ -1629,11 +1673,15 @@ public class Missile extends Rocket {
 		if (this.getOwner() == World.getPlayerAircraft()) {
 			World.cur().scoreCounter.rocketsFire += 1;
 		}
-		if (!Config.isUSE_RENDER()) return;
-
-		if (this.engineDelayTime <= 0L) {
-			this.startEngine();
+		if (!Config.isUSE_RENDER()) {
+			if (this.engineDelayTime <= 0L)
+				this.bRocketFiring = true;
+			return;
 		}
+
+		if (this.engineDelayTime <= 0L)
+			this.startEngine();
+
 		this.light = new LightPointActor(new LightPointWorld(), new Point3d());
 		this.light.light.setColor((Color3f) Property.value(localClass, "emitColor", new Color3f(1.0F, 1.0F, 0.5F)));
 		this.light.light.setEmit(Property.floatValue(localClass, "emitMax", 1.0F), Property.floatValue(localClass, "emitLen", 50.0F));
@@ -1947,24 +1995,227 @@ public class Missile extends Rocket {
 		int lockType = ((TypeGuidedMissileCarrier) getOwner()).getGuidedMissileUtils().getDetectorType();
 //		Random random = new Random();
 		int lockTime = TrueRandom.nextInt((int)flareLockTime + 1000); //  World.rnd().nextInt((int) (flareLockTime + 1000));
-	  	double flareDistance = 0.0D;
-//	  	double victim1Distance = 0.0D;
-	  	int counterMeasureSize = theCountermeasures.size();
-	  	for (int counterMeasureIndex = 0; counterMeasureIndex < counterMeasureSize; counterMeasureIndex++) {
-	  		Actor flarechaff = (Actor) theCountermeasures.get(counterMeasureIndex);
-	  		flareDistance = GuidedMissileUtils.distanceBetween(this, flarechaff);
-//	  		victim1Distance = GuidedMissileUtils.distanceBetween(this, victim);
-	  		if (lockType == DETECTOR_TYPE_INFRARED && flarechaff instanceof RocketFlare && flareLockTime < lockTime && flareDistance < 200D && (double) (GuidedMissileUtils.angleActorBetween(victim, this)) > 30)
-	  			this.victim = flarechaff;
+		double flareDistance = 0.0D;
+//		double victim1Distance = 0.0D;
+		int counterMeasureSize = theCountermeasures.size();
+		for (int counterMeasureIndex = 0; counterMeasureIndex < counterMeasureSize; counterMeasureIndex++) {
+			Actor flarechaff = (Actor) theCountermeasures.get(counterMeasureIndex);
+			flareDistance = GuidedMissileUtils.distanceBetween(this, flarechaff);
+//			victim1Distance = GuidedMissileUtils.distanceBetween(this, victim);
+			if (lockType == DETECTOR_TYPE_INFRARED && flarechaff instanceof RocketFlare && flareLockTime < lockTime && flareDistance < 200D && (double) (GuidedMissileUtils.angleActorBetween(victim, this)) > 30)
+				this.victim = flarechaff;
 			else if ((lockType == DETECTOR_TYPE_RADAR_HOMING || lockType == DETECTOR_TYPE_RADAR_BEAMRIDING || lockType == DETECTOR_TYPE_RADAR_TRACK_VIA_MISSILE) && flarechaff instanceof RocketChaff && flareLockTime < lockTime && flareDistance < 500D && (double) (GuidedMissileUtils.angleActorBetween(victim, this)) > 30)
-	  			this.victim = flarechaff;
+				this.victim = flarechaff;
 			else if (lockType == DETECTOR_TYPE_IMAGE_IR && flarechaff instanceof RocketFlare && flareLockTime < lockTime && flareDistance < 500D && (double) (GuidedMissileUtils.angleActorBetween(victim, this)) > 30 && TrueRandom.nextFloat() < 0.1F)
-	  			this.victim = flarechaff;
-	  	}
+				this.victim = flarechaff;
+		}
+	}
+
+	private static final void InitTablesOfEnergyToKill() {
+		PenetrateEnergyToKill = new float[4][][];
+		PenetrateThickness = new float[4][];
+		PenetrateThickness[0] = (new float[] { 0.025F, 0.15F });
+		PenetrateEnergyToKill[0] = (new float[][] {
+			new float[] {  23400F, 131400F,  252000F },
+			new float[] { 131400F, 369000F, 1224000F }
+		});
+		PenetrateThickness[1] = (new float[] { 0.12F, 0.24F });
+		PenetrateEnergyToKill[1] = (new float[][] {
+			new float[] { 131400F,  252000F, 3295500F },
+			new float[] { 369000F, 3295500F, 5120000F }
+		});
+		PenetrateThickness[2] = (new float[] { 0.002F, 0.008F });
+		PenetrateEnergyToKill[2] = (new float[][] {
+			new float[] {  511.225F,  2453.88F, 23400F },
+			new float[] { 2453.88F,  10140F,	23400F }
+		});
+		PenetrateThickness[3] = (new float[] { 0.025F, 0.15F });
+		PenetrateEnergyToKill[3] = (new float[][] {
+			new float[] {  23400F, 131400F,  252000F },
+			new float[] { 131400F, 369000F, 1224000F }
+		});
+		for (int i = 0; i < 4; i++) {
+			if ((double)Math.abs(PenetrateThickness[i][0] - PenetrateThickness[i][1]) < 0.001D)
+				internalerrror(1);
+			for (int j = 0; j <= 1; j++) {
+				float af[] = PenetrateEnergyToKill[i][j];
+				if ((double)(af[1] - af[0]) < 0.001D || (double)(af[2] - af[1]) < 0.001D)
+					internalerrror(2);
+			}
+
+			float f = Math.min(PenetrateEnergyToKill[i][0][0], PenetrateEnergyToKill[i][1][0]);
+			float f1 = Math.max(PenetrateEnergyToKill[i][0][2], PenetrateEnergyToKill[i][1][2]);
+			for (int k = 0; k <= 100; k++) {
+				float f2 = f + ((f1 - f) * (float)k) / 100F;
+				float f3 = ComputeProbabOfPenetrateKill(i, 0, f2);
+				float f4 = ComputeProbabOfPenetrateKill(i, 1, f2);
+				if (f3 < f4) {
+					System.out.println(i + " i,e0,e1,e:" + k + " " + f + " " + f1 + " " + f2 + " prob0,1: " + f3 + " " + f4);
+					internalerrror(3);
+				}
+			}
+
+		}
+
+	}
+
+	private static final float ComputeProbabOfPenetrateKill(int i, int j, float f) {
+		float af[] = PenetrateEnergyToKill[i][j];
+		float f1;
+		float f2;
+		if (f < af[1]) {
+			if (f < af[0])
+				return 0.0F;
+			f1 = 0.2F / (af[1] - af[0]);
+			f2 = 0.1F - af[0] * f1;
+			if ( bLogDetailDamage ) System.out.println("ComputeProbabOfPenetrateKill(i="+ i + ", j=" + j + ", f=" + f + ") - if (f < af[1]) - f1=" + f1 + ", f2=" + f2);
+		} else {
+			if (f >= af[2])
+				return 1.0F;
+			f1 = 0.7F / (af[2] - af[1]);
+			f2 = 0.3F - af[1] * f1;
+			if ( bLogDetailDamage ) System.out.println("ComputeProbabOfPenetrateKill(i="+ i + ", j=" + j + ", f=" + f + ") - if (f => af[1]) - f1=" + f1 + ", f2=" + f2);
+		}
+		if ( bLogDetailDamage ) System.out.println("ComputeProbabOfPenetrateKill(i="+ i + ", j=" + j + ", f=" + f + ") - return=" + (f * f1 + f2));
+		return f * f1 + f2;
+	}
+
+	private final float ComputeProbabOfPenetrateKill(float f, int i) {
+		if (i <= 0) return 0.0F;
+
+		float f1 = ComputeProbabOfPenetrateKill(this.damage_MAT_TYPE, 0, f);
+		float f2 = ComputeProbabOfPenetrateKill(this.damage_MAT_TYPE, 1, f);
+		float af[] = PenetrateThickness[this.damage_MAT_TYPE];
+		float f3 = (f2 - f1) / (af[1] - af[0]);
+		float f4 = f1 - af[0] * f3;
+		float f5 = this.damage_PANZER * f3 + f4;
+
+		if (f5 < 0.1F) f5 = 0.0F;
+		else if (f5 >= 1.0F) f5 = 1.0F;
+		else if (i > 1) f5 = 1.0F - (float)Math.pow(1.0F - f5, i);
+
+		if ( bLogDetailDamage ) System.out.println("ComputeProbabOfPenetrateKill(f=" + f + " ,i=" + i + ") - f1=" + f1 + ", f2=" + f2 + ", f3=" + f3 + ", f4=" + f4 + ", return=f5=" + f5);
+		return f5;
+	}
+
+	public void msgShot(Shot shot) {
+		if ( bLogDetailDamage ) System.out.println("Missile(" + actorString(this) + ") - msgShot(){} - shot.power=" + shot.power);
+		shot.bodyMaterial = this.damage_EFF_BODY_MATERIAL;
+		if (!isAlive()) return;
+		if (shot.power <= 0.0F) return;
+
+		if (this.damage_MAT_TYPE == MAT_FLESH) {
+			if (shot.powerType == 1) {
+				die(shot.initiator, true);
+				return;
+			}
+			if (shot.v.length() < 20D) {
+				return;
+			} else {
+				die(shot.initiator, true);
+				return;
+			}
+		}
+		if (shot.powerType == 1) {
+			if (this.damage_MAT_TYPE != MAT_STEEL) return;
+			float f = shot.power * RndF(0.75F, 1.15F);
+			float f2 = 0.256F * (float)Math.sqrt(Math.sqrt(f));
+			if (this.damage_PANZER > f2) {
+				return;
+			} else {
+				die(shot.initiator, true);
+				return;
+			}
+		}
+		float f1 = ComputeProbabOfPenetrateKill(shot.power, 1);
+		if (!RndB(f1)) {
+			return;
+		} else {
+			die(shot.initiator, true);
+			return;
+		}
+	}
+
+	public void msgExplosion(Explosion explosion) {
+		if ( bLogDetailDamage ) System.out.println("Missile(" + actorString(this) + ") - msgExplosion(){} - explosion.power=" + explosion.power + " - receivedPower=" + explosion.receivedPower(this) + " - powerType=" + explosion.powerType);
+		if (!isAlive()) return;
+		if (explosion.power <= 0.0F) return;
+
+		if (this.damage_MAT_TYPE == MAT_FLESH) {
+			if (Explosion.killable(this, explosion.receivedTNT_1meter(this), 0.005F, 0.1F, 0.0F))
+				die(explosion.initiator, true);
+			return;
+		}
+		Explosion _tmp = explosion;
+		if (explosion.powerType == 1) {
+			float af[] = new float[6];
+			mesh().getBoundBox(af);
+			pos.getAbs(ppp);
+			ppp.x = (ppp.x - (double)af[0]) + (double)(af[3] - af[0]);
+			ppp.y = (ppp.y - (double)af[1]) + (double)(af[4] - af[1]);
+			ppp.z = (ppp.z - (double)af[2]) + (double)(af[5] - af[2]);
+			float af1[] = new float[2];
+			explosion.computeSplintersHit(ppp, mesh().collisionR(), 0.7F, af1);
+			float f = 0.015F * af1[1] * af1[1] * 0.5F;
+			float f1 = ComputeProbabOfPenetrateKill(f, (int)(af1[0] + 0.5F));
+			if ( bLogDetailDamage ) System.out.println("msgExplosion(){} - if(powerType == 1) - af1[0]=" + af1[0] + " , af1[1]=" + af1[1] + " , ProbabOfKill=" + f1);
+			if (RndB(f1))
+				die(explosion.initiator, true);
+			return;
+		}
+		if (explosion.powerType == 0) {
+			if (Explosion.killable(this, explosion.receivedPower(this), this.damage_MIN_TNT, this.damage_MAX_TNT, this.damage_PROBAB_DEATH_WHEN_EXPLOSION))
+				die(explosion.initiator, true);
+			return;
+		}
+		if (this.damage_MAT_TYPE == MAT_BRICK) {
+			return;
+		} else {
+			die(explosion.initiator, true);
+			return;
+		}
+	}
+
+	private void die(Actor actor, boolean flag) {
+		if ( bLogDetailDamage ) System.out.println("Missile(" + actorString(this) + ") - die(actor=" + actorString(actor) + ", flag=" + flag + "){}");
+		if (!isAlive()) return;
+		this.timeToFailure = 1000L;
+		if (RndB(0.04F)) this.failState = FAIL_TYPE_WARHEAD;
+		else if (Time.current() - this.startTime < this.rocketMotorOperationTime + this.rocketMotorSustainedOperationTime) {
+			if (RndB(0.25F)) this.failState = FAIL_TYPE_ENGINE;
+			else if (this.failState == FAIL_TYPE_NONE) {
+				if (RndB(0.7F)) this.failState = FAIL_TYPE_MIRROR;
+				else this.failState = FAIL_TYPE_CONTROL_BLOCKED;
+			}
+		}
+		else if (this.failState == FAIL_TYPE_NONE || this.failState == FAIL_TYPE_ENGINE) {
+			if (RndB(0.7F)) this.failState = FAIL_TYPE_MIRROR;
+			else this.failState = FAIL_TYPE_CONTROL_BLOCKED;
+		}
+		if (this.mshDamage != null)
+			setMesh(MeshShared.get(this.mshDamage));
+
+		if ( bLogDetailDamage ) System.out.println("Missile(" + actorString(this) + ") - die() - new failState=" + this.failState);
+		if ( bLogDetailDamage ) System.out.println("die() - old Yaw=" + this.missileOrient.getYaw() + " , old Pitch=" + this.missileOrient.getPitch());
+		this.missileOrient.setYPR(this.missileOrient.getYaw() + RndF(-5.0F, 5.0F), this.missileOrient.getPitch() + RndF(-5.0F, 5.0F), this.getRoll());
+		if ( bLogDetailDamage ) System.out.println("die() - new Yaw=" + this.missileOrient.getYaw() + " , new Pitch=" + this.missileOrient.getPitch());
+	}
+
+	private static final boolean RndB(float f) {
+		return TrueRandom.nextFloat(0.0F, 1.0F) < f;
+	}
+
+	private static final float RndF(float f, float f1) {
+		return TrueRandom.nextFloat(f, f1);
+	}
+
+	private static final void internalerrror(int i) {
+		System.out.println("*** Internal error #" + i + " in Missile damage database ***");
+		throw new RuntimeException("Can't initialize Missile");
 	}
 
 	private static String actorString(Actor actor) {
-		if(!Actor.isValid(actor)) return "(InvalidActor)";
+		if (!Actor.isValid(actor)) return "(InvalidActor)";
 		String s;
 		try {
 			s = actor.getClass().getName();
@@ -2084,6 +2335,7 @@ public class Missile extends Rocket {
 	private boolean waitingMeshFly = false;
 	private String mshSustain = null;
 	private boolean waitingMeshSustain = false;
+	private String mshDamage = null;
 	private long startTime = 0L;
 	private boolean startTimeIsSet = false;
 	private int iDetectorType = 0;
@@ -2115,5 +2367,41 @@ public class Missile extends Rocket {
 
 	private boolean bRealisticRadarSelect = false;
 
+	private static final int MAT_WOOD = 0;
+	private static final int MAT_BRICK = 1;
+	private static final int MAT_STEEL = 2;
+	private static final int MAT_FLESH = 3;
+	private static final int N_MAT_TYPES = 4;
+	private static float PenetrateEnergyToKill[][][] = (float[][][])null;
+	private static float PenetrateThickness[][] = (float[][])null;
+	private static final float KinEnergy_4 = 511.225F;
+	private static final float KinEnergy_7_62 = 2453.88F;
+	private static final float KinEnergy_12_7 = 10140F;
+	private static final float KinEnergy_20 = 23400F;
+	private static final float KinEnergy_37 = 131400F;
+	private static final float KinEnergy_45 = 252000F;
+	private static final float KinEnergy_50 = 369000F;
+	private static final float KinEnergy_75 = 1224000F;
+	private static final float KinEnergy_100 = 3295500F;
+	private static final float KinEnergy_203 = 5120000F;
+	private int damage_MAT_TYPE = -1;
+	private int damage_EXPL_TYPE = -1;
+	private int damage_EFF_BODY_MATERIAL = -1;
+	private float damage_PANZER = 0.001F;
+	private float damage_MIN_TNT = 0.07F;
+	private float damage_MAX_TNT = 0.071F;
+	private float damage_PROBAB_DEATH_WHEN_EXPLOSION = 0.4F;
+	private static Point3d ppp = new Point3d();
+	private boolean bMirrorValueSet = false;
+	private float mirrorAzimuth = 0.0F;
+	private float mirrorTangage = 0.0F;
+
+	static
+	{
+		InitTablesOfEnergyToKill();
+	}
+
 	private static boolean bLogDetail = false;
+	private static boolean bLogDetailDamage = false;
+
 }
