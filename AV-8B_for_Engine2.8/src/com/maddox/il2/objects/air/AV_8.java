@@ -116,6 +116,10 @@ public class AV_8 extends Scheme1
         vtolSlipX = 0;
         vtolSlipY = 0;
         antiColLight = new Eff3DActor[6];
+        oldAntiColLight = false;
+        isHydraulicAlive = false;
+        isGeneratorAlive = false;
+        isBatteryOn = false;
         laserSpotPos = new Point3d();
         laserTimer = -1L;
         semiradartarget = null;
@@ -806,6 +810,16 @@ public class AV_8 extends Scheme1
         FM.CT.bHasAntiColLights = true;
         FM.CT.bHasFormationLights = true;
         t1 = Time.current();
+        if(thisWeaponsName.endsWith("_NoGun"))
+        {
+            hierMesh().chunkVisible("CF1_D0", false);
+            hierMesh().chunkVisible("CF1nogun_D0", true);
+        }
+        else
+        {
+            hierMesh().chunkVisible("CF1_D0", true);
+            hierMesh().chunkVisible("CF1nogun_D0", false);
+        }
     }
 
     public void missionStarting()
@@ -935,6 +949,16 @@ public class AV_8 extends Scheme1
     public void rareAction(float f, boolean flag)
     {
         super.rareAction(f, flag);
+        if(FM.EI.engines[0].getRPM() > 200F || FM.getSpeedKMH() > 160F)
+        {
+            isGeneratorAlive = true;
+            isHydraulicAlive = true;
+        }
+        else
+        {
+            isGeneratorAlive = false;
+            isHydraulicAlive = false;
+        }
         if(FM.AS.isMaster() && Config.isUSE_RENDER())
         {
             Vector3d vector3d = FM.getVflow();
@@ -962,7 +986,7 @@ public class AV_8 extends Scheme1
             FLIR();
         if(!FLIR)
             FM.AP.setStabAltitude(false);
-        if(!FM.isPlayers())
+        if(!FM.isPlayers() && isGeneratorAlive)
             if(((Maneuver)super.FM).get_maneuver() == 21 && FM.AP.way.isLanding())
                 FM.CT.FlapsControlSwitch = 2;
             else if(((Maneuver)super.FM).get_maneuver() == 25 || ((Maneuver)super.FM).get_maneuver() == 26)
@@ -1771,7 +1795,12 @@ label0:
         if(FM.getSpeed() > 300F)
             FM.CT.cockpitDoorControl = 0.0F;
         for(int i = 1; i < 15; i++)
-            hierMesh().chunkSetAngles("Eflap" + i, 0.0F, 0.0F, Aircraft.cvt(150F - FM.getSpeedKMH(), -200F, 0.0F, 0.0F, 30F));
+        {
+            if(FM.EI.engines[0].getStage() > 0)
+                hierMesh().chunkSetAngles("Eflap" + i, 0.0F, 0.0F, Aircraft.cvt(150F - FM.getSpeedKMH(), -200F, 0.0F, 0.0F, 30F));
+            else
+                hierMesh().chunkSetAngles("Eflap" + i, 0.0F, 0.0F, 0.0F);
+        }
 
         computeflightmodel();
         formationlights();
@@ -1929,27 +1958,30 @@ label0:
 
     private void anticollights()
     {
-        if(FM.CT.bAntiColLights)
+        if(FM.CT.bAntiColLights && isGeneratorAlive && !oldAntiColLight)
         {
+            char postfix = (char)('A' + World.Rnd().nextInt(0, 5));
             for(int i = 0; i < 6; i++)
             {
                 if(antiColLight[i] == null)
                 {
                     try
                     {
-                        antiColLight[i] = Eff3DActor.New(this, findHook("_AntiColLight" + Integer.toString(i + 1)), new Loc(), 1.0F, "3DO/Effects/Fireworks/FlareRedFlash2.eff", -1.0F, false);
+                        antiColLight[i] = Eff3DActor.New(this, findHook("_AntiColLight" + Integer.toString(i + 1)), new Loc(), 1.0F, "3DO/Effects/Fireworks/FlareRedFlash2_" + String.valueOf(postfix) + ".eff", -1.0F, false);
                     } catch(Exception excp) {}
                 }
             }
+            oldAntiColLight = true;
         }
-        else
+        else if((!FM.CT.bAntiColLights || !isGeneratorAlive) && oldAntiColLight)
         {
             for(int i = 0; i < 6; i++)
-              if(antiColLight[i] != null)
-              {
-                  Eff3DActor.finish(antiColLight[i]);
-                  antiColLight[i] = null;
-              }
+                if(antiColLight[i] != null)
+                {
+                    Eff3DActor.finish(antiColLight[i]);
+                    antiColLight[i] = null;
+                }
+            oldAntiColLight = false;
         }
     }
 
@@ -2561,6 +2593,10 @@ label0:
     private int vtolSlipX;
     private int vtolSlipY;
     private Eff3DActor antiColLight[];
+    private boolean oldAntiColLight;
+    public boolean isHydraulicAlive;
+    public boolean isGeneratorAlive;
+    public boolean isBatteryOn;
 
     private Point3d laserSpotPos;
     private boolean bLaserOn = false;

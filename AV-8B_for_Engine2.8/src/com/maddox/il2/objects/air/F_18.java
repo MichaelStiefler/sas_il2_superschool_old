@@ -126,6 +126,7 @@ public class F_18 extends Scheme2
         bHasCenterTank = false;
         bHasWingTank = false;
         antiColLight = new Eff3DActor[6];
+        oldAntiColLight = false;
         isHydraulicAlive = false;
         isGeneratorAlive = false;
         isBatteryOn = false;
@@ -144,7 +145,7 @@ public class F_18 extends Scheme2
         groundradartarget = null;
         if(Config.cur.ini.get("Mods", "RWRTextStop", 0) > 0) bRWR_Show_Text_Warning = false;
         rwrUtils = new RadarWarningReceiverUtils(this, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning);
-//        rwrUtils = new RadarWarningReceiverUtils(this, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning, 4, "F18- ");
+//        rwrUtils = new RadarWarningReceiverUtils(this, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning, 12, "F18- ");
         iDebugLogLevel = 0;
     }
 
@@ -2278,20 +2279,22 @@ public class F_18 extends Scheme2
 
     private void anticollights()
     {
-        if(FM.CT.bAntiColLights && isGeneratorAlive)
+        if(FM.CT.bAntiColLights && isGeneratorAlive && !oldAntiColLight)
         {
+            char postfix = (char)('A' + World.Rnd().nextInt(0, 5));
             for(int i = 0; i < 6; i++)
             {
                 if(antiColLight[i] == null)
                 {
                     try
                     {
-                        antiColLight[i] = Eff3DActor.New(this, findHook("_AntiColLight" + Integer.toString(i + 1)), new Loc(), 1.0F, "3DO/Effects/Fireworks/FlareRedFlash2.eff", -1.0F, false);
+                        antiColLight[i] = Eff3DActor.New(this, findHook("_AntiColLight" + Integer.toString(i + 1)), new Loc(), 1.0F, "3DO/Effects/Fireworks/FlareRedFlash2_" + String.valueOf(postfix) + ".eff", -1.0F, false);
                     } catch(Exception excp) {}
                 }
             }
+            oldAntiColLight = true;
         }
-        else
+        else if((!FM.CT.bAntiColLights || !isGeneratorAlive) && oldAntiColLight)
         {
             for(int i = 0; i < 6; i++)
               if(antiColLight[i] != null)
@@ -2299,6 +2302,7 @@ public class F_18 extends Scheme2
                   Eff3DActor.finish(antiColLight[i]);
                   antiColLight[i] = null;
               }
+            oldAntiColLight = false;
         }
     }
 
@@ -2801,6 +2805,7 @@ public class F_18 extends Scheme2
     public boolean bHasWingTank;
     private float arrestor;
     private Eff3DActor antiColLight[];
+    private boolean oldAntiColLight;
     public boolean isHydraulicAlive;
     public boolean isGeneratorAlive;
     public boolean isBatteryOn;
