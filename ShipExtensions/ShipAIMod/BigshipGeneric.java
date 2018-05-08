@@ -18,6 +18,7 @@ import com.maddox.il2.objects.bridges.BridgeSegment;
 import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.il2.objects.weapons.CannonMidrangeGeneric;
 import com.maddox.il2.objects.weapons.Gun;
+import com.maddox.il2.objects.weapons.MissileInterceptable;
 import com.maddox.il2.objects.weapons.Rocket;
 import com.maddox.rts.*;
 import java.io.IOException;
@@ -298,6 +299,11 @@ public class BigshipGeneric extends ActorHMesh
                 float f1 = getF(sectfile, s, "FastTargetsAngleError", 0.0F, 45F);
                 shippartproperties.FAST_TARGETS_ANGLE_ERROR = f1;
             }
+            if(sectfile.exist(s, "InterceptMissiles"))
+            {
+                float f = getF(sectfile, s, "InterceptMissiles", 0.0F, 1.0F);
+                shippartproperties.ATTACK_MISSILES = (((int)(f + 0.5F)) > 0);
+            }
             if(sectfile.exist(s, "PreferSlowTarget"))
                 shippartproperties.PREFER_SLOW_TARGET = true;
             if(sectfile.exist(s, "HeadMinYaw"))
@@ -368,6 +374,11 @@ public class BigshipGeneric extends ActorHMesh
                 shippartproperties.ATTACK_FAST_TARGETS = (int)(f + 0.5F);
                 if(shippartproperties.ATTACK_FAST_TARGETS > 2)
                     shippartproperties.ATTACK_FAST_TARGETS = 2;
+            }
+            if(sectfile.exist(s, "InterceptMissiles"))
+            {
+                float f = getF(sectfile, s, "InterceptMissiles", 0.0F, 1.0F);
+                shippartproperties.ATTACK_MISSILES = (((int)(f + 0.5F)) > 0);
             }
             if(sectfile.exist(s, "TypeOfTarget"))
             {
@@ -595,6 +606,7 @@ public class BigshipGeneric extends ActorHMesh
                     shippartproperties.LauncherType = 0;
                     shippartproperties.ATTACK_FAST_TARGETS = 1;
                     shippartproperties.FAST_TARGETS_ANGLE_ERROR = 0.0F;
+                    shippartproperties.ATTACK_MISSILES = false;
                     shippartproperties.PREFER_SLOW_TARGET = false;
                     shippartproperties._HEAD_MIN_YAW = -1000F;
                     shippartproperties._HEAD_MAX_YAW = -1000F;
@@ -730,6 +742,7 @@ public class BigshipGeneric extends ActorHMesh
                     shippartproperties.LauncherType = 0;
                     shippartproperties.ATTACK_FAST_TARGETS = 1;
                     shippartproperties.FAST_TARGETS_ANGLE_ERROR = 0.0F;
+                    shippartproperties.ATTACK_MISSILES = false;
                     shippartproperties.PREFER_SLOW_TARGET = false;
                     shippartproperties._HEAD_MIN_YAW = -1000F;
                     shippartproperties._HEAD_MAX_YAW = -1000F;
@@ -1642,6 +1655,7 @@ public class BigshipGeneric extends ActorHMesh
         public float ATTACK_MIN_HEIGHT;
         public int ATTACK_FAST_TARGETS;
         public float FAST_TARGETS_ANGLE_ERROR;
+        public boolean ATTACK_MISSILES;
         public boolean PREFER_SLOW_TARGET;
         public AnglesRange HEAD_YAW_RANGE;
         public AnglesRange NOFIRE_YAW_RANGE;
@@ -1699,6 +1713,7 @@ public class BigshipGeneric extends ActorHMesh
             ATTACK_MIN_HEIGHT = 0.0F;
             ATTACK_FAST_TARGETS = 1;
             FAST_TARGETS_ANGLE_ERROR = 0.0F;
+            ATTACK_MISSILES = false;
             PREFER_SLOW_TARGET = false;
             HEAD_YAW_RANGE = new AnglesRange(-1F, 1.0F);
             NOFIRE_YAW_RANGE = new AnglesRange(-1F, 1.0F);
@@ -2006,7 +2021,7 @@ label0:
             p1.set(parts[k].pro.partOffs);
             loc.transform(p1);
             float f3 = parts[k].pro.partR;
-            float f4 = (float)(p1.distance(explosion.p) - (double)f3);
+            float f4 = (float)(p1.distance(explosion.p)) - f3;
             float f5 = 0.0F;
             if(explosion.p.z < 0.0D && parts[k].pro.baseChunkName.startsWith("Hull") && explosion.powerType == 0 && explosion.power > 2.0F)
                 f5 = explosion.receivedTNT_1meterWater(p1, f3, (float)explosion.p.z);
@@ -4525,7 +4540,7 @@ label0:
             actor = NearestEnemies.getAFoundEnemyInShoot(pos.getAbsPoint(), shippartproperties.ATTACK_MAX_RADIUS, getArmy(), shippartproperties.partOffs.z,
                     o, shippartproperties.HEAD_YAW_RANGE, shippartproperties.NOFIRE_YAW_RANGE, shippartproperties.NOFIRE_FLAG);
             if( actor == null ){
-                NearestEnemies.set(shippartproperties.WEAPONS_MASK, -9999.9F, 9999.9F, shippartproperties.ATTACK_MIN_HEIGHT, shippartproperties.ATTACK_MAX_HEIGHT);
+                NearestEnemies.set(shippartproperties.WEAPONS_MASK, -9999.9F, 9999.9F, shippartproperties.ATTACK_MIN_HEIGHT, shippartproperties.ATTACK_MAX_HEIGHT, shippartproperties.ATTACK_MISSILES, false);
                 actor = NearestEnemies.getAFoundEnemyInShoot(pos.getAbsPoint(), shippartproperties.ATTACK_MAX_RADIUS, getArmy(), shippartproperties.partOffs.z,
                         o, shippartproperties.HEAD_YAW_RANGE, shippartproperties.NOFIRE_YAW_RANGE, shippartproperties.NOFIRE_FLAG);
             }
@@ -4538,11 +4553,11 @@ label0:
                 break;
 
             case 1: // '\001'
-                NearestEnemies.set(shippartproperties.WEAPONS_MASK, -9999.9F, 9999.9F, shippartproperties.ATTACK_MIN_HEIGHT, shippartproperties.ATTACK_MAX_HEIGHT);
+                NearestEnemies.set(shippartproperties.WEAPONS_MASK, -9999.9F, 9999.9F, shippartproperties.ATTACK_MIN_HEIGHT, shippartproperties.ATTACK_MAX_HEIGHT, shippartproperties.ATTACK_MISSILES, false);
                 break;
 
             default:
-                NearestEnemies.set(shippartproperties.WEAPONS_MASK, KmHourToMSec(100F), 9999.9F, shippartproperties.ATTACK_MIN_HEIGHT, shippartproperties.ATTACK_MAX_HEIGHT);
+                NearestEnemies.set(shippartproperties.WEAPONS_MASK, KmHourToMSec(100F), 9999.9F, shippartproperties.ATTACK_MIN_HEIGHT, shippartproperties.ATTACK_MAX_HEIGHT, shippartproperties.ATTACK_MISSILES, false);
                 break;
             }
             if(shippartproperties.TypeOfTarget == 0)
@@ -4604,7 +4619,7 @@ label0:
             d /= AttackMaxDistance(aim);
             aim.setAimingError(World.Rnd().nextFloat(-1F, 1.0F), World.Rnd().nextFloat(-1F, 1.0F), 0.0F);
             aim.scaleAimingError(23.47F * (float)(4 - SKILL_IDX) * (float)(4 - SKILL_IDX));
-            if(actor instanceof Aircraft)
+            if((actor instanceof Aircraft) || (actor instanceof MissileInterceptable))
                 d *= 0.25D;
             aim.scaleAimingError((float)d);
             if(targetControl() > 0)
@@ -4730,17 +4745,17 @@ label0:
                 if(k >= 3 && d1 > (double)Mission.curCloudsHeight())
                     f8 *= 1.25F;
                 if(targetControl() > 0)
-                    if(actor instanceof Aircraft)
+                    if((actor instanceof Aircraft) || (actor instanceof MissileInterceptable))
                         f8 = (float)((double)f8 * 0.75D);
                     else
-                        f8 = (float)((double)f8 * 0.074999999999999997D);
+                        f8 = (float)((double)f8 * 0.075D);
                 f2 += f8;
             }
         }
-        if(actor instanceof Aircraft)
+        if((actor instanceof Aircraft) || (actor instanceof MissileInterceptable))
         {
             aim.scaleAimingError(0.73F);
-            f2 = (float)((double)f2 * (0.5D + (double)(Aim.AngleErrorKoefForSkill[SKILL_IDX] * 0.75F)));
+            f2 = f2 * (0.5F + Aim.AngleErrorKoefForSkill[SKILL_IDX] * 0.75F);
         } else
         if(aim.getAimingError().length() > 1.1100000143051147D)
             aim.scaleAimingError(0.973F);
@@ -4875,7 +4890,7 @@ label0:
                 Orient shipo = pos.getAbs().getOrient();
                 double tempx = Math.cos((double)DEG2RAD(shipo.getYaw()))*(double)point3d.x - Math.sin((double)DEG2RAD(shipo.getYaw()))*(double)point3d.y;
                 double tempy = Math.sin((double)DEG2RAD(shipo.getYaw()))*(double)point3d.x + Math.cos((double)DEG2RAD(shipo.getYaw()))*(double)point3d.y;
-                point3d.set((float)tempx, (float)tempy, point3d.z);
+                point3d.set(tempx, tempy, point3d.z);
                 if( bLogDetail )
                 {
                     System.out.println("singleShot: rotated point3d==" + point3d);
@@ -4955,7 +4970,7 @@ label0:
                 Orient shipo = pos.getAbs().getOrient();
                 double tempx = Math.cos((double)DEG2RAD(shipo.getYaw()))*(double)point3d.x - Math.sin((double)DEG2RAD(shipo.getYaw()))*(double)point3d.y;
                 double tempy = Math.sin((double)DEG2RAD(shipo.getYaw()))*(double)point3d.x + Math.cos((double)DEG2RAD(shipo.getYaw()))*(double)point3d.y;
-                point3d.set((float)tempx, (float)tempy, point3d.z);
+                point3d.set(tempx, tempy, point3d.z);
                 if( bLogDetail )
                 {
                     System.out.println("startFire: rotated point3d==" + point3d);
@@ -5290,7 +5305,9 @@ label0:
             {
                 System.out.println("BigshipGeneric zutiAssignStayPointsToBp error: " + exception.toString());
                 exception.printStackTrace();
-                k++;
+                // TODO: Fixed by SAS~Storebror: Ridiculous loop error fix +++ 
+                //k++;
+                // TODO: Fixed by SAS~Storebror: Ridiculous loop error fix ---
             }
         }
     }
