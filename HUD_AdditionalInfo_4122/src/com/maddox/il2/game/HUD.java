@@ -287,7 +287,9 @@ public class HUD {
         int plalt = 0;
         int plspd = 0;
         float fs;
+        float fgs;
         float fa;
+        Vector3d vtemp = new Vector3d();
 
         if(bPlayerLive)
         {
@@ -299,41 +301,53 @@ public class HUD {
         {
             fa = (float) main3d.viewActor().pos.getAbsPoint().z;
             fs = (float) ((Bomb) (main3d.viewActor())).getSpeed((Vector3d) null);
+            main3d.viewActor().pos.speed(vtemp);
+            fgs = (float) vtemp.length();
             d = main3d.viewActor().pos.getAbsPoint().z;
         } else
         if(main3d.viewActor() instanceof RocketBomb)
         {
             fa = (float) main3d.viewActor().pos.getAbsPoint().z;
             fs = (float) ((RocketBomb) (main3d.viewActor())).getSpeed((Vector3d) null);
+            main3d.viewActor().pos.speed(vtemp);
+            fgs = (float) vtemp.length();
             d = main3d.viewActor().pos.getAbsPoint().z;
         } else
         if(main3d.viewActor() instanceof Rocket)
         {
             fa = (float) main3d.viewActor().pos.getAbsPoint().z;
             fs = (float) ((Rocket) (main3d.viewActor())).getSpeed((Vector3d) null);
+            main3d.viewActor().pos.speed(vtemp);
+            fgs = (float) vtemp.length();
             d = main3d.viewActor().pos.getAbsPoint().z;
         } else
         if(!bMixedMessage)
         {
             fa = ((SndAircraft) ((Aircraft)main3d.viewActor())).FM.getAltitude();
             fs = ((SndAircraft) ((Aircraft)main3d.viewActor())).FM.getSpeed();
+            main3d.viewActor().pos.speed(vtemp);
+            fgs = (float) vtemp.length();
             d = ((Tuple3d) (((SndAircraft) ((Aircraft)main3d.viewActor())).FM).Loc).z;
         } else
         if(main3d.viewActor() instanceof Aircraft)
         {
             fa = ((SndAircraft) ((Aircraft)main3d.viewActor())).FM.getAltitude();
             fs = ((SndAircraft) ((Aircraft)main3d.viewActor())).FM.getSpeed();
+            main3d.viewActor().pos.speed(vtemp);
+            fgs = (float) vtemp.length();
             d = ((Tuple3d) (((FlightModelMain) (((SndAircraft) ((Aircraft)main3d.viewActor())).FM)).Loc)).z;
         } else
         {
             fa = 0.0F;
             fs = 0.0F;
+            fgs = 0.0F;
             d = 0.0D;
         }
         int l0;
         int i10;
         int iIAS;
         int iTAS;
+        int iGS;
         String speedunit;
         switch(iDrawSpeed)
         {
@@ -343,8 +357,9 @@ public class HUD {
                 plalt = (int)(World.getPlayerFM().getAltitude() * speedbarMultiplierMeters * (float)speedbarAltMeters * 0.1F) * 10;
                 plspd = (int)((3.6F * Pitot.Indicator((float)World.getPlayerFM().Loc.z, World.getPlayerFM().getSpeed()) * speedbarMultiplierKMH * (float)speedbarSpdKMH + 0.5F) * 0.1F) * 10;
             }
-            iIAS = (int)(3.6F * Pitot.Indicator((float)d, fs) * speedbarMultiplierKMH * (float)speedbarSpdKMH + 0.5F);
             iTAS = (int)(3.6F * fs * speedbarMultiplierKMH * (float)speedbarSpdKMH + 0.5F);
+            iIAS = (int)(3.6F * Pitot.Indicator((float)d, fs) * speedbarMultiplierKMH * (float)speedbarSpdKMH + 0.5F);
+            iGS = (int)(3.6F * fgs * speedbarMultiplierKMH * (float)speedbarSpdKMH + 0.5F);
             l0 = 0;
             i10 = 0;
             speedunit = "km/h";
@@ -356,8 +371,9 @@ public class HUD {
                 plalt = (int)((3.28084F * World.getPlayerFM().getAltitude() * speedbarMultiplierFeet * (float)speedbarAltFeet + 0.5F) * 0.1F) * 10;
                 plspd = (int)((1.943845F * Pitot.Indicator((float)World.getPlayerFM().Loc.z, World.getPlayerFM().getSpeed()) * speedbarMultiplierKnots * (float)speedbarSpdKnots + 0.5F) * 0.1F) * 10;
             }
-            iIAS = (int)(1.943845F * Pitot.Indicator((float)d, fs) * speedbarMultiplierKnots * (float)speedbarSpdKnots + 0.5F);
             iTAS = (int)(1.943845F * fs * speedbarMultiplierKnots * (float)speedbarSpdKnots + 0.5F);
+            iIAS = (int)(1.943845F * Pitot.Indicator((float)d, fs) * speedbarMultiplierKnots * (float)speedbarSpdKnots + 0.5F);
+            iGS = (int)(1.943845F * fgs * speedbarMultiplierKnots * (float)speedbarSpdKnots + 0.5F);
             l0 = (int)(fa * speedbarMultiplierMeters * (float)speedbarAltMeters + 0.5F);
             i10 = (int)(3.6F * Pitot.Indicator((float)d, fs) * speedbarMultiplierKMH * (float)speedbarSpdKMH + 0.5F);
             speedunit = "knots";
@@ -369,8 +385,9 @@ public class HUD {
                 plalt = (int)((3.28084F * World.getPlayerFM().getAltitude() * speedbarMultiplierFeet * (float)speedbarAltFeet + 0.5F) * 0.1F) * 10;
                 plspd = (int)((2.236936F * Pitot.Indicator((float)World.getPlayerFM().Loc.z, World.getPlayerFM().getSpeed()) * speedbarMultiplierMPH * (float)speedbarSpdMPH + 0.5F) * 0.1F) * 10;
             }
-            iIAS = (int)(2.236936F * Pitot.Indicator((float)d, fs) * speedbarMultiplierMPH * (float)speedbarSpdMPH + 0.5F);
             iTAS = (int)(2.236936F * fs * speedbarMultiplierMPH * (float)speedbarSpdMPH + 0.5F);
+            iIAS = (int)(2.236936F * Pitot.Indicator((float)d, fs) * speedbarMultiplierMPH * (float)speedbarSpdMPH + 0.5F);
+            iGS = (int)(2.236936F * fgs * speedbarMultiplierMPH * (float)speedbarSpdMPH + 0.5F);
             l0 = (int)(fa * speedbarMultiplierMeters * (float)speedbarAltMeters + 0.5F);
             i10 = (int)(3.6F * Pitot.Indicator((float)d, fs) * speedbarMultiplierKMH * (float)speedbarSpdKMH + 0.5F);
             speedunit = "MPH";
@@ -384,6 +401,7 @@ public class HUD {
             }
             iTAS = (int)(3.6F * fs * speedbarMultiplierKMH * (float)speedbarSpdKMH + 0.5F);
             iIAS = (int)(3.6F * Pitot.Indicator((float)d, fs) * speedbarMultiplierKMH * (float)speedbarSpdKMH + 0.5F);
+            iGS = (int)(3.6F * fgs * speedbarMultiplierKMH * (float)speedbarSpdKMH + 0.5F);
             l0 = 0;
             i10 = 0;
             speedunit = "km/h";
@@ -397,6 +415,7 @@ public class HUD {
             }
             iTAS = (int)(1.943845F * fs * speedbarMultiplierKnots * (float)speedbarSpdKnots + 0.5F);
             iIAS = (int)(1.943845F * Pitot.Indicator((float)d, fs) * speedbarMultiplierKnots * (float)speedbarSpdKnots + 0.5F);
+            iGS = (int)(1.943845F * fgs * speedbarMultiplierKnots * (float)speedbarSpdKnots + 0.5F);
             l0 = (int)(fa * speedbarMultiplierMeters * (float)speedbarAltMeters + 0.5F);
             i10 = (int)(3.6F * fs * speedbarMultiplierKMH * (float)speedbarSpdKMH + 0.5F);
             speedunit = "Knots";
@@ -410,6 +429,7 @@ public class HUD {
             }
             iTAS = (int)(2.236936F * fs * speedbarMultiplierMPH * (float)speedbarSpdMPH + 0.5F);
             iIAS = (int)(2.236936F * Pitot.Indicator((float)d, fs) * speedbarMultiplierMPH * (float)speedbarSpdMPH + 0.5F);
+            iGS = (int)(2.236936F * fgs * speedbarMultiplierMPH * (float)speedbarSpdMPH + 0.5F);
             l0 = (int)(fa * speedbarMultiplierMeters * (float)speedbarAltMeters + 0.5F);
             i10 = (int)(3.6F * fs * speedbarMultiplierKMH * (float)speedbarSpdKMH + 0.5F);
             speedunit = "MPH";
@@ -499,17 +519,17 @@ public class HUD {
                     {
                         ttfont.output(COLOR_SPD_REDo, 5F, 5 + (3 + (int)sbLocWay) * i, 0.0F, "Target: None");
                     }
-                    ttfont.output(COLOR_SPD_REDo, 5F, 5 + (4 + (int)sbLocWay) * i, 0.0F, "Locate(" + locx + " , " + locy + " , " + locz + ") - Distance:" + distance + " , HeadDiff:" + theaddiff);
+                    ttfont.output(COLOR_SPD_REDo, 5F, 5 + (4 + (int)sbLocWay) * i, 0.0F, "Locate(" + locx + " , " + locy + " , " + locz + ") - Alt:" + (locz - (int)Engine.land().HQ_Air(locx, locy)) + "m - Distance:" + distance + "m , HeadDiff:" + theaddiff);
                 }
                 else
                 {
-                    ttfont.output(COLOR_SPD_REDo, 5F, 5 + (4 + (int)sbLocWay) * i, 0.0F, "Locate(" + locx + " , " + locy + " , " + locz + ")");
+                    ttfont.output(COLOR_SPD_REDo, 5F, 5 + (4 + (int)sbLocWay) * i, 0.0F, "Locate(" + locx + " , " + locy + " , " + locz + ") - Alt:" + (locz - (int)Engine.land().HQ_Air(locx, locy)) + "m");
                 }
             }
             if(sbOrient >= 1.0F)
                 ttfont.output(COLOR_SPD_REDo, 5F, 5 + (3 + (int)sbOrient) * i, 0.0F, "Yaw:" +  ((yaw > 90)? 450 - yaw : 90 - yaw) + ", Pitch:" + pitch + ", Roll:" + (360 - roll));
             if(sbIASTAS >= 1.0F)
-                ttfont.output(COLOR_SPD_REDo, 5F, 5 + (3 + (int)sbIASTAS) * i, 0.0F, "TAS " + iTAS + speedunit + " (Mach " + Float.toString(machTAS) + ") ,  IAS " + iIAS + speedunit);
+                ttfont.output(COLOR_SPD_REDo, 5F, 5 + (3 + (int)sbIASTAS) * i, 0.0F, "TAS " + iTAS + speedunit + " (Mach " + Float.toString(machTAS) + ") ,  IAS " + iIAS + speedunit + " ,  GS " + iGS + speedunit);
         } else
         if(!bMixedMessage)
       //  if(!bMixedMessage || main3d.viewActor() == World.getPlayerAircraft())
@@ -694,7 +714,7 @@ public class HUD {
                                 int aileron2 = (int)(((Maneuver) ((Aircraft)main3d.viewActor()).FM).CT.getAileron() * 100F);
                                 if(sbLocWay >= 1.0F)
                                 {
-                                    ttfont.output(col, 5F, 5 + (4 + (int)sbLocWay) * i, 0.0F, "Locate(" + locx + " , " + locy + " , " + locz + ") - Distance:" + distance + " , Head:" + thead + " , HeadDiff:" + theaddiff);
+                                    ttfont.output(col, 5F, 5 + (4 + (int)sbLocWay) * i, 0.0F, "Locate(" + locx + " , " + locy + " , " + locz + ") - Alt:" + (locz - (int)Engine.land().HQ_Air(locx, locy)) + "m - Distance:" + distance + "m , Head:" + thead + " , HeadDiff:" + theaddiff);
                                     ttfont.output(col, 5F, 5 + (3 + (int)sbLocWay) * i, 0.0F, "Waypoint(" + wayx + " , " + wayy + " , " + wayz + ") , Speed:" + wayspeed + "km/h , Cur:" + waycur + " , Action:" + wayaction);
                                 }
                                 if(sbAIManeuver >= 1.0F)
@@ -712,7 +732,7 @@ public class HUD {
                                 if(sbFlapsSet >= 1.0F)
                                     ttfont.output(col, 5F, 5 + (3 + (int)sbFlapsSet) * i, 0.0F, renderSpeedSubstrings[7][0] + " " + flap + " " + renderSpeedSubstrings[7][1] + ", FlapSw=" + flapSw + " , fric=" + fric + ", fricF=" + fricF + ", fricR=" + fricR);
                                 if(sbVSpeedSet >= 1.0F)
-                                    ttfont.output(col, 5F, 5 + (3 + (int)sbVSpeedSet) * i, 0.0F, renderSpeedSubstrings[11][0] + " " + DecStr(vs) + " " + renderSpeedSubstrings[11][1] + ", " + DecStr(vs * 0.00328084F * 60F) + "ft/min");
+                                    ttfont.output(col, 5F, 5 + (3 + (int)sbVSpeedSet) * i, 0.0F, renderSpeedSubstrings[11][0] + " " + DecStr(vs * (bIsSI ? 1.0F : 3.28084F)) + " " + renderSpeedSubstrings[11][1] + ", " + DecStr((int)(vs * 3.28084F * 60F)) + "ft/min");
                                 if(sbAoASet >= 1.0F)
                                     ttfont.output(col, 5F, 5 + (3 + (int)sbAoASet) * i, 0.0F, renderSpeedSubstrings[10][0] + " " + DecStr(aoa) + " " + renderSpeedSubstrings[10][1]);
                                 if(sbTrimSet >= 1.0F)
@@ -722,7 +742,7 @@ public class HUD {
                                 if(sbTempSet >= 1.0F)
                                     ttfont.output(col, 5F, 5 + (3 + (int)sbTempSet) * i, 0.0F, renderSpeedSubstrings[13][0] + " " + temp + " " + renderSpeedSubstrings[13][1] + ", " + temp2 + " " + renderSpeedSubstrings[13][1]);
                                 if(sbIASTAS >= 1.0F)
-                                    ttfont.output(col, 5F, 5 + (3 + (int)sbIASTAS) * i, 0.0F, "TAS " + iTAS + speedunit + " (Mach " + Float.toString(machTAS) + ") ,  IAS " + iIAS + speedunit);
+                                    ttfont.output(col, 5F, 5 + (3 + (int)sbIASTAS) * i, 0.0F, "TAS " + iTAS + speedunit + " (Mach " + Float.toString(machTAS) + ") ,  IAS " + iIAS + speedunit + " ,  GS " + iGS + speedunit);
                                 if(sbDroptank >= 1.0F)
                                     ttfont.output(col, 5F, 5 + (3 + (int)sbDroptank) * i, 0.0F, droptank);
                                 if(sbSqure >= 1.0F)
