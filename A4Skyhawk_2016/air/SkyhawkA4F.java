@@ -330,9 +330,9 @@ public class SkyhawkA4F extends SkyhawkFuelReceiver
         {
             a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunColtMk12ki", 100);
             a_lweaponslot[1] = new Aircraft._WeaponSlot(0, "MGunColtMk12ki", 100);
-            a_lweaponslot[116] = new Aircraft._WeaponSlot(7, "RocketGunFlare_gn16", 30);
-            a_lweaponslot[117] = new Aircraft._WeaponSlot(7, "RocketGunFlare_gn16", 30);
-            a_lweaponslot[118] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
+            a_lweaponslot[116] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
+            a_lweaponslot[117] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
+            a_lweaponslot[118] = new Aircraft._WeaponSlot(7, "RocketGunFlare_gn16", 30);
         }
         catch(Exception exception) {
             System.out.println("Weapon register error - SkyhawkA4F : Default loadout Generator method");
