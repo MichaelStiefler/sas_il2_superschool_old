@@ -7,17 +7,12 @@ import com.maddox.il2.ai.air.*;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
-import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.il2.objects.weapons.*;
 import com.maddox.rts.*;
 import com.maddox.util.HashMapInt;
 import java.io.IOException;
 import java.util.ArrayList;
 
-// Referenced classes of package com.maddox.il2.objects.air:
-//            Skyhawk, TypeTankerDrogue, TypeDockable, Aircraft, 
-//            PaintSchemeFMPar05, TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, 
-//            NetAircraft, Cockpit, TypeGSuit
 
 public class SkyhawkA4E_tanker extends Skyhawk
     implements TypeCountermeasure, TypeDockable, TypeTankerDrogue
@@ -136,11 +131,11 @@ public class SkyhawkA4E_tanker extends Skyhawk
         super.onAircraftLoaded();
         super.bNoSpoiler = true;
 
-        ((FlightModelMain) FM).M.maxFuel += 880F;  // additional fuel 300gal in D-704 Refuel Store
-        ((FlightModelMain) FM).M.fuel += 880F;
-        ((FlightModelMain) FM).M.massEmpty += 370F;   // empty weight of D-704 Refuel Store
-        ((FlightModelMain) FM).M.mass += 370F;
-        ((FlightModelMain) FM).M.maxWeight += 1250F;
+        FM.M.maxFuel += 880F;  // additional fuel 300gal in D-704 Refuel Store
+        FM.M.fuel += 880F;
+        FM.M.massEmpty += 370F;   // empty weight of D-704 Refuel Store
+        FM.M.mass += 370F;
+        FM.M.maxWeight += 1250F;
 
         if(thisWeaponsName.startsWith("none"))
             bEmpty = true;
@@ -148,7 +143,7 @@ public class SkyhawkA4E_tanker extends Skyhawk
 
     public void update(float f)
     {
-        drogueRefuel(f);
+        drogueRefuel();
 
         if(FM.getSpeedKMH() > 185F)
             RATrot();
@@ -163,6 +158,8 @@ public class SkyhawkA4E_tanker extends Skyhawk
         super.missionStarting();
 
         checkChangeWeaponColors();
+
+        bFirstTime = true;
     }
 
     public void rareAction(float f, boolean flag)
@@ -195,7 +192,7 @@ public class SkyhawkA4E_tanker extends Skyhawk
         if(actor instanceof Aircraft)
         {
             Aircraft aircraft = (Aircraft)actor;
-            if(((FlightModelMain) (((SndAircraft) (aircraft)).FM)).AS.isMaster() && ((SndAircraft) (aircraft)).FM.getSpeedKMH() > 10F && FM.getSpeedKMH() > 10F && isDrogueExtended())
+            if(aircraft.FM.AS.isMaster() && aircraft.FM.getSpeedKMH() > 100F && FM.getSpeedKMH() > 100F && isDrogueExtended())
             {
                 for(int i = 0; i < drones.length; i++)
                 {
@@ -203,7 +200,7 @@ public class SkyhawkA4E_tanker extends Skyhawk
                         continue;
                     Loc locQueen = new Loc();
                     Loc locDrone = new Loc();
-                    super.pos.getAbs(locQueen);
+                    this.pos.getAbs(locQueen);
                     actor.pos.getAbs(locDrone);
                     Loc locDockport = new Loc();
                     HookNamed hookdockport = new HookNamed(this, "_Dockport" + i);
@@ -214,10 +211,15 @@ public class SkyhawkA4E_tanker extends Skyhawk
                     if(locDockport.getPoint().distance(locProbe.getPoint()) >= 8.0D)
                         continue;
                     if(FM.AS.isMaster())
+                    {
                         typeDockableRequestAttach(actor, i, true);
+                        return;
+                    }
                     else
-                        ((FlightModelMain) FM).AS.netToMaster(32, i, 0, actor);
-                    break;
+                    {
+                        FM.AS.netToMaster(32, i, 0, actor);
+                        return;
+                    }
                 }
 
             }
@@ -230,52 +232,54 @@ public class SkyhawkA4E_tanker extends Skyhawk
             if(actor == drones[i])
             {
                 Aircraft aircraft = (Aircraft)actor;
-                if(((FlightModelMain) (((SndAircraft) (aircraft)).FM)).AS.isMaster())
-                    if(((FlightModelMain) FM).AS.isMaster())
+                if(aircraft.FM.AS.isMaster())
+                    if(FM.AS.isMaster())
                         typeDockableRequestDetach(actor, i, true);
                     else
-                        ((FlightModelMain) FM).AS.netToMaster(33, i, 1, actor);
+                        FM.AS.netToMaster(33, i, 1, actor);
             }
 
     }
 
     public void typeDockableRequestAttach(Actor actor, int i, boolean flag)
     {
-        if(i >= 0 && i <= 1)
+        if(bFirstTime)
+            drogueRefuel();
+        if(i >= 0 && i < 1 && bDrogueExtended)
             if(flag)
             {
-                if(((FlightModelMain) FM).AS.isMaster())
+                if(FM.AS.isMaster())
                 {
-                    ((FlightModelMain) FM).AS.netToMirrors(34, i, 1, actor);
+                    FM.AS.netToMirrors(34, i, 1, actor);
                     typeDockableDoAttachToDrone(actor, i);
                 } else
                 {
-                    ((FlightModelMain) FM).AS.netToMaster(34, i, 1, actor);
+                    FM.AS.netToMaster(34, i, 1, actor);
                 }
             } else
-            if(((FlightModelMain) FM).AS.isMaster())
+            if(FM.AS.isMaster())
             {
                 if(!Actor.isValid(drones[i]))
                 {
-                    ((FlightModelMain) FM).AS.netToMirrors(34, i, 1, actor);
+                    FM.AS.netToMirrors(34, i, 1, actor);
                     typeDockableDoAttachToDrone(actor, i);
                 }
             } else
             {
-                ((FlightModelMain) FM).AS.netToMaster(34, i, 0, actor);
+                FM.AS.netToMaster(34, i, 0, actor);
             }
     }
 
     public void typeDockableRequestDetach(Actor actor, int i, boolean flag)
     {
         if(flag)
-            if(((FlightModelMain) FM).AS.isMaster())
+            if(FM.AS.isMaster())
             {
-                ((FlightModelMain) FM).AS.netToMirrors(35, i, 1, actor);
+                FM.AS.netToMirrors(35, i, 1, actor);
                 typeDockableDoDetachFromDrone(i);
             } else
             {
-                ((FlightModelMain) FM).AS.netToMaster(35, i, 1, actor);
+                FM.AS.netToMaster(35, i, 1, actor);
             }
     }
 
@@ -285,7 +289,7 @@ public class SkyhawkA4E_tanker extends Skyhawk
         {
             Loc locQueen = new Loc();
             Loc locDrone = new Loc();
-            super.pos.getAbs(locQueen);
+            this.pos.getAbs(locQueen);
             actor.pos.getAbs(locDrone);
             Loc locDockport = new Loc();
             HookNamed hookdockport = new HookNamed(this, "_Dockport" + i);
@@ -385,14 +389,14 @@ public class SkyhawkA4E_tanker extends Skyhawk
         }
     }
 
-    private void drogueRefuel(float f)
+    private void drogueRefuel()
     {
         float ias = Pitot.Indicator((float) (((Tuple3d) ((FlightModelMain)FM).Loc).z), FM.getSpeed()) * 3.6F;
         Aircraft enemy1 = War.GetNearestEnemyAircraft(this, 5000F, 9);
         Aircraft enemy2 = War.GetNearestEnemyAircraft(this, 6000F, 9);
 
-        if(bEmpty || FM.getAltitude() < 1000F || FM.CT.getGear() > 0.0F || FM.CT.getArrestor() > 0.0F
-           || ias > 580F || ias < 325F || FM.M.fuel < FM.M.maxFuel * 0.20F || enemy1 != null)
+        if(bEmpty || (FM.getAltitude() < 1000F && FM.getAltitude() != 0.0F && !bFirstTime) || FM.CT.getGear() > 0.0F || FM.CT.getArrestor() > 0.0F
+           || ias > 580F || (ias < 325F && ias != 0.0F && !bFirstTime) || FM.M.fuel < FM.M.maxFuel * 0.20F || enemy1 != null)
         {
 //            if(Time.current() > waitRefuelTimer)
 //            {
@@ -428,7 +432,7 @@ public class SkyhawkA4E_tanker extends Skyhawk
 //            }
         }
 
-        if(bDrogueExtended && ((FlightModelMain) FM).AS.isMaster())
+        if(bDrogueExtended && FM.AS.isMaster())
         {
             for(int i = 0; i < drones.length; i++)
                 if(Actor.isValid(drones[i]))
@@ -450,11 +454,14 @@ public class SkyhawkA4E_tanker extends Skyhawk
                     }
                 }
         }
+
+        if(bFirstTime && !(FM.getAltitude() == 0.0F && ias == 0.0F))
+            bFirstTime = false;
     }
 
-	public final float requestRefuel(Aircraft aircraft, float req, float f)
+    public final float requestRefuel(Aircraft aircraft, float req, float f)
     {
-        if(bDrogueExtended && ((FlightModelMain) FM).AS.isMaster())
+        if(bDrogueExtended && FM.AS.isMaster())
         {
             for(int i = 0; i < drones.length; i++)
                 if(Actor.isValid(drones[i]) && drones[i] == (Actor)aircraft)
@@ -487,6 +494,7 @@ public class SkyhawkA4E_tanker extends Skyhawk
     private long lastFlareDeployed;
     private ArrayList counterFlareList;
     private ArrayList counterChaffList;
+    private boolean bFirstTime = true;
     private boolean bDrogueExtended;
     private boolean bInRefueling;
     private Actor drones[];
@@ -550,7 +558,7 @@ public class SkyhawkA4E_tanker extends Skyhawk
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunColtMk12ki", 100);
             a_lweaponslot[1] = new Aircraft._WeaponSlot(0, "MGunColtMk12ki", 100);
-            a_lweaponslot[116] = new Aircraft._WeaponSlot(7, "RocketGunFlare_gn16", 30);
+            a_lweaponslot[116] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2x300Dt";
@@ -559,7 +567,7 @@ public class SkyhawkA4E_tanker extends Skyhawk
             a_lweaponslot[1] = new Aircraft._WeaponSlot(0, "MGunColtMk12ki", 100);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
             a_lweaponslot[6] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
-            a_lweaponslot[116] = new Aircraft._WeaponSlot(7, "RocketGunFlare_gn16", 30);
+            a_lweaponslot[116] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "none";

@@ -24,7 +24,7 @@ import java.util.Random;
 //            Aircraft, PaintScheme, EjectionSeat
 
 public class Skyhawk extends Scheme1
-    implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeFighterAceMaker, TypeRadarGunsight, TypeStormovik, TypeBomber, TypeX4Carrier, TypeGSuit, TypeZBReceiver, TypeFuelDump, TypeFastJet
+    implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeFighterAceMaker, TypeRadarGunsight, TypeStormovik, TypeBomber, TypeX4Carrier, TypeGSuit, TypeZBReceiver, TypeFuelDump, TypeFastJet, TypeRadarWarningReceiver
 {
 
     public float getFlowRate()
@@ -40,6 +40,23 @@ public class Skyhawk extends Scheme1
     public void getGFactors(TypeGSuit.GFactors theGFactors)
     {
         theGFactors.setGFactors(NEG_G_TOLERANCE_FACTOR, NEG_G_TIME_FACTOR, NEG_G_RECOVERY_FACTOR, POS_G_TOLERANCE_FACTOR, POS_G_TIME_FACTOR, POS_G_RECOVERY_FACTOR);
+    }
+
+    public RadarWarningReceiverUtils getRadarWarningReceiverUtils()
+    {
+        return rwrUtils;
+    }
+
+    public void myRadarSearchYou(Actor actor)
+    {
+        if(bHasRWR)
+            rwrUtils.recordRadarSearched(actor);
+    }
+
+    public void myRadarLockYou(Actor actor)
+    {
+        if(bHasRWR)
+            rwrUtils.recordRadarLocked(actor);
     }
 
     private static final float toMeters(float f)
@@ -445,6 +462,11 @@ public class Skyhawk extends Scheme1
         timeCounterBrake9 = 0.0F;
         timeCounterBrake29 = 0.0F;
         timeCounterBoost = 0.0F;
+        isHydraulicAlive = false;
+        isGeneratorAlive = false;
+        isBatteryOn = false;
+        lLastHydraulicLost = -1L;
+        lLastHydraulicGot = -1L;
         bSightAutomation = false;
         bSightBombDump = false;
         fSightCurDistance = 0.0F;
@@ -460,6 +482,7 @@ public class Skyhawk extends Scheme1
         k14WingspanType = 0;
         k14Distance = 200F;
         antiColLight = new Eff3DActor[6];
+        oldAntiColLight = false;
         arrestor = 0.0F;
         fSlat = 0.0F;
         bHasRWR = false;
@@ -469,7 +492,19 @@ public class Skyhawk extends Scheme1
         stockLiftWingLMid = 4.60F;
         stockLiftWingRMid = 4.60F;
         stockCy0 = 0.009F;
+        stockCy1 = 0.5F;
         stockDragAirbrake = 0.095F;
+
+        if((this instanceof SkyhawkA4E) || (this instanceof SkyhawkA4E_tanker) || (this instanceof SkyhawkA4M) ||
+           (this instanceof SkyhawkA4F) || (this instanceof SkyhawkA4F_late))
+            bHasRWR = true;
+
+        if(Config.cur.ini.get("Mods", "RWRTextStop", 0) > 0) bRWR_Show_Text_Warning = false;
+        if(bHasRWR)
+            rwrUtils = new RadarWarningReceiverUtils(this, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning);
+//          rwrUtils = new RadarWarningReceiverUtils(this, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning, 12, "A4- ");
+        else
+            rwrUtils = null;
     }
 
     public void onAircraftLoaded()
@@ -479,242 +514,19 @@ public class Skyhawk extends Scheme1
         FM.CT.bHasBombSelect = true;
         FM.CT.bHasAntiColLights = true;
 
-        if((this instanceof SkyhawkA4E) || (this instanceof SkyhawkA4E_tanker) || (this instanceof SkyhawkA4M) || 
-           (this instanceof SkyhawkA4F) || (this instanceof SkyhawkA4F_late))
-            bHasRWR = true;
+        if(bHasRWR)
+        {
+            rwrUtils.onAircraftLoaded();
+            rwrUtils.setLockTone("aircraft.APR25AAA", "aircraft.APR25S75EbandLock", "aircraft.APR25S75EbandLock", "APR25AAA.wav", "APR25S75EbandLock.wav", "APR25S75EbandLock.wav");
+        }
 
         Polares polares = (Polares)Reflection.getValue(FM, "Wing");
         stockSquareWing = FM.Sq.squareWing;
         stockLiftWingLMid = FM.Sq.liftWingLMid;
         stockLiftWingRMid = FM.Sq.liftWingRMid;
         stockCy0 = polares.Cy0_0;
+        stockCy1 = polares.Cy0_1;
         stockDragAirbrake = FM.Sq.dragAirbrakeCx;
-    }
-
-    private boolean RWRWarning()
-    {
-        boolean flag = false;
-        Point3d point3d = new Point3d();
-        super.pos.getAbs(point3d);
-        Vector3d vector3d = new Vector3d();
-        Aircraft aircraft = War.getNearestEnemy(this, 6000F);
-        if(aircraft != null)
-        {
-            double d = Main3D.cur3D().land2D.worldOfsX() + ((Actor) (aircraft)).pos.getAbsPoint().x;
-            double d1 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (aircraft)).pos.getAbsPoint().y;
-            double d2 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (aircraft)).pos.getAbsPoint().z;
-            double d3 = d2 - (double)Landscape.Hmin((float)((Actor) (aircraft)).pos.getAbsPoint().x, (float)((Actor) (aircraft)).pos.getAbsPoint().y);
-            if(d3 < 0.0D)
-                d3 = 0.0D;
-            int i = (int)(-((double)((Actor) (aircraft)).pos.getAbsOrient().getYaw() - 90D));
-            if(i < 0)
-                i = 360 + i;
-            int j = (int)(-((double)((Actor) (aircraft)).pos.getAbsOrient().getPitch() - 90D));
-            if(j < 0)
-                j = 360 + j;
-            Aircraft aircraft1 = War.getNearestEnemy(aircraft, 6000F);
-            boolean flag1;
-            if((aircraft1 instanceof Aircraft) && aircraft.getArmy() != World.getPlayerArmy() && (aircraft instanceof TypeFighterAceMaker) && ((aircraft instanceof TypeSupersonic) || (aircraft instanceof TypeFastJet)) && aircraft1 == World.getPlayerAircraft() && aircraft1.getSpeed(vector3d) > 20D)
-            {
-                pos.getAbs(point3d);
-                double d4 = Main3D.cur3D().land2D.worldOfsX() + ((Actor) (aircraft1)).pos.getAbsPoint().x;
-                double d6 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (aircraft1)).pos.getAbsPoint().y;
-                double d8 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (aircraft1)).pos.getAbsPoint().z;
-                new String();
-                new String();
-                int k = (int)(Math.floor(((Actor) (aircraft1)).pos.getAbsPoint().z * 0.10000000000000001D) * 10D);
-                int i1 = (int)(Math.floor((aircraft1.getSpeed(vector3d) * 60D * 60D) / 10000D) * 10D);
-                double d10 = (int)(Math.ceil((d2 - d8) / 10D) * 10D);
-                boolean flag2 = false;
-                Engine.land();
-                int k1 = Landscape.getPixelMapT(Engine.land().WORLD2PIXX(((Actor) (aircraft1)).pos.getAbsPoint().x), Engine.land().WORLD2PIXY(((Actor) (aircraft1)).pos.getAbsPoint().y));
-                float f = Mission.cur().sectFile().get("Weather", "WindSpeed", 0.0F);
-                if(k1 >= 28 && k1 < 32 && f < 7.5F)
-                    flag2 = true;
-                new String();
-                double d14 = d4 - d;
-                double d16 = d6 - d1;
-                float f1 = 57.32484F * (float)Math.atan2(d16, -d14);
-                int l1 = (int)(Math.floor((int)f1) - 90D);
-                if(l1 < 0)
-                    l1 = 360 + l1;
-                int i2 = l1 - i;
-                double d19 = d - d4;
-                double d20 = d1 - d6;
-                Random random = new Random();
-                float f3 = ((float)random.nextInt(20) - 10F) / 100F + 1.0F;
-                int i3 = random.nextInt(6) - 3;
-                float f4 = 19000F;
-                float f5 = f4;
-                if(d3 < 1200D)
-                    f5 = (float)(d3 * 0.80000001192092896D * 3D);
-                int j3 = (int)(Math.ceil(Math.sqrt((d20 * d20 + d19 * d19) * (double)f3) / 10D) * 10D);
-                if((float)j3 > f4)
-                    j3 = (int)(Math.ceil(Math.sqrt(d20 * d20 + d19 * d19) / 10D) * 10D);
-                float f6 = 57.32484F * (float)Math.atan2(j3, d10);
-                int k3 = (int)(Math.floor((int)f6) - 90D);
-                int l3 = (k3 - (90 - j)) + i3;
-                int i4 = (int)f4;
-                if((float)j3 < f4)
-                    if(j3 > 1150)
-                        i4 = (int)(Math.ceil((double)j3 / 900D) * 900D);
-                    else
-                        i4 = (int)(Math.ceil((double)j3 / 500D) * 500D);
-                int j4 = i2 + i3;
-                int k4 = j4;
-                if(k4 < 0)
-                    k4 += 360;
-                float f7 = (float)((double)f5 + Math.sin(Math.toRadians(Math.sqrt(i2 * i2) * 3D)) * ((double)f5 * 0.25D));
-                int l4 = (int)((double)f7 * Math.cos(Math.toRadians(l3)));
-                if((double)j3 <= (double)l4 && (double)j3 <= 14000D && (double)j3 >= 200D && l3 >= -30 && l3 <= 30 && Math.sqrt(j4 * j4) <= 60D)
-                    flag1 = true;
-                else
-                    flag1 = false;
-            }
-            else
-            {
-                flag1 = false;
-            }
-            Aircraft aircraft2 = World.getPlayerAircraft();
-            double d5 = Main3D.cur3D().land2D.worldOfsX() + ((Actor) (aircraft1)).pos.getAbsPoint().x;
-            double d7 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (aircraft1)).pos.getAbsPoint().y;
-            double d9 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (aircraft1)).pos.getAbsPoint().z;
-            int j1 = (int)(-((double)((Actor) (aircraft2)).pos.getAbsOrient().getYaw() - 90D));
-            if(j1 < 0)
-                j1 = 360 + j1;
-            if(flag1 && aircraft1 == World.getPlayerAircraft() && (aircraft1 instanceof Skyhawk))
-            {
-                pos.getAbs(point3d);
-                double d11 = Main3D.cur3D().land2D.worldOfsX() + aircraft.pos.getAbsPoint().x;
-                double d12 = Main3D.cur3D().land2D.worldOfsY() + aircraft.pos.getAbsPoint().y;
-                double d13 = Main3D.cur3D().land2D.worldOfsY() + aircraft.pos.getAbsPoint().z;
-                double d15 = (int)(Math.ceil((d9 - d13) / 10D) * 10D);
-                String s = "";
-                if(d9 - d13 - 500D >= 0.0D)
-                    s = " low";
-                if((d9 - d13) + 500D < 0.0D)
-                    s = " high";
-                new String();
-                double d17 = d11 - d5;
-                double d18 = d12 - d7;
-                float f2 = 57.32484F * (float)Math.atan2(d18, -d17);
-                int j2 = (int)(Math.floor((int)f2) - 90D);
-                if(j2 < 0)
-                    j2 = 360 + j2;
-                int k2 = j2 - j1;
-                if(k2 < 0)
-                    k2 = 360 + k2;
-                int l2 = (int)(Math.ceil((double)(k2 + 15) / 30D) - 1.0D);
-                if(l2 < 1)
-                    l2 = 12;
-                double d21 = d5 - d11;
-                double d22 = d7 - d12;
-                double d23 = Math.ceil(Math.sqrt(d22 * d22 + d21 * d21) / 10D) * 10D;
-                if(bMissileWarning)
-                {
-                    bRadarWarning = false;
-                }
-                else
-                {
-                    bRadarWarning = d23 <= 8000D && d23 >= 500D && Math.sqrt(d15 * d15) <= 6000D;
-                    aircraftbrg = cvt(l2, 0.0F, 12F, 0.0F, 360F);
-                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Enemy at " + l2 + " o'clock" + s + "!");
-                }
-            }
-            else
-            {
-                bRadarWarning = false;
-                aircraftbrg = 0.0F;
-            }
-        }
-        else
-        {
-            bRadarWarning = false;
-            aircraftbrg = 0.0F;
-        }
-        return true;
-    }
-
-    private boolean RWRLaunchWarning()
-    {
-        Point3d point3d = new Point3d();
-        pos.getAbs(point3d);
-        Vector3d vector3d = new Vector3d();
-        Object obj;
-        if((FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
-            obj = World.getPlayerAircraft();
-        else
-            obj = this;
-        super.pos.getAbs(point3d);
-        Object obj1;
-        if((FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
-            obj1 = World.getPlayerAircraft();
-        else
-            obj1 = this;
-        double d = Main3D.cur3D().land2D.worldOfsX() + ((Actor) (obj)).pos.getAbsPoint().x;
-        double d1 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (obj)).pos.getAbsPoint().y;
-        double d2 = Main3D.cur3D().land2D.worldOfsY() + ((Actor) (obj)).pos.getAbsPoint().z;
-        int i = (int)(-((double)((Actor) (obj1)).pos.getAbsOrient().getYaw() - 90D));
-        if(i < 0)
-            i = 360 + i;
-        List list = Engine.missiles();
-        int j = list.size();
-        if(j == 0 && (bMissileWarning || backfire))
-        {
-            bMissileWarning = false;
-            backfire = false;
-            misslebrg = 0.0F;
-            return false;
-        }
-        for(int k = 0; k < j; k++)
-        {
-            Actor actor = (Actor)list.get(k);
-            if(((actor instanceof Missile) || (actor instanceof MissileSAM)) && actor.getSpeed(vector3d) > 20D && ((Missile)actor).getMissileTarget() == this)
-            {
-                pos.getAbs(point3d);
-                double d3 = Main3D.cur3D().land2D.worldOfsX() + actor.pos.getAbsPoint().x;
-                double d4 = Main3D.cur3D().land2D.worldOfsY() + actor.pos.getAbsPoint().y;
-                double d5 = Main3D.cur3D().land2D.worldOfsY() + actor.pos.getAbsPoint().z;
-                double d6 = (int)(Math.ceil((d2 - d5) / 10D) * 10D);
-                String s = "";
-                if(d2 - d5 - 500D >= 0.0D)
-                    s = " LOW";
-                if((d2 - d5) + 500D < 0.0D)
-                    s = " HIGH";
-                new String();
-                double d7 = d3 - d;
-                double d8 = d4 - d1;
-                float f = 57.32484F * (float)Math.atan2(d8, -d7);
-                int i1 = (int)(Math.floor((int)f) - 90D);
-                if(i1 < 0)
-                    i1 = 360 + i1;
-                int j1 = i1 - i;
-                if(j1 < 0)
-                    j1 = 360 + j1;
-                int k1 = (int)(Math.ceil((double)(j1 + 15) / 30D) - 1.0D);
-                if(k1 < 1)
-                    k1 = 12;
-                double d9 = d - d3;
-                double d10 = d1 - d4;
-                double d11 = Math.ceil(Math.sqrt(d10 * d10 + d9 * d9) / 10D) * 10D;
-                bMissileWarning = true;
-                if((FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
-                {
-                    HUD.log(AircraftHotKeys.hudLogWeaponId, "MISSILE AT " + k1 + " O'CLOCK" + s + "!!!" + misslebrg);
-                    misslebrg = cvt(k1, 0.0F, 12F, 0.0F, 360F);
-                }
-                if((!FM.isPlayers() || !(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode()) && (FM instanceof Maneuver))
-                    backfire = true;
-            }
-            else
-            {
-                bMissileWarning = false;
-                backfire = false;
-                misslebrg = 0.0F;
-            }
-        }
-
-        return true;
     }
 
     public void rareAction(float f, boolean flag)
@@ -749,7 +561,7 @@ public class Skyhawk extends Scheme1
                 if (FM.CT.AirBrakeControl != 1.0F)
                     FM.CT.AirBrakeControl = 1.0F;
             }
-            else if (((Maneuver) FM).get_maneuver() == 25 && FM.AP.way.isLanding() && FM.getSpeed() < FM.VmaxFLAPS * 1.16F)
+            else if (((Maneuver) FM).get_maneuver() == 25 && FM.AP.way.isLanding() && FM.getSpeed() < FM.VminFLAPS * 1.16F)
             {
                 if (FM.getSpeed() > FM.VminFLAPS * 0.5F && FM.Gears.onGround())
                 {
@@ -769,6 +581,23 @@ public class Skyhawk extends Scheme1
                 if (FM.CT.AirBrakeControl != 1.0F)
                     FM.CT.AirBrakeControl = 1.0F;
             }
+            else if (FM.CT.AirBrakeControl != 0.0F)
+                FM.CT.AirBrakeControl = 0.0F;
+        if((FM.Gears.nearGround() || FM.Gears.onGround()) && FM.CT.getCockpitDoor() == 1.0F)
+        {
+            hierMesh().chunkVisible("HMask1_D0", false);
+            if(bTwoSeat)
+                hierMesh().chunkVisible("HMask2_D0", false);
+        }
+        else
+        {
+            hierMesh().chunkVisible("HMask1_D0", hierMesh().isChunkVisible("Pilot1_D0"));
+            if(bTwoSeat)
+                hierMesh().chunkVisible("HMask2_D0", hierMesh().isChunkVisible("Pilot2_D0"));
+        }
+        if(!FM.isPlayers())
+            FM.CT.bAntiColLights = FM.AS.bNavLightsOn;
+        anticollights();
     }
 
     public void doMurderPilot(int i)
@@ -882,7 +711,7 @@ public class Skyhawk extends Scheme1
         if(fSteer > maxSteer) fSteer = maxSteer;
         FM.Gears.steerAngle = fSteer;
         //By PAL, to line up Gear when Up
-           hierMesh().chunkSetAngles("GearC3_D0", 0.0F, 0.0F, fSteer * FM.CT.GearControl);
+            hierMesh().chunkSetAngles("GearC3_D0", 0.0F, 0.0F, fSteer * FM.CT.GearControl);
     }
 
     protected void moveRudder(float f)
@@ -892,8 +721,7 @@ public class Skyhawk extends Scheme1
 
     protected void moveFlap(float f)
     {
-        hierMesh().chunkSetAngles("Flap01_D0", 0.0F, -55F * f, 0.0F);
-        hierMesh().chunkSetAngles("Flap02_D0", 0.0F, -55F * f, 0.0F);
+        updateFlapsAndAirbrakesVisuals();
     }
 
     protected void moveFan(float f)
@@ -915,6 +743,47 @@ public class Skyhawk extends Scheme1
             if(Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null)
                 Main3D.cur3D().cockpits[0].onDoorMoved(f);
             setDoorSnd(f);
+        }
+    }
+
+    private void updateFlapsAndAirbrakesVisuals()
+    {
+        if(lLastHydraulicGot > 0L)
+        {
+            if(Time.current() - lLastHydraulicGot < 3000L)
+            {
+                float f1 = cvt((float)(Time.current() - lLastHydraulicGot), 800F, 2700F, 1.0F, 0.0F);
+                float deg = Math.max(4F * f1, 45F * FM.CT.getAirBrake());
+                hierMesh().chunkSetAngles("FuBrake01_D0", -deg, 0.0F, 0.0F);
+                hierMesh().chunkSetAngles("FuBrake02_D0", deg, 0.0F, 0.0F);
+
+                f1 = cvt((float)(Time.current() - lLastHydraulicGot), 300F, 2900F, 1.0F, 0.0F);
+                deg = Math.max(45F * f1, 55F * FM.CT.getFlap());
+                hierMesh().chunkSetAngles("Flap01_D0", 0.0F, -deg, 0.0F);
+                hierMesh().chunkSetAngles("Flap02_D0", 0.0F, -deg, 0.0F);
+            }
+            else
+            {
+                hierMesh().chunkSetAngles("FuBrake01_D0", -45F * FM.CT.getAirBrake(), 0.0F, 0.0F);
+                hierMesh().chunkSetAngles("FuBrake02_D0", 45F * FM.CT.getAirBrake(), 0.0F, 0.0F);
+                hierMesh().chunkSetAngles("Flap01_D0", 0.0F, -55F * FM.CT.getFlap(), 0.0F);
+                hierMesh().chunkSetAngles("Flap02_D0", 0.0F, -55F * FM.CT.getFlap(), 0.0F);
+            }
+        }
+        if(lLastHydraulicLost > 0L)
+        {
+            if(Time.current() - lLastHydraulicLost < 30000L)
+            {
+                float f1 = cvt((float)(Time.current() - lLastHydraulicLost), 9000F, 27000F, 0.0F, 1.0F);
+                float deg = Math.max(4F * f1, 45F * FM.CT.getAirBrake());
+                hierMesh().chunkSetAngles("FuBrake01_D0", -deg, 0.0F, 0.0F);
+                hierMesh().chunkSetAngles("FuBrake02_D0", deg, 0.0F, 0.0F);
+
+                f1 = cvt((float)(Time.current() - lLastHydraulicLost), 4000F, 29500F, 0.0F, 1.0F);
+                deg = Math.max(45F * f1, 55F * FM.CT.getFlap());
+                hierMesh().chunkSetAngles("Flap01_D0", 0.0F, -deg, 0.0F);
+                hierMesh().chunkSetAngles("Flap02_D0", 0.0F, -deg, 0.0F);
+            }
         }
     }
 
@@ -1219,8 +1088,7 @@ public class Skyhawk extends Scheme1
 
     protected void moveAirBrake(float f)
     {
-        hierMesh().chunkSetAngles("FuBrake01_D0", -45F * f, 0.0F, 0.0F);
-        hierMesh().chunkSetAngles("FuBrake02_D0", 45F * f, 0.0F, 0.0F);
+        updateFlapsAndAirbrakesVisuals();
     }
 
     public void checkSpolers(float f)
@@ -1246,17 +1114,21 @@ public class Skyhawk extends Scheme1
         if(overrideBailout)
             if(FM.AS.astateBailoutStep >= 0 && FM.AS.astateBailoutStep < 2)
             {
-                if(FM.CT.cockpitDoorControl > 0.5F && FM.CT.getCockpitDoor() > 0.5F)
+                if(FM.CT.cockpitDoorControl > 0.5F && FM.CT.getCockpitDoor() > 0.5F && FM.getSpeedKMH() < 15F)
+                {
                     FM.AS.astateBailoutStep = 11;
+                }
                 else
+                {
                     FM.AS.astateBailoutStep = 2;
-            } else
-            if(FM.AS.astateBailoutStep >= 2 && FM.AS.astateBailoutStep <= 3)
+                }
+            }
+            else if(FM.AS.astateBailoutStep >= 2 && FM.AS.astateBailoutStep <= 3)
             {
                 switch(FM.AS.astateBailoutStep)
                 {
                 case 2: // '\002'
-                    if(FM.CT.cockpitDoorControl < 0.5F)
+                    if(FM.CT.cockpitDoorControl < 0.5F || FM.CT.getCockpitDoor() < 0.5F || FM.getSpeedKMH() > 15F)
                         doRemoveBlisters();
                     break;
 
@@ -1269,8 +1141,8 @@ public class Skyhawk extends Scheme1
                 FM.AS.astateBailoutStep = (byte)(FM.AS.astateBailoutStep + 1);
                 if(FM.AS.astateBailoutStep == 4)
                     FM.AS.astateBailoutStep = 11;
-            } else
-            if(FM.AS.astateBailoutStep >= 11 && FM.AS.astateBailoutStep <= 19)
+            }
+            else if(FM.AS.astateBailoutStep >= 11 && FM.AS.astateBailoutStep <= 19)
             {
                 byte byte0 = FM.AS.astateBailoutStep;
                 if(FM.AS.isMaster())
@@ -1278,42 +1150,91 @@ public class Skyhawk extends Scheme1
                 FM.AS.astateBailoutStep = (byte)(FM.AS.astateBailoutStep + 1);
                 if((FM instanceof Maneuver) && ((Maneuver)FM).get_maneuver() != 44)
                 {
-                    World.cur();
                     if(FM.AS.actor != World.getPlayerAircraft())
                         ((Maneuver)FM).set_maneuver(44);
                 }
-                if(FM.AS.astatePilotStates[byte0 - 11] < 99)
+                doRemoveBodyFromPlane(byte0 - 10);
+                if(FM.getSpeedKMH() > 15F)
                 {
+                    if(byte0 == 11 || (byte0 == 12 && bTwoSeat))
+                        doEjectCatapult(byte0 - 10);
                     if(byte0 == 11)
-                    {
-                        doRemoveBodyFromPlane(2);
-                        doEjectCatapultStudent();
                         lTimeNextEject = Time.current() + 1000L;
-                    } else
-                    if(byte0 == 12)
+                    if (!bTwoSeat || byte0 > 11)
                     {
-                        doRemoveBodyFromPlane(1);
-                        doEjectCatapultInstructor();
-                        FM.AS.astateBailoutStep = 51;
-                        FM.setTakenMortalDamage(true, null);
-                        FM.CT.WeaponControl[0] = false;
-                        FM.CT.WeaponControl[1] = false;
                         FM.AS.astateBailoutStep = -1;
                         overrideBailout = false;
                         FM.AS.bIsAboutToBailout = true;
                         ejectComplete = true;
                     }
+                    EventLog.onBailedOut(this, byte0 - 11);
                     FM.AS.astatePilotStates[byte0 - 11] = 99;
-                } else
-                {
-                    EventLog.type("astatePilotStates[" + (byte0 - 11) + "]=" + FM.AS.astatePilotStates[byte0 - 11]);
+                    return;
                 }
+                else
+                {
+                    if(FM.AS.astatePilotStates[byte0 - 11] < 99)
+                    {
+                        FM.AS.astatePilotStates[byte0 - 11] = 100;
+                        if(FM.AS.isMaster())
+                        {
+                            try
+                            {
+                              Hook localHook = findHook("_ExternalBail0" + (byte0 - 10));
+
+                              if (localHook != null)
+                              {
+                                  Loc localLoc = new Loc(0.0D, 0.0D, 0.0D, World.Rnd().nextFloat(-45.0F, 45.0F), 0.0F, 0.0F);
+
+                                  localHook.computePos(this, pos.getAbs(), localLoc);
+
+                                  new Paratrooper(this, getArmy(), byte0 - 11, localLoc, FM.Vwld);
+
+                                  if ((byte0 > 10) && (byte0 <= 19))
+                                  {
+                                      EventLog.onBailedOut(this, byte0 - 11);
+                                  }
+                              }
+                            }
+                            catch (Exception localException)
+                            {
+                            }
+                            finally
+                            {
+                            }
+                            if ((FM.AS.astatePilotStates[byte0 - 11] == 19) && (this == World.getPlayerAircraft()) && (!World.isPlayerGunner()) && (FM.brakeShoe))
+                            {
+                                  MsgDestroy.Post(Time.current() + 1000L, this);
+                            }
+                        }
+                        FM.setTakenMortalDamage(true, null);
+                        FM.CT.WeaponControl[0] = false;
+                        FM.CT.WeaponControl[1] = false;
+                        FM.CT.bHasAileronControl = false;
+                        FM.CT.bHasRudderControl = false;
+                        FM.CT.bHasElevatorControl = false;
+                        if(!bTwoSeat || byte0 > 11)
+                        {
+                            FM.AS.astateBailoutStep = -1;
+                            overrideBailout = false;
+                            FM.AS.bIsAboutToBailout = true;
+                            ejectComplete = true;
+                            if ((this == World.getPlayerAircraft()) && (!World.isPlayerGunner()) && (FM.brakeShoe))
+                            {
+                                  MsgDestroy.Post(Time.current() + 1000L, this);
+                            }
+                        }
+                        return;
+                    }
+                }
+                EventLog.type("astatePilotStates[" + (byte0 - 11) + "]=" + FM.AS.astatePilotStates[byte0 - 11]);
             }
     }
 
-    public void doEjectCatapultStudent()
+    public void doEjectCatapult(final int i)
     {
-        new MsgAction(false, this) {
+        new MsgAction(false, this)
+        {
 
             public void doAction(Object obj)
             {
@@ -1322,49 +1243,27 @@ public class Skyhawk extends Scheme1
                 {
                     Loc loc = new Loc();
                     Loc loc1 = new Loc();
-                    Vector3d vector3d = new Vector3d(0.0D, 0.0D, 10D);
-                    HookNamed hooknamed = new HookNamed(aircraft, "_ExternalSeat02");
-                    ((Actor) (aircraft)).pos.getAbs(loc1);
+                    Vector3d vector3d = new Vector3d(0.0D, 0.0D, 40D - (double) i * 7D);
+                    HookNamed hooknamed = new HookNamed(aircraft, "_ExternalSeat0" + i);
+                    aircraft.pos.getAbs(loc1);
                     hooknamed.computePos(aircraft, loc1, loc);
                     loc.transform(vector3d);
-                    vector3d.x += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).x;
-                    vector3d.y += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).y;
-                    vector3d.z += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).z;
-                    new EjectionSeat(1, loc, vector3d, aircraft);
+                    vector3d.x += aircraft.FM.Vwld.x;
+                    vector3d.y += aircraft.FM.Vwld.y;
+                    vector3d.z += aircraft.FM.Vwld.z;
+                    new EjectionSeat(6, loc, vector3d, aircraft);
                 }
             }
 
         }
 ;
-        hierMesh().chunkVisible("Seat2_D0", false);
-    }
-
-    public void doEjectCatapultInstructor()
-    {
-        new MsgAction(false, this) {
-
-            public void doAction(Object obj)
-            {
-                Aircraft aircraft = (Aircraft)obj;
-                if(Actor.isValid(aircraft))
-                {
-                    Loc loc = new Loc();
-                    Loc loc1 = new Loc();
-                    Vector3d vector3d = new Vector3d(0.0D, 0.0D, 10D);
-                    HookNamed hooknamed = new HookNamed(aircraft, "_ExternalSeat01");
-                    ((Actor) (aircraft)).pos.getAbs(loc1);
-                    hooknamed.computePos(aircraft, loc1, loc);
-                    loc.transform(vector3d);
-                    vector3d.x += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).x;
-                    vector3d.y += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).y;
-                    vector3d.z += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).z;
-                    new EjectionSeat(1, loc, vector3d, aircraft);
-                }
-            }
-
-        }
-;
-        hierMesh().chunkVisible("Seat1_D0", false);
+        hierMesh().chunkVisible("Seat" + i + "_D0", false);
+        FM.setTakenMortalDamage(true, null);
+        FM.CT.WeaponControl[0] = false;
+        FM.CT.WeaponControl[1] = false;
+        FM.CT.bHasAileronControl = false;
+        FM.CT.bHasRudderControl = false;
+        FM.CT.bHasElevatorControl = false;
     }
 
     private final void doRemoveBlisters()
@@ -1404,7 +1303,7 @@ public class Skyhawk extends Scheme1
             critSpeed = 0.0F;
         if(FM.getAltitude() > 0.0F && calculateMach() >= 0.935F && FM.isTick(44, 0))  //  speed limiter, added by Vega
             FM.Sq.dragParasiteCx += 0.002F;
-        if((FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && FM.getSpeedKMH() > 15F)
+        if((FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete)
         {
             overrideBailout = true;
             FM.AS.bIsAboutToBailout = false;
@@ -1413,16 +1312,16 @@ public class Skyhawk extends Scheme1
         }
         soundbarier();
         if(bHasRWR)
-            RWRLaunchWarning();
-        if(bHasRWR && (FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
-            RWRWarning();
+        {
+            rwrUtils.update();
+            backfire = rwrUtils.getBackfire();
+            bRadarWarning = rwrUtils.getRadarLockedWarning();
+            bMissileWarning = rwrUtils.getMissileWarning();
+        }
         HydroGearCounter(f);
         if(FM.CT.getArrestor() > 0.2F)
             calculateArrestor();
         super.update(f);
-        if(!FM.isPlayers())
-            FM.CT.bAntiColLights = FM.AS.bNavLightsOn;
-        anticollights();
     }
 
     public void computeSlat()
@@ -1436,27 +1335,18 @@ public class Skyhawk extends Scheme1
         FM.Sq.squareWing = stockSquareWing + SquareSlat * 2F * fSlat;
         FM.Sq.liftWingLMid = stockLiftWingLMid + SquareSlat * fSlat;
         FM.Sq.liftWingRMid = stockLiftWingRMid + SquareSlat * fSlat;
-        polares.Cy0_0 = stockCy0 + Cy0AddSlat * fSlat;
+        polares.Cy0_0 = (stockCy0 + Cy0AddSlat * fSlat) * (1.0F - spoilerBrake * 0.9F);
+        polares.Cy0_1 = stockCy1 * (1.0F - spoilerBrake * 0.8F);
 
         resetYPRmodifier();
-        xyz[1] = -0.264F * fSlat;
-        xyz[2] = -0.12F * fSlat;
-        if(fSlat < 0.8F)
-            xyz[0] = -0.032F * Aircraft.cvt(fSlat, 0.4F, 0.8F, 0.0F, 0.5F);
-        else
-            xyz[0] = -0.032F * Aircraft.cvt(fSlat, 0.8F, 1.0F, 0.5F, 1.0F);
-        ypr[0] = -6.6F * fSlat;
-        ypr[1] = -4.4F * fSlat;
+        xyz[0] = -0.008F * Aircraft.cvt(fSlat, 0.4F, 1.0F, 0.0F, 1.0F);
+        xyz[1] = -0.297F * fSlat;
+        ypr[0] = -29.06F * fSlat;
         hierMesh().chunkSetLocate("SlatL_D0", Aircraft.xyz, Aircraft.ypr);
         resetYPRmodifier();
-        xyz[1] = 0.264F * fSlat;
-        xyz[2] = -0.12F * fSlat;
-        if(fSlat < 0.8F)
-            xyz[0] = -0.032F * Aircraft.cvt(fSlat, 0.4F, 0.8F, 0.0F, 0.5F);
-        else
-            xyz[0] = -0.032F * Aircraft.cvt(fSlat, 0.8F, 1.0F, 0.5F, 1.0F);
-        ypr[0] = 6.6F * fSlat;
-        ypr[1] = -4.4F * fSlat;
+        xyz[0] = -0.008F * Aircraft.cvt(fSlat, 0.4F, 1.0F, 0.0F, 1.0F);
+        xyz[1] = 0.297F * fSlat;
+        ypr[0] = 29.06F * fSlat;
         hierMesh().chunkSetLocate("SlatR_D0", Aircraft.xyz, Aircraft.ypr);
     }
 
@@ -1537,7 +1427,7 @@ public class Skyhawk extends Scheme1
 
     private void HydroGearCounter(float f)
     {
-        if(FM.EI.engines[0].getStage() < 6 && (FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode())
+        if(FM.EI.engines[0].getStage() < 6 && FM.getSpeedKMH() < 160F)
         {
             if(FM.Gears.nOfGearsOnGr > 0)
             {
@@ -1547,6 +1437,11 @@ public class Skyhawk extends Scheme1
                 FM.CT.bHasAirBrakeControl = false;
                 FM.CT.bHasRudderControl = true;
                 FM.CT.bHasGearControl = false;
+                isGeneratorAlive = false;
+                isHydraulicAlive = false;
+                if(lLastHydraulicLost == -1L)
+                    lLastHydraulicLost = Time.current();
+                lLastHydraulicGot = -1L;
             } else
             if(FM.Gears.nOfGearsOnGr == 0)
             {
@@ -1560,6 +1455,11 @@ public class Skyhawk extends Scheme1
                     FM.CT.bHasAirBrakeControl = false;
                     FM.CT.bHasRudderControl = false;
                     FM.CT.bHasGearControl = false;
+                    isGeneratorAlive = false;
+                    isHydraulicAlive = false;
+                    if(lLastHydraulicLost == -1L)
+                        lLastHydraulicLost = Time.current();
+                    lLastHydraulicGot = -1L;
                 }
             }
         } else
@@ -1571,8 +1471,15 @@ public class Skyhawk extends Scheme1
             FM.CT.bHasAirBrakeControl = true;
             FM.CT.bHasRudderControl = true;
             FM.CT.bHasGearControl = true;
+            isGeneratorAlive = true;
+            isHydraulicAlive = true;
+            lLastHydraulicLost = -1L;
+            if(lLastHydraulicGot == -1L)
+                lLastHydraulicGot = Time.current();
         }
-        if(FM.EI.engines[0].getStage() == 6 && FM.getSpeedKMH() < 5F && FM.Gears.nOfGearsOnGr < 3 && (FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode())
+        updateFlapsAndAirbrakesVisuals();
+
+        if(FM.EI.engines[0].getStage() == 6 && FM.getSpeedKMH() < 5F && FM.Loc.z - Engine.land().HQ_Air(FM.Loc.x, FM.Loc.y) < 40D && FM.Gears.nOfGearsOnGr < 3 && (FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode())
         {
             timeCounterCrash9 += f;
             if(timeCounterCrash9 > timeCrash9)
@@ -1664,28 +1571,57 @@ public class Skyhawk extends Scheme1
 
     private void anticollights()
     {
-        if(FM.CT.bAntiColLights)
+        if(FM.CT.bAntiColLights && isGeneratorAlive && !oldAntiColLight)
         {
+            char postfix = (char)('A' + World.Rnd().nextInt(0, 5));
             for(int i = 0; i < 6; i++)
             {
                 if(antiColLight[i] == null)
                 {
                     try
                     {
-                        antiColLight[i] = Eff3DActor.New(this, findHook("_AntiColLight" + Integer.toString(i + 1)), new Loc(), 1.0F, "3DO/Effects/Fireworks/FlareRedFlash.eff", -1.0F, false);
+                        antiColLight[i] = Eff3DActor.New(this, findHook("_AntiColLight" + Integer.toString(i + 1)), new Loc(), 1.0F, "3DO/Effects/Fireworks/FlareRedFlash_" + String.valueOf(postfix) + ".eff", -1.0F, false);
                     } catch(Exception excp) {}
                 }
             }
+            oldAntiColLight = true;
         }
-        else
+        else if((!FM.CT.bAntiColLights || !isGeneratorAlive) && oldAntiColLight)
         {
             for(int i = 0; i < 6; i++)
-              if(antiColLight[i] != null)
-              {
-                  Eff3DActor.finish(antiColLight[i]);
-                  antiColLight[i] = null;
-              }
+                if(antiColLight[i] != null)
+                {
+                    Eff3DActor.finish(antiColLight[i]);
+                    antiColLight[i] = null;
+                }
+            oldAntiColLight = false;
         }
+    }
+
+    public static void forceParkingStyle(HierMesh hiermesh) {
+        // flaps parking position without Hydraulic pressuer.
+        hiermesh.chunkSetAngles("Flap01_D0", 0.0F, -45F, 0.0F);
+        hiermesh.chunkSetAngles("Flap02_D0", 0.0F, -45F, 0.0F);
+
+        // fuselage airbrakes parking position without Hydraulic pressuer.
+        hiermesh.chunkSetAngles("FuBrake01_D0", -4F, 0.0F, 0.0F);
+        hiermesh.chunkSetAngles("FuBrake02_D0", 4F, 0.0F, 0.0F);
+
+        // slats parking position.
+        xyz[0] = -0.008F;
+        xyz[1] = -0.297F;
+        xyz[2] = 0.0F;
+        ypr[0] = -29.06F;
+        ypr[1] = 0.0F;
+        ypr[2] = 0.0F;
+        hiermesh.chunkSetLocate("SlatL_D0", Aircraft.xyz, Aircraft.ypr);
+        xyz[0] = -0.008F;
+        xyz[1] = 0.297F;
+        xyz[2] = 0.0F;
+        ypr[0] = 29.06F;
+        ypr[1] = 0.0F;
+        ypr[2] = 0.0F;
+        hiermesh.chunkSetLocate("SlatR_D0", Aircraft.xyz, Aircraft.ypr);
     }
 
     private float filter(float f, float f1, float f2, float f3, float f4) {
@@ -1745,6 +1681,11 @@ public class Skyhawk extends Scheme1
     private float timeBrake39;
     private float timeCounterBrake9;
     private float timeCounterBrake29;
+    public boolean isHydraulicAlive;
+    public boolean isGeneratorAlive;
+    public boolean isBatteryOn;
+    private long lLastHydraulicLost;
+    private long lLastHydraulicGot;
 
     private float critSpeed;
 
@@ -1772,14 +1713,23 @@ public class Skyhawk extends Scheme1
 
     //By western0221, Anti collision light
     private Eff3DActor antiColLight[];
+    private boolean oldAntiColLight;
 
     //By western0221, classfy has Radar Warning Receiver (A-4E or later)
     private boolean bHasRWR;
+    private RadarWarningReceiverUtils rwrUtils;
     public boolean bRadarWarning;
     public boolean bMissileWarning;
     public float misslebrg;
     public float aircraftbrg;
     public boolean backfire;
+
+    private static final int RWR_MAX_DETECT = 8;
+    private static final int RWR_KEEP_SECONDS = 2;
+    private static final double RWR_RECEIVE_ELEVATION = 45.0D;
+    private static final boolean RWR_DETECT_IRMIS = false;
+    private static final boolean RWR_DETECT_ELEVATION = false;
+    private boolean bRWR_Show_Text_Warning = true;
 
     //By western0221, classfy working ground spoiler (A-4F or later) or not (A-4E or earlier)
     public boolean bNoSpoiler;
@@ -1794,6 +1744,7 @@ public class Skyhawk extends Scheme1
     private float stockLiftWingRMid;
     private final float SquareSlat = 1.08F;
     private float stockCy0;
+    private float stockCy1;
     private final float Cy0AddSlat = 0.002F;
 
     // G Suit values
