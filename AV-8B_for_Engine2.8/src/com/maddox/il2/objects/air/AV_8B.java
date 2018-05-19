@@ -160,12 +160,22 @@ public class AV_8B extends AV_8
 
     public void myRadarSearchYou(Actor actor)
     {
-        rwrUtils.recordRadarSearched(actor);
+        rwrUtils.recordRadarSearched(actor, (String) null);
+    }
+
+    public void myRadarSearchYou(Actor actor, String soundpreset)
+    {
+        rwrUtils.recordRadarSearched(actor, soundpreset);
     }
 
     public void myRadarLockYou(Actor actor)
     {
-        rwrUtils.recordRadarLocked(actor);
+        rwrUtils.recordRadarLocked(actor, (String) null);
+    }
+
+    public void myRadarLockYou(Actor actor, String soundpreset)
+    {
+        rwrUtils.recordRadarLocked(actor, soundpreset);
     }
 
     public void onAircraftLoaded()
@@ -177,7 +187,7 @@ public class AV_8B extends AV_8
         bHasDeployedDragChute = false;
         FM.turret[0].bIsAIControlled = false;
         rwrUtils.onAircraftLoaded();
-        rwrUtils.setLockTone("", "aircraft.RWR2", "aircraft.MissileMissile", "", "RWR2.wav", "MissileMissile.wav");
+        rwrUtils.setLockTone("", "aircraft.usRWRLock", "aircraft.usRWRLaunchWarningMissileMissile", "", "usRWRLock.wav", "usRWRLaunchWarningMissileMissile.wav");
     }
 
     private void checkAmmo()
@@ -338,6 +348,16 @@ public class AV_8B extends AV_8
         super.missionStarting();
         checkAmmo();
         checkAsDrone();
+    }
+
+    public void startCockpitSounds()
+    {
+        rwrUtils.setSoundEnable(true);
+    }
+
+    public void stopCockpitSounds()
+    {
+        rwrUtils.stopAllRWRSounds();
     }
 
     private void checkAsDrone()

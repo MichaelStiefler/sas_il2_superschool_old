@@ -802,12 +802,22 @@ public class F_18 extends Scheme2
 
     public void myRadarSearchYou(Actor actor)
     {
-        rwrUtils.recordRadarSearched(actor);
+        rwrUtils.recordRadarSearched(actor, (String) null);
+    }
+
+    public void myRadarSearchYou(Actor actor, String soundpreset)
+    {
+        rwrUtils.recordRadarSearched(actor, soundpreset);
     }
 
     public void myRadarLockYou(Actor actor)
     {
-        rwrUtils.recordRadarLocked(actor);
+        rwrUtils.recordRadarLocked(actor, (String) null);
+    }
+
+    public void myRadarLockYou(Actor actor, String soundpreset)
+    {
+        rwrUtils.recordRadarLocked(actor, soundpreset);
     }
 
     public void onAircraftLoaded()
@@ -842,7 +852,7 @@ public class F_18 extends Scheme2
 //            FM.Sq.liftStab += 2.0F;
 //        }
         rwrUtils.onAircraftLoaded();
-        rwrUtils.setLockTone("", "aircraft.RWR2", "aircraft.MissileMissile", "", "RWR2.wav", "MissileMissile.wav");
+        rwrUtils.setLockTone("", "aircraft.usRWRLock", "aircraft.usRWRLaunchWarningMissileMissile", "", "usRWRLock.wav", "usRWRLaunchWarningMissileMissile.wav");
     }
 
     public void missionStarting()
@@ -862,6 +872,16 @@ public class F_18 extends Scheme2
             curthrl[i] = -1.0F;
             engineSurgeDamage[i] = 0.0F;
         }
+    }
+
+    public void startCockpitSounds()
+    {
+        rwrUtils.setSoundEnable(true);
+    }
+
+    public void stopCockpitSounds()
+    {
+        rwrUtils.stopAllRWRSounds();
     }
 
     public void updateLLights()
