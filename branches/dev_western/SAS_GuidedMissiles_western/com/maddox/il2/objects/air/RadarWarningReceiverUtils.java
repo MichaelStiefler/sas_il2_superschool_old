@@ -1,6 +1,6 @@
 // Source File Name: RadarWarningReceiverUtils.java
 // Author:		   western0221
-// Last Modified by: western0221 on 25th/Apr/2018
+// Last Modified by: western0221 on 19th/May/2018
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.*;
@@ -255,14 +255,23 @@ public class RadarWarningReceiverUtils {
 
 	public void initLockTones(String sFxRwrToneLock, String sFxRwrToneSearch, String sFxRwrToneMissile,
 							  String sSmplRwrLock, String sSmplRwrSearch, String sSmplRwrMissile) {
+		this.initLockTones(sFxRwrToneLock, sFxRwrToneSearch, sFxRwrToneMissile, (String) null, sSmplRwrLock, sSmplRwrSearch, sSmplRwrMissile, (String) null);
+	}
+
+	public void initLockTones(String sFxRwrToneLock, String sFxRwrToneSearch, String sFxRwrToneMissile, String sFxRwrToneThreatNew,
+							  String sSmplRwrLock, String sSmplRwrSearch, String sSmplRwrMissile, String sSmplRwrThreatNew) {
 		if(this.lockTonesInitialized) return;
+		if((this.iDebugLogLevel & 128) > 0)
+			System.out.println(sDebugPlaneName + "RWRUtils: initLockTones() entering .... this.rwrOwner=" + this.rwrOwner);
 		if(this.rwrOwner == World.getPlayerAircraft()) {
 			this.setFxRwrToneLock(sFxRwrToneLock, 1.0F);
 			this.setFxRwrToneSearch(sFxRwrToneSearch, 1.0F);
 			this.setFxRwrToneMissile(sFxRwrToneMissile, 1.0F);
+			this.setFxRwrToneThreatNew(sFxRwrToneThreatNew, 1.0F);
 			this.setSmplRwrLock(sSmplRwrLock);
 			this.setSmplRwrSearch(sSmplRwrSearch);
 			this.setSmplRwrMissile(sSmplRwrMissile);
+			this.setSmplRwrThreatNew(sSmplRwrThreatNew);
 		}
 		this.lockTonesInitialized = true;
 		if((this.iDebugLogLevel & 128) > 0)
@@ -346,15 +355,21 @@ public class RadarWarningReceiverUtils {
 	}
 
 	public void setLockTone(String theSearchPrs, String theLockPrs, String theMissilePrs, String theSearchWav, String theLockWav, String theMissileWav) {
+		this.setLockTone(theSearchPrs, theLockPrs, theMissilePrs, (String) null, theSearchWav, theLockWav, theMissileWav, (String) null);
+	}
+
+	public void setLockTone(String theSearchPrs, String theLockPrs, String theMissilePrs, String theThreatNewPrs, String theSearchWav, String theLockWav, String theMissileWav, String theThreatNewWav) {
 		if((this.iDebugLogLevel & 128) > 0)
 			System.out.println(sDebugPlaneName + "RWRUtils: setLockTone() entering .... this.rwrOwner=" + this.rwrOwner);
 		if(this.rwrOwner != World.getPlayerAircraft()) return;
 		this.setFxRwrToneSearch(theSearchPrs);
 		this.setFxRwrToneLock(theLockPrs);
 		this.setFxRwrToneMissile(theMissilePrs);
+		this.setFxRwrToneThreatNew(theThreatNewPrs);
 		this.setSmplRwrSearch(theSearchWav);
 		this.setSmplRwrLock(theLockWav);
 		this.setSmplRwrMissile(theMissileWav);
+		this.setSmplRwrThreatNew(theThreatNewWav);
 		if((this.iDebugLogLevel & 128) > 0)
 			System.out.println(sDebugPlaneName + "RWRUtils: setLockTone() finish!");
 	}
@@ -440,6 +455,33 @@ public class RadarWarningReceiverUtils {
 		this.fxRwrToneMissile.setVolume(value);
 	}
 
+	public void setFxRwrToneThreatNew(String value) {
+		if(this.rwrOwner != World.getPlayerAircraft()) return;
+		if(value == null || value == "") {
+			this.fxRwrToneThreatNew = null;
+			return;
+		}
+		// System.out.println("setFxMissileToneThreatNew " + value);
+		this.fxRwrToneThreatNew = this.rwrOwner.newSound(value, false);
+		// if(rwrOwner.getRootFX() != null)
+		// this.fxRwrToneThreatNew.setParent(rwrOwner.getRootFX());
+		// this.fxRwrToneThreatNew.setPosition(1, 0, 0);
+		if((this.iDebugLogLevel & 128) > 0)
+			System.out.println(sDebugPlaneName + "RWRUtils: setFxRwrToneThreatNew() finish!");
+	}
+
+	public void setFxRwrToneThreatNew(String fxName, float theVolume) {
+		if(this.rwrOwner != World.getPlayerAircraft()) return;
+		this.setFxRwrToneThreatNew(fxName);
+		this.setFxRwrToneThreatNewVolume(theVolume);
+	}
+
+	public void setFxRwrToneThreatNewVolume(float value) {
+		if(this.rwrOwner != World.getPlayerAircraft()) return;
+		if(this.fxRwrToneThreatNew == null) return;
+		this.fxRwrToneThreatNew.setVolume(value);
+	}
+
 	public void setSmplRwrSearch(String value) {
 		if(this.rwrOwner != World.getPlayerAircraft()) return;
 		if(value == null || value == "") {
@@ -477,6 +519,19 @@ public class RadarWarningReceiverUtils {
 		this.smplRwrMissile.setInfinite(true);
 		if((this.iDebugLogLevel & 128) > 0)
 			System.out.println(sDebugPlaneName + "RWRUtils: setSmplRwrMissile() finish!");
+	}
+
+	public void setSmplRwrThreatNew(String value) {
+		if(this.rwrOwner != World.getPlayerAircraft()) return;
+		if(value == null || value == "") {
+			this.smplRwrThreatNew = null;
+			return;
+		}
+		// System.out.println("setSmplThreatNew " + value);
+		this.smplRwrThreatNew = new Sample(value, 256, 65535);
+		this.smplRwrThreatNew.setInfinite(true);
+		if((this.iDebugLogLevel & 128) > 0)
+			System.out.println(sDebugPlaneName + "RWRUtils: setSmplRwrThreatNew() finish!");
 	}
 
 	public void update() {
@@ -949,6 +1004,10 @@ public class RadarWarningReceiverUtils {
 				this.radarsLock.add(tempNrwrdata);
 				if((this.iDebugLogLevel & 4) > 0)
 					System.out.println(sDebugPlaneName + "RWRUtils: new this.radarsLock.add(" + actorString(tact) + ") , size()=" + this.radarsLock.size());
+				if(fxRwrToneThreatNew != null) {
+					if(!fxRwrToneThreatNew.isPlaying())
+						fxRwrToneThreatNew.start();
+				}
 				if(this.bShowTextWarning && (this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode() || !(this.FM instanceof Pilot))
 				{
 					String sElev = "";
@@ -1042,14 +1101,14 @@ public class RadarWarningReceiverUtils {
 		return true;
 	}
 
-	public void recordRadarLocked(Actor actor)
+	public void recordRadarLocked(Actor actor, String soundpreset)
 	{
 		if((this.iDebugLogLevel & 4) > 0)
 			System.out.println(sDebugPlaneName + "RWRUtils: entering recordRadarLocked(" + actorString(actor) + ")");
 
 		if(!((actor instanceof TypeGuidedMissileCarrier)
-             || ((actor instanceof ArtilleryGeneric) && ((ArtilleryGeneric)actor).getHasRadar()) || ((actor instanceof TankGeneric) && ((TankGeneric)actor).getHasRadar()))
-           || actor.getArmy() == this.rwrOwner.getArmy())
+		     || ((actor instanceof ArtilleryGeneric) && ((ArtilleryGeneric)actor).getHasRadar()) || ((actor instanceof TankGeneric) && ((TankGeneric)actor).getHasRadar()))
+		   || actor.getArmy() == this.rwrOwner.getArmy())
 			return;
 		if(actor instanceof TypeGuidedMissileCarrier) {
 			GuidedMissileUtils gmu = ((TypeGuidedMissileCarrier)actor).getGuidedMissileUtils();
@@ -1105,6 +1164,10 @@ public class RadarWarningReceiverUtils {
 			this.radarsLock.add(tempNrwrdata);
 			if((this.iDebugLogLevel & 4) > 0)
 				System.out.println(sDebugPlaneName + "RWRUtils: new this.radarsLock.add(" + actorString(actor) + ") , size()=" + this.radarsLock.size());
+			if(fxRwrToneThreatNew != null) {
+				if(!fxRwrToneThreatNew.isPlaying())
+					fxRwrToneThreatNew.start();
+			}
 			if(this.bShowTextWarning && (this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode() || !(this.FM instanceof Pilot))
 			{
 				String sElev = "";
@@ -1124,7 +1187,7 @@ public class RadarWarningReceiverUtils {
 		Collections.sort(this.radarsLock);
 	}
 
-	public void recordRadarSearched(Actor actor)
+	public void recordRadarSearched(Actor actor, String soundpreset)
 	{
 		if((this.iDebugLogLevel & 8) > 0)
 			System.out.println(sDebugPlaneName + "RWRUtils: entering recordRadarSearched(" + actorString(actor) + ")");
@@ -1132,7 +1195,7 @@ public class RadarWarningReceiverUtils {
 		if(actor.getArmy() == this.rwrOwner.getArmy())
 			return;
 		if(!((actor instanceof TypeGuidedMissileCarrier) || (actor instanceof TypeRadar) || (actor instanceof TypeSemiRadar)
-            || ((actor instanceof ArtilleryGeneric) && ((ArtilleryGeneric)actor).getHasRadar()) || ((actor instanceof TankGeneric) && ((TankGeneric)actor).getHasRadar())))
+		    || ((actor instanceof ArtilleryGeneric) && ((ArtilleryGeneric)actor).getHasRadar()) || ((actor instanceof TankGeneric) && ((TankGeneric)actor).getHasRadar())))
 			return;
 
 		Point3d point3d = new Point3d();
@@ -1183,6 +1246,10 @@ public class RadarWarningReceiverUtils {
 			this.radars.add(tempNrwrdata);
 			if((this.iDebugLogLevel & 8) > 0)
 				System.out.println(sDebugPlaneName + "RWRUtils: new this.radars.add(" + actorString(actor) + ") , size()=" + this.radars.size());
+			if(fxRwrToneThreatNew != null) {
+				if(!fxRwrToneThreatNew.isPlaying())
+					fxRwrToneThreatNew.start();
+			}
 			if(this.bShowTextWarning && (this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode() || !(this.FM instanceof Pilot))
 			{
 				String sElev = "";
@@ -1204,6 +1271,8 @@ public class RadarWarningReceiverUtils {
 
 	public void playRWRWarning()
 	{
+		if(!bSoundEnabled) return;
+
 		if(fxRwrToneSearch != null)
 		{
 			if(bRadarSearchedWarning && !fxRwrToneSearch.isPlaying())
@@ -1249,6 +1318,28 @@ public class RadarWarningReceiverUtils {
 					System.out.println(sDebugPlaneName + "RWRUtils: fxRwrToneMissile.stop(); in playRWRWarning()");
 			}
 		}
+	}
+
+	public void stopAllRWRSounds()
+	{
+		bSoundEnabled = false;
+		if(fxRwrToneSearch != null && fxRwrToneSearch.isPlaying())
+			fxRwrToneSearch.stop();
+		if(fxRwrToneLock != null && fxRwrToneLock.isPlaying())
+			fxRwrToneLock.stop();
+		if(fxRwrToneMissile != null && fxRwrToneMissile.isPlaying())
+			fxRwrToneMissile.stop();
+
+		if((this.iDebugLogLevel & 128) > 0)
+			System.out.println(sDebugPlaneName + "RWRUtils: stopAllRWRSounds(); --- done.");
+	}
+
+	public void setSoundEnable(boolean flag)
+	{
+		bSoundEnabled = flag;
+
+		if((this.iDebugLogLevel & 128) > 0)
+			System.out.println(sDebugPlaneName + "RWRUtils: setSoundEnable( " + flag + " ) --- bSoundEnabled=" + flag);
 	}
 
 	private void missileListExpire()
@@ -1437,9 +1528,11 @@ public class RadarWarningReceiverUtils {
 	private SoundFX fxRwrToneLock = null;
 	private SoundFX fxRwrToneSearch = null;
 	private SoundFX fxRwrToneMissile = null;
+	private SoundFX fxRwrToneThreatNew = null;
 	private Sample smplRwrLock = null;
 	private Sample smplRwrSearch = null;
 	private Sample smplRwrMissile = null;
+	private Sample smplRwrThreatNew = null;
 	private String missileName = null;
 	private Actor rwrOwner = null;
 
@@ -1466,6 +1559,7 @@ public class RadarWarningReceiverUtils {
 	private long lastRWRUpdateTime = -1L;
 	private boolean backfire = false;
 	private boolean bAIEmergency = false;
+	private boolean bSoundEnabled = false;
 
 	private String sDebugPlaneName = "";
 	private int iDebugLogLevel = 0;
