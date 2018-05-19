@@ -50,13 +50,25 @@ public class Skyhawk extends Scheme1
     public void myRadarSearchYou(Actor actor)
     {
         if(bHasRWR)
-            rwrUtils.recordRadarSearched(actor);
+            rwrUtils.recordRadarSearched(actor, (String) null);
+    }
+
+    public void myRadarSearchYou(Actor actor, String soundpreset)
+    {
+        if(bHasRWR)
+            rwrUtils.recordRadarSearched(actor, soundpreset);
     }
 
     public void myRadarLockYou(Actor actor)
     {
         if(bHasRWR)
-            rwrUtils.recordRadarLocked(actor);
+            rwrUtils.recordRadarLocked(actor, (String) null);
+    }
+
+    public void myRadarLockYou(Actor actor, String soundpreset)
+    {
+        if(bHasRWR)
+            rwrUtils.recordRadarLocked(actor, soundpreset);
     }
 
     private static final float toMeters(float f)
@@ -502,9 +514,21 @@ public class Skyhawk extends Scheme1
         if(Config.cur.ini.get("Mods", "RWRTextStop", 0) > 0) bRWR_Show_Text_Warning = false;
         if(bHasRWR)
             rwrUtils = new RadarWarningReceiverUtils(this, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning);
-//          rwrUtils = new RadarWarningReceiverUtils(this, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning, 12, "A4- ");
+//          rwrUtils = new RadarWarningReceiverUtils(this, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning, 128, "A4- ");
         else
             rwrUtils = null;
+    }
+
+    public void startCockpitSounds()
+    {
+        if(rwrUtils != null)
+            rwrUtils.setSoundEnable(true);
+    }
+
+    public void stopCockpitSounds()
+    {
+        if(rwrUtils != null)
+            rwrUtils.stopAllRWRSounds();
     }
 
     public void onAircraftLoaded()
