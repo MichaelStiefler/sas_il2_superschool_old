@@ -45,6 +45,25 @@ public class CockpitSkyhawkA4F extends CockpitPilot
         }
     }
 
+    protected boolean doFocusEnter()
+    {
+        if(super.doFocusEnter())
+        {
+            ((Skyhawk)aircraft()).startCockpitSounds();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    protected void doFocusLeave()
+    {
+        ((Skyhawk)aircraft()).stopCockpitSounds();
+        super.doFocusLeave();
+    }
+
     class Interpolater extends InterpolateRef
     {
 
