@@ -113,6 +113,7 @@ public class CockpitAV_8B extends CockpitPilot
             aircraft().hierMesh().chunkVisible("HMask1_D0", false);
             aircraft().hierMesh().chunkVisible("Pilot1_D0", false);
             aircraft().hierMesh().chunkVisible("Seat1_D0", false);
+            ((AV_8B)aircraft()).startCockpitSounds();
             return true;
         }
         else
@@ -129,6 +130,9 @@ public class CockpitAV_8B extends CockpitPilot
         aircraft().hierMesh().chunkVisible("HMask1_D0", true);
         aircraft().hierMesh().chunkVisible("Pilot1_D0", true);
         aircraft().hierMesh().chunkVisible("Seat1_D0", true);
+
+        stopSoundEffects();
+        ((AV_8B)aircraft()).stopCockpitSounds();
         super.doFocusLeave();
     }
 
@@ -291,12 +295,19 @@ public class CockpitAV_8B extends CockpitPilot
         interpPut(new Interpolater(), null, Time.current(), null);
         if(super.acoustics != null)
             super.acoustics.globFX = new ReverbFXRoom(0.05F);
-        aoaWarnFX = aircraft().newSound("aircraft.AOA_Slow", false);
-        aoaWarnFX2 = aircraft().newSound("aircraft.AOA_Mid", false);
-        aoaWarnFX3 = aircraft().newSound("aircraft.AOA_Fast", false);
-        aoaWarnFX4 = aircraft().newSound("aircraft.AOA_Stall", false);
-        PullupWarn = aircraft().newSound("aircraft.Pullup", false);
-        AltitudeWarn = aircraft().newSound("aircraft.Altitude", false);
+        aoaWarnFX = aircraft().newSound("aircraft.usAOA_Slow", false);
+        aoaWarnFX2 = aircraft().newSound("aircraft.usAOA_Mid", false);
+        aoaWarnFX3 = aircraft().newSound("aircraft.usAOA_Fast", false);
+        aoaWarnFX4 = aircraft().newSound("aircraft.usAOA_Stall", false);
+        PullupWarn = aircraft().newSound("aircraft.vcenPullup", false);
+        AltitudeWarn = aircraft().newSound("aircraft.vcenAltitude", false);
+        OverGWarn = aircraft().newSound("aircraft.vcenOverG", false);
+        MinimumSpeedWarn = aircraft().newSound("aircraft.vcenMinimumSpeed", false);
+        MaximumSpeedWarn = aircraft().newSound("aircraft.vcenMaximumSpeed", false);
+        EngineFireWarn = aircraft().newSound("aircraft.vcenEngineFire", false);
+        lLastEngineFireWarned = -1L;
+        BingoFuelWarn = aircraft().newSound("aircraft.vcenBingoFuel", false);
+        iBingoFuelWarned = 0;
         hudPitchRudderStr = new String[37];
         for(int i = 18; i >= 0; i--)
             hudPitchRudderStr[i] = "Z_Z_HUD_PITCH" + (90 - i * 5);
@@ -3174,62 +3185,62 @@ public class CockpitAV_8B extends CockpitPilot
 
     protected void drawSound(float f)  //TODO SOUND
     {
+        if(Time.current() < 100L) return; // soon from mission start, some flight values are not set correctly by game system
+
         boolean flag = false;
-        if(aoaWarnFX != null)
-            if(setNew.fpmPitch >= 9.7F && setNew.fpmPitch < 12F && fm.Gears.nOfGearsOnGr < 1)
-            {
-                if(!aoaWarnFX.isPlaying())
-                    aoaWarnFX.play();
-                flag = true;
-            }
-            else
-            {
-                aoaWarnFX.cancel();
-                flag = false;
-            }
-        if(aoaWarnFX2 != null)
-            if(setNew.fpmPitch >= 12F && setNew.fpmPitch < 14F && fm.Gears.nOfGearsOnGr < 1)
-            {
-                if(!aoaWarnFX2.isPlaying())
-                    aoaWarnFX2.play();
-                flag = true;
-            }
-            else
-            {
-                aoaWarnFX2.cancel();
-                flag = false;
-            }
-        if(aoaWarnFX3 != null)
-            if(setNew.fpmPitch >= 14F && setNew.fpmPitch < 15.5F && fm.Gears.nOfGearsOnGr < 1)
-            {
-                if(!aoaWarnFX3.isPlaying())
-                    aoaWarnFX3.play();
-                flag = true;
-            }
-            else
-            {
-                aoaWarnFX3.cancel();
-                flag = false;
-            }
+        boolean flagAoA = false;
         if(aoaWarnFX4 != null)
-            if(setNew.fpmPitch >= 15.4F && fm.Gears.nOfGearsOnGr < 1)
+            if((setNew.fpmPitch >= 28F || fm.getAOA() >= 25F) && fm.Gears.nOfGearsOnGr < 1)
             {
                 if(!aoaWarnFX4.isPlaying())
                     aoaWarnFX4.play();
                 flag = true;
+                flagAoA = true;
             }
             else
             {
                 aoaWarnFX4.cancel();
-                flag = false;
             }
-        if(AltitudeWarn != null)
+        if(aoaWarnFX3 != null && !flagAoA)
+            if(((setNew.fpmPitch >= 20F && setNew.fpmPitch < 28F) || (fm.getAOA() >= 19F && fm.getAOA() < 25F)) && fm.Gears.nOfGearsOnGr < 1)
+            {
+                if(!aoaWarnFX3.isPlaying())
+                    aoaWarnFX3.play();
+                flagAoA = true;
+            }
+            else
+            {
+                aoaWarnFX3.cancel();
+            }
+        if(aoaWarnFX2 != null && !flagAoA)
+            if(((setNew.fpmPitch >= 15F && setNew.fpmPitch < 20F) || (fm.getAOA() >= 16.5F && fm.getAOA() < 19F)) && fm.Gears.nOfGearsOnGr < 1)
+            {
+                if(!aoaWarnFX2.isPlaying())
+                    aoaWarnFX2.play();
+                flagAoA = true;
+            }
+            else
+            {
+                aoaWarnFX2.cancel();
+            }
+        if(aoaWarnFX != null && !flagAoA)
+            if(((setNew.fpmPitch >= 11F && setNew.fpmPitch < 15F) || (fm.getAOA() >= 13F && fm.getAOA() < 16.5F)) && fm.Gears.nOfGearsOnGr < 1)
+            {
+                if(!aoaWarnFX.isPlaying())
+                    aoaWarnFX.play();
+                flagAoA = true;
+            }
+            else
+            {
+                aoaWarnFX.cancel();
+            }
+        if(AltitudeWarn != null && PullupWarn != null)
         {
             float radioaltnow = fm.getAltitude() - (float)Engine.land().HQ_Air(fm.Loc.x, fm.Loc.y);
             //radioaltnow = radioaltnow / (float)Math.cos(Math.toRadians(Math.abs(((FlightModelMain) (fm)).Or.getKren()))) / (float)Math.cos(Math.toRadians(Math.abs(((FlightModelMain) (fm)).Or.getTangage())));
             if((radioaltnow < 550F && fm.getVertSpeed() < -40F) || (radioaltnow < 100F && fm.CT.getGear() < 0.999999F))
             {
-                if((fm.Or.getPitch() - 360F) < -22F)
+                if((fm.Or.getPitch() - 360F) < -22F || ((fm.Or.getPitch() - 360F) < -10F && radioaltnow < 100F))
                 {
                     PullupWarn.start();
                     AltitudeWarn.stop();
@@ -3246,10 +3257,69 @@ public class CockpitAV_8B extends CockpitPilot
             {
                 AltitudeWarn.stop();
                 PullupWarn.stop();
-                flag = false;
+            }
+        }
+        if(OverGWarn != null)
+        {
+            if(fm.getOverload() > 10F)
+            {
+                OverGWarn.start();
+                flag = true;
+            }
+            else
+            {
+                OverGWarn.stop();
+            }
+        }
+        if(MinimumSpeedWarn != null)
+        {
+            if(fm.getSpeed() < 70F && fm.CT.getGear() < 0.999999F)
+            {
+                MinimumSpeedWarn.start();
+                flag = true;
+            }
+            else
+            {
+                MinimumSpeedWarn.stop();
+            }
+        }
+        if(MaximumSpeedWarn != null)
+        {
+            if(fm.getSpeed() > 420F)
+            {
+                MaximumSpeedWarn.start();
+                flag = true;
+            }
+            else
+            {
+                MaximumSpeedWarn.stop();
             }
         }
         super.mesh.chunkVisible("L_MC", flag);
+
+        if(fm.AS.astateEngineStates[0] > 2 && (lLastEngineFireWarned == -1L || Time.current() - lLastEngineFireWarned > 7200L) && EngineFireWarn != null)
+        {
+            EngineFireWarn.play();
+            lLastEngineFireWarned = Time.current();
+        }
+        float ffuel = fm.M.fuel * 2.20462262F;
+        if((((AV_8B) aircraft()).Bingofuel > ffuel && iBingoFuelWarned == 0) || (((AV_8B) aircraft()).Bingofuel - 100F > ffuel && iBingoFuelWarned == 1) && BingoFuelWarn != null)
+        {
+            BingoFuelWarn.play();
+            iBingoFuelWarned++;
+        }
+    }
+
+    private void stopSoundEffects()
+    {
+        if(aoaWarnFX4 != null && aoaWarnFX4.isPlaying())
+            aoaWarnFX4.cancel();
+        if(aoaWarnFX3 != null && aoaWarnFX3.isPlaying())
+            aoaWarnFX3.cancel();
+        if(aoaWarnFX2 != null && aoaWarnFX2.isPlaying())
+            aoaWarnFX2.cancel();
+        if(aoaWarnFX != null && aoaWarnFX.isPlaying())
+            aoaWarnFX.cancel();
     }
 
     protected void Warninglight()
@@ -3536,6 +3606,13 @@ public class CockpitAV_8B extends CockpitPilot
     private SoundFX aoaWarnFX4;
     private SoundFX PullupWarn;
     private SoundFX AltitudeWarn;
+    private SoundFX OverGWarn;
+    private SoundFX MinimumSpeedWarn;
+    private SoundFX MaximumSpeedWarn;
+    private SoundFX EngineFireWarn;
+    private long lLastEngineFireWarned;
+    private SoundFX BingoFuelWarn;
+    private int iBingoFuelWarned;
     private String hudPitchRudderStr[];
     private Gun gun[];
     private float alpha;
