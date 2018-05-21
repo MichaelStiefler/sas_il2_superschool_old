@@ -197,6 +197,26 @@ public class CockpitF_14 extends CockpitPilot
         CrossVersion.setPrintCompassHeading(this, true);
     }
 
+    protected boolean doFocusEnter()
+    {
+        if(super.doFocusEnter())
+        {
+            ((F_14)aircraft()).startCockpitSounds();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    protected void doFocusLeave()
+    {
+        stopSoundEffects();
+        ((F_14)aircraft()).stopCockpitSounds();
+        super.doFocusLeave();
+    }
+
     public void removeCanopy()
     {
         mesh.chunkVisible("Blister", false);
@@ -658,6 +678,10 @@ public class CockpitF_14 extends CockpitPilot
             setNightMats(true);
             setNightMats(false);
         }
+    }
+
+    private void stopSoundEffects()
+    {
     }
 
     private Variables setOld;

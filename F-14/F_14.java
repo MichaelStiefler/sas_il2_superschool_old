@@ -148,6 +148,7 @@ public class F_14 extends Scheme2
         SpoilerBrakeControl = 0.0F;
         oldSpoilerBrakeControl = 0.0F;
         antiColLight = new Eff3DActor[3];
+        oldAntiColLight = false;
         laserSpotPos = new Point3d();
         laserTimer = -1L;
         freq = 800;
@@ -732,12 +733,34 @@ public class F_14 extends Scheme2
 
     public void myRadarSearchYou(Actor actor)
     {
-        rwrUtils.recordRadarSearched(actor);
+        rwrUtils.recordRadarSearched(actor, (String) null);
+    }
+
+    public void myRadarSearchYou(Actor actor, String soundpreset)
+    {
+        rwrUtils.recordRadarSearched(actor, soundpreset);
     }
 
     public void myRadarLockYou(Actor actor)
     {
-        rwrUtils.recordRadarLocked(actor);
+        rwrUtils.recordRadarLocked(actor, (String) null);
+    }
+
+    public void myRadarLockYou(Actor actor, String soundpreset)
+    {
+        rwrUtils.recordRadarLocked(actor, soundpreset);
+    }
+
+    public void startCockpitSounds()
+    {
+        if(rwrUtils != null)
+            rwrUtils.setSoundEnable(true);
+    }
+
+    public void stopCockpitSounds()
+    {
+        if(rwrUtils != null)
+            rwrUtils.stopAllRWRSounds();
     }
 
     public void onAircraftLoaded()
@@ -873,7 +896,10 @@ public class F_14 extends Scheme2
             bCarryLaserpod = true;
         }
         rwrUtils.onAircraftLoaded();
-        rwrUtils.setLockTone("", "aircraft.RWR2", "aircraft.MissileMissile", "", "RWR2.wav", "MissileMissile.wav");
+        if(this instanceof F_14D)
+            rwrUtils.setLockTone("", "aircraft.usRWRLock", "aircraft.usRWRLaunchWarningMissileMissile", "", "usRWRLock.wav", "usRWRLaunchWarningMissileMissile.wav");
+        else
+            rwrUtils.setLockTone("aircraft.APR25AAA", "aircraft.APR25S75EbandLock", "aircraft.APR25S75EbandLock", "APR25AAA.wav", "APR25S75EbandLock.wav", "APR25S75EbandLock.wav");
     }
 
     public void missionStarting()
@@ -1023,7 +1049,8 @@ public class F_14 extends Scheme2
         formationlights();
         if(!FM.isPlayers())
             FM.CT.bAntiColLights = FM.AS.bNavLightsOn;
-        anticollights();
+        if(FM.CT.bAntiColLights != oldAntiColLight)
+            anticollights();
         if(FM.AP.way.curr().Action == 3 && !((Maneuver)super.FM).hasBombs())
         {
             FM.AP.way.next();
@@ -1636,7 +1663,7 @@ public class F_14 extends Scheme2
 
     public void checkSpoilers()
     {
-        if(FM.Gears.nOfGearsOnGr > 1 && FM.EI.engines[0].getControlThrottle() < 0.02F && FM.EI.engines[1].getControlThrottle() < 0.02F)
+        if(FM.Gears.nOfGearsOnGr > 1 && FM.EI.engines[0].getControlThrottle() < 0.20F && FM.EI.engines[1].getControlThrottle() < 0.20F)
         {
             SpoilerBrakeControl = FM.CT.getAirBrake();
             FM.Sq.dragAirbrakeCx = stockDragAirbrake * 2.0F;
@@ -2695,7 +2722,7 @@ public class F_14 extends Scheme2
             if(!bStableAIGround)
             {
                 Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-                polares.Cy0_1 = 0.8F * stockCy0_0 + 0.2F * stockCy0_1;
+                polares.Cy0_1 = (0.8F * stockCy0_0 + 0.2F * stockCy0_1) * (1.0F - 0.5F * SpoilerBrakeControl);
                 polares.CxMin_1 = 0.8F * stockCxMin_0 + 0.2F * stockCxMin_1;
                 polares.parabCxCoeff_1 = 0.8F * stockparabCxCoeff_0 + 0.2F * stockparabCxCoeff_1;
                 FM.Sq.squareFlaps = 0.35F * stockSqFlaps;
@@ -2709,7 +2736,7 @@ public class F_14 extends Scheme2
             if(!bStableAIGround)
             {
                 Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-                polares.Cy0_1 = stockCy0_1;
+                polares.Cy0_1 = stockCy0_1 * (1.0F - 0.5F * SpoilerBrakeControl);
                 polares.CxMin_1 = stockCxMin_1;
                 polares.parabCxCoeff_1 = stockparabCxCoeff_1;
                 FM.Sq.squareFlaps = stockSqFlaps;
@@ -2726,7 +2753,7 @@ public class F_14 extends Scheme2
                 if(!bStableAIGround)
                 {
                     Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-                    polares.Cy0_1 = 0.14F * stockCy0_0 + 0.86F * stockCy0_1;
+                    polares.Cy0_1 = (0.14F * stockCy0_0 + 0.86F * stockCy0_1)  * (1.0F - 0.5F * SpoilerBrakeControl);
                     polares.CxMin_1 = 0.14F * stockCxMin_0 + 0.86F * stockCxMin_1;
                     polares.parabCxCoeff_1 = 0.14F * stockparabCxCoeff_0 + 0.86F * stockparabCxCoeff_1;
                     FM.Sq.squareFlaps = 0.90F * stockSqFlaps;
@@ -2739,12 +2766,20 @@ public class F_14 extends Scheme2
                 if(!bStableAIGround)
                 {
                     Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-                    polares.Cy0_1 = stockCy0_1;
+                    polares.Cy0_1 = stockCy0_1 * (1.0F - 0.5F * SpoilerBrakeControl);
                     polares.CxMin_1 = stockCxMin_1;
                     polares.parabCxCoeff_1 = stockparabCxCoeff_1;
                     FM.Sq.squareFlaps = stockSqFlaps;
                 }
                 bFlapsInFixed = false;
+            }
+            else if(!bFlapsInFixed)
+            {
+                if(!bStableAIGround)
+                {
+                    Polares polares = (Polares)Reflection.getValue(FM, "Wing");
+                    polares.Cy0_1 = stockCy0_1 * (1.0F - 0.5F * SpoilerBrakeControl);
+                }
             }
         }
 
@@ -2935,7 +2970,7 @@ public class F_14 extends Scheme2
             Reflection.setFloat(FM, "GCenter", stockGCenter + floatindex(fsweep, gcenterScale));
             Reflection.setFloat(FM, "DefaultElevatorTrim", stockDefaultElevatorTrim + floatindex(fsweep, defaultelevtrimScale));
             polares.CxMin_0 = floatindex(fsweep, cxmin0Scale);
-            polares.Cy0_0 = floatindex(fsweep, cy00Scale);
+            polares.Cy0_0 = floatindex(fsweep, cy00Scale) * (1.0F - 0.5F * SpoilerBrakeControl);
             polares.CyCritH_0 = floatindex(fsweep, cycrith0Scale);
             FM.Sq.squareWing = stockSqWing - floatindex(fsweep, wingsquredecScale) * 2F;
             FM.Sq.liftWingLOut = FM.Sq.liftWingROut = stockSqWingOut - floatindex(fsweep, wingsquredecScale);
@@ -3111,13 +3146,14 @@ public class F_14 extends Scheme2
     {
         if(FM.CT.bAntiColLights)
         {
+            char postfix = (char)('A' + World.Rnd().nextInt(0, 5));
             for(int i = 0; i < 3; i++)
             {
                 if(antiColLight[i] == null)
                 {
                     try
                     {
-                        antiColLight[i] = Eff3DActor.New(this, findHook("_AntiColLight" + Integer.toString(i + 1)), new Loc(), 1.0F, "3DO/Effects/Fireworks/FlareRedFlash.eff", -1.0F, false);
+                        antiColLight[i] = Eff3DActor.New(this, findHook("_AntiColLight" + Integer.toString(i + 1)), new Loc(), 1.0F, "3DO/Effects/Fireworks/FlareRedFlash_" + String.valueOf(postfix) + ".eff", -1.0F, false);
                     } catch(Exception excp) {}
                 }
             }
@@ -3131,6 +3167,7 @@ public class F_14 extends Scheme2
                   antiColLight[i] = null;
               }
         }
+        oldAntiColLight = FM.CT.bAntiColLights;
     }
 
     private void formationlights()
@@ -3309,6 +3346,7 @@ public class F_14 extends Scheme2
     private float SpoilerBrakeControl;
     private float oldSpoilerBrakeControl;
     private Eff3DActor antiColLight[];
+    private boolean oldAntiColLight;
 
     public boolean bCarryLaserpod = false;
     private Point3d laserSpotPos;
