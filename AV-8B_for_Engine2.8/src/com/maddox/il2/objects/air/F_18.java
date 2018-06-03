@@ -1755,25 +1755,35 @@ public class F_18 extends Scheme2
     {
         switch(i)
         {
+        default:
+            break;
+
         case 13: // '\r'
             FM.Gears.cgear = false;
             float f = World.Rnd().nextFloat(0.0F, 1.0F);
             if(f < 0.1F)
             {
-                FM.AS.hitEngine(this, 0, 100);
                 if(World.Rnd().nextFloat(0.0F, 1.0F) < 0.5F)
+                {
+                    FM.AS.hitEngine(this, 0, 100);
                     FM.EI.engines[0].setEngineDies(actor);
-                FM.EI.engines[1].setEngineDies(actor);
+                }
+                else
+                {
+                    FM.AS.hitEngine(this, 1, 100);
+                    FM.EI.engines[1].setEngineDies(actor);
+                }
             }
             else if(f > 0.55F)
                 FM.EI.engines[0].setEngineDies(actor);
-            FM.EI.engines[1].setEngineDies(actor);
-            return super.cutFM(i, j, actor);
+            else
+                FM.EI.engines[1].setEngineDies(actor);
+            break;
 
         case 19: // '\023'
             FM.EI.engines[0].setEngineDies(actor);
             FM.EI.engines[1].setEngineDies(actor);
-            return super.cutFM(i, j, actor);
+            break;
         }
         return super.cutFM(i, j, actor);
     }

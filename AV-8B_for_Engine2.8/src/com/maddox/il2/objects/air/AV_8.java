@@ -1492,7 +1492,6 @@ public class AV_8 extends Scheme1
 
     protected boolean cutFM(int i, int j, Actor actor)
     {
-label0:
         switch(i)
         {
         default:
@@ -1501,18 +1500,9 @@ label0:
         case 13: // '\r'
             FM.Gears.cgear = false;
             float f = World.Rnd().nextFloat();
-            for(int k = 0; k < 1; k++)
-            {
-                if(f < 0.1F)
-                {
-                    FM.AS.hitEngine(this, k, 100);
-                    if(World.Rnd().nextFloat() < 0.49F)
-                        FM.EI.engines[k].setEngineDies(actor);
-                    break label0;
-                }
-                if(f > 0.55F)
-                    FM.EI.engines[k].setEngineDies(actor);
-            }
+            if(f < 0.1F)
+                FM.AS.hitEngine(this, 0, 100);
+            FM.EI.engines[0].setEngineDies(actor);
 
             break;
 
@@ -1525,12 +1515,8 @@ label0:
             break;
 
         case 19: // '\023'
-            for(int l = 0; l < 1; l++)
-            {
-                FM.CT.bHasAirBrakeControl = false;
-                FM.EI.engines[l].setEngineDies(actor);
-            }
-
+            FM.CT.bHasAirBrakeControl = false;
+            FM.EI.engines[0].setEngineDies(actor);
             break;
 
         case 11: // '\013'
