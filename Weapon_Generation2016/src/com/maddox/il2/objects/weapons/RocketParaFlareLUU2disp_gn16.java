@@ -25,6 +25,7 @@ public class RocketParaFlareLUU2disp_gn16 extends Rocket
         chute = null;
         bOnChute = false;
         bOnLight = false;
+        bCollideLand = false;
     }
 
     protected boolean haveSound()
@@ -74,9 +75,14 @@ public class RocketParaFlareLUU2disp_gn16 extends Rocket
         if(bOnChute)
         {
             getSpeed(v3d);
-            v3d.scale(0.96999999999999997D);
-            if(v3d.z < -2D)
-                v3d.z += 1.1F * Time.tickConstLenFs();
+            if(!bCollideLand)
+            {
+                v3d.scale(0.96999999999999997D);
+                if(v3d.z < -2D)
+                    v3d.z += 1.1F * Time.tickConstLenFs();
+            }
+            else
+                v3d.set(0.0D, 0.0D, 0.0D);
             setSpeed(v3d);
         } else
         if(Time.current() > ttcurTM)
@@ -102,14 +108,19 @@ public class RocketParaFlareLUU2disp_gn16 extends Rocket
 
     public void msgCollision(Actor actor, String s, String s1)
     {
-        if((actor instanceof ActorLand) && chute != null)
-            chute.landing();
+        if(actor instanceof ActorLand)
+        {
+            bCollideLand = true;
+            if(chute != null)
+                chute.landing();
+        }
         super.msgCollision(actor, s, s1);
     }
 
     private Chute chute;
     private boolean bOnChute;
     private boolean bOnLight;
+    private boolean bCollideLand;
     private static Vector3d v3d = new Vector3d();
     private long ttcurTM;
     private long ttlitTM;
