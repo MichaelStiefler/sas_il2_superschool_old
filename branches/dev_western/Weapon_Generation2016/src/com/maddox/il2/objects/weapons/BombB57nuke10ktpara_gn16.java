@@ -19,6 +19,7 @@ public class BombB57nuke10ktpara_gn16 extends Bomb
     {
         chute = null;
         bOnChute = false;
+        bCollideLand = false;
     }
 
     protected boolean haveSound()
@@ -46,9 +47,23 @@ public class BombB57nuke10ktpara_gn16 extends Bomb
         if(bOnChute)
         {
             getSpeed(v3d);
-            v3d.scale(0.97999999999999997D);
-            if(v3d.z < -2D)
-                v3d.z += 0.8F * Time.tickConstLenFs();
+            if(!bCollideLand)
+            {
+                super.pos.getAbs(p, or);
+                v3d.scale(0.980D);
+                if(v3d.z < -2D)
+                    v3d.z += 0.80F * Time.tickConstLenFs();
+                float pitch = or.getPitch();
+                for(;pitch > 180.0F; pitch -= 360.0F) ;
+                for(;pitch < -180.0F; pitch += 360.0F) ;
+                if(v3d.x > 0.0D && pitch > -89.0F && pitch > Math.toDegrees(Math.atan(v3d.z / v3d.x)))
+                {
+                    or.increment(0.0F, ((float)Math.toDegrees(Math.atan(v3d.z / v3d.x)) - pitch) * 0.5F, 0.0F);
+                    super.pos.setAbs(p, or);
+                }
+            }
+            else
+                v3d.set(0.0D, 0.0D, 0.0D);
             setSpeed(v3d);
         } else
         if(curTm > ttcurTM)
@@ -57,22 +72,29 @@ public class BombB57nuke10ktpara_gn16 extends Bomb
             chute = new Chute(this);
             chute.collide(false);
             chute.mesh().setScale(0.5F);
-            chute.pos.setRel(new Point3d(0.5D, 0.0D, 0.0D), new Orient(0.0F, 90F, 0.0F));
+            chute.pos.setRel(new Point3d(0.5D, 0.0D, -0.04D), new Orient(0.0F, 90F, 0.0F));
         }
     }
 
     public void msgCollision(Actor actor, String s, String s1)
     {
-        if((actor instanceof ActorLand) && chute != null)
-            chute.landing();
+        if(actor instanceof ActorLand)
+        {
+            bCollideLand = true;
+            if(chute != null)
+                chute.landing();
+        }
         super.msgCollision(actor, s, s1);
     }
 
     private Chute chute;
     private boolean bOnChute;
+    private boolean bCollideLand;
     private static Vector3d v3d = new Vector3d();
     private float ttcurTM;
     private float ttexpTM;
+    private Orient or = new Orient();
+    private Point3d p = new Point3d();
 
     static 
     {

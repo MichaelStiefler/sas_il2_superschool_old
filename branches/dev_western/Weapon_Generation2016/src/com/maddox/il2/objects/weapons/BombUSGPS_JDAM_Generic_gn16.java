@@ -44,31 +44,34 @@ public class BombUSGPS_JDAM_Generic_gn16 extends Bomb
                 float speedms = (float)getSpeed(null);
                 speedms += (200F - speedms) * 0.1F * tlfs;
                 super.pos.getAbs(p, or);
-                v.set(1.0D, 0.0D, 0.0D);
-                or.transform(v);
-                v.scale(speedms);
-                setSpeed(v);
-                p.x += ((Tuple3d) (v)).x * (double)tlfs;
-                p.y += ((Tuple3d) (v)).y * (double)tlfs;
-                p.z += ((Tuple3d) (v)).z * (double)tlfs - 0.011D;
-                pTemp.sub(p);
-                or.transformInv(pTemp);
-                float f2 = 0.05F;
-                if(p.distance(pTemp) > 0.0D)
+                if(p.z > Engine.land().HQ_Air(p.x, p.y))
                 {
-                    if(((Tuple3d) (pTemp)).y > 0.10000000000000001D)
-                        deltaAzimuth = -f2;
-                    if(((Tuple3d) (pTemp)).y < -0.10000000000000001D)
-                        deltaAzimuth = f2;
-                    if(((Tuple3d) (pTemp)).z < -0.10000000000000001D)
-                        deltaTangage = -f2;
-                    if(((Tuple3d) (pTemp)).z > 0.10000000000000001D)
-                        deltaTangage = f2;
-                    or.increment(70F * f2 * deltaAzimuth, 70F * f2 * deltaTangage, 0.0F);
-                    deltaAzimuth = deltaTangage = 0.0F;
+                    v.set(1.0D, 0.0D, 0.0D);
+                    or.transform(v);
+                    v.scale(speedms);
+                    setSpeed(v);
+                    p.x += ((Tuple3d) (v)).x * (double)tlfs;
+                    p.y += ((Tuple3d) (v)).y * (double)tlfs;
+                    p.z += ((Tuple3d) (v)).z * (double)tlfs - 0.011D;
+                    pTemp.sub(p);
+                    or.transformInv(pTemp);
+                    float f2 = 0.05F;
+                    if(p.distance(pTemp) > 0.0D)
+                    {
+                        if(((Tuple3d) (pTemp)).y > 0.10000000000000001D)
+                           deltaAzimuth = -f2;
+                        if(((Tuple3d) (pTemp)).y < -0.10000000000000001D)
+                            deltaAzimuth = f2;
+                        if(((Tuple3d) (pTemp)).z < -0.10000000000000001D)
+                            deltaTangage = -f2;
+                        if(((Tuple3d) (pTemp)).z > 0.10000000000000001D)
+                            deltaTangage = f2;
+                        or.increment(70F * f2 * deltaAzimuth, 70F * f2 * deltaTangage, 0.0F);
+                        deltaAzimuth = deltaTangage = 0.0F;
+                    }
+                    super.pos.setAbs(p, or);
+                    updateSound();
                 }
-                super.pos.setAbs(p, or);
-                updateSound();
             }
             else
             {

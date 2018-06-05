@@ -51,50 +51,56 @@ public class BombUSLGB_PavewayII_Generic_gn16 extends Bomb
             float speedms = (float)getSpeed(null);
             speedms += (200F - speedms) * 0.1F * tlfs;
             super.pos.getAbs(p, or);
-            v.set(1.0D, 0.0D, 0.0D);
-            or.transform(v);
-            v.scale(speedms);
-            if(laseron)
+            if(p.z > Engine.land().HQ_Air(p.x, p.y))
             {
-                bOnceCatchLaser = true;
-                setSpeed(v);
-                p.x += ((Tuple3d) (v)).x * (double)tlfs;
-                p.y += ((Tuple3d) (v)).y * (double)tlfs;
-                p.z += ((Tuple3d) (v)).z * (double)tlfs - 0.011D;
-// commented out by western0221; what necessity ?
-//                    if(isNet() && isNetMirror())
-//                        super.pos.setAbs(p, or);
-                pT.sub(p);
-                or.transformInv(pT);
-                float f2 = 0.05F;
-                if(p.distance(pT) > 0.0D)
+                v.set(1.0D, 0.0D, 0.0D);
+                or.transform(v);
+                v.scale(speedms);
+                if(laseron)
                 {
-                    if(((Tuple3d) (pT)).y > 0.10000000000000001D)
-                        deltaAzimuth = -f2;
-                    if(((Tuple3d) (pT)).y < -0.10000000000000001D)
-                        deltaAzimuth = f2;
-                    if(((Tuple3d) (pT)).z < -0.10000000000000001D)
-                        deltaTangage = -f2;
-                    if(((Tuple3d) (pT)).z > 0.10000000000000001D)
-                        deltaTangage = f2;
-                    or.increment(70F * f2 * deltaAzimuth, 70F * f2 * deltaTangage, 0.0F);
-                    deltaAzimuth = deltaTangage = 0.0F;
-                }
-                super.pos.setAbs(p, or);
-                updateSound();
-            }
-            else
-            {
-                if(bOnceCatchLaser)
-                {
+                    bOnceCatchLaser = true;
                     setSpeed(v);
                     p.x += ((Tuple3d) (v)).x * (double)tlfs;
                     p.y += ((Tuple3d) (v)).y * (double)tlfs;
                     p.z += ((Tuple3d) (v)).z * (double)tlfs - 0.011D;
+// commented out by western0221; what necessity ?
+//                    if(isNet() && isNetMirror())
+//                        super.pos.setAbs(p, or);
+                    pT.sub(p);
+                    or.transformInv(pT);
+                    float f2 = 0.05F;
+                    if(p.distance(pT) > 0.0D)
+                    {
+                        if(((Tuple3d) (pT)).y > 0.10000000000000001D)
+                            deltaAzimuth = -f2;
+                        if(((Tuple3d) (pT)).y < -0.10000000000000001D)
+                            deltaAzimuth = f2;
+                        if(((Tuple3d) (pT)).z < -0.10000000000000001D)
+                            deltaTangage = -f2;
+                        if(((Tuple3d) (pT)).z > 0.10000000000000001D)
+                            deltaTangage = f2;
+                        or.increment(70F * f2 * deltaAzimuth, 70F * f2 * deltaTangage, 0.0F);
+                        deltaAzimuth = deltaTangage = 0.0F;
+                    }
+                    super.pos.setAbs(p, or);
+                    updateSound();
                 }
-                super.curTm += Time.tickLenFs();
-                Ballistics.updateBomb(this, super.M, super.S, super.J, super.DistFromCMtoStab);
-                updateSound();
+                else
+                {
+                    double pitch = or.getPitch();
+                    for(;pitch > 180.0D; pitch -= 360.0D) ;
+                    for(;pitch < -180.0D; pitch += 360.0D) ;
+                    if(bOnceCatchLaser || pitch < -8.0D)
+                    {
+                        setSpeed(v);
+                        p.x += ((Tuple3d) (v)).x * (double)tlfs;
+                        p.y += ((Tuple3d) (v)).y * (double)tlfs;
+                        p.z += ((Tuple3d) (v)).z * (double)tlfs - 0.011D;
+                    }
+                    super.curTm += Time.tickLenFs();
+                    Ballistics.updateBomb(this, super.M, super.S, super.J, super.DistFromCMtoStab);
+                    updateSound();
+                }
             }
         }
         else
