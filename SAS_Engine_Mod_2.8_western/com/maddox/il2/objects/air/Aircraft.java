@@ -1119,7 +1119,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 								else string_77_ = string.substring(4, 5).toUpperCase();
 								int i_78_ = 0;
 								int i_79_ = World.Rnd().nextInt(0, 150);
-								if ((double) FM.CT.getGear() > 0.99) {
+								if (FM.CT.getGear() > 0.99F) {
 									if (i_79_ < 5) i_78_ = 8;
 									else if (i_79_ < 10) i_78_ = 7;
 									else if (i_79_ < 15) i_78_ = 1;
@@ -1152,7 +1152,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 								} else if (i_78_ != 0) {
 									if (shot.power > 40000.0F) i_76_ += 3;
 									if (i_78_ == 8) {
-										if ((double) World.Rnd().nextFloat() < 0.5) {
+										if (World.Rnd().nextFloat() < 0.5F) {
 											FM.AS.hitGear(shot.initiator, 1, 8);
 											FM.AS.hitGear(shot.initiator, 0, 8);
 										} else FM.AS.hitGear(shot.initiator, i_76_, i_78_);
@@ -1277,7 +1277,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	protected float getEnergyPastArmor(float f, float f1, Shot shot) {
-		shot.power -= (double) (shot.powerType != 0 ? 1.0F : 2.0F) * ((double) (f * 1700F) * Math.cos(f1));
+		shot.power -= (float) ((shot.powerType != 0 ? 1.0D : 2.0D) * ((double) f * 1700D * Math.cos(f1)));
 		return shot.power;
 	}
 
@@ -1291,17 +1291,17 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	protected float getEnergyPastArmor(double d, float f, Shot shot) {
-		shot.power -= (double) (shot.powerType != 0 ? 1.0F : 2.0F) * (d * 1700D * Math.cos(f));
+		shot.power -= (float) ((shot.powerType != 0 ? 1.0D : 2.0D) * (d * 1700D * Math.cos(f)));
 		return shot.power;
 	}
 
 	protected float getEnergyPastArmor(double d, Shot shot) {
-		shot.power -= (double) (shot.powerType != 0 ? 1.0F : 2.0F) * (d * 1700D);
+		shot.power -= (float) ((shot.powerType != 0 ? 1.0D : 2.0D) * (d * 1700D));
 		return shot.power;
 	}
 
 	public static boolean isArmorPenetrated(double d, Shot shot) {
-		return (double) shot.power > (double) (shot.powerType != 0 ? 1.0F : 2.0F) * (d * 1700D);
+		return (double) shot.power > (shot.powerType != 0 ? 1.0D : 2.0D) * (d * 1700D);
 	}
 
 	protected void netHits(int i, int j, int k, Actor actor) {
@@ -1687,6 +1687,8 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		case 2: // '\002'
 			FM = new FlightModel(s);
 			FM.AP = new Autopilotage();
+			// By western, add reserve AP
+			FM.APreserve = new Autopilotage();
 			break;
 		}
 		FM.actor = this;
@@ -3135,7 +3137,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 
 	public float getWheelWidth(int i) {
 		float f = cvt(FM.Wingspan, 10F, 40F, 0.12F, 0.42F);
-		if (i == 2) f = (float) ((double) f * 0.59999999999999998D);
+		if (i == 2) f = f * 0.6F;
 		return f;
 	}
 

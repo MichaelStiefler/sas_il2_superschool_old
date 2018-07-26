@@ -97,10 +97,10 @@ public class AIFlightModel extends FlightModel {
 		Cw.x = -q_ * (Wing.new_CxM(AOA, fullMach) + GearCX * CT.getGearR() + GearCX * CT.getGearL() + 2.0F * Sq.dragAirbrakeCx * CT.getAirBrake() + radiatorCX * (EI.getRadiatorPos() + CT.getCockpitDoor() + f1) + Sq.dragChuteCx * CT.getDragChute());
 		Cw.z = q_ * Wing.new_CyM(AOA, fullMach) * Kq;
 		if (fmsfxCurrentType != 0 && fmsfxCurrentType == 1) Cw.z *= Aircraft.cvt(fmsfxPrevValue, 0.003F, 0.8F, 1.0F, 0.0F);
-		if (d < 0.40000000000000002D * (double) Length) {
-			double d1 = 1.0D - d / (0.40000000000000002D * (double) Length);
-			double d2 = 1.0D + 0.29999999999999999D * d1;
-			double d4 = 1.0D + 0.29999999999999999D * d1;
+		if (d < 0.40D * (double) Length) {
+			double d1 = 1.0D - d / (0.40D * (double) Length);
+			double d2 = 1.0D + 0.3D * d1;
+			double d4 = 1.0D + 0.3D * d1;
 			Cw.z *= d2;
 			Cw.x *= d4;
 		}
@@ -191,7 +191,7 @@ public class AIFlightModel extends FlightModel {
 				double d7 = 20D - (double) Math.abs(AOA);
 				if (d7 < (double) minElevCoeff) d7 = minElevCoeff;
 				double d9 = (double) AOA - (double) CT.getElevator() * d7;
-				double d10 = 0.017000000000000001D * (double) Math.abs(AOA);
+				double d10 = 0.0170D * (double) Math.abs(AOA);
 				if (d10 < 1.0D) d10 = 1.0D;
 				if (d9 > 90D) d9 = -(180D - d9);
 				if (d9 < -90D) d9 = 180D - d9;
@@ -226,19 +226,19 @@ public class AIFlightModel extends FlightModel {
 		producedAF.set(0.0D, 0.0D, 0.0D);
 		AF.add(EI.producedF);
 		if (W.lengthSquared() > 36D) W.scale(6D / W.length());
-		double d3 = 0.10000000000000001D + (double) Sq.squareWing;
+		double d3 = 0.10D + (double) Sq.squareWing;
 		if (d3 < 1.0D) d3 = 1.0D;
 		d3 = 1.0D / d3;
-		W.x *= 1.0D - 0.12D * (0.20000000000000001D + (double) f2 + (double) f3) * d3;
-		W.y *= 1.0D - 0.5D * (0.20000000000000001D + (double) Sq.liftStab) * d3;
-		W.z *= 1.0D - 0.5D * (0.20000000000000001D + (double) Sq.liftKeel) * d3;
+		W.x *= 1.0D - 0.12D * (0.20D + (double) f2 + (double) f3) * d3;
+		W.y *= 1.0D - 0.5D * (0.20D + (double) Sq.liftStab) * d3;
+		W.z *= 1.0D - 0.5D * (0.20D + (double) Sq.liftKeel) * d3;
 		GF.set(0.0D, 0.0D, 0.0D);
 		GM.set(0.0D, 0.0D, 0.0D);
 		Gears.roughness = 0.5D;
 		Gears.ground(this, true);
-		GM.x *= 0.10000000000000001D;
-		GM.y *= 0.40000000000000002D;
-		GM.z *= 0.80000000000000004D;
+		GM.x *= 0.10D;
+		GM.y *= 0.40D;
+		GM.z *= 0.80D;
 		int l = 2;
 		if (GF.lengthSquared() == 0.0D && GM.lengthSquared() == 0.0D || brakeShoe) l = 1;
 		SummF.add(AF, GF);
@@ -297,9 +297,9 @@ public class AIFlightModel extends FlightModel {
 				GM.set(0.0D, 0.0D, 0.0D);
 				if (i1 < l - 1) {
 					Gears.ground(this, true);
-					GM.x *= 0.10000000000000001D;
-					GM.y *= 0.40000000000000002D;
-					GM.z *= 0.80000000000000004D;
+					GM.x *= 0.10D;
+					GM.y *= 0.40D;
+					GM.z *= 0.80D;
 					TmpV.set(0.0D, 0.0D, -Gravity);
 					Or.transformInv(TmpV);
 					GF.add(TmpV);

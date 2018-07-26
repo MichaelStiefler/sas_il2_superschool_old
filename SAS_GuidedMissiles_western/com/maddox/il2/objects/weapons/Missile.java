@@ -1,6 +1,6 @@
 // Source File Name: Missile.java
 // Author:	Storebror
-// Edit:	western0221 on 07th/May/2018
+// Edit:	western0221 on 24th/Jul/2018
 package com.maddox.il2.objects.weapons;
 
 import java.io.IOException;
@@ -37,6 +37,7 @@ import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.TypeFighter;
 import com.maddox.il2.objects.air.TypeGuidedMissileCarrier;
 import com.maddox.il2.objects.air.TypeLaserDesignator;
+import com.maddox.il2.objects.air.TypeSACLOS;
 import com.maddox.il2.objects.air.TypeSemiRadar;
 import com.maddox.il2.objects.vehicles.artillery.RocketryRocket;
 import com.maddox.rts.Message;
@@ -1015,10 +1016,13 @@ public class Missile extends Rocket
 		}
 		this.iDetectorType = Property.intValue(localClass, "detectorType", DETECTOR_TYPE_MANUAL);
 		if (iDetectorType == DETECTOR_TYPE_LASER) bLaserHoming = true;
-		else  bLaserHoming = false;
+		else bLaserHoming = false;
+		if (iDetectorType == DETECTOR_TYPE_SACLOS) bSACLOSHoming = true;
+		else bSACLOSHoming = false;
 		this.lTargetType = Property.longValue(localClass, "targetType", TARGET_AIR);
 		this.missileProximityFuzeRadius = Property.floatValue(localClass, "proximityFuzeRadius", 50.0F);
 		// When proximityFuzeRadius = 0F set, means no Proximity Fuze. So, working as Contact Fuze or Time Fuze (reaching timeLife).
+		this.soundNameRadarPW = Property.stringValue(localClass, "soundRadarPW", null);
 
 		this.bRealisticRadarSelect = Config.cur.ini.get("Mods", "RealisticRadarSelect", 0) != 0;
 
@@ -1115,6 +1119,10 @@ public class Missile extends Rocket
 
 	public boolean getRocketFiring() {
 		return this.bRocketFiring;
+	}
+
+	public String getSoundstringRadarPW() {
+		return this.soundNameRadarPW;
 	}
 
 	public int HitbyMask() {
@@ -1325,12 +1333,9 @@ public class Missile extends Rocket
 		switch (this.launchType) {
 		default:
 		case LAUNCH_TYPE_STRAIGHT: // simply ignite and leave rail
-		{
 			this.oldRoll = this.missileOrient.getRoll();
 			break;
-		}
 		case LAUNCH_TYPE_QUICK: // "swoosh" off rocket rail
-		{
 			this.missileBaseSpeed += 20.0F;
 			this.trajectoryVector3d.set(1.0D, 0.0D, 0.0D);
 			this.missileOrient.transform(this.trajectoryVector3d);
@@ -1344,9 +1349,7 @@ public class Missile extends Rocket
 			this.missileOrient.setYPR((float) this.launchYaw, (float) this.launchPitch, this.oldRoll);
 			this.pos.setAbs(this.missilePoint3d, this.missileOrient);
 			break;
-		}
 		case LAUNCH_TYPE_DROP: // drop pattern
-		{
 			// start with -6° pitch if launched from Aircraft
 			// this.launchKren = Math.toRadians(this.missileOrient.getKren());
 			this.launchKren = Math.toRadians(this.getOwner().pos.getAbsOrient().getRoll());
@@ -1368,7 +1371,6 @@ public class Missile extends Rocket
 			// fOldRoll);
 			// pos.setAbs(this.p, this.or);
 			break;
-		}
 		}
 	}
 
@@ -1411,6 +1413,30 @@ public class Missile extends Rocket
 				this.victimOffsetPoint3d = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetOffset();
 
 				if (this.targetPoint3dAbs == null || this.laserOwner == null || this.victimOffsetPoint3d == null)
+					return;
+
+				this.safeVictimOffset.set(this.victimOffsetPoint3d);
+				this.targetPoint3d.set(this.targetPoint3dAbs);
+				this.targetPoint3d.sub(this.missilePoint3d); // relative Position to target
+			}
+			return;
+		}
+
+		if (bSACLOSHoming) {
+			if (!this.ownerIsAI()) {
+				if (this.getFM().getOverload() > this.maxLaunchG) {
+					this.targetPoint3d = null;
+					this.targetPoint3dAbs = null;
+					this.laserOwner = null;
+					return;
+				}
+			}
+			if (this.getOwner() instanceof TypeGuidedMissileCarrier) {
+				this.targetPoint3dAbs = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetPos();
+				this.saclosOwner = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetPosOwner();
+				this.victimOffsetPoint3d = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetOffset();
+
+				if (this.targetPoint3dAbs == null || this.saclosOwner == null || this.victimOffsetPoint3d == null)
 					return;
 
 				this.safeVictimOffset.set(this.victimOffsetPoint3d);
@@ -1972,6 +1998,65 @@ public class Missile extends Rocket
 					}
 				}
 			}
+		} else if (bSACLOSHoming) {
+			double targetDistance = 0.0D;
+			float targetAngle = 0.0F;
+			float targetBait = 0.0F;
+			float maxTargetBait = 0.0F;
+
+			if (saclosOwner == null) {
+				while ((this.getOwner() instanceof TypeSACLOS) && (((TypeSACLOS) this.getOwner()).getSACLOSenabled())) {
+					Point3d point3d = new Point3d();
+					point3d.set(((TypeSACLOS) this.getOwner()).getSACLOStarget());
+					if (point3d == null)
+						break;
+					if (Main.cur().clouds != null &&
+						(   Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F
+						 || Main.cur().clouds.getVisibility(point3d, this.getOwner().pos.getAbsPoint()) < 1.0F))
+						break;
+					targetDistance = this.pos.getAbsPoint().distance(point3d);
+					if (targetDistance > attackMaxDistance)
+						break;
+					targetAngle = GuidedMissileUtils.angleBetween(this, point3d);
+					if (targetAngle > this.maxFOVfrom)
+						break;
+					saclosOwner = this.getOwner();
+					break;
+				}
+			}
+			if (saclosOwner != null) {
+				if (((TypeSACLOS) saclosOwner).getSACLOSenabled()) {
+					Point3d point3d = new Point3d();
+					point3d.set(((TypeSACLOS) saclosOwner).getSACLOStarget());
+
+					if (point3d != null) {
+						this.targetPoint3d.set(this.targetPoint3dAbs);
+						this.targetPoint3d.sub(this.missilePoint3d); // relative Position to target
+						this.missileOrient.transformInv(this.targetPoint3d); // set coordinate system according to A/C POV
+
+						// Calculate angle to target.
+						float angleAzimuth = (float) Math.toDegrees(Math.atan(this.targetPoint3d.y / this.targetPoint3d.x));
+						float angleTangage = (float) Math.toDegrees(Math.atan(this.targetPoint3d.z / this.targetPoint3d.x));
+
+						if (this.getFailState() == FAIL_TYPE_REFLEX) {
+							angleAzimuth += 180F;
+							angleTangage += 180F;
+							if (angleAzimuth > 180F) {
+								angleAzimuth = 180F - angleAzimuth;
+							}
+							if (angleTangage > 180F) {
+								angleTangage = 180F - angleTangage;
+							}
+						}
+
+						if (Main.cur().clouds == null ||
+							(   Main.cur().clouds.getVisibility(saclosOwner.pos.getAbsPoint(), this.pos.getAbsPoint()) >= 0.99F)
+							 && Main.cur().clouds.getVisibility(this.targetPoint3dAbs, saclosOwner.pos.getAbsPoint()) >= 0.99F) {
+							this.computeMissilePath(missileSpeed, 0.0F, 0.0F, angleAzimuth, angleTangage);
+						}
+					}
+				}
+			}
 		}
 
 		return this.computeFuzeState();
@@ -2002,11 +2087,11 @@ public class Missile extends Rocket
 			Actor flarechaff = (Actor) theCountermeasures.get(counterMeasureIndex);
 			flareDistance = GuidedMissileUtils.distanceBetween(this, flarechaff);
 //			victim1Distance = GuidedMissileUtils.distanceBetween(this, victim);
-			if (lockType == DETECTOR_TYPE_INFRARED && flarechaff instanceof RocketFlare && flareLockTime < lockTime && flareDistance < 200D && (double) (GuidedMissileUtils.angleActorBetween(victim, this)) > 30)
+			if (lockType == DETECTOR_TYPE_INFRARED && flarechaff instanceof RocketFlare && flareLockTime < lockTime && flareDistance < 200D && GuidedMissileUtils.angleActorBetween(victim, this) > 30F)
 				this.victim = flarechaff;
-			else if ((lockType == DETECTOR_TYPE_RADAR_HOMING || lockType == DETECTOR_TYPE_RADAR_BEAMRIDING || lockType == DETECTOR_TYPE_RADAR_TRACK_VIA_MISSILE) && flarechaff instanceof RocketChaff && flareLockTime < lockTime && flareDistance < 500D && (double) (GuidedMissileUtils.angleActorBetween(victim, this)) > 30)
+			else if ((lockType == DETECTOR_TYPE_RADAR_HOMING || lockType == DETECTOR_TYPE_RADAR_BEAMRIDING || lockType == DETECTOR_TYPE_RADAR_TRACK_VIA_MISSILE) && flarechaff instanceof RocketChaff && flareLockTime < lockTime && flareDistance < 500D && GuidedMissileUtils.angleActorBetween(victim, this) > 30F)
 				this.victim = flarechaff;
-			else if (lockType == DETECTOR_TYPE_IMAGE_IR && flarechaff instanceof RocketFlare && flareLockTime < lockTime && flareDistance < 500D && (double) (GuidedMissileUtils.angleActorBetween(victim, this)) > 30 && TrueRandom.nextFloat() < 0.1F)
+			else if (lockType == DETECTOR_TYPE_IMAGE_IR && flarechaff instanceof RocketFlare && flareLockTime < lockTime && flareDistance < 500D && GuidedMissileUtils.angleActorBetween(victim, this) > 30F && TrueRandom.nextFloat() < 0.1F)
 				this.victim = flarechaff;
 		}
 	}
@@ -2035,11 +2120,11 @@ public class Missile extends Rocket
 			new float[] { 131400F, 369000F, 1224000F }
 		});
 		for (int i = 0; i < 4; i++) {
-			if ((double)Math.abs(PenetrateThickness[i][0] - PenetrateThickness[i][1]) < 0.001D)
+			if (Math.abs(PenetrateThickness[i][0] - PenetrateThickness[i][1]) < 0.001F)
 				internalerrror(1);
 			for (int j = 0; j <= 1; j++) {
 				float af[] = PenetrateEnergyToKill[i][j];
-				if ((double)(af[1] - af[0]) < 0.001D || (double)(af[2] - af[1]) < 0.001D)
+				if (af[1] - af[0] < 0.001F || af[2] - af[1] < 0.001F)
 					internalerrror(2);
 			}
 
@@ -2239,6 +2324,7 @@ public class Missile extends Rocket
 	protected static final int DETECTOR_TYPE_IMAGE_EOTV = 7;
 	protected static final int DETECTOR_TYPE_IMAGE_IR = 8;
 	protected static final int DETECTOR_TYPE_LASER = 9;
+	protected static final int DETECTOR_TYPE_SACLOS = 10;
 	protected static final int FAIL_TYPE_CONTROL_BLOCKED = 6;
 	protected static final int FAIL_TYPE_ELECTRONICS = 1;
 	protected static final int FAIL_TYPE_ENGINE = 3;
@@ -2351,6 +2437,7 @@ public class Missile extends Rocket
 	private float turnDiffMax = 0F;
 	private float attackMaxDistance = 5000F;
 	private float missileProximityFuzeRadius = 50F;
+	private String soundNameRadarPW = null;
 	DecimalFormat twoPlaces = new DecimalFormat("+000.00;-000.00"); // only required for debugging
 
 	private Actor victim = null;
@@ -2364,6 +2451,8 @@ public class Missile extends Rocket
 
 	private boolean bLaserHoming = false;
 	private Actor laserOwner = null;
+	private boolean bSACLOSHoming = false;
+	private Actor saclosOwner = null;
 
 	private boolean bRealisticRadarSelect = false;
 

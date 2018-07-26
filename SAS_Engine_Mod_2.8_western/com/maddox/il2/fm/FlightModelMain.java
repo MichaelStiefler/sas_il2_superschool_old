@@ -7,6 +7,8 @@
 /*By Storebror, fix DiffFM loading error on 18th/Apr./2017*/
 /*By western, new FM properties Vlanding and VtakeoffRot on 20th/Nov./2017*/
 /*By western, add Scheme=8 case for 8x engines aircrafts on 26th/Apr./2018*/
+/*By western, add Scheme=10 case for 10x engines aircrafts on 23rd/Jun./2018*/
+/*By western, add AI landing process control values on 10th/Jul./2018*/
 package com.maddox.il2.fm;
 
 import java.io.BufferedWriter;
@@ -129,9 +131,9 @@ public class FlightModelMain extends FMMath {
 	protected Vector3d GM;
 	protected Vector3d SummF;
 	protected Vector3d SummM;
-	//BY PAL, static?
-	private /* static */ Vector3d TmpA = new Vector3d();
-	private /* static */ Vector3d TmpV = new Vector3d();
+	//BY PAL, static? --- By western, Yes static OK for temporary
+	private static Vector3d TmpA = new Vector3d();
+	private static Vector3d TmpV = new Vector3d();
 	protected Vector3d ACmeter;
 	protected Vector3d Accel;
 	protected Vector3d LocalAccel;
@@ -187,11 +189,11 @@ public class FlightModelMain extends FMMath {
 	String turnFile;
 	String speedFile;
 	String craftFile;
-	//By PAL, static???
-	private /* static */ Vector3d actVwld = new Vector3d();
+	//By PAL, static??? --- By western, Yes static OK for temporary
+	private static Vector3d actVwld = new Vector3d();
 	public long Operate;
-	private /* static */ Vector3d GPulse = new Vector3d();
-	public /* static */ boolean bCY_CRIT04 = true;
+	private static Vector3d GPulse = new Vector3d();
+	public static boolean bCY_CRIT04 = true;
 	private static InOutStreams fmDir = null; //By PAL, start it as null to initialize later.
 	// --------------------------------------------------------
 
@@ -205,6 +207,17 @@ public class FlightModelMain extends FMMath {
 	public float Vlanding;
 	public float VtakeoffRot;
 	public float VminAI;
+	public float VAILandingDownwind;
+	public int AILandingWPGearDown;
+	public int AILandingWPHookDown;
+	public int AILandingWPFlapFullDown;
+	public int AILandingWPFlapHalfDown;
+	public int AILandingWP360OverHeadApr;
+	public float AILandingWP360PitchPlus;
+	public boolean bOnGoingOverHeadApproach;
+	public boolean bNoDiveBombing;
+	public Autopilotage APreserve;
+
 	// --------------------------------------------------------
 
 	//By PAL, required for FMDiff
@@ -221,7 +234,7 @@ public class FlightModelMain extends FMMath {
 
 
 	public float getSpeedKMH() {
-		return (float) (Vflow.x * 3.6000000000000001D);
+		return (float) (Vflow.x * 3.60D);
 	}
 
 	public float getSpeed() {
@@ -285,7 +298,7 @@ public class FlightModelMain extends FMMath {
 		if (Vwld.lengthSquared() < 10D) {
 			double d = Vwld.lengthSquared() - 5D;
 			if (d < 0.0D) d = 0.0D;
-			TmpV.scale(0.20000000000000001D * d);
+			TmpV.scale(0.20D * d);
 		}
 		TmpA.set(0.0D, 0.0D, -Atmosphere.g());
 		Or.transformInv(TmpA);
@@ -577,6 +590,23 @@ public class FlightModelMain extends FMMath {
 		if (f > 0.0F && f <= 30.0F) CT.targetDegreeAITakeoffRotation = f;
 		f = sectfile.get(s2, "CTargetPitchDegreeAITakeoffClimb", -1F);
 		if (f > 0.0F && f <= 30.0F) CT.targetDegreeAITakeoffClimb = f;
+		// TODO: New AI landing control parameter
+		f = sectfile.get(s2, "CTargetPitchDegreeAIApproach", -1F);
+		if (f > 0.0F && f <= 30.0F) CT.targetDegreeAIApproach = f;
+		f = sectfile.get(s2, "AILandingWPDownwindSpd", -1F);
+		if (f > 50.0F && f <= 900.0F) VAILandingDownwind = f * 0.2777778F;
+		j = sectfile.get(s2, "AILandingWPGearDown", -1);
+		if(j < 9) AILandingWPGearDown = j;
+		j = sectfile.get(s2, "AILandingWPHookDown", -1);
+		if(j < 9) AILandingWPHookDown = j;
+		j = sectfile.get(s2, "AILandingWPFlapFullDown", -1);
+		if(j < 9) AILandingWPFlapFullDown = j;
+		j = sectfile.get(s2, "AILandingWPFlapHalfDown", -1);
+		if(j > 1 && j < 9 && j > AILandingWPFlapFullDown) AILandingWPFlapHalfDown = j;
+		j = sectfile.get(s2, "AILandingWP360OverHeadApproach", -1);
+		if(j == 1 || j == 2) AILandingWP360OverHeadApr = j;
+		f = sectfile.get(s2, "AILandingWP360PitchPlus", 0.0F);
+		if (f > 0.0F && f <= 1.0F) AILandingWP360PitchPlus = f;
 		// --------------------------------------------------------
 		// TODO: +++ Online Compatibility / Smoke Bug Fix +++
 		if (Mission.isNet()) {
@@ -655,6 +685,7 @@ public class FlightModelMain extends FMMath {
 		case 5: // '\005'
 		case 7: // '\007'
 		case 8: // '\008'
+		case 10:
 			float f4 = Length * 0.35F;
 			f4 *= f4;
 			float f14 = Length * 0.125F;
@@ -1054,6 +1085,15 @@ public class FlightModelMain extends FMMath {
 		Vlanding = -1.0F;
 		VtakeoffRot = -1.0F;
 		VminAI = -1.0F;
+		VAILandingDownwind = -1.0F;
+		AILandingWPGearDown = -1;
+		AILandingWPHookDown = -1;
+		AILandingWPFlapFullDown = -1;
+		AILandingWPFlapHalfDown = -1;
+		AILandingWP360OverHeadApr = -1;
+		AILandingWP360PitchPlus = 0.0F;
+		bOnGoingOverHeadApproach = false;
+		bNoDiveBombing = false;
 		// --------------------------------------------------------
 		Arms = new Arm();
 		Gears = new Gear();

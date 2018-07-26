@@ -1,5 +1,8 @@
 //Modified AircraftState class for the SAS Engine Mod
 
+//By western on 23rd/Jun./2018, expanded for 10x Engines aircrafts (from stock 6x), 8x fuel tank (from stock 4x)
+//By western on 29th/Jun./2018, debug expanded codes, recover static int astateEffectsDispXXXX values in each used lines.
+
 package com.maddox.il2.fm;
 
 import java.io.File;
@@ -239,30 +242,32 @@ public class AircraftState {
 	public boolean bIsEnableToBailout;
 	public byte astateBailoutStep;
 	public int astateCockpitState;
-	public byte astateOilStates[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-	private Eff3DActor astateOilEffects[][] = { { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null } };
-	public byte astateTankStates[] = { 0, 0, 0, 0 };
-	private Eff3DActor astateTankEffects[][] = { { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null } };
-	public byte astateEngineStates[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-	private Eff3DActor astateEngineEffects[][] = { { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null } };
-	public byte astateSootStates[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-	public Eff3DActor astateSootEffects[][] = { { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null } };
-	public Eff3DActor astateCondensateEffects[] = { null, null, null, null, null, null, null, null };
+	// By western, expanded astateOilStates[], astateOilEffects[][], astateEngineStates[], astateEngineEffects[][], astateSootStates[], astateSootEffects[][], astateCondensateEffects[], astateEngineBurnLights[] from stock 6 to modded 10.
+	// By western, expanded astateTankStates[], astateTankEffects[][], astateTankBurnLights[] from stock 4 to modded 8.
+	// By western, expanded astateEffectChunks[] +6 to enable both above changes.
+	public byte astateOilStates[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	private Eff3DActor astateOilEffects[][] = { { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null } };
+	public byte astateTankStates[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+	private Eff3DActor astateTankEffects[][] = { { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null } };
+	public byte astateEngineStates[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	private Eff3DActor astateEngineEffects[][] = { { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null } };
+	public byte astateSootStates[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	public Eff3DActor astateSootEffects[][] = { { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null } };
+	public Eff3DActor astateCondensateEffects[] = { null, null, null, null, null, null, null, null, null, null };
 	private Eff3DActor astateStallEffects[] = { null, null };
 	private Eff3DActor astateAirShowEffects[] = { null, null };
 	private Eff3DActor astateNavLightsEffects[] = { null, null, null, null, null, null };
 	private LightPointActor astateNavLightsLights[] = { null, null, null, null, null, null };
-	private LightPointActor astateTankBurnLights[] = { null, null, null, null };
-	// By western, expanded astateEngineBurnLights[] from stock 6 to modded 8.
-	private LightPointActor astateEngineBurnLights[] = { null, null, null, null, null, null, null, null };
+	private LightPointActor astateTankBurnLights[] = { null, null, null, null, null, null, null, null };
+	private LightPointActor astateEngineBurnLights[] = { null, null, null, null, null, null, null, null, null, null };
 	public Eff3DActor astateLandingLightEffects[] = { null, null, null, null };
 	private LightPointActor astateLandingLightLights[] = { null, null, null, null };
-	public String astateEffectChunks[] = { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null };
+	public String astateEffectChunks[] = { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null , null, null, null, null, null, null };
 	public static final int astateEffectsDispTanks = 0;
-	public static final int astateEffectsDispEngines = 4;
-	public static final int astateEffectsDispLights = 12;
-	public static final int astateEffectsDispLandingLights = 18;
-	public static final int astateEffectsDispOilfilters = 22;
+	public static final int astateEffectsDispEngines = 8;
+	public static final int astateEffectsDispLights = 18;
+	public static final int astateEffectsDispLandingLights = 24;
+	public static final int astateEffectsDispOilfilters = 28;
 	public static boolean bCheckPlayerAircraft = true;
 	private Item itemsToMaster[];
 	private Item itemsToMirrors[];
@@ -374,29 +379,29 @@ public class AircraftState {
 		if (actor1 instanceof Aircraft) aircraft = (AircraftLH) actor1;
 		else throw new RuntimeException("Can not cast aircraft structure into a non-aircraft entity.");
 		bIsMaster = flag;
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < 8; i++)
 			try {
-				astateEffectChunks[i + 0] = actor.findHook("_Tank" + (i + 1) + "Burn").chunkName();
-				astateEffectChunks[i + 0] = astateEffectChunks[i + 0].substring(0, astateEffectChunks[i + 0].length() - 1);
-				Aircraft.debugprintln(aircraft, "AS: Tank " + i + " FX attached to '" + astateEffectChunks[i + 0] + "' substring..");
+				astateEffectChunks[i + astateEffectsDispTanks] = actor.findHook("_Tank" + (i + 1) + "Burn").chunkName();
+				astateEffectChunks[i + astateEffectsDispTanks] = astateEffectChunks[i + astateEffectsDispTanks].substring(0, astateEffectChunks[i + astateEffectsDispTanks].length() - 1);
+				Aircraft.debugprintln(aircraft, "AS: Tank " + i + " FX attached to '" + astateEffectChunks[i + astateEffectsDispTanks] + "' substring..");
 			} catch (Exception exception) {
 			} finally {
 			}
 
 		for (int j = 0; j < aircraft.FM.EI.getNum(); j++)
 			try {
-				astateEffectChunks[j + 4] = actor.findHook("_Engine" + (j + 1) + "Smoke").chunkName();
-				astateEffectChunks[j + 4] = astateEffectChunks[j + 4].substring(0, astateEffectChunks[j + 4].length() - 1);
-				Aircraft.debugprintln(aircraft, "AS: Engine " + j + " FX attached to '" + astateEffectChunks[j + 4] + "' substring..");
+				astateEffectChunks[j + astateEffectsDispEngines] = actor.findHook("_Engine" + (j + 1) + "Smoke").chunkName();
+				astateEffectChunks[j + astateEffectsDispEngines] = astateEffectChunks[j + astateEffectsDispEngines].substring(0, astateEffectChunks[j + astateEffectsDispEngines].length() - 1);
+				Aircraft.debugprintln(aircraft, "AS: Engine " + j + " FX attached to '" + astateEffectChunks[j + astateEffectsDispEngines] + "' substring..");
 			} catch (Exception exception2) {
 			} finally {
 			}
 
 		for (int k = 0; k < astateNavLightsEffects.length; k++)
 			try {
-				astateEffectChunks[k + 12] = actor.findHook("_NavLight" + k).chunkName();
-				astateEffectChunks[k + 12] = astateEffectChunks[k + 12].substring(0, astateEffectChunks[k + 12].length() - 1);
-				Aircraft.debugprintln(aircraft, "AS: Nav. Lamp #" + k + " attached to '" + astateEffectChunks[k + 12] + "' substring..");
+				astateEffectChunks[k + astateEffectsDispLights] = actor.findHook("_NavLight" + k).chunkName();
+				astateEffectChunks[k + astateEffectsDispLights] = astateEffectChunks[k + astateEffectsDispLights].substring(0, astateEffectChunks[k + astateEffectsDispLights].length() - 1);
+				Aircraft.debugprintln(aircraft, "AS: Nav. Lamp #" + k + " attached to '" + astateEffectChunks[k + astateEffectsDispLights] + "' substring..");
 				HookNamed hooknamed = new HookNamed(aircraft, "_NavLight" + k);
 				loc1.set(1.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
 				hooknamed.computePos(actor, loc, loc1);
@@ -413,9 +418,9 @@ public class AircraftState {
 
 		for (int l = 0; l < 4; l++)
 			try {
-				astateEffectChunks[l + 18] = actor.findHook("_LandingLight0" + l).chunkName();
-				astateEffectChunks[l + 18] = astateEffectChunks[l + 18].substring(0, astateEffectChunks[l + 18].length() - 1);
-				Aircraft.debugprintln(aircraft, "AS: Landing Lamp #" + l + " attached to '" + astateEffectChunks[l + 18] + "' substring..");
+				astateEffectChunks[l + astateEffectsDispLandingLights] = actor.findHook("_LandingLight0" + l).chunkName();
+				astateEffectChunks[l + astateEffectsDispLandingLights] = astateEffectChunks[l + astateEffectsDispLandingLights].substring(0, astateEffectChunks[l + astateEffectsDispLandingLights].length() - 1);
+				Aircraft.debugprintln(aircraft, "AS: Landing Lamp #" + l + " attached to '" + astateEffectChunks[l + astateEffectsDispLandingLights] + "' substring..");
 				HookNamed hooknamed1 = new HookNamed(aircraft, "_LandingLight0" + l);
 				loc1.set(1.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
 				hooknamed1.computePos(actor, loc, loc1);
@@ -430,9 +435,9 @@ public class AircraftState {
 
 		for (int i1 = 0; i1 < aircraft.FM.EI.getNum(); i1++)
 			try {
-				astateEffectChunks[i1 + 22] = actor.findHook("_Engine" + (i1 + 1) + "Oil").chunkName();
-				astateEffectChunks[i1 + 22] = astateEffectChunks[i1 + 22].substring(0, astateEffectChunks[i1 + 22].length() - 1);
-				Aircraft.debugprintln(aircraft, "AS: Oilfilter " + i1 + " FX attached to '" + astateEffectChunks[i1 + 22] + "' substring..");
+				astateEffectChunks[i1 + astateEffectsDispOilfilters] = actor.findHook("_Engine" + (i1 + 1) + "Oil").chunkName();
+				astateEffectChunks[i1 + astateEffectsDispOilfilters] = astateEffectChunks[i1 + astateEffectsDispOilfilters].substring(0, astateEffectChunks[i1 + astateEffectsDispOilfilters].length() - 1);
+				Aircraft.debugprintln(aircraft, "AS: Oilfilter " + i1 + " FX attached to '" + astateEffectChunks[i1 + astateEffectsDispOilfilters] + "' substring..");
 			} catch (Exception exception6) {
 			} finally {
 			}
@@ -475,9 +480,9 @@ public class AircraftState {
 
 	private void doSetOilState(int i, int j) {
 		if (astateOilStates[i] == j) return;
-		Aircraft.debugprintln(aircraft, "AS: Checking '" + astateEffectChunks[i + 22] + "' visibility..");
-		boolean flag = aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + 22]);
-		Aircraft.debugprintln(aircraft, "AS: '" + astateEffectChunks[i + 22] + "' is " + (flag ? "visible" : "invisible") + "..");
+		Aircraft.debugprintln(aircraft, "AS: Checking '" + astateEffectChunks[i + astateEffectsDispOilfilters] + "' visibility..");
+		boolean flag = aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + astateEffectsDispOilfilters]);
+		Aircraft.debugprintln(aircraft, "AS: '" + astateEffectChunks[i + astateEffectsDispOilfilters] + "' is " + (flag ? "visible" : "invisible") + "..");
 		Aircraft.debugprintln(aircraft, "Stating OilFilter " + i + " to state " + j + (flag ? ".." : " rejected (missing part).."));
 		if (!flag) return;
 		Aircraft.debugprintln(aircraft, "Stating OilFilter " + i + " to state " + j + "..");
@@ -545,7 +550,7 @@ public class AircraftState {
 	}
 
 	public boolean doSetTankState(Actor actor1, int i, int j) {
-		boolean flag = aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + 0]);
+		boolean flag = aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + astateEffectsDispTanks]);
 		Aircraft.debugprintln(aircraft, "Stating Tank " + i + " to state " + j + (flag ? ".." : " rejected (missing part).."));
 		if (!flag) return false;
 		if (World.getPlayerAircraft() == actor) {
@@ -674,7 +679,7 @@ public class AircraftState {
 	public void explodeTank(Actor actor1, int i) {
 		if (!Actor.isValid(actor1)) return;
 		if (bIsMaster) {
-			if (!aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + 0])) return;
+			if (!aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + astateEffectsDispTanks])) return;
 			netToMirrors(10, i, 0);
 			doExplodeTank(i);
 		} else {
@@ -688,8 +693,8 @@ public class AircraftState {
 		Eff3DActor.New(actor, actor.findHook("_Tank" + (i + 1) + "Burn"), null, 1.0F, "3DO/Effects/Fireworks/Tank_SmokeBoiling.eff", -1F);
 		Eff3DActor.New(actor, actor.findHook("_Tank" + (i + 1) + "Burn"), null, 1.0F, "3DO/Effects/Fireworks/Tank_Sparks.eff", -1F);
 		Eff3DActor.New(actor, actor.findHook("_Tank" + (i + 1) + "Burn"), null, 1.0F, "3DO/Effects/Fireworks/Tank_SparksP.eff", -1F);
-		aircraft.msgCollision(actor, astateEffectChunks[i + 0] + "0", astateEffectChunks[i + 0] + "0");
-		if ((actor instanceof Scheme1) && aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + 0])) aircraft.msgCollision(actor, "CF_D0", "CF_D0");
+		aircraft.msgCollision(actor, astateEffectChunks[i + astateEffectsDispTanks] + "0", astateEffectChunks[i + astateEffectsDispTanks] + "0");
+		if ((actor instanceof Scheme1) && aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + astateEffectsDispTanks])) aircraft.msgCollision(actor, "CF_D0", "CF_D0");
 		HookNamed hooknamed = new HookNamed((ActorMesh) actor, "_Tank" + (i + 1) + "Burn");
 		Loc loc = new Loc();
 		Loc loc1 = new Loc();
@@ -735,9 +740,9 @@ public class AircraftState {
 	}
 
 	public boolean doSetEngineState(Actor actor1, int i, int j) {
-		Aircraft.debugprintln(aircraft, "AS: Checking '" + astateEffectChunks[i + 4] + "' visibility..");
-		boolean flag = aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + 4]);
-		Aircraft.debugprintln(aircraft, "AS: '" + astateEffectChunks[i + 4] + "' is " + (flag ? "visible" : "invisible") + "..");
+		Aircraft.debugprintln(aircraft, "AS: Checking '" + astateEffectChunks[i + astateEffectsDispEngines] + "' visibility..");
+		boolean flag = aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + astateEffectsDispEngines]);
+		Aircraft.debugprintln(aircraft, "AS: '" + astateEffectChunks[i + astateEffectsDispEngines] + "' is " + (flag ? "visible" : "invisible") + "..");
 		Aircraft.debugprintln(aircraft, "Stating Engine " + i + " to state " + j + (flag ? ".." : " rejected (missing part).."));
 		if (!flag) return false;
 		if (astateEngineStates[i] < 4 && j >= 4) {
@@ -860,7 +865,7 @@ public class AircraftState {
 	public void explodeEngine(Actor actor1, int i) {
 		if (!Actor.isValid(actor1)) return;
 		if (bIsMaster) {
-			if (!aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + 4])) return;
+			if (!aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + astateEffectsDispEngines])) return;
 			netToMirrors(3, i, 0);
 			doExplodeEngine(i);
 		} else {
@@ -874,7 +879,7 @@ public class AircraftState {
 		Eff3DActor.New(actor, actor.findHook("_Engine" + (i + 1) + "Smoke"), null, 1.0F, "3DO/Effects/Fireworks/Tank_SmokeBoiling.eff", -1F);
 		Eff3DActor.New(actor, actor.findHook("_Engine" + (i + 1) + "Smoke"), null, 1.0F, "3DO/Effects/Fireworks/Tank_Sparks.eff", -1F);
 		Eff3DActor.New(actor, actor.findHook("_Engine" + (i + 1) + "Smoke"), null, 1.0F, "3DO/Effects/Fireworks/Tank_SparksP.eff", -1F);
-		aircraft.msgCollision(aircraft, astateEffectChunks[i + 4] + "0", astateEffectChunks[i + 4] + "0");
+		aircraft.msgCollision(aircraft, astateEffectChunks[i + astateEffectsDispEngines] + "0", astateEffectChunks[i + astateEffectsDispEngines] + "0");
 		Actor actor1;
 		if (aircraft.getDamager() != null) actor1 = aircraft.getDamager();
 		else actor1 = actor;
@@ -883,7 +888,7 @@ public class AircraftState {
 		Loc loc1 = new Loc();
 		actor.pos.getCurrent(loc);
 		hooknamed.computePos(actor, loc, loc1);
-		if (aircraft.FM.EI.engines[i].getType() != 1 && aircraft.FM.EI.engines[i].getType() != 0) MsgExplosion.send(null, astateEffectChunks[4 + i] + "0", loc1.getPoint(), actor1, 1.248F, 0.026F, 1, 75F);
+		if (aircraft.FM.EI.engines[i].getType() != 1 && aircraft.FM.EI.engines[i].getType() != 0) MsgExplosion.send(null, astateEffectChunks[i + astateEffectsDispEngines] + "0", loc1.getPoint(), actor1, 1.248F, 0.026F, 1, 75F);
 	}
 
 	public void setEngineStarts(int i) {
@@ -1064,9 +1069,9 @@ public class AircraftState {
 	}
 
 	public void doSetEngineExtinguisherVisuals(int i) {
-		Aircraft.debugprintln(aircraft, "AS: Checking '" + astateEffectChunks[i + 4] + "' visibility..");
-		boolean flag = aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + 4]);
-		Aircraft.debugprintln(aircraft, "AS: '" + astateEffectChunks[i + 4] + "' is " + (flag ? "visible" : "invisible") + "..");
+		Aircraft.debugprintln(aircraft, "AS: Checking '" + astateEffectChunks[i + astateEffectsDispEngines] + "' visibility..");
+		boolean flag = aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + astateEffectsDispEngines]);
+		Aircraft.debugprintln(aircraft, "AS: '" + astateEffectChunks[i + astateEffectsDispEngines] + "' is " + (flag ? "visible" : "invisible") + "..");
 		Aircraft.debugprintln(aircraft, "Firing Extinguisher on Engine " + i + (flag ? ".." : " rejected (missing part).."));
 		if (!flag) {
 			return;
@@ -1088,9 +1093,9 @@ public class AircraftState {
 	}
 
 	public boolean doSetSootState(int i, int j) {
-		Aircraft.debugprintln(aircraft, "AS: Checking '" + astateEffectChunks[i + 4] + "' visibility..");
-		boolean flag = aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + 4]);
-		Aircraft.debugprintln(aircraft, "AS: '" + astateEffectChunks[i + 4] + "' is " + (flag ? "visible" : "invisible") + "..");
+		Aircraft.debugprintln(aircraft, "AS: Checking '" + astateEffectChunks[i + astateEffectsDispEngines] + "' visibility..");
+		boolean flag = aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + astateEffectsDispEngines]);
+		Aircraft.debugprintln(aircraft, "AS: '" + astateEffectChunks[i + astateEffectsDispEngines] + "' is " + (flag ? "visible" : "invisible") + "..");
 		Aircraft.debugprintln(aircraft, "Stating Engine " + i + " to state " + j + (flag ? ".." : " rejected (missing part).."));
 		if (!flag) {
 			return false;
@@ -1414,9 +1419,9 @@ public class AircraftState {
 			new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
 			new Loc();
 			for (int j = 0; j < astateNavLightsEffects.length; j++) {
-				Aircraft.debugprintln(aircraft, "AS: Checking '" + astateEffectChunks[j + 12] + "' visibility..");
-				boolean flag1 = aircraft.isChunkAnyDamageVisible(astateEffectChunks[j + 12]);
-				Aircraft.debugprintln(aircraft, "AS: '" + astateEffectChunks[j + 12] + "' is " + (flag1 ? "visible" : "invisible") + "..");
+				Aircraft.debugprintln(aircraft, "AS: Checking '" + astateEffectChunks[j + astateEffectsDispLights] + "' visibility..");
+				boolean flag1 = aircraft.isChunkAnyDamageVisible(astateEffectChunks[j + astateEffectsDispLights]);
+				Aircraft.debugprintln(aircraft, "AS: '" + astateEffectChunks[j + astateEffectsDispLights] + "' is " + (flag1 ? "visible" : "invisible") + "..");
 				if (flag1) {
 					bNavLightsOn = flag;
 					// TODO: Updated nav light code
@@ -1689,9 +1694,9 @@ public class AircraftState {
 
 		if (flag) {
 			for (int j = 0; j < astateLandingLightEffects.length; j++) {
-				Aircraft.debugprintln(aircraft, "AS: Checking '" + astateEffectChunks[j + 18] + "' visibility..");
-				boolean flag1 = aircraft.isChunkAnyDamageVisible(astateEffectChunks[j + 18]);
-				Aircraft.debugprintln(aircraft, "AS: '" + astateEffectChunks[j + 18] + "' is " + (flag1 ? "visible" : "invisible") + "..");
+				Aircraft.debugprintln(aircraft, "AS: Checking '" + astateEffectChunks[j + astateEffectsDispLandingLights] + "' visibility..");
+				boolean flag1 = aircraft.isChunkAnyDamageVisible(astateEffectChunks[j + astateEffectsDispLandingLights]);
+				Aircraft.debugprintln(aircraft, "AS: '" + astateEffectChunks[j + astateEffectsDispLandingLights] + "' is " + (flag1 ? "visible" : "invisible") + "..");
 				if (flag1) {
 					String s = "3DO/Effects/Fireworks/FlareWhiteWide.eff";
 					astateLandingLightEffects[j] = Eff3DActor.New(actor, actor.findHook("_LandingLight0" + j), null, 1.0F, s, -1F);
@@ -2886,7 +2891,7 @@ public class AircraftState {
 		replicateBombModeStatesToNet();
 		// TODO: current Bomb Selected for bHasBombSelect
 		netmsgguaranted.writeByte(aircraft.FM.CT.curBombSelected);
-}
+	}
 
 	public void netFirstUpdate(NetMsgInput netmsginput) throws IOException {
 		int k2;

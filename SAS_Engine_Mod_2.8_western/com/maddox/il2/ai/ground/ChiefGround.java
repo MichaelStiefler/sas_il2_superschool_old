@@ -1,5 +1,6 @@
 /*Modified ChiefGround class for the SAS Engine Mod*/
 /*By western, new GetNearestEnemy method with radar search and missile interceptable flags on 24th/Apr./2018*/
+/*By western, Add sound preset of radar pulse wave on 23rd/Jun./2018*/
 
 package com.maddox.il2.ai.ground;
 
@@ -414,18 +415,18 @@ public class ChiefGround extends Chief
 
     public Actor GetNearestEnemy(Point3d point3d, double maxDistance, int weaponMask, float limitSpeed)
     {
-        return this.GetNearestEnemy(point3d, maxDistance, weaponMask, limitSpeed, false, false, null);
+        return this.GetNearestEnemy(point3d, maxDistance, weaponMask, limitSpeed, false, false, null, null);
     }
 
     // By western, expanded for flags Intercept missiles and Radar use
-    public Actor GetNearestEnemy(Point3d point3d, double maxDistance, int weaponMask, float limitSpeed, boolean bInterceptMissile, boolean bUseRadar, Actor owner)
+    public Actor GetNearestEnemy(Point3d point3d, double maxDistance, int weaponMask, float limitSpeed, boolean bInterceptMissile, boolean bUseRadar, String sPresetPW, Actor owner)
     {
         if(unitsPacked.size() > 0)
             return null;
         if(limitSpeed < 0.0F)
-            NearestEnemies.set(weaponMask, bInterceptMissile, bUseRadar);
+            NearestEnemies.set(weaponMask, bInterceptMissile, bUseRadar, sPresetPW);
         else
-            NearestEnemies.set(weaponMask, -9999.9F, limitSpeed, bInterceptMissile, bUseRadar);
+            NearestEnemies.set(weaponMask, -9999.9F, limitSpeed, bInterceptMissile, bUseRadar, sPresetPW);
         Actor actor = NearestEnemies.getAFoundEnemy(point3d, maxDistance, getArmy(), owner);
         if(actor == null)
             return null;

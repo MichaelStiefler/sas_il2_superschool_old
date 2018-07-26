@@ -1,6 +1,7 @@
 /*Modified ScoreCounter class for the SAS Engine Mod*/
 
 /*By western on 26th/Apr./2018, expanded for 8x Engines / Scheme8 aircrafts */
+/*By western on 23rd/Jun./2018, expanded for 10x Engines / Scheme10 aircrafts */
 
 package com.maddox.il2.objects;
 
@@ -28,6 +29,7 @@ public class ScoreRegister
         ScoreCounter.register(com.maddox.il2.objects.air.Scheme6.class, 0, 300D, 400D);
         ScoreCounter.register(com.maddox.il2.objects.air.Scheme7.class, 0, 600D, 400D);
         ScoreCounter.register(com.maddox.il2.objects.air.Scheme8.class, 0, 800D, 400D);
+        ScoreCounter.register(com.maddox.il2.objects.air.Scheme10.class, 0, 1000D, 400D);
         ScoreCounter.register(com.maddox.il2.objects.air.BF_109G6HARTMANN.class, 0, 150D, 500D);
         ScoreCounter.register(com.maddox.il2.objects.air.BF_109G6GRAF.class, 0, 150D, 500D);
         ScoreCounter.register(com.maddox.il2.objects.air.I_16TYPE24SAFONOV.class, 0, 150D, 500D);
