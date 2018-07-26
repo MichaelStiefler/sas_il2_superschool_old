@@ -4540,7 +4540,7 @@ label0:
             actor = NearestEnemies.getAFoundEnemyInShoot(pos.getAbsPoint(), shippartproperties.ATTACK_MAX_RADIUS, getArmy(), shippartproperties.partOffs.z,
                     o, shippartproperties.HEAD_YAW_RANGE, shippartproperties.NOFIRE_YAW_RANGE, shippartproperties.NOFIRE_FLAG);
             if( actor == null ){
-                NearestEnemies.set(shippartproperties.WEAPONS_MASK, -9999.9F, 9999.9F, shippartproperties.ATTACK_MIN_HEIGHT, shippartproperties.ATTACK_MAX_HEIGHT, shippartproperties.ATTACK_MISSILES, false);
+                NearestEnemies.set(shippartproperties.WEAPONS_MASK, -9999.9F, 9999.9F, shippartproperties.ATTACK_MIN_HEIGHT, shippartproperties.ATTACK_MAX_HEIGHT, shippartproperties.ATTACK_MISSILES, false, (String)null);
                 actor = NearestEnemies.getAFoundEnemyInShoot(pos.getAbsPoint(), shippartproperties.ATTACK_MAX_RADIUS, getArmy(), shippartproperties.partOffs.z,
                         o, shippartproperties.HEAD_YAW_RANGE, shippartproperties.NOFIRE_YAW_RANGE, shippartproperties.NOFIRE_FLAG);
             }
@@ -4553,11 +4553,11 @@ label0:
                 break;
 
             case 1: // '\001'
-                NearestEnemies.set(shippartproperties.WEAPONS_MASK, -9999.9F, 9999.9F, shippartproperties.ATTACK_MIN_HEIGHT, shippartproperties.ATTACK_MAX_HEIGHT, shippartproperties.ATTACK_MISSILES, false);
+                NearestEnemies.set(shippartproperties.WEAPONS_MASK, -9999.9F, 9999.9F, shippartproperties.ATTACK_MIN_HEIGHT, shippartproperties.ATTACK_MAX_HEIGHT, shippartproperties.ATTACK_MISSILES, false, (String)null);
                 break;
 
             default:
-                NearestEnemies.set(shippartproperties.WEAPONS_MASK, KmHourToMSec(100F), 9999.9F, shippartproperties.ATTACK_MIN_HEIGHT, shippartproperties.ATTACK_MAX_HEIGHT, shippartproperties.ATTACK_MISSILES, false);
+                NearestEnemies.set(shippartproperties.WEAPONS_MASK, KmHourToMSec(100F), 9999.9F, shippartproperties.ATTACK_MIN_HEIGHT, shippartproperties.ATTACK_MAX_HEIGHT, shippartproperties.ATTACK_MISSILES, false, (String)null);
                 break;
             }
             if(shippartproperties.TypeOfTarget == 0)
