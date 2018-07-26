@@ -59,6 +59,7 @@ public class F_18 extends Scheme2
     public F_18()
     {
         tflap = 0L;
+        tflapSw = -1L;
         bForceTakeoffElTrim = false;
         bForceFlapmodeAuto = false;
         oldTrimElevator = 0.0F;
@@ -144,8 +145,8 @@ public class F_18 extends Scheme2
         semiradartarget = null;
         groundradartarget = null;
         if(Config.cur.ini.get("Mods", "RWRTextStop", 0) > 0) bRWR_Show_Text_Warning = false;
-        rwrUtils = new RadarWarningReceiverUtils(this, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning);
-//        rwrUtils = new RadarWarningReceiverUtils(this, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning, 12, "F18- ");
+        rwrUtils = new RadarWarningReceiverUtils(this, RWR_GENERATION, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning);
+//        rwrUtils = new RadarWarningReceiverUtils(this, RWR_GENERATION, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning, 12, "F18- ");
         iDebugLogLevel = 0;
     }
 
@@ -800,19 +801,9 @@ public class F_18 extends Scheme2
         return rwrUtils;
     }
 
-    public void myRadarSearchYou(Actor actor)
-    {
-        rwrUtils.recordRadarSearched(actor, (String) null);
-    }
-
     public void myRadarSearchYou(Actor actor, String soundpreset)
     {
         rwrUtils.recordRadarSearched(actor, soundpreset);
-    }
-
-    public void myRadarLockYou(Actor actor)
-    {
-        rwrUtils.recordRadarLocked(actor, (String) null);
     }
 
     public void myRadarLockYou(Actor actor, String soundpreset)
@@ -852,7 +843,7 @@ public class F_18 extends Scheme2
 //            FM.Sq.liftStab += 2.0F;
 //        }
         rwrUtils.onAircraftLoaded();
-        rwrUtils.setLockTone("", "aircraft.usRWRLock", "aircraft.usRWRLaunchWarningMissileMissile", "", "usRWRLock.wav", "usRWRLaunchWarningMissileMissile.wav");
+        rwrUtils.setLockTone("aircraft.usRWRScan", "aircraft.usRWRLock", "aircraft.usRWRLaunchWarningMissileMissile", "aircraft.usRWRThreatNew");
     }
 
     public void missionStarting()
@@ -1022,8 +1013,8 @@ public class F_18 extends Scheme2
         }
         if(FLIR)
             FLIR();
-        if(!FM.isPlayers() && isGeneratorAlive)
-            if((((Maneuver)FM).get_maneuver() == 21 || ((Maneuver)FM).get_maneuver() == 25)
+        if(!FM.isPlayers() && (FM instanceof Maneuver) && isGeneratorAlive)
+            if((((Maneuver)FM).get_maneuver() == 21 || ((Maneuver)FM).get_maneuver() == 25 || ((Maneuver)FM).get_maneuver() == 2 || ((Maneuver)FM).get_maneuver() == 84)
                && FM.AP.way.isLanding() && (FM.Gears.nOfGearsOnGr < 3 || FM.getSpeedKMH() > 80F))
                 FM.CT.FlapsControlSwitch = 2;
             else if(((Maneuver)FM).get_maneuver() == 26)
@@ -1046,6 +1037,41 @@ public class F_18 extends Scheme2
                 radartoggle = true;
                 radarmode = 0;
             }
+
+        if((bHasPaveway || FM.bNoDiveBombing) && Time.current() - tLastLGBcheck > 30000L && (FM instanceof Maneuver))
+        {
+            if(!((Maneuver)FM).hasBombs())
+            {
+                bHasPaveway = false;
+                FM.bNoDiveBombing = false;
+            }
+            else
+            {
+                boolean bTempNoGBU = true;
+                boolean bTempNoJDAM = true;
+                for(int i = 0; i < FM.CT.Weapons.length && bTempNoGBU && bTempNoJDAM; i++)
+                    if(FM.CT.Weapons[i] != null)
+                    {
+                        for(int j = 0; j < FM.CT.Weapons[i].length && bTempNoGBU && bTempNoJDAM; j++)
+                            if(FM.CT.Weapons[i][j].haveBullets())
+                            {
+                                if(FM.CT.Weapons[i][j] instanceof BombGunGBU10_Mk84LGB_gn16 ||
+                                   FM.CT.Weapons[i][j] instanceof BombGunGBU12_Mk82LGB_gn16 ||
+                                   FM.CT.Weapons[i][j] instanceof BombGunGBU16_Mk83LGB_gn16)
+                                    bTempNoGBU = false;
+                                else if(FM.CT.Weapons[i][j] instanceof BombGunGBU38_Mk82JDAM_gn16 ||
+                                        FM.CT.Weapons[i][j] instanceof BombGunGBU32_Mk83JDAM_gn16 ||
+                                        FM.CT.Weapons[i][j] instanceof BombGunGBU31_Mk84JDAM_gn16)
+                                    bTempNoJDAM = false;
+                            }
+                    }
+                if(bTempNoGBU)
+                    bHasPaveway = false;
+                if(bTempNoGBU && bTempNoJDAM)
+                    FM.bNoDiveBombing = false;
+            }
+            tLastLGBcheck = Time.current();
+        }
     }
 
     private final void UpdateLightIntensity()
@@ -2079,6 +2105,13 @@ public class F_18 extends Scheme2
 
     private void computeflightmodel()
     {
+        if(FM.CT.FlapsControlSwitch == 0 || FM.CT.FlapsControlSwitch == 2)
+            tflapSw = -1L;
+        else
+        {
+            if(tflapSw == -1L)
+                tflapSw = Time.current();
+        }
         float f = (cvt(FM.getAOA(), 0.0F, 5F, 0.0F, 1.0F) * FM.getAOA()) * 0.025F * cvt(FM.getSpeedKMH(), 0.0F, 500F, 0.0F, 1.0F);
         if(FM.getSpeedKMH() > 465F || FM.CT.FlapsControlSwitch == 0)
         {
@@ -2087,7 +2120,7 @@ public class F_18 extends Scheme2
             else
                 bForceFlapmodeAuto = false;
             FM.CT.FlapsControl = cvt(f, 0.0F, 0.2F, 0.0F, 0.2F);
-            if(Time.current() > tflap + 3000L && bForceTakeoffElTrim)
+            if(Time.current() > tflap + 2700L && bForceTakeoffElTrim)
             {
                 FM.CT.setTrimElevatorControl(0.0F);
                 bForceTakeoffElTrim = false;
@@ -2100,13 +2133,19 @@ public class F_18 extends Scheme2
             if(FM.CT.FlapsControlSwitch == 1 && f1 > FM.CT.FlapStage[1])
                 f1 = FM.CT.FlapStage[1];
             FM.CT.FlapsControl = f1;
-            if(FM.CT.FlapsControlSwitch == 1 && FM.CT.FlapsControl > 0.6F && FM.Gears.onGround())
+            if(FM.CT.FlapsControlSwitch != 1 && bForceTakeoffElTrim)
+            {
+                tflap = 0L;
+                FM.CT.setTrimElevatorControl(0.0F);
+                bForceTakeoffElTrim = false;
+            }
+            if(FM.CT.FlapsControlSwitch == 1 && tflapSw > 0L && Time.current() > tflapSw + 400L && FM.CT.FlapsControl > 0.6F && ((FM.Or.getPitch() > 180F)? FM.Or.getPitch() - 360F : FM.Or.getPitch()) < (FM.isPlayers() ? 6F : 9F) && FM.Gears.onGround())
             {
                 tflap = Time.current();
                 FM.CT.setTrimElevatorControl(0.5F);
                 bForceTakeoffElTrim = true;
             }
-            else if(Time.current() > tflap + 1500L && bForceTakeoffElTrim)
+            else if(Time.current() > tflap + 100L && bForceTakeoffElTrim)
                 FM.CT.setTrimElevatorControl(cvt(((FM.Or.getPitch() > 180F)? FM.Or.getPitch() - 360F : FM.Or.getPitch()), 5F, 13F, 0.3F, -0.4F));
         }
         if(FM.getAOA() > 28F || FM.getSpeedKMH() < 469F && FM.CT.FlapsControl > 0.16F && FM.CT.getGear() < 0.8F || FM.getOverload() >= 6F)
@@ -2828,6 +2867,7 @@ public class F_18 extends Scheme2
     public static float FlowRate = 10F;
     public static float FuelReserve = 1500F;
     private long tflap;
+    private long tflapSw;
     private boolean bForceTakeoffElTrim;
     public boolean bForceFlapmodeAuto;
     private float oldTrimElevator;
@@ -2858,6 +2898,7 @@ public class F_18 extends Scheme2
     public boolean bHasPaveway = false;
     private static float maxPavewayFOVfrom = 45.0F;
     private static double maxPavewayDistance = 20000D;
+    private long tLastLGBcheck = -1L;
 
     private Actor semiradartarget;
     private Actor groundradartarget;
@@ -2869,6 +2910,7 @@ public class F_18 extends Scheme2
     public boolean bRadarWarning;
     public boolean bMissileWarning;
 
+    private static final int RWR_GENERATION = 1;
     private static final int RWR_MAX_DETECT = 16;
     private static final int RWR_KEEP_SECONDS = 7;
     private static final double RWR_RECEIVE_ELEVATION = 45.0D;
