@@ -16,11 +16,11 @@ import java.util.ArrayList;
 
 // Referenced classes of package com.maddox.il2.objects.air:
 //            Skyhawk, TypeTankerDrogue, TypeDockable, Aircraft, 
-//            PaintSchemeFMPar05, TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, 
+//            PaintSchemeFMPar05, TypeGuidedMissileCarrier, TypeCountermeasure,
 //            NetAircraft, Cockpit, TypeGSuit
 
 public class SkyhawkA4F_late extends SkyhawkFuelReceiver
-    implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector
+    implements TypeGuidedMissileCarrier, TypeCountermeasure
 {
 
     public SkyhawkA4F_late()
@@ -33,12 +33,6 @@ public class SkyhawkA4F_late extends SkyhawkFuelReceiver
         lastFlareDeployed = 0L;
         counterFlareList = new ArrayList();
         counterChaffList = new ArrayList();
-        lastCommonThreatActive = 0L;
-        intervalCommonThreat = 1000L;
-        lastRadarLockThreatActive = 0L;
-        intervalRadarLockThreat = 1000L;
-        lastMissileLaunchThreatActive = 0L;
-        intervalMissileLaunchThreat = 1000L;
         guidedMissileUtils = new GuidedMissileUtils(this);
         bHasLAUcaps = false;
     }
@@ -155,48 +149,6 @@ public class SkyhawkA4F_late extends SkyhawkFuelReceiver
             return 0L;
     }
 
-    public void setCommonThreatActive()
-    {
-        long curTime = Time.current();
-        if(curTime - lastCommonThreatActive > intervalCommonThreat)
-        {
-            lastCommonThreatActive = curTime;
-            doDealCommonThreat();
-        }
-    }
-
-    public void setRadarLockThreatActive()
-    {
-        long curTime = Time.current();
-        if(curTime - lastRadarLockThreatActive > intervalRadarLockThreat)
-        {
-            lastRadarLockThreatActive = curTime;
-            doDealRadarLockThreat();
-        }
-    }
-
-    public void setMissileLaunchThreatActive()
-    {
-        long curTime = Time.current();
-        if(curTime - lastMissileLaunchThreatActive > intervalMissileLaunchThreat)
-        {
-            lastMissileLaunchThreatActive = curTime;
-            doDealMissileLaunchThreat();
-        }
-    }
-
-    private void doDealCommonThreat()
-    {
-    }
-
-    private void doDealRadarLockThreat()
-    {
-    }
-
-    private void doDealMissileLaunchThreat()
-    {
-    }
-
     public GuidedMissileUtils getGuidedMissileUtils()
     {
         return guidedMissileUtils;
@@ -264,12 +216,6 @@ public class SkyhawkA4F_late extends SkyhawkFuelReceiver
     private long lastFlareDeployed;
     private ArrayList counterFlareList;
     private ArrayList counterChaffList;
-    private long lastCommonThreatActive;
-    private long intervalCommonThreat;
-    private long lastRadarLockThreatActive;
-    private long intervalRadarLockThreat;
-    private long lastMissileLaunchThreatActive;
-    private long intervalMissileLaunchThreat;
     private boolean bHasLAUcaps;
 
     static 

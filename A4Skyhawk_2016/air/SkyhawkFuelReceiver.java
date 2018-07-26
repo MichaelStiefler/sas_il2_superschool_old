@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 // Referenced classes of package com.maddox.il2.objects.air:
 //            Skyhawk, TypeTankerDrogue, TypeDockable, Aircraft, 
-//            PaintSchemeFMPar05, TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, 
+//            PaintSchemeFMPar05, TypeGuidedMissileCarrier, TypeCountermeasure,
 //            NetAircraft, Cockpit, TypeGSuit
 
 public class SkyhawkFuelReceiver extends Skyhawk
