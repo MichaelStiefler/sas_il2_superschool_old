@@ -16,14 +16,8 @@ import com.maddox.util.HashMapInt;
 import java.util.*;
 import com.maddox.sas1946.il2.util.Reflection;
 
-// Referenced classes of package com.maddox.il2.objects.air:
-//            F_4, Aircraft, TypeFighterAceMaker, TypeRadarGunsight,
-//            PaintSchemeFMPar05, TypeGuidedMissileCarrier, TypeCountermeasure,
-//            TypeThreatDetector, TypeGSuit, TypeAcePlane, TypeFuelDump,
-//            TypeFastJet, NetAircraft
-
 public class F_14A extends F_14
-    implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector
+    implements TypeGuidedMissileCarrier, TypeCountermeasure
 {
 
     public F_14A()
@@ -33,12 +27,6 @@ public class F_14A extends F_14
         hasFlare = false;
         lastChaffDeployed = 0L;
         lastFlareDeployed = 0L;
-        lastCommonThreatActive = 0L;
-        intervalCommonThreat = 1000L;
-        lastRadarLockThreatActive = 0L;
-        intervalRadarLockThreat = 1000L;
-        lastMissileLaunchThreatActive = 0L;
-        intervalMissileLaunchThreat = 1000L;
         guidedMissileUtils = new GuidedMissileUtils(this);
         engineSFX = null;
         engineSTimer = 0x98967f;
@@ -114,49 +102,6 @@ public class F_14A extends F_14
         else
             return 0L;
     }
-
-    public void setCommonThreatActive()
-    {
-        long l = Time.current();
-        if(l - lastCommonThreatActive > intervalCommonThreat)
-        {
-            lastCommonThreatActive = l;
-            doDealCommonThreat();
-        }
-    }
-
-    public void setRadarLockThreatActive()
-    {
-        long l = Time.current();
-        if(l - lastRadarLockThreatActive > intervalRadarLockThreat)
-        {
-            lastRadarLockThreatActive = l;
-            doDealRadarLockThreat();
-        }
-    }
-
-    public void setMissileLaunchThreatActive()
-    {
-        long l = Time.current();
-        if(l - lastMissileLaunchThreatActive > intervalMissileLaunchThreat)
-        {
-            lastMissileLaunchThreatActive = l;
-            doDealMissileLaunchThreat();
-        }
-    }
-
-    private void doDealCommonThreat()
-    {
-    }
-
-    private void doDealRadarLockThreat()
-    {
-    }
-
-    private void doDealMissileLaunchThreat()
-    {
-    }
-
 
     public GuidedMissileUtils getGuidedMissileUtils()
     {
@@ -662,12 +607,6 @@ public class F_14A extends F_14
     private boolean hasFlare;
     private long lastChaffDeployed;
     private long lastFlareDeployed;
-    private long lastCommonThreatActive;
-    private long intervalCommonThreat;
-    private long lastRadarLockThreatActive;
-    private long intervalRadarLockThreat;
-    private long lastMissileLaunchThreatActive;
-    private long intervalMissileLaunchThreat;
     public boolean bToFire;
     protected SoundFX engineSFX;
     protected int engineSTimer;
