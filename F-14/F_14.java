@@ -149,12 +149,17 @@ public class F_14 extends Scheme2
         oldSpoilerBrakeControl = 0.0F;
         antiColLight = new Eff3DActor[3];
         oldAntiColLight = false;
+        lEnteredTaxiMode = -1L;
         laserSpotPos = new Point3d();
         laserTimer = -1L;
         freq = 800;
         Timer1 = Timer2 = freq;
         if(Config.cur.ini.get("Mods", "RWRTextStop", 0) > 0) bRWR_Show_Text_Warning = false;
-        rwrUtils = new RadarWarningReceiverUtils(this, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning);
+        if(this instanceof F_14D) {
+            RWR_GENERATION = 1;
+            RWR_KEEP_SECONDS = 7;
+        }
+        rwrUtils = new RadarWarningReceiverUtils(this, RWR_GENERATION, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning);
     }
 
     private static final float toMeters(float f)
@@ -832,6 +837,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon3R", true);
             FM.Sq.dragParasiteCx += 0.00007F;
             bCarryLaserpod = true;
+            FM.bNoDiveBombing = true;
         }
         if(thisWeaponsName.startsWith("Recon_ALQ"))
         {
@@ -849,6 +855,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon3R", true);
             FM.Sq.dragParasiteCx += 0.00007F;
             bCarryLaserpod = true;
+            FM.bNoDiveBombing = true;
         }
         if(thisWeaponsName.startsWith("GAttack_2xCBU"))
         {
@@ -894,6 +901,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon4R", true);
             FM.Sq.dragParasiteCx += 0.0001F;
             bCarryLaserpod = true;
+            FM.bNoDiveBombing = true;
         }
         rwrUtils.onAircraftLoaded();
         if(this instanceof F_14D)
@@ -1051,11 +1059,21 @@ public class F_14 extends Scheme2
             FM.CT.bAntiColLights = FM.AS.bNavLightsOn;
         if(FM.CT.bAntiColLights != oldAntiColLight)
             anticollights();
-        if(FM.AP.way.curr().Action == 3 && !((Maneuver)super.FM).hasBombs())
+        if(FM.AP.way.curr().Action == 3 && (FM instanceof Maneuver) && !((Maneuver)FM).hasBombs())
         {
             FM.AP.way.next();
             ((Maneuver)super.FM).target_ground = null;
             ((Maneuver)super.FM).Group.setGroupTask(1);
+        }
+
+        if(bHasPaveway && FM.bNoDiveBombing && Time.current() - tLastLGBcheck > 30000L && (FM instanceof Maneuver))
+        {
+            if(!((Maneuver)FM).hasBombs())
+            {
+                bHasPaveway = false;
+                FM.bNoDiveBombing = false;
+            }
+            tLastLGBcheck = Time.current();
         }
     }
 
@@ -1751,11 +1769,11 @@ public class F_14 extends Scheme2
         hierMesh().chunkSetAngles("IntakeDoor_Rr", 0.0F, 0.0F, fRamp3rd);
     }
 
-	public static void forceParkingStyle(HierMesh hiermesh) {
+    public static void forceParkingStyle(HierMesh hiermesh) {
         float f1 = 55F * 0.8F;  // var-wing parking position.
         hiermesh.chunkSetAngles("WingPivotL", 0.0F, f1, 0.0F);
         hiermesh.chunkSetAngles("WingPivotR", 0.0F, f1, 0.0F);
-	}
+    }
 
     protected void hitBone(String s, Shot shot, Point3d point3d)
     {
@@ -2846,7 +2864,6 @@ public class F_14 extends Scheme2
     {
         if(FM == null || !(FM instanceof Pilot) || !FM.CT.bHasVarWingControl)
             return;
-
         Polares polares = (Polares)Reflection.getValue(FM, "Wing");
 
         if((!(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode()) && (FM instanceof Maneuver))
@@ -2854,6 +2871,22 @@ public class F_14 extends Scheme2
             //When AI goes 'GAttack' waypoint, set VarWingControlSwitch = "BOMB". Others "AUTO".
             if(FM.AP.way.curr().Action == 3 || (((Maneuver)FM).Group != null && ((Maneuver)FM).Group.grTask == 4) || ((Maneuver)FM).get_task() == 4)
                 FM.CT.VarWingControlSwitch = 4;
+            else if(FM.AP.way.isLanding() && ((Maneuver)FM).get_maneuver() == 21)
+                FM.CT.VarWingControlSwitch = 1;
+            else if(FM.AP.way.isLanding() && ((Maneuver)FM).get_maneuver() == 25) {
+                if(((Maneuver)FM).getTaxiMode()) {
+                    if(lEnteredTaxiMode == -1L) {
+                        FM.CT.VarWingControlSwitch = 1;
+                        lEnteredTaxiMode = Time.current();
+                    }
+                    else if(Time.current() - lEnteredTaxiMode > 10000L)
+                        FM.CT.VarWingControlSwitch = 4;
+                    else
+                        FM.CT.VarWingControlSwitch = 1;
+                } else
+                    FM.CT.VarWingControlSwitch = 1;
+            } else if(((Maneuver)FM).get_maneuver() == 26)
+                FM.CT.VarWingControlSwitch = 1;
             else
                 FM.CT.VarWingControlSwitch = 0;
         }
@@ -3095,16 +3128,32 @@ public class F_14 extends Scheme2
     {
         if(((Maneuver)super.FM).get_maneuver() == 21)
         {
-            if(FM.getSpeed() > FM.VmaxFLAPS && FM.getSpeed() > FM.AP.way.curr().Speed * 1.4F && FM.getAltitude() > FM.AP.way.curr().z() + 20F
-               && FM.EI.engines[0].getControlThrottle() < 0.85F && FM.EI.engines[1].getControlThrottle() < 0.85F)
+            if(FM.AP.way.isLanding() && FM.AP.way.Cur() > 0)
             {
-                if(FM.CT.AirBrakeControl != 1.0F)
-                    FM.CT.AirBrakeControl = 1.0F;
+                if((FM.getSpeed() > FM.VmaxFLAPS && FM.getSpeed() > FM.AP.way.curr().Speed * 1.4F && FM.getAltitude() > FM.AP.way.curr().z() + 20F
+                   && FM.EI.engines[0].getControlThrottle() < 0.85F && FM.EI.engines[1].getControlThrottle() < 0.85F)
+                   || FM.getSpeed() > 144.6F)
+                {
+                    if(FM.CT.AirBrakeControl != 1.0F)
+                        FM.CT.AirBrakeControl = 1.0F;
+                }
+                else if(FM.getSpeed() < 141.0F)
+                    if(FM.CT.AirBrakeControl != 0.0F)
+                        FM.CT.AirBrakeControl = 0.0F;
             }
-            if(FM.getSpeed() < FM.AP.way.curr().Speed * 1.05F || FM.getAltitude() < FM.AP.way.curr().z()
-               || FM.EI.engines[0].getControlThrottle() > 0.96F || FM.EI.engines[1].getControlThrottle() > 0.96F)
-                if(FM.CT.AirBrakeControl != 0.0F)
-                    FM.CT.AirBrakeControl = 0.0F;
+            else
+            {
+                if(FM.getSpeed() > FM.VmaxFLAPS && FM.getSpeed() > FM.AP.way.curr().Speed * 1.4F && FM.getAltitude() > FM.AP.way.curr().z() + 20F
+                   && FM.EI.engines[0].getControlThrottle() < 0.85F && FM.EI.engines[1].getControlThrottle() < 0.85F)
+                {
+                    if(FM.CT.AirBrakeControl != 1.0F)
+                        FM.CT.AirBrakeControl = 1.0F;
+                }
+                if(FM.getSpeed() < FM.AP.way.curr().Speed * 1.05F || FM.getAltitude() < FM.AP.way.curr().z()
+                   || FM.EI.engines[0].getControlThrottle() > 0.96F || FM.EI.engines[1].getControlThrottle() > 0.96F)
+                    if(FM.CT.AirBrakeControl != 0.0F)
+                        FM.CT.AirBrakeControl = 0.0F;
+            }
         } else
         if(FM.Gears.onGround() && ((Maneuver)FM).get_maneuver() == 25 && FM.AP.way.isLanding() && !FM.AP.way.isLandingOnShip())
         {
@@ -3347,6 +3396,7 @@ public class F_14 extends Scheme2
     private float oldSpoilerBrakeControl;
     private Eff3DActor antiColLight[];
     private boolean oldAntiColLight;
+    private long lEnteredTaxiMode;
 
     public boolean bCarryLaserpod = false;
     private Point3d laserSpotPos;
@@ -3356,14 +3406,16 @@ public class F_14 extends Scheme2
     public boolean bHasPaveway = false;
     private static float maxPavewayFOVfrom = 45.0F;
     private static double maxPavewayDistance = 20000D;
+    private long tLastLGBcheck = -1L;
 
     private RadarWarningReceiverUtils rwrUtils;
     public boolean backfire;
     public boolean bRadarWarning;
     public boolean bMissileWarning;
 
+    private int RWR_GENERATION = 0;
     private static final int RWR_MAX_DETECT = 16;
-    private static final int RWR_KEEP_SECONDS = 7;
+    private int RWR_KEEP_SECONDS = 4;
     private static final double RWR_RECEIVE_ELEVATION = 45.0D;
     private static final boolean RWR_DETECT_IRMIS = false;
     private static final boolean RWR_DETECT_ELEVATION = false;

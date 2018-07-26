@@ -58,6 +58,13 @@
   DefaultRudderTrim 0.000
   CTargetPitchDegreeAITakeoffRotation 8.0
   CTargetPitchDegreeAITakeoffClimb 12.0
+  CTargetPitchDegreeAIApproach 7.0
+  AILandingWPGearDown 6
+  AILandingWPHookDown 8
+  AILandingWPFlapFullDown 6
+  AILandingWP360OverHeadApproach 2
+  AILandingWP360PitchPlus 0.20
+  AILandingWPDownwindSpd 400
 [Squares]
   Wing 54.5
   Aileron 5.00  // Wing 2.29 + StabiDiff 2.71
