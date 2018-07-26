@@ -25,11 +25,11 @@ import java.util.List;
 
 // Referenced classes of package com.maddox.il2.objects.air:
 //            Skyhawk, TypeTankerDrogue, TypeDockable, Aircraft, 
-//            PaintSchemeFMPar05, TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, 
+//            PaintSchemeFMPar05, TypeGuidedMissileCarrier, TypeCountermeasure, 
 //            NetAircraft, Cockpit, TypeGSuit
 
 public class SkyhawkA4M extends SkyhawkFuelReceiver
-    implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeLaserDesignator
+    implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeLaserDesignator
 {
 
     public SkyhawkA4M()
@@ -42,12 +42,6 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
         lastFlareDeployed = 0L;
         counterFlareList = new ArrayList();
         counterChaffList = new ArrayList();
-        lastCommonThreatActive = 0L;
-        intervalCommonThreat = 1000L;
-        lastRadarLockThreatActive = 0L;
-        intervalRadarLockThreat = 1000L;
-        lastMissileLaunchThreatActive = 0L;
-        intervalMissileLaunchThreat = 1000L;
         guidedMissileUtils = new GuidedMissileUtils(this);
         bHasLAUcaps = false;
         removeChuteTimer = -1L;
@@ -446,7 +440,10 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
                     else if(FM.CT.Weapons[i][j] instanceof BombGunGBU10_Mk84LGB_gn16 ||
                             FM.CT.Weapons[i][j] instanceof BombGunGBU12_Mk82LGB_gn16 ||
                             FM.CT.Weapons[i][j] instanceof BombGunGBU16_Mk83LGB_gn16)
+                    {
                         bHasPaveway = true;
+                        FM.bNoDiveBombing = true;
+                    }
                 }
             }
     }
@@ -516,48 +513,6 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
             return 0L;
     }
 
-    public void setCommonThreatActive()
-    {
-        long curTime = Time.current();
-        if(curTime - lastCommonThreatActive > intervalCommonThreat)
-        {
-            lastCommonThreatActive = curTime;
-            doDealCommonThreat();
-        }
-    }
-
-    public void setRadarLockThreatActive()
-    {
-        long curTime = Time.current();
-        if(curTime - lastRadarLockThreatActive > intervalRadarLockThreat)
-        {
-            lastRadarLockThreatActive = curTime;
-            doDealRadarLockThreat();
-        }
-    }
-
-    public void setMissileLaunchThreatActive()
-    {
-        long curTime = Time.current();
-        if(curTime - lastMissileLaunchThreatActive > intervalMissileLaunchThreat)
-        {
-            lastMissileLaunchThreatActive = curTime;
-            doDealMissileLaunchThreat();
-        }
-    }
-
-    private void doDealCommonThreat()
-    {
-    }
-
-    private void doDealRadarLockThreat()
-    {
-    }
-
-    private void doDealMissileLaunchThreat()
-    {
-    }
-
     public void onAircraftLoaded()
     {
         super.onAircraftLoaded();
@@ -570,6 +525,16 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
     public void rareAction(float f, boolean flag)
     {
         super.rareAction(f, flag);
+
+        if(bHasPaveway && FM.bNoDiveBombing && Time.current() - tLastLGBcheck > 30000L && (FM instanceof Maneuver))
+        {
+            if(!((Maneuver)FM).hasBombs())
+            {
+                bHasPaveway = false;
+                FM.bNoDiveBombing = false;
+            }
+            tLastLGBcheck = Time.current();
+        }
     }
 
     public GuidedMissileUtils getGuidedMissileUtils()
@@ -666,12 +631,6 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
     private long lastFlareDeployed;
     private ArrayList counterFlareList;
     private ArrayList counterChaffList;
-    private long lastCommonThreatActive;
-    private long intervalCommonThreat;
-    private long lastRadarLockThreatActive;
-    private long intervalRadarLockThreat;
-    private long lastMissileLaunchThreatActive;
-    private long intervalMissileLaunchThreat;
     private boolean bHasLAUcaps;
     private boolean bHasDeployedDragChute;
     private Chute chute;
@@ -698,6 +657,7 @@ public class SkyhawkA4M extends SkyhawkFuelReceiver
     private long tLastLaserUpdate = -1L;
     private static float maxPavewayFOVfrom = 45.0F;
     private static double maxPavewayDistance = 20000D;
+    private long tLastLGBcheck = -1L;
 
     private static Aircraft._WeaponSlot[] GenerateDefaultConfig(byte bt)
     {

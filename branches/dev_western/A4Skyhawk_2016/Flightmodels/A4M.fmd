@@ -45,6 +45,13 @@
   DefaultAileronTrim 0.000
   DefaultElevatorTrim 0.000
   DefaultRudderTrim 0.000
+  CTargetPitchDegreeAIApproach 5.0
+  AILandingWPGearDown 7
+  AILandingWPHookDown 8
+  AILandingWPFlapHalfDown 7
+  AILandingWPFlapFullDown 5
+  AILandingWP360OverHeadApproach 2
+  AILandingWPDownwindSpd 290
 [Squares]
   Wing 24.11
   Aileron 1.32

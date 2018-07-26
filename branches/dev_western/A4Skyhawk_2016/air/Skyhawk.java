@@ -47,22 +47,10 @@ public class Skyhawk extends Scheme1
         return rwrUtils;
     }
 
-    public void myRadarSearchYou(Actor actor)
-    {
-        if(bHasRWR)
-            rwrUtils.recordRadarSearched(actor, (String) null);
-    }
-
     public void myRadarSearchYou(Actor actor, String soundpreset)
     {
         if(bHasRWR)
             rwrUtils.recordRadarSearched(actor, soundpreset);
-    }
-
-    public void myRadarLockYou(Actor actor)
-    {
-        if(bHasRWR)
-            rwrUtils.recordRadarLocked(actor, (String) null);
     }
 
     public void myRadarLockYou(Actor actor, String soundpreset)
@@ -497,6 +485,7 @@ public class Skyhawk extends Scheme1
         oldAntiColLight = false;
         arrestor = 0.0F;
         fSlat = 0.0F;
+        iSlatControl = 0;
         bHasRWR = false;
         misslebrg = 0.0F;
         aircraftbrg = 0.0F;
@@ -513,8 +502,8 @@ public class Skyhawk extends Scheme1
 
         if(Config.cur.ini.get("Mods", "RWRTextStop", 0) > 0) bRWR_Show_Text_Warning = false;
         if(bHasRWR)
-            rwrUtils = new RadarWarningReceiverUtils(this, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning);
-//          rwrUtils = new RadarWarningReceiverUtils(this, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning, 128, "A4- ");
+            rwrUtils = new RadarWarningReceiverUtils(this, RWR_GENERATION, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning);
+//          rwrUtils = new RadarWarningReceiverUtils(this, RWR_GENERATION, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning, 12, "A4- ");
         else
             rwrUtils = null;
     }
@@ -772,7 +761,7 @@ public class Skyhawk extends Scheme1
 
     private void updateFlapsAndAirbrakesVisuals()
     {
-        if(lLastHydraulicGot > 0L)
+        if(lLastHydraulicGot > 0L && Time.current() > 3000L)
         {
             if(Time.current() - lLastHydraulicGot < 3000L)
             {
@@ -1351,10 +1340,18 @@ public class Skyhawk extends Scheme1
     public void computeSlat()
     {
         Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-        float slat = Math.max(
-          Aircraft.cvt(-FM.getSpeedKMH(), -370F, -224F, 0.0F, 1.0F),
-          Aircraft.cvt(FM.getAOA(), 4.9F, 12F, 0.0F, 1.0F));
-        fSlat = (fSlat * 19F + slat) / 20F;
+
+        if(FM.getSpeedKMH() < 300F || FM.getAOA() > 5.8F)
+            iSlatControl = 1;
+        if(FM.getSpeedKMH() > 330F && FM.getAOA() < 5.1F)
+            iSlatControl = 0;
+
+        if(FM.getSpeedKMH() < 70F)
+            fSlat = 1.0F;
+        else if(Math.abs(fSlat - (float)iSlatControl) < 0.02F)
+            fSlat = (float)iSlatControl;
+        else
+            fSlat = (fSlat * 24F + (float)iSlatControl) / 25F;
 
         FM.Sq.squareWing = stockSquareWing + SquareSlat * 2F * fSlat;
         FM.Sq.liftWingLMid = stockLiftWingLMid + SquareSlat * fSlat;
@@ -1748,6 +1745,7 @@ public class Skyhawk extends Scheme1
     public float aircraftbrg;
     public boolean backfire;
 
+    private static final int RWR_GENERATION = 0;
     private static final int RWR_MAX_DETECT = 8;
     private static final int RWR_KEEP_SECONDS = 2;
     private static final double RWR_RECEIVE_ELEVATION = 45.0D;
@@ -1763,6 +1761,7 @@ public class Skyhawk extends Scheme1
 
     //By western0221, slat value: 0.00=close, 1.00=full down
     private float fSlat;
+    private int iSlatControl;
     private float stockSquareWing;
     private float stockLiftWingLMid;
     private float stockLiftWingRMid;
