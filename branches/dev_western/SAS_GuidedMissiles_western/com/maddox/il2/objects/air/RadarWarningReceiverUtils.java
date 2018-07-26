@@ -1,6 +1,6 @@
 // Source File Name: RadarWarningReceiverUtils.java
 // Author:		   western0221
-// Last Modified by: western0221 on 19th/May/2018
+// Last Modified by: western0221 on 23rd/Jun./2018
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.*;
@@ -33,6 +33,7 @@ public class RadarWarningReceiverUtils {
 		long lastDetectTime;
 		double lastDetectDistance;
 		float lastDetectDirection;
+		SoundFX fxRwrToneGen0;
 		boolean bFinalWarned;
 
 		public RWRdata() {
@@ -42,6 +43,7 @@ public class RadarWarningReceiverUtils {
 			lastDetectTime = -1L;
 			lastDetectDistance = -1.0D;
 			lastDetectDirection = 360.1F;
+			fxRwrToneGen0 = null;
 			bFinalWarned = false;
 		}
 
@@ -217,19 +219,30 @@ public class RadarWarningReceiverUtils {
 		return strSection;
 	}
 
-	public RadarWarningReceiverUtils(Actor owner) {
-		this.initParams(owner);
+	public RadarWarningReceiverUtils(Actor theOwner) {
+		this.initParams(theOwner);
 	}
 
 	public RadarWarningReceiverUtils(Actor theOwner, int theMaxDetectRadarNum, int theKeepSeconds, double theReceiveElevationDegrees,
 									 boolean theAbleDetectIRmissiles, boolean theAbleDetectElevation, boolean theShowTextWarning) {
-		this.initParams(theOwner, theMaxDetectRadarNum, theKeepSeconds, theReceiveElevationDegrees, theAbleDetectIRmissiles, theAbleDetectElevation, theShowTextWarning);
+		this.initParams(theOwner, 0, theMaxDetectRadarNum, theKeepSeconds, theReceiveElevationDegrees, theAbleDetectIRmissiles, theAbleDetectElevation, theShowTextWarning);
+	}
+
+	public RadarWarningReceiverUtils(Actor theOwner, int theGen, int theMaxDetectRadarNum, int theKeepSeconds, double theReceiveElevationDegrees,
+									 boolean theAbleDetectIRmissiles, boolean theAbleDetectElevation, boolean theShowTextWarning) {
+		this.initParams(theOwner, theGen, theMaxDetectRadarNum, theKeepSeconds, theReceiveElevationDegrees, theAbleDetectIRmissiles, theAbleDetectElevation, theShowTextWarning);
 	}
 
 	public RadarWarningReceiverUtils(Actor theOwner, int theMaxDetectRadarNum, int theKeepSeconds, double theReceiveElevationDegrees,
 									 boolean theAbleDetectIRmissiles, boolean theAbleDetectElevation, boolean theShowTextWarning,
 									 int theDebugLogLevel, String theDebugPlaneName) {
-		this.initParams(theOwner, theMaxDetectRadarNum, theKeepSeconds, theReceiveElevationDegrees, theAbleDetectIRmissiles, theAbleDetectElevation, theShowTextWarning, theDebugLogLevel, theDebugPlaneName);
+		this.initParams(theOwner, 0, theMaxDetectRadarNum, theKeepSeconds, theReceiveElevationDegrees, theAbleDetectIRmissiles, theAbleDetectElevation, theShowTextWarning, theDebugLogLevel, theDebugPlaneName);
+	}
+
+	public RadarWarningReceiverUtils(Actor theOwner, int theGen, int theMaxDetectRadarNum, int theKeepSeconds, double theReceiveElevationDegrees,
+									 boolean theAbleDetectIRmissiles, boolean theAbleDetectElevation, boolean theShowTextWarning,
+									 int theDebugLogLevel, String theDebugPlaneName) {
+		this.initParams(theOwner, theGen, theMaxDetectRadarNum, theKeepSeconds, theReceiveElevationDegrees, theAbleDetectIRmissiles, theAbleDetectElevation, theShowTextWarning, theDebugLogLevel, theDebugPlaneName);
 	}
 
 	private boolean actorIsAI(Actor theActor) {
@@ -247,13 +260,15 @@ public class RadarWarningReceiverUtils {
 		this.ignoreMissileList = new ArrayList();
 
 		this.rwrOwner = null;
+		this.rwrGeneration = 0;
 		this.maxDetectRadarNum = 16;
 		this.keepMiliseconds = 7000L;
 		this.receiveElevationDegrees = 45.0D;
 		this.bAbleDetectIRmissiles = false;
 	}
 
-	public void initLockTones(String sFxRwrToneLock, String sFxRwrToneSearch, String sFxRwrToneMissile,
+//delete
+/*	public void initLockTones(String sFxRwrToneLock, String sFxRwrToneSearch, String sFxRwrToneMissile,
 							  String sSmplRwrLock, String sSmplRwrSearch, String sSmplRwrMissile) {
 		this.initLockTones(sFxRwrToneLock, sFxRwrToneSearch, sFxRwrToneMissile, (String) null, sSmplRwrLock, sSmplRwrSearch, sSmplRwrMissile, (String) null);
 	}
@@ -268,15 +283,17 @@ public class RadarWarningReceiverUtils {
 			this.setFxRwrToneSearch(sFxRwrToneSearch, 1.0F);
 			this.setFxRwrToneMissile(sFxRwrToneMissile, 1.0F);
 			this.setFxRwrToneThreatNew(sFxRwrToneThreatNew, 1.0F);
-			this.setSmplRwrLock(sSmplRwrLock);
-			this.setSmplRwrSearch(sSmplRwrSearch);
-			this.setSmplRwrMissile(sSmplRwrMissile);
-			this.setSmplRwrThreatNew(sSmplRwrThreatNew);
+//delete			this.setSmplRwrLock(sSmplRwrLock);
+//delete			this.setSmplRwrSearch(sSmplRwrSearch);
+//delete			this.setSmplRwrMissile(sSmplRwrMissile);
+//delete			this.setSmplRwrThreatNew(sSmplRwrThreatNew);
 		}
 		this.lockTonesInitialized = true;
 		if((this.iDebugLogLevel & 128) > 0)
 			System.out.println(sDebugPlaneName + "initLockTones finished");
 	}
+*/
+//delete
 
 	private void initParams(Actor theOwner) {
 		this.initCommon();
@@ -286,11 +303,12 @@ public class RadarWarningReceiverUtils {
 		}
 	}
 
-	private void initParams(Actor theOwner, int theMaxDetectRadarNum, int theKeepSeconds, double theReceiveElevationDegrees,
+	private void initParams(Actor theOwner, int theGen, int theMaxDetectRadarNum, int theKeepSeconds, double theReceiveElevationDegrees,
 							boolean theAbleDetectIRmissiles, boolean theAbleDetectElevation, boolean theShowTextWarning) {
 		this.initCommon();
 		if(theOwner instanceof Aircraft && theOwner instanceof TypeRadarWarningReceiver) {
 			this.rwrOwner = theOwner;
+			this.rwrGeneration = theGen;
 			this.FM = ((Aircraft) theOwner).FM;
 			this.maxDetectRadarNum = theMaxDetectRadarNum;
 			this.keepMiliseconds = (long) theKeepSeconds * 1000L;
@@ -301,10 +319,10 @@ public class RadarWarningReceiverUtils {
 		}
 	}
 
-	private void initParams(Actor theOwner, int theMaxDetectRadarNum, int theKeepSeconds, double theReceiveElevationDegrees,
+	private void initParams(Actor theOwner, int theGen, int theMaxDetectRadarNum, int theKeepSeconds, double theReceiveElevationDegrees,
 							boolean theAbleDetectIRmissiles, boolean theAbleDetectElevation, boolean theShowTextWarning,
 							int theDebugLogLevel, String theDebugPlaneName) {
-		this.initParams(theOwner, theMaxDetectRadarNum, theKeepSeconds, theReceiveElevationDegrees, theAbleDetectIRmissiles, theAbleDetectElevation, theShowTextWarning);
+		this.initParams(theOwner, theGen, theMaxDetectRadarNum, theKeepSeconds, theReceiveElevationDegrees, theAbleDetectIRmissiles, theAbleDetectElevation, theShowTextWarning);
 		iDebugLogLevel = theDebugLogLevel;
 		sDebugPlaneName = theDebugPlaneName;
 	}
@@ -366,10 +384,22 @@ public class RadarWarningReceiverUtils {
 		this.setFxRwrToneLock(theLockPrs);
 		this.setFxRwrToneMissile(theMissilePrs);
 		this.setFxRwrToneThreatNew(theThreatNewPrs);
-		this.setSmplRwrSearch(theSearchWav);
-		this.setSmplRwrLock(theLockWav);
-		this.setSmplRwrMissile(theMissileWav);
-		this.setSmplRwrThreatNew(theThreatNewWav);
+//delete		this.setSmplRwrSearch(theSearchWav);
+//delete		this.setSmplRwrLock(theLockWav);
+//delete		this.setSmplRwrMissile(theMissileWav);
+//delete		this.setSmplRwrThreatNew(theThreatNewWav);
+		if((this.iDebugLogLevel & 128) > 0)
+			System.out.println(sDebugPlaneName + "RWRUtils: setLockTone() finish!");
+	}
+
+	public void setLockTone(String theSearchPrs, String theLockPrs, String theMissilePrs, String theThreatNewPrs) {
+		if((this.iDebugLogLevel & 128) > 0)
+			System.out.println(sDebugPlaneName + "RWRUtils: setLockTone() entering .... this.rwrOwner=" + this.rwrOwner);
+		if(this.rwrOwner != World.getPlayerAircraft()) return;
+		this.setFxRwrToneSearch(theSearchPrs);
+		this.setFxRwrToneLock(theLockPrs);
+		this.setFxRwrToneMissile(theMissilePrs);
+		this.setFxRwrToneThreatNew(theThreatNewPrs);
 		if((this.iDebugLogLevel & 128) > 0)
 			System.out.println(sDebugPlaneName + "RWRUtils: setLockTone() finish!");
 	}
@@ -482,7 +512,8 @@ public class RadarWarningReceiverUtils {
 		this.fxRwrToneThreatNew.setVolume(value);
 	}
 
-	public void setSmplRwrSearch(String value) {
+//delete
+/*	public void setSmplRwrSearch(String value) {
 		if(this.rwrOwner != World.getPlayerAircraft()) return;
 		if(value == null || value == "") {
 			this.smplRwrSearch = null;
@@ -533,7 +564,8 @@ public class RadarWarningReceiverUtils {
 		if((this.iDebugLogLevel & 128) > 0)
 			System.out.println(sDebugPlaneName + "RWRUtils: setSmplRwrThreatNew() finish!");
 	}
-
+*/
+//delete
 	public void update() {
 		if(lastRWRUpdateTime == Time.current()) return;
 
@@ -559,7 +591,19 @@ public class RadarWarningReceiverUtils {
 			if(IRmissiles.size() > 0)
 				IRmissiles.clear();
 			if(RHmissiles.size() > 0)
+			{
+				if(this.rwrGeneration == 0)
+				{
+					RWRdata tempRrwrdata = null;
+					for(int i = 0; i < this.RHmissiles.size(); i++)
+					{
+						tempRrwrdata = (RWRdata)this.RHmissiles.get(i);
+						if(tempRrwrdata.fxRwrToneGen0 != null && tempRrwrdata.fxRwrToneGen0.isPlaying())
+							tempRrwrdata.fxRwrToneGen0.stop();
+					}
+				}
 				RHmissiles.clear();
+			}
 
 			if(bMissileWarning || backfire)
 			{
@@ -954,7 +998,7 @@ public class RadarWarningReceiverUtils {
 		this.rwrOwner.pos.getAbs(point3d);
 
 		if((this.iDebugLogLevel & 4) > 0)
-			System.out.println(sDebugPlaneName + "RWRUtils: before record this.radarsLock, radarsLock.size()=" + this.radarsLock.size());
+			System.out.println(sDebugPlaneName + "RWRUtils: RWRRadarLockWarning() - before record this.radarsLock, radarsLock.size()=" + this.radarsLock.size());
 		RWRdata tempNrwrdata = null;
 		RWRdata tempRrwrdata = null;
 		double tempDistance = 0.0D;
@@ -1004,7 +1048,7 @@ public class RadarWarningReceiverUtils {
 				this.radarsLock.add(tempNrwrdata);
 				if((this.iDebugLogLevel & 4) > 0)
 					System.out.println(sDebugPlaneName + "RWRUtils: new this.radarsLock.add(" + actorString(tact) + ") , size()=" + this.radarsLock.size());
-				if(fxRwrToneThreatNew != null) {
+				if(this.bSoundEnabled && this.rwrGeneration != 0 && fxRwrToneThreatNew != null) {
 					if(!fxRwrToneThreatNew.isPlaying())
 						fxRwrToneThreatNew.start();
 				}
@@ -1107,7 +1151,7 @@ public class RadarWarningReceiverUtils {
 			System.out.println(sDebugPlaneName + "RWRUtils: entering recordRadarLocked(" + actorString(actor) + ")");
 
 		if(!((actor instanceof TypeGuidedMissileCarrier)
-		     || ((actor instanceof ArtilleryGeneric) && ((ArtilleryGeneric)actor).getHasRadar()) || ((actor instanceof TankGeneric) && ((TankGeneric)actor).getHasRadar()))
+			 || ((actor instanceof ArtilleryGeneric) && ((ArtilleryGeneric)actor).getHasRadar()) || ((actor instanceof TankGeneric) && ((TankGeneric)actor).getHasRadar()))
 		   || actor.getArmy() == this.rwrOwner.getArmy())
 			return;
 		if(actor instanceof TypeGuidedMissileCarrier) {
@@ -1161,10 +1205,14 @@ public class RadarWarningReceiverUtils {
 			tempNrwrdata.lastDetectTime = Time.current();
 			tempNrwrdata.lastDetectDistance = tempDistance;
 			tempNrwrdata.lastDetectDirection = angle360Between(this.rwrOwner, actor);
+			if(this.rwrGeneration == 0 && soundpreset != null)
+				tempNrwrdata.fxRwrToneGen0 = this.rwrOwner.newSound(soundpreset, false);
+			else
+				tempNrwrdata.fxRwrToneGen0 = null;
 			this.radarsLock.add(tempNrwrdata);
 			if((this.iDebugLogLevel & 4) > 0)
 				System.out.println(sDebugPlaneName + "RWRUtils: new this.radarsLock.add(" + actorString(actor) + ") , size()=" + this.radarsLock.size());
-			if(fxRwrToneThreatNew != null) {
+			if(this.bSoundEnabled && this.rwrGeneration != 0 && fxRwrToneThreatNew != null) {
 				if(!fxRwrToneThreatNew.isPlaying())
 					fxRwrToneThreatNew.start();
 			}
@@ -1195,7 +1243,7 @@ public class RadarWarningReceiverUtils {
 		if(actor.getArmy() == this.rwrOwner.getArmy())
 			return;
 		if(!((actor instanceof TypeGuidedMissileCarrier) || (actor instanceof TypeRadar) || (actor instanceof TypeSemiRadar)
-		    || ((actor instanceof ArtilleryGeneric) && ((ArtilleryGeneric)actor).getHasRadar()) || ((actor instanceof TankGeneric) && ((TankGeneric)actor).getHasRadar())))
+			|| ((actor instanceof ArtilleryGeneric) && ((ArtilleryGeneric)actor).getHasRadar()) || ((actor instanceof TankGeneric) && ((TankGeneric)actor).getHasRadar())))
 			return;
 
 		Point3d point3d = new Point3d();
@@ -1243,10 +1291,14 @@ public class RadarWarningReceiverUtils {
 			tempNrwrdata.lastDetectTime = Time.current();
 			tempNrwrdata.lastDetectDistance = tempDistance;
 			tempNrwrdata.lastDetectDirection = angle360Between(this.rwrOwner, actor);
+			if(this.rwrGeneration == 0 && soundpreset != null)
+				tempNrwrdata.fxRwrToneGen0 = this.rwrOwner.newSound(soundpreset, false);
+			else
+				tempNrwrdata.fxRwrToneGen0 = null;
 			this.radars.add(tempNrwrdata);
 			if((this.iDebugLogLevel & 8) > 0)
 				System.out.println(sDebugPlaneName + "RWRUtils: new this.radars.add(" + actorString(actor) + ") , size()=" + this.radars.size());
-			if(fxRwrToneThreatNew != null) {
+			if(this.bSoundEnabled && this.rwrGeneration != 0 && fxRwrToneThreatNew != null) {
 				if(!fxRwrToneThreatNew.isPlaying())
 					fxRwrToneThreatNew.start();
 			}
@@ -1271,7 +1323,24 @@ public class RadarWarningReceiverUtils {
 
 	public void playRWRWarning()
 	{
-		if(!bSoundEnabled) return;
+		if(!this.bSoundEnabled) return;
+
+		if(this.rwrGeneration == 0)
+		{
+			for(int j = 0; j < this.radars.size(); j++)
+			{
+				if(((RWRdata)this.radars.get(j)).fxRwrToneGen0 != null && !((RWRdata)this.radars.get(j)).fxRwrToneGen0.isPlaying())
+					((RWRdata)this.radars.get(j)).fxRwrToneGen0.start();
+			}
+
+			for(int j = 0; j < this.radarsLock.size(); j++)
+			{
+				if(((RWRdata)this.radarsLock.get(j)).fxRwrToneGen0 != null && !((RWRdata)this.radarsLock.get(j)).fxRwrToneGen0.isPlaying())
+					((RWRdata)this.radarsLock.get(j)).fxRwrToneGen0.start();
+			}
+
+			return;
+		}
 
 		if(fxRwrToneSearch != null)
 		{
@@ -1322,13 +1391,37 @@ public class RadarWarningReceiverUtils {
 
 	public void stopAllRWRSounds()
 	{
-		bSoundEnabled = false;
+		this.bSoundEnabled = false;
 		if(fxRwrToneSearch != null && fxRwrToneSearch.isPlaying())
 			fxRwrToneSearch.stop();
 		if(fxRwrToneLock != null && fxRwrToneLock.isPlaying())
 			fxRwrToneLock.stop();
 		if(fxRwrToneMissile != null && fxRwrToneMissile.isPlaying())
 			fxRwrToneMissile.stop();
+		if(fxRwrToneThreatNew != null && fxRwrToneThreatNew.isPlaying())
+			fxRwrToneThreatNew.stop();
+		if(this.rwrGeneration == 0)
+		{
+			RWRdata tempRrwrdata = null;
+			for(int i = 0; i < this.RHmissiles.size(); i++)
+			{
+				tempRrwrdata = (RWRdata)this.RHmissiles.get(i);
+				if(tempRrwrdata.fxRwrToneGen0 != null && tempRrwrdata.fxRwrToneGen0.isPlaying())
+					tempRrwrdata.fxRwrToneGen0.stop();
+			}
+			for(int i = 0; i < this.radars.size(); i++)
+			{
+				tempRrwrdata = (RWRdata)this.radars.get(i);
+				if(tempRrwrdata.fxRwrToneGen0 != null && tempRrwrdata.fxRwrToneGen0.isPlaying())
+					tempRrwrdata.fxRwrToneGen0.stop();
+			}
+			for(int i = 0; i < this.radarsLock.size(); i++)
+			{
+				tempRrwrdata = (RWRdata)this.radarsLock.get(i);
+				if(tempRrwrdata.fxRwrToneGen0 != null && tempRrwrdata.fxRwrToneGen0.isPlaying())
+					tempRrwrdata.fxRwrToneGen0.stop();
+			}
+		}
 
 		if((this.iDebugLogLevel & 128) > 0)
 			System.out.println(sDebugPlaneName + "RWRUtils: stopAllRWRSounds(); --- done.");
@@ -1344,6 +1437,7 @@ public class RadarWarningReceiverUtils {
 
 	private void missileListExpire()
 	{
+		RWRdata tempRrwrdata = null;
 		if(this.ignoreMissileList.size() > 0)
 		{
 			for(int i = 0; i < this.ignoreMissileList.size(); i++)
@@ -1380,11 +1474,23 @@ public class RadarWarningReceiverUtils {
 			{
 				if(!(Actor.isValid(((RWRdata)this.RHmissiles.get(i)).actor)))
 				{
+					if(this.rwrGeneration == 0)
+					{
+						tempRrwrdata = (RWRdata)this.RHmissiles.get(i);
+						if(tempRrwrdata.fxRwrToneGen0 != null && tempRrwrdata.fxRwrToneGen0.isPlaying())
+							tempRrwrdata.fxRwrToneGen0.stop();
+					}
 					this.RHmissiles.remove(i);
 					continue;
 				}
 				if(Time.current() > ((RWRdata)this.RHmissiles.get(i)).lastDetectTime + this.keepMiliseconds)
 				{
+					if(this.rwrGeneration == 0)
+					{
+						tempRrwrdata = (RWRdata)this.RHmissiles.get(i);
+						if(tempRrwrdata.fxRwrToneGen0 != null && tempRrwrdata.fxRwrToneGen0.isPlaying())
+							tempRrwrdata.fxRwrToneGen0.stop();
+					}
 					this.ignoreMissileList.add(((RWRdata)this.RHmissiles.get(i)).actor);
 					this.RHmissiles.remove(i);
 					continue;
@@ -1399,6 +1505,12 @@ public class RadarWarningReceiverUtils {
 			{
 				if(Time.current() > ((RWRdata)this.RHmissiles.get(i)).lastDetectTime)
 				{
+					if(this.rwrGeneration == 0)
+					{
+						tempRrwrdata = (RWRdata)this.RHmissiles.get(i);
+						if(tempRrwrdata.fxRwrToneGen0 != null && tempRrwrdata.fxRwrToneGen0.isPlaying())
+							tempRrwrdata.fxRwrToneGen0.stop();
+					}
 					this.RHmissiles.remove(i);
 					nDone++;
 				}
@@ -1409,6 +1521,12 @@ public class RadarWarningReceiverUtils {
 		{
 			for(int i = this.RHmissiles.size() - 1; i >= maxDetectRadarNum; i--)
 			{
+				if(this.rwrGeneration == 0)
+				{
+					tempRrwrdata = (RWRdata)this.RHmissiles.get(i);
+					if(tempRrwrdata.fxRwrToneGen0 != null && tempRrwrdata.fxRwrToneGen0.isPlaying())
+						tempRrwrdata.fxRwrToneGen0.stop();
+				}
 				this.RHmissiles.remove(i);
 			}
 		}
@@ -1416,17 +1534,30 @@ public class RadarWarningReceiverUtils {
 
 	private void radarListExpire()
 	{
+		RWRdata tempRrwrdata = null;
 		if(this.radars.size() > 0)
 		{
 			for(int i = 0; i < this.radars.size(); i++)
 			{
 				if(!(Actor.isValid(((RWRdata)this.radars.get(i)).actor)))
 				{
+					if(this.rwrGeneration == 0)
+					{
+						tempRrwrdata = (RWRdata)this.radars.get(i);
+						if(tempRrwrdata.fxRwrToneGen0 != null && tempRrwrdata.fxRwrToneGen0.isPlaying())
+							tempRrwrdata.fxRwrToneGen0.stop();
+					}
 					this.radars.remove(i);
 					continue;
 				}
 				if(Time.current() > ((RWRdata)this.radars.get(i)).lastDetectTime + keepMiliseconds)
 				{
+					if(this.rwrGeneration == 0)
+					{
+						tempRrwrdata = (RWRdata)this.radars.get(i);
+						if(tempRrwrdata.fxRwrToneGen0 != null && tempRrwrdata.fxRwrToneGen0.isPlaying())
+							tempRrwrdata.fxRwrToneGen0.stop();
+					}
 					this.radars.remove(i);
 					continue;
 				}
@@ -1440,6 +1571,12 @@ public class RadarWarningReceiverUtils {
 			{
 				if(Time.current() > ((RWRdata)this.radars.get(i)).lastDetectTime)
 				{
+					if(this.rwrGeneration == 0)
+					{
+						tempRrwrdata = (RWRdata)this.radars.get(i);
+						if(tempRrwrdata.fxRwrToneGen0 != null && tempRrwrdata.fxRwrToneGen0.isPlaying())
+							tempRrwrdata.fxRwrToneGen0.stop();
+					}
 					this.radars.remove(i);
 					nDone++;
 				}
@@ -1450,6 +1587,12 @@ public class RadarWarningReceiverUtils {
 		{
 			for(int i = this.radars.size() - 1; i >= maxDetectRadarNum; i--)
 			{
+				if(this.rwrGeneration == 0)
+				{
+					tempRrwrdata = (RWRdata)this.radars.get(i);
+					if(tempRrwrdata.fxRwrToneGen0 != null && tempRrwrdata.fxRwrToneGen0.isPlaying())
+						tempRrwrdata.fxRwrToneGen0.stop();
+				}
 				this.radars.remove(i);
 			}
 		}
@@ -1457,17 +1600,30 @@ public class RadarWarningReceiverUtils {
 
 	private void radarLockListExpire()
 	{
+		RWRdata tempRrwrdata = null;
 		if(this.radarsLock.size() > 0)
 		{
 			for(int i = 0; i < this.radarsLock.size(); i++)
 			{
 				if(!(Actor.isValid(((RWRdata)this.radarsLock.get(i)).actor)))
 				{
+					if(this.rwrGeneration == 0)
+					{
+						tempRrwrdata = (RWRdata)this.radarsLock.get(i);
+						if(tempRrwrdata.fxRwrToneGen0 != null && tempRrwrdata.fxRwrToneGen0.isPlaying())
+							tempRrwrdata.fxRwrToneGen0.stop();
+					}
 					this.radarsLock.remove(i);
 					continue;
 				}
 				if(Time.current() > ((RWRdata)this.radarsLock.get(i)).lastDetectTime + keepMiliseconds)
 				{
+					if(this.rwrGeneration == 0)
+					{
+						tempRrwrdata = (RWRdata)this.radarsLock.get(i);
+						if(tempRrwrdata.fxRwrToneGen0 != null && tempRrwrdata.fxRwrToneGen0.isPlaying())
+							tempRrwrdata.fxRwrToneGen0.stop();
+					}
 					this.radarsLock.remove(i);
 					continue;
 				}
@@ -1481,6 +1637,12 @@ public class RadarWarningReceiverUtils {
 			{
 				if(Time.current() > ((RWRdata)this.radarsLock.get(i)).lastDetectTime)
 				{
+					if(this.rwrGeneration == 0)
+					{
+						tempRrwrdata = (RWRdata)this.radarsLock.get(i);
+						if(tempRrwrdata.fxRwrToneGen0 != null && tempRrwrdata.fxRwrToneGen0.isPlaying())
+							tempRrwrdata.fxRwrToneGen0.stop();
+					}
 					this.radarsLock.remove(i);
 					nDone++;
 				}
@@ -1491,6 +1653,12 @@ public class RadarWarningReceiverUtils {
 		{
 			for(int i = this.radarsLock.size() - 1; i >= maxDetectRadarNum; i--)
 			{
+				if(this.rwrGeneration == 0)
+				{
+					tempRrwrdata = (RWRdata)this.radarsLock.get(i);
+					if(tempRrwrdata.fxRwrToneGen0 != null && tempRrwrdata.fxRwrToneGen0.isPlaying())
+						tempRrwrdata.fxRwrToneGen0.stop();
+				}
 				this.radarsLock.remove(i);
 			}
 		}
@@ -1499,7 +1667,7 @@ public class RadarWarningReceiverUtils {
 	private int DEG2OCLOCK(double degree) {
 		while(degree < 0.0D)
 			degree += 360.0D;
-		int oclock = (int)(Math.ceil((degree + 15D) / 30.0D) - 1.0D);
+		int oclock = (int)(Math.ceil((degree + 15.0D) / 30.0D) - 1.0D);
 		if(oclock < 1)
 			oclock = 12;
 		return oclock;
@@ -1529,13 +1697,15 @@ public class RadarWarningReceiverUtils {
 	private SoundFX fxRwrToneSearch = null;
 	private SoundFX fxRwrToneMissile = null;
 	private SoundFX fxRwrToneThreatNew = null;
-	private Sample smplRwrLock = null;
-	private Sample smplRwrSearch = null;
-	private Sample smplRwrMissile = null;
-	private Sample smplRwrThreatNew = null;
+//delete	private Sample smplRwrLock = null;
+//delete	private Sample smplRwrSearch = null;
+//delete	private Sample smplRwrMissile = null;
+//delete	private Sample smplRwrThreatNew = null;
 	private String missileName = null;
 	private Actor rwrOwner = null;
 
+	// rwrGeneration: 0= 1950-80 era, sounds only puls-wave modulation; 1= 1990-2020 era, detect and identify enemy types and classes
+	private int rwrGeneration = 0;
 	private int maxDetectRadarNum = 0;
 	private long keepMiliseconds = 0L;
 	private double receiveElevationDegrees = 0.0D;

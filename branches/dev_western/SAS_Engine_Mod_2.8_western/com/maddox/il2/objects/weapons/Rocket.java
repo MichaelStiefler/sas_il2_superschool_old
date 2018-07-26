@@ -152,8 +152,8 @@ public class Rocket extends ActorMesh implements MsgCollisionRequestListener, Ms
 		if (f3 > 0.0F) DM = (f1 - f2) / (f3 / Time.tickConstLenFs());
 		else DM = 0.0F;
 		P = f4;
-		timeFire = (long) ((double) (f3 * 1000F) + 0.5D);
-		timeLife = (long) ((double) (f5 * 1000F) + 0.5D);
+		timeFire = (long) (f3 * 1000F + 0.5F);
+		timeLife = (long) (f5 * 1000F + 0.5F);
 	}
 
 	public void start(float f) {

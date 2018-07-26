@@ -1,6 +1,7 @@
 /*Modified NearestEnemies class for the SAS Engine Mod or Ship Extensions Mod*/
 /*By western, Add missile launcher or VLS missiles can turn to the enemy not only straight on 19th/Jan./2014*/
 /*By western, Add finding "MissileInterceptable" instances or using Radar ALL WEATHER search through clouds on 24th/Apr./2018*/
+/*By western, Add sound preset of radar pulse wave on 23rd/Jun./2018*/
 
 package com.maddox.il2.ai.ground;
 
@@ -48,7 +49,7 @@ public class NearestEnemies
         useHeight = false;
     }
 
-    // By western, additional set() method
+    // By western, additional set() methods
     public static void set(int iWeaponsMask, float fMinSpeed, float fMaxSpeed, float fMinHeight, float fMaxHeight)
     {
         enemies.clear();
@@ -61,29 +62,32 @@ public class NearestEnemies
         useHeight = true;
         interceptMissiles = false;
         useRadar = false;
+        soundPwRadarSearch = (String)null;
     }
 
-    public static void set(int iWeaponsMask, float fMinSpeed, float fMaxSpeed, float fMinHeight, float fMaxHeight, boolean bInterceptMissile, boolean bUseRadar)
+    public static void set(int iWeaponsMask, float fMinSpeed, float fMaxSpeed, float fMinHeight, float fMaxHeight, boolean bInterceptMissile, boolean bUseRadar, String sPulseWaveRadarSearch)
     {
         set(iWeaponsMask, fMinSpeed, fMaxSpeed, fMinHeight, fMaxHeight);
         interceptMissiles = bInterceptMissile;
         useRadar = bUseRadar;
+        soundPwRadarSearch = sPulseWaveRadarSearch;
     }
 
-    public static void set(int iWeaponsMask, boolean bInterceptMissile, boolean bUseRadar)
+    public static void set(int iWeaponsMask, boolean bInterceptMissile, boolean bUseRadar, String sPulseWaveRadarSearch)
     {
-        set(iWeaponsMask, 0.0F, 0.0F, bInterceptMissile, bUseRadar);
+        set(iWeaponsMask, 0.0F, 0.0F, bInterceptMissile, bUseRadar, sPulseWaveRadarSearch);
         useSpeed = false;
         useHeight = false;
     }
 
-    public static void set(int iWeaponsMask, float fMinSpeed, float fMaxSpeed, boolean bInterceptMissile, boolean bUseRadar)
+    public static void set(int iWeaponsMask, float fMinSpeed, float fMaxSpeed, boolean bInterceptMissile, boolean bUseRadar, String sPulseWaveRadarSearch)
     {
         set(iWeaponsMask, fMinSpeed, fMaxSpeed, 0.0F, 0.0F);
         useSpeed = true;
         useHeight = false;
         interceptMissiles = bInterceptMissile;
         useRadar = bUseRadar;
+        soundPwRadarSearch = sPulseWaveRadarSearch;
     }
 
     public static void resetGameClear()
@@ -277,7 +281,7 @@ public class NearestEnemies
                     nearNUsed++;
                     // By western, Notice to the RadarWarningReceiver plane when Radar is used
                     if(useRadar && (actor instanceof TypeRadarWarningReceiver) && owner != null && Actor.isValid(owner))
-                         ((TypeRadarWarningReceiver)actor).myRadarSearchYou(owner);
+                         ((TypeRadarWarningReceiver)actor).myRadarSearchYou(owner, soundPwRadarSearch);
                 }
                 continue;
             }
@@ -366,7 +370,11 @@ public class NearestEnemies
             if(actor instanceof MissileInterceptable)
             {
                 if(!interceptMissiles)
+                {
+                    if( bLogDetail )
+                        System.out.println("NearestEnemies: getAFoundEnemy , This doesn't have interceptMissiles flag for MissileInterceptable target No." + k + " = actor(" + actorString(actor) + ").");
                     continue;
+                }
             }
             if(actor instanceof Aircraft || actor instanceof MissileInterceptable)
             {
@@ -786,6 +794,7 @@ public class NearestEnemies
     private static float maxHeight;
     private static boolean interceptMissiles = false;
     private static boolean useRadar = false;
+    private static String soundPwRadarSearch = (String)null;
     private static Point3d tempPos = new Point3d();
 
     private static boolean bLogDetail = false;

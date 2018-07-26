@@ -205,9 +205,9 @@ public abstract class Cockpit extends Actor {
 			cmm2mir.m03 = cam2mir.m03;
 			cmm2mir.m13 = cam2mir.m13;
 			cmm2mir.m23 = -cam2mir.m23;
-			cmm2mir.m03 *= 0.45000000000000001D;
-			cmm2mir.m13 *= 0.45000000000000001D;
-			cmm2mir.m23 *= 0.45000000000000001D;
+			cmm2mir.m03 *= 0.450D;
+			cmm2mir.m13 *= 0.450D;
+			cmm2mir.m23 *= 0.450D;
 			cmm2w.mul(mir2w, cmm2mir);
 			mir2cmm.set(cmm2mir);
 			mir2cmm.invert();
@@ -807,7 +807,7 @@ public abstract class Cockpit extends Actor {
 			V.sub(fm.Loc, lightningPoint);
 			float f = (float) V.length();
 			atmosphereInterference = cvt(f, 1000F, 9000F, 1.0F, 0.0F);
-		} else if (atmosphereInterference > 0.01F) atmosphereInterference = (float) ((double) atmosphereInterference * 0.97999999999999998D);
+		} else if (atmosphereInterference > 0.01F) atmosphereInterference = atmosphereInterference * 0.98F;
 		if (!bFocus) return;
 		Aircraft aircraft1 = aircraft();
 		if (aircraft1.FM.AS.listenLorenzBlindLanding) listenLorenzBlindLanding(aircraft1);
@@ -1138,7 +1138,7 @@ public abstract class Cockpit extends Actor {
 		for (; f > 180F; f -= 180F)
 			;
 		f += terrainAndNightError;
-		if ((double) ndBeaconRange > 0.98999999999999999D) f = aircraft().FM.Or.azimut();
+		if (ndBeaconRange > 0.99F) f = aircraft().FM.Or.azimut();
 		else f += World.rnd().nextFloat(-ndBeaconRange - atmosphereInterference * 5F, ndBeaconRange + atmosphereInterference * 5F) * 30F;
 		return f;
 	}

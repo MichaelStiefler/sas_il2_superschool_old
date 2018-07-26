@@ -1,5 +1,5 @@
 /*Modified TankGeneric class for the SAS Engine Mod*/
-/*By western, Add radar search and missile interceptable flags about firing enemies on 24th/Apr./2018*/
+/*By western, Add radar search and missile interceptable flags about firing enemies on 24th/Apr./2018 - 22th/Jun./2018*/
 package com.maddox.il2.objects.vehicles.tanks;
 
 import java.io.IOException;
@@ -242,6 +242,11 @@ public abstract class TankGeneric extends ActorHMesh
                 float f8 = sectfile.get(s, "RadarSearch", -9865.345F);
                 if(f8 != -9865.345F)
                     tankproperties.gunProperties[j].USE_RADAR_SEARCH = f8 > 0.5F;
+                if(tankproperties.gunProperties[j].USE_RADAR_SEARCH)
+                {
+                    tankproperties.gunProperties[j].SOUND_PW_RADAR_SEARCH = getS(sectfile, s, "SoundRadarSearchPulseWave");
+                    tankproperties.gunProperties[j].SOUND_PW_RADAR_LOCK = getS(sectfile, s, "SoundRadarLockPulseWave");
+                }
                 // ---
                 tankproperties.gunProperties[j].ATTACK_MAX_DISTANCE = getF(sectfile, s, "AttackMaxDistance" + s4, 6F, 12000F);
                 tankproperties.gunProperties[j].ATTACK_MAX_RADIUS = getF(sectfile, s, "AttackMaxRadius" + s4, 6F, 12000F);
@@ -798,6 +803,8 @@ public abstract class TankGeneric extends ActorHMesh
         // +++ By western, expanded for flags Intercept missiles and Radar use
         public boolean ATTACK_MISSILES;
         public boolean USE_RADAR_SEARCH;
+        public String SOUND_PW_RADAR_SEARCH;
+        public String SOUND_PW_RADAR_LOCK;
         // ---
         public float FAST_TARGETS_ANGLE_ERROR;
         public AnglesRange HEAD_YAW_RANGE;
@@ -1452,6 +1459,7 @@ public abstract class TankGeneric extends ActorHMesh
             if(j != 0)
                 net = new Mirror(this, netchannel, j);
         }
+        actorsAimed = new Actor[prop.gunProperties.length];
         arms = new FireDevice[prop.gunProperties.length];
         for(int k = 0; k < arms.length; k++)
         {
@@ -2176,7 +2184,7 @@ public abstract class TankGeneric extends ActorHMesh
             if(((ChiefGround) (obj)).getCodeOfBridgeSegment(this) >= 0)
                 return null;
             // By western, expanded for flags Intercept missiles and Radar use
-            actor = ((ChiefGround) (obj)).GetNearestEnemy(pos.getAbsPoint(), AttackMaxDistance(aim), WeaponsMask(), prop.gunProperties[i].ATTACK_FAST_TARGETS ? -1F : KmHourToMSec(100F), prop.gunProperties[i].ATTACK_MISSILES, prop.gunProperties[i].USE_RADAR_SEARCH, (Actor)this);
+            actor = ((ChiefGround) (obj)).GetNearestEnemy(pos.getAbsPoint(), AttackMaxDistance(aim), WeaponsMask(), prop.gunProperties[i].ATTACK_FAST_TARGETS ? -1F : KmHourToMSec(100F), prop.gunProperties[i].ATTACK_MISSILES, prop.gunProperties[i].USE_RADAR_SEARCH, prop.gunProperties[i].SOUND_PW_RADAR_SEARCH, (Actor)this);
 
             if( bLogDetail ) System.out.println("TankGeneric(" + actorString(this) + ") - findEnemy(aim) - GetNearestEnemy()=" + actorString(actor));
         }
@@ -2208,7 +2216,12 @@ public abstract class TankGeneric extends ActorHMesh
 
             // By western, Notice to the RadarWarningReceiver plane when Radar is used
             if(prop.gunProperties[i].USE_RADAR_SEARCH && (actor instanceof TypeRadarWarningReceiver))
-                 ((TypeRadarWarningReceiver)actor).myRadarLockYou((Actor)this);
+            {
+                ((TypeRadarWarningReceiver)actor).myRadarLockYou((Actor)this, prop.gunProperties[i].SOUND_PW_RADAR_LOCK);
+                actorsAimed[i] = actor;
+            }
+            else
+                actorsAimed[i] = null;
 
             return actor;
         }
@@ -2407,6 +2420,8 @@ public abstract class TankGeneric extends ActorHMesh
             if(aim.equals(arms[i].aim))
             {
                 arms[i].gun.shots(1);
+                if(actorsAimed[i] != null && Actor.isValid(actorsAimed[i]) && (actorsAimed[i] instanceof TypeRadarWarningReceiver) && prop.gunProperties[i].USE_RADAR_SEARCH)
+                    ((TypeRadarWarningReceiver)actorsAimed[i]).myRadarLockYou((Actor)this, prop.gunProperties[i].SOUND_PW_RADAR_LOCK);
                 break;
             }
             i++;
@@ -2425,6 +2440,8 @@ public abstract class TankGeneric extends ActorHMesh
             if(aim.equals(arms[i].aim))
             {
                 arms[i].gun.shots(-1);
+                if(actorsAimed[i] != null && Actor.isValid(actorsAimed[i]) && (actorsAimed[i] instanceof TypeRadarWarningReceiver) && prop.gunProperties[i].USE_RADAR_SEARCH)
+                    ((TypeRadarWarningReceiver)actorsAimed[i]).myRadarLockYou((Actor)this, prop.gunProperties[i].SOUND_PW_RADAR_LOCK);
                 break;
             }
             i++;
@@ -2494,6 +2511,7 @@ public abstract class TankGeneric extends ActorHMesh
     protected SoundFX engineSFX;
     protected int engineSTimer;
     protected int ticksIn8secs;
+    private Actor actorsAimed[];
     private FireDevice arms[];
     private int collisionStage;
     static final int COLLIS_NO_COLLISION = 0;

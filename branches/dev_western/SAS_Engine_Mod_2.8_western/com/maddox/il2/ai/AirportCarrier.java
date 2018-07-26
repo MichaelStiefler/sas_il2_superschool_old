@@ -1,4 +1,6 @@
 /*Modified AirportCarrier class for the SAS Engine Mod*/
+/*By western, apply FlightModelMain.class and AutopilotAI.class tweak; adding AI landing process flexible gear controls on 04th/Jul./2018*/
+
 package com.maddox.il2.ai;
 
 import java.util.ArrayList;
@@ -38,7 +40,7 @@ import com.maddox.rts.Time;
 import com.maddox.util.NumberTokenizer;
 
 public class AirportCarrier extends Airport {
-	public static final double cellSize = 1.0;
+	public static final double cellSize = 1.0D;
 	private BigshipGeneric ship;
 	private Loc[] runway;
 	public BornPlace bornPlace = null;
@@ -46,7 +48,7 @@ public class AirportCarrier extends Airport {
 	private GUINetClientDBrief ui = null;
 	private Loc clientLoc = null;
 	private static Vector3d zeroSpeed = new Vector3d();
-	private static final Loc invalidLoc = new Loc(0.0, 0.0, 0.0, 0.0F, 0.0F, 0.0F);
+	private static final Loc invalidLoc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
 	private static Vector3d v1 = new Vector3d();
 	private Aircraft lastAddedAC = null;
 	private CellAirPlane lastAddedCells = null;
@@ -54,18 +56,21 @@ public class AirportCarrier extends Airport {
 	private int rnd2 = World.Rnd().nextInt(40, 60);
 	private Point_Stay[][] ownDefaultStayPoints = null;
 	private boolean skipCheck = false;
-	private static float[] x = { -100.0F, -20.0F, -10.0F, 1000.0F, 3000.0F, 4000.0F, 3000.0F, 0F, -1000F };
-	private static float[] xJ = { -100.0F, -20.0F, -10.0F, 2000.0F, 4500.0F, 6000.0F, 4500.0F, 0F, -1500F };
-	private static float[] xFJ = { -100.0F, -15.0F, 0.0F, 3000.0F, 6000.0F, 8000.0F, 6000.0F, 0F, -2000F };
-	private static float[] y = { 0.0F, 0.0F, 0.0F, 0.0F, -500.0F, -1500.0F, -3000.0F, -3000.0F, -3000.0F };
-	private static float[] yJ = { 0.0F, 0.0F, 0.0F, 0.0F, -750.0F, -2300.0F, -4500.0F, -4500.0F, -4500.0F };
-	private static float[] yFJ = { 0.0F, 0.0F, 0.0F, 0.0F, -1000.0F, -3000.0F, -6000.0F, -6000.0F, -6000.0F };
-	private static float[] z = { -4.0F, 5.0F, 5.0F, 150.0F, 450.0F, 500.0F, 500.0F, 500.0F, 500.0F };
-	private static float[] zJ = { -4.0F, 5.0F, 5.0F, 230.0F, 450.0F, 500.0F, 500.0F, 600.0F, 600.0F };
-	private static float[] zFJ = { -4.0F, 5.0F, 5.0F, 450.0F, 520.0F, 580.0F, 600.0F, 600.0F, 600.0F };
-	private static float[] v = { 0.0F, 80.0F, 100.0F, 180.0F, 250.0F, 270.0F, 280.0F, 300.0F, 300.0F };
-	private static float[] vJ = { 0.0F, 80.0F, 160.0F, 220.0F, 260.0F, 290.0F, 300.0F, 300.0F, 300.0F };
-	private static float[] vFJ = { 0.0F, 80.0F, 260.0F, 300.0F, 320.0F, 340.0F, 370.0F, 400.0F, 400.0F };
+	private static float[] x = { -100F, -20.0F, -10.0F, 1000F, 3000F, 4000F, 3000F, 0F, -1000F };
+	private static float[] xJ = { -100F, -20.0F, -10.0F, 2000F, 4500F, 6000F, 4500F, 0F, -1500F };
+	private static float[] xFJ = { -100F, -15.0F, 0.0F, 3000F,  6000F,  8000F,  6000F, 0F, -2000F };
+	private static float[] y = { 0.0F, 0.0F, 0.0F, 0.0F, -500F, -1500F, -3000F, -3000F, -3000F };
+	private static float[] yJ = { 0.0F, 0.0F, 0.0F, 0.0F, -750F, -2300F, -4500F, -4500F, -4500F };
+	private static float[] yFJ = { 0.0F, 0.0F, 0.0F, 0.0F, -1000F, -3000F, -6000F, -6000F, -6000F };
+	private static float[] z = { -4.0F, 5.0F, 5.0F, 150F, 450F, 500F, 500F, 500F, 500F };
+	private static float[] zJ = { -4.0F, 5.0F, 5.0F, 200F, 450F, 500F, 500F, 600F, 600F };
+	private static float[] zFJ = { -4.0F, 5.0F, 5.0F, 180F, 430F, 580F, 600F, 600F, 600F };
+	private static float[] v = { 0.0F, 80.0F, 100F, 180F, 250F, 270F, 280F, 300F, 300F };
+	private static float[] vJ = { 0.0F, 80.0F, 160F, 220F, 260F, 290F, 300F, 300F, 300F };
+	private static float[] vFJ = { 0.0F, 80.0F, 260F, 300F, 320F, 340F, 370F, 400F, 400F };
+	private static float ohanvxFJ[] = { -100F, -15.0F, 0.0F, 2200F, 3000F,  3000F,  2000F, -2000F, -4000F };
+	private static float ohanvyFJ[] = {  0.0F,   0.0F, 0.0F,  0.0F, -800F, -1600F, -2500F, -2500F,  -400F };
+	private static float ohanvzFJ[] = { -4.0F,   5.0F, 5.0F,  150F,  180F,   220F,   260F,   260F,   300F };
 	private Loc tmpLoc = new Loc();
 	private Point3d tmpP3d = new Point3d();
 	private Point3f tmpP3f = new Point3f();
@@ -252,7 +257,7 @@ public class AirportCarrier extends Airport {
 		tmpLoc.add(ship.initLoc);
 		Aircraft aircraft_8_ = War.getNearestFriendAtPoint(tmpLoc.getPoint(), aircraft, 50.0F);
 		if (aircraft_8_ != null && aircraft_8_ != aircraft) return 1;
-		if (aircraft.FM.CT.GearControl > 0.0F) return 0;
+		if (aircraft.FM.CT.GearControl > 0.0F && aircraft.FM.AILandingWPGearDown < 0) return 0;
 		if (landingRequest > 0) return 1;
 		landingRequest = 3000;
 		return 0;
@@ -269,11 +274,11 @@ public class AirportCarrier extends Airport {
 			curPlaneShift++;
 			aircraft.FM.setStationedOnGround(false);
 			aircraft.FM.setWasAirborne(true);
-			tmpLoc.set((double) -((float) curPlaneShift * 200.0F), (double) -((float) curPlaneShift * 100.0F), 300.0, 0.0F, 0.0F, 0.0F);
+			tmpLoc.set(-curPlaneShift * 200.0D, -curPlaneShift * 100.0D, 300.0D, 0.0F, 0.0F, 0.0F);
 			tmpLoc.add(r);
 			aircraft.pos.setAbs(tmpLoc);
 			aircraft.pos.getAbs(tmpP3d, tmpOr);
-			startSpeed.set(100.0, 0.0, 0.0);
+			startSpeed.set(100.0D, 0.0D, 0.0D);
 			tmpOr.transform(startSpeed);
 			aircraft.setSpeed(startSpeed);
 			aircraft.pos.reset();
@@ -365,11 +370,11 @@ public class AirportCarrier extends Airport {
 		if (loc == null || !isLocValid(loc)) {
 			setTakeoffOld(point3d, aircraft);
 			Loc loc_10_ = aircraft.pos.getAbs();
-			double d = World.Rnd().nextDouble(400.0, 800.0);
-			double d_11_ = World.Rnd().nextDouble(400.0, 800.0);
-			if (World.Rnd().nextFloat() < 0.5F) d *= -1.0;
-			if (World.Rnd().nextFloat() < 0.5F) d_11_ *= -1.0;
-			Point3d point3d_12_ = new Point3d(d, d_11_, 0.0);
+			double d = World.Rnd().nextDouble(400.0D, 800.0D);
+			double d_11_ = World.Rnd().nextDouble(400.0D, 800.0D);
+			if (World.Rnd().nextFloat() < 0.5F) d *= -1.0D;
+			if (World.Rnd().nextFloat() < 0.5F) d_11_ *= -1.0D;
+			Point3d point3d_12_ = new Point3d(d, d_11_, 0.0D);
 			loc_10_.add(point3d_12_);
 			aircraft.pos.setAbs(loc_10_);
 			return loc_10_;
@@ -512,7 +517,7 @@ public class AirportCarrier extends Airport {
 
 	private static Class clsBigArrestorPlane() {
 		if (_clsBigArrestorPlane != null) return _clsBigArrestorPlane;
-		double d = 0.0;
+		double d = 0.0D;
 		SectFile sectfile = new SectFile("com/maddox/il2/objects/air.ini", 0);
 		int i = sectfile.sections();
 		for (int i_20_ = 0; i_20_ < i; i_20_++) {
@@ -543,8 +548,8 @@ public class AirportCarrier extends Airport {
 									if (numbertokenizer.hasMoreTokens()) {
 										numbertokenizer.next();
 										if (numbertokenizer.hasMoreTokens()) {
-											double d_29_ = numbertokenizer.next(-1.0);
-											if (d_29_ > 0.0 && d < d_29_) {
+											double d_29_ = numbertokenizer.next(-1.0D);
+											if (d_29_ > 0.0D && d < d_29_) {
 												d = d_29_;
 												_clsBigArrestorPlane = var_class;
 											}
@@ -580,7 +585,7 @@ public class AirportCarrier extends Airport {
 					int i = ship.zutiBornPlace.zutiMaxBasePilots;
 					if (i > 164) i = 164;
 					for (int i_30_ = 0; i_30_ < i; i_30_++)
-						arraylist.add(new Point2d(-1.0, 1.0));
+						arraylist.add(new Point2d(-1.0D, 1.0D));
 				}
 			} else {
 				String string = ship.getShipProp().typicalPlaneClass;

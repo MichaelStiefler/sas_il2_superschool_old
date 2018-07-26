@@ -1,6 +1,7 @@
 /*Modified AirGroup class for the SAS Engine Mod*/
 
 /*By western on 26th/Apr./2018, add 8x Engines / Scheme8 decisions */
+/*By western on 23rd/Jun./2018, add 10x Engines / Scheme10 decisions */
 
 package com.maddox.il2.ai.air;
 
@@ -1763,7 +1764,7 @@ label0:
                 }
                 int j2 = w.Cur();
                 w.next();
-                if(w.curr().Action == 2 || w.curr().Action == 3 && (w.curr().getTarget() != null && !(airc[0] instanceof Scheme4) && !(airc[0] instanceof Scheme8) || (airc[0] instanceof TypeStormovik) || (airc[0] instanceof JU_87)))
+                if(w.curr().Action == 2 || w.curr().Action == 3 && (w.curr().getTarget() != null && !(airc[0] instanceof Scheme4) && !(airc[0] instanceof Scheme8) && !(airc[0] instanceof Scheme10) || (airc[0] instanceof TypeStormovik) || (airc[0] instanceof JU_87)))
                 {
                     w.curr().getP(tmpP);
                     tmpV.sub(tmpP, Pos);

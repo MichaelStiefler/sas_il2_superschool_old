@@ -160,9 +160,9 @@ public class VisCheck
         if(checkIfOwnPlaneBlocksVisibility(aircraft, aircraft1, false))
             return false;
         if(flag1)
-            dist = (float)((double)dist * 0.5D);
+            dist = dist * 0.5F;
         if(flag)
-            envLighting = (float)((double)envLighting * 1.1499999999999999D);
+            envLighting = envLighting * 1.15F;
         return envLighting > dist;
     }
 

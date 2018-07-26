@@ -989,14 +989,14 @@ public class AircraftHotKeys {
 				break;
 			}
 
-		case 139:
+		case 147:
 			// TODO:Placeholder for 'Radar Setting #1'
 			if (aircraft instanceof TypeRadar) {
 				((TypeRadar) aircraft).typeRadarRangePlus();
 				toTrackSign(i);
 				break;
 			}
-		case 140:
+		case 148:
 			// TODO:Placeholder for 'Radar Setting #2'
 			if (aircraft instanceof TypeRadar) {
 				((TypeRadar) aircraft).typeRadarRangeMinus();
@@ -1269,7 +1269,7 @@ public class AircraftHotKeys {
 			HUD.log("EngineSelect6");
 			break;
 
-		// TODO: Next two cases added in to allow for toggling of engines 7 and 8
+		// TODO: Next two cases added in to allow for toggling of engines 7 and 8, 9, 10
 		case 200:
 			if (FM.Scheme != 0 && FM.Scheme != 1 && FM.EI.getNum() >= 7) {
 				FM.EI.setCurControlAll(false);
@@ -1283,6 +1283,22 @@ public class AircraftHotKeys {
 				FM.EI.setCurControlAll(false);
 				FM.EI.setCurControl(7, true);
 				HUD.log("EngineSelect8");
+				break;
+			}
+			break;
+		case 206:
+			if (FM.Scheme != 0 && FM.Scheme != 1 && FM.EI.getNum() >= 9) {
+				FM.EI.setCurControlAll(false);
+				FM.EI.setCurControl(8, true);
+				HUD.log("EngineSelect9");
+				break;
+			}
+			break;
+		case 207:
+			if (FM.Scheme != 0 && FM.Scheme != 1 && FM.EI.getNum() >= 10) {
+				FM.EI.setCurControlAll(false);
+				FM.EI.setCurControl(9, true);
+				HUD.log("EngineSelect10");
 				break;
 			}
 			break;
@@ -1349,7 +1365,7 @@ public class AircraftHotKeys {
 			HUD.log("EngineSelect6" + (FM.EI.getCurControl(5) ? "" : "OFF"));
 			break;
 
-		// TODO: Next two cases added in to allow for toggling of engines 7 and 8
+		// TODO: Next two cases added in to allow for toggling of engines 7 and 8, 9, 10
 		case 111:
 			if (FM.Scheme == 0 || FM.Scheme == 1) return;
 			FM.EI.setCurControl(6, !FM.EI.getCurControl(6));
@@ -1360,6 +1376,17 @@ public class AircraftHotKeys {
 			if (FM.Scheme == 0 || FM.Scheme == 1) return;
 			FM.EI.setCurControl(7, !FM.EI.getCurControl(7));
 			HUD.log("EngineSelect8" + (FM.EI.getCurControl(7) ? "" : "OFF"));
+			break;
+		case 208:
+			if (FM.Scheme == 0 || FM.Scheme == 1) return;
+			FM.EI.setCurControl(8, !FM.EI.getCurControl(8));
+			HUD.log("EngineSelect9" + (FM.EI.getCurControl(8) ? "" : "OFF"));
+			break;
+
+		case 209:
+			if (FM.Scheme == 0 || FM.Scheme == 1) return;
+			FM.EI.setCurControl(9, !FM.EI.getCurControl(9));
+			HUD.log("EngineSelect10" + (FM.EI.getCurControl(9) ? "" : "OFF"));
 			break;
 
 		case 113: // 'q'
@@ -2699,23 +2726,27 @@ public class AircraftHotKeys {
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine61", "EngineSelect6", 99, 313));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine62", "EngineSelect7", 200, 314));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine63", "EngineSelect8", 201, 315));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine64", "EngineToggleAll", 102, 319));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine65", "EngineToggleLeft", 103, 328));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine66", "EngineToggleRight", 104, 329));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine67", "EngineToggle1", 105, 320));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine68", "EngineToggle2", 106, 321));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine69", "EngineToggle3", 107, 322));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine70", "EngineToggle4", 108, 323));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine71", "EngineToggle5", 109, 324));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine72", "EngineToggle6", 110, 325));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine73", "EngineToggle7", 111, 326));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine74", "EngineToggle8", 112, 327));
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$7", "2engine75") {
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine64", "EngineSelect9", 206, 331));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine65", "EngineSelect10", 207, 332));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine66", "EngineToggleAll", 102, 319));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine67", "EngineToggleLeft", 103, 328));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine68", "EngineToggleRight", 104, 329));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine69", "EngineToggle1", 105, 320));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine70", "EngineToggle2", 106, 321));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine71", "EngineToggle3", 107, 322));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine72", "EngineToggle4", 108, 323));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine73", "EngineToggle5", 109, 324));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine74", "EngineToggle6", 110, 325));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine75", "EngineToggle7", 111, 326));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine76", "EngineToggle8", 112, 327));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine77", "EngineToggle9", 208, 288));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine78", "EngineToggle10", 209, 289));
+		HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$7", "2engine79") {
 
 		});
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine76", "EngineExtinguisher", 113, 330));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine77", "EngineFeather", 114, 333));
-		HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$8", "2engine78") {
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine80", "EngineExtinguisher", 113, 330));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("2engine81", "EngineFeather", 114, 333));
+		HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$8", "2engine82") {
 
 		});
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced01", "AIRCRAFT_FLAPS_NOTCH_UP", 52, 152));
@@ -2733,8 +2764,8 @@ public class AircraftHotKeys {
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced10", "AIRCRAFT_DROP_TANKS", 62, 162));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced11", "Deploy_DragChute", 143, 412));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced12", "Deploy_RefuelDevice", 136, 405));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced121", "WING_SWEEP_MINUS", 202, 154));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced122", "WING_SWEEP_PLUS", 203, 155));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced121", "WING_SWEEP_MINUS", 202, 167));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("3advanced122", "WING_SWEEP_PLUS", 203, 168));
 		HotKeyCmdEnv.addCmd(new HotKeyCmd(false, "$$$9", "3advanced13") {
 
 		});
@@ -2778,8 +2809,8 @@ public class AircraftHotKeys {
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced12", "BOMB_RELEASE_TRAIN_DELAY", 196, 356));
 				// TODO: -- Added Code for importing 4.13.2m --
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced13", "RADAR_MODE_TOGGLE", 138, 407));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced14", "RADAR_RANGE_PLUS", 139, 408));
-		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced15", "RADAR_RANGE_MINUS", 140, 409));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced14", "RADAR_RANGE_PLUS", 147, 408));
+		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced15", "RADAR_RANGE_MINUS", 148, 409));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced16", "RADAR_GAIN_PLUS", 141, 410));
 		HotKeyCmdEnv.addCmd(new HotKeyCmdFire("5advanced17", "RADAR_GAIN_MINUS", 142, 411));
 	}

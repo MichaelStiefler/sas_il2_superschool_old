@@ -1,4 +1,5 @@
 /*Modified AirportStatic class for the SAS Engine Mod*/
+/*By western, add 360 over head approach for modern jets on 10th/Jul./2018*/
 package com.maddox.il2.ai;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import com.maddox.il2.engine.Interpolate;
 import com.maddox.il2.engine.Loc;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.fm.FlightModel;
+import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.TypeFastJet;
@@ -90,6 +92,8 @@ public abstract class AirportStatic extends Airport {
 		Runway runway1 = nearestRunway(pWay);
 		if (runway1 == null) return false;
 		Way way = new Way();
+		// By western, make a reserve way for go-around.
+		Way wayReserve = new Way();
 		float f = (float) Engine.land().HQ_Air(runway1.loc.getX(), runway1.loc.getY());
 		float f1 = flightmodel.M.massEmpty / 3000F;
 		if (f1 > 1.0F) f1 = 1.0F;
@@ -102,54 +106,187 @@ public abstract class AirportStatic extends Airport {
 		// f2 = 1.0F;
 		for (int i = x.length - 1; i >= 0; i--) {
 			WayPoint waypoint = new WayPoint();
+			WayPoint waypointReserve = new WayPoint();
 			int j = (flightmodel.AP.way.curr().waypointType - 101) + 1;
 			if (j < 0) j = 0;
 			switch (j) {
-			case 0: // '\0'
+			case 0: // '\0' : standard Counterclockwise traffic pattern
 			default:
-				if (((Interpolate) (flightmodel)).actor instanceof TypeFastJet) pd.set(xFJ[i], yFJ[i], zFJ[i]);
+				if (flightmodel.actor instanceof TypeFastJet) pd.set(xFJ[i], yFJ[i], zFJ[i]);
 				else pd.set(x[i] * f1, y[i] * f1, z[i] * f2);
+				pdRs.set(pd);
 				break;
 
-			case 1: // '\001'
-				if (((Interpolate) (flightmodel)).actor instanceof TypeFastJet) pd.set(xFJ[i], ryFJ[i], zFJ[i]);
+			case 1: // '\001' : Clockwise traffic pattern
+				if (flightmodel.actor instanceof TypeFastJet) pd.set(xFJ[i], ryFJ[i], zFJ[i]);
 				else pd.set(x[i] * f1, ry[i] * f1, z[i] * f2);
+				pdRs.set(pd);
 				break;
 
-			case 2: // '\002'
-				if (((Interpolate) (flightmodel)).actor instanceof TypeFastJet) pd.set(xFJ[i], lsyFJ[i], zFJ[i]);
-				else pd.set(x[i] * f1, lsy[i] * f1, z[i] * f2);
+			case 2: // '\002' : Counterclockwise traffic pattern, short width
+				if (flightmodel.actor instanceof TypeFastJet) {
+					if (flightmodel.AILandingWP360OverHeadApr == 1)
+					{
+						if (flightmodel instanceof Maneuver && ((Maneuver)flightmodel).Group != null) {
+							int acn = ((Maneuver)flightmodel).Group.numInGroup((Aircraft)flightmodel.actor) % 4;
+							pd.set(ohaafxFJ[acn][i], ohaafyFJ[i], ohaafzFJ[i]);
+						}
+						else
+							pd.set(ohaafxFJ[0][i], ohaafyFJ[i], ohaafzFJ[i]);
+						pdRs.set(ohaafxFJ[0][i], ohaafyFJ[i], ohaafzFJ[i]);
+
+						((FlightModelMain)flightmodel).bOnGoingOverHeadApproach = true;
+					}
+					else if (flightmodel.AILandingWP360OverHeadApr == 2)
+					{
+						if (flightmodel instanceof Maneuver && ((Maneuver)flightmodel).Group != null) {
+							int acn = ((Maneuver)flightmodel).Group.numInGroup((Aircraft)flightmodel.actor) % 4;
+							pd.set(ohanvxFJ[acn][i], ohanvyFJ[i], ohanvzFJ[i]);
+						}
+						else
+							pd.set(ohanvxFJ[0][i], ohanvyFJ[i], ohanvzFJ[i]);
+						pdRs.set(ohanvxFJ[0][i], ohanvyFJ[i], ohanvzFJ[i]);
+
+						((FlightModelMain)flightmodel).bOnGoingOverHeadApproach = true;
+					}
+					else {
+						pd.set(xFJ[i], lsyFJ[i], zFJ[i]);
+						pdRs.set(pd);
+					}
+				}
+				else {
+					pd.set(x[i] * f1, lsy[i] * f1, z[i] * f2);
+					pdRs.set(pd);
+				}
 				break;
 
-			case 3: // '\003'
-				if (((Interpolate) (flightmodel)).actor instanceof TypeFastJet) pd.set(xFJ[i], rsyFJ[i], zFJ[i]);
-				else pd.set(x[i] * f1, rsy[i] * f1, z[i] * f2);
+			case 3: // '\003' : Clockwise traffic pattern, short width
+				if (flightmodel.actor instanceof TypeFastJet) {
+					if (flightmodel.AILandingWP360OverHeadApr == 1)
+					{
+						if (flightmodel instanceof Maneuver && ((Maneuver)flightmodel).Group != null) {
+							int acn = ((Maneuver)flightmodel).Group.numInGroup((Aircraft)flightmodel.actor) % 4;
+							pd.set(ohaafxFJ[acn][i], ohaafryFJ[i], ohaafzFJ[i]);
+						}
+						else
+							pd.set(ohaafxFJ[0][i], ohaafryFJ[i], ohaafzFJ[i]);
+						pdRs.set(ohaafxFJ[0][i], ohaafryFJ[i], ohaafzFJ[i]);
+
+						((FlightModelMain)flightmodel).bOnGoingOverHeadApproach = true;
+					}
+					else if (flightmodel.AILandingWP360OverHeadApr == 2)
+					{
+						if (flightmodel instanceof Maneuver && ((Maneuver)flightmodel).Group != null) {
+							int acn = ((Maneuver)flightmodel).Group.numInGroup((Aircraft)flightmodel.actor) % 4;
+							pd.set(ohanvxFJ[acn][i], ohanvryFJ[i], ohanvzFJ[i]);
+						}
+						else
+							pd.set(ohanvxFJ[0][i], ohanvryFJ[i], ohanvzFJ[i]);
+						pdRs.set(ohanvxFJ[0][i], ohanvryFJ[i], ohanvzFJ[i]);
+
+						((FlightModelMain)flightmodel).bOnGoingOverHeadApproach = true;
+					}
+					else {
+						pd.set(xFJ[i], rsyFJ[i], zFJ[i]);
+						pdRs.set(pd);
+					}
+				}
+				else {
+					pd.set(x[i] * f1, rsy[i] * f1, z[i] * f2);
+					pdRs.set(pd);
+				}
 				break;
 
-			case 4: // '\004'
-				if (((Interpolate) (flightmodel)).actor instanceof TypeFastJet) pd.set(sixFJ[i], siyFJ[i], sizFJ[i]);
-				else pd.set(six[i] * f1, siy[i] * f1, siz[i] * f2);
+			case 4: // '\004' : Straight In
+				if (flightmodel.actor instanceof TypeFastJet) {
+					pd.set(sixFJ[i], siyFJ[i], sizFJ[i]);
+					pdRs.set(xFJ[i], yFJ[i], zFJ[i]);
+				}
+				else {
+					pd.set(six[i] * f1, siy[i] * f1, siz[i] * f2);
+					pdRs.set(x[i] * f1, y[i] * f1, z[i] * f2);
+				}
 				break;
 			}
 			float vlanding;
-			if (((Interpolate) (flightmodel)).actor instanceof TypeFastJet) {
-				if (i < 3) vlanding = Math.max(vFJ[i] * 0.278F, flightmodel.VminFLAPS * 1.2F);
-				else vlanding = Math.max(vFJ[i] * 0.278F, flightmodel.Vmin * 1.2F);
-				if (flightmodel.VminAI > 0F && vlanding < flightmodel.VminAI) vlanding = flightmodel.VminAI;
-				waypoint.set(Math.min(vlanding, 300F * 0.4F)); // 300F=Mach1 (instead of Vmax)
-			} else waypoint.set(Math.min(v[i] * 0.278F, flightmodel.Vmax * 0.7F));
+/*			if (flightmodel.VAILandingDownwind > 0F && i < 7)
+			{
+				if (i < 5)
+				{
+					if (flightmodel.actor instanceof TypeFastJet) {
+						if (i < 3) vlanding = Math.max(vFJ[i] * 0.278F, flightmodel.VminFLAPS * 1.2F);
+						else vlanding = Math.max(vFJ[i] * 0.278F, flightmodel.Vmin * 1.2F);
+						if (flightmodel.VminAI > 0F && vlanding < flightmodel.VminAI) vlanding = flightmodel.VminAI;
+						if (vlanding > flightmodel.VAILandingDownwind)
+							vlanding = flightmodel.VAILandingDownwind;
+						waypoint.set(Math.min(vlanding, 300F * 0.4F)); // 300F=Mach1 (instead of Vmax)
+					} else {
+					  vlanding = Math.min(v[i] * 0.278F, flightmodel.Vmax * 0.7F);
+						if (vlanding > flightmodel.VAILandingDownwind)
+							vlanding = flightmodel.VAILandingDownwind;
+						waypoint.set(Math.min(vlanding, 300F * 0.4F));
+					}
+				}
+				else
+				{
+					if (flightmodel.actor instanceof TypeFastJet) {
+						vlanding = Math.max(vFJ[i] * 0.278F, flightmodel.Vmin * 1.2F);
+						if (flightmodel.VminAI > 0F && vlanding < flightmodel.VminAI) vlanding = flightmodel.VminAI;
+						if (vlanding > flightmodel.VAILandingDownwind)
+							vlanding = 0.5F * (vlanding + flightmodel.VAILandingDownwind);
+						waypoint.set(Math.min(vlanding, 300F * 0.4F)); // 300F=Mach1 (instead of Vmax)
+					} else {
+					  vlanding = Math.min(v[i] * 0.278F, flightmodel.Vmax * 0.7F);
+						if (vlanding > flightmodel.VAILandingDownwind)
+							vlanding = 0.5F * (vlanding + flightmodel.VAILandingDownwind);
+						waypoint.set(Math.min(vlanding, 300F * 0.4F));
+					}
+				}
+			}
+			else
+			{ */
+				if (flightmodel.actor instanceof TypeFastJet) {
+					if (i < 3) {
+						// By western: ignoring vFJ[i] for low speed Jets like IL-28
+						if (flightmodel.VminFLAPS < 180F * 0.278F && flightmodel.Vmin < 230F * 0.278F && flightmodel.Vlanding < 180F * 0.278F)
+							vlanding = flightmodel.VminFLAPS * 1.2F;
+						else
+							vlanding = Math.max(vFJ[i] * 0.278F, flightmodel.VminFLAPS * 1.2F);
+					}
+					else if (i == 3) {
+						// By western: ignoring vFJ[i] for low speed Jets like IL-28
+						if (flightmodel.VminFLAPS < 180F * 0.278F && flightmodel.Vmin < 230F * 0.278F && flightmodel.Vlanding < 180F * 0.278F)
+							vlanding = flightmodel.Vmin * 1.2F;
+						else
+							vlanding = Math.max(vFJ[i] * 0.278F, flightmodel.Vmin * 1.2F);
+					}
+					else vlanding = Math.max(vFJ[i] * 0.278F, flightmodel.Vmin * 1.2F);
+					if (flightmodel.VminAI > 0F && vlanding < flightmodel.VminAI) vlanding = flightmodel.VminAI;
+					waypoint.set(Math.min(vlanding, 300F * 0.4F)); // 300F=Mach1 (instead of Vmax)
+					waypointReserve.set(Math.min(vlanding, 300F * 0.4F));
+				} else {
+					waypoint.set(Math.min(v[i] * 0.278F, flightmodel.Vmax * 0.7F));
+					waypointReserve.set(Math.min(v[i] * 0.278F, flightmodel.Vmax * 0.7F));
+				}
+/*			} */
 			waypoint.Action = 2;
 			runway1.loc.transform(pd);
 			float f3 = (float) Engine.land().HQ_Air(pd.x, pd.y);
 			pd.z -= f3 - f;
+			pdRs.z -= f3 - f;
 			pf.set(pd);
+			pfRs.set(pdRs);
 			waypoint.set(pf);
+			waypointReserve.set(pf);
 			way.add(waypoint);
+			wayReserve.add(waypointReserve);
 		}
 
 		way.setLanding(true);
+		wayReserve.setLanding(true);
 		if (flightmodel.AP.way.curr().waypointType == 104) way.setLanding2(true);
 		flightmodel.AP.way = way;
+		flightmodel.APreserve.way = wayReserve;
 		return true;
 	}
 
@@ -291,7 +428,7 @@ public abstract class AirportStatic extends Airport {
 			p2.set(1.0D, 0.0D, 0.0D);
 			runway1.loc.getOrient().transform(p1);
 			loc.getOrient().transform(p2);
-			if (p1.dot(p2) < -0.90000000000000002D) return runway1;
+			if (p1.dot(p2) < -0.90D) return runway1;
 		}
 
 		return null;
@@ -307,7 +444,7 @@ public abstract class AirportStatic extends Airport {
 	private static float y[] = { 0.0F, 0.0F, 0.0F, 0.0F, -500F, -2000F, -4000F, -4000F, -4000F };
 	private static float yFJ[] = { 0.0F, 0.0F, 0.0F, 0.0F, -1000F, -4000F, -8000F, -8000F, -8000F };
 	private static float z[] = { 0.0F, 6F, 20F, 160F, 500F, 600F, 700F, 700F, 700F };
-	private static float zFJ[] = { 0.0F, 6F, 20F, 320F, 650F, 900F, 1100F, 1100F, 1100F };
+	private static float zFJ[] = { 0.0F, 6F, 20F, 270F, 600F, 880F, 1100F, 1100F, 1100F };
 	private static float v[] = { 0.0F, 180F, 220F, 240F, 270F, 280F, 300F, 300F, 300F };
 	private static float vFJ[] = { 0.0F, 250F, 280F, 300F, 330F, 350F, 370F, 390F, 400F };
 	private static float ry[] = { 0.0F, 0.0F, 0.0F, 0.0F, 500F, 2000F, 4000F, 4000F, 4000F };
@@ -321,10 +458,27 @@ public abstract class AirportStatic extends Airport {
 	private static float siy[] = { 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F };
 	private static float siyFJ[] = { 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F };
 	private static float siz[] = { 0.0F, 6F, 20F, 160F, 500F, 600F, 700F, 700F, 700F };
-	private static float sizFJ[] = { 0.0F, 6F, 20F, 320F, 500F, 680F, 860F, 1000F, 1100F };
+	private static float sizFJ[] = { 0.0F, 6F, 20F, 270F, 380F, 500F, 590F, 610F, 630F };
+	private static float ohaafxFJ[][] = { { -1000F, -10.0F, 212F, 2220F, 3500F, 3500F, 2000F, -2000F, -4000F },
+									   	  { -1000F,  -5.0F, 216F, 2220F, 3500F, 3500F, 2000F, -3000F, -5000F },
+									   	  { -1000F,   0.0F, 220F, 2220F, 3500F, 3500F, 2000F, -4000F, -6000F },
+									   	  { -1000F,   5.0F, 224F, 2220F, 3500F, 3500F, 2000F, -5000F, -7000F } };
+	private static float ohaafyFJ[] = { 0.0F, 0.0F, 0.0F, 0.0F, -1230F, -2460F, -3700F, -3700F, -1000F };
+	private static float ohaafryFJ[] = { 0.0F, 0.0F, 0.0F, 0.0F, 1230F, 2460F, 3700F, 3700F, 1000F };
+	private static float ohaafzFJ[] = { 0.0F, 6F, 20F, 150F, 280F, 390F, 560F, 560F, 650F };
+	private static float ohanvxFJ[][] = { { -1000F, -10.0F, 212F, 2200F, 3000F, 3000F, 2000F, -2000F, -4000F },
+										  { -1000F,  -5.0F, 216F, 2200F, 3000F, 3000F, 2000F, -3000F, -5000F },
+										  { -1000F,   0.0F, 220F, 2200F, 3000F, 3000F, 2000F, -4000F, -6000F },
+										  { -1000F,   5.0F, 224F, 2200F, 3000F, 3000F, 2000F, -5000F, -7000F } };
+	private static float ohanvyFJ[] = { 0.0F, 0.0F, 0.0F, 0.0F, -800F, -1600F, -2500F, -2500F, -400F };
+	private static float ohanvryFJ[] = { 0.0F, 0.0F, 0.0F, 0.0F, 800F, 1600F, 2500F, 2500F, 400F };
+	private static float ohanvzFJ[] = { 0.0F, 6F, 20F, 150F, 180F, 220F, 260F, 260F, 300F };
 	private static Point3d pWay = new Point3d();
 	private static Point3d pd = new Point3d();
 	private static Point3f pf = new Point3f();
+	// By western, make a reserve way for go-around.
+	private static Point3d pdRs = new Point3d();
+	private static Point3f pfRs = new Point3f();
 	private static Vector3d v1 = new Vector3d();
 	private static Vector3d zeroSpeed = new Vector3d();
 	private static Loc tmpLoc = new Loc();

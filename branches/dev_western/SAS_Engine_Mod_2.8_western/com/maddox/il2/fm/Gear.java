@@ -3,6 +3,7 @@
 
 /*By PAL, from current Western Engine MOD*/
 /*By PAL, implemented Diagonal extra force in Catapult*/
+/*By western, landing wheel brake stronger for Heavy Jet on 25th/Jul./2018*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 package com.maddox.il2.fm;
@@ -186,9 +187,9 @@ public class Gear {
 	};
 	public boolean[] bCatapultHookExist = new boolean[4];
 
-	public double fric_pub;
-	public double fricF_pub;
-	public double fricR_pub;
+	public double[] fric_pub = new double[3];
+	public double[] fricF_pub = new double[3];
+	public double[] fricR_pub = new double[3];
 
 	//By PAL, new for Shock Absorber
 	public float shockAbsorber;
@@ -824,9 +825,9 @@ public class Gear {
 		boolean bIsTypeSupersonic = false;
 		boolean bIsTypeFastJet = false;
 		boolean bIsJets = false;
-		if (((Interpolate) (FM)).actor instanceof TypeSupersonic)
+		if (FM.actor instanceof TypeSupersonic)
 			bIsTypeSupersonic = true;
-		if (((Interpolate) (FM)).actor instanceof TypeFastJet)
+		if (FM.actor instanceof TypeFastJet)
 			bIsTypeFastJet = true;
 		if (FM.EI.engines[0].getType() == 2)
 			bIsJets = true;
@@ -959,7 +960,7 @@ public class Gear {
 			tempLoc.set(Pnt[i].x, Pnt[i].y, Pnt[i].z + 0.05F, 0.0F, 0.0F, 0.0F);
 			if (bPlateConcrete) {
 				MiscEffects.bellyLandingConcrete(FM, tempLoc, i, pnti[i]);
-				if ((double) World.Rnd().nextFloat() > 0.99D) {
+				if (World.Rnd().nextFloat() > 0.99F) {
 					for (int j = 0; j < FM.AS.astateTankStates.length; j++)
 						if (FM.AS.astateTankStates[j] == 1 || FM.AS.astateTankStates[j] == 2) {
 							Hook hook = FM.actor.findHook("_Tank" + (j + 1) + "Leak");
@@ -1049,7 +1050,7 @@ public class Gear {
 
 	// TODO: This method has been extensively edited for the differential braking and steering mod. Please follow comments for changes
 	private boolean testGearCollision(int i) {
-		if ((double) FM.CT.getGearR() < 0.01D && (double) FM.CT.getGearL() < 0.01D && (double) FM.CT.getGearC() < 0.01D) return false;
+		if (FM.CT.getGearR() < 0.01F && FM.CT.getGearL() < 0.01F && FM.CT.getGearC() < 0.01F) return false;
 		double d1 = 1.0D;
 		gWheelSinking[i] = (float) (-d);
 		Vs.set(FM.Vrel);
@@ -1093,8 +1094,14 @@ public class Gear {
 		}
 		else Tn.scale(d1, Normal);
 		double d5 = 0.0001D * d1;
-		if (d5 > 3.3D)
-			d5 = 3.3D;  // TODO: Limiter to avoid heavy planes bouncing on the ground
+		// By western, wheel brakes can work from higher running speed for Fast Jets
+		if (FM.actor instanceof TypeFastJet) {
+			if (d5 > 5.0D)
+				d5 = 5.0D;  // TODO: Limiter to avoid heavy planes bouncing on the ground
+		} else {
+			if (d5 > 3.3D)
+				d5 = 3.3D;  // TODO: Limiter to avoid heavy planes bouncing on the ground
+		}
 		double d6 = FM.CT.getBrake();
 		double d7 = FM.CT.getRudder();
 	//By PAL, Differential Brakes
@@ -1177,12 +1184,15 @@ public class Gear {
 				else d13 -= 7D * RightVPrj;
 				if (d13 > 20D) d13 = 20D;
 			}
-			double d14 = 15000D;
+			// By western, increase brake power for heavier aircrafts
+			double d14 = (double) Aircraft.cvt(FM.M.massEmpty, 50000F, 80000F, 15000F, 20000F);
 			if (d9 < 3D) {
 				double d15 = -0.333334D * (d9 - 3D);
-				d14 += 3000D * d15 * d15;
+				// By western, increase brake power for heavier aircrafts
+				d14 += (double) Aircraft.cvt(FM.M.massEmpty, 40000F, 60000F, 3000F, 4000F) * d15 * d15;
 			}
-			fricR = -d13 * 100000D * RightVPrj * d5;
+			// By western, increase brake power for heavier aircrafts
+			fricR = -d13 * (double) Aircraft.cvt(FM.M.massEmpty, 50000F, 80000F, 100000F, 130000F) * RightVPrj * d5;
 			maxFric = d14 * d5 * d12;
 			if (fricR > maxFric) fricR = maxFric;
 			if (fricR < -maxFric) fricR = -maxFric;
@@ -1197,7 +1207,8 @@ public class Gear {
 			// TODO: PAS++
 			d16 *= 0.03D * db;
 			// PAS--
-			fricF += -300000D * d16 * ForwardVPrj * d5;
+			// By western, increase brake power for heavier aircrafts
+			fricF += (double) Aircraft.cvt(FM.M.massEmpty, 50000F, 80000F, -300000F, -400000F) * d16 * ForwardVPrj * d5;
 			maxFric = d14 * d5 * d11;
 			if (fricF > maxFric) fricF = maxFric;
 			if (fricF < -maxFric) fricF = -maxFric;
@@ -1221,7 +1232,7 @@ public class Gear {
 					double d23 = (((Tuple3d) (Tn)).x * ((Tuple3d) (Tn)).x * 0.15D + ((Tuple3d) (Tn)).y * ((Tuple3d) (Tn)).y * 0.15D + ((Tuple3d) (Tn)).z * ((Tuple3d) (Tn)).z * 0.08D) / (d21 * d21);
 					if (fatigue[i] > 100 || d23 > 1.0D) {
 						landHit(i, (float) d18);
-						Aircraft aircraft1 = (Aircraft) ((Interpolate) (FM)).actor;
+						Aircraft aircraft1 = (Aircraft) FM.actor;
 						if (i == 0) aircraft1.msgCollision(aircraft1, "GearL2_D0", "GearL2_D0");
 						if (i == 1) aircraft1.msgCollision(aircraft1, "GearR2_D0", "GearR2_D0");
 					}
@@ -1274,16 +1285,16 @@ public class Gear {
 					RightVPrj = nwRight.dot(Vs);
 					double d19 = Math.sqrt(ForwardVPrj * ForwardVPrj + RightVPrj * RightVPrj);
 					if (d19 < 0.01D) d19 = 0.01D;
-					maxFric = bTaxing ? (double)Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, 4400F, 6000F) : 4000F;
+					maxFric = bTaxing ? (double) Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, 4400F, 6000F) : 4000F;
 					fricF = -100D * ForwardVPrj;
 					if (bTaxing)
-						fricR = (double)Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, -550F, -2500F) * RightVPrj;  // taxing
+						fricR = (double) Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, -550F, -2500F) * RightVPrj;  // taxing
 					else
 						fricR = -500D * RightVPrj;  // stock
 					if (fricR > maxFric) fricR = maxFric;
 					if (fricR < -maxFric) fricR = -maxFric;
 					if (bTaxing)
-						fricF -= Math.abs(fricR / (double)Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, 8.0F, 2.8F));   // braking effect in taxing turn
+						fricF -= Math.abs(fricR / (double) Aircraft.cvt(FM.M.getFullMass(), 10000F, 20000F, 8.0F, 2.8F));   // braking effect in taxing turn
 					if (fricF > maxFric) fricF = maxFric;
 					if (fricF < -maxFric) fricF = -maxFric;
 					maxFric = 1.0D - 0.02D * d19;
@@ -1368,7 +1379,7 @@ public class Gear {
 			else d20 += NormalVPrj * NormalVPrj * 0.02D;
 			if (d20 > 1.0D) {
 				landHit(i, (float) d20);
-				Aircraft aircraft = (Aircraft) ((Interpolate) (FM)).actor;
+				Aircraft aircraft = (Aircraft) FM.actor;
 				aircraft.msgCollision(aircraft, "GearC2_D0", "GearC2_D0");
 			}
 			break;
@@ -1393,7 +1404,11 @@ public class Gear {
 			tempLoc.set(Pnt[i].x, Pnt[i].y, Pnt[i].z + 0.05F, 0.0F, 0.0F, 0.0F);
 			MiscEffects.gearMarksSnow(FM, tempLoc, i, pnti[i]);
 		}
-		fric_pub = fric;  fricF_pub = fricF;  fricR_pub = fricR;
+		if (i >= 0 && i < 3) {
+			fric_pub[i] = fric;
+			fricF_pub[i] = fricF;
+			fricR_pub[i] = fricR;
+		}
 		return true;
 	}
 
@@ -1483,7 +1498,8 @@ public class Gear {
 
 			case 4: // '\004'
 			case 5: // '\005'
-			case 8: // '\008'  // By western, add 8x engines case
+			case 8:            // By western, add 8x engines case
+			case 10:           // By western, add 10x engines case
 				((Aircraft) FM.actor).hitProp(i - 3, 0, Engine.actorLand());
 				break;
 
@@ -1692,7 +1708,7 @@ public class Gear {
 	private void processingCollisionEffect() {
 		if (!canDoEffect) return;
 		Vnorm = FM.Vwld.dot(Normal);
-		if (FM.actor == World.getPlayerAircraft() && World.cur().diffCur.Realistic_Landings && Vnorm < -20D && (double) World.Rnd().nextFloat() < 0.02D) {
+		if (FM.actor == World.getPlayerAircraft() && World.cur().diffCur.Realistic_Landings && Vnorm < -20D && World.Rnd().nextFloat() < 0.02F) {
 			canDoEffect = false;
 			int i = 20 + (int) (30F * World.Rnd().nextFloat());
 			if (FM.CT.Weapons[3] != null && FM.CT.Weapons[3][0] != null && FM.CT.Weapons[3][0].countBullets() != 0) i = 0;
@@ -1902,7 +1918,7 @@ public class Gear {
 					bSteamCatapult = true;
 					bCatapultHookExist[k] = true;
 				} else {
-					System.out.println("Gear - 1901 : Hooks mismatching _SCat" + (k + 1) + "_start and _SCat" + k + 1 + "_end");
+					System.out.println("Gear - 1917 : Hooks mismatching _SCat" + (k + 1) + "_start and _SCat" + k + 1 + "_end");
 					break;
 				}
 			}
@@ -1912,7 +1928,7 @@ public class Gear {
 					bSteamCatapult = false;
 					bCatapultHookExist[k] = true;
 				} else {
-					System.out.println("Gear - 1911 : Hooks mismatching _Cat" + (k + 1) + "_start and _Cat" + k + "_end");
+					System.out.println("Gear - 1927 : Hooks mismatching _Cat" + (k + 1) + "_start and _Cat" + k + "_end");
 					break;
 				}
 			}
@@ -2242,7 +2258,7 @@ public class Gear {
 		//By PAL, if chocks are set in front of the Catapult, I don't have to show them!
 			ActorHMesh actorhmesh = (ActorHMesh)FM.actor;
 			if (!Actor.isValid(actorhmesh)) {
-				System.out.println("Not valid Actor Mesh for Chocks");
+				System.out.println("ERROR: Gear 2257 - Not valid Actor Mesh for Chocks");
 				return;
 			}
 			HierMesh hiermesh = actorhmesh.hierMesh();
@@ -2270,7 +2286,7 @@ public class Gear {
 				//By PAL, I'm working based on the Wheel Hook now.
 				hookl = (HookNamed)FM.actor.findHook("_ClipLGear");
 				if (hookl == null)
-					System.out.println("_ClipLGear not found! on " + this + " .... cannot set Chock 3d msh!");
+					System.out.println("ERROR: _ClipLGear not found! on " + this + " .... cannot set Chock 3d msh!");
 				else {
 					Orient tempO = new Orient(0F, Pitch, 0F);
 					Point3d tempP = new Point3d(0D, 0D, gWheelSinking[0]);
@@ -2313,7 +2329,7 @@ public class Gear {
 				//By PAL, I'm working based on the Wheel Hook now.
 				hookr = (HookNamed)FM.actor.findHook("_ClipRGear");
 				if (hookr == null)
-					System.out.println("_ClipRGear not found! on " + this + " .... cannot set Chock 3d msh!");
+					System.out.println("ERROR: _ClipRGear not found! on " + this + " .... cannot set Chock 3d msh!");
 				else {
 					Orient tempO = new Orient(0F, Pitch, 0F);
 					Point3d tempP = new Point3d(0D, 0D, gWheelSinking[1]);
@@ -2352,7 +2368,7 @@ public class Gear {
 					//By PAL, I'm working based on the Wheel Hook now.
 					hookc = (HookNamed)FM.actor.findHook("_ClipCGear");
 					if (hookc == null)
-						System.out.println("_ClipCGear not found! on " + this + " .... cannot set Chock 3d msh!");
+						System.out.println("ERROR: _ClipCGear not found! on " + this + " .... cannot set Chock 3d msh!");
 					else {
 						Orient tempO = new Orient(0F, Pitch, 0F);
 						Point3d tempP = new Point3d(0D, 0D, gWheelSinking[2]);

@@ -214,6 +214,7 @@ public class Controls {
 	public boolean bDroptanksDropped;
 	public float targetDegreeAITakeoffRotation;
 	public float targetDegreeAITakeoffClimb;
+	public float targetDegreeAIApproach;
 
 	// --------------------------------------------------------
 
@@ -381,6 +382,7 @@ public class Controls {
 		bDroptanksDropped = false;
 		targetDegreeAITakeoffRotation = -1.0F;
 		targetDegreeAITakeoffClimb = -1.0F;
+		targetDegreeAIApproach = -1.0F;
 		// --------------------------------------------------------
 
 		// Import values from 4.13.2m

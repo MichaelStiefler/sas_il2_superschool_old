@@ -210,13 +210,13 @@ public abstract class AircraftLH extends Aircraft {
 		if (this == World.getPlayerAircraft()) {
 			if (!World.cur().diffCur.No_Outside_Views && World.cur().diffCur.NoOwnPlayerViews && Main3D.cur3D().isViewOutside() && Main3D.cur3D().viewActor() == World.getPlayerAircraft() && !Aircraft.isPlayerTaxing())
 				HotKeyCmd.exec("aircraftView", "CockpitView");
-			if ((double) FM.CT.getGear() > 0.01D && (FM.AS.gearStates[0] != 0.0F || FM.AS.gearStates[1] != 0.0F || FM.AS.gearStates[2] != 0.0F)) {
+			if (FM.CT.getGear() > 0.01F && (FM.AS.gearStates[0] != 0.0F || FM.AS.gearStates[1] != 0.0F || FM.AS.gearStates[2] != 0.0F)) {
 				if (FM.getOverload() > World.Rnd().nextFloat(3F, 6F)) {
 					if (FM.AS.gearStates[0] < 0.0F && FM.AS.gearDamRecoveryStates[0] < 2) FM.AS.fixGear(this, 0);
 					if (FM.AS.gearStates[1] < 0.0F && FM.AS.gearDamRecoveryStates[1] < 2) FM.AS.fixGear(this, 1);
 					if (FM.AS.gearStates[2] < 0.0F && FM.AS.gearDamRecoveryStates[2] < 2) FM.AS.fixGear(this, 2);
 				}
-				if ((double) FM.CT.getGear() > 0.10000000000000001D && (double) FM.CT.getGear() < 0.20000000000000001D && FM.CT.GearControl == 0.0F) {
+				if (FM.CT.getGear() > 0.10F && FM.CT.getGear() < 0.20F && FM.CT.GearControl == 0.0F) {
 					if (FM.AS.gearStates[0] < 0.0F && FM.AS.gearDamRecoveryStates[0] == 0) FM.AS.fixGear(this, 0);
 					if (FM.AS.gearStates[1] < 0.0F && FM.AS.gearDamRecoveryStates[1] == 0) FM.AS.fixGear(this, 1);
 					if (FM.AS.gearStates[2] < 0.0F && FM.AS.gearDamRecoveryStates[2] == 0) FM.AS.fixGear(this, 2);

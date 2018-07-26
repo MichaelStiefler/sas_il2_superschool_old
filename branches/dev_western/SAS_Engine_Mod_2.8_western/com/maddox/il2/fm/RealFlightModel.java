@@ -130,6 +130,8 @@ public class RealFlightModel extends Pilot {
 		TmpVd = new Vector3d();
 		plAccel = new Vector3d();
 		AP = new Autopilot(this);
+		// By western, add reserve AP
+		APreserve = new Autopilot(this);
 		Realism = World.cur().diffCur;
 		maxSpeed = VmaxAllowed;
 	}
@@ -322,7 +324,7 @@ public class RealFlightModel extends Pilot {
 		TmpVd.sub(Loc);
 		Or.transformInv(TmpVd);
 		TmpVd.normalize();
-		if (TmpV.x < 0.84999999999999998D) return;
+		if (TmpV.x < 0.85D) return;
 		if (!(aircraft.FM instanceof Pilot)) {
 			return;
 		} else {
@@ -559,14 +561,14 @@ public class RealFlightModel extends Pilot {
 			d2 = EI.engines[0].addVflow;
 			if (Realism.Torque_N_Gyro_Effects) d4 = 0.5D * EI.engines[0].addVside;
 		}
-		Vn.set(-Arms.GCENTER, 0.84999999999999998D * (double) Arms.WING_END, -0.5D);
+		Vn.set(-Arms.GCENTER, 0.85D * (double) Arms.WING_END, -0.5D);
 		Vn.cross(W, Vn);
 		Vn.add(Vflow);
 		float f12 = f1 - RAD2DEG((float) Math.atan2(Vn.z, Vn.x));
-		Vn.x += 0.070000000000000007D * d2;
+		Vn.x += 0.070D * d2;
 		double d = Vn.lengthSquared();
 		d *= 0.5F * Density;
-		f7 = f1 - RAD2DEG((float) Math.atan2(Vn.z + 0.070000000000000007D * d4 * (double) EI.getPropDirSign(), Vn.x));
+		f7 = f1 - RAD2DEG((float) Math.atan2(Vn.z + 0.070D * d4 * (double) EI.getPropDirSign(), Vn.x));
 		float f14 = 0.015F * f1;
 		if (f14 < 0.0F) f14 *= 0.18F;
 		float f15 = 0.0F;
@@ -585,10 +587,10 @@ public class RealFlightModel extends Pilot {
 		Vn.cross(W, Vn);
 		Vn.add(Vflow);
 		float f13 = -f1 - RAD2DEG((float) Math.atan2(Vn.z, Vn.x));
-		Vn.x += 0.070000000000000007D * d2;
+		Vn.x += 0.070D * d2;
 		d = Vn.lengthSquared();
 		d *= 0.5F * Density;
-		float f9 = -f1 - RAD2DEG((float) Math.atan2(Vn.z - 0.070000000000000007D * d4 * (double) EI.getPropDirSign(), Vn.x));
+		float f9 = -f1 - RAD2DEG((float) Math.atan2(Vn.z - 0.070D * d4 * (double) EI.getPropDirSign(), Vn.x));
 		f14 = -0.015F * f1;
 		if (f14 < 0.0F) f14 *= 0.18F;
 		// TODO: Added drag caused by Drag chute
@@ -608,8 +610,8 @@ public class RealFlightModel extends Pilot {
 		Cwr.x -= d * (double) Fusel.new_Cx(AOS);
 		float f16 = Wing.get_AOA_CRYT();
 		double d7 = 1.0D;
-		double d8 = 0.5D + 0.40000000000000002D * (double) EI.getPowerOutput();
-		double d9 = 1.2D + 0.40000000000000002D * (double) EI.getPowerOutput();
+		double d8 = 0.5D + 0.40D * (double) EI.getPowerOutput();
+		double d9 = 1.2D + 0.40D * (double) EI.getPowerOutput();
 		if (spinCoeff < d8) spinCoeff = d8;
 		if (spinCoeff > d9) spinCoeff = d9;
 		f7 = f12;
@@ -627,20 +629,20 @@ public class RealFlightModel extends Pilot {
 				Cwr.z = d6;
 			}
 		} else if (f7 > f16 || f9 > f16) {
-			spinCoeff += 0.20000000000000001D * (double) f;
-			if ((double) Sq.squareRudders > 0.0D && (double) Math.abs(CT.RudderControl) > 0.5D && (double) CT.RudderControl * W.z > 0.0D) spinCoeff -= 0.29999999999999999D * (double) f;
+			spinCoeff += 0.20D * (double) f;
+			if (Sq.squareRudders > 0.0F && Math.abs(CT.RudderControl) > 0.5F && (double) CT.RudderControl * W.z > 0.0D) spinCoeff -= 0.30D * (double) f;
 			float f17;
 			if (f7 > f9) f17 = f7;
 			else f17 = f9;
 			turbCoeff = 0.8F * (f17 - f16);
 			if (turbCoeff < 1.0F) turbCoeff = 1.0F;
 			if (turbCoeff > 15F) turbCoeff = 15F;
-			d7 = 1.0D - 0.20000000000000001D * (double) (f17 - f16);
-			if (d7 < 0.20000000000000001D) d7 = 0.20000000000000001D;
-			d7 /= turbCoeff;
+			d7 = 1.0D - 0.20D * (double) (f17 - f16);
+			if (d7 < 0.20D) d7 = 0.20D;
+			d7 /= (double) turbCoeff;
 			double d12 = d * (double) turbCoeff * spinCoeff;
 			float f18 = getAltitude() - (float) Engine.land().HQ_Air(Loc.x, Loc.y);
-			if (f18 < 10F) d12 *= 0.1F * f18;
+			if (f18 < 10F) d12 *= 0.1D * (double) f18;
 			if (f7 > f9) {
 				Cwr.x += 0.019999999552965164D * d12 * (double) Sq.spinCxloss;
 				Cwl.x -= 0.25D * d12 * (double) Sq.spinCxloss;
@@ -656,16 +658,16 @@ public class RealFlightModel extends Pilot {
 		} else {
 			turbCoeff = 1.0F;
 			d7 = 1.0D;
-			spinCoeff -= 0.20000000000000001D * (double) f;
+			spinCoeff -= 0.20D * (double) f;
 			ailerInfluence = 1.0F;
 			rudderInfluence = 1.0F;
 		}
 		if (isTick(15, 0)) if (Math.abs(f7 - f9) > 5F) ForceFeedback.fxSetSpringZero((f9 - f7) * 0.04F, 0.0F);
 		else ForceFeedback.fxSetSpringZero(0.0F, 0.0F);
-		if (d1 < 0.40000000000000002D * (double) Length) {
-			double d10 = 1.0D - d1 / (0.40000000000000002D * (double) Length);
-			double d13 = 1.0D + 0.20000000000000001D * d10;
-			double d16 = 1.0D + 0.20000000000000001D * d10;
+		if (d1 < 0.40D * (double) Length) {
+			double d10 = 1.0D - d1 / (0.40D * (double) Length);
+			double d13 = 1.0D + 0.20D * d10;
+			double d16 = 1.0D + 0.20D * d10;
 			Cwl.z *= d13;
 			Cwl.x *= d16;
 			Cwr.z *= d13;
@@ -679,22 +681,22 @@ public class RealFlightModel extends Pilot {
 		d2 = 0.0D;
 		d4 = 0.0D;
 		if (EI.engines[0].getType() < 2) {
-			double d14 = 1.0D + 0.040000000000000001D * (double) Arms.RUDDER;
+			double d14 = 1.0D + 0.040D * (double) Arms.RUDDER;
 			d14 = 1.0D / (d14 * d14);
 			double d17 = Vn.x + d14 * EI.engines[0].addVflow;
-			if (d17 < 0.20000000000000001D) d17 = 0.20000000000000001D;
+			if (d17 < 0.20D) d17 = 0.20D;
 			double d19 = 1.0D - (1.5D * d11) / d17;
 			if (d19 < 0.0D) d19 = 0.0D;
 			double d3 = d19 * d14 * EI.engines[0].addVflow;
 			Vn.x += d3;
-			double d21 = Math.min(0.0011000000000000001D * Vn.x * Vn.x, 1.0D);
+			double d21 = Math.min(0.00110D * Vn.x * Vn.x, 1.0D);
 			if (Vn.x < 0.0D) d21 = 0.0D;
 			if (Realism.Torque_N_Gyro_Effects) d4 = d19 * d21 * EI.engines[0].addVside;
 		}
 		double d15 = (double) Density * Vn.lengthSquared() * 0.5D;
 		if (EI.getNum() == 1 && EI.engines[0].getType() < 2) {
-			f7 = -RAD2DEG((float) Math.atan2(Vn.z - 0.35999999999999999D * d4 * (double) EI.getPropDirSign(), Vn.x)) - 2.0F - 0.002F * V - SensPitch * f1;
-			f9 = -RAD2DEG((float) Math.atan2(Vn.z + 0.35999999999999999D * d4 * (double) EI.getPropDirSign(), Vn.x)) - 2.0F - 0.002F * V - SensPitch * f1;
+			f7 = -RAD2DEG((float) Math.atan2(Vn.z - 0.36D * d4 * (double) EI.getPropDirSign(), Vn.x)) - 2.0F - 0.002F * V - SensPitch * f1;
+			f9 = -RAD2DEG((float) Math.atan2(Vn.z + 0.36D * d4 * (double) EI.getPropDirSign(), Vn.x)) - 2.0F - 0.002F * V - SensPitch * f1;
 		} else {
 			f7 = f9 = -RAD2DEG((float) Math.atan2(Vn.z, Vn.x)) - 2.0F - 0.002F * V - SensPitch * f1;
 		}
@@ -880,8 +882,8 @@ public class RealFlightModel extends Pilot {
 		if (d18 > 1.0D) d18 = 1.0D;
 		double d20 = 0.0111D * (double) Math.abs(AOA);
 		if (Wing.AOACritL < AOA && AOA < Wing.AOACritH) d20 = 0.0D;
-		else if (AOA >= Wing.AOACritH) d20 = Math.min(d20, 0.29999999999999999D * (double) (AOA - Wing.AOACritH));
-		else if (Wing.AOACritL <= AOA) d20 = Math.min(d20, 0.29999999999999999D * (double) (Wing.AOACritL - AOA));
+		else if (AOA >= Wing.AOACritH) d20 = Math.min(d20, 0.3D * (double) (AOA - Wing.AOACritH));
+		else if (Wing.AOACritL <= AOA) d20 = Math.min(d20, 0.3D * (double) (Wing.AOACritL - AOA));
 		double d22 = (double) Arms.GCENTER + (double) Arms.GC_FLAPS_SHIFT * d18 * (1.0D - d20) + (double) Arms.GC_AOA_SHIFT * d20;
 		TmpV.set(-d22, (double) Arms.WING_MIDDLE * (1.3D + 1.0D * Math.sin(DEG2RAD(AOS))), -Arms.GCENTER_Z);
 		TmpV.cross(TmpV, Fwl);
@@ -900,7 +902,7 @@ public class RealFlightModel extends Pilot {
 		TmpV.cross(TmpV, Fv);
 		AM.add(TmpV);
 		double d23 = 1.0D - 1.0000000000000001E-005D * (double) indSpeed;
-		if (d23 < 0.80000000000000004D) d23 = 0.80000000000000004D;
+		if (d23 < 0.80D) d23 = 0.80D;
 		W.scale(d23);
 		if (!Realism.Stalls_N_Spins) AM.y += AF.z * 0.5D * Math.sin(DEG2RAD(Math.abs(AOA)));
 		if (W.lengthSquared() > 25D) W.scale(5D / W.length());
@@ -1042,14 +1044,14 @@ public class RealFlightModel extends Pilot {
 	}
 
 	private void calcOverLoad(float f, boolean flag) {
-        // GSuit Implementation added by SAS~Storebror 2015-02-26
-        TypeGSuit.GFactors theGFactors = new TypeGSuit.GFactors();
-        float fGPosLimit = this.getAltitude();
-        float fGNegLimit = this.Negative_G_Limit;
-        if(actor instanceof TypeGSuit)
-            ((TypeGSuit)actor).getGFactors(theGFactors);
-        fGPosLimit *= theGFactors.getPosGToleranceFactor();
-        fGNegLimit *= theGFactors.getNegGToleranceFactor();
+		// GSuit Implementation added by SAS~Storebror 2015-02-26
+		TypeGSuit.GFactors theGFactors = new TypeGSuit.GFactors();
+		float fGPosLimit = this.getAltitude();
+		float fGNegLimit = this.Negative_G_Limit;
+		if(actor instanceof TypeGSuit)
+			((TypeGSuit)actor).getGFactors(theGFactors);
+		fGPosLimit *= theGFactors.getPosGToleranceFactor();
+		fGNegLimit *= theGFactors.getNegGToleranceFactor();
 
 		if (f > 1.0F) f = 1.0F;
 		if (Gears.onGround() || !flag) {
@@ -1067,9 +1069,9 @@ public class RealFlightModel extends Pilot {
 		if (knockDnTime > 0.0F) knockDnTime -= f * theGFactors.getPosGRecoveryFactor();
 		if (knockUpTime > 0.0F) knockUpTime -= f * theGFactors.getNegGRecoveryFactor();
 		if (indiffDnTime < 4F * theGFactors.getPosGTimeFactor())
-            indiffDnTime += f * theGFactors.getPosGRecoveryFactor();
+			indiffDnTime += f * theGFactors.getPosGRecoveryFactor();
 		if (indiffUpTime < 4F * theGFactors.getNegGTimeFactor())
-            indiffUpTime += 0.3F * f * theGFactors.getNegGRecoveryFactor();
+			indiffUpTime += 0.3F * f * theGFactors.getNegGRecoveryFactor();
 		if (deep > 0.0F) {
 			if (indiffDnTime > 0.0F) indiffDnTime -= 0.8F * deep * f;
 			if (deep > 2.3F && knockDnTime < 18.4F) knockDnTime += 0.75F * deep * f;
