@@ -597,14 +597,23 @@ public class HUD {
                             try
                             {
                                 FlightModel fm = ((SndAircraft) ((Aircraft)main3d.viewActor())).FM;
-                                float trAil = (int)((fm).CT.getTrimAileronControl() * 10000F) / 100F;
-                                float trEl = (int)((fm).CT.getTrimElevatorControl() * 10000F) / 100F;
-                                float trRud = (int)((fm).CT.getTrimRudderControl() * 10000F) / 100F;
-                                int flap = (int)((fm).CT.getFlap() * 100F);
-                                int flapSw = (fm).CT.FlapsControlSwitch;
-                                float fric = (float)(Math.floor(fm.Gears.fric_pub / 2D) * 2D);
-                                float fricF = (float)(Math.floor(fm.Gears.fricF_pub / 2D) * 2D);
-                                float fricR = (float)(Math.floor(fm.Gears.fricR_pub / 2D) * 2D);
+                                float trAil = (int)(fm.CT.getTrimAileronControl() * 10000F) / 100F;
+                                float trEl = (int)(fm.CT.getTrimElevatorControl() * 10000F) / 100F;
+                                float trRud = (int)(fm.CT.getTrimRudderControl() * 10000F) / 100F;
+                                int flap = (int)(fm.CT.getFlap() * 100F);
+                                int flapSw = fm.CT.FlapsControlSwitch;
+                                int varwing = (int)(fm.CT.getVarWing() * 100F);
+                                int varwingcon = (int)(fm.CT.VarWingControl * 100F);
+                                int varwingSw = fm.CT.VarWingControlSwitch;
+                                float fric0 = (float)(Math.floor(fm.Gears.fric_pub[0] / 2D) * 2D);
+                                float fricF0 = (float)(Math.floor(fm.Gears.fricF_pub[0] / 2D) * 2D);
+                                float fricR0 = (float)(Math.floor(fm.Gears.fricR_pub[0] / 2D) * 2D);
+                                float fric1 = (float)(Math.floor(fm.Gears.fric_pub[1] / 2D) * 2D);
+                                float fricF1 = (float)(Math.floor(fm.Gears.fricF_pub[1] / 2D) * 2D);
+                                float fricR1 = (float)(Math.floor(fm.Gears.fricR_pub[1] / 2D) * 2D);
+                                float fric2 = (float)(Math.floor(fm.Gears.fric_pub[2] / 2D) * 2D);
+                                float fricF2 = (float)(Math.floor(fm.Gears.fricF_pub[2] / 2D) * 2D);
+                                float fricR2 = (float)(Math.floor(fm.Gears.fricR_pub[2] / 2D) * 2D);
                                 float vs = (int)(fm.getVertSpeed() * 100F) / 100F;
                                 float aoa = (int)fm.getAOA();
                                 float hp = 0.0F;
@@ -730,11 +739,11 @@ public class HUD {
                                 if(sbDragSet >= 1.0F)
                                     ttfont.output(col, 5F, 5 + (3 + (int)sbDragSet) * i, 0.0F, renderSpeedSubstrings[16][0] + " " + Float.toString(dragsta) + "Sta , " + Float.toString(dragdyn) + "Dyn " + renderSpeedSubstrings[16][1] + " , AirBrake:" + airbrake + "/" + airbrakecon + " , WheelBrake:" + brake + "/" + brakecon + " (Left:" + brakeLeft + "/" + brakeLeftcon + ", Right:" + brakeRight + "/" + brakeRightcon + ")" + (brakeShoe ? " CHOCK" : ""));
                                 if(sbFlapsSet >= 1.0F)
-                                    ttfont.output(col, 5F, 5 + (3 + (int)sbFlapsSet) * i, 0.0F, renderSpeedSubstrings[7][0] + " " + flap + " " + renderSpeedSubstrings[7][1] + ", FlapSw=" + flapSw + " , fric=" + fric + ", fricF=" + fricF + ", fricR=" + fricR);
+                                    ttfont.output(col, 5F, 5 + (3 + (int)sbFlapsSet) * i, 0.0F, renderSpeedSubstrings[7][0] + " " + flap + " " + renderSpeedSubstrings[7][1] + ", FlapSw=" + flapSw + ", VarWing=" + varwing + "/" + varwingcon + ", VarWingSw=" + varwingSw);
                                 if(sbVSpeedSet >= 1.0F)
                                     ttfont.output(col, 5F, 5 + (3 + (int)sbVSpeedSet) * i, 0.0F, renderSpeedSubstrings[11][0] + " " + DecStr(vs * (bIsSI ? 1.0F : 3.28084F)) + " " + renderSpeedSubstrings[11][1] + ", " + DecStr((int)(vs * 3.28084F * 60F)) + "ft/min");
                                 if(sbAoASet >= 1.0F)
-                                    ttfont.output(col, 5F, 5 + (3 + (int)sbAoASet) * i, 0.0F, renderSpeedSubstrings[10][0] + " " + DecStr(aoa) + " " + renderSpeedSubstrings[10][1]);
+                                    ttfont.output(col, 5F, 5 + (3 + (int)sbAoASet) * i, 0.0F, renderSpeedSubstrings[10][0] + " " + DecStr(aoa) + " " + renderSpeedSubstrings[10][1] + " , fric0=" + fric0 + ",fricF0=" + fricF0 + ",fricR0=" + fricR0 + " , fric1=" + fric1 + ",fricF1=" + fricF1 + ",fricR1=" + fricR1 + " , fric2=" + fric2 + ",fricF2=" + fricF2 + ",fricR2=" + fricR2);
                                 if(sbTrimSet >= 1.0F)
                                     ttfont.output(col, 5F, 5 + (3 + (int)sbTrimSet) * i, 0.0F, "Trim (" + renderSpeedSubstrings[4][0] + " " + trAil + renderSpeedSubstrings[4][1] + ", " + renderSpeedSubstrings[5][0] + " " + trEl + renderSpeedSubstrings[5][1] + ", " + renderSpeedSubstrings[6][0] + " " + trRud + renderSpeedSubstrings[6][1] + ")");
                                 if(sbRPMSet >= 1.0F)
