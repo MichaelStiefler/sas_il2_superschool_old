@@ -18,35 +18,16 @@ import com.maddox.util.HashMapInt;
 import java.io.IOException;
 import java.util.*;
 
-// Referenced classes of package com.maddox.il2.objects.air:
-//            AV_8, TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector,
-//            TypeGSuit, TypeAcePlane, TypeFuelDump, TypeDockable,
-//            PaintSchemeFMPar05, Aircraft, TypeFighterAceMaker, TypeSupersonic,
-//            TypeFastJet, F_18, NetAircraft, Chute,
-//            TypeTankerDrogue
-
 public class AV_8B extends AV_8
-    implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeDockable, TypeRadarWarningReceiver
+    implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeDockable, TypeRadarWarningReceiver
 {
 
     public AV_8B()
     {
-        lastCommonThreatActive = 0L;
-        intervalCommonThreat = 1000L;
-        lastRadarLockThreatActive = 0L;
-        intervalRadarLockThreat = 1000L;
-        lastMissileLaunchThreatActive = 0L;
-        intervalMissileLaunchThreat = 1000L;
         hasChaff = false;
         hasFlare = false;
         lastChaffDeployed = 0L;
         lastFlareDeployed = 0L;
-        lastCommonThreatActive = 0L;
-        intervalCommonThreat = 1000L;
-        lastRadarLockThreatActive = 0L;
-        intervalRadarLockThreat = 1000L;
-        lastMissileLaunchThreatActive = 0L;
-        intervalMissileLaunchThreat = 1000L;
         guidedMissileUtils = new GuidedMissileUtils(this);
         removeChuteTimer = -1L;
         counterFlareList = new ArrayList();
@@ -57,7 +38,7 @@ public class AV_8B extends AV_8
         lastAGMcheck = -1L;
         backfire = false;
         if(Config.cur.ini.get("Mods", "RWRTextStop", 0) > 0) bRWR_Show_Text_Warning = false;
-        rwrUtils = new RadarWarningReceiverUtils(this, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning);
+        rwrUtils = new RadarWarningReceiverUtils(this, RWR_GENERATION, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning);
     }
 
     public long getChaffDeployed()
@@ -74,48 +55,6 @@ public class AV_8B extends AV_8
             return lastFlareDeployed;
         else
             return 0L;
-    }
-
-    public void setCommonThreatActive()
-    {
-        long l = Time.current();
-        if(l - lastCommonThreatActive > intervalCommonThreat)
-        {
-            lastCommonThreatActive = l;
-            doDealCommonThreat();
-        }
-    }
-
-    public void setRadarLockThreatActive()
-    {
-        long l = Time.current();
-        if(l - lastRadarLockThreatActive > intervalRadarLockThreat)
-        {
-            lastRadarLockThreatActive = l;
-            doDealRadarLockThreat();
-        }
-    }
-
-    public void setMissileLaunchThreatActive()
-    {
-        long l = Time.current();
-        if(l - lastMissileLaunchThreatActive > intervalMissileLaunchThreat)
-        {
-            lastMissileLaunchThreatActive = l;
-            doDealMissileLaunchThreat();
-        }
-    }
-
-    private void doDealCommonThreat()
-    {
-    }
-
-    private void doDealRadarLockThreat()
-    {
-    }
-
-    private void doDealMissileLaunchThreat()
-    {
     }
 
     public void backFire()
@@ -158,19 +97,9 @@ public class AV_8B extends AV_8
         return rwrUtils;
     }
 
-    public void myRadarSearchYou(Actor actor)
-    {
-        rwrUtils.recordRadarSearched(actor, (String) null);
-    }
-
     public void myRadarSearchYou(Actor actor, String soundpreset)
     {
         rwrUtils.recordRadarSearched(actor, soundpreset);
-    }
-
-    public void myRadarLockYou(Actor actor)
-    {
-        rwrUtils.recordRadarLocked(actor, (String) null);
     }
 
     public void myRadarLockYou(Actor actor, String soundpreset)
@@ -187,7 +116,7 @@ public class AV_8B extends AV_8
         bHasDeployedDragChute = false;
         FM.turret[0].bIsAIControlled = false;
         rwrUtils.onAircraftLoaded();
-        rwrUtils.setLockTone("", "aircraft.usRWRLock", "aircraft.usRWRLaunchWarningMissileMissile", "", "usRWRLock.wav", "usRWRLaunchWarningMissileMissile.wav");
+        rwrUtils.setLockTone("aircraft.usRWRScan", "aircraft.usRWRLock", "aircraft.usRWRLaunchWarningMissileMissile", "aircraft.usRWRThreatNew");
     }
 
     private void checkAmmo()
@@ -615,12 +544,6 @@ public class AV_8B extends AV_8
     private boolean hasFlare;
     private long lastChaffDeployed;
     private long lastFlareDeployed;
-    private long lastCommonThreatActive;
-    private long intervalCommonThreat;
-    private long lastRadarLockThreatActive;
-    private long intervalRadarLockThreat;
-    private long lastMissileLaunchThreatActive;
-    private long intervalMissileLaunchThreat;
     private boolean bHasDeployedDragChute;
     private Chute chute;
     private long removeChuteTimer;
@@ -645,6 +568,7 @@ public class AV_8B extends AV_8
     public boolean bRadarWarning;
     public boolean bMissileWarning;
 
+    private static final int RWR_GENERATION = 1;
     private static final int RWR_MAX_DETECT = 16;
     private static final int RWR_KEEP_SECONDS = 7;
     private static final double RWR_RECEIVE_ELEVATION = 45.0D;

@@ -50,6 +50,10 @@
   DefaultAileronTrim 0.000
   DefaultElevatorTrim 0.000
   DefaultRudderTrim 0.000
+  AILandingWPGearDown 6
+  AILandingWPHookDown 8
+  AILandingWP360OverHeadApproach 2
+  AILandingWPDownwindSpd 464
 [Squares]
   Wing 37.16
   Aileron 4.646  // Wing 2.646 + StabiDiff 2.00
@@ -172,6 +176,7 @@
   VmaxFLAPS 600.0
   Vlanding 243.0
   VtakeoffRot 250.0
+  VminAI 420
   Vz_climb 150.96134
   V_climb 718.00494
   T_turn 23.715391

@@ -17,14 +17,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
-// Referenced classes of package com.maddox.il2.objects.air:
-//            F_18, Aircraft, TypeTankerDrogue, TypeDockable,
-//            PaintSchemeFMPar05, TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector,
-//            TypeGSuit, TypeAcePlane, TypeFuelDump, TypeStormovikArmored,
-//            NetAircraft
-
 public class F_18C extends F_18
-    implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeDockable
+    implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeDockable
 {
 
     public F_18C()
@@ -34,12 +28,6 @@ public class F_18C extends F_18
         hasFlare = false;
         lastChaffDeployed = 0L;
         lastFlareDeployed = 0L;
-        lastCommonThreatActive = 0L;
-        intervalCommonThreat = 1000L;
-        lastRadarLockThreatActive = 0L;
-        intervalRadarLockThreat = 1000L;
-        lastMissileLaunchThreatActive = 0L;
-        intervalMissileLaunchThreat = 1000L;
         guidedMissileUtils = new GuidedMissileUtils(this);
         bulletEmitters = null;
         wingFoldValue = 0.0F;
@@ -72,7 +60,14 @@ public class F_18C extends F_18
                         else if(FM.CT.Weapons[i][j] instanceof BombGunGBU10_Mk84LGB_gn16 ||
                                 FM.CT.Weapons[i][j] instanceof BombGunGBU12_Mk82LGB_gn16 ||
                                 FM.CT.Weapons[i][j] instanceof BombGunGBU16_Mk83LGB_gn16)
+                        {
                             super.bHasPaveway = true;
+                            FM.bNoDiveBombing = true;
+                        }
+                        else if(FM.CT.Weapons[i][j] instanceof BombGunGBU38_Mk82JDAM_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof BombGunGBU32_Mk83JDAM_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof BombGunGBU31_Mk84JDAM_gn16)
+                            FM.bNoDiveBombing = true;
                         else if(FM.CT.Weapons[i][j] instanceof RocketGunAGM65B_gn16 ||
                                 FM.CT.Weapons[i][j] instanceof RocketGunAGM65E_gn16 ||
                                 FM.CT.Weapons[i][j] instanceof RocketGunAGM65F_gn16 ||
@@ -160,48 +155,6 @@ public class F_18C extends F_18
             return lastFlareDeployed;
         else
             return 0L;
-    }
-
-    public void setCommonThreatActive()
-    {
-        long l = Time.current();
-        if(l - lastCommonThreatActive > intervalCommonThreat)
-        {
-            lastCommonThreatActive = l;
-            doDealCommonThreat();
-        }
-    }
-
-    public void setRadarLockThreatActive()
-    {
-        long l = Time.current();
-        if(l - lastRadarLockThreatActive > intervalRadarLockThreat)
-        {
-            lastRadarLockThreatActive = l;
-            doDealRadarLockThreat();
-        }
-    }
-
-    public void setMissileLaunchThreatActive()
-    {
-        long l = Time.current();
-        if(l - lastMissileLaunchThreatActive > intervalMissileLaunchThreat)
-        {
-            lastMissileLaunchThreatActive = l;
-            doDealMissileLaunchThreat();
-        }
-    }
-
-    private void doDealCommonThreat()
-    {
-    }
-
-    private void doDealRadarLockThreat()
-    {
-    }
-
-    private void doDealMissileLaunchThreat()
-    {
     }
 
     public GuidedMissileUtils getGuidedMissileUtils()
@@ -748,12 +701,6 @@ public class F_18C extends F_18
     private boolean hasFlare;
     private long lastChaffDeployed;
     private long lastFlareDeployed;
-    private long lastCommonThreatActive;
-    private long intervalCommonThreat;
-    private long lastRadarLockThreatActive;
-    private long intervalRadarLockThreat;
-    private long lastMissileLaunchThreatActive;
-    private long intervalMissileLaunchThreat;
     private float wingFoldValue;
     private ArrayList counterFlareList;
     private ArrayList counterChaffList;
