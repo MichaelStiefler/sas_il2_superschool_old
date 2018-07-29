@@ -1,6 +1,6 @@
 // Source File Name: Missile.java
 // Author:	Storebror
-// Edit:	western0221 on 24th/Jul/2018
+// Edit:	western0221 on 29th/Jul/2018
 package com.maddox.il2.objects.weapons;
 
 import java.io.IOException;
@@ -1407,7 +1407,7 @@ public class Missile extends Rocket
 					return;
 				}
 			}
-			if (this.getOwner() instanceof TypeGuidedMissileCarrier) {
+			if (this.getOwner() instanceof TypeGuidedMissileCarrier && this.getOwner() instanceof TypeLaserDesignator && (((TypeLaserDesignator) this.getOwner()).getLaserOn())) {
 				this.targetPoint3dAbs = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetPos();
 				this.laserOwner = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetPosOwner();
 				this.victimOffsetPoint3d = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetOffset();
@@ -1427,11 +1427,11 @@ public class Missile extends Rocket
 				if (this.getFM().getOverload() > this.maxLaunchG) {
 					this.targetPoint3d = null;
 					this.targetPoint3dAbs = null;
-					this.laserOwner = null;
+					this.saclosOwner = null;
 					return;
 				}
 			}
-			if (this.getOwner() instanceof TypeGuidedMissileCarrier) {
+			if ((this.getOwner() instanceof TypeGuidedMissileCarrier) && (this.getOwner() instanceof TypeSACLOS) && (((TypeSACLOS) this.getOwner()).getSACLOSenabled())) {
 				this.targetPoint3dAbs = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetPos();
 				this.saclosOwner = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetPosOwner();
 				this.victimOffsetPoint3d = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetOffset();
@@ -1971,7 +1971,7 @@ public class Missile extends Rocket
 					point3d.set(((TypeLaserDesignator) laserOwner).getLaserSpot());
 
 					if (point3d != null) {
-						this.targetPoint3d.set(this.targetPoint3dAbs);
+						this.targetPoint3d.set(point3d);
 						this.targetPoint3d.sub(this.missilePoint3d); // relative Position to target
 						this.missileOrient.transformInv(this.targetPoint3d); // set coordinate system according to A/C POV
 
@@ -1991,8 +1991,8 @@ public class Missile extends Rocket
 						}
 
 						if (Main.cur().clouds == null ||
-							(   Main.cur().clouds.getVisibility(this.targetPoint3dAbs, this.pos.getAbsPoint()) >= 0.99F)
-							 && Main.cur().clouds.getVisibility(this.targetPoint3dAbs, laserOwner.pos.getAbsPoint()) >= 0.99F) {
+							(   Main.cur().clouds.getVisibility(this.targetPoint3d, this.pos.getAbsPoint()) >= 0.99F)
+							 && Main.cur().clouds.getVisibility(this.targetPoint3d, laserOwner.pos.getAbsPoint()) >= 0.99F) {
 							this.computeMissilePath(missileSpeed, 0.0F, 0.0F, angleAzimuth, angleTangage);
 						}
 					}
@@ -2030,7 +2030,7 @@ public class Missile extends Rocket
 					point3d.set(((TypeSACLOS) saclosOwner).getSACLOStarget());
 
 					if (point3d != null) {
-						this.targetPoint3d.set(this.targetPoint3dAbs);
+						this.targetPoint3d.set(point3d);
 						this.targetPoint3d.sub(this.missilePoint3d); // relative Position to target
 						this.missileOrient.transformInv(this.targetPoint3d); // set coordinate system according to A/C POV
 
@@ -2051,7 +2051,7 @@ public class Missile extends Rocket
 
 						if (Main.cur().clouds == null ||
 							(   Main.cur().clouds.getVisibility(saclosOwner.pos.getAbsPoint(), this.pos.getAbsPoint()) >= 0.99F)
-							 && Main.cur().clouds.getVisibility(this.targetPoint3dAbs, saclosOwner.pos.getAbsPoint()) >= 0.99F) {
+							 && Main.cur().clouds.getVisibility(this.targetPoint3d, saclosOwner.pos.getAbsPoint()) >= 0.99F) {
 							this.computeMissilePath(missileSpeed, 0.0F, 0.0F, angleAzimuth, angleTangage);
 						}
 					}

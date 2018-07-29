@@ -1,6 +1,6 @@
 // Source File Name: GuidedMissileUtils.java
 // Author:	Storebror
-// Edit:	western0221 on 24th/Jul/2018
+// Edit:	western0221 on 29th/Jul/2018
 package com.maddox.il2.objects.weapons;
 
 import java.util.ArrayList;
@@ -402,7 +402,7 @@ public class GuidedMissileUtils {
 			&& (this.getMissileTarget() instanceof TypeRadarWarningReceiver) && this.getMissileTarget().getArmy() != ownerAircraft.FM.actor.getArmy())
 			((TypeRadarWarningReceiver) this.getMissileTarget()).myRadarLockYou(ownerAircraft.FM.actor, Property.stringValue(this.myMissileClass, "soundRadarPW", null));
 
-		if (this.trgtPk > this.getMinPkForAttack() && (this.iDetectorMode == Missile.DETECTOR_TYPE_LASER || this.iDetectorMode == Missile.DETECTOR_TYPE_SACLOS) && Actor.isValid(this.getMissileTarget()) && this.getMissileTarget().getArmy() != ownerAircraft.FM.actor.getArmy()
+		if (this.trgtPk > this.getMinPkForAttack() && (this.iDetectorMode == Missile.DETECTOR_TYPE_LASER || this.iDetectorMode == Missile.DETECTOR_TYPE_SACLOS) && this.getMissileTargetPos() != null
 			&& Time.current() > this.tMissilePrev + this.getMillisecondsBetweenMissileLaunchAI() && GuidedMissileUtils.noLaunchSince(minTimeBetweenAIMissileLaunch, ownerAircraft.FM.actor.getArmy())
 			&& missilesLeft(ownerAircraft.FM.CT.Weapons[ownerAircraft.FM.CT.rocketHookSelected])) {
 			this.tMissilePrev = Time.current();
@@ -759,10 +759,11 @@ public class GuidedMissileUtils {
 
 	private float getMissilePk() {
 		float thePk = 0.0F;
-		if (Actor.isValid(this.getMissileTarget())) {
-			if (this.iDetectorMode == Missile.DETECTOR_TYPE_LASER || this.iDetectorMode == Missile.DETECTOR_TYPE_SACLOS)
+		if (this.iDetectorMode == Missile.DETECTOR_TYPE_LASER || this.iDetectorMode == Missile.DETECTOR_TYPE_SACLOS) {
+			if (this.getMissileTargetPos() != null)
 				thePk = this.Pk(this.missileOwner, this.getMissileTargetPos());
-			else
+		} else {
+			if (Actor.isValid(this.getMissileTarget()))
 				thePk = this.Pk(this.missileOwner, this.getMissileTarget());
 		}
 
@@ -1406,7 +1407,7 @@ public class GuidedMissileUtils {
 				if (AP.way.isLast())
 					break;
 				AP.way.next();
-			} while(true);
+			} while (true);
 			AP.way.setCur(wcu);
 
 			if (flag)
@@ -1550,9 +1551,9 @@ public class GuidedMissileUtils {
 		Point3d theSelectedActorOffset = new Point3d(0.0D, 0.0D, 0.0D);
 		boolean bFound = false;
 
-		if (!(actor instanceof Aircraft) || ((this.iDetectorMode != Missile.DETECTOR_TYPE_LASER) || (this.iDetectorMode != Missile.DETECTOR_TYPE_SACLOS))) return null;
+		if (!(actor instanceof Aircraft) || ((this.iDetectorMode != Missile.DETECTOR_TYPE_LASER) && (this.iDetectorMode != Missile.DETECTOR_TYPE_SACLOS))) return null;
 
-		if (this.iDetectorMode != Missile.DETECTOR_TYPE_LASER) {
+		if (this.iDetectorMode == Missile.DETECTOR_TYPE_LASER) {
 			// superior the Laser spot of this missile's owner than others'
 			while ((actor instanceof TypeLaserDesignator) && ((TypeLaserDesignator) actor).getLaserOn()) {
 				Point3d point3d = new Point3d();
@@ -1620,7 +1621,7 @@ public class GuidedMissileUtils {
 			}
 		}
 
-		if (this.iDetectorMode != Missile.DETECTOR_TYPE_SACLOS) {
+		if (this.iDetectorMode == Missile.DETECTOR_TYPE_SACLOS) {
 			while ((actor instanceof TypeSACLOS) && ((TypeSACLOS) actor).getSACLOSenabled()) {
 				Point3d point3d = new Point3d();
 				point3d = ((TypeSACLOS)actor).getSACLOStarget();
