@@ -9,6 +9,7 @@
 /*By western, add Scheme=8 case for 8x engines aircrafts on 26th/Apr./2018*/
 /*By western, add Scheme=10 case for 10x engines aircrafts on 23rd/Jun./2018*/
 /*By western, add AI landing process control values on 10th/Jul./2018*/
+/*By western, add AI skip ground_attack flag on 30th/Jul./2018*/
 package com.maddox.il2.fm;
 
 import java.io.BufferedWriter;
@@ -216,6 +217,7 @@ public class FlightModelMain extends FMMath {
 	public float AILandingWP360PitchPlus;
 	public boolean bOnGoingOverHeadApproach;
 	public boolean bNoDiveBombing;
+	public boolean bSkipGroundAttack;
 	public Autopilotage APreserve;
 
 	// --------------------------------------------------------
@@ -1094,6 +1096,7 @@ public class FlightModelMain extends FMMath {
 		AILandingWP360PitchPlus = 0.0F;
 		bOnGoingOverHeadApproach = false;
 		bNoDiveBombing = false;
+		bSkipGroundAttack = false;
 		// --------------------------------------------------------
 		Arms = new Arm();
 		Gears = new Gear();
