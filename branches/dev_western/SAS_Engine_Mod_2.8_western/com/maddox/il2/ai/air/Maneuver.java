@@ -2,6 +2,7 @@
 /*By western, expand bombing process - Not to shallow dive when bNoDiveBombing=true for Laser / GPS guided bombs on 17th/Jul./2018*/
 /*By western, cruise speed tune for FastJet and SuperSonic on 17-24th/Jul./2018*/
 /*By western, landing wheel brake control for FastJet on 25th/Jul./2018*/
+/*By western, AI gun and rocket Ground-Attack for FastJet on 04th/Aug./2018*/
 package com.maddox.il2.ai.air;
 
 import java.util.ArrayList;
@@ -4640,6 +4641,7 @@ public class Maneuver extends AIFlightModel {
 		}
 		maxAOA = 15F;
 		minElevCoeff = 20F;
+		boolean bFJSS = ((actor instanceof TypeSupersonic) || (actor instanceof TypeFastJet));
 		switch (submaneuver) {
 		case 0: // '\0'
 			setCheckGround(true);
@@ -4717,16 +4719,28 @@ public class Maneuver extends AIFlightModel {
 				dontSwitch = true;
 			} else {
 				Ve.normalize();
-				if (Loc.z < constVtarg1.z) {
-					setSpeedMode(6);
+				if (bFJSS) {
+					if (Loc.z < constVtarg1.z) {
+						setSpeedMode(7);
+						smConstPower = 0.85F;
+					} else {
+						setSpeedMode(4);
+						float tempCS = CruiseSpeed;
+						if (tempCS > 200F) tempCS = 200F;
+						smConstSpeed = tempCS * 0.9F;
+					}
 				} else {
-					setSpeedMode(4);
-					smConstSpeed = 100F;
+					if (Loc.z < constVtarg1.z) {
+						setSpeedMode(6);
+					} else {
+						setSpeedMode(4);
+						smConstSpeed = 100F;
+					}
 				}
-				if (f3 > 1000F) farTurnToDirection(8F);
+				if (f3 > (bFJSS ? 1150F : 1000F)) farTurnToDirection(8F);
 				else attackTurnToDirection(f3, f, 4F + (float) Skill * 2.0F);
 				sub_Man_Count++;
-				if (f3 < 300F) {
+				if (f3 < (bFJSS ? 350F : 300F)) {
 					submaneuver++;
 					gattackCounter++;
 					sub_Man_Count = 0;
@@ -4740,16 +4754,28 @@ public class Maneuver extends AIFlightModel {
 			float f4 = (float) Ve.length();
 			Or.transformInv(Ve);
 			Ve.normalize();
-			if (Loc.z < constVtarg.z) {
-				setSpeedMode(6);
+			if (bFJSS) {
+				if (Loc.z < constVtarg.z) {
+					setSpeedMode(7);
+					smConstPower = 0.85F;
+				} else {
+					setSpeedMode(4);
+					float tempCS = CruiseSpeed;
+					if (tempCS > 200F) tempCS = 200F;
+					smConstSpeed = tempCS * 0.85F;
+				}
 			} else {
-				setSpeedMode(4);
-				smConstSpeed = 100F;
+				if (Loc.z < constVtarg.z) {
+					setSpeedMode(6);
+				} else {
+					setSpeedMode(4);
+					smConstSpeed = 100F;
+				}
 			}
-			if (f4 > 1000F) farTurnToDirection(8F);
+			if (f4 > (bFJSS ? 1150F : 1000F)) farTurnToDirection(8F);
 			else attackTurnToDirection(f4, f, 4F + (float) Skill * 2.0F);
 			sub_Man_Count++;
-			if (f4 < 300F) {
+			if (f4 < (bFJSS ? 350F : 300F)) {
 				submaneuver++;
 				gattackCounter++;
 				sub_Man_Count = 0;
@@ -4788,12 +4814,14 @@ public class Maneuver extends AIFlightModel {
 			Ve.z += f8 + Group.getAaaNum() * 0.5F;
 			Or.transformInv(Ve);
 			float speedFactor = getSpeedKMH() / 260F;
-			if (speedFactor < 1F)
-				speedFactor = 1F;
+			if (speedFactor < 1.0F)
+				speedFactor = 1.0F;
+			if (speedFactor > 2.2F)
+				speedFactor = 2.2F;
 			if (f5 < 800F * speedFactor && (shotAtFriend <= 0 || distToFriend > f5)) {
 				shootingDeviation -= f;
 				if (shootingDeviation < (float) (6 - gunnery)) shootingDeviation = 6 - gunnery;
-				if (Math.abs(Ve.y) < 15D && Math.abs(Ve.z) < 10D) {
+				if (Math.abs(Ve.y) < (bFJSS ? 18D : 15D) && Math.abs(Ve.z) < (bFJSS ? 12D : 10D)) {
 					if (f5 < 800F * speedFactor && Group.getAaaNum() > 10F || f5 < 650F * speedFactor ) CT.WeaponControl[0] = true;
 					if (f5 < 700F * speedFactor && Group.getAaaNum() > 10F || f5 < 550F * speedFactor ) CT.WeaponControl[1] = true;
 					if (CT.Weapons[2] != null && CT.Weapons[2][0] != null && CT.Weapons[2][CT.Weapons[2].length - 1].countBullets() != 0 && rocketsDelay < 1 && f5 < 570F * speedFactor) {
@@ -4801,6 +4829,8 @@ public class Maneuver extends AIFlightModel {
 						Voice.speakAttackByRockets((Aircraft) actor);
 						if (Group.getAaaNum() > 2.0F) rocketsDelay += 30F - Group.getAaaNum();
 						else rocketsDelay += 30;
+						if (bFJSS) rocketsDelay -= 8;
+						if (bFJSS&& rocketsDelay < 3) rocketsDelay = 3;
 					}
 				}
 			}
@@ -4818,8 +4848,16 @@ public class Maneuver extends AIFlightModel {
 			}
 			Ve.normalize();
 			attackTurnToDirection(f5, f, 10F + (float) Skill * 2.0F);
-			setSpeedMode(4);
-			smConstSpeed = 100F;
+			if (bFJSS) {
+				setSpeedMode(4);
+				float tempCS = CruiseSpeed;
+				if (tempCS > 200F) tempCS = 200F;
+				smConstSpeed = tempCS * 0.9F;
+			}
+			else {
+				setSpeedMode(4);
+				smConstSpeed = 100F;
+			}
 			break;
 
 		default:
@@ -4837,11 +4875,12 @@ public class Maneuver extends AIFlightModel {
 		bombsOut = false;
 		CT.WeaponControl[3] = false;
 		// TODO: DBW AI Mod Edits
+		setSpeedMode(4);
 		if ((actor instanceof TypeSupersonic) || (actor instanceof TypeFastJet)) {
-			setSpeedMode(7);
-			smConstPower = 0.7F;
+			float tempCS = CruiseSpeed;
+			if (tempCS > 200F) tempCS = 200F;
+			smConstSpeed = tempCS;
 		} else {
-			setSpeedMode(4);
 			smConstSpeed = 120F;
 		}
 		float f1 = ((Tuple3d) (super.Vwld)).z <= 0.0D ? 4F : 3F;
@@ -5275,7 +5314,10 @@ public class Maneuver extends AIFlightModel {
 			if (first) RandomVal = 50F - World.cur().rnd.nextFloat(0.0F, 100F);
 			// TODO: DBW AI Mod Edits
 			if ((actor instanceof TypeSupersonic) || (actor instanceof TypeFastJet)) {
-				setSpeedMode(7);
+				setSpeedMode(4);
+				float tempCS = CruiseSpeed;
+				if (tempCS > 200F) tempCS = 200F;
+				smConstSpeed = tempCS;
 			} else {
 				setSpeedMode(4);
 				smConstSpeed = 120F;
@@ -5768,8 +5810,15 @@ public class Maneuver extends AIFlightModel {
 	private void groundAttackCassette(Actor actorTarg, float f) {
 		maxG = 5F;
 		maxAOA = 8F;
+		// TODO: DBW AI Mod Edits
 		setSpeedMode(4);
-		smConstSpeed = 120F;
+		if ((actor instanceof TypeSupersonic) || (actor instanceof TypeFastJet)) {
+			float tempCS = CruiseSpeed;
+			if (tempCS > 200F) tempCS = 200F;
+			smConstSpeed = tempCS;
+		} else {
+			smConstSpeed = 120F;
+		}
 		minElevCoeff = 20F;
 		Ve.set(actorTarg.pos.getAbsPoint());
 		Ve.sub(Loc);

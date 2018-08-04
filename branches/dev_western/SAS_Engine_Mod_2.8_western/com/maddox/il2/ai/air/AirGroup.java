@@ -965,7 +965,7 @@ Label_3414:
                     b = false;
                 if (maneuver.CT.Weapons[0] != null && maneuver.CT.Weapons[0][0] != null && maneuver.CT.Weapons[0][0].bulletMassa() > 0.05f && maneuver.CT.Weapons[0][0].countBullets() > 0)
                     b = false;
-                if ((b && maneuver.CT.getWeaponMass() < 7.0F) || maneuver.CT.getWeaponMass() < 1.0F) {
+                if ((b && maneuver.CT.getWeaponMass() < 7.0F) || maneuver.CT.getWeaponMass() < 1.0F || maneuver.bSkipGroundAttack) {
                     Voice.speakEndOfAmmo(airc[n]);
                     if (!waitGroup(n) && n == 0) {
                         if (maneuver.AP.way.curr().Action == 3)
