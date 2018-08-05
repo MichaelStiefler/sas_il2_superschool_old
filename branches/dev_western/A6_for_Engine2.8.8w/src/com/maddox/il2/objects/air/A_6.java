@@ -663,6 +663,7 @@ public class A_6 extends Scheme2
         laserTimer = -1L;
         bLaserOn = false;
         FLIR = false;
+        counter = 0;
 
         for(int i = 0; i < 2; i++)
         {
@@ -813,12 +814,13 @@ public class A_6 extends Scheme2
         if(FM.actor == World.getPlayerAircraft() && lastDisplayTime != Time.current())
         {
             counter++;
-            if(counter % 17 == 0)
+            if(counter % 40 == 20)
                 InertialNavigation();
-            if(counter % 10 == 0)
+            if(counter % 40 == 7 || counter % 40 == 27)
                 GroundRadar();
-            if(counter % 10 == 5)
+            if(counter % 40 == 16 || counter % 40 == 36)
                 NavyRadar();
+            if(counter > 2147483000 || counter < 0) counter = 0;
             lastDisplayTime = Time.current();
         }
         boolean bSideDoorOccupy = false;
@@ -929,8 +931,8 @@ public class A_6 extends Scheme2
                     ((Maneuver)FM).target_ground = null;
                     ((Maneuver)FM).set_maneuver(0);
                 }
-                else
-                    lAIGAskipTimer = Time.current() + 20000L;
+                else if(lAIGAskipTimer == -1L)
+                    lAIGAskipTimer = Time.current() + 20000L + (long)Math.min(FM.getAltitude(), 10000F) * 5L;
             }
         }
 
@@ -1899,27 +1901,8 @@ public class A_6 extends Scheme2
             updatecontrollaser();
         }
         if(bHasLaser && FM.actor != World.getPlayerAircraft() && FM instanceof Maneuver)
-        {
-            if((bHasLAGM || bHasPaveway) && FM.AP.way.curr().Action == 3 && ((Maneuver)FM).target_ground != null && !bAILaserOn)
-            {
-                bAILaserOn = true;
-                setLaserOn(true);
-            }
-            else if(bAILaserOn)
-            {
-                if(lAILaserTimer > 0L && Time.current() > lAILaserTimer)
-                {
-                    bAILaserOn = false;
-                    setLaserOn(false);
-                }
-                else
-                    lAILaserTimer = Time.current() + 20000L;
-            }
-            if(bAILaserOn && ((Maneuver)FM).target_ground != null && ((Maneuver)FM).target_ground.pos != null && Actor.isValid(((Maneuver)FM).target_ground))
-            {
-                setLaserSpot(((Maneuver)FM).target_ground.pos.getAbsPoint());
-            }
-        }
+            AILaserControl();
+
         engineSurge(f);
         typeFighterAceMakerRangeFinder();
         checkHydraulicStatus();
@@ -2911,6 +2894,19 @@ public class A_6 extends Scheme2
         {
             float f0 = Aircraft.cvt(FM.getSpeedKMH(), 400F, 900F, 0.100F, -0.024F);
             float f1 = Aircraft.cvt(FM.M.mass - FM.M.massEmpty, 16000F, 6000F, 0.030F, 0.0F);
+            if((FM instanceof Maneuver) && !FM.bNoDiveBombing && (((Maneuver)FM).get_maneuver() == 43 || ((Maneuver)FM).get_maneuver() == 8 && FM.AP.way.curr().Action == 3))
+            {
+                f0 = Aircraft.cvt(FM.getSpeedKMH(), 360F, 900F, -0.06F, -0.18F);
+                f1 = Aircraft.cvt(FM.M.mass - FM.M.massEmpty, 16000F, 6000F, 0.00F, -0.06F);
+                float roll = FM.Or.getKren();
+                for(;roll > 180F;) roll -= 360F;
+                for(;roll < -180F;) roll += 360F;
+                roll = Math.abs(roll);
+                f0 *= cvt(roll, 35F, 60F, 1.0F, 0.0F);
+                f0 += cvt(roll, 55F, 65F, 0.0F, 0.08F);
+                f1 *= cvt(roll, 35F, 60F, 1.0F, 0.0F);
+                f1 += cvt((float)(FM.Loc.z - Engine.land().HQ_Air(FM.Loc.x, FM.Loc.y)), 10F, 60F, 0.1F, 0.0F);
+            }
             FM.CT.setTrimElevatorControl(f0 + f1);
         }
     }
@@ -3070,6 +3066,50 @@ public class A_6 extends Scheme2
                 engineOilPressurePSI[i] += Math.min((targetPress - engineOilPressurePSI[i]) * 0.1F, 0.1F);
             else
                 engineOilPressurePSI[i] -= Math.min((engineOilPressurePSI[i]- targetPress) * 0.06F, 0.06F);
+        }
+    }
+
+    private void AILaserControl()
+    {
+        Point3d point3d = new Point3d();
+        Point3d point3dtemp = new Point3d();
+        boolean bLaserReach = false;
+        if(((Maneuver)FM).target_ground != null)
+        {
+            point3d = ((Maneuver)FM).target_ground.pos.getAbsPoint();
+            bLaserReach = (this.pos.getAbsPoint().distance(point3d) < 20000D &&
+                (Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) > 0.98F) &&
+                !Landscape.rayHitHQ(this.pos.getAbsPoint(), point3d, point3dtemp));
+        }
+        if((bHasLAGM || bHasPaveway) && FM.AP.way.curr().Action == 3 && ((Maneuver)FM).target_ground != null && !bAILaserOn)
+        {
+            if(bLaserReach)
+            {
+                bAILaserOn = true;
+                setLaserOn(true);
+                lAILaserTimer = -1L;
+            }
+        }
+        else if(bAILaserOn)
+        {
+            if(((Maneuver)FM).target_ground == null || !bLaserReach)
+            {
+                bAILaserOn = false;
+                setLaserOn(false);
+                lAILaserTimer = -1L;
+            }
+            else if(lAILaserTimer > 0L && Time.current() > lAILaserTimer)
+            {
+                bAILaserOn = false;
+                setLaserOn(false);
+                lAILaserTimer = -1L;
+            }
+            else if(lAILaserTimer == -1L)
+                lAILaserTimer = Time.current() + 20000L + (long)Math.min(FM.getAltitude(), 4000F) * 5L;
+        }
+        if(bAILaserOn && ((Maneuver)FM).target_ground != null && ((Maneuver)FM).target_ground.pos != null && Actor.isValid(((Maneuver)FM).target_ground))
+        {
+            setLaserSpot(point3d);
         }
     }
 
