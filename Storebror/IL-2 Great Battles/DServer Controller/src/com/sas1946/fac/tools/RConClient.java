@@ -5,16 +5,29 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.util.Arrays;
 
 public class RConClient {
-
-    public static final int RCONCLIENT_WAITING           = 0;
-    public static final int RCONCLIENT_MESSAGE_RECEIVED  = 2;
-    public static final int RCONCLIENT_MESSAGE_SENT      = 3;
-    public static final int RCONCLIENT_CONNECTED         = 1;
-    public static final int RCONCLIENT_CONNECTION_FAILED = -1;
-    public static final int RCONCLIENT_READ_ERROR        = -2;
-    public static final int RCONCLIENT_WRITE_ERROR       = -3;
+    
+    public static enum RETURN_CODE {
+        RCONCLIENT_WRITE_ERROR(-3),
+        RCONCLIENT_READ_ERROR(-2),
+        RCONCLIENT_CONNECTION_FAILED(-1),
+        RCONCLIENT_WAITING(0),
+        RCONCLIENT_CONNECTED(1),
+        RCONCLIENT_MESSAGE_RECEIVED(2),
+        RCONCLIENT_MESSAGE_SENT(3);
+        
+        private int numVal;
+        
+        RETURN_CODE(int numVal) {
+            this.numVal = numVal;
+        }
+        
+        public int getNumVal() {
+            return numVal;
+        }
+    }
 
     public static enum COMMAND {
         none, mystatus, auth, getconsole, getplayerlist, serverstatus, kick, ban, banuser, unbanall, serverinput, sendstatnow, cutchatlog, chatmsg, opensds, spsget, spsreset, shutdown
@@ -22,7 +35,7 @@ public class RConClient {
 
     private static final RConClient         instance;
     private AsynchronousSocketChannel       rConSockChannel;
-    private CallBack<Void, Integer, String> rConCallback;
+    private CallBack<Void, RETURN_CODE, String> rConCallback;
     private COMMAND                         lastCommand;
 
     private RConClient() {
@@ -32,11 +45,11 @@ public class RConClient {
         return instance;
     }
 
-    public void setRConCallback(CallBack<Void, Integer, String> rConCallback) {
+    public void setRConCallback(CallBack<Void, RETURN_CODE, String> rConCallback) {
         this.rConCallback = rConCallback;
     }
 
-    private void callback(int val1, String val2) {
+    private void callback(RETURN_CODE val1, String val2) {
         this.rConCallback.call(val1, val2);
     }
 
@@ -44,16 +57,25 @@ public class RConClient {
         return this.lastCommand;
     }
 
+    @Deprecated
     public void spsget() {
         this.lastCommand = COMMAND.spsget;
         RConClient.this.doStartWrite(this.rConSockChannel, "spsget");
     }
 
+    @Deprecated
     public void auth(String user, String pass) {
         this.lastCommand = COMMAND.auth;
         RConClient.this.doStartWrite(this.rConSockChannel, "auth " + user + " " + pass);
     }
-
+    
+    public void sendCommand(COMMAND command, String... params) {
+        this.lastCommand = command;
+        StringBuilder sb = new StringBuilder(command.name());
+        Arrays.stream(params).forEach(s -> sb.append(" " + s));
+        RConClient.this.doStartWrite(this.rConSockChannel, sb.toString());
+    }
+    
     public void connect(String host, int port) {
         try {
             this.doConnect(host, port);
@@ -69,7 +91,7 @@ public class RConClient {
         sockChannel.connect(new InetSocketAddress(host, port), sockChannel, new CompletionHandler<Void, AsynchronousSocketChannel>() {
             @Override
             public void completed(Void result, AsynchronousSocketChannel channel) {
-                RConClient.this.callback(RCONCLIENT_CONNECTED, "remote console connected");
+                RConClient.this.callback(RETURN_CODE.RCONCLIENT_CONNECTED, "remote console connected");
                 RConClient.this.rConSockChannel = channel;
 
                 RConClient.this.doStartRead(channel);
@@ -77,7 +99,7 @@ public class RConClient {
 
             @Override
             public void failed(Throwable exc, AsynchronousSocketChannel channel) {
-                RConClient.this.callback(RCONCLIENT_CONNECTION_FAILED, "failed to connect to remote console");
+                RConClient.this.callback(RETURN_CODE.RCONCLIENT_CONNECTION_FAILED, "failed to connect to remote console");
                 RConClient.this.rConSockChannel = null;
             }
 
@@ -100,16 +122,16 @@ public class RConClient {
                     for (int i = 0; i < len; i++) {
                         message.append((char) buf.get());
                     }
-                    RConClient.this.callback(RCONCLIENT_MESSAGE_RECEIVED, "Read message:" + message);
+                    RConClient.this.callback(RETURN_CODE.RCONCLIENT_MESSAGE_RECEIVED, "Read message:" + message);
                 } else {
-                    RConClient.this.callback(RCONCLIENT_WAITING, "waiting...");
+                    RConClient.this.callback(RETURN_CODE.RCONCLIENT_WAITING, "waiting...");
                 }
                 RConClient.this.doStartRead(channel);
             }
 
             @Override
             public void failed(Throwable exc, AsynchronousSocketChannel channel) {
-                RConClient.this.callback(RCONCLIENT_READ_ERROR, "fail to read message from server");
+                RConClient.this.callback(RETURN_CODE.RCONCLIENT_READ_ERROR, "fail to read message from server");
             }
 
         });
@@ -129,12 +151,12 @@ public class RConClient {
         sockChannel.write(buf, sockChannel, new CompletionHandler<Integer, AsynchronousSocketChannel>() {
             @Override
             public void completed(Integer result, AsynchronousSocketChannel channel) {
-                RConClient.this.callback(RCONCLIENT_MESSAGE_SENT, "write message completed, result=" + result);
+                RConClient.this.callback(RETURN_CODE.RCONCLIENT_MESSAGE_SENT, "write message completed, result=" + result);
             }
 
             @Override
             public void failed(Throwable exc, AsynchronousSocketChannel channel) {
-                RConClient.this.callback(RCONCLIENT_WRITE_ERROR, "Fail to write the message to server");
+                RConClient.this.callback(RETURN_CODE.RCONCLIENT_WRITE_ERROR, "Fail to write the message to server");
             }
         });
     }
