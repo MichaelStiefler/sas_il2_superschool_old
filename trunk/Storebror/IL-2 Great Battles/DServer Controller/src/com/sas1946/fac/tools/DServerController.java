@@ -20,9 +20,9 @@ public class DServerController {
     private Label                   lblTickDelayValue;
     private final boolean           authenticated = false;
 
-    CallBack<Void, Integer, String> rConCallback  = new CallBack<Void, Integer, String>() {
+    CallBack<Void, RConClient.RETURN_CODE, String> rConCallback  = new CallBack<Void, RConClient.RETURN_CODE, String>() {
                                                       @Override
-                                                      public Void call(Integer val1, String val2) {
+                                                      public Void call(RConClient.RETURN_CODE val1, String val2) {
                                                           DServerController.this.rConClientCallback(val1, val2);
                                                           return null;
                                                       }
@@ -32,7 +32,7 @@ public class DServerController {
         Display.getDefault().asyncExec(() -> DServerController.this.lblTickDelayValue.setText(Float.toString(TickDelayWatcher.getInstance().getTickDelay())));
     }
 
-    private void rConClientCallback(Integer returnCode, String feedback) {
+    private void rConClientCallback(RConClient.RETURN_CODE returnCode, String feedback) {
         Display.getDefault().asyncExec(() -> {
             DServerController.this.addLog(feedback);
             DServerController.this.handleRConClientCallback(returnCode, feedback);
@@ -48,15 +48,15 @@ public class DServerController {
         });
     }
 
-    private void handleRConClientCallback(int returnCode, String feedback) {
+    private void handleRConClientCallback(RConClient.RETURN_CODE returnCode, String feedback) {
         switch (returnCode) {
 
-            case RConClient.RCONCLIENT_MESSAGE_RECEIVED:
+            case RCONCLIENT_MESSAGE_RECEIVED:
                 this.handleRConClientMessageReceived(RConClient.getInstance().getLastCommand(), feedback);
                 break;
 
-            case RConClient.RCONCLIENT_CONNECTED:
-                RConClient.getInstance().auth(Settings.getInstance().getrConSettings().getUser(), Settings.getInstance().getrConSettings().getPass());
+            case RCONCLIENT_CONNECTED:
+                RConClient.getInstance().sendCommand(RConClient.COMMAND.auth, Settings.getInstance().getrConSettings().getUser(), Settings.getInstance().getrConSettings().getPass());
                 break;
 
             default:
@@ -69,12 +69,43 @@ public class DServerController {
         switch (command) {
             case none:
                 break;
+            case mystatus:
+                RConClient.getInstance().sendCommand(RConClient.COMMAND.serverstatus);
+                break;
             case auth:
-                RConClient.getInstance().spsget();
+                RConClient.getInstance().sendCommand(RConClient.COMMAND.mystatus);
+                break;
+            case getconsole:
+                break;
+            case getplayerlist:
+                break;
+            case serverstatus:
+                RConClient.getInstance().sendCommand(RConClient.COMMAND.spsget);
+                break;
+            case kick:
+                break;
+            case ban:
+                break;
+            case banuser:
+                break;
+            case unbanall:
+                break;
+            case serverinput:
+                break;
+            case sendstatnow:
+                break;
+            case cutchatlog:
+                break;
+            case chatmsg:
+                break;
+            case opensds:
                 break;
             case spsget:
-                //RConClient.getInstance().spsget();
+                RConClient.getInstance().sendCommand(RConClient.COMMAND.getplayerlist);
                 break;
+            case spsreset:
+                break;
+            case shutdown:
             default:
                 break;
         }
