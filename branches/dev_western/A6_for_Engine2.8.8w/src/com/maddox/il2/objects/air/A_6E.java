@@ -38,6 +38,7 @@ public class A_6E extends A_6fuelReceiver
         counterFlareList.clear();
         counterChaffList.clear();
         for(int i = 0; i < FM.CT.Weapons.length; i++)
+        {
             if(FM.CT.Weapons[i] != null)
             {
                 for(int j = 0; j < FM.CT.Weapons[i].length; j++)
@@ -54,9 +55,13 @@ public class A_6E extends A_6fuelReceiver
                             super.bHasPaveway = true;
                             FM.bNoDiveBombing = true;
                         }
+                        else if(FM.CT.Weapons[i][j] instanceof RocketGunAGM65E_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof RocketGunAGM123A_gn16)
+                            super.bHasLAGM = true;
                     }
 
             }
+        }
     }
 
     private void checkChangeWeaponColors()
