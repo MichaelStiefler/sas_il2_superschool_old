@@ -74,6 +74,7 @@ public class A_6 extends Scheme2
         ts = false;
         ictl = false;
         hasHydraulicPressure = true;
+        isGeneratorAlive = true;
         radarmode = 0;
         targetnum = 0;
         lockrange = 0.04F;
@@ -125,11 +126,13 @@ public class A_6 extends Scheme2
         bObserverKilled = false;
         Flaps = false;
         antiColLight = new Eff3DActor[6];
+        oldAntiColLight = false;
         arrestor = 0.0F;
         engineOilPressurePSI = new float[2];
         laserSpotPos = new Point3d();
         laserTimer = -1L;
         counter = 0;
+        lastDisplayTime = -1L;
         freq = 800;
         Timer1 = Timer2 = freq;
         error = 0;
@@ -707,6 +710,7 @@ public class A_6 extends Scheme2
         if(FM.EI.engines[0].getStage() < 6 && FM.EI.engines[1].getStage() < 6 && FM.Gears.nOfGearsOnGr > 0)
         {
             hasHydraulicPressure = false;
+            isGeneratorAlive = false;
             FM.CT.bHasAileronControl = false;
             FM.CT.bHasElevatorControl = false;
             FM.CT.AirBrakeControl = 0.0F;
@@ -714,6 +718,7 @@ public class A_6 extends Scheme2
         if(!hasHydraulicPressure)
         {
             hasHydraulicPressure = true;
+            isGeneratorAlive = true;
             FM.CT.bHasAileronControl = true;
             FM.CT.bHasElevatorControl = true;
             FM.CT.bHasAirBrakeControl = true;
@@ -805,14 +810,16 @@ public class A_6 extends Scheme2
     {
         super.rareAction(f, flag);
 
-        if(FM.actor == World.getPlayerAircraft())
+        if(FM.actor == World.getPlayerAircraft() && lastDisplayTime != Time.current())
         {
-            if(counter++ % 17 == 0)
+            counter++;
+            if(counter % 17 == 0)
                 InertialNavigation();
-            if(counter++ % 10 == 0)
+            if(counter % 10 == 0)
                 GroundRadar();
-            if(counter++ % 10 == 5)
+            if(counter % 10 == 5)
                 NavyRadar();
+            lastDisplayTime = Time.current();
         }
         boolean bSideDoorOccupy = false;
         if(FM.CT.bHasSideDoor && FM.CT.bMoveSideDoor)
@@ -876,7 +883,7 @@ public class A_6 extends Scheme2
             if(ft == 0.0F)
                 UpdateLightIntensity();
         }
-        if(bHasLaser)
+        if(bHasLaser && FM.actor == World.getPlayerAircraft())
         {
             if(FLIR)
                 FLIR();
@@ -915,10 +922,15 @@ public class A_6 extends Scheme2
 
             if(!((Maneuver)FM).hasBombs() && !((Maneuver)FM).hasRockets() && FM.AP.way.curr().Action == 3)
             {
-                FM.AP.way.next();
-                FM.bSkipGroundAttack = true;
-                ((Maneuver)FM).target_ground = null;
-                ((Maneuver)FM).set_maneuver(0);
+                if(lAIGAskipTimer > 0L && Time.current() > lAIGAskipTimer)
+                {
+                    FM.AP.way.next();
+                    FM.bSkipGroundAttack = true;
+                    ((Maneuver)FM).target_ground = null;
+                    ((Maneuver)FM).set_maneuver(0);
+                }
+                else
+                    lAIGAskipTimer = Time.current() + 20000L;
             }
         }
 
@@ -937,18 +949,18 @@ public class A_6 extends Scheme2
             LastOxygenUseTime = -1L;
         }
 
-        if((bHasPaveway || FM.bNoDiveBombing) && Time.current() - tLastLGBcheck > 30000L && (FM instanceof Maneuver))
+        if((bHasLAGM || bHasPaveway || FM.bNoDiveBombing) && Time.current() - tLastLGBcheck > 30000L && (FM instanceof Maneuver))
         {
             if(!((Maneuver)FM).hasBombs())
             {
                 bHasPaveway = false;
                 FM.bNoDiveBombing = false;
             }
-            else
+            else if(bHasPaveway || FM.bNoDiveBombing)
             {
                 boolean bTempNoGBU = true;
                 boolean bTempNoJDAM = true;
-                for(int i = 0; i < FM.CT.Weapons.length && bTempNoGBU && bTempNoJDAM; i++)
+                for(int i = 3; i < 4 && bTempNoGBU && bTempNoJDAM; i++)
                     if(FM.CT.Weapons[i] != null)
                     {
                         for(int j = 0; j < FM.CT.Weapons[i].length && bTempNoGBU && bTempNoJDAM; j++)
@@ -968,6 +980,27 @@ public class A_6 extends Scheme2
                     bHasPaveway = false;
                 if(bTempNoGBU && bTempNoJDAM)
                     FM.bNoDiveBombing = false;
+            }
+            if(!((Maneuver)FM).hasRockets())
+            {
+                bHasLAGM = false;
+            }
+            else if(bHasLAGM)
+            {
+                boolean bTempNoLAGM = true;
+                for(int i = 2; i < FM.CT.Weapons.length && bTempNoLAGM; i++)
+                    if(FM.CT.Weapons[i] != null)
+                    {
+                        for(int j = 0; j < FM.CT.Weapons[i].length && bTempNoLAGM; j++)
+                            if(FM.CT.Weapons[i][j].haveBullets())
+                            {
+                                if(FM.CT.Weapons[i][j] instanceof RocketGunAGM65E_gn16 ||
+                                   FM.CT.Weapons[i][j] instanceof RocketGunAGM123A_gn16)
+                                    bTempNoLAGM = false;
+                            }
+                    }
+                if(bTempNoLAGM)
+                    bHasLAGM = false;
             }
             tLastLGBcheck = Time.current();
         }
@@ -1859,11 +1892,33 @@ public class A_6 extends Scheme2
             obsLookElevation = Aircraft.cvt(obsMove, 0.0F, obsMoveTot, obsElevationOld, obsElevation);
             hierMesh().chunkSetAngles("Head2_D0", 0.0F, obsLookAzimuth, obsLookElevation);
         }
-        if(bHasLaser)
+        if(bHasLaser && FM.actor == World.getPlayerAircraft())
         {
             if(FLIR)
                 laser(getLaserSpot());
             updatecontrollaser();
+        }
+        if(bHasLaser && FM.actor != World.getPlayerAircraft() && FM instanceof Maneuver)
+        {
+            if((bHasLAGM || bHasPaveway) && FM.AP.way.curr().Action == 3 && ((Maneuver)FM).target_ground != null && !bAILaserOn)
+            {
+                bAILaserOn = true;
+                setLaserOn(true);
+            }
+            else if(bAILaserOn)
+            {
+                if(lAILaserTimer > 0L && Time.current() > lAILaserTimer)
+                {
+                    bAILaserOn = false;
+                    setLaserOn(false);
+                }
+                else
+                    lAILaserTimer = Time.current() + 20000L;
+            }
+            if(bAILaserOn && ((Maneuver)FM).target_ground != null && ((Maneuver)FM).target_ground.pos != null && Actor.isValid(((Maneuver)FM).target_ground))
+            {
+                setLaserSpot(((Maneuver)FM).target_ground.pos.getAbsPoint());
+            }
         }
         engineSurge(f);
         typeFighterAceMakerRangeFinder();
@@ -1891,7 +1946,7 @@ public class A_6 extends Scheme2
             FM.CT.bHasCockpitDoorControl = false;
         else
             FM.CT.bHasCockpitDoorControl = true;
-        anticollight();
+        anticollights();
         computeEngineOilPressure();
     }
 
@@ -2836,46 +2891,6 @@ public class A_6 extends Scheme2
 
     private void LimitMovings()
     {
-/*        if(FM.CT.FlapsControl > 0.01F)
-        {
-            if(FM.CT.ElevatorControl < -0.125F) FM.CT.ElevatorControl = -0.125F;
-            if(FM.CT.trimElevator < -0.12F) FM.CT.trimElevator = -0.12F;
-            if(FM.CT.getTrimElevatorControl() < -0.12F) FM.CT.setTrimElevatorControl(-0.12F);
-//            if(FM.CT.ElevatorControl < -0.0625F) FM.CT.ElevatorControl = -0.0625F;
-//            if(FM.CT.trimElevator < -0.06F) FM.CT.trimElevator = -0.06F;
-//            if(FM.CT.getTrimElevatorControl() < -0.06F) FM.CT.setTrimElevatorControl(-0.06F);
-        }
-        else if(FM.Gears.nOfGearsOnGr > 2)
-        {
-            if(FM.CT.ElevatorControl < -0.125F) FM.CT.ElevatorControl = -0.125F;
-            if(FM.CT.trimElevator < -0.12F) FM.CT.trimElevator = -0.12F;
-            if(FM.CT.getTrimElevatorControl() < -0.12F) FM.CT.setTrimElevatorControl(-0.12F);
-//            if(FM.CT.ElevatorControl < -0.0625F) FM.CT.ElevatorControl = -0.0625F;
-//            if(FM.CT.trimElevator < -0.06F) FM.CT.trimElevator = -0.06F;
-//            if(FM.CT.getTrimElevatorControl() < -0.06F) FM.CT.setTrimElevatorControl(-0.06F);
-            if(FM.CT.ElevatorControl > 0.39584F) FM.CT.ElevatorControl = 0.39584F;
-            if(FM.CT.trimElevator > 0.38F) FM.CT.trimElevator = 0.38F;
-            if(FM.CT.getTrimElevatorControl() > 0.38F) FM.CT.setTrimElevatorControl(0.38F);
-        }
-        else
-        {
-            if(FM.CT.RudderControl < -0.11429F) FM.CT.RudderControl = -0.11429F;
-            if(FM.CT.trimRudder < -0.11F) FM.CT.trimRudder = -0.11F;
-            if(FM.CT.getTrimRudderControl() < -0.11F) FM.CT.setTrimRudderControl(-0.11F);
-            if(FM.CT.RudderControl > 0.11429F) FM.CT.RudderControl = 0.11429F;
-            if(FM.CT.trimRudder > 0.11F) FM.CT.trimRudder = 0.11F;
-            if(FM.CT.getTrimRudderControl() > 0.11F) FM.CT.setTrimRudderControl(0.11F);
-            if(FM.CT.ElevatorControl < -0.125F) FM.CT.ElevatorControl = -0.125F;
-            if(FM.CT.trimElevator < -0.12F) FM.CT.trimElevator = -0.12F;
-            if(FM.CT.getTrimElevatorControl() < -0.12F) FM.CT.setTrimElevatorControl(-0.12F);
-//            if(FM.CT.ElevatorControl < -0.0625F) FM.CT.ElevatorControl = -0.0625F;
-//            if(FM.CT.trimElevator < -0.06F) FM.CT.trimElevator = -0.06F;
-//            if(FM.CT.getTrimElevatorControl() < -0.06F) FM.CT.setTrimElevatorControl(-0.06F);
-            if(FM.CT.ElevatorControl > 0.39584F) FM.CT.ElevatorControl = 0.39584F;
-            if(FM.CT.trimElevator > 0.39F) FM.CT.trimElevator = 0.39F;
-            if(FM.CT.getTrimElevatorControl() > 0.39F) FM.CT.setTrimElevatorControl(0.39F);
-        }
-*/
         if(FM.CT.getPowerControl() > 1.0F)
         {
             FM.CT.setPowerControl(1.0F);
@@ -2900,10 +2915,11 @@ public class A_6 extends Scheme2
         }
     }
 
-    private void anticollight()
+    private void anticollights()
     {
-        if(FM.CT.bAntiColLights)
+        if(FM.CT.bAntiColLights && isGeneratorAlive && !oldAntiColLight)
         {
+            char postfix = (char)('A' + World.Rnd().nextInt(0, 5));
             for(int i = 0; i < 6; i++)
             {
                 if(antiColLight[i] == null)
@@ -2911,21 +2927,23 @@ public class A_6 extends Scheme2
                     try
                     {
                         if(bEA6B)
-                            antiColLight[i] = Eff3DActor.New(this, findHook("_AntiColLight" + Integer.toString(i + 1)), new Loc(), 1.0F, "3DO/Effects/Fireworks/FlareRedFlash2.eff", -1.0F, false);
+                            antiColLight[i] = Eff3DActor.New(this, findHook("_AntiColLight" + Integer.toString(i + 1)), new Loc(), 1.0F, "3DO/Effects/Fireworks/FlareRedFlash2_" + String.valueOf(postfix) + ".eff", -1.0F, false);
                         else
-                            antiColLight[i] = Eff3DActor.New(this, findHook("_AntiColLight" + Integer.toString(i + 1)), new Loc(), 1.0F, "3DO/Effects/Fireworks/FlareRedFlash.eff", -1.0F, false);
+                            antiColLight[i] = Eff3DActor.New(this, findHook("_AntiColLight" + Integer.toString(i + 1)), new Loc(), 1.0F, "3DO/Effects/Fireworks/FlareRedFlash_" + String.valueOf(postfix) + ".eff", -1.0F, false);
                     } catch(Exception excp) {}
                 }
             }
+            oldAntiColLight = true;
         }
-        else
+        else if((!FM.CT.bAntiColLights || !isGeneratorAlive) && oldAntiColLight)
         {
             for(int i = 0; i < 6; i++)
-              if(antiColLight[i] != null)
-              {
-                  Eff3DActor.finish(antiColLight[i]);
-                  antiColLight[i] = null;
-              }
+                if(antiColLight[i] != null)
+                {
+                    Eff3DActor.finish(antiColLight[i]);
+                    antiColLight[i] = null;
+                }
+            oldAntiColLight = false;
         }
     }
 
@@ -3098,6 +3116,7 @@ public class A_6 extends Scheme2
     public int LockState = 0;
     static Actor hunted = null;
     public boolean hasHydraulicPressure;
+    public boolean isGeneratorAlive;
     private static final float NEG_G_TOLERANCE_FACTOR = 2.5F;
     private static final float NEG_G_TIME_FACTOR = 2.5F;
     private static final float NEG_G_RECOVERY_FACTOR = 2.0F;
@@ -3155,6 +3174,7 @@ public class A_6 extends Scheme2
     private boolean bHasLaser;
     private float stockDragAirbrake;
     private Eff3DActor antiColLight[];
+    private boolean oldAntiColLight;
     public static float FlowRate = 10F;
     public static float FuelReserve = 1500F;
     private float arrestor;
@@ -3169,6 +3189,10 @@ public class A_6 extends Scheme2
     public long laserTimer;
     private boolean bLGBengaged = false;
     public boolean bHasPaveway = false;
+    public boolean bHasLAGM = false;
+    private boolean bAILaserOn = false;
+    private long lAILaserTimer = -1L;
+    private long lAIGAskipTimer = -1L;
     private static float maxPavewayFOVfrom = 45.0F;
     private static double maxPavewayDistance = 20000D;
     private long tLastLGBcheck = -1L;
@@ -3176,6 +3200,7 @@ public class A_6 extends Scheme2
     public float Timer2;
     private int freq;
     private int counter;
+    private long lastDisplayTime;
     private int error;
     protected boolean bHasSK1Seat;
 
