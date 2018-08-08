@@ -1,4 +1,4 @@
-package com.sas1946.fac.tools;
+package com.sas1946.fac.tools.dservercontroller;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
