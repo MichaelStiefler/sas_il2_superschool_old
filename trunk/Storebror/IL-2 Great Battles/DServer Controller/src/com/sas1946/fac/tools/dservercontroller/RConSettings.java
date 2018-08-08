@@ -1,4 +1,4 @@
-package com.sas1946.fac.tools;
+package com.sas1946.fac.tools.dservercontroller;
 
 public class RConSettings {
     private String address;
