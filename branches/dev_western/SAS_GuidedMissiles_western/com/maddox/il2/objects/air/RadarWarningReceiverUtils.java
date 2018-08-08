@@ -1,6 +1,6 @@
 // Source File Name: RadarWarningReceiverUtils.java
 // Author:		   western0221
-// Last Modified by: western0221 on 23rd/Jun./2018
+// Last Modified by: western0221 on 08th/Aug./2018
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.*;
@@ -215,7 +215,7 @@ public class RadarWarningReceiverUtils {
 		String s = actor.getClass().getName();
 		int i = s.lastIndexOf('.');
 		String strSection = s.substring(i + 1);
-		strSection =  strSection + '@' + Integer.toHexString(actor.hashCode());
+		strSection = strSection + '@' + Integer.toHexString(actor.hashCode());
 		return strSection;
 	}
 
@@ -297,19 +297,21 @@ public class RadarWarningReceiverUtils {
 
 	private void initParams(Actor theOwner) {
 		this.initCommon();
-		if(theOwner instanceof Aircraft) {
+		if(theOwner instanceof Aircraft && Actor.isValid(theOwner) && theOwner instanceof TypeRadarWarningReceiver) {
 			this.rwrOwner = theOwner;
-			this.FM = ((Aircraft) theOwner).FM;
+			if(((Aircraft) theOwner).FM != null)
+				this.FM = ((Aircraft) theOwner).FM;
 		}
 	}
 
 	private void initParams(Actor theOwner, int theGen, int theMaxDetectRadarNum, int theKeepSeconds, double theReceiveElevationDegrees,
 							boolean theAbleDetectIRmissiles, boolean theAbleDetectElevation, boolean theShowTextWarning) {
 		this.initCommon();
-		if(theOwner instanceof Aircraft && theOwner instanceof TypeRadarWarningReceiver) {
+		if(theOwner instanceof Aircraft && Actor.isValid(theOwner) && theOwner instanceof TypeRadarWarningReceiver) {
 			this.rwrOwner = theOwner;
 			this.rwrGeneration = theGen;
-			this.FM = ((Aircraft) theOwner).FM;
+			if(((Aircraft) theOwner).FM != null)
+				this.FM = ((Aircraft) theOwner).FM;
 			this.maxDetectRadarNum = theMaxDetectRadarNum;
 			this.keepMiliseconds = (long) theKeepSeconds * 1000L;
 			this.receiveElevationDegrees = theReceiveElevationDegrees;
@@ -569,8 +571,21 @@ public class RadarWarningReceiverUtils {
 	public void update() {
 		if(lastRWRUpdateTime == Time.current()) return;
 
+		if(this.rwrOwner == null)
+		{
+			try {
+				System.out.println("ERROR - RadarWarningReceiverUtils.class: rwrOwner value is not set till update() method is called.");
+				throw new Exception();
+			} catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		if(!Actor.isValid(this.rwrOwner)) return;
 		Aircraft ownerAircraft = (Aircraft) this.rwrOwner;
-		this.FM = ownerAircraft.FM;
+		if(this.FM == null && ownerAircraft.FM != null)
+			this.FM = ownerAircraft.FM;
+		if(this.FM == null) return;
 
 		RWRMissileLaunchWarning();
 		RWRRadarLockWarning();
@@ -623,7 +638,7 @@ public class RadarWarningReceiverUtils {
 		Actor actor = null;
 		for(int i = 0; i < mislist.size(); i++)
 		{
-   			actor = (Actor)mislist.get(i);
+			actor = (Actor)mislist.get(i);
 			if((actor instanceof Missile) && actor.getSpeed(vector3d) > 20D && !this.ignoreMissileList.contains(actor)
 			   && ((Missile)actor).getMissileTarget() == this.rwrOwner)
 			{
@@ -644,7 +659,7 @@ public class RadarWarningReceiverUtils {
 		double tempDistance = 0.0D;
 		for(int i = 0; i < missileHuntMe.size(); i++)
 		{
-   			Missile missile = (Missile)missileHuntMe.get(i);
+			Missile missile = (Missile)missileHuntMe.get(i);
 			dt = missile.getDetectorType();
 				// DETECTOR_TYPE_RADAR_HOMING = 2
 				// DETECTOR_TYPE_RADAR_BEAMRIDING = 3
@@ -655,7 +670,7 @@ public class RadarWarningReceiverUtils {
 				double zDiff = 0.0D;
 				double elevDegree = 0.0D;
 				if(tempDistance > 0D) {
-					zDiff = missile.pos.getAbsPoint().z - this.FM.Loc.z;
+					zDiff = missile.pos.getAbsPoint().z - this.rwrOwner.pos.getAbsPoint().z;
 					elevDegree = Math.toDegrees(Math.atan(Math.abs(zDiff) / tempDistance));
 					if((this.iDebugLogLevel & 1) > 0)
 						System.out.println(sDebugPlaneName + "RWRUtils: " + actorString(missile) + " 's elevation=" + Math.floor(elevDegree * 1000D) * 0.001D + " deg.");
@@ -717,7 +732,7 @@ public class RadarWarningReceiverUtils {
 				double zDiff = 0.0D;
 				double elevDegree = 0.0D;
 				if(tempDistance > 0D) {
-					zDiff = missile.pos.getAbsPoint().z - this.FM.Loc.z;
+					zDiff = missile.pos.getAbsPoint().z - this.rwrOwner.pos.getAbsPoint().z;
 					elevDegree = Math.toDegrees(Math.atan(Math.abs(zDiff) / tempDistance));
 					if((this.iDebugLogLevel & 2) > 0)
 						System.out.println(sDebugPlaneName + "RWRUtils: " + actorString(missile) + " 's elevation=" + Math.floor(elevDegree * 1000D) * 0.001D + " deg. , " + (int)tempDistance + " meters. RocketFiring=" + missile.getRocketFiring());
@@ -798,7 +813,7 @@ public class RadarWarningReceiverUtils {
 		Collections.sort(this.IRmissiles);
 		missileListExpire();
 
-		if(this.FM.isTick(12, 0) && bShowTextWarning && (this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode() || !(this.FM instanceof Pilot))
+		if(bShowTextWarning && (this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode() && !(this.FM instanceof Pilot) && this.FM.isTick(12, 0))
 		{
 			for(int j = 0; j < this.RHmissiles.size(); j++)
 			{
@@ -806,7 +821,7 @@ public class RadarWarningReceiverUtils {
 				if(!tempRrwrdata.bFinalWarned && tempRrwrdata.distance < 1800D && tempRrwrdata.distance > 0D)
 				{
 					String sElev = "";
-					double zDiff = tempRrwrdata.actor.pos.getAbsPoint().z - this.FM.Loc.z;
+					double zDiff = tempRrwrdata.actor.pos.getAbsPoint().z - this.rwrOwner.pos.getAbsPoint().z;
 					double elevDegree = Math.toDegrees(Math.atan(Math.abs(zDiff) / tempRrwrdata.distance));
 					if(this.bAbleDetectElevation) {
 						if(elevDegree > 15.0D) {
@@ -901,7 +916,7 @@ public class RadarWarningReceiverUtils {
 		}
 
 		// RIO message is always shown in ignoring bAbleDetectIRmissiles flag.
-		if(this.IRmissiles.size() > 0 && this.FM.isTick(24, 6) && this.FM.crew > 1 && (this.FM.isPlayers() && (this.FM instanceof RealFlightModel) && ((RealFlightModel)this.FM).isRealMode()) || !(this.FM instanceof Maneuver))
+		if(this.IRmissiles.size() > 0 && this.FM != null && (this.FM.isPlayers() && (this.FM instanceof RealFlightModel) && ((RealFlightModel)this.FM).isRealMode()) || !(this.FM instanceof Maneuver) && this.FM.crew > 1 && this.FM.isTick(24, 6))
 		{
 			for(int i = 0; i < this.IRmissiles.size(); i++)
 			{
@@ -911,7 +926,7 @@ public class RadarWarningReceiverUtils {
 			if(tempRrwrdata.distance < 1800D && ((Missile)tempRrwrdata.actor).getRocketFiring() && tempRrwrdata.firstDetectTime < Time.current() && TrueRandom.nextFloat() < 0.20F * CrewHealthSummaryWithoutPilot())
 			{
 				String sElev = "";
-				double zDiff = tempRrwrdata.actor.pos.getAbsPoint().z - this.FM.Loc.z;
+				double zDiff = tempRrwrdata.actor.pos.getAbsPoint().z - this.rwrOwner.pos.getAbsPoint().z;
 				double elevDegree = Math.toDegrees(Math.atan(Math.abs(zDiff) / tempRrwrdata.distance));
 				if(elevDegree > 15.0D) {
 					if(zDiff > 0D) sElev = "Above ";
@@ -954,7 +969,7 @@ public class RadarWarningReceiverUtils {
 		for(int i = 0; i < list.size(); i++)
 		{
 			boolean bRecorded = false;
-   			actor = (Actor)list.get(i);
+			actor = (Actor)list.get(i);
 			if((actor instanceof TypeGuidedMissileCarrier) && actor.getArmy() != this.rwrOwner.getArmy())
 			{
 				if((this.iDebugLogLevel & 4) > 0)
@@ -1004,12 +1019,12 @@ public class RadarWarningReceiverUtils {
 		double tempDistance = 0.0D;
 		for(int i = 0; i < radarLockMe.size(); i++)
 		{
-   			Actor tact = (Actor)radarLockMe.get(i);
+			Actor tact = (Actor)radarLockMe.get(i);
 			tempDistance = distanceBetween(this.rwrOwner, tact);
 			double zDiff = 0.0D;
 			double elevDegree = 0.0D;
 			if(tempDistance > 0D) {
-				zDiff = tact.pos.getAbsPoint().z - this.FM.Loc.z;
+				zDiff = tact.pos.getAbsPoint().z - this.rwrOwner.pos.getAbsPoint().z;
 				elevDegree = Math.toDegrees(Math.atan(Math.abs(zDiff) / tempDistance));
 				if((this.iDebugLogLevel & 4) > 0)
 					System.out.println(sDebugPlaneName + "RWRUtils: " + actorString(tact) + " 's elevation=" + Math.floor(elevDegree * 1000D) * 0.001D + " deg.");
@@ -1081,7 +1096,7 @@ public class RadarWarningReceiverUtils {
 		Collections.sort(this.radarsLock);
 		radarLockListExpire();
 
-		if(this.FM.isTick(600, 10) && this.radarsLock.size() > 0 && bShowTextWarning && (this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode() || !(this.FM instanceof Pilot))
+		if(this.radarsLock.size() > 0 && bShowTextWarning && (this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode() && !(this.FM instanceof Pilot) && this.FM.isTick(600, 10))
 		{
 			LocalLog(this.rwrOwner, AircraftHotKeys.hudLogWeaponId, "Total " + this.radarsLock.size() + " Radars Locking Me !");
 		}
@@ -1120,7 +1135,7 @@ public class RadarWarningReceiverUtils {
 		Collections.sort(this.radars);
 		radarListExpire();
 
-		if(this.FM.isTick(600, 310) && this.radars.size() > 0 && bShowTextWarning && (this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode() || !(this.FM instanceof Pilot))
+		if(this.radars.size() > 0 && bShowTextWarning && (this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode() && !(this.FM instanceof Pilot) && this.FM.isTick(600, 310))
 		{
 			LocalLog(this.rwrOwner, AircraftHotKeys.hudLogWeaponId, "Total " + this.radars.size() + " Radars Searching Me !");
 		}
@@ -1169,7 +1184,7 @@ public class RadarWarningReceiverUtils {
 		double zDiff = 0.0D;
 		double elevDegree = 0.0D;
 		if(tempDistance > 0D) {
-			zDiff = actor.pos.getAbsPoint().z - this.FM.Loc.z;
+			zDiff = actor.pos.getAbsPoint().z - this.rwrOwner.pos.getAbsPoint().z;
 			elevDegree = Math.toDegrees(Math.atan(Math.abs(zDiff) / tempDistance));
 			if((this.iDebugLogLevel & 4) > 0)
 				System.out.println(sDebugPlaneName + "RWRUtils: " + actorString(actor) + " 's elevation=" + Math.floor(elevDegree * 1000D) * 0.001D + " deg.");
@@ -1255,7 +1270,7 @@ public class RadarWarningReceiverUtils {
 		double zDiff = 0.0D;
 		double elevDegree = 0.0D;
 		if(tempDistance > 0D) {
-			zDiff = actor.pos.getAbsPoint().z - this.FM.Loc.z;
+			zDiff = actor.pos.getAbsPoint().z - this.rwrOwner.pos.getAbsPoint().z;
 			elevDegree = Math.toDegrees(Math.atan(Math.abs(zDiff) / tempDistance));
 			if((this.iDebugLogLevel & 8) > 0)
 				System.out.println(sDebugPlaneName + "RWRUtils: " + actorString(actor) + " 's elevation=" + Math.floor(elevDegree * 1000D) * 0.001D + " deg.");
