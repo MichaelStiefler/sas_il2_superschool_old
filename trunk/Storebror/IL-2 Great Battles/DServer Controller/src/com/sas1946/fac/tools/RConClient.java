@@ -71,9 +71,7 @@ public class RConClient {
     
     public void sendCommand(COMMAND command, String... params) {
         this.lastCommand = command;
-        StringBuilder sb = new StringBuilder(command.name());
-        Arrays.stream(params).forEach(s -> sb.append(" " + s));
-        RConClient.this.doStartWrite(this.rConSockChannel, sb.toString());
+        RConClient.this.doStartWrite(this.rConSockChannel, Arrays.stream(params).reduce(command.name(), (s, u) -> s + " " + u));
     }
     
     public void connect(String host, int port) {
