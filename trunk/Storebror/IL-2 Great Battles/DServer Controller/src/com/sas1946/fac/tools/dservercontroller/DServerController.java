@@ -133,6 +133,8 @@ public class DServerController {
         this.createContents();
         this.shlDserverController.open();
         this.shlDserverController.layout();
+        
+        MySqlConnector mySqlConnector = MySqlConnector.getInstance();
 
         TickDelayWatcher.getInstance().setTickDelayUpdateCallback(() -> this.tickDelayWatcherCallback());
         RConClient.getInstance().setRConCallback(this.rConCallback);
