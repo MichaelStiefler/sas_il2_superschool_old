@@ -2,13 +2,30 @@ package com.sas1946.fac.tools.dservercontroller;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 
 public class RConClient {
     
+    private class RConClientTimer extends TimerTask {
+        @Override
+        public void run() {
+            RConClient.this.update();
+        }
+    }
+
     public static enum RETURN_CODE {
         RCONCLIENT_WRITE_ERROR(-3),
         RCONCLIENT_READ_ERROR(-2),
@@ -37,6 +54,12 @@ public class RConClient {
     private AsynchronousSocketChannel       rConSockChannel;
     private CallBack<Void, RETURN_CODE, String> rConCallback;
     private COMMAND                         lastCommand;
+    private AtomicBoolean                   readyForSend;
+    private AtomicBoolean                   connected;
+    private List<COMMAND>                   updateCommands;
+    private int                             curCommand;
+    private int                             timeout;
+    private Timer                           timer;
 
     private RConClient() {
     }
@@ -71,10 +94,11 @@ public class RConClient {
     
     public void sendCommand(COMMAND command, String... params) {
         this.lastCommand = command;
-        RConClient.this.doStartWrite(this.rConSockChannel, Arrays.stream(params).reduce(command.name(), (s, u) -> s + " " + u));
+        RConClient.this.doStartWrite(this.rConSockChannel, Stream.concat(Stream.of(command.name()), Arrays.stream(params)).collect(Collectors.joining(" ")));
     }
     
     public void connect(String host, int port) {
+        if (this.connected.get()) return;
         try {
             this.doConnect(host, port);
         } catch (final IOException e) {
@@ -85,18 +109,22 @@ public class RConClient {
     private void doConnect(String host, int port) throws IOException {
 
         final AsynchronousSocketChannel sockChannel = AsynchronousSocketChannel.open();
+        sockChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
 
         sockChannel.connect(new InetSocketAddress(host, port), sockChannel, new CompletionHandler<Void, AsynchronousSocketChannel>() {
             @Override
             public void completed(Void result, AsynchronousSocketChannel channel) {
                 RConClient.this.callback(RETURN_CODE.RCONCLIENT_CONNECTED, "remote console connected");
                 RConClient.this.rConSockChannel = channel;
-
+                RConClient.this.readyForSend.set(true);
+                RConClient.this.connected.set(true);
                 RConClient.this.doStartRead(channel);
             }
 
             @Override
             public void failed(Throwable exc, AsynchronousSocketChannel channel) {
+                RConClient.this.readyForSend.set(false);
+                RConClient.this.connected.set(false);
                 RConClient.this.callback(RETURN_CODE.RCONCLIENT_CONNECTION_FAILED, "failed to connect to remote console");
                 RConClient.this.rConSockChannel = null;
             }
@@ -120,6 +148,7 @@ public class RConClient {
                     for (int i = 0; i < len; i++) {
                         message.append((char) buf.get());
                     }
+                    RConClient.this.readyForSend.set(true);
                     RConClient.this.callback(RETURN_CODE.RCONCLIENT_MESSAGE_RECEIVED, "Read message:" + message);
                 } else {
                     RConClient.this.callback(RETURN_CODE.RCONCLIENT_WAITING, "waiting...");
@@ -129,6 +158,8 @@ public class RConClient {
 
             @Override
             public void failed(Throwable exc, AsynchronousSocketChannel channel) {
+                RConClient.this.readyForSend.set(false);
+                RConClient.this.connected.set(false);
                 RConClient.this.callback(RETURN_CODE.RCONCLIENT_READ_ERROR, "fail to read message from server");
             }
 
@@ -146,6 +177,7 @@ public class RConClient {
         buf.put((byte) 0);
 
         buf.flip();
+        RConClient.this.readyForSend.set(false);
         sockChannel.write(buf, sockChannel, new CompletionHandler<Integer, AsynchronousSocketChannel>() {
             @Override
             public void completed(Integer result, AsynchronousSocketChannel channel) {
@@ -154,15 +186,46 @@ public class RConClient {
 
             @Override
             public void failed(Throwable exc, AsynchronousSocketChannel channel) {
+                RConClient.this.readyForSend.set(false);
+                RConClient.this.connected.set(false);
                 RConClient.this.callback(RETURN_CODE.RCONCLIENT_WRITE_ERROR, "Fail to write the message to server");
             }
         });
     }
+    
+    private void update() {
+        this.sendCommand(this.updateCommands.get(curCommand++));
+        if (curCommand >= this.updateCommands.size()) curCommand = 0;
+    }
+    
+    public void setUpdateCommand(List <COMMAND> updateCommands) {
+        Collections.copy(this.updateCommands, updateCommands);
+    }
 
+    public void addUpdateCommand(COMMAND command, boolean restartTimer) {
+        if (restartTimer) this.stopTimer();
+        this.updateCommands.add(command);
+        if (restartTimer) this.startTimer();
+    }
+
+    public void stopTimer() {
+        timer.cancel();
+    }
+
+    public void startTimer() {
+        timer.schedule(new RConClientTimer(), 100, this.timeout / this.updateCommands.size());
+    }
+    
     static {
         instance = new RConClient();
         instance.lastCommand = COMMAND.none;
         instance.rConSockChannel = null;
+        instance.readyForSend = new AtomicBoolean();
+        instance.connected = new AtomicBoolean();
+        instance.updateCommands = new ArrayList<COMMAND>(Arrays.asList(COMMAND.getplayerlist, COMMAND.spsget));
+        instance.timeout = 1000;
+        instance.timer = new Timer();
+        instance.startTimer();
     }
 
 }

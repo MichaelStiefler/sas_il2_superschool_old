@@ -5,15 +5,17 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 public class DServerController {
 
-    private final static int        MAX_LOG_LINES = 20;
+    private final static int        MAX_LOG_LINES = 14;
     protected Shell                 shlDserverController;
     private final FormToolkit       formToolkit   = new FormToolkit(Display.getDefault());
     private List                    logList;
@@ -80,7 +82,6 @@ public class DServerController {
             case getplayerlist:
                 break;
             case serverstatus:
-                RConClient.getInstance().sendCommand(RConClient.COMMAND.spsget);
                 break;
             case kick:
                 break;
@@ -101,7 +102,6 @@ public class DServerController {
             case opensds:
                 break;
             case spsget:
-                RConClient.getInstance().sendCommand(RConClient.COMMAND.getplayerlist);
                 break;
             case spsreset:
                 break;
@@ -133,6 +133,12 @@ public class DServerController {
         this.createContents();
         this.shlDserverController.open();
         this.shlDserverController.layout();
+        this.shlDserverController.addListener(SWT.Close, new Listener() {
+            public void handleEvent(Event event) {
+                TickDelayWatcher.getInstance().stop();
+                RConClient.getInstance().stopTimer();
+              }
+            });
         
         MySqlConnector mySqlConnector = MySqlConnector.getInstance();
 
