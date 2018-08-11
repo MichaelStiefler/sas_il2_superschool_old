@@ -4,41 +4,90 @@ package com.maddox.il2.objects.air;
 import com.maddox.JGP.*;
 import com.maddox.il2.ai.*;
 import com.maddox.il2.ai.air.*;
+import com.maddox.il2.ai.ground.NearestEnemies;
 import com.maddox.il2.ai.ground.TgtShip;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
-import com.maddox.il2.objects.Wreckage;
+import com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric;
+import com.maddox.il2.objects.vehicles.cars.CarGeneric;
+import com.maddox.il2.objects.ships.BigshipGeneric;
+import com.maddox.il2.objects.ships.ShipGeneric;
+import com.maddox.il2.objects.vehicles.stationary.StationaryGeneric;
+import com.maddox.il2.objects.vehicles.tanks.TankGeneric;
 import com.maddox.il2.objects.sounds.SndAircraft;
-import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.il2.objects.weapons.*;
 import com.maddox.rts.*;
-import com.maddox.sound.*;
 import com.maddox.util.HashMapInt;
 import java.io.IOException;
 import java.util.*;
 
 public class AV_8B extends AV_8
-    implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeDockable, TypeRadarWarningReceiver
+    implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeDockable, TypeRadarWarningReceiver, TypeLaserDesignator, TypeRadar, TypeSemiRadar, TypeGroundRadar
 {
 
     public AV_8B()
     {
+        bSightAutomation = false;
+        bSightBombDump = false;
+        fSightCurDistance = 0.0F;
+        radartoggle = false;
+        radarvrt = 0.0F;
+        radarhol = 0.0F;
+        lockmode = 0;
+        radargunsight = 0;
+        radarmode = 0;
+        radarrange = 1;
+        targetnum = 0;
+        lockrange = 0.04F;
+        t1 = 0L;
+        tangate = 0.0F;
+        azimult = 0.0F;
+        tf = 0L;
+        guidedMissileUtils = new GuidedMissileUtils(this);
         hasChaff = false;
         hasFlare = false;
         lastChaffDeployed = 0L;
         lastFlareDeployed = 0L;
-        guidedMissileUtils = new GuidedMissileUtils(this);
-        removeChuteTimer = -1L;
         counterFlareList = new ArrayList();
         counterChaffList = new ArrayList();
+        laserSpotPos = new Point3d();
+        FLIR = false;
+        bLaserOn = false;
+        laserTimer = -1L;
+        bLGBengaged = false;
+        bHasPaveway = false;
+        bHadLGweapons = false;
+        bAILaserOn = false;
+        lAILaserTimer = -1L;
+        lAIGAskipTimer = -1L;
+        lastLGBcheck = -1L;
+        lastAIMissileSelect = -1L;
+        hold = false;
+        holdFollow = false;
+        actorFollowing = null;;
+        bHasLaser = false;
         bHasAGM = false;
+        bHasLAGM = false;
         bHasAShM = false;
         bHasUGR = false;
         lastAGMcheck = -1L;
-        backfire = false;
+        semiradartarget = null;
+        groundradartarget = null;
         if(Config.cur.ini.get("Mods", "RWRTextStop", 0) > 0) bRWR_Show_Text_Warning = false;
         rwrUtils = new RadarWarningReceiverUtils(this, RWR_GENERATION, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, bRWR_Show_Text_Warning);
+        backfire = false;
+        iDebugLogLevel = 0;
+    }
+
+    private static final float toMeters(float f)
+    {
+        return 0.3048F * f;
+    }
+
+    private static final float toMetersPerSecond(float f)
+    {
+        return 0.4470401F * f;
     }
 
     public long getChaffDeployed()
@@ -107,13 +156,635 @@ public class AV_8B extends AV_8
         rwrUtils.recordRadarLocked(actor, soundpreset);
     }
 
+    public void auxPressed(int i)
+    {
+        super.auxPressed(i);
+        if(i == 20)
+            if(!radartoggle)
+            {
+                radartoggle = true;
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar ON");
+                radarmode = 0;
+            }
+            else
+            {
+                radartoggle = false;
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar OFF");
+            }
+        if(i == 22)
+        {
+            lockmode++;
+            if(lockmode > 1)
+                lockmode = 0;
+        }
+        if(i == 23)
+        {
+            radargunsight++;
+            if(radargunsight > 3)
+                radargunsight = 0;
+            if(radargunsight == 0)
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: funnel");
+            else if(radargunsight == 1)
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Radar ranging");
+            else if(radargunsight == 2)
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Unguided Rocket");
+            else if(radargunsight == 3)
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Ground");
+        }
+        if(i == 26)
+        {
+            if(hold && t1 + 200L < Time.current() && FLIR)
+            {
+                hold = false;
+                holdFollow = false;
+                HUD.log("Laser Pos Unlock");
+                t1 = Time.current();
+            }
+            if(!hold && t1 + 200L < Time.current() && FLIR)
+            {
+                hold = true;
+                holdFollow = false;
+                actorFollowing = null;
+                HUD.log("Laser Pos Lock");
+                t1 = Time.current();
+            }
+            if(!FLIR)
+                setLaserOn(false);
+        }
+        if(i == 27)
+        {
+            if(holdFollow && t1 + 200L < Time.current() && FLIR)
+            {
+                hold = false;
+                holdFollow = false;
+                actorFollowing = null;
+                HUD.log("Laser Track Unlock");
+                t1 = Time.current();
+            }
+            if(!holdFollow && t1 + 200L < Time.current() && FLIR)
+            {
+                hold = false;
+                holdFollow = true;
+                actorFollowing = null;
+                HUD.log("Laser Track Lock");
+                t1 = Time.current();
+            }
+        }
+    }
+
+    private void laser(Point3d point3d)
+    {
+        point3d.z = World.land().HQ(point3d.x, point3d.y);
+        Eff3DActor eff3dactor = Eff3DActor.New(null, null, new Loc(point3d.x, point3d.y, point3d.z, 0.0F, 0.0F, 0.0F), 1.0F, "3DO/Effects/Fireworks/FlareWhiteWide.eff", 0.1F);
+        eff3dactor.postDestroy(Time.current() + 1500L);
+    }
+
+    private void FLIR()
+    {
+        List list = Engine.targets();
+        int i = list.size();
+        for(int j = 0; j < i; j++)
+        {
+            Actor actor = (Actor)list.get(j);
+            if(((actor instanceof Aircraft) || (actor instanceof ArtilleryGeneric) || (actor instanceof CarGeneric) || (actor instanceof TankGeneric)) && !(actor instanceof StationaryGeneric) && !(actor instanceof TypeLaserDesignator) && actor.pos.getAbsPoint().distance(super.pos.getAbsPoint()) < 30000D)
+            {
+                Point3d point3d = new Point3d();
+                Orient orient = new Orient();
+                actor.pos.getAbs(point3d, orient);
+//                flirloc.set(point3d, orient);
+                Eff3DActor eff3dactor = Eff3DActor.New(actor, null, new Loc(), 1.0F, "effects/Explodes/Air/Zenitka/Germ_88mm/Glow.eff", 1.0F);
+                eff3dactor.postDestroy(Time.current() + 1500L);
+                LightPointActor lightpointactor = new LightPointActor(new LightPointWorld(), new Point3d());
+                lightpointactor.light.setColor(1.0F, 0.9F, 0.5F);
+                if(actor instanceof Aircraft)
+                    lightpointactor.light.setEmit(8F, 50F);
+                else if(!(actor instanceof ArtilleryGeneric))
+                    lightpointactor.light.setEmit(5F, 30F);
+                else
+                    lightpointactor.light.setEmit(3F, 10F);
+                ((Actor) (eff3dactor)).draw.lightMap().put("light", lightpointactor);
+            }
+        }
+
+    }
+
+    public void typeBomberAdjDistanceReset()
+    {
+    }
+
+    public void typeBomberAdjDistancePlus()
+    {
+        if(FLIR)
+        {
+            azimult++;
+            tf = Time.current();
+        }
+        else if(radartoggle && lockmode == 0)
+            radarhol += 0.0035F;
+    }
+
+    public void typeBomberAdjDistanceMinus()
+    {
+        if(FLIR)
+        {
+            azimult--;
+            tf = Time.current();
+        }
+        else if(radartoggle && lockmode == 0)
+            radarhol -= 0.0035F;
+    }
+
+    public void typeBomberAdjSideslipReset()
+    {
+        super.vtolSlipY = 0;
+    }
+
+    public void typeBomberAdjSideslipPlus()
+    {
+        if(nozzlemode == 1 && vtolvect > 0.74F)
+        {
+            super.vtolSlipY += 10;
+            if(super.vtolSlipY > 100)
+                super.vtolSlipY = 100;
+            if(super.vtolSlipY == 0)
+                HUD.log("Side Slip Thrust: Neutral");
+            else if(super.vtolSlipY > 0)
+                HUD.log("Side Slip Thrust: Right" + Math.abs(super.vtolSlipY));
+            else
+                HUD.log("Side Slip Thrust: Left" + Math.abs(super.vtolSlipY));
+        }
+        else if(FLIR)
+        {
+            tangate++;
+            tf = Time.current();
+        }
+        else if(radartoggle && lockmode == 0)
+            radarvrt += 0.0035F;
+    }
+
+    public void typeBomberAdjSideslipMinus()
+    {
+        if(nozzlemode == 1 && vtolvect > 0.74F)
+        {
+            super.vtolSlipY -= 10;
+            if(super.vtolSlipY < -100)
+                super.vtolSlipY = -100;
+            if(super.vtolSlipY == 0)
+                HUD.log("Side Slip Thrust: Neutral");
+            else if(super.vtolSlipY > 0)
+                HUD.log("Side Slip Thrust: Right" + Math.abs(super.vtolSlipY));
+            else
+                HUD.log("Side Slip Thrust: Left" + Math.abs(super.vtolSlipY));
+        }
+        else if(FLIR)
+        {
+            tangate--;
+            tf = Time.current();
+        }
+        else if(radartoggle && lockmode == 0)
+            radarvrt -= 0.0035F;
+    }
+
+    public void typeBomberAdjAltitudeReset()
+    {
+        super.vtolSlipX = 0;
+    }
+
+    public void typeBomberAdjAltitudePlus()
+    {
+        if(nozzlemode == 1 && vtolvect > 0.74F)
+        {
+            super.vtolSlipX += 10;
+            if(super.vtolSlipX > 100)
+                super.vtolSlipX = 100;
+            if(super.vtolSlipX == 0)
+                HUD.log("Forward Slip Thrust: Neutral");
+            else if(super.vtolSlipX > 0)
+                HUD.log("Forward Slip Thrust: " + Math.abs(super.vtolSlipX));
+            else
+                HUD.log("Backward Slip Thrust: " + Math.abs(super.vtolSlipX));
+        }
+        else if(FLIR)
+            if(!APmode1)
+            {
+                APmode1 = true;
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Altitude Hold Engaged");
+                FM.AP.setStabAltitude((float)FM.Loc.z);
+            }
+            else if(APmode1)
+            {
+                APmode1 = false;
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Altitude Hold Released");
+                FM.AP.setStabAltitude(false);
+            }
+    }
+
+    public void typeBomberAdjAltitudeMinus()
+    {
+        if(nozzlemode == 1 && vtolvect > 0.74F)
+        {
+            super.vtolSlipX -= 10;
+            if(super.vtolSlipX < -100)
+                super.vtolSlipX = -100;
+            if(super.vtolSlipX == 0)
+                HUD.log("Forward Slip Thrust: Neutral");
+            else if(super.vtolSlipX > 0)
+                HUD.log("Forward Slip Thrust: " + Math.abs(super.vtolSlipX));
+            else
+                HUD.log("Backward Slip Thrust: " + Math.abs(super.vtolSlipX));
+        }
+    }
+
+    public void typeBomberAdjSpeedReset()
+    {
+    }
+
+    public void typeBomberAdjSpeedPlus()
+    {
+        radarrange++;
+        if(radarrange > 5)
+            radarrange = 5;
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar range " + radarrange);
+    }
+
+    public void typeBomberAdjSpeedMinus()
+    {
+        radarrange--;
+        if(radarrange < 1)
+            radarrange = 1;
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar range " + radarrange);
+    }
+
+    public void typeBomberUpdate(float f)
+    {
+        if(Math.abs(FM.Or.getKren()) > 4.5F)
+        {
+            fSightCurReadyness -= 0.0666666F * f;
+            if(fSightCurReadyness < 0.0F)
+                fSightCurReadyness = 0.0F;
+        }
+        if(fSightCurReadyness < 1.0F)
+            fSightCurReadyness += 0.0333333F * f;
+        else if(bSightAutomation)
+        {
+            fSightCurDistance -= toMetersPerSecond(fSightCurSpeed) * f;
+            if(fSightCurDistance < 0.0F)
+            {
+                fSightCurDistance = 0.0F;
+                typeBomberToggleAutomation();
+            }
+            fSightCurForwardAngle = (float)Math.toDegrees(Math.atan(fSightCurDistance / toMeters(fSightCurAltitude)));
+            if(fSightCurDistance < toMetersPerSecond(fSightCurSpeed) * (float)Math.sqrt(toMeters(fSightCurAltitude) * 0.2038736F))
+                bSightBombDump = true;
+            if(bSightBombDump)
+                if(FM.isTick(3, 0))
+                {
+                    if(FM.CT.Weapons[3] != null && FM.CT.Weapons[3][FM.CT.Weapons[3].length - 1] != null && FM.CT.Weapons[3][FM.CT.Weapons[3].length - 1].haveBullets())
+                    {
+                        FM.CT.WeaponControl[3] = true;
+                        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
+                    }
+                }
+                else
+                {
+                    FM.CT.WeaponControl[3] = false;
+                }
+        }
+    }
+
+    public boolean typeBomberToggleAutomation()
+    {
+        k14Mode++;
+        if(k14Mode > 2)
+            k14Mode = 0;
+        if(k14Mode == 0)
+        {
+            if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Bomb");
+        }
+        else if(k14Mode == 1)
+        {
+            if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Gunnery");
+        }
+        else if(k14Mode == 2 && ((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Navigation");
+        return true;
+    }
+
+    public void typeBomberReplicateToNet(NetMsgGuaranted netmsgguaranted)
+        throws IOException
+    {
+        netmsgguaranted.writeByte((bSightAutomation ? 1 : 0) | (bSightBombDump ? 2 : 0));
+        netmsgguaranted.writeFloat(fSightCurDistance);
+        netmsgguaranted.writeByte((int)fSightCurForwardAngle);
+        netmsgguaranted.writeByte((int)((fSightCurSideslip + 3F) * 33.33333F));
+        netmsgguaranted.writeFloat(fSightCurAltitude);
+        netmsgguaranted.writeByte((int)(fSightCurSpeed / 2.5F));
+        netmsgguaranted.writeByte((int)(fSightCurReadyness * 200F));
+    }
+
+    public void typeBomberReplicateFromNet(NetMsgInput netmsginput)
+        throws IOException
+    {
+        int i = netmsginput.readUnsignedByte();
+        bSightAutomation = (i & 1) != 0;
+        bSightBombDump = (i & 2) != 0;
+        fSightCurDistance = netmsginput.readFloat();
+        fSightCurForwardAngle = netmsginput.readUnsignedByte();
+        fSightCurSideslip = -3F + (float)netmsginput.readUnsignedByte() / 33.33333F;
+        fSightCurAltitude = netmsginput.readFloat();
+        fSightCurSpeed = (float)netmsginput.readUnsignedByte() * 2.5F;
+        fSightCurReadyness = (float)netmsginput.readUnsignedByte() / 200F;
+    }
+
+    public void updatecontrollaser()
+    {
+        if(tf + 5L <= Time.current())
+        {
+            tangate = 0.0F;
+            azimult = 0.0F;
+        }
+
+        if(!FLIR && laserTimer > 0L && Time.current() > laserTimer && getLaserOn())
+        {
+            setLaserOn(false);
+        }
+
+        if(bHasPaveway)
+            checkgroundlaser();
+    }
+
+    private void checkgroundlaser()
+    {
+        boolean laseron = false;
+        double targetDistance = 0.0D;
+        float targetAngle = 0.0F;
+        float targetBait = 0.0F;
+        float maxTargetBait = 0.0F;
+        // superior the Laser spot of this Paveway's owner than others'
+        while(getLaserOn())
+        {
+            Point3d point3d = new Point3d();
+            point3d = getLaserSpot();
+            if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F)
+                break;
+            targetDistance = this.pos.getAbsPoint().distance(point3d);
+            if(targetDistance > maxPavewayDistance)
+                break;
+            targetAngle = angleBetween(this, point3d);
+            if(targetAngle > maxPavewayFOVfrom)
+                break;
+
+            laseron = true;
+            break;
+        }
+        // seak other Laser designator spots when Paveway's owner doesn't spot Laser
+        if(!laseron)
+        {
+            List list = Engine.targets();
+            int i = list.size();
+            for(int j = 0; j < i; j++)
+            {
+                Actor actor = (Actor)list.get(j);
+                if((actor instanceof TypeLaserDesignator) && ((TypeLaserDesignator) actor).getLaserOn() && actor.getArmy() == this.getArmy())
+                {
+                    Point3d point3d = new Point3d();
+                    point3d = ((TypeLaserDesignator)actor).getLaserSpot();
+                    // Not target about objects behind of clouds from the Paveway's seaker.
+                    if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F)
+                        continue;
+                    targetDistance = this.pos.getAbsPoint().distance(point3d);
+                    if(targetDistance > maxPavewayDistance)
+                        continue;
+                    targetAngle = angleBetween(this, point3d);
+                    if(targetAngle > maxPavewayFOVfrom)
+                        continue;
+
+                    targetBait = 1 / targetAngle / (float) (targetDistance * targetDistance);
+                    if(targetBait <= maxTargetBait)
+                        continue;
+
+                    maxTargetBait = targetBait;
+                    laseron = true;
+                }
+            }
+        }
+        setLaserArmEngaged(laseron);
+    }
+
+    private static float angleBetween(Actor actorFrom, Point3d pointTo) {
+        float angleRetVal = 180.1F;
+        double angleDoubleTemp = 0.0D;
+        Loc angleActorLoc = new Loc();
+        Point3d angleActorPos = new Point3d();
+        Vector3d angleTargRayDir = new Vector3d();
+        Vector3d angleNoseDir = new Vector3d();
+        actorFrom.pos.getAbs(angleActorLoc);
+        angleActorLoc.get(angleActorPos);
+        angleTargRayDir.sub(pointTo, angleActorPos);
+        angleDoubleTemp = angleTargRayDir.length();
+        angleTargRayDir.scale(1.0D / angleDoubleTemp);
+        angleNoseDir.set(1.0D, 0.0D, 0.0D);
+        angleActorLoc.transform(angleNoseDir);
+        angleDoubleTemp = angleNoseDir.dot(angleTargRayDir);
+        angleRetVal = Geom.RAD2DEG((float) Math.acos(angleDoubleTemp));
+        return angleRetVal;
+    }
+
+    public Point3d getLaserSpot()
+    {
+        return laserSpotPos;
+    }
+
+    public boolean setLaserSpot(Point3d p3d)
+    {
+        laserSpotPos = p3d;
+        return true;
+    }
+
+    public boolean getLaserOn()
+    {
+        return bLaserOn;
+    }
+
+    public boolean setLaserOn(boolean flag)
+    {
+        if(bLaserOn != flag)
+        {
+            if(bLaserOn == false)
+            {
+                if(FM.actor == World.getPlayerAircraft())
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser: ON");
+            }
+            else
+            {
+                if(FM.actor == World.getPlayerAircraft())
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser: OFF");
+                hold = false;
+                holdFollow = false;
+                actorFollowing = null;
+            }
+        }
+
+        return bLaserOn = flag;
+    }
+
+    public boolean getLaserArmEngaged()
+    {
+        return bLGBengaged;
+    }
+
+    public boolean setLaserArmEngaged(boolean flag)
+    {
+        if(bLGBengaged != flag)
+        {
+            if(bLGBengaged == false)
+            {
+                if(this == World.getPlayerAircraft())
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser Bomb: Engaged");
+            }
+            else
+            {
+                if(this == World.getPlayerAircraft())
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser Bomb: Disengaged");
+            }
+        }
+
+        return bLGBengaged = flag;
+    }
+
+
+    // +++ Implementing TypeSemiRadar
+    public Actor getSemiActiveRadarLockedActor()
+    {
+        if(getSemiActiveRadarOn())
+            return semiradartarget;
+
+        return (Actor) null;
+    }
+
+    public Actor setSemiActiveRadarLockedActor(Actor actor)
+    {
+        if(getSemiActiveRadarOn())
+        {
+            if(this.iDebugLogLevel > 2)
+            {
+            // debugging
+                if(actor == null)
+                    HUD.log("Semi-Active Radar lock-off.");
+                else
+                {
+                    String classnameFull = actor.getClass().getName();
+                    int idot = classnameFull.lastIndexOf('.');
+                    int idol = classnameFull.lastIndexOf('$');
+                    if(idot < idol) idot = idol;
+                    String classnameSection = classnameFull.substring(idot + 1);
+                    HUD.log("Semi-Active Radar lock-on " + classnameSection);
+                }
+            }
+
+            semiradartarget = actor;
+            return actor;
+        }
+        else
+            semiradartarget = null;
+
+        return (Actor) null;
+    }
+
+    public boolean getSemiActiveRadarOn()
+    {
+        if(radartoggle && (radarmode == 0 || radarmode == 1))
+            return true;
+        else
+            return false;
+    }
+
+    public boolean setSemiActiveRadarOn(boolean flag)
+    {
+        if(flag)
+        {
+            radartoggle = true;
+            if(radarmode == 2)
+                radarmode = 0;
+        }
+        else
+        {
+            radartoggle = false;
+        }
+
+        return flag;
+    }
+    // --- Implementing TypeSemiRadar
+
+    // +++ Implementing TypeGroundRadar
+    public Actor getGroundRadarLockedActor()
+    {
+        if(getGroundRadarOn())
+            return groundradartarget;
+
+        return (Actor) null;
+    }
+
+    public Actor setGroundRadarLockedActor(Actor actor)
+    {
+        if(getGroundRadarOn())
+        {
+            if(this.iDebugLogLevel > 2)
+            {
+            // debugging
+                if(actor == null)
+                    HUD.log("Ground Radar lock-off.");
+                else
+                {
+                    String classnameFull = actor.getClass().getName();
+                    int idot = classnameFull.lastIndexOf('.');
+                    int idol = classnameFull.lastIndexOf('$');
+                    if(idot < idol) idot = idol;
+                    String classnameSection = classnameFull.substring(idot + 1);
+                    HUD.log("Ground Radar lock-on " + classnameSection);
+                }
+            }
+
+            groundradartarget = actor;
+            return actor;
+        }
+        else
+            groundradartarget = null;
+
+        return (Actor) null;
+    }
+
+    public boolean getGroundRadarOn()
+    {
+        if(radartoggle && radarmode == 2)
+            return true;
+        else
+            return false;
+    }
+
+    public boolean setGroundRadarOn(boolean flag)
+    {
+        if(flag)
+        {
+            radartoggle = true;
+            if(radarmode != 2)
+                radarmode = 2;
+        }
+        else
+        {
+            radartoggle = false;
+        }
+
+        return flag;
+    }
+    // --- Implementing TypeGroundRadar
+
     public void onAircraftLoaded()
     {
         super.onAircraftLoaded();
         guidedMissileUtils.onAircraftLoaded();
-        FM.Skill = 3;
-        FM.CT.bHasDragChuteControl = true;
-        bHasDeployedDragChute = false;
         FM.turret[0].bIsAIControlled = false;
         rwrUtils.onAircraftLoaded();
         rwrUtils.setLockTone("aircraft.usRWRScan", "aircraft.usRWRLock", "aircraft.usRWRLaunchWarningMissileMissile", "aircraft.usRWRThreatNew");
@@ -123,10 +794,14 @@ public class AV_8B extends AV_8
     {
         counterFlareList.clear();
         counterChaffList.clear();
-        super.bHasPaveway = false;
+        bHasLaser = false;
+        bHasPaveway = false;
+        bHadLGweapons = false;
         bHasAGM = false;
+        bHasLAGM = false;
         bHasAShM = false;
         bHasUGR = false;
+        FM.bNoDiveBombing = false;
         for(int i = 0; i < FM.CT.Weapons.length; i++)
             if(FM.CT.Weapons[i] != null)
             {
@@ -140,18 +815,34 @@ public class AV_8B extends AV_8
                         else if(FM.CT.Weapons[i][j] instanceof BombGunGBU10_Mk84LGB_gn16 ||
                                 FM.CT.Weapons[i][j] instanceof BombGunGBU12_Mk82LGB_gn16 ||
                                 FM.CT.Weapons[i][j] instanceof BombGunGBU16_Mk83LGB_gn16)
-                            super.bHasPaveway = true;
-                        else if(FM.CT.Weapons[i][j] instanceof RocketGunAGM65E_gn16 ||
-                                FM.CT.Weapons[i][j] instanceof RocketGunAGM84E_gn16)
+                        {
+                            bHasPaveway = true;
+                            bHadLGweapons = true;
+                            FM.bNoDiveBombing = true;
+                        }
+                        else if(FM.CT.Weapons[i][j] instanceof BombGunGBU38_Mk82JDAM_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof BombGunGBU32_Mk83JDAM_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof BombGunGBU31_Mk84JDAM_gn16)
+                            FM.bNoDiveBombing = true;
+                        else if(FM.CT.Weapons[i][j] instanceof RocketGunAGM65E_gn16)
+                        {
+                            bHasLAGM = true;
+                            bHasAGM = true;
+                            bHadLGweapons = true;
+                        }
+                        else if(FM.CT.Weapons[i][j] instanceof RocketGunAGM84E_gn16)
                             bHasAGM = true;
                         else if(FM.CT.Weapons[i][j] instanceof RocketGunAGM84D_gn16 ||
                                 FM.CT.Weapons[i][j] instanceof RocketGunAGM84J_gn16)
                             bHasAShM = true;
                         else if(FM.CT.Weapons[i][j] instanceof RocketGun5inchZuniMk71_gn16 ||
                                 FM.CT.Weapons[i][j] instanceof RocketGun5inchZuniMk71AP_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof RocketGun5inchZuniMk71WPFAC_gn16 ||
                                 FM.CT.Weapons[i][j] instanceof RocketGunHYDRA_gn16)
                             bHasUGR = true;
                     }
+                    else if(FM.CT.Weapons[i][j] instanceof Pylon_AN_AAQ28_gn16)
+                        bHasLaser = true;
 
             }
 
@@ -159,6 +850,7 @@ public class AV_8B extends AV_8
 
     private void checkAIAGMrest()
     {
+        bHasLAGM = false;
         bHasAGM = false;
         bHasAShM = false;
         bHasUGR = false;
@@ -168,46 +860,156 @@ public class AV_8B extends AV_8
                 for(int j = 0; j < FM.CT.Weapons[i].length; j++)
                     if(FM.CT.Weapons[i][j].haveBullets())
                     {
-                        if(FM.CT.Weapons[i][j] instanceof RocketGunAGM65E_gn16 ||
-                           FM.CT.Weapons[i][j] instanceof RocketGunAGM84E_gn16)
+                        if(FM.CT.Weapons[i][j] instanceof RocketGunAGM65E_gn16)
+                        {
+                            bHasAGM = true;
+                            bHasLAGM = true;
+                        }
+                        if(FM.CT.Weapons[i][j] instanceof RocketGunAGM84E_gn16)
                             bHasAGM = true;
                         else if(FM.CT.Weapons[i][j] instanceof RocketGunAGM84D_gn16 ||
                                 FM.CT.Weapons[i][j] instanceof RocketGunAGM84J_gn16)
                             bHasAShM = true;
                         else if(FM.CT.Weapons[i][j] instanceof RocketGun5inchZuniMk71_gn16 ||
                                 FM.CT.Weapons[i][j] instanceof RocketGun5inchZuniMk71AP_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof RocketGun5inchZuniMk71WPFAC_gn16 ||
                                 FM.CT.Weapons[i][j] instanceof RocketGunHYDRA_gn16)
                             bHasUGR = true;
                     }
             }
     }
 
+    private void checkGuidedBombRest()
+    {
+        if(!((Maneuver)FM).hasBombs())
+        {
+            bHasPaveway = false;
+            FM.bNoDiveBombing = false;
+        }
+        else if(bHasPaveway || FM.bNoDiveBombing)
+        {
+            boolean bTempNoGBU = true;
+            boolean bTempNoJDAM = true;
+            for(int i = 3; i < 4 && bTempNoGBU && bTempNoJDAM; i++)
+                if(FM.CT.Weapons[i] != null)
+                {
+                    for(int j = 0; j < FM.CT.Weapons[i].length && bTempNoGBU && bTempNoJDAM; j++)
+                        if(FM.CT.Weapons[i][j].haveBullets())
+                        {
+                            if(FM.CT.Weapons[i][j] instanceof BombGunGBU10_Mk84LGB_gn16 ||
+                               FM.CT.Weapons[i][j] instanceof BombGunGBU12_Mk82LGB_gn16 ||
+                               FM.CT.Weapons[i][j] instanceof BombGunGBU16_Mk83LGB_gn16)
+                                bTempNoGBU = false;
+                            else if(FM.CT.Weapons[i][j] instanceof BombGunGBU38_Mk82JDAM_gn16 ||
+                                    FM.CT.Weapons[i][j] instanceof BombGunGBU32_Mk83JDAM_gn16 ||
+                                    FM.CT.Weapons[i][j] instanceof BombGunGBU31_Mk84JDAM_gn16)
+                                bTempNoJDAM = false;
+                        }
+                }
+            if(bTempNoGBU)
+                bHasPaveway = false;
+            if(bTempNoGBU && bTempNoJDAM)
+                FM.bNoDiveBombing = false;
+        }
+    }
+
     public void rareAction(float f, boolean flag)
     {
         super.rareAction(f, flag);
 
-        if((!(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode())
-           && !((Maneuver)super.FM).hasBombs() && FM.AP.way.curr().Action == 3)
+        if(bHasLaser && FM.actor == World.getPlayerAircraft())
         {
-            if(!bHasAGM && !bHasAShM && !bHasUGR)
-                FM.AP.way.next();
-            else if(!bHasAGM && !bHasUGR && bHasAShM && (FM.AP.way.curr().getTarget() == null || !(FM.AP.way.curr().getTarget() instanceof TgtShip)))
-                FM.AP.way.next();
-            else if(!bHasAGM && bHasUGR && !bHasAShM && FM.CT.rocketNameSelected != "Zuni" && FM.CT.rocketNameSelected != "Hydra")
+            if(FLIR)
+                FLIR();
+            if(!FLIR)
+                FM.AP.setStabAltitude(false);
+        }
+        if(bHasLaser && FM.actor != World.getPlayerAircraft() && FM instanceof Maneuver)
+            AILaserControl();
+
+        if((!FM.isPlayers() || !(FM instanceof RealFlightModel) || !((RealFlightModel) FM).isRealMode()) && (FM instanceof Maneuver))
+        {
+            if(FM.AP.way.curr().Action == 3)
             {
-                for(int i = 0; i < 4; i++)
+                Actor tempActor = null;
+                NearestEnemies.set(WeaponsMask(), 25F, 2000F, 20F, 20000F, false, true, (String)null);
+                tempActor = NearestEnemies.getAFoundFlyingPlane(this.pos.getAbsPoint(), 30000D, this.getArmy(), 1F);
+                if(tempActor == null && FM.AP.way.curr().getTarget() != null && Time.current() > lastAIMissileSelect + 8000L)
                 {
-                    if(FM.CT.rocketNameSelected == "Zuni" || FM.CT.rocketNameSelected == "Hydra")
-                        break;
-                    FM.CT.toggleRocketHook();
+                    if(bHasAShM && (FM.AP.way.curr().getTarget() instanceof TgtShip) &&
+                       FM.CT.rocketNameSelected != "AGM-84D" && FM.CT.rocketNameSelected != "AGM-84J")
+                    {
+                        for(int i = 0; i < 4; i++)
+                        {
+                            if(FM.CT.rocketNameSelected == "AGM-84D" || FM.CT.rocketNameSelected == "AGM-84J")
+                                break;
+                            FM.CT.toggleRocketHook();
+                        }
+                    }
+                    if((!bHasAShM || !(FM.AP.way.curr().getTarget() instanceof TgtShip)) && bHasAGM &&
+                       FM.CT.rocketNameSelected != "AGM-65E")
+                    {
+                        for(int i = 0; i < 4; i++)
+                        {
+                            if(FM.CT.rocketNameSelected == "AGM-65E")
+                                break;
+                            FM.CT.toggleRocketHook();
+                        }
+                    }
+                    if(!bHasAGM && bHasUGR && !bHasAShM && FM.CT.rocketNameSelected != "Zuni" && FM.CT.rocketNameSelected != "Hydra" &&
+                       FM.CT.rocketNameSelected != "HydraFAC" && FM.CT.rocketNameSelected != "HydraFO")
+                    {
+                        for(int i = 0; i < 4; i++)
+                        {
+                            if(FM.CT.rocketNameSelected == "Zuni" || FM.CT.rocketNameSelected == "Hydra" ||
+                               FM.CT.rocketNameSelected == "HydraFAC" || FM.CT.rocketNameSelected == "HydraFO")
+                                break;
+                            FM.CT.toggleRocketHook();
+                        }
+                    }
+                    lastAIMissileSelect = Time.current();
+                }
+                if((!((Maneuver)super.FM).hasBombs() && !bHasAGM && !bHasAShM && !bHasUGR) ||
+                   (!bHasAGM && !bHasUGR && bHasAShM && (FM.AP.way.curr().getTarget() == null || !(FM.AP.way.curr().getTarget() instanceof TgtShip))))
+                {
+                    if((lAIGAskipTimer > 0L && Time.current() > lAIGAskipTimer) || !bHadLGweapons || !bHasLaser)
+                    {
+                        FM.AP.way.next();
+                        FM.bSkipGroundAttack = true;
+                        ((Maneuver)FM).target_ground = null;
+                        ((Maneuver)FM).set_maneuver(0);
+                        FM.CT.toggleRocketHook();
+                    }
+                    else if(lAIGAskipTimer == -1L)
+                        lAIGAskipTimer = Time.current() + 20000L + (long)Math.min(FM.getAltitude(), 10000F) * 5L;
+                }
+
+                if((bHasAGM || bHasAShM || bHasUGR) && Time.current() > lastAGMcheck + 30000L)
+                {
+                    checkAIAGMrest();
+                    lastAGMcheck = Time.current();
                 }
             }
-            else if(Time.current() > lastAGMcheck + 30000L)
-            {
-                checkAIAGMrest();
-                lastAGMcheck = Time.current();
-            }
         }
+
+        if((bHasPaveway || FM.bNoDiveBombing) && Time.current() > lastLGBcheck + 30000L && (FM instanceof Maneuver))
+        {
+            checkGuidedBombRest();
+            lastLGBcheck = Time.current();
+        }
+
+        if(!FM.isPlayers())
+            if(((Maneuver)FM).get_maneuver() == 25 || ((Maneuver)FM).get_maneuver() == 26
+               || ((Maneuver)FM).get_maneuver() == 64 || ((Maneuver)FM).get_maneuver() == 66 || ((Maneuver)FM).get_maneuver() == 102)
+            {
+                // LANDING, TAKEOFF, PARKED_STARTUP, TAXI, TAXI_TO_TO
+                radartoggle = false;
+            }
+            else
+            {
+                radartoggle = true;
+                radarmode = 0;
+            }
     }
 
     public void update(float f)
@@ -221,46 +1023,13 @@ public class AV_8B extends AV_8
         backfire = rwrUtils.getBackfire();
         bRadarWarning = rwrUtils.getRadarLockedWarning();
         bMissileWarning = rwrUtils.getMissileWarning();
+        if(bHasLaser && FLIR)
+            laser(getLaserSpot());
+        if(bHasLaser)
+            updatecontrollaser();
         super.update(f);
         if(backfire)
             backFire();
-        updateDragChute();
-    }
-
-    private void updateDragChute()
-    {
-        if(FM.CT.DragChuteControl > 0.0F && !bHasDeployedDragChute)
-        {
-            chute = new Chute(this);
-            chute.setMesh("3do/plane/ChuteF86/mono.sim");
-            chute.collide(true);
-            chute.mesh().setScale(0.5F);
-            ((Actor) (chute)).pos.setRel(new Point3d(-5D, 0.0D, 0.5D), new Orient(0.0F, 90F, 0.0F));
-            bHasDeployedDragChute = true;
-        }
-        else if(bHasDeployedDragChute && FM.CT.bHasDragChuteControl)
-            if(FM.CT.DragChuteControl == 1.0F && FM.getSpeedKMH() > 600F || FM.CT.DragChuteControl < 1.0F)
-            {
-                if(chute != null)
-                {
-                    chute.tangleChute(this);
-                    ((Actor) (chute)).pos.setRel(new Point3d(-10D, 0.0D, 1.0D), new Orient(0.0F, 80F, 0.0F));
-                }
-                FM.CT.DragChuteControl = 0.0F;
-                FM.CT.bHasDragChuteControl = false;
-                removeChuteTimer = Time.current() + 250L;
-            }
-            else if(FM.CT.DragChuteControl == 1.0F && FM.getSpeedKMH() < 20F)
-            {
-                if(chute != null)
-                    chute.tangleChute(this);
-                ((Actor) (chute)).pos.setRel(new Orient(0.0F, 100F, 0.0F));
-                FM.CT.DragChuteControl = 0.0F;
-                FM.CT.bHasDragChuteControl = false;
-                removeChuteTimer = Time.current() + 10000L;
-            }
-        if(removeChuteTimer > 0L && !FM.CT.bHasDragChuteControl && Time.current() > removeChuteTimer)
-            chute.destroy();
     }
 
     public void msgCollisionRequest(Actor actor, boolean aflag[])
@@ -277,6 +1046,12 @@ public class AV_8B extends AV_8
         super.missionStarting();
         checkAmmo();
         checkAsDrone();
+        FM.CT.toggleRocketHook();
+        FM.CT.FlapsControlSwitch = 1;
+        laserTimer = -1L;
+        bLaserOn = false;
+        FLIR = false;
+        iDebugLogLevel = Config.cur.ini.get("Mods", "GuidedMissileDebugLog", 0);
     }
 
     public void startCockpitSounds()
@@ -383,7 +1158,7 @@ public class AV_8B extends AV_8
         queen_time = 0L;
         FM.EI.setEngineRunning();
         FM.CT.setGearAirborne();
-        moveGear(0.0F);
+        moveGear(0.0F, 0.0F, 0.0F);
         FlightModel flightmodel = ((SndAircraft) ((Aircraft)queen_)).FM;
         if(aircIndex() == 0 && (super.FM instanceof Maneuver) && (flightmodel instanceof Maneuver))
         {
@@ -521,6 +1296,94 @@ public class AV_8B extends AV_8
         }
     }
 
+    public void typeRadarGainMinus()
+    {
+    }
+
+    public void typeRadarGainPlus()
+    {
+    }
+
+    public void typeRadarRangeMinus()
+    {
+        radarrange++;
+        if(radarrange > 4)
+            radarrange = 4;
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar range " + radarrange);
+    }
+
+    public void typeRadarRangePlus()
+    {
+        radarrange--;
+        if(radarrange < 1)
+            radarrange = 1;
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar range " + radarrange);
+    }
+
+    public void typeRadarReplicateFromNet(NetMsgInput netmsginput)
+        throws IOException
+    {
+    }
+
+    public void typeRadarReplicateToNet(NetMsgGuaranted netmsgguaranted)
+        throws IOException
+    {
+    }
+
+    public boolean typeRadarToggleMode()
+    {
+        radarmode++;
+        if(radarmode > 2)
+            radarmode = 0;
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar mode " + radarmode);
+        return false;
+    }
+
+    private void AILaserControl()
+    {
+        Point3d point3d = new Point3d();
+        Point3d point3dtemp = new Point3d();
+        boolean bLaserReach = false;
+        if(((Maneuver)FM).target_ground != null)
+        {
+            point3d = ((Maneuver)FM).target_ground.pos.getAbsPoint();
+            bLaserReach = (this.pos.getAbsPoint().distance(point3d) < 20000D &&
+                (Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) > 0.98F) &&
+                !Landscape.rayHitHQ(this.pos.getAbsPoint(), point3d, point3dtemp));
+        }
+        if((bHasLAGM || bHasPaveway) && FM.AP.way.curr().Action == 3 && ((Maneuver)FM).target_ground != null && !bAILaserOn)
+        {
+            if(bLaserReach)
+            {
+                bAILaserOn = true;
+                setLaserOn(true);
+                lAILaserTimer = -1L;
+            }
+        }
+        else if(bAILaserOn)
+        {
+            if(((Maneuver)FM).target_ground == null || !bLaserReach)
+            {
+                bAILaserOn = false;
+                setLaserOn(false);
+                lAILaserTimer = -1L;
+            }
+            else if(lAILaserTimer > 0L && Time.current() > lAILaserTimer)
+            {
+                bAILaserOn = false;
+                setLaserOn(false);
+                lAILaserTimer = -1L;
+            }
+            else if(lAILaserTimer == -1L)
+                lAILaserTimer = Time.current() + 20000L + (long)Math.min(FM.getAltitude(), 4000F) * 5L;
+        }
+        if(bAILaserOn && ((Maneuver)FM).target_ground != null && ((Maneuver)FM).target_ground.pos != null && Actor.isValid(((Maneuver)FM).target_ground))
+        {
+            setLaserSpot(point3d);
+        }
+    }
+
+
     private static Aircraft._WeaponSlot[] GenerateDefaultConfig(byte bt)
     {
         Aircraft._WeaponSlot a_lweaponslot[] = new Aircraft._WeaponSlot[bt];
@@ -539,14 +1402,15 @@ public class AV_8B extends AV_8
         return a_lweaponslot;
     }
 
+    private boolean bSightAutomation;
+    private boolean bSightBombDump;
+    private float fSightCurDistance;
+
     private GuidedMissileUtils guidedMissileUtils;
     private boolean hasChaff;
     private boolean hasFlare;
     private long lastChaffDeployed;
     private long lastFlareDeployed;
-    private boolean bHasDeployedDragChute;
-    private Chute chute;
-    private long removeChuteTimer;
     private Actor queen_last;
     private long queen_time;
     private boolean bNeedSetup;
@@ -557,10 +1421,50 @@ public class AV_8B extends AV_8
     private ArrayList counterFlareList;
     private ArrayList counterChaffList;
     private boolean bHasAGM;
+    private boolean bHasLAGM;
     private boolean bHasAShM;
     private boolean bHasUGR;
     private long lastAGMcheck;
+    public boolean radartoggle;
+    public int radarmode;
+    public int radarrange;
+    public int targetnum;
+    public int lockmode;
+    public float lockrange;
+    public int radargunsight;
+    public float azimult;
+    public float tangate;
+    public long tf;
+    public float radarvrt;
+    public float radarhol;
 
+    // TypeLaserDesignator and laser guided weapon values
+    public boolean FLIR;
+    private boolean bLaserOn;
+    public long laserTimer;
+    private Point3d laserSpotPos;
+    private boolean bLGBengaged;
+    public boolean bHasPaveway;
+    public boolean bHadLGweapons;
+    private boolean bAILaserOn;
+    private long lAILaserTimer;
+    private long lAIGAskipTimer;
+    private static float maxPavewayFOVfrom = 45.0F;
+    private static double maxPavewayDistance = 20000D;
+    private long lastLGBcheck;
+    private long lastAIMissileSelect;
+    public boolean hold;
+    public boolean holdFollow;
+    public Actor actorFollowing;
+//    private static Loc flirloc = new Loc();
+    public boolean bHasLaser;
+
+    private Actor semiradartarget;
+    private Actor groundradartarget;
+
+    private int iDebugLogLevel = 0;
+
+    // TypeRadarWarningReceiver values
     private RadarWarningReceiverUtils rwrUtils;
     public float misslebrg;
     public float aircraftbrg;
