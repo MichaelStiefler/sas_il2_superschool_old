@@ -21,6 +21,13 @@ import java.util.List;
 public class CockpitF18FLIR extends CockpitGunner
 {
 
+    public boolean isEnableFocusing()
+    {
+        if(!((F_18)aircraft()).bHasLaser)
+            return false;
+        return !aircraft().FM.AS.isPilotParatrooper(0);
+    }
+
     protected boolean doFocusEnter()
     {
         if(super.doFocusEnter())

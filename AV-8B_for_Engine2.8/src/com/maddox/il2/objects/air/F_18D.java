@@ -2,193 +2,37 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.*;
-import com.maddox.il2.ai.*;
-import com.maddox.il2.ai.air.*;
-import com.maddox.il2.ai.ground.TgtShip;
-import com.maddox.il2.engine.*;
-import com.maddox.il2.fm.*;
-import com.maddox.il2.objects.sounds.SndAircraft;
-import com.maddox.il2.objects.sounds.Voice;
-import com.maddox.il2.objects.weapons.*;
+import com.maddox.il2.ai.BulletEmitter;
+import com.maddox.il2.objects.weapons.RocketGunAIM9L_gn16;
 import com.maddox.rts.*;
-import com.maddox.sas1946.il2.util.Reflection;
 import com.maddox.util.HashMapInt;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 
 public class F_18D extends F_18
-    implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeDockable
 {
 
     public F_18D()
     {
-        guidedMissileUtils = null;
-        hasChaff = false;
-        hasFlare = false;
-        lastChaffDeployed = 0L;
-        lastFlareDeployed = 0L;
-        guidedMissileUtils = new GuidedMissileUtils(this);
         bulletEmitters = null;
         wingFoldValue = 0.0F;
-        counterFlareList = new ArrayList();
-        counterChaffList = new ArrayList();
-        bHasAGM = false;
-        bHasAShM = false;
-        bHasUGR = false;
-        lastAGMcheck = -1L;
-    }
-
-    private void checkAmmo()
-    {
-        counterFlareList.clear();
-        counterChaffList.clear();
-        super.bHasPaveway = false;
-        bHasAGM = false;
-        bHasAShM = false;
-        bHasUGR = false;
-        for(int i = 0; i < FM.CT.Weapons.length; i++)
-            if(FM.CT.Weapons[i] != null)
-            {
-                for(int j = 0; j < FM.CT.Weapons[i].length; j++)
-                    if(FM.CT.Weapons[i][j].haveBullets())
-                    {
-                        if(FM.CT.Weapons[i][j] instanceof RocketGunFlare_gn16)
-                            counterFlareList.add(FM.CT.Weapons[i][j]);
-                        else if(FM.CT.Weapons[i][j] instanceof RocketGunChaff_gn16)
-                            counterChaffList.add(FM.CT.Weapons[i][j]);
-                        else if(FM.CT.Weapons[i][j] instanceof BombGunGBU10_Mk84LGB_gn16 ||
-                                FM.CT.Weapons[i][j] instanceof BombGunGBU12_Mk82LGB_gn16 ||
-                                FM.CT.Weapons[i][j] instanceof BombGunGBU16_Mk83LGB_gn16)
-                        {
-                            super.bHasPaveway = true;
-                            FM.bNoDiveBombing = true;
-                        }
-                        else if(FM.CT.Weapons[i][j] instanceof BombGunGBU38_Mk82JDAM_gn16 ||
-                                FM.CT.Weapons[i][j] instanceof BombGunGBU32_Mk83JDAM_gn16 ||
-                                FM.CT.Weapons[i][j] instanceof BombGunGBU31_Mk84JDAM_gn16)
-                            FM.bNoDiveBombing = true;
-                        else if(FM.CT.Weapons[i][j] instanceof RocketGunAGM65B_gn16 ||
-                                FM.CT.Weapons[i][j] instanceof RocketGunAGM65E_gn16 ||
-                                FM.CT.Weapons[i][j] instanceof RocketGunAGM65F_gn16 ||
-                                FM.CT.Weapons[i][j] instanceof RocketGunAGM123A_gn16 ||
-                                FM.CT.Weapons[i][j] instanceof RocketGunAGM84E_gn16)
-                            bHasAGM = true;
-                        else if(FM.CT.Weapons[i][j] instanceof RocketGunAGM84D_gn16 ||
-                                FM.CT.Weapons[i][j] instanceof RocketGunAGM84J_gn16)
-                            bHasAShM = true;
-                        else if(FM.CT.Weapons[i][j] instanceof RocketGun5inchZuniMk71_gn16 ||
-                                FM.CT.Weapons[i][j] instanceof RocketGun5inchZuniMk71AP_gn16)
-                            bHasUGR = true;
-                    }
-            }
-    }
-
-    private void checkAIAGMrest()
-    {
-        bHasAGM = false;
-        bHasAShM = false;
-        bHasUGR = false;
-        for(int i = 0; i < FM.CT.Weapons.length; i++)
-            if(FM.CT.Weapons[i] != null)
-            {
-                for(int j = 0; j < FM.CT.Weapons[i].length; j++)
-                    if(FM.CT.Weapons[i][j].haveBullets())
-                    {
-                        if(FM.CT.Weapons[i][j] instanceof RocketGunAGM65B_gn16 ||
-                           FM.CT.Weapons[i][j] instanceof RocketGunAGM65E_gn16 ||
-                           FM.CT.Weapons[i][j] instanceof RocketGunAGM65F_gn16 ||
-                           FM.CT.Weapons[i][j] instanceof RocketGunAGM123A_gn16 ||
-                           FM.CT.Weapons[i][j] instanceof RocketGunAGM84E_gn16)
-                            bHasAGM = true;
-                        else if(FM.CT.Weapons[i][j] instanceof RocketGunAGM84D_gn16 ||
-                                FM.CT.Weapons[i][j] instanceof RocketGunAGM84J_gn16)
-                            bHasAShM = true;
-                        else if(FM.CT.Weapons[i][j] instanceof RocketGun5inchZuniMk71_gn16 ||
-                                FM.CT.Weapons[i][j] instanceof RocketGun5inchZuniMk71AP_gn16)
-                            bHasUGR = true;
-                    }
-            }
-    }
-
-    public void backFire()
-    {
-        if(counterFlareList.isEmpty())
-            hasFlare = false;
-        else
-        {
-            if(Time.current() > lastFlareDeployed + 700L)
-            {
-                ((RocketGunFlare_gn16)counterFlareList.get(0)).shots(1);
-                hasFlare = true;
-                lastFlareDeployed = Time.current();
-                if(!((RocketGunFlare_gn16)counterFlareList.get(0)).haveBullets())
-                    counterFlareList.remove(0);
-            }
-        }
-        if(counterChaffList.isEmpty())
-            hasChaff = false;
-        else
-        {
-            if(Time.current() > lastChaffDeployed + 900L)
-            {
-                ((RocketGunChaff_gn16)counterChaffList.get(0)).shots(1);
-                hasChaff = true;
-                lastChaffDeployed = Time.current();
-                if(!((RocketGunChaff_gn16)counterChaffList.get(0)).haveBullets())
-                    counterChaffList.remove(0);
-            }
-        }
-    }
-
-    public long getChaffDeployed()
-    {
-        if(hasChaff)
-            return lastChaffDeployed;
-        else
-            return 0L;
-    }
-
-    public long getFlareDeployed()
-    {
-        if(hasFlare)
-            return lastFlareDeployed;
-        else
-            return 0L;
-    }
-
-    public GuidedMissileUtils getGuidedMissileUtils()
-    {
-        return guidedMissileUtils;
     }
 
     public void onAircraftLoaded()
     {
         super.onAircraftLoaded();
-        guidedMissileUtils.onAircraftLoaded();
         bulletEmitters = new BulletEmitter[weaponHookArray.length];
         for(int i = 0; i < weaponHookArray.length; i++)
             bulletEmitters[i] = getBulletEmitterByHookName(weaponHookArray[i]);
-        FM.turret[0].bIsAIControlled = false;
     }
 
     public void update(float f)
     {
-        if(bNeedSetup)
-            checkAsDrone();
-        guidedMissileUtils.update();
-        computeF404_AB();
-        computeLift();
-        computeEnergy();
-        computeEngine();
-        if(super.FM instanceof Maneuver)
-            receivingRefuel(f);
+        computeF404_GE400_AB();
         super.update(f);
-        if(super.backfire)
-            backFire();
     }
 
-    public void computeF404_AB()
+    private void computeF404_GE400_AB()
     {
         if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() > 5)
             FM.producedAF.x += 19200D;
@@ -212,274 +56,14 @@ public class F_18D extends F_18
         FM.producedAF.x -= f1 * 1000F;
     }
 
-    public void computeLift()
-    {
-        Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-        float f = calculateMach();
-        if(calculateMach() < 0.0F);
-        float f1 = 0.0F;
-        if(f > 2.25F)
-        {
-            f1 = 0.12F;
-        }
-        else
-        {
-            float f2 = f * f;
-            float f3 = f2 * f;
-            float f4 = f3 * f;
-            float f5 = f4 * f;
-            float f6 = f5 * f;
-            float f7 = f6 * f;
-            float f8 = f7 * f;
-            float f9 = f8 * f;
-            f1 = ((((((0.00152131F * f8 + 0.0351945F * f7) - 0.403687F * f6) + 1.58931F * f5) - 3.09189F * f4) + 3.21415F * f3) - 1.73844F * f2) + 0.364213F * f + 0.078F;
-        }
-        polares.lineCyCoeff = f1;
-    }
-
-    public void computeEnergy()
-    {
-        float f = FM.getOverload();
-        if(FM.getOverload() < 4.5F);
-        float f1 = 0.0F;
-        if(f >= 10F)
-        {
-            f1 = 0.085F;
-        }
-        else
-        {
-            float f2 = f * f;
-            float f3 = f2 * f;
-            float f4 = f3 * f;
-            float f5 = f4 * f;
-            float f6 = f5 * f;
-            f1 = ((6.734E-007F * f5 + 9.876539E-007F * f4) - 7.57583E-006F * f3) + 2.22222E-006F * f2 + 1.70512E-005F * f;
-        }
-        FM.Sq.dragParasiteCx += f1;
-    }
-
-    public void computeEngine()
-    {
-        float f = FM.getAltitude() / 1000F;
-        float f1 = 0.0F;
-        if(FM.EI.engines[0].getThrustOutput() < 1.001F && FM.EI.engines[0].getStage() > 5 && FM.EI.engines[1].getThrustOutput() < 1.001F && FM.EI.engines[1].getStage() > 5)
-            if(calculateMach() <= 0.0F);
-        if(f > 13.5F)
-        {
-            f1 = 1.5F;
-        }
-        else
-        {
-            float f2 = f * f;
-            float f3 = f2 * f;
-            f1 = 0.0130719F * f2 - 0.0653595F * f;
-        }
-        FM.producedAF.x -= f1 * 1000F;
-    }
-
-    public void msgCollisionRequest(Actor actor, boolean aflag[])
-    {
-        super.msgCollisionRequest(actor, aflag);
-        if(queen_last != null && queen_last == actor && (queen_time == 0L || Time.current() < queen_time + 5000L))
-            aflag[0] = false;
-        else
-            aflag[0] = true;
-    }
-
     public void missionStarting()
     {
         super.missionStarting();
-        checkAmmo();
-        checkAsDrone();
-    }
-
-    private void checkAsDrone()
-    {
-        if(target_ == null)
-        {
-            if(FM.AP.way.curr().getTarget() == null)
-                FM.AP.way.next();
-            target_ = FM.AP.way.curr().getTarget();
-            if(Actor.isValid(target_) && (target_ instanceof Wing))
-            {
-                Wing wing = (Wing)target_;
-                int i = aircIndex();
-                if(Actor.isValid(wing.airc[i / 2]))
-                    target_ = wing.airc[i / 2];
-                else
-                    target_ = null;
-            }
-        }
-        if(Actor.isValid(target_) && (target_ instanceof TypeTankerDrogue))
-        {
-            queen_last = target_;
-            queen_time = Time.current();
-            if(isNetMaster())
-                ((TypeDockable)target_).typeDockableRequestAttach(this, aircIndex() % 2, true);
-        }
-        bNeedSetup = false;
-        target_ = null;
-    }
-
-    public int typeDockableGetDockport()
-    {
-        if(typeDockableIsDocked())
-            return dockport_;
-        else
-            return -1;
-    }
-
-    public Actor typeDockableGetQueen()
-    {
-        return queen_;
-    }
-
-    public boolean typeDockableIsDocked()
-    {
-        return Actor.isValid(queen_);
-    }
-
-    public void typeDockableAttemptAttach()
-    {
-        if(FM.AS.isMaster() && !typeDockableIsDocked())
-        {
-            Aircraft aircraft = War.getNearestFriend(this);
-            if((aircraft instanceof TypeTankerDrogue) && FM.CT.getRefuel() > 0.95F)
-                ((TypeDockable)aircraft).typeDockableRequestAttach(this);
-        }
-    }
-
-    public void typeDockableAttemptDetach()
-    {
-        if(FM.AS.isMaster() && typeDockableIsDocked() && Actor.isValid(queen_))
-            ((TypeDockable)queen_).typeDockableRequestDetach(this);
-    }
-
-    public void typeDockableRequestAttach(Actor actor)
-    {
-    }
-
-    public void typeDockableRequestDetach(Actor actor)
-    {
-    }
-
-    public void typeDockableRequestAttach(Actor actor, int i, boolean flag)
-    {
-    }
-
-    public void typeDockableRequestDetach(Actor actor, int i, boolean flag)
-    {
-    }
-
-    public void typeDockableDoAttachToDrone(Actor actor, int i)
-    {
-    }
-
-    public void typeDockableDoDetachFromDrone(int i)
-    {
-    }
-
-    public void typeDockableDoAttachToQueen(Actor actor, int i)
-    {
-        queen_ = actor;
-        dockport_ = i;
-        queen_last = queen_;
-        queen_time = 0L;
-        FM.EI.setEngineRunning();
-        FM.CT.setGearAirborne();
-        moveGear(0.0F);
-        FlightModel flightmodel = ((SndAircraft) ((Aircraft)queen_)).FM;
-        if(aircIndex() == 0 && (super.FM instanceof Maneuver) && (flightmodel instanceof Maneuver))
-        {
-            Maneuver maneuver = (Maneuver)flightmodel;
-            Maneuver maneuver1 = (Maneuver)super.FM;
-            if(maneuver.Group != null && maneuver1.Group != null && maneuver1.Group.numInGroup(this) == maneuver1.Group.nOfAirc - 1)
-            {
-                AirGroup airgroup = new AirGroup(maneuver1.Group);
-                maneuver1.Group.delAircraft(this);
-                airgroup.addAircraft(this);
-                airgroup.attachGroup(maneuver.Group);
-                airgroup.rejoinGroup = null;
-                airgroup.leaderGroup = null;
-                airgroup.clientGroup = maneuver.Group;
-            }
-        }
-    }
-
-    public void typeDockableDoDetachFromQueen(int i)
-    {
-        if(dockport_ == i)
-        {
-            queen_last = queen_;
-            queen_time = Time.current();
-            queen_ = null;
-            dockport_ = 0;
-        }
-    }
-
-    public void typeDockableReplicateToNet(NetMsgGuaranted netmsgguaranted)
-        throws IOException
-    {
-        if(typeDockableIsDocked())
-        {
-            netmsgguaranted.writeByte(1);
-            ActorNet actornet = null;
-            if(Actor.isValid(queen_))
-            {
-                actornet = queen_.net;
-                if(actornet.countNoMirrors() > 0)
-                    actornet = null;
-            }
-            netmsgguaranted.writeByte(dockport_);
-            netmsgguaranted.writeNetObj(actornet);
-        }
-        else
-        {
-            netmsgguaranted.writeByte(0);
-        }
-    }
-
-    public void typeDockableReplicateFromNet(NetMsgInput netmsginput)
-        throws IOException
-    {
-        if(netmsginput.readByte() == 1)
-        {
-            dockport_ = netmsginput.readByte();
-            NetObj netobj = netmsginput.readNetObj();
-            if(netobj != null)
-            {
-                Actor actor = (Actor)netobj.superObj();
-                ((TypeDockable)actor).typeDockableDoAttachToDrone(this, dockport_);
-            }
-        }
     }
 
     public void rareAction(float f, boolean flag)
     {
         super.rareAction(f, flag);
-
-        if((!(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode())
-           && !((Maneuver)super.FM).hasBombs() && FM.AP.way.curr().Action == 3)
-        {
-            if(!bHasAGM && !bHasAShM && !bHasUGR)
-                FM.AP.way.next();
-            else if(!bHasAGM && !bHasUGR && bHasAShM && (FM.AP.way.curr().getTarget() == null || !(FM.AP.way.curr().getTarget() instanceof TgtShip)))
-                FM.AP.way.next();
-            else if(!bHasAGM && bHasUGR && !bHasAShM && FM.CT.rocketNameSelected != "Zuni")
-            {
-                for(int i = 0; i < 4; i++)
-                {
-                    if(FM.CT.rocketNameSelected == "Zuni")
-                        break;
-                    FM.CT.toggleRocketHook();
-                }
-            }
-            else if(Time.current() > lastAGMcheck + 30000L)
-            {
-                checkAIAGMrest();
-                lastAGMcheck = Time.current();
-            }
-        }
     }
 
     public void updateHook()
@@ -501,77 +85,6 @@ public class F_18D extends F_18
         {
             wingFoldValue = f;
             super.needUpdateHook = true;
-        }
-    }
-
-    private void receivingRefuel(float f)
-    {
-        int i = aircIndex();
-
-        if(typeDockableIsDocked())
-        {
-            if(FM.CT.getRefuel() < 0.9F)
-            {
-                typeDockableAttemptDetach();
-            }
-            else
-            {
-                if(!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode())
-                {
-                    ((Maneuver)super.FM).unblock();
-                    ((Maneuver)super.FM).set_maneuver(48);
-                    for(int j = 0; j < i; j++)
-                        ((Maneuver)super.FM).push(48);
-
-                    if(FM.AP.way.curr().Action != 3)
-                        ((FlightModelMain) ((Maneuver)super.FM)).AP.way.setCur(((FlightModelMain) (((SndAircraft) ((Aircraft)queen_)).FM)).AP.way.Cur());
-                    ((Pilot)FM).setDumbTime(3000L);
-                }
-                FuelTank fuelTanks[];
-                fuelTanks = FM.CT.getFuelTanks();
-                if(FM.M.fuel < FM.M.maxFuel - 12F)
-                {
-                    float getFuel = ((TypeTankerDrogue) (queen_)).requestRefuel((Aircraft) this, 11.101F, f);
-                    FM.M.fuel += getFuel;
-                }
-                else if(fuelTanks.length > 0 && fuelTanks[0] != null && !FM.M.bFuelTanksDropped)
-                {
-                    float freeTankSum = 0F;
-                    for(int num = 0; num < fuelTanks.length; num++)
-                        freeTankSum += fuelTanks[num].checkFreeTankSpace();
-                    if(freeTankSum < 12F)
-                        typeDockableAttemptDetach();
-                    float getFuel = ((TypeTankerDrogue) (queen_)).requestRefuel((Aircraft) this, 11.101F, f);
-                    for(int num = 0; num < fuelTanks.length; num++)
-                        fuelTanks[num].doRefuel(getFuel * (fuelTanks[num].checkFreeTankSpace() / freeTankSum));
-                }
-                else
-                    typeDockableAttemptDetach();
-            }
-        }
-        else if(!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode())
-        {
-            if(FM.CT.GearControl == 0.0F && FM.EI.engines[0].getStage() == 0)
-                FM.EI.setEngineRunning();
-            if(dtime > 0L && ((Maneuver)super.FM).Group != null)
-            {
-                ((Maneuver)super.FM).Group.leaderGroup = null;
-                ((Maneuver)super.FM).set_maneuver(22);
-                ((Pilot)FM).setDumbTime(3000L);
-                if(Time.current() > dtime + 3000L)
-                {
-                    dtime = -1L;
-                    ((Maneuver)super.FM).clear_stack();
-                    ((Maneuver)super.FM).set_maneuver(0);
-                    ((Pilot)FM).setDumbTime(0L);
-                }
-            }
-            else if(FM.AP.way.curr().Action == 0)
-            {
-                Maneuver maneuver = (Maneuver)super.FM;
-                if(maneuver.Group != null && maneuver.Group.airc[0] == this && maneuver.Group.clientGroup != null)
-                    maneuver.Group.setGroupTask(2);
-            }
         }
     }
 
@@ -695,26 +208,9 @@ public class F_18D extends F_18
             "_Rock15",          "_Rock16",          "_Rock17",          "_Rock18",          "_Rock19",          "_Rock20",          "_Rock21",          "_Rock22",          "_Rock23",          "_Rock24",
             "_Rock25",          "_Rock26",          "_Rock27",          "_Rock28",          "_Flare01",         "_Flare02",         "_Chaff01",         "_Chaff02"
     };
+
     private BulletEmitter bulletEmitters[];
-    private GuidedMissileUtils guidedMissileUtils;
-    private boolean hasChaff;
-    private boolean hasFlare;
-    private long lastChaffDeployed;
-    private long lastFlareDeployed;
     private float wingFoldValue;
-    private ArrayList counterFlareList;
-    private ArrayList counterChaffList;
-    private boolean bHasAGM;
-    private boolean bHasAShM;
-    private boolean bHasUGR;
-    private long lastAGMcheck;
-    private Actor queen_last;
-    private long queen_time;
-    private boolean bNeedSetup;
-    private long dtime;
-    private Actor target_;
-    private Actor queen_;
-    private int dockport_;
 
     static
     {

@@ -10,25 +10,17 @@ import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
 import com.maddox.il2.objects.Wreckage;
 import com.maddox.il2.objects.sounds.SndAircraft;
-import com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric;
-import com.maddox.il2.objects.vehicles.cars.CarGeneric;
-import com.maddox.il2.objects.ships.BigshipGeneric;
-import com.maddox.il2.objects.ships.ShipGeneric;
-import com.maddox.il2.objects.vehicles.stationary.StationaryGeneric;
-import com.maddox.il2.objects.vehicles.tanks.TankGeneric;
 import com.maddox.il2.objects.weapons.*;
 import com.maddox.rts.*;
-import com.maddox.sound.Sample;
-import com.maddox.sound.SoundFX;
 import com.maddox.util.HashMapExt;
+import com.maddox.sas1946.il2.util.Reflection;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
-import com.maddox.sas1946.il2.util.Reflection;
 
 
 public class AV_8 extends Scheme1
-    implements TypeSupersonic, TypeFighter, TypeFighterAceMaker, TypeAcePlane, TypeGSuit, TypeFastJet, TypeBomber, TypeStormovikArmored, TypeLaserDesignator, TypeRadar, TypeSemiRadar, TypeGroundRadar, TypeFuelDump
+    implements TypeFighter, TypeFighterAceMaker, TypeBomber, TypeStormovikArmored, TypeGSuit, TypeSupersonic, TypeFastJet, TypeFuelDump
 {
 
     public float getDragForce(float f, float f1, float f2, float f3)
@@ -60,32 +52,9 @@ public class AV_8 extends Scheme1
     {
         lLightHook = new Hook[4];
         SonicBoom = 0.0F;
-        bSlatsOff = false;
-        oldctl = -1F;
-        curctl = -1F;
-        oldthrl = -1F;
-        curthrl = -1F;
         k14Mode = 2;
         k14WingspanType = 0;
         k14Distance = 200F;
-        AirBrakeControl = 0.0F;
-        DragChuteControl = 0.0F;
-        overrideBailout = false;
-        ejectComplete = false;
-        lightTime = 0.0F;
-        ft = 0.0F;
-        mn = 0.0F;
-        ts = false;
-        ictl = false;
-        engineSurgeDamage = 0.0F;
-        gearTargetAngle = -1F;
-        gearCurrentAngle = -1F;
-        hasHydraulicPressure = true;
-        vectorthrustx = 0.0F;
-        vectorthrustz = 0.0F;
-        radarmode = 0;
-        targetnum = 0;
-        lockrange = 0.04F;
         bSightAutomation = false;
         bSightBombDump = false;
         fSightCurDistance = 0.0F;
@@ -94,37 +63,33 @@ public class AV_8 extends Scheme1
         fSightCurAltitude = 3000F;
         fSightCurSpeed = 200F;
         fSightCurReadyness = 0.0F;
-        missilesList = new ArrayList();
-        lockmode = 0;
-        deltaAzimuth = 0.0F;
-        deltaTangage = 0.0F;
-        radargunsight = 0;
+        overrideBailout = false;
+        ejectComplete = false;
+        lightTime = 0.0F;
+        ft = 0.0F;
+        oldctl = -1F;
+        curctl = -1F;
+        oldthrl = -1F;
+        curthrl = -1F;
+        engineSurgeDamage = 0.0F;
+        gearTargetAngle = -1F;
+        gearCurrentAngle = -1F;
+        vectorthrustx = 0.0F;
+        vectorthrustz = 0.0F;
         leftscreen = 2;
         Bingofuel = 1000;
-        radarrange = 1;
+        Nvision = false;
         bDynamoOperational = true;
         dynamoOrient = 0.0F;
         bDynamoRotary = false;
-        hold = false;
-        t1 = 0L;
-        tangate = 0.0F;
-        azimult = 0.0F;
-        tf = 0L;
         APmode1 = false;
-        radartoggle = false;
-        Nvision = false;
-        vtolSlipX = 0;
-        vtolSlipY = 0;
         antiColLight = new Eff3DActor[6];
         oldAntiColLight = false;
         isHydraulicAlive = false;
         isGeneratorAlive = false;
         isBatteryOn = false;
-        laserSpotPos = new Point3d();
-        laserTimer = -1L;
-        semiradartarget = null;
-        groundradartarget = null;
-        iDebugLogLevel = 0;
+        vtolSlipX = 0;
+        vtolSlipY = 0;
     }
 
     private static final float toMeters(float f)
@@ -150,18 +115,6 @@ public class AV_8 extends Scheme1
     public void auxPressed(int i)
     {
         super.auxPressed(i);
-        if(i == 20)
-            if(!radartoggle)
-            {
-                radartoggle = true;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar ON");
-                radarmode = 0;
-            }
-            else
-            {
-                radartoggle = false;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar OFF");
-            }
         if(i == 21)
             if(!Nvision)
             {
@@ -173,26 +126,6 @@ public class AV_8 extends Scheme1
                 Nvision = false;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Nvision OFF");
             }
-        if(i == 22)
-        {
-            lockmode++;
-            if(lockmode > 1)
-                lockmode = 0;
-        }
-        if(i == 23)
-        {
-            radargunsight++;
-            if(radargunsight > 3)
-                radargunsight = 0;
-            if(radargunsight == 0)
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: funnel");
-            else if(radargunsight == 1)
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Radar ranging");
-            else if(radargunsight == 2)
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Unguided Rocket");
-            else if(radargunsight == 3)
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight: Ground");
-        }
         if(i == 24)
         {
             leftscreen++;
@@ -210,46 +143,7 @@ public class AV_8 extends Scheme1
             Bingofuel += 500;
             if(Bingofuel > 6000)
                 Bingofuel = 1000;
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "Bingofuel  " + Bingofuel);
-        }
-        if(i == 26)
-        {
-            if(hold && t1 + 200L < Time.current() && FLIR)
-            {
-                hold = false;
-                holdFollow = false;
-                HUD.log("Laser Pos Unlock");
-                t1 = Time.current();
-            }
-            if(!hold && t1 + 200L < Time.current() && FLIR)
-            {
-                hold = true;
-                holdFollow = false;
-                actorFollowing = null;
-                HUD.log("Laser Pos Lock");
-                t1 = Time.current();
-            }
-            if(!FLIR)
-                setLaserOn(false);
-        }
-        if(i == 27)
-        {
-            if(holdFollow && t1 + 200L < Time.current() && FLIR)
-            {
-                hold = false;
-                holdFollow = false;
-                actorFollowing = null;
-                HUD.log("Laser Track Unlock");
-                t1 = Time.current();
-            }
-            if(!holdFollow && t1 + 200L < Time.current() && FLIR)
-            {
-                hold = false;
-                holdFollow = true;
-                actorFollowing = null;
-                HUD.log("Laser Track Lock");
-                t1 = Time.current();
-            }
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "Bingofuel " + Bingofuel);
         }
         if(i == 28)
             if(!ILS)
@@ -264,451 +158,40 @@ public class AV_8 extends Scheme1
             }
     }
 
-    private void laser(Point3d point3d)
-    {
-        point3d.z = World.land().HQ(point3d.x, point3d.y);
-        Eff3DActor eff3dactor = Eff3DActor.New(null, null, new Loc(point3d.x, point3d.y, point3d.z, 0.0F, 0.0F, 0.0F), 1.0F, "3DO/Effects/Fireworks/FlareWhiteWide.eff", 0.1F);
-        eff3dactor.postDestroy(Time.current() + 1500L);
-    }
-
-    private void FLIR()
-    {
-        List list = Engine.targets();
-        int i = list.size();
-        for(int j = 0; j < i; j++)
-        {
-            Actor actor = (Actor)list.get(j);
-            if(((actor instanceof Aircraft) || (actor instanceof ArtilleryGeneric) || (actor instanceof CarGeneric) || (actor instanceof TankGeneric)) && !(actor instanceof StationaryGeneric) && !(actor instanceof TypeLaserDesignator) && actor.pos.getAbsPoint().distance(super.pos.getAbsPoint()) < 30000D)
-            {
-                Point3d point3d = new Point3d();
-                Orient orient = new Orient();
-                actor.pos.getAbs(point3d, orient);
-//                flirloc.set(point3d, orient);
-                Eff3DActor eff3dactor = Eff3DActor.New(actor, null, new Loc(), 1.0F, "effects/Explodes/Air/Zenitka/Germ_88mm/Glow.eff", 1.0F);
-                eff3dactor.postDestroy(Time.current() + 1500L);
-                LightPointActor lightpointactor = new LightPointActor(new LightPointWorld(), new Point3d());
-                lightpointactor.light.setColor(1.0F, 0.9F, 0.5F);
-                if(actor instanceof Aircraft)
-                    lightpointactor.light.setEmit(8F, 50F);
-                else if(!(actor instanceof ArtilleryGeneric))
-                    lightpointactor.light.setEmit(5F, 30F);
-                else
-                    lightpointactor.light.setEmit(3F, 10F);
-                ((Actor) (eff3dactor)).draw.lightMap().put("light", lightpointactor);
-            }
-        }
-
-    }
-
     public void typeBomberAdjDistanceReset()
     {
     }
 
     public void typeBomberAdjDistancePlus()
     {
-        if(FLIR)
-        {
-            azimult++;
-            tf = Time.current();
-        }
-        else if(radartoggle && lockmode == 0)
-            radarhol += 0.0035F;
     }
 
     public void typeBomberAdjDistanceMinus()
     {
-        if(FLIR)
-        {
-            azimult--;
-            tf = Time.current();
-        }
-        else if(radartoggle && lockmode == 0)
-            radarhol -= 0.0035F;
     }
 
     public void typeBomberAdjSideslipReset()
     {
-        vtolSlipY = 0;
     }
 
     public void typeBomberAdjSideslipPlus()
     {
-        if(nozzlemode == 1 && vtolvect > 0.74F)
-        {
-            vtolSlipY += 10;
-            if(vtolSlipY > 100)
-                vtolSlipY = 100;
-            if(vtolSlipY == 0)
-                HUD.log("Side Slip Thrust: Neutral");
-            else if(vtolSlipY > 0)
-                HUD.log("Side Slip Thrust: Right" + Math.abs(vtolSlipY));
-            else
-                HUD.log("Side Slip Thrust: Left" + Math.abs(vtolSlipY));
-        }
-        else if(FLIR)
-        {
-            tangate++;
-            tf = Time.current();
-        }
-        else if(radartoggle && lockmode == 0)
-            radarvrt += 0.0035F;
     }
 
     public void typeBomberAdjSideslipMinus()
     {
-        if(nozzlemode == 1 && vtolvect > 0.74F)
-        {
-            vtolSlipY -= 10;
-            if(vtolSlipY < -100)
-                vtolSlipY = -100;
-            if(vtolSlipY == 0)
-                HUD.log("Side Slip Thrust: Neutral");
-            else if(vtolSlipY > 0)
-                HUD.log("Side Slip Thrust: Right" + Math.abs(vtolSlipY));
-            else
-                HUD.log("Side Slip Thrust: Left" + Math.abs(vtolSlipY));
-        }
-        else if(FLIR)
-        {
-            tangate--;
-            tf = Time.current();
-        }
-        else if(radartoggle && lockmode == 0)
-            radarvrt -= 0.0035F;
     }
-
-    public void updatecontrollaser()
-    {
-        if(tf + 5L <= Time.current())
-        {
-            tangate = 0.0F;
-            azimult = 0.0F;
-        }
-
-        if(!FLIR && laserTimer > 0L && Time.current() > laserTimer && getLaserOn())
-        {
-            setLaserOn(false);
-        }
-
-        if(bHasPaveway)
-            checkgroundlaser();
-    }
-
-    private void checkgroundlaser()
-    {
-        boolean laseron = false;
-        double targetDistance = 0.0D;
-        float targetAngle = 0.0F;
-        float targetBait = 0.0F;
-        float maxTargetBait = 0.0F;
-        // superior the Laser spot of this Paveway's owner than others'
-        while(getLaserOn())
-        {
-            Point3d point3d = new Point3d();
-            point3d = getLaserSpot();
-            if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F)
-                break;
-            targetDistance = this.pos.getAbsPoint().distance(point3d);
-            if(targetDistance > maxPavewayDistance)
-                break;
-            targetAngle = angleBetween(this, point3d);
-            if(targetAngle > maxPavewayFOVfrom)
-                break;
-
-            laseron = true;
-            break;
-        }
-        // seak other Laser designator spots when Paveway's owner doesn't spot Laser
-        if(!laseron)
-        {
-            List list = Engine.targets();
-            int i = list.size();
-            for(int j = 0; j < i; j++)
-            {
-                Actor actor = (Actor)list.get(j);
-                if((actor instanceof TypeLaserDesignator) && ((TypeLaserDesignator) actor).getLaserOn() && actor.getArmy() == this.getArmy())
-                {
-                    Point3d point3d = new Point3d();
-                    point3d = ((TypeLaserDesignator)actor).getLaserSpot();
-                    // Not target about objects behind of clouds from the Paveway's seaker.
-                    if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F)
-                        continue;
-                    targetDistance = this.pos.getAbsPoint().distance(point3d);
-                    if(targetDistance > maxPavewayDistance)
-                        continue;
-                    targetAngle = angleBetween(this, point3d);
-                    if(targetAngle > maxPavewayFOVfrom)
-                        continue;
-
-                    targetBait = 1 / targetAngle / (float) (targetDistance * targetDistance);
-                    if(targetBait <= maxTargetBait)
-                        continue;
-
-                    maxTargetBait = targetBait;
-                    laseron = true;
-                }
-            }
-        }
-        setLaserArmEngaged(laseron);
-    }
-
-    private static float angleBetween(Actor actorFrom, Point3d pointTo) {
-        float angleRetVal = 180.1F;
-        double angleDoubleTemp = 0.0D;
-        Loc angleActorLoc = new Loc();
-        Point3d angleActorPos = new Point3d();
-        Vector3d angleTargRayDir = new Vector3d();
-        Vector3d angleNoseDir = new Vector3d();
-        actorFrom.pos.getAbs(angleActorLoc);
-        angleActorLoc.get(angleActorPos);
-        angleTargRayDir.sub(pointTo, angleActorPos);
-        angleDoubleTemp = angleTargRayDir.length();
-        angleTargRayDir.scale(1.0D / angleDoubleTemp);
-        angleNoseDir.set(1.0D, 0.0D, 0.0D);
-        angleActorLoc.transform(angleNoseDir);
-        angleDoubleTemp = angleNoseDir.dot(angleTargRayDir);
-        angleRetVal = Geom.RAD2DEG((float) Math.acos(angleDoubleTemp));
-        return angleRetVal;
-    }
-
-    public Point3d getLaserSpot()
-    {
-        return laserSpotPos;
-    }
-
-    public boolean setLaserSpot(Point3d p3d)
-    {
-        laserSpotPos = p3d;
-        return true;
-    }
-
-    public boolean getLaserOn()
-    {
-        return bLaserOn;
-    }
-
-    public boolean setLaserOn(boolean flag)
-    {
-        if(bLaserOn != flag)
-        {
-            if(bLaserOn == false)
-            {
-                if(FM.actor == World.getPlayerAircraft())
-                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser: ON");
-            }
-            else
-            {
-                if(FM.actor == World.getPlayerAircraft())
-                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser: OFF");
-                hold = false;
-                holdFollow = false;
-                actorFollowing = null;
-            }
-        }
-
-        return bLaserOn = flag;
-    }
-
-    public boolean getLaserArmEngaged()
-    {
-        return bLGBengaged;
-    }
-
-    public boolean setLaserArmEngaged(boolean flag)
-    {
-        if(bLGBengaged != flag)
-        {
-            if(bLGBengaged == false)
-            {
-                if(this == World.getPlayerAircraft())
-                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser Bomb: Engaged");
-            }
-            else
-            {
-                if(this == World.getPlayerAircraft())
-                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser Bomb: Disengaged");
-            }
-        }
-
-        return bLGBengaged = flag;
-    }
-
-
-    // +++ Implementing TypeSemiRadar
-    public Actor getSemiActiveRadarLockedActor()
-    {
-        if(getSemiActiveRadarOn())
-            return semiradartarget;
-
-        return (Actor) null;
-    }
-
-    public Actor setSemiActiveRadarLockedActor(Actor actor)
-    {
-        if(getSemiActiveRadarOn())
-        {
-            if(this.iDebugLogLevel > 2)
-            {
-            // debugging
-                if(actor == null)
-                    HUD.log("Semi-Active Radar lock-off.");
-                else
-                {
-                    String classnameFull = actor.getClass().getName();
-                    int idot = classnameFull.lastIndexOf('.');
-                    int idol = classnameFull.lastIndexOf('$');
-                    if(idot < idol) idot = idol;
-                    String classnameSection = classnameFull.substring(idot + 1);
-                    HUD.log("Semi-Active Radar lock-on " + classnameSection);
-                }
-            }
-
-            semiradartarget = actor;
-            return actor;
-        }
-        else
-            semiradartarget = null;
-
-        return (Actor) null;
-    }
-
-    public boolean getSemiActiveRadarOn()
-    {
-        if(radartoggle && (radarmode == 0 || radarmode == 1))
-            return true;
-        else
-            return false;
-    }
-
-    public boolean setSemiActiveRadarOn(boolean flag)
-    {
-        if(flag)
-        {
-            radartoggle = true;
-            if(radarmode == 2)
-                radarmode = 0;
-        }
-        else
-        {
-            radartoggle = false;
-        }
-
-        return flag;
-    }
-    // --- Implementing TypeSemiRadar
-
-    // +++ Implementing TypeGroundRadar
-    public Actor getGroundRadarLockedActor()
-    {
-        if(getGroundRadarOn())
-            return groundradartarget;
-
-        return (Actor) null;
-    }
-
-    public Actor setGroundRadarLockedActor(Actor actor)
-    {
-        if(getGroundRadarOn())
-        {
-            if(this.iDebugLogLevel > 2)
-            {
-            // debugging
-                if(actor == null)
-                    HUD.log("Ground Radar lock-off.");
-                else
-                {
-                    String classnameFull = actor.getClass().getName();
-                    int idot = classnameFull.lastIndexOf('.');
-                    int idol = classnameFull.lastIndexOf('$');
-                    if(idot < idol) idot = idol;
-                    String classnameSection = classnameFull.substring(idot + 1);
-                    HUD.log("Ground Radar lock-on " + classnameSection);
-                }
-            }
-
-            groundradartarget = actor;
-            return actor;
-        }
-        else
-            groundradartarget = null;
-
-        return (Actor) null;
-    }
-
-    public boolean getGroundRadarOn()
-    {
-        if(radartoggle && radarmode == 2)
-            return true;
-        else
-            return false;
-    }
-
-    public boolean setGroundRadarOn(boolean flag)
-    {
-        if(flag)
-        {
-            radartoggle = true;
-            if(radarmode != 2)
-                radarmode = 2;
-        }
-        else
-        {
-            radartoggle = false;
-        }
-
-        return flag;
-    }
-    // --- Implementing TypeGroundRadar
-
 
     public void typeBomberAdjAltitudeReset()
     {
-        vtolSlipX = 0;
     }
 
     public void typeBomberAdjAltitudePlus()
     {
-        if(nozzlemode == 1 && vtolvect > 0.74F)
-        {
-            vtolSlipX += 10;
-            if(vtolSlipX > 100)
-                vtolSlipX = 100;
-            if(vtolSlipX == 0)
-                HUD.log("Forward Slip Thrust: Neutral");
-            else if(vtolSlipX > 0)
-                HUD.log("Forward Slip Thrust: " + Math.abs(vtolSlipX));
-            else
-                HUD.log("Backward Slip Thrust: " + Math.abs(vtolSlipX));
-        }
-        else if(FLIR)
-            if(!APmode1)
-            {
-                APmode1 = true;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Altitude Hold Engaged");
-                FM.AP.setStabAltitude(2000F);
-            }
-            else if(APmode1)
-            {
-                APmode1 = false;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Altitude Hold Released");
-                FM.AP.setStabAltitude(false);
-            }
     }
 
     public void typeBomberAdjAltitudeMinus()
     {
-        if(nozzlemode == 1 && vtolvect > 0.74F)
-        {
-            vtolSlipX -= 10;
-            if(vtolSlipX < -100)
-                vtolSlipX = -100;
-            if(vtolSlipX == 0)
-                HUD.log("Forward Slip Thrust: Neutral");
-            else if(vtolSlipX > 0)
-                HUD.log("Forward Slip Thrust: " + Math.abs(vtolSlipX));
-            else
-                HUD.log("Backward Slip Thrust: " + Math.abs(vtolSlipX));
-        }
     }
 
     public void typeBomberAdjSpeedReset()
@@ -717,81 +200,29 @@ public class AV_8 extends Scheme1
 
     public void typeBomberAdjSpeedPlus()
     {
-        radarrange++;
-        if(radarrange > 5)
-            radarrange = 5;
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar range " + radarrange);
     }
 
     public void typeBomberAdjSpeedMinus()
     {
-        radarrange--;
-        if(radarrange < 1)
-            radarrange = 1;
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar range " + radarrange);
     }
 
     public void typeBomberUpdate(float f)
     {
-        if(Math.abs(FM.Or.getKren()) > 4.5F)
-        {
-            fSightCurReadyness -= 0.0666666F * f;
-            if(fSightCurReadyness < 0.0F)
-                fSightCurReadyness = 0.0F;
-        }
-        if(fSightCurReadyness < 1.0F)
-            fSightCurReadyness += 0.0333333F * f;
-        else if(bSightAutomation)
-        {
-            fSightCurDistance -= toMetersPerSecond(fSightCurSpeed) * f;
-            if(fSightCurDistance < 0.0F)
-            {
-                fSightCurDistance = 0.0F;
-                typeBomberToggleAutomation();
-            }
-            fSightCurForwardAngle = (float)Math.toDegrees(Math.atan(fSightCurDistance / toMeters(fSightCurAltitude)));
-            if(fSightCurDistance < toMetersPerSecond(fSightCurSpeed) * (float)Math.sqrt(toMeters(fSightCurAltitude) * 0.2038736F))
-                bSightBombDump = true;
-            if(bSightBombDump)
-                if(FM.isTick(3, 0))
-                {
-                    if(FM.CT.Weapons[3] != null && FM.CT.Weapons[3][FM.CT.Weapons[3].length - 1] != null && FM.CT.Weapons[3][FM.CT.Weapons[3].length - 1].haveBullets())
-                    {
-                        FM.CT.WeaponControl[3] = true;
-                        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
-                    }
-                }
-                else
-                {
-                    FM.CT.WeaponControl[3] = false;
-                }
-        }
+    }
+
+    public boolean typeBomberToggleAutomation()
+    {
+        return true;
     }
 
     public void typeBomberReplicateToNet(NetMsgGuaranted netmsgguaranted)
         throws IOException
     {
-        netmsgguaranted.writeByte((bSightAutomation ? 1 : 0) | (bSightBombDump ? 2 : 0));
-        netmsgguaranted.writeFloat(fSightCurDistance);
-        netmsgguaranted.writeByte((int)fSightCurForwardAngle);
-        netmsgguaranted.writeByte((int)((fSightCurSideslip + 3F) * 33.33333F));
-        netmsgguaranted.writeFloat(fSightCurAltitude);
-        netmsgguaranted.writeByte((int)(fSightCurSpeed / 2.5F));
-        netmsgguaranted.writeByte((int)(fSightCurReadyness * 200F));
     }
 
     public void typeBomberReplicateFromNet(NetMsgInput netmsginput)
         throws IOException
     {
-        int i = netmsginput.readUnsignedByte();
-        bSightAutomation = (i & 1) != 0;
-        bSightBombDump = (i & 2) != 0;
-        fSightCurDistance = netmsginput.readFloat();
-        fSightCurForwardAngle = netmsginput.readUnsignedByte();
-        fSightCurSideslip = -3F + (float)netmsginput.readUnsignedByte() / 33.33333F;
-        fSightCurAltitude = netmsginput.readFloat();
-        fSightCurSpeed = (float)netmsginput.readUnsignedByte() * 2.5F;
-        fSightCurReadyness = (float)netmsginput.readUnsignedByte() / 200F;
     }
 
     public void getGFactors(TypeGSuit.GFactors gfactors)
@@ -803,9 +234,6 @@ public class AV_8 extends Scheme1
     {
         super.onAircraftLoaded();
         FM.AS.wantBeaconsNet(true);
-        actl = FM.SensRoll;
-        ectl = FM.SensPitch;
-        rctl = FM.SensYaw;
         FM.CT.bHasBombSelect = true;
         FM.CT.bHasAntiColLights = true;
         FM.CT.bHasFormationLights = true;
@@ -826,12 +254,6 @@ public class AV_8 extends Scheme1
     {
         super.missionStarting();
 //        checkDroptanks();
-
-        FM.CT.FlapsControlSwitch = 1;
-        laserTimer = -1L;
-        bLaserOn = false;
-        FLIR = false;
-        iDebugLogLevel = Config.cur.ini.get("Mods", "GuidedMissileDebugLog", 0);
     }
 
     public void checkHydraulicStatus()
@@ -839,15 +261,15 @@ public class AV_8 extends Scheme1
         if(FM.EI.engines[0].getStage() < 6 && FM.Gears.nOfGearsOnGr > 0)
         {
             gearTargetAngle = 90F;
-            hasHydraulicPressure = false;
+            isHydraulicAlive = false;
             FM.CT.bHasAileronControl = false;
             FM.CT.bHasElevatorControl = false;
             FM.CT.AirBrakeControl = 0.0F;
         }
-        else if(!hasHydraulicPressure)
+        else if(!isHydraulicAlive)
         {
             gearTargetAngle = 0.0F;
-            hasHydraulicPressure = true;
+            isHydraulicAlive = true;
             FM.CT.bHasAileronControl = true;
             FM.CT.bHasElevatorControl = true;
             FM.CT.bHasAirBrakeControl = true;
@@ -961,17 +383,6 @@ public class AV_8 extends Scheme1
         }
         if(FM.AS.isMaster() && Config.isUSE_RENDER())
         {
-            Vector3d vector3d = FM.getVflow();
-            mn = (float)vector3d.lengthSquared();
-            mn = (float)Math.sqrt(mn);
-            AV_8 av_8 = this;
-            float f1 = mn;
-            World.cur().getClass();
-            av_8.mn = f1 / Atmosphere.sonicSpeed((float)FM.Loc.z);
-            if(mn >= 0.9F && mn < 1.1F)
-                ts = true;
-            else
-                ts = false;
             ft = World.getTimeofDay() % 0.01F;
             if(ft == 0.0F)
                 UpdateLightIntensity();
@@ -982,10 +393,6 @@ public class AV_8 extends Scheme1
             hierMesh().chunkVisible("HMask1_D0", hierMesh().isChunkVisible("Pilot1_D0"));
         if((!FM.isPlayers() || !(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode()) && (super.FM instanceof Maneuver))
             AIAirBrake();
-        if(FLIR)
-            FLIR();
-        if(!FLIR)
-            FM.AP.setStabAltitude(false);
         if(!FM.isPlayers() && isGeneratorAlive)
             if(((Maneuver)super.FM).get_maneuver() == 21 && FM.AP.way.isLanding())
                 FM.CT.FlapsControlSwitch = 2;
@@ -995,18 +402,6 @@ public class AV_8 extends Scheme1
                 FM.CT.FlapsControlSwitch = 0;
             else
                 FM.CT.FlapsControlSwitch = 1;
-        if(!FM.isPlayers())
-            if(((Maneuver)FM).get_maneuver() == 25 || ((Maneuver)FM).get_maneuver() == 26
-               || ((Maneuver)FM).get_maneuver() == 64 || ((Maneuver)FM).get_maneuver() == 66 || ((Maneuver)FM).get_maneuver() == 102)
-            {
-                // LANDING, TAKEOFF, PARKED_STARTUP, TAXI, TAXI_TO_TO
-                radartoggle = false;
-            }
-            else
-            {
-                radartoggle = true;
-                radarmode = 0;
-            }
     }
 
     private final void UpdateLightIntensity()
@@ -1163,35 +558,48 @@ public class AV_8 extends Scheme1
         hierMesh().chunkSetLocate("Airbrake21_D0", Aircraft.xyz, Aircraft.ypr);
     }
 
+    // no more needed 4.12.2m or later games, but keep backward compatibility
     public static void moveGear(HierMesh hiermesh, float f)
     {
-        float fy = f > 0.5F ? Aircraft.cvt(f, 0.8F, 1.0F, 90F, 0.0F) : Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, 90F);
-        float fx = f > 0.5F ? Aircraft.cvt(f, 0.8F, 1.0F, 6F, 0.0F) : Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, 6F);
-        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.3F, 0.8F, 0.0F, -95F));
-        hiermesh.chunkSetAngles("GearC7_D0", fx, -fy, 0.0F);
-        hiermesh.chunkSetAngles("GearC8_D0", -fx, fy, 0.0F);
-        hiermesh.chunkSetAngles("GearC9_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, 90F), 0.0F);
-        hiermesh.chunkSetAngles("GearC10_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.11F, 0.0F, -90F), 0.0F);
-        hiermesh.chunkSetAngles("GearC11_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, -90F));
-        hiermesh.chunkSetAngles("GearB2_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.7F, 0.0F, 115F));
-        hiermesh.chunkSetAngles("GearB5_D0", 0.0F, Aircraft.cvt(f, 0.0F, 0.7F, 0.0F, 90F), 0.0F);
-        hiermesh.chunkSetAngles("GearB6_D0", 0.0F, Aircraft.cvt(f, 0.0F, 0.7F, 0.0F, -90F), 0.0F);
-        hiermesh.chunkSetAngles("GearB7_D0", 0.0F, fy, 0.0F);
-        hiermesh.chunkSetAngles("GearB8_D0", 0.0F, fy, 0.0F);
-        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, 85F));
-        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, 85F));
-        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, -90F), 0.0F);
-        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, -90F), 0.0F);
-        hiermesh.chunkSetAngles("GearL5_D0", 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, 90F), 0.0F);
-        hiermesh.chunkSetAngles("GearR5_D0", 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, 90F), 0.0F);
-        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, 45F));
-        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, 45F));
+        moveGear(hiermesh, f, f, f);
     }
 
+    public static void moveGear(HierMesh hiermesh, float fgl, float fgr, float fgc)
+    {
+        float fy = fgc > 0.5F ? Aircraft.cvt(fgc, 0.8F, 1.0F, 90F, 0.0F) : Aircraft.cvt(fgc, 0.01F, 0.11F, 0.0F, 90F);
+        float fx = fgc > 0.5F ? Aircraft.cvt(fgc, 0.8F, 1.0F, 6F, 0.0F) : Aircraft.cvt(fgc, 0.01F, 0.11F, 0.0F, 6F);
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 0.0F, Aircraft.cvt(fgc, 0.3F, 0.8F, 0.0F, -95F));
+        hiermesh.chunkSetAngles("GearC7_D0", fx, -fy, 0.0F);
+        hiermesh.chunkSetAngles("GearC8_D0", -fx, fy, 0.0F);
+        hiermesh.chunkSetAngles("GearC9_D0", 0.0F, Aircraft.cvt(fgc, 0.01F, 0.11F, 0.0F, 90F), 0.0F);
+        hiermesh.chunkSetAngles("GearC10_D0", 0.0F, Aircraft.cvt(fgc, 0.01F, 0.11F, 0.0F, -90F), 0.0F);
+        hiermesh.chunkSetAngles("GearC11_D0", 0.0F, 0.0F, Aircraft.cvt(fgc, 0.0F, 0.8F, 0.0F, -90F));
+
+        hiermesh.chunkSetAngles("GearB2_D0", 0.0F, 0.0F, Aircraft.cvt(fgc, 0.0F, 0.7F, 0.0F, 115F));
+        hiermesh.chunkSetAngles("GearB5_D0", 0.0F, Aircraft.cvt(fgc, 0.0F, 0.7F, 0.0F, 90F), 0.0F);
+        hiermesh.chunkSetAngles("GearB6_D0", 0.0F, Aircraft.cvt(fgc, 0.0F, 0.7F, 0.0F, -90F), 0.0F);
+        hiermesh.chunkSetAngles("GearB7_D0", 0.0F, fy, 0.0F);
+        hiermesh.chunkSetAngles("GearB8_D0", 0.0F, fy, 0.0F);
+
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 0.0F, Aircraft.cvt(fgl, 0.0F, 0.8F, 0.0F, 85F));
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 0.0F, Aircraft.cvt(fgr, 0.0F, 0.8F, 0.0F, 85F));
+        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(fgl, 0.0F, 0.8F, 0.0F, -90F), 0.0F);
+        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(fgr, 0.0F, 0.8F, 0.0F, -90F), 0.0F);
+        hiermesh.chunkSetAngles("GearL5_D0", 0.0F, Aircraft.cvt(fgl, 0.0F, 0.8F, 0.0F, 90F), 0.0F);
+        hiermesh.chunkSetAngles("GearR5_D0", 0.0F, Aircraft.cvt(fgr, 0.0F, 0.8F, 0.0F, 90F), 0.0F);
+        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, 0.0F, Aircraft.cvt(fgl, 0.0F, 0.8F, 0.0F, 45F));
+        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, 0.0F, Aircraft.cvt(fgr, 0.0F, 0.8F, 0.0F, 45F));
+    }
+
+    // no more needed 4.12.2m or later games, but keep backward compatibility
     protected void moveGear(float f)
     {
         moveGear(hierMesh(), f);
-        resetYPRmodifier();
+    }
+
+    protected void moveGear(float fgl, float fgr, float fgc)
+    {
+        moveGear(hierMesh(), fgl, fgr, fgc);
     }
 
     public void moveWheelSink()
@@ -1723,14 +1131,10 @@ public class AV_8 extends Scheme1
             if(FM.AP.way.isLanding() && FM.Gears.onGround() && FM.getSpeed() > 40F)
             {
                 FM.CT.AirBrakeControl = 1.0F;
-                if(FM.CT.bHasDragChuteControl)
-                    FM.CT.DragChuteControl = 1.0F;
             }
             if(FM.AP.way.isLanding() && FM.Gears.onGround() && FM.getSpeed() < 40F)
             {
                 FM.CT.AirBrakeControl = 0.0F;
-                if(FM.getSpeed() < 20F)
-                    FM.CT.DragChuteControl = 0.0F;
             }
         }
         if(FM.AS.isMaster() && Config.isUSE_RENDER())
@@ -1761,13 +1165,7 @@ public class AV_8 extends Scheme1
                 {
                     FM.AS.setSootState(this, i, 0);
                 }
-
-            if(super.FM instanceof RealFlightModel)
-                umn();
         }
-        if(FLIR)
-            laser(getLaserSpot());
-        updatecontrollaser();
         engineSurge(f);
         typeFighterAceMakerRangeFinder();
         checkHydraulicStatus();
@@ -2278,99 +1676,6 @@ public class AV_8 extends Scheme1
 
     }
 
-    private final void umn()
-    {
-        Vector3d vector3d = FM.getVflow();
-        mn = (float)vector3d.lengthSquared();
-        mn = (float)Math.sqrt(mn);
-        AV_8 av_8 = this;
-        float f = mn;
-        World.cur().getClass();
-        av_8.mn = f / Atmosphere.sonicSpeed((float)((Tuple3d) (FM.Loc)).z);
-        if(mn >= lteb)
-            ts = true;
-        else
-            ts = false;
-    }
-
-    public boolean ist()
-    {
-        return ts;
-    }
-
-    public float gmnr()
-    {
-        return mn;
-    }
-
-    public boolean inr()
-    {
-        return ictl;
-    }
-
-    public void typeRadarGainMinus()
-    {
-    }
-
-    public void typeRadarGainPlus()
-    {
-    }
-
-    public void typeRadarRangeMinus()
-    {
-        radarrange++;
-        if(radarrange > 4)
-            radarrange = 4;
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar range " + radarrange);
-    }
-
-    public void typeRadarRangePlus()
-    {
-        radarrange--;
-        if(radarrange < 1)
-            radarrange = 1;
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar range " + radarrange);
-    }
-
-    public void typeRadarReplicateFromNet(NetMsgInput netmsginput)
-        throws IOException
-    {
-    }
-
-    public void typeRadarReplicateToNet(NetMsgGuaranted netmsgguaranted)
-        throws IOException
-    {
-    }
-
-    public boolean typeRadarToggleMode()
-    {
-        radarmode++;
-        if(radarmode > 2)
-            radarmode = 0;
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar mode " + radarmode);
-        return false;
-    }
-
-    public boolean typeBomberToggleAutomation()
-    {
-        k14Mode++;
-        if(k14Mode > 2)
-            k14Mode = 0;
-        if(k14Mode == 0)
-        {
-            if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Bomb");
-        }
-        else if(k14Mode == 1)
-        {
-            if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Gunnery");
-        }
-        else if(k14Mode == 2 && ((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Navigation");
-        return true;
-    }
-
     public float getFlowRate()
     {
         return FlowRate;
@@ -2396,7 +1701,6 @@ public class AV_8 extends Scheme1
                 {
                     if(FM.CT.AirBrakeControl != 1.0F)
                         FM.CT.AirBrakeControl = 1.0F;
-                    FM.CT.DragChuteControl = 1.0F;
                 }
                 else if(FM.CT.AirBrakeControl != 1.0F)
                     FM.CT.AirBrakeControl = 1.0F;
@@ -2414,17 +1718,18 @@ public class AV_8 extends Scheme1
             if(FM.CT.AirBrakeControl != 1.0F)
                 FM.CT.AirBrakeControl = 1.0F;
         }
-        else if(hasHydraulicPressure && FM.CT.AirBrakeControl != 0.0F)
+        else if(isHydraulicAlive && FM.CT.AirBrakeControl != 0.0F)
             FM.CT.AirBrakeControl = 0.0F;
     }
 
     public void computeLift()
     {
         Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-        float x = this.calculateMach();
-        if(this.calculateMach() >= 0.0F);
+        float x = calculateMach();
         float Lift = 0.0F;
-        if(x > 1.1F)
+        if(x <= 0.0F)
+            Lift = 0.08F;
+        else if(x > 1.1F)
             Lift = 0.05F;
         else
         {
@@ -2432,18 +1737,18 @@ public class AV_8 extends Scheme1
             float x3 = x2 * x;
             float x4 = x3 * x;
             float x5 = x4 * x;
-            Lift= - 2.02967F*x4 + 3.68466F*x3 - 1.8923F*x2 + 0.297311F*x + 0.08F;
-          //  {{0.0, 0.08},{0.2, 0.09},{0.6, 0.11}, {1.0, 0.14},{1.1, 0.05}}      
+            Lift = - 2.02967F*x4 + 3.68466F*x3 - 1.8923F*x2 + 0.297311F*x + 0.08F;
+          //  {{0.0, 0.08}, {0.2, 0.09}, {0.6, 0.11}, {1.0, 0.14}, {1.1, 0.05}}
         }
-        polares.lineCyCoeff= Lift;
+        polares.lineCyCoeff = Lift;
     }
-
 
     public void computeEnergy()
     {
         float x = FM.getOverload();
-        if(FM.getOverload() >= 4.5F);
         float Energy = 0.0F;
+        if(x < -3F)
+            Energy = 0.0001F;
         if(x >= 10F)
             Energy = 0.085F;
         else
@@ -2454,27 +1759,25 @@ public class AV_8 extends Scheme1
             float x5 = x4 * x;
             float x6 = x5 * x;
             Energy= 0.000000842F*x5 + 0.0000009877F*x4 - 0.00000947291F*x3 + 0.00000222222F*x2 +0.0000170512F*x;
-            //{{-3,0.0001},{-1.5,0.00001},{0,0},{1.5,0.00001},{3,0.0001},{10,0.085}}
-           
+            // {{-3,0.0001}, {-1.5,0.00001}, {0,0}, {1.5,0.00001}, {3,0.0001}, {10,0.085}}
+
         }
         FM.Sq.dragParasiteCx += Energy;
     }
 
     public float Fuelamount;
-    public boolean radartoggle;
+    public int leftscreen;
+    public int Bingofuel;
     public boolean Nvision;
-    public int lockmode;
-    private boolean APmode1;
+    public boolean APmode1;
     public boolean ILS;
-    public boolean hold;
-    public boolean holdFollow;
-    public Actor actorFollowing;
-    public long t1;
-    public float azimult;
-    public float tangate;
-    public long tf;
-    public float radarvrt;
-    public float radarhol;
+    private float oldctl;
+    private float curctl;
+    private float oldthrl;
+    private float curthrl;
+    private float engineSurgeDamage;
+    private boolean overrideBailout;
+    private boolean ejectComplete;
     public int nozzlemode;
     public long tvect;
     private boolean bDynamoOperational;
@@ -2487,20 +1790,11 @@ public class AV_8 extends Scheme1
     private boolean flapswitch;
     private float vectorthrustz;
     private float vectorthrustx;
-    public int radarrange;
+    public long t1;
     private long twait;
-    protected boolean bSlatsOff;
-    private float oldctl;
-    private float curctl;
-    private float oldthrl;
-    private float curthrl;
     public int k14Mode;
     public int k14WingspanType;
     public float k14Distance;
-    public float AirBrakeControl;
-    public float DragChuteControl;
-    private boolean overrideBailout;
-    private boolean ejectComplete;
     private float lightTime;
     private float ft;
     private LightPointWorld lLight[];
@@ -2509,35 +1803,15 @@ public class AV_8 extends Scheme1
     private Point3d lLightP1 = new Point3d();
     private Point3d lLightP2 = new Point3d();
     private Point3d lLightPL = new Point3d();
-    private boolean ictl;
-    private static float mteb = 1.0F;
-    private float mn;
-    private static float uteb = 1.25F;
-    private static float lteb = 0.92F;
-    private float actl;
-    private float rctl;
-    private float ectl;
-    private boolean ts;
-    private float H1;
     public boolean bChangedPit = false;
     private float SonicBoom;
     private Eff3DActor shockwave;
     private boolean isSonic;
 //    public static int LockState = 0;
     Actor hunted = null;
-    private float engineSurgeDamage;
     private float gearTargetAngle;
     private float gearCurrentAngle;
-    public boolean hasHydraulicPressure;
-    private static final float NEG_G_TOLERANCE_FACTOR = 3.5F;
-    private static final float NEG_G_TIME_FACTOR = 1.5F;
-    private static final float NEG_G_RECOVERY_FACTOR = 2.5F;
-    private static final float POS_G_TOLERANCE_FACTOR = 8.2F;
-    private static final float POS_G_TIME_FACTOR = 3F;
-    private static final float POS_G_RECOVERY_FACTOR = 3.5F;
-    public int radarmode;
-    public int targetnum;
-    public float lockrange;
+
     private Eff3DActor pull1;
     private Eff3DActor pull2;
     private Eff3DActor pull3;
@@ -2562,40 +1836,30 @@ public class AV_8 extends Scheme1
     public float fSightCurAltitude;
     public float fSightCurSpeed;
     public float fSightCurReadyness;
-    public boolean FLIR;
-//    private static Loc flirloc = new Loc();
-    private ArrayList missilesList;
-    private float deltaAzimuth;
-    private float deltaTangage;
     private Eff3DActor jet1;
     private Eff3DActor jet2;
-    public int radargunsight;
-    public int leftscreen;
-    public int Bingofuel;
     private boolean bUseDroopAileron;
     private boolean oldbUseDroopAileron;
-    public static float FlowRate = 10F;
-    public static float FuelReserve = 1500F;
-    private int vtolSlipX;
-    private int vtolSlipY;
+    public int vtolSlipX;
+    public int vtolSlipY;
     private Eff3DActor antiColLight[];
     private boolean oldAntiColLight;
     public boolean isHydraulicAlive;
     public boolean isGeneratorAlive;
     public boolean isBatteryOn;
 
-    private Point3d laserSpotPos;
-    private boolean bLaserOn = false;
-    public long laserTimer;
-    private boolean bLGBengaged = false;
-    public boolean bHasPaveway = false;
-    private static float maxPavewayFOVfrom = 45.0F;
-    private static double maxPavewayDistance = 20000D;
+    // TypeFuelDump setup values
+    public static float FlowRate = 10F;
+    public static float FuelReserve = 1500F;
 
-    private Actor semiradartarget;
-    private Actor groundradartarget;
+    // TypeGSuit setup values
+    private static final float NEG_G_TOLERANCE_FACTOR = 3.5F;
+    private static final float NEG_G_TIME_FACTOR = 1.5F;
+    private static final float NEG_G_RECOVERY_FACTOR = 2.5F;
+    private static final float POS_G_TOLERANCE_FACTOR = 8.2F;
+    private static final float POS_G_TIME_FACTOR = 3F;
+    private static final float POS_G_RECOVERY_FACTOR = 3.5F;
 
-    private int iDebugLogLevel = 0;
 
     static
     {

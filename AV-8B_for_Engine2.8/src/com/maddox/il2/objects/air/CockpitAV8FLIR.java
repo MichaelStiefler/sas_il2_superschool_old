@@ -21,11 +21,18 @@ import java.util.List;
 public class CockpitAV8FLIR extends CockpitGunner
 {
 
+    public boolean isEnableFocusing()
+    {
+        if(!((AV_8B)aircraft()).bHasLaser)
+            return false;
+        return !aircraft().FM.AS.isPilotParatrooper(0);
+    }
+
     protected boolean doFocusEnter()
     {
         if(super.doFocusEnter())
         {
-            ((AV_8)aircraft()).FLIR = true;
+            ((AV_8B)aircraft()).FLIR = true;
             ((TypeLaserDesignator)aircraft()).setLaserOn(true);
             CmdEnv.top().exec("fov 33.3");
             return true;
@@ -38,8 +45,8 @@ public class CockpitAV8FLIR extends CockpitGunner
     protected void doFocusLeave()
     {
         super.doFocusLeave();
-        ((AV_8)aircraft()).FLIR = false;
-        ((AV_8)aircraft()).laserTimer = Time.current() + 180000L;  // Laser Auto OFF after 180 sec.
+        ((AV_8B)aircraft()).FLIR = false;
+        ((AV_8B)aircraft()).laserTimer = Time.current() + 180000L;  // Laser Auto OFF after 180 sec.
     }
 
     public void moveGun(Orient orient)
@@ -52,7 +59,7 @@ public class CockpitAV8FLIR extends CockpitGunner
 
     private void instrument(Orient orient)
     {
-        if(!((AV_8)aircraft()).Nvision)
+        if(!((AV_8B)aircraft()).Nvision)
         {
             super.mesh.chunkVisible("Screen", false);
             super.mesh.chunkVisible("Dark", true);
@@ -71,7 +78,7 @@ public class CockpitAV8FLIR extends CockpitGunner
         super.mesh.chunkSetLocate("Z_Z_FLIR_VERT", Cockpit.xyz, Cockpit.ypr);
         Orient orient2 = new Orient();
         Point3d point3d = new Point3d();
-        ((AV_8)aircraft()).pos.getAbs(point3d, orient2);
+        ((AV_8B)aircraft()).pos.getAbs(point3d, orient2);
         float roll = orient2.getRoll();
         float antiroll = 360F - roll;
         if(antiroll > 180F)
@@ -97,7 +104,7 @@ public class CockpitAV8FLIR extends CockpitGunner
     {
         Orient orient2 = new Orient();
         Point3d point3d = new Point3d();
-        ((AV_8)aircraft()).pos.getAbs(point3d, orient2);
+        ((AV_8B)aircraft()).pos.getAbs(point3d, orient2);
         float roll = orient2.getRoll();
         float fn = orient2.getPitch();
         float pitch = 0.0F;
@@ -106,7 +113,7 @@ public class CockpitAV8FLIR extends CockpitGunner
         if(fn < 90F)
             pitch = fn;
         super.mesh.chunkSetAngles("baseflir", 0.0F, -pitch, roll);
-        if(((AV_8)aircraft()).hold)
+        if(((AV_8B)aircraft()).hold)
         {
             super.mesh.chunkVisible("Z_Z_FLIR_Lock", true);
             LaserP3.x = LaserP2.x;
@@ -186,7 +193,7 @@ public class CockpitAV8FLIR extends CockpitGunner
         else
         {
             LaserHook[1] = new HookNamed(super.mesh, "_Laser1");
-            ((AV_8)aircraft()).pos.getRender(Actor._tmpLoc);
+            ((AV_8B)aircraft()).pos.getRender(Actor._tmpLoc);
             LaserLoc1.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
             LaserHook[1].computePos(this, Actor._tmpLoc, LaserLoc1);
             LaserLoc1.get(LaserP1);
