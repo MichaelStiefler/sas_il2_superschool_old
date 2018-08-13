@@ -26,9 +26,8 @@ import java.util.*;
 
 
 public class F_14 extends Scheme2
-    implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeGSuit, TypeFastJet, TypeBomber, TypeStormovikArmored, TypeAcePlane, TypeLaserDesignator, TypeRadar, TypeFuelDump, TypeRadarWarningReceiver
+    implements TypeFighter, TypeFighterAceMaker, TypeBNZFighter, TypeBomber, TypeSupersonic, TypeFastJet, TypeLaserDesignator, TypeGSuit, TypeFuelDump, TypeRadarWarningReceiver, TypeGuidedMissileCarrier, TypeCountermeasure, TypeRadar
 {
-    // delete TypeFighterAceMaker, 
 
     public float getDragForce(float f, float f1, float f2, float f3)
     {
@@ -57,10 +56,13 @@ public class F_14 extends Scheme2
 
     public F_14()
     {
-        bForceTakeoffElTrim = false;
-        bForceFlapmodeAuto = false;
-        oldTrimElevator = 0.0F;
-        elevatorsField = null;
+        guidedMissileUtils = new GuidedMissileUtils(this);
+        hasChaff = false;
+        hasFlare = false;
+        lastChaffDeployed = 0L;
+        lastFlareDeployed = 0L;
+        counterFlareList = new ArrayList();
+        counterChaffList = new ArrayList();
         lLightHook = new Hook[4];
         SonicBoom = 0.0F;
         k14Mode = 2;
@@ -70,9 +72,6 @@ public class F_14 extends Scheme2
         ejectComplete = false;
         lightTime = 0.0F;
         ft = 0.0F;
-        mn = 0.0F;
-        ts = false;
-        ictl = false;
         hasHydraulicPressure = true;
         super.bWantBeaconKeys = true;
         lTimeNextEject = 0L;
@@ -86,9 +85,6 @@ public class F_14 extends Scheme2
         obsMove = 0.0F;
         obsMoveTot = 0.0F;
         bObserverKilled = false;
-        bToFire = false;
-        deltaAzimuth = 0.0F;
-        deltaTangage = 0.0F;
         bSightAutomation = false;
         bSightBombDump = false;
         fSightCurDistance = 0.0F;
@@ -108,23 +104,20 @@ public class F_14 extends Scheme2
         APmode1 = false;
         APmode2 = false;
         APmode3 = false;
-        radartogle = false;
-        v = 0.0F;
-        h = 0.0F;
+        radartoggle = false;
+        radarvrt = 0.0F;
+        radarhol = 0.0F;
         lockmode = 0;
         radargunsight = 0;
         leftscreen = 2;
         Bingofuel = 1000;
         radarrange = 1;
         Nvision = false;
-        thrustMaxField = new Field[2];
-        bHasCenterTank = false;
-        bHasWingTank = false;
+        bHasUnderTank = false;
         bTakeoffFlapAssist = false;
         bSpawnedAsAI = false;
         bTakeoffAIAssist = false;
         bStableAIGround = false;
-        arrestor = 0.0F;
         autoEng = false;
         curFlaps = 0.0F;
         desiredPosition = 0.0F;
@@ -150,8 +143,21 @@ public class F_14 extends Scheme2
         antiColLight = new Eff3DActor[3];
         oldAntiColLight = false;
         lEnteredTaxiMode = -1L;
+        FLIR = false;
+        bLaserOn = false;
         laserSpotPos = new Point3d();
+        bLGBengaged = false;
         laserTimer = -1L;
+        bHasLaser = false;
+        bHasPaveway = false;
+        bHadLGweapons = false;
+        bAILaserOn = false;
+        lAILaserTimer = -1L;
+        lAIGAskipTimer = -1L;
+        lastLGBcheck = -1L;
+        hold = false;
+        holdFollow = false;
+        actorFollowing = null;
         freq = 800;
         Timer1 = Timer2 = freq;
         if(Config.cur.ini.get("Mods", "RWRTextStop", 0) > 0) bRWR_Show_Text_Warning = false;
@@ -172,6 +178,123 @@ public class F_14 extends Scheme2
         return 0.4470401F * f;
     }
 
+    private void checkAmmo()
+    {
+        counterFlareList.clear();
+        counterChaffList.clear();
+        bHasLaser = false;
+        bHasPaveway = false;
+        bHadLGweapons = false;
+        FM.bNoDiveBombing = false;
+
+        for(int i = 0; i < FM.CT.Weapons.length; i++)
+            if(FM.CT.Weapons[i] != null)
+            {
+                for(int j = 0; j < FM.CT.Weapons[i].length; j++)
+                    if(FM.CT.Weapons[i][j].haveBullets())
+                    {
+                        if(FM.CT.Weapons[i][j] instanceof RocketGunFlare_gn16)
+                            counterFlareList.add(FM.CT.Weapons[i][j]);
+                        else if(FM.CT.Weapons[i][j] instanceof RocketGunChaff_gn16)
+                            counterChaffList.add(FM.CT.Weapons[i][j]);
+                        else if(FM.CT.Weapons[i][j] instanceof BombGunGBU10_Mk84LGB_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof BombGunGBU12_Mk82LGB_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof BombGunGBU16_Mk83LGB_gn16)
+                        {
+                            bHasPaveway = true;
+                            bHadLGweapons = true;
+                            FM.bNoDiveBombing = true;
+                        }
+                        else if(FM.CT.Weapons[i][j] instanceof BombGunGBU38_Mk82JDAM_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof BombGunGBU32_Mk83JDAM_gn16 ||
+                                FM.CT.Weapons[i][j] instanceof BombGunGBU31_Mk84JDAM_gn16)
+                            FM.bNoDiveBombing = true;
+                    }
+                    else if(FM.CT.Weapons[i][j] instanceof Pylon_AN_AAQ14_gn16)
+                        bHasLaser = true;
+            }
+    }
+
+    private void checkGuidedBombRest()
+    {
+        if(!((Maneuver)FM).hasBombs())
+        {
+            bHasPaveway = false;
+            FM.bNoDiveBombing = false;
+        }
+        else if(bHasPaveway || FM.bNoDiveBombing)
+        {
+            boolean bTempNoGBU = true;
+            boolean bTempNoJDAM = true;
+            for(int i = 3; i < 4 && bTempNoGBU && bTempNoJDAM; i++)
+                if(FM.CT.Weapons[i] != null)
+                {
+                    for(int j = 0; j < FM.CT.Weapons[i].length && bTempNoGBU && bTempNoJDAM; j++)
+                        if(FM.CT.Weapons[i][j].haveBullets())
+                        {
+                            if(FM.CT.Weapons[i][j] instanceof BombGunGBU10_Mk84LGB_gn16 ||
+                               FM.CT.Weapons[i][j] instanceof BombGunGBU12_Mk82LGB_gn16 ||
+                               FM.CT.Weapons[i][j] instanceof BombGunGBU16_Mk83LGB_gn16)
+                                bTempNoGBU = false;
+                            else if(FM.CT.Weapons[i][j] instanceof BombGunGBU38_Mk82JDAM_gn16 ||
+                                    FM.CT.Weapons[i][j] instanceof BombGunGBU32_Mk83JDAM_gn16 ||
+                                    FM.CT.Weapons[i][j] instanceof BombGunGBU31_Mk84JDAM_gn16)
+                                bTempNoJDAM = false;
+                        }
+                }
+            if(bTempNoGBU)
+                bHasPaveway = false;
+            if(bTempNoGBU && bTempNoJDAM)
+                FM.bNoDiveBombing = false;
+        }
+    }
+
+    private void backFire()
+    {
+        if(counterFlareList.isEmpty())
+            hasFlare = false;
+        else
+        {
+            if(Time.current() > lastFlareDeployed + 1200L)
+            {
+                ((RocketGunFlare_gn16)counterFlareList.get(0)).shots(1);
+                hasFlare = true;
+                lastFlareDeployed = Time.current();
+                if(!((RocketGunFlare_gn16)counterFlareList.get(0)).haveBullets())
+                    counterFlareList.remove(0);
+            }
+        }
+        if(counterChaffList.isEmpty())
+            hasChaff = false;
+        else
+        {
+            if(Time.current() > lastChaffDeployed + 1500L)
+            {
+                ((RocketGunChaff_gn16)counterChaffList.get(0)).shots(1);
+                hasChaff = true;
+                lastChaffDeployed = Time.current();
+                if(!((RocketGunChaff_gn16)counterChaffList.get(0)).haveBullets())
+                    counterChaffList.remove(0);
+            }
+        }
+    }
+
+    public long getChaffDeployed()
+    {
+        if(hasChaff)
+            return lastChaffDeployed;
+        else
+            return 0L;
+    }
+
+    public long getFlareDeployed()
+    {
+        if(hasFlare)
+            return lastFlareDeployed;
+        else
+            return 0L;
+    }
+
     public float checkfuel(int i)
     {
         FuelTank afueltank[] = FM.CT.getFuelTanks();
@@ -188,24 +311,27 @@ public class F_14 extends Scheme2
     private void checkDroptanks()
     {
         FuelTank afueltank[] = FM.CT.getFuelTanks();
-        if(afueltank.length == 1 || afueltank.length == 3)
-            bHasCenterTank = true;
-        if(afueltank.length == 2 || afueltank.length == 3)
-            bHasWingTank = true;
+        if(afueltank.length == 2)
+            bHasUnderTank = true;
+    }
+
+    public GuidedMissileUtils getGuidedMissileUtils()
+    {
+        return guidedMissileUtils;
     }
 
     public void auxPressed(int i)
     {
         super.auxPressed(i);
         if(i == 20)
-            if(!radartogle)
+            if(!radartoggle)
             {
-                radartogle = true;
+                radartoggle = true;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar ON");
                 radarmode = 0;
             } else
             {
-                radartogle = false;
+                radartoggle = false;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar OFF");
             }
         if(i == 21)
@@ -257,18 +383,18 @@ public class F_14 extends Scheme2
             Bingofuel += 500;
             if(Bingofuel > 6000)
                 Bingofuel = 1000;
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "Bingofuel  " + Bingofuel);
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "Bingofuel " + Bingofuel);
         }
         if(i == 26)
         {
-            if(hold && t1 + 200L < Time.current() && FLIR)
+            if(hold && Time.current() > t1 + 200L && FLIR)
             {
                 hold = false;
                 holdFollow = false;
                 HUD.log("Laser Pos Unlock");
                 t1 = Time.current();
             }
-            if(!hold && t1 + 200L < Time.current() && FLIR)
+            if(!hold && Time.current() > t1 + 200L && FLIR)
             {
                 hold = true;
                 holdFollow = false;
@@ -281,7 +407,7 @@ public class F_14 extends Scheme2
         }
         if(i == 27)
         {
-            if(holdFollow && t1 + 200L < Time.current() && FLIR)
+            if(holdFollow && Time.current() > t1 + 200L && FLIR)
             {
                 hold = false;
                 holdFollow = false;
@@ -289,7 +415,7 @@ public class F_14 extends Scheme2
                 HUD.log("Laser Track Unlock");
                 t1 = Time.current();
             }
-            if(!holdFollow && t1 + 200L < Time.current() && FLIR)
+            if(!holdFollow && Time.current() > t1 + 200L && FLIR)
             {
                 hold = false;
                 holdFollow = true;
@@ -353,8 +479,8 @@ public class F_14 extends Scheme2
             azimult++;
             tf = Time.current();
         } else
-        if(radartogle && lockmode == 0)
-            h += 0.0035F;
+        if(radartoggle && lockmode == 0)
+            radarhol += 0.0035F;
     }
 
     public void typeBomberAdjDistanceMinus()
@@ -364,8 +490,8 @@ public class F_14 extends Scheme2
             azimult--;
             tf = Time.current();
         } else
-        if(radartogle && lockmode == 0)
-            h -= 0.0035F;
+        if(radartoggle && lockmode == 0)
+            radarhol -= 0.0035F;
     }
 
     public void typeBomberAdjSideslipReset()
@@ -379,8 +505,8 @@ public class F_14 extends Scheme2
             tangate++;
             tf = Time.current();
         } else
-        if(radartogle && lockmode == 0)
-            v += 0.0035F;
+        if(radartoggle && lockmode == 0)
+            radarvrt += 0.0035F;
     }
 
     public void typeBomberAdjSideslipMinus()
@@ -390,8 +516,8 @@ public class F_14 extends Scheme2
             tangate--;
             tf = Time.current();
         } else
-        if(radartogle && lockmode == 0)
-            v -= 0.0035F;
+        if(radartoggle && lockmode == 0)
+            radarvrt -= 0.0035F;
     }
 
     public void updatecontrollaser()
@@ -577,7 +703,7 @@ public class F_14 extends Scheme2
             {
                 APmode3 = true;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Altitude Hold Engaged");
-                ((FlightModelMain) (FM)).AP.setStabAltitude(1000F);
+                ((FlightModelMain) (FM)).AP.setStabAltitude((float)FM.Loc.z);
             } else
             if(APmode3)
             {
@@ -611,7 +737,7 @@ public class F_14 extends Scheme2
         radarrange++;
         if(radarrange > 5)
             radarrange = 5;
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "range" + radarrange);
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar range " + radarrange);
     }
 
     public void typeBomberAdjSpeedMinus()
@@ -619,7 +745,7 @@ public class F_14 extends Scheme2
         radarrange--;
         if(radarrange < 1)
             radarrange = 1;
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "range" + radarrange);
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar range " + radarrange);
     }
 
     public void typeBomberUpdate(float f)
@@ -736,19 +862,9 @@ public class F_14 extends Scheme2
         return rwrUtils;
     }
 
-    public void myRadarSearchYou(Actor actor)
-    {
-        rwrUtils.recordRadarSearched(actor, (String) null);
-    }
-
     public void myRadarSearchYou(Actor actor, String soundpreset)
     {
         rwrUtils.recordRadarSearched(actor, soundpreset);
-    }
-
-    public void myRadarLockYou(Actor actor)
-    {
-        rwrUtils.recordRadarLocked(actor, (String) null);
     }
 
     public void myRadarLockYou(Actor actor, String soundpreset)
@@ -771,13 +887,11 @@ public class F_14 extends Scheme2
     public void onAircraftLoaded()
     {
         super.onAircraftLoaded();
+        guidedMissileUtils.onAircraftLoaded();
         FM.AS.wantBeaconsNet(true);
         FM.Skill = 3;
         FM.turret[0].bIsAIControlled = false;
         FM.CT.bHasBombSelect = true;
-        actl = FM.SensRoll;
-        ectl = FM.SensPitch;
-        rctl = FM.SensYaw;
         t1 = Time.current();
         FM.CT.bHasAntiColLights = true;
         FM.CT.bHasFormationLights = true;
@@ -797,8 +911,6 @@ public class F_14 extends Scheme2
         stockSqWingOut = FM.Sq.liftWingLOut;
         stockSqFlaps = FM.Sq.squareFlaps;
         stockDragAirbrake = FM.Sq.dragAirbrakeCx;
-        FM.CT.toggleRocketHook();
-        bCarryLaserpod = false;
         if(thisWeaponsName.startsWith("Fighter_4xAIM54"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
@@ -836,8 +948,6 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon3L", true);
             hierMesh().chunkVisible("Pylon3R", true);
             FM.Sq.dragParasiteCx += 0.00007F;
-            bCarryLaserpod = true;
-            FM.bNoDiveBombing = true;
         }
         if(thisWeaponsName.startsWith("Recon_ALQ"))
         {
@@ -854,8 +964,6 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon3L", true);
             hierMesh().chunkVisible("Pylon3R", true);
             FM.Sq.dragParasiteCx += 0.00007F;
-            bCarryLaserpod = true;
-            FM.bNoDiveBombing = true;
         }
         if(thisWeaponsName.startsWith("GAttack_2xCBU"))
         {
@@ -900,8 +1008,6 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon4L", true);
             hierMesh().chunkVisible("Pylon4R", true);
             FM.Sq.dragParasiteCx += 0.0001F;
-            bCarryLaserpod = true;
-            FM.bNoDiveBombing = true;
         }
         rwrUtils.onAircraftLoaded();
         if(this instanceof F_14D)
@@ -914,8 +1020,11 @@ public class F_14 extends Scheme2
     {
         super.missionStarting();
         checkDroptanks();
+        checkAmmo();
         if(!(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
             bSpawnedAsAI = true;
+
+        FM.CT.toggleRocketHook();
 
         tVarWingInput = -1L;
         laserTimer = -1L;
@@ -1027,14 +1136,6 @@ public class F_14 extends Scheme2
             }
         if(FM.AS.isMaster() && Config.isUSE_RENDER())
         {
-            Vector3d vector3d = FM.getVflow();
-            mn = (float)vector3d.lengthSquared();
-            mn = (float)Math.sqrt(mn);
-            mn /= Atmosphere.sonicSpeed((float)((Tuple3d) (FM.Loc)).z);
-            if(mn >= 0.90F && mn < 1.10F)
-                ts = true;
-            else
-                ts = false;
             ft = World.getTimeofDay() % 0.01F;
             if(ft == 0.0F)
                 UpdateLightIntensity();
@@ -1042,38 +1143,49 @@ public class F_14 extends Scheme2
         if(FM.Gears.onGround() && FM.CT.getCockpitDoor() == 1.0F)
         {
             hierMesh().chunkVisible("HMask1_D0", false);
-            if(FM.crew > 1)
-                hierMesh().chunkVisible("HMask2_D0", false);
+            hierMesh().chunkVisible("HMask2_D0", false);
         } else
         {
             hierMesh().chunkVisible("HMask1_D0", hierMesh().isChunkVisible("Pilot1_D0"));
-            if(FM.crew > 1)
-                hierMesh().chunkVisible("HMask2_D0", hierMesh().isChunkVisible("Pilot2_D0"));
+            hierMesh().chunkVisible("HMask2_D0", hierMesh().isChunkVisible("Pilot2_D0"));
         }
-        if(FLIR)
-            FLIR();
-        if((!FM.isPlayers() || !(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode()) && (FM instanceof Maneuver))
-            AiAirbrakeOperation();
-        formationlights();
-        if(!FM.isPlayers())
-            FM.CT.bAntiColLights = FM.AS.bNavLightsOn;
-        if(FM.CT.bAntiColLights != oldAntiColLight)
-            anticollights();
-        if(FM.AP.way.curr().Action == 3 && (FM instanceof Maneuver) && !((Maneuver)FM).hasBombs())
+        if(bHasLaser && FM.actor == World.getPlayerAircraft())
         {
-            FM.AP.way.next();
-            ((Maneuver)super.FM).target_ground = null;
-            ((Maneuver)super.FM).Group.setGroupTask(1);
+            if(FLIR)
+                FLIR();
+        }
+        if(bHasLaser && FM.actor != World.getPlayerAircraft() && FM instanceof Maneuver)
+            AILaserControl();
+
+        if((!FM.isPlayers() || !(FM instanceof RealFlightModel) || !((RealFlightModel) FM).isRealMode()) && (FM instanceof Maneuver))
+        {
+            if(FM.AP.way.curr().Action == 3)
+            {
+                if(!((Maneuver)super.FM).hasBombs())
+                {
+                    if((lAIGAskipTimer > 0L && Time.current() > lAIGAskipTimer) || !bHadLGweapons || !bHasLaser)
+                    {
+                        FM.AP.way.next();
+                        FM.bSkipGroundAttack = true;
+                        ((Maneuver)FM).target_ground = null;
+                        ((Maneuver)FM).set_maneuver(0);
+                    }
+                    else if(lAIGAskipTimer == -1L)
+                        lAIGAskipTimer = Time.current() + 20000L + (long)Math.min(FM.getAltitude(), 10000F) * 5L;
+                }
+            }
+            AiAirbrakeOperation();
+            FM.CT.bAntiColLights = FM.AS.bNavLightsOn;
         }
 
-        if(bHasPaveway && FM.bNoDiveBombing && Time.current() - tLastLGBcheck > 30000L && (FM instanceof Maneuver))
+        formationlights();
+        if(FM.CT.bAntiColLights != oldAntiColLight)
+            anticollights();
+
+        if((bHasPaveway || FM.bNoDiveBombing) && Time.current() > lastLGBcheck + 30000L && (FM instanceof Maneuver))
         {
-            if(!((Maneuver)FM).hasBombs())
-            {
-                bHasPaveway = false;
-                FM.bNoDiveBombing = false;
-            }
-            tLastLGBcheck = Time.current();
+            checkGuidedBombRest();
+            lastLGBcheck = Time.current();
         }
     }
 
@@ -1111,7 +1223,7 @@ public class F_14 extends Scheme2
         return true;
     }
 
-/*    public boolean typeFighterAceMakerToggleAutomation()
+    public boolean typeFighterAceMakerToggleAutomation()
     {
         return true;
     }
@@ -1162,7 +1274,7 @@ public class F_14 extends Scheme2
         k14Mode = netmsginput.readByte();
         k14WingspanType = netmsginput.readByte();
         k14Distance = netmsginput.readFloat();
-    } */
+    }
 
     public void doMurderPilot(int i)
     {
@@ -2218,6 +2330,7 @@ public class F_14 extends Scheme2
 
     public void update(float f)
     {
+        guidedMissileUtils.update();
         if((FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && FM.getSpeedKMH() > 15F)
         {
             overrideBailout = true;
@@ -2250,8 +2363,6 @@ public class F_14 extends Scheme2
                 }
                 setExhaustFlame(Math.round(Aircraft.cvt(FM.EI.engines[en].getThrustOutput(), 0.7F, 0.92F, 0.0F, 12F)), en);
             }
-            if(super.FM instanceof RealFlightModel)
-                umn();
         }
         if(FLIR)
             laser(getLaserSpot());
@@ -2263,6 +2374,8 @@ public class F_14 extends Scheme2
         backfire = rwrUtils.getBackfire();
         bRadarWarning = rwrUtils.getRadarLockedWarning();
         bMissileWarning = rwrUtils.getMissileWarning();
+        if(backfire)
+            backFire();
         checkHydraulicStatus();
         computeLift();
         computeVarWing();
@@ -2348,33 +2461,6 @@ public class F_14 extends Scheme2
     }
 
 
-    private final void umn()
-    {
-        Vector3d vector3d = FM.getVflow();
-        mn = (float)vector3d.lengthSquared();
-        mn = (float)Math.sqrt(mn);
-        mn /= Atmosphere.sonicSpeed((float)((Tuple3d) (FM.Loc)).z);
-        if(mn >= lteb)
-            ts = true;
-        else
-            ts = false;
-    }
-
-    public boolean ist()
-    {
-        return ts;
-    }
-
-    public float gmnr()
-    {
-        return mn;
-    }
-
-    public boolean inr()
-    {
-        return ictl;
-    }
-
     public void typeRadarGainMinus()
     {
         radarrange++;
@@ -2434,6 +2520,50 @@ public class F_14 extends Scheme2
     public float getFuelReserve()
     {
         return FuelReserve;
+    }
+
+    private void AILaserControl()
+    {
+        Point3d point3d = new Point3d();
+        Point3d point3dtemp = new Point3d();
+        boolean bLaserReach = false;
+        if(((Maneuver)FM).target_ground != null)
+        {
+            point3d = ((Maneuver)FM).target_ground.pos.getAbsPoint();
+            bLaserReach = (this.pos.getAbsPoint().distance(point3d) < 20000D &&
+                (Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) > 0.98F) &&
+                !Landscape.rayHitHQ(this.pos.getAbsPoint(), point3d, point3dtemp));
+        }
+        if(bHasPaveway && FM.AP.way.curr().Action == 3 && ((Maneuver)FM).target_ground != null && !bAILaserOn)
+        {
+            if(bLaserReach)
+            {
+                bAILaserOn = true;
+                setLaserOn(true);
+                lAILaserTimer = -1L;
+            }
+        }
+        else if(bAILaserOn)
+        {
+            if(((Maneuver)FM).target_ground == null || !bLaserReach)
+            {
+                bAILaserOn = false;
+                setLaserOn(false);
+                lAILaserTimer = -1L;
+            }
+            else if(lAILaserTimer > 0L && Time.current() > lAILaserTimer)
+            {
+                bAILaserOn = false;
+                setLaserOn(false);
+                lAILaserTimer = -1L;
+            }
+            else if(lAILaserTimer == -1L)
+                lAILaserTimer = Time.current() + 20000L + (long)Math.min(FM.getAltitude(), 4000F) * 5L;
+        }
+        if(bAILaserOn && ((Maneuver)FM).target_ground != null && ((Maneuver)FM).target_ground.pos != null && Actor.isValid(((Maneuver)FM).target_ground))
+        {
+            setLaserSpot(point3d);
+        }
     }
 
     public void doSetSootState(int i, int j)
@@ -2869,26 +2999,33 @@ public class F_14 extends Scheme2
         if((!(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode()) && (FM instanceof Maneuver))
         {
             //When AI goes 'GAttack' waypoint, set VarWingControlSwitch = "BOMB". Others "AUTO".
-            if(FM.AP.way.curr().Action == 3 || (((Maneuver)FM).Group != null && ((Maneuver)FM).Group.grTask == 4) || ((Maneuver)FM).get_task() == 4)
+            if(FM.AP.way.curr().Action == 3 || (((Maneuver)FM).Group != null && ((Maneuver)FM).Group.grTask == 4) || ((Maneuver)FM).get_task() == 4) {
                 FM.CT.VarWingControlSwitch = 4;
-            else if(FM.AP.way.isLanding() && ((Maneuver)FM).get_maneuver() == 21)
+                FM.CT.setTrimElevatorControl(0.50F);
+            } else if(FM.AP.way.isLanding() && (((Maneuver)FM).get_maneuver() == 21 || ((Maneuver)FM).get_maneuver() == 2)) {
                 FM.CT.VarWingControlSwitch = 1;
-            else if(FM.AP.way.isLanding() && ((Maneuver)FM).get_maneuver() == 25) {
+                FM.CT.setTrimElevatorControl(0.60F);
+            } else if(FM.AP.way.isLanding() && ((Maneuver)FM).get_maneuver() == 25) {
                 if(((Maneuver)FM).getTaxiMode()) {
                     if(lEnteredTaxiMode == -1L) {
                         FM.CT.VarWingControlSwitch = 1;
+                        FM.CT.setTrimElevatorControl(0.0F);
                         lEnteredTaxiMode = Time.current();
-                    }
-                    else if(Time.current() - lEnteredTaxiMode > 10000L)
-                        FM.CT.VarWingControlSwitch = 4;
+                    } else if(Time.current() > lEnteredTaxiMode + 10000L)
+                        FM.CT.VarWingControlSwitch = 3;
                     else
                         FM.CT.VarWingControlSwitch = 1;
-                } else
+                } else {
                     FM.CT.VarWingControlSwitch = 1;
-            } else if(((Maneuver)FM).get_maneuver() == 26)
+                    FM.CT.setTrimElevatorControl(0.10F);
+                }
+            } else if(((Maneuver)FM).get_maneuver() == 26) {
                 FM.CT.VarWingControlSwitch = 1;
-            else
+                FM.CT.setTrimElevatorControl(0.0F);
+            } else {
                 FM.CT.VarWingControlSwitch = 0;
+                FM.CT.setTrimElevatorControl(0.0F);
+            }
         }
 
         float target_value = 0.0F;
@@ -2977,8 +3114,8 @@ public class F_14 extends Scheme2
                 target_value = FM.CT.VarWingControl;
             oldVarWingControlSwitch = 3;
             break;
-        case 4:   // BOMB; fixed 55 degrees
-            target_value = 0.6034F;
+        case 4:   // BOMB; historically fixed 55 degrees, but 48 degrees to avoid flight character too drastic change.
+            target_value = 0.4827F;  // 0.6034F;
             oldVarWingControlSwitch = 4;
             break;
         }
@@ -3263,33 +3400,38 @@ public class F_14 extends Scheme2
 
 
     public float Fuelamount;
-    public boolean radartogle;
+    public boolean radartoggle;
     public int radarmode;
     public int targetnum;
     public float lockrange;
+    public int lockmode;
     public int radargunsight;
+    public int radarrange;
     public int leftscreen;
+    public float azimult;
+    public float tangate;
+    public long tf;
+    public float radarvrt;
+    public float radarhol;
     public int Bingofuel;
     public boolean Nvision;
-    public int lockmode;
     private boolean APmode1;
     private boolean APmode2;
     private boolean APmode3;
     public boolean ILS;
     public boolean bDLCengaged;
     private int iDLCcommand;  // from -10 ~ +10
-    public float azimult;
-    public float tangate;
-    public long tf;
-    public float v;
-    public float h;
     private float oldthrl[] = { -1.0F, -1.0F };
     private float curthrl[] = { -1.0F, -1.0F };
+    private float engineSurgeDamage[] = { 0.0F, 0.0F };
     public int k14Mode;
     public int k14WingspanType;
     public float k14Distance;
+    public int LockState = 0;
+    public Actor hunted = null;
     private boolean overrideBailout;
     private boolean ejectComplete;
+    private long lTimeNextEject;
     private float lightTime;
     private float ft;
     private LightPointWorld lLight[];
@@ -3298,24 +3440,10 @@ public class F_14 extends Scheme2
     private Point3d lLightP1 = new Point3d();
     private Point3d lLightP2 = new Point3d();
     private Point3d lLightPL = new Point3d();
-    private boolean ictl;
-    private float mn;
-    private static float lteb = 0.92F;
-    private boolean ts;
     public boolean bChangedPit = false;
     private float SonicBoom;
     private Eff3DActor shockwave;
     private boolean isSonic;
-    public int LockState = 0;
-    public Actor hunted = null;
-    private float engineSurgeDamage[] = { 0.0F, 0.0F };
-    private static final float NEG_G_TOLERANCE_FACTOR = 3.5F;
-    private static final float NEG_G_TIME_FACTOR = 2.5F;
-    private static final float NEG_G_RECOVERY_FACTOR = 1F;
-    private static final float POS_G_TOLERANCE_FACTOR = 7F;
-    private static final float POS_G_TIME_FACTOR = 3F;
-    private static final float POS_G_RECOVERY_FACTOR = 5F;
-    private long lTimeNextEject;
     private int obsLookTime;
     private float obsLookAzimuth;
     private float obsLookElevation;
@@ -3326,14 +3454,7 @@ public class F_14 extends Scheme2
     private float obsMove;
     private float obsMoveTot;
     boolean bObserverKilled;
-    public boolean bToFire;
-    private float deltaAzimuth;
-    private float deltaTangage;
 //    private static Loc l = new Loc();
-    public boolean FLIR;
-    public boolean hold;
-    public boolean holdFollow;
-    public Actor actorFollowing;
     private Eff3DActor pull01;
     private Eff3DActor pull02;
     private Eff3DActor pull03;
@@ -3348,25 +3469,14 @@ public class F_14 extends Scheme2
     public float fSightCurReadyness;
     public boolean trimauto;
     private long t1;
-    public int radarrange;
-    private Field thrustMaxField[];
     public float fNozzleOpenL;
     public float fNozzleOpenR;
-    private Field elevatorsField;
-    public static float FlowRate = 10F;
-    public static float FuelReserve = 1500F;
-    private boolean bForceTakeoffElTrim;
-    public boolean bForceFlapmodeAuto;
-    private float oldTrimElevator;
-    public boolean bHasCenterTank;
-    public boolean bHasWingTank;
+
+    public boolean bHasUnderTank;
     private boolean bSpawnedAsAI;
     public int freq;
     public float Timer1;
     public float Timer2;
-    private float actl;
-    private float rctl;
-    private float ectl;
     private long tVarWingInput;
     private int oldVarWingControlSwitch;
     public boolean hasHydraulicPressure;
@@ -3379,6 +3489,9 @@ public class F_14 extends Scheme2
     private float desiredPosition;
     private boolean bFlapsOutFixed;
     private boolean bFlapsInFixed;
+    private Eff3DActor antiColLight[];
+    private boolean oldAntiColLight;
+
     private float stockCy0_0;
     private float stockCy0_1;
     private float stockCxMin_0;
@@ -3394,25 +3507,21 @@ public class F_14 extends Scheme2
     private float stockDragAirbrake;
     private float SpoilerBrakeControl;
     private float oldSpoilerBrakeControl;
-    private Eff3DActor antiColLight[];
-    private boolean oldAntiColLight;
     private long lEnteredTaxiMode;
 
-    public boolean bCarryLaserpod = false;
-    private Point3d laserSpotPos;
-    private boolean bLaserOn = false;
-    public long laserTimer;
-    private boolean bLGBengaged = false;
-    public boolean bHasPaveway = false;
-    private static float maxPavewayFOVfrom = 45.0F;
-    private static double maxPavewayDistance = 20000D;
-    private long tLastLGBcheck = -1L;
+    // TypeFuelDump setup values
+    public static float FlowRate = 10F;
+    public static float FuelReserve = 1500F;
 
-    private RadarWarningReceiverUtils rwrUtils;
-    public boolean backfire;
-    public boolean bRadarWarning;
-    public boolean bMissileWarning;
+    // TypeGSuit setup values
+    private static final float NEG_G_TOLERANCE_FACTOR = 3.5F;
+    private static final float NEG_G_TIME_FACTOR = 2.5F;
+    private static final float NEG_G_RECOVERY_FACTOR = 1F;
+    private static final float POS_G_TOLERANCE_FACTOR = 7F;
+    private static final float POS_G_TIME_FACTOR = 3F;
+    private static final float POS_G_RECOVERY_FACTOR = 5F;
 
+    // TypeRadarWarningReceiver setup values
     private int RWR_GENERATION = 0;
     private static final int RWR_MAX_DETECT = 16;
     private int RWR_KEEP_SECONDS = 4;
@@ -3420,6 +3529,42 @@ public class F_14 extends Scheme2
     private static final boolean RWR_DETECT_IRMIS = false;
     private static final boolean RWR_DETECT_ELEVATION = false;
     private boolean bRWR_Show_Text_Warning = true;
+
+    private RadarWarningReceiverUtils rwrUtils;
+    public boolean backfire;
+    public boolean bRadarWarning;
+    public boolean bMissileWarning;
+
+    // TypeCountermeasure setup values
+    private boolean hasChaff;
+    private boolean hasFlare;
+    private long lastChaffDeployed;
+    private long lastFlareDeployed;
+    private ArrayList counterFlareList;
+    private ArrayList counterChaffList;
+
+    // TypeGuidedMissileCarrier and AI decision control value
+    private GuidedMissileUtils guidedMissileUtils;
+
+    // TypeLaserDesignator and laser guided weapon values
+    public boolean bHasLaser;
+    private Point3d laserSpotPos;
+    private boolean bLaserOn;
+    public long laserTimer;
+    private boolean bLGBengaged;
+    public boolean bHasPaveway;
+    private boolean bHadLGweapons;
+    private boolean bAILaserOn;
+    private long lAILaserTimer;
+    private long lAIGAskipTimer;
+    private static float maxPavewayFOVfrom = 45.0F;
+    private static double maxPavewayDistance = 20000D;
+    private long lastLGBcheck;
+    public boolean FLIR;
+    public boolean hold;
+    public boolean holdFollow;
+    public Actor actorFollowing;
+
 
     private static final float gcenterScale[] = {
         0.0F, 0.0F, -0.7F, -1.4F, -2F
