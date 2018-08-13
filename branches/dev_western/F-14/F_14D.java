@@ -18,24 +18,12 @@ import com.maddox.sas1946.il2.util.Reflection;
 
 
 public class F_14D extends F_14
-    implements TypeGuidedMissileCarrier, TypeCountermeasure
 {
 
     public F_14D()
     {
-        guidedMissileUtils = null;
-        hasChaff = false;
-        hasFlare = false;
-        lastChaffDeployed = 0L;
-        lastFlareDeployed = 0L;
-        guidedMissileUtils = new GuidedMissileUtils(this);
-        engineSFX = null;
-        engineSTimer = 0x98967f;
-        outCommand = new NetMsgFiltered();
         counter = 0;
         error = 0;
-        counterFlareList = new ArrayList();
-        counterChaffList = new ArrayList();
     }
 
     public static String getSkinPrefix(String s, Regiment regiment)
@@ -43,91 +31,15 @@ public class F_14D extends F_14
         return "F14D_";
     }
 
-    private void checkAmmo()
-    {
-        for(int i = 0; i < FM.CT.Weapons.length; i++)
-            if(FM.CT.Weapons[i] != null)
-            {
-                for(int j = 0; j < FM.CT.Weapons[i].length; j++)
-                    if(FM.CT.Weapons[i][j].haveBullets())
-                    {
-                        if(FM.CT.Weapons[i][j] instanceof RocketGunFlare_gn16)
-                            counterFlareList.add(FM.CT.Weapons[i][j]);
-                        else if(FM.CT.Weapons[i][j] instanceof RocketGunChaff_gn16)
-                            counterChaffList.add(FM.CT.Weapons[i][j]);
-                        else if(FM.CT.Weapons[i][j] instanceof BombGunGBU10_Mk84LGB_gn16 ||
-                                FM.CT.Weapons[i][j] instanceof BombGunGBU12_Mk82LGB_gn16 ||
-                                FM.CT.Weapons[i][j] instanceof BombGunGBU16_Mk83LGB_gn16)
-                            super.bHasPaveway = true;
-                    }
-            }
-    }
-
-    public void backFire()
-    {
-        if(counterFlareList.isEmpty())
-            hasFlare = false;
-        else
-        {
-            if(Time.current() > lastFlareDeployed + 1200L)
-            {
-                ((RocketGunFlare_gn16)counterFlareList.get(0)).shots(1);
-                hasFlare = true;
-                lastFlareDeployed = Time.current();
-                if(!((RocketGunFlare_gn16)counterFlareList.get(0)).haveBullets())
-                    counterFlareList.remove(0);
-            }
-        }
-        if(counterChaffList.isEmpty())
-            hasChaff = false;
-        else
-        {
-            if(Time.current() > lastChaffDeployed + 1500L)
-            {
-                ((RocketGunChaff_gn16)counterChaffList.get(0)).shots(1);
-                hasChaff = true;
-                lastChaffDeployed = Time.current();
-                if(!((RocketGunChaff_gn16)counterChaffList.get(0)).haveBullets())
-                    counterChaffList.remove(0);
-            }
-        }
-    }
-
-    public long getChaffDeployed()
-    {
-        if(hasChaff)
-            return lastChaffDeployed;
-        else
-            return 0L;
-    }
-
-    public long getFlareDeployed()
-    {
-        if(hasFlare)
-            return lastFlareDeployed;
-        else
-            return 0L;
-    }
-
-    public GuidedMissileUtils getGuidedMissileUtils()
-    {
-        return guidedMissileUtils;
-    }
-
     public void onAircraftLoaded()
     {
         super.onAircraftLoaded();
-        checkAmmo();
-        guidedMissileUtils.onAircraftLoaded();
     }
 
     public void update(float f)
     {
-        guidedMissileUtils.update();
         computeF110GE400_AB();
         super.update(f);
-        if(super.backfire)
-            backFire();
     }
 
 
@@ -732,21 +644,9 @@ public class F_14D extends F_14
     }
 
 
-
-    private GuidedMissileUtils guidedMissileUtils;
-    private boolean bRadarWarning;
-    private boolean hasChaff;
-    private boolean hasFlare;
-    private long lastChaffDeployed;
-    private long lastFlareDeployed;
-    protected SoundFX engineSFX;
-    protected int engineSTimer;
-    private NetMsgFiltered outCommand;
     private int counter;
     private int error;
     private long raretimer;
-    private ArrayList counterFlareList;
-    private ArrayList counterChaffList;
 
     private static String irstPlaneName[] =
     {

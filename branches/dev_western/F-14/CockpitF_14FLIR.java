@@ -24,7 +24,7 @@ public class CockpitF_14FLIR extends CockpitGunner
     {
         if(!Actor.isValid(aircraft()))
             return false;
-        if(!((F_14)aircraft()).bCarryLaserpod)
+        if(!((F_14)aircraft()).bHasLaser)
             return false;
         return !aircraft().FM.AS.isPilotParatrooper(0);
     }
