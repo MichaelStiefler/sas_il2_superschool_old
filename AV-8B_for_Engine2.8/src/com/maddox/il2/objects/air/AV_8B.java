@@ -340,12 +340,13 @@ public class AV_8B extends AV_8
                 break;
             }
         }
-        if(i == 26)
+        if(i == 26 && bHasLaser)
         {
             if(hold && Time.current() > t1 + 200L && FLIR)
             {
                 hold = false;
                 holdFollow = false;
+                actorFollowing = null;
                 HUD.log("Laser Pos Unlock");
                 t1 = Time.current();
             }
@@ -360,7 +361,7 @@ public class AV_8B extends AV_8
             if(!FLIR)
                 setLaserOn(false);
         }
-        if(i == 27)
+        if(i == 27 && bHasLaser)
         {
             if(holdFollow && Time.current() > t1 + 200L && FLIR)
             {
@@ -490,14 +491,16 @@ public class AV_8B extends AV_8
             if(!APmode1)
             {
                 APmode1 = true;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Altitude Hold Engaged");
                 FM.AP.setStabAltitude((float)FM.Loc.z);
+                if(this == World.getPlayerAircraft())
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Altitude Hold Engaged");
             }
             else if(APmode1)
             {
                 APmode1 = false;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Altitude Hold Released");
                 FM.AP.setStabAltitude(false);
+                if(this == World.getPlayerAircraft())
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Altitude Hold Released");
             }
     }
 
@@ -653,7 +656,6 @@ public class AV_8B extends AV_8
                 ((Actor) (eff3dactor)).draw.lightMap().put("light", lightpointactor);
             }
         }
-
     }
 
     public void updatecontrollaser()
@@ -1003,137 +1005,6 @@ public class AV_8B extends AV_8
         rwrUtils.setLockTone("aircraft.usRWRScan", "aircraft.usRWRLock", "aircraft.usRWRLaunchWarningMissileMissile", "aircraft.usRWRThreatNew");
     }
 
-    public void rareAction(float f, boolean flag)
-    {
-        super.rareAction(f, flag);
-
-        if(bHasLaser && this == World.getPlayerAircraft())
-        {
-            if(FLIR)
-                FLIR();
-            if(!FLIR)
-                FM.AP.setStabAltitude(false);
-        }
-
-        if((!FM.isPlayers() || !(FM instanceof RealFlightModel) || !((RealFlightModel) FM).isRealMode()) && (FM instanceof Maneuver))
-        {
-            if(FM.AP.way.curr().Action == 3)
-            {
-                Actor tempActor = null;
-                NearestEnemies.set(WeaponsMask(), 25F, 2000F, 20F, 20000F, false, true, (String)null);
-                tempActor = NearestEnemies.getAFoundFlyingPlane(this.pos.getAbsPoint(), 30000D, this.getArmy(), 1F);
-                if(tempActor == null && FM.AP.way.curr().getTarget() != null && Time.current() > lastAIMissileSelect + 8000L)
-                {
-                    if(bHasAShM && (FM.AP.way.curr().getTarget() instanceof TgtShip) &&
-                       FM.CT.rocketNameSelected != "AGM-84A" && FM.CT.rocketNameSelected != "AGM-84D" && FM.CT.rocketNameSelected != "AGM-84J")
-                    {
-                        for(int i = 0; i < 4; i++)
-                        {
-                            if(FM.CT.rocketNameSelected == "AGM-84A" || FM.CT.rocketNameSelected == "AGM-84D" || FM.CT.rocketNameSelected == "AGM-84J")
-                                break;
-                            FM.CT.toggleRocketHook();
-                        }
-                    }
-                    if((!bHasAShM || !(FM.AP.way.curr().getTarget() instanceof TgtShip)) && bHasAGM &&
-                       FM.CT.rocketNameSelected != "AGM-65E")
-                    {
-                        for(int i = 0; i < 4; i++)
-                        {
-                            if(FM.CT.rocketNameSelected == "AGM-65E")
-                                break;
-                            FM.CT.toggleRocketHook();
-                        }
-                    }
-                    if(!bHasAGM && bHasUGR && !bHasAShM && FM.CT.rocketNameSelected != "Zuni" && FM.CT.rocketNameSelected != "ZuniFAC" && FM.CT.rocketNameSelected != "ZuniFO" &&
-                       FM.CT.rocketNameSelected != "Hydra" && FM.CT.rocketNameSelected != "HydraFAC" && FM.CT.rocketNameSelected != "HydraFO")
-                    {
-                        for(int i = 0; i < 4; i++)
-                        {
-                            if(FM.CT.rocketNameSelected == "Zuni" || FM.CT.rocketNameSelected == "ZuniFAC" || FM.CT.rocketNameSelected == "ZuniFO" ||
-                               FM.CT.rocketNameSelected == "Hydra" || FM.CT.rocketNameSelected == "HydraFAC" || FM.CT.rocketNameSelected == "HydraFO")
-                                break;
-                            FM.CT.toggleRocketHook();
-                        }
-                    }
-                    lastAIMissileSelect = Time.current();
-                }
-                if((!((Maneuver)super.FM).hasBombs() && !bHasAGM && !bHasAShM && !bHasUGR) ||
-                   (!bHasAGM && !bHasUGR && bHasAShM && (FM.AP.way.curr().getTarget() == null || !(FM.AP.way.curr().getTarget() instanceof TgtShip))))
-                {
-                    if((lAIGAskipTimer > 0L && Time.current() > lAIGAskipTimer) || !bHadLGweapons || !bHasLaser)
-                    {
-                        FM.AP.way.next();
-                        FM.bSkipGroundAttack = true;
-                        ((Maneuver)FM).target_ground = null;
-                        ((Maneuver)FM).set_maneuver(0);
-                        FM.CT.toggleRocketHook();
-                    }
-                    else if(lAIGAskipTimer == -1L)
-                        lAIGAskipTimer = Time.current() + 20000L + (long)Math.min(FM.getAltitude(), 10000F) * 5L;
-                }
-
-                if((bHasAGM || bHasAShM || bHasUGR) && Time.current() > lastAGMcheck + 30000L)
-                {
-                    checkAIAGMrest();
-                    lastAGMcheck = Time.current();
-                }
-            }
-        }
-
-        if((bHasPaveway || FM.bNoDiveBombing) && Time.current() > lastLGBcheck + 30000L && (FM instanceof Maneuver))
-        {
-            checkGuidedBombRest();
-            lastLGBcheck = Time.current();
-        }
-
-        if(!FM.isPlayers())
-            if(((Maneuver)FM).get_maneuver() == 25 || ((Maneuver)FM).get_maneuver() == 26
-               || ((Maneuver)FM).get_maneuver() == 64 || ((Maneuver)FM).get_maneuver() == 66 || ((Maneuver)FM).get_maneuver() == 102)
-            {
-                // LANDING, TAKEOFF, PARKED_STARTUP, TAXI, TAXI_TO_TO
-                radartoggle = false;
-            }
-            else
-            {
-                radartoggle = true;
-                radarmode = 0;
-            }
-    }
-
-    public void update(float f)
-    {
-        if(bNeedSetup)
-            checkAsDrone();
-        guidedMissileUtils.update();
-        if(super.FM instanceof Maneuver)
-            receivingRefuel(f);
-        rwrUtils.update();
-        backfire = rwrUtils.getBackfire();
-        bRadarWarning = rwrUtils.getRadarLockedWarning();
-        bMissileWarning = rwrUtils.getMissileWarning();
-        if(bHasLaser && this == World.getPlayerAircraft())
-        {
-            if(FLIR)
-                laser(getLaserSpot());
-            updatecontrollaser();
-        }
-        if(bHasLaser && this != World.getPlayerAircraft() && (FM instanceof Maneuver))
-            AILaserControl();
-
-        super.update(f);
-        if(backfire)
-            backFire();
-    }
-
-    public void msgCollisionRequest(Actor actor, boolean aflag[])
-    {
-        super.msgCollisionRequest(actor, aflag);
-        if(queen_last != null && queen_last == actor && (queen_time == 0L || Time.current() < queen_time + 5000L))
-            aflag[0] = false;
-        else
-            aflag[0] = true;
-    }
-
     public void missionStarting()
     {
         super.missionStarting();
@@ -1145,16 +1016,6 @@ public class AV_8B extends AV_8
         bLaserOn = false;
         FLIR = false;
         iDebugLogLevel = Config.cur.ini.get("Mods", "GuidedMissileDebugLog", 0);
-    }
-
-    public void startCockpitSounds()
-    {
-        rwrUtils.setSoundEnable(true);
-    }
-
-    public void stopCockpitSounds()
-    {
-        rwrUtils.stopAllRWRSounds();
     }
 
     private void checkAsDrone()
@@ -1327,6 +1188,7 @@ public class AV_8B extends AV_8
             if(FM.CT.getRefuel() < 0.9F)
             {
                 typeDockableAttemptDetach();
+                return;
             }
             else
             {
@@ -1339,7 +1201,7 @@ public class AV_8B extends AV_8
 
                     if(FM.AP.way.curr().Action != 3)
                         ((FlightModelMain) ((Maneuver)super.FM)).AP.way.setCur(((FlightModelMain) (((SndAircraft) ((Aircraft)queen_)).FM)).AP.way.Cur());
-                    ((Pilot)FM).setDumbTime(3000L);
+                    ((Pilot)super.FM).setDumbTime(3000L);
                 }
                 FuelTank fuelTanks[];
                 fuelTanks = FM.CT.getFuelTanks();
@@ -1353,14 +1215,20 @@ public class AV_8B extends AV_8
                     float freeTankSum = 0F;
                     for(int num = 0; num < fuelTanks.length; num++)
                         freeTankSum += fuelTanks[num].checkFreeTankSpace();
-                    if(freeTankSum < fuelReceiveRate - 1.1F)
+                    if(freeTankSum < fuelReceiveRate + 1.1F)
+                    {
                         typeDockableAttemptDetach();
+                        return;
+                    }
                     float getFuel = ((TypeTankerDrogue) (queen_)).requestRefuel((Aircraft) this, fuelReceiveRate, f);
                     for(int num = 0; num < fuelTanks.length; num++)
                         fuelTanks[num].doRefuel(getFuel * (fuelTanks[num].checkFreeTankSpace() / freeTankSum));
                 }
                 else
+                {
                     typeDockableAttemptDetach();
+                    return;
+                }
             }
         }
         else if(!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode())
@@ -1371,13 +1239,13 @@ public class AV_8B extends AV_8
             {
                 ((Maneuver)super.FM).Group.leaderGroup = null;
                 ((Maneuver)super.FM).set_maneuver(22);
-                ((Pilot)FM).setDumbTime(3000L);
+                ((Pilot)super.FM).setDumbTime(3000L);
                 if(Time.current() > dtime + 3000L)
                 {
                     dtime = -1L;
                     ((Maneuver)super.FM).clear_stack();
                     ((Maneuver)super.FM).set_maneuver(0);
-                    ((Pilot)FM).setDumbTime(0L);
+                    ((Pilot)super.FM).setDumbTime(0L);
                 }
             }
             else if(FM.AP.way.curr().Action == 0)
@@ -1387,6 +1255,147 @@ public class AV_8B extends AV_8
                     maneuver.Group.setGroupTask(2);
             }
         }
+    }
+
+    public void startCockpitSounds()
+    {
+        rwrUtils.setSoundEnable(true);
+    }
+
+    public void stopCockpitSounds()
+    {
+        rwrUtils.stopAllRWRSounds();
+    }
+
+    public void rareAction(float f, boolean flag)
+    {
+        super.rareAction(f, flag);
+
+        if(bHasLaser && this == World.getPlayerAircraft())
+        {
+            if(FLIR)
+                FLIR();
+            if(!FLIR)
+                FM.AP.setStabAltitude(false);
+        }
+
+        if((!FM.isPlayers() || !(FM instanceof RealFlightModel) || !((RealFlightModel) FM).isRealMode()) && (FM instanceof Maneuver))
+        {
+            if(FM.AP.way.curr().Action == 3)
+            {
+                Actor tempActor = null;
+                NearestEnemies.set(WeaponsMask(), 25F, 2000F, 20F, 20000F, false, true, (String)null);
+                tempActor = NearestEnemies.getAFoundFlyingPlane(this.pos.getAbsPoint(), 30000D, this.getArmy(), 1F);
+                if(tempActor == null && FM.AP.way.curr().getTarget() != null && Time.current() > lastAIMissileSelect + 8000L)
+                {
+                    if(bHasAShM && (FM.AP.way.curr().getTarget() instanceof TgtShip) &&
+                       FM.CT.rocketNameSelected != "AGM-84A" && FM.CT.rocketNameSelected != "AGM-84D" && FM.CT.rocketNameSelected != "AGM-84J")
+                    {
+                        for(int i = 0; i < 4; i++)
+                        {
+                            if(FM.CT.rocketNameSelected == "AGM-84A" || FM.CT.rocketNameSelected == "AGM-84D" || FM.CT.rocketNameSelected == "AGM-84J")
+                                break;
+                            FM.CT.toggleRocketHook();
+                        }
+                    }
+                    if((!bHasAShM || !(FM.AP.way.curr().getTarget() instanceof TgtShip)) && bHasAGM &&
+                       FM.CT.rocketNameSelected != "AGM-65E")
+                    {
+                        for(int i = 0; i < 4; i++)
+                        {
+                            if(FM.CT.rocketNameSelected == "AGM-65E")
+                                break;
+                            FM.CT.toggleRocketHook();
+                        }
+                    }
+                    if(!bHasAGM && bHasUGR && !bHasAShM && FM.CT.rocketNameSelected != "Zuni" && FM.CT.rocketNameSelected != "ZuniFAC" && FM.CT.rocketNameSelected != "ZuniFO" &&
+                       FM.CT.rocketNameSelected != "Hydra" && FM.CT.rocketNameSelected != "HydraFAC" && FM.CT.rocketNameSelected != "HydraFO")
+                    {
+                        for(int i = 0; i < 4; i++)
+                        {
+                            if(FM.CT.rocketNameSelected == "Zuni" || FM.CT.rocketNameSelected == "ZuniFAC" || FM.CT.rocketNameSelected == "ZuniFO" ||
+                               FM.CT.rocketNameSelected == "Hydra" || FM.CT.rocketNameSelected == "HydraFAC" || FM.CT.rocketNameSelected == "HydraFO")
+                                break;
+                            FM.CT.toggleRocketHook();
+                        }
+                    }
+                    lastAIMissileSelect = Time.current();
+                }
+                if((!((Maneuver)super.FM).hasBombs() && !bHasAGM && !bHasAShM && !bHasUGR) ||
+                   (!bHasAGM && !bHasUGR && bHasAShM && (FM.AP.way.curr().getTarget() == null || !(FM.AP.way.curr().getTarget() instanceof TgtShip))))
+                {
+                    if((lAIGAskipTimer > 0L && Time.current() > lAIGAskipTimer) || !bHadLGweapons || !bHasLaser)
+                    {
+                        FM.AP.way.next();
+                        FM.bSkipGroundAttack = true;
+                        ((Maneuver)FM).target_ground = null;
+                        ((Maneuver)FM).set_maneuver(0);
+                        FM.CT.toggleRocketHook();
+                    }
+                    else if(lAIGAskipTimer == -1L)
+                        lAIGAskipTimer = Time.current() + 20000L + (long)Math.min(FM.getAltitude(), 10000F) * 5L;
+                }
+
+                if((bHasAGM || bHasAShM || bHasUGR) && Time.current() > lastAGMcheck + 30000L)
+                {
+                    checkAIAGMrest();
+                    lastAGMcheck = Time.current();
+                }
+            }
+        }
+
+        if((bHasPaveway || FM.bNoDiveBombing) && Time.current() > lastLGBcheck + 30000L && (FM instanceof Maneuver))
+        {
+            checkGuidedBombRest();
+            lastLGBcheck = Time.current();
+        }
+
+        if(!FM.isPlayers())
+            if(((Maneuver)FM).get_maneuver() == 25 || ((Maneuver)FM).get_maneuver() == 26
+               || ((Maneuver)FM).get_maneuver() == 64 || ((Maneuver)FM).get_maneuver() == 66 || ((Maneuver)FM).get_maneuver() == 102)
+            {
+                // LANDING, TAKEOFF, PARKED_STARTUP, TAXI, TAXI_TO_TO
+                radartoggle = false;
+            }
+            else
+            {
+                radartoggle = true;
+                radarmode = 0;
+            }
+    }
+
+    public void update(float f)
+    {
+        if(bNeedSetup)
+            checkAsDrone();
+        guidedMissileUtils.update();
+        if(super.FM instanceof Maneuver)
+            receivingRefuel(f);
+        rwrUtils.update();
+        backfire = rwrUtils.getBackfire();
+        bRadarWarning = rwrUtils.getRadarLockedWarning();
+        bMissileWarning = rwrUtils.getMissileWarning();
+        if(bHasLaser && this == World.getPlayerAircraft())
+        {
+            if(FLIR)
+                laser(getLaserSpot());
+            updatecontrollaser();
+        }
+        if(bHasLaser && this != World.getPlayerAircraft() && (FM instanceof Maneuver))
+            AILaserControl();
+
+        super.update(f);
+        if(backfire)
+            backFire();
+    }
+
+    public void msgCollisionRequest(Actor actor, boolean aflag[])
+    {
+        super.msgCollisionRequest(actor, aflag);
+        if(queen_last != null && queen_last == actor && (queen_time == 0L || Time.current() < queen_time + 5000L))
+            aflag[0] = false;
+        else
+            aflag[0] = true;
     }
 
     public void typeRadarGainPlus()

@@ -435,6 +435,26 @@ public class AV_8 extends Scheme1
     {
     }
 
+    public void typeFighterAceMakerRangeFinder()
+    {
+        if(k14Mode != 1)
+            return;
+        hunted = Main3D.cur3D().getViewPadlockEnemy();
+        if(hunted == null)
+        {
+            k14Distance = 200F;
+            hunted = War.GetNearestEnemyAircraft(FM.actor, 2700F, 9);
+        }
+        if(hunted != null)
+        {
+            k14Distance = (float)(FM.actor.pos.getAbsPoint().distance(hunted.pos.getAbsPoint()));
+            if(k14Distance > 800F)
+                k14Distance = 800F;
+            else if(k14Distance < 200F)
+                k14Distance = 200F;
+        }
+    }
+
     public void typeFighterAceMakerReplicateToNet(NetMsgGuaranted netmsgguaranted)
         throws IOException
     {
@@ -462,207 +482,6 @@ public class AV_8 extends Scheme1
             hierMesh().chunkVisible("Pilot1_D1", true);
             break;
         }
-    }
-
-    public void doEjectCatapult()
-    {
-        new MsgAction(false, this) {
-
-            public void doAction(Object obj)
-            {
-                Aircraft aircraft = (Aircraft)obj;
-                if(Actor.isValid(aircraft))
-                {
-                    Loc loc = new Loc();
-                    Loc loc1 = new Loc();
-                    Vector3d vector3d = new Vector3d(0.0D, 0.0D, 60D);
-                    HookNamed hooknamed = new HookNamed(aircraft, "_ExternalSeat01");
-                    ((Actor) (aircraft)).pos.getAbs(loc1);
-                    hooknamed.computePos(aircraft, loc1, loc);
-                    loc.transform(vector3d);
-                    vector3d.x += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).x;
-                    vector3d.y += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).y;
-                    vector3d.z += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).z;
-                    new EjectionSeat(10, loc, vector3d, aircraft);
-                }
-            }
-
-        }
-;
-        hierMesh().chunkVisible("Seat1_D0", false);
-        FM.setTakenMortalDamage(true, null);
-        FM.CT.WeaponControl[0] = false;
-        FM.CT.WeaponControl[1] = false;
-        FM.CT.bHasAileronControl = false;
-        FM.CT.bHasRudderControl = false;
-        FM.CT.bHasElevatorControl = false;
-    }
-
-    public void moveCockpitDoor(float f)
-    {
-        resetYPRmodifier();
-        Aircraft.xyz[1] = Aircraft.cvt(f, 0.2F, 1.0F, 0.0F, 0.6F);
-        hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
-        if(Config.isUSE_RENDER())
-        {
-            if(Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null)
-                Main3D.cur3D().cockpits[0].onDoorMoved(f);
-            setDoorSnd(f);
-        }
-    }
-
-    protected void moveFan(float f)
-    {
-        if(bDynamoOperational)
-        {
-            pk = Math.abs((int)(FM.Vwld.length() / 14D));
-            if(pk >= 1)
-                pk = 1;
-        }
-        if(bDynamoRotary != (pk == 1))
-        {
-            bDynamoRotary = pk == 1;
-            hierMesh().chunkVisible("Prop1_D0", !bDynamoRotary);
-            hierMesh().chunkVisible("PropRot1_D0", bDynamoRotary);
-        }
-        dynamoOrient = bDynamoRotary ? (dynamoOrient - 17.987F) % 360F : (float)((double)dynamoOrient - FM.Vwld.length() * 1.5444015264511111D) % 360F;
-        hierMesh().chunkSetAngles("Prop1_D0", 0.0F, dynamoOrient, 0.0F);
-        super.moveFan(f);
-    }
-
-    protected void moveAirBrake(float f)
-    {
-        float f1 = FM.CT.GearControl <= 0.5F ? 50F : 25F;
-        hierMesh().chunkSetAngles("Airbrake_D0", 0.0F, 0.0F, f1 * f);
-        hierMesh().chunkSetAngles("Airbrake2_D0", 0.0F, 0.0F, -70F * f);
-        resetYPRmodifier();
-        Aircraft.xyz[1] = Aircraft.cvt(f, 0.0F, 1.0F, 0.0F, 0.14F);
-        hierMesh().chunkSetLocate("Airbrake21_D0", Aircraft.xyz, Aircraft.ypr);
-    }
-
-    // no more needed 4.12.2m or later games, but keep backward compatibility
-    public static void moveGear(HierMesh hiermesh, float f)
-    {
-        moveGear(hiermesh, f, f, f);
-    }
-
-    public static void moveGear(HierMesh hiermesh, float fgl, float fgr, float fgc)
-    {
-        float fy = fgc > 0.5F ? Aircraft.cvt(fgc, 0.8F, 1.0F, 90F, 0.0F) : Aircraft.cvt(fgc, 0.01F, 0.11F, 0.0F, 90F);
-        float fx = fgc > 0.5F ? Aircraft.cvt(fgc, 0.8F, 1.0F, 6F, 0.0F) : Aircraft.cvt(fgc, 0.01F, 0.11F, 0.0F, 6F);
-        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 0.0F, Aircraft.cvt(fgc, 0.3F, 0.8F, 0.0F, -95F));
-        hiermesh.chunkSetAngles("GearC7_D0", fx, -fy, 0.0F);
-        hiermesh.chunkSetAngles("GearC8_D0", -fx, fy, 0.0F);
-        hiermesh.chunkSetAngles("GearC9_D0", 0.0F, Aircraft.cvt(fgc, 0.01F, 0.11F, 0.0F, 90F), 0.0F);
-        hiermesh.chunkSetAngles("GearC10_D0", 0.0F, Aircraft.cvt(fgc, 0.01F, 0.11F, 0.0F, -90F), 0.0F);
-        hiermesh.chunkSetAngles("GearC11_D0", 0.0F, 0.0F, Aircraft.cvt(fgc, 0.0F, 0.8F, 0.0F, -90F));
-
-        hiermesh.chunkSetAngles("GearB2_D0", 0.0F, 0.0F, Aircraft.cvt(fgc, 0.0F, 0.7F, 0.0F, 115F));
-        hiermesh.chunkSetAngles("GearB5_D0", 0.0F, Aircraft.cvt(fgc, 0.0F, 0.7F, 0.0F, 90F), 0.0F);
-        hiermesh.chunkSetAngles("GearB6_D0", 0.0F, Aircraft.cvt(fgc, 0.0F, 0.7F, 0.0F, -90F), 0.0F);
-        hiermesh.chunkSetAngles("GearB7_D0", 0.0F, fy, 0.0F);
-        hiermesh.chunkSetAngles("GearB8_D0", 0.0F, fy, 0.0F);
-
-        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 0.0F, Aircraft.cvt(fgl, 0.0F, 0.8F, 0.0F, 85F));
-        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 0.0F, Aircraft.cvt(fgr, 0.0F, 0.8F, 0.0F, 85F));
-        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(fgl, 0.0F, 0.8F, 0.0F, -90F), 0.0F);
-        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(fgr, 0.0F, 0.8F, 0.0F, -90F), 0.0F);
-        hiermesh.chunkSetAngles("GearL5_D0", 0.0F, Aircraft.cvt(fgl, 0.0F, 0.8F, 0.0F, 90F), 0.0F);
-        hiermesh.chunkSetAngles("GearR5_D0", 0.0F, Aircraft.cvt(fgr, 0.0F, 0.8F, 0.0F, 90F), 0.0F);
-        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, 0.0F, Aircraft.cvt(fgl, 0.0F, 0.8F, 0.0F, 45F));
-        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, 0.0F, Aircraft.cvt(fgr, 0.0F, 0.8F, 0.0F, 45F));
-    }
-
-    // no more needed 4.12.2m or later games, but keep backward compatibility
-    protected void moveGear(float f)
-    {
-        moveGear(hierMesh(), f);
-    }
-
-    protected void moveGear(float fgl, float fgr, float fgc)
-    {
-        moveGear(hierMesh(), fgl, fgr, fgc);
-    }
-
-    public void moveWheelSink()
-    {
-        resetYPRmodifier();
-        float f = FM.Gears.gWheelSinking[2];
-        Aircraft.xyz[2] = -f;
-        hierMesh().chunkSetLocate("GearC211_D0", Aircraft.xyz, Aircraft.ypr);
-        hierMesh().chunkSetAngles("GearC3_D0", 0.0F, -20F * f, 0.0F);
-        resetYPRmodifier();
-        f = FM.Gears.gWheelSinking[0] + FM.Gears.gWheelSinking[1];
-        Aircraft.xyz[1] = -f / 2.0F;
-        hierMesh().chunkSetLocate("GearB21_D0", Aircraft.xyz, Aircraft.ypr);
-        hierMesh().chunkSetAngles("GearB3_D0", 0.0F, 20F * f, 0.0F);
-    }
-
-    protected void moveRudder(float f)
-    {
-        hierMesh().chunkSetAngles("Rudder_D0", 30F * f, 0.0F, 0.0F);
-    }
-
-    public void moveSteering(float f)
-    {
-        if(FM.CT.GearControl > 0.5F && FM.Gears.onGround())
-            hierMesh().chunkSetAngles("GearC21_D0", -1.2F * f, 0.0F, 0.0F);
-        if(FM.CT.GearControl < 0.5F)
-            hierMesh().chunkSetAngles("GearC21_D0", 0.0F, 0.0F, 0.0F);
-    }
-
-    protected void moveElevator(float f)
-    {
-        updateControlsVisuals();
-    }
-
-    private final void updateControlsVisuals()
-    {
-        if(FM.getSpeedKMH() > 590F)
-        {
-            hierMesh().chunkSetAngles("VatorL_D0", 0.0F, 0.0F, -30F * FM.CT.getElevator() + 17F * FM.CT.getAileron());
-            hierMesh().chunkSetAngles("VatorR_D0", 0.0F, 0.0F, -30F * FM.CT.getElevator() - 17F * FM.CT.getAileron());
-        }
-        else
-        {
-            hierMesh().chunkSetAngles("VatorL_D0", 0.0F, 0.0F, -17F * FM.CT.getElevator() + 10F * FM.CT.getAileron());
-            hierMesh().chunkSetAngles("VatorR_D0", 0.0F, 0.0F, -17F * FM.CT.getElevator() - 10F * FM.CT.getAileron());
-        }
-    }
-
-    protected void moveAileron(float f)
-    {
-        updateControlsVisuals();
-        if(bUseDroopAileron)
-        {
-            hierMesh().chunkSetAngles("AroneL_D0", 0.0F, 0.0F, 15F);
-            hierMesh().chunkSetAngles("AroneR_D0", 0.0F, 0.0F, 15F);
-        }
-        else if(FM.getSpeedKMH() > 570F)
-        {
-            float f1 = 2.0F * f;
-            hierMesh().chunkSetAngles("AroneL_D0", 0.0F, 0.0F, 20F * f1);
-            hierMesh().chunkSetAngles("AroneR_D0", 0.0F, 0.0F, -20F * f1);
-        }
-        else
-        {
-            hierMesh().chunkSetAngles("AroneL_D0", 0.0F, 0.0F, 20F * f);
-            hierMesh().chunkSetAngles("AroneR_D0", 0.0F, 0.0F, -20F * f);
-        }
-    }
-
-    protected void moveFlap(float f)
-    {
-        float f1 = 35F * f;
-        float f2 = Aircraft.cvt(f, 0.0F, 1.0F, 0.0F, 18F);
-        hierMesh().chunkSetAngles("Flap1_D0", 0.0F, 0.0F, f1);
-        hierMesh().chunkSetAngles("Flap2_D0", 0.0F, 0.0F, f1);
-        hierMesh().chunkSetAngles("Flap12_D0", 0.0F, 0.0F, f2);
-        hierMesh().chunkSetAngles("Flap22_D0", 0.0F, 0.0F, f2);
-        resetYPRmodifier();
-        Aircraft.xyz[1] = Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, 0.2F);
-        hierMesh().chunkSetLocate("Flap21_D0", Aircraft.xyz, Aircraft.ypr);
-        hierMesh().chunkSetLocate("Flap11_D0", Aircraft.xyz, Aircraft.ypr);
     }
 
     protected void hitBone(String s, Shot shot, Point3d point3d)
@@ -919,24 +738,181 @@ public class AV_8 extends Scheme1
         return super.cutFM(i, j, actor);
     }
 
-    public void typeFighterAceMakerRangeFinder()
+    public void moveCockpitDoor(float f)
     {
-        if(k14Mode != 1)
-            return;
-        hunted = Main3D.cur3D().getViewPadlockEnemy();
-        if(hunted == null)
+        resetYPRmodifier();
+        Aircraft.xyz[1] = Aircraft.cvt(f, 0.2F, 1.0F, 0.0F, 0.6F);
+        hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
+        if(Config.isUSE_RENDER())
         {
-            k14Distance = 200F;
-            hunted = War.GetNearestEnemyAircraft(FM.actor, 2700F, 9);
+            if(Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null)
+                Main3D.cur3D().cockpits[0].onDoorMoved(f);
+            setDoorSnd(f);
         }
-        if(hunted != null)
+    }
+
+    // no more needed 4.12.2m or later games, but keep backward compatibility
+    public static void moveGear(HierMesh hiermesh, float f)
+    {
+        moveGear(hiermesh, f, f, f);
+    }
+
+    public static void moveGear(HierMesh hiermesh, float fgl, float fgr, float fgc)
+    {
+        float fy = fgc > 0.5F ? Aircraft.cvt(fgc, 0.8F, 1.0F, 90F, 0.0F) : Aircraft.cvt(fgc, 0.01F, 0.11F, 0.0F, 90F);
+        float fx = fgc > 0.5F ? Aircraft.cvt(fgc, 0.8F, 1.0F, 6F, 0.0F) : Aircraft.cvt(fgc, 0.01F, 0.11F, 0.0F, 6F);
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 0.0F, Aircraft.cvt(fgc, 0.3F, 0.8F, 0.0F, -95F));
+        hiermesh.chunkSetAngles("GearC7_D0", fx, -fy, 0.0F);
+        hiermesh.chunkSetAngles("GearC8_D0", -fx, fy, 0.0F);
+        hiermesh.chunkSetAngles("GearC9_D0", 0.0F, Aircraft.cvt(fgc, 0.01F, 0.11F, 0.0F, 90F), 0.0F);
+        hiermesh.chunkSetAngles("GearC10_D0", 0.0F, Aircraft.cvt(fgc, 0.01F, 0.11F, 0.0F, -90F), 0.0F);
+        hiermesh.chunkSetAngles("GearC11_D0", 0.0F, 0.0F, Aircraft.cvt(fgc, 0.0F, 0.8F, 0.0F, -90F));
+
+        hiermesh.chunkSetAngles("GearB2_D0", 0.0F, 0.0F, Aircraft.cvt(fgc, 0.0F, 0.7F, 0.0F, 115F));
+        hiermesh.chunkSetAngles("GearB5_D0", 0.0F, Aircraft.cvt(fgc, 0.0F, 0.7F, 0.0F, 90F), 0.0F);
+        hiermesh.chunkSetAngles("GearB6_D0", 0.0F, Aircraft.cvt(fgc, 0.0F, 0.7F, 0.0F, -90F), 0.0F);
+        hiermesh.chunkSetAngles("GearB7_D0", 0.0F, fy, 0.0F);
+        hiermesh.chunkSetAngles("GearB8_D0", 0.0F, fy, 0.0F);
+
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 0.0F, Aircraft.cvt(fgl, 0.0F, 0.8F, 0.0F, 85F));
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 0.0F, Aircraft.cvt(fgr, 0.0F, 0.8F, 0.0F, 85F));
+        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(fgl, 0.0F, 0.8F, 0.0F, -90F), 0.0F);
+        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(fgr, 0.0F, 0.8F, 0.0F, -90F), 0.0F);
+        hiermesh.chunkSetAngles("GearL5_D0", 0.0F, Aircraft.cvt(fgl, 0.0F, 0.8F, 0.0F, 90F), 0.0F);
+        hiermesh.chunkSetAngles("GearR5_D0", 0.0F, Aircraft.cvt(fgr, 0.0F, 0.8F, 0.0F, 90F), 0.0F);
+        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, 0.0F, Aircraft.cvt(fgl, 0.0F, 0.8F, 0.0F, 45F));
+        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, 0.0F, Aircraft.cvt(fgr, 0.0F, 0.8F, 0.0F, 45F));
+    }
+
+    // no more needed 4.12.2m or later games, but keep backward compatibility
+    protected void moveGear(float f)
+    {
+        moveGear(hierMesh(), f);
+    }
+
+    protected void moveGear(float fgl, float fgr, float fgc)
+    {
+        moveGear(hierMesh(), fgl, fgr, fgc);
+    }
+
+    public void moveWheelSink()
+    {
+        resetYPRmodifier();
+        float f = FM.Gears.gWheelSinking[2];
+        Aircraft.xyz[2] = -f;
+        hierMesh().chunkSetLocate("GearC211_D0", Aircraft.xyz, Aircraft.ypr);
+        hierMesh().chunkSetAngles("GearC3_D0", 0.0F, -20F * f, 0.0F);
+        resetYPRmodifier();
+        f = FM.Gears.gWheelSinking[0] + FM.Gears.gWheelSinking[1];
+        Aircraft.xyz[1] = -f / 2.0F;
+        hierMesh().chunkSetLocate("GearB21_D0", Aircraft.xyz, Aircraft.ypr);
+        hierMesh().chunkSetAngles("GearB3_D0", 0.0F, 20F * f, 0.0F);
+    }
+
+    protected void moveFan(float f)
+    {
+        if(bDynamoOperational)
         {
-            k14Distance = (float)(FM.actor.pos.getAbsPoint().distance(hunted.pos.getAbsPoint()));
-            if(k14Distance > 800F)
-                k14Distance = 800F;
-            else if(k14Distance < 200F)
-                k14Distance = 200F;
+            pk = Math.abs((int)(FM.Vwld.length() / 14D));
+            if(pk >= 1)
+                pk = 1;
         }
+        if(bDynamoRotary != (pk == 1))
+        {
+            bDynamoRotary = pk == 1;
+            hierMesh().chunkVisible("Prop1_D0", !bDynamoRotary);
+            hierMesh().chunkVisible("PropRot1_D0", bDynamoRotary);
+        }
+        dynamoOrient = bDynamoRotary ? (dynamoOrient - 17.987F) % 360F : (float)((double)dynamoOrient - FM.Vwld.length() * 1.5444015264511111D) % 360F;
+        hierMesh().chunkSetAngles("Prop1_D0", 0.0F, dynamoOrient, 0.0F);
+        super.moveFan(f);
+    }
+
+    protected void moveRudder(float f)
+    {
+        hierMesh().chunkSetAngles("Rudder_D0", 30F * f, 0.0F, 0.0F);
+    }
+
+    public void moveSteering(float f)
+    {
+        if(FM.CT.GearControl > 0.5F && FM.Gears.onGround())
+            hierMesh().chunkSetAngles("GearC21_D0", -1.2F * f, 0.0F, 0.0F);
+        if(FM.CT.GearControl < 0.5F)
+            hierMesh().chunkSetAngles("GearC21_D0", 0.0F, 0.0F, 0.0F);
+    }
+
+    protected void moveElevator(float f)
+    {
+        updateControlsVisuals();
+    }
+
+    private final void updateControlsVisuals()
+    {
+        if(FM.getSpeedKMH() > 590F)
+        {
+            hierMesh().chunkSetAngles("VatorL_D0", 0.0F, 0.0F, -30F * FM.CT.getElevator() + 17F * FM.CT.getAileron());
+            hierMesh().chunkSetAngles("VatorR_D0", 0.0F, 0.0F, -30F * FM.CT.getElevator() - 17F * FM.CT.getAileron());
+        }
+        else
+        {
+            hierMesh().chunkSetAngles("VatorL_D0", 0.0F, 0.0F, -17F * FM.CT.getElevator() + 10F * FM.CT.getAileron());
+            hierMesh().chunkSetAngles("VatorR_D0", 0.0F, 0.0F, -17F * FM.CT.getElevator() - 10F * FM.CT.getAileron());
+        }
+    }
+
+    protected void moveAileron(float f)
+    {
+        updateControlsVisuals();
+        if(bUseDroopAileron)
+        {
+            hierMesh().chunkSetAngles("AroneL_D0", 0.0F, 0.0F, 15F);
+            hierMesh().chunkSetAngles("AroneR_D0", 0.0F, 0.0F, 15F);
+        }
+        else if(FM.getSpeedKMH() > 570F)
+        {
+            float f1 = 2.0F * f;
+            hierMesh().chunkSetAngles("AroneL_D0", 0.0F, 0.0F, 20F * f1);
+            hierMesh().chunkSetAngles("AroneR_D0", 0.0F, 0.0F, -20F * f1);
+        }
+        else
+        {
+            hierMesh().chunkSetAngles("AroneL_D0", 0.0F, 0.0F, 20F * f);
+            hierMesh().chunkSetAngles("AroneR_D0", 0.0F, 0.0F, -20F * f);
+        }
+    }
+
+    protected void moveFlap(float f)
+    {
+        float f1 = 35F * f;
+        float f2 = Aircraft.cvt(f, 0.0F, 1.0F, 0.0F, 18F);
+        hierMesh().chunkSetAngles("Flap1_D0", 0.0F, 0.0F, f1);
+        hierMesh().chunkSetAngles("Flap2_D0", 0.0F, 0.0F, f1);
+        hierMesh().chunkSetAngles("Flap12_D0", 0.0F, 0.0F, f2);
+        hierMesh().chunkSetAngles("Flap22_D0", 0.0F, 0.0F, f2);
+        resetYPRmodifier();
+        Aircraft.xyz[1] = Aircraft.cvt(f, 0.0F, 0.8F, 0.0F, 0.2F);
+        hierMesh().chunkSetLocate("Flap21_D0", Aircraft.xyz, Aircraft.ypr);
+        hierMesh().chunkSetLocate("Flap11_D0", Aircraft.xyz, Aircraft.ypr);
+    }
+
+    protected void moveAirBrake(float f)
+    {
+        float f1 = FM.CT.GearControl <= 0.5F ? 50F : 25F;
+        hierMesh().chunkSetAngles("Airbrake_D0", 0.0F, 0.0F, f1 * f);
+        hierMesh().chunkSetAngles("Airbrake2_D0", 0.0F, 0.0F, -70F * f);
+        resetYPRmodifier();
+        Aircraft.xyz[1] = Aircraft.cvt(f, 0.0F, 1.0F, 0.0F, 0.14F);
+        hierMesh().chunkSetLocate("Airbrake21_D0", Aircraft.xyz, Aircraft.ypr);
+    }
+
+    public void moveRefuel(float f)
+    {
+        resetYPRmodifier();
+        hierMesh().chunkSetAngles("Refillrod1", Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, 15F), 0.0F, 0.0F);
+        hierMesh().chunkSetAngles("Refillrod3", 0.0F, Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, 75F), 0.0F);
+        hierMesh().chunkSetAngles("Refillrod4", 0.0F, Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, -165F), 0.0F);
+        Aircraft.xyz[1] = Aircraft.cvt(f, 0.0F, 1.0F, 0.0F, -0.9F);
+        hierMesh().chunkSetLocate("Refillrod2", Aircraft.xyz, Aircraft.ypr);
     }
 
     public float getAirPressure(float f)
@@ -1024,11 +1000,12 @@ public class AV_8 extends Scheme1
             Eff3DActor.finish(shockwave);
     }
 
-    public void engineSurge(float f)
+    private void engineSurge(float f)
     {
         if(FM.AS.isMaster())
         {
             for(int i = 0; i < 1; i++)
+            {
                 if(curthrl[i] == -1F)
                 {
                     curthrl[i] = oldthrl[i] = FM.EI.engines[i].getControlThrottle();
@@ -1067,6 +1044,7 @@ public class AV_8 extends Scheme1
                     }
                     oldthrl[i] = curthrl[i];
                 }
+            }
         }
     }
 
@@ -1504,16 +1482,6 @@ public class AV_8 extends Scheme1
         vectorthrustx = 0.5F * f;
     }
 
-    public void moveRefuel(float f)
-    {
-        resetYPRmodifier();
-        hierMesh().chunkSetAngles("Refillrod1", Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, 15F), 0.0F, 0.0F);
-        hierMesh().chunkSetAngles("Refillrod3", 0.0F, Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, 75F), 0.0F);
-        hierMesh().chunkSetAngles("Refillrod4", 0.0F, Aircraft.cvt(f, 0.0F, 0.5F, 0.0F, -165F), 0.0F);
-        Aircraft.xyz[1] = Aircraft.cvt(f, 0.0F, 1.0F, 0.0F, -0.9F);
-        hierMesh().chunkSetLocate("Refillrod2", Aircraft.xyz, Aircraft.ypr);
-    }
-
     public void doSetSootState(int i, int j)
     {
         for(int k = 0; k < 2; k++)
@@ -1657,14 +1625,38 @@ public class AV_8 extends Scheme1
 
     }
 
-    public float getFlowRate()
+    public void doEjectCatapult()
     {
-        return FlowRate;
-    }
+        new MsgAction(false, this) {
 
-    public float getFuelReserve()
-    {
-        return FuelReserve;
+            public void doAction(Object obj)
+            {
+                Aircraft aircraft = (Aircraft)obj;
+                if(Actor.isValid(aircraft))
+                {
+                    Loc loc = new Loc();
+                    Loc loc1 = new Loc();
+                    Vector3d vector3d = new Vector3d(0.0D, 0.0D, 60D);
+                    HookNamed hooknamed = new HookNamed(aircraft, "_ExternalSeat01");
+                    ((Actor) (aircraft)).pos.getAbs(loc1);
+                    hooknamed.computePos(aircraft, loc1, loc);
+                    loc.transform(vector3d);
+                    vector3d.x += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).x;
+                    vector3d.y += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).y;
+                    vector3d.z += ((Tuple3d) (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Vwld)).z;
+                    new EjectionSeat(10, loc, vector3d, aircraft);
+                }
+            }
+
+        }
+;
+        hierMesh().chunkVisible("Seat1_D0", false);
+        FM.setTakenMortalDamage(true, null);
+        FM.CT.WeaponControl[0] = false;
+        FM.CT.WeaponControl[1] = false;
+        FM.CT.bHasAileronControl = false;
+        FM.CT.bHasRudderControl = false;
+        FM.CT.bHasElevatorControl = false;
     }
 
     private void AIAirBrake()
@@ -1746,6 +1738,16 @@ public class AV_8 extends Scheme1
         FM.Sq.dragParasiteCx += Energy;
     }
 
+    public float getFlowRate()
+    {
+        return FlowRate;
+    }
+
+    public float getFuelReserve()
+    {
+        return FuelReserve;
+    }
+
     public int Bingofuel;
     public boolean Nvision;
     public boolean APmode1;
@@ -1771,6 +1773,8 @@ public class AV_8 extends Scheme1
     public int k14Mode;
     public int k14WingspanType;
     public float k14Distance;
+//    public static int LockState = 0;
+    Actor hunted = null;
     private float lightTime;
     private float ft;
     private LightPointWorld lLight[];
@@ -1783,8 +1787,6 @@ public class AV_8 extends Scheme1
     private float SonicBoom;
     private Eff3DActor shockwave;
     private boolean isSonic;
-//    public static int LockState = 0;
-    Actor hunted = null;
     private float gearTargetAngle;
     private float gearCurrentAngle;
 
