@@ -3,8 +3,7 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.*;
 import com.maddox.il2.ai.*;
-import com.maddox.il2.ai.air.Maneuver;
-import com.maddox.il2.ai.air.Pilot;
+import com.maddox.il2.ai.air.*;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
@@ -55,6 +54,10 @@ public class AV_8 extends Scheme1
         k14Mode = 2;
         k14WingspanType = 0;
         k14Distance = 200F;
+        overrideBailout = false;
+        ejectComplete = false;
+        lightTime = 0.0F;
+        ft = 0.0F;
         bSightAutomation = false;
         bSightBombDump = false;
         fSightCurDistance = 0.0F;
@@ -63,20 +66,10 @@ public class AV_8 extends Scheme1
         fSightCurAltitude = 3000F;
         fSightCurSpeed = 200F;
         fSightCurReadyness = 0.0F;
-        overrideBailout = false;
-        ejectComplete = false;
-        lightTime = 0.0F;
-        ft = 0.0F;
-        oldctl = -1F;
-        curctl = -1F;
-        oldthrl = -1F;
-        curthrl = -1F;
-        engineSurgeDamage = 0.0F;
         gearTargetAngle = -1F;
         gearCurrentAngle = -1F;
         vectorthrustx = 0.0F;
         vectorthrustz = 0.0F;
-        leftscreen = 2;
         Bingofuel = 1000;
         Nvision = false;
         bDynamoOperational = true;
@@ -104,12 +97,12 @@ public class AV_8 extends Scheme1
 
     public float checkfuel(int i)
     {
-        FuelTank fuelTanks[] = FM.CT.getFuelTanks();
-        if(fuelTanks.length == 0)
-            return 0.0F;
-        Fuelamount = fuelTanks[i].checkFuel();
+        FuelTank afueltank[] = FM.CT.getFuelTanks();
 
-        return Fuelamount;
+        if(afueltank.length == 0 || FM.M.bFuelTanksDropped)
+            return 0.0F;
+
+        return afueltank[i].checkFuel();
     }
 
     public void auxPressed(int i)
@@ -126,18 +119,6 @@ public class AV_8 extends Scheme1
                 Nvision = false;
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Nvision OFF");
             }
-        if(i == 24)
-        {
-            leftscreen++;
-            if(leftscreen > 2)
-                leftscreen = 0;
-            if(leftscreen == 0)
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Left screen: Fuel");
-            else if(leftscreen == 1)
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Left screen: FPAS");
-            else if(leftscreen == 2)
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Left screen: Engine");
-        }
         if(i == 25)
         {
             Bingofuel += 500;
@@ -237,7 +218,6 @@ public class AV_8 extends Scheme1
         FM.CT.bHasBombSelect = true;
         FM.CT.bHasAntiColLights = true;
         FM.CT.bHasFormationLights = true;
-        t1 = Time.current();
         if(thisWeaponsName.endsWith("_NoGun"))
         {
             hierMesh().chunkVisible("CF1_D0", false);
@@ -324,6 +304,7 @@ public class AV_8 extends Scheme1
         else
         {
             for(int j = 0; j < 4; j++)
+            {
                 if(FM.AS.astateLandingLightEffects[j] != null)
                 {
                     lLightLoc1.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
@@ -350,6 +331,7 @@ public class AV_8 extends Scheme1
                 }
                 else if(lLight[j].getR() != 0.0F)
                     lLight[j].setEmit(0.0F, 0.0F);
+            }
 
         }
     }
@@ -945,11 +927,11 @@ public class AV_8 extends Scheme1
         if(hunted == null)
         {
             k14Distance = 200F;
-            hunted = War.GetNearestEnemyAircraft(((Interpolate) (super.FM)).actor, 2700F, 9);
+            hunted = War.GetNearestEnemyAircraft(FM.actor, 2700F, 9);
         }
         if(hunted != null)
         {
-            k14Distance = (float)((Interpolate) (super.FM)).actor.pos.getAbsPoint().distance(hunted.pos.getAbsPoint());
+            k14Distance = (float)(FM.actor.pos.getAbsPoint().distance(hunted.pos.getAbsPoint()));
             if(k14Distance > 800F)
                 k14Distance = 800F;
             else if(k14Distance < 200F)
@@ -1032,7 +1014,7 @@ public class AV_8 extends Scheme1
         {
             super.playSound("aircraft.SonicBoom", true);
             super.playSound("aircraft.SonicBoomInternal", true);
-            if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
+            if(this == World.getPlayerAircraft())
                 HUD.log(AircraftHotKeys.hudLogPowerId, "Mach 1 Exceeded!");
             if(Config.isUSE_RENDER() && World.Rnd().nextFloat() < getAirDensityFactor(FM.getAltitude()))
                 shockwave = Eff3DActor.New(this, findHook("_Shockwave"), null, 1.0F, "3DO/Effects/Aircraft/Condensation.eff", -1F);
@@ -1047,45 +1029,44 @@ public class AV_8 extends Scheme1
         if(FM.AS.isMaster())
         {
             for(int i = 0; i < 1; i++)
-                if(curthrl == -1F)
+                if(curthrl[i] == -1F)
                 {
-                    curthrl = oldthrl = FM.EI.engines[i].getControlThrottle();
+                    curthrl[i] = oldthrl[i] = FM.EI.engines[i].getControlThrottle();
                 }
                 else
                 {
-                    curthrl = FM.EI.engines[i].getControlThrottle();
-                    if(curthrl < 1.05F)
+                    curthrl[i] = FM.EI.engines[i].getControlThrottle();
+                    if(curthrl[i] < 1.05F)
                     {
-                        if((curthrl - oldthrl) / f > 20F && FM.EI.engines[i].getRPM() < 3200F && FM.EI.engines[i].getStage() == 6 && World.Rnd().nextFloat() < 0.4F)
+                        if((curthrl[i] - oldthrl[i]) / f > 20F && FM.EI.engines[i].getRPM() < 3200F && FM.EI.engines[i].getStage() == 6 && World.Rnd().nextFloat() < 0.4F)
                         {
-                            if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
+                            if(this == World.getPlayerAircraft())
                                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Compressor Stall!");
                             super.playSound("weapon.MGunMk108s", true);
-                            engineSurgeDamage += 0.01F * (FM.EI.engines[i].getRPM() / 1000F);
-                            FM.EI.engines[i].doSetReadyness(FM.EI.engines[i].getReadyness() - engineSurgeDamage);
+                            engineSurgeDamage[i] += 0.01F * (FM.EI.engines[i].getRPM() / 1000F);
+                            FM.EI.engines[i].doSetReadyness(FM.EI.engines[i].getReadyness() - engineSurgeDamage[i]);
                             if(World.Rnd().nextFloat() < 0.05F && (super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode())
                                 FM.AS.hitEngine(this, i, 100);
                             if(World.Rnd().nextFloat() < 0.05F && (super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode())
                                 FM.EI.engines[i].setEngineDies(this);
                         }
-                        if((curthrl - oldthrl) / f < -20F && (curthrl - oldthrl) / f > -100F && FM.EI.engines[i].getRPM() < 3200F && FM.EI.engines[i].getStage() == 6)
+                        if((curthrl[i] - oldthrl[i]) / f < -20F && (curthrl[i] - oldthrl[i]) / f > -100F && FM.EI.engines[i].getRPM() < 3200F && FM.EI.engines[i].getStage() == 6)
                         {
                             super.playSound("weapon.MGunMk108s", true);
-                            engineSurgeDamage += 0.001F * (FM.EI.engines[i].getRPM() / 1000F);
-                            FM.EI.engines[i].doSetReadyness(FM.EI.engines[i].getReadyness() - engineSurgeDamage);
+                            engineSurgeDamage[i] += 0.001F * (FM.EI.engines[i].getRPM() / 1000F);
+                            FM.EI.engines[i].doSetReadyness(FM.EI.engines[i].getReadyness() - engineSurgeDamage[i]);
                             if(World.Rnd().nextFloat() < 0.4F && (super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode())
                             {
-                                if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
+                                if(this == World.getPlayerAircraft())
                                     HUD.log(AircraftHotKeys.hudLogWeaponId, "Engine Flameout!");
                                 FM.EI.engines[i].setEngineStops(this);
                             }
-                            else if(((Interpolate) (super.FM)).actor == World.getPlayerAircraft())
+                            else if(this == World.getPlayerAircraft())
                                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Compressor Stall!");
                         }
                     }
-                    oldthrl = curthrl;
+                    oldthrl[i] = curthrl[i];
                 }
-
         }
     }
 
@@ -1765,17 +1746,13 @@ public class AV_8 extends Scheme1
         FM.Sq.dragParasiteCx += Energy;
     }
 
-    public float Fuelamount;
-    public int leftscreen;
     public int Bingofuel;
     public boolean Nvision;
     public boolean APmode1;
     public boolean ILS;
-    private float oldctl;
-    private float curctl;
-    private float oldthrl;
-    private float curthrl;
-    private float engineSurgeDamage;
+    private float oldthrl[] = { -1.0F };
+    private float curthrl[] = { -1.0F };
+    private float engineSurgeDamage[] = { 0.0F };
     private boolean overrideBailout;
     private boolean ejectComplete;
     public int nozzlemode;
@@ -1790,7 +1767,6 @@ public class AV_8 extends Scheme1
     private boolean flapswitch;
     private float vectorthrustz;
     private float vectorthrustx;
-    public long t1;
     private long twait;
     public int k14Mode;
     public int k14WingspanType;
