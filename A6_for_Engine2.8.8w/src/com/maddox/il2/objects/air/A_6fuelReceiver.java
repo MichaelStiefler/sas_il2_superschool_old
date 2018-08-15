@@ -150,7 +150,7 @@ public class A_6fuelReceiver extends A_6
         queen_time = 0L;
         FM.EI.setEngineRunning();
         FM.CT.setGearAirborne();
-        moveGear(0.0F);
+        moveGear(0.0F, 0.0F, 0.0F);
         FlightModel flightmodel = ((SndAircraft) ((Aircraft)queen_)).FM;
         if(aircIndex() == 0 && (super.FM instanceof Maneuver) && (flightmodel instanceof Maneuver))
         {
@@ -195,7 +195,8 @@ public class A_6fuelReceiver extends A_6
             }
             netmsgguaranted.writeByte(dockport_);
             netmsgguaranted.writeNetObj(actornet);
-        } else
+        }
+        else
         {
             netmsgguaranted.writeByte(0);
         }
@@ -244,7 +245,7 @@ public class A_6fuelReceiver extends A_6
                 float freeTankSum = 0F;
                 for(int num = 0; num < fuelTanks.length; num++)
                     freeTankSum += fuelTanks[num].checkFreeTankSpace();
-                if(freeTankSum < fuelReceiveRate - 0.8F)
+                if(freeTankSum < fuelReceiveRate + 0.8F)
                 {
                     typeDockableAttemptDetach();
                     return;
@@ -258,8 +259,8 @@ public class A_6fuelReceiver extends A_6
                 typeDockableAttemptDetach();
                 return;
             }
-        } else
-        if(!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode())
+        }
+        else if(!(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode())
         {
             if(FM.CT.GearControl == 0.0F && FM.EI.engines[0].getStage() == 0)
                 FM.EI.setEngineRunning();
@@ -275,8 +276,8 @@ public class A_6fuelReceiver extends A_6
                     ((Maneuver)super.FM).set_maneuver(0);
                     ((Pilot)super.FM).setDumbTime(0L);
                 }
-            } else
-            if(FM.AP.way.curr().Action == 0)
+            }
+            else if(FM.AP.way.curr().Action == 0)
             {
                 Maneuver maneuver = (Maneuver)super.FM;
                 if(maneuver.Group != null && maneuver.Group.airc[0] == this && maneuver.Group.clientGroup != null)

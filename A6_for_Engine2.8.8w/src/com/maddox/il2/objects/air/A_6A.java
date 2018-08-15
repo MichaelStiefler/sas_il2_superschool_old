@@ -7,8 +7,6 @@ import com.maddox.il2.ai.air.*;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
-import com.maddox.il2.objects.sounds.SndAircraft;
-import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.il2.objects.weapons.*;
 import com.maddox.rts.*;
 import com.maddox.util.HashMapInt;
@@ -17,68 +15,11 @@ import java.util.ArrayList;
 
 
 public class A_6A extends A_6fuelReceiver
-    implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeAcePlane
 {
 
     public A_6A()
     {
-        guidedMissileUtils = null;
-        hasChaff = false;
-        hasFlare = false;
-        lastChaffDeployed = 0L;
-        lastFlareDeployed = 0L;
-        guidedMissileUtils = new GuidedMissileUtils(this);
-        counterFlareList = new ArrayList();
-        counterChaffList = new ArrayList();
         bHasLAUcaps = false;
-    }
-
-    private void checkAmmo()
-    {
-        counterFlareList.clear();
-        counterChaffList.clear();
-        for(int i = 0; i < FM.CT.Weapons.length; i++)
-            if(FM.CT.Weapons[i] != null)
-            {
-                for(int j = 0; j < FM.CT.Weapons[i].length; j++)
-                    if(FM.CT.Weapons[i][j].haveBullets())
-                    {
-                        if(FM.CT.Weapons[i][j] instanceof RocketGunFlare_gn16)
-                            counterFlareList.add(FM.CT.Weapons[i][j]);
-                        else if(FM.CT.Weapons[i][j] instanceof RocketGunChaff_gn16)
-                            counterChaffList.add(FM.CT.Weapons[i][j]);
-                    }
-            }
-    }
-
-    public void backFire()
-    {
-        if(counterFlareList.isEmpty())
-            hasFlare = false;
-        else
-        {
-            if(Time.current() > lastFlareDeployed + 700L)
-            {
-                ((RocketGunFlare_gn16)counterFlareList.get(0)).shots(1);
-                hasFlare = true;
-                lastFlareDeployed = Time.current();
-                if(!((RocketGunFlare_gn16)counterFlareList.get(0)).haveBullets())
-                    counterFlareList.remove(0);
-            }
-        }
-        if(counterChaffList.isEmpty())
-            hasChaff = false;
-        else
-        {
-            if(Time.current() > lastChaffDeployed + 900L)
-            {
-                ((RocketGunChaff_gn16)counterChaffList.get(0)).shots(1);
-                hasChaff = true;
-                lastChaffDeployed = Time.current();
-                if(!((RocketGunChaff_gn16)counterChaffList.get(0)).haveBullets())
-                    counterChaffList.remove(0);
-            }
-        }
     }
 
     private void checkChangeWeaponColors()
@@ -136,33 +77,10 @@ public class A_6A extends A_6fuelReceiver
         }
     }
 
-    public long getChaffDeployed()
-    {
-        if(hasChaff)
-            return lastChaffDeployed;
-        else
-            return 0L;
-    }
-
-    public long getFlareDeployed()
-    {
-        if(hasFlare)
-            return lastFlareDeployed;
-        else
-            return 0L;
-    }
-
-    public GuidedMissileUtils getGuidedMissileUtils()
-    {
-        return guidedMissileUtils;
-    }
-
     public void onAircraftLoaded()
     {
         super.noFL = true;
         super.onAircraftLoaded();
-        guidedMissileUtils.onAircraftLoaded();
-        FM.Skill = 3;
         super.fuelReceiveRate = 10.093F;
     }
 
@@ -170,11 +88,8 @@ public class A_6A extends A_6fuelReceiver
     {
         if(bHasLAUcaps)
             checkDeleteLAUcaps();
-        guidedMissileUtils.update();
 
         super.update(f);
-        if(super.backfire)
-            backFire();
     }
 
     public void missionStarting()
@@ -182,8 +97,6 @@ public class A_6A extends A_6fuelReceiver
         super.missionStarting();
 
         checkChangeWeaponColors();
-
-        checkAmmo();
     }
 
     public void rareAction(float f, boolean flag)
@@ -191,13 +104,6 @@ public class A_6A extends A_6fuelReceiver
         super.rareAction(f, flag);
     }
 
-    private GuidedMissileUtils guidedMissileUtils;
-    private boolean hasChaff;
-    private boolean hasFlare;
-    private long lastChaffDeployed;
-    private long lastFlareDeployed;
-    private ArrayList counterFlareList;
-    private ArrayList counterChaffList;
     private boolean bHasLAUcaps;
 
     static 
