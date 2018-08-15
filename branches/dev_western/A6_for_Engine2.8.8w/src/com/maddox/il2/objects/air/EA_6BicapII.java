@@ -7,8 +7,6 @@ import com.maddox.il2.ai.air.*;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
-import com.maddox.il2.objects.sounds.SndAircraft;
-import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.il2.objects.weapons.*;
 import com.maddox.rts.*;
 import com.maddox.util.HashMapInt;
@@ -17,97 +15,16 @@ import java.util.ArrayList;
 
 
 public class EA_6BicapII extends A_6fuelReceiver
-    implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeAcePlane
 {
 
     public EA_6BicapII()
     {
-        guidedMissileUtils = null;
-        hasChaff = false;
-        hasFlare = false;
-        lastChaffDeployed = 0L;
-        lastFlareDeployed = 0L;
-        guidedMissileUtils = new GuidedMissileUtils(this);
-        counterFlareList = new ArrayList();
-        counterChaffList = new ArrayList();
         ratdeg = 0F;
-    }
-
-    private void checkAmmo()
-    {
-        counterFlareList.clear();
-        counterChaffList.clear();
-        for(int i = 0; i < ((FlightModelMain) (super.FM)).CT.Weapons.length; i++)
-            if(((FlightModelMain) (super.FM)).CT.Weapons[i] != null)
-            {
-                for(int j = 0; j < ((FlightModelMain) (super.FM)).CT.Weapons[i].length; j++)
-                    if(((FlightModelMain) (super.FM)).CT.Weapons[i][j].haveBullets())
-                    {
-                        if(FM.CT.Weapons[i][j] instanceof RocketGunFlare_gn16)
-                            counterFlareList.add(FM.CT.Weapons[i][j]);
-                        else if(FM.CT.Weapons[i][j] instanceof RocketGunChaff_gn16)
-                            counterChaffList.add(FM.CT.Weapons[i][j]);
-                    }
-            }
-
-    }
-
-    public void backFire()
-    {
-        if(counterFlareList.isEmpty())
-            hasFlare = false;
-        else
-        {
-            if(Time.current() > lastFlareDeployed + 700L)
-            {
-                ((RocketGunFlare_gn16)counterFlareList.get(0)).shots(1);
-                hasFlare = true;
-                lastFlareDeployed = Time.current();
-                if(!((RocketGunFlare_gn16)counterFlareList.get(0)).haveBullets())
-                    counterFlareList.remove(0);
-            }
-        }
-        if(counterChaffList.isEmpty())
-            hasChaff = false;
-        else
-        {
-            if(Time.current() > lastChaffDeployed + 900L)
-            {
-                ((RocketGunChaff_gn16)counterChaffList.get(0)).shots(1);
-                hasChaff = true;
-                lastChaffDeployed = Time.current();
-                if(!((RocketGunChaff_gn16)counterChaffList.get(0)).haveBullets())
-                    counterChaffList.remove(0);
-            }
-        }
-    }
-
-    public long getChaffDeployed()
-    {
-        if(hasChaff)
-            return lastChaffDeployed;
-        else
-            return 0L;
-    }
-
-    public long getFlareDeployed()
-    {
-        if(hasFlare)
-            return lastFlareDeployed;
-        else
-            return 0L;
-    }
-
-    public GuidedMissileUtils getGuidedMissileUtils()
-    {
-        return guidedMissileUtils;
     }
 
     public void onAircraftLoaded()
     {
         super.onAircraftLoaded();
-        guidedMissileUtils.onAircraftLoaded();
-        FM.Skill = 3;
         super.fuelReceiveRate = 10.093F;
         if(thisWeaponsName.endsWith("__ALQ3"))
         {
@@ -148,30 +65,19 @@ public class EA_6BicapII extends A_6fuelReceiver
             FM.M.massEmpty += 482F * 5F;
             FM.Sq.dragProducedCx += 0.028F * 5F;
         }
-        if(!thisWeaponsName.startsWith("empty"))
-        {
-            hasChaff = true;
-            hasFlare = true;
-        }
     }
 
     public void update(float f)
     {
-        guidedMissileUtils.update();
-
         if(FM.getSpeedKMH() > 185F)
             RATrot();
 
         super.update(f);
-        if(super.backfire)
-            backFire();
     }
 
     public void missionStarting()
     {
         super.missionStarting();
-
-        checkAmmo();
     }
 
     private void RATrot()
@@ -205,13 +111,6 @@ public class EA_6BicapII extends A_6fuelReceiver
         }
     }
 
-    private GuidedMissileUtils guidedMissileUtils;
-    private boolean hasChaff;
-    private boolean hasFlare;
-    private long lastChaffDeployed;
-    private long lastFlareDeployed;
-    private ArrayList counterFlareList;
-    private ArrayList counterChaffList;
     private float ratdeg;
 
     static 

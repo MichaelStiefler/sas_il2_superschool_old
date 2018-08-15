@@ -8,7 +8,6 @@ import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
 import com.maddox.il2.objects.sounds.SndAircraft;
-import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.il2.objects.weapons.*;
 import com.maddox.rts.*;
 import com.maddox.util.HashMapInt;
@@ -17,19 +16,11 @@ import java.util.ArrayList;
 
 
 public class A_6E_tanker extends A_6
-    implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeAcePlane, TypeDockable, TypeTankerDrogue
+    implements TypeDockable, TypeTankerDrogue
 {
 
     public A_6E_tanker()
     {
-        guidedMissileUtils = null;
-        hasChaff = false;
-        hasFlare = false;
-        lastChaffDeployed = 0L;
-        lastFlareDeployed = 0L;
-        guidedMissileUtils = new GuidedMissileUtils(this);
-        counterFlareList = new ArrayList();
-        counterChaffList = new ArrayList();
         bDrogueExtended = true;
         bInRefueling = false;
         maxSendRefuel = 11.101F;      // max send rate = 220gal per 1minute 
@@ -45,26 +36,6 @@ public class A_6E_tanker extends A_6
         return bDrogueExtended;
     }
 
-    private void checkAmmo()
-    {
-        counterFlareList.clear();
-        counterChaffList.clear();
-        for(int i = 0; i < FM.CT.Weapons.length; i++)
-            if(FM.CT.Weapons[i] != null)
-            {
-                for(int j = 0; j < FM.CT.Weapons[i].length; j++)
-                    if(FM.CT.Weapons[i][j].haveBullets())
-                    {
-                        if(FM.CT.Weapons[i][j] instanceof RocketGunFlare_gn16)
-                            counterFlareList.add(FM.CT.Weapons[i][j]);
-                        else if(FM.CT.Weapons[i][j] instanceof RocketGunChaff_gn16)
-                            counterChaffList.add(FM.CT.Weapons[i][j]);
-                    }
-
-            }
-
-    }
-
     private void checkChangeWeaponColors()
     {
         for(int i = 0; i < FM.CT.Weapons.length; i++)
@@ -76,62 +47,9 @@ public class A_6E_tanker extends A_6
             }
     }
 
-    public void backFire()
-    {
-        if(counterFlareList.isEmpty())
-            hasFlare = false;
-        else
-        {
-            if(Time.current() > lastFlareDeployed + 700L)
-            {
-                ((RocketGunFlare_gn16)counterFlareList.get(0)).shots(1);
-                hasFlare = true;
-                lastFlareDeployed = Time.current();
-                if(!((RocketGunFlare_gn16)counterFlareList.get(0)).haveBullets())
-                    counterFlareList.remove(0);
-            }
-        }
-        if(counterChaffList.isEmpty())
-            hasChaff = false;
-        else
-        {
-            if(Time.current() > lastChaffDeployed + 900L)
-            {
-                ((RocketGunChaff_gn16)counterChaffList.get(0)).shots(1);
-                hasChaff = true;
-                lastChaffDeployed = Time.current();
-                if(!((RocketGunChaff_gn16)counterChaffList.get(0)).haveBullets())
-                    counterChaffList.remove(0);
-            }
-        }
-    }
-
-    public long getChaffDeployed()
-    {
-        if(hasChaff)
-            return lastChaffDeployed;
-        else
-            return 0L;
-    }
-
-    public long getFlareDeployed()
-    {
-        if(hasFlare)
-            return lastFlareDeployed;
-        else
-            return 0L;
-    }
-
-    public GuidedMissileUtils getGuidedMissileUtils()
-    {
-        return guidedMissileUtils;
-    }
-
     public void onAircraftLoaded()
     {
         super.onAircraftLoaded();
-        guidedMissileUtils.onAircraftLoaded();
-        FM.Skill = 3;
         FM.turret[0].bIsAIControlled = false;
 
         ((FlightModelMain) FM).M.maxFuel += 880F;  // additional fuel 300gal in A/A42R-1 Refuel Store
@@ -146,16 +64,12 @@ public class A_6E_tanker extends A_6
 
     public void update(float f)
     {
-        guidedMissileUtils.update();
-
         drogueRefuel(f);
 
         if(FM.getSpeedKMH() > 185F)
             RATrot();
 
         super.update(f);
-        if(super.backfire)
-            backFire();
     }
 
     public boolean typeDockableIsDocked()
@@ -352,8 +266,6 @@ public class A_6E_tanker extends A_6
         super.missionStarting();
 
         checkChangeWeaponColors();
-
-        checkAmmo();
     }
 
     private void RATrot()
@@ -463,13 +375,6 @@ public class A_6E_tanker extends A_6
         return 0.0F;
     }
 
-    private GuidedMissileUtils guidedMissileUtils;
-    private boolean hasChaff;
-    private boolean hasFlare;
-    private long lastChaffDeployed;
-    private long lastFlareDeployed;
-    private ArrayList counterFlareList;
-    private ArrayList counterChaffList;
     private Actor queen_last;
     private long queen_time;
     private boolean bNeedSetup;
