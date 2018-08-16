@@ -19,7 +19,7 @@ public class MySqlConnector {
         instance = new MySqlConnector();
         try {
             MySqlSettings sqlset = Settings.getInstance().getMySqlSettings();
-            conn = DriverManager.getConnection("jdbc:mysql://" + sqlset.getAddress() + ":" + sqlset.getPort() + "/" + sqlset.getDbName() + "?user=" + sqlset.getUser() + "&password=" + sqlset.getPass());
+            conn = DriverManager.getConnection("jdbc:mysql://" + sqlset.getAddress() + ":" + sqlset.getPort() + "/" + sqlset.getDbName() + "?serverTimezone=" + sqlset.getTimezone() + "&user=" + sqlset.getUser() + "&password=" + sqlset.getPass());
         } catch (SQLException e) {
             e.printStackTrace();
             System.exit(-2);
