@@ -6,13 +6,15 @@ public class MySqlSettings {
     private String user;
     private String pass;
     private String dbName;
+    private String timezone;
 
-    public MySqlSettings(String address, int port, String user, String pass, String dbName) {
+    public MySqlSettings(String address, int port, String user, String pass, String dbName, String timezone) {
         this.setAddress(address);
         this.setPort(port);
         this.setUser(user);
         this.setPass(pass);
         this.setDbName(dbName);
+        this.setTimezone(timezone);
     }
 
     public String getAddress() {
@@ -53,5 +55,13 @@ public class MySqlSettings {
 
     public void setDbName(String dbName) {
         this.dbName = dbName;
+    }
+
+    public String getTimezone() {
+        return timezone;
+    }
+
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
     }
 }

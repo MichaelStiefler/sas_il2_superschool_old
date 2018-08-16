@@ -57,6 +57,7 @@ public class Settings {
                 prefs.node("mysql").getInt("port", 3306),
                 prefs.node("mysql").get("user", null),
                 prefs.node("mysql").get("pass", null),
-                prefs.node("mysql").get("database", "dservercontroller"));
+                prefs.node("mysql").get("database", "dservercontroller"),
+                prefs.node("mysql").get("timezone", "UTC"));
     }
 }
