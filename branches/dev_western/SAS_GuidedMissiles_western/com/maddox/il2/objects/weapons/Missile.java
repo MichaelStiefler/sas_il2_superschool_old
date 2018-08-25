@@ -1,6 +1,6 @@
 // Source File Name: Missile.java
 // Author:	Storebror
-// Edit:	western0221 on 29th/Jul/2018
+// Edit:	western0221 on 20th/Aug./2018
 package com.maddox.il2.objects.weapons;
 
 import java.io.IOException;
@@ -253,7 +253,7 @@ public class Missile extends Rocket
 				if (f2Future < 0F) {
 					f2Future = 0F;
 				}
-				if (((this.victim instanceof Aircraft) || (this.victim instanceof com.maddox.il2.objects.vehicles.artillery.RocketryRocket) || (this.victim instanceof MissileInterceptable)) && (f2Future > f2 * 5F || f2 > this.previousDistance) && this.previousDistance != 1000F) {
+				if (((this.victim instanceof Aircraft) || (this.victim instanceof RocketryRocket) || (this.victim instanceof MissileInterceptable)) && (f2Future > f2 * 5F || f2 > this.previousDistance) && this.previousDistance != 1000F) {
 					if ( f2 > 0F && f2 < this.missileProximityFuzeRadius) {
 						if ( bLogDetail ) {
 							ArrayList lst = new ArrayList();
@@ -280,6 +280,8 @@ public class Missile extends Rocket
 		}
 		this.safeVictimOffset.set(this.victimOffsetPoint3d);
 		if (!Actor.isValid(this.getOwner())) {
+			if ( bLogDetail )
+				System.out.println("Missile(" + actorString(this) + ") - entering doExplosionAir(); - Because of owner(" + actorString(this.getOwner()) + ") becomes not valid.");
 			this.doExplosionAir();
 			this.postDestroy();
 			this.collide(false);
@@ -406,6 +408,8 @@ public class Missile extends Rocket
 			return -1F;
 		}
 		if (this.getFailState() == FAIL_TYPE_WARHEAD) {
+			if ( bLogDetail )
+				System.out.println("Missile(" + actorString(this) + ") - entering doExplosionAir(); - Because of getFailState() == FAIL_TYPE_WARHEAD.");
 			this.doExplosionAir();
 			this.postDestroy();
 			this.collide(false);
@@ -759,7 +763,6 @@ public class Missile extends Rocket
 	}
 
 	private void doStart(float f) {
-		this.startEngineDone();
 		// super.start(-1F, 0);
 		if (this.waitingMeshFly) {
 			setMesh(MeshShared.get(this.mshFly));
@@ -773,8 +776,10 @@ public class Missile extends Rocket
 		this.setMissileVictim();
 		this.myActiveMissile = new ActiveMissile(this, this.getOwner(), this.victim, (Actor.isValid(this.getOwner())) ? this.getOwner().getArmy() : Integer.MAX_VALUE, (Actor.isValid(this.victim)) ? this.victim.getArmy() : Integer.MAX_VALUE, this.ownerIsAI());
 		GuidedMissileUtils.addActiveMissile(this.myActiveMissile);
+		this.startEngineDone();
 
 		if ( bLogDetail && Actor.isValid(this) ) System.out.println("Missile(" + actorString(this) + ") - doStart(f), recording new ActiveMissile(): getOwner()=" + actorString(this.getOwner()) + "; " + (Actor.isValid(this.getOwner()) ? ("Valid getOwner().getArmy()=" + getOwner().getArmy()) : "Invalid") + " - collisionR()=" + this.mesh().collisionR() + " , visibilityR()=" + this.mesh().visibilityR());
+		if ( bLogDetail && Actor.isValid(this) ) iStatusCur_getArmy |= Integer.parseInt("0000000000000000000010000000000", 2);
 //		if (this.victim == null)
 //			System.out.println("Owner " + this.getOwner().hashCode() + " Active Missile added for victim=null");
 //		else
@@ -888,7 +893,15 @@ public class Missile extends Rocket
 	}
 
 	public int getArmy() {
-		if ( bLogDetail && Actor.isValid(this) ) System.out.println("Missile(" + actorString(this) + ") - getArmy(): getOwner()=" + actorString(this.getOwner()) + "; " + (Actor.isValid(this.getOwner()) ? ("Valid getOwner().getArmy()=" + getOwner().getArmy()) : "Invalid"));
+		if ( bLogDetail ) {
+			iStatusCur_getArmy |= Integer.parseInt("0000000000000000000000000000010", 2);
+			if (!Actor.isValid(this.getOwner())) iStatusCur_getArmy |= Integer.parseInt("0000000000000000000000000000100", 2);
+			else iStatusCur_getArmy &= Integer.parseInt("1111111111111111111111111111011", 2);
+
+			if (Actor.isValid(this) && iStatusCur_getArmy != iStatusPrev_getArmy) System.out.println("Missile(" + actorString(this) + ") - getArmy(): getOwner()=" + actorString(this.getOwner()) + "; " + (Actor.isValid(this.getOwner()) ? ("Valid getOwner().getArmy()=" + getOwner().getArmy()) : "Invalid") + " , iStatusCur_getArmy=" + iStatusCur_getArmy);
+
+			iStatusPrev_getArmy = iStatusCur_getArmy;
+		}
 
 		if (Actor.isValid(this.getOwner())) return this.getOwner().getArmy();
 		return 0;
@@ -1025,6 +1038,9 @@ public class Missile extends Rocket
 		this.soundNameRadarPW = Property.stringValue(localClass, "soundRadarPW", null);
 
 		this.bRealisticRadarSelect = Config.cur.ini.get("Mods", "RealisticRadarSelect", 0) != 0;
+		int iLog = Config.cur.ini.get("Mods", "GuidedMissileDebugLog", 0);
+		if ((iLog & 128) == 128) bLogDetail = true;
+		if ((iLog & 256) == 256) bLogDetailDamage = true;
 
 		if (this instanceof MissileInterceptable) {
 			// damage parameters borrowing from House.class -- Body=FuelSmall
@@ -1582,6 +1598,7 @@ public class Missile extends Rocket
 		// possible only countermeasure -- no shooting down.
 		if (this instanceof MissileInterceptable) {
 			Engine.targets().add(this);
+			setName(this.getOwner().name() + "_" + ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileName() + this.hashCode());
 		}
 
 		Engine.missiles().add(this);
@@ -2222,7 +2239,7 @@ public class Missile extends Rocket
 	}
 
 	public void msgExplosion(Explosion explosion) {
-		if ( bLogDetailDamage ) System.out.println("Missile(" + actorString(this) + ") - msgExplosion(){} - explosion.power=" + explosion.power + " - receivedPower=" + explosion.receivedPower(this) + " - powerType=" + explosion.powerType);
+		if ( bLogDetailDamage || bLogDetail ) System.out.println("Missile(" + actorString(this) + ") - msgExplosion(){} - explosion.power=" + explosion.power + " - receivedPower=" + explosion.receivedPower(this) + " - powerType=" + explosion.powerType);
 		if (!isAlive()) return;
 		if (explosion.power <= 0.0F) return;
 
@@ -2243,7 +2260,7 @@ public class Missile extends Rocket
 			explosion.computeSplintersHit(ppp, mesh().collisionR(), 0.7F, af1);
 			float f = 0.015F * af1[1] * af1[1] * 0.5F;
 			float f1 = ComputeProbabOfPenetrateKill(f, (int)(af1[0] + 0.5F));
-			if ( bLogDetailDamage ) System.out.println("msgExplosion(){} - if(powerType == 1) - af1[0]=" + af1[0] + " , af1[1]=" + af1[1] + " , ProbabOfKill=" + f1);
+			if ( bLogDetailDamage || bLogDetail) System.out.println("msgExplosion(){} - if(powerType == 1) - af1[0]=" + af1[0] + " , af1[1]=" + af1[1] + " , ProbabOfKill=" + f1);
 			if (RndB(f1))
 				die(explosion.initiator, true);
 			return;
@@ -2284,6 +2301,18 @@ public class Missile extends Rocket
 		if ( bLogDetailDamage ) System.out.println("die() - old Yaw=" + this.missileOrient.getYaw() + " , old Pitch=" + this.missileOrient.getPitch());
 		this.missileOrient.setYPR(this.missileOrient.getYaw() + RndF(-5.0F, 5.0F), this.missileOrient.getPitch() + RndF(-5.0F, 5.0F), this.getRoll());
 		if ( bLogDetailDamage ) System.out.println("die() - new Yaw=" + this.missileOrient.getYaw() + " , new Pitch=" + this.missileOrient.getPitch());
+	}
+
+	public void msgCollisionRequest(Actor actor, boolean aflag[]) {
+		if ( bLogDetail )
+			System.out.println("Missile(" + actorString(this) + ") - entering msgCollisionRequest(actor, aflag[])");
+		super.msgCollisionRequest(actor, aflag);
+	}
+
+	public void msgCollision(Actor actor, String s, String s1) {
+		if ( bLogDetail )
+			System.out.println("Missile(" + actorString(this) + ") - entering msgCollision(actor, s, s1)");
+		super.msgCollision(actor, s, s1);
 	}
 
 	private static final boolean RndB(float f) {
@@ -2492,5 +2521,7 @@ public class Missile extends Rocket
 
 	private static boolean bLogDetail = false;
 	private static boolean bLogDetailDamage = false;
+	private int iStatusCur_getArmy = 0;
+	private int iStatusPrev_getArmy = 0;
 
 }
