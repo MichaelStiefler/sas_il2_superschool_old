@@ -5322,7 +5322,7 @@ public class Maneuver extends AIFlightModel {
 				setSpeedMode(4);
 				smConstSpeed = 120F;
 			}
-			Ve.set(actor.pos.getAbsPoint());
+			Ve.set(actorTarg.pos.getAbsPoint());
 			Ve.sub(super.Loc);
 			addWindCorrection();
 			float f1 = (float) (-((Tuple3d) (Ve)).z);
@@ -5346,7 +5346,9 @@ public class Maneuver extends AIFlightModel {
 			Ve.x += (float) ((Tuple3d) (tmpV3d)).x;
 			Ve.y += (float) ((Tuple3d) (tmpV3d)).y;
 			Ve.z += (float) ((Tuple3d) (tmpV3d)).z;
-			if ((CT.Weapons[3][0].getClass().getName().endsWith("SnakeEye") ? f5 >= (f2 * 1.175) : f5 >= f2) && passCounter == 0) {
+			if (CT.Weapons[3][0].getClass().getName().endsWith("SnakeEye") || CT.Weapons[3][0].getClass().getName().endsWith("SnakeEye_gn16")) f2 *= 1.188F;
+			else if (CT.Weapons[3][0].getClass().getName().endsWith("Ballute_gn16")) f2 *= 1.160F;
+			if (f5 >= f2 && passCounter == 0) {
 				bombsOut = true;
 				// TODO: DBW AI Mod Edits
 				if (!(actor instanceof TypeSupersonic) && !(actor instanceof TypeFastJet) && !(actor instanceof TypeDiveBomber)) bombsOutCounter = 129;
