@@ -14,6 +14,7 @@ using System.Security.Permissions;
 using IniParser;
 using IniParser.Model;
 using PlanSwitcher;
+using Microsoft.Win32.TaskScheduler;
 
 namespace FUMS
 {
@@ -27,7 +28,7 @@ namespace FUMS
 
         private Dictionary<string, int> processPriorities;
         private Dictionary<string, int> processAffinities;
-        private Dictionary<int, List<string>> powerPlans;
+        private Dictionary<string, int> powerPlans;
         private Object processPrioritiesSyncObject = new Object();
         private Object processAffinitiesSyncObject = new Object();
         private Object powerPlanSyncObject = new Object();
@@ -41,6 +42,8 @@ namespace FUMS
         private int maxAffinity;
         private bool isHT;
         private bool powerPlanSet;
+        private FileSystemWatcher iniWatcher;
+        private bool skipStartupCheckStateChange;
 
         public FUMS()
         {
@@ -77,16 +80,15 @@ namespace FUMS
             if (minimize) this.Hide(); else this.Show();
             this.ShowInTaskbar = !minimize;
             this.WindowState = minimize ? FormWindowState.Minimized : FormWindowState.Normal;
-            //this.notifyIcon.Visible = minimize;
         }
 
         private void FUMS_Load(object sender, EventArgs e)
         {
             this.MinimizeToTray(true);
             this.iniParser = new FileIniDataParser();
-            this.processPriorities = new Dictionary<string, int>();
-            this.processAffinities = new Dictionary<string, int>();
-            this.powerPlans = new Dictionary<int, List<string>>();
+            this.processPriorities = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+            this.processAffinities = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+            this.powerPlans = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
             this.powerManager = PowerManagerProvider.CreatePowerManager();
             this.plans = powerManager.GetPlans();
             this.startupPlan = this.powerManager.GetCurrentPlan();
@@ -97,6 +99,8 @@ namespace FUMS
             int shiftNum = this.isHT ? (this.numCores << 1) : this.numCores;
             this.maxAffinity = (1 << shiftNum) - 1;
             this.powerPlanSet = false;
+            this.skipStartupCheckStateChange = true;
+            this.checkBoxStartup.CheckState = this.isStartupEnabled()?CheckState.Checked:CheckState.Unchecked;
             this.ReadSettings();
         }
 
@@ -123,28 +127,37 @@ namespace FUMS
         [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         private void WatchFileForChanges(string theFile)
         {
-            FileSystemWatcher watcher = new FileSystemWatcher();
-            watcher.Path = Path.GetDirectoryName(theFile);
+            this.iniWatcher = new FileSystemWatcher();
+            this.iniWatcher.Path = Path.GetDirectoryName(theFile);
             /* Watch for changes in LastAccess and LastWrite times, and
                the renaming of files or directories. */
-            watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
+            this.iniWatcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
                | NotifyFilters.FileName | NotifyFilters.DirectoryName;
-            // Only watch text files.
-            watcher.Filter = Path.GetFileName(theFile);
+            // Only watch our ini file.
+            this.iniWatcher.Filter = Path.GetFileName(theFile);
 
             // Add event handlers.
-            watcher.Changed += new FileSystemEventHandler(OnChanged);
-            watcher.Created += new FileSystemEventHandler(OnChanged);
-            watcher.Deleted += new FileSystemEventHandler(OnChanged);
-            watcher.Renamed += new RenamedEventHandler(OnRenamed);
+            this.iniWatcher.Changed += new FileSystemEventHandler(OnChanged);
+            this.iniWatcher.Created += new FileSystemEventHandler(OnChanged);
+            this.iniWatcher.Deleted += new FileSystemEventHandler(OnChanged);
+            this.iniWatcher.Renamed += new RenamedEventHandler(OnRenamed);
 
             // Begin watching.
-            watcher.EnableRaisingEvents = true;
+            this.iniWatcher.EnableRaisingEvents = true;
         }
 
         private void OnChanged(object source, FileSystemEventArgs e)
         {
-            this.ReadProcessSettings();
+            try
+            {
+                this.iniWatcher.EnableRaisingEvents = false;
+                this.ReadProcessSettings();
+            }
+
+            finally
+            {
+                this.iniWatcher.EnableRaisingEvents = true;
+            }
         }
 
         private void OnRenamed(object source, RenamedEventArgs e)
@@ -221,60 +234,61 @@ namespace FUMS
         private void CheckProcesses()
         {
             int newPowerPlan = -1;
-
+            List<Process> pendingProcessList;
             List<Process> processList = Process.GetProcesses().ToList();
-            List<String> distinctProcessNames = processList.Select(p => p.ProcessName).Distinct(StringComparer.InvariantCultureIgnoreCase).ToList();
-            distinctProcessNames.Sort();
 
             Monitor.Enter(this.processPrioritiesSyncObject);
-            var priorityIntersection = distinctProcessNames.Intersect(this.processPriorities.Keys, StringComparer.InvariantCultureIgnoreCase);
-            foreach (String theProcessName in priorityIntersection)
+            try
             {
-                ProcessPriorityClass targetPriority = this.IntToPrio(this.processPriorities[theProcessName]);
-                try
+                pendingProcessList = processList.Where(process => this.processPriorities.ContainsKey(process.ProcessName) && process.PriorityClass != this.IntToPrio(this.processPriorities[process.ProcessName])).ToList();
+                foreach (Process pendingProcess in pendingProcessList)
                 {
-                    foreach (Process theProcess in processList.FindAll(p => p.ProcessName.Equals(theProcessName, StringComparison.InvariantCultureIgnoreCase) && p.PriorityClass != targetPriority))
+                    try
                     {
-                        try
-                        {
-                            theProcess.PriorityClass = targetPriority;
-                            this.Proto("Priority for " + theProcess.ProcessName + " set to " + targetPriority.ToString());
-                        }
-                        catch { }
+                        ProcessPriorityClass processPriorityClass = this.IntToPrio(this.processPriorities[pendingProcess.ProcessName]);
+                        pendingProcess.PriorityClass = processPriorityClass;
+                        this.Proto("Priority for " + pendingProcess.ProcessName + " set to " + processPriorityClass.ToString());
                     }
+                    catch (Exception ex) { Debug.WriteLine("Exception caught:", ex.Message); }
                 }
-                catch { }
             }
+            catch (Exception ex) { Debug.WriteLine("Exception caught:", ex.Message); }
             Monitor.Exit(this.processPrioritiesSyncObject);
             Thread.Sleep(0);
 
             Monitor.Enter(this.processAffinitiesSyncObject);
-            var affinityIntersection = distinctProcessNames.Intersect(this.processAffinities.Keys, StringComparer.InvariantCultureIgnoreCase);
-            foreach (String theProcessName in affinityIntersection)
+            try
             {
-                try
+                pendingProcessList = processList.Where(process => this.processAffinities.ContainsKey(process.ProcessName) && process.ProcessorAffinity != (IntPtr)this.processAffinities[process.ProcessName]).ToList();
+                foreach (Process pendingProcess in pendingProcessList)
                 {
-                    foreach (Process theProcess in processList.FindAll(p => p.ProcessName.Equals(theProcessName, StringComparison.InvariantCultureIgnoreCase) && p.ProcessorAffinity != (IntPtr)this.processAffinities[theProcessName]))
+                    try
                     {
-                        try
-                        {
-                            theProcess.ProcessorAffinity = (IntPtr)this.processAffinities[theProcessName];
-                            this.Proto("Affinity for " + theProcess.ProcessName + " set to " + this.AffinityToCores(this.processAffinities[theProcessName]));
-                        }
-                        catch { }
+                        pendingProcess.ProcessorAffinity = (IntPtr)this.processAffinities[pendingProcess.ProcessName];
+                        this.Proto("Affinity for " + pendingProcess.ProcessName + " set to " + this.AffinityToCores(this.processAffinities[pendingProcess.ProcessName]));
                     }
+                    catch (Exception ex) { Debug.WriteLine("Exception caught:", ex.Message); }
                 }
-                catch { }
             }
+            catch (Exception ex) { Debug.WriteLine("Exception caught:", ex.Message); }
             Monitor.Exit(this.processAffinitiesSyncObject);
             Thread.Sleep(0);
 
             Monitor.Enter(this.powerPlanSyncObject);
-            foreach (int powerPlan in this.powerPlans.Keys)
+            PowerPlan currentPowerPlan = this.powerManager.GetCurrentPlan();
+            try
             {
-                if (powerPlan <= newPowerPlan) continue;
-                if (distinctProcessNames.Intersect(this.powerPlans[powerPlan], StringComparer.InvariantCultureIgnoreCase).Any()) newPowerPlan = powerPlan;
+                pendingProcessList = processList.Where(process => this.powerPlans.ContainsKey(process.ProcessName)).ToList();
+                foreach (Process pendingProcess in pendingProcessList)
+                {
+                    try
+                    {
+                        if (this.powerPlans[pendingProcess.ProcessName] > newPowerPlan) newPowerPlan = this.powerPlans[pendingProcess.ProcessName];
+                    }
+                    catch (Exception ex) { Debug.WriteLine("Exception caught:", ex.Message); }
+                }
             }
+            catch (Exception ex) { Debug.WriteLine("Exception caught:", ex.Message); }
             Monitor.Exit(this.powerPlanSyncObject);
             if (newPowerPlan >= 0)
             {
@@ -305,9 +319,9 @@ namespace FUMS
         {
             String iniFileName = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + INI_NAME;
             IniData iniData = this.iniParser.ReadFile(iniFileName);
-            Dictionary<string, int> newProcessPriorities = new Dictionary<string, int>();
-            Dictionary<string, int> newProcessAffinities = new Dictionary<string, int>();
-            Dictionary<int, List<string>> newPowerPlans = new Dictionary<int, List<string>>();
+            Dictionary<string, int> newProcessPriorities = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+            Dictionary<string, int> newProcessAffinities = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+            Dictionary<string, int> newPowerPlans = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
             foreach (KeyData keyData in iniData["Priority"])
             {
                 try
@@ -353,9 +367,7 @@ namespace FUMS
                     intValue = this.plans.Count - 1 - intValue;
                     if (theKey.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase))
                         theKey = theKey.Substring(0, theKey.Length - 4);
-                    if (!newPowerPlans.ContainsKey(intValue))
-                        newPowerPlans.Add(intValue, new List<string>());
-                    newPowerPlans[intValue].Add(theKey);
+                    newPowerPlans[theKey] = intValue;
                     this.Proto("PowerPlan Setting: " + theKey + " = " + this.plans[intValue].name);
                 }
                 catch { }
@@ -363,12 +375,10 @@ namespace FUMS
 
             Monitor.Enter(this.processPrioritiesSyncObject);
             this.processPriorities.Clear();
-            //this.processPriorities.TrimExcess();
             this.processPriorities = newProcessPriorities;
             Monitor.Exit(this.processPrioritiesSyncObject);
             Monitor.Enter(this.processAffinitiesSyncObject);
             this.processAffinities.Clear();
-            //this.processAffinities.TrimExcess();
             this.processAffinities = newProcessAffinities;
             Monitor.Exit(this.processAffinitiesSyncObject);
             Monitor.Enter(this.powerPlanSyncObject);
@@ -395,12 +405,70 @@ namespace FUMS
             return affinityCores.ToString();
         }
 
+        private bool isStartupEnabled()
+        {
+            using (TaskService ts = new TaskService())
+            {
+                Task task = ts.FindTask("FUMS");
+                return (task != null && task.Enabled);
+            }
+        }
+
+        private bool setStartup(bool enableStartup)
+        {
+            using (TaskService ts = new TaskService())
+            {
+                Task task = ts.FindTask("FUMS");
+                if (task != null) {
+                    try
+                    {
+                        task.Folder.DeleteTask("FUMS");
+                        if (!enableStartup) return true;
+                    }
+                    catch
+                    {
+                        if (!enableStartup) return false;
+                    }
+                } else if (!enableStartup) return true;
+
+                TaskDefinition td = ts.NewTask();
+                td.RegistrationInfo.Description = "Start FUMS with Windows";
+                td.Triggers.Add(new LogonTrigger());
+                td.Actions.Add(new ExecAction(System.Reflection.Assembly.GetEntryAssembly().Location));
+                td.Principal.RunLevel = TaskRunLevel.Highest;
+                td.Settings.StopIfGoingOnBatteries = false;
+                td.Settings.DisallowStartIfOnBatteries = false;
+                td.Settings.ExecutionTimeLimit = TimeSpan.Zero;
+                td.Settings.IdleSettings.StopOnIdleEnd = false;
+                return (ts.RootFolder.RegisterTaskDefinition("FUMS", td) != null);
+            }
+        }
+
         private void FUMS_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (e.CloseReason == CloseReason.UserClosing && !this.exitClicked)
             {
                 e.Cancel = true;
                 this.WindowState = FormWindowState.Minimized;
+            }
+        }
+
+        private void checkBoxStartup_CheckStateChanged(object sender, EventArgs e)
+        {
+            if (this.skipStartupCheckStateChange)
+            {
+                this.skipStartupCheckStateChange = false;
+                return;
+            }
+
+            this.setStartup(this.checkBoxStartup.CheckState == CheckState.Checked);
+            if (this.isStartupEnabled() != (this.checkBoxStartup.CheckState == CheckState.Checked))
+            {
+                this.skipStartupCheckStateChange = true;
+                if (this.checkBoxStartup.CheckState == CheckState.Checked)
+                    this.checkBoxStartup.CheckState = CheckState.Unchecked;
+                else
+                    this.checkBoxStartup.CheckState = CheckState.Unchecked;
             }
         }
     }

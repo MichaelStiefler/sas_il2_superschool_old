@@ -33,6 +33,7 @@
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.timerUpdate = new System.Windows.Forms.Timer(this.components);
             this.listBoxProto = new System.Windows.Forms.ListBox();
+            this.checkBoxStartup = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // notifyIcon
@@ -55,11 +56,25 @@
             this.listBoxProto.Size = new System.Drawing.Size(417, 342);
             this.listBoxProto.TabIndex = 0;
             // 
+            // checkBoxStartup
+            // 
+            this.checkBoxStartup.AutoSize = true;
+            this.checkBoxStartup.Checked = true;
+            this.checkBoxStartup.CheckState = System.Windows.Forms.CheckState.Indeterminate;
+            this.checkBoxStartup.Location = new System.Drawing.Point(12, 360);
+            this.checkBoxStartup.Name = "checkBoxStartup";
+            this.checkBoxStartup.Size = new System.Drawing.Size(168, 17);
+            this.checkBoxStartup.TabIndex = 1;
+            this.checkBoxStartup.Text = "Start with Windows (Autostart)";
+            this.checkBoxStartup.UseVisualStyleBackColor = true;
+            this.checkBoxStartup.CheckStateChanged += new System.EventHandler(this.checkBoxStartup_CheckStateChanged);
+            // 
             // FUMS
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(441, 364);
+            this.ClientSize = new System.Drawing.Size(441, 384);
+            this.Controls.Add(this.checkBoxStartup);
             this.Controls.Add(this.listBoxProto);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -71,6 +86,7 @@
             this.Load += new System.EventHandler(this.FUMS_Load);
             this.Resize += new System.EventHandler(this.FUMS_Resize);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -79,6 +95,7 @@
         private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.Timer timerUpdate;
         private System.Windows.Forms.ListBox listBoxProto;
+        private System.Windows.Forms.CheckBox checkBoxStartup;
     }
 }
 
