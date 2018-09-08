@@ -1,6 +1,7 @@
 /*Modified AutopilotAI class for the SAS Engine Mod*/
 /*By western, add AI landing process flexible gear / hook / flap controls on 05th-15th/Jul./2018*/
 /*By western, rework elevator control for very heavy planes on 18th-23rd/Jul./2018*/
+/*By western, rework reach waypoint decision on 07th/Sep./2018*/
 package com.maddox.il2.ai.air;
 
 import com.maddox.JGP.Point3d;
@@ -195,10 +196,15 @@ public class AutopilotAI extends Autopilotage {
 		if (((Maneuver) (FM)).Group != null && ((Maneuver) (FM)).Group.getAaaNum() > 3F && ((Aircraft) FM.actor).aircIndex() == 0 && FM.isTick(165, 0)) avoidance = (float) (1 - World.Rnd().nextInt(0, 1) * 2) * World.Rnd().nextFloat(15F, 30F);
 		if (this.bWayPoint) {
 			boolean bReached = false;
-			if (bFJ && FM.getSpeed() > 155F) bReached = way.isReachedFastJet(PlLoc, FM.getSpeed());
-			else bReached = way.isReached(PlLoc);
-			if (WWPoint != way.auto(PlLoc) || bReached) {
-				WWPoint = (bFJ && FM.getSpeed() > 155F) ? way.autoFastJet(PlLoc, FM.getSpeed()) : way.auto(PlLoc);
+			if (bFJ) {
+				bReached = (WWPoint != way.autoFastJet(PlLoc, FM.getSpeed()));
+				if (!bReached) bReached = way.isReachedFastJet(PlLoc, FM.getSpeed());
+			} else {
+				bReached = (WWPoint != way.auto(PlLoc));
+				if (!bReached) bReached = way.isReached(PlLoc);
+			}
+			if (bReached) {
+				WWPoint = bFJ ? way.autoFastJet(PlLoc, FM.getSpeed()) : way.auto(PlLoc);
 				WWPoint.getP(WPoint);
 				if (((Aircraft) FM.actor).aircIndex() == 0 && !way.isLanding()) {
 					voiceCommand(WPoint, PlLoc);
@@ -636,18 +642,15 @@ public class AutopilotAI extends Autopilotage {
 			else if (FM.CT.FlapStage != null && FM.CT.FlapStageMax != -1.0F) {
 				if (FM.CT.FlapStage[FM.CT.nFlapStages - 1] < 0.22F) FM.CT.FlapsControl = 1.0F;
 				else FM.CT.FlapsControl = FM.CT.FlapStage[FM.CT.nFlapStages - 1];
-			}
-			else {
+			} else {
 				FM.CT.FlapsControl = 0.33F;
 			}
 		}
 	}
 
 	private float clamp11(float f) {
-		if (f < -1.0F)
-			f = -1.0F;
-		else if (f > 1.0F)
-			f = 1.0F;
+		if (f < -1.0F) f = -1.0F;
+		else if (f > 1.0F) f = 1.0F;
 		return f;
 	}
 }

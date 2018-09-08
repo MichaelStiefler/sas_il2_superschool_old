@@ -1,14 +1,15 @@
 // Source File Name:   Way.java
 /*By western, rework reached waypoint decision for FastJet on 24th/Jul./2018*/
+/*By western, delete bAlreadyTrue and add bLastReachedFlag to fix a bug on 08th/Sep./2018*/
 
 package com.maddox.il2.ai;
-
-import java.util.ArrayList;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.rts.SectFile;
+import com.maddox.rts.Time;
 import com.maddox.util.NumberTokenizer;
+import java.util.ArrayList;
 
 // Referenced classes of package com.maddox.il2.ai:
 //            WayPoint, World, Airport
@@ -30,6 +31,8 @@ public class Way {
 		landingOnShip = false;
 		landingAirport = null;
 		takeoffAirport = null;
+		bLastReachedFlag = false;
+		lastReachCheckTime = -1L;
 	}
 
 	public Way(Way way) {
@@ -53,6 +56,8 @@ public class Way {
 		landing = way.landing;
 		landingAirport = way.landingAirport;
 		if (takeoffAirport == null) takeoffAirport = way.takeoffAirport;
+		bLastReachedFlag = false;
+		lastReachCheckTime = -1L;
 	}
 
 	public WayPoint first() {
@@ -106,13 +111,21 @@ public class Way {
 	}
 
 	public WayPoint auto(Point3d point3d) {
-		if (Cur == 0 || isReached(point3d)) return next();
-		else return curr();
+		if (Time.current() == lastReachCheckTime) return curr();
+		if (Cur == 0 || isReached(point3d)) {
+			return next();
+		} else {
+			return curr();
+		}
 	}
 
 	public WayPoint autoFastJet(Point3d point3d, float fSpeed) {
-		if (Cur == 0 || isReachedFastJet(point3d, fSpeed)) return next();
-		else return curr();
+		if (Time.current() == lastReachCheckTime) return curr();
+		if (Cur == 0 || isReachedFastJet(point3d, fSpeed)) {
+			return next();
+		} else {
+			return curr();
+		}
 	}
 
 	public double getCurDist() {
@@ -120,10 +133,8 @@ public class Way {
 	}
 
 	public boolean isReached(Point3d point3d) {
-		if (bAlreadyTrue) {
-			bAlreadyTrue = false;
-			return true;
-		}
+		if (Time.current() == lastReachCheckTime) return bLastReachedFlag;
+		lastReachCheckTime = Time.current();
 		curr().getP(P);
 		V.sub(point3d, P);
 		if (curr().timeout == -1 && !isLast()) {
@@ -133,7 +144,8 @@ public class Way {
 			if (curDist < 100000000D && curDist > prevdistToNextWP2) {
 				curr().setTimeout(0);
 				prevdistToNextWP2 = 3.4028234663852886E+038D;
-				bAlreadyTrue = true;
+				if (bLogDetail) System.out.println("Way: 147 - return true;");
+				bLastReachedFlag = true;
 				return true;
 			}
 			prevdistToNextWP2 = curDist;
@@ -141,19 +153,19 @@ public class Way {
 			curDist = V.x * V.x + V.y * V.y;
 			if (curDist < 1000000D && curDist > prevdist2) {
 				prevdist2 = 100000000D;
-				bAlreadyTrue = true;
+				if (bLogDetail) System.out.println("Way: 156 - return true;");
+				bLastReachedFlag = true;
 				return true;
 			}
 			prevdist2 = curDist;
 		}
+		bLastReachedFlag = false;
 		return false;
 	}
 
 	public boolean isReachedFastJet(Point3d point3d, float fSpeed) {
-		if (bAlreadyTrue) {
-			bAlreadyTrue = false;
-			return true;
-		}
+		if (Time.current() == lastReachCheckTime) return bLastReachedFlag;
+		lastReachCheckTime = Time.current();
 		curr().getP(P);
 		V.sub(point3d, P);
 		double spdFactor = (double) fSpeed / 170D;  // 170m/s (=612km/h) is spdFactor=1.0D
@@ -163,30 +175,31 @@ public class Way {
 			((WayPoint) WList.get(Cur + 1)).getP(tmpP);
 			V.sub(point3d, tmpP);
 			curDist = V.x * V.x + V.y * V.y;
-			if (bLogDetail) System.out.println("Way: 166 - curDist=" + Integer.toString((int) Math.floor(curDist)) + " , prevdistToNextWP2=" + Integer.toString((int) Math.floor(prevdistToNextWP2)));
+			if (bLogDetail) System.out.println("Way: 178 - curDist=" + Integer.toString((int) Math.floor(curDist)) + " , prevdistToNextWP2=" + Integer.toString((int) Math.floor(prevdistToNextWP2)));
 			if (curDist < 100000000D && curDist > prevdistToNextWP2) {
 				curr().setTimeout(0);
 				prevdistToNextWP2 = 3.4028234663852886E+038D;
-				if (bLogDetail) System.out.println("Way: 170 - return true;");
-				bAlreadyTrue = true;
+				if (bLogDetail) System.out.println("Way: 182 - return true;");
+				bLastReachedFlag = true;
 				return true;
 			}
 			prevdistToNextWP2 = curDist;
 		} else {
 			curDist = V.x * V.x + V.y * V.y;
-			if (bLogDetail) System.out.println("Way: 177 - curDist=" + Integer.toString((int) Math.floor(curDist)) + " , prevdist2=" + Integer.toString((int) Math.floor(prevdist2)) + " , prevdist3=" + Integer.toString((int) Math.floor(prevdist3)));
+			if (bLogDetail) System.out.println("Way: 189 - curDist=" + Integer.toString((int) Math.floor(curDist)) + " , prevdist2=" + Integer.toString((int) Math.floor(prevdist2)) + " , prevdist3=" + Integer.toString((int) Math.floor(prevdist3)));
 			if (curDist < 3000000D * spdFactor && curDist > prevdist2 && prevdist2 < prevdist3) {
 				prevdist2 = 200000000D;
 				prevdist3 = 200000000D;
-				if (bLogDetail) System.out.println("Way: 181 - return true;");
-				bAlreadyTrue = true;
+				if (bLogDetail) System.out.println("Way: 193 - return true;");
+				bLastReachedFlag = true;
 				return true;
 			} else if (curDist > prevdist2 && prevdist2 < prevdist3) {
-				if (bLogDetail) System.out.println("Way: 186 - >>>>> curDist=" + Integer.toString((int) Math.floor(curDist)) + " > " + Integer.toString((int) Math.floor(prevdist2)) + "=prevdist2 < prevdist3=" + Integer.toString((int) Math.floor(prevdist3)));
+				if (bLogDetail) System.out.println("Way: 197 - >>>>> curDist=" + Integer.toString((int) Math.floor(curDist)) + " > " + Integer.toString((int) Math.floor(prevdist2)) + "=prevdist2 < prevdist3=" + Integer.toString((int) Math.floor(prevdist3)));
 			}
 			prevdist3 = prevdist2;
 			prevdist2 = curDist;
 		}
+		bLastReachedFlag = false;
 		return false;
 	}
 
@@ -275,16 +288,18 @@ public class Way {
 			waypoint.set(P);
 			waypoint.set(f / 3.6F);
 			String s2 = numbertokenizer.next(null);
-			if (s2 != null) if (s2.equals("&0")) {
-				waypoint.bRadioSilence = false;
-				s2 = null;
-			} else if (s2.equals("&1")) {
-				waypoint.bRadioSilence = true;
-				s2 = null;
-			} else {
-				numbertokenizer.next(0);
-				String s3 = numbertokenizer.next(null);
-				if (s3 != null && s3.equals("&1")) waypoint.bRadioSilence = true;
+			if (s2 != null) {
+				if (s2.equals("&0")) {
+					waypoint.bRadioSilence = false;
+					s2 = null;
+				} else if (s2.equals("&1")) {
+					waypoint.bRadioSilence = true;
+					s2 = null;
+				} else {
+					numbertokenizer.next(0);
+					String s3 = numbertokenizer.next(null);
+					if (s3 != null && s3.equals("&1")) waypoint.bRadioSilence = true;
+				}
 			}
 			String s4 = numbertokenizer.next(null);
 			if (s4 != null && s4.startsWith("F")) {
@@ -349,7 +364,8 @@ public class Way {
 	private static Point3d tmpP = new Point3d();
 	private static WayPoint defaultWP = new WayPoint();
 	private boolean landing2;
-	private boolean bAlreadyTrue = false;
+	private boolean bLastReachedFlag;
+	private long lastReachCheckTime;
 
 	private boolean bLogDetail = false;
 }
