@@ -42,6 +42,8 @@
 #define CLIENT_INI			L"il2fb.ini"
 #define SERVER_INI			L"il2server.ini"
 #define LOGFILE_NAME		L"initlog.lst"
+#define IL2GE_PATHS			{L"il2ge.dll", L"il2ge\\lib\\il2ge.dll", L"bin\\selector\\basefiles\\il2ge.dll"}
+#define IL2GE_PATHS_NUM		3
 #define	XSS_DIVIDER			128
 #define PERM_DIVIDER		8
 
@@ -72,6 +74,7 @@ void ReadSelectorSettings();
 void GetParams();
 BOOL IsServerExe();
 BOOL StartWatchdog();
+BOOL FileExists(LPCTSTR szPath);
 
 //*************************************************************************
 // Type definitions
@@ -84,3 +87,4 @@ typedef HRESULT(WINAPI * DLLUNREGISTERSERVER)();
 typedef BOOL(WINAPI * IMMDISABLEIME)(__in  DWORD);
 typedef jint(CALLBACK * ORI_CreateJavaVM)(JavaVM **p_vm, void **p_env, void *vm_args);
 JNIEXPORT jstring JNICALL Java_com_maddox_sas1946_il2_util_BaseGameVersion_getSelectorInfo(JNIEnv *, jobject, jint);
+typedef void(WINAPI * IL2GE_Init)();

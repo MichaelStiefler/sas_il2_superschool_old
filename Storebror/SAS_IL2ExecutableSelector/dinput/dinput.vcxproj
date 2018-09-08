@@ -15,7 +15,7 @@
     <ProjectGuid>{F41599A1-FD0D-4670-A97B-FDB97BFCFA5C}</ProjectGuid>
     <RootNamespace>dinput</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
     <SccProjectName>Svn</SccProjectName>
     <SccAuxPath>Svn</SccAuxPath>
     <SccLocalPath>Svn</SccLocalPath>
