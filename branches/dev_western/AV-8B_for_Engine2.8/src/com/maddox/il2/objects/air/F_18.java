@@ -2667,11 +2667,11 @@ public class F_18 extends Scheme2
             }
             if(((Maneuver)FM).get_maneuver() == 21)
             {
-                if(FM.getSpeed() > FM.AP.way.curr().Speed * 1.2F && FM.getAltitude() > FM.AP.way.curr().z() + 20F
-                   && FM.EI.engines[0].getControlThrottle() < 0.85F && FM.EI.engines[0].getControlThrottle() < 0.85F)
+                if(Pitot.Indicator((float)FM.getAltitude(), FM.getSpeed()) > FM.AP.way.curr().Speed * 1.2F && FM.getAltitude() > FM.AP.way.curr().z() + 20F
+                   && FM.EI.engines[0].getControlThrottle() < 0.88F && FM.EI.engines[1].getControlThrottle() < 0.88F)
                     FM.CT.AirBrakeControl = 1.0F;
-                if(FM.getSpeed() < FM.AP.way.curr().Speed * 1.05F || FM.getAltitude() < FM.AP.way.curr().z()
-                   || FM.EI.engines[0].getControlThrottle() > 0.96F || FM.EI.engines[0].getControlThrottle() > 0.96F)
+                if(Pitot.Indicator((float)FM.getAltitude(), FM.getSpeed()) < FM.AP.way.curr().Speed * 1.05F || FM.getAltitude() < FM.AP.way.curr().z()
+                   || FM.EI.engines[0].getControlThrottle() > 0.96F || FM.EI.engines[1].getControlThrottle() > 0.96F)
                     FM.CT.AirBrakeControl = 0.0F;
             }
         }
