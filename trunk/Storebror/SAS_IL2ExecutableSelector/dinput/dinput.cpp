@@ -67,6 +67,7 @@ TCHAR szBuffer[MAX_PATH];
 BOOL bDisableMutex = FALSE;
 int g_isServer = -1;
 //HANDLE g_hJobObject = NULL;
+HMODULE g_hIL2GE = NULL;
 
 ORI_CreateJavaVM		JniCreateJavaVM = NULL;
 IMMDISABLEIME			SysImmDisableIme = NULL;
@@ -75,6 +76,7 @@ DIRECTINPUTCREATEW		SysDirectInputCreateW = NULL;
 DIRECTINPUTCREATEEX		SysDirectInputCreateEx = NULL;
 DLLREGISTERSERVER		SysDllRegisterServer = NULL;
 DLLUNREGISTERSERVER		SysDllUnregisterServer = NULL;
+IL2GE_Init				Il2geInit = NULL;
 
 const TCHAR *	c_szMsgWndClass = _T("Il2SASWatchdogMsgWnd");
 
@@ -91,7 +93,8 @@ const TCHAR *	c_szMsgWndClass = _T("Il2SASWatchdogMsgWnd");
 //************************************
 DINPUT_API HRESULT __stdcall DirectInputCreateA(HINSTANCE hinst, DWORD dwVersion, LPDIRECTINPUTA *ppDI, LPUNKNOWN punkOuter)
 {
-    // forward any DirectInputCreateA function call to windows native dinput.dll
+	TRACE(L"DirectInputCreateA\r\n");
+	// forward any DirectInputCreateA function call to windows native dinput.dll
 	if(hDInput == NULL) {
 		LPCTSTR lpEnvPath = _wgetenv(L"SystemRoot");
 		TCHAR szDirectInputPath[MAX_PATH];
@@ -123,7 +126,8 @@ DINPUT_API HRESULT __stdcall DirectInputCreateA(HINSTANCE hinst, DWORD dwVersion
 //************************************
 DINPUT_API HRESULT __stdcall DirectInputCreateEx(HINSTANCE hinst, DWORD dwVersion, REFIID refIID, LPVOID *ppDI, LPUNKNOWN punkOuter)
 {
-    // forward any DirectInputCreateEx function call to windows native dinput.dll
+	TRACE(L"DirectInputCreateEx\r\n");
+	// forward any DirectInputCreateEx function call to windows native dinput.dll
 	if(hDInput == NULL) {
 		LPCTSTR lpEnvPath = _wgetenv(L"SystemRoot");
 		TCHAR szDirectInputPath[MAX_PATH];
@@ -154,7 +158,8 @@ DINPUT_API HRESULT __stdcall DirectInputCreateEx(HINSTANCE hinst, DWORD dwVersio
 //************************************
 DINPUT_API HRESULT __stdcall DirectInputCreateW(HINSTANCE hinst, DWORD dwVersion, LPDIRECTINPUTW *ppDI, LPUNKNOWN punkOuter)
 {
-    // forward any DirectInputCreateW function call to windows native dinput.dll
+	TRACE(L"DirectInputCreateW\r\n");
+	// forward any DirectInputCreateW function call to windows native dinput.dll
 	if(hDInput == NULL) {
 		LPCTSTR lpEnvPath = _wgetenv(L"SystemRoot");
 		TCHAR szDirectInputPath[MAX_PATH];
@@ -182,7 +187,8 @@ DINPUT_API HRESULT __stdcall DirectInputCreateW(HINSTANCE hinst, DWORD dwVersion
 //************************************
 DINPUT_API BOOL __stdcall ImmDisableIME(__in  DWORD idThread)
 {
-    // forward any ImmDisableIME function call to windows native imm32.dll
+	TRACE(L"ImmDisableIME\r\n");
+	// forward any ImmDisableIME function call to windows native imm32.dll
 	if(hImm32 == NULL) {
 		LPCTSTR lpEnvPath = _wgetenv(L"SystemRoot");
 		TCHAR szImm32Path[MAX_PATH];
@@ -210,7 +216,8 @@ DINPUT_API BOOL __stdcall ImmDisableIME(__in  DWORD idThread)
 //************************************
 DINPUT_API HRESULT __stdcall DllRegisterServer(void)
 {
-    // forward any DllRegisterServer function call to windows native dinput.dll
+	TRACE(L"DllRegisterServer\r\n");
+	// forward any DllRegisterServer function call to windows native dinput.dll
 	if(hDInput == NULL) {
 		LPCTSTR lpEnvPath = _wgetenv(L"SystemRoot");
 		TCHAR szDirectInputPath[MAX_PATH];
@@ -238,7 +245,8 @@ DINPUT_API HRESULT __stdcall DllRegisterServer(void)
 //************************************
 DINPUT_API HRESULT __stdcall DllUnregisterServer(void)
 {
-    // forward any DllUnregisterServer function call to windows native dinput.dll
+	TRACE(L"DllUnregisterServer\r\n");
+	// forward any DllUnregisterServer function call to windows native dinput.dll
 	if(hDInput == NULL) {
 		LPCTSTR lpEnvPath = _wgetenv(L"SystemRoot");
 		TCHAR szDirectInputPath[MAX_PATH];
@@ -294,7 +302,39 @@ jint JNICALL SAS_CreateJavaVM(JavaVM **p_vm, void **p_env, void *vm_args)
 {
     // This function is being called when the JMP command has been successfully
     // injected into JVM.dll and an application calls JNI_CreateJavaVM().
-    TRACE(L"Hooked \"SAS_CreateJavaVM\" function activated, injecting JVM Parameters\r\n");
+    TRACE(L"Hooked \"SAS_CreateJavaVM\" function activated\r\n");
+	if (g_hIL2GE == NULL && !IsServerExe()) {
+		TCHAR szIL2GEFile[MAX_PATH];
+		TRACE(L"Checking IL-2 Graphics Extender Availability...\r\n");
+		LPCTSTR il2gepaths [] = IL2GE_PATHS;
+		for (int i = 0; i < IL2GE_PATHS_NUM; i++) {
+			memset(szIL2GEFile, 0, sizeof(szIL2GEFile));
+			_tcscpy(szIL2GEFile, szCurDir);
+			_tcscat(szIL2GEFile, il2gepaths[i]);
+			TRACE(L"Trying %s\r\n", szIL2GEFile);
+			if (FileExists(szIL2GEFile)) {
+				TRACE(L"il2ge.dll found, loading library.\r\n", szIL2GEFile);
+				g_hIL2GE = LoadLibrary(szIL2GEFile);
+				if (g_hIL2GE != NULL) {
+					TRACE(L"IL-2 Graphics Extender loaded successfully, trying to call Init() method...\r\n");
+					Il2geInit = (IL2GE_Init)GetProcAddress(g_hIL2GE, "Init");
+					if (Il2geInit == NULL) {
+						TRACE(L"No Init() method available in IL-2 Graphics Extender.\r\n");
+						break;
+					}
+					TRACE(L"Init() method found, calling it now.\r\n");
+					Il2geInit();
+					break;
+				}
+			}
+		}
+		if (g_hIL2GE == NULL) {
+			TRACE(L"IL-2 Graphics Extender not available.\r\n");
+			g_hIL2GE = (HMODULE)INVALID_HANDLE_VALUE;
+		}
+	}
+	TRACE(L"Injecting JVM Parameters\r\n");
+
     DWORD dwOldProtect = 0;
     DWORD dwNumRead = 0;
     DWORD dwProcRights = PROC_FULL_RIGHTS;
@@ -1009,6 +1049,12 @@ void versionString(char* buffer, int numToken, ...) {
 	va_start(argptr, numToken);
 	sprintf(buffer, "%d.%d.%d.%d", va_arg(argptr,int), va_arg(argptr,int), va_arg(argptr,int), va_arg(argptr,int));
 	va_end(argptr);
+}
+
+BOOL FileExists(LPCTSTR szPath) {
+	DWORD dwAttrib = GetFileAttributes(szPath);
+	return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
+		!(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 }
 
 JNIEXPORT jstring JNICALL Java_com_maddox_sas1946_il2_util_BaseGameVersion_getSelectorInfo(JNIEnv *env, jobject obj, jint infoRequested) {
