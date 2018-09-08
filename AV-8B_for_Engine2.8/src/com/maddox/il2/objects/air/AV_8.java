@@ -1661,7 +1661,7 @@ public class AV_8 extends Scheme1
 
     private void AIAirBrake()
     {
-        if(FM.AP.way.isLanding() && FM.getSpeed() > FM.VmaxFLAPS && FM.getSpeed() > FM.AP.way.curr().getV() * 1.4F)
+        if(FM.AP.way.isLanding() && FM.getSpeed() > FM.VmaxFLAPS && Pitot.Indicator((float)FM.getAltitude(), FM.getSpeed()) > FM.AP.way.curr().Speed * 1.25F)
         {
             if(FM.CT.AirBrakeControl != 1.0F)
                 FM.CT.AirBrakeControl = 1.0F;
@@ -1690,6 +1690,17 @@ public class AV_8 extends Scheme1
         {
             if(FM.CT.AirBrakeControl != 1.0F)
                 FM.CT.AirBrakeControl = 1.0F;
+        }
+        else if(((Maneuver)super.FM).get_maneuver() == 21 && Pitot.Indicator((float)FM.getAltitude(), FM.getSpeed()) > FM.AP.way.curr().Speed * 1.25F && FM.getAltitude() > FM.AP.way.curr().z() + 20F
+           && FM.EI.engines[0].getControlThrottle() < 0.88F)
+        {
+            if(FM.CT.AirBrakeControl != 1.0F)
+                FM.CT.AirBrakeControl = 1.0F;
+        }
+        else if(((Maneuver)super.FM).get_maneuver() == 21 && Pitot.Indicator((float)FM.getAltitude(), FM.getSpeed()) > FM.AP.way.curr().Speed * 1.05F && FM.getAltitude() > FM.AP.way.curr().z()
+           && FM.EI.engines[0].getControlThrottle() < 0.95F)
+        {
+            ;   // Not to do anything in neutral condition
         }
         else if(isHydraulicAlive && FM.CT.AirBrakeControl != 0.0F)
             FM.CT.AirBrakeControl = 0.0F;
