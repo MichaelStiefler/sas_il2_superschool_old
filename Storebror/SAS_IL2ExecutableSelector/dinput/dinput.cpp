@@ -54,6 +54,7 @@ extern HANDLE g_hJobObject;
 extern TCHAR szCurDir[MAX_PATH];
 extern TCHAR szCurDir[MAX_PATH];
 extern TCHAR szIniFile[MAX_PATH];
+extern TCHAR szConfIniFile[MAX_PATH];
 extern char cIniFile[MAX_PATH];
 extern int g_iSplashScreenMode;
 
@@ -68,6 +69,7 @@ BOOL bDisableMutex = FALSE;
 int g_isServer = -1;
 //HANDLE g_hJobObject = NULL;
 HMODULE g_hIL2GE = NULL;
+BOOL g_bIsOpenGL = FALSE;
 
 ORI_CreateJavaVM		JniCreateJavaVM = NULL;
 IMMDISABLEIME			SysImmDisableIme = NULL;
@@ -93,7 +95,6 @@ const TCHAR *	c_szMsgWndClass = _T("Il2SASWatchdogMsgWnd");
 //************************************
 DINPUT_API HRESULT __stdcall DirectInputCreateA(HINSTANCE hinst, DWORD dwVersion, LPDIRECTINPUTA *ppDI, LPUNKNOWN punkOuter)
 {
-	TRACE(L"DirectInputCreateA\r\n");
 	// forward any DirectInputCreateA function call to windows native dinput.dll
 	if(hDInput == NULL) {
 		LPCTSTR lpEnvPath = _wgetenv(L"SystemRoot");
@@ -126,7 +127,6 @@ DINPUT_API HRESULT __stdcall DirectInputCreateA(HINSTANCE hinst, DWORD dwVersion
 //************************************
 DINPUT_API HRESULT __stdcall DirectInputCreateEx(HINSTANCE hinst, DWORD dwVersion, REFIID refIID, LPVOID *ppDI, LPUNKNOWN punkOuter)
 {
-	TRACE(L"DirectInputCreateEx\r\n");
 	// forward any DirectInputCreateEx function call to windows native dinput.dll
 	if(hDInput == NULL) {
 		LPCTSTR lpEnvPath = _wgetenv(L"SystemRoot");
@@ -158,7 +158,6 @@ DINPUT_API HRESULT __stdcall DirectInputCreateEx(HINSTANCE hinst, DWORD dwVersio
 //************************************
 DINPUT_API HRESULT __stdcall DirectInputCreateW(HINSTANCE hinst, DWORD dwVersion, LPDIRECTINPUTW *ppDI, LPUNKNOWN punkOuter)
 {
-	TRACE(L"DirectInputCreateW\r\n");
 	// forward any DirectInputCreateW function call to windows native dinput.dll
 	if(hDInput == NULL) {
 		LPCTSTR lpEnvPath = _wgetenv(L"SystemRoot");
@@ -187,7 +186,6 @@ DINPUT_API HRESULT __stdcall DirectInputCreateW(HINSTANCE hinst, DWORD dwVersion
 //************************************
 DINPUT_API BOOL __stdcall ImmDisableIME(__in  DWORD idThread)
 {
-	TRACE(L"ImmDisableIME\r\n");
 	// forward any ImmDisableIME function call to windows native imm32.dll
 	if(hImm32 == NULL) {
 		LPCTSTR lpEnvPath = _wgetenv(L"SystemRoot");
@@ -216,7 +214,6 @@ DINPUT_API BOOL __stdcall ImmDisableIME(__in  DWORD idThread)
 //************************************
 DINPUT_API HRESULT __stdcall DllRegisterServer(void)
 {
-	TRACE(L"DllRegisterServer\r\n");
 	// forward any DllRegisterServer function call to windows native dinput.dll
 	if(hDInput == NULL) {
 		LPCTSTR lpEnvPath = _wgetenv(L"SystemRoot");
@@ -245,7 +242,6 @@ DINPUT_API HRESULT __stdcall DllRegisterServer(void)
 //************************************
 DINPUT_API HRESULT __stdcall DllUnregisterServer(void)
 {
-	TRACE(L"DllUnregisterServer\r\n");
 	// forward any DllUnregisterServer function call to windows native dinput.dll
 	if(hDInput == NULL) {
 		LPCTSTR lpEnvPath = _wgetenv(L"SystemRoot");
@@ -304,33 +300,38 @@ jint JNICALL SAS_CreateJavaVM(JavaVM **p_vm, void **p_env, void *vm_args)
     // injected into JVM.dll and an application calls JNI_CreateJavaVM().
     TRACE(L"Hooked \"SAS_CreateJavaVM\" function activated\r\n");
 	if (g_hIL2GE == NULL && !IsServerExe()) {
-		TCHAR szIL2GEFile[MAX_PATH];
-		TRACE(L"Checking IL-2 Graphics Extender Availability...\r\n");
-		LPCTSTR il2gepaths [] = IL2GE_PATHS;
-		for (int i = 0; i < IL2GE_PATHS_NUM; i++) {
-			memset(szIL2GEFile, 0, sizeof(szIL2GEFile));
-			_tcscpy(szIL2GEFile, szCurDir);
-			_tcscat(szIL2GEFile, il2gepaths[i]);
-			TRACE(L"Trying %s\r\n", szIL2GEFile);
-			if (FileExists(szIL2GEFile)) {
-				TRACE(L"il2ge.dll found, loading library.\r\n", szIL2GEFile);
-				g_hIL2GE = LoadLibrary(szIL2GEFile);
-				if (g_hIL2GE != NULL) {
-					TRACE(L"IL-2 Graphics Extender loaded successfully, trying to call Init() method...\r\n");
-					Il2geInit = (IL2GE_Init)GetProcAddress(g_hIL2GE, "Init");
-					if (Il2geInit == NULL) {
-						TRACE(L"No Init() method available in IL-2 Graphics Extender.\r\n");
+		if (g_bIsOpenGL) {
+			TCHAR szIL2GEFile[MAX_PATH];
+			TRACE(L"OpenGL Mode detected, checking IL-2 Graphics Extender Availability...\r\n");
+			LPCTSTR il2gepaths[] = IL2GE_PATHS;
+			for (int i = 0; i < IL2GE_PATHS_NUM; i++) {
+				memset(szIL2GEFile, 0, sizeof(szIL2GEFile));
+				_tcscpy(szIL2GEFile, szCurDir);
+				_tcscat(szIL2GEFile, il2gepaths[i]);
+				TRACE(L"Trying %s\r\n", szIL2GEFile);
+				if (FileExists(szIL2GEFile)) {
+					TRACE(L"il2ge.dll found, loading library.\r\n", szIL2GEFile);
+					g_hIL2GE = LoadLibrary(szIL2GEFile);
+					if (g_hIL2GE != NULL) {
+						TRACE(L"IL-2 Graphics Extender loaded successfully, trying to call Init() method...\r\n");
+						Il2geInit = (IL2GE_Init)GetProcAddress(g_hIL2GE, "Init");
+						if (Il2geInit == NULL) {
+							TRACE(L"No Init() method available in IL-2 Graphics Extender.\r\n");
+							break;
+						}
+						TRACE(L"Init() method found, calling it now.\r\n");
+						Il2geInit();
 						break;
 					}
-					TRACE(L"Init() method found, calling it now.\r\n");
-					Il2geInit();
-					break;
 				}
 			}
+			if (g_hIL2GE == NULL) {
+				TRACE(L"IL-2 Graphics Extender not available.\r\n");
+				g_hIL2GE = (HMODULE)INVALID_HANDLE_VALUE;
+			}
 		}
-		if (g_hIL2GE == NULL) {
-			TRACE(L"IL-2 Graphics Extender not available.\r\n");
-			g_hIL2GE = (HMODULE)INVALID_HANDLE_VALUE;
+		else {
+			TRACE(L"DirectX Mode detected, skipping IL-2 Graphics Extender routines.\r\n");
 		}
 	}
 	TRACE(L"Injecting JVM Parameters\r\n");
@@ -774,6 +775,22 @@ void ReadSelectorSettings()
 }
 
 //************************************
+// Method:    ReadConfSettings
+// FullName:  ReadConfSettings
+// Access:    public
+// Returns:   void
+// Qualifier:
+//************************************
+void ReadConfSettings()
+{
+	if (GetPrivateProfileString(L"GLPROVIDER", L"GL", L"dx8wrap.dll", szBuffer, MAX_PATH, szConfIniFile)) {
+		LPTSTR szGlProvider = szBuffer;
+		_tcstrim(szGlProvider);
+		if (_tcsicmp(szGlProvider, L"opengl32.dll") == 0) g_bIsOpenGL = TRUE;
+	}
+}
+
+//************************************
 // Method:    ReadJvmOptions
 // FullName:  ReadJvmOptions
 // Access:    public
@@ -972,6 +989,7 @@ void GetParams()
     JvmOptions.clear();
     FinalJvmOptions.clear();
     ReadSelectorSettings();
+	ReadConfSettings();
     ReadJvmOptions();
     EliminateDuplicateJvmOptions();
     AddMandatoryJvmOptions();
@@ -1055,6 +1073,19 @@ BOOL FileExists(LPCTSTR szPath) {
 	DWORD dwAttrib = GetFileAttributes(szPath);
 	return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
 		!(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+}
+
+void _tcstrim(LPTSTR str) {
+	int start = 0; // number of leading spaces
+	LPTSTR buffer = str;
+	while (*str && *str++ == L' ') ++start;
+	while (*str++); // move to end of string
+	int end = str - buffer - 1;
+	while (end > 0 && buffer[end - 1] == L' ') --end; // backup over trailing spaces
+	buffer[end] = 0; // remove trailing spaces
+	if (end <= start || start == 0) return; // exit if no leading spaces or string is now empty
+	str = buffer + start;
+	while ((*buffer++ = *str++));  // remove leading spaces: K&R
 }
 
 JNIEXPORT jstring JNICALL Java_com_maddox_sas1946_il2_util_BaseGameVersion_getSelectorInfo(JNIEnv *env, jobject obj, jint infoRequested) {
