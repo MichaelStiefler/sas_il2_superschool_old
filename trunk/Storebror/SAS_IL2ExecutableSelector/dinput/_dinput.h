@@ -41,6 +41,7 @@
 #define PROC_FULL_RIGHTS DELETE|READ_CONTROL|SYNCHRONIZE|WRITE_DAC|WRITE_OWNER|PROCESS_TERMINATE|PROCESS_CREATE_THREAD|PROCESS_SET_SESSIONID|PROCESS_VM_OPERATION|PROCESS_VM_READ|PROCESS_VM_WRITE|PROCESS_DUP_HANDLE|PROCESS_CREATE_PROCESS|PROCESS_SET_QUOTA|PROCESS_SET_INFORMATION|PROCESS_QUERY_INFORMATION|PROCESS_SUSPEND_RESUME
 #define CLIENT_INI			L"il2fb.ini"
 #define SERVER_INI			L"il2server.ini"
+#define CLIENT_CONF_INI		L"conf.ini"
 #define LOGFILE_NAME		L"initlog.lst"
 #define IL2GE_PATHS			{L"il2ge.dll", L"il2ge\\lib\\il2ge.dll", L"bin\\selector\\basefiles\\il2ge.dll"}
 #define IL2GE_PATHS_NUM		3
@@ -75,6 +76,8 @@ void GetParams();
 BOOL IsServerExe();
 BOOL StartWatchdog();
 BOOL FileExists(LPCTSTR szPath);
+void ReadConfSettings();
+void _tcstrim(LPTSTR str);
 
 //*************************************************************************
 // Type definitions

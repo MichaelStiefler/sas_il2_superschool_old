@@ -50,6 +50,7 @@ TCHAR szImm32Path[MAX_PATH];
 TCHAR szJvmPath[MAX_PATH];
 TCHAR szCurDir[MAX_PATH];
 TCHAR szIniFile[MAX_PATH];
+TCHAR szConfIniFile[MAX_PATH];
 TCHAR LogFileName[MAX_PATH];
 char cIniFile[MAX_PATH];
 BOOL g_bProcessAttached = FALSE;
@@ -98,7 +99,8 @@ BOOL APIENTRY DllMain(HMODULE hModule,
                 _stprintf(szIniFile, L"%s%s", szCurDir, SERVER_INI);
             } else {
                 _stprintf(szIniFile, L"%s%s", szCurDir, CLIENT_INI);
-            }
+				_stprintf(szConfIniFile, L"%s%s", szCurDir, CLIENT_CONF_INI);
+			}
 
             wcstombs(cIniFile, szIniFile, MAX_PATH);
         }
