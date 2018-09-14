@@ -39,7 +39,7 @@
             // notifyIcon
             // 
             this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
-            this.notifyIcon.Text = "Priority and Affinity Settings Tool";
+            this.notifyIcon.Text = "         FUMS\r\n    F*ck Up My System\r\nA Process Management Tool";
             this.notifyIcon.Visible = true;
             this.notifyIcon.DoubleClick += new System.EventHandler(this.notifyIcon_DoubleClick);
             // 

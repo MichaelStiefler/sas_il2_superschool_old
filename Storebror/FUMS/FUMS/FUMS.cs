@@ -51,8 +51,7 @@ namespace FUMS
             this.menuItemExit = new System.Windows.Forms.MenuItem();
             this.contextMenu = new System.Windows.Forms.ContextMenu();
             // Initialize contextMenu 
-            this.contextMenu.MenuItems.AddRange(
-                        new System.Windows.Forms.MenuItem[] { this.menuItemShow, this.menuItemExit });
+            this.contextMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] { this.menuItemShow, this.menuItemExit });
             // Initialize menuItemShow 
             this.menuItemShow.Index = 0;
             this.menuItemShow.Text = "&Show";
@@ -433,7 +432,9 @@ namespace FUMS
 
                 TaskDefinition td = ts.NewTask();
                 td.RegistrationInfo.Description = "Start FUMS with Windows";
-                td.Triggers.Add(new LogonTrigger());
+                LogonTrigger logonTrigger = new LogonTrigger();
+                logonTrigger.Delay = TimeSpan.FromSeconds(30);
+                td.Triggers.Add(logonTrigger);
                 td.Actions.Add(new ExecAction(System.Reflection.Assembly.GetEntryAssembly().Location));
                 td.Principal.RunLevel = TaskRunLevel.Highest;
                 td.Settings.StopIfGoingOnBatteries = false;
