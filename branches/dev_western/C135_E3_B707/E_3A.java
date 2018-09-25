@@ -8,16 +8,41 @@ import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
 import com.maddox.il2.objects.weapons.MissileInterceptable;
-import com.maddox.rts.Finger;
-import com.maddox.rts.Property;
-import com.maddox.rts.Time;
+import com.maddox.rts.*;
 import com.maddox.util.HashMapInt;
 import com.maddox.sas1946.il2.util.TrueRandom;
+import java.io.IOException;
 import java.util.*;
 
 
 public class E_3A extends C_135
+    implements TypeBomber, TypeRadar
 {
+
+    public class EnemyRadarData implements Comparable
+    {
+        Actor actor;
+        double distance;
+        double speed;
+        double dirdiff;
+
+        public EnemyRadarData()
+        {
+            actor = null;
+            distance = -1.0D;
+            speed = -1.0D;
+            dirdiff = 0.0D;
+        }
+
+        public int compareTo(Object other)
+        {
+            EnemyRadarData otherEnemy = (EnemyRadarData)other;
+            int r = 0;
+            if(this.distance - otherEnemy.distance > 0.0D) r = 1;
+            else if(this.distance - otherEnemy.distance < 0.0D) r = -1;
+            return r;
+        }
+    }
 
     public E_3A()
     {
@@ -31,6 +56,9 @@ public class E_3A extends C_135
         enemyCruiseMissileList = new ArrayList();
         friendlyPlaneList = new ArrayList();
         friendlyAwacsList = new ArrayList();
+        radarDisplayRange = 0;
+        radarDisplayVrt = 0;
+        radarDisplayHol = 0;
     }
 
     public static String getSkinPrefix(String s, Regiment regiment)
@@ -93,31 +121,6 @@ public class E_3A extends C_135
 
         angleRetVal = (float)degNew;
         return angleRetVal;
-    }
-
-    public class EnemyRadarData implements Comparable
-    {
-        Actor actor;
-        double distance;
-        double speed;
-        double dirdiff;
-
-        public EnemyRadarData()
-        {
-            actor = null;
-            distance = -1.0D;
-            speed = -1.0D;
-            dirdiff = 0.0D;
-        }
-
-        public int compareTo(Object other)
-        {
-            EnemyRadarData otherEnemy = (EnemyRadarData)other;
-            int r = 0;
-            if(this.distance - otherEnemy.distance > 0.0D) r = 1;
-            else if(this.distance - otherEnemy.distance < 0.0D) r = -1;
-            return r;
-        }
     }
 
     public void update(float f)
@@ -195,7 +198,8 @@ public class E_3A extends C_135
 
         List list = Engine.targets();
         Actor actor = null;
-        double altitude = 0D;
+        double altitudeAbs = 0D;
+        double altitudeTrue = 0D;
         boolean playerInAwacsSight = false;
         Point3d point3dtemp = new Point3d();
 
@@ -212,19 +216,29 @@ public class E_3A extends C_135
             if(distanceBetween(this, actor) > maxRange)
                 continue;
 
-            altitude = actor.pos.getAbsPoint().z - Engine.land().HQ_Air(actor.pos.getAbsPoint().x, actor.pos.getAbsPoint().y);
+            altitudeAbs = actor.pos.getAbsPoint().z - Engine.land().HQ_Air(actor.pos.getAbsPoint().x, actor.pos.getAbsPoint().y);
+            altitudeTrue = actor.pos.getAbsPoint().z;
 
-            if(altitude < minAltitude)
+            if(altitudeAbs < minAltitude)
                 continue;
-            if(altitude < thresholdLA && distanceBetween(this, actor) > maxRangeLA)
+            if(altitudeAbs < thresholdLA && distanceBetween(this, actor) > maxRangeLA)
                 continue;
+            if(altitudeAbs < thresholdAbsLA && altitudeTrue > 120D && distanceBetween(this, actor) > maxRangeAbsLA)
+                continue;  // Low altitude on ground is harder to search than on sea.
             if(Landscape.rayHitHQ(this.pos.getAbsPoint(), actor.pos.getAbsPoint(), point3dtemp))
                 continue;  // "actor" is behind of terrain and cannot detect from AWACS.
+            if(Mission.curCloudsType() > 4 && (Mission.curCloudsHeight() - 20D > this.pos.getAbsPoint().z || Mission.curCloudsHeight() - 30D > actor.pos.getAbsPoint().z) && Main.cur().clouds != null)
+                if(distanceBetween(this, actor) > maxRangeLA * Main.cur().clouds.getVisibility(this.pos.getAbsPoint(), actor.pos.getAbsPoint()) * TrueRandom.nextFloat(0.7F, 1.2F) * (float)(7 - Mission.curCloudsType()))
+                    continue;   // Thunderclouds disturb Radar detecting. (No Rain clouds don't do.)
 
             if(actor.getArmy() != this.getArmy())
             {
                 if(actor instanceof Aircraft)
+                {
                     enemyPlaneList.add(actor);
+                    if(actor instanceof TypeRadarWarningReceiver)
+                        ((TypeRadarWarningReceiver)actor).myRadarSearchYou(this, sr_soundpreset);
+                }
                 else if(actor instanceof MissileInterceptable && ((MissileInterceptable)actor).isReleased())
                     enemyCruiseMissileList.add(actor);
             }
@@ -265,6 +279,7 @@ public class E_3A extends C_135
         enemies.clear();
         EnemyRadarData tempERD = null;
         Vector3d vtemp = new Vector3d();
+        int drawspeed = Main3D.cur3D().hud.drawSpeed();
 
         for(int i = 0; i < enemyPlaneList.size(); i++)
         {
@@ -278,10 +293,25 @@ public class E_3A extends C_135
         }
         Collections.sort(enemies);
 
-        int k1 = (int)angle360Between(World.getPlayerAircraft(), ((EnemyRadarData)(enemies.get(0))).actor);
-        int l1 = (int)(-((double)(((EnemyRadarData)(enemies.get(0))).actor).pos.getAbsOrient().getYaw() - 90D));
-        if(l1 < 0) l1 += 360;
-        HUD.logCenter("                                      Target bearing " + k1 + "\260" + ", range " + (int)(((EnemyRadarData)(enemies.get(0))).distance * 0.001D) + "km, height " + (int)((EnemyRadarData)(enemies.get(0))).actor.pos.getAbsPoint().z + "m, heading " + l1 + "\260");
+        int iBear = (int)((angle360Between(World.getPlayerAircraft(), ((EnemyRadarData)(enemies.get(0))).actor) + 5.5F) * 0.1F) * 10;
+        int iHead = (int)(-((double)(((EnemyRadarData)(enemies.get(0))).actor).pos.getAbsOrient().getYaw() - 90D - 5.5D) * 0.1F) * 10;
+        if(iHead < 0) iHead += 360;
+        switch(drawspeed)
+        {
+        default:
+        case 1:
+        case 4:
+            HUD.logCenter("                     Target bearing " + iBear + "\260" + ", range " + (int)(((EnemyRadarData)(enemies.get(0))).distance * 0.001D) + "km, height " + (int)(((EnemyRadarData)(enemies.get(0))).actor.pos.getAbsPoint().z * 0.1D) * 10 + "m, heading " + iHead + "\260" + ", Spd " + (int)(((EnemyRadarData)(enemies.get(0))).speed * 0.36D + 0.5D) * 10 + "km/h");
+            break;
+        case 2:
+        case 5:
+            HUD.logCenter("                     Target bearing " + iBear + "\260" + ", range " + (int)(((EnemyRadarData)(enemies.get(0))).distance * 0.0005399568D) + "NM, height " + (int)(((EnemyRadarData)(enemies.get(0))).actor.pos.getAbsPoint().z * 0.32808D) * 10 + "ft, heading " + iHead + "\260" + ", Spd " + (int)(((EnemyRadarData)(enemies.get(0))).speed * 0.1943845D + 0.5D) * 10 + "kt");
+            break;
+        case 3:
+        case 6:
+            HUD.logCenter("                     Target bearing " + iBear + "\260" + ", range " + (int)(((EnemyRadarData)(enemies.get(0))).distance * 0.000621371D) + "mile, height " + (int)(((EnemyRadarData)(enemies.get(0))).actor.pos.getAbsPoint().z * 0.32808D) * 10 + "ft, heading " + iHead + "\260" + ", Spd " + (int)(((EnemyRadarData)(enemies.get(0))).speed * 0.2236936D + 0.5D) * 10 + "mph");
+            break;
+        }
 
 /*            if(flag)
             {
@@ -294,6 +324,197 @@ public class E_3A extends C_135
                 HUD.logCenter("                                                                             Target at " + s + "-" + j1 + ", height " + l + "m, heading " + l1 + "\260");
             }
         } */
+    }
+
+    public void typeRadarGainMinus()
+    {
+    }
+
+    public void typeRadarGainPlus()
+    {
+    }
+
+    public void typeRadarRangeMinus()
+    {
+        radarDisplayRange++;
+        if(radarDisplayRange > 2)
+            radarDisplayRange = 2;
+
+        if(radarDisplayRange == 1)
+        {
+            radarDisplayVrt = 0;
+            radarDisplayHol = 0;
+        }
+        else if(radarDisplayRange == 2)
+        {
+            if(radarDisplayVrt == 0)
+                radarDisplayVrt = 1;
+            else if(radarDisplayVrt == 1)
+                radarDisplayVrt = 2;
+            if(radarDisplayHol == 0)
+                radarDisplayHol = 1;
+            else if(radarDisplayHol == 1)
+                radarDisplayHol = 2;
+        }
+
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar dislay range " + radarDisplayRange);
+    }
+
+    public void typeRadarRangePlus()
+    {
+        radarDisplayRange--;
+        if(radarDisplayRange < 0)
+            radarDisplayRange = 0;
+
+        if(radarDisplayRange == 0)
+        {
+            radarDisplayVrt = 0;
+            radarDisplayHol = 0;
+        }
+        else if(radarDisplayRange == 1)
+        {
+            if(radarDisplayVrt < 2)
+                radarDisplayVrt = 0;
+            else
+                radarDisplayVrt = 1;
+            if(radarDisplayHol < 2)
+                radarDisplayHol = 0;
+            else
+                radarDisplayHol = 1;
+        }
+
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "Radar dislay range " + radarDisplayRange);
+    }
+
+    public void typeRadarReplicateFromNet(NetMsgInput netmsginput)
+        throws IOException
+    {
+    }
+
+    public void typeRadarReplicateToNet(NetMsgGuaranted netmsgguaranted)
+        throws IOException
+    {
+    }
+
+    public boolean typeRadarToggleMode()
+    {
+        return false;
+    }
+
+    public void typeBomberAdjDistanceReset()
+    {
+    }
+
+    public void typeBomberAdjDistancePlus()
+    {
+        if(radarDisplayRange == 0) return;
+
+        radarDisplayVrt--;
+        if(radarDisplayVrt < 0)
+            radarDisplayVrt = 0;
+    }
+
+    public void typeBomberAdjDistanceMinus()
+    {
+        if(radarDisplayRange == 0) return;
+
+        int maxnum = 0;
+        if(radarDisplayRange == 1) maxnum = 1;
+        else if(radarDisplayRange == 2) maxnum = 3;
+
+        radarDisplayVrt++;
+        if(radarDisplayVrt > maxnum)
+            radarDisplayVrt = maxnum;
+    }
+
+    public void typeBomberAdjSideslipReset()
+    {
+    }
+
+    public void typeBomberAdjSideslipPlus()
+    {
+        if(radarDisplayRange == 0) return;
+
+        radarDisplayHol--;
+        if(radarDisplayHol < 0)
+            radarDisplayHol = 0;
+    }
+
+    public void typeBomberAdjSideslipMinus()
+    {
+        if(radarDisplayRange == 0) return;
+
+        int maxnum = 0;
+        if(radarDisplayRange == 1) maxnum = 1;
+        else if(radarDisplayRange == 2) maxnum = 3;
+
+        radarDisplayHol++;
+        if(radarDisplayHol > maxnum)
+            radarDisplayHol = maxnum;
+    }
+
+    public void typeBomberAdjAltitudeReset()
+    {
+    }
+
+    public void typeBomberAdjAltitudePlus()
+    {
+    }
+
+    public void typeBomberAdjAltitudeMinus()
+    {
+    }
+
+    public void typeBomberAdjSpeedReset()
+    {
+    }
+
+    public void typeBomberAdjSpeedPlus()
+    {
+    }
+
+    public void typeBomberAdjSpeedMinus()
+    {
+    }
+
+    public void typeBomberUpdate(float f)
+    {
+    }
+
+    public void typeBomberReplicateToNet(NetMsgGuaranted netmsgguaranted)
+        throws IOException
+    {
+    }
+
+    public void typeBomberReplicateFromNet(NetMsgInput netmsginput)
+        throws IOException
+    {
+    }
+
+    public boolean typeBomberToggleAutomation()
+    {
+        return true;
+    }
+
+    // Radar ArrayList "getter" interfaces For Radar display cockpit class
+    public ArrayList getEnemyPlaneList()
+    {
+        return enemyPlaneList;
+    }
+
+    public ArrayList getEnemyCruiseMissileList()
+    {
+        return enemyCruiseMissileList;
+    }
+
+    public ArrayList getFriendlyPlaneList()
+    {
+        return friendlyPlaneList;
+    }
+
+    public ArrayList getFriendlyAwacsList()
+    {
+        return friendlyAwacsList;
     }
 
 //    public static boolean   bChangedPit = false;
@@ -309,12 +530,19 @@ public class E_3A extends C_135
     private ArrayList friendlyPlaneList;
     private ArrayList friendlyAwacsList;
 
+    public int radarDisplayRange = 0;  // 0:Full display 550x550km, 1:2/3 display 400x400km, 2:1/3 display 200x200km
+    public int radarDisplayVrt = 0;    // When radarDisplayRange == 1 or 2, move display area Vertical and Horizontal
+    public int radarDisplayHol = 0;
+
     private static double maxRange = 550000D;   // Radar search range 550km
     private static double maxRangeLA = 320000D; // == 320km Radar search range for low altitude
     private static double thresholdLA = 1200D;  // under 1200m is treated as low altitude
+    private static double maxRangeAbsLA = 180000D; // == 180km Radar search range for lower absolute altitude
+    private static double thresholdAbsLA = 100D;  // Absolute Altitude under 100m on ground makes difficult to searched
     private static double minAltitude = 30D;  // cannot detect planes flying lower than 30m from terrain
     private static int maxDetectNum = 640;
     private static int maxTrackNum = 240;
+    private static String sr_soundpreset = "aircraft.APR25AAA";   // Sound Preset string for enemy Gen-0 RWR sound play
 
     static {
         final Class class1 = E_3A.class;
@@ -325,7 +553,7 @@ public class E_3A extends C_135
         Property.set(class1, "yearExpired", 2050F);
         Property.set(class1, "FlightModel", "FlightModels/E-3A.fmd:C135FM");
         Property.set(class1, "cockpitClass", new Class[] {
-            CockpitC_135.class // , CockpitE_3RADAR.class
+            CockpitC_135.class , CockpitE_3RADAR.class
           });
         Property.set(class1, "LOSElevation", 0.73425F);
         Aircraft.weaponTriggersRegister(class1, new int[] {});
