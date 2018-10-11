@@ -25,9 +25,6 @@ public void start() {
     this.pos.setAbs(this.pos.getCurrent());
     this.pos.getAbs(var1);
     new ParatrooperVDV(this.getOwner(), this.getOwner().getArmy(), 255, var1, ((Aircraft)this.getOwner()).FM.Vwld);
-    
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "111");
-    
     this.destroy();
  }
 

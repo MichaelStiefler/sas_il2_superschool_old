@@ -16,6 +16,7 @@ import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
+import com.maddox.sas1946.il2.util.Reflection;
 import com.maddox.util.HashMapInt;
 
 import java.io.IOException;
@@ -31,16 +32,17 @@ import com.maddox.il2.objects.weapons.BombGunVDVAKS;
 //            TypeTransport, TypeStormovik, NetAircraft
 
 public class MI8MT extends Scheme2a
-    implements TypeTransport, TypeStormovik, TypeBomber
+    implements TypeHelicopter, TypeTransport, TypeStormovik, TypeBomber, TypeCountermeasure
 {
 
     public MI8MT()
     {
-   	 forceTrim_x = 0.0D;
+    	isAI = true;
+    	forceTrim_x = 0.0D;
      forceTrim_y = 0.0D;
      forceTrim_z = 0.0D;
      getTrim = false;
-
+     rotorRPM = 0.0F;
      curAngleRotor = 0.0F;
      lastTimeFan = Time.current();
      oMainRotor = new Orient();
@@ -62,8 +64,82 @@ public class MI8MT extends Scheme2a
         obsMove = 0.0F;
         obsMoveTot = 0.0F;
         bObserverKilled = false;
+        hasChaff = false;
+        hasFlare = false;
+        lastChaffDeployed = 0L;
+        lastFlareDeployed = 0L;
+        lastCommonThreatActive = 0L;
+        intervalCommonThreat = 1000L;
+        lastRadarLockThreatActive = 0L;
+        intervalRadarLockThreat = 1000L;
+        lastMissileLaunchThreatActive = 0L;
+        intervalMissileLaunchThreat = 1000L;
+        
+     this.pictVBrake = 0.0F;
+     this.pictAileron = 0.0F;
+     this.pictVator = 0.0F;
+     this.pictRudder = 0.0F;
+     this.pictBlister = 0.0F;
     }
 
+    public long getChaffDeployed()
+    {
+        if(hasChaff)
+            return lastChaffDeployed;
+        else
+            return 0L;
+    }
+
+    public long getFlareDeployed()
+    {
+        if(hasFlare)
+            return lastFlareDeployed;
+        else
+            return 0L;
+    }
+
+    public void setCommonThreatActive()
+    {
+        long curTime = Time.current();
+        if(curTime - lastCommonThreatActive > intervalCommonThreat)
+        {
+            lastCommonThreatActive = curTime;
+            doDealCommonThreat();
+        }
+    }
+
+    public void setRadarLockThreatActive()
+    {
+        long curTime = Time.current();
+        if(curTime - lastRadarLockThreatActive > intervalRadarLockThreat)
+        {
+            lastRadarLockThreatActive = curTime;
+            doDealRadarLockThreat();
+        }
+    }
+
+    public void setMissileLaunchThreatActive()
+    {
+        long curTime = Time.current();
+        if(curTime - lastMissileLaunchThreatActive > intervalMissileLaunchThreat)
+        {
+            lastMissileLaunchThreatActive = curTime;
+            doDealMissileLaunchThreat();
+        }
+    }
+
+    private void doDealCommonThreat()
+    {
+    }
+
+    private void doDealRadarLockThreat()
+    {
+    }
+
+    private void doDealMissileLaunchThreat()
+    {
+    }
+    
     public void rareAction(float f, boolean flag)
     {
         super.rareAction(f, flag);
@@ -125,37 +201,30 @@ public class MI8MT extends Scheme2a
     {
         resetYPRmodifier();
         Aircraft.xyz[1] = Aircraft.cvt(f, 0.0F, 1F, 0.0F, -0.8F);
+        Aircraft.xyz[0] = Aircraft.cvt(f, 0.0F, 1F, 0.0F, -0.02F);
         hierMesh().chunkSetLocate("Door1_D0", Aircraft.xyz, Aircraft.ypr);
     }
 
     protected void moveFan(float f)
     {
-        rotorrpm = Math.abs((int)((double)(FM.EI.engines[0].getw() * 0.025F) + FM.Vwld.length() / 30D));
-        if(rotorrpm >= 1)
-            rotorrpm = 1;
-        if((FM.EI.engines[0].getw() > 100F) && (FM.EI.engines[1].getw() > 100F))
+        float tRPM = Math.max(((FlightModelMain) (super.FM)).EI.engines[0].getRPM(), ((FlightModelMain) (super.FM)).EI.engines[1].getRPM());
+        tRPM *= 0.061F;
+        float aThrottle = (((FlightModelMain) (super.FM)).EI.engines[0].getControlThrottle() + ((FlightModelMain) (super.FM)).EI.engines[1].getControlThrottle()) / 2.0F;
+        float aThrust = (((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() + ((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput()) / 2.0F;
+//        if(aThrust * aThrust < 0.1F)
+//            tRPM = 0.0F;
+        rotorRPM += (tRPM - rotorRPM) * 0.0001F;
+        if(aThrust * aThrottle > 0.25F)
         {
             hierMesh().chunkVisible("Prop1_D0", false);
+            hierMesh().chunkVisible("Prop2_D0", false);
             hierMesh().chunkVisible("PropRot1_D0", true);
-        }
-        if((FM.EI.engines[0].getw() < 100F) && (FM.EI.engines[1].getw() < 100F))
+            hierMesh().chunkVisible("PropRot2_D0", true);
+        } else
         {
             hierMesh().chunkVisible("Prop1_D0", true);
-            hierMesh().chunkVisible("PropRot1_D0", false);
-        }
-        if(hierMesh().isChunkVisible("Prop1_D1"))
-        {
-            hierMesh().chunkVisible("Prop1_D0", false);
-            hierMesh().chunkVisible("PropRot1_D0", false);
-        }
-        if((FM.EI.engines[0].getw() > 100F) && (FM.EI.engines[1].getw() > 100F))
-        {
-            hierMesh().chunkVisible("Prop2_D0", false);
-            hierMesh().chunkVisible("PropRot2_D0", true);
-        }
-        if((FM.EI.engines[0].getw() < 100F) && (FM.EI.engines[1].getw() < 100F))
-        {
             hierMesh().chunkVisible("Prop2_D0", true);
+            hierMesh().chunkVisible("PropRot1_D0", false);
             hierMesh().chunkVisible("PropRot2_D0", false);
         }
         if(hierMesh().isChunkVisible("Prop2_D1"))
@@ -169,9 +238,12 @@ public class MI8MT extends Scheme2a
             hierMesh().chunkVisible("PropRot2_D0", false);
             hierMesh().chunkVisible("Prop2_D1", false);
         }
-        dynamoOrient = bDynamoRotary ? (dynamoOrient - 100F) % 360F : (float)((double)dynamoOrient - (double)rotorrpm * 25D) % 360F;
-        hierMesh().chunkSetAngles("Prop1_D0", -dynamoOrient, 0.0F, 0.0F);
-        hierMesh().chunkSetAngles("Prop2_D0", 0.0F, 0.0F, dynamoOrient);
+        long curTime = Time.current();
+        diffAngleRotor = (6F * rotorRPM * (float)(curTime - lastTimeFan)) / 1000F;
+        curAngleRotor += diffAngleRotor;
+        lastTimeFan = curTime;
+        hierMesh().chunkSetAngles("Prop1_D0", -curAngleRotor % 360F, 0.0F, 0.0F);
+        hierMesh().chunkSetAngles("Prop2_D0", 0.0F, 0.0F, -(curAngleRotor * 5.86F) % 360F);
     }
 
     public void moveWheelSink()
@@ -565,6 +637,162 @@ public class MI8MT extends Scheme2a
     public void onAircraftLoaded()
     {
         super.onAircraftLoaded();
+        
+        
+    	if((super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode() || !(super.FM instanceof Pilot))  		
+        {
+    		isAI = false;
+        } else {
+        	isAI = true;
+//        	this.FM.EI.engines[0].doSetEngineStarts();
+//        	this.FM.EI.engines[1].doSetEngineStarts();
+        	
+
+        	Squares squares = (Squares)Reflection.getValue(FM, "Sq");
+        	squares.squareWing = 26.0F;
+        	squares.squareAilerons = 1.00F;
+        	squares.squareFlaps = 0.81F;
+        	squares.liftStab = 5.20F;
+        	squares.squareElevators = 2.80F;
+        	squares.liftKeel = 0.1F;
+        	squares.squareRudders = 2.50F;
+        	squares.liftWingLIn = (squares.liftWingRIn = 4.33F);
+        	squares.liftWingLMid = (squares.liftWingRMid = 4.33F);
+        	squares.liftWingLOut = (squares.liftWingROut = 4.33F);
+        	squares.dragFuselageCx = 0.06F;
+        	squares.dragAirbrakeCx = 1.00F;
+       	
+        	Vector3f eVect = new Vector3f();
+            eVect.x = 1.0F; eVect.y = 0.0F; eVect.z = 0.0F;
+            
+            Point3d ePos = new Point3d();
+            ePos.x = 1.5F; ePos.y = 0.0F; ePos.z = 0.0F;
+            
+            Point3d ePropPos = new Point3d();
+            ePropPos.x = 1.0F; ePropPos.y = 0.0F; ePropPos.z = 0.0F;
+            
+            this.FM.EI.engines[0].setVector(eVect);
+            this.FM.EI.engines[0].setPos(ePos);
+            this.FM.EI.engines[0].setPropPos(ePropPos);
+        	
+        	Reflection.setInt(this.FM.EI.engines[0], "type", 2);
+        	Reflection.setBoolean(this.FM.EI.engines[0], "bIsAutonomous", true);
+        	Reflection.setInt(this.FM.EI.engines[0], "cylinders", 6);
+        	Reflection.setInt(this.FM.EI.engines[0], "engineCarburetorType", 0);
+        	Reflection.setInt(this.FM.EI.engines[0], "propDirection", 1);
+        	Reflection.setFloat(this.FM.EI.engines[0], "propMass", 150.0F);
+        	Reflection.setInt(this.FM.EI.engines[0], "compressorType", 0);
+        	Reflection.setInt(this.FM.EI.engines[0], "compressorMaxStep", 0);
+        	Reflection.setBoolean(this.FM.EI.engines[0], "bHasCompressorControl", false);
+        	Reflection.setBoolean(this.FM.EI.engines[0], "bHasRadiatorControl", true);
+//        	Reflection.setFloat(this.FM.EI.engines[0], "tChangeSpeed", 0.01F);
+//        	Reflection.setFloat(this.FM.EI.engines[0], "tWaterMaxRPM", 95F);
+//        	Reflection.setFloat(this.FM.EI.engines[0], "tOilInMaxRPM", 70.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[0], "tOilOutMaxRPM", 107.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[0], "timeOverheat", 280.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[0], "timeUnderheat", 999.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[0], "tWaterCritMax", 108.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[0], "tWaterCritMin", 60.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[0], "tOilCritMax", 130.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[0], "tOilCritMin", 40.0F);
+        	Reflection.setFloat(this.FM.EI.engines[0], "horsePowers", 2200.0F);
+        	Reflection.setFloat(this.FM.EI.engines[0], "thrustMax", 3800.0F);
+        	Reflection.setFloat(this.FM.EI.engines[0], "engineI", 10.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[0], "RPMMin", 150.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[0], "RPMNom", 1665.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[0], "RPMMax", 1665.0F);
+        	Reflection.setFloat(this.FM.EI.engines[0], "wMaxAllowed", 2500.0F);
+        	Reflection.setFloat(this.FM.EI.engines[0], "propReductor", 1.0F);
+        	Reflection.setFloat(this.FM.EI.engines[0], "propDiameter", 4.5F);
+        	Reflection.setInt(this.FM.EI.engines[0], "propAngleDeviceType", 7);
+        	Reflection.setFloat(this.FM.EI.engines[0], "propAngleChangeSpeed", 10.0F);
+        	Reflection.setFloat(this.FM.EI.engines[0], "propAngleDeviceMinParam", 200.0F);
+        	Reflection.setFloat(this.FM.EI.engines[0], "propAngleDeviceMaxParam", 1665.0F);
+        	Reflection.setFloat(this.FM.EI.engines[0], "propPhiMax", 10.0F);
+        	Reflection.setFloat(this.FM.EI.engines[0], "propAoA0", 1.0F);
+        	Reflection.setFloat(this.FM.EI.engines[0], "compressorPMax", 2.0F);
+        	Reflection.setFloat(this.FM.EI.engines[0], "compressorRPMtoPMax", 1665.0F);
+        	Reflection.setFloat(this.FM.EI.engines[0], "compressorRPMtoCurvature", 1.0F);
+        	Reflection.setFloat(this.FM.EI.engines[0], "compressorRPMtoWMaxATA", 2.0F);
+      	
+            this.FM.EI.engines[1].setVector(eVect);
+            this.FM.EI.engines[1].setPos(ePos);
+            this.FM.EI.engines[1].setPropPos(ePropPos);
+        	
+        	Reflection.setInt(this.FM.EI.engines[1], "type", 2);
+        	Reflection.setBoolean(this.FM.EI.engines[1], "bIsAutonomous", true);
+        	Reflection.setInt(this.FM.EI.engines[1], "cylinders", 6);
+        	Reflection.setInt(this.FM.EI.engines[1], "engineCarburetorType", 0);
+        	Reflection.setInt(this.FM.EI.engines[1], "propDirection", 1);
+        	Reflection.setFloat(this.FM.EI.engines[1], "propMass", 150.0F);
+        	Reflection.setInt(this.FM.EI.engines[1], "compressorType", 0);
+        	Reflection.setInt(this.FM.EI.engines[1], "compressorMaxStep", 0);
+        	Reflection.setBoolean(this.FM.EI.engines[1], "bHasCompressorControl", false);
+        	Reflection.setBoolean(this.FM.EI.engines[1], "bHasRadiatorControl", true);
+//        	Reflection.setFloat(this.FM.EI.engines[1], "tChangeSpeed", 0.01F);
+//        	Reflection.setFloat(this.FM.EI.engines[1], "tWaterMaxRPM", 95F);
+//        	Reflection.setFloat(this.FM.EI.engines[1], "tOilInMaxRPM", 70.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[1], "tOilOutMaxRPM", 107.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[1], "timeOverheat", 280.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[1], "timeUnderheat", 999.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[1], "tWaterCritMax", 108.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[1], "tWaterCritMin", 60.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[1], "tOilCritMax", 130.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[1], "tOilCritMin", 40.0F);
+        	Reflection.setFloat(this.FM.EI.engines[1], "horsePowers", 2200.0F);
+        	Reflection.setFloat(this.FM.EI.engines[1], "thrustMax", 3800.0F);
+        	Reflection.setFloat(this.FM.EI.engines[1], "engineI", 10.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[1], "RPMMin", 150.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[1], "RPMNom", 1665.0F);
+//        	Reflection.setFloat(this.FM.EI.engines[1], "RPMMax", 1665.0F);
+        	Reflection.setFloat(this.FM.EI.engines[1], "wMaxAllowed", 2500.0F);
+        	Reflection.setFloat(this.FM.EI.engines[1], "propReductor", 1.0F);
+        	Reflection.setFloat(this.FM.EI.engines[1], "propDiameter", 4.5F);
+        	Reflection.setInt(this.FM.EI.engines[1], "propAngleDeviceType", 7);
+        	Reflection.setFloat(this.FM.EI.engines[1], "propAngleChangeSpeed", 10.0F);
+        	Reflection.setFloat(this.FM.EI.engines[1], "propAngleDeviceMinParam", 200.0F);
+        	Reflection.setFloat(this.FM.EI.engines[1], "propAngleDeviceMaxParam", 1665.0F);
+        	Reflection.setFloat(this.FM.EI.engines[1], "propPhiMax", 10.0F);
+        	Reflection.setFloat(this.FM.EI.engines[1], "propAoA0", 1.0F);
+        	Reflection.setFloat(this.FM.EI.engines[1], "compressorPMax", 2.0F);
+        	Reflection.setFloat(this.FM.EI.engines[1], "compressorRPMtoPMax", 1665.0F);
+        	Reflection.setFloat(this.FM.EI.engines[1], "compressorRPMtoCurvature", 1.0F);
+        	Reflection.setFloat(this.FM.EI.engines[1], "compressorRPMtoWMaxATA", 2.0F);
+
+        	Polares polares = (Polares)Reflection.getValue(FM, "Wing");
+        	polares.AOA_crit = 10.0F;
+        	Reflection.setFloat(this.FM, "Vmin", 0.0F);
+        	Reflection.setFloat(this.FM, "Vmax", 280.0F);
+        	Reflection.setFloat(this.FM, "VmaxAllowed", 300.0F);
+        	Reflection.setFloat(this.FM, "VmaxH", 310.0F);
+        	Reflection.setFloat(this.FM, "HofVmax", 7900.0F);
+        	Reflection.setFloat(this.FM, "VminFLAPS", 0.0F);
+        	Reflection.setFloat(this.FM, "VmaxFLAPS", 280.0F);
+        	polares.Cy0_max = 0.15F;
+        	polares.FlapsMult = 1.0F;
+        	polares.FlapsAngSh = 4.0F;
+        	polares.lineCyCoeff = 0.09F;
+        	polares.AOAMinCx_Shift = 0.0F;
+        	polares.Cy0_0 = 0.15F;
+        	polares.AOACritH_0 = 10.0F;
+        	polares.AOACritL_0 = -6.0F;
+        	polares.CyCritH_0 = 0.9934692F;
+        	polares.CyCritL_0 = -0.7648107F;
+        	polares.parabCxCoeff_0 = 5.0E-4F;
+        	polares.CxMin_0 = 0.0525F;
+        	polares.Cy0_1 = 1.53F;
+        	polares.AOACritH_1 = 10.0F;
+        	polares.AOACritL_1 = -6.0F;
+        	polares.CyCritH_1 = 1.2791651F;
+        	polares.CyCritL_1 = -0.7F;
+        	polares.CxMin_1 = 0.15F;
+        	polares.parabCxCoeff_1 = 7.5E-5F;
+        	polares.parabAngle = 5.0F;
+        	polares.declineCoeff = 0.008F;
+        	polares.maxDistAng = 40.0F;
+        	
+        }
+        World.cur().diffCur.Engine_Overheat = false;
 //        FM.CT.bHasBayDoors = true;
         if(thisWeaponsName.endsWith("mm"))
         {
@@ -604,20 +832,59 @@ public class MI8MT extends Scheme2a
     	}
     }
     
+   private void stability()
+   {
+   	 Vector3f eVect = new Vector3f();
+     eVect.x = 1.0F; //By PAL, to produce some tendency to advance
+     eVect.y = 0.0F;
+     eVect.z = 0.0F;
+//     eVect.normalize();
+     FM.EI.engines[0].setVector(eVect);
+     FM.EI.engines[1].setVector(eVect);
+//     ((FlightModelMain) (super.FM)).CT.FlapsControl = 1.0F;
+
+     
+     float avT = (FM.EI.engines[0].getThrustOutput() + FM.EI.engines[1].getThrustOutput())  / 2F;
+     
+//     FM.producedAF.x += avT * 100000;
+//     FM.producedAF.z += avT * 150000;
+     FM.producedAF.x += Aircraft.cvt(avT, 0.0F, 0.3F, 0.0F, 10000F);
+     FM.producedAF.z += Aircraft.cvt(avT, 0.0F, 0.3F, 0.0F, 130000F);
+     
+//     super.FM.getW().scale(0.6D);
+     ((FlightModelMain) (super.FM)).SensYaw = 0.5F; 
+     ((FlightModelMain) (super.FM)).SensPitch = 0.3F;
+     ((FlightModelMain) (super.FM)).SensRoll = 0.3F;
+     
+     Vector3d localVector3d = new Vector3d();
+     getSpeed(localVector3d);
+     if (this.FM.getVertSpeed() > 0.01F)
+     {	
+     	float verSPDlimit = cvt(this.FM.getVertSpeed(), 1.0F, 10.0F, 1.0F, 0.95F);
+     	localVector3d.z *= verSPDlimit;
+//     	HUD.log(AircraftHotKeys.hudLogWeaponId, "vert: " + verSPDlimit);
+     	setSpeed(localVector3d);
+     }
+     
+     if((double)super.FM.getSpeedKMH() >= 250D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5 && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
+         FM.Sq.dragParasiteCx += 0.04F;
+     if((double)super.FM.getSpeedKMH() >= 260D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5 && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
+     	FM.Sq.dragParasiteCx += 0.04F;
+     if((double)super.FM.getSpeedKMH() >= 280D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5 && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
+     	FM.Sq.dragParasiteCx += 0.05F;
+     
+     float angleOfattackCx;
+     if(this.FM.getAOA() >= 0.5)
+     	angleOfattackCx = this.FM.getAOA() / 5;
+     else
+     	angleOfattackCx = 0;
+     FM.Sq.dragParasiteCx += angleOfattackCx;
+
+   }
+    
     public void update(float f)
     {
-    	if((super.FM instanceof RealFlightModel) && ((RealFlightModel)super.FM).isRealMode() || !(super.FM instanceof Pilot))
-        {
-    		if(thisWeaponsName.startsWith("VDV Squad") || thisWeaponsName.startsWith("4xUB-32-57+VDV Squad+1x12.7mm") || thisWeaponsName.startsWith("VDV Recon Squad") || thisWeaponsName.startsWith("4xUB-32-57+VDV Recon Squad+1x12.7mm"))
-        	{
-    			Point3d point3d = new Point3d();
-    			float f1 = (float)((double)FM.getAltitude() - World.land().HQ(point3d.x, point3d.y));
-    			if(f1 > 15F && FM.getSpeedKMH() > 15F)
-    			{
-    				FM.CT.BayDoorControl = 0.0F;
-    			}
-        	}
-        }
+    	
     	
         Pilot pilot = (Pilot)FM;
         if((pilot != null) && !Mission.isNet())
@@ -661,152 +928,325 @@ public class MI8MT extends Scheme2a
             hierMesh().chunkSetAngles("Head2_D0", 0.0F, obsLookAzimuth, obsLookElevation);
         }
         super.update(f);
-        if((double)super.FM.getSpeedKMH() >= 280D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-            FM.Sq.dragParasiteCx += 0.03F;
-        if((double)super.FM.getSpeedKMH() >= 280D && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-        	FM.Sq.dragParasiteCx += 0.03F;
-        if((double)super.FM.getSpeedKMH() >= 290D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-        	FM.Sq.dragParasiteCx += 0.03F;
-        if((double)super.FM.getSpeedKMH() >= 290D && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-        	FM.Sq.dragParasiteCx += 0.03F;
-        if((double)super.FM.getSpeedKMH() >= 310D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5)
-        	FM.Sq.dragParasiteCx += 0.03F;
-        if((double)super.FM.getSpeedKMH() >= 310D && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
-        	FM.Sq.dragParasiteCx += 0.03F;
+
+		if (isAI) {
+			stability();
+		    HUD.log(AircraftHotKeys.hudLogWeaponId, "Eng" + Reflection.getInt(this.FM.EI.engines[0], "type"));
+//			float f1 = this.FM.CT.getAirBrake();
+//			f1 = this.FM.CT.getAileron();
+//			if (Math.abs(this.pictAileron - f1) > 0.01F)
+//				this.pictAileron = f1;
+//			f1 = this.FM.CT.getRudder();
+//			if (Math.abs(this.pictRudder - f1) > 0.01F)
+//				this.pictRudder = f1;
+//			f1 = this.FM.CT.getElevator();
+//			if (Math.abs(this.pictVator - f1) > 0.01F)
+//				this.pictVator = f1;
+//			float f2 = this.FM.EI.getPowerOutput()
+//					* Aircraft.cvt(this.FM.getSpeedKMH(), 0.0F, 600.0F, 2.0F,
+//							0.0F);
+//			if (this.FM.CT.getAirBrake() > 0.5F) {
+//				if (this.FM.Or.getTangage() > 5.0F) {
+//					this.FM.getW().scale(Aircraft.cvt(this.FM.Or.getTangage(), 45.0F, 90.0F, 1.0F, 0.1F));
+//					float f3 = this.FM.Or.getTangage();
+//					if (Math.abs(this.FM.Or.getKren()) > 90.0F)
+//						f3 = 90.0F + (90.0F - f3);
+//					float f4 = f3 - 90.0F;
+//					this.FM.CT.trimElevator = Aircraft.cvt(f4, -20.0F, 20.0F, 0.5F, -0.5F);
+//					f4 = this.FM.Or.getKren();
+//					if (Math.abs(f4) > 90.0F)
+//						if (f4 > 0.0F) {
+//							f4 = 180.0F - f4;
+//						} else
+//							f4 = -180.0F - f4;
+//					this.FM.CT.trimAileron = Aircraft.cvt(f4, -20.0F, 20.0F, 0.5F, -0.5F);
+//					this.FM.CT.trimRudder = Aircraft.cvt(f4, -15.0F, 15.0F, 0.04F, -0.04F);
+//				}
+//			} else {
+//				this.FM.CT.trimAileron = 0.0F;
+//				this.FM.CT.trimElevator = 0.0F;
+//				this.FM.CT.trimRudder = 0.0F;
+//			}
+//			this.FM.Or.increment(
+//					f2 * (this.FM.CT.getRudder() + this.FM.CT.getTrimRudderControl()),
+//					f2 * (this.FM.CT.getElevator() + this.FM.CT.getTrimElevatorControl()),
+//					f2 * (this.FM.CT.getAileron() + this.FM.CT.getTrimAileronControl()));
+		} else {
         
+
         double kren = ((FlightModelMain) (super.FM)).Or.getKren();
         double tang = ((FlightModelMain) (super.FM)).Or.getTangage();
-        float aile = ((FlightModelMain) (super.FM)).CT.getAileron() + (float)forceTrim_x;
-        if(aile > 1.0F)
-            aile = 1.0F;
-        if(aile < -1F)
-            aile = -1F;
-        float elev = ((FlightModelMain) (super.FM)).CT.getElevator() + (float)forceTrim_y;
-        if(elev > 1.0F)
-            elev = 1.0F;
-        if(elev < -1F)
-            elev = -1F;
+        /*Code above not used now, will be used for autopilot*/
+        
+        
+        /** aile = aileron deflection for flightmodel*/
+        /*  the two if's below it ensure it is within <-1;1>, forceTrim_x acts to basicaly re-center the cyclic*/
+        float aile/*kren*/ = ((FlightModelMain) (super.FM)).CT.getAileron() + (float) forceTrim_x /*+ ((FlightModelMain) (super.FM)).CT.getTrimAileronControl()*/;
+        //kren *= 35F;
+        if(aile>1)aile=1;
+        if(aile<-1)aile=-1;
+        
+        /** similar for elevator*/
+        float elev/*tang*/ = ((FlightModelMain) (super.FM)).CT.getElevator() + (float) forceTrim_y /*+ ((FlightModelMain) (super.FM)).CT.getTrimElevatorControl()*/;
+        if(elev>1)elev=1;
+        if(elev<-1)elev=-1;
+        //tang -= 0.05F;
+        //tang *= tang >= 0.0F ? 35F : 50F;
+        
+        /** anti-torque*/
+        /*  does not have force trim yet*/
         float rudd = ((FlightModelMain) (super.FM)).CT.getRudder() + ((FlightModelMain) (super.FM)).CT.getTrimRudderControl();
-        if(rudd > 1.0F)
-        	rudd = 1.0F;
-        if(rudd < -1F)
-        	rudd = -1F;
-        if(getTrim)
+
+        /*trim setting code*/
+        if(getTrim) /*getTrim goes true if Aux=20 is pressed*/
         {
-            forceTrim_x = aile;
-            forceTrim_y = elev;
-            forceTrim_z = rudd;
-            getTrim = false;
-        }
-        double Wx = ((Tuple3d) (super.FM.getW())).x;
-        double Wy = ((Tuple3d) (super.FM.getW())).y;
-        double Wz = ((Tuple3d) (super.FM.getW())).z;
-        double AWx = ((Tuple3d) (super.FM.getAW())).x;
-        double AWy = ((Tuple3d) (super.FM.getAW())).y;
-        double AWz = ((Tuple3d) (super.FM.getAW())).z;
+        forceTrim_x=aile; /*inserts current aile value - that is, already re-centered by the force trim*/
+        forceTrim_y=elev; /*similar for elev*/
+        getTrim=false; /*sets the getTrim condition false so it stops after first cycle*/
+        };
+        
+
+        /**Angular speeds and accelerations*/
+        double Wx = ((FlightModelMain)(super.FM)).getW().x;
+        double Wy = ((FlightModelMain)(super.FM)).getW().y;
+        double Wz = ((FlightModelMain)(super.FM)).getW().z;
+        
+
+        double AWx = ((FlightModelMain)(super.FM)).getAW().x;
+        double AWy = ((FlightModelMain)(super.FM)).getAW().y;
+        double AWz = ((FlightModelMain)(super.FM)).getAW().z;
+        
+        
+        
+        /**collective is being read here*/
+        /* it is an average of both pitch axes*/
         float aPitch = (((FlightModelMain) (super.FM)).EI.engines[0].getControlProp() + ((FlightModelMain) (super.FM)).EI.engines[1].getControlProp()) / 2.0F;
-        float aThrottle = (((FlightModelMain) (super.FM)).EI.engines[0].getControlThrottle() + ((FlightModelMain) (super.FM)).EI.engines[1].getControlThrottle()) / 2.0F;
-        float aThrust = (((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() + ((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput()) / 2.0F;
-        Vector3d vFlow = super.FM.getVflow();
-        double sinkRate = ((Tuple3d) (vFlow)).z;
-        float airDensity = Atmosphere.density((float)((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z);
-        double rotorSurface = 30D;
-        double rotorSurface_cyclic = 10D;
-        double tailRotorSurface = 1.3500000000000001D;
-        double rotorCy = 4.3D;
-        double rotorCx = 0.0014D;
-        double rotorCx_dyn = 0.00050000000000000001D;
-        double rotorLineCx = 0.00050000000000000001D * (double)(aPitch * aPitch * 15F * 15F);
-        double tailRotorLineCx = 0.00050000000000000001D * (double)(rudd * rudd * 5F * 5F);
-        double rotorCyDyn_0 = 0.17999999999999999D;
-        double rotorCyDyn_line = 0.089999999999999997D;
-        double rotorDiameter = 17.300000000000001D;
-        double tailRotorDiameter = 4D;
-        double rotorRPM_max = 4D;
-        double rotorRPM = (double)aThrust * rotorRPM_max;
-        double hubDirection_x = Math.toRadians(0.0D);
-        double hubDirection_y = Math.toRadians(5D);
-        double rotorHeight = 2D;
-        double rotorSpeed = 6.2831853071795862D * (rotorDiameter / 2D) * 0.5D * rotorRPM;
-        double autoPitch = PitchAuto(-Wy);
-        double autoRoll = RollAuto(Wx);
-        double d_hubDirection_x = Math.toRadians(-((double)aile + autoRoll) * 2D);
-        double d_hubDirection_y = Math.toRadians(((double)elev + autoPitch) * 5D);
-        double rotorLift_dyn = 0.5D * (rotorCyDyn_0 + rotorCyDyn_line * 13D * (double)aPitch) * rotorSurface * (double)airDensity * rotorSpeed * rotorSpeed;
-        double rotorLift_moment_z = 0.5D * (rotorCx + rotorLineCx) * rotorSurface * (double)airDensity * rotorSpeed * rotorSpeed;
-        double rotorLift_moment_y = -(rotorDiameter / 2D) * 0.5D * 0.5D * (rotorCyDyn_line * 5D * ((double)elev + autoPitch)) * rotorSurface_cyclic * (double)airDensity * rotorSpeed * rotorSpeed;
-        double rotorLift_moment_x = (rotorDiameter / 2D) * 0.5D * 0.5D * (rotorCyDyn_line * 3D * ((double)aile + autoRoll)) * rotorSurface_cyclic * (double)airDensity * rotorSpeed * rotorSpeed;
-        rotorLift_moment_y += rotorLift_dyn * (rotorHeight * d_hubDirection_y);
-        rotorLift_moment_x += rotorLift_dyn * (rotorHeight * d_hubDirection_x);
-        double tailRotorSpeed = (6.2831853071795862D * (tailRotorDiameter / 2D) * 0.5D * (double)aThrust * 1112D) / 60D;
-        double tailRotorLift_dyn = 0.5D * (rotorCyDyn_line * 10D * (double)rudd) * (double)airDensity * tailRotorSpeed * tailRotorSpeed;
-        double tailRotorLift_moment_y = (tailRotorDiameter / 2D) * 0.5D * 0.5D * (rotorCx + tailRotorLineCx) * tailRotorSurface * (double)airDensity * tailRotorSpeed * tailRotorSpeed;
-        double tailRotorLift_moment_z = tailRotorLift_dyn * 10D;
-        double rotateSpeed_z = Wz * (rotorDiameter / 2D) * 0.5D;
-        double rotateSpeed_y = Wy * (rotorDiameter / 2D) * 0.5D;
-        double rotateSpeed_x = Wx * (rotorDiameter / 2D) * 0.5D;
-        double inertia_x = (double)(-((FlightModelMain) (super.FM)).M.getFullMass()) * (AWx * 0.0D * 0.033000000000000002D + Wx * 0.0D) * 3D * 3D;
-        double inertia_y = (double)(-((FlightModelMain) (super.FM)).M.getFullMass()) * (AWy * 0.0D * 0.033000000000000002D + Wy * 0.0D) * 17D * 17D;
-        double inertia_z = (double)(-((FlightModelMain) (super.FM)).M.getFullMass()) * (AWz * 0.0D * 0.033000000000000002D + Wz * 0.0D) * 17D * 17D;
-        double balanceMoment_x = (rotorDiameter / 2D) * 0.5D * rotateSpeed_x * rotateSpeed_x * (rotorSurface + 6.4000000000000004D) * (double)airDensity * rotorCy * 0.5D;
-        if(rotateSpeed_x < 0.0D)
-            balanceMoment_x = 0.0D - balanceMoment_x;
-        double balanceMoment_y = (rotorDiameter / 2D) * 0.5D * rotateSpeed_y * rotateSpeed_y * rotorSurface * (double)airDensity * rotorCy * 0.5D;
-        if(rotateSpeed_y < 0.0D)
-            balanceMoment_y = 0.0D - balanceMoment_y;
-        double balanceMoment_z = 10D * rotateSpeed_z * rotateSpeed_z * tailRotorSurface * (double)airDensity * rotorCy * 0.5D;
-        if(rotateSpeed_z < 0.0D)
-            balanceMoment_z = 0.0D - balanceMoment_z;
-        double G = 9.8100000000000005D * (double)((FlightModelMain) (super.FM)).M.getFullMass();
-        double balanceMoment_G_x = 0.0D;
-        double balanceMoment_G_y = 0.0D;
-        double balanceMoment_G_z = 0.0D;
+        /*Added this for later use ---^*/
+//        vThrust.set(0.0F, 0.0F, /*(1.0F+aPitch)/2*/1F);
+//        oMainRotor.set(0.0F, tang, kren);
+//        oMainRotor.transform(vThrust);
+//        ((FlightModelMain) (super.FM)).EI.engines[0].setVector(vThrust);
+//        ((FlightModelMain) (super.FM)).EI.engines[1].setVector(vThrust);
+        /**throttle not used now*/
+//        float aThrottle = (((FlightModelMain) (super.FM)).EI.engines[0].getControlThrottle() + ((FlightModelMain) (super.FM)).EI.engines[1].getControlThrottle()) / 2.0F;
+        float Engine1rpm = Aircraft.cvt(((FlightModelMain) (super.FM)).EI.engines[0].getRPM(), 0.0F, 12500F, 0.0F, 1.0F);
+        float Engine2rpm = Aircraft.cvt(((FlightModelMain) (super.FM)).EI.engines[1].getRPM(), 0.0F, 12500F, 0.0F, 1.0F);
+        //        float aThrottle = (Engine1rpm + Engine2rpm) / 2.0F;
+        		
+        float aThrottle = (float) Math.sqrt((Math.pow(Engine1rpm, 2.0F) + Math.pow(Engine2rpm, 2.0F)) / 2.0F);
+        
+//    	HUD.log(AircraftHotKeys.hudLogWeaponId, "PropAOA: " + ((FlightModelMain) (super.FM)).EI.engines[0].getPropAoA());
+//        HUD.log(AircraftHotKeys.hudLogWeaponId, "Engine rpm: " + aThrottle);
+    	
+        /**only thrust is, to set the rotor RPM (again, an average)*/
+        /**rotor RPM code is simplified and is directly controled by
+         * thrust, I wanted to add a full rotor RPM code,
+         * giving the rotor certain inertia etc, + enabling autorotation
+         * but that is not implemented yet*/
+//        float aThrust = (((FlightModelMain) (super.FM)).EI.engines[0].getThrustOutput() + ((FlightModelMain) (super.FM)).EI.engines[1].getThrustOutput()) / 2.0F;
+        float aThrust = aThrottle;
+
+        /**helicopter speeds are loaded into vFlow*/
+        Vector3d vFlow;
+		vFlow=((FlightModelMain)(super.FM)).getVflow();
+		double sinkRate = vFlow.z;
+		
+		/*old debug HUD.log*/
+		//HUD.log(AircraftHotKeys.hudLogWeaponId, "sinkRate" + sinkRate);
+		float airDensity = Atmosphere.density((float)((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z);
         float antiSinkForce;
-        if(sinkRate >= 0.0D)
-            antiSinkForce = -(float)(0.5D * rotorCy * rotorSurface * (double)airDensity * sinkRate * sinkRate);
-        else
-            antiSinkForce = (float)(0.5D * rotorCy * rotorSurface * (double)airDensity * sinkRate * sinkRate);
         float headOnForce;
-        double dragMoment_y;
-        if(((Tuple3d) (vFlow)).x >= 0.0D)
-        {
-            headOnForce = -(float)(0.5D * (rotorCx + rotorLineCx) * rotorSurface * (double)airDensity * ((Tuple3d) (vFlow)).x * ((Tuple3d) (vFlow)).x);
-            dragMoment_y = -2D * (0.5D * (rotorCx + rotorLineCx) * rotorSurface * (double)airDensity * ((Tuple3d) (vFlow)).x * ((Tuple3d) (vFlow)).x);
-        } else
-        {
-            headOnForce = (float)(0.5D * (rotorCx + rotorLineCx) * rotorSurface * (double)airDensity * ((Tuple3d) (vFlow)).x * ((Tuple3d) (vFlow)).x);
-            dragMoment_y = 2D * (0.5D * (rotorCx + rotorLineCx) * rotorSurface * (double)airDensity * ((Tuple3d) (vFlow)).x * ((Tuple3d) (vFlow)).x);
-        }
         float sideForce;
         float tailRotorMoment;
-        double dragMoment_x;
-        if(((Tuple3d) (vFlow)).y >= 0.0D)
-        {
-            sideForce = -(float)(0.5D * (rotorCx + rotorLineCx + 1.0D) * rotorSurface * (double)airDensity * ((Tuple3d) (vFlow)).y * ((Tuple3d) (vFlow)).y);
-            tailRotorMoment = (float)(0.5D * rotorCy * tailRotorSurface * (double)airDensity * ((Tuple3d) (vFlow)).y * ((Tuple3d) (vFlow)).y) * 10F;
-            dragMoment_x = 2D * (0.5D * (rotorCx + rotorLineCx) * rotorSurface * (double)airDensity * ((Tuple3d) (vFlow)).y * ((Tuple3d) (vFlow)).y);
-        } else
-        {
-            sideForce = (float)(0.5D * (rotorCx + rotorLineCx + 1.0D) * rotorSurface * (double)airDensity * ((Tuple3d) (vFlow)).y * ((Tuple3d) (vFlow)).y);
-            tailRotorMoment = -(float)(0.5D * rotorCy * tailRotorSurface * (double)airDensity * ((Tuple3d) (vFlow)).y * ((Tuple3d) (vFlow)).y) * 10F;
-            dragMoment_x = -2D * (0.5D * (rotorCx + rotorLineCx) * rotorSurface * (double)airDensity * ((Tuple3d) (vFlow)).y * ((Tuple3d) (vFlow)).y);
-        }
-        double rotorLift_3D_x = Math.sin(hubDirection_y - d_hubDirection_y) * Math.cos(hubDirection_x + d_hubDirection_x) * rotorLift_dyn;
-        double rotorLift_3D_y = Math.sin(hubDirection_x + d_hubDirection_x) * rotorLift_dyn;
-        double rotorLift_3D_z = Math.cos(hubDirection_y - d_hubDirection_y) * Math.cos(hubDirection_x + d_hubDirection_x) * rotorLift_dyn;
-        ((FlightModelMain) (super.FM)).producedAF.x += (double)headOnForce + rotorLift_3D_x;
-        ((FlightModelMain) (super.FM)).producedAF.y += (double)sideForce + rotorLift_3D_y;
-        ((FlightModelMain) (super.FM)).producedAF.z += (double)antiSinkForce + rotorLift_3D_z;
-        ((FlightModelMain) (super.FM)).producedAM.x += (dragMoment_x - balanceMoment_x) + rotorLift_moment_x;
-        ((FlightModelMain) (super.FM)).producedAM.y += ((dragMoment_y + tailRotorLift_moment_y) - balanceMoment_y) + rotorLift_moment_y;
-        ((FlightModelMain) (super.FM)).producedAM.z += ((double)tailRotorMoment - tailRotorLift_moment_z - balanceMoment_z) + rotorLift_moment_z;
-        rotateSpeed_z = 0.0D;
-        rotateSpeed_y = 0.0D;
-        rotateSpeed_x = 0.0D;
-        headOnForce = 0.0F;
-        sideForce = 0.0F;
+        double rotorSurface = 20/*235*/;  //surface of main rotor
+        double rotorSurface_cyclic = 10;//13.183; 
+        /*(above) surface of main rotor that acts when cyclic is engaged
+         * the whole rotor changes AoA by a sine function around the rotor trajectory
+         * so when averaged out, it is roughly equal to full deflection being applied to half of the rotor surface*/
+        double tailRotorSurface =1.35;  //surface of tail rotor
+        double rotorCy = 1.3;           //drag coefficient for speeds perpendicular to rotors (sinking, rotation around vertical axis)
         
-//        FM.producedAF.z += aPitch * 40000;
+
+        
+        double rotorCx = 0.002;         //drag for flow paralel to the rotors (rotor rotation, helicopter going forward/sideways, rotation around y axis)
+        
+        double rotorLineCx = 0.0006 * ((aPitch) * (aPitch) * 10 * 10); //increase over rotorCx when higher pitch (collective) is applied
+        double tailRotorLineCx = 0.0006 * ((rudd) * (rudd) * 10 * 10); //similar for anti-torque
+        double rotorCyDyn_0 = 0.18;         //actual lift coefficient for 0 AoA of rotor blades (used for both main rotor and tail rotor)
+        double rotorCyDyn_line = 0.09;      //linear increase with higher pitch angle of rotor blades
+        double rotorDiameter = 17.3;        //main rotor diameter, used for rotor speed calculation
+        double tailRotorDiameter = 4;       //same for tail rotor
+        double rotorRPM_max = 240;            //main rotor max RPM for the simplified code
+        double rotor_tailRPM_max=1112;        //tail rotor max RPM
+        double rotorRPM = (aThrust*rotorRPM_max/60)*(1-(aPitch*0.05));   
+        /*max thrust is 1.0, meaning if thrust is max, revolutions are max too
+         * it is impossible to fly the helicopter on one engine now, because the thrust value is average!
+         * I should have done some square (or square root) average instead*/
+        /*the RPM get decreased at higher collective*/
+        double hubDirection_x = Math.toRadians(0);
+        double hubDirection_y = Math.toRadians(5);
+        /*default rotur hub direction, now 5° forward*/
+        
+        double rotorHeight = 2;  //height of hub above the CG, important for drag moments
+        
+        double rotorSpeed = 2*Math.PI*(rotorDiameter/2)*0.66*rotorRPM;  //finally, rotor speed
+        /**the rotor speed can be summed up to single speed (it changes with distance from center of rotation)*/
+        /*this speed is equivalent to speed at two thirds of the radius from the center*/
+
+    	
+        /**Autopilot code is calculated at this point**/
+        /* it only reacts to angular speed at the moment*/
+        /* the only purpose now is to prevent over-rolling*/
+        /* the code itself is above Update*/
+        double autoPitch = PitchAuto(-Wy);   
+        double autoRoll = RollAuto (Wx);
+        
+
+        /**hub direction change (as difference to original position, not final value)*/
+        
+        double d_hubDirection_x = Math.toRadians(-(aile+autoRoll)*2);
+        double d_hubDirection_y = Math.toRadians((elev+autoPitch)*5);
+        
+        
+        
+        /**L I F T S   A N D   D R A G S*/
+        
+        
+        /*main rotor lift*/
+        /**All come from
+         * (1/2).C.S.ro.V^2*/
+        /*C varies depending on deflection angles, S on rotor, V on RPM, ro = air density*/
+        double rotorLift_dyn = 0.5 * (rotorCyDyn_0+ rotorCyDyn_line * 10 * aPitch) * rotorSurface * airDensity * rotorSpeed * rotorSpeed;
+        /*torque created by rotor drag*/
+        double rotorLift_moment_z = 0.5 * (rotorCx+rotorLineCx) * rotorSurface * airDensity * rotorSpeed * rotorSpeed;
+        /*rotation moments*/
+        double rotorLift_moment_y = -(rotorDiameter/2)*0.5 * 0.5 * (rotorCyDyn_line * 5 * (elev+autoPitch)) * rotorSurface_cyclic * airDensity * rotorSpeed * rotorSpeed;
+        double rotorLift_moment_x = (rotorDiameter/2)*0.5 * 0.5 * (rotorCyDyn_line * 3 * (aile+autoRoll)) * rotorSurface_cyclic * airDensity * rotorSpeed * rotorSpeed;
+        
+        
+        /*additional moment created by hub tilting*/
+        rotorLift_moment_y += rotorLift_dyn*(rotorHeight*Math.sin(d_hubDirection_y));
+        rotorLift_moment_x += rotorLift_dyn*(rotorHeight*Math.sin(d_hubDirection_x));
+        
+        
+        /*the 2/3 radius speed on tail rotor*/
+        double tailRotorSpeed = 2*Math.PI*(tailRotorDiameter/2)*0.66*aThrust*rotor_tailRPM_max/60;
+        
+        /*lift for anti-torque*/
+        double tailRotorLift_dyn = 0.5*(rotorCyDyn_line * 10 * rudd) * airDensity * tailRotorSpeed * tailRotorSpeed;
+        /*torque around Y axis*/
+        double tailRotorLift_moment_y = 0.5*(tailRotorDiameter/2)*0.66 /*it acts 2/3 from center of rotation*/ * (rotorCx+tailRotorLineCx) * tailRotorSurface * airDensity * tailRotorSpeed * tailRotorSpeed;
+        /*transfering the tailRotorLift_dyn into actual moment*/
+        double tailRotorLift_moment_z = tailRotorLift_dyn*10;
+        
+        
+        
+        
+        /**just declarations*/
+        double dragMoment_x;
+        double dragMoment_y;
+        
+        //super.update(f);
+        
+        double rotateSpeed_x;
+        double rotateSpeed_y;
+        double rotateSpeed_z;
+        
+        
+        
+        rotateSpeed_z = (Wz*(rotorDiameter/2)*0.5);
+        
+        rotateSpeed_y = (Wy*(rotorDiameter/2)*0.5);
+        
+        rotateSpeed_x = (Wx*(rotorDiameter/2)*0.5);
+        
+        double inertia_x = -((FlightModelMain) (super.FM)).M.getFullMass()*(AWx*(1/2)*0.033+Wx*(1/2))*3*3;
+        double inertia_y = -((FlightModelMain) (super.FM)).M.getFullMass()*(AWy*(1/12)*0.033+Wy*(1/12))*17*17;
+        double inertia_z = -((FlightModelMain) (super.FM)).M.getFullMass()*(AWz*(1/12)*0.033+Wz*(1/12))*17*17;
+        
+        
+        /*these moments are caused by flow perpendicular to rotor blades as a helicopter rotates*/
+        double balanceMoment_x = (rotorDiameter/2)*0.66*rotateSpeed_x*rotateSpeed_x*rotorSurface*airDensity*rotorCy*0.5;
+        if(rotateSpeed_x<0){balanceMoment_x = 0-balanceMoment_x;};
+        double balanceMoment_y = (rotorDiameter/2)*0.66*rotateSpeed_y*rotateSpeed_y*rotorSurface*airDensity*rotorCy*0.5;
+        if(rotateSpeed_y<0){balanceMoment_y = 0-balanceMoment_y;};
+        double balanceMoment_z = 10*rotateSpeed_z*rotateSpeed_z*tailRotorSurface*airDensity*rotorCy*0.5;
+        if(rotateSpeed_z<0){balanceMoment_z = 0-balanceMoment_z;};
+        
+
+        /**this originally served to level the helicopter, it will be later used for autopilot code*/
+        // G = 9.81 * ((FlightModelMain) (super.FM)).M.getFullMass();
+        //double balanceMoment_G_x =0;// -Math.cos(Math.toRadians(tang))*G * (2*Math.sin(Math.toRadians(kren)));
+        
+        //double balanceMoment_G_y =0;// Math.cos(Math.toRadians(kren))*G * (/*Math.sqrt(4.25)*/2*Math.sin(Math.toRadians(/*14+*/tang)));
+        //double balanceMoment_G_z =0;// Math.sin(Math.toRadians(kren))*G * (/*Math.sqrt(4.25)*/0*Math.sin(Math.toRadians(/*14+*/tang)));
+        
+        if(sinkRate>=0){
+        antiSinkForce = -(float) (rotorCy * rotorSurface * airDensity * sinkRate * sinkRate);
+        } /*force caused by flow perpendicular to rotor as helicopter sinks (or climbs)*/
+        else
+        {
+        	antiSinkForce = (float) (rotorCy * rotorSurface * airDensity * sinkRate * sinkRate);
+        };
+        
+        /**drag caused by flow in X axis on the main rotor*/
+        /*it also produces a moment around Y axis*/
+        
+        /**These are all multiplied by 2 to better simulate:
+         * loss of AoA when going up/down
+         * dihedral of the rotor
+         * fuselage drag*/
+        if(vFlow.x>=0){
+            headOnForce = -(float) ((rotorCx+rotorLineCx) * rotorSurface * airDensity * vFlow.x * vFlow.x);
+            dragMoment_y =  -(float) 2*((rotorCx+rotorLineCx) * rotorSurface * airDensity * vFlow.x * vFlow.x);
+            }
+            else
+            {
+            	headOnForce = (float) ((rotorCx+rotorLineCx) * rotorSurface * airDensity * vFlow.x * vFlow.x);
+            	dragMoment_y =  (float) 2*((rotorCx+rotorLineCx) * rotorSurface * airDensity * vFlow.x * vFlow.x);
+            };
+         /**similar*/
+            if(vFlow.y>=0){
+                sideForce = -(float) ((rotorCx+rotorLineCx+1) * rotorSurface * airDensity * vFlow.y * vFlow.y);
+                tailRotorMoment = (float) (rotorCy * tailRotorSurface * airDensity * vFlow.y * vFlow.y)*10;
+                dragMoment_x =  (float) 2*((rotorCx+rotorLineCx) * rotorSurface * airDensity * vFlow.y * vFlow.y);
+                }
+                else
+                {
+                	sideForce = (float) ((rotorCx+rotorLineCx+1) * rotorSurface * airDensity * vFlow.y * vFlow.y);
+                	tailRotorMoment = -(float) (rotorCy * tailRotorSurface * airDensity * vFlow.y * vFlow.y)*10;
+                	dragMoment_x =  -(float) 2*((rotorCx+rotorLineCx) * rotorSurface * airDensity * vFlow.y * vFlow.y);
+                };
+                
+            /** code distributing lift forces into all three axes as the hub rotates*/
+                /*(hubDirection_x+d_hubDirection_x) sums up default direction and direction difference*/
+              double rotorLift_3D_x = Math.sin(hubDirection_y-d_hubDirection_y)*Math.cos(hubDirection_x+d_hubDirection_x)*rotorLift_dyn;
+              double rotorLift_3D_y = Math.sin(hubDirection_x+d_hubDirection_x)*rotorLift_dyn;
+              double rotorLift_3D_z = Math.cos(hubDirection_y-d_hubDirection_y)*Math.cos(hubDirection_x+d_hubDirection_x)*rotorLift_dyn;
+                
+                
+        /**all forces and moments summed up and added to base flight model*/
+              
+              float antiLiftForce;
+              if(sinkRate >= 1.0D)
+              	antiLiftForce = (float)(0.5D * rotorCy * rotorSurface * (double)airDensity * sinkRate * sinkRate) * 20;
+              else
+              	antiLiftForce = 0;
+              
+              this.FM.producedAF.x += headOnForce+rotorLift_3D_x;
+              this.FM.producedAF.y += sideForce+rotorLift_3D_y;
+              this.FM.producedAF.z += antiSinkForce+rotorLift_3D_z-antiLiftForce;
+              this.FM.producedAM.x += dragMoment_x - balanceMoment_x + rotorLift_moment_x;
+              this.FM.producedAM.y += dragMoment_y + tailRotorLift_moment_y - balanceMoment_y + rotorLift_moment_y;
+              this.FM.producedAM.z += tailRotorMoment - tailRotorLift_moment_z - balanceMoment_z + rotorLift_moment_z;
+        
+        //HUD.log(AircraftHotKeys.hudLogWeaponId, "III: " + rotorMainLift_III + ";   IV: " + rotorMainLift_IV);
+              
+        rotateSpeed_z = 0;
+        rotateSpeed_y = 0;
+        rotateSpeed_x = 0;
+        headOnForce = 0;
+        sideForce = 0;
         
         
         Vector3d localVector3d = new Vector3d();
@@ -819,26 +1259,49 @@ public class MI8MT extends Scheme2a
         	localVector3d.z *= 0.9D;
         	setSpeed(localVector3d);
         }
+        if (this.FM.getVertSpeed() > 0.01F)
+        {
+        	
+        	float verSPDlimit = cvt(this.FM.getVertSpeed(), 1.0F, 10.0F, 1.0F, 0.95F);
+        	localVector3d.z *= verSPDlimit;
+//        	HUD.log(AircraftHotKeys.hudLogWeaponId, "vert: " + verSPDlimit);
+        	setSpeed(localVector3d);
+        }
+        
+        if((double)super.FM.getSpeedKMH() >= 250D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5 && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
+            FM.Sq.dragParasiteCx += 0.04F;
+        if((double)super.FM.getSpeedKMH() >= 260D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5 && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
+        	FM.Sq.dragParasiteCx += 0.04F;
+        if((double)super.FM.getSpeedKMH() >= 280D && ((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 5 && ((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 5)
+        	FM.Sq.dragParasiteCx += 0.05F;
+        
+        float angleOfattackCx;
+        if(this.FM.getAOA() >= 0.5)
+        	angleOfattackCx = this.FM.getAOA() / 5;
+        else
+        	angleOfattackCx = 0;
+        FM.Sq.dragParasiteCx += angleOfattackCx;
+        }
+
+        	
+
+        
+//        HUD.log(AircraftHotKeys.hudLogWeaponId, "drag: " + FM.Sq.dragParasiteCx);
     }
     
     public double PitchAuto(double p)
     {
-        p = -(p * 4D);
-        if(p >= 0.20000000000000001D)
-            p = 0.20000000000000001D;
-        if(p <= -0.20000000000000001D)
-            p = -0.20000000000000001D;
-        return p;
+    	p = -(p*4);
+    	if(p>=0.2)p=0.2;
+    	if(p<=-0.2)p=-0.2;
+    	return p;
     }
-
     public double RollAuto(double k)
     {
-        k = -(k * 4D);
-        if(k >= 0.20000000000000001D)
-            k = 0.20000000000000001D;
-        if(k <= -0.20000000000000001D)
-            k = -0.20000000000000001D;
-        return k;
+    	k = -(k*4);
+    	if(k>=0.2)k=0.2;
+    	if(k<=-0.2)k=-0.2;
+    	return k;
     }
     
     public void auxPressed(int i)
@@ -891,7 +1354,10 @@ public class MI8MT extends Scheme2a
         return f1 >= -3.1F || f1 <= -4.6F;
     }
 
-
+    private float rotorRPM;
+    
+    private boolean isAI;
+    
     private int obsLookTime;
     private float obsLookAzimuth;
     private float obsLookElevation;
@@ -925,6 +1391,24 @@ public class MI8MT extends Scheme2a
     public double forceTrim_y;
     public double forceTrim_z;
     public boolean getTrim;
+    
+    private boolean bRadarWarning;
+    private boolean hasChaff;
+    private boolean hasFlare;
+    private long lastChaffDeployed;
+    private long lastFlareDeployed;
+    private long lastCommonThreatActive;
+    private long intervalCommonThreat;
+    private long lastRadarLockThreatActive;
+    private long intervalRadarLockThreat;
+    private long lastMissileLaunchThreatActive;
+    private long intervalMissileLaunchThreat;
+    
+    private float pictVBrake;
+    private float pictAileron;
+    private float pictVator;
+    private float pictRudder;
+    private float pictBlister;
 
     static 
     {
@@ -935,7 +1419,8 @@ public class MI8MT extends Scheme2a
         Property.set(class1, "PaintScheme", new PaintSchemeFMPar05());
         Property.set(class1, "yearService", 1950F);
         Property.set(class1, "yearExpired", 1960.5F);
-        Property.set(class1, "FlightModel", "FlightModels/Mi-24V.fmd:HIND");
+        Property.set(class1, "FlightModel", "FlightModels/Mi-8.fmd:MI");
+
         Property.set(class1, "cockpitClass", new Class[] {
             com.maddox.il2.objects.air.CockpitMi8.class, 
             com.maddox.il2.objects.air.CockpitMi8_TGunner.class
@@ -968,10 +1453,10 @@ public class MI8MT extends Scheme2a
             s = "2xUB-32-57";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[1] = null;
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[8] = new Aircraft._WeaponSlot(1, "RocketGunS5M", 32);
-            a_lweaponslot[9] = new Aircraft._WeaponSlot(1, "RocketGunS5M", 32);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[8] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
+            a_lweaponslot[9] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
             arraylist.add(s);
@@ -979,14 +1464,14 @@ public class MI8MT extends Scheme2a
             s = "4xUB-32-57";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[1] = null;
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[6] = new Aircraft._WeaponSlot(1, "RocketGunS5M", 32);
-            a_lweaponslot[7] = new Aircraft._WeaponSlot(1, "RocketGunS5M", 32);
-            a_lweaponslot[8] = new Aircraft._WeaponSlot(1, "RocketGunS5M", 32);
-            a_lweaponslot[9] = new Aircraft._WeaponSlot(1, "RocketGunS5M", 32);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[6] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
+            a_lweaponslot[7] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
+            a_lweaponslot[8] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
+            a_lweaponslot[9] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
             arraylist.add(s);
@@ -995,10 +1480,10 @@ public class MI8MT extends Scheme2a
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[0] = new Aircraft._WeaponSlot(10, "MGunDHK", 500);
             a_lweaponslot[1] = null;
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[8] = new Aircraft._WeaponSlot(1, "RocketGunS5M", 32);
-            a_lweaponslot[9] = new Aircraft._WeaponSlot(1, "RocketGunS5M", 32);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[8] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
+            a_lweaponslot[9] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
             arraylist.add(s);
@@ -1007,14 +1492,14 @@ public class MI8MT extends Scheme2a
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[0] = new Aircraft._WeaponSlot(10, "MGunDHK", 500);
             a_lweaponslot[1] = null;
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[6] = new Aircraft._WeaponSlot(1, "RocketGunS5M", 32);
-            a_lweaponslot[7] = new Aircraft._WeaponSlot(1, "RocketGunS5M", 32);
-            a_lweaponslot[8] = new Aircraft._WeaponSlot(1, "RocketGunS5M", 32);
-            a_lweaponslot[9] = new Aircraft._WeaponSlot(1, "RocketGunS5M", 32);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[6] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
+            a_lweaponslot[7] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
+            a_lweaponslot[8] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
+            a_lweaponslot[9] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
             arraylist.add(s);
@@ -1045,17 +1530,17 @@ public class MI8MT extends Scheme2a
             a_lweaponslot[1] = null;
             a_lweaponslot[8] = new Aircraft._WeaponSlot(3, "BombGunFAB250m46", 1);
             a_lweaponslot[9] = new Aircraft._WeaponSlot(3, "BombGunFAB250m46", 1);
-            a_lweaponslot[6] = new Aircraft._WeaponSlot(1, "RocketGunS5M", 32);
-            a_lweaponslot[7] = new Aircraft._WeaponSlot(1, "RocketGunS5M", 32);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
+            a_lweaponslot[6] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
+            a_lweaponslot[7] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "VDV Squad";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[1] = new Aircraft._WeaponSlot(3, "BombGunVDVAKS", 1);
+            a_lweaponslot[1] = new Aircraft._WeaponSlot(3, "BombGunVDVAKS", 24);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
 //            a_lweaponslot[12] = new Aircraft._WeaponSlot(3, "BombGunVDVRPG", 2);
@@ -1064,15 +1549,15 @@ public class MI8MT extends Scheme2a
             s = "4xUB-32-57+VDV Squad+1x12.7mm";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[0] = new Aircraft._WeaponSlot(10, "MGunDHK", 500);
-            a_lweaponslot[1] = new Aircraft._WeaponSlot(3, "BombGunVDVAKS2", 1);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[6] = new Aircraft._WeaponSlot(1, "CannonRocketSimpleS5M", 32);
-            a_lweaponslot[7] = new Aircraft._WeaponSlot(1, "CannonRocketSimpleS5M", 32);
-            a_lweaponslot[8] = new Aircraft._WeaponSlot(1, "CannonRocketSimpleS5M", 32);
-            a_lweaponslot[9] = new Aircraft._WeaponSlot(1, "CannonRocketSimpleS5M", 32);
+            a_lweaponslot[1] = new Aircraft._WeaponSlot(3, "BombGunVDVAKS", 24);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[6] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
+            a_lweaponslot[7] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
+            a_lweaponslot[8] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
+            a_lweaponslot[9] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
 //            a_lweaponslot[12] = new Aircraft._WeaponSlot(3, "BombGunVDVRPG", 2);
@@ -1089,14 +1574,14 @@ public class MI8MT extends Scheme2a
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             a_lweaponslot[0] = new Aircraft._WeaponSlot(10, "MGunDHK", 500);
             a_lweaponslot[1] = new Aircraft._WeaponSlot(3, "BombGunVDVAKS", 4);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "PylonUB32", 1);
-            a_lweaponslot[6] = new Aircraft._WeaponSlot(1, "CannonRocketSimpleS5M", 32);
-            a_lweaponslot[7] = new Aircraft._WeaponSlot(1, "CannonRocketSimpleS5M", 32);
-            a_lweaponslot[8] = new Aircraft._WeaponSlot(1, "CannonRocketSimpleS5M", 32);
-            a_lweaponslot[9] = new Aircraft._WeaponSlot(1, "CannonRocketSimpleS5M", 32);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(9, "Pylon_B8", 1);
+            a_lweaponslot[6] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
+            a_lweaponslot[7] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
+            a_lweaponslot[8] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
+            a_lweaponslot[9] = new Aircraft._WeaponSlot(1, "RocketGunS8", 20);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(7, "RocketGunFlare", 35);
             arraylist.add(s);

@@ -84,7 +84,7 @@ public class BombVDVAKS extends com.maddox.il2.objects.weapons.Bomb {
 		com.maddox.rts.Property.set(class1, "power", 0.1F);
 		com.maddox.rts.Property.set(class1, "powerType", 0);
 		com.maddox.rts.Property.set(class1, "kalibr", 6.00001F);
-		com.maddox.rts.Property.set(class1, "massa", 75.0F);
+		com.maddox.rts.Property.set(class1, "massa", 100.0F);
 		com.maddox.rts.Property.set(class1, "sound", (Object)null);
 	}
 }

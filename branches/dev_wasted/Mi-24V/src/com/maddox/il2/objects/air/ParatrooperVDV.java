@@ -100,7 +100,7 @@ public class ParatrooperVDV extends ActorMesh
             else
                 turn_para_on_height = 500F + 1500F * ((f - 500F) / 3500F);
             turn_para_on_height*= World.Rnd().nextFloat(1.0F, 1.2F);
-            nRunCycles = World.Rnd().nextInt(6, 12);
+            nRunCycles = World.Rnd().nextInt(6, 18);
             Class class1 = actor.getOwner().getClass();
             Object obj = Property.value(class1, "cockpitClass");
             if(obj != null)
@@ -412,8 +412,13 @@ public class ParatrooperVDV extends ActorMesh
                     }
                     break;
                 }
+                Random randomGenerator = new Random();
+                long rndDst = randomGenerator.nextInt(20);
+                
                 if(l / 733L >= (long)nRunCycles)
                 {
+                	
+//TODO: Insert 
 //                    st = 5;
                     animStartTime = Time.current();
                     EventLog.type("419");
@@ -424,7 +429,6 @@ public class ParatrooperVDV extends ActorMesh
                     Orient orient = new Orient();
                     orient.setYPR(orient.getYaw(), orient.getPitch(), orient.getRoll());
                     
-                    Random randomGenerator = new Random();
                          
                     class1 = com.maddox.il2.objects.vehicles.artillery.ArtilleryWasted.VDVInfantry.class;
                     spawn = (ActorSpawn)Spawn.get(class1.getName());
@@ -940,7 +944,11 @@ public class ParatrooperVDV extends ActorMesh
         loc.get(startOrient);
         faceOrient = new Orient();
         faceOrient.set(startOrient);
-        faceOrient.setYPR(faceOrient.getYaw(), 0.0F, 0.0F);
+        
+        Random randomGenerator = new Random();
+        float rndOr = randomGenerator.nextInt(40);
+        
+        faceOrient.setYPR(faceOrient.getYaw() + rndOr, 0.0F, 0.0F);
         Vector3d vector3d1 = new Vector3d();
         vector3d1.set(1.0D, 0.0D, 0.0D);
         faceOrient.transform(vector3d1);

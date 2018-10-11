@@ -204,27 +204,29 @@ public class CockpitMi24 extends CockpitPilot
 //        super.mesh.chunkSetAngles("leftrudder", 10F * ((FlightModelMain) (super.fm)).CT.getRudder(), 0.0F, 0.0F);
 //        super.mesh.chunkSetAngles("rightrudder", 10F * ((FlightModelMain) (super.fm)).CT.getRudder(), 0.0F, 0.0F);
 //        super.mesh.chunkSetAngles("throttle", 0.0F, -40.909F * interp(setNew.throttle, setOld.throttle, f), 0.0F);
-        super.mesh.chunkSetAngles("Z_RPM1", -cvt(((FlightModelMain) (super.fm)).EI.engines[0].getRPM(), 0.0F, 1665F, 0.0F, 315F), 0.0F, 0.0F);
-        super.mesh.chunkSetAngles("Z_RPM2", -cvt(((FlightModelMain) (super.fm)).EI.engines[1].getRPM(), 0.0F, 1665F, 0.0F, 315F), 0.0F, 0.0F);
+        super.mesh.chunkSetAngles("Z_RPM1", -cvt(((FlightModelMain) (super.fm)).EI.engines[0].getRPM(), 0.0F, 13750F, 0.0F, 346.5F), 0.0F, 0.0F);
+        super.mesh.chunkSetAngles("Z_RPM2", -cvt(((FlightModelMain) (super.fm)).EI.engines[1].getRPM(), 0.0F, 13750F, 0.0F, 346.5F), 0.0F, 0.0F);
         
+        float Engine1rpm = Aircraft.cvt(((FlightModelMain) (super.fm)).EI.engines[0].getRPM(), 0.0F, 12500F, 0.0F, 1.0F);
+        float Engine2rpm = Aircraft.cvt(((FlightModelMain) (super.fm)).EI.engines[1].getRPM(), 0.0F, 12500F, 0.0F, 1.0F);
+        float PropRPM = (float) Math.sqrt((Math.pow(Engine1rpm, 2.0F) + Math.pow(Engine2rpm, 2.0F)) / 2.0F);
+        super.mesh.chunkSetAngles("Z_PropRPM", -cvt(PropRPM, 0.0F, 1.1F, 0.0F, 346.5F), 0.0F, 0.0F);
         
-        float PropRPM = (((FlightModelMain) (super.fm)).EI.engines[1].getRPM() + ((FlightModelMain) (super.fm)).EI.engines[1].getRPM())  / 2F;    
-        super.mesh.chunkSetAngles("Z_PropRPM", -cvt(PropRPM, 0.0F, 1665F, 0.0F, 315F), 0.0F, 0.0F);
+        super.mesh.chunkSetAngles("Z_FUEL", -cvt(((FlightModelMain) (super.fm)).M.fuel, 0.0F, 2500F, 0.0F, 301F), 0.0F, 0.0F);
+        super.mesh.chunkSetAngles("Z_TEMPM1", -cvt(((FlightModelMain) (super.fm)).EI.engines[0].tWaterOut, 0F, 120F, 0.0F, 264F), 0.0F, 0.0F);
+        super.mesh.chunkSetAngles("Z_TEMPM2", -cvt(((FlightModelMain) (super.fm)).EI.engines[1].tWaterOut, 0F, 120F, 0.0F, 264F), 0.0F, 0.0F);
+        super.mesh.chunkSetAngles("Z_TEMPS1", -cvt(((FlightModelMain) (super.fm)).EI.engines[0].tOilOut, 0F, 150F, 0.0F, 120F), 0.0F, 0.0F);
+        super.mesh.chunkSetAngles("Z_TEMPS4", -cvt(((FlightModelMain) (super.fm)).EI.engines[0].tOilOut, 0F, 150F, 0.0F, 120F), 0.0F, 0.0F);
+        super.mesh.chunkSetAngles("Z_TEMPS2", -cvt(((FlightModelMain) (super.fm)).EI.engines[0].tOilOut, 0F, 120F, 0.0F, 120F), 0.0F, 0.0F);
+        super.mesh.chunkSetAngles("Z_TEMPS3", -cvt(((FlightModelMain) (super.fm)).EI.engines[1].tOilOut, 0F, 120F, 0.0F, 120F), 0.0F, 0.0F);
         
-        super.mesh.chunkSetAngles("Z_FUEL", -cvt(((FlightModelMain) (super.fm)).M.fuel, 0.0F, 2100F, 0.0F, 297F), 0.0F, 0.0F);
-        super.mesh.chunkSetAngles("Z_TEMPM1", -cvt(((FlightModelMain) (super.fm)).EI.engines[0].tOilOut, 0F, 120F, 0.0F, 264F), 0.0F, 0.0F);
-        super.mesh.chunkSetAngles("Z_TEMPM2", -cvt(((FlightModelMain) (super.fm)).EI.engines[1].tOilOut, 0F, 120F, 0.0F, 264F), 0.0F, 0.0F);
-        super.mesh.chunkSetAngles("Z_TEMPS1", -cvt(((FlightModelMain) (super.fm)).M.fuel <= 1.0F ? 0.0F : cvt(((FlightModelMain) (super.fm)).EI.engines[0].getRPM(), 0.0F, 3050F, 0.0F, 4F), 0.0F, 5F, 0F, -147F), 0.0F, 0.0F);
-        super.mesh.chunkSetAngles("Z_TEMPS4", -cvt(((FlightModelMain) (super.fm)).M.fuel <= 1.0F ? 0.0F : cvt(((FlightModelMain) (super.fm)).EI.engines[0].getRPM(), 0.0F, 3050F, 0.0F, 4F), 0.0F, 5F, 0F, -147F), 0.0F, 0.0F);
-        super.mesh.chunkSetAngles("Z_TEMPS2", -cvt(((FlightModelMain) (super.fm)).EI.engines[0].tOilOut, 0F, 150F, 0.0F, 147F), 0.0F, 0.0F);
-        super.mesh.chunkSetAngles("Z_TEMPS3", -cvt(((FlightModelMain) (super.fm)).EI.engines[1].tOilOut, 0F, 150F, 0.0F, 147F), 0.0F, 0.0F);
+        super.mesh.chunkSetAngles("Z_TEMPR1", -cvt(((FlightModelMain) (super.fm)).EI.engines[0].tOilOut, 0F, 150F, 0.0F, 120F), 0.0F, 0.0F);
+        super.mesh.chunkSetAngles("Z_TEMPR2", -cvt(((FlightModelMain) (super.fm)).EI.engines[1].tOilOut, 0F, 150F, 0.0F, -120F), 0.0F, 0.0F);
+        super.mesh.chunkSetAngles("Z_TEMPR3", -cvt(((FlightModelMain) (super.fm)).EI.engines[0].tOilOut, 0F, 150F, 0.0F, 120F), 0.0F, 0.0F);
+        super.mesh.chunkSetAngles("Z_TEMPR4", -cvt(((FlightModelMain) (super.fm)).EI.engines[1].tOilOut, 0F, 150F, 0.0F, -120F), 0.0F, 0.0F);
         
-        super.mesh.chunkSetAngles("Z_TEMPR1", -cvt(((FlightModelMain) (super.fm)).EI.engines[0].tOilOut, 0F, 150F, 0.0F, -147F), 0.0F, 0.0F);
-        super.mesh.chunkSetAngles("Z_TEMPR2", -cvt(((FlightModelMain) (super.fm)).EI.engines[1].tOilOut, 0F, 150F, 0.0F, 147F), 0.0F, 0.0F);
-        super.mesh.chunkSetAngles("Z_TEMPR3", -cvt(((FlightModelMain) (super.fm)).EI.engines[0].tOilOut, 0F, 150F, 0.0F, -147F), 0.0F, 0.0F);
-        super.mesh.chunkSetAngles("Z_TEMPR4", -cvt(((FlightModelMain) (super.fm)).EI.engines[1].tOilOut, 0F, 150F, 0.0F, 147F), 0.0F, 0.0F);
-        
-        super.mesh.chunkSetAngles("Z_BladeAng", -cvt(((FlightModelMain) (super.fm)).EI.engines[0].getThrustOutput(), 0.0F, 1.1F, 0.0F, 204F), 0.0F, 0.0F);
+        float aPitch = (((FlightModelMain) (super.fm)).EI.engines[0].getControlProp() + ((FlightModelMain) (super.fm)).EI.engines[1].getControlProp()) / 2.0F;
+        super.mesh.chunkSetAngles("Z_BladeAng", -cvt(aPitch, 0.0F, 1.153F, 0.0F, 204F), 0.0F, 0.0F);
         
         super.mesh.chunkSetAngles("Z_G", -cvt(super.fm.getOverload(), -2F, 4F, -105F, 207F), 0.0F, 0.0F);
         
@@ -239,7 +241,7 @@ public class CockpitMi24 extends CockpitPilot
         super.mesh.chunkSetAngles("Z_COMPASSB", -90F + setNew.waypointAzimuth.getDeg(f * 0.1F), 0.0F, 0.0F);
         super.mesh.chunkSetAngles("Z_COMPASSC", setNew.radioCompassAzimuth.getDeg(f * 0.02F), 0.0F, 0.0F);
 //        super.mesh.chunkSetAngles("Z_SPD", -floatindex(cvt(super.fm.getSpeedKMH(), 50F, 450F, 0.0F, 9F), speedometerScale), 0.0F, 0.0F);
-        super.mesh.chunkSetAngles("Z_SPD", -cvt(((FlightModelMain) (super.fm)).getSpeedKMH(), 50F, 450F, 0.0F, 330F), 0.0F, 0.0F);
+        super.mesh.chunkSetAngles("Z_SPD", -cvt(((FlightModelMain) (super.fm)).getSpeedKMH(), 50F, 450F, 0.0F, 332F), 0.0F, 0.0F);
 //        super.mesh.chunkSetAngles("Z_Speedometer3", cvt(machNumber(), 0.5F, 3F, 0.0F, 349F), 0.0F, 0.0F);
 //        super.mesh.chunkSetAngles("Z_Speedometer2", floatindex(cvt(Pitot.Indicator((float)((Tuple3d) (((FlightModelMain) (super.fm)).Loc)).z, super.fm.getSpeedKMH()), 200F, 2500F, 0.0F, 24F), speedometerScale), 0.0F, 0.0F);
         super.mesh.chunkSetAngles("Z_ALTB", -cvt(interp(setNew.altimeter, setOld.altimeter, f), 0.0F, 30000F, 0.0F, 360F), 0.0F, 0.0F);
@@ -266,8 +268,8 @@ public class CockpitMi24 extends CockpitPilot
         Cockpit.xyz[1] = cvt((float) (vector3d.y * 3.6D), -25F, 25F, 0.027F, -0.027F);
         super.mesh.chunkSetLocate("Z_PSpd2", Cockpit.xyz, Cockpit.ypr);
 
-        super.mesh.chunkSetAngles("Z_HRZ", 0.0F, ((FlightModelMain) (super.fm)).Or.getKren(), cvt(((FlightModelMain) (super.fm)).Or.getTangage(), -40.0F, 40.0F, -21.0F, 21.0F));
-        super.mesh.chunkSetAngles("Z_HRZEmer", 0.0F, ((FlightModelMain) (super.fm)).Or.getKren(), cvt(((FlightModelMain) (super.fm)).Or.getTangage(), -40.0F, 40.0F, -63.0F, 63.0F));
+        super.mesh.chunkSetAngles("Z_HRZ", 0.0F, -((FlightModelMain) (super.fm)).Or.getKren(), -cvt(((FlightModelMain) (super.fm)).Or.getTangage(), -40.0F, 40.0F, -21.0F, 21.0F));
+        super.mesh.chunkSetAngles("Z_HRZEmer", 0.0F, ((FlightModelMain) (super.fm)).Or.getKren(), -cvt(((FlightModelMain) (super.fm)).Or.getTangage(), -40.0F, 40.0F, -63.0F, 63.0F));
 //        super.mesh.chunkSetAngles("Z_Gear1", 0.0F, 0.0F, 50F * (pictGear = 0.82F * pictGear + 0.18F * ((FlightModelMain) (super.fm)).CT.GearControl));
         
         super.mesh.chunkVisible("L_GearDown", ((FlightModelMain) (super.fm)).CT.getGear() > 0.95F);
@@ -411,7 +413,7 @@ public class CockpitMi24 extends CockpitPilot
     };
     
     private static final float radaltScale[] = {
-        0.0F, 156F, 180F, 204F, 228F, 253F, 276F, 300F
+        0.0F, 155F, 181F, 207F, 232F, 257F, 281F, 303F
     };
     private static final float variometerScale[] = {
         -180F, -141F, -78F, 0.0F, 78F, 141F, 180F 
