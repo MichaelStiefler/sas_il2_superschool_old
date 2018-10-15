@@ -157,6 +157,9 @@ public class E_3A extends C_135
         {
             rotoMode = 0;  // Stop
             rotodegpm = 0;
+            radarDisplayRange = 0;
+            radarDisplayVrt = 0;
+            radarDisplayHol = 0;
             return;
         }
         else if(FM.getAltitude() < 950F)
@@ -305,7 +308,7 @@ public class E_3A extends C_135
             break;
         case 2:
         case 5:
-            HUD.logCenter("                     Target bearing " + iBear + "\260" + ", range " + (int)(((EnemyRadarData)(enemies.get(0))).distance * 0.0005399568D) + "NM, height " + (int)(((EnemyRadarData)(enemies.get(0))).actor.pos.getAbsPoint().z * 0.32808D) * 10 + "ft, heading " + iHead + "\260" + ", Spd " + (int)(((EnemyRadarData)(enemies.get(0))).speed * 0.1943845D + 0.5D) * 10 + "kt");
+            HUD.logCenter("                     Target bearing " + iBear + "\260" + ", range " + (int)(((EnemyRadarData)(enemies.get(0))).distance * 0.0005399568D) + "nm, height " + (int)(((EnemyRadarData)(enemies.get(0))).actor.pos.getAbsPoint().z * 0.32808D) * 10 + "ft, heading " + iHead + "\260" + ", Spd " + (int)(((EnemyRadarData)(enemies.get(0))).speed * 0.1943845D + 0.5D) * 10 + "kt");
             break;
         case 3:
         case 6:
@@ -336,9 +339,10 @@ public class E_3A extends C_135
 
     public void typeRadarRangeMinus()
     {
+        if(radarDisplayRange > 1)
+            return;
+
         radarDisplayRange++;
-        if(radarDisplayRange > 2)
-            radarDisplayRange = 2;
 
         if(radarDisplayRange == 1)
         {
@@ -362,9 +366,10 @@ public class E_3A extends C_135
 
     public void typeRadarRangePlus()
     {
+        if(radarDisplayRange < 1)
+            return;
+
         radarDisplayRange--;
-        if(radarDisplayRange < 0)
-            radarDisplayRange = 0;
 
         if(radarDisplayRange == 0)
         {
@@ -420,7 +425,7 @@ public class E_3A extends C_135
 
         int maxnum = 0;
         if(radarDisplayRange == 1) maxnum = 1;
-        else if(radarDisplayRange == 2) maxnum = 3;
+        else if(radarDisplayRange == 2) maxnum = 2;
 
         radarDisplayVrt++;
         if(radarDisplayVrt > maxnum)
@@ -435,22 +440,22 @@ public class E_3A extends C_135
     {
         if(radarDisplayRange == 0) return;
 
-        radarDisplayHol--;
-        if(radarDisplayHol < 0)
-            radarDisplayHol = 0;
+        int maxnum = 0;
+        if(radarDisplayRange == 1) maxnum = 1;
+        else if(radarDisplayRange == 2) maxnum = 2;
+
+        radarDisplayHol++;
+        if(radarDisplayHol > maxnum)
+            radarDisplayHol = maxnum;
     }
 
     public void typeBomberAdjSideslipMinus()
     {
         if(radarDisplayRange == 0) return;
 
-        int maxnum = 0;
-        if(radarDisplayRange == 1) maxnum = 1;
-        else if(radarDisplayRange == 2) maxnum = 3;
-
-        radarDisplayHol++;
-        if(radarDisplayHol > maxnum)
-            radarDisplayHol = maxnum;
+        radarDisplayHol--;
+        if(radarDisplayHol < 0)
+            radarDisplayHol = 0;
     }
 
     public void typeBomberAdjAltitudeReset()
@@ -519,10 +524,10 @@ public class E_3A extends C_135
 
 //    public static boolean   bChangedPit = false;
     private long rareTimer;
-    private int rotoMode;
+    public int rotoMode;
     private int rotodegpm;
     private float rotoOrient;
-    private long awacsTimer;
+    public long awacsTimer;
     private int awacsCounter;
 
     private ArrayList enemyPlaneList;
