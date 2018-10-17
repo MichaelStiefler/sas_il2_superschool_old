@@ -356,13 +356,13 @@ public class CockpitF_14 extends CockpitPilot
         mesh.chunkSetAngles("Z_miles_10", cvt((float)Math.floor(f11 / 10F), 0.0F, 100F, 0.0F, 3600F), 0.0F, 0.0F);
         mesh.chunkSetAngles("Z_miles_100", cvt((float)Math.floor(f11 / 100F), 0.0F, 10F, 0.0F, 360F), 0.0F, 0.0F);
         mesh.chunkVisible("Z_miles_hide", !bHSIILS && !bHSITAC && !bHSINAV && !bHSITGT);
-        mesh.chunkVisible("Z_HSItext_DL", bHSIDL);
-        mesh.chunkVisible("Z_HSItext_ILS", bHSIILS);
-        mesh.chunkVisible("Z_HSItext_MAN", bHSIMAN);
-        mesh.chunkVisible("Z_HSItext_NAV", bHSINAV);
-        mesh.chunkVisible("Z_HSItext_TAC", bHSITAC);
-        mesh.chunkVisible("Z_HSItext_TGT", bHSITGT);
-        mesh.chunkVisible("Z_HSItext_UHF", bHSIUHF);
+//        mesh.chunkVisible("Z_HSItext_DL", bHSIDL);
+//        mesh.chunkVisible("Z_HSItext_ILS", bHSIILS);
+//        mesh.chunkVisible("Z_HSItext_MAN", bHSIMAN);
+//        mesh.chunkVisible("Z_HSItext_NAV", bHSINAV);
+//        mesh.chunkVisible("Z_HSItext_TAC", bHSITAC);
+//        mesh.chunkVisible("Z_HSItext_TGT", bHSITGT);
+//        mesh.chunkVisible("Z_HSItext_UHF", bHSIUHF);
         mesh.chunkSetAngles("Z_AOA", cvt(30F - f6, 0.0F, 30F, 0.0F, 270F), 0.0F, 0.0F);
         mesh.chunkSetAngles("Z_Accello1", cvt(fm.getOverload(), -5F, 10F, -220F, 114F), 0.0F, 0.0F);
         mesh.chunkSetAngles("Z_Accello2", cvt(setNew.accelloMax, -5F, 10F, -220F, 114F), 0.0F, 0.0F);
@@ -401,7 +401,7 @@ public class CockpitF_14 extends CockpitPilot
             mesh.chunkVisible("Z_AOALanding3", false);
         }
         mesh.chunkVisible("Z_Warn_WHEELS", ((FlightModelMain) (fm)).CT.getGear() < 1.0F && ((FlightModelMain) (fm)).CT.FlapsControl > 0.2F);
-        boolean flag = false;
+/*        boolean flag = false;
         if(((FlightModelMain) (fm)).CT.Weapons[5] != null && "AIM-7E".equals(((FlightModelMain) (fm)).CT.rocketNameSelected))
         {
             int i;
@@ -547,6 +547,7 @@ public class CockpitF_14 extends CockpitPilot
             mesh.chunkVisible("Z_MisSelect_SwR1", false);
             mesh.chunkVisible("Z_MisSelect_SwR2", false);
         }
+*/
     }
 
     public void reflectCockpitState()
