@@ -1036,6 +1036,7 @@ public class F_14 extends Scheme2
             oldthrl[i] = -1.0F;
             curthrl[i] = -1.0F;
             engineSurgeDamage[i] = 0.0F;
+            exNozzleBroken[i] = false;
         }
     }
 
@@ -1942,40 +1943,46 @@ public class F_14 extends Scheme2
                     break;
                 }
             } else
-            if(s.startsWith("xxeng1"))
+            if(s.startsWith("xxeng"))
             {
-                debuggunnery("Engine Module: Hit..");
+                int ien = 0;
+                if(s.startsWith("xxeng1")) ien = 0;
+                else if(s.startsWith("xxeng2")) ien = 1;
+                debuggunnery("Engine Module " + (ien + 1) + " : Hit..");
                 if(s.endsWith("bloc"))
                     getEnergyPastArmor((double)World.Rnd().nextFloat(0.0F, 60F) / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot);
-                if(s.endsWith("cams") && getEnergyPastArmor(0.45F, shot) > 0.0F && World.Rnd().nextFloat() < FM.EI.engines[0].getCylindersRatio() * 20F)
+                if(s.endsWith("cams") && getEnergyPastArmor(0.45F, shot) > 0.0F && World.Rnd().nextFloat() < FM.EI.engines[ien].getCylindersRatio() * 20F)
                 {
-                    FM.EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int)(shot.power / 4800F)));
-                    debuggunnery("Engine Module: Engine Cams Hit, " + FM.EI.engines[0].getCylindersOperable() + "/" + FM.EI.engines[0].getCylinders() + " Left..");
+                    FM.EI.engines[ien].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int)(shot.power / 4800F)));
+                    debuggunnery("Engine Module " + (ien + 1) + " : Engine Cams Hit, " + FM.EI.engines[ien].getCylindersOperable() + "/" + FM.EI.engines[ien].getCylinders() + " Left..");
                     if(World.Rnd().nextFloat() < shot.power / 24000F)
                     {
-                        FM.AS.hitEngine(shot.initiator, 0, 2);
-                        debuggunnery("Engine Module: Engine Cams Hit - Engine Fires..");
+                        FM.AS.hitEngine(shot.initiator, ien, 2);
+                        debuggunnery("Engine Module " + (ien + 1) + " : Engine Cams Hit - Engine Fires..");
                     }
                     if(shot.powerType == 3 && World.Rnd().nextFloat() < 0.75F)
                     {
-                        FM.AS.hitEngine(shot.initiator, 0, 1);
-                        debuggunnery("Engine Module: Engine Cams Hit (2) - Engine Fires..");
+                        FM.AS.hitEngine(shot.initiator, ien, 1);
+                        debuggunnery("Engine Module " + (ien + 1) + " : Engine Cams Hit (2) - Engine Fires..");
                     }
                 }
                 if(s.endsWith("eqpt") && World.Rnd().nextFloat() < shot.power / 24000F)
                 {
-                    FM.AS.hitEngine(shot.initiator, 0, 3);
-                    debuggunnery("Engine Module: Hit - Engine Fires..");
+                    FM.AS.hitEngine(shot.initiator, ien, 3);
+                    debuggunnery("Engine Module " + (ien + 1) + " : Hit - Engine Fires..");
                 }
-                s.endsWith("exht");
+                if(s.endsWith("exht") && World.Rnd().nextFloat() < shot.power / 30000F)
+                {
+                    exNozzleBroken[ien] = true;
+                    debuggunnery("Engine Module " + (ien + 1) + " : Hit - Exhaust nozzle broken..");
+                }
             } else
-            if(s.startsWith("xxmgun0"))
+            if(s.startsWith("xxCannon1") || s.startsWith("xxammo1"))
             {
-                int k = s.charAt(7) - 49;
                 if(getEnergyPastArmor(1.5F, shot) > 0.0F)
                 {
-                    debuggunnery("Armament: mnine Gun (" + k + ") Disabled..");
-                    FM.AS.setJamBullets(0, k);
+                    debuggunnery("Armament: Cannon Disabled..");
+                    FM.AS.setJamBullets(0, 0);
                     getEnergyPastArmor(World.Rnd().nextFloat(0.5F, 23.325F), shot);
                 }
             } else
@@ -2046,11 +2053,18 @@ public class F_14 extends Scheme2
             } else
             if(s.startsWith("xkeel"))
             {
-                if(chunkDamageVisible("Keel1") < 2)
+                if(s.endsWith("1") && chunkDamageVisible("Keel1") < 2)
                     hitChunk("Keel1", shot);
+                if(s.endsWith("2") && chunkDamageVisible("Keel2") < 2)
+                    hitChunk("Keel2", shot);
             } else
             if(s.startsWith("xrudder"))
-                hitChunk("Rudder1", shot);
+            {
+                if(s.endsWith("1"))
+                    hitChunk("Rudder1", shot);
+                if(s.endsWith("2"))
+                    hitChunk("Rudder2", shot);
+            }
             else
             if(s.startsWith("xstab"))
             {
@@ -2087,6 +2101,17 @@ public class F_14 extends Scheme2
                     hitChunk("AroneL", shot);
                 if(s.startsWith("xaroner"))
                     hitChunk("AroneR", shot);
+            } else
+            if(s.startsWith("xflap"))
+            {
+                if(s.endsWith("01"))
+                    hitChunk("Flap01", shot);
+                if(s.endsWith("02"))
+                    hitChunk("Flap02", shot);
+                if(s.endsWith("03"))
+                    hitChunk("Flap03", shot);
+                if(s.endsWith("04"))
+                    hitChunk("Flap04", shot);
             } else
             if(s.startsWith("xgear"))
             {
@@ -2406,29 +2431,41 @@ public class F_14 extends Scheme2
         {
             int step;
 
-            fNozzleOpenL = FM.EI.engines[0].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[0].getPowerOutput(), 0.0F, 0.92F, 0F, 0.9999F) : cvt(FM.EI.engines[0].getPowerOutput(), 0.92F, 1.1F, 0.9999F, 0F);
-            step = (int)Math.floor(fNozzleOpenL * 10F);
-            for(int i = 0; i < 10; i++)
-                hierMesh().chunkVisible("ExhaustL" + i, i == step);
+            if(!exNozzleBroken[0])
+            {
+                fNozzleOpenL = FM.EI.engines[0].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[0].getPowerOutput(), 0.0F, 0.92F, 0F, 0.9999F) : cvt(FM.EI.engines[0].getPowerOutput(), 0.92F, 1.1F, 0.9999F, 0F);
+                step = (int)Math.floor(fNozzleOpenL * 10F);
+                for(int i = 0; i < 10; i++)
+                    hierMesh().chunkVisible("ExhaustL" + i, i == step);
+            }
 
-            fNozzleOpenR = FM.EI.engines[1].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[1].getPowerOutput(), 0.0F, 0.92F, 0F, 0.9999F) : cvt(FM.EI.engines[1].getPowerOutput(), 0.92F, 1.1F, 0.9999F, 0F);
-            step = (int)Math.floor(fNozzleOpenR * 10F);
-            for(int i = 0; i < 10; i++)
-                hierMesh().chunkVisible("ExhaustR" + i, i == step);
+            if(!exNozzleBroken[1])
+            {
+                fNozzleOpenR = FM.EI.engines[1].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[1].getPowerOutput(), 0.0F, 0.92F, 0F, 0.9999F) : cvt(FM.EI.engines[1].getPowerOutput(), 0.92F, 1.1F, 0.9999F, 0F);
+                step = (int)Math.floor(fNozzleOpenR * 10F);
+                for(int i = 0; i < 10; i++)
+                    hierMesh().chunkVisible("ExhaustR" + i, i == step);
+            }
         }
         if((this instanceof F_14B) || (this instanceof F_14D))
         {
             float deg;
 
-            fNozzleOpenL = FM.EI.engines[0].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[0].getPowerOutput(), 0.0F, 0.92F, 0.0F, 1.0F) : cvt(FM.EI.engines[0].getPowerOutput(), 0.92F, 1.1F, 1.0F, 0.0F);
-            deg = -9F * (1F - fNozzleOpenL);
-            for(int i = 1; i < 33; i++)
-                hierMesh().chunkSetAngles("Eflap" + i, deg, 0.0F, 0.0F);
+            if(!exNozzleBroken[0])
+            {
+                fNozzleOpenL = FM.EI.engines[0].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[0].getPowerOutput(), 0.0F, 0.92F, 0.0F, 1.0F) : cvt(FM.EI.engines[0].getPowerOutput(), 0.92F, 1.1F, 1.0F, 0.0F);
+                deg = -9F * (1F - fNozzleOpenL);
+                for(int i = 1; i < 33; i++)
+                    hierMesh().chunkSetAngles("Eflap" + i, deg, 0.0F, 0.0F);
+            }
 
-            fNozzleOpenR = FM.EI.engines[1].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[1].getPowerOutput(), 0.0F, 0.92F, 0.0F, 1.0F) : cvt(FM.EI.engines[1].getPowerOutput(), 0.92F, 1.1F, 1.0F, 0.0F);
-            deg = -9F * (1F - fNozzleOpenR);
-            for(int j = 33; j > 32 && j < 65; j++)
-                hierMesh().chunkSetAngles("Eflap" + j, deg, 0.0F, 0.0F);
+            if(!exNozzleBroken[1])
+            {
+                fNozzleOpenR = FM.EI.engines[1].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[1].getPowerOutput(), 0.0F, 0.92F, 0.0F, 1.0F) : cvt(FM.EI.engines[1].getPowerOutput(), 0.92F, 1.1F, 1.0F, 0.0F);
+                deg = -9F * (1F - fNozzleOpenR);
+                for(int j = 33; j > 32 && j < 65; j++)
+                    hierMesh().chunkSetAngles("Eflap" + j, deg, 0.0F, 0.0F);
+            }
         }
 
         float f1 = cvt(FM.getSpeedKMH(), 500F, 1000F, 0.999F, 0.601F);
@@ -3175,9 +3212,9 @@ public class F_14 extends Scheme2
         for(int en = 0; en < 2; en++)
         {
             if(FM.EI.engines[en].getThrustOutput() > 1.001F && FM.EI.engines[en].getStage() > 5)
-                FM.producedAF.x += 40600D;
+                FM.producedAF.x += (40600D * (exNozzleBroken[en] ? 0.90D : 1.0D));
             if(FM.EI.engines[en].getThrustOutput() > 1.001F && FM.EI.engines[en].getStage() > 5 && calculateMach() > 0.85F)
-                FM.producedAF.x += 12000D;
+                FM.producedAF.x += (12000D * (exNozzleBroken[en] ? 0.90D : 1.0D));
             if(FM.EI.engines[en].getThrustOutput() > 1.001F && FM.EI.engines[en].getStage() > 5 && calculateMach() > 1.3F)
                 FM.producedAF.x -= 34000D;
         }
@@ -3187,7 +3224,7 @@ public class F_14 extends Scheme2
          && FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() == 6)
             if (x > 19.0F)
             {
-                thrustDegradation = 20.0F;
+                thrustDegradation = 25.0F;
             }
             else
             {
@@ -3199,6 +3236,8 @@ public class F_14 extends Scheme2
                 thrustDegradation = -(17077F*x6/142443000F) + (13553F*x5/2374050F) - (13203787F*x4/142443000F) + (434033F*x3/698250F) - (71389321F*x2/35610750F) + (1247081F*x/339150F);
         //{{0,0},{2,3},{5,4},{7,0},{12,-30},{17,7},{19,25}}
             }
+        if(exNozzleBroken[0]) thrustDegradation += 0.3F;
+        if(exNozzleBroken[1]) thrustDegradation += 0.3F;
         FM.producedAF.x -=  thrustDegradation * 1000F;
     }
 
@@ -3424,6 +3463,7 @@ public class F_14 extends Scheme2
     private float oldthrl[] = { -1.0F, -1.0F };
     private float curthrl[] = { -1.0F, -1.0F };
     private float engineSurgeDamage[] = { 0.0F, 0.0F };
+    public boolean exNozzleBroken[] = { false, false };
     public int k14Mode;
     public int k14WingspanType;
     public float k14Distance;

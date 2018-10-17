@@ -123,12 +123,12 @@
   Turret6B 100
   VatorL 50
   VatorR 50
-  WingLIn 180
-  WingLMid 180
-  WingLOut 180
-  WingRIn 180
-  WingRMid 180
-  WingROut 180
+  WingLIn 240
+  WingLMid 240
+  WingLOut 240
+  WingRIn 240
+  WingRMid 240
+  WingROut 240
   Flap01 200
   Flap02 200
   Flap03 200

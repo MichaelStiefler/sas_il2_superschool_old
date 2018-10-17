@@ -465,7 +465,7 @@ public class F_14A extends F_14
         for(int en = 0; en < 2; en++)
         {
             if(FM.EI.engines[en].getThrustOutput() > 1.001F && FM.EI.engines[en].getStage() > 5)
-                FM.producedAF.x += 33200D;
+                FM.producedAF.x += (33200D * (exNozzleBroken[en] ? 0.90D : 1.0D));
             if(FM.EI.engines[en].getThrustOutput() > 1.001F && FM.EI.engines[en].getStage() > 5 && calculateMach() > 1.3F)
                 FM.producedAF.x -= 20000D;
         }
@@ -475,7 +475,7 @@ public class F_14A extends F_14
           && FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() == 6)
             if (x > 19F)
             {
-                thrustDegradation = 20.0F;
+                thrustDegradation = 25.0F;
             }
             else
             {
@@ -487,6 +487,8 @@ public class F_14A extends F_14
                 thrustDegradation = -0.000281394F*x6 + 0.0135257F*x5 - 0.227697F*x4 + 1.62839F*x3 - 5.10746F*x2 + 6.31553F*x;
         //{{0,0},{2,2},{5,3},{7,0},{10,-25},{15,-20},{18.5,37}}
             }
+        if(exNozzleBroken[0]) thrustDegradation += 0.3F;
+        if(exNozzleBroken[1]) thrustDegradation += 0.3F;
         FM.producedAF.x -= thrustDegradation * 1000F;
     }
 
@@ -540,7 +542,7 @@ public class F_14A extends F_14
            "_CANNON01", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_Rock05", "_Rock06", "_Rock07", "_Rock08","_ExternalRock09",
            "_ExternalRock10", "_ExternalRock11", "_ExternalRock12", "_ExternalRock13", "_ExternalRock14", "_ExternalRock15", "_ExternalRock16", "_ExternalDev01", "_ExternalDev02","_ExternalRock17",
            "_ExternalRock18", "_ExternalRock19", "_ExternalRock20", "_ExternalRock21", "_ExternalRock22", "_ExternalRock23", "_ExternalRock24", "_ExternalRock25", "_ExternalRock26", "_ExternalRock27",
-           "_ExternalRock28", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalDev03", "_ExternalDev04", "_ExternalRock29", "_ExternalRock30"
+           "_ExternalRock28", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalDev03", "_ExternalDev04", "_Flare01", "_Chaff01"
 
         });
         String s = "";
