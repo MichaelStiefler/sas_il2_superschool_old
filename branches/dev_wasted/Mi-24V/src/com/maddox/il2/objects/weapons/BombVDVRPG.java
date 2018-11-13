@@ -1,8 +1,9 @@
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.il2.ai.*;
+import com.maddox.il2.ai.ScoreItem;
 import com.maddox.il2.ai.World;
+import com.maddox.il2.ai.ground.*;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorSpawn;
 import com.maddox.il2.engine.ActorSpawnArg;
@@ -10,6 +11,7 @@ import com.maddox.il2.engine.Loc;
 import com.maddox.il2.engine.Orient;
 import com.maddox.rts.NetChannel;
 import com.maddox.rts.Spawn;
+
 import java.util.Random;
 
 // Referenced classes of package com.maddox.il2.objects.weapons:

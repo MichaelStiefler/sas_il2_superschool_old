@@ -50,8 +50,8 @@ public class CockpitMi8_TGunner extends CockpitGunner {
 			fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
 			if (bGunFire) {
 				if (hook1 == null)
-					hook1 = new HookNamed(aircraft(), "_MGUN03");
-				doHitMasterAircraft(aircraft(), hook1, "_MGUN03");
+					hook1 = new HookNamed(aircraft(), "_MGUN01");
+				doHitMasterAircraft(aircraft(), hook1, "_MGUN01");
 			}
 		}
 	}

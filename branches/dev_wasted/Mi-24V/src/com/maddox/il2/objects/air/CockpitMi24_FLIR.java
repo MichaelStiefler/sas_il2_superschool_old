@@ -36,60 +36,14 @@ import java.io.PrintStream;
 public class CockpitMi24_FLIR extends CockpitGunner {
 
 	public void moveGun(Orient orient) {
-		
 		Orient orient1 = hookGunner().getGunMove();
         float f = orient1.getYaw();
         float f1 = orient1.getTangage();
-        
         Mi24V.LaserOr = hookGunner().getGunMove();
-		
 		super.moveGun(orient);
-
 		mesh.chunkSetAngles("Turret1A", -f, 0.0F, 0.0F);
-		mesh.chunkSetAngles("Turret1B", 0.0F, f1, 0.0F);
-		
-		
-//		String s3 = " ";
-//        if(victim instanceof TgtTank)
-//            s3 = "Armor";
-//        if(victim instanceof ArtilleryGeneric)
-//            s3 = "Misc";
-//        if(victim instanceof TgtVehicle)
-//            s3 = "Vehicle";
-//        if(victim instanceof AAA)
-//            s3 = "AAA";
-
-		
-
-		
+		mesh.chunkSetAngles("Turret1B", 0.0F, f1, 0.0F);	
 	}
-	
-//    public void laserUpdate() {
-//    	
-//    	this.pos.setUpdateEnable(true);
-//    	
-//    	this.pos.getRender(_tmpLoc);
-//    	LaserHook[1] = new HookNamed(super.mesh, "_Laser1");
-//    	
-//    	LaserLoc1.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-//    	this.LaserHook[1].computePos(this, _tmpLoc, LaserLoc1);
-//    	LaserLoc1.get(LaserP1);
-//    	LaserLoc1.set(30000.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-//    	this.LaserHook[1].computePos(this, _tmpLoc, LaserLoc1);
-//    	LaserLoc1.get(LaserP2);
-//    	Engine.land(); 
-//    	if (Landscape.rayHitHQ(LaserP1, LaserP2, LaserPL)) 
-//    	{
-//    		LaserPL.z -= 0.95D;
-//    		LaserP2.interpolate(LaserP1, LaserPL, 1.0F);
-// //   		this.Laser[1].setPos(LaserP2);
-//    		
-//    		Mi24V.spot.set(LaserP2);
-//    		
-//    		Eff3DActor eff3dactor = Eff3DActor.New(null, null, new Loc(LaserP2.x, LaserP2.y, LaserP2.z, 0.0F, 0.0F, 0.0F), 1.0F, "3DO/Effects/Fireworks/FlareWhiteWide.eff", 0.1F);
-//    		
-//    	}
-//    }
 
 	public void clipAnglesGun(Orient orient) {
 		if (isRealMode())
@@ -110,108 +64,17 @@ public class CockpitMi24_FLIR extends CockpitGunner {
 				orient.wrap();
 			}
 	}
-	
-	
-//    public void clipAnglesGun(Orient orient)
-//    {
-//        float f = orient.getYaw();
-//        float f1 = orient.getTangage();
-//        float f2 = Math.abs(f);
-//        for(; f < -180F; f += 360F);
-//        for(; f > 180F; f -= 360F);
-//        for(; prevA0 < -180F; prevA0 += 360F);
-//        for(; prevA0 > 180F; prevA0 -= 360F);
-//        if(!isRealMode())
-//        {
-//            prevA0 = f;
-//        } else
-//        {
-//            if(bNeedSetUp)
-//            {
-//                prevTime = Time.current() - 1L;
-//                bNeedSetUp = false;
-//            }
-//            if(f < -120F && prevA0 > 120F)
-//                f += 360F;
-//            else
-//            if(f > 120F && prevA0 < -120F)
-//                prevA0 += 360F;
-//            float f3 = f - prevA0;
-//            float f4 = 0.001F * (float)(Time.current() - prevTime);
-//            float f5 = Math.abs(f3 / f4);
-//            if(f5 > 120F)
-//                if(f > prevA0)
-//                    f = prevA0 + 120F * f4;
-//                else
-//                if(f < prevA0)
-//                    f = prevA0 - 120F * f4;
-//            prevTime = Time.current();
-//            if(f1 > 0.0F)
-//                f1 = 0.0F;
-//            if(f1 < -95F)
-//                f1 = -95F;
-//            orient.setYPR(f, f1, 0.0F);
-//            orient.wrap();
-//            prevA0 = f;
-//        }
-//    }
-    
-    
 
 	protected void interpTick() {
 		if (isRealMode()) {
-			
-			
-			
-			
-			
-			
-//			lock();
-			
-//			Orient orient1 = hookGunner().getGunMove();
-//	        float f = orient1.getYaw();
-//	        float f1 = orient1.getTangage();
-//	        
-//	        float kren = ((FlightModelMain) (super.fm)).Or.getKren();
-//	        float yaw = ((FlightModelMain) (super.fm)).Or.getYaw();
-//	        float tangage = ((FlightModelMain) (super.fm)).Or.getTangage();
-//	        
-//	        	
-//	        	if (kren < -30F)
-//	        		kren = -30F;
-//	        	if (kren > 30F)
-//	        		kren = 30F;
-//		        mesh.chunkSetAngles("Body", 0.0F, kren, 0.0F);
-//				mesh.chunkSetAngles("Turret1A", -f - yaw, 0.0F, 0.0F);
-//				mesh.chunkSetAngles("Turret1B", 0.0F, f1 - tangage, 0.0F);
-			
-			
-
-			
-
 		}
 	}
-	
-//	private void lock()
-//    {
-//        if(!bEntered)
-//        {
-//            return;
-//        } else
-//        {
-//        	victim = Selector.look(true, true, Main3D.cur3D()._camera3D[Main3D.cur3D().getRenderIndx()], -1, -1, World.getPlayerAircraft(), false);
-//        	Mi24V.lock = victim;
-//            return;
-//        }
-//    }
 	
 	protected boolean doFocusEnter()
     {
         if(super.doFocusEnter())
         {
-        	((Mi24V)aircraft()).FLIR = true;
-            enter();
-            
+            enter();         
             aircraft().hierMesh().chunkVisible("CF_D0", true);
             aircraft().hierMesh().chunkVisible("Blister_D0", true);
             aircraft().hierMesh().chunkVisible("Door2_D0", true);
@@ -278,16 +141,6 @@ public class CockpitMi24_FLIR extends CockpitGunner {
         }
     }
 
-//	public void doGunFire(boolean flag) {
-//		if (isRealMode()) {
-//			if (emitter == null || !emitter.haveBullets()
-//					|| !aiTurret().bIsOperable)
-//				bGunFire = false;
-//			else
-//				bGunFire = flag;
-//			fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
-//		}
-//	}
 
 	public void reflectCockpitState() {
 		if ((fm.AS.astateCockpitState & 4) != 0)

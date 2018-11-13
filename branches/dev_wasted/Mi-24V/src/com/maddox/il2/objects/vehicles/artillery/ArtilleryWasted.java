@@ -7,13 +7,13 @@ package com.maddox.il2.objects.vehicles.artillery;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
-import com.maddox.il2.ai.*;
-import com.maddox.il2.ai.ground.Aim;
+import com.maddox.il2.ai.ground.*;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.objects.air.MI8MT;
 import com.maddox.rts.Time;
 import com.maddox.util.HashMapExt;
+
 import java.util.*;
 
 // Referenced classes of package com.maddox.il2.objects.vehicles.artillery:
@@ -118,6 +118,7 @@ public abstract class ArtilleryWasted
 
         public VDVRPGInfantry()
         {
+        	Engine.targets().add(this);
         }
     }
 

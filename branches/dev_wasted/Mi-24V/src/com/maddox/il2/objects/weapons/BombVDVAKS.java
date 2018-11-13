@@ -2,10 +2,13 @@ package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Tuple3d;
-import com.maddox.il2.ai.*;
+import com.maddox.il2.ai.ScoreItem;
+import com.maddox.il2.ai.World;
+import com.maddox.il2.ai.ground.*;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.objects.ActorAlign;
 import com.maddox.rts.*;
+
 import java.util.ArrayList;
 import java.util.Random;
 // Referenced classes of package com.maddox.il2.objects.weapons:
