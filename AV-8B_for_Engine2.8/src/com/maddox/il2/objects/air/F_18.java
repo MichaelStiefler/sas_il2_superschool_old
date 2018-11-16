@@ -2682,9 +2682,9 @@ public class F_18 extends Scheme2
     {
         Polares polares = (Polares)Reflection.getValue(FM, "Wing");
         float f = calculateMach();
-        float f1 = 0.0F;
+        float f1 = 0.078F;
         if(f < 0.0F)
-            f1 = 0.0F;
+            f1 = 0.078F;
         else if(f > 2.25F)
             f1 = 0.12F;
         else
@@ -3357,7 +3357,14 @@ public class F_18 extends Scheme2
     }
 
     private static String actorString(Actor actor) {
-        String s = actor.getClass().getName();
+		if (!Actor.isValid(actor)) return "(InvalidActor)";
+		String s;
+		try {
+			s = actor.getClass().getName();
+		} catch(Exception e) {
+			System.out.println("F_18 - actorString(): Cannot resolve class name of " + actor);
+			return "(NoClassnameActor)";
+		}
         int i = s.lastIndexOf('.');
         String strSection = s.substring(i + 1);
         strSection = strSection + '@' + Integer.toHexString(actor.hashCode());
