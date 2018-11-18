@@ -108,6 +108,8 @@ public class F_18 extends Scheme2
         queen_ = null;
         dockport_ = -1;
         fuelReceiveRate = 11.101F;
+        // max receive rate = 220gal per 1minute (Probe and Drogue system can send/receive only small amount.)
+        // 220gal == 833liter == 666kg JP-5 ---> 1 sec cycle = 11.101 kg
         APmode1 = false;
         radartoggle = false;
         radarvrt = 0.0F;
@@ -132,10 +134,10 @@ public class F_18 extends Scheme2
         isGeneratorAlive = false;
         isBatteryOn = false;
         arrestor = 0.0F;
-        stockCy0_0 = 0.011F;
+        stockCy0_0 = 0.05F;
         stockCy0_1 = 0.40F;
-        stockCxMin_0 = 0.034F;
-        stockCxMin_1 = 0.091F;
+        stockCxMin_0 = 0.021F;
+        stockCxMin_1 = 0.028F;
         stockCyCritH_0 = 1.4F;
         stockSqFlaps = 5.726F;
         stockSqAileron = 4.646F;
@@ -2601,8 +2603,7 @@ public class F_18 extends Scheme2
         computeFlightmodel();
         computeElevators();
         computeLift();
-        computeEnergy();
-        computeEngine();
+        computeSupersonicLimiter();
         FlapAssistTakeoff();
         updateDragChute();
         if(backfire)
@@ -2681,64 +2682,37 @@ public class F_18 extends Scheme2
     private void computeLift()
     {
         Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-        float f = calculateMach();
-        float f1 = 0.078F;
-        if(f < 0.0F)
-            f1 = 0.078F;
-        else if(f > 2.25F)
-            f1 = 0.12F;
+        float x = cvt(calculateMach(), 0.9F, 1.3F, 0.08F, 0.035F);
+        float y = cvt(calculateMach(), 1.3F, 2.2F, 0.035F, 0.012F);
+        if(calculateMach() < 1.3F)
+            polares.lineCyCoeff = x;
         else
-        {
-            float f2 = f * f;
-            float f3 = f2 * f;
-            float f4 = f3 * f;
-            float f5 = f4 * f;
-            float f6 = f5 * f;
-            float f7 = f6 * f;
-            float f8 = f7 * f;
-            float f9 = f8 * f;
-            f1 = ((((((0.00152131F * f8 + 0.0351945F * f7) - 0.403687F * f6) + 1.58931F * f5) - 3.09189F * f4) + 3.21415F * f3) - 1.73844F * f2) + 0.364213F * f + 0.078F;
-        }
-        polares.lineCyCoeff = f1;
+            polares.lineCyCoeff = y;
     }
 
-    private void computeEnergy()
+    private void computeSupersonicLimiter()
     {
-        float f = FM.getOverload();
-        float f1 = 0.0F;
-        if(f < 4.5F)
-            f1 = 0.0F;
-        else if(f >= 10F)
-            f1 = 0.085F;
+        if(FM.getAltitude() < 10000F)
+        {
+            float x = cvt(FM.getAltitude(), 0.0F, 10000F, 1.16F, 1.78F);
+            float xx = cvt(FM.getAltitude(), 0.0F, 10000F, 1.22F, 1.82F);
+            if(calculateMach() > x)
+                FM.producedAF.x -= cvt(calculateMach(), x, xx, 0F, 30000F);
+        }
+        else if(FM.getAltitude() < 16000F)
+        {
+            float y = cvt(FM.getAltitude(), 10000F, 16000F, 1.76F, 1.54F);
+            float yy = cvt(FM.getAltitude(), 10000F, 16000F, 1.82F, 1.58F);
+            if(calculateMach() > y)
+                FM.producedAF.x -= cvt(calculateMach(), y, yy, 0F, 27500F);
+        }
         else
         {
-            float f2 = f * f;
-            float f3 = f2 * f;
-            float f4 = f3 * f;
-            float f5 = f4 * f;
-            float f6 = f5 * f;
-            f1 = ((6.734E-007F * f5 + 9.876539E-007F * f4) - 7.57583E-006F * f3) + 2.22222E-006F * f2 + 1.70512E-005F * f;
+            float z = cvt(FM.getAltitude(), 16000F, 18000F, 1.53F, 1.34F);
+            float zz = cvt(FM.getAltitude(), 16000F, 18000F, 1.58F, 1.38F);
+            if(calculateMach() > z)
+                FM.producedAF.x -= cvt(calculateMach(), z, zz, 0F, 27500F);
         }
-        FM.Sq.dragParasiteCx += f1;
-    }
-
-    private void computeEngine()
-    {
-        float f = FM.getAltitude() / 1000F;
-        float f1 = 0.0F;
-        if(FM.EI.engines[0].getThrustOutput() < 1.001F && FM.EI.engines[0].getStage() > 5 && FM.EI.engines[1].getThrustOutput() < 1.001F && FM.EI.engines[1].getStage() > 5)
-        {
-            if(f <= 0.0F)
-                f1 = 0.0F;
-            else if(f > 13.5F)
-                f1 = 1.5F;
-            else
-            {
-                float f2 = f * f;
-                f1 = 0.0130719F * f2 - 0.0653595F * f;
-            }
-        }
-        FM.producedAF.x -= f1 * 1000F;
     }
 
     public void restoreElevatorControl()

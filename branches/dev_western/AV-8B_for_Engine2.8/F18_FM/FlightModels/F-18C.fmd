@@ -12,7 +12,7 @@
   Empty 10500
   TakeOff 17900
   Oil 20.81
-  Fuel 4903.0
+  Fuel 4925.0
 [Controls]
   CAileron 3
   CAileronTrim 1
@@ -66,17 +66,17 @@
   Wing_Mid 7.0
   Wing_Out 3.88
   FuselageCxS 0.0001
-  AirbrakeCxS 0.25
+  AirbrakeCxS 0.07
 [Arm]
   Aileron 3.5
   Flap 2.0
-  Stabilizer 4.3
-  Keel 4.5
-  Elevator 5.8
-  Rudder 4.9
+  Stabilizer 7.3
+  Keel 7.5
+  Elevator 7.5
+  Rudder 7.5
   Wing_In 1.1
-  Wing_Mid 3.7
-  Wing_Out 1.2
+  Wing_Mid 3.0
+  Wing_Out 4.2
   Wing_V 1.5
   GCenter 0.0
   GCenterZ 0.0
@@ -170,7 +170,7 @@
   Vmin 250
   Vmax 1400.0
   VmaxAllowed 2500.0
-  VmaxH 2370.0
+  VmaxH 1970.0
   HofVmax 12190.0
   VminFLAPS 210.0
   VmaxFLAPS 600.0
@@ -188,28 +188,28 @@
   Range 4180.0
   CruiseSpeed 900.0
   G_CLASS_COEFF 20.0
-  G_CLASS 10.5
+  G_CLASS 11.5
   ReferenceWeight +5500
   SensYaw 0.35
-  SensPitch 0.7
+  SensPitch 0.8
   SensRoll 0.13
 [Polares]
-  lineCyCoeff 0.092
-  AOAMinCx_Shift 0.3
-  Cy0_0 0.011
+  lineCyCoeff 0.08
+  AOAMinCx_Shift 1.0
+  Cy0_0 0.05
   AOACritH_0 35.0
   AOACritL_0 -16.0
-  CyCritH_0 1.4
+  CyCritH_0 1.1
   CyCritL_0 -0.75
-  CxMin_0 0.0340
-  parabCxCoeff_0 6.0E-4
+  CxMin_0 0.021
+  parabCxCoeff_0 7.0E-4
   Cy0_1 0.4
   AOACritH_1 30.0
   AOACritL_1 -22.0
   CyCritH_1 1.4
   CyCritL_1 -0.7
-  CxMin_1 0.091
-  parabCxCoeff_1 7.5E-4
+  CxMin_1 0.028
+  parabCxCoeff_1 7.0E-4
   parabAngle 6.0
   Decline 0.004
   maxDistAng 40.0
@@ -221,8 +221,8 @@
 [Supersonic]
   VminMach 0.92
   VsoundMach1 0.98
-  CfsoundMach1 1.55
+  CfsoundMach1 1.8
   VsoundMach2 1.2
-  CfsoundMach2 1.5
+  CfsoundMach2 1.8
   VmaxMach 1.25
-  CfmaxMach 1.35
+  CfmaxMach 1.55

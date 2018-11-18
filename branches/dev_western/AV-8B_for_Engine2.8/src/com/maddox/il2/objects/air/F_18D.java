@@ -28,32 +28,29 @@ public class F_18D extends F_18
 
     public void update(float f)
     {
-        computeF404_GE400_AB();
         super.update(f);
+        computeF404_GE400_AB();
+        computeLimiter18D();
     }
 
     private void computeF404_GE400_AB()
     {
+        double x = (double)cvt(calculateMach(), 1.0F, 1.75F, 1F, 0.4F);
+        double y = (double)cvt(FM.getAltitude(), 16500F, 18000F, 1F, 0.4F);
         if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() > 5)
-            FM.producedAF.x += 19200D;
+            FM.producedAF.x += 19200D * x * y;
         if(FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() > 5)
-            FM.producedAF.x += 19200D;
-        float f = FM.getAltitude() / 1000F;
-        float f1 = 0.0F;
-        if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() == 6 && FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() == 6)
-            if(f > 17F)
-            {
-                f1 = 20F;
-            }
-            else
-            {
-                float f2 = f * f;
-                float f3 = f2 * f;
-                float f4 = f3 * f;
-                float f5 = f4 * f;
-                f1 = ((0.00179375F * f4 - 0.043032F * f3) + 0.315483F * f2) - 0.563221F * f;
-            }
-        FM.producedAF.x -= f1 * 1000F;
+            FM.producedAF.x += 19200D * x * y;
+    }
+
+    private void computeLimiter18D()
+    {
+        if(FM.EI.engines[0].getThrustOutput() < 1.001F || FM.EI.engines[1].getThrustOutput() < 1.001F)
+        {
+            double x = (double)cvt(calculateMach(), 0.5F, 1.0F, 0F, 56000F);
+            double y = (double)cvt(FM.getAltitude(), 0.0F, 11000F, 1F, 0.258F);
+            FM.producedAF.x -= (x * y);
+        }
     }
 
     public void missionStarting()
@@ -71,7 +68,7 @@ public class F_18D extends F_18
         for(int i = 0; i < weaponHookArray.length; i++)
             try
             {
-               if(bulletEmitters[i] instanceof RocketGunAIM9L_gn16)
+                if(bulletEmitters[i] instanceof RocketGunAIM9L_gn16)
                     ((RocketGunAIM9L_gn16)bulletEmitters[i]).updateHook(weaponHookArray[i]);
             }
             catch(Exception exception) { }
