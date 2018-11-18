@@ -63,7 +63,7 @@
   CompressorRPMP0 1600.0
   CompressorRPMPMax 3480.0
   CompressorMaxATARPM 5.0
-  CompressorSpeedManifold 1.1
+  CompressorSpeedManifold 1.0
   DisP0x 3480
   DisP0y 0
   DisP1x 0
@@ -79,10 +79,10 @@
   TOILMAX 150
   TOILMIN 0
   TOILMIN 0
-  FuelConsumptionP01 0.02
-  FuelConsumptionP05 0.04
-  FuelConsumptionP1  0.06
-  FuelConsumptionPMAX 0.190
+  FuelConsumptionP01 0.01
+  FuelConsumptionP05 0.02
+  FuelConsumptionP1  0.03
+  FuelConsumptionPMAX 0.180
 [GE-402]
   HorsePowers 1.0
   BoostFactor 1.1
@@ -112,7 +112,7 @@
   CompressorRPMP0 1600.0
   CompressorRPMPMax 3480.0
   CompressorMaxATARPM 5.0
-  CompressorSpeedManifold 1.05
+  CompressorSpeedManifold 1.00
   DisP0x 3480
   DisP0y 0
   DisP1x 0
@@ -128,7 +128,7 @@
   TOILMAX 150
   TOILMIN 0
   TOILMIN 0
-  FuelConsumptionP01 0.02
-  FuelConsumptionP05 0.04
-  FuelConsumptionP1  0.06
-  FuelConsumptionPMAX 0.190
+  FuelConsumptionP01 0.01
+  FuelConsumptionP05 0.02
+  FuelConsumptionP1  0.03
+  FuelConsumptionPMAX 0.180
