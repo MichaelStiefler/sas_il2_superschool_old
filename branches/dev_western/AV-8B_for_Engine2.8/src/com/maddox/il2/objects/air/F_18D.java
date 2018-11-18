@@ -45,7 +45,8 @@ public class F_18D extends F_18
 
     private void computeLimiter18D()
     {
-        if(FM.EI.engines[0].getThrustOutput() < 1.001F || FM.EI.engines[1].getThrustOutput() < 1.001F)
+        if((FM.EI.engines[0].getThrustOutput() < 1.001F && FM.EI.engines[0].getStage() > 5)
+           || (FM.EI.engines[1].getThrustOutput() < 1.001F && FM.EI.engines[1].getStage() > 5))
         {
             double x = (double)cvt(calculateMach(), 0.5F, 1.0F, 0F, 56000F);
             double y = (double)cvt(FM.getAltitude(), 0.0F, 11000F, 1F, 0.258F);

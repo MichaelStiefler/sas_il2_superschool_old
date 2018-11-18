@@ -82,6 +82,9 @@ public class AV_8B extends AV_8
         holdFollow = false;
         actorFollowing = null;
         t1 = 0L;
+        counter = 0;
+        error = 0;
+        raretimer = 0L;
         semiradartarget = null;
         groundradartarget = null;
         if(Config.cur.ini.get("Mods", "RWRTextStop", 0) > 0) bRWR_Show_Text_Warning = false;
@@ -1269,6 +1272,14 @@ public class AV_8B extends AV_8
 
     public void rareAction(float f, boolean flag)
     {
+        if(raretimer != Time.current() && this == World.getPlayerAircraft())
+        {
+            counter++;
+            if(counter % 12 == 9)
+                InertialNavigation();
+        }
+        raretimer = Time.current();
+
         super.rareAction(f, flag);
 
         if(bHasLaser && this == World.getPlayerAircraft())
@@ -1362,6 +1373,46 @@ public class AV_8B extends AV_8
                 radartoggle = true;
                 radarmode = 0;
             }
+    }
+
+    private boolean InertialNavigation()
+    {
+        Point3d point3d = new Point3d();
+        pos.getAbs(point3d);
+        Vector3d vector3d = new Vector3d();
+        Aircraft aircraft = World.getPlayerAircraft();
+        if(aircraft.getSpeed(vector3d) > 20D && aircraft.pos.getAbsPoint().z >= 150D)
+        {
+            pos.getAbs(point3d);
+            if(Mission.cur() != null)
+            {
+                error++;
+                if(error > 99)
+                    error = 1;
+            }
+            int i = error;
+            int j = i;
+            Random random = new Random();
+            int k = random.nextInt(100);
+            if(k > 50)
+                i -= i * 2;
+            k = random.nextInt(100);
+            if(k > 50)
+                j -= j * 2;
+            double d = Main3D.cur3D().land2D.mapSizeX() / 1000D;
+            double d1 = ((Main3D.cur3D().land2D.worldOfsX() + ((Actor) (aircraft)).pos.getAbsPoint().x) / 1000D) / 10D;
+            double d2 = ((Main3D.cur3D().land2D.worldOfsY() + ((Actor) (aircraft)).pos.getAbsPoint().y) / 1000D) / 10D;
+            char c = (char)(int)(65D + Math.floor((d1 / 676D - Math.floor(d1 / 676D)) * 26D));
+            char c1 = (char)(int)(65D + Math.floor((d1 / 26D - Math.floor(d1 / 26D)) * 26D));
+            String s = "";
+            if(d > 260D)
+                s = "" + c + c1;
+            else
+                s = "" + c1;
+            int l = (int)Math.ceil(d2);
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "INS: " + s + "-" + l);
+        }
+        return true;
     }
 
     public void update(float f)
@@ -1473,6 +1524,10 @@ public class AV_8B extends AV_8
     public float tangate;
     public long tf;
     public int leftscreen;
+
+    private int counter;
+    private int error;
+    private long raretimer;
 
     private boolean bSightAutomation;
     private boolean bSightBombDump;
