@@ -1131,7 +1131,8 @@ public class AV_8 extends Scheme1
         moveHydraulics(f);
         soundbarier();
         computeLift();
-        computeEnergy();
+        computeLimiter();
+        computeVerticalThrust();
         super.update(f);
         pullingvapor();
         VTOL();
@@ -1709,44 +1710,44 @@ public class AV_8 extends Scheme1
     public void computeLift()
     {
         Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-        float x = calculateMach();
-        float Lift = 0.0F;
-        if(x <= 0.0F)
-            Lift = 0.08F;
-        else if(x > 1.1F)
-            Lift = 0.05F;
+        float x = cvt(calculateMach(), 0.9F, 1.3F, 0.08F, 0.04F);
+        float y = cvt(calculateMach(), 1.3F, 2.3F, 0.04F, 0.016F);
+        if(calculateMach() < 1.3F)
+            polares.lineCyCoeff = x;
         else
-        {
-            float x2 = x * x;
-            float x3 = x2 * x;
-            float x4 = x3 * x;
-            float x5 = x4 * x;
-            Lift = - 2.02967F*x4 + 3.68466F*x3 - 1.8923F*x2 + 0.297311F*x + 0.08F;
-          //  {{0.0, 0.08}, {0.2, 0.09}, {0.6, 0.11}, {1.0, 0.14}, {1.1, 0.05}}
-        }
-        polares.lineCyCoeff = Lift;
+            polares.lineCyCoeff = y;
     }
 
-    public void computeEnergy()
+    public void computeLimiter()
     {
-        float x = FM.getOverload();
-        float Energy = 0.0F;
-        if(x < -3F)
-            Energy = 0.0001F;
-        if(x >= 10F)
-            Energy = 0.085F;
-        else
+        if(FM.EI.engines[0].getThrustOutput() < 1.001F && FM.EI.engines[0].getStage() > 5)
         {
-            float x2 = x * x;
-            float x3 = x2 * x;
-            float x4 = x3 * x;
-            float x5 = x4 * x;
-            float x6 = x5 * x;
-            Energy= 0.000000842F*x5 + 0.0000009877F*x4 - 0.00000947291F*x3 + 0.00000222222F*x2 +0.0000170512F*x;
-            // {{-3,0.0001}, {-1.5,0.00001}, {0,0}, {1.5,0.00001}, {3,0.0001}, {10,0.085}}
-
+            double x = (double)cvt(calculateMach(), 0.5F, 1.0F, 0F, 5000F);
+            double y = (double)cvt(FM.getAltitude(), 0.0F, 11000F, 1F, -5.9F);
+            FM.producedAF.x -= (x * y);
         }
-        FM.Sq.dragParasiteCx += Energy;
+    }
+
+    public void computeVerticalThrust()
+    {
+        boolean isControlledByAI = true;
+        if(FM.isPlayers() && (FM instanceof RealFlightModel))
+        {
+            isControlledByAI = !((RealFlightModel)FM).RealMode;
+        }
+        float x = FM.EI.engines[0].getThrustOutput();
+        float ias = Pitot.Indicator((float)FM.Loc.z, FM.getSpeed()) * 3.6F;
+        float alt = FM.getAltitude() - (float)Engine.land().HQ_Air(FM.Loc.x, FM.Loc.y);
+        float y = cvt(ias, 0.0F, 150F, 1F, 0.9F);
+        float z = cvt(ias, 150F, 320F, 0.9F, 0.0F);
+        float t = cvt(alt, 0.0F, 20F, 1.0F, 1.0F);
+        float k = cvt(alt, 20F, 30F, 1.0F, 0.0F);
+        float Thrust1 = 0.0F;
+        if(FM.EI.engines[0].getStage() > 5 && FM.EI.getPowerOutput() > 0.2F && isControlledByAI) //&& ias < 15F) // AI
+        {
+            Thrust1 = x * 1.1F;
+        }
+        FM.producedAF.z += Thrust1 * (10F * FM.M.massEmpty  + 7F * FM.M.fuel) * y * z * t * k; // (10F * FM.M.massEmpty + 10F * FM.M.fuel)
     }
 
     public float getFlowRate()

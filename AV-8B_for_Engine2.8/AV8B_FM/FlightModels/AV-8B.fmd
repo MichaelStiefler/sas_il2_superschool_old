@@ -55,11 +55,11 @@
   DefaultElevatorTrim 0.000
   DefaultRudderTrim 0.000
 [Squares]
-  Wing 24.00
+  Wing 24.0
   Aileron 1.32
-  Flap 2.80
-  Stabilizer 2.10
-  Elevator 4.80
+  Flap 2.8
+  Stabilizer 2.1
+  Elevator 4.8
   Keel 3.18
   Rudder 2.0
   Wing_In 3
@@ -69,15 +69,15 @@
 [Arm]
   Aileron 3.5
   Flap 0.5
-  Stabilizer 5.0
-  Keel 4.5
-  Elevator 5.5
+  Stabilizer 7.0
+  Keel 7.5
+  Elevator 7.5
   Rudder 6.1
   Wing_In 3.0
   Wing_Mid 4.0
   Wing_Out 3.0
   Wing_V 1.5
-  GCenter   -2.0
+  GCenter   0.0
   GCenterZ  0.0
   GC_AOA_Shift  -0.7
   GC_Flaps_Shift 0.0
@@ -135,9 +135,9 @@
 [Gear]
   H 0.21
   Pitch 5.842
-  SinkFactor 700.0
-  SpringsStiffness 0.6
-  TailStiffness 0.4
+  SinkFactor 200.0
+  SpringsStiffness 0.55
+  TailStiffness 0.45
 [Params]
   CriticalAOA 21.00
   CriticalCy 01.70
@@ -166,17 +166,17 @@
   Range 1050.0
   CruiseSpeed 800.0
   SensYaw 0.35
-  SensPitch 0.80
-  SensRoll 0.20
+  SensPitch 0.6
+  SensRoll 0.2
 [Polares]
-  lineCyCoeff 0.090
-  AOAMinCx_Shift 0.30
+  lineCyCoeff 0.08
+  AOAMinCx_Shift 0.3
   Cy0_0 0.09
   AOACritH_0 25.0
   AOACritL_0 -16.0
   CyCritH_0 1.25
   CyCritL_0 -0.75
-  CxMin_0 0.033
+  CxMin_0 0.023
   parabCxCoeff_0 7.0E-4
   Cy0_1 0.8
   AOACritH_1 25.0
