@@ -18,6 +18,7 @@ import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorHMesh;
 import com.maddox.il2.engine.ActorMesh;
 import com.maddox.il2.engine.ActorNet;
+import com.maddox.il2.engine.ActorPosMove;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.Hook;
@@ -788,9 +789,18 @@ public class AircraftState {
     {
         if(tankOwner != null)
         {
-            for(int tankEffectNo = 0; tankEffectNo < 3; tankEffectNo++)
-                if(astateTankEffects[tankNo][tankEffectNo] != null)
-                    astateTankEffects[tankNo][tankEffectNo].pos.changeBase(tankOwner, null, true);
+            for(int tankEffectNo = 0; tankEffectNo < 3; tankEffectNo++) {
+                if(astateTankEffects[tankNo][tankEffectNo] != null) {
+//                    astateTankEffects[tankNo][tankEffectNo].pos.changeBase(tankOwner, null, true);
+                    // +++ TODO: Bugfix by SAS~Storebror, check actor presence and matching instance
+                    if (astateTankEffects[tankNo][tankEffectNo].pos instanceof ActorPosMove) {
+                        ActorPosMove apm = (ActorPosMove)astateTankEffects[tankNo][tankEffectNo].pos;
+                        if (apm.actor() != null && tankOwner != null) {
+                            apm.changeBase(tankOwner, null, true);
+                        }
+                    }
+                }
+            }
 
         }
         if(astateTankBurnLights[tankNo] != null)

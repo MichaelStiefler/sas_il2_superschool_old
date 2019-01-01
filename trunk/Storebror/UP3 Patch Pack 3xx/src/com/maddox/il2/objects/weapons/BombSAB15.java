@@ -11,9 +11,9 @@ import com.maddox.il2.objects.air.Chute;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
-public class BombMk24FlareLight extends Bomb {
+public class BombSAB15 extends Bomb {
 
-    public BombMk24FlareLight() {
+    public BombSAB15() {
         this.chute = null;
         this.bOnChute = false;
     }
@@ -47,7 +47,7 @@ public class BombMk24FlareLight extends Bomb {
             this.bOnChute = true;
             // TODO: Bugfix by SAS~Storebror: Avoid Scaling Meshes with Shadows!
 //          chute = new Chute(this);
-            this.chute = new BombChute(this, 0.25F);
+            this.chute = new BombChute(this, 0.5F);
             this.chute.collide(false);
             // TODO: Bugfix by SAS~Storebror: Avoid Scaling Meshes with Shadows!
 //          chute.mesh().setScale(0.5F);
@@ -68,16 +68,16 @@ public class BombMk24FlareLight extends Bomb {
     private float           ttcurTM;
 
     static {
-        final Class class1 = BombMk24FlareLight.class;
-        Property.set(class1, "mesh", "3DO/Arms/Mk24_Flare/mono.sim");
+        final Class class1 = BombSAB15.class;
+        Property.set(class1, "mesh", "3DO/Arms/SAB-15/mono.sim");
         Property.set(class1, "emitColor", new Color3f(1.0F, 1.0F, 1.0F));
         Property.set(class1, "emitLen", 250F);
         Property.set(class1, "emitMax", 10F);
         Property.set(class1, "radius", 75F);
         Property.set(class1, "power", 0.0F);
         Property.set(class1, "powerType", 1);
-        Property.set(class1, "kalibr", 0.2F);
-        Property.set(class1, "massa", 1.0F);
+        Property.set(class1, "kalibr", 0.2505F);
+        Property.set(class1, "massa", 15F);
         Property.set(class1, "sound", "weapon.bomb_phball");
     }
 }

@@ -11,9 +11,9 @@ import com.maddox.il2.objects.air.Chute;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
-public class BombMk24FlareLight extends Bomb {
+public class BombParaFlareUK extends Bomb {
 
-    public BombMk24FlareLight() {
+    public BombParaFlareUK() {
         this.chute = null;
         this.bOnChute = false;
     }
@@ -68,16 +68,16 @@ public class BombMk24FlareLight extends Bomb {
     private float           ttcurTM;
 
     static {
-        final Class class1 = BombMk24FlareLight.class;
-        Property.set(class1, "mesh", "3DO/Arms/Mk24_Flare/mono.sim");
-        Property.set(class1, "emitColor", new Color3f(1.0F, 1.0F, 1.0F));
+        final Class class1 = BombParaFlareUK.class;
+        Property.set(class1, "mesh", "3DO/Arms/paraFlareUK/mono.sim");
+        Property.set(class1, "emitColor", new Color3f(1.0F, 1.0F, 0.95F));
         Property.set(class1, "emitLen", 250F);
         Property.set(class1, "emitMax", 10F);
         Property.set(class1, "radius", 75F);
         Property.set(class1, "power", 0.0F);
         Property.set(class1, "powerType", 1);
         Property.set(class1, "kalibr", 0.2F);
-        Property.set(class1, "massa", 1.0F);
+        Property.set(class1, "massa", 8F);
         Property.set(class1, "sound", "weapon.bomb_phball");
     }
 }
