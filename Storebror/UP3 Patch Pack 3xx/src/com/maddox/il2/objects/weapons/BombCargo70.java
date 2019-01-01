@@ -30,38 +30,43 @@ public class BombCargo70 extends Bomb {
 
     public void start() {
         super.start();
-        ttcurTM = World.Rnd().nextFloat(0.5F, 1.75F);
+        this.ttcurTM = World.Rnd().nextFloat(0.5F, 1.75F);
     }
 
     public void interpolateTick() {
         super.interpolateTick();
-        getSpeed(v3d);
+        this.getSpeed(v3d);
         or.setAT0(v3d);
-        pos.setAbs(or);
-        if (bOnChute) {
+        this.pos.setAbs(or);
+        if (this.bOnChute) {
             v3d.scale(0.99);
-            if (v3d.z < -5.0)
-                v3d.z += (double) (1.1F * Time.tickConstLenFs());
-            setSpeed(v3d);
-        } else if (curTm > ttcurTM) {
-            bOnChute = true;
-            chute = new Chute(this);
-            chute.collide(false);
-            chute.mesh().setScale(1.5F);
-            chute.pos.setRel(new Point3d(2.0, 0.0, 0.0), new Orient(0.0F, 90.0F, 0.0F));
+            if (v3d.z < -5.0) {
+                v3d.z += 1.1F * Time.tickConstLenFs();
+            }
+            this.setSpeed(v3d);
+        } else if (this.curTm > this.ttcurTM) {
+            this.bOnChute = true;
+            // TODO: Bugfix by SAS~Storebror: Avoid Scaling Meshes with Shadows!
+//            chute = new Chute(this);
+            this.chute = new BombChute(this, 1.5F);
+            this.chute.collide(false);
+            // TODO: Bugfix by SAS~Storebror: Avoid Scaling Meshes with Shadows!
+//            chute.mesh().setScale(1.5F);
+            this.chute.pos.setRel(new Point3d(2.0, 0.0, 0.0), new Orient(0.0F, 90.0F, 0.0F));
         }
     }
 
     public void msgCollision(Actor actor, String string, String string_0_) {
         if (actor instanceof ActorLand) {
-            if (chute != null)
-                chute.landing();
-            Loc loc = new Loc();
-            pos.getAbs(loc);
+            if (this.chute != null) {
+                this.chute.landing();
+            }
+            final Loc loc = new Loc();
+            this.pos.getAbs(loc);
             loc.getPoint().z = Engine.land().HQ(loc.getPoint().x, loc.getPoint().y);
             if (!Engine.land().isWater(loc.getPoint().x, loc.getPoint().y)) {
                 loc.getOrient().set(loc.getOrient().getAzimut(), -90.0F, 0.0F);
-                ActorSimpleMesh actorsimplemesh = new ActorSimpleMesh("3DO/Arms/Cargo-TypeA/mono.sim", loc);
+                final ActorSimpleMesh actorsimplemesh = new ActorSimpleMesh("3DO/Arms/Cargo-TypeA/mono.sim", loc);
                 actorsimplemesh.collide(false);
                 actorsimplemesh.postDestroy(150000L);
             }
@@ -72,13 +77,14 @@ public class BombCargo70 extends Bomb {
                 ZutiWeaponsManagement.addCargoResources(this.pos.getAbsPoint());
             }
             // ----------------------------------------------------------------
-        } else if (chute != null)
-            chute.destroy();
-        destroy();
+        } else if (this.chute != null) {
+            this.chute.destroy();
+        }
+        this.destroy();
     }
 
     static {
-        Class var_class = BombCargo70.class;
+        final Class var_class = BombCargo70.class;
         Property.set(var_class, "mesh", "3DO/Arms/Cargo-TypeA/mono.sim");
         Property.set(var_class, "radius", 1.0F);
         Property.set(var_class, "power", 6.0F);

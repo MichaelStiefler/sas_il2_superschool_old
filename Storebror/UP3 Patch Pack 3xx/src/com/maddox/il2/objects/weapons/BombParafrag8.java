@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.weapons;
 
-import com.maddox.JGP.Color3f;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.World;
@@ -11,9 +10,9 @@ import com.maddox.il2.objects.air.Chute;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
-public class BombMk24FlareLight extends Bomb {
+public class BombParafrag8 extends Bomb {
 
-    public BombMk24FlareLight() {
+    public BombParafrag8() {
         this.chute = null;
         this.bOnChute = false;
     }
@@ -68,16 +67,13 @@ public class BombMk24FlareLight extends Bomb {
     private float           ttcurTM;
 
     static {
-        final Class class1 = BombMk24FlareLight.class;
-        Property.set(class1, "mesh", "3DO/Arms/Mk24_Flare/mono.sim");
-        Property.set(class1, "emitColor", new Color3f(1.0F, 1.0F, 1.0F));
-        Property.set(class1, "emitLen", 250F);
-        Property.set(class1, "emitMax", 10F);
+        final Class class1 = BombParafrag8.class;
+        Property.set(class1, "mesh", "3DO/Arms/Parafrag/mono.sim");
         Property.set(class1, "radius", 75F);
-        Property.set(class1, "power", 0.0F);
+        Property.set(class1, "power", 4F);
         Property.set(class1, "powerType", 1);
         Property.set(class1, "kalibr", 0.2F);
-        Property.set(class1, "massa", 1.0F);
+        Property.set(class1, "massa", 10.4F);
         Property.set(class1, "sound", "weapon.bomb_phball");
     }
 }
