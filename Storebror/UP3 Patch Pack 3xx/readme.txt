@@ -1,12 +1,12 @@
-UP3 RC4 Patch Pack v3.01
+UP3 RC4 Patch Pack v3.02
 
 Contents:
 - All fixes listed below
 - All feature enhancements listed below
 - UP3 RC4 without obfuscation
-- SAS Common Utils v1.09
+- SAS Common Utils v1.10
 - SFS AutoMount v2
-- IL-2 Selector 3.3.0
+- IL-2 Selector 3.4.2
 
 Included feature enhancements:
 - Replication of aircraft control surfaces movement over the net and through NTRK recordings
@@ -64,6 +64,7 @@ Included feature enhancements:
 - MXY-7 Ohka causes realistic damage on impact
 - SPB (TB-3, I-16 Type 5 and 24) improved, including automatic docking mechanism
 - Enhanced Weapon Release Control mod by SAS~Skylla integrated
+- SB-2 M-100 and M-103 playable nose gunner station added
 
 Included fixes:
 - Bf 109 Series Cockpit Code fix
@@ -156,6 +157,11 @@ Included fixes:
 - BombGunNull/BombNull bug fixed
 - Old/New TrackIR code compatibility bug fixed
 - P-40M Flight Model fixed, vertical stabilizer and rudder arm values adjusted according to the lengthened fuselage
+- MBR-2 top gunner fixed
+- SB-2 M-100 and M-103 Top and Ventral gunner fixed
+- Cant Z-1007 bis Top gunner fixed
+- All bomb/cargo/flare loads with parachutes fixed
+- YAK-7 Center of Gravity issues fixed
 
 (*) Me-262V3 flight model:
     Like in real life, you have to tap the brakes in order to get the 262V3 off the ground.
@@ -216,13 +222,13 @@ LogTicks=<0/1>             "Tick Delta" output in log.lst, default=0, 0=disable,
 Installation:
 1.) Run JSGME.exe from your UP3 RC4 game folder and disable any of the following previously installed mods(packs), if applicable:
     * Any old Hotfix Pack (* see below)
-    * Any old Patch Pack (e.g. "#UP#_Patch_Pack_216")
+    * Any old Patch Pack (e.g. "#UP#_Patch_Pack_301")
     * UP3 RC4 without obfuscation ("#UP#_Unobfuscated_MDS_for_UP3"), because this is integrated in this patch pack already
 2.) Check your enabled JSGME Mods, now there should only be:
     * #UP#_Enable_UP.3.0
     * Additional JSGME Mods not related to Fixes, Patches, unobfuscated UP etc.
 3.) Extract this Patch Pack to your UP3 RC4 game folder
-4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_301")
+4.) Run jsgme.exe and activate this mod ("#UP#_Patch_Pack_302")
 
 ********************
 
