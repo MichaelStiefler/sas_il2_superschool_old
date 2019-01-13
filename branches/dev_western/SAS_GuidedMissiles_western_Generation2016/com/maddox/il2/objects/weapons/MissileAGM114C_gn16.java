@@ -36,8 +36,8 @@ public class MissileAGM114C_gn16 extends Missile {
 		Property.set(class1, "forceP1", 0.0F); // Power1, i.e. Rocket Engine force output at beginning (in Percent)
 		Property.set(class1, "dragCoefficient", 0.28F); // Aerodynamic Drag Coefficient
 		Property.set(class1, "powerType", 0); // Type of Explosion. 0="Splash", 1="Splinters", 2="Napalm"
-		Property.set(class1, "power", 4.0F); // RL Data: 8kg HE warhead, for realism reduced to 1/2 of it's RL weight
-		Property.set(class1, "radius", 2.0F); // Radius of Explosion Effect
+		Property.set(class1, "power", 16.0F); // RL Data: 8kg HEAT warhead and make twice converting in HE
+		Property.set(class1, "radius", 0.6F); // Radius of Explosion Effect , HEAT is very narrow rafius
 		Property.set(class1, "kalibr", 0.178F); // Diameter of Missile Body
 		Property.set(class1, "massa", 45.5F); // Missile Weight at Launch time
 		Property.set(class1, "massaEnd", 36.5F); // Missile Weight when Booster burned out
