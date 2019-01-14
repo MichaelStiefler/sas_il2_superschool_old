@@ -31,7 +31,7 @@ public class MissilePython5_gn16 extends Missile {
 		Property.set(class1, "emitMax", 0.4F); // Amount of emitted Smoke
 		Property.set(class1, "sound", "weapon.rocket_132"); // Sound of Rocket Motor
 		Property.set(class1, "timeLife", 50F); // Rocket life time in Seconds
-		Property.set(class1, "timeFire", 9.0F); // Rocket Booster Burn time in Seconds
+		Property.set(class1, "timeFire", 8.6F); // Rocket Booster Burn time in Seconds
 		Property.set(class1, "force", 14400F); // Rocket Booster Power (in Newton)
 		Property.set(class1, "timeSustain", 0F); // Rocket Sustained Motor Burn time in Seconds (0 for single stage rockets)
 		Property.set(class1, "forceSustain", 0F); // Rocket Sustained Power (in Newton)
@@ -48,7 +48,7 @@ public class MissilePython5_gn16 extends Missile {
 		Property.set(class1, "stepMode", Missile.STEP_MODE_HOMING); // target tracking mode
 		Property.set(class1, "launchType", Missile.LAUNCH_TYPE_QUICK); // launch pattern
 		Property.set(class1, "detectorType", Missile.DETECTOR_TYPE_INFRARED); // detector type
-		Property.set(class1, "sunRayAngle", 5.5F); // max. Angle at which the missile will track Sun Ray, zero disables Sun Ray tracking (only valid for IR detector missiles)
+		Property.set(class1, "sunRayAngle", 4.5F); // max. Angle at which the missile will track Sun Ray, zero disables Sun Ray tracking (only valid for IR detector missiles)
 		Property.set(class1, "multiTrackingCapable", 1); // set whether or not this type of missile can fight multiple different targets simultaneously. Usually "1" for IR missiles and "0" for others.
 		Property.set(class1, "canTrackSubs", 0); // set whether or not submerged objects can be tracked
 		Property.set(class1, "minPkForAI", 25.0F); // min. Kill Probability for AI to launch a missile
