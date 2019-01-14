@@ -1,4 +1,4 @@
-// Source File Name: MissilePython7_gn16.java
+// Source File Name: MissilePython4_gn16.java
 // Author:           western0221
 // Last Modified by: western0221 2019-01-13
 package com.maddox.il2.objects.weapons;
@@ -48,7 +48,7 @@ public class MissilePython4_gn16 extends Missile {
 		Property.set(class1, "stepMode", Missile.STEP_MODE_HOMING); // target tracking mode
 		Property.set(class1, "launchType", Missile.LAUNCH_TYPE_QUICK); // launch pattern
 		Property.set(class1, "detectorType", Missile.DETECTOR_TYPE_INFRARED); // detector type
-		Property.set(class1, "sunRayAngle", 5.5F); // max. Angle at which the missile will track Sun Ray, zero disables Sun Ray tracking (only valid for IR detector missiles)
+		Property.set(class1, "sunRayAngle", 5.0F); // max. Angle at which the missile will track Sun Ray, zero disables Sun Ray tracking (only valid for IR detector missiles)
 		Property.set(class1, "multiTrackingCapable", 1); // set whether or not this type of missile can fight multiple different targets simultaneously. Usually "1" for IR missiles and "0" for others.
 		Property.set(class1, "canTrackSubs", 0); // set whether or not submerged objects can be tracked
 		Property.set(class1, "minPkForAI", 25.0F); // min. Kill Probability for AI to launch a missile
@@ -65,7 +65,7 @@ public class MissilePython4_gn16 extends Missile {
 		Property.set(class1, "flareLockTime", 1200L); // time (in milliseconds) for missile locking on to different target, i.e. flare (sun, ground clutter etc.)
 		Property.set(class1, "trackDelay", 500L); // time (in milliseconds) for missile tracking target after launch (i.e. the time for the missile to fly straight first to be clear of the launching A/C)
 		Property.set(class1, "failureRate", 10.0F); // Failure rate in percent
-		Property.set(class1, "maxLockGForce", 9.0F); // max. G-Force for lockon
+		Property.set(class1, "maxLockGForce", 10.0F); // max. G-Force for lockon
 		Property.set(class1, "maxFOVfrom", 30.0F); // max Angle offset from launch A/C POV
 		Property.set(class1, "maxFOVto", 360.0F); // max Angle offset from target aft POV
 		Property.set(class1, "PkMaxFOVfrom", 35.0F); // max Angle offset from launch A/C POV for Pk calculation
@@ -82,7 +82,7 @@ public class MissilePython4_gn16 extends Missile {
 		Property.set(class1, "fxNoLockVolume", 1.0F); // Volume for No Lock Tone, "1" is default
 		Property.set(class1, "smplLock", "AIM9_lock.wav"); // wav file for Lock Tone
 		Property.set(class1, "smplNoLock", "AIM9_no_lock.wav"); // wav file for No Lock Tone
-		Property.set(class1, "friendlyName", "Python3"); // Display Name of this missile
+		Property.set(class1, "friendlyName", "Python4"); // Display Name of this missile
 		Spawn.add(class1, new SPAWN());
 	}
 
