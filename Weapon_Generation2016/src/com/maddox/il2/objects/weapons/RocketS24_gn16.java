@@ -35,8 +35,8 @@ public class RocketS24_gn16 extends Rocket
            ? (class$com$maddox$il2$objects$weapons$RocketS24_gn16
           = _mthclass$("com.maddox.il2.objects.weapons.RocketS24_gn16"))
            : class$com$maddox$il2$objects$weapons$RocketS24_gn16);
-        Property.set(class1, "mesh", "3DO/Arms/S24_Rocket_gn16/mono.sim");
-        Property.set(class1, "sprite", "3DO/Effects/Tracers/GuidedRocket/Black.eff");
+        Property.set(class1, "mesh", "3do/Arms/S24_Rocket_gn16/mono.sim");
+        Property.set(class1, "sprite", "3do/Effects/Tracers/GuidedRocket/Black.eff");
         Property.set(class1, "flame", "3do/Effects/RocketS25/RocketS25Flame.sim");
         Property.set(class1, "smoke", "3do/Effects/RocketSidewinder/RocketSidewinderSmoke.eff");
         Property.set(class1, "emitColor", new Color3f(1.0F, 1.0F, 0.5F));
