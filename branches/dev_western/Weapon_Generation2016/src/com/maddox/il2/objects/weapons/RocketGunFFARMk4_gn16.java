@@ -1,3 +1,4 @@
+// Last Modified by: western0221 2019-01-22
 
 package com.maddox.il2.objects.weapons;
 
@@ -9,11 +10,6 @@ public class RocketGunFFARMk4_gn16 extends RocketGun
 
     public RocketGunFFARMk4_gn16()
     {
-    }
-
-    public void setRocketTimeLife(float f)
-    {
-        timeLife = -1F;
     }
 
     static Class _mthclass$(String s)
