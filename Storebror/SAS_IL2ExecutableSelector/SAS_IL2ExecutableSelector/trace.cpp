@@ -1,6 +1,6 @@
 //*****************************************************************
 // il2fb.exe - SAS IL-2 Executable Selector
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of il2fb.exe.
 //
@@ -115,10 +115,8 @@ void Proto(LPCTSTR szLine)
     /////////////////////////////////////////////////////////////////////////
     WriteFile(hFile, cTimeStamp, strlen(cTimeStamp), &dwBytesWritten, NULL);
     WriteFile(hFile, cLine, strlen(cLine), &dwBytesWritten, NULL);
-    //WriteFile(hFile,"\r\n",2,&dwBytesWritten,NULL);
     CloseHandle(hFile);
     delete [] cLine;
     delete [] cTimeStamp;
-    //LeaveCriticalSection(&myCriticalSection);
 }
 #endif

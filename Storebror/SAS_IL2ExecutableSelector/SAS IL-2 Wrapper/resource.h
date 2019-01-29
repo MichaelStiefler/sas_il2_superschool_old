@@ -1,6 +1,6 @@
 //*****************************************************************
 // wrapper.dll - il2fb.exe mod files wrapper
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of wrapper.dll.
 //
@@ -23,12 +23,11 @@
 //
 //*****************************************************************
 
-#include "../global/globals.h"
+#include "../global/version.h"
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by SAS IL-2 Wrapper.rc
 //
-#define IDI_ICON_SASUP                  102
 
 // Next default values for new objects
 //

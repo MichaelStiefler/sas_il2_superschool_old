@@ -1,6 +1,6 @@
 //*****************************************************************
 // IL-2 Selector.exe - IL-2 Selector Launcher
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of IL-2 Selector.exe.
 //
@@ -23,7 +23,7 @@
 //
 //*****************************************************************
 
-#include "../global/globals.h"
+#include "../global/version.h"
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by Il-2 Selector Launcher.rc

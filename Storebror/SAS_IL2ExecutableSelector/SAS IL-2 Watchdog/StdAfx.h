@@ -1,6 +1,6 @@
 //*****************************************************************
 // IL-2 Watchdog.exe - il2fb.exe Watchdog
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of IL-2 Watchdog.exe.
 //
@@ -26,8 +26,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 #pragma once
-
-#define WIN32_LEAN_AND_MEAN
 
 #include <Windows.h>
 #include <WindowsX.h>

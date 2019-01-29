@@ -1,6 +1,6 @@
 //*****************************************************************
 // il2fb.exe - SAS IL-2 Executable Selector
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of il2fb.exe.
 //
@@ -56,8 +56,6 @@ int g_iModTypes = 0;
 LPTSTR* g_szModTypes = NULL;
 LPTSTR* g_szModTypeHelpText = NULL;
 LPTSTR* g_szModTypeExeParms = NULL;
-//TCHAR* g_szModTypes[6] = {L"Stock Game", L"Classic Mod Game", L"SAS Modact 3", L"Ultrapack 3", L"Dark Blue World", L"Dark Blue World 1916"};
-//TCHAR* g_szModTypeExeParms[6] = {NULL, L"/f:files /m:mods /lb:il2fb.exe", L"/f:none /m:#SAS /lb:il2fb.exe", L"/f:none /m:#UP# /lb:il2fb.exe", L"/f:none /m:#DBW /lb:il2fb.exe", L"/f:none /m:#DBW_1916 /lb:il2fb.exe"};
 int g_iRamSizes[5] = {128, 256, 512, 768, 1024};
 TCHAR szAppName[MAX_PATH];
 TCHAR szSelectorPath[MAX_PATH];

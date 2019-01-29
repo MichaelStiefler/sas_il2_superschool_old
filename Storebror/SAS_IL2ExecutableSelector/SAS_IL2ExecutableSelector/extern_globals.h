@@ -1,6 +1,6 @@
 //*****************************************************************
 // il2fb.exe - SAS IL-2 Executable Selector
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of il2fb.exe.
 //
@@ -57,8 +57,6 @@ extern int g_iModTypes;
 extern LPTSTR* g_szModTypes;
 extern LPTSTR* g_szModTypeHelpText;
 extern LPTSTR* g_szModTypeExeParms;
-//extern TCHAR* g_szModTypes[6];
-//extern TCHAR* g_szModTypeExeParms[6];
 extern int g_iRamSizes[5];
 extern TCHAR szAppName[MAX_PATH];
 extern TCHAR szSelectorPath[MAX_PATH];

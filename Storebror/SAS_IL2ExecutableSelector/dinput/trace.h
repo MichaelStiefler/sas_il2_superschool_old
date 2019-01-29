@@ -1,6 +1,6 @@
 //*****************************************************************
 // DINPUT.dll - JVM Parameter parser and il2fb.exe modifier
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of DINPUT.dll.
 //

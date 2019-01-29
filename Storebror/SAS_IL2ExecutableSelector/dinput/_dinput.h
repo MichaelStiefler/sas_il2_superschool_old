@@ -1,6 +1,6 @@
 //*****************************************************************
 // DINPUT.dll - JVM Parameter parser and il2fb.exe modifier
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of DINPUT.dll.
 //
@@ -34,6 +34,7 @@
 //*************************************************************************
 #include "jni.h"
 #include "dinput.h"
+#include <string>
 
 //*************************************************************************
 // Definitions
@@ -43,6 +44,9 @@
 #define SERVER_INI			L"il2server.ini"
 #define CLIENT_CONF_INI		L"conf.ini"
 #define LOGFILE_NAME		L"initlog.lst"
+#define CLASSES_RUNTIME_FILE_NAME		L"%sclasses_runtime_%04d-%02d-%02d.csv"
+#define CLASSES_SORTED_FILE_NAME		L"%sclasses_sorted_%04d-%02d-%02d.csv"
+#define CLASSES_SUMMARY_FILE_NAME		L"%sclasses_summary_%04d-%02d-%02d.txt"
 #define IL2GE_PATHS			{L"il2ge.dll", L"il2ge\\lib\\il2ge.dll", L"bin\\selector\\basefiles\\il2ge.dll"}
 #define IL2GE_PATHS_NUM		3
 #define	XSS_DIVIDER			128
@@ -60,14 +64,6 @@
 #define SELECTOR_INFO_COPYRIGHT			6
 
 //*************************************************************************
-// Structure definitions
-//*************************************************************************
-struct MyJvmOptionItem {
-    LPCSTR lpJvmOptionItem;
-    LPCSTR lpJvmOptionItemLowercase;
-};
-
-//*************************************************************************
 // Function Prototypes
 //*************************************************************************
 void AdjustJvmParams();
@@ -75,19 +71,9 @@ void ReadSelectorSettings();
 void GetParams();
 BOOL IsServerExe();
 BOOL StartWatchdog();
+BOOL StartPipeLogger();
 BOOL FileExists(LPCTSTR szPath);
 void ReadConfSettings();
 void _tcstrim(LPTSTR str);
 
-//*************************************************************************
-// Type definitions
-//*************************************************************************
-typedef HRESULT(WINAPI * DIRECTINPUTCREATEA)(HINSTANCE, DWORD, LPDIRECTINPUTA *, LPUNKNOWN);
-typedef HRESULT(WINAPI * DIRECTINPUTCREATEW)(HINSTANCE, DWORD, LPDIRECTINPUTW *, LPUNKNOWN);
-typedef HRESULT(WINAPI * DIRECTINPUTCREATEEX)(HINSTANCE, DWORD, REFIID, LPVOID *, LPUNKNOWN);
-typedef HRESULT(WINAPI * DLLREGISTERSERVER)();
-typedef HRESULT(WINAPI * DLLUNREGISTERSERVER)();
-typedef BOOL(WINAPI * IMMDISABLEIME)(__in  DWORD);
-typedef jint(CALLBACK * ORI_CreateJavaVM)(JavaVM **p_vm, void **p_env, void *vm_args);
 JNIEXPORT jstring JNICALL Java_com_maddox_sas1946_il2_util_BaseGameVersion_getSelectorInfo(JNIEnv *, jobject, jint);
-typedef void(WINAPI * IL2GE_Init)();

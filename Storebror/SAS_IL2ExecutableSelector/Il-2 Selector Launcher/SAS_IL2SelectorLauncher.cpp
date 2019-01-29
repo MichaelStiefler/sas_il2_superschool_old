@@ -1,6 +1,6 @@
 //*****************************************************************
 // IL-2 Selector.exe - IL-2 Selector Launcher
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of IL-2 Selector.exe.
 //
@@ -62,8 +62,8 @@ int WINAPI _tWinMain(
     ZeroMemory(&pi, sizeof(pi));
     TCHAR szSelectorPath[MAX_PATH];
     TCHAR szSelectorFile[MAX_PATH];
-    memset(szSelectorPath, 0, sizeof(szSelectorPath));
-    memset(szSelectorFile, 0, sizeof(szSelectorFile));
+	ZeroMemory(szSelectorPath, sizeof(szSelectorPath));
+	ZeroMemory(szSelectorFile, sizeof(szSelectorFile));
     GetModuleFileName(NULL, szSelectorPath, MAX_PATH);
     LPTSTR pszFileName = _tcsrchr(szSelectorPath, '\\') + 1;
     *pszFileName = '\0';

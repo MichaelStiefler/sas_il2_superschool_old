@@ -1,6 +1,6 @@
 //*****************************************************************
 // il2fb.exe - SAS IL-2 Executable Selector
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of il2fb.exe.
 //
@@ -484,9 +484,7 @@ void SASES_OnHScroll(HWND hwnd, HWND hwndCtl, UINT code, int pos)
         case TB_THUMBTRACK:
         case TB_TOP:
         case TB_BOTTOM:
-            //case TB_ENDTRACK:
         {
-            //TRACE(L"code %d, pos %d\r\n", code, pos);
             g_iRamSize = stepRamSize(pos);
             SendMessage(GetDlgItem(g_hWnd, IDC_SLIDER_RAMSIZE), TBM_SETPOS, (WPARAM) TRUE, (LPARAM) g_iRamSize);
             SendMessage(GetDlgItem(g_hWnd, IDC_SLIDER_RAMSIZE), TBM_SETSEL, (WPARAM) TRUE, (LPARAM) MAKELONG(0, g_iRamSize));

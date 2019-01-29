@@ -1,6 +1,6 @@
 //*****************************************************************
 // IL-2 Watchdog.exe - il2fb.exe Watchdog
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of IL-2 Watchdog.exe.
 //
@@ -48,7 +48,6 @@ static const GUID Il2WatchdogGUID = SIGNATURE;
 void ShowLastError();
 static LRESULT MsgWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 void CheckIl2Termination();
-void CheckIl2Start();
 void CALLBACK WinEventProc(
 						   HWINEVENTHOOK hWinEventHook,
 						   DWORD event,
