@@ -1,6 +1,6 @@
 //*****************************************************************
 // IL-2 Watchdog.exe - il2fb.exe Watchdog
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of IL-2 Watchdog.exe.
 //
@@ -31,19 +31,16 @@
 #include "tchar.h"
 #include <assert.h>
 #include "winver.h"
-#pragma comment(lib, "version.lib")
+#include "globals.h"
 
+#pragma comment(lib, "version.lib")
 #pragma comment(lib, "gdiplus.lib")
 
-HWND g_hSplashWnd = NULL;
-static ULONG_PTR gdiplusToken;
-static ULONG_PTR gdiplusBGThreadToken;
 static Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 static Gdiplus::GdiplusStartupOutput gdiplusStartupOutput;
+static ULONG_PTR gdiplusToken;
+static ULONG_PTR gdiplusBGThreadToken;
 static TCHAR szVersionInfo[MAX_PATH];
-extern int g_iSplashScreenMode;
-
-
 
 // Creates a stream object initialized with the data from an executable resource.
 //************************************
@@ -253,10 +250,8 @@ HBITMAP LoadSplashImage(HMODULE hModule, LPCTSTR lpName, LPCTSTR lpType)
 void RegisterWindowClass(HINSTANCE hInstance, LPCTSTR lpIconName, LPCTSTR lpszClassName)
 {
     WNDCLASS wc = { 0 };
-    //wc.lpfnWndProc = DefWindowProc;
     wc.lpfnWndProc = WndProc;
     wc.hInstance = hInstance;
-    //wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON_SASUP));
     wc.hIcon = LoadIcon(hInstance, lpIconName);
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.lpszClassName = lpszClassName;
@@ -277,9 +272,9 @@ HWND CreateSplashWindow(HINSTANCE hInstance, LPCTSTR lpszClassName)
 {
     HWND hwndOwner = CreateWindow(lpszClassName, NULL, WS_POPUP,
                                   0, 0, 0, 0, NULL, NULL, hInstance, NULL);
-	DWORD dwExStyle = WS_EX_LAYERED | WS_EX_NOACTIVATE;
+	DWORD dwExStyle = WS_EX_LAYERED | WS_EX_NOACTIVATE | WS_EX_NOPARENTNOTIFY;
 	if (g_iSplashScreenMode & SPLASH_SCREEN_TOPMOST) dwExStyle |= WS_EX_TOPMOST;
-    return CreateWindowEx(dwExStyle, lpszClassName, NULL, WS_POPUP | WS_VISIBLE,
+	return CreateWindowEx(dwExStyle, lpszClassName, NULL, WS_POPUP | WS_VISIBLE,
                           0, 0, 0, 0, hwndOwner, NULL, hInstance, NULL);
 }
 
@@ -318,7 +313,6 @@ void SetSplashImage(HWND hwndSplash, HBITMAP hbmpSplash)
     Gdiplus::Font myFont(L"Times New Roman", 11, 1);
     Gdiplus::PointF thePoint(268, 405);
     Gdiplus::SolidBrush GxTextBrush(Gdiplus::Color(255, 255, 0, 0));
-    //WCHAR thetext[] = L"Selector 3.0 Beta 02";
     int stats = Gx.DrawString(szVersionInfo, -1, &myFont, thePoint, &GxTextBrush);
     // use the source image's alpha channel for blending
     BLENDFUNCTION blend = { 0 };
@@ -367,8 +361,6 @@ void GetSelectorVersion()
                 _tcscpy(szVersionInfo, L"IL-2 Selector ");
                 _tcsncat(szVersionInfo, (LPCTSTR)pvProductVersion, iProductVersionLen);
                 _tcscat(szVersionInfo, L" © by SAS");
-                //strProductName.SetString((LPCTSTR)pvProductName, iProductNameLen);
-                //strProductVersion.SetString((LPCTSTR)pvProductVersion, iProductVersionLen);
             }
         }
     }
@@ -397,25 +389,9 @@ void ShowSplash(HINSTANCE hInstance, LPCTSTR lpIconName, LPCTSTR lpszClassName, 
     ResumeThread(hSplashThread);
     CloseHandle(hSplashThread);
 
-    //CloseHandle(CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)StartSplashThread,mySplashParams,0,NULL));
-
     while(FindWindow(lpszClassName, NULL) == NULL) {
         Sleep(100);
     }
-
-    //CoInitialize(NULL);
-    //// Initialization
-    //gdiplusStartupInput.SuppressBackgroundThread = TRUE;
-    //Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput,
-    //	&gdiplusStartupOutput);
-    //Gdiplus::Status stat = gdiplusStartupOutput.NotificationHook(
-    //	&gdiplusBGThreadToken);
-    //assert(stat == Gdiplus::Ok);
-    //RegisterWindowClass(hInstance, lpIconName, lpszClassName);
-    //HBITMAP hSplashImage = LoadSplashImage(hInstance, lpSplashImageName, lpSplashImageType);
-    //g_hSplashWnd = CreateSplashWindow(hInstance, lpszClassName);
-    //SetWindowTextW(g_hSplashWnd, lpszSplashTitle);
-    //SetSplashImage(g_hSplashWnd, hSplashImage);
 }
 
 //************************************
@@ -433,19 +409,6 @@ void CloseSplash()
 
     PostMessage(g_hSplashWnd, WM_CLOSE, 0, 0);
     return;
-    /*
-    //OutputDebugString(L"CloseSplash.\r\n");
-    ShowWindowAsync(g_hSplashWnd, SW_HIDE);
-    //DestroyWindow(g_hSplashWnd);
-    //PostMessage(g_hSplashWnd, WM_CLOSE, 0, 0);
-    PostMessage(g_hSplashWnd, WM_DESTROY, 0, 0);
-    PostMessage(g_hSplashWnd, WM_NCDESTROY, 0, 0);
-    g_hSplashWnd = NULL;
-    CoUninitialize();
-    // Termination
-    gdiplusStartupOutput.NotificationUnhook(gdiplusBGThreadToken);
-    Gdiplus::GdiplusShutdown(gdiplusToken);
-    */
 }
 
 
@@ -485,20 +448,15 @@ UINT StartSplashThread(LPVOID pParam)
             TranslateMessage(&msg);
             DispatchMessage(&msg);
 
-            //if (msg.hwnd == g_hSplashWnd) {
             if((msg.message == WM_CLOSE) || (msg.message == WM_DESTROY)) {
                 break;
             }
-
-            //}
         }
     }
 
     // Return the exit code to the system.
     CoUninitialize();
-    //OutputDebugString(L"SplashThread Stop.\r\n");
     return msg.wParam;
-    //return 0;
 }
 
 // Callback Function
@@ -527,9 +485,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
         Gdiplus::GdiplusShutdown(gdiplusToken);
         break;
 
-        //case WM_DESTROY:
-        //	//PostQuitMessage(0);
-        //	break;
     default:
         return DefWindowProc(hwnd, Message, wParam, lParam);
     }

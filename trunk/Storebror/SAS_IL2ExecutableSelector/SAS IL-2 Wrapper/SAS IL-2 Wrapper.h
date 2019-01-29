@@ -1,6 +1,6 @@
 //*****************************************************************
 // wrapper.dll - il2fb.exe mod files wrapper
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of wrapper.dll.
 //
@@ -64,25 +64,20 @@
 typedef unsigned int __cdecl TSFS_open(char *filename, int flags);
 typedef unsigned int __cdecl TSFS_openf(unsigned __int64 hash, int flags);
 typedef unsigned int __cdecl TCalcCryptDump(int checkSecond2, BYTE* baseAddrData, int len);
-typedef unsigned int __cdecl TSFS_read(int filePointer, LPVOID lpBuffer, DWORD* nNumberOfBytesToRead);
-typedef unsigned int __cdecl TSFS_lseek(int filePointer, LONG lDistanceToMove, int moveMethod);
+typedef unsigned int __stdcall TSFS_read(int filePointer, LPVOID lpBuffer, DWORD* nNumberOfBytesToRead);
+typedef unsigned int __stdcall TSFS_lseek(int filePointer, LONG lDistanceToMove, int moveMethod);
 
 struct MyFileListItem {
-    unsigned __int64 hash;
-    LPSTR filePath;
-    DWORD	dwIndex;
+	unsigned __int64 hash;
+	LPSTR filePath;
+	DWORD	dwIndex;
 };
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*
- * Class:     HelloWorld
- * Method:    print
- * Signature: ()V
- */
-JNIEXPORT int JNICALL Java_com_maddox_il2_net_NetServerParams_readDump(JNIEnv *, jobject, jint);
- 
+	JNIEXPORT int JNICALL Java_com_maddox_il2_net_NetServerParams_readDump(JNIEnv *, jobject, jint);
+
 #ifdef __cplusplus
 }
 #endif
@@ -103,7 +98,6 @@ void CreateFilesFolderList(float * pfPikoSeconds);
 bool CreateCachedFilesFolderList(float * pfPikoSeconds);
 bool ReadCachedFileList(LPCTSTR pCachedFileListName);
 int RemoveDuplicates(float * pfPikoSeconds);
-int binarySearchFileListEnhanced(unsigned __int64 theHash);
 void GetCommandLineParams();
 void LinkIl2fbExe();
 void StopWatchStart(float *pfPikoSeconds);

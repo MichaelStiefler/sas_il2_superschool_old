@@ -46,7 +46,7 @@
     <_ProjectFileVersion>15.0.26419.1</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <OutDir>U:\IL2\CLIENT\COMMON\bin\selector\basefiles\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>IL-2 Watchdog</TargetName>
@@ -61,15 +61,16 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>
+      </MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <OutputFile>$(OutDir)IL-2 Watchdog.exe</OutputFile>
+      <OutputFile>U:\IL2\CLIENT\COMMON\bin\selector\basefiles\IL-2 Watchdog.exe</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -100,6 +101,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="globals.cpp" />
     <ClCompile Include="SAS IL-2 Watchdog.cpp" />
     <ClCompile Include="SplashScreen.cpp" />
     <ClCompile Include="StdAfx.cpp" />
@@ -107,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CopyData.h" />
+    <ClInclude Include="globals.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SAS IL-2 Watchdog.h" />
     <ClInclude Include="SplashScreen.h" />
@@ -117,7 +120,7 @@
     <ResourceCompile Include="SAS IL-2 Watchdog.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="img\SASUP.ico" />
+    <Image Include="img\SAS.ico" />
     <Image Include="img\splash.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

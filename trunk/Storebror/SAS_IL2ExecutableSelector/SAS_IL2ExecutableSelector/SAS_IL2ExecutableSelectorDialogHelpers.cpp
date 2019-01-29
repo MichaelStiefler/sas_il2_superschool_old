@@ -1,6 +1,6 @@
 //*****************************************************************
 // il2fb.exe - SAS IL-2 Executable Selector
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of il2fb.exe.
 //
@@ -112,8 +112,6 @@ void SetRamSliderTicks()
     SendMessage(GetDlgItem(g_hWnd, IDC_SLIDER_RAMSIZE), TBM_SETRANGE, (WPARAM)TRUE, (LPARAM)MAKELONG(g_bExpertModeEnabled ? 64 : 128, g_bExpertModeEnabled ? 2048 : 1024));
     SetDlgItemText(g_hWnd, IDC_STATIC_RAM_MIN, (g_bExpertModeEnabled) ? L"64" : L"128");
     SetDlgItemText(g_hWnd, IDC_STATIC_RAM_MAX, (g_bExpertModeEnabled) ? L"2048" : L"1024");
-    //SendMessage(GetDlgItem(g_hWnd, IDC_SLIDER_RAMSIZE), TBM_SETRANGE, (WPARAM)TRUE, (LPARAM)MAKELONG(128, 1024));
-    //SetDlgItemText(g_hWnd, IDC_STATIC_RAM_MAX, L"1024");
     SendMessage(GetDlgItem(g_hWnd, IDC_SLIDER_RAMSIZE), TBM_CLEARTICS, (WPARAM)TRUE, 0);
     SendMessage(GetDlgItem(g_hWnd, IDC_SLIDER_RAMSIZE), TBM_SETTIC, (WPARAM)TRUE, 128);
     SendMessage(GetDlgItem(g_hWnd, IDC_SLIDER_RAMSIZE), TBM_SETTIC, (WPARAM)TRUE, 256);
@@ -151,14 +149,11 @@ void FillDropdown()
 //************************************
 void SettingsToControls()
 {
-    //SendMessage(g_hWnd, WM_SETREDRAW, FALSE, 0);
     PostMessage(GetDlgItem(g_hWnd, IDC_COMBO_MODTYPES), CB_SETCURSEL, g_iModType, 0);
     ShowModtypeHints(g_iModType);
-    //if (g_iModType == 0) g_iRamSize = 128;
     g_iRamSize = stepRamSize(g_iRamSize);
     PostMessage(GetDlgItem(g_hWnd, IDC_COMBO_MODTYPES), CB_SETEDITSEL, 0, MAKELPARAM(0, -1));
     EnableWindow(GetDlgItem(g_hWnd, IDC_STATIC_RAM), bShowRamUsage());
-    //EnableWindow(GetDlgItem(g_hWnd, IDC_EDIT_RAM), bShowRamUsageEdit());
     SendMessage(GetDlgItem(g_hWnd, IDC_EDIT_RAM), EM_SETREADONLY, !bShowRamUsageEdit(), 0);
 
     if(GetFocus() != GetDlgItem(g_hWnd, IDC_EDIT_RAM)) {
@@ -218,7 +213,6 @@ void SettingsToControls()
 	CheckDlgButton(g_hWnd, IDC_CHECK_SPLASH_SHOW, (g_iSplashScreenMode & SPLASH_SCREEN_VISIBLE) ? BST_CHECKED : BST_UNCHECKED);
 	CheckDlgButton(g_hWnd, IDC_CHECK_SPLASH_TOPMOST, (g_iSplashScreenMode & SPLASH_SCREEN_TOPMOST) ? BST_CHECKED : BST_UNCHECKED);
     ShowAdditionalJvmParams();
-    //SendMessage(g_hWnd, WM_SETREDRAW, TRUE, 0);
     InvalidateRect(g_hWnd, NULL, TRUE);
 }
 //************************************
@@ -260,9 +254,9 @@ void ShowAdditionalJvmParams()
     }
 
     TCHAR szJvmOptionsInFile[0xFFFF];
-    memset(szJvmOptionsInFile, 0, sizeof(szJvmOptionsInFile));
+	ZeroMemory(szJvmOptionsInFile, sizeof(szJvmOptionsInFile));
     TCHAR szJvmOptions[0xFFFF];
-    memset(szJvmOptions, 0, sizeof(szJvmOptions));
+	ZeroMemory(szJvmOptions, sizeof(szJvmOptions));
     GetPrivateProfileSection(L"JVM", szJvmOptionsInFile, 0xFFFF, szIniFile);
     LPTSTR lpJvmOptionToken = szJvmOptionsInFile;
 
@@ -505,9 +499,6 @@ void CreateStatusBar(int numParts, ...)
 
     SendMessage(g_hWndStatus, SB_SETPARTS, numParts, (LPARAM)status_parts);
     SendMessage(g_hWndStatus, WM_SETFONT, (WPARAM)g_hStatusFont, TRUE);
-    //SetStatusBar(0, TRUE, RGB(255,0,0), GetSysColor(COLOR_BTNFACE), TRANSPARENT, L"Status TEST 1!");
-    //SetStatusBar(1, TRUE, RGB(255,0,0), RGB(0,255,0), OPAQUE, L"Status TEST 2!");
-    //SetStatusBar(2, FALSE, RGB(255,0,0), GetSysColor(COLOR_BTNFACE), TRANSPARENT, L"Status TEST 3!");
     delete [] status_parts;
 }
 

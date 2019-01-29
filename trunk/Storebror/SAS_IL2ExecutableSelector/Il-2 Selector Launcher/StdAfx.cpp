@@ -1,6 +1,6 @@
 //*****************************************************************
 // IL-2 Selector.exe - IL-2 Selector Launcher
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of IL-2 Selector.exe.
 //

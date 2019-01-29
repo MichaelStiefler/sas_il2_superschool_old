@@ -1,6 +1,6 @@
 //*****************************************************************
 // DINPUT.dll - JVM Parameter parser and il2fb.exe modifier
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of DINPUT.dll.
 //
@@ -26,35 +26,19 @@
 //*************************************************************************
 // Includes
 //*************************************************************************
-//#include <windows.h>
+#include "StdAfx.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <tchar.h>
 #include "trace.h"
 #include <share.h>
 #include "_dinput.h"
+#include "classes_runtime.h"
+#include "globals.h"
 
 #define _CRT_SECURE_NO_WARNINGS
 #pragma warning( disable : 4996 )
 
-
-//*************************************************************************
-// Globals
-//*************************************************************************
-HMODULE hJvm = NULL;
-HMODULE hDInput = NULL;
-HMODULE hImm32 = NULL;
-HANDLE g_hJobObject = NULL;
-TCHAR szDirectInputPath[MAX_PATH];
-TCHAR szImm32Path[MAX_PATH];
-TCHAR szJvmPath[MAX_PATH];
-TCHAR szCurDir[MAX_PATH];
-TCHAR szIniFile[MAX_PATH];
-TCHAR szConfIniFile[MAX_PATH];
-TCHAR LogFileName[MAX_PATH];
-char cIniFile[MAX_PATH];
-BOOL g_bProcessAttached = FALSE;
-int g_iSplashScreenMode = 0;
 
 //************************************
 // Method:    DllMain
@@ -73,27 +57,20 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 {
     switch(ul_reason_for_call) {
     case DLL_PROCESS_ATTACH:
-        if(hDInput == NULL) {
-            memset(szCurDir, 0, sizeof(szCurDir));
-            GetModuleFileName(NULL, szCurDir, MAX_PATH);
+        if(hDInput == NULL && !g_bProcessAttached) {
+			ZeroMemory(szCurDir, sizeof(szCurDir));
+			ZeroMemory(cCurDir, sizeof(cCurDir));
+			ZeroMemory(szIniFile, sizeof(szIniFile));
+			ZeroMemory(szConfIniFile, sizeof(szConfIniFile));
+
+			GetModuleFileName(NULL, szCurDir, MAX_PATH);
             LPTSTR pszFileName = NULL;
             pszFileName = _tcsrchr(szCurDir, '\\') + 1;
             *pszFileName = '\0';
+			wcstombs(cCurDir, szCurDir, _tcslen(szCurDir));
+
             _stprintf(LogFileName, L"%s%s", szCurDir, LOGFILE_NAME);
-            FILE * log;
-
-            while(true) {
-                log = _tfsopen(LogFileName, L"wb", _SH_DENYWR);
-
-                if(log != NULL) {
-                    break;
-                }
-
-                Sleep(rand() % 100);
-            }
-
-            fflush(log);
-            fclose(log);
+			ResetFile(LogFileName);
 
             if(IsServerExe()) {
                 _stprintf(szIniFile, L"%s%s", szCurDir, SERVER_INI);
@@ -109,7 +86,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 
         if(!g_bProcessAttached) {
             g_bProcessAttached = TRUE;
-            AdjustJvmParams();
+			AdjustJvmParams();
         }
 
         break;
@@ -126,8 +103,12 @@ BOOL APIENTRY DllMain(HMODULE hModule,
         if(hDInput != NULL) {
             FreeLibrary(hDInput);
             hDInput = NULL;
-        }
+		}
 		if (g_hJobObject != NULL) CloseHandle(g_hJobObject);
+		if (g_bDumpFileAccess) {
+			PrintClassesList();
+			WaitForClassesRuntimeWriter();
+		}
         break;
     }
 

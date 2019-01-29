@@ -1,6 +1,6 @@
 //*****************************************************************
 // IL-2 Watchdog.exe - il2fb.exe Watchdog
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of IL-2 Watchdog.exe.
 //
@@ -25,4 +25,5 @@
 
 #include <windows.h>
 bool _trace(TCHAR *format, ...);
+bool _trace(char *format, ...);
 #define TRACE _trace

@@ -1,6 +1,6 @@
 //*****************************************************************
 // DINPUT.dll - JVM Parameter parser and il2fb.exe modifier
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of DINPUT.dll.
 //
@@ -23,7 +23,7 @@
 //
 //*****************************************************************
 
-#include "../global/globals.h"
+#include "../global/version.h"
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by dinput.rc

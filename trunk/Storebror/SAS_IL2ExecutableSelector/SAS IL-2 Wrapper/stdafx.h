@@ -1,6 +1,6 @@
 //*****************************************************************
 // wrapper.dll - il2fb.exe mod files wrapper
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of wrapper.dll.
 //

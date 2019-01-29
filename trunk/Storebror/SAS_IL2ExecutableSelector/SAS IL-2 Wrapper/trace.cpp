@@ -1,6 +1,6 @@
 //*****************************************************************
 // wrapper.dll - il2fb.exe mod files wrapper
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of wrapper.dll.
 //
@@ -31,6 +31,44 @@
 
 extern TCHAR LogFileName[];
 
+bool traceLog(LPCSTR output) {
+#ifdef _DEBUG
+	OutputDebugStringA(output);
+#endif
+	if (LogFileName != NULL && _tcslen(LogFileName) != 0) {
+		SYSTEMTIME stSystemTime;
+		/////////////////////////////////////////////////////////////////////////
+		// Generate Time Stamp
+		/////////////////////////////////////////////////////////////////////////
+		GetLocalTime(&stSystemTime);
+		FILE *log;
+
+		while (true) {
+			log = _wfsopen(LogFileName, L"ab", _SH_DENYWR);
+
+			if (log != NULL) {
+				break;
+			}
+
+			Sleep(rand() % 100);
+		}
+
+		fprintf(log, "%04d-%02d-%02d %02d:%02d:%02d:%03d    (wrapper) : %s",
+			stSystemTime.wYear,
+			stSystemTime.wMonth,
+			stSystemTime.wDay,
+			stSystemTime.wHour,
+			stSystemTime.wMinute,
+			stSystemTime.wSecond,
+			stSystemTime.wMilliseconds,
+			output);
+		fflush(log);
+		fclose(log);
+	}
+	return true;
+}
+
+
 //************************************
 // Method:    _trace
 // FullName:  _trace
@@ -42,63 +80,18 @@ extern TCHAR LogFileName[];
 //************************************
 bool _trace(TCHAR *format, ...)
 {
-    va_list argptr;
-    va_start(argptr, format);
-    int len = _vsctprintf(format, argptr)   // _vscprintf doesn't count
-              + 1; // terminating '\0'
-    TCHAR* buffer = (TCHAR*)malloc(len * sizeof(TCHAR));
-    memset(buffer, 0, sizeof(buffer));
-    _vsntprintf(buffer, len - 1, format, argptr);
-    buffer[len - 1] = L'\0';
-    va_end(argptr);
-#ifdef _DEBUG
-    OutputDebugString(buffer);
-#endif
-
-    if(LogFileName != NULL && _tcslen(LogFileName) != 0) {
-        CHAR* cBufLog = (CHAR*)malloc(len * sizeof(TCHAR));
-        memset(cBufLog, 0, sizeof(cBufLog));
-        wcstombs(cBufLog, buffer, len - 1);
-        cBufLog[len - 1] = '\0';
-        SYSTEMTIME stSystemTime;
-        /////////////////////////////////////////////////////////////////////////
-        // Generate Time Stamp
-        /////////////////////////////////////////////////////////////////////////
-        GetLocalTime(&stSystemTime);
-        int lenLogFileName = _tcslen(LogFileName);
-        CHAR* cLogFileName = (CHAR*)malloc((lenLogFileName + 1) * sizeof(TCHAR));
-        memset(cLogFileName, 0, sizeof(cLogFileName));
-        wcstombs(cLogFileName, LogFileName, lenLogFileName);
-        cLogFileName[lenLogFileName] = '\0';
-        FILE *log;
-
-        while(true) {
-            log = _fsopen(cLogFileName, "ab", _SH_DENYWR);
-
-            if(log != NULL) {
-                break;
-            }
-
-            Sleep(rand() % 100);
-        }
-
-        fprintf(log, "%04d-%02d-%02d %02d:%02d:%02d:%03d    (wrapper) : %s",
-                stSystemTime.wYear,
-                stSystemTime.wMonth,
-                stSystemTime.wDay,
-                stSystemTime.wHour,
-                stSystemTime.wMinute,
-                stSystemTime.wSecond,
-                stSystemTime.wMilliseconds,
-                cBufLog);
-        fflush(log);
-        fclose(log);
-        free(cBufLog);
-        free(cLogFileName);
-    }
-
-    free(buffer);
-    return true;
+	va_list argptr;
+	va_start(argptr, format);
+	int len = _vsctprintf(format, argptr)   // _vscprintf doesn't count
+		+ 1; // terminating '\0'
+	TCHAR* buffer = (TCHAR*)calloc(len, sizeof(TCHAR));
+	_vsntprintf(buffer, len - 1, format, argptr);
+	buffer[len - 1] = L'\0';
+	va_end(argptr);
+	CHAR* cBufLog = (CHAR*)calloc(len, sizeof(CHAR));
+	wcstombs(cBufLog, buffer, len - 1);
+	cBufLog[len - 1] = '\0';
+	return traceLog(cBufLog);
 }
 
 //************************************
@@ -112,56 +105,13 @@ bool _trace(TCHAR *format, ...)
 //************************************
 bool _trace(char *format, ...)
 {
-    va_list argptr;
-    va_start(argptr, format);
-    int len = _vscprintf(format, argptr)   // _vscprintf doesn't count
-              + 1; // terminating '\0'
-    CHAR* buffer = (CHAR*)malloc(len * sizeof(CHAR));
-    memset(buffer, 0, sizeof(buffer));
-    _vsnprintf(buffer, len - 1, format, argptr);
-    buffer[len - 1] = '\0';
-    va_end(argptr);
-#ifdef _DEBUG
-    OutputDebugStringA(buffer);
-#endif
-
-    if(LogFileName != NULL && _tcslen(LogFileName) != 0) {
-        SYSTEMTIME stSystemTime;
-        /////////////////////////////////////////////////////////////////////////
-        // Generate Time Stamp
-        /////////////////////////////////////////////////////////////////////////
-        GetLocalTime(&stSystemTime);
-        int lenLogFileName = _tcslen(LogFileName);
-        CHAR* cLogFileName = (CHAR*)malloc((lenLogFileName + 1) * sizeof(TCHAR));
-        memset(cLogFileName, 0, sizeof(cLogFileName));
-        wcstombs(cLogFileName, LogFileName, lenLogFileName);
-        cLogFileName[lenLogFileName] = '\0';
-        FILE *log;
-
-        while(true) {
-            log = _fsopen(cLogFileName, "ab", _SH_DENYWR);
-
-            if(log != NULL) {
-                break;
-            }
-
-            Sleep(rand() % 100);
-        }
-
-        fprintf(log, "%04d-%02d-%02d %02d:%02d:%02d:%03d (dinput.dll) : %s",
-                stSystemTime.wYear,
-                stSystemTime.wMonth,
-                stSystemTime.wDay,
-                stSystemTime.wHour,
-                stSystemTime.wMinute,
-                stSystemTime.wSecond,
-                stSystemTime.wMilliseconds,
-                buffer);
-        fflush(log);
-        fclose(log);
-        free(cLogFileName);
-    }
-
-    free(buffer);
-    return true;
+	va_list argptr;
+	va_start(argptr, format);
+	int len = _vscprintf(format, argptr)   // _vscprintf doesn't count
+		+ 1; // terminating '\0'
+	CHAR* buffer = (CHAR*)calloc(len, sizeof(CHAR));
+	_vsnprintf(buffer, len - 1, format, argptr);
+	buffer[len - 1] = '\0';
+	va_end(argptr);
+	return traceLog(buffer);
 }

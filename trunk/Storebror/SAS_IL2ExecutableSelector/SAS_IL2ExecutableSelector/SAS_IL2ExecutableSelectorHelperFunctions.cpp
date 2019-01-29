@@ -1,6 +1,6 @@
 //*****************************************************************
 // il2fb.exe - SAS IL-2 Executable Selector
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of il2fb.exe.
 //
@@ -84,8 +84,6 @@ UINT StartIl2Thread(LPVOID pParam)
     SetCurrentDirectory(szGamePath);
     TRACE(L"CreateProcess\r\n");
 
-    //SecureSetFileAttributes(szIl2StartPath,
-    //	FILE_ATTRIBUTE_HIDDEN);
     if(CreateProcess(NULL, szCommandLine, NULL,
                      NULL, FALSE, CREATE_NEW_CONSOLE, NULL, szGamePath, &si, &pi)) {
         TRACE(L"Process created\r\n");
@@ -123,8 +121,8 @@ UINT StartIl2Thread(LPVOID pParam)
 void GetFilesAndPaths()
 {
     TCHAR szBuf[MAX_PATH];
-    memset(szSelectorPath, 0, sizeof(szSelectorPath));
-    memset(szGamePath, 0, sizeof(szGamePath));
+	ZeroMemory(szSelectorPath, sizeof(szSelectorPath));
+	ZeroMemory(szGamePath, sizeof(szGamePath));
     GetModuleFileName(NULL, szAppName, MAX_PATH);
     _tcscpy(szBuf, szAppName);
     _tcscpy(szSelectorPath, szAppName);
@@ -149,8 +147,6 @@ void GetFilesAndPaths()
                 _tcscpy(szWindowTitle, L"IL-2 Selector ");
                 _tcsncat(szWindowTitle, (LPCTSTR)pvProductVersion, iProductVersionLen);
                 _tcscat(szWindowTitle, L" by SAS");
-                //strProductName.SetString((LPCTSTR)pvProductName, iProductNameLen);
-                //strProductVersion.SetString((LPCTSTR)pvProductVersion, iProductVersionLen);
             }
         }
     }

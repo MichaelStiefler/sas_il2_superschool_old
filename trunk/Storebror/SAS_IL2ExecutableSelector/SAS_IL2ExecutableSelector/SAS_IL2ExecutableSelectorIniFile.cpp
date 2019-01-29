@@ -1,6 +1,6 @@
 //*****************************************************************
 // il2fb.exe - SAS IL-2 Executable Selector
-// Copyright (C) 2013 SAS~Storebror
+// Copyright (C) 2019 SAS~Storebror
 //
 // This file is part of il2fb.exe.
 //
@@ -159,9 +159,9 @@ void WriteIniSettings()
 	WritePrivateProfileInt(L"Settings", L"SplashScreenMode", g_iSplashScreenMode, szIniFile);
     WritePrivateProfileString(L"JVM2", NULL, NULL, szIniFile);
     TCHAR szJvmOptionsInFile[0xFFFF];
-    memset(szJvmOptionsInFile, 0, sizeof(szJvmOptionsInFile));
+	ZeroMemory(szJvmOptionsInFile, sizeof(szJvmOptionsInFile));
     TCHAR szJvmOptions[0xFFFF];
-    memset(szJvmOptions, 0, sizeof(szJvmOptions));
+	ZeroMemory(szJvmOptions, sizeof(szJvmOptions));
     GetDlgItemText(g_hWnd, IDC_EDIT_JVM_PARAMS, szJvmOptions, 0xFFFF);
     WritePrivateProfileString(L"JVM", NULL, NULL, szIniFile);
     LPTSTR lpJvmOptionsInFile = szJvmOptionsInFile;
