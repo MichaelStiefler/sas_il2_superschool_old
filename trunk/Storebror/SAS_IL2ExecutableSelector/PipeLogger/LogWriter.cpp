@@ -34,7 +34,7 @@
 FILE* OpenLogFile(LPCTSTR logFileName) {
 	FILE *retVal = NULL;
 	while (true) {
-		retVal = _wfsopen(logFileName, L"ab", _SH_DENYWR);
+		retVal = _tfsopen(logFileName, L"ab", _SH_DENYWR);
 
 		if (retVal != NULL) {
 			break;
@@ -106,7 +106,7 @@ DWORD WINAPI LogWriterThread(LPVOID lpvParam)
 	try {
 		while (bContinue)
 		{
-			switch (WaitForMultipleObjects(3, waitHandles, FALSE, pLogWriterParams->dwFlushTimeout)) {
+			switch (WaitForMultipleObjects(3, waitHandles, FALSE, dwFlushTimeout)) {
 			case WAIT_OBJECT_0:
 				bFlushPending = flushQueue(logFile, logQueue);
 				if (bInstantFlush) {
@@ -115,7 +115,7 @@ DWORD WINAPI LogWriterThread(LPVOID lpvParam)
 						bFlushPending = FALSE;
 					}
 				}
-				else if (pLogWriterParams->dwFlushTimeout != INFINITE && GetTickCount() - lastFlush > dwFlushTimeout) {
+				else if (dwFlushTimeout != INFINITE && GetTickCount() - lastFlush > dwFlushTimeout) {
 					logFile = FlushLogFile(logFile, pchLogFile);
 					lastFlush = GetTickCount();
 					bFlushPending = FALSE;
