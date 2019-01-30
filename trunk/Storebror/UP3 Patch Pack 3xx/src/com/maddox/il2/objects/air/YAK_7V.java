@@ -69,9 +69,9 @@ public class YAK_7V extends YAK implements TypeFighter, TypeTNBFighter, TypeScou
         Property.set(class1, "yearExpired", 1945F);
         Property.set(class1, "cockpitClass", new Class[] { CockpitYAK_7Vper.class, CockpitYAK_7Vzad.class });
         Property.set(class1, "FlightModel", "FlightModels/Yak-7v.fmd");
-        Aircraft.weaponTriggersRegister(class1, new int[] { 0 });
-        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01" });
-        Aircraft.weaponsRegister(class1, "default", new String[] { "MGunShKASsi 500" });
+        Aircraft.weaponTriggersRegister(class1, new int[] { });
+        Aircraft.weaponHooksRegister(class1, new String[] { });
+        Aircraft.weaponsRegister(class1, "default", new String[] { null });
         Aircraft.weaponsRegister(class1, "none", new String[] { null });
     }
 }

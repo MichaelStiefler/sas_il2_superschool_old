@@ -559,7 +559,11 @@ public final class House extends ActorMesh
             drawing(false);
             return;
         }
-        setMesh(MeshShared.get(s));
+        try {
+            setMesh(MeshShared.get(s)); // TODO: Modified by SAS~Storebror, deal with missing dead meshes
+        } catch (Exception e) {
+            System.out.println("House activateMesh(): Couldn't set mesh \"" + s + "\".");
+        }
         if(flag ? !prop.bInitHeight1 : !prop.bInitHeight0)
         {
             int i = mesh().hookFind("Ground_Level");

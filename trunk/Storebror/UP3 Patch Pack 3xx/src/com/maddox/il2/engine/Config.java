@@ -92,12 +92,15 @@ public class Config {
             beforeLoadSound();
         }
         // TODO: +++ Mods Settings GUI by SAS~Storebror +++
-        this.bInstantLog = ini.get("Mods", "InstantLog", 0) != 0;
+        this.bInstantLog = ini.get("Mods", "InstantLog", 2) == 1;
+        this.bPipedLog = ini.get("Mods", "InstantLog", 2) == 2;
         // TODO: --- Mods Settings GUI by SAS~Storebror ---
         // TODO: +++ Additional Log Settings by SAS~Storebror +++
-        this.bLogDate = ini.get("Mods", "LogDate", 0) != 0;
-        this.bLogMilliseconds = ini.get("Mods", "LogMilliseconds", 0) != 0;
-        this.bLogTicks = ini.get("Mods", "LogTicks", 0) != 0;
+        this.bLogDate = ini.get("Mods", "LogDate", 1) != 0;
+        this.bLogMilliseconds = ini.get("Mods", "LogMilliseconds", 1) != 0;
+        this.bLogTicks = ini.get("Mods", "LogTicks", 1) != 0;
+        this.iEventLogFlushTimeout = ini.get("Mods", "EventLogFlushTimeout", 1000);
+        this.iLogFlushTimeout = ini.get("Mods", "LogFlushTimeout", 1000);
         // TODO: --- Additional Log Settings by SAS~Storebror ---
     }
 
@@ -123,12 +126,14 @@ public class Config {
             ini.setValue("Mods", "AutoNtrk", this.bAutoNtrkRecording ? "1" : "0");
             ini.setValue("Mods", "Darkness", "" + this.iDarkness);
             ini.setValue("Mods", "Diffuse", "" + this.iDiffuse);
+            ini.setValue("Mods", "EventLogFlushTimeout", "" + this.iEventLogFlushTimeout);
+            ini.setValue("Mods", "LogFlushTimeout", "" + this.iLogFlushTimeout);
             // TODO: --- Mods Settings GUI by SAS~Storebror ---
             saveSound();
             saveEngine();
         }
         // TODO: +++ Mods Settings GUI by SAS~Storebror +++
-        ini.setValue("Mods", "InstantLog", this.bInstantLog? "1" : "0");
+        ini.setValue("Mods", "InstantLog", this.bPipedLog? "2" : this.bInstantLog?"1":"0");
         // TODO: --- Mods Settings GUI by SAS~Storebror ---
         saveConsole();
         saveNet();
@@ -701,8 +706,14 @@ public class Config {
     public static final int     MAX_NIGHT_SETTINGS = 10;
  // TODO: --- Mods Settings GUI by SAS~Storebror ---
  // TODO: +++ Additional Log Settings by SAS~Storebror +++
-    public boolean              bLogDate;
-    public boolean              bLogMilliseconds;
-    public boolean              bLogTicks;
+    public boolean              bLogDate = true;
+    public boolean              bLogMilliseconds = true;
+    public boolean              bLogTicks = true;
+    public boolean              bPipedLog = true;
+    public int                  iEventLogFlushTimeout = 1000;
+    public int                  iLogFlushTimeout = 1000;
  // TODO: --- Additional Log Settings by SAS~Storebror ---
+ // TODO: +++ Widescreen backport from 4.12 by SAS~Storebror +++
+    public boolean              windowsWideScreenFoV = false;
+ // TODO: --- Widescreen backport from 4.12 by SAS~Storebror ---
 }
