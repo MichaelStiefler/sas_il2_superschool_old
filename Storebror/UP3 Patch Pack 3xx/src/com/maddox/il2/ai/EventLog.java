@@ -192,10 +192,18 @@ public class EventLog {
             if ((Main.cur() instanceof DServer) || ((Main.cur().netServerParams != null) && !Main.cur().netServerParams.isSingle() && Main.cur().netServerParams.isMaster())) {
                 bBuffering = false;
             }
-            if (bBuffering) {
-                file = new PrintStream(new BufferedOutputStream(new FileOutputStream(HomePath.toFileSystemName(fileName, 0), true), 2048));
+            // +++ TODO: Piped Logging +++
+            if (Config.cur != null && Config.cur.bPipedLog) {
+                file = new PrintStream(new FileOutputStream(new File("\\\\.\\pipe\\SAS_PIPE_LOGGER")));
+                file.print(HomePath.toFileSystemName(fileName, 0) + "\u0000" + (bBuffering?""+Config.cur.iEventLogFlushTimeout:"0")); // \u0000 = Separator, Flush Timeout = Instantly for Server, 1000ms for Client default
+                file.flush();
             } else {
-                file = new PrintStream(new FileOutputStream(HomePath.toFileSystemName(fileName, 0), true));
+            // --- TODO: Piped Logging ---
+                if (bBuffering) {
+                    file = new PrintStream(new BufferedOutputStream(new FileOutputStream(HomePath.toFileSystemName(fileName, 0), true), 2048));
+                } else {
+                    file = new PrintStream(new FileOutputStream(HomePath.toFileSystemName(fileName, 0), true));
+                }
             }
         } catch (Exception exception) {
             return false;

@@ -98,7 +98,7 @@ public class Sun
         float declinationRadians = (float)(90 - declination) * DEG2RAD;
         float declinationCosinus = (float)Math.cos(declinationRadians);
         float declinationSinus = (float)Math.sin(declinationRadians);
-        float dayRadians = (float)((month * 30 + day) - 80) * DEG2RAD;
+        float dayRadians = (float)(month * 30 + day - 80) * DEG2RAD;
         float timeOfDayRadians = (float)Math.PI * timeOfDay / 12F;
         float timeOfDaySinus = (float)Math.sin(timeOfDayRadians);
         float timeOfDayCosinus = (float)Math.cos(timeOfDayRadians);

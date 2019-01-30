@@ -1,5 +1,6 @@
 package com.maddox.rts;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,6 +35,18 @@ class ConsoleLogFile implements ConsoleOut {
     }
 
     public void type(String s) {
+        if (!this.isPiped && Config.cur != null && Config.cur.bPipedLog && this.fileName != null && this.fileName.length() > 0) {
+            //this.f = new PrintWriter(new FileOutputStream(HomePath.toFileSystemName(this.fileName, 0), true)); // TESTING!
+//            if (this.f != null) {
+//                this.f.flush();
+//                this.f.close();
+//            }
+            this.connectToPipe(this.fileName);
+            if (this.isPiped) {
+                Calendar calendar = Calendar.getInstance();
+                this.f.println("[" + this.longDate.format(calendar.getTime()) + "] ----------- Switched to pipe mode ----------");
+            }
+        }
         if (Console.bTypeTimeInLogFile) {
             // TODO: +++ Additional Log Settings by SAS~Storebror +++
             this.checkInit();
@@ -50,6 +63,7 @@ class ConsoleLogFile implements ConsoleOut {
         this.f.print(s);
         // TODO: +++ Instant Log by SAS~Storebror +++
         if (Config.cur.bInstantLog) this.flush();
+        if (this.isPiped) this.f.flush();
         // TODO: --- Instant Log by SAS~Storebror ---
     }
 
@@ -73,16 +87,41 @@ class ConsoleLogFile implements ConsoleOut {
     public ConsoleLogFile(String s) throws FileNotFoundException {
         // TODO: +++ Instant Log by SAS~Storebror +++
         this.fileName = s;
-        // TODO: --- Instant Log by SAS~Storebror ---
-        this.f = new PrintWriter(new FileOutputStream(HomePath.toFileSystemName(s, 0), true));
         Calendar calendar = Calendar.getInstance();
         this.longDate = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
+        // TODO: --- Instant Log by SAS~Storebror ---
+        
+        //this.connectToPipe(s);
+        this.f = new PrintWriter(new FileOutputStream(HomePath.toFileSystemName(s, 0), true));
+            
         // TODO: +++ Additional Log Settings by SAS~Storebror +++
 //        this.shortDate = DateFormat.getTimeInstance(DateFormat.MEDIUM);
         // TODO: --- Additional Log Settings by SAS~Storebror ---
         this.f.println();
         this.f.println("[" + this.longDate.format(calendar.getTime()) + "] ------------ BEGIN log session -------------");
         this.f.println();
+    }
+    
+    private void connectToPipe(String s) {
+        try {
+            if (this.f != null) {
+                this.f.flush();
+                this.f.close();
+            }
+            this.f = new PrintWriter(new FileOutputStream(new File("\\\\.\\pipe\\SAS_PIPE_LOGGER")));
+            this.f.print(HomePath.toFileSystemName(s, 0) + "\u0000" + Config.cur.iLogFlushTimeout); // \u0000 = Separator, Flush Timeout = 1000ms default
+//            this.f.print(HomePath.toFileSystemName(s, 0) + "\u00001000"); // \u0000 = Separator, Flush Timeout = 1000ms default
+            this.f.flush();
+            this.isPiped = true;
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            try {
+                this.f = new PrintWriter(new FileOutputStream(HomePath.toFileSystemName(s, 0), true));
+            } catch (FileNotFoundException fnfe) {
+                System.exit(-1);
+            }
+            e.printStackTrace();
+        }
     }
 
     // TODO: +++ Additional Log Settings by SAS~Storebror +++
@@ -106,5 +145,6 @@ class ConsoleLogFile implements ConsoleOut {
     // TODO: --- Instant Log by SAS~Storebror ---
     // TODO: +++ Additional Log Settings by SAS~Storebror +++
     private long        lastTick;
+    private boolean     isPiped = false;
     // TODO: --- Additional Log Settings by SAS~Storebror ---
 }
