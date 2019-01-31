@@ -123,6 +123,7 @@ public class F_14 extends Scheme2
         desiredPosition = 0.0F;
         tVarWingInput = -1L;
         oldVarWingControlSwitch = 0;
+        varWingProgram = 0F;
         bFlapsOutFixed = false;
         bFlapsInFixed = false;
         stockCy0_0 = 0.13F;
@@ -323,7 +324,7 @@ public class F_14 extends Scheme2
     public void auxPressed(int i)
     {
         super.auxPressed(i);
-        if(i == 20)
+/*        if(i == 20)
             if(!radartoggle)
             {
                 radartoggle = true;
@@ -377,11 +378,11 @@ public class F_14 extends Scheme2
             else
             if(leftscreen == 2)
                 HUD.log(AircraftHotKeys.hudLogWeaponId, "Left screen: Engine");
-        }
+        } */
         if(i == 25)
         {
             Bingofuel += 500;
-            if(Bingofuel > 6000)
+            if(Bingofuel > 11000)
                 Bingofuel = 1000;
             HUD.log(AircraftHotKeys.hudLogWeaponId, "Bingofuel " + Bingofuel);
         }
@@ -424,17 +425,6 @@ public class F_14 extends Scheme2
                 t1 = Time.current();
             }
         }
-        if(i == 28)
-            if(!ILS)
-            {
-                ILS = true;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "ILS ON");
-            }
-            else
-            {
-                ILS = false;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "ILS OFF");
-            }
         if(i == 29)
             if(!bDLCengaged)
             {
@@ -3068,53 +3058,57 @@ public class F_14 extends Scheme2
         float target_value = 0.0F;
 
         // VarWing degree decision part
+
+        // calculate Flight Computer Program value
+        if(calculateMach() < 0.435F)
+            varWingProgram = 0F;   // 20 deg.
+        else if(calculateMach() < 0.55F)
+            varWingProgram = 0.036364F;   // 22 deg.
+        else if(calculateMach() < 0.97F)
+        {
+            if(FM.getAltitude() > 6090F)   // over 20000 feet
+            {
+                if(calculateMach() < 0.64F)
+                    varWingProgram = 0.036364F;   // 22 deg.
+                else if(calculateMach() < 0.7F)
+                    varWingProgram = cvt(calculateMach(), 0.64F, 0.7F, 0.036364F, 0.0964F);   // 22 ~ 25.88 deg.
+                else if(calculateMach() < 0.738F)
+                    varWingProgram = cvt(calculateMach(), 0.7F, 0.738F, 0.0964F, 0.1396F);   // 25.88 ~ 28.53 deg.
+                else if(calculateMach() < 0.776F)
+                    varWingProgram = cvt(calculateMach(), 0.738F, 0.776F, 0.1396F, 0.2045F);   // 28.53 ~ 32.5 deg.
+                else if(calculateMach() < 0.8F)
+                    varWingProgram = cvt(calculateMach(), 0.7776F, 0.8F, 0.2045F, 0.3F);   // 32.5 ~ 37.869 deg.
+                else if(calculateMach() < 0.87222F)
+                    varWingProgram = cvt(calculateMach(), 0.8F, 0.87222F, 0.3F, 0.49F);   // 37.869 ~ 50 deg.
+                else
+                    varWingProgram = cvt(calculateMach(), 0.87222F, 0.97F, 0.49F, 0.6555F);   // 50 ~ 60 deg.
+            }
+            else   // below 20000 feet
+            {
+                if(calculateMach() < 0.6F)
+                    varWingProgram = cvt(calculateMach(), 0.55F, 0.6F, 0.036364F, 0.0964F);   // 22 ~ 25.88 deg.
+                else if(calculateMach() < 0.66F)
+                    varWingProgram = cvt(calculateMach(), 0.6F, 0.66F, 0.0964F, 0.1636F);   // 25.88 ~ 30 deg.
+                else if(calculateMach() < 0.75F)
+                    varWingProgram = cvt(calculateMach(), 0.66F, 0.75F, 0.1636F, 0.2636F);   // 30 ~ 36.11 deg.
+                else if(calculateMach() < 0.8F)
+                    varWingProgram = cvt(calculateMach(), 0.75F, 0.8F, 0.2636F, 0.3272F);   // 36.11 ~ 40 deg.
+                else if(calculateMach() < 0.87222F)
+                    varWingProgram = cvt(calculateMach(), 0.8F, 0.87222F, 0.3272F, 0.49F);   // 40 ~ 50 deg.
+                else
+                    varWingProgram = cvt(calculateMach(), 0.87222F, 0.97F, 0.49F, 0.6555F);   // 50 ~ 60 deg.
+            }
+        }
+        else if(calculateMach() < 1.1F)
+            varWingProgram = cvt(calculateMach(), 0.97F, 1.1F, 0.6555F, 0.7373F);   // 60 ~ 65 deg.
+        else
+            varWingProgram = cvt(calculateMach(), 1.1F, 1.2F, 0.7373F, 0.8F);   // 65 ~ 68 deg.
+
         switch(FM.CT.VarWingControlSwitch)
         {
         default:
         case 0:   // AUTO
-            if(calculateMach() < 0.435F)
-                target_value = 0F;   // 20 deg.
-            else if(calculateMach() < 0.55F)
-                target_value = 0.036364F;   // 22 deg.
-            else if(calculateMach() < 0.97F)
-            {
-                if(FM.getAltitude() > 6090F)   // over 20000 feet
-                {
-                    if(calculateMach() < 0.64F)
-                        target_value = 0.036364F;   // 22 deg.
-                    else if(calculateMach() < 0.7F)
-                        target_value = cvt(calculateMach(), 0.64F, 0.7F, 0.036364F, 0.0964F);   // 22 ~ 25.88 deg.
-                    else if(calculateMach() < 0.738F)
-                        target_value = cvt(calculateMach(), 0.7F, 0.738F, 0.0964F, 0.1396F);   // 25.88 ~ 28.53 deg.
-                    else if(calculateMach() < 0.776F)
-                        target_value = cvt(calculateMach(), 0.738F, 0.776F, 0.1396F, 0.2045F);   // 28.53 ~ 32.5 deg.
-                    else if(calculateMach() < 0.8F)
-                        target_value = cvt(calculateMach(), 0.7776F, 0.8F, 0.2045F, 0.3F);   // 32.5 ~ 37.869 deg.
-                    else if(calculateMach() < 0.87222F)
-                        target_value = cvt(calculateMach(), 0.8F, 0.87222F, 0.3F, 0.49F);   // 37.869 ~ 50 deg.
-                    else
-                        target_value = cvt(calculateMach(), 0.87222F, 0.97F, 0.49F, 0.6555F);   // 50 ~ 60 deg.
-                }
-                else   // below 20000 feet
-                {
-                    if(calculateMach() < 0.6F)
-                        target_value = cvt(calculateMach(), 0.55F, 0.6F, 0.036364F, 0.0964F);   // 22 ~ 25.88 deg.
-                    else if(calculateMach() < 0.66F)
-                        target_value = cvt(calculateMach(), 0.6F, 0.66F, 0.0964F, 0.1636F);   // 25.88 ~ 30 deg.
-                    else if(calculateMach() < 0.75F)
-                        target_value = cvt(calculateMach(), 0.66F, 0.75F, 0.1636F, 0.2636F);   // 30 ~ 36.11 deg.
-                    else if(calculateMach() < 0.8F)
-                        target_value = cvt(calculateMach(), 0.75F, 0.8F, 0.2636F, 0.3272F);   // 36.11 ~ 40 deg.
-                    else if(calculateMach() < 0.87222F)
-                        target_value = cvt(calculateMach(), 0.8F, 0.87222F, 0.3272F, 0.49F);   // 40 ~ 50 deg.
-                    else
-                        target_value = cvt(calculateMach(), 0.87222F, 0.97F, 0.49F, 0.6555F);   // 50 ~ 60 deg.
-                }
-            }
-            else if(calculateMach() < 1.1F)
-                target_value = cvt(calculateMach(), 0.97F, 1.1F, 0.6555F, 0.7373F);   // 60 ~ 65 deg.
-            else
-                target_value = cvt(calculateMach(), 1.1F, 1.2F, 0.7373F, 0.8F);   // 65 ~ 68 deg.
+            target_value = varWingProgram;
             oldVarWingControlSwitch = 0;
             break;
         case 1:   // Extend
@@ -3457,7 +3451,6 @@ public class F_14 extends Scheme2
     private boolean APmode1;
     private boolean APmode2;
     private boolean APmode3;
-    public boolean ILS;
     public boolean bDLCengaged;
     private int iDLCcommand;  // from -10 ~ +10
     private float oldthrl[] = { -1.0F, -1.0F };
@@ -3519,6 +3512,7 @@ public class F_14 extends Scheme2
     public float Timer2;
     private long tVarWingInput;
     private int oldVarWingControlSwitch;
+    public float varWingProgram;
     public boolean hasHydraulicPressure;
     private boolean bTakeoffFlapAssist;
     private boolean bTakeoffAIAssist;
