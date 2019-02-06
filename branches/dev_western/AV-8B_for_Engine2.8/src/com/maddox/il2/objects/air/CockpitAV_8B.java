@@ -9,6 +9,7 @@ import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Mission;
+import com.maddox.il2.objects.air.RadarWarningReceiverUtils;
 import com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric;
 import com.maddox.il2.objects.vehicles.cars.CarGeneric;
 import com.maddox.il2.objects.vehicles.stationary.StationaryGeneric;
@@ -30,7 +31,7 @@ import java.util.List;
 
 
 // Referenced classes of package com.maddox.il2.objects.air:
-//            CockpitPilot, AircraftLH, F_18, Aircraft,
+//            CockpitPilot, AircraftLH, AV_8B, Aircraft,
 //            Cockpit, TypeSupersonic
 
 public class CockpitAV_8B extends CockpitPilot
@@ -245,6 +246,10 @@ public class CockpitAV_8B extends CockpitPilot
                 setNew.isGeneratorAllive = true;
             else
                 setNew.isGeneratorAllive = false;
+            if(fm.getSpeedKMH() > 200F || fm.Gears.nOfGearsOnGr > 2)
+                setNew.isBatteryOn = true;
+            else
+                setNew.isBatteryOn = false;
             f = ((AV_8B) aircraft()).fSightCurForwardAngle;
             f1 = ((AV_8B) aircraft()).fSightCurSideslip;
             f2 = fm.getAltitude();
@@ -372,6 +377,7 @@ public class CockpitAV_8B extends CockpitPilot
             reflectPlaneMats();
             reflectPlaneToModel();
             bNeedSetUp = false;
+            rwrutils = ((AV_8B) aircraft()).getRadarWarningReceiverUtils();
         }
         HUDgunsight();
         radarclutter(f);
@@ -438,36 +444,166 @@ public class CockpitAV_8B extends CockpitPilot
 
     private void RWR()
     {
-        if(((AV_8B)aircraft()).bMissileWarning == true)
+        int totalrwr = 0;
+        boolean warnflag = false;
+        boolean warnAIR = false;
+        boolean warnSAM = false;
+        long newestTime = -1L;
+        float newestX = 0F;
+        float newestZ = 0F;
+        RadarWarningReceiverUtils.RWRdata tempRrwrdata = rwrutils.new RWRdata();
+        super.mesh.chunkVisible("Z_Z_RWR_threat", false);
+
+        if(rwrutils.getMissileWarning() && setNew.isGeneratorAllive)
         {
-            super.mesh.chunkVisible("Z_Z_RWR_M", true);
-            super.mesh.chunkVisible("L_AI", true);
+            warnflag = true;
             resetYPRmodifier();
-            float f = ((AV_8B)aircraft()).misslebrg;
-            Cockpit.xyz[0] = -(float)Math.sin(Math.toRadians(f)) * 0.013333F;
-            Cockpit.xyz[2] = (float)Math.cos(Math.toRadians(f)) * 0.013333F;
-            super.mesh.chunkSetLocate("Z_Z_RWR_M", Cockpit.xyz, Cockpit.ypr);
+            ArrayList rhmissiles = new ArrayList();
+            rhmissiles = rwrutils.getRHmissileList();
+            for(int i = 0; i < rhmissiles.size() && totalrwr < RWR_MAX_DETECT; i++)
+            {
+                tempRrwrdata = (RadarWarningReceiverUtils.RWRdata)rhmissiles.get(i);
+                float dir = tempRrwrdata.lastDetectDirection;
+                float dst = cvt((float)tempRrwrdata.lastDetectDistance, 500F, 30000F, 0.003F, 0.022F);
+                Cockpit.xyz[0] = -(float)Math.sin(Math.toRadians(dir)) * dst;
+                Cockpit.xyz[2] = (float)Math.cos(Math.toRadians(dir)) * dst;
+                String sni = (totalrwr < 10) ? "0" + Integer.toString(totalrwr) : Integer.toString(totalrwr);
+                super.mesh.chunkVisible("Z_Z_RWR_" + sni, true);
+                super.mesh.chunkSetLocate("Z_Z_RWR_" + sni, Cockpit.xyz, Cockpit.ypr);
+                if(i == 0)
+                {
+                    super.mesh.materialReplace("RWR" + sni, "RWRmissile1");
+                }
+                else
+                    super.mesh.materialReplace("RWR" + sni, "RWRmissile2");
+
+                if(newestTime < tempRrwrdata.firstDetectTime)
+                {
+                    newestX = Cockpit.xyz[0];
+                    newestZ = Cockpit.xyz[2];
+                    newestTime = tempRrwrdata.firstDetectTime;
+                }
+
+                totalrwr++;
+            }
+        }
+        if(rwrutils.getRadarLockedWarning() && setNew.isGeneratorAllive)
+        {
+            warnflag = true;
+            resetYPRmodifier();
+            ArrayList radarsLock = new ArrayList();
+            radarsLock = rwrutils.getRadarLockList();
+            for(int i = 0; i < radarsLock.size() && totalrwr < RWR_MAX_DETECT; i++)
+            {
+                tempRrwrdata = (RadarWarningReceiverUtils.RWRdata)radarsLock.get(i);
+                float dir = tempRrwrdata.lastDetectDirection;
+                float dst = cvt((float)tempRrwrdata.lastDetectDistance, 15000F, 30000F, 0.011F, 0.022F);
+                Cockpit.xyz[0] = -(float)Math.sin(Math.toRadians(dir)) * dst;
+                Cockpit.xyz[2] = (float)Math.cos(Math.toRadians(dir)) * dst;
+                String sni = (totalrwr < 10) ? "0" + Integer.toString(totalrwr) : Integer.toString(totalrwr);
+                super.mesh.chunkVisible("Z_Z_RWR_" + sni, true);
+                super.mesh.chunkSetLocate("Z_Z_RWR_" + sni, Cockpit.xyz, Cockpit.ypr);
+                if(totalrwr == 0)
+                {
+                    super.mesh.chunkVisible("Z_Z_RWR_threat", true);
+                    super.mesh.chunkSetLocate("Z_Z_RWR_threat", Cockpit.xyz, Cockpit.ypr);
+                }
+                if(tempRrwrdata.actor instanceof Aircraft)
+                {
+                    warnAIR = true;
+                    int idx = getRwrPlaneIdx(tempRrwrdata.actor);
+                    if(idx != -1)
+                    {
+                        String sm = rwrPlaneMatString[idx];
+                        if(rwrPlaneLock[idx])
+                            super.mesh.materialReplace("RWR" + sni, sm + "_lock");
+                        else
+                            super.mesh.materialReplace("RWR" + sni, sm);
+                    }
+                    else
+                        super.mesh.materialReplace("RWR" + sni, "RWR" + sni);
+                }
+                else
+                {
+                    warnSAM = true;
+                    super.mesh.materialReplace("RWR" + sni, "RWRZsu234");
+                }
+
+                if(newestTime < tempRrwrdata.firstDetectTime)
+                {
+                    newestX = Cockpit.xyz[0];
+                    newestZ = Cockpit.xyz[2];
+                    newestTime = tempRrwrdata.firstDetectTime;
+                }
+
+                totalrwr++;
+            }
+        }
+        if(rwrutils.getRadarSearchedWarning() && setNew.isGeneratorAllive)
+        {
+            warnflag = true;
+            resetYPRmodifier();
+            ArrayList radars = new ArrayList();
+            radars = rwrutils.getRadarList();
+            for(int i = 0; i < radars.size() && totalrwr < RWR_MAX_DETECT; i++)
+            {
+                tempRrwrdata = (RadarWarningReceiverUtils.RWRdata)radars.get(i);
+                float dir = tempRrwrdata.lastDetectDirection;
+                float dst = cvt((float)tempRrwrdata.lastDetectDistance, 24000F, 30000F, 0.0177F, 0.022F);
+                Cockpit.xyz[0] = -(float)Math.sin(Math.toRadians(dir)) * dst;
+                Cockpit.xyz[2] = (float)Math.cos(Math.toRadians(dir)) * dst;
+                String sni = (totalrwr < 10) ? "0" + Integer.toString(totalrwr) : Integer.toString(totalrwr);
+                super.mesh.chunkVisible("Z_Z_RWR_" + sni, true);
+                super.mesh.chunkSetLocate("Z_Z_RWR_" + sni, Cockpit.xyz, Cockpit.ypr);
+                if(tempRrwrdata.actor instanceof Aircraft)
+                {
+                    int idx = getRwrPlaneIdx(tempRrwrdata.actor);
+                    if(idx != -1)
+                    {
+                        String sm = rwrPlaneMatString[idx];
+                        super.mesh.materialReplace("RWR" + sni, sm);
+                    }
+                    else
+                        super.mesh.materialReplace("RWR" + sni, "RWR" + sni);
+                }
+                else
+                {
+                    super.mesh.materialReplace("RWR" + sni, "RWRZsu234");
+                }
+
+                if(newestTime < tempRrwrdata.firstDetectTime)
+                {
+                    newestX = Cockpit.xyz[0];
+                    newestZ = Cockpit.xyz[2];
+                    newestTime = tempRrwrdata.firstDetectTime;
+                }
+
+                totalrwr++;
+            }
+        }
+
+        if(newestTime > 0L)
+        {
+            super.mesh.chunkVisible("Z_Z_RWR_new", true);
+            Cockpit.xyz[0] = newestX;
+            Cockpit.xyz[2] = newestZ;
+            super.mesh.chunkSetLocate("Z_Z_RWR_new", Cockpit.xyz, Cockpit.ypr);
         }
         else
+            super.mesh.chunkVisible("Z_Z_RWR_new", false);
+
+        for(int i = totalrwr; i < RWR_MAX_DETECT; i++)
         {
-            super.mesh.chunkVisible("Z_Z_RWR_M", false);
-            super.mesh.chunkVisible("L_AI", false);
+            String sni = (i < 10) ? "0" + Integer.toString(i) : Integer.toString(i);
+            super.mesh.chunkVisible("Z_Z_RWR_" + sni, false);
         }
-        if(((AV_8B)aircraft()).bRadarWarning == true)
-        {
-            super.mesh.chunkVisible("Z_Z_RWR_U", true);
-            super.mesh.chunkVisible("L_AI", true);
-            resetYPRmodifier();
-            float f = ((AV_8B)aircraft()).aircraftbrg;
-            Cockpit.xyz[0] = -(float)Math.sin(Math.toRadians(f)) * 0.026666F;
-            Cockpit.xyz[2] = (float)Math.cos(Math.toRadians(f)) * 0.026666F;
-            super.mesh.chunkSetLocate("Z_Z_RWR_U", Cockpit.xyz, Cockpit.ypr);
-        }
-        else
-        {
-            super.mesh.chunkVisible("Z_Z_RWR_U", false);
-            super.mesh.chunkVisible("L_AI", false);
-        }
+        super.mesh.chunkVisible("L_AI_SAM", warnflag && setNew.isGeneratorAllive);
+        if(warnAIR && warnSAM)
+            super.mesh.materialReplace("Wlight_AISAM", "Wlight_AI_SAM");
+        else if(warnAIR)
+            super.mesh.materialReplace("Wlight_AISAM", "Wlight_AI");
+        else if(warnSAM)
+            super.mesh.materialReplace("Wlight_AISAM", "Wlight_SAM");
     }
 
     private void ILS()  //TODO ILS
@@ -592,7 +728,7 @@ public class CockpitAV_8B extends CockpitPilot
     {
         ScY = 0.0000045F * ((AV_8B) aircraft()).radarrange;
         boolean radar = false;
-        if(!setNew.isBatteryOn && !setNew.isGeneratorAllive || ((AV_8B) aircraft()).radartoggle == false)
+        if(!setNew.isGeneratorAllive || !((AV_8B) aircraft()).radartoggle)
         {
             radar = false;
             start = false;
@@ -3015,7 +3151,7 @@ public class CockpitAV_8B extends CockpitPilot
     {
         boolean flag = false;
         boolean flag1 = false;
-        if(!setNew.isBatteryOn && !setNew.isGeneratorAllive)
+        if(!setNew.isGeneratorAllive)
             flag1 = false;
         else
             flag1 = true;
@@ -3324,9 +3460,11 @@ public class CockpitAV_8B extends CockpitPilot
 
     protected void Warninglight()
     {
-        super.mesh.chunkVisible("L_SpBr", fm.CT.getAirBrake() > 0.1F);
+        super.mesh.chunkVisible("L_SpBr", fm.CT.getAirBrake() > 0.1F && (setNew.isBatteryOn || setNew.isGeneratorAllive));
         super.mesh.chunkVisible("L_LFire", fm.AS.astateEngineStates[0] > 2);
-        super.mesh.chunkVisible("L_RFire", fm.AS.astateEngineStates[1] > 2);
+
+        super.mesh.chunkVisible("L_Gear", (setNew.isBatteryOn || setNew.isGeneratorAllive));
+        super.mesh.chunkVisible("L_Flap", (setNew.isBatteryOn || setNew.isGeneratorAllive));
 
         if(fm.CT.getGearL() > 0.95F && fm.CT.getGearR() > 0.95F && fm.CT.getGearC() > 0.95F && LGearStat != 7)
         {
@@ -3391,53 +3529,25 @@ public class CockpitAV_8B extends CockpitPilot
             }
         }
 
-        boolean H = false;
-        boolean M = false;
-        boolean L = false;
-        if(fm.CT.getGear() < 0.1F)
+        if(fm.CT.getGear() < 0.1F || (!setNew.isBatteryOn && !setNew.isGeneratorAllive))
         {
-            H = false;
-            M = false;
-            L = false;
+            super.mesh.chunkVisible("L_AOA", false);
         }
         else
         {
-            if(((FlightModelMain) (fm)).getAOA() > 8.9F)
-            {
-                H = true;
-                M = false;
-                L = false;
-            }
+            super.mesh.chunkVisible("L_AOA", true);
+            if(((FlightModelMain) (fm)).getAOA() > 8.9F)   // SLOW, Green
+                super.mesh.materialReplace("WlightAOA", "WlightAOA_H");
             else if(((FlightModelMain) (fm)).getAOA() > 8.1F)
-            {
-                H = true;
-                M = true;
-                L = false;
-            }
-            else if(((FlightModelMain) (fm)).getAOA() > 6.9F)
-            {
-                H = false;
-                M = true;
-                L = false;
-            }
+                super.mesh.materialReplace("WlightAOA", "WlightAOA_HM");
+            else if(((FlightModelMain) (fm)).getAOA() > 6.9F)   // ON SPEED, Yellow
+                super.mesh.materialReplace("WlightAOA", "WlightAOA_M");
             else if(((FlightModelMain) (fm)).getAOA() > 6.4F)
-            {
-                H = false;
-                M = true;
-                L = true;
-            }
-            else
-            {
-                H = false;
-                M = false;
-                L = true;
-            }
+                super.mesh.materialReplace("WlightAOA", "WlightAOA_ML");
+            else   // FAST, Red
+                super.mesh.materialReplace("WlightAOA", "WlightAOA_L");
         }
-        super.mesh.chunkVisible("L_AOAH", H);
-        super.mesh.chunkVisible("L_AOAL", L);
-        super.mesh.chunkVisible("L_AOAM", M);
     }
-
 
 
     public float normalizeDegree(float f)
@@ -3587,6 +3697,23 @@ public class CockpitAV_8B extends CockpitPilot
 //        mesh.chunkVisible("Refillrod2", hiermesh.isChunkVisible("Refillrod2"));
     }
 
+    int getRwrPlaneIdx(Actor actor)
+    {
+        String classnameFull = actor.getClass().getName();
+        int idot = classnameFull.lastIndexOf('.');
+        int idol = classnameFull.lastIndexOf('$');
+        if (idot < idol) idot = idol;
+        String classnameSection = classnameFull.substring(idot + 1);
+        for(int num = 0; num < rwrPlaneClassString.length; num++)
+        {
+            if((classnameSection.indexOf(rwrPlaneClassString[num])) != -1)
+            {
+                return num;
+            }
+        }
+        return -1;
+    }
+
     private Variables setOld;
     private Variables setNew;
     private Variables setTmp;
@@ -3673,6 +3800,8 @@ public class CockpitAV_8B extends CockpitPilot
     private float totalfuel;
     private long timefuel;
     private float becondistance;
+    private RadarWarningReceiverUtils rwrutils;
+    private static final int RWR_MAX_DETECT = 11;   // 16;  // (250 nodes limit in cockpit hier.him)
 
     private static final float rpmScale[] = {
         0.0F, 190F, 220F, 300F
@@ -3692,6 +3821,42 @@ public class CockpitAV_8B extends CockpitPilot
         7.812F, 8.168F, 8.508F, 8.978F, 9.24F, 9.576F, 9.849F, 10.108F, 10.473F, 10.699F,
         10.911F, 11.111F, 11.384F, 11.554F, 11.787F, 11.928F, 11.992F, 12.282F, 12.381F, 12.513F,
         12.603F, 12.704F, 12.739F, 12.782F, 12.789F
+    };
+    private static final String rwrPlaneClassString[] = {
+        "A_50",       "E_2",        "E_3",           "F_4",      "F_5",      "F_8",      "F_14",     "F_15",     "F_16",      "F_18",
+        "F_100",      "F_101",      "F_102",         "F_104",    "F_105",    "F_106",    "F_111",    "AV_8",     "MiG_17",    "MiG_19",
+        "SM_12",      "F_6",        "FT_6",          "MiG_21",   "MiG21",    "F_7",      "MiG_23",   "MiG_27",   "MiG_25",    "MiG_29",
+        "Su_27",      "Su_33",      "MiG_31",        "Su_9",     "Su_11",    "Su_15",    "Su_30",    "Su_34",    "MIRAGEIIIC", "IAI_Nesher",
+        "IAI_Dagger", "IAI_Kfir",   "Mirage_2000",   "Tu_126"
+    };
+    private static final String rwrPlaneMatString[] = {
+        "RWRA50",     "RWRE2",      "RWRE3",         "RWRF4",    "RWRF5",    "RWRF8",    "RWRF14",   "RWRF15",   "RWRF16",     "RWRF18",
+        "RWRF100",    "RWRF101",    "RWRF102",       "RWRF104",  "RWRF105",  "RWRF106",  "RWRF111",  "RWRAV8",   "RWRMiG17",   "RWRMiG19",
+        "RWRMiG19",   "RWRMiG19",   "RWRMiG19",      "RWRMiG21", "RWRMiG21", "RWRMiG21", "RWRMiG23", "RWRMiG23", "RWWRMiG25",  "RWRMiG29",
+        "RWRMiG29",   "RWRMiG29",   "RWRMiG31",      "RWRSu9",   "RWRSu11",  "RWRSu15",  "RWRSu30",  "RWRSu34",  "RWRMirage3", "RWRMirage3",
+        "RWRMirage3", "RWRMirage3", "RWRMirage2000", "RWRTu126"
+    };
+    private static final boolean rwrPlaneLock[] = {
+        false,        false,        false,           true,       false,      true,       true,       true,       true,         true,
+        false,        true,         true,            true,       false,      true,       false,      true,       true,         true,
+        true,         true,         true,            true,       true,       true,       true,       true,       true,         true,
+        true,         true,         true,            true,       true,       true,       true,       true,       true,         true,
+        true,         true,         true,            true
+    };
+    private static final String rwrGroundClassString[] = {
+        "ZSU23",     "M163"
+    };
+    private static final String rwrGroundMatString[] = {
+        "RWRZsu234", "RWRM163"
+    };
+    private static final boolean rwrGroundLock[] = {
+        false,       false
+    };
+    private static final String rwrShipClassString[] = {
+    };
+    private static final String rwrShipMatString[] = {
+    };
+    private static final boolean rwrShipLock[] = {
     };
 
 }
