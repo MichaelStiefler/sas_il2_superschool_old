@@ -1,6 +1,6 @@
 [Aircraft]
   Type 7
-  Crew 8
+  Crew 9
   Wingspan 46.0
   Length 37.0
   Seaplane 1
@@ -38,10 +38,10 @@
   Wing 255.0
   Aileron 12.9
   Flap 18.1
-  Stabilizer 35.8
-  Elevator 15.3
-  Keel 10.1
-  Rudder 5.1
+  Stabilizer 48.8
+  Elevator 22.7
+  Keel 27.1
+  Rudder 9.3
   Wing_In 45.5
   Wing_Mid 41.0
   Wing_Out 41.0
@@ -111,9 +111,9 @@
   Engine5SubModel Jumo-207C(R)
 [Gear]
   FromIni 1
-  H 2.33885
+  H 2.2   // 2.85
   Pitch 0.2
-  SinkFactor 20500.0
+  SinkFactor 14000.0
   WaterClipList 0405060708091011121315161718232425
 [Params]
   CriticalAOA 16.00
@@ -134,9 +134,9 @@
   G_class 6.0
   Range 3220.0
   CruiseSpeed 290.0
-  SensYaw 0.285
-  SensPitch 0.38
-  SensRoll 0.19
+  SensYaw 0.25
+  SensPitch 0.33
+  SensRoll 0.18
 [Polares]
   lineCyCoeff 0.090
   AOAMinCx_Shift 1.5
@@ -152,7 +152,7 @@
   AOACritL_1 -22.0
   CyCritH_1 1.45
   CyCritL_1 -0.7
-  CxMin_1 0.062
+  CxMin_1 0.068
   parabCxCoeff_1 4.2E-4
   draw_graphs 0
   mc3 -2.9991,-11.086,-29.882,59.825,-53.377,-246.74,-216.73,-210.01
