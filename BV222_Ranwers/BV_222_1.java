@@ -174,7 +174,8 @@ public class BV_222_1 extends BV_222
             hierMesh().chunkVisible("Pilot" + (i + 1) + "_D0", false);
             hierMesh().chunkVisible("HMask" + (i + 1) + "_D0", false);
             hierMesh().chunkVisible("Pilot" + (i + 1) + "_D1", true);
-            hierMesh().chunkVisible("Head" + (i + 1) + "_D0", false);
+            if(i == 0)  // Pilot2 ~ Pilot9 don't have "Head" msh
+                hierMesh().chunkVisible("Head" + (i + 1) + "_D0", false);
             return;
         }
     }
@@ -309,7 +310,7 @@ public class BV_222_1 extends BV_222
             a_lweaponslot[8] = new Aircraft._WeaponSlot(17, "MGunMG131t", 350);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "None";
+            s = "none";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             for(int i = 0; i < byte0; i++)
                 a_lweaponslot[i] = null;
