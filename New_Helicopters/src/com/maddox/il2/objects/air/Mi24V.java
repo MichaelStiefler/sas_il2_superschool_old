@@ -12,6 +12,7 @@ import com.maddox.il2.ai.War;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Maneuver;
 import com.maddox.il2.ai.air.Pilot;
+import com.maddox.il2.ai.ground.Aim;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
 import com.maddox.il2.game.*;
@@ -44,7 +45,7 @@ public class Mi24V extends Scheme2 implements TypeHelicopter, TypeStormovikArmor
 		sndTrim = this.newSound("cockpit.trimmer", false);
 		sndProp = this.newSound("propeller.mi24", true);
 		bAPazimut = false;
-		bAPkrentang = false;
+		bAPkrentang = true;
 		bAPalt = false;
 		apALltPitch = 0.0F;
 		apAzimut = 0.0F;
@@ -473,6 +474,13 @@ public class Mi24V extends Scheme2 implements TypeHelicopter, TypeStormovikArmor
     	if((FM instanceof RealFlightModel) && ((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))  		
         {
     		isAI = false;
+    		if (!FM.Gears.onGround()) {
+    			aPitch = 0.75F;
+    			engineRPM = 15000;
+    			reductorRPM = 228D;
+    			rotorRPM = 228D;
+    			FM.CT.setPowerControl(1.0F);
+    		}
         } else {
         	isAI = true;
         	Squares squares = (Squares)Reflection.getValue(FM, "Sq");
@@ -1665,18 +1673,20 @@ public class Mi24V extends Scheme2 implements TypeHelicopter, TypeStormovikArmor
         		rotorCyDyn_line -= Math.abs(sinkRate) * 0.001D;
         	}
         }
-        HUD.training("rotorCyDyn_0 " + rotorCyDyn_0);
         double rotorDiameter = 17.3D;
         double tailRotorDiameter = 3.0D;
-        float fuselageCxS = 5;
+        float fAOA = this.FM.getAOA();
+        float fuselageCxS = (5 - cvt((float) vFlow.x, 41.6F, 83.3F, 0F, 4.0F));
         float fuselageCyS = 20;
-        engineRPM = Math.sqrt((Math.pow(FM.EI.engines[0].getRPM(), 2D) + Math.pow(FM.EI.engines[1].getRPM(), 2D)) / 2D);
-        reductorRPM = engineRPM * 0.016D;
         double load = (FM.M.getFullMass() - FM.M.massEmpty) * airDensity;
         double bladeAOACx = aPitch > 0.7D - (load / 27000D) ? (load / 50000D) * ((aPitch - (0.7D  - (load / 27000D))) / (0.3D + (load / 27000))) * (rotorRPM / 240D) : 0D;
         double bladeCx = FM.Or.getTangage() > 0.0 ? ((vFlow.x + vFlow.z) * Math.abs(FM.Or.getTangage())) * 0.0001D : -(((vFlow.x + vFlow.z) * Math.abs(FM.Or.getTangage()) * 0.0001D) / 3);
-        double tempRPM = reductorRPM * ((0.95D + bladeCx) - bladeAOACx);
-        rotorRPM += rotorRPM < tempRPM ? reductorRPM * 0.0007D : -(reductorRPM * 0.0007D);
+        float flowRPM = cvt((float) vFlow.x, 0.0F, 27F, 0.0F, (float) ((200D - (double) (Math.abs(fAOA) * 3D)) - (sinkRate > 0D ? sinkRate * 12D : 0D)));
+        engineRPM = Math.sqrt((Math.pow(FM.EI.engines[0].getRPM(), 2D) + Math.pow(FM.EI.engines[1].getRPM(), 2D)) / 2D);
+        reductorRPM = engineRPM * 0.016D > flowRPM ? engineRPM * 0.016D > 228 ? 228 : engineRPM * 0.016D : flowRPM;
+        HUD.training("flowRPM " + flowRPM);
+        double tempRPM = reductorRPM * ((1.0D + bladeCx) - bladeAOACx);
+        rotorRPM += rotorRPM < tempRPM ? 0.005 + (reductorRPM * 0.0007D) : -(0.005 + (reductorRPM * 0.0007D));
         double hubDirection_x = Math.toRadians(0.0D);
         double hubDirection_y = Math.toRadians(5D);
         double rotorHeight = 2D;
@@ -1686,7 +1696,7 @@ public class Mi24V extends Scheme2 implements TypeHelicopter, TypeStormovikArmor
         double d_hubDirection_x = Math.toRadians(-((double)aile + autoRoll) * 2D);
         double d_hubDirection_y = Math.toRadians(((double)elev + autoPitch) * 5D);
         double rotorLift_dyn = 0.5D * (rotorCyDyn_0 + rotorCyDyn_line * 12D * (double)aPitch) * rotorSurface * (double)airDensity * rotorSpeed * rotorSpeed;
-        double rotorLift_moment_z = 0.5D * (rotorCx + rotorLineCx) * rotorSurface * (double)airDensity * rotorSpeed * rotorSpeed;
+        double rotorLift_moment_z = 0.5D * (rotorCx + rotorLineCx * 1.2D * (double)aPitch) * rotorSurface * (double)airDensity * rotorSpeed * rotorSpeed;
         double rotorLift_moment_y = -(rotorDiameter / 2D) * 0.5D * 0.5D * (rotorCyDyn_line * 5D * ((double)elev + autoPitch)) * rotorSurface_cyclic * (double)airDensity * rotorSpeed * rotorSpeed;
         double rotorLift_moment_x = (rotorDiameter / 2D) * 0.5D * 0.5D * (rotorCyDyn_line * 3D * ((double)aile + autoRoll)) * rotorSurface_cyclic * (double)airDensity * rotorSpeed * rotorSpeed;
         rotorLift_moment_y += rotorLift_dyn * (rotorHeight * Math.sin(d_hubDirection_y));
@@ -1754,11 +1764,9 @@ public class Mi24V extends Scheme2 implements TypeHelicopter, TypeStormovikArmor
         FM.producedAF.z += ((double)antiSinkForce + rotorLift_3D_z) - (double)antiLiftForce;
         FM.producedAM.x += (double)dragMoment_x - balanceMoment_x+ rotorLift_moment_x;
         FM.producedAM.y += (double)((dragMoment_y + tailRotorLift_moment_y) - balanceMoment_y) + rotorLift_moment_y;
-              if(!TailRotorDestroyed) {
-            	  FM.producedAM.z += tailRotorMoment - tailRotorLift_moment_z - balanceMoment_z + rotorLift_moment_z;
-              } else {
-            	  FM.producedAM.z += rotorRPM * 50000 + aPitch * 50000;
-              }
+        FM.producedAM.z += !TailRotorDestroyed ? FM.producedAM.z += tailRotorMoment - tailRotorLift_moment_z - balanceMoment_z + rotorLift_moment_z : rotorRPM * 50000 + aPitch * 50000;
+        FM.Vwld.z *= sinkRate > 0.0 ? cvt((float) sinkRate, 1.0F, 10.0F, 1.0F, 0.95F) : 1.0;
+        FM.Sq.dragParasiteCx += fAOA > 0.0F ? fAOA / 5 : 0;
                       
         rotateSpeed_z = 0;
         rotateSpeed_y = 0;
@@ -1766,7 +1774,7 @@ public class Mi24V extends Scheme2 implements TypeHelicopter, TypeStormovikArmor
         headOnForce = 0;
         sideForce = 0;
         
-        if(FM.EI.engines[0].getStage() > 5 || FM.EI.engines[1].getStage() > 5) {
+        if(rotorRPM > 0) {
         	float shakeMe = 0F;
         	float shakeRPM = (float) ((rotorRPM / 2.4D) * 0.01D);
         	if (vFlow.x < 22.2D && vFlow.x > 11.1D) {
@@ -1776,31 +1784,6 @@ public class Mi24V extends Scheme2 implements TypeHelicopter, TypeStormovikArmor
         	}
         	((RealFlightModel)FM).producedShakeLevel += shakeMe;
         }
-        Vector3d localVector3d = new Vector3d();
-        getSpeed(localVector3d);
-        Point3d localPoint3d1 = new Point3d();
-        pos.getAbs(localPoint3d1);
-        if (this.FM.getVertSpeed() > 0.01F)
-        {
-        	float verSPDlimit = cvt(this.FM.getVertSpeed(), 1.0F, 10.0F, 1.0F, 0.95F);
-        	localVector3d.z *= verSPDlimit;
-        	setSpeed(localVector3d);
-        }
-        if(FM.getSpeedKMH() >= 270 && FM.EI.engines[0].getStage() > 5 && FM.EI.engines[1].getStage() > 5)
-            FM.Sq.dragParasiteCx += 0.04F;
-        if(FM.getSpeedKMH() >= 280 && FM.EI.engines[0].getStage() > 5 && FM.EI.engines[1].getStage() > 5)
-        	FM.Sq.dragParasiteCx += 0.04F;
-        if(FM.getSpeedKMH() >= 290 && FM.EI.engines[0].getStage() > 5 && FM.EI.engines[1].getStage() > 5)
-        	FM.Sq.dragParasiteCx += 0.05F;
-        
-        float angleOfattackCx;
-        if(this.FM.getAOA() >= 0.5)
-        	angleOfattackCx = this.FM.getAOA() / 5;
-        else
-        	angleOfattackCx = 0;
-        FM.Sq.dragParasiteCx += angleOfattackCx;
-        
-        
 	}
 		
 	public double PitchAuto(double p) {
