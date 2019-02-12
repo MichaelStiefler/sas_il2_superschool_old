@@ -1,5 +1,6 @@
 /*Modified AirportStatic class for the SAS Engine Mod*/
 /*By western, add 360 over head approach for modern jets on 10th/Jul./2018*/
+/*By western, add TypeHelicopter on 12th/Feb./2019*/
 package com.maddox.il2.ai;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.TypeFastJet;
+import com.maddox.il2.objects.air.TypeHelicopter;
 import com.maddox.rts.Time;
 
 public abstract class AirportStatic extends Airport {
@@ -101,6 +103,10 @@ public abstract class AirportStatic extends Airport {
 		if (flightmodel.EI.engines[0].getType() == 2) f1 = 1.25F;
 		else if (flightmodel.EI.engines[0].getType() == 3) f1 = 1.5F;
 		float f2 = f1;
+		if (flightmodel.actor instanceof TypeHelicopter) {
+			f1 = 0.4F;
+			f2 = 0.4F;
+		}
 		// DBW AI MOD - get rid of stock one
 		// if(f2 > 1.0F)
 		// f2 = 1.0F;

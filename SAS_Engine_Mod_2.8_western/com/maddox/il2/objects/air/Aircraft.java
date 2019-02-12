@@ -234,11 +234,12 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	private float VarWing_;
 	private float Refuel_ = 0.0F;
 	private float CatLaunchBar_ = 0.0F;
-	// Expanded to allow for up to 8 props
-	protected float[] propPos = { 0.0F, 21.6F, 45.9F, 66.9F, 45.0F, 9.2F, 0.0F, 0.0F };
-	protected int[] oldProp = { 0, 0, 0, 0, 0, 0, 0, 0 };
+	// Expanded to allow for up to 10 props
+	protected float[] propPos = { 0.0F, 21.6F, 45.9F, 66.9F, 45.0F, 9.2F, 63.0F, 85.0F, 105.0F, 33.0F };
+	protected int[] oldProp = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 	protected static final String[][] Props = { { "Prop1_D0", "PropRot1_D0", "Prop1_D1" }, { "Prop2_D0", "PropRot2_D0", "Prop2_D1" }, { "Prop3_D0", "PropRot3_D0", "Prop3_D1" }, { "Prop4_D0", "PropRot4_D0", "Prop4_D1" },
-			{ "Prop5_D0", "PropRot5_D0", "Prop5_D1" }, { "Prop6_D0", "PropRot6_D0", "Prop6_D1" }, { "Prop7_D0", "PropRot7_D0", "Prop7_D1" }, { "Prop8_D0", "PropRot8_D0", "Prop8_D1" } };
+			{ "Prop5_D0", "PropRot5_D0", "Prop5_D1" }, { "Prop6_D0", "PropRot6_D0", "Prop6_D1" }, { "Prop7_D0", "PropRot7_D0", "Prop7_D1" }, { "Prop8_D0", "PropRot8_D0", "Prop8_D1" },
+			{ "Prop9_D0", "PropRot9_D0", "Prop9_D1" }, { "Prop10_D0", "PropRot10_D0", "Prop10_D1" } };
 	// Adds addition aircraft to ZBReceiver list
 	static {
 		planesWithZBReceiver = (new Class[] { com.maddox.il2.objects.air.F4U.class, com.maddox.il2.objects.air.F4F.class, com.maddox.il2.objects.air.TBF.class, com.maddox.il2.objects.air.SBD.class, com.maddox.il2.objects.air.PBYX.class,
@@ -2211,10 +2212,13 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 
 	public static void weapons(Class class1) {
 		try {
-			int i = Finger.Int("ce" + class1.getName() + "vd");
-			BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(i, "adt"))), getSwTbl(i))));
 			ArrayList arraylist = weaponsListProperty(class1);
 			HashMapInt hashmapint = weaponsMapProperty(class1);
+			// By western: ignoring cod/ weapon loadout flag, added in Engine mod 2.8.12w
+			boolean bIgnoreCodWeapon = (Property.intValue(class1, "IgnoreCodWeapon", 0) == 1);
+			if (bIgnoreCodWeapon) return;
+			int i = Finger.Int("ce" + class1.getName() + "vd");
+			BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(i, "adt"))), getSwTbl(i))));
 			do {
 				String s = bufferedreader.readLine();
 				if (s == null) break;
@@ -2468,7 +2472,11 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 						else ((MGunAircraftGeneric) bulletemitter).setConvDistance(FM.convAI, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F));
 					break;
 
+				// By western: Engine mod expanded rocket triggers 4,5,6 are treated as same as stock trigger 2
 				case 2: // '\002'
+				case 4:
+				case 5:
+				case 6:
 					if (bulletemitter instanceof RocketGun) if (World.getPlayerAircraft() == aircraft) {
 						((RocketGun) bulletemitter).setRocketTimeLife(World.cur().userRocketDelay);
 						((RocketGun) bulletemitter).setConvDistance(World.cur().userCoverRocket, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F) - 2.81F);
