@@ -147,9 +147,10 @@ public class MotorSound implements FmSounds {
 			if (f2 > 0.0F) f4 *= 1.0F - f2 * 0.15F * dmgRnd.nextFloat();
 			sndMotor.setControl(100, f4);
 			sndMotor.setControl(101, f2);
-//		  By western, comment out next 2 lines, no lines in stock MotorSound.class ; unknown code meaning
-//			float f5 = motor.getThrustOutput();
-//			sndMotor.setControl(1001, f5);
+//			+++ Afterburner sound control, added in Engine mod +++
+			float f5 = motor.getThrustOutput();
+			sndMotor.setControl(1001, f5);
+//			--- added in Engine mod ---
 		}
 		if (sndProp != null) {
 			float f1 = motor.getPropRPM();
