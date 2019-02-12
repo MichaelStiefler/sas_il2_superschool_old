@@ -172,35 +172,40 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
         this._properties.put("NAME", "fps");
         this._levelAccess = 1;
     }
-    
+
     private void generateCodLoadouts() {
-        SectFile airIniSectfile = new SectFile("com/maddox/il2/objects/air.ini");
-        File loadoutsDir = new File(HomePath.toFileSystemName("loadouts/new/", 0));
-        if(!loadoutsDir.exists())
+        final SectFile airIniSectfile = new SectFile("com/maddox/il2/objects/air.ini");
+        final File loadoutsDir = new File(HomePath.toFileSystemName("loadouts/new/", 0));
+        if (!loadoutsDir.exists()) {
             loadoutsDir.mkdirs();
-        File loadoutsDirCsv = new File(HomePath.toFileSystemName("loadouts/csv/", 0));
-        if(!loadoutsDirCsv.exists())
+        }
+        final File loadoutsDirCsv = new File(HomePath.toFileSystemName("loadouts/csv/", 0));
+        if (!loadoutsDirCsv.exists()) {
             loadoutsDirCsv.mkdirs();
-        File loadoutsDirDecoded = new File(HomePath.toFileSystemName("loadouts/decoded/", 0));
-        if(!loadoutsDirDecoded.exists())
+        }
+        final File loadoutsDirDecoded = new File(HomePath.toFileSystemName("loadouts/decoded/", 0));
+        if (!loadoutsDirDecoded.exists()) {
             loadoutsDirDecoded.mkdirs();
-        File loadoutsDirCod = new File(HomePath.toFileSystemName("loadouts/cod/", 0));
-        if(!loadoutsDirCod.exists())
+        }
+        final File loadoutsDirCod = new File(HomePath.toFileSystemName("loadouts/cod/", 0));
+        if (!loadoutsDirCod.exists()) {
             loadoutsDirCod.mkdirs();
-        File loadoutsDirNewCod = new File(HomePath.toFileSystemName("loadouts/new_cod/", 0));
-        if(!loadoutsDirNewCod.exists())
+        }
+        final File loadoutsDirNewCod = new File(HomePath.toFileSystemName("loadouts/new_cod/", 0));
+        if (!loadoutsDirNewCod.exists()) {
             loadoutsDirNewCod.mkdirs();
+        }
         try {
-            PrintWriter pwErrors = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/errors.txt", 0))));
+            final PrintWriter pwErrors = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/errors.txt", 0))));
             for (int sectionIndex = 0; sectionIndex < airIniSectfile.sections(); sectionIndex++) {
                 for (int varsIndex = 0; varsIndex < airIniSectfile.vars(sectionIndex); varsIndex++) {
                     boolean hasCoddedWeapons = false;
-                    NumberTokenizer numbertokenizer = new NumberTokenizer(airIniSectfile.value(sectionIndex, varsIndex));
+                    final NumberTokenizer numbertokenizer = new NumberTokenizer(airIniSectfile.value(sectionIndex, varsIndex));
                     String airplaneName = numbertokenizer.next((String) null);
                     Class airplaneClass = null;
                     try {
                         airplaneClass = ObjIO.classForName(airplaneName);
-                    } catch (Exception exception) {
+                    } catch (final Exception exception) {
                         System.out.println("Class '" + airplaneName + "' not found");
                         continue;
                     }
@@ -209,94 +214,102 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
                         pwErrors.println(airplaneName);
                     }
                     airplaneName = airplaneName.substring(4);
-                    if (airplaneName.toLowerCase().startsWith("placeholder")) continue;
-                    
-                    int classFingerInt = Finger.Int("ce" + airplaneClass.getName() + "vd");
+                    if (airplaneName.toLowerCase().startsWith("placeholder")) {
+                        continue;
+                    }
+
+                    final int classFingerInt = Finger.Int("ce" + airplaneClass.getName() + "vd");
                     PrintWriter pwu = null;
                     try {
-                        BufferedReader brDecoded = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(classFingerInt, "adt"))), getSwTbl(classFingerInt))));
+                        final BufferedReader brDecoded = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(classFingerInt, "adt"))), getSwTbl(classFingerInt))));
                         hasCoddedWeapons = true;
                         pwu = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/decoded/" + airplaneName, 0))));
                         do {
-                            String decodedLine = brDecoded.readLine();
-                            if (decodedLine == null) break;
+                            final String decodedLine = brDecoded.readLine();
+                            if (decodedLine == null) {
+                                break;
+                            }
                             pwu.println(decodedLine);
                         } while (true);
                         pwu.flush();
                         pwu.close();
                         brDecoded.close();
-                        
-                        BufferedReader brEncrypted = new BufferedReader(new InputStreamReader(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(classFingerInt, "adt")))));
-                        BufferedWriter bwEncrypted = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(HomePath.toFileSystemName("loadouts/cod/" + Finger.incInt(classFingerInt, "adt"), 0))));
-                        char[] cBuf = new char[1024];
+
+                        final BufferedReader brEncrypted = new BufferedReader(new InputStreamReader(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(classFingerInt, "adt")))));
+                        final BufferedWriter bwEncrypted = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(HomePath.toFileSystemName("loadouts/cod/" + Finger.incInt(classFingerInt, "adt"), 0))));
+                        final char[] cBuf = new char[1024];
                         do {
-                            int iRead = brEncrypted.read(cBuf, 0, 1024);
-                            if (iRead == -1) break;
+                            final int iRead = brEncrypted.read(cBuf, 0, 1024);
+                            if (iRead == -1) {
+                                break;
+                            }
                             bwEncrypted.write(cBuf, 0, iRead);
                         } while (true);
                         bwEncrypted.close();
                         brEncrypted.close();
-                    } catch (Exception e) {
-                        if (hasCoddedWeapons)
+                    } catch (final Exception e) {
+                        if (hasCoddedWeapons) {
                             e.printStackTrace();
+                        }
                         hasCoddedWeapons = false;
                     }
-                    String[] hooks = Aircraft.getWeaponHooksRegistered(airplaneClass);
-                    int[] triggers = Aircraft.getWeaponTriggersRegistered(airplaneClass);
-                    int hookLength = hooks.length;
-                    int triggerLength = triggers.length;
+
+                    final String codIndicator = hasCoddedWeapons ? " (+) " : " (-) ";
+
+                    final String[] hooks = Aircraft.getWeaponHooksRegistered(airplaneClass);
+                    final int[] triggers = Aircraft.getWeaponTriggersRegistered(airplaneClass);
+                    final int hookLength = hooks.length;
+                    final int triggerLength = triggers.length;
                     if (hookLength != triggerLength) {
-                        pwErrors.println(airplaneName + " hookLength != triggerLength");
+                        pwErrors.println(airplaneName + codIndicator + " hookLength != triggerLength");
                     }
                     try {
-                        PrintWriter pwAircraft = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/new/" + airplaneName, 0))));
-                        PrintWriter pwk = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new KryptoOutputFilter(new FileOutputStream(HomePath.toFileSystemName("loadouts/new_cod/" + Finger.incInt(classFingerInt, "adt"), 0)), getSwTbl(classFingerInt)))));
-                        PrintWriter pwAircraftCsv = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/csv/" + airplaneName + ".csv", 0))));
-                        
-                        for (int hookIndex = 0; hookIndex<hookLength; hookIndex++) {
+                        final PrintWriter pwAircraft = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/new/" + airplaneName, 0))));
+                        final PrintWriter pwk = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new KryptoOutputFilter(new FileOutputStream(HomePath.toFileSystemName("loadouts/new_cod/" + Finger.incInt(classFingerInt, "adt"), 0)), getSwTbl(classFingerInt)))));
+                        final PrintWriter pwAircraftCsv = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/csv/" + airplaneName + ".csv", 0))));
+
+                        for (int hookIndex = 0; hookIndex < hookLength; hookIndex++) {
                             pwAircraftCsv.print(",");
                             pwAircraftCsv.print(hooks[hookIndex]);
                         }
                         pwAircraftCsv.println();
-                        for (int triggerIndex = 0; triggerIndex<triggerLength; triggerIndex++) {
+                        for (int triggerIndex = 0; triggerIndex < triggerLength; triggerIndex++) {
                             pwAircraftCsv.print(",");
                             pwAircraftCsv.print(triggers[triggerIndex]);
                         }
                         pwAircraftCsv.println();
-                        
-                        String[] loadoutArray = Aircraft.getWeaponsRegistered(airplaneClass);
+
+                        final String[] loadoutArray = Aircraft.getWeaponsRegistered(airplaneClass);
+                        boolean lastElementNotNone = false;
                         if (loadoutArray.length < 2) {
-                            pwErrors.println(airplaneName + " loadoutArray.length < 2");
+                            pwErrors.println(airplaneName + codIndicator + " loadoutArray.length < 2");
                         } else {
                             if (!loadoutArray[0].equals("default")) {
-                                pwErrors.println(airplaneName + " loadoutArray[0]=" + loadoutArray[0] + ", needs to be default");
+                                pwErrors.println(airplaneName + codIndicator + " loadoutArray[0]=" + loadoutArray[0] + ", but first element needs to be default (case sensitive!)");
                             }
-                            int lastElementIndex = loadoutArray.length -1;
-                            if (!loadoutArray[lastElementIndex].equals("none")) {
-                                pwErrors.println(airplaneName + " loadoutArray[" + lastElementIndex + "]=" + loadoutArray[lastElementIndex] + ", needs to be none");
+                            if (!loadoutArray[loadoutArray.length - 1].equals("none")) {
+                                lastElementNotNone = true;
                             }
                         }
                         for (int loadoutIndex = 0; loadoutIndex < loadoutArray.length; loadoutIndex++) {
                             String loadoutsLine = loadoutArray[loadoutIndex];
-                            if (loadoutIndex != 0 && loadoutArray[loadoutIndex].toLowerCase().equals("default")) {
-                                pwErrors.println(airplaneName + " loadoutArray[loadoutIndex]=" + loadoutArray[loadoutIndex] + ", but default is only allowed in first slot!");
+                            if ((loadoutIndex != 0) && loadoutArray[loadoutIndex].toLowerCase().equals("default")) {
+                                pwErrors.println(airplaneName + codIndicator + " loadoutArray[" + loadoutIndex + "]=" + loadoutArray[loadoutIndex] + ", but default is only allowed in first slot! (might indicate overlapping weapon slots)");
+                            } else if ((loadoutIndex != (loadoutArray.length - 1)) && loadoutArray[loadoutIndex].toLowerCase().equals("none")) {
+                                pwErrors.println(airplaneName + codIndicator + " loadoutArray[" + loadoutIndex + "]=" + loadoutArray[loadoutIndex] + ", but none is only allowed in last slot! (might indicate overlapping weapon slots)");
+                            } else if (loadoutArray[loadoutIndex].indexOf(' ') > -1) {
+                                pwErrors.println(airplaneName + codIndicator + " loadout " + loadoutArray[loadoutIndex] + " name contains spaces!");
                             }
-                            if (loadoutIndex != loadoutArray.length-1 && loadoutArray[loadoutIndex].toLowerCase().equals("none")) {
-                                pwErrors.println(airplaneName + " loadoutArray[loadoutIndex]=" + loadoutArray[loadoutIndex] + ", but none is only allowed in last slot!");
-                            }
-                            if (loadoutArray[loadoutIndex].indexOf(' ') > -1) {
-                                pwErrors.println(airplaneName + " loadout " + loadoutArray[loadoutIndex] + " name contains spaces!");
-                            }
-                            
-                            Aircraft._WeaponSlot[] weaponSlotArray = Aircraft.getWeaponSlotsRegistered(airplaneClass, loadoutArray[loadoutIndex]);
+
+                            final Aircraft._WeaponSlot[] weaponSlotArray = Aircraft.getWeaponSlotsRegistered(airplaneClass, loadoutArray[loadoutIndex]);
                             if (weaponSlotArray == null) {
-                                pwErrors.println(airplaneName + " loadout " + loadoutArray[loadoutIndex] + " isn't a registered slot on this aircraft class!");
+                                pwErrors.println(airplaneName + codIndicator + " loadout " + loadoutArray[loadoutIndex] + " isn't a registered slot on this aircraft class!");
                                 pwAircraft.println(loadoutsLine);
                                 pwAircraftCsv.println(loadoutsLine);
                                 continue;
                             }
                             if (hookLength != weaponSlotArray.length) {
-                                pwErrors.println(airplaneName + " loadout " + loadoutArray[loadoutIndex] + " length (" + weaponSlotArray.length + ") doesn't match hook length (" + hookLength + ")");
+                                pwErrors.println(airplaneName + codIndicator + " loadout " + loadoutArray[loadoutIndex] + " length (" + weaponSlotArray.length + ") doesn't match hook length (" + hookLength + ")");
                             }
                             for (int slotIndex = 0; slotIndex < weaponSlotArray.length; slotIndex++) {
                                 if (weaponSlotArray[slotIndex] == null) {
@@ -318,41 +331,42 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
                         pwAircraft.close();
                         pwAircraftCsv.close();
                         pwk.close();
-                    } catch (Exception e) {
+                        if (lastElementNotNone) {
+                            pwErrors.println(airplaneName + codIndicator + " loadoutArray[" + (loadoutArray.length - 1) + "]=" + loadoutArray[loadoutArray.length - 1] + ", but last element needs to be none (case sensitive!)");
+                        }
+                    } catch (final Exception e) {
                         System.out.println("Error on Aircraft " + airplaneName);
                         e.printStackTrace();
                     }
                 }
             }
             pwErrors.close();
-        } catch (Exception oe) {
+        } catch (final Exception oe) {
             oe.printStackTrace();
         }
     }
-    
-    private static int[] getSwTbl(int i)
-    {
-      if (i < 0) {
-        i = -i;
-      }
-      int ims = i % 16 + 11;
-      int ktl = i % Finger.kTable.length;
-      if (ims < 0) {
-        ims = -ims % 16;
-      }
-      if (ims < 10) {
-        ims = 10;
-      }
-      if (ktl < 0) {
-        ktl = -ktl % Finger.kTable.length;
-      }
-      int[] aiRetval = new int[ims];
-      for (int aiRetvalIndex = 0; aiRetvalIndex < ims; aiRetvalIndex++) {
-        aiRetval[aiRetvalIndex] = Finger.kTable[((ktl + aiRetvalIndex) % Finger.kTable.length)];
-      }
-      return aiRetval;
-    }
 
+    private static int[] getSwTbl(int i) {
+        if (i < 0) {
+            i = -i;
+        }
+        int ims = (i % 16) + 11;
+        int ktl = i % Finger.kTable.length;
+        if (ims < 0) {
+            ims = -ims % 16;
+        }
+        if (ims < 10) {
+            ims = 10;
+        }
+        if (ktl < 0) {
+            ktl = -ktl % Finger.kTable.length;
+        }
+        final int[] aiRetval = new int[ims];
+        for (int aiRetvalIndex = 0; aiRetvalIndex < ims; aiRetvalIndex++) {
+            aiRetval[aiRetvalIndex] = Finger.kTable[((ktl + aiRetvalIndex) % Finger.kTable.length)];
+        }
+        return aiRetval;
+    }
 
     private boolean            bGo;
     private boolean            bShow;
