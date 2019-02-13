@@ -1,0 +1,675 @@
+package com.maddox.il2.objects.air;
+
+import java.io.IOException;
+
+import com.maddox.JGP.Tuple3d;
+import com.maddox.JGP.Vector3d;
+import com.maddox.il2.ai.World;
+import com.maddox.il2.engine.Actor;
+import com.maddox.il2.engine.Interpolate;
+import com.maddox.il2.fm.FlightModelMain;
+import com.maddox.il2.fm.Pitot;
+import com.maddox.il2.fm.RealFlightModel;
+import com.maddox.il2.game.AircraftHotKeys;
+import com.maddox.il2.game.HUD;
+import com.maddox.il2.objects.Wreckage;
+import com.maddox.rts.CLASS;
+import com.maddox.rts.NetMsgGuaranted;
+import com.maddox.rts.NetMsgInput;
+import com.maddox.rts.Property;
+
+public class JU_88A1 extends JU_88Axx implements TypeBomber, TypeDiveBomber, TypeScout {
+
+    public JU_88A1() {
+        this.diveMechStage = 0;
+        this.bNDives = false;
+        this.bDropsBombs = false;
+        this.needsToOpenBombays = false;
+        this.bSightAutomation = false;
+        this.bSightBombDump = false;
+        this.fSightCurDistance = 0.0F;
+        this.fSightCurForwardAngle = 0.0F;
+        this.fSightCurSideslip = 0.0F;
+        this.fSightCurAltitude = 850F;
+        this.fSightCurSpeed = 150F;
+        this.fSightCurReadyness = 0.0F;
+        this.fDiveRecoveryAlt = 850F;
+        this.fDiveVelocity = 150F;
+        this.fDiveAngle = 70F;
+        this.iRust = 1;
+        this.blisterRemoved = false;
+        this.topBlisterRemoved = false;
+    }
+
+    public void onAircraftLoaded() {
+        super.onAircraftLoaded();
+        float f = 0.0F;
+        float f1 = 0.0F;
+        this.needsToOpenBombays = false;
+        if (super.thisWeaponsName.endsWith("RustA")) {
+            this.iRust = 1;
+            if (super.thisWeaponsName.endsWith("2xTank900L_RustA")) {
+                f1 += 45F;
+            }
+            if (super.thisWeaponsName.startsWith("28x")) {
+                this.needsToOpenBombays = true;
+            }
+        } else if (super.thisWeaponsName.endsWith("RustB")) {
+            this.iRust = 2;
+            f1 += 60F;
+            if (!super.thisWeaponsName.endsWith("LiteRustB")) {
+                f += 900F;
+            }
+            if (super.thisWeaponsName.startsWith("10x")) {
+                this.needsToOpenBombays = true;
+            }
+        } else if (super.thisWeaponsName.endsWith("RustC")) {
+            this.iRust = 3;
+            ((FlightModelMain) (super.FM)).CT.bHasBayDoors = false;
+            f1 += 120F;
+            f1 += 45F;
+            f += 1400F;
+        } else if (super.thisWeaponsName.endsWith("RustF")) {
+            this.iRust = 3;
+            ((FlightModelMain) (super.FM)).CT.bHasBayDoors = false;
+            f += 900F;
+            f1 += 60F;
+            f1 += 100F;
+            if (super.thisWeaponsName.endsWith("xTank900L_RustF")) {
+                f1 += 90F;
+                if (super.thisWeaponsName.endsWith("2xTank900L_RustF")) {
+                    f1 += 30F;
+                }
+            }
+        }
+        float f2 = ((FlightModelMain) (super.FM)).M.fuel / ((FlightModelMain) (super.FM)).M.maxFuel;
+        ((FlightModelMain) (super.FM)).M.fuel += f2 * f;
+        ((FlightModelMain) (super.FM)).M.maxFuel += f;
+        ((FlightModelMain) (super.FM)).M.massEmpty += f1;
+    }
+
+    public boolean turretAngles(int i, float af[]) {
+        for (int j = 0; j < 2; j++) {
+            af[j] = (af[j] + 3600F) % 360F;
+            if (af[j] > 180F) {
+                af[j] -= 360F;
+            }
+        }
+
+        af[2] = 0.0F;
+        boolean flag = true;
+        float f = -af[0];
+        float f1 = af[1];
+        switch (i) {
+            default:
+                break;
+
+            case 0: // '\0'
+                if (JU_88Axx.bNavigatorUseBombsight) {
+                    flag = false;
+                    f = 0.0F;
+                    f1 = 0.0F;
+                    break;
+                }
+                if (f < -20F) {
+                    f = -20F;
+                    flag = false;
+                }
+                if (f > 20F) {
+                    f = 20F;
+                    flag = false;
+                }
+                if (f1 < -15F) {
+                    f1 = -15F;
+                    flag = false;
+                }
+                if (f1 > 20F) {
+                    f1 = 20F;
+                    flag = false;
+                }
+                break;
+
+            case 1: // '\001'
+                if (f < -40F) {
+                    f = -40F;
+                    flag = false;
+                }
+                if (f > 40F) {
+                    f = 40F;
+                    flag = false;
+                }
+                if (f1 < -5F) {
+                    f1 = -5F;
+                    flag = false;
+                }
+                if (f1 > 60F) {
+                    f1 = 60F;
+                    flag = false;
+                }
+                if (f > 30F) {
+                    if (f1 < Aircraft.cvt(f, 30F, 40F, -5F, 25F)) {
+                        f1 = Aircraft.cvt(f, 30F, 40F, -5F, 25F);
+                    }
+                    break;
+                }
+                if (f > 5.3F) {
+                    if (f1 < Aircraft.cvt(f, 5.3F, 25F, -1.72F, -5F)) {
+                        f1 = Aircraft.cvt(f, 5.3F, 25F, -1.72F, -5F);
+                    }
+                    break;
+                }
+                if (f > -5.3F) {
+                    if (f1 < -1.72F) {
+                        f1 = -1.72F;
+                    }
+                    break;
+                }
+                if (f > -30F) {
+                    if (f1 < Aircraft.cvt(f, -30F, -5.3F, 5F, -1.72F)) {
+                        f1 = Aircraft.cvt(f, -30F, -5.3F, 5F, -1.72F);
+                    }
+                    break;
+                }
+                if (f1 < Aircraft.cvt(f, -40F, -30F, 25F, -5F)) {
+                    f1 = Aircraft.cvt(f, -40F, -30F, 25F, -5F);
+                }
+                break;
+
+            case 2: // '\002'
+                if (f < -40F) {
+                    f = -40F;
+                    flag = false;
+                }
+                if (f > 40F) {
+                    f = 40F;
+                    flag = false;
+                }
+                if (f1 < -50F) {
+                    f1 = -50F;
+                    flag = false;
+                }
+                if (f1 > 0.0F) {
+                    f1 = 0.0F;
+                    flag = false;
+                }
+                break;
+        }
+        af[0] = -f;
+        af[1] = f1;
+        return flag;
+    }
+
+    public void doWreck(String s) {
+        if (this.hierMesh().chunkFindCheck(s) != -1) {
+            this.hierMesh().hideSubTrees(s);
+            Wreckage wreckage = new Wreckage(this, this.hierMesh().chunkFind(s));
+            wreckage.collide(true);
+            Vector3d vector3d = new Vector3d();
+            vector3d.set(((FlightModelMain) (super.FM)).Vwld);
+            wreckage.setSpeed(vector3d);
+        }
+    }
+
+    public void blisterRemoved(int i) {
+        if (i < 4) {
+            if (!this.topBlisterRemoved) {
+                this.doWreck("BlisterTop_D0");
+                this.hierMesh().chunkVisible("Turret2B_D0", false);
+                this.hierMesh().chunkVisible("Turret2C_D0", false);
+                this.topBlisterRemoved = true;
+            }
+        } else if (!this.blisterRemoved && (i == 4)) {
+            this.doWreck("BlisterDown_D0");
+            this.hierMesh().chunkVisible("Turret3B_D0", false);
+            this.hierMesh().chunkVisible("Turret3C_D0", false);
+            this.blisterRemoved = true;
+        }
+    }
+
+    protected void moveBayDoor(float f) {
+        if (!this.needsToOpenBombays && !super.FM.isPlayers()) {
+            return;
+        }
+        if (this.iRust != 3) {
+            this.hierMesh().chunkSetAngles("Bay1_D0", 0.0F, 87F * f, 0.0F);
+            this.hierMesh().chunkSetAngles("Bay2_D0", 0.0F, -86F * f, 0.0F);
+            this.hierMesh().chunkSetAngles("Bay3_D0", 0.0F, 86F * f, 0.0F);
+            this.hierMesh().chunkSetAngles("Bay4_D0", 0.0F, -87F * f, 0.0F);
+        }
+        if (this.iRust == 1) {
+            this.hierMesh().chunkSetAngles("Bay5_D0", 0.0F, 85F * f, 0.0F);
+            this.hierMesh().chunkSetAngles("Bay6_D0", 0.0F, -85F * f, 0.0F);
+            this.hierMesh().chunkSetAngles("Bay7_D0", 0.0F, 85F * f, 0.0F);
+            this.hierMesh().chunkSetAngles("Bay8_D0", 0.0F, -85F * f, 0.0F);
+        }
+    }
+
+    protected void nextDMGLevel(String s, int i, Actor actor) {
+        super.nextDMGLevel(s, i, actor);
+        if (super.FM.isPlayers()) {
+            bChangedPit = true;
+        }
+    }
+
+    protected void nextCUTLevel(String s, int i, Actor actor) {
+        super.nextCUTLevel(s, i, actor);
+        if (super.FM.isPlayers()) {
+            bChangedPit = true;
+        }
+    }
+
+    public void rareAction(float f, boolean flag) {
+        super.rareAction(f, flag);
+        for (int i = 1; i < 4; i++) {
+            if (super.FM.getAltitude() < 3000F) {
+                this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
+            } else {
+                this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
+            }
+        }
+
+    }
+
+    public void update(float f) {
+        this.updateJU87D5(f);
+        this.updateJU87(f);
+        super.update(f);
+        if ((Pitot.Indicator((float) ((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z, super.FM.getSpeed()) > 70F) && (((FlightModelMain) (super.FM)).CT.getFlap() > 0.01D) && (((FlightModelMain) (super.FM)).CT.FlapsControl != 0.0F)) {
+            ((FlightModelMain) (super.FM)).CT.FlapsControl = 0.0F;
+            World.cur();
+            if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft()) {
+                HUD.log("FlapsRaised");
+            }
+        }
+        float f1 = ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator();
+        if (f1 != 0.0F) {
+            this.hierMesh().chunkSetAngles("Radl11_D0", -30F * f1, 0.0F, 0.0F);
+        }
+        f1 = ((FlightModelMain) (super.FM)).EI.engines[1].getControlRadiator();
+        if (f1 != 0.0F) {
+            this.hierMesh().chunkSetAngles("Radr11_D0", -30F * f1, 0.0F, 0.0F);
+        }
+    }
+
+    protected void moveFlap(float f) {
+        float f1 = -42.5F * f;
+        this.hierMesh().chunkSetAngles("Flap01_D0", 0.0F, f1, 0.0F);
+        this.hierMesh().chunkSetAngles("Flap02_D0", 0.0F, f1, 0.0F);
+    }
+
+    protected void moveRudder(float f) {
+        this.hierMesh().chunkSetAngles("Rudder1_D0", 0.0F, -35F * f, 0.0F);
+    }
+
+    protected void moveAileron(float f) {
+        this.hierMesh().chunkSetAngles("AroneL_D0", 0.0F, -20F * f, 0.0F);
+        this.hierMesh().chunkSetAngles("AroneR_D0", 0.0F, -20F * f, 0.0F);
+    }
+
+    protected void moveElevator(float f) {
+        if (f > 0.0F) {
+            this.hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -40F * f, 0.0F);
+            this.hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -40F * f, 0.0F);
+        } else {
+            this.hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -25F * f, 0.0F);
+            this.hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -25F * f, 0.0F);
+        }
+    }
+
+    public void updateJU87(float f) {
+        if ((this == World.getPlayerAircraft()) && (super.FM instanceof RealFlightModel)) {
+            if (((RealFlightModel) super.FM).isRealMode()) {
+                switch (this.diveMechStage) {
+                    case 0: // '\0'
+                        if (this.bNDives && (((FlightModelMain) (super.FM)).CT.AirBrakeControl == 1.0F) && (((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z > this.fDiveRecoveryAlt)) {
+                            this.diveMechStage++;
+                            this.bNDives = false;
+                        } else {
+                            this.bNDives = ((FlightModelMain) (super.FM)).CT.AirBrakeControl != 1.0F;
+                        }
+                        break;
+
+                    case 1: // '\001'
+                        ((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(-0.25F);
+                        ((FlightModelMain) (super.FM)).CT.trimElevator = -0.25F;
+                        if ((((FlightModelMain) (super.FM)).CT.AirBrakeControl == 0.0F) || ((FlightModelMain) (super.FM)).CT.saveWeaponControl[3] || ((((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].countBullets() == 0))) {
+                            if (((FlightModelMain) (super.FM)).CT.AirBrakeControl == 0.0F) {
+                                this.diveMechStage++;
+                            }
+                            if ((((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].countBullets() == 0)) {
+                                this.diveMechStage++;
+                            }
+                        }
+                        break;
+
+                    case 2: // '\002'
+                        ((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(0.45F);
+                        ((FlightModelMain) (super.FM)).CT.trimElevator = 0.45F;
+                        if ((((FlightModelMain) (super.FM)).CT.AirBrakeControl == 0.0F) || (((FlightModelMain) (super.FM)).Or.getTangage() > 0.0F)) {
+                            this.diveMechStage++;
+                        }
+                        break;
+
+                    case 3: // '\003'
+                        ((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(0.0F);
+                        ((FlightModelMain) (super.FM)).CT.trimElevator = 0.0F;
+                        this.diveMechStage = 0;
+                        break;
+                }
+            } else {
+                ((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(0.0F);
+                ((FlightModelMain) (super.FM)).CT.trimElevator = 0.0F;
+            }
+        }
+        if (this.bDropsBombs && super.FM.isTick(3, 0) && (((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1] != null) && ((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].haveBullets()) {
+            ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = true;
+        }
+    }
+
+    public void updateJU87D5(float f) {
+        this.fDiveAngle = -((FlightModelMain) (super.FM)).Or.getTangage();
+        if (this.fDiveAngle > 89F) {
+            this.fDiveAngle = 89F;
+        }
+        if (this.fDiveAngle < 10F) {
+            this.fDiveAngle = 10F;
+        }
+    }
+
+    protected void moveAirBrake(float f) {
+        this.hierMesh().chunkSetAngles("Brake01_D0", 0.0F, -90F * f, 0.0F);
+        this.hierMesh().chunkSetAngles("Brake02_D0", 0.0F, -90F * f, 0.0F);
+    }
+
+    public void doMurderPilot(int i) {
+        switch (i) {
+            case 0: // '\0'
+                this.hierMesh().chunkVisible("Pilot1_D0", false);
+                this.hierMesh().chunkVisible("Head1_D0", false);
+                this.hierMesh().chunkVisible("HMask1_D0", false);
+                this.hierMesh().chunkVisible("Pilot1_D1", true);
+                break;
+
+            case 1: // '\001'
+                this.hierMesh().chunkVisible("Pilot2_D0", false);
+                this.hierMesh().chunkVisible("Pilot2_D1", true);
+                this.hierMesh().chunkVisible("HMask2_D0", false);
+                break;
+
+            case 2: // '\002'
+                this.hierMesh().chunkVisible("Pilot3_D0", false);
+                this.hierMesh().chunkVisible("Pilot3_D1", true);
+                this.hierMesh().chunkVisible("HMask3_D0", false);
+                break;
+
+            case 3: // '\003'
+                this.hierMesh().chunkVisible("Pilot4_D0", false);
+                this.hierMesh().chunkVisible("Pilot4_D1", true);
+                this.hierMesh().chunkVisible("HMask4_D0", false);
+                break;
+        }
+    }
+
+    public boolean typeBomberToggleAutomation() {
+        this.bSightAutomation = !this.bSightAutomation;
+        this.bSightBombDump = false;
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAutomation" + (this.bSightAutomation ? "ON" : "OFF"));
+        return this.bSightAutomation;
+    }
+
+    public void typeBomberAdjDistanceReset() {
+        this.fSightCurDistance = 0.0F;
+        this.fSightCurForwardAngle = 0.0F;
+    }
+
+    public void typeBomberAdjDistancePlus() {
+        this.fSightCurForwardAngle++;
+        if (this.fSightCurForwardAngle > 85F) {
+            this.fSightCurForwardAngle = 85F;
+        }
+        this.fSightCurDistance = this.fSightCurAltitude * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
+        if (this.bSightAutomation) {
+            this.typeBomberToggleAutomation();
+        }
+    }
+
+    public void typeBomberAdjDistanceMinus() {
+        this.fSightCurForwardAngle--;
+        if (this.fSightCurForwardAngle < 0.0F) {
+            this.fSightCurForwardAngle = 0.0F;
+        }
+        this.fSightCurDistance = this.fSightCurAltitude * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
+        if (this.bSightAutomation) {
+            this.typeBomberToggleAutomation();
+        }
+    }
+
+    public void typeBomberAdjSideslipReset() {
+        this.fSightCurSideslip = 0.0F;
+    }
+
+    public void typeBomberAdjSideslipPlus() {
+        this.fSightCurSideslip += 0.05F;
+        if (this.fSightCurSideslip > 3F) {
+            this.fSightCurSideslip = 3F;
+        }
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Float(this.fSightCurSideslip * 10F) });
+    }
+
+    public void typeBomberAdjSideslipMinus() {
+        this.fSightCurSideslip -= 0.05F;
+        if (this.fSightCurSideslip < -3F) {
+            this.fSightCurSideslip = -3F;
+        }
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Float(this.fSightCurSideslip * 10F) });
+    }
+
+    public void typeBomberAdjAltitudeReset() {
+        this.fSightCurAltitude = 850F;
+        this.typeDiveBomberAdjAltitudeReset();
+    }
+
+    public void typeBomberAdjAltitudePlus() {
+        this.fSightCurAltitude += 10F;
+        if (this.fSightCurAltitude > 10000F) {
+            this.fSightCurAltitude = 10000F;
+        }
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) this.fSightCurAltitude) });
+        this.fSightCurDistance = this.fSightCurAltitude * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.typeDiveBomberAdjAltitudePlus();
+    }
+
+    public void typeBomberAdjAltitudeMinus() {
+        this.fSightCurAltitude -= 10F;
+        if (this.fSightCurAltitude < 500F) {
+            this.fSightCurAltitude = 500F;
+        }
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) this.fSightCurAltitude) });
+        this.fSightCurDistance = this.fSightCurAltitude * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.typeDiveBomberAdjAltitudeMinus();
+    }
+
+    public void typeBomberAdjSpeedReset() {
+        this.fSightCurSpeed = 150F;
+        this.typeDiveBomberAdjVelocityReset();
+    }
+
+    public void typeBomberAdjSpeedPlus() {
+        this.fSightCurSpeed += 10F;
+        if (this.fSightCurSpeed > 700F) {
+            this.fSightCurSpeed = 700F;
+        }
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) this.fSightCurSpeed) });
+        this.typeDiveBomberAdjVelocityPlus();
+    }
+
+    public void typeBomberAdjSpeedMinus() {
+        this.fSightCurSpeed -= 10F;
+        if (this.fSightCurSpeed < 150F) {
+            this.fSightCurSpeed = 150F;
+        }
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) this.fSightCurSpeed) });
+        this.typeDiveBomberAdjVelocityMinus();
+    }
+
+    public void typeBomberUpdate(float f) {
+        if (Math.abs(((FlightModelMain) (super.FM)).Or.getKren()) > 4.5D) {
+            this.fSightCurReadyness -= 0.0666666F * f;
+            if (this.fSightCurReadyness < 0.0F) {
+                this.fSightCurReadyness = 0.0F;
+            }
+        }
+        if (this.fSightCurReadyness < 1.0F) {
+            this.fSightCurReadyness += 0.0333333F * f;
+        } else if (this.bSightAutomation) {
+            this.fSightCurDistance -= (this.fSightCurSpeed / 3.6F) * f;
+            if (this.fSightCurDistance < 0.0F) {
+                this.fSightCurDistance = 0.0F;
+                this.typeBomberToggleAutomation();
+            }
+            this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / this.fSightCurAltitude));
+            if (this.fSightCurDistance < (this.fSightCurSpeed / 3.6F * Math.sqrt(this.fSightCurAltitude * 0.2038736F))) {
+                this.bSightBombDump = true;
+            }
+            if (this.bSightBombDump) {
+                if (super.FM.isTick(3, 0)) {
+                    if ((((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1] != null) && ((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].haveBullets()) {
+                        ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = true;
+                        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
+                    }
+                } else {
+                    ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = false;
+                }
+            }
+        }
+    }
+
+    public void typeBomberReplicateToNet(NetMsgGuaranted netmsgguaranted) throws IOException {
+        netmsgguaranted.writeByte((this.bSightAutomation ? 1 : 0) | (this.bSightBombDump ? 2 : 0));
+        netmsgguaranted.writeFloat(this.fSightCurDistance);
+        netmsgguaranted.writeByte((int) this.fSightCurForwardAngle);
+        netmsgguaranted.writeByte((int) ((this.fSightCurSideslip + 3F) * 33.33333F));
+        netmsgguaranted.writeFloat(this.fSightCurAltitude);
+        netmsgguaranted.writeByte((int) (this.fSightCurSpeed / 2.5F));
+        netmsgguaranted.writeByte((int) (this.fSightCurReadyness * 200F));
+    }
+
+    public void typeBomberReplicateFromNet(NetMsgInput netmsginput) throws IOException {
+        int i = netmsginput.readUnsignedByte();
+        this.bSightAutomation = (i & 1) != 0;
+        this.bSightBombDump = (i & 2) != 0;
+        this.fSightCurDistance = netmsginput.readFloat();
+        this.fSightCurForwardAngle = netmsginput.readUnsignedByte();
+        this.fSightCurSideslip = -3F + (netmsginput.readUnsignedByte() / 33.33333F);
+        this.fSightCurAltitude = this.fDiveRecoveryAlt = netmsginput.readFloat();
+        this.fSightCurSpeed = this.fDiveVelocity = netmsginput.readUnsignedByte() * 2.5F;
+        this.fSightCurReadyness = netmsginput.readUnsignedByte() / 200F;
+    }
+
+    public boolean typeDiveBomberToggleAutomation() {
+        return false;
+    }
+
+    public void typeDiveBomberAdjAltitudeReset() {
+    }
+
+    public void typeDiveBomberAdjAltitudePlus() {
+        this.fDiveRecoveryAlt += 10F;
+        if (this.fDiveRecoveryAlt > 10000F) {
+            this.fDiveRecoveryAlt = 10000F;
+        }
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) this.fDiveRecoveryAlt) });
+    }
+
+    public void typeDiveBomberAdjAltitudeMinus() {
+        this.fDiveRecoveryAlt -= 10F;
+        if (this.fDiveRecoveryAlt < 500F) {
+            this.fDiveRecoveryAlt = 500F;
+        }
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) this.fDiveRecoveryAlt) });
+    }
+
+    public void typeDiveBomberAdjVelocityReset() {
+    }
+
+    public void typeDiveBomberAdjVelocityPlus() {
+        this.fDiveVelocity += 10F;
+        if (this.fDiveVelocity > 700F) {
+            this.fDiveVelocity = 700F;
+        }
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) this.fDiveVelocity) });
+    }
+
+    public void typeDiveBomberAdjVelocityMinus() {
+        this.fDiveVelocity -= 10F;
+        if (this.fDiveVelocity < 150F) {
+            this.fDiveVelocity = 150F;
+        }
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) this.fDiveVelocity) });
+    }
+
+    public void typeDiveBomberAdjDiveAngleReset() {
+    }
+
+    public void typeDiveBomberAdjDiveAnglePlus() {
+    }
+
+    public void typeDiveBomberAdjDiveAngleMinus() {
+    }
+
+    public void typeBomberAdjOpbLeft() {
+    }
+
+    public void typeBomberAdjOpbRight() {
+    }
+
+    public void typeBomberAdjOpbForward() {
+    }
+
+    public void typeBomberAdjOpbBack() {
+    }
+
+    public boolean typeBomberAdjOpbTimer() {
+        return false;
+    }
+
+    public void moveSteering(float f) {
+        this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(f, -65F, 65F, 65F, -65F), 0.0F);
+    }
+
+    public static boolean bChangedPit = false;
+    private int           iRust;
+    public boolean        blisterRemoved;
+    public boolean        topBlisterRemoved;
+    public int            diveMechStage;
+    public boolean        bNDives;
+    private boolean       bDropsBombs;
+    private boolean       needsToOpenBombays;
+    private boolean       bSightAutomation;
+    private boolean       bSightBombDump;
+    private float         fSightCurDistance;
+    public float          fSightCurForwardAngle;
+    public float          fSightCurSideslip;
+    public float          fSightCurAltitude;
+    public float          fSightCurSpeed;
+    public float          fSightCurReadyness;
+    public float          fDiveRecoveryAlt;
+    public float          fDiveVelocity;
+    public float          fDiveAngle;
+
+    static {
+        Class class1 = CLASS.THIS();
+        new NetAircraft.SPAWN(class1);
+        Property.set(class1, "iconFar_shortClassName", "Ju-88");
+        Property.set(class1, "meshName", "3DO/Plane/Ju-88A-1/hier.him");
+        Property.set(class1, "PaintScheme", new PaintSchemeBMPar02());
+        Property.set(class1, "yearService", 1939F);
+        Property.set(class1, "yearExpired", 1945.5F);
+        Property.set(class1, "FlightModel", "FlightModels/Ju-88A-1.fmd:Ju-88A-4Late");
+        Property.set(class1, "LOSElevation", 1.0976F);
+        Aircraft.weaponTriggersRegister(class1, new int[] { 10, 11, 12, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 9, 9, 9, 9 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07", "_BombSpawn08", "_BombSpawn08a", "_BombSpawn09", "_BombSpawn09a", "_BombSpawn10", "_BombSpawn11", "_BombSpawn12", "_BombSpawn13", "_BombSpawn14", "_BombSpawn15", "_BombSpawn15a", "_BombSpawn16", "_BombSpawn16a", "_BombSpawn17", "_BombSpawn18", "_BombSpawn19", "_BombSpawn20", "_BombSpawn21", "_BombSpawn22", "_BombSpawn23", "_BombSpawn24", "_ExternalBomb04", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb03", "_ExternalBomb05", "_ExternalBomb06", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04" });
+    }
+}
