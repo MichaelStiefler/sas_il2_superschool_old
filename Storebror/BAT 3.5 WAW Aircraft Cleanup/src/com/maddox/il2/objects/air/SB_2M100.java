@@ -1,6 +1,7 @@
 package com.maddox.il2.objects.air;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.game.AircraftHotKeys;
@@ -9,6 +10,7 @@ import com.maddox.il2.game.Main3D;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
+import com.maddox.util.HashMapInt;
 
 public class SB_2M100 extends SB_2M100A implements TypeBomber {
 
@@ -161,6 +163,8 @@ public class SB_2M100 extends SB_2M100A implements TypeBomber {
         Property.set(class1, "yearExpired", 1944F);
         Property.set(class1, "FlightModel", "FlightModels/SB-2M-100A.fmd");
         Property.set(class1, "cockpitClass", new Class[] { CockpitSB.class, CockpitSB_Bombardier.class, CockpitSB_NGunner.class, CockpitSB_TGunner.class, CockpitSB_BGunner.class });
+        Property.set(class1, "weaponsList", new ArrayList());
+        Property.set(class1, "weaponsMap", new HashMapInt());
         Aircraft.weaponTriggersRegister(class1, new int[] { 10, 10, 11, 12, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02", "_BombSpawn01", "_BombSpawn02", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07", "_BombSpawn08", "_BombSpawn07", "_BombSpawn08", "_BombSpawn09", "_BombSpawn09" });
     }
