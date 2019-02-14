@@ -1,6 +1,7 @@
 package com.maddox.il2.objects.air;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
@@ -10,6 +11,7 @@ import com.maddox.il2.game.HUD;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
+import com.maddox.util.HashMapInt;
 
 public class S_31 extends DO_335A0 implements TypeBomber {
 
@@ -297,6 +299,8 @@ public class S_31 extends DO_335A0 implements TypeBomber {
         Property.set(class1, "FlightModel", "FlightModels/Do-335A-6.fmd:DO_335");
         Property.set(class1, "cockpitClass", new Class[] { CockpitS_31.class, CockpitS31_Bombardier.class });
         Property.set(class1, "LOSElevation", 0.73425F);
+        Property.set(class1, "weaponsList", new ArrayList());
+        Property.set(class1, "weaponsMap", new HashMapInt());
         Aircraft.weaponTriggersRegister(class1, new int[] { 10, 11, 12, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_MGUN04", "_MGUN05" });
     }
