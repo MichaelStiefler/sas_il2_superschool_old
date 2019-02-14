@@ -1,6 +1,6 @@
 // Source File Name: GuidedMissileUtils.java
 // Author:	Storebror
-// Edit:	western0221 on 20th/Aug./2018
+// Edit:	western0221 on 13th/Feb./2019
 package com.maddox.il2.objects.weapons;
 
 import java.util.ArrayList;
@@ -223,6 +223,30 @@ public class GuidedMissileUtils {
 
 	public static float angleBetween(Actor actorFrom, Vector3f targetVector) {
 		return angleBetween(actorFrom, new Vector3d(targetVector));
+	}
+
+	public static float pitchBetween(Actor actorFrom, Actor actorTo) {
+		float angleRetVal = 180.1F;
+		double angleDoubleTemp = 0.0D;
+		Loc angleActorLoc = new Loc();
+		Point3d angleActorPos = new Point3d();
+		Point3d angleTargetPos = new Point3d();
+		Vector3d angleTargRayDir = new Vector3d();
+		Vector3d angleNoseDir = new Vector3d();
+		actorFrom.pos.getAbs(angleActorLoc);
+		angleActorLoc.get(angleActorPos);
+		actorTo.pos.getAbs(angleTargetPos);
+		angleTargRayDir.sub(angleTargetPos, angleActorPos);
+		angleDoubleTemp = angleTargRayDir.length();
+		angleTargRayDir.scale(1.0D / angleDoubleTemp);
+		angleNoseDir.set(1.0D, 0.0D, 0.0D);
+		angleActorLoc.transform(angleNoseDir);
+		angleDoubleTemp = angleTargRayDir.y;
+		angleTargRayDir.y = angleTargRayDir.z;
+		angleTargRayDir.z = angleDoubleTemp;
+		angleDoubleTemp = angleNoseDir.dot(angleTargRayDir);
+		angleRetVal = Geom.RAD2DEG((float) Math.acos(angleDoubleTemp));
+		return angleRetVal;
 	}
 
 	public static double distanceBetween(Actor actorFrom, Actor actorTo) {
