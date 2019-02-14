@@ -43,7 +43,7 @@ public class LANCASTER_MKIIIB_SPECIAL extends Scheme4 implements TypeTransport, 
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        LANCASTER_MKIIIB_SPECIAL.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {
@@ -52,15 +52,15 @@ public class LANCASTER_MKIIIB_SPECIAL extends Scheme4 implements TypeTransport, 
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 25: // '\031'
+            case 25:
                 this.FM.turret[0].bIsOperable = false;
                 break;
 
-            case 26: // '\032'
+            case 26:
                 this.FM.turret[1].bIsOperable = false;
                 break;
 
-            case 27: // '\033'
+            case 27:
                 this.FM.turret[2].bIsOperable = false;
                 break;
         }
@@ -92,52 +92,52 @@ public class LANCASTER_MKIIIB_SPECIAL extends Scheme4 implements TypeTransport, 
                 }
                 if ((this.getEnergyPastArmor(6.87F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.05F)) {
                     switch (j) {
-                        case 1: // '\001'
+                        case 1:
                             j = 10;
                             i = 0;
                             break;
 
-                        case 2: // '\002'
+                        case 2:
                             j = 10;
                             i = 1;
                             break;
 
-                        case 3: // '\003'
+                        case 3:
                             j = 11;
                             i = 0;
                             break;
 
-                        case 4: // '\004'
+                        case 4:
                             j = 11;
                             i = 1;
                             break;
 
-                        case 5: // '\005'
+                        case 5:
                             j = 12;
                             i = 0;
                             break;
 
-                        case 6: // '\006'
+                        case 6:
                             j = 12;
                             i = 1;
                             break;
 
-                        case 7: // '\007'
+                        case 7:
                             j = 13;
                             i = 0;
                             break;
 
-                        case 8: // '\b'
+                        case 8:
                             j = 14;
                             i = 0;
                             break;
 
-                        case 9: // '\t'
+                        case 9:
                             j = 15;
                             i = 0;
                             break;
 
-                        case 10: // '\n'
+                        case 10:
                             j = 15;
                             i = 1;
                             break;
@@ -149,15 +149,15 @@ public class LANCASTER_MKIIIB_SPECIAL extends Scheme4 implements TypeTransport, 
             if (s.startsWith("xxcontrols")) {
                 int k = s.charAt(10) - 48;
                 switch (k) {
-                    case 1: // '\001'
-                    case 2: // '\002'
+                    case 1:
+                    case 2:
                         if ((this.getEnergyPastArmor(1.0F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
                             this.FM.AS.setControlsDamage(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Aileron Controls Out..");
                         }
                         break;
 
-                    case 3: // '\003'
+                    case 3:
                         if ((World.Rnd().nextFloat() < 0.125F) && (this.getEnergyPastArmor(5.2F, shot) > 0.0F)) {
                             Aircraft.debugprintln(this, "*** Control Column: Hit, Controls Destroyed..");
                             this.FM.AS.setControlsDamage(shot.initiator, 2);
@@ -167,9 +167,9 @@ public class LANCASTER_MKIIIB_SPECIAL extends Scheme4 implements TypeTransport, 
                         this.getEnergyPastArmor(2.0F, shot);
                         break;
 
-                    case 4: // '\004'
-                    case 5: // '\005'
-                    case 6: // '\006'
+                    case 4:
+                    case 5:
+                    case 6:
                         if ((World.Rnd().nextFloat() < 0.252F) && (this.getEnergyPastArmor(5.2F, shot) > 0.0F)) {
                             if (World.Rnd().nextFloat() < 0.125F) {
                                 this.FM.AS.setControlsDamage(shot.initiator, 2);
@@ -416,52 +416,52 @@ public class LANCASTER_MKIIIB_SPECIAL extends Scheme4 implements TypeTransport, 
                 int k1 = (10 * (s.charAt(5) - 48)) + (s.charAt(6) - 48);
                 if ((this.getEnergyPastArmor(6.45F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.35F)) {
                     switch (k1) {
-                        case 1: // '\001'
+                        case 1:
                             k1 = 10;
                             i = 0;
                             break;
 
-                        case 2: // '\002'
+                        case 2:
                             k1 = 10;
                             i = 1;
                             break;
 
-                        case 3: // '\003'
+                        case 3:
                             k1 = 11;
                             i = 0;
                             break;
 
-                        case 4: // '\004'
+                        case 4:
                             k1 = 11;
                             i = 1;
                             break;
 
-                        case 5: // '\005'
+                        case 5:
                             k1 = 12;
                             i = 0;
                             break;
 
-                        case 6: // '\006'
+                        case 6:
                             k1 = 12;
                             i = 1;
                             break;
 
-                        case 7: // '\007'
+                        case 7:
                             k1 = 13;
                             i = 0;
                             break;
 
-                        case 8: // '\b'
+                        case 8:
                             k1 = 14;
                             i = 0;
                             break;
 
-                        case 9: // '\t'
+                        case 9:
                             k1 = 15;
                             i = 0;
                             break;
 
-                        case 10: // '\n'
+                        case 10:
                             k1 = 15;
                             i = 1;
                             break;
@@ -593,15 +593,15 @@ public class LANCASTER_MKIIIB_SPECIAL extends Scheme4 implements TypeTransport, 
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 4: // '\004'
+            case 4:
                 this.FM.turret[0].bIsOperable = false;
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.FM.turret[1].bIsOperable = false;
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.FM.turret[2].bIsOperable = false;
                 break;
         }
@@ -609,49 +609,49 @@ public class LANCASTER_MKIIIB_SPECIAL extends Scheme4 implements TypeTransport, 
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 this.hierMesh().chunkVisible("Head2_D0", false);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("HMask3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 this.hierMesh().chunkVisible("Head3_D0", false);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.hierMesh().chunkVisible("Pilot4_D0", false);
                 this.hierMesh().chunkVisible("HMask4_D0", false);
                 this.hierMesh().chunkVisible("Pilot4_D1", true);
                 this.hierMesh().chunkVisible("Head4_D0", false);
                 break;
 
-            case 5: // '\005'
+            case 5:
                 this.hierMesh().chunkVisible("Pilot6_D0", false);
                 this.hierMesh().chunkVisible("HMask6_D0", false);
                 this.hierMesh().chunkVisible("Pilot6_D1", true);
                 this.hierMesh().chunkVisible("Head5_D0", false);
                 break;
 
-            case 6: // '\006'
+            case 6:
                 this.hierMesh().chunkVisible("Pilot7_D0", false);
                 this.hierMesh().chunkVisible("HMask7_D0", false);
                 this.hierMesh().chunkVisible("Pilot7_D1", true);
                 this.hierMesh().chunkVisible("Head6_D0", false);
                 break;
 
-            case 7: // '\007'
+            case 7:
                 this.hierMesh().chunkVisible("Pilot8_D0", false);
                 this.hierMesh().chunkVisible("HMask8_D0", false);
                 this.hierMesh().chunkVisible("Pilot8_D1", true);
@@ -706,7 +706,7 @@ public class LANCASTER_MKIIIB_SPECIAL extends Scheme4 implements TypeTransport, 
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -76F) {
                     f = -76F;
                     flag = false;
@@ -725,7 +725,7 @@ public class LANCASTER_MKIIIB_SPECIAL extends Scheme4 implements TypeTransport, 
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 float f2 = Math.abs(f);
                 if (f1 > 50F) {
                     f1 = 50F;
@@ -786,7 +786,7 @@ public class LANCASTER_MKIIIB_SPECIAL extends Scheme4 implements TypeTransport, 
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -87F) {
                     f = -87F;
                     flag = false;
@@ -805,7 +805,7 @@ public class LANCASTER_MKIIIB_SPECIAL extends Scheme4 implements TypeTransport, 
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f1 < -45F) {
                     f1 = -45F;
                     flag = false;
@@ -852,7 +852,7 @@ public class LANCASTER_MKIIIB_SPECIAL extends Scheme4 implements TypeTransport, 
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 f = -f;
                 if (f1 < -45F) {
                     f1 = -45F;
@@ -928,7 +928,7 @@ public class LANCASTER_MKIIIB_SPECIAL extends Scheme4 implements TypeTransport, 
         if (this.fSightCurForwardAngle > 85F) {
             this.fSightCurForwardAngle = 85F;
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = LANCASTER_MKIIIB_SPECIAL.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         if (this.bSightAutomation) {
             this.typeBomberToggleAutomation();
@@ -940,7 +940,7 @@ public class LANCASTER_MKIIIB_SPECIAL extends Scheme4 implements TypeTransport, 
         if (this.fSightCurForwardAngle < 0.0F) {
             this.fSightCurForwardAngle = 0.0F;
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = LANCASTER_MKIIIB_SPECIAL.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         if (this.bSightAutomation) {
             this.typeBomberToggleAutomation();
@@ -977,7 +977,7 @@ public class LANCASTER_MKIIIB_SPECIAL extends Scheme4 implements TypeTransport, 
             this.fSightCurAltitude = 50000F;
         }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int) this.fSightCurAltitude) });
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = LANCASTER_MKIIIB_SPECIAL.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
     }
 
     public void typeBomberAdjAltitudeMinus() {
@@ -986,7 +986,7 @@ public class LANCASTER_MKIIIB_SPECIAL extends Scheme4 implements TypeTransport, 
             this.fSightCurAltitude = 1000F;
         }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int) this.fSightCurAltitude) });
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = LANCASTER_MKIIIB_SPECIAL.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
     }
 
     public void typeBomberAdjSpeedReset() {
@@ -1019,13 +1019,13 @@ public class LANCASTER_MKIIIB_SPECIAL extends Scheme4 implements TypeTransport, 
         if (this.fSightCurReadyness < 1.0F) {
             this.fSightCurReadyness += 0.0333333F * f;
         } else if (this.bSightAutomation) {
-            this.fSightCurDistance -= toMetersPerSecond(this.fSightCurSpeed) * f;
+            this.fSightCurDistance -= LANCASTER_MKIIIB_SPECIAL.toMetersPerSecond(this.fSightCurSpeed) * f;
             if (this.fSightCurDistance < 0.0F) {
                 this.fSightCurDistance = 0.0F;
                 this.typeBomberToggleAutomation();
             }
-            this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / toMeters(this.fSightCurAltitude)));
-            if (this.fSightCurDistance < (toMetersPerSecond(this.fSightCurSpeed) * Math.sqrt(toMeters(this.fSightCurAltitude) * 0.203874F))) {
+            this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / LANCASTER_MKIIIB_SPECIAL.toMeters(this.fSightCurAltitude)));
+            if (this.fSightCurDistance < (LANCASTER_MKIIIB_SPECIAL.toMetersPerSecond(this.fSightCurSpeed) * Math.sqrt(LANCASTER_MKIIIB_SPECIAL.toMeters(this.fSightCurAltitude) * 0.203874F))) {
                 this.bSightBombDump = true;
             }
             if (this.bSightBombDump) {

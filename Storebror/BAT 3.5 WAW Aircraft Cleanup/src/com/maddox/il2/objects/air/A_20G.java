@@ -4,9 +4,7 @@ import com.maddox.JGP.Point3d;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class A_20G extends A_20 implements TypeStormovik {
@@ -46,7 +44,7 @@ public class A_20G extends A_20 implements TypeStormovik {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f1 > 89F) {
                     f1 = 89F;
                     flag = false;
@@ -57,7 +55,7 @@ public class A_20G extends A_20 implements TypeStormovik {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -30F) {
                     f = -30F;
                     flag = false;
@@ -83,12 +81,12 @@ public class A_20G extends A_20 implements TypeStormovik {
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 1: // '\001'
-                super.FM.turret[0].setHealth(f);
+            case 1:
+                this.FM.turret[0].setHealth(f);
                 break;
 
-            case 2: // '\002'
-                super.FM.turret[1].setHealth(f);
+            case 2:
+                this.FM.turret[1].setHealth(f);
                 break;
         }
     }
@@ -106,21 +104,21 @@ public class A_20G extends A_20 implements TypeStormovik {
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         if (flag) {
-            if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[0] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
-                ((FlightModelMain) (super.FM)).AS.hitTank(this, 0, 1);
+            if ((this.FM.AS.astateEngineStates[0] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
+                this.FM.AS.hitTank(this, 0, 1);
             }
-            if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[1] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
-                ((FlightModelMain) (super.FM)).AS.hitTank(this, 1, 1);
+            if ((this.FM.AS.astateEngineStates[1] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
+                this.FM.AS.hitTank(this, 1, 1);
             }
-            if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[2] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
-                ((FlightModelMain) (super.FM)).AS.hitTank(this, 2, 1);
+            if ((this.FM.AS.astateEngineStates[2] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
+                this.FM.AS.hitTank(this, 2, 1);
             }
-            if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[3] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
-                ((FlightModelMain) (super.FM)).AS.hitTank(this, 3, 1);
+            if ((this.FM.AS.astateEngineStates[3] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
+                this.FM.AS.hitTank(this, 3, 1);
             }
         }
         for (int i = 1; i < 4; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -130,7 +128,7 @@ public class A_20G extends A_20 implements TypeStormovik {
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = A_20G.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "A-20");
         Property.set(class1, "meshName", "3DO/Plane/A-20G(Multi1)/hier.him");

@@ -10,15 +10,15 @@ public class Koolhoven_FK51W extends Koolhovenxyz {
 
     public void update(float f) {
         super.update(f);
-        super.onAircraftLoaded();
-        if (super.FM.isPlayers()) {
+        this.onAircraftLoaded();
+        if (this.FM.isPlayers()) {
             if (!Main3D.cur3D().isViewOutside()) {
                 this.hierMesh().chunkVisible("Blister1_D0", false);
             } else {
                 this.hierMesh().chunkVisible("Blister1_D0", true);
             }
         }
-        if (super.FM.isPlayers()) {
+        if (this.FM.isPlayers()) {
             if (!Main3D.cur3D().isViewOutside()) {
                 this.hierMesh().chunkVisible("Blister1_D1", false);
             }

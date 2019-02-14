@@ -72,12 +72,12 @@ public class BF_109CRP extends BF_109 {
 
     public static void moveGearOld(HierMesh hiermesh, float f) {
         float f1 = 0.8F;
-        float f2 = (-0.5F * (float) Math.cos((f / f1) * 3.1415926535897931D)) + 0.5F;
+        float f2 = (-0.5F * (float) Math.cos((f / f1) * Math.PI)) + 0.5F;
         if ((f <= f1) || (f == 1.0F)) {
             hiermesh.chunkSetAngles("GearL3_D0", 0.0F, -77.5F * f2, 0.0F);
             hiermesh.chunkSetAngles("GearL2_D0", -33.5F * f2, 0.0F, 0.0F);
         }
-        f2 = (-0.5F * (float) Math.cos(((f - (1.0F - f1)) / f1) * 3.1415926535897931D)) + 0.5F;
+        f2 = (-0.5F * (float) Math.cos(((f - (1.0F - f1)) / f1) * Math.PI)) + 0.5F;
         if (f >= (1.0F - f1)) {
             hiermesh.chunkSetAngles("GearR3_D0", 0.0F, 77.5F * f2, 0.0F);
             hiermesh.chunkSetAngles("GearR2_D0", 33.5F * f2, 0.0F, 0.0F);
@@ -99,12 +99,12 @@ public class BF_109CRP extends BF_109 {
 
     protected void moveGearOld(float f) {
         float f1 = 0.9F - (((Wing) this.getOwner()).aircIndex(this) * 0.1F);
-        float f2 = (-0.5F * (float) Math.cos((f / f1) * 3.1415926535897931D)) + 0.5F;
+        float f2 = (-0.5F * (float) Math.cos((f / f1) * Math.PI)) + 0.5F;
         if ((f <= f1) || (f == 1.0F)) {
             this.hierMesh().chunkSetAngles("GearL3_D0", 0.0F, -77.5F * f2, 0.0F);
             this.hierMesh().chunkSetAngles("GearL2_D0", -33.5F * f2, 0.0F, 0.0F);
         }
-        f2 = (-0.5F * (float) Math.cos(((f - (1.0F - f1)) / f1) * 3.1415926535897931D)) + 0.5F;
+        f2 = (-0.5F * (float) Math.cos(((f - (1.0F - f1)) / f1) * Math.PI)) + 0.5F;
         if (f >= (1.0F - f1)) {
             this.hierMesh().chunkSetAngles("GearR3_D0", 0.0F, 77.5F * f2, 0.0F);
             this.hierMesh().chunkSetAngles("GearR2_D0", 33.5F * f2, 0.0F, 0.0F);
@@ -120,39 +120,39 @@ public class BF_109CRP extends BF_109 {
 
     public static void moveGear(HierMesh hiermesh, float f, float f1, float f2, boolean flag) {
         if (flag) {
-            hiermesh.chunkSetAngles("GearC3_D0", smoothCvt(f2, 0.725F, 0.925F, 0.0F, 70F), 0.0F, 0.0F);
+            hiermesh.chunkSetAngles("GearC3_D0", BF_109CRP.smoothCvt(f2, 0.725F, 0.925F, 0.0F, 70F), 0.0F, 0.0F);
         } else {
-            hiermesh.chunkSetAngles("GearC3_D0", smoothCvt(f2, 0.01F, 0.2F, 0.0F, 70F), 0.0F, 0.0F);
+            hiermesh.chunkSetAngles("GearC3_D0", BF_109CRP.smoothCvt(f2, 0.01F, 0.2F, 0.0F, 70F), 0.0F, 0.0F);
         }
-        hiermesh.chunkSetAngles("GearL2_D0", smoothCvt(f, 0.01F, 0.6F, 0.0F, -33.5F), 0.0F, 0.0F);
-        hiermesh.chunkSetAngles("GearL3_D0", 0.0F, smoothCvt(f, 0.01F, 0.6F, 0.0F, -77.5F), 0.0F);
-        hiermesh.chunkSetAngles("GearR2_D0", smoothCvt(f1, 0.3F, 0.9F, 0.0F, 33.5F), 0.0F, 0.0F);
-        hiermesh.chunkSetAngles("GearR3_D0", 0.0F, smoothCvt(f1, 0.3F, 0.9F, 0.0F, 77.5F), 0.0F);
+        hiermesh.chunkSetAngles("GearL2_D0", BF_109CRP.smoothCvt(f, 0.01F, 0.6F, 0.0F, -33.5F), 0.0F, 0.0F);
+        hiermesh.chunkSetAngles("GearL3_D0", 0.0F, BF_109CRP.smoothCvt(f, 0.01F, 0.6F, 0.0F, -77.5F), 0.0F);
+        hiermesh.chunkSetAngles("GearR2_D0", BF_109CRP.smoothCvt(f1, 0.3F, 0.9F, 0.0F, 33.5F), 0.0F, 0.0F);
+        hiermesh.chunkSetAngles("GearR3_D0", 0.0F, BF_109CRP.smoothCvt(f1, 0.3F, 0.9F, 0.0F, 77.5F), 0.0F);
     }
 
     public static void moveGear(HierMesh hiermesh, float f, float f1, float f2) {
-        moveGear(hiermesh, f, f1, f2, true);
+        BF_109CRP.moveGear(hiermesh, f, f1, f2, true);
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2, this.FM.CT.GearControl > 0.5F);
+        BF_109CRP.moveGear(this.hierMesh(), f, f1, f2, this.FM.CT.GearControl > 0.5F);
     }
 
     public static void moveGear(HierMesh hiermesh, float f, boolean flag) {
-        moveGear(hiermesh, f, f, f, flag);
+        BF_109CRP.moveGear(hiermesh, f, f, f, flag);
     }
 
     public static void moveGear(HierMesh hiermesh, float f) {
-        moveGear(hiermesh, f, f, f, true);
+        BF_109CRP.moveGear(hiermesh, f, f, f, true);
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f, this.FM.CT.GearControl > 0.5F);
+        BF_109CRP.moveGear(this.hierMesh(), f, this.FM.CT.GearControl > 0.5F);
     }
 
     private static float smoothCvt(float f, float f1, float f2, float f3, float f4) {
         f = Math.min(Math.max(f, f1), f2);
-        return f3 + ((f4 - f3) * ((-0.5F * (float) Math.cos(((f - f1) / (f2 - f1)) * 3.1415926535897931D)) + 0.5F));
+        return f3 + ((f4 - f3) * ((-0.5F * (float) Math.cos(((f - f1) / (f2 - f1)) * Math.PI)) + 0.5F));
     }
 
     public void moveSteering(float f) {

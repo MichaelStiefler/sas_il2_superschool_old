@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Interpolate;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class ThunderboltMkIIlate extends P_47ModPack {
@@ -11,10 +10,10 @@ public class ThunderboltMkIIlate extends P_47ModPack {
 
     public void missionStarting() {
         super.missionStarting();
-        if (super.FM.isStationedOnGround()) {
-            ((FlightModelMain) (super.FM)).AS.setCockpitDoor(((Interpolate) (super.FM)).actor, 1);
-            ((FlightModelMain) (super.FM)).CT.cockpitDoorControl = 1.0F;
-            P_47ModPack.printDebugMessage("*** Initial canopy state: " + (((FlightModelMain) (super.FM)).CT.getCockpitDoor() != 1.0F ? "closed" : "open"));
+        if (this.FM.isStationedOnGround()) {
+            this.FM.AS.setCockpitDoor(((Interpolate) (this.FM)).actor, 1);
+            this.FM.CT.cockpitDoorControl = 1.0F;
+            P_47ModPack.printDebugMessage("*** Initial canopy state: " + (this.FM.CT.getCockpitDoor() != 1.0F ? "closed" : "open"));
         }
     }
 

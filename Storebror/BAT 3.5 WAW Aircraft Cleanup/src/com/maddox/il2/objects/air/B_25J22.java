@@ -15,7 +15,7 @@ public class B_25J22 extends B_25_Strafer implements TypeBomber, TypeStormovik, 
         this.fSightCurAltitude = 3000F;
         this.fSightCurSpeed = 200F;
         this.fSightCurReadyness = 0.0F;
-        bChangedPit = false;
+        B_25J22.bChangedPit = false;
         this.fSightCurForwardAngle = 0.0F;
         this.fSightCurSideslip = 0.0F;
         this.fSightCurAltitude = 3000F;
@@ -25,7 +25,7 @@ public class B_25J22 extends B_25_Strafer implements TypeBomber, TypeStormovik, 
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
+            case 19:
                 this.killPilot(this, 4);
                 break;
         }
@@ -34,32 +34,32 @@ public class B_25J22 extends B_25_Strafer implements TypeBomber, TypeStormovik, 
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.hierMesh().chunkVisible("Pilot4_D0", false);
                 this.hierMesh().chunkVisible("HMask4_D0", false);
                 this.hierMesh().chunkVisible("Pilot4_D1", true);
                 break;
 
-            case 4: // '\004'
+            case 4:
                 this.hierMesh().chunkVisible("Pilot5_D0", false);
                 this.hierMesh().chunkVisible("HMask5_D0", false);
                 this.hierMesh().chunkVisible("Pilot5_D1", true);
                 break;
 
-            case 5: // '\005'
+            case 5:
                 this.hierMesh().chunkVisible("Pilot6_D0", false);
                 this.hierMesh().chunkVisible("HMask6_D0", false);
                 this.hierMesh().chunkVisible("Pilot6_D1", true);
@@ -87,14 +87,14 @@ public class B_25J22 extends B_25_Strafer implements TypeBomber, TypeStormovik, 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            B_25J22.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            B_25J22.bChangedPit = true;
         }
     }
 
@@ -106,10 +106,10 @@ public class B_25J22 extends B_25_Strafer implements TypeBomber, TypeStormovik, 
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 return false;
 
-            case 1: // '\001'
+            case 1:
                 if (f1 < 0.0F) {
                     f1 = 0.0F;
                     flag = false;
@@ -120,7 +120,7 @@ public class B_25J22 extends B_25_Strafer implements TypeBomber, TypeStormovik, 
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -38F) {
                     f = -38F;
                     flag = false;
@@ -139,7 +139,7 @@ public class B_25J22 extends B_25_Strafer implements TypeBomber, TypeStormovik, 
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f < -85F) {
                     f = -85F;
                     flag = false;
@@ -158,7 +158,7 @@ public class B_25J22 extends B_25_Strafer implements TypeBomber, TypeStormovik, 
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 if (f < -34F) {
                     f = -34F;
                     flag = false;
@@ -184,15 +184,15 @@ public class B_25J22 extends B_25_Strafer implements TypeBomber, TypeStormovik, 
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 3: // '\003'
+            case 3:
                 this.FM.turret[1].bIsOperable = false;
                 break;
 
-            case 4: // '\004'
+            case 4:
                 this.FM.turret[2].bIsOperable = false;
                 break;
 
-            case 5: // '\005'
+            case 5:
                 this.FM.turret[3].bIsOperable = false;
                 this.FM.turret[4].bIsOperable = false;
                 break;

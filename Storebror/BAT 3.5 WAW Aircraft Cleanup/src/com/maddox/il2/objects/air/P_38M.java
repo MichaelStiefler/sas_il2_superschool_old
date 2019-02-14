@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class P_38M extends P_38 {
@@ -13,7 +12,7 @@ public class P_38M extends P_38 {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
@@ -22,19 +21,19 @@ public class P_38M extends P_38 {
                     // fall through
                 }
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Head2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 if (!this.FM.AS.bIsAboutToBailout) {
-                    ;
+
                 }
                 break;
         }
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = P_38M.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "P-38");
         Property.set(class1, "meshName", "3DO/Plane/P-38M/hier.him");

@@ -9,7 +9,6 @@ import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.NetMsgGuaranted;
@@ -44,7 +43,7 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        LANCASTER.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {
@@ -53,16 +52,16 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 25: // '\031'
-                super.FM.turret[0].bIsOperable = false;
+            case 25:
+                this.FM.turret[0].bIsOperable = false;
                 break;
 
-            case 26: // '\032'
-                super.FM.turret[1].bIsOperable = false;
+            case 26:
+                this.FM.turret[1].bIsOperable = false;
                 break;
 
-            case 27: // '\033'
-                super.FM.turret[2].bIsOperable = false;
+            case 27:
+                this.FM.turret[2].bIsOperable = false;
                 break;
         }
         return super.cutFM(i, j, actor);
@@ -93,57 +92,57 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
                 }
                 if ((this.getEnergyPastArmor(6.87F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.05F)) {
                     switch (j) {
-                        case 1: // '\001'
+                        case 1:
                             j = 10;
                             i = 0;
                             break;
 
-                        case 2: // '\002'
+                        case 2:
                             j = 10;
                             i = 1;
                             break;
 
-                        case 3: // '\003'
+                        case 3:
                             j = 11;
                             i = 0;
                             break;
 
-                        case 4: // '\004'
+                        case 4:
                             j = 11;
                             i = 1;
                             break;
 
-                        case 5: // '\005'
+                        case 5:
                             j = 12;
                             i = 0;
                             break;
 
-                        case 6: // '\006'
+                        case 6:
                             j = 12;
                             i = 1;
                             break;
 
-                        case 7: // '\007'
+                        case 7:
                             j = 13;
                             i = 0;
                             break;
 
-                        case 8: // '\b'
+                        case 8:
                             j = 14;
                             i = 0;
                             break;
 
-                        case 9: // '\t'
+                        case 9:
                             j = 15;
                             i = 0;
                             break;
 
-                        case 10: // '\n'
+                        case 10:
                             j = 15;
                             i = 1;
                             break;
                     }
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(j, i);
+                    this.FM.AS.setJamBullets(j, i);
                     return;
                 }
             }
@@ -153,33 +152,33 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
                     default:
                         break;
 
-                    case 1: // '\001'
-                    case 2: // '\002'
+                    case 1:
+                    case 2:
                         if ((this.getEnergyPastArmor(1.0F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                            this.FM.AS.setControlsDamage(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Aileron Controls Out..");
                         }
                         break;
 
-                    case 3: // '\003'
+                    case 3:
                         if ((World.Rnd().nextFloat() < 0.125F) && (this.getEnergyPastArmor(5.2F, shot) > 0.0F)) {
                             Aircraft.debugprintln(this, "*** Control Column: Hit, Controls Destroyed..");
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                            this.FM.AS.setControlsDamage(shot.initiator, 2);
+                            this.FM.AS.setControlsDamage(shot.initiator, 1);
+                            this.FM.AS.setControlsDamage(shot.initiator, 0);
                         }
                         this.getEnergyPastArmor(2.0F, shot);
                         break;
 
-                    case 4: // '\004'
-                    case 5: // '\005'
-                    case 6: // '\006'
+                    case 4:
+                    case 5:
+                    case 6:
                         if ((World.Rnd().nextFloat() < 0.252F) && (this.getEnergyPastArmor(5.2F, shot) > 0.0F)) {
                             if (World.Rnd().nextFloat() < 0.125F) {
-                                ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
+                                this.FM.AS.setControlsDamage(shot.initiator, 2);
                             }
                             if (World.Rnd().nextFloat() < 0.125F) {
-                                ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
+                                this.FM.AS.setControlsDamage(shot.initiator, 1);
                             }
                         }
                         this.getEnergyPastArmor(2.0F, shot);
@@ -192,44 +191,44 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
                 if (s.endsWith("case")) {
                     if (this.getEnergyPastArmor(0.2F, shot) > 0.0F) {
                         if (World.Rnd().nextFloat() < (shot.power / 140000F)) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, l);
+                            this.FM.AS.setEngineStuck(shot.initiator, l);
                             Aircraft.debugprintln(this, "*** Engine (" + l + ") Crank Case Hit - Engine Stucks..");
                         }
                         if (World.Rnd().nextFloat() < (shot.power / 85000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, l, 2);
+                            this.FM.AS.hitEngine(shot.initiator, l, 2);
                             Aircraft.debugprintln(this, "*** Engine (" + l + ") Crank Case Hit - Engine Damaged..");
                         }
                     } else if (World.Rnd().nextFloat() < 0.005F) {
-                        ((FlightModelMain) (super.FM)).EI.engines[l].setCyliderKnockOut(shot.initiator, 1);
+                        this.FM.EI.engines[l].setCyliderKnockOut(shot.initiator, 1);
                     } else {
-                        ((FlightModelMain) (super.FM)).EI.engines[l].setReadyness(shot.initiator, ((FlightModelMain) (super.FM)).EI.engines[l].getReadyness() - 0.00082F);
-                        Aircraft.debugprintln(this, "*** Engine (" + l + ") Crank Case Hit - Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[l].getReadyness() + "..");
+                        this.FM.EI.engines[l].setReadyness(shot.initiator, this.FM.EI.engines[l].getReadyness() - 0.00082F);
+                        Aircraft.debugprintln(this, "*** Engine (" + l + ") Crank Case Hit - Readyness Reduced to " + this.FM.EI.engines[l].getReadyness() + "..");
                     }
                     this.getEnergyPastArmor(12F, shot);
                 }
                 if (s.endsWith("cyls")) {
-                    if ((this.getEnergyPastArmor(5.85F, shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[l].getCylindersRatio() * 0.75F))) {
-                        ((FlightModelMain) (super.FM)).EI.engines[l].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 19000F)));
-                        Aircraft.debugprintln(this, "*** Engine (" + l + ") Cylinders Hit, " + ((FlightModelMain) (super.FM)).EI.engines[l].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[l].getCylinders() + " Left..");
+                    if ((this.getEnergyPastArmor(5.85F, shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[l].getCylindersRatio() * 0.75F))) {
+                        this.FM.EI.engines[l].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 19000F)));
+                        Aircraft.debugprintln(this, "*** Engine (" + l + ") Cylinders Hit, " + this.FM.EI.engines[l].getCylindersOperable() + "/" + this.FM.EI.engines[l].getCylinders() + " Left..");
                         if (World.Rnd().nextFloat() < (shot.power / 18000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, l, 2);
+                            this.FM.AS.hitEngine(shot.initiator, l, 2);
                             Aircraft.debugprintln(this, "*** Engine (" + l + ") Cylinders Hit - Engine Fires..");
                         }
                     }
                     this.getEnergyPastArmor(25F, shot);
                 }
                 if (s.endsWith("mag1")) {
-                    ((FlightModelMain) (super.FM)).EI.engines[l].setMagnetoKnockOut(shot.initiator, 0);
+                    this.FM.EI.engines[l].setMagnetoKnockOut(shot.initiator, 0);
                     Aircraft.debugprintln(this, "*** Engine (" + l + ") Module: Magneto #0 Destroyed..");
                     this.getEnergyPastArmor(25F, shot);
                 }
                 if (s.endsWith("mag2")) {
-                    ((FlightModelMain) (super.FM)).EI.engines[l].setMagnetoKnockOut(shot.initiator, 1);
+                    this.FM.EI.engines[l].setMagnetoKnockOut(shot.initiator, 1);
                     Aircraft.debugprintln(this, "*** Engine (" + l + ") Module: Magneto #1 Destroyed..");
                     this.getEnergyPastArmor(25F, shot);
                 }
                 if (s.endsWith("oil1") && (this.getEnergyPastArmor(0.2F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
-                    ((FlightModelMain) (super.FM)).AS.setOilState(shot.initiator, l, 1);
+                    this.FM.AS.setOilState(shot.initiator, l, 1);
                     Aircraft.debugprintln(this, "*** Engine (" + l + ") Module: Oil Filter Pierced..");
                 }
                 return;
@@ -265,7 +264,7 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
             if (s.startsWith("xxoil")) {
                 int i1 = s.charAt(5) - 49;
                 if ((this.getEnergyPastArmor(0.21F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.2435F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, i1);
+                    this.FM.AS.hitOil(shot.initiator, i1);
                 }
                 Aircraft.debugprintln(this, "*** Engine (" + i1 + ") Module: Oil Tank Pierced..");
                 return;
@@ -273,7 +272,7 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
             if (s.startsWith("xxpnm")) {
                 if (this.getEnergyPastArmor(World.Rnd().nextFloat(0.25F, 1.22F), shot) > 0.0F) {
                     this.debuggunnery("Pneumo System: Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 1);
+                    this.FM.AS.setInternalDamage(shot.initiator, 1);
                 }
                 return;
             }
@@ -327,20 +326,20 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
             if (s.startsWith("xxtank")) {
                 int j1 = s.charAt(6) - 49;
                 if (this.getEnergyPastArmor(0.06F, shot) > 0.0F) {
-                    if (((FlightModelMain) (super.FM)).AS.astateTankStates[j1] == 0) {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, j1, 1);
-                        ((FlightModelMain) (super.FM)).AS.doSetTankState(shot.initiator, j1, 1);
+                    if (this.FM.AS.astateTankStates[j1] == 0) {
+                        this.FM.AS.hitTank(shot.initiator, j1, 1);
+                        this.FM.AS.doSetTankState(shot.initiator, j1, 1);
                     }
                     if (shot.powerType == 3) {
                         if (shot.power < 16100F) {
-                            if ((((FlightModelMain) (super.FM)).AS.astateTankStates[j1] < 4) && (World.Rnd().nextFloat() < 0.21F)) {
-                                ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, j1, 1);
+                            if ((this.FM.AS.astateTankStates[j1] < 4) && (World.Rnd().nextFloat() < 0.21F)) {
+                                this.FM.AS.hitTank(shot.initiator, j1, 1);
                             }
                         } else {
-                            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, j1, World.Rnd().nextInt(1, 1 + (int) (shot.power / 16100F)));
+                            this.FM.AS.hitTank(shot.initiator, j1, World.Rnd().nextInt(1, 1 + (int) (shot.power / 16100F)));
                         }
                     } else if (shot.power > 16100F) {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, j1, World.Rnd().nextInt(1, 1 + (int) (shot.power / 16100F)));
+                        this.FM.AS.hitTank(shot.initiator, j1, World.Rnd().nextInt(1, 1 + (int) (shot.power / 16100F)));
                     }
                 }
                 return;
@@ -471,7 +470,7 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
         if (s.startsWith("xgear")) {
             if (World.Rnd().nextFloat() < 0.05F) {
                 Aircraft.debugprintln(this, "*** Gear Hydro Failed..");
-                ((FlightModelMain) (super.FM)).Gears.setHydroOperable(false);
+                this.FM.Gears.setHydroOperable(false);
             }
             return;
         }
@@ -482,57 +481,57 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
             int k1 = (10 * (s.charAt(5) - 48)) + (s.charAt(6) - 48);
             if ((this.getEnergyPastArmor(6.45F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.35F)) {
                 switch (k1) {
-                    case 1: // '\001'
+                    case 1:
                         k1 = 10;
                         i = 0;
                         break;
 
-                    case 2: // '\002'
+                    case 2:
                         k1 = 10;
                         i = 1;
                         break;
 
-                    case 3: // '\003'
+                    case 3:
                         k1 = 11;
                         i = 0;
                         break;
 
-                    case 4: // '\004'
+                    case 4:
                         k1 = 11;
                         i = 1;
                         break;
 
-                    case 5: // '\005'
+                    case 5:
                         k1 = 12;
                         i = 0;
                         break;
 
-                    case 6: // '\006'
+                    case 6:
                         k1 = 12;
                         i = 1;
                         break;
 
-                    case 7: // '\007'
+                    case 7:
                         k1 = 13;
                         i = 0;
                         break;
 
-                    case 8: // '\b'
+                    case 8:
                         k1 = 14;
                         i = 0;
                         break;
 
-                    case 9: // '\t'
+                    case 9:
                         k1 = 15;
                         i = 0;
                         break;
 
-                    case 10: // '\n'
+                    case 10:
                         k1 = 15;
                         i = 1;
                         break;
                 }
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(k1, i);
+                this.FM.AS.setJamBullets(k1, i);
             }
             return;
         }
@@ -586,16 +585,16 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
     public void msgShot(Shot shot) {
         this.setShot(shot);
         if (shot.chunkName.startsWith("Engine1") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 1);
+            this.FM.AS.hitEngine(shot.initiator, 0, 1);
         }
         if (shot.chunkName.startsWith("Engine2") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 1, 1);
+            this.FM.AS.hitEngine(shot.initiator, 1, 1);
         }
         if (shot.chunkName.startsWith("Engine3") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 2, 1);
+            this.FM.AS.hitEngine(shot.initiator, 2, 1);
         }
         if (shot.chunkName.startsWith("Engine4") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 3, 1);
+            this.FM.AS.hitEngine(shot.initiator, 3, 1);
         }
         if (shot.chunkName.startsWith("CF")) {
             if ((((Tuple3d) (Aircraft.Pd)).x > 4.5500001907348633D) && (((Tuple3d) (Aircraft.Pd)).x < 7.1500000953674316D) && (((Tuple3d) (Aircraft.Pd)).z > 0.57999998331069946D)) {
@@ -606,7 +605,7 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
                             HUD.logCenter("H E A D S H O T");
                         }
                     } else {
-                        ((FlightModelMain) (super.FM)).AS.hitPilot(shot.initiator, 0, (int) (shot.power * 0.004F));
+                        this.FM.AS.hitPilot(shot.initiator, 0, (int) (shot.power * 0.004F));
                     }
                 }
                 if (World.Rnd().nextFloat() < 0.233F) {
@@ -616,16 +615,16 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
                             HUD.logCenter("H E A D S H O T");
                         }
                     } else {
-                        ((FlightModelMain) (super.FM)).AS.hitPilot(shot.initiator, 1, (int) (shot.power * 0.004F));
+                        this.FM.AS.hitPilot(shot.initiator, 1, (int) (shot.power * 0.004F));
                     }
                 }
             }
             if ((((Tuple3d) (Aircraft.Pd)).x > 9.5299997329711914D) && (((Tuple3d) (Aircraft.Pd)).z < 0.14000000059604645D) && (((Tuple3d) (Aircraft.Pd)).z > -0.62999999523162842D)) {
-                ((FlightModelMain) (super.FM)).AS.hitPilot(shot.initiator, 2, (int) (shot.power * 0.002F));
+                this.FM.AS.hitPilot(shot.initiator, 2, (int) (shot.power * 0.002F));
             }
             if ((((Tuple3d) (Aircraft.Pd)).x > 2.4749999046325684D) && (((Tuple3d) (Aircraft.Pd)).x < 4.4899997711181641D) && (((Tuple3d) (Aircraft.Pd)).z > 0.61000001430511475D) && ((shot.power * Math.sqrt((((Tuple3d) (Aircraft.v1)).y * ((Tuple3d) (Aircraft.v1)).y) + (((Tuple3d) (Aircraft.v1)).z * ((Tuple3d) (Aircraft.v1)).z))) > 11900D) && (World.Rnd().nextFloat() < 0.45F)) {
                 for (int i = 0; i < 4; i++) {
-                    ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, i, 0);
+                    this.FM.AS.setEngineSpecificDamage(shot.initiator, i, 0);
                 }
 
             }
@@ -637,15 +636,15 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
                     HUD.logCenter("H E A D S H O T");
                 }
             } else {
-                ((FlightModelMain) (super.FM)).AS.hitPilot(shot.initiator, 2, (int) (shot.power * 0.004F));
+                this.FM.AS.hitPilot(shot.initiator, 2, (int) (shot.power * 0.004F));
             }
             shot.chunkName = "CF_D" + this.chunkDamageVisible("CF");
         }
         if (shot.chunkName.startsWith("Turret2")) {
             if (World.Rnd().nextBoolean()) {
-                ((FlightModelMain) (super.FM)).AS.hitPilot(shot.initiator, 4, (int) (shot.power * 0.004F));
+                this.FM.AS.hitPilot(shot.initiator, 4, (int) (shot.power * 0.004F));
             } else {
-                super.FM.turret[1].bIsOperable = false;
+                this.FM.turret[1].bIsOperable = false;
             }
         }
         if (shot.chunkName.startsWith("Turret3")) {
@@ -655,7 +654,7 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
                     HUD.logCenter("H E A D S H O T");
                 }
             } else {
-                ((FlightModelMain) (super.FM)).AS.hitPilot(shot.initiator, 7, (int) (shot.power * 0.002F));
+                this.FM.AS.hitPilot(shot.initiator, 7, (int) (shot.power * 0.002F));
             }
             shot.chunkName = "Tail1_D" + this.chunkDamageVisible("Tail1");
         }
@@ -666,7 +665,7 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
                     HUD.logCenter("H E A D S H O T");
                 }
             } else {
-                ((FlightModelMain) (super.FM)).AS.hitPilot(shot.initiator, 5, (int) (shot.power * 0.002F));
+                this.FM.AS.hitPilot(shot.initiator, 5, (int) (shot.power * 0.002F));
             }
         } else if (shot.chunkName.startsWith("Turret5")) {
             if (((Tuple3d) (Aircraft.Pd)).z > -0.99540001153945923D) {
@@ -675,7 +674,7 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
                     HUD.logCenter("H E A D S H O T");
                 }
             } else {
-                ((FlightModelMain) (super.FM)).AS.hitPilot(shot.initiator, 6, (int) (shot.power * 0.002F));
+                this.FM.AS.hitPilot(shot.initiator, 6, (int) (shot.power * 0.002F));
             }
         } else {
             super.msgShot(shot);
@@ -684,65 +683,65 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 4: // '\004'
-                super.FM.turret[0].bIsOperable = false;
+            case 4:
+                this.FM.turret[0].bIsOperable = false;
                 break;
 
-            case 3: // '\003'
-                super.FM.turret[1].bIsOperable = false;
+            case 3:
+                this.FM.turret[1].bIsOperable = false;
                 break;
 
-            case 2: // '\002'
-                super.FM.turret[2].bIsOperable = false;
+            case 2:
+                this.FM.turret[2].bIsOperable = false;
                 break;
         }
     }
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 this.hierMesh().chunkVisible("Head2_D0", false);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("HMask3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 this.hierMesh().chunkVisible("Head3_D0", false);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.hierMesh().chunkVisible("Pilot4_D0", false);
                 this.hierMesh().chunkVisible("HMask4_D0", false);
                 this.hierMesh().chunkVisible("Pilot4_D1", true);
                 this.hierMesh().chunkVisible("Head4_D0", false);
                 break;
 
-            case 5: // '\005'
+            case 5:
                 this.hierMesh().chunkVisible("Pilot6_D0", false);
                 this.hierMesh().chunkVisible("HMask6_D0", false);
                 this.hierMesh().chunkVisible("Pilot6_D1", true);
                 this.hierMesh().chunkVisible("Head5_D0", false);
                 break;
 
-            case 6: // '\006'
+            case 6:
                 this.hierMesh().chunkVisible("Pilot7_D0", false);
                 this.hierMesh().chunkVisible("HMask7_D0", false);
                 this.hierMesh().chunkVisible("Pilot7_D1", true);
                 this.hierMesh().chunkVisible("Head6_D0", false);
                 break;
 
-            case 7: // '\007'
+            case 7:
                 this.hierMesh().chunkVisible("Pilot8_D0", false);
                 this.hierMesh().chunkVisible("HMask8_D0", false);
                 this.hierMesh().chunkVisible("Pilot8_D1", true);
@@ -759,7 +758,7 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -76F) {
                     f = -76F;
                     flag = false;
@@ -778,7 +777,7 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 float f2 = Math.abs(f);
                 if (f1 > 50F) {
                     f1 = 50F;
@@ -839,7 +838,7 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -87F) {
                     f = -87F;
                     flag = false;
@@ -858,7 +857,7 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f1 < -45F) {
                     f1 = -45F;
                     flag = false;
@@ -905,7 +904,7 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 f = -f;
                 if (f1 < -45F) {
                     f1 = -45F;
@@ -953,7 +952,7 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).AS.wantBeaconsNet(true);
+        this.FM.AS.wantBeaconsNet(true);
     }
 
     private static final float toMeters(float f) {
@@ -981,7 +980,7 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
         if (this.fSightCurForwardAngle > 85F) {
             this.fSightCurForwardAngle = 85F;
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = LANCASTER.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         if (this.bSightAutomation) {
             this.typeBomberToggleAutomation();
@@ -993,7 +992,7 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
         if (this.fSightCurForwardAngle < 0.0F) {
             this.fSightCurForwardAngle = 0.0F;
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = LANCASTER.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         if (this.bSightAutomation) {
             this.typeBomberToggleAutomation();
@@ -1030,7 +1029,7 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
             this.fSightCurAltitude = 50000F;
         }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int) this.fSightCurAltitude) });
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = LANCASTER.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
     }
 
     public void typeBomberAdjAltitudeMinus() {
@@ -1039,7 +1038,7 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
             this.fSightCurAltitude = 1000F;
         }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int) this.fSightCurAltitude) });
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = LANCASTER.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
     }
 
     public void typeBomberAdjSpeedReset() {
@@ -1063,7 +1062,7 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
     }
 
     public void typeBomberUpdate(float f) {
-        if (Math.abs(((FlightModelMain) (super.FM)).Or.getKren()) > 4.5D) {
+        if (Math.abs(this.FM.Or.getKren()) > 4.5D) {
             this.fSightCurReadyness -= 0.0666666F * f;
             if (this.fSightCurReadyness < 0.0F) {
                 this.fSightCurReadyness = 0.0F;
@@ -1072,23 +1071,23 @@ public class LANCASTER extends Scheme4 implements TypeTransport, TypeBomber {
         if (this.fSightCurReadyness < 1.0F) {
             this.fSightCurReadyness += 0.0333333F * f;
         } else if (this.bSightAutomation) {
-            this.fSightCurDistance -= toMetersPerSecond(this.fSightCurSpeed) * f;
+            this.fSightCurDistance -= LANCASTER.toMetersPerSecond(this.fSightCurSpeed) * f;
             if (this.fSightCurDistance < 0.0F) {
                 this.fSightCurDistance = 0.0F;
                 this.typeBomberToggleAutomation();
             }
-            this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / toMeters(this.fSightCurAltitude)));
-            if (this.fSightCurDistance < (toMetersPerSecond(this.fSightCurSpeed) * Math.sqrt(toMeters(this.fSightCurAltitude) * 0.2038736F))) {
+            this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / LANCASTER.toMeters(this.fSightCurAltitude)));
+            if (this.fSightCurDistance < (LANCASTER.toMetersPerSecond(this.fSightCurSpeed) * Math.sqrt(LANCASTER.toMeters(this.fSightCurAltitude) * 0.2038736F))) {
                 this.bSightBombDump = true;
             }
             if (this.bSightBombDump) {
-                if (super.FM.isTick(3, 0)) {
-                    if ((((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1] != null) && ((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].haveBullets()) {
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = true;
+                if (this.FM.isTick(3, 0)) {
+                    if ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1] != null) && this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].haveBullets()) {
+                        this.FM.CT.WeaponControl[3] = true;
                         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
                     }
                 } else {
-                    ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = false;
+                    this.FM.CT.WeaponControl[3] = false;
                 }
             }
         }

@@ -26,23 +26,23 @@ public class PZL37B extends PZL37 implements TypeBomber {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 25: // '\031'
+            case 25:
                 this.FM.turret[0].bIsOperable = false;
                 break;
 
-            case 26: // '\032'
+            case 26:
                 this.FM.turret[1].bIsOperable = false;
                 break;
 
-            case 27: // '\033'
+            case 27:
                 this.FM.turret[2].bIsOperable = false;
                 break;
 
-            case 28: // '\034'
+            case 28:
                 this.FM.turret[3].bIsOperable = false;
                 break;
 
-            case 29: // '\035'
+            case 29:
                 this.FM.turret[4].bIsOperable = false;
                 break;
         }
@@ -51,23 +51,23 @@ public class PZL37B extends PZL37 implements TypeBomber {
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 2: // '\002'
+            case 2:
                 this.FM.turret[0].bIsOperable = false;
                 break;
 
-            case 4: // '\004'
+            case 4:
                 this.FM.turret[1].bIsOperable = false;
                 break;
 
-            case 5: // '\005'
+            case 5:
                 this.FM.turret[3].bIsOperable = false;
                 break;
 
-            case 6: // '\006'
+            case 6:
                 this.FM.turret[4].bIsOperable = false;
                 break;
 
-            case 7: // '\007'
+            case 7:
                 this.FM.turret[2].bIsOperable = false;
                 break;
         }

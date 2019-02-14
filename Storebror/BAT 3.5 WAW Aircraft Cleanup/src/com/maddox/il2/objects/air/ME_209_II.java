@@ -105,23 +105,23 @@ public class ME_209_II extends BF_109 implements TypeFighter, TypeBNZFighter, Ty
     }
 
     public static void moveGear(HierMesh hiermesh, float f, float f1, float f2) {
-        moveGear(hiermesh, f, f1, f2, true);
+        ME_209_II.moveGear(hiermesh, f, f1, f2, true);
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2, this.FM.CT.GearControl > 0.5F);
+        ME_209_II.moveGear(this.hierMesh(), f, f1, f2, this.FM.CT.GearControl > 0.5F);
     }
 
     public static void moveGear(HierMesh hiermesh, float f, boolean flag) {
-        moveGear(hiermesh, f, f, f, flag);
+        ME_209_II.moveGear(hiermesh, f, f, f, flag);
     }
 
     public static void moveGear(HierMesh hiermesh, float f) {
-        moveGear(hiermesh, f, f, f, true);
+        ME_209_II.moveGear(hiermesh, f, f, f, true);
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f, this.FM.CT.GearControl > 0.5F);
+        ME_209_II.moveGear(this.hierMesh(), f, this.FM.CT.GearControl > 0.5F);
     }
 
     public void moveSteering(float f) {

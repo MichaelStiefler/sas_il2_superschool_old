@@ -18,11 +18,9 @@ public class P_400 extends P_39 {
         Property.set(class1, "yearService", 1941F);
         Property.set(class1, "yearExpired", 1948.5F);
         Property.set(class1, "FlightModel", "FlightModels/P-400.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitP_39N1.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitP_39N1.class });
         Property.set(class1, "LOSElevation", 0.8941F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0, 1, 3 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_CANNON01", "_ExternalBomb01" });
-        weaponsRegister(class1, "default", new String[] { "MGunBrowning50si 200", "MGunBrowning50si 200", "MGunBrowning303kj 500", "MGunBrowning303kj 500", "MGunBrowning303kj 500", "MGunBrowning303kj 500", "MGunHispanoMkIki 60", null });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0, 1, 3 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_CANNON01", "_ExternalBomb01" });
     }
 }

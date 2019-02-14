@@ -17,36 +17,36 @@ public class R_10 extends Scheme1 implements TypeScout, TypeBomber, TypeStormovi
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 1: // '\001'
-                super.FM.turret[0].setHealth(f);
+            case 1:
+                this.FM.turret[0].setHealth(f);
                 break;
         }
     }
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            R_10.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            R_10.bChangedPit = true;
         }
     }
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
@@ -56,7 +56,7 @@ public class R_10 extends Scheme1 implements TypeScout, TypeBomber, TypeStormovi
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (super.FM.getAltitude() < 3000F) {
+        if (this.FM.getAltitude() < 3000F) {
             this.hierMesh().chunkVisible("HMask1_D0", false);
             this.hierMesh().chunkVisible("HMask2_D0", false);
         } else {
@@ -78,7 +78,7 @@ public class R_10 extends Scheme1 implements TypeScout, TypeBomber, TypeStormovi
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        R_10.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     protected void hitBone(String s, Shot shot, Point3d point3d) {

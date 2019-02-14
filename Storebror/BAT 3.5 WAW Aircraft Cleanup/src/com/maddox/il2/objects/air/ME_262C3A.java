@@ -6,7 +6,6 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Eff3DActor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.weapons.GunEmpty;
 import com.maddox.rts.Property;
 
@@ -28,19 +27,19 @@ public class ME_262C3A extends ME_262 {
                 if (this.getEnergyPastArmor(1.0F, shot) > 0.0F) {
                     this.debuggunnery("T-Stoff Tank Left: Pierced..");
                 }
-                ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 2, World.Rnd().nextInt(1, 4));
+                this.FM.AS.hitTank(shot.initiator, 2, World.Rnd().nextInt(1, 4));
                 this.bOxidiserLeak = true;
             }
             if (s.endsWith("right")) {
                 if (this.getEnergyPastArmor(1.0F, shot) > 0.0F) {
                     this.debuggunnery("T-Stoff Tank Right: Pierced..");
                 }
-                ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 3, World.Rnd().nextInt(1, 4));
+                this.FM.AS.hitTank(shot.initiator, 3, World.Rnd().nextInt(1, 4));
                 this.bOxidiserLeak = true;
             }
         }
         if (s.startsWith("xxengine3") && (this.getEnergyPastArmor(4.96F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
-            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 2, 100);
+            this.FM.AS.hitEngine(shot.initiator, 2, 100);
         }
     }
 
@@ -92,48 +91,48 @@ public class ME_262C3A extends ME_262 {
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         if (Config.isUSE_RENDER()) {
-            if ((this.oldVwld < 20F) && (super.FM.getSpeed() > 20F)) {
+            if ((this.oldVwld < 20F) && (this.FM.getSpeed() > 20F)) {
                 Eff3DActor.finish(this.turboexhaust);
                 this.turboexhaust = Eff3DActor.New(this, this.findHook("_Engine3ES_02"), null, 1.0F, "3DO/Effects/Aircraft/WhiteOxySmallTSPD.eff", -1F);
             }
-            if ((this.oldVwld > 20F) && (super.FM.getSpeed() < 20F)) {
+            if ((this.oldVwld > 20F) && (this.FM.getSpeed() < 20F)) {
                 Eff3DActor.finish(this.turboexhaust);
                 this.turboexhaust = Eff3DActor.New(this, this.findHook("_Engine3ES_02"), null, 1.0F, "3DO/Effects/Aircraft/WhiteOxySmallGND.eff", -1F);
             }
-            this.oldVwld = super.FM.getSpeed();
+            this.oldVwld = this.FM.getSpeed();
         }
         if (flag && this.bOxidiserLeak) {
             if (World.Rnd().nextFloat() < 0.2F) {
-                ((FlightModelMain) (super.FM)).AS.hitEngine(this, 2, 100);
+                this.FM.AS.hitEngine(this, 2, 100);
             } else if (World.Rnd().nextFloat() < 0.2F) {
-                ((FlightModelMain) (super.FM)).EI.engines[2].setEngineDies(this);
+                this.FM.EI.engines[2].setEngineDies(this);
             }
         }
     }
 
     public void update(float f) {
         super.update(f);
-        if (((FlightModelMain) (super.FM)).AS.isMaster()) {
+        if (this.FM.AS.isMaster()) {
             if (this.prevThtl < 0.25F) {
-                ((FlightModelMain) (super.FM)).EI.engines[2].setControlThrottle(0.1F);
+                this.FM.EI.engines[2].setControlThrottle(0.1F);
             } else if (this.prevThtl < 0.5F) {
-                ((FlightModelMain) (super.FM)).EI.engines[2].setControlThrottle(0.4F);
+                this.FM.EI.engines[2].setControlThrottle(0.4F);
             } else if (this.prevThtl < 0.75F) {
-                ((FlightModelMain) (super.FM)).EI.engines[2].setControlThrottle(0.7F);
+                this.FM.EI.engines[2].setControlThrottle(0.7F);
             } else {
-                ((FlightModelMain) (super.FM)).EI.engines[2].setControlThrottle(1.0F);
+                this.FM.EI.engines[2].setControlThrottle(1.0F);
             }
-            if (this.prevThtl != ((FlightModelMain) (super.FM)).CT.getPowerControl(2)) {
-                this.prevThtl = ((FlightModelMain) (super.FM)).CT.getPowerControl(2);
+            if (this.prevThtl != this.FM.CT.getPowerControl(2)) {
+                this.prevThtl = this.FM.CT.getPowerControl(2);
             }
-            if ((((FlightModelMain) (super.FM)).EI.engines[2].getStage() > 0) && (((FlightModelMain) (super.FM)).EI.engines[2].getStage() < 7)) {
-                if (!((FlightModelMain) (super.FM)).M.requestNitro((2424F * ((FlightModelMain) (super.FM)).EI.engines[2].getControlThrottle() * f) / 252F) && (World.cur().diffCur.Limited_Fuel || !super.FM.isPlayers())) {
-                    ((FlightModelMain) (super.FM)).EI.engines[2].setControlThrottle(0.0F);
-                    ((FlightModelMain) (super.FM)).EI.engines[2].setEngineStops(this);
-                    ((FlightModelMain) (super.FM)).EI.engines[2].setStage(this, 0);
+            if ((this.FM.EI.engines[2].getStage() > 0) && (this.FM.EI.engines[2].getStage() < 7)) {
+                if (!this.FM.M.requestNitro((2424F * this.FM.EI.engines[2].getControlThrottle() * f) / 252F) && (World.cur().diffCur.Limited_Fuel || !this.FM.isPlayers())) {
+                    this.FM.EI.engines[2].setControlThrottle(0.0F);
+                    this.FM.EI.engines[2].setEngineStops(this);
+                    this.FM.EI.engines[2].setStage(this, 0);
                 }
                 if (Config.isUSE_RENDER()) {
-                    if (((FlightModelMain) (super.FM)).EI.engines[2].getControlThrottle() > 0.0F) {
+                    if (this.FM.EI.engines[2].getControlThrottle() > 0.0F) {
                         this.doSetSootState(2, 8);
                     } else {
                         this.doSetSootState(2, 7);
@@ -145,48 +144,48 @@ public class ME_262C3A extends ME_262 {
 
     public void doSetSootState(int i, int j) {
         for (int k = 0; k < 2; k++) {
-            if (((FlightModelMain) (super.FM)).AS.astateSootEffects[i][k] != null) {
-                Eff3DActor.finish(((FlightModelMain) (super.FM)).AS.astateSootEffects[i][k]);
+            if (this.FM.AS.astateSootEffects[i][k] != null) {
+                Eff3DActor.finish(this.FM.AS.astateSootEffects[i][k]);
             }
-            ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][k] = null;
+            this.FM.AS.astateSootEffects[i][k] = null;
         }
 
         try {
             switch (j) {
-                case 1: // '\001'
-                    ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][0] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "ES_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
-                    ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][1] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "ES_02"), null, 1.0F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
+                case 1:
+                    this.FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "ES_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
+                    this.FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "ES_02"), null, 1.0F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
                     break;
 
-                case 3: // '\003'
-                    ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][1] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
+                case 3:
+                    this.FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
                     // fall through
 
-                case 2: // '\002'
-                    ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][0] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/TurboZippo.eff", -1F);
+                case 2:
+                    this.FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/TurboZippo.eff", -1F);
                     break;
 
-                case 5: // '\005'
-                    ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][0] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "EF_01"), null, 3F, "3DO/Effects/Aircraft/TurboJRD1100F.eff", -1F);
+                case 5:
+                    this.FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "EF_01"), null, 3F, "3DO/Effects/Aircraft/TurboJRD1100F.eff", -1F);
                     // fall through
 
-                case 4: // '\004'
-                    ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][1] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
+                case 4:
+                    this.FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
                     break;
 
-                case 6: // '\006'
-                    ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][0] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "ES_01"), null, 1.0F, "3DO/Effects/Aircraft/Full_throttle.eff", -1F);
-                    ((FlightModelMain) (super.FM)).AS.astateSootEffects[i][1] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "ES_02"), null, 1.0F, "3DO/Effects/Aircraft/Full_throttle.eff", -1F);
+                case 6:
+                    this.FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "ES_01"), null, 1.0F, "3DO/Effects/Aircraft/Full_throttle.eff", -1F);
+                    this.FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "ES_02"), null, 1.0F, "3DO/Effects/Aircraft/Full_throttle.eff", -1F);
                     break;
 
-                case 7: // '\007'
+                case 7:
                     Eff3DActor.setIntesity(this.flame, 0.0F);
                     Eff3DActor.setIntesity(this.dust, 0.0F);
                     Eff3DActor.setIntesity(this.trail, 0.0F);
                     Eff3DActor.setIntesity(this.sprite, 0.0F);
                     break;
 
-                case 8: // '\b'
+                case 8:
                     Eff3DActor.setIntesity(this.flame, 1.0F);
                     Eff3DActor.setIntesity(this.dust, 1.0F);
                     Eff3DActor.setIntesity(this.trail, 1.0F);

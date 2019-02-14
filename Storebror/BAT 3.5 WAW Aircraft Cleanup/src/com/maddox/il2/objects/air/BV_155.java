@@ -32,11 +32,11 @@ public class BV_155 extends FW_190 {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        BV_155.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGear() < 0.98F) {
+        if (this.FM.CT.getGear() < 0.98F) {
             return;
         } else {
             this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -f, 0.0F);
@@ -46,8 +46,8 @@ public class BV_155 extends FW_190 {
 
     public void setOnGround(Point3d point3d, Orient orient, Vector3d vector3d) {
         super.setOnGround(point3d, orient, vector3d);
-        if (super.FM.isPlayers()) {
-            ((FlightModelMain) (super.FM)).CT.cockpitDoorControl = 1.0F;
+        if (this.FM.isPlayers()) {
+            this.FM.CT.cockpitDoorControl = 1.0F;
         }
     }
 
@@ -56,27 +56,27 @@ public class BV_155 extends FW_190 {
             this.hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -10F * this.kangle, 0.0F);
         }
 
-        this.kangle = (0.95F * this.kangle) + (0.05F * ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator());
+        this.kangle = (0.95F * this.kangle) + (0.05F * this.FM.EI.engines[0].getControlRadiator());
         float f1 = World.Rnd().nextFloat(0.87F, 1.04F);
-        if (super.FM.isPlayers() && (((FlightModelMain) (super.FM)).CT.cockpitDoorControl > 0.9F) && (super.FM.getSpeedKMH() > (180F * f1)) && (((FlightModelMain) (super.FM)).AS.aircraft.hierMesh().chunkFindCheck("Blister1_D0") != -1) && (((FlightModelMain) (super.FM)).AS.getPilotHealth(0) > 0.0F) && super.FM.isPlayers() && (((FlightModelMain) (super.FM)).CT.cockpitDoorControl > 0.9F) && (super.FM.getSpeedKMH() > (180F * f1)) && (((FlightModelMain) (super.FM)).AS.aircraft.hierMesh().chunkFindCheck("Wire_D0") != -1) && (((FlightModelMain) (super.FM)).AS.getPilotHealth(0) > 0.0F)) {
-            super.playSound("aircraft.arrach", true);
+        if (this.FM.isPlayers() && (this.FM.CT.cockpitDoorControl > 0.9F) && (this.FM.getSpeedKMH() > (180F * f1)) && (this.FM.AS.aircraft.hierMesh().chunkFindCheck("Blister1_D0") != -1) && (this.FM.AS.getPilotHealth(0) > 0.0F) && this.FM.isPlayers() && (this.FM.CT.cockpitDoorControl > 0.9F) && (this.FM.getSpeedKMH() > (180F * f1)) && (this.FM.AS.aircraft.hierMesh().chunkFindCheck("Wire_D0") != -1) && (this.FM.AS.getPilotHealth(0) > 0.0F)) {
+            this.playSound("aircraft.arrach", true);
             if (this == World.getPlayerAircraft()) {
                 ((CockpitFW_190D9early) Main3D.cur3D().cockpitCur).blowoffcanopyforCirXD9();
             }
-            ((FlightModelMain) (super.FM)).AS.aircraft.hierMesh().hideSubTrees("Wire_D0");
-            ((FlightModelMain) (super.FM)).AS.aircraft.hierMesh().hideSubTrees("Blister1_D0");
-            Wreckage wreckage = new Wreckage((ActorHMesh) ((FlightModelMain) (super.FM)).AS.actor, ((FlightModelMain) (super.FM)).AS.aircraft.hierMesh().chunkFind("Blister1_D0"));
-            Wreckage wreckage1 = new Wreckage((ActorHMesh) ((FlightModelMain) (super.FM)).AS.actor, ((FlightModelMain) (super.FM)).AS.aircraft.hierMesh().chunkFind("Wire_D0"));
+            this.FM.AS.aircraft.hierMesh().hideSubTrees("Wire_D0");
+            this.FM.AS.aircraft.hierMesh().hideSubTrees("Blister1_D0");
+            Wreckage wreckage = new Wreckage((ActorHMesh) this.FM.AS.actor, this.FM.AS.aircraft.hierMesh().chunkFind("Blister1_D0"));
+            Wreckage wreckage1 = new Wreckage((ActorHMesh) this.FM.AS.actor, this.FM.AS.aircraft.hierMesh().chunkFind("Wire_D0"));
             wreckage.collide(true);
             wreckage1.collide(true);
             Vector3d vector3d = new Vector3d();
-            vector3d.set(((FlightModelMain) (((SndAircraft) (((FlightModelMain) (super.FM)).AS.aircraft)).FM)).Vwld);
+            vector3d.set(((FlightModelMain) (((SndAircraft) (this.FM.AS.aircraft)).FM)).Vwld);
             wreckage.setSpeed(vector3d);
             wreckage1.setSpeed(vector3d);
-            ((FlightModelMain) (super.FM)).CT.cockpitDoorControl = 0.9F;
-            ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = false;
-            super.FM.VmaxAllowed = 161F;
-            ((FlightModelMain) (super.FM)).Sq.dragEngineCx[0] *= 6.2F;
+            this.FM.CT.cockpitDoorControl = 0.9F;
+            this.FM.CT.bHasCockpitDoorControl = false;
+            this.FM.VmaxAllowed = 161F;
+            this.FM.Sq.dragEngineCx[0] *= 6.2F;
         }
         super.update(f);
     }

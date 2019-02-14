@@ -6,7 +6,6 @@ import com.maddox.JGP.Vector3d;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.objects.Wreckage;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -126,7 +125,7 @@ public class RE_2001 extends RE_2001xyz implements TypeDiveBomber, TypeFighter {
     private boolean blisterRemoved;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = RE_2001.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "RE.2001");
         Property.set(class1, "meshName_it", "3DO/Plane/RE-2001(it)/hier.him");

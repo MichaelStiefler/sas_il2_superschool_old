@@ -8,7 +8,6 @@ import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class I_250 extends Scheme2 implements TypeFighter, TypeBNZFighter {
@@ -67,41 +66,41 @@ public class I_250 extends Scheme2 implements TypeFighter, TypeBNZFighter {
     }
 
     public static void moveGear(HierMesh hiermesh, float f, float f1, float f2) {
-        hiermesh.chunkSetAngles("GearC99_D0", 0.0F, cvt(f2, 0.15F, 0.45F, 0.0F, -50F), 0.0F);
+        hiermesh.chunkSetAngles("GearC99_D0", 0.0F, Aircraft.cvt(f2, 0.15F, 0.45F, 0.0F, -50F), 0.0F);
         hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 0.0F, 0.0F);
-        ypr[0] = ypr[1] = ypr[2] = xyz[0] = xyz[1] = xyz[2] = 0.0F;
-        ypr[2] = cvt(f2, 0.05F, 0.25F, 0.0F, -45F);
-        xyz[1] = cvt(f2, 0.05F, 0.25F, 0.0F, 0.3F);
-        xyz[2] = cvt(f2, 0.05F, 0.25F, 0.0F, 0.125F);
-        hiermesh.chunkSetLocate("GearC3_D0", xyz, ypr);
-        hiermesh.chunkSetLocate("GearC4_D0", xyz, ypr);
+        Aircraft.ypr[0] = Aircraft.ypr[1] = Aircraft.ypr[2] = Aircraft.xyz[0] = Aircraft.xyz[1] = Aircraft.xyz[2] = 0.0F;
+        Aircraft.ypr[2] = Aircraft.cvt(f2, 0.05F, 0.25F, 0.0F, -45F);
+        Aircraft.xyz[1] = Aircraft.cvt(f2, 0.05F, 0.25F, 0.0F, 0.3F);
+        Aircraft.xyz[2] = Aircraft.cvt(f2, 0.05F, 0.25F, 0.0F, 0.125F);
+        hiermesh.chunkSetLocate("GearC3_D0", Aircraft.xyz, Aircraft.ypr);
+        hiermesh.chunkSetLocate("GearC4_D0", Aircraft.xyz, Aircraft.ypr);
         if (f < 0.5F) {
-            hiermesh.chunkSetAngles("GearL4_D0", 0.0F, cvt(f, 0.02F, 0.4F, 0.0F, -90F), 0.0F);
+            hiermesh.chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(f, 0.02F, 0.4F, 0.0F, -90F), 0.0F);
         } else {
-            hiermesh.chunkSetAngles("GearL4_D0", 0.0F, cvt(f, 0.72F, 0.98F, -90F, 0.0F), 0.0F);
+            hiermesh.chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(f, 0.72F, 0.98F, -90F, 0.0F), 0.0F);
         }
-        hiermesh.chunkSetAngles("GearL5_D0", 0.0F, cvt(f, 0.05F, 0.95F, 0.0F, -82F), 0.0F);
-        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, cvt(f, 0.05F, 0.95F, 0.0F, -82F), 0.0F);
+        hiermesh.chunkSetAngles("GearL5_D0", 0.0F, Aircraft.cvt(f, 0.05F, 0.95F, 0.0F, -82F), 0.0F);
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(f, 0.05F, 0.95F, 0.0F, -82F), 0.0F);
         if (f1 < 0.5F) {
-            hiermesh.chunkSetAngles("GearR4_D0", 0.0F, cvt(f1, 0.02F, 0.4F, 0.0F, -90F), 0.0F);
+            hiermesh.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(f1, 0.02F, 0.4F, 0.0F, -90F), 0.0F);
         } else {
-            hiermesh.chunkSetAngles("GearR4_D0", 0.0F, cvt(f1, 0.72F, 0.98F, -90F, 0.0F), 0.0F);
+            hiermesh.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(f1, 0.72F, 0.98F, -90F, 0.0F), 0.0F);
         }
-        hiermesh.chunkSetAngles("GearR5_D0", 0.0F, cvt(f1, 0.25F, 0.9F, 0.0F, -82F), 0.0F);
-        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, cvt(f1, 0.25F, 0.9F, 0.0F, -82F), 0.0F);
+        hiermesh.chunkSetAngles("GearR5_D0", 0.0F, Aircraft.cvt(f1, 0.25F, 0.9F, 0.0F, -82F), 0.0F);
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(f1, 0.25F, 0.9F, 0.0F, -82F), 0.0F);
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        I_250.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public void moveSteering(float f) {
-        this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -cvt(f, -78F, 78F, -78F, 78F), 0.0F);
+        this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -Aircraft.cvt(f, -78F, 78F, -78F, 78F), 0.0F);
     }
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
@@ -118,9 +117,9 @@ public class I_250 extends Scheme2 implements TypeFighter, TypeBNZFighter {
                     this.getEnergyPastArmor(12.88F, shot);
                 }
                 if (s.startsWith("xxarmorg")) {
-                    this.getEnergyPastArmor(33.959999084472656D / (Math.abs(v1.x) + 9.9999997473787516E-005D), shot);
+                    this.getEnergyPastArmor(33.959999084472656D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D), shot);
                     if (shot.power <= 0.0F) {
-                        if (Math.abs(v1.x) > 0.86599999666213989D) {
+                        if (Math.abs(Aircraft.v1.x) > 0.86599999666213989D) {
                             this.doRicochet(shot);
                         } else {
                             this.doRicochetBack(shot);
@@ -132,49 +131,49 @@ public class I_250 extends Scheme2 implements TypeFighter, TypeBNZFighter {
             if (s.startsWith("xxcontrols")) {
                 int i = s.charAt(10) - 48;
                 switch (i) {
-                    case 7: // '\007'
+                    case 7:
                     default:
                         break;
 
-                    case 1: // '\001'
-                    case 3: // '\003'
+                    case 1:
+                    case 3:
                         if (this.getEnergyPastArmor(4.1F, shot) > 0.0F) {
-                            debugprintln(this, "*** Aileron Controls Crank: Disabled..");
+                            Aircraft.debugprintln(this, "*** Aileron Controls Crank: Disabled..");
                             this.FM.AS.setControlsDamage(shot.initiator, 0);
                         }
                         break;
 
-                    case 2: // '\002'
-                    case 4: // '\004'
+                    case 2:
+                    case 4:
                         if ((this.getEnergyPastArmor(2.1F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
-                            debugprintln(this, "*** Aileron Controls: Disabled..");
+                            Aircraft.debugprintln(this, "*** Aileron Controls: Disabled..");
                             this.FM.AS.setControlsDamage(shot.initiator, 0);
                         }
                         break;
 
-                    case 5: // '\005'
-                    case 6: // '\006'
+                    case 5:
+                    case 6:
                         if (this.getEnergyPastArmor(0.3F, shot) > 0.0F) {
-                            debugprintln(this, "*** Rudder Controls: Disabled / Strings Broken..");
+                            Aircraft.debugprintln(this, "*** Rudder Controls: Disabled / Strings Broken..");
                             this.FM.AS.setControlsDamage(shot.initiator, 2);
                         }
                         break;
 
-                    case 8: // '\b'
+                    case 8:
                         if (this.getEnergyPastArmor(3.2F, shot) > 0.0F) {
-                            debugprintln(this, "*** Control Column: Hit, Controls Destroyed..");
+                            Aircraft.debugprintln(this, "*** Control Column: Hit, Controls Destroyed..");
                             this.FM.AS.setControlsDamage(shot.initiator, 2);
                             this.FM.AS.setControlsDamage(shot.initiator, 1);
                             this.FM.AS.setControlsDamage(shot.initiator, 0);
                         }
                         break;
 
-                    case 9: // '\t'
+                    case 9:
                         if (this.getEnergyPastArmor(0.1F, shot) > 0.0F) {
                             this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 8);
                             this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 1);
                             this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 6);
-                            debugprintln(this, "*** Throttle Quadrant: Hit, Engine Controls Disabled..");
+                            Aircraft.debugprintln(this, "*** Throttle Quadrant: Hit, Engine Controls Disabled..");
                         }
                         break;
                 }
@@ -239,7 +238,7 @@ public class I_250 extends Scheme2 implements TypeFighter, TypeBNZFighter {
             }
             if (s.startsWith("xxeng2")) {
                 if (s.startsWith("xxeng2supc") && (this.getEnergyPastArmor(0.1F, shot) > 0.0F)) {
-                    debugprintln(this, "*** Engine Module(s): Supercharger Disabled..");
+                    Aircraft.debugprintln(this, "*** Engine Module(s): Supercharger Disabled..");
                     this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 0);
                     this.FM.AS.setEngineSpecificDamage(shot.initiator, 1, 0);
                 }
@@ -256,31 +255,31 @@ public class I_250 extends Scheme2 implements TypeFighter, TypeBNZFighter {
             }
             if (s.startsWith("xxspar")) {
                 this.debuggunnery("Spar Construction: Hit..");
-                if (s.startsWith("xxsparli") && (this.chunkDamageVisible("WingLIn") > 2) && (World.Rnd().nextFloat() > (Math.abs(v1.x) + 0.11999999731779099D)) && (this.getEnergyPastArmor(6.9600000381469727D / (Math.abs(v1.x) + 9.9999997473787516E-005D), shot) > 0.0F)) {
+                if (s.startsWith("xxsparli") && (this.chunkDamageVisible("WingLIn") > 2) && (World.Rnd().nextFloat() > (Math.abs(Aircraft.v1.x) + 0.11999999731779099D)) && (this.getEnergyPastArmor(6.9600000381469727D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D), shot) > 0.0F)) {
                     this.debuggunnery("Spar Construction: WingLIn Spar Hit, Breaking in Half..");
                     this.nextDMGLevels(1, 2, "WingLIn_D3", shot.initiator);
                 }
-                if (s.startsWith("xxsparri") && (this.chunkDamageVisible("WingRIn") > 2) && (World.Rnd().nextFloat() > (Math.abs(v1.x) + 0.11999999731779099D)) && (this.getEnergyPastArmor(6.9600000381469727D / (Math.abs(v1.x) + 9.9999997473787516E-005D), shot) > 0.0F)) {
+                if (s.startsWith("xxsparri") && (this.chunkDamageVisible("WingRIn") > 2) && (World.Rnd().nextFloat() > (Math.abs(Aircraft.v1.x) + 0.11999999731779099D)) && (this.getEnergyPastArmor(6.9600000381469727D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D), shot) > 0.0F)) {
                     this.debuggunnery("Spar Construction: WingRIn Spar Hit, Breaking in Half..");
                     this.nextDMGLevels(1, 2, "WingRIn_D3", shot.initiator);
                 }
-                if (s.startsWith("xxsparlm") && (this.chunkDamageVisible("WingLMid") > 2) && (World.Rnd().nextFloat() > (Math.abs(v1.x) + 0.11999999731779099D)) && (this.getEnergyPastArmor(6.9600000381469727D / (Math.abs(v1.x) + 9.9999997473787516E-005D), shot) > 0.0F)) {
+                if (s.startsWith("xxsparlm") && (this.chunkDamageVisible("WingLMid") > 2) && (World.Rnd().nextFloat() > (Math.abs(Aircraft.v1.x) + 0.11999999731779099D)) && (this.getEnergyPastArmor(6.9600000381469727D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D), shot) > 0.0F)) {
                     this.debuggunnery("Spar Construction: WingLMid Spar Hit, Breaking in Half..");
                     this.nextDMGLevels(1, 2, "WingLMid_D3", shot.initiator);
                 }
-                if (s.startsWith("xxsparrm") && (this.chunkDamageVisible("WingRMid") > 2) && (World.Rnd().nextFloat() > (Math.abs(v1.x) + 0.11999999731779099D)) && (this.getEnergyPastArmor(6.9600000381469727D / (Math.abs(v1.x) + 9.9999997473787516E-005D), shot) > 0.0F)) {
+                if (s.startsWith("xxsparrm") && (this.chunkDamageVisible("WingRMid") > 2) && (World.Rnd().nextFloat() > (Math.abs(Aircraft.v1.x) + 0.11999999731779099D)) && (this.getEnergyPastArmor(6.9600000381469727D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D), shot) > 0.0F)) {
                     this.debuggunnery("Spar Construction: WingRMid Spar Hit, Breaking in Half..");
                     this.nextDMGLevels(1, 2, "WingRMid_D3", shot.initiator);
                 }
-                if (s.startsWith("xxsparlo") && (this.chunkDamageVisible("WingLOut") > 2) && (World.Rnd().nextFloat() > (Math.abs(v1.x) + 0.11999999731779099D)) && (this.getEnergyPastArmor(6.9600000381469727D / (Math.abs(v1.x) + 9.9999997473787516E-005D), shot) > 0.0F)) {
+                if (s.startsWith("xxsparlo") && (this.chunkDamageVisible("WingLOut") > 2) && (World.Rnd().nextFloat() > (Math.abs(Aircraft.v1.x) + 0.11999999731779099D)) && (this.getEnergyPastArmor(6.9600000381469727D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D), shot) > 0.0F)) {
                     this.debuggunnery("Spar Construction: WingLOut Spar Hit, Breaking in Half..");
                     this.nextDMGLevels(1, 2, "WingLOut_D3", shot.initiator);
                 }
-                if (s.startsWith("xxsparro") && (this.chunkDamageVisible("WingROut") > 2) && (World.Rnd().nextFloat() > (Math.abs(v1.x) + 0.11999999731779099D)) && (this.getEnergyPastArmor(6.9600000381469727D / (Math.abs(v1.x) + 9.9999997473787516E-005D), shot) > 0.0F)) {
+                if (s.startsWith("xxsparro") && (this.chunkDamageVisible("WingROut") > 2) && (World.Rnd().nextFloat() > (Math.abs(Aircraft.v1.x) + 0.11999999731779099D)) && (this.getEnergyPastArmor(6.9600000381469727D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D), shot) > 0.0F)) {
                     this.debuggunnery("Spar Construction: WingROut Spar Hit, Breaking in Half..");
                     this.nextDMGLevels(1, 2, "WingROut_D3", shot.initiator);
                 }
-                if (s.startsWith("xxspart") && (this.chunkDamageVisible("Tail1") > 2) && (this.getEnergyPastArmor(3.86F / (float) Math.sqrt((v1.y * v1.y) + (v1.z * v1.z)), shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
+                if (s.startsWith("xxspart") && (this.chunkDamageVisible("Tail1") > 2) && (this.getEnergyPastArmor(3.86F / (float) Math.sqrt((Aircraft.v1.y * Aircraft.v1.y) + (Aircraft.v1.z * Aircraft.v1.z)), shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
                     this.debuggunnery("Spar Construction: Tail1 Ribs Hit, Breaking in Half..");
                     this.nextDMGLevels(1, 2, "Tail1_D3", shot.initiator);
                 }
@@ -337,7 +336,7 @@ public class I_250 extends Scheme2 implements TypeFighter, TypeBNZFighter {
         if (s.startsWith("xcockpit")) {
             if (point3d.z > 0.77500000000000002D) {
                 this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 1);
-                if ((v1.x < -0.90000000000000002D) && (this.getEnergyPastArmor(12D / (Math.abs(v1.x) + 9.9999997473787516E-005D), shot) > 0.0F)) {
+                if ((Aircraft.v1.x < -0.90000000000000002D) && (this.getEnergyPastArmor(12D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D), shot) > 0.0F)) {
                     this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 2);
                 }
             } else if (point3d.y > 0.0D) {
@@ -449,12 +448,12 @@ public class I_250 extends Scheme2 implements TypeFighter, TypeBNZFighter {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
+            case 19:
                 this.FM.AS.setEngineDies(this, 1);
-                return this.cut(partNames()[i]);
+                return this.cut(Aircraft.partNames()[i]);
 
-            case 3: // '\003'
-            case 4: // '\004'
+            case 3:
+            case 4:
                 return false;
         }
         return super.cutFM(i, j, actor);
@@ -462,8 +461,8 @@ public class I_250 extends Scheme2 implements TypeFighter, TypeBNZFighter {
 
     public void moveCockpitDoor(float f) {
         this.resetYPRmodifier();
-        xyz[2] = cvt(f, 0.01F, 0.99F, 0.0F, -0.6F);
-        this.hierMesh().chunkSetLocate("Blister1_D0", xyz, ypr);
+        Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, -0.6F);
+        this.hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
         if (Config.isUSE_RENDER()) {
             if ((Main3D.cur3D().cockpits != null) && (Main3D.cur3D().cockpits[0] != null)) {
                 Main3D.cur3D().cockpits[0].onDoorMoved(f);
@@ -477,7 +476,7 @@ public class I_250 extends Scheme2 implements TypeFighter, TypeBNZFighter {
     private float pdor;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = I_250.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "I-250");
         Property.set(class1, "meshName", "3DO/Plane/I-250(Multi1)/hier.him");
@@ -490,11 +489,9 @@ public class I_250 extends Scheme2 implements TypeFighter, TypeBNZFighter {
         Property.set(class1, "yearService", 1946F);
         Property.set(class1, "yearExpired", 1956F);
         Property.set(class1, "FlightModel", "FlightModels/I-250.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitI_250.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitI_250.class });
         Property.set(class1, "LOSElevation", 0.61825F);
-        weaponTriggersRegister(class1, new int[] { 0, 1, 1 });
-        weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_CANNON03" });
-        weaponsRegister(class1, "default", new String[] { "MGunB20ki 100", "MGunB20s 100", "MGunB20s 100" });
-        weaponsRegister(class1, "none", new String[] { null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 1, 1 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_CANNON03" });
     }
 }

@@ -2,15 +2,12 @@ package com.maddox.il2.objects.air;
 
 import java.io.IOException;
 
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Interpolate;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.fm.Pitot;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -31,11 +28,11 @@ public class JU_388K extends JU_388 implements TypeBomber, TypeScout {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.startsWith("12xSC250")) {
-            ((FlightModelMain) (super.FM)).M.fuel += 900F;
-            ((FlightModelMain) (super.FM)).M.maxFuel += 900F;
+        if (this.thisWeaponsName.startsWith("12xSC250")) {
+            this.FM.M.fuel += 900F;
+            this.FM.M.maxFuel += 900F;
             this.needsToOpenBombays = true;
-        } else if (super.thisWeaponsName.startsWith("6xSC500") || super.thisWeaponsName.startsWith("3xSC1000") || super.thisWeaponsName.startsWith("1xSC1800") || super.thisWeaponsName.startsWith("1xSC2500")) {
+        } else if (this.thisWeaponsName.startsWith("6xSC500") || this.thisWeaponsName.startsWith("3xSC1000") || this.thisWeaponsName.startsWith("1xSC1800") || this.thisWeaponsName.startsWith("1xSC2500")) {
             this.needsToOpenBombays = true;
         }
     }
@@ -52,22 +49,22 @@ public class JU_388K extends JU_388 implements TypeBomber, TypeScout {
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            JU_388K.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            JU_388K.bChangedPit = true;
         }
     }
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         for (int i = 1; i < 4; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -78,10 +75,10 @@ public class JU_388K extends JU_388 implements TypeBomber, TypeScout {
 
     public void update(float f) {
         super.update(f);
-        if ((Pitot.Indicator((float) ((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z, super.FM.getSpeed()) > 70F) && (((FlightModelMain) (super.FM)).CT.getFlap() > 0.01D) && (((FlightModelMain) (super.FM)).CT.FlapsControl != 0.0F)) {
-            ((FlightModelMain) (super.FM)).CT.FlapsControl = 0.0F;
+        if ((Pitot.Indicator((float) this.FM.Loc.z, this.FM.getSpeed()) > 70F) && (this.FM.CT.getFlap() > 0.01D) && (this.FM.CT.FlapsControl != 0.0F)) {
+            this.FM.CT.FlapsControl = 0.0F;
             World.cur();
-            if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft()) {
+            if (((Interpolate) (this.FM)).actor == World.getPlayerAircraft()) {
                 HUD.log("FlapsRaised");
             }
         }
@@ -89,20 +86,20 @@ public class JU_388K extends JU_388 implements TypeBomber, TypeScout {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 this.hierMesh().chunkVisible("HMask3_D0", false);
@@ -209,7 +206,7 @@ public class JU_388K extends JU_388 implements TypeBomber, TypeScout {
     }
 
     public void typeBomberUpdate(float f) {
-        if (Math.abs(((FlightModelMain) (super.FM)).Or.getKren()) > 4.5D) {
+        if (Math.abs(this.FM.Or.getKren()) > 4.5D) {
             this.fSightCurReadyness -= 0.0666666F * f;
             if (this.fSightCurReadyness < 0.0F) {
                 this.fSightCurReadyness = 0.0F;
@@ -228,13 +225,13 @@ public class JU_388K extends JU_388 implements TypeBomber, TypeScout {
                 this.bSightBombDump = true;
             }
             if (this.bSightBombDump) {
-                if (super.FM.isTick(3, 0)) {
-                    if ((((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1] != null) && ((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].haveBullets()) {
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = true;
+                if (this.FM.isTick(3, 0)) {
+                    if ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1] != null) && this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].haveBullets()) {
+                        this.FM.CT.WeaponControl[3] = true;
                         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
                     }
                 } else {
-                    ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = false;
+                    this.FM.CT.WeaponControl[3] = false;
                 }
             }
         }
@@ -279,7 +276,7 @@ public class JU_388K extends JU_388 implements TypeBomber, TypeScout {
     public float          fSightCurReadyness;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = JU_388K.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Ju-388");
         Property.set(class1, "meshName", "3DO/Plane/JU_388K/hier.him");

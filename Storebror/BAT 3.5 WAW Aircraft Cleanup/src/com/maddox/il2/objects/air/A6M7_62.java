@@ -15,9 +15,9 @@ public class A6M7_62 extends A6M {
             if (s.equals("xxarmorg")) {
                 this.getEnergyPastArmor(World.Rnd().nextFloat(44F, 46F), shot);
                 this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 2);
-                debugprintln(this, "*** Armor Glass: Hit..");
+                Aircraft.debugprintln(this, "*** Armor Glass: Hit..");
                 if (shot.power <= 0.0F) {
-                    debugprintln(this, "*** Armor Glass: Bullet Stopped..");
+                    Aircraft.debugprintln(this, "*** Armor Glass: Bullet Stopped..");
                     if (World.Rnd().nextFloat() < 0.5F) {
                         this.doRicochetBack(shot);
                     }
@@ -25,7 +25,7 @@ public class A6M7_62 extends A6M {
                 return;
             }
             if (s.equals("xxarmors")) {
-                this.getEnergyPastArmor(8D / (Math.abs(v1.x) + 9.9999997473787516E-006D), shot);
+                this.getEnergyPastArmor(8D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-006D), shot);
                 return;
             }
             if (s.startsWith("xxammor")) {
@@ -81,15 +81,9 @@ public class A6M7_62 extends A6M {
         Property.set(class1, "yearService", 1943.5F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/A6M7_Model62.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitA6M7_62.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitA6M7_62.class });
         Property.set(class1, "LOSElevation", 1.01885F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 0, 1, 1, 9, 9, 3, 9, 9, 2, 2, 2, 2 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalDev01", "_ExternalBomb02", "_ExternalDev02", "_ExternalDev03", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04" });
-        weaponsRegister(class1, "default", new String[] { "MGunMG131s 230", "MGunMG131ki 240", "MGunMG131ki 240", "MGunMGFFk 125", "MGunMGFFk 125", null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "2x150dt", new String[] { "MGunMG131s 230", "MGunMG131ki 240", "MGunMG131ki 240", "MGunMGFFk 125", "MGunMGFFk 125", null, null, null, "FuelTankGun_Tank0Underwing", "FuelTankGun_Tank0Underwing", null, null, null, null });
-        weaponsRegister(class1, "1xwdt4s", new String[] { "MGunMG131s 230", "MGunMG131ki 240", "MGunMG131ki 240", "MGunMGFFk 125", "MGunMGFFk 125", "FuelTankGun_Tank0Centre", null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "4xtype3", new String[] { "MGunMG131s 230", "MGunMG131ki 240", "MGunMG131ki 240", "MGunMGFFk 125", "MGunMGFFk 125", null, null, null, null, null, "RocketGunType3Mk27", "RocketGunType3Mk27", "RocketGunType3Mk27", "RocketGunType3Mk27" });
-        weaponsRegister(class1, "1x250", new String[] { "MGunMG131s 230", "MGunMG131ki 240", "MGunMG131ki 240", "MGunMGFFk 125", "MGunMGFFk 125", null, "PylonA6MPLN1", "BombGun250kg", null, null, null, null, null, null });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 1, 1, 9, 9, 3, 9, 9, 2, 2, 2, 2 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalDev01", "_ExternalBomb02", "_ExternalDev02", "_ExternalDev03", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04" });
     }
 }

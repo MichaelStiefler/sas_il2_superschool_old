@@ -25,7 +25,7 @@ public class HE_280 extends ME_262 {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        HE_280.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public void moveSteering(float f) {
@@ -34,7 +34,7 @@ public class HE_280 extends ME_262 {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);

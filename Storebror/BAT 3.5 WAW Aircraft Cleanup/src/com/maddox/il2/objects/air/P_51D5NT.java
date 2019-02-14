@@ -2,7 +2,6 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.Regiment;
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.game.Mission;
 import com.maddox.rts.Property;
@@ -29,8 +28,8 @@ public class P_51D5NT extends P_51 {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = true;
-        ((FlightModelMain) (super.FM)).CT.dvCockpitDoor = 0.75F;
+        this.FM.CT.bHasCockpitDoorControl = true;
+        this.FM.CT.dvCockpitDoor = 0.75F;
     }
 
     public static String getSkinPrefix(String s, Regiment regiment) {

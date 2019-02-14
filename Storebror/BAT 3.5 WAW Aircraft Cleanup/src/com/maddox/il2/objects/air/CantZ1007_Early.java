@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -24,7 +23,7 @@ public class CantZ1007_Early extends CantZ1007 implements TypeBomber, TypeTransp
             default:
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -43,7 +42,7 @@ public class CantZ1007_Early extends CantZ1007 implements TypeBomber, TypeTransp
                 }
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f1 < -7F) {
                     f1 = -7F;
                     flag = false;
@@ -54,7 +53,7 @@ public class CantZ1007_Early extends CantZ1007 implements TypeBomber, TypeTransp
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -40F) {
                     f = -40F;
                     flag = false;
@@ -73,7 +72,7 @@ public class CantZ1007_Early extends CantZ1007 implements TypeBomber, TypeTransp
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -60F) {
                     f = -60F;
                     flag = false;
@@ -102,54 +101,54 @@ public class CantZ1007_Early extends CantZ1007 implements TypeBomber, TypeTransp
     }
 
     public void typeBomberAdjDistanceReset() {
-        super.fSightCurForwardAngle = 0.0F;
+        this.fSightCurForwardAngle = 0.0F;
     }
 
     public void typeBomberAdjDistancePlus() {
-        super.fSightCurForwardAngle += 0.4F;
-        if (super.fSightCurForwardAngle > 75F) {
-            super.fSightCurForwardAngle = 75F;
+        this.fSightCurForwardAngle += 0.4F;
+        if (this.fSightCurForwardAngle > 75F) {
+            this.fSightCurForwardAngle = 75F;
         }
     }
 
     public void typeBomberAdjDistanceMinus() {
-        super.fSightCurForwardAngle -= 0.4F;
-        if (super.fSightCurForwardAngle < -15F) {
-            super.fSightCurForwardAngle = -15F;
+        this.fSightCurForwardAngle -= 0.4F;
+        if (this.fSightCurForwardAngle < -15F) {
+            this.fSightCurForwardAngle = -15F;
         }
     }
 
     public void typeBomberAdjSideslipReset() {
-        super.fSightCurSideslip = 0.0F;
+        this.fSightCurSideslip = 0.0F;
     }
 
     public void typeBomberAdjSideslipPlus() {
-        super.fSightCurSideslip += 0.5D;
-        if (super.thisWeaponsName.startsWith("1x")) {
-            if (super.fSightCurSideslip > 40F) {
-                super.fSightCurSideslip = 40F;
+        this.fSightCurSideslip += 0.5D;
+        if (this.thisWeaponsName.startsWith("1x")) {
+            if (this.fSightCurSideslip > 40F) {
+                this.fSightCurSideslip = 40F;
             }
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "Torpedo Angle  " + super.fSightCurSideslip);
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "Torpedo Angle  " + this.fSightCurSideslip);
         } else {
-            if (super.fSightCurSideslip > 10F) {
-                super.fSightCurSideslip = 10F;
+            if (this.fSightCurSideslip > 10F) {
+                this.fSightCurSideslip = 10F;
             }
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip " + super.fSightCurSideslip);
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip " + this.fSightCurSideslip);
         }
     }
 
     public void typeBomberAdjSideslipMinus() {
-        super.fSightCurSideslip -= 0.5D;
-        if (super.thisWeaponsName.startsWith("1x")) {
-            if (super.fSightCurSideslip < -40F) {
-                super.fSightCurSideslip = -40F;
+        this.fSightCurSideslip -= 0.5D;
+        if (this.thisWeaponsName.startsWith("1x")) {
+            if (this.fSightCurSideslip < -40F) {
+                this.fSightCurSideslip = -40F;
             }
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "Torpedo Angle  " + super.fSightCurSideslip);
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "Torpedo Angle  " + this.fSightCurSideslip);
         } else {
-            if (super.fSightCurSideslip < -10F) {
-                super.fSightCurSideslip = -10F;
+            if (this.fSightCurSideslip < -10F) {
+                this.fSightCurSideslip = -10F;
             }
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip " + super.fSightCurSideslip);
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip " + this.fSightCurSideslip);
         }
     }
 
@@ -196,28 +195,28 @@ public class CantZ1007_Early extends CantZ1007 implements TypeBomber, TypeTransp
     public void typeBomberUpdate(float f) {
         double d = (this.fSightCurSpeed / 3.6000000000000001D) * Math.sqrt(this.fSightCurAltitude * 0.20387359799999999D);
         d -= this.fSightCurAltitude * this.fSightCurAltitude * 1.419E-005D;
-        super.fSightSetForwardAngle = (float) Math.atan(d / this.fSightCurAltitude);
+        this.fSightSetForwardAngle = (float) Math.atan(d / this.fSightCurAltitude);
     }
 
     public void typeBomberReplicateToNet(NetMsgGuaranted netmsgguaranted) throws IOException {
         netmsgguaranted.writeFloat(this.fSightCurAltitude);
         netmsgguaranted.writeFloat(this.fSightCurSpeed);
-        netmsgguaranted.writeFloat(super.fSightCurForwardAngle);
-        netmsgguaranted.writeFloat(super.fSightCurSideslip);
+        netmsgguaranted.writeFloat(this.fSightCurForwardAngle);
+        netmsgguaranted.writeFloat(this.fSightCurSideslip);
     }
 
     public void typeBomberReplicateFromNet(NetMsgInput netmsginput) throws IOException {
         this.fSightCurAltitude = netmsginput.readFloat();
         this.fSightCurSpeed = netmsginput.readFloat();
-        super.fSightCurForwardAngle = netmsginput.readFloat();
-        super.fSightCurSideslip = netmsginput.readFloat();
+        this.fSightCurForwardAngle = netmsginput.readFloat();
+        this.fSightCurSideslip = netmsginput.readFloat();
     }
 
     public float fSightCurAltitude;
     public float fSightCurSpeed;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = CantZ1007_Early.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "CantZ");
         Property.set(class1, "meshName", "3do/plane/CantZ1007_Early(multi)/hier.him");

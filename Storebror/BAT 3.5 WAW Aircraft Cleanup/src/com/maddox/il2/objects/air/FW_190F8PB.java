@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class FW_190F8PB extends FW_190F implements TypeStormovik {
@@ -10,7 +9,7 @@ public class FW_190F8PB extends FW_190F implements TypeStormovik {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).AS.wantBeaconsNet(true);
+        this.FM.AS.wantBeaconsNet(true);
         this.hierMesh().chunkVisible("Flap01_D0", true);
         this.hierMesh().chunkVisible("Flap01Holed_D0", false);
         this.hierMesh().chunkVisible("Flap04_D0", true);
@@ -22,7 +21,7 @@ public class FW_190F8PB extends FW_190F implements TypeStormovik {
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGear() < 0.98F) {
+        if (this.FM.CT.getGear() < 0.98F) {
             return;
         } else {
             this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -f, 0.0F);

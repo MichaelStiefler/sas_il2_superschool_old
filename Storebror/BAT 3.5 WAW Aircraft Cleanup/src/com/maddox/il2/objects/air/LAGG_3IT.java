@@ -10,8 +10,8 @@ public class LAGG_3IT extends LAGG_3 {
 
     public void update(float f) {
         if (this.FM.getSpeed() > 5F) {
-            this.hierMesh().chunkSetAngles("SlatL_D0", 0.0F, cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.2F), 0.0F);
-            this.hierMesh().chunkSetAngles("SlatR_D0", 0.0F, cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.2F), 0.0F);
+            this.hierMesh().chunkSetAngles("SlatL_D0", 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.2F), 0.0F);
+            this.hierMesh().chunkSetAngles("SlatR_D0", 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.2F), 0.0F);
         }
         super.update(f);
     }
@@ -28,7 +28,7 @@ public class LAGG_3IT extends LAGG_3 {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        LAGG_3IT.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     static {
@@ -40,11 +40,9 @@ public class LAGG_3IT extends LAGG_3 {
         Property.set(class1, "yearService", 1943F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/LaGG-3IT.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitLAGG_3SERIES66.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitLAGG_3SERIES66.class });
         Property.set(class1, "LOSElevation", 0.69445F);
-        weaponTriggersRegister(class1, new int[] { 0, 1 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_CANNON01" });
-        weaponsRegister(class1, "default", new String[] { "MGunUBs 220", "MGunNS37ki 22" });
-        weaponsRegister(class1, "none", new String[] { null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 1 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_CANNON01" });
     }
 }

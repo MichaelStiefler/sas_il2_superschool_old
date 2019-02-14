@@ -28,7 +28,7 @@ public class RWD_8 extends Scheme1 implements TypeScout, TypeTransport {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        RWD_8.moveGear(this.hierMesh(), f);
     }
 
     public void moveWheelSink() {
@@ -36,15 +36,15 @@ public class RWD_8 extends Scheme1 implements TypeScout, TypeTransport {
         Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.5F, 0.0F, 0.5F);
         this.hierMesh().chunkSetLocate("GearL3_D0", Aircraft.xyz, Aircraft.ypr);
         float f = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.5F, 0.0F, 5F);
-        this.hierMesh().chunkSetAngles("GearL2_D0", 0.0F, floatindex(f, gearL2), 0.0F);
-        this.hierMesh().chunkSetAngles("GearL4_D0", 0.0F, floatindex(f, gearL4), 0.0F);
-        this.hierMesh().chunkSetAngles("GearL5_D0", 0.0F, floatindex(f, gearL5), 0.0F);
+        this.hierMesh().chunkSetAngles("GearL2_D0", 0.0F, AircraftLH.floatindex(f, RWD_8.gearL2), 0.0F);
+        this.hierMesh().chunkSetAngles("GearL4_D0", 0.0F, AircraftLH.floatindex(f, RWD_8.gearL4), 0.0F);
+        this.hierMesh().chunkSetAngles("GearL5_D0", 0.0F, AircraftLH.floatindex(f, RWD_8.gearL5), 0.0F);
         Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.5F, 0.0F, 0.5F);
         this.hierMesh().chunkSetLocate("GearR3_D0", Aircraft.xyz, Aircraft.ypr);
         f = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.5F, 0.0F, 5F);
-        this.hierMesh().chunkSetAngles("GearR2_D0", 0.0F, -floatindex(f, gearL2), 0.0F);
-        this.hierMesh().chunkSetAngles("GearR4_D0", 0.0F, -floatindex(f, gearL4), 0.0F);
-        this.hierMesh().chunkSetAngles("GearR5_D0", 0.0F, -floatindex(f, gearL5), 0.0F);
+        this.hierMesh().chunkSetAngles("GearR2_D0", 0.0F, -AircraftLH.floatindex(f, RWD_8.gearL2), 0.0F);
+        this.hierMesh().chunkSetAngles("GearR4_D0", 0.0F, -AircraftLH.floatindex(f, RWD_8.gearL4), 0.0F);
+        this.hierMesh().chunkSetAngles("GearR5_D0", 0.0F, -AircraftLH.floatindex(f, RWD_8.gearL5), 0.0F);
     }
 
     protected void moveFlap(float f) {
@@ -99,10 +99,10 @@ public class RWD_8 extends Scheme1 implements TypeScout, TypeTransport {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 34: // '"'
+            case 34:
                 return super.cutFM(35, j, actor);
 
-            case 37: // '%'
+            case 37:
                 return super.cutFM(38, j, actor);
         }
         return super.cutFM(i, j, actor);
@@ -119,7 +119,7 @@ public class RWD_8 extends Scheme1 implements TypeScout, TypeTransport {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
@@ -129,7 +129,7 @@ public class RWD_8 extends Scheme1 implements TypeScout, TypeTransport {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Head2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);

@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class RE_2000 extends RE_2000xyz {
@@ -9,7 +8,7 @@ public class RE_2000 extends RE_2000xyz {
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = RE_2000.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "RE.2000");
         Property.set(class1, "meshName_hu", "3DO/Plane/RE-2000(hu)/hier.him");
@@ -21,7 +20,7 @@ public class RE_2000 extends RE_2000xyz {
         Property.set(class1, "yearService", 1939F);
         Property.set(class1, "yearExpired", 1948.5F);
         Property.set(class1, "FlightModel", "FlightModels/RE-2000.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitRE_2000.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitRE_2000.class });
         Property.set(class1, "LOSElevation", 0.9119F);
         Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 3, 3, 3, 3 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_BOMBCASSETTE01", "_BOMBCASSETTE02" });

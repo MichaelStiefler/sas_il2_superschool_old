@@ -4,10 +4,8 @@ import java.io.IOException;
 
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.objects.Wreckage;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -23,7 +21,7 @@ public class RE_2002 extends RE_2002xyz implements TypeDiveBomber {
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (this.tiltCanopyOpened && !this.blisterRemoved && (super.FM.getSpeed() > 75F)) {
+        if (this.tiltCanopyOpened && !this.blisterRemoved && (this.FM.getSpeed() > 75F)) {
             this.doRemoveBlister1();
         }
     }
@@ -35,14 +33,14 @@ public class RE_2002 extends RE_2002xyz implements TypeDiveBomber {
             Wreckage wreckage = new Wreckage(this, this.hierMesh().chunkFind("Blister1_D0"));
             wreckage.collide(true);
             Vector3d vector3d = new Vector3d();
-            vector3d.set(((FlightModelMain) (super.FM)).Vwld);
+            vector3d.set(this.FM.Vwld);
             wreckage.setSpeed(vector3d);
         }
     }
 
     public void moveCockpitDoor(float f) {
         if (f > this.canopyF) {
-            if ((((FlightModelMain) (super.FM)).Gears.onGround() && (super.FM.getSpeed() < 5F)) || this.tiltCanopyOpened) {
+            if ((this.FM.Gears.onGround() && (this.FM.getSpeed() < 5F)) || this.tiltCanopyOpened) {
                 this.tiltCanopyOpened = true;
                 this.hierMesh().chunkSetAngles("Blister1_D0", 0.0F, 100F * f, 0.0F);
             } else {
@@ -54,9 +52,9 @@ public class RE_2002 extends RE_2002xyz implements TypeDiveBomber {
                 Aircraft.xyz[0] = 0.01F;
                 this.hierMesh().chunkSetLocate("Blister4R_D0", Aircraft.xyz, Aircraft.ypr);
             }
-        } else if ((((FlightModelMain) (super.FM)).Gears.onGround() && (super.FM.getSpeed() < 5F) && !this.slideCanopyOpened) || this.tiltCanopyOpened) {
+        } else if ((this.FM.Gears.onGround() && (this.FM.getSpeed() < 5F) && !this.slideCanopyOpened) || this.tiltCanopyOpened) {
             this.hierMesh().chunkSetAngles("Blister1_D0", 0.0F, 100F * f, 0.0F);
-            if ((super.FM.getSpeed() > 50F) && (f < 0.6F) && !this.blisterRemoved) {
+            if ((this.FM.getSpeed() > 50F) && (f < 0.6F) && !this.blisterRemoved) {
                 this.doRemoveBlister1();
             }
             if (f == 0.0F) {
@@ -127,7 +125,7 @@ public class RE_2002 extends RE_2002xyz implements TypeDiveBomber {
     private boolean blisterRemoved;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = RE_2002.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "RE.2002");
         Property.set(class1, "meshName_it", "3DO/Plane/RE-2002(it)/hier.him");

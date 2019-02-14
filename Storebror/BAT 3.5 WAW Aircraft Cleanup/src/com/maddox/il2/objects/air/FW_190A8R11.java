@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.weapons.GunEmpty;
 import com.maddox.rts.Property;
 
@@ -40,7 +39,7 @@ public class FW_190A8R11 extends FW_190 implements TypeFighter, TypeBNZFighter {
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGear() < 0.98F) {
+        if (this.FM.CT.getGear() < 0.98F) {
             return;
         } else {
             this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -f, 0.0F);

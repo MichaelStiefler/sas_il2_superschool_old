@@ -3,10 +3,8 @@ package com.maddox.il2.objects.air;
 import java.io.IOException;
 
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -26,7 +24,7 @@ public class B_25BRaider extends B_25 implements TypeBomber {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
+            case 19:
                 this.killPilot(this, 4);
                 break;
         }
@@ -36,7 +34,7 @@ public class B_25BRaider extends B_25 implements TypeBomber {
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         for (int i = 1; i < 7; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -47,15 +45,15 @@ public class B_25BRaider extends B_25 implements TypeBomber {
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            B_25BRaider.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            B_25BRaider.bChangedPit = true;
         }
     }
 
@@ -84,7 +82,7 @@ public class B_25BRaider extends B_25 implements TypeBomber {
         if (this.fSightCurForwardAngle > 85F) {
             this.fSightCurForwardAngle = 85F;
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = B_25BRaider.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         if (this.bSightAutomation) {
             this.typeBomberToggleAutomation();
@@ -96,7 +94,7 @@ public class B_25BRaider extends B_25 implements TypeBomber {
         if (this.fSightCurForwardAngle < 0.0F) {
             this.fSightCurForwardAngle = 0.0F;
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = B_25BRaider.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         if (this.bSightAutomation) {
             this.typeBomberToggleAutomation();
@@ -133,7 +131,7 @@ public class B_25BRaider extends B_25 implements TypeBomber {
             this.fSightCurAltitude = 50000F;
         }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int) this.fSightCurAltitude) });
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = B_25BRaider.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
     }
 
     public void typeBomberAdjAltitudeMinus() {
@@ -142,7 +140,7 @@ public class B_25BRaider extends B_25 implements TypeBomber {
             this.fSightCurAltitude = 1000F;
         }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int) this.fSightCurAltitude) });
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = B_25BRaider.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
     }
 
     public void typeBomberAdjSpeedReset() {
@@ -166,7 +164,7 @@ public class B_25BRaider extends B_25 implements TypeBomber {
     }
 
     public void typeBomberUpdate(float f) {
-        if (Math.abs(((FlightModelMain) (super.FM)).Or.getKren()) > 4.5D) {
+        if (Math.abs(this.FM.Or.getKren()) > 4.5D) {
             this.fSightCurReadyness -= 0.0666666F * f;
             if (this.fSightCurReadyness < 0.0F) {
                 this.fSightCurReadyness = 0.0F;
@@ -175,23 +173,23 @@ public class B_25BRaider extends B_25 implements TypeBomber {
         if (this.fSightCurReadyness < 1.0F) {
             this.fSightCurReadyness += 0.0333333F * f;
         } else if (this.bSightAutomation) {
-            this.fSightCurDistance -= toMetersPerSecond(this.fSightCurSpeed) * f;
+            this.fSightCurDistance -= B_25BRaider.toMetersPerSecond(this.fSightCurSpeed) * f;
             if (this.fSightCurDistance < 0.0F) {
                 this.fSightCurDistance = 0.0F;
                 this.typeBomberToggleAutomation();
             }
-            this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / toMeters(this.fSightCurAltitude)));
-            if (this.fSightCurDistance < (toMetersPerSecond(this.fSightCurSpeed) * Math.sqrt(toMeters(this.fSightCurAltitude) * 0.2038736F))) {
+            this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / B_25BRaider.toMeters(this.fSightCurAltitude)));
+            if (this.fSightCurDistance < (B_25BRaider.toMetersPerSecond(this.fSightCurSpeed) * Math.sqrt(B_25BRaider.toMeters(this.fSightCurAltitude) * 0.2038736F))) {
                 this.bSightBombDump = true;
             }
             if (this.bSightBombDump) {
-                if (super.FM.isTick(3, 0)) {
-                    if ((((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1] != null) && ((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].haveBullets()) {
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = true;
+                if (this.FM.isTick(3, 0)) {
+                    if ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1] != null) && this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].haveBullets()) {
+                        this.FM.CT.WeaponControl[3] = true;
                         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
                     }
                 } else {
-                    ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = false;
+                    this.FM.CT.WeaponControl[3] = false;
                 }
             }
         }
@@ -228,10 +226,9 @@ public class B_25BRaider extends B_25 implements TypeBomber {
     public float          fSightCurAltitude;
     public float          fSightCurSpeed;
     public float          fSightCurReadyness;
-    static Class          class$com$maddox$il2$objects$air$B_25BRaider;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = B_25BRaider.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "B-25");
         Property.set(class1, "meshName", "3DO/Plane/B-25BRaider(Multi1)/hier.him");

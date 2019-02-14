@@ -10,7 +10,7 @@ public class Martin_B_10B extends Martin_B10_USAAC implements TypeBomber {
 
     public Martin_B_10B() {
         this.bChangedExts = false;
-        bChangedPit = true;
+        Martin_B_10B.bChangedPit = true;
         this.fSightSetForwardAngle = 0.0F;
         this.fSightCurSideslip = 0.0F;
         this.fSightCurForwardAngle = 0.0F;

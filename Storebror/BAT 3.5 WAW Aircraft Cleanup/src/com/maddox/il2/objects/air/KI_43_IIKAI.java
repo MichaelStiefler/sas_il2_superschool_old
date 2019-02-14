@@ -33,12 +33,9 @@ public class KI_43_IIKAI extends KI_43 {
         Property.set(class1, "yearService", 1943F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/Ki-43-II.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitKI_43_IIKAI.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitKI_43_IIKAI.class });
         Property.set(class1, "LOSElevation", 0.4252F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 9, 9, 3, 3 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_ExternalDev01", "_ExternalDev02", "_ExternalBomb01", "_ExternalBomb02" });
-        weaponsRegister(class1, "default", new String[] { "MGunHo103s 250", "MGunHo103s 250", null, null, null, null });
-        weaponsRegister(class1, "2x250", new String[] { "MGunHo103s 250", "MGunHo103s 250", "PylonKI43PLN1", "PylonKI43PLN1", "BombGun250kgJ", "BombGun250kgJ" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 9, 9, 3, 3 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_ExternalDev01", "_ExternalDev02", "_ExternalBomb01", "_ExternalBomb02" });
     }
 }

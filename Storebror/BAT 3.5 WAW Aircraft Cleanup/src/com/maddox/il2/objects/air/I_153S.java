@@ -6,7 +6,6 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 import com.maddox.util.HashMapInt;
 
@@ -34,7 +33,7 @@ public class I_153S extends I_153_M62 implements TypeFighter, TypeTNBFighter {
             this.hierMesh().chunkVisible("GearR7_D0", true);
             this.hierMesh().chunkVisible("GearR8_D0", true);
             this.hierMesh().chunkVisible("GearR9_D0", true);
-            ((FlightModelMain) (super.FM)).CT.bHasBrakeControl = false;
+            this.FM.CT.bHasBrakeControl = false;
         }
     }
 
@@ -58,20 +57,20 @@ public class I_153S extends I_153_M62 implements TypeFighter, TypeTNBFighter {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        I_153S.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            I_153S.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            I_153S.bChangedPit = true;
         }
     }
 

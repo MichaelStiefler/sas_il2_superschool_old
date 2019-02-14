@@ -48,7 +48,7 @@ public class A_20B3S extends A_20 implements TypeStormovik, TypeBomber {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -75F) {
                     f = -75F;
                     flag = false;
@@ -67,7 +67,7 @@ public class A_20B3S extends A_20 implements TypeStormovik, TypeBomber {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -30F) {
                     f = -30F;
                     flag = false;
@@ -93,11 +93,11 @@ public class A_20B3S extends A_20 implements TypeStormovik, TypeBomber {
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.FM.turret[0].bIsOperable = false;
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.FM.turret[1].bIsOperable = false;
                 break;
         }

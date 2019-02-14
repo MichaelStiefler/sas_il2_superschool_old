@@ -14,15 +14,15 @@ public class FW_190D15 extends FW_190DB603NEW {
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGear() >= 0.98F) {
+        if (this.FM.CT.getGear() >= 0.98F) {
             this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -f, 0.0F);
         }
     }
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).AS.wantBeaconsNet(true);
-        ((FlightModelMain) (super.FM)).Sq.dragParasiteCx = 0.0F;
+        this.FM.AS.wantBeaconsNet(true);
+        this.FM.Sq.dragParasiteCx = 0.0F;
     }
 
     public void update(float f) {
@@ -30,7 +30,7 @@ public class FW_190D15 extends FW_190DB603NEW {
             this.hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -20F * this.kangle, 0.0F);
         }
 
-        this.kangle = (0.95F * this.kangle) + (0.05F * ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator());
+        this.kangle = (0.95F * this.kangle) + (0.05F * this.FM.EI.engines[0].getControlRadiator());
         super.update(f);
     }
 
@@ -54,22 +54,22 @@ public class FW_190D15 extends FW_190DB603NEW {
         } catch (Exception exception) {
         }
         switch (byte0) {
-            case 9: // '\t'
+            case 9:
                 Property.set(class1, "FlightModel", "FlightModels/Fw-190D-9.fmd");
                 break;
 
-            case 13: // '\r'
+            case 13:
                 Property.set(class1, "FlightModel", "FlightModels/Fw-190D-13.fmd");
                 break;
 
-            case 15: // '\017'
+            case 15:
                 Property.set(class1, "FlightModel", "FlightModels/Fw-190D-15.fmd");
                 break;
 
-            case 10: // '\n'
-            case 11: // '\013'
-            case 12: // '\f'
-            case 14: // '\016'
+            case 10:
+            case 11:
+            case 12:
+            case 14:
             default:
                 Property.set(class1, "FlightModel", "FlightModels/Fw-190D-9.fmd");
                 break;

@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class A7M2 extends A7M {
@@ -10,7 +9,7 @@ public class A7M2 extends A7M {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.startsWith("1x") || super.thisWeaponsName.startsWith("H+1x")) {
+        if (this.thisWeaponsName.startsWith("1x") || this.thisWeaponsName.startsWith("H+1x")) {
             this.hierMesh().chunkVisible("Pilon_D0", true);
             return;
         } else {
@@ -19,7 +18,7 @@ public class A7M2 extends A7M {
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = A7M2.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "A7M");
         Property.set(class1, "meshName", "3DO/Plane/A7M2/hier.him");

@@ -1,9 +1,7 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class MustangMkI extends P_51 {
@@ -42,7 +40,7 @@ public class MustangMkI extends P_51 {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("pilot1a_D0", false);
                 this.hierMesh().chunkVisible("pilot1b_D0", false);
@@ -73,24 +71,22 @@ public class MustangMkI extends P_51 {
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (super.FM.getAltitude() < 3000F) {
+        if (this.FM.getAltitude() < 3000F) {
             this.hierMesh().chunkVisible("HMask1_D0", false);
             this.hierMesh().chunkVisible("HangMask1_D0", true);
-            if (((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+            if (this.FM.AS.bIsAboutToBailout) {
                 this.hierMesh().chunkVisible("HangMask1_D0", false);
             }
         } else {
             this.hierMesh().chunkVisible("HMask1_D0", this.hierMesh().isChunkVisible("Pilot1_D0"));
-            if ((super.FM.getAltitude() >= 3000F) || this.hierMesh().isChunkVisible("HMask1_D0") || ((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+            if ((this.FM.getAltitude() >= 3000F) || this.hierMesh().isChunkVisible("HMask1_D0") || this.FM.AS.bIsAboutToBailout) {
                 this.hierMesh().chunkVisible("HangMask1_D0", false);
             }
         }
     }
 
-    static Class class$com$maddox$il2$objects$air$MustangMkI;
-
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = MustangMkI.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "P-51");
         Property.set(class1, "meshName", "3DO/Plane/MustangMkI(Multi1)/hier.him");

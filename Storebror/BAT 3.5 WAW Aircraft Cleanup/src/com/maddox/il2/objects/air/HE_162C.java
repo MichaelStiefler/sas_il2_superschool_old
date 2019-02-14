@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Actor;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class HE_162C extends HE_162 {
@@ -11,13 +10,13 @@ public class HE_162C extends HE_162 {
 
     protected void moveRudder(float f) {
         this.resetYPRmodifier();
-        xyz[1] = cvt(this.FM.Gears.gWheelSinking[2], 0.0F, 0.0632F, 0.0F, 0.0632F);
+        Aircraft.xyz[1] = Aircraft.cvt(this.FM.Gears.gWheelSinking[2], 0.0F, 0.0632F, 0.0F, 0.0632F);
         if (this.FM.CT.getGear() > 0.99F) {
-            ypr[1] = 40F * this.FM.CT.getRudder();
+            Aircraft.ypr[1] = 40F * this.FM.CT.getRudder();
         }
-        this.hierMesh().chunkSetLocate("GearC25_D0", xyz, ypr);
-        this.hierMesh().chunkSetAngles("GearC27_D0", 0.0F, cvt(this.FM.Gears.gWheelSinking[2], 0.0F, 0.0632F, 0.0F, -15F), 0.0F);
-        this.hierMesh().chunkSetAngles("GearC28_D0", 0.0F, cvt(this.FM.Gears.gWheelSinking[2], 0.0F, 0.0632F, 0.0F, 30F), 0.0F);
+        this.hierMesh().chunkSetLocate("GearC25_D0", Aircraft.xyz, Aircraft.ypr);
+        this.hierMesh().chunkSetAngles("GearC27_D0", 0.0F, Aircraft.cvt(this.FM.Gears.gWheelSinking[2], 0.0F, 0.0632F, 0.0F, -15F), 0.0F);
+        this.hierMesh().chunkSetAngles("GearC28_D0", 0.0F, Aircraft.cvt(this.FM.Gears.gWheelSinking[2], 0.0F, 0.0632F, 0.0F, 30F), 0.0F);
         this.updateControlsVisuals();
     }
 
@@ -32,23 +31,23 @@ public class HE_162C extends HE_162 {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
+            case 33:
                 return super.cutFM(34, j, actor);
 
-            case 36: // '$'
+            case 36:
                 return super.cutFM(37, j, actor);
 
-            case 17: // '\021'
+            case 17:
                 return super.cutFM(11, j, actor);
 
-            case 18: // '\022'
+            case 18:
                 return super.cutFM(12, j, actor);
         }
         return super.cutFM(i, j, actor);
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = HE_162C.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "He-162");
         Property.set(class1, "meshName", "3DO/Plane/He-162C/hier.him");
@@ -56,11 +55,9 @@ public class HE_162C extends HE_162 {
         Property.set(class1, "yearService", 1946F);
         Property.set(class1, "yearExpired", 1956F);
         Property.set(class1, "FlightModel", "FlightModels/He-162C.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitHE_162C.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitHE_162C.class });
         Property.set(class1, "LOSElevation", 0.5099F);
-        weaponTriggersRegister(class1, new int[] { 0, 0 });
-        weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02" });
-        weaponsRegister(class1, "default", new String[] { "MGunMK108k 100", "MGunMK108k 100" });
-        weaponsRegister(class1, "none", new String[] { null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02" });
     }
 }

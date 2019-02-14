@@ -9,7 +9,7 @@ public class YAK_9TALBERT extends YAK_9TX implements TypeAcePlane {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        super.FM.Skill = 3;
+        this.FM.Skill = 3;
     }
 
     static {

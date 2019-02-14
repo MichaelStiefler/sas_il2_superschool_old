@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import java.io.IOException;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Maneuver;
 import com.maddox.il2.ai.air.Pilot;
@@ -55,14 +54,14 @@ public class FW_190_SeaJab extends Fw_190_Sea implements TypeX4Carrier, TypeBomb
     }
 
     public void doFireBoosters() {
-        Object aobj[] = super.pos.getBaseAttached();
+        Object aobj[] = this.pos.getBaseAttached();
         if (aobj != null) {
             int i = 0;
             do {
                 if (i >= aobj.length) {
                     break;
                 }
-                if (((Maneuver) super.FM).hasRockets() || ((Maneuver) super.FM).hasBombs() || (aobj[i] instanceof BombSC500) || (aobj[i] instanceof BombSD500) || (aobj[i] instanceof BombAB500) || (aobj[i] instanceof BombAB1000) || (aobj[i] instanceof BombSB1000) || (aobj[i] instanceof BombSC1000) || (aobj[i] instanceof BombPC1600) || (aobj[i] instanceof BombSC1800) || (aobj[i] instanceof BombSC2000) || (aobj[i] instanceof BombGunTorpFiume) || (aobj[i] instanceof BombGunTorpMk13) || (aobj[i] instanceof BombGunTorpF5Bheavy) || (aobj[i] instanceof BombGunTorpLTF5Practice) || (aobj[i] instanceof BombGun4512) || (aobj[i] instanceof RocketGunPC1000RS) || (aobj[i] instanceof RocketGunWfrGr21) || (aobj[i] instanceof FuelTankGun)) {
+                if (((Maneuver) this.FM).hasRockets() || ((Maneuver) this.FM).hasBombs() || (aobj[i] instanceof BombSC500) || (aobj[i] instanceof BombSD500) || (aobj[i] instanceof BombAB500) || (aobj[i] instanceof BombAB1000) || (aobj[i] instanceof BombSB1000) || (aobj[i] instanceof BombSC1000) || (aobj[i] instanceof BombPC1600) || (aobj[i] instanceof BombSC1800) || (aobj[i] instanceof BombSC2000) || (aobj[i] instanceof BombGunTorpFiume) || (aobj[i] instanceof BombGunTorpMk13) || (aobj[i] instanceof BombGunTorpF5Bheavy) || (aobj[i] instanceof BombGunTorpLTF5Practice) || (aobj[i] instanceof BombGun4512) || (aobj[i] instanceof RocketGunPC1000RS) || (aobj[i] instanceof RocketGunWfrGr21) || (aobj[i] instanceof FuelTankGun)) {
                     if ((this.booster[0] != null) && (this.booster[1] != null)) {
                         Eff3DActor.New(this, this.findHook("_Booster1"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
                     }
@@ -75,14 +74,14 @@ public class FW_190_SeaJab extends Fw_190_Sea implements TypeX4Carrier, TypeBomb
     }
 
     public void doCutBoosters() {
-        Object aobj[] = super.pos.getBaseAttached();
+        Object aobj[] = this.pos.getBaseAttached();
         if (aobj != null) {
             int i = 0;
             do {
                 if (i >= aobj.length) {
                     break;
                 }
-                if (((Maneuver) super.FM).hasRockets() || ((Maneuver) super.FM).hasBombs() || (aobj[i] instanceof BombSC500) || (aobj[i] instanceof BombSD500) || (aobj[i] instanceof BombAB500) || (aobj[i] instanceof BombAB1000) || (aobj[i] instanceof BombSB1000) || (aobj[i] instanceof BombSC1000) || (aobj[i] instanceof BombPC1600) || (aobj[i] instanceof BombSC1800) || (aobj[i] instanceof BombSC2000) || (aobj[i] instanceof BombGunTorpFiume) || (aobj[i] instanceof BombGunTorpMk13) || (aobj[i] instanceof BombGunTorpF5Bheavy) || (aobj[i] instanceof BombGunTorpLTF5Practice) || (aobj[i] instanceof BombGun4512) || (aobj[i] instanceof RocketGunPC1000RS) || (aobj[i] instanceof RocketGunWfrGr21) || (aobj[i] instanceof FuelTankGun)) {
+                if (((Maneuver) this.FM).hasRockets() || ((Maneuver) this.FM).hasBombs() || (aobj[i] instanceof BombSC500) || (aobj[i] instanceof BombSD500) || (aobj[i] instanceof BombAB500) || (aobj[i] instanceof BombAB1000) || (aobj[i] instanceof BombSB1000) || (aobj[i] instanceof BombSC1000) || (aobj[i] instanceof BombPC1600) || (aobj[i] instanceof BombSC1800) || (aobj[i] instanceof BombSC2000) || (aobj[i] instanceof BombGunTorpFiume) || (aobj[i] instanceof BombGunTorpMk13) || (aobj[i] instanceof BombGunTorpF5Bheavy) || (aobj[i] instanceof BombGunTorpLTF5Practice) || (aobj[i] instanceof BombGun4512) || (aobj[i] instanceof RocketGunPC1000RS) || (aobj[i] instanceof RocketGunWfrGr21) || (aobj[i] instanceof FuelTankGun)) {
                     for (int j = 0; j < 2; j++) {
                         if (this.booster[j] != null) {
                             this.booster[j].start();
@@ -99,14 +98,14 @@ public class FW_190_SeaJab extends Fw_190_Sea implements TypeX4Carrier, TypeBomb
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        Object aobj[] = super.pos.getBaseAttached();
+        Object aobj[] = this.pos.getBaseAttached();
         if (aobj != null) {
             int i = 0;
             do {
                 if (i >= aobj.length) {
                     break;
                 }
-                if (((Maneuver) super.FM).hasRockets() || ((Maneuver) super.FM).hasBombs() || (aobj[i] instanceof BombSC500) || (aobj[i] instanceof BombSD500) || (aobj[i] instanceof BombAB500) || (aobj[i] instanceof BombAB1000) || (aobj[i] instanceof BombSB1000) || (aobj[i] instanceof BombSC1000) || (aobj[i] instanceof BombPC1600) || (aobj[i] instanceof BombSC1800) || (aobj[i] instanceof BombSC2000) || (aobj[i] instanceof BombGunTorpFiume) || (aobj[i] instanceof BombGunTorpMk13) || (aobj[i] instanceof BombGunTorpF5Bheavy) || (aobj[i] instanceof BombGunTorpLTF5Practice) || (aobj[i] instanceof BombGun4512) || (aobj[i] instanceof RocketGunPC1000RS) || (aobj[i] instanceof RocketGunWfrGr21) || (aobj[i] instanceof FuelTankGun)) {
+                if (((Maneuver) this.FM).hasRockets() || ((Maneuver) this.FM).hasBombs() || (aobj[i] instanceof BombSC500) || (aobj[i] instanceof BombSD500) || (aobj[i] instanceof BombAB500) || (aobj[i] instanceof BombAB1000) || (aobj[i] instanceof BombSB1000) || (aobj[i] instanceof BombSC1000) || (aobj[i] instanceof BombPC1600) || (aobj[i] instanceof BombSC1800) || (aobj[i] instanceof BombSC2000) || (aobj[i] instanceof BombGunTorpFiume) || (aobj[i] instanceof BombGunTorpMk13) || (aobj[i] instanceof BombGunTorpF5Bheavy) || (aobj[i] instanceof BombGunTorpLTF5Practice) || (aobj[i] instanceof BombGun4512) || (aobj[i] instanceof RocketGunPC1000RS) || (aobj[i] instanceof RocketGunWfrGr21) || (aobj[i] instanceof FuelTankGun)) {
                     try {
                         this.booster[0] = new BombStarthilfeSolfuelL();
                         ((Actor) (this.booster[0])).pos.setBase(this, this.findHook("_BoosterH1"), false);
@@ -132,14 +131,14 @@ public class FW_190_SeaJab extends Fw_190_Sea implements TypeX4Carrier, TypeBomb
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
-            case 34: // '"'
-            case 35: // '#'
-            case 36: // '$'
-            case 37: // '%'
-            case 38: // '&'
+            case 33:
+            case 34:
+            case 35:
+            case 36:
+            case 37:
+            case 38:
                 this.doCutBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
                 break;
         }
@@ -148,41 +147,41 @@ public class FW_190_SeaJab extends Fw_190_Sea implements TypeX4Carrier, TypeBomb
 
     public void update(float f) {
         super.update(f);
-        if ((super.FM instanceof Pilot) && this.bHasBoosters) {
-            if ((super.FM.getAltitude() > 300F) && (this.boosterFireOutTime == -1L) && (((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z != 0.0D) && (World.Rnd().nextFloat() < 0.05F)) {
+        if ((this.FM instanceof Pilot) && this.bHasBoosters) {
+            if ((this.FM.getAltitude() > 300F) && (this.boosterFireOutTime == -1L) && (this.FM.Loc.z != 0.0D) && (World.Rnd().nextFloat() < 0.05F)) {
                 this.doCutBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
             }
-            if (this.bHasBoosters && (this.boosterFireOutTime == -1L) && ((FlightModelMain) (super.FM)).Gears.onGround() && (((FlightModelMain) (super.FM)).EI.getPowerOutput() > 0.9F) && (((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6) && (super.FM.getSpeedKMH() > 20F)) {
-                Object aobj[] = super.pos.getBaseAttached();
+            if (this.bHasBoosters && (this.boosterFireOutTime == -1L) && this.FM.Gears.onGround() && (this.FM.EI.getPowerOutput() > 0.9F) && (this.FM.EI.engines[0].getStage() == 6) && (this.FM.getSpeedKMH() > 20F)) {
+                Object aobj[] = this.pos.getBaseAttached();
                 if (aobj != null) {
                     int i = 0;
                     do {
                         if (i >= aobj.length) {
                             break;
                         }
-                        if (((Maneuver) super.FM).hasRockets() || ((Maneuver) super.FM).hasBombs() || (aobj[i] instanceof BombSC500) || (aobj[i] instanceof BombSD500) || (aobj[i] instanceof BombAB500) || (aobj[i] instanceof BombAB1000) || (aobj[i] instanceof BombSB1000) || (aobj[i] instanceof BombSC1000) || (aobj[i] instanceof BombPC1600) || (aobj[i] instanceof BombSC1800) || (aobj[i] instanceof BombSC2000) || (aobj[i] instanceof BombGunTorpFiume) || (aobj[i] instanceof BombGunTorpMk13) || (aobj[i] instanceof BombGunTorpF5Bheavy) || (aobj[i] instanceof BombGunTorpLTF5Practice) || (aobj[i] instanceof BombGun4512) || (aobj[i] instanceof RocketGunPC1000RS) || (aobj[i] instanceof RocketGunWfrGr21) || (aobj[i] instanceof FuelTankGun)) {
+                        if (((Maneuver) this.FM).hasRockets() || ((Maneuver) this.FM).hasBombs() || (aobj[i] instanceof BombSC500) || (aobj[i] instanceof BombSD500) || (aobj[i] instanceof BombAB500) || (aobj[i] instanceof BombAB1000) || (aobj[i] instanceof BombSB1000) || (aobj[i] instanceof BombSC1000) || (aobj[i] instanceof BombPC1600) || (aobj[i] instanceof BombSC1800) || (aobj[i] instanceof BombSC2000) || (aobj[i] instanceof BombGunTorpFiume) || (aobj[i] instanceof BombGunTorpMk13) || (aobj[i] instanceof BombGunTorpF5Bheavy) || (aobj[i] instanceof BombGunTorpLTF5Practice) || (aobj[i] instanceof BombGun4512) || (aobj[i] instanceof RocketGunPC1000RS) || (aobj[i] instanceof RocketGunWfrGr21) || (aobj[i] instanceof FuelTankGun)) {
                             this.boosterFireOutTime = Time.current() + 30000L;
                             this.doFireBoosters();
-                            ((FlightModelMain) (super.FM)).AS.setGliderBoostOn();
+                            this.FM.AS.setGliderBoostOn();
                             break;
                         }
                         i++;
                     } while (true);
                 } else {
                     this.doCutBoosters();
-                    ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                    this.FM.AS.setGliderBoostOff();
                     this.bHasBoosters = false;
                 }
             }
             if (this.bHasBoosters && (this.boosterFireOutTime > 0L)) {
                 if (Time.current() < this.boosterFireOutTime) {
-                    ((FlightModelMain) (super.FM)).producedAF.x += 20000D;
+                    this.FM.producedAF.x += 20000D;
                 }
                 if (Time.current() > (this.boosterFireOutTime + 10000L)) {
                     this.doCutBoosters();
-                    ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                    this.FM.AS.setGliderBoostOff();
                     this.bHasBoosters = false;
                 }
             }
@@ -251,24 +250,24 @@ public class FW_190_SeaJab extends Fw_190_Sea implements TypeX4Carrier, TypeBomb
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        FW_190_SeaJab.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGear() >= 0.98F) {
+        if (this.FM.CT.getGear() >= 0.98F) {
             this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -f, 0.0F);
         }
     }
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if ((!(super.FM instanceof RealFlightModel) || !((RealFlightModel) super.FM).isRealMode()) && flag && (super.FM instanceof Pilot)) {
-            Pilot pilot = (Pilot) super.FM;
+        if ((!(this.FM instanceof RealFlightModel) || !((RealFlightModel) this.FM).isRealMode()) && flag && (this.FM instanceof Pilot)) {
+            Pilot pilot = (Pilot) this.FM;
             if ((pilot.get_maneuver() == 63) && (((Maneuver) (pilot)).target != null)) {
                 Point3d point3d = new Point3d(((FlightModelMain) (((Maneuver) (pilot)).target)).Loc);
-                point3d.sub(((FlightModelMain) (super.FM)).Loc);
-                ((FlightModelMain) (super.FM)).Or.transformInv(point3d);
-                if ((((((Tuple3d) (point3d)).x > 4000D) && (((Tuple3d) (point3d)).x < 5500D)) || ((((Tuple3d) (point3d)).x > 100D) && (((Tuple3d) (point3d)).x < 5000D) && (World.Rnd().nextFloat() < 0.33F))) && (Time.current() > (this.tX4Prev + 10000L))) {
+                point3d.sub(this.FM.Loc);
+                this.FM.Or.transformInv(point3d);
+                if ((((point3d.x > 4000D) && (point3d.x < 5500D)) || ((point3d.x > 100D) && (point3d.x < 5000D) && (World.Rnd().nextFloat() < 0.33F))) && (Time.current() > (this.tX4Prev + 10000L))) {
                     this.bToFire = true;
                     this.tX4Prev = Time.current();
                 }

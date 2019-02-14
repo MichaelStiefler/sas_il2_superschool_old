@@ -2,7 +2,6 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class Do217_K2 extends Do217 implements TypeX4Carrier, TypeGuidedBombCarrier {
@@ -16,11 +15,11 @@ public class Do217_K2 extends Do217 implements TypeX4Carrier, TypeGuidedBombCarr
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.startsWith("1xFritzX") || super.thisWeaponsName.startsWith("2xFritzX")) {
+        if (this.thisWeaponsName.startsWith("1xFritzX") || this.thisWeaponsName.startsWith("2xFritzX")) {
             this.hierMesh().chunkVisible("WingRackR_D0", true);
             this.hierMesh().chunkVisible("WingRackL_D0", true);
         }
-        if (super.thisWeaponsName.startsWith("1xHS293") || super.thisWeaponsName.startsWith("2xHS293")) {
+        if (this.thisWeaponsName.startsWith("1xHS293") || this.thisWeaponsName.startsWith("2xHS293")) {
             this.hierMesh().chunkVisible("WingRackR1_D0", true);
             this.hierMesh().chunkVisible("WingRackL1_D0", true);
         }
@@ -102,72 +101,72 @@ public class Do217_K2 extends Do217 implements TypeX4Carrier, TypeGuidedBombCarr
     }
 
     public void typeBomberAdjDistancePlus() {
-        super.fSightCurForwardAngle++;
-        if (super.fSightCurForwardAngle > 85F) {
-            super.fSightCurForwardAngle = 85F;
+        this.fSightCurForwardAngle++;
+        if (this.fSightCurForwardAngle > 85F) {
+            this.fSightCurForwardAngle = 85F;
         }
-        super.fSightCurDistance = super.fSightCurAltitude * (float) Math.tan(Math.toRadians(super.fSightCurForwardAngle));
+        this.fSightCurDistance = this.fSightCurAltitude * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         if (!this.isGuidingBomb) {
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) super.fSightCurForwardAngle) });
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         }
-        if (super.bSightAutomation) {
+        if (this.bSightAutomation) {
             this.typeBomberToggleAutomation();
         }
     }
 
     public void typeBomberAdjDistanceMinus() {
-        super.fSightCurForwardAngle--;
-        if (super.fSightCurForwardAngle < 0.0F) {
-            super.fSightCurForwardAngle = 0.0F;
+        this.fSightCurForwardAngle--;
+        if (this.fSightCurForwardAngle < 0.0F) {
+            this.fSightCurForwardAngle = 0.0F;
         }
-        super.fSightCurDistance = super.fSightCurAltitude * (float) Math.tan(Math.toRadians(super.fSightCurForwardAngle));
+        this.fSightCurDistance = this.fSightCurAltitude * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         if (!this.isGuidingBomb) {
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) super.fSightCurForwardAngle) });
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         }
-        if (super.bSightAutomation) {
+        if (this.bSightAutomation) {
             this.typeBomberToggleAutomation();
         }
     }
 
     public void typeBomberAdjSideslipPlus() {
         if (!this.isGuidingBomb) {
-            super.fSightCurSideslip += 0.1F;
-            if (super.fSightCurSideslip > 3F) {
-                super.fSightCurSideslip = 3F;
+            this.fSightCurSideslip += 0.1F;
+            if (this.fSightCurSideslip > 3F) {
+                this.fSightCurSideslip = 3F;
             }
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int) (super.fSightCurSideslip * 10F)) });
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int) (this.fSightCurSideslip * 10F)) });
         }
     }
 
     public void typeBomberAdjSideslipMinus() {
         if (!this.isGuidingBomb) {
-            super.fSightCurSideslip -= 0.1F;
-            if (super.fSightCurSideslip < -3F) {
-                super.fSightCurSideslip = -3F;
+            this.fSightCurSideslip -= 0.1F;
+            if (this.fSightCurSideslip < -3F) {
+                this.fSightCurSideslip = -3F;
             }
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int) (super.fSightCurSideslip * 10F)) });
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int) (this.fSightCurSideslip * 10F)) });
         }
     }
 
     public void typeBomberAdjAltitudePlus() {
         if (!this.isGuidingBomb) {
-            super.fSightCurAltitude += 10F;
-            if (super.fSightCurAltitude > 10000F) {
-                super.fSightCurAltitude = 10000F;
+            this.fSightCurAltitude += 10F;
+            if (this.fSightCurAltitude > 10000F) {
+                this.fSightCurAltitude = 10000F;
             }
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) super.fSightCurAltitude) });
-            super.fSightCurDistance = super.fSightCurAltitude * (float) Math.tan(Math.toRadians(super.fSightCurForwardAngle));
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) this.fSightCurAltitude) });
+            this.fSightCurDistance = this.fSightCurAltitude * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         }
     }
 
     public void typeBomberAdjAltitudeMinus() {
         if (!this.isGuidingBomb) {
-            super.fSightCurAltitude -= 10F;
-            if (super.fSightCurAltitude < 850F) {
-                super.fSightCurAltitude = 850F;
+            this.fSightCurAltitude -= 10F;
+            if (this.fSightCurAltitude < 850F) {
+                this.fSightCurAltitude = 850F;
             }
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) super.fSightCurAltitude) });
-            super.fSightCurDistance = super.fSightCurAltitude * (float) Math.tan(Math.toRadians(super.fSightCurForwardAngle));
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) this.fSightCurAltitude) });
+            this.fSightCurDistance = this.fSightCurAltitude * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         }
     }
 
@@ -181,7 +180,7 @@ public class Do217_K2 extends Do217 implements TypeX4Carrier, TypeGuidedBombCarr
     private boolean isMasterAlive;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = Do217_K2.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Do-217");
         Property.set(class1, "meshName", "3do/plane/Do217_K2/hier.him");

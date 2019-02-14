@@ -11,8 +11,8 @@ public class ME_262A1AU4 extends ME_262 implements TypeStormovik {
     public static void moveGear(HierMesh hiermesh, float f, float f1, float f2) {
         hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 103F * f2, 0.0F);
         hiermesh.chunkSetAngles("GearC21_D0", 0.0F, -90F * f2, 0.0F);
-        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, cvt(f2, 0.01F, 0.11F, 0.0F, -90F), 0.0F);
-        hiermesh.chunkSetAngles("GearC6_D0", 0.0F, cvt(f2, 0.01F, 0.11F, 0.0F, -90F), 0.0F);
+        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, Aircraft.cvt(f2, 0.01F, 0.11F, 0.0F, -90F), 0.0F);
+        hiermesh.chunkSetAngles("GearC6_D0", 0.0F, Aircraft.cvt(f2, 0.01F, 0.11F, 0.0F, -90F), 0.0F);
         hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 73F * f, 0.0F);
         hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 73F * f1, 0.0F);
         hiermesh.chunkSetAngles("GearL4_D0", 0.0F, 88F * f, 0.0F);
@@ -22,14 +22,14 @@ public class ME_262A1AU4 extends ME_262 implements TypeStormovik {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        ME_262A1AU4.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public void moveWheelSink() {
         this.resetYPRmodifier();
         float f = this.FM.Gears.gWheelSinking[2];
-        xyz[1] = cvt(f, 0.0F, 0.19F, 0.0F, 0.19F);
-        this.hierMesh().chunkSetLocate("GearC22_D0", xyz, ypr);
+        Aircraft.xyz[1] = Aircraft.cvt(f, 0.0F, 0.19F, 0.0F, 0.19F);
+        this.hierMesh().chunkSetLocate("GearC22_D0", Aircraft.xyz, Aircraft.ypr);
     }
 
     protected void moveRudder(float f) {
@@ -48,11 +48,9 @@ public class ME_262A1AU4 extends ME_262 implements TypeStormovik {
         Property.set(class1, "yearService", 1944F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/Me-262A-1aU4.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitME_262.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitME_262.class });
         Property.set(class1, "LOSElevation", 0.74615F);
-        weaponTriggersRegister(class1, new int[] { 1 });
-        weaponHooksRegister(class1, new String[] { "_CANNON01" });
-        weaponsRegister(class1, "default", new String[] { "MGunMK214A 28" });
-        weaponsRegister(class1, "none", new String[] { null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 1 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01" });
     }
 }

@@ -6,7 +6,6 @@ import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.Engine;
 import com.maddox.il2.game.HUD;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class LA_7R extends LA_X {
@@ -81,13 +80,13 @@ public class LA_7R extends LA_X {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
+            case 19:
                 this.bHasEngine = false;
                 this.FM.AS.setEngineDies(this, 1);
-                return this.cut(partNames()[i]);
+                return this.cut(Aircraft.partNames()[i]);
 
-            case 3: // '\003'
-            case 4: // '\004'
+            case 3:
+            case 4:
                 return false;
         }
         return super.cutFM(i, j, actor);
@@ -115,15 +114,15 @@ public class LA_7R extends LA_X {
         }
     }
 
-    private boolean         bHasEngine;
-    private Eff3DActor      flame;
-    private Eff3DActor      dust;
-    private Eff3DActor      trail;
-    private Eff3DActor      sprite;
-    private boolean         bPowR;
+    private boolean    bHasEngine;
+    private Eff3DActor flame;
+    private Eff3DActor dust;
+    private Eff3DActor trail;
+    private Eff3DActor sprite;
+    private boolean    bPowR;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = LA_7R.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "La");
         Property.set(class1, "meshName", "3DO/Plane/La-7R(Multi1)/hier.him");
@@ -131,14 +130,9 @@ public class LA_7R extends LA_X {
         Property.set(class1, "yearService", 1944F);
         Property.set(class1, "yearExpired", 1948.5F);
         Property.set(class1, "FlightModel", "FlightModels/La-7R.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitLA_7R.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitLA_7R.class });
         Property.set(class1, "LOSElevation", 0.92F);
-        weaponTriggersRegister(class1, new int[] { 1, 1, 3, 3, 9, 9 });
-        weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02" });
-        weaponsRegister(class1, "default", new String[] { "MGunB20s 200", "MGunB20s 200", null, null, null, null });
-        weaponsRegister(class1, "2xFAB50", new String[] { "MGunB20s 200", "MGunB20s 200", "BombGunFAB50 1", "BombGunFAB50 1", null, null });
-        weaponsRegister(class1, "2xFAB100", new String[] { "MGunB20s 200", "MGunB20s 200", "BombGunFAB100 1", "BombGunFAB100 1", null, null });
-        weaponsRegister(class1, "2xDROPTANK", new String[] { "MGunB20s 200", "MGunB20s 200", null, null, "FuelTankGun_Tank80", "FuelTankGun_Tank80" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 1, 1, 3, 3, 9, 9 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02" });
     }
 }

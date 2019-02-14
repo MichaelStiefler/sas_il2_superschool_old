@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.weapons.GunEmpty;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
@@ -77,26 +76,26 @@ public class Fw_190_SeaFg extends Fw_190_Sea implements TypeFighter, TypeBNZFigh
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        Fw_190_SeaFg.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGear() >= 0.98F) {
+        if (this.FM.CT.getGear() >= 0.98F) {
             this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -f, 0.0F);
         }
     }
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            Fw_190_SeaFg.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            Fw_190_SeaFg.bChangedPit = true;
         }
     }
 

@@ -8,7 +8,6 @@ import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
@@ -79,7 +78,7 @@ public class ME_163B1A extends Scheme1 implements TypeFighter, TypeBNZFighter {
         if (var1.startsWith("xx")) {
             if (var1.startsWith("xxarmor")) {
                 if (var1.endsWith("1")) {
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(var2.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 2);
+                    this.FM.AS.setCockpitState(var2.initiator, this.FM.AS.astateCockpitState | 2);
                     if (this.getEnergyPastArmor(World.Rnd().nextFloat(30F, 90F) / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), var2) < 0.0F) {
                         this.doRicochet(var2);
                     }
@@ -89,29 +88,29 @@ public class ME_163B1A extends Scheme1 implements TypeFighter, TypeBNZFighter {
             } else if (var1.startsWith("xxcontrols")) {
                 int var6 = var1.charAt(10) - 48;
                 switch (var6) {
-                    case 1: // '\001'
+                    case 1:
                         if ((this.getEnergyPastArmor(2.2F / (float) Math.sqrt((((Tuple3d) (Aircraft.v1)).y * ((Tuple3d) (Aircraft.v1)).y) + (((Tuple3d) (Aircraft.v1)).z * ((Tuple3d) (Aircraft.v1)).z)), var2) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(var2.initiator, 2);
+                            this.FM.AS.setControlsDamage(var2.initiator, 2);
                         }
                         break;
 
-                    case 2: // '\002'
+                    case 2:
                         if (this.getEnergyPastArmor(2.2F / (float) Math.sqrt((((Tuple3d) (Aircraft.v1)).y * ((Tuple3d) (Aircraft.v1)).y) + (((Tuple3d) (Aircraft.v1)).z * ((Tuple3d) (Aircraft.v1)).z)), var2) > 0.0F) {
                             if (World.Rnd().nextFloat() < 0.25F) {
-                                ((FlightModelMain) (super.FM)).AS.setControlsDamage(var2.initiator, 2);
+                                this.FM.AS.setControlsDamage(var2.initiator, 2);
                             }
                             if (World.Rnd().nextFloat() < 0.25F) {
-                                ((FlightModelMain) (super.FM)).AS.setControlsDamage(var2.initiator, 1);
-                                ((FlightModelMain) (super.FM)).AS.setControlsDamage(var2.initiator, 0);
+                                this.FM.AS.setControlsDamage(var2.initiator, 1);
+                                this.FM.AS.setControlsDamage(var2.initiator, 0);
                             }
                         }
                         break;
 
-                    case 3: // '\003'
-                    case 4: // '\004'
+                    case 3:
+                    case 4:
                         if ((this.getEnergyPastArmor(2.2F, var2) > 0.0F) && (World.Rnd().nextFloat() < 0.1F)) {
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(var2.initiator, 1);
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(var2.initiator, 0);
+                            this.FM.AS.setControlsDamage(var2.initiator, 1);
+                            this.FM.AS.setControlsDamage(var2.initiator, 0);
                         }
                         break;
                 }
@@ -168,51 +167,51 @@ public class ME_163B1A extends Scheme1 implements TypeFighter, TypeBNZFighter {
             } else if (var1.startsWith("xxeng")) {
                 int var6 = var1.charAt(8) - 48;
                 switch (var6) {
-                    case 1: // '\001'
+                    case 1:
                         if (World.Rnd().nextFloat() < 0.01F) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(var2.initiator, 0, 100);
+                            this.FM.AS.hitEngine(var2.initiator, 0, 100);
                         }
                         if (((Tuple3d) (Aircraft.Pd)).x < -2.7000000476837158D) {
-                            ((FlightModelMain) (super.FM)).EI.engines[0].setReadyness(var2.initiator, ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.01F, 0.35F));
+                            this.FM.EI.engines[0].setReadyness(var2.initiator, this.FM.EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.01F, 0.35F));
                         }
                         break;
 
-                    case 2: // '\002'
+                    case 2:
                         if ((this.getEnergyPastArmor(4.96F, var2) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(var2.initiator, 0, 100);
+                            this.FM.AS.hitEngine(var2.initiator, 0, 100);
                         }
                         break;
 
-                    case 3: // '\003'
+                    case 3:
                         this.getEnergyPastArmor(5.808F, var2);
                         break;
                 }
             } else if (var1.startsWith("xxtank")) {
                 int var6 = var1.charAt(6) - 48;
                 switch (var6) {
-                    case 1: // '\001'
+                    case 1:
                         if (this.getEnergyPastArmor(World.Rnd().nextFloat(1.0F, 7.9F), var2) > 0.0F) {
-                            ((FlightModelMain) (super.FM)).AS.hitTank(var2.initiator, 3, 1);
+                            this.FM.AS.hitTank(var2.initiator, 3, 1);
                         }
                         break;
 
-                    case 2: // '\002'
-                    case 3: // '\003'
+                    case 2:
+                    case 3:
                         if (this.getEnergyPastArmor(World.Rnd().nextFloat(1.0F, 7.9F), var2) > 0.0F) {
-                            ((FlightModelMain) (super.FM)).AS.hitTank(var2.initiator, 2, 1);
+                            this.FM.AS.hitTank(var2.initiator, 2, 1);
                             this.bCockpitNVentilated = true;
                         }
                         // fall through
 
-                    case 4: // '\004'
+                    case 4:
                         if (this.getEnergyPastArmor(World.Rnd().nextFloat(1.0F, 7.9F), var2) > 0.0F) {
-                            ((FlightModelMain) (super.FM)).AS.hitTank(var2.initiator, 0, World.Rnd().nextInt(1, 4));
+                            this.FM.AS.hitTank(var2.initiator, 0, World.Rnd().nextInt(1, 4));
                         }
                         break;
 
-                    case 5: // '\005'
+                    case 5:
                         if (this.getEnergyPastArmor(World.Rnd().nextFloat(1.0F, 7.9F), var2) > 0.0F) {
-                            ((FlightModelMain) (super.FM)).AS.hitTank(var2.initiator, 1, World.Rnd().nextInt(1, 4));
+                            this.FM.AS.hitTank(var2.initiator, 1, World.Rnd().nextInt(1, 4));
                         }
                         break;
                 }
@@ -220,20 +219,20 @@ public class ME_163B1A extends Scheme1 implements TypeFighter, TypeBNZFighter {
                 int var6 = var1.charAt(6) - 48;
                 if (World.Rnd().nextFloat() < 0.1F) {
                     if (var6 == 0) {
-                        ((FlightModelMain) (super.FM)).AS.setJamBullets(1, 1);
+                        this.FM.AS.setJamBullets(1, 1);
                     } else {
-                        ((FlightModelMain) (super.FM)).AS.setJamBullets(1, 0);
+                        this.FM.AS.setJamBullets(1, 0);
                     }
                 }
             } else {
                 if (var1.startsWith("xxgunl") && (this.getEnergyPastArmor(World.Rnd().nextFloat(2.0F, 35.6F), var2) > 0.0F)) {
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(1, 0);
+                    this.FM.AS.setJamBullets(1, 0);
                 }
                 if (var1.startsWith("xxgunr") && (this.getEnergyPastArmor(World.Rnd().nextFloat(2.0F, 35.6F), var2) > 0.0F)) {
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(1, 1);
+                    this.FM.AS.setJamBullets(1, 1);
                 }
                 if (!var1.startsWith("xxeqpt")) {
-                    ;
+
                 }
             }
         } else if (var1.startsWith("xcf")) {
@@ -244,18 +243,18 @@ public class ME_163B1A extends Scheme1 implements TypeFighter, TypeBNZFighter {
             if ((((Tuple3d) (Aircraft.Pd)).x > 0.80000000000000004D) && (((Tuple3d) (Aircraft.Pd)).x < 2D)) {
                 if (((Tuple3d) (Aircraft.Pd)).z > 0.42499999999999999D) {
                     if (World.Rnd().nextFloat() < 0.5F) {
-                        ((FlightModelMain) (super.FM)).AS.setCockpitState(var2.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 1);
+                        this.FM.AS.setCockpitState(var2.initiator, this.FM.AS.astateCockpitState | 1);
                     }
                 } else if (((Tuple3d) (Aircraft.Pd)).y > 0.0D) {
                     if (World.Rnd().nextFloat() < 0.5F) {
-                        ((FlightModelMain) (super.FM)).AS.setCockpitState(var2.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 4);
+                        this.FM.AS.setCockpitState(var2.initiator, this.FM.AS.astateCockpitState | 4);
                     } else {
-                        ((FlightModelMain) (super.FM)).AS.setCockpitState(var2.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 8);
+                        this.FM.AS.setCockpitState(var2.initiator, this.FM.AS.astateCockpitState | 8);
                     }
                 } else if (World.Rnd().nextFloat() < 0.5F) {
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(var2.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x10);
+                    this.FM.AS.setCockpitState(var2.initiator, this.FM.AS.astateCockpitState | 0x10);
                 } else {
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(var2.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x20);
+                    this.FM.AS.setCockpitState(var2.initiator, this.FM.AS.astateCockpitState | 0x20);
                 }
             }
             if (this.chunkDamageVisible("CF") < 3) {
@@ -334,18 +333,18 @@ public class ME_163B1A extends Scheme1 implements TypeFighter, TypeBNZFighter {
     public void rareAction(float var1, boolean var2) {
         super.rareAction(var1, var2);
         if (var2 && this.bCockpitNVentilated) {
-            ((FlightModelMain) (super.FM)).AS.hitPilot(this, 0, 1);
+            this.FM.AS.hitPilot(this, 0, 1);
         }
         if (Config.isUSE_RENDER()) {
-            if ((this.oldVwld < 20F) && (super.FM.getSpeed() > 20F)) {
+            if ((this.oldVwld < 20F) && (this.FM.getSpeed() > 20F)) {
                 Eff3DActor.finish(this.turboexhaust);
                 this.turboexhaust = Eff3DActor.New(this, this.findHook("_Engine1ES_02"), null, 1.0F, "3DO/Effects/Aircraft/WhiteOxySmallTSPD.eff", -1F);
             }
-            if ((this.oldVwld > 20F) && (super.FM.getSpeed() < 20F)) {
+            if ((this.oldVwld > 20F) && (this.FM.getSpeed() < 20F)) {
                 Eff3DActor.finish(this.turboexhaust);
                 this.turboexhaust = Eff3DActor.New(this, this.findHook("_Engine1ES_02"), null, 1.0F, "3DO/Effects/Aircraft/WhiteOxySmallGND.eff", -1F);
             }
-            this.oldVwld = super.FM.getSpeed();
+            this.oldVwld = this.FM.getSpeed();
         }
     }
 
@@ -380,8 +379,8 @@ public class ME_163B1A extends Scheme1 implements TypeFighter, TypeBNZFighter {
                 }
                 this.hierMesh().chunkVisible("Cart_D0", false);
                 this.bCartAttached = false;
-                super.FM.setCapableOfTaxiing(false);
-                ((FlightModelMain) (super.FM)).CT.bHasBrakeControl = false;
+                this.FM.setCapableOfTaxiing(false);
+                this.FM.CT.bHasBrakeControl = false;
             }
         } else {
             this.resetYPRmodifier();
@@ -399,8 +398,8 @@ public class ME_163B1A extends Scheme1 implements TypeFighter, TypeBNZFighter {
     }
 
     public void moveWheelSink() {
-        if (!this.bCartAttached && (((FlightModelMain) (super.FM)).CT.getGear() > 0.99F)) {
-            float var1 = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.066F, -45F, 0.0F);
+        if (!this.bCartAttached && (this.FM.CT.getGear() > 0.99F)) {
+            float var1 = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.066F, -45F, 0.0F);
             this.hierMesh().chunkSetAngles("GearL2_D0", 0.0F, var1, 0.0F);
             this.hierMesh().chunkSetAngles("GearL3_D0", 0.0F, var1, 0.0F);
             this.hierMesh().chunkSetAngles("GearL4_D0", 0.0F, var1, 0.0F);
@@ -423,8 +422,8 @@ public class ME_163B1A extends Scheme1 implements TypeFighter, TypeBNZFighter {
 
     private void reflectControls() {
         HierMesh var1 = this.hierMesh();
-        float var2 = -20F * ((FlightModelMain) (super.FM)).CT.getAileron();
-        float var3 = 20F * ((FlightModelMain) (super.FM)).CT.getElevator();
+        float var2 = -20F * this.FM.CT.getAileron();
+        float var3 = 20F * this.FM.CT.getElevator();
         var1.chunkSetAngles("AroneL_D0", 0.0F, var2 + var3, 0.0F);
         var1.chunkSetAngles("AroneR_D0", 0.0F, var2 - var3, 0.0F);
         var1.chunkSetAngles("VatorL_D0", 0.0F, 0.5F * var3, 0.0F);
@@ -438,7 +437,7 @@ public class ME_163B1A extends Scheme1 implements TypeFighter, TypeBNZFighter {
     }
 
     protected void moveFan(float var1) {
-        this.pk = Math.abs((int) (((FlightModelMain) (super.FM)).Vwld.length() / 14D));
+        this.pk = Math.abs((int) (this.FM.Vwld.length() / 14D));
         if (this.pk >= 1) {
             this.pk = 1;
         }
@@ -447,69 +446,69 @@ public class ME_163B1A extends Scheme1 implements TypeFighter, TypeBNZFighter {
             this.hierMesh().chunkVisible("Prop1_D0", !this.bDynamoRotary);
             this.hierMesh().chunkVisible("PropRot1_D0", this.bDynamoRotary);
         }
-        this.dynamoOrient = this.bDynamoRotary ? (this.dynamoOrient - 17.987F) % 360F : (float) (this.dynamoOrient - (((FlightModelMain) (super.FM)).Vwld.length() * 1.5444015264511108D)) % 360F;
+        this.dynamoOrient = this.bDynamoRotary ? (this.dynamoOrient - 17.987F) % 360F : (float) (this.dynamoOrient - (this.FM.Vwld.length() * 1.5444015264511108D)) % 360F;
         this.hierMesh().chunkSetAngles("Prop1_D0", 0.0F, this.dynamoOrient, 0.0F);
     }
 
     public void update(float var1) {
         super.update(var1);
         if (this.bCartAttached) {
-            this.moveGear(((FlightModelMain) (super.FM)).CT.getGear());
-            if ((super.FM instanceof RealFlightModel) && ((RealFlightModel) super.FM).isRealMode()) {
-                ((FlightModelMain) (super.FM)).CT.bHasBrakeControl = false;
+            this.moveGear(this.FM.CT.getGear());
+            if ((this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode()) {
+                this.FM.CT.bHasBrakeControl = false;
             } else {
-                ((FlightModelMain) (super.FM)).CT.bHasBrakeControl = true;
+                this.FM.CT.bHasBrakeControl = true;
             }
         }
-        if (((FlightModelMain) (super.FM)).AS.isMaster()) {
+        if (this.FM.AS.isMaster()) {
             if (Config.isUSE_RENDER()) {
-                if ((((FlightModelMain) (super.FM)).EI.engines[0].getw() > 0.0F) && (((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6)) {
-                    ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 1);
+                if ((this.FM.EI.engines[0].getw() > 0.0F) && (this.FM.EI.engines[0].getStage() == 6)) {
+                    this.FM.AS.setSootState(this, 0, 1);
                 } else {
-                    ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 0);
+                    this.FM.AS.setSootState(this, 0, 0);
                 }
             }
             if (this.oldThtl < 0.35F) {
-                ((FlightModelMain) (super.FM)).EI.setThrottle(0.0F);
+                this.FM.EI.setThrottle(0.0F);
             } else if (this.oldThtl < 0.65F) {
-                ((FlightModelMain) (super.FM)).EI.setThrottle(0.35F);
+                this.FM.EI.setThrottle(0.35F);
             } else if (this.oldThtl < 1.0F) {
-                ((FlightModelMain) (super.FM)).EI.setThrottle(0.65F);
+                this.FM.EI.setThrottle(0.65F);
             } else {
-                ((FlightModelMain) (super.FM)).EI.setThrottle(1.0F);
+                this.FM.EI.setThrottle(1.0F);
             }
-            if (this.oldThtl != ((FlightModelMain) (super.FM)).CT.PowerControl) {
-                this.oldThtl = ((FlightModelMain) (super.FM)).CT.PowerControl;
-                if ((super.FM instanceof RealFlightModel) && ((RealFlightModel) super.FM).isRealMode()) {
+            if (this.oldThtl != this.FM.CT.PowerControl) {
+                this.oldThtl = this.FM.CT.PowerControl;
+                if ((this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode()) {
                     HUD.log(AircraftHotKeys.hudLogPowerId, "Power", new Object[] { new Integer(Math.round(this.oldThtl * 100F)) });
                 }
             }
             if (this.oldThtl == 0.0F) {
-                if (!((FlightModelMain) (super.FM)).Gears.onGround()) {
-                    if ((super.FM instanceof RealFlightModel) && ((RealFlightModel) super.FM).isRealMode() && (((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6)) {
+                if (!this.FM.Gears.onGround()) {
+                    if ((this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode() && (this.FM.EI.engines[0].getStage() == 6)) {
                         HUD.log("EngineI0");
                     }
-                    ((FlightModelMain) (super.FM)).EI.engines[0].setEngineStops(this);
+                    this.FM.EI.engines[0].setEngineStops(this);
                 }
             } else {
-                if ((super.FM instanceof RealFlightModel) && ((RealFlightModel) super.FM).isRealMode() && (((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 0) && (((FlightModelMain) (super.FM)).M.fuel > 0.0F)) {
+                if ((this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode() && (this.FM.EI.engines[0].getStage() == 0) && (this.FM.M.fuel > 0.0F)) {
                     HUD.log("EngineI1");
                 }
-                ((FlightModelMain) (super.FM)).EI.engines[0].setStage(this, 6);
+                this.FM.EI.engines[0].setStage(this, 6);
             }
         }
     }
 
     public void doSetSootState(int var1, int var2) {
         switch (var2) {
-            case 0: // '\0'
+            case 0:
                 Eff3DActor.setIntesity(this.flame, 0.0F);
                 Eff3DActor.setIntesity(this.dust, 0.0F);
                 Eff3DActor.setIntesity(this.trail, 0.0F);
                 Eff3DActor.setIntesity(this.sprite, 0.0F);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 Eff3DActor.setIntesity(this.flame, 1.0F);
                 Eff3DActor.setIntesity(this.dust, 1.0F);
                 Eff3DActor.setIntesity(this.trail, 1.0F);
@@ -541,7 +540,7 @@ public class ME_163B1A extends Scheme1 implements TypeFighter, TypeBNZFighter {
         Property.set(var0, "yearService", 1944F);
         Property.set(var0, "yearExpired", 1946F);
         Property.set(var0, "FlightModel", "FlightModels/Me-163B-1a.fmd");
-        Property.set(var0, "cockpitClass", new Class[] { CockpitME_163.class} );
+        Property.set(var0, "cockpitClass", new Class[] { CockpitME_163.class });
         Property.set(var0, "LOSElevation", 0.87325F);
         Aircraft.weaponTriggersRegister(var0, new int[] { 1, 1, 1, 1 });
         Aircraft.weaponHooksRegister(var0, new String[] { "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04" });

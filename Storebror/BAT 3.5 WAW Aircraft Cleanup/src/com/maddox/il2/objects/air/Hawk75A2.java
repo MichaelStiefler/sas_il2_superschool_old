@@ -26,14 +26,14 @@ public class Hawk75A2 extends P_36 {
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            Hawk75A2.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            Hawk75A2.bChangedPit = true;
         }
     }
 

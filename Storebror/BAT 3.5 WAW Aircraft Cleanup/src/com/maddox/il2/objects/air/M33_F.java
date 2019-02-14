@@ -116,9 +116,9 @@ public class M33_F extends Scheme1 implements TypeSailPlane {
         for (int i = 0; i < 3; i++) {
             for (int i_0_ = 0; i_0_ < 2; i_0_++) {
                 if (this.FM.Gears.clpGearEff[i][i_0_] != null) {
-                    tmpp.set(this.FM.Gears.clpGearEff[i][i_0_].pos.getAbsPoint());
-                    tmpp.z = 0.01D;
-                    this.FM.Gears.clpGearEff[i][i_0_].pos.setAbs(tmpp);
+                    M33_F.tmpp.set(this.FM.Gears.clpGearEff[i][i_0_].pos.getAbsPoint());
+                    M33_F.tmpp.z = 0.01D;
+                    this.FM.Gears.clpGearEff[i][i_0_].pos.setAbs(M33_F.tmpp);
                     this.FM.Gears.clpGearEff[i][i_0_].pos.reset();
                 }
             }
@@ -215,32 +215,32 @@ public class M33_F extends Scheme1 implements TypeSailPlane {
                     default:
                         break;
 
-                    case 1: // '\001'
-                    case 2: // '\002'
-                    case 3: // '\003'
-                    case 4: // '\004'
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
                         if ((this.getEnergyPastArmor(0.99F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.175F)) {
                             this.debuggunnery("Controls: Ailerones Controls: Out..");
                             this.FM.AS.setControlsDamage(shot.initiator, 0);
                         }
                         break;
 
-                    case 5: // '\005'
-                    case 6: // '\006'
+                    case 5:
+                    case 6:
                         if ((this.getEnergyPastArmor(0.22F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.275F)) {
                             this.debuggunnery("Controls: Rudder Controls: Disabled / Strings Broken..");
                             this.FM.AS.setControlsDamage(shot.initiator, 2);
                         }
                         break;
 
-                    case 7: // '\007'
+                    case 7:
                         if ((this.getEnergyPastArmor(4.2F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.175F)) {
                             this.debuggunnery("Controls: Elevator Controls: Disabled..");
                             this.FM.AS.setControlsDamage(shot.initiator, 1);
                         }
                         break;
 
-                    case 8: // '\b'
+                    case 8:
                         if (this.getEnergyPastArmor(3.2F, shot) > 0.0F) {
                             Aircraft.debugprintln(this, "*** Control Column: Hit, Controls Destroyed..");
                             this.FM.AS.setControlsDamage(shot.initiator, 2);
@@ -249,7 +249,7 @@ public class M33_F extends Scheme1 implements TypeSailPlane {
                         }
                         break;
 
-                    case 9: // '\t'
+                    case 9:
                         if (this.getEnergyPastArmor(0.1F, shot) > 0.0F) {
                             this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 8);
                             this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 1);
@@ -519,12 +519,12 @@ public class M33_F extends Scheme1 implements TypeSailPlane {
         } catch (Exception exception) {
         }
         switch (M33FMType) {
-            case 33: // '!'
+            case 33:
                 Property.set(var_class, "FlightModel", "FlightModels/FlightModels/M33.fmd");
                 System.out.println("M33 Loading FMD: FlightModels/FlightModels/M33.fmd");
                 break;
 
-            case 0: // '\0'
+            case 0:
             default:
                 Property.set(var_class, "FlightModel", "FlightModels/A6M2N.fmd");
                 System.out.println("M33 Loading FMD: FlightModels/A6M2N.fmd");

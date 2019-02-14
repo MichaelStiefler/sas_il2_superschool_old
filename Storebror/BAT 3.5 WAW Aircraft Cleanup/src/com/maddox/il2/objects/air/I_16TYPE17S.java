@@ -4,7 +4,6 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class I_16TYPE17S extends I_16 implements TypeFighter, TypeTNBFighter {
@@ -29,7 +28,7 @@ public class I_16TYPE17S extends I_16 implements TypeFighter, TypeTNBFighter {
             this.hierMesh().chunkVisible("SkiR2_D0", true);
             this.hierMesh().chunkVisible("GearR2z_D0", true);
             this.hierMesh().chunkVisible("GearR3z_D0", true);
-            ((FlightModelMain) (super.FM)).CT.bHasBrakeControl = false;
+            this.FM.CT.bHasBrakeControl = false;
         }
     }
 
@@ -62,7 +61,7 @@ public class I_16TYPE17S extends I_16 implements TypeFighter, TypeTNBFighter {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        I_16TYPE17S.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     protected void moveFlap(float f) {
@@ -72,15 +71,15 @@ public class I_16TYPE17S extends I_16 implements TypeFighter, TypeTNBFighter {
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            I_16TYPE17S.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            I_16TYPE17S.bChangedPit = true;
         }
     }
 

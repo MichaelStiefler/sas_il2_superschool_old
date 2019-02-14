@@ -3,13 +3,11 @@ package com.maddox.il2.objects.air;
 import java.io.IOException;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Eff3DActor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.BombWalterStarthilferakete;
 import com.maddox.rts.NetMsgGuaranted;
@@ -39,7 +37,7 @@ public class ME_323 extends Scheme7 implements TypeTransport, TypeBomber {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.endsWith("RATO")) {
+        if (this.thisWeaponsName.endsWith("RATO")) {
             for (int i = 0; i < 4; i++) {
                 try {
                     this.booster[i] = new BombWalterStarthilferakete();
@@ -78,7 +76,7 @@ public class ME_323 extends Scheme7 implements TypeTransport, TypeBomber {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -97,7 +95,7 @@ public class ME_323 extends Scheme7 implements TypeTransport, TypeBomber {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -116,7 +114,7 @@ public class ME_323 extends Scheme7 implements TypeTransport, TypeBomber {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -135,7 +133,7 @@ public class ME_323 extends Scheme7 implements TypeTransport, TypeBomber {
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -154,7 +152,7 @@ public class ME_323 extends Scheme7 implements TypeTransport, TypeBomber {
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 if (f1 < -3F) {
                     f1 = -3F;
                     flag = false;
@@ -165,7 +163,7 @@ public class ME_323 extends Scheme7 implements TypeTransport, TypeBomber {
                 }
                 break;
 
-            case 5: // '\005'
+            case 5:
                 if (f1 < -3F) {
                     f1 = -3F;
                     flag = false;
@@ -176,7 +174,7 @@ public class ME_323 extends Scheme7 implements TypeTransport, TypeBomber {
                 }
                 break;
 
-            case 6: // '\006'
+            case 6:
                 if (f < -30F) {
                     f = -30F;
                     flag = false;
@@ -204,7 +202,7 @@ public class ME_323 extends Scheme7 implements TypeTransport, TypeBomber {
         if (s.startsWith("xengine")) {
             int i = s.charAt(7) - 49;
             if (World.Rnd().nextFloat() < 0.1F) {
-                ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, i, 1);
+                this.FM.AS.hitEngine(shot.initiator, i, 1);
             }
         } else if (s.startsWith("xpilot") || s.startsWith("xhead")) {
             byte byte0 = 0;
@@ -224,28 +222,28 @@ public class ME_323 extends Scheme7 implements TypeTransport, TypeBomber {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
+            case 33:
                 return super.cutFM(34, j, actor);
 
-            case 36: // '$'
+            case 36:
                 return super.cutFM(37, j, actor);
 
-            case 38: // '&'
+            case 38:
                 this.doCutBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
                 // fall through
 
-            case 3: // '\003'
+            case 3:
                 return false;
 
-            case 4: // '\004'
+            case 4:
                 return false;
 
-            case 5: // '\005'
+            case 5:
                 return false;
 
-            case 6: // '\006'
+            case 6:
                 return false;
 
             default:
@@ -255,63 +253,63 @@ public class ME_323 extends Scheme7 implements TypeTransport, TypeBomber {
 
     public void update(float paramFloat) {
         super.update(paramFloat);
-        if (!(super.FM instanceof Pilot)) {
+        if (!(this.FM instanceof Pilot)) {
             return;
         }
-        if (this.bHasBoosters && super.thisWeaponsName.endsWith("RATO")) {
-            if ((super.FM.getAltitude() > 300F) && (this.boosterFireOutTime == -1L) && (((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z != 0.0D) && (World.Rnd().nextFloat() < 0.05F)) {
+        if (this.bHasBoosters && this.thisWeaponsName.endsWith("RATO")) {
+            if ((this.FM.getAltitude() > 300F) && (this.boosterFireOutTime == -1L) && (this.FM.Loc.z != 0.0D) && (World.Rnd().nextFloat() < 0.05F)) {
                 this.doCutBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
             }
-            if (this.bHasBoosters && (this.boosterFireOutTime == -1L) && ((FlightModelMain) (super.FM)).Gears.onGround() && (((FlightModelMain) (super.FM)).EI.getPowerOutput() > 0.8F) && (((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6) && (((FlightModelMain) (super.FM)).EI.engines[1].getStage() == 6) && (((FlightModelMain) (super.FM)).EI.engines[2].getStage() == 6) && (((FlightModelMain) (super.FM)).EI.engines[3].getStage() == 6) && (((FlightModelMain) (super.FM)).EI.engines[4].getStage() == 6) && (((FlightModelMain) (super.FM)).EI.engines[5].getStage() == 6) && (super.FM.getSpeedKMH() > 20F)) {
+            if (this.bHasBoosters && (this.boosterFireOutTime == -1L) && this.FM.Gears.onGround() && (this.FM.EI.getPowerOutput() > 0.8F) && (this.FM.EI.engines[0].getStage() == 6) && (this.FM.EI.engines[1].getStage() == 6) && (this.FM.EI.engines[2].getStage() == 6) && (this.FM.EI.engines[3].getStage() == 6) && (this.FM.EI.engines[4].getStage() == 6) && (this.FM.EI.engines[5].getStage() == 6) && (this.FM.getSpeedKMH() > 20F)) {
                 this.boosterFireOutTime = Time.current() + 35000L;
                 this.doFireBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOn();
+                this.FM.AS.setGliderBoostOn();
             }
             if (this.bHasBoosters && (this.boosterFireOutTime > 0L)) {
                 if (Time.current() < this.boosterFireOutTime) {
-                    ((FlightModelMain) (super.FM)).producedAF.x += 30000D;
+                    this.FM.producedAF.x += 30000D;
                 }
                 if (Time.current() > (this.boosterFireOutTime + 20000L)) {
                     this.doCutBoosters();
-                    ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                    this.FM.AS.setGliderBoostOff();
                     this.bHasBoosters = false;
                 }
             }
         }
-        ((FlightModelMain) (super.FM)).Gears.lgear = true;
-        ((FlightModelMain) (super.FM)).Gears.rgear = true;
+        this.FM.Gears.lgear = true;
+        this.FM.Gears.rgear = true;
     }
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 2: // '\002'
-                super.FM.turret[6].bIsOperable = false;
+            case 2:
+                this.FM.turret[6].bIsOperable = false;
                 break;
 
-            case 3: // '\003'
-                super.FM.turret[4].bIsOperable = false;
+            case 3:
+                this.FM.turret[4].bIsOperable = false;
                 break;
 
-            case 4: // '\004'
-                super.FM.turret[5].bIsOperable = false;
+            case 4:
+                this.FM.turret[5].bIsOperable = false;
                 break;
 
-            case 5: // '\005'
-                super.FM.turret[0].bIsOperable = false;
+            case 5:
+                this.FM.turret[0].bIsOperable = false;
                 break;
 
-            case 6: // '\006'
-                super.FM.turret[1].bIsOperable = false;
+            case 6:
+                this.FM.turret[1].bIsOperable = false;
                 break;
 
-            case 7: // '\007'
-                super.FM.turret[2].bIsOperable = false;
+            case 7:
+                this.FM.turret[2].bIsOperable = false;
                 break;
 
-            case 8: // '\b'
-                super.FM.turret[3].bIsOperable = false;
+            case 8:
+                this.FM.turret[3].bIsOperable = false;
                 break;
         }
     }
@@ -321,7 +319,7 @@ public class ME_323 extends Scheme7 implements TypeTransport, TypeBomber {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);
@@ -330,7 +328,7 @@ public class ME_323 extends Scheme7 implements TypeTransport, TypeBomber {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 if (this.hierMesh().isChunkVisible("Blister1_D0")) {
@@ -338,17 +336,17 @@ public class ME_323 extends Scheme7 implements TypeTransport, TypeBomber {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.hierMesh().chunkVisible("Pilot4_D0", false);
                 this.hierMesh().chunkVisible("Pilot4_D1", true);
                 break;
 
-            case 4: // '\004'
+            case 4:
                 this.hierMesh().chunkVisible("Pilot5_D0", false);
                 this.hierMesh().chunkVisible("Pilot5_D1", true);
                 break;

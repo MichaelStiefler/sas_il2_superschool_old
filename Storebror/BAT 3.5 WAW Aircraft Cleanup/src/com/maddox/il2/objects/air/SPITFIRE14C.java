@@ -21,7 +21,7 @@ public class SPITFIRE14C extends SPITFIRE implements TypeBNZFighter {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        SPITFIRE14C.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {
@@ -79,7 +79,7 @@ public class SPITFIRE14C extends SPITFIRE implements TypeBNZFighter {
         Property.set(class1, "yearService", 1943F);
         Property.set(class1, "yearExpired", 1946.5F);
         Property.set(class1, "FlightModel", "FlightModels/SpitfireXIVC.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitSpit14C.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitSpit14C.class });
         Property.set(class1, "LOSElevation", 0.5926F);
         Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 1, 1, 9, 9, 3 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_CANNON01", "_CANNON02", "_ExternalDev08", "_ExternalDev01", "_ExternalBomb01" });

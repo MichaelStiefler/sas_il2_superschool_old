@@ -1,11 +1,9 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Eff3DActor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.BombPC1600;
 import com.maddox.il2.objects.weapons.BombSC1000;
@@ -30,7 +28,7 @@ public class HE_111H20 extends HE_111xyz {
     }
 
     public void doFireBoosters() {
-        Object aobj[] = super.pos.getBaseAttached();
+        Object aobj[] = this.pos.getBaseAttached();
         if (aobj != null) {
             int i = 0;
             do {
@@ -48,7 +46,7 @@ public class HE_111H20 extends HE_111xyz {
     }
 
     public void doCutBoosters() {
-        Object aobj[] = super.pos.getBaseAttached();
+        Object aobj[] = this.pos.getBaseAttached();
         if (aobj != null) {
             int i = 0;
             do {
@@ -72,7 +70,7 @@ public class HE_111H20 extends HE_111xyz {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        Object aobj[] = super.pos.getBaseAttached();
+        Object aobj[] = this.pos.getBaseAttached();
         if (aobj != null) {
             int i = 0;
             do {
@@ -100,14 +98,14 @@ public class HE_111H20 extends HE_111xyz {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
-            case 34: // '"'
-            case 35: // '#'
-            case 36: // '$'
-            case 37: // '%'
-            case 38: // '&'
+            case 33:
+            case 34:
+            case 35:
+            case 36:
+            case 37:
+            case 38:
                 this.doCutBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
                 break;
         }
@@ -116,14 +114,14 @@ public class HE_111H20 extends HE_111xyz {
 
     public void update(float f) {
         super.update(f);
-        if ((super.FM instanceof Pilot) && this.bHasBoosters) {
-            if ((super.FM.getAltitude() > 300F) && (this.boosterFireOutTime == -1L) && (((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z != 0.0D) && (World.Rnd().nextFloat() < 0.05F)) {
+        if ((this.FM instanceof Pilot) && this.bHasBoosters) {
+            if ((this.FM.getAltitude() > 300F) && (this.boosterFireOutTime == -1L) && (this.FM.Loc.z != 0.0D) && (World.Rnd().nextFloat() < 0.05F)) {
                 this.doCutBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
             }
-            if (this.bHasBoosters && (this.boosterFireOutTime == -1L) && ((FlightModelMain) (super.FM)).Gears.onGround() && (((FlightModelMain) (super.FM)).EI.getPowerOutput() > 0.8F) && (((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6) && (((FlightModelMain) (super.FM)).EI.engines[1].getStage() == 6) && (super.FM.getSpeedKMH() > 20F)) {
-                Object aobj[] = super.pos.getBaseAttached();
+            if (this.bHasBoosters && (this.boosterFireOutTime == -1L) && this.FM.Gears.onGround() && (this.FM.EI.getPowerOutput() > 0.8F) && (this.FM.EI.engines[0].getStage() == 6) && (this.FM.EI.engines[1].getStage() == 6) && (this.FM.getSpeedKMH() > 20F)) {
+                Object aobj[] = this.pos.getBaseAttached();
                 if (aobj != null) {
                     int i = 0;
                     do {
@@ -133,24 +131,24 @@ public class HE_111H20 extends HE_111xyz {
                         if ((aobj[i] instanceof BombSC1000) || (aobj[i] instanceof BombSC2000) || (aobj[i] instanceof BombPC1600) || (aobj[i] instanceof BombSC1800) || (aobj[i] instanceof BombSC2500)) {
                             this.boosterFireOutTime = Time.current() + 30000L;
                             this.doFireBoosters();
-                            ((FlightModelMain) (super.FM)).AS.setGliderBoostOn();
+                            this.FM.AS.setGliderBoostOn();
                             break;
                         }
                         i++;
                     } while (true);
                 } else {
                     this.doCutBoosters();
-                    ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                    this.FM.AS.setGliderBoostOff();
                     this.bHasBoosters = false;
                 }
             }
             if (this.bHasBoosters && (this.boosterFireOutTime > 0L)) {
                 if (Time.current() < this.boosterFireOutTime) {
-                    ((FlightModelMain) (super.FM)).producedAF.x += 20000D;
+                    this.FM.producedAF.x += 20000D;
                 }
                 if (Time.current() > (this.boosterFireOutTime + 10000L)) {
                     this.doCutBoosters();
-                    ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                    this.FM.AS.setGliderBoostOff();
                     this.bHasBoosters = false;
                 }
             }

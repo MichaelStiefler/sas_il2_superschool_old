@@ -23,7 +23,7 @@ public class YAK_9RLR_DZZ extends YAK implements TypeBNZFighter, TypeScout {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        YAK_9RLR_DZZ.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {
@@ -45,7 +45,7 @@ public class YAK_9RLR_DZZ extends YAK implements TypeBNZFighter, TypeScout {
         Property.set(class1, "yearService", 1944F);
         Property.set(class1, "yearExpired", 1952.8F);
         Property.set(class1, "FlightModel", "FlightModels/Yak-9D.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitYAK_9D.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitYAK_9D.class });
         Property.set(class1, "LOSElevation", 0.6432F);
         Aircraft.weaponTriggersRegister(class1, new int[] { 0 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01" });

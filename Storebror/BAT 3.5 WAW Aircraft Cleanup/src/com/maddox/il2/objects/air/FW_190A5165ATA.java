@@ -1,8 +1,6 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.weapons.GunEmpty;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class FW_190A5165ATA extends FW_190 implements TypeFighter, TypeBNZFighter {
@@ -12,7 +10,7 @@ public class FW_190A5165ATA extends FW_190 implements TypeFighter, TypeBNZFighte
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).AS.wantBeaconsNet(true);
+        this.FM.AS.wantBeaconsNet(true);
         if (this.getGunByHookName("_MGUN01") instanceof GunEmpty) {
             this.hierMesh().chunkVisible("7mmC_D0", false);
             this.hierMesh().chunkVisible("7mmCowl_D0", true);
@@ -44,7 +42,7 @@ public class FW_190A5165ATA extends FW_190 implements TypeFighter, TypeBNZFighte
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGear() < 0.98F) {
+        if (this.FM.CT.getGear() < 0.98F) {
             return;
         } else {
             this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -f, 0.0F);
@@ -53,7 +51,7 @@ public class FW_190A5165ATA extends FW_190 implements TypeFighter, TypeBNZFighte
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = FW_190A5165ATA.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "FW190");
         Property.set(class1, "meshName", "3DO/Plane/Fw-190A-5(Beta)/hier.him");

@@ -22,7 +22,7 @@ public class J1N1_Sa extends J1N1 implements TypeJazzPlayer {
     }
 
     public Vector3d getAttackVector() {
-        return ATTACK_VECTOR;
+        return J1N1_Sa.ATTACK_VECTOR;
     }
 
     private static final Vector3d ATTACK_VECTOR = new Vector3d(-190D, 0.0D, -300D);

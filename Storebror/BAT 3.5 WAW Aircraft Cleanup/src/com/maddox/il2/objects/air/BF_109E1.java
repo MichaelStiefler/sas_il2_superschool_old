@@ -5,7 +5,7 @@ import com.maddox.rts.Property;
 public class BF_109E1 extends BF_109E3 {
 
     public BF_109E1() {
-        super.bIsE3 = false;
+        this.bIsE3 = false;
     }
 
     static {

@@ -9,14 +9,14 @@ public class P_61A_10 extends P_61X {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.endsWith("gunpod")) {
+        if (this.thisWeaponsName.endsWith("gunpod")) {
             this.hierMesh().chunkVisible("Turret1A_D0", true);
             this.hierMesh().chunkVisible("Turret1B_D0", true);
         } else {
             this.hierMesh().chunkVisible("Turret1A_D0", false);
             this.hierMesh().chunkVisible("Turret1B_D0", false);
         }
-        if (super.thisWeaponsName.startsWith("2x")) {
+        if (this.thisWeaponsName.startsWith("2x")) {
             this.hierMesh().chunkVisible("PylonDTK_L2", true);
             this.hierMesh().chunkVisible("PylonDTK_R2", true);
         } else {

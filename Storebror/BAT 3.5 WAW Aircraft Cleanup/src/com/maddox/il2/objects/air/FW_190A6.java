@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.weapons.GunEmpty;
 import com.maddox.rts.Property;
 
@@ -11,7 +10,7 @@ public class FW_190A6 extends FW_190 {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).AS.wantBeaconsNet(true);
+        this.FM.AS.wantBeaconsNet(true);
         if (this.getGunByHookName("_MGUN01") instanceof GunEmpty) {
             this.hierMesh().chunkVisible("7mmC_D0", false);
             this.hierMesh().chunkVisible("7mmCowl_D0", true);
@@ -43,7 +42,7 @@ public class FW_190A6 extends FW_190 {
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGear() < 0.98F) {
+        if (this.FM.CT.getGear() < 0.98F) {
             return;
         } else {
             this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -f, 0.0F);

@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import java.util.ArrayList;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Tuple3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Maneuver;
@@ -33,23 +32,23 @@ public class J7W3 extends J7Wx implements TypeX4Carrier {
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (((super.FM instanceof RealFlightModel) && ((RealFlightModel) super.FM).isRealMode()) || !flag || !(super.FM instanceof Pilot)) {
+        if (((this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode()) || !flag || !(this.FM instanceof Pilot)) {
             return;
         }
         if (this.missilesList.isEmpty()) {
             return;
         }
-        Pilot pilot = (Pilot) super.FM;
+        Pilot pilot = (Pilot) this.FM;
         if ((Time.current() > (this.tX4Prev + 10000L)) && ((pilot.get_maneuver() == 27) || (pilot.get_maneuver() == 62) || (pilot.get_maneuver() == 63)) && (((Maneuver) (pilot)).target != null)) {
             Point3d point3d = new Point3d(((FlightModelMain) (((Maneuver) (pilot)).target)).Loc);
-            point3d.sub(((FlightModelMain) (super.FM)).Loc);
-            ((FlightModelMain) (super.FM)).Or.transformInv(point3d);
-            if (pilot.get_maneuver() != 63 ? (((Tuple3d) (point3d)).x > (((FlightModelMain) (super.FM)).CT.Weapons[0][1].countBullets() <= 20 ? 350D : 800D)) && (((Tuple3d) (point3d)).x < (1500D + (250D * ((FlightModelMain) (super.FM)).Skill))) : ((((Tuple3d) (point3d)).x > 2000D) && (((Tuple3d) (point3d)).x < 3500D)) || ((((Tuple3d) (point3d)).x > 100D) && (((Tuple3d) (point3d)).x < 3000D) && (World.Rnd().nextFloat() < 0.33F))) {
-                double d = Math.pow(((Tuple3d) (point3d)).x / 1500D, 2D) * 1500D;
-                if ((((Tuple3d) (point3d)).y < d) && (((Tuple3d) (point3d)).y > -d) && (((Tuple3d) (point3d)).z < d) && (((Tuple3d) (point3d)).z > -d) && ((pilot.get_maneuver() != 63) || (((Tuple3d) (point3d)).x < 2500D) || (((((Tuple3d) (point3d)).y * 2D) < ((Tuple3d) (point3d)).x) && ((((Tuple3d) (point3d)).y * 2D) > -((Tuple3d) (point3d)).x) && ((((Tuple3d) (point3d)).z * 2D) < ((Tuple3d) (point3d)).x) && ((((Tuple3d) (point3d)).z * 2D) > -((Tuple3d) (point3d)).x)))) {
+            point3d.sub(this.FM.Loc);
+            this.FM.Or.transformInv(point3d);
+            if (pilot.get_maneuver() != 63 ? (point3d.x > (this.FM.CT.Weapons[0][1].countBullets() <= 20 ? 350D : 800D)) && (point3d.x < (1500D + (250D * this.FM.Skill))) : ((point3d.x > 2000D) && (point3d.x < 3500D)) || ((point3d.x > 100D) && (point3d.x < 3000D) && (World.Rnd().nextFloat() < 0.33F))) {
+                double d = Math.pow(point3d.x / 1500D, 2D) * 1500D;
+                if ((point3d.y < d) && (point3d.y > -d) && (point3d.z < d) && (point3d.z > -d) && ((pilot.get_maneuver() != 63) || (point3d.x < 2500D) || (((point3d.y * 2D) < point3d.x) && ((point3d.y * 2D) > -point3d.x) && ((point3d.z * 2D) < point3d.x) && ((point3d.z * 2D) > -point3d.x)))) {
                     Orientation orientation = new Orientation();
                     Orientation orientation1 = new Orientation();
-                    super.FM.getOrient(orientation);
+                    this.FM.getOrient(orientation);
                     ((Maneuver) (pilot)).target.getOrient(orientation1);
                     float f1 = Math.abs(orientation.getAzimut() - orientation1.getAzimut()) % 360F;
                     f1 = f1 <= 180F ? f1 : 360F - f1;
@@ -57,7 +56,7 @@ public class J7W3 extends J7Wx implements TypeX4Carrier {
                     float f2 = Math.abs(orientation.getTangage() - orientation1.getTangage()) % 360F;
                     f2 = f2 <= 180F ? f2 : 360F - f2;
                     f2 = f2 <= 90F ? f2 : 180F - f2;
-                    double d1 = (((Tuple3d) (point3d)).x * (5 - ((FlightModelMain) (super.FM)).Skill)) / (((Maneuver) (pilot)).target.getSpeed() + 1.0F);
+                    double d1 = (point3d.x * (5 - this.FM.Skill)) / (((Maneuver) (pilot)).target.getSpeed() + 1.0F);
                     if ((f1 < d1) && (f2 < d1)) {
                         this.launchMsl();
                         this.tX4Prev = Time.current();
@@ -69,11 +68,11 @@ public class J7W3 extends J7Wx implements TypeX4Carrier {
     }
 
     public void createMissilesList() {
-        for (int i = 0; i < ((FlightModelMain) (super.FM)).CT.Weapons.length; i++) {
-            if (((FlightModelMain) (super.FM)).CT.Weapons[i] != null) {
-                for (int j = 0; j < ((FlightModelMain) (super.FM)).CT.Weapons[i].length; j++) {
-                    if (((FlightModelMain) (super.FM)).CT.Weapons[i][j] instanceof RocketGunX4H) {
-                        this.missilesList.add(((FlightModelMain) (super.FM)).CT.Weapons[i][j]);
+        for (int i = 0; i < this.FM.CT.Weapons.length; i++) {
+            if (this.FM.CT.Weapons[i] != null) {
+                for (int j = 0; j < this.FM.CT.Weapons[i].length; j++) {
+                    if (this.FM.CT.Weapons[i][j] instanceof RocketGunX4H) {
+                        this.missilesList.add(this.FM.CT.Weapons[i][j]);
                     }
                 }
 
@@ -207,7 +206,7 @@ public class J7W3 extends J7Wx implements TypeX4Carrier {
             this.hierMesh().chunkVisible("Prop2_D1", false);
             this.hierMesh().chunkVisible("PropRot2_D0", false);
             this.hierMesh().chunkVisible("Fan", false);
-            super.FM.EI.engines[0].setEngineDies(this);
+            this.FM.EI.engines[0].setEngineDies(this);
         }
     }
 

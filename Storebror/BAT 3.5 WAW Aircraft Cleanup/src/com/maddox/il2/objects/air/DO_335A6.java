@@ -35,26 +35,26 @@ public class DO_335A6 extends DO_335 implements TypeX4Carrier, TypeRadarLiSN2Car
     }
 
     public void onAircraftLoaded() {
-        super.FM.crew = 2;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[1] = 2;
+        this.FM.crew = 2;
+        this.FM.AS.astatePilotFunctions[1] = 2;
     }
 
     public void update(float f) {
-        if ((((FlightModelMain) (super.FM)).AS.bIsAboutToBailout || this.overrideBailout) && !this.ejectComplete && (super.FM.getSpeedKMH() > 15F) && !super.FM.isStationedOnGround()) {
+        if ((this.FM.AS.bIsAboutToBailout || this.overrideBailout) && !this.ejectComplete && (this.FM.getSpeedKMH() > 15F) && !this.FM.isStationedOnGround()) {
             this.overrideBailout = true;
-            ((FlightModelMain) (super.FM)).AS.bIsAboutToBailout = false;
+            this.FM.AS.bIsAboutToBailout = false;
             if (Time.current() > this.lTimeNextEject) {
                 this.bailout();
             }
         }
-        float f1 = ((FlightModelMain) (super.FM)).EI.engines[1].getControlRadiator();
+        float f1 = this.FM.EI.engines[1].getControlRadiator();
         if (Math.abs(this.flapps[1] - f1) > 0.01F) {
             this.flapps[1] = f1;
             this.hierMesh().chunkSetAngles("Water1_D0", 0.0F, -20F * f1, 0.0F);
             this.hierMesh().chunkSetAngles("Water2_D0", 0.0F, -10F * f1, 0.0F);
             this.hierMesh().chunkSetAngles("Water3_D0", 0.0F, -10F * f1, 0.0F);
         }
-        f1 = ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator();
+        f1 = this.FM.EI.engines[0].getControlRadiator();
         if (Math.abs(this.flapps[0] - f1) > 0.01F) {
             this.flapps[0] = f1;
             for (int i = 2; i < 8; i++) {
@@ -64,9 +64,9 @@ public class DO_335A6 extends DO_335 implements TypeX4Carrier, TypeRadarLiSN2Car
 
         }
         super.update(f);
-        if (((FlightModelMain) (super.FM)).AS.isMaster() && this.bKeelUp && (((FlightModelMain) (super.FM)).AS.astateBailoutStep == 3) && !super.FM.isStationedOnGround()) {
-            ((FlightModelMain) (super.FM)).AS.setInternalDamage(this, 5);
-            ((FlightModelMain) (super.FM)).AS.setInternalDamage(this, 4);
+        if (this.FM.AS.isMaster() && this.bKeelUp && (this.FM.AS.astateBailoutStep == 3) && !this.FM.isStationedOnGround()) {
+            this.FM.AS.setInternalDamage(this, 5);
+            this.FM.AS.setInternalDamage(this, 4);
             this.bKeelUp = false;
         }
         super.update(f);
@@ -74,7 +74,7 @@ public class DO_335A6 extends DO_335 implements TypeX4Carrier, TypeRadarLiSN2Car
 
     public final void doKeelShutoff() {
         this.nextDMGLevels(4, 2, "Keel1_D" + this.chunkDamageVisible("Keel1"), this);
-        super.oldProp[1] = 99;
+        this.oldProp[1] = 99;
         Wreckage wreckage;
         if (this.hierMesh().isChunkVisible("Prop2_D1")) {
             wreckage = new Wreckage(this, this.hierMesh().chunkFind("Prop2_D1"));
@@ -83,7 +83,7 @@ public class DO_335A6 extends DO_335 implements TypeX4Carrier, TypeRadarLiSN2Car
         }
         Eff3DActor.New(wreckage, null, null, 1.0F, Wreckage.SMOKE, 3F);
         Vector3d vector3d = new Vector3d();
-        vector3d.set(((FlightModelMain) (super.FM)).Vwld);
+        vector3d.set(this.FM.Vwld);
         wreckage.setSpeed(vector3d);
         this.hierMesh().chunkVisible("Prop2_D0", false);
         this.hierMesh().chunkVisible("Prop2_D1", false);
@@ -92,13 +92,13 @@ public class DO_335A6 extends DO_335 implements TypeX4Carrier, TypeRadarLiSN2Car
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Head2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
@@ -108,17 +108,17 @@ public class DO_335A6 extends DO_335 implements TypeX4Carrier, TypeRadarLiSN2Car
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
+            case 33:
                 return super.cutFM(34, j, actor);
 
-            case 36: // '$'
+            case 36:
                 return super.cutFM(37, j, actor);
 
-            case 11: // '\013'
+            case 11:
                 this.cutFM(17, j, actor);
-                super.FM.cut(17, j, actor);
+                this.FM.cut(17, j, actor);
                 this.cutFM(18, j, actor);
-                super.FM.cut(18, j, actor);
+                this.FM.cut(18, j, actor);
                 return super.cutFM(i, j, actor);
         }
         return super.cutFM(i, j, actor);
@@ -126,7 +126,7 @@ public class DO_335A6 extends DO_335 implements TypeX4Carrier, TypeRadarLiSN2Car
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (super.FM.getAltitude() < 3000F) {
+        if (this.FM.getAltitude() < 3000F) {
             this.hierMesh().chunkVisible("HMask2_D0", false);
         } else {
             this.hierMesh().chunkVisible("HMask2_D0", this.hierMesh().isChunkVisible("Pilot2_D0"));
@@ -183,44 +183,44 @@ public class DO_335A6 extends DO_335 implements TypeX4Carrier, TypeRadarLiSN2Car
 
     private void bailout() {
         if (this.overrideBailout) {
-            if ((((FlightModelMain) (super.FM)).AS.astateBailoutStep >= 0) && (((FlightModelMain) (super.FM)).AS.astateBailoutStep < 2)) {
-                if ((((FlightModelMain) (super.FM)).CT.cockpitDoorControl > 0.5F) && (((FlightModelMain) (super.FM)).CT.getCockpitDoor() > 0.5F)) {
-                    ((FlightModelMain) (super.FM)).AS.astateBailoutStep = 11;
+            if ((this.FM.AS.astateBailoutStep >= 0) && (this.FM.AS.astateBailoutStep < 2)) {
+                if ((this.FM.CT.cockpitDoorControl > 0.5F) && (this.FM.CT.getCockpitDoor() > 0.5F)) {
+                    this.FM.AS.astateBailoutStep = 11;
                 } else {
-                    ((FlightModelMain) (super.FM)).AS.astateBailoutStep = 2;
+                    this.FM.AS.astateBailoutStep = 2;
                 }
-            } else if ((((FlightModelMain) (super.FM)).AS.astateBailoutStep >= 2) && (((FlightModelMain) (super.FM)).AS.astateBailoutStep <= 3)) {
-                switch (((FlightModelMain) (super.FM)).AS.astateBailoutStep) {
-                    case 2: // '\002'
-                        if (((FlightModelMain) (super.FM)).CT.cockpitDoorControl < 0.5F) {
+            } else if ((this.FM.AS.astateBailoutStep >= 2) && (this.FM.AS.astateBailoutStep <= 3)) {
+                switch (this.FM.AS.astateBailoutStep) {
+                    case 2:
+                        if (this.FM.CT.cockpitDoorControl < 0.5F) {
                             this.doRemoveBlisters();
                         }
                         break;
 
-                    case 3: // '\003'
+                    case 3:
                         this.lTimeNextEject = Time.current() + 1000L;
                         break;
                 }
-                if (((FlightModelMain) (super.FM)).AS.isMaster()) {
-                    ((FlightModelMain) (super.FM)).AS.netToMirrors(20, ((FlightModelMain) (super.FM)).AS.astateBailoutStep, 1, null);
+                if (this.FM.AS.isMaster()) {
+                    this.FM.AS.netToMirrors(20, this.FM.AS.astateBailoutStep, 1, null);
                 }
-                ((FlightModelMain) (super.FM)).AS.astateBailoutStep = (byte) (((FlightModelMain) (super.FM)).AS.astateBailoutStep + 1);
-                if (((FlightModelMain) (super.FM)).AS.astateBailoutStep == 4) {
-                    ((FlightModelMain) (super.FM)).AS.astateBailoutStep = 11;
+                this.FM.AS.astateBailoutStep = (byte) (this.FM.AS.astateBailoutStep + 1);
+                if (this.FM.AS.astateBailoutStep == 4) {
+                    this.FM.AS.astateBailoutStep = 11;
                 }
-            } else if ((((FlightModelMain) (super.FM)).AS.astateBailoutStep >= 11) && (((FlightModelMain) (super.FM)).AS.astateBailoutStep <= 19)) {
-                int i = ((FlightModelMain) (super.FM)).AS.astateBailoutStep;
-                if (((FlightModelMain) (super.FM)).AS.isMaster()) {
-                    ((FlightModelMain) (super.FM)).AS.netToMirrors(20, ((FlightModelMain) (super.FM)).AS.astateBailoutStep, 1, null);
+            } else if ((this.FM.AS.astateBailoutStep >= 11) && (this.FM.AS.astateBailoutStep <= 19)) {
+                int i = this.FM.AS.astateBailoutStep;
+                if (this.FM.AS.isMaster()) {
+                    this.FM.AS.netToMirrors(20, this.FM.AS.astateBailoutStep, 1, null);
                 }
-                ((FlightModelMain) (super.FM)).AS.astateBailoutStep = (byte) (((FlightModelMain) (super.FM)).AS.astateBailoutStep + 1);
-                if ((super.FM instanceof Maneuver) && (((Maneuver) super.FM).get_maneuver() != 44)) {
+                this.FM.AS.astateBailoutStep = (byte) (this.FM.AS.astateBailoutStep + 1);
+                if ((this.FM instanceof Maneuver) && (((Maneuver) this.FM).get_maneuver() != 44)) {
                     World.cur();
-                    if (((FlightModelMain) (super.FM)).AS.actor != World.getPlayerAircraft()) {
-                        ((Maneuver) super.FM).set_maneuver(44);
+                    if (this.FM.AS.actor != World.getPlayerAircraft()) {
+                        ((Maneuver) this.FM).set_maneuver(44);
                     }
                 }
-                if (((FlightModelMain) (super.FM)).AS.astatePilotStates[i - 11] < 99) {
+                if (this.FM.AS.astatePilotStates[i - 11] < 99) {
                     if (i == 11) {
                         this.doRemoveBodyFromPlane(2);
                         this.doEjectCatapultRadar();
@@ -228,18 +228,18 @@ public class DO_335A6 extends DO_335 implements TypeX4Carrier, TypeRadarLiSN2Car
                     } else if (i == 12) {
                         this.doRemoveBodyFromPlane(1);
                         this.doEjectCatapultPilot();
-                        ((FlightModelMain) (super.FM)).AS.astateBailoutStep = 51;
-                        super.FM.setTakenMortalDamage(true, null);
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[0] = false;
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[1] = false;
-                        ((FlightModelMain) (super.FM)).AS.astateBailoutStep = -1;
+                        this.FM.AS.astateBailoutStep = 51;
+                        this.FM.setTakenMortalDamage(true, null);
+                        this.FM.CT.WeaponControl[0] = false;
+                        this.FM.CT.WeaponControl[1] = false;
+                        this.FM.AS.astateBailoutStep = -1;
                         this.overrideBailout = false;
-                        ((FlightModelMain) (super.FM)).AS.bIsAboutToBailout = true;
+                        this.FM.AS.bIsAboutToBailout = true;
                         this.ejectComplete = true;
                     }
-                    ((FlightModelMain) (super.FM)).AS.astatePilotStates[i - 11] = 99;
+                    this.FM.AS.astatePilotStates[i - 11] = 99;
                 } else {
-                    EventLog.type("astatePilotStates[" + (i - 11) + "]=" + ((FlightModelMain) (super.FM)).AS.astatePilotStates[i - 11]);
+                    EventLog.type("astatePilotStates[" + (i - 11) + "]=" + this.FM.AS.astatePilotStates[i - 11]);
                 }
             }
         }
@@ -247,12 +247,12 @@ public class DO_335A6 extends DO_335 implements TypeX4Carrier, TypeRadarLiSN2Car
 
     private final void doRemoveBlisters() {
         for (int i = 1; i < 10; i++) {
-            if ((this.hierMesh().chunkFindCheck("Blister" + i + "_D0") != -1) && (((FlightModelMain) (super.FM)).AS.getPilotHealth(i - 1) > 0.0F)) {
+            if ((this.hierMesh().chunkFindCheck("Blister" + i + "_D0") != -1) && (this.FM.AS.getPilotHealth(i - 1) > 0.0F)) {
                 this.hierMesh().hideSubTrees("Blister" + i + "_D0");
                 Wreckage localWreckage = new Wreckage(this, this.hierMesh().chunkFind("Blister" + i + "_D0"));
                 localWreckage.collide(false);
                 Vector3d localVector3d = new Vector3d();
-                localVector3d.set(((FlightModelMain) (super.FM)).Vwld);
+                localVector3d.set(this.FM.Vwld);
                 localWreckage.setSpeed(localVector3d);
             }
         }
@@ -345,13 +345,13 @@ public class DO_335A6 extends DO_335 implements TypeX4Carrier, TypeRadarLiSN2Car
             this.headYm = f - 0.0005F;
             f *= 0.7F;
             f1 *= 0.7F;
-            tmpOrLH.setYPR(0.0F, 0.0F, 0.0F);
-            tmpOrLH.increment(0.0F, f, 0.0F);
-            tmpOrLH.increment(f1, 0.0F, 0.0F);
-            tmpOrLH.increment(0.0F, 0.0F, (-0.2F * f1) + (0.05F * f));
-            this.headOr[0] = tmpOrLH.getYaw();
-            this.headOr[1] = tmpOrLH.getPitch();
-            this.headOr[2] = tmpOrLH.getRoll();
+            DO_335A6.tmpOrLH.setYPR(0.0F, 0.0F, 0.0F);
+            DO_335A6.tmpOrLH.increment(0.0F, f, 0.0F);
+            DO_335A6.tmpOrLH.increment(f1, 0.0F, 0.0F);
+            DO_335A6.tmpOrLH.increment(0.0F, 0.0F, (-0.2F * f1) + (0.05F * f));
+            this.headOr[0] = DO_335A6.tmpOrLH.getYaw();
+            this.headOr[1] = DO_335A6.tmpOrLH.getPitch();
+            this.headOr[2] = DO_335A6.tmpOrLH.getRoll();
             this.headPos[0] = 0.0005F * Math.abs(f);
             this.headPos[1] = -0.0001F * Math.abs(f);
             this.headPos[2] = 0.0F;

@@ -4,7 +4,6 @@ import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class P1Y1 extends P1Y implements TypeBomber, TypeDiveBomber {
@@ -15,7 +14,7 @@ public class P1Y1 extends P1Y implements TypeBomber, TypeDiveBomber {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.startsWith("1xtyp91")) {
+        if (this.thisWeaponsName.startsWith("1xtyp91")) {
             this.bombBayDoorsRemoved = true;
         } else {
             this.hierMesh().chunkVisible("Bay1_D0", true);
@@ -36,20 +35,20 @@ public class P1Y1 extends P1Y implements TypeBomber, TypeDiveBomber {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("HMask3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
@@ -60,28 +59,28 @@ public class P1Y1 extends P1Y implements TypeBomber, TypeDiveBomber {
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         if (flag) {
-            if (((FlightModelMain) (super.FM)).AS.astateEngineStates[0] > 3) {
-                if ((((FlightModelMain) (super.FM)).AS.astateTankStates[1] < 4) && (World.Rnd().nextFloat() < 0.025F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitTank(this, 1, 1);
+            if (this.FM.AS.astateEngineStates[0] > 3) {
+                if ((this.FM.AS.astateTankStates[1] < 4) && (World.Rnd().nextFloat() < 0.025F)) {
+                    this.FM.AS.hitTank(this, 1, 1);
                 }
-                if ((super.FM.getSpeedKMH() > 200F) && (World.Rnd().nextFloat() < 0.025F)) {
+                if ((this.FM.getSpeedKMH() > 200F) && (World.Rnd().nextFloat() < 0.025F)) {
                     this.nextDMGLevel("Keel1_D0", 0, this);
                 }
-                if ((super.FM.getSpeedKMH() > 200F) && (World.Rnd().nextFloat() < 0.025F)) {
+                if ((this.FM.getSpeedKMH() > 200F) && (World.Rnd().nextFloat() < 0.025F)) {
                     this.nextDMGLevel("StabL_D0", 0, this);
                 }
                 if (World.Rnd().nextFloat() < 0.25F) {
                     this.nextDMGLevel("WingLIn_D0", 0, this);
                 }
             }
-            if (((FlightModelMain) (super.FM)).AS.astateEngineStates[1] > 3) {
-                if ((((FlightModelMain) (super.FM)).AS.astateTankStates[2] < 4) && (World.Rnd().nextFloat() < 0.025F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitTank(this, 2, 1);
+            if (this.FM.AS.astateEngineStates[1] > 3) {
+                if ((this.FM.AS.astateTankStates[2] < 4) && (World.Rnd().nextFloat() < 0.025F)) {
+                    this.FM.AS.hitTank(this, 2, 1);
                 }
-                if ((super.FM.getSpeedKMH() > 200F) && (World.Rnd().nextFloat() < 0.025F)) {
+                if ((this.FM.getSpeedKMH() > 200F) && (World.Rnd().nextFloat() < 0.025F)) {
                     this.nextDMGLevel("Keel2_D0", 0, this);
                 }
-                if ((super.FM.getSpeedKMH() > 200F) && (World.Rnd().nextFloat() < 0.025F)) {
+                if ((this.FM.getSpeedKMH() > 200F) && (World.Rnd().nextFloat() < 0.025F)) {
                     this.nextDMGLevel("StabR_D0", 0, this);
                 }
                 if (World.Rnd().nextFloat() < 0.25F) {
@@ -89,7 +88,7 @@ public class P1Y1 extends P1Y implements TypeBomber, TypeDiveBomber {
                 }
             }
         }
-        if (super.FM.getAltitude() < 3000F) {
+        if (this.FM.getAltitude() < 3000F) {
             this.hierMesh().chunkVisible("HMask1_D0", false);
             this.hierMesh().chunkVisible("HMask2_D0", false);
             this.hierMesh().chunkVisible("HMask3_D0", false);
@@ -108,7 +107,7 @@ public class P1Y1 extends P1Y implements TypeBomber, TypeDiveBomber {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -35F) {
                     f = -35F;
                     flag = false;
@@ -127,7 +126,7 @@ public class P1Y1 extends P1Y implements TypeBomber, TypeDiveBomber {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -33F) {
                     f = -33F;
                     flag = false;
@@ -153,12 +152,12 @@ public class P1Y1 extends P1Y implements TypeBomber, TypeDiveBomber {
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 1: // '\001'
-                super.FM.turret[0].setHealth(f);
+            case 1:
+                this.FM.turret[0].setHealth(f);
                 break;
 
-            case 2: // '\002'
-                super.FM.turret[1].setHealth(f);
+            case 2:
+                this.FM.turret[1].setHealth(f);
                 break;
         }
     }
@@ -179,32 +178,32 @@ public class P1Y1 extends P1Y implements TypeBomber, TypeDiveBomber {
 
     protected void hitBoneEngine(String s, Shot shot, Point3d point3d, int i) {
         if (s.endsWith("prop") && (this.getEnergyPastArmor(0.2F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
-            ((FlightModelMain) (super.FM)).EI.engines[i].setKillPropAngleDevice(shot.initiator);
+            this.FM.EI.engines[i].setKillPropAngleDevice(shot.initiator);
         }
         if (s.endsWith("base")) {
             if (this.getEnergyPastArmor(0.2F, shot) > 0.0F) {
                 if (World.Rnd().nextFloat() < (shot.power / 140000F)) {
-                    ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, i);
+                    this.FM.AS.setEngineStuck(shot.initiator, i);
                     Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Engine Stucks..");
                 }
                 if (World.Rnd().nextFloat() < (shot.power / 85000F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, i, 2);
+                    this.FM.AS.hitEngine(shot.initiator, i, 2);
                     Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Engine Damaged..");
                 }
             } else if (World.Rnd().nextFloat() < 0.01F) {
-                ((FlightModelMain) (super.FM)).EI.engines[i].setCyliderKnockOut(shot.initiator, 1);
+                this.FM.EI.engines[i].setCyliderKnockOut(shot.initiator, 1);
             } else {
-                ((FlightModelMain) (super.FM)).EI.engines[i].setReadyness(shot.initiator, ((FlightModelMain) (super.FM)).EI.engines[i].getReadyness() - 0.002F);
-                Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[i].getReadyness() + "..");
+                this.FM.EI.engines[i].setReadyness(shot.initiator, this.FM.EI.engines[i].getReadyness() - 0.002F);
+                Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Readyness Reduced to " + this.FM.EI.engines[i].getReadyness() + "..");
             }
             this.getEnergyPastArmor(12F, shot);
         }
         if (s.endsWith("cyls")) {
-            if ((this.getEnergyPastArmor(6.85F, shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[i].getCylindersRatio() * 0.75F))) {
-                ((FlightModelMain) (super.FM)).EI.engines[i].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 19000F)));
-                Aircraft.debugprintln(this, "*** Engine Cylinders Hit, " + ((FlightModelMain) (super.FM)).EI.engines[i].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[i].getCylinders() + " Left..");
+            if ((this.getEnergyPastArmor(6.85F, shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[i].getCylindersRatio() * 0.75F))) {
+                this.FM.EI.engines[i].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 19000F)));
+                Aircraft.debugprintln(this, "*** Engine Cylinders Hit, " + this.FM.EI.engines[i].getCylindersOperable() + "/" + this.FM.EI.engines[i].getCylinders() + " Left..");
                 if (World.Rnd().nextFloat() < (shot.power / 48000F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, i, 2);
+                    this.FM.AS.hitEngine(shot.initiator, i, 2);
                     Aircraft.debugprintln(this, "*** Engine Cylinders Hit - Engine Fires..");
                 }
             }
@@ -212,29 +211,29 @@ public class P1Y1 extends P1Y implements TypeBomber, TypeDiveBomber {
         }
         if (s.endsWith("supc")) {
             if (this.getEnergyPastArmor(0.05F, shot) > 0.0F) {
-                ((FlightModelMain) (super.FM)).EI.engines[i].setKillCompressor(shot.initiator);
+                this.FM.EI.engines[i].setKillCompressor(shot.initiator);
             }
             this.getEnergyPastArmor(2.0F, shot);
         }
         if (s.endsWith("eqpt")) {
             if (this.getEnergyPastArmor(0.1F, shot) > 0.0F) {
                 if ((((Tuple3d) (Aircraft.Pd)).y > 0.0D) && (((Tuple3d) (Aircraft.Pd)).z < 0.189D) && (World.Rnd().nextFloat(0.0F, 16000F) < shot.power)) {
-                    ((FlightModelMain) (super.FM)).EI.engines[i].setMagnetoKnockOut(shot.initiator, 0);
+                    this.FM.EI.engines[i].setMagnetoKnockOut(shot.initiator, 0);
                 }
                 if ((((Tuple3d) (Aircraft.Pd)).y < 0.0D) && (((Tuple3d) (Aircraft.Pd)).z < 0.189D) && (World.Rnd().nextFloat(0.0F, 16000F) < shot.power)) {
-                    ((FlightModelMain) (super.FM)).EI.engines[i].setMagnetoKnockOut(shot.initiator, 1);
+                    this.FM.EI.engines[i].setMagnetoKnockOut(shot.initiator, 1);
                 }
                 if (World.Rnd().nextFloat(0.0F, 26700F) < shot.power) {
-                    ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, i, 4);
+                    this.FM.AS.setEngineSpecificDamage(shot.initiator, i, 4);
                 }
                 if (World.Rnd().nextFloat(0.0F, 26700F) < shot.power) {
-                    ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, i, 0);
+                    this.FM.AS.setEngineSpecificDamage(shot.initiator, i, 0);
                 }
                 if (World.Rnd().nextFloat(0.0F, 26700F) < shot.power) {
-                    ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, i, 6);
+                    this.FM.AS.setEngineSpecificDamage(shot.initiator, i, 6);
                 }
                 if (World.Rnd().nextFloat(0.0F, 26700F) < shot.power) {
-                    ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, i, 1);
+                    this.FM.AS.setEngineSpecificDamage(shot.initiator, i, 1);
                 }
             }
             this.getEnergyPastArmor(2.0F, shot);

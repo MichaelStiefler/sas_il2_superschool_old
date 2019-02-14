@@ -51,7 +51,7 @@ public class MIG_3AM38 extends MIG_3 {
         Property.set(class1, "yearService", 1941F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/MiG-3AM-38.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitMIG_3.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitMIG_3.class });
         Property.set(class1, "LOSElevation", 0.906F);
         Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03" });

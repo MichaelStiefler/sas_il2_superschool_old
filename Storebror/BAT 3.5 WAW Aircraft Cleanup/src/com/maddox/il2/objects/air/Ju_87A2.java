@@ -2,7 +2,6 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Property;
 
@@ -25,7 +24,7 @@ public class Ju_87A2 extends JU_87 {
 
     protected void moveFan(float f) {
         if (this.bDynamoOperational) {
-            this.pk = Math.abs((int) (((FlightModelMain) (super.FM)).Vwld.length() / 14D));
+            this.pk = Math.abs((int) (this.FM.Vwld.length() / 14D));
             if (this.pk >= 1) {
                 this.pk = 1;
             }
@@ -35,7 +34,7 @@ public class Ju_87A2 extends JU_87 {
             this.hierMesh().chunkVisible("GearR3_D0", !this.bDynamoRotary);
             this.hierMesh().chunkVisible("GearR3Rot_D0", this.bDynamoRotary);
         }
-        this.dynamoOrient = this.bDynamoRotary ? (this.dynamoOrient - 17.987F) % 360F : (float) (this.dynamoOrient - (((FlightModelMain) (super.FM)).Vwld.length() * 1.5444015264511108D)) % 360F;
+        this.dynamoOrient = this.bDynamoRotary ? (this.dynamoOrient - 17.987F) % 360F : (float) (this.dynamoOrient - (this.FM.Vwld.length() * 1.5444015264511108D)) % 360F;
         this.hierMesh().chunkSetAngles("GearR3_D0", 0.0F, this.dynamoOrient, 0.0F);
         super.moveFan(f);
     }
@@ -58,7 +57,7 @@ public class Ju_87A2 extends JU_87 {
 
     public void update(float f) {
         for (int i = 1; i < 9; i++) {
-            this.hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -15F * ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator(), 0.0F);
+            this.hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -15F * this.FM.EI.engines[0].getControlRadiator(), 0.0F);
         }
 
         super.update(f);
@@ -66,7 +65,7 @@ public class Ju_87A2 extends JU_87 {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.equals("1xSC500")) {
+        if (this.thisWeaponsName.equals("1xSC500")) {
             this.hierMesh().chunkVisible("Pilot2_D0", false);
             this.hierMesh().chunkVisible("Pilot2_D1", false);
             this.hierMesh().chunkVisible("BlisterA2_D0", false);

@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class JEEP50 extends CAR {
@@ -10,22 +9,22 @@ public class JEEP50 extends CAR {
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 1: // '\001'
-                super.FM.turret[0].bIsOperable = false;
+            case 1:
+                this.FM.turret[0].bIsOperable = false;
                 break;
         }
     }
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Helm_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot6_D0", false);
                 this.hierMesh().chunkVisible("Pilot6_D1", true);
                 break;
@@ -33,10 +32,10 @@ public class JEEP50 extends CAR {
     }
 
     public void update(float f) {
-        if (((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+        if (this.FM.AS.bIsAboutToBailout) {
             this.hierMesh().chunkVisible("Helm_D0", false);
         }
-        ((FlightModelMain) (super.FM)).EI.engines[0].addVside *= 9.9999999999999995E-008D;
+        this.FM.EI.engines[0].addVside *= 9.9999999999999995E-008D;
         super.update(f);
     }
 

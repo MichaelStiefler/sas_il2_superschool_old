@@ -54,16 +54,16 @@ public class HE_111P2_Late extends HE_111 {
     public void doRemoveBodyFromPlane(int i) {
         super.doRemoveBodyFromPlane(i);
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot1_FAK", false);
                 this.hierMesh().chunkVisible("Head1_FAK", false);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot2_FAK", false);
                 break;
 
-            case 4: // '\004'
+            case 4:
                 this.hierMesh().chunkVisible("Pilot4_FAK", false);
                 break;
         }
@@ -201,24 +201,24 @@ public class HE_111P2_Late extends HE_111 {
 
     private void SturmanBusy(int i) {
         switch (i) {
-            case 3: // '\003'
-            case 4: // '\004'
+            case 3:
+            case 4:
             default:
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (!this.pilot2kill) {
                     this.FM.turret[0].bIsOperable = true;
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (!this.pilot2kill) {
                     this.FM.turret[0].bIsOperable = false;
                 }
                 break;
 
-            case 5: // '\005'
+            case 5:
                 if (this.pilot5kill) {
                     break;
                 }
@@ -233,7 +233,7 @@ public class HE_111P2_Late extends HE_111 {
                 }
                 break;
 
-            case 6: // '\006'
+            case 6:
                 if (this.pilot5kill) {
                     break;
                 }
@@ -287,7 +287,7 @@ public class HE_111P2_Late extends HE_111 {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -35F) {
                     f = -35F;
                     flag = false;
@@ -306,7 +306,7 @@ public class HE_111P2_Late extends HE_111 {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 float f2 = this.FM.CT.getCockpitDoor();
                 if (f2 >= 0.99F) {
                     if (f < -90F) {
@@ -338,7 +338,7 @@ public class HE_111P2_Late extends HE_111 {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -35F) {
                     f = -35F;
                     flag = false;
@@ -357,7 +357,7 @@ public class HE_111P2_Late extends HE_111 {
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f < -55F) {
                     f = -55F;
                     flag = false;
@@ -380,7 +380,7 @@ public class HE_111P2_Late extends HE_111 {
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 if (f < -23F) {
                     f = -23F;
                     flag = false;
@@ -410,19 +410,19 @@ public class HE_111P2_Late extends HE_111 {
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.FM.turret[0].setHealth(f);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.FM.turret[1].setHealth(f);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.FM.turret[2].setHealth(f);
                 break;
 
-            case 4: // '\004'
+            case 4:
                 this.FM.turret[3].setHealth(f);
                 this.FM.turret[4].setHealth(f);
                 break;
@@ -434,7 +434,7 @@ public class HE_111P2_Late extends HE_111 {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);
@@ -454,7 +454,7 @@ public class HE_111P2_Late extends HE_111 {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.pilot2kill = true;
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
@@ -473,14 +473,14 @@ public class HE_111P2_Late extends HE_111 {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 this.hierMesh().chunkVisible("HMask3_D0", false);
                 this.hierMesh().chunkVisible("Gore3_D0", true);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.hierMesh().chunkVisible("Pilot4_D0", false);
                 this.hierMesh().chunkVisible("Pilot4_D1", true);
                 this.hierMesh().chunkVisible("HMask4_D0", false);
@@ -496,7 +496,7 @@ public class HE_111P2_Late extends HE_111 {
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 this.pilot5kill = true;
                 this.hierMesh().chunkVisible("Pilot5_D0", false);
                 this.hierMesh().chunkVisible("Pilot5_D1", true);

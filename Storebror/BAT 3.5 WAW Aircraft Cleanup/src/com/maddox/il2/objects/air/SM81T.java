@@ -10,8 +10,8 @@ public class SM81T extends SM81x implements TypeBomber, TypeTransport {
 
     public void update(float f) {
         super.update(f);
-        super.onAircraftLoaded();
-        if (super.FM.isPlayers()) {
+        this.onAircraftLoaded();
+        if (this.FM.isPlayers()) {
             if (!Main3D.cur3D().isViewOutside()) {
                 this.hierMesh().chunkVisible("CF_D0", false);
                 this.hierMesh().chunkVisible("Blister1_D0", false);
@@ -32,7 +32,7 @@ public class SM81T extends SM81x implements TypeBomber, TypeTransport {
                 this.hierMesh().chunkVisible("Pilot2_D0", true);
             }
         }
-        if (super.FM.isPlayers()) {
+        if (this.FM.isPlayers()) {
             if (!Main3D.cur3D().isViewOutside()) {
                 this.hierMesh().chunkVisible("CF_D1", false);
             }
@@ -57,7 +57,7 @@ public class SM81T extends SM81x implements TypeBomber, TypeTransport {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f1 < 0.0F) {
                     f1 = 0.0F;
                     flag = false;
@@ -68,7 +68,7 @@ public class SM81T extends SM81x implements TypeBomber, TypeTransport {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f1 < -45F) {
                     f1 = -45F;
                     flag = false;
@@ -86,7 +86,7 @@ public class SM81T extends SM81x implements TypeBomber, TypeTransport {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.equals("18xPara")) {
+        if (this.thisWeaponsName.equals("18xPara")) {
             this.hierMesh().chunkVisible("Door_D0", false);
             return;
         } else {

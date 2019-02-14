@@ -35,21 +35,21 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable {
     protected void moveFan(float f) {
         int i = 0;
         for (int j = 0; j < 1; j++) {
-            if (super.oldProp[j] < 2) {
-                i = Math.abs((int) (((FlightModelMain) (super.FM)).EI.engines[j].getw() * 0.12F * 1.5F));
+            if (this.oldProp[j] < 2) {
+                i = Math.abs((int) (this.FM.EI.engines[j].getw() * 0.12F * 1.5F));
                 if (i >= 1) {
                     i = 1;
                 }
-                if (i != super.oldProp[j]) {
-                    this.hierMesh().chunkVisible(Aircraft.Props[j][super.oldProp[j]], false);
-                    super.oldProp[j] = i;
+                if (i != this.oldProp[j]) {
+                    this.hierMesh().chunkVisible(Aircraft.Props[j][this.oldProp[j]], false);
+                    this.oldProp[j] = i;
                     this.hierMesh().chunkVisible(Aircraft.Props[j][i], true);
                 }
             }
             if (i == 0) {
-                super.propPos[j] = (super.propPos[j] + (57.3F * ((FlightModelMain) (super.FM)).EI.engines[j].getw() * f)) % 360F;
+                this.propPos[j] = (this.propPos[j] + (57.3F * this.FM.EI.engines[j].getw() * f)) % 360F;
             } else {
-                float f1 = 57.3F * ((FlightModelMain) (super.FM)).EI.engines[j].getw();
+                float f1 = 57.3F * this.FM.EI.engines[j].getw();
                 f1 %= 2880F;
                 f1 /= 2880F;
                 if (f1 <= 0.5F) {
@@ -58,9 +58,9 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable {
                     f1 = (f1 * 2.0F) - 2.0F;
                 }
                 f1 *= 1200F;
-                super.propPos[j] = (super.propPos[j] + (f1 * f)) % 360F;
+                this.propPos[j] = (this.propPos[j] + (f1 * f)) % 360F;
             }
-            this.hierMesh().chunkSetAngles(Aircraft.Props[j][0], 0.0F, -super.propPos[j], 0.0F);
+            this.hierMesh().chunkSetAngles(Aircraft.Props[j][0], 0.0F, -this.propPos[j], 0.0F);
         }
 
     }
@@ -74,7 +74,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable {
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGear() < 0.98F) {
+        if (this.FM.CT.getGear() < 0.98F) {
             return;
         } else {
             this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -f, 0.0F);
@@ -86,37 +86,37 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable {
         if (this.bNeedSetup) {
             this.checkAsDrone();
         }
-        if (super.FM instanceof Maneuver) {
+        if (this.FM instanceof Maneuver) {
             if (this.typeDockableIsDocked()) {
-                if (!(super.FM instanceof RealFlightModel) || !((RealFlightModel) super.FM).isRealMode()) {
-                    ((Maneuver) super.FM).set_maneuver(48);
-                    ((FlightModelMain) ((Maneuver) super.FM)).AP.way.setCur(((FlightModelMain) (((SndAircraft) ((Aircraft) this.queen_)).FM)).AP.way.Cur());
-                    ((Pilot) super.FM).setDumbTime(3000L);
+                if (!(this.FM instanceof RealFlightModel) || !((RealFlightModel) this.FM).isRealMode()) {
+                    ((Maneuver) this.FM).set_maneuver(48);
+                    ((FlightModelMain) ((Maneuver) this.FM)).AP.way.setCur(((FlightModelMain) (((SndAircraft) ((Aircraft) this.queen_)).FM)).AP.way.Cur());
+                    ((Pilot) this.FM).setDumbTime(3000L);
                 }
-            } else if (!(super.FM instanceof RealFlightModel) || !((RealFlightModel) super.FM).isRealMode()) {
+            } else if (!(this.FM instanceof RealFlightModel) || !((RealFlightModel) this.FM).isRealMode()) {
                 if (this.dtime > 0L) {
-                    ((Maneuver) super.FM).set_maneuver(22);
-                    ((Pilot) super.FM).setDumbTime(3000L);
+                    ((Maneuver) this.FM).set_maneuver(22);
+                    ((Pilot) this.FM).setDumbTime(3000L);
                     if (Time.current() > (this.dtime + 3000L)) {
                         this.dtime = -1L;
-                        ((Maneuver) super.FM).clear_stack();
-                        ((Maneuver) super.FM).pop();
-                        ((Pilot) super.FM).setDumbTime(0L);
+                        ((Maneuver) this.FM).clear_stack();
+                        ((Maneuver) this.FM).pop();
+                        ((Pilot) this.FM).setDumbTime(0L);
                     }
-                } else if ((((FlightModelMain) (super.FM)).AP.way.curr().Action == 3) && (((Maneuver) super.FM).get_maneuver() == 24)) {
-                    ((Maneuver) super.FM).set_maneuver(21);
-                    ((Pilot) super.FM).setDumbTime(30000L);
+                } else if ((this.FM.AP.way.curr().Action == 3) && (((Maneuver) this.FM).get_maneuver() == 24)) {
+                    ((Maneuver) this.FM).set_maneuver(21);
+                    ((Pilot) this.FM).setDumbTime(30000L);
                 }
             }
         }
         if (this.typeDockableIsDocked()) {
             Aircraft aircraft = (Aircraft) this.typeDockableGetQueen();
-            ((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.AileronControl = ((FlightModelMain) (super.FM)).CT.AileronControl;
-            ((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.ElevatorControl = ((FlightModelMain) (super.FM)).CT.ElevatorControl;
-            ((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.RudderControl = ((FlightModelMain) (super.FM)).CT.RudderControl;
-            ((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.GearControl = ((FlightModelMain) (super.FM)).CT.GearControl;
+            ((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.AileronControl = this.FM.CT.AileronControl;
+            ((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.ElevatorControl = this.FM.CT.ElevatorControl;
+            ((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.RudderControl = this.FM.CT.RudderControl;
+            ((FlightModelMain) (((SndAircraft) (aircraft)).FM)).CT.GearControl = this.FM.CT.GearControl;
         }
-        if (((FlightModelMain) (super.FM)).CT.saveWeaponControl[3]) {
+        if (this.FM.CT.saveWeaponControl[3]) {
             this.typeDockableAttemptDetach();
         }
         super.update(f);
@@ -125,14 +125,14 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable {
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         if (flag) {
-            ;
+
         }
     }
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).AS.wantBeaconsNet(true);
-        if (Mission.isCoop() && !Mission.isServer() && !this.isSpawnFromMission() && super.net.isMaster()) {
+        this.FM.AS.wantBeaconsNet(true);
+        if (Mission.isCoop() && !Mission.isServer() && !this.isSpawnFromMission() && this.net.isMaster()) {
             new MsgAction(64, 0.0D, this) {
 
                 public void doAction() {
@@ -156,17 +156,17 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable {
     private void onCoopMasterSpawned() {
         Actor actor = null;
         String s = null;
-        if (((FlightModelMain) (super.FM)).AP.way.curr().getTargetName() == null) {
-            ((FlightModelMain) (super.FM)).AP.way.next();
+        if (this.FM.AP.way.curr().getTargetName() == null) {
+            this.FM.AP.way.next();
         }
-        s = ((FlightModelMain) (super.FM)).AP.way.curr().getTargetName();
+        s = this.FM.AP.way.curr().getTargetName();
         if (s != null) {
             actor = Actor.getByName(s);
         }
         if (Actor.isValid(actor) && (actor instanceof Wing) && (actor.getOwnerAttachedCount() > 0)) {
             actor = (Actor) actor.getOwnerAttached(0);
         }
-        ((FlightModelMain) (super.FM)).AP.way.setCur(0);
+        this.FM.AP.way.setCur(0);
         if (Actor.isValid(actor) && (actor instanceof JU_88MSTL)) {
             try {
                 Aircraft aircraft = (Aircraft) actor;
@@ -189,12 +189,12 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable {
 
     private void checkAsDrone() {
         if (this.target_ == null) {
-            if (((FlightModelMain) (super.FM)).AP.way.curr().getTarget() == null) {
-                ((FlightModelMain) (super.FM)).AP.way.next();
+            if (this.FM.AP.way.curr().getTarget() == null) {
+                this.FM.AP.way.next();
             }
-            this.target_ = ((FlightModelMain) (super.FM)).AP.way.curr().getTarget();
+            this.target_ = this.FM.AP.way.curr().getTarget();
             if (Actor.isValid(this.target_)) {
-                this.target_ = ((FlightModelMain) (super.FM)).AP.way.curr().getTargetActorRandom();
+                this.target_ = this.FM.AP.way.curr().getTargetActorRandom();
             }
         }
         if (Actor.isValid(this.target_) && (this.target_ instanceof JU_88MSTL) && this.isNetMaster()) {
@@ -221,7 +221,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable {
     }
 
     public void typeDockableAttemptAttach() {
-        if (!((FlightModelMain) (super.FM)).AS.isMaster()) {
+        if (!this.FM.AS.isMaster()) {
             return;
         }
         if (!this.typeDockableIsDocked()) {
@@ -233,7 +233,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable {
     }
 
     public void typeDockableAttemptDetach() {
-        if (((FlightModelMain) (super.FM)).AS.isMaster() && this.typeDockableIsDocked() && Actor.isValid(this.queen_)) {
+        if (this.FM.AS.isMaster() && this.typeDockableIsDocked() && Actor.isValid(this.queen_)) {
             ((TypeDockable) this.queen_).typeDockableRequestDetach(this);
         }
     }
@@ -259,27 +259,27 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable {
     public void typeDockableDoAttachToQueen(Actor actor, int i) {
         this.queen_ = actor;
         this.dockport_ = i;
-        if (((FlightModelMain) (super.FM)).EI.getNum() == 1) {
-            super.FM.Scheme = 2;
+        if (this.FM.EI.getNum() == 1) {
+            this.FM.Scheme = 2;
             Aircraft aircraft = (Aircraft) actor;
-            ((FlightModelMain) (super.FM)).EI.setNum(3);
-            Motor motor = ((FlightModelMain) (super.FM)).EI.engines[0];
-            ((FlightModelMain) (super.FM)).EI.engines = new Motor[3];
-            ((FlightModelMain) (super.FM)).EI.engines[0] = motor;
-            ((FlightModelMain) (super.FM)).EI.engines[1] = ((FlightModelMain) (((SndAircraft) (aircraft)).FM)).EI.engines[0];
-            ((FlightModelMain) (super.FM)).EI.engines[2] = ((FlightModelMain) (((SndAircraft) (aircraft)).FM)).EI.engines[1];
-            ((FlightModelMain) (super.FM)).EI.bCurControl = (new boolean[] { true, true, true });
+            this.FM.EI.setNum(3);
+            Motor motor = this.FM.EI.engines[0];
+            this.FM.EI.engines = new Motor[3];
+            this.FM.EI.engines[0] = motor;
+            this.FM.EI.engines[1] = ((FlightModelMain) (((SndAircraft) (aircraft)).FM)).EI.engines[0];
+            this.FM.EI.engines[2] = ((FlightModelMain) (((SndAircraft) (aircraft)).FM)).EI.engines[1];
+            this.FM.EI.bCurControl = (new boolean[] { true, true, true });
             ((FlightModelMain) (((SndAircraft) (aircraft)).FM)).EI.bCurControl[0] = false;
             ((FlightModelMain) (((SndAircraft) (aircraft)).FM)).EI.bCurControl[1] = false;
         }
-        ((FlightModelMain) (super.FM)).EI.setEngineRunning();
-        ((FlightModelMain) (super.FM)).CT.setGearAirborne();
+        this.FM.EI.setEngineRunning();
+        this.FM.CT.setGearAirborne();
         this.moveGear(0.0F);
-        ((FlightModelMain) (super.FM)).CT.GearControl = ((FlightModelMain) (((SndAircraft) ((Aircraft) actor)).FM)).CT.GearControl;
+        this.FM.CT.GearControl = ((FlightModelMain) (((SndAircraft) ((Aircraft) actor)).FM)).CT.GearControl;
         com.maddox.il2.fm.FlightModel flightmodel = ((SndAircraft) ((Aircraft) this.queen_)).FM;
-        if ((super.FM instanceof Maneuver) && (flightmodel instanceof Maneuver)) {
+        if ((this.FM instanceof Maneuver) && (flightmodel instanceof Maneuver)) {
             Maneuver maneuver = (Maneuver) flightmodel;
-            Maneuver maneuver1 = (Maneuver) super.FM;
+            Maneuver maneuver1 = (Maneuver) this.FM;
             if ((maneuver.Group != null) && (maneuver1.Group != null) && (maneuver1.Group.numInGroup(this) == (maneuver1.Group.nOfAirc - 1))) {
                 AirGroup airgroup = new AirGroup(maneuver1.Group);
                 maneuver1.Group.delAircraft(this);
@@ -296,24 +296,24 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable {
         }
         this.queen_ = null;
         this.dockport_ = 0;
-        ((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(0.51F);
-        ((FlightModelMain) (super.FM)).CT.trimElevator = 0.51F;
-        ((FlightModelMain) (super.FM)).CT.setGearAirborne();
-        if (((FlightModelMain) (super.FM)).EI.getNum() == 3) {
-            super.FM.Scheme = 1;
-            ((FlightModelMain) (super.FM)).EI.setNum(1);
-            Motor motor = ((FlightModelMain) (super.FM)).EI.engines[0];
-            ((FlightModelMain) (super.FM)).EI.engines = new Motor[1];
-            ((FlightModelMain) (super.FM)).EI.engines[0] = motor;
-            ((FlightModelMain) (super.FM)).EI.bCurControl = (new boolean[] { true });
+        this.FM.CT.setTrimElevatorControl(0.51F);
+        this.FM.CT.trimElevator = 0.51F;
+        this.FM.CT.setGearAirborne();
+        if (this.FM.EI.getNum() == 3) {
+            this.FM.Scheme = 1;
+            this.FM.EI.setNum(1);
+            Motor motor = this.FM.EI.engines[0];
+            this.FM.EI.engines = new Motor[1];
+            this.FM.EI.engines[0] = motor;
+            this.FM.EI.bCurControl = (new boolean[] { true });
             for (int j = 1; j < 3; j++) {
-                if (((FlightModelMain) (super.FM)).Gears.clpEngineEff[j][0] != null) {
-                    Eff3DActor.finish(((FlightModelMain) (super.FM)).Gears.clpEngineEff[j][0]);
-                    ((FlightModelMain) (super.FM)).Gears.clpEngineEff[j][0] = null;
+                if (this.FM.Gears.clpEngineEff[j][0] != null) {
+                    Eff3DActor.finish(this.FM.Gears.clpEngineEff[j][0]);
+                    this.FM.Gears.clpEngineEff[j][0] = null;
                 }
-                if (((FlightModelMain) (super.FM)).Gears.clpEngineEff[j][1] != null) {
-                    Eff3DActor.finish(((FlightModelMain) (super.FM)).Gears.clpEngineEff[j][1]);
-                    ((FlightModelMain) (super.FM)).Gears.clpEngineEff[j][1] = null;
+                if (this.FM.Gears.clpEngineEff[j][1] != null) {
+                    Eff3DActor.finish(this.FM.Gears.clpEngineEff[j][1]);
+                    this.FM.Gears.clpEngineEff[j][1] = null;
                 }
             }
 

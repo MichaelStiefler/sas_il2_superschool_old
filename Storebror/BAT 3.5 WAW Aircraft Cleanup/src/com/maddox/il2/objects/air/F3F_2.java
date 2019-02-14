@@ -8,7 +8,6 @@ import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Property;
 
@@ -23,7 +22,7 @@ public class F3F_2 extends Scheme1 implements TypeFighter {
         super.nextDMGLevel(s, i, actor);
         this.bChangedExts = true;
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            F3F_2.bChangedPit = true;
         }
     }
 
@@ -31,7 +30,7 @@ public class F3F_2 extends Scheme1 implements TypeFighter {
         super.nextCUTLevel(s, i, actor);
         this.bChangedExts = true;
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            F3F_2.bChangedPit = true;
         }
     }
 
@@ -54,7 +53,7 @@ public class F3F_2 extends Scheme1 implements TypeFighter {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        F3F_2.moveGear(this.hierMesh(), f);
     }
 
     protected void moveElevator(float f) {
@@ -88,8 +87,8 @@ public class F3F_2 extends Scheme1 implements TypeFighter {
             default:
                 break;
 
-            case 0: // '\0'
-                if (!((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+            case 0:
+                if (!this.FM.AS.bIsAboutToBailout) {
                     this.hierMesh().chunkVisible("Pilot1_D0", false);
                     this.hierMesh().chunkVisible("Head1_D0", false);
                     this.hierMesh().chunkVisible("HMask1_D0", false);
@@ -101,7 +100,7 @@ public class F3F_2 extends Scheme1 implements TypeFighter {
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (super.FM.getAltitude() < 3000F) {
+        if (this.FM.getAltitude() < 3000F) {
             this.hierMesh().chunkVisible("HMask1_D0", false);
         } else {
             this.hierMesh().chunkVisible("HMask1_D0", this.hierMesh().isChunkVisible("Pilot1_D0"));
@@ -115,46 +114,46 @@ public class F3F_2 extends Scheme1 implements TypeFighter {
                 if (s.startsWith("xxeng1")) {
                     if (s.endsWith("case") && (this.getEnergyPastArmor(0.7F, shot) > 0.0F)) {
                         if (World.Rnd().nextFloat(20000F, 200000F) < shot.power) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, 0);
+                            this.FM.AS.setEngineStuck(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Engine Stucks..");
                         }
                         if (World.Rnd().nextFloat(10000F, 50000F) < shot.power) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
+                            this.FM.AS.hitEngine(shot.initiator, 0, 2);
                             Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Engine Damaged..");
                         }
                         if (World.Rnd().nextFloat(8000F, 28000F) < shot.power) {
-                            ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, 1);
-                            Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Cylinder Feed Out, " + ((FlightModelMain) (super.FM)).EI.engines[0].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[0].getCylinders() + " Left..");
+                            this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, 1);
+                            Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Cylinder Feed Out, " + this.FM.EI.engines[0].getCylindersOperable() + "/" + this.FM.EI.engines[0].getCylinders() + " Left..");
                         }
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setReadyness(shot.initiator, ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 48000F));
-                        Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() + "..");
+                        this.FM.EI.engines[0].setReadyness(shot.initiator, this.FM.EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 48000F));
+                        Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + "..");
                     }
-                    if (s.endsWith("cyls") && (this.getEnergyPastArmor(0.45F, shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[0].getCylindersRatio() * 1.75F))) {
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
-                        Aircraft.debugprintln(this, "*** Engine Cylinders Hit, " + ((FlightModelMain) (super.FM)).EI.engines[0].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[0].getCylinders() + " Left..");
-                        if (((FlightModelMain) (super.FM)).AS.astateEngineStates[0] < 1) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 1);
+                    if (s.endsWith("cyls") && (this.getEnergyPastArmor(0.45F, shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[0].getCylindersRatio() * 1.75F))) {
+                        this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
+                        Aircraft.debugprintln(this, "*** Engine Cylinders Hit, " + this.FM.EI.engines[0].getCylindersOperable() + "/" + this.FM.EI.engines[0].getCylinders() + " Left..");
+                        if (this.FM.AS.astateEngineStates[0] < 1) {
+                            this.FM.AS.hitEngine(shot.initiator, 0, 1);
                         }
                         if (World.Rnd().nextFloat() < (shot.power / 24000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 3);
+                            this.FM.AS.hitEngine(shot.initiator, 0, 3);
                             Aircraft.debugprintln(this, "*** Engine Cylinders Hit - Engine Fires..");
                         }
                         this.getEnergyPastArmor(25F, shot);
                     }
                     if (s.endsWith("supc") && (this.getEnergyPastArmor(0.05F, shot) > 0.0F)) {
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setKillCompressor(shot.initiator);
+                        this.FM.EI.engines[0].setKillCompressor(shot.initiator);
                     }
                 }
                 if (s.endsWith("oil1")) {
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, 0);
+                    this.FM.AS.hitOil(shot.initiator, 0);
                 }
             }
             if (s.startsWith("xxtank")) {
                 int i = s.charAt(6) - 49;
                 if ((this.getEnergyPastArmor(0.1F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, i, 1);
+                    this.FM.AS.hitTank(shot.initiator, i, 1);
                     if ((shot.powerType == 3) && (World.Rnd().nextFloat() < 0.11F)) {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, i, 2);
+                        this.FM.AS.hitTank(shot.initiator, i, 2);
                     }
                 }
             }
@@ -165,16 +164,16 @@ public class F3F_2 extends Scheme1 implements TypeFighter {
                 this.hitChunk("CF", shot);
             }
             if (World.Rnd().nextFloat() < 0.21F) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 2);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 2);
             }
             if (World.Rnd().nextFloat() < 0.21F) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 1);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 1);
             }
             if (World.Rnd().nextFloat() < 0.21F) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 8);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 8);
             }
             if (World.Rnd().nextFloat() < 0.21F) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 4);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 4);
             }
         } else if (s.startsWith("xeng")) {
             if (this.chunkDamageVisible("Engine1") < 2) {
@@ -245,19 +244,19 @@ public class F3F_2 extends Scheme1 implements TypeFighter {
 
     public void update(float f) {
         super.update(f);
-        float f1 = ((FlightModelMain) (super.FM)).CT.getArrestor();
+        float f1 = this.FM.CT.getArrestor();
         float f2 = 81F * f1 * f1 * f1 * f1 * f1 * f1 * f1;
         if (f1 > 0.01F) {
-            if (((FlightModelMain) (super.FM)).Gears.arrestorVAngle != 0.0F) {
-                this.arrestor = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.arrestorVAngle, -f2, f2, -f2, f2);
+            if (this.FM.Gears.arrestorVAngle != 0.0F) {
+                this.arrestor = Aircraft.cvt(this.FM.Gears.arrestorVAngle, -f2, f2, -f2, f2);
                 this.moveArrestorHook(f1);
-                if (((FlightModelMain) (super.FM)).Gears.arrestorVAngle < -81F) {
-                    ;
+                if (this.FM.Gears.arrestorVAngle < -81F) {
+
                 }
             } else {
-                float f3 = 58F * ((FlightModelMain) (super.FM)).Gears.arrestorVSink;
-                if ((f3 > 0.0F) && (super.FM.getSpeedKMH() > 60F)) {
-                    Eff3DActor.New(this, ((FlightModelMain) (super.FM)).Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
+                float f3 = 58F * this.FM.Gears.arrestorVSink;
+                if ((f3 > 0.0F) && (this.FM.getSpeedKMH() > 60F)) {
+                    Eff3DActor.New(this, this.FM.Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
                 }
                 this.arrestor += f3;
                 if (this.arrestor > f2) {

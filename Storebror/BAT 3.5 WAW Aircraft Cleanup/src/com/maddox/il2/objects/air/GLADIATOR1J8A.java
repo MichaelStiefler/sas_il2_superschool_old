@@ -16,12 +16,10 @@ public class GLADIATOR1J8A extends GLADIATOR {
         Property.set(class1, "yearService", 1939F);
         Property.set(class1, "yearExpired", 1943F);
         Property.set(class1, "FlightModel", "FlightModels/GladiatorMkI.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitJ8A.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitJ8A.class });
         Property.set(class1, "LOSElevation", 0.8472F);
         Property.set(class1, "originCountry", PaintScheme.countryFinland);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
-        weaponsRegister(class1, "default", new String[] { "MGunBrowning303sipzl 600", "MGunBrowning303sipzl 600", "MGunBrowning303k 400", "MGunBrowning303k 400" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
     }
 }

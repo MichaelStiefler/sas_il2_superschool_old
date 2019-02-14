@@ -24,7 +24,7 @@ public class YAK_9DD extends YAK implements TypeBNZFighter {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        YAK_9DD.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {

@@ -3,10 +3,8 @@ package com.maddox.il2.objects.air;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Eff3DActor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.objects.sounds.Voice;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class IL_2N extends IL_2 {
@@ -33,30 +31,30 @@ public class IL_2N extends IL_2 {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = true;
-        ((FlightModelMain) (super.FM)).CT.dvCockpitDoor = 0.75F;
+        this.FM.CT.bHasCockpitDoorControl = true;
+        this.FM.CT.dvCockpitDoor = 0.75F;
     }
 
     public void update(float f) {
         World.cur();
-        if ((this == World.getPlayerAircraft()) && (super.FM.turret.length > 0) && (((FlightModelMain) (super.FM)).AS.astatePilotStates[1] < 90) && super.FM.turret[0].bIsAIControlled && ((super.FM.getOverload() > 7F) || (super.FM.getOverload() < -0.7F))) {
+        if ((this == World.getPlayerAircraft()) && (this.FM.turret.length > 0) && (this.FM.AS.astatePilotStates[1] < 90) && this.FM.turret[0].bIsAIControlled && ((this.FM.getOverload() > 7F) || (this.FM.getOverload() < -0.7F))) {
             Voice.speakRearGunShake();
         }
-        if (super.FM.getSpeed() > 5F) {
-            this.hierMesh().chunkSetAngles("SlatL_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 11F, 0.0F, 1.2F), 0.0F);
-            this.hierMesh().chunkSetAngles("SlatR_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 11F, 0.0F, 1.2F), 0.0F);
+        if (this.FM.getSpeed() > 5F) {
+            this.hierMesh().chunkSetAngles("SlatL_D0", 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.2F), 0.0F);
+            this.hierMesh().chunkSetAngles("SlatR_D0", 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.2F), 0.0F);
         }
-        if (((FlightModelMain) (super.FM)).CT.getArrestor() > 0.2F) {
-            if (((FlightModelMain) (super.FM)).Gears.arrestorVAngle != 0.0F) {
-                float f1 = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.arrestorVAngle, -26F, 11F, 1.0F, 0.0F);
+        if (this.FM.CT.getArrestor() > 0.2F) {
+            if (this.FM.Gears.arrestorVAngle != 0.0F) {
+                float f1 = Aircraft.cvt(this.FM.Gears.arrestorVAngle, -26F, 11F, 1.0F, 0.0F);
                 this.arrestor = (0.8F * this.arrestor) + (0.2F * f1);
                 this.moveArrestorHook(this.arrestor);
             } else {
-                float f2 = (-42F * ((FlightModelMain) (super.FM)).Gears.arrestorVSink) / 37F;
-                if ((f2 < 0.0F) && (super.FM.getSpeedKMH() > 60F)) {
-                    Eff3DActor.New(this, ((FlightModelMain) (super.FM)).Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
+                float f2 = (-42F * this.FM.Gears.arrestorVSink) / 37F;
+                if ((f2 < 0.0F) && (this.FM.getSpeedKMH() > 60F)) {
+                    Eff3DActor.New(this, this.FM.Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
                 }
-                if ((f2 > 0.0F) && (((FlightModelMain) (super.FM)).CT.getArrestor() < 0.95F)) {
+                if ((f2 > 0.0F) && (this.FM.CT.getArrestor() < 0.95F)) {
                     f2 = 0.0F;
                 }
                 if (f2 > 0.0F) {
@@ -78,7 +76,7 @@ public class IL_2N extends IL_2 {
     private float arrestor;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = IL_2N.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "IL2");
         Property.set(class1, "meshName", "3do/plane/Il-2N(Multi1)/hier.him");

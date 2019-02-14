@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class MIG_3POKRYSHKIN extends MIG_3 implements TypeAcePlane {
@@ -11,9 +10,9 @@ public class MIG_3POKRYSHKIN extends MIG_3 implements TypeAcePlane {
     }
 
     public void update(float f) {
-        if (super.FM.getSpeed() > 5F) {
-            this.hierMesh().chunkSetAngles("SlatL_D0", Aircraft.cvt(super.FM.getAOA(), 6.8F, 11F, 0.0F, 0.9F), 0.0F, 0.0F);
-            this.hierMesh().chunkSetAngles("SlatR_D0", Aircraft.cvt(super.FM.getAOA(), 6.8F, 11F, 0.0F, 0.9F), 0.0F, 0.0F);
+        if (this.FM.getSpeed() > 5F) {
+            this.hierMesh().chunkSetAngles("SlatL_D0", Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 0.9F), 0.0F, 0.0F);
+            this.hierMesh().chunkSetAngles("SlatR_D0", Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 0.9F), 0.0F, 0.0F);
         }
         if (Math.abs(this.flapps - this.kangle) > 0.01F) {
             this.flapps = this.kangle;
@@ -21,13 +20,13 @@ public class MIG_3POKRYSHKIN extends MIG_3 implements TypeAcePlane {
             this.hierMesh().chunkSetAngles("OilRad1_D0", 0.0F, -20F * this.kangle, 0.0F);
             this.hierMesh().chunkSetAngles("OilRad2_D0", 0.0F, -20F * this.kangle, 0.0F);
         }
-        this.kangle = (0.95F * this.kangle) + (0.05F * ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator());
+        this.kangle = (0.95F * this.kangle) + (0.05F * this.FM.EI.engines[0].getControlRadiator());
         super.update(f);
     }
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        super.FM.Skill = 3;
+        this.FM.Skill = 3;
     }
 
     private float kangle;

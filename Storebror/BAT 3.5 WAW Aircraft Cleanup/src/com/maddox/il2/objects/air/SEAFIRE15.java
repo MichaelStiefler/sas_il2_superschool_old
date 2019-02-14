@@ -16,7 +16,7 @@ public class SEAFIRE15 extends SeafireLate {
         this.resetYPRmodifier();
         Aircraft.xyz[2] = 0.1385F * paramFloat;
         this.hierMesh().chunkSetLocate("Hook3_D0", Aircraft.xyz, Aircraft.ypr);
-        super.arrestor = paramFloat;
+        this.arrestor = paramFloat;
     }
 
     static {

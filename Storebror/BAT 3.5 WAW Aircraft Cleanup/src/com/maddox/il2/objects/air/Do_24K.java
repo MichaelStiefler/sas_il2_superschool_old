@@ -19,7 +19,7 @@ public class Do_24K extends Do_24X implements TypeSeaPlane, TypeTransport, TypeB
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f1 > 60F) {
                     f1 = 60F;
                     flag = false;
@@ -38,7 +38,7 @@ public class Do_24K extends Do_24X implements TypeSeaPlane, TypeTransport, TypeB
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f1 > 60F) {
                     f1 = 60F;
                     flag = false;
@@ -57,7 +57,7 @@ public class Do_24K extends Do_24X implements TypeSeaPlane, TypeTransport, TypeB
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -52F) {
                     f = -52F;
                     flag = false;
@@ -83,17 +83,17 @@ public class Do_24K extends Do_24X implements TypeSeaPlane, TypeTransport, TypeB
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 2: // '\002'
-                super.FM.turret[0].setHealth(f);
+            case 2:
+                this.FM.turret[0].setHealth(f);
                 break;
 
-            case 3: // '\003'
-                super.FM.turret[1].setHealth(f);
-                super.FM.turret[2].setHealth(f);
+            case 3:
+                this.FM.turret[1].setHealth(f);
+                this.FM.turret[2].setHealth(f);
                 break;
 
-            case 4: // '\004'
-                super.FM.turret[3].setHealth(f);
+            case 4:
+                this.FM.turret[3].setHealth(f);
                 break;
         }
     }

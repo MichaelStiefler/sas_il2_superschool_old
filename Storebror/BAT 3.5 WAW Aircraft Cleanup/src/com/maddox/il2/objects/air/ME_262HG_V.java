@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import java.util.ArrayList;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Maneuver;
 import com.maddox.il2.ai.air.Pilot;
@@ -50,15 +49,15 @@ public class ME_262HG_V extends ME_262HGII implements TypeX4Carrier {
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (((super.FM instanceof RealFlightModel) && ((RealFlightModel) super.FM).isRealMode()) || !flag || !(super.FM instanceof Pilot)) {
+        if (((this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode()) || !flag || !(this.FM instanceof Pilot)) {
             return;
         }
-        Pilot pilot = (Pilot) super.FM;
+        Pilot pilot = (Pilot) this.FM;
         if ((pilot.get_maneuver() == 63) && (((Maneuver) (pilot)).target != null)) {
             Point3d point3d = new Point3d(((FlightModelMain) (((Maneuver) (pilot)).target)).Loc);
-            point3d.sub(((FlightModelMain) (super.FM)).Loc);
-            ((FlightModelMain) (super.FM)).Or.transformInv(point3d);
-            if ((((((Tuple3d) (point3d)).x > 4000D) && (((Tuple3d) (point3d)).x < 5500D)) || ((((Tuple3d) (point3d)).x > 100D) && (((Tuple3d) (point3d)).x < 5000D) && (World.Rnd().nextFloat() < 0.33F))) && (Time.current() > (this.tX4Prev + 10000L))) {
+            point3d.sub(this.FM.Loc);
+            this.FM.Or.transformInv(point3d);
+            if ((((point3d.x > 4000D) && (point3d.x < 5500D)) || ((point3d.x > 100D) && (point3d.x < 5000D) && (World.Rnd().nextFloat() < 0.33F))) && (Time.current() > (this.tX4Prev + 10000L))) {
                 this.bToFire = true;
                 this.tX4Prev = Time.current();
             }
@@ -121,23 +120,23 @@ public class ME_262HG_V extends ME_262HGII implements TypeX4Carrier {
     }
 
     public static void moveGear(HierMesh hiermesh, float f, float f1, float f2) {
-        moveGear(hiermesh, f, f1, f2, true);
+        ME_262HG_V.moveGear(hiermesh, f, f1, f2, true);
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2, ((FlightModelMain) (super.FM)).CT.GearControl > 0.5F);
+        ME_262HG_V.moveGear(this.hierMesh(), f, f1, f2, this.FM.CT.GearControl > 0.5F);
     }
 
     public static void moveGear(HierMesh hiermesh, float f, boolean flag) {
-        moveGear(hiermesh, f, f, f, flag);
+        ME_262HG_V.moveGear(hiermesh, f, f, f, flag);
     }
 
     public static void moveGear(HierMesh hiermesh, float f) {
-        moveGear(hiermesh, f, f, f, true);
+        ME_262HG_V.moveGear(hiermesh, f, f, f, true);
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f, ((FlightModelMain) (super.FM)).CT.GearControl > 0.5F);
+        ME_262HG_V.moveGear(this.hierMesh(), f, this.FM.CT.GearControl > 0.5F);
     }
 
     public void moveCockpitDoor(float f) {
@@ -152,9 +151,9 @@ public class ME_262HG_V extends ME_262HGII implements TypeX4Carrier {
     }
 
     protected void moveFan(float f) {
-        for (int i = 0; i < ((FlightModelMain) (super.FM)).EI.getNum(); i++) {
-            super.propPos[i] = (super.propPos[i] + (57.3F * ((FlightModelMain) (super.FM)).EI.engines[i].getw() * f)) % 360F;
-            this.hierMesh().chunkSetAngles(Aircraft.Props[i][0], 0.0F, -super.propPos[i], 0.0F);
+        for (int i = 0; i < this.FM.EI.getNum(); i++) {
+            this.propPos[i] = (this.propPos[i] + (57.3F * this.FM.EI.engines[i].getw() * f)) % 360F;
+            this.hierMesh().chunkSetAngles(Aircraft.Props[i][0], 0.0F, -this.propPos[i], 0.0F);
         }
 
     }

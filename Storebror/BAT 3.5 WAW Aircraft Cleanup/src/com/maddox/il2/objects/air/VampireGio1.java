@@ -7,8 +7,6 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class VampireGio1 extends Scheme1 implements TypeFighter, TypeBNZFighter, TypeStormovik {
@@ -18,7 +16,7 @@ public class VampireGio1 extends Scheme1 implements TypeFighter, TypeBNZFighter,
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.endsWith("default")) {
+        if (this.thisWeaponsName.endsWith("default")) {
             this.hierMesh().chunkVisible("Pilon1_D0", false);
             this.hierMesh().chunkVisible("Pilon2_D0", false);
             this.hierMesh().chunkVisible("Pilon3_D0", false);
@@ -28,7 +26,7 @@ public class VampireGio1 extends Scheme1 implements TypeFighter, TypeBNZFighter,
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
@@ -49,7 +47,7 @@ public class VampireGio1 extends Scheme1 implements TypeFighter, TypeBNZFighter,
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        VampireGio1.moveGear(this.hierMesh(), f);
     }
 
     protected void moveElevator(float f) {
@@ -65,7 +63,7 @@ public class VampireGio1 extends Scheme1 implements TypeFighter, TypeBNZFighter,
     protected void moveRudder(float f) {
         this.hierMesh().chunkSetAngles("Rudder1_D0", 0.0F, -20F * f, 0.0F);
         this.hierMesh().chunkSetAngles("Rudder2_D0", 0.0F, -20F * f, 0.0F);
-        if (((FlightModelMain) (super.FM)).CT.getGear() > 0.8F) {
+        if (this.FM.CT.getGear() > 0.8F) {
             this.hierMesh().chunkSetAngles("GearC6_D0", 0.0F, 0.0F, -40F * f);
         }
     }
@@ -90,7 +88,7 @@ public class VampireGio1 extends Scheme1 implements TypeFighter, TypeBNZFighter,
                     this.getEnergyPastArmor(World.Rnd().nextFloat(12.7F, 12.7F) / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot);
                 } else if (s.endsWith("g1")) {
                     this.getEnergyPastArmor(World.Rnd().nextFloat(20F, 60F) / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot);
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 2);
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 2);
                     if (shot.power <= 0.0F) {
                         this.doRicochetBack(shot);
                     }
@@ -99,23 +97,23 @@ public class VampireGio1 extends Scheme1 implements TypeFighter, TypeBNZFighter,
                 this.debuggunnery("Controls: Hit..");
                 int i = s.charAt(10) - 48;
                 switch (i) {
-                    case 1: // '\001'
-                    case 2: // '\002'
+                    case 1:
+                    case 2:
                         if ((this.getEnergyPastArmor(0.99F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
                             this.debuggunnery("Controls: Ailerones Controls: Out..");
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                            this.FM.AS.setControlsDamage(shot.initiator, 0);
                         }
                         break;
 
-                    case 3: // '\003'
-                    case 4: // '\004'
+                    case 3:
+                    case 4:
                         if ((this.getEnergyPastArmor(1.22F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
                             this.debuggunnery("Controls: Rudder Controls: Disabled / Strings Broken..");
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
+                            this.FM.AS.setControlsDamage(shot.initiator, 2);
                         }
                         if ((this.getEnergyPastArmor(1.22F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
                             this.debuggunnery("Controls: Elevator Controls: Disabled..");
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
+                            this.FM.AS.setControlsDamage(shot.initiator, 1);
                         }
                         break;
                 }
@@ -124,36 +122,36 @@ public class VampireGio1 extends Scheme1 implements TypeFighter, TypeBNZFighter,
                 if (s.endsWith("bloc")) {
                     this.getEnergyPastArmor(World.Rnd().nextFloat(0.0F, 60F) / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot);
                 }
-                if (s.endsWith("cams") && (this.getEnergyPastArmor(0.45F, shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[0].getCylindersRatio() * 20F))) {
-                    ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
-                    this.debuggunnery("Engine Module: Engine Cams Hit, " + ((FlightModelMain) (super.FM)).EI.engines[0].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[0].getCylinders() + " Left..");
+                if (s.endsWith("cams") && (this.getEnergyPastArmor(0.45F, shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[0].getCylindersRatio() * 20F))) {
+                    this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
+                    this.debuggunnery("Engine Module: Engine Cams Hit, " + this.FM.EI.engines[0].getCylindersOperable() + "/" + this.FM.EI.engines[0].getCylinders() + " Left..");
                     if (World.Rnd().nextFloat() < (shot.power / 24000F)) {
-                        ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
+                        this.FM.AS.hitEngine(shot.initiator, 0, 2);
                         this.debuggunnery("Engine Module: Engine Cams Hit - Engine Fires..");
                     }
                     if ((shot.powerType == 3) && (World.Rnd().nextFloat() < 0.75F)) {
-                        ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 1);
+                        this.FM.AS.hitEngine(shot.initiator, 0, 1);
                         this.debuggunnery("Engine Module: Engine Cams Hit (2) - Engine Fires..");
                     }
                 }
                 if (s.endsWith("eqpt") && (World.Rnd().nextFloat() < (shot.power / 24000F))) {
-                    ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 3);
+                    this.FM.AS.hitEngine(shot.initiator, 0, 3);
                     this.debuggunnery("Engine Module: Hit - Engine Fires..");
                 }
                 if (!s.endsWith("exht")) {
-                    ;
+
                 }
             } else if (s.startsWith("xxhyd")) {
-                ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 3);
+                this.FM.AS.setInternalDamage(shot.initiator, 3);
             } else if (s.startsWith("xxmgun0")) {
                 int j = s.charAt(7) - 49;
                 if (this.getEnergyPastArmor(0.5F, shot) > 0.0F) {
                     this.debuggunnery("Armament: Machine Gun (" + j + ") Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(0, j);
+                    this.FM.AS.setJamBullets(0, j);
                     this.getEnergyPastArmor(World.Rnd().nextFloat(0.5F, 23.325F), shot);
                 }
             } else if (s.startsWith("xxpnm")) {
-                ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 1);
+                this.FM.AS.setInternalDamage(shot.initiator, 1);
             } else if (s.startsWith("xxspar")) {
                 Aircraft.debugprintln(this, "*** Spar Construction: Hit..");
                 if (s.startsWith("xxsparli") && (World.Rnd().nextFloat(0.0F, 0.115F) < shot.mass) && (this.getEnergyPastArmor(6.8F * World.Rnd().nextFloat(1.0F, 1.5F), shot) > 0.0F)) {
@@ -191,13 +189,13 @@ public class VampireGio1 extends Scheme1 implements TypeFighter, TypeBNZFighter,
             } else if (s.startsWith("xxtank")) {
                 int k = s.charAt(6) - 49;
                 if ((this.getEnergyPastArmor(0.1F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
-                    if (((FlightModelMain) (super.FM)).AS.astateTankStates[k] == 0) {
+                    if (this.FM.AS.astateTankStates[k] == 0) {
                         this.debuggunnery("Fuel Tank (" + k + "): Pierced..");
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, k, 1);
-                        ((FlightModelMain) (super.FM)).AS.doSetTankState(shot.initiator, k, 1);
+                        this.FM.AS.hitTank(shot.initiator, k, 1);
+                        this.FM.AS.doSetTankState(shot.initiator, k, 1);
                     }
                     if ((shot.powerType == 3) && (World.Rnd().nextFloat() < 0.1F)) {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, k, 2);
+                        this.FM.AS.hitTank(shot.initiator, k, 2);
                         this.debuggunnery("Fuel Tank (" + k + "): Hit..");
                     }
                 }
@@ -205,21 +203,21 @@ public class VampireGio1 extends Scheme1 implements TypeFighter, TypeBNZFighter,
         } else if (s.startsWith("xcf") || s.startsWith("xcockpit")) {
             this.hitChunk("CF", shot);
             if (s.startsWith("xcockpit")) {
-                if (((Tuple3d) (point3d)).x > 2D) {
+                if (point3d.x > 2D) {
                     if (World.Rnd().nextFloat() < 0.2F) {
-                        ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 4);
+                        this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 4);
                     }
                 } else {
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 1);
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 1);
                 }
-            } else if (((Tuple3d) (point3d)).x > 2.5D) {
+            } else if (point3d.x > 2.5D) {
                 if (World.Rnd().nextFloat() < 0.2F) {
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x40);
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x40);
                 }
-            } else if (((Tuple3d) (point3d)).y > 0.0D) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 8);
+            } else if (point3d.y > 0.0D) {
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 8);
             } else {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x20);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x20);
             }
         } else if (s.startsWith("xtail")) {
             if (this.chunkDamageVisible("Tail1") < 3) {
@@ -280,11 +278,11 @@ public class VampireGio1 extends Scheme1 implements TypeFighter, TypeBNZFighter,
         } else if (s.startsWith("xgear")) {
             if (s.endsWith("1") && (World.Rnd().nextFloat() < 0.05F)) {
                 this.debuggunnery("Hydro System: Disabled..");
-                ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 0);
+                this.FM.AS.setInternalDamage(shot.initiator, 0);
             }
             if (s.endsWith("2") && (World.Rnd().nextFloat() < 0.1F) && (this.getEnergyPastArmor(World.Rnd().nextFloat(1.2F, 3.435F), shot) > 0.0F)) {
                 this.debuggunnery("Undercarriage: Stuck..");
-                ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 3);
+                this.FM.AS.setInternalDamage(shot.initiator, 3);
             }
         } else if (s.startsWith("xpilot") || s.startsWith("xhead")) {
             byte byte0 = 0;
@@ -303,15 +301,15 @@ public class VampireGio1 extends Scheme1 implements TypeFighter, TypeBNZFighter,
     }
 
     public void update(float f) {
-        if (Config.isUSE_RENDER() && ((FlightModelMain) (super.FM)).AS.isMaster()) {
-            if ((((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput() > 0.8F) && (((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6)) {
-                if (((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput() > 0.95F) {
-                    ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 3);
+        if (Config.isUSE_RENDER() && this.FM.AS.isMaster()) {
+            if ((this.FM.EI.engines[0].getPowerOutput() > 0.8F) && (this.FM.EI.engines[0].getStage() == 6)) {
+                if (this.FM.EI.engines[0].getPowerOutput() > 0.95F) {
+                    this.FM.AS.setSootState(this, 0, 3);
                 } else {
-                    ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 2);
+                    this.FM.AS.setSootState(this, 0, 2);
                 }
             } else {
-                ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 0);
+                this.FM.AS.setSootState(this, 0, 0);
             }
         }
         super.update(f);
@@ -319,18 +317,18 @@ public class VampireGio1 extends Scheme1 implements TypeFighter, TypeBNZFighter,
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
-                ((FlightModelMain) (super.FM)).EI.engines[0].setEngineDies(actor);
+            case 19:
+                this.FM.EI.engines[0].setEngineDies(actor);
                 return super.cutFM(i, j, actor);
 
-            case 11: // '\013'
+            case 11:
                 this.cut("StabL");
                 this.cut("StabR");
-                super.FM.cut(17, j, actor);
-                super.FM.cut(18, j, actor);
+                this.FM.cut(17, j, actor);
+                this.FM.cut(18, j, actor);
                 break;
 
-            case 13: // '\r'
+            case 13:
                 return false;
         }
         return super.cutFM(i, j, actor);
@@ -338,7 +336,7 @@ public class VampireGio1 extends Scheme1 implements TypeFighter, TypeBNZFighter,
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (super.FM.getAltitude() < 500F) {
+        if (this.FM.getAltitude() < 500F) {
             this.hierMesh().chunkVisible("HMask1_D0", false);
         } else {
             this.hierMesh().chunkVisible("HMask1_D0", this.hierMesh().isChunkVisible("Pilot1_D0"));
@@ -346,7 +344,7 @@ public class VampireGio1 extends Scheme1 implements TypeFighter, TypeBNZFighter,
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = VampireGio1.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Vampire");
         Property.set(class1, "meshName", "3DO/Plane/Vampire1(Multi1)/hier.him");

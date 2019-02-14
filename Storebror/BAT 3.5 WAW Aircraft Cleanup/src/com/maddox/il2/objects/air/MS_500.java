@@ -12,7 +12,6 @@ import com.maddox.il2.engine.HookNamed;
 import com.maddox.il2.engine.Landscape;
 import com.maddox.il2.engine.LightPointWorld;
 import com.maddox.il2.engine.Loc;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import com.maddox.sound.AudioStream;
@@ -28,7 +27,7 @@ public class MS_500 extends Scheme1 implements TypeScout, TypeTransport {
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (super.FM.getAltitude() < 3000F) {
+        if (this.FM.getAltitude() < 3000F) {
             this.hierMesh().chunkVisible("HMask1_D0", false);
         } else {
             this.hierMesh().chunkVisible("HMask1_D0", this.hierMesh().isChunkVisible("Pilot1_D0"));
@@ -43,18 +42,18 @@ public class MS_500 extends Scheme1 implements TypeScout, TypeTransport {
 
     public void moveWheelSink() {
         this.resetYPRmodifier();
-        Aircraft.xyz[2] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.5F, 0.0F, 0.5F);
+        Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.5F, 0.0F, 0.5F);
         this.hierMesh().chunkSetLocate("GearL3_D0", Aircraft.xyz, Aircraft.ypr);
-        float f = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.5F, 0.0F, 5F);
-        this.hierMesh().chunkSetAngles("GearL2_D0", 0.0F, floatindex(f, gearL2), 0.0F);
-        this.hierMesh().chunkSetAngles("GearL4_D0", 0.0F, floatindex(f, gearL4), 0.0F);
-        this.hierMesh().chunkSetAngles("GearL5_D0", 0.0F, floatindex(f, gearL5), 0.0F);
-        Aircraft.xyz[2] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 0.5F, 0.0F, 0.5F);
+        float f = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.5F, 0.0F, 5F);
+        this.hierMesh().chunkSetAngles("GearL2_D0", 0.0F, AircraftLH.floatindex(f, MS_500.gearL2), 0.0F);
+        this.hierMesh().chunkSetAngles("GearL4_D0", 0.0F, AircraftLH.floatindex(f, MS_500.gearL4), 0.0F);
+        this.hierMesh().chunkSetAngles("GearL5_D0", 0.0F, AircraftLH.floatindex(f, MS_500.gearL5), 0.0F);
+        Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.5F, 0.0F, 0.5F);
         this.hierMesh().chunkSetLocate("GearR3_D0", Aircraft.xyz, Aircraft.ypr);
-        f = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 0.5F, 0.0F, 5F);
-        this.hierMesh().chunkSetAngles("GearR2_D0", 0.0F, -floatindex(f, gearL2), 0.0F);
-        this.hierMesh().chunkSetAngles("GearR4_D0", 0.0F, -floatindex(f, gearL4), 0.0F);
-        this.hierMesh().chunkSetAngles("GearR5_D0", 0.0F, -floatindex(f, gearL5), 0.0F);
+        f = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.5F, 0.0F, 5F);
+        this.hierMesh().chunkSetAngles("GearR2_D0", 0.0F, -AircraftLH.floatindex(f, MS_500.gearL2), 0.0F);
+        this.hierMesh().chunkSetAngles("GearR4_D0", 0.0F, -AircraftLH.floatindex(f, MS_500.gearL4), 0.0F);
+        this.hierMesh().chunkSetAngles("GearR5_D0", 0.0F, -AircraftLH.floatindex(f, MS_500.gearL5), 0.0F);
     }
 
     protected void moveFlap(float f) {
@@ -116,7 +115,7 @@ public class MS_500 extends Scheme1 implements TypeScout, TypeTransport {
     }
 
     public void updateLLights() {
-        super.pos.getRender(Actor._tmpLoc);
+        this.pos.getRender(Actor._tmpLoc);
         if (this.lLight == null) {
             if (Actor._tmpLoc.getX() >= 1.0D) {
                 this.lLight = new LightPointWorld[4];
@@ -133,19 +132,19 @@ public class MS_500 extends Scheme1 implements TypeScout, TypeTransport {
             }
         } else {
             for (int j = 0; j < 4; j++) {
-                if (((FlightModelMain) (super.FM)).AS.astateLandingLightEffects[j] != null) {
-                    lLightLoc1.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-                    this.lLightHook[j].computePos(this, Actor._tmpLoc, lLightLoc1);
-                    lLightLoc1.get(lLightP1);
-                    lLightLoc1.set(2000D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-                    this.lLightHook[j].computePos(this, Actor._tmpLoc, lLightLoc1);
-                    lLightLoc1.get(lLightP2);
+                if (this.FM.AS.astateLandingLightEffects[j] != null) {
+                    MS_500.lLightLoc1.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+                    this.lLightHook[j].computePos(this, Actor._tmpLoc, MS_500.lLightLoc1);
+                    MS_500.lLightLoc1.get(MS_500.lLightP1);
+                    MS_500.lLightLoc1.set(2000D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+                    this.lLightHook[j].computePos(this, Actor._tmpLoc, MS_500.lLightLoc1);
+                    MS_500.lLightLoc1.get(MS_500.lLightP2);
                     Engine.land();
-                    if (Landscape.rayHitHQ(lLightP1, lLightP2, lLightPL)) {
-                        lLightPL.z++;
-                        lLightP2.interpolate(lLightP1, lLightPL, 0.95F);
-                        this.lLight[j].setPos(lLightP2);
-                        float f = (float) lLightP1.distance(lLightPL);
+                    if (Landscape.rayHitHQ(MS_500.lLightP1, MS_500.lLightP2, MS_500.lLightPL)) {
+                        MS_500.lLightPL.z++;
+                        MS_500.lLightP2.interpolate(MS_500.lLightP1, MS_500.lLightPL, 0.95F);
+                        this.lLight[j].setPos(MS_500.lLightP2);
+                        float f = (float) MS_500.lLightP1.distance(MS_500.lLightPL);
                         float f1 = (f * 0.5F) + 60F;
                         float f2 = 0.7F - ((0.8F * f * this.lightTime) / 2000F);
                         this.lLight[j].setEmit(f2, f1);
@@ -178,10 +177,10 @@ public class MS_500 extends Scheme1 implements TypeScout, TypeTransport {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 34: // '"'
+            case 34:
                 return super.cutFM(35, j, actor);
 
-            case 37: // '%'
+            case 37:
                 return super.cutFM(38, j, actor);
         }
         return super.cutFM(i, j, actor);
@@ -192,12 +191,12 @@ public class MS_500 extends Scheme1 implements TypeScout, TypeTransport {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
-                if (!((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+                if (!this.FM.AS.bIsAboutToBailout) {
                     this.hierMesh().chunkVisible("Gore1_D0", true);
                 }
                 break;

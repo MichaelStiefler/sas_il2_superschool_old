@@ -1,17 +1,16 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class Autogyro extends AutogyroX implements TypeScout, TypeTransport, TypeStormovik, TypeBomber {
 
     public Autogyro() {
-        bChangedPit = true;
+        Autogyro.bChangedPit = true;
         this.bDynamoOperational = true;
         this.dynamoOrient = 0.0F;
         this.bDynamoRotary = false;
-        prevWing = true;
+        Autogyro.prevWing = true;
     }
 
     protected void moveRudder(float f) {
@@ -30,13 +29,13 @@ public class Autogyro extends AutogyroX implements TypeScout, TypeTransport, Typ
 
     protected void moveFan(float f) {
         if (this.bDynamoOperational) {
-            this.pk = Math.abs((int) (((FlightModelMain) (super.FM)).Vwld.length() / 14D));
+            this.pk = Math.abs((int) (this.FM.Vwld.length() / 14D));
             if (this.pk >= 1) {
                 this.pk = 1;
             }
         }
-        if (prevWing) {
-            this.dynamoOrient = this.bDynamoRotary ? (this.dynamoOrient - 17.987F) % 360F : (float) (this.dynamoOrient - (((FlightModelMain) (super.FM)).Vwld.length() * 1.5444015264511108D)) % 360F;
+        if (Autogyro.prevWing) {
+            this.dynamoOrient = this.bDynamoRotary ? (this.dynamoOrient - 17.987F) % 360F : (float) (this.dynamoOrient - (this.FM.Vwld.length() * 1.5444015264511108D)) % 360F;
             this.hierMesh().chunkSetAngles("Prop2_D0", 0.0F, this.dynamoOrient, 0.0F);
         }
         super.moveFan(f);
@@ -49,9 +48,9 @@ public class Autogyro extends AutogyroX implements TypeScout, TypeTransport, Typ
 
     public void moveWingFold(float f) {
         if (f < 0.001F) {
-            prevWing = true;
+            Autogyro.prevWing = true;
         } else {
-            prevWing = false;
+            Autogyro.prevWing = false;
             this.hierMesh().chunkSetAngles("Prop2_D0", 0.0F, 0.0F, 0.0F);
         }
         this.moveWingFold(this.hierMesh(), f);

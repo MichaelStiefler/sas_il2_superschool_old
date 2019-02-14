@@ -27,18 +27,18 @@ public class I_185M82A extends I_185 {
 
     public static void moveGear(HierMesh hiermesh, float f, float f1, float f2) {
         hiermesh.chunkSetAngles("GearC2_D0", 0.0F, -65F * f2, 0.0F);
-        hiermesh.chunkSetAngles("GearC3_D0", 0.0F, cvt(f2, 0.02F, 0.1F, 0.0F, -65F), 0.0F);
-        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, cvt(f2, 0.02F, 0.1F, 0.0F, -65F), 0.0F);
+        hiermesh.chunkSetAngles("GearC3_D0", 0.0F, Aircraft.cvt(f2, 0.02F, 0.1F, 0.0F, -65F), 0.0F);
+        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(f2, 0.02F, 0.1F, 0.0F, -65F), 0.0F);
         hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 87F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearL7_D0", 0.0F, cvt(f, 0.02F, 0.1F, 0.0F, -85F), 0.0F);
+        hiermesh.chunkSetAngles("GearL7_D0", 0.0F, Aircraft.cvt(f, 0.02F, 0.1F, 0.0F, -85F), 0.0F);
         hiermesh.chunkSetAngles("GearL8_D0", 0.0F, -90F * f, 0.0F);
         hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 87F * f1, 0.0F);
-        hiermesh.chunkSetAngles("GearR7_D0", 0.0F, cvt(f1, 0.02F, 0.1F, 0.0F, -85F), 0.0F);
+        hiermesh.chunkSetAngles("GearR7_D0", 0.0F, Aircraft.cvt(f1, 0.02F, 0.1F, 0.0F, -85F), 0.0F);
         hiermesh.chunkSetAngles("GearR8_D0", 0.0F, -90F * f1, 0.0F);
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        I_185M82A.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public void onAircraftLoaded() {
@@ -73,14 +73,9 @@ public class I_185M82A extends I_185 {
         Property.set(class1, "yearService", 1942F);
         Property.set(class1, "yearExpired", 1945F);
         Property.set(class1, "FlightModel", "FlightModels/I-185M-82A.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitI_185M82.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitI_185M82.class });
         Property.set(class1, "LOSElevation", 0.89135F);
-        weaponTriggersRegister(class1, new int[] { 1, 1, 1, 3, 3, 3, 3, 9, 9, 2, 2, 2, 2, 2, 2 });
-        weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_CANNON03", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalDev01", "_ExternalDev02", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06" });
-        weaponsRegister(class1, "default", new String[] { "MGunShVAKsi 220", "MGunShVAKsi 220", "MGunShVAKsi 220", null, null, null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "4fab100", new String[] { "MGunShVAKsi 220", "MGunShVAKsi 220", "MGunShVAKsi 220", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "2fab250", new String[] { "MGunShVAKsi 220", "MGunShVAKsi 220", "MGunShVAKsi 220", "BombGunFAB250 1", "BombGunFAB250 1", null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "6rs82", new String[] { "MGunShVAKsi 220", "MGunShVAKsi 220", "MGunShVAKsi 220", null, null, null, null, "PylonRO_82_3", "PylonRO_82_3", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 1, 1, 1, 3, 3, 3, 3, 9, 9, 2, 2, 2, 2, 2, 2 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_CANNON03", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalDev01", "_ExternalDev02", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06" });
     }
 }

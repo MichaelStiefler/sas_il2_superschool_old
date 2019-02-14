@@ -6,7 +6,6 @@ import com.maddox.il2.ai.Explosion;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.weapons.GunEmpty;
 import com.maddox.rts.Property;
 
@@ -21,8 +20,8 @@ public class Hawk75H extends Scheme1 implements TypeStormovik {
             default:
                 break;
 
-            case 0: // '\0'
-                if (!((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+            case 0:
+                if (!this.FM.AS.bIsAboutToBailout) {
                     this.hierMesh().chunkVisible("Pilot1_D0", false);
                     this.hierMesh().chunkVisible("Head1_D0", false);
                     this.hierMesh().chunkVisible("HMask1_D0", false);
@@ -44,7 +43,7 @@ public class Hawk75H extends Scheme1 implements TypeStormovik {
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (super.FM.getAltitude() < 3000F) {
+        if (this.FM.getAltitude() < 3000F) {
             this.hierMesh().chunkVisible("HMask1_D0", false);
         } else {
             this.hierMesh().chunkVisible("HMask1_D0", this.hierMesh().isChunkVisible("Pilot1_D0"));
@@ -56,18 +55,18 @@ public class Hawk75H extends Scheme1 implements TypeStormovik {
         if (explosion.chunkName != null) {
             if (explosion.chunkName.startsWith("WingL")) {
                 if (World.Rnd().nextFloat() < 0.02F) {
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 2);
+                    this.FM.AS.setJamBullets(0, 2);
                 }
                 if (World.Rnd().nextFloat() < 0.02F) {
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 3);
+                    this.FM.AS.setJamBullets(0, 3);
                 }
             }
             if (explosion.chunkName.startsWith("WingR")) {
                 if (World.Rnd().nextFloat() < 0.02F) {
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 4);
+                    this.FM.AS.setJamBullets(0, 4);
                 }
                 if (World.Rnd().nextFloat() < 0.02F) {
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 5);
+                    this.FM.AS.setJamBullets(0, 5);
                 }
             }
         }
@@ -85,36 +84,36 @@ public class Hawk75H extends Scheme1 implements TypeStormovik {
             if (s.startsWith("xxcontrols")) {
                 if (s.endsWith("1")) {
                     if (World.Rnd().nextFloat() < 0.3F) {
-                        ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 6);
+                        this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 6);
                         Aircraft.debugprintln(this, "*** Engine Controls Out..");
                     }
                     if (World.Rnd().nextFloat() < 0.3F) {
-                        ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 1);
+                        this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 1);
                         Aircraft.debugprintln(this, "*** Engine Controls Out..");
                     }
                 } else if (s.endsWith("2")) {
                     if ((World.Rnd().nextFloat() < 0.5F) && (this.getEnergyPastArmor(0.1F, shot) > 0.0F)) {
-                        ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
+                        this.FM.AS.setControlsDamage(shot.initiator, 1);
                         Aircraft.debugprintln(this, "*** Evelator Controls Out..");
                     }
                     if ((World.Rnd().nextFloat() < 0.5F) && (this.getEnergyPastArmor(0.1F, shot) > 0.0F)) {
-                        ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                        this.FM.AS.setControlsDamage(shot.initiator, 0);
                         Aircraft.debugprintln(this, "*** Ailerones Controls Out..");
                     }
                     if ((World.Rnd().nextFloat() < 0.5F) && (this.getEnergyPastArmor(0.1F, shot) > 0.0F)) {
-                        ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
+                        this.FM.AS.setControlsDamage(shot.initiator, 2);
                         Aircraft.debugprintln(this, "*** Rudder Controls Out..");
                     }
                     if (World.Rnd().nextFloat() < 0.3F) {
-                        ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 6);
+                        this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 6);
                         Aircraft.debugprintln(this, "*** Engine Controls Out..");
                     }
                     if (World.Rnd().nextFloat() < 0.3F) {
-                        ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 1);
+                        this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 1);
                         Aircraft.debugprintln(this, "*** Engine Controls Out..");
                     }
                 } else if (s.endsWith("3") && (World.Rnd().nextFloat() < 0.5F) && (this.getEnergyPastArmor(0.1F, shot) > 0.0F)) {
-                    ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
+                    this.FM.AS.setControlsDamage(shot.initiator, 2);
                     Aircraft.debugprintln(this, "*** Rudder Controls Out..");
                 }
                 return;
@@ -122,28 +121,28 @@ public class Hawk75H extends Scheme1 implements TypeStormovik {
             if (s.startsWith("xxeng")) {
                 if (s.startsWith("xxengkart") && (this.getEnergyPastArmor(0.1F, shot) > 0.0F)) {
                     if (World.Rnd().nextFloat() < (shot.power / 200000F)) {
-                        ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, 0);
+                        this.FM.AS.setEngineStuck(shot.initiator, 0);
                         Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Engine Stucks..");
                     }
                     if (World.Rnd().nextFloat() < (shot.power / 50000F)) {
-                        ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
+                        this.FM.AS.hitEngine(shot.initiator, 0, 2);
                         Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Engine Damaged..");
                     }
                     if (World.Rnd().nextFloat() < (shot.power / 28000F)) {
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, 1);
-                        Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Cylinder Feed Out, " + ((FlightModelMain) (super.FM)).EI.engines[0].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[0].getCylinders() + " Left..");
+                        this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, 1);
+                        Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Cylinder Feed Out, " + this.FM.EI.engines[0].getCylindersOperable() + "/" + this.FM.EI.engines[0].getCylinders() + " Left..");
                     }
-                    ((FlightModelMain) (super.FM)).EI.engines[0].setReadyness(shot.initiator, ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 48000F));
-                    Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() + "..");
+                    this.FM.EI.engines[0].setReadyness(shot.initiator, this.FM.EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 48000F));
+                    Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + "..");
                 }
-                if (s.startsWith("xxengcy") && (this.getEnergyPastArmor(0.45F, shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[0].getCylindersRatio() * 1.75F))) {
-                    ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
-                    Aircraft.debugprintln(this, "*** Engine Cylinders Hit, " + ((FlightModelMain) (super.FM)).EI.engines[0].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[0].getCylinders() + " Left..");
-                    if (((FlightModelMain) (super.FM)).AS.astateEngineStates[0] < 1) {
-                        ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 1);
+                if (s.startsWith("xxengcy") && (this.getEnergyPastArmor(0.45F, shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[0].getCylindersRatio() * 1.75F))) {
+                    this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
+                    Aircraft.debugprintln(this, "*** Engine Cylinders Hit, " + this.FM.EI.engines[0].getCylindersOperable() + "/" + this.FM.EI.engines[0].getCylinders() + " Left..");
+                    if (this.FM.AS.astateEngineStates[0] < 1) {
+                        this.FM.AS.hitEngine(shot.initiator, 0, 1);
                     }
                     if (World.Rnd().nextFloat() < (shot.power / 24000F)) {
-                        ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 3);
+                        this.FM.AS.hitEngine(shot.initiator, 0, 3);
                         Aircraft.debugprintln(this, "*** Engine Cylinders Hit - Engine Fires..");
                     }
                     this.getEnergyPastArmor(25F, shot);
@@ -158,9 +157,9 @@ public class Hawk75H extends Scheme1 implements TypeStormovik {
                     i = 1;
                 }
                 if ((this.getEnergyPastArmor(0.1F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, i, 1);
+                    this.FM.AS.hitTank(shot.initiator, i, 1);
                     if ((shot.powerType == 3) && (World.Rnd().nextFloat() < 0.11F)) {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, i, 2);
+                        this.FM.AS.hitTank(shot.initiator, i, 2);
                     }
                 }
                 return;
@@ -169,31 +168,31 @@ public class Hawk75H extends Scheme1 implements TypeStormovik {
                 byte byte0 = 0;
                 int k = s.charAt(6) - 48;
                 switch (k) {
-                    case 1: // '\001'
+                    case 1:
                         byte0 = 2;
                         break;
 
-                    case 2: // '\002'
+                    case 2:
                         byte0 = 1;
                         break;
 
-                    case 3: // '\003'
+                    case 3:
                         byte0 = 3;
                         break;
 
-                    case 4: // '\004'
+                    case 4:
                         byte0 = 0;
                         break;
 
-                    case 5: // '\005'
+                    case 5:
                         byte0 = 4;
                         break;
 
-                    case 6: // '\006'
+                    case 6:
                         byte0 = 5;
                         break;
                 }
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(0, byte0);
+                this.FM.AS.setJamBullets(0, byte0);
                 this.getEnergyPastArmor(25.1F, shot);
                 return;
             }
@@ -204,27 +203,27 @@ public class Hawk75H extends Scheme1 implements TypeStormovik {
                         default:
                             break;
 
-                        case 1: // '\001'
-                            ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 1);
+                        case 1:
+                            this.FM.AS.setJamBullets(0, 1);
                             break;
 
-                        case 2: // '\002'
+                        case 2:
                             if (World.Rnd().nextFloat() < 0.5F) {
-                                ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 2);
+                                this.FM.AS.setJamBullets(0, 2);
                             } else {
-                                ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 3);
+                                this.FM.AS.setJamBullets(0, 3);
                             }
                             break;
 
-                        case 3: // '\003'
-                            ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 0);
+                        case 3:
+                            this.FM.AS.setJamBullets(0, 0);
                             break;
 
-                        case 4: // '\004'
+                        case 4:
                             if (World.Rnd().nextFloat() < 0.5F) {
-                                ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 4);
+                                this.FM.AS.setJamBullets(0, 4);
                             } else {
-                                ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 5);
+                                this.FM.AS.setJamBullets(0, 5);
                             }
                             break;
                     }
@@ -368,13 +367,13 @@ public class Hawk75H extends Scheme1 implements TypeStormovik {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 11: // '\013'
-            case 33: // '!'
-            case 34: // '"'
-            case 35: // '#'
-            case 36: // '$'
-            case 37: // '%'
-            case 38: // '&'
+            case 11:
+            case 33:
+            case 34:
+            case 35:
+            case 36:
+            case 37:
+            case 38:
                 this.hierMesh().chunkVisible("Wire_D0", false);
                 break;
         }
@@ -386,7 +385,7 @@ public class Hawk75H extends Scheme1 implements TypeStormovik {
             this.hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -10F * this.kangle, 0.0F);
         }
 
-        this.kangle = (0.95F * this.kangle) + (0.05F * ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator());
+        this.kangle = (0.95F * this.kangle) + (0.05F * this.FM.EI.engines[0].getControlRadiator());
         super.update(f);
     }
 

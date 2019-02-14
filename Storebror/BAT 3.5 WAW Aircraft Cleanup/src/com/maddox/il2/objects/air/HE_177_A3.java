@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.World;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
@@ -21,31 +20,31 @@ public class HE_177_A3 extends HE_177X implements TypeBomber, TypeTransport, Typ
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.startsWith("A51") || super.thisWeaponsName.startsWith("A53") || super.thisWeaponsName.startsWith("A54")) {
-            if (super.thisWeaponsName.indexOf("293") != -1) {
+        if (this.thisWeaponsName.startsWith("A51") || this.thisWeaponsName.startsWith("A53") || this.thisWeaponsName.startsWith("A54")) {
+            if (this.thisWeaponsName.indexOf("293") != -1) {
                 this.hierMesh().chunkVisible("PylonHs293C", true);
-            } else if (super.thisWeaponsName.indexOf("FritzX") != -1) {
+            } else if (this.thisWeaponsName.indexOf("FritzX") != -1) {
                 this.hierMesh().chunkVisible("PylonFritzXC", true);
-            } else if (super.thisWeaponsName.indexOf("LT50") != -1) {
+            } else if (this.thisWeaponsName.indexOf("LT50") != -1) {
                 this.hierMesh().chunkVisible("PylonLT50L", true);
                 this.hierMesh().chunkVisible("PylonLT50R", true);
                 this.hierMesh().chunkVisible("PylonLT50C1", true);
                 this.hierMesh().chunkVisible("PylonLT50C2", true);
                 this.hasToKG = true;
-            } else if (super.thisWeaponsName.indexOf("SC2500") != -1) {
+            } else if (this.thisWeaponsName.indexOf("SC2500") != -1) {
                 this.hierMesh().chunkVisible("PylonSC2500C", true);
             } else {
                 this.hierMesh().chunkVisible("PylonC", true);
             }
         }
-        if (super.thisWeaponsName.startsWith("A52") || super.thisWeaponsName.startsWith("A53")) {
-            if (super.thisWeaponsName.indexOf("293") != -1) {
+        if (this.thisWeaponsName.startsWith("A52") || this.thisWeaponsName.startsWith("A53")) {
+            if (this.thisWeaponsName.indexOf("293") != -1) {
                 this.hierMesh().chunkVisible("PylonHs293L", true);
                 this.hierMesh().chunkVisible("PylonHs293R", true);
-            } else if ((super.thisWeaponsName.indexOf("FritzX") != -1) || (super.thisWeaponsName.indexOf("SC") != -1)) {
+            } else if ((this.thisWeaponsName.indexOf("FritzX") != -1) || (this.thisWeaponsName.indexOf("SC") != -1)) {
                 this.hierMesh().chunkVisible("PylonFritzXL", true);
                 this.hierMesh().chunkVisible("PylonFritzXR", true);
-            } else if (super.thisWeaponsName.indexOf("LT50") != -1) {
+            } else if (this.thisWeaponsName.indexOf("LT50") != -1) {
                 this.hierMesh().chunkVisible("PylonLT50C1", true);
                 this.hierMesh().chunkVisible("PylonLT50C2", true);
                 this.hasToKG = true;
@@ -54,8 +53,8 @@ public class HE_177_A3 extends HE_177X implements TypeBomber, TypeTransport, Typ
                 this.hierMesh().chunkVisible("PylonR", true);
             }
         }
-        if (super.thisWeaponsName.startsWith("A5")) {
-            ((FlightModelMain) (super.FM)).CT.bHasBayDoorControl = false;
+        if (this.thisWeaponsName.startsWith("A5")) {
+            this.FM.CT.bHasBayDoorControl = false;
         }
     }
 
@@ -66,10 +65,10 @@ public class HE_177_A3 extends HE_177X implements TypeBomber, TypeTransport, Typ
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if ((Main3D.cur3D().cockpitCurIndx() != 3) && (Main3D.cur3D().cockpitCurIndx() != 4) && (Time.current() > super.ventralGunnerTargetCheckTime)) {
-            super.ventralGunnerTargetCheckTime = Time.current() + World.Rnd().nextLong(5000L, 20000L);
-            if (super.FM.turret.length != 0) {
-                if (super.FM.turret[2].target == null) {
+        if ((Main3D.cur3D().cockpitCurIndx() != 3) && (Main3D.cur3D().cockpitCurIndx() != 4) && (Time.current() > this.ventralGunnerTargetCheckTime)) {
+            this.ventralGunnerTargetCheckTime = Time.current() + World.Rnd().nextLong(5000L, 20000L);
+            if (this.FM.turret.length != 0) {
+                if (this.FM.turret[2].target == null) {
                     this.setVentralGunnerDirection(0);
                 } else {
                     this.setVentralGunnerDirection(1);
@@ -79,7 +78,7 @@ public class HE_177_A3 extends HE_177X implements TypeBomber, TypeTransport, Typ
     }
 
     public boolean isSalvo() {
-        return super.thisWeaponsName.indexOf("spread") == -1;
+        return this.thisWeaponsName.indexOf("spread") == -1;
     }
 
     public void typeBomberAdjAltitudePlus() {
@@ -92,7 +91,7 @@ public class HE_177_A3 extends HE_177X implements TypeBomber, TypeTransport, Typ
             if (this.fShipSpeed > 35F) {
                 this.fShipSpeed = 35F;
             }
-            ToKGUtils.setTorpedoGyroAngle(super.FM, this.fAOB, this.fShipSpeed);
+            ToKGUtils.setTorpedoGyroAngle(this.FM, this.fAOB, this.fShipSpeed);
             HUD.log(AircraftHotKeys.hudLogWeaponId, "TOKGSpeed", new Object[] { new Integer((int) this.fShipSpeed) });
             return;
         } else {
@@ -111,7 +110,7 @@ public class HE_177_A3 extends HE_177X implements TypeBomber, TypeTransport, Typ
             if (this.fShipSpeed < 0.0F) {
                 this.fShipSpeed = 0.0F;
             }
-            ToKGUtils.setTorpedoGyroAngle(super.FM, this.fAOB, this.fShipSpeed);
+            ToKGUtils.setTorpedoGyroAngle(this.FM, this.fAOB, this.fShipSpeed);
             HUD.log(AircraftHotKeys.hudLogWeaponId, "TOKGSpeed", new Object[] { new Integer((int) this.fShipSpeed) });
             return;
         } else {
@@ -130,15 +129,15 @@ public class HE_177_A3 extends HE_177X implements TypeBomber, TypeTransport, Typ
             if (this.fAOB > 180F) {
                 this.fAOB = 180F;
             }
-            ToKGUtils.setTorpedoGyroAngle(super.FM, this.fAOB, this.fShipSpeed);
+            ToKGUtils.setTorpedoGyroAngle(this.FM, this.fAOB, this.fShipSpeed);
             HUD.log(AircraftHotKeys.hudLogWeaponId, "TOKGAOB", new Object[] { new Integer((int) this.fAOB) });
             return;
         }
-        super.fSightCurSideslip += 0.05F;
-        if (super.fSightCurSideslip > 3F) {
-            super.fSightCurSideslip = 3F;
+        this.fSightCurSideslip += 0.05F;
+        if (this.fSightCurSideslip > 3F) {
+            this.fSightCurSideslip = 3F;
         }
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Float(super.fSightCurSideslip * 10F) });
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Float(this.fSightCurSideslip * 10F) });
     }
 
     public void typeBomberAdjSideslipMinus() {
@@ -151,7 +150,7 @@ public class HE_177_A3 extends HE_177X implements TypeBomber, TypeTransport, Typ
             if (this.fAOB < -180F) {
                 this.fAOB = -180F;
             }
-            ToKGUtils.setTorpedoGyroAngle(super.FM, this.fAOB, this.fShipSpeed);
+            ToKGUtils.setTorpedoGyroAngle(this.FM, this.fAOB, this.fShipSpeed);
             HUD.log(AircraftHotKeys.hudLogWeaponId, "TOKGAOB", new Object[] { new Integer((int) this.fAOB) });
             return;
         } else {
@@ -170,7 +169,7 @@ public class HE_177_A3 extends HE_177X implements TypeBomber, TypeTransport, Typ
             if (this.fShipSpeed > 35F) {
                 this.fShipSpeed = 35F;
             }
-            ToKGUtils.setTorpedoGyroAngle(super.FM, this.fAOB, this.fShipSpeed);
+            ToKGUtils.setTorpedoGyroAngle(this.FM, this.fAOB, this.fShipSpeed);
             HUD.log(AircraftHotKeys.hudLogWeaponId, "TOKGSpeed", new Object[] { new Integer((int) this.fShipSpeed) });
             return;
         } else {
@@ -189,7 +188,7 @@ public class HE_177_A3 extends HE_177X implements TypeBomber, TypeTransport, Typ
             if (this.fShipSpeed < 0.0F) {
                 this.fShipSpeed = 0.0F;
             }
-            ToKGUtils.setTorpedoGyroAngle(super.FM, this.fAOB, this.fShipSpeed);
+            ToKGUtils.setTorpedoGyroAngle(this.FM, this.fAOB, this.fShipSpeed);
             HUD.log(AircraftHotKeys.hudLogWeaponId, "TOKGSpeed", new Object[] { new Integer((int) this.fShipSpeed) });
             return;
         } else {
@@ -208,7 +207,7 @@ public class HE_177_A3 extends HE_177X implements TypeBomber, TypeTransport, Typ
             if (this.fShipSpeed > 35F) {
                 this.fShipSpeed = 35F;
             }
-            ToKGUtils.setTorpedoGyroAngle(super.FM, this.fAOB, this.fShipSpeed);
+            ToKGUtils.setTorpedoGyroAngle(this.FM, this.fAOB, this.fShipSpeed);
             HUD.log(AircraftHotKeys.hudLogWeaponId, "TOKGSpeed", new Object[] { new Integer((int) this.fShipSpeed) });
             return;
         } else {
@@ -227,7 +226,7 @@ public class HE_177_A3 extends HE_177X implements TypeBomber, TypeTransport, Typ
             if (this.fShipSpeed < 0.0F) {
                 this.fShipSpeed = 0.0F;
             }
-            ToKGUtils.setTorpedoGyroAngle(super.FM, this.fAOB, this.fShipSpeed);
+            ToKGUtils.setTorpedoGyroAngle(this.FM, this.fAOB, this.fShipSpeed);
             HUD.log(AircraftHotKeys.hudLogWeaponId, "TOKGSpeed", new Object[] { new Integer((int) this.fShipSpeed) });
             return;
         } else {

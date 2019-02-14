@@ -14,7 +14,7 @@ public class YAK_1PFLight extends YAK implements TypeTNBFighter {
     }
 
     public void update_windluk(float f) {
-        super.update(f);
+        this.update(f);
     }
 
     static {

@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Tuple3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.engine.Actor;
@@ -10,7 +9,6 @@ import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.Orient;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Property;
 import com.maddox.sas1946.il2.util.Reflection;
@@ -19,7 +17,7 @@ public class J2F_Duck_Super extends Scheme1 implements TypeScout, TypeAmphibious
 
     public J2F_Duck_Super() {
         this.startWithGearDown = false;
-        bChangedPit = true;
+        J2F_Duck_Super.bChangedPit = true;
         this.arrestor = 0.0F;
         this.flapps = 0.0F;
     }
@@ -61,36 +59,36 @@ public class J2F_Duck_Super extends Scheme1 implements TypeScout, TypeAmphibious
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 1: // '\001'
-                super.FM.turret[0].bIsOperable = false;
+            case 1:
+                this.FM.turret[0].bIsOperable = false;
                 break;
         }
     }
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            J2F_Duck_Super.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            J2F_Duck_Super.bChangedPit = true;
         }
     }
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
@@ -100,7 +98,7 @@ public class J2F_Duck_Super extends Scheme1 implements TypeScout, TypeAmphibious
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (super.FM.getAltitude() < 5000F) {
+        if (this.FM.getAltitude() < 5000F) {
             this.hierMesh().chunkVisible("HMask1_D0", false);
             this.hierMesh().chunkVisible("HMask2_D0", false);
         } else {
@@ -111,8 +109,8 @@ public class J2F_Duck_Super extends Scheme1 implements TypeScout, TypeAmphibious
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
-                ((FlightModelMain) (super.FM)).CT.bHasArrestorControl = false;
+            case 19:
+                this.FM.CT.bHasArrestorControl = false;
                 break;
         }
         return super.cutFM(i, j, actor);
@@ -124,17 +122,17 @@ public class J2F_Duck_Super extends Scheme1 implements TypeScout, TypeAmphibious
     }
 
     public void update(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getArrestor() > 0.2F) {
-            if (((FlightModelMain) (super.FM)).Gears.arrestorVAngle != 0.0F) {
-                float f1 = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.arrestorVAngle, -26F, 11F, 1.0F, 0.0F);
+        if (this.FM.CT.getArrestor() > 0.2F) {
+            if (this.FM.Gears.arrestorVAngle != 0.0F) {
+                float f1 = Aircraft.cvt(this.FM.Gears.arrestorVAngle, -26F, 11F, 1.0F, 0.0F);
                 this.arrestor = (0.8F * this.arrestor) + (0.2F * f1);
                 this.moveArrestorHook(this.arrestor);
             } else {
-                float f2 = (-42F * ((FlightModelMain) (super.FM)).Gears.arrestorVSink) / 37F;
-                if ((f2 < 0.0F) && (super.FM.getSpeedKMH() > 60F)) {
-                    Eff3DActor.New(this, ((FlightModelMain) (super.FM)).Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
+                float f2 = (-42F * this.FM.Gears.arrestorVSink) / 37F;
+                if ((f2 < 0.0F) && (this.FM.getSpeedKMH() > 60F)) {
+                    Eff3DActor.New(this, this.FM.Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
                 }
-                if ((f2 > 0.0F) && (((FlightModelMain) (super.FM)).CT.getArrestor() < 0.95F)) {
+                if ((f2 > 0.0F) && (this.FM.CT.getArrestor() < 0.95F)) {
                     f2 = 0.0F;
                 }
                 if (f2 > 0.0F) {
@@ -152,16 +150,16 @@ public class J2F_Duck_Super extends Scheme1 implements TypeScout, TypeAmphibious
         }
         super.update(f);
         if (this.startWithGearDown) {
-            Reflection.setFloat(((FlightModelMain) (super.FM)).CT, "airBrake", 1.0F);
-            ((FlightModelMain) (super.FM)).CT.AirBrakeControl = 1.0F;
+            Reflection.setFloat(this.FM.CT, "airBrake", 1.0F);
+            this.FM.CT.AirBrakeControl = 1.0F;
             this.startWithGearDown = false;
         }
     }
 
     public void setOnGround(Point3d point3d, Orient orient, Vector3d vector3d) {
-        if (!Engine.cur.land.isWater(((Tuple3d) (point3d)).x, ((Tuple3d) (point3d)).y)) {
+        if (!Engine.cur.land.isWater(point3d.x, point3d.y)) {
             this.moveGearAmf(1.0F);
-            ((FlightModelMain) (super.FM)).CT.AirBrakeControl = 1.0F;
+            this.FM.CT.AirBrakeControl = 1.0F;
             this.startWithGearDown = true;
             point3d.z += 0.49242201447486877D;
             orient.increment(0.0F, 7.3528F, 0.0F);
@@ -191,7 +189,7 @@ public class J2F_Duck_Super extends Scheme1 implements TypeScout, TypeAmphibious
         float f = -af[0];
         float f1 = af[1];
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 if (f < -31F) {
                     f = -31F;
                     flag = false;
@@ -219,8 +217,8 @@ public class J2F_Duck_Super extends Scheme1 implements TypeScout, TypeAmphibious
     }
 
     public static void moveGearAmf(HierMesh hiermesh, float f) {
-        moveGearAmf(hiermesh, Aircraft.cvt(f, 0.01F, 0.91F, 0.0F, 1.0F), 0, true);
-        moveGearAmf(hiermesh, Aircraft.cvt(f, 0.09F, 0.98F, 0.0F, 1.0F), 1, true);
+        J2F_Duck_Super.moveGearAmf(hiermesh, Aircraft.cvt(f, 0.01F, 0.91F, 0.0F, 1.0F), 0, true);
+        J2F_Duck_Super.moveGearAmf(hiermesh, Aircraft.cvt(f, 0.09F, 0.98F, 0.0F, 1.0F), 1, true);
     }
 
     protected static final void moveGearAmf(HierMesh hiermesh, float f, int i, boolean flag) {
@@ -235,8 +233,8 @@ public class J2F_Duck_Super extends Scheme1 implements TypeScout, TypeAmphibious
 
     protected void moveGearAmf(float f) {
         float f1 = Aircraft.cvt(f, 0.01F, 0.91F, 0.0F, 1.0F);
-        moveGearAmf(this.hierMesh(), f1, 0, true);
-        moveGearAmf(this.hierMesh(), f1, 1, true);
+        J2F_Duck_Super.moveGearAmf(this.hierMesh(), f1, 0, true);
+        J2F_Duck_Super.moveGearAmf(this.hierMesh(), f1, 1, true);
     }
 
     public static boolean bChangedPit = false;

@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Property;
 
@@ -12,9 +11,9 @@ public class N1K1JA extends N1K {
 
     public void update(float f) {
         super.update(f);
-        float f1 = ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator();
-        if (Math.abs(super.flapps - f1) > 0.01F) {
-            super.flapps = f1;
+        float f1 = this.FM.EI.engines[0].getControlRadiator();
+        if (Math.abs(this.flapps - f1) > 0.01F) {
+            this.flapps = f1;
             for (int i = 1; i < 11; i++) {
                 this.hierMesh().chunkSetAngles("Cowflap" + i + "_D0", 0.0F, -20F * f1, 0.0F);
             }
@@ -24,7 +23,7 @@ public class N1K1JA extends N1K {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (((FlightModelMain) (super.FM)).CT.Weapons[3] != null) {
+        if (this.FM.CT.Weapons[3] != null) {
             this.hierMesh().chunkVisible("RackL_D0", true);
             this.hierMesh().chunkVisible("RackR_D0", true);
         }

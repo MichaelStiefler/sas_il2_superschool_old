@@ -23,7 +23,7 @@ public class B_25D5 extends B_25_Strafer implements TypeBomber, TypeStormovik, T
         this.bpos = 1.0F;
         this.bcurpos = 1.0F;
         this.btme = -1L;
-        bChangedPit = false;
+        B_25D5.bChangedPit = false;
         this.fSightCurForwardAngle = 0.0F;
         this.fSightCurSideslip = 0.0F;
         this.fSightCurAltitude = 3000F;
@@ -33,26 +33,26 @@ public class B_25D5 extends B_25_Strafer implements TypeBomber, TypeStormovik, T
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.hierMesh().chunkVisible("Pilot4_D0", false);
                 this.hierMesh().chunkVisible("HMask4_D0", false);
                 this.hierMesh().chunkVisible("Pilot4_D1", true);
                 break;
 
-            case 5: // '\005'
+            case 5:
                 this.hierMesh().chunkVisible("Pilot6_D0", false);
                 this.hierMesh().chunkVisible("HMask6_D0", false);
                 this.hierMesh().chunkVisible("Pilot6_D1", true);
@@ -117,14 +117,14 @@ public class B_25D5 extends B_25_Strafer implements TypeBomber, TypeStormovik, T
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            B_25D5.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            B_25D5.bChangedPit = true;
         }
     }
 
@@ -136,10 +136,10 @@ public class B_25D5 extends B_25_Strafer implements TypeBomber, TypeStormovik, T
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 return false;
 
-            case 1: // '\001'
+            case 1:
                 if (f1 < 0.0F) {
                     f1 = 0.0F;
                     flag = false;
@@ -150,7 +150,7 @@ public class B_25D5 extends B_25_Strafer implements TypeBomber, TypeStormovik, T
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f1 < -88F) {
                     f1 = -88F;
                     flag = false;
@@ -217,11 +217,11 @@ public class B_25D5 extends B_25_Strafer implements TypeBomber, TypeStormovik, T
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 3: // '\003'
+            case 3:
                 this.FM.turret[1].bIsOperable = false;
                 break;
 
-            case 4: // '\004'
+            case 4:
                 this.FM.turret[2].bIsOperable = false;
                 break;
         }

@@ -91,7 +91,7 @@ public class Short_Sunderland extends Sunderlandxyz implements TypeSailPlane, Ty
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -60F) {
                     f = -60F;
                     flag = false;
@@ -110,7 +110,7 @@ public class Short_Sunderland extends Sunderlandxyz implements TypeSailPlane, Ty
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if ((f >= 3F) && (f < 11F)) {
                     if (f1 < 27F) {
                         flag = false;
@@ -144,7 +144,7 @@ public class Short_Sunderland extends Sunderlandxyz implements TypeSailPlane, Ty
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -60F) {
                     f = -60F;
                     flag = false;
@@ -170,15 +170,15 @@ public class Short_Sunderland extends Sunderlandxyz implements TypeSailPlane, Ty
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 2: // '\002'
+            case 2:
                 this.FM.turret[0].bIsOperable = false;
                 break;
 
-            case 4: // '\004'
+            case 4:
                 this.FM.turret[1].bIsOperable = false;
                 break;
 
-            case 5: // '\005'
+            case 5:
                 this.FM.turret[2].bIsOperable = false;
                 break;
         }
@@ -186,15 +186,15 @@ public class Short_Sunderland extends Sunderlandxyz implements TypeSailPlane, Ty
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 2: // '\002'
+            case 2:
                 this.FM.turret[0].setHealth(f);
                 break;
 
-            case 4: // '\004'
+            case 4:
                 this.FM.turret[1].setHealth(f);
                 break;
 
-            case 5: // '\005'
+            case 5:
                 this.FM.turret[2].setHealth(f);
                 break;
         }

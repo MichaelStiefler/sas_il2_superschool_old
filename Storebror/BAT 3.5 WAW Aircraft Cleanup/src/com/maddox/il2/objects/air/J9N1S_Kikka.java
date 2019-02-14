@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Actor;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class J9N1S_Kikka extends KikkaS123 implements TypeFighter, TypeBNZFighter {
@@ -12,28 +11,28 @@ public class J9N1S_Kikka extends KikkaS123 implements TypeFighter, TypeBNZFighte
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            J9N1S_Kikka.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            J9N1S_Kikka.bChangedPit = true;
         }
     }
 
     public void doMurderPilot(int i) {
         super.doMurderPilot(i);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            J9N1S_Kikka.bChangedPit = true;
         }
     }
 
     public static boolean bChangedPit = false;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = J9N1S_Kikka.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Kikka");
         Property.set(class1, "meshName", "3DO/Plane/J9N1-S-Kikka/hier.him");

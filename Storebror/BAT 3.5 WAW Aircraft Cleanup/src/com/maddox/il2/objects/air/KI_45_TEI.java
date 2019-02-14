@@ -33,7 +33,7 @@ public class KI_45_TEI extends KI_45 implements TypeJazzPlayer {
     }
 
     public Vector3d getAttackVector() {
-        return ATTACK_VECTOR;
+        return KI_45_TEI.ATTACK_VECTOR;
     }
 
     private static final Vector3d ATTACK_VECTOR = new Vector3d(-190D, 0.0D, -300D);

@@ -10,7 +10,7 @@ public class Martin_WH3 extends Martin_WH3xyz implements TypeBomber {
 
     public Martin_WH3() {
         this.bChangedExts = false;
-        bChangedPit = true;
+        Martin_WH3.bChangedPit = true;
         this.fSightSetForwardAngle = 0.0F;
         this.fSightCurSideslip = 0.0F;
         this.fSightCurForwardAngle = 0.0F;

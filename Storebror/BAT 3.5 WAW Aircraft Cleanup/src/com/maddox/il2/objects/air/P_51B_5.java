@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Property;
 
@@ -24,11 +23,9 @@ public class P_51B_5 extends P_51 {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = true;
-        ((FlightModelMain) (super.FM)).CT.dvCockpitDoor = 0.75F;
+        this.FM.CT.bHasCockpitDoorControl = true;
+        this.FM.CT.dvCockpitDoor = 0.75F;
     }
-
-    static Class class$com$maddox$il2$objects$air$P_51A;
 
     static {
         Class class1 = P_51B_5.class;

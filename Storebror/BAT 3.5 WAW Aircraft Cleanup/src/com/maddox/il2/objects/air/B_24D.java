@@ -24,7 +24,7 @@ public class B_24D extends B_24 implements TypeBomber {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
+            case 19:
                 this.killPilot(this, 4);
                 break;
         }
@@ -46,14 +46,14 @@ public class B_24D extends B_24 implements TypeBomber {
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            B_24D.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            B_24D.bChangedPit = true;
         }
     }
 
@@ -65,7 +65,7 @@ public class B_24D extends B_24 implements TypeBomber {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -85F) {
                     f = -85F;
                     flag = false;
@@ -84,7 +84,7 @@ public class B_24D extends B_24 implements TypeBomber {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f1 < -0F) {
                     f1 = -0F;
                     flag = false;
@@ -95,7 +95,7 @@ public class B_24D extends B_24 implements TypeBomber {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f1 < -70F) {
                     f1 = -70F;
                     flag = false;
@@ -106,7 +106,7 @@ public class B_24D extends B_24 implements TypeBomber {
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f < -35F) {
                     f = -35F;
                     flag = false;
@@ -125,7 +125,7 @@ public class B_24D extends B_24 implements TypeBomber {
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 if (f < -67F) {
                     f = -67F;
                     flag = false;
@@ -144,7 +144,7 @@ public class B_24D extends B_24 implements TypeBomber {
                 }
                 break;
 
-            case 5: // '\005'
+            case 5:
                 if (f < -85F) {
                     f = -85F;
                     flag = false;
@@ -170,19 +170,19 @@ public class B_24D extends B_24 implements TypeBomber {
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 2: // '\002'
+            case 2:
                 this.FM.turret[0].bIsOperable = false;
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.FM.turret[1].bIsOperable = false;
                 break;
 
-            case 4: // '\004'
+            case 4:
                 this.FM.turret[2].bIsOperable = false;
                 break;
 
-            case 5: // '\005'
+            case 5:
                 this.FM.turret[3].bIsOperable = false;
                 this.FM.turret[4].bIsOperable = false;
                 break;
@@ -214,7 +214,7 @@ public class B_24D extends B_24 implements TypeBomber {
         if (this.fSightCurForwardAngle > 85F) {
             this.fSightCurForwardAngle = 85F;
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = B_24D.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         if (this.bSightAutomation) {
             this.typeBomberToggleAutomation();
@@ -226,7 +226,7 @@ public class B_24D extends B_24 implements TypeBomber {
         if (this.fSightCurForwardAngle < 0.0F) {
             this.fSightCurForwardAngle = 0.0F;
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = B_24D.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         if (this.bSightAutomation) {
             this.typeBomberToggleAutomation();
@@ -263,7 +263,7 @@ public class B_24D extends B_24 implements TypeBomber {
             this.fSightCurAltitude = 50000F;
         }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int) this.fSightCurAltitude) });
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = B_24D.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
     }
 
     public void typeBomberAdjAltitudeMinus() {
@@ -272,7 +272,7 @@ public class B_24D extends B_24 implements TypeBomber {
             this.fSightCurAltitude = 1000F;
         }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int) this.fSightCurAltitude) });
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = B_24D.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
     }
 
     public void typeBomberAdjSpeedReset() {
@@ -305,13 +305,13 @@ public class B_24D extends B_24 implements TypeBomber {
         if (this.fSightCurReadyness < 1.0F) {
             this.fSightCurReadyness += 0.0333333F * f;
         } else if (this.bSightAutomation) {
-            this.fSightCurDistance -= toMetersPerSecond(this.fSightCurSpeed) * f;
+            this.fSightCurDistance -= B_24D.toMetersPerSecond(this.fSightCurSpeed) * f;
             if (this.fSightCurDistance < 0.0F) {
                 this.fSightCurDistance = 0.0F;
                 this.typeBomberToggleAutomation();
             }
-            this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / toMeters(this.fSightCurAltitude)));
-            if (this.fSightCurDistance < (toMetersPerSecond(this.fSightCurSpeed) * Math.sqrt(toMeters(this.fSightCurAltitude) * 0.2038736F))) {
+            this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / B_24D.toMeters(this.fSightCurAltitude)));
+            if (this.fSightCurDistance < (B_24D.toMetersPerSecond(this.fSightCurSpeed) * Math.sqrt(B_24D.toMeters(this.fSightCurAltitude) * 0.2038736F))) {
                 this.bSightBombDump = true;
             }
             if (this.bSightBombDump) {

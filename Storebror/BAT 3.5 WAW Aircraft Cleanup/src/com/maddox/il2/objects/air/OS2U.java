@@ -18,21 +18,21 @@ public class OS2U extends OS2Uxyz implements TypeDiveBomber, TypeScout {
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            OS2U.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            OS2U.bChangedPit = true;
         }
     }
 
     public void doMurderPilot(int i) {
         super.doMurderPilot(i);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            OS2U.bChangedPit = true;
         }
     }
 
@@ -41,7 +41,7 @@ public class OS2U extends OS2Uxyz implements TypeDiveBomber, TypeScout {
         float f = -af[0];
         float f1 = af[1];
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 if (f < -40F) {
                     f = -40F;
                     flag = false;

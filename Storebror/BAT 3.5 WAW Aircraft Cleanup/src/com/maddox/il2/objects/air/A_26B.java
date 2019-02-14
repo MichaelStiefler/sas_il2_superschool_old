@@ -17,7 +17,7 @@ public class A_26B extends A_26 implements TypeStormovik, TypeStormovikArmored {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 f2 = (Math.abs(f) / 66F) * 2.5F;
                 if (f1 > f2) {
                     f1 = f2;
@@ -29,7 +29,7 @@ public class A_26B extends A_26 implements TypeStormovik, TypeStormovikArmored {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (Math.abs(f) > 170F) {
                     f2 += Math.min(Math.abs(f) - 170F, 4F);
                 }
@@ -53,9 +53,9 @@ public class A_26B extends A_26 implements TypeStormovik, TypeStormovikArmored {
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 1: // '\001'
-                super.FM.turret[0].setHealth(f);
-                super.FM.turret[1].setHealth(f);
+            case 1:
+                this.FM.turret[0].setHealth(f);
+                this.FM.turret[1].setHealth(f);
                 break;
         }
     }
@@ -77,7 +77,7 @@ public class A_26B extends A_26 implements TypeStormovik, TypeStormovikArmored {
             }
         }
         for (int i = 1; i < 4; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -89,12 +89,12 @@ public class A_26B extends A_26 implements TypeStormovik, TypeStormovikArmored {
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
         this.FM.AS.wantBeaconsNet(true);
-        if (super.thisWeaponsName.startsWith("PTO")) {
+        if (this.thisWeaponsName.startsWith("PTO")) {
             this.FM.M.massEmpty -= 100F;
             this.FM.M.fuel += 260F;
             this.hierMesh().chunkVisible("Turret1A_D0", false);
             this.hierMesh().chunkVisible("Turret1B_D0", false);
-            super.FM.turret[0].setHealth(0.0F);
+            this.FM.turret[0].setHealth(0.0F);
         } else {
             this.hierMesh().chunkVisible("Turret1A_D0", true);
             this.hierMesh().chunkVisible("Turret1B_D0", true);

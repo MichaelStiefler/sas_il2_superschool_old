@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Maneuver;
@@ -34,18 +33,18 @@ public class ME_410B extends ME_210 implements TypeBNZFighter, TypeStormovik, Ty
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (((FlightModelMain) (super.FM)).CT.Weapons[1] != null) {
-            this.g1 = ((FlightModelMain) (super.FM)).CT.Weapons[1][0];
+        if (this.FM.CT.Weapons[1] != null) {
+            this.g1 = this.FM.CT.Weapons[1][0];
         }
-        if (super.thisWeaponsName.endsWith("DTK")) {
+        if (this.thisWeaponsName.endsWith("DTK")) {
             this.hierMesh().chunkVisible("Rack_L", true);
             this.hierMesh().chunkVisible("Rack_R", true);
         } else {
             this.hierMesh().chunkVisible("Rack_L", false);
             this.hierMesh().chunkVisible("Rack_R", false);
         }
-        if (super.thisWeaponsName.startsWith("NJ") || super.thisWeaponsName.startsWith("nj")) {
-            ((FlightModelMain) (super.FM)).M.massEmpty += 60F;
+        if (this.thisWeaponsName.startsWith("NJ") || this.thisWeaponsName.startsWith("nj")) {
+            this.FM.M.massEmpty += 60F;
             this.hierMesh().chunkVisible("Fug1_D0", true);
             this.hierMesh().chunkVisible("Fug200_D0", true);
             this.hierMesh().chunkVisible("RadarOp_D0", true);
@@ -60,7 +59,7 @@ public class ME_410B extends ME_210 implements TypeBNZFighter, TypeStormovik, Ty
             this.hierMesh().chunkVisible("Pilot2_D0", true);
             this.hierMesh().chunkVisible("HMask2_D0", true);
         }
-        if (super.thisWeaponsName.startsWith("NJ_SMuzik")) {
+        if (this.thisWeaponsName.startsWith("NJ_SMuzik")) {
             this.hierMesh().chunkVisible("Turret1A_D0", false);
             this.hierMesh().chunkVisible("Turret1B_D0", false);
             this.hierMesh().chunkVisible("Turret2A_D0", false);
@@ -71,8 +70,8 @@ public class ME_410B extends ME_210 implements TypeBNZFighter, TypeStormovik, Ty
             this.hierMesh().chunkVisible("Turret2A_D0", true);
             this.hierMesh().chunkVisible("Turret2B_D0", true);
         }
-        if (super.thisWeaponsName.startsWith("SEA")) {
-            ((FlightModelMain) (super.FM)).M.massEmpty += 30F;
+        if (this.thisWeaponsName.startsWith("SEA")) {
+            this.FM.M.massEmpty += 30F;
             this.hierMesh().chunkVisible("Fug1C_D0", true);
             this.hierMesh().chunkVisible("Fug1L_D0", true);
             this.hierMesh().chunkVisible("Fug1R_D0", true);
@@ -81,14 +80,14 @@ public class ME_410B extends ME_210 implements TypeBNZFighter, TypeStormovik, Ty
             this.hierMesh().chunkVisible("Fug1L_D0", false);
             this.hierMesh().chunkVisible("Fug1R_D0", false);
         }
-        if (super.thisWeaponsName.startsWith("ZFR4")) {
+        if (this.thisWeaponsName.startsWith("ZFR4")) {
             this.hierMesh().chunkVisible("Telescope", true);
         } else {
             this.hierMesh().chunkVisible("Telescope", false);
         }
-        if (super.thisWeaponsName.startsWith("U4") || super.thisWeaponsName.startsWith("ZFR4_U4")) {
+        if (this.thisWeaponsName.startsWith("U4") || this.thisWeaponsName.startsWith("ZFR4_U4")) {
             this.hierMesh().chunkVisible("BK5_BARREL", true);
-            ((FlightModelMain) (super.FM)).M.massEmpty += 540F;
+            this.FM.M.massEmpty += 540F;
         } else {
             this.hierMesh().chunkVisible("BK5_BARREL", false);
         }
@@ -100,7 +99,7 @@ public class ME_410B extends ME_210 implements TypeBNZFighter, TypeStormovik, Ty
                 default:
                     break;
 
-                case 0: // '\0'
+                case 0:
                     if (this.g1.isShots()) {
                         this.oldbullets = this.g1.countBullets();
                         this.phase = 1;
@@ -108,7 +107,7 @@ public class ME_410B extends ME_210 implements TypeBNZFighter, TypeStormovik, Ty
                     }
                     break;
 
-                case 1: // '\001'
+                case 1:
                     this.disp += 12.6F * paramFloat;
                     this.resetYPRmodifier();
                     Aircraft.xyz[0] = this.disp;
@@ -118,7 +117,7 @@ public class ME_410B extends ME_210 implements TypeBNZFighter, TypeStormovik, Ty
                     }
                     break;
 
-                case 2: // '\002'
+                case 2:
                     this.disp -= 1.2F * paramFloat;
                     this.resetYPRmodifier();
                     Aircraft.xyz[0] = this.disp;
@@ -128,7 +127,7 @@ public class ME_410B extends ME_210 implements TypeBNZFighter, TypeStormovik, Ty
                     }
                     break;
 
-                case 3: // '\003'
+                case 3:
                     this.phase = 0;
                     break;
             }
@@ -138,7 +137,7 @@ public class ME_410B extends ME_210 implements TypeBNZFighter, TypeStormovik, Ty
                 default:
                     break;
 
-                case 0: // '\0'
+                case 0:
                     if (this.g1.isShots()) {
                         this.oldbullets = this.g1.countBullets();
                         this.phase = 1;
@@ -146,7 +145,7 @@ public class ME_410B extends ME_210 implements TypeBNZFighter, TypeStormovik, Ty
                     }
                     break;
 
-                case 1: // '\001'
+                case 1:
                     this.disp += 31.6F * paramFloat;
                     this.resetYPRmodifier();
                     Aircraft.xyz[0] = this.disp;
@@ -156,7 +155,7 @@ public class ME_410B extends ME_210 implements TypeBNZFighter, TypeStormovik, Ty
                     }
                     break;
 
-                case 2: // '\002'
+                case 2:
                     this.disp -= 5.2F * paramFloat;
                     this.resetYPRmodifier();
                     Aircraft.xyz[0] = this.disp;
@@ -166,7 +165,7 @@ public class ME_410B extends ME_210 implements TypeBNZFighter, TypeStormovik, Ty
                     }
                     break;
 
-                case 3: // '\003'
+                case 3:
                     this.phase = 0;
                     break;
             }
@@ -176,13 +175,13 @@ public class ME_410B extends ME_210 implements TypeBNZFighter, TypeStormovik, Ty
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if ((!(super.FM instanceof RealFlightModel) || !((RealFlightModel) super.FM).isRealMode()) && flag && (super.FM instanceof Pilot)) {
-            Pilot pilot = (Pilot) super.FM;
+        if ((!(this.FM instanceof RealFlightModel) || !((RealFlightModel) this.FM).isRealMode()) && flag && (this.FM instanceof Pilot)) {
+            Pilot pilot = (Pilot) this.FM;
             if ((pilot.get_maneuver() == 63) && (((Maneuver) (pilot)).target != null)) {
                 Point3d point3d = new Point3d(((FlightModelMain) (((Maneuver) (pilot)).target)).Loc);
-                point3d.sub(((FlightModelMain) (super.FM)).Loc);
-                ((FlightModelMain) (super.FM)).Or.transformInv(point3d);
-                if ((((((Tuple3d) (point3d)).x > 4000D) && (((Tuple3d) (point3d)).x < 5500D)) || ((((Tuple3d) (point3d)).x > 100D) && (((Tuple3d) (point3d)).x < 5000D) && (World.Rnd().nextFloat() < 0.33F))) && (Time.current() > (this.tX4Prev + 10000L))) {
+                point3d.sub(this.FM.Loc);
+                this.FM.Or.transformInv(point3d);
+                if ((((point3d.x > 4000D) && (point3d.x < 5500D)) || ((point3d.x > 100D) && (point3d.x < 5000D) && (World.Rnd().nextFloat() < 0.33F))) && (Time.current() > (this.tX4Prev + 10000L))) {
                     this.bToFire = true;
                     this.tX4Prev = Time.current();
                 }

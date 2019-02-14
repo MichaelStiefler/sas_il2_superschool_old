@@ -7,7 +7,6 @@ import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.game.HUD;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class YAK_3R extends YAK {
@@ -87,13 +86,13 @@ public class YAK_3R extends YAK {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
+            case 19:
                 this.bHasEngine = false;
                 this.FM.AS.setEngineDies(this, 1);
-                return this.cut(partNames()[i]);
+                return this.cut(Aircraft.partNames()[i]);
 
-            case 3: // '\003'
-            case 4: // '\004'
+            case 3:
+            case 4:
                 return false;
         }
         return super.cutFM(i, j, actor);
@@ -114,7 +113,7 @@ public class YAK_3R extends YAK {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        YAK_3R.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public void update(float f) {
@@ -145,16 +144,16 @@ public class YAK_3R extends YAK {
         }
     }
 
-    private boolean         bHasEngine;
-    private Eff3DActor      flame;
-    private Eff3DActor      dust;
-    private Eff3DActor      trail;
-    private Eff3DActor      sprite;
-    private boolean         bPowR;
-    private float           flapps;
+    private boolean    bHasEngine;
+    private Eff3DActor flame;
+    private Eff3DActor dust;
+    private Eff3DActor trail;
+    private Eff3DActor sprite;
+    private boolean    bPowR;
+    private float      flapps;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = YAK_3R.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Yak");
         Property.set(class1, "meshName", "3DO/Plane/Yak-3R(Multi1)/hier.him");
@@ -162,11 +161,9 @@ public class YAK_3R extends YAK {
         Property.set(class1, "yearService", 1944F);
         Property.set(class1, "yearExpired", 1948.5F);
         Property.set(class1, "FlightModel", "FlightModels/Yak-3R.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitYAK_3R.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitYAK_3R.class });
         Property.set(class1, "LOSElevation", 0.6576F);
-        weaponTriggersRegister(class1, new int[] { 1 });
-        weaponHooksRegister(class1, new String[] { "_CANNON01" });
-        weaponsRegister(class1, "default", new String[] { "MGunVYaki 60" });
-        weaponsRegister(class1, "none", new String[] { null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 1 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01" });
     }
 }

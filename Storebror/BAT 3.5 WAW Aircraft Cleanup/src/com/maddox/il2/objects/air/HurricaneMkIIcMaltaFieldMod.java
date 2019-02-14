@@ -47,8 +47,8 @@ public class HurricaneMkIIcMaltaFieldMod extends Hurricane implements TypeFighte
         if (this != World.getPlayerAircraft()) {
             return;
         }
-        if (this.hierMesh().chunkFindCheck(cps) >= 0) {
-            System.out.println(cpm);
+        if (this.hierMesh().chunkFindCheck(HurricaneMkIIcMaltaFieldMod.cps) >= 0) {
+            System.out.println(HurricaneMkIIcMaltaFieldMod.cpm);
             this.FM.M.massEmpty += 1000F;
         }
         this.Mk2Distance = Math.round(World.cur().userCoverMashineGun / 54.6805F) * 50F;
@@ -100,21 +100,21 @@ public class HurricaneMkIIcMaltaFieldMod extends Hurricane implements TypeFighte
     }
 
     private void hudLogTargetType(int i) {
-        if (i >= Mk2TargetWingspanText.length) {
+        if (i >= HurricaneMkIIcMaltaFieldMod.Mk2TargetWingspanText.length) {
             HUD.log(AircraftHotKeys.hudLogWeaponId, "Unknown Wingspan type \"" + i + "\" selected");
             return;
         }
-        if (Mk2TargetWingspanText[i].endsWith("ft.")) {
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan selected: " + Mk2TargetWingspanText[i]);
+        if (HurricaneMkIIcMaltaFieldMod.Mk2TargetWingspanText[i].endsWith("ft.")) {
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "Wingspan selected: " + HurricaneMkIIcMaltaFieldMod.Mk2TargetWingspanText[i]);
         } else {
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "Target selected: " + Mk2TargetWingspanText[i]);
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "Target selected: " + HurricaneMkIIcMaltaFieldMod.Mk2TargetWingspanText[i]);
         }
     }
 
     public void typeFighterAceMakerAdjSideslipPlus() {
         this.Mk2WingspanType++;
-        if (this.Mk2WingspanType >= Mk2TargetWingspanText.length) {
-            this.Mk2WingspanType = Mk2TargetWingspanText.length - 1;
+        if (this.Mk2WingspanType >= HurricaneMkIIcMaltaFieldMod.Mk2TargetWingspanText.length) {
+            this.Mk2WingspanType = HurricaneMkIIcMaltaFieldMod.Mk2TargetWingspanText.length - 1;
         }
         this.hudLogTargetType(this.Mk2WingspanType);
     }
@@ -197,13 +197,13 @@ public class HurricaneMkIIcMaltaFieldMod extends Hurricane implements TypeFighte
                 ai[i] = j;
             }
 
-            ByteArrayInputStream bytearrayinputstream = new ByteArrayInputStream(bai1);
+            ByteArrayInputStream bytearrayinputstream = new ByteArrayInputStream(HurricaneMkIIcMaltaFieldMod.bai1);
             BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(bytearrayinputstream, ai)));
-            cps = bufferedreader.readLine();
+            HurricaneMkIIcMaltaFieldMod.cps = bufferedreader.readLine();
             bufferedreader.close();
-            bytearrayinputstream = new ByteArrayInputStream(bai2);
+            bytearrayinputstream = new ByteArrayInputStream(HurricaneMkIIcMaltaFieldMod.bai2);
             bufferedreader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(bytearrayinputstream, ai)));
-            cpm = bufferedreader.readLine();
+            HurricaneMkIIcMaltaFieldMod.cpm = bufferedreader.readLine();
             bufferedreader.close();
         } catch (Exception exception1) {
             System.out.println("cps Generation error");

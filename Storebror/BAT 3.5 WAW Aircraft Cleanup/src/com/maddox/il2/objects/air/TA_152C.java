@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Maneuver;
 import com.maddox.il2.ai.air.Pilot;
@@ -9,7 +8,6 @@ import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.objects.weapons.GunEmpty;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
@@ -41,11 +39,11 @@ public class TA_152C extends TA_152NEW implements TypeX4Carrier {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        TA_152C.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGear() < 0.98F) {
+        if (this.FM.CT.getGear() < 0.98F) {
             return;
         } else {
             this.hierMesh().chunkSetAngles("GearC3_D0", 0.0F, -f, 0.0F);
@@ -55,9 +53,9 @@ public class TA_152C extends TA_152NEW implements TypeX4Carrier {
 
     public void moveWheelSink() {
         this.resetYPRmodifier();
-        Aircraft.xyz[1] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.44F, 0.0F, 0.44F);
+        Aircraft.xyz[1] = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.44F, 0.0F, 0.44F);
         this.hierMesh().chunkSetLocate("GearL2a_D0", Aircraft.xyz, Aircraft.ypr);
-        Aircraft.xyz[1] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 0.44F, 0.0F, 0.44F);
+        Aircraft.xyz[1] = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.44F, 0.0F, 0.44F);
         this.hierMesh().chunkSetLocate("GearR2a_D0", Aircraft.xyz, Aircraft.ypr);
     }
 
@@ -69,15 +67,15 @@ public class TA_152C extends TA_152NEW implements TypeX4Carrier {
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (((super.FM instanceof RealFlightModel) && ((RealFlightModel) super.FM).isRealMode()) || !flag || !(super.FM instanceof Pilot)) {
+        if (((this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode()) || !flag || !(this.FM instanceof Pilot)) {
             return;
         }
-        Pilot pilot = (Pilot) super.FM;
+        Pilot pilot = (Pilot) this.FM;
         if ((pilot.get_maneuver() == 63) && (((Maneuver) (pilot)).target != null)) {
             Point3d point3d = new Point3d(((FlightModelMain) (((Maneuver) (pilot)).target)).Loc);
-            point3d.sub(((FlightModelMain) (super.FM)).Loc);
-            ((FlightModelMain) (super.FM)).Or.transformInv(point3d);
-            if ((((((Tuple3d) (point3d)).x > 4000D) && (((Tuple3d) (point3d)).x < 5500D)) || ((((Tuple3d) (point3d)).x > 100D) && (((Tuple3d) (point3d)).x < 5000D) && (World.Rnd().nextFloat() < 0.33F))) && (Time.current() > (this.tX4Prev + 10000L))) {
+            point3d.sub(this.FM.Loc);
+            this.FM.Or.transformInv(point3d);
+            if ((((point3d.x > 4000D) && (point3d.x < 5500D)) || ((point3d.x > 100D) && (point3d.x < 5000D) && (World.Rnd().nextFloat() < 0.33F))) && (Time.current() > (this.tX4Prev + 10000L))) {
                 this.bToFire = true;
                 this.tX4Prev = Time.current();
             }
@@ -89,7 +87,7 @@ public class TA_152C extends TA_152NEW implements TypeX4Carrier {
             this.hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -20F * this.kangle, 0.0F);
         }
 
-        this.kangle = (0.95F * this.kangle) + (0.05F * ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator());
+        this.kangle = (0.95F * this.kangle) + (0.05F * this.FM.EI.engines[0].getControlRadiator());
         super.update(f);
     }
 
@@ -123,7 +121,7 @@ public class TA_152C extends TA_152NEW implements TypeX4Carrier {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).AS.wantBeaconsNet(true);
+        this.FM.AS.wantBeaconsNet(true);
         if (this.getGunByHookName("_CANNON03") instanceof GunEmpty) {
             this.hierMesh().chunkVisible("20mmL1_D0", false);
         }
@@ -139,7 +137,7 @@ public class TA_152C extends TA_152NEW implements TypeX4Carrier {
     private float  deltaTangage;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = TA_152C.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Ta.152");
         Property.set(class1, "meshName", "3DO/Plane/Ta-152C/hier.him");

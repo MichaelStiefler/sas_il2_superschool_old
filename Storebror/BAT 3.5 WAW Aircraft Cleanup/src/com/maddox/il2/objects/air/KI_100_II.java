@@ -18,7 +18,7 @@ public class KI_100_II extends KI_100 {
         Property.set(class1, "yearService", 1945.9F);
         Property.set(class1, "yearExpired", 1945.9F);
         Property.set(class1, "FlightModel", "FlightModels/Ki-100-II.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitKI_100.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitKI_100.class });
         Property.set(class1, "LOSElevation", 0.85935F);
         Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1, 3, 3 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02" });

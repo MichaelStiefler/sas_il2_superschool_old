@@ -19,7 +19,7 @@ public class F2A2 extends F2A {
         super.nextDMGLevel(s, i, actor);
         this.bChangedExts = true;
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            F2A2.bChangedPit = true;
         }
     }
 
@@ -27,7 +27,7 @@ public class F2A2 extends F2A {
         super.nextCUTLevel(s, i, actor);
         this.bChangedExts = true;
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            F2A2.bChangedPit = true;
         }
     }
 
@@ -51,8 +51,8 @@ public class F2A2 extends F2A {
 
     public void moveCockpitDoor(float f) {
         this.resetYPRmodifier();
-        xyz[0] = cvt(f, 0.01F, 0.99F, 0.0F, 0.725F);
-        this.hierMesh().chunkSetLocate("Blister1_D0", xyz, ypr);
+        Aircraft.xyz[0] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 0.725F);
+        this.hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
         if (Config.isUSE_RENDER()) {
             if ((Main3D.cur3D().cockpits != null) && (Main3D.cur3D().cockpits[0] != null)) {
                 Main3D.cur3D().cockpits[0].onDoorMoved(f);
@@ -76,11 +76,9 @@ public class F2A2 extends F2A {
         Property.set(class1, "yearService", 1940F);
         Property.set(class1, "yearExpired", 1948.5F);
         Property.set(class1, "FlightModel", "FlightModels/F2A-2.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitF2A2.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitF2A2.class });
         Property.set(class1, "LOSElevation", 1.032F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
-        weaponsRegister(class1, "default", new String[] { "MGunBrowning50si 250", "MGunBrowning50si 250", "MGunBrowning50k 250", "MGunBrowning50k 250" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
     }
 }

@@ -2,7 +2,6 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Property;
 
@@ -14,22 +13,22 @@ public class Dewoitine520 extends D_520 implements TypeBNZFighter {
 
     protected void moveFan(float f) {
         int i = 0;
-        for (int j = 0; j < ((FlightModelMain) (super.FM)).EI.getNum(); j++) {
-            if (super.oldProp[j] < 2) {
-                i = Math.abs((int) (((FlightModelMain) (super.FM)).EI.engines[j].getw() * 0.06F));
+        for (int j = 0; j < this.FM.EI.getNum(); j++) {
+            if (this.oldProp[j] < 2) {
+                i = Math.abs((int) (this.FM.EI.engines[j].getw() * 0.06F));
                 if (i >= 1) {
                     i = 1;
                 }
-                if ((i != super.oldProp[j]) && this.hierMesh().isChunkVisible(Aircraft.Props[j][super.oldProp[j]])) {
-                    this.hierMesh().chunkVisible(Aircraft.Props[j][super.oldProp[j]], false);
-                    super.oldProp[j] = i;
+                if ((i != this.oldProp[j]) && this.hierMesh().isChunkVisible(Aircraft.Props[j][this.oldProp[j]])) {
+                    this.hierMesh().chunkVisible(Aircraft.Props[j][this.oldProp[j]], false);
+                    this.oldProp[j] = i;
                     this.hierMesh().chunkVisible(Aircraft.Props[j][i], true);
                 }
             }
             if (i == 0) {
-                super.propPos[j] = (super.propPos[j] + (57.3F * ((FlightModelMain) (super.FM)).EI.engines[j].getw() * f)) % 360F;
+                this.propPos[j] = (this.propPos[j] + (57.3F * this.FM.EI.engines[j].getw() * f)) % 360F;
             } else {
-                float f1 = 57.3F * ((FlightModelMain) (super.FM)).EI.engines[j].getw();
+                float f1 = 57.3F * this.FM.EI.engines[j].getw();
                 f1 %= 2880F;
                 f1 /= 2880F;
                 if (f1 <= 0.5F) {
@@ -38,16 +37,16 @@ public class Dewoitine520 extends D_520 implements TypeBNZFighter {
                     f1 = (f1 * 2.0F) - 2.0F;
                 }
                 f1 *= 1200F;
-                super.propPos[j] = (super.propPos[j] + (f1 * f)) % 360F;
+                this.propPos[j] = (this.propPos[j] + (f1 * f)) % 360F;
             }
-            this.hierMesh().chunkSetAngles(Aircraft.Props[j][0], 0.0F, super.propPos[j], 0.0F);
+            this.hierMesh().chunkSetAngles(Aircraft.Props[j][0], 0.0F, this.propPos[j], 0.0F);
         }
 
     }
 
     public void update(float f) {
         this.hierMesh().chunkSetAngles("Radiatorb", 0.0F, -27F * this.kangle, 0.0F);
-        this.kangle = (0.95F * this.kangle) + (0.05F * ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator());
+        this.kangle = (0.95F * this.kangle) + (0.05F * this.FM.EI.engines[0].getControlRadiator());
         if (this.kangle > 1.0F) {
             this.kangle = 1.0F;
         }
@@ -64,11 +63,11 @@ public class Dewoitine520 extends D_520 implements TypeBNZFighter {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        Dewoitine520.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGear() < 0.98F) {
+        if (this.FM.CT.getGear() < 0.98F) {
             return;
         } else {
             this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -f, 0.0F);

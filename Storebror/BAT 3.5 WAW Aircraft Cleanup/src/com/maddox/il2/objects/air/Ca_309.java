@@ -9,7 +9,6 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -18,7 +17,7 @@ public class Ca_309 extends CA_Twins implements TypeBomber, TypeStormovik, TypeT
 
     public Ca_309() {
         this.bChangedExts = false;
-        bChangedPit = true;
+        Ca_309.bChangedPit = true;
         this.fSightSetForwardAngle = 0.0F;
         this.fSightCurSideslip = 0.0F;
         this.fSightCurForwardAngle = 0.0F;
@@ -42,7 +41,7 @@ public class Ca_309 extends CA_Twins implements TypeBomber, TypeStormovik, TypeT
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        Ca_309.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {
@@ -51,32 +50,32 @@ public class Ca_309 extends CA_Twins implements TypeBomber, TypeStormovik, TypeT
 
     public void moveWheelSink() {
         this.resetYPRmodifier();
-        Aircraft.xyz[2] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.25F, 0.0F, 0.23F);
-        Aircraft.xyz[2] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.25F, 0.0F, 0.2F);
-        Aircraft.xyz[2] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 0.25F, 0.0F, 0.23F);
-        Aircraft.xyz[2] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 0.25F, 0.0F, 0.2F);
+        Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.25F, 0.0F, 0.23F);
+        Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.25F, 0.0F, 0.2F);
+        Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.25F, 0.0F, 0.23F);
+        Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.25F, 0.0F, 0.2F);
     }
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         if (flag) {
-            if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[0] > 3) && (World.Rnd().nextFloat() < 0.39F)) {
-                ((FlightModelMain) (super.FM)).AS.hitTank(this, 0, 1);
+            if ((this.FM.AS.astateEngineStates[0] > 3) && (World.Rnd().nextFloat() < 0.39F)) {
+                this.FM.AS.hitTank(this, 0, 1);
             }
-            if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[1] > 3) && (World.Rnd().nextFloat() < 0.39F)) {
-                ((FlightModelMain) (super.FM)).AS.hitTank(this, 1, 1);
+            if ((this.FM.AS.astateEngineStates[1] > 3) && (World.Rnd().nextFloat() < 0.39F)) {
+                this.FM.AS.hitTank(this, 1, 1);
             }
-            if ((((FlightModelMain) (super.FM)).AS.astateTankStates[0] > 4) && (World.Rnd().nextFloat() < 0.035F)) {
-                this.nextDMGLevel(((FlightModelMain) (super.FM)).AS.astateEffectChunks[0] + "0", 0, this);
+            if ((this.FM.AS.astateTankStates[0] > 4) && (World.Rnd().nextFloat() < 0.035F)) {
+                this.nextDMGLevel(this.FM.AS.astateEffectChunks[0] + "0", 0, this);
             }
-            if ((((FlightModelMain) (super.FM)).AS.astateTankStates[1] > 4) && (World.Rnd().nextFloat() < 0.035F)) {
-                this.nextDMGLevel(((FlightModelMain) (super.FM)).AS.astateEffectChunks[1] + "0", 0, this);
+            if ((this.FM.AS.astateTankStates[1] > 4) && (World.Rnd().nextFloat() < 0.035F)) {
+                this.nextDMGLevel(this.FM.AS.astateEffectChunks[1] + "0", 0, this);
             }
-            if ((((FlightModelMain) (super.FM)).AS.astateTankStates[2] > 4) && (World.Rnd().nextFloat() < 0.035F)) {
-                this.nextDMGLevel(((FlightModelMain) (super.FM)).AS.astateEffectChunks[2] + "0", 0, this);
+            if ((this.FM.AS.astateTankStates[2] > 4) && (World.Rnd().nextFloat() < 0.035F)) {
+                this.nextDMGLevel(this.FM.AS.astateEffectChunks[2] + "0", 0, this);
             }
-            if ((((FlightModelMain) (super.FM)).AS.astateTankStates[3] > 4) && (World.Rnd().nextFloat() < 0.035F)) {
-                this.nextDMGLevel(((FlightModelMain) (super.FM)).AS.astateEffectChunks[3] + "0", 0, this);
+            if ((this.FM.AS.astateTankStates[3] > 4) && (World.Rnd().nextFloat() < 0.035F)) {
+                this.nextDMGLevel(this.FM.AS.astateEffectChunks[3] + "0", 0, this);
             }
         }
     }
@@ -86,7 +85,7 @@ public class Ca_309 extends CA_Twins implements TypeBomber, TypeStormovik, TypeT
         float f = -af[0];
         float f1 = af[1];
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 if (f1 < -80F) {
                     f1 = -80F;
                     flag = false;
@@ -112,15 +111,15 @@ public class Ca_309 extends CA_Twins implements TypeBomber, TypeStormovik, TypeT
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
+            case 33:
                 this.hitProp(0, j, actor);
                 return super.cutFM(34, j, actor);
 
-            case 36: // '$'
+            case 36:
                 this.hitProp(1, j, actor);
                 return super.cutFM(37, j, actor);
 
-            case 13: // '\r'
+            case 13:
                 this.killPilot(this, 0);
                 this.killPilot(this, 1);
                 return false;
@@ -130,7 +129,7 @@ public class Ca_309 extends CA_Twins implements TypeBomber, TypeStormovik, TypeT
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.equals("BREDA 20mm")) {
+        if (this.thisWeaponsName.equals("BREDA 20mm")) {
             this.hierMesh().chunkVisible("GunBREDA", true);
         } else {
             this.hierMesh().chunkVisible("GunBREDA", false);
@@ -253,46 +252,46 @@ public class Ca_309 extends CA_Twins implements TypeBomber, TypeStormovik, TypeT
                     default:
                         break;
 
-                    case 1: // '\001'
+                    case 1:
                         if ((World.Rnd().nextFloat() < 0.1F) || (shot.mass > 0.092F)) {
                             if (World.Rnd().nextFloat() < 0.1F) {
-                                ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 1);
+                                this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 1);
                             }
                             if (World.Rnd().nextFloat() < 0.5F) {
-                                ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 6);
+                                this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 6);
                             }
                         }
                         // fall through
 
-                    case 2: // '\002'
+                    case 2:
                         if ((World.Rnd().nextFloat() < 0.1F) || (shot.mass > 0.092F)) {
                             if (World.Rnd().nextFloat() < 0.1F) {
-                                ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 1, 1);
+                                this.FM.AS.setEngineSpecificDamage(shot.initiator, 1, 1);
                             }
                             if (World.Rnd().nextFloat() < 0.5F) {
-                                ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 1, 6);
+                                this.FM.AS.setEngineSpecificDamage(shot.initiator, 1, 6);
                             }
                         }
                         // fall through
 
-                    case 3: // '\003'
-                    case 4: // '\004'
+                    case 3:
+                    case 4:
                         if (this.getEnergyPastArmor(1.0F, shot) > 0.0F) {
                             if (World.Rnd().nextFloat() < 0.12F) {
-                                ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
+                                this.FM.AS.setControlsDamage(shot.initiator, 1);
                                 Aircraft.debugprintln(this, "*** Evelator Controls Out..");
                             }
                             if (World.Rnd().nextFloat() < 0.12F) {
-                                ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
+                                this.FM.AS.setControlsDamage(shot.initiator, 2);
                                 Aircraft.debugprintln(this, "*** Rudder Controls Out..");
                             }
                         }
                         break;
 
-                    case 5: // '\005'
-                    case 6: // '\006'
+                    case 5:
+                    case 6:
                         if ((this.getEnergyPastArmor(0.2F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                            this.FM.AS.setControlsDamage(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Aileron Controls Out..");
                         }
                         break;
@@ -330,12 +329,12 @@ public class Ca_309 extends CA_Twins implements TypeBomber, TypeStormovik, TypeT
                     this.nextDMGLevels(3, 2, "Engine2_D0", shot.initiator);
                 }
             }
-            if (s.startsWith("xxbomb") && (World.Rnd().nextFloat() < 0.01F) && (((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && ((FlightModelMain) (super.FM)).CT.Weapons[3][0].haveBullets()) {
+            if (s.startsWith("xxbomb") && (World.Rnd().nextFloat() < 0.01F) && (this.FM.CT.Weapons[3] != null) && this.FM.CT.Weapons[3][0].haveBullets()) {
                 Aircraft.debugprintln(this, "*** Bomb Payload Detonates..");
-                ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 0, 10);
-                ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 1, 10);
-                ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 2, 10);
-                ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 3, 10);
+                this.FM.AS.hitTank(shot.initiator, 0, 10);
+                this.FM.AS.hitTank(shot.initiator, 1, 10);
+                this.FM.AS.hitTank(shot.initiator, 2, 10);
+                this.FM.AS.hitTank(shot.initiator, 3, 10);
                 this.nextDMGLevels(3, 2, "CF_D0", shot.initiator);
             }
             if (s.startsWith("xxprop")) {
@@ -343,10 +342,10 @@ public class Ca_309 extends CA_Twins implements TypeBomber, TypeStormovik, TypeT
                 if (s.endsWith("2")) {
                     j = 1;
                 }
-                ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, j, 4);
+                this.FM.AS.setEngineSpecificDamage(shot.initiator, j, 4);
                 Aircraft.debugprintln(this, "*** Engine" + (j + 1) + " Governor Damaged..");
                 if ((this.getEnergyPastArmor(2.0F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
-                    ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, j, 3);
+                    this.FM.AS.setEngineSpecificDamage(shot.initiator, j, 3);
                     Aircraft.debugprintln(this, "*** Engine" + (j + 1) + " Governor Failed..");
                 }
             }
@@ -355,52 +354,52 @@ public class Ca_309 extends CA_Twins implements TypeBomber, TypeStormovik, TypeT
                 if (s.startsWith("xxengine2")) {
                     k = 1;
                 }
-                if ((this.getEnergyPastArmor(World.Rnd().nextFloat(0.1F, 4.3F), shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[k].getCylindersRatio() * 1.12F))) {
-                    ((FlightModelMain) (super.FM)).EI.engines[k].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 9124F)));
-                    Aircraft.debugprintln(this, "*** Engine" + (k + 1) + " Cylindres Damaged, " + ((FlightModelMain) (super.FM)).EI.engines[k].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[k].getCylinders() + " left..");
+                if ((this.getEnergyPastArmor(World.Rnd().nextFloat(0.1F, 4.3F), shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[k].getCylindersRatio() * 1.12F))) {
+                    this.FM.EI.engines[k].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 9124F)));
+                    Aircraft.debugprintln(this, "*** Engine" + (k + 1) + " Cylindres Damaged, " + this.FM.EI.engines[k].getCylindersOperable() + "/" + this.FM.EI.engines[k].getCylinders() + " left..");
                 }
                 if (World.Rnd().nextFloat(0.0F, 18000F) < shot.power) {
-                    ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, k, 1);
+                    this.FM.AS.hitEngine(shot.initiator, k, 1);
                 }
-                ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, k);
+                this.FM.AS.hitOil(shot.initiator, k);
             }
             if (s.startsWith("xxoil")) {
                 int l = 0;
                 if (s.startsWith("xxoil2")) {
                     l = 1;
                 }
-                ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, l);
+                this.FM.AS.hitOil(shot.initiator, l);
             }
             if (s.startsWith("xxtank")) {
                 int i1 = s.charAt(6) - 49;
                 if ((i1 < 4) && (this.getEnergyPastArmor(0.1F, shot) > 0.0F)) {
                     if (shot.power < 14100F) {
-                        if (((FlightModelMain) (super.FM)).AS.astateTankStates[i1] < 1) {
-                            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, i1, 2);
+                        if (this.FM.AS.astateTankStates[i1] < 1) {
+                            this.FM.AS.hitTank(shot.initiator, i1, 2);
                         }
-                        if ((((FlightModelMain) (super.FM)).AS.astateTankStates[i1] < 4) && (World.Rnd().nextFloat() < 0.1F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, i1, 1);
+                        if ((this.FM.AS.astateTankStates[i1] < 4) && (World.Rnd().nextFloat() < 0.1F)) {
+                            this.FM.AS.hitTank(shot.initiator, i1, 1);
                         }
-                        if ((shot.powerType == 3) && (((FlightModelMain) (super.FM)).AS.astateTankStates[i1] > 2) && (World.Rnd().nextFloat() < 0.07F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, i1, 10);
+                        if ((shot.powerType == 3) && (this.FM.AS.astateTankStates[i1] > 2) && (World.Rnd().nextFloat() < 0.07F)) {
+                            this.FM.AS.hitTank(shot.initiator, i1, 10);
                         }
                     } else {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, i1, World.Rnd().nextInt(0, (int) (shot.power / 20000F)));
+                        this.FM.AS.hitTank(shot.initiator, i1, World.Rnd().nextInt(0, (int) (shot.power / 20000F)));
                     }
                 }
                 if ((i1 == 4) && (this.getEnergyPastArmor(1.1F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.06F)) {
                     for (int j1 = 0; j1 < 4; j1++) {
-                        ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, j1);
+                        this.FM.AS.hitOil(shot.initiator, j1);
                     }
 
                 }
             }
             if (s.startsWith("xxammo") && (World.Rnd().nextFloat() < 0.01F)) {
-                ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 2, 10);
-                ((FlightModelMain) (super.FM)).AS.explodeTank(shot.initiator, 2);
+                this.FM.AS.hitTank(shot.initiator, 2, 10);
+                this.FM.AS.explodeTank(shot.initiator, 2);
             }
             if (s.startsWith("xxmgun1")) {
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 0);
+                this.FM.AS.setJamBullets(0, 0);
             }
             return;
         }
@@ -451,22 +450,22 @@ public class Ca_309 extends CA_Twins implements TypeBomber, TypeStormovik, TypeT
                 if (this.chunkDamageVisible("Engine1") < 2) {
                     this.hitChunk("Engine1", shot);
                 }
-                ((FlightModelMain) (super.FM)).EI.engines[0].setReadyness(shot.initiator, ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 96000F));
-                Aircraft.debugprintln(this, "*** Engine1 Hit - Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() + "..");
+                this.FM.EI.engines[0].setReadyness(shot.initiator, this.FM.EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 96000F));
+                Aircraft.debugprintln(this, "*** Engine1 Hit - Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + "..");
             } else if (s.startsWith("xengine2")) {
                 if (this.chunkDamageVisible("Engine2") < 2) {
                     this.hitChunk("Engine2", shot);
                 }
-                ((FlightModelMain) (super.FM)).EI.engines[1].setReadyness(shot.initiator, ((FlightModelMain) (super.FM)).EI.engines[1].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 96000F));
-                Aircraft.debugprintln(this, "*** Engine2 Hit - Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[1].getReadyness() + "..");
+                this.FM.EI.engines[1].setReadyness(shot.initiator, this.FM.EI.engines[1].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 96000F));
+                Aircraft.debugprintln(this, "*** Engine2 Hit - Readyness Reduced to " + this.FM.EI.engines[1].getReadyness() + "..");
             } else if (s.startsWith("xgear")) {
                 if (World.Rnd().nextFloat() < 0.1F) {
                     Aircraft.debugprintln(this, "*** Gear Actuator Failed..");
-                    ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 3);
+                    this.FM.AS.setInternalDamage(shot.initiator, 3);
                 }
             } else if (s.startsWith("xturret")) {
                 if (s.startsWith("xturret1")) {
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(10, 0);
+                    this.FM.AS.setJamBullets(10, 0);
                 }
             } else if (s.startsWith("xpilot") || s.startsWith("xhead")) {
                 byte byte0 = 0;
@@ -487,26 +486,26 @@ public class Ca_309 extends CA_Twins implements TypeBomber, TypeStormovik, TypeT
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 2: // '\002'
-                super.FM.turret[0].bIsOperable = false;
+            case 2:
+                this.FM.turret[0].bIsOperable = false;
                 break;
         }
     }
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 break;
@@ -514,18 +513,18 @@ public class Ca_309 extends CA_Twins implements TypeBomber, TypeStormovik, TypeT
     }
 
     public void update(float f) {
-        if (((FlightModelMain) (super.FM)).AS.isMaster() && Config.isUSE_RENDER()) {
-            if ((((FlightModelMain) (super.FM)).CT.PowerControl > 1.0F) && (((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6)) {
-                ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 1);
+        if (this.FM.AS.isMaster() && Config.isUSE_RENDER()) {
+            if ((this.FM.CT.PowerControl > 1.0F) && (this.FM.EI.engines[0].getStage() == 6)) {
+                this.FM.AS.setSootState(this, 0, 1);
             } else {
-                ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 0);
+                this.FM.AS.setSootState(this, 0, 0);
             }
         }
-        if (((FlightModelMain) (super.FM)).AS.isMaster() && Config.isUSE_RENDER()) {
-            if ((((FlightModelMain) (super.FM)).CT.PowerControl > 1.0F) && (((FlightModelMain) (super.FM)).EI.engines[1].getStage() == 6)) {
-                ((FlightModelMain) (super.FM)).AS.setSootState(this, 1, 1);
+        if (this.FM.AS.isMaster() && Config.isUSE_RENDER()) {
+            if ((this.FM.CT.PowerControl > 1.0F) && (this.FM.EI.engines[1].getStage() == 6)) {
+                this.FM.AS.setSootState(this, 1, 1);
             } else {
-                ((FlightModelMain) (super.FM)).AS.setSootState(this, 1, 0);
+                this.FM.AS.setSootState(this, 1, 0);
             }
         }
         super.update(f);

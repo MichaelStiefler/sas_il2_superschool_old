@@ -2,7 +2,6 @@ package com.maddox.il2.objects.air;
 
 import java.io.IOException;
 
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -62,7 +61,7 @@ public class SW2 extends Swordfish {
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = SW2.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Swordfish");
         Property.set(class1, "meshName", "3DO/Plane/SwordfishASW(multi)/hier.him");

@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.weapons.FuelTankGun;
 import com.maddox.il2.objects.weapons.GunEmpty;
 import com.maddox.rts.Property;
@@ -19,26 +18,26 @@ public class FW190D9early extends FW_190D implements TypeFighter, TypeBNZFighter
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            FW190D9early.bChangedPit = true;
         }
     }
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).CT.bHasLockGearControl = false;
-        super.FM.SensPitch = 0.603F;
-        super.FM.SensRoll = 0.34F;
-        super.FM.SensYaw = 0.49F;
-        ((FlightModelMain) (super.FM)).EI.engines[0].tOilOutMaxRPM = World.Rnd().nextFloat(106.4F, 111.3F);
-        super.FM.setGCenter(0.122F);
-        ((FlightModelMain) (super.FM)).Gears.bTailwheelLocked = false;
-        ((FlightModelMain) (super.FM)).EI.engines[0].setPropReductorValue(World.Rnd().nextFloat(0.54952F, 0.5523F));
-        ((FlightModelMain) (super.FM)).EI.engines[0].setControlPropAuto(false);
-        if (super.FM.isPlayers()) {
-            ((FlightModelMain) (super.FM)).CT.setMagnetoControl(0);
+        this.FM.CT.bHasLockGearControl = false;
+        this.FM.SensPitch = 0.603F;
+        this.FM.SensRoll = 0.34F;
+        this.FM.SensYaw = 0.49F;
+        this.FM.EI.engines[0].tOilOutMaxRPM = World.Rnd().nextFloat(106.4F, 111.3F);
+        this.FM.setGCenter(0.122F);
+        this.FM.Gears.bTailwheelLocked = false;
+        this.FM.EI.engines[0].setPropReductorValue(World.Rnd().nextFloat(0.54952F, 0.5523F));
+        this.FM.EI.engines[0].setControlPropAuto(false);
+        if (this.FM.isPlayers()) {
+            this.FM.CT.setMagnetoControl(0);
         }
-        ((FlightModelMain) (super.FM)).CT.bHasAirBrakeControl = true;
+        this.FM.CT.bHasAirBrakeControl = true;
         if (this.getGunByHookName("_MGUN01") instanceof GunEmpty) {
             this.hierMesh().chunkVisible("7mmC_D0", false);
             this.hierMesh().chunkVisible("7mmCowl_D0", true);
@@ -53,8 +52,8 @@ public class FW190D9early extends FW_190D implements TypeFighter, TypeBNZFighter
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            FW190D9early.bChangedPit = true;
         }
     }
 
@@ -63,7 +62,7 @@ public class FW190D9early extends FW_190D implements TypeFighter, TypeBNZFighter
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGear() < 0.98F) {
+        if (this.FM.CT.getGear() < 0.98F) {
             return;
         } else {
             this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -f, 0.0F);
@@ -77,72 +76,72 @@ public class FW190D9early extends FW_190D implements TypeFighter, TypeBNZFighter
             this.hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -20F * this.kangle, 0.0F);
         }
 
-        this.kangle = (0.95F * this.kangle) + (0.05F * ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator());
-        if (!((FlightModelMain) (super.FM)).Gears.onGround()) {
-            ((FlightModelMain) (super.FM)).EI.engines[0].addVside *= 1.0171699999999999D;
-            ((FlightModelMain) (super.FM)).EI.engines[0].addVflow *= 1.0076499999999999D;
+        this.kangle = (0.95F * this.kangle) + (0.05F * this.FM.EI.engines[0].getControlRadiator());
+        if (!this.FM.Gears.onGround()) {
+            this.FM.EI.engines[0].addVside *= 1.0171699999999999D;
+            this.FM.EI.engines[0].addVflow *= 1.0076499999999999D;
         }
-        if (((FlightModelMain) (super.FM)).AS.isMaster() && Config.isUSE_RENDER()) {
-            if (((FlightModelMain) (super.FM)).CT.PowerControl > this.patate) {
-                ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 1);
+        if (this.FM.AS.isMaster() && Config.isUSE_RENDER()) {
+            if (this.FM.CT.PowerControl > this.patate) {
+                this.FM.AS.setSootState(this, 0, 1);
             } else {
-                ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 0);
+                this.FM.AS.setSootState(this, 0, 0);
             }
         }
-        if (((FlightModelMain) (super.FM)).CT.getTrimElevatorControl() > 0.361F) {
-            ((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(0.361F);
+        if (this.FM.CT.getTrimElevatorControl() > 0.361F) {
+            this.FM.CT.setTrimElevatorControl(0.361F);
         }
-        if (((FlightModelMain) (super.FM)).CT.getTrimElevatorControl() < -0.261F) {
-            ((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(-0.261F);
+        if (this.FM.CT.getTrimElevatorControl() < -0.261F) {
+            this.FM.CT.setTrimElevatorControl(-0.261F);
         }
         super.update(f);
-        if (((FlightModelMain) (super.FM)).Gears.onGround() && (((FlightModelMain) (super.FM)).EI.engines[0].getRPM() < 2600F)) {
-            super.FM.SensYaw = 0.86F;
+        if (this.FM.Gears.onGround() && (this.FM.EI.engines[0].getRPM() < 2600F)) {
+            this.FM.SensYaw = 0.86F;
         } else {
-            super.FM.SensYaw = 0.49F;
+            this.FM.SensYaw = 0.49F;
         }
-        if (((FlightModelMain) (super.FM)).Gears.onGround() && (((FlightModelMain) (super.FM)).CT.ElevatorControl >= 0.06F)) {
-            ((FlightModelMain) (super.FM)).Gears.bTailwheelLocked = true;
-            ((FlightModelMain) (super.FM)).EI.engines[0].addVside *= 1.0074099999999999D;
-            ((FlightModelMain) (super.FM)).EI.engines[0].addVflow *= 1.0076499999999999D;
-            super.FM.SensYaw = 0.63F;
+        if (this.FM.Gears.onGround() && (this.FM.CT.ElevatorControl >= 0.06F)) {
+            this.FM.Gears.bTailwheelLocked = true;
+            this.FM.EI.engines[0].addVside *= 1.0074099999999999D;
+            this.FM.EI.engines[0].addVflow *= 1.0076499999999999D;
+            this.FM.SensYaw = 0.63F;
         } else {
-            if (((FlightModelMain) (super.FM)).Gears.onGround() && (((FlightModelMain) (super.FM)).CT.ElevatorControl <= 0.06F)) {
-                ((FlightModelMain) (super.FM)).Gears.bTailwheelLocked = false;
-                super.FM.SensYaw = 0.86F;
-                ((FlightModelMain) (super.FM)).EI.engines[0].addVside *= 1.0171699999999999D;
-                ((FlightModelMain) (super.FM)).EI.engines[0].addVflow *= 1.0076499999999999D;
+            if (this.FM.Gears.onGround() && (this.FM.CT.ElevatorControl <= 0.06F)) {
+                this.FM.Gears.bTailwheelLocked = false;
+                this.FM.SensYaw = 0.86F;
+                this.FM.EI.engines[0].addVside *= 1.0171699999999999D;
+                this.FM.EI.engines[0].addVflow *= 1.0076499999999999D;
             }
-            if (super.FM.isPlayers() && ((FlightModelMain) (super.FM)).Gears.onGround()) {
-                super.FM.VmaxAllowed = super.FM.getSpeed();
+            if (this.FM.isPlayers() && this.FM.Gears.onGround()) {
+                this.FM.VmaxAllowed = this.FM.getSpeed();
             }
-            if (((FlightModelMain) (super.FM)).VmaxAllowed > 251.3F) {
-                super.FM.VmaxAllowed = 251.3F;
+            if (this.FM.VmaxAllowed > 251.3F) {
+                this.FM.VmaxAllowed = 251.3F;
             }
-            if (!super.FM.isPlayers() && ((FlightModelMain) (super.FM)).Gears.onGround()) {
-                if (((FlightModelMain) (super.FM)).EI.engines[0].getRPM() < 100F) {
-                    ((FlightModelMain) (super.FM)).CT.cockpitDoorControl = 1.0F;
+            if (!this.FM.isPlayers() && this.FM.Gears.onGround()) {
+                if (this.FM.EI.engines[0].getRPM() < 100F) {
+                    this.FM.CT.cockpitDoorControl = 1.0F;
                 } else {
-                    ((FlightModelMain) (super.FM)).CT.cockpitDoorControl = 0.0F;
+                    this.FM.CT.cockpitDoorControl = 0.0F;
                 }
             }
-            if ((((FlightModelMain) (super.FM)).CT.cockpitDoorControl > 0.5F) && (super.FM.getSpeed() > 18F)) {
-                super.FM.VmaxAllowed = super.FM.getSpeed() + 1.0F;
+            if ((this.FM.CT.cockpitDoorControl > 0.5F) && (this.FM.getSpeed() > 18F)) {
+                this.FM.VmaxAllowed = this.FM.getSpeed() + 1.0F;
             }
-            if (((FlightModelMain) (super.FM)).EI.engines[0].getControlThrottle() > 1.0F) {
-                if (((FlightModelMain) (super.FM)).CT.getElevator() < 0.0F) {
-                    super.FM.SensPitch = 0.534F;
+            if (this.FM.EI.engines[0].getControlThrottle() > 1.0F) {
+                if (this.FM.CT.getElevator() < 0.0F) {
+                    this.FM.SensPitch = 0.534F;
                 } else {
-                    super.FM.SensPitch = 0.603F;
+                    this.FM.SensPitch = 0.603F;
                 }
             }
-            if (((FlightModelMain) (super.FM)).EI.engines[0].getControlThrottle() > 1.05F) {
+            if (this.FM.EI.engines[0].getControlThrottle() > 1.05F) {
                 this.prout1 += f;
                 if (this.prout1 > this.prout) {
-                    ((FlightModelMain) (super.FM)).EI.engines[0].tOilOutMaxRPM = 119.8F;
-                    ((FlightModelMain) (super.FM)).Sq.dragEngineCx[0] *= 5.4F;
+                    this.FM.EI.engines[0].tOilOutMaxRPM = 119.8F;
+                    this.FM.Sq.dragEngineCx[0] *= 5.4F;
                     if (World.Rnd().nextFloat(0.0F, 1.0F) > 0.97F) {
-                        ((FlightModelMain) (super.FM)).EI.engines[0].doSetCyliderKnockOut(1);
+                        this.FM.EI.engines[0].doSetCyliderKnockOut(1);
                     }
                 }
             } else {
@@ -155,41 +154,41 @@ public class FW190D9early extends FW_190D implements TypeFighter, TypeBNZFighter
     }
 
     private void calcg() {
-        this.G = super.FM.getOverload();
-        this.limite = 35400F / ((FlightModelMain) (super.FM)).M.mass;
+        this.G = this.FM.getOverload();
+        this.limite = 35400F / this.FM.M.mass;
         if (this.G > (this.limite * 1.1040000000000001D)) {
-            super.FM.VmaxAllowed = super.FM.getSpeed() - 30F;
-        } else if ((((FlightModelMain) (super.FM)).EI.engines[0].getRPM() > 2800F) && (((FlightModelMain) (super.FM)).EI.engines[0].getRPM() <= 3000F)) {
-            super.FM.VmaxAllowed = super.FM.getSpeed() + 14.5F;
-        } else if (((FlightModelMain) (super.FM)).EI.engines[0].getRPM() > 3000F) {
-            super.FM.VmaxAllowed = super.FM.getSpeed() + 11F;
+            this.FM.VmaxAllowed = this.FM.getSpeed() - 30F;
+        } else if ((this.FM.EI.engines[0].getRPM() > 2800F) && (this.FM.EI.engines[0].getRPM() <= 3000F)) {
+            this.FM.VmaxAllowed = this.FM.getSpeed() + 14.5F;
+        } else if (this.FM.EI.engines[0].getRPM() > 3000F) {
+            this.FM.VmaxAllowed = this.FM.getSpeed() + 11F;
         } else {
-            super.FM.VmaxAllowed = 251.3F;
+            this.FM.VmaxAllowed = 251.3F;
         }
     }
 
     private void calcgneg() {
-        this.Gneg = super.FM.getOverload();
-        this.limiteneg = -17700F / ((FlightModelMain) (super.FM)).M.mass;
+        this.Gneg = this.FM.getOverload();
+        this.limiteneg = -17700F / this.FM.M.mass;
         if (this.Gneg < this.limiteneg) {
-            super.FM.VmaxAllowed = super.FM.getSpeed() - 30F;
+            this.FM.VmaxAllowed = this.FM.getSpeed() - 30F;
         }
     }
 
     private void calccg() {
-        if ((((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][0] != null) && ((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].haveBullets()) {
-            super.FM.setGCenter(0.157F);
+        if ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][0] != null) && this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].haveBullets()) {
+            this.FM.setGCenter(0.157F);
         } else {
-            for (int l = 0; l < ((FlightModelMain) (super.FM)).CT.Weapons.length; l++) {
-                if (((FlightModelMain) (super.FM)).CT.Weapons[l] != null) {
-                    for (int j1 = 0; j1 < ((FlightModelMain) (super.FM)).CT.Weapons[l].length; j1++) {
-                        if ((((FlightModelMain) (super.FM)).CT.Weapons[l][j1] instanceof FuelTankGun) && ((FlightModelMain) (super.FM)).CT.Weapons[l][j1].haveBullets()) {
-                            super.FM.setGCenter(0.154F);
+            for (int l = 0; l < this.FM.CT.Weapons.length; l++) {
+                if (this.FM.CT.Weapons[l] != null) {
+                    for (int j1 = 0; j1 < this.FM.CT.Weapons[l].length; j1++) {
+                        if ((this.FM.CT.Weapons[l][j1] instanceof FuelTankGun) && this.FM.CT.Weapons[l][j1].haveBullets()) {
+                            this.FM.setGCenter(0.154F);
                         }
                     }
 
                 } else {
-                    super.FM.setGCenter(0.122F);
+                    this.FM.setGCenter(0.122F);
                 }
             }
 

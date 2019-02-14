@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Property;
 
@@ -35,7 +34,7 @@ public class Sea_HurricaneMkIId extends Hurricane {
             this.hideWingWeapons(false);
         } else {
             this.setGunPodsOn(false);
-            ((FlightModelMain) (super.FM)).CT.WeaponControl[0] = false;
+            this.FM.CT.WeaponControl[0] = false;
             this.hideWingWeapons(false);
         }
         this.moveWingFold(this.hierMesh(), f);

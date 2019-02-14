@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Interpolate;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 import com.maddox.sas1946.il2.util.BaseGameVersion;
 
@@ -12,21 +11,21 @@ public class P_35 extends P_35xyz {
 
     public void missionStarting() {
         super.missionStarting();
-        if (super.FM.isStationedOnGround()) {
-            ((FlightModelMain) (super.FM)).AS.setCockpitDoor(((Interpolate) (super.FM)).actor, 1);
-            ((FlightModelMain) (super.FM)).CT.cockpitDoorControl = 1.0F;
+        if (this.FM.isStationedOnGround()) {
+            this.FM.AS.setCockpitDoor(((Interpolate) (this.FM)).actor, 1);
+            this.FM.CT.cockpitDoorControl = 1.0F;
         }
     }
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.startsWith("P35A")) {
+        if (this.thisWeaponsName.startsWith("P35A")) {
             this.hierMesh().chunkVisible("WingGunL_D0", true);
             this.hierMesh().chunkVisible("WingGunR_D0", true);
             if (BaseGameVersion.is412orLater()) {
-                ((FlightModelMain) (super.FM)).EI.engines[0].load(super.FM, "PW_R-1830_Series:P47Pack_FM", "R-1830-45", 0);
+                this.FM.EI.engines[0].load(this.FM, "PW_R-1830_Series:P47Pack_FM", "R-1830-45", 0);
             } else {
-                ((FlightModelMain) (super.FM)).EI.engines[0].load(super.FM, "FlightModels/PW_R-1830_Series:P47Pack_FM.emd", "R-1830-45", 0);
+                this.FM.EI.engines[0].load(this.FM, "FlightModels/PW_R-1830_Series:P47Pack_FM.emd", "R-1830-45", 0);
             }
         } else {
             this.hierMesh().chunkVisible("WingGunL_D0", false);

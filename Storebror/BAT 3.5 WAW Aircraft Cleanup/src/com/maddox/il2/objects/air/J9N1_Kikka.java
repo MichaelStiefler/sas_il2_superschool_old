@@ -54,12 +54,12 @@ public class J9N1_Kikka extends Kikka123 {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
-            case 34: // '"'
-            case 35: // '#'
-            case 36: // '$'
-            case 37: // '%'
-            case 38: // '&'
+            case 33:
+            case 34:
+            case 35:
+            case 36:
+            case 37:
+            case 38:
                 this.doCutBoosters();
                 this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;

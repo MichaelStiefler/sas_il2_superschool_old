@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Property;
 
@@ -14,8 +13,8 @@ public class FokkerCXP extends Biplanexyz {
 
     public void update(float f) {
         super.update(f);
-        super.onAircraftLoaded();
-        if (super.FM.isPlayers()) {
+        this.onAircraftLoaded();
+        if (this.FM.isPlayers()) {
             if (!Main3D.cur3D().isViewOutside()) {
                 this.hierMesh().chunkVisible("Blister1_D0", false);
                 this.hierMesh().chunkVisible("Blister2_D0", false);
@@ -24,7 +23,7 @@ public class FokkerCXP extends Biplanexyz {
                 this.hierMesh().chunkVisible("Blister2_D0", true);
             }
         }
-        if (super.FM.isPlayers()) {
+        if (this.FM.isPlayers()) {
             if (!Main3D.cur3D().isViewOutside()) {
                 this.hierMesh().chunkVisible("Blister1_D1", false);
             }
@@ -40,7 +39,7 @@ public class FokkerCXP extends Biplanexyz {
             this.hierMesh().chunkVisible("SkiC1_D0", true);
             this.hierMesh().chunkVisible("SkiL1_D0", true);
             this.hierMesh().chunkVisible("SkiR1_D0", true);
-            ((FlightModelMain) (super.FM)).CT.bHasBrakeControl = false;
+            this.FM.CT.bHasBrakeControl = false;
         }
     }
 

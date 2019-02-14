@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -12,8 +11,8 @@ import com.maddox.rts.Property;
 public class CantZ506B extends CantZ506 implements TypeBomber, TypeTransport, TypeSeaPlane {
 
     public CantZ506B() {
-        super.fSightCurAltitude = 850F;
-        super.fSightCurSpeed = 150F;
+        this.fSightCurAltitude = 850F;
+        this.fSightCurSpeed = 150F;
     }
 
     public boolean turretAngles(int i, float af[]) {
@@ -24,7 +23,7 @@ public class CantZ506B extends CantZ506 implements TypeBomber, TypeTransport, Ty
             default:
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -43,7 +42,7 @@ public class CantZ506B extends CantZ506 implements TypeBomber, TypeTransport, Ty
                 }
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f1 < -4F) {
                     f1 = -4F;
                     flag = false;
@@ -54,7 +53,7 @@ public class CantZ506B extends CantZ506 implements TypeBomber, TypeTransport, Ty
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -40F) {
                     f = -40F;
                     flag = false;
@@ -73,7 +72,7 @@ public class CantZ506B extends CantZ506 implements TypeBomber, TypeTransport, Ty
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -60F) {
                     f = -60F;
                     flag = false;
@@ -102,115 +101,115 @@ public class CantZ506B extends CantZ506 implements TypeBomber, TypeTransport, Ty
     }
 
     public void typeBomberAdjDistanceReset() {
-        super.fSightCurForwardAngle = 0.0F;
+        this.fSightCurForwardAngle = 0.0F;
     }
 
     public void typeBomberAdjDistancePlus() {
-        super.fSightCurForwardAngle += 0.4F;
-        if (super.fSightCurForwardAngle > 75F) {
-            super.fSightCurForwardAngle = 75F;
+        this.fSightCurForwardAngle += 0.4F;
+        if (this.fSightCurForwardAngle > 75F) {
+            this.fSightCurForwardAngle = 75F;
         }
     }
 
     public void typeBomberAdjDistanceMinus() {
-        super.fSightCurForwardAngle -= 0.4F;
-        if (super.fSightCurForwardAngle < -15F) {
-            super.fSightCurForwardAngle = -15F;
+        this.fSightCurForwardAngle -= 0.4F;
+        if (this.fSightCurForwardAngle < -15F) {
+            this.fSightCurForwardAngle = -15F;
         }
     }
 
     public void typeBomberAdjSideslipReset() {
-        super.fSightCurSideslip = 0.0F;
+        this.fSightCurSideslip = 0.0F;
     }
 
     public void typeBomberAdjSideslipPlus() {
-        super.fSightCurSideslip += 0.5D;
-        if (super.thisWeaponsName.startsWith("1x")) {
-            if (super.fSightCurSideslip > 40F) {
-                super.fSightCurSideslip = 40F;
+        this.fSightCurSideslip += 0.5D;
+        if (this.thisWeaponsName.startsWith("1x")) {
+            if (this.fSightCurSideslip > 40F) {
+                this.fSightCurSideslip = 40F;
             }
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "TorpedoAngle", new Object[] { new Integer((int) (super.fSightCurSideslip * 1.0F)) });
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "TorpedoAngle", new Object[] { new Integer((int) (this.fSightCurSideslip * 1.0F)) });
         } else {
-            if (super.fSightCurSideslip > 10F) {
-                super.fSightCurSideslip = 10F;
+            if (this.fSightCurSideslip > 10F) {
+                this.fSightCurSideslip = 10F;
             }
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip " + super.fSightCurSideslip);
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip " + this.fSightCurSideslip);
         }
     }
 
     public void typeBomberAdjSideslipMinus() {
-        super.fSightCurSideslip -= 0.5D;
-        if (super.thisWeaponsName.startsWith("1x")) {
-            if (super.fSightCurSideslip < -40F) {
-                super.fSightCurSideslip = -40F;
+        this.fSightCurSideslip -= 0.5D;
+        if (this.thisWeaponsName.startsWith("1x")) {
+            if (this.fSightCurSideslip < -40F) {
+                this.fSightCurSideslip = -40F;
             }
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "TorpedoAngle", new Object[] { new Integer((int) (super.fSightCurSideslip * 1.0F)) });
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "TorpedoAngle", new Object[] { new Integer((int) (this.fSightCurSideslip * 1.0F)) });
         } else {
-            if (super.fSightCurSideslip < -10F) {
-                super.fSightCurSideslip = -10F;
+            if (this.fSightCurSideslip < -10F) {
+                this.fSightCurSideslip = -10F;
             }
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip " + super.fSightCurSideslip);
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip " + this.fSightCurSideslip);
         }
     }
 
     public void typeBomberAdjAltitudeReset() {
-        super.fSightCurAltitude = 300F;
+        this.fSightCurAltitude = 300F;
     }
 
     public void typeBomberAdjAltitudePlus() {
-        super.fSightCurAltitude += 10F;
-        if (super.fSightCurAltitude > 6000F) {
-            super.fSightCurAltitude = 6000F;
+        this.fSightCurAltitude += 10F;
+        if (this.fSightCurAltitude > 6000F) {
+            this.fSightCurAltitude = 6000F;
         }
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) super.fSightCurAltitude) });
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) this.fSightCurAltitude) });
     }
 
     public void typeBomberAdjAltitudeMinus() {
-        super.fSightCurAltitude -= 10F;
-        if (super.fSightCurAltitude < 300F) {
-            super.fSightCurAltitude = 300F;
+        this.fSightCurAltitude -= 10F;
+        if (this.fSightCurAltitude < 300F) {
+            this.fSightCurAltitude = 300F;
         }
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) super.fSightCurAltitude) });
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) this.fSightCurAltitude) });
     }
 
     public void typeBomberAdjSpeedReset() {
-        super.fSightCurSpeed = 50F;
+        this.fSightCurSpeed = 50F;
     }
 
     public void typeBomberAdjSpeedPlus() {
-        super.fSightCurSpeed += 5F;
-        if (super.fSightCurSpeed > 650F) {
-            super.fSightCurSpeed = 650F;
+        this.fSightCurSpeed += 5F;
+        if (this.fSightCurSpeed > 650F) {
+            this.fSightCurSpeed = 650F;
         }
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) super.fSightCurSpeed) });
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) this.fSightCurSpeed) });
     }
 
     public void typeBomberAdjSpeedMinus() {
-        super.fSightCurSpeed -= 5F;
-        if (super.fSightCurSpeed < 50F) {
-            super.fSightCurSpeed = 50F;
+        this.fSightCurSpeed -= 5F;
+        if (this.fSightCurSpeed < 50F) {
+            this.fSightCurSpeed = 50F;
         }
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) super.fSightCurSpeed) });
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) this.fSightCurSpeed) });
     }
 
     public void typeBomberUpdate(float f) {
-        double d = (super.fSightCurSpeed / 3.6000000000000001D) * Math.sqrt(super.fSightCurAltitude * 0.20387359799999999D);
-        d -= super.fSightCurAltitude * super.fSightCurAltitude * 1.419E-005D;
-        super.fSightSetForwardAngle = (float) Math.atan(d / super.fSightCurAltitude);
+        double d = (this.fSightCurSpeed / 3.6000000000000001D) * Math.sqrt(this.fSightCurAltitude * 0.20387359799999999D);
+        d -= this.fSightCurAltitude * this.fSightCurAltitude * 1.419E-005D;
+        this.fSightSetForwardAngle = (float) Math.atan(d / this.fSightCurAltitude);
     }
 
     public void typeBomberReplicateToNet(NetMsgGuaranted netmsgguaranted) throws IOException {
-        netmsgguaranted.writeFloat(super.fSightCurAltitude);
-        netmsgguaranted.writeFloat(super.fSightCurSpeed);
-        netmsgguaranted.writeFloat(super.fSightCurForwardAngle);
-        netmsgguaranted.writeFloat(super.fSightCurSideslip);
+        netmsgguaranted.writeFloat(this.fSightCurAltitude);
+        netmsgguaranted.writeFloat(this.fSightCurSpeed);
+        netmsgguaranted.writeFloat(this.fSightCurForwardAngle);
+        netmsgguaranted.writeFloat(this.fSightCurSideslip);
     }
 
     public void typeBomberReplicateFromNet(NetMsgInput netmsginput) throws IOException {
-        super.fSightCurAltitude = netmsginput.readFloat();
-        super.fSightCurSpeed = netmsginput.readFloat();
-        super.fSightCurForwardAngle = netmsginput.readFloat();
-        super.fSightCurSideslip = netmsginput.readFloat();
+        this.fSightCurAltitude = netmsginput.readFloat();
+        this.fSightCurSpeed = netmsginput.readFloat();
+        this.fSightCurForwardAngle = netmsginput.readFloat();
+        this.fSightCurSideslip = netmsginput.readFloat();
     }
 
     protected void moveRudder(float paramFloat) {
@@ -218,7 +217,7 @@ public class CantZ506B extends CantZ506 implements TypeBomber, TypeTransport, Ty
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = CantZ506B.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "CantZ");
         Property.set(class1, "meshName", "3do/plane/CantZ506B(multi)/hier.him");

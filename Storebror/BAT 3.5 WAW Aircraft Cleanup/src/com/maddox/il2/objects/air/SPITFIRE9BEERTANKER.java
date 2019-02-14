@@ -1,9 +1,7 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class SPITFIRE9BEERTANKER extends SPITFIRE9 {
@@ -28,12 +26,12 @@ public class SPITFIRE9BEERTANKER extends SPITFIRE9 {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = true;
-        ((FlightModelMain) (super.FM)).CT.dvCockpitDoor = 0.75F;
+        this.FM.CT.bHasCockpitDoorControl = true;
+        this.FM.CT.dvCockpitDoor = 0.75F;
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = SPITFIRE9BEERTANKER.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Beer, mate!");
         Property.set(class1, "meshName", "3DO/Plane/SpitfireMkIXc(Multi1)/hier.him");

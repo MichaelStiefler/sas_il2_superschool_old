@@ -2,7 +2,6 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class VildebeestS extends Biplanexyz implements TypeSailPlane, TypeStormovikArmored {
@@ -26,11 +25,11 @@ public class VildebeestS extends Biplanexyz implements TypeSailPlane, TypeStormo
         super.update(f);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 2; j++) {
-                if (((FlightModelMain) (super.FM)).Gears.clpGearEff[i][j] != null) {
-                    this.tmpp.set(((Actor) (((FlightModelMain) (super.FM)).Gears.clpGearEff[i][j])).pos.getAbsPoint());
+                if (this.FM.Gears.clpGearEff[i][j] != null) {
+                    this.tmpp.set(((Actor) (this.FM.Gears.clpGearEff[i][j])).pos.getAbsPoint());
                     this.tmpp.z = 0.01D;
-                    ((Actor) (((FlightModelMain) (super.FM)).Gears.clpGearEff[i][j])).pos.setAbs(this.tmpp);
-                    ((Actor) (((FlightModelMain) (super.FM)).Gears.clpGearEff[i][j])).pos.reset();
+                    ((Actor) (this.FM.Gears.clpGearEff[i][j])).pos.setAbs(this.tmpp);
+                    ((Actor) (this.FM.Gears.clpGearEff[i][j])).pos.reset();
                 }
             }
 

@@ -20,54 +20,54 @@ public class H5Y extends H5YX implements TypeBomber {
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 2: // '\002'
-                super.FM.turret[0].bIsOperable = false;
+            case 2:
+                this.FM.turret[0].bIsOperable = false;
                 break;
 
-            case 5: // '\005'
-                super.FM.turret[1].bIsOperable = false;
+            case 5:
+                this.FM.turret[1].bIsOperable = false;
                 break;
 
-            case 6: // '\006'
-                super.FM.turret[2].bIsOperable = false;
+            case 6:
+                this.FM.turret[2].bIsOperable = false;
                 break;
         }
     }
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("HMask3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.hierMesh().chunkVisible("Pilot4_D0", false);
                 this.hierMesh().chunkVisible("HMask4_D0", false);
                 this.hierMesh().chunkVisible("Pilot4_D1", true);
                 break;
 
-            case 5: // '\005'
+            case 5:
                 this.hierMesh().chunkVisible("Pilot6_D0", false);
                 this.hierMesh().chunkVisible("HMask6_D0", false);
                 this.hierMesh().chunkVisible("Pilot6_D1", true);
                 break;
 
-            case 6: // '\006'
+            case 6:
                 this.hierMesh().chunkVisible("Pilot7_D0", false);
                 this.hierMesh().chunkVisible("HMask7_D0", false);
                 this.hierMesh().chunkVisible("Pilot7_D1", true);

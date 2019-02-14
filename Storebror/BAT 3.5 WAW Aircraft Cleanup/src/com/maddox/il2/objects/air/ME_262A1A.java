@@ -24,7 +24,7 @@ public class ME_262A1A extends ME_262 {
             this.hierMesh().chunkVisible("MK108", true);
         }
         super.onAircraftLoaded();
-        super.FM.isPlayers();
+        this.FM.isPlayers();
     }
 
     static {

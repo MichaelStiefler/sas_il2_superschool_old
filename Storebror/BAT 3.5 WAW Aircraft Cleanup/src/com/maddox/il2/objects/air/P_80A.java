@@ -19,11 +19,9 @@ public class P_80A extends P_80 {
         Property.set(class1, "yearService", 1944.9F);
         Property.set(class1, "yearExpired", 1948.3F);
         Property.set(class1, "FlightModel", "FlightModels/P-80A.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitYP_80.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitYP_80.class });
         Property.set(class1, "LOSElevation", 0.965F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06" });
-        weaponsRegister(class1, "default", new String[] { "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06" });
     }
 }

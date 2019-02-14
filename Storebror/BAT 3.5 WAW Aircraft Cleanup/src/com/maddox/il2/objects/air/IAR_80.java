@@ -16,11 +16,9 @@ public class IAR_80 extends IAR_8X implements TypeFighter {
         Property.set(class1, "yearService", 1939.5F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/IAR-80.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitIAR80.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitIAR80.class });
         Property.set(class1, "LOSElevation", 0.8323F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
-        weaponsRegister(class1, "default", new String[] { "MGunBrowning303k 1000", "MGunBrowning303k 1000", "MGunBrowning303k 1000", "MGunBrowning303k 1000" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
     }
 }

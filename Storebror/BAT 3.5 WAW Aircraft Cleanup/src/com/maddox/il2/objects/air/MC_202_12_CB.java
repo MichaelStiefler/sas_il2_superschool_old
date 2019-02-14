@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class MC_202_12_CB extends MC_202xyz implements TypeFighter, TypeTNBFighter {
@@ -9,7 +8,7 @@ public class MC_202_12_CB extends MC_202xyz implements TypeFighter, TypeTNBFight
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = MC_202_12_CB.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "M.C.202");
         Property.set(class1, "meshName_it", "3DO/Plane/MC-202XIICB(it)/hier.him");

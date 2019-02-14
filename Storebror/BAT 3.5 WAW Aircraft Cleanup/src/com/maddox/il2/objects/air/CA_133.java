@@ -31,7 +31,7 @@ public class CA_133 extends GioCaproni implements TypeBomber, TypeTransport {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (af[0] < -50F) {
                     af[0] = -50F;
                     flag = false;
@@ -55,7 +55,7 @@ public class CA_133 extends GioCaproni implements TypeBomber, TypeTransport {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (af[0] < -120F) {
                     af[0] = -120F;
                     flag = false;
@@ -73,7 +73,7 @@ public class CA_133 extends GioCaproni implements TypeBomber, TypeTransport {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (af[0] < -60F) {
                     af[0] = -60F;
                     flag = false;
@@ -91,7 +91,7 @@ public class CA_133 extends GioCaproni implements TypeBomber, TypeTransport {
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (af[0] < -45F) {
                     af[0] = -45F;
                     flag = false;
@@ -127,7 +127,7 @@ public class CA_133 extends GioCaproni implements TypeBomber, TypeTransport {
             this.FM.AS.hitEngine(shot.initiator, 1, 1);
         }
         if ((this.FM.AS.astateEngineStates[0] > 2) && (this.FM.AS.astateEngineStates[1] > 2)) {
-            super.FM.setCapableOfBMP(false, shot.initiator);
+            this.FM.setCapableOfBMP(false, shot.initiator);
         }
         super.msgShot(shot);
     }
@@ -250,7 +250,7 @@ public class CA_133 extends GioCaproni implements TypeBomber, TypeTransport {
                 this.bSightBombDump = true;
             }
             if (this.bSightBombDump) {
-                if (super.FM.isTick(3, 0)) {
+                if (this.FM.isTick(3, 0)) {
                     if ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1] != null) && this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].haveBullets()) {
                         this.FM.CT.WeaponControl[3] = true;
                         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");

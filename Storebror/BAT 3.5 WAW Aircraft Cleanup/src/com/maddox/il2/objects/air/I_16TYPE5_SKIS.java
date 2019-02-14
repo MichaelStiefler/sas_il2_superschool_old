@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.game.Main3D;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class I_16TYPE5_SKIS extends I_16FixedSkis implements TypeTNBFighter {
@@ -27,7 +26,7 @@ public class I_16TYPE5_SKIS extends I_16FixedSkis implements TypeTNBFighter {
             this.hierMesh().chunkSetAngles("Blister2_D0", 0.0F, 160F * f, 0.0F);
             if (f >= 1.0F) {
                 this.okToJump = true;
-                super.hitDaSilk();
+                this.hitDaSilk();
             }
         } else {
             Aircraft.xyz[0] = 0.0F;
@@ -122,7 +121,7 @@ public class I_16TYPE5_SKIS extends I_16FixedSkis implements TypeTNBFighter {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
@@ -149,7 +148,7 @@ public class I_16TYPE5_SKIS extends I_16FixedSkis implements TypeTNBFighter {
     private boolean sideDoorOpened;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = I_16TYPE5_SKIS.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "I-16");
         Property.set(class1, "meshName", "3DO/Plane/I-16type5(multi)/hier_skis.him");
@@ -161,12 +160,7 @@ public class I_16TYPE5_SKIS extends I_16FixedSkis implements TypeTNBFighter {
         Property.set(class1, "FlightModel", "FlightModels/I-16type5Skis.fmd");
         Property.set(class1, "cockpitClass", new Class[] { CockpitI_16TYPE5.class });
         Property.set(class1, "LOSElevation", 0.82595F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 3, 3, 9, 9 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev07", "_ExternalDev08" });
-        weaponsRegister(class1, "default", new String[] { "MGunShKASk 900", "MGunShKASk 900", null, null, null, null });
-        weaponsRegister(class1, "2x50kg", new String[] { "MGunShKASk 900", "MGunShKASk 900", "BombGunFAB50 1", "BombGunFAB50 1", null, null });
-        weaponsRegister(class1, "2x100kg", new String[] { "MGunShKASk 900", "MGunShKASk 900", "BombGunFAB100 1", "BombGunFAB100 1", null, null });
-        weaponsRegister(class1, "PV-1", new String[] { "MGunPV1 900", "MGunPV1 900", null, null, null, null });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 3, 3, 9, 9 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev07", "_ExternalDev08" });
     }
 }

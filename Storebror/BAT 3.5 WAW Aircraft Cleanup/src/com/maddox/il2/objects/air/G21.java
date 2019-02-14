@@ -9,7 +9,7 @@ public class G21 extends Goose {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.startsWith("Passengers")) {
+        if (this.thisWeaponsName.startsWith("Passengers")) {
             this.hierMesh().chunkVisible("Amiral", true);
             this.hierMesh().chunkVisible("Pass1", true);
             this.hierMesh().chunkVisible("Pass2", true);

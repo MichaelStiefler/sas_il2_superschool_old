@@ -33,7 +33,7 @@ public class KI_43_IIKAI_DZZ extends KI_43 {
         Property.set(class1, "yearService", 1943F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/Ki-43-II.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitKI_43_IIKAI.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitKI_43_IIKAI.class });
         Property.set(class1, "LOSElevation", 0.4252F);
         Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 9, 9, 3, 3 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_ExternalDev01", "_ExternalDev02", "_ExternalBomb01", "_ExternalBomb02" });

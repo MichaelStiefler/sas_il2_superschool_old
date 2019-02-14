@@ -5,14 +5,14 @@ import com.maddox.rts.Property;
 public class Bv_237 extends Bv_237X implements TypeFighter, TypeStormovik, TypeX4Carrier {
 
     public Bv_237() {
-        prevWing = true;
+        Bv_237.prevWing = true;
         this.bToFire = false;
         this.deltaAzimuth = 0.0F;
         this.deltaTangage = 0.0F;
     }
 
     public void onAircraftLoaded() {
-        if (super.thisWeaponsName.startsWith("2 x Mk-103")) {
+        if (this.thisWeaponsName.startsWith("2 x Mk-103")) {
             this.hierMesh().chunkVisible("Gun01_D0", true);
             this.hierMesh().chunkVisible("Gun02_D0", true);
         } else {

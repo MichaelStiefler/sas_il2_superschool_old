@@ -35,7 +35,7 @@ public class G3M2_11 extends G3M implements TypeBomber {
             this.hierMesh().chunkSetLocate("Turret3C_D0", Aircraft.xyz, Aircraft.ypr);
             if (this.fGunPos > 0.8F) {
                 if (this.fGunPos < 0.9F) {
-                    ;
+
                 }
             }
         }
@@ -60,7 +60,7 @@ public class G3M2_11 extends G3M implements TypeBomber {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -85F) {
                     f = -85F;
                     flag = false;
@@ -79,7 +79,7 @@ public class G3M2_11 extends G3M implements TypeBomber {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f1 < -0F) {
                     f1 = -0F;
                     flag = false;
@@ -90,7 +90,7 @@ public class G3M2_11 extends G3M implements TypeBomber {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f1 > 89F) {
                     f1 = 89F;
                     flag = false;

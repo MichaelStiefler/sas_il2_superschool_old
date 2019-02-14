@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Maneuver;
 import com.maddox.il2.ai.air.Pilot;
@@ -43,15 +42,15 @@ public class ME_262TPF extends ME_262B implements TypeX4Carrier, TypeRadarLiSN2C
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (((super.FM instanceof RealFlightModel) && ((RealFlightModel) super.FM).isRealMode()) || !flag || !(super.FM instanceof Pilot)) {
+        if (((this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode()) || !flag || !(this.FM instanceof Pilot)) {
             return;
         }
-        Pilot pilot = (Pilot) super.FM;
+        Pilot pilot = (Pilot) this.FM;
         if ((pilot.get_maneuver() == 63) && (((Maneuver) (pilot)).target != null)) {
             Point3d point3d = new Point3d(((FlightModelMain) (((Maneuver) (pilot)).target)).Loc);
-            point3d.sub(((FlightModelMain) (super.FM)).Loc);
-            ((FlightModelMain) (super.FM)).Or.transformInv(point3d);
-            if ((((((Tuple3d) (point3d)).x > 4000D) && (((Tuple3d) (point3d)).x < 5500D)) || ((((Tuple3d) (point3d)).x > 100D) && (((Tuple3d) (point3d)).x < 5000D) && (World.Rnd().nextFloat() < 0.33F))) && (Time.current() > (this.tX4Prev + 10000L))) {
+            point3d.sub(this.FM.Loc);
+            this.FM.Or.transformInv(point3d);
+            if ((((point3d.x > 4000D) && (point3d.x < 5500D)) || ((point3d.x > 100D) && (point3d.x < 5000D) && (World.Rnd().nextFloat() < 0.33F))) && (Time.current() > (this.tX4Prev + 10000L))) {
                 this.bToFire = true;
                 this.tX4Prev = Time.current();
             }
@@ -125,20 +124,20 @@ public class ME_262TPF extends ME_262B implements TypeX4Carrier, TypeRadarLiSN2C
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
-                if (!((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+                if (!this.FM.AS.bIsAboutToBailout) {
                     this.hierMesh().chunkVisible("Gore1_D0", true);
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Head2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
-                if (!((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+                if (!this.FM.AS.bIsAboutToBailout) {
                     this.hierMesh().chunkVisible("Gore3_D0", true);
                 }
                 break;
@@ -146,12 +145,12 @@ public class ME_262TPF extends ME_262B implements TypeX4Carrier, TypeRadarLiSN2C
     }
 
     public void update(float f) {
-        if (super.FM.isPlayers() && !Main3D.cur3D().isViewOutside()) {
+        if (this.FM.isPlayers() && !Main3D.cur3D().isViewOutside()) {
             this.hierMesh().chunkVisible("Blister1_D0", false);
         } else {
             this.hierMesh().chunkVisible("Blister1_D0", true);
         }
-        if (((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+        if (this.FM.AS.bIsAboutToBailout) {
             this.hierMesh().chunkVisible("Blister1_D0", false);
         }
         super.update(f);
@@ -190,13 +189,13 @@ public class ME_262TPF extends ME_262B implements TypeX4Carrier, TypeRadarLiSN2C
             this.headYm = f - 0.0005F;
             f *= 0.7F;
             f1 *= 0.7F;
-            tmpOrLH.setYPR(0.0F, 0.0F, 0.0F);
-            tmpOrLH.increment(0.0F, f, 0.0F);
-            tmpOrLH.increment(f1, 0.0F, 0.0F);
-            tmpOrLH.increment(0.0F, 0.0F, (-0.2F * f1) + (0.05F * f));
-            this.headOr[0] = tmpOrLH.getYaw();
-            this.headOr[1] = tmpOrLH.getPitch();
-            this.headOr[2] = tmpOrLH.getRoll();
+            ME_262TPF.tmpOrLH.setYPR(0.0F, 0.0F, 0.0F);
+            ME_262TPF.tmpOrLH.increment(0.0F, f, 0.0F);
+            ME_262TPF.tmpOrLH.increment(f1, 0.0F, 0.0F);
+            ME_262TPF.tmpOrLH.increment(0.0F, 0.0F, (-0.2F * f1) + (0.05F * f));
+            this.headOr[0] = ME_262TPF.tmpOrLH.getYaw();
+            this.headOr[1] = ME_262TPF.tmpOrLH.getPitch();
+            this.headOr[2] = ME_262TPF.tmpOrLH.getRoll();
             this.headPos[0] = 0.0005F * Math.abs(f);
             this.headPos[1] = -0.0001F * Math.abs(f);
             this.headPos[2] = 0.0F;

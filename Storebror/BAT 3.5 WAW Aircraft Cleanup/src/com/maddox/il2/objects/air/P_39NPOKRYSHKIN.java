@@ -9,7 +9,7 @@ public class P_39NPOKRYSHKIN extends P_39 implements TypeAcePlane {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        super.FM.Skill = 3;
+        this.FM.Skill = 3;
     }
 
     static {

@@ -1,10 +1,7 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.weapons.GunEmpty;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 import com.maddox.sas1946.il2.util.Reflection;
 
@@ -32,11 +29,11 @@ public class TA_152H extends TA_152NEW {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        TA_152H.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGear() < 0.98F) {
+        if (this.FM.CT.getGear() < 0.98F) {
             return;
         } else {
             this.hierMesh().chunkSetAngles("GearC3_D0", 0.0F, -f, 0.0F);
@@ -46,9 +43,9 @@ public class TA_152H extends TA_152NEW {
 
     public void moveWheelSink() {
         this.resetYPRmodifier();
-        Aircraft.xyz[1] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.44F, 0.0F, 0.44F);
+        Aircraft.xyz[1] = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.44F, 0.0F, 0.44F);
         this.hierMesh().chunkSetLocate("GearL2a_D0", Aircraft.xyz, Aircraft.ypr);
-        Aircraft.xyz[1] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 0.44F, 0.0F, 0.44F);
+        Aircraft.xyz[1] = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.44F, 0.0F, 0.44F);
         this.hierMesh().chunkSetLocate("GearR2a_D0", Aircraft.xyz, Aircraft.ypr);
     }
 
@@ -57,21 +54,21 @@ public class TA_152H extends TA_152NEW {
             this.hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -20F * this.kangle, 0.0F);
         }
 
-        this.kangle = (0.95F * this.kangle) + (0.05F * ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator());
-        if (((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z > 9000D) {
-            if (!((FlightModelMain) (super.FM)).EI.engines[0].getControlAfterburner()) {
+        this.kangle = (0.95F * this.kangle) + (0.05F * this.FM.EI.engines[0].getControlRadiator());
+        if (this.FM.Loc.z > 9000D) {
+            if (!this.FM.EI.engines[0].getControlAfterburner()) {
                 Reflection.setBoolean(this.FM.EI.engines[0], "bHasAfterburnerControl", true);
             }
-            ((FlightModelMain) (super.FM)).EI.engines[0].setAfterburnerType(2);
-        } else if (!((FlightModelMain) (super.FM)).EI.engines[0].getControlAfterburner()) {
-            ((FlightModelMain) (super.FM)).EI.engines[0].doSetKillControlAfterburner();
+            this.FM.EI.engines[0].setAfterburnerType(2);
+        } else if (!this.FM.EI.engines[0].getControlAfterburner()) {
+            this.FM.EI.engines[0].doSetKillControlAfterburner();
         }
         super.update(f);
     }
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).AS.wantBeaconsNet(true);
+        this.FM.AS.wantBeaconsNet(true);
         if (this.getGunByHookName("_CANNON03") instanceof GunEmpty) {
             this.hierMesh().chunkVisible("20mmL1_D0", false);
         }
@@ -83,7 +80,7 @@ public class TA_152H extends TA_152NEW {
     private float kangle;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = TA_152H.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Ta.152");
         Property.set(class1, "meshName", "3DO/Plane/TA-152H-0/hier.him");

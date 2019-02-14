@@ -5,9 +5,7 @@ import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class YAK_15 extends YAK {
@@ -29,8 +27,8 @@ public class YAK_15 extends YAK {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = true;
-        ((FlightModelMain) (super.FM)).CT.dvCockpitDoor = 0.65F;
+        this.FM.CT.bHasCockpitDoorControl = true;
+        this.FM.CT.dvCockpitDoor = 0.65F;
     }
 
     public float getEyeLevelCorrection() {
@@ -47,7 +45,7 @@ public class YAK_15 extends YAK {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        YAK_15.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {
@@ -59,7 +57,7 @@ public class YAK_15 extends YAK {
             if (s.startsWith("xxCannon01")) {
                 if (this.getEnergyPastArmor(9.8F, shot) > 0.0F) {
                     this.debuggunnery("Armament: Cannon (0) Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(1, 0);
+                    this.FM.AS.setJamBullets(1, 0);
                     this.getEnergyPastArmor(World.Rnd().nextFloat(0.5F, 23.325F), shot);
                 }
                 return;
@@ -67,7 +65,7 @@ public class YAK_15 extends YAK {
             if (s.startsWith("xxCannon02")) {
                 if (this.getEnergyPastArmor(9.8F, shot) > 0.0F) {
                     this.debuggunnery("Armament: Cannon (0) Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(1, 1);
+                    this.FM.AS.setJamBullets(1, 1);
                     this.getEnergyPastArmor(World.Rnd().nextFloat(0.5F, 23.325F), shot);
                 }
                 return;
@@ -77,22 +75,22 @@ public class YAK_15 extends YAK {
     }
 
     public void update(float f) {
-        if (Config.isUSE_RENDER() && ((FlightModelMain) (super.FM)).AS.isMaster()) {
-            if ((((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput() > 0.8F) && (((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6)) {
-                if (((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput() > 0.95F) {
-                    ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 3);
+        if (Config.isUSE_RENDER() && this.FM.AS.isMaster()) {
+            if ((this.FM.EI.engines[0].getPowerOutput() > 0.8F) && (this.FM.EI.engines[0].getStage() == 6)) {
+                if (this.FM.EI.engines[0].getPowerOutput() > 0.95F) {
+                    this.FM.AS.setSootState(this, 0, 3);
                 } else {
-                    ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 2);
+                    this.FM.AS.setSootState(this, 0, 2);
                 }
             } else {
-                ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 0);
+                this.FM.AS.setSootState(this, 0, 0);
             }
         }
         super.update(f);
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = YAK_15.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Yak");
         Property.set(class1, "meshName", "3DO/Plane/Yak-15(Multi1)/hier.him");

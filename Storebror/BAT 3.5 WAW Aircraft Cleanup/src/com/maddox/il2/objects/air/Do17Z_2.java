@@ -31,22 +31,22 @@ public class Do17Z_2 extends Do17 {
 
     public void doWoundPilot(int paramInt, float paramFloat) {
         switch (paramInt) {
-            case 1: // '\001'
-                super.FM.turret[0].setHealth(paramFloat);
+            case 1:
+                this.FM.turret[0].setHealth(paramFloat);
                 break;
 
-            case 2: // '\002'
-                super.FM.turret[1].setHealth(paramFloat);
-                super.FM.turret[3].setHealth(paramFloat);
-                super.FM.turret[4].setHealth(paramFloat);
+            case 2:
+                this.FM.turret[1].setHealth(paramFloat);
+                this.FM.turret[3].setHealth(paramFloat);
+                this.FM.turret[4].setHealth(paramFloat);
                 break;
 
-            case 3: // '\003'
-                super.FM.turret[2].setHealth(paramFloat);
+            case 3:
+                this.FM.turret[2].setHealth(paramFloat);
                 // fall through
 
-            case 4: // '\004'
-                super.FM.turret[5].setHealth(paramFloat);
+            case 4:
+                this.FM.turret[5].setHealth(paramFloat);
                 break;
         }
     }

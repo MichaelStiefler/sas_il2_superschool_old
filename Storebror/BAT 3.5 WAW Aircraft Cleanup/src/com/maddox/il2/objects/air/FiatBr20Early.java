@@ -15,7 +15,7 @@ public class FiatBr20Early extends FiatBr2x implements TypeBomber, TypeTransport
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -35F) {
                     f = -35F;
                     flag = false;
@@ -34,7 +34,7 @@ public class FiatBr20Early extends FiatBr2x implements TypeBomber, TypeTransport
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -30F) {
                     f = -30F;
                     flag = false;
@@ -53,7 +53,7 @@ public class FiatBr20Early extends FiatBr2x implements TypeBomber, TypeTransport
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -90F) {
                     f = -90F;
                     flag = false;

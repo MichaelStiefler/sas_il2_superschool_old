@@ -135,7 +135,7 @@ public class BlenheimS1 extends BLENHEIM {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.equals("2x500lbs")) {
+        if (this.thisWeaponsName.equals("2x500lbs")) {
             this.hierMesh().chunkVisible("Bay1_D0", true);
             this.hierMesh().chunkVisible("Bay2_D0", true);
             this.hierMesh().chunkVisible("Bay3_D0", true);
@@ -151,7 +151,7 @@ public class BlenheimS1 extends BLENHEIM {
             this.hierMesh().chunkVisible("RackFinBL", false);
             return;
         }
-        if (super.thisWeaponsName.equals("4x250lbs")) {
+        if (this.thisWeaponsName.equals("4x250lbs")) {
             this.hierMesh().chunkVisible("Bay1_D0", true);
             this.hierMesh().chunkVisible("Bay2_D0", true);
             this.hierMesh().chunkVisible("Bay3_D0", true);
@@ -167,7 +167,7 @@ public class BlenheimS1 extends BLENHEIM {
             this.hierMesh().chunkVisible("RackFinBL", false);
             return;
         }
-        if (super.thisWeaponsName.equals("4x250lbs+8x40lbsF")) {
+        if (this.thisWeaponsName.equals("4x250lbs+8x40lbsF")) {
             this.hierMesh().chunkVisible("Bay1_D0", true);
             this.hierMesh().chunkVisible("Bay2_D0", true);
             this.hierMesh().chunkVisible("Bay3_D0", true);
@@ -175,7 +175,7 @@ public class BlenheimS1 extends BLENHEIM {
             this.hierMesh().chunkVisible("RackFinBL", false);
             return;
         }
-        if (super.thisWeaponsName.equals("4x120lbs+8x40lbsPara")) {
+        if (this.thisWeaponsName.equals("4x120lbs+8x40lbsPara")) {
             this.hierMesh().chunkVisible("Bay1_D0", true);
             this.hierMesh().chunkVisible("Bay2_D0", true);
             this.hierMesh().chunkVisible("Bay3_D0", true);
@@ -183,7 +183,7 @@ public class BlenheimS1 extends BLENHEIM {
             this.hierMesh().chunkVisible("RackFinBL", false);
             return;
         }
-        if (super.thisWeaponsName.equals("4x250lbs+8x30lbsInc")) {
+        if (this.thisWeaponsName.equals("4x250lbs+8x30lbsInc")) {
             this.hierMesh().chunkVisible("Bay1_D0", true);
             this.hierMesh().chunkVisible("Bay2_D0", true);
             this.hierMesh().chunkVisible("Bay3_D0", true);
@@ -191,7 +191,7 @@ public class BlenheimS1 extends BLENHEIM {
             this.hierMesh().chunkVisible("RackFinBL", false);
             return;
         }
-        if (super.thisWeaponsName.equals("2xSBC250_20lbsPara+2x250lbs+8x30lbsInc")) {
+        if (this.thisWeaponsName.equals("2xSBC250_20lbsPara+2x250lbs+8x30lbsInc")) {
             this.hierMesh().chunkVisible("Bay1_D0", false);
             this.hierMesh().chunkVisible("Bay2_D0", true);
             this.hierMesh().chunkVisible("Bay3_D0", false);
@@ -199,7 +199,7 @@ public class BlenheimS1 extends BLENHEIM {
             this.hierMesh().chunkVisible("RackFinBL", false);
             return;
         }
-        if (super.thisWeaponsName.equals("4xSBC250_20lbs+8x30lbsInc")) {
+        if (this.thisWeaponsName.equals("4xSBC250_20lbs+8x30lbsInc")) {
             this.hierMesh().chunkVisible("Bay1_D0", false);
             this.hierMesh().chunkVisible("Bay2_D0", false);
             this.hierMesh().chunkVisible("Bay3_D0", false);

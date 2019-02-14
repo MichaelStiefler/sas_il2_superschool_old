@@ -11,14 +11,14 @@ public class IAR_80M extends IAR_8X implements TypeFighter, TypeBNZFighter {
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            IAR_80M.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            IAR_80M.bChangedPit = true;
         }
     }
 

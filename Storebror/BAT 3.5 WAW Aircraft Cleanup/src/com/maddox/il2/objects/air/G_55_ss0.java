@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class G_55_ss0 extends G_55xyz {
@@ -9,7 +8,7 @@ public class G_55_ss0 extends G_55xyz {
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = G_55_ss0.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "G.55");
         Property.set(class1, "meshName_it", "3DO/Plane/G-55_ss0(it)/hier.him");

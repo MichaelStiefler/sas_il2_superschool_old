@@ -16,14 +16,9 @@ public class LA_5FN extends LA_X {
         Property.set(class1, "yearService", 1943F);
         Property.set(class1, "yearExpired", 1948F);
         Property.set(class1, "FlightModel", "FlightModels/La-5FN.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitLA_5FN.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitLA_5FN.class });
         Property.set(class1, "LOSElevation", 0.750618F);
-        weaponTriggersRegister(class1, new int[] { 1, 1, 3, 3, 9, 9 });
-        weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02" });
-        weaponsRegister(class1, "default", new String[] { "MGunShVAKs 170", "MGunShVAKs 200", null, null, null, null });
-        weaponsRegister(class1, "2xFAB50", new String[] { "MGunShVAKs 170", "MGunShVAKs 200", "BombGunFAB50 1", "BombGunFAB50 1", null, null });
-        weaponsRegister(class1, "2xFAB100", new String[] { "MGunShVAKs 170", "MGunShVAKs 200", "BombGunFAB100 1", "BombGunFAB100 1", null, null });
-        weaponsRegister(class1, "2xDROPTANK", new String[] { "MGunShVAKs 170", "MGunShVAKs 200", null, null, "FuelTankGun_Tank80", "FuelTankGun_Tank80" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 1, 1, 3, 3, 9, 9 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02" });
     }
 }

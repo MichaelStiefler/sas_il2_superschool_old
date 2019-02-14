@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class P_40M extends P_40 {
@@ -10,12 +9,12 @@ public class P_40M extends P_40 {
 
     public void update(float f1) {
         super.update(f1);
-        f = Aircraft.cvt(((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator(), 0.0F, 1.0F, 5F, -17F);
-        this.hierMesh().chunkSetAngles("Water2_D0", 0.0F, f, 0.0F);
-        this.hierMesh().chunkSetAngles("Water3_D0", 0.0F, f, 0.0F);
-        f = Math.min(f, 0.0F);
-        this.hierMesh().chunkSetAngles("Water1_D0", 0.0F, f, 0.0F);
-        this.hierMesh().chunkSetAngles("Water4_D0", 0.0F, f, 0.0F);
+        P_40M.f = Aircraft.cvt(this.FM.EI.engines[0].getControlRadiator(), 0.0F, 1.0F, 5F, -17F);
+        this.hierMesh().chunkSetAngles("Water2_D0", 0.0F, P_40M.f, 0.0F);
+        this.hierMesh().chunkSetAngles("Water3_D0", 0.0F, P_40M.f, 0.0F);
+        P_40M.f = Math.min(P_40M.f, 0.0F);
+        this.hierMesh().chunkSetAngles("Water1_D0", 0.0F, P_40M.f, 0.0F);
+        this.hierMesh().chunkSetAngles("Water4_D0", 0.0F, P_40M.f, 0.0F);
     }
 
     private static float f;

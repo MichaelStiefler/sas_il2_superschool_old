@@ -9,11 +9,9 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.Interpolate;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.fm.Pitot;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.objects.Wreckage;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class JU_88P1 extends JU_88Axx implements TypeBNZFighter, TypeStormovik {
@@ -28,10 +26,10 @@ public class JU_88P1 extends JU_88Axx implements TypeBNZFighter, TypeStormovik {
     }
 
     public void onAircraftLoaded() {
-        if (((FlightModelMain) (super.FM)).CT.Weapons[1] != null) {
-            this.g1 = ((FlightModelMain) (super.FM)).CT.Weapons[1][0];
+        if (this.FM.CT.Weapons[1] != null) {
+            this.g1 = this.FM.CT.Weapons[1][0];
         }
-        ((FlightModelMain) (super.FM)).Sq.liftKeel *= this.BK75stabilizingMultiplier;
+        this.FM.Sq.liftKeel *= this.BK75stabilizingMultiplier;
     }
 
     public void doWreck(String s) {
@@ -40,7 +38,7 @@ public class JU_88P1 extends JU_88Axx implements TypeBNZFighter, TypeStormovik {
             Wreckage wreckage = new Wreckage(this, this.hierMesh().chunkFind(s));
             wreckage.collide(true);
             Vector3d vector3d = new Vector3d();
-            vector3d.set(((FlightModelMain) (super.FM)).Vwld);
+            vector3d.set(this.FM.Vwld);
             wreckage.setSpeed(vector3d);
         }
     }
@@ -57,7 +55,7 @@ public class JU_88P1 extends JU_88Axx implements TypeBNZFighter, TypeStormovik {
     protected void hitBone(String s, Shot shot, Point3d point3d) {
         if (s.startsWith("xbk75gun")) {
             this.debuggunnery("BK75: Disabled..");
-            ((FlightModelMain) (super.FM)).AS.setJamBullets(1, 0);
+            this.FM.AS.setJamBullets(1, 0);
             this.getEnergyPastArmor(World.Rnd().nextFloat(3.3F, 24.6F), shot);
         }
         if (s.equals("xxarmorp6")) {
@@ -74,21 +72,21 @@ public class JU_88P1 extends JU_88Axx implements TypeBNZFighter, TypeStormovik {
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            JU_88P1.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            JU_88P1.bChangedPit = true;
         }
     }
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (super.FM.getAltitude() < 3000F) {
+        if (this.FM.getAltitude() < 3000F) {
             this.hierMesh().chunkVisible("HMask1_D0", false);
             this.hierMesh().chunkVisible("HMask2_D0", false);
             this.hierMesh().chunkVisible("HMask3_D0", false);
@@ -107,7 +105,7 @@ public class JU_88P1 extends JU_88Axx implements TypeBNZFighter, TypeStormovik {
                 default:
                     break;
 
-                case 0: // '\0'
+                case 0:
                     if (this.g1.isShots() && (this.oldbullets != this.g1.countBullets())) {
                         this.oldbullets = this.g1.countBullets();
                         this.phase++;
@@ -116,7 +114,7 @@ public class JU_88P1 extends JU_88Axx implements TypeBNZFighter, TypeStormovik {
                     }
                     break;
 
-                case 1: // '\001'
+                case 1:
                     this.disp += 8F * f;
                     this.resetYPRmodifier();
                     Aircraft.xyz[1] = this.disp;
@@ -126,7 +124,7 @@ public class JU_88P1 extends JU_88Axx implements TypeBNZFighter, TypeStormovik {
                     }
                     break;
 
-                case 2: // '\002'
+                case 2:
                     this.disp += 6F * f;
                     this.resetYPRmodifier();
                     Aircraft.xyz[0] = this.disp;
@@ -136,11 +134,11 @@ public class JU_88P1 extends JU_88Axx implements TypeBNZFighter, TypeStormovik {
                     }
                     break;
 
-                case 3: // '\003'
+                case 3:
                     Wreckage wreckage = new Wreckage(this, this.hierMesh().chunkFind("Shell_D0"));
                     Eff3DActor.New(wreckage, null, null, 1.0F, Wreckage.SMOKE, 3F);
                     Vector3d vector3d = new Vector3d();
-                    vector3d.set(((FlightModelMain) (super.FM)).Vwld);
+                    vector3d.set(this.FM.Vwld);
                     vector3d.y = (0.94999999999999996D * ((Tuple3d) (vector3d)).y) - 1.0D;
                     vector3d.x = (0.94999999999999996D * ((Tuple3d) (vector3d)).x) + 1.0D;
                     vector3d.z -= 5D;
@@ -150,7 +148,7 @@ public class JU_88P1 extends JU_88Axx implements TypeBNZFighter, TypeStormovik {
                     this.phase++;
                     break;
 
-                case 4: // '\004'
+                case 4:
                     this.disp -= 1.0F * f;
                     this.resetYPRmodifier();
                     Aircraft.xyz[1] = this.disp;
@@ -165,16 +163,16 @@ public class JU_88P1 extends JU_88Axx implements TypeBNZFighter, TypeStormovik {
                     }
                     break;
 
-                case 5: // '\005'
+                case 5:
                     this.phase = 0;
                     break;
             }
         }
         super.update(f);
-        if ((Pitot.Indicator((float) ((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z, super.FM.getSpeed()) > 70F) && (((FlightModelMain) (super.FM)).CT.getFlap() > 0.01D) && (((FlightModelMain) (super.FM)).CT.FlapsControl != 0.0F)) {
-            ((FlightModelMain) (super.FM)).CT.FlapsControl = 0.0F;
+        if ((Pitot.Indicator((float) this.FM.Loc.z, this.FM.getSpeed()) > 70F) && (this.FM.CT.getFlap() > 0.01D) && (this.FM.CT.FlapsControl != 0.0F)) {
+            this.FM.CT.FlapsControl = 0.0F;
             World.cur();
-            if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft()) {
+            if (((Interpolate) (this.FM)).actor == World.getPlayerAircraft()) {
                 HUD.log("FlapsRaised");
             }
         }
@@ -196,18 +194,18 @@ public class JU_88P1 extends JU_88Axx implements TypeBNZFighter, TypeStormovik {
             default:
                 break;
 
-            case 0: // '\0'
-                if (!super.FM.turret[1].bIsAIControlled || super.secondaryRearGunActive) {
+            case 0:
+                if (!this.FM.turret[1].bIsAIControlled || this.secondaryRearGunActive) {
                     flag = false;
                     f = 0.0F;
                     f1 = 0.0F;
                     break;
                 }
-                super.mainRearGunActive = true;
+                this.mainRearGunActive = true;
                 if (f < -25F) {
                     f = -25F;
                     flag = false;
-                    super.mainRearGunActive = false;
+                    this.mainRearGunActive = false;
                 }
                 if (f > 45F) {
                     f = 45F;
@@ -238,15 +236,15 @@ public class JU_88P1 extends JU_88Axx implements TypeBNZFighter, TypeStormovik {
                 }
                 break;
 
-            case 1: // '\001'
-                if (!super.FM.turret[0].bIsAIControlled || super.mainRearGunActive) {
-                    super.secondaryRearGunActive = false;
+            case 1:
+                if (!this.FM.turret[0].bIsAIControlled || this.mainRearGunActive) {
+                    this.secondaryRearGunActive = false;
                     flag = false;
                     f = 0.0F;
                     f1 = 0.0F;
                     break;
                 }
-                super.secondaryRearGunActive = true;
+                this.secondaryRearGunActive = true;
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -254,7 +252,7 @@ public class JU_88P1 extends JU_88Axx implements TypeBNZFighter, TypeStormovik {
                 if (f > 25F) {
                     f = 25F;
                     flag = false;
-                    super.secondaryRearGunActive = false;
+                    this.secondaryRearGunActive = false;
                 }
                 if (f1 < -10F) {
                     f1 = -10F;
@@ -281,7 +279,7 @@ public class JU_88P1 extends JU_88Axx implements TypeBNZFighter, TypeStormovik {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -15F) {
                     f = -15F;
                     flag = false;
@@ -310,20 +308,20 @@ public class JU_88P1 extends JU_88Axx implements TypeBNZFighter, TypeStormovik {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("HMask3_D0", false);
                 this.hierMesh().chunkVisible("HMask3a_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", this.hierMesh().isChunkVisible("Pilot3_D0"));
@@ -351,7 +349,7 @@ public class JU_88P1 extends JU_88Axx implements TypeBNZFighter, TypeStormovik {
     private float         BK75stabilizingMultiplier;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = JU_88P1.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Ju-88");
         Property.set(class1, "meshName", "3DO/Plane/Ju-88P-1/hier.him");

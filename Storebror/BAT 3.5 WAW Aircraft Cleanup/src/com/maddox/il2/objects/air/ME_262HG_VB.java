@@ -39,7 +39,7 @@ public class ME_262HG_VB extends ME_262 implements TypeX4Carrier, TypeRadarLiSN2
 
     protected void moveRudder(float f) {
         this.updateControlsVisuals();
-        if (((FlightModelMain) (super.FM)).CT.getGear() > 0.75F) {
+        if (this.FM.CT.getGear() > 0.75F) {
             this.hierMesh().chunkSetAngles("GearC21_D0", 0.0F, 40F * f, 0.0F);
         }
     }
@@ -49,8 +49,8 @@ public class ME_262HG_VB extends ME_262 implements TypeX4Carrier, TypeRadarLiSN2
     }
 
     private final void updateControlsVisuals() {
-        this.hierMesh().chunkSetAngles("VatorL_D0", 0.0F, (-21.25F * ((FlightModelMain) (super.FM)).CT.getElevator()) - (21.25F * ((FlightModelMain) (super.FM)).CT.getRudder()), 0.0F);
-        this.hierMesh().chunkSetAngles("VatorR_D0", 0.0F, (-21.25F * ((FlightModelMain) (super.FM)).CT.getElevator()) + (21.25F * ((FlightModelMain) (super.FM)).CT.getRudder()), 0.0F);
+        this.hierMesh().chunkSetAngles("VatorL_D0", 0.0F, (-21.25F * this.FM.CT.getElevator()) - (21.25F * this.FM.CT.getRudder()), 0.0F);
+        this.hierMesh().chunkSetAngles("VatorR_D0", 0.0F, (-21.25F * this.FM.CT.getElevator()) + (21.25F * this.FM.CT.getRudder()), 0.0F);
     }
 
     public void doEjectCatapult() {
@@ -103,13 +103,13 @@ public class ME_262HG_VB extends ME_262 implements TypeX4Carrier, TypeRadarLiSN2
             this.headYm = f - 0.0005F;
             f *= 0.7F;
             f1 *= 0.7F;
-            tmpOrLH.setYPR(0.0F, 0.0F, 0.0F);
-            tmpOrLH.increment(0.0F, f, 0.0F);
-            tmpOrLH.increment(f1, 0.0F, 0.0F);
-            tmpOrLH.increment(0.0F, 0.0F, (-0.2F * f1) + (0.05F * f));
-            this.headOr[0] = tmpOrLH.getYaw();
-            this.headOr[1] = tmpOrLH.getPitch();
-            this.headOr[2] = tmpOrLH.getRoll();
+            ME_262HG_VB.tmpOrLH.setYPR(0.0F, 0.0F, 0.0F);
+            ME_262HG_VB.tmpOrLH.increment(0.0F, f, 0.0F);
+            ME_262HG_VB.tmpOrLH.increment(f1, 0.0F, 0.0F);
+            ME_262HG_VB.tmpOrLH.increment(0.0F, 0.0F, (-0.2F * f1) + (0.05F * f));
+            this.headOr[0] = ME_262HG_VB.tmpOrLH.getYaw();
+            this.headOr[1] = ME_262HG_VB.tmpOrLH.getPitch();
+            this.headOr[2] = ME_262HG_VB.tmpOrLH.getRoll();
             this.headPos[0] = 0.0005F * Math.abs(f);
             this.headPos[1] = -0.0001F * Math.abs(f);
             this.headPos[2] = 0.0F;
@@ -126,9 +126,9 @@ public class ME_262HG_VB extends ME_262 implements TypeX4Carrier, TypeRadarLiSN2
     }
 
     protected void moveFan(float f) {
-        for (int j = 0; j < ((FlightModelMain) (super.FM)).EI.getNum(); j++) {
-            super.propPos[j] = (super.propPos[j] + (57.3F * ((FlightModelMain) (super.FM)).EI.engines[j].getw() * f)) % 360F;
-            this.hierMesh().chunkSetAngles(Aircraft.Props[j][0], 0.0F, -super.propPos[j], 0.0F);
+        for (int j = 0; j < this.FM.EI.getNum(); j++) {
+            this.propPos[j] = (this.propPos[j] + (57.3F * this.FM.EI.engines[j].getw() * f)) % 360F;
+            this.hierMesh().chunkSetAngles(Aircraft.Props[j][0], 0.0F, -this.propPos[j], 0.0F);
         }
 
     }
@@ -161,23 +161,23 @@ public class ME_262HG_VB extends ME_262 implements TypeX4Carrier, TypeRadarLiSN2
     }
 
     public static void moveGear(HierMesh hiermesh, float f, float f1, float f2) {
-        moveGear(hiermesh, f, f1, f2, true);
+        ME_262HG_VB.moveGear(hiermesh, f, f1, f2, true);
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2, ((FlightModelMain) (super.FM)).CT.GearControl > 0.5F);
+        ME_262HG_VB.moveGear(this.hierMesh(), f, f1, f2, this.FM.CT.GearControl > 0.5F);
     }
 
     public static void moveGear(HierMesh hiermesh, float f, boolean bDown) {
-        moveGear(hiermesh, f, f, f, bDown);
+        ME_262HG_VB.moveGear(hiermesh, f, f, f, bDown);
     }
 
     public static void moveGear(HierMesh hiermesh, float f) {
-        moveGear(hiermesh, f, f, f, true);
+        ME_262HG_VB.moveGear(hiermesh, f, f, f, true);
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f, ((FlightModelMain) (super.FM)).CT.GearControl > 0.5F);
+        ME_262HG_VB.moveGear(this.hierMesh(), f, this.FM.CT.GearControl > 0.5F);
     }
 
     public void moveCockpitDoor(float f) {
@@ -193,15 +193,15 @@ public class ME_262HG_VB extends ME_262 implements TypeX4Carrier, TypeRadarLiSN2
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (((super.FM instanceof RealFlightModel) && ((RealFlightModel) super.FM).isRealMode()) || !flag || !(super.FM instanceof Pilot)) {
+        if (((this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode()) || !flag || !(this.FM instanceof Pilot)) {
             return;
         }
-        Pilot pilot = (Pilot) super.FM;
+        Pilot pilot = (Pilot) this.FM;
         if ((pilot.get_maneuver() == 63) && (((Maneuver) (pilot)).target != null)) {
             Point3d point3d = new Point3d(((FlightModelMain) (((Maneuver) (pilot)).target)).Loc);
-            point3d.sub(((FlightModelMain) (super.FM)).Loc);
-            ((FlightModelMain) (super.FM)).Or.transformInv(point3d);
-            if ((((((Tuple3d) (point3d)).x > 4000D) && (((Tuple3d) (point3d)).x < 5500D)) || ((((Tuple3d) (point3d)).x > 100D) && (((Tuple3d) (point3d)).x < 5000D) && (World.Rnd().nextFloat() < 0.33F))) && (Time.current() > (this.tX4Prev + 10000L))) {
+            point3d.sub(this.FM.Loc);
+            this.FM.Or.transformInv(point3d);
+            if ((((point3d.x > 4000D) && (point3d.x < 5500D)) || ((point3d.x > 100D) && (point3d.x < 5000D) && (World.Rnd().nextFloat() < 0.33F))) && (Time.current() > (this.tX4Prev + 10000L))) {
                 this.bToFire = true;
                 this.tX4Prev = Time.current();
             }
@@ -275,20 +275,20 @@ public class ME_262HG_VB extends ME_262 implements TypeX4Carrier, TypeRadarLiSN2
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
-                if (!((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+                if (!this.FM.AS.bIsAboutToBailout) {
                     this.hierMesh().chunkVisible("Gore1_D0", true);
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Head2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
-                if (!((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+                if (!this.FM.AS.bIsAboutToBailout) {
                     this.hierMesh().chunkVisible("Gore3_D0", true);
                 }
                 break;
@@ -296,12 +296,12 @@ public class ME_262HG_VB extends ME_262 implements TypeX4Carrier, TypeRadarLiSN2
     }
 
     public void update(float f) {
-        if (super.FM.isPlayers() && !Main3D.cur3D().isViewOutside()) {
+        if (this.FM.isPlayers() && !Main3D.cur3D().isViewOutside()) {
             this.hierMesh().chunkVisible("Blister1_D0", false);
         } else {
             this.hierMesh().chunkVisible("Blister1_D0", true);
         }
-        if (((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+        if (this.FM.AS.bIsAboutToBailout) {
             this.hierMesh().chunkVisible("Blister1_D0", false);
         }
         super.update(f);

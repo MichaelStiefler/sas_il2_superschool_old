@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class WhirlwindA extends Whirlwind implements TypeFighter, TypeStormovik {
@@ -9,7 +8,7 @@ public class WhirlwindA extends Whirlwind implements TypeFighter, TypeStormovik 
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = WhirlwindA.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Whirlwind");
         Property.set(class1, "meshName", "3DO/Plane/Whirlwind(Multi1)/hier.him");

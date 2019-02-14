@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
@@ -54,7 +53,7 @@ public class SPITFIRE16E extends SPITFIRE9 implements TypeFighterAceMaker {
 
     public void update(float f) {
         super.update(f);
-        if ((((FlightModelMain) (super.FM)).CT.getCockpitDoor() > 0.20000000000000001D) && this.bHasBlister && (super.FM.getSpeedKMH() > this.fMaxKMHSpeedForOpenCanopy) && (this.hierMesh().chunkFindCheck("Blister1_D0") != -1)) {
+        if ((this.FM.CT.getCockpitDoor() > 0.20000000000000001D) && this.bHasBlister && (this.FM.getSpeedKMH() > this.fMaxKMHSpeedForOpenCanopy) && (this.hierMesh().chunkFindCheck("Blister1_D0") != -1)) {
             try {
                 if (this == World.getPlayerAircraft()) {
                     ((CockpitSpit16E) Main3D.cur3D().cockpitCur).removeCanopy();
@@ -65,11 +64,11 @@ public class SPITFIRE16E extends SPITFIRE9 implements TypeFighterAceMaker {
             Wreckage wreckage = new Wreckage(this, this.hierMesh().chunkFind("Blister1_D0"));
             wreckage.collide(false);
             Vector3d vector3d = new Vector3d();
-            vector3d.set(((FlightModelMain) (super.FM)).Vwld);
+            vector3d.set(this.FM.Vwld);
             wreckage.setSpeed(vector3d);
             this.bHasBlister = false;
-            ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = false;
-            super.FM.setGCenter(-0.3F);
+            this.FM.CT.bHasCockpitDoorControl = false;
+            this.FM.setGCenter(-0.3F);
         }
     }
 

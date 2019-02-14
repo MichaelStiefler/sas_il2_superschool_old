@@ -7,7 +7,6 @@ import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
@@ -35,7 +34,7 @@ public class FOKKERG1 extends Scheme3 implements TypeScout, TypeFighter, TypeSto
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        FOKKERG1.moveGear(this.hierMesh(), f);
     }
 
     protected void moveFlap(float f) {
@@ -49,40 +48,40 @@ public class FOKKERG1 extends Scheme3 implements TypeScout, TypeFighter, TypeSto
         this.setShot(shot);
         if (shot.chunkName.startsWith("WingLIn")) {
             if (World.Rnd().nextFloat() < 0.048F) {
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 0);
+                this.FM.AS.setJamBullets(0, 0);
             }
             if ((((Tuple3d) (Aircraft.v1)).x < 0.25D) && (World.Rnd().nextFloat() < 0.25F) && (World.Rnd().nextFloat(0.01F, 0.121F) < shot.mass)) {
-                ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 0, (int) (1.0F + (shot.mass * 26.08F)));
+                this.FM.AS.hitTank(shot.initiator, 0, (int) (1.0F + (shot.mass * 26.08F)));
             }
         }
         if (shot.chunkName.startsWith("WingRIn")) {
             if (World.Rnd().nextFloat() < 0.048F) {
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 1);
+                this.FM.AS.setJamBullets(0, 1);
             }
             if ((((Tuple3d) (Aircraft.v1)).x < 0.25D) && (World.Rnd().nextFloat() < 0.25F) && (World.Rnd().nextFloat(0.01F, 0.121F) < shot.mass)) {
-                ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 1, (int) (1.0F + (shot.mass * 26.08F)));
+                this.FM.AS.hitTank(shot.initiator, 1, (int) (1.0F + (shot.mass * 26.08F)));
             }
         }
         if (shot.chunkName.startsWith("Engine1")) {
             if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.5F) {
-                ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, (int) (1.0F + (shot.mass * 20.7F)));
+                this.FM.AS.hitEngine(shot.initiator, 0, (int) (1.0F + (shot.mass * 20.7F)));
             }
             if (World.Rnd().nextFloat() < 0.01F) {
-                ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 5);
+                this.FM.AS.hitEngine(shot.initiator, 0, 5);
             }
         }
         if (shot.chunkName.startsWith("Engine2")) {
             if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.5F) {
-                ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 1, (int) (1.0F + (shot.mass * 20.7F)));
+                this.FM.AS.hitEngine(shot.initiator, 1, (int) (1.0F + (shot.mass * 20.7F)));
             }
             if (World.Rnd().nextFloat() < 0.01F) {
-                ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 1, 5);
+                this.FM.AS.hitEngine(shot.initiator, 1, 5);
             }
         }
         if (shot.chunkName.startsWith("Pilot1")) {
             if ((((Tuple3d) (Aircraft.v1)).x > -0.5D) || ((shot.power * -((Tuple3d) (Aircraft.v1)).x) > 12800D)) {
                 this.killPilot(shot.initiator, 0);
-                super.FM.setCapableOfBMP(false, shot.initiator);
+                this.FM.setCapableOfBMP(false, shot.initiator);
                 if ((((Tuple3d) (Aircraft.Pd)).z > 0.5D) && (shot.initiator == World.getPlayerAircraft()) && World.cur().isArcade()) {
                     HUD.logCenter("H E A D S H O T");
                 }
@@ -104,28 +103,28 @@ public class FOKKERG1 extends Scheme3 implements TypeScout, TypeFighter, TypeSto
             shot.chunkName = "CF_D0";
         }
         if (shot.chunkName.startsWith("Tail1") && (World.Rnd().nextFloat() < 0.05F)) {
-            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 0, (int) (1.0F + (shot.mass * 26.08F)));
+            this.FM.AS.hitTank(shot.initiator, 0, (int) (1.0F + (shot.mass * 26.08F)));
         }
         if (shot.chunkName.startsWith("Tail2") && (World.Rnd().nextFloat() < 0.05F)) {
-            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 1, (int) (1.0F + (shot.mass * 26.08F)));
+            this.FM.AS.hitTank(shot.initiator, 1, (int) (1.0F + (shot.mass * 26.08F)));
         }
-        if (((((FlightModelMain) (super.FM)).AS.astateEngineStates[0] == 4) || (((FlightModelMain) (super.FM)).AS.astateEngineStates[1] == 4)) && (World.Rnd().nextInt(0, 99) < 33)) {
-            super.FM.setCapableOfBMP(false, shot.initiator);
+        if (((this.FM.AS.astateEngineStates[0] == 4) || (this.FM.AS.astateEngineStates[1] == 4)) && (World.Rnd().nextInt(0, 99) < 33)) {
+            this.FM.setCapableOfBMP(false, shot.initiator);
         }
         super.msgShot(shot);
     }
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
+            case 33:
                 if (World.Rnd().nextFloat() < 0.66F) {
-                    ((FlightModelMain) (super.FM)).AS.hitTank(this, 0, 6);
+                    this.FM.AS.hitTank(this, 0, 6);
                 }
                 return super.cutFM(34, j, actor);
 
-            case 36: // '$'
+            case 36:
                 if (World.Rnd().nextFloat() < 0.66F) {
-                    ((FlightModelMain) (super.FM)).AS.hitTank(this, 1, 6);
+                    this.FM.AS.hitTank(this, 1, 6);
                 }
                 return super.cutFM(37, j, actor);
         }
@@ -135,7 +134,7 @@ public class FOKKERG1 extends Scheme3 implements TypeScout, TypeFighter, TypeSto
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         for (int i = 1; i < 4; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -146,13 +145,13 @@ public class FOKKERG1 extends Scheme3 implements TypeScout, TypeFighter, TypeSto
 
     public void doKillPilot(int i) {
         if (i == 1) {
-            super.FM.turret[1].bIsOperable = false;
+            this.FM.turret[1].bIsOperable = false;
             this.hierMesh().chunkVisible("Turret2A_D0", false);
             this.hierMesh().chunkVisible("Turret2B_D0", false);
             this.hierMesh().chunkVisible("Turret2B_D1", true);
         }
         if (i == 2) {
-            super.FM.turret[0].bIsOperable = false;
+            this.FM.turret[0].bIsOperable = false;
             this.hierMesh().chunkVisible("Turret1A_D0", false);
             this.hierMesh().chunkVisible("Turret1B_D0", false);
             this.hierMesh().chunkVisible("Turret1B_D1", true);
@@ -161,14 +160,14 @@ public class FOKKERG1 extends Scheme3 implements TypeScout, TypeFighter, TypeSto
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
@@ -184,7 +183,7 @@ public class FOKKERG1 extends Scheme3 implements TypeScout, TypeFighter, TypeSto
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f1 < 40F) {
                     f1 = 40F;
                     flag = false;
@@ -195,7 +194,7 @@ public class FOKKERG1 extends Scheme3 implements TypeScout, TypeFighter, TypeSto
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -75F) {
                     f = -75F;
                     flag = false;

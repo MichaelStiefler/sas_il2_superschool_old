@@ -18,7 +18,7 @@ public class D4Y3S extends D4YS implements TypeJazzPlayer {
     }
 
     public Vector3d getAttackVector() {
-        return ATTACK_VECTOR;
+        return D4Y3S.ATTACK_VECTOR;
     }
 
     public void update(float f) {

@@ -5,7 +5,6 @@ import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Property;
 
@@ -34,7 +33,7 @@ public class CA1_Wirraway extends Scheme1 implements TypeStormovik, TypeScout, T
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        CA1_Wirraway.moveGear(this.hierMesh(), f);
     }
 
     protected void moveElevator(float f) {
@@ -61,7 +60,7 @@ public class CA1_Wirraway extends Scheme1 implements TypeStormovik, TypeScout, T
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (super.FM.getAltitude() < 3000F) {
+        if (this.FM.getAltitude() < 3000F) {
             this.hierMesh().chunkVisible("HMask1_D0", false);
             this.hierMesh().chunkVisible("HMask2_D0", false);
         } else {
@@ -75,7 +74,7 @@ public class CA1_Wirraway extends Scheme1 implements TypeStormovik, TypeScout, T
         float f = -af[0];
         float f1 = af[1];
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 if (f < -40F) {
                     f = -40F;
                     flag = false;
@@ -101,22 +100,22 @@ public class CA1_Wirraway extends Scheme1 implements TypeStormovik, TypeScout, T
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 1: // '\001'
-                super.FM.turret[0].bIsOperable = false;
+            case 1:
+                this.FM.turret[0].bIsOperable = false;
                 break;
         }
     }
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
@@ -130,31 +129,31 @@ public class CA1_Wirraway extends Scheme1 implements TypeStormovik, TypeScout, T
                 if (s.endsWith("case")) {
                     if (this.getEnergyPastArmor(World.Rnd().nextFloat(0.2F, 0.55F), shot) > 0.0F) {
                         if (World.Rnd().nextFloat() < (shot.power / 280000F)) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, 0);
+                            this.FM.AS.setEngineStuck(shot.initiator, 0);
                         }
                         if (World.Rnd().nextFloat() < (shot.power / 100000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
+                            this.FM.AS.hitEngine(shot.initiator, 0, 2);
                         }
                     }
                     this.getEnergyPastArmor(World.Rnd().nextFloat(0.0F, 24F), shot);
                 }
                 if (s.endsWith("cyls")) {
-                    if ((this.getEnergyPastArmor(0.85F, shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[0].getCylindersRatio() * 0.66F))) {
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 32200F)));
+                    if ((this.getEnergyPastArmor(0.85F, shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[0].getCylindersRatio() * 0.66F))) {
+                        this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 32200F)));
                         if (World.Rnd().nextFloat() < (shot.power / 1000000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
+                            this.FM.AS.hitEngine(shot.initiator, 0, 2);
                         }
                     }
                     this.getEnergyPastArmor(25F, shot);
                 }
                 if (s.endsWith("oil1") && (World.Rnd().nextFloat() < 0.5F) && (this.getEnergyPastArmor(0.25F, shot) > 0.0F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, 0);
+                    this.FM.AS.hitOil(shot.initiator, 0);
                 }
                 return;
             }
             if (s.endsWith("oil1")) {
                 if ((this.getEnergyPastArmor(0.25F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, 0);
+                    this.FM.AS.hitOil(shot.initiator, 0);
                     this.getEnergyPastArmor(0.22F, shot);
                 }
                 return;
@@ -162,9 +161,9 @@ public class CA1_Wirraway extends Scheme1 implements TypeStormovik, TypeScout, T
             if (s.startsWith("xxtank")) {
                 int i = s.charAt(6) - 49;
                 if (this.getEnergyPastArmor(0.1F, shot) > 0.0F) {
-                    ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, i, 1);
+                    this.FM.AS.hitTank(shot.initiator, i, 1);
                     if ((World.Rnd().nextFloat() < 0.02F) || ((shot.powerType == 3) && (World.Rnd().nextFloat() < 0.11F))) {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, i, 2);
+                        this.FM.AS.hitTank(shot.initiator, i, 2);
                     }
                 }
                 return;

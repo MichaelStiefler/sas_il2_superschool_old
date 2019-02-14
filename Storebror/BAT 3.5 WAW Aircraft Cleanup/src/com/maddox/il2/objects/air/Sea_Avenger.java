@@ -25,15 +25,15 @@ public class Sea_Avenger extends TBF_Naval {
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            Sea_Avenger.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            Sea_Avenger.bChangedPit = true;
         }
     }
 
@@ -63,7 +63,7 @@ public class Sea_Avenger extends TBF_Naval {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f1 > 89F) {
                     f1 = 89F;
                     flag = false;
@@ -78,7 +78,7 @@ public class Sea_Avenger extends TBF_Naval {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -23F) {
                     f = -23F;
                     flag = false;

@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import com.maddox.JGP.Point3d;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class P_24F extends P_24 {
@@ -15,19 +14,19 @@ public class P_24F extends P_24 {
         if (s.startsWith("xxmgun")) {
             if (s.endsWith("01")) {
                 Aircraft.debugprintln(this, "*** Machine Gun: Disabled..");
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 0);
+                this.FM.AS.setJamBullets(0, 0);
             }
             if (s.endsWith("02")) {
                 Aircraft.debugprintln(this, "*** Cannon: Disabled..");
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 1);
+                this.FM.AS.setJamBullets(0, 1);
             }
             if (s.endsWith("03")) {
                 Aircraft.debugprintln(this, "*** Cannon: Disabled..");
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(1, 0);
+                this.FM.AS.setJamBullets(1, 0);
             }
             if (s.endsWith("04")) {
                 Aircraft.debugprintln(this, "*** Machine Gun: Disabled..");
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(1, 1);
+                this.FM.AS.setJamBullets(1, 1);
             }
             this.getEnergyPastArmor(World.Rnd().nextFloat(0.0F, 28.33F), shot);
         }

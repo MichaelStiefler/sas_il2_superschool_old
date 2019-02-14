@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.weapons.GunEmpty;
 import com.maddox.rts.Property;
 
@@ -14,7 +13,7 @@ public class FW_190A4FR extends FW_190 {
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGear() >= 0.98F) {
+        if (this.FM.CT.getGear() >= 0.98F) {
             this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -f, 0.0F);
         }
     }
@@ -56,7 +55,7 @@ public class FW_190A4FR extends FW_190 {
         Property.set(class1, "yearService", 1942.6F);
         Property.set(class1, "yearExpired", 1948F);
         Property.set(class1, "FlightModel", "FlightModels/Fw-190A-4FR.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitFW_190A4.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitFW_190A4.class });
         Property.set(class1, "LOSElevation", 0.764106F);
         Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 1, 1, 9, 9, 9, 9, 9, 9, 2, 2, 9, 9, 3 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalDev07", "_ExternalDev08", "_ExternalRock01", "_ExternalRock02", "_ExternalDev01", "_ExternalDev02", "_ExternalBomb01" });

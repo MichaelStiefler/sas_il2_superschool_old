@@ -26,7 +26,7 @@ public class TB_3_4M_17_T_DZZ extends TB_3 implements TypeTransport {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f1 < -47F) {
                     f1 = -47F;
                     flag = false;
@@ -64,7 +64,7 @@ public class TB_3_4M_17_T_DZZ extends TB_3 implements TypeTransport {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f1 < -47F) {
                     f1 = -47F;
                     flag = false;
@@ -166,7 +166,7 @@ public class TB_3_4M_17_T_DZZ extends TB_3 implements TypeTransport {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f1 < -47F) {
                     f1 = -47F;
                     flag = false;

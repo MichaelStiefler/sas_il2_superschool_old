@@ -16,12 +16,9 @@ public class P_39Q10 extends P_39 {
         Property.set(class1, "yearService", 1944.5F);
         Property.set(class1, "yearExpired", 1948.5F);
         Property.set(class1, "FlightModel", "FlightModels/P-39Q-10.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitP_39Q10.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitP_39Q10.class });
         Property.set(class1, "LOSElevation", 0.8941F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 1, 3 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_ExternalBomb01" });
-        weaponsRegister(class1, "default", new String[] { "MGunBrowning50si 200", "MGunBrowning50si 200", "MGunM4ki 30", null });
-        weaponsRegister(class1, "1xFAB250", new String[] { "MGunBrowning50si 200", "MGunBrowning50si 200", "MGunM4ki 30", "BombGunFAB250 1" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 3 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_ExternalBomb01" });
     }
 }

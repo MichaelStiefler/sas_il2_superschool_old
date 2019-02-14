@@ -57,20 +57,20 @@ public class GO_229A3NJ extends GO_229 implements TypeFighterAceMaker, TypeBNZFi
     }
 
     public void createMissilesList() {
-        for (int i = 0; i < ((FlightModelMain) (super.FM)).CT.Weapons.length; i++) {
-            if (((FlightModelMain) (super.FM)).CT.Weapons[i] != null) {
-                for (int j = 0; j < ((FlightModelMain) (super.FM)).CT.Weapons[i].length; j++) {
-                    if (((FlightModelMain) (super.FM)).CT.Weapons[i][j] instanceof RocketGunX4) {
-                        if ((((FlightModelMain) (super.FM)).CT.Weapons[i][j] instanceof RocketGunX4homing) || (((FlightModelMain) (super.FM)).CT.Weapons[i][j] instanceof RocketGunX7homing)) {
+        for (int i = 0; i < this.FM.CT.Weapons.length; i++) {
+            if (this.FM.CT.Weapons[i] != null) {
+                for (int j = 0; j < this.FM.CT.Weapons[i].length; j++) {
+                    if (this.FM.CT.Weapons[i][j] instanceof RocketGunX4) {
+                        if ((this.FM.CT.Weapons[i][j] instanceof RocketGunX4homing) || (this.FM.CT.Weapons[i][j] instanceof RocketGunX7homing)) {
                             this.homing = true;
                         }
-                        if (((FlightModelMain) (super.FM)).CT.Weapons[i][j] instanceof RocketGunX7) {
+                        if (this.FM.CT.Weapons[i][j] instanceof RocketGunX7) {
                             this.X7 = true;
                         }
-                        if (((FlightModelMain) (super.FM)).CT.Weapons[i][j] instanceof RocketGunX4R) {
+                        if (this.FM.CT.Weapons[i][j] instanceof RocketGunX4R) {
                             this.IR = true;
                         }
-                        this.missilesList.add(((FlightModelMain) (super.FM)).CT.Weapons[i][j]);
+                        this.missilesList.add(this.FM.CT.Weapons[i][j]);
                     }
                 }
 
@@ -97,25 +97,25 @@ public class GO_229A3NJ extends GO_229 implements TypeFighterAceMaker, TypeBNZFi
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (((super.FM instanceof RealFlightModel) && ((RealFlightModel) super.FM).isRealMode()) || !flag || !(super.FM instanceof Pilot)) {
+        if (((this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode()) || !flag || !(this.FM instanceof Pilot)) {
             return;
         }
         if (this.missilesList.isEmpty()) {
             return;
         }
         if (Time.current() > (this.tX4Prev + (this.homing || this.IR ? 10000L : 500L))) {
-            Pilot pilot = (Pilot) super.FM;
+            Pilot pilot = (Pilot) this.FM;
             if (((pilot.get_maneuver() == 27) || (pilot.get_maneuver() == 62) || (pilot.get_maneuver() == 63)) && (((Maneuver) (pilot)).target != null)) {
                 Point3d point3d = new Point3d(((FlightModelMain) (((Maneuver) (pilot)).target)).Loc);
-                point3d.sub(((FlightModelMain) (super.FM)).Loc);
-                ((FlightModelMain) (super.FM)).Or.transformInv(point3d);
+                point3d.sub(this.FM.Loc);
+                this.FM.Or.transformInv(point3d);
                 if (this.homing && !this.X7) {
-                    if (pilot.get_maneuver() == 63 ? ((((Tuple3d) (point3d)).x > 7000D) && (((Tuple3d) (point3d)).x < 10000D)) || ((((Tuple3d) (point3d)).x > 350D) && (((Tuple3d) (point3d)).x < 9000D) && (World.Rnd().nextFloat() < 0.33F)) : (((Tuple3d) (point3d)).x > (((FlightModelMain) (super.FM)).CT.Weapons[0][1].countBullets() > 20 ? 800D : 350D)) && (((Tuple3d) (point3d)).x < (3500D + (500D * ((FlightModelMain) (super.FM)).Skill)))) {
-                        double d = Math.pow(((Tuple3d) (point3d)).x / 5000D, 2D) * 5000D;
-                        if ((((Tuple3d) (point3d)).y < d) && (((Tuple3d) (point3d)).y > -d) && (((Tuple3d) (point3d)).z < d) && (((Tuple3d) (point3d)).z > -d) && ((pilot.get_maneuver() != 63) || (((Tuple3d) (point3d)).x < 7000D) || (((((Tuple3d) (point3d)).y * 2D) < ((Tuple3d) (point3d)).x) && ((((Tuple3d) (point3d)).y * 2D) > -((Tuple3d) (point3d)).x) && ((((Tuple3d) (point3d)).z * 2D) < ((Tuple3d) (point3d)).x) && ((((Tuple3d) (point3d)).z * 2D) > -((Tuple3d) (point3d)).x)))) {
+                    if (pilot.get_maneuver() == 63 ? ((point3d.x > 7000D) && (point3d.x < 10000D)) || ((point3d.x > 350D) && (point3d.x < 9000D) && (World.Rnd().nextFloat() < 0.33F)) : (point3d.x > (this.FM.CT.Weapons[0][1].countBullets() > 20 ? 800D : 350D)) && (point3d.x < (3500D + (500D * this.FM.Skill)))) {
+                        double d = Math.pow(point3d.x / 5000D, 2D) * 5000D;
+                        if ((point3d.y < d) && (point3d.y > -d) && (point3d.z < d) && (point3d.z > -d) && ((pilot.get_maneuver() != 63) || (point3d.x < 7000D) || (((point3d.y * 2D) < point3d.x) && ((point3d.y * 2D) > -point3d.x) && ((point3d.z * 2D) < point3d.x) && ((point3d.z * 2D) > -point3d.x)))) {
                             Orientation orientation2 = new Orientation();
                             Orientation orientation3 = new Orientation();
-                            super.FM.getOrient(orientation2);
+                            this.FM.getOrient(orientation2);
                             ((Maneuver) (pilot)).target.getOrient(orientation3);
                             float f3 = Math.abs(orientation2.getAzimut() - orientation3.getAzimut()) % 360F;
                             f3 = f3 > 180F ? 360F - f3 : f3;
@@ -123,7 +123,7 @@ public class GO_229A3NJ extends GO_229 implements TypeFighterAceMaker, TypeBNZFi
                             float f4 = Math.abs(orientation2.getTangage() - orientation3.getTangage()) % 360F;
                             f4 = f4 > 180F ? 360F - f4 : f4;
                             f4 = f4 > 90F ? 180F - f4 : f4;
-                            double d2 = (((Tuple3d) (point3d)).x * (5 - ((FlightModelMain) (super.FM)).Skill)) / (((Maneuver) (pilot)).target.getSpeed() + 1.0F);
+                            double d2 = (point3d.x * (5 - this.FM.Skill)) / (((Maneuver) (pilot)).target.getSpeed() + 1.0F);
                             if ((f3 < d2) && (f4 < d2)) {
                                 this.launchMsl();
                                 this.tX4Prev = Time.current();
@@ -131,10 +131,10 @@ public class GO_229A3NJ extends GO_229 implements TypeFighterAceMaker, TypeBNZFi
                             }
                         }
                     }
-                } else if ((pilot.get_maneuver() == 63 ? ((((Tuple3d) (point3d)).x > 4000D) && (((Tuple3d) (point3d)).x < 5500D)) || ((((Tuple3d) (point3d)).x > 100D) && (((Tuple3d) (point3d)).x < 5000D) && (World.Rnd().nextFloat() < 0.33F)) : (((Tuple3d) (point3d)).x > (((FlightModelMain) (super.FM)).CT.Weapons[0][1].countBullets() > 20 ? 800D : 350D)) && (((Tuple3d) (point3d)).x < (2000D + (1000D * ((FlightModelMain) (super.FM)).Skill)))) && (((((Tuple3d) (point3d)).y * 1.5D) < ((Tuple3d) (point3d)).x) && ((((Tuple3d) (point3d)).y * 1.5D) > -((Tuple3d) (point3d)).x) && ((((Tuple3d) (point3d)).z * 2D) < ((Tuple3d) (point3d)).x) && ((((Tuple3d) (point3d)).z * 2D) > -((Tuple3d) (point3d)).x))) {
+                } else if ((pilot.get_maneuver() == 63 ? ((point3d.x > 4000D) && (point3d.x < 5500D)) || ((point3d.x > 100D) && (point3d.x < 5000D) && (World.Rnd().nextFloat() < 0.33F)) : (point3d.x > (this.FM.CT.Weapons[0][1].countBullets() > 20 ? 800D : 350D)) && (point3d.x < (2000D + (1000D * this.FM.Skill)))) && (((point3d.y * 1.5D) < point3d.x) && ((point3d.y * 1.5D) > -point3d.x) && ((point3d.z * 2D) < point3d.x) && ((point3d.z * 2D) > -point3d.x))) {
                     Orientation orientation = new Orientation();
                     Orientation orientation1 = new Orientation();
-                    super.FM.getOrient(orientation);
+                    this.FM.getOrient(orientation);
                     ((Maneuver) (pilot)).target.getOrient(orientation1);
                     float f1 = Math.abs(orientation.getAzimut() - orientation1.getAzimut()) % 360F;
                     f1 = f1 > 180F ? 360F - f1 : f1;
@@ -142,12 +142,12 @@ public class GO_229A3NJ extends GO_229 implements TypeFighterAceMaker, TypeBNZFi
                     float f2 = Math.abs(orientation.getTangage() - orientation1.getTangage()) % 360F;
                     f2 = f2 > 180F ? 360F - f2 : f2;
                     f2 = f2 > 90F ? 180F - f2 : f2;
-                    double d1 = (((Tuple3d) (point3d)).x * (4.5D - ((FlightModelMain) (super.FM)).Skill)) / (((Maneuver) (pilot)).target.getSpeed() + 1.0F);
+                    double d1 = (point3d.x * (4.5D - this.FM.Skill)) / (((Maneuver) (pilot)).target.getSpeed() + 1.0F);
                     if ((f1 < d1) && (f2 < d1)) {
                         double d3 = FMMath.RAD2DEG(Math.atan(Math.sqrt(Math.pow(Math.tan(FMMath.DEG2RAD(f1)), 2D) + Math.pow(Math.tan(FMMath.DEG2RAD(f2)), 2D))));
                         com.maddox.JGP.Vector3d vector3d = ((Maneuver) (pilot)).target.getAccel();
                         double d4 = Math.sqrt(Math.pow(((Tuple3d) (vector3d)).x, 2D) + Math.pow(((Tuple3d) (vector3d)).y, 2D) + Math.pow(((Tuple3d) (vector3d)).z, 2D));
-                        double d5 = (90D - d3) / (9 + ((FlightModelMain) (super.FM)).Skill);
+                        double d5 = (90D - d3) / (9 + this.FM.Skill);
                         if (d4 < d5) {
                             this.launchMsl();
                             this.tX4Prev = Time.current();
@@ -158,11 +158,11 @@ public class GO_229A3NJ extends GO_229 implements TypeFighterAceMaker, TypeBNZFi
             } else if ((pilot.get_maneuver() == 43) && (((Maneuver) (pilot)).target_ground != null) && (this.X7 || (!this.IR && !this.homing)) && ((!(((Maneuver) (pilot)).target_ground instanceof Soldier) && !(((Maneuver) (pilot)).target_ground instanceof BridgeSegment)) || !this.homing)) {
                 Point3d point3d1 = new Point3d();
                 ((Maneuver) (pilot)).target_ground.pos.getAbs(point3d1);
-                point3d1.sub(((FlightModelMain) (super.FM)).Loc);
-                ((FlightModelMain) (super.FM)).Or.transformInv(point3d1);
-                if ((((Tuple3d) (point3d1)).x > 400D) && (((Tuple3d) (point3d1)).x < ((this.homing ? 4250D : this.IR ? 2250D : 1250D) + (250D * ((FlightModelMain) (super.FM)).Skill)))) {
+                point3d1.sub(this.FM.Loc);
+                this.FM.Or.transformInv(point3d1);
+                if ((((Tuple3d) (point3d1)).x > 400D) && (((Tuple3d) (point3d1)).x < ((this.homing ? 4250D : this.IR ? 2250D : 1250D) + (250D * this.FM.Skill)))) {
                     if (!this.homing || !this.IR) {
-                        point3d1.x /= 2 - (((FlightModelMain) (super.FM)).Skill / 3);
+                        point3d1.x /= 2 - (this.FM.Skill / 3);
                     }
                     if (this.homing ? ((((Tuple3d) (point3d1)).y * 5D) < ((Tuple3d) (point3d1)).x) && ((((Tuple3d) (point3d1)).y * 5D) > -((Tuple3d) (point3d1)).x) && ((((Tuple3d) (point3d1)).z * 5D) < ((Tuple3d) (point3d1)).x) && ((((Tuple3d) (point3d1)).z * 5D) > -((Tuple3d) (point3d1)).x) : (((Tuple3d) (point3d1)).y < ((Tuple3d) (point3d1)).x) && (((Tuple3d) (point3d1)).y > -((Tuple3d) (point3d1)).x) && ((((Tuple3d) (point3d1)).z * 1.5D) < ((Tuple3d) (point3d1)).x) && ((((Tuple3d) (point3d1)).z * 2D) > -((Tuple3d) (point3d1)).x)) {
                         this.launchMsl();
@@ -194,7 +194,7 @@ public class GO_229A3NJ extends GO_229 implements TypeFighterAceMaker, TypeBNZFi
         this.deltaAzimuth = 1.0F;
         if (this.X4check) {
             this.X4check = false;
-        } else if ((super.FM instanceof RealFlightModel) && ((RealFlightModel) super.FM).isRealMode()) {
+        } else if ((this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode()) {
             this.typeFighterAceMakerAdjSideslipPlus();
         }
         this.radarMode++;
@@ -208,7 +208,7 @@ public class GO_229A3NJ extends GO_229 implements TypeFighterAceMaker, TypeBNZFi
         this.deltaAzimuth = -1F;
         if (this.X4check) {
             this.X4check = false;
-        } else if ((super.FM instanceof RealFlightModel) && ((RealFlightModel) super.FM).isRealMode()) {
+        } else if ((this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode()) {
             this.typeFighterAceMakerAdjSideslipMinus();
         }
         this.radarMode--;
@@ -251,7 +251,7 @@ public class GO_229A3NJ extends GO_229 implements TypeFighterAceMaker, TypeBNZFi
         if (this.k14IFFmode > 2) {
             this.k14IFFmode = 0;
         }
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "IFF " + k14IFFmodeStr[this.k14IFFmode]);
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "IFF " + GO_229A3NJ.k14IFFmodeStr[this.k14IFFmode]);
     }
 
     public void typeFighterAceMakerAdjDistanceMinus() {
@@ -259,7 +259,7 @@ public class GO_229A3NJ extends GO_229 implements TypeFighterAceMaker, TypeBNZFi
         if (this.k14IFFmode < 0) {
             this.k14IFFmode = 2;
         }
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "IFF " + k14IFFmodeStr[this.k14IFFmode]);
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "IFF " + GO_229A3NJ.k14IFFmodeStr[this.k14IFFmode]);
     }
 
     public void typeFighterAceMakerAdjSideslipReset() {
@@ -286,9 +286,9 @@ public class GO_229A3NJ extends GO_229 implements TypeFighterAceMaker, TypeBNZFi
             return;
         }
         if (this.k14IFFmode == 2) {
-            if ((trgt = Selector.look(true, false, Main3D.cur3D()._camera3D[Main3D.cur3D().getRenderIndx()], this.getArmy(), -1, this, false)) != null) {
+            if ((GO_229A3NJ.trgt = Selector.look(true, false, Main3D.cur3D()._camera3D[Main3D.cur3D().getRenderIndx()], this.getArmy(), -1, this, false)) != null) {
                 this.k14Mode = this.k14Auto;
-                this.k14Distance = (float) super.pos.getAbsPoint().distance(trgt.pos.getAbsPoint());
+                this.k14Distance = (float) this.pos.getAbsPoint().distance(GO_229A3NJ.trgt.pos.getAbsPoint());
                 if (this.k14Distance > 800F) {
                     this.k14Distance = 800F;
                 } else if (this.k14Distance < 100F) {
@@ -297,12 +297,12 @@ public class GO_229A3NJ extends GO_229 implements TypeFighterAceMaker, TypeBNZFi
             } else {
                 this.k14Mode = 0;
             }
-        } else if ((trgt = Selector.look(true, false, Main3D.cur3D()._camera3D[Main3D.cur3D().getRenderIndx()], -1, -1, this, false)) != null) {
-            if ((this.k14IFFmode == 1) && (trgt.getArmy() == this.getOwner().getArmy())) {
+        } else if ((GO_229A3NJ.trgt = Selector.look(true, false, Main3D.cur3D()._camera3D[Main3D.cur3D().getRenderIndx()], -1, -1, this, false)) != null) {
+            if ((this.k14IFFmode == 1) && (GO_229A3NJ.trgt.getArmy() == this.getOwner().getArmy())) {
                 this.k14Mode = 0;
             } else {
                 this.k14Mode = this.k14Auto;
-                this.k14Distance = (float) super.pos.getAbsPoint().distance(trgt.pos.getAbsPoint());
+                this.k14Distance = (float) this.pos.getAbsPoint().distance(GO_229A3NJ.trgt.pos.getAbsPoint());
                 if (this.k14Distance > 800F) {
                     this.k14Distance = 800F;
                 } else if (this.k14Distance < 100F) {

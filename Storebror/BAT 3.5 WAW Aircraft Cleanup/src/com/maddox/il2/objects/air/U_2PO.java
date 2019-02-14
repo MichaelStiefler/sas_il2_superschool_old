@@ -14,7 +14,6 @@ import com.maddox.il2.engine.Landscape;
 import com.maddox.il2.engine.LightPointWorld;
 import com.maddox.il2.engine.Loc;
 import com.maddox.il2.engine.Mat;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.sounds.MotorSound;
 import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.rts.NetMsgGuaranted;
@@ -25,7 +24,7 @@ import com.maddox.sound.SoundFX;
 public class U_2PO extends U_2 {
 
     public U_2PO() {
-        bChangedPit = true;
+        U_2PO.bChangedPit = true;
         this.lLightHook = new Hook[4];
         this.lightTime = 0.0F;
     }
@@ -33,14 +32,14 @@ public class U_2PO extends U_2 {
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            U_2PO.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            U_2PO.bChangedPit = true;
         }
     }
 
@@ -49,7 +48,7 @@ public class U_2PO extends U_2 {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
@@ -58,7 +57,7 @@ public class U_2PO extends U_2 {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 if (!this.FM.AS.bIsAboutToBailout) {
@@ -137,7 +136,7 @@ public class U_2PO extends U_2 {
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         if (this.FM.getAltitude() < 3000F) {
-            ;
+
         }
     }
 
@@ -148,11 +147,11 @@ public class U_2PO extends U_2 {
         UserCfg usercfg = World.cur().userCfg;
         String s = usercfg.getWeapon("U-2PO");
         if (s.equals("cargo")) {
-            bSecondPilot = true;
+            U_2PO.bSecondPilot = true;
         } else {
-            bSecondPilot = false;
+            U_2PO.bSecondPilot = false;
         }
-        if (bSecondPilot) {
+        if (U_2PO.bSecondPilot) {
             this.hierMesh().chunkVisible("Pilot2_D0", true);
             this.FM.setGCenter(-0.2F);
         } else {
@@ -226,7 +225,7 @@ public class U_2PO extends U_2 {
     }
 
     public void updateLLights() {
-        super.pos.getRender(Actor._tmpLoc);
+        this.pos.getRender(Actor._tmpLoc);
         if (this.lLight == null) {
             if (Actor._tmpLoc.getX() >= 1.0D) {
                 this.lLight = new LightPointWorld[4];
@@ -243,19 +242,19 @@ public class U_2PO extends U_2 {
             }
         } else {
             for (int j = 0; j < 4; j++) {
-                if (((FlightModelMain) (super.FM)).AS.astateLandingLightEffects[j] != null) {
-                    lLightLoc1.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-                    this.lLightHook[j].computePos(this, Actor._tmpLoc, lLightLoc1);
-                    lLightLoc1.get(lLightP1);
-                    lLightLoc1.set(2000D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-                    this.lLightHook[j].computePos(this, Actor._tmpLoc, lLightLoc1);
-                    lLightLoc1.get(lLightP2);
+                if (this.FM.AS.astateLandingLightEffects[j] != null) {
+                    U_2PO.lLightLoc1.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+                    this.lLightHook[j].computePos(this, Actor._tmpLoc, U_2PO.lLightLoc1);
+                    U_2PO.lLightLoc1.get(U_2PO.lLightP1);
+                    U_2PO.lLightLoc1.set(2000D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+                    this.lLightHook[j].computePos(this, Actor._tmpLoc, U_2PO.lLightLoc1);
+                    U_2PO.lLightLoc1.get(U_2PO.lLightP2);
                     Engine.land();
-                    if (Landscape.rayHitHQ(lLightP1, lLightP2, lLightPL)) {
-                        lLightPL.z++;
-                        lLightP2.interpolate(lLightP1, lLightPL, 0.95F);
-                        this.lLight[j].setPos(lLightP2);
-                        float f = (float) lLightP1.distance(lLightPL);
+                    if (Landscape.rayHitHQ(U_2PO.lLightP1, U_2PO.lLightP2, U_2PO.lLightPL)) {
+                        U_2PO.lLightPL.z++;
+                        U_2PO.lLightP2.interpolate(U_2PO.lLightP1, U_2PO.lLightPL, 0.95F);
+                        this.lLight[j].setPos(U_2PO.lLightP2);
+                        float f = (float) U_2PO.lLightP1.distance(U_2PO.lLightPL);
                         float f1 = (f * 0.5F) + 60F;
                         float f2 = 0.7F - ((0.8F * f * this.lightTime) / 2000F);
                         this.lLight[j].setEmit(f2, f1);

@@ -12,14 +12,14 @@ public class CW_21 extends CW21xyz {
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            CW_21.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            CW_21.bChangedPit = true;
         }
     }
 
@@ -37,7 +37,7 @@ public class CW_21 extends CW21xyz {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        CW_21.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public void moveSteering(float f) {
@@ -65,7 +65,7 @@ public class CW_21 extends CW21xyz {
         Property.set(class1, "yearService", 1940.6F);
         Property.set(class1, "yearExpired", 1945F);
         Property.set(class1, "FlightModel", "FlightModels/CW-21.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitCW_21.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitCW_21.class });
         Property.set(class1, "LOSElevation", 0.764106F);
         Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });

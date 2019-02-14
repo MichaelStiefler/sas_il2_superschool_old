@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.Regiment;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Mission;
 import com.maddox.rts.Property;
 
@@ -31,7 +30,7 @@ public class MS406 extends MS400X {
 
     public void update(float f) {
         this.resetYPRmodifier();
-        Aircraft.xyz[1] = Aircraft.cvt(((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator(), 0.0F, 1.0F, 0.2F, 0.0F);
+        Aircraft.xyz[1] = Aircraft.cvt(this.FM.EI.engines[0].getControlRadiator(), 0.0F, 1.0F, 0.2F, 0.0F);
         if (Math.abs(this.flapps - Aircraft.xyz[1]) > 0.01F) {
             this.flapps = Aircraft.xyz[1];
             this.hierMesh().chunkSetLocate("OilRad_D0", Aircraft.xyz, Aircraft.ypr);

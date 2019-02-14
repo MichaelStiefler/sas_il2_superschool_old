@@ -16,7 +16,6 @@ import com.maddox.il2.game.Main3D;
 import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.weapons.BombGunNull;
 import com.maddox.il2.objects.weapons.BombTorpMk13a;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -31,12 +30,12 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        Object aobj[] = super.pos.getBaseAttached();
+        Object aobj[] = this.pos.getBaseAttached();
         if (aobj != null) {
             for (int i = 0; i < aobj.length; i++) {
                 if (aobj[i] instanceof BombTorpMk13a) {
-                    ((FlightModelMain) (super.FM)).AS.disablePilot(1);
-                    ((FlightModelMain) (super.FM)).M.massEmpty -= 80F;
+                    this.FM.AS.disablePilot(1);
+                    this.FM.M.massEmpty -= 80F;
                     if (Config.isUSE_RENDER()) {
                         this.hierMesh().chunkVisible("Bombdoor_D0", false);
                         this.hierMesh().chunkVisible("Pilot2_D0", false);
@@ -51,7 +50,7 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (super.FM.getAltitude() < 3000F) {
+        if (this.FM.getAltitude() < 3000F) {
             this.hierMesh().chunkVisible("HMask1_D0", false);
             this.hierMesh().chunkVisible("HMask2_D0", false);
             this.hierMesh().chunkVisible("HMask2B_D0", false);
@@ -62,8 +61,8 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
             this.hierMesh().chunkVisible("HMask2B_D0", this.hierMesh().isChunkVisible("Pilot2B_D0"));
             this.hierMesh().chunkVisible("HMask3_D0", this.hierMesh().isChunkVisible("Pilot3_D0"));
         }
-        if (super.FM instanceof Maneuver) {
-            Maneuver maneuver = (Maneuver) super.FM;
+        if (this.FM instanceof Maneuver) {
+            Maneuver maneuver = (Maneuver) this.FM;
             if ((maneuver.get_maneuver() == 43) && (((FlightModelMain) (maneuver)).CT.Weapons[3] != null)) {
                 for (int i = 0; i < ((FlightModelMain) (maneuver)).CT.Weapons[3].length; i++) {
                     if ((((FlightModelMain) (maneuver)).CT.Weapons[3][i] != null) && !(((FlightModelMain) (maneuver)).CT.Weapons[3][i] instanceof BombGunNull) && (((FlightModelMain) (maneuver)).CT.Weapons[3][i].countBullets() != 0)) {
@@ -106,39 +105,39 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
                     default:
                         break;
 
-                    case 1: // '\001'
+                    case 1:
                         if ((World.Rnd().nextFloat() < 0.5F) && (this.getEnergyPastArmor(0.1F, shot) > 0.0F)) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 1);
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 6);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 1);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 6);
                             Aircraft.debugprintln(this, "*** Throttle Quadrant: Hit, Engine Controls Disabled..");
                         }
                         break;
 
-                    case 2: // '\002'
+                    case 2:
                         if ((World.Rnd().nextFloat() < 0.5F) && (this.getEnergyPastArmor(0.1F, shot) > 0.0F)) {
                             this.debuggunnery("Controls: Ailerones Controls: Disabled..");
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                            this.FM.AS.setControlsDamage(shot.initiator, 0);
                         }
                         break;
 
-                    case 3: // '\003'
+                    case 3:
                         if ((World.Rnd().nextFloat() < 0.95F) && (this.getEnergyPastArmor(4.253F, shot) > 0.0F)) {
                             this.debuggunnery("Controls: Rudder Controls: Disabled..");
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
+                            this.FM.AS.setControlsDamage(shot.initiator, 2);
                         }
                         break;
 
-                    case 4: // '\004'
+                    case 4:
                         if ((World.Rnd().nextFloat() < 0.25F) && (this.getEnergyPastArmor(0.1F, shot) > 0.0F)) {
                             this.debuggunnery("Controls: Elevator Controls: Disabled..");
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
+                            this.FM.AS.setControlsDamage(shot.initiator, 1);
                         }
                         break;
 
-                    case 5: // '\005'
+                    case 5:
                         if ((World.Rnd().nextFloat() < 0.5F) && (this.getEnergyPastArmor(0.1F, shot) > 0.0F)) {
                             this.debuggunnery("Controls: Ailerones Controls: Disabled..");
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                            this.FM.AS.setControlsDamage(shot.initiator, 0);
                         }
                         break;
                 }
@@ -150,21 +149,21 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
                     if (this.getEnergyPastArmor(World.Rnd().nextFloat(0.2F, 0.55F), shot) > 0.0F) {
                         if (World.Rnd().nextFloat() < (shot.power / 280000F)) {
                             this.debuggunnery("Engine Module: Engine Crank Case Hit - Engine Stucks..");
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, 0);
+                            this.FM.AS.setEngineStuck(shot.initiator, 0);
                         }
                         if (World.Rnd().nextFloat() < (shot.power / 100000F)) {
                             this.debuggunnery("Engine Module: Engine Crank Case Hit - Engine Damaged..");
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
+                            this.FM.AS.hitEngine(shot.initiator, 0, 2);
                         }
                     }
                     this.getEnergyPastArmor(World.Rnd().nextFloat(0.0F, 24F), shot);
                 }
                 if (s.endsWith("cyls")) {
-                    if ((this.getEnergyPastArmor(0.85F, shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[0].getCylindersRatio() * 0.66F))) {
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 32200F)));
-                        this.debuggunnery("Engine Module: Cylinders Hit, " + ((FlightModelMain) (super.FM)).EI.engines[0].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[0].getCylinders() + " Left..");
+                    if ((this.getEnergyPastArmor(0.85F, shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[0].getCylindersRatio() * 0.66F))) {
+                        this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 32200F)));
+                        this.debuggunnery("Engine Module: Cylinders Hit, " + this.FM.EI.engines[0].getCylindersOperable() + "/" + this.FM.EI.engines[0].getCylinders() + " Left..");
                         if (World.Rnd().nextFloat() < (shot.power / 1000000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
+                            this.FM.AS.hitEngine(shot.initiator, 0, 2);
                             this.debuggunnery("Engine Module: Cylinders Hit - Engine Fires..");
                         }
                     }
@@ -172,25 +171,25 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
                 }
                 if (s.endsWith("mag1")) {
                     this.debuggunnery("Engine Module: Magneto 1 Destroyed..");
-                    ((FlightModelMain) (super.FM)).EI.engines[0].setMagnetoKnockOut(shot.initiator, 0);
+                    this.FM.EI.engines[0].setMagnetoKnockOut(shot.initiator, 0);
                 }
                 if (s.endsWith("mag2")) {
                     this.debuggunnery("Engine Module: Magneto 2 Destroyed..");
-                    ((FlightModelMain) (super.FM)).EI.engines[0].setMagnetoKnockOut(shot.initiator, 1);
+                    this.FM.EI.engines[0].setMagnetoKnockOut(shot.initiator, 1);
                 }
                 if (s.endsWith("eqpt")) {
                     if (this.getEnergyPastArmor(0.5F, shot) > 0.0F) {
                         if (World.Rnd().nextFloat(0.0F, 26700F) < shot.power) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 4);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 4);
                         }
                         if (World.Rnd().nextFloat(0.0F, 26700F) < shot.power) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 0);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 0);
                         }
                         if (World.Rnd().nextFloat(0.0F, 26700F) < shot.power) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 6);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 6);
                         }
                         if (World.Rnd().nextFloat(0.0F, 26700F) < shot.power) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 1);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 1);
                         }
                     }
                     this.getEnergyPastArmor(2.0F, shot);
@@ -199,7 +198,7 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
                     if ((World.Rnd().nextFloat() < 0.6F) && (this.getEnergyPastArmor(0.25F, shot) > 0.0F)) {
                         this.debuggunnery("Engine Module: Oil Radiator Hit..");
                     }
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, 0);
+                    this.FM.AS.hitOil(shot.initiator, 0);
                 }
                 return;
             }
@@ -214,7 +213,7 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
                 }
                 if (this.getEnergyPastArmor(0.5F, shot) > 0.0F) {
                     this.debuggunnery("Armament: Machine Gun (" + j + ") Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(byte1, j);
+                    this.FM.AS.setJamBullets(byte1, j);
                     this.getEnergyPastArmor(World.Rnd().nextFloat(0.5F, 23.325F), shot);
                 }
                 return;
@@ -245,7 +244,7 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
             }
             if (s.startsWith("xxoil")) {
                 if ((this.getEnergyPastArmor(0.25F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, 0);
+                    this.FM.AS.hitOil(shot.initiator, 0);
                     this.getEnergyPastArmor(0.22F, shot);
                     this.debuggunnery("Engine Module: Oil Tank Pierced..");
                 }
@@ -297,9 +296,9 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
             if (s.startsWith("xxtank")) {
                 int k = s.charAt(6) - 49;
                 if (this.getEnergyPastArmor(0.1F, shot) > 0.0F) {
-                    ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, k, 1);
+                    this.FM.AS.hitTank(shot.initiator, k, 1);
                     if ((World.Rnd().nextFloat() < 0.02F) || ((shot.powerType == 3) && (World.Rnd().nextFloat() < 0.11F))) {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, k, 2);
+                        this.FM.AS.hitTank(shot.initiator, k, 2);
                     }
                 }
                 return;
@@ -351,7 +350,7 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
                     this.hitChunk("WingLMid", shot);
                 }
                 if (World.Rnd().nextFloat() < (shot.mass + 0.02F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, 0);
+                    this.FM.AS.hitOil(shot.initiator, 0);
                 }
             }
             if (s.startsWith("xwingrmid") && (this.chunkDamageVisible("WingRMid") < 3)) {
@@ -391,7 +390,7 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
         float f = -af[0];
         float f1 = af[1];
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 if (f < -135F) {
                     f = -135F;
                 }
@@ -408,7 +407,7 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
                 }
                 float f2;
                 for (f2 = Math.abs(f); f2 > 180F; f2 -= 180F) {
-                    ;
+
                 }
                 if (f1 < -AircraftLH.floatindex(Aircraft.cvt(f2, 0.0F, 180F, 0.0F, 36F), af)) {
                     f1 = -AircraftLH.floatindex(Aircraft.cvt(f2, 0.0F, 180F, 0.0F, 36F), af);
@@ -445,22 +444,22 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 2: // '\002'
-                super.FM.turret[0].setHealth(f);
+            case 2:
+                this.FM.turret[0].setHealth(f);
                 break;
         }
     }
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Head2_D0", false);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
@@ -470,7 +469,7 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
                 this.hierMesh().chunkVisible("HMask2B_D0", false);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("HMask3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
@@ -481,22 +480,22 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
-                ((FlightModelMain) (super.FM)).Gears.hitCentreGear();
+            case 19:
+                this.FM.Gears.hitCentreGear();
                 this.hierMesh().chunkVisible("Wire1_D0", false);
                 break;
 
-            case 10: // '\n'
+            case 10:
                 this.doWreck("GearR3_D0");
-                ((FlightModelMain) (super.FM)).Gears.hitRightGear();
+                this.FM.Gears.hitRightGear();
                 break;
 
-            case 9: // '\t'
+            case 9:
                 this.doWreck("GearL3_D0");
-                ((FlightModelMain) (super.FM)).Gears.hitLeftGear();
+                this.FM.Gears.hitLeftGear();
                 break;
 
-            case 11: // '\013'
+            case 11:
                 this.hierMesh().chunkVisible("Wire1_D0", false);
                 break;
         }
@@ -505,12 +504,12 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
 
     public void update(float f) {
         super.update(f);
-        if (((FlightModelMain) (super.FM)).EI.engines[0].getControlProp() < 0.5F) {
-            ((FlightModelMain) (super.FM)).EI.engines[0].setControlProp(0.0F);
+        if (this.FM.EI.engines[0].getControlProp() < 0.5F) {
+            this.FM.EI.engines[0].setControlProp(0.0F);
         } else {
-            ((FlightModelMain) (super.FM)).EI.engines[0].setControlProp(1.0F);
+            this.FM.EI.engines[0].setControlProp(1.0F);
         }
-        float f1 = ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator();
+        float f1 = this.FM.EI.engines[0].getControlRadiator();
         if (Math.abs(this.flapps - f1) > 0.01F) {
             this.flapps = f1;
             for (int i = 0; i <= 12; i++) {
@@ -525,7 +524,7 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
             this.hierMesh().chunkVisible("HMask2_D0", false);
             this.hierMesh().chunkVisible("Pilot2B_D0", true);
             this.hierMesh().chunkVisible("Head2B_D0", true);
-            if (super.FM.getAltitude() > 3000F) {
+            if (this.FM.getAltitude() > 3000F) {
                 this.hierMesh().chunkVisible("HMask2B_D0", true);
             }
         } else if (!this.openDoors && (this.bombardierDoors > 0.0F)) {
@@ -534,7 +533,7 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
                 this.bombardierDoors = 0.0F;
                 this.hierMesh().chunkVisible("Pilot2_D0", true);
                 this.hierMesh().chunkVisible("Head2_D0", true);
-                if (super.FM.getAltitude() > 3000F) {
+                if (this.FM.getAltitude() > 3000F) {
                     this.hierMesh().chunkVisible("HMask2_D0", true);
                 }
                 this.hierMesh().chunkVisible("Pilot2B_D0", false);
@@ -618,7 +617,7 @@ public class TBD1A extends Scheme1 implements TypeStormovik, TypeBomber, TypeTwo
     private float   flapps;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = TBD1A.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "TBD");
         Property.set(class1, "meshName", "3DO/Plane/TBD-1A(Multi1)/hier.him");

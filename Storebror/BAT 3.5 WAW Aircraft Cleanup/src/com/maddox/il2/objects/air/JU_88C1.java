@@ -1,17 +1,14 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Tuple3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Interpolate;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.fm.Pitot;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.objects.Wreckage;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class JU_88C1 extends JU_88Axx implements TypeFighter, TypeBNZFighter, TypeStormovik {
@@ -31,7 +28,7 @@ public class JU_88C1 extends JU_88Axx implements TypeFighter, TypeBNZFighter, Ty
             Wreckage wreckage = new Wreckage(this, this.hierMesh().chunkFind(s));
             wreckage.collide(true);
             Vector3d vector3d = new Vector3d();
-            vector3d.set(((FlightModelMain) (super.FM)).Vwld);
+            vector3d.set(this.FM.Vwld);
             wreckage.setSpeed(vector3d);
         }
     }
@@ -76,22 +73,22 @@ public class JU_88C1 extends JU_88Axx implements TypeFighter, TypeBNZFighter, Ty
         if (s.startsWith("xxmgun")) {
             if (s.endsWith("01")) {
                 this.debuggunnery("MG17-1: Disabled..");
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 0);
+                this.FM.AS.setJamBullets(0, 0);
             }
             if (s.endsWith("02")) {
                 this.debuggunnery("MG17-2: Disabled..");
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 1);
+                this.FM.AS.setJamBullets(0, 1);
             }
             if (s.endsWith("03")) {
                 this.debuggunnery("MG17-3: Disabled..");
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 2);
+                this.FM.AS.setJamBullets(0, 2);
             }
             this.getEnergyPastArmor(World.Rnd().nextFloat(3.3F, 12.96F), shot);
         }
         if (s.startsWith("xxcannon")) {
             if (s.endsWith("01")) {
                 this.debuggunnery("Cannon MG151/20-1: Disabled..");
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(1, 0);
+                this.FM.AS.setJamBullets(1, 0);
             }
             this.getEnergyPastArmor(World.Rnd().nextFloat(3.3F, 24.6F), shot);
         }
@@ -113,22 +110,22 @@ public class JU_88C1 extends JU_88Axx implements TypeFighter, TypeBNZFighter, Ty
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            JU_88C1.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            JU_88C1.bChangedPit = true;
         }
     }
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         for (int i = 1; i < 3; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -139,25 +136,25 @@ public class JU_88C1 extends JU_88Axx implements TypeFighter, TypeBNZFighter, Ty
 
     public void update(float f) {
         super.update(f);
-        if ((Pitot.Indicator((float) ((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z, super.FM.getSpeed()) > 70F) && (((FlightModelMain) (super.FM)).CT.getFlap() > 0.01D) && (((FlightModelMain) (super.FM)).CT.FlapsControl != 0.0F)) {
-            ((FlightModelMain) (super.FM)).CT.FlapsControl = 0.0F;
+        if ((Pitot.Indicator((float) this.FM.Loc.z, this.FM.getSpeed()) > 70F) && (this.FM.CT.getFlap() > 0.01D) && (this.FM.CT.FlapsControl != 0.0F)) {
+            this.FM.CT.FlapsControl = 0.0F;
             World.cur();
-            if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft()) {
+            if (((Interpolate) (this.FM)).actor == World.getPlayerAircraft()) {
                 HUD.log("FlapsRaised");
             }
         }
-        float f1 = ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator();
+        float f1 = this.FM.EI.engines[0].getControlRadiator();
         if (f1 != 0.0F) {
             this.hierMesh().chunkSetAngles("Radl11_D0", -30F * f1, 0.0F, 0.0F);
         }
-        f1 = ((FlightModelMain) (super.FM)).EI.engines[1].getControlRadiator();
+        f1 = this.FM.EI.engines[1].getControlRadiator();
         if (f1 != 0.0F) {
             this.hierMesh().chunkSetAngles("Radr11_D0", -30F * f1, 0.0F, 0.0F);
         }
-        if (((FlightModelMain) (super.FM)).AS.bNavLightsOn) {
-            ((FlightModelMain) (super.FM)).CT.StabilizerControl = true;
+        if (this.FM.AS.bNavLightsOn) {
+            this.FM.CT.StabilizerControl = true;
         } else {
-            ((FlightModelMain) (super.FM)).CT.StabilizerControl = false;
+            this.FM.CT.StabilizerControl = false;
         }
     }
 
@@ -177,7 +174,7 @@ public class JU_88C1 extends JU_88Axx implements TypeFighter, TypeBNZFighter, Ty
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -40F) {
                     f = -40F;
                     flag = false;
@@ -215,7 +212,7 @@ public class JU_88C1 extends JU_88Axx implements TypeFighter, TypeBNZFighter, Ty
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -40F) {
                     f = -40F;
                     flag = false;
@@ -244,20 +241,20 @@ public class JU_88C1 extends JU_88Axx implements TypeFighter, TypeBNZFighter, Ty
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 this.hierMesh().chunkVisible("HMask3_D0", false);
@@ -274,7 +271,7 @@ public class JU_88C1 extends JU_88Axx implements TypeFighter, TypeBNZFighter, Ty
     private boolean       topBlisterRemoved;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = JU_88C1.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Ju-88");
         Property.set(class1, "meshName", "3DO/Plane/Ju-88C-1/hier.him");

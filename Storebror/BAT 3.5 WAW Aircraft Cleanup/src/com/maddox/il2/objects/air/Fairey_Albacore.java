@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import java.io.IOException;
 
 import com.maddox.il2.engine.Actor;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -16,28 +15,28 @@ public class Fairey_Albacore extends Albacore123 {
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            Fairey_Albacore.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            Fairey_Albacore.bChangedPit = true;
         }
     }
 
     public void doWoundPilot(int i, float f) {
         super.doWoundPilot(i, f);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            Fairey_Albacore.bChangedPit = true;
         }
     }
 
     public void doMurderPilot(int i) {
         super.doMurderPilot(i);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            Fairey_Albacore.bChangedPit = true;
         }
     }
 
@@ -46,7 +45,7 @@ public class Fairey_Albacore extends Albacore123 {
         float f = -af[0];
         float f1 = af[1];
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 if (f < -33F) {
                     f = -33F;
                     flag = false;
@@ -122,7 +121,7 @@ public class Fairey_Albacore extends Albacore123 {
     public static boolean bChangedPit = false;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = Fairey_Albacore.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Albacore");
         Property.set(class1, "meshName", "3do/Plane/Fairey-Albacore(Multi1)/hier.him");

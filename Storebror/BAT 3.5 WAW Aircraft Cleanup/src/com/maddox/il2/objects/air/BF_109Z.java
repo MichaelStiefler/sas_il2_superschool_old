@@ -9,7 +9,6 @@ import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.objects.Wreckage;
 import com.maddox.rts.Property;
@@ -40,7 +39,7 @@ public class BF_109Z extends Scheme2 implements TypeFighter {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        BF_109Z.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public void moveSteering(float f) {
@@ -58,12 +57,12 @@ public class BF_109Z extends Scheme2 implements TypeFighter {
     }
 
     public void update(float f) {
-        this.hierMesh().chunkSetAngles("GearL6_D0", 0.0F, -((FlightModelMain) (super.FM)).Gears.gWheelAngles[0], 0.0F);
-        this.hierMesh().chunkSetAngles("GearR6_D0", 0.0F, -((FlightModelMain) (super.FM)).Gears.gWheelAngles[1], 0.0F);
-        this.hierMesh().chunkSetAngles("GearC4_D0", 0.0F, -((FlightModelMain) (super.FM)).Gears.gWheelAngles[2], 0.0F);
-        if (super.FM.getSpeed() > 5F) {
-            this.hierMesh().chunkSetAngles("SlatL_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F), 0.0F);
-            this.hierMesh().chunkSetAngles("SlatR_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F), 0.0F);
+        this.hierMesh().chunkSetAngles("GearL6_D0", 0.0F, -this.FM.Gears.gWheelAngles[0], 0.0F);
+        this.hierMesh().chunkSetAngles("GearR6_D0", 0.0F, -this.FM.Gears.gWheelAngles[1], 0.0F);
+        this.hierMesh().chunkSetAngles("GearC4_D0", 0.0F, -this.FM.Gears.gWheelAngles[2], 0.0F);
+        if (this.FM.getSpeed() > 5F) {
+            this.hierMesh().chunkSetAngles("SlatL_D0", 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F), 0.0F);
+            this.hierMesh().chunkSetAngles("SlatR_D0", 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F), 0.0F);
         }
         if (Math.abs(this.flapps - this.kangle) > 0.01F) {
             this.flapps = this.kangle;
@@ -76,13 +75,13 @@ public class BF_109Z extends Scheme2 implements TypeFighter {
             this.hierMesh().chunkSetAngles("Flap02L2_D0", 0.0F, -20F * this.kangle, 0.0F);
             this.hierMesh().chunkSetAngles("Flap02U2_D0", 0.0F, 20F * this.kangle, 0.0F);
         }
-        this.kangle = (0.95F * this.kangle) + (0.05F * ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator());
+        this.kangle = (0.95F * this.kangle) + (0.05F * this.FM.EI.engines[0].getControlRadiator());
         if (this.kangle > 1.0F) {
             this.kangle = 1.0F;
         }
         super.update(f);
         this.CombustionFlame();
-        if ((((FlightModelMain) (super.FM)).CT.getCockpitDoor() > 0.20000000000000001D) && this.bHasBlister && (super.FM.getSpeedKMH() > this.fMaxKMHSpeedForOpenCanopy) && (this.hierMesh().chunkFindCheck("Blister1_D0") != -1)) {
+        if ((this.FM.CT.getCockpitDoor() > 0.20000000000000001D) && this.bHasBlister && (this.FM.getSpeedKMH() > this.fMaxKMHSpeedForOpenCanopy) && (this.hierMesh().chunkFindCheck("Blister1_D0") != -1)) {
             try {
                 if (this == World.getPlayerAircraft()) {
                     ((CockpitBF_109Z) Main3D.cur3D().cockpitCur).removeCanopy();
@@ -93,25 +92,25 @@ public class BF_109Z extends Scheme2 implements TypeFighter {
             Wreckage wreckage = new Wreckage(this, this.hierMesh().chunkFind("Blister1_D0"));
             wreckage.collide(true);
             Vector3d vector3d = new Vector3d();
-            vector3d.set(((FlightModelMain) (super.FM)).Vwld);
+            vector3d.set(this.FM.Vwld);
             wreckage.setSpeed(vector3d);
             this.bHasBlister = false;
-            ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = false;
-            super.FM.setGCenter(-0.5F);
+            this.FM.CT.bHasCockpitDoorControl = false;
+            this.FM.setGCenter(-0.5F);
         }
     }
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         if (flag) {
-            if (((FlightModelMain) (super.FM)).AS.astateTankStates[2] > 5) {
-                ((FlightModelMain) (super.FM)).AS.repairTank(2);
+            if (this.FM.AS.astateTankStates[2] > 5) {
+                this.FM.AS.repairTank(2);
             }
-            if (((FlightModelMain) (super.FM)).AS.astateTankStates[3] > 5) {
-                ((FlightModelMain) (super.FM)).AS.repairTank(3);
+            if (this.FM.AS.astateTankStates[3] > 5) {
+                this.FM.AS.repairTank(3);
             }
         }
-        if (super.FM.getAltitude() < 3000F) {
+        if (this.FM.getAltitude() < 3000F) {
             this.hierMesh().chunkVisible("HMask1_D0", false);
         } else {
             this.hierMesh().chunkVisible("HMask1_D0", this.hierMesh().isChunkVisible("Head1_D0"));
@@ -127,39 +126,39 @@ public class BF_109Z extends Scheme2 implements TypeFighter {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 5: // '\005'
-            case 6: // '\006'
-            case 7: // '\007'
-            case 8: // '\b'
-            case 11: // '\013'
-            case 12: // '\f'
-            case 14: // '\016'
-            case 15: // '\017'
-            case 16: // '\020'
-            case 17: // '\021'
-            case 21: // '\025'
-            case 22: // '\026'
-            case 23: // '\027'
-            case 24: // '\030'
-            case 25: // '\031'
-            case 26: // '\032'
-            case 27: // '\033'
-            case 28: // '\034'
-            case 29: // '\035'
-            case 30: // '\036'
-            case 31: // '\037'
-            case 32: // ' '
-            case 33: // '!'
-            case 34: // '"'
-            case 35: // '#'
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 11:
+            case 12:
+            case 14:
+            case 15:
+            case 16:
+            case 17:
+            case 21:
+            case 22:
+            case 23:
+            case 24:
+            case 25:
+            case 26:
+            case 27:
+            case 28:
+            case 29:
+            case 30:
+            case 31:
+            case 32:
+            case 33:
+            case 34:
+            case 35:
             default:
                 break;
 
-            case 3: // '\003'
-            case 4: // '\004'
+            case 3:
+            case 4:
                 return false;
 
-            case 18: // '\022'
+            case 18:
                 if (World.Rnd().nextFloat() >= 0.5F) {
                     break;
                 }
@@ -169,46 +168,46 @@ public class BF_109Z extends Scheme2 implements TypeFighter {
                 }
                 break;
 
-            case 13: // '\r'
+            case 13:
                 this.cut("WingRIn");
                 this.cut("Engine2");
                 this.cut("Tail2");
-                super.FM.cut(36, j, actor);
-                super.FM.cut(4, j, actor);
-                super.FM.cut(20, j, actor);
+                this.FM.cut(36, j, actor);
+                this.FM.cut(4, j, actor);
+                this.FM.cut(20, j, actor);
                 if (World.Rnd().nextFloat() < 0.5F) {
                     this.cut("StabR");
-                    super.FM.cut(18, j, actor);
-                    super.FM.cut(17, j, actor);
+                    this.FM.cut(18, j, actor);
+                    this.FM.cut(17, j, actor);
                 }
                 break;
 
-            case 19: // '\023'
+            case 19:
                 this.cut("StabR");
-                super.FM.cut(18, j, actor);
-                super.FM.cut(17, j, actor);
+                this.FM.cut(18, j, actor);
+                this.FM.cut(17, j, actor);
                 break;
 
-            case 20: // '\024'
+            case 20:
                 this.cut("StabR");
-                super.FM.cut(18, j, actor);
-                super.FM.cut(17, j, actor);
+                this.FM.cut(18, j, actor);
+                this.FM.cut(17, j, actor);
                 break;
 
-            case 36: // '$'
+            case 36:
                 this.cut("Engine2");
                 this.cut("Nose");
                 this.cut("Tail2");
-                super.FM.cut(4, j, actor);
-                super.FM.cut(13, j, actor);
-                super.FM.cut(20, j, actor);
+                this.FM.cut(4, j, actor);
+                this.FM.cut(13, j, actor);
+                this.FM.cut(20, j, actor);
                 break;
 
-            case 9: // '\t'
+            case 9:
                 this.cut("GearL4");
                 break;
 
-            case 10: // '\n'
+            case 10:
                 this.cut("GearR4");
                 break;
         }
@@ -218,29 +217,29 @@ public class BF_109Z extends Scheme2 implements TypeFighter {
     private void reflectGlassState(int i) {
         this.GlassState |= i;
         switch (this.GlassState & 3) {
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().materialReplace("Glass2", "ZBulletsHoles");
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().materialReplace("Glass2", "GlassOil");
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.hierMesh().materialReplace("Glass2", "GlassOilHoles");
                 break;
         }
         switch (this.GlassState & 0xc) {
-            case 4: // '\004'
+            case 4:
                 this.hierMesh().materialReplace("GlassW", "ZBulletsHoles");
                 break;
 
-            case 8: // '\b'
+            case 8:
                 this.hierMesh().materialReplace("GlassW", "Wounded");
                 this.hierMesh().chunkVisible("Gore2_D0", true);
                 break;
 
-            case 12: // '\f'
+            case 12:
                 this.hierMesh().materialReplace("GlassW", "WoundedHoles");
                 this.hierMesh().chunkVisible("Gore2_D0", true);
                 break;
@@ -253,7 +252,7 @@ public class BF_109Z extends Scheme2 implements TypeFighter {
                 Aircraft.debugprintln(this, "*** Armor: Hit..");
                 if (s.endsWith("p1")) {
                     this.getEnergyPastArmor(World.Rnd().nextFloat(20F, 30F), shot);
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 2);
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 2);
                     this.reflectGlassState(5);
                     Aircraft.debugprintln(this, "*** Armor Glass: Hit..");
                     if (shot.power <= 0.0F) {
@@ -265,7 +264,7 @@ public class BF_109Z extends Scheme2 implements TypeFighter {
                 } else if (s.endsWith("p2")) {
                     this.getEnergyPastArmor(0.5F, shot);
                 } else if (s.endsWith("p3")) {
-                    if (((Tuple3d) (point3d)).z < -0.27000000000000002D) {
+                    if (point3d.z < -0.27000000000000002D) {
                         this.getEnergyPastArmor(4.0999999046325684D / (Math.abs(((Tuple3d) (Aircraft.v1)).z) + 9.9999997473787516E-006D), shot);
                     } else {
                         this.getEnergyPastArmor(8.1000003814697266D / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-006D), shot);
@@ -293,55 +292,55 @@ public class BF_109Z extends Scheme2 implements TypeFighter {
                     default:
                         break;
 
-                    case 1: // '\001'
-                    case 4: // '\004'
+                    case 1:
+                    case 4:
                         if (this.getEnergyPastArmor(0.1F, shot) > 0.0F) {
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                            this.FM.AS.setControlsDamage(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Aileron Controls: Control Crank Destroyed..");
                         }
                         break;
 
-                    case 2: // '\002'
-                    case 3: // '\003'
-                    case 8: // '\b'
+                    case 2:
+                    case 3:
+                    case 8:
                         if ((this.getEnergyPastArmor(0.12F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.1F)) {
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                            this.FM.AS.setControlsDamage(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Aileron Controls: Disabled..");
                         }
                         break;
 
-                    case 5: // '\005'
-                    case 6: // '\006'
-                    case 10: // '\n'
-                    case 11: // '\013'
+                    case 5:
+                    case 6:
+                    case 10:
+                    case 11:
                         if ((this.getEnergyPastArmor(0.002F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.1F)) {
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
+                            this.FM.AS.setControlsDamage(shot.initiator, 1);
                             Aircraft.debugprintln(this, "*** Elevator Controls: Disabled / Strings Broken..");
                         }
                         break;
 
-                    case 7: // '\007'
-                    case 9: // '\t'
+                    case 7:
+                    case 9:
                         if ((this.getEnergyPastArmor(2.3F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.2F)) {
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
+                            this.FM.AS.setControlsDamage(shot.initiator, 2);
                             Aircraft.debugprintln(this, "*** Rudder Controls: Disabled..");
                         }
                         break;
 
-                    case 12: // '\f'
+                    case 12:
                         if (this.getEnergyPastArmor(3.2F, shot) > 0.0F) {
                             Aircraft.debugprintln(this, "*** Control Column: Hit, Controls Destroyed..");
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                            this.FM.AS.setControlsDamage(shot.initiator, 2);
+                            this.FM.AS.setControlsDamage(shot.initiator, 1);
+                            this.FM.AS.setControlsDamage(shot.initiator, 0);
                         }
                         break;
 
-                    case 13: // '\r'
+                    case 13:
                         if (this.getEnergyPastArmor(0.1F, shot) > 0.0F) {
-                            ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 8);
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 1);
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 6);
+                            this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 8);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 1);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 6);
                             Aircraft.debugprintln(this, "*** Throttle Quadrant: Hit, Engine Controls Disabled..");
                         }
                         break;
@@ -421,85 +420,85 @@ public class BF_109Z extends Scheme2 implements TypeFighter {
                 int j = s.charAt(5) - 49;
                 Aircraft.debugprintln(this, "*** Engine Module: Hit..");
                 if (s.endsWith("pipe")) {
-                    if ((World.Rnd().nextFloat() < 0.1F) && (((FlightModelMain) (super.FM)).CT.Weapons[0] != null)) {
-                        ((FlightModelMain) (super.FM)).AS.setJamBullets(0, j);
+                    if ((World.Rnd().nextFloat() < 0.1F) && (this.FM.CT.Weapons[0] != null)) {
+                        this.FM.AS.setJamBullets(0, j);
                         Aircraft.debugprintln(this, "*** Engine" + j + ": Nose Nozzle Pipe Bent..");
                     }
                     this.getEnergyPastArmor(0.3F, shot);
                 } else if (s.endsWith("prop")) {
                     if ((this.getEnergyPastArmor(0.1F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.8F)) {
                         if (World.Rnd().nextFloat() < 0.5F) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, j, 3);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, j, 3);
                             Aircraft.debugprintln(this, "*** Engine" + j + ": Prop Governor Hit, Disabled..");
                         } else {
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, j, 4);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, j, 4);
                             Aircraft.debugprintln(this, "*** Engine" + j + ": Prop Governor Hit, Damaged..");
                         }
                     }
                 } else if (s.endsWith("gear")) {
                     if (this.getEnergyPastArmor(4.6F, shot) > 0.0F) {
                         if (World.Rnd().nextFloat() < 0.5F) {
-                            ((FlightModelMain) (super.FM)).EI.engines[j].setEngineStuck(shot.initiator);
+                            this.FM.EI.engines[j].setEngineStuck(shot.initiator);
                             Aircraft.debugprintln(this, "*** Engine" + j + ": Bullet Jams Reductor Gear..");
                         } else {
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, j, 3);
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, j, 4);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, j, 3);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, j, 4);
                             Aircraft.debugprintln(this, "*** Engine" + j + ": Reductor Gear Damaged, Prop Governor Failed..");
                         }
                     }
                 } else if (s.endsWith("supc")) {
                     if (this.getEnergyPastArmor(0.1F, shot) > 0.0F) {
-                        ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, j, 0);
+                        this.FM.AS.setEngineSpecificDamage(shot.initiator, j, 0);
                         Aircraft.debugprintln(this, "*** Engine" + j + ": Supercharger Disabled..");
                     }
                 } else if (s.endsWith("feed")) {
-                    if ((this.getEnergyPastArmor(3.2F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F) && (((FlightModelMain) (super.FM)).EI.engines[j].getPowerOutput() > 0.7F)) {
-                        ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, j, 100);
+                    if ((this.getEnergyPastArmor(3.2F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F) && (this.FM.EI.engines[j].getPowerOutput() > 0.7F)) {
+                        this.FM.AS.hitEngine(shot.initiator, j, 100);
                         Aircraft.debugprintln(this, "*** Engine" + j + ": Pressurized Fuel Line Pierced, Fuel Flamed..");
                     }
                 } else if (s.endsWith("fuel")) {
                     if (this.getEnergyPastArmor(1.1F, shot) > 0.0F) {
-                        ((FlightModelMain) (super.FM)).EI.engines[j].setEngineStops(shot.initiator);
+                        this.FM.EI.engines[j].setEngineStops(shot.initiator);
                         Aircraft.debugprintln(this, "*** Engine" + j + ": Fuel Line Stalled, Engine Stalled..");
                     }
                 } else if (s.endsWith("case")) {
                     if (this.getEnergyPastArmor(2.1F, shot) > 0.0F) {
                         if (World.Rnd().nextFloat() < (shot.power / 175000F)) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, j);
+                            this.FM.AS.setEngineStuck(shot.initiator, j);
                             Aircraft.debugprintln(this, "*** Engine" + j + ": Bullet Jams Crank Ball Bearing..");
                         }
                         if (World.Rnd().nextFloat() < (shot.power / 50000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, j, 2);
-                            Aircraft.debugprintln(this, "*** Engine" + j + ": Crank Case Hit, Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[j].getReadyness() + "..");
+                            this.FM.AS.hitEngine(shot.initiator, j, 2);
+                            Aircraft.debugprintln(this, "*** Engine" + j + ": Crank Case Hit, Readyness Reduced to " + this.FM.EI.engines[j].getReadyness() + "..");
                         }
-                        ((FlightModelMain) (super.FM)).EI.engines[j].setReadyness(shot.initiator, ((FlightModelMain) (super.FM)).EI.engines[j].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 48000F));
-                        Aircraft.debugprintln(this, "*** Engine" + j + ": Crank Case Hit, Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[j].getReadyness() + "..");
+                        this.FM.EI.engines[j].setReadyness(shot.initiator, this.FM.EI.engines[j].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 48000F));
+                        Aircraft.debugprintln(this, "*** Engine" + j + ": Crank Case Hit, Readyness Reduced to " + this.FM.EI.engines[j].getReadyness() + "..");
                     }
                     this.getEnergyPastArmor(22.5F, shot);
                 } else if (s.endsWith("cyl1") || s.endsWith("cyl2")) {
-                    if ((this.getEnergyPastArmor(0.1F, shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[j].getCylindersRatio() * 1.75F))) {
-                        ((FlightModelMain) (super.FM)).EI.engines[j].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
-                        Aircraft.debugprintln(this, "*** Engine" + j + ": Cylinders Hit, " + ((FlightModelMain) (super.FM)).EI.engines[j].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[j].getCylinders() + " Left..");
+                    if ((this.getEnergyPastArmor(0.1F, shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[j].getCylindersRatio() * 1.75F))) {
+                        this.FM.EI.engines[j].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
+                        Aircraft.debugprintln(this, "*** Engine" + j + ": Cylinders Hit, " + this.FM.EI.engines[j].getCylindersOperable() + "/" + this.FM.EI.engines[j].getCylinders() + " Left..");
                         if (World.Rnd().nextFloat() < (shot.power / 24000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, j, 3);
+                            this.FM.AS.hitEngine(shot.initiator, j, 3);
                             Aircraft.debugprintln(this, "*** Engine" + j + ": Cylinders Hit, Engine Fires..");
                         }
                         if (World.Rnd().nextFloat() < 0.01F) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, j);
+                            this.FM.AS.setEngineStuck(shot.initiator, j);
                             Aircraft.debugprintln(this, "*** Engine" + j + ": Bullet Jams Piston Head..");
                         }
                         this.getEnergyPastArmor(22.5F, shot);
                     }
                 } else if (s.endsWith("mag1") || s.endsWith("mag2")) {
                     int j1 = s.charAt(9) - 49;
-                    ((FlightModelMain) (super.FM)).EI.engines[j].setMagnetoKnockOut(shot.initiator, j1);
+                    this.FM.EI.engines[j].setMagnetoKnockOut(shot.initiator, j1);
                     Aircraft.debugprintln(this, "*** Engine" + j + ": Magneto " + j1 + " Destroyed..");
                 } else if (s.endsWith("sync")) {
                     if ((this.getEnergyPastArmor(2.1F, shot) <= 0.0F) || (World.Rnd().nextFloat() < 0.5F)) {
-                        ;
+
                     }
                 } else if (s.endsWith("oil1")) {
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, j);
+                    this.FM.AS.hitOil(shot.initiator, j);
                     this.reflectGlassState(2);
                     Aircraft.debugprintln(this, "*** Engine" + j + ": Oil Radiator Hit..");
                 }
@@ -514,7 +513,7 @@ public class BF_109Z extends Scheme2 implements TypeFighter {
                     if (k == 8) {
                         k = 1;
                     }
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, k);
+                    this.FM.AS.hitOil(shot.initiator, k);
                     this.getEnergyPastArmor(0.22F, shot);
                     this.reflectGlassState(2);
                     Aircraft.debugprintln(this, "*** Engine" + k + ": Oil Tank Pierced..");
@@ -527,48 +526,48 @@ public class BF_109Z extends Scheme2 implements TypeFighter {
                     default:
                         break;
 
-                    case 1: // '\001'
-                    case 2: // '\002'
+                    case 1:
+                    case 2:
                         if ((this.getEnergyPastArmor(0.1F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
-                            if (((FlightModelMain) (super.FM)).AS.astateTankStates[2] == 0) {
+                            if (this.FM.AS.astateTankStates[2] == 0) {
                                 Aircraft.debugprintln(this, "*** Fuel Tank: Pierced..");
-                                ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 2, 1);
-                                ((FlightModelMain) (super.FM)).AS.doSetTankState(shot.initiator, 2, 1);
+                                this.FM.AS.hitTank(shot.initiator, 2, 1);
+                                this.FM.AS.doSetTankState(shot.initiator, 2, 1);
                             }
                             if ((shot.powerType == 3) && (World.Rnd().nextFloat() < 0.5F)) {
-                                ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 2, 2);
+                                this.FM.AS.hitTank(shot.initiator, 2, 2);
                                 Aircraft.debugprintln(this, "*** Fuel Tank: Hit..");
                             }
                         }
                         break;
 
-                    case 3: // '\003'
-                    case 4: // '\004'
+                    case 3:
+                    case 4:
                         if ((this.getEnergyPastArmor(0.1F, shot) <= 0.0F) || (World.Rnd().nextFloat() >= 0.25F)) {
                             break;
                         }
-                        if (((FlightModelMain) (super.FM)).AS.astateTankStates[3] == 0) {
+                        if (this.FM.AS.astateTankStates[3] == 0) {
                             Aircraft.debugprintln(this, "*** Fuel Tank: Pierced..");
-                            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 3, 1);
-                            ((FlightModelMain) (super.FM)).AS.doSetTankState(shot.initiator, 3, 1);
+                            this.FM.AS.hitTank(shot.initiator, 3, 1);
+                            this.FM.AS.doSetTankState(shot.initiator, 3, 1);
                         }
                         if ((shot.powerType == 3) && (World.Rnd().nextFloat() < 0.5F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 3, 2);
+                            this.FM.AS.hitTank(shot.initiator, 3, 2);
                             Aircraft.debugprintln(this, "*** Fuel Tank: Hit..");
                         }
                         break;
 
-                    case 5: // '\005'
+                    case 5:
                         if ((this.getEnergyPastArmor(0.1F, shot) <= 0.0F) || (World.Rnd().nextFloat() >= 0.25F)) {
                             break;
                         }
-                        if (((FlightModelMain) (super.FM)).AS.astateTankStates[1] == 0) {
+                        if (this.FM.AS.astateTankStates[1] == 0) {
                             Aircraft.debugprintln(this, "*** Fuel Tank: Pierced..");
-                            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 1, 1);
-                            ((FlightModelMain) (super.FM)).AS.doSetTankState(shot.initiator, 1, 1);
+                            this.FM.AS.hitTank(shot.initiator, 1, 1);
+                            this.FM.AS.doSetTankState(shot.initiator, 1, 1);
                         }
                         if ((shot.powerType == 3) && (World.Rnd().nextFloat() < 0.5F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 1, 2);
+                            this.FM.AS.hitTank(shot.initiator, 1, 2);
                             Aircraft.debugprintln(this, "*** Fuel Tank: Hit..");
                         }
                         break;
@@ -579,7 +578,7 @@ public class BF_109Z extends Scheme2 implements TypeFighter {
                 if (this.getEnergyPastArmor(4.6F, shot) > 0.0F) {
                     int i1 = s.charAt(9) - 49;
                     Aircraft.debugprintln(this, "*** Cannon(" + i1 + "): Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(0, i1);
+                    this.FM.AS.setJamBullets(0, i1);
                     this.getEnergyPastArmor(World.Rnd().nextFloat(3.3F, 24.6F), shot);
                 }
                 return;
@@ -595,21 +594,21 @@ public class BF_109Z extends Scheme2 implements TypeFighter {
                 this.hitChunk("CF", shot);
             }
             if (s.startsWith("xcockpit")) {
-                if (((Tuple3d) (point3d)).z > 0.40000000000000002D) {
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 1);
+                if (point3d.z > 0.40000000000000002D) {
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 1);
                     this.reflectGlassState(5);
                     if (World.Rnd().nextFloat() < 0.1F) {
-                        ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x20);
+                        this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x20);
                         this.reflectGlassState(5);
                     }
-                } else if (((Tuple3d) (point3d)).y > 1.7649999999999999D) {
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 4);
+                } else if (point3d.y > 1.7649999999999999D) {
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 4);
                 } else {
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x10);
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x10);
                     this.reflectGlassState(5);
                 }
-                if (((Tuple3d) (point3d)).x > 0.20000000000000001D) {
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x40);
+                if (point3d.x > 0.20000000000000001D) {
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x40);
                 }
             }
         } else if (s.startsWith("xeng")) {
@@ -687,7 +686,7 @@ public class BF_109Z extends Scheme2 implements TypeFighter {
                 k1 = s.charAt(5) - 49;
             }
             this.hitFlesh(k1, shot, byte0);
-            if (((FlightModelMain) (super.FM)).AS.getPilotHealth(0) < 1.0F) {
+            if (this.FM.AS.getPilotHealth(0) < 1.0F) {
                 this.reflectGlassState(8);
             }
         }
@@ -698,12 +697,12 @@ public class BF_109Z extends Scheme2 implements TypeFighter {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
-                if (!((FlightModelMain) (super.FM)).AS.bIsAboutToBailout && World.cur().isHighGore()) {
+                if (!this.FM.AS.bIsAboutToBailout && World.cur().isHighGore()) {
                     if (this.hierMesh().isChunkVisible("Blister1_D0")) {
                         this.hierMesh().chunkVisible("Gore1_D0", true);
                     }
@@ -730,113 +729,113 @@ public class BF_109Z extends Scheme2 implements TypeFighter {
         int i = World.Rnd().nextInt(0, 100);
         int j = World.Rnd().nextInt(1, 12);
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.random = "01";
                 break;
 
-            case 8: // '\b'
+            case 8:
                 this.random = "02";
                 break;
 
-            case 14: // '\016'
+            case 14:
                 this.random = "03";
                 break;
 
-            case 21: // '\025'
+            case 21:
                 this.random = "04";
                 break;
 
-            case 30: // '\036'
+            case 30:
                 this.random = "05";
                 break;
 
-            case 38: // '&'
+            case 38:
                 this.random = "06";
                 break;
 
-            case 44: // ','
+            case 44:
                 this.random = "07";
                 break;
 
-            case 68: // 'D'
+            case 68:
                 this.random = "08";
                 break;
 
-            case 70: // 'F'
+            case 70:
                 this.random = "09";
                 break;
 
-            case 81: // 'Q'
+            case 81:
                 this.random = "10";
                 break;
 
-            case 89: // 'Y'
+            case 89:
                 this.random = "11";
                 break;
 
-            case 94: // '^'
+            case 94:
                 this.random = "12";
                 break;
         }
         switch (j) {
-            case 1: // '\001'
+            case 1:
                 this.random3 = "01";
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.random3 = "03";
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.random3 = "05";
                 break;
 
-            case 4: // '\004'
+            case 4:
                 this.random3 = "07";
                 break;
 
-            case 5: // '\005'
+            case 5:
                 this.random3 = "09";
                 break;
 
-            case 6: // '\006'
+            case 6:
                 this.random3 = "11";
                 break;
 
-            case 7: // '\007'
+            case 7:
                 this.random3 = "02";
                 break;
 
-            case 8: // '\b'
+            case 8:
                 this.random3 = "04";
                 break;
 
-            case 9: // '\t'
+            case 9:
                 this.random3 = "06";
                 break;
 
-            case 10: // '\n'
+            case 10:
                 this.random3 = "08";
                 break;
 
-            case 11: // '\013'
+            case 11:
                 this.random3 = "10";
                 break;
 
-            case 12: // '\f'
+            case 12:
                 this.random3 = "12";
                 break;
         }
-        if ((((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6) && (((FlightModelMain) (super.FM)).EI.engines[0].getPowerOutput() > 0.85F)) {
+        if ((this.FM.EI.engines[0].getStage() == 6) && (this.FM.EI.engines[0].getPowerOutput() > 0.85F)) {
             Eff3DActor.New(this, this.findHook("_Engine1EF_" + this.random3), null, 1.0F, "3DO/Effects/Fireworks/HolyGrail2.eff", -1F);
         }
-        if ((((FlightModelMain) (super.FM)).EI.engines[0].getStage() > 1) && (((FlightModelMain) (super.FM)).EI.engines[0].getStage() < 3) && (super.FM.getSpeedKMH() < 10F)) {
+        if ((this.FM.EI.engines[0].getStage() > 1) && (this.FM.EI.engines[0].getStage() < 3) && (this.FM.getSpeedKMH() < 10F)) {
             Eff3DActor.New(this, this.findHook("_Engine1EF_" + this.random), null, 1.0F, "3DO/Effects/Aircraft/HolyGrail1.eff", -1F);
         }
-        if ((((FlightModelMain) (super.FM)).EI.engines[1].getStage() == 6) && (((FlightModelMain) (super.FM)).EI.engines[1].getPowerOutput() > 0.85F)) {
+        if ((this.FM.EI.engines[1].getStage() == 6) && (this.FM.EI.engines[1].getPowerOutput() > 0.85F)) {
             Eff3DActor.New(this, this.findHook("_Engine2EF_" + this.random3), null, 1.0F, "3DO/Effects/Fireworks/HolyGrail2.eff", -1F);
         }
-        if ((((FlightModelMain) (super.FM)).EI.engines[1].getStage() > 1) && (((FlightModelMain) (super.FM)).EI.engines[1].getStage() < 3) && (super.FM.getSpeedKMH() < 10F)) {
+        if ((this.FM.EI.engines[1].getStage() > 1) && (this.FM.EI.engines[1].getStage() < 3) && (this.FM.getSpeedKMH() < 10F)) {
             Eff3DActor.New(this, this.findHook("_Engine2EF_" + this.random), null, 1.0F, "3DO/Effects/Aircraft/HolyGrail1.eff", -1F);
         }
     }

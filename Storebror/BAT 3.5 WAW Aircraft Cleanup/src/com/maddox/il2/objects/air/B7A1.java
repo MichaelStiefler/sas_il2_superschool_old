@@ -38,7 +38,7 @@ public class B7A1 extends B7A implements TypeDiveBomber, TypeBomber {
         float f = -af[0];
         float f1 = af[1];
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 if (f < -33F) {
                     f = -33F;
                     flag = false;

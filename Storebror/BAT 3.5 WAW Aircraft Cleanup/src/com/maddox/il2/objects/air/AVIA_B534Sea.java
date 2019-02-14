@@ -1,9 +1,7 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.fm.Atmosphere;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.fm.Pitot;
 import com.maddox.rts.Property;
 
@@ -20,13 +18,13 @@ public class AVIA_B534Sea extends Avia_B5xx implements TypeFighter, TypeTNBFight
 
     public void update(float f) {
         super.update(f);
-        if (((FlightModelMain) (super.FM)).Gears.arrestorVAngle != 0.0F) {
-            float f1 = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.arrestorVAngle, -56F, 4F, 1.0F, 0.0F);
+        if (this.FM.Gears.arrestorVAngle != 0.0F) {
+            float f1 = Aircraft.cvt(this.FM.Gears.arrestorVAngle, -56F, 4F, 1.0F, 0.0F);
             this.arrestor = (0.8F * this.arrestor) + (0.2F * f1);
         } else {
-            float f2 = (-60F * ((FlightModelMain) (super.FM)).Gears.arrestorVSink) / 60F;
-            if ((f2 < 0.0F) && (super.FM.getSpeedKMH() > 60F)) {
-                Eff3DActor.New(this, ((FlightModelMain) (super.FM)).Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
+            float f2 = (-60F * this.FM.Gears.arrestorVSink) / 60F;
+            if ((f2 < 0.0F) && (this.FM.getSpeedKMH() > 60F)) {
+                Eff3DActor.New(this, this.FM.Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
             }
             if (f2 > 0.15F) {
                 f2 = 0.15F;
@@ -36,17 +34,17 @@ public class AVIA_B534Sea extends Avia_B5xx implements TypeFighter, TypeTNBFight
                 this.arrestor = 0.0F;
             }
         }
-        if (this.arrestor > ((FlightModelMain) (super.FM)).CT.getArrestor()) {
-            this.arrestor = ((FlightModelMain) (super.FM)).CT.getArrestor();
+        if (this.arrestor > this.FM.CT.getArrestor()) {
+            this.arrestor = this.FM.CT.getArrestor();
         }
         this.moveArrestorHook(this.arrestor);
-        float f3 = Atmosphere.temperature((float) ((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z) - 273.15F;
-        float f4 = Pitot.Indicator((float) ((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z, super.FM.getSpeedKMH());
+        float f3 = Atmosphere.temperature((float) this.FM.Loc.z) - 273.15F;
+        float f4 = Pitot.Indicator((float) this.FM.Loc.z, this.FM.getSpeedKMH());
         if (f4 < 0.0F) {
             f4 = 0.0F;
         }
-        float f5 = (((((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator() * f * f4) / (f4 + 50F)) * (((FlightModelMain) (super.FM)).EI.engines[0].tWaterOut - f3)) / 256F;
-        ((FlightModelMain) (super.FM)).EI.engines[0].tWaterOut -= f5;
+        float f5 = (((this.FM.EI.engines[0].getControlRadiator() * f * f4) / (f4 + 50F)) * (this.FM.EI.engines[0].tWaterOut - f3)) / 256F;
+        this.FM.EI.engines[0].tWaterOut -= f5;
     }
 
     protected float arrestor;

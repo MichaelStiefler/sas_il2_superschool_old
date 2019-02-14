@@ -127,7 +127,7 @@ public class HS_129B2 extends HS_129 {
         Property.set(class1, "yearService", 1942F);
         Property.set(class1, "yearExpired", 1945F);
         Property.set(class1, "FlightModel", "FlightModels/Hs-129B-2.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitHS_129B2.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitHS_129B2.class });
         Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 1, 1, 1, 9, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 9, 9 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04", "_HEAVYCANNON01", "_ExternalDev01", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalDev02", "_ExternalDev03" });
     }

@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
@@ -37,9 +36,9 @@ public class IL_4_DB3F extends IL_4 implements TypeBomber {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = true;
-        ((FlightModelMain) (super.FM)).CT.dvCockpitDoor = 0.75F;
-        super.FM.crew = 4;
+        this.FM.CT.bHasCockpitDoorControl = true;
+        this.FM.CT.dvCockpitDoor = 0.75F;
+        this.FM.crew = 4;
     }
 
     public boolean turretAngles(int i, float af[]) {
@@ -50,7 +49,7 @@ public class IL_4_DB3F extends IL_4 implements TypeBomber {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -27F) {
                     f = -27F;
                     flag = false;
@@ -69,7 +68,7 @@ public class IL_4_DB3F extends IL_4 implements TypeBomber {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if ((f < 2.0F) && (f > -2F) && (f1 < 25F)) {
                     flag = false;
                 }
@@ -83,7 +82,7 @@ public class IL_4_DB3F extends IL_4 implements TypeBomber {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -25F) {
                     f = -25F;
                     flag = false;
@@ -119,7 +118,7 @@ public class IL_4_DB3F extends IL_4 implements TypeBomber {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        IL_4_DB3F.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public void typeBomberAdjDistanceReset() {
@@ -224,15 +223,15 @@ public class IL_4_DB3F extends IL_4 implements TypeBomber {
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            IL_4_DB3F.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            IL_4_DB3F.bChangedPit = true;
         }
     }
 

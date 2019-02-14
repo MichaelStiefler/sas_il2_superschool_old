@@ -11,7 +11,6 @@ import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Mat;
 import com.maddox.il2.game.Main;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.HomePath;
 import com.maddox.rts.Property;
 
@@ -74,9 +73,9 @@ public class I_16TYPE6 extends I_16 implements TypeTNBFighter {
             super.moveFan(f);
             float f1 = this.FM.CT.getAileron();
             float f2 = this.FM.CT.getElevator();
-            this.hierMesh().chunkSetAngles("Stick_D0", 0.0F, 12F * f1, cvt(f2, -1F, 1.0F, -12F, 18F));
-            this.hierMesh().chunkSetAngles("pilotarm2_d0", cvt(f1, -1F, 1.0F, 14F, -16F), 0.0F, cvt(f1, -1F, 1.0F, 6F, -8F) - (cvt(f2, -1F, 0.0F, -36F, 0.0F) + cvt(f2, 0.0F, 1.0F, 0.0F, 32F)));
-            this.hierMesh().chunkSetAngles("pilotarm1_d0", 0.0F, 0.0F, cvt(f1, -1F, 1.0F, -16F, 14F) + cvt(f2, -1F, 0.0F, -62F, 0.0F) + cvt(f2, 0.0F, 1.0F, 0.0F, 44F));
+            this.hierMesh().chunkSetAngles("Stick_D0", 0.0F, 12F * f1, Aircraft.cvt(f2, -1F, 1.0F, -12F, 18F));
+            this.hierMesh().chunkSetAngles("pilotarm2_d0", Aircraft.cvt(f1, -1F, 1.0F, 14F, -16F), 0.0F, Aircraft.cvt(f1, -1F, 1.0F, 6F, -8F) - (Aircraft.cvt(f2, -1F, 0.0F, -36F, 0.0F) + Aircraft.cvt(f2, 0.0F, 1.0F, 0.0F, 32F)));
+            this.hierMesh().chunkSetAngles("pilotarm1_d0", 0.0F, 0.0F, Aircraft.cvt(f1, -1F, 1.0F, -16F, 14F) + Aircraft.cvt(f2, -1F, 0.0F, -62F, 0.0F) + Aircraft.cvt(f2, 0.0F, 1.0F, 0.0F, 44F));
             if (!this.removeSpinnerHub) {
                 boolean flag = this.hierMesh().isChunkVisible("PropRot1_D0");
                 this.hierMesh().chunkVisible("PropHubRot1_D0", flag);
@@ -99,7 +98,7 @@ public class I_16TYPE6 extends I_16 implements TypeTNBFighter {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
@@ -284,33 +283,33 @@ public class I_16TYPE6 extends I_16 implements TypeTNBFighter {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 11: // '\013'
+            case 11:
                 this.hierMesh().chunkVisible("RadioWire1_d0", false);
                 this.hierMesh().chunkVisible("RadioWire2_d0", false);
                 break;
 
-            case 36: // '$'
+            case 36:
                 this.hierMesh().chunkVisible("RadioWire2_d0", false);
                 this.hierMesh().chunkVisible("GearWireR1_D0", false);
                 this.hierMesh().chunkVisible("GearWireR2_D0", false);
                 break;
 
-            case 38: // '&'
+            case 38:
                 this.hierMesh().chunkVisible("RadioWire2_d0", false);
                 break;
 
-            case 19: // '\023'
+            case 19:
                 this.hierMesh().chunkVisible("RadioWire1_d0", false);
                 this.hierMesh().chunkVisible("RadioWire2_d0", false);
                 break;
 
-            case 9: // '\t'
-            case 33: // '!'
+            case 9:
+            case 33:
                 this.hierMesh().chunkVisible("GearWireL1_D0", false);
                 this.hierMesh().chunkVisible("GearWireL2_D0", false);
                 break;
 
-            case 10: // '\n'
+            case 10:
                 this.hierMesh().chunkVisible("GearWireR1_D0", false);
                 this.hierMesh().chunkVisible("GearWireR2_D0", false);
                 break;
@@ -326,7 +325,7 @@ public class I_16TYPE6 extends I_16 implements TypeTNBFighter {
     private boolean          removeSpinnerHub;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = I_16TYPE6.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "I-16");
         Property.set(class1, "meshName", "3DO/Plane/I-16type6(multi)/hier.him");
@@ -338,13 +337,7 @@ public class I_16TYPE6 extends I_16 implements TypeTNBFighter {
         Property.set(class1, "FlightModel", "FlightModels/I-16type6.fmd");
         Property.set(class1, "cockpitClass", new Class[] { CockpitI_16TYPE6.class });
         Property.set(class1, "LOSElevation", 0.82595F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 2, 2, 2, 2, 2, 2, 3, 3, 9, 9, 9, 9, 9, 9, 9, 9 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalDev07", "_ExternalDev08" });
-        weaponsRegister(class1, "default", new String[] { "MGunShKASk 900", "MGunShKASk 900", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "2x50kg", new String[] { "MGunShKASk 900", "MGunShKASk 900", null, null, null, null, null, null, "BombGunFAB50 1", "BombGunFAB50 1", null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "2x100kg", new String[] { "MGunShKASk 900", "MGunShKASk 900", null, null, null, null, null, null, "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "4xRS-82", new String[] { "MGunShKASk 900", "MGunShKASk 900", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", null, null, null, null, "PylonRO_82_1 1", "PylonRO_82_1 1", "PylonRO_82_1 1", "PylonRO_82_1 1", null, null, null, null });
-        weaponsRegister(class1, "6xRS-82", new String[] { "MGunShKASk 900", "MGunShKASk 900", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", null, null, "PylonRO_82_1 1", "PylonRO_82_1 1", "PylonRO_82_1 1", "PylonRO_82_1 1", "PylonRO_82_1 1", "PylonRO_82_1 1", null, null });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 2, 2, 2, 2, 2, 2, 3, 3, 9, 9, 9, 9, 9, 9, 9, 9 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalDev07", "_ExternalDev08" });
     }
 }

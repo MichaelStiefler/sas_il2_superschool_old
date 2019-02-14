@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class MC_202_3 extends MC_202xyz {
@@ -9,7 +8,7 @@ public class MC_202_3 extends MC_202xyz {
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = MC_202_3.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "M.C.202");
         Property.set(class1, "meshName_it", "3DO/Plane/MC-202_III(it)/hier.him");
@@ -19,11 +18,9 @@ public class MC_202_3 extends MC_202xyz {
         Property.set(class1, "yearService", 1941F);
         Property.set(class1, "yearExpired", 1948.5F);
         Property.set(class1, "FlightModel", "FlightModels/MC-202.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitMC_202.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitMC_202.class });
         Property.set(class1, "LOSElevation", 0.81305F);
-        weaponTriggersRegister(class1, new int[] { 0, 0 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02" });
-        weaponsRegister(class1, "default", new String[] { "MGunBredaSAFAT127siMC202 370", "MGunBredaSAFAT127siMC202 370" });
-        weaponsRegister(class1, "none", new String[] { null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02" });
     }
 }

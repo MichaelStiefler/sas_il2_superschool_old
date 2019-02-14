@@ -28,7 +28,7 @@ public class P_38DroopSnoot extends P_38 implements TypeBomber, TypeStormovik {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
+            case 19:
                 this.hierMesh().chunkVisible("Blister2_D0", false);
                 break;
         }
@@ -37,14 +37,14 @@ public class P_38DroopSnoot extends P_38 implements TypeBomber, TypeStormovik {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 // fall through
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
@@ -116,7 +116,7 @@ public class P_38DroopSnoot extends P_38 implements TypeBomber, TypeStormovik {
         if (this.fSightCurForwardAngle > 85F) {
             this.fSightCurForwardAngle = 85F;
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = P_38DroopSnoot.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         if (this.bSightAutomation) {
             this.typeBomberToggleAutomation();
@@ -128,7 +128,7 @@ public class P_38DroopSnoot extends P_38 implements TypeBomber, TypeStormovik {
         if (this.fSightCurForwardAngle < 0.0F) {
             this.fSightCurForwardAngle = 0.0F;
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = P_38DroopSnoot.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         if (this.bSightAutomation) {
             this.typeBomberToggleAutomation();
@@ -165,7 +165,7 @@ public class P_38DroopSnoot extends P_38 implements TypeBomber, TypeStormovik {
             this.fSightCurAltitude = 50000F;
         }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int) this.fSightCurAltitude) });
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = P_38DroopSnoot.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
     }
 
     public void typeBomberAdjAltitudeMinus() {
@@ -174,7 +174,7 @@ public class P_38DroopSnoot extends P_38 implements TypeBomber, TypeStormovik {
             this.fSightCurAltitude = 1000F;
         }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int) this.fSightCurAltitude) });
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = P_38DroopSnoot.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
     }
 
     public void typeBomberAdjSpeedReset() {
@@ -207,13 +207,13 @@ public class P_38DroopSnoot extends P_38 implements TypeBomber, TypeStormovik {
         if (this.fSightCurReadyness < 1.0F) {
             this.fSightCurReadyness += 0.0333333F * f;
         } else if (this.bSightAutomation) {
-            this.fSightCurDistance -= toMetersPerSecond(this.fSightCurSpeed) * f;
+            this.fSightCurDistance -= P_38DroopSnoot.toMetersPerSecond(this.fSightCurSpeed) * f;
             if (this.fSightCurDistance < 0.0F) {
                 this.fSightCurDistance = 0.0F;
                 this.typeBomberToggleAutomation();
             }
-            this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / toMeters(this.fSightCurAltitude)));
-            if (this.fSightCurDistance < (toMetersPerSecond(this.fSightCurSpeed) * Math.sqrt(toMeters(this.fSightCurAltitude) * 0.2038736F))) {
+            this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / P_38DroopSnoot.toMeters(this.fSightCurAltitude)));
+            if (this.fSightCurDistance < (P_38DroopSnoot.toMetersPerSecond(this.fSightCurSpeed) * Math.sqrt(P_38DroopSnoot.toMeters(this.fSightCurAltitude) * 0.2038736F))) {
                 this.bSightBombDump = true;
             }
             if (this.bSightBombDump) {

@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.World;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class MIG_9_I_300 extends MIG_9 {
@@ -14,10 +13,10 @@ public class MIG_9_I_300 extends MIG_9 {
         super.update(f);
         if (this.FM.AS.isMaster() && (this.FM.CT.Weapons[1] != null) && (this.FM.CT.Weapons[1][0] != null)) {
             if (this.FM.CT.Weapons[1][0].countBullets() < this.nCN37) {
-                if (World.Rnd().nextFloat() < cvt(this.FM.getAltitude(), 3000F, 7000F, 0.0F, 0.1F)) {
+                if (World.Rnd().nextFloat() < Aircraft.cvt(this.FM.getAltitude(), 3000F, 7000F, 0.0F, 0.1F)) {
                     this.FM.EI.engines[0].setEngineStops(this);
                 }
-                if (World.Rnd().nextFloat() < cvt(this.FM.getAltitude(), 3000F, 7000F, 0.0F, 0.1F)) {
+                if (World.Rnd().nextFloat() < Aircraft.cvt(this.FM.getAltitude(), 3000F, 7000F, 0.0F, 0.1F)) {
                     this.FM.EI.engines[1].setEngineStops(this);
                 }
             }
@@ -28,7 +27,7 @@ public class MIG_9_I_300 extends MIG_9 {
     private int nCN37;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = MIG_9_I_300.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "MiG-9");
         Property.set(class1, "meshName", "3DO/Plane/MiG-9(F-2)(Multi1)/hier.him");
@@ -38,11 +37,9 @@ public class MIG_9_I_300 extends MIG_9 {
         Property.set(class1, "yearService", 1946F);
         Property.set(class1, "yearExpired", 1956F);
         Property.set(class1, "FlightModel", "FlightModels/MiG-9.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitMIG_9.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitMIG_9.class });
         Property.set(class1, "LOSElevation", 0.75635F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 1 });
-        weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_CANNON03" });
-        weaponsRegister(class1, "default", new String[] { "MGunVYak 80", "MGunVYak 80", "MGunN57ki 21" });
-        weaponsRegister(class1, "none", new String[] { null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_CANNON03" });
     }
 }

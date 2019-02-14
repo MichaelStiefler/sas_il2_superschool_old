@@ -14,15 +14,15 @@ public class BF_110G4NJ extends BF_110 implements TypeX4Carrier, TypeRadarLiSN2C
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            BF_110G4NJ.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            BF_110G4NJ.bChangedPit = true;
         }
     }
 
@@ -31,7 +31,7 @@ public class BF_110G4NJ extends BF_110 implements TypeX4Carrier, TypeRadarLiSN2C
         float f = -af[0];
         float f1 = af[1];
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 if (f1 < -19F) {
                     f1 = -19F;
                     flag = false;

@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class YAK_3VK107 extends YAK implements TypeBNZFighter {
@@ -28,7 +27,7 @@ public class YAK_3VK107 extends YAK implements TypeBNZFighter {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        YAK_3VK107.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public void moveSteering(float f) {
@@ -47,7 +46,7 @@ public class YAK_3VK107 extends YAK implements TypeBNZFighter {
     private float flapps;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = YAK_3VK107.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Yak");
         Property.set(class1, "meshName", "3DO/Plane/Yak-3_VK107(Multi1)/hier.him");
@@ -55,11 +54,9 @@ public class YAK_3VK107 extends YAK implements TypeBNZFighter {
         Property.set(class1, "yearService", 1945F);
         Property.set(class1, "yearExpired", 1952.8F);
         Property.set(class1, "FlightModel", "FlightModels/Yak-3VK-107.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitYAK_3VK107.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitYAK_3VK107.class });
         Property.set(class1, "LOSElevation", 0.6576F);
-        weaponTriggersRegister(class1, new int[] { 0, 1 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_CANNON01" });
-        weaponsRegister(class1, "default", new String[] { "MGunUBsi 200", "MGunShVAKki 120" });
-        weaponsRegister(class1, "none", new String[] { null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 1 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_CANNON01" });
     }
 }

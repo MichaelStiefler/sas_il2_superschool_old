@@ -2,7 +2,6 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class KI_46_OTSUHEI extends KI_46 implements TypeFighter, TypeJazzPlayer {
@@ -13,28 +12,28 @@ public class KI_46_OTSUHEI extends KI_46 implements TypeFighter, TypeJazzPlayer 
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
+        if (this.FM.isPlayers()) {
             this.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
+        if (this.FM.isPlayers()) {
             this.bChangedPit = true;
         }
     }
 
     public boolean hasCourseWeaponBullets() {
-        return ((((FlightModelMain) (super.FM)).CT.Weapons[0] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[0][0] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[0][1] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[0][0].countBullets() != 0)) || (((FlightModelMain) (super.FM)).CT.Weapons[0][1].countBullets() != 0);
+        return ((this.FM.CT.Weapons[0] != null) && (this.FM.CT.Weapons[0][0] != null) && (this.FM.CT.Weapons[0][1] != null) && (this.FM.CT.Weapons[0][0].countBullets() != 0)) || (this.FM.CT.Weapons[0][1].countBullets() != 0);
     }
 
     public boolean hasSlantedWeaponBullets() {
-        return (((FlightModelMain) (super.FM)).AS.astatePilotStates[1] < 100) && (((FlightModelMain) (super.FM)).CT.Weapons[1] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[1][0] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[1][0].countBullets() != 0);
+        return (this.FM.AS.astatePilotStates[1] < 100) && (this.FM.CT.Weapons[1] != null) && (this.FM.CT.Weapons[1][0] != null) && (this.FM.CT.Weapons[1][0].countBullets() != 0);
     }
 
     public Vector3d getAttackVector() {
-        return ATTACK_VECTOR;
+        return KI_46_OTSUHEI.ATTACK_VECTOR;
     }
 
     private static final Vector3d ATTACK_VECTOR = new Vector3d(150D, 0.0D, -400D);

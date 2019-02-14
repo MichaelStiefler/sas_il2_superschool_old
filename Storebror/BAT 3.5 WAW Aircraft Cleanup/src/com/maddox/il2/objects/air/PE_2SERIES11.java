@@ -85,7 +85,7 @@ public class PE_2SERIES11 extends PE_2 implements TypeBomber, TypeDiveBomber, Ty
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -104,7 +104,7 @@ public class PE_2SERIES11 extends PE_2 implements TypeBomber, TypeDiveBomber, Ty
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -30F) {
                     f = -30F;
                     flag = false;
@@ -130,12 +130,12 @@ public class PE_2SERIES11 extends PE_2 implements TypeBomber, TypeDiveBomber, Ty
 
     private void setRadist(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot3_D0", true);
                 this.hierMesh().chunkVisible("Pilot3a_D0", false);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot3a_D0", true);
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 break;
@@ -144,11 +144,11 @@ public class PE_2SERIES11 extends PE_2 implements TypeBomber, TypeDiveBomber, Ty
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.FM.turret[0].setHealth(f);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.FM.turret[1].setHealth(f);
                 break;
         }

@@ -19,7 +19,7 @@ public class Do_24N_1 extends Do_24X implements TypeBomber {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -85F) {
                     f = -85F;
                     flag = false;
@@ -38,7 +38,7 @@ public class Do_24N_1 extends Do_24X implements TypeBomber {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f1 < -0F) {
                     f1 = -0F;
                     flag = false;
@@ -49,7 +49,7 @@ public class Do_24N_1 extends Do_24X implements TypeBomber {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f1 < -70F) {
                     f1 = -70F;
                     flag = false;
@@ -60,7 +60,7 @@ public class Do_24N_1 extends Do_24X implements TypeBomber {
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f < -35F) {
                     f = -35F;
                     flag = false;
@@ -79,7 +79,7 @@ public class Do_24N_1 extends Do_24X implements TypeBomber {
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 if (f < -67F) {
                     f = -67F;
                     flag = false;
@@ -98,7 +98,7 @@ public class Do_24N_1 extends Do_24X implements TypeBomber {
                 }
                 break;
 
-            case 5: // '\005'
+            case 5:
                 if (f < -85F) {
                     f = -85F;
                     flag = false;
@@ -124,21 +124,21 @@ public class Do_24N_1 extends Do_24X implements TypeBomber {
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 2: // '\002'
-                super.FM.turret[0].setHealth(f);
+            case 2:
+                this.FM.turret[0].setHealth(f);
                 break;
 
-            case 3: // '\003'
-                super.FM.turret[1].setHealth(f);
-                super.FM.turret[2].setHealth(f);
+            case 3:
+                this.FM.turret[1].setHealth(f);
+                this.FM.turret[2].setHealth(f);
                 break;
 
-            case 4: // '\004'
-                super.FM.turret[3].setHealth(f);
+            case 4:
+                this.FM.turret[3].setHealth(f);
                 break;
 
-            case 5: // '\005'
-                super.FM.turret[4].setHealth(f);
+            case 5:
+                this.FM.turret[4].setHealth(f);
                 break;
         }
     }

@@ -18,14 +18,9 @@ public class KI_84_IB extends KI_84 {
         Property.set(class1, "yearService", 1943.5F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/Ki-84-Ia.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitKI_84_IB.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitKI_84_IB.class });
         Property.set(class1, "LOSElevation", 0.0985F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1, 3, 3, 9, 9, 9, 9 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev01", "_ExternalDev02", "_ExternalBomb01", "_ExternalBomb02" });
-        weaponsRegister(class1, "default", new String[] { "MGunHo5s 150", "MGunHo5s 150", "MGunHo5k 150", "MGunHo5k 150", null, null, null, null, null, null });
-        weaponsRegister(class1, "2x100", new String[] { "MGunHo5s 150", "MGunHo5s 150", "MGunHo5k 150", "MGunHo5k 150", "BombGun100kgJ 1", "BombGun100kgJ 1", "PylonKI84PLN2", "PylonKI84PLN2", null, null });
-        weaponsRegister(class1, "2x250", new String[] { "MGunHo5s 150", "MGunHo5s 150", "MGunHo5k 150", "MGunHo5k 150", "BombGun250kgJ 1", "BombGun250kgJ 1", "PylonKI84PLN2", "PylonKI84PLN2", null, null });
-        weaponsRegister(class1, "2tank200", new String[] { "MGunHo5s 150", "MGunHo5s 150", "MGunHo5k 150", "MGunHo5k 150", null, null, "PylonKI84PLN2", "PylonKI84PLN2", "FuelTankGun_TankKi84", "FuelTankGun_TankKi84" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1, 3, 3, 9, 9, 9, 9 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev01", "_ExternalDev02", "_ExternalBomb01", "_ExternalBomb02" });
     }
 }

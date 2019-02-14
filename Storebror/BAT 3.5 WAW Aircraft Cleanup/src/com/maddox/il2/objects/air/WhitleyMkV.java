@@ -26,11 +26,11 @@ public class WhitleyMkV extends WhitleyBombers implements TypeBomber {
         float f = -af[0];
         float f1 = af[1];
         switch (i) {
-            case 2: // '\002'
+            case 2:
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -70F) {
                     f = -70F;
                     flag = false;
@@ -49,7 +49,7 @@ public class WhitleyMkV extends WhitleyBombers implements TypeBomber {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -40F) {
                     f = -40F;
                     flag = false;
@@ -68,7 +68,7 @@ public class WhitleyMkV extends WhitleyBombers implements TypeBomber {
                 }
                 // fall through
 
-            case 3: // '\003'
+            case 3:
                 if (f < -55F) {
                     f = -55F;
                     flag = false;
@@ -87,7 +87,7 @@ public class WhitleyMkV extends WhitleyBombers implements TypeBomber {
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 if (f < -30F) {
                     f = -30F;
                     flag = false;
@@ -113,19 +113,19 @@ public class WhitleyMkV extends WhitleyBombers implements TypeBomber {
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 2: // '\002'
+            case 2:
                 this.FM.turret[0].bIsOperable = false;
                 break;
 
-            case 4: // '\004'
+            case 4:
                 this.FM.turret[2].bIsOperable = false;
                 break;
 
-            case 5: // '\005'
+            case 5:
                 this.FM.turret[3].bIsOperable = false;
                 break;
 
-            case 6: // '\006'
+            case 6:
                 this.FM.turret[1].bIsOperable = false;
                 break;
         }
@@ -156,7 +156,7 @@ public class WhitleyMkV extends WhitleyBombers implements TypeBomber {
         if (this.fSightCurForwardAngle > 85F) {
             this.fSightCurForwardAngle = 85F;
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = WhitleyMkV.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         if (this.bSightAutomation) {
             this.typeBomberToggleAutomation();
@@ -168,7 +168,7 @@ public class WhitleyMkV extends WhitleyBombers implements TypeBomber {
         if (this.fSightCurForwardAngle < 0.0F) {
             this.fSightCurForwardAngle = 0.0F;
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = WhitleyMkV.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         if (this.bSightAutomation) {
             this.typeBomberToggleAutomation();
@@ -205,7 +205,7 @@ public class WhitleyMkV extends WhitleyBombers implements TypeBomber {
             this.fSightCurAltitude = 50000F;
         }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int) this.fSightCurAltitude) });
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = WhitleyMkV.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
     }
 
     public void typeBomberAdjAltitudeMinus() {
@@ -214,7 +214,7 @@ public class WhitleyMkV extends WhitleyBombers implements TypeBomber {
             this.fSightCurAltitude = 1000F;
         }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int) this.fSightCurAltitude) });
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = WhitleyMkV.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
     }
 
     public void typeBomberAdjSpeedReset() {
@@ -247,13 +247,13 @@ public class WhitleyMkV extends WhitleyBombers implements TypeBomber {
         if (this.fSightCurReadyness < 1.0F) {
             this.fSightCurReadyness += 0.0333333F * f;
         } else if (this.bSightAutomation) {
-            this.fSightCurDistance -= toMetersPerSecond(this.fSightCurSpeed) * f;
+            this.fSightCurDistance -= WhitleyMkV.toMetersPerSecond(this.fSightCurSpeed) * f;
             if (this.fSightCurDistance < 0.0F) {
                 this.fSightCurDistance = 0.0F;
                 this.typeBomberToggleAutomation();
             }
-            this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / toMeters(this.fSightCurAltitude)));
-            if (this.fSightCurDistance < (toMetersPerSecond(this.fSightCurSpeed) * Math.sqrt(toMeters(this.fSightCurAltitude) * 0.2038736F))) {
+            this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / WhitleyMkV.toMeters(this.fSightCurAltitude)));
+            if (this.fSightCurDistance < (WhitleyMkV.toMetersPerSecond(this.fSightCurSpeed) * Math.sqrt(WhitleyMkV.toMeters(this.fSightCurAltitude) * 0.2038736F))) {
                 this.bSightBombDump = true;
             }
             if (this.bSightBombDump) {

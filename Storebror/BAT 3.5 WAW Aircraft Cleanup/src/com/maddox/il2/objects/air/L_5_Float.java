@@ -84,10 +84,10 @@ public class L_5_Float extends Scheme1 implements TypeSailPlane, TypeScout, Type
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 34: // '"'
+            case 34:
                 return super.cutFM(35, j, actor);
 
-            case 37: // '%'
+            case 37:
                 return super.cutFM(38, j, actor);
         }
         return super.cutFM(i, j, actor);
@@ -95,7 +95,7 @@ public class L_5_Float extends Scheme1 implements TypeSailPlane, TypeScout, Type
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);

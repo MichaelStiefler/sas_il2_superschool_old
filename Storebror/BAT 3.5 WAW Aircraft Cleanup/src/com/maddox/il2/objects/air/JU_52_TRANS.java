@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -17,19 +16,19 @@ public class JU_52_TRANS extends JU_52 implements TypeBomber {
     public void msgShot(Shot shot) {
         this.setShot(shot);
         if (shot.chunkName.startsWith("WingLIn") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 0, 1);
+            this.FM.AS.hitTank(shot.initiator, 0, 1);
         }
         if (shot.chunkName.startsWith("WingRIn") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 1, 1);
+            this.FM.AS.hitTank(shot.initiator, 1, 1);
         }
         if (shot.chunkName.startsWith("Engine1") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 1);
+            this.FM.AS.hitEngine(shot.initiator, 0, 1);
         }
         if (shot.chunkName.startsWith("Engine2") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 1, 1);
+            this.FM.AS.hitEngine(shot.initiator, 1, 1);
         }
-        if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[0] > 2) && (((FlightModelMain) (super.FM)).AS.astateEngineStates[1] > 2)) {
-            super.FM.setCapableOfBMP(false, shot.initiator);
+        if ((this.FM.AS.astateEngineStates[0] > 2) && (this.FM.AS.astateEngineStates[1] > 2)) {
+            this.FM.setCapableOfBMP(false, shot.initiator);
         }
         super.msgShot(shot);
     }

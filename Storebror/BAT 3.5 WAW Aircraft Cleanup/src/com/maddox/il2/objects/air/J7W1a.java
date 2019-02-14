@@ -42,7 +42,7 @@ public class J7W1a extends J7Wx {
             this.hierMesh().chunkVisible("Prop1_D1", false);
             this.hierMesh().chunkVisible("PropRot1_D0", false);
             this.hierMesh().chunkVisible("Fan", false);
-            super.FM.EI.engines[0].setEngineDies(this);
+            this.FM.EI.engines[0].setEngineDies(this);
         }
     }
 

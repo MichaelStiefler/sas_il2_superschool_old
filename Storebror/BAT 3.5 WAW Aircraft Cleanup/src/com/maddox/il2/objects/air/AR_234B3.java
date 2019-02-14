@@ -2,12 +2,10 @@ package com.maddox.il2.objects.air;
 
 import java.io.IOException;
 
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Eff3DActor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.BombStarthilfe109500;
 import com.maddox.rts.NetMsgGuaranted;
@@ -64,22 +62,22 @@ public class AR_234B3 extends AR_234 implements TypeX4Carrier {
 
     protected void moveFan(float f) {
         int i = 0;
-        for (int j = 0; j < ((FlightModelMain) (super.FM)).EI.getNum(); j++) {
-            if (super.oldProp[j] < 2) {
-                i = Math.abs((int) (((FlightModelMain) (super.FM)).EI.engines[j].getw() * 0.06F));
+        for (int j = 0; j < this.FM.EI.getNum(); j++) {
+            if (this.oldProp[j] < 2) {
+                i = Math.abs((int) (this.FM.EI.engines[j].getw() * 0.06F));
                 if (i >= 1) {
                     i = 1;
                 }
-                if ((i != super.oldProp[j]) && this.hierMesh().isChunkVisible(Aircraft.Props[j][super.oldProp[j]])) {
-                    this.hierMesh().chunkVisible(Aircraft.Props[j][super.oldProp[j]], false);
-                    super.oldProp[j] = i;
+                if ((i != this.oldProp[j]) && this.hierMesh().isChunkVisible(Aircraft.Props[j][this.oldProp[j]])) {
+                    this.hierMesh().chunkVisible(Aircraft.Props[j][this.oldProp[j]], false);
+                    this.oldProp[j] = i;
                     this.hierMesh().chunkVisible(Aircraft.Props[j][i], true);
                 }
             }
             if (i == 0) {
-                super.propPos[j] = (super.propPos[j] + (57.3F * ((FlightModelMain) (super.FM)).EI.engines[j].getw() * f)) % 360F;
+                this.propPos[j] = (this.propPos[j] + (57.3F * this.FM.EI.engines[j].getw() * f)) % 360F;
             } else {
-                float f1 = 57.3F * ((FlightModelMain) (super.FM)).EI.engines[j].getw();
+                float f1 = 57.3F * this.FM.EI.engines[j].getw();
                 f1 %= 2880F;
                 f1 /= 2880F;
                 if (f1 <= 0.5F) {
@@ -88,23 +86,23 @@ public class AR_234B3 extends AR_234 implements TypeX4Carrier {
                     f1 = (f1 * 2.0F) - 2.0F;
                 }
                 f1 *= 1200F;
-                super.propPos[j] = (super.propPos[j] + (f1 * f)) % 360F;
+                this.propPos[j] = (this.propPos[j] + (f1 * f)) % 360F;
             }
-            this.hierMesh().chunkSetAngles(Aircraft.Props[j][0], 0.0F, -super.propPos[j], 0.0F);
+            this.hierMesh().chunkSetAngles(Aircraft.Props[j][0], 0.0F, -this.propPos[j], 0.0F);
         }
 
     }
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
-            case 34: // '"'
-            case 35: // '#'
-            case 36: // '$'
-            case 37: // '%'
-            case 38: // '&'
+            case 33:
+            case 34:
+            case 35:
+            case 36:
+            case 37:
+            case 38:
                 this.doCutBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
                 break;
         }
@@ -113,34 +111,34 @@ public class AR_234B3 extends AR_234 implements TypeX4Carrier {
 
     public void update(float f) {
         super.update(f);
-        if (!(super.FM instanceof Pilot)) {
+        if (!(this.FM instanceof Pilot)) {
             return;
         }
         long curTime = Time.current();
-        if ((((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6) || (((FlightModelMain) (super.FM)).EI.engines[1].getStage() == 6)) {
-            this.dynamoOrient -= (curTime - this.lastTime) / (this.radarShortRange ? RADAR_ROTATION_SHORT / 360F : RADAR_ROTATION_NORMAL / 360F);
+        if ((this.FM.EI.engines[0].getStage() == 6) || (this.FM.EI.engines[1].getStage() == 6)) {
+            this.dynamoOrient -= (curTime - this.lastTime) / (this.radarShortRange ? AR_234B3.RADAR_ROTATION_SHORT / 360F : AR_234B3.RADAR_ROTATION_NORMAL / 360F);
             this.dynamoOrient %= 360F;
             this.hierMesh().chunkSetAngles("RADAR_D0", this.dynamoOrient, 0.0F, 0.0F);
         }
         this.lastTime = curTime;
         if (this.bHasBoosters) {
-            if ((super.FM.getAltitude() > 300F) && (this.boosterFireOutTime == -1L) && (((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z != 0.0D) && (World.Rnd().nextFloat() < 0.05F)) {
+            if ((this.FM.getAltitude() > 300F) && (this.boosterFireOutTime == -1L) && (this.FM.Loc.z != 0.0D) && (World.Rnd().nextFloat() < 0.05F)) {
                 this.doCutBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
             }
-            if (this.bHasBoosters && (this.boosterFireOutTime == -1L) && ((FlightModelMain) (super.FM)).Gears.onGround() && (((FlightModelMain) (super.FM)).EI.getPowerOutput() > 0.8F) && (((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6) && (((FlightModelMain) (super.FM)).EI.engines[1].getStage() == 6) && (super.FM.getSpeedKMH() > 20F)) {
+            if (this.bHasBoosters && (this.boosterFireOutTime == -1L) && this.FM.Gears.onGround() && (this.FM.EI.getPowerOutput() > 0.8F) && (this.FM.EI.engines[0].getStage() == 6) && (this.FM.EI.engines[1].getStage() == 6) && (this.FM.getSpeedKMH() > 20F)) {
                 this.boosterFireOutTime = Time.current() + 30000L;
                 this.doFireBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOn();
+                this.FM.AS.setGliderBoostOn();
             }
             if (this.bHasBoosters && (this.boosterFireOutTime > 0L)) {
                 if (Time.current() < this.boosterFireOutTime) {
-                    ((FlightModelMain) (super.FM)).producedAF.x += 20000D;
+                    this.FM.producedAF.x += 20000D;
                 }
                 if (Time.current() > (this.boosterFireOutTime + 10000L)) {
                     this.doCutBoosters();
-                    ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                    this.FM.AS.setGliderBoostOff();
                     this.bHasBoosters = false;
                 }
             }

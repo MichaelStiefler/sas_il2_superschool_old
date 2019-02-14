@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import java.io.IOException;
 
 import com.maddox.JGP.Vector3d;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -12,27 +11,27 @@ public class MB_174 extends MB_170 implements TypeBomber, TypeStormovik {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = true;
-        ((FlightModelMain) (super.FM)).CT.dvCockpitDoor = 0.75F;
+        this.FM.CT.bHasCockpitDoorControl = true;
+        this.FM.CT.dvCockpitDoor = 0.75F;
     }
 
     public MB_174() {
     }
 
     public boolean hasCourseWeaponBullets() {
-        return (((FlightModelMain) (super.FM)).CT.Weapons[0] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[0][0] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[0][0].countBullets() != 0);
+        return (this.FM.CT.Weapons[0] != null) && (this.FM.CT.Weapons[0][0] != null) && (this.FM.CT.Weapons[0][0].countBullets() != 0);
     }
 
     public boolean hasSlantedWeaponBullets() {
-        if (super.hasJazzMusic) {
-            return ((((FlightModelMain) (super.FM)).CT.Weapons[1] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[1][0] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[1][1] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[1][0].countBullets() != 0)) || (((FlightModelMain) (super.FM)).CT.Weapons[1][1].countBullets() != 0);
+        if (this.hasJazzMusic) {
+            return ((this.FM.CT.Weapons[1] != null) && (this.FM.CT.Weapons[1][0] != null) && (this.FM.CT.Weapons[1][1] != null) && (this.FM.CT.Weapons[1][0].countBullets() != 0)) || (this.FM.CT.Weapons[1][1].countBullets() != 0);
         } else {
             return false;
         }
     }
 
     public Vector3d getAttackVector() {
-        return ATTACK_VECTOR;
+        return MB_174.ATTACK_VECTOR;
     }
 
     public void typeBomberAdjAltitudeMinus() {

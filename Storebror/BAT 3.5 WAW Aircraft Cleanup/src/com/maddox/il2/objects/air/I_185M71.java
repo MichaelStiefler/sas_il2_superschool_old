@@ -33,11 +33,9 @@ public class I_185M71 extends I_185 {
         Property.set(class1, "yearService", 1942F);
         Property.set(class1, "yearExpired", 1945F);
         Property.set(class1, "FlightModel", "FlightModels/I-185M-71.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitI_185M71.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitI_185M71.class });
         Property.set(class1, "LOSElevation", 0.89135F);
-        weaponTriggersRegister(class1, new int[] { 1, 1, 1 });
-        weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_CANNON03" });
-        weaponsRegister(class1, "default", new String[] { "MGunShVAKsi 220", "MGunShVAKsi 220", "MGunShVAKsi 220" });
-        weaponsRegister(class1, "none", new String[] { null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 1, 1, 1 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_CANNON03" });
     }
 }

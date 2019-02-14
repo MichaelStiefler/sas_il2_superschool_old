@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class R_XIIID extends R_XIIIxyz {
@@ -10,11 +9,11 @@ public class R_XIIID extends R_XIIIxyz {
 
     public void moveWheelSink() {
         this.resetYPRmodifier();
-        float f = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 4F, 0.0F, 4F);
+        float f = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 4F, 0.0F, 4F);
         this.hierMesh().chunkSetAngles("GearL2_D0", 0.0F, 55F * f, 0.0F);
         Aircraft.xyz[2] = -0.63F * f;
         this.hierMesh().chunkSetLocate("GearL5_D0", Aircraft.xyz, Aircraft.ypr);
-        f = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 4F, 0.0F, 4F);
+        f = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 4F, 0.0F, 4F);
         this.hierMesh().chunkSetAngles("GearR2_D0", 0.0F, -55F * f, 0.0F);
         Aircraft.xyz[2] = -0.63F * f;
         this.hierMesh().chunkSetLocate("GearR5_D0", Aircraft.xyz, Aircraft.ypr);

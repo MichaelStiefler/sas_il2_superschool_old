@@ -15,21 +15,21 @@ public class F1M extends Pete_v1 implements TypeSailPlane, TypeScout, TypeDiveBo
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            F1M.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            F1M.bChangedPit = true;
         }
     }
 
     public void doMurderPilot(int i) {
         super.doMurderPilot(i);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            F1M.bChangedPit = true;
         }
     }
 
@@ -38,7 +38,7 @@ public class F1M extends Pete_v1 implements TypeSailPlane, TypeScout, TypeDiveBo
         float f = -af[0];
         float f1 = af[1];
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 if (f < -30F) {
                     f = -30F;
                     flag = false;

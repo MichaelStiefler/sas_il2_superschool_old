@@ -16,7 +16,7 @@ public class PE_3SERIES1 extends PE_2 implements TypeFighter {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -35,7 +35,7 @@ public class PE_3SERIES1 extends PE_2 implements TypeFighter {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -2F) {
                     f = -2F;
                     flag = false;
@@ -61,7 +61,7 @@ public class PE_3SERIES1 extends PE_2 implements TypeFighter {
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.FM.turret[0].setHealth(f);
                 this.FM.turret[1].setHealth(f);
                 break;
@@ -83,11 +83,7 @@ public class PE_3SERIES1 extends PE_2 implements TypeFighter {
         Property.set(class1, "FlightModel", "FlightModels/Pe-3series1.fmd");
         Property.set(class1, "cockpitClass", new Class[] { CockpitPE3_1.class, CockpitPE3_1_TGunner.class });
         Property.set(class1, "LOSElevation", 0.76315F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 10, 11, 3, 3 });
-        weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_MGUN01", "_MGUN02", "_BombSpawn05", "_BombSpawn06" });
-        weaponsRegister(class1, "default", new String[] { "MGunUBk 250", "MGunUBk 350", "MGunShKASt 750", "MGunShKASki 750", null, null });
-        weaponsRegister(class1, "2fab50", new String[] { "MGunUBk 250", "MGunUBk 350", "MGunShKASt 750", "MGunShKASki 750", "BombGunFAB50", "BombGunFAB50" });
-        weaponsRegister(class1, "2fab100", new String[] { "MGunUBk 250", "MGunUBk 350", "MGunShKASt 750", "MGunShKASki 750", "BombGunFAB100", "BombGunFAB100" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 10, 11, 3, 3 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_MGUN01", "_MGUN02", "_BombSpawn05", "_BombSpawn06" });
     }
 }

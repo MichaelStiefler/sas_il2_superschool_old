@@ -9,7 +9,6 @@ import com.maddox.il2.fm.Pitot;
 import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -61,14 +60,14 @@ public class JU_88A4 extends JU_88NEW implements TypeBomber, TypeDiveBomber, Typ
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            JU_88A4.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            JU_88A4.bChangedPit = true;
         }
     }
 
@@ -101,7 +100,7 @@ public class JU_88A4 extends JU_88NEW implements TypeBomber, TypeDiveBomber, Typ
         if ((this == World.getPlayerAircraft()) && (this.FM instanceof RealFlightModel)) {
             if (((RealFlightModel) this.FM).isRealMode()) {
                 switch (this.diveMechStage) {
-                    case 0: // '\0'
+                    case 0:
                         if (this.bNDives && (this.FM.CT.AirBrakeControl == 1.0F) && (this.FM.Loc.z > this.fDiveRecoveryAlt)) {
                             this.diveMechStage++;
                             this.bNDives = false;
@@ -110,7 +109,7 @@ public class JU_88A4 extends JU_88NEW implements TypeBomber, TypeDiveBomber, Typ
                         }
                         break;
 
-                    case 1: // '\001'
+                    case 1:
                         this.FM.CT.setTrimElevatorControl(-0.25F);
                         this.FM.CT.trimElevator = -0.25F;
                         if ((this.FM.CT.AirBrakeControl == 0.0F) || this.FM.CT.saveWeaponControl[3] || ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].countBullets() == 0))) {
@@ -123,7 +122,7 @@ public class JU_88A4 extends JU_88NEW implements TypeBomber, TypeDiveBomber, Typ
                         }
                         break;
 
-                    case 2: // '\002'
+                    case 2:
                         this.FM.CT.setTrimElevatorControl(0.45F);
                         this.FM.CT.trimElevator = 0.45F;
                         if ((this.FM.CT.AirBrakeControl == 0.0F) || (this.FM.Or.getTangage() > 0.0F)) {
@@ -131,7 +130,7 @@ public class JU_88A4 extends JU_88NEW implements TypeBomber, TypeDiveBomber, Typ
                         }
                         break;
 
-                    case 3: // '\003'
+                    case 3:
                         this.FM.CT.setTrimElevatorControl(0.0F);
                         this.FM.CT.trimElevator = 0.0F;
                         this.diveMechStage = 0;
@@ -164,16 +163,16 @@ public class JU_88A4 extends JU_88NEW implements TypeBomber, TypeDiveBomber, Typ
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.FM.turret[0].setHealth(f);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.FM.turret[1].setHealth(f);
                 this.FM.turret[2].setHealth(f);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.FM.turret[3].setHealth(f);
                 break;
         }
@@ -181,26 +180,26 @@ public class JU_88A4 extends JU_88NEW implements TypeBomber, TypeDiveBomber, Typ
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 this.hierMesh().chunkVisible("HMask3_D0", false);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.hierMesh().chunkVisible("Pilot4_D0", false);
                 this.hierMesh().chunkVisible("Pilot4_D1", true);
                 this.hierMesh().chunkVisible("HMask4_D0", false);
@@ -328,7 +327,7 @@ public class JU_88A4 extends JU_88NEW implements TypeBomber, TypeDiveBomber, Typ
                 this.typeBomberToggleAutomation();
             }
             this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / this.fSightCurAltitude));
-            if (this.fSightCurDistance < (this.fSightCurSpeed / 3.6F * Math.sqrt(this.fSightCurAltitude * 0.2038736F))) {
+            if (this.fSightCurDistance < ((this.fSightCurSpeed / 3.6F) * Math.sqrt(this.fSightCurAltitude * 0.2038736F))) {
                 this.bSightBombDump = true;
             }
             if (this.bSightBombDump) {
@@ -453,7 +452,7 @@ public class JU_88A4 extends JU_88NEW implements TypeBomber, TypeDiveBomber, Typ
     public float          fDiveAngle;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = JU_88A4.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Ju-88");
         Property.set(class1, "meshName", "3DO/Plane/Ju-88A-4/hier.him");

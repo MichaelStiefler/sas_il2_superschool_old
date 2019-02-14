@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -29,7 +28,7 @@ public class SM79i extends SM79 implements TypeBomber, TypeTransport {
             default:
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -48,7 +47,7 @@ public class SM79i extends SM79 implements TypeBomber, TypeTransport {
                 }
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -40F) {
                     f = -40F;
                     flag = false;
@@ -67,7 +66,7 @@ public class SM79i extends SM79 implements TypeBomber, TypeTransport {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -40F) {
                     f = -40F;
                     flag = false;
@@ -86,7 +85,7 @@ public class SM79i extends SM79 implements TypeBomber, TypeTransport {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -60F) {
                     f = -60F;
                     flag = false;
@@ -227,7 +226,7 @@ public class SM79i extends SM79 implements TypeBomber, TypeTransport {
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = SM79i.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "SM.79");
         Property.set(class1, "meshName_it", "3do/plane/SM79-I(it)/hier.him");

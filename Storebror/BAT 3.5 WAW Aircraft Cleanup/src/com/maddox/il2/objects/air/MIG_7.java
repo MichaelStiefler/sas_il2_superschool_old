@@ -27,7 +27,7 @@ public class MIG_7 extends MIG_3 {
     }
 
     public static void moveGear(HierMesh hiermesh, float f, float f1, float f2, float af[]) {
-        myResetYPRmodifier();
+        MIG_7.myResetYPRmodifier();
         Aircraft.ypr[1] = Aircraft.cvt(f, 0.01F + af[0], 0.915F + af[0], 0.0F, 88F);
         if (f <= (af[0] + 0.07F)) {
             Aircraft.xyz[0] = Aircraft.cvt(f, 0.01F + af[0], 0.07F + af[0], 0.0F, 0.05F);
@@ -54,19 +54,19 @@ public class MIG_7 extends MIG_3 {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2, this.rndgear);
+        MIG_7.moveGear(this.hierMesh(), f, f1, f2, this.rndgear);
     }
 
     public static void moveGear(HierMesh hiermesh, float f, float f1, float f2) {
-        moveGear(hiermesh, f, f1, f2, rndgearnull);
+        MIG_7.moveGear(hiermesh, f, f1, f2, MIG_7.rndgearnull);
     }
 
     public static void moveGear(HierMesh hiermesh, float f) {
-        moveGear(hiermesh, f, f, f, rndgearnull);
+        MIG_7.moveGear(hiermesh, f, f, f, MIG_7.rndgearnull);
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f, f, f, this.rndgear);
+        MIG_7.moveGear(this.hierMesh(), f, f, f, this.rndgear);
     }
 
     public void moveCockpitDoor(float f) {

@@ -6,10 +6,8 @@ import com.maddox.il2.ai.Wing;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.objects.Wreckage;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class BF_109K4C3 extends BF_109 implements TypeBNZFighter {
@@ -27,20 +25,20 @@ public class BF_109K4C3 extends BF_109 implements TypeBNZFighter {
     }
 
     public void update(float f) {
-        if (super.FM.getSpeed() > 5F) {
-            this.hierMesh().chunkSetAngles("SlatL_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F), 0.0F);
-            this.hierMesh().chunkSetAngles("SlatR_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F), 0.0F);
+        if (this.FM.getSpeed() > 5F) {
+            this.hierMesh().chunkSetAngles("SlatL_D0", 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F), 0.0F);
+            this.hierMesh().chunkSetAngles("SlatR_D0", 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F), 0.0F);
         }
         this.hierMesh().chunkSetAngles("Flap01L_D0", 0.0F, -20F * this.kangle, 0.0F);
         this.hierMesh().chunkSetAngles("Flap01U_D0", 0.0F, 20F * this.kangle, 0.0F);
         this.hierMesh().chunkSetAngles("Flap02L_D0", 0.0F, -20F * this.kangle, 0.0F);
         this.hierMesh().chunkSetAngles("Flap02U_D0", 0.0F, 20F * this.kangle, 0.0F);
-        this.kangle = (0.95F * this.kangle) + (0.05F * ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator());
+        this.kangle = (0.95F * this.kangle) + (0.05F * this.FM.EI.engines[0].getControlRadiator());
         if (this.kangle > 1.0F) {
             this.kangle = 1.0F;
         }
         super.update(f);
-        if ((((FlightModelMain) (super.FM)).CT.getCockpitDoor() > 0.20000000000000001D) && this.bHasBlister && (super.FM.getSpeedKMH() > this.fMaxKMHSpeedForOpenCanopy) && (this.hierMesh().chunkFindCheck("Blister1_D0") != -1)) {
+        if ((this.FM.CT.getCockpitDoor() > 0.20000000000000001D) && this.bHasBlister && (this.FM.getSpeedKMH() > this.fMaxKMHSpeedForOpenCanopy) && (this.hierMesh().chunkFindCheck("Blister1_D0") != -1)) {
             try {
                 if (this == World.getPlayerAircraft()) {
                     ((CockpitBF_109G10) Main3D.cur3D().cockpitCur).removeCanopy();
@@ -51,22 +49,22 @@ public class BF_109K4C3 extends BF_109 implements TypeBNZFighter {
             Wreckage wreckage = new Wreckage(this, this.hierMesh().chunkFind("Blister1_D0"));
             wreckage.collide(true);
             Vector3d vector3d = new Vector3d();
-            vector3d.set(((FlightModelMain) (super.FM)).Vwld);
+            vector3d.set(this.FM.Vwld);
             wreckage.setSpeed(vector3d);
             this.bHasBlister = false;
-            ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = false;
-            super.FM.setGCenter(-0.5F);
+            this.FM.CT.bHasCockpitDoorControl = false;
+            this.FM.setGCenter(-0.5F);
         }
     }
 
     public static void moveGear(HierMesh hiermesh, float f) {
         float f1 = 0.8F;
-        float f2 = (-0.5F * (float) Math.cos(f / f1 * 3.1415926535897931D)) + 0.5F;
+        float f2 = (-0.5F * (float) Math.cos((f / f1) * Math.PI)) + 0.5F;
         if ((f <= f1) || (f == 1.0F)) {
             hiermesh.chunkSetAngles("GearL3_D0", 0.0F, -77.5F * f2, 0.0F);
             hiermesh.chunkSetAngles("GearL2_D0", -33.5F * f2, 0.0F, 0.0F);
         }
-        f2 = (-0.5F * (float) Math.cos((f - (1.0F - f1)) / f1 * 3.1415926535897931D)) + 0.5F;
+        f2 = (-0.5F * (float) Math.cos(((f - (1.0F - f1)) / f1) * Math.PI)) + 0.5F;
         if (f >= (1.0F - f1)) {
             hiermesh.chunkSetAngles("GearR3_D0", 0.0F, 77.5F * f2, 0.0F);
             hiermesh.chunkSetAngles("GearR2_D0", 33.5F * f2, 0.0F, 0.0F);
@@ -91,12 +89,12 @@ public class BF_109K4C3 extends BF_109 implements TypeBNZFighter {
 
     protected void moveGear(float f) {
         float f1 = 0.9F - (((Wing) this.getOwner()).aircIndex(this) * 0.1F);
-        float f2 = (-0.5F * (float) Math.cos(f / f1 * 3.1415926535897931D)) + 0.5F;
+        float f2 = (-0.5F * (float) Math.cos((f / f1) * Math.PI)) + 0.5F;
         if ((f <= f1) || (f == 1.0F)) {
             this.hierMesh().chunkSetAngles("GearL3_D0", 0.0F, -77.5F * f2, 0.0F);
             this.hierMesh().chunkSetAngles("GearL2_D0", -33.5F * f2, 0.0F, 0.0F);
         }
-        f2 = (-0.5F * (float) Math.cos((f - (1.0F - f1)) / f1 * 3.1415926535897931D)) + 0.5F;
+        f2 = (-0.5F * (float) Math.cos(((f - (1.0F - f1)) / f1) * Math.PI)) + 0.5F;
         if (f >= (1.0F - f1)) {
             this.hierMesh().chunkSetAngles("GearR3_D0", 0.0F, 77.5F * f2, 0.0F);
             this.hierMesh().chunkSetAngles("GearR2_D0", 33.5F * f2, 0.0F, 0.0F);
@@ -114,7 +112,7 @@ public class BF_109K4C3 extends BF_109 implements TypeBNZFighter {
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGear() < 0.98F) {
+        if (this.FM.CT.getGear() < 0.98F) {
             return;
         } else {
             this.hierMesh().chunkSetAngles("GearC2_D0", 90F, -f, 0.0F);
@@ -148,7 +146,7 @@ public class BF_109K4C3 extends BF_109 implements TypeBNZFighter {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.startsWith("K6_")) {
+        if (this.thisWeaponsName.startsWith("K6_")) {
             this.hierMesh().chunkVisible("GunL_D0", true);
             this.hierMesh().chunkVisible("GunR_D0", true);
             return;
@@ -163,7 +161,7 @@ public class BF_109K4C3 extends BF_109 implements TypeBNZFighter {
     public boolean bHasBlister;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = BF_109K4C3.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Bf109");
         Property.set(class1, "meshName", "3DO/Plane/Bf-109K-4/hier.him");

@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import java.io.IOException;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.MsgExplosion;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.War;
@@ -123,9 +122,9 @@ public class MXY_7 extends Scheme2a implements MsgCollisionRequestListener, Type
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 3: // '\003'
-            case 19: // '\023'
-                ((FlightModelMain) (super.FM)).AS.setEngineDies(this, 0);
+            case 3:
+            case 19:
+                this.FM.AS.setEngineDies(this, 0);
                 return false;
         }
         return super.cutFM(i, j, actor);
@@ -138,25 +137,25 @@ public class MXY_7 extends Scheme2a implements MsgCollisionRequestListener, Type
     public void msgEndAction(Object obj, int i) {
         super.msgEndAction(obj, i);
         switch (i) {
-            case 2: // '\002'
+            case 2:
                 Actor actor = null;
                 if (Actor.isValid(this.queen_last)) {
                     actor = this.queen_last;
                 } else {
                     actor = Engine.cur.actorLand;
                 }
-                MsgExplosion.send(this, null, ((FlightModelMain) (super.FM)).Loc, actor, 0.0F, 600F, 0, 600F);
+                MsgExplosion.send(this, null, this.FM.Loc, actor, 0.0F, 600F, 0, 600F);
                 break;
         }
     }
 
     protected void doExplosion() {
         super.doExplosion();
-        if ((((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z - 10D) < World.land().HQ_Air(((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).x, ((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).y)) {
-            if (Engine.land().isWater(((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).x, ((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).y)) {
-                Explosions.BOMB250_Water(((FlightModelMain) (super.FM)).Loc, 1.0F, 1.0F);
+        if ((this.FM.Loc.z - 10D) < World.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y)) {
+            if (Engine.land().isWater(this.FM.Loc.x, this.FM.Loc.y)) {
+                Explosions.BOMB250_Water(this.FM.Loc, 1.0F, 1.0F);
             } else {
-                Explosions.BOMB250_Land(((FlightModelMain) (super.FM)).Loc, 1.0F, 1.0F, true, false);
+                Explosions.BOMB250_Land(this.FM.Loc, 1.0F, 1.0F, true, false);
             }
         }
     }
@@ -165,49 +164,49 @@ public class MXY_7 extends Scheme2a implements MsgCollisionRequestListener, Type
         if (this.bNeedSetup) {
             this.checkAsDrone();
         }
-        if (super.FM instanceof Maneuver) {
+        if (this.FM instanceof Maneuver) {
             if (this.typeDockableIsDocked()) {
-                if (!(super.FM instanceof RealFlightModel) || !((RealFlightModel) super.FM).isRealMode()) {
-                    ((Maneuver) super.FM).unblock();
-                    ((Maneuver) super.FM).set_maneuver(48);
-                    ((FlightModelMain) ((Maneuver) super.FM)).AP.way.setCur(((FlightModelMain) (((SndAircraft) ((Aircraft) this.queen_)).FM)).AP.way.Cur());
-                    ((Pilot) super.FM).setDumbTime(3000L);
+                if (!(this.FM instanceof RealFlightModel) || !((RealFlightModel) this.FM).isRealMode()) {
+                    ((Maneuver) this.FM).unblock();
+                    ((Maneuver) this.FM).set_maneuver(48);
+                    ((FlightModelMain) ((Maneuver) this.FM)).AP.way.setCur(((FlightModelMain) (((SndAircraft) ((Aircraft) this.queen_)).FM)).AP.way.Cur());
+                    ((Pilot) this.FM).setDumbTime(3000L);
                 }
-            } else if (!(super.FM instanceof RealFlightModel) || !((RealFlightModel) super.FM).isRealMode()) {
-                if (((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 0) {
-                    ((FlightModelMain) (super.FM)).EI.setEngineRunning();
+            } else if (!(this.FM instanceof RealFlightModel) || !((RealFlightModel) this.FM).isRealMode()) {
+                if (this.FM.EI.engines[0].getStage() == 0) {
+                    this.FM.EI.setEngineRunning();
                 }
                 if (this.dtime > 0L) {
-                    ((Maneuver) super.FM).setBusy(false);
-                    ((Maneuver) super.FM).Group.leaderGroup = null;
-                    ((Maneuver) super.FM).set_maneuver(22);
-                    ((Pilot) super.FM).setDumbTime(3000L);
+                    ((Maneuver) this.FM).setBusy(false);
+                    ((Maneuver) this.FM).Group.leaderGroup = null;
+                    ((Maneuver) this.FM).set_maneuver(22);
+                    ((Pilot) this.FM).setDumbTime(3000L);
                     if (Time.current() > (this.dtime + 3000L)) {
                         this.dtime = -1L;
-                        ((Maneuver) super.FM).clear_stack();
-                        ((Maneuver) super.FM).pop();
-                        ((Pilot) super.FM).setDumbTime(0L);
+                        ((Maneuver) this.FM).clear_stack();
+                        ((Maneuver) this.FM).pop();
+                        ((Pilot) this.FM).setDumbTime(0L);
                     }
                 }
             }
         }
         super.update(f);
-        if (((FlightModelMain) (super.FM)).AS.isMaster()) {
+        if (this.FM.AS.isMaster()) {
             for (int i = 0; i < 3; i++) {
-                if ((((FlightModelMain) (super.FM)).CT.PowerControl > 0.77F) && (((FlightModelMain) (super.FM)).EI.engines[i].getStage() == 0) && (((FlightModelMain) (super.FM)).M.fuel > 0.0F) && !this.typeDockableIsDocked()) {
-                    ((FlightModelMain) (super.FM)).EI.engines[i].setStage(this, 6);
+                if ((this.FM.CT.PowerControl > 0.77F) && (this.FM.EI.engines[i].getStage() == 0) && (this.FM.M.fuel > 0.0F) && !this.typeDockableIsDocked()) {
+                    this.FM.EI.engines[i].setStage(this, 6);
                 }
-                if (((((FlightModelMain) (super.FM)).CT.PowerControl < 0.77F) && (((FlightModelMain) (super.FM)).EI.engines[i].getStage() > 0)) || (((FlightModelMain) (super.FM)).M.fuel == 0.0F)) {
-                    ((FlightModelMain) (super.FM)).EI.engines[i].setEngineStops(this);
+                if (((this.FM.CT.PowerControl < 0.77F) && (this.FM.EI.engines[i].getStage() > 0)) || (this.FM.M.fuel == 0.0F)) {
+                    this.FM.EI.engines[i].setEngineStops(this);
                 }
             }
 
             if (Config.isUSE_RENDER()) {
                 for (int j = 0; j < 3; j++) {
-                    if ((((FlightModelMain) (super.FM)).EI.engines[j].getw() > 50F) && (((FlightModelMain) (super.FM)).EI.engines[j].getStage() == 6)) {
-                        ((FlightModelMain) (super.FM)).AS.setSootState(this, j, 1);
+                    if ((this.FM.EI.engines[j].getw() > 50F) && (this.FM.EI.engines[j].getStage() == 6)) {
+                        this.FM.AS.setSootState(this, j, 1);
                     } else {
-                        ((FlightModelMain) (super.FM)).AS.setSootState(this, j, 0);
+                        this.FM.AS.setSootState(this, j, 0);
                     }
                 }
 
@@ -217,20 +216,20 @@ public class MXY_7 extends Scheme2a implements MsgCollisionRequestListener, Type
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (flag && (((FlightModelMain) (super.FM)).AP.way.curr().Action == 3) && this.typeDockableIsDocked() && (Math.abs(((FlightModelMain) (((SndAircraft) ((Aircraft) this.queen_)).FM)).Or.getKren()) < 3F)) {
-            if (super.FM.isPlayers()) {
-                if ((super.FM instanceof RealFlightModel) && !((RealFlightModel) super.FM).isRealMode()) {
+        if (flag && (this.FM.AP.way.curr().Action == 3) && this.typeDockableIsDocked() && (Math.abs(((FlightModelMain) (((SndAircraft) ((Aircraft) this.queen_)).FM)).Or.getKren()) < 3F)) {
+            if (this.FM.isPlayers()) {
+                if ((this.FM instanceof RealFlightModel) && !((RealFlightModel) this.FM).isRealMode()) {
                     this.typeDockableAttemptDetach();
-                    ((Maneuver) super.FM).set_maneuver(22);
-                    ((Maneuver) super.FM).setCheckStrike(false);
-                    ((FlightModelMain) (super.FM)).Vwld.z -= 5D;
+                    ((Maneuver) this.FM).set_maneuver(22);
+                    ((Maneuver) this.FM).setCheckStrike(false);
+                    this.FM.Vwld.z -= 5D;
                     this.dtime = Time.current();
                 }
             } else {
                 this.typeDockableAttemptDetach();
-                ((Maneuver) super.FM).set_maneuver(22);
-                ((Maneuver) super.FM).setCheckStrike(false);
-                ((FlightModelMain) (super.FM)).Vwld.z -= 5D;
+                ((Maneuver) this.FM).set_maneuver(22);
+                ((Maneuver) this.FM).setCheckStrike(false);
+                this.FM.Vwld.z -= 5D;
                 this.dtime = Time.current();
             }
         }
@@ -242,10 +241,10 @@ public class MXY_7 extends Scheme2a implements MsgCollisionRequestListener, Type
 
     private void checkAsDrone() {
         if (this.target_ == null) {
-            if (((FlightModelMain) (super.FM)).AP.way.curr().getTarget() == null) {
-                ((FlightModelMain) (super.FM)).AP.way.next();
+            if (this.FM.AP.way.curr().getTarget() == null) {
+                this.FM.AP.way.next();
             }
-            this.target_ = ((FlightModelMain) (super.FM)).AP.way.curr().getTarget();
+            this.target_ = this.FM.AP.way.curr().getTarget();
             if (Actor.isValid(this.target_) && (this.target_ instanceof Wing)) {
                 Wing wing = (Wing) this.target_;
                 int i = this.aircIndex();
@@ -284,7 +283,7 @@ public class MXY_7 extends Scheme2a implements MsgCollisionRequestListener, Type
     }
 
     public void typeDockableAttemptAttach() {
-        if (!((FlightModelMain) (super.FM)).AS.isMaster()) {
+        if (!this.FM.AS.isMaster()) {
             return;
         }
         if (!this.typeDockableIsDocked()) {
@@ -296,7 +295,7 @@ public class MXY_7 extends Scheme2a implements MsgCollisionRequestListener, Type
     }
 
     public void typeDockableAttemptDetach() {
-        if (((FlightModelMain) (super.FM)).AS.isMaster() && this.typeDockableIsDocked() && Actor.isValid(this.queen_)) {
+        if (this.FM.AS.isMaster() && this.typeDockableIsDocked() && Actor.isValid(this.queen_)) {
             ((TypeDockable) this.queen_).typeDockableRequestDetach(this);
         }
     }
@@ -368,14 +367,14 @@ public class MXY_7 extends Scheme2a implements MsgCollisionRequestListener, Type
 
     public void doSetSootState(int i, int j) {
         switch (j) {
-            case 0: // '\0'
+            case 0:
                 Eff3DActor.setIntesity(this.flame[i], 0.0F);
                 Eff3DActor.setIntesity(this.dust[i], 0.0F);
                 Eff3DActor.setIntesity(this.trail[i], 0.0F);
                 Eff3DActor.setIntesity(this.sprite[i], 0.0F);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 Eff3DActor.setIntesity(this.flame[i], 1.0F);
                 Eff3DActor.setIntesity(this.dust[i], 0.5F);
                 Eff3DActor.setIntesity(this.trail[i], 1.0F);

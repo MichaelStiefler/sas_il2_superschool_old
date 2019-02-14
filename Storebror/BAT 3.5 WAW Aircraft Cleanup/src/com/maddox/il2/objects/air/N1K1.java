@@ -6,7 +6,6 @@ import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.fm.Pitot;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
@@ -24,7 +23,7 @@ public class N1K1 extends Scheme1 implements TypeSeaPlane, TypeFighter {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
@@ -35,29 +34,29 @@ public class N1K1 extends Scheme1 implements TypeSeaPlane, TypeFighter {
 
     public void update(float f) {
         super.update(f);
-        if ((((FlightModelMain) (super.FM)).CT.FlapsControl <= 0.32F) && (((FlightModelMain) (super.FM)).CT.FlapsControl >= 0.05F)) {
+        if ((this.FM.CT.FlapsControl <= 0.32F) && (this.FM.CT.FlapsControl >= 0.05F)) {
             if ((this == World.getPlayerAircraft()) && !this.autoEng) {
                 HUD.log("FlapsAuto");
                 this.autoEng = true;
-                this.curFlaps = ((FlightModelMain) (super.FM)).CT.getFlap();
+                this.curFlaps = this.FM.CT.getFlap();
             }
-            float f1 = Pitot.Indicator((float) ((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z, super.FM.getSpeed());
-            this.mBar = (f1 * f1) / (super.FM.getOverload() * 10F);
-            if ((this.mBar < 315F) && (super.FM.getOverload() > 0.0F) && (f1 < 128F)) {
+            float f1 = Pitot.Indicator((float) this.FM.Loc.z, this.FM.getSpeed());
+            this.mBar = (f1 * f1) / (this.FM.getOverload() * 10F);
+            if ((this.mBar < 315F) && (this.FM.getOverload() > 0.0F) && (f1 < 128F)) {
                 this.desiredPosition = (315F - this.mBar) / 140F;
                 if (this.desiredPosition > 1.0F) {
                     this.desiredPosition = 1.0F;
                 }
                 if (this.curFlaps < this.desiredPosition) {
-                    this.curFlaps = this.flapsMovement(f, this.desiredPosition, this.curFlaps, 999F, Aircraft.cvt(super.FM.getSpeedKMH(), 150F, 280F, 0.15F, 0.08F));
+                    this.curFlaps = this.flapsMovement(f, this.desiredPosition, this.curFlaps, 999F, Aircraft.cvt(this.FM.getSpeedKMH(), 150F, 280F, 0.15F, 0.08F));
                 } else {
-                    this.curFlaps = this.flapsMovement(f, this.desiredPosition, this.curFlaps, 999F, Aircraft.cvt(super.FM.getSpeedKMH(), 150F, 280F, 0.15F, 0.25F));
+                    this.curFlaps = this.flapsMovement(f, this.desiredPosition, this.curFlaps, 999F, Aircraft.cvt(this.FM.getSpeedKMH(), 150F, 280F, 0.15F, 0.25F));
                 }
-                ((FlightModelMain) (super.FM)).CT.forceFlaps(this.curFlaps);
+                this.FM.CT.forceFlaps(this.curFlaps);
             } else {
                 this.desiredPosition = 0.0F;
-                this.curFlaps = this.flapsMovement(f, this.desiredPosition, this.curFlaps, 999F, Aircraft.cvt(super.FM.getSpeedKMH(), 150F, 280F, 0.15F, 0.25F));
-                ((FlightModelMain) (super.FM)).CT.forceFlaps(this.curFlaps);
+                this.curFlaps = this.flapsMovement(f, this.desiredPosition, this.curFlaps, 999F, Aircraft.cvt(this.FM.getSpeedKMH(), 150F, 280F, 0.15F, 0.25F));
+                this.FM.CT.forceFlaps(this.curFlaps);
             }
             if (Math.abs(this.desiredPosition - this.curFlaps) >= 0.02F) {
                 this.sfxFlaps(true);
@@ -67,16 +66,16 @@ public class N1K1 extends Scheme1 implements TypeSeaPlane, TypeFighter {
         } else {
             this.autoEng = false;
         }
-        if (((FlightModelMain) (super.FM)).CT.BrakeControl > 0.4F) {
-            ((FlightModelMain) (super.FM)).CT.BrakeControl = 0.4F;
+        if (this.FM.CT.BrakeControl > 0.4F) {
+            this.FM.CT.BrakeControl = 0.4F;
         }
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 2; j++) {
-                if (((FlightModelMain) (super.FM)).Gears.clpGearEff[i][j] != null) {
-                    tmpp.set(((Actor) (((FlightModelMain) (super.FM)).Gears.clpGearEff[i][j])).pos.getAbsPoint());
-                    tmpp.z = 0.01D;
-                    ((Actor) (((FlightModelMain) (super.FM)).Gears.clpGearEff[i][j])).pos.setAbs(tmpp);
-                    ((Actor) (((FlightModelMain) (super.FM)).Gears.clpGearEff[i][j])).pos.reset();
+                if (this.FM.Gears.clpGearEff[i][j] != null) {
+                    N1K1.tmpp.set(((Actor) (this.FM.Gears.clpGearEff[i][j])).pos.getAbsPoint());
+                    N1K1.tmpp.z = 0.01D;
+                    ((Actor) (this.FM.Gears.clpGearEff[i][j])).pos.setAbs(N1K1.tmpp);
+                    ((Actor) (this.FM.Gears.clpGearEff[i][j])).pos.reset();
                 }
             }
 
@@ -103,7 +102,7 @@ public class N1K1 extends Scheme1 implements TypeSeaPlane, TypeFighter {
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (super.FM.getAltitude() < 3000F) {
+        if (this.FM.getAltitude() < 3000F) {
             this.hierMesh().chunkVisible("HMask1_D0", false);
         } else {
             this.hierMesh().chunkVisible("HMask1_D0", this.hierMesh().isChunkVisible("Pilot1_D0"));
@@ -166,7 +165,7 @@ public class N1K1 extends Scheme1 implements TypeSeaPlane, TypeFighter {
         if (s.startsWith("xx")) {
             if (s.startsWith("xxarmor")) {
                 if (s.endsWith("p1")) {
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 2);
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 2);
                     if (this.getEnergyPastArmor(World.Rnd().nextFloat(32.5F, 65F) / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot) < 0.0F) {
                         this.doRicochetBack(shot);
                     }
@@ -181,7 +180,7 @@ public class N1K1 extends Scheme1 implements TypeSeaPlane, TypeFighter {
                 int i = s.charAt(8) - 49;
                 if (this.getEnergyPastArmor(6.29F, shot) > 0.0F) {
                     this.debuggunnery("Armament: Cannon (" + i + ") Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(1, i);
+                    this.FM.AS.setJamBullets(1, i);
                     this.getEnergyPastArmor(World.Rnd().nextFloat(0.5F, 23.325F), shot);
                 }
                 return;
@@ -193,45 +192,45 @@ public class N1K1 extends Scheme1 implements TypeSeaPlane, TypeFighter {
                     default:
                         break;
 
-                    case 1: // '\001'
-                    case 2: // '\002'
-                    case 3: // '\003'
-                    case 4: // '\004'
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
                         if ((this.getEnergyPastArmor(0.99F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.175F)) {
                             this.debuggunnery("Controls: Ailerones Controls: Out..");
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                            this.FM.AS.setControlsDamage(shot.initiator, 0);
                         }
                         break;
 
-                    case 5: // '\005'
-                    case 6: // '\006'
+                    case 5:
+                    case 6:
                         if ((this.getEnergyPastArmor(0.22F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.275F)) {
                             this.debuggunnery("Controls: Rudder Controls: Disabled / Strings Broken..");
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
+                            this.FM.AS.setControlsDamage(shot.initiator, 2);
                         }
                         break;
 
-                    case 7: // '\007'
+                    case 7:
                         if ((this.getEnergyPastArmor(4.2F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.175F)) {
                             this.debuggunnery("Controls: Elevator Controls: Disabled..");
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
+                            this.FM.AS.setControlsDamage(shot.initiator, 1);
                         }
                         break;
 
-                    case 8: // '\b'
+                    case 8:
                         if (this.getEnergyPastArmor(3.2F, shot) > 0.0F) {
                             Aircraft.debugprintln(this, "*** Control Column: Hit, Controls Destroyed..");
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                            this.FM.AS.setControlsDamage(shot.initiator, 2);
+                            this.FM.AS.setControlsDamage(shot.initiator, 1);
+                            this.FM.AS.setControlsDamage(shot.initiator, 0);
                         }
                         break;
 
-                    case 9: // '\t'
+                    case 9:
                         if (this.getEnergyPastArmor(0.1F, shot) > 0.0F) {
-                            ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 8);
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 1);
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 6);
+                            this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 8);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 1);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 6);
                             Aircraft.debugprintln(this, "*** Throttle Quadrant: Hit, Engine Controls Disabled..");
                         }
                         break;
@@ -242,27 +241,27 @@ public class N1K1 extends Scheme1 implements TypeSeaPlane, TypeFighter {
                 if (s.endsWith("case")) {
                     if (this.getEnergyPastArmor(0.2F, shot) > 0.0F) {
                         if (World.Rnd().nextFloat() < (shot.power / 140000F)) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, 0);
+                            this.FM.AS.setEngineStuck(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Engine Stucks..");
                         }
                         if (World.Rnd().nextFloat() < (shot.power / 85000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
+                            this.FM.AS.hitEngine(shot.initiator, 0, 2);
                             Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Engine Damaged..");
                         }
                     } else if (World.Rnd().nextFloat() < 0.01F) {
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, 1);
+                        this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, 1);
                     } else {
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setReadyness(shot.initiator, ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() - 0.002F);
-                        Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() + "..");
+                        this.FM.EI.engines[0].setReadyness(shot.initiator, this.FM.EI.engines[0].getReadyness() - 0.002F);
+                        Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + "..");
                     }
                     this.getEnergyPastArmor(12F, shot);
                 }
                 if (s.endsWith("cyls")) {
-                    if ((this.getEnergyPastArmor(5.85F, shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[0].getCylindersRatio() * 0.75F))) {
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 19000F)));
-                        Aircraft.debugprintln(this, "*** Engine Cylinders Hit, " + ((FlightModelMain) (super.FM)).EI.engines[0].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[0].getCylinders() + " Left..");
+                    if ((this.getEnergyPastArmor(5.85F, shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[0].getCylindersRatio() * 0.75F))) {
+                        this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 19000F)));
+                        Aircraft.debugprintln(this, "*** Engine Cylinders Hit, " + this.FM.EI.engines[0].getCylindersOperable() + "/" + this.FM.EI.engines[0].getCylinders() + " Left..");
                         if (World.Rnd().nextFloat() < (shot.power / 48000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
+                            this.FM.AS.hitEngine(shot.initiator, 0, 2);
                             Aircraft.debugprintln(this, "*** Engine Cylinders Hit - Engine Fires..");
                         }
                     }
@@ -271,22 +270,22 @@ public class N1K1 extends Scheme1 implements TypeSeaPlane, TypeFighter {
                 if (s.endsWith("gear")) {
                     if (this.getEnergyPastArmor(0.1F, shot) > 0.0F) {
                         if (World.Rnd().nextFloat(0.0F, 26700F) < shot.power) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 4);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 4);
                         }
                         if (World.Rnd().nextFloat(0.0F, 26700F) < shot.power) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 0);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 0);
                         }
                         if (World.Rnd().nextFloat(0.0F, 26700F) < shot.power) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 6);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 6);
                         }
                         if (World.Rnd().nextFloat(0.0F, 26700F) < shot.power) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 1);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 1);
                         }
                     }
                     this.getEnergyPastArmor(2.0F, shot);
                 }
                 if (s.endsWith("prop") && (this.getEnergyPastArmor(0.2F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
-                    ((FlightModelMain) (super.FM)).EI.engines[0].setKillPropAngleDevice(shot.initiator);
+                    this.FM.EI.engines[0].setKillPropAngleDevice(shot.initiator);
                 }
                 return;
             }
@@ -318,14 +317,14 @@ public class N1K1 extends Scheme1 implements TypeSeaPlane, TypeFighter {
                 int k = s.charAt(7) - 49;
                 if (this.getEnergyPastArmor(0.75F, shot) > 0.0F) {
                     this.debuggunnery("Armament: Machine Gun (" + k + ") Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(0, k);
+                    this.FM.AS.setJamBullets(0, k);
                     this.getEnergyPastArmor(World.Rnd().nextFloat(0.5F, 23.325F), shot);
                 }
                 return;
             }
             if (s.startsWith("xxoil")) {
                 if ((this.getEnergyPastArmor(0.25F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.125F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, 0);
+                    this.FM.AS.hitOil(shot.initiator, 0);
                     this.getEnergyPastArmor(0.22F, shot);
                     this.debuggunnery("Engine Module: Oil Tank Pierced..");
                 }
@@ -369,13 +368,13 @@ public class N1K1 extends Scheme1 implements TypeSeaPlane, TypeFighter {
                     return;
                 }
                 if ((this.getEnergyPastArmor(0.8F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.45F)) {
-                    if (((FlightModelMain) (super.FM)).AS.astateTankStates[l] == 0) {
+                    if (this.FM.AS.astateTankStates[l] == 0) {
                         this.debuggunnery("Fuel Tank (" + l + "): Pierced..");
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, l, 1);
-                        ((FlightModelMain) (super.FM)).AS.doSetTankState(shot.initiator, l, 1);
+                        this.FM.AS.hitTank(shot.initiator, l, 1);
+                        this.FM.AS.doSetTankState(shot.initiator, l, 1);
                     }
                     if ((World.Rnd().nextFloat() < 0.008F) || ((shot.powerType == 3) && (World.Rnd().nextFloat() < 0.6F))) {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, l, 1);
+                        this.FM.AS.hitTank(shot.initiator, l, 1);
                         this.debuggunnery("Fuel Tank (" + l + "): Hit..");
                     }
                 }
@@ -447,11 +446,11 @@ public class N1K1 extends Scheme1 implements TypeSeaPlane, TypeFighter {
         } else if (s.startsWith("xgear")) {
             if (World.Rnd().nextFloat() < 0.05F) {
                 this.debuggunnery("Hydro System: Disabled..");
-                ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 0);
+                this.FM.AS.setInternalDamage(shot.initiator, 0);
             }
             if ((World.Rnd().nextFloat() < 0.1F) && (this.getEnergyPastArmor(World.Rnd().nextFloat(1.2F, 3.435F), shot) > 0.0F)) {
                 this.debuggunnery("Undercarriage: Stuck..");
-                ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 3);
+                this.FM.AS.setInternalDamage(shot.initiator, 3);
             }
         } else if (s.startsWith("xpilot") || s.startsWith("xhead")) {
             byte byte0 = 0;
@@ -471,7 +470,7 @@ public class N1K1 extends Scheme1 implements TypeSeaPlane, TypeFighter {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (((FlightModelMain) (super.FM)).CT.Weapons[3] != null) {
+        if (this.FM.CT.Weapons[3] != null) {
             this.hierMesh().chunkVisible("RackL_D0", true);
             this.hierMesh().chunkVisible("RackR_D0", true);
         }
