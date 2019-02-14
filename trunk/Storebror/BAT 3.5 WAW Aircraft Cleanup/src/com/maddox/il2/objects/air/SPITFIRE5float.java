@@ -38,7 +38,7 @@ public class SPITFIRE5float extends Scheme2 implements TypeSailPlane {
 
     public void update(float f) {
         if (this != World.getPlayerAircraft()) {
-            if (((FlightModelMain) (super.FM)).Gears.onGround()) {
+            if (this.FM.Gears.onGround()) {
                 ((FlightModelMain) (this.FM)).AS.setCockpitDoor(this, 1);
             } else {
                 ((FlightModelMain) (this.FM)).AS.setCockpitDoor(this, 0);

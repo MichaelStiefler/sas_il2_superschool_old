@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class B_17D extends B_17 implements TypeBomber {
@@ -15,29 +14,29 @@ public class B_17D extends B_17 implements TypeBomber {
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 2: // '\002'
-                super.FM.turret[0].setHealth(f);
-                super.FM.turret[1].setHealth(f);
-                super.FM.turret[2].setHealth(f);
+            case 2:
+                this.FM.turret[0].setHealth(f);
+                this.FM.turret[1].setHealth(f);
+                this.FM.turret[2].setHealth(f);
                 break;
 
-            case 6: // '\006'
-                super.FM.turret[3].setHealth(f);
+            case 6:
+                this.FM.turret[3].setHealth(f);
                 break;
 
-            case 7: // '\007'
-                super.FM.turret[4].setHealth(f);
+            case 7:
+                this.FM.turret[4].setHealth(f);
                 break;
 
-            case 8: // '\b'
-                super.FM.turret[5].setHealth(f);
+            case 8:
+                this.FM.turret[5].setHealth(f);
                 break;
         }
     }
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).AS.wantBeaconsNet(true);
+        this.FM.AS.wantBeaconsNet(true);
     }
 
     public boolean turretAngles(int i, float af[]) {
@@ -48,7 +47,7 @@ public class B_17D extends B_17 implements TypeBomber {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -11F) {
                     f = -11F;
                     flag = false;
@@ -67,7 +66,7 @@ public class B_17D extends B_17 implements TypeBomber {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -26F) {
                     f = -26F;
                     flag = false;
@@ -86,7 +85,7 @@ public class B_17D extends B_17 implements TypeBomber {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -11F) {
                     f = -11F;
                     flag = false;
@@ -105,7 +104,7 @@ public class B_17D extends B_17 implements TypeBomber {
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f < -12F) {
                     f = -12F;
                     flag = false;
@@ -124,7 +123,7 @@ public class B_17D extends B_17 implements TypeBomber {
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 if (f < -41F) {
                     f = -41F;
                     flag = false;
@@ -143,7 +142,7 @@ public class B_17D extends B_17 implements TypeBomber {
                 }
                 break;
 
-            case 5: // '\005'
+            case 5:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;

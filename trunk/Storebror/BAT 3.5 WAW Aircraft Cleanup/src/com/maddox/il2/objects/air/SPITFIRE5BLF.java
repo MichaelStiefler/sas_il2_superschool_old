@@ -18,11 +18,9 @@ public class SPITFIRE5BLF extends SPITFIRE5 {
         Property.set(class1, "yearService", 1942F);
         Property.set(class1, "yearExpired", 1946.5F);
         Property.set(class1, "FlightModel", "FlightModels/Spitfire-LF-Vb-M45M-18.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitSpit5B.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitSpit5B.class });
         Property.set(class1, "LOSElevation", 0.5926F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 1, 1 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_CANNON01", "_CANNON02" });
-        weaponsRegister(class1, "default", new String[] { "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunHispanoMkIki 60", "MGunHispanoMkIki 60" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 1, 1 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_CANNON01", "_CANNON02" });
     }
 }

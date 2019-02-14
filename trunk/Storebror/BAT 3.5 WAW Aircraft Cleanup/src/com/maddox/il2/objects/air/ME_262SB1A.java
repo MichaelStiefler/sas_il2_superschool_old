@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import java.security.SecureRandom;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Tuple3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.World;
@@ -12,7 +11,6 @@ import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.Orient;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.BombStarthilfe109500;
 import com.maddox.rts.Property;
@@ -55,13 +53,13 @@ public class ME_262SB1A extends ME_262 implements TypeStormovik, TypeX4Carrier, 
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.equalsIgnoreCase("default") || super.thisWeaponsName.equalsIgnoreCase("24r4m")) {
+        if (this.thisWeaponsName.equalsIgnoreCase("default") || this.thisWeaponsName.equalsIgnoreCase("24r4m")) {
             this.hierMesh().chunkVisible("PylonL_D0", false);
             this.hierMesh().chunkVisible("PylonR_D0", false);
-        } else if (super.thisWeaponsName.toLowerCase().startsWith("1x")) {
+        } else if (this.thisWeaponsName.toLowerCase().startsWith("1x")) {
             this.hierMesh().chunkVisible("PylonR_D0", false);
         }
-        if ((super.thisWeaponsName.toLowerCase().indexOf("wfrgr") < 0) && (super.thisWeaponsName.toLowerCase().indexOf("r4m") < 0)) {
+        if ((this.thisWeaponsName.toLowerCase().indexOf("wfrgr") < 0) && (this.thisWeaponsName.toLowerCase().indexOf("r4m") < 0)) {
             this.hierMesh().hideSubTrees("Antenna_L_D0");
             this.hierMesh().hideSubTrees("Antenna_R_D0");
         }
@@ -69,14 +67,14 @@ public class ME_262SB1A extends ME_262 implements TypeStormovik, TypeX4Carrier, 
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
-            case 34: // '"'
-            case 35: // '#'
-            case 36: // '$'
-            case 37: // '%'
-            case 38: // '&'
+            case 33:
+            case 34:
+            case 35:
+            case 36:
+            case 37:
+            case 38:
                 this.doCutBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
                 break;
         }
@@ -85,27 +83,27 @@ public class ME_262SB1A extends ME_262 implements TypeStormovik, TypeX4Carrier, 
 
     public void update(float f) {
         super.update(f);
-        if (!(super.FM instanceof Pilot)) {
+        if (!(this.FM instanceof Pilot)) {
             return;
         }
         if (this.bHasBoosters) {
-            if (((super.FM.getAltitude() - World.land().HQ_Air(((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).x, ((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).y)) > 300D) && (this.boosterFireOutTime == -1L) && (((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z != 0.0D) && (World.Rnd().nextFloat() < 0.05F)) {
+            if (((this.FM.getAltitude() - World.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y)) > 300D) && (this.boosterFireOutTime == -1L) && (this.FM.Loc.z != 0.0D) && (World.Rnd().nextFloat() < 0.05F)) {
                 this.doCutBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
             }
-            if (this.bHasBoosters && (this.boosterFireOutTime == -1L) && ((FlightModelMain) (super.FM)).Gears.onGround() && (((FlightModelMain) (super.FM)).EI.getPowerOutput() > 0.8F) && (((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6) && (((FlightModelMain) (super.FM)).EI.engines[1].getStage() == 6) && (super.FM.getSpeedKMH() > 20F)) {
+            if (this.bHasBoosters && (this.boosterFireOutTime == -1L) && this.FM.Gears.onGround() && (this.FM.EI.getPowerOutput() > 0.8F) && (this.FM.EI.engines[0].getStage() == 6) && (this.FM.EI.engines[1].getStage() == 6) && (this.FM.getSpeedKMH() > 20F)) {
                 this.boosterFireOutTime = Time.current() + 30000L;
                 this.doFireBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOn();
+                this.FM.AS.setGliderBoostOn();
             }
             if (this.bHasBoosters && (this.boosterFireOutTime > 0L)) {
                 if (Time.current() < this.boosterFireOutTime) {
-                    ((FlightModelMain) (super.FM)).producedAF.x += 15000D;
+                    this.FM.producedAF.x += 15000D;
                 }
                 if (Time.current() > (this.boosterFireOutTime + 10000L)) {
                     this.doCutBoosters();
-                    ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                    this.FM.AS.setGliderBoostOff();
                     this.bHasBoosters = false;
                 }
             }
@@ -126,51 +124,51 @@ public class ME_262SB1A extends ME_262 implements TypeStormovik, TypeX4Carrier, 
     }
 
     public static void moveGear(HierMesh hiermesh, float leftGearPos, float rightGearPos, float frontWheelPos, boolean bDown, float rnd[]) {
-        myResetYPRmodifier();
-        Aircraft.xyz[2] = smoothCvt(frontWheelPos, 0.01F + rnd[2], 0.11F + rnd[2], 0.0F, 0.1F);
-        Aircraft.ypr[1] = smoothCvt(frontWheelPos, 0.01F + rnd[2], 0.11F + rnd[2], 0.0F, -90F);
+        ME_262SB1A.myResetYPRmodifier();
+        Aircraft.xyz[2] = ME_262SB1A.smoothCvt(frontWheelPos, 0.01F + rnd[2], 0.11F + rnd[2], 0.0F, 0.1F);
+        Aircraft.ypr[1] = ME_262SB1A.smoothCvt(frontWheelPos, 0.01F + rnd[2], 0.11F + rnd[2], 0.0F, -90F);
         hiermesh.chunkSetLocate("GearC5_D0", Aircraft.xyz, Aircraft.ypr);
-        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, smoothCvt(frontWheelPos, 0.11F + rnd[2], 0.84F + rnd[2], 0.0F, 103F), 0.0F);
-        hiermesh.chunkSetAngles("GearC21_D0", 0.0F, smoothCvt(frontWheelPos, 0.15F + rnd[2], 0.35F + rnd[2], 0.0F, -90F), 0.0F);
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, ME_262SB1A.smoothCvt(frontWheelPos, 0.11F + rnd[2], 0.84F + rnd[2], 0.0F, 103F), 0.0F);
+        hiermesh.chunkSetAngles("GearC21_D0", 0.0F, ME_262SB1A.smoothCvt(frontWheelPos, 0.15F + rnd[2], 0.35F + rnd[2], 0.0F, -90F), 0.0F);
         if (frontWheelPos < 0.2F) {
-            hiermesh.chunkSetAngles("GearC6_D0", 0.0F, smoothCvt(frontWheelPos, 0.01F + rnd[2], 0.11F + rnd[2], 0.0F, -90F), 0.0F);
+            hiermesh.chunkSetAngles("GearC6_D0", 0.0F, ME_262SB1A.smoothCvt(frontWheelPos, 0.01F + rnd[2], 0.11F + rnd[2], 0.0F, -90F), 0.0F);
         } else {
-            hiermesh.chunkSetAngles("GearC6_D0", 0.0F, smoothCvt(frontWheelPos, 0.51F + rnd[2], 0.65F + rnd[2], -90F, 0.0F), 0.0F);
+            hiermesh.chunkSetAngles("GearC6_D0", 0.0F, ME_262SB1A.smoothCvt(frontWheelPos, 0.51F + rnd[2], 0.65F + rnd[2], -90F, 0.0F), 0.0F);
         }
-        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, smoothCvt(leftGearPos, 0.15F + rnd[0], 0.74F + rnd[0], 0.0F, 73F), 0.0F);
-        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, smoothCvt(rightGearPos, 0.25F + rnd[1], 0.84F + rnd[1], 0.0F, 73F), 0.0F);
-        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, smoothCvt(leftGearPos, 0.15F + rnd[0], 0.74F + rnd[0], 0.0F, 82F), 0.0F);
-        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, smoothCvt(rightGearPos, 0.25F + rnd[1], 0.84F + rnd[1], 0.0F, 82F), 0.0F);
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, ME_262SB1A.smoothCvt(leftGearPos, 0.15F + rnd[0], 0.74F + rnd[0], 0.0F, 73F), 0.0F);
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, ME_262SB1A.smoothCvt(rightGearPos, 0.25F + rnd[1], 0.84F + rnd[1], 0.0F, 73F), 0.0F);
+        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, ME_262SB1A.smoothCvt(leftGearPos, 0.15F + rnd[0], 0.74F + rnd[0], 0.0F, 82F), 0.0F);
+        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, ME_262SB1A.smoothCvt(rightGearPos, 0.25F + rnd[1], 0.84F + rnd[1], 0.0F, 82F), 0.0F);
         if (leftGearPos < 0.2F) {
-            hiermesh.chunkSetAngles("GearL6_D0", 0.0F, smoothCvt(leftGearPos, 0.05F + rnd[0], 0.15F + rnd[0], 0.0F, -90F), 0.0F);
+            hiermesh.chunkSetAngles("GearL6_D0", 0.0F, ME_262SB1A.smoothCvt(leftGearPos, 0.05F + rnd[0], 0.15F + rnd[0], 0.0F, -90F), 0.0F);
         } else {
-            hiermesh.chunkSetAngles("GearL6_D0", 0.0F, smoothCvt(leftGearPos, 0.45F + rnd[0], 0.55F + rnd[0], -90F, 0.0F), 0.0F);
+            hiermesh.chunkSetAngles("GearL6_D0", 0.0F, ME_262SB1A.smoothCvt(leftGearPos, 0.45F + rnd[0], 0.55F + rnd[0], -90F, 0.0F), 0.0F);
         }
         if (rightGearPos < 0.3F) {
-            hiermesh.chunkSetAngles("GearR6_D0", 0.0F, smoothCvt(rightGearPos, 0.15F + rnd[1], 0.25F + rnd[1], 0.0F, -90F), 0.0F);
+            hiermesh.chunkSetAngles("GearR6_D0", 0.0F, ME_262SB1A.smoothCvt(rightGearPos, 0.15F + rnd[1], 0.25F + rnd[1], 0.0F, -90F), 0.0F);
         } else {
-            hiermesh.chunkSetAngles("GearR6_D0", 0.0F, smoothCvt(rightGearPos, 0.55F + rnd[1], 0.65F + rnd[1], -90F, 0.0F), 0.0F);
+            hiermesh.chunkSetAngles("GearR6_D0", 0.0F, ME_262SB1A.smoothCvt(rightGearPos, 0.55F + rnd[1], 0.65F + rnd[1], -90F, 0.0F), 0.0F);
         }
     }
 
     public static void moveGear(HierMesh hiermesh, float leftGearPos, float rightGearPos, float frontWheelPos) {
-        moveGear(hiermesh, leftGearPos, rightGearPos, frontWheelPos, true, rndgearnull);
+        ME_262SB1A.moveGear(hiermesh, leftGearPos, rightGearPos, frontWheelPos, true, ME_262SB1A.rndgearnull);
     }
 
     protected void moveGear(float leftGearPos, float rightGearPos, float frontWheelPos) {
-        moveGear(this.hierMesh(), leftGearPos, rightGearPos, frontWheelPos, ((FlightModelMain) (super.FM)).CT.GearControl > 0.5F, this.rndgear);
+        ME_262SB1A.moveGear(this.hierMesh(), leftGearPos, rightGearPos, frontWheelPos, this.FM.CT.GearControl > 0.5F, this.rndgear);
     }
 
     public static void moveGear(HierMesh hiermesh, float gearPos, boolean bDown) {
-        moveGear(hiermesh, gearPos, gearPos, gearPos, bDown, rndgearnull);
+        ME_262SB1A.moveGear(hiermesh, gearPos, gearPos, gearPos, bDown, ME_262SB1A.rndgearnull);
     }
 
     public static void moveGear(HierMesh hiermesh, float gearPos) {
-        moveGear(hiermesh, gearPos, gearPos, gearPos, true, rndgearnull);
+        ME_262SB1A.moveGear(hiermesh, gearPos, gearPos, gearPos, true, ME_262SB1A.rndgearnull);
     }
 
     protected void moveGear(float gearPos) {
-        moveGear(this.hierMesh(), gearPos, gearPos, gearPos, ((FlightModelMain) (super.FM)).CT.GearControl > 0.5F, this.rndgear);
+        ME_262SB1A.moveGear(this.hierMesh(), gearPos, gearPos, gearPos, this.FM.CT.GearControl > 0.5F, this.rndgear);
     }
 
     static void myResetYPRmodifier() {
@@ -179,19 +177,19 @@ public class ME_262SB1A extends ME_262 implements TypeStormovik, TypeX4Carrier, 
 
     static float smoothCvt(float inputValue, float inMin, float inMax, float outMin, float outMax) {
         inputValue = Math.min(Math.max(inputValue, inMin), inMax);
-        return outMin + ((outMax - outMin) * ((-0.5F * (float) Math.cos(((inputValue - inMin) / (inMax - inMin)) * 3.1415926535897931D)) + 0.5F));
+        return outMin + ((outMax - outMin) * ((-0.5F * (float) Math.cos(((inputValue - inMin) / (inMax - inMin)) * Math.PI)) + 0.5F));
     }
 
     public void moveWheelSink() {
         this.resetYPRmodifier();
-        float f = ((FlightModelMain) (super.FM)).Gears.gWheelSinking[2];
+        float f = this.FM.Gears.gWheelSinking[2];
         Aircraft.xyz[1] = Aircraft.cvt(f, 0.0F, 0.19F, 0.0F, 0.19F);
         this.hierMesh().chunkSetLocate("GearC22_D0", Aircraft.xyz, Aircraft.ypr);
     }
 
     protected void moveRudder(float f) {
         this.hierMesh().chunkSetAngles("Rudder1_D0", 0.0F, -30F * f, 0.0F);
-        if (((FlightModelMain) (super.FM)).CT.getGear() > 0.75F) {
+        if (this.FM.CT.getGear() > 0.75F) {
             this.hierMesh().chunkSetAngles("GearC21_D0", 0.0F, -90F + (40F * f), 0.0F);
         }
     }

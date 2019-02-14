@@ -136,30 +136,30 @@ public class FI_103RIV extends Scheme1 implements TypeDockable, MsgCollisionRequ
                     default:
                         break;
 
-                    case 1: // '\001'
-                    case 4: // '\004'
+                    case 1:
+                    case 4:
                         if (this.getEnergyPastArmor(4.5F, shot) > 0.0F) {
                             this.FM.AS.setControlsDamage(shot.initiator, 0);
                             this.debuggunnery("Ailerons Controls Out..");
                         }
                         break;
 
-                    case 2: // '\002'
-                    case 3: // '\003'
+                    case 2:
+                    case 3:
                         if ((this.getEnergyPastArmor(1.5F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
                             this.FM.AS.setControlsDamage(shot.initiator, 0);
                             this.debuggunnery("Ailerons Controls Out..");
                         }
                         break;
 
-                    case 5: // '\005'
+                    case 5:
                         if ((this.getEnergyPastArmor(1.5F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.45F)) {
                             this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 1);
                             this.debuggunnery("*** Engine1 Throttle Controls Out..");
                         }
                         break;
 
-                    case 6: // '\006'
+                    case 6:
                         if (this.getEnergyPastArmor(4F, shot) <= 0.0F) {
                             break;
                         }
@@ -173,7 +173,7 @@ public class FI_103RIV extends Scheme1 implements TypeDockable, MsgCollisionRequ
                         }
                         break;
 
-                    case 7: // '\007'
+                    case 7:
                         if (this.getEnergyPastArmor(1.0F, shot) <= 0.0F) {
                             break;
                         }
@@ -305,7 +305,7 @@ public class FI_103RIV extends Scheme1 implements TypeDockable, MsgCollisionRequ
             default:
                 break;
 
-            case 19: // '\023'
+            case 19:
                 this.cut("StabL");
                 this.cut("StabR");
                 this.FM.cut(17, j, actor);
@@ -314,7 +314,7 @@ public class FI_103RIV extends Scheme1 implements TypeDockable, MsgCollisionRequ
                 this.cutFM(3, j, actor);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.FM.EI.engines[0].setEngineDies(actor);
                 if (this.soundfx != null) {
                     this.soundfx.cancel();
@@ -436,7 +436,7 @@ public class FI_103RIV extends Scheme1 implements TypeDockable, MsgCollisionRequ
     public void msgEndAction(Object obj, int i) {
         super.msgEndAction(obj, i);
         switch (i) {
-            case 2: // '\002'
+            case 2:
                 Actor actor;
                 if (Actor.isValid(this.queen_last)) {
                     actor = this.queen_last;
@@ -620,7 +620,7 @@ public class FI_103RIV extends Scheme1 implements TypeDockable, MsgCollisionRequ
         Property.set(class1, "yearService", 1944F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/BI-1.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitFI_103R.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitFI_103R.class });
         Aircraft.weaponTriggersRegister(class1, new int[] { 0 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_Clip00" });
     }

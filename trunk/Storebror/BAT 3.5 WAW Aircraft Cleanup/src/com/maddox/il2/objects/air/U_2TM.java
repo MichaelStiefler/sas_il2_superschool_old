@@ -67,10 +67,10 @@ public class U_2TM extends Scheme1 implements TypeScout, TypeTransport, TypeBomb
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 34: // '"'
+            case 34:
                 return super.cutFM(35, j, actor);
 
-            case 37: // '%'
+            case 37:
                 return super.cutFM(38, j, actor);
         }
         return super.cutFM(i, j, actor);
@@ -87,7 +87,7 @@ public class U_2TM extends Scheme1 implements TypeScout, TypeTransport, TypeBomb
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
@@ -96,7 +96,7 @@ public class U_2TM extends Scheme1 implements TypeScout, TypeTransport, TypeBomb
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Head2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);

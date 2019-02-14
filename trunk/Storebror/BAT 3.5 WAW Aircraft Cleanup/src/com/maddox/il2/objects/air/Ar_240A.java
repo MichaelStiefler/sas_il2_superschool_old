@@ -15,7 +15,7 @@ public class Ar_240A extends Ar_240xyz implements TypeFighter, TypeBNZFighter, T
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -75F) {
                     f = -75F;
                     flag = false;
@@ -34,7 +34,7 @@ public class Ar_240A extends Ar_240xyz implements TypeFighter, TypeBNZFighter, T
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -75F) {
                     f = -75F;
                     flag = false;
@@ -60,7 +60,7 @@ public class Ar_240A extends Ar_240xyz implements TypeFighter, TypeBNZFighter, T
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.FM.turret[0].bIsOperable = false;
                 this.FM.turret[1].bIsOperable = false;
                 break;

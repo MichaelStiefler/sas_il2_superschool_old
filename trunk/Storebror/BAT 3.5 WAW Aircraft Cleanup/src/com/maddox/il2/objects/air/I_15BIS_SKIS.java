@@ -45,10 +45,10 @@ public class I_15BIS_SKIS extends I_15xyz {
                 }
                 this.hierMesh().chunkSetAngles("SkiL1_D0", World.Rnd().nextFloat(-f2, f2), World.Rnd().nextFloat(-f2, f2) - this.skiAngleL, World.Rnd().nextFloat(f2, f2));
             } else {
-                if (this.skiAngleL > (f1 * -10F + 0.01D)) {
+                if (this.skiAngleL > ((f1 * -10F) + 0.01D)) {
                     this.skiAngleL = this.skiAngleL - this.spring;
                     flag = true;
-                } else if (this.skiAngleL < (f1 * -10F - 0.01D)) {
+                } else if (this.skiAngleL < ((f1 * -10F) - 0.01D)) {
                     this.skiAngleL = this.skiAngleL + this.spring;
                     flag = true;
                 }
@@ -66,10 +66,10 @@ public class I_15BIS_SKIS extends I_15xyz {
                     this.hierMesh().chunkSetAngles("SkiL1_D0", World.Rnd().nextFloat(-f2, f2), World.Rnd().nextFloat(-f2, f2) - this.skiAngleL, World.Rnd().nextFloat(f2, f2));
                 }
             } else {
-                if (this.skiAngleR > (f1 * -10F + 0.01D)) {
+                if (this.skiAngleR > ((f1 * -10F) + 0.01D)) {
                     this.skiAngleR = this.skiAngleR - this.spring;
                     flag = true;
-                } else if (this.skiAngleR < (f1 * -10F - 0.01D)) {
+                } else if (this.skiAngleR < ((f1 * -10F) - 0.01D)) {
                     this.skiAngleR = this.skiAngleR + this.spring;
                     flag = true;
                 }
@@ -241,7 +241,7 @@ public class I_15BIS_SKIS extends I_15xyz {
         Property.set(class1, "yearService", 1937F);
         Property.set(class1, "yearExpired", 1942F);
         Property.set(class1, "FlightModel", "FlightModels/I-15bis.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitI_15Bis.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitI_15Bis.class });
         Property.set(class1, "LOSElevation", 0.84305F);
         Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 9, 9, 9, 9, 9, 9, 9, 9 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06", "_ExternalRock07", "_ExternalRock08", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalDev07", "_ExternalDev08" });

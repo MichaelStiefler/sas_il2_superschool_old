@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import com.maddox.JGP.Point3d;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class RAPID extends Scheme1 implements TypeTransport {
@@ -16,7 +15,7 @@ public class RAPID extends Scheme1 implements TypeTransport {
 
     protected void moveFan(float f) {
         if (this.bDynamoOperational) {
-            this.pk = Math.abs((int) (((FlightModelMain) (super.FM)).Vwld.length() / 14D));
+            this.pk = Math.abs((int) (this.FM.Vwld.length() / 14D));
             if (this.pk >= 1) {
                 this.pk = 1;
             }
@@ -26,7 +25,7 @@ public class RAPID extends Scheme1 implements TypeTransport {
             this.hierMesh().chunkVisible("PropG_D0", !this.bDynamoRotary);
             this.hierMesh().chunkVisible("PropGRot_D0", this.bDynamoRotary);
         }
-        this.dynamoOrient = this.bDynamoRotary ? (this.dynamoOrient - 17.987F) % 360F : (float) (this.dynamoOrient - (((FlightModelMain) (super.FM)).Vwld.length() * 1.5444015264511108D)) % 360F;
+        this.dynamoOrient = this.bDynamoRotary ? (this.dynamoOrient - 17.987F) % 360F : (float) (this.dynamoOrient - (this.FM.Vwld.length() * 1.5444015264511108D)) % 360F;
         this.hierMesh().chunkSetAngles("PropG_D0", 0.0F, this.dynamoOrient, 0.0F);
         super.moveFan(f);
     }
@@ -54,7 +53,7 @@ public class RAPID extends Scheme1 implements TypeTransport {
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         for (int i = 1; i < 3; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -70,34 +69,34 @@ public class RAPID extends Scheme1 implements TypeTransport {
                 if (s.endsWith("gear")) {
                     if (this.getEnergyPastArmor(1.7F, shot) > 0.0F) {
                         if (World.Rnd().nextFloat(20000F, 140000F) < shot.power) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, i);
+                            this.FM.AS.setEngineStuck(shot.initiator, i);
                             this.debuggunnery("*** Engine" + i + " Crank Case Hit - Engine Stucks..");
                         }
                         if (World.Rnd().nextFloat(10000F, 50000F) < shot.power) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, i, 2);
+                            this.FM.AS.hitEngine(shot.initiator, i, 2);
                             this.debuggunnery("*** Engine" + i + " Crank Case Hit - Engine Damaged..");
                         }
                     } else if (World.Rnd().nextFloat() < 0.04F) {
-                        ((FlightModelMain) (super.FM)).EI.engines[i].setCyliderKnockOut(shot.initiator, 1);
+                        this.FM.EI.engines[i].setCyliderKnockOut(shot.initiator, 1);
                     } else {
-                        ((FlightModelMain) (super.FM)).EI.engines[i].setReadyness(shot.initiator, ((FlightModelMain) (super.FM)).EI.engines[i].getReadyness() - 0.02F);
-                        this.debuggunnery("*** Engine" + i + " Crank Case Hit - Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[i].getReadyness() + "..");
+                        this.FM.EI.engines[i].setReadyness(shot.initiator, this.FM.EI.engines[i].getReadyness() - 0.02F);
+                        this.debuggunnery("*** Engine" + i + " Crank Case Hit - Readyness Reduced to " + this.FM.EI.engines[i].getReadyness() + "..");
                     }
                     this.getEnergyPastArmor(12F, shot);
                 }
                 if (s.endsWith("case")) {
-                    if ((this.getEnergyPastArmor(0.85F, shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[i].getCylindersRatio() * 0.9878F))) {
-                        ((FlightModelMain) (super.FM)).EI.engines[i].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 19000F)));
-                        this.debuggunnery("*** Engine" + i + " Cylinders Hit, " + ((FlightModelMain) (super.FM)).EI.engines[i].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[i].getCylinders() + " Left..");
+                    if ((this.getEnergyPastArmor(0.85F, shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[i].getCylindersRatio() * 0.9878F))) {
+                        this.FM.EI.engines[i].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 19000F)));
+                        this.debuggunnery("*** Engine" + i + " Cylinders Hit, " + this.FM.EI.engines[i].getCylindersOperable() + "/" + this.FM.EI.engines[i].getCylinders() + " Left..");
                         if (World.Rnd().nextFloat() < (shot.power / 48000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
+                            this.FM.AS.hitEngine(shot.initiator, 0, 2);
                             this.debuggunnery("*** Engine Cylinders Hit - Engine Fires..");
                         }
                     }
                     this.getEnergyPastArmor(25F, shot);
                 }
                 if (s.endsWith("oil1") && (this.getEnergyPastArmor(4.21F, shot) > 0.0F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, i);
+                    this.FM.AS.hitOil(shot.initiator, i);
                     this.getEnergyPastArmor(0.42F, shot);
                 }
                 return;
@@ -105,20 +104,20 @@ public class RAPID extends Scheme1 implements TypeTransport {
             if (s.startsWith("xxtank")) {
                 int j = s.charAt(6) - 49;
                 if (this.getEnergyPastArmor(0.06F, shot) > 0.0F) {
-                    if (((FlightModelMain) (super.FM)).AS.astateTankStates[j] == 0) {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, j, 1);
-                        ((FlightModelMain) (super.FM)).AS.doSetTankState(shot.initiator, j, 1);
+                    if (this.FM.AS.astateTankStates[j] == 0) {
+                        this.FM.AS.hitTank(shot.initiator, j, 1);
+                        this.FM.AS.doSetTankState(shot.initiator, j, 1);
                     }
                     if (shot.powerType == 3) {
                         if (shot.power < 16100F) {
-                            if ((((FlightModelMain) (super.FM)).AS.astateTankStates[j] < 4) && (World.Rnd().nextFloat() < 0.21F)) {
-                                ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, j, 1);
+                            if ((this.FM.AS.astateTankStates[j] < 4) && (World.Rnd().nextFloat() < 0.21F)) {
+                                this.FM.AS.hitTank(shot.initiator, j, 1);
                             }
                         } else {
-                            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, j, World.Rnd().nextInt(1, 1 + (int) (shot.power / 16100F)));
+                            this.FM.AS.hitTank(shot.initiator, j, World.Rnd().nextInt(1, 1 + (int) (shot.power / 16100F)));
                         }
                     } else if (shot.power > 16100F) {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, j, World.Rnd().nextInt(1, 1 + (int) (shot.power / 16100F)));
+                        this.FM.AS.hitTank(shot.initiator, j, World.Rnd().nextInt(1, 1 + (int) (shot.power / 16100F)));
                     }
                 }
                 return;
@@ -212,7 +211,7 @@ public class RAPID extends Scheme1 implements TypeTransport {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);

@@ -16,7 +16,7 @@ public class SB2U_USN extends SB2U implements TypeStormovik, TypeDiveBomber {
         float f = -af[0];
         float f1 = af[1];
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 if (f < -31F) {
                     f = -31F;
                     flag = false;

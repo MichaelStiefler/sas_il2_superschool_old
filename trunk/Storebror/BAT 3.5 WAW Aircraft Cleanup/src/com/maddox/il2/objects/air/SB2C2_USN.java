@@ -16,7 +16,7 @@ public class SB2C2_USN extends Seadiver123 implements TypeDiveBomber, TypeStormo
         float f = -af[0];
         float f1 = af[1];
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 if (f < -70F) {
                     f = -70F;
                 }
@@ -33,10 +33,10 @@ public class SB2C2_USN extends Seadiver123 implements TypeDiveBomber, TypeStormo
                 }
                 float f2;
                 for (f2 = Math.abs(f); f2 > 180F; f2 -= 180F) {
-                    ;
+
                 }
-                if (f1 < -floatindex(Aircraft.cvt(f2, 0.0F, 180F, 0.0F, 36F), af)) {
-                    f1 = -floatindex(Aircraft.cvt(f2, 0.0F, 180F, 0.0F, 36F), af);
+                if (f1 < -AircraftLH.floatindex(Aircraft.cvt(f2, 0.0F, 180F, 0.0F, 36F), af)) {
+                    f1 = -AircraftLH.floatindex(Aircraft.cvt(f2, 0.0F, 180F, 0.0F, 36F), af);
                 }
                 break;
         }

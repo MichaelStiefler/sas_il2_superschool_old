@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.weapons.FuelTank_Type_D;
 import com.maddox.rts.Property;
 
@@ -11,20 +10,20 @@ public class FW_190F2 extends FW_190F implements TypeStormovik {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).AS.wantBeaconsNet(true);
-        ((FlightModelMain) (super.FM)).M.massEmpty -= 0.0F;
+        this.FM.AS.wantBeaconsNet(true);
+        this.FM.M.massEmpty -= 0.0F;
         this.hierMesh().chunkVisible("7mmC_D0", true);
         this.hierMesh().chunkVisible("7mmCowl_D0", false);
         this.hierMesh().chunkVisible("Flap01_D0", true);
         this.hierMesh().chunkVisible("Flap04_D0", true);
         this.hierMesh().chunkVisible("Flap01Holed_D0", false);
         this.hierMesh().chunkVisible("Flap04Holed_D0", false);
-        if (super.thisWeaponsName.endsWith("_Trop")) {
+        if (this.thisWeaponsName.endsWith("_Trop")) {
             this.hierMesh().chunkVisible("TropFilter_D0", true);
         } else {
             this.hierMesh().chunkVisible("TropFilter_D0", false);
         }
-        Object aobj[] = super.pos.getBaseAttached();
+        Object aobj[] = this.pos.getBaseAttached();
         if (aobj != null) {
             int i = 0;
             do {
@@ -48,7 +47,7 @@ public class FW_190F2 extends FW_190F implements TypeStormovik {
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGear() < 0.98F) {
+        if (this.FM.CT.getGear() < 0.98F) {
             return;
         } else {
             this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -f, 0.0F);

@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class B_17E extends B_17 implements TypeBomber {
@@ -10,7 +9,7 @@ public class B_17E extends B_17 implements TypeBomber {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).AS.wantBeaconsNet(true);
+        this.FM.AS.wantBeaconsNet(true);
     }
 
     public boolean turretAngles(int i, float af[]) {
@@ -21,7 +20,7 @@ public class B_17E extends B_17 implements TypeBomber {
             default:
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -40,7 +39,7 @@ public class B_17E extends B_17 implements TypeBomber {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -50F) {
                     f = -50F;
                     flag = false;
@@ -59,7 +58,7 @@ public class B_17E extends B_17 implements TypeBomber {
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f1 < -3F) {
                     f1 = -3F;
                     flag = false;
@@ -70,7 +69,7 @@ public class B_17E extends B_17 implements TypeBomber {
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 if (f1 < -85F) {
                     f1 = -85F;
                     flag = false;
@@ -81,7 +80,7 @@ public class B_17E extends B_17 implements TypeBomber {
                 }
                 break;
 
-            case 5: // '\005'
+            case 5:
                 if (f < -70F) {
                     f = -60F;
                     flag = false;
@@ -100,7 +99,7 @@ public class B_17E extends B_17 implements TypeBomber {
                 }
                 break;
 
-            case 6: // '\006'
+            case 6:
                 if (f < -70F) {
                     f = -70F;
                     flag = false;
@@ -119,7 +118,7 @@ public class B_17E extends B_17 implements TypeBomber {
                 }
                 break;
 
-            case 7: // '\007'
+            case 7:
                 if (f < -25F) {
                     f = -25F;
                     flag = false;

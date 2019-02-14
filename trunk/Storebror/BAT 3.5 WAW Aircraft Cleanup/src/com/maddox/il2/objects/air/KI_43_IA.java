@@ -41,11 +41,9 @@ public class KI_43_IA extends KI_43 {
         Property.set(class1, "yearService", 1941F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/Ki-43-Ia.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitKI_43.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitKI_43.class });
         Property.set(class1, "LOSElevation", 0.5265F);
-        weaponTriggersRegister(class1, new int[] { 0, 0 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02" });
-        weaponsRegister(class1, "default", new String[] { "MGunBrowning303s_jap 500", "MGunBrowning303s_jap 500" });
-        weaponsRegister(class1, "none", new String[] { null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02" });
     }
 }

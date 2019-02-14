@@ -4,7 +4,6 @@ import java.util.Random;
 
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Property;
 
@@ -16,15 +15,15 @@ public class SPITFIRE1B extends SPITFIRE {
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            SPITFIRE1B.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            SPITFIRE1B.bChangedPit = true;
         }
     }
 
@@ -46,17 +45,17 @@ public class SPITFIRE1B extends SPITFIRE {
     public void update(float f) {
         Random random = new Random();
         int i = 1;
-        if ((super.FM.getOverload() > 2.0F) || (super.FM.getOverload() < 0.0F) || (super.FM.getAltitude() > 5000F)) {
-            if (((FlightModelMain) (super.FM)).CT.WeaponControl[i]) {
+        if ((this.FM.getOverload() > 2.0F) || (this.FM.getOverload() < 0.0F) || (this.FM.getAltitude() > 5000F)) {
+            if (this.FM.CT.WeaponControl[i]) {
                 for (int j = 0; j < 2; j++) {
-                    int l = ((FlightModelMain) (super.FM)).CT.Weapons[i][j].countBullets();
+                    int l = this.FM.CT.Weapons[i][j].countBullets();
                     if (l < this.burst_fire[j][1]) {
                         this.burst_fire[j][0]++;
                         this.burst_fire[j][1] = l;
                         int i1 = Math.abs(random.nextInt()) % 100;
                         float f1 = this.burst_fire[j][0] * 1.0F;
                         if (i1 < f1) {
-                            ((FlightModelMain) (super.FM)).AS.setJamBullets(i, j);
+                            this.FM.AS.setJamBullets(i, j);
                         }
                     }
                 }
@@ -64,7 +63,7 @@ public class SPITFIRE1B extends SPITFIRE {
             } else {
                 for (int k = 0; k < 2; k++) {
                     this.burst_fire[k][0] = 0;
-                    this.burst_fire[k][1] = ((FlightModelMain) (super.FM)).CT.Weapons[i][k].countBullets();
+                    this.burst_fire[k][1] = this.FM.CT.Weapons[i][k].countBullets();
                 }
 
             }

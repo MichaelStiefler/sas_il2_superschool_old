@@ -3,45 +3,44 @@ package com.maddox.il2.objects.air;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class RWD_10 extends Scheme1 implements TypeScout {
 
     public RWD_10() {
-        bChangedPit = true;
+        RWD_10.bChangedPit = true;
     }
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            RWD_10.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            RWD_10.bChangedPit = true;
         }
     }
 
     public void msgShot(Shot shot) {
         this.setShot(shot);
         if (shot.chunkName.startsWith("CF") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 0, 1);
+            this.FM.AS.hitTank(shot.initiator, 0, 1);
         }
         if (shot.chunkName.startsWith("Pilot")) {
-            ((FlightModelMain) (super.FM)).AS.hitPilot(shot.initiator, 0, 101);
+            this.FM.AS.hitPilot(shot.initiator, 0, 101);
         }
     }
 
     public void moveWheelSink() {
         this.resetYPRmodifier();
-        float f = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.35F, 0.0F, 0.35F);
+        float f = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.35F, 0.0F, 0.35F);
         this.hierMesh().chunkSetAngles("GearL2_D0", 0.0F, 20F * f, 0.0F);
         Aircraft.xyz[2] = -0.21F * f;
-        f = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 0.35F, 0.0F, 0.35F);
+        f = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.35F, 0.0F, 0.35F);
         this.hierMesh().chunkSetAngles("GearR2_D0", 0.0F, -20F * f, 0.0F);
         Aircraft.xyz[2] = -0.21F * f;
     }
@@ -65,7 +64,7 @@ public class RWD_10 extends Scheme1 implements TypeScout {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
@@ -76,7 +75,7 @@ public class RWD_10 extends Scheme1 implements TypeScout {
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (super.FM.getAltitude() < 3000F) {
+        if (this.FM.getAltitude() < 3000F) {
             this.hierMesh().chunkVisible("HMask1_D0", false);
         } else {
             this.hierMesh().chunkVisible("HMask1_D0", this.hierMesh().isChunkVisible("Head1_D0"));

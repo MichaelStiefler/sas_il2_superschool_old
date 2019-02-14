@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.BulletEmitter;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class MOSQUITOtsts extends MOSQUITO implements TypeFighter, TypeStormovik {
@@ -40,7 +39,7 @@ public class MOSQUITOtsts extends MOSQUITO implements TypeFighter, TypeStormovik
                 default:
                     break;
 
-                case 0: // '\0'
+                case 0:
                     if (this.g1.isShots()) {
                         this.oldbullets = this.g1.countBullets();
                         this.phase = 1;
@@ -48,7 +47,7 @@ public class MOSQUITOtsts extends MOSQUITO implements TypeFighter, TypeStormovik
                     }
                     break;
 
-                case 1: // '\001'
+                case 1:
                     this.disp += 12.6F * f;
                     this.resetYPRmodifier();
                     Aircraft.xyz[1] = this.disp;
@@ -58,7 +57,7 @@ public class MOSQUITOtsts extends MOSQUITO implements TypeFighter, TypeStormovik
                     }
                     break;
 
-                case 2: // '\002'
+                case 2:
                     this.disp -= 1.2F * f;
                     this.resetYPRmodifier();
                     Aircraft.xyz[1] = this.disp;
@@ -68,7 +67,7 @@ public class MOSQUITOtsts extends MOSQUITO implements TypeFighter, TypeStormovik
                     }
                     break;
 
-                case 3: // '\003'
+                case 3:
                     this.phase = 0;
                     break;
             }
@@ -82,7 +81,7 @@ public class MOSQUITOtsts extends MOSQUITO implements TypeFighter, TypeStormovik
     private BulletEmitter g1;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = MOSQUITOtsts.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Mosquito");
         Property.set(class1, "meshName", "3DO/Plane/Mosquito_FB_MkVI_Tse(Multi1)/TseTse_hier.him");

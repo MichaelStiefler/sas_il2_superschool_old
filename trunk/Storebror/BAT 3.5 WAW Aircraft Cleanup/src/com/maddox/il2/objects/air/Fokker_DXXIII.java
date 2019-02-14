@@ -46,7 +46,7 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 3: // '\003'
+            case 3:
                 this.FM.setGCenter(-1.5F);
                 break;
         }
@@ -157,7 +157,7 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
     }
 
     public static void moveGear(HierMesh hiermesh, float f, float f1, float f2, float af[]) {
-        myResetYPRmodifier();
+        Fokker_DXXIII.myResetYPRmodifier();
         hiermesh.chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(f2, 0.1F + af[2], 0.85F + af[2], 3F, -115.5F), 0.0F);
         hiermesh.chunkSetAngles("GearC7_D0", 0.0F, Aircraft.cvt(f2, 0.1F + af[2], 0.85F + af[2], 0.0F, -137F), 0.0F);
         hiermesh.chunkSetAngles("GearC8_D0", 0.0F, Aircraft.cvt(f2, 0.1F + af[2], 0.85F + af[2], 0.0F, -148.5F), 0.0F);
@@ -173,7 +173,7 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2, this.rndgear);
+        Fokker_DXXIII.moveGear(this.hierMesh(), f, f1, f2, this.rndgear);
     }
 
     private static void myResetYPRmodifier() {
@@ -181,15 +181,15 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
     }
 
     public static void moveGear(HierMesh hiermesh, float f, float f1, float f2) {
-        moveGear(hiermesh, f, f1, f2, rndgearnull);
+        Fokker_DXXIII.moveGear(hiermesh, f, f1, f2, Fokker_DXXIII.rndgearnull);
     }
 
     public static void moveGear(HierMesh hiermesh, float f) {
-        moveGear(hiermesh, f, f, f, rndgearnull);
+        Fokker_DXXIII.moveGear(hiermesh, f, f, f, Fokker_DXXIII.rndgearnull);
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f, f, f, this.rndgear);
+        Fokker_DXXIII.moveGear(this.hierMesh(), f, f, f, this.rndgear);
     }
 
     public void moveSteering(float f) {
@@ -225,7 +225,7 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
 
     public void auxPlus(int i) {
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.gyroDelta++;
                 break;
         }
@@ -233,7 +233,7 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
 
     public void auxMinus(int i) {
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.gyroDelta--;
                 break;
         }
@@ -295,24 +295,24 @@ public class Fokker_DXXIII extends Scheme2 implements TypeFighter {
                     default:
                         break;
 
-                    case 1: // '\001'
-                    case 4: // '\004'
+                    case 1:
+                    case 4:
                         if (this.getEnergyPastArmor(1.2F, shot) > 0.0F) {
                             this.FM.AS.setControlsDamage(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Aileron Controls: Control Crank Destroyed..");
                         }
                         break;
 
-                    case 2: // '\002'
-                    case 3: // '\003'
+                    case 2:
+                    case 3:
                         if ((this.getEnergyPastArmor(4D / (Math.abs(Aircraft.v1.x) + 0.0001D), shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
                             this.debuggunnery("Controls: Aileron Wiring Hit, Aileron Controls Disabled..");
                             this.FM.AS.setControlsDamage(shot.initiator, 0);
                         }
                         break;
 
-                    case 5: // '\005'
-                    case 6: // '\006'
+                    case 5:
+                    case 6:
                         if (this.getEnergyPastArmor(1.0F, shot) <= 0.0F) {
                             break;
                         }

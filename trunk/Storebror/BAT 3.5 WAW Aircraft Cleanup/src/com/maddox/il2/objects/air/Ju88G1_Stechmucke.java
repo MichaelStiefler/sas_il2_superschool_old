@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Actor;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class Ju88G1_Stechmucke extends JU_88 implements TypeStormovik, TypeFighter, TypeScout {
@@ -24,34 +23,34 @@ public class Ju88G1_Stechmucke extends JU_88 implements TypeStormovik, TypeFight
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            Ju88G1_Stechmucke.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            Ju88G1_Stechmucke.bChangedPit = true;
         }
     }
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 this.hierMesh().chunkVisible("HMask3_D0", false);
@@ -66,7 +65,7 @@ public class Ju88G1_Stechmucke extends JU_88 implements TypeStormovik, TypeFight
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         for (int i = 1; i < 3; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -91,7 +90,7 @@ public class Ju88G1_Stechmucke extends JU_88 implements TypeStormovik, TypeFight
     protected int         spreadAngle;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = Ju88G1_Stechmucke.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Ju-88");
         Property.set(class1, "meshName", "3DO/Plane/Ju-88G1_Stechmucke(Multi1)/hier.him");

@@ -5,26 +5,25 @@ import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class P_7 extends Scheme1 implements TypeFighter, TypeTNBFighter {
 
     public P_7() {
-        bChangedPit = true;
+        P_7.bChangedPit = true;
     }
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            P_7.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            P_7.bChangedPit = true;
         }
     }
 
@@ -33,23 +32,23 @@ public class P_7 extends Scheme1 implements TypeFighter, TypeTNBFighter {
             if (s.startsWith("xxcontrols")) {
                 int i = s.charAt(10) - 48;
                 switch (i) {
-                    case 1: // '\001'
+                    case 1:
                         if (this.getEnergyPastArmor(World.Rnd().nextFloat(0.1F, 2.3F), shot) > 0.0F) {
                             if (World.Rnd().nextFloat() < 0.25F) {
-                                ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
+                                this.FM.AS.setControlsDamage(shot.initiator, 2);
                                 Aircraft.debugprintln(this, "*** Rudder Controls: Disabled..");
                             }
                             if (World.Rnd().nextFloat() < 0.25F) {
-                                ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
+                                this.FM.AS.setControlsDamage(shot.initiator, 1);
                                 Aircraft.debugprintln(this, "*** Elevator Controls: Disabled..");
                             }
                         }
                         // fall through
 
-                    case 2: // '\002'
-                    case 3: // '\003'
+                    case 2:
+                    case 3:
                         if (this.getEnergyPastArmor(1.5F, shot) > 0.0F) {
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                            this.FM.AS.setControlsDamage(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Aileron Controls: Disabled..");
                         }
                         break;
@@ -118,31 +117,31 @@ public class P_7 extends Scheme1 implements TypeFighter, TypeTNBFighter {
                 if (s.endsWith("case")) {
                     if (this.getEnergyPastArmor(2.1F, shot) > 0.0F) {
                         if (World.Rnd().nextFloat() < (shot.power / 175000F)) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, 0);
+                            this.FM.AS.setEngineStuck(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Engine Module: Bullet Jams Crank Ball Bearing..");
                         }
                         if (World.Rnd().nextFloat() < (shot.power / 50000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
-                            Aircraft.debugprintln(this, "*** Engine Module: Crank Case Hit, Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() + "..");
+                            this.FM.AS.hitEngine(shot.initiator, 0, 2);
+                            Aircraft.debugprintln(this, "*** Engine Module: Crank Case Hit, Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + "..");
                         }
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setReadyness(shot.initiator, ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 48000F));
-                        Aircraft.debugprintln(this, "*** Engine Module: Crank Case Hit, Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() + "..");
+                        this.FM.EI.engines[0].setReadyness(shot.initiator, this.FM.EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 48000F));
+                        Aircraft.debugprintln(this, "*** Engine Module: Crank Case Hit, Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + "..");
                     }
                     if (World.Rnd().nextFloat() < 0.002F) {
                         this.debuggunnery("Engine Module: Crank Case Hit - Fuel Feed Hit - Engine Flamed..");
-                        ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 10);
+                        this.FM.AS.hitEngine(shot.initiator, 0, 10);
                     }
                     this.getEnergyPastArmor(12.7F, shot);
                 } else if (s.startsWith("xxeng1cyls")) {
-                    if ((this.getEnergyPastArmor(World.Rnd().nextFloat(0.2F, 4.4F), shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[0].getCylindersRatio() * 1.12F))) {
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
-                        Aircraft.debugprintln(this, "*** Engine Module: Cylinders Hit, " + ((FlightModelMain) (super.FM)).EI.engines[0].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[0].getCylinders() + " Left..");
+                    if ((this.getEnergyPastArmor(World.Rnd().nextFloat(0.2F, 4.4F), shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[0].getCylindersRatio() * 1.12F))) {
+                        this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
+                        Aircraft.debugprintln(this, "*** Engine Module: Cylinders Hit, " + this.FM.EI.engines[0].getCylindersOperable() + "/" + this.FM.EI.engines[0].getCylinders() + " Left..");
                         if (World.Rnd().nextFloat() < (shot.power / 48000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 3);
+                            this.FM.AS.hitEngine(shot.initiator, 0, 3);
                             Aircraft.debugprintln(this, "*** Engine Module: Cylinders Hit, Engine Fires..");
                         }
                         if (World.Rnd().nextFloat() < 0.005F) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, 0);
+                            this.FM.AS.setEngineStuck(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Engine Module: Bullet Jams Piston Head..");
                         }
                         this.getEnergyPastArmor(22.5F, shot);
@@ -150,50 +149,50 @@ public class P_7 extends Scheme1 implements TypeFighter, TypeTNBFighter {
                 } else if (s.endsWith("eqpt")) {
                     if ((this.getEnergyPastArmor(0.2721F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
                         if (World.Rnd().nextFloat() < 0.1F) {
-                            ((FlightModelMain) (super.FM)).EI.engines[0].setMagnetoKnockOut(shot.initiator, 0);
+                            this.FM.EI.engines[0].setMagnetoKnockOut(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Engine Module: Magneto 0 Destroyed..");
                         }
                         if (World.Rnd().nextFloat() < 0.1F) {
-                            ((FlightModelMain) (super.FM)).EI.engines[0].setMagnetoKnockOut(shot.initiator, 1);
+                            this.FM.EI.engines[0].setMagnetoKnockOut(shot.initiator, 1);
                             Aircraft.debugprintln(this, "*** Engine Module: Magneto 1 Destroyed..");
                         }
                         if (World.Rnd().nextFloat() < 0.1F) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 1);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 1);
                             Aircraft.debugprintln(this, "*** Engine Module: Throttle Controls Cut..");
                         }
                         if (World.Rnd().nextFloat() < 0.1F) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 7);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 7);
                             Aircraft.debugprintln(this, "*** Engine Module: Mix Controls Cut..");
                         }
                     }
                 } else if (s.endsWith("oil1")) {
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, 0);
+                    this.FM.AS.hitOil(shot.initiator, 0);
                     Aircraft.debugprintln(this, "*** Engine Module: Oil Radiator Hit..");
                 }
             }
             if (s.startsWith("xxoil")) {
-                ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, 0);
+                this.FM.AS.hitOil(shot.initiator, 0);
                 this.getEnergyPastArmor(0.22F, shot);
                 Aircraft.debugprintln(this, "*** Engine Module: Oil Tank Pierced..");
             }
             if (s.startsWith("xxtank1") && (this.getEnergyPastArmor(0.1F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.99F)) {
-                if (((FlightModelMain) (super.FM)).AS.astateTankStates[0] == 0) {
+                if (this.FM.AS.astateTankStates[0] == 0) {
                     Aircraft.debugprintln(this, "*** Fuel Tank: Pierced..");
-                    ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 0, 1);
+                    this.FM.AS.hitTank(shot.initiator, 0, 1);
                 }
                 if ((shot.powerType == 3) && (World.Rnd().nextFloat() < 0.5F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 0, 2);
+                    this.FM.AS.hitTank(shot.initiator, 0, 2);
                     Aircraft.debugprintln(this, "*** Fuel Tank: Hit..");
                 }
             }
             if (s.startsWith("xxmgun")) {
                 if (s.endsWith("01")) {
                     Aircraft.debugprintln(this, "*** Machine Gun: Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 0);
+                    this.FM.AS.setJamBullets(0, 0);
                 }
                 if (s.endsWith("02")) {
                     Aircraft.debugprintln(this, "*** Machine Gun: Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 1);
+                    this.FM.AS.setJamBullets(0, 1);
                 }
                 this.getEnergyPastArmor(World.Rnd().nextFloat(0.0F, 28.33F), shot);
             }
@@ -271,7 +270,7 @@ public class P_7 extends Scheme1 implements TypeFighter, TypeTNBFighter {
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (super.FM.getAltitude() < 3000F) {
+        if (this.FM.getAltitude() < 3000F) {
             this.hierMesh().chunkVisible("HMask1_D0", false);
         } else {
             this.hierMesh().chunkVisible("HMask1_D0", this.hierMesh().isChunkVisible("Head1_D0"));
@@ -280,7 +279,7 @@ public class P_7 extends Scheme1 implements TypeFighter, TypeTNBFighter {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
@@ -291,10 +290,10 @@ public class P_7 extends Scheme1 implements TypeFighter, TypeTNBFighter {
 
     public void moveWheelSink() {
         this.resetYPRmodifier();
-        float f = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.25F, 0.0F, 0.35F);
+        float f = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.25F, 0.0F, 0.35F);
         this.hierMesh().chunkSetAngles("GearL2_D0", 0.0F, 20F * f, 0.0F);
         Aircraft.xyz[2] = -0.21F * f;
-        f = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 0.25F, 0.0F, 0.35F);
+        f = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.25F, 0.0F, 0.35F);
         this.hierMesh().chunkSetAngles("GearR2_D0", 0.0F, -20F * f, 0.0F);
         Aircraft.xyz[2] = -0.21F * f;
     }

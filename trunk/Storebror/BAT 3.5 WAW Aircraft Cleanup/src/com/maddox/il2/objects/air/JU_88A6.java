@@ -3,20 +3,17 @@ package com.maddox.il2.objects.air;
 import java.io.IOException;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Tuple3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.Regiment;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Interpolate;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.fm.Pitot;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.objects.Wreckage;
 import com.maddox.il2.objects.weapons.Gun;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -45,29 +42,29 @@ public class JU_88A6 extends JU_88Axx implements TypeBomber, TypeScout {
         float f = 0.0F;
         float f1 = 0.0F;
         this.needsToOpenBombays = false;
-        if (super.thisWeaponsName.endsWith("RustA")) {
+        if (this.thisWeaponsName.endsWith("RustA")) {
             this.iRust = 1;
-            if (super.thisWeaponsName.startsWith("28x")) {
+            if (this.thisWeaponsName.startsWith("28x")) {
                 this.needsToOpenBombays = true;
             }
-        } else if (super.thisWeaponsName.endsWith("RustB")) {
+        } else if (this.thisWeaponsName.endsWith("RustB")) {
             this.iRust = 2;
             f1 += 60F;
-            if (!super.thisWeaponsName.endsWith("LiteRustB")) {
+            if (!this.thisWeaponsName.endsWith("LiteRustB")) {
                 f += 900F;
             }
-            if (super.thisWeaponsName.startsWith("10x")) {
+            if (this.thisWeaponsName.startsWith("10x")) {
                 this.needsToOpenBombays = true;
             }
         }
-        float f2 = ((FlightModelMain) (super.FM)).M.fuel / ((FlightModelMain) (super.FM)).M.maxFuel;
-        ((FlightModelMain) (super.FM)).M.fuel += f2 * f;
-        ((FlightModelMain) (super.FM)).M.maxFuel += f;
-        ((FlightModelMain) (super.FM)).M.massEmpty += f1;
+        float f2 = this.FM.M.fuel / this.FM.M.maxFuel;
+        this.FM.M.fuel += f2 * f;
+        this.FM.M.maxFuel += f;
+        this.FM.M.massEmpty += f1;
     }
 
     void ReloadAmmo(int i) {
-        if ((super.FM.turret.length != 0) && World.cur().diffCur.Limited_Ammo) {
+        if ((this.FM.turret.length != 0) && World.cur().diffCur.Limited_Ammo) {
             int j = 0;
             int k = 0;
             j = this.gun1.countBullets();
@@ -85,7 +82,7 @@ public class JU_88A6 extends JU_88Axx implements TypeBomber, TypeScout {
     }
 
     void JamAmmo(int i) {
-        if (super.FM.turret.length != 0) {
+        if (this.FM.turret.length != 0) {
             int j = 0;
             int k = 0;
             j = this.gun1.countBullets();
@@ -94,12 +91,12 @@ public class JU_88A6 extends JU_88Axx implements TypeBomber, TypeScout {
                 if (j != 0) {
                     this.gun1.loadBullets(j + k);
                 }
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(12, 0);
+                this.FM.AS.setJamBullets(12, 0);
             } else if (i == 2) {
                 if (k != 0) {
                     this.gun2.loadBullets(j + k);
                 }
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(11, 0);
+                this.FM.AS.setJamBullets(11, 0);
             }
         }
     }
@@ -130,7 +127,7 @@ public class JU_88A6 extends JU_88Axx implements TypeBomber, TypeScout {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (JU_88Axx.bNavigatorUseBombsight) {
                     flag = false;
                     f = 0.0F;
@@ -155,19 +152,19 @@ public class JU_88A6 extends JU_88Axx implements TypeBomber, TypeScout {
                 }
                 break;
 
-            case 1: // '\001'
-                if (!super.FM.turret[2].bIsAIControlled || super.secondaryRearGunActive) {
+            case 1:
+                if (!this.FM.turret[2].bIsAIControlled || this.secondaryRearGunActive) {
                     flag = false;
                     f = 0.0F;
                     f1 = 0.0F;
                     this.ReloadAmmo(2);
                     break;
                 }
-                super.mainRearGunActive = true;
+                this.mainRearGunActive = true;
                 if (f < -20F) {
                     f = -20F;
                     flag = false;
-                    super.mainRearGunActive = false;
+                    this.mainRearGunActive = false;
                 }
                 if (f > 45F) {
                     f = 45F;
@@ -198,16 +195,16 @@ public class JU_88A6 extends JU_88Axx implements TypeBomber, TypeScout {
                 }
                 break;
 
-            case 2: // '\002'
-                if (!super.FM.turret[1].bIsAIControlled || super.mainRearGunActive) {
-                    super.secondaryRearGunActive = false;
+            case 2:
+                if (!this.FM.turret[1].bIsAIControlled || this.mainRearGunActive) {
+                    this.secondaryRearGunActive = false;
                     flag = false;
                     f = 0.0F;
                     f1 = 0.0F;
                     this.ReloadAmmo(1);
                     break;
                 }
-                super.secondaryRearGunActive = true;
+                this.secondaryRearGunActive = true;
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -215,7 +212,7 @@ public class JU_88A6 extends JU_88Axx implements TypeBomber, TypeScout {
                 if (f > 20F) {
                     f = 20F;
                     flag = false;
-                    super.secondaryRearGunActive = false;
+                    this.secondaryRearGunActive = false;
                 }
                 if (f1 < -5F) {
                     f1 = -5F;
@@ -242,7 +239,7 @@ public class JU_88A6 extends JU_88Axx implements TypeBomber, TypeScout {
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f < -40F) {
                     f = -40F;
                     flag = false;
@@ -272,7 +269,7 @@ public class JU_88A6 extends JU_88Axx implements TypeBomber, TypeScout {
             Wreckage wreckage = new Wreckage(this, this.hierMesh().chunkFind(s));
             wreckage.collide(true);
             Vector3d vector3d = new Vector3d();
-            vector3d.set(((FlightModelMain) (super.FM)).Vwld);
+            vector3d.set(this.FM.Vwld);
             wreckage.setSpeed(vector3d);
         }
     }
@@ -296,7 +293,7 @@ public class JU_88A6 extends JU_88Axx implements TypeBomber, TypeScout {
     }
 
     protected void moveBayDoor(float f) {
-        if (!this.needsToOpenBombays && !super.FM.isPlayers()) {
+        if (!this.needsToOpenBombays && !this.FM.isPlayers()) {
             return;
         }
         if (this.iRust != 3) {
@@ -315,22 +312,22 @@ public class JU_88A6 extends JU_88Axx implements TypeBomber, TypeScout {
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            JU_88A6.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            JU_88A6.bChangedPit = true;
         }
     }
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         for (int i = 1; i < 4; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -341,18 +338,18 @@ public class JU_88A6 extends JU_88Axx implements TypeBomber, TypeScout {
 
     public void update(float f) {
         super.update(f);
-        if ((Pitot.Indicator((float) ((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z, super.FM.getSpeed()) > 70F) && (((FlightModelMain) (super.FM)).CT.getFlap() > 0.01D) && (((FlightModelMain) (super.FM)).CT.FlapsControl != 0.0F)) {
-            ((FlightModelMain) (super.FM)).CT.FlapsControl = 0.0F;
+        if ((Pitot.Indicator((float) this.FM.Loc.z, this.FM.getSpeed()) > 70F) && (this.FM.CT.getFlap() > 0.01D) && (this.FM.CT.FlapsControl != 0.0F)) {
+            this.FM.CT.FlapsControl = 0.0F;
             World.cur();
-            if (((Interpolate) (super.FM)).actor == World.getPlayerAircraft()) {
+            if (((Interpolate) (this.FM)).actor == World.getPlayerAircraft()) {
                 HUD.log("FlapsRaised");
             }
         }
-        float f1 = ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator();
+        float f1 = this.FM.EI.engines[0].getControlRadiator();
         if (f1 != 0.0F) {
             this.hierMesh().chunkSetAngles("Radl11_D0", -30F * f1, 0.0F, 0.0F);
         }
-        f1 = ((FlightModelMain) (super.FM)).EI.engines[1].getControlRadiator();
+        f1 = this.FM.EI.engines[1].getControlRadiator();
         if (f1 != 0.0F) {
             this.hierMesh().chunkSetAngles("Radr11_D0", -30F * f1, 0.0F, 0.0F);
         }
@@ -360,26 +357,26 @@ public class JU_88A6 extends JU_88Axx implements TypeBomber, TypeScout {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 this.hierMesh().chunkVisible("HMask3_D0", false);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.hierMesh().chunkVisible("Pilot4_D0", false);
                 this.hierMesh().chunkVisible("Pilot4_D1", true);
                 this.hierMesh().chunkVisible("HMask4_D0", false);
@@ -492,7 +489,7 @@ public class JU_88A6 extends JU_88Axx implements TypeBomber, TypeScout {
     }
 
     public void typeBomberUpdate(float f) {
-        if (Math.abs(((FlightModelMain) (super.FM)).Or.getKren()) > 4.5D) {
+        if (Math.abs(this.FM.Or.getKren()) > 4.5D) {
             this.fSightCurReadyness -= 0.0666666F * f;
             if (this.fSightCurReadyness < 0.0F) {
                 this.fSightCurReadyness = 0.0F;
@@ -511,13 +508,13 @@ public class JU_88A6 extends JU_88Axx implements TypeBomber, TypeScout {
                 this.bSightBombDump = true;
             }
             if (this.bSightBombDump) {
-                if (super.FM.isTick(3, 0)) {
-                    if ((((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1] != null) && ((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].haveBullets()) {
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = true;
+                if (this.FM.isTick(3, 0)) {
+                    if ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1] != null) && this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].haveBullets()) {
+                        this.FM.CT.WeaponControl[3] = true;
                         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
                     }
                 } else {
-                    ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = false;
+                    this.FM.CT.WeaponControl[3] = false;
                 }
             }
         }
@@ -586,7 +583,7 @@ public class JU_88A6 extends JU_88Axx implements TypeBomber, TypeScout {
     public float          fSightCurReadyness;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = JU_88A6.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Ju-88");
         Property.set(class1, "meshName", "3DO/Plane/Ju-88A-6/hier.him");

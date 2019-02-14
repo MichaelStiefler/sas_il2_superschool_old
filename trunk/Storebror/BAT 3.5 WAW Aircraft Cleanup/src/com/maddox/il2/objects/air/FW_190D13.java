@@ -2,7 +2,6 @@ package com.maddox.il2.objects.air;
 
 import java.io.IOException;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -67,7 +66,7 @@ public class FW_190D13 extends FW_190DNEW implements TypeBomber {
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGear() >= 0.98F) {
+        if (this.FM.CT.getGear() >= 0.98F) {
             this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -f, 0.0F);
         }
     }
@@ -77,13 +76,13 @@ public class FW_190D13 extends FW_190DNEW implements TypeBomber {
             this.hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -20F * this.kangle, 0.0F);
         }
 
-        this.kangle = (0.95F * this.kangle) + (0.05F * ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator());
+        this.kangle = (0.95F * this.kangle) + (0.05F * this.FM.EI.engines[0].getControlRadiator());
         super.update(f);
     }
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).AS.wantBeaconsNet(true);
+        this.FM.AS.wantBeaconsNet(true);
     }
 
     private float kangle;

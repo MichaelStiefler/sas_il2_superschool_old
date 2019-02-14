@@ -103,7 +103,7 @@ public class HS_129B3Wa extends HS_129 {
                 default:
                     break;
 
-                case 0: // '\0'
+                case 0:
                     if (this.g1.isShots() && (this.oldbullets != this.g1.countBullets())) {
                         this.oldbullets = this.g1.countBullets();
                         this.phase++;
@@ -112,7 +112,7 @@ public class HS_129B3Wa extends HS_129 {
                     }
                     break;
 
-                case 1: // '\001'
+                case 1:
                     this.disp += 6F * f;
                     this.resetYPRmodifier();
                     Aircraft.xyz[0] = this.disp;
@@ -124,7 +124,7 @@ public class HS_129B3Wa extends HS_129 {
                     }
                     break;
 
-                case 2: // '\002'
+                case 2:
                     Wreckage wreckage = new Wreckage(this, this.hierMesh().chunkFind("Shell_D0"));
                     Eff3DActor.New(wreckage, null, null, 1.0F, Wreckage.SMOKE, 3F);
                     Vector3d vector3d = new Vector3d();
@@ -135,7 +135,7 @@ public class HS_129B3Wa extends HS_129 {
                     this.phase++;
                     break;
 
-                case 3: // '\003'
+                case 3:
                     this.disp -= 0.8F * f;
                     this.resetYPRmodifier();
                     Aircraft.xyz[0] = this.disp;
@@ -151,7 +151,7 @@ public class HS_129B3Wa extends HS_129 {
                     }
                     break;
 
-                case 4: // '\004'
+                case 4:
                     this.phase = 0;
                     break;
             }
@@ -175,10 +175,8 @@ public class HS_129B3Wa extends HS_129 {
         Property.set(class1, "yearService", 1943.9F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/Hs-129B-3.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitHS_129B3.class} );
-        weaponTriggersRegister(class1, new int[] { 0, 0, 1, 9 });
+        Property.set(class1, "cockpitClass", new Class[] { CockpitHS_129B3.class });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 9 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_HEAVYCANNON01", "_ExternalDev01" });
-        weaponsRegister(class1, "default", new String[] { "MGunMG131ki 500", "MGunMG131ki 500", "MGunBK75 13", "PylonHS129BK75" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null });
     }
 }

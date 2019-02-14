@@ -69,21 +69,11 @@ public class DO_335A0 extends DO_335 {
         Property.set(class1, "yearService", 1945F);
         Property.set(class1, "yearExpired", 1948F);
         Property.set(class1, "FlightModel", "FlightModels/Do-335.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitDO_335.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitDO_335.class });
         Property.set(class1, "LOSElevation", 1.00705F);
         Property.set(class1, "weaponsList", new ArrayList());
         Property.set(class1, "weaponsMap", new HashMapInt());
-        weaponTriggersRegister(class1, new int[] { 0, 0, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
-        weaponHooksRegister(class1, new String[] { "_MGUN02", "_MGUN03", "_MGUN01", "_BombSpawn01", "_BombSpawn02", "_BombSpawn01", "_BombSpawn03", "_BombSpawn01", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07", "_BombSpawn08", "_BombSpawn09", "_BombSpawn10", "_BombSpawn11" });
-        weaponsRegister(class1, "default", new String[] { "MGunMG15120si 200", "MGunMG15120si 200", "MGunMK103ki 70", null, null, null, null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "8sc50", new String[] { "MGunMG15120si 200", "MGunMG15120si 200", "MGunMK103ki 70", null, null, null, null, null, "BombGunSC50", "BombGunSC50", "BombGunSC50", "BombGunSC50", "BombGunSC50", "BombGunSC50", "BombGunSC50", "BombGunSC50" });
-        weaponsRegister(class1, "8sc70", new String[] { "MGunMG15120si 200", "MGunMG15120si 200", "MGunMK103ki 70", null, null, null, null, null, "BombGunSC70", "BombGunSC70", "BombGunSC70", "BombGunSC70", "BombGunSC70", "BombGunSC70", "BombGunSC70", "BombGunSC70" });
-        weaponsRegister(class1, "2sc250", new String[] { "MGunMG15120si 200", "MGunMG15120si 200", "MGunMK103ki 70", null, "BombGunSC250", "BombGunNull", "BombGunSC250", "BombGunNull", null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "2xab250", new String[] { "MGunMG15120si 200", "MGunMG15120si 200", "MGunMK103ki 70", null, "BombGunAB250", "BombGunNull", "BombGunAB250", "BombGunNull", null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "1sc500", new String[] { "MGunMG15120si 200", "MGunMG15120si 200", "MGunMK103ki 70", "BombGunSC500", null, null, null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "1sd500", new String[] { "MGunMG15120si 200", "MGunMG15120si 200", "MGunMK103ki 70", "BombGunSD500", null, null, null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "1ab500", new String[] { "MGunMG15120si 200", "MGunMG15120si 200", "MGunMK103ki 70", "BombGunAB500", null, null, null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "1sc1000", new String[] { "MGunMG15120si 200", "MGunMG15120si 200", "MGunMK103ki 70", "BombGunSC1000", null, null, null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN02", "_MGUN03", "_MGUN01", "_BombSpawn01", "_BombSpawn02", "_BombSpawn01", "_BombSpawn03", "_BombSpawn01", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07", "_BombSpawn08", "_BombSpawn09", "_BombSpawn10", "_BombSpawn11" });
     }
 }

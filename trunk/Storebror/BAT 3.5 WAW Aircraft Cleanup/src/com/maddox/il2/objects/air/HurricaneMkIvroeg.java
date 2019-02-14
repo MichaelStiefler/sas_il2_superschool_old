@@ -2,7 +2,6 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class HurricaneMkIvroeg extends Hurricane implements TypeFighter {
@@ -12,15 +11,15 @@ public class HurricaneMkIvroeg extends Hurricane implements TypeFighter {
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            HurricaneMkIvroeg.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            HurricaneMkIvroeg.bChangedPit = true;
         }
     }
 
@@ -44,7 +43,7 @@ public class HurricaneMkIvroeg extends Hurricane implements TypeFighter {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        HurricaneMkIvroeg.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {
@@ -53,9 +52,9 @@ public class HurricaneMkIvroeg extends Hurricane implements TypeFighter {
 
     public void moveWheelSink() {
         this.resetYPRmodifier();
-        Aircraft.xyz[2] = -Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.25F, 0.0F, 0.25F);
+        Aircraft.xyz[2] = -Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.25F, 0.0F, 0.25F);
         this.hierMesh().chunkSetLocate("GearL10_D0", Aircraft.xyz, Aircraft.ypr);
-        Aircraft.xyz[2] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 0.25F, 0.0F, 0.25F);
+        Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.25F, 0.0F, 0.25F);
         this.hierMesh().chunkSetLocate("GearR10_D0", Aircraft.xyz, Aircraft.ypr);
     }
 

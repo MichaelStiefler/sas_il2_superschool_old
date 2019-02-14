@@ -23,13 +23,13 @@ public class J1N1_S extends J1N1 implements TypeJazzPlayer {
     }
 
     public Vector3d getAttackVector() {
-        return ATTACK_VECTOR;
+        return J1N1_S.ATTACK_VECTOR;
     }
 
     public void update(float f) {
         super.update(f);
-        super.onAircraftLoaded();
-        if (super.FM.isPlayers()) {
+        this.onAircraftLoaded();
+        if (this.FM.isPlayers()) {
             if (!Main3D.cur3D().isViewOutside()) {
                 this.hierMesh().chunkVisible("CF_D0", false);
                 this.hierMesh().chunkVisible("Nose_D0", false);

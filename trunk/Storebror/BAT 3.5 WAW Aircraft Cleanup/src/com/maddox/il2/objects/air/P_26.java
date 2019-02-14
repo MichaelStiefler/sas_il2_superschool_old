@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Actor;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class P_26 extends P_26x {
@@ -20,7 +19,7 @@ public class P_26 extends P_26x {
         super.nextDMGLevel(s, i, actor);
         this.bChangedExts = true;
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            P_26.bChangedPit = true;
         }
     }
 
@@ -28,7 +27,7 @@ public class P_26 extends P_26x {
         super.nextCUTLevel(s, i, actor);
         this.bChangedExts = true;
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            P_26.bChangedPit = true;
         }
     }
 
@@ -36,7 +35,7 @@ public class P_26 extends P_26x {
     public static boolean bChangedPit = false;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = P_26.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "P-26");
         Property.set(class1, "meshName", "3DO/Plane/P-26(Multi1)/hier.him");

@@ -6,7 +6,6 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.RealFlightModel;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class LAGG_3RD extends LAGG_3 {
@@ -48,8 +47,8 @@ public class LAGG_3RD extends LAGG_3 {
             }
         }
         if (this.FM.getSpeed() > 5F) {
-            this.hierMesh().chunkSetAngles("SlatL_D0", 0.0F, cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.2F), 0.0F);
-            this.hierMesh().chunkSetAngles("SlatR_D0", 0.0F, cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.2F), 0.0F);
+            this.hierMesh().chunkSetAngles("SlatL_D0", 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.2F), 0.0F);
+            this.hierMesh().chunkSetAngles("SlatR_D0", 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.2F), 0.0F);
         }
         super.update(f);
     }
@@ -66,7 +65,7 @@ public class LAGG_3RD extends LAGG_3 {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        LAGG_3RD.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public void moveSteering(float f) {
@@ -92,22 +91,22 @@ public class LAGG_3RD extends LAGG_3 {
             }
             if (s.startsWith("xxarmor")) {
                 if (s.endsWith("p1")) {
-                    this.getEnergyPastArmor(12.7F / (1E-005F + (float) Math.abs(v1.x)), shot);
+                    this.getEnergyPastArmor(12.7F / (1E-005F + (float) Math.abs(Aircraft.v1.x)), shot);
                 } else if (s.endsWith("g1")) {
                     this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 2);
-                    this.getEnergyPastArmor(18.15F / (1E-005F + (float) Math.abs(v1.x)), shot);
+                    this.getEnergyPastArmor(18.15F / (1E-005F + (float) Math.abs(Aircraft.v1.x)), shot);
                 }
                 return;
             }
             if (s.startsWith("xxcontrols")) {
-                if (Pd.x > -0.35499998927116394D) {
+                if (Aircraft.Pd.x > -0.35499998927116394D) {
                     if ((World.Rnd().nextFloat() < 0.1F) || (this.getEnergyPastArmor(0.1F, shot) > 0.0F)) {
                         this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 6);
                         if (World.Rnd().nextFloat() < 0.1F) {
                             this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 1);
                         }
                     }
-                } else if (Pd.x > -1.2849999666213989D) {
+                } else if (Aircraft.Pd.x > -1.2849999666213989D) {
                     if (World.Rnd().nextFloat() < 0.2F) {
                         this.FM.AS.setControlsDamage(shot.initiator, 0);
                     }
@@ -123,36 +122,36 @@ public class LAGG_3RD extends LAGG_3 {
                 return;
             }
             if (s.startsWith("xxspar")) {
-                if ((s.endsWith("li1") || s.endsWith("li2")) && (World.Rnd().nextFloat() < (1.0D - (0.92000001668930054D * Math.abs(v1.x)))) && (this.chunkDamageVisible("WingLIn") > 2) && (this.getEnergyPastArmor(2.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** WingLIn Spars Damaged..");
+                if ((s.endsWith("li1") || s.endsWith("li2")) && (World.Rnd().nextFloat() < (1.0D - (0.92000001668930054D * Math.abs(Aircraft.v1.x)))) && (this.chunkDamageVisible("WingLIn") > 2) && (this.getEnergyPastArmor(2.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
+                    Aircraft.debugprintln(this, "*** WingLIn Spars Damaged..");
                     this.nextDMGLevels(1, 2, "WingLIn_D3", shot.initiator);
                 }
-                if ((s.endsWith("ri1") || s.endsWith("ri2")) && (World.Rnd().nextFloat() < (1.0D - (0.92000001668930054D * Math.abs(v1.x)))) && (this.chunkDamageVisible("WingRIn") > 2) && (this.getEnergyPastArmor(2.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** WingRIn Spars Damaged..");
+                if ((s.endsWith("ri1") || s.endsWith("ri2")) && (World.Rnd().nextFloat() < (1.0D - (0.92000001668930054D * Math.abs(Aircraft.v1.x)))) && (this.chunkDamageVisible("WingRIn") > 2) && (this.getEnergyPastArmor(2.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
+                    Aircraft.debugprintln(this, "*** WingRIn Spars Damaged..");
                     this.nextDMGLevels(1, 2, "WingRIn_D3", shot.initiator);
                 }
-                if ((s.endsWith("lm1") || s.endsWith("lm2")) && (World.Rnd().nextFloat() < (1.0D - (0.92000001668930054D * Math.abs(v1.x)))) && (this.chunkDamageVisible("WingLMid") > 2) && (this.getEnergyPastArmor(2.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** WingLMid Spars Damaged..");
+                if ((s.endsWith("lm1") || s.endsWith("lm2")) && (World.Rnd().nextFloat() < (1.0D - (0.92000001668930054D * Math.abs(Aircraft.v1.x)))) && (this.chunkDamageVisible("WingLMid") > 2) && (this.getEnergyPastArmor(2.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
+                    Aircraft.debugprintln(this, "*** WingLMid Spars Damaged..");
                     this.nextDMGLevels(1, 2, "WingLMid_D3", shot.initiator);
                 }
-                if ((s.endsWith("rm1") || s.endsWith("rm2")) && (World.Rnd().nextFloat() < (1.0D - (0.92000001668930054D * Math.abs(v1.x)))) && (this.chunkDamageVisible("WingRMid") > 2) && (this.getEnergyPastArmor(2.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** WingRMid Spars Damaged..");
+                if ((s.endsWith("rm1") || s.endsWith("rm2")) && (World.Rnd().nextFloat() < (1.0D - (0.92000001668930054D * Math.abs(Aircraft.v1.x)))) && (this.chunkDamageVisible("WingRMid") > 2) && (this.getEnergyPastArmor(2.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
+                    Aircraft.debugprintln(this, "*** WingRMid Spars Damaged..");
                     this.nextDMGLevels(1, 2, "WingRMid_D3", shot.initiator);
                 }
-                if ((s.endsWith("lo1") || s.endsWith("lo2")) && (World.Rnd().nextFloat() < (1.0D - (0.92000001668930054D * Math.abs(v1.x)))) && (this.chunkDamageVisible("WingLOut") > 2) && (this.getEnergyPastArmor(1.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** WingLOut Spars Damaged..");
+                if ((s.endsWith("lo1") || s.endsWith("lo2")) && (World.Rnd().nextFloat() < (1.0D - (0.92000001668930054D * Math.abs(Aircraft.v1.x)))) && (this.chunkDamageVisible("WingLOut") > 2) && (this.getEnergyPastArmor(1.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
+                    Aircraft.debugprintln(this, "*** WingLOut Spars Damaged..");
                     this.nextDMGLevels(1, 2, "WingLOut_D3", shot.initiator);
                 }
-                if ((s.endsWith("ro1") || s.endsWith("ro2")) && (World.Rnd().nextFloat() < (1.0D - (0.92000001668930054D * Math.abs(v1.x)))) && (this.chunkDamageVisible("WingROut") > 2) && (this.getEnergyPastArmor(1.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** WingROut Spars Damaged..");
+                if ((s.endsWith("ro1") || s.endsWith("ro2")) && (World.Rnd().nextFloat() < (1.0D - (0.92000001668930054D * Math.abs(Aircraft.v1.x)))) && (this.chunkDamageVisible("WingROut") > 2) && (this.getEnergyPastArmor(1.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
+                    Aircraft.debugprintln(this, "*** WingROut Spars Damaged..");
                     this.nextDMGLevels(1, 2, "WingROut_D3", shot.initiator);
                 }
                 if ((s.endsWith("sl1") || s.endsWith("sl2")) && (this.chunkDamageVisible("StabL") > 2) && (this.getEnergyPastArmor(3.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** StabL Spars Damaged..");
+                    Aircraft.debugprintln(this, "*** StabL Spars Damaged..");
                     this.nextDMGLevels(1, 2, "StabL_D3", shot.initiator);
                 }
                 if ((s.endsWith("sr1") || s.endsWith("sr2")) && (this.chunkDamageVisible("StabR") > 2) && (this.getEnergyPastArmor(3.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** StabR Spars Damaged..");
+                    Aircraft.debugprintln(this, "*** StabR Spars Damaged..");
                     this.nextDMGLevels(1, 2, "StabR_D3", shot.initiator);
                 }
                 return;
@@ -160,26 +159,26 @@ public class LAGG_3RD extends LAGG_3 {
             if (s.startsWith("xxlock")) {
                 if (s.endsWith("al")) {
                     if (this.getEnergyPastArmor(0.35F, shot) > 0.0F) {
-                        debugprintln(this, "*** AroneL Lock Damaged..");
+                        Aircraft.debugprintln(this, "*** AroneL Lock Damaged..");
                         this.nextDMGLevels(1, 2, "AroneL_D0", shot.initiator);
                     }
                 } else if (s.endsWith("ar")) {
                     if (this.getEnergyPastArmor(0.35F, shot) > 0.0F) {
-                        debugprintln(this, "*** AroneR Lock Damaged..");
+                        Aircraft.debugprintln(this, "*** AroneR Lock Damaged..");
                         this.nextDMGLevels(1, 2, "AroneR_D0", shot.initiator);
                     }
                 } else if (s.endsWith("vl1") || s.endsWith("vl2")) {
                     if (this.getEnergyPastArmor(0.35F, shot) > 0.0F) {
-                        debugprintln(this, "*** VatorL Lock Damaged..");
+                        Aircraft.debugprintln(this, "*** VatorL Lock Damaged..");
                         this.nextDMGLevels(1, 2, "VatorL_D0", shot.initiator);
                     }
                 } else if (s.endsWith("vr1") || s.endsWith("vr2")) {
                     if (this.getEnergyPastArmor(0.35F, shot) > 0.0F) {
-                        debugprintln(this, "*** VatorR Lock Damaged..");
+                        Aircraft.debugprintln(this, "*** VatorR Lock Damaged..");
                         this.nextDMGLevels(1, 2, "VatorR_D0", shot.initiator);
                     }
                 } else if ((s.endsWith("r1") || s.endsWith("r2")) && (this.getEnergyPastArmor(0.35F, shot) > 0.0F)) {
-                    debugprintln(this, "*** Rudder1 Lock Damaged..");
+                    Aircraft.debugprintln(this, "*** Rudder1 Lock Damaged..");
                     this.nextDMGLevels(1, 2, "Rudder1_D0", shot.initiator);
                 }
                 return;
@@ -219,14 +218,14 @@ public class LAGG_3RD extends LAGG_3 {
                 return;
             }
         }
-        if ((s.startsWith("xcf") || (s.startsWith("xcockpit") && (Pd.z > 0.73299998044967651D))) && (this.chunkDamageVisible("CF") < 3)) {
+        if ((s.startsWith("xcf") || (s.startsWith("xcockpit") && (Aircraft.Pd.z > 0.73299998044967651D))) && (this.chunkDamageVisible("CF") < 3)) {
             this.hitChunk("CF", shot);
         }
         if (s.startsWith("xxcockpit")) {
             if (World.Rnd().nextFloat() < 0.1F) {
                 this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x40);
             }
-            if (Pd.y < 0.0D) {
+            if (Aircraft.Pd.y < 0.0D) {
                 if (World.Rnd().nextFloat() < 0.25F) {
                     this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 4);
                 }
@@ -241,7 +240,7 @@ public class LAGG_3RD extends LAGG_3 {
                     this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x20);
                 }
             }
-            if ((Pd.z > 0.63899999856948853D) && (Pd.x < -1.0410000085830688D)) {
+            if ((Aircraft.Pd.z > 0.63899999856948853D) && (Aircraft.Pd.x < -1.0410000085830688D)) {
                 this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 1);
             }
         } else if (s.startsWith("xeng")) {
@@ -314,7 +313,7 @@ public class LAGG_3RD extends LAGG_3 {
     private float curctl;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = LAGG_3RD.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "LaGG");
         Property.set(class1, "meshName", "3DO/Plane/LaGG-3RD(Multi1)/hier.him");
@@ -322,11 +321,9 @@ public class LAGG_3RD extends LAGG_3 {
         Property.set(class1, "yearService", 1944F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/LaGG-3RD.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitLAGG_3RD.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitLAGG_3RD.class });
         Property.set(class1, "LOSElevation", 0.90695F);
-        weaponTriggersRegister(class1, new int[] { 1, 1 });
-        weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02" });
-        weaponsRegister(class1, "default", new String[] { "MGunShVAKki 240", "MGunShVAKki 240" });
-        weaponsRegister(class1, "none", new String[] { null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 1, 1 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02" });
     }
 }

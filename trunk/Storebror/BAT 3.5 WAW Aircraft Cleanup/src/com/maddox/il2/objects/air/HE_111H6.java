@@ -182,22 +182,7 @@ public class HE_111H6 extends HE_111 implements TypeHasToKG {
         Property.set(class1, "yearExpired", 1948F);
         Property.set(class1, "FlightModel", "FlightModels/He-111H-6.fmd");
         Property.set(class1, "cockpitClass", new Class[] { CockpitHE_111H6.class, CockpitHE_111H6_Bombardier.class, CockpitHE_111H6_NGunner.class, CockpitHE_111H2_TGunner.class, CockpitHE_111H2_BGunner.class, CockpitHE_111H2_LGunner.class, CockpitHE_111H2_RGunner.class });
-        weaponTriggersRegister(class1, new int[] { 10, 11, 12, 13, 14, 15, 3, 3, 3, 3 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04" });
-        weaponsRegister(class1, "default", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", null, null, null, null });
-        weaponsRegister(class1, "4xSD250", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunSD500", "BombGunSD500", null, null });
-        weaponsRegister(class1, "4xSC500", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunSC500", "BombGunSC500", null, null });
-        weaponsRegister(class1, "4xAB500", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunAB500", "BombGunAB500", null, null });
-        weaponsRegister(class1, "1SC1000", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunSC1000", null, null, null });
-        weaponsRegister(class1, "2SC1000", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunSC1000", "BombGunSC1000", null, null });
-        weaponsRegister(class1, "2PC1600", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunPC1600", null, null, null });
-        weaponsRegister(class1, "1SC1800", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunSC1800", null, null, null });
-        weaponsRegister(class1, "2SC2000", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunSC2000", null, null, null });
-        weaponsRegister(class1, "2xTorp", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunTorpF5BheavyL", "BombGunTorpF5BheavyR", null, null });
-        weaponsRegister(class1, "2xTorp_spread", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunTorpF5BheavyL", "BombGunNull", "BombGunNull", "BombGunTorpF5BheavyR" });
-        weaponsRegister(class1, "2xTorp_LTW", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunTorpFiumeL", "BombGunTorpFiumeR", null, null });
-        weaponsRegister(class1, "2xTorp_LTW_spread", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunTorpFiumeL", "BombGunNull", "BombGunNull", "BombGunTorpFiumeR" });
-        weaponsRegister(class1, "2xTorp_Practice_spread", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunTorpLTF5PracticeL", "BombGunNull", "BombGunNull", "BombGunTorpLTF5PracticeR" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 10, 11, 12, 13, 14, 15, 3, 3, 3, 3 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04" });
     }
 }

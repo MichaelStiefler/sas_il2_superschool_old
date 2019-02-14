@@ -2,16 +2,13 @@ package com.maddox.il2.objects.air;
 
 import java.io.IOException;
 
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Interpolate;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.fm.Pitot;
 import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -38,11 +35,11 @@ public class JU_188beta extends JU_88NEW implements TypeBomber, TypeDiveBomber, 
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.startsWith("10xSC50")) {
-            ((FlightModelMain) (super.FM)).M.fuel += 900F;
-            ((FlightModelMain) (super.FM)).M.maxFuel += 900F;
+        if (this.thisWeaponsName.startsWith("10xSC50")) {
+            this.FM.M.fuel += 900F;
+            this.FM.M.maxFuel += 900F;
             this.needsToOpenBombays = true;
-        } else if (super.thisWeaponsName.startsWith("28xSC50") || super.thisWeaponsName.startsWith("18xSC50") || super.thisWeaponsName.startsWith("6xSC250")) {
+        } else if (this.thisWeaponsName.startsWith("28xSC50") || this.thisWeaponsName.startsWith("18xSC50") || this.thisWeaponsName.startsWith("6xSC250")) {
             this.needsToOpenBombays = true;
         }
     }
@@ -58,22 +55,22 @@ public class JU_188beta extends JU_88NEW implements TypeBomber, TypeDiveBomber, 
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            JU_188beta.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            JU_188beta.bChangedPit = true;
         }
     }
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         for (int i = 1; i < 4; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -86,9 +83,9 @@ public class JU_188beta extends JU_88NEW implements TypeBomber, TypeDiveBomber, 
         this.updateJU87D5(f);
         this.updateJU87(f);
         super.update(f);
-        if ((Pitot.Indicator((float) ((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z, super.FM.getSpeed()) > 70F) && (((FlightModelMain) (super.FM)).CT.getFlap() > 0.01D) && (((FlightModelMain) (super.FM)).CT.FlapsControl != 0.0F)) {
-            ((FlightModelMain) (super.FM)).CT.FlapsControl = 0.0F;
-            Actor actor = ((Interpolate) (super.FM)).actor;
+        if ((Pitot.Indicator((float) this.FM.Loc.z, this.FM.getSpeed()) > 70F) && (this.FM.CT.getFlap() > 0.01D) && (this.FM.CT.FlapsControl != 0.0F)) {
+            this.FM.CT.FlapsControl = 0.0F;
+            Actor actor = ((Interpolate) (this.FM)).actor;
             World.cur();
             if (actor == World.getPlayerAircraft()) {
                 HUD.log("FlapsRaised");
@@ -97,57 +94,57 @@ public class JU_188beta extends JU_88NEW implements TypeBomber, TypeDiveBomber, 
     }
 
     public void updateJU87(float f) {
-        if ((this == World.getPlayerAircraft()) && (super.FM instanceof RealFlightModel)) {
-            if (((RealFlightModel) super.FM).isRealMode()) {
+        if ((this == World.getPlayerAircraft()) && (this.FM instanceof RealFlightModel)) {
+            if (((RealFlightModel) this.FM).isRealMode()) {
                 switch (this.diveMechStage) {
-                    case 0: // '\0'
-                        if (this.bNDives && (((FlightModelMain) (super.FM)).CT.AirBrakeControl == 1.0F) && (((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z > this.fDiveRecoveryAlt)) {
+                    case 0:
+                        if (this.bNDives && (this.FM.CT.AirBrakeControl == 1.0F) && (this.FM.Loc.z > this.fDiveRecoveryAlt)) {
                             this.diveMechStage++;
                             this.bNDives = false;
                         } else {
-                            this.bNDives = ((FlightModelMain) (super.FM)).CT.AirBrakeControl != 1.0F;
+                            this.bNDives = this.FM.CT.AirBrakeControl != 1.0F;
                         }
                         break;
 
-                    case 1: // '\001'
-                        ((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(-0.25F);
-                        ((FlightModelMain) (super.FM)).CT.trimElevator = -0.25F;
-                        if ((((FlightModelMain) (super.FM)).CT.AirBrakeControl == 0.0F) || ((FlightModelMain) (super.FM)).CT.saveWeaponControl[3] || ((((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].countBullets() == 0))) {
-                            if (((FlightModelMain) (super.FM)).CT.AirBrakeControl == 0.0F) {
+                    case 1:
+                        this.FM.CT.setTrimElevatorControl(-0.25F);
+                        this.FM.CT.trimElevator = -0.25F;
+                        if ((this.FM.CT.AirBrakeControl == 0.0F) || this.FM.CT.saveWeaponControl[3] || ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].countBullets() == 0))) {
+                            if (this.FM.CT.AirBrakeControl == 0.0F) {
                                 this.diveMechStage++;
                             }
-                            if ((((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].countBullets() == 0)) {
+                            if ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].countBullets() == 0)) {
                                 this.diveMechStage++;
                             }
                         }
                         break;
 
-                    case 2: // '\002'
-                        ((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(0.45F);
-                        ((FlightModelMain) (super.FM)).CT.trimElevator = 0.45F;
-                        if ((((FlightModelMain) (super.FM)).CT.AirBrakeControl == 0.0F) || (((FlightModelMain) (super.FM)).Or.getTangage() > 0.0F)) {
+                    case 2:
+                        this.FM.CT.setTrimElevatorControl(0.45F);
+                        this.FM.CT.trimElevator = 0.45F;
+                        if ((this.FM.CT.AirBrakeControl == 0.0F) || (this.FM.Or.getTangage() > 0.0F)) {
                             this.diveMechStage++;
                         }
                         break;
 
-                    case 3: // '\003'
-                        ((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(0.0F);
-                        ((FlightModelMain) (super.FM)).CT.trimElevator = 0.0F;
+                    case 3:
+                        this.FM.CT.setTrimElevatorControl(0.0F);
+                        this.FM.CT.trimElevator = 0.0F;
                         this.diveMechStage = 0;
                         break;
                 }
             } else {
-                ((FlightModelMain) (super.FM)).CT.setTrimElevatorControl(0.0F);
-                ((FlightModelMain) (super.FM)).CT.trimElevator = 0.0F;
+                this.FM.CT.setTrimElevatorControl(0.0F);
+                this.FM.CT.trimElevator = 0.0F;
             }
         }
-        if (this.bDropsBombs && super.FM.isTick(3, 0) && (((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1] != null) && ((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].haveBullets()) {
-            ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = true;
+        if (this.bDropsBombs && this.FM.isTick(3, 0) && (this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1] != null) && this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].haveBullets()) {
+            this.FM.CT.WeaponControl[3] = true;
         }
     }
 
     public void updateJU87D5(float f) {
-        this.fDiveAngle = -((FlightModelMain) (super.FM)).Or.getTangage();
+        this.fDiveAngle = -this.FM.Or.getTangage();
         if (this.fDiveAngle > 89F) {
             this.fDiveAngle = 89F;
         }
@@ -163,26 +160,26 @@ public class JU_188beta extends JU_88NEW implements TypeBomber, TypeDiveBomber, 
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 this.hierMesh().chunkVisible("HMask3_D0", false);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.hierMesh().chunkVisible("Pilot4_D0", false);
                 this.hierMesh().chunkVisible("Pilot4_D1", true);
                 this.hierMesh().chunkVisible("HMask4_D0", false);
@@ -295,7 +292,7 @@ public class JU_188beta extends JU_88NEW implements TypeBomber, TypeDiveBomber, 
     }
 
     public void typeBomberUpdate(float f) {
-        if (Math.abs(((FlightModelMain) (super.FM)).Or.getKren()) > 4.5D) {
+        if (Math.abs(this.FM.Or.getKren()) > 4.5D) {
             this.fSightCurReadyness -= 0.0666666F * f;
             if (this.fSightCurReadyness < 0.0F) {
                 this.fSightCurReadyness = 0.0F;
@@ -310,17 +307,17 @@ public class JU_188beta extends JU_88NEW implements TypeBomber, TypeDiveBomber, 
                 this.typeBomberToggleAutomation();
             }
             this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / this.fSightCurAltitude));
-            if (this.fSightCurDistance < (this.fSightCurSpeed / 3.6F * Math.sqrt(this.fSightCurAltitude * 0.2038736F))) {
+            if (this.fSightCurDistance < ((this.fSightCurSpeed / 3.6F) * Math.sqrt(this.fSightCurAltitude * 0.2038736F))) {
                 this.bSightBombDump = true;
             }
             if (this.bSightBombDump) {
-                if (super.FM.isTick(3, 0)) {
-                    if ((((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1] != null) && ((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].haveBullets()) {
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = true;
+                if (this.FM.isTick(3, 0)) {
+                    if ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1] != null) && this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].haveBullets()) {
+                        this.FM.CT.WeaponControl[3] = true;
                         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
                     }
                 } else {
-                    ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = false;
+                    this.FM.CT.WeaponControl[3] = false;
                 }
             }
         }
@@ -421,7 +418,7 @@ public class JU_188beta extends JU_88NEW implements TypeBomber, TypeDiveBomber, 
     public float          fDiveAngle;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = JU_188beta.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Ju188A2");
         Property.set(class1, "meshName", "3DO/Plane/JU188beta/hier.him");

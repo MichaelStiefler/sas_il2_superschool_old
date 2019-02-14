@@ -35,13 +35,13 @@ public class J8M1 extends Scheme1 implements TypeFighter, TypeBNZFighter {
             this.headYm = f - 0.0005F;
             f *= 0.7F;
             f1 *= 0.7F;
-            tmpOrLH.setYPR(0.0F, 0.0F, 0.0F);
-            tmpOrLH.increment(0.0F, f, 0.0F);
-            tmpOrLH.increment(f1, 0.0F, 0.0F);
-            tmpOrLH.increment(0.0F, 0.0F, (-0.2F * f1) + (0.05F * f));
-            this.headOr[0] = tmpOrLH.getYaw();
-            this.headOr[1] = tmpOrLH.getPitch();
-            this.headOr[2] = tmpOrLH.getRoll();
+            J8M1.tmpOrLH.setYPR(0.0F, 0.0F, 0.0F);
+            J8M1.tmpOrLH.increment(0.0F, f, 0.0F);
+            J8M1.tmpOrLH.increment(f1, 0.0F, 0.0F);
+            J8M1.tmpOrLH.increment(0.0F, 0.0F, (-0.2F * f1) + (0.05F * f));
+            this.headOr[0] = J8M1.tmpOrLH.getYaw();
+            this.headOr[1] = J8M1.tmpOrLH.getPitch();
+            this.headOr[2] = J8M1.tmpOrLH.getRoll();
             this.headPos[0] = 0.0001F * Math.abs(f);
             this.headPos[1] = -0.0001F * Math.abs(f);
             this.headPos[2] = 0.0F;
@@ -103,13 +103,13 @@ public class J8M1 extends Scheme1 implements TypeFighter, TypeBNZFighter {
                     default:
                         break;
 
-                    case 1: // '\001'
+                    case 1:
                         if ((this.getEnergyPastArmor(2.2F / (float) Math.sqrt((Aircraft.v1.y * Aircraft.v1.y) + (Aircraft.v1.z * Aircraft.v1.z)), shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
                             this.FM.AS.setControlsDamage(shot.initiator, 2);
                         }
                         break;
 
-                    case 2: // '\002'
+                    case 2:
                         if (this.getEnergyPastArmor(2.2F / (float) Math.sqrt((Aircraft.v1.y * Aircraft.v1.y) + (Aircraft.v1.z * Aircraft.v1.z)), shot) <= 0.0F) {
                             break;
                         }
@@ -122,8 +122,8 @@ public class J8M1 extends Scheme1 implements TypeFighter, TypeBNZFighter {
                         }
                         break;
 
-                    case 3: // '\003'
-                    case 4: // '\004'
+                    case 3:
+                    case 4:
                         if ((this.getEnergyPastArmor(2.2F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.1F)) {
                             this.FM.AS.setControlsDamage(shot.initiator, 1);
                             this.FM.AS.setControlsDamage(shot.initiator, 0);
@@ -192,7 +192,7 @@ public class J8M1 extends Scheme1 implements TypeFighter, TypeBNZFighter {
                     default:
                         break;
 
-                    case 1: // '\001'
+                    case 1:
                         if (World.Rnd().nextFloat() < 0.01F) {
                             this.FM.AS.hitEngine(shot.initiator, 0, 100);
                         }
@@ -201,13 +201,13 @@ public class J8M1 extends Scheme1 implements TypeFighter, TypeBNZFighter {
                         }
                         break;
 
-                    case 2: // '\002'
+                    case 2:
                         if ((this.getEnergyPastArmor(4.96F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
                             this.FM.AS.hitEngine(shot.initiator, 0, 100);
                         }
                         break;
 
-                    case 3: // '\003'
+                    case 3:
                         this.getEnergyPastArmor(5.808F, shot);
                         break;
                 }
@@ -219,27 +219,27 @@ public class J8M1 extends Scheme1 implements TypeFighter, TypeBNZFighter {
                     default:
                         break;
 
-                    case 1: // '\001'
+                    case 1:
                         if (this.getEnergyPastArmor(World.Rnd().nextFloat(1.0F, 7.9F), shot) > 0.0F) {
                             this.FM.AS.hitTank(shot.initiator, 3, 1);
                         }
                         break;
 
-                    case 2: // '\002'
-                    case 3: // '\003'
+                    case 2:
+                    case 3:
                         if (this.getEnergyPastArmor(World.Rnd().nextFloat(1.0F, 7.9F), shot) > 0.0F) {
                             this.FM.AS.hitTank(shot.initiator, 2, 1);
                             this.bCockpitNVentilated = true;
                         }
                         // fall through
 
-                    case 4: // '\004'
+                    case 4:
                         if (this.getEnergyPastArmor(World.Rnd().nextFloat(1.0F, 7.9F), shot) > 0.0F) {
                             this.FM.AS.hitTank(shot.initiator, 0, World.Rnd().nextInt(1, 4));
                         }
                         break;
 
-                    case 5: // '\005'
+                    case 5:
                         if (this.getEnergyPastArmor(World.Rnd().nextFloat(1.0F, 7.9F), shot) > 0.0F) {
                             this.FM.AS.hitTank(shot.initiator, 1, World.Rnd().nextInt(1, 4));
                         }
@@ -265,7 +265,7 @@ public class J8M1 extends Scheme1 implements TypeFighter, TypeBNZFighter {
                 this.FM.AS.setJamBullets(1, 1);
             }
             if (s.startsWith("xxeqpt")) {
-                ;
+
             }
             return;
         }
@@ -525,14 +525,14 @@ public class J8M1 extends Scheme1 implements TypeFighter, TypeBNZFighter {
 
     public void doSetSootState(int i, int j) {
         switch (j) {
-            case 0: // '\0'
+            case 0:
                 Eff3DActor.setIntesity(this.flame, 0.0F);
                 Eff3DActor.setIntesity(this.dust, 0.0F);
                 Eff3DActor.setIntesity(this.trail, 0.0F);
                 Eff3DActor.setIntesity(this.sprite, 0.0F);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 Eff3DActor.setIntesity(this.flame, 1.0F);
                 Eff3DActor.setIntesity(this.dust, 1.0F);
                 Eff3DActor.setIntesity(this.trail, 1.0F);

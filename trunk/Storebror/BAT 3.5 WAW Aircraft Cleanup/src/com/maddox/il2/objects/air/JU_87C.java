@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.Actor;
@@ -8,7 +7,6 @@ import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.Landscape;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
@@ -36,39 +34,39 @@ public class JU_87C extends JU_87 {
     }
 
     private boolean isAI() {
-        return ((this != World.getPlayerAircraft()) || !((RealFlightModel) super.FM).isRealMode()) && (super.FM instanceof Pilot);
+        return ((this != World.getPlayerAircraft()) || !((RealFlightModel) this.FM).isRealMode()) && (this.FM instanceof Pilot);
     }
 
     private void updateGearStatus() {
-        float f = super.FM.getAltitude() - Landscape.HQ_Air((float) ((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).x, (float) ((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).y);
+        float f = this.FM.getAltitude() - Landscape.HQ_Air((float) this.FM.Loc.x, (float) this.FM.Loc.y);
         if ((f < 30F) && !this.bGearJettisoned) {
-            ((FlightModelMain) (super.FM)).Gears.rgear = true;
-            ((FlightModelMain) (super.FM)).Gears.lgear = true;
+            this.FM.Gears.rgear = true;
+            this.FM.Gears.lgear = true;
         } else {
-            ((FlightModelMain) (super.FM)).Gears.rgear = false;
-            ((FlightModelMain) (super.FM)).Gears.lgear = false;
+            this.FM.Gears.rgear = false;
+            this.FM.Gears.lgear = false;
         }
         if (!this.bGearInitialized) {
-            ((FlightModelMain) (super.FM)).CT.GearControl = 1.0F;
-            ((FlightModelMain) (super.FM)).CT.setGear(1.0F);
+            this.FM.CT.GearControl = 1.0F;
+            this.FM.CT.setGear(1.0F);
             this.bGearInitialized = true;
         }
         if (this.isAI()) {
             if (this.bGearJettisoned) {
-                ((FlightModelMain) (super.FM)).CT.GearControl = 0.0F;
-                ((FlightModelMain) (super.FM)).CT.setGear(0.0F);
+                this.FM.CT.GearControl = 0.0F;
+                this.FM.CT.setGear(0.0F);
             } else {
-                ((FlightModelMain) (super.FM)).CT.GearControl = 1.0F;
-                ((FlightModelMain) (super.FM)).CT.setGear(1.0F);
+                this.FM.CT.GearControl = 1.0F;
+                this.FM.CT.setGear(1.0F);
             }
-            ((FlightModelMain) (super.FM)).CT.bHasGearControl = false;
+            this.FM.CT.bHasGearControl = false;
             this.bOldStatusAI = true;
         } else {
             if (!this.bGearJettisoned) {
-                ((FlightModelMain) (super.FM)).CT.bHasGearControl = true;
+                this.FM.CT.bHasGearControl = true;
                 if (this.bOldStatusAI) {
-                    ((FlightModelMain) (super.FM)).CT.GearControl = 1.0F;
-                    ((FlightModelMain) (super.FM)).CT.setGear(1.0F);
+                    this.FM.CT.GearControl = 1.0F;
+                    this.FM.CT.setGear(1.0F);
                 }
             }
             this.bOldStatusAI = false;
@@ -78,18 +76,18 @@ public class JU_87C extends JU_87 {
     protected void moveGear(float f) {
         if (!this.isAI()) {
             if (this.bGearJettisoned) {
-                ((FlightModelMain) (super.FM)).CT.GearControl = 0.0F;
-                ((FlightModelMain) (super.FM)).CT.setGear(0.0F);
+                this.FM.CT.GearControl = 0.0F;
+                this.FM.CT.setGear(0.0F);
             } else if (!this.bGearJettisoned && (f < 0.95F)) {
                 this.bGearJettisoned = true;
                 this.cutFM(9, 0, this);
                 this.cutFM(10, 0, this);
-                ((FlightModelMain) (super.FM)).CT.GearControl = 0.0F;
-                ((FlightModelMain) (super.FM)).CT.setGear(0.0F);
-                ((FlightModelMain) (super.FM)).Gears.setOperable(false);
-                ((FlightModelMain) (super.FM)).CT.bHasGearControl = false;
-                super.FM.setGCenter(-0.5F);
-                super.FM.GearCX = 0.0F;
+                this.FM.CT.GearControl = 0.0F;
+                this.FM.CT.setGear(0.0F);
+                this.FM.Gears.setOperable(false);
+                this.FM.CT.bHasGearControl = false;
+                this.FM.setGCenter(-0.5F);
+                this.FM.GearCX = 0.0F;
                 if (this == World.getPlayerAircraft()) {
                     HUD.log("Gear Jettisoned");
                 }
@@ -108,7 +106,7 @@ public class JU_87C extends JU_87 {
             this.hideWingWeapons(false);
         } else {
             this.setGunPodsOn(false);
-            ((FlightModelMain) (super.FM)).CT.WeaponControl[0] = false;
+            this.FM.CT.WeaponControl[0] = false;
             this.hideWingWeapons(true);
         }
         this.moveWingFold(this.hierMesh(), f);
@@ -138,7 +136,7 @@ public class JU_87C extends JU_87 {
 
     protected void moveFan(float f) {
         if (this.bDynamoOperational) {
-            this.pk = Math.abs((int) (((FlightModelMain) (super.FM)).Vwld.length() / 14D));
+            this.pk = Math.abs((int) (this.FM.Vwld.length() / 14D));
             if (this.pk >= 1) {
                 this.pk = 1;
             }
@@ -148,7 +146,7 @@ public class JU_87C extends JU_87 {
             this.hierMesh().chunkVisible("GearR3_D0", !this.bDynamoRotary);
             this.hierMesh().chunkVisible("GearR3Rot_D0", this.bDynamoRotary);
         }
-        this.dynamoOrient = this.bDynamoRotary ? (this.dynamoOrient - 17.987F) % 360F : (float) (this.dynamoOrient - (((FlightModelMain) (super.FM)).Vwld.length() * 1.5444015264511108D)) % 360F;
+        this.dynamoOrient = this.bDynamoRotary ? (this.dynamoOrient - 17.987F) % 360F : (float) (this.dynamoOrient - (this.FM.Vwld.length() * 1.5444015264511108D)) % 360F;
         this.hierMesh().chunkSetAngles("GearR3_D0", 0.0F, this.dynamoOrient, 0.0F);
         super.moveFan(f);
     }
@@ -161,21 +159,21 @@ public class JU_87C extends JU_87 {
     public void update(float f) {
         this.updateGearStatus();
         for (int i = 1; i < 9; i++) {
-            this.hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -15F * ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator(), 0.0F);
+            this.hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -15F * this.FM.EI.engines[0].getControlRadiator(), 0.0F);
         }
 
         super.update(f);
-        if (((FlightModelMain) (super.FM)).CT.getArrestor() > 0.9F) {
-            if (((FlightModelMain) (super.FM)).Gears.arrestorVAngle != 0.0F) {
-                this.arrestor2 = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.arrestorVAngle, -65F, 3F, 45F, -23F);
+        if (this.FM.CT.getArrestor() > 0.9F) {
+            if (this.FM.Gears.arrestorVAngle != 0.0F) {
+                this.arrestor2 = Aircraft.cvt(this.FM.Gears.arrestorVAngle, -65F, 3F, 45F, -23F);
                 this.hierMesh().chunkSetAngles("Hook_D0", 0.0F, this.arrestor2, 0.0F);
-                ((FlightModelMain) (super.FM)).Gears.getClass();
+                this.FM.Gears.getClass();
             } else {
-                float f1 = -41F * ((FlightModelMain) (super.FM)).Gears.arrestorVSink;
-                if ((f1 < 0.0F) && (super.FM.getSpeedKMH() > 60F)) {
-                    Eff3DActor.New(this, ((FlightModelMain) (super.FM)).Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
+                float f1 = -41F * this.FM.Gears.arrestorVSink;
+                if ((f1 < 0.0F) && (this.FM.getSpeedKMH() > 60F)) {
+                    Eff3DActor.New(this, this.FM.Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
                 }
-                if ((f1 > 0.0F) && (((FlightModelMain) (super.FM)).CT.getArrestor() < 0.9F)) {
+                if ((f1 > 0.0F) && (this.FM.CT.getArrestor() < 0.9F)) {
                     f1 = 0.0F;
                 }
                 if (f1 > 6.2F) {

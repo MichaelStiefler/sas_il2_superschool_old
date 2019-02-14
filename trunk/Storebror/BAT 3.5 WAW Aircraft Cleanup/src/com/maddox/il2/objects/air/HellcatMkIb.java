@@ -1,7 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class HellcatMkIb extends F6F {
@@ -12,7 +10,7 @@ public class HellcatMkIb extends F6F {
 
     public void update(float f) {
         super.update(f);
-        float f1 = ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator();
+        float f1 = this.FM.EI.engines[0].getControlRadiator();
         if (Math.abs(this.flapps - f1) > 0.01F) {
             this.flapps = f1;
             for (int i = 1; i < 8; i++) {
@@ -23,10 +21,9 @@ public class HellcatMkIb extends F6F {
     }
 
     private float flapps;
-    static Class  class$com$maddox$il2$objects$air$HellcatMkIb;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = HellcatMkIb.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "F6F");
         Property.set(class1, "meshName", "3DO/Plane/HellcatMkIb(Multi1)/hier.him");

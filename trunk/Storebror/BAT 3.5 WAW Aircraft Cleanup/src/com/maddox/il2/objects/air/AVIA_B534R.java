@@ -1,8 +1,6 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.fm.Atmosphere;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.fm.Pitot;
 import com.maddox.rts.Property;
 
@@ -13,13 +11,13 @@ public class AVIA_B534R extends Avia_B5xx {
 
     public void update(float f) {
         super.update(f);
-        float f1 = Atmosphere.temperature((float) ((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z) - 273.15F;
-        float f2 = Pitot.Indicator((float) ((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z, super.FM.getSpeedKMH());
+        float f1 = Atmosphere.temperature((float) this.FM.Loc.z) - 273.15F;
+        float f2 = Pitot.Indicator((float) this.FM.Loc.z, this.FM.getSpeedKMH());
         if (f2 < 0.0F) {
             f2 = 0.0F;
         }
-        float f3 = (((((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator() * f * f2) / (f2 + 50F)) * (((FlightModelMain) (super.FM)).EI.engines[0].tWaterOut - f1)) / 256F;
-        ((FlightModelMain) (super.FM)).EI.engines[0].tWaterOut -= f3;
+        float f3 = (((this.FM.EI.engines[0].getControlRadiator() * f * f2) / (f2 + 50F)) * (this.FM.EI.engines[0].tWaterOut - f1)) / 256F;
+        this.FM.EI.engines[0].tWaterOut -= f3;
     }
 
     static {

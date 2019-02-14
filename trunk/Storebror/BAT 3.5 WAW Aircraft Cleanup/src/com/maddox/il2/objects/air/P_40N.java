@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.objects.weapons.GunEmpty;
 import com.maddox.rts.Property;
@@ -24,8 +23,8 @@ public class P_40N extends P_40 implements TypeStormovik {
             this.hierMesh().chunkVisible("Pilon2_D0", true);
             this.hierMesh().chunkVisible("Pilon3_D0", true);
         }
-        if (super.thisWeaponsName.startsWith("light")) {
-            ((FlightModelMain) (super.FM)).M.massEmpty = 3159F;
+        if (this.thisWeaponsName.startsWith("light")) {
+            this.FM.M.massEmpty = 3159F;
             this.hierMesh().chunkVisible("WingGunL_D0", false);
             this.hierMesh().chunkVisible("WingGunR_D0", false);
             return;
@@ -36,14 +35,14 @@ public class P_40N extends P_40 implements TypeStormovik {
 
     public void update(float f1) {
         super.update(f1);
-        f = Aircraft.cvt(((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator(), 0.0F, 1.0F, 5F, -17F);
-        this.hierMesh().chunkSetAngles("Water2_D0", 0.0F, f, 0.0F);
-        this.hierMesh().chunkSetAngles("Water3_D0", 0.0F, f, 0.0F);
-        f = Math.min(f, 0.0F);
-        this.hierMesh().chunkSetAngles("Water1_D0", 0.0F, f, 0.0F);
-        this.hierMesh().chunkSetAngles("Water4_D0", 0.0F, f, 0.0F);
-        if (((FlightModelMain) (super.FM)).EI.engines[0].getControlAfterburner()) {
-            ((FlightModelMain) (super.FM)).EI.engines[0].setAfterburnerType(11);
+        P_40N.f = Aircraft.cvt(this.FM.EI.engines[0].getControlRadiator(), 0.0F, 1.0F, 5F, -17F);
+        this.hierMesh().chunkSetAngles("Water2_D0", 0.0F, P_40N.f, 0.0F);
+        this.hierMesh().chunkSetAngles("Water3_D0", 0.0F, P_40N.f, 0.0F);
+        P_40N.f = Math.min(P_40N.f, 0.0F);
+        this.hierMesh().chunkSetAngles("Water1_D0", 0.0F, P_40N.f, 0.0F);
+        this.hierMesh().chunkSetAngles("Water4_D0", 0.0F, P_40N.f, 0.0F);
+        if (this.FM.EI.engines[0].getControlAfterburner()) {
+            this.FM.EI.engines[0].setAfterburnerType(11);
             HUD.logRightBottom("BOOST / WEP ENABLED!");
         }
     }

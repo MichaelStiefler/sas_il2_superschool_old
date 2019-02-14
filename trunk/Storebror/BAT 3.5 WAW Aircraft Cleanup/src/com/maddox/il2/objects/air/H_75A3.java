@@ -73,16 +73,8 @@ public class H_75A3 extends P_36 {
         Property.set(class1, "yearService", 1940F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/P-36A-3.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitHawk_75A3.class} );
-        weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalBomb09", "_ExternalBomb10" });
-        weaponsRegister(class1, "default", new String[] { "MGunBrowning303si 600", "MGunBrowning303si 600", "MGunBrowning303k 500", "MGunBrowning303k 500", "MGunBrowning303k 500", "MGunBrowning303k 500", null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "1x50+5x303", new String[] { "MGunBrowning50si 200", "MGunBrowning303si 600", "MGunBrowning303k 500", "MGunBrowning303k 500", "MGunBrowning303k 500", "MGunBrowning303k 500", null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "2x50+4x303", new String[] { "MGunBrowning50si 200", "MGunBrowning50si 200", "MGunBrowning303k 500", "MGunBrowning303k 500", "MGunBrowning303k 500", "MGunBrowning303k 500", null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "10x12kg_bombs", new String[] { "MGunBrowning303si 600", "MGunBrowning303si 600", "MGunBrowning303k 500", "MGunBrowning303k 500", "MGunBrowning303k 500", "MGunBrowning303k 500", "BombGun12kgFi", "BombGun12kgFi", "BombGun12kgFi", "BombGun12kgFi", "BombGun12kgFi", "BombGun12kgFi", "BombGun12kgFi", "BombGun12kgFi", "BombGun12kgFi", "BombGun12kgFi" });
-        weaponsRegister(class1, "6x25kg_bombs", new String[] { "MGunBrowning303si 600", "MGunBrowning303si 600", "MGunBrowning303k 500", "MGunBrowning303k 500", "MGunBrowning303k 500", "MGunBrowning303k 500", null, null, null, null, "BombGun25kgFi", "BombGun25kgFi", "BombGun25kgFi", "BombGun25kgFi", "BombGun25kgFi", "BombGun25kgFi" });
-        weaponsRegister(class1, "2x50+4x303+10x12kg_bombs", new String[] { "MGunBrowning50si 200", "MGunBrowning50si 200", "MGunBrowning303k 500", "MGunBrowning303k 500", "MGunBrowning303k 500", "MGunBrowning303k 500", "BombGun12kgFi", "BombGun12kgFi", "BombGun12kgFi", "BombGun12kgFi", "BombGun12kgFi", "BombGun12kgFi", "BombGun12kgFi", "BombGun12kgFi", "BombGun12kgFi", "BombGun12kgFi" });
-        weaponsRegister(class1, "2x50+4x303+6x25kg_bombs", new String[] { "MGunBrowning50si 200", "MGunBrowning50si 200", "MGunBrowning303k 500", "MGunBrowning303k 500", "MGunBrowning303k 500", "MGunBrowning303k 500", null, null, null, null, "BombGun25kgFi", "BombGun25kgFi", "BombGun25kgFi", "BombGun25kgFi", "BombGun25kgFi", "BombGun25kgFi" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+        Property.set(class1, "cockpitClass", new Class[] { CockpitHawk_75A3.class });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalBomb09", "_ExternalBomb10" });
     }
 }

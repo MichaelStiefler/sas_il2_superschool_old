@@ -9,7 +9,7 @@ public class LA_7KOJEDUB extends LA_X implements TypeAcePlane {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        super.FM.Skill = 3;
+        this.FM.Skill = 3;
     }
 
     static {

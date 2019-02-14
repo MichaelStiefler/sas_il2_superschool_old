@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
@@ -21,26 +20,26 @@ public class SPITFIREFR14E extends SPITFIRE9 implements TypeFighterAceMaker, Typ
         this.k14WingspanType = 0;
         this.k14Distance = 200F;
         this.flapps = 0.0F;
-        kl = 1.0F;
-        kr = 1.0F;
-        kc = 1.0F;
+        SPITFIREFR14E.kl = 1.0F;
+        SPITFIREFR14E.kr = 1.0F;
+        SPITFIREFR14E.kc = 1.0F;
     }
 
     public static void moveGear(HierMesh hiermesh, float f) {
-        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(f * kl, 0.0F, 0.6F, 0.0F, -95F), 0.0F);
-        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(f * kr, 0.2F, 1.0F, 0.0F, -95F), 0.0F);
-        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(f * kc, 0.01F, 0.99F, 0.0F, -75F), 0.0F);
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(f * SPITFIREFR14E.kl, 0.0F, 0.6F, 0.0F, -95F), 0.0F);
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(f * SPITFIREFR14E.kr, 0.2F, 1.0F, 0.0F, -95F), 0.0F);
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(f * SPITFIREFR14E.kc, 0.01F, 0.99F, 0.0F, -75F), 0.0F);
         hiermesh.chunkSetAngles("GearC3_D0", 0.0F, 0.0F, 0.0F);
-        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(f * kc, 0.01F, 0.09F, 0.0F, -75F), 0.0F);
-        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, Aircraft.cvt(f * kc, 0.01F, 0.09F, 0.0F, -75F), 0.0F);
+        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(f * SPITFIREFR14E.kc, 0.01F, 0.09F, 0.0F, -75F), 0.0F);
+        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, Aircraft.cvt(f * SPITFIREFR14E.kc, 0.01F, 0.09F, 0.0F, -75F), 0.0F);
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
-        if (((FlightModelMain) (super.FM)).Gears.isHydroOperable()) {
-            kl = 1.0F;
-            kr = 1.0F;
-            kc = 1.0F;
+        SPITFIREFR14E.moveGear(this.hierMesh(), f);
+        if (this.FM.Gears.isHydroOperable()) {
+            SPITFIREFR14E.kl = 1.0F;
+            SPITFIREFR14E.kr = 1.0F;
+            SPITFIREFR14E.kc = 1.0F;
         }
     }
 
@@ -50,9 +49,9 @@ public class SPITFIREFR14E extends SPITFIRE9 implements TypeFighterAceMaker, Typ
 
     public void moveWheelSink() {
         this.resetYPRmodifier();
-        Aircraft.xyz[2] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.247F, 0.0F, -0.247F);
+        Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.247F, 0.0F, -0.247F);
         this.hierMesh().chunkSetLocate("GearL3_D0", Aircraft.xyz, Aircraft.ypr);
-        Aircraft.xyz[2] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 0.247F, 0.0F, 0.247F);
+        Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.247F, 0.0F, 0.247F);
         this.hierMesh().chunkSetLocate("GearR3_D0", Aircraft.xyz, Aircraft.ypr);
     }
 
@@ -73,7 +72,7 @@ public class SPITFIREFR14E extends SPITFIRE9 implements TypeFighterAceMaker, Typ
 
     public void update(float f) {
         super.update(f);
-        float f1 = ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator();
+        float f1 = this.FM.EI.engines[0].getControlRadiator();
         if (Math.abs(this.flapps - f1) > 0.01F) {
             this.flapps = f1;
             this.hierMesh().chunkSetAngles("Oil1_D0", 0.0F, -20F * f1, 0.0F);

@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.LightPointActor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -76,8 +75,8 @@ public class AR_234B1 extends AR_234B2 implements TypeScout {
     public void update(float f) {
         super.update(f);
         for (int i = 0; i <= 1; i++) {
-            if ((Math.abs(((FlightModelMain) (super.FM)).EI.engines[i].getControlThrottle() - this.lastLockedThrust[i]) > 0.03F) || ((((FlightModelMain) (super.FM)).EI.engines[i].getStage() > 0) && (((FlightModelMain) (super.FM)).EI.engines[i].getStage() < 6))) {
-                this.lastLockedThrust[i] = ((FlightModelMain) (super.FM)).EI.engines[i].getControlThrottle();
+            if ((Math.abs(this.FM.EI.engines[i].getControlThrottle() - this.lastLockedThrust[i]) > 0.03F) || ((this.FM.EI.engines[i].getStage() > 0) && (this.FM.EI.engines[i].getStage() < 6))) {
+                this.lastLockedThrust[i] = this.FM.EI.engines[i].getControlThrottle();
                 this.lastThrustChange = Time.current();
             }
             this.throttleLocked = (Time.current() - this.lastThrustChange) > 5000L;
@@ -102,7 +101,7 @@ public class AR_234B1 extends AR_234B2 implements TypeScout {
             if (!this.engineIsUp(i)) {
                 this.tankSelectors[i] = 2;
             }
-            if (((FlightModelMain) (super.FM)).AS.astateEngineStates[i] >= 4) {
+            if (this.FM.AS.astateEngineStates[i] >= 4) {
                 if (this.nextEngineFireActionTime[i] == 0L) {
                     System.out.println("ENGINE " + (i + 1) + " caught fire !!!");
                     this.nextEngineFireActionTime[i] = Time.current() + 5000L;
@@ -111,23 +110,23 @@ public class AR_234B1 extends AR_234B2 implements TypeScout {
                         default:
                             break;
 
-                        case 0: // '\0'
-                            ((FlightModelMain) (super.FM)).AS.setEngineDies(this, i);
+                        case 0:
+                            this.FM.AS.setEngineDies(this, i);
                             this.tankSelectors[i] = 2;
                             this.nextEngineFireActionTime[i] = Time.current() + 5000L;
                             this.nextEngineFireAction[i] = 1;
                             break;
 
-                        case 1: // '\001'
-                            ((FlightModelMain) (super.FM)).AS.setEngineState(this, i, 2);
+                        case 1:
+                            this.FM.AS.setEngineState(this, i, 2);
                             Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "Smoke"), null, 1.0F, "3DO/Effects/Aircraft/EngineExtinguisher1.eff", 3F);
-                            ((FlightModelMain) (super.FM)).EI.engines[i].tOilIn -= 20F;
-                            ((FlightModelMain) (super.FM)).EI.engines[i].tOilOut -= 20F;
-                            ((FlightModelMain) (super.FM)).EI.engines[i].tWaterOut -= 40F;
-                            LightPointActor astateEngineBurnLights[] = (LightPointActor[]) Reflection.getValue(((FlightModelMain) (super.FM)).AS, "astateEngineBurnLights");
+                            this.FM.EI.engines[i].tOilIn -= 20F;
+                            this.FM.EI.engines[i].tOilOut -= 20F;
+                            this.FM.EI.engines[i].tWaterOut -= 40F;
+                            LightPointActor astateEngineBurnLights[] = (LightPointActor[]) Reflection.getValue(this.FM.AS, "astateEngineBurnLights");
                             for (int j = 0; j < astateEngineBurnLights.length; j++) {
                                 if (astateEngineBurnLights[i] != null) {
-                                    super.draw.lightMap().remove("_EngineBurnLight" + i);
+                                    this.draw.lightMap().remove("_EngineBurnLight" + i);
                                     astateEngineBurnLights[i].destroy();
                                     astateEngineBurnLights[i] = null;
                                 }
@@ -143,11 +142,11 @@ public class AR_234B1 extends AR_234B2 implements TypeScout {
     }
 
     private boolean engineIsUp(int engineIndex) {
-        return (((FlightModelMain) (super.FM)).EI.engines[engineIndex].getStage() > 0) && (((FlightModelMain) (super.FM)).EI.engines[engineIndex].getStage() < 7);
+        return (this.FM.EI.engines[engineIndex].getStage() > 0) && (this.FM.EI.engines[engineIndex].getStage() < 7);
     }
 
     private void checkTankState(int theTank, int otherTank) {
-        this.tankStates[theTank] = ((FlightModelMain) (super.FM)).AS.astateTankStates[theTank];
+        this.tankStates[theTank] = this.FM.AS.astateTankStates[theTank];
         if (((this.tankStates[theTank] != 0) && (this.tankStates[otherTank] == 0)) || ((this.tankStates[theTank] == 6) && (this.tankStates[otherTank] < 6))) {
             for (int i = 0; i <= 1; i++) {
                 if (this.engineIsUp(i)) {

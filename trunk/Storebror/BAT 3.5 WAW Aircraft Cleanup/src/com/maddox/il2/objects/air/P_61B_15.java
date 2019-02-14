@@ -15,7 +15,7 @@ public class P_61B_15 extends P_61X {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f1 < -1F) {
                     f1 = -1F;
                     flag = false;
@@ -26,7 +26,7 @@ public class P_61B_15 extends P_61X {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f1 < -80F) {
                     f1 = -80F;
                     flag = false;

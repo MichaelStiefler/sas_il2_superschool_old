@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Eff3DActor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Property;
 
@@ -15,15 +14,15 @@ public class SEAFIRE250AK extends SPITFIRE5 {
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            SEAFIRE250AK.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            SEAFIRE250AK.bChangedPit = true;
         }
     }
 
@@ -79,17 +78,17 @@ public class SEAFIRE250AK extends SPITFIRE5 {
 
     public void update(float f) {
         super.update(f);
-        if (((FlightModelMain) (super.FM)).CT.getArrestor() > 0.2F) {
-            if (((FlightModelMain) (super.FM)).Gears.arrestorVAngle != 0.0F) {
-                float f1 = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.arrestorVAngle, -50F, 7F, 1.0F, 0.0F);
+        if (this.FM.CT.getArrestor() > 0.2F) {
+            if (this.FM.Gears.arrestorVAngle != 0.0F) {
+                float f1 = Aircraft.cvt(this.FM.Gears.arrestorVAngle, -50F, 7F, 1.0F, 0.0F);
                 this.arrestor = (0.8F * this.arrestor) + (0.2F * f1);
                 this.moveArrestorHook(this.arrestor);
             } else {
-                float f2 = (-33F * ((FlightModelMain) (super.FM)).Gears.arrestorVSink) / 57F;
-                if ((f2 < 0.0F) && (super.FM.getSpeedKMH() > 60F)) {
-                    Eff3DActor.New(this, ((FlightModelMain) (super.FM)).Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
+                float f2 = (-33F * this.FM.Gears.arrestorVSink) / 57F;
+                if ((f2 < 0.0F) && (this.FM.getSpeedKMH() > 60F)) {
+                    Eff3DActor.New(this, this.FM.Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
                 }
-                if ((f2 > 0.0F) && (((FlightModelMain) (super.FM)).CT.getArrestor() < 0.95F)) {
+                if ((f2 > 0.0F) && (this.FM.CT.getArrestor() < 0.95F)) {
                     f2 = 0.0F;
                 }
                 if (f2 > 0.2F) {
@@ -112,8 +111,8 @@ public class SEAFIRE250AK extends SPITFIRE5 {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
-                ((FlightModelMain) (super.FM)).CT.bHasArrestorControl = false;
+            case 19:
+                this.FM.CT.bHasArrestorControl = false;
                 break;
         }
         return super.cutFM(i, j, actor);
@@ -121,7 +120,6 @@ public class SEAFIRE250AK extends SPITFIRE5 {
 
     private float         arrestor;
     public static boolean bChangedPit = false;
-    static Class          class$com$maddox$il2$objects$air$CockpitSEAFIREI250AK;
 
     static {
         Class class1 = SEAFIRE250AK.class;

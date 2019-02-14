@@ -36,7 +36,7 @@ public class Ki232 extends DO_335 implements TypeX4Carrier, TypeGuidedBombCarrie
     }
 
     public void onAircraftLoaded() {
-        if (super.thisWeaponsName.startsWith("Type3_Rockets_Schrage_Musik")) {
+        if (this.thisWeaponsName.startsWith("Type3_Rockets_Schrage_Musik")) {
             this.hierMesh().chunkVisible("RocketArray_D0", true);
         } else {
             this.hierMesh().chunkVisible("RocketArray_D0", false);

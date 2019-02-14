@@ -2,9 +2,7 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class SPITFIRE5C2LFCLPLand extends SPITFIRE {
@@ -33,7 +31,7 @@ public class SPITFIRE5C2LFCLPLand extends SPITFIRE {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        SPITFIRE5C2LFCLPLand.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {
@@ -42,17 +40,15 @@ public class SPITFIRE5C2LFCLPLand extends SPITFIRE {
 
     public void moveWheelSink() {
         this.resetYPRmodifier();
-        Aircraft.xyz[2] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.247F, 0.0F, -0.247F);
+        Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.247F, 0.0F, -0.247F);
         this.hierMesh().chunkSetLocate("GearL3_D0", Aircraft.xyz, Aircraft.ypr);
-        Aircraft.xyz[2] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 0.247F, 0.0F, 0.247F);
+        Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.247F, 0.0F, 0.247F);
         this.hierMesh().chunkSetLocate("GearR3_D0", Aircraft.xyz, Aircraft.ypr);
     }
 
-    static Class class$com$maddox$il2$objects$air$SPITFIRE5C2LFCLPLand;
-    static Class class$com$maddox$il2$objects$air$CockpitSpit5Cfb;
 
     static {
-        Class var_class = CLASS.THIS();
+        Class var_class = SPITFIRE5C2LFCLPLand.class;
         new NetAircraft.SPAWN(var_class);
         Property.set(var_class, "iconFar_shortClassName", "Spit");
         Property.set(var_class, "meshName", "3DO/Plane/SpitfireMkVcLFCLPLand(Multi1)/hier.him");

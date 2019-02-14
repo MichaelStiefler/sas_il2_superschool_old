@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class BF_110H4 extends BF_110 implements TypeX4Carrier, TypeRadarLiSN2Carrier {
@@ -14,21 +13,21 @@ public class BF_110H4 extends BF_110 implements TypeX4Carrier, TypeRadarLiSN2Car
     }
 
     public void onAircraftLoaded() {
-        super.FM.crew = 2;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[1] = 2;
+        this.FM.crew = 2;
+        this.FM.AS.astatePilotFunctions[1] = 2;
     }
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            BF_110H4.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            BF_110H4.bChangedPit = true;
         }
     }
 

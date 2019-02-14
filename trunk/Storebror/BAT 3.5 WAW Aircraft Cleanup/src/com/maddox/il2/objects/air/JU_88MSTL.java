@@ -26,7 +26,7 @@ public class JU_88MSTL extends JU_88 implements TypeDockable {
     public void msgEndAction(Object obj, int i) {
         super.msgEndAction(obj, i);
         switch (i) {
-            case 2: // '\002'
+            case 2:
                 MsgExplosion.send(this, null, this.FM.Loc, this.droneInitiator, 0.0F, 4550F, 0, 890F);
                 break;
         }
@@ -238,9 +238,7 @@ public class JU_88MSTL extends JU_88 implements TypeDockable {
         Property.set(class1, "yearService", 1943F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/Ju-88A-4Mistel.fmd");
-        weaponTriggersRegister(class1, new int[] { 9 });
-        weaponHooksRegister(class1, new String[] { "_Dockport0" });
-        weaponsRegister(class1, "default", new String[] { null });
-        weaponsRegister(class1, "none", new String[] { null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 9 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_Dockport0" });
     }
 }

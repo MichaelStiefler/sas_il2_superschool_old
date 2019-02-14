@@ -23,7 +23,7 @@ public class NW_YAK_9U extends YAK implements TypeBNZFighter {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        NW_YAK_9U.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {

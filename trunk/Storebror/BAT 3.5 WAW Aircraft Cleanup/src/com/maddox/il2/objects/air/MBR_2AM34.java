@@ -7,7 +7,6 @@ import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.NetMsgGuaranted;
@@ -27,21 +26,21 @@ public class MBR_2AM34 extends Scheme1 implements TypeTransport, TypeBomber, Typ
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
+            case 33:
                 return super.cutFM(34, j, actor);
 
-            case 36: // '$'
+            case 36:
                 return super.cutFM(37, j, actor);
 
-            case 11: // '\013'
+            case 11:
                 this.cutFM(17, j, actor);
-                super.FM.cut(17, j, actor);
+                this.FM.cut(17, j, actor);
                 this.cutFM(18, j, actor);
-                super.FM.cut(18, j, actor);
+                this.FM.cut(18, j, actor);
                 return super.cutFM(i, j, actor);
 
-            case 19: // '\023'
-                ((FlightModelMain) (super.FM)).Gears.bIsSail = false;
+            case 19:
+                this.FM.Gears.bIsSail = false;
                 break;
         }
         return super.cutFM(i, j, actor);
@@ -56,11 +55,11 @@ public class MBR_2AM34 extends Scheme1 implements TypeTransport, TypeBomber, Typ
         super.update(f);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 2; j++) {
-                if (((FlightModelMain) (super.FM)).Gears.clpGearEff[i][j] != null) {
-                    this.tmpp.set(((Actor) (((FlightModelMain) (super.FM)).Gears.clpGearEff[i][j])).pos.getAbsPoint());
+                if (this.FM.Gears.clpGearEff[i][j] != null) {
+                    this.tmpp.set(((Actor) (this.FM.Gears.clpGearEff[i][j])).pos.getAbsPoint());
                     this.tmpp.z = 0.01D;
-                    ((Actor) (((FlightModelMain) (super.FM)).Gears.clpGearEff[i][j])).pos.setAbs(this.tmpp);
-                    ((Actor) (((FlightModelMain) (super.FM)).Gears.clpGearEff[i][j])).pos.reset();
+                    ((Actor) (this.FM.Gears.clpGearEff[i][j])).pos.setAbs(this.tmpp);
+                    ((Actor) (this.FM.Gears.clpGearEff[i][j])).pos.reset();
                 }
             }
 
@@ -70,12 +69,12 @@ public class MBR_2AM34 extends Scheme1 implements TypeTransport, TypeBomber, Typ
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 1: // '\001'
-                super.FM.turret[0].setHealth(f);
+            case 1:
+                this.FM.turret[0].setHealth(f);
                 break;
 
-            case 2: // '\002'
-                super.FM.turret[1].setHealth(f);
+            case 2:
+                this.FM.turret[1].setHealth(f);
                 break;
         }
     }
@@ -85,7 +84,7 @@ public class MBR_2AM34 extends Scheme1 implements TypeTransport, TypeBomber, Typ
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
@@ -94,7 +93,7 @@ public class MBR_2AM34 extends Scheme1 implements TypeTransport, TypeBomber, Typ
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 if (World.cur().isHighGore()) {
@@ -102,7 +101,7 @@ public class MBR_2AM34 extends Scheme1 implements TypeTransport, TypeBomber, Typ
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 if (World.cur().isHighGore()) {
@@ -121,7 +120,7 @@ public class MBR_2AM34 extends Scheme1 implements TypeTransport, TypeBomber, Typ
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        MBR_2AM34.moveGear(this.hierMesh(), f);
     }
 
     public boolean turretAngles(int i, float af[]) {
@@ -132,7 +131,7 @@ public class MBR_2AM34 extends Scheme1 implements TypeTransport, TypeBomber, Typ
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 float f2 = Math.abs(f);
                 if (f2 < 114F) {
                     if (f1 < -33F) {
@@ -168,7 +167,7 @@ public class MBR_2AM34 extends Scheme1 implements TypeTransport, TypeBomber, Typ
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 float f3 = Math.abs(f);
                 if (f3 < 2.0F) {
                     flag = false;
@@ -218,13 +217,13 @@ public class MBR_2AM34 extends Scheme1 implements TypeTransport, TypeBomber, Typ
     public void msgShot(Shot shot) {
         this.setShot(shot);
         if (shot.chunkName.startsWith("WingLIn") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 0, 1);
+            this.FM.AS.hitTank(shot.initiator, 0, 1);
         }
         if (shot.chunkName.startsWith("WingRIn") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 1, 1);
+            this.FM.AS.hitTank(shot.initiator, 1, 1);
         }
         if (shot.chunkName.startsWith("Engine1") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 1);
+            this.FM.AS.hitEngine(shot.initiator, 0, 1);
         }
         if (shot.chunkName.startsWith("Pilot1")) {
             this.killPilot(shot.initiator, 0);

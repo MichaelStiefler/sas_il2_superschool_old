@@ -14,15 +14,15 @@ public class UHU extends UHUxyz implements TypeX4Carrier, TypeRadarLiSN2Carrier 
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.endsWith("R4")) {
+        if (this.thisWeaponsName.endsWith("R4")) {
             this.hierMesh().chunkVisible("MG_FF1", true);
             this.hierMesh().chunkVisible("MG_FF2", true);
         }
-        if (super.thisWeaponsName.startsWith("SN2b")) {
+        if (this.thisWeaponsName.startsWith("SN2b")) {
             this.hierMesh().chunkVisible("RadarSN2b", true);
             this.hierMesh().chunkVisible("RadarSN2c", false);
         }
-        if (super.thisWeaponsName.startsWith("SN2d")) {
+        if (this.thisWeaponsName.startsWith("SN2d")) {
             this.hierMesh().chunkVisible("RadarSN2d", true);
             this.hierMesh().chunkVisible("RadarSN2c", false);
         }
@@ -30,14 +30,14 @@ public class UHU extends UHUxyz implements TypeX4Carrier, TypeRadarLiSN2Carrier 
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);

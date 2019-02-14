@@ -7,7 +7,6 @@ import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Eff3DActor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.ActorLand;
 import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.BombWalterStarthilferakete;
@@ -22,7 +21,7 @@ public class ME_321 extends Scheme0 implements TypeGlider, TypeTransport, TypeBo
     }
 
     public void msgCollision(Actor actor, String s, String s1) {
-        if ((actor instanceof ActorLand) && (super.FM.getVertSpeed() > -10F)) {
+        if ((actor instanceof ActorLand) && (this.FM.getVertSpeed() > -10F)) {
             return;
         } else {
             super.msgCollision(actor, s, s1);
@@ -32,40 +31,40 @@ public class ME_321 extends Scheme0 implements TypeGlider, TypeTransport, TypeBo
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 2: // '\002'
-                super.FM.turret[0].setHealth(f);
+            case 2:
+                this.FM.turret[0].setHealth(f);
                 break;
 
-            case 3: // '\003'
-                super.FM.turret[1].setHealth(f);
+            case 3:
+                this.FM.turret[1].setHealth(f);
                 break;
 
-            case 4: // '\004'
-                super.FM.turret[2].setHealth(f);
+            case 4:
+                this.FM.turret[2].setHealth(f);
                 break;
 
-            case 5: // '\005'
-                super.FM.turret[3].setHealth(f);
+            case 5:
+                this.FM.turret[3].setHealth(f);
                 break;
         }
     }
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 2: // '\002'
-                super.FM.turret[0].bIsOperable = false;
+            case 2:
+                this.FM.turret[0].bIsOperable = false;
                 break;
 
-            case 3: // '\003'
-                super.FM.turret[1].bIsOperable = false;
+            case 3:
+                this.FM.turret[1].bIsOperable = false;
                 break;
 
-            case 4: // '\004'
-                super.FM.turret[2].bIsOperable = false;
+            case 4:
+                this.FM.turret[2].bIsOperable = false;
                 break;
 
-            case 5: // '\005'
-                super.FM.turret[3].bIsOperable = false;
+            case 5:
+                this.FM.turret[3].bIsOperable = false;
                 break;
         }
     }
@@ -75,7 +74,7 @@ public class ME_321 extends Scheme0 implements TypeGlider, TypeTransport, TypeBo
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);
@@ -84,7 +83,7 @@ public class ME_321 extends Scheme0 implements TypeGlider, TypeTransport, TypeBo
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 if (this.hierMesh().isChunkVisible("Blister1_D0") && World.cur().isHighGore()) {
@@ -133,7 +132,7 @@ public class ME_321 extends Scheme0 implements TypeGlider, TypeTransport, TypeBo
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -152,7 +151,7 @@ public class ME_321 extends Scheme0 implements TypeGlider, TypeTransport, TypeBo
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -171,7 +170,7 @@ public class ME_321 extends Scheme0 implements TypeGlider, TypeTransport, TypeBo
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -190,7 +189,7 @@ public class ME_321 extends Scheme0 implements TypeGlider, TypeTransport, TypeBo
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -216,24 +215,24 @@ public class ME_321 extends Scheme0 implements TypeGlider, TypeTransport, TypeBo
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
+            case 33:
                 return super.cutFM(34, j, actor);
 
-            case 36: // '$'
+            case 36:
                 return super.cutFM(37, j, actor);
 
-            case 34: // '"'
-            case 35: // '#'
+            case 34:
+            case 35:
             default:
                 return super.cutFM(i, j, actor);
         }
     }
 
     public void update(float f) {
-        ((FlightModelMain) (super.FM)).CT.GearControl = 1.0F;
-        super.FM.GearCX = 0.0F;
-        ((FlightModelMain) (super.FM)).Gears.lgear = true;
-        ((FlightModelMain) (super.FM)).Gears.rgear = true;
+        this.FM.CT.GearControl = 1.0F;
+        this.FM.GearCX = 0.0F;
+        this.FM.Gears.lgear = true;
+        this.FM.Gears.rgear = true;
         super.update(f);
     }
 

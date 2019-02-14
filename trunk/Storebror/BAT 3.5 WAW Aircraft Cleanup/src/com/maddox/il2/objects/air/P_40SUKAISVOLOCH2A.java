@@ -18,11 +18,9 @@ public class P_40SUKAISVOLOCH2A extends P_40SUKAISVOLOCH {
         Property.set(class1, "yearService", 1941F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/P-40B.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitP_40B.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitP_40B.class });
         Property.set(class1, "LOSElevation", 1.0728F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06" });
-        weaponsRegister(class1, "default", new String[] { "MGunBrowning50si 250", "MGunBrowning50si 250", "MGunBrowning303k 300", "MGunBrowning303k 240", "MGunBrowning303k 300", "MGunBrowning303k 240" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06" });
     }
 }

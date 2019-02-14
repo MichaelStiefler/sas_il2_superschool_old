@@ -1,15 +1,12 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.GunEmpty;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
@@ -52,14 +49,14 @@ public class MOSQUITO_TR33 extends MOSQUITO implements TypeFighter, TypeStormovi
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
-            case 34: // '"'
-            case 35: // '#'
-            case 36: // '$'
-            case 37: // '%'
-            case 38: // '&'
+            case 33:
+            case 34:
+            case 35:
+            case 36:
+            case 37:
+            case 38:
                 this.doCutBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
                 break;
         }
@@ -81,7 +78,7 @@ public class MOSQUITO_TR33 extends MOSQUITO implements TypeFighter, TypeStormovi
             this.hideWingWeapons(false);
         } else {
             this.setGunPodsOn(false);
-            ((FlightModelMain) (super.FM)).CT.WeaponControl[0] = false;
+            this.FM.CT.WeaponControl[0] = false;
             this.hideWingWeapons(true);
         }
         this.moveWingFold(this.hierMesh(), f);
@@ -89,44 +86,44 @@ public class MOSQUITO_TR33 extends MOSQUITO implements TypeFighter, TypeStormovi
 
     public void update(float f) {
         super.update(f);
-        if (!(super.FM instanceof Pilot)) {
+        if (!(this.FM instanceof Pilot)) {
             return;
         }
         if (this.bHasBoosters) {
-            if ((super.FM.getAltitude() > 300F) && (this.boosterFireOutTime == -1L) && (((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z != 0.0D) && (World.Rnd().nextFloat() < 0.05F)) {
+            if ((this.FM.getAltitude() > 300F) && (this.boosterFireOutTime == -1L) && (this.FM.Loc.z != 0.0D) && (World.Rnd().nextFloat() < 0.05F)) {
                 this.doCutBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
             }
-            if (this.bHasBoosters && (this.boosterFireOutTime == -1L) && ((FlightModelMain) (super.FM)).Gears.onGround() && (((FlightModelMain) (super.FM)).EI.getPowerOutput() > 0.8F) && (((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6) && (((FlightModelMain) (super.FM)).EI.engines[1].getStage() == 6) && (super.FM.getSpeedKMH() > 5F)) {
+            if (this.bHasBoosters && (this.boosterFireOutTime == -1L) && this.FM.Gears.onGround() && (this.FM.EI.getPowerOutput() > 0.8F) && (this.FM.EI.engines[0].getStage() == 6) && (this.FM.EI.engines[1].getStage() == 6) && (this.FM.getSpeedKMH() > 5F)) {
                 this.boosterFireOutTime = Time.current() + 30000L;
                 this.doFireBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOn();
+                this.FM.AS.setGliderBoostOn();
             }
             if (this.bHasBoosters && (this.boosterFireOutTime > 0L)) {
                 if (Time.current() < this.boosterFireOutTime) {
-                    ((FlightModelMain) (super.FM)).producedAF.x += 35000D;
+                    this.FM.producedAF.x += 35000D;
                 }
                 if (Time.current() > (this.boosterFireOutTime + 10000L)) {
                     this.doCutBoosters();
-                    ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                    this.FM.AS.setGliderBoostOff();
                     this.bHasBoosters = false;
                 }
             }
         }
-        if (((FlightModelMain) (super.FM)).CT.getArrestor() > 0.9F) {
-            if (((FlightModelMain) (super.FM)).Gears.arrestorVAngle != 0.0F) {
-                this.arrestor2 = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.arrestorVAngle, -65F, 3F, 45F, -23F);
+        if (this.FM.CT.getArrestor() > 0.9F) {
+            if (this.FM.Gears.arrestorVAngle != 0.0F) {
+                this.arrestor2 = Aircraft.cvt(this.FM.Gears.arrestorVAngle, -65F, 3F, 45F, -23F);
                 this.hierMesh().chunkSetAngles("Hook_D0", 0.0F, this.arrestor2, 0.0F);
-                if (((FlightModelMain) (super.FM)).Gears.arrestorVAngle >= -35F) {
-                    ;
+                if (this.FM.Gears.arrestorVAngle >= -35F) {
+
                 }
             } else {
-                float f1 = -41F * ((FlightModelMain) (super.FM)).Gears.arrestorVSink;
-                if ((f1 < 0.0F) && (super.FM.getSpeedKMH() > 60F)) {
-                    Eff3DActor.New(this, ((FlightModelMain) (super.FM)).Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
+                float f1 = -41F * this.FM.Gears.arrestorVSink;
+                if ((f1 < 0.0F) && (this.FM.getSpeedKMH() > 60F)) {
+                    Eff3DActor.New(this, this.FM.Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
                 }
-                if ((f1 > 0.0F) && (((FlightModelMain) (super.FM)).CT.getArrestor() < 0.9F)) {
+                if ((f1 > 0.0F) && (this.FM.CT.getArrestor() < 0.9F)) {
                     f1 = 0.0F;
                 }
                 if (f1 > 6.2F) {
@@ -149,7 +146,7 @@ public class MOSQUITO_TR33 extends MOSQUITO implements TypeFighter, TypeStormovi
     private float     arrestor2;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = MOSQUITO_TR33.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Mosquito");
         Property.set(class1, "meshName", "3DO/Plane/Mosquito_TR_Mk33(Multi1)/hier.him");

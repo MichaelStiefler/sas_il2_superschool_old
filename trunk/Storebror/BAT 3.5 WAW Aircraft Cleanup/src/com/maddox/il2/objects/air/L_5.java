@@ -62,17 +62,17 @@ public class L_5 extends Scheme1 implements TypeScout, TypeTransport, TypeFighte
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        L_5.moveGear(this.hierMesh(), f);
     }
 
     public void moveWheelSink() {
         this.resetYPRmodifier();
         Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.5F, 0.0F, 0.5F);
         float f = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.5F, 0.0F, 5F);
-        this.hierMesh().chunkSetAngles("GearL2_D0", 0.0F, floatindex(f, gearL2), 0.0F);
+        this.hierMesh().chunkSetAngles("GearL2_D0", 0.0F, AircraftLH.floatindex(f, L_5.gearL2), 0.0F);
         Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.5F, 0.0F, 0.5F);
         f = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.5F, 0.0F, 5F);
-        this.hierMesh().chunkSetAngles("GearR2_D0", 0.0F, -floatindex(f, gearL2), 0.0F);
+        this.hierMesh().chunkSetAngles("GearR2_D0", 0.0F, -AircraftLH.floatindex(f, L_5.gearL2), 0.0F);
     }
 
     protected void moveRudder(float f) {
@@ -138,10 +138,10 @@ public class L_5 extends Scheme1 implements TypeScout, TypeTransport, TypeFighte
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 34: // '"'
+            case 34:
                 return super.cutFM(35, j, actor);
 
-            case 37: // '%'
+            case 37:
                 return super.cutFM(38, j, actor);
         }
         return super.cutFM(i, j, actor);
@@ -149,14 +149,14 @@ public class L_5 extends Scheme1 implements TypeScout, TypeTransport, TypeFighte
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Head2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);

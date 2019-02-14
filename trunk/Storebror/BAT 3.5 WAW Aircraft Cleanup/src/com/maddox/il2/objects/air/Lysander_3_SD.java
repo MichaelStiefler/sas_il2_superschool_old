@@ -7,7 +7,6 @@ import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
@@ -27,17 +26,17 @@ public class Lysander_3_SD extends LysanderX implements TypeBomber, TypeScout, T
     }
 
     public void update(float f) {
-        if (super.FM.getSpeed() > 5F) {
-            this.hierMesh().chunkSetAngles("SlatLInner_D0", 0.0F, 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F));
-            this.hierMesh().chunkSetAngles("SlatLOuter_D0", 0.0F, 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F));
-            this.hierMesh().chunkSetAngles("SlatRInner_D0", 0.0F, 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F));
-            this.hierMesh().chunkSetAngles("SlatROuter_D0", 0.0F, 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F));
+        if (this.FM.getSpeed() > 5F) {
+            this.hierMesh().chunkSetAngles("SlatLInner_D0", 0.0F, 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F));
+            this.hierMesh().chunkSetAngles("SlatLOuter_D0", 0.0F, 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F));
+            this.hierMesh().chunkSetAngles("SlatRInner_D0", 0.0F, 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F));
+            this.hierMesh().chunkSetAngles("SlatROuter_D0", 0.0F, 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F));
         }
         super.update(f);
     }
 
     protected void moveAileron(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getWing() < 0.01F) {
+        if (this.FM.CT.getWing() < 0.01F) {
             this.hierMesh().chunkSetAngles("AroneL_D0", 0.0F, -30F * f, 0.0F);
             this.hierMesh().chunkSetAngles("AroneR_D0", 0.0F, -30F * f, 0.0F);
         }
@@ -55,7 +54,7 @@ public class Lysander_3_SD extends LysanderX implements TypeBomber, TypeScout, T
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         for (int i = 1; i < 3; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -68,17 +67,17 @@ public class Lysander_3_SD extends LysanderX implements TypeBomber, TypeScout, T
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        Lysander_3_SD.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {
         if (f > 66.5F) {
             f = 66.5F;
-            ((FlightModelMain) (super.FM)).Gears.steerAngle = f;
+            this.FM.Gears.steerAngle = f;
         }
         if (f < -66.5F) {
             f = -66.5F;
-            ((FlightModelMain) (super.FM)).Gears.steerAngle = f;
+            this.FM.Gears.steerAngle = f;
         }
         this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -f, 0.0F);
     }
@@ -91,24 +90,24 @@ public class Lysander_3_SD extends LysanderX implements TypeBomber, TypeScout, T
 
     public void msgShot(Shot shot) {
         this.setShot(shot);
-        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 1, (int) (1.0F + (shot.mass * 18.95F * 2.0F)));
+        this.FM.AS.hitTank(shot.initiator, 1, (int) (1.0F + (shot.mass * 18.95F * 2.0F)));
         if (shot.chunkName.startsWith("Engine")) {
             if (World.Rnd().nextFloat(0.0F, 1.0F) < shot.mass) {
-                ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 1);
+                this.FM.AS.hitEngine(shot.initiator, 0, 1);
             }
             if ((((Tuple3d) (Aircraft.v1)).z > 0.0D) && (World.Rnd().nextFloat() < 0.12F)) {
-                ((FlightModelMain) (super.FM)).AS.setEngineDies(shot.initiator, 0);
+                this.FM.AS.setEngineDies(shot.initiator, 0);
                 if (shot.mass > 0.1F) {
-                    ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 5);
+                    this.FM.AS.hitEngine(shot.initiator, 0, 5);
                 }
             }
             if ((((Tuple3d) (Aircraft.v1)).x < 0.10000000149011612D) && (World.Rnd().nextFloat() < 0.57F)) {
-                ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, 0);
+                this.FM.AS.hitOil(shot.initiator, 0);
             }
         }
         if (shot.chunkName.startsWith("Pilot1")) {
             this.killPilot(shot.initiator, 0);
-            super.FM.setCapableOfBMP(false, shot.initiator);
+            this.FM.setCapableOfBMP(false, shot.initiator);
             if ((((Tuple3d) (Aircraft.Pd)).z > 0.5D) && (shot.initiator == World.getPlayerAircraft()) && World.cur().isArcade()) {
                 HUD.logCenter("H E A D S H O T");
             }
@@ -119,10 +118,10 @@ public class Lysander_3_SD extends LysanderX implements TypeBomber, TypeScout, T
             }
         } else {
             if (shot.chunkName.startsWith("Turret")) {
-                super.FM.turret[0].bIsOperable = false;
+                this.FM.turret[0].bIsOperable = false;
             }
-            if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[0] == 4) && (World.Rnd().nextInt(0, 99) < 33)) {
-                super.FM.setCapableOfBMP(false, shot.initiator);
+            if ((this.FM.AS.astateEngineStates[0] == 4) && (World.Rnd().nextInt(0, 99) < 33)) {
+                this.FM.setCapableOfBMP(false, shot.initiator);
             }
             super.msgShot(shot);
         }
@@ -130,14 +129,14 @@ public class Lysander_3_SD extends LysanderX implements TypeBomber, TypeScout, T
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 34: // '"'
+            case 34:
                 return super.cutFM(35, j, actor);
 
-            case 37: // '%'
+            case 37:
                 return super.cutFM(38, j, actor);
 
-            case 35: // '#'
-            case 36: // '$'
+            case 35:
+            case 36:
             default:
                 return super.cutFM(i, j, actor);
         }
@@ -145,7 +144,7 @@ public class Lysander_3_SD extends LysanderX implements TypeBomber, TypeScout, T
 
     public void doKillPilot(int i) {
         if (i == 1) {
-            super.FM.turret[0].bIsOperable = false;
+            this.FM.turret[0].bIsOperable = false;
         }
     }
 
@@ -154,21 +153,21 @@ public class Lysander_3_SD extends LysanderX implements TypeBomber, TypeScout, T
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
-                if (!((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+                if (!this.FM.AS.bIsAboutToBailout) {
                     this.hierMesh().chunkVisible("Gore1_D0", true);
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
-                if (!((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+                if (!this.FM.AS.bIsAboutToBailout) {
                     this.hierMesh().chunkVisible("Gore2_D0", true);
                 }
                 break;

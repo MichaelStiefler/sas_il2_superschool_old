@@ -5,7 +5,7 @@ import com.maddox.rts.Property;
 public class Bv_141 extends Bv_237X implements TypeScout, TypeFighter {
 
     public Bv_141() {
-        prevWing = true;
+        Bv_141.prevWing = true;
         this.bToFire = false;
     }
 
@@ -17,7 +17,7 @@ public class Bv_141 extends Bv_237X implements TypeScout, TypeFighter {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f1 < 40F) {
                     f1 = 40F;
                     flag = false;
@@ -28,7 +28,7 @@ public class Bv_141 extends Bv_237X implements TypeScout, TypeFighter {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -75F) {
                     f = -75F;
                     flag = false;

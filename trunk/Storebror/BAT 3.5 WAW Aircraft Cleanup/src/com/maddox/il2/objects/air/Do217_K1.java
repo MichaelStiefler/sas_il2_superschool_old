@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class Do217_K1 extends Do217 {
@@ -48,7 +47,7 @@ public class Do217_K1 extends Do217 {
             this.hierMesh().chunkSetAngles("BayL06_D0", 0.0F, Aircraft.cvt(f, 0.4F, 0.9F, 0.0F, -150.5F), 0.0F);
             this.hierMesh().chunkSetAngles("BayR03_D0", 0.0F, Aircraft.cvt(f, 0.4F, 0.9F, 0.0F, 150.5F), 0.0F);
             this.hierMesh().chunkSetAngles("BayR06_D0", 0.0F, Aircraft.cvt(f, 0.4F, 0.9F, 0.0F, 150.5F), 0.0F);
-            if (super.thisWeaponsName.endsWith("Torpedo")) {
+            if (this.thisWeaponsName.endsWith("Torpedo")) {
                 this.hierMesh().chunkVisible("BayL09_D0", flag);
                 this.hierMesh().chunkVisible("BayR09_D0", flag);
                 this.hierMesh().chunkSetAngles("BayL07_D0", 0.0F, Aircraft.cvt(f, 0.04F, 0.7F, 0.0F, 120.5F), 0.0F);
@@ -65,7 +64,7 @@ public class Do217_K1 extends Do217 {
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = Do217_K1.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Do-217");
         Property.set(class1, "meshName", "3do/plane/Do217_K1/hier.him");

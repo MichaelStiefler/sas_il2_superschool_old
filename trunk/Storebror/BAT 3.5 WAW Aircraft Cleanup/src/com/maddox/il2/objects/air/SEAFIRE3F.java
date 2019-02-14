@@ -16,14 +16,14 @@ public class SEAFIRE3F extends SPITFIRE5 {
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            SEAFIRE3F.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            SEAFIRE3F.bChangedPit = true;
         }
     }
 
@@ -57,16 +57,16 @@ public class SEAFIRE3F extends SPITFIRE5 {
         this.hierMesh().chunkSetAngles("Hook1_D0", 0.0F, -57F * f, 0.0F);
         this.hierMesh().chunkSetAngles("Hook2_D0", 0.0F, -12F * f, 0.0F);
         this.resetYPRmodifier();
-        xyz[2] = 0.1385F * f;
-        this.hierMesh().chunkSetLocate("Hook3_D0", xyz, ypr);
+        Aircraft.xyz[2] = 0.1385F * f;
+        this.hierMesh().chunkSetLocate("Hook3_D0", Aircraft.xyz, Aircraft.ypr);
         this.arrestor = f;
     }
 
     public void moveCockpitDoor(float f) {
         this.resetYPRmodifier();
-        xyz[1] = cvt(f, 0.01F, 0.99F, 0.0F, 0.55F);
-        this.hierMesh().chunkSetLocate("Blister1_D0", xyz, ypr);
-        float f1 = (float) Math.sin(cvt(f, 0.01F, 0.99F, 0.0F, 3.141593F));
+        Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 0.55F);
+        this.hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
+        float f1 = (float) Math.sin(Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 3.141593F));
         this.hierMesh().chunkSetAngles("Pilot1_D0", 0.0F, 0.0F, 9F * f1);
         this.hierMesh().chunkSetAngles("Head1_D0", 12F * f1, 0.0F, 0.0F);
         if (Config.isUSE_RENDER()) {
@@ -81,7 +81,7 @@ public class SEAFIRE3F extends SPITFIRE5 {
         super.update(f);
         if (this.FM.CT.getArrestor() > 0.2F) {
             if (this.FM.Gears.arrestorVAngle != 0.0F) {
-                float f1 = cvt(this.FM.Gears.arrestorVAngle, -50F, 7F, 1.0F, 0.0F);
+                float f1 = Aircraft.cvt(this.FM.Gears.arrestorVAngle, -50F, 7F, 1.0F, 0.0F);
                 this.arrestor = (0.8F * this.arrestor) + (0.2F * f1);
                 this.moveArrestorHook(this.arrestor);
             } else {
@@ -131,7 +131,7 @@ public class SEAFIRE3F extends SPITFIRE5 {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
+            case 19:
                 this.FM.CT.bHasArrestorControl = false;
                 break;
         }
@@ -150,17 +150,9 @@ public class SEAFIRE3F extends SPITFIRE5 {
         Property.set(class1, "yearService", 1944F);
         Property.set(class1, "yearExpired", 1946.5F);
         Property.set(class1, "FlightModel", "FlightModels/Seafire-F-MkIII.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitSea3.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitSea3.class });
         Property.set(class1, "LOSElevation", 1.06985F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 1, 1, 9, 3, 9, 9, 3, 3, 9, 9, 9, 9, 2, 2, 2, 2, 9 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_CANNON01", "_CANNON02", "_ExternalDev01", "_ExternalBomb01", "_ExternalDev02", "_ExternalDev03", "_ExternalBomb02", "_ExternalBomb03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalDev07", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalDev08" });
-        weaponsRegister(class1, "default", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "1x30dt", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", null, null, null, null, null, null, null, null, null, null, null, null, null, null, "FuelTankGun_TankSpit30" });
-        weaponsRegister(class1, "1x45dt", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", null, null, null, null, null, null, null, null, null, null, null, null, null, null, "FuelTankGun_TankSpit45" });
-        weaponsRegister(class1, "1x90dt", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", null, null, null, null, null, null, null, null, null, null, null, null, null, null, "FuelTankGun_TankSpit90" });
-        weaponsRegister(class1, "1x500", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", "PylonSpitC", "BombGun500lbsE 1", null, null, null, null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "2x250", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", null, null, "PylonSpitL", "PylonSpitR", "BombGun250lbsE 1", "BombGun250lbsE 1", null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "4x60hvar", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", null, null, null, null, null, null, "PylonSpitROCK", "PylonSpitROCK", "PylonSpitROCK", "PylonSpitROCK", "RocketGunHVAR5BEAU 1", "RocketGunHVAR5BEAU 1", "RocketGunHVAR5BEAU 1", "RocketGunHVAR5BEAU 1", null });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 1, 1, 9, 3, 9, 9, 3, 3, 9, 9, 9, 9, 2, 2, 2, 2, 9 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_CANNON01", "_CANNON02", "_ExternalDev01", "_ExternalBomb01", "_ExternalDev02", "_ExternalDev03", "_ExternalBomb02", "_ExternalBomb03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalDev07", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalDev08" });
     }
 }

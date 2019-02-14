@@ -11,14 +11,14 @@ public class KI_46_OTSU extends KI_46 implements TypeFighter {
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
+        if (this.FM.isPlayers()) {
             this.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
+        if (this.FM.isPlayers()) {
             this.bChangedPit = true;
         }
     }

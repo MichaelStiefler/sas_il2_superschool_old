@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class WAGEN extends CAR {
@@ -9,10 +8,10 @@ public class WAGEN extends CAR {
     }
 
     public void update(float f) {
-        if (((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+        if (this.FM.AS.bIsAboutToBailout) {
             this.hierMesh().chunkVisible("Helm_D0", false);
         }
-        ((FlightModelMain) (super.FM)).EI.engines[0].addVside *= 9.9999999999999995E-008D;
+        this.FM.EI.engines[0].addVside *= 9.9999999999999995E-008D;
         super.update(f);
     }
 

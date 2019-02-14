@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import java.util.ArrayList;
 
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
@@ -35,9 +34,9 @@ public class JU_87D8 extends JU_87D5 implements TypeStormovik {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = true;
-        ((FlightModelMain) (super.FM)).CT.dvCockpitDoor = 0.65F;
-        Object aobj[] = super.pos.getBaseAttached();
+        this.FM.CT.bHasCockpitDoorControl = true;
+        this.FM.CT.dvCockpitDoor = 0.65F;
+        Object aobj[] = this.pos.getBaseAttached();
         if (aobj != null) {
             int i = 0;
             do {
@@ -45,8 +44,8 @@ public class JU_87D8 extends JU_87D5 implements TypeStormovik {
                     break;
                 }
                 if ((aobj[i] instanceof PylonWB81B) || (aobj[i] instanceof PylonWB81A) || (aobj[i] instanceof PylonWB20) || (aobj[i] instanceof PylonWB151)) {
-                    ((FlightModelMain) (super.FM)).M.massEmpty += 190F;
-                    ((FlightModelMain) (super.FM)).CT.bHasAirBrakeControl = false;
+                    this.FM.M.massEmpty += 190F;
+                    this.FM.CT.bHasAirBrakeControl = false;
                     this.hierMesh().chunkVisible("Brake01_D0", false);
                     this.hierMesh().chunkVisible("Brake02_D0", false);
                     this.hierMesh().chunkVisible("WingLMid_D0", false);
@@ -61,7 +60,7 @@ public class JU_87D8 extends JU_87D5 implements TypeStormovik {
     }
 
     protected void moveAirBrake(float f) {
-        Object aobj[] = super.pos.getBaseAttached();
+        Object aobj[] = this.pos.getBaseAttached();
         if (aobj != null) {
             int i = 0;
             do {
@@ -80,41 +79,41 @@ public class JU_87D8 extends JU_87D5 implements TypeStormovik {
 
     public void typeDiveBomberAdjAltitudePlus() {
         if ((this.getGunByHookName("_MGUN05") instanceof GunEmpty) && (this.getGunByHookName("_MGUN17") instanceof GunEmpty) && (this.getGunByHookName("_CANNON03") instanceof GunEmpty) && (this.getGunByHookName("_CANNON07") instanceof GunEmpty)) {
-            super.fDiveRecoveryAlt += 25F;
-            if (super.fDiveRecoveryAlt > 6000F) {
-                super.fDiveRecoveryAlt = 6000F;
+            this.fDiveRecoveryAlt += 25F;
+            if (this.fDiveRecoveryAlt > 6000F) {
+                this.fDiveRecoveryAlt = 6000F;
             }
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) super.fDiveRecoveryAlt) });
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) this.fDiveRecoveryAlt) });
         }
     }
 
     public void typeDiveBomberAdjAltitudeMinus() {
         if ((this.getGunByHookName("_MGUN05") instanceof GunEmpty) && (this.getGunByHookName("_MGUN17") instanceof GunEmpty) && (this.getGunByHookName("_CANNON03") instanceof GunEmpty) && (this.getGunByHookName("_CANNON07") instanceof GunEmpty)) {
-            super.fDiveRecoveryAlt -= 25F;
-            if (super.fDiveRecoveryAlt < 0.0F) {
-                super.fDiveRecoveryAlt = 0.0F;
+            this.fDiveRecoveryAlt -= 25F;
+            if (this.fDiveRecoveryAlt < 0.0F) {
+                this.fDiveRecoveryAlt = 0.0F;
             }
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) super.fDiveRecoveryAlt) });
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) this.fDiveRecoveryAlt) });
         }
     }
 
     public void typeDiveBomberAdjVelocityPlus() {
         if ((this.getGunByHookName("_MGUN05") instanceof GunEmpty) && (this.getGunByHookName("_MGUN17") instanceof GunEmpty) && (this.getGunByHookName("_CANNON03") instanceof GunEmpty) && (this.getGunByHookName("_CANNON07") instanceof GunEmpty)) {
-            super.fDiveVelocity += 10F;
-            if (super.fDiveVelocity > 700F) {
-                super.fDiveVelocity = 700F;
+            this.fDiveVelocity += 10F;
+            if (this.fDiveVelocity > 700F) {
+                this.fDiveVelocity = 700F;
             }
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) super.fDiveVelocity) });
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) this.fDiveVelocity) });
         }
     }
 
     public void typeDiveBomberAdjVelocityMinus() {
         if ((this.getGunByHookName("_MGUN05") instanceof GunEmpty) && (this.getGunByHookName("_MGUN17") instanceof GunEmpty) && (this.getGunByHookName("_CANNON03") instanceof GunEmpty) && (this.getGunByHookName("_CANNON07") instanceof GunEmpty)) {
-            super.fDiveVelocity -= 10F;
-            if (super.fDiveVelocity < 150F) {
-                super.fDiveVelocity = 150F;
+            this.fDiveVelocity -= 10F;
+            if (this.fDiveVelocity < 150F) {
+                this.fDiveVelocity = 150F;
             }
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) super.fDiveVelocity) });
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) this.fDiveVelocity) });
         }
     }
 

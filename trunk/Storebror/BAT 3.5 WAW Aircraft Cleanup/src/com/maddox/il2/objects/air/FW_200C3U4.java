@@ -171,7 +171,7 @@ public class FW_200C3U4 extends FW_200 implements TypeBomber, TypeX4Carrier, Typ
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.startsWith("2HS293")) {
+        if (this.thisWeaponsName.startsWith("2HS293")) {
             this.hierMesh().chunkVisible("Hs293RackL", true);
             this.hierMesh().chunkVisible("Hs293RackR", true);
         }

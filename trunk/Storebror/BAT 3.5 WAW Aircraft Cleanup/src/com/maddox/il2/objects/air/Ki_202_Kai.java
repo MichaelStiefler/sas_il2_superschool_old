@@ -10,7 +10,6 @@ import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -25,7 +24,7 @@ public class Ki_202_Kai extends Scheme1 implements TypeFighter, TypeBNZFighter, 
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
@@ -54,7 +53,7 @@ public class Ki_202_Kai extends Scheme1 implements TypeFighter, TypeBNZFighter, 
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        Ki_202_Kai.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {
@@ -101,16 +100,16 @@ public class Ki_202_Kai extends Scheme1 implements TypeFighter, TypeBNZFighter, 
                 this.debuggunnery("Controls: Hit..");
                 int i = s.charAt(10) - 48;
                 switch (i) {
-                    case 1: // '\001'
-                    case 2: // '\002'
+                    case 1:
+                    case 2:
                         if ((this.getEnergyPastArmor(0.99F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
                             this.debuggunnery("Controls: Ailerones Controls: Out..");
                             this.FM.AS.setControlsDamage(shot.initiator, 0);
                         }
                         break;
 
-                    case 3: // '\003'
-                    case 4: // '\004'
+                    case 3:
+                    case 4:
                         if ((this.getEnergyPastArmor(1.22F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
                             this.debuggunnery("Controls: Rudder Controls: Disabled / Strings Broken..");
                             this.FM.AS.setControlsDamage(shot.initiator, 2);
@@ -143,7 +142,7 @@ public class Ki_202_Kai extends Scheme1 implements TypeFighter, TypeBNZFighter, 
                     this.debuggunnery("Engine Module: Hit - Engine Fires..");
                 }
                 if (!s.endsWith("exht")) {
-                    ;
+
                 }
             } else if (s.startsWith("xxhyd")) {
                 this.FM.AS.setInternalDamage(shot.initiator, 3);
@@ -321,18 +320,18 @@ public class Ki_202_Kai extends Scheme1 implements TypeFighter, TypeBNZFighter, 
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
+            case 19:
                 this.FM.EI.engines[0].setEngineDies(actor);
                 return super.cutFM(i, j, actor);
 
-            case 11: // '\013'
+            case 11:
                 this.cut("StabL");
                 this.cut("StabR");
                 this.FM.cut(17, j, actor);
                 this.FM.cut(18, j, actor);
                 break;
 
-            case 13: // '\r'
+            case 13:
                 return false;
         }
         return super.cutFM(i, j, actor);
@@ -349,12 +348,12 @@ public class Ki_202_Kai extends Scheme1 implements TypeFighter, TypeBNZFighter, 
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.endsWith("2P")) {
+        if (this.thisWeaponsName.endsWith("2P")) {
             this.hierMesh().chunkVisible("Pilon1_D0", true);
             this.hierMesh().chunkVisible("Pilon3_D0", true);
             return;
         }
-        if (super.thisWeaponsName.endsWith("4P")) {
+        if (this.thisWeaponsName.endsWith("4P")) {
             this.hierMesh().chunkVisible("Pilon1_D0", true);
             this.hierMesh().chunkVisible("Pilon2_D0", true);
             this.hierMesh().chunkVisible("Pilon3_D0", true);
@@ -428,7 +427,7 @@ public class Ki_202_Kai extends Scheme1 implements TypeFighter, TypeBNZFighter, 
     public int   k14WingspanType;
     public float k14Distance;
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = Ki_202_Kai.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Ki-202-Ka");
         Property.set(class1, "meshName", "3DO/Plane/Ki-202Kai(Multi1)/hier.him");

@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import java.io.IOException;
 
 import com.maddox.il2.ai.BulletEmitter;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -19,12 +18,12 @@ public class ME_410A extends ME_210 implements TypeStormovik, TypeStormovikArmor
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (((FlightModelMain) (super.FM)).CT.Weapons[1] != null) {
-            this.g1 = ((FlightModelMain) (super.FM)).CT.Weapons[1][0];
+        if (this.FM.CT.Weapons[1] != null) {
+            this.g1 = this.FM.CT.Weapons[1][0];
         }
-        if (super.thisWeaponsName.startsWith("A2U4")) {
+        if (this.thisWeaponsName.startsWith("A2U4")) {
             this.hierMesh().chunkVisible("BK5_BARREL", true);
-            ((FlightModelMain) (super.FM)).M.massEmpty += 540F;
+            this.FM.M.massEmpty += 540F;
         } else {
             this.hierMesh().chunkVisible("BK5_BARREL", false);
         }
@@ -36,7 +35,7 @@ public class ME_410A extends ME_210 implements TypeStormovik, TypeStormovikArmor
                 default:
                     break;
 
-                case 0: // '\0'
+                case 0:
                     if (this.g1.isShots()) {
                         this.oldbullets = this.g1.countBullets();
                         this.phase = 1;
@@ -44,7 +43,7 @@ public class ME_410A extends ME_210 implements TypeStormovik, TypeStormovikArmor
                     }
                     break;
 
-                case 1: // '\001'
+                case 1:
                     this.disp += 12.6F * paramFloat;
                     this.resetYPRmodifier();
                     Aircraft.xyz[0] = this.disp;
@@ -54,7 +53,7 @@ public class ME_410A extends ME_210 implements TypeStormovik, TypeStormovikArmor
                     }
                     break;
 
-                case 2: // '\002'
+                case 2:
                     this.disp -= 1.2F * paramFloat;
                     this.resetYPRmodifier();
                     Aircraft.xyz[0] = this.disp;
@@ -64,7 +63,7 @@ public class ME_410A extends ME_210 implements TypeStormovik, TypeStormovikArmor
                     }
                     break;
 
-                case 3: // '\003'
+                case 3:
                     this.phase = 0;
                     break;
             }

@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Property;
 
@@ -29,9 +28,9 @@ public class Texan_AT6 extends Texan123 implements TypeStormovik {
     }
 
     public void update(float f) {
-        super.onAircraftLoaded();
+        this.onAircraftLoaded();
         super.update(f);
-        if (super.FM.isPlayers()) {
+        if (this.FM.isPlayers()) {
             if (!Main3D.cur3D().isViewOutside()) {
                 this.hierMesh().chunkVisible("Blister1_D0", false);
                 this.hierMesh().chunkVisible("Blister2_D0", false);
@@ -44,7 +43,7 @@ public class Texan_AT6 extends Texan123 implements TypeStormovik {
                 this.hierMesh().chunkVisible("Head1_D0", true);
             }
             ((Actor) (World.getPlayerAircraft())).pos.getAbsPoint();
-            if (((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+            if (this.FM.AS.bIsAboutToBailout) {
                 this.hierMesh().chunkVisible("Blister1_D0", false);
                 this.hierMesh().chunkVisible("Blister2_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D0", false);

@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import com.maddox.il2.ai.Regiment;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Mission;
 import com.maddox.rts.Property;
 
@@ -14,20 +13,20 @@ public class Beaufort1Late extends Beaufort {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).Gears.computePlaneLandPose(super.FM);
-        if (super.thisWeaponsName.startsWith("1x")) {
+        this.FM.Gears.computePlaneLandPose(this.FM);
+        if (this.thisWeaponsName.startsWith("1x")) {
             this.hierMesh().chunkVisible("BayDoorL_D0", false);
             this.hierMesh().chunkVisible("BayDoorR_D0", false);
-            super.bombBayDoorsRemoved = true;
+            this.bombBayDoorsRemoved = true;
         }
     }
 
     public void update(float f) {
         super.update(f);
         for (int i = 0; i < 2; i++) {
-            float f1 = ((FlightModelMain) (super.FM)).EI.engines[i].getControlRadiator();
-            if (Math.abs(super.flapps[i] - f1) > 0.01F) {
-                super.flapps[i] = f1;
+            float f1 = this.FM.EI.engines[i].getControlRadiator();
+            if (Math.abs(this.flapps[i] - f1) > 0.01F) {
+                this.flapps[i] = f1;
                 for (int j = 1; j < 21; j++) {
                     this.hierMesh().chunkSetAngles("Water" + (j + (20 * i)) + "_D0", 0.0F, -20F * f1, 0.0F);
                 }
@@ -39,9 +38,9 @@ public class Beaufort1Late extends Beaufort {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 13: // '\r'
+            case 13:
                 this.killPilot(this, 1);
-                super.FM.turret[1].bIsOperable = false;
+                this.FM.turret[1].bIsOperable = false;
                 break;
         }
         return super.cutFM(i, j, actor);
@@ -57,7 +56,7 @@ public class Beaufort1Late extends Beaufort {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        Beaufort1Late.moveGear(this.hierMesh(), f);
     }
 
     public boolean turretAngles(int i, float af[]) {
@@ -68,7 +67,7 @@ public class Beaufort1Late extends Beaufort {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f1 > 70F) {
                     f1 = 70F;
                     flag = false;
@@ -87,7 +86,7 @@ public class Beaufort1Late extends Beaufort {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f1 > 20F) {
                     f1 = 20F;
                     flag = false;
@@ -113,12 +112,12 @@ public class Beaufort1Late extends Beaufort {
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 1: // '\001'
-                super.FM.turret[1].setHealth(f);
+            case 1:
+                this.FM.turret[1].setHealth(f);
                 break;
 
-            case 2: // '\002'
-                super.FM.turret[0].setHealth(f);
+            case 2:
+                this.FM.turret[0].setHealth(f);
                 break;
         }
     }

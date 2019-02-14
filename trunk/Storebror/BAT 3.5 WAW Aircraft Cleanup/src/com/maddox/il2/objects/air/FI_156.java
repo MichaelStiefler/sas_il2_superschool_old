@@ -6,7 +6,6 @@ import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.Property;
 
@@ -17,13 +16,13 @@ public class FI_156 extends Scheme1 implements TypeScout, TypeTransport {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        super.FM.crew = 2;
+        this.FM.crew = 2;
     }
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         for (int i = 1; i < 3; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -36,23 +35,23 @@ public class FI_156 extends Scheme1 implements TypeScout, TypeTransport {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        FI_156.moveGear(this.hierMesh(), f);
     }
 
     public void moveWheelSink() {
         this.resetYPRmodifier();
-        Aircraft.xyz[2] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.5F, 0.0F, 0.5F);
+        Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.5F, 0.0F, 0.5F);
         this.hierMesh().chunkSetLocate("GearL3_D0", Aircraft.xyz, Aircraft.ypr);
-        float f = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.5F, 0.0F, 5F);
-        this.hierMesh().chunkSetAngles("GearL2_D0", 0.0F, AircraftLH.floatindex(f, gearL2), 0.0F);
-        this.hierMesh().chunkSetAngles("GearL4_D0", 0.0F, AircraftLH.floatindex(f, gearL4), 0.0F);
-        this.hierMesh().chunkSetAngles("GearL5_D0", 0.0F, AircraftLH.floatindex(f, gearL5), 0.0F);
-        Aircraft.xyz[2] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 0.5F, 0.0F, 0.5F);
+        float f = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.5F, 0.0F, 5F);
+        this.hierMesh().chunkSetAngles("GearL2_D0", 0.0F, AircraftLH.floatindex(f, FI_156.gearL2), 0.0F);
+        this.hierMesh().chunkSetAngles("GearL4_D0", 0.0F, AircraftLH.floatindex(f, FI_156.gearL4), 0.0F);
+        this.hierMesh().chunkSetAngles("GearL5_D0", 0.0F, AircraftLH.floatindex(f, FI_156.gearL5), 0.0F);
+        Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.5F, 0.0F, 0.5F);
         this.hierMesh().chunkSetLocate("GearR3_D0", Aircraft.xyz, Aircraft.ypr);
-        f = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 0.5F, 0.0F, 5F);
-        this.hierMesh().chunkSetAngles("GearR2_D0", 0.0F, -AircraftLH.floatindex(f, gearL2), 0.0F);
-        this.hierMesh().chunkSetAngles("GearR4_D0", 0.0F, -AircraftLH.floatindex(f, gearL4), 0.0F);
-        this.hierMesh().chunkSetAngles("GearR5_D0", 0.0F, -AircraftLH.floatindex(f, gearL5), 0.0F);
+        f = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.5F, 0.0F, 5F);
+        this.hierMesh().chunkSetAngles("GearR2_D0", 0.0F, -AircraftLH.floatindex(f, FI_156.gearL2), 0.0F);
+        this.hierMesh().chunkSetAngles("GearR4_D0", 0.0F, -AircraftLH.floatindex(f, FI_156.gearL4), 0.0F);
+        this.hierMesh().chunkSetAngles("GearR5_D0", 0.0F, -AircraftLH.floatindex(f, FI_156.gearL5), 0.0F);
     }
 
     protected void moveFlap(float f) {
@@ -64,28 +63,28 @@ public class FI_156 extends Scheme1 implements TypeScout, TypeTransport {
     public void msgShot(Shot shot) {
         this.setShot(shot);
         if (shot.chunkName.startsWith("WingLMid") && (World.Rnd().nextFloat(0.0F, 0.121F) < shot.mass)) {
-            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 0, (int) (1.0F + (shot.mass * 18.95F * 2.0F)));
+            this.FM.AS.hitTank(shot.initiator, 0, (int) (1.0F + (shot.mass * 18.95F * 2.0F)));
         }
         if (shot.chunkName.startsWith("WingRMid") && (World.Rnd().nextFloat(0.0F, 0.121F) < shot.mass)) {
-            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 1, (int) (1.0F + (shot.mass * 18.95F * 2.0F)));
+            this.FM.AS.hitTank(shot.initiator, 1, (int) (1.0F + (shot.mass * 18.95F * 2.0F)));
         }
         if (shot.chunkName.startsWith("Engine")) {
             if (World.Rnd().nextFloat(0.0F, 1.0F) < shot.mass) {
-                ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 1);
+                this.FM.AS.hitEngine(shot.initiator, 0, 1);
             }
             if ((((Tuple3d) (Aircraft.v1)).z > 0.0D) && (World.Rnd().nextFloat() < 0.12F)) {
-                ((FlightModelMain) (super.FM)).AS.setEngineDies(shot.initiator, 0);
+                this.FM.AS.setEngineDies(shot.initiator, 0);
                 if (shot.mass > 0.1F) {
-                    ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 5);
+                    this.FM.AS.hitEngine(shot.initiator, 0, 5);
                 }
             }
             if ((((Tuple3d) (Aircraft.v1)).x < 0.10000000149011612D) && (World.Rnd().nextFloat() < 0.57F)) {
-                ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, 0);
+                this.FM.AS.hitOil(shot.initiator, 0);
             }
         }
         if (shot.chunkName.startsWith("Pilot1")) {
             this.killPilot(shot.initiator, 0);
-            super.FM.setCapableOfBMP(false, shot.initiator);
+            this.FM.setCapableOfBMP(false, shot.initiator);
             if ((((Tuple3d) (Aircraft.Pd)).z > 0.5D) && (shot.initiator == World.getPlayerAircraft()) && World.cur().isArcade()) {
                 HUD.logCenter("H E A D S H O T");
             }
@@ -99,24 +98,24 @@ public class FI_156 extends Scheme1 implements TypeScout, TypeTransport {
             return;
         }
         if (shot.chunkName.startsWith("Turret")) {
-            super.FM.turret[0].bIsOperable = false;
+            this.FM.turret[0].bIsOperable = false;
         }
-        if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[0] == 4) && (World.Rnd().nextInt(0, 99) < 33)) {
-            super.FM.setCapableOfBMP(false, shot.initiator);
+        if ((this.FM.AS.astateEngineStates[0] == 4) && (World.Rnd().nextInt(0, 99) < 33)) {
+            this.FM.setCapableOfBMP(false, shot.initiator);
         }
         super.msgShot(shot);
     }
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 34: // '"'
+            case 34:
                 return super.cutFM(35, j, actor);
 
-            case 37: // '%'
+            case 37:
                 return super.cutFM(38, j, actor);
 
-            case 35: // '#'
-            case 36: // '$'
+            case 35:
+            case 36:
             default:
                 return super.cutFM(i, j, actor);
         }
@@ -124,7 +123,7 @@ public class FI_156 extends Scheme1 implements TypeScout, TypeTransport {
 
     public void doWoundPilot(int i, float f) {
         if (i == 1) {
-            super.FM.turret[0].setHealth(f);
+            this.FM.turret[0].setHealth(f);
         }
     }
 
@@ -133,21 +132,21 @@ public class FI_156 extends Scheme1 implements TypeScout, TypeTransport {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
-                if (!((FlightModelMain) (super.FM)).AS.bIsAboutToBailout && World.cur().isHighGore()) {
+                if (!this.FM.AS.bIsAboutToBailout && World.cur().isHighGore()) {
                     this.hierMesh().chunkVisible("Gore1_D0", true);
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
-                if (!((FlightModelMain) (super.FM)).AS.bIsAboutToBailout && World.cur().isHighGore()) {
+                if (!this.FM.AS.bIsAboutToBailout && World.cur().isHighGore()) {
                     this.hierMesh().chunkVisible("Gore2_D0", true);
                 }
                 break;

@@ -93,7 +93,7 @@ public class A6M_54 extends JC_A6M {
         Property.set(class1, "yearService", 1945.5F);
         Property.set(class1, "yearExpired", 1945.9F);
         Property.set(class1, "FlightModel", "FlightModels/A6M8.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitA6M8c.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitA6M8c.class });
         Property.set(class1, "LOSElevation", 1.01885F);
         Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1, 9, 9, 3, 9, 9, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 9, 9 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN02", "_MGUN03", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalDev01", "_ExternalBomb02", "_ExternalDev02", "_ExternalDev03", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06", "_ExternalRock07", "_ExternalRock08", "_ExternalRock09", "_ExternalRock10", "_ExternalDev04", "_ExternalDev05" });

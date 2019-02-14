@@ -143,7 +143,7 @@ public class FI_103_V1 extends Scheme1 implements TypeDockable, MsgCollisionRequ
                     default:
                         break;
 
-                    case 6: // '\006'
+                    case 6:
                         if (this.getEnergyPastArmor(4F, shot) > 0.0F) {
                             if (World.Rnd().nextFloat() < 0.5F) {
                                 this.FM.AS.setControlsDamage(shot.initiator, 1);
@@ -157,7 +157,7 @@ public class FI_103_V1 extends Scheme1 implements TypeDockable, MsgCollisionRequ
                         }
                         break;
 
-                    case 7: // '\007'
+                    case 7:
                         if (this.getEnergyPastArmor(1.0F, shot) <= 0.0F) {
                             break;
                         }
@@ -263,7 +263,7 @@ public class FI_103_V1 extends Scheme1 implements TypeDockable, MsgCollisionRequ
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
+            case 19:
                 this.cutFM(3, j, actor);
                 this.FM.AS.setTankState(actor, 0, 6);
                 this.cut("WingLIn");
@@ -272,7 +272,7 @@ public class FI_103_V1 extends Scheme1 implements TypeDockable, MsgCollisionRequ
                 this.FM.cut(36, j, actor);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.FM.EI.engines[0].setEngineDies(actor);
                 if (this.soundfx != null) {
                     this.soundfx.cancel();
@@ -437,7 +437,7 @@ public class FI_103_V1 extends Scheme1 implements TypeDockable, MsgCollisionRequ
     public void msgEndAction(Object obj, int i) {
         super.msgEndAction(obj, i);
         switch (i) {
-            case 2: // '\002'
+            case 2:
                 Actor actor;
                 if (Actor.isValid(this.queen_last)) {
                     actor = this.queen_last;

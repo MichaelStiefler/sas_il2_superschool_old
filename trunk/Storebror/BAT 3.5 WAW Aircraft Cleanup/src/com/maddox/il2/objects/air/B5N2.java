@@ -39,17 +39,17 @@ public class B5N2 extends B5N implements TypeBomber {
         float f2 = -35F;
         if (f < 0.0F) {
             if (f < -20F) {
-                f2 = cvt(f, -41F, -20F, -35F, -15F);
+                f2 = Aircraft.cvt(f, -41F, -20F, -35F, -15F);
             } else {
-                f2 = cvt(f, -20F, -10F, -15F, -8F);
+                f2 = Aircraft.cvt(f, -20F, -10F, -15F, -8F);
             }
         } else if (f > 20F) {
-            f2 = cvt(f, 20F, 41F, -15F, -35F);
+            f2 = Aircraft.cvt(f, 20F, 41F, -15F, -35F);
         } else {
-            f2 = cvt(f, 10F, 20F, -8F, -15F);
+            f2 = Aircraft.cvt(f, 10F, 20F, -8F, -15F);
         }
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 if (f < -54F) {
                     f = -54F;
                     flag = false;
@@ -218,17 +218,7 @@ public class B5N2 extends B5N implements TypeBomber {
         Property.set(class1, "FlightModel", "FlightModels/B5N2.fmd");
         Property.set(class1, "cockpitClass", new Class[] { CockpitB5N2.class, CockpitB5N2_Bombardier.class, CockpitB5N2_Gunner.class });
         Property.set(class1, "LOSElevation", 0.5926F);
-        weaponTriggersRegister(class1, new int[] { 10, 9, 3, 9, 3, 9, 3, 3, 3, 9, 3, 3, 3, 3, 3, 3 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_ExternalDev01", "_ExternalBomb01", "_ExternalDev02", "_ExternalBomb02", "_ExternalDev03", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalDev04", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalBomb09", "_ExternalBomb10", "_ExternalBomb11" });
-        weaponsRegister(class1, "default", new String[] { "MGunVikkersKt 582", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "6x30", new String[] { "MGunVikkersKt 582", null, null, null, null, null, null, null, null, "PylonB5NPLN3", "BombGun30kgJ 1", "BombGun30kgJ 1", "BombGun30kgJ 1", "BombGun30kgJ 1", "BombGun30kgJ 1", "BombGun30kgJ 1" });
-        weaponsRegister(class1, "6x50", new String[] { "MGunVikkersKt 582", null, null, null, null, null, null, null, null, "PylonB5NPLN3", "BombGun50kgJ 1", "BombGun50kgJ 1", "BombGun50kgJ 1", "BombGun50kgJ 1", "BombGun50kgJ 1", "BombGun50kgJ 1" });
-        weaponsRegister(class1, "3x100", new String[] { "MGunVikkersKt 582", null, null, null, null, "PylonB5NPLN2", "BombGun100kgJ 1", "BombGun100kgJ 1", "BombGun100kgJ 1", null, null, null, null, null, null, null });
-        weaponsRegister(class1, "1x250", new String[] { "MGunVikkersKt 582", null, null, "PylonB5NPLN1", "BombGun250kgJ 1", null, null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "1x500", new String[] { "MGunVikkersKt 582", null, null, "PylonB5NPLN1", "BombGun500kgJ 1", null, null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "1x600", new String[] { "MGunVikkersKt 582", null, null, "PylonB5NPLN1", "BombGun600kgJ 1", null, null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "1x91", new String[] { "MGunVikkersKt 582", "PylonB5NPLN0", "BombGunTorpType91 1", null, null, null, null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "1x91_late", new String[] { "MGunVikkersKt 582", "PylonB5NPLN0", "BombGunTorpType91late 1", null, null, null, null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 10, 9, 3, 9, 3, 9, 3, 3, 3, 9, 3, 3, 3, 3, 3, 3 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_ExternalDev01", "_ExternalBomb01", "_ExternalDev02", "_ExternalBomb02", "_ExternalDev03", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalDev04", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalBomb09", "_ExternalBomb10", "_ExternalBomb11" });
     }
 }

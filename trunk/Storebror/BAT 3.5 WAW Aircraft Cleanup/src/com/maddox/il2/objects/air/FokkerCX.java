@@ -10,8 +10,8 @@ public class FokkerCX extends Biplanexyz {
 
     public void update(float f) {
         super.update(f);
-        super.onAircraftLoaded();
-        if (super.FM.isPlayers()) {
+        this.onAircraftLoaded();
+        if (this.FM.isPlayers()) {
             if (!Main3D.cur3D().isViewOutside()) {
                 this.hierMesh().chunkVisible("Blister1_D0", false);
                 this.hierMesh().chunkVisible("Blister2_D0", false);
@@ -20,7 +20,7 @@ public class FokkerCX extends Biplanexyz {
                 this.hierMesh().chunkVisible("Blister2_D0", true);
             }
         }
-        if (super.FM.isPlayers()) {
+        if (this.FM.isPlayers()) {
             if (!Main3D.cur3D().isViewOutside()) {
                 this.hierMesh().chunkVisible("Blister1_D1", false);
             }

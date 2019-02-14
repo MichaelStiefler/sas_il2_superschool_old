@@ -21,14 +21,14 @@ public class TB_3_4M_34R_T_DZZ extends TB_3 implements TypeTransport {
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            TB_3_4M_34R_T_DZZ.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            TB_3_4M_34R_T_DZZ.bChangedPit = true;
         }
     }
 
@@ -41,7 +41,7 @@ public class TB_3_4M_34R_T_DZZ extends TB_3 implements TypeTransport {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f1 < -47F) {
                     f1 = -47F;
                     flag = false;
@@ -79,7 +79,7 @@ public class TB_3_4M_34R_T_DZZ extends TB_3 implements TypeTransport {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f1 < -47F) {
                     f1 = -47F;
                     flag = false;
@@ -169,7 +169,7 @@ public class TB_3_4M_34R_T_DZZ extends TB_3 implements TypeTransport {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f1 < -47F) {
                     f1 = -47F;
                     flag = false;

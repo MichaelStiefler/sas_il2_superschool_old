@@ -12,7 +12,6 @@ import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.Pitot;
 import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.game.HUD;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class BI_6 extends Scheme6 implements TypeFighter {
@@ -115,7 +114,7 @@ public class BI_6 extends Scheme6 implements TypeFighter {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        BI_6.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     protected void moveFlap(float f) {
@@ -186,7 +185,7 @@ public class BI_6 extends Scheme6 implements TypeFighter {
                     this.getEnergyPastArmor(12.71F, shot);
                 }
                 if (s.endsWith("p2")) {
-                    this.getEnergyPastArmor(12.699999809265137D / (Math.abs(v1.x) + 9.9999997473787516E-005D), shot);
+                    this.getEnergyPastArmor(12.699999809265137D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D), shot);
                 }
                 return;
             }
@@ -222,23 +221,23 @@ public class BI_6 extends Scheme6 implements TypeFighter {
                     default:
                         break;
 
-                    case 1: // '\001'
-                    case 4: // '\004'
+                    case 1:
+                    case 4:
                         if (this.getEnergyPastArmor(4.5F, shot) > 0.0F) {
                             this.FM.AS.setControlsDamage(shot.initiator, 0);
                             this.debuggunnery("Ailerons Controls Out..");
                         }
                         break;
 
-                    case 2: // '\002'
-                    case 3: // '\003'
+                    case 2:
+                    case 3:
                         if ((this.getEnergyPastArmor(1.5F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
                             this.FM.AS.setControlsDamage(shot.initiator, 0);
                             this.debuggunnery("Ailerons Controls Out..");
                         }
                         break;
 
-                    case 5: // '\005'
+                    case 5:
                         if (this.getEnergyPastArmor(1.5F, shot) <= 0.0F) {
                             break;
                         }
@@ -256,7 +255,7 @@ public class BI_6 extends Scheme6 implements TypeFighter {
                         }
                         break;
 
-                    case 6: // '\006'
+                    case 6:
                         if (this.getEnergyPastArmor(4F, shot) <= 0.0F) {
                             break;
                         }
@@ -270,7 +269,7 @@ public class BI_6 extends Scheme6 implements TypeFighter {
                         }
                         break;
 
-                    case 7: // '\007'
+                    case 7:
                         if (this.getEnergyPastArmor(1.0F, shot) <= 0.0F) {
                             break;
                         }
@@ -451,52 +450,52 @@ public class BI_6 extends Scheme6 implements TypeFighter {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 3: // '\003'
-            case 19: // '\023'
+            case 3:
+            case 19:
                 this.bHasEngine = false;
                 this.FM.AS.setEngineDies(this, 0);
-                return this.cut(partNames()[i]);
+                return this.cut(Aircraft.partNames()[i]);
 
-            case 4: // '\004'
-            case 33: // '!'
-            case 34: // '"'
-            case 35: // '#'
+            case 4:
+            case 33:
+            case 34:
+            case 35:
                 this.FM.AS.setEngineDies(this, 1);
-                return this.cut(partNames()[i]);
+                return this.cut(Aircraft.partNames()[i]);
 
-            case 5: // '\005'
-            case 36: // '$'
-            case 37: // '%'
-            case 38: // '&'
+            case 5:
+            case 36:
+            case 37:
+            case 38:
                 this.FM.AS.setEngineDies(this, 2);
-                return this.cut(partNames()[i]);
+                return this.cut(Aircraft.partNames()[i]);
 
-            case 6: // '\006'
-            case 7: // '\007'
-            case 8: // '\b'
-            case 9: // '\t'
-            case 10: // '\n'
-            case 11: // '\013'
-            case 12: // '\f'
-            case 13: // '\r'
-            case 14: // '\016'
-            case 15: // '\017'
-            case 16: // '\020'
-            case 17: // '\021'
-            case 18: // '\022'
-            case 20: // '\024'
-            case 21: // '\025'
-            case 22: // '\026'
-            case 23: // '\027'
-            case 24: // '\030'
-            case 25: // '\031'
-            case 26: // '\032'
-            case 27: // '\033'
-            case 28: // '\034'
-            case 29: // '\035'
-            case 30: // '\036'
-            case 31: // '\037'
-            case 32: // ' '
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+            case 15:
+            case 16:
+            case 17:
+            case 18:
+            case 20:
+            case 21:
+            case 22:
+            case 23:
+            case 24:
+            case 25:
+            case 26:
+            case 27:
+            case 28:
+            case 29:
+            case 30:
+            case 31:
+            case 32:
             default:
                 return super.cutFM(i, j, actor);
         }
@@ -537,9 +536,9 @@ public class BI_6 extends Scheme6 implements TypeFighter {
             this.FM.EI.engines[2].setStage(this, 0);
         }
         if (this.FM.isPlayers() && (Pitot.Indicator((float) this.FM.Loc.z, this.FM.getSpeedKMH()) > 750F)) {
-            v.x = v.z = 0.0D;
-            v.y = cvt(Pitot.Indicator((float) this.FM.Loc.z, this.FM.getSpeedKMH()), 750F, 950F, 0.0F, 400000F);
-            ((RealFlightModel) this.FM).gunMomentum(v, false);
+            BI_6.v.x = BI_6.v.z = 0.0D;
+            BI_6.v.y = Aircraft.cvt(Pitot.Indicator((float) this.FM.Loc.z, this.FM.getSpeedKMH()), 750F, 950F, 0.0F, 400000F);
+            ((RealFlightModel) this.FM).gunMomentum(BI_6.v, false);
         }
     }
 
@@ -552,7 +551,7 @@ public class BI_6 extends Scheme6 implements TypeFighter {
     private static Vector3d v = new Vector3d();
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = BI_6.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "BI-6");
         Property.set(class1, "meshName", "3DO/Plane/BI-6/hier.him");
@@ -561,11 +560,9 @@ public class BI_6 extends Scheme6 implements TypeFighter {
         Property.set(class1, "yearService", 1942F);
         Property.set(class1, "yearExpired", 1944F);
         Property.set(class1, "FlightModel", "FlightModels/BI-6.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitBI_6.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitBI_6.class });
         Property.set(class1, "LOSElevation", 0.87325F);
-        weaponTriggersRegister(class1, new int[] { 0, 0 });
-        weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02" });
-        weaponsRegister(class1, "default", new String[] { "MGunShVAKki 90", "MGunShVAKki 90" });
-        weaponsRegister(class1, "none", new String[] { null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02" });
     }
 }

@@ -2,10 +2,8 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.Regiment;
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.game.Mission;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class P_51CM extends P_51 {
@@ -27,8 +25,8 @@ public class P_51CM extends P_51 {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = true;
-        ((FlightModelMain) (super.FM)).CT.dvCockpitDoor = 0.75F;
+        this.FM.CT.bHasCockpitDoorControl = true;
+        this.FM.CT.dvCockpitDoor = 0.75F;
     }
 
     public void doRemoveBodyFromPlane(int i) {
@@ -50,7 +48,7 @@ public class P_51CM extends P_51 {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("pilot1a_D0", false);
                 this.hierMesh().chunkVisible("pilot1b_D0", false);
@@ -81,15 +79,15 @@ public class P_51CM extends P_51 {
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (super.FM.getAltitude() < 3000F) {
+        if (this.FM.getAltitude() < 3000F) {
             this.hierMesh().chunkVisible("HMask1_D0", false);
             this.hierMesh().chunkVisible("HangMask1_D0", true);
-            if (((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+            if (this.FM.AS.bIsAboutToBailout) {
                 this.hierMesh().chunkVisible("HangMask1_D0", false);
             }
         } else {
             this.hierMesh().chunkVisible("HMask1_D0", this.hierMesh().isChunkVisible("Pilot1_D0"));
-            if ((super.FM.getAltitude() >= 3000F) || this.hierMesh().isChunkVisible("HMask1_D0") || ((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+            if ((this.FM.getAltitude() >= 3000F) || this.hierMesh().isChunkVisible("HMask1_D0") || this.FM.AS.bIsAboutToBailout) {
                 this.hierMesh().chunkVisible("HangMask1_D0", false);
             }
         }
@@ -109,7 +107,7 @@ public class P_51CM extends P_51 {
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = P_51CM.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Mustang");
         Property.set(class1, "meshName", "3DO/Plane/MustangMkIII(Multi1)/hier.him");

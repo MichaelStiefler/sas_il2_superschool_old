@@ -16,11 +16,9 @@ public class GO_229A1 extends GO_229 implements TypeFighter, TypeBNZFighter {
         Property.set(class1, "yearService", 1946.5F);
         Property.set(class1, "yearExpired", 1999F);
         Property.set(class1, "FlightModel", "FlightModels/Ho-229.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitGO_229.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitGO_229.class });
         Property.set(class1, "LOSElevation", 0.51305F);
-        weaponTriggersRegister(class1, new int[] { 0, 0 });
-        weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02" });
-        weaponsRegister(class1, "default", new String[] { "MGunMK103k 120", "MGunMK103k 120" });
-        weaponsRegister(class1, "none", new String[] { null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02" });
     }
 }

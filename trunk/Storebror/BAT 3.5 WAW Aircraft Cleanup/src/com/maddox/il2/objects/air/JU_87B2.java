@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import com.maddox.il2.ai.Regiment;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Property;
 
@@ -31,8 +30,8 @@ public class JU_87B2 extends JU_87 {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = true;
-        ((FlightModelMain) (super.FM)).CT.dvCockpitDoor = 0.65F;
+        this.FM.CT.bHasCockpitDoorControl = true;
+        this.FM.CT.dvCockpitDoor = 0.65F;
     }
 
     protected boolean cutFM(int i, int j, Actor actor) {
@@ -46,7 +45,7 @@ public class JU_87B2 extends JU_87 {
 
     protected void moveFan(float f) {
         if (this.bDynamoOperational) {
-            this.pk = Math.abs((int) (((FlightModelMain) (super.FM)).Vwld.length() / 14D));
+            this.pk = Math.abs((int) (this.FM.Vwld.length() / 14D));
             if (this.pk >= 1) {
                 this.pk = 1;
             }
@@ -56,7 +55,7 @@ public class JU_87B2 extends JU_87 {
             this.hierMesh().chunkVisible("GearR3_D0", !this.bDynamoRotary);
             this.hierMesh().chunkVisible("GearR3Rot_D0", this.bDynamoRotary);
         }
-        this.dynamoOrient = this.bDynamoRotary ? (this.dynamoOrient - 17.987F) % 360F : (float) (this.dynamoOrient - (((FlightModelMain) (super.FM)).Vwld.length() * 1.5444015264511108D)) % 360F;
+        this.dynamoOrient = this.bDynamoRotary ? (this.dynamoOrient - 17.987F) % 360F : (float) (this.dynamoOrient - (this.FM.Vwld.length() * 1.5444015264511108D)) % 360F;
         this.hierMesh().chunkSetAngles("GearR3_D0", 0.0F, this.dynamoOrient, 0.0F);
         super.moveFan(f);
     }
@@ -67,7 +66,7 @@ public class JU_87B2 extends JU_87 {
     }
 
     public void update(float f) {
-        float f1 = ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator();
+        float f1 = this.FM.EI.engines[0].getControlRadiator();
         if (Math.abs(this.flapps - f1) > 0.01F) {
             this.flapps = f1;
             for (int i = 1; i < 9; i++) {

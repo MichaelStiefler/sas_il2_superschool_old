@@ -27,7 +27,7 @@ public class Me_262_HGIV extends ME_262 implements TypeX4Carrier, TypeStormovik,
         this.deltaAzimuth = 1.0F;
         if (this.X4check) {
             this.X4check = false;
-        } else if ((super.FM instanceof RealFlightModel) && ((RealFlightModel) super.FM).isRealMode()) {
+        } else if ((this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode()) {
             this.typeFighterAceMakerAdjSideslipPlus();
         }
     }
@@ -36,7 +36,7 @@ public class Me_262_HGIV extends ME_262 implements TypeX4Carrier, TypeStormovik,
         this.deltaAzimuth = -1F;
         if (this.X4check) {
             this.X4check = false;
-        } else if ((super.FM instanceof RealFlightModel) && ((RealFlightModel) super.FM).isRealMode()) {
+        } else if ((this.FM instanceof RealFlightModel) && ((RealFlightModel) this.FM).isRealMode()) {
             this.typeFighterAceMakerAdjSideslipMinus();
         }
     }
@@ -121,12 +121,12 @@ public class Me_262_HGIV extends ME_262 implements TypeX4Carrier, TypeStormovik,
         this.k14Distance = netmsginput.readFloat();
     }
 
-    private float     deltaAzimuth;
-    private float     deltaTangage;
-    private boolean   X4check;
-    public int        k14Mode;
-    public int        k14WingspanType;
-    public float      k14Distance;
+    private float   deltaAzimuth;
+    private float   deltaTangage;
+    private boolean X4check;
+    public int      k14Mode;
+    public int      k14WingspanType;
+    public float    k14Distance;
 
     static {
         Class class1 = Me_262_HGIV.class;

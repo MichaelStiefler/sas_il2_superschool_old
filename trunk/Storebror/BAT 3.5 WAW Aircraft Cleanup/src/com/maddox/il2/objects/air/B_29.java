@@ -20,7 +20,7 @@ public class B_29 extends B_29X implements TypeBomber, TypeX4Carrier, TypeGuided
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
+            case 19:
                 this.killPilot(this, 4);
                 break;
         }
@@ -29,21 +29,21 @@ public class B_29 extends B_29X implements TypeBomber, TypeX4Carrier, TypeGuided
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 2: // '\002'
-                super.FM.turret[0].setHealth(f);
+            case 2:
+                this.FM.turret[0].setHealth(f);
                 break;
 
-            case 3: // '\003'
-                super.FM.turret[1].setHealth(f);
+            case 3:
+                this.FM.turret[1].setHealth(f);
                 break;
 
-            case 4: // '\004'
-                super.FM.turret[2].setHealth(f);
+            case 4:
+                this.FM.turret[2].setHealth(f);
                 break;
 
-            case 5: // '\005'
-                super.FM.turret[3].setHealth(f);
-                super.FM.turret[4].setHealth(f);
+            case 5:
+                this.FM.turret[3].setHealth(f);
+                this.FM.turret[4].setHealth(f);
                 break;
         }
     }

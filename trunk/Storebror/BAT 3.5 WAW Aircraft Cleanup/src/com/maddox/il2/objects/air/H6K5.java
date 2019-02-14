@@ -25,19 +25,19 @@ public class H6K5 extends H6K5abc implements TypeBomber {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.endsWith("default")) {
+        if (this.thisWeaponsName.endsWith("default")) {
             this.hierMesh().chunkVisible("RACK1L_D0", false);
             this.hierMesh().chunkVisible("RACK1R_D0", false);
             this.hierMesh().chunkVisible("RACK2L_D0", false);
             this.hierMesh().chunkVisible("RACK2R_D0", false);
         }
-        if (super.thisWeaponsName.endsWith("torpedoes")) {
+        if (this.thisWeaponsName.endsWith("torpedoes")) {
             this.hierMesh().chunkVisible("RACK1L_D0", false);
             this.hierMesh().chunkVisible("RACK1R_D0", false);
             this.hierMesh().chunkVisible("RACK2L_D0", true);
             this.hierMesh().chunkVisible("RACK2R_D0", true);
         }
-        if (super.thisWeaponsName.endsWith("bombs")) {
+        if (this.thisWeaponsName.endsWith("bombs")) {
             this.hierMesh().chunkVisible("RACK1L_D0", true);
             this.hierMesh().chunkVisible("RACK1R_D0", true);
             this.hierMesh().chunkVisible("RACK2L_D0", false);
@@ -104,7 +104,7 @@ public class H6K5 extends H6K5abc implements TypeBomber {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -35F) {
                     f = -35F;
                     flag = false;
@@ -123,7 +123,7 @@ public class H6K5 extends H6K5abc implements TypeBomber {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -22F) {
                     f = -22F;
                     flag = false;
@@ -142,7 +142,7 @@ public class H6K5 extends H6K5abc implements TypeBomber {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -22F) {
                     f = -22F;
                     flag = false;
@@ -161,7 +161,7 @@ public class H6K5 extends H6K5abc implements TypeBomber {
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f1 < 0.0F) {
                     f1 = 0.0F;
                     flag = false;
@@ -172,7 +172,7 @@ public class H6K5 extends H6K5abc implements TypeBomber {
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 if (f < -25F) {
                     f = -25F;
                     flag = false;
@@ -201,29 +201,29 @@ public class H6K5 extends H6K5abc implements TypeBomber {
             default:
                 break;
 
-            case 33: // '!'
+            case 33:
                 this.hitProp(0, j, actor);
                 break;
 
-            case 36: // '$'
+            case 36:
                 this.hitProp(1, j, actor);
                 break;
 
-            case 34: // '"'
+            case 34:
                 this.FM.AS.hitEngine(this, 0, 2);
                 if (World.Rnd().nextInt(0, 99) < 66) {
                     this.FM.AS.hitEngine(this, 0, 2);
                 }
                 break;
 
-            case 37: // '%'
+            case 37:
                 this.FM.AS.hitEngine(this, 1, 2);
                 if (World.Rnd().nextInt(0, 99) < 66) {
                     this.FM.AS.hitEngine(this, 1, 2);
                 }
                 break;
 
-            case 19: // '\023'
+            case 19:
                 this.killPilot(actor, 6);
                 break;
         }
@@ -232,20 +232,20 @@ public class H6K5 extends H6K5abc implements TypeBomber {
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 2: // '\002'
+            case 2:
                 this.FM.turret[0].bIsOperable = false;
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.FM.turret[1].bIsOperable = false;
                 this.FM.turret[2].bIsOperable = false;
                 break;
 
-            case 4: // '\004'
+            case 4:
                 this.FM.turret[3].bIsOperable = false;
                 break;
 
-            case 5: // '\005'
+            case 5:
                 this.FM.turret[4].bIsOperable = false;
                 break;
         }

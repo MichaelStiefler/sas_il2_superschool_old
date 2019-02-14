@@ -1,8 +1,6 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.fm.Atmosphere;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.fm.Pitot;
 import com.maddox.rts.Property;
 
@@ -12,24 +10,24 @@ public class Ki10 extends Avia_B5xx {
     }
 
     public void update(float f) {
-        float f1 = Atmosphere.temperature((float) ((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z) - 273.15F;
-        float f2 = Pitot.Indicator((float) ((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z, super.FM.getSpeedKMH());
+        float f1 = Atmosphere.temperature((float) this.FM.Loc.z) - 273.15F;
+        float f2 = Pitot.Indicator((float) this.FM.Loc.z, this.FM.getSpeedKMH());
         if (f2 < 0.0F) {
             f2 = 0.0F;
         }
-        float f3 = (((((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator() * f * f2) / (f2 + 50F)) * (((FlightModelMain) (super.FM)).EI.engines[0].tWaterOut - f1)) / 256F;
-        ((FlightModelMain) (super.FM)).EI.engines[0].tWaterOut -= f3;
-        float f4 = ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator();
+        float f3 = (((this.FM.EI.engines[0].getControlRadiator() * f * f2) / (f2 + 50F)) * (this.FM.EI.engines[0].tWaterOut - f1)) / 256F;
+        this.FM.EI.engines[0].tWaterOut -= f3;
+        float f4 = this.FM.EI.engines[0].getControlRadiator();
         f4 = (((-36F * f4) - 30F) * f4) + 30F;
-        super.kangle = (0.95F * super.kangle) + (0.05F * f4);
-        this.hierMesh().chunkSetAngles("radiator1_D0", 0.0F, super.kangle, 0.0F);
-        this.hierMesh().chunkSetAngles("radiator2_D0", 0.0F, super.kangle, 0.0F);
-        this.hierMesh().chunkSetAngles("radiator3_D0", 0.0F, super.kangle, 0.0F);
-        this.hierMesh().chunkSetAngles("radiator4_D0", 0.0F, super.kangle, 0.0F);
-        this.hierMesh().chunkSetAngles("radiator5_D0", 0.0F, super.kangle, 0.0F);
-        this.hierMesh().chunkSetAngles("radiator6_D0", 0.0F, super.kangle, 0.0F);
-        this.hierMesh().chunkSetAngles("radiator7_D0", 0.0F, super.kangle, 0.0F);
-        this.hierMesh().chunkSetAngles("radiator8_D0", 0.0F, super.kangle, 0.0F);
+        this.kangle = (0.95F * this.kangle) + (0.05F * f4);
+        this.hierMesh().chunkSetAngles("radiator1_D0", 0.0F, this.kangle, 0.0F);
+        this.hierMesh().chunkSetAngles("radiator2_D0", 0.0F, this.kangle, 0.0F);
+        this.hierMesh().chunkSetAngles("radiator3_D0", 0.0F, this.kangle, 0.0F);
+        this.hierMesh().chunkSetAngles("radiator4_D0", 0.0F, this.kangle, 0.0F);
+        this.hierMesh().chunkSetAngles("radiator5_D0", 0.0F, this.kangle, 0.0F);
+        this.hierMesh().chunkSetAngles("radiator6_D0", 0.0F, this.kangle, 0.0F);
+        this.hierMesh().chunkSetAngles("radiator7_D0", 0.0F, this.kangle, 0.0F);
+        this.hierMesh().chunkSetAngles("radiator8_D0", 0.0F, this.kangle, 0.0F);
         super.update(f);
     }
 

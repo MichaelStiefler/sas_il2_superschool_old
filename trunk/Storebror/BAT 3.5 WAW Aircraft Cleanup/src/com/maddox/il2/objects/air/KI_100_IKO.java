@@ -18,13 +18,9 @@ public class KI_100_IKO extends KI_100 {
         Property.set(class1, "yearService", 1943F);
         Property.set(class1, "yearExpired", 1947F);
         Property.set(class1, "FlightModel", "FlightModels/Ki-100-I.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitKI_100.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitKI_100.class });
         Property.set(class1, "LOSElevation", 0.85935F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1, 3, 3, 9, 9 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev01", "_ExternalDev02" });
-        weaponsRegister(class1, "default", new String[] { "MGunHo103k 250", "MGunHo103k 250", "MGunHo5si 250", "MGunHo5si 250", null, null, null, null });
-        weaponsRegister(class1, "2x250", new String[] { "MGunHo103k 250", "MGunHo103k 250", "MGunHo5si 250", "MGunHo5si 250", "BombGun250kgJ 1", "BombGun250kgJ 1", null, null });
-        weaponsRegister(class1, "1x250", new String[] { "MGunHo103k 250", "MGunHo103k 250", "MGunHo5si 250", "MGunHo5si 250", null, "BombGun250kgJ 1", null, null });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1, 3, 3, 9, 9 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev01", "_ExternalDev02" });
     }
 }

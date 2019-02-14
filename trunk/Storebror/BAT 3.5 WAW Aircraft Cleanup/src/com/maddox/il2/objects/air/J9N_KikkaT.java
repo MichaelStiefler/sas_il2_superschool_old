@@ -7,7 +7,6 @@ import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.BombIJN_RATO;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
@@ -55,12 +54,12 @@ public class J9N_KikkaT extends Kikka2v {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
-            case 34: // '"'
-            case 35: // '#'
-            case 36: // '$'
-            case 37: // '%'
-            case 38: // '&'
+            case 33:
+            case 34:
+            case 35:
+            case 36:
+            case 37:
+            case 38:
                 this.doCutBoosters();
                 this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
@@ -100,7 +99,7 @@ public class J9N_KikkaT extends Kikka2v {
     protected boolean     bHasBoosters;
     protected long        boosterFireOutTime;
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = J9N_KikkaT.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Kikka");
         Property.set(class1, "meshName", "3DO/Plane/J9N-KikkaT(Multi1)/hier.him");

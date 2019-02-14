@@ -80,12 +80,12 @@ public class HE_111H12 extends HE_111 implements TypeX4Carrier, TypeGuidedBombCa
     public void doRemoveBodyFromPlane(int i) {
         super.doRemoveBodyFromPlane(i);
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot1_FAK", false);
                 this.hierMesh().chunkVisible("Head1_FAK", false);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot2_FAK", false);
                 break;
         }
@@ -182,13 +182,13 @@ public class HE_111H12 extends HE_111 implements TypeX4Carrier, TypeGuidedBombCa
             default:
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (!this.pilot2kill) {
                     this.FM.turret[0].bIsOperable = false;
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (!this.pilot2kill) {
                     this.FM.turret[0].bIsOperable = true;
                 }
@@ -219,7 +219,7 @@ public class HE_111H12 extends HE_111 implements TypeX4Carrier, TypeGuidedBombCa
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -25F) {
                     f = -25F;
                     flag = false;
@@ -238,7 +238,7 @@ public class HE_111H12 extends HE_111 implements TypeX4Carrier, TypeGuidedBombCa
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -40F) {
                     f = -40F;
                     flag = false;
@@ -264,11 +264,11 @@ public class HE_111H12 extends HE_111 implements TypeX4Carrier, TypeGuidedBombCa
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.FM.turret[0].setHealth(f);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.FM.turret[1].setHealth(f);
                 break;
         }
@@ -279,7 +279,7 @@ public class HE_111H12 extends HE_111 implements TypeX4Carrier, TypeGuidedBombCa
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);
@@ -299,7 +299,7 @@ public class HE_111H12 extends HE_111 implements TypeX4Carrier, TypeGuidedBombCa
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.pilot2kill = true;
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
@@ -318,7 +318,7 @@ public class HE_111H12 extends HE_111 implements TypeX4Carrier, TypeGuidedBombCa
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 this.hierMesh().chunkVisible("HMask3_D0", false);

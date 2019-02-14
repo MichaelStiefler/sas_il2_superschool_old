@@ -7,7 +7,6 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.AircraftState;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
@@ -22,29 +21,29 @@ public class SPITFIREF22 extends SPITFIRE9 implements TypeFighterAceMaker, TypeB
         this.k14Mode = 0;
         this.k14WingspanType = 0;
         this.k14Distance = 200F;
-        kl = 1.0F;
-        kr = 1.0F;
-        kc = 1.0F;
+        SPITFIREF22.kl = 1.0F;
+        SPITFIREF22.kr = 1.0F;
+        SPITFIREF22.kc = 1.0F;
     }
 
     public void hitDaSilk() {
         if (this.okToJump) {
             super.hitDaSilk();
-        } else if (super.FM.isPlayers() || this.isNetPlayer() || !((FlightModelMain) (super.FM)).AS.isPilotDead(0)) {
-            if ((((FlightModelMain) (super.FM)).CT.getCockpitDoor() < 1.0F) && !this.bailingOut) {
+        } else if (this.FM.isPlayers() || this.isNetPlayer() || !this.FM.AS.isPilotDead(0)) {
+            if ((this.FM.CT.getCockpitDoor() < 1.0F) && !this.bailingOut) {
                 this.bailingOut = true;
-                ((FlightModelMain) (super.FM)).AS.setCockpitDoor(this, 1);
-            } else if ((((FlightModelMain) (super.FM)).CT.getCockpitDoor() == 1.0F) && !this.bailingOut) {
+                this.FM.AS.setCockpitDoor(this, 1);
+            } else if ((this.FM.CT.getCockpitDoor() == 1.0F) && !this.bailingOut) {
                 this.bailingOut = true;
                 this.okToJump = true;
                 this.canopyForward = true;
                 super.hitDaSilk();
             }
         }
-        if (!this.sideDoorOpened && ((FlightModelMain) (super.FM)).AS.bIsAboutToBailout && !((FlightModelMain) (super.FM)).AS.isPilotDead(0)) {
+        if (!this.sideDoorOpened && this.FM.AS.bIsAboutToBailout && !this.FM.AS.isPilotDead(0)) {
             this.sideDoorOpened = true;
-            ((FlightModelMain) (super.FM)).CT.forceCockpitDoor(0.0F);
-            ((FlightModelMain) (super.FM)).AS.setCockpitDoor(this, 1);
+            this.FM.CT.forceCockpitDoor(0.0F);
+            this.FM.AS.setCockpitDoor(this, 1);
         }
     }
 
@@ -60,26 +59,26 @@ public class SPITFIREF22 extends SPITFIRE9 implements TypeFighterAceMaker, TypeB
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        SPITFIREF22.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public static void moveGear(HierMesh hiermesh, float f) {
-        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(f * kl, 0.2F, 0.8F, 0.0F, -95F), 0.0F);
-        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(f * kl, 0.0F, 0.2F, 0.0F, 90F), 0.0F);
-        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(f * kr, 0.4F, 1.0F, 0.0F, -95F), 0.0F);
-        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(f * kr, 0.2F, 0.4F, 0.0F, -90F), 0.0F);
-        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(f * kc, 0.01F, 0.99F, 0.0F, -75F), 0.0F);
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(f * SPITFIREF22.kl, 0.2F, 0.8F, 0.0F, -95F), 0.0F);
+        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(f * SPITFIREF22.kl, 0.0F, 0.2F, 0.0F, 90F), 0.0F);
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(f * SPITFIREF22.kr, 0.4F, 1.0F, 0.0F, -95F), 0.0F);
+        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(f * SPITFIREF22.kr, 0.2F, 0.4F, 0.0F, -90F), 0.0F);
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(f * SPITFIREF22.kc, 0.01F, 0.99F, 0.0F, -75F), 0.0F);
         hiermesh.chunkSetAngles("GearC3_D0", 0.0F, 0.0F, 0.0F);
-        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(f * kc, 0.01F, 0.09F, 0.0F, -75F), 0.0F);
-        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, Aircraft.cvt(f * kc, 0.01F, 0.09F, 0.0F, -75F), 0.0F);
+        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(f * SPITFIREF22.kc, 0.01F, 0.09F, 0.0F, -75F), 0.0F);
+        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, Aircraft.cvt(f * SPITFIREF22.kc, 0.01F, 0.09F, 0.0F, -75F), 0.0F);
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
-        if (((FlightModelMain) (super.FM)).Gears.isHydroOperable()) {
-            kl = 1.0F;
-            kr = 1.0F;
-            kc = 1.0F;
+        SPITFIREF22.moveGear(this.hierMesh(), f);
+        if (this.FM.Gears.isHydroOperable()) {
+            SPITFIREF22.kl = 1.0F;
+            SPITFIREF22.kr = 1.0F;
+            SPITFIREF22.kc = 1.0F;
         }
     }
 
@@ -89,26 +88,26 @@ public class SPITFIREF22 extends SPITFIRE9 implements TypeFighterAceMaker, TypeB
 
     public void moveWheelSink() {
         this.resetYPRmodifier();
-        Aircraft.xyz[2] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.247F, 0.0F, -0.247F);
+        Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.247F, 0.0F, -0.247F);
         this.hierMesh().chunkSetLocate("GearL3_D0", Aircraft.xyz, Aircraft.ypr);
-        Aircraft.xyz[2] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 0.247F, 0.0F, 0.247F);
+        Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.247F, 0.0F, 0.247F);
         this.hierMesh().chunkSetLocate("GearR3_D0", Aircraft.xyz, Aircraft.ypr);
     }
 
     public void moveCockpitDoor(float f) {
         if (this.bailingOut && (f >= 1.0F) && !this.canopyForward) {
             this.canopyForward = true;
-            ((FlightModelMain) (super.FM)).CT.forceCockpitDoor(0.0F);
-            ((FlightModelMain) (super.FM)).AS.setCockpitDoor(this, 1);
+            this.FM.CT.forceCockpitDoor(0.0F);
+            this.FM.AS.setCockpitDoor(this, 1);
         } else if (this.canopyForward && !this.sideDoorOpened) {
             this.hierMesh().chunkSetAngles("Blister2_D0", 0.0F, 160F * f, 0.0F);
             if (f >= 1.0F) {
                 this.okToJump = true;
-                super.hitDaSilk();
+                this.hitDaSilk();
             }
         } else {
             try {
-                if (((FlightModelMain) (super.FM)).CT.bMoveSideDoor) {
+                if (this.FM.CT.bMoveSideDoor) {
                     this.sideDoorOpened = true;
                     this.hierMesh().chunkSetAngles("Blister2_D0", 0.0F, 160F * f, 0.0F);
                     return;
@@ -136,9 +135,9 @@ public class SPITFIREF22 extends SPITFIRE9 implements TypeFighterAceMaker, TypeB
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (this.okToJump && (((FlightModelMain) (super.FM)).CT.getCockpitDoor() >= 1.0F) && this.canopyForward && this.bailingOut && !((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+        if (this.okToJump && (this.FM.CT.getCockpitDoor() >= 1.0F) && this.canopyForward && this.bailingOut && !this.FM.AS.bIsAboutToBailout) {
             AircraftState.bCheckPlayerAircraft = false;
-            super.hitDaSilk();
+            this.hitDaSilk();
             AircraftState.bCheckPlayerAircraft = false;
         }
     }
@@ -147,7 +146,7 @@ public class SPITFIREF22 extends SPITFIRE9 implements TypeFighterAceMaker, TypeB
         super.update(f);
         this.hierMesh().chunkSetAngles("Oil1_D0", 0.0F, -20F * this.kangle, 0.0F);
         this.hierMesh().chunkSetAngles("Oil2_D0", 0.0F, -20F * this.kangle, 0.0F);
-        this.kangle = (0.95F * this.kangle) + (0.05F * ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator());
+        this.kangle = (0.95F * this.kangle) + (0.05F * this.FM.EI.engines[0].getControlRadiator());
         if (this.kangle > 1.0F) {
             this.kangle = 1.0F;
         }
@@ -220,32 +219,32 @@ public class SPITFIREF22 extends SPITFIRE9 implements TypeFighterAceMaker, TypeB
 
     protected void gearDamageFX(String s) {
         if (s.startsWith("xgearl") || s.startsWith("GearL")) {
-            if (super.FM.isPlayers()) {
+            if (this.FM.isPlayers()) {
                 HUD.log("Left Gear:  Hydraulic system Failed");
             }
-            kl = World.Rnd().nextFloat();
-            kr = World.Rnd().nextFloat() * kl;
-            kc = 0.1F;
+            SPITFIREF22.kl = World.Rnd().nextFloat();
+            SPITFIREF22.kr = World.Rnd().nextFloat() * SPITFIREF22.kl;
+            SPITFIREF22.kc = 0.1F;
             this.cutGearCovers("L");
         } else if (s.startsWith("xgearr") || s.startsWith("GearR")) {
-            if (super.FM.isPlayers()) {
+            if (this.FM.isPlayers()) {
                 HUD.log("Right Gear:  Hydraulic system Failed");
             }
-            kr = World.Rnd().nextFloat();
-            kl = World.Rnd().nextFloat() * kr;
-            kc = 0.1F;
+            SPITFIREF22.kr = World.Rnd().nextFloat();
+            SPITFIREF22.kl = World.Rnd().nextFloat() * SPITFIREF22.kr;
+            SPITFIREF22.kc = 0.1F;
             this.cutGearCovers("R");
         } else {
-            if (super.FM.isPlayers()) {
+            if (this.FM.isPlayers()) {
                 HUD.log("Center Gear:  Hydraulic system Failed");
             }
-            kc = World.Rnd().nextFloat();
-            kl = World.Rnd().nextFloat() * kc;
-            kr = World.Rnd().nextFloat() * kc;
+            SPITFIREF22.kc = World.Rnd().nextFloat();
+            SPITFIREF22.kl = World.Rnd().nextFloat() * SPITFIREF22.kc;
+            SPITFIREF22.kr = World.Rnd().nextFloat() * SPITFIREF22.kc;
             this.cutGearCovers("C");
         }
-        ((FlightModelMain) (super.FM)).CT.GearControl = 1.0F;
-        ((FlightModelMain) (super.FM)).Gears.setHydroOperable(false);
+        this.FM.CT.GearControl = 1.0F;
+        this.FM.Gears.setHydroOperable(false);
     }
 
     private void cutGearCovers(String s) {
@@ -253,19 +252,19 @@ public class SPITFIREF22 extends SPITFIRE9 implements TypeFighterAceMaker, TypeB
         if (World.Rnd().nextFloat() < 0.3F) {
             Wreckage wreckage = new Wreckage(this, this.hierMesh().chunkFind("Gear" + s + 5 + "_D0"));
             wreckage.collide(true);
-            vector3d.set(((FlightModelMain) (super.FM)).Vwld);
+            vector3d.set(this.FM.Vwld);
             wreckage.setSpeed(vector3d);
             this.hierMesh().chunkVisible("Gear" + s + 5 + "_D0", false);
             Wreckage wreckage1 = new Wreckage(this, this.hierMesh().chunkFind("Gear" + s + 6 + "_D0"));
             wreckage1.collide(true);
-            vector3d.set(((FlightModelMain) (super.FM)).Vwld);
+            vector3d.set(this.FM.Vwld);
             wreckage1.setSpeed(vector3d);
             this.hierMesh().chunkVisible("Gear" + s + 6 + "_D0", false);
         } else if (World.Rnd().nextFloat() < 0.3F) {
             int i = World.Rnd().nextInt(2) + 5;
             Wreckage wreckage2 = new Wreckage(this, this.hierMesh().chunkFind("Gear" + s + i + "_D0"));
             wreckage2.collide(true);
-            vector3d.set(((FlightModelMain) (super.FM)).Vwld);
+            vector3d.set(this.FM.Vwld);
             wreckage2.setSpeed(vector3d);
             this.hierMesh().chunkVisible("Gear" + s + i + "_D0", false);
         }

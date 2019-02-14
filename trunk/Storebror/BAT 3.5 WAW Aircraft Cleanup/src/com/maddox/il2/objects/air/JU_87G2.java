@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import java.util.ArrayList;
 
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.objects.weapons.GunEmpty;
 import com.maddox.rts.Property;
@@ -29,8 +28,8 @@ public class JU_87G2 extends JU_87G1 implements TypeStormovik {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = true;
-        ((FlightModelMain) (super.FM)).CT.dvCockpitDoor = 0.65F;
+        this.FM.CT.bHasCockpitDoorControl = true;
+        this.FM.CT.dvCockpitDoor = 0.65F;
         if (!(this.getGunByHookName("_MGUN01") instanceof GunEmpty)) {
             this.hierMesh().chunkVisible("20mmL_D0", true);
         }

@@ -10,7 +10,7 @@ public class Mitsubishi_Ki_2 extends KI2_cde implements TypeBomber, TypeTranspor
 
     public Mitsubishi_Ki_2() {
         this.bChangedExts = false;
-        bChangedPit = true;
+        Mitsubishi_Ki_2.bChangedPit = true;
         this.fSightSetForwardAngle = 0.0F;
         this.fSightCurSideslip = 0.0F;
         this.fSightCurForwardAngle = 0.0F;

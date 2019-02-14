@@ -29,11 +29,7 @@ public class AVIA_B534 extends Avia_B5xx {
         Property.set(class1, "originCountry", PaintScheme.countrySlovakia);
         Property.set(class1, "cockpitClass", new Class[] { CockpitAVIA_B534.class });
         Property.set(class1, "LOSElevation", 0.66F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1, 9, 9, 9, 9, 9, 9, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalBomb09", "_ExternalBomb10" });
-        weaponsRegister(class1, "default", new String[] { "MGunVz30syn 300", "MGunVz30syn 300", "MGunVz30syn 300", "MGunVz30syn 300", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "6*10kg", new String[] { "MGunVz30syn 300", "MGunVz30syn 300", "MGunVz30syn 300", "MGunVz30syn 300", "PylonS328 1", "PylonS328 1", "PylonS328 1", "PylonS328 1", "PylonS328 1", "PylonS328 1", null, null, null, null, "BombGun10kgCZ", "BombGun10kgCZ", "BombGun10kgCZ", "BombGun10kgCZ", "BombGun10kgCZ", "BombGun10kgCZ" });
-        weaponsRegister(class1, "4*20kg", new String[] { "MGunVz30syn 300", "MGunVz30syn 300", "MGunVz30syn 300", "MGunVz30syn 300", "PylonS328 1", "PylonS328 1", null, null, "PylonS328 1", "PylonS328 1", "BombGun20kgCZ", "BombGun20kgCZ", "BombGun20kgCZ", "BombGun20kgCZ", null, null, null, null, null, null });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1, 9, 9, 9, 9, 9, 9, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalBomb09", "_ExternalBomb10" });
     }
 }

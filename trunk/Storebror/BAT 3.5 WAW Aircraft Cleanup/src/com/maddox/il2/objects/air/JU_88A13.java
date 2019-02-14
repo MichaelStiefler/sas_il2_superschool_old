@@ -1,11 +1,9 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Eff3DActor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.BombAB23;
 import com.maddox.il2.objects.weapons.BombSC50;
@@ -13,7 +11,6 @@ import com.maddox.il2.objects.weapons.BombSC50C;
 import com.maddox.il2.objects.weapons.BombStarthilfe109500;
 import com.maddox.il2.objects.weapons.FuelTank_Ju88;
 import com.maddox.il2.objects.weapons.GunEmpty;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
@@ -58,19 +55,19 @@ public class JU_88A13 extends JU88A13 implements TypeStormovik, TypeScout {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).M.massEmpty -= 160F;
-        ((FlightModelMain) (super.FM)).CT.bHasAirBrakeControl = false;
-        ((FlightModelMain) (super.FM)).M.fuel = 640F;
+        this.FM.M.massEmpty -= 160F;
+        this.FM.CT.bHasAirBrakeControl = false;
+        this.FM.M.fuel = 640F;
         if ((this.getGunByHookName("_MGUN09") instanceof GunEmpty) || (this.getGunByHookName("_MGUN21") instanceof GunEmpty)) {
-            ((FlightModelMain) (super.FM)).M.massEmpty += 90F;
+            this.FM.M.massEmpty += 90F;
         }
         if (this.getGunByHookName("_CANNON03") instanceof GunEmpty) {
-            ((FlightModelMain) (super.FM)).M.massEmpty += 108F;
+            this.FM.M.massEmpty += 108F;
         }
         if (this.getGunByHookName("_CANNON07") instanceof GunEmpty) {
-            ((FlightModelMain) (super.FM)).M.massEmpty += 240F;
+            this.FM.M.massEmpty += 240F;
         }
-        Object aobj[] = super.pos.getBaseAttached();
+        Object aobj[] = this.pos.getBaseAttached();
         if (aobj != null) {
             for (int i = 0; i < aobj.length; i++) {
                 if (aobj[i] instanceof FuelTank_Ju88) {
@@ -94,7 +91,7 @@ public class JU_88A13 extends JU88A13 implements TypeStormovik, TypeScout {
             this.hierMesh().chunkVisible("Bay7_D0", true);
             this.hierMesh().chunkVisible("Bay8_D0", true);
         }
-        this.fullMass = ((FlightModelMain) (super.FM)).M.getFullMass() + ((FlightModelMain) (super.FM)).M.fuel + ((FlightModelMain) (super.FM)).CT.getWeaponMass() + this.massFuelTank;
+        this.fullMass = this.FM.M.getFullMass() + this.FM.M.fuel + this.FM.CT.getWeaponMass() + this.massFuelTank;
         if (this.fullMass >= this.MassBoost) {
             this.boostersEnable = true;
         }
@@ -139,14 +136,14 @@ public class JU_88A13 extends JU88A13 implements TypeStormovik, TypeScout {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
-            case 34: // '"'
-            case 35: // '#'
-            case 36: // '$'
-            case 37: // '%'
-            case 38: // '&'
+            case 33:
+            case 34:
+            case 35:
+            case 36:
+            case 37:
+            case 38:
                 this.doCutBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
                 break;
         }
@@ -155,30 +152,30 @@ public class JU_88A13 extends JU88A13 implements TypeStormovik, TypeScout {
 
     public void update(float f) {
         super.update(f);
-        if ((super.FM instanceof Pilot) && this.bHasBoosters) {
-            if ((super.FM.getAltitude() > 300F) && (this.boosterFireOutTime == -1L) && (((Tuple3d) (((FlightModelMain) (super.FM)).Loc)).z != 0.0D) && (World.Rnd().nextFloat() < 0.05F)) {
+        if ((this.FM instanceof Pilot) && this.bHasBoosters) {
+            if ((this.FM.getAltitude() > 300F) && (this.boosterFireOutTime == -1L) && (this.FM.Loc.z != 0.0D) && (World.Rnd().nextFloat() < 0.05F)) {
                 this.doCutBoosters();
-                ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
             }
-            if (this.bHasBoosters && (this.boosterFireOutTime == -1L) && ((FlightModelMain) (super.FM)).Gears.onGround() && (((FlightModelMain) (super.FM)).EI.getPowerOutput() > 0.8F) && (((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6) && (((FlightModelMain) (super.FM)).EI.engines[1].getStage() == 6) && (super.FM.getSpeedKMH() > 20F)) {
+            if (this.bHasBoosters && (this.boosterFireOutTime == -1L) && this.FM.Gears.onGround() && (this.FM.EI.getPowerOutput() > 0.8F) && (this.FM.EI.engines[0].getStage() == 6) && (this.FM.EI.engines[1].getStage() == 6) && (this.FM.getSpeedKMH() > 20F)) {
                 if (this.boostersEnable) {
                     this.boosterFireOutTime = Time.current() + 30000L;
                     this.doFireBoosters();
-                    ((FlightModelMain) (super.FM)).AS.setGliderBoostOn();
+                    this.FM.AS.setGliderBoostOn();
                 } else {
                     this.doCutBoosters();
-                    ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                    this.FM.AS.setGliderBoostOff();
                     this.bHasBoosters = false;
                 }
             }
             if (this.bHasBoosters && (this.boosterFireOutTime > 0L)) {
                 if (Time.current() < this.boosterFireOutTime) {
-                    ((FlightModelMain) (super.FM)).producedAF.x += 20000D;
+                    this.FM.producedAF.x += 20000D;
                 }
                 if (Time.current() > (this.boosterFireOutTime + 10000L)) {
                     this.doCutBoosters();
-                    ((FlightModelMain) (super.FM)).AS.setGliderBoostOff();
+                    this.FM.AS.setGliderBoostOff();
                     this.bHasBoosters = false;
                 }
             }
@@ -187,22 +184,22 @@ public class JU_88A13 extends JU88A13 implements TypeStormovik, TypeScout {
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            JU_88A13.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            JU_88A13.bChangedPit = true;
         }
     }
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         for (int i = 1; i < 4; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -213,26 +210,26 @@ public class JU_88A13 extends JU88A13 implements TypeStormovik, TypeScout {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 this.hierMesh().chunkVisible("HMask3_D0", false);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.hierMesh().chunkVisible("Pilot4_D0", false);
                 this.hierMesh().chunkVisible("Pilot4_D1", true);
                 this.hierMesh().chunkVisible("HMask4_D0", false);
@@ -264,7 +261,7 @@ public class JU_88A13 extends JU88A13 implements TypeStormovik, TypeScout {
     public float          fDiveAngle;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = JU_88A13.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Ju-88");
         Property.set(class1, "meshName", "3DO/Plane/Ju-88A-13/hier_A13.him");

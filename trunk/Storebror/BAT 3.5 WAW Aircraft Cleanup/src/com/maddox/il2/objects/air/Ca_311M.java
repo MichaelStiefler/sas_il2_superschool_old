@@ -10,7 +10,7 @@ public class Ca_311M extends CA_Twins2 implements TypeBomber, TypeStormovik, Typ
 
     public Ca_311M() {
         this.bChangedExts = false;
-        bChangedPit = true;
+        Ca_311M.bChangedPit = true;
         this.fSightSetForwardAngle = 0.0F;
         this.fSightCurSideslip = 0.0F;
         this.fSightCurForwardAngle = 0.0F;

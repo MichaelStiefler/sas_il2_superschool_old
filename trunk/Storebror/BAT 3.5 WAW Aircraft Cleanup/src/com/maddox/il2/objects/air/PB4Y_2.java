@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import java.io.IOException;
 
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.NetMsgGuaranted;
@@ -29,17 +28,17 @@ public class PB4Y_2 extends PB4Y implements TypeBomber, TypeX4Carrier, TypeGuide
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        super.FM.crew = 9;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[0] = 1;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[1] = 2;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[2] = 3;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[3] = 9;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[4] = 4;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[5] = 4;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[6] = 5;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[7] = 5;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[8] = 7;
-        if (super.thisWeaponsName.endsWith("Bat")) {
+        this.FM.crew = 9;
+        this.FM.AS.astatePilotFunctions[0] = 1;
+        this.FM.AS.astatePilotFunctions[1] = 2;
+        this.FM.AS.astatePilotFunctions[2] = 3;
+        this.FM.AS.astatePilotFunctions[3] = 9;
+        this.FM.AS.astatePilotFunctions[4] = 4;
+        this.FM.AS.astatePilotFunctions[5] = 4;
+        this.FM.AS.astatePilotFunctions[6] = 5;
+        this.FM.AS.astatePilotFunctions[7] = 5;
+        this.FM.AS.astatePilotFunctions[8] = 7;
+        if (this.thisWeaponsName.endsWith("Bat")) {
             this.hierMesh().chunkVisible("BatWingRackR_D0", true);
             this.hierMesh().chunkVisible("BatWingRackL_D0", true);
             return;
@@ -94,7 +93,7 @@ public class PB4Y_2 extends PB4Y implements TypeBomber, TypeX4Carrier, TypeGuide
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
+            case 19:
                 this.killPilot(this, 4);
                 break;
         }
@@ -109,7 +108,7 @@ public class PB4Y_2 extends PB4Y implements TypeBomber, TypeX4Carrier, TypeGuide
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -85F) {
                     f = -85F;
                     flag = false;
@@ -128,7 +127,7 @@ public class PB4Y_2 extends PB4Y implements TypeBomber, TypeX4Carrier, TypeGuide
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f1 < -0F) {
                     f1 = -0F;
                     flag = false;
@@ -139,7 +138,7 @@ public class PB4Y_2 extends PB4Y implements TypeBomber, TypeX4Carrier, TypeGuide
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f1 < -0F) {
                     f1 = -0F;
                     flag = false;
@@ -150,7 +149,7 @@ public class PB4Y_2 extends PB4Y implements TypeBomber, TypeX4Carrier, TypeGuide
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f < -35F) {
                     f = -35F;
                     flag = false;
@@ -169,7 +168,7 @@ public class PB4Y_2 extends PB4Y implements TypeBomber, TypeX4Carrier, TypeGuide
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 if (f < -67F) {
                     f = -67F;
                     flag = false;
@@ -188,7 +187,7 @@ public class PB4Y_2 extends PB4Y implements TypeBomber, TypeX4Carrier, TypeGuide
                 }
                 break;
 
-            case 5: // '\005'
+            case 5:
                 if (f < -85F) {
                     f = -85F;
                     flag = false;
@@ -237,7 +236,7 @@ public class PB4Y_2 extends PB4Y implements TypeBomber, TypeX4Carrier, TypeGuide
         if (this.fSightCurForwardAngle > 85F) {
             this.fSightCurForwardAngle = 85F;
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = PB4Y_2.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         if (!this.isGuidingBomb) {
             HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         }
@@ -251,7 +250,7 @@ public class PB4Y_2 extends PB4Y implements TypeBomber, TypeX4Carrier, TypeGuide
         if (this.fSightCurForwardAngle < 0.0F) {
             this.fSightCurForwardAngle = 0.0F;
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = PB4Y_2.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         if (!this.isGuidingBomb) {
             HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         }
@@ -296,7 +295,7 @@ public class PB4Y_2 extends PB4Y implements TypeBomber, TypeX4Carrier, TypeGuide
         if (!this.isGuidingBomb) {
             HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int) this.fSightCurAltitude) });
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = PB4Y_2.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
     }
 
     public void typeBomberAdjAltitudeMinus() {
@@ -307,7 +306,7 @@ public class PB4Y_2 extends PB4Y implements TypeBomber, TypeX4Carrier, TypeGuide
         if (!this.isGuidingBomb) {
             HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int) this.fSightCurAltitude) });
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = PB4Y_2.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
     }
 
     public void typeBomberAdjSpeedReset() {
@@ -335,7 +334,7 @@ public class PB4Y_2 extends PB4Y implements TypeBomber, TypeX4Carrier, TypeGuide
     }
 
     public void typeBomberUpdate(float f) {
-        if (Math.abs(((FlightModelMain) (super.FM)).Or.getKren()) > 4.5D) {
+        if (Math.abs(this.FM.Or.getKren()) > 4.5D) {
             this.fSightCurReadyness -= 0.0666666F * f;
             if (this.fSightCurReadyness < 0.0F) {
                 this.fSightCurReadyness = 0.0F;
@@ -344,23 +343,23 @@ public class PB4Y_2 extends PB4Y implements TypeBomber, TypeX4Carrier, TypeGuide
         if (this.fSightCurReadyness < 1.0F) {
             this.fSightCurReadyness += 0.0333333F * f;
         } else if (this.bSightAutomation) {
-            this.fSightCurDistance -= toMetersPerSecond(this.fSightCurSpeed) * f;
+            this.fSightCurDistance -= PB4Y_2.toMetersPerSecond(this.fSightCurSpeed) * f;
             if (this.fSightCurDistance < 0.0F) {
                 this.fSightCurDistance = 0.0F;
                 this.typeBomberToggleAutomation();
             }
-            this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / toMeters(this.fSightCurAltitude)));
-            if (this.fSightCurDistance < (toMetersPerSecond(this.fSightCurSpeed) * Math.sqrt(toMeters(this.fSightCurAltitude) * 0.2038736F))) {
+            this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / PB4Y_2.toMeters(this.fSightCurAltitude)));
+            if (this.fSightCurDistance < (PB4Y_2.toMetersPerSecond(this.fSightCurSpeed) * Math.sqrt(PB4Y_2.toMeters(this.fSightCurAltitude) * 0.2038736F))) {
                 this.bSightBombDump = true;
             }
             if (this.bSightBombDump) {
-                if (super.FM.isTick(3, 0)) {
-                    if ((((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1] != null) && ((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].haveBullets()) {
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = true;
+                if (this.FM.isTick(3, 0)) {
+                    if ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1] != null) && this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].haveBullets()) {
+                        this.FM.CT.WeaponControl[3] = true;
                         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
                     }
                 } else {
-                    ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = false;
+                    this.FM.CT.WeaponControl[3] = false;
                 }
             }
         }

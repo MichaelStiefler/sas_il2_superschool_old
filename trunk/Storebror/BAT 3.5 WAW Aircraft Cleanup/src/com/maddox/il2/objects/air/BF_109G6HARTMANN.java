@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class BF_109G6HARTMANN extends BF_109 implements TypeAcePlane {
@@ -13,13 +12,13 @@ public class BF_109G6HARTMANN extends BF_109 implements TypeAcePlane {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        super.FM.Skill = 3;
+        this.FM.Skill = 3;
     }
 
     public void update(float f) {
-        if (super.FM.getSpeed() > 5F) {
-            this.hierMesh().chunkSetAngles("SlatL_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F), 0.0F);
-            this.hierMesh().chunkSetAngles("SlatR_D0", 0.0F, Aircraft.cvt(super.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F), 0.0F);
+        if (this.FM.getSpeed() > 5F) {
+            this.hierMesh().chunkSetAngles("SlatL_D0", 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F), 0.0F);
+            this.hierMesh().chunkSetAngles("SlatR_D0", 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F), 0.0F);
         }
         if (Math.abs(this.flapps - this.kangle) > 0.01F) {
             this.flapps = this.kangle;
@@ -28,7 +27,7 @@ public class BF_109G6HARTMANN extends BF_109 implements TypeAcePlane {
             this.hierMesh().chunkSetAngles("Flap02L_D0", 0.0F, -20F * this.kangle, 0.0F);
             this.hierMesh().chunkSetAngles("Flap02U_D0", 0.0F, 20F * this.kangle, 0.0F);
         }
-        this.kangle = (0.95F * this.kangle) + (0.05F * ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator());
+        this.kangle = (0.95F * this.kangle) + (0.05F * this.FM.EI.engines[0].getControlRadiator());
         if (this.kangle > 1.0F) {
             this.kangle = 1.0F;
         }
@@ -37,12 +36,12 @@ public class BF_109G6HARTMANN extends BF_109 implements TypeAcePlane {
 
     public static void moveGear(HierMesh hiermesh, float f, float f1, float f2) {
         float f3 = 0.8F;
-        float f4 = (-0.5F * (float) Math.cos((f / f3) * 3.1415926535897931D)) + 0.5F;
+        float f4 = (-0.5F * (float) Math.cos((f / f3) * Math.PI)) + 0.5F;
         if ((f <= f3) || (f == 1.0F)) {
             hiermesh.chunkSetAngles("GearL3_D0", 0.0F, -77.5F * f4, 0.0F);
             hiermesh.chunkSetAngles("GearL2_D0", -33.5F * f4, 0.0F, 0.0F);
         }
-        f4 = (-0.5F * (float) Math.cos(((f1 - (1.0F - f3)) / f3) * 3.1415926535897931D)) + 0.5F;
+        f4 = (-0.5F * (float) Math.cos(((f1 - (1.0F - f3)) / f3) * Math.PI)) + 0.5F;
         if (f1 >= (1.0F - f3)) {
             hiermesh.chunkSetAngles("GearR3_D0", 0.0F, 77.5F * f4, 0.0F);
             hiermesh.chunkSetAngles("GearR2_D0", 33.5F * f4, 0.0F, 0.0F);
@@ -66,11 +65,11 @@ public class BF_109G6HARTMANN extends BF_109 implements TypeAcePlane {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        BF_109G6HARTMANN.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGearC() < 0.98F) {
+        if (this.FM.CT.getGearC() < 0.98F) {
             return;
         } else {
             this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -f, 0.0F);

@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.BulletEmitter;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class ME_210CA1ZSTR extends ME_210 implements TypeBNZFighter, TypeStormovik, TypeStormovikArmored {
@@ -18,8 +17,8 @@ public class ME_210CA1ZSTR extends ME_210 implements TypeBNZFighter, TypeStormov
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (((FlightModelMain) (super.FM)).CT.Weapons[1] != null) {
-            this.g1 = ((FlightModelMain) (super.FM)).CT.Weapons[1][0];
+        if (this.FM.CT.Weapons[1] != null) {
+            this.g1 = this.FM.CT.Weapons[1][0];
         }
     }
 
@@ -29,7 +28,7 @@ public class ME_210CA1ZSTR extends ME_210 implements TypeBNZFighter, TypeStormov
                 default:
                     break;
 
-                case 0: // '\0'
+                case 0:
                     if (this.g1.isShots()) {
                         this.oldbullets = this.g1.countBullets();
                         this.phase = 1;
@@ -37,7 +36,7 @@ public class ME_210CA1ZSTR extends ME_210 implements TypeBNZFighter, TypeStormov
                     }
                     break;
 
-                case 1: // '\001'
+                case 1:
                     this.disp += 31.2F * paramFloat;
                     this.resetYPRmodifier();
                     Aircraft.xyz[0] = this.disp / 2.0F;
@@ -47,7 +46,7 @@ public class ME_210CA1ZSTR extends ME_210 implements TypeBNZFighter, TypeStormov
                     }
                     break;
 
-                case 2: // '\002'
+                case 2:
                     this.disp -= 4.3F * paramFloat;
                     this.resetYPRmodifier();
                     Aircraft.xyz[0] = this.disp / 2.0F;
@@ -57,7 +56,7 @@ public class ME_210CA1ZSTR extends ME_210 implements TypeBNZFighter, TypeStormov
                     }
                     break;
 
-                case 3: // '\003'
+                case 3:
                     this.phase = 0;
                     break;
             }

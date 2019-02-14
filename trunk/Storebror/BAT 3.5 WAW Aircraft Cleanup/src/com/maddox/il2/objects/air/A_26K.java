@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.World;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class A_26K extends A_26 implements TypeStormovik, TypeStormovikArmored {
@@ -12,21 +11,21 @@ public class A_26K extends A_26 implements TypeStormovik, TypeStormovikArmored {
     public void rareAction(float paramFloat, boolean paramBoolean) {
         super.rareAction(paramFloat, paramBoolean);
         if (paramBoolean) {
-            if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[0] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
-                ((FlightModelMain) (super.FM)).AS.hitTank(this, 0, 1);
+            if ((this.FM.AS.astateEngineStates[0] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
+                this.FM.AS.hitTank(this, 0, 1);
             }
-            if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[1] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
-                ((FlightModelMain) (super.FM)).AS.hitTank(this, 1, 1);
+            if ((this.FM.AS.astateEngineStates[1] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
+                this.FM.AS.hitTank(this, 1, 1);
             }
-            if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[2] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
-                ((FlightModelMain) (super.FM)).AS.hitTank(this, 2, 1);
+            if ((this.FM.AS.astateEngineStates[2] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
+                this.FM.AS.hitTank(this, 2, 1);
             }
-            if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[3] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
-                ((FlightModelMain) (super.FM)).AS.hitTank(this, 3, 1);
+            if ((this.FM.AS.astateEngineStates[3] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
+                this.FM.AS.hitTank(this, 3, 1);
             }
         }
         for (int i = 1; i < 4; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));

@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.NetMsgGuaranted;
@@ -32,7 +31,7 @@ public class CA_133T extends GioCaproni implements TypeBomber, TypeTransport {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (af[0] < -50F) {
                     af[0] = -50F;
                     flag = false;
@@ -56,7 +55,7 @@ public class CA_133T extends GioCaproni implements TypeBomber, TypeTransport {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (af[0] < -120F) {
                     af[0] = -120F;
                     flag = false;
@@ -74,7 +73,7 @@ public class CA_133T extends GioCaproni implements TypeBomber, TypeTransport {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (af[0] < -60F) {
                     af[0] = -60F;
                     flag = false;
@@ -92,7 +91,7 @@ public class CA_133T extends GioCaproni implements TypeBomber, TypeTransport {
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (af[0] < -45F) {
                     af[0] = -45F;
                     flag = false;
@@ -116,19 +115,19 @@ public class CA_133T extends GioCaproni implements TypeBomber, TypeTransport {
     public void msgShot(Shot shot) {
         this.setShot(shot);
         if (shot.chunkName.startsWith("WingLIn") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 0, 1);
+            this.FM.AS.hitTank(shot.initiator, 0, 1);
         }
         if (shot.chunkName.startsWith("WingRIn") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 1, 1);
+            this.FM.AS.hitTank(shot.initiator, 1, 1);
         }
         if (shot.chunkName.startsWith("Engine1") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 1);
+            this.FM.AS.hitEngine(shot.initiator, 0, 1);
         }
         if (shot.chunkName.startsWith("Engine2") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 1, 1);
+            this.FM.AS.hitEngine(shot.initiator, 1, 1);
         }
-        if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[0] > 2) && (((FlightModelMain) (super.FM)).AS.astateEngineStates[1] > 2)) {
-            super.FM.setCapableOfBMP(false, shot.initiator);
+        if ((this.FM.AS.astateEngineStates[0] > 2) && (this.FM.AS.astateEngineStates[1] > 2)) {
+            this.FM.setCapableOfBMP(false, shot.initiator);
         }
         super.msgShot(shot);
     }
@@ -232,7 +231,7 @@ public class CA_133T extends GioCaproni implements TypeBomber, TypeTransport {
     }
 
     public void typeBomberUpdate(float f) {
-        if (Math.abs(((FlightModelMain) (super.FM)).Or.getKren()) > 4.5D) {
+        if (Math.abs(this.FM.Or.getKren()) > 4.5D) {
             this.fSightCurReadyness -= 0.0666666F * f;
             if (this.fSightCurReadyness < 0.0F) {
                 this.fSightCurReadyness = 0.0F;
@@ -251,13 +250,13 @@ public class CA_133T extends GioCaproni implements TypeBomber, TypeTransport {
                 this.bSightBombDump = true;
             }
             if (this.bSightBombDump) {
-                if (super.FM.isTick(3, 0)) {
-                    if ((((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1] != null) && ((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].haveBullets()) {
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = true;
+                if (this.FM.isTick(3, 0)) {
+                    if ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1] != null) && this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].haveBullets()) {
+                        this.FM.CT.WeaponControl[3] = true;
                         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
                     }
                 } else {
-                    ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = false;
+                    this.FM.CT.WeaponControl[3] = false;
                 }
             }
         }
@@ -286,7 +285,7 @@ public class CA_133T extends GioCaproni implements TypeBomber, TypeTransport {
     }
 
     public void update(float f) {
-        if (((FlightModelMain) (super.FM)).AS.bLandingLightOn) {
+        if (this.FM.AS.bLandingLightOn) {
             if (this.llpos < 1.0F) {
                 this.llpos += 0.5F * f;
                 this.hierMesh().chunkSetAngles("LLight_D0", 0.0F, -90F * this.llpos, 0.0F);

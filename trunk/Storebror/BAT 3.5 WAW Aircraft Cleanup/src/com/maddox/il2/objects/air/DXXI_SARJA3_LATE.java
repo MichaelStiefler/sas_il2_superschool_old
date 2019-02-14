@@ -200,9 +200,9 @@ public class DXXI_SARJA3_LATE extends DXXI implements TypeScout {
             super.moveFan(f);
             float f1 = this.FM.CT.getAileron();
             float f2 = this.FM.CT.getElevator();
-            this.hierMesh().chunkSetAngles("Stick_D0", 0.0F, 9F * f1, cvt(f2, -1F, 1.0F, -8F, 9.5F));
-            this.hierMesh().chunkSetAngles("pilotarm2_d0", cvt(f1, -1F, 1.0F, 14F, -16F), 0.0F, cvt(f1, -1F, 1.0F, 6F, -8F) - cvt(f2, -1F, 1.0F, -37F, 35F));
-            this.hierMesh().chunkSetAngles("pilotarm1_d0", 0.0F, 0.0F, cvt(f1, -1F, 1.0F, -16F, 14F) + cvt(f2, -1F, 0.0F, -61F, 0.0F) + cvt(f2, 0.0F, 1.0F, 0.0F, 43F));
+            this.hierMesh().chunkSetAngles("Stick_D0", 0.0F, 9F * f1, Aircraft.cvt(f2, -1F, 1.0F, -8F, 9.5F));
+            this.hierMesh().chunkSetAngles("pilotarm2_d0", Aircraft.cvt(f1, -1F, 1.0F, 14F, -16F), 0.0F, Aircraft.cvt(f1, -1F, 1.0F, 6F, -8F) - Aircraft.cvt(f2, -1F, 1.0F, -37F, 35F));
+            this.hierMesh().chunkSetAngles("pilotarm1_d0", 0.0F, 0.0F, Aircraft.cvt(f1, -1F, 1.0F, -16F, 14F) + Aircraft.cvt(f2, -1F, 0.0F, -61F, 0.0F) + Aircraft.cvt(f2, 0.0F, 1.0F, 0.0F, 43F));
             if (World.cur().camouflage == 1) {
                 float f3 = Aircraft.cvt(this.FM.getSpeed(), 30F, 100F, 1.0F, 0.0F);
                 float f4 = Aircraft.cvt(this.FM.getSpeed(), 0.0F, 30F, 0.0F, 0.5F);
@@ -301,7 +301,7 @@ public class DXXI_SARJA3_LATE extends DXXI implements TypeScout {
 
     public void auxPlus(int i) {
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.gyroDelta++;
                 break;
         }
@@ -309,7 +309,7 @@ public class DXXI_SARJA3_LATE extends DXXI implements TypeScout {
 
     public void auxMinus(int i) {
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.gyroDelta--;
                 break;
         }
@@ -333,7 +333,7 @@ public class DXXI_SARJA3_LATE extends DXXI implements TypeScout {
         Property.set(class1, "yearService", 1941F);
         Property.set(class1, "yearExpired", 1945F);
         Property.set(class1, "FlightModel", "FlightModels/FokkerS3LATE.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitDXXI_SARJA3_LATE.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitDXXI_SARJA3_LATE.class });
         Property.set(class1, "LOSElevation", 0.8472F);
         Property.set(class1, "originCountry", PaintScheme.countryFinland);
         Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0 });

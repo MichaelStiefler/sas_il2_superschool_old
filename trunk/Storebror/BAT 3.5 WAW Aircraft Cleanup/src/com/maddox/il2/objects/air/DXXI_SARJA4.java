@@ -10,7 +10,6 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.Wreckage;
@@ -31,8 +30,8 @@ public class DXXI_SARJA4 extends DXXI implements TypeScout {
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (flag && (((FlightModelMain) (super.FM)).AS.astateEngineStates[0] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
-            ((FlightModelMain) (super.FM)).AS.hitTank(this, 0, 1);
+        if (flag && (this.FM.AS.astateEngineStates[0] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
+            this.FM.AS.hitTank(this, 0, 1);
         }
     }
 
@@ -103,10 +102,10 @@ public class DXXI_SARJA4 extends DXXI implements TypeScout {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        super.hasSelfSealingTank = true;
-        super.canopyMaxAngle = 0.45F;
+        this.hasSelfSealingTank = true;
+        this.canopyMaxAngle = 0.45F;
         if (Config.isUSE_RENDER() && (World.cur().camouflage == 1)) {
-            super.hasSkis = true;
+            this.hasSkis = true;
             this.hierMesh().chunkVisible("GearL1_D0", false);
             this.hierMesh().chunkVisible("GearL22_D0", false);
             this.hierMesh().chunkVisible("GearR1_D0", false);
@@ -121,7 +120,7 @@ public class DXXI_SARJA4 extends DXXI implements TypeScout {
             this.hierMesh().chunkVisible("GearL21_D0", true);
             this.hierMesh().chunkVisible("GearR11_D0", true);
             this.hierMesh().chunkVisible("GearR21_D0", true);
-            ((FlightModelMain) (super.FM)).CT.bHasBrakeControl = false;
+            this.FM.CT.bHasBrakeControl = false;
         } else if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.01F) {
             this.removeWheelSpats();
         }
@@ -159,12 +158,12 @@ public class DXXI_SARJA4 extends DXXI implements TypeScout {
     protected void moveFan(float f) {
         if (Config.isUSE_RENDER()) {
             super.moveFan(-f);
-            float f1 = ((FlightModelMain) (super.FM)).CT.getAileron();
-            float f2 = ((FlightModelMain) (super.FM)).CT.getElevator();
+            float f1 = this.FM.CT.getAileron();
+            float f2 = this.FM.CT.getElevator();
             this.hierMesh().chunkSetAngles("Stick_D0", 0.0F, 9F * f1, Aircraft.cvt(f2, -1F, 1.0F, -8F, 9.5F));
             this.hierMesh().chunkSetAngles("pilotarm2_d0", Aircraft.cvt(f1, -1F, 1.0F, 14F, -16F), 0.0F, Aircraft.cvt(f1, -1F, 1.0F, 6F, -8F) - Aircraft.cvt(f2, -1F, 1.0F, -37F, 35F));
             this.hierMesh().chunkSetAngles("pilotarm1_d0", 0.0F, 0.0F, Aircraft.cvt(f1, -1F, 1.0F, -16F, 14F) + Aircraft.cvt(f2, -1F, 0.0F, -61F, 0.0F) + Aircraft.cvt(f2, 0.0F, 1.0F, 0.0F, 43F));
-            float f3 = ((FlightModelMain) (super.FM)).CT.getRadiator() * 30F;
+            float f3 = this.FM.CT.getRadiator() * 30F;
             this.hierMesh().chunkSetAngles("cowlf1_d0", 0.0F, f3, 0.0F);
             this.hierMesh().chunkSetAngles("cowlf2_d0", 0.0F, f3, 0.0F);
             this.hierMesh().chunkSetAngles("cowlf3_d0", 0.0F, f3, 0.0F);
@@ -177,15 +176,15 @@ public class DXXI_SARJA4 extends DXXI implements TypeScout {
             this.hierMesh().chunkSetAngles("cowlf10_d0", 0.0F, f3, 0.0F);
             this.hierMesh().chunkSetAngles("cowlf0_d0", 0.0F, f3, 0.0F);
             if (World.cur().camouflage == 1) {
-                float f4 = Aircraft.cvt(super.FM.getSpeed(), 30F, 100F, 1.0F, 0.0F);
-                float f5 = Aircraft.cvt(super.FM.getSpeed(), 0.0F, 30F, 0.0F, 0.5F);
-                if (((FlightModelMain) (super.FM)).Gears.gWheelSinking[0] > 0.0F) {
-                    this.skiAngleL = (0.5F * this.skiAngleL) + (0.5F * ((FlightModelMain) (super.FM)).Or.getTangage());
+                float f4 = Aircraft.cvt(this.FM.getSpeed(), 30F, 100F, 1.0F, 0.0F);
+                float f5 = Aircraft.cvt(this.FM.getSpeed(), 0.0F, 30F, 0.0F, 0.5F);
+                if (this.FM.Gears.gWheelSinking[0] > 0.0F) {
+                    this.skiAngleL = (0.5F * this.skiAngleL) + (0.5F * this.FM.Or.getTangage());
                     if (this.skiAngleL > 20F) {
                         this.skiAngleL -= this.spring;
                     }
                     this.hierMesh().chunkSetAngles("GearL21_D0", World.Rnd().nextFloat(-f5, f5), World.Rnd().nextFloat(-f5 * 2.0F, f5 * 2.0F) + this.skiAngleL, World.Rnd().nextFloat(f5, f5));
-                    if ((((FlightModelMain) (super.FM)).Gears.gWheelSinking[1] == 0.0F) && (((FlightModelMain) (super.FM)).Or.getRoll() < 365F) && (((FlightModelMain) (super.FM)).Or.getRoll() > 355F)) {
+                    if ((this.FM.Gears.gWheelSinking[1] == 0.0F) && (this.FM.Or.getRoll() < 365F) && (this.FM.Or.getRoll() > 355F)) {
                         this.skiAngleR = this.skiAngleL;
                         this.hierMesh().chunkSetAngles("GearR21_D0", World.Rnd().nextFloat(-f5, f5), World.Rnd().nextFloat(-f5 * 2.0F, f5 * 2.0F) + this.skiAngleR, World.Rnd().nextFloat(f5, f5));
                     }
@@ -197,8 +196,8 @@ public class DXXI_SARJA4 extends DXXI implements TypeScout {
                     }
                     this.hierMesh().chunkSetAngles("GearL21_D0", 0.0F, this.skiAngleL, 0.0F);
                 }
-                if (((FlightModelMain) (super.FM)).Gears.gWheelSinking[1] > 0.0F) {
-                    this.skiAngleR = (0.5F * this.skiAngleR) + (0.5F * ((FlightModelMain) (super.FM)).Or.getTangage());
+                if (this.FM.Gears.gWheelSinking[1] > 0.0F) {
+                    this.skiAngleR = (0.5F * this.skiAngleR) + (0.5F * this.FM.Or.getTangage());
                     if (this.skiAngleR > 20F) {
                         this.skiAngleR -= this.spring;
                     }
@@ -229,8 +228,8 @@ public class DXXI_SARJA4 extends DXXI implements TypeScout {
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            super.bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            this.bChangedPit = true;
         }
         if (World.cur().camouflage != 1) {
             if (this.hierMesh().isChunkVisible("GearR22_D2") && !this.hierMesh().isChunkVisible("gearr31_d0")) {
@@ -239,7 +238,7 @@ public class DXXI_SARJA4 extends DXXI implements TypeScout {
                 Wreckage wreckage = new Wreckage(this, this.hierMesh().chunkFind("GearR22_D1"));
                 wreckage.collide(true);
                 Vector3d vector3d = new Vector3d();
-                vector3d.set(((FlightModelMain) (super.FM)).Vwld);
+                vector3d.set(this.FM.Vwld);
                 wreckage.setSpeed(vector3d);
             }
             if (this.hierMesh().isChunkVisible("GearL22_D2") && !this.hierMesh().isChunkVisible("gearl31_d0")) {
@@ -248,7 +247,7 @@ public class DXXI_SARJA4 extends DXXI implements TypeScout {
                 Wreckage wreckage1 = new Wreckage(this, this.hierMesh().chunkFind("GearL22_D1"));
                 wreckage1.collide(true);
                 Vector3d vector3d1 = new Vector3d();
-                vector3d1.set(((FlightModelMain) (super.FM)).Vwld);
+                vector3d1.set(this.FM.Vwld);
                 wreckage1.setSpeed(vector3d1);
             }
         } else {
@@ -260,7 +259,7 @@ public class DXXI_SARJA4 extends DXXI implements TypeScout {
                 Wreckage wreckage2 = new Wreckage(this, this.hierMesh().chunkFind("GearR11_D0"));
                 wreckage2.collide(true);
                 Vector3d vector3d2 = new Vector3d();
-                vector3d2.set(((FlightModelMain) (super.FM)).Vwld);
+                vector3d2.set(this.FM.Vwld);
                 wreckage2.setSpeed(vector3d2);
             }
             if ((this.hierMesh().isChunkVisible("GearL11_D1") || this.hierMesh().isChunkVisible("GearL21_D2")) && !this.hierMesh().isChunkVisible("gearl31_d0")) {
@@ -271,14 +270,14 @@ public class DXXI_SARJA4 extends DXXI implements TypeScout {
                 Wreckage wreckage3 = new Wreckage(this, this.hierMesh().chunkFind("GearL11_D0"));
                 wreckage3.collide(true);
                 Vector3d vector3d3 = new Vector3d();
-                vector3d3.set(((FlightModelMain) (super.FM)).Vwld);
+                vector3d3.set(this.FM.Vwld);
                 wreckage3.setSpeed(vector3d3);
             }
         }
     }
 
     public void sfxWheels() {
-        if (!super.hasSkis) {
+        if (!this.hasSkis) {
             super.sfxWheels();
         }
     }

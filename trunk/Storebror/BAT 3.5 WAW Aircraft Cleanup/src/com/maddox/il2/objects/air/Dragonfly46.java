@@ -5,7 +5,6 @@ import com.maddox.il2.objects.weapons.MGunM4k;
 import com.maddox.il2.objects.weapons.MGunMG213C20s;
 import com.maddox.il2.objects.weapons.MGunMK108k;
 import com.maddox.il2.objects.weapons.MGunNS37k;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class Dragonfly46 extends DragonflyX {
@@ -56,7 +55,7 @@ public class Dragonfly46 extends DragonflyX {
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = Dragonfly46.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Dragonfly");
         Property.set(class1, "meshName", "3DO/Plane/Dragonfly46/hier.him");

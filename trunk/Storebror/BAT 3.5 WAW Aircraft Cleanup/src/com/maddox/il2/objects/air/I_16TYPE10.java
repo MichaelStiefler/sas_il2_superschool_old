@@ -11,14 +11,14 @@ public class I_16TYPE10 extends I_16 implements TypeFighter, TypeTNBFighter {
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            I_16TYPE10.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            I_16TYPE10.bChangedPit = true;
         }
     }
 

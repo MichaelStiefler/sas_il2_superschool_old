@@ -19,7 +19,7 @@ public class SPITFIRE8CLPFB extends SPITFIRE {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        SPITFIRE8CLPFB.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {

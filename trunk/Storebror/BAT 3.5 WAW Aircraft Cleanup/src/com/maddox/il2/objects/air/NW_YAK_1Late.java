@@ -14,7 +14,7 @@ public class NW_YAK_1Late extends YAK implements TypeTNBFighter {
     }
 
     public void update_windluk(float f) {
-        super.update(f);
+        this.update(f);
     }
 
     static {

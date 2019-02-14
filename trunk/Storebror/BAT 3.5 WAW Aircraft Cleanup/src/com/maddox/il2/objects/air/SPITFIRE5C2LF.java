@@ -14,7 +14,7 @@ public class SPITFIRE5C2LF extends SPITFIRE {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        SPITFIRE5C2LF.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {

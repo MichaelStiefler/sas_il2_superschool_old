@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.weapons.GunEmpty;
 import com.maddox.rts.Property;
 
@@ -28,9 +27,9 @@ public class HurricaneMkIV extends Hurricane implements TypeStormovik, TypeStorm
             this.hierMesh().chunkVisible("PylonR_D0", false);
         }
         super.onAircraftLoaded();
-        if (super.FM.isPlayers()) {
-            ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = true;
-            ((FlightModelMain) (super.FM)).CT.dvCockpitDoor = 1.0F;
+        if (this.FM.isPlayers()) {
+            this.FM.CT.bHasCockpitDoorControl = true;
+            this.FM.CT.dvCockpitDoor = 1.0F;
         }
     }
 

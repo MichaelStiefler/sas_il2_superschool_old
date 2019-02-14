@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Property;
 
@@ -26,13 +25,13 @@ public class JU_87G2RUDEL extends JU_87 implements TypeStormovik, TypeAcePlane {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = true;
-        ((FlightModelMain) (super.FM)).CT.dvCockpitDoor = 0.65F;
-        super.FM.Skill = 3;
+        this.FM.CT.bHasCockpitDoorControl = true;
+        this.FM.CT.dvCockpitDoor = 0.65F;
+        this.FM.Skill = 3;
     }
 
     public void update(float f) {
-        float f1 = ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator();
+        float f1 = this.FM.EI.engines[0].getControlRadiator();
         if (Math.abs(this.flapps - f1) > 0.01F) {
             this.flapps = f1;
             for (int i = 1; i < 5; i++) {

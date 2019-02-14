@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class MS410 extends MS400X {
@@ -10,7 +9,7 @@ public class MS410 extends MS400X {
     }
 
     public void update(float f) {
-        float f1 = ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator();
+        float f1 = this.FM.EI.engines[0].getControlRadiator();
         if (Math.abs(this.flapps - f1) > 0.01F) {
             this.flapps = f1;
             this.hierMesh().chunkSetAngles("OilRad_D0", 0.0F, -20F * f1, 0.0F);

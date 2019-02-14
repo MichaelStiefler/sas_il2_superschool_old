@@ -6,7 +6,6 @@ import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.GunGeneric;
 import com.maddox.il2.engine.GunProperties;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.weapons.Gun;
 import com.maddox.rts.Property;
 
@@ -24,10 +23,10 @@ public class DXXI_SARJA3_SARVANTO extends DXXI implements TypeAcePlane {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        super.FM.Skill = 3;
+        this.FM.Skill = 3;
         this.JormaSarvanto();
         if (Config.isUSE_RENDER() && (World.cur().camouflage == 1)) {
-            super.hasSkis = true;
+            this.hasSkis = true;
             this.hierMesh().chunkVisible("GearL1_D0", false);
             this.hierMesh().chunkVisible("GearL22_D0", false);
             this.hierMesh().chunkVisible("GearR1_D0", false);
@@ -42,13 +41,13 @@ public class DXXI_SARJA3_SARVANTO extends DXXI implements TypeAcePlane {
             this.hierMesh().chunkVisible("GearL21_D0", true);
             this.hierMesh().chunkVisible("GearR11_D0", true);
             this.hierMesh().chunkVisible("GearR21_D0", true);
-            ((FlightModelMain) (super.FM)).CT.bHasBrakeControl = false;
+            this.FM.CT.bHasBrakeControl = false;
         }
     }
 
     private void JormaSarvanto() {
-        for (int i = 0; i < ((FlightModelMain) (super.FM)).CT.Weapons.length; i++) {
-            com.maddox.il2.ai.BulletEmitter abulletemitter[] = ((FlightModelMain) (super.FM)).CT.Weapons[i];
+        for (int i = 0; i < this.FM.CT.Weapons.length; i++) {
+            com.maddox.il2.ai.BulletEmitter abulletemitter[] = this.FM.CT.Weapons[i];
             if (abulletemitter != null) {
                 for (int j = 0; j < abulletemitter.length; j++) {
                     com.maddox.il2.ai.BulletEmitter bulletemitter = abulletemitter[j];
@@ -100,42 +99,42 @@ public class DXXI_SARJA3_SARVANTO extends DXXI implements TypeAcePlane {
     protected void moveFan(float f) {
         if (Config.isUSE_RENDER()) {
             super.moveFan(f);
-            float f1 = ((FlightModelMain) (super.FM)).CT.getAileron();
-            float f2 = ((FlightModelMain) (super.FM)).CT.getElevator();
+            float f1 = this.FM.CT.getAileron();
+            float f2 = this.FM.CT.getElevator();
             this.hierMesh().chunkSetAngles("Stick_D0", 0.0F, 9F * f1, Aircraft.cvt(f2, -1F, 1.0F, -8F, 9.5F));
             this.hierMesh().chunkSetAngles("pilotarm2_d0", Aircraft.cvt(f1, -1F, 1.0F, 14F, -16F), 0.0F, Aircraft.cvt(f1, -1F, 1.0F, 6F, -8F) - Aircraft.cvt(f2, -1F, 1.0F, -37F, 35F));
             this.hierMesh().chunkSetAngles("pilotarm1_d0", 0.0F, 0.0F, Aircraft.cvt(f1, -1F, 1.0F, -16F, 14F) + Aircraft.cvt(f2, -1F, 0.0F, -61F, 0.0F) + Aircraft.cvt(f2, 0.0F, 1.0F, 0.0F, 43F));
             if (World.cur().camouflage == 1) {
-                float f3 = Aircraft.cvt(super.FM.getSpeed(), 30F, 100F, 1.0F, 0.0F);
-                float f4 = Aircraft.cvt(super.FM.getSpeed(), 0.0F, 30F, 0.0F, 0.5F);
-                if (((FlightModelMain) (super.FM)).Gears.gWheelSinking[0] > 0.0F) {
-                    this.skiAngleL = (0.5F * this.skiAngleL) + (0.5F * ((FlightModelMain) (super.FM)).Or.getTangage());
+                float f3 = Aircraft.cvt(this.FM.getSpeed(), 30F, 100F, 1.0F, 0.0F);
+                float f4 = Aircraft.cvt(this.FM.getSpeed(), 0.0F, 30F, 0.0F, 0.5F);
+                if (this.FM.Gears.gWheelSinking[0] > 0.0F) {
+                    this.skiAngleL = (0.5F * this.skiAngleL) + (0.5F * this.FM.Or.getTangage());
                     if (this.skiAngleL > 20F) {
                         this.skiAngleL -= this.spring;
                     }
                     this.hierMesh().chunkSetAngles("GearL21_D0", World.Rnd().nextFloat(-f4, f4), World.Rnd().nextFloat(-f4 * 2.0F, f4 * 2.0F) + this.skiAngleL, World.Rnd().nextFloat(f4, f4));
-                    if ((((FlightModelMain) (super.FM)).Gears.gWheelSinking[1] == 0.0F) && (((FlightModelMain) (super.FM)).Or.getRoll() < 365F) && (((FlightModelMain) (super.FM)).Or.getRoll() > 355F)) {
+                    if ((this.FM.Gears.gWheelSinking[1] == 0.0F) && (this.FM.Or.getRoll() < 365F) && (this.FM.Or.getRoll() > 355F)) {
                         this.skiAngleR = this.skiAngleL;
                         this.hierMesh().chunkSetAngles("GearR21_D0", World.Rnd().nextFloat(-f4, f4), World.Rnd().nextFloat(-f4 * 2.0F, f4 * 2.0F) + this.skiAngleR, World.Rnd().nextFloat(f4, f4));
                     }
                 } else {
-                    if (this.skiAngleL > (f3 * -10F + 0.01D)) {
+                    if (this.skiAngleL > ((f3 * -10F) + 0.01D)) {
                         this.skiAngleL -= this.spring;
-                    } else if (this.skiAngleL < (f3 * -10F - 0.01D)) {
+                    } else if (this.skiAngleL < ((f3 * -10F) - 0.01D)) {
                         this.skiAngleL += this.spring;
                     }
                     this.hierMesh().chunkSetAngles("GearL21_D0", 0.0F, this.skiAngleL, 0.0F);
                 }
-                if (((FlightModelMain) (super.FM)).Gears.gWheelSinking[1] > 0.0F) {
-                    this.skiAngleR = (0.5F * this.skiAngleR) + (0.5F * ((FlightModelMain) (super.FM)).Or.getTangage());
+                if (this.FM.Gears.gWheelSinking[1] > 0.0F) {
+                    this.skiAngleR = (0.5F * this.skiAngleR) + (0.5F * this.FM.Or.getTangage());
                     if (this.skiAngleR > 20F) {
                         this.skiAngleR -= this.spring;
                     }
                     this.hierMesh().chunkSetAngles("GearR21_D0", World.Rnd().nextFloat(-f4, f4), World.Rnd().nextFloat(-f4 * 2.0F, f4 * 2.0F) + this.skiAngleR, World.Rnd().nextFloat(f4, f4));
                 } else {
-                    if (this.skiAngleR > (f3 * -10F + 0.01D)) {
+                    if (this.skiAngleR > ((f3 * -10F) + 0.01D)) {
                         this.skiAngleR -= this.spring;
-                    } else if (this.skiAngleR < (f3 * -10F - 0.01D)) {
+                    } else if (this.skiAngleR < ((f3 * -10F) - 0.01D)) {
                         this.skiAngleR += this.spring;
                     }
                     this.hierMesh().chunkSetAngles("GearR21_D0", 0.0F, this.skiAngleR, 0.0F);
@@ -146,7 +145,7 @@ public class DXXI_SARJA3_SARVANTO extends DXXI implements TypeAcePlane {
     }
 
     public void sfxWheels() {
-        if (!super.hasSkis) {
+        if (!this.hasSkis) {
             super.sfxWheels();
         }
     }

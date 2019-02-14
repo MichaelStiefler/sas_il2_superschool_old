@@ -2,7 +2,6 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.War;
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Property;
 
@@ -27,7 +26,7 @@ public class HampdenMkI extends HAMPDEN {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.startsWith("1 x")) {
+        if (this.thisWeaponsName.startsWith("1 x")) {
             this.hierMesh().chunkVisible("Bay3_D0", true);
             this.hierMesh().chunkVisible("Bay4_D0", true);
             this.hierMesh().chunkVisible("PilonTorp_D0", true);
@@ -41,12 +40,12 @@ public class HampdenMkI extends HAMPDEN {
 
     public void rareAction(float f, boolean flag) {
         Aircraft aircraft = War.getNearestEnemy(this, 6000F);
-        if (!this.pilot3kill && (aircraft != null) && !((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+        if (!this.pilot3kill && (aircraft != null) && !this.FM.AS.bIsAboutToBailout) {
             this.hierMesh().chunkVisible("Blister3_D0", false);
             this.hierMesh().chunkVisible("BlisturretOpen_D0", true);
             this.BlisTurOpen = true;
         }
-        if (!this.pilot3kill && (aircraft == null) && !((FlightModelMain) (super.FM)).AS.bIsAboutToBailout && this.BlisTurOpen) {
+        if (!this.pilot3kill && (aircraft == null) && !this.FM.AS.bIsAboutToBailout && this.BlisTurOpen) {
             this.hierMesh().chunkVisible("Blister3_D0", true);
             this.hierMesh().chunkVisible("BlisturretOpen_D0", false);
             this.BlisTurOpen = false;
@@ -55,14 +54,14 @@ public class HampdenMkI extends HAMPDEN {
 
     public void update(float f) {
         super.update(f);
-        if (!super.FM.isPlayers() && ((FlightModelMain) (super.FM)).Gears.onGround()) {
-            if (((FlightModelMain) (super.FM)).EI.engines[1].getRPM() < 100F) {
-                ((FlightModelMain) (super.FM)).CT.cockpitDoorControl = 1.0F;
+        if (!this.FM.isPlayers() && this.FM.Gears.onGround()) {
+            if (this.FM.EI.engines[1].getRPM() < 100F) {
+                this.FM.CT.cockpitDoorControl = 1.0F;
             } else {
-                ((FlightModelMain) (super.FM)).CT.cockpitDoorControl = 0.0F;
+                this.FM.CT.cockpitDoorControl = 0.0F;
             }
         }
-        if (((FlightModelMain) (super.FM)).AS.bIsAboutToBailout && this.BlisTurOpen && !this.pilot3kill) {
+        if (this.FM.AS.bIsAboutToBailout && this.BlisTurOpen && !this.pilot3kill) {
             this.hierMesh().chunkVisible("BlisturretOpen_D0", false);
             this.hierMesh().chunkVisible("Blister3_D0", true);
             this.BlisTurOpen = false;
@@ -71,45 +70,45 @@ public class HampdenMkI extends HAMPDEN {
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 2: // '\002'
-                super.FM.turret[0].bIsOperable = false;
+            case 2:
+                this.FM.turret[0].bIsOperable = false;
                 break;
 
-            case 3: // '\003'
-                super.FM.turret[1].bIsOperable = false;
+            case 3:
+                this.FM.turret[1].bIsOperable = false;
                 break;
         }
     }
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.pilot3kill = true;
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 this.hierMesh().chunkVisible("HMask3_D0", false);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.hierMesh().chunkVisible("Pilot4_D0", false);
                 this.hierMesh().chunkVisible("Pilot4_D1", true);
                 this.hierMesh().chunkVisible("HMask4_D0", false);
                 break;
 
-            case 4: // '\004'
+            case 4:
                 this.hierMesh().chunkVisible("Pilot5_D0", false);
                 this.hierMesh().chunkVisible("Pilot5_D1", true);
                 this.hierMesh().chunkVisible("HMask5_D0", false);

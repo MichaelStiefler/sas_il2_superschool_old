@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.objects.weapons.MGunMGFFki;
 import com.maddox.rts.Property;
 import com.maddox.util.HashMapInt;
@@ -17,19 +16,19 @@ public class BF_109D1 extends BF_109B1 {
     public void update(float f) {
         if (this.getGunByHookName("_CANNON03") instanceof MGunMGFFki) {
             this.hierMesh().chunkVisible("NoseCannon1_D0", true);
-            if ((((FlightModelMain) (super.FM)).EI.engines[0].tOilOut > 70F) || (((FlightModelMain) (super.FM)).EI.engines[0].getControlThrottle() > 0.8F)) {
+            if ((this.FM.EI.engines[0].tOilOut > 70F) || (this.FM.EI.engines[0].getControlThrottle() > 0.8F)) {
                 Random random = new Random();
                 int i = 1;
-                if (((FlightModelMain) (super.FM)).CT.WeaponControl[i]) {
+                if (this.FM.CT.WeaponControl[i]) {
                     for (int j = 0; j < 1; j++) {
-                        int l = ((FlightModelMain) (super.FM)).CT.Weapons[i][j].countBullets();
+                        int l = this.FM.CT.Weapons[i][j].countBullets();
                         if (l < this.burst_fire[j][1]) {
                             this.burst_fire[j][0]++;
                             this.burst_fire[j][1] = l;
                             int i1 = Math.abs(random.nextInt()) % 100;
                             float f1 = this.burst_fire[j][0] * 1.0F;
                             if (i1 < f1) {
-                                ((FlightModelMain) (super.FM)).AS.setJamBullets(i, j);
+                                this.FM.AS.setJamBullets(i, j);
                             }
                         }
                     }
@@ -37,7 +36,7 @@ public class BF_109D1 extends BF_109B1 {
                 } else {
                     for (int k = 0; k < 1; k++) {
                         this.burst_fire[k][0] = 0;
-                        this.burst_fire[k][1] = ((FlightModelMain) (super.FM)).CT.Weapons[i][k].countBullets();
+                        this.burst_fire[k][1] = this.FM.CT.Weapons[i][k].countBullets();
                     }
 
                 }

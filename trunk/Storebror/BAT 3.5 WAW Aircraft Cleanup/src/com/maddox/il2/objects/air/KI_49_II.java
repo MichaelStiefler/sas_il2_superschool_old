@@ -22,7 +22,7 @@ public class KI_49_II extends KI_49 implements TypeBomber {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        KI_49_II.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public boolean turretAngles(int i, float af[]) {
@@ -33,7 +33,7 @@ public class KI_49_II extends KI_49 implements TypeBomber {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -35F) {
                     f = -35F;
                     flag = false;
@@ -52,7 +52,7 @@ public class KI_49_II extends KI_49 implements TypeBomber {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -71,7 +71,7 @@ public class KI_49_II extends KI_49 implements TypeBomber {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -20F) {
                     f = -20F;
                     flag = false;
@@ -90,7 +90,7 @@ public class KI_49_II extends KI_49 implements TypeBomber {
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f < -10F) {
                     f = -10F;
                     flag = false;

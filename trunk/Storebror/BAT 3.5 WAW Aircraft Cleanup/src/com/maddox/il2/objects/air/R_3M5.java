@@ -2,7 +2,6 @@ package com.maddox.il2.objects.air;
 
 import java.io.IOException;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -14,8 +13,8 @@ public class R_3M5 extends TupolevANT3 implements TypeFighter, TypeStormovik {
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 1: // '\001'
-                super.FM.turret[0].setHealth(f);
+            case 1:
+                this.FM.turret[0].setHealth(f);
                 break;
         }
     }
@@ -25,19 +24,19 @@ public class R_3M5 extends TupolevANT3 implements TypeFighter, TypeStormovik {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
-                if (!((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+                if (!this.FM.AS.bIsAboutToBailout) {
                     this.hierMesh().chunkVisible("Gore1_D0", true);
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
-                if (!((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+                if (!this.FM.AS.bIsAboutToBailout) {
                     this.hierMesh().chunkVisible("Gore2_D0", true);
                 }
                 break;

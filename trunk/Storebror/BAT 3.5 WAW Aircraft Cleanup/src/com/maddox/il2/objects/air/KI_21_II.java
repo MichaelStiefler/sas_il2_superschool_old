@@ -3,10 +3,8 @@ package com.maddox.il2.objects.air;
 import java.io.IOException;
 
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -39,7 +37,7 @@ public class KI_21_II extends KI_21 implements TypeBomber {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        KI_21_II.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public boolean turretAngles(int i, float af[]) {
@@ -50,7 +48,7 @@ public class KI_21_II extends KI_21 implements TypeBomber {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -35F) {
                     f = -35F;
                     flag = false;
@@ -69,7 +67,7 @@ public class KI_21_II extends KI_21 implements TypeBomber {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -88,7 +86,7 @@ public class KI_21_II extends KI_21 implements TypeBomber {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -20F) {
                     f = -20F;
                     flag = false;
@@ -107,7 +105,7 @@ public class KI_21_II extends KI_21 implements TypeBomber {
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f < -10F) {
                     f = -10F;
                     flag = false;
@@ -238,7 +236,7 @@ public class KI_21_II extends KI_21 implements TypeBomber {
     }
 
     public void typeBomberUpdate(float f) {
-        if (Math.abs(((FlightModelMain) (super.FM)).Or.getKren()) > 4.5D) {
+        if (Math.abs(this.FM.Or.getKren()) > 4.5D) {
             this.fSightCurReadyness -= 0.0666666F * f;
             if (this.fSightCurReadyness < 0.0F) {
                 this.fSightCurReadyness = 0.0F;
@@ -253,18 +251,18 @@ public class KI_21_II extends KI_21 implements TypeBomber {
                 this.typeBomberToggleAutomation();
             }
             this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / this.fSightCurAltitude));
-            this.calibDistance = (this.fSightCurSpeed / 3.6F) * AircraftLH.floatindex(Aircraft.cvt(this.fSightCurAltitude, 0.0F, 7000F, 0.0F, 7F), calibrationScale);
+            this.calibDistance = (this.fSightCurSpeed / 3.6F) * AircraftLH.floatindex(Aircraft.cvt(this.fSightCurAltitude, 0.0F, 7000F, 0.0F, 7F), KI_21_II.calibrationScale);
             if (this.fSightCurDistance < (this.calibDistance + ((this.fSightCurSpeed / 3.6F) * Math.sqrt(this.fSightCurAltitude * 0.2038736F)))) {
                 this.bSightBombDump = true;
             }
             if (this.bSightBombDump) {
-                if (super.FM.isTick(3, 0)) {
-                    if ((((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1] != null) && ((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].haveBullets()) {
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = true;
+                if (this.FM.isTick(3, 0)) {
+                    if ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1] != null) && this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].haveBullets()) {
+                        this.FM.CT.WeaponControl[3] = true;
                         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
                     }
                 } else {
-                    ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = false;
+                    this.FM.CT.WeaponControl[3] = false;
                 }
             }
         }
@@ -304,7 +302,7 @@ public class KI_21_II extends KI_21 implements TypeBomber {
     static final float calibrationScale[] = { 0.0F, 0.2F, 0.4F, 0.66F, 0.86F, 1.05F, 1.2F, 1.6F };
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = KI_21_II.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Ki-21");
         Property.set(class1, "meshName", "3DO/Plane/Ki-21-II(Multi1)/hier.him");

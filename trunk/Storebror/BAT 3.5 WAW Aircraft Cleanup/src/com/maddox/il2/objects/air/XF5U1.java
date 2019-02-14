@@ -80,61 +80,61 @@ public class XF5U1 extends Scheme2a implements TypeFighter, TypeBNZFighter, Type
 
     // New Gear Animation Code,
     public static void moveGear(HierMesh hiermesh, float leftGear, float rightGear, float tailGear) {
-        ypr[0] = ypr[1] = ypr[2] = xyz[0] = xyz[1] = xyz[2] = 0.0F;
-        ypr[1] = cvt(tailGear, 0.20F, 0.99F, 0.0F, -75F);
-        xyz[0] = cvt(tailGear, 0.20F, 0.99F, 0.0F, 0.5F);
-        hiermesh.chunkSetLocate("GearC2_D0", xyz, ypr);
-        hiermesh.chunkSetAngles("GearC6_D0", 0.0F, cvt(tailGear, 0.01F, 0.25F, 0.0F, -95F), 0.0F);
-        hiermesh.chunkSetAngles("GearC8_D0", 0.0F, cvt(tailGear, 0.01F, 0.25F, 0.0F, -95F), 0.0F);
-        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, cvt(leftGear, 0.22F, 0.93F, 0.0F, -100F), 0.0F);
-        hiermesh.chunkSetAngles("GearL7_D0", 0.0F, cvt(leftGear, 0.22F, 0.93F, 0.0F, -40F), 0.0F);
-        hiermesh.chunkSetAngles("GearL8_D0", 0.0F, cvt(leftGear, 0.01F, 0.29F, 0.0F, -80F), 0.0F);
-        hiermesh.chunkSetAngles("GearL9_D0", 0.0F, cvt(leftGear, 0.01F, 0.29F, 0.0F, -80F), 0.0F);
-        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, cvt(rightGear, 0.29F, 0.99F, 0.0F, -100F), 0.0F);
-        hiermesh.chunkSetAngles("GearR7_D0", 0.0F, cvt(rightGear, 0.29F, 0.99F, 0.0F, -40F), 0.0F);
-        hiermesh.chunkSetAngles("GearR8_D0", 0.0F, cvt(rightGear, 0.08F, 0.36F, 0.0F, -80F), 0.0F);
-        hiermesh.chunkSetAngles("GearR9_D0", 0.0F, cvt(rightGear, 0.08F, 0.36F, 0.0F, -80F), 0.0F);
+        Aircraft.ypr[0] = Aircraft.ypr[1] = Aircraft.ypr[2] = Aircraft.xyz[0] = Aircraft.xyz[1] = Aircraft.xyz[2] = 0.0F;
+        Aircraft.ypr[1] = Aircraft.cvt(tailGear, 0.20F, 0.99F, 0.0F, -75F);
+        Aircraft.xyz[0] = Aircraft.cvt(tailGear, 0.20F, 0.99F, 0.0F, 0.5F);
+        hiermesh.chunkSetLocate("GearC2_D0", Aircraft.xyz, Aircraft.ypr);
+        hiermesh.chunkSetAngles("GearC6_D0", 0.0F, Aircraft.cvt(tailGear, 0.01F, 0.25F, 0.0F, -95F), 0.0F);
+        hiermesh.chunkSetAngles("GearC8_D0", 0.0F, Aircraft.cvt(tailGear, 0.01F, 0.25F, 0.0F, -95F), 0.0F);
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(leftGear, 0.22F, 0.93F, 0.0F, -100F), 0.0F);
+        hiermesh.chunkSetAngles("GearL7_D0", 0.0F, Aircraft.cvt(leftGear, 0.22F, 0.93F, 0.0F, -40F), 0.0F);
+        hiermesh.chunkSetAngles("GearL8_D0", 0.0F, Aircraft.cvt(leftGear, 0.01F, 0.29F, 0.0F, -80F), 0.0F);
+        hiermesh.chunkSetAngles("GearL9_D0", 0.0F, Aircraft.cvt(leftGear, 0.01F, 0.29F, 0.0F, -80F), 0.0F);
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(rightGear, 0.29F, 0.99F, 0.0F, -100F), 0.0F);
+        hiermesh.chunkSetAngles("GearR7_D0", 0.0F, Aircraft.cvt(rightGear, 0.29F, 0.99F, 0.0F, -40F), 0.0F);
+        hiermesh.chunkSetAngles("GearR8_D0", 0.0F, Aircraft.cvt(rightGear, 0.08F, 0.36F, 0.0F, -80F), 0.0F);
+        hiermesh.chunkSetAngles("GearR9_D0", 0.0F, Aircraft.cvt(rightGear, 0.08F, 0.36F, 0.0F, -80F), 0.0F);
     }
 
     protected void moveGear(float f, float f1, float f2) {
         this.steera = 0.0F;
         this.moveWheelSink();
-        moveGear(this.hierMesh(), f, f1, f2);
+        XF5U1.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     // ************************************************************************************************
     // Gear code for backward compatibility, older base game versions don't indepently move their gears
     public static void moveGear(HierMesh hiermesh, float gearPos) {
-        moveGear(hiermesh, gearPos, gearPos, gearPos); // re-route old style function calls to new code
+        XF5U1.moveGear(hiermesh, gearPos, gearPos, gearPos); // re-route old style function calls to new code
     }
 
     protected void moveGear(float gearPos) {
-        moveGear(this.hierMesh(), gearPos);
+        XF5U1.moveGear(this.hierMesh(), gearPos);
     }
     // ************************************************************************************************
 
     public void moveSteering(float f) {
-        this.steera = (0.9F * this.steera) + (0.1F * cvt(f, -50F, 50F, 50F, -50F));
+        this.steera = (0.9F * this.steera) + (0.1F * Aircraft.cvt(f, -50F, 50F, 50F, -50F));
         this.moveWheelSink();
     }
 
     public void moveWheelSink() {
         this.resetYPRmodifier();
-        xyz[1] = cvt(this.FM.Gears.gWheelSinking[2], 0.0F, 0.24F, 0.0F, 0.2406F);
-        ypr[1] = this.steera;
-        this.hierMesh().chunkSetLocate("GearC3_D0", xyz, ypr);
-        this.hierMesh().chunkSetAngles("GearC4_D0", 0.0F, cvt(this.FM.Gears.gWheelSinking[2], 0.0F, 0.24F, 0.0F, -50F), 0.0F);
-        this.hierMesh().chunkSetAngles("GearC5_D0", 0.0F, cvt(this.FM.Gears.gWheelSinking[2], 0.0F, 0.24F, 0.0F, -105F), 0.0F);
+        Aircraft.xyz[1] = Aircraft.cvt(this.FM.Gears.gWheelSinking[2], 0.0F, 0.24F, 0.0F, 0.2406F);
+        Aircraft.ypr[1] = this.steera;
+        this.hierMesh().chunkSetLocate("GearC3_D0", Aircraft.xyz, Aircraft.ypr);
+        this.hierMesh().chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(this.FM.Gears.gWheelSinking[2], 0.0F, 0.24F, 0.0F, -50F), 0.0F);
+        this.hierMesh().chunkSetAngles("GearC5_D0", 0.0F, Aircraft.cvt(this.FM.Gears.gWheelSinking[2], 0.0F, 0.24F, 0.0F, -105F), 0.0F);
         this.resetYPRmodifier();
-        xyz[1] = cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.32F, 0.0F, -0.3206F);
-        this.hierMesh().chunkSetLocate("GearL3_D0", xyz, ypr);
-        this.hierMesh().chunkSetAngles("GearL4_D0", 0.0F, cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.32F, 0.0F, -60F), 0.0F);
-        this.hierMesh().chunkSetAngles("GearL5_D0", 0.0F, cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.32F, 0.0F, -117.5F), 0.0F);
+        Aircraft.xyz[1] = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.32F, 0.0F, -0.3206F);
+        this.hierMesh().chunkSetLocate("GearL3_D0", Aircraft.xyz, Aircraft.ypr);
+        this.hierMesh().chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.32F, 0.0F, -60F), 0.0F);
+        this.hierMesh().chunkSetAngles("GearL5_D0", 0.0F, Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.32F, 0.0F, -117.5F), 0.0F);
         this.resetYPRmodifier();
-        xyz[1] = cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.32F, 0.0F, 0.3206F);
-        this.hierMesh().chunkSetLocate("GearR3_D0", xyz, ypr);
-        this.hierMesh().chunkSetAngles("GearR4_D0", 0.0F, cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.32F, 0.0F, -60F), 0.0F);
-        this.hierMesh().chunkSetAngles("GearR5_D0", 0.0F, cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.32F, 0.0F, -117.5F), 0.0F);
+        Aircraft.xyz[1] = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.32F, 0.0F, 0.3206F);
+        this.hierMesh().chunkSetLocate("GearR3_D0", Aircraft.xyz, Aircraft.ypr);
+        this.hierMesh().chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.32F, 0.0F, -60F), 0.0F);
+        this.hierMesh().chunkSetAngles("GearR5_D0", 0.0F, Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.32F, 0.0F, -117.5F), 0.0F);
     }
 
     public void moveCockpitDoor(float f) {
@@ -193,9 +193,9 @@ public class XF5U1 extends Scheme2a implements TypeFighter, TypeBNZFighter, Type
             if (s.startsWith("xxarmor")) {
                 if (s.endsWith("1")) {
                     this.getEnergyPastArmor(World.Rnd().nextFloat(20F, 30F), shot);
-                    debugprintln(this, "*** Armor Glass: Hit..");
+                    Aircraft.debugprintln(this, "*** Armor Glass: Hit..");
                     if (shot.power <= 0.0F) {
-                        debugprintln(this, "*** Armor Glass: Bullet Stopped..");
+                        Aircraft.debugprintln(this, "*** Armor Glass: Bullet Stopped..");
                         if (World.Rnd().nextFloat() < 0.5F) {
                             this.doRicochetBack(shot);
                         }
@@ -204,52 +204,52 @@ public class XF5U1 extends Scheme2a implements TypeFighter, TypeBNZFighter, Type
                     }
                 }
                 if (s.endsWith("2")) {
-                    this.getEnergyPastArmor(12.7F / (1E-005F + (float) Math.abs(v1.x)), shot);
+                    this.getEnergyPastArmor(12.7F / (1E-005F + (float) Math.abs(Aircraft.v1.x)), shot);
                 }
                 if (s.endsWith("3")) {
-                    this.getEnergyPastArmor(12.7F / (1E-005F + (float) Math.abs(v1.x)), shot);
+                    this.getEnergyPastArmor(12.7F / (1E-005F + (float) Math.abs(Aircraft.v1.x)), shot);
                     this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x40);
                 }
                 if (s.endsWith("4")) {
-                    this.getEnergyPastArmor(8.9F / (1E-005F + (float) Math.abs(v1.x)), shot);
+                    this.getEnergyPastArmor(8.9F / (1E-005F + (float) Math.abs(Aircraft.v1.x)), shot);
                 }
                 if (s.endsWith("5")) {
-                    this.getEnergyPastArmor(8.9F / (1E-005F + (float) Math.abs(v1.z)), shot);
+                    this.getEnergyPastArmor(8.9F / (1E-005F + (float) Math.abs(Aircraft.v1.z)), shot);
                 }
                 return;
             }
             if (s.startsWith("xxarcon")) {
                 if ((World.Rnd().nextFloat() < 0.5F) && (this.getEnergyPastArmor(0.1F, shot) > 0.0F)) {
                     this.FM.AS.setControlsDamage(shot.initiator, 0);
-                    debugprintln(this, "*** Ailerones Controls Out..");
+                    Aircraft.debugprintln(this, "*** Ailerones Controls Out..");
                 }
                 return;
             }
             if (s.startsWith("xxvatcon")) {
                 if ((World.Rnd().nextFloat() < 0.5F) && (this.getEnergyPastArmor(0.1F, shot) > 0.0F)) {
                     this.FM.AS.setControlsDamage(shot.initiator, 1);
-                    debugprintln(this, "*** Elevators Controls Out..");
+                    Aircraft.debugprintln(this, "*** Elevators Controls Out..");
                 }
                 return;
             }
             if (s.startsWith("xxrudcon")) {
                 if ((World.Rnd().nextFloat() < 0.5F) && (this.getEnergyPastArmor(0.1F, shot) > 0.0F)) {
                     this.FM.AS.setControlsDamage(shot.initiator, 2);
-                    debugprintln(this, "*** Rudder Controls Out..");
+                    Aircraft.debugprintln(this, "*** Rudder Controls Out..");
                 }
                 return;
             }
             if (s.startsWith("xxeng1")) {
                 if ((this.getEnergyPastArmor(4.45F, shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[0].getCylindersRatio() * 0.75F))) {
                     this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 6800F)));
-                    debugprintln(this, "*** Engine 0 Cylinders Hit, " + this.FM.EI.engines[0].getCylindersOperable() + "/" + this.FM.EI.engines[0].getCylinders() + " Left..");
+                    Aircraft.debugprintln(this, "*** Engine 0 Cylinders Hit, " + this.FM.EI.engines[0].getCylindersOperable() + "/" + this.FM.EI.engines[0].getCylinders() + " Left..");
                     if (this.FM.AS.astateEngineStates[0] < 1) {
                         this.FM.AS.hitEngine(shot.initiator, 0, 1);
                         this.FM.AS.doSetEngineState(shot.initiator, 0, 1);
                     }
                     if (World.Rnd().nextFloat() < (shot.power / 48000F)) {
                         this.FM.AS.hitEngine(shot.initiator, 0, 3);
-                        debugprintln(this, "*** Engine 0 Cylinders Hit - Engine Fires..");
+                        Aircraft.debugprintln(this, "*** Engine 0 Cylinders Hit - Engine Fires..");
                     }
                     this.getEnergyPastArmor(25F, shot);
                 }
@@ -258,14 +258,14 @@ public class XF5U1 extends Scheme2a implements TypeFighter, TypeBNZFighter, Type
             if (s.startsWith("xxeng2")) {
                 if ((this.getEnergyPastArmor(4.45F, shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[1].getCylindersRatio() * 0.75F))) {
                     this.FM.EI.engines[1].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 6800F)));
-                    debugprintln(this, "*** Engine 1 Cylinders Hit, " + this.FM.EI.engines[1].getCylindersOperable() + "/" + this.FM.EI.engines[1].getCylinders() + " Left..");
+                    Aircraft.debugprintln(this, "*** Engine 1 Cylinders Hit, " + this.FM.EI.engines[1].getCylindersOperable() + "/" + this.FM.EI.engines[1].getCylinders() + " Left..");
                     if (this.FM.AS.astateEngineStates[1] < 1) {
                         this.FM.AS.hitEngine(shot.initiator, 1, 1);
                         this.FM.AS.doSetEngineState(shot.initiator, 1, 1);
                     }
                     if (World.Rnd().nextFloat() < (shot.power / 48000F)) {
                         this.FM.AS.hitEngine(shot.initiator, 1, 3);
-                        debugprintln(this, "*** Engine 1 Cylinders Hit - Engine Fires..");
+                        Aircraft.debugprintln(this, "*** Engine 1 Cylinders Hit - Engine Fires..");
                     }
                     this.getEnergyPastArmor(25F, shot);
                 }
@@ -274,54 +274,54 @@ public class XF5U1 extends Scheme2a implements TypeFighter, TypeBNZFighter, Type
             if (s.startsWith("xxoilradiat1")) {
                 if ((this.getEnergyPastArmor(0.45F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
                     this.FM.AS.hitOil(shot.initiator, 0);
-                    debugprintln(this, "*** Engine Module 0: Oil Radiator Hit..");
+                    Aircraft.debugprintln(this, "*** Engine Module 0: Oil Radiator Hit..");
                 }
                 return;
             }
             if (s.startsWith("xxoilradiat2")) {
                 if ((this.getEnergyPastArmor(0.45F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
                     this.FM.AS.hitOil(shot.initiator, 1);
-                    debugprintln(this, "*** Engine Module 1: Oil Radiator Hit..");
+                    Aircraft.debugprintln(this, "*** Engine Module 1: Oil Radiator Hit..");
                 }
                 return;
             }
             if (s.startsWith("xxoiltank1")) {
                 if ((this.getEnergyPastArmor(2.38F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
                     this.FM.AS.hitOil(shot.initiator, 0);
-                    debugprintln(this, "*** Engine Module 0: Oil Radiator Hit..");
+                    Aircraft.debugprintln(this, "*** Engine Module 0: Oil Radiator Hit..");
                 }
                 return;
             }
             if (s.startsWith("xxoiltank2")) {
                 if ((this.getEnergyPastArmor(2.38F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
                     this.FM.AS.hitOil(shot.initiator, 1);
-                    debugprintln(this, "*** Engine Module 1: Oil Radiator Hit..");
+                    Aircraft.debugprintln(this, "*** Engine Module 1: Oil Radiator Hit..");
                 }
                 return;
             }
             if (s.startsWith("xxmagneto1")) {
                 int i = World.Rnd().nextInt(0, 1);
                 this.FM.EI.engines[0].setMagnetoKnockOut(shot.initiator, i);
-                debugprintln(this, "*** Engine Module 0: Magneto " + i + " Destroyed..");
+                Aircraft.debugprintln(this, "*** Engine Module 0: Magneto " + i + " Destroyed..");
                 return;
             }
             if (s.startsWith("xxmagneto2")) {
                 int j = World.Rnd().nextInt(0, 1);
                 this.FM.EI.engines[1].setMagnetoKnockOut(shot.initiator, j);
-                debugprintln(this, "*** Engine Module 1: Magneto " + j + " Destroyed..");
+                Aircraft.debugprintln(this, "*** Engine Module 1: Magneto " + j + " Destroyed..");
                 return;
             }
             if (s.startsWith("xxturbo1")) {
                 if (this.getEnergyPastArmor(1.23F, shot) > 0.0F) {
                     this.FM.EI.engines[0].setKillCompressor(shot.initiator);
-                    debugprintln(this, "*** Engine Module 0: Supercharger Destroyed..");
+                    Aircraft.debugprintln(this, "*** Engine Module 0: Supercharger Destroyed..");
                 }
                 return;
             }
             if (s.startsWith("xxturbo2")) {
                 if (this.getEnergyPastArmor(1.23F, shot) > 0.0F) {
                     this.FM.EI.engines[1].setKillCompressor(shot.initiator);
-                    debugprintln(this, "*** Engine Module 1: Supercharger Destroyed..");
+                    Aircraft.debugprintln(this, "*** Engine Module 1: Supercharger Destroyed..");
                 }
                 return;
             }
@@ -402,65 +402,65 @@ public class XF5U1 extends Scheme2a implements TypeFighter, TypeBNZFighter, Type
                 return;
             }
             if (s.startsWith("xxspar")) {
-                debugprintln(this, "*** Spar Construction: Hit..");
+                Aircraft.debugprintln(this, "*** Spar Construction: Hit..");
                 if (s.startsWith("xxsparli") && (this.chunkDamageVisible("WingLIn") > 2) && (this.getEnergyPastArmor(19.7F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** WingLIn Spars Damaged..");
+                    Aircraft.debugprintln(this, "*** WingLIn Spars Damaged..");
                     this.nextDMGLevels(1, 2, "WingLIn_D3", shot.initiator);
                 }
                 if (s.startsWith("xxsparri") && (this.chunkDamageVisible("WingRIn") > 2) && (this.getEnergyPastArmor(19.7F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** WingRIn Spars Damaged..");
+                    Aircraft.debugprintln(this, "*** WingRIn Spars Damaged..");
                     this.nextDMGLevels(1, 2, "WingRIn_D3", shot.initiator);
                 }
                 if (s.startsWith("xxsparlm") && (this.chunkDamageVisible("WingLMid") > 2) && (this.getEnergyPastArmor(16.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** WingLMid Spars Damaged..");
+                    Aircraft.debugprintln(this, "*** WingLMid Spars Damaged..");
                     this.nextDMGLevels(1, 2, "WingLMid_D3", shot.initiator);
                 }
                 if (s.startsWith("xxsparrm") && (this.chunkDamageVisible("WingRMid") > 2) && (this.getEnergyPastArmor(16.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** WingRMid Spars Damaged..");
+                    Aircraft.debugprintln(this, "*** WingRMid Spars Damaged..");
                     this.nextDMGLevels(1, 2, "WingRMid_D3", shot.initiator);
                 }
                 if (s.startsWith("xxsparlo") && (this.chunkDamageVisible("WingLOut") > 2) && (this.getEnergyPastArmor(16.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** WingLOut Spars Damaged..");
+                    Aircraft.debugprintln(this, "*** WingLOut Spars Damaged..");
                     this.nextDMGLevels(1, 2, "WingLOut_D3", shot.initiator);
                 }
                 if (s.startsWith("xxsparro") && (this.chunkDamageVisible("WingROut") > 2) && (this.getEnergyPastArmor(16.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** WingROut Spars Damaged..");
+                    Aircraft.debugprintln(this, "*** WingROut Spars Damaged..");
                     this.nextDMGLevels(1, 2, "WingROut_D3", shot.initiator);
                 }
                 if (s.startsWith("xxpark1") && (this.chunkDamageVisible("Keel1") > 1) && (this.getEnergyPastArmor(9.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** Keel1 Spars Damaged..");
+                    Aircraft.debugprintln(this, "*** Keel1 Spars Damaged..");
                     this.nextDMGLevels(1, 2, "Keel1_D2", shot.initiator);
                 }
                 if (s.startsWith("xxpark2") && (this.chunkDamageVisible("Keel2") > 1) && (this.getEnergyPastArmor(9.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** Keel2 Spars Damaged..");
+                    Aircraft.debugprintln(this, "*** Keel2 Spars Damaged..");
                     this.nextDMGLevels(1, 2, "Keel2_D2", shot.initiator);
                 }
                 if (s.startsWith("xxsparsl") && (this.chunkDamageVisible("StabL") > 1) && (this.getEnergyPastArmor(12.7F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** Stab Spars Damaged..");
+                    Aircraft.debugprintln(this, "*** Stab Spars Damaged..");
                     this.nextDMGLevels(1, 2, "StabL_D2", shot.initiator);
                 }
                 return;
             }
             if (s.startsWith("xxlock")) {
-                debugprintln(this, "*** Lock Construction: Hit..");
+                Aircraft.debugprintln(this, "*** Lock Construction: Hit..");
                 if ((s.startsWith("xxlockk1") || s.startsWith("xxlockk2")) && (this.getEnergyPastArmor(5.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** Rudder1 Lock Shot Off..");
+                    Aircraft.debugprintln(this, "*** Rudder1 Lock Shot Off..");
                     this.nextDMGLevels(3, 2, "Rudder1_D" + this.chunkDamageVisible("Rudder1"), shot.initiator);
                 }
                 if ((s.startsWith("xxlockk3") || s.startsWith("xxlockk4")) && (this.getEnergyPastArmor(5.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** Rudder2 Lock Shot Off..");
+                    Aircraft.debugprintln(this, "*** Rudder2 Lock Shot Off..");
                     this.nextDMGLevels(3, 2, "Rudder2_D" + this.chunkDamageVisible("Rudder2"), shot.initiator);
                 }
                 if (s.startsWith("xxlocksl") && (this.getEnergyPastArmor(5.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** Vator Lock Shot Off..");
+                    Aircraft.debugprintln(this, "*** Vator Lock Shot Off..");
                     this.nextDMGLevels(3, 2, "VatorL_D" + this.chunkDamageVisible("VatorL"), shot.initiator);
                 }
                 if (s.startsWith("xxlockal") && (this.getEnergyPastArmor(5.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** AroneL Lock Shot Off..");
+                    Aircraft.debugprintln(this, "*** AroneL Lock Shot Off..");
                     this.nextDMGLevels(3, 2, "AroneL_D" + this.chunkDamageVisible("AroneL"), shot.initiator);
                 }
                 if (s.startsWith("xxlockar") && (this.getEnergyPastArmor(5.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)) {
-                    debugprintln(this, "*** AroneR Lock Shot Off..");
+                    Aircraft.debugprintln(this, "*** AroneR Lock Shot Off..");
                     this.nextDMGLevels(3, 2, "AroneR_D" + this.chunkDamageVisible("AroneR"), shot.initiator);
                 }
                 return;
@@ -686,7 +686,7 @@ public class XF5U1 extends Scheme2a implements TypeFighter, TypeBNZFighter, Type
             RealFlightModel realflightmodel = (RealFlightModel) this.FM;
             float mach = Reflection.getFloat(realflightmodel, "Mach");
             if (realflightmodel.RealMode && (mach < 0.15F)) {
-                this.FM.SensPitch = cvt(mach, 0F, 0.15F, 2.0F, 0.63F);
+                this.FM.SensPitch = Aircraft.cvt(mach, 0F, 0.15F, 2.0F, 0.63F);
             } else {
                 this.FM.SensPitch = 0.63F;
             }
@@ -711,12 +711,12 @@ public class XF5U1 extends Scheme2a implements TypeFighter, TypeBNZFighter, Type
                 engineW = this.FM.EI.engines[this.masterEngineIndex].getw();
             }
 
-            if (Math.abs(this.lastPropW[j] - engineW) < PROP_W_DIFF_MAX) {
+            if (Math.abs(this.lastPropW[j] - engineW) < XF5U1.PROP_W_DIFF_MAX) {
                 this.lastPropW[j] = engineW;
             } else if (this.lastPropW[j] > engineW) {
-                this.lastPropW[j] -= PROP_W_DIFF_MAX;
+                this.lastPropW[j] -= XF5U1.PROP_W_DIFF_MAX;
             } else {
-                this.lastPropW[j] += PROP_W_DIFF_MAX;
+                this.lastPropW[j] += XF5U1.PROP_W_DIFF_MAX;
             }
 
             if (this.oldProp[j] < 2) {
@@ -724,13 +724,13 @@ public class XF5U1 extends Scheme2a implements TypeFighter, TypeBNZFighter, Type
                 if (i >= 1) {
                     i = 1;
                 }
-                if ((i != this.oldProp[j]) && this.hierMesh().isChunkVisible(Props[j][this.oldProp[j]][0])) {
-                    for (int k = 0; k < Props[j][this.oldProp[j]].length; k++) {
-                        this.hierMesh().chunkVisible(Props[j][this.oldProp[j]][k], false);
+                if ((i != this.oldProp[j]) && this.hierMesh().isChunkVisible(XF5U1.Props[j][this.oldProp[j]][0])) {
+                    for (int k = 0; k < XF5U1.Props[j][this.oldProp[j]].length; k++) {
+                        this.hierMesh().chunkVisible(XF5U1.Props[j][this.oldProp[j]][k], false);
                     }
                     this.oldProp[j] = i;
-                    for (int k = 0; k < Props[j][i].length; k++) {
-                        this.hierMesh().chunkVisible(Props[j][i][k], true);
+                    for (int k = 0; k < XF5U1.Props[j][i].length; k++) {
+                        this.hierMesh().chunkVisible(XF5U1.Props[j][i][k], true);
                     }
                 }
             }
@@ -749,7 +749,7 @@ public class XF5U1 extends Scheme2a implements TypeFighter, TypeBNZFighter, Type
                 this.propPos[j] = (this.propPos[j] + (f1 * f)) % 360F;
             }
             for (int k = 0; k < 2; k++) {
-                this.hierMesh().chunkSetAngles(Props[j][0][k], 0.0F, -this.propPos[j], 0.0F);
+                this.hierMesh().chunkSetAngles(XF5U1.Props[j][0][k], 0.0F, -this.propPos[j], 0.0F);
             }
         }
 
@@ -759,17 +759,17 @@ public class XF5U1 extends Scheme2a implements TypeFighter, TypeBNZFighter, Type
         if ((i > (this.FM.EI.getNum() - 1)) || (this.oldProp[i] == 2)) {
             return;
         }
-        super.hitProp(i, j, actor);
+        this.hitProp(i, j, actor);
         this.FM.cut(this.part("Engine" + (i + 1)), j, actor);
         if (this.isChunkAnyDamageVisible("Prop" + (i + 1)) || this.isChunkAnyDamageVisible("PropRot" + (i + 1))) {
-            for (int k = 0; j < Props[i][0].length; k++) {
-                this.hierMesh().chunkVisible(Props[i][0][k], false);
+            for (int k = 0; j < XF5U1.Props[i][0].length; k++) {
+                this.hierMesh().chunkVisible(XF5U1.Props[i][0][k], false);
             }
-            for (int k = 0; j < Props[i][1].length; k++) {
-                this.hierMesh().chunkVisible(Props[i][1][k], false);
+            for (int k = 0; j < XF5U1.Props[i][1].length; k++) {
+                this.hierMesh().chunkVisible(XF5U1.Props[i][1][k], false);
             }
-            for (int k = 0; j < Props[i][2].length; k++) {
-                this.hierMesh().chunkVisible(Props[i][2][k], true);
+            for (int k = 0; j < XF5U1.Props[i][2].length; k++) {
+                this.hierMesh().chunkVisible(XF5U1.Props[i][2][k], true);
             }
         }
         this.FM.EI.engines[i].setFricCoeffT(1.0F);
@@ -786,16 +786,16 @@ public class XF5U1 extends Scheme2a implements TypeFighter, TypeBNZFighter, Type
                 propPitch = -0.2F;
             }
             float propPitchDiff = propPitch - this.lastPropPitch[i];
-            if (Math.abs(propPitchDiff) > PROP_PITCH_DIFF_MAX) {
+            if (Math.abs(propPitchDiff) > XF5U1.PROP_PITCH_DIFF_MAX) {
                 if (propPitchDiff > 0.0F) {
-                    propPitch = this.lastPropPitch[i] + PROP_PITCH_DIFF_MAX;
+                    propPitch = this.lastPropPitch[i] + XF5U1.PROP_PITCH_DIFF_MAX;
                 } else {
-                    propPitch = this.lastPropPitch[i] - PROP_PITCH_DIFF_MAX;
+                    propPitch = this.lastPropPitch[i] - XF5U1.PROP_PITCH_DIFF_MAX;
                 }
             }
-            for (int j = 2; j < Props[i][0].length; j++) {
-                float curBladeAngleRad = (float) Math.toRadians(((PropCyclicFactors[i][0] * this.propPos[i]) + PropCyclicFactors[i][j - 1]) % 360F);
-                this.hierMesh().chunkSetAngles(Props[i][0][j], cvt(propPitch + ((this.FM.EI.engines[i].getControlFeather() == 1) ? 0F : (((float) Math.cos(curBladeAngleRad) * this.fElevator) + ((float) Math.sin(curBladeAngleRad) * -1F * this.fRudder)) * PROP_PITCH_CYCLIC_FACTOR), PropAngles[i][0], PropAngles[i][1], PropAngles[i][2], PropAngles[i][3]), 0.0F, 0.0F);
+            for (int j = 2; j < XF5U1.Props[i][0].length; j++) {
+                float curBladeAngleRad = (float) Math.toRadians(((XF5U1.PropCyclicFactors[i][0] * this.propPos[i]) + XF5U1.PropCyclicFactors[i][j - 1]) % 360F);
+                this.hierMesh().chunkSetAngles(XF5U1.Props[i][0][j], Aircraft.cvt(propPitch + ((this.FM.EI.engines[i].getControlFeather() == 1) ? 0F : (((float) Math.cos(curBladeAngleRad) * this.fElevator) + ((float) Math.sin(curBladeAngleRad) * -1F * this.fRudder)) * XF5U1.PROP_PITCH_CYCLIC_FACTOR), XF5U1.PropAngles[i][0], XF5U1.PropAngles[i][1], XF5U1.PropAngles[i][2], XF5U1.PropAngles[i][3]), 0.0F, 0.0F);
             }
             this.lastPropPitch[i] = propPitch;
         }
@@ -859,37 +859,37 @@ public class XF5U1 extends Scheme2a implements TypeFighter, TypeBNZFighter, Type
                     fPropNew = this.fRudder;
                     break;
             }
-            if (Math.abs(this.fPropAngle[i] - fPropNew) < PROP_DIFF_MAX) {
+            if (Math.abs(this.fPropAngle[i] - fPropNew) < XF5U1.PROP_DIFF_MAX) {
                 this.fPropAngle[i] = fPropNew;
             } else if (this.fPropAngle[i] > fPropNew) {
-                this.fPropAngle[i] -= PROP_DIFF_MAX;
+                this.fPropAngle[i] -= XF5U1.PROP_DIFF_MAX;
             } else {
-                this.fPropAngle[i] += PROP_DIFF_MAX;
+                this.fPropAngle[i] += XF5U1.PROP_DIFF_MAX;
             }
         }
 
-        float fY = (float) Math.toRadians(PROP_ANGLE_MAX * this.fPropAngle[1]);
-        float fZ = (float) Math.toRadians(PROP_ANGLE_MAX * this.fPropAngle[0]);
+        float fY = (float) Math.toRadians(XF5U1.PROP_ANGLE_MAX * this.fPropAngle[1]);
+        float fZ = (float) Math.toRadians(XF5U1.PROP_ANGLE_MAX * this.fPropAngle[0]);
         for (int i = 0; i < this.FM.EI.getNum(); i++) {
             float fPropNewFactor = Math.min(1.0F, Math.abs(this.lastPropW[this.propShaftClutchEngaged ? this.masterEngineIndex : i] * 0.1F)); // Prop pitch vectoring effect only works when RPM reaches a certain level
-            if (Math.abs(this.fPropFactor[i] - fPropNewFactor) < PROP_FACTOR_DIFF_MAX) {
+            if (Math.abs(this.fPropFactor[i] - fPropNewFactor) < XF5U1.PROP_FACTOR_DIFF_MAX) {
                 this.fPropFactor[i] = fPropNewFactor;
             } else if (this.fPropFactor[i] > fPropNewFactor) {
-                this.fPropFactor[i] -= PROP_FACTOR_DIFF_MAX;
+                this.fPropFactor[i] -= XF5U1.PROP_FACTOR_DIFF_MAX;
             } else {
-                this.fPropFactor[i] += PROP_FACTOR_DIFF_MAX;
+                this.fPropFactor[i] += XF5U1.PROP_FACTOR_DIFF_MAX;
             }
             this.engineVector.set((float) (Math.cos(fY * this.fPropFactor[i]) * Math.cos(fZ * this.fPropFactor[i])), (float) -Math.sin(fY * this.fPropFactor[i]), (float) Math.sin(fZ * this.fPropFactor[i]));
             this.FM.EI.engines[i].setVector(this.engineVector);
-            this.hierMesh().chunkSetAngles("Prop" + (i + 1) + "_Base", 0.0F, PROP_ANGLE_MAX * this.fPropAngle[1] * this.fPropFactor[i], PROP_ANGLE_MAX * this.fPropAngle[0] * this.fPropFactor[i]);
+            this.hierMesh().chunkSetAngles("Prop" + (i + 1) + "_Base", 0.0F, XF5U1.PROP_ANGLE_MAX * this.fPropAngle[1] * this.fPropFactor[i], XF5U1.PROP_ANGLE_MAX * this.fPropAngle[0] * this.fPropFactor[i]);
         }
     }
 
     private void xf5uMoveElevon(float fElevator, float fAileron) {
         this.fElevator = fElevator;
         this.fAileron = fAileron;
-        this.fAileronLeftFactor = (fElevator * fAileron) > 0 ? cvt(Math.abs(fElevator + fAileron), 1.0F, 2.0F, 1.0F, 1.5F) : 1.0F;
-        this.fAileronRightFactor = (fElevator * fAileron) < 0 ? cvt(Math.abs(fElevator - fAileron), 1.0F, 2.0F, 1.0F, 1.5F) : 1.0F;
+        this.fAileronLeftFactor = (fElevator * fAileron) > 0 ? Aircraft.cvt(Math.abs(fElevator + fAileron), 1.0F, 2.0F, 1.0F, 1.5F) : 1.0F;
+        this.fAileronRightFactor = (fElevator * fAileron) < 0 ? Aircraft.cvt(Math.abs(fElevator - fAileron), 1.0F, 2.0F, 1.0F, 1.5F) : 1.0F;
         this.fAileronLeft = Math.min(Math.max(this.fElevator - (fAileron * this.fAileronLeftFactor), -1.0F), 1.0F);
         this.fAileronRight = Math.min(Math.max(this.fElevator + (fAileron * this.fAileronRightFactor), -1.0F), 1.0F);
         this.hierMesh().chunkSetAngles("AroneL_D0", 0.0F, 30F * this.fAileronLeft, 0.0F);
@@ -913,7 +913,7 @@ public class XF5U1 extends Scheme2a implements TypeFighter, TypeBNZFighter, Type
 
     public boolean xf5uCut(String partName) {
         if (!partName.equalsIgnoreCase("WingLIn") && !partName.equalsIgnoreCase("WingLIn")) {
-            return super.cut(partName);
+            return this.cut(partName);
         }
         System.out.println("" + partName + " goes off..");
         this.debugprintln("" + partName + " goes off..");
@@ -986,8 +986,8 @@ public class XF5U1 extends Scheme2a implements TypeFighter, TypeBNZFighter, Type
             }
         }
         this.hierMesh().setCurChunk(arrayOfInt[0]);
-        this.hierMesh().getChunkLocObj(tmpLoc1);
-        this.sfxCrash(tmpLoc1.getPoint());
+        this.hierMesh().getChunkLocObj(Aircraft.tmpLoc1);
+        this.sfxCrash(Aircraft.tmpLoc1.getPoint());
 
         return true;
     }
@@ -1138,7 +1138,7 @@ public class XF5U1 extends Scheme2a implements TypeFighter, TypeBNZFighter, Type
         Property.set(class1, "FlightModel", "FlightModels/XF5U1.fmd:XF5U_FM");
         Property.set(class1, "cockpitClass", new Class[] { CockpitXF5U1.class });
         Property.set(class1, "LOSElevation", 0.69215F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0, 9, 9, 9, 9, 3, 3, 2, 2 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalBomb01", "_ExternalBomb02", "_ExternalRock01", "_ExternalRock02" });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0, 9, 9, 9, 9, 3, 3, 2, 2 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalBomb01", "_ExternalBomb02", "_ExternalRock01", "_ExternalRock02" });
     }
 }

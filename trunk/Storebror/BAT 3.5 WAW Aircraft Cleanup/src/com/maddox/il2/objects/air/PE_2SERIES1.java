@@ -54,7 +54,7 @@ public class PE_2SERIES1 extends PE_2 implements TypeBomber, TypeDiveBomber, Typ
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -73,7 +73,7 @@ public class PE_2SERIES1 extends PE_2 implements TypeBomber, TypeDiveBomber, Typ
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -30F) {
                     f = -30F;
                     flag = false;
@@ -99,12 +99,12 @@ public class PE_2SERIES1 extends PE_2 implements TypeBomber, TypeDiveBomber, Typ
 
     private void setRadist(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot3_D0", true);
                 this.hierMesh().chunkVisible("Pilot3a_D0", false);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot3a_D0", true);
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 break;
@@ -113,11 +113,11 @@ public class PE_2SERIES1 extends PE_2 implements TypeBomber, TypeDiveBomber, Typ
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.FM.turret[0].setHealth(f);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.FM.turret[1].setHealth(f);
                 break;
         }
@@ -244,16 +244,7 @@ public class PE_2SERIES1 extends PE_2 implements TypeBomber, TypeDiveBomber, Typ
         Property.set(class1, "FlightModel", "FlightModels/Pe-2series1.fmd");
         Property.set(class1, "cockpitClass", new Class[] { CockpitPE2_1.class, CockpitPE2_Bombardier.class, CockpitPE2_1_TGunner.class, CockpitPE2_BGunner.class });
         Property.set(class1, "LOSElevation", 0.76315F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 10, 11, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
-        weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06" });
-        weaponsRegister(class1, "default", new String[] { "MGunShKASki 500", "MGunShKASki 500", "MGunShKASt 750", "MGunShKASt 750", null, null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "6fab50", new String[] { "MGunShKASki 500", "MGunShKASki 500", "MGunShKASt 750", "MGunShKASt 750", null, null, null, null, "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50" });
-        weaponsRegister(class1, "6fab100", new String[] { "MGunShKASki 500", "MGunShKASki 500", "MGunShKASt 750", "MGunShKASt 750", null, null, null, null, "BombGunFAB100", "BombGunFAB100", "BombGunFAB100", "BombGunFAB100", "BombGunFAB100", "BombGunFAB100" });
-        weaponsRegister(class1, "2fab250", new String[] { "MGunShKASki 500", "MGunShKASki 500", "MGunShKASt 750", "MGunShKASt 750", null, null, "BombGunFAB250", "BombGunFAB250", null, null, null, null, null, null });
-        weaponsRegister(class1, "2fab2502fab100", new String[] { "MGunShKASki 500", "MGunShKASki 500", "MGunShKASt 750", "MGunShKASt 750", null, null, "BombGunFAB250", "BombGunFAB250", null, null, null, null, "BombGunFAB100", "BombGunFAB100" });
-        weaponsRegister(class1, "4fab250", new String[] { "MGunShKASki 500", "MGunShKASki 500", "MGunShKASt 750", "MGunShKASt 750", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", null, null, null, null, null, null });
-        weaponsRegister(class1, "2fab500", new String[] { "MGunShKASki 500", "MGunShKASki 500", "MGunShKASt 750", "MGunShKASt 750", "BombGunFAB500", "BombGunFAB500", null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "2fab5002fab250", new String[] { "MGunShKASki 500", "MGunShKASki 500", "MGunShKASt 750", "MGunShKASt 750", "BombGunFAB500", "BombGunFAB500", "BombGunFAB250", "BombGunFAB250", null, null, null, null, null, null });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 10, 11, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06" });
     }
 }

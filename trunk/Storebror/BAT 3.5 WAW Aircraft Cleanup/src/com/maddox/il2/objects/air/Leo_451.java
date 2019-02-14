@@ -21,7 +21,7 @@ public class Leo_451 extends Leoxyz implements TypeBomber, TypeTransport {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -40,7 +40,7 @@ public class Leo_451 extends Leoxyz implements TypeBomber, TypeTransport {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -30F) {
                     f = -30F;
                     flag = false;
@@ -69,103 +69,103 @@ public class Leo_451 extends Leoxyz implements TypeBomber, TypeTransport {
     }
 
     public void typeBomberAdjDistanceReset() {
-        super.fSightCurForwardAngle = 0.0F;
+        this.fSightCurForwardAngle = 0.0F;
     }
 
     public void typeBomberAdjDistancePlus() {
-        super.fSightCurForwardAngle += 0.2F;
-        if (super.fSightCurForwardAngle > 75F) {
-            super.fSightCurForwardAngle = 75F;
+        this.fSightCurForwardAngle += 0.2F;
+        if (this.fSightCurForwardAngle > 75F) {
+            this.fSightCurForwardAngle = 75F;
         }
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) (super.fSightCurForwardAngle * 1.0F)) });
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) (this.fSightCurForwardAngle * 1.0F)) });
     }
 
     public void typeBomberAdjDistanceMinus() {
-        super.fSightCurForwardAngle -= 0.2F;
-        if (super.fSightCurForwardAngle < -15F) {
-            super.fSightCurForwardAngle = -15F;
+        this.fSightCurForwardAngle -= 0.2F;
+        if (this.fSightCurForwardAngle < -15F) {
+            this.fSightCurForwardAngle = -15F;
         }
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) (super.fSightCurForwardAngle * 1.0F)) });
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) (this.fSightCurForwardAngle * 1.0F)) });
     }
 
     public void typeBomberAdjSideslipReset() {
-        super.fSightCurSideslip = 0.0F;
+        this.fSightCurSideslip = 0.0F;
     }
 
     public void typeBomberAdjSideslipPlus() {
-        super.fSightCurSideslip++;
-        if (super.fSightCurSideslip > 45F) {
-            super.fSightCurSideslip = 45F;
+        this.fSightCurSideslip++;
+        if (this.fSightCurSideslip > 45F) {
+            this.fSightCurSideslip = 45F;
         }
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int) (super.fSightCurSideslip * 1.0F)) });
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int) (this.fSightCurSideslip * 1.0F)) });
     }
 
     public void typeBomberAdjSideslipMinus() {
-        super.fSightCurSideslip--;
-        if (super.fSightCurSideslip < -45F) {
-            super.fSightCurSideslip = -45F;
+        this.fSightCurSideslip--;
+        if (this.fSightCurSideslip < -45F) {
+            this.fSightCurSideslip = -45F;
         }
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int) (super.fSightCurSideslip * 1.0F)) });
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int) (this.fSightCurSideslip * 1.0F)) });
     }
 
     public void typeBomberAdjAltitudeReset() {
-        super.fSightCurAltitude = 300F;
+        this.fSightCurAltitude = 300F;
     }
 
     public void typeBomberAdjAltitudePlus() {
-        super.fSightCurAltitude += 10F;
-        if (super.fSightCurAltitude > 6000F) {
-            super.fSightCurAltitude = 6000F;
+        this.fSightCurAltitude += 10F;
+        if (this.fSightCurAltitude > 6000F) {
+            this.fSightCurAltitude = 6000F;
         }
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) super.fSightCurAltitude) });
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) this.fSightCurAltitude) });
     }
 
     public void typeBomberAdjAltitudeMinus() {
-        super.fSightCurAltitude -= 10F;
-        if (super.fSightCurAltitude < 300F) {
-            super.fSightCurAltitude = 300F;
+        this.fSightCurAltitude -= 10F;
+        if (this.fSightCurAltitude < 300F) {
+            this.fSightCurAltitude = 300F;
         }
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) super.fSightCurAltitude) });
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) this.fSightCurAltitude) });
     }
 
     public void typeBomberAdjSpeedReset() {
-        super.fSightCurSpeed = 50F;
+        this.fSightCurSpeed = 50F;
     }
 
     public void typeBomberAdjSpeedPlus() {
-        super.fSightCurSpeed += 5F;
-        if (super.fSightCurSpeed > 650F) {
-            super.fSightCurSpeed = 650F;
+        this.fSightCurSpeed += 5F;
+        if (this.fSightCurSpeed > 650F) {
+            this.fSightCurSpeed = 650F;
         }
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) super.fSightCurSpeed) });
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) this.fSightCurSpeed) });
     }
 
     public void typeBomberAdjSpeedMinus() {
-        super.fSightCurSpeed -= 5F;
-        if (super.fSightCurSpeed < 50F) {
-            super.fSightCurSpeed = 50F;
+        this.fSightCurSpeed -= 5F;
+        if (this.fSightCurSpeed < 50F) {
+            this.fSightCurSpeed = 50F;
         }
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) super.fSightCurSpeed) });
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) this.fSightCurSpeed) });
     }
 
     public void typeBomberUpdate(float f) {
-        double d = (super.fSightCurSpeed / 3.6000000000000001D) * Math.sqrt(super.fSightCurAltitude * 0.20387359799999999D);
-        d -= super.fSightCurAltitude * super.fSightCurAltitude * 1.419E-005D;
-        super.fSightSetForwardAngle = (float) Math.toDegrees(Math.atan(d / super.fSightCurAltitude));
+        double d = (this.fSightCurSpeed / 3.6000000000000001D) * Math.sqrt(this.fSightCurAltitude * 0.20387359799999999D);
+        d -= this.fSightCurAltitude * this.fSightCurAltitude * 1.419E-005D;
+        this.fSightSetForwardAngle = (float) Math.toDegrees(Math.atan(d / this.fSightCurAltitude));
     }
 
     public void typeBomberReplicateToNet(NetMsgGuaranted netmsgguaranted) throws IOException {
-        netmsgguaranted.writeFloat(super.fSightCurAltitude);
-        netmsgguaranted.writeFloat(super.fSightCurSpeed);
-        netmsgguaranted.writeFloat(super.fSightCurForwardAngle);
-        netmsgguaranted.writeFloat(super.fSightCurSideslip);
+        netmsgguaranted.writeFloat(this.fSightCurAltitude);
+        netmsgguaranted.writeFloat(this.fSightCurSpeed);
+        netmsgguaranted.writeFloat(this.fSightCurForwardAngle);
+        netmsgguaranted.writeFloat(this.fSightCurSideslip);
     }
 
     public void typeBomberReplicateFromNet(NetMsgInput netmsginput) throws IOException {
-        super.fSightCurAltitude = netmsginput.readFloat();
-        super.fSightCurSpeed = netmsginput.readFloat();
-        super.fSightCurForwardAngle = netmsginput.readFloat();
-        super.fSightCurSideslip = netmsginput.readFloat();
+        this.fSightCurAltitude = netmsginput.readFloat();
+        this.fSightCurSpeed = netmsginput.readFloat();
+        this.fSightCurForwardAngle = netmsginput.readFloat();
+        this.fSightCurSideslip = netmsginput.readFloat();
     }
 
     static {

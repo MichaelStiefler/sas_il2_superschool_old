@@ -69,7 +69,7 @@ public class Dragonfly36a extends Dragonfly36bis implements TypeFighter {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        Dragonfly36a.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public void msgShot(Shot shot) {
@@ -94,15 +94,15 @@ public class Dragonfly36a extends Dragonfly36bis implements TypeFighter {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
+            case 33:
                 this.FM.AS.hitTank(this, 2, 7);
                 return super.cutFM(34, j, actor);
 
-            case 36: // '$'
+            case 36:
                 this.FM.AS.hitTank(this, 3, 7);
                 return super.cutFM(37, j, actor);
 
-            case 19: // '\023'
+            case 19:
                 this.FM.CT.bHasArrestorControl = false;
                 break;
         }

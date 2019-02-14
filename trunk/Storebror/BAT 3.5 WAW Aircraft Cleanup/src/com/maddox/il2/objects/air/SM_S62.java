@@ -21,20 +21,20 @@ public class SM_S62 extends Scheme1 implements TypeTransport, TypeBomber, TypeSa
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
+            case 33:
                 return super.cutFM(34, j, actor);
 
-            case 36: // '$'
+            case 36:
                 return super.cutFM(37, j, actor);
 
-            case 11: // '\013'
+            case 11:
                 this.cutFM(17, j, actor);
                 this.FM.cut(17, j, actor);
                 this.cutFM(18, j, actor);
                 this.FM.cut(18, j, actor);
                 return super.cutFM(i, j, actor);
 
-            case 19: // '\023'
+            case 19:
                 this.FM.Gears.bIsSail = false;
                 break;
         }
@@ -64,11 +64,11 @@ public class SM_S62 extends Scheme1 implements TypeTransport, TypeBomber, TypeSa
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.FM.turret[0].setHealth(f);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.FM.turret[1].setHealth(f);
                 break;
         }
@@ -76,19 +76,19 @@ public class SM_S62 extends Scheme1 implements TypeTransport, TypeBomber, TypeSa
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Gore0_D0", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 this.hierMesh().chunkVisible("Gore1_D0", true);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 this.hierMesh().chunkVisible("Gore2_D0", true);
@@ -105,7 +105,7 @@ public class SM_S62 extends Scheme1 implements TypeTransport, TypeBomber, TypeSa
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        SM_S62.moveGear(this.hierMesh(), f);
     }
 
     public boolean turretAngles(int i, float af[]) {
@@ -116,7 +116,7 @@ public class SM_S62 extends Scheme1 implements TypeTransport, TypeBomber, TypeSa
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 float f2 = Math.abs(f);
                 if (f2 < 114F) {
                     if (f1 < -33F) {
@@ -152,7 +152,7 @@ public class SM_S62 extends Scheme1 implements TypeTransport, TypeBomber, TypeSa
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 float f3 = Math.abs(f);
                 if (f3 < 2.0F) {
                     flag = false;

@@ -27,7 +27,7 @@ public class YAK_9U extends YAK implements TypeBNZFighter {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        YAK_9U.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public void moveSteering(float f) {
@@ -56,11 +56,9 @@ public class YAK_9U extends YAK implements TypeBNZFighter {
         Property.set(class1, "yearService", 1944F);
         Property.set(class1, "yearExpired", 1952.8F);
         Property.set(class1, "FlightModel", "FlightModels/Yak-9U.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitYAK_9U.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitYAK_9U.class });
         Property.set(class1, "LOSElevation", 0.6432F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 1 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_CANNON01" });
-        weaponsRegister(class1, "default", new String[] { "MGunUBsi 170", "MGunUBsi 157", "MGunShVAKki 120" });
-        weaponsRegister(class1, "none", new String[] { null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_CANNON01" });
     }
 }

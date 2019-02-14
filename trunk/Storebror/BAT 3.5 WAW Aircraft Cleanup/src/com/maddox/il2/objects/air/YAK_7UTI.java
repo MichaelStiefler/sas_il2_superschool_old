@@ -39,7 +39,7 @@ public class YAK_7UTI extends YAK_7A implements TypeFighter, TypeTNBFighter, Typ
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        YAK_7UTI.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {

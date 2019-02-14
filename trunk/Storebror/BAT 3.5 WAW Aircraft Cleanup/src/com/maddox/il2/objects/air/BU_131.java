@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import com.maddox.JGP.Point3d;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class BU_131 extends Scheme1 implements TypeScout {
@@ -29,7 +28,7 @@ public class BU_131 extends Scheme1 implements TypeScout {
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (super.FM.getAltitude() < 3000F) {
+        if (this.FM.getAltitude() < 3000F) {
             this.hierMesh().chunkVisible("HMask1_D0", false);
             this.hierMesh().chunkVisible("HMask2_D0", false);
         } else {
@@ -40,14 +39,14 @@ public class BU_131 extends Scheme1 implements TypeScout {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
@@ -62,27 +61,27 @@ public class BU_131 extends Scheme1 implements TypeScout {
                 if (s.endsWith("case")) {
                     if (this.getEnergyPastArmor(2.1F, shot) > 0.0F) {
                         if (World.Rnd().nextFloat() < (shot.power / 175000F)) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, 0);
+                            this.FM.AS.setEngineStuck(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Engine Module: Bullet Jams Crank Ball Bearing..");
                         }
                         if (World.Rnd().nextFloat() < (shot.power / 50000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
-                            Aircraft.debugprintln(this, "*** Engine Module: Crank Case Hit, Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() + "..");
+                            this.FM.AS.hitEngine(shot.initiator, 0, 2);
+                            Aircraft.debugprintln(this, "*** Engine Module: Crank Case Hit, Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + "..");
                         }
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setReadyness(shot.initiator, ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 48000F));
-                        Aircraft.debugprintln(this, "*** Engine Module: Crank Case Hit, Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() + "..");
+                        this.FM.EI.engines[0].setReadyness(shot.initiator, this.FM.EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 48000F));
+                        Aircraft.debugprintln(this, "*** Engine Module: Crank Case Hit, Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + "..");
                     }
                     this.getEnergyPastArmor(12.7F, shot);
                 } else if (s.startsWith("xxeng1cyls")) {
-                    if ((this.getEnergyPastArmor(World.Rnd().nextFloat(0.2F, 4.4F), shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[0].getCylindersRatio() * 1.12F))) {
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
-                        Aircraft.debugprintln(this, "*** Engine Module: Cylinders Hit, " + ((FlightModelMain) (super.FM)).EI.engines[0].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[0].getCylinders() + " Left..");
+                    if ((this.getEnergyPastArmor(World.Rnd().nextFloat(0.2F, 4.4F), shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[0].getCylindersRatio() * 1.12F))) {
+                        this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
+                        Aircraft.debugprintln(this, "*** Engine Module: Cylinders Hit, " + this.FM.EI.engines[0].getCylindersOperable() + "/" + this.FM.EI.engines[0].getCylinders() + " Left..");
                         if (World.Rnd().nextFloat() < (shot.power / 48000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 3);
+                            this.FM.AS.hitEngine(shot.initiator, 0, 3);
                             Aircraft.debugprintln(this, "*** Engine Module: Cylinders Hit, Engine Fires..");
                         }
                         if (World.Rnd().nextFloat() < 0.005F) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, 0);
+                            this.FM.AS.setEngineStuck(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Engine Module: Bullet Jams Piston Head..");
                         }
                         this.getEnergyPastArmor(22.5F, shot);
@@ -90,16 +89,16 @@ public class BU_131 extends Scheme1 implements TypeScout {
                 } else if (s.endsWith("mag")) {
                     if ((this.getEnergyPastArmor(0.2721F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
                         if (World.Rnd().nextFloat() < 0.1F) {
-                            ((FlightModelMain) (super.FM)).EI.engines[0].setMagnetoKnockOut(shot.initiator, 0);
+                            this.FM.EI.engines[0].setMagnetoKnockOut(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Engine Module: Magneto 0 Destroyed..");
                         }
                         if (World.Rnd().nextFloat() < 0.1F) {
-                            ((FlightModelMain) (super.FM)).EI.engines[0].setMagnetoKnockOut(shot.initiator, 1);
+                            this.FM.EI.engines[0].setMagnetoKnockOut(shot.initiator, 1);
                             Aircraft.debugprintln(this, "*** Engine Module: Magneto 1 Destroyed..");
                         }
                     }
                 } else if (s.endsWith("oil1")) {
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, 0);
+                    this.FM.AS.hitOil(shot.initiator, 0);
                     Aircraft.debugprintln(this, "*** Engine Module: Oil Radiator Hit..");
                 }
                 return;
@@ -107,12 +106,12 @@ public class BU_131 extends Scheme1 implements TypeScout {
             if (s.startsWith("xxtank1")) {
                 int i = s.charAt(6) - 49;
                 if ((this.getEnergyPastArmor(0.4F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.99F)) {
-                    if (((FlightModelMain) (super.FM)).AS.astateTankStates[i] == 0) {
+                    if (this.FM.AS.astateTankStates[i] == 0) {
                         Aircraft.debugprintln(this, "*** Fuel Tank: Pierced..");
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, i, 2);
+                        this.FM.AS.hitTank(shot.initiator, i, 2);
                     }
                     if ((shot.powerType == 3) && (World.Rnd().nextFloat() < 0.25F)) {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, i, 2);
+                        this.FM.AS.hitTank(shot.initiator, i, 2);
                         Aircraft.debugprintln(this, "*** Fuel Tank: Hit..");
                     }
                 }

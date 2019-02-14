@@ -16,13 +16,9 @@ public class P_40EM105 extends P_40 {
         Property.set(class1, "yearService", 1942F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/P-40E-M-105.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitP_40E.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitP_40E.class });
         Property.set(class1, "LOSElevation", 1.06965F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0, 9, 9, 9, 9, 2, 2, 2, 2, 3 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalBomb01" });
-        weaponsRegister(class1, "default", new String[] { "MGunBrowning50k 312", "MGunBrowning50k 291", "MGunBrowning50k 240", "MGunBrowning50k 312", "MGunBrowning50k 291", "MGunBrowning50k 240", null, null, null, null, null, null, null, null, null });
-        weaponsRegister(class1, "4rs82", new String[] { "MGunBrowning50k 312", "MGunBrowning50k 291", "MGunBrowning50k 240", "MGunBrowning50k 312", "MGunBrowning50k 291", "MGunBrowning50k 240", "PylonRO_82_1", "PylonRO_82_1", "PylonRO_82_1", "PylonRO_82_1", "RocketGunRS82", "RocketGunRS82", "RocketGunRS82", "RocketGunRS82", null });
-        weaponsRegister(class1, "1fab250", new String[] { "MGunBrowning50k 312", "MGunBrowning50k 291", "MGunBrowning50k 240", "MGunBrowning50k 312", "MGunBrowning50k 291", "MGunBrowning50k 240", null, null, null, null, null, null, null, null, "BombGunFAB250" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0, 9, 9, 9, 9, 2, 2, 2, 2, 3 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalBomb01" });
     }
 }

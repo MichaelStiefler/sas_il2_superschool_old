@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.maddox.il2.ai.Explosion;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.NetMsgGuaranted;
@@ -21,15 +20,15 @@ public class TB_3_4M_34R extends TB_3 {
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            TB_3_4M_34R.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            TB_3_4M_34R.bChangedPit = true;
         }
     }
 
@@ -42,7 +41,7 @@ public class TB_3_4M_34R extends TB_3 {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f1 < -47F) {
                     f1 = -47F;
                     flag = false;
@@ -80,7 +79,7 @@ public class TB_3_4M_34R extends TB_3 {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f1 < -47F) {
                     f1 = -47F;
                     flag = false;
@@ -170,7 +169,7 @@ public class TB_3_4M_34R extends TB_3 {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f1 < -47F) {
                     f1 = -47F;
                     flag = false;
@@ -196,14 +195,14 @@ public class TB_3_4M_34R extends TB_3 {
         super.rareAction(f, flag);
         if (flag) {
             for (int i = 0; i < 4; i++) {
-                if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[i] > 3) && (((FlightModelMain) (super.FM)).EI.engines[i].getReadyness() < 0.1F)) {
-                    ((FlightModelMain) (super.FM)).AS.repairEngine(i);
+                if ((this.FM.AS.astateEngineStates[i] > 3) && (this.FM.EI.engines[i].getReadyness() < 0.1F)) {
+                    this.FM.AS.repairEngine(i);
                 }
             }
 
             for (int j = 0; j < 4; j++) {
-                if ((((FlightModelMain) (super.FM)).AS.astateTankStates[j] > 3) && (((FlightModelMain) (super.FM)).AS.astatePilotStates[4] < 50F) && (((FlightModelMain) (super.FM)).AS.astatePilotStates[7] < 50F) && (World.Rnd().nextFloat() < 0.1F)) {
-                    ((FlightModelMain) (super.FM)).AS.repairTank(j);
+                if ((this.FM.AS.astateTankStates[j] > 3) && (this.FM.AS.astatePilotStates[4] < 50F) && (this.FM.AS.astatePilotStates[7] < 50F) && (World.Rnd().nextFloat() < 0.1F)) {
+                    this.FM.AS.repairTank(j);
                 }
             }
 
@@ -212,8 +211,8 @@ public class TB_3_4M_34R extends TB_3 {
 
     public void update(float f) {
         super.update(f);
-        this.hierMesh().chunkSetAngles("GearL3_D0", 0.0F, -((FlightModelMain) (super.FM)).Gears.gWheelAngles[0], 0.0F);
-        this.hierMesh().chunkSetAngles("GearR3_D0", 0.0F, -((FlightModelMain) (super.FM)).Gears.gWheelAngles[1], 0.0F);
+        this.hierMesh().chunkSetAngles("GearL3_D0", 0.0F, -this.FM.Gears.gWheelAngles[0], 0.0F);
+        this.hierMesh().chunkSetAngles("GearR3_D0", 0.0F, -this.FM.Gears.gWheelAngles[1], 0.0F);
     }
 
     public void msgExplosion(Explosion explosion) {

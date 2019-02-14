@@ -21,15 +21,15 @@ public class G4M2E extends G4M implements TypeBomber, TypeTransport, TypeDockabl
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            G4M2E.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            G4M2E.bChangedPit = true;
         }
     }
 
@@ -45,7 +45,7 @@ public class G4M2E extends G4M implements TypeBomber, TypeTransport, TypeDockabl
     }
 
     public void typeDockableAttemptDetach() {
-        if (((FlightModelMain) (super.FM)).AS.isMaster()) {
+        if (this.FM.AS.isMaster()) {
             for (int i = 0; i < this.drones.length; i++) {
                 if (Actor.isValid(this.drones[i])) {
                     this.typeDockableRequestDetach(this.drones[i], i, true);
@@ -60,21 +60,21 @@ public class G4M2E extends G4M implements TypeBomber, TypeTransport, TypeDockabl
             return;
         }
         Aircraft aircraft = (Aircraft) actor;
-        if (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).AS.isMaster() && ((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Gears.onGround() && (((SndAircraft) (aircraft)).FM.getSpeedKMH() < 10F) && (super.FM.getSpeedKMH() < 10F)) {
+        if (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).AS.isMaster() && ((FlightModelMain) (((SndAircraft) (aircraft)).FM)).Gears.onGround() && (((SndAircraft) (aircraft)).FM.getSpeedKMH() < 10F) && (this.FM.getSpeedKMH() < 10F)) {
             for (int i = 0; i < this.drones.length; i++) {
                 if (!Actor.isValid(this.drones[i])) {
                     HookNamed hooknamed = new HookNamed(this, "_Dockport" + i);
                     Loc loc = new Loc();
                     Loc loc1 = new Loc();
-                    super.pos.getAbs(loc1);
+                    this.pos.getAbs(loc1);
                     hooknamed.computePos(this, loc1, loc);
                     actor.pos.getAbs(loc1);
                     if (loc.getPoint().distance(loc1.getPoint()) < 5D) {
-                        if (((FlightModelMain) (super.FM)).AS.isMaster()) {
+                        if (this.FM.AS.isMaster()) {
                             this.typeDockableRequestAttach(actor, i, true);
                             return;
                         } else {
-                            ((FlightModelMain) (super.FM)).AS.netToMaster(32, i, 0, actor);
+                            this.FM.AS.netToMaster(32, i, 0, actor);
                             return;
                         }
                     }
@@ -89,10 +89,10 @@ public class G4M2E extends G4M implements TypeBomber, TypeTransport, TypeDockabl
             if (actor == this.drones[i]) {
                 Aircraft aircraft = (Aircraft) actor;
                 if (((FlightModelMain) (((SndAircraft) (aircraft)).FM)).AS.isMaster()) {
-                    if (((FlightModelMain) (super.FM)).AS.isMaster()) {
+                    if (this.FM.AS.isMaster()) {
                         this.typeDockableRequestDetach(actor, i, true);
                     } else {
-                        ((FlightModelMain) (super.FM)).AS.netToMaster(33, i, 1, actor);
+                        this.FM.AS.netToMaster(33, i, 1, actor);
                     }
                 }
             }
@@ -105,29 +105,29 @@ public class G4M2E extends G4M implements TypeBomber, TypeTransport, TypeDockabl
             return;
         }
         if (flag) {
-            if (((FlightModelMain) (super.FM)).AS.isMaster()) {
-                ((FlightModelMain) (super.FM)).AS.netToMirrors(34, i, 1, actor);
+            if (this.FM.AS.isMaster()) {
+                this.FM.AS.netToMirrors(34, i, 1, actor);
                 this.typeDockableDoAttachToDrone(actor, i);
             } else {
-                ((FlightModelMain) (super.FM)).AS.netToMaster(34, i, 1, actor);
+                this.FM.AS.netToMaster(34, i, 1, actor);
             }
-        } else if (((FlightModelMain) (super.FM)).AS.isMaster()) {
+        } else if (this.FM.AS.isMaster()) {
             if (!Actor.isValid(this.drones[i])) {
-                ((FlightModelMain) (super.FM)).AS.netToMirrors(34, i, 1, actor);
+                this.FM.AS.netToMirrors(34, i, 1, actor);
                 this.typeDockableDoAttachToDrone(actor, i);
             }
         } else {
-            ((FlightModelMain) (super.FM)).AS.netToMaster(34, i, 0, actor);
+            this.FM.AS.netToMaster(34, i, 0, actor);
         }
     }
 
     public void typeDockableRequestDetach(Actor actor, int i, boolean flag) {
         if (flag) {
-            if (((FlightModelMain) (super.FM)).AS.isMaster()) {
-                ((FlightModelMain) (super.FM)).AS.netToMirrors(35, i, 1, actor);
+            if (this.FM.AS.isMaster()) {
+                this.FM.AS.netToMirrors(35, i, 1, actor);
                 this.typeDockableDoDetachFromDrone(i);
             } else {
-                ((FlightModelMain) (super.FM)).AS.netToMaster(35, i, 1, actor);
+                this.FM.AS.netToMaster(35, i, 1, actor);
             }
         }
     }
@@ -137,7 +137,7 @@ public class G4M2E extends G4M implements TypeBomber, TypeTransport, TypeDockabl
             HookNamed hooknamed = new HookNamed(this, "_Dockport" + i);
             Loc loc = new Loc();
             Loc loc1 = new Loc();
-            super.pos.getAbs(loc1);
+            this.pos.getAbs(loc1);
             hooknamed.computePos(this, loc1, loc);
             actor.pos.setAbs(loc);
             actor.pos.setBase(this, null, true);
@@ -201,7 +201,7 @@ public class G4M2E extends G4M implements TypeBomber, TypeTransport, TypeDockabl
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -20F) {
                     f = -20F;
                     flag = false;
@@ -220,7 +220,7 @@ public class G4M2E extends G4M implements TypeBomber, TypeTransport, TypeDockabl
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -30F) {
                     f = -30F;
                     flag = false;
@@ -239,7 +239,7 @@ public class G4M2E extends G4M implements TypeBomber, TypeTransport, TypeDockabl
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f1 < -3F) {
                     f1 = -3F;
                     flag = false;
@@ -250,7 +250,7 @@ public class G4M2E extends G4M implements TypeBomber, TypeTransport, TypeDockabl
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f < -10F) {
                     f = -10F;
                     flag = false;
@@ -269,7 +269,7 @@ public class G4M2E extends G4M implements TypeBomber, TypeTransport, TypeDockabl
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 if (f < -70F) {
                     f = -70F;
                     flag = false;
@@ -288,7 +288,7 @@ public class G4M2E extends G4M implements TypeBomber, TypeTransport, TypeDockabl
                 }
                 break;
 
-            case 5: // '\005'
+            case 5:
                 if (f < -30F) {
                     f = -30F;
                     flag = false;
@@ -313,14 +313,14 @@ public class G4M2E extends G4M implements TypeBomber, TypeTransport, TypeDockabl
     }
 
     public void typeBomberUpdate(float f) {
-        if (super.FM.isPlayers()) {
+        if (this.FM.isPlayers()) {
             if (!Main3D.cur3D().isViewOutside()) {
                 this.hierMesh().chunkVisible("CF_D0", false);
             } else {
                 this.hierMesh().chunkVisible("CF_D0", true);
             }
         }
-        if (super.FM.isPlayers()) {
+        if (this.FM.isPlayers()) {
             if (!Main3D.cur3D().isViewOutside()) {
                 this.hierMesh().chunkVisible("CF_D1", false);
             }

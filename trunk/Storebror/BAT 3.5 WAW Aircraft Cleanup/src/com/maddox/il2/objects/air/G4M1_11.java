@@ -19,7 +19,7 @@ public class G4M1_11 extends G4M implements TypeBomber {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.equals("1xMine_JJ") || super.thisWeaponsName.equals("1xMine_P1") || super.thisWeaponsName.equals("1xtyp91_late")) {
+        if (this.thisWeaponsName.equals("1xMine_JJ") || this.thisWeaponsName.equals("1xMine_P1") || this.thisWeaponsName.equals("1xtyp91_late")) {
             this.hierMesh().chunkVisible("Bay1_D0", false);
             this.hierMesh().chunkVisible("Bay2_D0", false);
             this.bombBayDoorsRemoved = true;
@@ -28,8 +28,8 @@ public class G4M1_11 extends G4M implements TypeBomber {
 
     public void update(float f) {
         super.update(f);
-        float f1 = super.FM.turret[1].tu[0];
-        float f2 = super.FM.turret[1].tu[1];
+        float f1 = this.FM.turret[1].tu[0];
+        float f2 = this.FM.turret[1].tu[1];
         f1 -= 360F;
         if ((Math.abs(f1) > 2.0F) || (Math.abs(f2) > 2.0F)) {
             float f3 = (float) Math.toDegrees(Math.atan2(f1, f2));

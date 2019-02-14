@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import java.io.IOException;
 
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -16,13 +15,13 @@ public class B_25H1 extends B_25 implements TypeBomber, TypeStormovik, TypeStorm
         this.fSightCurAltitude = 3000F;
         this.fSightCurSpeed = 200F;
         this.fSightCurReadyness = 0.0F;
-        bChangedPit = false;
+        B_25H1.bChangedPit = false;
     }
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         for (int i = 1; i < 7; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -33,21 +32,21 @@ public class B_25H1 extends B_25 implements TypeBomber, TypeStormovik, TypeStorm
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            B_25H1.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            B_25H1.bChangedPit = true;
         }
     }
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).AS.wantBeaconsNet(true);
+        this.FM.AS.wantBeaconsNet(true);
     }
 
     public boolean turretAngles(int i, float af[]) {
@@ -58,10 +57,10 @@ public class B_25H1 extends B_25 implements TypeBomber, TypeStormovik, TypeStorm
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 return false;
 
-            case 1: // '\001'
+            case 1:
                 if (f1 < 0.0F) {
                     f1 = 0.0F;
                     flag = false;
@@ -72,7 +71,7 @@ public class B_25H1 extends B_25 implements TypeBomber, TypeStormovik, TypeStorm
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -38F) {
                     f = -38F;
                     flag = false;
@@ -91,7 +90,7 @@ public class B_25H1 extends B_25 implements TypeBomber, TypeStormovik, TypeStorm
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f < -85F) {
                     f = -85F;
                     flag = false;
@@ -110,7 +109,7 @@ public class B_25H1 extends B_25 implements TypeBomber, TypeStormovik, TypeStorm
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 if (f < -37F) {
                     f = -37F;
                     flag = false;
@@ -185,7 +184,7 @@ public class B_25H1 extends B_25 implements TypeBomber, TypeStormovik, TypeStorm
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
+            case 19:
                 this.killPilot(this, 4);
                 break;
         }
@@ -194,17 +193,17 @@ public class B_25H1 extends B_25 implements TypeBomber, TypeStormovik, TypeStorm
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 3: // '\003'
-                super.FM.turret[1].setHealth(f);
+            case 3:
+                this.FM.turret[1].setHealth(f);
                 break;
 
-            case 4: // '\004'
-                super.FM.turret[2].setHealth(f);
+            case 4:
+                this.FM.turret[2].setHealth(f);
                 break;
 
-            case 5: // '\005'
-                super.FM.turret[3].setHealth(f);
-                super.FM.turret[4].setHealth(f);
+            case 5:
+                this.FM.turret[3].setHealth(f);
+                this.FM.turret[4].setHealth(f);
                 break;
         }
     }

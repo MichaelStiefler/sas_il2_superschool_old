@@ -3,9 +3,7 @@ package com.maddox.il2.objects.air;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.MsgCollisionListener;
 import com.maddox.il2.engine.MsgCollisionRequestListener;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.HUD;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 import com.maddox.sas1946.il2.util.Reflection;
 
@@ -24,7 +22,7 @@ public class FW_190V18 extends FW_190V implements MsgCollisionRequestListener, M
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGear() < 0.98F) {
+        if (this.FM.CT.getGear() < 0.98F) {
             return;
         } else {
             this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -f, 0.0F);
@@ -37,34 +35,34 @@ public class FW_190V18 extends FW_190V implements MsgCollisionRequestListener, M
     }
 
     private void randomEngineFailures(float f) {
-        if (((FlightModelMain) (super.FM)).EI.engines[0].getStage() < 6) {
+        if (this.FM.EI.engines[0].getStage() < 6) {
             return;
         }
-        if (this.compressorOK && (World.Rnd().nextFloat() < this.randomLimit(f, randomCompressorKillTime))) {
-            ((FlightModelMain) (super.FM)).EI.engines[0].setKillCompressor(this);
+        if (this.compressorOK && (World.Rnd().nextFloat() < this.randomLimit(f, FW_190V18.randomCompressorKillTime))) {
+            this.FM.EI.engines[0].setKillCompressor(this);
             this.compressorOK = false;
             if (this == World.getPlayerAircraft()) {
                 HUD.log("FailedCompressor");
             }
         }
-        if ((((FlightModelMain) (super.FM)).EI.engines[0].getCylindersOperable() > 0) && (World.Rnd().nextFloat() < this.randomLimit(f, randomCylinderKnockoutTime))) {
-            ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(this, 1);
+        if ((this.FM.EI.engines[0].getCylindersOperable() > 0) && (World.Rnd().nextFloat() < this.randomLimit(f, FW_190V18.randomCylinderKnockoutTime))) {
+            this.FM.EI.engines[0].setCyliderKnockOut(this, 1);
             HUD.log("Cylinder Knockout!");
         }
-        if (World.Rnd().nextFloat() < this.randomLimit(f, randomEngineStopTime)) {
-            ((FlightModelMain) (super.FM)).EI.engines[0].setEngineStops(this);
+        if (World.Rnd().nextFloat() < this.randomLimit(f, FW_190V18.randomEngineStopTime)) {
+            this.FM.EI.engines[0].setEngineStops(this);
         }
-        if ((this.magnetosOK[0] || this.magnetosOK[1]) && (World.Rnd().nextFloat() < this.randomLimit(f, randomMagnetoKnockoutTime))) {
+        if ((this.magnetosOK[0] || this.magnetosOK[1]) && (World.Rnd().nextFloat() < this.randomLimit(f, FW_190V18.randomMagnetoKnockoutTime))) {
             int i = World.Rnd().nextFloat() >= 0.5F ? 1 : 0;
             if (this.magnetosOK[i]) {
-                ((FlightModelMain) (super.FM)).EI.engines[0].setMagnetoKnockOut(this, i);
+                this.FM.EI.engines[0].setMagnetoKnockOut(this, i);
                 this.magnetosOK[i] = false;
                 if (this == World.getPlayerAircraft()) {
                     HUD.log("Magneto Knockout !");
                 }
             }
         }
-        if (this.radiatorControlOK && (World.Rnd().nextFloat() < this.randomLimit(f, randomRadiatorControlDamagedTime))) {
+        if (this.radiatorControlOK && (World.Rnd().nextFloat() < this.randomLimit(f, FW_190V18.randomRadiatorControlDamagedTime))) {
             Reflection.setBoolean(this.FM.EI.engines[0], "bHasRadiatorControl", false);
             this.radiatorControlOK = false;
             if (this == World.getPlayerAircraft()) {
@@ -74,14 +72,14 @@ public class FW_190V18 extends FW_190V implements MsgCollisionRequestListener, M
     }
 
     public void update(float f) {
-        if (((FlightModelMain) (super.FM)).AS.isMaster() && World.cur().diffCur.Reliability) {
+        if (this.FM.AS.isMaster() && World.cur().diffCur.Reliability) {
             this.randomEngineFailures(f);
         }
         for (int i = 1; i < 17; i++) {
             this.hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -20F * this.kangle, 0.0F);
         }
 
-        this.kangle = (0.95F * this.kangle) + (0.05F * ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator());
+        this.kangle = (0.95F * this.kangle) + (0.05F * this.FM.EI.engines[0].getControlRadiator());
         super.update(f);
     }
 
@@ -98,7 +96,7 @@ public class FW_190V18 extends FW_190V implements MsgCollisionRequestListener, M
     public float         IdleTime1;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = FW_190V18.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "FW190V18");
         Property.set(class1, "meshName", "3DO/Plane/Fw-190V18/hier.him");

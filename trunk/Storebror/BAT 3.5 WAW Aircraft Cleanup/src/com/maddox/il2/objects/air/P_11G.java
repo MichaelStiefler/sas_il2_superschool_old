@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.objects.Wreckage;
 import com.maddox.il2.objects.weapons.Bomb;
@@ -17,7 +16,7 @@ public class P_11G extends P_11 {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        Object aobj[] = super.pos.getBaseAttached();
+        Object aobj[] = this.pos.getBaseAttached();
         if (aobj != null) {
             for (int i = 0; i < aobj.length; i++) {
                 if (aobj[i] instanceof Bomb) {
@@ -51,7 +50,7 @@ public class P_11G extends P_11 {
 
     public void update(float f) {
         super.update(f);
-        if ((((FlightModelMain) (super.FM)).CT.getCockpitDoor() > 0.20000000000000001D) && this.bHasBlister && (super.FM.getSpeedKMH() > 150F) && (this.hierMesh().chunkFindCheck("Blister1_D0") != -1)) {
+        if ((this.FM.CT.getCockpitDoor() > 0.20000000000000001D) && this.bHasBlister && (this.FM.getSpeedKMH() > 150F) && (this.hierMesh().chunkFindCheck("Blister1_D0") != -1)) {
             try {
                 if (this == World.getPlayerAircraft()) {
                     ((CockpitP_11G) Main3D.cur3D().cockpitCur).removeCanopy();
@@ -62,10 +61,10 @@ public class P_11G extends P_11 {
             Wreckage wreckage = new Wreckage(this, this.hierMesh().chunkFind("Blister1_D0"));
             wreckage.collide(false);
             Vector3d vector3d = new Vector3d();
-            vector3d.set(((FlightModelMain) (super.FM)).Vwld);
+            vector3d.set(this.FM.Vwld);
             wreckage.setSpeed(vector3d);
             this.bHasBlister = false;
-            ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = false;
+            this.FM.CT.bHasCockpitDoorControl = false;
         }
     }
 

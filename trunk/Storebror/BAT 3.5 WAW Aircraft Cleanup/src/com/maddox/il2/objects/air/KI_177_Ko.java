@@ -5,7 +5,7 @@ import com.maddox.rts.Property;
 public class KI_177_Ko extends KI_61 implements TypeFighter, TypeStormovik, TypeX4Carrier {
 
     public KI_177_Ko() {
-        prevWing = true;
+        KI_177_Ko.prevWing = true;
         this.bToFire = false;
         this.deltaAzimuth = 0.0F;
         this.deltaTangage = 0.0F;

@@ -41,7 +41,7 @@ public class MIG_3U extends MIG_3 {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        MIG_3U.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public void msgShot(Shot shot) {
@@ -66,11 +66,11 @@ public class MIG_3U extends MIG_3 {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
+            case 33:
                 this.FM.AS.hitTank(this, 2, 7);
                 return super.cutFM(34, j, actor);
 
-            case 36: // '$'
+            case 36:
                 this.FM.AS.hitTank(this, 3, 7);
                 return super.cutFM(37, j, actor);
         }
@@ -89,11 +89,9 @@ public class MIG_3U extends MIG_3 {
         Property.set(class1, "yearService", 1942F);
         Property.set(class1, "yearExpired", 1943F);
         Property.set(class1, "FlightModel", "FlightModels/MiG-3U.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitMIG_3U.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitMIG_3U.class });
         Property.set(class1, "LOSElevation", 0.906F);
-        weaponTriggersRegister(class1, new int[] { 0, 0 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02" });
-        weaponsRegister(class1, "default", new String[] { "MGunShVAKs 150", "MGunShVAKs 150" });
-        weaponsRegister(class1, "none", new String[] { null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02" });
     }
 }

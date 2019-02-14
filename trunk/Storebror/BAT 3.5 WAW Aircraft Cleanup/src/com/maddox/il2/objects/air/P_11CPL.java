@@ -60,8 +60,8 @@ public class P_11CPL extends P_11 {
 
     public void hitDaSilk() {
         if ((this.FM.EI.engines[0].getStage() == 0) && this.FM.isStationedOnGround()) {
-            if (bPilotInPit) {
-                bPilotInPit = false;
+            if (P_11CPL.bPilotInPit) {
+                P_11CPL.bPilotInPit = false;
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.reverse = true;
@@ -69,7 +69,7 @@ public class P_11CPL extends P_11 {
                     this.hierMesh().chunkVisible("Pilot1_Out_D0", true);
                 }
             } else {
-                bPilotInPit = true;
+                P_11CPL.bPilotInPit = true;
                 this.reverse = false;
                 if (!this.startAnimation()) {
                     this.hierMesh().chunkVisible("Pilot1_Out_D0", false);
@@ -149,14 +149,14 @@ public class P_11CPL extends P_11 {
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            P_11CPL.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            P_11CPL.bChangedPit = true;
         }
     }
 

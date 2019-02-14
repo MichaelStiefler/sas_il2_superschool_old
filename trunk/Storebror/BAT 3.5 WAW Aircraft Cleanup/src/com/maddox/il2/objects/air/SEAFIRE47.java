@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 import com.maddox.util.HashMapInt;
 
@@ -17,21 +16,21 @@ public class SEAFIRE47 extends SeafireLateBubbleTopCanopy {
         this.hierMesh().chunkFind(Aircraft.Props[1][0]);
         int i = 0;
         for (int j = 0; j < 2; j++) {
-            if (super.oldProp[j] < 2) {
-                i = Math.abs((int) (((FlightModelMain) (super.FM)).EI.engines[0].getw() * 0.06F));
+            if (this.oldProp[j] < 2) {
+                i = Math.abs((int) (this.FM.EI.engines[0].getw() * 0.06F));
                 if (i >= 1) {
                     i = 1;
                 }
-                if ((i != super.oldProp[j]) && this.hierMesh().isChunkVisible(Aircraft.Props[j][super.oldProp[j]])) {
-                    this.hierMesh().chunkVisible(Aircraft.Props[j][super.oldProp[j]], false);
-                    super.oldProp[j] = i;
+                if ((i != this.oldProp[j]) && this.hierMesh().isChunkVisible(Aircraft.Props[j][this.oldProp[j]])) {
+                    this.hierMesh().chunkVisible(Aircraft.Props[j][this.oldProp[j]], false);
+                    this.oldProp[j] = i;
                     this.hierMesh().chunkVisible(Aircraft.Props[j][i], true);
                 }
             }
             if (i == 0) {
-                super.propPos[j] = (super.propPos[j] + (57.3F * ((FlightModelMain) (super.FM)).EI.engines[0].getw() * f)) % 360F;
+                this.propPos[j] = (this.propPos[j] + (57.3F * this.FM.EI.engines[0].getw() * f)) % 360F;
             } else {
-                float f1 = 57.3F * ((FlightModelMain) (super.FM)).EI.engines[0].getw();
+                float f1 = 57.3F * this.FM.EI.engines[0].getw();
                 f1 %= 2880F;
                 f1 /= 2880F;
                 if (f1 <= 0.5F) {
@@ -40,19 +39,19 @@ public class SEAFIRE47 extends SeafireLateBubbleTopCanopy {
                     f1 = (f1 * 2.0F) - 2.0F;
                 }
                 f1 *= 1200F;
-                super.propPos[j] = (super.propPos[j] + (f1 * f)) % 360F;
+                this.propPos[j] = (this.propPos[j] + (f1 * f)) % 360F;
             }
             if (j == 0) {
-                this.hierMesh().chunkSetAngles(Aircraft.Props[j][i], 0.0F, super.propPos[j], 0.0F);
+                this.hierMesh().chunkSetAngles(Aircraft.Props[j][i], 0.0F, this.propPos[j], 0.0F);
             } else {
-                this.hierMesh().chunkSetAngles(Aircraft.Props[j][i], 0.0F, -super.propPos[j], 0.0F);
+                this.hierMesh().chunkSetAngles(Aircraft.Props[j][i], 0.0F, -this.propPos[j], 0.0F);
             }
         }
 
     }
 
     public void hitProp(int i, int j, Actor actor) {
-        if ((i > (((FlightModelMain) (super.FM)).EI.getNum() - 1)) || (super.oldProp[i] == 2)) {
+        if ((i > (this.FM.EI.getNum() - 1)) || (this.oldProp[i] == 2)) {
             return;
         }
         if (this.isChunkAnyDamageVisible("Prop" + (i + 1)) || this.isChunkAnyDamageVisible("PropRot" + (i + 1))) {

@@ -8,7 +8,6 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.objects.Wreckage;
 import com.maddox.rts.Property;
@@ -29,16 +28,16 @@ public class B_24D140CO extends B_24 {
         this.hierMesh().chunkVisible("Turret5B_D0", false);
         this.hierMesh().chunkVisible("WindDL_D0", false);
         this.hierMesh().chunkVisible("WindDR_D0", false);
-        super.FM.crew = 9;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[0] = 1;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[1] = 2;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[2] = 9;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[3] = 4;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[4] = 5;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[5] = 5;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[6] = 3;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[7] = 7;
-        ((FlightModelMain) (super.FM)).AS.astatePilotFunctions[8] = 6;
+        this.FM.crew = 9;
+        this.FM.AS.astatePilotFunctions[0] = 1;
+        this.FM.AS.astatePilotFunctions[1] = 2;
+        this.FM.AS.astatePilotFunctions[2] = 9;
+        this.FM.AS.astatePilotFunctions[3] = 4;
+        this.FM.AS.astatePilotFunctions[4] = 5;
+        this.FM.AS.astatePilotFunctions[5] = 5;
+        this.FM.AS.astatePilotFunctions[6] = 3;
+        this.FM.AS.astatePilotFunctions[7] = 7;
+        this.FM.AS.astatePilotFunctions[8] = 6;
     }
 
     public B_24D140CO() {
@@ -103,7 +102,7 @@ public class B_24D140CO extends B_24 {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 27: // '\033'
+            case 27:
                 this.killPilot(this, 8);
                 this.hierMesh().chunkVisible("Turret3A_D0", false);
                 this.hierMesh().chunkVisible("Turret3B_D0", false);
@@ -114,7 +113,7 @@ public class B_24D140CO extends B_24 {
                 this.bBallRemoved = true;
                 break;
 
-            case 19: // '\023'
+            case 19:
                 this.killPilot(this, 4);
                 this.killPilot(this, 5);
                 this.killPilot(this, 7);
@@ -123,7 +122,7 @@ public class B_24D140CO extends B_24 {
                 this.cut("StabR");
                 break;
 
-            case 13: // '\r'
+            case 13:
                 this.killPilot(this, 0);
                 this.killPilot(this, 1);
                 this.killPilot(this, 2);
@@ -171,7 +170,7 @@ public class B_24D140CO extends B_24 {
             Wreckage wreckage = new Wreckage(this, this.hierMesh().chunkFind(s));
             wreckage.collide(true);
             Vector3d vector3d = new Vector3d();
-            vector3d.set(((FlightModelMain) (super.FM)).Vwld);
+            vector3d.set(this.FM.Vwld);
             wreckage.setSpeed(vector3d);
         }
     }
@@ -184,7 +183,7 @@ public class B_24D140CO extends B_24 {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -5F) {
                     f = -5F;
                     flag = false;
@@ -203,7 +202,7 @@ public class B_24D140CO extends B_24 {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 float f2 = -6.5F;
                 if (f1 < -6.5F) {
                     f1 = -6.5F;
@@ -245,7 +244,7 @@ public class B_24D140CO extends B_24 {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (this.fBallPos < 0.98999999999999999D) {
                     float f3 = Aircraft.cvt(this.fBallPos, 0.5F, 1.0F, 180F, 0.0F);
                     float f6 = Aircraft.cvt(this.fBallPos, 0.5F, 1.0F, -90F, -22F);
@@ -274,7 +273,7 @@ public class B_24D140CO extends B_24 {
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f < -66F) {
                     f = -66F;
                     flag = false;
@@ -317,7 +316,7 @@ public class B_24D140CO extends B_24 {
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 if (f < -39F) {
                     f = -39F;
                     flag = false;
@@ -360,7 +359,7 @@ public class B_24D140CO extends B_24 {
                 }
                 break;
 
-            case 5: // '\005'
+            case 5:
                 if (f < -60F) {
                     f = -60F;
                     flag = false;
@@ -379,7 +378,7 @@ public class B_24D140CO extends B_24 {
                 }
                 break;
 
-            case 6: // '\006'
+            case 6:
                 if (f < -45F) {
                     f = -45F;
                     flag = false;
@@ -405,17 +404,17 @@ public class B_24D140CO extends B_24 {
 
     public void update(float f) {
         super.update(f);
-        if (((FlightModelMain) (super.FM)).CT.getGear() > 0.9F) {
+        if (this.FM.CT.getGear() > 0.9F) {
             Aircraft.xyz[0] = 0.0F;
             Aircraft.ypr[0] = 0.0F;
             Aircraft.ypr[1] = 0.0F;
             Aircraft.ypr[2] = 0.0F;
             Aircraft.xyz[2] = 0.0F;
             Aircraft.xyz[1] = Aircraft.cvt(this.suspC, 0.0F, 0.25F, 0.0F, 0.25F);
-            Aircraft.ypr[1] = Reflection.getFloat(this, "fCSteer");//super.fCSteer;
+            Aircraft.ypr[1] = Reflection.getFloat(this, "fCSteer");//this.fCSteer;
             this.hierMesh().chunkSetLocate("GearC2_D0", Aircraft.xyz, Aircraft.ypr);
         }
-        if (!((FlightModelMain) (super.FM)).AS.isMaster()) {
+        if (!this.FM.AS.isMaster()) {
             return;
         }
         if (this.iBallPos == 0.0F) {
@@ -434,7 +433,7 @@ public class B_24D140CO extends B_24 {
                 if (this.fBallPos > 1.0F) {
                     this.fBallPos = 1.0F;
                     this.iBallPos = 0.5F;
-                    super.FM.turret[2].bIsOperable = true;
+                    this.FM.turret[2].bIsOperable = true;
                 }
             }
             this.resetYPRmodifier();
@@ -443,11 +442,11 @@ public class B_24D140CO extends B_24 {
         }
         if (Time.current() > this.btme) {
             this.btme = Time.current() + World.Rnd().nextLong(5000L, 12000L);
-            if ((super.FM.turret[1].target == null) && (super.FM.turret[2].target == null) && (super.FM.turret[3].target == null) && (super.FM.turret[4].target == null) && (super.FM.turret[5].target == null)) {
-                super.FM.turret[2].bIsOperable = false;
+            if ((super.FM.turret[1].target == null) && (this.FM.turret[2].target == null) && (this.FM.turret[3].target == null) && (this.FM.turret[4].target == null) && (this.FM.turret[5].target == null)) {
+                this.FM.turret[2].bIsOperable = false;
                 this.iBallPos = 0.0F;
             }
-            if ((super.FM.turret[1].target != null) && (((FlightModelMain) (super.FM)).AS.astatePilotStates[8] < 90) && (this.iBallPos == 0.0F)) {
+            if ((this.FM.turret[1].target != null) && (this.FM.AS.astatePilotStates[8] < 90) && (this.iBallPos == 0.0F)) {
                 this.iBallPos = 1.0F;
             }
         }
@@ -467,12 +466,12 @@ public class B_24D140CO extends B_24 {
             }
         }
         this.hierMesh().chunkSetAngles("HatchDoorL_D0", 0.0F, Aircraft.cvt(1.0F - this.fLGunPos, 0.4F, 0.54F, 0.0F, 135F), 0.0F);
-        if (super.FM.turret[3].bIsAIControlled) {
-            if ((super.FM.turret[3].target != null) && (((FlightModelMain) (super.FM)).AS.astatePilotStates[4] < 90)) {
+        if (this.FM.turret[3].bIsAIControlled) {
+            if ((this.FM.turret[3].target != null) && (this.FM.AS.astatePilotStates[4] < 90)) {
                 this.iLGunPos = 1;
-                super.FM.turret[3].bIsOperable = true;
+                this.FM.turret[3].bIsOperable = true;
             }
-        } else if (super.FM.turret[3].bIsOperable) {
+        } else if (this.FM.turret[3].bIsOperable) {
             this.iLGunPos = 1;
         } else {
             this.iLGunPos = 0;
@@ -493,12 +492,12 @@ public class B_24D140CO extends B_24 {
             }
         }
         this.hierMesh().chunkSetAngles("HatchDoorR_D0", 0.0F, Aircraft.cvt(1.0F - this.fRGunPos, 0.4F, 0.54F, 0.0F, 135F), 0.0F);
-        if (super.FM.turret[4].bIsAIControlled) {
-            if ((super.FM.turret[4].target != null) && (((FlightModelMain) (super.FM)).AS.astatePilotStates[5] < 90)) {
+        if (this.FM.turret[4].bIsAIControlled) {
+            if ((this.FM.turret[4].target != null) && (this.FM.AS.astatePilotStates[5] < 90)) {
                 this.iRGunPos = 1;
-                super.FM.turret[4].bIsOperable = true;
+                this.FM.turret[4].bIsOperable = true;
             }
-        } else if (super.FM.turret[4].bIsOperable) {
+        } else if (this.FM.turret[4].bIsOperable) {
             this.iRGunPos = 1;
         } else {
             this.iRGunPos = 0;
@@ -519,7 +518,7 @@ public class B_24D140CO extends B_24 {
                     this.getEnergyPastArmor(9.5299997329711914D / (Math.abs(((Tuple3d) (Aircraft.v1)).y) + 9.9999999747524271E-007D), shot);
                 } else if (s.endsWith("05")) {
                     this.getEnergyPastArmor(0.5D / (Math.abs(((Tuple3d) (Aircraft.v1)).z) + 9.9999999747524271E-007D), shot);
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x80);
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x80);
                 } else if (s.endsWith("06")) {
                     this.getEnergyPastArmor(9.5299997329711914D / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999999747524271E-007D), shot);
                 } else if (s.endsWith("07")) {
@@ -530,10 +529,10 @@ public class B_24D140CO extends B_24 {
                     this.getEnergyPastArmor(6.3499999046325684D / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999999747524271E-007D), shot);
                 } else if (s.endsWith("10")) {
                     this.getEnergyPastArmor(22D / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999999747524271E-007D), shot);
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x20);
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x20);
                 } else if (s.endsWith("11")) {
                     if (this.getEnergyPastArmor(52D / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999999747524271E-007D), shot) > 0.0F) {
-                        ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 8);
+                        this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 8);
                     }
                 } else if (s.endsWith("12")) {
                     this.getEnergyPastArmor(52D / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999999747524271E-007D), shot);
@@ -543,10 +542,10 @@ public class B_24D140CO extends B_24 {
                     this.getEnergyPastArmor(7.9375D / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999999747524271E-007D), shot);
                 } else if (s.endsWith("15")) {
                     this.getEnergyPastArmor(9.5250000000000004D / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999999747524271E-007D), shot);
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x20);
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x20);
                 } else if (s.endsWith("16")) {
                     this.getEnergyPastArmor(9.5250000000000004D / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999999747524271E-007D), shot);
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x20);
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x20);
                 } else if (s.endsWith("17")) {
                     this.getEnergyPastArmor(15.875D / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999999747524271E-007D), shot);
                 } else if (s.endsWith("18")) {
@@ -566,22 +565,22 @@ public class B_24D140CO extends B_24 {
                 }
             }
             if (s.equals("xxfrontwindow")) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 1);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 1);
             }
             if (s.equals("xxleftwindow")) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 4);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 4);
             }
             if (s.equals("xxrightwindow")) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x10);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x10);
             }
             if (s.equals("xxtopwindow")) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x40);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x40);
             }
             if (s.equals("xxpanelleft")) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x40);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x40);
             }
             if (s.equals("xxpanelright")) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 2);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 2);
             }
             if (s.startsWith("xxammo")) {
                 int i = s.charAt(6) - 48;
@@ -590,69 +589,69 @@ public class B_24D140CO extends B_24 {
                 }
                 if ((this.getEnergyPastArmor(6.87F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.05F)) {
                     switch (i) {
-                        case 1: // '\001'
+                        case 1:
                             i = 1;
                             k1 = 0;
                             break;
 
-                        case 2: // '\002'
+                        case 2:
                             return;
 
-                        case 3: // '\003'
+                        case 3:
                             i = 11;
                             k1 = 0;
                             this.topLeftGunJammed = true;
                             break;
 
-                        case 4: // '\004'
+                        case 4:
                             i = 11;
                             k1 = 1;
                             this.topRightGunJammed = true;
                             break;
 
-                        case 5: // '\005'
+                        case 5:
                             i = 12;
                             k1 = 0;
                             break;
 
-                        case 6: // '\006'
+                        case 6:
                             i = 12;
                             k1 = 1;
                             break;
 
-                        case 7: // '\007'
+                        case 7:
                             i = 14;
                             k1 = 0;
                             break;
 
-                        case 8: // '\b'
+                        case 8:
                             i = 13;
                             k1 = 0;
                             break;
 
-                        case 9: // '\t'
+                        case 9:
                             i = 10;
                             k1 = 0;
                             this.rearLeftGunJammed = true;
                             break;
 
-                        case 10: // '\n'
+                        case 10:
                             i = 10;
                             k1 = 1;
                             this.rearRightGunJammed = true;
                             break;
 
-                        case 11: // '\013'
+                        case 11:
                             i = 15;
                             k1 = 0;
                             break;
 
-                        case 12: // '\f'
+                        case 12:
                             i = 16;
                             k1 = 0;
                             break;
                     }
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(i, k1);
+                    this.FM.AS.setJamBullets(i, k1);
                     return;
                 }
             }
@@ -665,32 +664,32 @@ public class B_24D140CO extends B_24 {
                     default:
                         break;
 
-                    case 1: // '\001'
-                    case 2: // '\002'
-                    case 11: // '\013'
-                    case 12: // '\f'
+                    case 1:
+                    case 2:
+                    case 11:
+                    case 12:
                         if ((this.getEnergyPastArmor(5F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                            this.FM.AS.setControlsDamage(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Aileron Controls Out..");
                         }
                         break;
 
-                    case 3: // '\003'
-                    case 4: // '\004'
-                    case 5: // '\005'
-                    case 6: // '\006'
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
                         if ((World.Rnd().nextFloat() < 0.252F) && (this.getEnergyPastArmor(5.2F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.125F)) {
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
+                            this.FM.AS.setControlsDamage(shot.initiator, 2);
                         }
                         this.getEnergyPastArmor(2.0F, shot);
                         break;
 
-                    case 7: // '\007'
-                    case 8: // '\b'
-                    case 9: // '\t'
-                    case 10: // '\n'
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
                         if ((World.Rnd().nextFloat() < 0.252F) && (this.getEnergyPastArmor(5.2F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.125F)) {
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
+                            this.FM.AS.setControlsDamage(shot.initiator, 1);
                         }
                         this.getEnergyPastArmor(2.0F, shot);
                         break;
@@ -702,44 +701,44 @@ public class B_24D140CO extends B_24 {
                 if (s.endsWith("case")) {
                     if (this.getEnergyPastArmor(0.2F, shot) > 0.0F) {
                         if (World.Rnd().nextFloat() < (shot.power / 140000F)) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, k);
+                            this.FM.AS.setEngineStuck(shot.initiator, k);
                             Aircraft.debugprintln(this, "*** Engine (" + k + ") Crank Case Hit - Engine Stucks..");
                         }
                         if (World.Rnd().nextFloat() < (shot.power / 85000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, k, 2);
+                            this.FM.AS.hitEngine(shot.initiator, k, 2);
                             Aircraft.debugprintln(this, "*** Engine (" + k + ") Crank Case Hit - Engine Damaged..");
                         }
                     } else if (World.Rnd().nextFloat() < 0.005F) {
-                        ((FlightModelMain) (super.FM)).EI.engines[k].setCyliderKnockOut(shot.initiator, 1);
+                        this.FM.EI.engines[k].setCyliderKnockOut(shot.initiator, 1);
                     } else {
-                        ((FlightModelMain) (super.FM)).EI.engines[k].setReadyness(shot.initiator, ((FlightModelMain) (super.FM)).EI.engines[k].getReadyness() - 0.00082F);
-                        Aircraft.debugprintln(this, "*** Engine (" + k + ") Crank Case Hit - Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[k].getReadyness() + "..");
+                        this.FM.EI.engines[k].setReadyness(shot.initiator, this.FM.EI.engines[k].getReadyness() - 0.00082F);
+                        Aircraft.debugprintln(this, "*** Engine (" + k + ") Crank Case Hit - Readyness Reduced to " + this.FM.EI.engines[k].getReadyness() + "..");
                     }
                     this.getEnergyPastArmor(12F, shot);
                 }
                 if (s.endsWith("cyls")) {
-                    if ((this.getEnergyPastArmor(5.85F, shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[k].getCylindersRatio() * 0.75F))) {
-                        ((FlightModelMain) (super.FM)).EI.engines[k].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 19000F)));
-                        Aircraft.debugprintln(this, "*** Engine (" + k + ") Cylinders Hit, " + ((FlightModelMain) (super.FM)).EI.engines[k].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[k].getCylinders() + " Left..");
+                    if ((this.getEnergyPastArmor(5.85F, shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[k].getCylindersRatio() * 0.75F))) {
+                        this.FM.EI.engines[k].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 19000F)));
+                        Aircraft.debugprintln(this, "*** Engine (" + k + ") Cylinders Hit, " + this.FM.EI.engines[k].getCylindersOperable() + "/" + this.FM.EI.engines[k].getCylinders() + " Left..");
                         if (World.Rnd().nextFloat() < (shot.power / 18000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, k, 2);
+                            this.FM.AS.hitEngine(shot.initiator, k, 2);
                             Aircraft.debugprintln(this, "*** Engine (" + k + ") Cylinders Hit - Engine Fires..");
                         }
                     }
                     this.getEnergyPastArmor(25F, shot);
                 }
                 if (s.endsWith("mag1")) {
-                    ((FlightModelMain) (super.FM)).EI.engines[k].setMagnetoKnockOut(shot.initiator, 0);
+                    this.FM.EI.engines[k].setMagnetoKnockOut(shot.initiator, 0);
                     Aircraft.debugprintln(this, "*** Engine (" + k + ") Module: Magneto #0 Destroyed..");
                     this.getEnergyPastArmor(25F, shot);
                 }
                 if (s.endsWith("mag2")) {
-                    ((FlightModelMain) (super.FM)).EI.engines[k].setMagnetoKnockOut(shot.initiator, 1);
+                    this.FM.EI.engines[k].setMagnetoKnockOut(shot.initiator, 1);
                     Aircraft.debugprintln(this, "*** Engine (" + k + ") Module: Magneto #1 Destroyed..");
                     this.getEnergyPastArmor(25F, shot);
                 }
                 if (s.endsWith("oil1") && (this.getEnergyPastArmor(0.2F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
-                    ((FlightModelMain) (super.FM)).AS.setOilState(shot.initiator, k, 1);
+                    this.FM.AS.setOilState(shot.initiator, k, 1);
                     Aircraft.debugprintln(this, "*** Engine (" + k + ") Module: Oil Filter Pierced..");
                 }
                 return;
@@ -775,7 +774,7 @@ public class B_24D140CO extends B_24 {
             if (s.startsWith("xxoil")) {
                 int l = s.charAt(5) - 49;
                 if ((this.getEnergyPastArmor(0.21F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.2435F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, l);
+                    this.FM.AS.hitOil(shot.initiator, l);
                 }
                 Aircraft.debugprintln(this, "*** Engine (" + l + ") Module: Oil Tank Pierced..");
                 return;
@@ -783,7 +782,7 @@ public class B_24D140CO extends B_24 {
             if (s.startsWith("xxpnm")) {
                 if (this.getEnergyPastArmor(World.Rnd().nextFloat(0.25F, 1.22F), shot) > 0.0F) {
                     this.debuggunnery("Pneumo System: Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 1);
+                    this.FM.AS.setInternalDamage(shot.initiator, 1);
                 }
                 return;
             }
@@ -793,7 +792,7 @@ public class B_24D140CO extends B_24 {
             }
             if (s.startsWith("xxautopilot")) {
                 if (this.getEnergyPastArmor(World.Rnd().nextFloat(1.0F, 4F), shot) > 0.0F) {
-                    ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
+                    this.FM.AS.setControlsDamage(shot.initiator, 2);
                 }
                 return;
             }
@@ -843,20 +842,20 @@ public class B_24D140CO extends B_24 {
             if (s.startsWith("xxtank")) {
                 int i1 = s.charAt(6) - 49;
                 if (this.getEnergyPastArmor(0.06F, shot) > 0.0F) {
-                    if (((FlightModelMain) (super.FM)).AS.astateTankStates[i1] == 0) {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, i1, 1);
-                        ((FlightModelMain) (super.FM)).AS.doSetTankState(shot.initiator, i1, 1);
+                    if (this.FM.AS.astateTankStates[i1] == 0) {
+                        this.FM.AS.hitTank(shot.initiator, i1, 1);
+                        this.FM.AS.doSetTankState(shot.initiator, i1, 1);
                     }
                     if (shot.powerType == 3) {
                         if (shot.power < 16100F) {
-                            if ((((FlightModelMain) (super.FM)).AS.astateTankStates[i1] < 4) && (World.Rnd().nextFloat() < 0.21F)) {
-                                ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, i1, 1);
+                            if ((this.FM.AS.astateTankStates[i1] < 4) && (World.Rnd().nextFloat() < 0.21F)) {
+                                this.FM.AS.hitTank(shot.initiator, i1, 1);
                             }
                         } else {
-                            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, i1, World.Rnd().nextInt(1, 1 + (int) (shot.power / 16100F)));
+                            this.FM.AS.hitTank(shot.initiator, i1, World.Rnd().nextInt(1, 1 + (int) (shot.power / 16100F)));
                         }
                     } else if (shot.power > 16100F) {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, i1, World.Rnd().nextInt(1, 1 + (int) (shot.power / 16100F)));
+                        this.FM.AS.hitTank(shot.initiator, i1, World.Rnd().nextInt(1, 1 + (int) (shot.power / 16100F)));
                     }
                 }
                 return;
@@ -999,7 +998,7 @@ public class B_24D140CO extends B_24 {
         if (s.startsWith("xgear")) {
             if (World.Rnd().nextFloat() < 0.05F) {
                 Aircraft.debugprintln(this, "*** Gear Hydro Failed..");
-                ((FlightModelMain) (super.FM)).Gears.setHydroOperable(false);
+                this.FM.Gears.setHydroOperable(false);
             }
             return;
         }
@@ -1010,69 +1009,69 @@ public class B_24D140CO extends B_24 {
             int j1 = (10 * (s.charAt(5) - 48)) + (s.charAt(6) - 48);
             if ((this.getEnergyPastArmor(6.45F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.35F)) {
                 switch (j1) {
-                    case 1: // '\001'
+                    case 1:
                         j1 = 1;
                         k1 = 0;
                         break;
 
-                    case 2: // '\002'
+                    case 2:
                         return;
 
-                    case 3: // '\003'
+                    case 3:
                         j1 = 11;
                         k1 = 0;
                         this.topLeftGunJammed = true;
                         break;
 
-                    case 4: // '\004'
+                    case 4:
                         j1 = 11;
                         k1 = 1;
                         this.topRightGunJammed = true;
                         break;
 
-                    case 5: // '\005'
+                    case 5:
                         j1 = 12;
                         k1 = 0;
                         break;
 
-                    case 6: // '\006'
+                    case 6:
                         j1 = 12;
                         k1 = 1;
                         break;
 
-                    case 7: // '\007'
+                    case 7:
                         j1 = 14;
                         k1 = 0;
                         break;
 
-                    case 8: // '\b'
+                    case 8:
                         j1 = 13;
                         k1 = 0;
                         break;
 
-                    case 9: // '\t'
+                    case 9:
                         j1 = 10;
                         k1 = 0;
                         this.rearLeftGunJammed = true;
                         break;
 
-                    case 10: // '\n'
+                    case 10:
                         j1 = 10;
                         k1 = 1;
                         this.rearRightGunJammed = true;
                         break;
 
-                    case 11: // '\013'
+                    case 11:
                         j1 = 15;
                         k1 = 0;
                         break;
 
-                    case 12: // '\f'
+                    case 12:
                         j1 = 16;
                         k1 = 0;
                         break;
                 }
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(j1, k1);
+                this.FM.AS.setJamBullets(j1, k1);
             }
             return;
         }
@@ -1113,19 +1112,19 @@ public class B_24D140CO extends B_24 {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        B_24D140CO.moveGear(this.hierMesh(), f);
     }
 
     public void moveWheelSink() {
-        if (((FlightModelMain) (super.FM)).Gears.onGround()) {
+        if (this.FM.Gears.onGround()) {
             this.suspension += 0.008F;
         } else {
             this.suspension -= 0.008F;
         }
         if (this.suspension < 0.0F) {
             this.suspension = 0.0F;
-            if (!super.FM.isPlayers()) {
-                ((FlightModelMain) (super.FM)).Gears.bTailwheelLocked = true;
+            if (!this.FM.isPlayers()) {
+                this.FM.Gears.bTailwheelLocked = true;
             }
         }
         if (this.suspension > 0.1F) {
@@ -1136,14 +1135,14 @@ public class B_24D140CO extends B_24 {
         Aircraft.ypr[1] = 0.0F;
         Aircraft.ypr[2] = 0.0F;
         Aircraft.xyz[2] = 0.0F;
-        float f = Aircraft.cvt(super.FM.getSpeed(), 0.0F, 35F, 0.0F, 1.0F);
-        this.suspL = (((FlightModelMain) (super.FM)).Gears.gWheelSinking[0] * f) + this.suspension;
+        float f = Aircraft.cvt(this.FM.getSpeed(), 0.0F, 35F, 0.0F, 1.0F);
+        this.suspL = (this.FM.Gears.gWheelSinking[0] * f) + this.suspension;
         Aircraft.xyz[1] = Aircraft.cvt(this.suspL, 0.0F, 0.25F, 0.0F, 0.15F);
         this.hierMesh().chunkSetLocate("GearL2_D0", Aircraft.xyz, Aircraft.ypr);
-        this.suspR = (((FlightModelMain) (super.FM)).Gears.gWheelSinking[1] * f) + this.suspension;
+        this.suspR = (this.FM.Gears.gWheelSinking[1] * f) + this.suspension;
         Aircraft.xyz[1] = Aircraft.cvt(this.suspR, 0.0F, 0.25F, 0.0F, 0.15F);
         this.hierMesh().chunkSetLocate("GearR2_D0", Aircraft.xyz, Aircraft.ypr);
-        this.suspC = (((FlightModelMain) (super.FM)).Gears.gWheelSinking[2] * f) + this.suspension;
+        this.suspC = (this.FM.Gears.gWheelSinking[2] * f) + this.suspension;
     }
 
     public float getBombSightPDI() {

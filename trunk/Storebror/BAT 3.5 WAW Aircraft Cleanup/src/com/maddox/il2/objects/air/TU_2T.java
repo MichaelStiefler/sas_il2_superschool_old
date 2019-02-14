@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -139,7 +138,7 @@ public class TU_2T extends TU_2 implements TypeBomber {
     public float fSightCurSideslip;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = TU_2T.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Tu-2");
         Property.set(class1, "meshName", "3DO/Plane/Tu-2T(Multi1)/hier.him");

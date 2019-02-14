@@ -10,8 +10,8 @@ public class SM73 extends SM81x implements TypeBomber, TypeTransport {
 
     public void update(float f) {
         super.update(f);
-        super.onAircraftLoaded();
-        if (super.FM.isPlayers()) {
+        this.onAircraftLoaded();
+        if (this.FM.isPlayers()) {
             if (!Main3D.cur3D().isViewOutside()) {
                 this.hierMesh().chunkVisible("CF_D0", false);
                 this.hierMesh().chunkVisible("Blister1_D0", false);
@@ -32,7 +32,7 @@ public class SM73 extends SM81x implements TypeBomber, TypeTransport {
                 this.hierMesh().chunkVisible("Pilot2_D0", true);
             }
         }
-        if (super.FM.isPlayers()) {
+        if (this.FM.isPlayers()) {
             if (!Main3D.cur3D().isViewOutside()) {
                 this.hierMesh().chunkVisible("CF_D1", false);
             }

@@ -8,7 +8,6 @@ import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -16,7 +15,7 @@ import com.maddox.rts.Property;
 public class Junkers_F13Ski extends Scheme1 implements TypeStormovik, TypeBomber, TypeScout {
 
     public Junkers_F13Ski() {
-        bChangedPit = true;
+        Junkers_F13Ski.bChangedPit = true;
         this.setPit(null);
     }
 
@@ -27,21 +26,21 @@ public class Junkers_F13Ski extends Scheme1 implements TypeStormovik, TypeBomber
             this.hierMesh().chunkVisible("GearL11_D0", true);
             this.hierMesh().chunkVisible("GearR1_D0", false);
             this.hierMesh().chunkVisible("GearR11_D0", true);
-            ((FlightModelMain) (super.FM)).CT.bHasBrakeControl = false;
+            this.FM.CT.bHasBrakeControl = false;
         }
     }
 
     protected void moveFan(float f) {
         if (Config.isUSE_RENDER()) {
             super.moveFan(f);
-            float f1 = Aircraft.cvt(((FlightModelMain) (super.FM)).Or.getTangage(), -30F, 30F, -30F, 30F);
-            if (((FlightModelMain) (super.FM)).Gears.onGround() && (((FlightModelMain) (super.FM)).CT.getGear() > 0.9F) && (super.FM.getSpeed() > 5F)) {
-                if (((FlightModelMain) (super.FM)).Gears.gWheelSinking[0] > 0.0F) {
+            float f1 = Aircraft.cvt(this.FM.Or.getTangage(), -30F, 30F, -30F, 30F);
+            if (this.FM.Gears.onGround() && (this.FM.CT.getGear() > 0.9F) && (this.FM.getSpeed() > 5F)) {
+                if (this.FM.Gears.gWheelSinking[0] > 0.0F) {
                     this.hierMesh().chunkSetAngles("GearL11_D0", World.Rnd().nextFloat(-1F, 1.0F), World.Rnd().nextFloat(-1F, 1.0F), World.Rnd().nextFloat(-1F, 1.0F) - f1);
                 } else {
                     this.hierMesh().chunkSetAngles("GearL11_D0", 0.0F, 0.0F, -f1);
                 }
-                if (((FlightModelMain) (super.FM)).Gears.gWheelSinking[1] > 0.0F) {
+                if (this.FM.Gears.gWheelSinking[1] > 0.0F) {
                     this.hierMesh().chunkSetAngles("GearR11_D0", World.Rnd().nextFloat(-1F, 1.0F), World.Rnd().nextFloat(-1F, 1.0F), World.Rnd().nextFloat(-1F, 1.0F) - f1);
                 } else {
                     this.hierMesh().chunkSetAngles("GearR11_D0", 0.0F, 0.0F, -f1);
@@ -56,7 +55,7 @@ public class Junkers_F13Ski extends Scheme1 implements TypeStormovik, TypeBomber
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         for (int i = 1; i < 3; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -89,27 +88,27 @@ public class Junkers_F13Ski extends Scheme1 implements TypeStormovik, TypeBomber
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            Junkers_F13Ski.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            Junkers_F13Ski.bChangedPit = true;
         }
     }
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Head2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
@@ -123,36 +122,36 @@ public class Junkers_F13Ski extends Scheme1 implements TypeStormovik, TypeBomber
                 this.debuggunnery("Controls: Hit..");
                 int i = s.charAt(10) - 48;
                 switch (i) {
-                    case 1: // '\001'
-                    case 2: // '\002'
-                    case 3: // '\003'
-                    case 4: // '\004'
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
                         if (this.getEnergyPastArmor(4.2F, shot) > 0.0F) {
                             this.debuggunnery("Controls: Ailerones Controls: Out..");
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                            this.FM.AS.setControlsDamage(shot.initiator, 0);
                         }
                         break;
 
-                    case 5: // '\005'
+                    case 5:
                         if ((this.getEnergyPastArmor(4.2F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.12F)) {
                             this.debuggunnery("Controls: Elevator Controls: Disabled..");
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
+                            this.FM.AS.setControlsDamage(shot.initiator, 1);
                         }
                         break;
 
-                    case 6: // '\006'
+                    case 6:
                         if ((this.getEnergyPastArmor(0.22F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.12F)) {
                             this.debuggunnery("Controls: Rudder Controls: Disabled / Strings Broken..");
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
+                            this.FM.AS.setControlsDamage(shot.initiator, 2);
                         }
                         break;
 
-                    case 7: // '\007'
+                    case 7:
                         if (this.getEnergyPastArmor(3.2F, shot) > 0.0F) {
                             Aircraft.debugprintln(this, "*** Control Column: Hit, Controls Destroyed..");
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                            this.FM.AS.setControlsDamage(shot.initiator, 2);
+                            this.FM.AS.setControlsDamage(shot.initiator, 1);
+                            this.FM.AS.setControlsDamage(shot.initiator, 0);
                         }
                         break;
                 }
@@ -160,27 +159,27 @@ public class Junkers_F13Ski extends Scheme1 implements TypeStormovik, TypeBomber
                 if (s.endsWith("case")) {
                     if (this.getEnergyPastArmor(0.2F, shot) > 0.0F) {
                         if (World.Rnd().nextFloat() < (shot.power / 140000F)) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, 0);
+                            this.FM.AS.setEngineStuck(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Engine Stucks..");
                         }
                         if (World.Rnd().nextFloat() < (shot.power / 85000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
+                            this.FM.AS.hitEngine(shot.initiator, 0, 2);
                             Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Engine Damaged..");
                         }
                     } else if (World.Rnd().nextFloat() < 0.01F) {
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, 1);
+                        this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, 1);
                     } else {
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setReadyness(shot.initiator, ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() - 0.002F);
-                        Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() + "..");
+                        this.FM.EI.engines[0].setReadyness(shot.initiator, this.FM.EI.engines[0].getReadyness() - 0.002F);
+                        Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + "..");
                     }
                     this.getEnergyPastArmor(12F, shot);
                 }
                 if (s.endsWith("cyls")) {
-                    if ((this.getEnergyPastArmor(5.85F, shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[0].getCylindersRatio() * 0.75F))) {
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 19000F)));
-                        Aircraft.debugprintln(this, "*** Engine Cylinders Hit, " + ((FlightModelMain) (super.FM)).EI.engines[0].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[0].getCylinders() + " Left..");
+                    if ((this.getEnergyPastArmor(5.85F, shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[0].getCylindersRatio() * 0.75F))) {
+                        this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 19000F)));
+                        Aircraft.debugprintln(this, "*** Engine Cylinders Hit, " + this.FM.EI.engines[0].getCylindersOperable() + "/" + this.FM.EI.engines[0].getCylinders() + " Left..");
                         if (World.Rnd().nextFloat() < (shot.power / 48000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
+                            this.FM.AS.hitEngine(shot.initiator, 0, 2);
                             Aircraft.debugprintln(this, "*** Engine Cylinders Hit - Engine Fires..");
                         }
                     }
@@ -193,7 +192,7 @@ public class Junkers_F13Ski extends Scheme1 implements TypeStormovik, TypeBomber
                     if ((World.Rnd().nextFloat() < 0.5F) && (this.getEnergyPastArmor(0.25F, shot) > 0.0F)) {
                         this.debuggunnery("Engine Module: Oil Radiator Hit..");
                     }
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, 0);
+                    this.FM.AS.hitOil(shot.initiator, 0);
                 }
             } else if (s.startsWith("xxlock")) {
                 this.debuggunnery("Lock Construction: Hit..");
@@ -220,19 +219,19 @@ public class Junkers_F13Ski extends Scheme1 implements TypeStormovik, TypeBomber
             } else if (s.startsWith("xxmgun01")) {
                 if (this.getEnergyPastArmor(0.75F, shot) > 0.0F) {
                     this.debuggunnery("Armament: MGUN (0) Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 0);
+                    this.FM.AS.setJamBullets(0, 0);
                     this.getEnergyPastArmor(World.Rnd().nextFloat(0.5F, 23.325F), shot);
                 }
             } else if (s.startsWith("xxmgun02")) {
                 if (this.getEnergyPastArmor(0.75F, shot) > 0.0F) {
                     this.debuggunnery("Armament: MGUN (1) Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 1);
+                    this.FM.AS.setJamBullets(0, 1);
                     this.getEnergyPastArmor(World.Rnd().nextFloat(0.5F, 23.325F), shot);
                 }
             } else if (s.startsWith("xxoil")) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x40);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x40);
                 if ((this.getEnergyPastArmor(0.25F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.125F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, 0);
+                    this.FM.AS.hitOil(shot.initiator, 0);
                     this.getEnergyPastArmor(0.22F, shot);
                     this.debuggunnery("Engine Module: Oil Tank Pierced..");
                 }
@@ -269,38 +268,38 @@ public class Junkers_F13Ski extends Scheme1 implements TypeStormovik, TypeBomber
             } else if (s.startsWith("xxtank")) {
                 int j = s.charAt(6) - 49;
                 if ((this.getEnergyPastArmor(1.2F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.4F)) {
-                    if (((FlightModelMain) (super.FM)).AS.astateTankStates[j] == 0) {
+                    if (this.FM.AS.astateTankStates[j] == 0) {
                         this.debuggunnery("Fuel Tank (" + j + "): Pierced..");
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, j, 1);
-                        ((FlightModelMain) (super.FM)).AS.doSetTankState(shot.initiator, j, 1);
+                        this.FM.AS.hitTank(shot.initiator, j, 1);
+                        this.FM.AS.doSetTankState(shot.initiator, j, 1);
                     }
                     if ((World.Rnd().nextFloat() < 0.003F) || ((shot.powerType == 3) && (World.Rnd().nextFloat() < 0.4F))) {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, j, 2);
+                        this.FM.AS.hitTank(shot.initiator, j, 2);
                         this.debuggunnery("Fuel Tank (" + j + "): Hit..");
                     }
                 }
             }
         } else if (s.startsWith("xcf") || s.startsWith("xcock")) {
             this.hitChunk("CF", shot);
-            if (((Tuple3d) (point3d)).z > 0.56799999999999995D) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 1);
-                if (((Tuple3d) (point3d)).x > -0.092999999999999999D) {
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 2);
+            if (point3d.z > 0.56799999999999995D) {
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 1);
+                if (point3d.x > -0.092999999999999999D) {
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 2);
                 }
             } else {
-                if (((Tuple3d) (point3d)).y > 0.0D) {
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x10);
+                if (point3d.y > 0.0D) {
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x10);
                 } else {
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 4);
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 4);
                 }
                 if (World.Rnd().nextFloat() < 0.1F) {
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 8);
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 8);
                 }
                 if (World.Rnd().nextFloat() < 0.1F) {
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x20);
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x20);
                 }
                 if (World.Rnd().nextFloat() < 0.1F) {
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x40);
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x40);
                 }
             }
         } else if (s.startsWith("xeng")) {
@@ -362,11 +361,11 @@ public class Junkers_F13Ski extends Scheme1 implements TypeStormovik, TypeBomber
         } else if (s.startsWith("xgear")) {
             if (World.Rnd().nextFloat() < 0.05F) {
                 this.debuggunnery("Hydro System: Disabled..");
-                ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 0);
+                this.FM.AS.setInternalDamage(shot.initiator, 0);
             }
             if ((World.Rnd().nextFloat() < 0.1F) && (this.getEnergyPastArmor(World.Rnd().nextFloat(1.2F, 3.435F), shot) > 0.0F)) {
                 this.debuggunnery("Undercarriage: Stuck..");
-                ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 3);
+                this.FM.AS.setInternalDamage(shot.initiator, 3);
             }
         } else if (s.startsWith("xpilot") || s.startsWith("xhead")) {
             byte byte0 = 0;

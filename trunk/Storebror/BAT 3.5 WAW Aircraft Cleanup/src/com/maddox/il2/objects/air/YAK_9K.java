@@ -28,7 +28,7 @@ public class YAK_9K extends YAK implements TypeStormovik {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        YAK_9K.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public void update(float f) {
@@ -54,11 +54,9 @@ public class YAK_9K extends YAK implements TypeStormovik {
         Property.set(class1, "yearService", 1944.6F);
         Property.set(class1, "yearExpired", 1948.5F);
         Property.set(class1, "FlightModel", "FlightModels/Yak-9K.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitYAK_9T.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitYAK_9T.class });
         Property.set(class1, "LOSElevation", 0.661F);
-        weaponTriggersRegister(class1, new int[] { 0, 1 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_CANNON01" });
-        weaponsRegister(class1, "default", new String[] { "MGunUBsi 200", "MGunNS45ki 29" });
-        weaponsRegister(class1, "none", new String[] { null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 1 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_CANNON01" });
     }
 }

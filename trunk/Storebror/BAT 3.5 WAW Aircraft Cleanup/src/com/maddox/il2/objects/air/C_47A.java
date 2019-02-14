@@ -25,7 +25,7 @@ public class C_47A extends Scheme2 implements TypeTransport, TypeBomber {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        C_47A.moveGear(this.hierMesh(), f);
     }
 
     public void msgShot(Shot shot) {
@@ -67,14 +67,14 @@ public class C_47A extends Scheme2 implements TypeTransport, TypeBomber {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
@@ -99,18 +99,18 @@ public class C_47A extends Scheme2 implements TypeTransport, TypeBomber {
             default:
                 break;
 
-            case 13: // '\r'
+            case 13:
                 this.killPilot(this, 0);
                 this.killPilot(this, 1);
                 break;
 
-            case 35: // '#'
+            case 35:
                 if (World.Rnd().nextFloat() < 0.25F) {
                     this.FM.AS.hitTank(this, 1, World.Rnd().nextInt(2, 6));
                 }
                 break;
 
-            case 38: // '&'
+            case 38:
                 if (World.Rnd().nextFloat() < 0.25F) {
                     this.FM.AS.hitTank(this, 2, World.Rnd().nextInt(2, 6));
                 }

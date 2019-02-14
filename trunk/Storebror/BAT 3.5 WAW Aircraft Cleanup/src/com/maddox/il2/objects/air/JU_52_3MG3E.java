@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.NetMsgGuaranted;
@@ -29,7 +28,7 @@ public class JU_52_3MG3E extends JU_52 implements TypeBomber {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.startsWith("12x")) {
+        if (this.thisWeaponsName.startsWith("12x")) {
             if (Config.isUSE_RENDER()) {
                 this.hierMesh().chunkVisible("CFS_D0", true);
                 this.hierMesh().chunkVisible("Pilot4_D0", true);
@@ -59,7 +58,7 @@ public class JU_52_3MG3E extends JU_52 implements TypeBomber {
             }
             return;
         }
-        if (super.thisWeaponsName.startsWith("5x")) {
+        if (this.thisWeaponsName.startsWith("5x")) {
             if (Config.isUSE_RENDER()) {
                 this.hierMesh().chunkVisible("CargoA_01", true);
                 this.hierMesh().chunkVisible("CargoA_02", true);
@@ -69,7 +68,7 @@ public class JU_52_3MG3E extends JU_52 implements TypeBomber {
             }
             return;
         }
-        if (super.thisWeaponsName.startsWith("4xA")) {
+        if (this.thisWeaponsName.startsWith("4xA")) {
             if (Config.isUSE_RENDER()) {
                 this.hierMesh().chunkVisible("CFS_D0", true);
                 this.hierMesh().chunkVisible("Pilot12_D0", true);
@@ -94,14 +93,14 @@ public class JU_52_3MG3E extends JU_52 implements TypeBomber {
     protected void drawBombs() {
         int i = 0;
         int k2 = 15;
-        if (((FlightModelMain) (super.FM)).CT.Weapons[3] != null) {
-            for (int j = 0; j < ((FlightModelMain) (super.FM)).CT.Weapons[3].length; j++) {
-                if (((FlightModelMain) (super.FM)).CT.Weapons[3][j] != null) {
-                    i += ((FlightModelMain) (super.FM)).CT.Weapons[3][j].countBullets();
+        if (this.FM.CT.Weapons[3] != null) {
+            for (int j = 0; j < this.FM.CT.Weapons[3].length; j++) {
+                if (this.FM.CT.Weapons[3][j] != null) {
+                    i += this.FM.CT.Weapons[3][j].countBullets();
                 }
             }
 
-            if (super.thisWeaponsName.startsWith("12x")) {
+            if (this.thisWeaponsName.startsWith("12x")) {
                 for (int k1 = i + 1; k1 <= 12; k1++) {
                     this.hierMesh().chunkVisible("Pilot" + k2 + "_D0", false);
                     this.hierMesh().chunkVisible("Helm" + k2 + "_D0", false);
@@ -110,7 +109,7 @@ public class JU_52_3MG3E extends JU_52 implements TypeBomber {
 
             }
             int k3 = 12;
-            if (super.thisWeaponsName.startsWith("4xA")) {
+            if (this.thisWeaponsName.startsWith("4xA")) {
                 for (int l1 = i + 1; l1 <= 4; l1++) {
                     this.hierMesh().chunkVisible("Pilot" + k3 + "_D0", false);
                     this.hierMesh().chunkVisible("Helm" + k3 + "_D0", false);
@@ -118,7 +117,7 @@ public class JU_52_3MG3E extends JU_52 implements TypeBomber {
                 }
 
             }
-            if (super.thisWeaponsName.startsWith("5x")) {
+            if (this.thisWeaponsName.startsWith("5x")) {
                 for (int i2 = i + 1; i2 <= 5; i2++) {
                     this.hierMesh().chunkVisible("CargoA_0" + i2, false);
                 }
@@ -133,7 +132,7 @@ public class JU_52_3MG3E extends JU_52 implements TypeBomber {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (af[0] < -50F) {
                     af[0] = -50F;
                     flag = false;
@@ -157,7 +156,7 @@ public class JU_52_3MG3E extends JU_52 implements TypeBomber {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (af[0] < -120F) {
                     af[0] = -120F;
                     flag = false;
@@ -181,19 +180,19 @@ public class JU_52_3MG3E extends JU_52 implements TypeBomber {
     public void msgShot(Shot shot) {
         this.setShot(shot);
         if (shot.chunkName.startsWith("WingLIn") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 0, 1);
+            this.FM.AS.hitTank(shot.initiator, 0, 1);
         }
         if (shot.chunkName.startsWith("WingRIn") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 1, 1);
+            this.FM.AS.hitTank(shot.initiator, 1, 1);
         }
         if (shot.chunkName.startsWith("Engine1") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 1);
+            this.FM.AS.hitEngine(shot.initiator, 0, 1);
         }
         if (shot.chunkName.startsWith("Engine2") && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 1, 1);
+            this.FM.AS.hitEngine(shot.initiator, 1, 1);
         }
-        if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[0] > 2) && (((FlightModelMain) (super.FM)).AS.astateEngineStates[1] > 2)) {
-            super.FM.setCapableOfBMP(false, shot.initiator);
+        if ((this.FM.AS.astateEngineStates[0] > 2) && (this.FM.AS.astateEngineStates[1] > 2)) {
+            this.FM.setCapableOfBMP(false, shot.initiator);
         }
         super.msgShot(shot);
     }
@@ -297,7 +296,7 @@ public class JU_52_3MG3E extends JU_52 implements TypeBomber {
     }
 
     public void typeBomberUpdate(float f) {
-        if (Math.abs(((FlightModelMain) (super.FM)).Or.getKren()) > 4.5D) {
+        if (Math.abs(this.FM.Or.getKren()) > 4.5D) {
             this.fSightCurReadyness -= 0.0666666F * f;
             if (this.fSightCurReadyness < 0.0F) {
                 this.fSightCurReadyness = 0.0F;
@@ -316,13 +315,13 @@ public class JU_52_3MG3E extends JU_52 implements TypeBomber {
                 this.bSightBombDump = true;
             }
             if (this.bSightBombDump) {
-                if (super.FM.isTick(3, 0)) {
-                    if ((((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1] != null) && ((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].haveBullets()) {
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = true;
+                if (this.FM.isTick(3, 0)) {
+                    if ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1] != null) && this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].haveBullets()) {
+                        this.FM.CT.WeaponControl[3] = true;
                         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
                     }
                 } else {
-                    ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = false;
+                    this.FM.CT.WeaponControl[3] = false;
                 }
             }
         }
@@ -351,7 +350,7 @@ public class JU_52_3MG3E extends JU_52 implements TypeBomber {
     }
 
     public void update(float f) {
-        if (((FlightModelMain) (super.FM)).AS.bLandingLightOn) {
+        if (this.FM.AS.bLandingLightOn) {
             if (this.llpos < 1.0F) {
                 this.llpos += 0.5F * f;
                 this.hierMesh().chunkSetAngles("LLight_D0", 0.0F, -90F * this.llpos, 0.0F);

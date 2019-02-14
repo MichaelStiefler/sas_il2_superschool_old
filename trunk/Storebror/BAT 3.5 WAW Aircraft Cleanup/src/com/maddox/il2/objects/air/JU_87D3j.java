@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import java.util.ArrayList;
 
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.objects.weapons.PylonWB151;
 import com.maddox.il2.objects.weapons.PylonWB20;
@@ -32,9 +31,9 @@ public class JU_87D3j extends JU_87D3 implements TypeStormovik {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = true;
-        ((FlightModelMain) (super.FM)).CT.dvCockpitDoor = 0.65F;
-        Object aobj[] = super.pos.getBaseAttached();
+        this.FM.CT.bHasCockpitDoorControl = true;
+        this.FM.CT.dvCockpitDoor = 0.65F;
+        Object aobj[] = this.pos.getBaseAttached();
         if (aobj != null) {
             int i = 0;
             do {
@@ -42,7 +41,7 @@ public class JU_87D3j extends JU_87D3 implements TypeStormovik {
                     break;
                 }
                 if ((aobj[i] instanceof PylonWB81B) || (aobj[i] instanceof PylonWB81A) || (aobj[i] instanceof PylonWB20) || (aobj[i] instanceof PylonWB151)) {
-                    ((FlightModelMain) (super.FM)).M.massEmpty += 190F;
+                    this.FM.M.massEmpty += 190F;
                     break;
                 }
                 i++;

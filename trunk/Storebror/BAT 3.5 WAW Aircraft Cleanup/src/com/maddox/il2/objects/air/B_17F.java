@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class B_17F extends B_17 implements TypeBomber {
@@ -11,7 +10,7 @@ public class B_17F extends B_17 implements TypeBomber {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
+            case 19:
                 this.killPilot(this, 4);
                 break;
         }
@@ -21,7 +20,7 @@ public class B_17F extends B_17 implements TypeBomber {
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         for (int i = 1; i < 7; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -32,19 +31,19 @@ public class B_17F extends B_17 implements TypeBomber {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).AS.wantBeaconsNet(true);
+        this.FM.AS.wantBeaconsNet(true);
     }
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
+        if (this.FM.isPlayers()) {
             B_17.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
+        if (this.FM.isPlayers()) {
             B_17.bChangedPit = true;
         }
     }
@@ -57,7 +56,7 @@ public class B_17F extends B_17 implements TypeBomber {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -23F) {
                     f = -23F;
                     flag = false;
@@ -76,7 +75,7 @@ public class B_17F extends B_17 implements TypeBomber {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -20F) {
                     f = -20F;
                     flag = false;
@@ -95,7 +94,7 @@ public class B_17F extends B_17 implements TypeBomber {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -20F) {
                     f = -20F;
                     flag = false;
@@ -114,7 +113,7 @@ public class B_17F extends B_17 implements TypeBomber {
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f1 < -3F) {
                     f1 = -3F;
                     flag = false;
@@ -125,7 +124,7 @@ public class B_17F extends B_17 implements TypeBomber {
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 if (f1 < -75F) {
                     f1 = -75F;
                     flag = false;
@@ -136,7 +135,7 @@ public class B_17F extends B_17 implements TypeBomber {
                 }
                 break;
 
-            case 5: // '\005'
+            case 5:
                 if (f < -70F) {
                     f = -70F;
                     flag = false;
@@ -155,7 +154,7 @@ public class B_17F extends B_17 implements TypeBomber {
                 }
                 break;
 
-            case 6: // '\006'
+            case 6:
                 if (f < -63F) {
                     f = -63F;
                     flag = false;
@@ -174,7 +173,7 @@ public class B_17F extends B_17 implements TypeBomber {
                 }
                 break;
 
-            case 7: // '\007'
+            case 7:
                 if (f < -25F) {
                     f = -25F;
                     flag = false;
@@ -200,21 +199,21 @@ public class B_17F extends B_17 implements TypeBomber {
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 2: // '\002'
-                super.FM.turret[0].setHealth(f);
+            case 2:
+                this.FM.turret[0].setHealth(f);
                 break;
 
-            case 3: // '\003'
-                super.FM.turret[1].setHealth(f);
+            case 3:
+                this.FM.turret[1].setHealth(f);
                 break;
 
-            case 4: // '\004'
-                super.FM.turret[2].setHealth(f);
+            case 4:
+                this.FM.turret[2].setHealth(f);
                 break;
 
-            case 5: // '\005'
-                super.FM.turret[3].setHealth(f);
-                super.FM.turret[4].setHealth(f);
+            case 5:
+                this.FM.turret[3].setHealth(f);
+                this.FM.turret[4].setHealth(f);
                 break;
         }
     }

@@ -10,7 +10,7 @@ public class Martin_B_10Bfloats extends Martin_B10_Float implements TypeBomber, 
 
     public Martin_B_10Bfloats() {
         this.bChangedExts = false;
-        bChangedPit = true;
+        Martin_B_10Bfloats.bChangedPit = true;
         this.fSightSetForwardAngle = 0.0F;
         this.fSightCurSideslip = 0.0F;
         this.fSightCurForwardAngle = 0.0F;

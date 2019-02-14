@@ -127,22 +127,22 @@ public class D3A1 extends D3A implements TypeDiveBomber, TypeBomber {
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            D3A1.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            D3A1.bChangedPit = true;
         }
     }
 
     public void doMurderPilot(int i) {
         super.doMurderPilot(i);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            D3A1.bChangedPit = true;
         }
     }
 
@@ -163,7 +163,7 @@ public class D3A1 extends D3A implements TypeDiveBomber, TypeBomber {
         float f = -af[0];
         float f1 = af[1];
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 if (f < -33F) {
                     f = -33F;
                     flag = false;

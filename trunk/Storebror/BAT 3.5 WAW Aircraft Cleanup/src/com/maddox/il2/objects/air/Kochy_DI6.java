@@ -5,7 +5,6 @@ import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class Kochy_DI6 extends Scheme1 implements TypeFighter, TypeStormovik {
@@ -23,7 +22,7 @@ public class Kochy_DI6 extends Scheme1 implements TypeFighter, TypeStormovik {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        Kochy_DI6.moveGear(this.hierMesh(), f);
     }
 
     protected void moveElevator(float f) {
@@ -42,22 +41,22 @@ public class Kochy_DI6 extends Scheme1 implements TypeFighter, TypeStormovik {
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 1: // '\001'
-                super.FM.turret[0].bIsOperable = false;
+            case 1:
+                this.FM.turret[0].bIsOperable = false;
                 break;
         }
     }
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
@@ -68,7 +67,7 @@ public class Kochy_DI6 extends Scheme1 implements TypeFighter, TypeStormovik {
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         for (int i = 1; i < 3; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -82,7 +81,7 @@ public class Kochy_DI6 extends Scheme1 implements TypeFighter, TypeStormovik {
         float f = -af[0];
         float f1 = af[1];
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 if (f < -50F) {
                     f = -50F;
                     flag = false;
@@ -113,46 +112,46 @@ public class Kochy_DI6 extends Scheme1 implements TypeFighter, TypeStormovik {
                 if (s.startsWith("xxeng1")) {
                     if (s.endsWith("case") && (this.getEnergyPastArmor(0.7F, shot) > 0.0F)) {
                         if (World.Rnd().nextFloat(20000F, 200000F) < shot.power) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, 0);
+                            this.FM.AS.setEngineStuck(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Engine Stucks..");
                         }
                         if (World.Rnd().nextFloat(10000F, 50000F) < shot.power) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
+                            this.FM.AS.hitEngine(shot.initiator, 0, 2);
                             Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Engine Damaged..");
                         }
                         if (World.Rnd().nextFloat(8000F, 28000F) < shot.power) {
-                            ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, 1);
-                            Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Cylinder Feed Out, " + ((FlightModelMain) (super.FM)).EI.engines[0].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[0].getCylinders() + " Left..");
+                            this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, 1);
+                            Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Cylinder Feed Out, " + this.FM.EI.engines[0].getCylindersOperable() + "/" + this.FM.EI.engines[0].getCylinders() + " Left..");
                         }
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setReadyness(shot.initiator, ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 48000F));
-                        Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() + "..");
+                        this.FM.EI.engines[0].setReadyness(shot.initiator, this.FM.EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 48000F));
+                        Aircraft.debugprintln(this, "*** Engine Crank Case Hit - Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + "..");
                     }
-                    if (s.endsWith("cyls") && (this.getEnergyPastArmor(0.45F, shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[0].getCylindersRatio() * 1.75F))) {
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
-                        Aircraft.debugprintln(this, "*** Engine Cylinders Hit, " + ((FlightModelMain) (super.FM)).EI.engines[0].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[0].getCylinders() + " Left..");
-                        if (((FlightModelMain) (super.FM)).AS.astateEngineStates[0] < 1) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 1);
+                    if (s.endsWith("cyls") && (this.getEnergyPastArmor(0.45F, shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[0].getCylindersRatio() * 1.75F))) {
+                        this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
+                        Aircraft.debugprintln(this, "*** Engine Cylinders Hit, " + this.FM.EI.engines[0].getCylindersOperable() + "/" + this.FM.EI.engines[0].getCylinders() + " Left..");
+                        if (this.FM.AS.astateEngineStates[0] < 1) {
+                            this.FM.AS.hitEngine(shot.initiator, 0, 1);
                         }
                         if (World.Rnd().nextFloat() < (shot.power / 24000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 3);
+                            this.FM.AS.hitEngine(shot.initiator, 0, 3);
                             Aircraft.debugprintln(this, "*** Engine Cylinders Hit - Engine Fires..");
                         }
                         this.getEnergyPastArmor(25F, shot);
                     }
                     if (s.endsWith("supc") && (this.getEnergyPastArmor(0.05F, shot) > 0.0F)) {
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setKillCompressor(shot.initiator);
+                        this.FM.EI.engines[0].setKillCompressor(shot.initiator);
                     }
                 }
                 if (s.endsWith("oil1") && (World.Rnd().nextFloat() < 0.5F) && (this.getEnergyPastArmor(0.25F, shot) > 0.0F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, 0);
+                    this.FM.AS.hitOil(shot.initiator, 0);
                 }
             }
             if (s.startsWith("xxtank")) {
                 int i = s.charAt(6) - 49;
                 if ((this.getEnergyPastArmor(0.1F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, i, 1);
+                    this.FM.AS.hitTank(shot.initiator, i, 1);
                     if ((shot.powerType == 3) && (World.Rnd().nextFloat() < 0.11F)) {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, i, 2);
+                        this.FM.AS.hitTank(shot.initiator, i, 2);
                     }
                 }
             }

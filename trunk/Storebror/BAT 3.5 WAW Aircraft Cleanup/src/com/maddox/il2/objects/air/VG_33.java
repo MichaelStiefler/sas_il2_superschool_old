@@ -74,12 +74,12 @@ public class VG_33 extends BF_109 {
 
     public static void moveGear(HierMesh hiermesh, float f) {
         float f1 = 0.8F;
-        float f2 = (-0.5F * (float) Math.cos(f / f1 * 3.1415926535897931D)) + 0.5F;
+        float f2 = (-0.5F * (float) Math.cos((f / f1) * Math.PI)) + 0.5F;
         if (f <= f1) {
             hiermesh.chunkSetAngles("GearL3_D0", 0.0F, -78F * f2, 0.0F);
             hiermesh.chunkSetAngles("GearL2_D0", -24F * f2, 0.0F, 0.0F);
         }
-        f2 = (-0.5F * (float) Math.cos((f - (1.0F - f1)) / f1 * 3.1415926535897931D)) + 0.5F;
+        f2 = (-0.5F * (float) Math.cos(((f - (1.0F - f1)) / f1) * Math.PI)) + 0.5F;
         if (f >= (1.0F - f1)) {
             hiermesh.chunkSetAngles("GearR3_D0", 0.0F, 78F * f2, 0.0F);
             hiermesh.chunkSetAngles("GearR2_D0", 24F * f2, 0.0F, 0.0F);
@@ -100,12 +100,12 @@ public class VG_33 extends BF_109 {
 
     protected void moveGear(float f) {
         float f1 = 0.9F - (((Wing) this.getOwner()).aircIndex(this) * 0.1F);
-        float f2 = (-0.5F * (float) Math.cos(f / f1 * 3.1415926535897931D)) + 0.5F;
+        float f2 = (-0.5F * (float) Math.cos((f / f1) * Math.PI)) + 0.5F;
         if (f <= f1) {
             this.hierMesh().chunkSetAngles("GearL3_D0", 0.0F, -78F * f2, 0.0F);
             this.hierMesh().chunkSetAngles("GearL2_D0", -24F * f2, 0.0F, 0.0F);
         }
-        f2 = (-0.5F * (float) Math.cos((f - (1.0F - f1)) / f1 * 3.1415926535897931D)) + 0.5F;
+        f2 = (-0.5F * (float) Math.cos(((f - (1.0F - f1)) / f1) * Math.PI)) + 0.5F;
         if (f >= (1.0F - f1)) {
             this.hierMesh().chunkSetAngles("GearR3_D0", 0.0F, 78F * f2, 0.0F);
             this.hierMesh().chunkSetAngles("GearR2_D0", 24F * f2, 0.0F, 0.0F);

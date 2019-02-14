@@ -18,14 +18,9 @@ public class I_16TYPE18 extends I_16 implements TypeTNBFighter {
         Property.set(class1, "yearService", 1939F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/I-16type18.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitI_16TYPE18.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitI_16TYPE18.class });
         Property.set(class1, "LOSElevation", 0.82595F);
-        weaponTriggersRegister(class1, new int[] { 1, 1, 0, 0, 3, 3, 9, 9 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev07", "_ExternalDev08" });
-        weaponsRegister(class1, "default", new String[] { "MGunShKASk 650", "MGunShKASk 650", "MGunShKASk 750", "MGunShKASk 750", null, null, null, null });
-        weaponsRegister(class1, "2fab50", new String[] { "MGunShKASk 650", "MGunShKASk 650", "MGunShKASk 750", "MGunShKASk 750", "BombGunFAB50", "BombGunFAB50", null, null });
-        weaponsRegister(class1, "2fab100", new String[] { "MGunShKASk 650", "MGunShKASk 650", "MGunShKASk 750", "MGunShKASk 750", "BombGunFAB100", "BombGunFAB100", null, null });
-        weaponsRegister(class1, "2tank100", new String[] { "MGunShKASk 650", "MGunShKASk 650", "MGunShKASk 750", "MGunShKASk 750", null, null, "FuelTankGun_Tank100i16", "FuelTankGun_Tank100i16" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 1, 1, 0, 0, 3, 3, 9, 9 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev07", "_ExternalDev08" });
     }
 }

@@ -24,7 +24,7 @@ public class YAK_3bsf extends YAK {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        YAK_3bsf.moveGear(this.hierMesh(), f);
     }
 
     public void moveArrestorHook(float f) {

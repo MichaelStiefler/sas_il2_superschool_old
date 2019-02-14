@@ -1,8 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.World;
-import com.maddox.il2.fm.FlightModelMain;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class G_55 extends G_55xyz {
@@ -12,12 +10,12 @@ public class G_55 extends G_55xyz {
 
     public void onAircraftLoaded() {
         if (this == World.getPlayerAircraft()) {
-            ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = false;
+            this.FM.CT.bHasCockpitDoorControl = false;
         }
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = G_55.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "G.55");
         Property.set(class1, "meshName_it", "3DO/Plane/G-55(it)/hier.him");

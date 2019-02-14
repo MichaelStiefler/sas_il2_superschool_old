@@ -2,7 +2,6 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Property;
 
@@ -42,27 +41,27 @@ public class HE_100D extends HE_1xx implements TypeFighter, TypeBNZFighter, Type
     }
 
     public static void moveGear(HierMesh hiermesh, float leftGearPos, float rightGearPos, float tailWheelPos) {
-        moveGear(hiermesh, leftGearPos, rightGearPos, tailWheelPos, true, HE_1xx.rndgearnull);
+        HE_100D.moveGear(hiermesh, leftGearPos, rightGearPos, tailWheelPos, true, HE_1xx.rndgearnull);
     }
 
     protected void moveGear(float leftGearPos, float rightGearPos, float tailWheelPos) {
-        moveGear(this.hierMesh(), leftGearPos, rightGearPos, tailWheelPos, ((FlightModelMain) (super.FM)).CT.GearControl > 0.5F, super.rndgear);
+        HE_100D.moveGear(this.hierMesh(), leftGearPos, rightGearPos, tailWheelPos, this.FM.CT.GearControl > 0.5F, this.rndgear);
     }
 
     public static void moveGear(HierMesh hiermesh, float gearPos, boolean bDown) {
-        moveGear(hiermesh, gearPos, gearPos, gearPos, bDown, HE_1xx.rndgearnull);
+        HE_100D.moveGear(hiermesh, gearPos, gearPos, gearPos, bDown, HE_1xx.rndgearnull);
     }
 
     public static void moveGear(HierMesh hiermesh, float gearPos) {
-        moveGear(hiermesh, gearPos, gearPos, gearPos, true, HE_1xx.rndgearnull);
+        HE_100D.moveGear(hiermesh, gearPos, gearPos, gearPos, true, HE_1xx.rndgearnull);
     }
 
     protected void moveGear(float gearPos) {
-        moveGear(this.hierMesh(), gearPos, gearPos, gearPos, ((FlightModelMain) (super.FM)).CT.GearControl > 0.5F, super.rndgear);
+        HE_100D.moveGear(this.hierMesh(), gearPos, gearPos, gearPos, this.FM.CT.GearControl > 0.5F, this.rndgear);
     }
 
     public void moveSteering(float f) {
-        if (((FlightModelMain) (super.FM)).CT.getGear() >= 0.98F) {
+        if (this.FM.CT.getGear() >= 0.98F) {
             this.hierMesh().chunkSetAngles("GearC2_D0", 90F, -f, 0.0F);
         }
     }
@@ -81,7 +80,7 @@ public class HE_100D extends HE_1xx implements TypeFighter, TypeBNZFighter, Type
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.toLowerCase().startsWith("late")) {
+        if (this.thisWeaponsName.toLowerCase().startsWith("late")) {
             this.hierMesh().chunkVisible("GunL_MG151_D0", true);
             this.hierMesh().chunkVisible("GunR_MG151_D0", true);
         }

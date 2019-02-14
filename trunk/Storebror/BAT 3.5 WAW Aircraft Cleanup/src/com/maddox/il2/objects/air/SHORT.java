@@ -6,7 +6,6 @@ import com.maddox.JGP.Point3d;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.NetMsgGuaranted;
@@ -28,10 +27,10 @@ public class SHORT extends Scheme4 implements TypeBomber {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.startsWith("20x500")) {
-            ((FlightModelMain) (super.FM)).M.fuel -= 1570F;
-        } else if (super.thisWeaponsName.startsWith("28x500")) {
-            ((FlightModelMain) (super.FM)).M.fuel -= 3375F;
+        if (this.thisWeaponsName.startsWith("20x500")) {
+            this.FM.M.fuel -= 1570F;
+        } else if (this.thisWeaponsName.startsWith("28x500")) {
+            this.FM.M.fuel -= 3375F;
         }
     }
 
@@ -73,17 +72,17 @@ public class SHORT extends Scheme4 implements TypeBomber {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        SHORT.moveGear(this.hierMesh(), f);
     }
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 2: // '\002'
-                super.FM.turret[0].bIsOperable = false;
+            case 2:
+                this.FM.turret[0].bIsOperable = false;
                 break;
 
-            case 3: // '\003'
-                super.FM.turret[1].bIsOperable = false;
+            case 3:
+                this.FM.turret[1].bIsOperable = false;
                 break;
         }
     }
@@ -92,7 +91,7 @@ public class SHORT extends Scheme4 implements TypeBomber {
         super.rareAction(f, flag);
         for (int i = 1; i < 6; i++) {
             if (i != 5) {
-                if (super.FM.getAltitude() < 3000F) {
+                if (this.FM.getAltitude() < 3000F) {
                     this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
                 } else {
                     this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -122,7 +121,7 @@ public class SHORT extends Scheme4 implements TypeBomber {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f1 < -2F) {
                     f1 = -2F;
                     flag = false;
@@ -133,7 +132,7 @@ public class SHORT extends Scheme4 implements TypeBomber {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -70F) {
                     f = -70F;
                     flag = false;
@@ -164,34 +163,34 @@ public class SHORT extends Scheme4 implements TypeBomber {
                 if (s.endsWith("case")) {
                     if (this.getEnergyPastArmor(0.2F, shot) > 0.0F) {
                         if (World.Rnd().nextFloat() < (shot.power / 140000F)) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, i);
+                            this.FM.AS.setEngineStuck(shot.initiator, i);
                             Aircraft.debugprintln(this, "*** Engine (" + i + ") Crank Case Hit - Engine Stucks..");
                         }
                         if (World.Rnd().nextFloat() < (shot.power / 85000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, i, 2);
+                            this.FM.AS.hitEngine(shot.initiator, i, 2);
                             Aircraft.debugprintln(this, "*** Engine (" + i + ") Crank Case Hit - Engine Damaged..");
                         }
                     } else if (World.Rnd().nextFloat() < 0.005F) {
-                        ((FlightModelMain) (super.FM)).EI.engines[i].setCyliderKnockOut(shot.initiator, 1);
+                        this.FM.EI.engines[i].setCyliderKnockOut(shot.initiator, 1);
                     } else {
-                        ((FlightModelMain) (super.FM)).EI.engines[i].setReadyness(shot.initiator, ((FlightModelMain) (super.FM)).EI.engines[i].getReadyness() - 0.00082F);
-                        Aircraft.debugprintln(this, "*** Engine (" + i + ") Crank Case Hit - Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[i].getReadyness() + "..");
+                        this.FM.EI.engines[i].setReadyness(shot.initiator, this.FM.EI.engines[i].getReadyness() - 0.00082F);
+                        Aircraft.debugprintln(this, "*** Engine (" + i + ") Crank Case Hit - Readyness Reduced to " + this.FM.EI.engines[i].getReadyness() + "..");
                     }
                     this.getEnergyPastArmor(12F, shot);
                 }
                 if (s.endsWith("cyls")) {
-                    if ((this.getEnergyPastArmor(5.85F, shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[i].getCylindersRatio() * 0.75F))) {
-                        ((FlightModelMain) (super.FM)).EI.engines[i].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 19000F)));
-                        Aircraft.debugprintln(this, "*** Engine (" + i + ") Cylinders Hit, " + ((FlightModelMain) (super.FM)).EI.engines[i].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[i].getCylinders() + " Left..");
+                    if ((this.getEnergyPastArmor(5.85F, shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[i].getCylindersRatio() * 0.75F))) {
+                        this.FM.EI.engines[i].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 19000F)));
+                        Aircraft.debugprintln(this, "*** Engine (" + i + ") Cylinders Hit, " + this.FM.EI.engines[i].getCylindersOperable() + "/" + this.FM.EI.engines[i].getCylinders() + " Left..");
                         if (World.Rnd().nextFloat() < (shot.power / 18000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, i, 2);
+                            this.FM.AS.hitEngine(shot.initiator, i, 2);
                             Aircraft.debugprintln(this, "*** Engine (" + i + ") Cylinders Hit - Engine Fires..");
                         }
                     }
                     this.getEnergyPastArmor(25F, shot);
                 }
                 if (s.endsWith("supc")) {
-                    ((FlightModelMain) (super.FM)).EI.engines[i].setMagnetoKnockOut(shot.initiator, 0);
+                    this.FM.EI.engines[i].setMagnetoKnockOut(shot.initiator, 0);
                     Aircraft.debugprintln(this, "*** Engine (" + i + ") Module: Magneto #0 Destroyed..");
                     this.getEnergyPastArmor(25F, shot);
                 }
@@ -200,7 +199,7 @@ public class SHORT extends Scheme4 implements TypeBomber {
             if (s.endsWith("oil1")) {
                 int j = s.charAt(5) - 49;
                 if ((this.getEnergyPastArmor(0.21F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.2435F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, j);
+                    this.FM.AS.hitOil(shot.initiator, j);
                 }
                 Aircraft.debugprintln(this, "*** Engine (" + j + ") Module: Oil Tank Pierced..");
                 return;
@@ -208,20 +207,20 @@ public class SHORT extends Scheme4 implements TypeBomber {
             if (s.startsWith("xxtank")) {
                 int k = s.charAt(6) - 49;
                 if (this.getEnergyPastArmor(0.06F, shot) > 0.0F) {
-                    if (((FlightModelMain) (super.FM)).AS.astateTankStates[k] == 0) {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, k, 1);
-                        ((FlightModelMain) (super.FM)).AS.doSetTankState(shot.initiator, k, 1);
+                    if (this.FM.AS.astateTankStates[k] == 0) {
+                        this.FM.AS.hitTank(shot.initiator, k, 1);
+                        this.FM.AS.doSetTankState(shot.initiator, k, 1);
                     }
                     if (shot.powerType == 3) {
                         if (shot.power < 16100F) {
-                            if ((((FlightModelMain) (super.FM)).AS.astateTankStates[k] < 4) && (World.Rnd().nextFloat() < 0.21F)) {
-                                ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, k, 1);
+                            if ((this.FM.AS.astateTankStates[k] < 4) && (World.Rnd().nextFloat() < 0.21F)) {
+                                this.FM.AS.hitTank(shot.initiator, k, 1);
                             }
                         } else {
-                            ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, k, World.Rnd().nextInt(1, 1 + (int) (shot.power / 16100F)));
+                            this.FM.AS.hitTank(shot.initiator, k, World.Rnd().nextInt(1, 1 + (int) (shot.power / 16100F)));
                         }
                     } else if (shot.power > 16100F) {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, k, World.Rnd().nextInt(1, 1 + (int) (shot.power / 16100F)));
+                        this.FM.AS.hitTank(shot.initiator, k, World.Rnd().nextInt(1, 1 + (int) (shot.power / 16100F)));
                     }
                 }
                 return;
@@ -310,7 +309,7 @@ public class SHORT extends Scheme4 implements TypeBomber {
         if (s.startsWith("xgear")) {
             if (World.Rnd().nextFloat() < 0.05F) {
                 Aircraft.debugprintln(this, "*** Gear Hydro Failed..");
-                ((FlightModelMain) (super.FM)).Gears.setHydroOperable(false);
+                this.FM.Gears.setHydroOperable(false);
             }
             return;
         }
@@ -358,7 +357,7 @@ public class SHORT extends Scheme4 implements TypeBomber {
         if (this.fSightCurForwardAngle > 85F) {
             this.fSightCurForwardAngle = 85F;
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = SHORT.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         if (this.bSightAutomation) {
             this.typeBomberToggleAutomation();
@@ -370,7 +369,7 @@ public class SHORT extends Scheme4 implements TypeBomber {
         if (this.fSightCurForwardAngle < 0.0F) {
             this.fSightCurForwardAngle = 0.0F;
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = SHORT.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         if (this.bSightAutomation) {
             this.typeBomberToggleAutomation();
@@ -407,7 +406,7 @@ public class SHORT extends Scheme4 implements TypeBomber {
             this.fSightCurAltitude = 50000F;
         }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int) this.fSightCurAltitude) });
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = SHORT.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
     }
 
     public void typeBomberAdjAltitudeMinus() {
@@ -416,7 +415,7 @@ public class SHORT extends Scheme4 implements TypeBomber {
             this.fSightCurAltitude = 1000F;
         }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int) this.fSightCurAltitude) });
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = SHORT.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
     }
 
     public void typeBomberAdjSpeedReset() {
@@ -440,7 +439,7 @@ public class SHORT extends Scheme4 implements TypeBomber {
     }
 
     public void typeBomberUpdate(float f) {
-        if (Math.abs(((FlightModelMain) (super.FM)).Or.getKren()) > 4.5D) {
+        if (Math.abs(this.FM.Or.getKren()) > 4.5D) {
             this.fSightCurReadyness -= 0.0666666F * f;
             if (this.fSightCurReadyness < 0.0F) {
                 this.fSightCurReadyness = 0.0F;
@@ -449,23 +448,23 @@ public class SHORT extends Scheme4 implements TypeBomber {
         if (this.fSightCurReadyness < 1.0F) {
             this.fSightCurReadyness += 0.0333333F * f;
         } else if (this.bSightAutomation) {
-            this.fSightCurDistance -= toMetersPerSecond(this.fSightCurSpeed) * f;
+            this.fSightCurDistance -= SHORT.toMetersPerSecond(this.fSightCurSpeed) * f;
             if (this.fSightCurDistance < 0.0F) {
                 this.fSightCurDistance = 0.0F;
                 this.typeBomberToggleAutomation();
             }
-            this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / toMeters(this.fSightCurAltitude)));
-            if (this.fSightCurDistance < (toMetersPerSecond(this.fSightCurSpeed) * Math.sqrt(toMeters(this.fSightCurAltitude) * 0.2038736F))) {
+            this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / SHORT.toMeters(this.fSightCurAltitude)));
+            if (this.fSightCurDistance < (SHORT.toMetersPerSecond(this.fSightCurSpeed) * Math.sqrt(SHORT.toMeters(this.fSightCurAltitude) * 0.2038736F))) {
                 this.bSightBombDump = true;
             }
             if (this.bSightBombDump) {
-                if (super.FM.isTick(3, 0)) {
-                    if ((((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1] != null) && ((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].haveBullets()) {
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = true;
+                if (this.FM.isTick(3, 0)) {
+                    if ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1] != null) && this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].haveBullets()) {
+                        this.FM.CT.WeaponControl[3] = true;
                         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
                     }
                 } else {
-                    ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = false;
+                    this.FM.CT.WeaponControl[3] = false;
                 }
             }
         }

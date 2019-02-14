@@ -49,7 +49,7 @@ public class MIG_3EARLY extends MIG_3 {
         Property.set(class1, "yearService", 1940F);
         Property.set(class1, "yearExpired", 1944F);
         Property.set(class1, "FlightModel", "FlightModels/MiG-3.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitMIG_3.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitMIG_3.class });
         Property.set(class1, "LOSElevation", 0.906F);
         Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1, 1, 3, 3, 3, 3, 9, 9, 9, 9, 2, 2, 2, 2, 2, 2 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06" });

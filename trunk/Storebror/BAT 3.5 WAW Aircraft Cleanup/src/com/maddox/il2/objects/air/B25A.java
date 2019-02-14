@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class B25A extends B_25 implements TypeTransport {
@@ -19,10 +18,9 @@ public class B25A extends B_25 implements TypeTransport {
     public float          fSightCurAltitude;
     public float          fSightCurSpeed;
     public float          fSightCurReadyness;
-    static Class          class$com$maddox$il2$objects$air$B_25C25;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = B25A.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "B-25");
         Property.set(class1, "meshName", "3DO/Plane/B-25A(Multi1)/hier.him");

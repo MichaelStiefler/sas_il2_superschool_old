@@ -84,8 +84,8 @@ public class LetovS_328 extends Letov {
     }
 
     public void update(float f) {
-        if (!super.FM.turret[0].bIsAIControlled) {
-            super.gunOutOverride = 1;
+        if (!this.FM.turret[0].bIsAIControlled) {
+            this.gunOutOverride = 1;
         }
         super.update(f);
     }

@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import java.io.IOException;
 
 import com.maddox.il2.engine.Eff3DActor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
@@ -24,19 +23,19 @@ public class D1A1_IJN extends Susie123 implements TypeStormovik, TypeDiveBomber 
 
     public void update(float f) {
         super.update(f);
-        float f1 = ((FlightModelMain) (super.FM)).CT.getArrestor();
+        float f1 = this.FM.CT.getArrestor();
         float f2 = 81F * f1 * f1 * f1 * f1 * f1 * f1 * f1;
         if (f1 > 0.01F) {
-            if (((FlightModelMain) (super.FM)).Gears.arrestorVAngle != 0.0F) {
-                this.arrestor = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.arrestorVAngle, -f2, f2, -f2, f2);
+            if (this.FM.Gears.arrestorVAngle != 0.0F) {
+                this.arrestor = Aircraft.cvt(this.FM.Gears.arrestorVAngle, -f2, f2, -f2, f2);
                 this.moveArrestorHook(f1);
-                if (((FlightModelMain) (super.FM)).Gears.arrestorVAngle < -81F) {
-                    ;
+                if (this.FM.Gears.arrestorVAngle < -81F) {
+
                 }
             } else {
-                float f3 = 58F * ((FlightModelMain) (super.FM)).Gears.arrestorVSink;
-                if ((f3 > 0.0F) && (super.FM.getSpeedKMH() > 60F)) {
-                    Eff3DActor.New(this, ((FlightModelMain) (super.FM)).Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
+                float f3 = 58F * this.FM.Gears.arrestorVSink;
+                if ((f3 > 0.0F) && (this.FM.getSpeedKMH() > 60F)) {
+                    Eff3DActor.New(this, this.FM.Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
                 }
                 this.arrestor += f3;
                 if (this.arrestor > f2) {
@@ -48,8 +47,8 @@ public class D1A1_IJN extends Susie123 implements TypeStormovik, TypeDiveBomber 
                 this.moveArrestorHook(f1);
             }
         }
-        super.onAircraftLoaded();
-        if (super.FM.isPlayers()) {
+        this.onAircraftLoaded();
+        if (this.FM.isPlayers()) {
             if (!Main3D.cur3D().isViewOutside()) {
                 this.hierMesh().chunkVisible("AroneL_D0", false);
                 this.hierMesh().chunkVisible("AroneR_D0", false);
@@ -70,7 +69,7 @@ public class D1A1_IJN extends Susie123 implements TypeStormovik, TypeDiveBomber 
                 this.hierMesh().chunkVisible("Engine1_D0", true);
             }
         }
-        if (super.FM.isPlayers()) {
+        if (this.FM.isPlayers()) {
             if (!Main3D.cur3D().isViewOutside()) {
                 this.hierMesh().chunkVisible("AroneL_D1", false);
             }

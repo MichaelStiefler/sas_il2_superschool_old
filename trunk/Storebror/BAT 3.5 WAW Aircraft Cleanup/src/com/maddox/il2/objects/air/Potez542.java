@@ -21,7 +21,7 @@ public class Potez542 extends Potez54x implements TypeBomber, TypeTransport {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -90F) {
                     f = -90F;
                     flag = false;
@@ -40,7 +40,7 @@ public class Potez542 extends Potez54x implements TypeBomber, TypeTransport {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -120F) {
                     f = -120F;
                     flag = false;
@@ -59,7 +59,7 @@ public class Potez542 extends Potez54x implements TypeBomber, TypeTransport {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -30F) {
                     f = -30F;
                     flag = false;
@@ -111,7 +111,7 @@ public class Potez542 extends Potez54x implements TypeBomber, TypeTransport {
 
     public void typeBomberAdjSideslipPlus() {
         this.fSightCurSideslip += 0.5D;
-        if (super.thisWeaponsName.startsWith("1x")) {
+        if (this.thisWeaponsName.startsWith("1x")) {
             if (this.fSightCurSideslip > 40F) {
                 this.fSightCurSideslip = 40F;
             }
@@ -126,7 +126,7 @@ public class Potez542 extends Potez54x implements TypeBomber, TypeTransport {
 
     public void typeBomberAdjSideslipMinus() {
         this.fSightCurSideslip -= 0.5D;
-        if (super.thisWeaponsName.startsWith("1x")) {
+        if (this.thisWeaponsName.startsWith("1x")) {
             if (this.fSightCurSideslip < -40F) {
                 this.fSightCurSideslip = -40F;
             }
@@ -201,7 +201,7 @@ public class Potez542 extends Potez54x implements TypeBomber, TypeTransport {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.equals("12x10kgP")) {
+        if (this.thisWeaponsName.equals("12x10kgP")) {
             this.hierMesh().chunkVisible("RackD_Door_D0", true);
             this.hierMesh().chunkVisible("RackF_Door_D0", false);
             this.hierMesh().chunkVisible("RackTypeF_D0", true);
@@ -212,7 +212,7 @@ public class Potez542 extends Potez54x implements TypeBomber, TypeTransport {
             this.hierMesh().chunkVisible("RackTypeTGPU2_R_D0", false);
             return;
         }
-        if (super.thisWeaponsName.equals("8x50kgA")) {
+        if (this.thisWeaponsName.equals("8x50kgA")) {
             this.hierMesh().chunkVisible("RackD_Door_D0", false);
             this.hierMesh().chunkVisible("RackF_Door_D0", true);
             this.hierMesh().chunkVisible("RackTypeD_D0", true);
@@ -223,7 +223,7 @@ public class Potez542 extends Potez54x implements TypeBomber, TypeTransport {
             this.hierMesh().chunkVisible("RackTypeTGPU2_R_D0", false);
             return;
         }
-        if (super.thisWeaponsName.equals("32x10kgA")) {
+        if (this.thisWeaponsName.equals("32x10kgA")) {
             this.hierMesh().chunkVisible("RackD_Door_D0", false);
             this.hierMesh().chunkVisible("RackF_Door_D0", true);
             this.hierMesh().chunkVisible("RackTypeD_D0", true);
@@ -234,7 +234,7 @@ public class Potez542 extends Potez54x implements TypeBomber, TypeTransport {
             this.hierMesh().chunkVisible("RackTypeTGPU2_R_D0", false);
             return;
         }
-        if (super.thisWeaponsName.equals("4x100kgNo1")) {
+        if (this.thisWeaponsName.equals("4x100kgNo1")) {
             this.hierMesh().chunkVisible("RackD_Door_D0", true);
             this.hierMesh().chunkVisible("RackF_Door_D0", true);
             this.hierMesh().chunkVisible("RackTypeD_D0", false);
@@ -245,7 +245,7 @@ public class Potez542 extends Potez54x implements TypeBomber, TypeTransport {
             this.hierMesh().chunkVisible("RackTypeTGPU2_R_D0", true);
             return;
         }
-        if (super.thisWeaponsName.equals("4x200kgMod1930+12x10kgP")) {
+        if (this.thisWeaponsName.equals("4x200kgMod1930+12x10kgP")) {
             this.hierMesh().chunkVisible("RackD_Door_D0", true);
             this.hierMesh().chunkVisible("RackF_Door_D0", false);
             this.hierMesh().chunkVisible("RackTypeD_D0", false);
@@ -256,7 +256,7 @@ public class Potez542 extends Potez54x implements TypeBomber, TypeTransport {
             this.hierMesh().chunkVisible("RackTypeTGPU2_R_D0", true);
             return;
         }
-        if (super.thisWeaponsName.equals("2x500kgNo1")) {
+        if (this.thisWeaponsName.equals("2x500kgNo1")) {
             this.hierMesh().chunkVisible("RackD_Door_D0", true);
             this.hierMesh().chunkVisible("RackF_Door_D0", true);
             this.hierMesh().chunkVisible("RackTypeD_D0", false);
@@ -267,7 +267,7 @@ public class Potez542 extends Potez54x implements TypeBomber, TypeTransport {
             this.hierMesh().chunkVisible("RackTypeTGPU2_R_D0", true);
             return;
         }
-        if (super.thisWeaponsName.equals("2x500kgMod1930")) {
+        if (this.thisWeaponsName.equals("2x500kgMod1930")) {
             this.hierMesh().chunkVisible("RackD_Door_D0", true);
             this.hierMesh().chunkVisible("RackF_Door_D0", true);
             this.hierMesh().chunkVisible("RackTypeD_D0", false);

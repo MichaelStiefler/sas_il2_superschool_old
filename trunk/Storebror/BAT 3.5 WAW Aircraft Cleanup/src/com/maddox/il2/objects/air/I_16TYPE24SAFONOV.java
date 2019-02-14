@@ -9,7 +9,7 @@ public class I_16TYPE24SAFONOV extends I_16 implements TypeAcePlane {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        super.FM.Skill = 3;
+        this.FM.Skill = 3;
     }
 
     static {

@@ -6,7 +6,6 @@ import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
@@ -29,14 +28,14 @@ public class SeafangFMk32 extends Seafang implements TypeBNZFighter {
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            SeafangFMk32.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            SeafangFMk32.bChangedPit = true;
         }
     }
 
@@ -77,7 +76,7 @@ public class SeafangFMk32 extends Seafang implements TypeBNZFighter {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        SeafangFMk32.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {
@@ -175,7 +174,7 @@ public class SeafangFMk32 extends Seafang implements TypeBNZFighter {
                 this.arrestor = Aircraft.cvt(this.FM.Gears.arrestorVAngle, -f2, f2, -f2, f2);
                 this.moveArrestorHook(f1);
                 if (this.FM.Gears.arrestorVAngle >= -81F) {
-                    ;
+
                 }
             } else {
                 float f3 = 58F * this.FM.Gears.arrestorVSink;
@@ -192,7 +191,7 @@ public class SeafangFMk32 extends Seafang implements TypeBNZFighter {
                 this.moveArrestorHook(f1);
             }
         }
-        float f4 = ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator();
+        float f4 = this.FM.EI.engines[0].getControlRadiator();
         if (Math.abs(this.flapps - f4) > 0.01F) {
             this.flapps = f4;
             this.hierMesh().chunkSetAngles("Oil1_D0", 0.0F, -20F * f4, 0.0F);
@@ -229,7 +228,7 @@ public class SeafangFMk32 extends Seafang implements TypeBNZFighter {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
+            case 19:
                 this.FM.CT.bHasArrestorControl = false;
                 break;
         }

@@ -58,7 +58,7 @@ public class SEAGLADIATOR2 extends SEAGLADIATOR {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
+            case 19:
                 this.FM.CT.bHasArrestorControl = false;
                 break;
         }
@@ -78,7 +78,7 @@ public class SEAGLADIATOR2 extends SEAGLADIATOR {
         Property.set(class1, "yearService", 1939F);
         Property.set(class1, "yearExpired", 1943F);
         Property.set(class1, "FlightModel", "FlightModels/SeaGladiatorMkII.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitSEAGLADIATOR.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitSEAGLADIATOR.class });
         Property.set(class1, "LOSElevation", 0.8472F);
         Property.set(class1, "originCountry", PaintScheme.countryBritain);
         Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1 });

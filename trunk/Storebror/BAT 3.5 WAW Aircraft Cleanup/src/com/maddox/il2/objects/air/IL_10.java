@@ -6,10 +6,8 @@ import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.objects.sounds.Voice;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class IL_10 extends Scheme1 implements TypeStormovikArmored {
@@ -26,10 +24,10 @@ public class IL_10 extends Scheme1 implements TypeStormovikArmored {
     public void update(float f) {
         super.update(f);
         World.cur();
-        if ((this == World.getPlayerAircraft()) && (super.FM.turret.length > 0) && (((FlightModelMain) (super.FM)).AS.astatePilotStates[1] < 90) && super.FM.turret[0].bIsAIControlled && ((super.FM.getOverload() > 7F) || (super.FM.getOverload() < -0.7F))) {
+        if ((this == World.getPlayerAircraft()) && (this.FM.turret.length > 0) && (this.FM.AS.astatePilotStates[1] < 90) && this.FM.turret[0].bIsAIControlled && ((this.FM.getOverload() > 7F) || (this.FM.getOverload() < -0.7F))) {
             Voice.speakRearGunShake();
         }
-        this.kangle = (0.95F * this.kangle) + (0.05F * ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator());
+        this.kangle = (0.95F * this.kangle) + (0.05F * this.FM.EI.engines[0].getControlRadiator());
         if (this.kangle > 1.0F) {
             this.kangle = 1.0F;
         }
@@ -54,9 +52,9 @@ public class IL_10 extends Scheme1 implements TypeStormovikArmored {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).AS.wantBeaconsNet(true);
-        ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = true;
-        ((FlightModelMain) (super.FM)).CT.dvCockpitDoor = 0.65F;
+        this.FM.AS.wantBeaconsNet(true);
+        this.FM.CT.bHasCockpitDoorControl = true;
+        this.FM.CT.dvCockpitDoor = 0.65F;
     }
 
     public static void moveGear(HierMesh hiermesh, float f, float f1, float f2) {
@@ -74,7 +72,7 @@ public class IL_10 extends Scheme1 implements TypeStormovikArmored {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        IL_10.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public void moveSteering(float f) {
@@ -82,14 +80,14 @@ public class IL_10 extends Scheme1 implements TypeStormovikArmored {
     }
 
     public void moveWheelSink() {
-        if (((FlightModelMain) (super.FM)).CT.getGear() < 0.99F) {
+        if (this.FM.CT.getGear() < 0.99F) {
             return;
         } else {
             this.resetYPRmodifier();
             Aircraft.ypr[1] = -90F;
-            Aircraft.xyz[1] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.228F, 0.0F, -0.228F);
+            Aircraft.xyz[1] = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.228F, 0.0F, -0.228F);
             this.hierMesh().chunkSetLocate("GearL3_D0", Aircraft.xyz, Aircraft.ypr);
-            Aircraft.xyz[1] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 0.228F, 0.0F, 0.228F);
+            Aircraft.xyz[1] = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.228F, 0.0F, 0.228F);
             this.hierMesh().chunkSetLocate("GearR3_D0", Aircraft.xyz, Aircraft.ypr);
             return;
         }
@@ -122,24 +120,24 @@ public class IL_10 extends Scheme1 implements TypeStormovikArmored {
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 1: // '\001'
-                if (super.FM.turret.length == 0) {
+            case 1:
+                if (this.FM.turret.length == 0) {
                     return;
                 }
-                super.FM.turret[0].setHealth(f);
+                this.FM.turret[0].setHealth(f);
                 break;
         }
     }
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 break;
@@ -157,17 +155,17 @@ public class IL_10 extends Scheme1 implements TypeStormovikArmored {
                         default:
                             break;
 
-                        case 1: // '\001'
+                        case 1:
                             this.getEnergyPastArmor(12.880000114440918D / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot);
                             if ((shot.power <= 0.0F) && (World.Rnd().nextFloat() < 0.23F)) {
                                 this.doRicochet(shot);
                             }
                             break;
 
-                        case 2: // '\002'
-                        case 5: // '\005'
-                        case 7: // '\007'
-                        case 8: // '\b'
+                        case 2:
+                        case 5:
+                        case 7:
+                        case 8:
                             this.getEnergyPastArmor(8D / (Math.abs(((Tuple3d) (Aircraft.v1)).y) + 9.9999997473787516E-005D), shot);
                             shot.powerType = 0;
                             if ((shot.power <= 0.0F) && (Math.abs(((Tuple3d) (Aircraft.v1)).x) > 0.86599999666213989D)) {
@@ -175,18 +173,18 @@ public class IL_10 extends Scheme1 implements TypeStormovikArmored {
                             }
                             break;
 
-                        case 3: // '\003'
+                        case 3:
                             this.getEnergyPastArmor(16D / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot);
                             break;
 
-                        case 4: // '\004'
+                        case 4:
                             this.getEnergyPastArmor(20.200000762939453D / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot);
                             if (shot.power <= 0.0F) {
                                 this.doRicochetBack(shot);
                             }
                             break;
 
-                        case 6: // '\006'
+                        case 6:
                             this.getEnergyPastArmor(8D / (Math.abs(((Tuple3d) (Aircraft.v1)).z) + 9.9999997473787516E-005D), shot);
                             shot.powerType = 0;
                             if ((shot.power <= 0.0F) && (Math.abs(((Tuple3d) (Aircraft.v1)).z) < 0.43999999761581421D)) {
@@ -207,24 +205,24 @@ public class IL_10 extends Scheme1 implements TypeStormovikArmored {
                     default:
                         break;
 
-                    case 5: // '\005'
+                    case 5:
                         if (this.getEnergyPastArmor(0.25F / ((float) Math.sqrt((((Tuple3d) (Aircraft.v1)).y * ((Tuple3d) (Aircraft.v1)).y) + (((Tuple3d) (Aircraft.v1)).z * ((Tuple3d) (Aircraft.v1)).z)) + 0.0001F), shot) > 0.0F) {
                             if (World.Rnd().nextFloat() < 0.05F) {
                                 this.debuggunnery("Controls: Elevator Wiring Hit, Elevator Controls Disabled..");
-                                ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
+                                this.FM.AS.setControlsDamage(shot.initiator, 1);
                             }
                             if (World.Rnd().nextFloat() < 0.75F) {
                                 this.debuggunnery("Controls: Rudder Wiring Hit, Rudder Controls Disabled..");
-                                ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
+                                this.FM.AS.setControlsDamage(shot.initiator, 2);
                             }
                         }
                         break;
 
-                    case 3: // '\003'
-                    case 4: // '\004'
+                    case 3:
+                    case 4:
                         if ((this.getEnergyPastArmor(4D / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
                             this.debuggunnery("Controls: Aileron Wiring Hit, Aileron Controls Disabled..");
-                            ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                            this.FM.AS.setControlsDamage(shot.initiator, 0);
                         }
                         break;
                 }
@@ -289,125 +287,125 @@ public class IL_10 extends Scheme1 implements TypeStormovikArmored {
                     if ((this.getEnergyPastArmor(3.6F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.8F)) {
                         if (World.Rnd().nextFloat() < 0.5F) {
                             this.debuggunnery("Engine Module: Prop Governor Hit, Disabled..");
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 3);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 3);
                         } else {
                             this.debuggunnery("Engine Module: Prop Governor Hit, Oil Pipes Damaged..");
-                            ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 4);
+                            this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 4);
                         }
                     }
                 } else if (s.endsWith("gear")) {
                     if ((this.getEnergyPastArmor(4.6F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
                         this.debuggunnery("Engine Module: Reductor Hit, Bullet Jams Reductor Gear..");
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setEngineStuck(shot.initiator);
+                        this.FM.EI.engines[0].setEngineStuck(shot.initiator);
                     }
                 } else if (s.endsWith("feed")) {
                     if ((this.getEnergyPastArmor(3.2F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
                         if (World.Rnd().nextFloat() < 0.1F) {
                             this.debuggunnery("Engine Module: Feed Lines Hit, Engine Stalled..");
-                            ((FlightModelMain) (super.FM)).EI.engines[0].setEngineStops(shot.initiator);
+                            this.FM.EI.engines[0].setEngineStops(shot.initiator);
                         }
                         if (World.Rnd().nextFloat() < 0.05F) {
                             this.debuggunnery("Engine Module: Feed Gear Hit, Engine Jams..");
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, 0);
+                            this.FM.AS.setEngineStuck(shot.initiator, 0);
                         }
                         if (World.Rnd().nextFloat() < 0.1F) {
                             this.debuggunnery("Engine Module: Feed Gear Hit, Half Cylinder Feed Cut-Out..");
-                            ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, 6);
+                            this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, 6);
                         }
                     }
                 } else if (s.endsWith("case")) {
                     if (this.getEnergyPastArmor(2.2F, shot) > 0.0F) {
                         if (World.Rnd().nextFloat() < (shot.power / 175000F)) {
                             this.debuggunnery("Engine Module: Crank Case Hit, Bullet Jams Ball Bearings..");
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, 0);
+                            this.FM.AS.setEngineStuck(shot.initiator, 0);
                         }
                         if (World.Rnd().nextFloat() < (shot.power / 50000F)) {
-                            this.debuggunnery("Engine Module: Crank Case Hit, Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() + "..");
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
+                            this.debuggunnery("Engine Module: Crank Case Hit, Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + "..");
+                            this.FM.AS.hitEngine(shot.initiator, 0, 2);
                         }
                     }
-                    ((FlightModelMain) (super.FM)).EI.engines[0].setReadyness(shot.initiator, ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 48000F));
-                    this.debuggunnery("Engine Module: Crank Case Hit, Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() + "..");
+                    this.FM.EI.engines[0].setReadyness(shot.initiator, this.FM.EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 48000F));
+                    this.debuggunnery("Engine Module: Crank Case Hit, Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + "..");
                     this.getEnergyPastArmor(22.5F, shot);
                 } else if (s.endsWith("cyls")) {
-                    if ((this.getEnergyPastArmor(1.3F, shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[0].getCylindersRatio() * 1.75F))) {
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
-                        this.debuggunnery("Engine Module: Cylinders Assembly Hit, " + ((FlightModelMain) (super.FM)).EI.engines[0].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[0].getCylinders() + " Operating..");
+                    if ((this.getEnergyPastArmor(1.3F, shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[0].getCylindersRatio() * 1.75F))) {
+                        this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
+                        this.debuggunnery("Engine Module: Cylinders Assembly Hit, " + this.FM.EI.engines[0].getCylindersOperable() + "/" + this.FM.EI.engines[0].getCylinders() + " Operating..");
                         if (World.Rnd().nextFloat() < (shot.power / 48000F)) {
                             this.debuggunnery("Engine Module: Cylinders Assembly Hit, Engine Fires..");
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 3);
+                            this.FM.AS.hitEngine(shot.initiator, 0, 3);
                         }
                         if (World.Rnd().nextFloat() < 0.01F) {
                             this.debuggunnery("Engine Module: Cylinders Assembly Hit, Bullet Jams Piston Head..");
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, 0);
+                            this.FM.AS.setEngineStuck(shot.initiator, 0);
                         }
                         this.getEnergyPastArmor(22.5F, shot);
                     }
-                    if ((Math.abs(((Tuple3d) (point3d)).y) < 0.1379999965429306D) && (this.getEnergyPastArmor(3.2F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
+                    if ((Math.abs(point3d.y) < 0.1379999965429306D) && (this.getEnergyPastArmor(3.2F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.5F)) {
                         if (World.Rnd().nextFloat() < 0.1F) {
                             this.debuggunnery("Engine Module: Feed Lines Hit, Engine Stalled..");
-                            ((FlightModelMain) (super.FM)).EI.engines[0].setEngineStops(shot.initiator);
+                            this.FM.EI.engines[0].setEngineStops(shot.initiator);
                         }
                         if (World.Rnd().nextFloat() < 0.05F) {
                             this.debuggunnery("Engine Module: Feed Gear Hit, Engine Jams..");
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, 0);
+                            this.FM.AS.setEngineStuck(shot.initiator, 0);
                         }
                         if (World.Rnd().nextFloat() < 0.1F) {
                             this.debuggunnery("Engine Module: Feed Gear Hit, Half Cylinder Feed Cut-Out..");
-                            ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, 6);
+                            this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, 6);
                         }
                     }
                 } else if (s.startsWith("xxeng1oil") && (this.getEnergyPastArmor(0.5F, shot) > 0.0F)) {
                     this.debuggunnery("Engine Module: Oil Radiator Hit, Oil Radiator Pierced..");
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, 0);
+                    this.FM.AS.hitOil(shot.initiator, 0);
                 }
             }
             if (s.startsWith("xxOil") && (this.getEnergyPastArmor(3.5F, shot) > 0.0F)) {
                 this.debuggunnery("Engine Module: Oil Tank Hit..");
-                ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, 0);
+                this.FM.AS.hitOil(shot.initiator, 0);
             }
             if (s.startsWith("xxtank") && (this.getEnergyPastArmor(0.12F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
-                if (((FlightModelMain) (super.FM)).AS.astateTankStates[0] == 0) {
+                if (this.FM.AS.astateTankStates[0] == 0) {
                     this.debuggunnery("Fuel System: Fuel Tank Pierced..");
-                    ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 0, 1);
-                    ((FlightModelMain) (super.FM)).AS.doSetTankState(shot.initiator, 0, 1);
-                } else if (((FlightModelMain) (super.FM)).AS.astateTankStates[i] == 1) {
+                    this.FM.AS.hitTank(shot.initiator, 0, 1);
+                    this.FM.AS.doSetTankState(shot.initiator, 0, 1);
+                } else if (this.FM.AS.astateTankStates[i] == 1) {
                     this.debuggunnery("Fuel System: Fuel Tank Pierced..");
-                    ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 0, 1);
-                    ((FlightModelMain) (super.FM)).AS.doSetTankState(shot.initiator, 0, 2);
+                    this.FM.AS.hitTank(shot.initiator, 0, 1);
+                    this.FM.AS.doSetTankState(shot.initiator, 0, 2);
                 }
                 if ((shot.powerType == 3) && (World.Rnd().nextFloat() < 0.5F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 0, 2);
+                    this.FM.AS.hitTank(shot.initiator, 0, 2);
                     this.debuggunnery("Fuel System: Fuel Tank Pierced, State Shifted..");
                 }
             }
             if (s.startsWith("xxmgun")) {
                 if (s.endsWith("01")) {
                     this.debuggunnery("Armament System: Left Machine Gun: Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 0);
+                    this.FM.AS.setJamBullets(0, 0);
                 }
                 if (s.endsWith("02")) {
                     this.debuggunnery("Armament System: Right Machine Gun: Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(0, 1);
+                    this.FM.AS.setJamBullets(0, 1);
                 }
                 this.getEnergyPastArmor(World.Rnd().nextFloat(0.3F, 12.6F), shot);
             }
             if (s.startsWith("xxcannon")) {
                 if (s.endsWith("01") && (this.getEnergyPastArmor(0.25F, shot) > 0.0F)) {
                     this.debuggunnery("Armament System: Left Cannon: Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(1, 0);
+                    this.FM.AS.setJamBullets(1, 0);
                 }
                 if (s.endsWith("02") && (this.getEnergyPastArmor(0.25F, shot) > 0.0F)) {
                     this.debuggunnery("Armament System: Right Cannon: Disabled..");
-                    ((FlightModelMain) (super.FM)).AS.setJamBullets(1, 1);
+                    this.FM.AS.setJamBullets(1, 1);
                 }
                 this.getEnergyPastArmor(World.Rnd().nextFloat(3.3F, 24.6F), shot);
             }
             if (s.startsWith("xxbomb")) {
-                if ((World.Rnd().nextFloat() < 0.00345F) && (((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && ((FlightModelMain) (super.FM)).CT.Weapons[3][0].haveBullets()) {
+                if ((World.Rnd().nextFloat() < 0.00345F) && (this.FM.CT.Weapons[3] != null) && this.FM.CT.Weapons[3][0].haveBullets()) {
                     this.debuggunnery("Armament System: Bomb Payload Detonated..");
-                    ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 0, 10);
-                    ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 1, 10);
+                    this.FM.AS.hitTank(shot.initiator, 0, 10);
+                    this.FM.AS.hitTank(shot.initiator, 1, 10);
                     this.nextDMGLevels(3, 2, "CF_D0", shot.initiator);
                 }
                 return;
@@ -416,28 +414,28 @@ public class IL_10 extends Scheme1 implements TypeStormovikArmored {
             }
         }
         if (s.startsWith("xcockpit")) {
-            if (((Tuple3d) (point3d)).z > 0.77500000000000002D) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 1);
+            if (point3d.z > 0.77500000000000002D) {
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 1);
                 if ((((Tuple3d) (Aircraft.v1)).x < -0.90000000000000002D) && (this.getEnergyPastArmor(12D / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot) > 0.0F)) {
-                    ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 2);
+                    this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 2);
                 }
-            } else if (((Tuple3d) (point3d)).y > 0.0D) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 4);
+            } else if (point3d.y > 0.0D) {
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 4);
             } else {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x10);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x10);
             }
             if (World.Rnd().nextFloat() < 0.067F) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 8);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 8);
             }
             if (World.Rnd().nextFloat() < 0.067F) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x20);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x20);
             }
             if (World.Rnd().nextFloat() < 0.067F) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x40);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x40);
             }
         }
         if (s.startsWith("xcf")) {
-            if (((Tuple3d) (point3d)).z < 0.67200000000000004D) {
+            if (point3d.z < 0.67200000000000004D) {
                 this.getEnergyPastArmor(6D / (Math.abs(Math.sqrt((((Tuple3d) (Aircraft.v1)).y * ((Tuple3d) (Aircraft.v1)).y) + (((Tuple3d) (Aircraft.v1)).z * ((Tuple3d) (Aircraft.v1)).z))) + 9.9999997473787516E-005D), shot);
                 if ((shot.power <= 0.0F) && (Math.abs(((Tuple3d) (Aircraft.v1)).x) > 0.86599999666213989D)) {
                     this.doRicochet(shot);
@@ -447,9 +445,9 @@ public class IL_10 extends Scheme1 implements TypeStormovikArmored {
                 this.hitChunk("CF", shot);
             }
         } else if (s.startsWith("xeng")) {
-            if (((Tuple3d) (point3d)).z > 0.54900000000000004D) {
+            if (point3d.z > 0.54900000000000004D) {
                 this.getEnergyPastArmor(2D / (Math.abs(((Tuple3d) (Aircraft.v1)).z) + 9.9999997473787516E-005D), shot);
-            } else if (((Tuple3d) (point3d)).x > 2.819D) {
+            } else if (point3d.x > 2.819D) {
                 this.getEnergyPastArmor(6D / (Math.abs(((Tuple3d) (Aircraft.v1)).x) + 9.9999997473787516E-005D), shot);
             } else {
                 this.getEnergyPastArmor(4D / (Math.abs(Math.sqrt((((Tuple3d) (Aircraft.v1)).y * ((Tuple3d) (Aircraft.v1)).y) + (((Tuple3d) (Aircraft.v1)).z * ((Tuple3d) (Aircraft.v1)).z))) + 9.9999997473787516E-005D), shot);
@@ -513,16 +511,16 @@ public class IL_10 extends Scheme1 implements TypeStormovikArmored {
         } else if (s.startsWith("xgear")) {
             if (s.endsWith("1") && (World.Rnd().nextFloat() < 0.05F)) {
                 this.debuggunnery("Hydro System: Disabled..");
-                ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 0);
+                this.FM.AS.setInternalDamage(shot.initiator, 0);
             }
             if ((s.endsWith("2a") || s.endsWith("2b")) && (World.Rnd().nextFloat() < 0.1F) && (this.getEnergyPastArmor(World.Rnd().nextFloat(1.2F, 3.435F), shot) > 0.0F)) {
                 this.debuggunnery("Undercarriage: Stuck..");
-                ((FlightModelMain) (super.FM)).AS.setInternalDamage(shot.initiator, 3);
+                this.FM.AS.setInternalDamage(shot.initiator, 3);
             }
         } else if (s.startsWith("xturret")) {
             if (this.getEnergyPastArmor(0.25F, shot) > 0.0F) {
                 this.debuggunnery("Armament System: Turret Machine Gun(s): Disabled..");
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(10, 0);
+                this.FM.AS.setJamBullets(10, 0);
                 this.getEnergyPastArmor(World.Rnd().nextFloat(0.1F, 26.35F), shot);
             }
         } else if (s.startsWith("xhelm")) {
@@ -549,7 +547,7 @@ public class IL_10 extends Scheme1 implements TypeStormovikArmored {
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         for (int i = 1; i < 3; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 if (this.hierMesh().chunkFindCheck("HMask" + i + "_D0") != -1) {
                     this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
                 }
@@ -564,7 +562,7 @@ public class IL_10 extends Scheme1 implements TypeStormovikArmored {
     private float flapps;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = IL_10.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Il-10");
         Property.set(class1, "meshName", "3DO/Plane/Il-10(Multi1)/hier.him");

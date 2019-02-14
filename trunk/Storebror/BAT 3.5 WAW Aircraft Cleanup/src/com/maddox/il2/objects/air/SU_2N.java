@@ -9,9 +9,7 @@ import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.Main3D;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -34,7 +32,7 @@ public class SU_2N extends Scheme1 implements TypeScout, TypeBomber, TypeStormov
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         for (int i = 1; i < 3; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -60,7 +58,7 @@ public class SU_2N extends Scheme1 implements TypeScout, TypeBomber, TypeStormov
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        SU_2N.moveGear(this.hierMesh(), f);
     }
 
     protected void hitBone(String s, Shot shot, Point3d point3d) {
@@ -91,14 +89,14 @@ public class SU_2N extends Scheme1 implements TypeScout, TypeBomber, TypeStormov
                 this.hitChunk("WingLIn", shot);
             }
             if ((shot.powerType == 3) && (World.Rnd().nextFloat() < 0.1F)) {
-                ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 0, 1);
+                this.FM.AS.hitTank(shot.initiator, 0, 1);
             }
         } else if (s.startsWith("xwingrin")) {
             if (this.chunkDamageVisible("WingRIn") < 3) {
                 this.hitChunk("WingRIn", shot);
             }
             if ((shot.powerType == 3) && (World.Rnd().nextFloat() < 0.1F)) {
-                ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 1, 1);
+                this.FM.AS.hitTank(shot.initiator, 1, 1);
             }
         } else if (s.startsWith("xwinglmid")) {
             if (this.chunkDamageVisible("WingLMid") < 3) {
@@ -124,14 +122,14 @@ public class SU_2N extends Scheme1 implements TypeScout, TypeBomber, TypeStormov
             if (this.chunkDamageVisible("Engine1") < 2) {
                 this.hitChunk("Engine1", shot);
             }
-            if ((this.getEnergyPastArmor(1.45F, shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[0].getCylindersRatio() * 0.5F))) {
-                ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
-                if (((FlightModelMain) (super.FM)).AS.astateEngineStates[0] < 1) {
-                    ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 1);
-                    ((FlightModelMain) (super.FM)).AS.doSetEngineState(shot.initiator, 0, 1);
+            if ((this.getEnergyPastArmor(1.45F, shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[0].getCylindersRatio() * 0.5F))) {
+                this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
+                if (this.FM.AS.astateEngineStates[0] < 1) {
+                    this.FM.AS.hitEngine(shot.initiator, 0, 1);
+                    this.FM.AS.doSetEngineState(shot.initiator, 0, 1);
                 }
                 if (World.Rnd().nextFloat() < (shot.power / 960000F)) {
-                    ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 3);
+                    this.FM.AS.hitEngine(shot.initiator, 0, 3);
                 }
                 this.getEnergyPastArmor(25F, shot);
             }
@@ -141,13 +139,13 @@ public class SU_2N extends Scheme1 implements TypeScout, TypeBomber, TypeStormov
             this.hitChunk("GearR2", shot);
         } else if (s.startsWith("xturret")) {
             if (s.startsWith("xturret1")) {
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(10, 0);
+                this.FM.AS.setJamBullets(10, 0);
             }
             if (s.startsWith("xturret2")) {
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(11, 0);
+                this.FM.AS.setJamBullets(11, 0);
             }
             if (s.startsWith("xturret3")) {
-                ((FlightModelMain) (super.FM)).AS.setJamBullets(12, 0);
+                this.FM.AS.setJamBullets(12, 0);
             }
         } else if (s.startsWith("xpilot") || s.startsWith("xhead")) {
             byte byte0 = 0;
@@ -170,7 +168,7 @@ public class SU_2N extends Scheme1 implements TypeScout, TypeBomber, TypeStormov
         float f = -af[0];
         float f1 = af[1];
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 if (f < -90F) {
                     f = -90F;
                     flag = false;
@@ -245,22 +243,22 @@ public class SU_2N extends Scheme1 implements TypeScout, TypeBomber, TypeStormov
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 1: // '\001'
-                super.FM.turret[0].setHealth(f);
+            case 1:
+                this.FM.turret[0].setHealth(f);
                 break;
         }
     }
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
@@ -270,8 +268,8 @@ public class SU_2N extends Scheme1 implements TypeScout, TypeBomber, TypeStormov
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 11: // '\013'
-            case 19: // '\023'
+            case 11:
+            case 19:
                 this.hierMesh().chunkVisible("Wire_D0", false);
                 break;
         }
@@ -292,27 +290,27 @@ public class SU_2N extends Scheme1 implements TypeScout, TypeBomber, TypeStormov
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = true;
-        ((FlightModelMain) (super.FM)).CT.dvCockpitDoor = 0.75F;
+        this.FM.CT.bHasCockpitDoorControl = true;
+        this.FM.CT.dvCockpitDoor = 0.75F;
     }
 
     public void update(float f) {
-        float f1 = Aircraft.cvt(((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator(), 0.0F, 1.0F, 0.0F, -10F);
+        float f1 = Aircraft.cvt(this.FM.EI.engines[0].getControlRadiator(), 0.0F, 1.0F, 0.0F, -10F);
         for (int i = 1; i < 17; i++) {
             this.hierMesh().chunkSetAngles("cowlflap" + i + "_D0", 0.0F, f1, 0.0F);
         }
 
-        if (((FlightModelMain) (super.FM)).CT.getArrestor() > 0.2F) {
-            if (((FlightModelMain) (super.FM)).Gears.arrestorVAngle != 0.0F) {
-                float f2 = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.arrestorVAngle, -26F, 11F, 1.0F, 0.0F);
+        if (this.FM.CT.getArrestor() > 0.2F) {
+            if (this.FM.Gears.arrestorVAngle != 0.0F) {
+                float f2 = Aircraft.cvt(this.FM.Gears.arrestorVAngle, -26F, 11F, 1.0F, 0.0F);
                 this.arrestor = (0.8F * this.arrestor) + (0.2F * f2);
                 this.moveArrestorHook(this.arrestor);
             } else {
-                float f3 = (-42F * ((FlightModelMain) (super.FM)).Gears.arrestorVSink) / 37F;
-                if ((f3 < 0.0F) && (super.FM.getSpeedKMH() > 60F)) {
-                    Eff3DActor.New(this, ((FlightModelMain) (super.FM)).Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
+                float f3 = (-42F * this.FM.Gears.arrestorVSink) / 37F;
+                if ((f3 < 0.0F) && (this.FM.getSpeedKMH() > 60F)) {
+                    Eff3DActor.New(this, this.FM.Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
                 }
-                if ((f3 > 0.0F) && (((FlightModelMain) (super.FM)).CT.getArrestor() < 0.95F)) {
+                if ((f3 > 0.0F) && (this.FM.CT.getArrestor() < 0.95F)) {
                     f3 = 0.0F;
                 }
                 if (f3 > 0.0F) {
@@ -334,7 +332,7 @@ public class SU_2N extends Scheme1 implements TypeScout, TypeBomber, TypeStormov
     private float arrestor;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = SU_2N.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Su-2N");
         Property.set(class1, "meshName", "3DO/Plane/Su-2N/hier.him");

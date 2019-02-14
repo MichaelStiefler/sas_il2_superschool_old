@@ -7,7 +7,6 @@ import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.War;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -22,14 +21,14 @@ public class KI_15_II extends Scheme1 implements TypeScout, TypeBomber, TypeStor
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            KI_15_II.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            KI_15_II.bChangedPit = true;
         }
     }
 
@@ -42,12 +41,12 @@ public class KI_15_II extends Scheme1 implements TypeScout, TypeBomber, TypeStor
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        KI_15_II.moveGear(this.hierMesh(), f);
     }
 
     public void rareAction(float f, boolean flag) {
         Aircraft aircraft = War.getNearestEnemy(this, 6000F);
-        if (!this.pilot2kill && (aircraft != null) && !((FlightModelMain) (super.FM)).AS.bIsAboutToBailout) {
+        if (!this.pilot2kill && (aircraft != null) && !this.FM.AS.bIsAboutToBailout) {
             this.hierMesh().chunkVisible("Turret1B_D0", true);
             this.hierMesh().chunkVisible("Turret1C_D0", true);
             this.hierMesh().chunkVisible("TurretCG_D0", true);
@@ -56,7 +55,7 @@ public class KI_15_II extends Scheme1 implements TypeScout, TypeBomber, TypeStor
             this.hierMesh().chunkVisible("DownCG_D0", false);
             this.BlisTurOpen = true;
         }
-        if (!this.pilot2kill && (aircraft == null) && !((FlightModelMain) (super.FM)).AS.bIsAboutToBailout && this.BlisTurOpen) {
+        if (!this.pilot2kill && (aircraft == null) && !this.FM.AS.bIsAboutToBailout && this.BlisTurOpen) {
             this.hierMesh().chunkVisible("Turret1B_D0", false);
             this.hierMesh().chunkVisible("Turret1C_D0", false);
             this.hierMesh().chunkVisible("TurretCG_D0", false);
@@ -76,7 +75,7 @@ public class KI_15_II extends Scheme1 implements TypeScout, TypeBomber, TypeStor
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.FM.turret[0].bIsOperable = false;
                 break;
         }
@@ -100,14 +99,14 @@ public class KI_15_II extends Scheme1 implements TypeScout, TypeBomber, TypeStor
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.FM.turret[0].bIsOperable = false;
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
@@ -144,7 +143,7 @@ public class KI_15_II extends Scheme1 implements TypeScout, TypeBomber, TypeStor
         float f = -af[0];
         float f1 = af[1];
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 if (f < -19F) {
                     f = -19F;
                     flag = false;

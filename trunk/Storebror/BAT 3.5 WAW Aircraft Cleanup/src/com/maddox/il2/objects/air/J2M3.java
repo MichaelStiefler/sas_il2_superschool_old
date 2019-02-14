@@ -18,12 +18,9 @@ public class J2M3 extends J2M {
         Property.set(class1, "yearService", 1944F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/J2M3.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitJ2M3.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitJ2M3.class });
         Property.set(class1, "LOSElevation", 1.113F);
-        weaponTriggersRegister(class1, new int[] { 1, 1, 1, 1, 3, 3 });
-        weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04", "_ExternalBomb01", "_ExternalBomb02" });
-        weaponsRegister(class1, "default", new String[] { "MGunHo5k 210", "MGunHo5k 190", "MGunHo5k 190", "MGunHo5k 210", null, null });
-        weaponsRegister(class1, "2x60", new String[] { "MGunHo5k 210", "MGunHo5k 190", "MGunHo5k 190", "MGunHo5k 210", "BombGun60kgJ 1", "BombGun60kgJ 1" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 1, 1, 1, 1, 3, 3 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04", "_ExternalBomb01", "_ExternalBomb02" });
     }
 }

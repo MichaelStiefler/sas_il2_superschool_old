@@ -2,7 +2,6 @@ package com.maddox.il2.objects.air;
 
 import java.io.IOException;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -18,7 +17,7 @@ public class SBD3 extends SBD implements TypeStormovik, TypeDiveBomber {
         float f = -af[0];
         float f1 = af[1];
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 if (f < -135F) {
                     f = -135F;
                 }
@@ -35,10 +34,10 @@ public class SBD3 extends SBD implements TypeStormovik, TypeDiveBomber {
                 }
                 float f2;
                 for (f2 = Math.abs(f); f2 > 180F; f2 -= 180F) {
-                    ;
+
                 }
-                if (f1 < -floatindex(Aircraft.cvt(f2, 0.0F, 180F, 0.0F, 36F), af)) {
-                    f1 = -floatindex(Aircraft.cvt(f2, 0.0F, 180F, 0.0F, 36F), af);
+                if (f1 < -AircraftLH.floatindex(Aircraft.cvt(f2, 0.0F, 180F, 0.0F, 36F), af)) {
+                    f1 = -AircraftLH.floatindex(Aircraft.cvt(f2, 0.0F, 180F, 0.0F, 36F), af);
                 }
                 break;
         }
@@ -86,7 +85,7 @@ public class SBD3 extends SBD implements TypeStormovik, TypeDiveBomber {
 
     public void update(float f) {
         super.update(f);
-        float f1 = ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator();
+        float f1 = this.FM.EI.engines[0].getControlRadiator();
         if (Math.abs(this.flapps - f1) > 0.01F) {
             this.flapps = f1;
             this.hierMesh().chunkSetAngles("Oil_D0", 0.0F, -22F * f1, 0.0F);

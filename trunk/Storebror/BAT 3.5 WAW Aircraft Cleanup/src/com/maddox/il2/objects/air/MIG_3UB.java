@@ -51,7 +51,7 @@ public class MIG_3UB extends MIG_3 {
         Property.set(class1, "yearService", 1941F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/MiG-3ud.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitMIG_3UB.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitMIG_3UB.class });
         Property.set(class1, "LOSElevation", 0.906F);
         Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 9, 9, 2, 2, 2, 2, 2, 2 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_ExternalDev03", "_ExternalDev04", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06" });

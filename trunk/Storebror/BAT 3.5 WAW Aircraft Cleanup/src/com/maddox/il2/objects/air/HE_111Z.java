@@ -210,9 +210,9 @@ public class HE_111Z extends Scheme5 implements TypeTransport, TypeDockable {
             } else if (s.startsWith("xxcontrols")) {
                 int i = s.charAt(10) - 48;
                 switch (i) {
-                    case 1: // '\001'
-                    case 2: // '\002'
-                    case 8: // '\b'
+                    case 1:
+                    case 2:
+                    case 8:
                         if (this.getEnergyPastArmor(1.0F, shot) > 0.0F) {
                             if (World.Rnd().nextFloat() < 0.12F) {
                                 this.debuggunnery("Controls: Evelator Controls Out..");
@@ -225,9 +225,9 @@ public class HE_111Z extends Scheme5 implements TypeTransport, TypeDockable {
                         }
                         break;
 
-                    case 3: // '\003'
-                    case 4: // '\004'
-                    case 7: // '\007'
+                    case 3:
+                    case 4:
+                    case 7:
                         if ((this.getEnergyPastArmor(1.0F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
                             this.debuggunnery("Controls: Ailerons Controls Out..");
                             this.FM.AS.setControlsDamage(shot.initiator, 0);
@@ -522,7 +522,7 @@ public class HE_111Z extends Scheme5 implements TypeTransport, TypeDockable {
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        HE_111Z.moveGear(this.hierMesh(), f);
     }
 
     protected void moveFlap(float f) {
@@ -540,7 +540,7 @@ public class HE_111Z extends Scheme5 implements TypeTransport, TypeDockable {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -35F) {
                     f = -35F;
                     flag = false;
@@ -559,7 +559,7 @@ public class HE_111Z extends Scheme5 implements TypeTransport, TypeDockable {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -42F) {
                     f = -42F;
                     flag = false;
@@ -578,7 +578,7 @@ public class HE_111Z extends Scheme5 implements TypeTransport, TypeDockable {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -35F) {
                     f = -35F;
                     flag = false;
@@ -597,7 +597,7 @@ public class HE_111Z extends Scheme5 implements TypeTransport, TypeDockable {
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f < -55F) {
                     f = -55F;
                     flag = false;
@@ -616,7 +616,7 @@ public class HE_111Z extends Scheme5 implements TypeTransport, TypeDockable {
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 if (f < -25F) {
                     f = -25F;
                     flag = false;
@@ -635,7 +635,7 @@ public class HE_111Z extends Scheme5 implements TypeTransport, TypeDockable {
                 }
                 break;
 
-            case 5: // '\005'
+            case 5:
                 if (f < -42F) {
                     f = -42F;
                     flag = false;
@@ -654,7 +654,7 @@ public class HE_111Z extends Scheme5 implements TypeTransport, TypeDockable {
                 }
                 break;
 
-            case 6: // '\006'
+            case 6:
                 if (f < -35F) {
                     f = -35F;
                     flag = false;
@@ -673,7 +673,7 @@ public class HE_111Z extends Scheme5 implements TypeTransport, TypeDockable {
                 }
                 break;
 
-            case 7: // '\007'
+            case 7:
                 if (f < -23F) {
                     f = -23F;
                     flag = false;
@@ -699,34 +699,34 @@ public class HE_111Z extends Scheme5 implements TypeTransport, TypeDockable {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 37: // '%'
+            case 37:
                 this.hitProp(3, j, actor);
                 super.cutFM(10, j, actor);
                 break;
 
-            case 11: // '\013'
+            case 11:
                 this.hierMesh().chunkVisible("Wire_D0", false);
                 break;
 
-            case 19: // '\023'
+            case 19:
                 this.hierMesh().chunkVisible("Wire_D0", false);
                 // fall through
 
-            case 20: // '\024'
+            case 20:
                 this.cut("GearC2");
                 break;
 
-            case 33: // '!'
+            case 33:
                 this.hitProp(0, j, actor);
                 this.hitProp(1, j, actor);
                 // fall through
 
-            case 36: // '$'
+            case 36:
                 this.hitProp(2, j, actor);
                 this.hitProp(4, j, actor);
                 // fall through
 
-            case 13: // '\r'
+            case 13:
                 this.killPilot(actor, 5);
                 this.killPilot(actor, 6);
                 this.killPilot(actor, 7);
@@ -740,35 +740,35 @@ public class HE_111Z extends Scheme5 implements TypeTransport, TypeDockable {
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.FM.turret[0].bIsOperable = false;
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.FM.turret[1].bIsOperable = false;
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.FM.turret[2].bIsOperable = false;
                 break;
 
-            case 4: // '\004'
+            case 4:
                 this.FM.turret[3].bIsOperable = false;
                 break;
 
-            case 6: // '\006'
+            case 6:
                 this.FM.turret[4].bIsOperable = false;
                 break;
 
-            case 7: // '\007'
+            case 7:
                 this.FM.turret[5].bIsOperable = false;
                 break;
 
-            case 8: // '\b'
+            case 8:
                 this.FM.turret[6].bIsOperable = false;
                 break;
 
-            case 9: // '\t'
+            case 9:
                 this.FM.turret[7].bIsOperable = false;
                 break;
         }
@@ -776,11 +776,11 @@ public class HE_111Z extends Scheme5 implements TypeTransport, TypeDockable {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 4: // '\004'
+            case 4:
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);
@@ -789,7 +789,7 @@ public class HE_111Z extends Scheme5 implements TypeTransport, TypeDockable {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 if (this.isChunkAnyDamageVisible("CF")) {
@@ -797,7 +797,7 @@ public class HE_111Z extends Scheme5 implements TypeTransport, TypeDockable {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 if (this.isChunkAnyDamageVisible("CF")) {
@@ -805,18 +805,18 @@ public class HE_111Z extends Scheme5 implements TypeTransport, TypeDockable {
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.hierMesh().chunkVisible("Pilot4_D0", false);
                 this.hierMesh().chunkVisible("Pilot4_D1", true);
                 break;
 
-            case 5: // '\005'
+            case 5:
                 if (this.isChunkAnyDamageVisible("Nose")) {
                     this.hierMesh().chunkVisible("Gore4_D0", true);
                 }
                 break;
 
-            case 6: // '\006'
+            case 6:
                 this.hierMesh().chunkVisible("Pilot7_D0", false);
                 this.hierMesh().chunkVisible("Pilot7_D1", true);
                 if (this.isChunkAnyDamageVisible("Nose")) {
@@ -824,7 +824,7 @@ public class HE_111Z extends Scheme5 implements TypeTransport, TypeDockable {
                 }
                 break;
 
-            case 7: // '\007'
+            case 7:
                 this.hierMesh().chunkVisible("Pilot8_D0", false);
                 this.hierMesh().chunkVisible("Pilot8_D1", true);
                 if (this.isChunkAnyDamageVisible("Nose")) {
@@ -832,7 +832,7 @@ public class HE_111Z extends Scheme5 implements TypeTransport, TypeDockable {
                 }
                 break;
 
-            case 8: // '\b'
+            case 8:
                 this.hierMesh().chunkVisible("Pilot9_D0", false);
                 this.hierMesh().chunkVisible("Pilot9_D1", true);
                 break;

@@ -81,16 +81,16 @@ public class HE_111H8 extends HE_111 {
     public void doRemoveBodyFromPlane(int i) {
         super.doRemoveBodyFromPlane(i);
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot1_FAK", false);
                 this.hierMesh().chunkVisible("Head1_FAK", false);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot2_FAK", false);
                 break;
 
-            case 4: // '\004'
+            case 4:
                 this.hierMesh().chunkVisible("Pilot4_FAK", false);
                 break;
         }
@@ -214,14 +214,14 @@ public class HE_111H8 extends HE_111 {
             default:
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (!this.pilot4kill) {
                     this.FM.turret[1].bIsOperable = true;
                     this.FM.turret[2].bIsOperable = false;
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 if (!this.pilot4kill) {
                     this.FM.turret[1].bIsOperable = false;
                     this.FM.turret[2].bIsOperable = true;
@@ -277,7 +277,7 @@ public class HE_111H8 extends HE_111 {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 float f2 = this.FM.CT.getCockpitDoor();
                 if (f2 >= 0.99F) {
                     if (f < -75F) {
@@ -303,7 +303,7 @@ public class HE_111H8 extends HE_111 {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -35F) {
                     f = -35F;
                     flag = false;
@@ -322,7 +322,7 @@ public class HE_111H8 extends HE_111 {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -20F) {
                     f = -20F;
                     flag = false;
@@ -348,11 +348,11 @@ public class HE_111H8 extends HE_111 {
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 2: // '\002'
+            case 2:
                 this.FM.turret[0].setHealth(f);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.FM.turret[1].setHealth(f);
                 break;
         }
@@ -363,7 +363,7 @@ public class HE_111H8 extends HE_111 {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);
@@ -383,7 +383,7 @@ public class HE_111H8 extends HE_111 {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 if (this.bPitUnfocused && !this.FM.AS.bIsAboutToBailout) {
@@ -401,14 +401,14 @@ public class HE_111H8 extends HE_111 {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
                 this.hierMesh().chunkVisible("HMask3_D0", false);
                 this.hierMesh().chunkVisible("Gore3_D0", true);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.pilot4kill = true;
                 this.hierMesh().chunkVisible("Pilot4_D0", false);
                 this.hierMesh().chunkVisible("Pilot4_D1", true);

@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import java.io.IOException;
 
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.NetMsgGuaranted;
@@ -26,15 +25,15 @@ public class H8K1 extends H8K implements TypeBomber {
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            H8K1.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            H8K1.bChangedPit = true;
         }
     }
 
@@ -46,7 +45,7 @@ public class H8K1 extends H8K implements TypeBomber {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -35F) {
                     f = -35F;
                     flag = false;
@@ -65,7 +64,7 @@ public class H8K1 extends H8K implements TypeBomber {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -22F) {
                     f = -22F;
                     flag = false;
@@ -84,7 +83,7 @@ public class H8K1 extends H8K implements TypeBomber {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -22F) {
                     f = -22F;
                     flag = false;
@@ -103,7 +102,7 @@ public class H8K1 extends H8K implements TypeBomber {
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (f1 < 0.0F) {
                     f1 = 0.0F;
                     flag = false;
@@ -114,7 +113,7 @@ public class H8K1 extends H8K implements TypeBomber {
                 }
                 break;
 
-            case 4: // '\004'
+            case 4:
                 if (f < -25F) {
                     f = -25F;
                     flag = false;
@@ -140,21 +139,21 @@ public class H8K1 extends H8K implements TypeBomber {
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 2: // '\002'
-                super.FM.turret[0].setHealth(f);
+            case 2:
+                this.FM.turret[0].setHealth(f);
                 break;
 
-            case 3: // '\003'
-                super.FM.turret[1].setHealth(f);
-                super.FM.turret[2].setHealth(f);
+            case 3:
+                this.FM.turret[1].setHealth(f);
+                this.FM.turret[2].setHealth(f);
                 break;
 
-            case 4: // '\004'
-                super.FM.turret[3].setHealth(f);
+            case 4:
+                this.FM.turret[3].setHealth(f);
                 break;
 
-            case 5: // '\005'
-                super.FM.turret[4].setHealth(f);
+            case 5:
+                this.FM.turret[4].setHealth(f);
                 break;
         }
     }
@@ -270,7 +269,7 @@ public class H8K1 extends H8K implements TypeBomber {
     }
 
     public void typeBomberUpdate(float f) {
-        if (Math.abs(((FlightModelMain) (super.FM)).Or.getKren()) > 4.5D) {
+        if (Math.abs(this.FM.Or.getKren()) > 4.5D) {
             this.fSightCurReadyness -= 0.0666666F * f;
             if (this.fSightCurReadyness < 0.0F) {
                 this.fSightCurReadyness = 0.0F;
@@ -285,20 +284,20 @@ public class H8K1 extends H8K implements TypeBomber {
                 this.typeBomberToggleAutomation();
             }
             this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / this.fSightCurAltitude));
-            this.calibDistance = (this.fSightCurSpeed / 3.6F) * AircraftLH.floatindex(Aircraft.cvt(this.fSightCurAltitude, 0.0F, 7000F, 0.0F, 7F), calibrationScale);
-            System.out.println("time = " + AircraftLH.floatindex(Aircraft.cvt(this.fSightCurAltitude, 0.0F, 7000F, 0.0F, 7F), calibrationScale));
+            this.calibDistance = (this.fSightCurSpeed / 3.6F) * AircraftLH.floatindex(Aircraft.cvt(this.fSightCurAltitude, 0.0F, 7000F, 0.0F, 7F), H8K1.calibrationScale);
+            System.out.println("time = " + AircraftLH.floatindex(Aircraft.cvt(this.fSightCurAltitude, 0.0F, 7000F, 0.0F, 7F), H8K1.calibrationScale));
             System.out.println("calibDistance = " + this.calibDistance);
             if (this.fSightCurDistance < (this.calibDistance + ((this.fSightCurSpeed / 3.6F) * Math.sqrt(this.fSightCurAltitude * 0.2038736F)))) {
                 this.bSightBombDump = true;
             }
             if (this.bSightBombDump) {
-                if (super.FM.isTick(3, 0)) {
-                    if ((((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1] != null) && ((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].haveBullets()) {
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = true;
+                if (this.FM.isTick(3, 0)) {
+                    if ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1] != null) && this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].haveBullets()) {
+                        this.FM.CT.WeaponControl[3] = true;
                         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
                     }
                 } else {
-                    ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = false;
+                    this.FM.CT.WeaponControl[3] = false;
                 }
             }
         }

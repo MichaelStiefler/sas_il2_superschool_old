@@ -33,8 +33,8 @@ public class KI_48_II_KAMIKAZE extends KI_48 implements MsgCollisionRequestListe
 
     protected boolean cutFM(int i, int j, Actor actor1) {
         switch (i) {
-            case 3: // '\003'
-            case 19: // '\023'
+            case 3:
+            case 19:
                 this.FM.AS.setEngineDies(this, 0);
                 return false;
         }
@@ -44,7 +44,7 @@ public class KI_48_II_KAMIKAZE extends KI_48 implements MsgCollisionRequestListe
     public void msgEndAction(Object obj, int i) {
         super.msgEndAction(obj, i);
         switch (i) {
-            case 2: // '\002'
+            case 2:
                 this.actor = Engine.cur.actorLand;
                 MsgExplosion.send(this, null, this.FM.Loc, this.actor, 0.0F, 2500F, 0, 890F);
                 break;

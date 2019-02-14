@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 import com.maddox.util.HashMapInt;
 
@@ -20,21 +19,21 @@ public class Junkers_F13B_Ski extends Junkers_F13 {
             this.hierMesh().chunkVisible("GearL11_D0", true);
             this.hierMesh().chunkVisible("GearR1_D0", false);
             this.hierMesh().chunkVisible("GearR11_D0", true);
-            ((FlightModelMain) (super.FM)).CT.bHasBrakeControl = false;
+            this.FM.CT.bHasBrakeControl = false;
         }
     }
 
     protected void moveFan(float f) {
         if (Config.isUSE_RENDER()) {
             super.moveFan(f);
-            float f1 = Aircraft.cvt(((FlightModelMain) (super.FM)).Or.getTangage(), -30F, 30F, -30F, 30F);
-            if (((FlightModelMain) (super.FM)).Gears.onGround() && (((FlightModelMain) (super.FM)).CT.getGear() > 0.9F) && (super.FM.getSpeed() > 5F)) {
-                if (((FlightModelMain) (super.FM)).Gears.gWheelSinking[0] > 0.0F) {
+            float f1 = Aircraft.cvt(this.FM.Or.getTangage(), -30F, 30F, -30F, 30F);
+            if (this.FM.Gears.onGround() && (this.FM.CT.getGear() > 0.9F) && (this.FM.getSpeed() > 5F)) {
+                if (this.FM.Gears.gWheelSinking[0] > 0.0F) {
                     this.hierMesh().chunkSetAngles("GearL11_D0", World.Rnd().nextFloat(-1F, 1.0F), World.Rnd().nextFloat(-1F, 1.0F), World.Rnd().nextFloat(-1F, 1.0F) - f1);
                 } else {
                     this.hierMesh().chunkSetAngles("GearL11_D0", 0.0F, 0.0F, -f1);
                 }
-                if (((FlightModelMain) (super.FM)).Gears.gWheelSinking[1] > 0.0F) {
+                if (this.FM.Gears.gWheelSinking[1] > 0.0F) {
                     this.hierMesh().chunkSetAngles("GearR11_D0", World.Rnd().nextFloat(-1F, 1.0F), World.Rnd().nextFloat(-1F, 1.0F), World.Rnd().nextFloat(-1F, 1.0F) - f1);
                 } else {
                     this.hierMesh().chunkSetAngles("GearR11_D0", 0.0F, 0.0F, -f1);
@@ -49,7 +48,7 @@ public class Junkers_F13B_Ski extends Junkers_F13 {
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         for (int i = 1; i < 3; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));

@@ -49,7 +49,7 @@ public class J1N1_F extends J1N1 implements TypeBomber {
 
     public void typeBomberAdjSideslipPlus() {
         this.fSightCurSideslip += 0.5D;
-        if (super.thisWeaponsName.startsWith("1x")) {
+        if (this.thisWeaponsName.startsWith("1x")) {
             if (this.fSightCurSideslip > 40F) {
                 this.fSightCurSideslip = 40F;
             }
@@ -64,7 +64,7 @@ public class J1N1_F extends J1N1 implements TypeBomber {
 
     public void typeBomberAdjSideslipMinus() {
         this.fSightCurSideslip -= 0.5D;
-        if (super.thisWeaponsName.startsWith("1x")) {
+        if (this.thisWeaponsName.startsWith("1x")) {
             if (this.fSightCurSideslip < -40F) {
                 this.fSightCurSideslip = -40F;
             }
@@ -137,8 +137,6 @@ public class J1N1_F extends J1N1 implements TypeBomber {
         this.fSightCurSideslip = netmsginput.readFloat();
     }
 
-    static Class   class$com$maddox$il2$objects$air$J1N1F;
-    static Class   class$com$maddox$il2$objects$air$CockpitJ1N1F;
     public boolean bSightAutomation;
     public float   fSightCurDistance;
     public float   fSightCurForwardAngle;

@@ -5,11 +5,9 @@ import java.io.IOException;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -30,7 +28,7 @@ public class A_20C extends A_20 implements TypeBomber, TypeStormovik {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
+            case 19:
                 this.hierMesh().chunkVisible("Blister2_D0", false);
                 break;
         }
@@ -45,7 +43,7 @@ public class A_20C extends A_20 implements TypeBomber, TypeStormovik {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -75F) {
                     f = -75F;
                     flag = false;
@@ -64,7 +62,7 @@ public class A_20C extends A_20 implements TypeBomber, TypeStormovik {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -30F) {
                     f = -30F;
                     flag = false;
@@ -90,38 +88,38 @@ public class A_20C extends A_20 implements TypeBomber, TypeStormovik {
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 1: // '\001'
-                super.FM.turret[0].setHealth(f);
+            case 1:
+                this.FM.turret[0].setHealth(f);
                 break;
 
-            case 2: // '\002'
-                super.FM.turret[1].setHealth(f);
+            case 2:
+                this.FM.turret[1].setHealth(f);
                 break;
         }
     }
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.hierMesh().chunkVisible("Pilot4_D0", false);
                 this.hierMesh().chunkVisible("HMask4_D0", false);
                 this.hierMesh().chunkVisible("Pilot4_D1", true);
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("HMask2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3_D0", false);
                 this.hierMesh().chunkVisible("HMask3_D0", false);
                 this.hierMesh().chunkVisible("Pilot3_D1", true);
@@ -131,13 +129,13 @@ public class A_20C extends A_20 implements TypeBomber, TypeStormovik {
 
     public void moveWheelSink() {
         this.resetYPRmodifier();
-        Aircraft.xyz[2] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[0], 0.0F, 0.288F, 0.0F, 0.288F);
+        Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.288F, 0.0F, 0.288F);
         this.hierMesh().chunkSetLocate("GearL3_D0", Aircraft.xyz, Aircraft.ypr);
         this.resetYPRmodifier();
-        Aircraft.xyz[2] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[1], 0.0F, 0.288F, 0.0F, 0.288F);
+        Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.288F, 0.0F, 0.288F);
         this.hierMesh().chunkSetLocate("GearR3_D0", Aircraft.xyz, Aircraft.ypr);
         this.resetYPRmodifier();
-        Aircraft.xyz[2] = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.gWheelSinking[2], 0.0F, 0.122F, 0.0F, 0.122F);
+        Aircraft.xyz[2] = Aircraft.cvt(this.FM.Gears.gWheelSinking[2], 0.0F, 0.122F, 0.0F, 0.122F);
         this.hierMesh().chunkSetLocate("GearC3_D0", Aircraft.xyz, Aircraft.ypr);
     }
 
@@ -154,21 +152,21 @@ public class A_20C extends A_20 implements TypeBomber, TypeStormovik {
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         if (flag) {
-            if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[0] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
-                ((FlightModelMain) (super.FM)).AS.hitTank(this, 0, 1);
+            if ((this.FM.AS.astateEngineStates[0] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
+                this.FM.AS.hitTank(this, 0, 1);
             }
-            if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[1] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
-                ((FlightModelMain) (super.FM)).AS.hitTank(this, 1, 1);
+            if ((this.FM.AS.astateEngineStates[1] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
+                this.FM.AS.hitTank(this, 1, 1);
             }
-            if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[2] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
-                ((FlightModelMain) (super.FM)).AS.hitTank(this, 2, 1);
+            if ((this.FM.AS.astateEngineStates[2] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
+                this.FM.AS.hitTank(this, 2, 1);
             }
-            if ((((FlightModelMain) (super.FM)).AS.astateEngineStates[3] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
-                ((FlightModelMain) (super.FM)).AS.hitTank(this, 3, 1);
+            if ((this.FM.AS.astateEngineStates[3] > 3) && (World.Rnd().nextFloat() < 0.0023F)) {
+                this.FM.AS.hitTank(this, 3, 1);
             }
         }
         for (int i = 1; i < 5; i++) {
-            if (super.FM.getAltitude() < 3000F) {
+            if (this.FM.getAltitude() < 3000F) {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", false);
             } else {
                 this.hierMesh().chunkVisible("HMask" + i + "_D0", this.hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -179,7 +177,7 @@ public class A_20C extends A_20 implements TypeBomber, TypeStormovik {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).AS.wantBeaconsNet(true);
+        this.FM.AS.wantBeaconsNet(true);
     }
 
     private static final float toMeters(float f) {
@@ -207,7 +205,7 @@ public class A_20C extends A_20 implements TypeBomber, TypeStormovik {
         if (this.fSightCurForwardAngle > 85F) {
             this.fSightCurForwardAngle = 85F;
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = A_20C.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         if (this.bSightAutomation) {
             this.typeBomberToggleAutomation();
@@ -219,7 +217,7 @@ public class A_20C extends A_20 implements TypeBomber, TypeStormovik {
         if (this.fSightCurForwardAngle < 0.0F) {
             this.fSightCurForwardAngle = 0.0F;
         }
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = A_20C.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
         if (this.bSightAutomation) {
             this.typeBomberToggleAutomation();
@@ -256,7 +254,7 @@ public class A_20C extends A_20 implements TypeBomber, TypeStormovik {
             this.fSightCurAltitude = 50000F;
         }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int) this.fSightCurAltitude) });
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = A_20C.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
     }
 
     public void typeBomberAdjAltitudeMinus() {
@@ -265,7 +263,7 @@ public class A_20C extends A_20 implements TypeBomber, TypeStormovik {
             this.fSightCurAltitude = 1000F;
         }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int) this.fSightCurAltitude) });
-        this.fSightCurDistance = toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
+        this.fSightCurDistance = A_20C.toMeters(this.fSightCurAltitude) * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
     }
 
     public void typeBomberAdjSpeedReset() {
@@ -289,7 +287,7 @@ public class A_20C extends A_20 implements TypeBomber, TypeStormovik {
     }
 
     public void typeBomberUpdate(float f) {
-        if (Math.abs(((FlightModelMain) (super.FM)).Or.getKren()) > 4.5D) {
+        if (Math.abs(this.FM.Or.getKren()) > 4.5D) {
             this.fSightCurReadyness -= 0.0666666F * f;
             if (this.fSightCurReadyness < 0.0F) {
                 this.fSightCurReadyness = 0.0F;
@@ -298,23 +296,23 @@ public class A_20C extends A_20 implements TypeBomber, TypeStormovik {
         if (this.fSightCurReadyness < 1.0F) {
             this.fSightCurReadyness += 0.0333333F * f;
         } else if (this.bSightAutomation) {
-            this.fSightCurDistance -= toMetersPerSecond(this.fSightCurSpeed) * f;
+            this.fSightCurDistance -= A_20C.toMetersPerSecond(this.fSightCurSpeed) * f;
             if (this.fSightCurDistance < 0.0F) {
                 this.fSightCurDistance = 0.0F;
                 this.typeBomberToggleAutomation();
             }
-            this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / toMeters(this.fSightCurAltitude)));
-            if (this.fSightCurDistance < (toMetersPerSecond(this.fSightCurSpeed) * Math.sqrt(toMeters(this.fSightCurAltitude) * 0.2038736F))) {
+            this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / A_20C.toMeters(this.fSightCurAltitude)));
+            if (this.fSightCurDistance < (A_20C.toMetersPerSecond(this.fSightCurSpeed) * Math.sqrt(A_20C.toMeters(this.fSightCurAltitude) * 0.2038736F))) {
                 this.bSightBombDump = true;
             }
             if (this.bSightBombDump) {
-                if (super.FM.isTick(3, 0)) {
-                    if ((((FlightModelMain) (super.FM)).CT.Weapons[3] != null) && (((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1] != null) && ((FlightModelMain) (super.FM)).CT.Weapons[3][((FlightModelMain) (super.FM)).CT.Weapons[3].length - 1].haveBullets()) {
-                        ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = true;
+                if (this.FM.isTick(3, 0)) {
+                    if ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1] != null) && this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].haveBullets()) {
+                        this.FM.CT.WeaponControl[3] = true;
                         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
                     }
                 } else {
-                    ((FlightModelMain) (super.FM)).CT.WeaponControl[3] = false;
+                    this.FM.CT.WeaponControl[3] = false;
                 }
             }
         }
@@ -343,7 +341,7 @@ public class A_20C extends A_20 implements TypeBomber, TypeStormovik {
     }
 
     public void update(float f) {
-        if (((FlightModelMain) (super.FM)).AS.bLandingLightOn) {
+        if (this.FM.AS.bLandingLightOn) {
             if (this.llpos < 1.0F) {
                 this.llpos += 0.5F * f;
                 this.hierMesh().chunkSetAngles("LLight_D0", 0.0F, -90F * this.llpos, 0.0F);
@@ -366,7 +364,7 @@ public class A_20C extends A_20 implements TypeBomber, TypeStormovik {
     private float   llpos;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = A_20C.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "A-20");
         Property.set(class1, "meshName", "3DO/Plane/A-20C(Multi1)/hier.him");

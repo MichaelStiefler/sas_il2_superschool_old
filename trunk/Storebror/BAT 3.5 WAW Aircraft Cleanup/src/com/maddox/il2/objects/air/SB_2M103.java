@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.engine.Orient;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class SB_2M103 extends SBxyz {
@@ -13,20 +12,20 @@ public class SB_2M103 extends SBxyz {
 
     public void setOnGround(Point3d point3d, Orient orient, Vector3d vector3d) {
         super.setOnGround(point3d, orient, vector3d);
-        if (super.FM.isPlayers()) {
-            ((FlightModelMain) (super.FM)).CT.bHasCockpitDoorControl = true;
-            ((FlightModelMain) (super.FM)).CT.dvCockpitDoor = 0.5F;
-            ((FlightModelMain) (super.FM)).CT.cockpitDoorControl = 1.0F;
+        if (this.FM.isPlayers()) {
+            this.FM.CT.bHasCockpitDoorControl = true;
+            this.FM.CT.dvCockpitDoor = 0.5F;
+            this.FM.CT.cockpitDoorControl = 1.0F;
         }
     }
 
     public void update(float f) {
         super.update(f);
-        if (!super.FM.isPlayers() && ((FlightModelMain) (super.FM)).Gears.onGround()) {
-            if (((FlightModelMain) (super.FM)).EI.engines[1].getRPM() < 100F) {
-                ((FlightModelMain) (super.FM)).CT.cockpitDoorControl = 1.0F;
+        if (!this.FM.isPlayers() && this.FM.Gears.onGround()) {
+            if (this.FM.EI.engines[1].getRPM() < 100F) {
+                this.FM.CT.cockpitDoorControl = 1.0F;
             } else {
-                ((FlightModelMain) (super.FM)).CT.cockpitDoorControl = 0.0F;
+                this.FM.CT.cockpitDoorControl = 0.0F;
             }
         }
     }

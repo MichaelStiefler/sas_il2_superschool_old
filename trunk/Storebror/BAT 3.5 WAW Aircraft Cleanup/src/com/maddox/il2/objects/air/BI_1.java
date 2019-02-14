@@ -114,7 +114,7 @@ public class BI_1 extends Scheme1 implements TypeFighter {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        BI_1.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     protected void moveFlap(float f) {
@@ -167,7 +167,7 @@ public class BI_1 extends Scheme1 implements TypeFighter {
                     this.getEnergyPastArmor(12.71F, shot);
                 }
                 if (s.endsWith("p2")) {
-                    this.getEnergyPastArmor(12.699999809265137D / (Math.abs(v1.x) + 9.9999997473787516E-005D), shot);
+                    this.getEnergyPastArmor(12.699999809265137D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D), shot);
                 }
                 return;
             }
@@ -191,30 +191,30 @@ public class BI_1 extends Scheme1 implements TypeFighter {
                     default:
                         break;
 
-                    case 1: // '\001'
-                    case 4: // '\004'
+                    case 1:
+                    case 4:
                         if (this.getEnergyPastArmor(4.5F, shot) > 0.0F) {
                             this.FM.AS.setControlsDamage(shot.initiator, 0);
                             this.debuggunnery("Ailerons Controls Out..");
                         }
                         break;
 
-                    case 2: // '\002'
-                    case 3: // '\003'
+                    case 2:
+                    case 3:
                         if ((this.getEnergyPastArmor(1.5F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
                             this.FM.AS.setControlsDamage(shot.initiator, 0);
                             this.debuggunnery("Ailerons Controls Out..");
                         }
                         break;
 
-                    case 5: // '\005'
+                    case 5:
                         if ((this.getEnergyPastArmor(1.5F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.45F)) {
                             this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 1);
                             this.debuggunnery("*** Engine1 Throttle Controls Out..");
                         }
                         break;
 
-                    case 6: // '\006'
+                    case 6:
                         if (this.getEnergyPastArmor(4F, shot) <= 0.0F) {
                             break;
                         }
@@ -228,7 +228,7 @@ public class BI_1 extends Scheme1 implements TypeFighter {
                         }
                         break;
 
-                    case 7: // '\007'
+                    case 7:
                         if (this.getEnergyPastArmor(1.0F, shot) <= 0.0F) {
                             break;
                         }
@@ -401,11 +401,11 @@ public class BI_1 extends Scheme1 implements TypeFighter {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 3: // '\003'
-            case 19: // '\023'
+            case 3:
+            case 19:
                 this.bHasEngine = false;
                 this.FM.AS.setEngineDies(this, 0);
-                return this.cut(partNames()[i]);
+                return this.cut(Aircraft.partNames()[i]);
         }
         return super.cutFM(i, j, actor);
     }
@@ -434,9 +434,9 @@ public class BI_1 extends Scheme1 implements TypeFighter {
             this.FM.setReadyToDie(true);
         }
         if (this.FM.isPlayers() && (Pitot.Indicator((float) this.FM.Loc.z, this.FM.getSpeedKMH()) > 750F)) {
-            v.x = v.z = 0.0D;
-            v.y = cvt(Pitot.Indicator((float) this.FM.Loc.z, this.FM.getSpeedKMH()), 750F, 950F, 0.0F, 400000F);
-            ((RealFlightModel) this.FM).gunMomentum(v, false);
+            BI_1.v.x = BI_1.v.z = 0.0D;
+            BI_1.v.y = Aircraft.cvt(Pitot.Indicator((float) this.FM.Loc.z, this.FM.getSpeedKMH()), 750F, 950F, 0.0F, 400000F);
+            ((RealFlightModel) this.FM).gunMomentum(BI_1.v, false);
         }
     }
 
@@ -458,11 +458,9 @@ public class BI_1 extends Scheme1 implements TypeFighter {
         Property.set(class1, "yearService", 1942F);
         Property.set(class1, "yearExpired", 1944F);
         Property.set(class1, "FlightModel", "FlightModels/BI-1.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitBI_1.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitBI_1.class });
         Property.set(class1, "LOSElevation", 0.87325F);
-        weaponTriggersRegister(class1, new int[] { 0, 0 });
-        weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02" });
-        weaponsRegister(class1, "default", new String[] { "MGunShVAKki 45", "MGunShVAKki 45" });
-        weaponsRegister(class1, "none", new String[] { null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02" });
     }
 }

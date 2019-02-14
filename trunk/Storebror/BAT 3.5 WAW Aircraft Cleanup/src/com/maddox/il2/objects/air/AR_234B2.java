@@ -10,7 +10,6 @@ import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.BombStarthilfe109500;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -68,12 +67,12 @@ public class AR_234B2 extends AR_234 {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
-            case 34: // '"'
-            case 35: // '#'
-            case 36: // '$'
-            case 37: // '%'
-            case 38: // '&'
+            case 33:
+            case 34:
+            case 35:
+            case 36:
+            case 37:
+            case 38:
                 this.doCutBoosters();
                 this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
@@ -313,7 +312,7 @@ public class AR_234B2 extends AR_234 {
     public float      fSightCurReadyness;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = AR_234B2.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Ar 234");
         Property.set(class1, "meshName", "3DO/Plane/Ar-234B-2/hier.him");
@@ -323,16 +322,7 @@ public class AR_234B2 extends AR_234 {
         Property.set(class1, "FlightModel", "FlightModels/Ar-234B-2.fmd");
         Property.set(class1, "cockpitClass", new Class[] { CockpitAR_234B2.class, CockpitAR_234B2_Bombardier.class });
         Property.set(class1, "LOSElevation", 1.14075F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 3, 3, 3, 9, 9 });
-        weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalDev01", "_ExternalDev02" });
-        weaponsRegister(class1, "default", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", null, null, null, null, null });
-        weaponsRegister(class1, "2xtyped", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", null, null, null, "FuelTankGun_Type_D", "FuelTankGun_Type_D" });
-        weaponsRegister(class1, "3xsc500", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", "BombGunSC500 1", "BombGunSC500 1", "BombGunSC500 1", null, null });
-        weaponsRegister(class1, "3xsd500", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", "BombGunSD500 1", "BombGunSD500 1", "BombGunSD500 1", null, null });
-        weaponsRegister(class1, "1xsc1000", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", null, null, "BombGunSC1000 1", null, null });
-        weaponsRegister(class1, "1xsc10002xsc250", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", "BombGunSC250 1", "BombGunSC250 1", "BombGunSC1000 1", null, null });
-        weaponsRegister(class1, "3xab250", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", "BombGunAB250 1", "BombGunAB250 1", "BombGunAB250 1", null, null });
-        weaponsRegister(class1, "3xab500", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", "BombGunAB500 1", "BombGunAB500 1", "BombGunAB500 1", null, null });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 3, 3, 3, 9, 9 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalDev01", "_ExternalDev02" });
     }
 }

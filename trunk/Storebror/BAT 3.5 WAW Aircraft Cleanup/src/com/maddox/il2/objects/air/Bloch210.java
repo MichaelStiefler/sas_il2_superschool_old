@@ -21,7 +21,7 @@ public class Bloch210 extends Bloch2xx implements TypeBomber, TypeTransport {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -90F) {
                     f = -90F;
                     flag = false;
@@ -40,7 +40,7 @@ public class Bloch210 extends Bloch2xx implements TypeBomber, TypeTransport {
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -120F) {
                     f = -120F;
                     flag = false;
@@ -59,7 +59,7 @@ public class Bloch210 extends Bloch2xx implements TypeBomber, TypeTransport {
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f < -30F) {
                     f = -30F;
                     flag = false;
@@ -160,7 +160,7 @@ public class Bloch210 extends Bloch2xx implements TypeBomber, TypeTransport {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.equals("32x50kgA")) {
+        if (this.thisWeaponsName.equals("32x50kgA")) {
             this.hierMesh().chunkVisible("RackTypeD_1_D0", true);
             this.hierMesh().chunkVisible("RackTypeD_2_D0", true);
             this.hierMesh().chunkVisible("RackTypeD_3_D0", true);
@@ -173,7 +173,7 @@ public class Bloch210 extends Bloch2xx implements TypeBomber, TypeTransport {
             this.hierMesh().chunkVisible("RackTypeTGPU_R_D0", false);
             return;
         }
-        if (super.thisWeaponsName.equals("128x10kgP")) {
+        if (this.thisWeaponsName.equals("128x10kgP")) {
             this.hierMesh().chunkVisible("RackTypeD_1_D0", true);
             this.hierMesh().chunkVisible("RackTypeD_2_D0", true);
             this.hierMesh().chunkVisible("RackTypeD_3_D0", true);
@@ -186,7 +186,7 @@ public class Bloch210 extends Bloch2xx implements TypeBomber, TypeTransport {
             this.hierMesh().chunkVisible("RackTypeTGPU_R_D0", false);
             return;
         }
-        if (super.thisWeaponsName.equals("8x200kg")) {
+        if (this.thisWeaponsName.equals("8x200kg")) {
             this.hierMesh().chunkVisible("RackTypeD_1_D0", false);
             this.hierMesh().chunkVisible("RackTypeD_2_D0", false);
             this.hierMesh().chunkVisible("RackTypeD_3_D0", false);
@@ -199,7 +199,7 @@ public class Bloch210 extends Bloch2xx implements TypeBomber, TypeTransport {
             this.hierMesh().chunkVisible("RackTypeTGPU_R_D0", false);
             return;
         }
-        if (super.thisWeaponsName.equals("14x100kg")) {
+        if (this.thisWeaponsName.equals("14x100kg")) {
             this.hierMesh().chunkVisible("RackTypeD_1_D0", false);
             this.hierMesh().chunkVisible("RackTypeD_2_D0", false);
             this.hierMesh().chunkVisible("RackTypeD_3_D0", false);
@@ -212,7 +212,7 @@ public class Bloch210 extends Bloch2xx implements TypeBomber, TypeTransport {
             this.hierMesh().chunkVisible("RackTypeTGPU_R_D0", false);
             return;
         }
-        if (super.thisWeaponsName.equals("2x500kg")) {
+        if (this.thisWeaponsName.equals("2x500kg")) {
             this.hierMesh().chunkVisible("RackTypeD_1_D0", false);
             this.hierMesh().chunkVisible("RackTypeD_2_D0", false);
             this.hierMesh().chunkVisible("RackTypeD_3_D0", false);
@@ -225,7 +225,7 @@ public class Bloch210 extends Bloch2xx implements TypeBomber, TypeTransport {
             this.hierMesh().chunkVisible("RackTypeTGPU_R_D0", true);
             return;
         }
-        if (super.thisWeaponsName.equals("2x500kg+6x100")) {
+        if (this.thisWeaponsName.equals("2x500kg+6x100")) {
             this.hierMesh().chunkVisible("RackTypeD_1_D0", false);
             this.hierMesh().chunkVisible("RackTypeD_2_D0", false);
             this.hierMesh().chunkVisible("RackTypeD_3_D0", false);
@@ -238,7 +238,7 @@ public class Bloch210 extends Bloch2xx implements TypeBomber, TypeTransport {
             this.hierMesh().chunkVisible("RackTypeTGPU_R_D0", true);
             return;
         }
-        if (super.thisWeaponsName.equals("2x500kg+2x200")) {
+        if (this.thisWeaponsName.equals("2x500kg+2x200")) {
             this.hierMesh().chunkVisible("RackTypeD_1_D0", false);
             this.hierMesh().chunkVisible("RackTypeD_2_D0", false);
             this.hierMesh().chunkVisible("RackTypeD_3_D0", false);

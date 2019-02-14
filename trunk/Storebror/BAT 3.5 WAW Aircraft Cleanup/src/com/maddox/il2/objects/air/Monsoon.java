@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class Monsoon extends Monsoonx implements TypeSailPlane {
@@ -9,7 +8,7 @@ public class Monsoon extends Monsoonx implements TypeSailPlane {
     }
 
     public void onAircraftLoaded() {
-        ((FlightModelMain) (super.FM)).EI.engines[0].doSetKillControlAfterburner();
+        this.FM.EI.engines[0].doSetKillControlAfterburner();
         super.onAircraftLoaded();
     }
 

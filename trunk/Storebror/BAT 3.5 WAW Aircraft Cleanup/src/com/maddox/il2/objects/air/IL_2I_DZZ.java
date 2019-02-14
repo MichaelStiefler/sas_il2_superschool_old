@@ -18,7 +18,7 @@ public class IL_2I_DZZ extends IL_2 implements TypeFighter {
         Property.set(class1, "yearService", 1943F);
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/Il-2I.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitIL_2_1942.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitIL_2_1942.class });
         Property.set(class1, "LOSElevation", 0.81F);
         Property.set(class1, "Handicap", 1.1F);
         Aircraft.weaponTriggersRegister(class1, new int[] { 1, 1, 3, 3 });

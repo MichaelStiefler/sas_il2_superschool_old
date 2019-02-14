@@ -38,10 +38,10 @@ public class G50 extends Scheme1 implements TypeFighter, TypeTNBFighter {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 33: // '!'
+            case 33:
                 return super.cutFM(34, j, actor);
 
-            case 36: // '$'
+            case 36:
                 return super.cutFM(37, j, actor);
         }
         return super.cutFM(i, j, actor);
@@ -49,7 +49,7 @@ public class G50 extends Scheme1 implements TypeFighter, TypeTNBFighter {
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("HMask1_D0", false);
@@ -72,7 +72,7 @@ public class G50 extends Scheme1 implements TypeFighter, TypeTNBFighter {
                     default:
                         break;
 
-                    case 1: // '\001'
+                    case 1:
                         if (this.getEnergyPastArmor(2.2F, shot) > 0.0F) {
                             this.debuggunnery("Controls: Control Column: Hit, Controls Destroyed..");
                             this.FM.AS.setControlsDamage(shot.initiator, 2);
@@ -81,26 +81,26 @@ public class G50 extends Scheme1 implements TypeFighter, TypeTNBFighter {
                         }
                         break;
 
-                    case 2: // '\002'
-                    case 3: // '\003'
-                    case 4: // '\004'
+                    case 2:
+                    case 3:
+                    case 4:
                         if (this.getEnergyPastArmor(0.004F, shot) > 0.0F) {
                             this.FM.AS.setControlsDamage(shot.initiator, 1);
                             this.debuggunnery("Controls: Elevator Controls: Disabled / Strings Broken..");
                         }
                         break;
 
-                    case 5: // '\005'
+                    case 5:
                         if (this.getEnergyPastArmor(0.004F, shot) > 0.0F) {
                             this.FM.AS.setControlsDamage(shot.initiator, 2);
                             this.debuggunnery("Controls: Rudder Controls: Disabled / Strings Broken..");
                         }
                         break;
 
-                    case 6: // '\006'
-                    case 7: // '\007'
-                    case 8: // '\b'
-                    case 9: // '\t'
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
                         if ((this.getEnergyPastArmor(0.12F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.25F)) {
                             this.FM.AS.setControlsDamage(shot.initiator, 0);
                             this.debuggunnery("Controls: Aileron Controls: Disabled..");
@@ -184,11 +184,11 @@ public class G50 extends Scheme1 implements TypeFighter, TypeTNBFighter {
                 int i1 = s.charAt(7) - 48;
                 if (World.Rnd().nextFloat(0.0F, 20000F) < shot.power) {
                     switch (i1) {
-                        case 1: // '\001'
+                        case 1:
                             this.FM.AS.setJamBullets(0, 0);
                             break;
 
-                        case 2: // '\002'
+                        case 2:
                             this.FM.AS.setJamBullets(0, 1);
                             break;
                     }
@@ -333,7 +333,7 @@ public class G50 extends Scheme1 implements TypeFighter, TypeTNBFighter {
     }
 
     protected void moveGear(float f, float f1, float f2) {
-        moveGear(this.hierMesh(), f, f1, f2);
+        G50.moveGear(this.hierMesh(), f, f1, f2);
     }
 
     public void moveSteering(float f) {
@@ -342,10 +342,10 @@ public class G50 extends Scheme1 implements TypeFighter, TypeTNBFighter {
 
     public void moveWheelSink() {
         this.resetYPRmodifier();
-        xyz[1] = cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.2F, 0.0F, 0.2F);
-        this.hierMesh().chunkSetLocate("GearL3_D0", xyz, ypr);
-        xyz[1] = cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.2F, 0.0F, 0.2F);
-        this.hierMesh().chunkSetLocate("GearR3_D0", xyz, ypr);
+        Aircraft.xyz[1] = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.2F, 0.0F, 0.2F);
+        this.hierMesh().chunkSetLocate("GearL3_D0", Aircraft.xyz, Aircraft.ypr);
+        Aircraft.xyz[1] = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.2F, 0.0F, 0.2F);
+        this.hierMesh().chunkSetLocate("GearR3_D0", Aircraft.xyz, Aircraft.ypr);
     }
 
     public void rareAction(float f, boolean flag) {
@@ -369,11 +369,9 @@ public class G50 extends Scheme1 implements TypeFighter, TypeTNBFighter {
         Property.set(class1, "yearService", 1938F);
         Property.set(class1, "yearExpired", 1944.8F);
         Property.set(class1, "FlightModel", "FlightModels/G50.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitG50.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitG50.class });
         Property.set(class1, "LOSElevation", 0.98615F);
-        weaponTriggersRegister(class1, new int[] { 0, 0 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02" });
-        weaponsRegister(class1, "default", new String[] { "MGunBredaSAFAT127siG50 300", "MGunBredaSAFAT127siG50 300" });
-        weaponsRegister(class1, "none", new String[] { null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02" });
     }
 }

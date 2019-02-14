@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import java.io.IOException;
 
 import com.maddox.il2.ai.World;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -20,12 +19,12 @@ public class B_25G1 extends B_25 implements TypeBomber, TypeStormovik, TypeStorm
         this.fSightCurAltitude = 3000F;
         this.fSightCurSpeed = 200F;
         this.fSightCurReadyness = 0.0F;
-        bChangedPit = false;
+        B_25G1.bChangedPit = false;
     }
 
     public void update(float f) {
         super.update(f);
-        if (!((FlightModelMain) (super.FM)).AS.isMaster()) {
+        if (!this.FM.AS.isMaster()) {
             return;
         }
         if (this.bpos == 0.0F) {
@@ -44,7 +43,7 @@ public class B_25G1 extends B_25 implements TypeBomber, TypeStormovik, TypeStorm
                 if (this.bcurpos > 1.0F) {
                     this.bcurpos = 1.0F;
                     this.bpos = 0.5F;
-                    super.FM.turret[2].bIsOperable = true;
+                    this.FM.turret[2].bIsOperable = true;
                 }
             }
             this.resetYPRmodifier();
@@ -53,11 +52,11 @@ public class B_25G1 extends B_25 implements TypeBomber, TypeStormovik, TypeStorm
         }
         if (Time.current() > this.btme) {
             this.btme = Time.current() + World.Rnd().nextLong(5000L, 12000L);
-            if (super.FM.turret[2].target == null) {
-                super.FM.turret[2].bIsOperable = false;
+            if (this.FM.turret[2].target == null) {
+                this.FM.turret[2].bIsOperable = false;
                 this.bpos = 0.0F;
             }
-            if ((super.FM.turret[1].target != null) && (((FlightModelMain) (super.FM)).AS.astatePilotStates[4] < 90)) {
+            if ((this.FM.turret[1].target != null) && (this.FM.AS.astatePilotStates[4] < 90)) {
                 this.bpos = 1.0F;
             }
         }
@@ -65,7 +64,7 @@ public class B_25G1 extends B_25 implements TypeBomber, TypeStormovik, TypeStorm
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        ((FlightModelMain) (super.FM)).AS.wantBeaconsNet(true);
+        this.FM.AS.wantBeaconsNet(true);
     }
 
     public boolean turretAngles(int i, float af[]) {
@@ -76,10 +75,10 @@ public class B_25G1 extends B_25 implements TypeBomber, TypeStormovik, TypeStorm
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 return false;
 
-            case 1: // '\001'
+            case 1:
                 if (f1 < 0.0F) {
                     f1 = 0.0F;
                     flag = false;
@@ -90,7 +89,7 @@ public class B_25G1 extends B_25 implements TypeBomber, TypeStormovik, TypeStorm
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (f1 < -88F) {
                     f1 = -88F;
                     flag = false;
@@ -157,12 +156,12 @@ public class B_25G1 extends B_25 implements TypeBomber, TypeStormovik, TypeStorm
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 3: // '\003'
-                super.FM.turret[1].setHealth(f);
+            case 3:
+                this.FM.turret[1].setHealth(f);
                 break;
 
-            case 4: // '\004'
-                super.FM.turret[2].setHealth(f);
+            case 4:
+                this.FM.turret[2].setHealth(f);
                 break;
         }
     }

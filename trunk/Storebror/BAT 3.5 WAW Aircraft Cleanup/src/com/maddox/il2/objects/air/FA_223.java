@@ -23,7 +23,7 @@ public class FA_223 extends Scheme1 implements TypeScout, TypeTransport, TypeSto
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (super.FM.getAltitude() < 3000F) {
+        if (this.FM.getAltitude() < 3000F) {
             this.hierMesh().chunkVisible("HMask1_D0", false);
         } else {
             this.hierMesh().chunkVisible("HMask1_D0", this.hierMesh().isChunkVisible("Head1_D0"));
@@ -46,7 +46,7 @@ public class FA_223 extends Scheme1 implements TypeScout, TypeTransport, TypeSto
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        FA_223.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {
@@ -59,7 +59,7 @@ public class FA_223 extends Scheme1 implements TypeScout, TypeTransport, TypeSto
     }
 
     protected void moveFan(float f) {
-        this.rotorrpm = Math.abs((int) (this.FM.EI.engines[0].getw() * 0.025F + (this.FM.Vwld.length() / 30D)));
+        this.rotorrpm = Math.abs((int) ((this.FM.EI.engines[0].getw() * 0.025F) + (this.FM.Vwld.length() / 30D)));
         if (this.rotorrpm >= 1) {
             this.rotorrpm = 1;
         }
@@ -122,7 +122,7 @@ public class FA_223 extends Scheme1 implements TypeScout, TypeTransport, TypeSto
                         default:
                             break;
 
-                        case 1: // '\001'
+                        case 1:
                             if (this.getEnergyPastArmor(World.Rnd().nextFloat(0.1F, 2.3F), shot) > 0.0F) {
                                 if (World.Rnd().nextFloat() < 0.25F) {
                                     this.FM.AS.setControlsDamage(shot.initiator, 2);
@@ -135,8 +135,8 @@ public class FA_223 extends Scheme1 implements TypeScout, TypeTransport, TypeSto
                             }
                             // fall through
 
-                        case 2: // '\002'
-                        case 3: // '\003'
+                        case 2:
+                        case 3:
                             if (this.getEnergyPastArmor(1.5F, shot) > 0.0F) {
                                 this.FM.AS.setControlsDamage(shot.initiator, 0);
                                 Aircraft.debugprintln(this, "*** Aileron Controls: Control Crank Destroyed..");
@@ -382,10 +382,10 @@ public class FA_223 extends Scheme1 implements TypeScout, TypeTransport, TypeSto
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 34: // '"'
+            case 34:
                 return super.cutFM(35, j, actor);
 
-            case 37: // '%'
+            case 37:
                 return super.cutFM(38, j, actor);
         }
         return super.cutFM(i, j, actor);
@@ -393,7 +393,7 @@ public class FA_223 extends Scheme1 implements TypeScout, TypeTransport, TypeSto
 
     public void doMurderPilot(int i) {
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
@@ -483,7 +483,7 @@ public class FA_223 extends Scheme1 implements TypeScout, TypeTransport, TypeSto
         float f1 = 0.0F;
         if (this.FM.EI.engines[0].getStage() > 5) {
             if (this.FM.EI.getPowerOutput() <= 0.0F) {
-                ;
+
             }
         }
         if (f > 6D) {

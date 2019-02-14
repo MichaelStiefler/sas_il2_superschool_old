@@ -18,15 +18,9 @@ public class CR_42 extends CR_42X {
         Property.set(class1, "yearService", 1939F);
         Property.set(class1, "yearExpired", 1943F);
         Property.set(class1, "FlightModel", "FlightModels/CR42.fmd");
-        Property.set(class1, "cockpitClass", new Class[] { CockpitCR42.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitCR42.class });
         Property.set(class1, "LOSElevation", 0.742F);
-        weaponTriggersRegister(class1, new int[] { 0, 0, 3, 3 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02" });
-        weaponsRegister(class1, "default", new String[] { "MGunBredaSAFAT127siCR42 400", "MGunBredaSAFAT127siCR42 400", null, null });
-        weaponsRegister(class1, "2sc50", new String[] { "MGunBredaSAFAT127siCR42 400", "MGunBredaSAFAT127siCR42 400", "BombGunSC50 1", "BombGunSC50 1" });
-        weaponsRegister(class1, "2sc70", new String[] { "MGunBredaSAFAT127siCR42 400", "MGunBredaSAFAT127siCR42 400", "BombGunSC70 1", "BombGunSC70 1" });
-        weaponsRegister(class1, "2x50", new String[] { "MGunBredaSAFAT127siCR42 400", "MGunBredaSAFAT127siCR42 400", "BombGunIT_50_M 1", "BombGunIT_50_M 1" });
-        weaponsRegister(class1, "2x100", new String[] { "MGunBredaSAFAT127siCR42 400", "MGunBredaSAFAT127siCR42 400", "BombGunIT_100_M 1", "BombGunIT_100_M 1" });
-        weaponsRegister(class1, "none", new String[] { null, null, null, null });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 3, 3 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02" });
     }
 }

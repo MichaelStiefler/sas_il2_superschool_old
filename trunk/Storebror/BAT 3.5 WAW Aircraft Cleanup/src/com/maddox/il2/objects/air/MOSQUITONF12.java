@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class MOSQUITONF12 extends MOSQUITO implements TypeFighter, TypeStormovik {
@@ -9,7 +8,7 @@ public class MOSQUITONF12 extends MOSQUITO implements TypeFighter, TypeStormovik
     }
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = MOSQUITONF12.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Mosquito");
         Property.set(class1, "meshName", "3DO/Plane/MOSQUITONF12(Multi1)/hier.him");

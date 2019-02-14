@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -17,22 +16,22 @@ public class U_2VS extends U_2 {
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
+        if (this.FM.isPlayers()) {
             this.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if (super.FM.isPlayers()) {
+        if (this.FM.isPlayers()) {
             this.bChangedPit = true;
         }
     }
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
-            case 1: // '\001'
-                super.FM.turret[0].setHealth(f);
+            case 1:
+                this.FM.turret[0].setHealth(f);
                 break;
         }
     }
@@ -42,19 +41,19 @@ public class U_2VS extends U_2 {
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot1_D0", false);
                 this.hierMesh().chunkVisible("Head1_D0", false);
                 this.hierMesh().chunkVisible("Pilot1_D1", true);
-                if (!((FlightModelMain) (super.FM)).AS.bIsAboutToBailout && World.cur().isHighGore()) {
+                if (!this.FM.AS.bIsAboutToBailout && World.cur().isHighGore()) {
                     this.hierMesh().chunkVisible("Gore1_D0", true);
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot2_D0", false);
                 this.hierMesh().chunkVisible("Pilot2_D1", true);
-                if (!((FlightModelMain) (super.FM)).AS.bIsAboutToBailout && World.cur().isHighGore()) {
+                if (!this.FM.AS.bIsAboutToBailout && World.cur().isHighGore()) {
                     this.hierMesh().chunkVisible("Gore2_D0", true);
                 }
                 break;

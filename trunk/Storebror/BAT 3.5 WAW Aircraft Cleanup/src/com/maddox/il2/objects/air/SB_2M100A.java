@@ -25,7 +25,7 @@ public class SB_2M100A extends SB {
         Property.set(class1, "cockpitClass", new Class[] { CockpitSB.class, CockpitSB_Bombardier.class, CockpitSB_NGunner.class, CockpitSB_TGunner.class, CockpitSB_BGunner.class });
         Property.set(class1, "weaponsList", new ArrayList());
         Property.set(class1, "weaponsMap", new HashMapInt());
-        weaponTriggersRegister(class1, new int[] { 10, 10, 11, 12, 3, 3, 3, 3, 3, 3, 3 });
-        weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07" });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 10, 10, 11, 12, 3, 3, 3, 3, 3, 3, 3 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07" });
     }
 }

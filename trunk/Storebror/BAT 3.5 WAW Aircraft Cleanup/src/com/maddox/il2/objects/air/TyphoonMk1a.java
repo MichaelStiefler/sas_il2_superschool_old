@@ -1,7 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
 public class TyphoonMk1a extends TEMPEST {
@@ -10,15 +8,13 @@ public class TyphoonMk1a extends TEMPEST {
     }
 
     public void onAircraftLoaded() {
-        ((FlightModelMain) (super.FM)).EI.engines[0].doSetKillControlAfterburner();
+        this.FM.EI.engines[0].doSetKillControlAfterburner();
         super.onAircraftLoaded();
     }
 
-    static Class class$com$maddox$il2$objects$air$TyphoonMk1a;
-    static Class class$com$maddox$il2$objects$air$CockpitTYPHOON1a;
 
     static {
-        Class class1 = CLASS.THIS();
+        Class class1 = TyphoonMk1a.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "Typhoon");
         Property.set(class1, "meshName", "3DO/Plane/TyphoonMkIa(Multi1)/hier.him");

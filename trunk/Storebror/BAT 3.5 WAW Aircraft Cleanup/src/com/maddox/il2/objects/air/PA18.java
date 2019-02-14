@@ -5,7 +5,6 @@ import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class PA18 extends Scheme1 implements TypeStormovik {
@@ -15,7 +14,7 @@ public class PA18 extends Scheme1 implements TypeStormovik {
 
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if (super.FM.getAltitude() < 3000F) {
+        if (this.FM.getAltitude() < 3000F) {
             this.hierMesh().chunkVisible("HMask1_D0", false);
         } else {
             this.hierMesh().chunkVisible("HMask1_D0", this.hierMesh().isChunkVisible("Pilot1_D0"));
@@ -53,30 +52,30 @@ public class PA18 extends Scheme1 implements TypeStormovik {
             if (s.startsWith("xxcontrols")) {
                 if (s.endsWith("8")) {
                     if (World.Rnd().nextFloat() < 0.2F) {
-                        ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
+                        this.FM.AS.setControlsDamage(shot.initiator, 2);
                         Aircraft.debugprintln(this, "*** Rudder Controls Out.. (#8)");
                     }
                 } else if (s.endsWith("9")) {
                     if (World.Rnd().nextFloat() < 0.2F) {
-                        ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
+                        this.FM.AS.setControlsDamage(shot.initiator, 1);
                         Aircraft.debugprintln(this, "*** Evelator Controls Out.. (#9)");
                     }
                     if (World.Rnd().nextFloat() < 0.2F) {
-                        ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 0);
+                        this.FM.AS.setControlsDamage(shot.initiator, 0);
                         Aircraft.debugprintln(this, "*** Arone Controls Out.. (#9)");
                     }
                 } else if (s.endsWith("5")) {
                     if (World.Rnd().nextFloat() < 0.5F) {
-                        ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 1);
+                        this.FM.AS.setControlsDamage(shot.initiator, 1);
                         Aircraft.debugprintln(this, "*** Evelator Controls Out.. (#5)");
                     }
                 } else if (s.endsWith("6")) {
                     if (World.Rnd().nextFloat() < 0.5F) {
-                        ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
+                        this.FM.AS.setControlsDamage(shot.initiator, 2);
                         Aircraft.debugprintln(this, "*** Rudder Controls Out.. (#6)");
                     }
                 } else if ((s.endsWith("2") || s.endsWith("4")) && (World.Rnd().nextFloat() < 0.5F)) {
-                    ((FlightModelMain) (super.FM)).AS.setControlsDamage(shot.initiator, 2);
+                    this.FM.AS.setControlsDamage(shot.initiator, 2);
                     Aircraft.debugprintln(this, "*** Arone Controls Out.. (#2/#4)");
                 }
                 return;
@@ -88,55 +87,55 @@ public class PA18 extends Scheme1 implements TypeStormovik {
                 } else if (s.endsWith("case")) {
                     if (this.getEnergyPastArmor(2.1F, shot) > 0.0F) {
                         if (World.Rnd().nextFloat() < (shot.power / 175000F)) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, 0);
+                            this.FM.AS.setEngineStuck(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Engine Module: Bullet Jams Crank Ball Bearing..");
                         }
                         if (World.Rnd().nextFloat() < (shot.power / 50000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 2);
-                            Aircraft.debugprintln(this, "*** Engine Module: Crank Case Hit, Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() + "..");
+                            this.FM.AS.hitEngine(shot.initiator, 0, 2);
+                            Aircraft.debugprintln(this, "*** Engine Module: Crank Case Hit, Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + "..");
                         }
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setReadyness(shot.initiator, ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 48000F));
-                        Aircraft.debugprintln(this, "*** Engine Module: Crank Case Hit, Readyness Reduced to " + ((FlightModelMain) (super.FM)).EI.engines[0].getReadyness() + "..");
+                        this.FM.EI.engines[0].setReadyness(shot.initiator, this.FM.EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 48000F));
+                        Aircraft.debugprintln(this, "*** Engine Module: Crank Case Hit, Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + "..");
                     }
                     this.getEnergyPastArmor(12.7F, shot);
                 } else if (s.endsWith("cyl1") || s.endsWith("cyl2")) {
-                    if ((this.getEnergyPastArmor(World.Rnd().nextFloat(0.2F, 4.4F), shot) > 0.0F) && (World.Rnd().nextFloat() < (((FlightModelMain) (super.FM)).EI.engines[0].getCylindersRatio() * 1.12F))) {
-                        ((FlightModelMain) (super.FM)).EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
-                        Aircraft.debugprintln(this, "*** Engine Module: Cylinders Hit, " + ((FlightModelMain) (super.FM)).EI.engines[0].getCylindersOperable() + "/" + ((FlightModelMain) (super.FM)).EI.engines[0].getCylinders() + " Left..");
+                    if ((this.getEnergyPastArmor(World.Rnd().nextFloat(0.2F, 4.4F), shot) > 0.0F) && (World.Rnd().nextFloat() < (this.FM.EI.engines[0].getCylindersRatio() * 1.12F))) {
+                        this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 4800F)));
+                        Aircraft.debugprintln(this, "*** Engine Module: Cylinders Hit, " + this.FM.EI.engines[0].getCylindersOperable() + "/" + this.FM.EI.engines[0].getCylinders() + " Left..");
                         if (World.Rnd().nextFloat() < (shot.power / 48000F)) {
-                            ((FlightModelMain) (super.FM)).AS.hitEngine(shot.initiator, 0, 3);
+                            this.FM.AS.hitEngine(shot.initiator, 0, 3);
                             Aircraft.debugprintln(this, "*** Engine Module: Cylinders Hit, Engine Fires..");
                         }
                         if (World.Rnd().nextFloat() < 0.005F) {
-                            ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, 0);
+                            this.FM.AS.setEngineStuck(shot.initiator, 0);
                             Aircraft.debugprintln(this, "*** Engine Module: Bullet Jams Piston Head..");
                         }
                         this.getEnergyPastArmor(22.5F, shot);
                     }
                 } else if (s.endsWith("oil1")) {
-                    ((FlightModelMain) (super.FM)).AS.hitOil(shot.initiator, 0);
+                    this.FM.AS.hitOil(shot.initiator, 0);
                     Aircraft.debugprintln(this, "*** Engine Module: Oil Radiator Hit..");
                 } else if (s.endsWith("supc")) {
                     Aircraft.debugprintln(this, "*** Engine Module: Supercharger Hit..");
                     if ((this.getEnergyPastArmor(0.1F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.05F)) {
-                        ((FlightModelMain) (super.FM)).AS.setEngineSpecificDamage(shot.initiator, 0, 0);
+                        this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 0);
                         Aircraft.debugprintln(this, "*** Engine Module: Supercharger Disabled..");
                     }
                 }
             } else if (s.endsWith("gear")) {
                 Aircraft.debugprintln(this, "*** Engine Module: Gear Hit..");
                 if ((this.getEnergyPastArmor(2.1F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.05F)) {
-                    ((FlightModelMain) (super.FM)).AS.setEngineStuck(shot.initiator, 0);
+                    this.FM.AS.setEngineStuck(shot.initiator, 0);
                     Aircraft.debugprintln(this, "*** Engine Module: gear hit, engine stuck..");
                 }
             } else if (s.startsWith("xxtank")) {
                 if ((this.getEnergyPastArmor(0.1F, shot) > 0.0F) && (World.Rnd().nextFloat() < 0.99F)) {
-                    if (((FlightModelMain) (super.FM)).AS.astateTankStates[0] == 0) {
+                    if (this.FM.AS.astateTankStates[0] == 0) {
                         Aircraft.debugprintln(this, "*** Fuel Tank: Pierced..");
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 0, 2);
+                        this.FM.AS.hitTank(shot.initiator, 0, 2);
                     }
                     if ((shot.powerType == 3) && (World.Rnd().nextFloat() < 0.25F)) {
-                        ((FlightModelMain) (super.FM)).AS.hitTank(shot.initiator, 0, 2);
+                        this.FM.AS.hitTank(shot.initiator, 0, 2);
                         Aircraft.debugprintln(this, "*** Fuel Tank: Hit..");
                     }
                 }
@@ -197,15 +196,15 @@ public class PA18 extends Scheme1 implements TypeStormovik {
             this.hitFlesh(i, shot, byte0);
         } else if (s.startsWith("xcockpit")) {
             if (World.Rnd().nextFloat() < 0.2F) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 1);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 1);
             } else if (World.Rnd().nextFloat() < 0.4F) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 2);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 2);
             } else if (World.Rnd().nextFloat() < 0.6F) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 4);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 4);
             } else if (World.Rnd().nextFloat() < 0.8F) {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x10);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x10);
             } else {
-                ((FlightModelMain) (super.FM)).AS.setCockpitState(shot.initiator, ((FlightModelMain) (super.FM)).AS.astateCockpitState | 0x40);
+                this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x40);
             }
         } else if (s.startsWith("xcf")) {
             if (this.chunkDamageVisible("CF") < 3) {
@@ -279,11 +278,11 @@ public class PA18 extends Scheme1 implements TypeStormovik {
     }
 
     public void update(float f) {
-        if (((FlightModelMain) (super.FM)).AS.isMaster() && Config.isUSE_RENDER()) {
-            if ((((FlightModelMain) (super.FM)).CT.PowerControl > 0.85F) && (((FlightModelMain) (super.FM)).EI.engines[0].getStage() == 6)) {
-                ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 1);
+        if (this.FM.AS.isMaster() && Config.isUSE_RENDER()) {
+            if ((this.FM.CT.PowerControl > 0.85F) && (this.FM.EI.engines[0].getStage() == 6)) {
+                this.FM.AS.setSootState(this, 0, 1);
             } else {
-                ((FlightModelMain) (super.FM)).AS.setSootState(this, 0, 0);
+                this.FM.AS.setSootState(this, 0, 0);
             }
         }
         super.update(f);

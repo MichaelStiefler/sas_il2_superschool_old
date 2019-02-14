@@ -60,7 +60,7 @@ public class P_36A4 extends P_36 {
         Property.set(class1, "PaintScheme_us", new PaintSchemeFCSPar02());
         Property.set(class1, "yearService", 1941F);
         Property.set(class1, "yearExpired", 1945.5F);
-        Property.set(class1, "cockpitClass", new Class[] { CockpitHawk_75A3.class} );
+        Property.set(class1, "cockpitClass", new Class[] { CockpitHawk_75A3.class });
         Property.set(class1, "FlightModel", "FlightModels/P-36A-4.fmd");
         Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalBomb09", "_ExternalBomb10" });

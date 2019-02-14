@@ -109,7 +109,7 @@ public class PE_2SERIES354 extends PE_2 implements TypeBomber, TypeDiveBomber, T
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 if (f < -110F) {
                     f = -110F;
                     flag = false;
@@ -128,7 +128,7 @@ public class PE_2SERIES354 extends PE_2 implements TypeBomber, TypeDiveBomber, T
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 if (f < -30F) {
                     f = -30F;
                     flag = false;
@@ -147,7 +147,7 @@ public class PE_2SERIES354 extends PE_2 implements TypeBomber, TypeDiveBomber, T
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 if (!this.FM.turret[1].bIsAIControlled) {
                     f = 0.0F;
                     f1 = 0.0F;
@@ -172,7 +172,7 @@ public class PE_2SERIES354 extends PE_2 implements TypeBomber, TypeDiveBomber, T
                 }
                 break;
 
-            case 3: // '\003'
+            case 3:
                 if (!this.FM.turret[1].bIsAIControlled) {
                     f = 0.0F;
                     f1 = 0.0F;
@@ -211,24 +211,24 @@ public class PE_2SERIES354 extends PE_2 implements TypeBomber, TypeDiveBomber, T
         this.FM.turret[2].bIsOperable = false;
         this.FM.turret[3].bIsOperable = false;
         switch (i) {
-            case 0: // '\0'
+            case 0:
                 this.hierMesh().chunkVisible("Pilot3_D0", true);
                 this.FM.turret[1].bIsOperable = true;
                 break;
 
-            case 1: // '\001'
+            case 1:
                 this.hierMesh().chunkVisible("Pilot3a_D0", true);
                 this.FM.turret[1].bIsOperable = true;
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.hierMesh().chunkVisible("Pilot3b_D0", true);
                 this.FM.turret[2].bIsOperable = true;
                 this.hierMesh().chunkVisible("Turret3B_D0", true);
                 this.hierMesh().chunkVisible("Turret4B_D0", false);
                 break;
 
-            case 3: // '\003'
+            case 3:
                 this.hierMesh().chunkVisible("Pilot3c_D0", true);
                 this.FM.turret[3].bIsOperable = true;
                 this.hierMesh().chunkVisible("Turret3B_D0", false);
@@ -239,11 +239,11 @@ public class PE_2SERIES354 extends PE_2 implements TypeBomber, TypeDiveBomber, T
 
     public void doKillPilot(int i) {
         switch (i) {
-            case 1: // '\001'
+            case 1:
                 this.FM.turret[0].bIsOperable = false;
                 break;
 
-            case 2: // '\002'
+            case 2:
                 this.FM.turret[1].bIsOperable = false;
                 this.FM.turret[2].bIsOperable = false;
                 this.FM.turret[3].bIsOperable = false;

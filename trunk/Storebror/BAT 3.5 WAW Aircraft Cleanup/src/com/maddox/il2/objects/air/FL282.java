@@ -1,16 +1,15 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class FL282 extends FL282X implements TypeScout, TypeTransport, TypeStormovik, TypeBomber, TypeX4Carrier {
 
     public FL282() {
-        bChangedPit = true;
+        FL282.bChangedPit = true;
         this.bDynamoOperational = true;
         this.dynamoOrient = 0.0F;
         this.bDynamoRotary = false;
-        prevWing = true;
+        FL282.prevWing = true;
         this.bToFire = false;
         this.deltaAzimuth = 0.0F;
         this.deltaTangage = 0.0F;
@@ -35,13 +34,13 @@ public class FL282 extends FL282X implements TypeScout, TypeTransport, TypeStorm
 
     protected void moveFan(float f) {
         if (this.bDynamoOperational) {
-            this.pk = Math.abs((int) (((FlightModelMain) (super.FM)).Vwld.length() / 14D));
+            this.pk = Math.abs((int) (this.FM.Vwld.length() / 14D));
             if (this.pk >= 1) {
                 this.pk = 1;
             }
         }
-        if (prevWing) {
-            this.dynamoOrient = this.bDynamoRotary ? (this.dynamoOrient - 17.987F) % 360F : (float) (this.dynamoOrient - (((FlightModelMain) (super.FM)).Vwld.length() * 1.5444015264511108D)) % 360F;
+        if (FL282.prevWing) {
+            this.dynamoOrient = this.bDynamoRotary ? (this.dynamoOrient - 17.987F) % 360F : (float) (this.dynamoOrient - (this.FM.Vwld.length() * 1.5444015264511108D)) % 360F;
             this.hierMesh().chunkSetAngles("Prop2_D0", 0.0F, this.dynamoOrient, 0.0F);
             this.hierMesh().chunkSetAngles("Prop3_D0", 0.0F, -this.dynamoOrient, 0.0F);
         }
@@ -50,14 +49,14 @@ public class FL282 extends FL282X implements TypeScout, TypeTransport, TypeStorm
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.startsWith("Gunpods")) {
+        if (this.thisWeaponsName.startsWith("Gunpods")) {
             this.hierMesh().chunkVisible("Pod_01", true);
             this.hierMesh().chunkVisible("Pod_02", true);
         } else {
             this.hierMesh().chunkVisible("Pod_01", false);
             this.hierMesh().chunkVisible("Pod_02", false);
         }
-        if (super.thisWeaponsName.startsWith("Panzershrek")) {
+        if (this.thisWeaponsName.startsWith("Panzershrek")) {
             this.hierMesh().chunkVisible("Panzer1", true);
             this.hierMesh().chunkVisible("Panzer2", true);
         } else {

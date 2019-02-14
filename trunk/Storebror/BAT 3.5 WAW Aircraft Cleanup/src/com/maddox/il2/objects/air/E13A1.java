@@ -2,7 +2,6 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.rts.Property;
 
 public class E13A1 extends E13A {
@@ -13,7 +12,7 @@ public class E13A1 extends E13A {
 
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if (super.thisWeaponsName.startsWith("2x1")) {
+        if (this.thisWeaponsName.startsWith("2x1")) {
             this.needsToOpenBombays = false;
         }
     }
@@ -32,11 +31,11 @@ public class E13A1 extends E13A {
         super.update(f);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 2; j++) {
-                if (((FlightModelMain) (super.FM)).Gears.clpGearEff[i][j] != null) {
-                    tmpp.set(((Actor) (((FlightModelMain) (super.FM)).Gears.clpGearEff[i][j])).pos.getAbsPoint());
-                    tmpp.z = 0.01D;
-                    ((Actor) (((FlightModelMain) (super.FM)).Gears.clpGearEff[i][j])).pos.setAbs(tmpp);
-                    ((Actor) (((FlightModelMain) (super.FM)).Gears.clpGearEff[i][j])).pos.reset();
+                if (this.FM.Gears.clpGearEff[i][j] != null) {
+                    E13A1.tmpp.set(((Actor) (this.FM.Gears.clpGearEff[i][j])).pos.getAbsPoint());
+                    E13A1.tmpp.z = 0.01D;
+                    ((Actor) (this.FM.Gears.clpGearEff[i][j])).pos.setAbs(E13A1.tmpp);
+                    ((Actor) (this.FM.Gears.clpGearEff[i][j])).pos.reset();
                 }
             }
 

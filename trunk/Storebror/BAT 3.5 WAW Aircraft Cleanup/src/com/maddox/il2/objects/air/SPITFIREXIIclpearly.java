@@ -12,14 +12,14 @@ public class SPITFIREXIIclpearly extends SPITFIRE implements TypeFighter, TypeBN
     protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            SPITFIREXIIclpearly.bChangedPit = true;
         }
     }
 
     protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            SPITFIREXIIclpearly.bChangedPit = true;
         }
     }
 
@@ -33,7 +33,7 @@ public class SPITFIREXIIclpearly extends SPITFIRE implements TypeFighter, TypeBN
     }
 
     protected void moveGear(float f) {
-        moveGear(this.hierMesh(), f);
+        SPITFIREXIIclpearly.moveGear(this.hierMesh(), f);
     }
 
     public void moveSteering(float f) {

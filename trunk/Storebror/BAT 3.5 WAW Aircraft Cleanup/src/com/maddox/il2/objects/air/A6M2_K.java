@@ -13,7 +13,7 @@ public class A6M2_K extends A6M_TEN {
     public void doMurderPilot(int i) {
         super.doMurderPilot(i);
         if (this.FM.isPlayers()) {
-            bChangedPit = true;
+            A6M2_K.bChangedPit = true;
         }
     }
 
@@ -45,8 +45,8 @@ public class A6M2_K extends A6M_TEN {
                 this.moveArrestorHook(this.arrestor);
             }
         }
-        super.onAircraftLoaded();
-        if (super.FM.isPlayers()) {
+        this.onAircraftLoaded();
+        if (this.FM.isPlayers()) {
             if (!Main3D.cur3D().isViewOutside()) {
                 this.hierMesh().chunkVisible("Blister0", false);
                 this.hierMesh().chunkVisible("Blister1_D0", false);
@@ -59,7 +59,7 @@ public class A6M2_K extends A6M_TEN {
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
-            case 19: // '\023'
+            case 19:
                 this.FM.CT.bHasArrestorControl = false;
                 break;
         }
