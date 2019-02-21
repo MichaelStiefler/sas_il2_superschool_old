@@ -1,6 +1,6 @@
 // Source File Name: Missile.java
 // Author:	Storebror
-// Edit:	western0221 on 13th/Feb./2019
+// Edit:	western0221 on 21th/Feb./2019
 package com.maddox.il2.objects.weapons;
 
 import java.io.IOException;
@@ -210,7 +210,7 @@ public class Missile extends Rocket
 		this.trajectoryVector3d = new Vector3d();
 		this.victimSpeed = new Vector3d();
 		this.victimOffsetOrient = new Orient();
-		this.victimOffsetPoint3d = new Point3d();
+		this.victimOffsetPoint3f = new Point3f();
 		this.MissileInit();
 		return;
 	}
@@ -278,7 +278,7 @@ public class Missile extends Rocket
 				this.previousDistance = 1000F;
 			}
 		}
-		this.safeVictimOffset.set(this.victimOffsetPoint3d);
+		this.safeVictimOffset.set(this.victimOffsetPoint3f);
 		if (!Actor.isValid(this.getOwner())) {
 			if ( bLogDetail )
 				System.out.println("Missile(" + actorString(this) + ") - entering doExplosionAir(); - Because of owner(" + actorString(this.getOwner()) + ") becomes not valid.");
@@ -292,7 +292,7 @@ public class Missile extends Rocket
 	}
 
 	private float computeMissileAccelleration() {
-		this.victimOffsetPoint3d.set(this.safeVictimOffset);
+		this.victimOffsetPoint3f.set(this.safeVictimOffset);
 		// float tickLen = Time.tickLenFs();
 		float missileSpeed = (float) this.getSpeed(null);
 		if (this.getFailState() == FAIL_TYPE_ENGINE) {
@@ -1442,12 +1442,12 @@ public class Missile extends Rocket
 			if (this.getOwner() instanceof TypeGuidedMissileCarrier && this.getOwner() instanceof TypeLaserDesignator && (((TypeLaserDesignator) this.getOwner()).getLaserOn())) {
 				this.targetPoint3dAbs = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetPos();
 				this.laserOwner = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetPosOwner();
-				this.victimOffsetPoint3d = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetOffset();
+				this.victimOffsetPoint3f = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetOffset();
 
-				if (this.targetPoint3dAbs == null || this.laserOwner == null || this.victimOffsetPoint3d == null)
+				if (this.targetPoint3dAbs == null || this.laserOwner == null || this.victimOffsetPoint3f == null)
 					return;
 
-				this.safeVictimOffset.set(this.victimOffsetPoint3d);
+				this.safeVictimOffset.set(this.victimOffsetPoint3f);
 				this.targetPoint3d.set(this.targetPoint3dAbs);
 				this.targetPoint3d.sub(this.missilePoint3d); // relative Position to target
 			}
@@ -1466,12 +1466,12 @@ public class Missile extends Rocket
 			if ((this.getOwner() instanceof TypeGuidedMissileCarrier) && (this.getOwner() instanceof TypeSACLOS) && (((TypeSACLOS) this.getOwner()).getSACLOSenabled())) {
 				this.targetPoint3dAbs = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetPos();
 				this.saclosOwner = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetPosOwner();
-				this.victimOffsetPoint3d = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetOffset();
+				this.victimOffsetPoint3f = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetOffset();
 
-				if (this.targetPoint3dAbs == null || this.saclosOwner == null || this.victimOffsetPoint3d == null)
+				if (this.targetPoint3dAbs == null || this.saclosOwner == null || this.victimOffsetPoint3f == null)
 					return;
 
-				this.safeVictimOffset.set(this.victimOffsetPoint3d);
+				this.safeVictimOffset.set(this.victimOffsetPoint3f);
 				this.targetPoint3d.set(this.targetPoint3dAbs);
 				this.targetPoint3d.sub(this.missilePoint3d); // relative Position to target
 			}
@@ -1487,8 +1487,8 @@ public class Missile extends Rocket
 						this.victim = null;
 					} else {
 						this.lockingVictim = true;
-						this.victimOffsetPoint3d = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetOffset();
-						this.safeVictimOffset.set(this.victimOffsetPoint3d);
+						this.victimOffsetPoint3f = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetOffset();
+						this.safeVictimOffset.set(this.victimOffsetPoint3f);
 					}
 				} else if (this.getOwner() instanceof TypeFighter) {
 					if (this.getFM() != null) {
@@ -1506,7 +1506,7 @@ public class Missile extends Rocket
 				if (this.getOwner() instanceof TypeGuidedMissileCarrier) {
 					this.victim = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTarget();
 					this.lockingVictim = true;
-					this.safeVictimOffset.set(this.victimOffsetPoint3d);
+					this.safeVictimOffset.set(this.victimOffsetPoint3f);
 				} else {
 					this.victim = Selector.look(true, false, Main3D.cur3D()._camera3D[Main3D.cur3D().getRenderIndx()], World.getPlayerAircraft().getArmy(), -1, World.getPlayerAircraft(), false);
 					if (this.victim == null) {
@@ -1784,7 +1784,7 @@ public class Missile extends Rocket
 				Vector3d vectorOffset = new Vector3d();
 				Orient orientTarget = new Orient();
 				orientTarget.set(this.victim.pos.getAbsOrient());
-				vectorOffset.set(this.victimOffsetPoint3d); // take victim Offset into account
+				vectorOffset.set(this.victimOffsetPoint3f); // take victim Offset into account
 				orientTarget.transform(vectorOffset); // take victim Offset into account
 				pointTarget.add(vectorOffset); // take victim Offset into account
 
@@ -1935,7 +1935,7 @@ public class Missile extends Rocket
 			}
 			Orient orientTarget = new Orient();
 			orientTarget.set(this.victim.pos.getAbsOrient());
-			this.trajectoryVector3d.set(this.victimOffsetPoint3d); // take victim Offset into account
+			this.trajectoryVector3d.set(this.victimOffsetPoint3f); // take victim Offset into account
 			orientTarget.transform(this.trajectoryVector3d); // take victim Offset into account
 			this.targetPoint3d.add(this.trajectoryVector3d); // take victim Offset into account
 
@@ -2509,7 +2509,7 @@ public class Missile extends Rocket
 	// private static RangeRandom theRangeRandom;
 
 	private Orient victimOffsetOrient = null;
-	private Point3d victimOffsetPoint3d = null;
+	private Point3f victimOffsetPoint3f = null;
 	private Vector3d victimSpeed = null;
 	private boolean bRocketFiring = false;
 
