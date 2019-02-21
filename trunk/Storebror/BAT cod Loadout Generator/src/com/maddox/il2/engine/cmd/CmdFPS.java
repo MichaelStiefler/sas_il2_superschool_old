@@ -38,8 +38,8 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
         if (!this.bGo) {
             return;
         }
-        final long l = Time.real();
-        final int i = RendersMain.frame();
+        long l = Time.real();
+        int i = RendersMain.frame();
         if (l >= (this.timePrev + 250L)) {
             this.fpsCur = (1000D * (i - this.framePrev)) / (l - this.timePrev);
             if (this.fpsMin > this.fpsCur) {
@@ -55,17 +55,17 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
             return;
         }
         if (this.bShow) {
-            final Render render = (Render) Actor.getByName("renderTextScr");
+            Render render = (Render) Actor.getByName("renderTextScr");
             if (render == null) {
                 return;
             }
-            final TTFont ttfont = TextScr.font();
-            final int j = render.getViewPortWidth();
-            final int k = render.getViewPortHeight();
-            final String s = "fps:" + this.fpsInfo();
-            final int i1 = (int) ttfont.width(s);
-            final int j1 = k - ttfont.height() - 5;
-            final int k1 = (j - i1) / 2;
+            TTFont ttfont = TextScr.font();
+            int j = render.getViewPortWidth();
+            int k = render.getViewPortHeight();
+            String s = "fps:" + this.fpsInfo();
+            int i1 = (int) ttfont.width(s);
+            int j1 = k - ttfont.height() - 5;
+            int k1 = (j - i1) / 2;
             TextScr.output(k1, j1, s);
         }
         if ((this.logPeriod > 0L) && (l >= (this.logPrintTime + this.logPeriod))) {
@@ -174,41 +174,60 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
     }
 
     private void generateCodLoadouts() {
-        final SectFile airIniSectfile = new SectFile("com/maddox/il2/objects/air.ini");
-        final File loadoutsDir = new File(HomePath.toFileSystemName("loadouts/new/", 0));
+        String prohibitedLoadoutNameCharacters = " ,";
+        boolean debugAirClassNames = false;
+        SectFile codIniSectfile = new SectFile("cod.ini");
+        if (codIniSectfile.sectionExist("Common")) {
+            int commonSectionIndex = codIniSectfile.sectionIndex("Common");
+            if (codIniSectfile.varExist(commonSectionIndex, "prohibitedLoadoutNameCharacters")) {
+                prohibitedLoadoutNameCharacters = codIniSectfile.value(commonSectionIndex, codIniSectfile.varIndex(commonSectionIndex, "prohibitedLoadoutNameCharacters"));
+                if (prohibitedLoadoutNameCharacters.startsWith("\"") && prohibitedLoadoutNameCharacters.endsWith("\"")) {
+                    prohibitedLoadoutNameCharacters = prohibitedLoadoutNameCharacters.substring(1, prohibitedLoadoutNameCharacters.length()-1);
+                    System.out.println("prohibited Loadout Name Characters set to: \"" + prohibitedLoadoutNameCharacters + "\"");
+                }
+            }
+            if (codIniSectfile.varExist(commonSectionIndex, "debugAirClassNames")) {
+                debugAirClassNames = codIniSectfile.value(commonSectionIndex, codIniSectfile.varIndex(commonSectionIndex, "debugAirClassNames")).trim().equals("1");
+                System.out.println("debug Air Class Names set to: \"" + debugAirClassNames + "\"");
+            }
+        }
+        
+        SectFile airIniSectfile = new SectFile("com/maddox/il2/objects/air.ini");
+        File loadoutsDir = new File(HomePath.toFileSystemName("loadouts/new/", 0));
         if (!loadoutsDir.exists()) {
             loadoutsDir.mkdirs();
         }
-        final File loadoutsDirCsv = new File(HomePath.toFileSystemName("loadouts/csv/", 0));
+        File loadoutsDirCsv = new File(HomePath.toFileSystemName("loadouts/csv/", 0));
         if (!loadoutsDirCsv.exists()) {
             loadoutsDirCsv.mkdirs();
         }
-        final File loadoutsDirDecoded = new File(HomePath.toFileSystemName("loadouts/decoded/", 0));
+        File loadoutsDirDecoded = new File(HomePath.toFileSystemName("loadouts/decoded/", 0));
         if (!loadoutsDirDecoded.exists()) {
             loadoutsDirDecoded.mkdirs();
         }
-        final File loadoutsDirCod = new File(HomePath.toFileSystemName("loadouts/cod/", 0));
+        File loadoutsDirCod = new File(HomePath.toFileSystemName("loadouts/cod/", 0));
         if (!loadoutsDirCod.exists()) {
             loadoutsDirCod.mkdirs();
         }
-        final File loadoutsDirNewCod = new File(HomePath.toFileSystemName("loadouts/new_cod/", 0));
+        File loadoutsDirNewCod = new File(HomePath.toFileSystemName("loadouts/new_cod/", 0));
         if (!loadoutsDirNewCod.exists()) {
             loadoutsDirNewCod.mkdirs();
         }
         try {
-            final PrintWriter pwErrors = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/errors.txt", 0))));
+            PrintWriter pwErrors = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/errors.txt", 0))));
             for (int sectionIndex = 0; sectionIndex < airIniSectfile.sections(); sectionIndex++) {
                 for (int varsIndex = 0; varsIndex < airIniSectfile.vars(sectionIndex); varsIndex++) {
                     boolean hasCoddedWeapons = false;
-                    final NumberTokenizer numbertokenizer = new NumberTokenizer(airIniSectfile.value(sectionIndex, varsIndex));
+                    NumberTokenizer numbertokenizer = new NumberTokenizer(airIniSectfile.value(sectionIndex, varsIndex));
                     String airplaneName = numbertokenizer.next((String) null);
                     Class airplaneClass = null;
                     try {
                         airplaneClass = ObjIO.classForName(airplaneName);
-                    } catch (final Exception exception) {
+                    } catch (Exception exception) {
                         System.out.println("Class '" + airplaneName + "' not found");
                         continue;
                     }
+                    if (debugAirClassNames) System.out.println("Class '" + airplaneName + "'...");
                     if (!airplaneName.startsWith("air.")) {
                         airplaneName = "###ERROR### " + airplaneName + " ###ERROR###";
                         pwErrors.println(airplaneName);
@@ -218,14 +237,14 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
                         continue;
                     }
 
-                    final int classFingerInt = Finger.Int("ce" + airplaneClass.getName() + "vd");
+                    int classFingerInt = Finger.Int("ce" + airplaneClass.getName() + "vd");
                     PrintWriter pwu = null;
                     try {
-                        final BufferedReader brDecoded = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(classFingerInt, "adt"))), getSwTbl(classFingerInt))));
+                        BufferedReader brDecoded = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(classFingerInt, "adt"))), getSwTbl(classFingerInt))));
                         hasCoddedWeapons = true;
                         pwu = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/decoded/" + airplaneName, 0))));
                         do {
-                            final String decodedLine = brDecoded.readLine();
+                            String decodedLine = brDecoded.readLine();
                             if (decodedLine == null) {
                                 break;
                             }
@@ -235,11 +254,11 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
                         pwu.close();
                         brDecoded.close();
 
-                        final BufferedReader brEncrypted = new BufferedReader(new InputStreamReader(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(classFingerInt, "adt")))));
-                        final BufferedWriter bwEncrypted = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(HomePath.toFileSystemName("loadouts/cod/" + Finger.incInt(classFingerInt, "adt"), 0))));
-                        final char[] cBuf = new char[1024];
+                        BufferedReader brEncrypted = new BufferedReader(new InputStreamReader(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(classFingerInt, "adt")))));
+                        BufferedWriter bwEncrypted = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(HomePath.toFileSystemName("loadouts/cod/" + Finger.incInt(classFingerInt, "adt"), 0))));
+                        char[] cBuf = new char[1024];
                         do {
-                            final int iRead = brEncrypted.read(cBuf, 0, 1024);
+                            int iRead = brEncrypted.read(cBuf, 0, 1024);
                             if (iRead == -1) {
                                 break;
                             }
@@ -247,26 +266,27 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
                         } while (true);
                         bwEncrypted.close();
                         brEncrypted.close();
-                    } catch (final Exception e) {
+                    } catch (Exception e) {
                         if (hasCoddedWeapons) {
                             e.printStackTrace();
                         }
                         hasCoddedWeapons = false;
                     }
 
-                    final String codIndicator = hasCoddedWeapons ? " (+) " : " (-) ";
+                    String codIndicator = hasCoddedWeapons ? " (+) " : " (-) ";
 
-                    final String[] hooks = Aircraft.getWeaponHooksRegistered(airplaneClass);
-                    final int[] triggers = Aircraft.getWeaponTriggersRegistered(airplaneClass);
-                    final int hookLength = hooks.length;
-                    final int triggerLength = triggers.length;
+                    String[] hooks = Aircraft.getWeaponHooksRegistered(airplaneClass);
+                    int[] triggers = Aircraft.getWeaponTriggersRegistered(airplaneClass);
+                    int hookLength = hooks.length;
+                    int triggerLength = triggers.length;
                     if (hookLength != triggerLength) {
                         pwErrors.println(airplaneName + codIndicator + " hookLength != triggerLength");
                     }
                     try {
-                        final PrintWriter pwAircraft = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/new/" + airplaneName, 0))));
-                        final PrintWriter pwk = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new KryptoOutputFilter(new FileOutputStream(HomePath.toFileSystemName("loadouts/new_cod/" + Finger.incInt(classFingerInt, "adt"), 0)), getSwTbl(classFingerInt)))));
-                        final PrintWriter pwAircraftCsv = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/csv/" + airplaneName + ".csv", 0))));
+                        PrintWriter pwAircraft = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/new/" + airplaneName, 0))));
+                        PrintWriter pwk = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new KryptoOutputFilter(new FileOutputStream(HomePath.toFileSystemName("loadouts/new_cod/" + Finger.incInt(classFingerInt, "adt"), 0)), getSwTbl(classFingerInt)))));
+                        PrintWriter pwAircraftCsv = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/csv/" + airplaneName + ".csv", 0))));
+                        pwAircraftCsv.println("sep=,");
 
                         for (int hookIndex = 0; hookIndex < hookLength; hookIndex++) {
                             pwAircraftCsv.print(",");
@@ -279,7 +299,7 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
                         }
                         pwAircraftCsv.println();
 
-                        final String[] loadoutArray = Aircraft.getWeaponsRegistered(airplaneClass);
+                        String[] loadoutArray = Aircraft.getWeaponsRegistered(airplaneClass);
                         boolean lastElementNotNone = false;
                         if (loadoutArray.length < 2) {
                             pwErrors.println(airplaneName + codIndicator + " loadoutArray.length < 2");
@@ -297,11 +317,19 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
                                 pwErrors.println(airplaneName + codIndicator + " loadoutArray[" + loadoutIndex + "]=" + loadoutArray[loadoutIndex] + ", but default is only allowed in first slot! (might indicate overlapping weapon slots)");
                             } else if ((loadoutIndex != (loadoutArray.length - 1)) && loadoutArray[loadoutIndex].toLowerCase().equals("none")) {
                                 pwErrors.println(airplaneName + codIndicator + " loadoutArray[" + loadoutIndex + "]=" + loadoutArray[loadoutIndex] + ", but none is only allowed in last slot! (might indicate overlapping weapon slots)");
-                            } else if (loadoutArray[loadoutIndex].indexOf(' ') > -1) {
-                                pwErrors.println(airplaneName + codIndicator + " loadout " + loadoutArray[loadoutIndex] + " name contains spaces!");
+                            } else {
+                                for (int prohibitedCharacterIndex = 0; prohibitedCharacterIndex<prohibitedLoadoutNameCharacters.length(); prohibitedCharacterIndex++) {
+                                    if (loadoutArray[loadoutIndex].indexOf(prohibitedLoadoutNameCharacters.charAt(prohibitedCharacterIndex)) > -1) {
+                                        pwErrors.println(airplaneName + codIndicator + " loadout " + loadoutArray[loadoutIndex] + " name contains prohibited Characters!");
+                                        break;
+                                    }
+                                }
                             }
+//                            } else if (loadoutArray[loadoutIndex].indexOf(' ') > -1) {
+//                                pwErrors.println(airplaneName + codIndicator + " loadout " + loadoutArray[loadoutIndex] + " name contains spaces!");
+//                            }
 
-                            final Aircraft._WeaponSlot[] weaponSlotArray = Aircraft.getWeaponSlotsRegistered(airplaneClass, loadoutArray[loadoutIndex]);
+                            Aircraft._WeaponSlot[] weaponSlotArray = Aircraft.getWeaponSlotsRegistered(airplaneClass, loadoutArray[loadoutIndex]);
                             if (weaponSlotArray == null) {
                                 pwErrors.println(airplaneName + codIndicator + " loadout " + loadoutArray[loadoutIndex] + " isn't a registered slot on this aircraft class!");
                                 pwAircraft.println(loadoutsLine);
@@ -334,14 +362,14 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
                         if (lastElementNotNone) {
                             pwErrors.println(airplaneName + codIndicator + " loadoutArray[" + (loadoutArray.length - 1) + "]=" + loadoutArray[loadoutArray.length - 1] + ", but last element needs to be none (case sensitive!)");
                         }
-                    } catch (final Exception e) {
+                    } catch (Exception e) {
                         System.out.println("Error on Aircraft " + airplaneName);
                         e.printStackTrace();
                     }
                 }
             }
             pwErrors.close();
-        } catch (final Exception oe) {
+        } catch (Exception oe) {
             oe.printStackTrace();
         }
     }
@@ -361,7 +389,7 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
         if (ktl < 0) {
             ktl = -ktl % Finger.kTable.length;
         }
-        final int[] aiRetval = new int[ims];
+        int[] aiRetval = new int[ims];
         for (int aiRetvalIndex = 0; aiRetvalIndex < ims; aiRetvalIndex++) {
             aiRetval[aiRetvalIndex] = Finger.kTable[((ktl + aiRetvalIndex) % Finger.kTable.length)];
         }
@@ -379,12 +407,12 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
     private int                framePrev;
     private long               logPeriod;
     private long               logPrintTime;
-    public static final String LOG   = "LOG";
-    public static final String START = "START";
-    public static final String STOP  = "STOP";
-    public static final String SHOW  = "SHOW";
-    public static final String HIDE  = "HIDE";
-    public static final String PERF  = "PERF";
-    public static final String COD   = "COD";
+    public final static String LOG   = "LOG";
+    public final static String START = "START";
+    public final static String STOP  = "STOP";
+    public final static String SHOW  = "SHOW";
+    public final static String HIDE  = "HIDE";
+    public final static String PERF  = "PERF";
+    public final static String COD   = "COD";
     private MsgTimeOut         msg;
 }
