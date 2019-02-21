@@ -1,6 +1,6 @@
 // Source File Name: GuidedMissileUtils.java
 // Author:	Storebror
-// Edit:	western0221 on 13th/Feb./2019
+// Edit:	western0221 on 21th/Feb./2019
 package com.maddox.il2.objects.weapons;
 
 import java.util.ArrayList;
@@ -834,7 +834,7 @@ public class GuidedMissileUtils {
 		return this.trgtPosOwner;
 	}
 
-	public Point3d getMissileTargetOffset() {
+	public Point3f getMissileTargetOffset() {
 		return this.getSelectedActorOffset();
 	}
 
@@ -866,7 +866,7 @@ public class GuidedMissileUtils {
 		return this.fPkOptDist;
 	}
 
-	public Point3d getSelectedActorOffset() {
+	public Point3f getSelectedActorOffset() {
 		return this.selectedActorOffset;
 	}
 
@@ -895,7 +895,7 @@ public class GuidedMissileUtils {
 	}
 
 	private void initCommon() {
-		this.selectedActorOffset = new Point3d();
+		this.selectedActorOffset = new Point3f();
 		this.engageMode = this.ENGAGE_AUTO;
 		this.iMissileLockState = 0;
 		this.iMissileTone = 0;
@@ -1055,7 +1055,7 @@ public class GuidedMissileUtils {
 						maxTargetBait = targetBait;
 						selectedActor = theTarget1;
 						if (theTarget1 instanceof Aircraft) {
-							theSelectedActorOffset.set(0, 0, 0);
+							theSelectedActorOffset.set(0.0F, 0.0F, 0.0F);
 						}
 						return selectedActor;
 					}
@@ -1183,7 +1183,7 @@ public class GuidedMissileUtils {
 								// Arm Arms = (Arm) Reflection.genericGetFieldValue((FlightModelMain) (((SndAircraft) (theTarget1)).FM), "Arms");
 								// float fGC = ((Float) Reflection.genericGetFieldValue(Arms, "GCENTER")).floatValue();
 								// theSelectedActorOffset.set(fGC, 0, 0);
-								theSelectedActorOffset.set(0, 0, 0);
+								theSelectedActorOffset.set(0.0F, 0.0F, 0.0F);
 							}
 						}
 						break;
@@ -1454,7 +1454,7 @@ public class GuidedMissileUtils {
 		float targetBait = 0.0F;
 		float maxTargetBait = 0.0F;
 		Actor selectedActor = null;
-		this.selectedActorOffset.set(new Point3d(0.0D, 0.0D, 0.0D));
+		this.selectedActorOffset.set(new Point3f(0.0F, 0.0F, 0.0F));
 
 		if (!(actor instanceof Aircraft) || (this.iDetectorMode == Missile.DETECTOR_TYPE_MANUAL)) return selectedActor;
 
@@ -1519,7 +1519,7 @@ public class GuidedMissileUtils {
 											if (theActiveMissile.getVictim().pos.getAbsPoint().z < 5D) { // don't hit small boats
 												if (!this.canTrackSubs) {
 													// HUD.log("Offset added");
-													this.selectedActorOffset.set(new Point3d(0.0D, 0.0D, 5.0D));
+													this.selectedActorOffset.set(new Point3f(0.0F, 0.0F, 5.0F));
 												}
 											}
 											return theActiveMissile.getVictim();
@@ -1548,7 +1548,7 @@ public class GuidedMissileUtils {
 			if (selectedActor.pos.getAbsPoint().z < 5D) { // don't hit small boats
 				if (!this.canTrackSubs) {
 					// HUD.log("Offset added");
-					this.selectedActorOffset.set(new Point3d(0.0D, 0.0D, 5.0D));
+					this.selectedActorOffset.set(new Point3f(0.0F, 0.0F, 5.0F));
 				}
 			}
 		}
@@ -1572,7 +1572,7 @@ public class GuidedMissileUtils {
 		float targetBait = 0.0F;
 		float maxTargetBait = 0.0F;
 		Point3d selectedPos = new Point3d();
-		Point3d theSelectedActorOffset = new Point3d(0.0D, 0.0D, 0.0D);
+		Point3f theSelectedActorOffset = new Point3f(0.0F, 0.0F, 0.0F);
 		boolean bFound = false;
 
 		if (!(actor instanceof Aircraft) || ((this.iDetectorMode != Missile.DETECTOR_TYPE_LASER) && (this.iDetectorMode != Missile.DETECTOR_TYPE_SACLOS))) return null;
@@ -2385,7 +2385,7 @@ public class GuidedMissileUtils {
 	protected Point3f pVictimOffset = null;
 	public int rocketSelected = 2;
 	private ArrayList rocketsList = null;
-	private Point3d selectedActorOffset = null;
+	private Point3f selectedActorOffset = null;
 	private Sample smplMissileLock = null;
 	private Sample smplMissileNoLock = null;
 	private long targetType = Missile.TARGET_AIR;
