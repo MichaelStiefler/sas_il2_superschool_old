@@ -15,11 +15,12 @@ public class RocketGunS8KOM extends RocketGun
 
     public RocketGunS8KOM()
     {
+    	setSpreadRnd(3);
     }
 
     public void setConvDistance(float f, float f1)
     {
-        super.setConvDistance(f, f1 + 2.81F);
+        super.setConvDistance(f + 1000F, f1 + 2.81F);
     }
 
     static 

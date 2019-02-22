@@ -10,15 +10,15 @@ import com.maddox.rts.Property;
 // Referenced classes of package com.maddox.il2.objects.weapons:
 //            PylonRO_82_1
 
-public class Pylon_B8 extends PylonRO_82_1
+public class Pylon9M114 extends PylonRO_82_1
 {
 
-    public Pylon_B8()
+    public Pylon9M114()
     {
     }
 
     static 
     {
-        Property.set(com.maddox.il2.objects.weapons.Pylon_B8.class, "mesh", "3DO/Arms/Pylon_B-8/mono.sim");
+        Property.set(com.maddox.il2.objects.weapons.Pylon9M114.class, "mesh", "3DO/Arms/Sturm_Pylon/mono.sim");
     }
 }

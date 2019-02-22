@@ -28,7 +28,7 @@ import com.maddox.il2.objects.ships.ShipGeneric;
 
 import com.maddox.il2.objects.air.Mi24V;
 
-public class MissileSturm extends Missile {
+public class Missile9M114 extends Missile {
 
 //    public boolean interpolateStep()
 //    {
@@ -222,7 +222,7 @@ public class MissileSturm extends Missile {
     }
   }
 
-  public MissileSturm(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f) {
+  public Missile9M114(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f) {
     this.MissileInit(actor, netchannel, i, point3d, orient, f);
     victim = null;
     fm = null;
@@ -238,7 +238,7 @@ public class MissileSturm extends Missile {
     collide(false);
   }
 
-  public MissileSturm() {
+  public Missile9M114() {
       victim = null;
       fm = null;
       tStart = 0L;
@@ -283,7 +283,7 @@ public class MissileSturm extends Missile {
   private Actor victim;
 
   static {
-    Class class1 = com.maddox.il2.objects.weapons.MissileSturm.class;
+    Class class1 = com.maddox.il2.objects.weapons.Missile9M114.class;
     Property.set(class1, "mesh", "3DO/Arms/5inchZuni/mono.sim");
     Property.set(class1, "sprite", "3DO/Effects/Tracers/GuidedRocket/Black.eff");
     Property.set(class1, "flame", "3do/Effects/RocketSidewinder/RocketSidewinderFlame.sim");
@@ -306,7 +306,7 @@ public class MissileSturm extends Missile {
     Property.set(class1, "kalibr", 1.30F);
     Property.set(class1, "massa", 31.4F);
     Property.set(class1, "massaEnd", 20.0F);
-    Property.set(class1, "stepMode", Missile.STEP_MODE_HOMING); // target tracking mode
+    Property.set(class1, "stepMode", Missile.STEP_MODE_BEAMRIDER); // target tracking mode
     Property.set(class1, "launchType", Missile.LAUNCH_TYPE_QUICK); // launch pattern
     Property.set(class1, "detectorType", 0); // detector type
     Property.set(class1, "sunRayAngle", 0.0F); // max. Angle at which the missile will track Sun Ray, zero disables Sun Ray tracking (only valid for IR detector missiles)
@@ -341,7 +341,7 @@ public class MissileSturm extends Missile {
     Property.set(class1, "fxNoLock", (String)null); // prs file for No Lock Tone
     Property.set(class1, "smplLock", (String)null); // wav file for Lock Tone
     Property.set(class1, "smplNoLock", (String)null); // wav file for No Lock Tone
-    Property.set(class1, "friendlyName", "9K133"); // Display Name of this missile
+    Property.set(class1, "friendlyName", "9M114"); // Display Name of this missile
     Spawn.add(class1, new SPAWN());
   }
 }
