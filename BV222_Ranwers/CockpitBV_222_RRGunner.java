@@ -12,17 +12,6 @@ import com.maddox.rts.Property;
 public class CockpitBV_222_RRGunner extends CockpitGunner
 {
 
-    protected boolean doFocusEnter()
-    {
-        if(super.doFocusEnter())
-        {
-            return true;
-        } else
-        {
-            return false;
-        }
-    }
-
     public void moveGun(Orient orient)
     {
         super.moveGun(orient);
@@ -40,16 +29,14 @@ public class CockpitBV_222_RRGunner extends CockpitGunner
             {
                 float f = orient.getYaw();
                 float f1 = orient.getTangage();
-                if(f < -40F)
-                    f = -40F;
+                if(f < -10F)
+                    f = -10F;
                 if(f > 55F)
                     f = 55F;
                 if(f1 > 30F)
                     f1 = 30F;
-                if(f1 < -40F)
-                    f1 = -40F;
-                if(f1 < -55F + 0.5F * f)
-                    f1 = -55F + 0.5F * f;
+                if(f1 < -30F)
+                    f1 = -30F;
                 orient.setYPR(f, f1, 0.0F);
                 orient.wrap();
             }

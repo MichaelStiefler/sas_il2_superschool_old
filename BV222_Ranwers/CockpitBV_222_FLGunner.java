@@ -14,7 +14,7 @@ public class CockpitBV_222_FLGunner extends CockpitGunner
     public void moveGun(Orient orient)
     {
         super.moveGun(orient);
-        super.mesh.chunkSetAngles("Body", -45F, 0.0F, 0.0F);
+        super.mesh.chunkSetAngles("Body", 0.0F, 0.0F, 0.0F);
         super.mesh.chunkSetAngles("TurretLA", 0.0F, -orient.getYaw(), 0.0F);
         super.mesh.chunkSetAngles("TurretLB", 0.0F, orient.getTangage(), 0.0F);
     }
@@ -29,16 +29,14 @@ public class CockpitBV_222_FLGunner extends CockpitGunner
             {
                 float f = orient.getYaw();
                 float f1 = orient.getTangage();
-                if(f < -55F)
-                    f = -55F;
-                if(f > 40F)
-                    f = 40F;
+                if(f < -10F)
+                    f = -10F;
+                if(f > 60F)
+                    f = 60F;
                 if(f1 > 30F)
                     f1 = 30F;
-                if(f1 < -40F)
-                    f1 = -40F;
-                if(f1 < -55F - 0.5F * f)
-                    f1 = -55F - 0.5F * f;
+                if(f1 < -30F)
+                    f1 = -30F;
                 orient.setYPR(f, f1, 0.0F);
                 orient.wrap();
             }
@@ -50,7 +48,6 @@ public class CockpitBV_222_FLGunner extends CockpitGunner
         {
             if(super.emitter == null || !super.emitter.haveBullets() || !aiTurret().bIsOperable)
                 super.bGunFire = false;
-            (super.fm).CT.WeaponControl[weaponControlNum()] = super.bGunFire;
             (super.fm).CT.WeaponControl[weaponControlNum()] = super.bGunFire;
             if(super.bGunFire)
             {

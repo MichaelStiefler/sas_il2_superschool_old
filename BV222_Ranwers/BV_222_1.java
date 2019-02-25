@@ -32,47 +32,47 @@ public class BV_222_1 extends BV_222
             break;
 
         case 0: // '\0'
-            if(f < -35F)
+            if(f < -10F)
             {
-                f = -35F;
+                f = -10F;
                 flag = false;
             }
-            if(f > 35F)
+            if(f > 60F)
             {
-                f = 35F;
+                f = 60F;
                 flag = false;
             }
-            if(f1 < -25F)
+            if(f1 < -30F)
             {
-                f1 = -25F;
+                f1 = -30F;
                 flag = false;
             }
-            if(f1 > 25F)
+            if(f1 > 30F)
             {
-                f1 = 25F;
+                f1 = 30F;
                 flag = false;
             }
             break;
 
         case 1: // '\001'
-            if(f < -22F)
+            if(f < -60F)
             {
-                f = -22F;
+                f = -60F;
                 flag = false;
             }
-            if(f > 22F)
+            if(f > 10F)
             {
-                f = 22F;
+                f = 10F;
                 flag = false;
             }
-            if(f1 < -57F)
+            if(f1 < -30F)
             {
-                f1 = -57F;
+                f1 = -30F;
                 flag = false;
             }
-            if(f1 > 33F)
+            if(f1 > 30F)
             {
-                f1 = 33F;
+                f1 = 30F;
                 flag = false;
             }
             break;
