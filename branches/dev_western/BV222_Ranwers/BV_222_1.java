@@ -270,13 +270,15 @@ public class BV_222_1 extends BV_222
         Property.set(class1, "yearExpired", 1945.5F);
         Property.set(class1, "FlightModel", "FlightModels/BV-222.fmd:BV222FM");
         Property.set(class1, "cockpitClass", new Class[] {
-            com.maddox.il2.objects.air.CockpitBV_222.class, com.maddox.il2.objects.air.CockpitME_323_FLGunner.class, com.maddox.il2.objects.air.CockpitME_323_FRGunner.class, com.maddox.il2.objects.air.CockpitBV_222_TGunner.class, com.maddox.il2.objects.air.CockpitME_323_TLGunner.class, com.maddox.il2.objects.air.CockpitME_323_TRGunner.class, com.maddox.il2.objects.air.CockpitME_323_LGunner.class, com.maddox.il2.objects.air.CockpitME_323_RGunner.class, com.maddox.il2.objects.air.CockpitBV_222_TGunner.class
+            com.maddox.il2.objects.air.CockpitBV_222.class,           com.maddox.il2.objects.air.CockpitBV_222_NGunner.class,   com.maddox.il2.objects.air.CockpitBV_222_TGunner.class,
+            com.maddox.il2.objects.air.CockpitBV_222_FLGunner.class,  com.maddox.il2.objects.air.CockpitBV_222_FRGunner.class,  com.maddox.il2.objects.air.CockpitBV_222_RLGunner.class, com.maddox.il2.objects.air.CockpitBV_222_RRGunner.class,
+            com.maddox.il2.objects.air.CockpitBV_222_WiLGunner.class, com.maddox.il2.objects.air.CockpitBV_222_WiRGunner.class
         });
         Aircraft.weaponTriggersRegister(class1, new int[] {
-            10, 11, 12, 13, 14, 15, 16, 3, 17
+            10, 11, 12, 13, 14, 15, 16, 17, 3
         });
         Aircraft.weaponHooksRegister(class1, new String[] {
-            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_ExternalBomb01", "_MGUN08"
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_ExternalBomb01"
         });
         try
         {
@@ -293,8 +295,8 @@ public class BV_222_1 extends BV_222
             a_lweaponslot[3] = new Aircraft._WeaponSlot(13, "MGunMG131t", 350);
             a_lweaponslot[4] = new Aircraft._WeaponSlot(14, "MGunMG15120t", 350);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(15, "MGunMG15120t", 350);
-            a_lweaponslot[6] = new Aircraft._WeaponSlot(16, "MGunMG15t", 350);
-            a_lweaponslot[8] = new Aircraft._WeaponSlot(17, "MGunMG131t", 350);
+            a_lweaponslot[6] = new Aircraft._WeaponSlot(16, "MGunMG15120t", 350);
+            a_lweaponslot[7] = new Aircraft._WeaponSlot(17, "MGunMG131t", 350);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "92xPara";
@@ -305,9 +307,9 @@ public class BV_222_1 extends BV_222
             a_lweaponslot[3] = new Aircraft._WeaponSlot(13, "MGunMG131t", 350);
             a_lweaponslot[4] = new Aircraft._WeaponSlot(14, "MGunMG15120t", 350);
             a_lweaponslot[5] = new Aircraft._WeaponSlot(15, "MGunMG15120t", 350);
-            a_lweaponslot[6] = new Aircraft._WeaponSlot(16, "MGunMG15t", 350);
-            a_lweaponslot[7] = new Aircraft._WeaponSlot(3, "BombGunPara", 92);
-            a_lweaponslot[8] = new Aircraft._WeaponSlot(17, "MGunMG131t", 350);
+            a_lweaponslot[6] = new Aircraft._WeaponSlot(16, "MGunMG15120t", 350);
+            a_lweaponslot[7] = new Aircraft._WeaponSlot(17, "MGunMG131t", 350);
+            a_lweaponslot[8] = new Aircraft._WeaponSlot(3, "BombGunPara", 92);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "none";

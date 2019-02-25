@@ -1,12 +1,20 @@
 [Aircraft]
   Type 7
-  Crew 9
+  Crew 8
   Wingspan 46.0
   Length 37.0
   Seaplane 1
   Canard 0
   Jet 0
   JetHiV 0
+  CrewFunction0 1
+  CrewFunction1 3
+  CrewFunction2 4
+  CrewFunction3 5
+  CrewFunction4 5
+  CrewFunction5 5
+  CrewFunction6 4
+  CrewFunction7 4
 [Mass]
   Empty 30650.0
   TakeOff 49000.0
