@@ -3,66 +3,52 @@ package com.maddox.il2.objects.air;
 import com.maddox.il2.engine.Actor;
 import com.maddox.rts.Property;
 
-public class U_2NB extends U_2VS
-{
+public class U_2NB extends U_2VS {
 
-    public U_2NB()
-    {
+    public U_2NB() {
     }
 
-    protected void nextDMGLevel(String s, int i, Actor actor)
-    {
+    protected void nextDMGLevel(String s, int i, Actor actor) {
         super.nextDMGLevel(s, i, actor);
-        if(FM.isPlayers())
-            bChangedPit = true;
+        if (this.FM.isPlayers()) {
+            U_2NB.bChangedPit = true;
+        }
     }
 
-    protected void nextCUTLevel(String s, int i, Actor actor)
-    {
+    protected void nextCUTLevel(String s, int i, Actor actor) {
         super.nextCUTLevel(s, i, actor);
-        if(FM.isPlayers())
-            bChangedPit = true;
-    }
-
-    public void doMurderPilot(int i)
-    {
-        switch(i)
-        {
-        default:
-            break;
-
-        case 0:
-            hierMesh().chunkVisible("Pilot1_D0", false);
-            hierMesh().chunkVisible("Head1_D0", false);
-            hierMesh().chunkVisible("Pilot1_D1", true);
-            if(!FM.AS.bIsAboutToBailout)
-                hierMesh().chunkVisible("Gore1_D0", true);
-            break;
-
-        case 1:
-            hierMesh().chunkVisible("Pilot2_D0", false);
-            hierMesh().chunkVisible("Pilot2_D1", true);
-            if(!FM.AS.bIsAboutToBailout)
-                hierMesh().chunkVisible("Gore2_D0", true);
-            break;
+        if (this.FM.isPlayers()) {
+            U_2NB.bChangedPit = true;
         }
     }
 
-    private static Aircraft._WeaponSlot[] GenerateDefaultConfig(int i)
-    {
-        Aircraft._WeaponSlot a_lweaponslot[] = new Aircraft._WeaponSlot[i];
-        try
-        {
-            a_lweaponslot[0] = null;
+    public void doMurderPilot(int i) {
+        switch (i) {
+            default:
+                break;
+
+            case 0:
+                this.hierMesh().chunkVisible("Pilot1_D0", false);
+                this.hierMesh().chunkVisible("Head1_D0", false);
+                this.hierMesh().chunkVisible("Pilot1_D1", true);
+                if (!this.FM.AS.bIsAboutToBailout) {
+                    this.hierMesh().chunkVisible("Gore1_D0", true);
+                }
+                break;
+
+            case 1:
+                this.hierMesh().chunkVisible("Pilot2_D0", false);
+                this.hierMesh().chunkVisible("Pilot2_D1", true);
+                if (!this.FM.AS.bIsAboutToBailout) {
+                    this.hierMesh().chunkVisible("Gore2_D0", true);
+                }
+                break;
         }
-        catch(Exception exception) { }
-        return a_lweaponslot;
     }
 
     public static boolean bChangedPit = false;
 
-    static 
-    {
+    static {
         Class class1 = U_2NB.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "U-2");
@@ -70,15 +56,9 @@ public class U_2NB extends U_2VS
         Property.set(class1, "PaintScheme", new PaintSchemeBMPar02());
         Property.set(class1, "yearService", 1933F);
         Property.set(class1, "yearExpired", 1967F);
-        Property.set(class1, "cockpitClass", new Class[] {
-            CockpitU2UT.class, CockpitU2VN.class
-        });
+        Property.set(class1, "cockpitClass", new Class[] { CockpitU2UT.class, CockpitU2VN.class });
         Property.set(class1, "FlightModel", "FlightModels/U-2NB.fmd");
-        Aircraft.weaponTriggersRegister(class1, new int[] {
-            10, 3, 3, 3, 3, 3
-        });
-        Aircraft.weaponHooksRegister(class1, new String[] {
-            "_MGUN01", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_BombSpawn01"
-        });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 10, 3, 3, 3, 3, 3 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_BombSpawn01" });
     }
 }

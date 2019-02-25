@@ -5,21 +5,18 @@ import java.io.IOException;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorMesh;
 import com.maddox.il2.engine.ActorNet;
-import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.HookNamed;
 import com.maddox.il2.engine.Loc;
 import com.maddox.il2.fm.Pitot;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.NetObj;
-import com.maddox.rts.Property;
 
-public class A1H_Tanker extends AD_Tanker implements TypeDockable, TypeTankerDrogue {
+public class A_6XYZ_tanker extends A_6 implements TypeDockable, TypeTankerDrogue {
 
-    public A1H_Tanker() {
+    public A_6XYZ_tanker() {
         this.bDrogueExtended = true;
         this.bInRefueling = false;
-        this.maxSendRefuel = 9.588F;
         this.drones = new Actor[1];
         this.ratdeg = 0.0F;
         this.bEmpty = false;
@@ -27,6 +24,9 @@ public class A1H_Tanker extends AD_Tanker implements TypeDockable, TypeTankerDro
 
     public boolean isDrogueExtended() {
         return this.bDrogueExtended;
+    }
+
+    void checkChangeWeaponColors() {
     }
 
     public void onAircraftLoaded() {
@@ -43,9 +43,6 @@ public class A1H_Tanker extends AD_Tanker implements TypeDockable, TypeTankerDro
 
     public void update(float f) {
         this.drogueRefuel(f);
-        if (this.FM.CT.getArrestor() > 0.2F) {
-            this.calculateArrestor();
-        }
         if (this.FM.getSpeedKMH() > 185F) {
             this.RATrot();
         }
@@ -88,7 +85,7 @@ public class A1H_Tanker extends AD_Tanker implements TypeDockable, TypeTankerDro
                     Loc loc3 = new Loc();
                     HookNamed hooknamed1 = new HookNamed((ActorMesh) actor, "_Probe");
                     hooknamed1.computePos(actor, loc1, loc3);
-                    if (loc2.getPoint().distance(loc3.getPoint()) >= 7.5D) {
+                    if (loc2.getPoint().distance(loc3.getPoint()) >= 8D) {
                         continue;
                     }
                     if (this.FM.AS.isMaster()) {
@@ -105,17 +102,15 @@ public class A1H_Tanker extends AD_Tanker implements TypeDockable, TypeTankerDro
 
     public void typeDockableRequestDetach(Actor actor) {
         for (int i = 0; i < this.drones.length; i++) {
-            if (actor != this.drones[i]) {
-                continue;
-            }
-            Aircraft aircraft = (Aircraft) actor;
-            if (!aircraft.FM.AS.isMaster()) {
-                continue;
-            }
-            if (this.FM.AS.isMaster()) {
-                this.typeDockableRequestDetach(actor, i, true);
-            } else {
-                this.FM.AS.netToMaster(33, i, 1, actor);
+            if (actor == this.drones[i]) {
+                Aircraft aircraft = (Aircraft) actor;
+                if (aircraft.FM.AS.isMaster()) {
+                    if (this.FM.AS.isMaster()) {
+                        this.typeDockableRequestDetach(actor, i, true);
+                    } else {
+                        this.FM.AS.netToMaster(33, i, 1, actor);
+                    }
+                }
             }
         }
 
@@ -213,31 +208,22 @@ public class A1H_Tanker extends AD_Tanker implements TypeDockable, TypeTankerDro
 
     public void typeDockableReplicateFromNet(NetMsgInput netmsginput) throws IOException {
         for (int i = 0; i < this.drones.length; i++) {
-            if (netmsginput.readByte() != 1) {
-                continue;
-            }
-            NetObj netobj = netmsginput.readNetObj();
-            if (netobj != null) {
-                this.typeDockableDoAttachToDrone((Actor) netobj.superObj(), i);
+            if (netmsginput.readByte() == 1) {
+                NetObj netobj = netmsginput.readNetObj();
+                if (netobj != null) {
+                    this.typeDockableDoAttachToDrone((Actor) netobj.superObj(), i);
+                }
             }
         }
 
     }
 
-    protected boolean cutFM(int i, int j, Actor actor) {
-        if (this.FM.AS.isMaster()) {
-            switch (i) {
-                case 33:
-                case 34:
-                case 35:
-                    this.typeDockableRequestDetach(this.drones[0], 0, true);
-                    break;
-            }
-        }
-        return super.cutFM(i, j, actor);
+    public void missionStarting() {
+        super.missionStarting();
+        this.checkChangeWeaponColors();
     }
 
-    private void RATrot() {
+    void RATrot() {
         if (this.FM.getSpeedKMH() < 250F) {
             this.ratdeg -= 10F;
         } else if (this.FM.getSpeedKMH() < 400F) {
@@ -250,22 +236,17 @@ public class A1H_Tanker extends AD_Tanker implements TypeDockable, TypeTankerDro
         if (this.ratdeg < 720F) {
             this.ratdeg += 1440F;
         }
-        this.hierMesh().chunkSetAngles("D704_rat", 0.0F, 0.0F, this.ratdeg);
-        if (this.FM.getSpeedKMH() > 300F) {
-            this.hierMesh().chunkVisible("D704_rat_rot", true);
-            this.hierMesh().chunkVisible("D704_rat", false);
-        } else {
-            this.hierMesh().chunkVisible("D704_rat_rot", false);
-            this.hierMesh().chunkVisible("D704_rat", true);
-        }
     }
 
-    private void drogueRefuel(float f) {
+    void drogueRefuel(float f) {
+    }
+
+    void drogueRefuel(float f, String sFuelLine, String sDrogue, String sDrogueFold) {
         float f1 = Pitot.Indicator((float) this.FM.Loc.z, this.FM.getSpeed()) * 3.6F;
-        if (this.bEmpty || (this.FM.getAltitude() < 1000F) || (this.FM.CT.getGear() > 0.0F) || (this.FM.CT.getArrestor() > 0.0F) || (f1 > 580F) || (f1 < 325F) || (this.FM.M.fuel < (this.FM.M.maxFuel * 0.2D))) {
-            this.hierMesh().chunkVisible("D704_FuelLine1", false);
-            this.hierMesh().chunkVisible("D704_Drogue1", false);
-            this.hierMesh().chunkVisible("D704_Drogue1_Fold", true);
+        if (this.bEmpty || (this.FM.getAltitude() < 1000F) || (this.FM.CT.getGear() > 0.0F) || (this.FM.CT.getArrestor() > 0.0F) || (f1 > 580F) || (f1 < 325F) || (this.FM.M.fuel < (this.FM.M.maxFuel * 0.2F))) {
+            this.hierMesh().chunkVisible(sFuelLine, false);
+            this.hierMesh().chunkVisible(sDrogue, false);
+            this.hierMesh().chunkVisible(sDrogueFold, true);
             if (this.bDrogueExtended) {
                 this.hierMesh().materialReplace("CYellowOff", "CYellowOff");
             }
@@ -276,9 +257,9 @@ public class A1H_Tanker extends AD_Tanker implements TypeDockable, TypeTankerDro
                 this.bInRefueling = false;
             }
         } else {
-            this.hierMesh().chunkVisible("D704_FuelLine1", true);
-            this.hierMesh().chunkVisible("D704_Drogue1", true);
-            this.hierMesh().chunkVisible("D704_Drogue1_Fold", false);
+            this.hierMesh().chunkVisible(sFuelLine, true);
+            this.hierMesh().chunkVisible(sDrogue, true);
+            this.hierMesh().chunkVisible(sDrogueFold, false);
             if (!this.bDrogueExtended && !this.bInRefueling) {
                 this.hierMesh().materialReplace("CYellowOff", "CYellowOn");
             }
@@ -292,9 +273,7 @@ public class A1H_Tanker extends AD_Tanker implements TypeDockable, TypeTankerDro
                         this.hierMesh().materialReplace("CYellowOff", "CYellowOff");
                         this.bInRefueling = true;
                     }
-                    continue;
-                }
-                if (this.bInRefueling) {
+                } else if (this.bInRefueling) {
                     this.hierMesh().materialReplace("CGreenOff", "CGreenOff");
                     this.hierMesh().materialReplace("CYellowOff", "CYellowOn");
                     this.bInRefueling = false;
@@ -307,14 +286,13 @@ public class A1H_Tanker extends AD_Tanker implements TypeDockable, TypeTankerDro
     public final float requestRefuel(Aircraft aircraft, float f, float f1) {
         if (this.bDrogueExtended && this.FM.AS.isMaster()) {
             for (int i = 0; i < this.drones.length; i++) {
-                if (!Actor.isValid(this.drones[i]) || (this.drones[i] != aircraft)) {
-                    continue;
-                }
-                if (f > this.maxSendRefuel) {
-                    f = this.maxSendRefuel;
-                }
-                if (this.FM.M.requestFuel(f * f1)) {
-                    return f * f1;
+                if (Actor.isValid(this.drones[i]) && (this.drones[i] == aircraft)) {
+                    if (f > this.maxSendRefuel) {
+                        f = this.maxSendRefuel;
+                    }
+                    if (this.FM.M.requestFuel(f * f1)) {
+                        return f * f1;
+                    }
                 }
             }
 
@@ -322,54 +300,17 @@ public class A1H_Tanker extends AD_Tanker implements TypeDockable, TypeTankerDro
         return 0.0F;
     }
 
-    private void calculateArrestor() {
-        if (this.FM.Gears.arrestorVAngle != 0.0F) {
-            float f = Aircraft.cvt(this.FM.Gears.arrestorVAngle, -50F, 7F, 1.0F, 0.0F);
-            this.arrestor = (0.8F * this.arrestor) + (0.2F * f);
-            this.moveArrestorHook(this.arrestor);
-        } else {
-            float f1 = (-33F * this.FM.Gears.arrestorVSink) / 57F;
-            if ((f1 < 0.0F) && (this.FM.getSpeedKMH() > 60F)) {
-                Eff3DActor.New(this, this.FM.Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
-            }
-            if ((f1 > 0.0F) && (this.FM.CT.getArrestor() < 0.95F)) {
-                f1 = 0.0F;
-            }
-            if (f1 > 0.2F) {
-                f1 = 0.2F;
-            }
-            if (f1 > 0.0F) {
-                this.arrestor = (0.7F * this.arrestor) + (0.3F * (this.arrestor + f1));
-            } else {
-                this.arrestor = (0.3F * this.arrestor) + (0.7F * (this.arrestor + f1));
-            }
-            if (this.arrestor < 0.0F) {
-                this.arrestor = 0.0F;
-            } else if (this.arrestor > 1.0F) {
-                this.arrestor = 1.0F;
-            }
-            this.moveArrestorHook(this.arrestor);
-        }
-    }
-
     private boolean bDrogueExtended;
     private boolean bInRefueling;
     private Actor   drones[];
-    private float   maxSendRefuel;
+    float           maxSendRefuel;
     private float   ratdeg;
     private boolean bEmpty;
 
-    static {
-        Class class1 = A1H_Tanker.class;
-        new NetAircraft.SPAWN(class1);
-        Property.set(class1, "iconFar_shortClassName", "A-1H");
-        Property.set(class1, "meshName", "3DO/Plane/A1H_Tanker(multi1)/hier.him");
-        Property.set(class1, "PaintScheme", new PaintSchemeFMPar06());
-        Property.set(class1, "yearService", 1946F);
-        Property.set(class1, "yearExpired", 1968F);
-        Property.set(class1, "FlightModel", "FlightModels/A1H.fmd");
-        Property.set(class1, "LOSElevation", 1.0585F);
-        Aircraft.weaponTriggersRegister(class1, new int[] { 1, 1, 1, 1, 9, 9 });
-        Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04", "_ExternalDev17", "_ExternalDev18" });
-    }
+    static int[]    triggers = { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 7, 8 };
+
+    static String[] hooks    = { "_ExternalDev06", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb01", "_Bomb06", "_ExternalBomb07", "_Bomb08", "_ExternalBomb09", "_Bomb10", "_ExternalBomb11", "_ExternalRock01", "_ExternalRock01", "_ExternalRock02", "_ExternalRock02", "_ExternalRock03", "_ExternalRock03", "_ExternalRock04", "_ExternalRock04", "_Bomb12", "_Bomb13", "_ExternalBomb14", "_ExternalBomb15", "_Bomb16", "_ExternalBomb17", "_ExternalBomb18", "_Bomb19NOUSE", "_ExternalBomb20", "_Bomb21", "_Bomb22NOUSE", "_ExternalBomb23", "_Bomb24", "_Bomb25", "_ExternalBomb26", "_ExternalBomb27", "_Bomb28", "_Bomb29", "_ExternalBomb30", "_ExternalBomb31", "_Bomb32", "_Bomb33", "_ExternalBomb34", "_ExternalBomb35", "_ExternalBomb36", "_ExternalBomb37", "_ExternalBomb38", "_ExternalBomb39",
+            "_ExternalBomb40", "_ExternalBomb41", "_ExternalBomb42", "_ExternalBomb43", "_ExternalBomb44", "_ExternalBomb45", "_ExternalBomb46", "_ExternalBomb47", "_ExternalBomb48", "_ExternalDev07", "_ExternalDev08", "_ExternalDev09", "_ExternalDev10", "_ExternalDev11", "_ExternalDev12", "_ExternalDev13", "_ExternalDev14", "_ExternalDev15", "_ExternalDev16", "_ExternalDev07", "_ExternalDev08", "_ExternalDev09", "_ExternalDev10", "_ExternalDev11", "_ExternalDev12", "_ExternalDev13", "_ExternalDev14", "_ExternalDev15", "_ExternalDev16", "_Rock05", "_Rock06", "_Rock07", "_Rock08", "_Rock09", "_Rock10", "_Rock11", "_Rock12", "_Rock13", "_Rock14", "_Rock15", "_Rock16", "_Rock17", "_Rock18", "_Rock19", "_Rock20", "_Rock21", "_Rock22", "_Rock23", "_Rock24", "_Rock25", "_Rock26", "_Rock27", "_Rock28", "_Rock29", "_Rock30", "_ExternalRock31", "_ExternalRock31", "_ExternalRock32", "_ExternalRock32", "_Rock33", "_Rock34", "_ExternalRock35", "_ExternalRock35", "_ExternalRock36", "_ExternalRock36", "_ExternalRock37",
+            "_ExternalRock37", "_ExternalRock38", "_ExternalRock38", "_Flare01", "_Chaff01" };
+
 }

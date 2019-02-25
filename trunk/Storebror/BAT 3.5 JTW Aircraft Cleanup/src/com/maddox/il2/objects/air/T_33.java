@@ -14,83 +14,74 @@ import com.maddox.rts.MsgAction;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
-public class T_33 extends P_80
-{
+public class T_33 extends P_80 {
 
-    public T_33()
-    {
-        lTimeNextEject = 0L;
-        overrideBailout = false;
-        ejectComplete = false;
-        lTimeNextEject = 0L;
-        emergencyEject = false;
+    public T_33() {
+        this.lTimeNextEject = 0L;
+        this.overrideBailout = false;
+        this.ejectComplete = false;
+        this.lTimeNextEject = 0L;
+        this.emergencyEject = false;
     }
 
-    public void onAircraftLoaded()
-    {
+    public void onAircraftLoaded() {
         super.onAircraftLoaded();
-        if(this.thisWeaponsName.startsWith("50cal"))
-            hierMesh().chunkVisible("NoseGun_D0", true);
-        else
-            hierMesh().chunkVisible("NoseGun_D0", false);
-    }
-
-    public void doMurderPilot(int i)
-    {
-        switch(i)
-        {
-        case 0:
-            hierMesh().chunkVisible("Pilot1_D0", false);
-            hierMesh().chunkVisible("Head1_D0", false);
-            hierMesh().chunkVisible("Pilot1_D1", true);
-            break;
-
-        case 1:
-            hierMesh().chunkVisible("Pilot2_D0", false);
-            hierMesh().chunkVisible("Head2_D0", false);
-            hierMesh().chunkVisible("Pilot2_D1", true);
-            break;
+        if (this.thisWeaponsName.startsWith("50cal")) {
+            this.hierMesh().chunkVisible("NoseGun_D0", true);
+        } else {
+            this.hierMesh().chunkVisible("NoseGun_D0", false);
         }
     }
 
-    protected boolean cutFM(int i, int j, Actor actor)
-    {
-        switch(i)
-        {
-        case 33:
-            return super.cutFM(34, j, actor);
+    public void doMurderPilot(int i) {
+        switch (i) {
+            case 0:
+                this.hierMesh().chunkVisible("Pilot1_D0", false);
+                this.hierMesh().chunkVisible("Head1_D0", false);
+                this.hierMesh().chunkVisible("Pilot1_D1", true);
+                break;
 
-        case 36:
-            return super.cutFM(37, j, actor);
+            case 1:
+                this.hierMesh().chunkVisible("Pilot2_D0", false);
+                this.hierMesh().chunkVisible("Head2_D0", false);
+                this.hierMesh().chunkVisible("Pilot2_D1", true);
+                break;
+        }
+    }
 
-        case 11:
-            cutFM(17, j, actor);
-            this.FM.cut(17, j, actor);
-            cutFM(18, j, actor);
-            this.FM.cut(18, j, actor);
-            return super.cutFM(i, j, actor);
+    protected boolean cutFM(int i, int j, Actor actor) {
+        switch (i) {
+            case 33:
+                return super.cutFM(34, j, actor);
+
+            case 36:
+                return super.cutFM(37, j, actor);
+
+            case 11:
+                this.cutFM(17, j, actor);
+                this.FM.cut(17, j, actor);
+                this.cutFM(18, j, actor);
+                this.FM.cut(18, j, actor);
+                return super.cutFM(i, j, actor);
         }
         return super.cutFM(i, j, actor);
     }
 
-    public void rareAction(float f, boolean flag)
-    {
+    public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
-        if((this.FM.Gears.nearGround() || this.FM.Gears.onGround()) && this.FM.CT.getCockpitDoor() == 1.0F)
-            hierMesh().chunkVisible("HMask2_D0", false);
-        else
-            hierMesh().chunkVisible("HMask2_D0", hierMesh().isChunkVisible("Head2_D0"));
+        if ((this.FM.Gears.nearGround() || this.FM.Gears.onGround()) && (this.FM.CT.getCockpitDoor() == 1.0F)) {
+            this.hierMesh().chunkVisible("HMask2_D0", false);
+        } else {
+            this.hierMesh().chunkVisible("HMask2_D0", this.hierMesh().isChunkVisible("Head2_D0"));
+        }
     }
 
-    public void doEjectCatapultStudent()
-    {
+    public void doEjectCatapultStudent() {
         new MsgAction(false, this) {
 
-            public void doAction(Object obj)
-            {
-                Aircraft aircraft = (Aircraft)obj;
-                if(Actor.isValid(aircraft))
-                {
+            public void doAction(Object obj) {
+                Aircraft aircraft = (Aircraft) obj;
+                if (Actor.isValid(aircraft)) {
                     Loc loc = new Loc();
                     Loc loc1 = new Loc();
                     Vector3d vector3d = new Vector3d(0.0D, 0.0D, 20D);
@@ -105,20 +96,16 @@ public class T_33 extends P_80
                 }
             }
 
-        }
-;
-        hierMesh().chunkVisible("Seat2_D0", false);
+        };
+        this.hierMesh().chunkVisible("Seat2_D0", false);
     }
 
-    public void doEjectCatapultInstructor()
-    {
+    public void doEjectCatapultInstructor() {
         new MsgAction(false, this) {
 
-            public void doAction(Object obj)
-            {
-                Aircraft aircraft = (Aircraft)obj;
-                if(Actor.isValid(aircraft))
-                {
+            public void doAction(Object obj) {
+                Aircraft aircraft = (Aircraft) obj;
+                if (Actor.isValid(aircraft)) {
                     Loc loc = new Loc();
                     Loc loc1 = new Loc();
                     Vector3d vector3d = new Vector3d(0.0D, 0.0D, 20D);
@@ -133,112 +120,102 @@ public class T_33 extends P_80
                 }
             }
 
-        }
-;
-        hierMesh().chunkVisible("Seat1_D0", false);
-        FM.setTakenMortalDamage(true, null);
-        FM.CT.WeaponControl[0] = false;
-        FM.CT.WeaponControl[1] = false;
-        FM.CT.bHasAileronControl = false;
-        FM.CT.bHasRudderControl = false;
-        FM.CT.bHasElevatorControl = false;
+        };
+        this.hierMesh().chunkVisible("Seat1_D0", false);
+        this.FM.setTakenMortalDamage(true, null);
+        this.FM.CT.WeaponControl[0] = false;
+        this.FM.CT.WeaponControl[1] = false;
+        this.FM.CT.bHasAileronControl = false;
+        this.FM.CT.bHasRudderControl = false;
+        this.FM.CT.bHasElevatorControl = false;
     }
 
-    private void bailout()
-    {
-        if(overrideBailout)
-            if(this.FM.AS.astateBailoutStep >= 0 && this.FM.AS.astateBailoutStep < 2)
-            {
-                if(this.FM.CT.cockpitDoorControl > 0.5F && this.FM.CT.getCockpitDoor() > 0.5F)
+    private void bailout() {
+        if (this.overrideBailout) {
+            if ((this.FM.AS.astateBailoutStep >= 0) && (this.FM.AS.astateBailoutStep < 2)) {
+                if ((this.FM.CT.cockpitDoorControl > 0.5F) && (this.FM.CT.getCockpitDoor() > 0.5F)) {
                     this.FM.AS.astateBailoutStep = 11;
-                else
+                } else {
                     this.FM.AS.astateBailoutStep = 2;
-            } else
-            if(this.FM.AS.astateBailoutStep >= 2 && this.FM.AS.astateBailoutStep <= 3)
-            {
-                switch(this.FM.AS.astateBailoutStep)
-                {
-                case 2:
-                    if(this.FM.CT.cockpitDoorControl < 0.5F)
-                        if(this.FM.AS.getPilotHealth(0) < 0.5F || this.FM.AS.getPilotHealth(1) < 0.5F || this.FM.EI.engines[0].getReadyness() < 0.7F || !this.FM.CT.bHasCockpitDoorControl || this.FM.getSpeedKMH() < 250F || World.Rnd().nextFloat() < 0.2F)
-                        {
-                            emergencyEject = true;
-                            breakBlister();
-                        } else
-                        {
-                            doRemoveBlister1();
+                }
+            } else if ((this.FM.AS.astateBailoutStep >= 2) && (this.FM.AS.astateBailoutStep <= 3)) {
+                switch (this.FM.AS.astateBailoutStep) {
+                    case 2:
+                        if (this.FM.CT.cockpitDoorControl < 0.5F) {
+                            if ((this.FM.AS.getPilotHealth(0) < 0.5F) || (this.FM.AS.getPilotHealth(1) < 0.5F) || (this.FM.EI.engines[0].getReadyness() < 0.7F) || !this.FM.CT.bHasCockpitDoorControl || (this.FM.getSpeedKMH() < 250F) || (World.Rnd().nextFloat() < 0.2F)) {
+                                this.emergencyEject = true;
+                                this.breakBlister();
+                            } else {
+                                this.doRemoveBlister1();
+                            }
                         }
-                    break;
+                        break;
 
-                case 3:
-                    if(!emergencyEject)
-                        lTimeNextEject = Time.current() + 1000L;
-                    break;
+                    case 3:
+                        if (!this.emergencyEject) {
+                            this.lTimeNextEject = Time.current() + 1000L;
+                        }
+                        break;
                 }
-                if(this.FM.AS.isMaster())
+                if (this.FM.AS.isMaster()) {
                     this.FM.AS.netToMirrors(20, this.FM.AS.astateBailoutStep, 1, null);
-                this.FM.AS.astateBailoutStep = (byte)(this.FM.AS.astateBailoutStep + 1);
-                if(this.FM.AS.astateBailoutStep == 4)
+                }
+                this.FM.AS.astateBailoutStep = (byte) (this.FM.AS.astateBailoutStep + 1);
+                if (this.FM.AS.astateBailoutStep == 4) {
                     this.FM.AS.astateBailoutStep = 11;
-            } else
-            if(this.FM.AS.astateBailoutStep >= 11 && this.FM.AS.astateBailoutStep <= 19)
-            {
-                byte byte0 = this.FM.AS.astateBailoutStep;
-                if(this.FM.AS.isMaster())
-                    this.FM.AS.netToMirrors(20, this.FM.AS.astateBailoutStep, 1, null);
-                this.FM.AS.astateBailoutStep = (byte)(this.FM.AS.astateBailoutStep + 1);
-                if((this.FM instanceof Maneuver) && ((Maneuver)this.FM).get_maneuver() != 44)
-                {
-                    World.cur();
-                    if(this.FM.AS.actor != World.getPlayerAircraft())
-                        ((Maneuver)this.FM).set_maneuver(44);
                 }
-                if(this.FM.AS.astatePilotStates[byte0 - 11] < 99)
-                {
-                    if(byte0 == 11)
-                    {
-                        doRemoveBodyFromPlane(2);
-                        doEjectCatapultStudent();
-                        lTimeNextEject = Time.current() + 1000L;
-                    } else
-                    if(byte0 == 12)
-                    {
-                        doRemoveBodyFromPlane(1);
-                        doEjectCatapultInstructor();
+            } else if ((this.FM.AS.astateBailoutStep >= 11) && (this.FM.AS.astateBailoutStep <= 19)) {
+                byte byte0 = this.FM.AS.astateBailoutStep;
+                if (this.FM.AS.isMaster()) {
+                    this.FM.AS.netToMirrors(20, this.FM.AS.astateBailoutStep, 1, null);
+                }
+                this.FM.AS.astateBailoutStep = (byte) (this.FM.AS.astateBailoutStep + 1);
+                if ((this.FM instanceof Maneuver) && (((Maneuver) this.FM).get_maneuver() != 44)) {
+                    World.cur();
+                    if (this.FM.AS.actor != World.getPlayerAircraft()) {
+                        ((Maneuver) this.FM).set_maneuver(44);
+                    }
+                }
+                if (this.FM.AS.astatePilotStates[byte0 - 11] < 99) {
+                    if (byte0 == 11) {
+                        this.doRemoveBodyFromPlane(2);
+                        this.doEjectCatapultStudent();
+                        this.lTimeNextEject = Time.current() + 1000L;
+                    } else if (byte0 == 12) {
+                        this.doRemoveBodyFromPlane(1);
+                        this.doEjectCatapultInstructor();
                         this.FM.AS.astateBailoutStep = 51;
                         this.FM.setTakenMortalDamage(true, null);
                         this.FM.CT.WeaponControl[0] = false;
                         this.FM.CT.WeaponControl[1] = false;
                         this.FM.AS.astateBailoutStep = -1;
-                        overrideBailout = false;
+                        this.overrideBailout = false;
                         this.FM.AS.bIsAboutToBailout = true;
-                        ejectComplete = true;
+                        this.ejectComplete = true;
                     }
                     this.FM.AS.astatePilotStates[byte0 - 11] = 99;
-                } else
-                {
+                } else {
                     EventLog.type("astatePilotStates[" + (byte0 - 11) + "]=" + this.FM.AS.astatePilotStates[byte0 - 11]);
                 }
             }
+        }
     }
 
-    private final void breakBlister()
-    {
-        if(hierMesh().chunkFindCheck("Blister1_D0") != -1 && this.FM.AS.getPilotHealth(0) > 0.0F)
-        {
-            hierMesh().hideSubTrees("Blister1_D0");
-            hierMesh().chunkVisible("BlisterBroken_D0", true);
-            Wreckage wreckage = new Wreckage(this, hierMesh().chunkFind("BlisterPiece1_D0"));
+    private final void breakBlister() {
+        if ((this.hierMesh().chunkFindCheck("Blister1_D0") != -1) && (this.FM.AS.getPilotHealth(0) > 0.0F)) {
+            this.hierMesh().hideSubTrees("Blister1_D0");
+            this.hierMesh().chunkVisible("BlisterBroken_D0", true);
+            Wreckage wreckage = new Wreckage(this, this.hierMesh().chunkFind("BlisterPiece1_D0"));
             wreckage.collide(false);
             Vector3d vector3d = new Vector3d();
             vector3d.set(this.FM.Vwld);
             wreckage.setSpeed(vector3d);
-            Wreckage wreckage1 = new Wreckage(this, hierMesh().chunkFind("BlisterPiece2_D0"));
+            Wreckage wreckage1 = new Wreckage(this, this.hierMesh().chunkFind("BlisterPiece2_D0"));
             wreckage1.collide(false);
             Vector3d vector3d1 = new Vector3d();
             vector3d1.set(this.FM.Vwld);
             wreckage1.setSpeed(vector3d1);
-            Wreckage wreckage2 = new Wreckage(this, hierMesh().chunkFind("BlisterPiece3_D0"));
+            Wreckage wreckage2 = new Wreckage(this, this.hierMesh().chunkFind("BlisterPiece3_D0"));
             wreckage2.collide(false);
             Vector3d vector3d2 = new Vector3d();
             vector3d2.set(this.FM.Vwld);
@@ -246,12 +223,10 @@ public class T_33 extends P_80
         }
     }
 
-    private final void doRemoveBlister1()
-    {
-        if(hierMesh().chunkFindCheck("Blister1_D0") != -1 && this.FM.AS.getPilotHealth(0) > 0.0F)
-        {
-            hierMesh().hideSubTrees("Blister1_D0");
-            Wreckage wreckage = new Wreckage(this, hierMesh().chunkFind("Blister1_D0"));
+    private final void doRemoveBlister1() {
+        if ((this.hierMesh().chunkFindCheck("Blister1_D0") != -1) && (this.FM.AS.getPilotHealth(0) > 0.0F)) {
+            this.hierMesh().hideSubTrees("Blister1_D0");
+            Wreckage wreckage = new Wreckage(this, this.hierMesh().chunkFind("Blister1_D0"));
             wreckage.collide(false);
             Vector3d vector3d = new Vector3d();
             vector3d.set(this.FM.Vwld);
@@ -259,40 +234,37 @@ public class T_33 extends P_80
         }
     }
 
-    public void moveCockpitDoor(float f)
-    {
-        resetYPRmodifier();
-        hierMesh().chunkSetAngles("BlisterMove", 0.0F, 0.0F, 25F * f);
+    public void moveCockpitDoor(float f) {
+        this.resetYPRmodifier();
+        this.hierMesh().chunkSetAngles("BlisterMove", 0.0F, 0.0F, 25F * f);
         Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 0.7F);
-        hierMesh().chunkSetLocate("Cylinder_D0", Aircraft.xyz, Aircraft.ypr);
-        if(Config.isUSE_RENDER())
-        {
-            if(Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null)
+        this.hierMesh().chunkSetLocate("Cylinder_D0", Aircraft.xyz, Aircraft.ypr);
+        if (Config.isUSE_RENDER()) {
+            if ((Main3D.cur3D().cockpits != null) && (Main3D.cur3D().cockpits[0] != null)) {
                 Main3D.cur3D().cockpits[0].onDoorMoved(f);
-            setDoorSnd(f);
+            }
+            this.setDoorSnd(f);
         }
     }
 
-    public void update(float f)
-    {
-        if((this.FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && this.FM.getSpeedKMH() > 15F)
-        {
-            overrideBailout = true;
+    public void update(float f) {
+        if ((this.FM.AS.bIsAboutToBailout || this.overrideBailout) && !this.ejectComplete && (this.FM.getSpeedKMH() > 15F)) {
+            this.overrideBailout = true;
             this.FM.AS.bIsAboutToBailout = false;
-            if(Time.current() > lTimeNextEject)
-                bailout();
+            if (Time.current() > this.lTimeNextEject) {
+                this.bailout();
+            }
         }
         super.update(f);
     }
 
     public static boolean bChangedPit = false;
-    private boolean overrideBailout;
-    private boolean ejectComplete;
-    private long lTimeNextEject;
-    private boolean emergencyEject;
+    private boolean       overrideBailout;
+    private boolean       ejectComplete;
+    private long          lTimeNextEject;
+    private boolean       emergencyEject;
 
-    static 
-    {
+    static {
         Class class1 = T_33.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "T-33");
@@ -301,18 +273,8 @@ public class T_33 extends P_80
         Property.set(class1, "yearService", 1946.9F);
         Property.set(class1, "yearExpired", 1955.3F);
         Property.set(class1, "FlightModel", "FlightModels/T-33.fmd:F80_FM");
-        Property.set(class1, "cockpitClass", new Class[] {
-            CockpitT_33c.class, CockpitT_33i.class
-        });
-        Aircraft.weaponTriggersRegister(class1, new int[] {
-            0, 0, 9, 9, 9, 9, 3, 3, 9, 9, 
-            9, 9, 9, 9, 9, 9, 2, 2, 2, 2, 
-            2, 2, 2, 2
-        });
-        Aircraft.weaponHooksRegister(class1, new String[] {
-            "_MGUN01", "_MGUN02", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev05", "_ExternalDev06", 
-            "_ExternalDev07", "_ExternalDev08", "_ExternalDev09", "_ExternalDev10", "_ExternalDev11", "_ExternalDev12", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", 
-            "_ExternalRock05", "_ExternalRock06", "_ExternalRock07", "_ExternalRock08"
-        });
+        Property.set(class1, "cockpitClass", new Class[] { CockpitT_33c.class, CockpitT_33i.class });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 9, 9, 9, 9, 3, 3, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 2, 2, 2, 2, 2 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev05", "_ExternalDev06", "_ExternalDev07", "_ExternalDev08", "_ExternalDev09", "_ExternalDev10", "_ExternalDev11", "_ExternalDev12", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06", "_ExternalRock07", "_ExternalRock08" });
     }
 }
