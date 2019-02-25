@@ -10,111 +10,101 @@ import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 
-public class P_51D20NA extends P_51
-    implements TypeFighterAceMaker
-{
+public class P_51D20NA extends P_51 implements TypeFighterAceMaker {
 
-    public P_51D20NA()
-    {
-        k14Mode = 0;
-        k14WingspanType = 0;
-        k14Distance = 200F;
+    public P_51D20NA() {
+        this.k14Mode = 0;
+        this.k14WingspanType = 0;
+        this.k14Distance = 200F;
     }
 
-    public static String getSkinPrefix(String s, Regiment regiment)
-    {
-        if(regiment == null || regiment.country() == null)
+    public static String getSkinPrefix(String s, Regiment regiment) {
+        if ((regiment == null) || (regiment.country() == null)) {
             return "";
+        }
         String s1 = "";
         String s2 = "";
         int i = Mission.getMissionDate(true);
-        if(i > 0 && i < 0x128a3de)
+        if ((i > 0) && (i < 0x128a3de)) {
             s1 = "PreInvasion_";
-        if(regiment.country().equals("us"))
-            if(regiment.name().equals("15AF_332FG_099FS"))
-            {
+        }
+        if (regiment.country().equals("us")) {
+            if (regiment.name().equals("15AF_332FG_099FS")) {
                 s2 = "332FG_";
                 s1 = "";
-            } else
-            if(regiment.name().equals("8AF_004FG_0HQ"))
+            } else if (regiment.name().equals("8AF_004FG_0HQ")) {
                 s2 = "4FG_";
-            else
-            if(regiment.name().startsWith("8AF_359FG"))
+            } else if (regiment.name().startsWith("8AF_359FG")) {
                 s2 = "359FG_";
+            }
+        }
         return s1 + s2;
     }
 
-    public boolean typeFighterAceMakerToggleAutomation()
-    {
-        k14Mode++;
-        if(k14Mode > 2)
-            k14Mode = 0;
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerMode" + k14Mode);
+    public boolean typeFighterAceMakerToggleAutomation() {
+        this.k14Mode++;
+        if (this.k14Mode > 2) {
+            this.k14Mode = 0;
+        }
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerMode" + this.k14Mode);
         return true;
     }
 
-    public void typeFighterAceMakerAdjDistanceReset()
-    {
+    public void typeFighterAceMakerAdjDistanceReset() {
     }
 
-    public void typeFighterAceMakerAdjDistancePlus()
-    {
-        k14Distance += 10F;
-        if(k14Distance > 800F)
-            k14Distance = 800F;
+    public void typeFighterAceMakerAdjDistancePlus() {
+        this.k14Distance += 10F;
+        if (this.k14Distance > 800F) {
+            this.k14Distance = 800F;
+        }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerInc");
     }
 
-    public void typeFighterAceMakerAdjDistanceMinus()
-    {
-        k14Distance -= 10F;
-        if(k14Distance < 200F)
-            k14Distance = 200F;
+    public void typeFighterAceMakerAdjDistanceMinus() {
+        this.k14Distance -= 10F;
+        if (this.k14Distance < 200F) {
+            this.k14Distance = 200F;
+        }
         HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerDec");
     }
 
-    public void typeFighterAceMakerAdjSideslipReset()
-    {
+    public void typeFighterAceMakerAdjSideslipReset() {
     }
 
-    public void typeFighterAceMakerAdjSideslipPlus()
-    {
-        k14WingspanType--;
-        if(k14WingspanType < 0)
-            k14WingspanType = 0;
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerWing" + k14WingspanType);
+    public void typeFighterAceMakerAdjSideslipPlus() {
+        this.k14WingspanType--;
+        if (this.k14WingspanType < 0) {
+            this.k14WingspanType = 0;
+        }
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerWing" + this.k14WingspanType);
     }
 
-    public void typeFighterAceMakerAdjSideslipMinus()
-    {
-        k14WingspanType++;
-        if(k14WingspanType > 9)
-            k14WingspanType = 9;
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerWing" + k14WingspanType);
+    public void typeFighterAceMakerAdjSideslipMinus() {
+        this.k14WingspanType++;
+        if (this.k14WingspanType > 9) {
+            this.k14WingspanType = 9;
+        }
+        HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerWing" + this.k14WingspanType);
     }
 
-    public void typeFighterAceMakerReplicateToNet(NetMsgGuaranted netmsgguaranted)
-        throws IOException
-    {
-        netmsgguaranted.writeByte(k14Mode);
-        netmsgguaranted.writeByte(k14WingspanType);
-        netmsgguaranted.writeFloat(k14Distance);
+    public void typeFighterAceMakerReplicateToNet(NetMsgGuaranted netmsgguaranted) throws IOException {
+        netmsgguaranted.writeByte(this.k14Mode);
+        netmsgguaranted.writeByte(this.k14WingspanType);
+        netmsgguaranted.writeFloat(this.k14Distance);
     }
 
-    public void typeFighterAceMakerReplicateFromNet(NetMsgInput netmsginput)
-        throws IOException
-    {
-        k14Mode = netmsginput.readByte();
-        k14WingspanType = netmsginput.readByte();
-        k14Distance = netmsginput.readFloat();
+    public void typeFighterAceMakerReplicateFromNet(NetMsgInput netmsginput) throws IOException {
+        this.k14Mode = netmsginput.readByte();
+        this.k14WingspanType = netmsginput.readByte();
+        this.k14Distance = netmsginput.readFloat();
     }
 
-    public int k14Mode;
-    public int k14WingspanType;
+    public int   k14Mode;
+    public int   k14WingspanType;
     public float k14Distance;
 
-    static 
-    {
+    static {
         Class class1 = P_51D20NA.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "P-51");
@@ -129,13 +119,7 @@ public class P_51D20NA extends P_51
         Property.set(class1, "FlightModel", "FlightModels/P-51D-20.fmd");
         Property.set(class1, "cockpitClass", new Class[] { CockpitP_51D20K14.class });
         Property.set(class1, "LOSElevation", 1.06935F);
-        weaponTriggersRegister(class1, new int[] {
-            0, 0, 0, 0, 0, 0, 9, 9, 3, 3, 
-            9, 9
-        });
-        weaponHooksRegister(class1, new String[] {
-            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02", 
-            "_ExternalBomb01", "_ExternalBomb02"
-        });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0, 9, 9, 3, 3, 9, 9 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02" });
     }
 }

@@ -3,15 +3,12 @@ package com.maddox.il2.objects.air;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.rts.Property;
 
-public class MC_205_3 extends MC_202xyz
-{
+public class MC_205_3 extends MC_202xyz {
 
-    public MC_205_3()
-    {
+    public MC_205_3() {
     }
 
-    public static void moveGear(HierMesh hiermesh, float f, float f1, float f2)
-    {
+    public static void moveGear(HierMesh hiermesh, float f, float f1, float f2) {
         hiermesh.chunkSetAngles("GearL2_D0", 0.0F, -88F * f, 0.0F);
         hiermesh.chunkSetAngles("GearR2_D0", 0.0F, -88F * f1, 0.0F);
         hiermesh.chunkSetAngles("GearL5_D0", 0.0F, -100F * f, 0.0F);
@@ -20,31 +17,26 @@ public class MC_205_3 extends MC_202xyz
         hiermesh.chunkSetAngles("GearR6_D0", 0.0F, -114F * f1, 0.0F);
         hiermesh.chunkSetAngles("GearL4_D0", 0.0F, Math.max(-f * 1500F, -80F), 0.0F);
         hiermesh.chunkSetAngles("GearR4_D0", 0.0F, Math.max(-f1 * 1500F, -80F), 0.0F);
-        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, cvt(f2, 0.11F, 0.67F, 0.0F, -38F), 0.0F);
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(f2, 0.11F, 0.67F, 0.0F, -38F), 0.0F);
         hiermesh.chunkSetAngles("GearC3_D0", 0.0F, 0.0F, 0.0F);
-        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, cvt(f2, 0.01F, 0.09F, 0.0F, -80F), 0.0F);
-        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, cvt(f2, 0.01F, 0.09F, 0.0F, -80F), 0.0F);
+        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(f2, 0.01F, 0.09F, 0.0F, -80F), 0.0F);
+        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, Aircraft.cvt(f2, 0.01F, 0.09F, 0.0F, -80F), 0.0F);
     }
 
-    protected void moveGear(float f, float f1, float f2)
-    {
-        moveGear(hierMesh(), f, f1, f2);
+    protected void moveGear(float f, float f1, float f2) {
+        MC_205_3.moveGear(this.hierMesh(), f, f1, f2);
     }
 
-    public void moveSteering(float f)
-    {
-        if(FM.CT.getGearC() < 0.65F)
-        {
+    public void moveSteering(float f) {
+        if (this.FM.CT.getGearC() < 0.65F) {
             return;
-        } else
-        {
-            hierMesh().chunkSetAngles("GearC3_D0", 0.0F, cvt(f, -30F, 30F, 30F, -30F), 0.0F);
+        } else {
+            this.hierMesh().chunkSetAngles("GearC3_D0", 0.0F, Aircraft.cvt(f, -30F, 30F, 30F, -30F), 0.0F);
             return;
         }
     }
 
-    static 
-    {
+    static {
         Class class1 = MC_205_3.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "M.C.205");
@@ -57,11 +49,7 @@ public class MC_205_3 extends MC_202xyz
         Property.set(class1, "FlightModel", "FlightModels/MC-205.fmd");
         Property.set(class1, "cockpitClass", new Class[] { CockpitMC_205.class });
         Property.set(class1, "LOSElevation", 0.7898F);
-        weaponTriggersRegister(class1, new int[] {
-            0, 0, 1, 1
-        });
-        weaponHooksRegister(class1, new String[] {
-            "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02"
-        });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02" });
     }
 }

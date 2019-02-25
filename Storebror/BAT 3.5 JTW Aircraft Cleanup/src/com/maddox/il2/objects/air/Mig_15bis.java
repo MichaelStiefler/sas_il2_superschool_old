@@ -6,35 +6,32 @@ import com.maddox.JGP.Vector3d;
 import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.rts.Property;
 
-public class Mig_15bis extends Mig_15F
-{
+public class Mig_15bis extends Mig_15F {
 
-    public Mig_15bis()
-    {
-        random = new Random();
+    public Mig_15bis() {
+        this.random = new Random();
     }
 
-    public void update(float f)
-    {
+    public void update(float f) {
         super.update(f);
-        if(valkhenza_mode != 0 && this.FM.isPlayers() && (double)calculateMach() >= 0.84999999999999998D)
-        {
-            if(valkhenza_mode == 1)
-                v.x = Aircraft.cvt(calculateMach(), 0.85F, 1.0F, 0.0F, -800000F);
-            if(valkhenza_mode == 2)
-                v.x = Aircraft.cvt(calculateMach(), 0.85F, 1.0F, 0.0F, 800000F);
-            v.y = Aircraft.cvt(calculateMach(), 0.85F, 1.0F, 0.0F, -600000F);
-            v.z = 0.0D;
-            ((RealFlightModel)this.FM).gunMomentum(v, false);
+        if ((this.valkhenza_mode != 0) && this.FM.isPlayers() && (this.calculateMach() >= 0.85D)) {
+            if (this.valkhenza_mode == 1) {
+                Mig_15bis.v.x = Aircraft.cvt(this.calculateMach(), 0.85F, 1.0F, 0.0F, -800000F);
+            }
+            if (this.valkhenza_mode == 2) {
+                Mig_15bis.v.x = Aircraft.cvt(this.calculateMach(), 0.85F, 1.0F, 0.0F, 800000F);
+            }
+            Mig_15bis.v.y = Aircraft.cvt(this.calculateMach(), 0.85F, 1.0F, 0.0F, -600000F);
+            Mig_15bis.v.z = 0.0D;
+            ((RealFlightModel) this.FM).gunMomentum(Mig_15bis.v, false);
         }
     }
 
-    protected Random random;
-    protected int valkhenza_mode;
+    protected Random        random;
+    protected int           valkhenza_mode;
     private static Vector3d v = new Vector3d();
 
-    static 
-    {
+    static {
         Class class1 = Mig_15bis.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "iconFar_shortClassName", "MiG-15");
@@ -51,15 +48,9 @@ public class Mig_15bis extends Mig_15F
         Property.set(class1, "yearService", 1949.9F);
         Property.set(class1, "yearExpired", 1960.3F);
         Property.set(class1, "FlightModel", "FlightModels/MiG-15F.fmd:JETERA");
-        Property.set(class1, "cockpitClass", new Class[] {
-            CockpitMig_15F.class
-        });
+        Property.set(class1, "cockpitClass", new Class[] { CockpitMig_15F.class });
         Property.set(class1, "LOSElevation", 0.725F);
-        Aircraft.weaponTriggersRegister(class1, new int[] {
-            1, 0, 0, 9, 9
-        });
-        Aircraft.weaponHooksRegister(class1, new String[] {
-            "_CANNON01", "_CANNON02", "_CANNON03", "_ExternalDev01", "_ExternalDev02"
-        });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 1, 0, 0, 9, 9 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_CANNON01", "_CANNON02", "_CANNON03", "_ExternalDev01", "_ExternalDev02" });
     }
 }
