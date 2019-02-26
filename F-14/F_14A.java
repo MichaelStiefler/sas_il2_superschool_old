@@ -211,14 +211,7 @@ public class F_14A extends F_14
                 if(k2 < 345 && k2 >= 300)
                     s3 = "off our left, ";
                 if((double)j1 <= (double)l2 && (double)j1 > 100D && l1 >= -20 && l1 <= 20 && Math.sqrt(j2 * j2) <= 60D)
-                {
                     HUD.log(AircraftHotKeys.hudLogWeaponId, "WSO: Contact " + s3 + s + ", " + i2 + "m");
-                    freq = 1;
-                } else
-                {
-                    freq = 1;
-                }
-                setTimer(freq);
             }
         }
 
@@ -411,8 +404,6 @@ public class F_14A extends F_14
                    && (double)j1 < IRstrength)
                 {
                     HUD.log(AircraftHotKeys.hudLogWeaponId, "IR Tracking! " + s3 + s);
-                    freq = 1;
-                    setTimer(freq);
                     return true;
                 }
             }
@@ -422,41 +413,41 @@ public class F_14A extends F_14
 
     private boolean InertialNavigation()
     {
-            Point3d point3d = new Point3d();
+        Point3d point3d = new Point3d();
+        pos.getAbs(point3d);
+        Vector3d vector3d = new Vector3d();
+        Aircraft aircraft = World.getPlayerAircraft();
+        if(aircraft.getSpeed(vector3d) > 20D && ((Actor) (aircraft)).pos.getAbsPoint().z >= 150D && (aircraft instanceof F_14A))
+        {
             pos.getAbs(point3d);
-            Vector3d vector3d = new Vector3d();
-            Aircraft aircraft = World.getPlayerAircraft();
-            if(aircraft.getSpeed(vector3d) > 20D && ((Actor) (aircraft)).pos.getAbsPoint().z >= 150D && (aircraft instanceof F_14A))
+            if(Mission.cur() != null)
             {
-                pos.getAbs(point3d);
-                if(Mission.cur() != null)
-                {
-                    error++;
-                    if(error > 99)
-                        error = 1;
-                }
-                int i = error;
-                int j = i;
-                Random random = new Random();
-                int k = random.nextInt(100);
-                if(k > 50)
-                    i -= i * 2;
-                k = random.nextInt(100);
-                if(k > 50)
-                    j -= j * 2;
-                double d = Main3D.cur3D().land2D.mapSizeX() / 1000D;
-                double d1 = ((Main3D.cur3D().land2D.worldOfsX() + ((Actor) (aircraft)).pos.getAbsPoint().x) / 1000D) / 10D;
-                double d2 = ((Main3D.cur3D().land2D.worldOfsY() + ((Actor) (aircraft)).pos.getAbsPoint().y) / 1000D) / 10D;
-                char c = (char)(int)(65D + Math.floor((d1 / 676D - Math.floor(d1 / 676D)) * 26D));
-                char c1 = (char)(int)(65D + Math.floor((d1 / 26D - Math.floor(d1 / 26D)) * 26D));
-                String s = "";
-                if(d > 260D)
-                    s = "" + c + c1;
-                else
-                    s = "" + c1;
-                int l = (int)Math.ceil(d2);
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "INS: " + s + "-" + l);
+                error++;
+                if(error > 99)
+                    error = 1;
             }
+            int i = error;
+            int j = i;
+            Random random = new Random();
+            int k = random.nextInt(100);
+            if(k > 50)
+                i -= i * 2;
+            k = random.nextInt(100);
+            if(k > 50)
+                j -= j * 2;
+            double d = Main3D.cur3D().land2D.mapSizeX() / 1000D;
+            double d1 = ((Main3D.cur3D().land2D.worldOfsX() + ((Actor) (aircraft)).pos.getAbsPoint().x) / 1000D) / 10D;
+            double d2 = ((Main3D.cur3D().land2D.worldOfsY() + ((Actor) (aircraft)).pos.getAbsPoint().y) / 1000D) / 10D;
+            char c = (char)(int)(65D + Math.floor((d1 / 676D - Math.floor(d1 / 676D)) * 26D));
+            char c1 = (char)(int)(65D + Math.floor((d1 / 26D - Math.floor(d1 / 26D)) * 26D));
+            String s = "";
+            if(d > 260D)
+                s = "" + c + c1;
+            else
+                s = "" + c1;
+            int l = (int)Math.ceil(d2);
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "INS: " + s + "-" + l);
+        }
         return true;
     }
 

@@ -212,14 +212,7 @@ public class F_14D extends F_14
                 if(k2 < 345 && k2 >= 300)
                     s3 = "off our left, ";
                 if((double)j1 <= (double)l2 && (double)j1 > 100D && l1 >= -20 && l1 <= 20 && Math.sqrt(j2 * j2) <= 60D)
-                {
                     HUD.log(AircraftHotKeys.hudLogWeaponId, "WSO: Contact " + s3 + s + ", " + i2 + "m");
-                    freq = 1;
-                } else
-                {
-                    freq = 1;
-                }
-                setTimer(freq);
             }
         }
 
@@ -406,8 +399,6 @@ public class F_14D extends F_14
                     if((double)j1 <= (double)l2 && (double)j1 < irstMaxDistance[num] && l1 >= -20 && l1 <= 20 && Math.sqrt(j2 * j2) <= 60D && (classnameSection.indexOf(irstPlaneName[num])) !=-1)
                     {
                         HUD.log(AircraftHotKeys.hudLogWeaponId, "TV Tracking! " + irstPlaneDisplay[num] + " " + s3 + s + ", " + i2 + "m");
-                        freq = 1;
-                        setTimer(freq);
                         return true;
                     }
                 }
@@ -574,8 +565,6 @@ public class F_14D extends F_14
                    && (double)j1 < IRstrength)
                 {
                     HUD.log(AircraftHotKeys.hudLogWeaponId, "IR Tracking! " + s3 + s);
-                    freq = 1;
-                    setTimer(freq);
                     return true;
                 }
             }
