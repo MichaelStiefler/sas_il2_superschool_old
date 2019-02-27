@@ -312,6 +312,19 @@ public class BV_222_1 extends BV_222
             a_lweaponslot[8] = new Aircraft._WeaponSlot(3, "BombGunPara", 92);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
+            s = "12xCargoA";
+            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
+            a_lweaponslot[0] = new Aircraft._WeaponSlot(10, "MGunMG131t", 350);
+            a_lweaponslot[1] = new Aircraft._WeaponSlot(11, "MGunMG131t", 350);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(12, "MGunMG131t", 350);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(13, "MGunMG131t", 350);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(14, "MGunMG15120t", 350);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(15, "MGunMG15120t", 350);
+            a_lweaponslot[6] = new Aircraft._WeaponSlot(16, "MGunMG15120t", 350);
+            a_lweaponslot[7] = new Aircraft._WeaponSlot(17, "MGunMG131t", 350);
+            a_lweaponslot[8] = new Aircraft._WeaponSlot(3, "BombGunCargoA", 12);
+            arraylist.add(s);
+            hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "none";
             a_lweaponslot = new Aircraft._WeaponSlot[byte0];
             for(int i = 0; i < byte0; i++)

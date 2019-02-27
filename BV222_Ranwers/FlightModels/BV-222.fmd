@@ -63,6 +63,8 @@
   Engine2 500
   Engine3 500
   Engine4 500
+  Engine5 500
+  Engine6 500
   GearL2 400
   GearR2 400
   Keel1 400
@@ -81,6 +83,8 @@
   Turret4B 200
   Turret5B 200
   Turret6B 200
+  Turret7B 200
+  Turret8B 200
   VatorL 300
   VatorR 300
   WingLIn 1000
