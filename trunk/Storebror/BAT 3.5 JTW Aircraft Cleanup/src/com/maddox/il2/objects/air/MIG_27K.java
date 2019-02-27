@@ -139,16 +139,16 @@ public class MIG_27K extends MIG_23 implements TypeLaserSpotter {
         this.FM.producedAF.x -= f1 * 1000F;
     }
 
-    private static Point3d  LaserP3    = new Point3d();
-    public boolean          laserOn;
-    public boolean          laserLock;
-    public static Orient    tmpOr      = new Orient();
-    private Hook            LaserHook[];
-    private static Loc      LaserLoc1  = new Loc();
-    private static Point3d  LaserP1    = new Point3d();
-    private static Point3d  LaserP2    = new Point3d();
-    private static Point3d  LaserPL    = new Point3d();
-    public boolean          APmode3;
+    private static Point3d LaserP3   = new Point3d();
+    public boolean         laserOn;
+    public boolean         laserLock;
+    public static Orient   tmpOr     = new Orient();
+    private Hook           LaserHook[];
+    private static Loc     LaserLoc1 = new Loc();
+    private static Point3d LaserP1   = new Point3d();
+    private static Point3d LaserP2   = new Point3d();
+    private static Point3d LaserPL   = new Point3d();
+    public boolean         APmode3;
 
     static {
         Class class1 = MIG_27K.class;

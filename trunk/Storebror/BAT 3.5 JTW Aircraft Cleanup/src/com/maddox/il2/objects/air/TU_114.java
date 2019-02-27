@@ -1,7 +1,10 @@
 package com.maddox.il2.objects.air;
 
+import java.util.ArrayList;
+
 import com.maddox.il2.engine.Actor;
 import com.maddox.rts.Property;
+import com.maddox.util.HashMapInt;
 
 public class TU_114 extends TU_95 {
 
@@ -174,6 +177,8 @@ public class TU_114 extends TU_95 {
         Property.set(class1, "yearExpired", 1960F);
         Property.set(class1, "cockpitClass", new Class[] { CockpitTU126.class });
         Property.set(class1, "FlightModel", "FlightModels/TU_95FM.fmd:TU95_FM");
+        Property.set(class1, "weaponsList", new ArrayList());
+        Property.set(class1, "weaponsMap", new HashMapInt());
         Aircraft.weaponTriggersRegister(class1, new int[] { 10, 10, 11, 11 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN09", "_MGUN10", "_MGUN11", "_MGUN12" });
     }

@@ -428,17 +428,17 @@ public class MV_22 extends Scheme2 implements TypeTransport {
         this.Timer2 = f;
     }
 
-    protected boolean  bWingOff;
-    public boolean     APmode1;
-    public boolean     APmode2;
-    public float       Timer1;
-    public float       Timer2;
-    private int        freq;
-    private int        counter;
-    private long       raretimer;
-    private int        error;
-    public boolean     ILS;
-    public boolean     FL;
+    protected boolean bWingOff;
+    public boolean    APmode1;
+    public boolean    APmode2;
+    public float      Timer1;
+    public float      Timer2;
+    private int       freq;
+    private int       counter;
+    private long      raretimer;
+    private int       error;
+    public boolean    ILS;
+    public boolean    FL;
 
     static {
         Class class1 = MV_22.class;
