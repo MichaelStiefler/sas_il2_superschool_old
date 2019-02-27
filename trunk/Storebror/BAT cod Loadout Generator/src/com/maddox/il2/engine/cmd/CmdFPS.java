@@ -8,7 +8,11 @@ import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Render;
@@ -197,13 +201,25 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
         if (!loadoutsDir.exists()) {
             loadoutsDir.mkdirs();
         }
+        File loadoutsDir2 = new File(HomePath.toFileSystemName("loadouts/newNormalized/", 0));
+        if (!loadoutsDir2.exists()) {
+            loadoutsDir2.mkdirs();
+        }
         File loadoutsDirCsv = new File(HomePath.toFileSystemName("loadouts/csv/", 0));
         if (!loadoutsDirCsv.exists()) {
             loadoutsDirCsv.mkdirs();
         }
+        File loadoutsDirCsv2 = new File(HomePath.toFileSystemName("loadouts/csvNormalized/", 0));
+        if (!loadoutsDirCsv2.exists()) {
+            loadoutsDirCsv2.mkdirs();
+        }
         File loadoutsDirDecoded = new File(HomePath.toFileSystemName("loadouts/decoded/", 0));
         if (!loadoutsDirDecoded.exists()) {
             loadoutsDirDecoded.mkdirs();
+        }
+        File loadoutsDirDecoded2 = new File(HomePath.toFileSystemName("loadouts/decodedNormalized/", 0));
+        if (!loadoutsDirDecoded2.exists()) {
+            loadoutsDirDecoded2.mkdirs();
         }
         File loadoutsDirCod = new File(HomePath.toFileSystemName("loadouts/cod/", 0));
         if (!loadoutsDirCod.exists()) {
@@ -228,6 +244,7 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
                         continue;
                     }
                     if (debugAirClassNames) System.out.println("Class '" + airplaneName + "'...");
+                    
                     if (!airplaneName.startsWith("air.")) {
                         airplaneName = "###ERROR### " + airplaneName + " ###ERROR###";
                         pwErrors.println(airplaneName);
@@ -236,22 +253,58 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
                     if (airplaneName.toLowerCase().startsWith("placeholder")) {
                         continue;
                     }
+                    
+                    String[] hooks = Aircraft.getWeaponHooksRegistered(airplaneClass);
+                    int[] triggers = Aircraft.getWeaponTriggersRegistered(airplaneClass);
+                    String[] loadoutArray = Aircraft.getWeaponsRegistered(airplaneClass);
+                    int hookLength = hooks.length;
+                    int triggerLength = triggers.length;
 
                     int classFingerInt = Finger.Int("ce" + airplaneClass.getName() + "vd");
                     PrintWriter pwu = null;
+                    PrintWriter pwu2 = null;
                     try {
                         BufferedReader brDecoded = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(classFingerInt, "adt"))), getSwTbl(classFingerInt))));
                         hasCoddedWeapons = true;
+                        
                         pwu = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/decoded/" + airplaneName, 0))));
+                        pwu2 = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/decodedNormalized/" + airplaneName, 0))));
                         do {
                             String decodedLine = brDecoded.readLine();
                             if (decodedLine == null) {
                                 break;
                             }
+                            if (decodedLine.trim().length() < 1) continue;
                             pwu.println(decodedLine);
+                            List list = new ArrayList();
+                            StringTokenizer st = new StringTokenizer(decodedLine, ",");
+                            while (st.hasMoreTokens()) {
+                                String token = st.nextToken();
+                                if (token.trim().length() == 0)
+                                    token = " ";
+                                list.add(token);
+                            }
+                            while (list.size() - 1 < hookLength) {
+                                list.add(" ");
+                            }
+                            while (list.size() - 1 > hookLength) {
+                                String removedItem = list.remove(list.size() - 1).toString();
+                                if (removedItem.trim().length() > 0) {
+                                    pwErrors.println(airplaneName + " (+) loadout " + list.get(0) + " needs trimming, but surplus element " + list.size() + " isn't empty (" + removedItem + ")");
+                                }
+                            }
+                            Iterator li = list.iterator();
+                            while (li.hasNext()) {
+                                pwu2.print(li.next());
+                                if (li.hasNext())
+                                    pwu2.print(",");
+                            }
+                            pwu2.println();
                         } while (true);
-                        pwu.flush();
+                        //pwu.flush();
                         pwu.close();
+                        //pwu2.flush();
+                        pwu2.close();
                         brDecoded.close();
 
                         BufferedReader brEncrypted = new BufferedReader(new InputStreamReader(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(classFingerInt, "adt")))));
@@ -275,31 +328,35 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
 
                     String codIndicator = hasCoddedWeapons ? " (+) " : " (-) ";
 
-                    String[] hooks = Aircraft.getWeaponHooksRegistered(airplaneClass);
-                    int[] triggers = Aircraft.getWeaponTriggersRegistered(airplaneClass);
-                    int hookLength = hooks.length;
-                    int triggerLength = triggers.length;
                     if (hookLength != triggerLength) {
                         pwErrors.println(airplaneName + codIndicator + " hookLength != triggerLength");
                     }
                     try {
                         PrintWriter pwAircraft = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/new/" + airplaneName, 0))));
+                        PrintWriter pwAircraft2 = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/newNormalized/" + airplaneName, 0))));
                         PrintWriter pwk = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new KryptoOutputFilter(new FileOutputStream(HomePath.toFileSystemName("loadouts/new_cod/" + Finger.incInt(classFingerInt, "adt"), 0)), getSwTbl(classFingerInt)))));
                         PrintWriter pwAircraftCsv = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/csv/" + airplaneName + ".csv", 0))));
+                        PrintWriter pwAircraftCsv2 = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("loadouts/csvNormalized/" + airplaneName + ".csv", 0))));
                         pwAircraftCsv.println("sep=,");
+                        pwAircraftCsv2.println("sep=,");
 
                         for (int hookIndex = 0; hookIndex < hookLength; hookIndex++) {
                             pwAircraftCsv.print(",");
                             pwAircraftCsv.print(hooks[hookIndex]);
+                            pwAircraftCsv2.print(",");
+                            pwAircraftCsv2.print(hooks[hookIndex]);
                         }
                         pwAircraftCsv.println();
+                        pwAircraftCsv2.println();
                         for (int triggerIndex = 0; triggerIndex < triggerLength; triggerIndex++) {
                             pwAircraftCsv.print(",");
                             pwAircraftCsv.print(triggers[triggerIndex]);
+                            pwAircraftCsv2.print(",");
+                            pwAircraftCsv2.print(triggers[triggerIndex]);
                         }
                         pwAircraftCsv.println();
+                        pwAircraftCsv2.println();
 
-                        String[] loadoutArray = Aircraft.getWeaponsRegistered(airplaneClass);
                         boolean lastElementNotNone = false;
                         if (loadoutArray.length < 2) {
                             pwErrors.println(airplaneName + codIndicator + " loadoutArray.length < 2");
@@ -313,6 +370,9 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
                         }
                         for (int loadoutIndex = 0; loadoutIndex < loadoutArray.length; loadoutIndex++) {
                             String loadoutsLine = loadoutArray[loadoutIndex];
+                            String loadoutsLine2 = loadoutArray[loadoutIndex];
+                            if (loadoutIndex == 0 && loadoutsLine2.equalsIgnoreCase("default")) loadoutsLine2 = "default";
+                            else if (loadoutIndex == loadoutArray.length - 1 && (loadoutsLine2.equalsIgnoreCase("none") || loadoutsLine2.equalsIgnoreCase("empty"))) loadoutsLine2 = "none";
                             if ((loadoutIndex != 0) && loadoutArray[loadoutIndex].toLowerCase().equals("default")) {
                                 pwErrors.println(airplaneName + codIndicator + " loadoutArray[" + loadoutIndex + "]=" + loadoutArray[loadoutIndex] + ", but default is only allowed in first slot! (might indicate overlapping weapon slots)");
                             } else if ((loadoutIndex != (loadoutArray.length - 1)) && loadoutArray[loadoutIndex].toLowerCase().equals("none")) {
@@ -342,6 +402,8 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
                             for (int slotIndex = 0; slotIndex < weaponSlotArray.length; slotIndex++) {
                                 if (weaponSlotArray[slotIndex] == null) {
                                     loadoutsLine += ", ";
+                                    if (slotIndex < hookLength)
+                                        loadoutsLine2 += ", ";
                                 } else {
                                     String weaponName = ObjIO.classGetName(weaponSlotArray[slotIndex].clazz);
                                     if (!weaponName.startsWith("weapons.")) {
@@ -350,14 +412,30 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
                                         weaponName = weaponName.substring(8);
                                     }
                                     loadoutsLine += "," + weaponSlotArray[slotIndex].trigger + " " + weaponName + " " + weaponSlotArray[slotIndex].bullets;
+                                    if (slotIndex < hookLength) {
+                                        loadoutsLine2 += "," + weaponSlotArray[slotIndex].trigger + " " + weaponName + " " + weaponSlotArray[slotIndex].bullets;
+                                    } else {
+                                        pwErrors.println(airplaneName + codIndicator + " loadout " + loadoutArray[loadoutIndex] + " needs trimming, but surplus element " + slotIndex + " isn't empty (" + weaponSlotArray[slotIndex].trigger + " " + weaponName + " " + weaponSlotArray[slotIndex].bullets + ")");
+                                    }
                                 }
                             }
+                            
+                            if (weaponSlotArray.length < hookLength) {
+                                for (int slotIndex = weaponSlotArray.length; slotIndex < hookLength; slotIndex++) {
+                                    loadoutsLine2 += ", ";
+                                }
+                            }
+                            
                             pwAircraft.println(loadoutsLine);
                             pwAircraftCsv.println(loadoutsLine);
+                            pwAircraft2.println(loadoutsLine2);
+                            pwAircraftCsv2.println(loadoutsLine2);
                             pwk.println(loadoutsLine);
                         }
                         pwAircraft.close();
                         pwAircraftCsv.close();
+                        pwAircraft2.close();
+                        pwAircraftCsv2.close();
                         pwk.close();
                         if (lastElementNotNone) {
                             pwErrors.println(airplaneName + codIndicator + " loadoutArray[" + (loadoutArray.length - 1) + "]=" + loadoutArray[loadoutArray.length - 1] + ", but last element needs to be none (case sensitive!)");
