@@ -1,5 +1,7 @@
 package com.maddox.il2.objects.air;
 
+import java.util.ArrayList;
+
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.Shot;
@@ -17,6 +19,7 @@ import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.objects.bridges.BridgeSegment;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
+import com.maddox.util.HashMapInt;
 
 public class AH1 extends Scheme1 implements TypeScout, TypeTransport, TypeStormovik {
 
@@ -453,16 +456,6 @@ public class AH1 extends Scheme1 implements TypeScout, TypeTransport, TypeStormo
     void tiltRotor(float f1) {
     }
 
-    static void initialize(Class aircraftClass) {
-        new NetAircraft.SPAWN(aircraftClass);
-        Property.set(aircraftClass, "meshName", "3DO/Plane/AH1-Cobra(Multi1)/hier.him");
-        Property.set(aircraftClass, "PaintScheme", new PaintSchemeFMPar05());
-        Property.set(aircraftClass, "yearService", 1956F);
-        Property.set(aircraftClass, "yearExpired", 1986.5F);
-        Aircraft.weaponTriggersRegister(aircraftClass, new int[] { 10, 10, 9, 9, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 9, 9, 9, 9, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 9, 9, 9, 9, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1 });
-        Aircraft.weaponHooksRegister(aircraftClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalDev01", "_ExternalDev02", "_MGUN03", "_MGUN04", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06", "_ExternalRock07", "_ExternalRock08", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalRock09", "_ExternalRock10", "_ExternalRock11", "_ExternalRock12", "_ExternalRock13", "_ExternalRock14", "_ExternalRock15", "_ExternalRock16", "_ExternalRock17", "_ExternalRock18", "_ExternalRock19", "_ExternalRock20", "_ExternalRock21", "_ExternalRock22", "_ExternalDev07", "_ExternalDev08", "_ExternalDev09", "_ExternalDev10", "_ExternalRock23", "_ExternalRock24", "_ExternalRock25", "_ExternalRock26", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_MGUN09", "_MGUN10", "_MGUN11", "_MGUN12" });
-    }
-
     public static boolean bChangedPit = false;
     private static Loc    l           = new Loc();
     public Loc            suka;
@@ -472,9 +465,17 @@ public class AH1 extends Scheme1 implements TypeScout, TypeTransport, TypeStormo
 
     static {
         Class class1 = AH1.class;
-        AH1.initialize(class1);
+        new NetAircraft.SPAWN(class1);
+        Property.set(class1, "meshName", "3DO/Plane/AH1-Cobra(Multi1)/hier.him");
         Property.set(class1, "iconFar_shortClassName", "Cobra");
         Property.set(class1, "FlightModel", "FlightModels/AH1.fmd:AH1FM");
+        Property.set(class1, "PaintScheme", new PaintSchemeFMPar05());
+        Property.set(class1, "yearService", 1956F);
+        Property.set(class1, "yearExpired", 1986.5F);
         Property.set(class1, "cockpitClass", new Class[] { CockpitAH1.class, CockpitAH1_TGunner.class });
+        Property.set(class1, "weaponsList", new ArrayList());
+        Property.set(class1, "weaponsMap", new HashMapInt());
+        Aircraft.weaponTriggersRegister(class1, new int[] { 10, 10, 9, 9, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 9, 9, 9, 9, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 9, 9, 9, 9, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_ExternalDev01", "_ExternalDev02", "_MGUN03", "_MGUN04", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06", "_ExternalRock07", "_ExternalRock08", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalRock09", "_ExternalRock10", "_ExternalRock11", "_ExternalRock12", "_ExternalRock13", "_ExternalRock14", "_ExternalRock15", "_ExternalRock16", "_ExternalRock17", "_ExternalRock18", "_ExternalRock19", "_ExternalRock20", "_ExternalRock21", "_ExternalRock22", "_ExternalDev07", "_ExternalDev08", "_ExternalDev09", "_ExternalDev10", "_ExternalRock23", "_ExternalRock24", "_ExternalRock25", "_ExternalRock26", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_MGUN09", "_MGUN10", "_MGUN11", "_MGUN12" });
     }
 }

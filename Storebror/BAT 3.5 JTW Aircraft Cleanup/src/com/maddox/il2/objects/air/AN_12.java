@@ -1,6 +1,7 @@
 package com.maddox.il2.objects.air;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.game.AircraftHotKeys;
@@ -8,6 +9,7 @@ import com.maddox.il2.game.HUD;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
+import com.maddox.util.HashMapInt;
 
 public class AN_12 extends AN_10 implements TypeBomber {
 
@@ -355,6 +357,8 @@ public class AN_12 extends AN_10 implements TypeBomber {
         Property.set(class1, "yearExpired", 1960.9F);
         Property.set(class1, "cockpitClass", new Class[] { CockpitAN_10.class, CockpitAN_12_Bombardier.class, CockpitAN_12_AGunner.class });
         Property.set(class1, "FlightModel", "FlightModels/B-29KJ1.fmd:KJ1");
+        Property.set(class1, "weaponsList", new ArrayList());
+        Property.set(class1, "weaponsMap", new HashMapInt());
         Aircraft.weaponTriggersRegister(class1, new int[] { 10, 10, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 3, 3, 3, 3 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_MGUN09", "_MGUN10", "_MGUN11", "_MGUN12", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04" });
     }

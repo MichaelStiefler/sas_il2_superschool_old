@@ -1,7 +1,10 @@
 package com.maddox.il2.objects.air;
 
+import java.util.ArrayList;
+
 import com.maddox.il2.engine.Actor;
 import com.maddox.rts.Property;
+import com.maddox.util.HashMapInt;
 
 public class U_2VS_shkas extends U_2VS {
 
@@ -66,6 +69,8 @@ public class U_2VS_shkas extends U_2VS {
         Property.set(class1, "yearExpired", 1967F);
         Property.set(class1, "cockpitClass", new Class[] { CockpitU2VSs.class, CockpitU2Gunner.class });
         Property.set(class1, "FlightModel", "FlightModels/U-2LSH.fmd");
+        Property.set(class1, "weaponsList", new ArrayList());
+        Property.set(class1, "weaponsMap", new HashMapInt());
         Aircraft.weaponTriggersRegister(class1, new int[] { 10, 3, 3, 3, 3, 3 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_BombSpawn01" });
     }

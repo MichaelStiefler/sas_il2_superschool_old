@@ -1,10 +1,12 @@
 package com.maddox.il2.objects.air;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
+import com.maddox.util.HashMapInt;
 
 public class U_2VS extends U_2 {
 
@@ -102,6 +104,8 @@ public class U_2VS extends U_2 {
         Property.set(class1, "yearExpired", 1967.8F);
         Property.set(class1, "FlightModel", "FlightModels/U-2VS.fmd");
         Property.set(class1, "cockpitClass", new Class[] { CockpitU2VS.class, CockpitU2VS_TGunner.class });
+        Property.set(class1, "weaponsList", new ArrayList());
+        Property.set(class1, "weaponsMap", new HashMapInt());
         Aircraft.weaponTriggersRegister(class1, new int[] { 10, 3, 3, 3, 3 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04" });
     }

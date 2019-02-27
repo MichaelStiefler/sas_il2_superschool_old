@@ -269,11 +269,11 @@ public class F2H_3 extends F2H {
         this.Timer2 = f;
     }
 
-    public static boolean   bChangedPit = false;
-    public float            Timer1;
-    public float            Timer2;
-    private int             freq;
-    private int             counter;
+    public static boolean bChangedPit = false;
+    public float          Timer1;
+    public float          Timer2;
+    private int           freq;
+    private int           counter;
 
     static {
         Class class1 = F2H_3.class;

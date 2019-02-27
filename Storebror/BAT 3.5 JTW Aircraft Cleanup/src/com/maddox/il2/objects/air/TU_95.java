@@ -37,6 +37,7 @@ import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 import com.maddox.sound.Sample;
 import com.maddox.sound.SoundFX;
+import com.maddox.util.HashMapInt;
 
 public class TU_95 extends TU_95X implements TypeBomber, TypeGuidedMissileCarrier, TypeX4Carrier, TypeFastJet, TypeFuelDump, TypeSupersonic, TypeDockable {
 
@@ -1036,6 +1037,8 @@ public class TU_95 extends TU_95X implements TypeBomber, TypeGuidedMissileCarrie
         Property.set(class1, "yearExpired", 2800.9F);
         Property.set(class1, "FlightModel", "FlightModels/TU_95FM.fmd:TU95_FM");
         Property.set(class1, "cockpitClass", new Class[] { CockpitTU95.class, CockpitTU95_Bombardier.class, CockpitTU95_RGunner.class, CockpitTU95_AGunner.class });
+        Property.set(class1, "weaponsList", new ArrayList());
+        Property.set(class1, "weaponsMap", new HashMapInt());
         Aircraft.weaponTriggersRegister(class1, new int[] { 10, 10, 11, 11, 3, 3, 2, 2, 2, 2, 9, 9, 2, 2, 2, 2, 2, 2, 2, 2, 9, 9, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 });
         Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN09", "_MGUN10", "_MGUN11", "_MGUN12", "_BombSpawn01", "_BombSpawn02", "_ExternalRock01", "_ExternalRock01", "_ExternalRock02", "_ExternalRock02", "_ExternalDev01", "_ExternalDev02", "_ExternalRock03", "_ExternalRock03", "_ExternalRock12", "_ExternalRock12", "_ExternalRock06", "_ExternalRock06", "_ExternalRock07", "_ExternalRock07", "_ExternalDev06", "_ExternalDev07", "_ExternalRock08", "_ExternalRock08", "_ExternalRock09", "_ExternalRock09", "_ExternalRock10", "_ExternalRock10", "_ExternalRock11", "_ExternalRock11", "_ExternalDev08", "_ExternalDev09", "_ExternalRock13", "_ExternalRock13", "_ExternalRock14", "_ExternalRock14", "_ExternalRock04", "_ExternalRock04", "_ExternalRock05", "_ExternalRock05", "_InternalRock04", "_InternalRock04", "_Flare01", "_Flare02" });
     }
