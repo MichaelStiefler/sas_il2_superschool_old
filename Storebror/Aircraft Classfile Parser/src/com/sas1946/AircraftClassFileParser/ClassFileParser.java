@@ -2,9 +2,14 @@ package com.sas1946.AircraftClassFileParser;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ClassFileParser {
     public void parseFiles(String directoryName) {
@@ -54,29 +59,85 @@ public class ClassFileParser {
                 // Change all non-Array Cockpit Class declarations (single cockpit planes) to Array Style
                 line = line.replaceAll("^(.*Property\\.set\\(.+,\\s\\\"cockpitClass\\\",\\s)Cockpit(.+)\\);", "$1new Class[] { Cockpit$2 });");
                 
-                
-//                if (line.trim().matches("^Property.set\\([^,]*,\\s\\\"cockpitClass\\\",\\sCockpit.*\\);")) {
-//                    line = line.substring(0, line.indexOf(" Cockpit")) + " new Class[] {" + line.substring(line.indexOf(" Cockpit"), line.lastIndexOf(")")) + "} );";
-//                }
-                
                 // Remove surplus comments after switch cases
                 line = line.replaceAll("^(\\s*case\\s\\d+:)\\s\\/\\/\\s\\'.+\\'", "$1");
                 
                 // Replace "CLASS.THIS()" be real class reference
                 line = line.replaceAll("^(\\s+)Class\\s((\\w|\\d)+)\\s=\\sCLASS\\.THIS\\(\\);", "$1Class $2 = " + file.getName().replaceFirst("[.][^.]+$", "") + ".class;");
                 
-                // Remove surplus FlightModelMain typecast
-                line = line.replace("((FlightModelMain) (super.FM))", "this.FM");
-                
-                // Remove surplus Tuple3d typecast 1
-                line = line.replace("((Tuple3d) (this.FM.Loc))", "this.FM.Loc");
+                // Remove surplus actor typecast
+                line = line.replaceAll("(^.*)\\(\\(Actor\\)\\s\\((\\S+)\\)\\)(.*$)", "$1$2$3");
 
-                // Remove surplus Tuple3d typecast 2
-                line = line.replace("((Tuple3d) (point3d))", "point3d");
+                // Remove surplus SndAircraft typecast
+                line = line.replaceAll("(^.*)\\(\\(SndAircraft\\)\\s\\((\\S+)\\)\\)(.*$)", "$1$2$3");
+
+                // Remove surplus FlightModelMain typecast
+                line = line.replaceAll("(^.*)\\(\\(FlightModelMain\\)\\s\\((\\S+)\\)\\)(.*$)", "$1$2$3");
+
+                // Remove surplus Tuple3d typecast
+                line = line.replaceAll("(^.*)\\(\\(Tuple3d\\)\\s\\((\\S+)\\)\\)(.*$)", "$1$2$3");
+
+                // Remove surplus Tuple3f typecast
+                line = line.replaceAll("(^.*)\\(\\(Tuple3f\\)\\s\\((\\S+)\\)\\)(.*$)", "$1$2$3");
 
                 // Set Math.PI where it applies
                 line = line.replace("3.1415926535897931D", "Math.PI");
+                
+                // Fix gravitational constant misused custom const value 1
+                line = line.replace("0.2038736F", "(2F / 9.81F)");
+                
+                // Get rid of 0.10000000000000001D style constants
+                Pattern zeroesPattern = Pattern.compile("(^.*\\D+)(\\d+\\.[1-9]+)0{4,}([^0]\\d*)([DF])(.*$)");
+                while (true) {
+                    Matcher zeroesMatcher = zeroesPattern.matcher(line);
+                    if (!zeroesMatcher.find()) break;
+                    MatchResult zeroesMatcherResult = zeroesMatcher.toMatchResult();
+                    line = zeroesMatcherResult.group(1) + zeroesMatcherResult.group(2) + zeroesMatcherResult.group(4) + zeroesMatcherResult.group(5);
+                    //line = zeroesMatcher.replaceFirst("$1$2$4$5");
+                }
+                
+                // Get rid of 0.59999999999999998D style constants
+                Pattern ninesPattern = Pattern.compile("(^.*\\D+)(\\d+)(\\.)(\\d*[0-8]+)(9{4,})(\\d)([DF])(.*$)");
+                while (true) {
+                    Matcher ninesMatcher = ninesPattern.matcher(line);
+                    if (!ninesMatcher.find()) break;
+                    MatchResult ninesMatcherResult = ninesMatcher.toMatchResult();
+                    BigDecimal ninesBigDecimal = new BigDecimal(ninesMatcherResult.group(2) + ninesMatcherResult.group(3) + ninesMatcherResult.group(4) + ninesMatcherResult.group(5) + ninesMatcherResult.group(6));
+                    ninesBigDecimal = ninesBigDecimal.setScale(ninesMatcherResult.group(4).length(), RoundingMode.HALF_UP);
+                    line = ninesMatcherResult.group(1) + ninesBigDecimal.toPlainString() + ninesMatcherResult.group(7) + ninesMatcherResult.group(8);
+                }
+                
+                // set appropriate constants instead of gfactors.setGFactors(1.5F, 1.5F, 1.0F, 2.0F, 2.0F, 2.0F);
+                Pattern gFactorsPattern = Pattern.compile("(^.*\\.)setGFactors\\((.*F),\\s(.*F),\\s(.*F),\\s(.*F),\\s(.*F),\\s(.*F)(\\);)");
+                while (true) {
+                    Matcher gFactorsMatcher = gFactorsPattern.matcher(line);
+                    if (!gFactorsMatcher.find()) break;
+                    MatchResult gFactorsMatcherResult = gFactorsMatcher.toMatchResult();
+                    line = gFactorsMatcherResult.group(1) + "setGFactors(NEG_G_TOLERANCE_FACTOR, NEG_G_TIME_FACTOR, NEG_G_RECOVERY_FACTOR, POS_G_TOLERANCE_FACTOR, POS_G_TIME_FACTOR, POS_G_RECOVERY_FACTOR" + gFactorsMatcherResult.group(8);
+                    list.add(listIndex + 1, "//    private static final float POS_G_RECOVERY_FACTOR = " + gFactorsMatcherResult.group(7) + ";");
+                    list.add(listIndex + 1, "//    private static final float POS_G_TIME_FACTOR = " + gFactorsMatcherResult.group(6) + ";");
+                    list.add(listIndex + 1, "//    private static final float POS_G_TOLERANCE_FACTOR = " + gFactorsMatcherResult.group(5) + ";");
+                    list.add(listIndex + 1, "//    private static final float NEG_G_RECOVERY_FACTOR = " + gFactorsMatcherResult.group(4) + ";");
+                    list.add(listIndex + 1, "//    private static final float NEG_G_TIME_FACTOR = " + gFactorsMatcherResult.group(3) + ";");
+                    list.add(listIndex + 1, "//    private static final float NEG_G_TOLERANCE_FACTOR = " + gFactorsMatcherResult.group(2) + ";");
+                }
+                
+                // set appropriate constants instead of new RadarWarningReceiverUtils(this, 1, 16, 7, 45D, false, false, bRWR_Show_Text_Warning);
+                Pattern rwrUtilsPattern = Pattern.compile("(^.*)new RadarWarningReceiverUtils\\((.*), (\\d+), (\\d+), (\\d+), (.*D), ((?:true|false)), ((?:true|false)), (.*)(\\);)");
+                while (true) {
+                    Matcher rwrUtilsMatcher = rwrUtilsPattern.matcher(line);
+                    if (!rwrUtilsMatcher.find()) break;
+                    MatchResult rwrUtilsMatcherResult = rwrUtilsMatcher.toMatchResult();
+                    line = rwrUtilsMatcherResult.group(1) + "new RadarWarningReceiverUtils(" + rwrUtilsMatcherResult.group(2) + ", RWR_GENERATION, RWR_MAX_DETECT, RWR_KEEP_SECONDS, RWR_RECEIVE_ELEVATION, RWR_DETECT_IRMIS, RWR_DETECT_ELEVATION, " + rwrUtilsMatcherResult.group(9) + rwrUtilsMatcherResult.group(10);
+                    list.add(listIndex + 1, "//    private static final boolean RWR_DETECT_ELEVATION = " + rwrUtilsMatcherResult.group(8) + ";");
+                    list.add(listIndex + 1, "//    private static final boolean RWR_DETECT_IRMIS = " + rwrUtilsMatcherResult.group(7) + ";");
+                    list.add(listIndex + 1, "//    private static final double RWR_RECEIVE_ELEVATION = " + rwrUtilsMatcherResult.group(6) + ";");
+                    list.add(listIndex + 1, "//    private static final int RWR_KEEP_SECONDS = " + rwrUtilsMatcherResult.group(5) + ";");
+                    list.add(listIndex + 1, "//    private static final int RWR_MAX_DETECT = " + rwrUtilsMatcherResult.group(4) + ";");
+                    list.add(listIndex + 1, "//    private static final int RWR_GENERATION = " + rwrUtilsMatcherResult.group(3) + ";");
+                }
 
+                
                 // If the current line might be a method declaration, store the method name
                 if (curBracketLevel == 1 && !line.trim().isEmpty() && !line.contains(";") && !line.contains("//") && !line.contains("/*")) {
                     if (line.contains("(") && line.contains(")")) {
