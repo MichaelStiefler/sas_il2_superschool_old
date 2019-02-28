@@ -66,19 +66,19 @@ public class ClassFileParser {
                 line = line.replaceAll("^(\\s+)Class\\s((\\w|\\d)+)\\s=\\sCLASS\\.THIS\\(\\);", "$1Class $2 = " + file.getName().replaceFirst("[.][^.]+$", "") + ".class;");
                 
                 // Remove surplus actor typecast
-                line = line.replaceAll("(^.*)\\(\\(Actor\\)\\s\\((\\S+)\\)\\)(.*$)", "$1$2$3");
+                line = line.replaceAll("(^.*)\\(\\(Actor\\)\\s\\((\\S+?)\\)\\)(.*$)", "$1$2$3");
 
                 // Remove surplus SndAircraft typecast
-                line = line.replaceAll("(^.*)\\(\\(SndAircraft\\)\\s\\((\\S+)\\)\\)(.*$)", "$1$2$3");
+                line = line.replaceAll("(^.*)\\(\\(SndAircraft\\)\\s\\((\\S+?)\\)\\)(.*$)", "$1$2$3");
 
                 // Remove surplus FlightModelMain typecast
-                line = line.replaceAll("(^.*)\\(\\(FlightModelMain\\)\\s\\((\\S+)\\)\\)(.*$)", "$1$2$3");
+                line = line.replaceAll("(^.*)\\(\\(FlightModelMain\\)\\s\\((\\S+?)\\)\\)(.*$)", "$1$2$3");
 
                 // Remove surplus Tuple3d typecast
-                line = line.replaceAll("(^.*)\\(\\(Tuple3d\\)\\s\\((\\S+)\\)\\)(.*$)", "$1$2$3");
+                line = line.replaceAll("(^.*)\\(\\(Tuple3d\\)\\s\\((\\S+?)\\)\\)(.*$)", "$1$2$3");
 
                 // Remove surplus Tuple3f typecast
-                line = line.replaceAll("(^.*)\\(\\(Tuple3f\\)\\s\\((\\S+)\\)\\)(.*$)", "$1$2$3");
+                line = line.replaceAll("(^.*)\\(\\(Tuple3f\\)\\s\\((\\S+?)\\)\\)(.*$)", "$1$2$3");
 
                 // Set Math.PI where it applies
                 line = line.replace("3.1415926535897931D", "Math.PI");
