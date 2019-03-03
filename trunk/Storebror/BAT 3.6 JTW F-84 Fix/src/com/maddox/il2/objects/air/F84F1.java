@@ -4,35 +4,18 @@ import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.game.HUD;
-import com.maddox.il2.objects.weapons.GuidedMissileUtils;
 import com.maddox.rts.Property;
-import com.maddox.rts.Time;
 
-public class F84F1 extends F84 implements TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeFastJet {
+public class F84F1 extends F84 implements TypeFastJet {
 
     public F84F1() {
-        this.guidedMissileUtils = new GuidedMissileUtils(this);
-        this.hasChaff = false;
-        this.hasFlare = false;
-        this.lastChaffDeployed = 0L;
-        this.lastFlareDeployed = 0L;
-        this.lastCommonThreatActive = 0L;
-        this.intervalCommonThreat = 1000L;
-        this.lastRadarLockThreatActive = 0L;
-        this.intervalRadarLockThreat = 1000L;
-        this.lastMissileLaunchThreatActive = 0L;
-        this.intervalMissileLaunchThreat = 1000L;
-        this.bToFire = false;
-        this.guidedMissileUtils = new GuidedMissileUtils(this);
         this.APmode1 = false;
         this.APmode2 = false;
-
     }
 
     public void onAircraftLoaded() {
         this.bHasBoosterLoadout = this.thisWeaponsName.endsWith("JATO");
         super.onAircraftLoaded();
-        this.guidedMissileUtils.onAircraftLoaded();
         if (Config.isUSE_RENDER()) {
             this.turbo = Eff3DActor.New(this, this.findHook("_Engine1EF_01"), null, 1.0F, "3DO/Effects/Aircraft/TurboZippo.eff", -1F);
             this.turbosmoke = Eff3DActor.New(this, this.findHook("_Engine1ES_01"), null, 1.0F, "3DO/Effects/Aircraft/GraySmallTSPD.eff", -1F);
@@ -97,7 +80,6 @@ public class F84F1 extends F84 implements TypeGuidedMissileCarrier, TypeCounterm
     }
 
     public void update(float f) {
-        this.guidedMissileUtils.update();
         this.computeSubsonicLimiter();
         super.update(f);
     }
@@ -109,59 +91,6 @@ public class F84F1 extends F84 implements TypeGuidedMissileCarrier, TypeCounterm
     protected void moveAirBrake(float f) {
         this.hierMesh().chunkSetAngles("Brake01_D0", 0.0F, 0.0F, 40F * f);
         this.hierMesh().chunkSetAngles("Brake02_D0", 0.0F, 0.0F, 40F * f);
-    }
-
-    public long getChaffDeployed() {
-        if (this.hasChaff) {
-            return this.lastChaffDeployed;
-        } else {
-            return 0L;
-        }
-    }
-
-    public long getFlareDeployed() {
-        if (this.hasFlare) {
-            return this.lastFlareDeployed;
-        } else {
-            return 0L;
-        }
-    }
-
-    public void setCommonThreatActive() {
-        long l = Time.current();
-        if ((l - this.lastCommonThreatActive) > this.intervalCommonThreat) {
-            this.lastCommonThreatActive = l;
-            this.doDealCommonThreat();
-        }
-    }
-
-    public void setRadarLockThreatActive() {
-        long l = Time.current();
-        if ((l - this.lastRadarLockThreatActive) > this.intervalRadarLockThreat) {
-            this.lastRadarLockThreatActive = l;
-            this.doDealRadarLockThreat();
-        }
-    }
-
-    public void setMissileLaunchThreatActive() {
-        long l = Time.current();
-        if ((l - this.lastMissileLaunchThreatActive) > this.intervalMissileLaunchThreat) {
-            this.lastMissileLaunchThreatActive = l;
-            this.doDealMissileLaunchThreat();
-        }
-    }
-
-    private void doDealCommonThreat() {
-    }
-
-    private void doDealRadarLockThreat() {
-    }
-
-    private void doDealMissileLaunchThreat() {
-    }
-
-    public GuidedMissileUtils getGuidedMissileUtils() {
-        return this.guidedMissileUtils;
     }
 
     public void doSetSootState(int i, int j) {
@@ -214,21 +143,9 @@ public class F84F1 extends F84 implements TypeGuidedMissileCarrier, TypeCounterm
 
     private static float[][]   sootStates = { { 0.0F, 0.0F, 0.0F }, { 0.0F, 1.0F, 0.0F }, { 1.0F, 1.0F, 0.0F }, { 1.0F, 1.0F, 1.0F } };
 
-    private GuidedMissileUtils guidedMissileUtils;
     private Eff3DActor         turbo;
     private Eff3DActor         turbosmoke;
     private Eff3DActor         afterburner;
-    private boolean            hasChaff;
-    private boolean            hasFlare;
-    private long               lastChaffDeployed;
-    private long               lastFlareDeployed;
-    private long               lastCommonThreatActive;
-    private long               intervalCommonThreat;
-    private long               lastRadarLockThreatActive;
-    private long               intervalRadarLockThreat;
-    private long               lastMissileLaunchThreatActive;
-    private long               intervalMissileLaunchThreat;
-    public boolean             bToFire;
     public boolean             APmode1;
     public boolean             APmode2;
 
