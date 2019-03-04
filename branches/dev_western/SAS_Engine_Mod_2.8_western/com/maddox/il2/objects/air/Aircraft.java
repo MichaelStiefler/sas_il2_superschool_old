@@ -3,6 +3,7 @@ package com.maddox.il2.objects.air;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -2212,13 +2213,23 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 
 	public static void weapons(Class class1) {
 		try {
-			ArrayList arraylist = weaponsListProperty(class1);
-			HashMapInt hashmapint = weaponsMapProperty(class1);
+//			ArrayList arraylist = weaponsListProperty(class1);
+//			HashMapInt hashmapint = weaponsMapProperty(class1);
+		    
 			// By western: ignoring cod/ weapon loadout flag, added in Engine mod 2.8.12w
 			boolean bIgnoreCodWeapon = (Property.intValue(class1, "IgnoreCodWeapon", 0) == 1);
 			if (bIgnoreCodWeapon) return;
 			int i = Finger.Int("ce" + class1.getName() + "vd");
-			BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(i, "adt"))), getSwTbl(i))));
+			
+            // FIXME: By SAS~Storebror: Avoid duplicate Loadout Lists
+            BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(i, "adt"))), getSwTbl(i))));
+            ArrayList arraylist = new ArrayList();
+            Property.set(class1, "weaponsList", arraylist);
+            HashMapInt hashmapint = new HashMapInt();
+            Property.set(class1, "weaponsMap", hashmapint);         
+            
+//			BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(i, "adt"))), getSwTbl(i))));
+            
 			do {
 				String s = bufferedreader.readLine();
 				if (s == null) break;
@@ -2238,7 +2249,11 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 				hashmapint.put(Finger.Int(s1), a_lweaponslot);
 			} while (true);
 			bufferedreader.close();
+			
+        // FIXME: By SAS~Storebror: Don't hide potential errors inside cod files
+        } catch (FileNotFoundException fnfe) {
 		} catch (Exception exception) {
+		    exception.printStackTrace();
 		}
 	}
 
