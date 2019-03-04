@@ -71,16 +71,25 @@ public class CockpitMi24 extends CockpitPilot
                 variables.radioalt = f1 + f2 * (f3 - Landscape.HQ_Air((float)fm.Loc.x, (float)fm.Loc.y));
                 setNew.vspeed = (199F * setOld.vspeed + fm.getVertSpeed()) / 200F;
                 
-                float f4 = ((Mi24V)aircraft()).k14Distance;
-                setNew.k14w = (5F * CockpitMi24.k14TargetWingspanScale[((Mi24V)aircraft()).k14WingspanType]) / f4;
+                float f4 = ((Mi24X)aircraft()).k14Distance;
+                setNew.k14w = (5F * CockpitMi24.k14TargetWingspanScale[((Mi24X)aircraft()).k14WingspanType]) / f4;
                 setNew.k14w = 0.9F * setOld.k14w + 0.1F * setNew.k14w;
-                setNew.k14wingspan = 0.9F * setOld.k14wingspan + 0.1F * CockpitMi24.k14TargetMarkScale[((Mi24V)aircraft()).k14WingspanType];
-                setNew.k14mode = 0.8F * setOld.k14mode + 0.2F * (float)((Mi24V)aircraft()).k14Mode;
+                setNew.k14wingspan = 0.9F * setOld.k14wingspan + 0.1F * CockpitMi24.k14TargetMarkScale[((Mi24X)aircraft()).k14WingspanType];
+                setNew.k14mode = 0.8F * setOld.k14mode + 0.2F * (float)((Mi24X)aircraft()).k14Mode;
                 Vector3d vector3d = ((SndAircraft) (aircraft())).FM.getW();
                 double d = 0.00125D * (double)f4;
                 float f5 = (float)Math.toDegrees(d * ((Tuple3d) (vector3d)).z);
                 float f6 = -(float)Math.toDegrees(d * ((Tuple3d) (vector3d)).y);
-                float f7 = floatindex((f4 - 200F) * 0.04F, CockpitMi24.k14BulletDrop) - CockpitMi24.k14BulletDrop[0];
+                float f7 = 0F;
+                if (((Mi24X)aircraft()).k14Mode == 1) {
+                    f7 = f4 * 0.02F;
+                }
+                if (((Mi24X)aircraft()).k14Mode == 2) {
+                    f7 = f4 * 0.14F;
+                }
+                if (((Mi24X)aircraft()).k14Mode == 4) {
+                	f7 = floatindex((f4 - 200F) * 0.04F, CockpitMi24.k14BulletDrop) - CockpitMi24.k14BulletDrop[0];
+                }
                 f6 += (float)Math.toDegrees(Math.atan(f7 / f4));
                 setNew.k14x = 0.92F * setOld.k14x + 0.08F * f5;
                 setNew.k14y = 0.92F * setOld.k14y + 0.08F * f6;
@@ -118,8 +127,6 @@ public class CockpitMi24 extends CockpitPilot
         AnglesFork azimuth;
         AnglesFork waypointAzimuth;
         AnglesFork radioCompassAzimuth;
-        float beaconDirection;
-        float beaconRange;
         float ilsLoc;
         float ilsGS;
         float k14wingspan;
@@ -151,7 +158,7 @@ public class CockpitMi24 extends CockpitPilot
     {
         if(super.doFocusEnter())
         {
-        	((Mi24V)aircraft()).hierMesh().chunkVisible("Door1_D0", false);
+        	((Mi24X)aircraft()).hierMesh().chunkVisible("Door1_D0", false);
             return true;
         } else
         {
@@ -162,13 +169,8 @@ public class CockpitMi24 extends CockpitPilot
     protected void doFocusLeave()
     {
         if(Actor.isAlive(aircraft()))
-        	((Mi24V)aircraft()).hierMesh().chunkVisible("Door1_D0", true);
+        	((Mi24X)aircraft()).hierMesh().chunkVisible("Door1_D0", true);
         super.doFocusLeave();
-    }
-
-//    private float machNumber()
-    {
-//        return ((MIG_21)super.aircraft()).calculateMach();
     }
 
     public CockpitMi24()
@@ -180,27 +182,6 @@ public class CockpitMi24 extends CockpitPilot
         bNeedSetUp = true;
         pictAiler = 0.0F;
         pictElev = 0.0F;
-//        HookNamed hooknamed = new HookNamed(mesh, "LAMPHOOK1");
-//        Loc loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-//        hooknamed.computePos(this, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F), loc);
-//        light1 = new LightPointActor(new LightPoint(), loc.getPoint());
-//        light1.light.setColor(300F, 0F, 0F);
-//        light1.light.setEmit(0.0F, 0.0F);
-//        pos.base().draw.lightMap().put("LAMPHOOK1", light1);
-//        hooknamed = new HookNamed(mesh, "LAMPHOOK2");
-//        loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-//        hooknamed.computePos(this, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F), loc);
-//        light2 = new LightPointActor(new LightPoint(), loc.getPoint());
-//        light2.light.setColor(300F, 0F, 0F);
-//        light2.light.setEmit(0.0F, 0.0F);
-//        pos.base().draw.lightMap().put("LAMPHOOK2", light2);
-//        hooknamed = new HookNamed(mesh, "LAMPHOOK3");
-//        loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-//        hooknamed.computePos(this, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F), loc);
-//        light3 = new LightPointActor(new LightPoint(), loc.getPoint());
-//        light3.light.setColor(300F, 0F, 0F);
-//        light3.light.setEmit(0.0F, 0.0F);
-//        pos.base().draw.lightMap().put("LAMPHOOK3", light3);
         super.cockpitNightMats = (new String[] {
             "Gause1", "Gause2", "Gause3", "Gause4", "Sidepanel", "instrument1"
         });
@@ -210,15 +191,7 @@ public class CockpitMi24 extends CockpitPilot
         if(super.acoustics != null)
             super.acoustics.globFX = new ReverbFXRoom(0.45F);
     }
-    
-    private int iLockState()
-    {
-        if(!(super.aircraft() instanceof TypeGuidedMissileCarrier))
-            return 0;
-        else
-            return ((TypeGuidedMissileCarrier)super.aircraft()).getGuidedMissileUtils().getMissileLockState();
-    }
-
+ 
     protected float waypointAzimuth()
     {
         return super.waypointAzimuthInvertMinus(10F);
@@ -234,21 +207,20 @@ public class CockpitMi24 extends CockpitPilot
         
         if((((FlightModelMain) (super.fm)).AS.astateCockpitState & 2) == 0)
         {
-            int i = ((Mi24V)aircraft()).k14Mode;
+            int i = ((Mi24X)aircraft()).k14Mode;
             if(i == 0)
             {
                 super.mesh.chunkVisible("Z_Z_Bombmark1", false);
                 super.mesh.chunkVisible("Z_Z_Rocketmark1", false);
 
             } else
-            if(i == 1)
+            if(i == 1 || i == 2 || i ==  4)
             {
                 super.mesh.chunkVisible("Z_Z_Bombmark1", false);
                 super.mesh.chunkVisible("Z_Z_Rocketmark1", true);
-                super.mesh.chunkSetAngles("Z_Z_Rocketmark", 0.0F, -setNew.k14y, 0.0F);
-                super.mesh.chunkSetAngles("Z_Z_Rocketmark1", -setNew.k14x, 2.0F, 0.0F);
+                super.mesh.chunkSetAngles("Z_Z_Rocketmark", -setNew.k14x * 0.75F, -setNew.k14y * 0.75F, 0.0F);
             } else
-            if(i == 2)
+            if(i == 3)
             {
                 super.mesh.chunkVisible("Z_Z_Bombmark1", true);
                 super.mesh.chunkVisible("Z_Z_Rocketmark1", false);
@@ -267,7 +239,7 @@ public class CockpitMi24 extends CockpitPilot
         super.mesh.chunkSetAngles("Z_RPM1", -cvt(((FlightModelMain) (super.fm)).EI.engines[0].getRPM(), 0.0F, 16500F, 0.0F, 346.5F), 0.0F, 0.0F);
         super.mesh.chunkSetAngles("Z_RPM2", -cvt(((FlightModelMain) (super.fm)).EI.engines[1].getRPM(), 0.0F, 16500F, 0.0F, 346.5F), 0.0F, 0.0F);
 
-        float rotorRPM = (float) ((Mi24V)aircraft()).rotorRPM;
+        float rotorRPM = (float) ((Mi24X)aircraft()).rotorRPM;
         super.mesh.chunkSetAngles("Z_PropRPM", -cvt(rotorRPM, 0.0F, 264F, 0.0F, 346.5F), 0.0F, 0.0F);
         
         super.mesh.chunkSetAngles("Z_FUEL", -cvt(((FlightModelMain) (super.fm)).M.fuel, 0.0F, 2500F, 0.0F, 301F), 0.0F, 0.0F);
@@ -283,12 +255,12 @@ public class CockpitMi24 extends CockpitPilot
         super.mesh.chunkSetAngles("Z_TEMPR3", -cvt(((FlightModelMain) (super.fm)).EI.engines[0].tOilOut, 0F, 150F, 0.0F, 120F), 0.0F, 0.0F);
         super.mesh.chunkSetAngles("Z_TEMPR4", -cvt(((FlightModelMain) (super.fm)).EI.engines[1].tOilOut, 0F, 150F, 0.0F, -120F), 0.0F, 0.0F);
         
-        float aPitch = ((Mi24V)aircraft()).aPitch;
+        float aPitch = ((Mi24X)aircraft()).aPitch;
         super.mesh.chunkSetAngles("Z_BladeAng", -cvt(aPitch, 0.0F, 1.153F, 0.0F, 204F), 0.0F, 0.0F);
         
         super.mesh.chunkSetAngles("Z_G", -cvt(super.fm.getOverload(), -2F, 4F, -105F, 207F), 0.0F, 0.0F);
         
-        super.mesh.chunkSetAngles("Z_Slide", cvt(getBall(40D), -40F, 40F, -111F, 111F), 0.0F, 0.0F);
+        super.mesh.chunkSetAngles("Z_Slide", cvt(super.fm.getAOS(), -40F, 40F, -111F, 111F), 0.0F, 0.0F);
         
         super.mesh.chunkSetAngles("Z_Hour", -cvt(World.getTimeofDay(), 0.0F, 24F, 0.0F, 720F), 0.0F, 0.0F);
         super.mesh.chunkSetAngles("Z_MIN", -cvt(World.getTimeofDay() % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F, 0.0F);
@@ -458,15 +430,11 @@ public class CockpitMi24 extends CockpitPilot
     }
 
     private float alpha;
-    private float alpha2;
     private Variables setOld;
     private Variables setNew;
     private Variables setTmp;
     private float pictAiler;
     private float pictElev;
-    private LightPointActor light1;
-    private LightPointActor light2;
-    private LightPointActor light3;
     private boolean bNeedSetUp;
     
     private static final float k14TargetMarkScale[] = {
@@ -475,32 +443,18 @@ public class CockpitMi24 extends CockpitPilot
     private static final float k14TargetWingspanScale[] = {
         11F, 11.3F, 11.8F, 15F, 20F, 25F, 30F, 35F, 40F, 43.05F
     };
+
     private static final float k14BulletDrop[] = {
-        5.812F, 6.168F, 6.508F, 6.978F, 7.24F, 7.576F, 7.849F, 8.108F, 8.473F, 8.699F, 
-        8.911F, 9.111F, 9.384F, 9.554F, 9.787F, 9.928F, 9.992F, 10.282F, 10.381F, 10.513F, 
+        5.812F, 6.168F, 6.508F, 6.978F, 7.24F, 7.576F, 7.849F, 8.108F, 8.473F, 8.699F,
+        8.911F, 9.111F, 9.384F, 9.554F, 9.787F, 9.928F, 9.992F, 10.282F, 10.381F, 10.513F,
         10.603F, 10.704F, 10.739F, 10.782F, 10.789F
     };
-    
-    private static final float speedometerScale[] = {
-        0.0F, 39F, 84F, 129F, 174F, 213F, 255F, 294F, 330F
-    };
-    
+      
     private static final float radaltScale[] = {
         0.0F, 155F, 181F, 207F, 232F, 257F, 281F, 303F
     };
     private static final float variometerScale[] = {
         -180F, -141F, -78F, 0.0F, 78F, 141F, 180F 
     };
-    private static final float rpmScale[] = {
-        -5F, 29F, 58F, 87F, 116F, 155F, 188F, 196.71F, 205.42F, 214.13F, 
-        222.84F, 231.55F, 240.26F, 248.97F, 257.68F, 266.39F, 275.1F, 283.81F, 292.52F, 301.23F, 
-        310F
-    };
-    private static final float rpmScale2[] = {
-        -5F, 29F, 58F, 87F, 100F, 110F, 120F, 132.07F, 144.14F, 156.21F, 
-        168.28F, 180.35F, 192.42F, 204.49F, 216.56F, 228.63F, 240.07F, 252.77F, 264.84F, 276.91F, 
-        289F
-    };
     public Vector3f w;
-    private float pictGear;
 }

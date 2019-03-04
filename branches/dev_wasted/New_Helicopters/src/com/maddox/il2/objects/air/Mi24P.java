@@ -1,66 +1,51 @@
-// Decompiled by DJ v3.12.12.101 Copyright 2016 Atanas Neshkov  Date: 05.10.2017 20:29:34
-// Home Page:  http://www.neshkov.com/dj.html - Check often for new version!
-// Decompiler options: packimports(3) 
-// Source File Name:   Mi24V.java
-
 package com.maddox.il2.objects.air;
 
-import com.maddox.JGP.Point3d;
-import com.maddox.il2.ai.War;
-import com.maddox.il2.ai.air.Pilot;
-import com.maddox.il2.engine.Actor;
-import com.maddox.il2.game.Mission;
-import com.maddox.il2.objects.bridges.BridgeSegment;
+import com.maddox.il2.ai.World;
+import com.maddox.il2.game.AircraftHotKeys;
+import com.maddox.il2.game.HUD;
 import com.maddox.rts.*;
 import com.maddox.util.HashMapInt;
 
 import java.util.ArrayList;
 
-public class Mi24V extends Mi24X  {
+public class Mi24P extends Mi24X  {
 
-	public Mi24V() {
+	public Mi24P() {
+		shotFreqCannon = 0;
 	}
 	
-	private void OperatorTurret() {
-		Pilot pilot = (Pilot) FM;
-		if ((pilot != null) && !Mission.isNet()) {
-			if (isAI) {
-				Actor actor = War.GetNearestEnemy(this, 1, 3000F);
-				if (pilot != null && isAlive(actor) && !(actor instanceof BridgeSegment)) {
-					Point3d point3d = new Point3d();
-					actor.pos.getAbs(point3d);
-					if (pos.getAbsPoint().distance(point3d) < 1700D) {
-						point3d.sub(FM.Loc);
-						FM.Or.transformInv(point3d);
-						if (point3d.y < 0.0D) {
-							FM.turret[1].target = actor;
-							FM.turret[1].tMode = 2;
-						}
-					}
-				} else if (actor != null) {
-					if (FM.turret[1].target != null && !(FM.turret[0].target instanceof Aircraft) && !isAlive(FM.turret[0].target))
-						FM.turret[1].target = null;
-				}
-			} else {
-				Actor actor = victim;
-				if (pilot != null && victim != null && isAlive(actor)) {
-					Point3d point3d = new Point3d();
-					actor.pos.getAbs(point3d);
-					if (pos.getAbsPoint().distance(point3d) < 1700D) {
-						point3d.sub(FM.Loc);
-						FM.Or.transformInv(point3d);
-						if (point3d.y < 0.0D) {
-							FM.turret[1].target = actor;
-							FM.turret[1].tMode = 2;
-						}
-					}
-				} else if (actor != null) {
-					if (FM.turret[1].target != null && !(FM.turret[0].target instanceof Aircraft) && !isAlive(FM.turret[0].target))
-						FM.turret[1].target = null;
-				}
-			}
-		}
-	}
+    public boolean typeFighterAceMakerToggleAutomation()
+    {
+        k14Mode++;
+        if(k14Mode > 4)
+            k14Mode = 0;
+        if(k14Mode == 0)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "ASP-17V: Grid");
+        } else
+        if(k14Mode == 1)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "ASP-17V: S-8");
+        } else
+        if(k14Mode == 2)
+        {
+            if(FM.actor == World.getPlayerAircraft())
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "ASP-17V: S-13");
+        } else
+        if(k14Mode == 3)
+        {	
+        	if(FM.actor == World.getPlayerAircraft())
+        		HUD.log(AircraftHotKeys.hudLogWeaponId, "ASP-17V: Unguided Bomb");
+		} else
+	    if(k14Mode == 4)
+	    {
+	        if(FM.actor == World.getPlayerAircraft())
+	            HUD.log(AircraftHotKeys.hudLogWeaponId, "ASP-17V: Cannon");
+	    }
+        return true;
+    }
 	
 	public boolean turretAngles(int i, float af[]) {
 		boolean flag = super.turretAngles(i, af);
@@ -88,25 +73,6 @@ public class Mi24V extends Mi24X  {
 				flag = false;
 			}
 			break;
-
-		case 1: // '\001'
-			if (f < -80F) {
-				f = -80F;
-				flag = false;
-			}
-			if (f > 20F) {
-				f = 20F;
-				flag = false;
-			}
-			if (f1 < -60F) {
-				f1 = -45F;
-				flag = false;
-			}
-			if (f1 > 60F) {
-				f1 = 60F;
-				flag = false;
-			}
-			break;
 		}
 		af[0] = -f;
 		af[1] = f1;
@@ -114,7 +80,6 @@ public class Mi24V extends Mi24X  {
 	}
 
 	public void update(float f) {
-		OperatorTurret();
 		super.update(f);
 	}
 	
@@ -122,22 +87,51 @@ public class Mi24V extends Mi24X  {
 		super.onAircraftLoaded();
 		FM.turret[0].bIsAIControlled = false;
 	}
+	
+	public void auxPressed(int i) {
+		super.auxPressed(i);
+		if (i == 25){
+			shotFreqCannon++;
+			if(shotFreqCannon > 1)
+				shotFreqCannon = 0;
+			if (shotFreqCannon == 0) HUD.log(AircraftHotKeys.hudLogWeaponId, "GSh-2-30K: Max.");
+			if (shotFreqCannon == 1) HUD.log(AircraftHotKeys.hudLogWeaponId, "GSh-2-30K: Min.");
+		}
+	}
+	
+    protected static Aircraft._WeaponSlot[] GenerateDefaultConfig(byte bt)
+    {
+        Aircraft._WeaponSlot a_lweaponslot[] = new Aircraft._WeaponSlot[bt];
+        try
+        {
+			a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunGSH_30_2h", 250);
+			a_lweaponslot[10] = new Aircraft._WeaponSlot(7, "RocketGunFlareLO56_gn16", 96);
+			a_lweaponslot[11] = new Aircraft._WeaponSlot(7, "RocketGunFlareLO56_gn16", 96);
+        }
+        catch(Exception exception) {
+            System.out.println("Weapon register error - Mi-24P : Default loadout Generator method");
+            System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+        return a_lweaponslot;
+    }
+    
+    public int shotFreqCannon;
     
 	static {
-		Class class1 = com.maddox.il2.objects.air.Mi24V.class;
+		Class class1 = com.maddox.il2.objects.air.Mi24P.class;
 		new NetAircraft.SPAWN(class1);
-		Property.set(class1, "iconFar_shortClassName", "Mi-24V");
-		Property.set(class1, "meshName", "3DO/Plane/Mi-24V/hier.him");
+		Property.set(class1, "iconFar_shortClassName", "Mi-24P");
+		Property.set(class1, "meshName", "3DO/Plane/Mi-24P/hier.him");
 		Property.set(class1, "PaintScheme", new PaintSchemeFMPar05());
 		Property.set(class1, "yearService", 1950F);
 		Property.set(class1, "yearExpired", 1960.5F);
 		Property.set(class1, "FlightModel", "FlightModels/Mi-24V.fmd:HELIFMD");
 		Property.set(class1, "cockpitClass", new Class[] {
 				com.maddox.il2.objects.air.CockpitMi24.class,
-				com.maddox.il2.objects.air.CockpitMi24_FLIR.class,
-				com.maddox.il2.objects.air.CockpitMi24_GUNNER.class
+				com.maddox.il2.objects.air.CockpitMi24_FLIR.class
 		});
-		Property.set(class1, "LOSElevation", 0.965F);
+		Property.set(class1, "LOSElevation", 0F);
     	Aircraft.weaponTriggersRegister(class1, new int[] { 
     			0, 0, 9, 9, 9, 9, 2, 2, 2, 2, 
     			7, 7, 9, 9, 2, 2, 2, 2, 2, 2, 
