@@ -2,11 +2,11 @@
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.*;
-import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.Loc;
+import com.maddox.il2.engine.Orient;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 import com.maddox.sas1946.il2.util.TrueRandom;
@@ -29,7 +29,9 @@ public class RocketFlareLO56_gn16 extends RocketFlare_gn16
 		setSpeed(speed);
 		if (com.maddox.il2.engine.Config.isUSE_RENDER())
 		{
-			this.eff1 = Eff3DActor.New(this, null, new Loc(), 0.8F, "3do/Effects/RocketSidewinder/RocketSidewinderSmoke.eff", f1);
+            Loc loc = new Loc();
+            loc.set(0D, 0D, 0D, 180F, 0F, 0F);
+			this.eff1 = Eff3DActor.New(this, null, loc, 0.8F, "3DO/Effects/Tracers/GuidedRocket/White.eff", f1);
 		}
 		this.t1 = Time.current() + 5000L;
 		Engine.countermeasures().add(this);

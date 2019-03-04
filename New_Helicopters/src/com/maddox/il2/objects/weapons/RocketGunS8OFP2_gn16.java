@@ -15,14 +15,19 @@ public class RocketGunS8OFP2_gn16 extends RocketGun
 
     public RocketGunS8OFP2_gn16()
     {
-    	setSpreadRnd(3);
+    	setSpreadRnd(0);
     }
 
     public void setConvDistance(float f, float f1)
     {
-        super.setConvDistance(f + 1000F, f1 + 2.81F);
+        super.setConvDistance(f + 1000F, f1 + 2.0F);
     }
 
+    public void setRocketTimeLife(float f)
+    {
+        super.timeLife = -1F;
+    }
+    
     static 
     {
         Class class1 = com.maddox.il2.objects.weapons.RocketGunS8OFP2_gn16.class;

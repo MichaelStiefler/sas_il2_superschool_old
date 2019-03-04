@@ -22,11 +22,9 @@ public class RocketS8OFP2_gn16 extends Rocket
     public void start(float f, int i)
     {
         super.start(f, i);
-//        super.speed.normalize();
-//        super.speed.scale(590D);
         super.noGDelay = -1L;
     }
-
+    
     static 
     {
         Class class1 = com.maddox.il2.objects.weapons.RocketS8OFP2_gn16.class;
@@ -46,8 +44,11 @@ public class RocketS8OFP2_gn16 extends Rocket
         Property.set(class1, "power", 2.9F);
         Property.set(class1, "powerType", 0);
         Property.set(class1, "kalibr", 0.080F);
+        Property.set(class1, "spinningStraightFactor", 1.5F);
+        Property.set(class1, "maxDeltaAngle", 0.2F);
         Property.set(class1, "massa", 16.7F);
         Property.set(class1, "massaEnd", 13.53F);
         Property.set(class1, "friendlyName", "S-8");
+        
     }
 }
