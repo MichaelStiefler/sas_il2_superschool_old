@@ -3,6 +3,7 @@
 /*By western, cruise speed tune for FastJet and SuperSonic on 17-24th/Jul./2018*/
 /*By western, landing wheel brake control for FastJet on 25th/Jul./2018*/
 /*By western, AI gun and rocket Ground-Attack for FastJet on 04th/Aug./2018*/
+/*By western, AI dive bombing debug, more retouch AI gun and rocket Ground-Attack for FastJet on 04th/Mar./2019*/
 package com.maddox.il2.ai.air;
 
 import java.util.ArrayList;
@@ -4642,6 +4643,9 @@ public class Maneuver extends AIFlightModel {
 		maxAOA = 15F;
 		minElevCoeff = 20F;
 		boolean bFJSS = ((actor instanceof TypeSupersonic) || (actor instanceof TypeFastJet));
+		Point3d nloc = new Point3d();
+		nloc.set(Loc);
+		if(bFJSS) actor.futurePosition(3.0F, nloc);  // get 3.0 seconds future position
 		switch (submaneuver) {
 		case 0: // '\0'
 			setCheckGround(true);
@@ -4651,7 +4655,8 @@ public class Maneuver extends AIFlightModel {
 				koeff = ((float) (12 - flying) * M.getFullMass()) / (Sq.squareWing * Wing.CyCritH_0);
 				float f7 = 0.2666667F;
 				if (koeff < 800F) koeff = 800F;
-				Ve.sub(Vtarg, Loc);
+				// Bt western: FastJet decision is done by 3.0 seconds future position
+				Ve.sub(Vtarg, nloc);
 				float f2 = (float) Ve.length();
 				float f6 = f2 - koeff * 1.75F;
 				if (f2 > 3000F) f2 = 3000F;
@@ -4662,7 +4667,8 @@ public class Maneuver extends AIFlightModel {
 				double d = tmpV3f.length();
 				double d1 = 0.0D;
 				if (d < 9.9999997473787516E-005D || Group.getAaaNum() > 8.5F && !(actorTarg instanceof TgtShip)) {
-					tmpV3f.sub(Vtarg, Loc);
+				// Bt western: FastJet decision is done by 3.0 seconds future position
+					tmpV3f.sub(Vtarg, nloc);
 					tmpV3f.z = 0.0D;
 					tmpV3f.normalize();
 					d1 = Math.toDegrees(Math.atan2(tmpV3f.y, tmpV3f.x));
@@ -4687,7 +4693,8 @@ public class Maneuver extends AIFlightModel {
 					Vtarg.x -= tmpV3f.x * (double) koeff * d1 + (double) f6;
 					Vtarg.y -= tmpV3f.y * (double) koeff * d1 + (double) f6;
 				} else {
-					Ve.sub(constVtarg, Loc);
+				// Bt western: FastJet decision is done by 3.0 seconds future position
+					Ve.sub(constVtarg, nloc);
 					Ve.normalize();
 					Vxy.cross(Ve, tmpV3f);
 					Ve.sub(tmpV3f);
@@ -4709,7 +4716,8 @@ public class Maneuver extends AIFlightModel {
 				}
 			}
 			Ve.set(constVtarg1);
-			Ve.sub(Loc);
+			// Bt western: FastJet decision is done by 3.0 seconds future position
+			Ve.sub(nloc);
 			float f3 = (float) Ve.length();
 			Or.transformInv(Ve);
 			if (Ve.x < 0.0D && f3 < koeff) {
@@ -4750,7 +4758,8 @@ public class Maneuver extends AIFlightModel {
 
 		case 1: // '\001'
 			Ve.set(constVtarg);
-			Ve.sub(Loc);
+			// Bt western: FastJet decision is done by 3.0 seconds future position
+			Ve.sub(nloc);
 			float f4 = (float) Ve.length();
 			Or.transformInv(Ve);
 			Ve.normalize();
@@ -4830,7 +4839,7 @@ public class Maneuver extends AIFlightModel {
 						if (Group.getAaaNum() > 2.0F) rocketsDelay += 30F - Group.getAaaNum();
 						else rocketsDelay += 30;
 						if (bFJSS) rocketsDelay -= 8;
-						if (bFJSS&& rocketsDelay < 3) rocketsDelay = 3;
+						if (bFJSS && rocketsDelay < 3) rocketsDelay = 3;
 					}
 				}
 			}
@@ -5306,7 +5315,7 @@ public class Maneuver extends AIFlightModel {
 	}
 
 	private void groundAttackShallowDive(Actor actorTarg, float f) {
-		maxAOA = 8F;
+		maxAOA = 10F;
 		if (!hasBombs()) {
 			set_maneuver(0);
 			wingman(true);
@@ -5342,29 +5351,32 @@ public class Maneuver extends AIFlightModel {
 			float f4 = (float) Math.sqrt(((Tuple3d) (super.Vwld)).x * ((Tuple3d) (super.Vwld)).x + ((Tuple3d) (super.Vwld)).y * ((Tuple3d) (super.Vwld)).y);
 			float f5 = f4 * f3 + 10F;
 			actorTarg.getSpeed(tmpV3d);
-			tmpV3d.scale((double) f3 * 0.450D * (double) super.Skill);
-			Ve.x += (float) ((Tuple3d) (tmpV3d)).x;
-			Ve.y += (float) ((Tuple3d) (tmpV3d)).y;
-			Ve.z += (float) ((Tuple3d) (tmpV3d)).z;
+			tmpV3d.scale((double) f3 * 0.350D * (double) super.Skill);
+			Ve.x += (float) tmpV3d.x;
+			Ve.y += (float) tmpV3d.y;
+			Ve.z += (float) tmpV3d.z;
 			if (CT.Weapons[3][0].getClass().getName().endsWith("SnakeEye") || CT.Weapons[3][0].getClass().getName().endsWith("SnakeEye_gn16")) f2 *= 1.188F;
 			else if (CT.Weapons[3][0].getClass().getName().endsWith("Ballute_gn16")) f2 *= 1.160F;
-			if (f5 >= f2 && passCounter == 0) {
-				bombsOut = true;
-				// TODO: DBW AI Mod Edits
-				if (!(actor instanceof TypeSupersonic) && !(actor instanceof TypeFastJet) && !(actor instanceof TypeDiveBomber)) bombsOutCounter = 129;
-				else bombsOutCounter = 0;
-				Voice.speakAttackByBombs((Aircraft) actor);
-				setSpeedMode(6);
-				CT.BayDoorControl = 0.0F;
-				pop();
-				sub_Man_Count = 0;
-				passCounter++;
-			} else if (passCounter >= 5)
-			;
-			passCounter = 0;
-			push(55);
-			push(48);
-			super.Or.transformInv(Ve);
+			if (f5 >= f2) {
+				if(passCounter == 0) {
+					bombsOut = true;
+					// TODO: DBW AI Mod Edits
+					if (!(actor instanceof TypeSupersonic) && !(actor instanceof TypeFastJet) && !(actor instanceof TypeDiveBomber)) bombsOutCounter = 129;
+					else bombsOutCounter = 0;
+					Voice.speakAttackByBombs((Aircraft) actor);
+					setSpeedMode(6);
+					CT.BayDoorControl = 0.0F;
+					passCounter++;
+				} else if (passCounter >= 5) {
+					passCounter = 0;
+					push(55);
+					push(48);
+					pop();
+					sub_Man_Count = 0;
+				} else
+					passCounter++;
+			}
+			Or.transformInv(Ve);
 			Ve.normalize();
 			turnToDirection(f);
 		}
@@ -5402,7 +5414,7 @@ public class Maneuver extends AIFlightModel {
 		float f1 = (float) Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y);
 		if (f1 > 1000F || submaneuver == 3 && sub_Man_Count > 100) {
 			Vtarg.set(actorTarg.pos.getAbsPoint());
-			actor.getSpeed(tmpV3d);
+			actorTarg.getSpeed(tmpV3d);
 			float f5 = 0.0F;
 			f5 = Alt / 120F;
 			f5 *= 0.33333F;
