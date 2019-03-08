@@ -1,15 +1,8 @@
 package com.maddox.il2.objects.air;
 
-import java.io.IOException;
-
-import com.maddox.rts.NetMsgGuaranted;
-import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 
-public class Taube2 extends TaubeX implements TypeFighter, TypeScout, TypeStormovik {
-
-    public Taube2() {
-    }
+public class Taube2 extends TaubeX implements TypeFighter, TypeScout, TypeBomber, TypeStormovik {
 
     public void doWoundPilot(int i, float f) {
         switch (i) {
@@ -19,77 +12,46 @@ public class Taube2 extends TaubeX implements TypeFighter, TypeScout, TypeStormo
         }
     }
 
-    public void doMurderPilot(int i) {
+    public boolean turretAngles(int i, float af[]) {
+        boolean flag = super.turretAngles(i, af);
+        float f = -af[0];
+        float f1 = af[1];
         switch (i) {
-            default:
-                break;
-
             case 0:
-                this.hierMesh().chunkVisible("Pilot1_D0", false);
-                this.hierMesh().chunkVisible("Head1_D0", false);
-                this.hierMesh().chunkVisible("Pilot1_D1", true);
-                if (!this.FM.AS.bIsAboutToBailout) {
-                    this.hierMesh().chunkVisible("Gore1_D0", true);
+                float fMax = -10F;
+                if (f < -120F) {
+                    f = -120F;
+                } else if (f < -70F) {
+                    fMax = 0F;
+                } else if ((f >= -70F) && (f < -65F)) {
+                    fMax = Aircraft.cvt(f, -70F, -65F, 0F, -10F);
+                } else if ((f >= -51.5F) && (f < -46.5F)) {
+                    fMax = Aircraft.cvt(f, -51.5F, -46.5F, -10F, 35F);
+                } else if ((f >= -46.5F) && (f < -11.75F)) {
+                    fMax = Aircraft.cvt(f, -46.5F, -11.75F, 35F, 45F);
+                } else if ((f >= -11.75F) && (f < 23F)) {
+                    fMax = Aircraft.cvt(f, -11.75F, 23F, 45F, 35F);
+                } else if ((f >= 23F) && (f < 28F)) {
+                    fMax = Aircraft.cvt(f, 23F, 28F, 35F, -10F);
+                } else if ((f > 55F) && (f <= 60F)) {
+                    fMax = Aircraft.cvt(f, 55F, 60F, -10F, 0F);
+                } else if (f > 60F) {
+                    fMax = 0F;
                 }
-                break;
-
-            case 1:
-                this.hierMesh().chunkVisible("Pilot2_D0", false);
-                this.hierMesh().chunkVisible("Pilot2_D1", true);
-                if (!this.FM.AS.bIsAboutToBailout) {
-                    this.hierMesh().chunkVisible("Gore2_D0", true);
+                if (f > 100F) {
+                    f = 100F;
+                }
+                if (f1 < fMax) {
+                    f1 = fMax;
+                }
+                if (f1 > 80F) {
+                    f1 = 80F;
                 }
                 break;
         }
-    }
-
-    public boolean typeBomberToggleAutomation() {
-        return false;
-    }
-
-    public void typeBomberAdjDistanceReset() {
-    }
-
-    public void typeBomberAdjDistancePlus() {
-    }
-
-    public void typeBomberAdjDistanceMinus() {
-    }
-
-    public void typeBomberAdjSideslipReset() {
-    }
-
-    public void typeBomberAdjSideslipPlus() {
-    }
-
-    public void typeBomberAdjSideslipMinus() {
-    }
-
-    public void typeBomberAdjAltitudeReset() {
-    }
-
-    public void typeBomberAdjAltitudePlus() {
-    }
-
-    public void typeBomberAdjAltitudeMinus() {
-    }
-
-    public void typeBomberAdjSpeedReset() {
-    }
-
-    public void typeBomberAdjSpeedPlus() {
-    }
-
-    public void typeBomberAdjSpeedMinus() {
-    }
-
-    public void typeBomberUpdate(float f) {
-    }
-
-    public void typeBomberReplicateToNet(NetMsgGuaranted netmsgguaranted) throws IOException {
-    }
-
-    public void typeBomberReplicateFromNet(NetMsgInput netmsginput) throws IOException {
+        af[0] = -f;
+        af[1] = f1;
+        return flag;
     }
 
     static {
@@ -102,7 +64,7 @@ public class Taube2 extends TaubeX implements TypeFighter, TypeScout, TypeStormo
         Property.set(class1, "yearExpired", 1967.8F);
         Property.set(class1, "FlightModel", "FlightModels/Taube.fmd:Taube_FM");
         Property.set(class1, "cockpitClass", new Class[] { CockpitTaube2_PIL.class, CockpitTaube2_Ob.class });
-        Aircraft.weaponTriggersRegister(class1, new int[] { 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 10 });
-        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalBomb09", "_ExternalBomb10", "_ExternalBomb11", "_ExternalBomb12", "_MGUN02" });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 3, 10 });
+        Aircraft.weaponHooksRegister(class1, new String[] { "_ExternalBomb01", "_MGUN02" });
     }
 }

@@ -1,11 +1,8 @@
 package com.maddox.il2.objects.air;
 
-import java.text.DecimalFormat;
-
 import com.maddox.il2.engine.Hook;
 import com.maddox.il2.engine.HookNamed;
 import com.maddox.il2.engine.Orient;
-import com.maddox.il2.game.HUD;
 import com.maddox.rts.Property;
 
 public class CockpitTaube2_Ob extends CockpitGunner {
@@ -25,8 +22,6 @@ public class CockpitTaube2_Ob extends CockpitGunner {
             } else {
                 float f = orient.getYaw();
                 float f1 = orient.getTangage();
-                DecimalFormat twoDigits = new DecimalFormat("0.00");
-                HUD.training("f=" + twoDigits.format(f) + ", f1=" + twoDigits.format(f1));
 
                 float fMax = -10F;
                 if (f < -120F) {
@@ -85,7 +80,6 @@ public class CockpitTaube2_Ob extends CockpitGunner {
             if ((this.emitter == null) || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) {
                 this.bGunFire = false;
             }
-//            this.fm.CT.WeaponControl[this.weaponControlNum()] = this.bGunFire;
             if (this.bGunFire) {
                 if (this.hook2 == null) {
                     this.hook2 = new HookNamed(this.aircraft(), "_MGUN02");

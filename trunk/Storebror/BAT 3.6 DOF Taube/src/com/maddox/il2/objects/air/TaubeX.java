@@ -43,48 +43,6 @@ public abstract class TaubeX extends Scheme1 implements TypeFighter, TypeScout, 
         }
     }
 
-    public boolean turretAngles(int i, float af[]) {
-        boolean flag = super.turretAngles(i, af);
-        float f = -af[0];
-        float f1 = af[1];
-        switch (i) {
-            case 0:
-                float fMax = -10F;
-                if (f < -120F) {
-                    f = -120F;
-                } else if (f < -70F) {
-                    fMax = 0F;
-                } else if ((f >= -70F) && (f < -65F)) {
-                    fMax = Aircraft.cvt(f, -70F, -65F, 0F, -10F);
-                } else if ((f >= -51.5F) && (f < -46.5F)) {
-                    fMax = Aircraft.cvt(f, -51.5F, -46.5F, -10F, 35F);
-                } else if ((f >= -46.5F) && (f < -11.75F)) {
-                    fMax = Aircraft.cvt(f, -46.5F, -11.75F, 35F, 45F);
-                } else if ((f >= -11.75F) && (f < 23F)) {
-                    fMax = Aircraft.cvt(f, -11.75F, 23F, 45F, 35F);
-                } else if ((f >= 23F) && (f < 28F)) {
-                    fMax = Aircraft.cvt(f, 23F, 28F, 35F, -10F);
-                } else if ((f > 55F) && (f <= 60F)) {
-                    fMax = Aircraft.cvt(f, 55F, 60F, -10F, 0F);
-                } else if (f > 60F) {
-                    fMax = 0F;
-                }
-                if (f > 100F) {
-                    f = 100F;
-                }
-                if (f1 < fMax) {
-                    f1 = fMax;
-                }
-                if (f1 > 80F) {
-                    f1 = 80F;
-                }
-                break;
-        }
-        af[0] = -f;
-        af[1] = f1;
-        return flag;
-    }
-
     protected void moveRudder(float f) {
         this.hierMesh().chunkSetAngles("Rudder1_D0", 0.0F, -20F * f, 0.0F);
     }
@@ -340,48 +298,56 @@ public abstract class TaubeX extends Scheme1 implements TypeFighter, TypeScout, 
         }
     }
 
-    public int getPk() {
-        return this.pk;
+    public boolean typeBomberToggleAutomation() {
+        return false;
     }
 
-    public void setPk(int i) {
-        this.pk = i;
+    public void typeBomberAdjDistanceReset() {
     }
 
-    public abstract void typeBomberUpdate(float f);
+    public void typeBomberAdjDistancePlus() {
+    }
 
-    public abstract boolean typeBomberToggleAutomation();
+    public void typeBomberAdjDistanceMinus() {
+    }
 
-    public abstract void typeBomberReplicateToNet(NetMsgGuaranted netmsgguaranted) throws IOException;
+    public void typeBomberAdjSideslipReset() {
+    }
 
-    public abstract void typeBomberReplicateFromNet(NetMsgInput netmsginput) throws IOException;
+    public void typeBomberAdjSideslipPlus() {
+    }
 
-    public abstract void typeBomberAdjSpeedReset();
+    public void typeBomberAdjSideslipMinus() {
+    }
 
-    public abstract void typeBomberAdjSpeedPlus();
+    public void typeBomberAdjAltitudeReset() {
+    }
 
-    public abstract void typeBomberAdjSpeedMinus();
+    public void typeBomberAdjAltitudePlus() {
+    }
 
-    public abstract void typeBomberAdjSideslipReset();
+    public void typeBomberAdjAltitudeMinus() {
+    }
 
-    public abstract void typeBomberAdjSideslipPlus();
+    public void typeBomberAdjSpeedReset() {
+    }
 
-    public abstract void typeBomberAdjSideslipMinus();
+    public void typeBomberAdjSpeedPlus() {
+    }
 
-    public abstract void typeBomberAdjDistanceReset();
+    public void typeBomberAdjSpeedMinus() {
+    }
 
-    public abstract void typeBomberAdjDistancePlus();
+    public void typeBomberUpdate(float f) {
+    }
 
-    public abstract void typeBomberAdjDistanceMinus();
+    public void typeBomberReplicateToNet(NetMsgGuaranted netmsgguaranted) throws IOException {
+    }
 
-    public abstract void typeBomberAdjAltitudeReset();
-
-    public abstract void typeBomberAdjAltitudePlus();
-
-    public abstract void typeBomberAdjAltitudeMinus();
+    public void typeBomberReplicateFromNet(NetMsgInput netmsginput) throws IOException {
+    }
 
     public static boolean bChangedPit;
-    private int           pk;
 
     static {
         Class class1 = TaubeX.class;
