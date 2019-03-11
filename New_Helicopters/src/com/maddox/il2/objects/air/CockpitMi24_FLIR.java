@@ -116,6 +116,6 @@ public class CockpitMi24_FLIR extends CockpitGunner {
 	static {
 		Property.set(CLASS.THIS(), "aiTuretNum", 0);
 		Property.set(CLASS.THIS(), "weaponControlNum", 10);
-		Property.set(CLASS.THIS(), "astatePilotIndx", 1);
+		Property.set(CLASS.THIS(), "astatePilotIndx", 0);
 	}
 }
