@@ -18,25 +18,31 @@ import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.NetGunner;
 import com.maddox.rts.Time;
 
-// Referenced classes of package com.maddox.il2.objects.weapons:
-//            MGunAircraftGeneric
-
 public class MGunYakB extends MGunAircraftGeneric
 {
 
     public MGunYakB()
     {
+        this.tLastShotFreqChange = 0L;
+        this.fShotFreqFactor = 0.2F; 
     }
     
-    public void doStartBullet(double paramDouble) {   
-    	super.doStartBullet(paramDouble);
-    	Actor localActor = getOwner();
-    	localActor.getSpeed(v);
-    	v1.add(v);
+    public void shots(int i, float f)
+    {
+        if (i == 0 && this.fShotFreqFactor > 0.2F) {
+            this.fShotFreqFactor -= (float)(Time.current() - this.tLastShotFreqChange) / 1250F;
+            if (this.fShotFreqFactor < 0.2F) fShotFreqFactor = 0.2F;
+        } else {
+            if (this.fShotFreqFactor < 1.0F) {
+                this.fShotFreqFactor += (float)(Time.current() - this.tLastShotFreqChange) / 375F;
+                if (this.fShotFreqFactor > 1.0F) fShotFreqFactor = 1.0F;
+            }
+            this._shotStep = (float)prop.bulletsCluster / (prop.shotFreq * this.fShotFreqFactor);
+            this.sound.setPitch(this.fShotFreqFactor);
+        }
+        this.tLastShotFreqChange = Time.current();
+        super.shots(i, f);
     }
-    
-    private static Vector3d v = new Vector3d();
-    private static Vector3d v1 = new Vector3d();
 
     public GunProperties createProperties()
     {
@@ -48,7 +54,7 @@ public class MGunYakB extends MGunAircraftGeneric
         gunproperties.sprite = "3DO/Effects/GunFire/7mm/GunFlare.eff";
         gunproperties.smoke = "effects/smokes/MachineGun.eff";
         gunproperties.shells = "3DO/Effects/GunShells/GunShells.eff";
-        gunproperties.sound = "weapon.MiniGun";
+        gunproperties.sound = "weapon.Gau4";
         gunproperties.emitColor = new Color3f(1.0F, 1.0F, 0.0F);
         gunproperties.emitI = 10F;
         gunproperties.emitR = 3F;
@@ -86,4 +92,7 @@ public class MGunYakB extends MGunAircraftGeneric
         gunproperties.bullet[1].timeLife = 3F;
         return gunproperties;
     }
+    
+    private long tLastShotFreqChange;
+    private float fShotFreqFactor;
 }

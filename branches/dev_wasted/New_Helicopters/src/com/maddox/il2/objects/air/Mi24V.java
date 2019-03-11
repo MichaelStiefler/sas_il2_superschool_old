@@ -38,26 +38,26 @@ public class Mi24V extends Mi24X  {
 						}
 					}
 				} else if (actor != null) {
-					if (FM.turret[1].target != null && !(FM.turret[0].target instanceof Aircraft) && !isAlive(FM.turret[0].target))
+					if (FM.turret[1].target != null && !(FM.turret[1].target instanceof Aircraft) && !isAlive(FM.turret[1].target))
 						FM.turret[1].target = null;
 				}
-			} else {
-				Actor actor = victim;
-				if (pilot != null && victim != null && isAlive(actor)) {
-					Point3d point3d = new Point3d();
-					actor.pos.getAbs(point3d);
-					if (pos.getAbsPoint().distance(point3d) < 1700D) {
-						point3d.sub(FM.Loc);
-						FM.Or.transformInv(point3d);
-						if (point3d.y < 0.0D) {
-							FM.turret[1].target = actor;
-							FM.turret[1].tMode = 2;
-						}
+			} 
+		} else {
+			Actor actor = victim;
+			if (pilot != null && victim != null && isAlive(actor)) {
+				Point3d point3d = new Point3d();
+				actor.pos.getAbs(point3d);
+				if (pos.getAbsPoint().distance(point3d) < 1700D) {
+					point3d.sub(FM.Loc);
+					FM.Or.transformInv(point3d);
+					if (point3d.y < 0.0D) {
+						FM.turret[1].target = actor;
+						FM.turret[1].tMode = 2;
 					}
-				} else if (actor != null) {
-					if (FM.turret[1].target != null && !(FM.turret[0].target instanceof Aircraft) && !isAlive(FM.turret[0].target))
-						FM.turret[1].target = null;
 				}
+			} else if (actor != null) {
+				if (FM.turret[1].target != null && !(FM.turret[1].target instanceof Aircraft) && !isAlive(FM.turret[1].target))
+					FM.turret[1].target = null;
 			}
 		}
 	}
@@ -137,12 +137,12 @@ public class Mi24V extends Mi24X  {
 				com.maddox.il2.objects.air.CockpitMi24_FLIR.class,
 				com.maddox.il2.objects.air.CockpitMi24_GUNNER.class
 		});
-		Property.set(class1, "LOSElevation", 0.965F);
+		Property.set(class1, "LOSElevation", 0.0F);
     	Aircraft.weaponTriggersRegister(class1, new int[] { 
-    			0, 0, 9, 9, 9, 9, 2, 2, 2, 2, 
-    			7, 7, 9, 9, 2, 2, 2, 2, 2, 2, 
-    			2, 2, 9, 9, 9, 9, 3, 3, 3, 3, 
-    			9, 9 
+    			11, 10, 9, 9, 9, 9, 2, 2, 2, 2, 
+    			7,  7,  9, 9, 2, 2, 2, 2, 2, 2, 
+    			2,  2,  9, 9, 9, 9, 3, 3, 3, 3, 
+    			9,  9 
     	});
     	Aircraft.weaponHooksRegister(class1, new String[] { 
     			"_MGUN01",         "_BombSpawn01",    "_ExternalDev01", "_ExternalDev02", "_ExternalDev03",  "_ExternalDev04",  "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", 

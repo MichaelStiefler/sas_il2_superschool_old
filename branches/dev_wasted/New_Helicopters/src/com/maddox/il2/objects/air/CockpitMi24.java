@@ -34,6 +34,7 @@ public class CockpitMi24 extends CockpitPilot
                 setTmp = setOld;
                 setOld = setNew;
                 setNew = setTmp;
+                setNew.aos = 0.9F * setOld.aos + ((FlightModelMain) (fm)).getAOS() * 0.1F;
                 setNew.throttle = 0.9F * setOld.throttle + ((FlightModelMain) (fm)).CT.PowerControl * 0.1F;
                 setNew.starter = 0.94F * setOld.starter + 0.06F * (((FlightModelMain) (fm)).EI.engines[0].getStage() <= 0 || ((FlightModelMain) (fm)).EI.engines[0].getStage() >= 6 ? 0.0F : 1.0F);
                 setNew.altimeter = fm.getAltitude();
@@ -118,7 +119,7 @@ public class CockpitMi24 extends CockpitPilot
 
     private class Variables
     {
-
+    	float aos;
         float throttle;
         float vspeed;
         float starter;
@@ -260,7 +261,7 @@ public class CockpitMi24 extends CockpitPilot
         
         super.mesh.chunkSetAngles("Z_G", -cvt(super.fm.getOverload(), -2F, 4F, -105F, 207F), 0.0F, 0.0F);
         
-        super.mesh.chunkSetAngles("Z_Slide", cvt(super.fm.getAOS(), -40F, 40F, -111F, 111F), 0.0F, 0.0F);
+        super.mesh.chunkSetAngles("Z_Slide", cvt(interp(setNew.aos, setOld.aos, f), -40F, 40F, -111F, 111F), 0.0F, 0.0F);
         
         super.mesh.chunkSetAngles("Z_Hour", -cvt(World.getTimeofDay(), 0.0F, 24F, 0.0F, 720F), 0.0F, 0.0F);
         super.mesh.chunkSetAngles("Z_MIN", -cvt(World.getTimeofDay() % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F, 0.0F);

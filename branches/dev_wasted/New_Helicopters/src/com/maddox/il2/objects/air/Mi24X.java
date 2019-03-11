@@ -30,6 +30,7 @@ import com.maddox.il2.engine.Orient;
 import com.maddox.il2.engine.Orientation;
 import com.maddox.il2.fm.Atmosphere;
 import com.maddox.il2.fm.FlightModelMain;
+import com.maddox.il2.fm.Pitot;
 import com.maddox.il2.fm.Polares;
 import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.fm.Squares;
@@ -221,13 +222,13 @@ TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeLaserSpott
 
 	public void laserUpdate() {
 		if (laserOn) {
-			this.pos.getRender(_tmpLoc);
+			this.pos.getRender(this.pos.getCurrent());
 			LaserHook[1] = new HookNamed(this, "_Laser1");
 			LaserLoc1.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-			this.LaserHook[1].computePos(this, _tmpLoc, LaserLoc1);
+			this.LaserHook[1].computePos(this, this.pos.getCurrent(), LaserLoc1);
 			LaserLoc1.get(LaserP1);
 			LaserLoc1.set(6000.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-			this.LaserHook[1].computePos(this, _tmpLoc, LaserLoc1);
+			this.LaserHook[1].computePos(this, this.pos.getCurrent(), LaserLoc1);
 			LaserLoc1.get(LaserP2);
 			Engine.land();
 			if (Landscape.rayHitHQ(LaserP1, LaserP2, LaserPL)) {
@@ -1367,27 +1368,26 @@ TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeLaserSpott
 	//TODO: Stability method is used to calculate AI flight behavior. 	
 	
 	private void stability(float f) { 
-		if(TailRotorDestroyed) this.FM.producedAM.z += 100000;
-		Vector3f eVect = new Vector3f();
-		eVect.x = 1.0F;
-		eVect.y = 0.0F;
-		eVect.z = 0.0F;
-		FM.EI.engines[0].setVector(eVect);
-		FM.EI.engines[1].setVector(eVect);
+		float avT = (FM.EI.engines[0].getControlThrottle() + FM.EI.engines[1].getControlThrottle()) / 2F;
+        float alt = FM.getAltitude() - Landscape.HQ_Air((float) this.FM.Loc.x, (float) this.FM.Loc.y);
+//        if ((alt < 10F) && (this.FM.getSpeedKMH() < 60F) && (vector3d.z < -1D)) {
+//            vector3d.z *= 0.9D;
+//            this.setSpeed(vector3d);
+//        }
 
+        
+        
+        
+        
+		if(TailRotorDestroyed) this.FM.producedAM.z += 100000;
 		this.pos.getAbs(localPoint3d1);
 		Vector3d localVector3d = new Vector3d(FM.Vwld);
 
-		float avT = (FM.EI.engines[0].getControlThrottle() + FM.EI.engines[1].getControlThrottle()) / 2F;
-		float alt = FM.getAltitude() - Landscape.HQ_Air((float) this.FM.Loc.x, (float) this.FM.Loc.y);
-//		Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-//		polares.Cy0_0 = cvt(alt, 30F, 50F, 5.5F, 0.55F);
-//		polares.lineCyCoeff = cvt(alt, 30F, 50F, 0.29F, 0.19F);
-//		polares.CyCritH_0 = cvt(alt, 30F, 50F, 5.9934692F, 1.1F);
+
 		FM.SensYaw = 0.5F; 
-		FM.SensPitch = 0.5F;
-		FM.SensRoll = 0.5F;
-		if(((com.maddox.il2.ai.air.Maneuver) FM).get_maneuver() == 26) takeOff = true;
+		FM.SensPitch = 0.3F;
+		FM.SensRoll = 0.3F;
+		if(((Maneuver) FM).get_maneuver() == 26 && alt < 10F && Time.current() < asTimer + 2500L) takeOff = true;
 		if (takeOff){
 			switch (takeOffStep) {
 			case 0:
@@ -1420,7 +1420,6 @@ TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeLaserSpott
 			case 1:
 			{
 				Reflection.setBoolean(((Maneuver) FM), "callSuperUpdate", false);
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "1!");
 				((Maneuver) FM).set_maneuver(66);
 				((Maneuver) FM).setSpeedMode(11);
 				FM.Vwld.x = 0D;
@@ -1437,7 +1436,6 @@ TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeLaserSpott
 			case 2:
 			{
 				Reflection.setBoolean(((Maneuver) FM), "callSuperUpdate", false);
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "2!");
 				((Maneuver) FM).set_maneuver(66);
 				((Maneuver) FM).setSpeedMode(11);
 				tOr.setYPR(tOr.getYaw(), -4.0F, tOr.getRoll());
@@ -1449,7 +1447,6 @@ TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeLaserSpott
 			case 3:
 			{
 				Reflection.setBoolean(((Maneuver) FM), "callSuperUpdate", false);
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "3!");
 				((Maneuver) FM).set_maneuver(66);
 				((Maneuver) FM).setSpeedMode(11);
 				tOr.setYPR(tOr.getYaw(), -7.0F, tOr.getRoll());
@@ -1461,7 +1458,6 @@ TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeLaserSpott
 			case 4:
 			{
 				Reflection.setBoolean(((Maneuver) FM), "callSuperUpdate", false);
-				HUD.log(AircraftHotKeys.hudLogWeaponId, "4!");
 				((Maneuver) FM).set_maneuver(66);
 				((Maneuver) FM).setSpeedMode(11);
 				tOr.setYPR(tOr.getYaw(), -4.0F, tOr.getRoll());
@@ -1476,7 +1472,7 @@ TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeLaserSpott
 			}
 			}
 		}
-		if (((com.maddox.il2.ai.air.Maneuver) FM).get_maneuver() == 25) 
+		if (((Maneuver) FM).get_maneuver() == 25) 
 		{
 			landing = true;
 		}
@@ -1485,7 +1481,7 @@ TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeLaserSpott
 			if (alt <= 17 && alt > 7)
 			{
 				FM.setCapableOfTaxiing(false);
-				((com.maddox.il2.ai.air.Maneuver) FM).set_maneuver(66);
+				((Maneuver) FM).set_maneuver(66);
 				FM.CT.ElevatorControl = 0.8F;
 				localVector3d.x *= 0.995;
 				localVector3d.y *= 0.995;
@@ -1493,13 +1489,13 @@ TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeLaserSpott
 			}		
 			if (alt <= 7)
 			{
-				((com.maddox.il2.ai.air.Maneuver) FM).setSpeedMode(8);	
+				((Maneuver) FM).setSpeedMode(8);	
 				localVector3d.x *= 0.97;
 				localVector3d.y *= 0.97;
 				localVector3d.z *= 0.4;
 				if (FM.Gears.nOfGearsOnGr > 2)
 				{
-					((com.maddox.il2.ai.air.Maneuver) FM).set_maneuver(66);
+					((Maneuver) FM).set_maneuver(66);
 					FM.CT.BrakeControl = 1.0F;
 					FM.EI.setEngineStops();
 					MsgDestroy.Post(Time.current() + 12000L, this);
@@ -1509,11 +1505,19 @@ TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeLaserSpott
 		}
 		if (FM.getSpeedKMH() > 0.1F && !takeOff && !landing && !(((Maneuver) FM).get_maneuver() == 44) && !(((Maneuver) FM).get_maneuver() == 49) && !FM.isReadyToDie() && !FM.isTakenMortalDamage()) 
 		{
-			FM.producedAF.z += avT * cvt(alt, 30F, 50F, 30000F, 0F) + avT * 20000F;
-			FM.producedAF.x += avT * cvt(alt, 30F, 50F, 5000F, 0F) + avT * 5000F;
-			if (FM.getSpeedKMH() >= 310)
-				FM.Sq.dragParasiteCx += 0.25F;
-			FM.Vwld.z *= FM.getVertSpeed() > 0.0 ? cvt((float) FM.getVertSpeed(), 1.0F, 10.0F, 1.0F, 0.95F) : 1.0;
+	        Point3d point3d1 = new Point3d(0.0D, 0.0D, 0.0D);
+	        point3d1.x = 0.0D - ((this.FM.Or.getTangage() / 10F) - (this.FM.CT.getElevator() * 2.5D));
+	        point3d1.y = 0.0D - ((this.FM.Or.getKren() / 10F) - (this.FM.CT.getAileron() * 2.5D));
+	        point3d1.z = 2D;
+	        this.FM.EI.engines[0].setPropPos(point3d1);
+	        this.FM.EI.engines[1].setPropPos(point3d1);
+	        this.FM.producedAF.x += 15000D * avT;
+	        this.FM.producedAF.y += 6000D * (-this.FM.CT.getAileron() * avT);
+	        this.FM.producedAF.z += avT * 70000F;
+	        float f1 = avT * Aircraft.cvt(this.FM.getSpeedKMH(), 0.0F, 300F, 1.0F, 0.0F);
+	        this.FM.Or.increment(f1 * (this.FM.CT.getRudder() + this.FM.CT.getTrimRudderControl()), f1 * (this.FM.CT.getElevator() + this.FM.CT.getTrimElevatorControl()), f1 * (this.FM.CT.getAileron() + this.FM.CT.getTrimAileronControl()));
+			FM.Sq.dragParasiteCx += cvt(FM.getSpeedKMH(), 290F, 300F, 0.0F, 1.0F);
+			if (FM.getVertSpeed() > 2.0) FM.CT.ElevatorControl = (FM.getSpeedKMH() - 180F - FM.Or.getTangage() * 10F - FM.getVertSpeed() * 5F) * 0.004F;
 		}
 		engineRPM = Math.sqrt((Math.pow(FM.EI.engines[0].getRPM(), 2D) + Math.pow(FM.EI.engines[1].getRPM(), 2D)) / 2D);
 		reductorRPM = engineRPM * 0.016D;
@@ -1644,7 +1648,7 @@ TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeLaserSpott
 //		rotorRPM = reductorRPM;
 //	}
 
-	public void human() {
+	public void human(float f) {
 
 		if (FM.EI.getCurControl(0) && !FM.EI.getCurControl(1)) FM.EI.engines[1].setControlProp(FM.EI.engines[0].getControlProp());
 		if (FM.EI.getCurControl(1) && !FM.EI.getCurControl(0)) FM.EI.engines[0].setControlProp(FM.EI.engines[1].getControlProp());
@@ -1814,14 +1818,14 @@ TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeLaserSpott
 			antiLiftForce = (float)(0.5D * rotorCy * rotorSurface * (double)airDensity * sinkRate * sinkRate) * 20F;
 		else
 			antiLiftForce = 0.0F;
-		FM.producedAF.x += (double)headOnForce + rotorLift_3D_x;
-		FM.producedAF.y += (double)sideForce + rotorLift_3D_y;
-		FM.producedAF.z += ((double)antiSinkForce + rotorLift_3D_z) - (double)antiLiftForce;
-		FM.producedAM.x += (double)dragMoment_x - balanceMoment_x+ rotorLift_moment_x;
-		FM.producedAM.y += (double)((dragMoment_y + tailRotorLift_moment_y) - balanceMoment_y) + rotorLift_moment_y;
-		FM.producedAM.z += !TailRotorDestroyed ? FM.producedAM.z += tailRotorMoment - tailRotorLift_moment_z - balanceMoment_z + rotorLift_moment_z : rotorRPM * 50000 + aPitch * 50000;
-		FM.Vwld.z *= sinkRate > 0.0 ? cvt((float) sinkRate, 1.0F, 10.0F, 1.0F, 0.95F) : 1.0;
-		FM.Sq.dragParasiteCx += fAOA > 0.0F ? fAOA / 5 : 0;
+		FM.producedAF.x += ((double)headOnForce + rotorLift_3D_x) / 0.03 * f;
+		FM.producedAF.y += ((double)sideForce + rotorLift_3D_y) / 0.03 * f;
+		FM.producedAF.z += (((double)antiSinkForce + rotorLift_3D_z) - (double)antiLiftForce) / 0.03 * f;
+		FM.producedAM.x += ((double)dragMoment_x - balanceMoment_x+ rotorLift_moment_x) / 0.03 * f;
+		FM.producedAM.y += ((double)((dragMoment_y + tailRotorLift_moment_y) - balanceMoment_y) + rotorLift_moment_y) / 0.03 * f;
+		FM.producedAM.z += !TailRotorDestroyed ? FM.producedAM.z += (tailRotorMoment - tailRotorLift_moment_z - balanceMoment_z + rotorLift_moment_z) / 0.03 * f : rotorRPM * 50000 + aPitch * 50000;
+		FM.Vwld.z *= sinkRate > 0.0 ? (cvt((float) sinkRate, 1.0F, 10.0F, 1.0F, 0.95F)) / 0.03 * f : 1.0 / 0.03 * f;
+		FM.Sq.dragParasiteCx += fAOA > 0.0F ? (fAOA / 5) / 0.03 * f : 0;
 
 		rotateSpeed_z = 0;
 		rotateSpeed_y = 0;
@@ -1831,11 +1835,11 @@ TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeLaserSpott
 
 		if(rotorRPM > 0) {
 			float shakeMe = 0F;
-			float shakeRPM = (float) ((rotorRPM / 2.4D) * 0.01D);
+			float shakeRPM = ((float) ((rotorRPM / 2.4D) * 0.01D)) / 0.03F * f;
 			if (vFlow.x < 22.2D && vFlow.x > 11.1D) {
-				shakeMe = cvt((float) vFlow.x, 11.1F, 22.2F, 0.03F, shakeRPM * 0.010F + (aPitch * shakeRPM) * 0.015F);
+				shakeMe = (cvt((float) vFlow.x, 11.1F, 22.2F, 0.03F, shakeRPM * 0.010F + (aPitch * shakeRPM) * 0.015F)) / 0.03F * f;
 			} else if (vFlow.x < 11.1D) {
-				shakeMe = cvt((float) vFlow.x, 5.5F, 11.1F, shakeRPM * 0.010F + (aPitch * shakeRPM) * 0.015F, 0.03F);
+				shakeMe = (cvt((float) vFlow.x, 5.5F, 11.1F, shakeRPM * 0.010F + (aPitch * shakeRPM) * 0.015F, 0.03F)) / 0.03F * f;
 			}
 			((RealFlightModel)FM).producedShakeLevel += shakeMe;
 		}
@@ -2102,7 +2106,7 @@ TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeLaserSpott
 		if (Time.current() < asTimer) {
 			checkAirstart();
 		}
-		if (isAI) stability(f); else human();
+		if (isAI) stability(f); else human(f);
 		rotorSound();
 		dustEmit();
 		setMissileLaunchThreatActive();
@@ -2127,7 +2131,7 @@ TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeLaserSpott
 		if (aso2mode > 0) {
 			setCommonThreatActive();
 		}
-		if (isAI) {
+		if (isAI && !FM.Gears.onGround()) {
 			Pilot pilot = (Pilot) FM;
 			if((((Maneuver) FM).get_maneuver() == 7 || ((Maneuver) FM).get_maneuver() == 43) || ((Maneuver) FM).target_ground != null)
 			{
@@ -2213,7 +2217,7 @@ TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeLaserSpott
 			this.FM.EI.engines[0].setPropPos(ePropPos);
 
 			Reflection.setFloat(FM.EI.engines[0], "tChangeSpeed", 0.000001F);
-			Reflection.setFloat(FM.EI.engines[0], "thrustMax", 7000.0F);
+			Reflection.setFloat(FM.EI.engines[0], "thrustMax", 2200.0F);
 			Reflection.setFloat(FM.EI.engines[0], "engineAcceleration", 1.0F);
 			Reflection.setFloat(FM.EI.engines[0], "propReductor", 1.0F);
 
@@ -2222,7 +2226,7 @@ TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeLaserSpott
 			this.FM.EI.engines[1].setPropPos(ePropPos);
 
 			Reflection.setFloat(FM.EI.engines[1], "tChangeSpeed", 0.000001F);
-			Reflection.setFloat(FM.EI.engines[1], "thrustMax", 7000.0F);
+			Reflection.setFloat(FM.EI.engines[1], "thrustMax", 2200.0F);
 			Reflection.setFloat(FM.EI.engines[1], "engineAcceleration", 1.0F);
 			Reflection.setFloat(FM.EI.engines[1], "propReductor", 1.0F);
 			Polares polares = (Polares)Reflection.getValue(FM, "Wing");
@@ -2234,22 +2238,15 @@ TypeGuidedMissileCarrier, TypeCountermeasure, TypeThreatDetector, TypeLaserSpott
 			Reflection.setFloat(FM, "HofVmax", 7900.0F);
 			Reflection.setFloat(FM, "VminFLAPS", 20.0F);
 			Reflection.setFloat(FM, "VmaxFLAPS", 280.0F);
-			Reflection.setFloat(FM, "VmaxFLAPS", 280.0F);
-			
-//			Polares polares = (Polares)Reflection.getValue(FM, "Wing");
-//			polares.Cy0_0 = cvt(alt, 30F, 50F, 5.5F, 0.55F);
-//			polares.lineCyCoeff = cvt(alt, 30F, 50F, 0.29F, 0.19F);
-//			polares.CyCritH_0 = cvt(alt, 30F, 50F, 5.9934692F, 1.1F);
-			
 			polares.Cy0_max = 7.15F;
 			polares.FlapsMult = 1.0F;
 			polares.FlapsAngSh = 4.0F;
 			polares.lineCyCoeff = 0.19F;
 			polares.AOAMinCx_Shift = 0.0F;
-			polares.Cy0_0 = 0.55F;
+			polares.Cy0_0 = 0.8F;
 			polares.AOACritH_0 = 10.0F;
 			polares.AOACritL_0 = -6.0F;
-			polares.CyCritH_0 = 2.0F;
+			polares.CyCritH_0 = 0.9F;
 			polares.CyCritL_0 = -0.7648107F;
 			polares.parabCxCoeff_0 = 5.0E-4F;
 			polares.CxMin_0 = 0.0125F;

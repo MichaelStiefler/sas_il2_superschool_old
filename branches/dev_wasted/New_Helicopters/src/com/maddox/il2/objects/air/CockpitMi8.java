@@ -26,6 +26,7 @@ public class CockpitMi8 extends CockpitPilot
 
         public boolean tick()
         {
+        	
             if(fm != null)
             {
                 if(bNeedSetUp)
@@ -34,6 +35,7 @@ public class CockpitMi8 extends CockpitPilot
                 setOld = setNew;
                 setNew = setTmp;
                 setNew.throttle = 0.9F * setOld.throttle + ((FlightModelMain) (fm)).CT.PowerControl * 0.1F;
+                setNew.pitch = 0.9F * setOld.pitch + (((FlightModelMain) (fm)).EI.engines[0].getControlProp() + ((FlightModelMain) (fm)).EI.engines[0].getControlProp() / 2) * 0.1F;
                 setNew.starter = 0.94F * setOld.starter + 0.06F * (((FlightModelMain) (fm)).EI.engines[0].getStage() <= 0 || ((FlightModelMain) (fm)).EI.engines[0].getStage() >= 6 ? 0.0F : 1.0F);
                 setNew.altimeter = fm.getAltitude();
                 float f = waypointAzimuth();
@@ -82,6 +84,7 @@ public class CockpitMi8 extends CockpitPilot
     {
 
         float throttle;
+        float pitch;
         float vspeed;
         float starter;
         float altimeter;
@@ -97,6 +100,7 @@ public class CockpitMi8 extends CockpitPilot
         private Variables()
         {
             throttle = 0.0F;
+            pitch = 0.0F;
             starter = 0.0F;
             altimeter = 0.0F;
             vspeed = 0.0F;
@@ -201,9 +205,18 @@ public class CockpitMi8 extends CockpitPilot
 //        super.mesh.chunkSetAngles("Canopy", -90F * ((FlightModelMain) (super.fm)).CT.getCockpitDoor(), 0.0F, 0.0F);
         super.mesh.chunkSetAngles("Z_STICK1", 0.0F, -(pictAiler = 0.85F * pictAiler + 0.15F * ((FlightModelMain) (super.fm)).CT.AileronControl) * 10F, -(pictElev = 0.85F * pictElev + 0.15F * ((FlightModelMain) (super.fm)).CT.ElevatorControl) * 10F);
         super.mesh.chunkSetAngles("Z_STICK2", 0.0F, -(pictAiler = 0.85F * pictAiler + 0.15F * ((FlightModelMain) (super.fm)).CT.AileronControl) * 10F, -(pictElev = 0.85F * pictElev + 0.15F * ((FlightModelMain) (super.fm)).CT.ElevatorControl) * 10F);
-//        super.mesh.chunkSetAngles("leftrudder", 10F * ((FlightModelMain) (super.fm)).CT.getRudder(), 0.0F, 0.0F);
-//        super.mesh.chunkSetAngles("rightrudder", 10F * ((FlightModelMain) (super.fm)).CT.getRudder(), 0.0F, 0.0F);
-//        super.mesh.chunkSetAngles("throttle", 0.0F, -40.909F * interp(setNew.throttle, setOld.throttle, f), 0.0F);
+        super.mesh.chunkSetAngles("BARRAD", 0.0F, 30F * ((FlightModelMain) (super.fm)).CT.getRudder(), 0.0F);
+        super.mesh.chunkSetAngles("BARRAI", 0.0F, 30F * ((FlightModelMain) (super.fm)).CT.getRudder(), 0.0F);
+        resetYPRmodifier();
+        Cockpit.xyz[0] = cvt(((FlightModelMain) (super.fm)).CT.getRudder(), -1.0F, 1.0F, -0.09F, 0.06F);
+        super.mesh.chunkSetLocate("PEDALL1", Cockpit.xyz, Cockpit.ypr);
+        resetYPRmodifier();
+        Cockpit.xyz[0] = cvt(((FlightModelMain) (super.fm)).CT.getRudder(), -1.0F, 1.0F, 0.06F, -0.09F);
+        super.mesh.chunkSetLocate("PEDALL2", Cockpit.xyz, Cockpit.ypr);
+        super.mesh.chunkSetAngles("Z_Colectivo", 0.0F, 0.0F, -20.909F * interp(setNew.pitch, setOld.pitch, f));
+        super.mesh.chunkSetAngles("Z_Gases", 0.0F, -45.0F * interp(setNew.throttle, setOld.throttle, f), 0.0F);
+        super.mesh.chunkSetAngles("Z_ColectivoL", 0.0F, 0.0F, -20.909F * interp(setNew.pitch, setOld.pitch, f));
+        super.mesh.chunkSetAngles("Z_GasesL", 0.0F, -45.0F * interp(setNew.throttle, setOld.throttle, f), 0.0F);
         super.mesh.chunkSetAngles("Z_RPM1", 0.0F, -cvt(((FlightModelMain) (super.fm)).EI.engines[0].getRPM(), 0.0F, 1665F, 0.0F, 315F), 0.0F);
         super.mesh.chunkSetAngles("Z_RPM2", 0.0F, -cvt(((FlightModelMain) (super.fm)).EI.engines[1].getRPM(), 0.0F, 1665F, 0.0F, 315F), 0.0F);
         super.mesh.chunkSetAngles("Z_FUEL", 0.0F, -cvt(((FlightModelMain) (super.fm)).M.fuel, 0.0F, 1470F, 0.0F, 330F), 0.0F);

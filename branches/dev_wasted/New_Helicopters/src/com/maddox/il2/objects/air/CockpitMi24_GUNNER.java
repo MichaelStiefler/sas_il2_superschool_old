@@ -55,8 +55,7 @@ public class CockpitMi24_GUNNER extends CockpitGunner {
 
 	protected void interpTick() {
 		if (isRealMode()) {
-			if (emitter == null || !emitter.haveBullets()
-					|| !aiTurret().bIsOperable)
+			if (emitter == null || !emitter.haveBullets() || !aiTurret().bIsOperable)
 				bGunFire = false;
 			fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
 		}
@@ -64,8 +63,7 @@ public class CockpitMi24_GUNNER extends CockpitGunner {
 
 	public void doGunFire(boolean flag) {
 		if (isRealMode()) {
-			if (emitter == null || !emitter.haveBullets()
-					|| !aiTurret().bIsOperable)
+			if (emitter == null || !emitter.haveBullets() || !aiTurret().bIsOperable)
 				bGunFire = false;
 			else
 				bGunFire = flag;
