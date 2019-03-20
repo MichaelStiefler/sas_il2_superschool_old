@@ -155,10 +155,24 @@ public abstract class Mi24X extends Scheme2 implements TypeHelicopter, TypeStorm
     }
 
     public void rotorSound() {
-        this.sndProp.setParent(this.getRootFX());
-        this.sndProp.setPosition(this.FM.EI.engines[0].getEnginePos());
-        this.sndProp.setControl(100, (float) this.rotorRPM);
-        this.sndProp.setControl(108, this.aPitch);
+        try {
+            this.sndProp.setParent(this.getRootFX());
+            this.sndProp.setPosition(this.FM.EI.engines[0].getEnginePos());
+            this.sndProp.setControl(100, (float) this.rotorRPM);
+            this.sndProp.setControl(108, this.aPitch);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void trimSound() {
+        try {
+            this.sndTrim.cancel();
+            this.sndTrim.setParent(this.getRootFX());
+            this.sndTrim.play(this.pos.getAbsPoint());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void dustEmit() {
@@ -1587,24 +1601,20 @@ public abstract class Mi24X extends Scheme2 implements TypeHelicopter, TypeStorm
         }
         return k;
     }
-
+    
     public void auxPressed(int i) {
         super.auxPressed(i);
         if (i == 20) {
             HUD.log(AircraftHotKeys.hudLogWeaponId, "Trimmer: Set");
-            this.sndTrim.cancel();
-            this.sndTrim.setParent(this.getRootFX());
-            this.sndTrim.play(this.pos.getAbsPoint());
             this.getTrim = true;
+            this.trimSound();
         }
         if (i == 21) {
             this.forceTrim_x = 0.0D;
             this.forceTrim_y = 0.0D;
             this.forceTrim_z = 0.0D;
             HUD.log(AircraftHotKeys.hudLogWeaponId, "Trimmer: Reset");
-            this.sndTrim.cancel();
-            this.sndTrim.setParent(this.getRootFX());
-            this.sndTrim.play(this.pos.getAbsPoint());
+            this.trimSound();
         }
         if (i == 22) {
             this.repMod++;
@@ -1993,7 +2003,6 @@ public abstract class Mi24X extends Scheme2 implements TypeHelicopter, TypeStorm
     public int                 k14Mode;
     public int                 k14WingspanType;
     public float               k14Distance;
-    protected SoundFX          sndTrim;
     private boolean            bAPazimut;
     private boolean            bAPalt;
     private boolean            bAPkrentang;
@@ -2066,6 +2075,7 @@ public abstract class Mi24X extends Scheme2 implements TypeHelicopter, TypeStorm
     public double              rotorRPM;
     public double              tailRotorRPM;
     protected SoundFX          sndProp;
+    protected SoundFX          sndTrim;
     public boolean             isAI;
     private long               asTimer;
     private boolean            AltCheck;

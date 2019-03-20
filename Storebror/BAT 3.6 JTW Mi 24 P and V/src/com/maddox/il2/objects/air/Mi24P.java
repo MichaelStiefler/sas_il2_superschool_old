@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.World;
-import com.maddox.il2.engine.Interpolate;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.Property;
@@ -17,25 +16,8 @@ public class Mi24P extends Mi24X {
         if (this.k14Mode > 4) {
             this.k14Mode = 0;
         }
-        if (this.k14Mode == 0) {
-            if (((Interpolate) (this.FM)).actor == World.getPlayerAircraft()) {
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "ASP-17V: Grid");
-            }
-        } else if (this.k14Mode == 1) {
-            if (((Interpolate) (this.FM)).actor == World.getPlayerAircraft()) {
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "ASP-17V: S-8");
-            }
-        } else if (this.k14Mode == 2) {
-            if (((Interpolate) (this.FM)).actor == World.getPlayerAircraft()) {
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "ASP-17V: S-13");
-            }
-        } else if (this.k14Mode == 3) {
-            if (((Interpolate) (this.FM)).actor == World.getPlayerAircraft()) {
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "ASP-17V: Unguided Bomb");
-            }
-        } else if ((this.k14Mode == 4) && (((Interpolate) (this.FM)).actor == World.getPlayerAircraft())) {
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "ASP-17V: Cannon");
-        }
+        if (this == World.getPlayerAircraft())
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "ASP-17V: " + k14Modes[this.k14Mode]);
         return true;
     }
 
@@ -89,21 +71,8 @@ public class Mi24P extends Mi24X {
         }
     }
 
-    protected static Aircraft._WeaponSlot[] GenerateDefaultConfig(byte bt) {
-        Aircraft._WeaponSlot a_lweaponslot[] = new Aircraft._WeaponSlot[bt];
-        try {
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunGSH_30_2h", 250);
-            a_lweaponslot[10] = new Aircraft._WeaponSlot(7, "RocketGunFlareLO56_gn16", 96);
-            a_lweaponslot[11] = new Aircraft._WeaponSlot(7, "RocketGunFlareLO56_gn16", 96);
-        } catch (Exception exception) {
-            System.out.println("Weapon register error - Mi-24P : Default loadout Generator method");
-            System.out.println(exception.getMessage());
-            exception.printStackTrace();
-        }
-        return a_lweaponslot;
-    }
-
     public int shotFreqCannon;
+    private String k14Modes[] = {"Grid", "S-8", "S-13", "Unguided Bomb", "Cannon"};
 
     static {
         Class class1 = Mi24P.class;
