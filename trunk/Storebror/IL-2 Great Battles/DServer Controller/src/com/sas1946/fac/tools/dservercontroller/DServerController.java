@@ -139,7 +139,7 @@ public class DServerController {
                 RConClient.getInstance().stopTimer();
               }
             });
-        
+
         MySqlConnector mySqlConnector = MySqlConnector.getInstance();
 
         TickDelayWatcher.getInstance().setTickDelayUpdateCallback(() -> this.tickDelayWatcherCallback());
