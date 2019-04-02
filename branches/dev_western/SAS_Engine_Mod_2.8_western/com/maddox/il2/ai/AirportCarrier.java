@@ -32,7 +32,6 @@ import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.air.TypeFastJet;
 import com.maddox.il2.objects.ships.BigshipGeneric;
-import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.rts.ObjIO;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
@@ -68,9 +67,10 @@ public class AirportCarrier extends Airport {
 	private static float[] v = { 0.0F, 80.0F, 100F, 180F, 250F, 270F, 280F, 300F, 300F };
 	private static float[] vJ = { 0.0F, 80.0F, 160F, 220F, 260F, 290F, 300F, 300F, 300F };
 	private static float[] vFJ = { 0.0F, 80.0F, 260F, 300F, 320F, 340F, 370F, 400F, 400F };
-	private static float ohanvxFJ[] = { -100F, -15.0F, 0.0F, 2200F, 3000F,  3000F,  2000F, -2000F, -4000F };
-	private static float ohanvyFJ[] = {  0.0F,   0.0F, 0.0F,  0.0F, -800F, -1600F, -2500F, -2500F,  -400F };
-	private static float ohanvzFJ[] = { -4.0F,   5.0F, 5.0F,  150F,  180F,   220F,   260F,   260F,   300F };
+	//TODO: disabled by SAS~Storebror, these are unused fields
+//	private static float ohanvxFJ[] = { -100F, -15.0F, 0.0F, 2200F, 3000F,  3000F,  2000F, -2000F, -4000F };
+//	private static float ohanvyFJ[] = {  0.0F,   0.0F, 0.0F,  0.0F, -800F, -1600F, -2500F, -2500F,  -400F };
+//	private static float ohanvzFJ[] = { -4.0F,   5.0F, 5.0F,  150F,  180F,   220F,   260F,   260F,   300F };
 	private Loc tmpLoc = new Loc();
 	private Point3d tmpP3d = new Point3d();
 	private Point3f tmpP3f = new Point3f();
@@ -84,6 +84,9 @@ public class AirportCarrier extends Airport {
 	private static Class _clsBigArrestorPlane = null;
 	private static CellAirPlane _cellBigArrestorPlane = null;
 	private static HashMap _clsMapArrestorPlane = new HashMap();
+	//TODO: +++ modified by SAS~Storebror
+	private static boolean clsBigArrestorPlaneInitialized = false;
+	//TODO: ---
 
 	class DeckUpdater extends Interpolate {
 		public boolean tick() {
@@ -516,7 +519,10 @@ public class AirportCarrier extends Airport {
 	}
 
 	private static Class clsBigArrestorPlane() {
-		if (_clsBigArrestorPlane != null) return _clsBigArrestorPlane;
+		//TODO: +++ modified by SAS~Storebror
+		if (clsBigArrestorPlaneInitialized) return _clsBigArrestorPlane;
+		clsBigArrestorPlaneInitialized = true;
+		//TODO: ---
 		double d = 0.0D;
 		SectFile sectfile = new SectFile("com/maddox/il2/objects/air.ini", 0);
 		int i = sectfile.sections();
