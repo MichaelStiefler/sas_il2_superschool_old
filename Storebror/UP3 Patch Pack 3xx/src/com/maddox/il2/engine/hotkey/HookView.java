@@ -50,7 +50,7 @@ public class HookView extends HookRender {
         } else {
             overrideActorChange = false;
         }
-        
+
         if (bFollow == true && flag == true && this.sameActorSelected == true) {
             this.hookViewIndex++;
             this.setHookView();
@@ -437,7 +437,7 @@ public class HookView extends HookRender {
                             angleTangage = -70F;
                         if (angleTangage > 85F)
                             angleTangage = 85F;
-                        
+
                         this.movePilotsHead(viewAircraft, angleAzimuth, angleTangage);
                         viewAircraft.hierMesh().setCurChunk(oldCurChunk);
                     }
@@ -469,13 +469,13 @@ public class HookView extends HookRender {
                 HookKeys.current.setMode(this.lastCockpitPanViewState);
             }
         }
-        
+
         bUse = flag;
         if (camera != null)
             camera.pos.inValidate(true);
         useCommon(1, bUse);
     }
-    
+
     public boolean isUse() {
         return bUse;
     }
@@ -580,6 +580,12 @@ public class HookView extends HookRender {
                 }
                 // TODO: +++ Camera Mod 4.12 +++
             }
+            Orient test = new Orient();
+            test.set(o);
+            test.wrap();
+//            DecimalFormat df = new DecimalFormat("0.#");
+//            float azimuth = 90F - test.getYaw();
+            //HUD.training("Azimuth:" + df.format(azimuth) + "°, Elevation:" + df.format(o.getTangage()) + "°");
             // TODO: --- Camera Mod 4.12 ---
             if (Actor.isValid(camera))
                 camera.pos.inValidate(true);
@@ -597,7 +603,7 @@ public class HookView extends HookRender {
             float oldTangage = this.oldHeadTangage+360F;
             azimuth = this.oldHeadAzimuth = (oldAzimuth * (float)(SMOOTH_FACTOR - 1) + newAzimuth) / (float)SMOOTH_FACTOR - 360F;
             tangage = this.oldHeadTangage = (oldTangage * (float)(SMOOTH_FACTOR - 1) + newTangage) / (float)SMOOTH_FACTOR - 360F;
-            
+
             if (Math.abs(this.lastHeadAzimuthShown - azimuth) < (float)HEAD_MOVE_COARSE && (Math.abs(this.lastHeadTangageShown - tangage) < (float)HEAD_MOVE_COARSE)) {
                 azimuth = this.lastHeadAzimuthShown;
                 tangage = this.lastHeadTangageShown;
@@ -605,7 +611,7 @@ public class HookView extends HookRender {
                 this.lastHeadAzimuthShown = azimuth;
                 this.lastHeadTangageShown = tangage;
             }
-            
+
             this.headTp = tangage + 0.0005F;
             this.headTm = tangage - 0.0005F;
             this.headYp = azimuth + 0.0005F;
@@ -863,14 +869,14 @@ public class HookView extends HookRender {
 
     public boolean setHookView() {
         Aircraft viewAircraft = null;
-    
+
         if (Config.isUSE_RENDER()) {
             if (Main3D.cur3D().viewActor() instanceof Aircraft) {
                 viewAircraft = (Aircraft) Main3D.cur3D().viewActor();
             }
         }
 
-        
+
         if (viewAircraft == null)
             return false;
         set(viewAircraft, 10F, -10F);
