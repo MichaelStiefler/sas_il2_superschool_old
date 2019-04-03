@@ -54,6 +54,15 @@ public class Engine
         return cur.targets;
     }
 
+	// TODO: Guided Missiles Update
+	public static List missiles() {
+		return cur.missiles;
+	}
+
+	public static List countermeasures() {
+		return cur.countermeasures;
+	}
+
     public static void setWorldAcoustics(String s)
     {
         cur.worldAcoustics = new Acoustics(s);
@@ -170,7 +179,7 @@ public class Engine
 
     public void resetGameClear()
     {
-        while(bulletList != null) 
+        while(bulletList != null)
         {
             BulletGeneric bulletgeneric = bulletList;
             bulletList = bulletgeneric.nextBullet;
@@ -250,7 +259,7 @@ public class Engine
         System.out.println(exception.getMessage());
         exception.printStackTrace();
     }
-    
+
 
     public static Engine cur;
     public static final boolean CHECK_DESTROY_ACTORS = false;
@@ -263,6 +272,12 @@ public class Engine
     public CollideEnv collideEnv;
     public DreamEnv dreamEnv;
     protected ArrayList targets;
+
+	// TODO: Guided Missiles Update
+	protected ArrayList missiles;
+	protected ArrayList countermeasures;
+
+
     private Acoustics worldAcoustics;
     protected ActorSoundListener soundListener;
     private Renders rendersMain;

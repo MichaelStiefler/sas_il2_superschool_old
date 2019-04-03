@@ -10,6 +10,7 @@ import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.Orientation;
 import com.maddox.il2.fm.Autopilotage;
+import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FMMath;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.game.Main;
@@ -40,6 +41,10 @@ public class AutopilotAI extends Autopilotage
 	private float				Ev;
 	private float				SA;
 	private Vector3d			Ve		= new Vector3d();
+
+	// TODO: Guided Missiles Update
+	private boolean overrideMissileControl = false;
+	private Controls theMissileControls = null;
 
 	public AutopilotAI(FlightModel flightmodel)
 	{
@@ -181,6 +186,10 @@ public class AutopilotAI extends Autopilotage
 
 	public void update(float f)
 	{
+		// TODO: Guided Missiles Update
+		if (this.overrideMissileControl) {
+			this.theMissileControls.WeaponControl[this.theMissileControls.rocketHookSelected] = true;
+		}
 		FM.getLoc(PlLoc);
 		SA = (float) Math.max(StabAltitude, Engine.land().HQ_Air(PlLoc.x, PlLoc.y) + 5.0);
 		do
@@ -482,4 +491,11 @@ public class AutopilotAI extends Autopilotage
 		if (FM.getAOA() > 11.0F && FM.CT.ElevatorControl > -0.3F)
 			FM.CT.ElevatorControl -= 0.3F * f;
 	}
+
+	// TODO: Guided Missiles Update
+	public void setOverrideMissileControl(Controls theControls, boolean overrideMissile) {
+		this.theMissileControls = theControls;
+		this.overrideMissileControl = overrideMissile;
+	}
+
 }
