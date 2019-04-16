@@ -38,6 +38,7 @@ import com.maddox.il2.engine.TextScr;
 import com.maddox.il2.fm.AIFlightModel;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.FlightModelMain;
+import com.maddox.il2.fm.Gear;
 import com.maddox.il2.fm.Pitot;
 import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.game.HUD;
@@ -56,9 +57,9 @@ import com.maddox.il2.objects.air.ME_163B1A;
 import com.maddox.il2.objects.air.MXY_7;
 import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.air.SM79;
+import com.maddox.il2.objects.air.Scheme10;
 import com.maddox.il2.objects.air.Scheme4;
 import com.maddox.il2.objects.air.Scheme8;
-import com.maddox.il2.objects.air.Scheme10;
 import com.maddox.il2.objects.air.Swordfish;
 import com.maddox.il2.objects.air.TA_152C;
 import com.maddox.il2.objects.air.TA_183;
@@ -78,7 +79,6 @@ import com.maddox.il2.objects.air.TypeSupersonic;
 import com.maddox.il2.objects.air.TypeTransport;
 import com.maddox.il2.objects.ships.BigshipGeneric;
 import com.maddox.il2.objects.ships.TestRunway;
-import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.il2.objects.weapons.BombGun;
 import com.maddox.il2.objects.weapons.BombGunNull;
@@ -875,7 +875,7 @@ public class Maneuver extends AIFlightModel {
 			// TODO By western: set Chocks for Parking with conf.ini custom setting
 			Vector3d vtemp = new Vector3d();
 			actor.pos.speed(vtemp);
-			if (Gears.bUseChocksParking && vtemp.length() == 0.0D && !(actor instanceof TypeSeaPlane)) brakeShoe = true;
+			if (Gear.bUseChocksParking && vtemp.length() == 0.0D && !(actor instanceof TypeSeaPlane)) brakeShoe = true;
 			break;
 
 		case 48: // '0'  // DELAY
@@ -3776,7 +3776,7 @@ public class Maneuver extends AIFlightModel {
 					CT.setPowerControl(1.1F);
 					setSpeedMode(11);
 				}
-				// --- TODO: 
+				// --- TODO:
 			}
 			if (CT.FlapsControl == 0.0F && CT.getWing() < 0.001F && !CT.bHasFlapsControlSwitch && CT.nFlapStages > 0) {
 				if (bCarrierTakeoff && CT.FlapTakeoffCarrier > 0F)
@@ -5357,6 +5357,9 @@ public class Maneuver extends AIFlightModel {
 			Ve.z += (float) tmpV3d.z;
 			if (CT.Weapons[3][0].getClass().getName().endsWith("SnakeEye") || CT.Weapons[3][0].getClass().getName().endsWith("SnakeEye_gn16")) f2 *= 1.188F;
 			else if (CT.Weapons[3][0].getClass().getName().endsWith("Ballute_gn16")) f2 *= 1.160F;
+
+			// +++ New 2.8.14 code...
+			/*
 			if (f5 >= f2) {
 				if(passCounter == 0) {
 					bombsOut = true;
@@ -5369,14 +5372,58 @@ public class Maneuver extends AIFlightModel {
 					passCounter++;
 				} else if (passCounter >= 5) {
 					passCounter = 0;
-					push(55);
-					push(48);
+					push(FOLLOW_SPIRAL_UP);
+					push(DELAY);
 					pop();
 					sub_Man_Count = 0;
 				} else
 					passCounter++;
 			}
 			Or.transformInv(Ve);
+			*/
+			// --- New 2.8.14 code...
+
+			// +++ Old 2.8.12 code...
+			/*
+			if (f5 >= f2 && passCounter == 0) {
+				bombsOut = true;
+				// TODO: DBW AI Mod Edits
+				if (!(actor instanceof TypeSupersonic) && !(actor instanceof TypeFastJet) && !(actor instanceof TypeDiveBomber)) bombsOutCounter = 129;
+				else bombsOutCounter = 0;
+				Voice.speakAttackByBombs((Aircraft) actor);
+				setSpeedMode(6);
+				CT.BayDoorControl = 0.0F;
+				pop();
+				sub_Man_Count = 0;
+				passCounter++;
+			} else if (passCounter >= 5);
+			passCounter = 0;
+			push(FOLLOW_SPIRAL_UP);
+			push(DELAY);
+			super.Or.transformInv(Ve);
+			*/
+			// --- Old 2.8.12 code...
+
+			// +++ Storebror's futile attempt to clean the mess...
+			if (f5 >= f2 && this.passCounter == 0) {
+				this.bombsOut = true;
+				// TODO: DBW AI Mod Edits
+				this.bombsOutCounter = (this.actor instanceof TypeSupersonic || this.actor instanceof TypeFastJet
+						|| this.actor instanceof TypeDiveBomber) ? 0 : 129;
+				Voice.speakAttackByBombs((Aircraft) actor);
+				this.setSpeedMode(MAX_SPEED);
+				CT.BayDoorControl = 0.0F;
+				this.pop();
+				this.sub_Man_Count = 0;
+				this.passCounter++;
+			}
+			this.passCounter = 0;
+			this.push(FOLLOW_SPIRAL_UP);
+			this.push(DELAY);
+			this.Or.transformInv(Ve);
+			// --- Storebror's futile attempt to clear the mess...
+
+			//System.out.println("groundAttackShallowDive part 3 actor=" + actor.hashCode());
 			Ve.normalize();
 			turnToDirection(f);
 		}
