@@ -90,10 +90,6 @@ public class CockpitFW_190A4 extends CockpitPilot //implements typeAmmocounter .
     
   //------------------------------------------------------------------------
     //TODO skylla: Schusszaehler:
-    /**
-     * PLEASE NOTE: This is still under construction. Method calls disabled
-     * now as the files addressed aren't ready yet. 
-    **/
     private void showSpinner(int i, boolean b) {
     	if(i < 0 || i > 4)
     		return;
@@ -219,21 +215,21 @@ public class CockpitFW_190A4 extends CockpitPilot //implements typeAmmocounter .
         	}
         	
         	if(gun4 == oldammo[4]-1) {
-        		//showSpinner(2,false);
+        		showSpinner(2,false);
         	} else if(gun4 == oldammo[4]-2) {
-        		//showSpinner(2,true);
+        		showSpinner(2,true);
         		oldammo[4] = gun4;
         	} else {
-        		//showSpinner(2,true);
+        		showSpinner(2,true);
         	}
         	
         	if(gun5 == oldammo[5]-1) {
-        		//showSpinner(3,false);
+        		showSpinner(3,false);
         	} else if(gun5 == oldammo[5]-2) {
-        		//showSpinner(3,true);
+        		showSpinner(3,true);
         		oldammo[5] = gun5;
         	} else {
-        		//showSpinner(3,true);
+        		showSpinner(3,true);
         	}
         	
         } else {
@@ -248,44 +244,44 @@ public class CockpitFW_190A4 extends CockpitPilot //implements typeAmmocounter .
         		this.mesh.chunkVisible("XLampMG17_2", false);
         	}
         	if(oldammo[4]-gun4 > 5) {
-        		//showSpinner(2,false);
+        		showSpinner(2,false);
         	} else {
-        		//showSpinner(2,true);
+        		showSpinner(2,true);
         	}
         	if(oldammo[5]-gun5 > 5) {
-        		//showSpinner(3,false);
+        		showSpinner(3,false);
         	} else {
-        		//showSpinner(3,true);
+        		showSpinner(3,true);
         	}
         }
         if(this.fm.CT.WeaponControl[1]) {
         	if(gun2 == oldammo[2]-1) {
-        		//showSpinner(1,false);
+        		showSpinner(1,false);
         	} else if(gun2 == oldammo[2]-2) {
-        		//showSpinner(1,true);
+        		showSpinner(1,true);
         		oldammo[2] = gun2;
         	} else {
-        		//showSpinner(1,true);
+        		showSpinner(1,true);
         	}
         	
         	if(gun3 == oldammo[3]-1) {
-        		//showSpinner(4,false);
+        		showSpinner(4,false);
         	} else if(gun3 == oldammo[3]-2) {
-        		//showSpinner(4,true);
+        		showSpinner(4,true);
         		oldammo[3] = gun3;
         	} else {
-        		//showSpinner(4,true);
+        		showSpinner(4,true);
         	}
         } else {
         	if(oldammo[2]-gun2 > 5) {
-        		//showSpinner(1,false);
+        		showSpinner(1,false);
         	} else {
-        		//showSpinner(1,true);
+        		showSpinner(1,true);
         	}
         	if(oldammo[3]-gun3 > 5) {
-        		//showSpinner(4,false);
+        		showSpinner(4,false);
         	} else {
-        		//showSpinner(4,true);
+        		showSpinner(4,true);
         	}
         }
       //------------------------------------------------------------------------
