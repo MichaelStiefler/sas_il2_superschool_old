@@ -1062,7 +1062,7 @@ public class GuidedMissileUtils {
 		this.trgtMissile = selectedActor;
 	}
 
-	public Actor lookForGuidedMissileTargetShip(Actor actor, float maxFOVfrom, float maxFOVto, double maxDistance) {
+	public void lookForGuidedMissileTargetShip(Actor actor, float maxFOVfrom, float maxFOVto, double maxDistance) {
 		double targetDistance = 0.0D;
 		float targetAngle = 0.0F;
 		float targetBait = 0.0F;
@@ -1070,7 +1070,11 @@ public class GuidedMissileUtils {
 		Actor selectedActor = null;
 		this.selectedActorOffset.set(new Point3f(0.0F, 0.0F, 0.0F));
 
-		if (!(actor instanceof Aircraft) || (this.iDetectorMode == Missile.DETECTOR_TYPE_MANUAL)) return selectedActor;
+		if (!(actor instanceof Aircraft) || (this.iDetectorMode == Missile.DETECTOR_TYPE_MANUAL)) {
+			this.trgtMissile = null;
+			this.trgtInSight = null;
+			return;
+		}
 
 		try {
 			List list = Engine.targets();
@@ -1112,7 +1116,11 @@ public class GuidedMissileUtils {
 							if (!this.multiTrackingCapable) {
 								if (theActiveMissile.getOwner() == actor) {
 									if (theActiveMissile.getVictim() != null) {
-										if (actorIsAI(actor)) return null;
+										if (actorIsAI(actor)) {
+											this.trgtMissile = null;
+											this.trgtInSight = null;
+											return;
+										}
 										else {
 											if (theActiveMissile.getVictim().pos.getAbsPoint().z < 5D) { // don't hit small boats
 												if (!this.canTrackSubs) {
@@ -1120,7 +1128,9 @@ public class GuidedMissileUtils {
 													this.selectedActorOffset.set(new Point3f(0.0F, 0.0F, 5.0F));
 												}
 											}
-											return theActiveMissile.getVictim();
+											this.trgtMissile = theActiveMissile.getVictim();
+											this.trgtInSight = null;
+											return;
 										}
 									}
 								}
@@ -1149,7 +1159,10 @@ public class GuidedMissileUtils {
 				}
 			}
 		}
-		return selectedActor;
+//		System.out.println("lookForGuidedMissileTargetShip " + (selectedActor == null?"null":selectedActor.getClass().getName()));
+		this.trgtMissile = selectedActor;
+		this.trgtInSight = null;
+		//return selectedActor;
 	}
 
 	public void onAircraftLoaded() {
@@ -1489,15 +1502,32 @@ public class GuidedMissileUtils {
 		this.targetType = theTargetType;
 	}
 
-	public void shootRocket() {
+	public void shootNextMissile() {
+		this.shootNextMissile(false);
+	}
+	public void shootNextMissile(boolean isValidForNetMirrors) {
 //		System.out.println("shootRocket 1");
 		if (this.missilesList.isEmpty()) return;
 //		System.out.println("shootRocket 2");
-		((MissileGun) this.missilesList.get(0)).shots(1);
+		int missileToShoot = 0;
+		MissileGun theMissileGun = null;
+		for (; missileToShoot<this.missilesList.size(); missileToShoot++) {
+			theMissileGun = (MissileGun)this.missilesList.get(missileToShoot);
+			if (!theMissileGun.isShots()/* && !theMissileGun.isEngineWarmupRunning()*/) break;
+		}
+
+		if (missileToShoot >= this.missilesList.size()) {
+			System.out.println("### ERROR in shootNextMissile(" + isValidForNetMirrors + "): No available MissileGun found!");
+			return;
+		}
+
+		theMissileGun.shots(1, isValidForNetMirrors);
+
+//		((MissileGun) this.missilesList.get(0)).shots(1, isValidForNetMirrors);
 	}
 
-	public void shotMissile() {
-//		System.out.println("shotMissile 1");
+	public void shotMissile(MissileGun theMissileGun) {
+//		System.out.println("shotMissile 1 " + theMissileGun.hashCode());
 		if (!(this.missileOwner instanceof Aircraft)) return;
 //		System.out.println("shotMissile 2");
 		Aircraft ownerAircraft = (Aircraft) this.missileOwner;
@@ -1515,11 +1545,11 @@ public class GuidedMissileUtils {
 //			System.out.println("shotMissile 3");
 			if ((World.cur().diffCur.Limited_Ammo) || (ownerAircraft != World.getPlayerAircraft())) {
 //				System.out.println("shotMissile 4");
-				if (!this.missilesList.isEmpty() && this.missilesList.get(0) != null) {
+				if (!this.missilesList.isEmpty() && this.missilesList.contains(theMissileGun)) {
 //					System.out.println("shotMissile 5");
-					if (((MissileGun) this.missilesList.get(0)).isEngineWarmupRunning()) return;
+					if (theMissileGun.isEngineWarmupRunning()) return;
 //					System.out.println("shotMissile 6");
-					this.missilesList.remove(0);
+					this.missilesList.remove(theMissileGun);
 				}
 			}
 			if (ownerAircraft != World.getPlayerAircraft()) {

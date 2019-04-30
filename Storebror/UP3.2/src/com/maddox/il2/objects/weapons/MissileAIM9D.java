@@ -52,7 +52,7 @@ public class MissileAIM9D extends Missile {
 		Property.set(class1, "canTrackSubs", 0); // set whether or not submerged objects can be tracked
 		Property.set(class1, "minPkForAI", 25.0F); // min. Kill Probability for AI to launch a missile
 		Property.set(class1, "timeForNextLaunchAI", 10000L); // time between two Missile launches for AI
-		Property.set(class1, "engineDelayTime", -200L); // Rocket Engine Start Delay Time (in milliseconds), negative Value means that Engine is started before Missile leaves it's rail
+		Property.set(class1, "engineDelayTime", -300L); // Rocket Engine Start Delay Time (in milliseconds), negative Value means that Engine is started before Missile leaves it's rail
 		Property.set(class1, "attackDecisionByAI", 1); // let AI decide whether or not to attack. Usually "1" for short range missiles and "0" for all others.
 		Property.set(class1, "targetType", Missile.TARGET_AIR); // Type of valid targets, can be any combination of TARGET_AIR, TARGET_GROUND and TARGET_SHIP.
 		Property.set(class1, "shotFreq", 0.01F); // Minimum time (in seconds) between two missile launches

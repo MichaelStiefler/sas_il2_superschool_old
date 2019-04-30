@@ -101,6 +101,11 @@ public abstract class Missile extends Rocket {
 				this.out.writeShort(sRoll);
 				float f = (float) this.actor().getSpeed(null);
 				this.out.writeFloat(f);
+//		        int timeToNextTick = (int)(Time.tickNext() - Time.current());
+//		        if (timeToNextTick > 255) {
+//		        	timeToNextTick = 255;
+//		        }
+//		        this.out.writeByte(timeToNextTick);
 				this.post(Time.current(), this.out);
 //				System.out.println("Missile Master netUpdate x=" + this.theMissilePoint3d.x + ", y=" + this.theMissilePoint3d.y + ", z=" + this.theMissilePoint3d.z + ", yaw=" + Reflection.getFloat(this.theMissileOrient, "Yaw") + ", pitch=" + Reflection.getFloat(this.theMissileOrient, "Pitch") + ", roll=" + Reflection.getFloat(this.theMissileOrient, "Roll") + ", speed=" + this.actor().getSpeed(null));
 			} catch (Exception exception) {
@@ -118,6 +123,9 @@ public abstract class Missile extends Rocket {
 		Point3d theMissilePoint3d = new Point3d();
 
 		Vector3d theTrajectoryVector3d = new Vector3d();
+
+		// TODO: Storebror: Attempt to smoothen missile movement
+//		private int messageTimeToNextTick = 0;
 
 		public Mirror(Actor actor, NetChannel netchannel, int i) {
 			super(actor, netchannel, i);
@@ -143,6 +151,16 @@ public abstract class Missile extends Rocket {
 
 		public boolean netInput(NetMsgInput netmsginput) throws IOException {
 			if (netmsginput.isGuaranted()) return false;
+
+//		      if ((Time.isPaused()) && (!NetMissionTrack.isPlaying())) {
+//		          return true;
+//		        }
+//		        if (netmsginput.channel() != masterChannel())
+//		        {
+//		          postRealTo(Message.currentTime(true), masterChannel(), new NetMsgFiltered(netmsginput, 0));
+//		          return true;
+//		        }
+
 			if (this.isMirrored()) {
 				this.out.unLockAndSet(netmsginput, 0);
 				this.postReal(Message.currentTime(true), this.out);
@@ -157,13 +175,32 @@ public abstract class Missile extends Rocket {
 				float fPitch = (float)sPitch / 364F;
 				float fRoll = (float)sRoll / 182F;
 				float fSpeed = netmsginput.readFloat();
+//				this.messageTimeToNextTick = netmsginput.readUnsignedByte();
+//				long mct = Message.currentTime(false);
+//				long tickSum = mct + this.messageTimeToNextTick;
+//				long tickNextDiff = Time.tickNext() - tickSum;
+////				System.out.println("tickNextDiff = " + tickNextDiff + ", tickSum=" + tickSum + ", current=" + Time.current() + ", tickConstLen=" + Time.tickConstLen() + ", mTTNT=" + messageTimeToNextTick + ", mct=" + mct);
+//
+//				tickNextDiff+=Time.tickConstLen()/2;
+//				if (tickNextDiff < 0) tickNextDiff = 0;
+//				float advanceFactor = (float)tickNextDiff / 1000F; //(float)Time.tickConstLen();
+
 				this.theMissileOrient.set(fYaw, fPitch, fRoll);
 				this.theMissileOrient.wrap();
-				this.actor().pos.setAbs(this.theMissilePoint3d, this.theMissileOrient);
 
 				this.theTrajectoryVector3d.set(1.0D, 0.0D, 0.0D);
 				this.theMissileOrient.transform(this.theTrajectoryVector3d);
+
 				this.theTrajectoryVector3d.scale(fSpeed);
+
+//				this.theMissilePoint3d.x += this.theTrajectoryVector3d.x * advanceFactor;
+//				this.theMissilePoint3d.y += this.theTrajectoryVector3d.y * advanceFactor;
+//				this.theMissilePoint3d.z += this.theTrajectoryVector3d.z * advanceFactor;
+//				this.theMissilePoint3d.x += this.theTrajectoryVector3d.x * (float)Time.tickConstLen() / 1000F;
+//				this.theMissilePoint3d.y += this.theTrajectoryVector3d.y * (float)Time.tickConstLen() / 1000F;
+//				this.theMissilePoint3d.z += this.theTrajectoryVector3d.z * (float)Time.tickConstLen() / 1000F;
+
+				this.actor().pos.setAbs(this.theMissilePoint3d, this.theMissileOrient);
 				this.actor().setSpeed(this.theTrajectoryVector3d);
 			} else {
 				//old UP3 RC4 Style Missile Data
@@ -224,9 +261,11 @@ public abstract class Missile extends Rocket {
 					f = netmsginput.readFloat();
 				}
 				this.doSpawn(actor, netmsginput.channel(), i, point3d, orient, f);
-				if (actor instanceof com.maddox.il2.objects.air.TypeGuidedMissileCarrier) {
+				if (actor instanceof TypeGuidedMissileCarrier) {
 					// EventLog.type("netSpawn 1");
-					((TypeGuidedMissileCarrier) actor).getGuidedMissileUtils().shotMissile();
+//					System.out.println("Missile NetSpawn shotMissile");
+					((TypeGuidedMissileCarrier) actor).getGuidedMissileUtils().shootNextMissile(true);
+					//((TypeGuidedMissileCarrier) actor).getGuidedMissileUtils().shotMissile();
 				}
 			} catch (Exception exception) {
 				System.out.println(exception.getMessage());
@@ -1003,9 +1042,21 @@ public abstract class Missile extends Rocket {
 				this.startTime = Time.current();
 			}
 		}
+	    if ((this.isNet()) && (this.isNetMirror()))
+	    {
+//	        this.pos.getAbs(this.missilePoint3d, this.missileOrient);
+//	        this.trajectoryVector3d.set(1.0D, 0.0D, 0.0D);
+//	        this.missileOrient.transform(this.trajectoryVector3d);
+//	        this.trajectoryVector3d.scale((float)this.getSpeed(null) * Time.tickLenFs());
+//	        this.missilePoint3d.add(this.trajectoryVector3d);
+//	        this.pos.setAbs(this.missilePoint3d, this.missileOrient);
+//			System.out.println("Missile interpolateStep NetMirror x=" + this.missilePoint3d.x + ", y=" + this.missilePoint3d.y + ", z=" + this.missilePoint3d.z + ", yaw=" + Reflection.getFloat(this.missileOrient, "Yaw") + ", pitch=" + Reflection.getFloat(this.missileOrient, "Pitch") + ", roll=" + Reflection.getFloat(this.missileOrient, "Roll") + ", speed=" + this.getSpeed(null));
+	    	return false;
+	    }
 		if (Time.current() > this.startTime + this.trackDelay) {
 			if (this.isSunTracking() || this.isGroundTracking()) {
 				this.victim = null;
+//				System.out.println("Missile is tracking sun or ground");
 			}
 		}
 		// float fSpeed = (float) this.getSpeed((Vector3d) null) * 3.6F;
@@ -1013,15 +1064,16 @@ public abstract class Missile extends Rocket {
 		// this.fMaxSpeed = fSpeed;
 		// }
 		// HUD.training("" + this.twoPlaces.format(fSpeed) + " / " + this.twoPlaces.format(this.fMaxSpeed));
+//		System.out.println("Missile interpolateStep x=" + this.missilePoint3d.x + ", y=" + this.missilePoint3d.y + ", z=" + this.missilePoint3d.z + ", yaw=" + Reflection.getFloat(this.missileOrient, "Yaw") + ", pitch=" + Reflection.getFloat(this.missileOrient, "Pitch") + ", roll=" + Reflection.getFloat(this.missileOrient, "Roll") + ", speed=" + this.getSpeed(null));
 		switch (this.stepMode) {
-		case STEP_MODE_HOMING: {
-			return this.stepTargetHoming();
-		}
-		case STEP_MODE_BEAMRIDER: {
-			return this.stepBeamRider();
-		}
-		default:
-			break;
+			case STEP_MODE_HOMING: {
+				return this.stepTargetHoming();
+			}
+			case STEP_MODE_BEAMRIDER: {
+				return this.stepBeamRider();
+			}
+			default:
+				break;
 		}
 		return true;
 	}
@@ -1615,6 +1667,7 @@ public abstract class Missile extends Rocket {
 		if (Time.current() < this.startTime + this.trackDelay) {
 			this.computeNoTrackPath();
 		} else if (this.victim != null) {
+
 			this.checkChaffFlareLock();
 			// System.out.println("stepTargetHoming victim=" + this.victim.getClass().getName());
 			this.victim.pos.getAbs(this.targetPoint3d, this.victimOffsetOrient);
@@ -1622,6 +1675,7 @@ public abstract class Missile extends Rocket {
 
 			this.victim.getSpeed(this.victimSpeed); // target movement vector
 			double victimDistance = GuidedMissileUtils.distanceBetween(this, this.victim); // distance missile -> target
+//			System.out.println("Missile is tracking " + this.victim.getClass().getName() + ", distance=" + victimDistance);
 			double theVictimSpeed = this.victimSpeed.length(); // target speed
 			if (theVictimSpeed > 10D) {
 				double speedRel = missileSpeed / theVictimSpeed; // relation missile speed / target speed
@@ -1807,6 +1861,5 @@ public abstract class Missile extends Rocket {
 	private Point3f victimOffsetPoint3d = null;
 
 	private Vector3d victimSpeed = null;
-
 
 }
