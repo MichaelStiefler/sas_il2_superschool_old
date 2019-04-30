@@ -1,59 +1,73 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.JGP.*;
-import com.maddox.il2.ai.*;
-import com.maddox.il2.ai.air.Maneuver;
-import com.maddox.il2.engine.*;
-import com.maddox.il2.fm.*;
-import com.maddox.il2.game.*;
-import com.maddox.il2.objects.Wreckage;
-import com.maddox.rts.*;
 import java.io.IOException;
+
+import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Vector3d;
+import com.maddox.il2.ai.Shot;
+import com.maddox.il2.ai.War;
+import com.maddox.il2.ai.World;
+import com.maddox.il2.ai.air.Maneuver;
+import com.maddox.il2.engine.Actor;
+import com.maddox.il2.engine.Config;
+import com.maddox.il2.engine.Eff3DActor;
+import com.maddox.il2.engine.HierMesh;
+import com.maddox.il2.engine.HookNamed;
+import com.maddox.il2.engine.Interpolate;
+import com.maddox.il2.engine.Loc;
+import com.maddox.il2.fm.AircraftState;
+import com.maddox.il2.fm.Atmosphere;
+import com.maddox.il2.fm.Controls;
+import com.maddox.il2.fm.RealFlightModel;
+import com.maddox.il2.game.AircraftHotKeys;
+import com.maddox.il2.game.HUD;
+import com.maddox.il2.game.Main3D;
+import com.maddox.il2.objects.Wreckage;
+import com.maddox.rts.MsgAction;
+import com.maddox.rts.NetMsgGuaranted;
+import com.maddox.rts.NetMsgInput;
+import com.maddox.rts.Property;
 
 public class Mig_17 extends Scheme1
     implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeFighterAceMaker
 {
-    private class _cls0
+    private class TranssonicEffects
     {
 
-        public void rs(int ii)
+        public void reduceSensitivity(int part)
         {
-            if(ii == 0 || ii == 1)
-                actl*= 0.68D;
-            if(ii == 31 || ii == 32)
-                ectl*= 0.68D;
-            if(ii == 15 || ii == 16)
-                rctl*= 0.68D;
+            if(part == 0 || part == 1) // Left and Right Aileron
+                aileronControlSensitivity *= 0.68D;
+            if(part == 31 || part == 32)
+                elevatorControlSensitivity *= 0.68D;
+            if(part == 15 || part == 16)
+                rudderControlSensitivity *= 0.68D;
         }
 
-        private void $1()
+        private void update()
         {
-            if(ts)
+            if(transsonic)
             {
-                float f1 = Aircraft.cvt(FM.getAltitude(), lal, tal, bef, tef);
-                float f2 = Aircraft.cvt(mn, mn >= Mig_17.mteb ? Mig_17.uteb : Mig_17.lteb, mn >= Mig_17.mteb ? Mig_17.lteb : Mig_17.uteb, mn >= Mig_17.mteb ? thef : bhef, mn >= Mig_17.mteb ? phef : thef);
-                float f3 = Aircraft.cvt(mn, mn >= Mig_17.mteb ? Mig_17.uteb : Mig_17.lteb, mn >= Mig_17.mteb ? Mig_17.lteb : Mig_17.uteb, mn >= Mig_17.mteb ? wef / f1 : mef, mn >= Mig_17.mteb ? lef / f1 : wef / f1);
+                float f1 = Aircraft.cvt(FM.getAltitude(), lowerAltitudeLevel, topAltitudeLevel, baseEffect, topEffect);
+                float f2 = Aircraft.cvt(machNumber, machNumber >= Mig_17.maxTranssonicEffectBoundary ? Mig_17.upperTranssonicEffectBoundary : Mig_17.lowerTranssonicEffectBoundary, machNumber >= Mig_17.maxTranssonicEffectBoundary ? Mig_17.lowerTranssonicEffectBoundary : Mig_17.upperTranssonicEffectBoundary, machNumber >= Mig_17.maxTranssonicEffectBoundary ? thef : bhef, machNumber >= Mig_17.maxTranssonicEffectBoundary ? phef : thef);
+                float f3 = Aircraft.cvt(machNumber, machNumber >= Mig_17.maxTranssonicEffectBoundary ? Mig_17.upperTranssonicEffectBoundary : Mig_17.lowerTranssonicEffectBoundary, machNumber >= Mig_17.maxTranssonicEffectBoundary ? Mig_17.lowerTranssonicEffectBoundary : Mig_17.upperTranssonicEffectBoundary, machNumber >= Mig_17.maxTranssonicEffectBoundary ? wef / f1 : mef, machNumber >= Mig_17.maxTranssonicEffectBoundary ? lef / f1 : wef / f1);
                 ((RealFlightModel)FM).producedShakeLevel += 0.1125F * f2;
-                FM.SensPitch = ectl * f3 * f3;
-                FM.SensRoll = actl * f3;
-                FM.SensYaw = rctl * f3;
-                if(f2 > 0.6F)
-                    ictl = true;
-                else
-                    ictl = false;
-                if(ftl > 0.0F)
+                FM.SensPitch = elevatorControlSensitivity * f3 * f3;
+                FM.SensRoll = aileronControlSensitivity * f3;
+                FM.SensYaw = rudderControlSensitivity * f3;
+                if(flutterLevel > 0.0F)
                 {
                     if(World.Rnd().nextFloat() > 0.6F)
                         if(FM.CT.RudderControl > 0.0F)
-                            FM.CT.RudderControl -= ftl * f2;
+                            FM.CT.RudderControl -= flutterLevel * f2;
                         else
                         if(FM.CT.RudderControl < 0.0F)
                         {
-                            FM.CT.RudderControl += ftl * f2;
+                            FM.CT.RudderControl += flutterLevel * f2;
                         } else
                         {
                             Controls controls = FM.CT;
-                            controls.RudderControl = controls.RudderControl + (World.Rnd().nextFloat() <= 0.5F ? -ftl * f2 : ftl * f2);
+                            controls.RudderControl = controls.RudderControl + (World.Rnd().nextFloat() <= 0.5F ? -flutterLevel * f2 : flutterLevel * f2);
                         }
                     if(FM.CT.RudderControl > 1.0F)
                         FM.CT.RudderControl = 1.0F;
@@ -62,39 +76,39 @@ public class Mig_17 extends Scheme1
                 }
             } else
             {
-                FM.SensPitch = ectl;
-                FM.SensRoll = actl;
-                FM.SensYaw = rctl;
+                FM.SensPitch = elevatorControlSensitivity;
+                FM.SensRoll = aileronControlSensitivity;
+                FM.SensYaw = rudderControlSensitivity;
             }
         }
 
-        private float lal;
-        private float tal;
-        private float bef;
-        private float tef;
+        private float lowerAltitudeLevel;
+        private float topAltitudeLevel;
+        private float baseEffect;
+        private float topEffect;
         private float bhef;
         private float thef;
         private float phef;
         private float mef;
         private float wef;
         private float lef;
-        private float ftl;
+        private float flutterLevel;
 
 
-        private _cls0(float f1, float f2, float f3, float f4, float f5, float f6,
+        private TranssonicEffects(float f1, float f2, float f3, float f4, float f5, float f6,
                 float f7, float f8, float f9, float f10, float f11)
         {
-            lal = f1;
-            tal = f2;
-            bef = f3;
-            tef = f4;
+            lowerAltitudeLevel = f1;
+            topAltitudeLevel = f2;
+            baseEffect = f3;
+            topEffect = f4;
             bhef = f5;
             thef = f6;
             phef = f7;
             mef = f8;
             wef = f9;
             lef = f10;
-            ftl = f11;
+            flutterLevel = f11;
         }
 
     }
@@ -126,15 +140,14 @@ public class Mig_17 extends Scheme1
 
     public Mig_17()
     {
-        mn = 0.0F;
+        machNumber = 0.0F;
         SonicBoom = 0.0F;
-        ts = false;
+        transsonic = false;
         curst = false;
         oldctl = -1F;
         curctl = -1F;
         oldthrl = -1F;
         curthrl = -1F;
-        ictl = false;
         overrideBailout = false;
         ejectComplete = false;
         k14Mode = 0;
@@ -232,9 +245,9 @@ public class Mig_17 extends Scheme1
     {
         super.onAircraftLoaded();
         this.FM.AS.wantBeaconsNet(true);
-        actl = this.FM.SensRoll;
-        ectl = this.FM.SensPitch;
-        rctl = this.FM.SensYaw;
+        aileronControlSensitivity = this.FM.SensRoll;
+        elevatorControlSensitivity = this.FM.SensPitch;
+        rudderControlSensitivity = this.FM.SensYaw;
     }
 
     public void rareAction(float paramFloat, boolean paramBoolean)
@@ -411,7 +424,7 @@ public class Mig_17 extends Scheme1
     protected void hitBone(String paramString, Shot paramShot, Point3d paramPoint3d)
     {
         int ii = part(paramString);
-        $1.rs(ii);
+        transsonicEffects.reduceSensitivity(ii);
         if(paramString.startsWith("xx"))
         {
             if(paramString.startsWith("xxammo"))
@@ -823,31 +836,33 @@ public class Mig_17 extends Scheme1
 
     public void update(float paramFloat)
     {
-        if(this.FM.AS.isMaster() && Config.isUSE_RENDER())
-        {
+    	if (Config.isUSE_RENDER()) {
             setExhaustFlame(Math.round(Aircraft.cvt(this.FM.EI.engines[0].getThrustOutput(), 0.7F, 0.87F, 0.0F, 12F)), 0);
-            if(this.FM instanceof RealFlightModel)
-            {
-                umnr();
-                this.$1.$1();
-            }
-            if(curctl == -1F)
-            {
-                curctl = oldctl = this.FM.CT.getAirBrake();
-            } else
-            {
-                curctl = this.FM.CT.getAirBrake();
-                if(curctl > 0.05F)
-                    if(curctl - oldctl > 0.0F)
-                        curst = true;
-                    else
-                    if(curctl - oldctl == 0.0F && oldctl == 1.0F)
-                        curst = true;
-                    else
-                        curst = false;
-            }
-            oldctl = curctl;
-        }
+	        if(this.FM.AS.isMaster())
+	        {
+	            if(this.FM instanceof RealFlightModel)
+	            {
+	                updateMachNumber();
+	                this.transsonicEffects.update();
+	            }
+	            if(curctl == -1F)
+	            {
+	                curctl = oldctl = this.FM.CT.getAirBrake();
+	            } else
+	            {
+	                curctl = this.FM.CT.getAirBrake();
+	                if(curctl > 0.05F)
+	                    if(curctl - oldctl > 0.0F)
+	                        curst = true;
+	                    else
+	                    if(curctl - oldctl == 0.0F && oldctl == 1.0F)
+	                        curst = true;
+	                    else
+	                        curst = false;
+	            }
+	            oldctl = curctl;
+	        }
+    	}
         if((this.FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && this.FM.getSpeedKMH() > 15F)
         {
             overrideBailout = true;
@@ -1075,60 +1090,55 @@ public class Mig_17 extends Scheme1
 
     }
 
-    public boolean ist()
+    public boolean isTranssonic()
     {
-        return ts;
+        return transsonic;
     }
 
-    public float gmnr()
+    public float getMachNumber()
     {
-        return mn;
+        return machNumber;
     }
 
-    public boolean inr()
-    {
-        return ictl;
-    }
-
-    private final void umnr()
+    private final void updateMachNumber()
     {
         Vector3d vf1 = this.FM.getVflow();
-        mn = (float)vf1.lengthSquared();
-        mn = (float)Math.sqrt(mn);
+        machNumber = (float)vf1.lengthSquared();
+        machNumber = (float)Math.sqrt(machNumber);
         Mig_17 mig_17 = this;
-        float f = mn;
+        float f = machNumber;
         if(World.cur().Atm == null);
-        mig_17.mn = f / Atmosphere.sonicSpeed((float)this.FM.Loc.z);
-        if(mn >= lteb)
-            ts = true;
+        mig_17.machNumber = f / Atmosphere.sonicSpeed((float)this.FM.Loc.z);
+        if(machNumber >= lowerTranssonicEffectBoundary)
+            transsonic = true;
         else
-            ts = false;
+            transsonic = false;
     }
 
-    public void doSetSootState(int paramInt1, int paramInt2)
+    public void doSetSootState(int i1, int i2)
     {
         for(int i = 0; i < 2; i++)
         {
-            if(this.FM.AS.astateSootEffects[paramInt1][i] != null)
-                Eff3DActor.finish(this.FM.AS.astateSootEffects[paramInt1][i]);
-            this.FM.AS.astateSootEffects[paramInt1][i] = null;
+            if(this.FM.AS.astateSootEffects[i1][i] != null)
+                Eff3DActor.finish(this.FM.AS.astateSootEffects[i1][i]);
+            this.FM.AS.astateSootEffects[i1][i] = null;
         }
 
-        switch(paramInt2)
+        switch(i2)
         {
         case 3:
-            this.FM.AS.astateSootEffects[paramInt1][0] = Eff3DActor.New(this, findHook("_Engine1EF_01"), null, 0.75F, "3DO/Effects/Aircraft/TurboZippo.eff", -1F);
+            this.FM.AS.astateSootEffects[i1][0] = Eff3DActor.New(this, findHook("_Engine1EF_01"), null, 0.75F, "3DO/Effects/Aircraft/TurboZippo.eff", -1F);
             break;
 
         case 5:
-            this.FM.AS.astateSootEffects[paramInt1][0] = Eff3DActor.New(this, findHook("_Engine1EF_01"), null, 0.75F, "3DO/Effects/Aircraft/TurboZippo.eff", -1F);
-            this.FM.AS.astateSootEffects[paramInt1][1] = Eff3DActor.New(this, findHook("_Engine1EF_02"), null, 2.0F, "3DO/Effects/Aircraft/TurboJRD1100F.eff", -1F);
+            this.FM.AS.astateSootEffects[i1][0] = Eff3DActor.New(this, findHook("_Engine1EF_01"), null, 0.75F, "3DO/Effects/Aircraft/TurboZippo.eff", -1F);
+            this.FM.AS.astateSootEffects[i1][1] = Eff3DActor.New(this, findHook("_Engine1EF_02"), null, 2.0F, "3DO/Effects/Aircraft/TurboJRD1100F.eff", -1F);
             break;
         }
     }
 
     protected boolean curst;
-    private boolean ts;
+    private boolean transsonic;
     private float oldctl;
     private float curctl;
     private float oldthrl;
@@ -1136,18 +1146,17 @@ public class Mig_17 extends Scheme1
     private boolean overrideBailout;
     private boolean ejectComplete;
     public static boolean bChangedPit = false;
-    private float mn;
-    private static float uteb = 1.25F;
-    private static float lteb = 0.9F;
-    private static float mteb = 1.0F;
-    private boolean ictl;
-    private float actl;
-    private float rctl;
-    private float ectl;
+    private float machNumber;
+    private static float upperTranssonicEffectBoundary = 1.25F;
+    private static float lowerTranssonicEffectBoundary = 0.9F;
+    private static float maxTranssonicEffectBoundary = 1.0F;
+    private float aileronControlSensitivity;
+    private float rudderControlSensitivity;
+    private float elevatorControlSensitivity;
     private float SonicBoom;
     private Eff3DActor shockwave;
     private boolean isSonic;
-    private final _cls0 $1 = new _cls0(0.0F, 14000F, 0.65F, 1.0F, 0.05F, 1.0F, 0.4F, 1.0F, 0.46F, 0.55F, 0.65F);
+    private final TranssonicEffects transsonicEffects = new TranssonicEffects(0.0F, 14000F, 0.65F, 1.0F, 0.05F, 1.0F, 0.4F, 1.0F, 0.46F, 0.55F, 0.65F);
     public int k14Mode;
     public int k14WingspanType;
     public float k14Distance;
@@ -1159,16 +1168,4 @@ public class Mig_17 extends Scheme1
         Class localClass = Mig_17.class;
         Property.set(localClass, "originCountry", PaintScheme.countryRussia);
     }
-
-
-
-
-
-
-
-
-
-
-
-
 }

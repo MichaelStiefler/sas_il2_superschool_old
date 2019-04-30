@@ -10,6 +10,7 @@ import java.util.Map;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.BulletEmitter;
+import com.maddox.il2.ai.EventLog;
 import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.ZutiSupportMethods_AI;
@@ -37,6 +38,7 @@ import com.maddox.il2.net.ZutiSupportMethods_NetSend;
 import com.maddox.il2.objects.ships.BigshipGeneric;
 import com.maddox.il2.objects.vehicles.planes.PlaneGeneric;
 import com.maddox.il2.objects.weapons.BombGun;
+import com.maddox.il2.objects.weapons.MissileGun;
 import com.maddox.il2.objects.weapons.RocketGun;
 import com.maddox.rts.HotKeyCmd;
 import com.maddox.rts.NetEnv;
@@ -50,13 +52,17 @@ import com.maddox.util.NumberTokenizer;
 public class ZutiSupportMethods_Air {
 	private static BornPlace LAST_PROCESSED_BORN_PLACE = null;
 
+	private static final int MSG_CHANGE_LOADOUT = 90;
+	private static final int MSG_RELOAD_WEAPONS = 91;
+	private static final int MSG_START_MISSILE_ENGINE = 92;
+
 	public static void resetClassVariables() {
 		ZutiSupportMethods_Air.LAST_PROCESSED_BORN_PLACE = null;
 	}
 
 	/**
 	 * Method executes actions that as a result backup specified aircraft engines.
-	 * 
+	 *
 	 * @param aircraft
 	 */
 	public static void backupAircraftEngines(Aircraft aircraft) {
@@ -79,7 +85,7 @@ public class ZutiSupportMethods_Air {
 
 	/**
 	 * Method returns number of engines that aircraft has.
-	 * 
+	 *
 	 * @param aircraft
 	 * @return
 	 */
@@ -92,7 +98,7 @@ public class ZutiSupportMethods_Air {
 
 	/**
 	 * Method loads specified weapons load to the aircraft.
-	 * 
+	 *
 	 * @param aircraft
 	 * @param weapons
 	 * @throws Exception
@@ -104,7 +110,7 @@ public class ZutiSupportMethods_Air {
 
 	/**
 	 * Method returns the name of currently loaded weapons loadout.
-	 * 
+	 *
 	 * @param aircraft
 	 * @return
 	 */
@@ -114,7 +120,7 @@ public class ZutiSupportMethods_Air {
 
 	/**
 	 * Method returns specified engine backup class.
-	 * 
+	 *
 	 * @param aircraft
 	 * @param engineId
 	 * @return
@@ -125,7 +131,7 @@ public class ZutiSupportMethods_Air {
 
 	/**
 	 * Method makes sure that aircraft wings are extended.
-	 * 
+	 *
 	 * @param aircraft
 	 */
 	public static void unfoldAircraftWings(Aircraft aircraft) {
@@ -157,7 +163,7 @@ public class ZutiSupportMethods_Air {
 
 	/**
 	 * Method calculates difference between aircraft and aircraft carrier speeds.
-	 * 
+	 *
 	 * @param aircraft
 	 * @return
 	 */
@@ -180,7 +186,7 @@ public class ZutiSupportMethods_Air {
 
 	/**
 	 * Execute this method after aircraft was created.
-	 * 
+	 *
 	 * @param aircraft
 	 */
 	public static void executeWhenAircraftIsCreated(Aircraft aircraft) {
@@ -236,7 +242,7 @@ public class ZutiSupportMethods_Air {
 	 * Call this method when aircraft is destroyed because in case it is multi-crew
 	 * enabled aircraft actions need to be performed to synchronize users net
 	 * positions.
-	 * 
+	 *
 	 * @param aircraft
 	 */
 	public static void executeWhenAircraftWasDestroyed(Aircraft aircraft) {
@@ -250,7 +256,7 @@ public class ZutiSupportMethods_Air {
 
 	/**
 	 * Method restores cockpit to it's original state.
-	 * 
+	 *
 	 * @param cockpit
 	 */
 	public static void restoreCockpit(Cockpit cockpit) {
@@ -268,7 +274,7 @@ public class ZutiSupportMethods_Air {
 
 	/**
 	 * Method backups cockpit meshes.
-	 * 
+	 *
 	 * @param cockpit
 	 */
 	public static void backupCockpit(Cockpit cockpit) {
@@ -318,7 +324,7 @@ public class ZutiSupportMethods_Air {
 	 * Check if selected aircraft is available at net user selected born place. Null
 	 * is returned if AC is not available. Method also decreases AC numbers if it is
 	 * available.
-	 * 
+	 *
 	 * @param aircraft
 	 * @param netUser
 	 * @return
@@ -344,7 +350,7 @@ public class ZutiSupportMethods_Air {
 	 * Check if selected aircraft is available at net user selected born place. Null
 	 * is returned if AC is not available. Method also decreases AC numbers if it is
 	 * available.
-	 * 
+	 *
 	 * @param aircraft
 	 * @param netUser
 	 * @return
@@ -381,7 +387,7 @@ public class ZutiSupportMethods_Air {
 
 	/**
 	 * Notify net players that specified aircraft executed loadout change command.
-	 * 
+	 *
 	 * @param aircraft
 	 * @param loadoutId
 	 * @param loadout
@@ -395,7 +401,7 @@ public class ZutiSupportMethods_Air {
 			System.out.println("ZutiSupportMethods_Air: sending loadout change to >" + loadout
 					+ "< command for aircraft >" + aircraft.name() + "< to mirrors!");
 			NetMsgGuaranted netMsgGuaranted = new NetMsgGuaranted();
-			netMsgGuaranted.writeByte(90);
+			netMsgGuaranted.writeByte(MSG_CHANGE_LOADOUT);
 			netMsgGuaranted.writeInt(loadoutId);
 			netMsgGuaranted.write255(loadout);
 			aircraft.net.post(netMsgGuaranted);
@@ -410,7 +416,7 @@ public class ZutiSupportMethods_Air {
 
 	/**
 	 * Notify net players that specified aircraft executed RRR command.
-	 * 
+	 *
 	 * @param aircraft
 	 * @param weaponsId:   0=guns, 1=rockets, 2=bombs
 	 * @param amount:      used for bullets and rockets amount reporting
@@ -441,7 +447,7 @@ public class ZutiSupportMethods_Air {
 		try {
 //        	System.out.println("ZutiSupportMethods_Air: sending reload weapons >" + weaponsId + "< command for aircraft >" + aircraft.name() + "< to mirrors!");
 			NetMsgGuaranted netMsgGuaranted = new NetMsgGuaranted();
-			netMsgGuaranted.writeByte(91);
+			netMsgGuaranted.writeByte(MSG_RELOAD_WEAPONS);
 			netMsgGuaranted.writeInt(weaponsId);
 
 			if (bombsAmount == null) {
@@ -482,8 +488,64 @@ public class ZutiSupportMethods_Air {
 	}
 
 	/**
+	 * Notify net players that specified aircraft started a missile engine in preparation for launch.
+	 *
+	 * @param aircraft
+	 * @param loadoutId
+	 * @param loadout
+	 * @return
+	 */
+	public static boolean sendNetAircraftMissileEngineStart(Actor actor, MissileGun missileGun) {
+//		System.out.println("ZutiSupportMethods_Air sendNetAircraftMissileEngineStart(" + actor.hashCode() + ", " + missileGun.hashCode()
+//		+ ", actor.isNet()=" + actor.isNet() + ", actor.isNetMirror()=" + actor.isNetMirror() + ", actor.isNetMaster()=" + actor.isNetMaster()
+//		+ " actor.net.countMirrors()=" + (actor.isNet()?actor.net.countMirrors():0));
+		if (!Actor.isValid(actor) || !(actor instanceof Aircraft) || !(actor instanceof TypeGuidedMissileCarrier)) return false;
+		Aircraft aircraft = (Aircraft)actor;
+		if (!aircraft.isNet() || aircraft.net.countMirrors() == 0) return false;
+
+		byte trigger = -1;
+		byte index = -1;
+
+		try {
+			for (byte l = 0; l < aircraft.FM.CT.Weapons.length; l++) {
+				if (aircraft.FM.CT.Weapons[l] != null) {
+					for (byte l1 = 0; l1 < aircraft.FM.CT.Weapons[l].length; l1++) {
+						if (aircraft.FM.CT.Weapons[l][l1] != null) {
+							if (aircraft.FM.CT.Weapons[l][l1].equals(missileGun)) {
+								trigger = l;
+								index = l1;
+								break;
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception exception) {
+			EventLog.type("Exception in sendNetAircraftMissileEngineStart: " + exception.getMessage());
+		}
+
+		if (trigger<0 || index<0) return false;
+
+		try {
+//			System.out.println("ZutiSupportMethods_Air: sending missile engine start trigger >" + trigger
+//					+ "< index >" + index + "< command for aircraft >" + aircraft.name() + "< to mirrors!");
+			NetMsgGuaranted netMsgGuaranted = new NetMsgGuaranted();
+			netMsgGuaranted.writeByte(MSG_START_MISSILE_ENGINE);
+			netMsgGuaranted.writeByte(trigger);
+			netMsgGuaranted.writeByte(index);
+			aircraft.net.post(netMsgGuaranted);
+			return true;
+		} catch (Exception exception) {
+			System.out.println(exception.getMessage());
+			exception.printStackTrace();
+			return false;
+		}
+	}
+
+
+	/**
 	 * Call this method when net aircraft receives new net command.
-	 * 
+	 *
 	 * @param aircraft
 	 * @param i:          command id
 	 * @param netmsginput
@@ -492,7 +554,7 @@ public class ZutiSupportMethods_Air {
 	public static boolean processNetAircraftMirroredMessage(Aircraft aircraft, int i, NetMsgInput netmsginput) {
 		try {
 			switch (i) {
-			case 90: {
+			case MSG_CHANGE_LOADOUT: {
 				// Loadout changed
 				int loadoutId = netmsginput.readInt();
 				String selectedLoadout = netmsginput.read255();
@@ -521,12 +583,12 @@ public class ZutiSupportMethods_Air {
 				ZutiSupportMethods_Air.sendNetAircraftLoadoutChange(aircraft, loadoutId, selectedLoadout);
 				return true;
 			}
-			case 91: {
+			case MSG_RELOAD_WEAPONS: {
 				int weaponsId = netmsginput.readInt();
 				// TODO: +++ RRR Bug hunting
 				ZutiWeaponsManagement.printDebugMessage(aircraft,
 						"ZutiSupportMethods_Air processNetAircraftMirroredMessage(" + aircraft.getClass().getName()
-								+ ", 91, NetMsgInput), weaponsId = " + weaponsId);
+								+ ", MSG_RELOAD_WEAPONS, NetMsgInput), weaponsId = " + weaponsId);
 				// --- RRR Bug hunting
 
 //					System.out.println("NetAircraft: received reload weapons >" + weaponsId + "< command!");
@@ -625,6 +687,17 @@ public class ZutiSupportMethods_Air {
 				// --- RRR Bug hunting
 				return true;
 			}
+			case MSG_START_MISSILE_ENGINE: {
+				byte trigger = netmsginput.readByte();
+				byte index = netmsginput.readByte();
+//				System.out.println("ZutiSupportMethods_Air MSG_START_MISSILE_ENGINE trigger=" + trigger + ", index=" + index);
+				if (!(aircraft.FM.CT.Weapons[trigger][index] instanceof MissileGun)) return true;
+				MissileGun missileGun = (MissileGun)aircraft.FM.CT.Weapons[trigger][index];
+				missileGun.netStartEngine();
+				ZutiSupportMethods_Air.sendNetAircraftMissileEngineStart(aircraft, missileGun);
+				return true;
+			}
+
 			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -636,7 +709,7 @@ public class ZutiSupportMethods_Air {
 
 	/**
 	 * Align aircraft based on the terrain it is spawning on.
-	 * 
+	 *
 	 * @param aircraft
 	 */
 	public static void alignAircraftToLandscape(NetAircraft aircraft) {
@@ -660,7 +733,7 @@ public class ZutiSupportMethods_Air {
 
 	/**
 	 * Method empties all resources from specified aircraft. Fuel is set to 0.
-	 * 
+	 *
 	 * @param ac
 	 */
 	public static void emptyAircraft(Aircraft aircraft) {
@@ -692,7 +765,7 @@ public class ZutiSupportMethods_Air {
 
 	/**
 	 * Method determines if aircraft has landed undamaged or not.
-	 * 
+	 *
 	 * @param fm
 	 * @return
 	 */
@@ -706,7 +779,7 @@ public class ZutiSupportMethods_Air {
 
 	/**
 	 * Method checks if bailing was done on ground/water.
-	 * 
+	 *
 	 * @param flightmodel
 	 * @return
 	 */
@@ -730,7 +803,7 @@ public class ZutiSupportMethods_Air {
 
 	/**
 	 * Method indicates if aircraft is still able to fly or not.
-	 * 
+	 *
 	 * @param fm
 	 * @return
 	 */
@@ -753,7 +826,7 @@ public class ZutiSupportMethods_Air {
 	/**
 	 * Method returns aircraft name from its actor name (string between $ and @
 	 * chars in actor.toString()).
-	 * 
+	 *
 	 * @param value
 	 * @return
 	 */
@@ -773,7 +846,7 @@ public class ZutiSupportMethods_Air {
 	/**
 	 * This method returns wing position only if that wing is still on the ground!
 	 * If it is not, null is returned as a result.
-	 * 
+	 *
 	 * @param sectfile
 	 * @param string
 	 * @return
@@ -805,7 +878,7 @@ public class ZutiSupportMethods_Air {
 	/**
 	 * Methdo creates default zuti aircraft objects. It's settings include: default
 	 * number of aircraft, max fuel selection at 100%, "Default" loadout.
-	 * 
+	 *
 	 * @param acName
 	 * @return
 	 */
@@ -826,7 +899,7 @@ public class ZutiSupportMethods_Air {
 	 * place that this plane belonged to (based on location of the plane and born
 	 * place radius) and decrease plane number for that plane, if born place counts
 	 * stationary planes as valid planes for overall plane numbers.
-	 * 
+	 *
 	 * @param stationaryPlane
 	 */
 	public static void decreaseBornPlacePlaneCounter(PlaneGeneric stationaryPlane) {
@@ -885,7 +958,7 @@ public class ZutiSupportMethods_Air {
 
 	/**
 	 * Method returns aircraft name.
-	 * 
+	 *
 	 * @param aircraft
 	 * @return
 	 */
@@ -899,7 +972,7 @@ public class ZutiSupportMethods_Air {
 	/**
 	 * Call this method when glider aircraft type landed. Based on its type certain
 	 * amount of paratroopers is loaded to home base in which glider landed.
-	 * 
+	 *
 	 * @param aircraft
 	 */
 	public static void processGliderLanding(Aircraft aircraft) {
@@ -934,7 +1007,7 @@ public class ZutiSupportMethods_Air {
 	/**
 	 * Call this method to destroy aircraft by directly calling .destroy on it or by
 	 * bailing the pilot (set bail to true).
-	 * 
+	 *
 	 * @param bail
 	 */
 	public static void destroyPlayerAircraft(boolean bail) {

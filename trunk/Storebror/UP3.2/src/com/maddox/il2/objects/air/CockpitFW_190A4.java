@@ -1,6 +1,6 @@
-// 
+//
 // Decompiled by Procyon v0.5.29
-// 
+//
 
 package com.maddox.il2.objects.air;
 
@@ -45,9 +45,9 @@ public class CockpitFW_190A4 extends CockpitPilot {
 
 	/*
 	 * skylla: Schusszaehler fix:
-	 * 
+	 *
 	 * @author: SAS~Skylla
-	 * 
+	 *
 	 * @params: int bullets: number of bullets still in the gun; float offset:
 	 * offset at which the ammocounter shows zero bullets left (-0.018f for outer,
 	 * -0.045f for inner) int counterrange: number of bullets the counter can
@@ -251,9 +251,10 @@ public class CockpitFW_190A4 extends CockpitPilot {
 			Cockpit.xyz[0] = ammoCounter(this.gun[3].countBullets(), -0.018f, 100);
 			this.mesh.chunkSetLocate("RC_MG151_R", Cockpit.xyz, Cockpit.ypr);
 		}
+		this.resetYPRmodifier();
 		/*
 		 * Original code:
-		 * 
+		 *
 		 * if (this.gun[0] != null) { Cockpit.xyz[0] =
 		 * this.cvt(this.gun[0].countBullets(), 0.0f, 500.0f, -0.044f, 0.0f);
 		 * this.mesh.chunkSetLocate("RC_MG17_L", Cockpit.xyz, Cockpit.ypr);

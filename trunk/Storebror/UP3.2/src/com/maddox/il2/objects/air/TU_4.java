@@ -5,15 +5,16 @@ import java.io.IOException;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
+import com.maddox.il2.objects.weapons.GuidedMissileUtils;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 
 public class TU_4 extends B_29X
-    implements TypeBomber
+    implements TypeBomber, TypeGuidedMissileCarrier
 {
 
-    public TU_4()
+	public TU_4()
     {
         bSightAutomation = false;
         bSightBombDump = false;
@@ -23,9 +24,26 @@ public class TU_4 extends B_29X
         fSightCurAltitude = 850F;
         fSightCurSpeed = 200F;
         fSightCurReadyness = 0.0F;
+        guidedMissileUtils = new GuidedMissileUtils(this);
     }
 
-    protected boolean cutFM(int i, int j, Actor actor)
+    public GuidedMissileUtils getGuidedMissileUtils() {
+		return guidedMissileUtils;
+	}
+
+	public void onAircraftLoaded()
+	{
+		super.onAircraftLoaded();
+		this.guidedMissileUtils.onAircraftLoaded();
+		FM.CT.bHasBayDoors = true;
+	}
+
+	public void update(float f) {
+		this.guidedMissileUtils.update();
+		super.update(f);
+	}
+
+	protected boolean cutFM(int i, int j, Actor actor)
     {
         switch(i)
         {
@@ -393,8 +411,9 @@ public class TU_4 extends B_29X
     public float fSightCurAltitude;
     public float fSightCurSpeed;
     public float fSightCurReadyness;
+	private GuidedMissileUtils guidedMissileUtils;
 
-    static 
+    static
     {
         Class class1 = TU_4.class;
         new NetAircraft.SPAWN(class1);
@@ -406,14 +425,25 @@ public class TU_4 extends B_29X
         Property.set(class1, "cockpitClass", new Class[] {
             CockpitTU4.class, CockpitTU4_Bombardier.class, CockpitTU4_TGunner.class, CockpitTU4_T2Gunner.class, CockpitTU4_FGunner.class, CockpitTU4_AGunner.class, CockpitTU4_RGunner.class
         });
-        Property.set(class1, "FlightModel", "FlightModels/B-29.fmd");
+
+        //TODO: Modified by SAS~Storebror, add Jetwar 1.3 updates
+//        Property.set(class1, "FlightModel", "FlightModels/B-29.fmd");
+//        Aircraft.weaponTriggersRegister(class1, new int[] {
+//            10, 10, 11, 11, 12, 12, 13, 13, 14, 14,
+//            3, 3, 3, 3
+//        });
+//        Aircraft.weaponHooksRegister(class1, new String[] {
+//            "_MGUN01", "_MGUN02", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_MGUN09", "_MGUN10", "_MGUN11", "_MGUN12",
+//            "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04"
+//        });
+        Property.set(class1, "FlightModel", "FlightModels/B-29TU4.fmd");
         Aircraft.weaponTriggersRegister(class1, new int[] {
-            10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 
-            3, 3, 3, 3
+            10, 10, 11, 11, 12, 12, 13, 13, 14, 14,
+            3, 3, 3, 3, 2, 2, 2, 2, 9, 9
         });
         Aircraft.weaponHooksRegister(class1, new String[] {
-            "_MGUN01", "_MGUN02", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_MGUN09", "_MGUN10", "_MGUN11", "_MGUN12", 
-            "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04"
+            "_MGUN01", "_MGUN02", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_MGUN09", "_MGUN10", "_MGUN11", "_MGUN12",
+            "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_ExternalRock01", "_ExternalRock01", "_ExternalRock02", "_ExternalRock02", "_ExternalDev01", "_ExternalDev02"
         });
     }
 }

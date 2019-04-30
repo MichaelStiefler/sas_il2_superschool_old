@@ -13,7 +13,7 @@ import java.io.IOException;
 public class F_86A extends Scheme1
     implements TypeSupersonic, TypeFighter, TypeBNZFighter, TypeFighterAceMaker, TypeStormovik, TypeGSuit
 {
-    private class _cls0 {
+    private class TranssonicEffects {
 
         private float lal;
         private float tal;
@@ -27,7 +27,7 @@ public class F_86A extends Scheme1
         private float lef;
         private float ftl;
 
-        private _cls0(float f1, float f2, float f3, float f4, float f5, float f6, float f7, float f8, float f9, float f10, float f11) {
+        private TranssonicEffects(float f1, float f2, float f3, float f4, float f5, float f6, float f7, float f8, float f9, float f10, float f11) {
             this.lal = f1;
             this.tal = f2;
             this.bef = f3;
@@ -41,29 +41,27 @@ public class F_86A extends Scheme1
             this.ftl = f11;
         }
 
-        public void rs(int ii) {
-            if (ii == 0 || ii == 1) {
-                access$234(F_86A.this, 0.68);
-            }
-            if (ii == 31 || ii == 32) {
-                access$334(F_86A.this, 0.68);
-            }
-            if (ii == 15 || ii == 16) {
-                access$434(F_86A.this, 0.68);
-            }
+        public void reduceSensitivity(int part)
+        {
+            if(part == 0 || part == 1) // Left and Right Aileron
+                aileronControlSensitivity *= 0.68D;
+            if(part == 31 || part == 32)
+                elevatorControlSensitivity *= 0.68D;
+            if(part == 15 || part == 16)
+                rudderControlSensitivity *= 0.68D;
         }
 
-        private void $1() {
-            if (F_86A.this.ts) {
+        private void update() {
+            if (F_86A.this.transsonic) {
                 float f1 = Aircraft.cvt(F_86A.this.FM.getAltitude(), this.lal, this.tal, this.bef, this.tef);
-                float f2 = Aircraft.cvt(F_86A.this.mn, F_86A.this.mn < F_86A.mteb ? F_86A.lteb : F_86A.uteb, F_86A.this.mn < F_86A.mteb ? F_86A.uteb : F_86A.lteb, F_86A.this.mn < F_86A.mteb ? this.bhef : this.thef, F_86A.this.mn < F_86A.mteb ? this.thef
+                float f2 = Aircraft.cvt(F_86A.this.mn, F_86A.this.mn < F_86A.maxTranssonicEffectBoundary ? F_86A.lowerTranssonicEffectBoundary : F_86A.upperTranssonicEffectBoundary, F_86A.this.mn < F_86A.maxTranssonicEffectBoundary ? F_86A.upperTranssonicEffectBoundary : F_86A.lowerTranssonicEffectBoundary, F_86A.this.mn < F_86A.maxTranssonicEffectBoundary ? this.bhef : this.thef, F_86A.this.mn < F_86A.maxTranssonicEffectBoundary ? this.thef
                         : this.phef);
-                float f3 = Aircraft.cvt(F_86A.this.mn, F_86A.this.mn < F_86A.mteb ? F_86A.lteb : F_86A.uteb, F_86A.this.mn < F_86A.mteb ? F_86A.uteb : F_86A.lteb, F_86A.this.mn < F_86A.mteb ? this.mef : this.wef / f1,
-                        F_86A.this.mn < F_86A.mteb ? this.wef / f1 : this.lef / f1);
+                float f3 = Aircraft.cvt(F_86A.this.mn, F_86A.this.mn < F_86A.maxTranssonicEffectBoundary ? F_86A.lowerTranssonicEffectBoundary : F_86A.upperTranssonicEffectBoundary, F_86A.this.mn < F_86A.maxTranssonicEffectBoundary ? F_86A.upperTranssonicEffectBoundary : F_86A.lowerTranssonicEffectBoundary, F_86A.this.mn < F_86A.maxTranssonicEffectBoundary ? this.mef : this.wef / f1,
+                        F_86A.this.mn < F_86A.maxTranssonicEffectBoundary ? this.wef / f1 : this.lef / f1);
                 ((RealFlightModel) F_86A.this.FM).producedShakeLevel += 0.1125F * f2;
-                F_86A.this.FM.SensPitch = F_86A.this.ectl * f3 * f3;
-                F_86A.this.FM.SensRoll = F_86A.this.actl * f3;
-                F_86A.this.FM.SensYaw = F_86A.this.rctl * f3;
+                F_86A.this.FM.SensPitch = F_86A.this.elevatorControlSensitivity * f3 * f3;
+                F_86A.this.FM.SensRoll = F_86A.this.aileronControlSensitivity * f3;
+                F_86A.this.FM.SensYaw = F_86A.this.rudderControlSensitivity * f3;
                 if (f2 > 0.6F) {
                     F_86A.this.ictl = true;
                 } else {
@@ -88,9 +86,9 @@ public class F_86A extends Scheme1
                     }
                 }
             } else {
-                F_86A.this.FM.SensPitch = F_86A.this.ectl;
-                F_86A.this.FM.SensRoll = F_86A.this.actl;
-                F_86A.this.FM.SensYaw = F_86A.this.rctl;
+                F_86A.this.FM.SensPitch = F_86A.this.elevatorControlSensitivity;
+                F_86A.this.FM.SensRoll = F_86A.this.aileronControlSensitivity;
+                F_86A.this.FM.SensYaw = F_86A.this.rudderControlSensitivity;
             }
         }
     }
@@ -137,7 +135,7 @@ public class F_86A extends Scheme1
         lightTime = 0.0F;
         ft = 0.0F;
         mn = 0.0F;
-        ts = false;
+        transsonic = false;
         ictl = false;
         engineSurgeDamage = 0.0F;
         gearTargetAngle = -1F;
@@ -160,9 +158,9 @@ public class F_86A extends Scheme1
     {
         super.onAircraftLoaded();
         this.FM.AS.wantBeaconsNet(true);
-        actl = this.FM.SensRoll;
-        ectl = this.FM.SensPitch;
-        rctl = this.FM.SensYaw;
+        aileronControlSensitivity = this.FM.SensRoll;
+        elevatorControlSensitivity = this.FM.SensPitch;
+        rudderControlSensitivity = this.FM.SensYaw;
     }
 
     public void checkHydraulicStatus()
@@ -301,9 +299,9 @@ public class F_86A extends Scheme1
             if(World.cur().Atm == null);
             f_86a.mn = f / Atmosphere.sonicSpeed((float)this.FM.Loc.z);
             if(mn >= 0.9F && mn < 1.1D)
-                ts = true;
+                transsonic = true;
             else
-                ts = false;
+                transsonic = false;
         }
         if((!this.FM.isPlayers() || !(this.FM instanceof RealFlightModel) || !((RealFlightModel)this.FM).isRealMode()) && (this.FM instanceof Maneuver))
             if(this.FM.AP.way.isLanding() && this.FM.getSpeed() > this.FM.VmaxFLAPS && this.FM.getSpeed() > this.FM.AP.way.curr().getV() * 1.4F)
@@ -665,7 +663,7 @@ public class F_86A extends Scheme1
     protected void hitBone(String paramString, Shot paramShot, Point3d paramPoint3d)
     {
         int ii = part(paramString);
-        $1.rs(ii);
+        transsonicEffects.reduceSensitivity(ii);
         if(paramString.startsWith("xx"))
         {
             if(paramString.startsWith("xxarmor"))
@@ -1101,7 +1099,7 @@ public class F_86A extends Scheme1
             if(this.FM instanceof RealFlightModel)
             {
                 umn();
-                this.$1.$1();
+                this.transsonicEffects.update();
             }
         }
         soundbarier();
@@ -1416,15 +1414,15 @@ public class F_86A extends Scheme1
         float f = mn;
         if(World.cur().Atm == null);
         f_86a.mn = f / Atmosphere.sonicSpeed((float)this.FM.Loc.z);
-        if(mn >= lteb)
-            ts = true;
+        if(mn >= lowerTranssonicEffectBoundary)
+            transsonic = true;
         else
-            ts = false;
+            transsonic = false;
     }
 
     public boolean ist()
     {
-        return ts;
+        return transsonic;
     }
 
     public float gmnr()
@@ -1437,20 +1435,20 @@ public class F_86A extends Scheme1
         return ictl;
     }
 
-    static float access$234(F_86A x0, double x1) {
-        return x0.actl *= x1;
-    }
-
-    static float access$334(F_86A x0, double x1) {
-        return x0.ectl *= x1;
-    }
-
-    static float access$434(F_86A x0, double x1) {
-        return x0.rctl *= x1;
-    }
+//    static float access$234(F_86A x0, double x1) {
+//        return x0.aileronControlSensitivity *= x1;
+//    }
+//
+//    static float access$334(F_86A x0, double x1) {
+//        return x0.elevatorControlSensitivity *= x1;
+//    }
+//
+//    static float access$434(F_86A x0, double x1) {
+//        return x0.rudderControlSensitivity *= x1;
+//    }
 
     private boolean bSlatsOff;
-    private final _cls0 $1 = new _cls0(0.0F, 9000F, 0.8F, 1.0F, 0.01F, 1.0F, 0.2F, 1.0F, 0.45F, 0.58F, 0.0F);
+    private final TranssonicEffects transsonicEffects = new TranssonicEffects(0.0F, 9000F, 0.8F, 1.0F, 0.01F, 1.0F, 0.2F, 1.0F, 0.45F, 0.58F, 0.0F);
     private float oldctl;
     private float curctl;
     public int k14Mode;
@@ -1470,17 +1468,17 @@ public class F_86A extends Scheme1
     private static Point3d lLightP2 = new Point3d();
     private static Point3d lLightPL = new Point3d();
     private boolean ictl;
-    private static float mteb = 1.0F;
+    private static float maxTranssonicEffectBoundary = 1.0F;
     private float mn;
-    private static float uteb = 1.25F;
-    private static float lteb = 0.9F;
-    private float actl;
-    private float rctl;
-    private float ectl;
+    private static float upperTranssonicEffectBoundary = 1.25F;
+    private static float lowerTranssonicEffectBoundary = 0.9F;
+    private float aileronControlSensitivity;
+    private float rudderControlSensitivity;
+    private float elevatorControlSensitivity;
     private float oldthrl;
     private float curthrl;
     private float H1;
-    private boolean ts;
+    private boolean transsonic;
     public static boolean bChangedPit = false;
     private float SonicBoom;
     private Eff3DActor shockwave;
