@@ -66,7 +66,7 @@ import com.maddox.util.NumberTokenizer;
 public class ZutiSupportMethods {
     /**
      * Internal class that stores results for net places for users
-     * 
+     *
      * @author Zuti
      *
      */
@@ -143,7 +143,7 @@ public class ZutiSupportMethods {
 
     /**
      * Gets country from given net regiment string.
-     * 
+     *
      * @param netRegiment
      * @return
      */
@@ -165,7 +165,7 @@ public class ZutiSupportMethods {
 
     /**
      * Gets user selected regiment from users config log.
-     * 
+     *
      * @param inRegiment
      * @return
      */
@@ -186,7 +186,7 @@ public class ZutiSupportMethods {
 
     /**
      * Returns FIRST country that is specified for given born place
-     * 
+     *
      * @param bp
      * @return
      */
@@ -201,7 +201,7 @@ public class ZutiSupportMethods {
 
     /**
      * Returns true if given regiment is one of regiments for given born place.
-     * 
+     *
      * @param netRegiment
      * @param bp
      * @return
@@ -225,7 +225,7 @@ public class ZutiSupportMethods {
 
     /**
      * Returns player army based on different game modes!
-     * 
+     *
      * @return
      */
     public static int getPlayerArmy() {
@@ -237,7 +237,7 @@ public class ZutiSupportMethods {
 
     /**
      * For given position this method returns closes target.
-     * 
+     *
      * @param playerPos
      * @param playerSameArmyAsTargets
      * @return
@@ -274,7 +274,7 @@ public class ZutiSupportMethods {
 
     /**
      * Once home base is captured this methods loads new planeset for it.
-     * 
+     *
      * @param bp
      */
     public static void addNewPlanesToCapturedBase(BornPlace bp) {
@@ -309,7 +309,7 @@ public class ZutiSupportMethods {
 
     /**
      * This method extracts aircraft names from objects in specified list
-     * 
+     *
      * @param zacList
      * @return
      */
@@ -329,7 +329,7 @@ public class ZutiSupportMethods {
 
     /**
      * Get aircraft list from mission line
-     * 
+     *
      * @param line
      * @return
      */
@@ -367,7 +367,7 @@ public class ZutiSupportMethods {
     /**
      * Returns true if given coordinate is on area that is under control by different army
      * than the one that is specified as a parameter to this method.
-     * 
+     *
      * @param army
      * @param x
      * @param y
@@ -391,7 +391,7 @@ public class ZutiSupportMethods {
     /**
      * This method assigns imputed marker to nearest ship around it.
      * If marker was assigned to a ship, true is returned. Else false.
-     * 
+     *
      * @param marker
      * @return
      */
@@ -458,7 +458,7 @@ public class ZutiSupportMethods {
     /**
      * This method assigns imputed marker to nearest tank around it.
      * If marker was assigned to a tank, true is returned. Else false.
-     * 
+     *
      * @param marker
      * @return
      */
@@ -509,7 +509,7 @@ public class ZutiSupportMethods {
     /**
      * This method assigns imputed marker to nearest artillery around it.
      * If marker was assigned to a artillery, true is returned. Else false.
-     * 
+     *
      * @param marker
      * @return
      */
@@ -560,7 +560,7 @@ public class ZutiSupportMethods {
     /**
      * This method returns those Markers that are inside circle area defined by
      * x and y and r coordinates.
-     * 
+     *
      * @param x
      *            X location coordinate
      * @param y
@@ -597,7 +597,7 @@ public class ZutiSupportMethods {
     /**
      * This method returns those Markers that are inside circle area defined by
      * x and y and r coordinates.
-     * 
+     *
      * @param x
      *            X location coordinate
      * @param y
@@ -633,7 +633,7 @@ public class ZutiSupportMethods {
 
     /**
      * Method inserts new front market at selected coordinates with selected army
-     * 
+     *
      * @param x
      * @param y
      * @param army
@@ -649,7 +649,7 @@ public class ZutiSupportMethods {
 
     /**
      * Remove markers that are in specified array.
-     * 
+     *
      * @param markers
      */
     public static void removeMarkers(List markers) {
@@ -739,7 +739,7 @@ public class ZutiSupportMethods {
 
     /**
      * Method checks if there are any chiefs (tank, artillery, ship) inside home base that corresponds to specified army.
-     * 
+     *
      * @param x
      * @param y
      * @param R:
@@ -780,7 +780,7 @@ public class ZutiSupportMethods {
     /**
      * Call this method once specified born place was identified as being overrun!
      * After it completes method also executes isMDSObjectivesCompleted() method.
-     * 
+     *
      * @param bp
      */
     private static void executeCodeSequenceAfterBornPlaceWasOverrun(BornPlace bp) {
@@ -846,7 +846,7 @@ public class ZutiSupportMethods {
 
     /**
      * Removes given front marker if it can not be reassigned to new unit.
-     * 
+     *
      * @param marker
      * @param ownerType:
      *            0=ship, 1=tank, 2=artillery
@@ -887,7 +887,7 @@ public class ZutiSupportMethods {
 
     /**
      * Method searches for airport at specified coordinates.
-     * 
+     *
      * @param x
      * @param y
      * @return
@@ -919,7 +919,7 @@ public class ZutiSupportMethods {
     /**
      * Returns player born place. If that one is not his anymore (overrun...),
      * method searches for nearest one based on specified position and army.
-     * 
+     *
      * @param playerPos
      * @param army
      * @return
@@ -940,7 +940,7 @@ public class ZutiSupportMethods {
 
     /**
      * Returns loadout name for specified aircraft and index of loaded loadout.
-     * 
+     *
      * @param zutiAircrafts
      * @param acName
      * @param loadout
@@ -974,7 +974,7 @@ public class ZutiSupportMethods {
     /**
      * Method returns loadout name for specified aircraft based on born place that pilot landed on.
      * Some born places might not offer same loadouts as pilot selected on his TO born place.
-     * 
+     *
      * @param bp
      * @param acName
      * @param posX
@@ -1001,7 +1001,7 @@ public class ZutiSupportMethods {
                  * System.out.println("NetAircraft spawning player plane: " + currentAcName);
                  * int bpId = netUser.getBornPlace();
                  * System.out.println("BP ID = " + bpId);
-                 * 
+                 *
                  * BornPlace zutiPilotsBornPlace = (BornPlace)World.cur().bornPlaces.get( bpId );
                  * if( zutiPilotsBornPlace != null )
                  * {
@@ -1034,7 +1034,7 @@ public class ZutiSupportMethods {
 
     /**
      * Get net user by his user name. Null is returned if user is not found.
-     * 
+     *
      * @param username
      */
     public static NetUser getNetUser(String username) {
@@ -1057,7 +1057,7 @@ public class ZutiSupportMethods {
 
     /**
      * Set current player re-fly duration.
-     * 
+     *
      * @param username
      * @param IP
      * @param penalty
@@ -1095,7 +1095,7 @@ public class ZutiSupportMethods {
 
     /**
      * Check if user has any pending re-fly penalties or not.
-     * 
+     *
      * @param name
      *            User name.
      * @param IP
@@ -1129,7 +1129,7 @@ public class ZutiSupportMethods {
 
     /**
      * Check status of objectives enforced by MDS. Do this each time when actor died.
-     * 
+     *
      * @param actor
      */
     public static void updateMDSObjectives(Actor actor) {
@@ -1216,7 +1216,7 @@ public class ZutiSupportMethods {
 
     /**
      * Check if selected side completed MDS enforced objectives.
-     * 
+     *
      * @param army
      * @return
      */
@@ -1255,7 +1255,7 @@ public class ZutiSupportMethods {
     /**
      * Method returns number of objects found in area defined by given coordinates and radius.
      * Objects are checked in map actors.static file, not mission file!
-     * 
+     *
      * @param inPoint
      * @param radius
      * @return
@@ -1291,7 +1291,7 @@ public class ZutiSupportMethods {
     /**
      * Method returns number of dead objects found in area defined by given coordinates and radius.
      * Objects are checked in map actors.static file, not mission file!
-     * 
+     *
      * @param inPoint
      * @param radius
      * @return
@@ -1326,7 +1326,7 @@ public class ZutiSupportMethods {
 
     /**
      * Call this method when one of the teams won.
-     * 
+     *
      * @param army
      */
     public static void doMissionComplete(int army) {
@@ -1385,7 +1385,7 @@ public class ZutiSupportMethods {
 
     /**
      * Method checks if pilot landed on home base with its own specific RRR settings.
-     * 
+     *
      * @param FM
      * @return BornPlace object if such born place is found, else null value is returned.
      */
@@ -1415,7 +1415,7 @@ public class ZutiSupportMethods {
      * Conditions: plane must be on friction area and must not be moving. If the plane can set chocks
      * they must be set else previous conditions apply (for float planes). If plane is on test runway or
      * on a carrier plane can also perform RRR functions.
-     * 
+     *
      * @param FM
      * @return
      */
@@ -1441,7 +1441,7 @@ public class ZutiSupportMethods {
 
     /**
      * Check if entered flight model is moving or not.
-     * 
+     *
      * @param flightmodel
      * @return
      */
@@ -1458,7 +1458,7 @@ public class ZutiSupportMethods {
 
     /**
      * Method searches all born places and returns that holds given coordinates and army.
-     * 
+     *
      * @param x
      * @param y
      * @param army
@@ -1494,7 +1494,7 @@ public class ZutiSupportMethods {
     /**
      * This method checks given born place and check if it was overrun by paratroopers.
      * If it was, a net message is sent to all players.
-     * 
+     *
      * @param bp
      * @param army
      */
@@ -1519,7 +1519,7 @@ public class ZutiSupportMethods {
 
     /**
      * Is specified actor a static actor or not? Static actors = NStationary group.
-     * 
+     *
      * @param actor
      * @return
      */
@@ -1544,7 +1544,7 @@ public class ZutiSupportMethods {
 
     /**
      * Removes specified born place from global list.
-     * 
+     *
      * @param bp
      */
     public static void removeBornPlace(BornPlace bp) {
@@ -1566,7 +1566,7 @@ public class ZutiSupportMethods {
 
     /**
      * Disconnect pilots from given born place.
-     * 
+     *
      * @param bp
      */
     public static void disconnectPilotsFromBornPlace(BornPlace bp) {
@@ -1599,7 +1599,7 @@ public class ZutiSupportMethods {
 
     /**
      * Call this method when you receive server message about para captured home base.
-     * 
+     *
      * @param bp
      * @param army
      */
@@ -1653,7 +1653,7 @@ public class ZutiSupportMethods {
      * paratroopers are used as payload things go wrong in dogfight environments because paratroopers
      * just weren't created for such usage (they send netspawn commands each time they are created,
      * no matter where they are created!
-     * 
+     *
      * @param x
      * @param y
      * @param z
@@ -1691,7 +1691,7 @@ public class ZutiSupportMethods {
 
     /**
      * Display (in console) what kind of ordinance AC carries.
-     * 
+     *
      * @param fm
      */
     public static void showWeapons(FlightModel fm) {
@@ -1714,7 +1714,7 @@ public class ZutiSupportMethods {
     /**
      * This method returns a valid actor army different from specefied one.
      * If no such actor can be found, original owner is returned instead.
-     * 
+     *
      * @param originalOwner
      * @param actorArmy
      * @return
@@ -1749,7 +1749,7 @@ public class ZutiSupportMethods {
 
     /**
      * Method determines if damager of some actor is this host or not.
-     * 
+     *
      * @param damager
      * @return
      */
@@ -1761,7 +1761,7 @@ public class ZutiSupportMethods {
 
             name = name.substring(0, name.lastIndexOf("_0"));
             String hostName = ((NetUser) NetEnv.host()).uniqueName();
-            System.out.println("ZutiSupportMethods - isDamagerCurrentUser: damager=" + name + " vs host=" + hostName);
+            // System.out.println("ZutiSupportMethods - isDamagerCurrentUser: damager=" + name + " vs host=" + hostName);
 
             if (hostName.equals(name))
                 return true;
@@ -1779,7 +1779,7 @@ public class ZutiSupportMethods {
      * way of linking them to mission related data (wings). For other objects you can do that as they are identified
      * correctly. Chiefs are reported with their mission names. So, only AC pose a problem and only they are changed.
      * Other names are returned as default (EventLog.name() method is called on them).
-     * 
+     *
      * @param actor
      * @return
      */
@@ -1822,7 +1822,7 @@ public class ZutiSupportMethods {
     /**
      * Convert boolean value to it's string representation.
      * True = 1, false = 0
-     * 
+     *
      * @param value
      * @return
      */
@@ -1928,7 +1928,7 @@ public class ZutiSupportMethods {
     /**
      * For specified born place this method searches list of allowed countries and loads them to it.
      * Countries for this method to work are saved as i18n string representations.
-     * 
+     *
      * @param bornplace
      * @param sectfile
      */
@@ -2018,7 +2018,7 @@ public class ZutiSupportMethods {
     /**
      * For specified born place this method searches list of allowed countries and loads them to it.
      * Countries for this method to work are saved as non-i18n string representations.
-     * 
+     *
      * @param bornplace
      * @param sectfile
      */
@@ -2160,7 +2160,7 @@ public class ZutiSupportMethods {
 
     /**
      * Loads captured planes that were assigned to specified born place.
-     * 
+     *
      * @param bornplace
      * @param sectfile
      */
@@ -2224,7 +2224,7 @@ public class ZutiSupportMethods {
 
     /**
      * Loads specific RRR settings for specified born place. Only if such settings exist.
-     * 
+     *
      * @param bornplace
      * @param sectfile
      */
@@ -2273,7 +2273,7 @@ public class ZutiSupportMethods {
 
     /**
      * Load aircraft for specified born place (parameter).
-     * 
+     *
      * @param parameter
      * @param sectfile
      * @return
@@ -2301,7 +2301,7 @@ public class ZutiSupportMethods {
 
     /**
      * Load aircraft list in case born place is captured.
-     * 
+     *
      * @param bornplace
      * @param sectfile
      */
@@ -2351,7 +2351,7 @@ public class ZutiSupportMethods {
 
     /**
      * Method sets airdrome army and color to army and color of born pace that was put on top of it.
-     * 
+     *
      * @param airdrome
      */
     public static void changeAirdromeArmyAndColorToBornPlaceArmyAndColor(AirDrome airdrome) {
@@ -2410,7 +2410,7 @@ public class ZutiSupportMethods {
 
     /**
      * This method serves as an means to add spawn points to global spawn points list.
-     * 
+     *
      * @param homeBaseSpawnPoints
      * @param standaloneHomebaseSpawnPoints
      * @return
@@ -2506,7 +2506,7 @@ public class ZutiSupportMethods {
 
     /**
      * Method returns true if object is identified as possible RRR object.
-     * 
+     *
      * @param name
      * @return
      */
@@ -2530,7 +2530,7 @@ public class ZutiSupportMethods {
 
     /**
      * Method fills various data to zuti aircraft object from string tokenizer.
-     * 
+     *
      * @param zac
      * @param stringtokenizer
      * @param zutiMdsSectionIdExists
@@ -2590,7 +2590,7 @@ public class ZutiSupportMethods {
     /**
      * Method returns player current location as a String.
      * format: x y (space between).
-     * 
+     *
      * @return
      */
     public static String getPlayerLocation() {
@@ -2606,7 +2606,7 @@ public class ZutiSupportMethods {
 
     /**
      * Check if specified point is on any ZAP. If so, method will it's id in the array. Else -1 is returned.
-     * 
+     *
      * @param pos
      * @return
      */
@@ -2629,7 +2629,7 @@ public class ZutiSupportMethods {
     /**
      * Call this method if you want to be sure that Resources related operation is
      * enabled for specified position.
-     * 
+     *
      * @param pos
      * @return
      */
@@ -2671,7 +2671,7 @@ public class ZutiSupportMethods {
      * This method will return you class name for specified i18n name.
      * Name must then be appended to appropriate string as only the LAST BIT of class name is returned.
      * Example: Input = A-20C, Output = A_20C.
-     * 
+     *
      * @param i18nName
      * @return
      */
@@ -2698,7 +2698,7 @@ public class ZutiSupportMethods {
      * This method will return you i18n name for specified class name.
      * Class name must be only the LAST BIT of class name.
      * Example: Input = A-20C, Output = A_20C. A-20C is the last but from com.maddox.il2.objects.air.A_20C.
-     * 
+     *
      * @param i18nName
      * @return
      */
@@ -2731,7 +2731,7 @@ public class ZutiSupportMethods {
 
     /**
      * Method returns null if ac name does not end with _0. Else user name is returned.
-     * 
+     *
      * @param acName
      * @return
      */
@@ -2745,7 +2745,7 @@ public class ZutiSupportMethods {
 
     /**
      * Method returns weapon I18N name for specified aircraft.
-     * 
+     *
      * @param acName
      * @param name
      * @return
@@ -2753,15 +2753,15 @@ public class ZutiSupportMethods {
     public static String getWeaponI18NName(String acName, String name) {
         return I18N.weapons(acName, name);
     }
-    
+
     private static int debugLevel = Integer.MIN_VALUE;
     private static final int DEBUG_DEFAULT = 0;
-    
+
     private static int curDebugLevel() {
         if (debugLevel == Integer.MIN_VALUE) debugLevel = Config.cur.ini.get("Mods", "DEBUG_ZSM", DEBUG_DEFAULT);
         return debugLevel;
     }
-    
+
     public static void printDebugMessage(String theMessage) {
         if (curDebugLevel() == 0) return;
         System.out.println(theMessage);

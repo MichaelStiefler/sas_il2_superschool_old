@@ -12,5 +12,6 @@ public class RocketGunAIM9B extends MissileGun implements MissileGunWithDelay {
 		Property.set(class1, "bullets", 1);
 		Property.set(class1, "shotFreq", 0.25F);
 		Property.set(class1, "sound", "weapon.rocketgun_132");
+	    Property.set(class1, "dateOfUse", 19560101);
 	}
 }

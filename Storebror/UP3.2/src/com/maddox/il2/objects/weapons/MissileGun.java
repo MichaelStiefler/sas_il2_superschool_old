@@ -192,7 +192,7 @@ public abstract class MissileGun extends RocketGun {
 	}
 
     public void netStartEngine() {
-    	System.out.println("MissileGun netStartEngine() " + this.hashCode());
+//    	System.out.println("MissileGun netStartEngine() " + this.hashCode());
 		Missile theMissile = (Missile) this.rocket;
 		if (theMissile == null) return;
 		theMissile.startEngine();

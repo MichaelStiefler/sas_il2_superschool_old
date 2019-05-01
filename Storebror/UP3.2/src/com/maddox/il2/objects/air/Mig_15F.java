@@ -803,39 +803,41 @@ public class Mig_15F extends Scheme1
 
     public void update(float paramFloat)
     {
-        if(this.FM.AS.isMaster() && Config.isUSE_RENDER())
-        {
-            if(this.FM.EI.engines[0].getPowerOutput() > 0.5F && this.FM.EI.engines[0].getStage() == 6)
-            {
-                if(this.FM.EI.engines[0].getPowerOutput() > 0.5F)
-                    this.FM.AS.setSootState(this, 0, 3);
-            } else
-            {
-                this.FM.AS.setSootState(this, 0, 0);
-            }
+    	if (Config.isUSE_RENDER()) {
             setExhaustFlame(Math.round(Aircraft.cvt(this.FM.EI.engines[0].getThrustOutput(), 0.7F, 0.87F, 0.0F, 12F)), 0);
-            if(this.FM instanceof RealFlightModel)
-            {
-                umnr();
-                this.$1.$1();
-            }
-            if(curctl == -1F)
-            {
-                curctl = oldctl = this.FM.CT.getAirBrake();
-            } else
-            {
-                curctl = this.FM.CT.getAirBrake();
-                if(curctl > 0.05F)
-                    if(curctl - oldctl > 0.0F)
-                        curst = true;
-                    else
-                    if(curctl - oldctl == 0.0F && oldctl == 1.0F)
-                        curst = true;
-                    else
-                        curst = false;
-            }
-            oldctl = curctl;
-        }
+	        if(this.FM.AS.isMaster())
+	        {
+	            if(this.FM.EI.engines[0].getPowerOutput() > 0.5F && this.FM.EI.engines[0].getStage() == 6)
+	            {
+	                if(this.FM.EI.engines[0].getPowerOutput() > 0.5F)
+	                    this.FM.AS.setSootState(this, 0, 3);
+	            } else
+	            {
+	                this.FM.AS.setSootState(this, 0, 0);
+	            }
+	            if(this.FM instanceof RealFlightModel)
+	            {
+	                umnr();
+	                this.$1.$1();
+	            }
+	            if(curctl == -1F)
+	            {
+	                curctl = oldctl = this.FM.CT.getAirBrake();
+	            } else
+	            {
+	                curctl = this.FM.CT.getAirBrake();
+	                if(curctl > 0.05F)
+	                    if(curctl - oldctl > 0.0F)
+	                        curst = true;
+	                    else
+	                    if(curctl - oldctl == 0.0F && oldctl == 1.0F)
+	                        curst = true;
+	                    else
+	                        curst = false;
+	            }
+	            oldctl = curctl;
+	        }
+    	}
         if((this.FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && this.FM.getSpeedKMH() > 15F)
         {
             overrideBailout = true;

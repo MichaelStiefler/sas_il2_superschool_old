@@ -79,7 +79,7 @@ public class ZutiSupportMethods_NetSend
 	public static final byte UPDATE_NET_PLACE = 79;
 	public static final byte FRONT_MARKER = 80;
 	public static final byte FRONT_REFRESH = 81;
-	
+
 	/**
 	 * Reset class variables
 	 */
@@ -93,7 +93,7 @@ public class ZutiSupportMethods_NetSend
 
 	/**
 	 *Send TEST message back to user
-	 * 
+	 *
 	 * @param netuser
 	 */
 	public static void testMessage(NetUser netuser)
@@ -115,7 +115,7 @@ public class ZutiSupportMethods_NetSend
 	/**
 	 * Player in question is not allowed to fly - is banned. Send server
 	 * relevant data!
-	 * 
+	 *
 	 * @param netuser
 	 * @param penalty
 	 */
@@ -142,7 +142,7 @@ public class ZutiSupportMethods_NetSend
 
 	/**
 	 * Plane that player selected is not available for various reasons.
-	 * 
+	 *
 	 * @param netuser
 	 * @param aircraftName
 	 */
@@ -153,7 +153,7 @@ public class ZutiSupportMethods_NetSend
 			if (netuser == null)
 				return;
 
-			
+
 			String user = ((NetUser) NetEnv.host()).uniqueName();
 			if( user.equals(netuser.uniqueName()) )
 			{
@@ -161,7 +161,7 @@ public class ZutiSupportMethods_NetSend
 				ZutiSupportMethods_NetReceive.aircraftNotAvailable();
 				return;
 			}
-			
+
 			NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
 			netmsgguaranted.writeByte(AIRCRAFT_NOT_AVAILABLE);
 			NetEnv.host().postTo(netuser.masterChannel(), netmsgguaranted);
@@ -176,7 +176,7 @@ public class ZutiSupportMethods_NetSend
 
 	/**
 	 * Inform users that target needs to be removed because it was completed.
-	 * 
+	 *
 	 * @param target
 	 */
 	public static void removeTarget(Target target)
@@ -245,7 +245,7 @@ public class ZutiSupportMethods_NetSend
 
 	/**
 	 * Send user notification that he was the first to inspect designated area
-	 * 
+	 *
 	 * @param netuser
 	 */
 	public static void awardedForInspectingArea(NetUser netuser)
@@ -270,7 +270,7 @@ public class ZutiSupportMethods_NetSend
 	/**
 	 * Send information to user about which aircraft are not available for which
 	 * born place.
-	 * 
+	 *
 	 * @param netuser
 	 */
 	public static void forwardAircraftList(NetUser netuser)
@@ -320,7 +320,7 @@ public class ZutiSupportMethods_NetSend
 	 * Instruct connected users and server to eject player from his current
 	 * position. After message is sent, neuser netplace is reset to -1 and his
 	 * old connections to the plane he was in are severed.
-	 * 
+	 *
 	 * @param netuser
 	 *            : netuser object representing player that is being ejected
 	 */
@@ -371,7 +371,7 @@ public class ZutiSupportMethods_NetSend
 	 * paratroopers. These events can not be recreated by users that connect
 	 * after those events because paratroopers despawn after some period of
 	 * time.
-	 * 
+	 *
 	 * @param netuser
 	 */
 	public static void paraCapturedHomeBases(NetUser netuser)
@@ -410,7 +410,7 @@ public class ZutiSupportMethods_NetSend
 
 	/**
 	 * Send information to users that home base was captured by paratroopers.
-	 * 
+	 *
 	 * @param bornplace
 	 */
 	public static void paraCapturedHomeBase(BornPlace bornplace)
@@ -470,7 +470,7 @@ public class ZutiSupportMethods_NetSend
 	{
 		if (!ZutiSupportMethods_NetSend.REQUEST_HB_AC_LIST)
 			return;
-		
+
 		try
 		{
 			NetUser netuser = (NetUser) NetEnv.host();
@@ -552,7 +552,7 @@ public class ZutiSupportMethods_NetSend
 
 	/**
 	 * Send message out that certain AC dropped its bomb load.
-	 * 
+	 *
 	 * @param acName
 	 * @param bool
 	 * @param hasBombBayDoors
@@ -589,7 +589,7 @@ public class ZutiSupportMethods_NetSend
 
 	/**
 	 * Send message out that bomb bay doors status changed.
-	 * 
+	 *
 	 * @param status
 	 *            1=opened, 0=closed
 	 * @param acName
@@ -658,7 +658,7 @@ public class ZutiSupportMethods_NetSend
 	/**
 	 * Send information to user about which aircraft have already released their
 	 * bombs.
-	 * 
+	 *
 	 * @param netuser
 	 */
 	public static void aircraftWithReleasedOrdinance(NetUser netuser)
@@ -700,7 +700,7 @@ public class ZutiSupportMethods_NetSend
 
 	/**
 	 * Send message to clients info about changes with bombardier instruments.
-	 * 
+	 *
 	 * @param acName
 	 * @param distance
 	 *            : <0 = decrease, >0 = increase
@@ -747,7 +747,7 @@ public class ZutiSupportMethods_NetSend
 	/**
 	 * Execute this method when a crew member destroys some actor that is valid
 	 * for scoring.
-	 * 
+	 *
 	 * @param acName
 	 * @param actorName
 	 */
@@ -791,7 +791,7 @@ public class ZutiSupportMethods_NetSend
 	/**
 	 * Instruct server to enable or disable controlling player AC to another
 	 * user.
-	 * 
+	 *
 	 * @param username
 	 *            :
 	 */
@@ -834,7 +834,7 @@ public class ZutiSupportMethods_NetSend
 	/**
 	 * Send new controls settings to server. It then forwards them to original
 	 * plane owner.
-	 * 
+	 *
 	 * @param controls
 	 */
 	public static void aircraftControlsMoved_ToServer(int eventId, float controlState)
@@ -870,7 +870,7 @@ public class ZutiSupportMethods_NetSend
 	/**
 	 * Send new controls settings to server. It then forwards them to original
 	 * plane owner.
-	 * 
+	 *
 	 * @param controls
 	 */
 	public static void aircraftControlsChanged_ToServer(String acName, int eventId, boolean weaponControl)
@@ -903,7 +903,7 @@ public class ZutiSupportMethods_NetSend
 	/**
 	 * Send request to server about possible cockpit change. If server grants
 	 * out wish, it will send back required data to complete this "transaction".
-	 * 
+	 *
 	 * @param acName
 	 * @param desiredCockpit
 	 * @param isPilot
@@ -958,7 +958,7 @@ public class ZutiSupportMethods_NetSend
 	 * Server received user request to change cockpit. Check if desired cockpit
 	 * is free on given aircraft and if it is, notify user that he is OK to
 	 * switch this cockpit.
-	 * 
+	 *
 	 * @param sender
 	 * @param netmsginput
 	 */
@@ -1029,7 +1029,7 @@ public class ZutiSupportMethods_NetSend
 
 	/**
 	 * Send request to server about your plane crew.
-	 * 
+	 *
 	 * @param acName
 	 */
 	public static void requestAircraftCrew(String acName)
@@ -1056,7 +1056,7 @@ public class ZutiSupportMethods_NetSend
 
 	/**
 	 * Server received user request for his crew buddies. Send him that list.
-	 * 
+	 *
 	 * @param sender
 	 * @param netmsginput
 	 */
@@ -1094,7 +1094,7 @@ public class ZutiSupportMethods_NetSend
 
 	/**
 	 * Send receiver data about his crew.
-	 * 
+	 *
 	 * @param receiver
 	 * @param acName
 	 */
@@ -1155,7 +1155,7 @@ public class ZutiSupportMethods_NetSend
 
 	/**
 	 * Call this method from server to send user list of live craters
-	 * 
+	 *
 	 * @param netuser
 	 */
 	public static void cratersList(NetUser netuser)
@@ -1197,7 +1197,7 @@ public class ZutiSupportMethods_NetSend
 
 	/**
 	 * Send server some message that all clients then log in event log.
-	 * 
+	 *
 	 * @param netuser
 	 * @param message
 	 */
@@ -1232,7 +1232,7 @@ public class ZutiSupportMethods_NetSend
 
 	/**
 	 * Send request to server that we want to refuel specified amount of fuel.
-	 * 
+	 *
 	 * @param fuel
 	 */
 	public static void requestFuel(float fuel)
@@ -1268,7 +1268,7 @@ public class ZutiSupportMethods_NetSend
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Notify server that you did not use all approved resources.
 	 * @param unusedFuel
@@ -1281,7 +1281,7 @@ public class ZutiSupportMethods_NetSend
 			NetUser netuser = (NetUser) NetEnv.host();
 			int bornPlayerId = -1;
 			int army = -1;
-			
+
 			BornPlace bp = ZutiSupportMethods_Net.getNearestBornPlace_AnyArmy(pos.x, pos.y);
 			if( Mission.MDS_VARIABLES().enabledResourcesManagement_BySide && ZutiSupportMethods.isOnZAP(pos) > -1 )
 				army = Front.army(pos.x, pos.y);
@@ -1296,7 +1296,7 @@ public class ZutiSupportMethods_NetSend
 					{
 						bornPlayerId = bp.zutiBpIndex;
 						bp.zutiFuelSupply += unusedFuel;
-	
+
 						ZutiSupportMethods_ResourcesManagement.printOutResourcesForHomeBase(bp);
 					}
 				}
@@ -1311,12 +1311,12 @@ public class ZutiSupportMethods_NetSend
 							Mission.MDS_VARIABLES().zutiFuelSupply_Blue += unusedFuel;
 							break;
 					}
-					
+
 					ZutiSupportMethods_ResourcesManagement.printOutResourcesForSide(army);
 				}
 				return;
 			}
-			
+
 			NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
 			netmsgguaranted.writeByte(RRR_RETURN_FUEL);
 			netmsgguaranted.writeFloat(unusedFuel);
@@ -1333,7 +1333,7 @@ public class ZutiSupportMethods_NetSend
 
 	/**
 	 * Send request to server that we want to get specified amount of bullets.
-	 * 
+	 *
 	 * @param bullets
 	 */
 	public static void requestBullets(long bullets)
@@ -1369,7 +1369,7 @@ public class ZutiSupportMethods_NetSend
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Notify server that you did not use all approved resources.
 	 * @param unusedBullets
@@ -1382,7 +1382,7 @@ public class ZutiSupportMethods_NetSend
 			NetUser netuser = (NetUser) NetEnv.host();
 			int bornPlaceId = -1;
 			int army = -1;
-			
+
 			BornPlace bp = ZutiSupportMethods_Net.getNearestBornPlace_AnyArmy(pos.x, pos.y);
 			if( Mission.MDS_VARIABLES().enabledResourcesManagement_BySide && ZutiSupportMethods.isOnZAP(pos) > -1 )
 				army = Front.army(pos.x, pos.y);
@@ -1397,7 +1397,7 @@ public class ZutiSupportMethods_NetSend
 					{
 						bornPlaceId = bp.zutiBpIndex;
 						bp.zutiBulletsSupply += unusedBullets;
-						
+
 						ZutiSupportMethods_ResourcesManagement.printOutResourcesForHomeBase(bp);
 					}
 				}
@@ -1412,7 +1412,7 @@ public class ZutiSupportMethods_NetSend
 							Mission.MDS_VARIABLES().zutiBulletsSupply_Blue += unusedBullets;
 							break;
 					}
-					
+
 					ZutiSupportMethods_ResourcesManagement.printOutResourcesForSide(army);
 				}
 				return;
@@ -1431,9 +1431,9 @@ public class ZutiSupportMethods_NetSend
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/** Send request to server that we want to get specified amount of bullets.
-	 * 
+	 *
 	 * @param bullets
 	 */
 	public static void requestBombs(int[] bombs)
@@ -1474,7 +1474,7 @@ public class ZutiSupportMethods_NetSend
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Notify server that you did not use all approved resources.
 	 * @param unusedBullets
@@ -1507,7 +1507,7 @@ public class ZutiSupportMethods_NetSend
 						bp.zutiBombsSupply[3] += unusedBombs[3];
 						bp.zutiBombsSupply[4] += unusedBombs[4];
 						bp.zutiBombsSupply[5] += unusedBombs[5];
-						
+
 						ZutiSupportMethods_ResourcesManagement.printOutResourcesForHomeBase(bp);
 					}
 				}
@@ -1532,7 +1532,7 @@ public class ZutiSupportMethods_NetSend
 							Mission.MDS_VARIABLES().zutiBombsSupply_Blue[5] += unusedBombs[5];
 							break;
 					}
-					
+
 					ZutiSupportMethods_ResourcesManagement.printOutResourcesForSide(army);
 				}
 				return;
@@ -1556,10 +1556,10 @@ public class ZutiSupportMethods_NetSend
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Send request to server that we want to get specified amount of rockets.
-	 * 
+	 *
 	 * @param bullets
 	 */
 	public static void requestRockets(long rockets)
@@ -1595,7 +1595,7 @@ public class ZutiSupportMethods_NetSend
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Notify server that you did not use all approved resources.
 	 * @param unusedBullets
@@ -1608,7 +1608,7 @@ public class ZutiSupportMethods_NetSend
 			NetUser netuser = (NetUser) NetEnv.host();
 			int bornPlaceId = -1;
 			int army = -1;
-			
+
 			BornPlace bp = ZutiSupportMethods_Net.getNearestBornPlace_AnyArmy(pos.x, pos.y);
 			if( Mission.MDS_VARIABLES().enabledResourcesManagement_BySide && ZutiSupportMethods.isOnZAP(pos) > -1 )
 				army = Front.army(pos.x, pos.y);
@@ -1623,7 +1623,7 @@ public class ZutiSupportMethods_NetSend
 					{
 						bornPlaceId = bp.zutiBpIndex;
 						bp.zutiRocketsSupply += unusedRockets;
-						
+
 						ZutiSupportMethods_ResourcesManagement.printOutResourcesForHomeBase(bp);
 					}
 				}
@@ -1638,7 +1638,7 @@ public class ZutiSupportMethods_NetSend
 							Mission.MDS_VARIABLES().zutiRocketsSupply_Blue += unusedRockets;
 							break;
 					}
-					
+
 					ZutiSupportMethods_ResourcesManagement.printOutResourcesForSide(army);
 				}
 				return;
@@ -1657,10 +1657,10 @@ public class ZutiSupportMethods_NetSend
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Send request to server that we want to get new engine.
-	 * 
+	 *
 	 * @param engines
 	 * @param engineId
 	 */
@@ -1698,7 +1698,7 @@ public class ZutiSupportMethods_NetSend
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Notify server that you did not use all approved resources.
 	 * @param unusedEngines
@@ -1715,7 +1715,7 @@ public class ZutiSupportMethods_NetSend
 			BornPlace bp = ZutiSupportMethods_Net.getNearestBornPlace_AnyArmy(pos.x, pos.y);
 			if( Mission.MDS_VARIABLES().enabledResourcesManagement_BySide && ZutiSupportMethods.isOnZAP(pos) > -1 )
 				army = Front.army(pos.x, pos.y);
-			
+
 			if (netuser == null || Main.cur().netServerParams == null || Main.cur().netServerParams.isMaster() || Mission.isSingle() )
 			{
 				//We are the server or game is single player based, we update resources
@@ -1726,7 +1726,7 @@ public class ZutiSupportMethods_NetSend
 					{
 						bornPlaceId = bp.zutiBpIndex;
 						bp.zutiEnginesSupply += unusedEngines;
-						
+
 						ZutiSupportMethods_ResourcesManagement.printOutResourcesForHomeBase(bp);
 					}
 				}
@@ -1741,7 +1741,7 @@ public class ZutiSupportMethods_NetSend
 							Mission.MDS_VARIABLES().zutiEnginesSupply_Blue += unusedEngines;
 							break;
 					}
-					
+
 					ZutiSupportMethods_ResourcesManagement.printOutResourcesForSide(army);
 				}
 				return;
@@ -1760,10 +1760,10 @@ public class ZutiSupportMethods_NetSend
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Send request to server that we want to get one repair kit.
-	 * 
+	 *
 	 */
 	public static void requestRepairKit(long requestedKits)
 	{
@@ -1798,7 +1798,7 @@ public class ZutiSupportMethods_NetSend
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Notify server that you did not use all approved resources.
 	 * @param unusedEngines
@@ -1815,7 +1815,7 @@ public class ZutiSupportMethods_NetSend
 			BornPlace bp = ZutiSupportMethods_Net.getNearestBornPlace_AnyArmy(pos.x, pos.y);
 			if( Mission.MDS_VARIABLES().enabledResourcesManagement_BySide && ZutiSupportMethods.isOnZAP(pos) > -1 )
 				army = Front.army(pos.x, pos.y);
-			
+
 			if (netuser == null || Main.cur().netServerParams == null || Main.cur().netServerParams.isMaster() || Mission.isSingle() )
 			{
 				//We are the server or game is single player based, we update resources
@@ -1826,7 +1826,7 @@ public class ZutiSupportMethods_NetSend
 					{
 						bornPlaceId = bp.zutiBpIndex;
 						bp.zutiRepairKitsSupply += unusedRepairKits;
-						
+
 						ZutiSupportMethods_ResourcesManagement.printOutResourcesForHomeBase(bp);
 					}
 				}
@@ -1841,7 +1841,7 @@ public class ZutiSupportMethods_NetSend
 							Mission.MDS_VARIABLES().zutiRepairKitsSupply_Blue += unusedRepairKits;
 							break;
 					}
-					
+
 					ZutiSupportMethods_ResourcesManagement.printOutResourcesForSide(army);
 				}
 				return;
@@ -1860,7 +1860,7 @@ public class ZutiSupportMethods_NetSend
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Report user amount of resources that he can use on his spawn place.
 	 * @param aircraft
@@ -1873,18 +1873,18 @@ public class ZutiSupportMethods_NetSend
 				return;
 
 			long bullets = ZutiSupportMethods_GameOrder.calculateBulletsToReload(aircraft);
-			int[] bombs = ZutiSupportMethods_GameOrder.getBombsCount(aircraft);	
+			int[] bombs = ZutiSupportMethods_GameOrder.getBombsCount(aircraft);
 			long rockets = ZutiSupportMethods_GameOrder.calculateRocketsToReload(aircraft);
 			float fuel = aircraft.FM.M.fuel;
 			long cargo = ZutiSupportMethods_GameOrder.getCargoCount(aircraft);
-			
+
 			if (Main.cur().netServerParams == null || Mission.isSingle())
 			{
 				//Single player mode, RRR must also work!
 				ZutiSupportMethods_NetSend_ToClients.spawnResources_ToClient(bullets, bombs, rockets, fuel, cargo, null);
 				return;
 			}
-			
+
 			if (Main.cur().netServerParams.isMaster())
 			{
 				//We are server... calculate available fuel and send that info to client
@@ -1898,7 +1898,7 @@ public class ZutiSupportMethods_NetSend
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * This method is executed by user and is sent to server/host. User is
 	 * requesting aircraft at his selected home base.
@@ -1915,7 +1915,7 @@ public class ZutiSupportMethods_NetSend
 
 			if (Main.cur().netServerParams != null && Main.cur().netServerParams.masterChannel() != null)
 			{
-				//System.out.println("Sending to SERVER!");
+//				System.out.println("Sending to SERVER!");
 				NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
 				netmsgguaranted.writeByte(AIRCRAFT_AVAILABILITY);
 				netmsgguaranted.write255(acName);
@@ -1954,12 +1954,12 @@ public class ZutiSupportMethods_NetSend
 			NetUser netuser = (NetUser)NetEnv.host();
 			if( netuser == null )
 				return;
-			
+
 			BornPlace bp = (BornPlace)World.cur().bornPlaces.get(netuser.getBornPlace());
 			//If home base is not positioned on a ship, don't execute this.
 			if( !bp.zutiAlreadyAssigned || !bp.zutiEnableQueue )
 				return;
-			
+
 			if (Main.cur().netServerParams.masterChannel() != null)
 			{
 				//Send to server
@@ -1986,12 +1986,12 @@ public class ZutiSupportMethods_NetSend
 	public static void releaseCarrierSpawnPlace(NetUser netUser)
 	{
 		try
-		{			
+		{
 			if( netUser.getAirdromeStay() < 0 )
 				return;
-			
+
 			int userBornPlace = netUser.getBornPlace();
-			
+
 			// +++ MDS Hotfix by Storebror
 			if (World.cur().bornPlaces != null) {
 				if( userBornPlace >= World.cur().bornPlaces.size() )
@@ -1999,12 +1999,12 @@ public class ZutiSupportMethods_NetSend
 					netUser.zutiSetAirdomeStay(-1);
 					return;
 				}
-				
+
 				BornPlace bp = (BornPlace)World.cur().bornPlaces.get(userBornPlace);
 				if( bp == null || bp.zutiAirspawnOnly || !bp.zutiAlreadyAssigned || !bp.zutiEnableQueue )
 					return;
 			}
-			
+
 			if (Main.cur().netServerParams.masterChannel() != null)
 			{
 				//Send to server
@@ -2020,7 +2020,7 @@ public class ZutiSupportMethods_NetSend
 				//We are server...
 				ZutiSupportMethods_Net.releaseStayPlace(netUser.uniqueName(), userBornPlace, netUser.getAirdromeStay());
 			}
-			
+
 			//Just make sure that none is selected!
 			netUser.zutiSetAirdomeStay(-1);
 		}
@@ -2037,9 +2037,9 @@ public class ZutiSupportMethods_NetSend
 	{
 		if( aircraft == null || !(aircraft.FM instanceof RealFlightModel) )
 			return;
-		
+
 		try
-		{			
+		{
 			if (Main.cur().netServerParams.masterChannel() != null)
 			{
 				//Send to server
@@ -2088,14 +2088,14 @@ public class ZutiSupportMethods_NetSend
 
 	/**
 	 * This method is executed by user and is sent to server/host. User is
-	 * requesting a list of front markers so that the sync of the front line 
+	 * requesting a list of front markers so that the sync of the front line
 	 * can be as accurate as possible.
 	 */
 	public static void requestFrontMarkers()
 	{
 		if( !ZutiSupportMethods_NetSend.REQUEST_FRONT_MARKERS || Front.markers() == null || Front.markers().size() == 0 )
 			return;
-		
+
 		try
 		{
 			NetUser netuser = (NetUser) NetEnv.host();
@@ -2105,7 +2105,7 @@ public class ZutiSupportMethods_NetSend
 
 			if( Front.markers() != null )
 				Front.markers().clear();
-			
+
 			NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
 			netmsgguaranted.writeByte(ZutiSupportMethods_NetSend.FRONT_MARKER);
 			//Send to server only!
@@ -2120,10 +2120,10 @@ public class ZutiSupportMethods_NetSend
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Send user locations about front markers.
-	 * 
+	 *
 	 * @param netuser
 	 */
 	public static void frontMarkers(NetUser netuser)
@@ -2132,7 +2132,7 @@ public class ZutiSupportMethods_NetSend
 		{
 			if (netuser == null || Front.markers() == null || Front.markers().size() == 0)
 				return;
-			
+
 			Front.Marker marker = null;
 			NetMsgGuaranted netmsgguaranted = null;
 
@@ -2163,6 +2163,6 @@ public class ZutiSupportMethods_NetSend
 			ex.printStackTrace();
 		}
 	}
-	
+
 
 }

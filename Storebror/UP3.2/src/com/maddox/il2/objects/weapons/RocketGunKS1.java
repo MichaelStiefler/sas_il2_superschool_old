@@ -11,6 +11,6 @@ public class RocketGunKS1 extends MissileGun implements MissileGunWithDelay
     Property.set(class1, "bullets", 1);
     Property.set(class1, "shotFreq", 2.0F);
     Property.set(class1, "sound", "weapon.bombgun");
-    Property.set(class1, "dateOfUse", 19450401);
+    Property.set(class1, "dateOfUse", 19530101);
   }
 }

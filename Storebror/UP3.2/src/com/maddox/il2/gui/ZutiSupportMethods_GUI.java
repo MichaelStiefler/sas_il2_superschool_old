@@ -77,23 +77,23 @@ public class ZutiSupportMethods_GUI
 	private static List DROP_DOWN_SERVERS_LIST = null;
 	public static GameState GAME_STATE = new GameState(0);
 	public static List STD_HOME_BASE_AIRFIELDS = null;
-	
+
 	//----------------------------------------------------------
 	static class Missions_CompareByFileName implements Comparator
 	{
-		public int compare(Object o1, Object o2) 
+		public int compare(Object o1, Object o2)
 		{
 			FileMission oo1 = (FileMission)o1;
 			FileMission oo2 = (FileMission)o2;
-			
+
 			if( oo1 == null || oo2 == null )
 				return 0;
-			
+
 			return oo1.fileName.toLowerCase().compareTo(oo2.fileName.toLowerCase());
 	    }
 	}
 	//----------------------------------------------------------
-	
+
 	/**
 	 * Reset class variables
 	 */
@@ -105,7 +105,7 @@ public class ZutiSupportMethods_GUI
 		ZutiSupportMethods_GUI.ZUTI_TIP = new String[3];
 		ZutiSupportMethods_GUI.STD_HOME_BASE_AIRFIELDS = new ArrayList();
 	}
-	
+
 	/**
 	 * Targets should only be loaded once per mission. If you want to load them more
 	 * than once, call this method with value = false and then call zutiFillTargets method again.
@@ -115,7 +115,7 @@ public class ZutiSupportMethods_GUI
 	{
 		ZutiSupportMethods_GUI.ZUTI_TARGETS_LOADED = value;
 	}
-	
+
 	/**
 	 * This method fills zutiPadObjects with new air objects. Duplicates are ignored.
 	 * @param guiPad
@@ -124,15 +124,15 @@ public class ZutiSupportMethods_GUI
 	{
 		if( !Mission.MDS_VARIABLES().zutiIcons_ShowAircraft )
 			return;
-		
+
 		try
 		{
 			Actor actor	= null;
 			ZutiPadObject zo = null;
-			
+
 			Aircraft playerAC = World.getPlayerAircraft();
 			boolean refreshIntervalSet = Mission.MDS_VARIABLES().zutiRadar_RefreshInterval > 0;
-			
+
 			//Fill air targets
 			List list = Engine.targets();
 			Aircraft aircraft = null;
@@ -141,14 +141,14 @@ public class ZutiSupportMethods_GUI
 			for (int i = 0; i < size; i++)
 			{
 				actor = (Actor)list.get(i);
-				
+
 				if(actor instanceof Aircraft)
 				{
 					aircraft = (Aircraft)list.get(i);
 					//Player AC is processed above, skip it here
 					if( !Mission.MDS_VARIABLES().zutiIcons_ShowPlayerAircraft && aircraft.equals(playerAC) )
 						continue;
-					
+
 					hash = new Integer(actor.hashCode());
 					if(!actor.getDiedFlag() )
 					{
@@ -166,7 +166,7 @@ public class ZutiSupportMethods_GUI
 					}
 				}
 			}
-			
+
 			//System.out.println("GUIPad - pad objects: " + guiPad.zutiPadObjects.size());
 		}
 		catch(Exception ex)
@@ -174,7 +174,7 @@ public class ZutiSupportMethods_GUI
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Check ground units and adds them to GUIPad array list if they should be processed
 	 * @param guiPad
@@ -183,41 +183,41 @@ public class ZutiSupportMethods_GUI
 	{
 		if( Main.cur() == null )
 			return;
-		
+
 		Mission mission = Main.cur().mission;
 		if( mission == null )
 			return;
-		
+
 		if( Mission.MDS_VARIABLES() == null || !Mission.MDS_VARIABLES().zutiIcons_ShowGroundUnits )
 			return;
-		
+
 		boolean radarIntervalSet = Mission.MDS_VARIABLES().zutiRadar_RefreshInterval > 0;
-		
+
 		ZutiPadObject zo = null;
 		//this method will collect those ground units that can be detected by scouts. Since
 		//ground units can not spawn at time later than 0 we can only check array only few times, say,
 		//every time GUIPad is activated? Should provide sufficient cover for new missions
-		
+
 		if( mission.actors == null )
 			return;
-		
+
 		Actor actor = null;
-		
+
 		//HashMapExt hashmapext = Engine.name2Actor();
 		//for (Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
-		
+
 		ArrayList actors = mission.actors;
 		if( actors == null || GUI.pad == null || GUI.pad.zutiPadObjects == null )
 			return;
-		
+
 		for( int i=0; i<actors.size(); i++ )
 		{
 			//actor = (Actor) entry.getValue();
 			actor = (Actor)actors.get(i);
-			
+
 			// TODO: Storebror: Fix Exception when actor is null
 			if (actor == null) continue;
-			
+
 			if( GUI.pad.zutiPadObjects.containsKey(new Integer(actor.hashCode())) )
 				continue;
 
@@ -228,7 +228,7 @@ public class ZutiSupportMethods_GUI
 					zo = new ZutiPadObject(actor, radarIntervalSet);
 					zo.setIcon( ZutiPadObject.ARTILLERY_TANK_ICON );
 					zo.type = 1;
-					
+
 					guiPad.zutiPadObjects.put(new Integer(zo.hashCode()), zo);
 				}
 				else if( actor instanceof Train )
@@ -236,7 +236,7 @@ public class ZutiSupportMethods_GUI
 					zo = new ZutiPadObject(actor, radarIntervalSet);
 					zo.setIcon( ZutiPadObject.TRAIN_ICON );
 					zo.type = 5;
-					
+
 					guiPad.zutiPadObjects.put(new Integer(zo.hashCode()), zo);
 				}
 				else if(actor instanceof AAA )
@@ -244,7 +244,7 @@ public class ZutiSupportMethods_GUI
 					zo = new ZutiPadObject(actor, radarIntervalSet);
 					zo.setIcon( ZutiPadObject.AAA_ICON );
 					zo.type = 2;
-					
+
 					guiPad.zutiPadObjects.put(new Integer(zo.hashCode()), zo);
 				}
 				else if(actor instanceof ArtilleryGeneric )
@@ -252,7 +252,7 @@ public class ZutiSupportMethods_GUI
 					zo = new ZutiPadObject(actor, radarIntervalSet);
 					zo.setIcon( ZutiPadObject.ARTILLERY_TANK_ICON );
 					zo.type = 2;
-					
+
 					guiPad.zutiPadObjects.put(new Integer(zo.hashCode()), zo);
 				}
 				else if( actor instanceof CarGeneric )
@@ -260,7 +260,7 @@ public class ZutiSupportMethods_GUI
 					zo = new ZutiPadObject(actor, radarIntervalSet);
 					zo.setIcon( ZutiPadObject.CAR_ICON );
 					zo.type = 5;
-					
+
 					guiPad.zutiPadObjects.put(new Integer(zo.hashCode()), zo);
 				}
 				else if(actor instanceof BigshipGeneric || actor instanceof ShipGeneric )
@@ -268,17 +268,17 @@ public class ZutiSupportMethods_GUI
 					zo = new ZutiPadObject(actor, radarIntervalSet);
 					zo.setIcon( ZutiPadObject.SHIP_ICON );
 					zo.type = 4;
-					
+
 					guiPad.zutiPadObjects.put(new Integer(zo.hashCode()), zo);
 					System.out.println("ZutiSupportMethods_GUI - SHIP ADDED " + actor.toString());
-					
+
 				}
 				else if(actor instanceof PlaneGeneric)
 				{
 					zo = new ZutiPadObject(actor, radarIntervalSet);
 					zo.setIcon( ZutiPadObject.AIRCRAFT_ICON );
 					zo.type = 0;
-					
+
 					guiPad.zutiPadObjects.put(new Integer(zo.hashCode()), zo);
 				}
 			}
@@ -295,19 +295,19 @@ public class ZutiSupportMethods_GUI
 			zutiNeutralHomeBases = new ArrayList();
 		else
 			zutiNeutralHomeBases.clear();
-		
+
 		ArrayList arraylist = World.cur().bornPlaces;
-		
+
 		if( arraylist == null )
 			return;
-		
+
 		int size = arraylist.size();
 		BornPlace bp = null;
-		
+
 		for( int i=0; i<size; i++ )
 		{
 			bp = (BornPlace)arraylist.get(i);
-			
+
 			//neutral = all that is not red and blue
 			if( bp.army != 1 && bp.army != 2 )
 				zutiNeutralHomeBases.add(bp);
@@ -327,7 +327,7 @@ public class ZutiSupportMethods_GUI
 			Iterator iterator = ZutiTargetsSupportMethods.ZUTI_TARGETPOINTS.iterator();
 			TargetPoint targetpoint = null;
 			String designation = null;
-			
+
 			while( iterator.hasNext() )
 			{
 				targetpoint = (TargetPoint)iterator.next();
@@ -348,14 +348,14 @@ public class ZutiSupportMethods_GUI
 		}
 		catch(Exception ex){ex.printStackTrace();}
 	}
-	
+
 	/**
 	 * Iterates through all load target points and prints their designation and type.
 	 */
 	public static void listTargetPoints()
 	{
 		TargetPoint targetpoint = null;
-	
+
 		try
 		{
 			Iterator iterator = ZutiTargetsSupportMethods.ZUTI_TARGETPOINTS.iterator();
@@ -367,7 +367,7 @@ public class ZutiSupportMethods_GUI
 		}
 		catch(Exception ex){ex.printStackTrace();}
 	}
-	
+
 	/**
 	 * Target was probably part of home base and home base was overrun.
 	 * Change it's designation and icon. Only for Destroy/defence ground targets.
@@ -403,7 +403,7 @@ public class ZutiSupportMethods_GUI
 		}
 		catch(Exception ex){ex.printStackTrace();}
 	}
-	
+
 	/**
 	 * Method searches sectfile for targets lines and creates appropriate target objects.
 	 * @param sectfile
@@ -412,9 +412,9 @@ public class ZutiSupportMethods_GUI
 	{
 		if( ZutiSupportMethods_GUI.ZUTI_TARGETS_LOADED || sectfile == null )
 			return;
-		
+
 		ZutiTargetsSupportMethods.ZUTI_TARGETPOINTS.clear();
-		
+
 		int sectionIndex = sectfile.sectionIndex("Target");
 		if (sectionIndex >= 0)
 		{
@@ -427,9 +427,9 @@ public class ZutiSupportMethods_GUI
 				if (importance != 2)
 				{
 					TargetPoint targetpoint = new TargetPoint();
-					
+
 					targetpoint.zutiSetDesignation( Target.ZUTI_TARGET_DESIGNATION_PREFIX + index);
-					
+
 					targetpoint.type = type;
 					targetpoint.importance = importance;
 					numbertokenizer.next(0);
@@ -446,7 +446,7 @@ public class ZutiSupportMethods_GUI
 					targetpoint.r = radius;
 					numbertokenizer.next(0);
 					targetpoint.nameTarget = numbertokenizer.next((String) null);
-					
+
 					if (targetpoint.nameTarget != null && targetpoint.nameTarget.startsWith("Bridge"))
 					{
 						//Edit by |ZUTI|
@@ -461,7 +461,7 @@ public class ZutiSupportMethods_GUI
 						targetpoint.x = (float) xCoord;
 						targetpoint.y = (float) yCoord;
 					}
-					
+
 					switch (targetpoint.type)
 					{
 					case 0:
@@ -472,7 +472,7 @@ public class ZutiSupportMethods_GUI
 							targetpoint.icon = IconDraw.get("icons/tdestroychief.mat");
 							targetpoint.iconOArmy = IconDraw.get("icons/tdefence.mat");
 						}
-						
+
 						//Add actor to this target point as it can be appended to moving actor
 						assignTargetActor(targetpoint);
 						break;
@@ -488,21 +488,21 @@ public class ZutiSupportMethods_GUI
 					case 3:
 						targetpoint.icon = IconDraw.get("icons/tinspect.mat");
 						targetpoint.iconOArmy = IconDraw.get("icons/tdefence.mat");
-						
+
 						//Add actor to this target point as it can be appended to moving actor
 						assignTargetActor(targetpoint);
 						break;
 					case 4:
 						targetpoint.icon = IconDraw.get("icons/tescort.mat");
 						targetpoint.iconOArmy = IconDraw.get("icons/tdestroychief.mat");
-						
+
 						//Add actor to this target point as it can be appended to moving actor
 						assignTargetActor(targetpoint);
 						break;
 					case 5:
 						targetpoint.icon = IconDraw.get("icons/tdefence.mat");
 						targetpoint.iconOArmy = IconDraw.get("icons/tdestroychief.mat");
-						
+
 						//Add actor to this target point as it can be appended to moving actor
 						assignTargetActor(targetpoint);
 						break;
@@ -526,7 +526,7 @@ public class ZutiSupportMethods_GUI
 						if( targetpoint.nameTargetOrig == null )
 							targetpoint.nameTargetOrig = targetpoint.nameTarget;
 					}
-					
+
 					if (targetpoint.nameTarget != null)
 					{
 						if (sectfile.exist("Chiefs", targetpoint.nameTarget))
@@ -559,15 +559,15 @@ public class ZutiSupportMethods_GUI
 						else
 							targetpoint.nameTarget = null;
 					}
-					
-					//Finally, add target to targets set					
+
+					//Finally, add target to targets set
 					ZutiTargetsSupportMethods.ZUTI_TARGETPOINTS.add(targetpoint);
 				}
 			}
 		}
-		
+
 		//System.out.println("GUIBriefing - loaded targets: " + ZUTI_TARGETS.size());
-				
+
 		ZutiSupportMethods_GUI.ZUTI_TARGETS_LOADED = true;
 	}
 
@@ -582,9 +582,9 @@ public class ZutiSupportMethods_GUI
 	{
 		if(targetpoint == null)
 			return;
-		
+
 		//System.out.println("targetpoint actor name: " + targetpoint.nameTarget);
-		
+
 		//Do we allow moving target icons?
 		if( !Mission.MDS_VARIABLES().zutiIcons_MovingIcons )
 		{
@@ -592,11 +592,11 @@ public class ZutiSupportMethods_GUI
 			targetpoint.actor = null;
 			return;
 		}
-		
+
 		try
 		{
 			//Add actor to this target point as it can be appended to moving actor
-			targetpoint.actor = com.maddox.il2.engine.Actor.getByName(targetpoint.nameTarget);	
+			targetpoint.actor = com.maddox.il2.engine.Actor.getByName(targetpoint.nameTarget);
 			//This needs to be done because getByName method returns invalid actor (pos = null) if actor is AI plane
 			//So, we need to add number from 0 to 3 at the end. But we have to search them one by one. If resulted actor = null, that plane was probably already killed
 			if( targetpoint.actor != null && targetpoint.actor instanceof Wing )
@@ -630,7 +630,7 @@ public class ZutiSupportMethods_GUI
 		}
 		catch(Exception ex){ex.printStackTrace();}
 	}
-	
+
 	/**
 	 * Draw targets on given renderer
 	 * @param guirenders
@@ -646,9 +646,9 @@ public class ZutiSupportMethods_GUI
 		//If targets are not meant to be drawn, don't draw them
 		if( !Mission.MDS_VARIABLES().zutiIcons_ShowTargets )
 			return;
-		
+
 		try
-		{			
+		{
 			if (set.size() != 0)
 			{
 				GPoint gpoint = guirenders.getMouseXY();
@@ -658,11 +658,11 @@ public class ZutiSupportMethods_GUI
 				float f_21_ = f;
 				float f_22_ = f_19_;
 				IconDraw.setColor(-16711681);
-				
+
 				TargetPoint targetpoint = null;
 				TargetPoint specialTargetPoint = null;
 				Iterator iterator = set.iterator();
-				
+
 				while( iterator.hasNext() )
 				{
 					targetpoint = (TargetPoint)iterator.next();
@@ -670,13 +670,13 @@ public class ZutiSupportMethods_GUI
 					{
 						float f_24_;
 						float f_25_;
-						
+
 						if( targetpoint.isBaseActorWing && (targetpoint.actor == null || targetpoint.actor.getDiedFlag()) )
 						{
 							ZutiSupportMethods_GUI.assignTargetActor(targetpoint);
 							//System.out.println("ZutiSupportMethods - drawTargets - new actor assigned for target " + targetpoint.zutiGetDesignation());
 						}
-						
+
 						//Debug info
 						/*
 						System.out.println("playerArmy: " + new Integer(zutiPlayerArmy).toString());
@@ -686,17 +686,17 @@ public class ZutiSupportMethods_GUI
 						System.out.println("zutiRadar_StaticIconsIfNoRadar: " + Main.cur().mission.zutiRadar_StaticIconsIfNoRadar);
 						System.out.println("----------------------------------------------------------------------------------------------");
 						*/
-						
+
 						f_24_ = (float)(((double)targetpoint.x - cameraortho2d.worldXOffset) * cameraortho2d.worldScale);
 						f_25_ = (float)(((double)targetpoint.y - cameraortho2d.worldYOffset) * cameraortho2d.worldScale);
-						
+
 						if(	Mission.MDS_VARIABLES().zutiIcons_StaticIconsIfNoRadar || targetpoint.isVisibleForPlayerArmy() )
 						{
 							if( zutiSameArmy )
 								IconDraw.render(targetpoint.icon, f_24_, f_25_);
 							else
 								IconDraw.render(targetpoint.iconOArmy, f_24_, f_25_);
-							
+
 							if (f_24_ >= f - f_20_ && f_24_ <= f + f_20_ && f_25_ >= f_19_ - f_20_ && f_25_ <= f_19_ + f_20_)
 							{
 								specialTargetPoint = targetpoint;
@@ -706,17 +706,17 @@ public class ZutiSupportMethods_GUI
 						}
 					}
 				}
-				
+
 				if(specialTargetPoint != null)
 				{
 					for (int i_26_ = 0; i_26_ < 3; i_26_++)
 						ZUTI_TIP[i_26_] = null;
-						
+
 					if (specialTargetPoint.importance == 0)
 						ZUTI_TIP[0] = I18N.gui("brief.Primary");
 					else
 						ZUTI_TIP[0] = I18N.gui("brief.Secondary");
-					
+
 					if( zutiSameArmy )
 					{
 						switch (specialTargetPoint.type)
@@ -777,7 +777,7 @@ public class ZutiSupportMethods_GUI
 							break;
 						}
 					}
-					if (specialTargetPoint.nameTarget != null) 
+					if (specialTargetPoint.nameTarget != null)
 						ZUTI_TIP[2] = specialTargetPoint.nameTarget;
 					float f_27_ = ttfont.width(ZUTI_TIP[0]);
 					int i_28_ = 1;
@@ -816,7 +816,7 @@ public class ZutiSupportMethods_GUI
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Draw targets on given renderer
 	 * @param guirenders
@@ -828,17 +828,17 @@ public class ZutiSupportMethods_GUI
 	{
 		try
 		{
-			int zutiPlayerArmy = ZutiSupportMethods.getPlayerArmy();			
-						
+			int zutiPlayerArmy = ZutiSupportMethods.getPlayerArmy();
+
 			//System.out.println("Player Army: " + zutiPlayerArmy + " vs mission army: " + com.maddox.il2.ai.World.getMissionArmy());
 			if( zutiPlayerArmy < 1 )
 				return;
-			
+
 			if( zutiPlayerArmy == com.maddox.il2.ai.World.getMissionArmy() )
 			{
 				drawTargets(guirenders, ttfont, mat, cameraortho2d, ZutiTargetsSupportMethods.ZUTI_TARGETPOINTS, zutiPlayerArmy, true);
 			}
-			else 
+			else
 			{
 				drawTargets(guirenders, ttfont, mat, cameraortho2d, ZutiTargetsSupportMethods.ZUTI_TARGETPOINTS, zutiPlayerArmy, false);
 			}
@@ -848,7 +848,7 @@ public class ZutiSupportMethods_GUI
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Method draws air units on your pad screen.
 	 */
@@ -856,29 +856,29 @@ public class ZutiSupportMethods_GUI
 	{
 		boolean noMinimapPath = World.cur().diffCur.NoMinimapPath;
 		boolean zutiRadar_AircraftIconsWhite = Mission.MDS_VARIABLES().zutiIcons_AircraftIconsWhite;
-		
+
 		try
 		{
 			Iterator iterator = GUI.pad.zutiPadObjects.keySet().iterator();
 			ZutiPadObject zo = null;
 			//Point3d point3d = null;
-			
+
 			while(iterator.hasNext())
 			{
 				zo = (ZutiPadObject)GUI.pad.zutiPadObjects.get(iterator.next());
-				
+
 				if( zo == null || zo.getOwner() == null || !zo.isAlive() )
 					continue;
-				
+
 				if( !noMinimapPath && zo.isPlayerPlane() )
 				{
 					zo.setVisibleForPlayerArmy(true);
 				}
-				
+
 				if( zo.isVisibleForPlayerArmy() )
-				{	
+				{
 					if( zutiRadar_AircraftIconsWhite )
-						IconDraw.setColor(-1);					
+						IconDraw.setColor(-1);
 					else
 						IconDraw.setColor(Army.color(zo.getArmy()));
 
@@ -888,11 +888,11 @@ public class ZutiSupportMethods_GUI
 						GUI.pad.zutiPlayeAcDrawn = true;
 						IconDraw.setColor(-1);
 					}
-					
+
 					//point3d = zo.getPosition();
 					//float f = (float) ((point3d.x - GUI.pad.cameraMap2D.worldXOffset) * GUI.pad.cameraMap2D.worldScale);
 					//float f_48_ = (float) ((point3d.y - GUI.pad.cameraMap2D.worldYOffset) * GUI.pad.cameraMap2D.worldScale);
-					
+
 					switch(zo.type)
 					{
 						case 0:
@@ -914,7 +914,7 @@ public class ZutiSupportMethods_GUI
 								renderPadObjects(GUI.pad.GUIPadMode, zo, mat);
 							}
 							break;
-						}						
+						}
 					}
 				}
 			}
@@ -924,9 +924,9 @@ public class ZutiSupportMethods_GUI
 			ex.printStackTrace();
 		}
 	}
-	
+
 	private static void renderPadObjects(int GUIPadMode, ZutiPadObject zo, Mat mat)
-	{		
+	{
 		if (GUIPadMode == 1)
 		{
 			Point3d point3d = zo.getPosition();
@@ -938,7 +938,7 @@ public class ZutiSupportMethods_GUI
 		else if (GUIPadMode == 2) //By PAL, relative map
 		{
 			Point3d point3d1 = zo.getPosition();
-			
+
 			if( zo.isPlayerPlane() )
 			{
 				//IconDraw.setColor(-1);
@@ -958,7 +958,7 @@ public class ZutiSupportMethods_GUI
 		{
 			if( !zo.isPlayerPlane() )
 				return;
-			
+
 			Point3d point3d = zo.getPosition();
 			float f = (float) ((((Tuple3d) (point3d)).x - GUI.pad.cameraMap2D.worldXOffset) * GUI.pad.cameraMap2D.worldScale);
 			float f1 = (float) ((((Tuple3d) (point3d)).y - GUI.pad.cameraMap2D.worldYOffset) * GUI.pad.cameraMap2D.worldScale);
@@ -977,7 +977,7 @@ public class ZutiSupportMethods_GUI
 		int primary = 0;
 		int secondary = 0;
 		int secret = 0;
-		
+
 		List targets = World.cur().targetsGuard.zutiGetTargets();
 		Target target = null;
 		for( int i=0; i<targets.size(); i++ )
@@ -985,7 +985,7 @@ public class ZutiSupportMethods_GUI
 			target = (Target)targets.get(i);
 			if( target.getDiedFlag() || target.isTaskComplete() )
 				continue;
-			
+
 			switch(target.importance())
 			{
 				case 0:
@@ -1005,14 +1005,14 @@ public class ZutiSupportMethods_GUI
 				}
 			}
 		}
-		
+
 		sb.append("PT: ");
 		sb.append(primary);
 		sb.append(", ST: ");
 		sb.append(secondary);
 		sb.append(", SeT: ");
 		sb.append(secret);
-		
+
 		return sb.toString();
 	}
 
@@ -1026,18 +1026,18 @@ public class ZutiSupportMethods_GUI
 		airArming.cWeapon.clear();
 		airArming.weaponNames.clear();
 		int i = airArming.cAircraft.getSelected();
-		
+
 		List limitWeaponsList = ZutiSupportMethods_Net.getLoadoutsForAircraftAtBornPlace(bp, (String)airArming.airNames.get(i));
-		
+
 		if( limitWeaponsList == null ||limitWeaponsList.size() < 1 )
 		{
 			airArming.fillWeapons();
 			return;
 		}
-		
+
 		if (i < 0)
 			return;
-		
+
 		Class class1 = (Class)Property.value(airArming.airNames.get(i), "airClass", null);
 		String as[] = Aircraft.getWeaponsRegistered(class1);
 		if (as != null && as.length > 0)
@@ -1047,21 +1047,21 @@ public class ZutiSupportMethods_GUI
 			{
 				String s1 = as[j];
 				String weaponFullName = I18N.weapons(s, s1);
-				
+
 				if (!airArming.bEnableWeaponChange)
 				{
 					String s2 = Main.cur().currentMissionFile.get(airArming.planeName, "weapons", (String)null);
 					if (!s1.equals(s2))
 						continue;
 				}
-				
+
 				if( limitWeaponsList.contains(weaponFullName) )
 				{
 					airArming.weaponNames.add(s1);
 					airArming.cWeapon.add(weaponFullName);
 				}
 			}
-			
+
 			if (airArming.weaponNames.size() == 0)
 			{
 				airArming.weaponNames.add(as[0]);
@@ -1070,7 +1070,7 @@ public class ZutiSupportMethods_GUI
 			airArming.cWeapon.setSelected(0, true, false);
 		}
 	}
-	
+
 	/**
 	 * Eliminates duplicates from both lists. Result is one clean list without any duplicates.
 	 * @param airArming
@@ -1085,11 +1085,11 @@ public class ZutiSupportMethods_GUI
 			if( airArming.weaponNames.contains(inList[i]) )
 				newList.add( inList[i] );
 		}
-		
+
 		String[] outList = new String[newList.size()];
 		for( int i=0; i<newList.size(); i++ )
 			outList[i] = (String)newList.get(i);
-		
+
 		return outList;
 	}
 
@@ -1102,13 +1102,13 @@ public class ZutiSupportMethods_GUI
 		{
 			Actor actor = (Actor) entry.getValue();
 			if (actor instanceof NetAircraft && Actor.isAlive(actor))
-			{				
+			{
 				System.out.println("Entry key: " + entry.getKey() + ",  value: " + entry.getValue());
-				System.out.println("Actor str: " + actor.toString() + ", name: " + actor.name());				
+				System.out.println("Actor str: " + actor.toString() + ", name: " + actor.name());
 			}
 		}
 	}
-	
+
 	/**
 	 * Creates list of available AC that allow multi-crew for specific army.
 	 * @param sectfile: mission file
@@ -1117,12 +1117,12 @@ public class ZutiSupportMethods_GUI
 	public static List createListItemsForMultiCrewEnabledAircraft(boolean isDSConsole, SectFile sectfile, int army, boolean isNetMaster)
 	{
 		List crewPositions = new ArrayList();
-		
+
 		try
 		{
 			int aircraftArmy = -1;
 			int position = 1;
-			
+
 			Actor actor = null;
 			String wingName = null;
 			Aircraft aircraft = null;
@@ -1136,25 +1136,25 @@ public class ZutiSupportMethods_GUI
 			SectFile flightModelSectFile = null;
 			Item item = null;
 			boolean isPlaneLivePlane = false;
-			
+
 			for (Map.Entry entry = Engine.name2Actor().nextEntry(null); entry != null; entry = Engine.name2Actor().nextEntry(entry))
 			{
 				aircraftArmy = -1;
 				actor = (Actor) entry.getValue();
-				
+
 				if( !(actor instanceof Aircraft) )
 					continue;
-	
+
 				if( !actor.isAlive() )
 					continue;
-				
+
 				wingName = entry.getKey().toString();
 				//This wing name has also appended aircraft position in wing, ie from 0 to 3. Remove that.
 				wingName = wingName.substring(0, wingName.length()-1);
-				
+
 				if( (sectfile.get(wingName, "OnlyAI", 0, 0, 1) == 1) )
 					continue;
-				
+
 				aircraft = (Aircraft) actor;
 				isPlaneLivePlane = false;
 				if( aircraft.name().endsWith("_0") )
@@ -1162,7 +1162,7 @@ public class ZutiSupportMethods_GUI
 					//Host can not see LIVE ac crew positions as it is not working by design.
 					if( isNetMaster )
 						continue;
-					
+
 					isPlaneLivePlane = true;
 					aircraftArmy = aircraft.getArmy();
 					//System.out.println("Live player AC found: " + aircraft.name() + ", army: " + aircraftArmy);
@@ -1182,10 +1182,10 @@ public class ZutiSupportMethods_GUI
 					//if mission allows it, if plane is in the air.
 					continue;
 				}
-				
+
 				//Set plane multiCrew globally - mostly for AI since live planes have this already set
 				aircraft.FM.AS.zutiSetMultiCrew( true );
-				
+
 				regiment = aircraft.getRegiment();
 				if( aircraftArmy == -1 )
 					aircraftArmy = regiment.getArmy();
@@ -1194,7 +1194,7 @@ public class ZutiSupportMethods_GUI
 					//the color in which plane is renders in gunner positions list. So, set it
 					//here for live players, just to make sure it's correct army.
 					regiment.setArmy(aircraftArmy);
-				
+
 				if( aircraftArmy == army )
 				{
 					var_class = aircraft.getClass();
@@ -1212,7 +1212,7 @@ public class ZutiSupportMethods_GUI
 							cockpits = var_classes.length;
 						}
 						aircraftName = Property.stringValue(var_class, "keyName", null);
-						
+
 						gtexture = null;
 						if( !isDSConsole )
 						{
@@ -1233,23 +1233,23 @@ public class ZutiSupportMethods_GUI
 								{
 									gtexture = GTexture.New("PaintSchemes/Cache/g01GUI.mat");
 									System.out.println("GUINetAircraft - item texture for aircraft >" + aircraft.name() + "< set to default BLUE texture as selected aircraft regiment >" + regiment.name() + "< texture DOES NOT EXIST!");
-								}								
+								}
 							}
 						}
-						
+
 						GUINetAircraft.crewFunction[0] = 1;
 						for (int crewFunctionsIndex = 1; crewFunctionsIndex < GUINetAircraft.crewFunction.length; crewFunctionsIndex++)
 							GUINetAircraft.crewFunction[crewFunctionsIndex] = 7;
-						
+
 						flightModelName = (Property.stringValue(var_class, "FlightModel", null));
 						flightModelSectFile = FlightModelMain.sectFile(flightModelName);
-						
+
 						int nrOfCrew = flightModelSectFile.get("Aircraft", "Crew", 1, 1, 20);
 						for (int crewFunctionsIndex = 0; crewFunctionsIndex < GUINetAircraft.crewFunction.length; crewFunctionsIndex++)
 							GUINetAircraft.crewFunction[crewFunctionsIndex] = (flightModelSectFile.get("Aircraft", "CrewFunction" + crewFunctionsIndex, GUINetAircraft.crewFunction[crewFunctionsIndex], 1, (AircraftState.astateHUDPilotHits).length));
-						
+
 						int acIndexInWing = aircraft.getWing().aircIndex(aircraft);
-						
+
 						for (int cockpitId = 1; cockpitId < cockpits; cockpitId++)
 						{
 							//if (cockpitId <= 0 || !CockpitPilot.class.isAssignableFrom(var_classes[cockpitId]))
@@ -1278,15 +1278,15 @@ public class ZutiSupportMethods_GUI
 								item.clsAircraft = var_class;
 								item.number = paintscheme.typedName(aircraft);
 								item.texture = gtexture;
-	
+
 								if( item.cocName.equals("Pilot") )
 									item.cocName = "Bombardier";
-								
+
 								if( isPlaneLivePlane )
 									item.zutiLiveAcName = aircraft.name();
 								else
 									item.zutiLiveAcName = null;
-								
+
 								//Edited by |ZUTI|: only gunner positions are available! No pilot seats possible!!!
 								crewPositions.add(item);
 							}
@@ -1299,7 +1299,7 @@ public class ZutiSupportMethods_GUI
 		{
 			ex.printStackTrace();
 		}
-		
+
 		return crewPositions;
 	}
 
@@ -1312,14 +1312,14 @@ public class ZutiSupportMethods_GUI
 	{
 		airArming.cFuel.clear();
 		int selectedAircraft = airArming.cAircraft.getSelected();
-		
+
 		int maxSelection = ZutiSupportMethods_Net.getBornPlaceAircraftFuelSelectionLimit(bp, (String)airArming.airNames.get(selectedAircraft));
 		for( int i=0; i<=maxSelection; i++ )
 		{
 			airArming.cFuel.add( new Integer((i+1)*10).toString() );
 		}
 	}
-	
+
 	/**
 	 * Method fills GUIAirArming fuel combo box to it's fullest.
 	 * @param airArming
@@ -1333,7 +1333,7 @@ public class ZutiSupportMethods_GUI
 			airArming.cFuel.add( new Integer((i+1)*10).toString() );
 		}
 	}
-		
+
 	/**
 	 * Set appropriate fuel selection for specified aircraft that is placed on specified born place.
 	 * @param airArming
@@ -1345,19 +1345,19 @@ public class ZutiSupportMethods_GUI
 		if( bp != null && bp.zutiEnablePlaneLimits )
 		{
 			ZutiSupportMethods_GUI.fillAircraftMaxFuelSelectionBasedOnBornPlace(airArming, bp);
-			
+
 			String selectedAircraft = (String)airArming.airNames.get(airArming.cAircraft.getSelected());
 			int maxForSelectedAircraft = ZutiSupportMethods_Net.getBornPlaceAircraftFuelSelectionLimit(bp, selectedAircraft);
-			
+
 			if( selection > maxForSelectedAircraft )
 				selection = maxForSelectedAircraft;
 		}
 		else
 			ZutiSupportMethods_GUI.fillFuelComboBox(airArming);
-		
+
 		airArming.cFuel.setSelected(selection, true, false);
 	}
-	
+
 
 	/**
 	 * Method loads all visited servers from game config file.
@@ -1374,12 +1374,12 @@ public class ZutiSupportMethods_GUI
 				else if (id > 9 && id < 100)
 					index = "0" + new Integer(id).toString();
 				else if (id > 99) index = new Integer(id).toString();
-	
+
 				String remoteHost = Config.cur.ini.get("NET", "remoteHost_" + index, "");
 				if (remoteHost.trim().length() > 0)
 					DROP_DOWN_SERVERS_LIST.add(remoteHost);
 			}
-			
+
 			DROP_DOWN_SERVERS_LIST = clearDuplicatesForDropDownServerList();
 		}
 	}
@@ -1393,10 +1393,10 @@ public class ZutiSupportMethods_GUI
 			if( !list.contains(line) )
 				list.add(line);
 		}
-		
+
 		return list;
 	}
-	
+
 	/**
 	 * Method saves entered servers in "connect" menu.
 	 */
@@ -1405,7 +1405,7 @@ public class ZutiSupportMethods_GUI
 		if(Config.isUSE_RENDER())
 		{
 			DROP_DOWN_SERVERS_LIST = clearDuplicatesForDropDownServerList();
-			
+
 			for (int id = 0; id < DROP_DOWN_SERVERS_LIST.size(); id++)
 			{
 				String index = "";
@@ -1414,12 +1414,12 @@ public class ZutiSupportMethods_GUI
 				else if (id > 9 && id < 100)
 					index = "0" + new Integer(id).toString();
 				else if (id > 99) index = new Integer(id).toString();
-	
+
 				Config.cur.ini.setValue("NET", "remoteHost_" + index, (String) DROP_DOWN_SERVERS_LIST.get(id));
 			}
 		}
 	}
-	
+
 	/**
 	 * Get all visited servers.
 	 * @return
@@ -1431,9 +1431,9 @@ public class ZutiSupportMethods_GUI
 			DROP_DOWN_SERVERS_LIST = new ArrayList();
 			ZutiSupportMethods_GUI.loadDropDownServersList();
 		}
-		
+
 		Collections.sort(DROP_DOWN_SERVERS_LIST);
-		
+
 		return DROP_DOWN_SERVERS_LIST;
 	}
 
@@ -1449,7 +1449,7 @@ public class ZutiSupportMethods_GUI
 			ZutiSupportMethods_GUI.saveDropDownServersList();
 		}
 	}
-	
+
 	/**
 	 * Add new server to visited servers list.
 	 * @param serverName
@@ -1462,7 +1462,7 @@ public class ZutiSupportMethods_GUI
 			ZutiSupportMethods_GUI.saveDropDownServersList();
 		}
 	}
-	
+
 	/**
 	 * Call this method if host selected valid aircraft.
 	 */
@@ -1481,9 +1481,9 @@ public class ZutiSupportMethods_GUI
 				NetUser netuser = (NetUser)NetEnv.host();
 				int i = netuser.getBornPlace();
 				int i_7_ = netuser.getAirdromeStay();
-				
+
 				System.out.println("------------------STAY AIRDROME: " + i_7_);
-				
+
 				UserCfg usercfg = World.cur().userCfg;
 				netuser.checkReplicateSkin(usercfg.netAirName);
 				netuser.checkReplicateNoseart(usercfg.netAirName);
@@ -1493,7 +1493,7 @@ public class ZutiSupportMethods_GUI
 					string = "0" + usercfg.netTacticalNumber;
 				else
 					string = "" + usercfg.netTacticalNumber;
-				
+
 				//---------------------------------------------------------------------------
 				//Edited by |ZUTI|: addint support for multi-crew...
 				//Original call
@@ -1507,7 +1507,7 @@ public class ZutiSupportMethods_GUI
 						"spawn " + ((Class)Property.value(usercfg.netAirName, "airClass", null)).getName() + " PLAYER NAME " + (((NetUser)NetEnv.host()).netUserRegiment.isEmpty() ? usercfg.netRegiment : "") + usercfg.netSquadron + "0" + string
 								+ " WEAPONS " + usercfg.getWeapon(usercfg.netAirName) + " BORNPLACE " + i + " STAYPLACE " + i_7_ + " FUEL " + usercfg.fuel  + (usercfg.bZutiMultiCrew ? " Z_MULTICREW " : " ") + (usercfg.bZutiMultiCrewAnytime ? "Z_MULTICREW_ANYTIME" : "") + " OVR");
 				//---------------------------------------------------------------------------
-				
+
 				Aircraft aircraft = World.getPlayerAircraft();
 				if (Actor.isValid(aircraft))
 				{
@@ -1516,7 +1516,7 @@ public class ZutiSupportMethods_GUI
 					ForceFeedback.startMission();
 					AudioDevice.soundsOn();
 					Main.stateStack().change(42);
-					
+
 					//TODO: Added by |ZUTI|: sync your position with other crew members
 					//---------------------------------------------------------------------------------------
 					//Enable joystick!
@@ -1526,7 +1526,7 @@ public class ZutiSupportMethods_GUI
 			}
 		}
 	}
-	
+
 	/**
 	 * Method checks if user selected valid ac, loadout, fuel and country for selected home base.
 	 * Return codes: 0=basic check failed. 1=fuel selection wrong. 2=weapons wrong. 3=country wrong.
@@ -1551,22 +1551,22 @@ public class ZutiSupportMethods_GUI
         BornPlace bornplace = (BornPlace)World.cur().bornPlaces.get(netuser.getBornPlace());
         if(bornplace.airNames == null)
             return 0;
-        
+
         //If home base does not have aircraft limitations selected, it's all valid :D
         if( !bornplace.zutiEnablePlaneLimits )
         	return -1;
-        
+
 		float maxForSelectedAircraft = ZutiSupportMethods_Net.getBornPlaceAircraftFuelSelectionLimit(bornplace, usercfg.netAirName);
 		//System.out.println("SELECTION: " + maxForSelectedAircraft);
 		maxForSelectedAircraft = (maxForSelectedAircraft+1)*10;
-		
+
 		//System.out.println("MAX = " + maxForSelectedAircraft + " vs selected=" + usercfg.fuel);
 		if( usercfg.fuel > maxForSelectedAircraft )
 		{
 			System.out.println("ZSM_GUI - Change fuel selection!");
 			return 1;
 		}
-        
+
 		List loadouts = ZutiSupportMethods_Net.getLoadoutsForAircraftAtBornPlace(bornplace, usercfg.netAirName);
 		boolean isValid = false;
 		if( loadouts.size() == 0 )
@@ -1587,16 +1587,16 @@ public class ZutiSupportMethods_GUI
 			System.out.println("ZSM_GUI - Change weapons selection!");
 			return 2;
 		}
-		
+
 		if( !ZutiSupportMethods.isRegimentValidForSelectedHB(usercfg.netRegiment, bornplace) )
 		{
 			System.out.println("ZSM_GUI - Change country selection!");
 			return 3;
 		}
-		
+
 		return -1;
 	}
-	
+
 	public static boolean isValidArming_ServerGUI()
 	{
 		com.maddox.il2.ai.UserCfg usercfg;
@@ -1638,7 +1638,7 @@ public class ZutiSupportMethods_GUI
 	private static boolean isValidBornPlace_ServerGUI()
 	{
 		NetUser netuser = (NetUser)NetEnv.host();
-		
+
 		int i = netuser.getBornPlace();
 		BornPlace bp = (BornPlace)World.cur().bornPlaces.get(i);
 		if( !bp.zutiAirspawnOnly && netuser.getAirdromeStay() < 0 && !bp.zutiAirspawnIfQueueFull )
@@ -1650,7 +1650,7 @@ public class ZutiSupportMethods_GUI
 		{
 			return true;
 		}
-		
+
 		if (i < 0 || i >= World.cur().bornPlaces.size())
 		{
 			new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, GAME_STATE.i18n("brief.BornPlace"), GAME_STATE.i18n("brief.BornPlaceSelect"), 3, 0.0F);
@@ -1664,7 +1664,7 @@ public class ZutiSupportMethods_GUI
 		}
 		return true;
 	}
-	
+
 	public static void spawn_ClientGUI()
 	{
 		if (isValidBornPlace_ClientGUI())
@@ -1689,7 +1689,7 @@ public class ZutiSupportMethods_GUI
 					string = "0" + usercfg.netTacticalNumber;
 				else
 					string = "" + usercfg.netTacticalNumber;
-				
+
 				//---------------------------------------------------------------------------
 				//Edited by |ZUTI|: addint support for multi-crew...
 				//Original call
@@ -1703,7 +1703,7 @@ public class ZutiSupportMethods_GUI
 						"spawn " + ((Class)Property.value(usercfg.netAirName, "airClass", null)).getName() + " PLAYER NAME " + (((NetUser)NetEnv.host()).netUserRegiment.isEmpty() ? usercfg.netRegiment : "") + usercfg.netSquadron + "0" + string
 								+ " WEAPONS " + usercfg.getWeapon(usercfg.netAirName) + " BORNPLACE " + i + " STAYPLACE " + i_7_ + " FUEL " + usercfg.fuel  + (usercfg.bZutiMultiCrew ? " Z_MULTICREW " : " ") + (usercfg.bZutiMultiCrewAnytime ? "Z_MULTICREW_ANYTIME" : "") + " OVR");
 				//---------------------------------------------------------------------------
-				
+
 				Aircraft aircraft = World.getPlayerAircraft();
 				if (Actor.isValid(aircraft))
 				{
@@ -1712,9 +1712,9 @@ public class ZutiSupportMethods_GUI
 					ForceFeedback.startMission();
 					AudioDevice.soundsOn();
 					Main.stateStack().change(43);
-					
+
 					//TODO: Added by |ZUTI|: sync your position with other crew members
-					//---------------------------------------------------------------------------------------					 
+					//---------------------------------------------------------------------------------------
 					//Enable joystick!
 					ZutiSupportMethods_Multicrew.setJojstickState();
 					//---------------------------------------------------------------------
@@ -1736,7 +1736,7 @@ public class ZutiSupportMethods_GUI
             return false;
         if(usercfg.getWeapon(usercfg.netAirName) == null)
             return false;
-        
+
         boolean flag;
         Class class1 = (Class)Property.value(usercfg.netAirName, "airClass", null);
         com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host();
@@ -1758,7 +1758,7 @@ public class ZutiSupportMethods_GUI
 
         if(!flag)
             return false;
-        
+
         return Aircraft.weaponsExist(class1, usercfg.getWeapon(usercfg.netAirName));
 	}
 	private static boolean isValidBornPlace_ClientGUI()
@@ -1775,7 +1775,7 @@ public class ZutiSupportMethods_GUI
 		{
 			return true;
 		}
-		
+
 		if (i < 0 || i >= World.cur().bornPlaces.size())
 		{
 			GUINetClientGuard guinetclientguard = (GUINetClientGuard)Main.cur().netChannelListener;
