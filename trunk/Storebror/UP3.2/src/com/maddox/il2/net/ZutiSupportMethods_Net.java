@@ -31,7 +31,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Method returns true if born place is not yet full or is disabled.
-     * 
+     *
      * @param bp
      * @return
      */
@@ -55,7 +55,7 @@ public class ZutiSupportMethods_Net {
     /**
      * Method searches stay points (spawn places) for specified born place.
      * Call this for born places positioned on carriers.
-     * 
+     *
      * @param bp
      */
     public static void setBornPlaceStayPoints(BornPlace bp) {
@@ -129,7 +129,7 @@ public class ZutiSupportMethods_Net {
      * Returned list contains loadouts IDs for specified aircraft that are supported
      * by specified born place. Loadouts names are localized strings.
      * supports for specified aircraft.
-     * 
+     *
      * @param bp
      * @param acName
      * @return
@@ -153,7 +153,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Method checks if specified aircraft is still available at given born place.
-     * 
+     *
      * @param bp
      * @param acName
      * @return
@@ -188,7 +188,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Method returns list containing available aircraft at specified born place.
-     * 
+     *
      * @param bp
      * @return
      */
@@ -211,7 +211,7 @@ public class ZutiSupportMethods_Net {
      * This method will return a list of ZutiAircraft objects with lines shorter than 255 characters. Each line will
      * contains these aircraft properties: acName, currentNumberOfAc, maxFuel, loadouts. These entries are separated by
      * space. When AC entry is done, an ; is inserted to separate AC between themselves.
-     * 
+     *
      * @param bp
      * @return
      */
@@ -250,7 +250,7 @@ public class ZutiSupportMethods_Net {
     /**
      * Method searches for home base at specified coordinates and removes planes listed in acNames
      * list from its aircraft list.
-     * 
+     *
      * @param acNames
      *            Aircraft list.
      * @param x
@@ -275,7 +275,7 @@ public class ZutiSupportMethods_Net {
                 ZutiSupportMethods_Net.setBornPlaceAircraftList(bp, aircraftList);
         }
     }
-    
+
     // TODO: Patch Pack 107, add previous function signature and remap to old behaviour
     public static void addAircraftToBornPlace(BornPlace bp, String acName) {
         addAircraftToBornPlace(bp, acName, false);
@@ -283,7 +283,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Method refills the airNames with full AC list and omit those planes that come with aircraftToIgnore parameter.
-     * 
+     *
      * @param bp
      * @param acName
      */
@@ -332,7 +332,7 @@ public class ZutiSupportMethods_Net {
     /**
      * Method is used to deduct one aircraft from specified home base.
      * Only affective if home base has zutiDecreasingNumberOfPlanes set to true.
-     * 
+     *
      * @param bp
      * @param acName
      */
@@ -360,7 +360,7 @@ public class ZutiSupportMethods_Net {
     /**
      * This method sets airNames list for specified home base with those aircraft
      * that are available.
-     * 
+     *
      * @param bp
      */
     public static void syncBornPlaceAirNamesList(BornPlace bp) {
@@ -385,7 +385,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Method de-activates list of AC for given born place.
-     * 
+     *
      * @param bp
      * @param zuti
      *            aircraft list
@@ -411,7 +411,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Fills born place airNames variable with all aircraft found in IL2 sources!
-     * 
+     *
      * @param bp
      */
     public static void addAllAircraftToBornPlace(BornPlace bp) {
@@ -440,7 +440,7 @@ public class ZutiSupportMethods_Net {
     /**
      * Method creates ZutiAircraftObjects based on complete aircraft list in specified born place.
      * Those objects are then inserted into zutiAircraft list.
-     * 
+     *
      * @param bp
      */
     public static void createCompleteAircraftListForBornPlace(BornPlace bp) {
@@ -469,7 +469,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Method loads countries for events of base capturing.
-     * 
+     *
      * @param bp
      */
     public static void loadBornPlaceCapturedCountries(BornPlace bp) {
@@ -517,7 +517,7 @@ public class ZutiSupportMethods_Net {
      * Method loads some default countries for given born place base on born place army.
      * This eliminates that born places have countries in their countries list that do not
      * belong to that born place army (red base having Germany as a valid country...)
-     * 
+     *
      * @param bp
      */
     public static void loadBornPlaceDefaultCountries(BornPlace bp) {
@@ -549,7 +549,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Method loads ALL IL2 DEFINED countries to specified born place.
-     * 
+     *
      * @param bp
      */
     public static void loadAllCountriesForBornPlace(BornPlace bp) {
@@ -578,7 +578,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Method searches for free spawn point for given airport.
-     * 
+     *
      * @param index
      *            : position in World.cur().airdrome.stay array to search for free point from
      * @return
@@ -631,7 +631,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Call this when new mission is loaded to reset server time!
-     * 
+     *
      * @param netserverparams
      */
     public static void resetServerTime(NetServerParams netserverparams) {
@@ -642,7 +642,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Method executes sequence of commands that enable orders to be used/send during dogfight game.
-     * 
+     *
      * @param netserverparams
      */
     public static void startDogfightGame(NetServerParams netserverparams) {
@@ -653,7 +653,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Ignore given class for CRT check or not? All classes that are named with less than 3 chars are ignored.
-     * 
+     *
      * @param className
      * @return
      */
@@ -671,7 +671,7 @@ public class ZutiSupportMethods_Net {
     /**
      * Method returns max fuel selection for specified born place and aircraft. Result indicates
      * fuel combo box selection id and is in range between 0 and 9. 0 = 10%, 9 = 100%.
-     * 
+     *
      * @param bp
      * @param acName
      * @return
@@ -696,7 +696,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Method returns max fuel in kg for specified aircraft at specified born place.
-     * 
+     *
      * @param bp
      * @param aircraft
      * @return
@@ -716,7 +716,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Gets born place that is nearest to given coordinates, regardless of it's army.
-     * 
+     *
      * @param x1
      * @param y1
      * @return
@@ -747,7 +747,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Gets born place that is nearest to given coordinates that is NOT of army that you specified.
-     * 
+     *
      * @param x1
      * @param y1
      * @param army
@@ -784,7 +784,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Returns nearest friendly born place for specified coordinates
-     * 
+     *
      * @param x1
      * @param y1
      * @param army
@@ -815,7 +815,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Get born place that has specified coordinates
-     * 
+     *
      * @param x
      * @param y
      * @return
@@ -840,7 +840,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Get born place based on it's id
-     * 
+     *
      * @param bpId
      * @return
      */
@@ -864,7 +864,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Check if given coordinates are inside any born place.
-     * 
+     *
      * @param x
      * @param y
      * @return Valid BornPlace object, else null.
@@ -893,7 +893,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Check if given coordinates are inside specified born place.
-     * 
+     *
      * @param x
      * @param y
      * @param bornPlace
@@ -913,7 +913,7 @@ public class ZutiSupportMethods_Net {
     /**
      * This method is one of the keys for enabling AI aircraft to recognize
      * and be aware of live players in dogfight game mode.
-     * 
+     *
      * @param aircraft
      */
     public static void manageDogfightGroups(Aircraft aircraft) {
@@ -940,7 +940,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Method fetches next free spawn place on carrier based home bases.
-     * 
+     *
      * @param user
      * @return
      */
@@ -995,7 +995,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Release stay point for given home base.
-     * 
+     *
      * @param bp
      */
     public static void releaseStayPlace(String userName, int bornPlaceId, int stayPlaceId) {
@@ -1020,7 +1020,7 @@ public class ZutiSupportMethods_Net {
 
     /**
      * Call this method to determine if netuser is in own aircraft or not.
-     * 
+     *
      * @param netuser
      * @param aircraft
      * @return
@@ -1046,12 +1046,12 @@ public class ZutiSupportMethods_Net {
     }
     private static int debugLevel = Integer.MIN_VALUE;
     private static final int DEBUG_DEFAULT = 0;
-    
+
     private static int curDebugLevel() {
         if (debugLevel == Integer.MIN_VALUE) debugLevel = Config.cur.ini.get("Mods", "DEBUG_ZSM_NET", DEBUG_DEFAULT);
         return debugLevel;
     }
-    
+
     public static void printDebugMessage(String theMessage) {
         if (curDebugLevel() == 0) return;
         System.out.println(theMessage);

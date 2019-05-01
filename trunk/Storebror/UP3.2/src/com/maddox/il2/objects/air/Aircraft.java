@@ -2418,24 +2418,24 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		return (_WeaponSlot[]) hashmapint.get(Finger.Int(string));
 	}
 
-	public static boolean weaponsExist(java.lang.Class class1, java.lang.String s) {
-		java.lang.Object obj = com.maddox.rts.Property.value(class1, "weaponsMap", null);
+	public static boolean weaponsExist(Class class1, String s) {
+		Object obj = Property.value(class1, "weaponsMap", null);
 		if (obj == null) {
 			return false;
 		} else {
-			com.maddox.util.HashMapInt hashmapint = (com.maddox.util.HashMapInt) obj;
+			HashMapInt hashmapint = (HashMapInt) obj;
 			int i = com.maddox.rts.Finger.Int(s);
 			boolean flag = Aircraft.isWeaponDateOk(class1, s);
 			return hashmapint.containsKey(i) && flag;
 		}
 	}
 
-	public static boolean isWeaponDateOk(java.lang.Class class1, java.lang.String s) {
+	public static boolean isWeaponDateOk(Class class1, String s) {
 		com.maddox.util.HashMapInt hashmapint = Aircraft.weaponsMapProperty(class1);
-		int i = com.maddox.rts.Finger.Int(s);
+		int i = Finger.Int(s);
 		if (!hashmapint.containsKey(i))
 			return true;
-		int j = com.maddox.il2.game.Mission.getMissionDate(false);
+		int j = Mission.getMissionDate(false);
 		if (j == 0)
 			return true;
 		java.lang.String s1 = "";

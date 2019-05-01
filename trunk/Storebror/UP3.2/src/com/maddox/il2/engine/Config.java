@@ -76,6 +76,10 @@ public class Config {
             this.iDiffuse = ini.get("Mods", "Diffuse", MAX_NIGHT_SETTINGS);
          // TODO: --- Mods Settings GUI by SAS~Storebror ---
 
+            // TODO: +++ Disable old "TRK" track recording
+            this.saveTrk = ini.get("game", "SaveTrk", saveTrk);
+            // TODO: --- Disable old "TRK" track recording
+
             checkWindowUse3Renders();
             if (windowChangeScreenRes) {
                 windowFullScreen = true;
@@ -129,6 +133,11 @@ public class Config {
             ini.setValue("Mods", "EventLogFlushTimeout", "" + this.iEventLogFlushTimeout);
             ini.setValue("Mods", "LogFlushTimeout", "" + this.iLogFlushTimeout);
             // TODO: --- Mods Settings GUI by SAS~Storebror ---
+
+            // TODO: +++ Disable old "TRK" track recording
+            ini.setValue("game", "SaveTrk", this.saveTrk ? "1" : "0");
+            // TODO: --- Disable old "TRK" track recording
+
             saveSound();
             saveEngine();
         }
@@ -721,4 +730,8 @@ public class Config {
  // TODO: +++ Widescreen backport from 4.12 by SAS~Storebror +++
     public boolean              windowsWideScreenFoV = false;
  // TODO: --- Widescreen backport from 4.12 by SAS~Storebror ---
+    // TODO: +++ Disable old "TRK" track recording
+    public boolean              saveTrk = false;
+    // TODO: --- Disable old "TRK" track recording
+
 }

@@ -1088,24 +1088,26 @@ public class F_86F extends Scheme1
             this.FM.AS.bIsAboutToBailout = false;
             bailout();
         }
-        if(this.FM.AS.isMaster() && Config.isUSE_RENDER())
-        {
-            if(this.FM.EI.engines[0].getPowerOutput() > 0.45F && this.FM.EI.engines[0].getStage() == 6)
-            {
-                if(this.FM.EI.engines[0].getPowerOutput() > 0.65F)
-                    this.FM.AS.setSootState(this, 0, 3);
-                else
-                    this.FM.AS.setSootState(this, 0, 2);
-            } else
-            {
-                this.FM.AS.setSootState(this, 0, 0);
-            }
+        if(Config.isUSE_RENDER()) {
             setExhaustFlame((int)Aircraft.cvt(this.FM.EI.engines[0].getThrustOutput(), 0.7F, 0.87F, 0.0F, 12F), 0);
-            if(this.FM instanceof RealFlightModel)
-            {
-                umn();
-                this.$1.$1();
-            }
+	        if(this.FM.AS.isMaster())
+	        {
+	            if(this.FM.EI.engines[0].getPowerOutput() > 0.45F && this.FM.EI.engines[0].getStage() == 6)
+	            {
+	                if(this.FM.EI.engines[0].getPowerOutput() > 0.65F)
+	                    this.FM.AS.setSootState(this, 0, 3);
+	                else
+	                    this.FM.AS.setSootState(this, 0, 2);
+	            } else
+	            {
+	                this.FM.AS.setSootState(this, 0, 0);
+	            }
+	            if(this.FM instanceof RealFlightModel)
+	            {
+	                umn();
+	                this.$1.$1();
+	            }
+	        }
         }
         engineSurge(paramFloat);
         typeFighterAceMakerRangeFinder();

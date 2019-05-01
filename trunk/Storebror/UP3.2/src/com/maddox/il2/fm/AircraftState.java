@@ -2866,6 +2866,7 @@ public class AircraftState {
                     case 40:
                     case 41:
                     case 43:
+                    	break;
                 }
             } else {
                 this.aircraft.net.postTo(this.aircraft.net.masterChannel(), new NetMsgGuaranted(paramNetMsgInput, paramNetMsgInput.available() > 3 ? 1 : 0));
