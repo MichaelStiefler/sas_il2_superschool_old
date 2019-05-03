@@ -138,9 +138,9 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
     public static final String MIN_PATCH_LEVEL        = "0";
     public static final String MAX_PATCH_LEVEL        = "100";
     public static final String UP_VERSION             = "3.2";
-    public static final String PATCH_LEVEL            = "0";
+    public static final String PATCH_LEVEL            = "1";
     public static final String PATCH_LEVEL_TEST       = "102b1";
-    public static String[]     PATCHLEVEL_G           = { "0" };
+    public static String[]     PATCHLEVEL_G           = { "1" };
     public static String[]     PATCHLEVEL_Y           = { "303" };
     private String             patchLevel             = "none";
     private String             selectorVersion        = "unknown";

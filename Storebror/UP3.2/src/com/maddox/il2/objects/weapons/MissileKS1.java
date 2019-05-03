@@ -2,6 +2,7 @@ package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Color3f;
 import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Vector3d;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Orient;
 import com.maddox.rts.NetChannel;
@@ -10,6 +11,121 @@ import com.maddox.rts.Spawn;
 
 public class MissileKS1 extends Missile implements MissileInterceptable
 {
+
+	private float victimOffsetZ = Float.MIN_VALUE;
+	private float cruiseAltitude = Float.MIN_VALUE;
+	private float smoothDampeningFactor = 1F;
+	private int altOffsetSign = 0;
+	private int flightPhase = 0;
+	Vector3d speedVector = new Vector3d();
+
+	public boolean computeSpecialStepBefore() {
+
+		if (!Actor.isValid(this.getVictim())) {
+//			System.out.println("victim invalid!");
+			return true;
+		}
+		float victimDistance = (float)GuidedMissileUtils.distanceBetween(this, this.getVictim());
+		if (victimOffsetZ == Float.MIN_VALUE) {
+			victimOffsetZ = this.getVictimOffsetPoint3f().z;
+//			System.out.println("victim offset = " + victimOffsetZ);
+		}
+		if (cruiseAltitude == Float.MIN_VALUE) {
+			if (Actor.isValid(this.getOwner())) {
+				this.cruiseAltitude = (float)this.getOwner().pos.getAbsPoint().z;
+				if (cruiseAltitude < 2000F) cruiseAltitude = 2000F;
+				if (cruiseAltitude > 10000F) cruiseAltitude = 10000F;
+//				System.out.println("cruise altitude = " + cruiseAltitude);
+			}
+		}
+		float alt = (float)this.pos.getAbsPoint().z;
+		if (victimDistance < 2500F) {
+//			System.out.println("distance=" + victimDistance + ", offset z=" + this.victimOffsetZ + ", alt=" + alt);
+			this.setVictimOffsetZ(this.victimOffsetZ);
+			return true;
+		}
+		float offsetZ = 2000F;
+		if (victimDistance < 20000F) {
+			if (flightPhase != 2) {
+				flightPhase = 2;
+				smoothDampeningFactor = 1F;
+				altOffsetSign = 0;
+			}
+			offsetZ = 400F;
+			if (victimDistance > 5000F) {
+				float altOffset = alt-offsetZ;
+				if (altOffset > 20F) {
+					if (altOffsetSign != 1) {
+						if (altOffsetSign != 0) smoothDampeningFactor *= 2F;
+						altOffsetSign = 1;
+					}
+					offsetZ -= Math.min(1F, altOffset / 1500F) * (victimDistance - alt) / smoothDampeningFactor;
+				} else if (altOffset < -20F) {
+					if (altOffsetSign != -1) {
+						if (altOffsetSign != 0) smoothDampeningFactor *= 2F;
+						altOffsetSign = -1;
+					}
+					offsetZ += Math.min(1F, -altOffset / 1500F) * (victimDistance - alt) / smoothDampeningFactor;
+				}
+			}
+		} else {
+			if (flightPhase != 1) {
+				flightPhase = 1;
+				smoothDampeningFactor = 1F;
+				altOffsetSign = 0;
+			}
+			offsetZ = cruiseAltitude;
+			if (victimDistance > 30000F) {
+				float altOffset = alt-offsetZ;
+				if (altOffset > 100F) {
+					if (altOffsetSign != 1) {
+						if (altOffsetSign != 0) smoothDampeningFactor *= 2F;
+						altOffsetSign = 1;
+					}
+					offsetZ -= Math.min(1F, altOffset / 1500F) * (victimDistance - alt) / smoothDampeningFactor;
+				} else if (altOffset < -100F) {
+					if (altOffsetSign != -1) {
+						if (altOffsetSign != 0) smoothDampeningFactor *= 2F;
+						altOffsetSign = -1;
+					}
+					offsetZ += Math.min(1F, -altOffset / 1500F) * (victimDistance - alt) / smoothDampeningFactor;
+				}
+			}
+		}
+//		System.out.println("distance=" + victimDistance + ", offset z=" + offsetZ + ", alt=" + alt);
+		this.setVictimOffsetZ(offsetZ);
+
+		return true;
+	}
+
+	public boolean computeSpecialStepAfter() {
+		float turnStepMax = this.getTurnStepMax();
+		if (turnStepMax == 0F) return true;
+		float roll = this.getMissileOrient().getKren();
+		while (roll > 180F) roll-=360F;
+		while (roll < -180F) roll+=360F;
+
+		float curTurn = this.getDeltaAzimuth();
+		float targetRoll = curTurn / turnStepMax;
+		if (targetRoll > 1F) targetRoll = 1F;
+		if (targetRoll < -1F) targetRoll = -1F;
+		targetRoll *= 45F;
+
+		float newRoll = (roll * 2F + targetRoll) / 3F;
+//		System.out.println("Failstate" + this.getFailState() + ", speed=" + (this.getSpeed(null) * 3.6F) + ", turnStepMax=" + turnStepMax + ", curTurn=" + curTurn + ", targetRoll=" + targetRoll + ", Roll=" + this.getMissileOrient().getKren() + ", newRoll=" + newRoll);
+		this.getMissileOrient().setYPR(this.getMissileOrient().getYaw(), this.getMissileOrient().getPitch(), -newRoll);
+
+		float speed = (float)this.getSpeed(this.speedVector) * 3.6F;
+		float machOne = MissilePhysics.getMachForAlt((float)this.pos.getAbsPoint().z);
+		if (speed > machOne * 0.95F) {
+			this.speedVector.scale(machOne * 0.95F / speed);
+			this.setSpeed(this.speedVector);
+		}
+
+		return true;
+	}
+
+
   static
   {
     Class class1 = MissileKS1.class;
@@ -23,7 +139,7 @@ public class MissileKS1 extends Missile implements MissileInterceptable
     Property.set(class1, "sound", "weapon.rocket_132");
     Property.set(class1, "timeLife", 400F); // Rocket life time in Seconds
     Property.set(class1, "timeFire", 300F); // Rocket Engine Burn time in Seconds
-    Property.set(class1, "force", 8900F); // Rocket Engine Power (in Newton)
+    Property.set(class1, "force", 18900F); // Rocket Engine Power (in Newton)
     Property.set(class1, "forceT1", 10.0F); // Time1, i.e. time until Rocket Engine force output maximum reached (in Seconds), 0 disables this feature
     Property.set(class1, "forceP1", 0.0F); // Power1, i.e. Rocket Engine force output at beginning (in Percent)
     Property.set(class1, "forceT2", 1.0F); // Time2, i.e. time before Rocket Engine burn time ends (in Seconds), from this time on Rocket Engine power output decreases, 0 disables this feature
