@@ -33,7 +33,7 @@ public class MissileAIM9B extends Missile {
 		Property.set(class1, "timeLife", 30F); // Rocket life time in Seconds
 		Property.set(class1, "timeFire", 2.2F); // Rocket Booster Burn time in Seconds
 		Property.set(class1, "force", 18000F); // Rocket Booster Power (in Newton)
-		Property.set(class1, "timeSustain", 0F); // Rocket Sustained Motor Burn time in Seconds (0 for single stage rockets)
+		Property.set(class1, "timeSustain", 30F); // Rocket Sustained Motor Burn time in Seconds (0 for single stage rockets)
 		Property.set(class1, "forceSustain", 0F); // Rocket Sustained Power (in Newton)
 		Property.set(class1, "forceT1", 0.5F); // Time1, i.e. time until Rocket Engine force output maximum reached (in Seconds), 0 disables this feature
 		Property.set(class1, "forceP1", 0.0F); // Power1, i.e. Rocket Engine force output at beginning (in Percent)
@@ -41,6 +41,7 @@ public class MissileAIM9B extends Missile {
 		Property.set(class1, "powerType", 0); // Type of Explosion. 0="Splash", 1="Splinters", 2="Napalm"
 		Property.set(class1, "power", 0.45F); // RL Data: 4.5kg HE warhead, for realism reduced to 1/10th of it's RL weight
 		Property.set(class1, "radius", 9.14F); // Radius of Explosion Effect
+	    Property.set(class1, "fuzeRadius", 50.0F); // If missile has proximity Fuze, this value will set the radius for target detection
 		Property.set(class1, "kalibr", 0.127F); // Diameter of Missile Body
 		Property.set(class1, "massa", 70.0F); // Missile Weight at Launch time
 		Property.set(class1, "massaEnd", 48F); // Missile Weight when Booster burned out
@@ -85,6 +86,10 @@ public class MissileAIM9B extends Missile {
 		Property.set(class1, "growlStyle", 1); // "1" is Sidewinder growl style, others may follow
 		Property.set(class1, "fxLockPitch", 2F); // Pitch for Lock Tone
 		Property.set(class1, "fxNoLockPitch", 1F); // Pitch for No Lock Tone
+		Property.set(class1, "fireAndForget", 1); // This is a fire and forget missile
+		Property.set(class1, "needIllumination", 0); // This missile does not need it's carrier to illuminate the target
+		Property.set(class1, "smokeSustain", 0F); // Smoke Intensity in sustained mode
+		Property.set(class1, "spriteSustain", 0.3F); // Sprite Intensity in sustained mode
 		Property.set(class1, "friendlyName", "AIM-9B"); // Display Name of this missile
 		Spawn.add(class1, new SPAWN());
 	}

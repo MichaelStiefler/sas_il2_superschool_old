@@ -1,6 +1,3 @@
-// Source File Name: MissileAIM9D.java
-// Author:           Storebror
-// Last Modified by: Storebror 2011-06-01
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Color3f;
@@ -41,6 +38,7 @@ public class MissileAIM9D extends Missile {
 		Property.set(class1, "powerType", 0); // Type of Explosion. 0="Splash", 1="Splinters", 2="Napalm"
 		Property.set(class1, "power", 1.02F); // RL Data: 10.2kg HE warhead, for realism reduced to 1/10th of it's RL weight
 		Property.set(class1, "radius", 12.93F); // Radius of Explosion Effect
+	    Property.set(class1, "fuzeRadius", 50.0F); // If missile has proximity Fuze, this value will set the radius for target detection
 		Property.set(class1, "kalibr", 0.127F); // Diameter of Missile Body
 		Property.set(class1, "massa", 88.5F); // Missile Weight at Launch time
 		Property.set(class1, "massaEnd", 58.5F); // Missile Weight when Booster burned out
@@ -85,6 +83,10 @@ public class MissileAIM9D extends Missile {
 		Property.set(class1, "growlStyle", 1); // "1" is Sidewinder growl style, others may follow
 		Property.set(class1, "fxLockPitch", 2F); // Pitch for Lock Tone
 		Property.set(class1, "fxNoLockPitch", 1F); // Pitch for No Lock Tone
+		Property.set(class1, "fireAndForget", 1); // This is no fire and forget missile
+		Property.set(class1, "needIllumination", 0); // This missile does need it's carrier to illuminate the target
+		Property.set(class1, "smokeSustain", 0F); // Smoke Intensity in sustained mode
+		Property.set(class1, "spriteSustain", 0.3F); // Sprite Intensity in sustained mode
 		Property.set(class1, "friendlyName", "AIM-9D"); // Display Name of this missile
 		Spawn.add(class1, new SPAWN());
 	}

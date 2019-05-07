@@ -27,6 +27,7 @@ import com.maddox.il2.engine.MsgCollisionRequestListener;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.RealFlightModel;
+import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.game.Selector;
 import com.maddox.il2.objects.ActorSimpleMesh;
@@ -299,11 +300,13 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		this.victimSpeed = new Vector3d();
 		this.victimOffsetOrient = new Orient();
 		this.victimOffsetPoint3f = new Point3f();
+	    this.flags |= 0xE0;
 		this.MissileInit();
 		return;
 	}
 
 	public Missile(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f) {
+	    this.flags |= 0xE0;
 		this.MissileInit(actor, netchannel, i, point3d, orient, f);
 	}
 
@@ -331,30 +334,33 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		this.deltaAzimuth = this.deltaTangage = 0.0F;
 		this.pos.setAbs(this.missilePoint3d, this.missileOrient);
 		if (Time.current() > this.startTime + (2 * this.trackDelay)) {
-			if (Actor.isValid(this.victim)) {
+			//if (Actor.isValid(this.victim)) {
+			if (actorHasPos(this.victim)) {
 				Point3d futureVictimPos = new Point3d();
 				this.victim.pos.getTime(Time.tickNext(), futureVictimPos);
 				Point3d futureMissilePos = new Point3d();
 				this.pos.getTime(Time.tickNext(), futureMissilePos);
-				float f2 = (float) this.missilePoint3d.distance(this.victim.pos.getAbsPoint());
-				float f2Future = (float) futureMissilePos.distance(futureVictimPos); // - 5F;
-				if (f2Future < 0F) {
-					f2Future = 0F;
+				float distance = (float) this.missilePoint3d.distance(this.victim.pos.getAbsPoint());
+				float distanceFuture = (float) futureMissilePos.distance(futureVictimPos); // - 5F;
+				if (distanceFuture < 0F) {
+					distanceFuture = 0F;
 				}
-				if (((this.victim instanceof Aircraft) || (this.victim instanceof MissileInterceptable)) && (f2Future > f2 * 5F || f2 > this.previousDistance) && this.previousDistance != 1000F) {
-					if (f2 < 50F) {
-						// Time.setPause(true); // Test detonation distance!
-						// HUD.log("MD:" + twoPlaces.format(f2) + "/" + twoPlaces.format(f2Future) + "/" + twoPlaces.format(previousDistance));
-						this.doExplosionAir();
-						this.postDestroy();
-						this.collide(false);
-						this.drawing(false);
+				if (this.fuzeRadius > 0F) {
+					if (((this.victim instanceof Aircraft) || (this.victim instanceof MissileInterceptable)) && (distanceFuture > distance * 5F || distance > this.previousDistance) && this.previousDistance != 1000F) {
+						if (distance < this.fuzeRadius) {
+							// Time.setPause(true); // Test detonation distance!
+							HUD.log("MD:" + twoPlaces.format(distance) + "/" + twoPlaces.format(distanceFuture) + "/" + twoPlaces.format(previousDistance));
+							this.doExplosionAir();
+							this.postDestroy();
+							this.collide(false);
+							this.drawing(false);
+						}
+						// if (this.getSpeed(null) > victim.getSpeed(null)) {
+						// victim = null;
+						// }
 					}
-					// if (this.getSpeed(null) > victim.getSpeed(null)) {
-					// victim = null;
-					// }
 				}
-				this.previousDistance = f2;
+				this.previousDistance = distance;
 			} else {
 				this.previousDistance = 1000F;
 				if (!this.deltaAngleApplied) {
@@ -372,13 +378,14 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 			}
 		}
 		this.safeVictimOffset.set(this.victimOffsetPoint3f);
-		if (!Actor.isValid(this.getOwner())) {
-			this.doExplosionAir();
-			this.postDestroy();
-			this.collide(false);
-			this.drawing(false);
-			return false;
-		}
+//		if (!Actor.isValid(this.getOwner())) {
+//		if (!actorHasPos(this.getOwner())) {
+//			this.doExplosionAir();
+//			this.postDestroy();
+//			this.collide(false);
+//			this.drawing(false);
+//			return false;
+//		}
 //		if (this.launchType == LAUNCH_TYPE_QUICK && Time.current() < this.startTime + 500L) {
 //			return true;
 //		}
@@ -401,11 +408,13 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		if (millisecondsFromStart > this.rocketMotorOperationTime + this.rocketMotorSustainedOperationTime) {
 			this.flameActive = false;
 			this.smokeActive = false;
+			this.spriteActive = false;
 			this.endSmoke();
 			this.missileMass = this.massaEnd;
-			this.missileForce = 0.0F;
+			theForce = this.missileForce = 0.0F;
 		} else if (millisecondsFromStart > this.rocketMotorOperationTime) {
-			theForce = this.missileSustainedForce;
+			this.enterSustainedMode();
+			theForce = this.missileForce = this.missileSustainedForce;
 		} else {
 			if (this.missileForceRunUpTime > 0.001F) {
 				if (millisecondsFromStart < this.missileForceRunUpTime) {
@@ -798,7 +807,8 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		if (this.isNet() && this.isNetMirror()) return;
 		this.setMissileDropParams();
 		this.setMissileVictim();
-		this.myActiveMissile = new ActiveMissile(this, this.getOwner(), this.victim, (Actor.isValid(this.getOwner())) ? this.getOwner().getArmy() : Integer.MAX_VALUE, (Actor.isValid(this.victim)) ? this.victim.getArmy() : Integer.MAX_VALUE, this.ownerIsAI());
+//		this.myActiveMissile = new ActiveMissile(this, this.getOwner(), this.victim, (Actor.isValid(this.getOwner())) ? this.getOwner().getArmy() : Integer.MAX_VALUE, (Actor.isValid(this.victim)) ? this.victim.getArmy() : Integer.MAX_VALUE, this.ownerIsAI());
+		this.myActiveMissile = new ActiveMissile(this, this.getOwner(), this.victim, this.getOwner()==null ? Integer.MAX_VALUE : this.getOwner().getArmy(), this.victim==null ? Integer.MAX_VALUE : this.victim.getArmy(), this.ownerIsAI());
 		GuidedMissileUtils.addActiveMissile(this.myActiveMissile);
 //		if (this.victim == null)
 //			System.out.println("Owner " + this.getOwner().hashCode() + " Active Missile added for victim=null");
@@ -915,9 +925,11 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	// }
 
 	protected void endSmoke() {
-//		System.out.println("endSmoke smokeActive=" + smokeActive + ", endedSmoke=" + endedSmoke
-//				+ ", spriteActive=" + spriteActive + ", endedSprite=" + endedSprite
-//				+ ", flameActive=" + flameActive + ", endedFlame=" + endedFlame);
+		if (this.isSmokeEnded) return;
+		System.out.println("endSmoke smokeActive=" + smokeActive + ", endedSmoke=" + endedSmoke
+				+ ", spriteActive=" + spriteActive + ", endedSprite=" + endedSprite
+				+ ", flameActive=" + flameActive + ", endedFlame=" + endedFlame);
+		this.missileForce = 0F;
 		if (!this.smokeActive && !this.endedSmoke) {
 //			System.out.println("endSmoke endAllSmoke");
 			this.endAllSmoke();
@@ -930,11 +942,38 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 //			System.out.println("endSmoke endAllFlame");
 			this.endAllFlame();
 		}
+		this.isSmokeEnded=true;
+	}
+
+	protected void enterSustainedMode() {
+		if (this.isSustained) return;
+		System.out.println("enterSustainedMode spriteSustain=" + spriteSustain + ", smokeSustain=" + smokeSustain);
+		this.missileForce = this.missileSustainedForce;
+		if (this.smokeActive && !this.endedSmoke) {
+			if (this.smokeSustain == 0F) {
+				this.smokeActive = false;
+				this.endAllSmoke();
+			} else {
+				this.setAllSmokeIntensities(this.smokeSustain);
+			}
+		}
+		if (this.spriteActive && !this.endedSprite) {
+			if (this.spriteSustain == 0F) {
+				this.spriteActive = false;
+				this.endAllSprites();
+			} else {
+				this.setAllSpriteIntensities(this.spriteSustain);
+			}
+		}
+		this.flameActive = false;
+		if (!this.endedFlame) this.endAllFlame();
+		this.isSustained = true;
 	}
 
 	public int getArmy() {
-		if (Actor.isValid(this.getOwner())) return this.getOwner().getArmy();
-		return 0;
+//		if (Actor.isValid(this.getOwner())) return this.getOwner().getArmy();
+//		return 0;
+		return this.getOwner()==null?0:this.getOwner().getArmy();
 	}
 
 	public int getFailState() {
@@ -1005,7 +1044,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		this.stepsForFullTurn = Property.floatValue(localClass, "stepsForFullTurn", 10);
 		this.rocketMotorOperationTime = Property.floatValue(localClass, "timeFire", 2.2F) * 1000F;
 		this.missileTimeLife = Property.floatValue(localClass, "timeLife", 30F) * 1000F;
-		this.rocketMotorSustainedOperationTime = Property.floatValue(localClass, "timeSustain", 0.0F) * 1000F;
+		this.rocketMotorSustainedOperationTime = Property.floatValue(localClass, "timeSustain", 0F) * 1000F;
 		super.timeFire = (long) (this.rocketMotorOperationTime + this.rocketMotorSustainedOperationTime);
 		super.timeLife = (long) this.missileTimeLife;
 		this.engineDelayTime = Property.longValue(this.getClass(), "engineDelayTime", 0L);
@@ -1026,7 +1065,13 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		this.exhausts = this.getNumExhausts();
 		this.effSmoke = Property.stringValue(localClass, "smoke", null);
 		this.effSprite = Property.stringValue(localClass, "sprite", null);
+		this.smokeSustain = Property.floatValue(localClass, "smokeSustain", 0F);
+		this.effSprite = Property.stringValue(localClass, "sprite", null);
+		this.spriteSustain = Property.floatValue(localClass, "spriteSustain", 0F);
 		this.simFlame = Property.stringValue(localClass, "flame", null);
+		this.fuzeRadius = Property.floatValue(localClass, "fuzeRadius", 0F);
+		this.fireAndForget = Property.intValue(localClass, "fireAndForget", 0) != 0;
+		this.needIllumination = Property.intValue(localClass, "needIllumination", 0) != 0;
 		float failureRate = Property.floatValue(localClass, "failureRate", 10.0F);
 		if (TrueRandom.nextFloat(0, 100.0F) < failureRate) {
 			this.setFailState();
@@ -1126,6 +1171,10 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 //				System.out.println("Missile is tracking sun or ground");
 			}
 		}
+
+		if (!this.isFireAndForget() && !Actor.isAlive(this.getOwner())) this.victim = null;
+		if (this.isNeedIllumination() && !this.isTargetIlluminated()) this.victim = null;
+
 		// float fSpeed = (float) this.getSpeed((Vector3d) null) * 3.6F;
 		// if (fSpeed > this.fMaxSpeed) {
 		// this.fMaxSpeed = fSpeed;
@@ -1206,6 +1255,8 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		this.flameActive = true;
 		this.smokeActive = true;
 		this.spriteActive = true;
+		this.collide(false);
+//		System.out.println("collide is false");
 		this.getMissileProperties();
 	}
 
@@ -1228,7 +1279,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		this.spriteActive = true;
 		this.net = new Mirror(this, netchannel, i);
 		this.pos.setAbs(point3d, orient);
-		this.pos.setAbs(orient);
+		//this.pos.setAbs(orient);
 		this.pos.reset();
 		this.pos.setBase(actor, null, true);
 		this.doStart(-1F);
@@ -1236,7 +1287,8 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		orient.transform(this.trajectoryVector3d);
 		this.trajectoryVector3d.scale(fSpeed);
 		this.setSpeed(this.trajectoryVector3d);
-		this.collide(false);
+		this.collide(true);
+//		System.out.println("collide is true");
 		this.getMissileProperties();
 		this.startTime = Time.current();
 		this.releaseTime = Time.current();
@@ -1622,6 +1674,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		//this.speed.x += 200.0D;
 		this.pos.getRelOrient().transform(this.speed);
 		this.collide(true);
+//		System.out.println("collide is true");
 		this.interpPut(new Interpolater(), null, Time.current(), null);
 
 		if (this.getOwner() == World.getPlayerAircraft()) {
@@ -1978,9 +2031,9 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	protected static final int LAUNCH_TYPE_STRAIGHT = 0;
 	protected static final int STEP_MODE_BEAMRIDER = 1;
 	protected static final int STEP_MODE_HOMING = 0;
-	protected static final int TARGET_AIR = 0x0001;
-	protected static final int TARGET_GROUND = 0x0010;
-	protected static final int TARGET_SHIP = 0x0100;
+	protected static final int TARGET_AIR = 1;
+	protected static final int TARGET_GROUND = 2;
+	protected static final int TARGET_SHIP = 4;
 	private float deltaAzimuth = 0.0F;
 	public float getDeltaAzimuth() {
 		return deltaAzimuth;
@@ -2036,6 +2089,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	private float missileForceRunUpTime = 0F;
 	private float missileKalibr = 0.2F;
 	private float missileMass = 86.2F;
+	private float fuzeRadius = 50F;
 	private Orient missileOrient = new Orient();
 	private Point3d missilePoint3d = new Point3d();
 	private float missileSustainedForce = 0F;
@@ -2130,4 +2184,112 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		this.turnStepMax = turnStepMax;
 	}
 
+	private boolean fireAndForget = false;
+	public boolean isFireAndForget() {
+		return fireAndForget;
+	}
+
+	public void setFireAndForget(boolean fireAndForget) {
+		this.fireAndForget = fireAndForget;
+	}
+
+	private boolean needIllumination = false;
+	public boolean isNeedIllumination() {
+		return needIllumination;
+	}
+
+	public void setNeedIllumination(boolean needIllumination) {
+		this.needIllumination = needIllumination;
+	}
+
+	public boolean isTargetIlluminated() {
+		if (this.isFireAndForget() || !this.isNeedIllumination()) return true;
+		if (!actorHasPos(this.getOwner()) || !actorHasPos(this.victim)) return false;
+		return GuidedMissileUtils.angleBetween(this.getOwner(), this.victim) <= this.maxFOVfrom;
+	}
+
+	private float smokeSustain = 0F;
+	public float getSmokeSustain() {
+		return smokeSustain;
+	}
+
+	public void setSmokeSustain(float smokeSustain) {
+		this.smokeSustain = smokeSustain;
+	}
+
+	private float spriteSustain = 0F;
+	public float getSpriteSustain() {
+		return spriteSustain;
+	}
+
+	public void setSpriteSustain(float spriteSustain) {
+		this.spriteSustain = spriteSustain;
+	}
+
+	private boolean isSmokeEnded = false;
+	private boolean isSustained = false;
+
+
+
+
+
+
+//	  public void msgCollisionRequest(Actor actor, boolean[] flag)
+//	  {
+//		  System.out.println("msgCollisionRequest 1 (" + (actor==null?"null":actor.getClass().getName()) + ", " + flag + ")");
+//		  super.msgCollisionRequest(actor, flag);
+//		  System.out.println("msgCollisionRequest 2 (" + (actor==null?"null":actor.getClass().getName()) + ", " + flag + ")");
+//	  }
+//
+//	  public void msgCollision(Actor actor, String s1, String s2)
+//	  {
+//		  System.out.println("msgCollision 1 (" + (actor==null?"null":actor.getClass().getName()) + ", " + s1 + ", " + s2 + ")");
+//		  super.msgCollision(actor, s1, s2);
+//		  System.out.println("msgCollision 2 (" + (actor==null?"null":actor.getClass().getName()) + ", " + s1 + ", " + s2 + ")");
+//	  }
+//
+//	  protected void doExplosionOld(Actor actor, String s)
+//	  {
+//		  System.out.println("doExplosion 1 (" + (actor==null?"null":actor.getClass().getName()) + ", " + s + ")");
+//		  super.doExplosion(actor, s);
+//		  System.out.println("doExplosion 2 (" + (actor==null?"null":actor.getClass().getName()) + ", " + s + ")");
+//	  }
+//
+//	  protected void doExplosionAir()
+//	  {
+//		  System.out.println("doExplosionAir 1");
+//		  super.doExplosionAir();
+//		  Exception test = new Exception ("doExplosionAir");
+//		  test.printStackTrace();
+//		  System.out.println("doExplosionAir 2");
+//	  }
+//
+//	protected void doExplosion(Actor actor, String s) {
+//		  System.out.println("doExplosion 1 (" + (actor==null?"null":actor.getClass().getName()) + ", " + s + ")");
+//		Point3d explosionPoint3d = new Point3d();
+//		this.pos.getTime(Time.current(), explosionPoint3d);
+//		doExplosion(actor, s, explosionPoint3d);
+//		  System.out.println("doExplosion 2 (" + (actor==null?"null":actor.getClass().getName()) + ", " + s + ")");
+//	}
+//
+//	protected void doExplosion(Actor actor, String s, Point3d point3d) {
+//		  System.out.println("doExplosion 1 (" + (actor==null?"null":actor.getClass().getName()) + ", " + s + ", p3d)");
+//		Class class1 = getClass();
+//		float f = Property.floatValue(class1, "power", 1000.0F);
+//		int i = Property.intValue(class1, "powerType", 0);
+//		float f1 = Property.floatValue(class1, "radius", 150.0F);
+//		int j = Property.intValue(class1, "newEffect", 0);
+//		int k = Property.intValue(class1, "nuke", 0);
+//		MsgExplosion.send(actor, s, point3d, getOwner(), this.M, f, i, f1, k);
+//		ActorCrater.initOwner = getOwner();
+//		Explosions.generate(actor, point3d, f, i, f1, !Mission.isNet(), j);
+//		ActorCrater.initOwner = null;
+//		destroy();
+//		  System.out.println("doExplosion 2 (" + (actor==null?"null":actor.getClass().getName()) + ", " + s + ", p3d)");
+//	}
+
+	public static boolean actorHasPos(Actor actor) {
+		if (actor == null) return false;
+		return actor.pos != null;
+	}
 }

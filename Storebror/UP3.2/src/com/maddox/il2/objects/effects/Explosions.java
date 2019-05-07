@@ -59,7 +59,7 @@ public class Explosions {
 
     // TODO: Added by |ZUTI|: my variable
     // -------------------------------------------------
-    
+
     // Removed by SAS~Storebror: Absolutely unnecessary!
 //    private static float       ZUTI_CRATER_SIZE      = 0.0F;
 //    private static long        ZUTI_TIME_TO_LIVE     = 80;
@@ -736,7 +736,7 @@ public class Explosions {
 //
 //                Explosions.ZUTI_VARIABLES_SET = true;
 //            }
-            
+
             // TODO: Modified by SAS~Storebror:
             // Just dynamically calculate the right values and use them for this single explosion
             // instead of carrying some useless ZUTI_CRATER_SIZE, ZUTI_TIME_TO_LIVE and ZUTI_VARIABLES_SET
@@ -793,7 +793,7 @@ public class Explosions {
 //
 //                Explosions.ZUTI_VARIABLES_SET = true;
 //            }
-            
+
             // TODO: Modified by SAS~Storebror:
             // Just dynamically calculate the right values and use them for this single explosion
             // instead of carrying some useless ZUTI_CRATER_SIZE, ZUTI_TIME_TO_LIVE and ZUTI_VARIABLES_SET
@@ -981,6 +981,18 @@ public class Explosions {
     }
 
     public static void generate(Actor actor, Point3d point3d, float bombChargeMas, int i, float f1, boolean flag, int j) {
+//    	Exception test = new Exception("Explosions generate ("
+//    			+ (actor==null?"null":actor.getClass().getName()) + ", point3d, "
+//    			+ bombChargeMas + ", "
+//    			+ i + ", "
+//    			+ f1 + ", "
+//    			+ flag + ", "
+//    			+ j + ")"
+//    			);
+//    	test.printStackTrace();
+
+
+
         // TODO: Added by |ZUTI|: bomb was released, store its crater effect if it is enabled
         // --------------------------------------------------
 
@@ -1005,7 +1017,7 @@ public class Explosions {
 
                 if (ZutiSupportMethods_Effects.isSynced(bombChargeMas)) {
                     ZutiSupportMethods_Effects.SyncingCrater myCrater = new ZutiSupportMethods_Effects.SyncingCrater();
-                    
+
                     // TODO: Modified by SAS~Storebror:
                     // Just dynamically calculate the right values and use them for this single explosion
                     // instead of carrying some useless ZUTI_CRATER_SIZE, ZUTI_TIME_TO_LIVE and ZUTI_VARIABLES_SET
@@ -1015,7 +1027,7 @@ public class Explosions {
                     myCrater.x = (float) point3d.x;
                     myCrater.y = (float) point3d.y;
                     myCrater.z = (float) point3d.z;
-                    
+
                     // TODO: Modified by SAS~Storebror:
                     // Just dynamically calculate the right values and use them for this single explosion
                     // instead of carrying some useless ZUTI_CRATER_SIZE, ZUTI_TIME_TO_LIVE and ZUTI_VARIABLES_SET
