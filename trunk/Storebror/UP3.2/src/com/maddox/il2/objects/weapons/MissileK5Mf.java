@@ -42,6 +42,7 @@ public class MissileK5Mf extends Missile {
 		Property.set(class1, "powerType", 0); // Type of Explosion. 0="Splash", 1="Splinters", 2="Napalm"
 		Property.set(class1, "power", 0.92F); // RL Data: 9.2kg HE warhead, for realism reduced to 1/4th of it's RL weight
 		Property.set(class1, "radius", 10F); // Radius of Explosion Effect
+	    Property.set(class1, "fuzeRadius", 50.0F); // If missile has proximity Fuze, this value will set the radius for target detection
 		Property.set(class1, "kalibr", 0.2F); // Diameter of Missile Body
 		Property.set(class1, "massa", 74.2F); // Missile Weight at Launch time
 		Property.set(class1, "massaEnd", 68F); // Missile Weight when Booster burned out
@@ -82,6 +83,10 @@ public class MissileK5Mf extends Missile {
 		Property.set(class1, "fxNoLockVolume", 1.0F); // Volume for No Lock Tone, "1" is default
 //		Property.set(class1, "smplLock", "K5_lock.wav"); // wav file for Lock Tone
 //		Property.set(class1, "smplNoLock", "K5_no_lock.wav"); // wav file for No Lock Tone
+		Property.set(class1, "fireAndForget", 0); // This is no fire and forget missile
+		Property.set(class1, "needIllumination", 1); // This missile does need it's carrier to illuminate the target
+		Property.set(class1, "smokeSustain", 0F); // Smoke Intensity in sustained mode
+		Property.set(class1, "spriteSustain", 0F); // Sprite Intensity in sustained mode
 		Property.set(class1, "friendlyName", "K-5M"); // Display Name of this missile
 		Spawn.add(class1, new SPAWN());
 	}

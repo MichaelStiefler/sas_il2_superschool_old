@@ -41,6 +41,7 @@ public class MissileK13A extends Missile {
 		Property.set(class1, "powerType", 0); // Type of Explosion. 0="Splash", 1="Splinters", 2="Napalm"
 		Property.set(class1, "power", 0.42F); // RL Data: 4.5kg HE warhead, for realism reduced to 1/10th of it's RL weight
 		Property.set(class1, "radius", 8.96F); // Radius of Explosion Effect
+	    Property.set(class1, "fuzeRadius", 50.0F); // If missile has proximity Fuze, this value will set the radius for target detection
 		Property.set(class1, "kalibr", 0.127F); // Diameter of Missile Body
 		Property.set(class1, "massa", 78.0F); // Missile Weight at Launch time
 		Property.set(class1, "massaEnd", 48F); // Missile Weight when Booster burned out
@@ -85,6 +86,10 @@ public class MissileK13A extends Missile {
 		Property.set(class1, "growlStyle", 1); // "1" is Sidewinder growl style, others may follow
 		Property.set(class1, "fxLockPitch", 2F); // Pitch for Lock Tone
 		Property.set(class1, "fxNoLockPitch", 1F); // Pitch for No Lock Tone
+		Property.set(class1, "fireAndForget", 1); // This is a fire and forget missile
+		Property.set(class1, "needIllumination", 0); // This missile does not need it's carrier to illuminate the target
+		Property.set(class1, "smokeSustain", 0F); // Smoke Intensity in sustained mode
+		Property.set(class1, "spriteSustain", 0.3F); // Sprite Intensity in sustained mode
 		Property.set(class1, "friendlyName", "K-13A"); // Display Name of this missile
 		Spawn.add(class1, new SPAWN());
 	}

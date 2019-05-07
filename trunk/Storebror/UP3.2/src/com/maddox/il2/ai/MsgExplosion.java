@@ -25,6 +25,16 @@ public class MsgExplosion extends Message
 
 	public static void send(Actor actor, String s, Point3d point3d, Actor owner, float f, float f1, int i, float f2, int j)
 	{
+//		System.out.println("MsgExplosion send("
+//				+ (actor==null?"null":actor.getClass().getName()) + ", "
+//				+ s + ", point3d, "
+//				+ (owner==null?"null":owner.getClass().getName()) + ", "
+//				+ f + ", "
+//				+ f1 + ", "
+//				+ i + ", "
+//				+ f2 + ", "
+//				+ j + ")"
+//				);
 		explosion.chunkName = s;
 		explosion.p.set(point3d);
 		explosion.radius = f2;
@@ -41,7 +51,7 @@ public class MsgExplosion extends Message
 		{
 			explosion.initiator = owner = Engine.actorLand();
 		}
-		
+
 		//TODO: Added by |ZUTI|: Fix for online problem when bombs are doing NO damage if player that
 		//dropped them died or left before they exploded. Now they do damage even if dropper died.
 		//--------------------------------------------------------
@@ -50,7 +60,12 @@ public class MsgExplosion extends Message
 			explosion.initiator = owner = Engine.actorLand();
 		}
 		//--------------------------------------------------------
-		
+
+//		System.out.println("MsgExplosion send Actor.isValid(owner)=" + Actor.isValid(owner)
+//				+ ", owner.isNet()=" + owner.isNet()
+//				+ ", owner.net.isMirror()=" + owner.net.isMirror()
+//				);
+
 		if (Actor.isValid(owner) && (!owner.isNet() || !owner.net.isMirror()))
 		{
 			if (Actor.isValid(actor))
@@ -70,6 +85,7 @@ public class MsgExplosion extends Message
 						Actor actor2 = (Actor) lst.get(k);
 						if (Actor.isValid(actor2) && actor != actor2)
 						{
+//							System.out.println("MsgExplosion send actor2 is valid:" + actor2.getClass().getName());
 							msg.setListener(actor2);
 							msg.send();
 						}

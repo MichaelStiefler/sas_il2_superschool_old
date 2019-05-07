@@ -12,7 +12,7 @@ import com.maddox.rts.Spawn;
 public class MissileKS1 extends Missile implements MissileInterceptable
 {
 
-	private float victimOffsetZ = Float.MIN_VALUE;
+//	private float victimOffsetZ = Float.MIN_VALUE;
 	private float cruiseAltitude = Float.MIN_VALUE;
 	private float smoothDampeningFactor = 1F;
 	private int altOffsetSign = 0;
@@ -21,17 +21,18 @@ public class MissileKS1 extends Missile implements MissileInterceptable
 
 	public boolean computeSpecialStepBefore() {
 
-		if (!Actor.isValid(this.getVictim())) {
+		if (!Missile.actorHasPos(this.getVictim())) {
 //			System.out.println("victim invalid!");
-			return true;
+//			return true;
+			return false;
 		}
 		float victimDistance = (float)GuidedMissileUtils.distanceBetween(this, this.getVictim());
-		if (victimOffsetZ == Float.MIN_VALUE) {
-			victimOffsetZ = this.getVictimOffsetPoint3f().z;
-//			System.out.println("victim offset = " + victimOffsetZ);
-		}
+//		if (victimOffsetZ == Float.MIN_VALUE) {
+//			victimOffsetZ = this.getVictimOffsetPoint3f().z;
+////			System.out.println("victim offset = " + victimOffsetZ);
+//		}
 		if (cruiseAltitude == Float.MIN_VALUE) {
-			if (Actor.isValid(this.getOwner())) {
+			if (Missile.actorHasPos(this.getOwner())) {
 				this.cruiseAltitude = (float)this.getOwner().pos.getAbsPoint().z;
 				if (cruiseAltitude < 2000F) cruiseAltitude = 2000F;
 				if (cruiseAltitude > 10000F) cruiseAltitude = 10000F;
@@ -40,8 +41,9 @@ public class MissileKS1 extends Missile implements MissileInterceptable
 		}
 		float alt = (float)this.pos.getAbsPoint().z;
 		if (victimDistance < 2500F) {
-//			System.out.println("distance=" + victimDistance + ", offset z=" + this.victimOffsetZ + ", alt=" + alt);
-			this.setVictimOffsetZ(this.victimOffsetZ);
+//			System.out.println("distance=" + victimDistance + ", offset z=" + 5F + ", alt=" + alt);
+//			this.setVictimOffsetZ(this.victimOffsetZ);
+			this.setVictimOffsetZ(5F);
 			return true;
 		}
 		float offsetZ = 2000F;
@@ -142,12 +144,13 @@ public class MissileKS1 extends Missile implements MissileInterceptable
     Property.set(class1, "force", 18900F); // Rocket Engine Power (in Newton)
     Property.set(class1, "forceT1", 10.0F); // Time1, i.e. time until Rocket Engine force output maximum reached (in Seconds), 0 disables this feature
     Property.set(class1, "forceP1", 0.0F); // Power1, i.e. Rocket Engine force output at beginning (in Percent)
-    Property.set(class1, "forceT2", 1.0F); // Time2, i.e. time before Rocket Engine burn time ends (in Seconds), from this time on Rocket Engine power output decreases, 0 disables this feature
-    Property.set(class1, "forceP2", 100.0F); // Power2, i.e. Rocket Engine force output at the end of burn time (in Percent)
+//    Property.set(class1, "forceT2", 1.0F); // Time2, i.e. time before Rocket Engine burn time ends (in Seconds), from this time on Rocket Engine power output decreases, 0 disables this feature
+//    Property.set(class1, "forceP2", 100.0F); // Power2, i.e. Rocket Engine force output at the end of burn time (in Percent)
     Property.set(class1, "dragCoefficient", 0.5F); // Aerodynamic Drag Coefficient
     Property.set(class1, "powerType", 0);
-    Property.set(class1, "power", 650F); // RL Data: 1015kg HE warhead, for realism reduced to 1/10th of it's RL weight
+    Property.set(class1, "power", 2650F); // RL Data: 1015kg HE warhead, for realism reduced
     Property.set(class1, "radius", 250.0F);
+    Property.set(class1, "fuzeRadius", 0.0F); // If missile has proximity Fuze, this value will set the radius for target detection
     Property.set(class1, "kalibr", 0.92F);
     Property.set(class1, "massa", 2735.0F);
     Property.set(class1, "massaEnd", 2471.0F); // 264kg fuel load
@@ -192,6 +195,10 @@ public class MissileKS1 extends Missile implements MissileInterceptable
 	Property.set(class1, "growlStyle", 0); // "1" is Sidewinder growl style, others may follow
 	Property.set(class1, "fxLockPitch", 1F); // Pitch for Lock Tone
 	Property.set(class1, "fxNoLockPitch", 1F); // Pitch for No Lock Tone
+	Property.set(class1, "fireAndForget", 0); // This is no fire and forget missile
+	Property.set(class1, "needIllumination", 1); // This missile does need it's carrier to illuminate the target
+	Property.set(class1, "smokeSustain", 0F); // Smoke Intensity in sustained mode
+	Property.set(class1, "spriteSustain", 0F); // Sprite Intensity in sustained mode
     Property.set(class1, "friendlyName", "KS-1"); // Display Name of this missile
     Property.set(class1, "iconFar_shortClassName", "KS-1 Missile"); // Display Name of this missile
     Spawn.add(class1, new SPAWN());
