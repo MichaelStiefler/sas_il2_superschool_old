@@ -2,11 +2,16 @@
 // Author:           Storebror
 package com.maddox.il2.objects.weapons;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.StringTokenizer;
 
+import com.maddox.JGP.Color3f;
 import com.maddox.JGP.Geom;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Point3f;
@@ -40,12 +45,16 @@ import com.maddox.il2.game.Selector;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.il2.objects.sounds.Voice;
+import com.maddox.rts.Finger;
+import com.maddox.rts.KryptoInputFilter;
 import com.maddox.rts.Property;
+import com.maddox.rts.SFSInputStream;
 import com.maddox.rts.Time;
 import com.maddox.sas1946.il2.util.Conversion;
 import com.maddox.sas1946.il2.util.TrueRandom;
 import com.maddox.sound.Sample;
 import com.maddox.sound.SoundFX;
+import com.maddox.util.NumberTokenizer;
 
 public class GuidedMissileUtils {
 
@@ -298,14 +307,16 @@ public class GuidedMissileUtils {
 //			if (this.getMissileOwner() == World.getPlayerAircraft()) HUD.training("" + this.trgtPk + "/" + this.getMinPkForAttack());
 		} else {
 			this.trgtPk = 0F;
-			return;
+			//return;
 		}
 
-		if (this.getMissileTarget() instanceof Aircraft || this.getMissileTarget() instanceof MissileInterceptable) {
-			float altTrgtPk = this.getMissilePk(this.getMissileTarget());
+		Actor missileTarget = this.getMissileTarget();
+//		System.out.println("missileTarget=" + (missileTarget==null?"null":missileTarget.getClass().getName()));
+		if (Missile.actorHasPos(missileTarget) && ownerAircraft.getArmy() != missileTarget.getArmy()) {
+			float altTrgtPk = this.getMissilePk(missileTarget);
 			if (altTrgtPk > this.trgtPk) {
 				this.trgtPk = altTrgtPk;
-				this.trgtAI = this.getMissileTarget();
+				this.trgtAI = missileTarget;
 			}
 //			if (this.getMissileOwner() == World.getPlayerAircraft()) HUD.training("A " + this.trgtPk + "/" + this.getMinPkForAttack());
 		}
@@ -1090,7 +1101,7 @@ public class GuidedMissileUtils {
 					if (targetAngle > maxFOVfrom) {
 						continue;
 					}
-					if (theTarget1.pos.getAbsPoint().z < 0D) {
+					if (theTarget1.pos.getAbsPoint().z < -3D) {
 						if (!this.canTrackSubs) {
 							continue;
 						}
@@ -1106,9 +1117,9 @@ public class GuidedMissileUtils {
 						if (actorIsAI(actor)) {
 							if (actor.getArmy() == theActiveMissile.getOwnerArmy()) {
 								if (theActiveMissile.getVictim() == theTarget1) {
-									// EventLog.type("blanked target " + theTarget1.getClass().getName() + " (already tracked)");
+//									System.out.println("blanked target " + theTarget1.getClass().getName() + " (already tracked)");
 									targetBait = 0.0F;
-									break;
+									continue;
 								}
 							}
 						}
@@ -1560,6 +1571,7 @@ public class GuidedMissileUtils {
 	}
 
 	public void update() {
+		if (!this.hasMissiles()) return;
 		Aircraft ownerAircraft = (Aircraft) this.missileOwner;
 		if (ownerAircraft != null) {
 			if (ownerAircraft.FM.CT.Weapons[ownerAircraft.FM.CT.rocketHookSelected] == null) ownerAircraft.FM.CT.toggleRocketHook();
@@ -1771,6 +1783,102 @@ public class GuidedMissileUtils {
 		Long retVal = (Long)targetsHandledByAiAlready.put(hashKey, curTime);
 		if (retVal == null) return 0;
 		return retVal.longValue();
+	}
+
+    private static int[] getSwTbl(int i)
+    {
+        if(i < 0)
+            i = -i;
+        int j = i % 16 + 11;
+        int k = i % Finger.kTable.length;
+        if(j < 0)
+            j = -j % 16;
+        if(j < 10)
+            j = 10;
+        if(k < 0)
+            k = -k % Finger.kTable.length;
+        int ai[] = new int[j];
+        for(int l = 0; l < j; l++)
+            ai[l] = Finger.kTable[(k + l) % Finger.kTable.length];
+
+        return ai;
+    }
+
+	public static boolean parseMissilePropertiesFile(Class missileClass) {
+		if (Property.intValue(missileClass, "IgnoreMissilePropertiesFile", 0) == 1) return true;
+        String line = "N/A";
+        String parsedLine = "N/A";
+        try
+        {
+            int i = Finger.Int("sa" + missileClass.getName() + "s1");
+            BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "missiles/" + Finger.incInt(i, "946"))), getSwTbl(i))));
+            do {
+            	if ((line = bufferedreader.readLine()) == null) break;
+            	parsedLine = line.trim();
+            	if (parsedLine.startsWith("//") || parsedLine.startsWith(";") || parsedLine.startsWith("*") || parsedLine.startsWith("#")) continue;
+            	if (parsedLine.indexOf("//") != -1) parsedLine = parsedLine.substring(0,line.indexOf("//")).trim();
+            	StringTokenizer stringtokenizer = new StringTokenizer(parsedLine, ",");
+            	if (stringtokenizer.countTokens() != 3) {
+                	System.out.println("GuidedMissileUtils Error in parseMissilePropertiesFile while parsing line: " + line + " (parsed: " + parsedLine + ")");
+                	System.out.println("Number of tokens in this line doesn't meet expectation (is: " + stringtokenizer.countTokens() + ", expected: 3)");
+                	continue;
+            	}
+            	String propertyName = stringtokenizer.nextToken();
+            	String propertyType = stringtokenizer.nextToken();
+            	if (propertyType.equalsIgnoreCase("i")) { // Integer
+            		String value = stringtokenizer.nextToken();
+            		if (value.equals("MAX"))
+                		Property.set(missileClass, propertyName, Integer.MAX_VALUE);
+            		else if (value.equals("MIN"))
+                		Property.set(missileClass, propertyName, Integer.MIN_VALUE);
+            		else
+            			Property.set(missileClass, propertyName, Integer.parseInt(value));
+            	} else if (propertyType.equalsIgnoreCase("l")) { // Long
+            		String value = stringtokenizer.nextToken();
+            		if (value.equals("MAX"))
+                		Property.set(missileClass, propertyName, Long.MAX_VALUE);
+            		else if (value.equals("MIN"))
+                		Property.set(missileClass, propertyName, Long.MIN_VALUE);
+            		else
+            			Property.set(missileClass, propertyName, Long.parseLong(value));
+            	} else if (propertyType.equalsIgnoreCase("f")) { // Float
+            		String value = stringtokenizer.nextToken();
+            		if (value.equals("MAX"))
+                		Property.set(missileClass, propertyName, Float.MAX_VALUE);
+            		else if (value.equals("MIN"))
+                		Property.set(missileClass, propertyName, Float.MIN_VALUE);
+            		else
+            			Property.set(missileClass, propertyName, Float.parseFloat(value));
+            	} else if (propertyType.equalsIgnoreCase("c")) { // Color
+            		NumberTokenizer numbertokenizer = new NumberTokenizer(stringtokenizer.nextToken(), " ");
+                	if (numbertokenizer.countTokens() != 3) {
+                    	System.out.println("GuidedMissileUtils Error in parseMissilePropertiesFile while parsing line: " + line + " (parsed: " + parsedLine + ")");
+                    	System.out.println("Number of numeric tokens in this line doesn't meet expectation (is: " + numbertokenizer.countTokens() + ", expected: 3)");
+                    	continue;
+                	}
+            		Property.set(missileClass, propertyName, new Color3f(numbertokenizer.nextFloat(), numbertokenizer.nextFloat(), numbertokenizer.nextFloat()));
+            	} else if (propertyType.equalsIgnoreCase("s")) { // String
+            		String value = stringtokenizer.nextToken();
+            		if (value.equals("null")) value = (String)null;
+            		Property.set(missileClass, propertyName, value);
+            	} else { // unknown
+                	System.out.println("GuidedMissileUtils Error in parseMissilePropertiesFile while parsing line: " + line + " (parsed: " + parsedLine + ")");
+                	System.out.println("Property \"" + propertyType + "\" doesn't meet expectations (valid property identifiers are i,l,f,c and s)");
+                	continue;
+            	}
+            } while(true);
+            bufferedreader.close();
+        }
+        catch(FileNotFoundException filenotfoundexception) {
+        	filenotfoundexception.printStackTrace();
+        }
+        catch(Exception exception)
+        {
+        	System.out.println("GuidedMissileUtils Exception in parseMissilePropertiesFile while parsing line: " + line + " (parsed: " + parsedLine + ")");
+            exception.printStackTrace();
+            return false;
+        }
+		return true;
 	}
 
 	private static Mission curMission = null;
