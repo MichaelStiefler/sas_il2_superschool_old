@@ -118,37 +118,37 @@ public abstract class Swordfish extends Scheme1 implements TypeBomber, TypeStorm
 
 	public void doWoundPilot(int i, float f) {
 		switch (i) {
-		case 2: // '\002'
-			this.FM.turret[0].setHealth(f);
-			break;
+			case 2: // '\002'
+				this.FM.turret[0].setHealth(f);
+				break;
 		}
 	}
 
 	public void doMurderPilot(int i) {
 		switch (i) {
-		case 0: // '\0'
-			this.hierMesh().chunkVisible("Pilot1_D0", false);
-			this.hierMesh().chunkVisible("Head1_D0", false);
-			this.hierMesh().chunkVisible("HMask1_D0", false);
-			this.hierMesh().chunkVisible("Pilot1_D1", true);
-			break;
+			case 0: // '\0'
+				this.hierMesh().chunkVisible("Pilot1_D0", false);
+				this.hierMesh().chunkVisible("Head1_D0", false);
+				this.hierMesh().chunkVisible("HMask1_D0", false);
+				this.hierMesh().chunkVisible("Pilot1_D1", true);
+				break;
 
-		case 1: // '\001'
-			this.hierMesh().chunkVisible("Pilot2_D0", false);
-			this.hierMesh().chunkVisible("Head2_D0", false);
-			this.hierMesh().chunkVisible("HMask2_D0", false);
-			this.hierMesh().chunkVisible("Pilot2_D1", true);
-			this.bObserverKilled = true;
-			break;
+			case 1: // '\001'
+				this.hierMesh().chunkVisible("Pilot2_D0", false);
+				this.hierMesh().chunkVisible("Head2_D0", false);
+				this.hierMesh().chunkVisible("HMask2_D0", false);
+				this.hierMesh().chunkVisible("Pilot2_D1", true);
+				this.bObserverKilled = true;
+				break;
 
-		case 2: // '\002'
-			this.hierMesh().chunkVisible("Pilot3_D0", false);
-			this.hierMesh().chunkVisible("Pilot3up_D0", false);
-			this.hierMesh().chunkVisible("Head3_D0", false);
-			this.hierMesh().chunkVisible("HMask3_D0", false);
-			this.hierMesh().chunkVisible("Pilot3_D1", true);
-			this.bTAGKilled = true;
-			break;
+			case 2: // '\002'
+				this.hierMesh().chunkVisible("Pilot3_D0", false);
+				this.hierMesh().chunkVisible("Pilot3up_D0", false);
+				this.hierMesh().chunkVisible("Head3_D0", false);
+				this.hierMesh().chunkVisible("HMask3_D0", false);
+				this.hierMesh().chunkVisible("Pilot3_D1", true);
+				this.bTAGKilled = true;
+				break;
 		}
 	}
 
@@ -165,11 +165,10 @@ public abstract class Swordfish extends Scheme1 implements TypeBomber, TypeStorm
 				}
 			} else {
 				this.noenemy++;
-				if (this.noenemy > 30 + this.wait && this.FM.CT.AirBrakeControl > 0.99F)
-					this.FM.CT.AirBrakeControl = 0.0F;
+				if (this.noenemy > 30 + this.wait && this.FM.CT.AirBrakeControl > 0.99F) { this.FM.CT.AirBrakeControl = 0.0F; }
 			}
 		}
-		if (!this.bObserverKilled)
+		if (!this.bObserverKilled) {
 			if (this.obsLookTime == 0) {
 				this.obsLookTime = 2 + World.Rnd().nextInt(1, 3);
 				this.obsMoveTot = 1.0F + World.Rnd().nextFloat() * 1.5F;
@@ -186,7 +185,8 @@ public abstract class Swordfish extends Scheme1 implements TypeBomber, TypeStorm
 			} else {
 				this.obsLookTime--;
 			}
-		if (!this.bTAGKilled)
+		}
+		if (!this.bTAGKilled) {
 			if (this.TAGLookTime == 0) {
 				this.TAGLookTime = 2 + World.Rnd().nextInt(1, 3);
 				this.TAGMoveTot = 1.0F + World.Rnd().nextFloat() * 1.5F;
@@ -203,6 +203,7 @@ public abstract class Swordfish extends Scheme1 implements TypeBomber, TypeStorm
 			} else {
 				this.TAGLookTime--;
 			}
+		}
 		if (this.FM.getAltitude() < 3000F) {
 			this.hierMesh().chunkVisible("HMask1_D0", false);
 			this.hierMesh().chunkVisible("HMask2_D0", false);
@@ -213,23 +214,17 @@ public abstract class Swordfish extends Scheme1 implements TypeBomber, TypeStorm
 			this.hierMesh().chunkVisible("HMask3_D0", this.hierMesh().isChunkVisible("Pilot3_D0"));
 		}
 		if (flag) {
-			if (this.FM.AS.astateEngineStates[0] > 3 && World.Rnd().nextFloat() < 0.39F)
-				this.FM.AS.hitTank(this, 0, 1);
-			if (this.FM.AS.astateTankStates[0] > 4 && World.Rnd().nextFloat() < 0.1F)
-				this.nextDMGLevel(this.FM.AS.astateEffectChunks[0] + "0", 0, this);
-			if (this.FM.AS.astateTankStates[1] > 4 && World.Rnd().nextFloat() < 0.1F)
-				this.nextDMGLevel(this.FM.AS.astateEffectChunks[1] + "0", 0, this);
-			if (this.FM.AS.astateTankStates[2] > 4 && World.Rnd().nextFloat() < 0.1F)
-				this.nextDMGLevel(this.FM.AS.astateEffectChunks[2] + "0", 0, this);
-			if (this.FM.AS.astateTankStates[3] > 4 && World.Rnd().nextFloat() < 0.1F)
-				this.nextDMGLevel(this.FM.AS.astateEffectChunks[3] + "0", 0, this);
+			if (this.FM.AS.astateEngineStates[0] > 3 && World.Rnd().nextFloat() < 0.39F) { this.FM.AS.hitTank(this, 0, 1); }
+			if (this.FM.AS.astateTankStates[0] > 4 && World.Rnd().nextFloat() < 0.1F) { this.nextDMGLevel(this.FM.AS.astateEffectChunks[0] + "0", 0, this); }
+			if (this.FM.AS.astateTankStates[1] > 4 && World.Rnd().nextFloat() < 0.1F) { this.nextDMGLevel(this.FM.AS.astateEffectChunks[1] + "0", 0, this); }
+			if (this.FM.AS.astateTankStates[2] > 4 && World.Rnd().nextFloat() < 0.1F) { this.nextDMGLevel(this.FM.AS.astateEffectChunks[2] + "0", 0, this); }
+			if (this.FM.AS.astateTankStates[3] > 4 && World.Rnd().nextFloat() < 0.1F) { this.nextDMGLevel(this.FM.AS.astateEffectChunks[3] + "0", 0, this); }
 		}
 	}
 
 	public void moveAirBrake(float f) {
 		this.airBrakePos = f;
-		if (this.bTAGKilled)
-			return;
+		if (this.bTAGKilled) { return; }
 		this.hierMesh().chunkSetAngles("TurrBase_D0", 0.0F, 70F * (1.0F - f), 0.0F);
 		this.hierMesh().chunkSetAngles("TurrBase1_D0", 70F * (1.0F - f), 0.0F, 0.0F);
 		this.noenemy = 0;
@@ -270,28 +265,26 @@ public abstract class Swordfish extends Scheme1 implements TypeBomber, TypeStorm
 	public void update(float f) {
 		Controls controls = this.FM.CT;
 		float f2 = controls.getFlap();
-		if (this.FM.CT.getArrestor() > 0.2F)
+		if (this.FM.CT.getArrestor() > 0.2F) {
 			if (this.FM.Gears.arrestorVAngle != 0.0F) {
 				float f3 = Aircraft.cvt(this.FM.Gears.arrestorVAngle, -26F, 11F, 1.0F, 0.0F);
 				this.arrestor = 0.8F * this.arrestor + 0.2F * f3;
 				this.moveArrestorHook(this.arrestor);
 			} else {
-				float f4 = (-42F * this.FM.Gears.arrestorVSink) / 37F;
-				if (f4 < 0.0F && this.FM.getSpeedKMH() > 50F)
-					Eff3DActor.New(this, this.FM.Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff",
-							0.1F);
-				if (f4 > 0.0F && this.FM.CT.getArrestor() < 0.95F)
-					f4 = 0.0F;
-				if (f4 > 0.0F)
+				float f4 = -42F * this.FM.Gears.arrestorVSink / 37F;
+				if (f4 < 0.0F && this.FM.getSpeedKMH() > 50F) { Eff3DActor.New(this, this.FM.Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F); }
+				if (f4 > 0.0F && this.FM.CT.getArrestor() < 0.95F) { f4 = 0.0F; }
+				if (f4 > 0.0F) {
 					this.arrestor = 0.7F * this.arrestor + 0.3F * (this.arrestor + f4);
-				else
+				} else {
 					this.arrestor = 0.3F * this.arrestor + 0.7F * (this.arrestor + f4);
-				if (this.arrestor < 0.0F)
+				}
+				if (this.arrestor < 0.0F) {
 					this.arrestor = 0.0F;
-				else if (this.arrestor > 1.0F)
-					this.arrestor = 1.0F;
+				} else if (this.arrestor > 1.0F) { this.arrestor = 1.0F; }
 				this.moveArrestorHook(this.arrestor);
 			}
+		}
 		float f5 = controls.getAileron();
 		float f6 = -(f5 * 30F + f2 * 17F);
 		this.hierMesh().chunkSetAngles("AroneL1_D0", 0.0F, f6, 0.0F);
@@ -300,39 +293,37 @@ public abstract class Swordfish extends Scheme1 implements TypeBomber, TypeStorm
 		this.hierMesh().chunkSetAngles("AroneR1_D0", 0.0F, f6, 0.0F);
 		this.hierMesh().chunkSetAngles("AroneR2_D0", 0.0F, f6, 0.0F);
 		this.resetYPRmodifier();
-		if (this.FM.EI.engines[0].getRPM() > 100F)
+		if (this.FM.EI.engines[0].getRPM() > 100F) {
 			this.slat = 0.96F * this.slat + 0.04F * Aircraft.cvt(this.FM.getSpeedKMH(), 80F, 110F, -0.18F, 0.0F);
-		else
+		} else {
 			this.slat = 0.995F * this.slat;
+		}
 		Aircraft.xyz[1] = this.slat;
 		this.hierMesh().chunkSetLocate("SlatR_D0", Aircraft.xyz, Aircraft.ypr);
 		this.hierMesh().chunkSetLocate("SlatL_D0", Aircraft.xyz, Aircraft.ypr);
-		if (this.FM.AS.isPilotParatrooper(2) && this.hierMesh().isChunkVisible("Pilot3up_D0"))
-			this.hierMesh().chunkVisible("Pilot3up_D0", false);
+		if (this.FM.AS.isPilotParatrooper(2) && this.hierMesh().isChunkVisible("Pilot3up_D0")) { this.hierMesh().chunkVisible("Pilot3up_D0", false); }
 		if (this.obsMove < this.obsMoveTot && !this.bObserverKilled && !this.FM.AS.isPilotParatrooper(1)) {
-			if (this.obsMove < 0.2F || this.obsMove > this.obsMoveTot - 0.2F)
+			if (this.obsMove < 0.2F || this.obsMove > this.obsMoveTot - 0.2F) {
 				this.obsMove += 0.29999999999999999D * f;
-			else if (this.obsMove < 0.1F || this.obsMove > this.obsMoveTot - 0.1F)
+			} else if (this.obsMove < 0.1F || this.obsMove > this.obsMoveTot - 0.1F) {
 				this.obsMove += 0.15F;
-			else
+			} else {
 				this.obsMove += 1.2D * f;
-			this.obsLookAzimuth = Aircraft.cvt(this.obsMove, 0.0F, this.obsMoveTot, this.obsAzimuthOld,
-					this.obsAzimuth);
-			this.obsLookElevation = Aircraft.cvt(this.obsMove, 0.0F, this.obsMoveTot, this.obsElevationOld,
-					this.obsElevation);
+			}
+			this.obsLookAzimuth = Aircraft.cvt(this.obsMove, 0.0F, this.obsMoveTot, this.obsAzimuthOld, this.obsAzimuth);
+			this.obsLookElevation = Aircraft.cvt(this.obsMove, 0.0F, this.obsMoveTot, this.obsElevationOld, this.obsElevation);
 			this.hierMesh().chunkSetAngles("Head2_D0", 0.0F, this.obsLookAzimuth, this.obsLookElevation);
 		}
 		if (this.TAGMove < this.TAGMoveTot && !this.bTAGKilled && !this.FM.AS.isPilotParatrooper(2)) {
-			if (this.TAGMove < 0.2F || this.TAGMove > this.TAGMoveTot - 0.2F)
+			if (this.TAGMove < 0.2F || this.TAGMove > this.TAGMoveTot - 0.2F) {
 				this.TAGMove += 0.29999999999999999D * f;
-			else if (this.TAGMove < 0.1F || this.TAGMove > this.TAGMoveTot - 0.1F)
+			} else if (this.TAGMove < 0.1F || this.TAGMove > this.TAGMoveTot - 0.1F) {
 				this.TAGMove += 0.15F;
-			else
+			} else {
 				this.TAGMove += 1.2D * f;
-			this.TAGLookAzimuth = Aircraft.cvt(this.TAGMove, 0.0F, this.TAGMoveTot, this.TAGAzimuthOld,
-					this.TAGAzimuth);
-			this.TAGLookElevation = Aircraft.cvt(this.TAGMove, 0.0F, this.TAGMoveTot, this.TAGElevationOld,
-					this.TAGElevation);
+			}
+			this.TAGLookAzimuth = Aircraft.cvt(this.TAGMove, 0.0F, this.TAGMoveTot, this.TAGAzimuthOld, this.TAGAzimuth);
+			this.TAGLookElevation = Aircraft.cvt(this.TAGMove, 0.0F, this.TAGMoveTot, this.TAGElevationOld, this.TAGElevation);
 			this.hierMesh().chunkSetAngles("Head3_D0", 0.0F, this.TAGLookAzimuth, this.TAGLookElevation);
 		}
 		super.update(f);
@@ -399,84 +390,60 @@ public abstract class Swordfish extends Scheme1 implements TypeBomber, TypeStorm
 				if (s.startsWith("xxarmorp")) {
 					int i = s.charAt(8) - 48;
 					switch (i) {
-					case 2: // '\002'
-						this.getEnergyPastArmor(
-								22.760000228881836D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D), shot);
-						if (shot.power <= 0.0F)
-							this.doRicochetBack(shot);
-						break;
+						case 2: // '\002'
+							this.getEnergyPastArmor(22.760000228881836D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D), shot);
+							if (shot.power <= 0.0F) { this.doRicochetBack(shot); }
+							break;
 
-					case 3: // '\003'
-						this.getEnergyPastArmor(9.366F, shot);
-						break;
+						case 3: // '\003'
+							this.getEnergyPastArmor(9.366F, shot);
+							break;
 
-					case 5: // '\005'
-						this.getEnergyPastArmor(
-								12.699999809265137D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D), shot);
-						break;
+						case 5: // '\005'
+							this.getEnergyPastArmor(12.699999809265137D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D), shot);
+							break;
 					}
 				}
 			} else if (s.startsWith("xxspar")) {
 				this.mydebuggunnery("Spar Construction: Hit..");
-				if (s.startsWith("xxsparli") && this.chunkDamageVisible("WingLIn") > 2
-						&& this.getEnergyPastArmor(
-								6.9600000381469727D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D),
-								shot) > 0.0F) {
+				if (s.startsWith("xxsparli") && this.chunkDamageVisible("WingLIn") > 2 && this.getEnergyPastArmor(6.9600000381469727D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D), shot) > 0.0F) {
 					this.mydebuggunnery("Spar Construction: WingLIn Spar Hit, Breaking in Half..");
 					this.nextDMGLevels(1, 2, "WingLIn_D3", shot.initiator);
 				}
-				if (s.startsWith("xxsparri") && this.chunkDamageVisible("WingRIn") > 2
-						&& this.getEnergyPastArmor(
-								6.9600000381469727D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D),
-								shot) > 0.0F) {
+				if (s.startsWith("xxsparri") && this.chunkDamageVisible("WingRIn") > 2 && this.getEnergyPastArmor(6.9600000381469727D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D), shot) > 0.0F) {
 					this.mydebuggunnery("Spar Construction: WingRIn Spar Hit, Breaking in Half..");
 					this.nextDMGLevels(1, 2, "WingRIn_D3", shot.initiator);
 				}
-				if (s.startsWith("xxsparlo") && this.chunkDamageVisible("WingLMid") > 2
-						&& this.getEnergyPastArmor(
-								6.9600000381469727D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D),
-								shot) > 0.0F) {
+				if (s.startsWith("xxsparlo") && this.chunkDamageVisible("WingLMid") > 2 && this.getEnergyPastArmor(6.9600000381469727D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D), shot) > 0.0F) {
 					this.mydebuggunnery("Spar Construction: WingLMid Spar Hit, Breaking in Half..");
 					this.nextDMGLevels(1, 2, "WingLMid_D3", shot.initiator);
 				}
-				if (s.startsWith("xxsparro") && this.chunkDamageVisible("WingRMid") > 2
-						&& this.getEnergyPastArmor(
-								6.9600000381469727D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D),
-								shot) > 0.0F) {
+				if (s.startsWith("xxsparro") && this.chunkDamageVisible("WingRMid") > 2 && this.getEnergyPastArmor(6.9600000381469727D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D), shot) > 0.0F) {
 					this.mydebuggunnery("Spar Construction: WingRMid Spar Hit, Breaking in Half..");
 					this.nextDMGLevels(1, 2, "WingRMid_D3", shot.initiator);
 				}
-				if (s.startsWith("xxspart") && this.chunkDamageVisible("Tail1") > 2
-						&& this.getEnergyPastArmor(3.86F
-								/ (float) Math.sqrt(Aircraft.v1.y * Aircraft.v1.y + Aircraft.v1.z * Aircraft.v1.z),
-								shot) > 0.0F
-						&& World.Rnd().nextFloat() < 0.25F) {
+				if (s.startsWith("xxspart") && this.chunkDamageVisible("Tail1") > 2 && this.getEnergyPastArmor(3.86F / (float) Math.sqrt(Aircraft.v1.y * Aircraft.v1.y + Aircraft.v1.z * Aircraft.v1.z), shot) > 0.0F && World.Rnd().nextFloat() < 0.25F) {
 					this.mydebuggunnery("Spar Construction: Tail1 Ribs Hit, Breaking in Half..");
 					this.nextDMGLevels(1, 2, "Tail1_D3", shot.initiator);
 				}
 			} else {
 				if (s.startsWith("xxlock")) {
 					this.mydebuggunnery("Lock Construction: Hit..");
-					if (s.startsWith("xxlockr")
-							&& this.getEnergyPastArmor(5.5F * World.Rnd().nextFloat(1.0F, 1.5F), shot) > 0.0F) {
+					if (s.startsWith("xxlockr") && this.getEnergyPastArmor(5.5F * World.Rnd().nextFloat(1.0F, 1.5F), shot) > 0.0F) {
 						this.mydebuggunnery("Lock Construction: Rudder1 Lock Shot Off..");
 						this.nextDMGLevels(3, 2, "Rudder1_D" + this.chunkDamageVisible("Rudder1"), shot.initiator);
 					}
-					if (s.startsWith("xxlockvl")
-							&& this.getEnergyPastArmor(5.5F * World.Rnd().nextFloat(1.0F, 1.5F), shot) > 0.0F) {
+					if (s.startsWith("xxlockvl") && this.getEnergyPastArmor(5.5F * World.Rnd().nextFloat(1.0F, 1.5F), shot) > 0.0F) {
 						this.mydebuggunnery("Lock Construction: VatorL Lock Shot Off..");
 						this.nextDMGLevels(3, 2, "VatorL_D" + this.chunkDamageVisible("VatorL"), shot.initiator);
 					}
-					if (s.startsWith("xxlockvr")
-							&& this.getEnergyPastArmor(5.5F * World.Rnd().nextFloat(1.0F, 1.5F), shot) > 0.0F) {
+					if (s.startsWith("xxlockvr") && this.getEnergyPastArmor(5.5F * World.Rnd().nextFloat(1.0F, 1.5F), shot) > 0.0F) {
 						this.mydebuggunnery("Lock Construction: VatorR Lock Shot Off..");
 						this.nextDMGLevels(3, 2, "VatorR_D" + this.chunkDamageVisible("VatorR"), shot.initiator);
 					}
 				}
 				if (s.startsWith("xxeng")) {
-					if ((s.endsWith("prop") || s.endsWith("pipe")) && this.getEnergyPastArmor(0.2F, shot) > 0.0F
-							&& World.Rnd().nextFloat() < 0.5F)
-						this.FM.EI.engines[0].setKillPropAngleDevice(shot.initiator);
+					if ((s.endsWith("prop") || s.endsWith("pipe")) && this.getEnergyPastArmor(0.2F, shot) > 0.0F && World.Rnd().nextFloat() < 0.5F) { this.FM.EI.engines[0].setKillPropAngleDevice(shot.initiator); }
 					if (s.endsWith("case") || s.endsWith("gear")) {
 						this.mydebuggunnery("*** Engine Crank Case Hit");
 						if (this.getEnergyPastArmor(0.2F, shot) > 0.0F) {
@@ -487,30 +454,22 @@ public abstract class Swordfish extends Scheme1 implements TypeBomber, TypeStorm
 								this.FM.AS.hitEngine(shot.initiator, 0, 2);
 								this.mydebuggunnery("*** Engine Crank Case Hit - Engine Damaged..");
 							} else {
-								this.FM.EI.engines[0].setReadyness(shot.initiator,
-										this.FM.EI.engines[0].getReadyness() - 0.002F);
-								this.mydebuggunnery("*** Engine Crank Case Hit - Readyness Reduced to "
-										+ this.FM.EI.engines[0].getReadyness() + "..");
+								this.FM.EI.engines[0].setReadyness(shot.initiator, this.FM.EI.engines[0].getReadyness() - 0.002F);
+								this.mydebuggunnery("*** Engine Crank Case Hit - Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + "..");
 							}
 						} else if (World.Rnd().nextFloat() < 0.05F) {
 							this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, 1);
 							this.mydebuggunnery("*** Engine Cylinders Damaged..");
 						} else {
-							this.FM.EI.engines[0].setReadyness(shot.initiator,
-									this.FM.EI.engines[0].getReadyness() - 0.002F);
-							this.mydebuggunnery("*** Engine Crank Case Hit - Readyness Reduced to "
-									+ this.FM.EI.engines[0].getReadyness() + "..");
+							this.FM.EI.engines[0].setReadyness(shot.initiator, this.FM.EI.engines[0].getReadyness() - 0.002F);
+							this.mydebuggunnery("*** Engine Crank Case Hit - Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + "..");
 						}
 						this.getEnergyPastArmor(12F, shot);
 					}
 					if (s.endsWith("cyls")) {
-						if (this.getEnergyPastArmor(6.85F, shot) > 0.0F
-								&& World.Rnd().nextFloat() < this.FM.EI.engines[0].getCylindersRatio() * 0.75F) {
-							this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator,
-									World.Rnd().nextInt(1, (int) (shot.power / 19000F)));
-							this.mydebuggunnery(
-									"*** Engine Cylinders Hit, " + this.FM.EI.engines[0].getCylindersOperable() + "/"
-											+ this.FM.EI.engines[0].getCylinders() + " Left..");
+						if (this.getEnergyPastArmor(6.85F, shot) > 0.0F && World.Rnd().nextFloat() < this.FM.EI.engines[0].getCylindersRatio() * 0.75F) {
+							this.FM.EI.engines[0].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int) (shot.power / 19000F)));
+							this.mydebuggunnery("*** Engine Cylinders Hit, " + this.FM.EI.engines[0].getCylindersOperable() + "/" + this.FM.EI.engines[0].getCylinders() + " Left..");
 							if (World.Rnd().nextFloat() < shot.power / 48000F) {
 								this.FM.AS.hitEngine(shot.initiator, 0, 2);
 								this.mydebuggunnery("*** Engine Cylinders Hit - Engine Fires..");
@@ -529,18 +488,15 @@ public abstract class Swordfish extends Scheme1 implements TypeBomber, TypeStorm
 					this.mydebuggunnery("*** Engine Module: Oil Radiator Hit..");
 				} else if (s.startsWith("xxtank")) {
 					int j = s.charAt(6) - 49;
-					if (this.getEnergyPastArmor(0.4F, shot) > 0.0F)
+					if (this.getEnergyPastArmor(0.4F, shot) > 0.0F) {
 						if (shot.power < 14100F) {
-							if (this.FM.AS.astateTankStates[j] < 1)
-								this.FM.AS.hitTank(shot.initiator, j, 1);
-							if (this.FM.AS.astateTankStates[j] < 4 && World.Rnd().nextFloat() < 0.15F)
-								this.FM.AS.hitTank(shot.initiator, j, 1);
-							if (shot.powerType == 3 && this.FM.AS.astateTankStates[j] > 1
-									&& World.Rnd().nextFloat() < 0.2F)
-								this.FM.AS.hitTank(shot.initiator, j, 10);
+							if (this.FM.AS.astateTankStates[j] < 1) { this.FM.AS.hitTank(shot.initiator, j, 1); }
+							if (this.FM.AS.astateTankStates[j] < 4 && World.Rnd().nextFloat() < 0.15F) { this.FM.AS.hitTank(shot.initiator, j, 1); }
+							if (shot.powerType == 3 && this.FM.AS.astateTankStates[j] > 1 && World.Rnd().nextFloat() < 0.2F) { this.FM.AS.hitTank(shot.initiator, j, 10); }
 						} else {
 							this.FM.AS.hitTank(shot.initiator, j, World.Rnd().nextInt(0, (int) (shot.power / 35000F)));
 						}
+					}
 					this.mydebuggunnery("*** Tank " + (j + 1) + " state = " + this.FM.AS.astateTankStates[j]);
 				} else if (s.startsWith("xxmgun")) {
 					if (s.endsWith("01")) {
@@ -558,12 +514,10 @@ public abstract class Swordfish extends Scheme1 implements TypeBomber, TypeStorm
 			this.setControlDamage(shot, 0);
 			this.setControlDamage(shot, 1);
 			this.setControlDamage(shot, 2);
-			if (this.chunkDamageVisible("CF") < 3)
-				this.hitChunk("CF", shot);
+			if (this.chunkDamageVisible("CF") < 3) { this.hitChunk("CF", shot); }
 		} else if (s.startsWith("xarmorp1")) {
 			this.getEnergyPastArmor(20.760000228881836D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-005D), shot);
-			if (shot.power <= 0.0F)
-				this.doRicochetBack(shot);
+			if (shot.power <= 0.0F) { this.doRicochetBack(shot); }
 		} else if (s.startsWith("xmgun01")) {
 			if (this.getEnergyPastArmor(World.Rnd().nextFloat(2.0F, 8F), shot) > 0.0F) {
 				this.mydebuggunnery("Armament System: Forward Machine Gun: Disabled..");
@@ -575,29 +529,22 @@ public abstract class Swordfish extends Scheme1 implements TypeBomber, TypeStorm
 				this.FM.AS.setJamBullets(0, 1);
 			}
 		} else if (s.startsWith("xeng")) {
-			if (this.chunkDamageVisible("Engine1") < 2)
-				this.hitChunk("Engine1", shot);
+			if (this.chunkDamageVisible("Engine1") < 2) { this.hitChunk("Engine1", shot); }
 		} else if (s.startsWith("xtail")) {
 			this.setControlDamage(shot, 1);
 			this.setControlDamage(shot, 2);
-			if (this.chunkDamageVisible("Tail1") < 3)
-				this.hitChunk("Tail1", shot);
-		} else if (s.startsWith("xkeel"))
+			if (this.chunkDamageVisible("Tail1") < 3) { this.hitChunk("Tail1", shot); }
+		} else if (s.startsWith("xkeel")) {
 			this.hitChunk("Keel1", shot);
-		else if (s.startsWith("xrudder")) {
+		} else if (s.startsWith("xrudder")) {
 			this.setControlDamage(shot, 2);
-			if (this.chunkDamageVisible("Rudder1") < 1)
-				this.hitChunk("Rudder1", shot);
+			if (this.chunkDamageVisible("Rudder1") < 1) { this.hitChunk("Rudder1", shot); }
 		} else if (s.startsWith("xstab")) {
-			if (s.startsWith("xstabl"))
-				this.hitChunk("StabL", shot);
-			if (s.startsWith("xstabr"))
-				this.hitChunk("StabR", shot);
+			if (s.startsWith("xstabl")) { this.hitChunk("StabL", shot); }
+			if (s.startsWith("xstabr")) { this.hitChunk("StabR", shot); }
 		} else if (s.startsWith("xvator")) {
-			if (s.startsWith("xvatorl") && this.chunkDamageVisible("VatorL") < 1)
-				this.hitChunk("VatorL", shot);
-			if (s.startsWith("xvatorr") && this.chunkDamageVisible("VatorR") < 1)
-				this.hitChunk("VatorR", shot);
+			if (s.startsWith("xvatorl") && this.chunkDamageVisible("VatorL") < 1) { this.hitChunk("VatorL", shot); }
+			if (s.startsWith("xvatorr") && this.chunkDamageVisible("VatorR") < 1) { this.hitChunk("VatorR", shot); }
 		} else if (s.startsWith("xwing")) {
 			if (s.startsWith("xwinglin") && this.chunkDamageVisible("WingLIn") < 3) {
 				this.setControlDamage(shot, 0);
@@ -615,29 +562,21 @@ public abstract class Swordfish extends Scheme1 implements TypeBomber, TypeStorm
 				this.setControlDamage(shot, 0);
 				this.hitChunk("WingRMid", shot);
 			}
-			if (s.startsWith("xwinglout") && this.chunkDamageVisible("WingLOut") < 3)
-				this.hitChunk("WingLOut", shot);
-			if (s.startsWith("xwingrout") && this.chunkDamageVisible("WingROut") < 3)
-				this.hitChunk("WingROut", shot);
+			if (s.startsWith("xwinglout") && this.chunkDamageVisible("WingLOut") < 3) { this.hitChunk("WingLOut", shot); }
+			if (s.startsWith("xwingrout") && this.chunkDamageVisible("WingROut") < 3) { this.hitChunk("WingROut", shot); }
 		} else if (s.startsWith("xarone")) {
-			if (s.startsWith("xaronel1"))
-				this.hitChunk("AroneL1", shot);
-			if (s.startsWith("xaronel2"))
-				this.hitChunk("AroneL2", shot);
-			if (s.startsWith("xaroner1"))
-				this.hitChunk("AroneR1", shot);
-			if (s.startsWith("xaroner2"))
-				this.hitChunk("AroneR2", shot);
+			if (s.startsWith("xaronel1")) { this.hitChunk("AroneL1", shot); }
+			if (s.startsWith("xaronel2")) { this.hitChunk("AroneL2", shot); }
+			if (s.startsWith("xaroner1")) { this.hitChunk("AroneR1", shot); }
+			if (s.startsWith("xaroner2")) { this.hitChunk("AroneR2", shot); }
 		} else if (s.startsWith("xgearr")) {
-			if (World.Rnd().nextFloat() < 0.1F
-					&& this.getEnergyPastArmor(World.Rnd().nextFloat(1.2F, 3.435F), shot) > 0.0F) {
+			if (World.Rnd().nextFloat() < 0.1F && this.getEnergyPastArmor(World.Rnd().nextFloat(1.2F, 3.435F), shot) > 0.0F) {
 				this.mydebuggunnery("Undercarriage: Stuck..");
 				this.FM.AS.setInternalDamage(shot.initiator, 3);
 			}
 			this.hitChunk("GearR2", shot);
 		} else if (s.startsWith("xgearl")) {
-			if (World.Rnd().nextFloat() < 0.1F
-					&& this.getEnergyPastArmor(World.Rnd().nextFloat(1.2F, 3.435F), shot) > 0.0F) {
+			if (World.Rnd().nextFloat() < 0.1F && this.getEnergyPastArmor(World.Rnd().nextFloat(1.2F, 3.435F), shot) > 0.0F) {
 				this.mydebuggunnery("Undercarriage: Stuck..");
 				this.FM.AS.setInternalDamage(shot.initiator, 3);
 			}
@@ -668,28 +607,28 @@ public abstract class Swordfish extends Scheme1 implements TypeBomber, TypeStorm
 		float f = af[0];
 		float f1 = af[1];
 		switch (i) {
-		case 0: // '\0'
-			if (f < -70F) {
-				f = -70F;
-				flag = false;
-			}
-			if (f > 70F) {
-				f = 70F;
-				flag = false;
-			}
-			if (f1 < -45F) {
-				f1 = -45F;
-				flag = false;
-			}
-			if (f1 > 70F) {
-				f1 = 70F;
-				flag = false;
-			}
-			if ((f > -30F || f < 30F) && f1 < -10F) {
-				f1 = -10F;
-				flag = false;
-			}
-			break;
+			case 0: // '\0'
+				if (f < -70F) {
+					f = -70F;
+					flag = false;
+				}
+				if (f > 70F) {
+					f = 70F;
+					flag = false;
+				}
+				if (f1 < -45F) {
+					f1 = -45F;
+					flag = false;
+				}
+				if (f1 > 70F) {
+					f1 = 70F;
+					flag = false;
+				}
+				if ((f > -30F || f < 30F) && f1 < -10F) {
+					f1 = -10F;
+					flag = false;
+				}
+				break;
 		}
 		af[0] = f;
 		af[1] = f1;
@@ -732,13 +671,13 @@ public abstract class Swordfish extends Scheme1 implements TypeBomber, TypeStorm
 	public abstract boolean typeBomberToggleAutomation();
 
 	// TODO: Storebror: Head Movement Bugfix for Swordfish
-	private float headPos[] = { 0, 0, 0 };
-	private float headOr[] = { 0, 0, 0 };
-	private static Orient tmpOrLH = new Orient();
-	private float headYp;
-	private float headTp;
-	private float headYm;
-	private float headTm;
+	private float         headPos[] = { 0, 0, 0 };
+	private float         headOr[]  = { 0, 0, 0 };
+	private static Orient tmpOrLH   = new Orient();
+	private float         headYp;
+	private float         headTp;
+	private float         headYm;
+	private float         headTm;
 
 	public void movePilotsHead(float f, float f1) {
 		f *= -1F;
@@ -764,44 +703,44 @@ public abstract class Swordfish extends Scheme1 implements TypeBomber, TypeStorm
 		}
 	}
 
-	public boolean bPitUnfocused;
-	boolean bIsWingTornOff;
-	public float airBrakePos;
+	public boolean  bPitUnfocused;
+	boolean         bIsWingTornOff;
+	public float    airBrakePos;
 	protected float arrestor;
-	float obsLookoutTimeLeft;
-	float obsLookoutAz;
-	float obsLookoutEl;
-	float obsLookoutAnim;
-	float obsLookoutMax;
-	float obsLookoutAzSpd;
-	float obsLookoutElSpd;
-	int obsLookoutIndex;
-	float obsLookoutPos[][];
-	private float wheel1;
-	private float wheel2;
-	private float slat;
-	private int noenemy;
-	private int wait;
-	private int obsLookTime;
-	private float obsLookAzimuth;
-	private float obsLookElevation;
-	private float obsAzimuth;
-	private float obsElevation;
-	private float obsAzimuthOld;
-	private float obsElevationOld;
-	private float obsMove;
-	private float obsMoveTot;
-	private int TAGLookTime;
-	private float TAGLookAzimuth;
-	private float TAGLookElevation;
-	private float TAGAzimuth;
-	private float TAGElevation;
-	private float TAGAzimuthOld;
-	private float TAGElevationOld;
-	private float TAGMove;
-	private float TAGMoveTot;
-	boolean bTAGKilled;
-	boolean bObserverKilled;
+	float           obsLookoutTimeLeft;
+	float           obsLookoutAz;
+	float           obsLookoutEl;
+	float           obsLookoutAnim;
+	float           obsLookoutMax;
+	float           obsLookoutAzSpd;
+	float           obsLookoutElSpd;
+	int             obsLookoutIndex;
+	float           obsLookoutPos[][];
+	private float   wheel1;
+	private float   wheel2;
+	private float   slat;
+	private int     noenemy;
+	private int     wait;
+	private int     obsLookTime;
+	private float   obsLookAzimuth;
+	private float   obsLookElevation;
+	private float   obsAzimuth;
+	private float   obsElevation;
+	private float   obsAzimuthOld;
+	private float   obsElevationOld;
+	private float   obsMove;
+	private float   obsMoveTot;
+	private int     TAGLookTime;
+	private float   TAGLookAzimuth;
+	private float   TAGLookElevation;
+	private float   TAGAzimuth;
+	private float   TAGElevation;
+	private float   TAGAzimuthOld;
+	private float   TAGElevationOld;
+	private float   TAGMove;
+	private float   TAGMoveTot;
+	boolean         bTAGKilled;
+	boolean         bObserverKilled;
 
 	static {
 		Class class1 = Swordfish.class;

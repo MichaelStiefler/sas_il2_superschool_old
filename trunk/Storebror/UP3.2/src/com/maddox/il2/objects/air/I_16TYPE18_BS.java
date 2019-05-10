@@ -7,19 +7,17 @@ public class I_16TYPE18_BS extends I_16 implements TypeFighter, TypeTNBFighter {
 
 	protected void nextDMGLevel(String s, int i, Actor actor) {
 		super.nextDMGLevel(s, i, actor);
-		if (FM.isPlayers())
-			bChangedPit = true;
+		if (this.FM.isPlayers()) { bChangedPit = true; }
 	}
 
 	protected void nextCUTLevel(String s, int i, Actor actor) {
 		super.nextCUTLevel(s, i, actor);
-		if (FM.isPlayers())
-			bChangedPit = true;
+		if (this.FM.isPlayers()) { bChangedPit = true; }
 	}
 
 	protected void moveFlap(float f) {
-		hierMesh().chunkSetAngles("Flap02_D0", 0.0F, -55F * f, 0.0F);
-		hierMesh().chunkSetAngles("Flap03_D0", 0.0F, -55F * f, 0.0F);
+		this.hierMesh().chunkSetAngles("Flap02_D0", 0.0F, -55F * f, 0.0F);
+		this.hierMesh().chunkSetAngles("Flap03_D0", 0.0F, -55F * f, 0.0F);
 	}
 
 	public static boolean bChangedPit = false;
@@ -37,7 +35,6 @@ public class I_16TYPE18_BS extends I_16 implements TypeFighter, TypeTNBFighter {
 		Property.set(class1, "cockpitClass", new Class[] { CockpitI_16TYPE18.class });
 		Property.set(class1, "FlightModel", "FlightModels/I-16type27.fmd");
 		weaponTriggersRegister(class1, new int[] { 1, 1, 0, 0, 3, 3, 9, 9 });
-		weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_ExternalBomb01",
-				"_ExternalBomb02", "_ExternalDev07", "_ExternalDev08" });
+		weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev07", "_ExternalDev08" });
 	}
 }

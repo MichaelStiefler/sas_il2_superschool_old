@@ -18,8 +18,7 @@ public class CockpitMBR_2AM34_TGunner extends CockpitGunner {
 	}
 
 	protected void doFocusLeave() {
-		this.aircraft().hierMesh().chunkVisible("Turret1B_D0",
-				this.aircraft().hierMesh().isChunkVisible("Turret1A_D0"));
+		this.aircraft().hierMesh().chunkVisible("Turret1B_D0", this.aircraft().hierMesh().isChunkVisible("Turret1A_D0"));
 		super.doFocusLeave();
 	}
 
@@ -33,16 +32,16 @@ public class CockpitMBR_2AM34_TGunner extends CockpitGunner {
 		float f = orient.getYaw();
 		float f1 = orient.getTangage();
 		for (; f < -180F; f += 360F) {
-			;
+
 		}
 		for (; f > 180F; f -= 360F) {
-			;
+
 		}
 		for (; this.prevA0 < -180F; this.prevA0 += 360F) {
-			;
+
 		}
 		for (; this.prevA0 > 180F; this.prevA0 -= 360F) {
-			;
+
 		}
 		if (!this.isRealMode()) {
 			this.prevA0 = f;
@@ -51,28 +50,20 @@ public class CockpitMBR_2AM34_TGunner extends CockpitGunner {
 				this.prevTime = Time.current() - 1L;
 				this.bNeedSetUp = false;
 			}
-			if ((f < -120F) && (this.prevA0 > 120F)) {
+			if (f < -120F && this.prevA0 > 120F) {
 				f += 360F;
-			} else if ((f > 120F) && (this.prevA0 < -120F)) {
-				this.prevA0 += 360F;
-			}
+			} else if (f > 120F && this.prevA0 < -120F) { this.prevA0 += 360F; }
 			final float f3 = f - this.prevA0;
 			final float f4 = 0.001F * (Time.current() - this.prevTime);
 			final float f5 = Math.abs(f3 / f4);
 			if (f5 > 120F) {
 				if (f > this.prevA0) {
-					f = this.prevA0 + (120F * f4);
-				} else if (f < this.prevA0) {
-					f = this.prevA0 - (120F * f4);
-				}
+					f = this.prevA0 + 120F * f4;
+				} else if (f < this.prevA0) { f = this.prevA0 - 120F * f4; }
 			}
 			this.prevTime = Time.current();
-			if (f1 > 73F) {
-				f1 = 73F;
-			}
-			if (f1 < 0.0F) {
-				f1 = 0.0F;
-			}
+			if (f1 > 73F) { f1 = 73F; }
+			if (f1 < 0.0F) { f1 = 0.0F; }
 			orient.setYPR(f, f1, 0.0F);
 			orient.wrap();
 			this.prevA0 = f;
@@ -81,14 +72,10 @@ public class CockpitMBR_2AM34_TGunner extends CockpitGunner {
 
 	protected void interpTick() {
 		if (this.isRealMode()) {
-			if ((this.emitter == null) || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) {
-				this.bGunFire = false;
-			}
+			if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) { this.bGunFire = false; }
 			this.fm.CT.WeaponControl[this.weaponControlNum()] = this.bGunFire;
 			if (this.bGunFire) {
-				if (this.hook1 == null) {
-					this.hook1 = new HookNamed(this.aircraft(), "_MGUN02");
-				}
+				if (this.hook1 == null) { this.hook1 = new HookNamed(this.aircraft(), "_MGUN02"); }
 				this.doHitMasterAircraft(this.aircraft(), this.hook1, "_MGUN02");
 			}
 		}
@@ -96,7 +83,7 @@ public class CockpitMBR_2AM34_TGunner extends CockpitGunner {
 
 	public void doGunFire(boolean flag) {
 		if (this.isRealMode()) {
-			if ((this.emitter == null) || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) {
+			if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) {
 				this.bGunFire = false;
 			} else {
 				this.bGunFire = flag;
@@ -106,12 +93,8 @@ public class CockpitMBR_2AM34_TGunner extends CockpitGunner {
 	}
 
 	public void reflectCockpitState() {
-		if ((this.fm.AS.astateCockpitState & 4) != 0) {
-			this.mesh.chunkVisible("Z_Holes1_D1", true);
-		}
-		if ((this.fm.AS.astateCockpitState & 0x10) != 0) {
-			this.mesh.chunkVisible("Z_Holes2_D1", true);
-		}
+		if ((this.fm.AS.astateCockpitState & 4) != 0) { this.mesh.chunkVisible("Z_Holes1_D1", true); }
+		if ((this.fm.AS.astateCockpitState & 0x10) != 0) { this.mesh.chunkVisible("Z_Holes2_D1", true); }
 	}
 
 	public CockpitMBR_2AM34_TGunner() {
@@ -123,9 +106,9 @@ public class CockpitMBR_2AM34_TGunner extends CockpitGunner {
 	}
 
 	private boolean bNeedSetUp;
-	private long prevTime;
-	private float prevA0;
-	private Hook hook1;
+	private long    prevTime;
+	private float   prevA0;
+	private Hook    hook1;
 
 	static {
 		Property.set(CockpitMBR_2AM34_TGunner.class, "aiTuretNum", 1);

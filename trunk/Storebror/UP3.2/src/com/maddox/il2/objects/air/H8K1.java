@@ -25,15 +25,12 @@ public class H8K1 extends H8K implements TypeBomber {
 
 	protected void nextDMGLevel(String s, int i, Actor actor) {
 		super.nextDMGLevel(s, i, actor);
-		if (this.FM.isPlayers()) {
-			bChangedPit = true;
-		}
+		if (this.FM.isPlayers()) { bChangedPit = true; }
 	}
 
 	protected void nextCUTLevel(String s, int i, Actor actor) {
 		super.nextCUTLevel(s, i, actor);
-		if (this.FM.isPlayers())
-			bChangedPit = true;
+		if (this.FM.isPlayers()) { bChangedPit = true; }
 	}
 
 	public boolean turretAngles(int i, float af[]) {
@@ -41,95 +38,95 @@ public class H8K1 extends H8K implements TypeBomber {
 		float f = -af[0];
 		float f1 = af[1];
 		switch (i) {
-		default:
-			break;
+			default:
+				break;
 
-		case 0: // '\0'
-			if (f < -35F) {
-				f = -35F;
-				flag = false;
-			}
-			if (f > 35F) {
-				f = 35F;
-				flag = false;
-			}
-			if (f1 < -25F) {
-				f1 = -25F;
-				flag = false;
-			}
-			if (f1 > 25F) {
-				f1 = 25F;
-				flag = false;
-			}
-			break;
+			case 0: // '\0'
+				if (f < -35F) {
+					f = -35F;
+					flag = false;
+				}
+				if (f > 35F) {
+					f = 35F;
+					flag = false;
+				}
+				if (f1 < -25F) {
+					f1 = -25F;
+					flag = false;
+				}
+				if (f1 > 25F) {
+					f1 = 25F;
+					flag = false;
+				}
+				break;
 
-		case 1: // '\001'
-			if (f < -22F) {
-				f = -22F;
-				flag = false;
-			}
-			if (f > 22F) {
-				f = 22F;
-				flag = false;
-			}
-			if (f1 < -57F) {
-				f1 = -57F;
-				flag = false;
-			}
-			if (f1 > 33F) {
-				f1 = 33F;
-				flag = false;
-			}
-			break;
+			case 1: // '\001'
+				if (f < -22F) {
+					f = -22F;
+					flag = false;
+				}
+				if (f > 22F) {
+					f = 22F;
+					flag = false;
+				}
+				if (f1 < -57F) {
+					f1 = -57F;
+					flag = false;
+				}
+				if (f1 > 33F) {
+					f1 = 33F;
+					flag = false;
+				}
+				break;
 
-		case 2: // '\002'
-			if (f < -22F) {
-				f = -22F;
-				flag = false;
-			}
-			if (f > 22F) {
-				f = 22F;
-				flag = false;
-			}
-			if (f1 < -57F) {
-				f1 = -57F;
-				flag = false;
-			}
-			if (f1 > 33F) {
-				f1 = 33F;
-				flag = false;
-			}
-			break;
+			case 2: // '\002'
+				if (f < -22F) {
+					f = -22F;
+					flag = false;
+				}
+				if (f > 22F) {
+					f = 22F;
+					flag = false;
+				}
+				if (f1 < -57F) {
+					f1 = -57F;
+					flag = false;
+				}
+				if (f1 > 33F) {
+					f1 = 33F;
+					flag = false;
+				}
+				break;
 
-		case 3: // '\003'
-			if (f1 < 0.0F) {
-				f1 = 0.0F;
-				flag = false;
-			}
-			if (f1 > 50F) {
-				f1 = 50F;
-				flag = false;
-			}
-			break;
+			case 3: // '\003'
+				if (f1 < 0.0F) {
+					f1 = 0.0F;
+					flag = false;
+				}
+				if (f1 > 50F) {
+					f1 = 50F;
+					flag = false;
+				}
+				break;
 
-		case 4: // '\004'
-			if (f < -25F) {
-				f = -25F;
-				flag = false;
-			}
-			if (f > 25F) {
-				f = 25F;
-				flag = false;
-			}
-			if (f1 < -25F) {
-				f1 = -25F;
-				flag = false;
-			}
-			if (f1 > 25F) {
-				f1 = 25F;
-				flag = false;
-			}
-			break;
+			case 4: // '\004'
+				if (f < -25F) {
+					f = -25F;
+					flag = false;
+				}
+				if (f > 25F) {
+					f = 25F;
+					flag = false;
+				}
+				if (f1 < -25F) {
+					f1 = -25F;
+					flag = false;
+				}
+				if (f1 > 25F) {
+					f1 = 25F;
+					flag = false;
+				}
+				break;
 		}
 		af[0] = -f;
 		af[1] = f1;
@@ -138,22 +135,22 @@ public class H8K1 extends H8K implements TypeBomber {
 
 	public void doWoundPilot(int i, float f) {
 		switch (i) {
-		case 2: // '\002'
-			this.FM.turret[0].setHealth(f);
-			break;
+			case 2: // '\002'
+				this.FM.turret[0].setHealth(f);
+				break;
 
-		case 3: // '\003'
-			this.FM.turret[1].setHealth(f);
-			this.FM.turret[2].setHealth(f);
-			break;
+			case 3: // '\003'
+				this.FM.turret[1].setHealth(f);
+				this.FM.turret[2].setHealth(f);
+				break;
 
-		case 4: // '\004'
-			this.FM.turret[3].setHealth(f);
-			break;
+			case 4: // '\004'
+				this.FM.turret[3].setHealth(f);
+				break;
 
-		case 5: // '\005'
-			this.FM.turret[4].setHealth(f);
-			break;
+			case 5: // '\005'
+				this.FM.turret[4].setHealth(f);
+				break;
 		}
 	}
 
@@ -183,24 +180,18 @@ public class H8K1 extends H8K implements TypeBomber {
 
 	public void typeBomberAdjDistancePlus() {
 		this.fSightCurForwardAngle++;
-		if (this.fSightCurForwardAngle > 85F)
-			this.fSightCurForwardAngle = 85F;
+		if (this.fSightCurForwardAngle > 85F) { this.fSightCurForwardAngle = 85F; }
 		this.fSightCurDistance = this.fSightCurAltitude * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
-		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation",
-				new Object[] { new Integer((int) this.fSightCurForwardAngle) });
-		if (this.bSightAutomation)
-			this.typeBomberToggleAutomation();
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
+		if (this.bSightAutomation) { this.typeBomberToggleAutomation(); }
 	}
 
 	public void typeBomberAdjDistanceMinus() {
 		this.fSightCurForwardAngle--;
-		if (this.fSightCurForwardAngle < 0.0F)
-			this.fSightCurForwardAngle = 0.0F;
+		if (this.fSightCurForwardAngle < 0.0F) { this.fSightCurForwardAngle = 0.0F; }
 		this.fSightCurDistance = this.fSightCurAltitude * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
-		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation",
-				new Object[] { new Integer((int) this.fSightCurForwardAngle) });
-		if (this.bSightAutomation)
-			this.typeBomberToggleAutomation();
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) this.fSightCurForwardAngle) });
+		if (this.bSightAutomation) { this.typeBomberToggleAutomation(); }
 	}
 
 	public void typeBomberAdjSideslipReset() {
@@ -209,18 +200,14 @@ public class H8K1 extends H8K implements TypeBomber {
 
 	public void typeBomberAdjSideslipPlus() {
 		this.fSightCurSideslip += 0.1F;
-		if (this.fSightCurSideslip > 3F)
-			this.fSightCurSideslip = 3F;
-		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip",
-				new Object[] { new Integer((int) (this.fSightCurSideslip * 10F)) });
+		if (this.fSightCurSideslip > 3F) { this.fSightCurSideslip = 3F; }
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int) (this.fSightCurSideslip * 10F)) });
 	}
 
 	public void typeBomberAdjSideslipMinus() {
 		this.fSightCurSideslip -= 0.1F;
-		if (this.fSightCurSideslip < -3F)
-			this.fSightCurSideslip = -3F;
-		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip",
-				new Object[] { new Integer((int) (this.fSightCurSideslip * 10F)) });
+		if (this.fSightCurSideslip < -3F) { this.fSightCurSideslip = -3F; }
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int) (this.fSightCurSideslip * 10F)) });
 	}
 
 	public void typeBomberAdjAltitudeReset() {
@@ -229,19 +216,15 @@ public class H8K1 extends H8K implements TypeBomber {
 
 	public void typeBomberAdjAltitudePlus() {
 		this.fSightCurAltitude += 10F;
-		if (this.fSightCurAltitude > 10000F)
-			this.fSightCurAltitude = 10000F;
-		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude",
-				new Object[] { new Integer((int) this.fSightCurAltitude) });
+		if (this.fSightCurAltitude > 10000F) { this.fSightCurAltitude = 10000F; }
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) this.fSightCurAltitude) });
 		this.fSightCurDistance = this.fSightCurAltitude * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
 	}
 
 	public void typeBomberAdjAltitudeMinus() {
 		this.fSightCurAltitude -= 10F;
-		if (this.fSightCurAltitude < 850F)
-			this.fSightCurAltitude = 850F;
-		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude",
-				new Object[] { new Integer((int) this.fSightCurAltitude) });
+		if (this.fSightCurAltitude < 850F) { this.fSightCurAltitude = 850F; }
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) this.fSightCurAltitude) });
 		this.fSightCurDistance = this.fSightCurAltitude * (float) Math.tan(Math.toRadians(this.fSightCurForwardAngle));
 	}
 
@@ -251,54 +234,44 @@ public class H8K1 extends H8K implements TypeBomber {
 
 	public void typeBomberAdjSpeedPlus() {
 		this.fSightCurSpeed += 10F;
-		if (this.fSightCurSpeed > 600F)
-			this.fSightCurSpeed = 600F;
-		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed",
-				new Object[] { new Integer((int) this.fSightCurSpeed) });
+		if (this.fSightCurSpeed > 600F) { this.fSightCurSpeed = 600F; }
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) this.fSightCurSpeed) });
 	}
 
 	public void typeBomberAdjSpeedMinus() {
 		this.fSightCurSpeed -= 10F;
-		if (this.fSightCurSpeed < 150F)
-			this.fSightCurSpeed = 150F;
-		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed",
-				new Object[] { new Integer((int) this.fSightCurSpeed) });
+		if (this.fSightCurSpeed < 150F) { this.fSightCurSpeed = 150F; }
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) this.fSightCurSpeed) });
 	}
 
 	public void typeBomberUpdate(float f) {
 		if (Math.abs(this.FM.Or.getKren()) > 4.5D) {
 			this.fSightCurReadyness -= 0.0666666F * f;
-			if (this.fSightCurReadyness < 0.0F)
-				this.fSightCurReadyness = 0.0F;
+			if (this.fSightCurReadyness < 0.0F) { this.fSightCurReadyness = 0.0F; }
 		}
-		if (this.fSightCurReadyness < 1.0F)
+		if (this.fSightCurReadyness < 1.0F) {
 			this.fSightCurReadyness += 0.0333333F * f;
-		else if (this.bSightAutomation) {
-			this.fSightCurDistance -= (this.fSightCurSpeed / 3.6F) * f;
+		} else if (this.bSightAutomation) {
+			this.fSightCurDistance -= this.fSightCurSpeed / 3.6F * f;
 			if (this.fSightCurDistance < 0.0F) {
 				this.fSightCurDistance = 0.0F;
 				this.typeBomberToggleAutomation();
 			}
-			this.fSightCurForwardAngle = (float) Math
-					.toDegrees(Math.atan(this.fSightCurDistance / this.fSightCurAltitude));
-			this.calibDistance = (this.fSightCurSpeed / 3.6F)
-					* floatindex(Aircraft.cvt(this.fSightCurAltitude, 0.0F, 7000F, 0.0F, 7F), calibrationScale);
-			System.out.println("time = "
-					+ floatindex(Aircraft.cvt(this.fSightCurAltitude, 0.0F, 7000F, 0.0F, 7F), calibrationScale));
+			this.fSightCurForwardAngle = (float) Math.toDegrees(Math.atan(this.fSightCurDistance / this.fSightCurAltitude));
+			this.calibDistance = this.fSightCurSpeed / 3.6F * floatindex(Aircraft.cvt(this.fSightCurAltitude, 0.0F, 7000F, 0.0F, 7F), calibrationScale);
+			System.out.println("time = " + floatindex(Aircraft.cvt(this.fSightCurAltitude, 0.0F, 7000F, 0.0F, 7F), calibrationScale));
 			System.out.println("calibDistance = " + this.calibDistance);
-			if (this.fSightCurDistance < this.calibDistance
-					+ this.fSightCurSpeed / 3.6F * Math.sqrt(this.fSightCurAltitude * 0.2038736F))
-				this.bSightBombDump = true;
-			if (this.bSightBombDump)
+			if (this.fSightCurDistance < this.calibDistance + this.fSightCurSpeed / 3.6F * Math.sqrt(this.fSightCurAltitude * 0.2038736F)) { this.bSightBombDump = true; }
+			if (this.bSightBombDump) {
 				if (this.FM.isTick(3, 0)) {
-					if (this.FM.CT.Weapons[3] != null && this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1] != null
-							&& this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].haveBullets()) {
+					if (this.FM.CT.Weapons[3] != null && this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1] != null && this.FM.CT.Weapons[3][this.FM.CT.Weapons[3].length - 1].haveBullets()) {
 						this.FM.CT.WeaponControl[3] = true;
 						HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
 					}
 				} else {
 					this.FM.CT.WeaponControl[3] = false;
 				}
+			}
 		}
 	}
 
@@ -324,17 +297,17 @@ public class H8K1 extends H8K implements TypeBomber {
 		this.fSightCurReadyness = netmsginput.readUnsignedByte() / 200F;
 	}
 
-	public static boolean bChangedPit = false;
-	private boolean bSightAutomation;
-	private boolean bSightBombDump;
-	private float fSightCurDistance;
-	public float fSightCurForwardAngle;
-	public float fSightCurSideslip;
-	public float fSightCurAltitude;
-	public float fSightCurSpeed;
-	public float fSightCurReadyness;
-	private float calibDistance;
-	static final float calibrationScale[] = { 0.0F, 0.2F, 0.4F, 0.66F, 0.86F, 1.05F, 1.2F, 1.6F };
+	public static boolean bChangedPit        = false;
+	private boolean       bSightAutomation;
+	private boolean       bSightBombDump;
+	private float         fSightCurDistance;
+	public float          fSightCurForwardAngle;
+	public float          fSightCurSideslip;
+	public float          fSightCurAltitude;
+	public float          fSightCurSpeed;
+	public float          fSightCurReadyness;
+	private float         calibDistance;
+	static final float    calibrationScale[] = { 0.0F, 0.2F, 0.4F, 0.66F, 0.86F, 1.05F, 1.2F, 1.6F };
 
 	static {
 		Class class1 = H8K1.class;
@@ -347,18 +320,12 @@ public class H8K1 extends H8K implements TypeBomber {
 		Property.set(class1, "yearService", 1941F);
 		Property.set(class1, "yearExpired", 2048F);
 		Property.set(class1, "FlightModel", "FlightModels/H8K1.fmd");
-		Property.set(class1, "cockpitClass", new Class[] { CockpitH8K1.class, CockpitH8K1_Bombardier.class,
-				CockpitH8K1_NGunner.class, CockpitH8K1_AGunner.class, CockpitH8K1_TGunner.class });
+		Property.set(class1, "cockpitClass", new Class[] { CockpitH8K1.class, CockpitH8K1_Bombardier.class, CockpitH8K1_NGunner.class, CockpitH8K1_AGunner.class, CockpitH8K1_TGunner.class });
 		Property.set(class1, "LOSElevation", 1.4078F);
-		weaponTriggersRegister(class1, new int[] { 10, 11, 12, 13, 14, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-				3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
+		weaponTriggersRegister(class1, new int[] { 10, 11, 12, 13, 14, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
 		weaponHooksRegister(class1,
-				new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_ExternalBomb01",
-						"_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06",
-						"_ExternalBomb07", "_ExternalBomb08", "_ExternalBomb09", "_ExternalBomb10", "_ExternalBomb11",
-						"_ExternalBomb12", "_ExternalBomb13", "_ExternalBomb14", "_ExternalBomb15", "_ExternalBomb16",
-						"_ExternalBomb17", "_ExternalBomb18", "_ExternalBomb19", "_ExternalBomb20", "_ExternalBomb21",
-						"_ExternalBomb22", "_ExternalBomb23", "_ExternalBomb24", "_ExternalBomb25",
-						"_ExternalBomb26" });
+				new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08",
+						"_ExternalBomb09", "_ExternalBomb10", "_ExternalBomb11", "_ExternalBomb12", "_ExternalBomb13", "_ExternalBomb14", "_ExternalBomb15", "_ExternalBomb16", "_ExternalBomb17", "_ExternalBomb18", "_ExternalBomb19", "_ExternalBomb20",
+						"_ExternalBomb21", "_ExternalBomb22", "_ExternalBomb23", "_ExternalBomb24", "_ExternalBomb25", "_ExternalBomb26" });
 	}
 }

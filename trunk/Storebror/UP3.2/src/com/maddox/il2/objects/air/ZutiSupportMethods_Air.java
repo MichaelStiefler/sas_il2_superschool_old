@@ -52,9 +52,9 @@ import com.maddox.util.NumberTokenizer;
 public class ZutiSupportMethods_Air {
 	private static BornPlace LAST_PROCESSED_BORN_PLACE = null;
 
-	private static final int MSG_CHANGE_LOADOUT = 90;
-	private static final int MSG_RELOAD_WEAPONS = 91;
-	private static final int MSG_START_MISSILE_ENGINE = 92;
+	private static final int MSG_CHANGE_LOADOUT        = 90;
+	private static final int MSG_RELOAD_WEAPONS        = 91;
+	private static final int MSG_START_MISSILE_ENGINE  = 92;
 
 	public static void resetClassVariables() {
 		ZutiSupportMethods_Air.LAST_PROCESSED_BORN_PLACE = null;
@@ -67,8 +67,7 @@ public class ZutiSupportMethods_Air {
 	 */
 	public static void backupAircraftEngines(Aircraft aircraft) {
 		try {
-			if (aircraft.zutiMotorsArray == null)
-				aircraft.zutiMotorsArray = new ArrayList();
+			if (aircraft.zutiMotorsArray == null) { aircraft.zutiMotorsArray = new ArrayList(); }
 
 			aircraft.zutiMotorsArray.clear();
 
@@ -90,8 +89,7 @@ public class ZutiSupportMethods_Air {
 	 * @return
 	 */
 	public static int getNuberOfAircraftEngines(Aircraft aircraft) {
-		if (aircraft.zutiMotorsArray == null)
-			return 0;
+		if (aircraft.zutiMotorsArray == null) { return 0; }
 
 		return aircraft.zutiMotorsArray.size();
 	}
@@ -137,8 +135,7 @@ public class ZutiSupportMethods_Air {
 	public static void unfoldAircraftWings(Aircraft aircraft) {
 		if (!aircraft.zutiWingsUnfolded) {
 			// give time to things to synchronize
-			if (Time.current() - aircraft.zutiLastUnfoldCheck < 2000)
-				return;
+			if (Time.current() - aircraft.zutiLastUnfoldCheck < 2000) { return; }
 
 			// System.out.println("Checking ..." + this.name());
 
@@ -150,8 +147,9 @@ public class ZutiSupportMethods_Air {
 			if (aircraft.FM.CT.wingControl > 0.0F && result) {
 				aircraft.FM.CT.wingControl = 0.0F;
 				// System.out.println("Set to 0.0!");
-			} else
+			} else {
 				aircraft.zutiUnfoldCheckRepeatCount--;
+			}
 
 			if (aircraft.zutiUnfoldCheckRepeatCount == 0) {
 				aircraft.zutiWingsUnfolded = true;
@@ -171,13 +169,12 @@ public class ZutiSupportMethods_Air {
 		if (aircraft.FM.brakeShoeLastCarrier != null) {
 			if (aircraft.FM.brakeShoeLastCarrier instanceof BigshipGeneric) {
 				Property property = Property.get(aircraft.FM.brakeShoeLastCarrier.getClass(), "speed");
-				if (property == null)
-					return false;
+				if (property == null) { return false; }
 
 				double result = aircraft.FM.getSpeed() - property.doubleValue();
 				// System.out.println("Speed diff: " + result);
 
-				return (Math.abs(result) > 20.0D) ? true : false;
+				return Math.abs(result) > 20.0D ? true : false;
 			}
 		}
 
@@ -193,9 +190,7 @@ public class ZutiSupportMethods_Air {
 		aircraft.FM.CT.zutiOwnerAircraftName = aircraft.name();
 
 		// TODO: Limit Log output to player planes only // by Storebror
-		if (aircraft.FM.CT.zutiOwnerAircraftName.endsWith("_0"))
-			System.out
-					.println("ZSM_Air - Spawning new AC. Owner name is >" + aircraft.FM.CT.zutiOwnerAircraftName + "<");
+		if (aircraft.FM.CT.zutiOwnerAircraftName.endsWith("_0")) { System.out.println("ZSM_Air - Spawning new AC. Owner name is >" + aircraft.FM.CT.zutiOwnerAircraftName + "<"); }
 
 		// Remember the fuel value of loaded aircraft
 		aircraft.zutiAircraftFuel = aircraft.FM.M.fuel;
@@ -232,22 +227,17 @@ public class ZutiSupportMethods_Air {
 
 		// Report resources to your side and adjust to available resources - only for
 		// single player missions
-		if (!Mission.isNet()) {
-			ZutiSupportMethods_NetSend.reportSpawnResources(aircraft);
-		}
+		if (!Mission.isNet()) { ZutiSupportMethods_NetSend.reportSpawnResources(aircraft); }
 
 	}
 
 	/**
-	 * Call this method when aircraft is destroyed because in case it is multi-crew
-	 * enabled aircraft actions need to be performed to synchronize users net
-	 * positions.
+	 * Call this method when aircraft is destroyed because in case it is multi-crew enabled aircraft actions need to be performed to synchronize users net positions.
 	 *
 	 * @param aircraft
 	 */
 	public static void executeWhenAircraftWasDestroyed(Aircraft aircraft) {
-		if (!aircraft.FM.AS.zutiIsPlaneMultiCrew())
-			return;
+		if (!aircraft.FM.AS.zutiIsPlaneMultiCrew()) { return; }
 
 		// Request user new net place if plane is multi crew plane because removing it
 		// would shuffle AC positions and as a result also netusers net places.
@@ -287,8 +277,7 @@ public class ZutiSupportMethods_Air {
 			boolean isVisible = cockpit.mesh.isChunkVisible();
 
 			// Don't store external body part meshes as I do not repair them
-			if (chunkName.startsWith("Wing"))
-				continue;
+			if (chunkName.startsWith("Wing")) { continue; }
 
 			// System.out.println(i + " - Storing mesh: " + chunkName + ", isVisible: " +
 			// isVisible);
@@ -297,8 +286,7 @@ public class ZutiSupportMethods_Air {
 	}
 
 	/**
-	 * When reloading gunners guns, old owner is lost and it needs to be reset! If
-	 * this method is not called, gunner can not fire gun any more.
+	 * When reloading gunners guns, old owner is lost and it needs to be reset! If this method is not called, gunner can not fire gun any more.
 	 */
 	public static void resetCockpitGunnerWeaponOwner(CockpitGunner cockpitGunner) {
 		BulletEmitter[] abulletemitter = cockpitGunner.aircraft().FM.CT.Weapons[cockpitGunner.weaponControlNum()];
@@ -309,21 +297,16 @@ public class ZutiSupportMethods_Air {
 	}
 
 	/**
-	 * Once player enters, leaves or is kicked from gunner position, set autopilot
-	 * for that gunner position ON. If it is left OFF, sycing problems occurs and
-	 * other players are unable to use that position effectively.
+	 * Once player enters, leaves or is kicked from gunner position, set autopilot for that gunner position ON. If it is left OFF, sycing problems occurs and other players are unable to use that position effectively.
 	 */
 	public static void setGunnerAutopilotOn() {
 		try {
 			HotKeyCmd.exec("misc", "cockpitRealOff" + Main3D.cur3D().cockpitCurIndx());
-		} catch (Exception ex) {
-		}
+		} catch (Exception ex) {}
 	}
 
 	/**
-	 * Check if selected aircraft is available at net user selected born place. Null
-	 * is returned if AC is not available. Method also decreases AC numbers if it is
-	 * available.
+	 * Check if selected aircraft is available at net user selected born place. Null is returned if AC is not available. Method also decreases AC numbers if it is available.
 	 *
 	 * @param aircraft
 	 * @param netUser
@@ -340,16 +323,14 @@ public class ZutiSupportMethods_Air {
 		// netUser.uniqueName());
 		// System.out.println("NetAircraft spawning player bp id: " +
 		// netUser.getBornPlace());
-		String currentAcName = Property.stringValue((aircraft).getClass(), "keyName");
+		String currentAcName = Property.stringValue(aircraft.getClass(), "keyName");
 		// System.out.println("NetAircraft spawning player plane: " + currentAcName);
 
 		return getAircraft(currentAcName, homeBaseId);
 	}
 
 	/**
-	 * Check if selected aircraft is available at net user selected born place. Null
-	 * is returned if AC is not available. Method also decreases AC numbers if it is
-	 * available.
+	 * Check if selected aircraft is available at net user selected born place. Null is returned if AC is not available. Method also decreases AC numbers if it is available.
 	 *
 	 * @param aircraft
 	 * @param netUser
@@ -362,22 +343,21 @@ public class ZutiSupportMethods_Air {
 				// if we don't have limiting planes enabled for selected home base, return true
 				// as all planes are available. Or, if that is enabled and plane is available...
 				// also return true then.
-				if (zutiPilotsBornPlace.zutiEnablePlaneLimits)
+				if (zutiPilotsBornPlace.zutiEnablePlaneLimits) {
 					return ZutiSupportMethods_Net.getAircraftAtBornPlace(zutiPilotsBornPlace, currentAcName);
-				else
+				} else {
 					return new ZutiAircraft();
-				// System.out.println(((Aircraft)this).typedName());
-				// String string = I18N.plane(Property.stringValue(((Aircraft)this).getClass(),
-				// "keyName"));
-				// String string = I18N.plane(Property.stringValue(((Aircraft)this).getClass(),
-				// "cockpitClass"));
-				// String string = Property.stringValue(((Aircraft)this).getClass(),
-				// "cockpitClass");
-				/*
-				 * String currentAcName = Property.stringValue(((Aircraft)this).getClass(),
-				 * "keyName"); System.out.println("NetAircraft - releasing plane: " +
-				 * currentAcName); zutiPilotsBornPlace.zutiReleaseAircraft(currentAcName);
-				 */
+					// System.out.println(((Aircraft)this).typedName());
+					// String string = I18N.plane(Property.stringValue(((Aircraft)this).getClass(),
+					// "keyName"));
+					// String string = I18N.plane(Property.stringValue(((Aircraft)this).getClass(),
+					// "cockpitClass"));
+					// String string = Property.stringValue(((Aircraft)this).getClass(),
+					// "cockpitClass");
+					/*
+					 * String currentAcName = Property.stringValue(((Aircraft)this).getClass(), "keyName"); System.out.println("NetAircraft - releasing plane: " + currentAcName); zutiPilotsBornPlace.zutiReleaseAircraft(currentAcName);
+					 */
+				}
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -394,12 +374,10 @@ public class ZutiSupportMethods_Air {
 	 * @return
 	 */
 	public static boolean sendNetAircraftLoadoutChange(Aircraft aircraft, int loadoutId, String loadout) {
-		if (!aircraft.isNet() || aircraft.net.countMirrors() == 0)
-			return false;
+		if (!aircraft.isNet() || aircraft.net.countMirrors() == 0) { return false; }
 
 		try {
-			System.out.println("ZutiSupportMethods_Air: sending loadout change to >" + loadout
-					+ "< command for aircraft >" + aircraft.name() + "< to mirrors!");
+			System.out.println("ZutiSupportMethods_Air: sending loadout change to >" + loadout + "< command for aircraft >" + aircraft.name() + "< to mirrors!");
 			NetMsgGuaranted netMsgGuaranted = new NetMsgGuaranted();
 			netMsgGuaranted.writeByte(MSG_CHANGE_LOADOUT);
 			netMsgGuaranted.writeInt(loadoutId);
@@ -423,8 +401,7 @@ public class ZutiSupportMethods_Air {
 	 * @param bombsAmount: used for reporting bombs amount
 	 * @return
 	 */
-	public static boolean sendNetAircraftRearmOrdinance(Aircraft aircraft, int weaponsId, long amount,
-			int[] bombsAmount) {
+	public static boolean sendNetAircraftRearmOrdinance(Aircraft aircraft, int weaponsId, long amount, int[] bombsAmount) {
 		// TODO: +++ RRR Bug hunting
 		String bombsArray = "";
 		if (bombsAmount == null) {
@@ -432,17 +409,14 @@ public class ZutiSupportMethods_Air {
 		} else {
 			bombsArray = "{ ";
 			for (int bai = 0; bai < bombsAmount.length; bai++) {
-				if (bai > 0)
-					bombsArray += ", ";
+				if (bai > 0) { bombsArray += ", "; }
 				bombsArray += bombsAmount[bai];
 			}
 			bombsArray += " }";
 		}
-		ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air sendNetAircraftRearmOrdinance("
-				+ aircraft.getClass().getName() + ", " + weaponsId + ", " + amount + ", " + bombsArray + " )");
+		ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air sendNetAircraftRearmOrdinance(" + aircraft.getClass().getName() + ", " + weaponsId + ", " + amount + ", " + bombsArray + " )");
 		// --- RRR Bug hunting
-		if (!aircraft.isNet() || aircraft.net.countMirrors() == 0)
-			return false;
+		if (!aircraft.isNet() || aircraft.net.countMirrors() == 0) { return false; }
 
 		try {
 //        	System.out.println("ZutiSupportMethods_Air: sending reload weapons >" + weaponsId + "< command for aircraft >" + aircraft.name() + "< to mirrors!");
@@ -453,8 +427,7 @@ public class ZutiSupportMethods_Air {
 			if (bombsAmount == null) {
 				netMsgGuaranted.writeLong(amount);
 				// TODO: +++ RRR Bug hunting
-				ZutiWeaponsManagement.printDebugMessage(aircraft,
-						"ZutiSupportMethods_Air sendNetAircraftRearmOrdinance netMsgGuaranted has no bombs array");
+				ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air sendNetAircraftRearmOrdinance netMsgGuaranted has no bombs array");
 				// --- RRR Bug hunting
 			} else {
 				netMsgGuaranted.writeInt(bombsAmount[0]);
@@ -464,19 +437,16 @@ public class ZutiSupportMethods_Air {
 				netMsgGuaranted.writeInt(bombsAmount[4]);
 				netMsgGuaranted.writeInt(bombsAmount[5]);
 				// TODO: +++ RRR Bug hunting
-				ZutiWeaponsManagement.printDebugMessage(aircraft,
-						"ZutiSupportMethods_Air sendNetAircraftRearmOrdinance netMsgGuaranted has bombs array");
+				ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air sendNetAircraftRearmOrdinance netMsgGuaranted has bombs array");
 				// --- RRR Bug hunting
 			}
 
 			// TODO: +++ RRR Bug hunting
-			ZutiWeaponsManagement.printDebugMessage(aircraft,
-					"ZutiSupportMethods_Air sendNetAircraftRearmOrdinance sending netMsgGuaranted");
+			ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air sendNetAircraftRearmOrdinance sending netMsgGuaranted");
 			// --- RRR Bug hunting
 			aircraft.net.post(netMsgGuaranted);
 			// TODO: +++ RRR Bug hunting
-			ZutiWeaponsManagement.printDebugMessage(aircraft,
-					"ZutiSupportMethods_Air sendNetAircraftRearmOrdinance netMsgGuaranted sent");
+			ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air sendNetAircraftRearmOrdinance netMsgGuaranted sent");
 			// --- RRR Bug hunting
 			// net.postTo(Main.cur().netServerParams.masterChannel(), netMsgGuaranted);
 			return true;
@@ -499,9 +469,9 @@ public class ZutiSupportMethods_Air {
 //		System.out.println("ZutiSupportMethods_Air sendNetAircraftMissileEngineStart(" + actor.hashCode() + ", " + missileGun.hashCode()
 //		+ ", actor.isNet()=" + actor.isNet() + ", actor.isNetMirror()=" + actor.isNetMirror() + ", actor.isNetMaster()=" + actor.isNetMaster()
 //		+ " actor.net.countMirrors()=" + (actor.isNet()?actor.net.countMirrors():0));
-		if (!Actor.isValid(actor) || !(actor instanceof Aircraft) || !(actor instanceof TypeGuidedMissileCarrier)) return false;
-		Aircraft aircraft = (Aircraft)actor;
-		if (!aircraft.isNet() || aircraft.net.countMirrors() == 0) return false;
+		if (!Actor.isValid(actor) || !(actor instanceof Aircraft) || !(actor instanceof TypeGuidedMissileCarrier)) { return false; }
+		Aircraft aircraft = (Aircraft) actor;
+		if (!aircraft.isNet() || aircraft.net.countMirrors() == 0) { return false; }
 
 		byte trigger = -1;
 		byte index = -1;
@@ -524,7 +494,7 @@ public class ZutiSupportMethods_Air {
 			EventLog.type("Exception in sendNetAircraftMissileEngineStart: " + exception.getMessage());
 		}
 
-		if (trigger<0 || index<0) return false;
+		if (trigger < 0 || index < 0) { return false; }
 
 		try {
 //			System.out.println("ZutiSupportMethods_Air: sending missile engine start trigger >" + trigger
@@ -542,7 +512,6 @@ public class ZutiSupportMethods_Air {
 		}
 	}
 
-
 	/**
 	 * Call this method when net aircraft receives new net command.
 	 *
@@ -554,149 +523,137 @@ public class ZutiSupportMethods_Air {
 	public static boolean processNetAircraftMirroredMessage(Aircraft aircraft, int i, NetMsgInput netmsginput) {
 		try {
 			switch (i) {
-			case MSG_CHANGE_LOADOUT: {
-				// Loadout changed
-				int loadoutId = netmsginput.readInt();
-				String selectedLoadout = netmsginput.read255();
+				case MSG_CHANGE_LOADOUT: {
+					// Loadout changed
+					int loadoutId = netmsginput.readInt();
+					String selectedLoadout = netmsginput.read255();
 
 //					System.out.println("NetAircraft: received change loadout to >" + loadoutId + "< command!");
 
-				// TODO: +++ RRR Bug hunting
+					// TODO: +++ RRR Bug hunting
 //					if( Config.isUSE_RENDER() ) // This if clause causes the net message not to populate across a dedicated server
 //					{
-				// --- RRR Bug hunting
+					// --- RRR Bug hunting
 
-				// Clear all ammo
-				ZutiWeaponsManagement.unloadLoadedWeapons(aircraft);
-				// Clear old pylons
-				ZutiWeaponsManagement.removePylons(aircraft);
-				// System.out.println("ZutiTimer_ChangeLoadout preparations complete!");
-				ZutiWeaponsManagement.preloadLoadOptions(aircraft, loadoutId, selectedLoadout);
+					// Clear all ammo
+					ZutiWeaponsManagement.unloadLoadedWeapons(aircraft);
+					// Clear old pylons
+					ZutiWeaponsManagement.removePylons(aircraft);
+					// System.out.println("ZutiTimer_ChangeLoadout preparations complete!");
+					ZutiWeaponsManagement.preloadLoadOptions(aircraft, loadoutId, selectedLoadout);
 
-				ZutiWeaponsManagement.changeLoadout(aircraft, selectedLoadout, false);
+					ZutiWeaponsManagement.changeLoadout(aircraft, selectedLoadout, false);
 
-				// TODO: +++ RRR Bug hunting
+					// TODO: +++ RRR Bug hunting
 //					}
-				// --- RRR Bug hunting
+					// --- RRR Bug hunting
 
-				// Forward this message to remaining clients
-				ZutiSupportMethods_Air.sendNetAircraftLoadoutChange(aircraft, loadoutId, selectedLoadout);
-				return true;
-			}
-			case MSG_RELOAD_WEAPONS: {
-				int weaponsId = netmsginput.readInt();
-				// TODO: +++ RRR Bug hunting
-				ZutiWeaponsManagement.printDebugMessage(aircraft,
-						"ZutiSupportMethods_Air processNetAircraftMirroredMessage(" + aircraft.getClass().getName()
-								+ ", MSG_RELOAD_WEAPONS, NetMsgInput), weaponsId = " + weaponsId);
-				// --- RRR Bug hunting
+					// Forward this message to remaining clients
+					ZutiSupportMethods_Air.sendNetAircraftLoadoutChange(aircraft, loadoutId, selectedLoadout);
+					return true;
+				}
+				case MSG_RELOAD_WEAPONS: {
+					int weaponsId = netmsginput.readInt();
+					// TODO: +++ RRR Bug hunting
+					ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air processNetAircraftMirroredMessage(" + aircraft.getClass().getName() + ", MSG_RELOAD_WEAPONS, NetMsgInput), weaponsId = " + weaponsId);
+					// --- RRR Bug hunting
 
 //					System.out.println("NetAircraft: received reload weapons >" + weaponsId + "< command!");
-				long bulletsRockets = -1;
-				int[] bombs = null;
+					long bulletsRockets = -1;
+					int[] bombs = null;
 
-				// TODO: +++ RRR Bug hunting
+					// TODO: +++ RRR Bug hunting
 //					if( Config.isUSE_RENDER() ) // This if clause causes the net message not to populate across a dedicated server
 //					{
-				// --- RRR Bug hunting
-				switch (weaponsId) {
-				case 0:
-					bulletsRockets = netmsginput.readLong();
-					// TODO: +++ RRR Bug hunting
-					ZutiWeaponsManagement.printDebugMessage(aircraft,
-							"ZutiSupportMethods_Air processNetAircraftMirroredMessage bulletsRockets = "
-									+ bulletsRockets);
 					// --- RRR Bug hunting
-					ZutiWeaponsManagement.rearmMGs_Cannons(aircraft, bulletsRockets);
-					break;
-				case 1:
-					bulletsRockets = netmsginput.readLong();
-					// TODO: +++ RRR Bug hunting
-					ZutiWeaponsManagement.printDebugMessage(aircraft,
-							"ZutiSupportMethods_Air processNetAircraftMirroredMessage bulletsRockets = "
-									+ bulletsRockets);
-					// --- RRR Bug hunting
-					ZutiWeaponsManagement.rearmRockets(aircraft, bulletsRockets);
-					break;
-				case 2:
-					// TODO: +++ RRR Bug hunting
-					// bombs = new int[]{0,0,0,0,0,0,0};
-					bombs = new int[] { 0, 0, 0, 0, 0, 0 }; // Good morning Zuti, index 0-5 is 6 elements, not 7.
-					// --- RRR Bug hunting
-					bombs[0] = netmsginput.readInt();
-					bombs[1] = netmsginput.readInt();
-					bombs[2] = netmsginput.readInt();
-					bombs[3] = netmsginput.readInt();
-					bombs[4] = netmsginput.readInt();
-					bombs[5] = netmsginput.readInt();
+					switch (weaponsId) {
+						case 0:
+							bulletsRockets = netmsginput.readLong();
+							// TODO: +++ RRR Bug hunting
+							ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air processNetAircraftMirroredMessage bulletsRockets = " + bulletsRockets);
+							// --- RRR Bug hunting
+							ZutiWeaponsManagement.rearmMGs_Cannons(aircraft, bulletsRockets);
+							break;
+						case 1:
+							bulletsRockets = netmsginput.readLong();
+							// TODO: +++ RRR Bug hunting
+							ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air processNetAircraftMirroredMessage bulletsRockets = " + bulletsRockets);
+							// --- RRR Bug hunting
+							ZutiWeaponsManagement.rearmRockets(aircraft, bulletsRockets);
+							break;
+						case 2:
+							// TODO: +++ RRR Bug hunting
+							// bombs = new int[]{0,0,0,0,0,0,0};
+							bombs = new int[] { 0, 0, 0, 0, 0, 0 }; // Good morning Zuti, index 0-5 is 6 elements, not 7.
+							// --- RRR Bug hunting
+							bombs[0] = netmsginput.readInt();
+							bombs[1] = netmsginput.readInt();
+							bombs[2] = netmsginput.readInt();
+							bombs[3] = netmsginput.readInt();
+							bombs[4] = netmsginput.readInt();
+							bombs[5] = netmsginput.readInt();
 
+							// TODO: +++ RRR Bug hunting
+							String bombsArray = "";
+							bombsArray = "{ ";
+							for (int bai = 0; bai < bombs.length; bai++) {
+								if (bai > 0) { bombsArray += ", "; }
+								bombsArray += bombs[bai];
+							}
+							bombsArray += " }";
+							ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air processNetAircraftMirroredMessage bombs = " + bombsArray);
+//								ZutiWeaponsManagement.rearmBombsFTanksTorpedoes(aircraft, bombs);
+							ZutiWeaponsManagement.rearmBombsFTanksTorpedoes(aircraft, (int[]) bombs.clone()); // Objects like
+																												 // arrays are
+																												 // passed as
+																												 // reference,
+																												 // this would
+																												 // reduce the
+																												 // number of
+																												 // bombs to
+																												 // reload before
+																												 // the reload
+																												 // command is
+																												 // sent to other
+																												 // clients!
+							// --- RRR Bug hunting
+							break;
+					}
+					// TODO: +++ RRR Bug hunting
+//					}
+					// --- RRR Bug hunting
+					// Forward this message to remaining clients
 					// TODO: +++ RRR Bug hunting
 					String bombsArray = "";
-					bombsArray = "{ ";
-					for (int bai = 0; bai < bombs.length; bai++) {
-						if (bai > 0)
-							bombsArray += ", ";
-						bombsArray += bombs[bai];
+					if (bombs == null) {
+						bombsArray = "null";
+					} else {
+						bombsArray = "{ ";
+						for (int bai = 0; bai < bombs.length; bai++) {
+							if (bai > 0) { bombsArray += ", "; }
+							bombsArray += bombs[bai];
+						}
+						bombsArray += " }";
 					}
-					bombsArray += " }";
 					ZutiWeaponsManagement.printDebugMessage(aircraft,
-							"ZutiSupportMethods_Air processNetAircraftMirroredMessage bombs = " + bombsArray);
-//								ZutiWeaponsManagement.rearmBombsFTanksTorpedoes(aircraft, bombs);
-					ZutiWeaponsManagement.rearmBombsFTanksTorpedoes(aircraft, (int[]) bombs.clone()); // Objects like
-																										// arrays are
-																										// passed as
-																										// reference,
-																										// this would
-																										// reduce the
-																										// number of
-																										// bombs to
-																										// reload before
-																										// the reload
-																										// command is
-																										// sent to other
-																										// clients!
+							"ZutiSupportMethods_Air processNetAircraftMirroredMessage calling ZutiSupportMethods_Air.sendNetAircraftRearmOrdinance(" + aircraft.getClass().getName() + ", " + weaponsId + ", " + bulletsRockets + ", " + bombsArray + ")");
 					// --- RRR Bug hunting
-					break;
+					ZutiSupportMethods_Air.sendNetAircraftRearmOrdinance(aircraft, weaponsId, bulletsRockets, bombs);
+					// TODO: +++ RRR Bug hunting
+					ZutiWeaponsManagement.printDebugMessage(aircraft, "ZutiSupportMethods_Air processNetAircraftMirroredMessage ZutiSupportMethods_Air.sendNetAircraftRearmOrdinance called");
+					// --- RRR Bug hunting
+					return true;
 				}
-				// TODO: +++ RRR Bug hunting
-//					}
-				// --- RRR Bug hunting
-				// Forward this message to remaining clients
-				// TODO: +++ RRR Bug hunting
-				String bombsArray = "";
-				if (bombs == null) {
-					bombsArray = "null";
-				} else {
-					bombsArray = "{ ";
-					for (int bai = 0; bai < bombs.length; bai++) {
-						if (bai > 0)
-							bombsArray += ", ";
-						bombsArray += bombs[bai];
-					}
-					bombsArray += " }";
-				}
-				ZutiWeaponsManagement.printDebugMessage(aircraft,
-						"ZutiSupportMethods_Air processNetAircraftMirroredMessage calling ZutiSupportMethods_Air.sendNetAircraftRearmOrdinance("
-								+ aircraft.getClass().getName() + ", " + weaponsId + ", " + bulletsRockets + ", "
-								+ bombsArray + ")");
-				// --- RRR Bug hunting
-				ZutiSupportMethods_Air.sendNetAircraftRearmOrdinance(aircraft, weaponsId, bulletsRockets, bombs);
-				// TODO: +++ RRR Bug hunting
-				ZutiWeaponsManagement.printDebugMessage(aircraft,
-						"ZutiSupportMethods_Air processNetAircraftMirroredMessage ZutiSupportMethods_Air.sendNetAircraftRearmOrdinance called");
-				// --- RRR Bug hunting
-				return true;
-			}
-			case MSG_START_MISSILE_ENGINE: {
-				byte trigger = netmsginput.readByte();
-				byte index = netmsginput.readByte();
+				case MSG_START_MISSILE_ENGINE: {
+					byte trigger = netmsginput.readByte();
+					byte index = netmsginput.readByte();
 //				System.out.println("ZutiSupportMethods_Air MSG_START_MISSILE_ENGINE trigger=" + trigger + ", index=" + index);
-				if (!(aircraft.FM.CT.Weapons[trigger][index] instanceof MissileGun)) return true;
-				MissileGun missileGun = (MissileGun)aircraft.FM.CT.Weapons[trigger][index];
-				missileGun.netStartEngine();
-				ZutiSupportMethods_Air.sendNetAircraftMissileEngineStart(aircraft, missileGun);
-				return true;
-			}
+					if (!(aircraft.FM.CT.Weapons[trigger][index] instanceof MissileGun)) { return true; }
+					MissileGun missileGun = (MissileGun) aircraft.FM.CT.Weapons[trigger][index];
+					missileGun.netStartEngine();
+					ZutiSupportMethods_Air.sendNetAircraftMissileEngineStart(aircraft, missileGun);
+					return true;
+				}
 
 			}
 		} catch (IOException ex) {
@@ -724,7 +681,7 @@ public class ZutiSupportMethods_Air {
 		o.orient(n);
 		o.increment(0.0F, aircraft.FM.Gears.Pitch, 0.0F);
 
-		long l = (long) ((p.x % 2.2999999999999998D) * 221D + (p.y % 3.3999999999999999D) * 211D * 211D);
+		long l = (long) (p.x % 2.2999999999999998D * 221D + p.y % 3.3999999999999999D * 211D * 211D);
 		RangeRandom rangerandom = new RangeRandom(l);
 		p.z += rangerandom.nextFloat(0.1F, 0.4F);
 
@@ -737,16 +694,14 @@ public class ZutiSupportMethods_Air {
 	 * @param ac
 	 */
 	public static void emptyAircraft(Aircraft aircraft) {
-		if (aircraft == null)
-			return;
+		if (aircraft == null) { return; }
 
 		aircraft.FM.M.fuel = 0;
 
 		BulletEmitter[][] weapons = aircraft.FM.CT.Weapons;
 
 		for (int i = 0; i < weapons.length; i++) {
-			if (weapons[i] == null)
-				continue;
+			if (weapons[i] == null) { continue; }
 
 			try {
 				for (int j = 0; j < weapons[i].length; j++) {
@@ -754,12 +709,9 @@ public class ZutiSupportMethods_Air {
 						((GunGeneric) weapons[i][j]).loadBullets(0);
 					} else if (weapons[i][j] instanceof RocketGun) {
 						((RocketGun) weapons[i][j]).loadBullets(0);
-					} else if (weapons[i][j] instanceof BombGun) {
-						((BombGun) weapons[i][j]).loadBullets(0);
-					}
+					} else if (weapons[i][j] instanceof BombGun) { ((BombGun) weapons[i][j]).loadBullets(0); }
 				}
-			} catch (Exception ex) {
-			}
+			} catch (Exception ex) {}
 		}
 	}
 
@@ -770,9 +722,7 @@ public class ZutiSupportMethods_Air {
 	 * @return
 	 */
 	public static boolean isAircraftOnTheGroundAndUndamaged(FlightModel fm) {
-		if ((fm.Gears.isAnyDamaged() && fm.getSpeedKMH() < 1) || !fm.isCapableOfBMP() || !fm.isCapableOfTaxiing()
-				|| fm.isSentControlsOutNote())
-			return false;
+		if (fm.Gears.isAnyDamaged() && fm.getSpeedKMH() < 1 || !fm.isCapableOfBMP() || !fm.isCapableOfTaxiing() || fm.isSentControlsOutNote()) { return false; }
 
 		return true;
 	}
@@ -784,18 +734,14 @@ public class ZutiSupportMethods_Air {
 	 * @return
 	 */
 	public static boolean isBailedOnGroundOrDeck(Aircraft aircraft) {
-		if (aircraft == null)
-			return false;
+		if (aircraft == null) { return false; }
 
 		Point3d pos = aircraft.pos.getAbsPoint();
 		if (World.land().isWater(pos.x, pos.y)) {
 			// Carrier rules apply for this case
-			if (aircraft.FM.getSpeedKMH() < ZutiSupportMethods_AI.MAX_SPEED_FOR_DECK_BAILOUT
-					&& aircraft.FM.getAltitude() < ZutiSupportMethods_AI.MAX_HEIGHT_FOR_DECK_BAILOUT)
-				return true;
+			if (aircraft.FM.getSpeedKMH() < ZutiSupportMethods_AI.MAX_SPEED_FOR_DECK_BAILOUT && aircraft.FM.getAltitude() < ZutiSupportMethods_AI.MAX_HEIGHT_FOR_DECK_BAILOUT) { return true; }
 		} else {
-			if (aircraft.FM.getSpeedKMH() < 10.0D && aircraft.FM.getVertSpeed() < 2.0D)
-				return true;
+			if (aircraft.FM.getSpeedKMH() < 10.0D && aircraft.FM.getVertSpeed() < 2.0D) { return true; }
 
 		}
 		return false;
@@ -809,30 +755,22 @@ public class ZutiSupportMethods_Air {
 	 */
 	public static boolean isAircraftUsable(FlightModel fm) {
 		/*
-		 * System.out.println("  isAnyDamaged: " + fm.Gears.isAnyDamaged());
-		 * System.out.println("  fm.getSpeedKMH(): " + fm.getSpeedKMH());
-		 * System.out.println("  fm.isCapableOfBMP(): " + fm.isCapableOfBMP());
-		 * System.out.println("  fm.isCapableOfTaxiing(): " + fm.isCapableOfTaxiing());
-		 * System.out.println("  fm.isSentControlsOutNote(): " +
-		 * fm.isSentControlsOutNote());
+		 * System.out.println("  isAnyDamaged: " + fm.Gears.isAnyDamaged()); System.out.println("  fm.getSpeedKMH(): " + fm.getSpeedKMH()); System.out.println("  fm.isCapableOfBMP(): " + fm.isCapableOfBMP());
+		 * System.out.println("  fm.isCapableOfTaxiing(): " + fm.isCapableOfTaxiing()); System.out.println("  fm.isSentControlsOutNote(): " + fm.isSentControlsOutNote());
 		 */
-		if (!fm.Gears.isAnyDamaged() && fm.getSpeedKMH() < 1 && fm.isCapableOfBMP() && fm.isCapableOfTaxiing()
-				&& !fm.isSentControlsOutNote())
-			return true;
+		if (!fm.Gears.isAnyDamaged() && fm.getSpeedKMH() < 1 && fm.isCapableOfBMP() && fm.isCapableOfTaxiing() && !fm.isSentControlsOutNote()) { return true; }
 
 		return false;
 	}
 
 	/**
-	 * Method returns aircraft name from its actor name (string between $ and @
-	 * chars in actor.toString()).
+	 * Method returns aircraft name from its actor name (string between $ and @ chars in actor.toString()).
 	 *
 	 * @param value
 	 * @return
 	 */
 	public static String getStaticAcNameFromActor(Actor actor) {
-		if (actor == null)
-			return "";
+		if (actor == null) { return ""; }
 
 		String value = actor.toString();
 
@@ -844,8 +782,7 @@ public class ZutiSupportMethods_Air {
 	}
 
 	/**
-	 * This method returns wing position only if that wing is still on the ground!
-	 * If it is not, null is returned as a result.
+	 * This method returns wing position only if that wing is still on the ground! If it is not, null is returned as a result.
 	 *
 	 * @param sectfile
 	 * @param string
@@ -855,12 +792,10 @@ public class ZutiSupportMethods_Air {
 		String wingName = string + "_Way";
 
 		int index = sectfile.sectionIndex(wingName);
-		if (index < 0)
-			return null;
+		if (index < 0) { return null; }
 
 		int variables = sectfile.vars(index);
-		if (variables < 0)
-			return null;
+		if (variables < 0) { return null; }
 
 		String line = sectfile.var(index, 0);
 		if (line.equalsIgnoreCase("TAKEOFF")) {
@@ -876,8 +811,7 @@ public class ZutiSupportMethods_Air {
 	}
 
 	/**
-	 * Methdo creates default zuti aircraft objects. It's settings include: default
-	 * number of aircraft, max fuel selection at 100%, "Default" loadout.
+	 * Methdo creates default zuti aircraft objects. It's settings include: default number of aircraft, max fuel selection at 100%, "Default" loadout.
 	 *
 	 * @param acName
 	 * @return
@@ -895,16 +829,13 @@ public class ZutiSupportMethods_Air {
 	}
 
 	/**
-	 * Call this method when a stationary plane was destroyed. Method will find born
-	 * place that this plane belonged to (based on location of the plane and born
-	 * place radius) and decrease plane number for that plane, if born place counts
-	 * stationary planes as valid planes for overall plane numbers.
+	 * Call this method when a stationary plane was destroyed. Method will find born place that this plane belonged to (based on location of the plane and born place radius) and decrease plane number for that plane, if born place counts stationary planes
+	 * as valid planes for overall plane numbers.
 	 *
 	 * @param stationaryPlane
 	 */
 	public static void decreaseBornPlacePlaneCounter(PlaneGeneric stationaryPlane) {
-		String acName = ZutiSupportMethods
-				.getAircraftName_I18N(ZutiSupportMethods_Air.getStaticAcNameFromActor(stationaryPlane));
+		String acName = ZutiSupportMethods.getAircraftName_I18N(ZutiSupportMethods_Air.getStaticAcNameFromActor(stationaryPlane));
 
 		// System.out.println(" Destroyed AC >" + acName + "<"); Patch Pack 107, reduce
 		// logging
@@ -917,8 +848,7 @@ public class ZutiSupportMethods_Air {
 			boolean processed = false;
 			if (LAST_PROCESSED_BORN_PLACE != null) {
 				// let's check first if destroyed static AC is in last bp area...
-				double distance = Math.sqrt(Math.pow(LAST_PROCESSED_BORN_PLACE.place.x - x, 2)
-						+ Math.pow(LAST_PROCESSED_BORN_PLACE.place.y - y, 2));
+				double distance = Math.sqrt(Math.pow(LAST_PROCESSED_BORN_PLACE.place.x - x, 2) + Math.pow(LAST_PROCESSED_BORN_PLACE.place.y - y, 2));
 				if (distance <= LAST_PROCESSED_BORN_PLACE.r) {
 					// jup, inside this bp destroyed ac was, alter that plane number
 					ZutiSupportMethods_Net.removeAircraftAtBornPlace(LAST_PROCESSED_BORN_PLACE, acName);
@@ -929,8 +859,7 @@ public class ZutiSupportMethods_Air {
 
 			if (!processed) {
 				List bornPlaces = World.cur().bornPlaces;
-				if (bornPlaces == null)
-					return;
+				if (bornPlaces == null) { return; }
 
 				BornPlace bp = null;
 				for (int i = 0; i < bornPlaces.size(); i++) {
@@ -938,8 +867,7 @@ public class ZutiSupportMethods_Air {
 
 					// If bornplace does not allow static planes affect on plane limitations, skip
 					// it and move to other ones
-					if (!bp.zutiIncludeStaticPlanes)
-						continue;
+					if (!bp.zutiIncludeStaticPlanes) { continue; }
 
 					// check if destroyed plane was inside correct born place radius
 					double distance = Math.pow(bp.place.x - x, 2) + Math.pow(bp.place.y - y, 2);
@@ -963,25 +891,20 @@ public class ZutiSupportMethods_Air {
 	 * @return
 	 */
 	public static String getAircraftI18NName(Class aircraftClass) {
-		if (aircraftClass != null)
-			return Property.stringValue(aircraftClass, "keyName");
+		if (aircraftClass != null) { return Property.stringValue(aircraftClass, "keyName"); }
 
 		return null;
 	}
 
 	/**
-	 * Call this method when glider aircraft type landed. Based on its type certain
-	 * amount of paratroopers is loaded to home base in which glider landed.
+	 * Call this method when glider aircraft type landed. Based on its type certain amount of paratroopers is loaded to home base in which glider landed.
 	 *
 	 * @param aircraft
 	 */
 	public static void processGliderLanding(Aircraft aircraft) {
-		if (aircraft == null || !(aircraft instanceof TypeGlider))
-			return;
+		if (aircraft == null || !(aircraft instanceof TypeGlider)) { return; }
 
-		if (Main.cur().netServerParams == null || !Main.cur().netServerParams.isMaster()) {
-			return;
-		}
+		if (Main.cur().netServerParams == null || !Main.cur().netServerParams.isMaster()) { return; }
 
 		Point3d pos = aircraft.pos.getAbsPoint();
 		BornPlace bp = ZutiSupportMethods.getParatrooperAreaBornPlace(pos.x, pos.y, aircraft.getArmy());
@@ -991,22 +914,17 @@ public class ZutiSupportMethods_Air {
 			// Determine number of paratroopers based on glider type
 			if (aircraft instanceof ME_321) {
 				paratroopers = 130;
-			} else if (aircraft instanceof G_11) {
-				paratroopers = 11;
-			}
+			} else if (aircraft instanceof G_11) { paratroopers = 11; }
 
 			bp.zutiParatroopersInsideHomeBaseArea += paratroopers;
-			System.out.println("ZSM_A - Glider landed... number of hostile paratroopers inside home base at x="
-					+ bp.place.x + " and y=" + bp.place.y + " is: " + bp.zutiParatroopersInsideHomeBaseArea
-					+ ". Needed: " + bp.zutiCapturingRequiredParatroopers);
+			System.out.println("ZSM_A - Glider landed... number of hostile paratroopers inside home base at x=" + bp.place.x + " and y=" + bp.place.y + " is: " + bp.zutiParatroopersInsideHomeBaseArea + ". Needed: " + bp.zutiCapturingRequiredParatroopers);
 
 			ZutiSupportMethods.isBornPlaceOverrunByPara(bp, aircraft.getArmy());
 		}
 	}
 
 	/**
-	 * Call this method to destroy aircraft by directly calling .destroy on it or by
-	 * bailing the pilot (set bail to true).
+	 * Call this method to destroy aircraft by directly calling .destroy on it or by bailing the pilot (set bail to true).
 	 *
 	 * @param bail
 	 */
@@ -1015,9 +933,7 @@ public class ZutiSupportMethods_Air {
 
 		ZutiSupportMethods_AI.collectPoints();
 		ZutiSupportMethods_NetSend.ejectPlayer((NetUser) NetEnv.host());
-		if (World.getPlayerFM() instanceof RealFlightModel) {
-			ZutiSupportMethods_NetSend.ejectAircraftCrew(World.getPlayerAircraft());
-		}
+		if (World.getPlayerFM() instanceof RealFlightModel) { ZutiSupportMethods_NetSend.ejectAircraftCrew(World.getPlayerAircraft()); }
 
 		ZutiSupportMethods_Multicrew.ejectPlayerGunner();
 
@@ -1028,9 +944,9 @@ public class ZutiSupportMethods_Air {
 			ZutiSupportMethods_FM.UPDATE_VULNERABILITY_TIMER = false;
 			ZutiSupportMethods_FM.UPDATE_DECK_TIMER = false;
 
-			if (!bail)
+			if (!bail) {
 				aircraft.destroy();
-			else {
+			} else {
 				AircraftState.bCheckPlayerAircraft = false;
 				aircraft.hitDaSilk();
 				AircraftState.bCheckPlayerAircraft = true;

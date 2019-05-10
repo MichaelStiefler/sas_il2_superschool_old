@@ -13,9 +13,7 @@ public class YAK_7V extends YAK implements TypeFighter, TypeTNBFighter, TypeScou
 		Aircraft.xyz[0] = -Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, 0.58F);
 		this.hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
 		if (Config.isUSE_RENDER()) {
-			if ((Main3D.cur3D().cockpits != null) && (Main3D.cur3D().cockpits[0] != null)) {
-				Main3D.cur3D().cockpits[0].onDoorMoved(f);
-			}
+			if (Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null) { Main3D.cur3D().cockpits[0].onDoorMoved(f); }
 			this.setDoorSnd(f);
 		}
 	}
@@ -28,9 +26,7 @@ public class YAK_7V extends YAK implements TypeFighter, TypeTNBFighter, TypeScou
 
 	protected void nextDMGLevel(String s, int i, Actor actor) {
 		super.nextDMGLevel(s, i, actor);
-		if (this.FM.isPlayers()) {
-			bChangedPit = true;
-		}
+		if (this.FM.isPlayers()) { bChangedPit = true; }
 	}
 
 	public static void moveGear(HierMesh hiermesh, float f) {
@@ -52,9 +48,7 @@ public class YAK_7V extends YAK implements TypeFighter, TypeTNBFighter, TypeScou
 
 	protected void nextCUTLevel(String s, int i, Actor actor) {
 		super.nextCUTLevel(s, i, actor);
-		if (this.FM.isPlayers()) {
-			bChangedPit = true;
-		}
+		if (this.FM.isPlayers()) { bChangedPit = true; }
 	}
 
 	public static boolean bChangedPit = false;

@@ -30,15 +30,13 @@ public class ME_262V3 extends ME_262 {
 
 	public void setOnGround(Point3d point3d, Orient orient, Vector3d vector3d) {
 		super.setOnGround(point3d, orient, vector3d);
-		if (this.FM.isPlayers())
-			this.FM.CT.setTrimElevatorControl(0.5F);
+		if (this.FM.isPlayers()) { this.FM.CT.setTrimElevatorControl(0.5F); }
 	}
 
 	public void update(float f) {
 		super.update(f);
-		if (this.FM.isPlayers() && (FM instanceof RealFlightModel) && ((RealFlightModel) FM).isRealMode()) {
-			if (this.startModToStd != -1L)
-				this.setSquaresStdSmoooth();
+		if (this.FM.isPlayers() && this.FM instanceof RealFlightModel && ((RealFlightModel) this.FM).isRealMode()) {
+			if (this.startModToStd != -1L) { this.setSquaresStdSmoooth(); }
 			if (this.FM.Gears.nOfGearsOnGr > 1 && this.FM.getAOA() > 15F) {
 				if (!this.isOnGround) {
 					this.getSquares();
@@ -60,15 +58,13 @@ public class ME_262V3 extends ME_262 {
 	}
 
 	public void engineSurge(float f) {
-		if (DEBUG)
-			return;
-		if (!this.FM.isPlayers() || !(FM instanceof RealFlightModel) || !((RealFlightModel) FM).isRealMode()) {
+		if (DEBUG) { return; }
+		if (!this.FM.isPlayers() || !(this.FM instanceof RealFlightModel) || !((RealFlightModel) this.FM).isRealMode()) {
 			super.engineSurge(f);
 			return;
 		}
 		for (int i = 0; i < 2; i++) {
-			this.FM.EI.engines[i].engineAcceleration = smoothCvt(this.FM.EI.engines[i].getRPM(), 2450F, 3400F, 0.03F,
-					0.15F); // limit engine acceleration below RPM_CRIT
+			this.FM.EI.engines[i].engineAcceleration = smoothCvt(this.FM.EI.engines[i].getRPM(), 2450F, 3400F, 0.03F, 0.15F); // limit engine acceleration below RPM_CRIT
 			if (this.curthrl[i] == -1F) {
 				this.curthrl[i] = this.oldthrl[i] = this.FM.EI.engines[i].getControlThrottle();
 			} else {
@@ -90,53 +86,38 @@ public class ME_262V3 extends ME_262 {
 //                    }
 //                }
 //                // ---
-				this.curthrl[i] = (THROTTLE_SMOOTHING_FACTOR * this.oldthrl[i]
-						+ this.FM.EI.engines[i].getControlThrottle()) / (THROTTLE_SMOOTHING_FACTOR + 1.0F);
-				if ((this.curthrl[i] - this.oldthrl[i]) / f > CHECK_DIFF_UP_PER_TICK
-						&& this.FM.EI.engines[i].getRPM() < RPM_CRIT && this.FM.EI.engines[i].getStage() == 6
-						&& World.Rnd().nextFloat() < 0.5F) {
-					if (this.FM.actor == World.getPlayerAircraft())
-						HUD.log("Compressor Stall!");
+				this.curthrl[i] = (THROTTLE_SMOOTHING_FACTOR * this.oldthrl[i] + this.FM.EI.engines[i].getControlThrottle()) / (THROTTLE_SMOOTHING_FACTOR + 1.0F);
+				if ((this.curthrl[i] - this.oldthrl[i]) / f > CHECK_DIFF_UP_PER_TICK && this.FM.EI.engines[i].getRPM() < RPM_CRIT && this.FM.EI.engines[i].getStage() == 6 && World.Rnd().nextFloat() < 0.5F) {
+					if (this.FM.actor == World.getPlayerAircraft()) { HUD.log("Compressor Stall!"); }
 					super.playSound("weapon.MGunMk108s", true);
 					this.engineSurgeDamage[i] += 0.01D * (this.FM.EI.engines[i].getRPM() / 1000F);
-					this.FM.EI.engines[i]
-							.doSetReadyness(this.FM.EI.engines[i].getReadyness() - this.engineSurgeDamage[i]);
-					if (World.Rnd().nextFloat() < 0.2F && (super.FM instanceof RealFlightModel)
-							&& ((RealFlightModel) super.FM).isRealMode())
-						this.FM.AS.hitEngine(this, i, 100);
-					if (World.Rnd().nextFloat() < 0.2F && (super.FM instanceof RealFlightModel)
-							&& ((RealFlightModel) super.FM).isRealMode())
-						this.FM.EI.engines[i].setEngineDies(this);
+					this.FM.EI.engines[i].doSetReadyness(this.FM.EI.engines[i].getReadyness() - this.engineSurgeDamage[i]);
+					if (World.Rnd().nextFloat() < 0.2F && super.FM instanceof RealFlightModel && ((RealFlightModel) super.FM).isRealMode()) { this.FM.AS.hitEngine(this, i, 100); }
+					if (World.Rnd().nextFloat() < 0.2F && super.FM instanceof RealFlightModel && ((RealFlightModel) super.FM).isRealMode()) { this.FM.EI.engines[i].setEngineDies(this); }
 					this.curthrl[i] = this.oldthrl[i] = this.FM.EI.engines[i].getControlThrottle(); // Make sure to skip
-																									// further engine
-																									// damage for this
-																									// throttle change,
-																									// it's been handled
-																									// already!
+																									 // further engine
+																									 // damage for this
+																									 // throttle change,
+																									 // it's been handled
+																									 // already!
 				}
-				if ((this.curthrl[i] - this.oldthrl[i]) / f < -CHECK_DIFF_DOWN_PER_TICK
-						&& (this.curthrl[i] - this.oldthrl[i]) / f > -100F && this.FM.EI.engines[i].getRPM() < RPM_CRIT
-						&& this.FM.EI.engines[i].getStage() == 6) {
+				if ((this.curthrl[i] - this.oldthrl[i]) / f < -CHECK_DIFF_DOWN_PER_TICK && (this.curthrl[i] - this.oldthrl[i]) / f > -100F && this.FM.EI.engines[i].getRPM() < RPM_CRIT && this.FM.EI.engines[i].getStage() == 6) {
 					super.playSound("weapon.MGunMk108s", true);
 					this.engineSurgeDamage[i] += 0.001D * (this.FM.EI.engines[i].getRPM() / 1000F);
-					this.FM.EI.engines[i]
-							.doSetReadyness(this.FM.EI.engines[i].getReadyness() - this.engineSurgeDamage[i]);
-					if (World.Rnd().nextFloat() < 0.5F && (super.FM instanceof RealFlightModel)
-							&& ((RealFlightModel) super.FM).isRealMode()) {
-						if (this.FM.actor == World.getPlayerAircraft())
-							HUD.log("Engine Flameout!");
+					this.FM.EI.engines[i].doSetReadyness(this.FM.EI.engines[i].getReadyness() - this.engineSurgeDamage[i]);
+					if (World.Rnd().nextFloat() < 0.5F && super.FM instanceof RealFlightModel && ((RealFlightModel) super.FM).isRealMode()) {
+						if (this.FM.actor == World.getPlayerAircraft()) { HUD.log("Engine Flameout!"); }
 						this.FM.EI.engines[i].setEngineStops(this);
 					} else {
-						if (this.FM.actor == World.getPlayerAircraft())
-							HUD.log("Compressor Stall!");
+						if (this.FM.actor == World.getPlayerAircraft()) { HUD.log("Compressor Stall!"); }
 						this.FM.EI.engines[i].setKillCompressor(this);
 					}
 					this.curthrl[i] = this.oldthrl[i] = this.FM.EI.engines[i].getControlThrottle(); // Make sure to skip
-																									// further engine
-																									// damage for this
-																									// throttle change,
-																									// it's been handled
-																									// already!
+																									 // further engine
+																									 // damage for this
+																									 // throttle change,
+																									 // it's been handled
+																									 // already!
 				}
 				this.oldthrl[i] = this.curthrl[i];
 			}
@@ -219,48 +200,45 @@ public class ME_262V3 extends ME_262 {
 
 	private static float smoothCvt(float inputValue, float inMin, float inMax, float outMin, float outMax) {
 		inputValue = Math.min(Math.max(inputValue, inMin), inMax);
-		return outMin + (outMax - outMin)
-				* (-0.5F * (float) Math.cos((inputValue - inMin) / (inMax - inMin) * Math.PI) + 0.5F);
+		return outMin + (outMax - outMin) * (-0.5F * (float) Math.cos((inputValue - inMin) / (inMax - inMin) * Math.PI) + 0.5F);
 	}
 
-	private float oldthrl[] = { -1F, -1F };
-	private float curthrl[] = { -1F, -1F };
-	private float engineSurgeDamage[] = { 0.0F, 0.0F };
-	private boolean isOnGround = false;
-	private float squareWing;
-	private float squareAilerons;
-	private float squareElevators;
-	private float squareRudders;
-	private float squareFlaps;
-	private float liftWingLIn;
-	private float liftWingLMid;
-	private float liftWingLOut;
-	private float liftWingRIn;
-	private float liftWingRMid;
-	private float liftWingROut;
-	private float liftStab;
-	private float liftKeel;
-	private float sensPitch;
-	private long startModToStd = -1L;
-	private static final float RPM_CRIT = 2450F; // Equals 6000 RPM = limit for automatic fuel injector, above this the
-													// throttle can be moved quickly
-	private static final float MOD_MULTIPLIER_SQUARE_AILERONS = 0.0F;
+	private float              oldthrl[]                       = { -1F, -1F };
+	private float              curthrl[]                       = { -1F, -1F };
+	private float              engineSurgeDamage[]             = { 0.0F, 0.0F };
+	private boolean            isOnGround                      = false;
+	private float              squareWing;
+	private float              squareAilerons;
+	private float              squareElevators;
+	private float              squareRudders;
+	private float              squareFlaps;
+	private float              liftWingLIn;
+	private float              liftWingLMid;
+	private float              liftWingLOut;
+	private float              liftWingRIn;
+	private float              liftWingRMid;
+	private float              liftWingROut;
+	private float              liftStab;
+	private float              liftKeel;
+	private float              sensPitch;
+	private long               startModToStd                   = -1L;
+	private static final float RPM_CRIT                        = 2450F; // Equals 6000 RPM = limit for automatic fuel injector, above this the
+																		 // throttle can be moved quickly
+	private static final float MOD_MULTIPLIER_SQUARE_AILERONS  = 0.0F;
 	private static final float MOD_MULTIPLIER_SQUARE_ELEVATORS = 0.0F;
-	private static final float MOD_MULTIPLIER_SQUARE_FLAPS = 0.0F;
-	private static final float MOD_MULTIPLIER_LIFT_WING = 0.5F;
-	private static final float MOD_MULTIPLIER_LIFT_STAB = -1.0F;
-	private static final float MOD_MULTIPLIER_SENS_PITCH = 0.0F;
-	private static final long TIME_MOD_TO_STD = 1500L;
-	private static final float THROTTLE_SMOOTHING_FACTOR = 50.0F; // Smoothing factor, smoothens "spikes" in throttle
-																	// movement and limits engine throttle response
-	private static final float MAX_PERCENTAGE_UP_PER_TICK = 10.0F; // Maximum Throttle percent per tick (0.03s) which is
-																	// allowed for throttle up below RPM_CRIT
-	private static final float MAX_PERCENTAGE_DOWN_PER_TICK = 20.0F; // Maximum Throttle percent per tick (0.03s) which
-																		// is allowed for throttle down below RPM_CRIT
-	private static final float CHECK_DIFF_UP_PER_TICK = MAX_PERCENTAGE_UP_PER_TICK / 100.0F / 0.03F
-			/ (THROTTLE_SMOOTHING_FACTOR + 1.0F); // Internal value for Throttle movement check
-	private static final float CHECK_DIFF_DOWN_PER_TICK = MAX_PERCENTAGE_DOWN_PER_TICK / 100.0F / 0.03F
-			/ (THROTTLE_SMOOTHING_FACTOR + 1.0F); // Internal value for Throttle movement check
+	private static final float MOD_MULTIPLIER_SQUARE_FLAPS     = 0.0F;
+	private static final float MOD_MULTIPLIER_LIFT_WING        = 0.5F;
+	private static final float MOD_MULTIPLIER_LIFT_STAB        = -1.0F;
+	private static final float MOD_MULTIPLIER_SENS_PITCH       = 0.0F;
+	private static final long  TIME_MOD_TO_STD                 = 1500L;
+	private static final float THROTTLE_SMOOTHING_FACTOR       = 50.0F; // Smoothing factor, smoothens "spikes" in throttle
+																		 // movement and limits engine throttle response
+	private static final float MAX_PERCENTAGE_UP_PER_TICK      = 10.0F; // Maximum Throttle percent per tick (0.03s) which is
+																		 // allowed for throttle up below RPM_CRIT
+	private static final float MAX_PERCENTAGE_DOWN_PER_TICK    = 20.0F; // Maximum Throttle percent per tick (0.03s) which
+																		 // is allowed for throttle down below RPM_CRIT
+	private static final float CHECK_DIFF_UP_PER_TICK          = MAX_PERCENTAGE_UP_PER_TICK / 100.0F / 0.03F / (THROTTLE_SMOOTHING_FACTOR + 1.0F); // Internal value for Throttle movement check
+	private static final float CHECK_DIFF_DOWN_PER_TICK        = MAX_PERCENTAGE_DOWN_PER_TICK / 100.0F / 0.03F / (THROTTLE_SMOOTHING_FACTOR + 1.0F); // Internal value for Throttle movement check
 
 	// Parameters below are for Debugging purpose only
 	private static boolean DEBUG = false;

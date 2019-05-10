@@ -50,8 +50,8 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	class Master extends ActorNet implements NetUpdate {
 
 		NetMsgFiltered out;
-		Orient theMissileOrient = new Orient();
-		Point3d theMissilePoint3d = new Point3d();
+		Orient         theMissileOrient  = new Orient();
+		Point3d        theMissilePoint3d = new Point3d();
 
 		public Master(Actor actor) {
 			super(actor);
@@ -59,9 +59,9 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		}
 
 		public void msgNetNewChannel(NetChannel netchannel) {
-			if (!Actor.isValid(this.actor())) return;
+			if (!Actor.isValid(this.actor())) { return; }
 			try {
-				if (netchannel.isMirrored(this)) return;
+				if (netchannel.isMirrored(this)) { return; }
 				if (netchannel.userState == 0) {
 					NetMsgSpawn netmsgspawn = this.actor().netReplicate(netchannel);
 					if (netmsgspawn != null) {
@@ -86,9 +86,9 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 				this.out.writeFloat((float) this.theMissilePoint3d.y);
 				this.out.writeFloat((float) this.theMissilePoint3d.z);
 				this.theMissileOrient.wrap();
-				short sYaw = (short)(this.theMissileOrient.getYaw() * 182F);
-				short sPitch = (short)(this.theMissileOrient.getTangage() * 364F);
-				short sRoll = (short)(this.theMissileOrient.getKren() * 182F);
+				short sYaw = (short) (this.theMissileOrient.getYaw() * 182F);
+				short sPitch = (short) (this.theMissileOrient.getTangage() * 364F);
+				short sRoll = (short) (this.theMissileOrient.getKren() * 182F);
 				this.out.writeShort(sYaw);
 				this.out.writeShort(sPitch);
 				this.out.writeShort(sRoll);
@@ -104,9 +104,9 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	class Mirror extends ActorNet {
 
 		NetMsgFiltered out;
-		Orient theMissileOrient = new Orient();
-		Point3d theMissilePoint3d = new Point3d();
-		Vector3d theTrajectoryVector3d = new Vector3d();
+		Orient         theMissileOrient      = new Orient();
+		Point3d        theMissilePoint3d     = new Point3d();
+		Vector3d       theTrajectoryVector3d = new Vector3d();
 
 		public Mirror(Actor actor, NetChannel netchannel, int i) {
 			super(actor, netchannel, i);
@@ -114,8 +114,8 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		}
 
 		public void msgNetNewChannel(NetChannel netchannel) {
-			if (!Actor.isValid(this.actor())) return;
-			if (netchannel.isMirrored(this)) return;
+			if (!Actor.isValid(this.actor())) { return; }
+			if (netchannel.isMirrored(this)) { return; }
 			try {
 				if (netchannel.userState == 0) {
 					NetMsgSpawn netmsgspawn = this.actor().netReplicate(netchannel);
@@ -131,28 +131,27 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		}
 
 		public boolean netInput(NetMsgInput netmsginput) throws IOException {
-			if (netmsginput.isGuaranted()) return false;
+			if (netmsginput.isGuaranted()) { return false; }
 			if (this.isMirrored()) {
 				this.out.unLockAndSet(netmsginput, 0);
 				this.postReal(Message.currentTime(true), this.out);
 			}
 			if (netmsginput.available() >= 22) {
-				//new UP3.2 Style Missile Data
+				// new UP3.2 Style Missile Data
 
 				this.actor().pos.getAbs(this.theMissilePoint3d);
 				float newPosX = netmsginput.readFloat();
 				float newPosY = netmsginput.readFloat();
 				float newPosZ = netmsginput.readFloat();
 				int smoothFactor = 10;
-				this.theMissilePoint3d.set((this.theMissilePoint3d.x * (double)(smoothFactor - 1) + (double)newPosX) / (double)(smoothFactor),
-						(this.theMissilePoint3d.y * (double)(smoothFactor - 1) + (double)newPosY) / (double)(smoothFactor),
-						(this.theMissilePoint3d.z * (double)(smoothFactor - 1) + (double)newPosZ) / (double)(smoothFactor));
+				this.theMissilePoint3d.set((this.theMissilePoint3d.x * (smoothFactor - 1) + newPosX) / smoothFactor, (this.theMissilePoint3d.y * (smoothFactor - 1) + newPosY) / smoothFactor,
+						(this.theMissilePoint3d.z * (smoothFactor - 1) + newPosZ) / smoothFactor);
 				short sYaw = netmsginput.readShort();
 				short sPitch = netmsginput.readShort();
 				short sRoll = netmsginput.readShort();
-				float fYaw = -((float)sYaw / 182F);
-				float fPitch = (float)sPitch / 364F;
-				float fRoll = (float)sRoll / 182F;
+				float fYaw = -(sYaw / 182F);
+				float fPitch = sPitch / 364F;
+				float fRoll = sRoll / 182F;
 				float fSpeed = netmsginput.readFloat();
 				this.theMissileOrient.set(fYaw, fPitch, fRoll);
 				this.theMissileOrient.wrap();
@@ -162,27 +161,26 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 				this.actor().pos.setAbs(this.theMissilePoint3d, this.theMissileOrient);
 				this.actor().setSpeed(this.theTrajectoryVector3d);
 			} else {
-				//old UP3 RC4 Style Missile Data
+				// old UP3 RC4 Style Missile Data
 				this.theMissilePoint3d.set(netmsginput.readFloat(), netmsginput.readFloat(), netmsginput.readFloat());
 				short sYaw = netmsginput.readShort();
 				short sPitch = netmsginput.readShort();
-	            float fYaw = -(((float)sYaw * 180F) / 32000F);
-	            float fPitch = ((float)sPitch * 90F) / 32000F;
-	            this.theMissileOrient.set(fYaw, fPitch, 0.0F);
-	            this.theMissileOrient.wrap();
-	            this.actor().pos.setAbs(theMissilePoint3d, theMissileOrient);
+				float fYaw = -(sYaw * 180F / 32000F);
+				float fPitch = sPitch * 90F / 32000F;
+				this.theMissileOrient.set(fYaw, fPitch, 0.0F);
+				this.theMissileOrient.wrap();
+				this.actor().pos.setAbs(this.theMissilePoint3d, this.theMissileOrient);
 			}
 			return true;
 		}
 	}
 
 	/**
-	 * Helper Class for a chained list of active Nav Lights for a particular Missile.
-	 * This class is necessary since missiles can have different numbers of active Nav Lights.
+	 * Helper Class for a chained list of active Nav Lights for a particular Missile. This class is necessary since missiles can have different numbers of active Nav Lights.
 	 */
 	private class MissileNavLight {
 		public MissileNavLight nextNavLight; // Pointer to the next chain element
-		public Eff3DActor theNavLight; // The Nav Light Object in the Chain
+		public Eff3DActor      theNavLight; // The Nav Light Object in the Chain
 
 		public MissileNavLight(Eff3DActor theEff3DActor) { // Element constructor.
 			this.theNavLight = theEff3DActor;
@@ -201,27 +199,25 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		public void netSpawn(int i, NetMsgInput netmsginput) {
 			NetObj netobj;
 			netobj = netmsginput.readNetObj();
-			if (netobj == null) return;
+			if (netobj == null) { return; }
 			try {
 				Actor actor = (Actor) netobj.superObj();
 				Point3d point3d = new Point3d();
 				Orient orient = new Orient();
 				float f = 0F;
 				if (netmsginput.available() >= 28) {
-					//new UP3.2 Style Missile Data
+					// new UP3.2 Style Missile Data
 					point3d.set(netmsginput.readFloat(), netmsginput.readFloat(), netmsginput.readFloat());
 					orient.set(netmsginput.readFloat(), netmsginput.readFloat(), netmsginput.readFloat());
 					f = netmsginput.readFloat();
 				} else {
-					//old UP3 RC4 Style Missile Data
+					// old UP3 RC4 Style Missile Data
 					point3d.set(netmsginput.readFloat(), netmsginput.readFloat(), netmsginput.readFloat());
 					orient.set(netmsginput.readFloat(), netmsginput.readFloat(), 0F);
 					f = netmsginput.readFloat();
 				}
 				this.doSpawn(actor, netmsginput.channel(), i, point3d, orient, f);
-				if (actor instanceof TypeGuidedMissileCarrier) {
-					((TypeGuidedMissileCarrier) actor).getGuidedMissileUtils().shootNextMissile(true);
-				}
+				if (actor instanceof TypeGuidedMissileCarrier) { ((TypeGuidedMissileCarrier) actor).getGuidedMissileUtils().shootNextMissile(true); }
 			} catch (Exception exception) {
 				System.out.println(exception.getMessage());
 				exception.printStackTrace();
@@ -236,13 +232,13 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		this.victimSpeed = new Vector3d();
 		this.victimOffsetOrient = new Orient();
 		this.victimOffsetPoint3f = new Point3f();
-	    this.flags |= 0xE0;
+		this.flags |= 0xE0;
 		this.MissileInit();
 		return;
 	}
 
 	public Missile(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float f) {
-	    this.flags |= 0xE0;
+		this.flags |= 0xE0;
 		this.MissileInit(actor, netchannel, i, point3d, orient, f);
 	}
 
@@ -251,14 +247,14 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	public int chooseBulletType(BulletProperties abulletproperties[]) {
-		if (abulletproperties.length == 1) return 0;
-		if (abulletproperties.length <= 0) return -1;
-		if (abulletproperties[0].power <= 0.0F) return 1;
-		if (abulletproperties[1].power <= 0.0F) return 0;
-		if (abulletproperties[0].powerType == 1) return 0;
-		if (abulletproperties[1].powerType == 1) return 1;
-		if (abulletproperties[0].powerType == 0) return 0;
-		if (abulletproperties[1].powerType == 0) return 1;
+		if (abulletproperties.length == 1) { return 0; }
+		if (abulletproperties.length <= 0) { return -1; }
+		if (abulletproperties[0].power <= 0.0F) { return 1; }
+		if (abulletproperties[1].power <= 0.0F) { return 0; }
+		if (abulletproperties[0].powerType == 1) { return 0; }
+		if (abulletproperties[1].powerType == 1) { return 1; }
+		if (abulletproperties[0].powerType == 0) { return 0; }
+		if (abulletproperties[1].powerType == 0) { return 1; }
 		return abulletproperties[0].powerType != 2 ? 0 : 1;
 	}
 
@@ -267,7 +263,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	private boolean computeFuzeState() {
-		if (Time.current() > this.startTime + (2 * this.trackDelay)) {
+		if (Time.current() > this.startTime + 2 * this.trackDelay) {
 			if (actorHasPos(this.victim)) {
 				Point3d futureVictimPos = new Point3d();
 				this.victim.pos.getTime(Time.tickNext(), futureVictimPos);
@@ -275,11 +271,9 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 				this.pos.getTime(Time.tickNext(), futureMissilePos);
 				float distance = (float) this.missilePoint3d.distance(this.victim.pos.getAbsPoint());
 				float distanceFuture = (float) futureMissilePos.distance(futureVictimPos); // - 5F;
-				if (distanceFuture < 0F) {
-					distanceFuture = 0F;
-				}
+				if (distanceFuture < 0F) { distanceFuture = 0F; }
 				if (this.fuzeRadius > 0F) {
-					if (((this.victim instanceof Aircraft) || (this.victim instanceof MissileInterceptable)) && (distanceFuture > distance * 5F || distance > this.previousDistance) && this.previousDistance != 1000F) {
+					if ((this.victim instanceof Aircraft || this.victim instanceof MissileInterceptable) && (distanceFuture > distance * 5F || distance > this.previousDistance) && this.previousDistance != 1000F) {
 						if (distance < this.fuzeRadius) {
 							this.doExplosionAir();
 							this.postDestroy();
@@ -300,9 +294,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	private float computeMissileAccelleration() {
 		this.victimOffsetPoint3f.set(this.safeVictimOffset);
 		float missileSpeed = (float) this.getSpeed(null);
-		if (this.getFailState() == FAIL_TYPE_ENGINE) {
-			this.rocketMotorOperationTime = 0.0F;
-		}
+		if (this.getFailState() == FAIL_TYPE_ENGINE) { this.rocketMotorOperationTime = 0.0F; }
 		this.pos.getAbs(this.missilePoint3d, this.missileOrient);
 		this.missileOrient.wrap();
 
@@ -330,26 +322,22 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 			if (this.missileForceRunUpTime > 0.001F) {
 				if (millisecondsFromStart < this.missileForceRunUpTime) {
 					float runUpTimeFactor = millisecondsFromStart / this.missileForceRunUpTime;
-					if (runUpTimeFactor > 1.0F) {
-						runUpTimeFactor = 1.0F;
-					}
+					if (runUpTimeFactor > 1.0F) { runUpTimeFactor = 1.0F; }
 					this.setAllSmokeIntensities(runUpTimeFactor);
 					this.setAllSpriteIntensities(runUpTimeFactor);
 					this.setAllFlameScale(runUpTimeFactor);
-					theForce *= (this.initialMissileForce + ((100.0F - this.initialMissileForce) * runUpTimeFactor)) / 100.0F;
+					theForce *= (this.initialMissileForce + (100.0F - this.initialMissileForce) * runUpTimeFactor) / 100.0F;
 				}
 			}
 			this.missileMass -= this.massLossPerTick;
 		}
 		float forceAzimuth = MissilePhysics.getGForce(missileSpeed, this.oldDeltaAzimuth / Time.tickLenFs());
 		float forceTangage = MissilePhysics.getGForce(missileSpeed, this.oldDeltaTangage / Time.tickLenFs());
-		float turnForce = (float) Math.sqrt((forceAzimuth * forceAzimuth) + (forceTangage * forceTangage)) * MissilePhysics.G_CONST * this.missileMass * ((float) Math.sqrt(2.0D) - 1.0F);
+		float turnForce = (float) Math.sqrt(forceAzimuth * forceAzimuth + forceTangage * forceTangage) * MissilePhysics.G_CONST * this.missileMass * ((float) Math.sqrt(2.0D) - 1.0F);
 		turnForce *= this.dragCoefficient;
 
-		float resForce = (float) Math.sqrt(Math.abs((theForce * theForce) - (turnForce * turnForce)));
-		if (turnForce > theForce) {
-			resForce *= -1F;
-		}
+		float resForce = (float) Math.sqrt(Math.abs(theForce * theForce - turnForce * turnForce));
+		if (turnForce > theForce) { resForce *= -1F; }
 		float accelForce = resForce - MissilePhysics.getDragInGravity(this.frontSquare, this.dragCoefficient, (float) this.missilePoint3d.z, missileSpeed, this.missileOrient.getTangage(), this.missileMass);
 		float accelleration = accelForce / this.missileMass;
 		missileSpeed += accelleration * Time.tickLenFs();
@@ -359,7 +347,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		}
 
 		this.trajectoryVector3d.set(1.0D, 0.0D, 0.0D);
-		if ((Time.current() < this.startTime + this.trackDelay) && (this.launchType == Missile.LAUNCH_TYPE_DROP)) // recover from launch pitch even if there's no target.
+		if (Time.current() < this.startTime + this.trackDelay && this.launchType == Missile.LAUNCH_TYPE_DROP) // recover from launch pitch even if there's no target.
 		{
 			this.dropFlightPathOrient.transform(this.trajectoryVector3d);
 		} else {
@@ -370,7 +358,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		this.missilePoint3d.x += this.trajectoryVector3d.x * Time.tickLenFs();
 		this.missilePoint3d.y += this.trajectoryVector3d.y * Time.tickLenFs();
 		this.missilePoint3d.z += this.trajectoryVector3d.z * Time.tickLenFs();
-		if ((this.isNet()) && (this.isNetMirror())) {
+		if (this.isNet() && this.isNetMirror()) {
 			this.pos.setAbs(this.missilePoint3d, this.missileOrient);
 			return -1F;
 		}
@@ -385,40 +373,38 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	private void computeMissilePath(float missileSpeed, float hTurn, float vTurn, float azimuth, float tangage) {
-		turnStepMax = MissilePhysics.getDegPerSec(missileSpeed, this.maxG) * Time.tickLenFs(); // turn limit, higher altitude means less turn capability (app. 1/10th from ground to 10km)
+		this.turnStepMax = MissilePhysics.getDegPerSec(missileSpeed, this.maxG) * Time.tickLenFs(); // turn limit, higher altitude means less turn capability (app. 1/10th from ground to 10km)
 		float turnStepMaxSpeedFactor = 1F;
 		float turnStepMaxAltitudeFactor = MissilePhysics.getAirDensityFactor((float) this.missilePoint3d.z);
 		if (missileSpeed < 340F) { // Missile slower than Mach 1, control surfaces effectivity decreases
 			turnStepMaxSpeedFactor = missileSpeed / 340F;
 		} else {
 			turnStepMaxAltitudeFactor *= Math.sqrt(missileSpeed / 340F);
-			if (turnStepMaxAltitudeFactor > 1F) turnStepMaxAltitudeFactor = 1F;
+			if (turnStepMaxAltitudeFactor > 1F) { turnStepMaxAltitudeFactor = 1F; }
 		}
 
-		turnStepMax *= turnStepMaxSpeedFactor * turnStepMaxAltitudeFactor;
+		this.turnStepMax *= turnStepMaxSpeedFactor * turnStepMaxAltitudeFactor;
 
-		float newTurnDiffMax = turnStepMax / this.stepsForFullTurn; // turn rate change limit, smoothen the turns.
-		if (newTurnDiffMax > this.turnDiffMax) {
-			this.turnDiffMax = (this.turnDiffMax * this.stepsForFullTurn + newTurnDiffMax) / (this.stepsForFullTurn + 1.0F);
-		}
+		float newTurnDiffMax = this.turnStepMax / this.stepsForFullTurn; // turn rate change limit, smoothen the turns.
+		if (newTurnDiffMax > this.turnDiffMax) { this.turnDiffMax = (this.turnDiffMax * this.stepsForFullTurn + newTurnDiffMax) / (this.stepsForFullTurn + 1.0F); }
 
 		if (this.getFailState() == FAIL_TYPE_IVAN) {
 			System.out.println("IRRER IVAN!");
 			if (this.ivanTimeLeft < Time.tickLenFs()) {
 				if (TrueRandom.nextFloat() < 0.5F) {
 					if (TrueRandom.nextFloat() < 0.5F) {
-						this.deltaAzimuth = turnStepMax;
+						this.deltaAzimuth = this.turnStepMax;
 					} else {
-						this.deltaAzimuth = -turnStepMax;
+						this.deltaAzimuth = -this.turnStepMax;
 					}
-					this.deltaTangage = TrueRandom.nextFloat(-turnStepMax, turnStepMax);
+					this.deltaTangage = TrueRandom.nextFloat(-this.turnStepMax, this.turnStepMax);
 				} else {
 					if (TrueRandom.nextFloat() < 0.5F) {
-						this.deltaTangage = turnStepMax;
+						this.deltaTangage = this.turnStepMax;
 					} else {
-						this.deltaTangage = -turnStepMax;
+						this.deltaTangage = -this.turnStepMax;
 					}
-					this.deltaAzimuth = TrueRandom.nextFloat(-turnStepMax, turnStepMax);
+					this.deltaAzimuth = TrueRandom.nextFloat(-this.turnStepMax, this.turnStepMax);
 				}
 				this.ivanTimeLeft = TrueRandom.nextFloat(IVAN_TIME_MIN, IVAN_TIME_MAX);
 			} else {
@@ -432,14 +418,14 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 			}
 		} else if (this.getFailState() == FAIL_TYPE_MIRROR) {
 			if (TrueRandom.nextFloat() < 0.5F) {
-				this.deltaAzimuth = turnStepMax;
+				this.deltaAzimuth = this.turnStepMax;
 			} else {
-				this.deltaAzimuth = -turnStepMax;
+				this.deltaAzimuth = -this.turnStepMax;
 			}
 			if (TrueRandom.nextFloat() < 0.5F) {
-				this.deltaTangage = turnStepMax;
+				this.deltaTangage = this.turnStepMax;
 			} else {
-				this.deltaTangage = -turnStepMax;
+				this.deltaTangage = -this.turnStepMax;
 			}
 		} else if (this.getFailState() == FAIL_TYPE_CONTROL_BLOCKED) {
 			this.deltaAzimuth = this.oldDeltaAzimuth;
@@ -449,18 +435,18 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 			if (this.stepMode == STEP_MODE_HOMING) {
 				if (this.targetPoint3d.x > -10D) { // don't track if target has been passed
 					this.deltaAzimuth = -azimuth;
-					if (this.deltaAzimuth > turnStepMax) {
-						this.deltaAzimuth = turnStepMax; // limit turn
+					if (this.deltaAzimuth > this.turnStepMax) {
+						this.deltaAzimuth = this.turnStepMax; // limit turn
 					}
-					if (this.deltaAzimuth < -turnStepMax) {
-						this.deltaAzimuth = -turnStepMax; // limit turn
+					if (this.deltaAzimuth < -this.turnStepMax) {
+						this.deltaAzimuth = -this.turnStepMax; // limit turn
 					}
 					this.deltaTangage = tangage;
-					if (this.deltaTangage > turnStepMax) {
-						this.deltaTangage = turnStepMax; // limit turn
+					if (this.deltaTangage > this.turnStepMax) {
+						this.deltaTangage = this.turnStepMax; // limit turn
 					}
-					if (this.deltaTangage < -turnStepMax) {
-						this.deltaTangage = -turnStepMax; // limit turn
+					if (this.deltaTangage < -this.turnStepMax) {
+						this.deltaTangage = -this.turnStepMax; // limit turn
 					}
 				}
 				if (Math.abs(this.oldDeltaAzimuth - this.deltaAzimuth) > this.turnDiffMax) // limit turn rate change
@@ -490,28 +476,20 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 						break; // Target outside Radar coverage
 					}
 
-					if ((hTurn * this.oldDeltaAzimuth) < 0.0F) {
+					if (hTurn * this.oldDeltaAzimuth < 0.0F) {
 						this.deltaAzimuth = hTurn * this.turnDiffMax;
 					} else {
-						this.deltaAzimuth = this.oldDeltaAzimuth + (hTurn * this.turnDiffMax);
-						if (this.deltaAzimuth < -turnStepMax) {
-							this.deltaAzimuth = -turnStepMax;
-						}
-						if (this.deltaAzimuth > turnStepMax) {
-							this.deltaAzimuth = turnStepMax;
-						}
+						this.deltaAzimuth = this.oldDeltaAzimuth + hTurn * this.turnDiffMax;
+						if (this.deltaAzimuth < -this.turnStepMax) { this.deltaAzimuth = -this.turnStepMax; }
+						if (this.deltaAzimuth > this.turnStepMax) { this.deltaAzimuth = this.turnStepMax; }
 					}
 
-					if ((vTurn * this.oldDeltaTangage) < 0.0F) {
+					if (vTurn * this.oldDeltaTangage < 0.0F) {
 						this.deltaTangage = vTurn * this.turnDiffMax;
 					} else {
-						this.deltaTangage = this.oldDeltaTangage + (vTurn * this.turnDiffMax);
-						if (this.deltaTangage < -turnStepMax) {
-							this.deltaTangage = -turnStepMax;
-						}
-						if (this.deltaTangage > turnStepMax) {
-							this.deltaTangage = turnStepMax;
-						}
+						this.deltaTangage = this.oldDeltaTangage + vTurn * this.turnDiffMax;
+						if (this.deltaTangage < -this.turnStepMax) { this.deltaTangage = -this.turnStepMax; }
+						if (this.deltaTangage > this.turnStepMax) { this.deltaTangage = this.turnStepMax; }
 					}
 
 				} while (false);
@@ -519,8 +497,8 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 			this.oldDeltaAzimuth = this.deltaAzimuth;
 			this.oldDeltaTangage = this.deltaTangage;
 		}
-		float sinRoll = (float)Math.sin(Math.toRadians(this.missileOrient.getKren()));
-		float cosRoll = (float)Math.cos(Math.toRadians(this.missileOrient.getKren()));
+		float sinRoll = (float) Math.sin(Math.toRadians(this.missileOrient.getKren()));
+		float cosRoll = (float) Math.cos(Math.toRadians(this.missileOrient.getKren()));
 		float rotDeltaAzimuth = cosRoll * this.deltaAzimuth - sinRoll * this.deltaTangage;
 		float rotDeltaTangage = sinRoll * this.deltaAzimuth + cosRoll * this.deltaTangage;
 		this.missileOrient.increment(rotDeltaAzimuth, rotDeltaTangage, 0.0F);
@@ -539,10 +517,10 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 				this.p3dTemp.add(this.getOwner().pos.getAbsPoint()); // Add carrier position. Now p3dTemp is the real world coordinate of the current missile's hook on the carrier plane.
 				double distanceFromLaunch = this.missilePoint3d.distance(this.p3dTemp); // distance between missile hook and current position, i.e. the length it traveled on the rail already.
 				if (distanceFromLaunch < 5D) { // We're on or near the rail. Make sure that missile doesn't travel through airplane if launched from rail
-					v3dTemp.set(distanceFromLaunch, 0D, 0D);
+					this.v3dTemp.set(distanceFromLaunch, 0D, 0D);
 					this.missileOrient.set(this.getOwner().pos.getAbsOrient());
-					this.missileOrient.transform(v3dTemp);
-					this.p3dTemp.add(v3dTemp);
+					this.missileOrient.transform(this.v3dTemp);
+					this.p3dTemp.add(this.v3dTemp);
 					this.missilePoint3d.set(this.p3dTemp);
 					this.deltaAzimuth = this.deltaTangage = this.oldDeltaAzimuth = this.oldDeltaTangage = 0F;
 					return;
@@ -550,8 +528,8 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 			}
 			if (!this.deltaAngleApplied) {
 				float fMaxDeltaAngle = Property.floatValue(this.getClass(), "maxDeltaAngle", 0.5F);
-				float fDeltaAngleX = (float)Math.pow(TrueRandom.nextFloat_Dome(-1F, 1F), 2F) * fMaxDeltaAngle;
-				float fDeltaAngleY = (float)Math.pow(TrueRandom.nextFloat_Dome(-1F, 1F), 2F) * fMaxDeltaAngle;
+				float fDeltaAngleX = (float) Math.pow(TrueRandom.nextFloat_Dome(-1F, 1F), 2F) * fMaxDeltaAngle;
+				float fDeltaAngleY = (float) Math.pow(TrueRandom.nextFloat_Dome(-1F, 1F), 2F) * fMaxDeltaAngle;
 				this.missileOrient.increment(fDeltaAngleX, fDeltaAngleY, 0.0F);
 				this.deltaAngleApplied = true;
 			}
@@ -564,7 +542,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	private void createAdditionalFlames() {
 		this.flames = new Actor[this.exhausts];
 		this.flames[0] = this.flame;
-		if (this.simFlame == null) return;
+		if (this.simFlame == null) { return; }
 		Hook theHook = null;
 		for (int i = 1; i < this.exhausts; i++) {
 			theHook = this.findHook("_SMOKE" + i);
@@ -581,7 +559,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	private void createAdditionalSmokes() {
 		this.smokes = new Eff3DActor[this.exhausts];
 		this.smokes[0] = this.smoke;
-		if (this.effSmoke == null) return;
+		if (this.effSmoke == null) { return; }
 		Hook theHook = null;
 		for (int i = 1; i < this.exhausts; i++) {
 			theHook = this.findHook("_SMOKE" + i);
@@ -590,16 +568,14 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 				continue;
 			}
 			this.smokes[i] = Eff3DActor.New(this, theHook, null, 1.0F, this.effSmoke, -1F);
-			if (this.smokes[i] != null) {
-				this.smokes[i].pos.changeHookToRel();
-			}
+			if (this.smokes[i] != null) { this.smokes[i].pos.changeHookToRel(); }
 		}
 	}
 
 	private void createAdditionalSprites() {
 		this.sprites = new Eff3DActor[this.exhausts];
 		this.sprites[0] = this.sprite;
-		if (this.effSprite == null) return;
+		if (this.effSprite == null) { return; }
 		Hook theHook = null;
 		for (int i = 1; i < this.exhausts; i++) {
 			theHook = this.findHook("_SMOKE" + i);
@@ -610,8 +586,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 			this.sprites[i] = Eff3DActor.New(this, theHook, null, this.missileKalibr, this.effSprite, -1F);
 			if (this.sprites[i] != null) {
 				this.sprites[i].pos.changeHookToRel();
-			} else {
-			}
+			} else {}
 		}
 	}
 
@@ -623,7 +598,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	 */
 	private void createNamedNavLights(String theNavLightHookName, String theEffectName) {
 		int numNavLights = this.getNumNavLights(theNavLightHookName);
-		if (numNavLights == 0) return;
+		if (numNavLights == 0) { return; }
 		Hook theHook = null;
 		for (int i = 0; i < numNavLights; i++) {
 			if (i == 0) {
@@ -643,25 +618,13 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	/**
-	 * Creates Nav Lights according to the missile's mesh.
-	 * Three Nav Light Types exist:
-	 * "_NavLightR" : Red Flare
-	 * "_NavLightG" : Green Flare
-	 * "_NavLightW" : White Flare (very bright one)
-	 * "_NavLightP" : Black Ball (currently useless)
+	 * Creates Nav Lights according to the missile's mesh. Three Nav Light Types exist: "_NavLightR" : Red Flare "_NavLightG" : Green Flare "_NavLightW" : White Flare (very bright one) "_NavLightP" : Black Ball (currently useless)
 	 *
 	 * First Nav Light has no index, following Nav Lights start with Index "1".
 	 *
-	 * Example: A Green and a Red Nav Light are set through following Hooks:
-	 * _NavLightG
-	 * _NavLightR
+	 * Example: A Green and a Red Nav Light are set through following Hooks: _NavLightG _NavLightR
 	 *
-	 * Example2: 2 Green Flares and 3 Black Balls are set through following Hooks:
-	 * _NavLightG
-	 * _NavLightG1
-	 * _NavLightP
-	 * _NavLightP1
-	 * _NavLightP2
+	 * Example2: 2 Green Flares and 3 Black Balls are set through following Hooks: _NavLightG _NavLightG1 _NavLightP _NavLightP1 _NavLightP2
 	 */
 	private void createNavLights() {
 		this.createNamedNavLights("_NavLightR", "3DO/Effects/Fireworks/FlareRed.eff");
@@ -671,9 +634,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	public void destroy() {
-		if (this.isNet() && this.isNetMirror()) {
-			this.doExplosionAir();
-		}
+		if (this.isNet() && this.isNetMirror()) { this.doExplosionAir(); }
 		this.endNavLights();
 		this.flameActive = false;
 		this.smokeActive = false;
@@ -686,9 +647,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 			GuidedMissileUtils.removeActiveMissile(this.myActiveMissile);
 			this.myActiveMissile = null;
 		}
-		if (this instanceof MissileInterceptable) {
-			Engine.targets().remove(this);
-		}
+		if (this instanceof MissileInterceptable) { Engine.targets().remove(this); }
 		// TODO: For RWR
 		try {
 			Engine.missiles().remove(this);
@@ -701,15 +660,15 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		this.startMissile(-1F, 0);
 		this.setMissileEffects();
 		this.setMissileStartParams();
-		if (this.isNet() && this.isNetMirror()) return;
+		if (this.isNet() && this.isNetMirror()) { return; }
 		this.setMissileDropParams();
 		this.setMissileVictim();
-		this.myActiveMissile = new ActiveMissile(this, this.getOwner(), this.victim, this.getOwner()==null ? Integer.MAX_VALUE : this.getOwner().getArmy(), this.victim==null ? Integer.MAX_VALUE : this.victim.getArmy(), this.ownerIsAI());
+		this.myActiveMissile = new ActiveMissile(this, this.getOwner(), this.victim, this.getOwner() == null ? Integer.MAX_VALUE : this.getOwner().getArmy(), this.victim == null ? Integer.MAX_VALUE : this.victim.getArmy(), this.ownerIsAI());
 		GuidedMissileUtils.addActiveMissile(this.myActiveMissile);
 	}
 
 	private void endAllFlame() {
-		if (this.endedFlame) return;
+		if (this.endedFlame) { return; }
 		if (this.exhausts < 2) {
 			if (this.flame != null) {
 				this.flame.drawing(false);
@@ -717,46 +676,34 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 			}
 		} else if (this.flames != null) { // SAS Engine Mod 2.6 Hotfix: Check if no flames have been defined.
 			for (int i = 0; i < this.exhausts; i++) {
-				if (this.flames[i] == null) {
-					continue;
-				}
+				if (this.flames[i] == null) { continue; }
 				this.flames[i].destroy();
 			}
 		}
-		if (this.light != null) {
-			this.light.light.setEmit(0.0F, 1.0F);
-		}
+		if (this.light != null) { this.light.light.setEmit(0.0F, 1.0F); }
 		this.stopSounds();
 		this.endedFlame = true;
 	}
 
 	private void setAllFlameScale(float scale) {
-		if (this.endedFlame) return;
+		if (this.endedFlame) { return; }
 		if (this.exhausts < 2) {
-			if (this.flame != null) {
-				((ActorSimpleMesh) this.flame).mesh().setScale(scale);
-			}
+			if (this.flame != null) { ((ActorSimpleMesh) this.flame).mesh().setScale(scale); }
 		} else if (this.flames != null) {
 			for (int i = 0; i < this.exhausts; i++) {
-				if (this.flames[i] == null) {
-					continue;
-				}
+				if (this.flames[i] == null) { continue; }
 				((ActorSimpleMesh) this.flames[i]).mesh().setScale(scale);
 			}
 		}
 	}
 
 	private void endAllSmoke() {
-		if (this.endedSmoke) return;
+		if (this.endedSmoke) { return; }
 		if (this.exhausts < 2) {
-			if (this.smoke != null) {
-				Eff3DActor.finish(this.smoke);
-			}
+			if (this.smoke != null) { Eff3DActor.finish(this.smoke); }
 		} else if (this.smokes != null) { // SAS Engine Mod 2.6 Hotfix: Check if no smokes have been defined.
 			for (int i = 0; i < this.exhausts; i++) {
-				if (this.smokes[i] == null) {
-					continue;
-				}
+				if (this.smokes[i] == null) { continue; }
 				Eff3DActor.finish(this.smokes[i]);
 			}
 		}
@@ -764,16 +711,12 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	private void endAllSprites() {
-		if (this.endedSprite) return;
+		if (this.endedSprite) { return; }
 		if (this.exhausts < 2) {
-			if (this.sprite != null) {
-				Eff3DActor.finish(this.sprite);
-			}
+			if (this.sprite != null) { Eff3DActor.finish(this.sprite); }
 		} else if (this.sprites != null) { // SAS Engine Mod 2.6 Hotfix: Check if no sprites have been defined.
 			for (int i = 0; i < this.exhausts; i++) {
-				if (this.sprites[i] == null) {
-					continue;
-				}
+				if (this.sprites[i] == null) { continue; }
 				Eff3DActor.finish(this.sprites[i]);
 			}
 		}
@@ -781,8 +724,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	/**
-	 * Finish all Nav Lights in the chained list.
-	 * No action required if there are no Nav Lights.
+	 * Finish all Nav Lights in the chained list. No action required if there are no Nav Lights.
 	 */
 	private void endNavLights() {
 		MissileNavLight theNavLight = this.firstNavLight;
@@ -793,7 +735,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	protected void endSmoke() {
-		if (this.isSmokeEnded) return;
+		if (this.isSmokeEnded) { return; }
 		this.missileForce = 0F;
 //		System.out.println("endSmoke this.smokeActive=" + this.smokeActive
 //				+ ", this.spriteActive=" + this.spriteActive
@@ -806,14 +748,14 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 //		System.out.println("millisecondsFromStart=" + (Time.current() - this.startTime)
 //				+ ", rocketMotorOperationTime=" + rocketMotorOperationTime
 //				+ ", rocketMotorSustainedOperationTime=" + rocketMotorSustainedOperationTime);
-		if (!this.smokeActive && !this.endedSmoke) this.endAllSmoke();
-		if (!this.spriteActive && !this.endedSprite) this.endAllSprites();
-		if (!this.flameActive && !this.endedFlame) this.endAllFlame();
-		if (this.endedSmoke && this.endedSprite && this.endedFlame) this.isSmokeEnded=true;
+		if (!this.smokeActive && !this.endedSmoke) { this.endAllSmoke(); }
+		if (!this.spriteActive && !this.endedSprite) { this.endAllSprites(); }
+		if (!this.flameActive && !this.endedFlame) { this.endAllFlame(); }
+		if (this.endedSmoke && this.endedSprite && this.endedFlame) { this.isSmokeEnded = true; }
 	}
 
 	protected void enterSustainedMode() {
-		if (this.isSustained) return;
+		if (this.isSustained) { return; }
 		this.missileForce = this.missileSustainedForce;
 		if (this.smokeActive && !this.endedSmoke) {
 			if (this.smokeSustain == 0F) {
@@ -832,35 +774,35 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 			}
 		}
 		this.flameActive = false;
-		if (!this.endedFlame) this.endAllFlame();
+		if (!this.endedFlame) { this.endAllFlame(); }
 		this.isSustained = true;
 	}
 
 	public int getArmy() {
-		return this.getOwner()==null?0:this.getOwner().getArmy();
+		return this.getOwner() == null ? 0 : this.getOwner().getArmy();
 	}
 
 	public int getFailState() {
-		if (this.timeToFailure == 0L) return FAIL_TYPE_NONE;
+		if (this.timeToFailure == 0L) { return FAIL_TYPE_NONE; }
 		long millisecondsFromStart = Time.current() - this.startTime;
-		if (millisecondsFromStart < this.timeToFailure) return FAIL_TYPE_NONE;
+		if (millisecondsFromStart < this.timeToFailure) { return FAIL_TYPE_NONE; }
 		if (this.myActiveMissile != null) {
 			GuidedMissileUtils.removeActiveMissile(this.myActiveMissile);
 			this.myActiveMissile = null;
 		}
 		if (this.failState == FAIL_TYPE_ELECTRONICS) {
 			float fRand = TrueRandom.nextFloat();
-			if (fRand < 0.01) return FAIL_TYPE_WARHEAD;
-			if (fRand < 0.02) return FAIL_TYPE_REFLEX;
-			if (fRand < 0.2) return FAIL_TYPE_MIRROR;
-			if (fRand < 0.5) return FAIL_TYPE_CONTROL_BLOCKED;
+			if (fRand < 0.01) { return FAIL_TYPE_WARHEAD; }
+			if (fRand < 0.02) { return FAIL_TYPE_REFLEX; }
+			if (fRand < 0.2) { return FAIL_TYPE_MIRROR; }
+			if (fRand < 0.5) { return FAIL_TYPE_CONTROL_BLOCKED; }
 			return FAIL_TYPE_IVAN;
 		}
 		return this.failState;
 	}
 
 	private FlightModel getFM() {
-		if (!this.ownerIsAircraft()) return null;
+		if (!this.ownerIsAircraft()) { return null; }
 		return ((Aircraft) this.getOwner()).FM;
 	}
 
@@ -869,10 +811,12 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		double theLaunchPitch = 2.0D * (Math.cos(launchPitchTimeFactor + 0.1D) - 1D + launchPitchTimeFactor / 5.0D);
 		theLaunchPitch *= Math.cos(this.launchKren);
 		theLaunchPitch += this.launchPitch;
-		while (theLaunchPitch > 180F)
+		while (theLaunchPitch > 180F) {
 			theLaunchPitch -= 360F;
-		while (theLaunchPitch < -180F)
+		}
+		while (theLaunchPitch < -180F) {
 			theLaunchPitch += 360F;
+		}
 		return theLaunchPitch;
 	}
 
@@ -885,10 +829,12 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		double theLaunchYaw = 2.0D * (Math.cos(launchYawTimeFactor + 0.1D) - 1D + launchYawTimeFactor / 5.0D);
 		theLaunchYaw *= Math.sin(this.launchKren);
 		theLaunchYaw += this.launchYaw;
-		while (theLaunchYaw > 180F)
+		while (theLaunchYaw > 180F) {
 			theLaunchYaw -= 360F;
-		while (theLaunchYaw < -180F)
+		}
+		while (theLaunchYaw < -180F) {
 			theLaunchYaw += 360F;
+		}
 		return theLaunchYaw;
 	}
 
@@ -916,7 +862,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		this.groundTrackFactor = Property.floatValue(localClass, "groundTrackFactor", 0.0F);
 		this.flareLockTime = Property.longValue(localClass, "flareLockTime", 1000L);
 		this.trackDelay = Property.longValue(localClass, "trackDelay", 1000L);
-		this.frontSquare = (float)Math.PI * this.missileKalibr * this.missileKalibr / 4.0F;
+		this.frontSquare = (float) Math.PI * this.missileKalibr * this.missileKalibr / 4.0F;
 		this.missileForceRunUpTime = Property.floatValue(localClass, "forceT1", 0.0F) * 1000F;
 		this.initialMissileForce = Property.floatValue(localClass, "forceP1", 0.0F);
 		this.dragCoefficient = Property.floatValue(localClass, "dragCoefficient", 0.3F);
@@ -936,23 +882,21 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 			this.setFailState();
 			float randFail = TrueRandom.nextFloat();
 			long baseFailTime = this.trackDelay;
-			if (this.failState == FAIL_TYPE_WARHEAD) {
-				baseFailTime += baseFailTime;
-			}
+			if (this.failState == FAIL_TYPE_WARHEAD) { baseFailTime += baseFailTime; }
 			this.timeToFailure = baseFailTime + (long) ((this.missileTimeLife - baseFailTime) * randFail);
 		} else {
 			this.failState = FAIL_TYPE_NONE;
 			this.timeToFailure = 0L;
 		}
 		if (this.rocketMotorOperationTime > 0.0F) {
-			this.massLossPerTick = ((this.missileMass - this.massaEnd) / (this.rocketMotorOperationTime / 1000F / Time.tickConstLenFs()));
+			this.massLossPerTick = (this.missileMass - this.massaEnd) / (this.rocketMotorOperationTime / 1000F / Time.tickConstLenFs());
 		} else {
 			this.massLossPerTick = 0.0F;
 		}
 	}
 
 	private int getNumExhausts() {
-		if (this.mesh.hookFind("_SMOKE") == -1) return 0;
+		if (this.mesh.hookFind("_SMOKE") == -1) { return 0; }
 		int retVal = 1;
 		while (this.mesh.hookFind("_SMOKE" + retVal) != -1) {
 			retVal++;
@@ -967,7 +911,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	 * @return Number of Nav Lights for Base Hook Name
 	 */
 	private int getNumNavLights(String theNavLightHookName) {
-		if (this.mesh.hookFind(theNavLightHookName) == -1) return 0;
+		if (this.mesh.hookFind(theNavLightHookName) == -1) { return 0; }
 		int retVal = 1;
 		while (this.mesh.hookFind(theNavLightHookName + retVal) != -1) {
 			retVal++;
@@ -976,22 +920,22 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	public float getRoll() {
-		if ((Time.current() - this.releaseTime) > this.trackDelay) return 0F;
-		float fRollCalcAbscissa = ((float) (Time.current() - this.startTime) / (float) this.trackDelay) * (float) Math.PI;
+		if (Time.current() - this.releaseTime > this.trackDelay) { return 0F; }
+		float fRollCalcAbscissa = (float) (Time.current() - this.startTime) / (float) this.trackDelay * (float) Math.PI;
 		float fRollCalcOrdinate = ((float) Math.cos(fRollCalcAbscissa) + 1F) * 0.5F;
-		float fRet = 360F - (fRollCalcOrdinate * (360F - this.oldRoll));
-		while (fRet > 180F)
+		float fRet = 360F - fRollCalcOrdinate * (360F - this.oldRoll);
+		while (fRet > 180F) {
 			fRet -= 360F;
-		while (fRet < -180F)
+		}
+		while (fRet < -180F) {
 			fRet += 360F;
+		}
 		return fRet;
 	}
 
 	public boolean getShotpointOffset(int i, Point3d point3d) {
-		if (i != 0) return false;
-		if (point3d != null) {
-			point3d.set(0.0D, 0.0D, 0.0D);
-		}
+		if (i != 0) { return false; }
+		if (point3d != null) { point3d.set(0.0D, 0.0D, 0.0D); }
 		return true;
 	}
 
@@ -1006,29 +950,27 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	public boolean interpolateStep() {
 		if (this.engineDelayTime > 0L) {
 			if (!this.engineRunning) {
-				if (Time.current() > this.releaseTime + this.engineDelayTime) {
-					this.startEngine();
-				}
+				if (Time.current() > this.releaseTime + this.engineDelayTime) { this.startEngine(); }
 				this.startTime = Time.current();
 			}
 		}
-	    if ((this.isNet()) && (this.isNetMirror())) return true;
-		if ((Time.current() > this.startTime + this.trackDelay) && (this.isSunTracking() || this.isGroundTracking())) this.victim = null;
-		if (!this.isFireAndForget() && !Actor.isAlive(this.getOwner())) this.victim = null;
-		if (this.isNeedIllumination() && !this.isTargetIlluminated()) this.victim = null;
+		if (this.isNet() && this.isNetMirror()) { return true; }
+		if (Time.current() > this.startTime + this.trackDelay && (this.isSunTracking() || this.isGroundTracking())) { this.victim = null; }
+		if (!this.isFireAndForget() && !Actor.isAlive(this.getOwner())) { this.victim = null; }
+		if (this.isNeedIllumination() && !this.isTargetIlluminated()) { this.victim = null; }
 
-		if (!this.computeSpecialStepBefore()) return false;
+		if (!this.computeSpecialStepBefore()) { return false; }
 		switch (this.stepMode) {
 			case STEP_MODE_HOMING:
-				if (!this.stepTargetHoming()) return false;
+				if (!this.stepTargetHoming()) { return false; }
 				break;
 			case STEP_MODE_BEAMRIDER:
-				if (!this.stepBeamRider()) return false;
+				if (!this.stepBeamRider()) { return false; }
 				break;
 			default:
 				break;
 		}
-		if (!this.computeSpecialStepAfter()) return false;
+		if (!this.computeSpecialStepAfter()) { return false; }
 
 		this.deltaAzimuth = this.deltaTangage = 0.0F;
 		this.pos.setAbs(this.missilePoint3d, this.missileOrient);
@@ -1045,7 +987,9 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	private boolean isGroundTracking() {
-		if (this.groundTrackFactor == 0.0F) return false; // No Ground Clutter Tracking possible
+		if (this.groundTrackFactor == 0.0F) {
+			return false; // No Ground Clutter Tracking possible
+		}
 		this.pos.getAbs(this.missilePoint3d, this.missileOrient);
 		this.missileOrient.wrap();
 		float ttG = this.missileOrient.getTangage() * -1.0F;
@@ -1053,11 +997,9 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		missileAlt /= 1000.0F;
 		float groundFactor = ttG / (missileAlt * missileAlt);
 		long lTimeCurrent = Time.current();
-		if (this.lastTimeNoFlare == 0L) {
-			this.lastTimeNoFlare = lTimeCurrent;
-		}
+		if (this.lastTimeNoFlare == 0L) { this.lastTimeNoFlare = lTimeCurrent; }
 		if (groundFactor > this.groundTrackFactor) {
-			if (lTimeCurrent < this.lastTimeNoFlare + this.flareLockTime) return false;
+			if (lTimeCurrent < this.lastTimeNoFlare + this.flareLockTime) { return false; }
 			return true;
 		}
 		this.lastTimeNoFlare = lTimeCurrent;
@@ -1065,13 +1007,15 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	public boolean isReleased() {
-		return (this.releaseTime != 0L);
+		return this.releaseTime != 0L;
 	}
 
 	private boolean isSunTracking() {
-		if (this.sunRayAngle == 0.0F) return false; // No Sun Ray Tracking possible
+		if (this.sunRayAngle == 0.0F) {
+			return false; // No Sun Ray Tracking possible
+		}
 		float sunAngle = GuidedMissileUtils.angleBetween(this, World.Sun().ToSun);
-		if (sunAngle < this.sunRayAngle) return true;
+		if (sunAngle < this.sunRayAngle) { return true; }
 		return false;
 	}
 
@@ -1094,11 +1038,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	public final void MissileInit(Actor actor, NetChannel netchannel, int i, Point3d point3d, Orient orient, float fSpeed) {
-		if (Actor.isValid(actor)) {
-			if (!(Actor.isValid(this.getOwner()))) {
-				this.setOwner(actor);
-			}
-		}
+		if (Actor.isValid(actor)) { if (!Actor.isValid(this.getOwner())) { this.setOwner(actor); } }
 		this.victim = null;
 		this.startTime = 0L;
 		this.previousDistance = 1000F;
@@ -1123,9 +1063,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		this.getMissileProperties();
 		this.startTime = Time.current();
 		this.releaseTime = Time.current();
-		if (this.engineDelayTime < 0L) {
-			this.startTime += this.engineDelayTime;
-		}
+		if (this.engineDelayTime < 0L) { this.startTime += this.engineDelayTime; }
 		if (this instanceof MissileInterceptable) {
 			// TODO: For RWR
 			try {
@@ -1154,120 +1092,100 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	private boolean ownerIsAI() {
-		if (this.getFM() == null) return true;
-		if ((this.getOwner() != World.getPlayerAircraft() || !((RealFlightModel) this.getFM()).isRealMode()) && (this.getFM() instanceof Pilot)) return true;
+		if (this.getFM() == null) { return true; }
+		if ((this.getOwner() != World.getPlayerAircraft() || !((RealFlightModel) this.getFM()).isRealMode()) && this.getFM() instanceof Pilot) { return true; }
 		return false;
 	}
 
 	private boolean ownerIsAircraft() {
-		if (this.getOwner() instanceof Aircraft) return true;
+		if (this.getOwner() instanceof Aircraft) { return true; }
 		return false;
 	}
 
 	public void runupEngine() {
 		float millisecondsFromStart = Time.current() - this.startTime;
 		float runUpTimeFactor = millisecondsFromStart / this.missileForceRunUpTime;
-		if (runUpTimeFactor > 1.0F) {
-			runUpTimeFactor = 1.0F;
-		}
+		if (runUpTimeFactor > 1.0F) { runUpTimeFactor = 1.0F; }
 		this.setAllSmokeIntensities(runUpTimeFactor);
 		this.setAllSpriteIntensities(runUpTimeFactor);
 		this.setAllFlameScale(runUpTimeFactor);
 	}
 
 	private void setAllSmokeIntensities(float theIntensity) {
-		if (!this.engineRunning) return;
+		if (!this.engineRunning) { return; }
 		if (this.exhausts < 2) {
-			if (this.smoke != null) {
-				Eff3DActor.setIntesity(this.smoke, theIntensity);
-			}
+			if (this.smoke != null) { Eff3DActor.setIntesity(this.smoke, theIntensity); }
 		} else if (this.smokes != null) { // SAS Engine Mod 2.6 Hotfix: Check if no smokes have been defined.
 			for (int i = 0; i < this.exhausts; i++) {
-				if (this.smokes[i] == null) {
-					continue;
-				}
+				if (this.smokes[i] == null) { continue; }
 				Eff3DActor.setIntesity(this.smokes[i], theIntensity);
 			}
 		}
 	}
 
 	private void setAllSpriteIntensities(float theIntensity) {
-		if (!this.engineRunning) return;
+		if (!this.engineRunning) { return; }
 		if (this.exhausts < 2) {
-			if (this.sprite != null) {
-				Eff3DActor.setIntesity(this.sprite, theIntensity);
-			}
+			if (this.sprite != null) { Eff3DActor.setIntesity(this.sprite, theIntensity); }
 		} else if (this.sprites != null) { // SAS Engine Mod 2.6 Hotfix: Check if no sprites have been defined.
 			for (int i = 0; i < this.exhausts; i++) {
-				if (this.sprites[i] == null) {
-					continue;
-				}
+				if (this.sprites[i] == null) { continue; }
 				Eff3DActor.setIntesity(this.sprites[i], theIntensity);
 			}
 		}
 	}
 
 	private void setFailState() {
-		if (this.failState == FAIL_TYPE_NONE) {
-			this.failState = TrueRandom.nextInt(1, FAIL_TYPE_NUMBER);
-		}
+		if (this.failState == FAIL_TYPE_NONE) { this.failState = TrueRandom.nextInt(1, FAIL_TYPE_NUMBER); }
 	}
 
 	private void setMissileDropParams() {
 		switch (this.launchType) {
-		default:
-		case LAUNCH_TYPE_STRAIGHT: // simply ignite and leave rail
-		{
-			this.oldRoll = this.missileOrient.getRoll();
-			break;
-		}
-		case LAUNCH_TYPE_QUICK: // "swoosh" off rocket rail
-		{
-			this.missileBaseSpeed += 5.0F;
-			this.trajectoryVector3d.set(1.0D, 0.0D, 0.0D);
-			this.missileOrient.transform(this.trajectoryVector3d);
-			this.trajectoryVector3d.scale(this.missileBaseSpeed);
-			this.setSpeed(this.trajectoryVector3d);
-			this.launchKren = Math.toRadians(this.missileOrient.getRoll());
-			this.launchYaw = this.missileOrient.getYaw();
-			this.launchPitch = this.missileOrient.getPitch();
-			this.oldRoll = this.missileOrient.getRoll();
-			this.pos.setAbs(this.missilePoint3d, this.missileOrient);
-			break;
-		}
-		case LAUNCH_TYPE_DROP: // drop pattern
-		{
-			this.launchKren = Math.toRadians(this.getOwner().pos.getAbsOrient().getRoll());
-			if (this.ownerIsAircraft()) {
-				this.launchYaw = this.missileOrient.getYaw() - (this.getFM().getAOA() * (float) Math.sin(this.launchKren));
-				this.launchPitch = this.missileOrient.getPitch() - (this.getFM().getAOA() * (float) Math.cos(this.launchKren));
+			default:
+			case LAUNCH_TYPE_STRAIGHT: // simply ignite and leave rail
+			{
 				this.oldRoll = this.missileOrient.getRoll();
-			} else { // if not launched from Aircraft, start in owner's current direction
-				this.launchYaw = this.getOwner().pos.getCurrentOrient().getYaw();
-				this.launchPitch = this.getOwner().pos.getCurrentOrient().getPitch();
-				this.oldRoll = this.getOwner().pos.getCurrentOrient().getRoll();
+				break;
 			}
-			this.dropFlightPathOrient.setYPR((float) this.launchYaw + (0.5F * (float) Math.sin(this.launchKren)), (float) this.launchPitch - (0.5F * (float) Math.cos(this.launchKren)), this.oldRoll);
-			break;
-		}
+			case LAUNCH_TYPE_QUICK: // "swoosh" off rocket rail
+			{
+				this.missileBaseSpeed += 5.0F;
+				this.trajectoryVector3d.set(1.0D, 0.0D, 0.0D);
+				this.missileOrient.transform(this.trajectoryVector3d);
+				this.trajectoryVector3d.scale(this.missileBaseSpeed);
+				this.setSpeed(this.trajectoryVector3d);
+				this.launchKren = Math.toRadians(this.missileOrient.getRoll());
+				this.launchYaw = this.missileOrient.getYaw();
+				this.launchPitch = this.missileOrient.getPitch();
+				this.oldRoll = this.missileOrient.getRoll();
+				this.pos.setAbs(this.missilePoint3d, this.missileOrient);
+				break;
+			}
+			case LAUNCH_TYPE_DROP: // drop pattern
+			{
+				this.launchKren = Math.toRadians(this.getOwner().pos.getAbsOrient().getRoll());
+				if (this.ownerIsAircraft()) {
+					this.launchYaw = this.missileOrient.getYaw() - this.getFM().getAOA() * (float) Math.sin(this.launchKren);
+					this.launchPitch = this.missileOrient.getPitch() - this.getFM().getAOA() * (float) Math.cos(this.launchKren);
+					this.oldRoll = this.missileOrient.getRoll();
+				} else { // if not launched from Aircraft, start in owner's current direction
+					this.launchYaw = this.getOwner().pos.getCurrentOrient().getYaw();
+					this.launchPitch = this.getOwner().pos.getCurrentOrient().getPitch();
+					this.oldRoll = this.getOwner().pos.getCurrentOrient().getRoll();
+				}
+				this.dropFlightPathOrient.setYPR((float) this.launchYaw + 0.5F * (float) Math.sin(this.launchKren), (float) this.launchPitch - 0.5F * (float) Math.cos(this.launchKren), this.oldRoll);
+				break;
+			}
 		}
 	}
 
 	public void setMissileEffects() {
-		if (this.engineDelayTime <= 0L) {
-			this.setSmokeSpriteFlames();
-		}
+		if (this.engineDelayTime <= 0L) { this.setSmokeSpriteFlames(); }
 		this.firstNavLight = null;
 		this.lastNavLight = null;
-		if (Config.isUSE_RENDER()) {
-			this.createNavLights();
-		}
-		if (this.flame != null) {
-			((ActorSimpleMesh) this.flame).mesh().setScale(1);
-		}
-		if (Config.isUSE_RENDER() && (this.flame != null)) {
-			this.flame.drawing(true);
-		}
+		if (Config.isUSE_RENDER()) { this.createNavLights(); }
+		if (this.flame != null) { ((ActorSimpleMesh) this.flame).mesh().setScale(1); }
+		if (Config.isUSE_RENDER() && this.flame != null) { this.flame.drawing(true); }
 	}
 
 	private void setMissileStartParams() {
@@ -1288,11 +1206,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 					this.victim = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTarget();
 					this.victimOffsetPoint3f = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetOffset();
 					this.safeVictimOffset.set(this.victimOffsetPoint3f);
-				} else if (this.getOwner() instanceof TypeFighter) {
-					if (this.getFM() != null) {
-						this.victim = ((Pilot) this.getFM()).target.actor;
-					}
-				}
+				} else if (this.getOwner() instanceof TypeFighter) { if (this.getFM() != null) { this.victim = ((Pilot) this.getFM()).target.actor; } }
 			} else {
 				if (this.getFM() != null) {
 					if (this.getFM().getOverload() > this.maxLaunchG) {
@@ -1306,32 +1220,23 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 					this.safeVictimOffset.set(this.victimOffsetPoint3f);
 				} else {
 					this.victim = Selector.look(true, false, Main3D.cur3D()._camera3D[Main3D.cur3D().getRenderIndx()], World.getPlayerAircraft().getArmy(), -1, World.getPlayerAircraft(), false);
-					if (this.victim == null) {
-						this.victim = Main3D.cur3D().getViewPadlockEnemy();
-					}
+					if (this.victim == null) { this.victim = Main3D.cur3D().getViewPadlockEnemy(); }
 				}
 			}
-		} catch (Exception exception) {
-		}
+		} catch (Exception exception) {}
 	}
 
 	private void setSmokeSpriteFlames() {
 		if (this.exhausts > 1) {
-			if (this.smoke != null) {
-				this.createAdditionalSmokes();
-			}
-			if (this.sprite != null) {
-				this.createAdditionalSprites();
-			}
-			if (this.flame != null) {
-				this.createAdditionalFlames();
-			}
+			if (this.smoke != null) { this.createAdditionalSmokes(); }
+			if (this.sprite != null) { this.createAdditionalSprites(); }
+			if (this.flame != null) { this.createAdditionalFlames(); }
 		}
 		this.engineRunning = true;
 	}
 
 	public void setStartTime() {
-		if (this.startTimeIsSet) return;
+		if (this.startTimeIsSet) { return; }
 		this.startTime = Time.current();
 		this.startTimeIsSet = true;
 	}
@@ -1359,19 +1264,19 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	public void startEngine() {
-		if (this.engineRunning) return;
+		if (this.engineRunning) { return; }
 		Class localClass = this.getClass();
 		Hook localHook = null;
 		String str = Property.stringValue(localClass, "sprite", null);
 		if (str != null) {
-			if (localHook == null) localHook = this.findHook("_SMOKE");
+			if (localHook == null) { localHook = this.findHook("_SMOKE"); }
 			this.sprite = Eff3DActor.New(this, localHook, null, 1.0F, str, -1.0F);
-			if (this.sprite != null) this.sprite.pos.changeHookToRel();
+			if (this.sprite != null) { this.sprite.pos.changeHookToRel(); }
 		}
 		this.createAdditionalSprites();
 		str = Property.stringValue(localClass, "flame", null);
 		if (str != null) {
-			if (localHook == null) localHook = this.findHook("_SMOKE");
+			if (localHook == null) { localHook = this.findHook("_SMOKE"); }
 			this.flame = new ActorSimpleMesh(str);
 			if (this.flame != null) {
 				((ActorSimpleMesh) this.flame).mesh().setScale(1.0F);
@@ -1383,21 +1288,19 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		this.createAdditionalFlames();
 		str = Property.stringValue(localClass, "smoke", null);
 		if (str != null) {
-			if (localHook == null) localHook = this.findHook("_SMOKE");
+			if (localHook == null) { localHook = this.findHook("_SMOKE"); }
 			this.smoke = Eff3DActor.New(this, localHook, null, 1.0F, str, -1.0F);
-			if (this.smoke != null) this.smoke.pos.changeHookToRel();
+			if (this.smoke != null) { this.smoke.pos.changeHookToRel(); }
 		}
 		this.createAdditionalSmokes();
 		this.soundName = Property.stringValue(localClass, "sound", null);
-		if (this.soundName != null) this.newSound(this.soundName, true);
+		if (this.soundName != null) { this.newSound(this.soundName, true); }
 		this.engineRunning = true;
 	}
 
 	public void startEngineDone() {
 		this.releaseTime = Time.current();
-		if (this instanceof MissileInterceptable) {
-			Engine.targets().add(this);
-		}
+		if (this instanceof MissileInterceptable) { Engine.targets().add(this); }
 		// TODO: For RWR
 		try {
 			Engine.missiles().add(this);
@@ -1407,19 +1310,15 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	public void startMissile(float paramFloat, int paramInt) {
 		Class localClass = this.getClass();
 		float f1 = Property.floatValue(localClass, "kalibr", 0.082F);
-		if (paramFloat <= 0.0F) paramFloat = Property.floatValue(localClass, "timeLife", 45.0F);
+		if (paramFloat <= 0.0F) { paramFloat = Property.floatValue(localClass, "timeLife", 45.0F); }
 
 		float f2 = -1.0F + 2.0F * TrueRandom.nextFloat();
 		f2 *= f2 * f2;
 		float f3 = -1.0F + 2.0F * TrueRandom.nextFloat();
 		f3 *= f3 * f3;
 
-		this.init(f1,
-				Property.floatValue(localClass, "massa", 6.8F),
-				Property.floatValue(localClass, "massaEnd", 2.52F),
-				Property.floatValue(localClass, "timeFire", 4.0F) / (1.0F + 0.1F * f2),
-				Property.floatValue(localClass, "force", 500.0F) * (1.0F + 0.1F * f2),
-				paramFloat + f3 * 0.1F);
+		this.init(f1, Property.floatValue(localClass, "massa", 6.8F), Property.floatValue(localClass, "massaEnd", 2.52F), Property.floatValue(localClass, "timeFire", 4.0F) / (1.0F + 0.1F * f2),
+				Property.floatValue(localClass, "force", 500.0F) * (1.0F + 0.1F * f2), paramFloat + f3 * 0.1F);
 
 		this.setOwner(this.pos.base(), false, false, false);
 		this.pos.setBase(null, null, true);
@@ -1445,9 +1344,9 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		this.pos.getRelOrient().transform(this.speed);
 		this.collide(true);
 		this.interpPut(new Interpolater(), null, Time.current(), null);
-		if (this.getOwner() == World.getPlayerAircraft()) World.cur().scoreCounter.rocketsFire += 1;
-		if (!Config.isUSE_RENDER()) return;
-		if (this.engineDelayTime <= 0L) this.startEngine();
+		if (this.getOwner() == World.getPlayerAircraft()) { World.cur().scoreCounter.rocketsFire += 1; }
+		if (!Config.isUSE_RENDER()) { return; }
+		if (this.engineDelayTime <= 0L) { this.startEngine(); }
 		this.light = new LightPointActor(new LightPointWorld(), new Point3d());
 		this.light.light.setColor((Color3f) Property.value(localClass, "emitColor", new Color3f(1.0F, 1.0F, 0.5F)));
 		this.light.light.setEmit(Property.floatValue(localClass, "emitMax", 1.0F), Property.floatValue(localClass, "emitLen", 50.0F));
@@ -1456,131 +1355,127 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 
 	public boolean stepBeamRider() {
 		float missileSpeed = this.computeMissileAccelleration();
-		if (missileSpeed == -1F) return false;
+		if (missileSpeed == -1F) { return false; }
 		Actor myOwner = this.getOwner();
-		if (this.victim != null && GuidedMissileUtils.angleBetween(myOwner, this.victim) > this.maxFOVfrom) this.victim = null;
+		if (this.victim != null && GuidedMissileUtils.angleBetween(myOwner, this.victim) > this.maxFOVfrom) { this.victim = null; }
 		if (Time.current() < this.startTime + this.trackDelay) {
 			this.computeNoTrackPath();
 			return true;
 		}
-		if (this.victim == null || this.getOwner() == null) return true;
-				float hTurn = 0.0F;
-				float vTurn = 0.0F;
+		if (this.victim == null || this.getOwner() == null) { return true; }
+		float hTurn = 0.0F;
+		float vTurn = 0.0F;
 
-				Point3d pointAC = new Point3d();
-				pointAC.set(myOwner.pos.getAbsPoint());
-				Orient orientAC = new Orient();
-				orientAC.set(myOwner.pos.getAbsOrient());
-				Point3d pointTarget = new Point3d();
-				pointTarget.set(this.victim.pos.getAbsPoint());
-				Vector3d vectorOffset = new Vector3d();
-				Orient orientTarget = new Orient();
-				orientTarget.set(this.victim.pos.getAbsOrient());
-				vectorOffset.set(this.victimOffsetPoint3f); // take victim Offset into account
-				orientTarget.transform(vectorOffset); // take victim Offset into account
-				pointTarget.add(vectorOffset); // take victim Offset into account
+		Point3d pointAC = new Point3d();
+		pointAC.set(myOwner.pos.getAbsPoint());
+		Orient orientAC = new Orient();
+		orientAC.set(myOwner.pos.getAbsOrient());
+		Point3d pointTarget = new Point3d();
+		pointTarget.set(this.victim.pos.getAbsPoint());
+		Vector3d vectorOffset = new Vector3d();
+		Orient orientTarget = new Orient();
+		orientTarget.set(this.victim.pos.getAbsOrient());
+		vectorOffset.set(this.victimOffsetPoint3f); // take victim Offset into account
+		orientTarget.transform(vectorOffset); // take victim Offset into account
+		pointTarget.add(vectorOffset); // take victim Offset into account
 
-				Point3d pointMissile = new Point3d();
-				pointMissile.set(this.pos.getAbsPoint());
+		Point3d pointMissile = new Point3d();
+		pointMissile.set(this.pos.getAbsPoint());
 
-				Point3d pointMissileAft = new Point3d();
-				pointMissileAft.set(pointMissile);
-				Orient orientMissileAft = new Orient();
-				orientMissileAft.set(this.pos.getAbsOrient());
-				Point3d pointACAft = new Point3d();
-				pointACAft.set(pointAC);
+		Point3d pointMissileAft = new Point3d();
+		pointMissileAft.set(pointMissile);
+		Orient orientMissileAft = new Orient();
+		orientMissileAft.set(this.pos.getAbsOrient());
+		Point3d pointACAft = new Point3d();
+		pointACAft.set(pointAC);
 
-				pointTarget.sub(pointAC);
-				orientAC.transformInv(pointTarget);
-				float targetAzimuth = (float) Math.toDegrees(Math.atan(-pointTarget.y / pointTarget.x));
-				float targetElevation = (float) Math.toDegrees(Math.atan(pointTarget.z / pointTarget.x));
-				if (this.getFailState() == FAIL_TYPE_REFLEX) {
-					targetAzimuth += 180F;
-					targetElevation += 180F;
-					if (targetAzimuth > 180F) {
-						targetAzimuth = 180F - targetAzimuth;
-					}
-					if (targetElevation > 180F) {
-						targetElevation = 180F - targetElevation;
-					}
-				}
+		pointTarget.sub(pointAC);
+		orientAC.transformInv(pointTarget);
+		float targetAzimuth = (float) Math.toDegrees(Math.atan(-pointTarget.y / pointTarget.x));
+		float targetElevation = (float) Math.toDegrees(Math.atan(pointTarget.z / pointTarget.x));
+		if (this.getFailState() == FAIL_TYPE_REFLEX) {
+			targetAzimuth += 180F;
+			targetElevation += 180F;
+			if (targetAzimuth > 180F) { targetAzimuth = 180F - targetAzimuth; }
+			if (targetElevation > 180F) { targetElevation = 180F - targetElevation; }
+		}
 
-				pointMissile.sub(pointAC);
-				orientAC.transformInv(pointMissile);
-				float missileAzimuth = (float) Math.toDegrees(Math.atan(-pointMissile.y / pointMissile.x));
-				float missileElevation = (float) Math.toDegrees(Math.atan(pointMissile.z / pointMissile.x));
+		pointMissile.sub(pointAC);
+		orientAC.transformInv(pointMissile);
+		float missileAzimuth = (float) Math.toDegrees(Math.atan(-pointMissile.y / pointMissile.x));
+		float missileElevation = (float) Math.toDegrees(Math.atan(pointMissile.z / pointMissile.x));
 
-				float missileOffsetAzimuth = missileAzimuth - targetAzimuth;
-				float missileOffsetElevation = missileElevation - targetElevation;
+		float missileOffsetAzimuth = missileAzimuth - targetAzimuth;
+		float missileOffsetElevation = missileElevation - targetElevation;
 
-				pointACAft.sub(pointMissileAft);
-				orientMissileAft.transformInv(pointACAft);
-				float missileAzimuthAft = (float) Math.toDegrees(Math.atan(-pointACAft.y / pointACAft.x));
-				float missileElevationAft = (float) Math.toDegrees(Math.atan(pointACAft.z / pointACAft.x));
+		pointACAft.sub(pointMissileAft);
+		orientMissileAft.transformInv(pointACAft);
+		float missileAzimuthAft = (float) Math.toDegrees(Math.atan(-pointACAft.y / pointACAft.x));
+		float missileElevationAft = (float) Math.toDegrees(Math.atan(pointACAft.z / pointACAft.x));
 
-				float missileTrackOffsetAzimuth = missileOffsetAzimuth - missileAzimuthAft;
-				float missileTrackOffsetElevation = missileOffsetElevation - missileElevationAft;
+		float missileTrackOffsetAzimuth = missileOffsetAzimuth - missileAzimuthAft;
+		float missileTrackOffsetElevation = missileOffsetElevation - missileElevationAft;
 
-				float closingFactor = -5.0F;
-				float maxClosing = 60.0F;
-				float fastClosingMax = 3.0F;
+		float closingFactor = -5.0F;
+		float maxClosing = 60.0F;
+		float fastClosingMax = 3.0F;
 
-				float turnNormal = 1.0F;
-				float turnQuick = 1.5F;
-				float turnSharp = 2.0F;
+		float turnNormal = 1.0F;
+		float turnQuick = 1.5F;
+		float turnSharp = 2.0F;
 
-				if (missileOffsetAzimuth < 0) { // left of beam
-					if (missileTrackOffsetAzimuth < 0) { // heading left
-						hTurn = turnSharp; // turn right sharp
-					} else if (missileTrackOffsetAzimuth > maxClosing) { // heading right more than 45° towards beam
-						hTurn = -turnNormal; // turn left
-					} else if ((missileTrackOffsetAzimuth > fastClosingMax) && (missileTrackOffsetAzimuth > (closingFactor * missileOffsetAzimuth))) { // fast closing in on beam from left
-						hTurn = -turnQuick; // turn left quick
-					} else {
-						hTurn = turnNormal; // turn right
-					}
-				} else { // right of beam
-					if (missileTrackOffsetAzimuth > 0) { // heading right
-						hTurn = -turnSharp; // turn left sharply
-					} else if (missileTrackOffsetAzimuth < -maxClosing) { // heading left more than 45° towards beam
-						hTurn = turnNormal; // turn right
-					} else if ((missileTrackOffsetAzimuth < -fastClosingMax) && (missileTrackOffsetAzimuth < (closingFactor * missileOffsetAzimuth))) { // fast closing in on beam from right
-						hTurn = turnQuick; // turn right quick
-					} else {
-						hTurn = -turnNormal; // turn left
-					}
-				}
+		if (missileOffsetAzimuth < 0) { // left of beam
+			if (missileTrackOffsetAzimuth < 0) { // heading left
+				hTurn = turnSharp; // turn right sharp
+			} else if (missileTrackOffsetAzimuth > maxClosing) { // heading right more than 45° towards beam
+				hTurn = -turnNormal; // turn left
+			} else if (missileTrackOffsetAzimuth > fastClosingMax && missileTrackOffsetAzimuth > closingFactor * missileOffsetAzimuth) { // fast closing in on beam from left
+				hTurn = -turnQuick; // turn left quick
+			} else {
+				hTurn = turnNormal; // turn right
+			}
+		} else { // right of beam
+			if (missileTrackOffsetAzimuth > 0) { // heading right
+				hTurn = -turnSharp; // turn left sharply
+			} else if (missileTrackOffsetAzimuth < -maxClosing) { // heading left more than 45° towards beam
+				hTurn = turnNormal; // turn right
+			} else if (missileTrackOffsetAzimuth < -fastClosingMax && missileTrackOffsetAzimuth < closingFactor * missileOffsetAzimuth) { // fast closing in on beam from right
+				hTurn = turnQuick; // turn right quick
+			} else {
+				hTurn = -turnNormal; // turn left
+			}
+		}
 
-				if (missileOffsetElevation < 0) { // below beam
-					if (missileTrackOffsetElevation < 0) { // heading down
-						vTurn = turnSharp; // turn up sharp
-					} else if (missileTrackOffsetElevation > maxClosing) { // heading up more than 45° towards beam
-						vTurn = -turnNormal; // turn down
-					} else if ((missileTrackOffsetElevation > fastClosingMax) && (missileTrackOffsetElevation > (closingFactor * missileOffsetElevation))) { // fast closing in on beam from below
-						vTurn = -turnQuick; // turn down quick
-					} else {
-						vTurn = turnNormal; // turn up
-					}
-				} else { // above beam
-					if (missileTrackOffsetElevation > 0) { // heading up
-						vTurn = -turnSharp; // turn down sharp
-					} else if (missileTrackOffsetElevation < -maxClosing) { // heading down more than 45° towards beam
-						vTurn = turnNormal; // turn up
-					} else if ((missileTrackOffsetElevation < -fastClosingMax) && (missileTrackOffsetElevation < (closingFactor * missileOffsetElevation))) { // fast closing in on beam from above
-						vTurn = turnQuick; // turn up quick
-					} else {
-						vTurn = -turnNormal; // turn down
-					}
-				}
+		if (missileOffsetElevation < 0) { // below beam
+			if (missileTrackOffsetElevation < 0) { // heading down
+				vTurn = turnSharp; // turn up sharp
+			} else if (missileTrackOffsetElevation > maxClosing) { // heading up more than 45° towards beam
+				vTurn = -turnNormal; // turn down
+			} else if (missileTrackOffsetElevation > fastClosingMax && missileTrackOffsetElevation > closingFactor * missileOffsetElevation) { // fast closing in on beam from below
+				vTurn = -turnQuick; // turn down quick
+			} else {
+				vTurn = turnNormal; // turn up
+			}
+		} else { // above beam
+			if (missileTrackOffsetElevation > 0) { // heading up
+				vTurn = -turnSharp; // turn down sharp
+			} else if (missileTrackOffsetElevation < -maxClosing) { // heading down more than 45° towards beam
+				vTurn = turnNormal; // turn up
+			} else if (missileTrackOffsetElevation < -fastClosingMax && missileTrackOffsetElevation < closingFactor * missileOffsetElevation) { // fast closing in on beam from above
+				vTurn = turnQuick; // turn up quick
+			} else {
+				vTurn = -turnNormal; // turn down
+			}
+		}
 
-				this.computeMissilePath(missileSpeed, hTurn, vTurn, targetAzimuth, targetElevation);
+		this.computeMissilePath(missileSpeed, hTurn, vTurn, targetAzimuth, targetElevation);
 
 		return true;
 	}
 
 	public boolean stepTargetHoming() {
 		float missileSpeed = this.computeMissileAccelleration();
-		if (missileSpeed == -1F) return false;
+		if (missileSpeed == -1F) { return false; }
 
 		if (Time.current() < this.startTime + this.trackDelay) {
 			this.computeNoTrackPath();
@@ -1600,50 +1495,50 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 			return true;
 		}
 
-			this.checkChaffFlareLock();
-			this.victim.pos.getAbs(this.targetPoint3d, this.victimOffsetOrient);
-			// Calculate future victim position
-			this.victim.getSpeed(this.victimSpeed); // target movement vector
-			double victimDistance = GuidedMissileUtils.distanceBetween(this, this.victim); // distance missile -> target
-			double theVictimSpeed = this.victimSpeed.length(); // target speed
-			if (theVictimSpeed > 10D) {
-				double speedRel = missileSpeed / theVictimSpeed; // relation missile speed / target speed
-				double gamma = (GuidedMissileUtils.angleActorBetween(this.victim, this)); // angle offset missile vector -> target vector
-				double alpha = Geom.RAD2DEG((float) (Math.asin(Math.sin(Geom.DEG2RAD((float) gamma)) / speedRel))); // angle offset target vector -> target interception path vector
-				double beta = 180.0D - gamma - alpha; // angle offset missile vector -> target interception path vector
-				double victimAdvance = victimDistance * Math.sin(Geom.DEG2RAD((float) alpha)) / Math.sin(Geom.DEG2RAD((float) beta)); // track made good by target until impact
-				victimAdvance -= 5.0D; // impact point 10m aft of engine (track exhaust).
-				double timeToTarget = victimAdvance / theVictimSpeed; // time until calculated impact
+		this.checkChaffFlareLock();
+		this.victim.pos.getAbs(this.targetPoint3d, this.victimOffsetOrient);
+		// Calculate future victim position
+		this.victim.getSpeed(this.victimSpeed); // target movement vector
+		double victimDistance = GuidedMissileUtils.distanceBetween(this, this.victim); // distance missile -> target
+		double theVictimSpeed = this.victimSpeed.length(); // target speed
+		if (theVictimSpeed > 10D) {
+			double speedRel = missileSpeed / theVictimSpeed; // relation missile speed / target speed
+			double gamma = GuidedMissileUtils.angleActorBetween(this.victim, this); // angle offset missile vector -> target vector
+			double alpha = Geom.RAD2DEG((float) Math.asin(Math.sin(Geom.DEG2RAD((float) gamma)) / speedRel)); // angle offset target vector -> target interception path vector
+			double beta = 180.0D - gamma - alpha; // angle offset missile vector -> target interception path vector
+			double victimAdvance = victimDistance * Math.sin(Geom.DEG2RAD((float) alpha)) / Math.sin(Geom.DEG2RAD((float) beta)); // track made good by target until impact
+			victimAdvance -= 5.0D; // impact point 10m aft of engine (track exhaust).
+			double timeToTarget = victimAdvance / theVictimSpeed; // time until calculated impact
 
-				this.victimSpeed.scale(timeToTarget * (this.leadPercent / 100.0F));
-				this.targetPoint3d.add(this.victimSpeed);
-			}
+			this.victimSpeed.scale(timeToTarget * (this.leadPercent / 100.0F));
+			this.targetPoint3d.add(this.victimSpeed);
+		}
 //			Orient orientTarget = new Orient();
 //			orientTarget.set(this.victim.pos.getAbsOrient());
-			this.oTemp.set(this.victim.pos.getAbsOrient());
-			this.trajectoryVector3d.set(this.victimOffsetPoint3f); // take victim Offset into account
-			this.oTemp.transform(this.trajectoryVector3d); // take victim Offset into account
+		this.oTemp.set(this.victim.pos.getAbsOrient());
+		this.trajectoryVector3d.set(this.victimOffsetPoint3f); // take victim Offset into account
+		this.oTemp.transform(this.trajectoryVector3d); // take victim Offset into account
 //			orientTarget.transform(this.trajectoryVector3d); // take victim Offset into account
-			this.targetPoint3d.add(this.trajectoryVector3d); // take victim Offset into account
+		this.targetPoint3d.add(this.trajectoryVector3d); // take victim Offset into account
 
-			this.targetPoint3d.sub(this.missilePoint3d); // relative Position to target
-			this.oTemp.setYPR(this.missileOrient.getYaw(), this.missileOrient.getPitch(), 0F);
-			this.oTemp.transformInv(this.targetPoint3d); // set coordinate system according to A/C POV
-			//this.missileOrient.transformInv(this.targetPoint3d); // set coordinate system according to A/C POV
+		this.targetPoint3d.sub(this.missilePoint3d); // relative Position to target
+		this.oTemp.setYPR(this.missileOrient.getYaw(), this.missileOrient.getPitch(), 0F);
+		this.oTemp.transformInv(this.targetPoint3d); // set coordinate system according to A/C POV
+		// this.missileOrient.transformInv(this.targetPoint3d); // set coordinate system according to A/C POV
 
-			// Calculate angle to target.
-			// This is required in order to respect the IR Seeker FOV.
-			float angleAzimuth = (float) Math.toDegrees(Math.atan(this.targetPoint3d.y / this.targetPoint3d.x));
-			float angleTangage = (float) Math.toDegrees(Math.atan(this.targetPoint3d.z / this.targetPoint3d.x));
+		// Calculate angle to target.
+		// This is required in order to respect the IR Seeker FOV.
+		float angleAzimuth = (float) Math.toDegrees(Math.atan(this.targetPoint3d.y / this.targetPoint3d.x));
+		float angleTangage = (float) Math.toDegrees(Math.atan(this.targetPoint3d.z / this.targetPoint3d.x));
 
-			if (this.getFailState() == FAIL_TYPE_REFLEX) {
-				angleAzimuth += 180F;
-				angleTangage += 180F;
-				if (angleAzimuth > 180F) angleAzimuth = 180F - angleAzimuth;
-				if (angleTangage > 180F) angleTangage = 180F - angleTangage;
-			}
+		if (this.getFailState() == FAIL_TYPE_REFLEX) {
+			angleAzimuth += 180F;
+			angleTangage += 180F;
+			if (angleAzimuth > 180F) { angleAzimuth = 180F - angleAzimuth; }
+			if (angleTangage > 180F) { angleTangage = 180F - angleTangage; }
+		}
 
-			this.computeMissilePath(missileSpeed, 0.0F, 0.0F, angleAzimuth, angleTangage);
+		this.computeMissilePath(missileSpeed, 0.0F, 0.0F, angleAzimuth, angleTangage);
 		return true;
 	}
 
@@ -1660,28 +1555,26 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		List theCountermeasures = null;
 		try {
 			theCountermeasures = Engine.countermeasures();
-		} catch (Exception e) {
-		}
+		} catch (Exception e) {}
 
-		if (theCountermeasures == null) return;
-	    int lockType = ((TypeGuidedMissileCarrier) getOwner()).getGuidedMissileUtils().getDetectorType();
-	    int lockTime = TrueRandom.nextInt((int)flareLockTime + 1000); //  World.rnd().nextInt((int) (flareLockTime + 1000));
-	  	double flareDistance = 0.0D;
-	  	int counterMeasureSize = theCountermeasures.size();
-	  	for (int counterMeasureIndex = 0; counterMeasureIndex < counterMeasureSize; counterMeasureIndex++) {
-	  		Actor flarechaff = (Actor) theCountermeasures.get(counterMeasureIndex);
-	  		flareDistance = GuidedMissileUtils.distanceBetween(this, flarechaff);
-	  		if(lockType == DETECTOR_TYPE_INFRARED && flarechaff instanceof RocketFlare && flareLockTime < lockTime && flareDistance < 200D && (double) (GuidedMissileUtils.angleActorBetween(victim, this)) > 30)
-	  		{
-	  			this.victim = flarechaff;
-	  		} else { if(flarechaff instanceof RocketChaff &&  flareLockTime < lockTime && flareDistance < 500D && (double) (GuidedMissileUtils.angleActorBetween(victim, this)) > 30)
-	  			this.victim = flarechaff;
-	  		}
-	  	}
+		if (theCountermeasures == null) { return; }
+		int lockType = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getDetectorType();
+		int lockTime = TrueRandom.nextInt((int) this.flareLockTime + 1000); // World.rnd().nextInt((int) (flareLockTime + 1000));
+		double flareDistance = 0.0D;
+		int counterMeasureSize = theCountermeasures.size();
+		for (int counterMeasureIndex = 0; counterMeasureIndex < counterMeasureSize; counterMeasureIndex++) {
+			Actor flarechaff = (Actor) theCountermeasures.get(counterMeasureIndex);
+			flareDistance = GuidedMissileUtils.distanceBetween(this, flarechaff);
+			if (lockType == DETECTOR_TYPE_INFRARED && flarechaff instanceof RocketFlare && this.flareLockTime < lockTime && flareDistance < 200D && (double) GuidedMissileUtils.angleActorBetween(this.victim, this) > 30) {
+				this.victim = flarechaff;
+			} else {
+				if (flarechaff instanceof RocketChaff && this.flareLockTime < lockTime && flareDistance < 500D && (double) GuidedMissileUtils.angleActorBetween(this.victim, this) > 30) { this.victim = flarechaff; }
+			}
+		}
 	}
 
 	public float getDeltaAzimuth() {
-		return deltaAzimuth;
+		return this.deltaAzimuth;
 	}
 
 	public void setDeltaAzimuth(float deltaAzimuth) {
@@ -1689,7 +1582,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	public float getDeltaTangage() {
-		return deltaTangage;
+		return this.deltaTangage;
 	}
 
 	public void setDeltaTangage(float deltaTangage) {
@@ -1697,7 +1590,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	public Orient getMissileOrient() {
-		return missileOrient;
+		return this.missileOrient;
 	}
 
 	public void setMissileOrient(Orient missileOrient) {
@@ -1705,7 +1598,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	public Point3d getMissilePoint3d() {
-		return missilePoint3d;
+		return this.missilePoint3d;
 	}
 
 	public void setMissilePoint3d(Point3d missilePoint3d) {
@@ -1713,7 +1606,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	public Actor getVictim() {
-		return victim;
+		return this.victim;
 	}
 
 	public void setVictim(Actor victim) {
@@ -1721,7 +1614,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	public Point3f getVictimOffsetPoint3f() {
-		return victimOffsetPoint3f;
+		return this.victimOffsetPoint3f;
 	}
 
 	public void setVictimOffsetPoint3f(Point3f victimOffsetPoint3f) {
@@ -1730,8 +1623,8 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	public void setVictimOffsetPoint3f(float x, float y, float z) {
-		this.victimOffsetPoint3f.set(x,y,z);
-		this.safeVictimOffset.set(x,y,z);
+		this.victimOffsetPoint3f.set(x, y, z);
+		this.safeVictimOffset.set(x, y, z);
 	}
 
 	public void setVictimOffsetZ(float victimOffsetZ) {
@@ -1740,7 +1633,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	public float getTurnStepMax() {
-		return turnStepMax;
+		return this.turnStepMax;
 	}
 
 	public void setTurnStepMax(float turnStepMax) {
@@ -1748,7 +1641,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	public boolean isFireAndForget() {
-		return fireAndForget;
+		return this.fireAndForget;
 	}
 
 	public void setFireAndForget(boolean fireAndForget) {
@@ -1756,7 +1649,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	public boolean isNeedIllumination() {
-		return needIllumination;
+		return this.needIllumination;
 	}
 
 	public void setNeedIllumination(boolean needIllumination) {
@@ -1764,13 +1657,13 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	public boolean isTargetIlluminated() {
-		if (this.isFireAndForget() || !this.isNeedIllumination()) return true;
-		if (!actorHasPos(this.getOwner()) || !actorHasPos(this.victim)) return false;
+		if (this.isFireAndForget() || !this.isNeedIllumination()) { return true; }
+		if (!actorHasPos(this.getOwner()) || !actorHasPos(this.victim)) { return false; }
 		return GuidedMissileUtils.angleBetween(this.getOwner(), this.victim) <= this.maxFOVfrom;
 	}
 
 	public float getSmokeSustain() {
-		return smokeSustain;
+		return this.smokeSustain;
 	}
 
 	public void setSmokeSustain(float smokeSustain) {
@@ -1778,7 +1671,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	public float getSpriteSustain() {
-		return spriteSustain;
+		return this.spriteSustain;
 	}
 
 	public void setSpriteSustain(float spriteSustain) {
@@ -1786,118 +1679,118 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	public static boolean actorHasPos(Actor actor) {
-		if (actor == null) return false;
+		if (actor == null) { return false; }
 		return actor.pos != null;
 	}
 
-	protected static final int DETECTOR_TYPE_INFRARED = 1;
-	protected static final int DETECTOR_TYPE_MANUAL = 0;
-	protected static final int DETECTOR_TYPE_RADAR_BEAMRIDING = 3;
-	protected static final int DETECTOR_TYPE_RADAR_HOMING = 2;
+	protected static final int DETECTOR_TYPE_INFRARED                = 1;
+	protected static final int DETECTOR_TYPE_MANUAL                  = 0;
+	protected static final int DETECTOR_TYPE_RADAR_BEAMRIDING        = 3;
+	protected static final int DETECTOR_TYPE_RADAR_HOMING            = 2;
 	protected static final int DETECTOR_TYPE_RADAR_TRACK_VIA_MISSILE = 4;
-	protected static final int FAIL_TYPE_CONTROL_BLOCKED = 6;
-	protected static final int FAIL_TYPE_ELECTRONICS = 1;
-	protected static final int FAIL_TYPE_ENGINE = 3;
-	protected static final int FAIL_TYPE_IVAN = 5;
-	protected static final int FAIL_TYPE_MIRROR = 2;
-	protected static final int FAIL_TYPE_NONE = 0;
-	protected static final int FAIL_TYPE_NUMBER = 7;
-	protected static final int FAIL_TYPE_REFLEX = 4;
-	protected static final int FAIL_TYPE_WARHEAD = 7;
-	private static final float IVAN_TIME_MAX = 2.0F;
-	private static final float IVAN_TIME_MIN = 1.0F;
-	protected static final int LAUNCH_TYPE_DROP = 2;
-	protected static final int LAUNCH_TYPE_QUICK = 1;
-	protected static final int LAUNCH_TYPE_STRAIGHT = 0;
-	protected static final int STEP_MODE_BEAMRIDER = 1;
-	protected static final int STEP_MODE_HOMING = 0;
-	protected static final int TARGET_AIR = 1;
-	protected static final int TARGET_GROUND = 2;
-	protected static final int TARGET_SHIP = 4;
-	private float deltaAzimuth = 0.0F;
-	private float deltaTangage = 0.0F;
-	private float dragCoefficient = 0.3F;
-	private Orient dropFlightPathOrient = new Orient();
-	private String effSmoke = null;
-	private String effSprite = null;
-	private boolean endedFlame = false;
-	private boolean endedSmoke = false;
-	private boolean endedSprite = false;
-	private long engineDelayTime = 0L;
-	private boolean engineRunning = false;
-	private int exhausts = 1;
-	private int failState = FAIL_TYPE_NONE;
-	private MissileNavLight firstNavLight = null; // First Nav Light Element in the chained list of Nav Lights.
-	private boolean flameActive = true;
-	private Actor[] flames = null;
-	private long flareLockTime = 1000L;
-	private float frontSquare = 1.0F;
-	private float groundTrackFactor = 0.0F;
-	private float initialMissileForce = 0F;
-	private float ivanTimeLeft = 0.0F;
-	private MissileNavLight lastNavLight = null; // Last Nav Light Element in the chained list of Nav Lights.
-	private long lastTimeNoFlare = 0L;
-	private double launchKren = 0.0D;
-	private double launchPitch = 0.0D;
-	private int launchType = 0;
-	private double launchYaw = 0.0D;
-	private float leadPercent = 0.0F; // 0 means tail chasing, 100 means full lead tracking
-	private float massaEnd = 86.2F;
-	private float massLossPerTick = 0F;
-	private float maxFOVfrom = 0.0F;
-	private float maxG = 12F; // maximum G-Force during flight
-	private float maxLaunchG = 2.0F;
-	private float missileBaseSpeed = 0.0F;
-	private float missileForce = 18712F;
-	private float missileForceRunUpTime = 0F;
-	private float missileKalibr = 0.2F;
-	private float missileMass = 86.2F;
-	private float fuzeRadius = 50F;
-	private Orient missileOrient = new Orient();
-	private Point3d missilePoint3d = new Point3d();
-	private float missileSustainedForce = 0F;
-	private float missileTimeLife = 30F;
-	private ActiveMissile myActiveMissile = null;
-	private float oldDeltaAzimuth;
-	private float oldDeltaTangage;
-	private float oldRoll = 0F;
-	private float previousDistance = 0.0F;
-	private long releaseTime = 0L;
-	private float rocketMotorOperationTime = 2.2F;
-	private float rocketMotorSustainedOperationTime = 0F;
-	private Vector3d safeVictimOffset = new Vector3d();
-	private String simFlame = null;
-	private boolean smokeActive = true;
-	private Eff3DActor[] smokes = null;
-	private boolean spriteActive = true;
-	private Eff3DActor[] sprites = null;
-	private long startTime = 0L;
-	private boolean startTimeIsSet = false;
-	private int stepMode = 0;
-	private float stepsForFullTurn = 10; // update steps for maximum control surface output, higher value means slower reaction and smoother flight, lower value means higher agility
-	private float sunRayAngle = 0.0F;
-	private Point3d targetPoint3d = null;
-	private long timeToFailure = 0L;
-	private long trackDelay = 1000L;
-	private Vector3d trajectoryVector3d = null;
-	private float turnDiffMax = 0F;
-	DecimalFormat twoPlaces = new DecimalFormat("+000.00;-000.00"); // only required for debugging
-	private Point3d missileOffset = null;
-	private Orient oTemp = new Orient();
-	private Point3d p3dTemp = new Point3d();
-	private Vector3d v3dTemp = new Vector3d();
-	private Actor victim = null;
-	private boolean deltaAngleApplied = false;
-	private Orient victimOffsetOrient = null;
-	private Point3f victimOffsetPoint3f = null;
-	private Vector3d victimSpeed = null;
-	private float turnStepMax = 0F;
-	private boolean fireAndForget = false;
-	private boolean needIllumination = false;
-	private float smokeSustain = 0F;
-	private float spriteSustain = 0F;
-	private boolean isSmokeEnded = false;
-	private boolean isSustained = false;
-	private float rollFactor = 0F;
-	private float currentRollRate = 0F;
+	protected static final int FAIL_TYPE_CONTROL_BLOCKED             = 6;
+	protected static final int FAIL_TYPE_ELECTRONICS                 = 1;
+	protected static final int FAIL_TYPE_ENGINE                      = 3;
+	protected static final int FAIL_TYPE_IVAN                        = 5;
+	protected static final int FAIL_TYPE_MIRROR                      = 2;
+	protected static final int FAIL_TYPE_NONE                        = 0;
+	protected static final int FAIL_TYPE_NUMBER                      = 7;
+	protected static final int FAIL_TYPE_REFLEX                      = 4;
+	protected static final int FAIL_TYPE_WARHEAD                     = 7;
+	private static final float IVAN_TIME_MAX                         = 2.0F;
+	private static final float IVAN_TIME_MIN                         = 1.0F;
+	protected static final int LAUNCH_TYPE_DROP                      = 2;
+	protected static final int LAUNCH_TYPE_QUICK                     = 1;
+	protected static final int LAUNCH_TYPE_STRAIGHT                  = 0;
+	protected static final int STEP_MODE_BEAMRIDER                   = 1;
+	protected static final int STEP_MODE_HOMING                      = 0;
+	protected static final int TARGET_AIR                            = 1;
+	protected static final int TARGET_GROUND                         = 2;
+	protected static final int TARGET_SHIP                           = 4;
+	private float              deltaAzimuth                          = 0.0F;
+	private float              deltaTangage                          = 0.0F;
+	private float              dragCoefficient                       = 0.3F;
+	private Orient             dropFlightPathOrient                  = new Orient();
+	private String             effSmoke                              = null;
+	private String             effSprite                             = null;
+	private boolean            endedFlame                            = false;
+	private boolean            endedSmoke                            = false;
+	private boolean            endedSprite                           = false;
+	private long               engineDelayTime                       = 0L;
+	private boolean            engineRunning                         = false;
+	private int                exhausts                              = 1;
+	private int                failState                             = FAIL_TYPE_NONE;
+	private MissileNavLight    firstNavLight                         = null; // First Nav Light Element in the chained list of Nav Lights.
+	private boolean            flameActive                           = true;
+	private Actor[]            flames                                = null;
+	private long               flareLockTime                         = 1000L;
+	private float              frontSquare                           = 1.0F;
+	private float              groundTrackFactor                     = 0.0F;
+	private float              initialMissileForce                   = 0F;
+	private float              ivanTimeLeft                          = 0.0F;
+	private MissileNavLight    lastNavLight                          = null; // Last Nav Light Element in the chained list of Nav Lights.
+	private long               lastTimeNoFlare                       = 0L;
+	private double             launchKren                            = 0.0D;
+	private double             launchPitch                           = 0.0D;
+	private int                launchType                            = 0;
+	private double             launchYaw                             = 0.0D;
+	private float              leadPercent                           = 0.0F; // 0 means tail chasing, 100 means full lead tracking
+	private float              massaEnd                              = 86.2F;
+	private float              massLossPerTick                       = 0F;
+	private float              maxFOVfrom                            = 0.0F;
+	private float              maxG                                  = 12F; // maximum G-Force during flight
+	private float              maxLaunchG                            = 2.0F;
+	private float              missileBaseSpeed                      = 0.0F;
+	private float              missileForce                          = 18712F;
+	private float              missileForceRunUpTime                 = 0F;
+	private float              missileKalibr                         = 0.2F;
+	private float              missileMass                           = 86.2F;
+	private float              fuzeRadius                            = 50F;
+	private Orient             missileOrient                         = new Orient();
+	private Point3d            missilePoint3d                        = new Point3d();
+	private float              missileSustainedForce                 = 0F;
+	private float              missileTimeLife                       = 30F;
+	private ActiveMissile      myActiveMissile                       = null;
+	private float              oldDeltaAzimuth;
+	private float              oldDeltaTangage;
+	private float              oldRoll                               = 0F;
+	private float              previousDistance                      = 0.0F;
+	private long               releaseTime                           = 0L;
+	private float              rocketMotorOperationTime              = 2.2F;
+	private float              rocketMotorSustainedOperationTime     = 0F;
+	private Vector3d           safeVictimOffset                      = new Vector3d();
+	private String             simFlame                              = null;
+	private boolean            smokeActive                           = true;
+	private Eff3DActor[]       smokes                                = null;
+	private boolean            spriteActive                          = true;
+	private Eff3DActor[]       sprites                               = null;
+	private long               startTime                             = 0L;
+	private boolean            startTimeIsSet                        = false;
+	private int                stepMode                              = 0;
+	private float              stepsForFullTurn                      = 10; // update steps for maximum control surface output, higher value means slower reaction and smoother flight, lower value means higher agility
+	private float              sunRayAngle                           = 0.0F;
+	private Point3d            targetPoint3d                         = null;
+	private long               timeToFailure                         = 0L;
+	private long               trackDelay                            = 1000L;
+	private Vector3d           trajectoryVector3d                    = null;
+	private float              turnDiffMax                           = 0F;
+	DecimalFormat              twoPlaces                             = new DecimalFormat("+000.00;-000.00"); // only required for debugging
+	private Point3d            missileOffset                         = null;
+	private Orient             oTemp                                 = new Orient();
+	private Point3d            p3dTemp                               = new Point3d();
+	private Vector3d           v3dTemp                               = new Vector3d();
+	private Actor              victim                                = null;
+	private boolean            deltaAngleApplied                     = false;
+	private Orient             victimOffsetOrient                    = null;
+	private Point3f            victimOffsetPoint3f                   = null;
+	private Vector3d           victimSpeed                           = null;
+	private float              turnStepMax                           = 0F;
+	private boolean            fireAndForget                         = false;
+	private boolean            needIllumination                      = false;
+	private float              smokeSustain                          = 0F;
+	private float              spriteSustain                         = 0F;
+	private boolean            isSmokeEnded                          = false;
+	private boolean            isSustained                           = false;
+	private float              rollFactor                            = 0F;
+	private float              currentRollRate                       = 0F;
 }

@@ -5,7 +5,7 @@ import com.maddox.rts.Property;
 public class SBD5 extends SBD implements TypeStormovik, TypeDiveBomber {
 
 	public SBD5() {
-		numFlapps = 7;
+		this.numFlapps = 7;
 	}
 
 	static {
@@ -24,7 +24,6 @@ public class SBD5 extends SBD implements TypeStormovik, TypeDiveBomber {
 		Property.set(class1, "cockpitClass", new Class[] { CockpitSBD5.class, CockpitSBD3_TGunner.class });
 		Property.set(class1, "LOSElevation", 1.1058F);
 		weaponTriggersRegister(class1, new int[] { 0, 0, 10, 10, 3, 3, 3 });
-		weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalBomb02",
-				"_ExternalBomb03", "_ExternalBomb01" });
+		weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb01" });
 	}
 }

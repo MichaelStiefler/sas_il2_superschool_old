@@ -20,18 +20,10 @@ public class CockpitSB2M100A_BGunner extends CockpitGunner {
 			} else {
 				float f = orient.getYaw();
 				float f1 = orient.getTangage();
-				if (f < -40F) {
-					f = -40F;
-				}
-				if (f > 40F) {
-					f = 40F;
-				}
-				if (f1 > 20F) {
-					f1 = 20F;
-				}
-				if (f1 < -45F) {
-					f1 = -45F;
-				}
+				if (f < -40F) { f = -40F; }
+				if (f > 40F) { f = 40F; }
+				if (f1 > 20F) { f1 = 20F; }
+				if (f1 < -45F) { f1 = -45F; }
 				orient.setYPR(f, f1, 0.0F);
 				orient.wrap();
 			}
@@ -40,14 +32,10 @@ public class CockpitSB2M100A_BGunner extends CockpitGunner {
 
 	protected void interpTick() {
 		if (this.isRealMode()) {
-			if ((this.emitter == null) || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) {
-				this.bGunFire = false;
-			}
+			if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) { this.bGunFire = false; }
 			this.fm.CT.WeaponControl[this.weaponControlNum()] = this.bGunFire;
 			if (this.bGunFire) {
-				if (this.hook1 == null) {
-					this.hook1 = new HookNamed(this.aircraft(), "_MGUN04");
-				}
+				if (this.hook1 == null) { this.hook1 = new HookNamed(this.aircraft(), "_MGUN04"); }
 				this.doHitMasterAircraft(this.aircraft(), this.hook1, "_MGUN04");
 			}
 		}
@@ -55,7 +43,7 @@ public class CockpitSB2M100A_BGunner extends CockpitGunner {
 
 	public void doGunFire(boolean flag) {
 		if (this.isRealMode()) {
-			if ((this.emitter == null) || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) {
+			if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) {
 				this.bGunFire = false;
 			} else {
 				this.bGunFire = flag;

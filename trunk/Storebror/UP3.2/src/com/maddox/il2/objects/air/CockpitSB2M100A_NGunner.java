@@ -22,22 +22,13 @@ public class CockpitSB2M100A_NGunner extends CockpitGunner {
 			this.bNeedSetUp = false;
 		}
 		this.mesh.chunkSetAngles("Z_arrow_hour", -this.cvt(World.getTimeofDay(), 0.0F, 24F, 0.0F, 720F), 0.0F, 0.0F);
-		this.mesh.chunkSetAngles("Z_arrow_min", -this.cvt(World.getTimeofDay() % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F,
-				0.0F);
-		this.mesh.chunkSetAngles("Z_arrow_sec_1",
-				-this.cvt(((World.getTimeofDay() % 1.0F) * 60F) % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F, 0.0F);
-		this.mesh.chunkSetAngles("Z_arrow_temp",
-				this.cvt(Atmosphere.temperature((float) this.fm.Loc.z) - 273.15F, -70F, 70F, 52F, -52F), 0.0F, 0.0F);
-		this.mesh.chunkSetAngles("Z_arrow_speed",
-				this.floatindex(
-						this.cvt(Pitot.Indicator((float) this.fm.Loc.z, this.fm.getSpeedKMH()), 0.0F, 600F, 0.0F, 15F),
-						speedometerScale),
-				0.0F, 0.0F);
-		this.mesh.chunkSetAngles("Z_arrow_alt2", -this.cvt(this.fm.getAltitude(), 0.0F, 10000F, 0.0F, 3600F), 0.0F,
-				0.0F);
-		this.mesh.chunkSetAngles("Z_arrow_alt1", -this.cvt(this.fm.getAltitude(), 0.0F, 10000F, 0.0F, 360F), 0.0F,
-				0.0F);
-		if (this.bGunFire && (this.patronMat != null)) {
+		this.mesh.chunkSetAngles("Z_arrow_min", -this.cvt(World.getTimeofDay() % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F, 0.0F);
+		this.mesh.chunkSetAngles("Z_arrow_sec_1", -this.cvt(World.getTimeofDay() % 1.0F * 60F % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F, 0.0F);
+		this.mesh.chunkSetAngles("Z_arrow_temp", this.cvt(Atmosphere.temperature((float) this.fm.Loc.z) - 273.15F, -70F, 70F, 52F, -52F), 0.0F, 0.0F);
+		this.mesh.chunkSetAngles("Z_arrow_speed", this.floatindex(this.cvt(Pitot.Indicator((float) this.fm.Loc.z, this.fm.getSpeedKMH()), 0.0F, 600F, 0.0F, 15F), speedometerScale), 0.0F, 0.0F);
+		this.mesh.chunkSetAngles("Z_arrow_alt2", -this.cvt(this.fm.getAltitude(), 0.0F, 10000F, 0.0F, 3600F), 0.0F, 0.0F);
+		this.mesh.chunkSetAngles("Z_arrow_alt1", -this.cvt(this.fm.getAltitude(), 0.0F, 10000F, 0.0F, 360F), 0.0F, 0.0F);
+		if (this.bGunFire && this.patronMat != null) {
 			this.patron -= 0.5F * f;
 			this.patronMat.setLayer(0);
 			this.patronMat.set((byte) 11, this.patron);
@@ -135,13 +126,13 @@ public class CockpitSB2M100A_NGunner extends CockpitGunner {
 		this.mesh.chunkSetAngles("BeltR4", f2, 0.0F, 0.0F);
 		this.mesh.chunkSetAngles("BeltR5", f2, 0.0F, 0.0F);
 		final float f3 = f * 0.32F;
-		final float f4 = 5F + (f1 * 0.038F);
-		this.mesh.chunkSetAngles("BeltL6", (f3 * 0.5F) + f4, 0.0F, 0.0F);
+		final float f4 = 5F + f1 * 0.038F;
+		this.mesh.chunkSetAngles("BeltL6", f3 * 0.5F + f4, 0.0F, 0.0F);
 		this.mesh.chunkSetAngles("BeltL7", f3 + f4, 0.0F, 0.0F);
 		this.mesh.chunkSetAngles("BeltL8", f3 + f4, 0.0F, 0.0F);
 		this.mesh.chunkSetAngles("BeltL9", -f3 - f4, 0.0F, 0.0F);
-		this.mesh.chunkSetAngles("BeltL10", (-f3 * 1.5F) - f4, 0.0F, 0.0F);
-		this.mesh.chunkSetAngles("BeltR6", (f3 * 0.5F) - f4, 0.0F, 0.0F);
+		this.mesh.chunkSetAngles("BeltL10", -f3 * 1.5F - f4, 0.0F, 0.0F);
+		this.mesh.chunkSetAngles("BeltR6", f3 * 0.5F - f4, 0.0F, 0.0F);
 		this.mesh.chunkSetAngles("BeltR7", f3 - f4, 0.0F, 0.0F);
 		this.mesh.chunkSetAngles("BeltR8", f3 - f4, 0.0F, 0.0F);
 		this.mesh.chunkSetAngles("BeltR9", -f3 + f4, 0.0F, 0.0F);
@@ -149,56 +140,36 @@ public class CockpitSB2M100A_NGunner extends CockpitGunner {
 	}
 
 	public void clipAnglesGun(Orient orient) {
-		if (!this.isRealMode()) {
-			return;
-		}
+		if (!this.isRealMode()) { return; }
 		if (!this.aiTurret().bIsOperable) {
 			orient.setYPR(0.0F, 0.0F, 0.0F);
 			return;
 		}
 		float f = orient.getYaw();
 		float f1 = orient.getTangage();
-		if (f < -20F) {
-			f = -20F;
-		}
-		if (f > 20F) {
-			f = 20F;
-		}
-		if (f1 < -50F) {
-			f1 = -50F;
-		}
-		if (f1 > 45F) {
-			f1 = 45F;
-		}
+		if (f < -20F) { f = -20F; }
+		if (f > 20F) { f = 20F; }
+		if (f1 < -50F) { f1 = -50F; }
+		if (f1 > 45F) { f1 = 45F; }
 		orient.setYPR(f, f1, 0.0F);
 		orient.wrap();
 	}
 
 	protected void interpTick() {
-		if (!this.isRealMode()) {
-			return;
-		}
-		if ((this.emitter == null) || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) {
-			this.bGunFire = false;
-		}
+		if (!this.isRealMode()) { return; }
+		if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) { this.bGunFire = false; }
 		this.fm.CT.WeaponControl[this.weaponControlNum()] = this.bGunFire;
 		if (this.bGunFire) {
-			if (this.hook1 == null) {
-				this.hook1 = new HookNamed(this.aircraft(), "_MGUN01");
-			}
+			if (this.hook1 == null) { this.hook1 = new HookNamed(this.aircraft(), "_MGUN01"); }
 			this.doHitMasterAircraft(this.aircraft(), this.hook1, "_MGUN01");
-			if (this.hook2 == null) {
-				this.hook2 = new HookNamed(this.aircraft(), "_MGUN02");
-			}
+			if (this.hook2 == null) { this.hook2 = new HookNamed(this.aircraft(), "_MGUN02"); }
 			this.doHitMasterAircraft(this.aircraft(), this.hook2, "_MGUN02");
 		}
 	}
 
 	public void doGunFire(boolean flag) {
-		if (!this.isRealMode()) {
-			return;
-		}
-		if ((this.emitter == null) || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) {
+		if (!this.isRealMode()) { return; }
+		if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) {
 			this.bGunFire = false;
 		} else {
 			this.bGunFire = flag;
@@ -214,8 +185,7 @@ public class CockpitSB2M100A_NGunner extends CockpitGunner {
 		this.hook1 = null;
 		this.hook2 = null;
 		this.gunOrient = new Orient();
-		this.cockpitNightMats = (new String[] { "ACHO_arrow", "Dprib_one", "Dprib_six", "equip_AN4_sh", "prib_one",
-				"Prib_six" });
+		this.cockpitNightMats = new String[] { "ACHO_arrow", "Dprib_one", "Dprib_six", "equip_AN4_sh", "prib_one", "Prib_six" };
 		this.setNightMats(false);
 		HookNamed hooknamed = new HookNamed(this.mesh, "LAMPHOOK03");
 		Loc loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
@@ -261,14 +231,13 @@ public class CockpitSB2M100A_NGunner extends CockpitGunner {
 
 	private final LightPointActor light3;
 	private final LightPointActor light4;
-	private float patron;
-	private Mat patronMat;
-	private boolean bNeedSetUp;
-	private static final float speedometerScale[] = { 0.0F, -10F, -19.5F, -32F, -46F, -66.5F, -89F, -114F, -141F,
-			-170.5F, -200.5F, -232.5F, -264F, -295.5F, -328F, -360F };
-	private Hook hook1;
-	private Hook hook2;
-	private final Orient gunOrient;
+	private float                 patron;
+	private Mat                   patronMat;
+	private boolean               bNeedSetUp;
+	private static final float    speedometerScale[] = { 0.0F, -10F, -19.5F, -32F, -46F, -66.5F, -89F, -114F, -141F, -170.5F, -200.5F, -232.5F, -264F, -295.5F, -328F, -360F };
+	private Hook                  hook1;
+	private Hook                  hook2;
+	private final Orient          gunOrient;
 
 	static {
 		Property.set(CockpitSB2M100A_NGunner.class, "aiTuretNum", 0);

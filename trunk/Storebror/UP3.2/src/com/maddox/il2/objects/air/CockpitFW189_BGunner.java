@@ -9,9 +9,7 @@ import com.maddox.il2.engine.Orient;
 import com.maddox.rts.Property;
 
 /**
- * This class originates from the Flyable AI classes for v4.12.2 by
- * SAS~Storebror It got imported to UP3 in order to allow players to enter the
- * Fw-189 belly gunner.
+ * This class originates from the Flyable AI classes for v4.12.2 by SAS~Storebror It got imported to UP3 in order to allow players to enter the Fw-189 belly gunner.
  **/
 
 public class CockpitFW189_BGunner extends CockpitGunner {
@@ -50,18 +48,10 @@ public class CockpitFW189_BGunner extends CockpitGunner {
 			} else {
 				float f = orient.getYaw();
 				float f1 = orient.getTangage();
-				if (f < -40F) {
-					f = -40F;
-				}
-				if (f > 40F) {
-					f = 40F;
-				}
-				if (f1 > 89.0F) {
-					f1 = 89.0F;
-				}
-				if (f1 < 10F) {
-					f1 = 10F;
-				}
+				if (f < -40F) { f = -40F; }
+				if (f > 40F) { f = 40F; }
+				if (f1 > 89.0F) { f1 = 89.0F; }
+				if (f1 < 10F) { f1 = 10F; }
 				orient.setYPR(f, f1, 0.0F);
 				orient.wrap();
 			}
@@ -70,14 +60,10 @@ public class CockpitFW189_BGunner extends CockpitGunner {
 
 	protected void interpTick() {
 		if (this.isRealMode()) {
-			if ((this.emitter == null) || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) {
-				this.bGunFire = false;
-			}
+			if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) { this.bGunFire = false; }
 			this.fm.CT.WeaponControl[this.weaponControlNum()] = this.bGunFire;
 			if (this.bGunFire) {
-				if (this.hook1 == null) {
-					this.hook1 = new HookNamed(this.aircraft(), "_MGUN03");
-				}
+				if (this.hook1 == null) { this.hook1 = new HookNamed(this.aircraft(), "_MGUN03"); }
 				this.doHitMasterAircraft(this.aircraft(), this.hook1, "_MGUN03");
 				if (this.iCocking > 0) {
 					this.iCocking = 0;
@@ -102,7 +88,7 @@ public class CockpitFW189_BGunner extends CockpitGunner {
 
 	public void doGunFire(boolean flag) {
 		if (this.isRealMode()) {
-			if ((this.emitter == null) || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) {
+			if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) {
 				this.bGunFire = false;
 			} else {
 				this.bGunFire = flag;
@@ -149,17 +135,15 @@ public class CockpitFW189_BGunner extends CockpitGunner {
 	}
 
 	public void reflectCockpitState() {
-		if (this.fm.AS.astateCockpitState != 0) {
-			this.mesh.chunkVisible("Holes_D1", true);
-		}
+		if (this.fm.AS.astateCockpitState != 0) { this.mesh.chunkVisible("Holes_D1", true); }
 	}
 
 	private LightPointActor light1;
 	private LightPointActor light2;
-	private Hook hook1;
-	private int iCocking;
-	private int iOldVisDrums;
-	private int iNewVisDrums;
+	private Hook            hook1;
+	private int             iCocking;
+	private int             iOldVisDrums;
+	private int             iNewVisDrums;
 
 	static {
 		Property.set(CockpitFW189_BGunner.class, "aiTuretNum", 0);
