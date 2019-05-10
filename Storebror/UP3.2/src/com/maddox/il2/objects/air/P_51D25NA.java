@@ -14,11 +14,11 @@ import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 
 public class P_51D25NA extends P_51Mustang implements TypeFighterAceMaker {
-	public int k14Mode;
-	public int k14WingspanType;
-	public float k14Distance;
+	public int     k14Mode;
+	public int     k14WingspanType;
+	public float   k14Distance;
 	public boolean bHasBlister;
-	private float fMaxKMHSpeedForOpenCanopy;
+	private float  fMaxKMHSpeedForOpenCanopy;
 
 	public P_51D25NA() {
 		this.k14Mode = 0;
@@ -36,24 +36,17 @@ public class P_51D25NA extends P_51Mustang implements TypeFighterAceMaker {
 		this.hierMesh().chunkSetAngles("Pilot1_D0", 0.0f, 0.0f, 9.0f * n2);
 		this.hierMesh().chunkSetAngles("Head1_D0", 12.0f * n2, 0.0f, 0.0f);
 		if (Config.isUSE_RENDER()) {
-			if ((Main3D.cur3D().cockpits != null) && (Main3D.cur3D().cockpits[0] != null)) {
-				Main3D.cur3D().cockpits[0].onDoorMoved(n);
-			}
+			if (Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null) { Main3D.cur3D().cockpits[0].onDoorMoved(n); }
 			this.setDoorSnd(n);
 		}
 	}
 
 	public void update(final float n) {
 		super.update(n);
-		if ((this.FM.CT.getCockpitDoor() > 0.2) && this.bHasBlister
-				&& (this.FM.getSpeedKMH() > this.fMaxKMHSpeedForOpenCanopy)
-				&& (this.hierMesh().chunkFindCheck("Blister1_D0") != -1)) {
+		if (this.FM.CT.getCockpitDoor() > 0.2 && this.bHasBlister && this.FM.getSpeedKMH() > this.fMaxKMHSpeedForOpenCanopy && this.hierMesh().chunkFindCheck("Blister1_D0") != -1) {
 			try {
-				if (this == World.getPlayerAircraft()) {
-					((CockpitP_51D25K14) Main3D.cur3D().cockpitCur).removeCanopy();
-				}
-			} catch (Exception ex) {
-			}
+				if (this == World.getPlayerAircraft()) { ((CockpitP_51D25K14) Main3D.cur3D().cockpitCur).removeCanopy(); }
+			} catch (Exception ex) {}
 			this.hierMesh().hideSubTrees("Blister1_D0");
 			final Wreckage wreckage = new Wreckage(this, this.hierMesh().chunkFind("Blister1_D0"));
 			wreckage.collide(false);
@@ -68,9 +61,7 @@ public class P_51D25NA extends P_51Mustang implements TypeFighterAceMaker {
 
 	public boolean typeFighterAceMakerToggleAutomation() {
 		++this.k14Mode;
-		if (this.k14Mode > 2) {
-			this.k14Mode = 0;
-		}
+		if (this.k14Mode > 2) { this.k14Mode = 0; }
 		HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerMode" + this.k14Mode);
 		return true;
 	}
@@ -80,16 +71,9 @@ public class P_51D25NA extends P_51Mustang implements TypeFighterAceMaker {
 	// -------------------------------------------------------------------------------------------------------
 	// TODO: skylla: gyro-gunsight distance HUD log:
 	/*
-	 * Infos & links: more Information, maybe some on the max/min distance? (one
-	 * must be logged in to access the "hard" stuff :S
-	 * https://ww2aircraft.net/forum/threads/k-14-gunsight.3415/ "Note: when
-	 * engaging in aerobatics the gyro's needed to be caged. If the pilot forgot to
-	 * do so the system would be damaged and useless. When the gyros were caged, the
-	 * system acted as a simple reflector gunsight. So the pilot had to be well
-	 * trained to cage and uncage the gyros during combat." range (K-14): range (Mk
-	 * II gyro): range: (EZ 42): 182,88m - 731,52m 164,59m - 731,52m 80m - 1000m
-	 * (source: http://forums.eagle.ru/showthread.php?t=128295&page=4) (600ft -
-	 * 2400ft ) (source: see above) (200yds - 800yds) (180yds - 800yds) (source:
+	 * Infos & links: more Information, maybe some on the max/min distance? (one must be logged in to access the "hard" stuff :S https://ww2aircraft.net/forum/threads/k-14-gunsight.3415/ "Note: when engaging in aerobatics the gyro's needed to be caged. If
+	 * the pilot forgot to do so the system would be damaged and useless. When the gyros were caged, the system acted as a simple reflector gunsight. So the pilot had to be well trained to cage and uncage the gyros during combat." range (K-14): range (Mk
+	 * II gyro): range: (EZ 42): 182,88m - 731,52m 164,59m - 731,52m 80m - 1000m (source: http://forums.eagle.ru/showthread.php?t=128295&page=4) (600ft - 2400ft ) (source: see above) (200yds - 800yds) (180yds - 800yds) (source:
 	 * http://forum.axishistory.com/viewtopic.php?t=17850&start=15)
 	 *
 	 *
@@ -107,21 +91,15 @@ public class P_51D25NA extends P_51Mustang implements TypeFighterAceMaker {
 		this.k14Distance += f;
 		if (this.k14Distance > 730.0f) {
 			this.k14Distance = 730.0f;
-		} else if (this.k14Distance < 180.0f) {
-			this.k14Distance = 180.0f;
-		}
-		HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Distance: " + (int) (this.k14Distance) + "m");
+		} else if (this.k14Distance < 180.0f) { this.k14Distance = 180.0f; }
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Distance: " + (int) this.k14Distance + "m");
 	}
 
 	// old code:
 	/*
-	 * public void typeFighterAceMakerAdjDistancePlus() { this.k14Distance += 10.0f;
-	 * if (this.k14Distance > 800.0f) { this.k14Distance = 800.0f; }
-	 * HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerInc"); }
+	 * public void typeFighterAceMakerAdjDistancePlus() { this.k14Distance += 10.0f; if (this.k14Distance > 800.0f) { this.k14Distance = 800.0f; } HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerInc"); }
 	 *
-	 * public void typeFighterAceMakerAdjDistanceMinus() { this.k14Distance -=
-	 * 10.0f; if (this.k14Distance < 200.0f) { this.k14Distance = 200.0f; }
-	 * HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerDec"); }
+	 * public void typeFighterAceMakerAdjDistanceMinus() { this.k14Distance -= 10.0f; if (this.k14Distance < 200.0f) { this.k14Distance = 200.0f; } HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerDec"); }
 	 */
 	// -------------------------------------------------------------------------------------------------------
 	public void typeFighterAceMakerAdjSideslipReset() {
@@ -129,17 +107,13 @@ public class P_51D25NA extends P_51Mustang implements TypeFighterAceMaker {
 
 	public void typeFighterAceMakerAdjSideslipPlus() {
 		--this.k14WingspanType;
-		if (this.k14WingspanType < 0) {
-			this.k14WingspanType = 0;
-		}
+		if (this.k14WingspanType < 0) { this.k14WingspanType = 0; }
 		HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerWing" + this.k14WingspanType);
 	}
 
 	public void typeFighterAceMakerAdjSideslipMinus() {
 		++this.k14WingspanType;
-		if (this.k14WingspanType > 9) {
-			this.k14WingspanType = 9;
-		}
+		if (this.k14WingspanType > 9) { this.k14WingspanType = 9; }
 		HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerWing" + this.k14WingspanType);
 	}
 
@@ -171,16 +145,11 @@ public class P_51D25NA extends P_51Mustang implements TypeFighterAceMaker {
 		Property.set(class1, "FlightModel", "FlightModels/P-51D-25.fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitP_51D25K14.class });
 		Property.set(class1, "LOSElevation", 1.1188f);
-		Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0, 9, 9, 9, 9, 3, 3, 9, 9, 2, 2, 2, 2, 2, 2,
-				9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 });
+		Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0, 9, 9, 9, 9, 3, 3, 9, 9, 2, 2, 2, 2, 2, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 });
 		Aircraft.weaponHooksRegister(class1,
-				new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalBomb01",
-						"_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02",
-						"_ExternalDev02", "_ExternalDev03", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03",
-						"_ExternalRock04", "_ExternalRock05", "_ExternalRock06", "_ExternalDev05", "_ExternalDev06",
-						"_ExternalDev07", "_ExternalDev08", "_ExternalDev09", "_ExternalDev10", "_ExternalDev11",
-						"_ExternalDev12", "_ExternalDev13", "_ExternalDev14", "_ExternalRock07", "_ExternalRock08",
-						"_ExternalRock09", "_ExternalRock10", "_ExternalRock11", "_ExternalRock12", "_ExternalRock13",
-						"_ExternalRock14", "_ExternalRock15", "_ExternalRock16" });
+				new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev02", "_ExternalDev03",
+						"_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06", "_ExternalDev05", "_ExternalDev06", "_ExternalDev07", "_ExternalDev08", "_ExternalDev09", "_ExternalDev10",
+						"_ExternalDev11", "_ExternalDev12", "_ExternalDev13", "_ExternalDev14", "_ExternalRock07", "_ExternalRock08", "_ExternalRock09", "_ExternalRock10", "_ExternalRock11", "_ExternalRock12", "_ExternalRock13", "_ExternalRock14",
+						"_ExternalRock15", "_ExternalRock16" });
 	}
 }

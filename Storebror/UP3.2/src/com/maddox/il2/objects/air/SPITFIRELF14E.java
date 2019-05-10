@@ -12,8 +12,8 @@ import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 
 public class SPITFIRELF14E extends SPITFIRE9 implements TypeFighterAceMaker, TypeBNZFighter {
-	public int k14Mode;
-	public int k14WingspanType;
+	public int   k14Mode;
+	public int   k14WingspanType;
 	public float k14Distance;
 //    private float flapps;
 
@@ -32,9 +32,7 @@ public class SPITFIRELF14E extends SPITFIRE9 implements TypeFighterAceMaker, Typ
 		this.hierMesh().chunkSetAngles("Pilot1_D0", 0.0f, 0.0f, 9.0f * n2);
 		this.hierMesh().chunkSetAngles("Head1_D0", 12.0f * n2, 0.0f, 0.0f);
 		if (Config.isUSE_RENDER()) {
-			if ((Main3D.cur3D().cockpits != null) && (Main3D.cur3D().cockpits[0] != null)) {
-				Main3D.cur3D().cockpits[0].onDoorMoved(n);
-			}
+			if (Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null) { Main3D.cur3D().cockpits[0].onDoorMoved(n); }
 			this.setDoorSnd(n);
 		}
 	}
@@ -66,9 +64,7 @@ public class SPITFIRELF14E extends SPITFIRE9 implements TypeFighterAceMaker, Typ
 
 	public boolean typeFighterAceMakerToggleAutomation() {
 		++this.k14Mode;
-		if (this.k14Mode > 2) {
-			this.k14Mode = 0;
-		}
+		if (this.k14Mode > 2) { this.k14Mode = 0; }
 		HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerMode" + this.k14Mode);
 		return true;
 	}
@@ -92,19 +88,13 @@ public class SPITFIRELF14E extends SPITFIRE9 implements TypeFighterAceMaker, Typ
 		this.k14Distance += f;
 		if (this.k14Distance > 730.0f) {
 			this.k14Distance = 730.0f;
-		} else if (this.k14Distance < 160.0f) {
-			this.k14Distance = 160.0f;
-		}
-		HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Distance: " + (int) (this.k14Distance) + "m");
+		} else if (this.k14Distance < 160.0f) { this.k14Distance = 160.0f; }
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Distance: " + (int) this.k14Distance + "m");
 	}
 	/*
-	 * public void typeFighterAceMakerAdjDistancePlus() { this.k14Distance += 10.0f;
-	 * if (this.k14Distance > 800.0f) { this.k14Distance = 800.0f; }
-	 * HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerInc"); }
+	 * public void typeFighterAceMakerAdjDistancePlus() { this.k14Distance += 10.0f; if (this.k14Distance > 800.0f) { this.k14Distance = 800.0f; } HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerInc"); }
 	 *
-	 * public void typeFighterAceMakerAdjDistanceMinus() { this.k14Distance -=
-	 * 10.0f; if (this.k14Distance < 200.0f) { this.k14Distance = 200.0f; }
-	 * HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerDec"); }
+	 * public void typeFighterAceMakerAdjDistanceMinus() { this.k14Distance -= 10.0f; if (this.k14Distance < 200.0f) { this.k14Distance = 200.0f; } HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerDec"); }
 	 */
 	// -------------------------------------------------------------------------------------------------------
 
@@ -113,17 +103,13 @@ public class SPITFIRELF14E extends SPITFIRE9 implements TypeFighterAceMaker, Typ
 
 	public void typeFighterAceMakerAdjSideslipPlus() {
 		--this.k14WingspanType;
-		if (this.k14WingspanType < 0) {
-			this.k14WingspanType = 0;
-		}
+		if (this.k14WingspanType < 0) { this.k14WingspanType = 0; }
 		HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerWing" + this.k14WingspanType);
 	}
 
 	public void typeFighterAceMakerAdjSideslipMinus() {
 		++this.k14WingspanType;
-		if (this.k14WingspanType > 9) {
-			this.k14WingspanType = 9;
-		}
+		if (this.k14WingspanType > 9) { this.k14WingspanType = 9; }
 		HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerWing" + this.k14WingspanType);
 	}
 
@@ -157,7 +143,6 @@ public class SPITFIRELF14E extends SPITFIRE9 implements TypeFighterAceMaker, Typ
 		Property.set(class1, "cockpitClass", new Class[] { CockpitSpitLF14E.class });
 		Property.set(class1, "LOSElevation", 0.5926f);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1, 9, 9, 3 });
-		Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN03", "_MGUN04", "_CANNON01", "_CANNON02",
-				"_ExternalDev08", "_ExternalDev01", "_ExternalBomb01" });
+		Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN03", "_MGUN04", "_CANNON01", "_CANNON02", "_ExternalDev08", "_ExternalDev01", "_ExternalBomb01" });
 	}
 }

@@ -37,33 +37,24 @@ public abstract class BF_109_Early extends BF_109 {
 
 	private void moveWingSlats() {
 		if (this.FM.getSpeed() > 5F) {
-			this.hierMesh().chunkSetAngles("SlatL_D0", 0.0F, 0.0F,
-					Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F));
-			this.hierMesh().chunkSetAngles("SlatR_D0", 0.0F, 0.0F,
-					Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F));
+			this.hierMesh().chunkSetAngles("SlatL_D0", 0.0F, 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F));
+			this.hierMesh().chunkSetAngles("SlatR_D0", 0.0F, 0.0F, Aircraft.cvt(this.FM.getAOA(), 6.8F, 11F, 0.0F, 1.5F));
 		}
 	}
 
 	private void moveRadiatorFlaps() {
-		if (this.hierMesh().chunkFindCheck("WaterL_D0") != -1)
-			this.hierMesh().chunkSetAngles("WaterL_D0", 0.0F, -38F * this.kangle, 0.0F);
-		if (this.hierMesh().chunkFindCheck("WaterR_D0") != -1)
-			this.hierMesh().chunkSetAngles("WaterR_D0", 0.0F, -38F * this.kangle, 0.0F);
+		if (this.hierMesh().chunkFindCheck("WaterL_D0") != -1) { this.hierMesh().chunkSetAngles("WaterL_D0", 0.0F, -38F * this.kangle, 0.0F); }
+		if (this.hierMesh().chunkFindCheck("WaterR_D0") != -1) { this.hierMesh().chunkSetAngles("WaterR_D0", 0.0F, -38F * this.kangle, 0.0F); }
 		this.kangle = 0.95F * this.kangle + 0.05F * this.FM.EI.engines[0].getControlRadiator();
-		if (this.kangle > 1.0F)
-			this.kangle = 1.0F;
+		if (this.kangle > 1.0F) { this.kangle = 1.0F; }
 	}
 
 	private void cockpitDoorVisibilty() {
-		if (this.FM.CT.getCockpitDoor() > 0.2D && this.bHasBlister
-				&& this.FM.getSpeedKMH() > this.fMaxKMHSpeedForOpenCanopy
-				&& this.hierMesh().chunkFindCheck("Blister1_D0") != -1) {
+		if (this.FM.CT.getCockpitDoor() > 0.2D && this.bHasBlister && this.FM.getSpeedKMH() > this.fMaxKMHSpeedForOpenCanopy && this.hierMesh().chunkFindCheck("Blister1_D0") != -1) {
 			if (Config.isUSE_RENDER()) {
 				try {
-					if (this == World.getPlayerAircraft())
-						((CockpitBF_109Bx) Main3D.cur3D().cockpitCur).removeCanopy();
-				} catch (Exception exception) {
-				}
+					if (this == World.getPlayerAircraft()) { ((CockpitBF_109Bx) Main3D.cur3D().cockpitCur).removeCanopy(); }
+				} catch (Exception exception) {}
 			}
 			this.hierMesh().hideSubTrees("Blister1_D0");
 			Wreckage wreckage = new Wreckage(this, this.hierMesh().chunkFind("Blister1_D0"));
@@ -78,12 +69,9 @@ public abstract class BF_109_Early extends BF_109 {
 	}
 
 	private void partsVisibilty() {
-		if (!Config.isUSE_RENDER())
-			return;
-		if (!this.FM.isPlayers())
-			return;
-		if (this != World.getPlayerAircraft())
-			return;
+		if (!Config.isUSE_RENDER()) { return; }
+		if (!this.FM.isPlayers()) { return; }
+		if (this != World.getPlayerAircraft()) { return; }
 		boolean isOutside = Main3D.cur3D().isViewOutside();
 		this.hierMesh().chunkVisible("CF_D0", isOutside);
 		this.hierMesh().chunkVisible("Blister1_D0", isOutside && this.bHasBlister);
@@ -93,10 +81,8 @@ public abstract class BF_109_Early extends BF_109 {
 			this.hierMesh().chunkVisible("CF_D3", false);
 		}
 		Point3d point3d = this.pos.getAbsPoint();
-		if (point3d.z - World.land().HQ(point3d.x, point3d.y) < 0.01D)
-			this.hierMesh().chunkVisible("CF_D0", true);
-		if (this.FM.AS.bIsAboutToBailout)
-			this.hierMesh().chunkVisible("Blister1_D0", false);
+		if (point3d.z - World.land().HQ(point3d.x, point3d.y) < 0.01D) { this.hierMesh().chunkVisible("CF_D0", true); }
+		if (this.FM.AS.bIsAboutToBailout) { this.hierMesh().chunkVisible("Blister1_D0", false); }
 	}
 
 	public static void moveGear(HierMesh hiermesh, float f) {
@@ -162,8 +148,7 @@ public abstract class BF_109_Early extends BF_109 {
 			this.resetYPRmodifier();
 			this.hierMesh().chunkSetAngles("Blister1_D0", 0.0F, 100F * f, 0.0F);
 			if (Config.isUSE_RENDER()) {
-				if (Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null)
-					Main3D.cur3D().cockpits[0].onDoorMoved(f);
+				if (Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null) { Main3D.cur3D().cockpits[0].onDoorMoved(f); }
 				this.setDoorSnd(f);
 			}
 		}
@@ -178,12 +163,11 @@ public abstract class BF_109_Early extends BF_109 {
 		Property.set(airClass, "cockpitClass", new Class[] { CockpitBF_109Bx.class });
 		Property.set(airClass, "LOSElevation", 0.74985F);
 		Aircraft.weaponTriggersRegister(airClass, new int[] { 0, 0, 1, 1, 1 });
-		Aircraft.weaponHooksRegister(airClass,
-				new String[] { "_MGUN01", "_MGUN02", "_CANNON03", "_CANNON01", "_CANNON02" });
+		Aircraft.weaponHooksRegister(airClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON03", "_CANNON01", "_CANNON02" });
 	}
 
-	public float cockpitDoor_;
-	private float fMaxKMHSpeedForOpenCanopy;
-	private float kangle;
+	public float   cockpitDoor_;
+	private float  fMaxKMHSpeedForOpenCanopy;
+	private float  kangle;
 	public boolean bHasBlister;
 }

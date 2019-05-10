@@ -106,160 +106,149 @@ import com.maddox.util.HashMapExt;
 import com.maddox.util.HashMapInt;
 import com.maddox.util.NumberTokenizer;
 
-public abstract class Aircraft extends NetAircraft implements MsgCollisionListener, MsgCollisionRequestListener,
-		MsgExplosionListener, MsgShotListener, MsgEndActionListener, Predator {
-	private boolean wfrGr21dropped;
-	public float headingBug;
-	public int idleTimeOnCarrier;
+public abstract class Aircraft extends NetAircraft implements MsgCollisionListener, MsgCollisionRequestListener, MsgExplosionListener, MsgShotListener, MsgEndActionListener, Predator {
+	private boolean                      wfrGr21dropped;
+	public float                         headingBug;
+	public int                           idleTimeOnCarrier;
 	private static final java.lang.Class planesWithZBReceiver[];
-	public int armingSeed;
-	public RangeRandom armingRnd;
+	public int                           armingSeed;
+	public RangeRandom                   armingRnd;
 
 	static {
-		planesWithZBReceiver = (new java.lang.Class[] { F4U.class, F4F.class, TBF.class, SBD.class, PBYX.class,
-				F6F.class, F2A2.class, SEAFIRE3.class, SEAFIRE3F.class, Fulmar.class, Swordfish.class, MOSQUITO.class,
-				B_25.class, A_20.class, B_17.class, B_24.class, B_29.class, BEAU.class, P_80.class, P_39.class,
-				P_51.class, P_47.class, P_40.class, P_38.class, P_36.class, A_20.class, C_47.class });
+		planesWithZBReceiver = new java.lang.Class[] { F4U.class, F4F.class, TBF.class, SBD.class, PBYX.class, F6F.class, F2A2.class, SEAFIRE3.class, SEAFIRE3F.class, Fulmar.class, Swordfish.class, MOSQUITO.class, B_25.class, A_20.class, B_17.class,
+				B_24.class, B_29.class, BEAU.class, P_80.class, P_39.class, P_51.class, P_47.class, P_40.class, P_38.class, P_36.class, A_20.class, C_47.class };
 	}
 
-	public long tmSearchlighted;
-	public static final float MINI_HIT = 5.0000006E-7F;
-	public static final float defaultUnitHit = 0.01F;
-	public static final float powerPerMM = 1700.0F;
-	public static final int HIT_COLLISION = 0;
-	public static final int HIT_EXPLOSION = 1;
-	public static final int HIT_SHOT = 2;
-	protected static float[] ypr = { 0.0F, 0.0F, 0.0F };
-	protected static float[] xyz = { 0.0F, 0.0F, 0.0F };
-	public static final int _AILERON_L = 0;
-	public static final int _AILERON_R = 1;
-	public static final int _FUSELAGE = 2;
-	public static final int _ENGINE_1 = 3;
-	public static final int _ENGINE_2 = 4;
-	public static final int _ENGINE_3 = 5;
-	public static final int _ENGINE_4 = 6;
-	public static final int _GEAR_C = 7;
-	public static final int _FLAP_R = 8;
-	public static final int _GEAR_L = 9;
-	public static final int _GEAR_R = 10;
-	public static final int _VER_STAB_1 = 11;
-	public static final int _VER_STAB_2 = 12;
-	public static final int _NOSE = 13;
-	public static final int _OIL = 14;
-	public static final int _RUDDER_1 = 15;
-	public static final int _RUDDER_2 = 16;
-	public static final int _HOR_STAB_L = 17;
-	public static final int _HOR_STAB_R = 18;
-	public static final int _TAIL_1 = 19;
-	public static final int _TAIL_2 = 20;
-	public static final int _TANK_1 = 21;
-	public static final int _TANK_2 = 22;
-	public static final int _TANK_3 = 23;
-	public static final int _TANK_4 = 24;
-	public static final int _TURRET_1 = 25;
-	public static final int _TURRET_2 = 26;
-	public static final int _TURRET_3 = 27;
-	public static final int _TURRET_4 = 28;
-	public static final int _TURRET_5 = 29;
-	public static final int _TURRET_6 = 30;
-	public static final int _ELEVATOR_L = 31;
-	public static final int _ELEVATOR_R = 32;
-	public static final int _WING_ROOT_L = 33;
-	public static final int _WING_MIDDLE_L = 34;
-	public static final int _WING_END_L = 35;
-	public static final int _WING_ROOT_R = 36;
-	public static final int _WING_MIDDLE_R = 37;
-	public static final int _WING_END_R = 38;
-	public static final int _FLAP_01 = 39;
-	public static final int _FLAP_02 = 40;
-	public static final int _FLAP_03 = 41;
-	public static final int _FLAP_04 = 42;
-	public static final int _NULLPART = 43;
-	public static final int _NOMOREPARTS = 44;
-	private static final String[] partNames = { "AroneL", "AroneR", "CF", "Engine1", "Engine2", "Engine3", "Engine4",
-			"GearC2", "FlapR", "GearL2", "GearR2", "Keel1", "Keel2", "Nose", "Oil", "Rudder1", "Rudder2", "StabL",
-			"StabR", "Tail1", "Tail2", "Tank1", "Tank2", "Tank3", "Tank4", "Turret1B", "Turret2B", "Turret3B",
-			"Turret4B", "Turret5B", "Turret6B", "VatorL", "VatorR", "WingLIn", "WingLMid", "WingLOut", "WingRIn",
-			"WingRMid", "WingROut", "Flap01", "Flap02", "Flap03", "Flap04", "NullPart", "EXPIRED" };
-	private static final String[] partNamesForAll = { "AroneL", "AroneR", "CF", "GearL2", "GearR2", "Keel1", "Oil",
-			"Rudder1", "StabL", "StabR", "Tail1", "VatorL", "VatorR", "WingLIn", "WingLMid", "WingLOut", "WingRIn",
-			"WingRMid", "WingROut" };
-	public static final int END_EXPLODE = 2;
-	public static final int END_FM_DESTROY = 3;
-	public static final int END_DISAPPEAR = 4;
-	private long timePostEndAction = -1L;
-	public boolean buried = false;
-	private float EpsCoarse_ = 0.03F;
-	private float EpsSmooth_ = 0.0030F;
-	private float EpsVerySmooth_ = 5.0E-4F;
-	private float Gear_;
-	private float Rudder_;
-	private float Elevator_;
-	private float Aileron_;
-	private float Flap_;
-	private float BayDoor_ = 0.0F;
-	private float AirBrake_ = 0.0F;
-	private float Steering_ = 0.0F;
-	public float wingfold_ = 0.0F;
-	public float cockpitDoor_ = 0.0F;
-	public float arrestor_ = 0.0F;
-	protected float[] propPos = { 0.0F, 21.6F, 45.9F, 66.9F, 45.0F, 9.2F };
+	public long                    tmSearchlighted;
+	public static final float      MINI_HIT          = 5.0000006E-7F;
+	public static final float      defaultUnitHit    = 0.01F;
+	public static final float      powerPerMM        = 1700.0F;
+	public static final int        HIT_COLLISION     = 0;
+	public static final int        HIT_EXPLOSION     = 1;
+	public static final int        HIT_SHOT          = 2;
+	protected static float[]       ypr               = { 0.0F, 0.0F, 0.0F };
+	protected static float[]       xyz               = { 0.0F, 0.0F, 0.0F };
+	public static final int        _AILERON_L        = 0;
+	public static final int        _AILERON_R        = 1;
+	public static final int        _FUSELAGE         = 2;
+	public static final int        _ENGINE_1         = 3;
+	public static final int        _ENGINE_2         = 4;
+	public static final int        _ENGINE_3         = 5;
+	public static final int        _ENGINE_4         = 6;
+	public static final int        _GEAR_C           = 7;
+	public static final int        _FLAP_R           = 8;
+	public static final int        _GEAR_L           = 9;
+	public static final int        _GEAR_R           = 10;
+	public static final int        _VER_STAB_1       = 11;
+	public static final int        _VER_STAB_2       = 12;
+	public static final int        _NOSE             = 13;
+	public static final int        _OIL              = 14;
+	public static final int        _RUDDER_1         = 15;
+	public static final int        _RUDDER_2         = 16;
+	public static final int        _HOR_STAB_L       = 17;
+	public static final int        _HOR_STAB_R       = 18;
+	public static final int        _TAIL_1           = 19;
+	public static final int        _TAIL_2           = 20;
+	public static final int        _TANK_1           = 21;
+	public static final int        _TANK_2           = 22;
+	public static final int        _TANK_3           = 23;
+	public static final int        _TANK_4           = 24;
+	public static final int        _TURRET_1         = 25;
+	public static final int        _TURRET_2         = 26;
+	public static final int        _TURRET_3         = 27;
+	public static final int        _TURRET_4         = 28;
+	public static final int        _TURRET_5         = 29;
+	public static final int        _TURRET_6         = 30;
+	public static final int        _ELEVATOR_L       = 31;
+	public static final int        _ELEVATOR_R       = 32;
+	public static final int        _WING_ROOT_L      = 33;
+	public static final int        _WING_MIDDLE_L    = 34;
+	public static final int        _WING_END_L       = 35;
+	public static final int        _WING_ROOT_R      = 36;
+	public static final int        _WING_MIDDLE_R    = 37;
+	public static final int        _WING_END_R       = 38;
+	public static final int        _FLAP_01          = 39;
+	public static final int        _FLAP_02          = 40;
+	public static final int        _FLAP_03          = 41;
+	public static final int        _FLAP_04          = 42;
+	public static final int        _NULLPART         = 43;
+	public static final int        _NOMOREPARTS      = 44;
+	private static final String[]  partNames         = { "AroneL", "AroneR", "CF", "Engine1", "Engine2", "Engine3", "Engine4", "GearC2", "FlapR", "GearL2", "GearR2", "Keel1", "Keel2", "Nose", "Oil", "Rudder1", "Rudder2", "StabL", "StabR", "Tail1",
+			"Tail2", "Tank1", "Tank2", "Tank3", "Tank4", "Turret1B", "Turret2B", "Turret3B", "Turret4B", "Turret5B", "Turret6B", "VatorL", "VatorR", "WingLIn", "WingLMid", "WingLOut", "WingRIn", "WingRMid", "WingROut", "Flap01", "Flap02", "Flap03",
+			"Flap04", "NullPart", "EXPIRED" };
+	private static final String[]  partNamesForAll   = { "AroneL", "AroneR", "CF", "GearL2", "GearR2", "Keel1", "Oil", "Rudder1", "StabL", "StabR", "Tail1", "VatorL", "VatorR", "WingLIn", "WingLMid", "WingLOut", "WingRIn", "WingRMid", "WingROut" };
+	public static final int        END_EXPLODE       = 2;
+	public static final int        END_FM_DESTROY    = 3;
+	public static final int        END_DISAPPEAR     = 4;
+	private long                   timePostEndAction = -1L;
+	public boolean                 buried            = false;
+	private float                  EpsCoarse_        = 0.03F;
+	private float                  EpsSmooth_        = 0.0030F;
+	private float                  EpsVerySmooth_    = 5.0E-4F;
+	private float                  Gear_;
+	private float                  Rudder_;
+	private float                  Elevator_;
+	private float                  Aileron_;
+	private float                  Flap_;
+	private float                  BayDoor_          = 0.0F;
+	private float                  AirBrake_         = 0.0F;
+	private float                  Steering_         = 0.0F;
+	public float                   wingfold_         = 0.0F;
+	public float                   cockpitDoor_      = 0.0F;
+	public float                   arrestor_         = 0.0F;
+	protected float[]              propPos           = { 0.0F, 21.6F, 45.9F, 66.9F, 45.0F, 9.2F };
 	// TODO: Edited by |ZUTI|
 	// Changed from protected to public
 	// ---------------------------------------------------------------------------------------------------------
-	public int[] oldProp = { 0, 0, 0, 0, 0, 0 };
-	public static final String[][] Props = { { "Prop1_D0", "PropRot1_D0", "Prop1_D1" },
-			{ "Prop2_D0", "PropRot2_D0", "Prop2_D1" }, { "Prop3_D0", "PropRot3_D0", "Prop3_D1" },
-			{ "Prop4_D0", "PropRot4_D0", "Prop4_D1" }, { "Prop5_D0", "PropRot5_D0", "Prop5_D1" },
-			{ "Prop6_D0", "PropRot6_D0", "Prop6_D1" } };
+	public int[]                   oldProp           = { 0, 0, 0, 0, 0, 0 };
+	public static final String[][] Props             = { { "Prop1_D0", "PropRot1_D0", "Prop1_D1" }, { "Prop2_D0", "PropRot2_D0", "Prop2_D1" }, { "Prop3_D0", "PropRot3_D0", "Prop3_D1" }, { "Prop4_D0", "PropRot4_D0", "Prop4_D1" },
+			{ "Prop5_D0", "PropRot5_D0", "Prop5_D1" }, { "Prop6_D0", "PropRot6_D0", "Prop6_D1" } };
 	// ---------------------------------------------------------------------------------------------------------
-	private LightPointWorld[] lLight;
-	private Hook[] lLightHook = { null, null, null, null };
-	private static Loc lLightLoc1 = new Loc();
-	private static Point3d lLightP1 = new Point3d();
-	private static Point3d lLightP2 = new Point3d();
-	private static Point3d lLightPL = new Point3d();
-	private String _loadingCountry;
-	private String typedName = "UNKNOWN";
-	private static String[] _skinMat = { "prop", "Gloss1D0o", "Gloss1D1o", "Gloss1D2o", "Gloss2D0o", "Gloss2D1o",
-			"Gloss2D2o", "Gloss1D0p", "Gloss1D1p", "Gloss1D2p", "Gloss2D0p", "Gloss2D1p", "Gloss2D2p", "Gloss1D0q",
-			"Gloss1D1q", "Gloss1D2q", "Gloss2D0q", "Gloss2D1q", "Gloss2D2q", "Matt1D0o", "Matt1D1o", "Matt1D2o",
-			"Matt2D0o", "Matt2D1o", "Matt2D2o", "Matt1D0p", "Matt1D1p", "Matt1D2p", "Matt2D0p", "Matt2D1p", "Matt2D2p",
-			"Matt1D0q", "Matt1D1q", "Matt1D2q", "Matt2D0q", "Matt2D1q", "Matt2D2q" };
-	private static final String[] _curSkin = { "skin1o.tga", "skin1p.tga", "skin1q.tga" };
-	private static HashMapExt meshCache = new HashMapExt();
-	private static HashMapExt airCache = new HashMapExt();
-	protected static Loc tmpLocCell = new Loc();
-	protected static Vector3d v1 = new Vector3d();
-	private static Vector3d Vd = new Vector3d();
-	protected static Point3d Pd = new Point3d();
-	protected static Point3d tmpP1 = new Point3d();
-	protected static Point3d tmpP2 = new Point3d();
-	public static Loc tmpLoc1 = new Loc();
-	protected static Loc tmpLoc2 = new Loc();
-	protected static Loc tmpLoc3 = new Loc();
-	protected static Loc tmpLocExp = new Loc();
-	public static Orient tmpOr = new Orient();
-	private static int tmpBonesHit;
-	private static boolean bWasAlive = true;
+	private LightPointWorld[]      lLight;
+	private Hook[]                 lLightHook        = { null, null, null, null };
+	private static Loc             lLightLoc1        = new Loc();
+	private static Point3d         lLightP1          = new Point3d();
+	private static Point3d         lLightP2          = new Point3d();
+	private static Point3d         lLightPL          = new Point3d();
+	private String                 _loadingCountry;
+	private String                 typedName         = "UNKNOWN";
+	private static String[]        _skinMat          = { "prop", "Gloss1D0o", "Gloss1D1o", "Gloss1D2o", "Gloss2D0o", "Gloss2D1o", "Gloss2D2o", "Gloss1D0p", "Gloss1D1p", "Gloss1D2p", "Gloss2D0p", "Gloss2D1p", "Gloss2D2p", "Gloss1D0q", "Gloss1D1q",
+			"Gloss1D2q", "Gloss2D0q", "Gloss2D1q", "Gloss2D2q", "Matt1D0o", "Matt1D1o", "Matt1D2o", "Matt2D0o", "Matt2D1o", "Matt2D2o", "Matt1D0p", "Matt1D1p", "Matt1D2p", "Matt2D0p", "Matt2D1p", "Matt2D2p", "Matt1D0q", "Matt1D1q", "Matt1D2q", "Matt2D0q",
+			"Matt2D1q", "Matt2D2q" };
+	private static final String[]  _curSkin          = { "skin1o.tga", "skin1p.tga", "skin1q.tga" };
+	private static HashMapExt      meshCache         = new HashMapExt();
+	private static HashMapExt      airCache          = new HashMapExt();
+	protected static Loc           tmpLocCell        = new Loc();
+	protected static Vector3d      v1                = new Vector3d();
+	private static Vector3d        Vd                = new Vector3d();
+	protected static Point3d       Pd                = new Point3d();
+	protected static Point3d       tmpP1             = new Point3d();
+	protected static Point3d       tmpP2             = new Point3d();
+	public static Loc              tmpLoc1           = new Loc();
+	protected static Loc           tmpLoc2           = new Loc();
+	protected static Loc           tmpLoc3           = new Loc();
+	protected static Loc           tmpLocExp         = new Loc();
+	public static Orient           tmpOr             = new Orient();
+	private static int             tmpBonesHit;
+	private static boolean         bWasAlive         = true;
 
 	static class EndActionParam {
-		Actor initiator;
+		Actor      initiator;
 		Eff3DActor smoke;
 
 		public EndActionParam(Actor actor, Eff3DActor eff3dactor) {
-			initiator = actor;
-			smoke = eff3dactor;
+			this.initiator = actor;
+			this.smoke = eff3dactor;
 		}
 	}
 
 	private static class MsgExplosionPostVarSet {
-		Actor THIS;
-		String chunkName;
+		Actor   THIS;
+		String  chunkName;
 		Point3d p = new Point3d();
-		Actor initiator;
-		float power;
-		float radius;
+		Actor   initiator;
+		float   power;
+		float   radius;
 
 		private MsgExplosionPostVarSet() {
 			/* empty */
@@ -267,22 +256,22 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	public static class _WeaponSlot {
-		public int trigger;
+		public int   trigger;
 		public Class clazz;
-		public int bullets;
+		public int   bullets;
 
 		public _WeaponSlot(int i, String string, int i_0_) throws Exception {
-			trigger = i;
-			clazz = ObjIO.classForName("weapons." + string);
-			bullets = i_0_;
+			this.trigger = i;
+			this.clazz = ObjIO.classForName("weapons." + string);
+			this.bullets = i_0_;
 		}
 	}
 
 	static class CacheItem {
 		HierMesh mesh;
-		boolean bExistTextures;
-		int loaded;
-		long time;
+		boolean  bExistTextures;
+		int      loaded;
+		long     time;
 	}
 
 	public static String[] partNames() {
@@ -290,13 +279,11 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	public int part(String string) {
-		if (string == null)
-			return 43;
+		if (string == null) { return 43; }
 		int i = 0;
 //		long l = 1L;
 		while (i < 44) {
-			if (string.startsWith(partNames[i]))
-				return i;
+			if (string.startsWith(partNames[i])) { return i; }
 			i++;
 //			l <<= 1;
 		}
@@ -304,228 +291,205 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	public boolean cut(String string) {
-		FM.dryFriction = 1.0F;
-		debugprintln("" + string + " goes off..");
-		if (World.Rnd().nextFloat() < bailProbabilityOnCut(string)) {
-			debugprintln("BAILING OUT - " + string + " gone, can't keep on..");
-			hitDaSilk();
+		this.FM.dryFriction = 1.0F;
+		this.debugprintln("" + string + " goes off..");
+		if (World.Rnd().nextFloat() < this.bailProbabilityOnCut(string)) {
+			this.debugprintln("BAILING OUT - " + string + " gone, can't keep on..");
+			this.hitDaSilk();
 		}
-		if (!isChunkAnyDamageVisible(string)) {
-			debugprintln("" + string + " is already cut off - operation rejected..");
+		if (!this.isChunkAnyDamageVisible(string)) {
+			this.debugprintln("" + string + " is already cut off - operation rejected..");
 			return false;
 		}
-		int[] is = hideSubTrees(string + "_D");
-		if (is == null)
-			return false;
+		int[] is = this.hideSubTrees(string + "_D");
+		if (is == null) { return false; }
 		for (int i = 0; i < is.length; i++) {
 			Wreckage wreckage = new Wreckage(this, is[i]);
 			for (int i_1_ = 0; i_1_ < 4; i_1_++) {
-				if (hierMesh().chunkName().startsWith(FM.AS.astateEffectChunks[i_1_ + 0]))
-					FM.AS.changeTankEffectBase(i_1_, wreckage);
+				if (this.hierMesh().chunkName().startsWith(this.FM.AS.astateEffectChunks[i_1_ + 0])) { this.FM.AS.changeTankEffectBase(i_1_, wreckage); }
 			}
-			for (int i_2_ = 0; i_2_ < FM.EI.getNum(); i_2_++) {
-				if (hierMesh().chunkName().startsWith(FM.AS.astateEffectChunks[i_2_ + 4])) {
-					FM.AS.changeEngineEffectBase(i_2_, wreckage);
-					FM.AS.changeSootEffectBase(i_2_, wreckage);
+			for (int i_2_ = 0; i_2_ < this.FM.EI.getNum(); i_2_++) {
+				if (this.hierMesh().chunkName().startsWith(this.FM.AS.astateEffectChunks[i_2_ + 4])) {
+					this.FM.AS.changeEngineEffectBase(i_2_, wreckage);
+					this.FM.AS.changeSootEffectBase(i_2_, wreckage);
 				}
 			}
 			for (int i_3_ = 0; i_3_ < 6; i_3_++) {
-				if (hierMesh().chunkName().startsWith(FM.AS.astateEffectChunks[i_3_ + 12]))
-					FM.AS.changeNavLightEffectBase(i_3_, wreckage);
+				if (this.hierMesh().chunkName().startsWith(this.FM.AS.astateEffectChunks[i_3_ + 12])) { this.FM.AS.changeNavLightEffectBase(i_3_, wreckage); }
 			}
 			for (int i_4_ = 0; i_4_ < 4; i_4_++) {
-				if (hierMesh().chunkName().startsWith(FM.AS.astateEffectChunks[i_4_ + 18]))
-					FM.AS.changeLandingLightEffectBase(i_4_, wreckage);
+				if (this.hierMesh().chunkName().startsWith(this.FM.AS.astateEffectChunks[i_4_ + 18])) { this.FM.AS.changeLandingLightEffectBase(i_4_, wreckage); }
 			}
-			for (int i_5_ = 0; i_5_ < FM.EI.getNum(); i_5_++) {
-				if (hierMesh().chunkName().startsWith(FM.AS.astateEffectChunks[i_5_ + 22]))
-					FM.AS.changeOilEffectBase(i_5_, wreckage);
+			for (int i_5_ = 0; i_5_ < this.FM.EI.getNum(); i_5_++) {
+				if (this.hierMesh().chunkName().startsWith(this.FM.AS.astateEffectChunks[i_5_ + 22])) { this.FM.AS.changeOilEffectBase(i_5_, wreckage); }
 			}
-			if (hierMesh().chunkName().startsWith(string) && World.Rnd().nextInt(0, 99) < 50)
-				Eff3DActor.New(wreckage, null, null, 1.0F, Wreckage.SMOKE, 3.0F);
-			Vd.set(FM.Vwld);
+			if (this.hierMesh().chunkName().startsWith(string) && World.Rnd().nextInt(0, 99) < 50) { Eff3DActor.New(wreckage, null, null, 1.0F, Wreckage.SMOKE, 3.0F); }
+			Vd.set(this.FM.Vwld);
 			wreckage.setSpeed(Vd);
 		}
-		is = hierMesh().getSubTrees(string + "_D");
-		for (int i = 0; i < is.length; i++)
-			detachGun(is[i]);
-		String string_6_ = string + "_CAP";
-		if (hierMesh().chunkFindCheck(string_6_) >= 0)
-			hierMesh().chunkVisible(string_6_, true);
+		is = this.hierMesh().getSubTrees(string + "_D");
 		for (int i = 0; i < is.length; i++) {
-			for (int i_7_ = 3; i_7_ < FM.Gears.pnti.length; i_7_++) {
+			this.detachGun(is[i]);
+		}
+		String string_6_ = string + "_CAP";
+		if (this.hierMesh().chunkFindCheck(string_6_) >= 0) { this.hierMesh().chunkVisible(string_6_, true); }
+		for (int i = 0; i < is.length; i++) {
+			for (int i_7_ = 3; i_7_ < this.FM.Gears.pnti.length; i_7_++) {
 				try {
-					if (FM.Gears.pnti[i_7_] != -1 && is[i] == hierMesh().chunkByHookNamed(FM.Gears.pnti[i_7_]))
-						FM.Gears.pnti[i_7_] = -1;
+					if (this.FM.Gears.pnti[i_7_] != -1 && is[i] == this.hierMesh().chunkByHookNamed(this.FM.Gears.pnti[i_7_])) { this.FM.Gears.pnti[i_7_] = -1; }
 				} catch (Exception exception) {
-					System.out.println(
-							"FATAL ERROR: Gear pnti[] cut failed on tt[] = " + i_7_ + " - " + FM.Gears.pnti.length);
+					System.out.println("FATAL ERROR: Gear pnti[] cut failed on tt[] = " + i_7_ + " - " + this.FM.Gears.pnti.length);
 				}
 			}
 		}
-		hierMesh().setCurChunk(is[0]);
-		hierMesh().getChunkLocObj(tmpLoc1);
-		sfxCrash(tmpLoc1.getPoint());
+		this.hierMesh().setCurChunk(is[0]);
+		this.hierMesh().getChunkLocObj(tmpLoc1);
+		this.sfxCrash(tmpLoc1.getPoint());
 		return true;
 	}
 
 	public boolean cut_Subtrees(String string) {
-		debugprintln("" + string + " goes off..");
-		if (World.Rnd().nextFloat() < bailProbabilityOnCut(string)) {
-			debugprintln("BAILING OUT - " + string + " gone, can't keep on..");
-			hitDaSilk();
+		this.debugprintln("" + string + " goes off..");
+		if (World.Rnd().nextFloat() < this.bailProbabilityOnCut(string)) {
+			this.debugprintln("BAILING OUT - " + string + " gone, can't keep on..");
+			this.hitDaSilk();
 		}
-		if (!isChunkAnyDamageVisible(string)) {
-			debugprintln("" + string + " is already cut off - operation rejected..");
+		if (!this.isChunkAnyDamageVisible(string)) {
+			this.debugprintln("" + string + " is already cut off - operation rejected..");
 			return false;
 		}
-		int i = hierMesh().chunkFindCheck(string + "_D0");
+		int i = this.hierMesh().chunkFindCheck(string + "_D0");
 		if (i >= 0) {
 			int i_8_;
 			for (i_8_ = 0; i_8_ <= 9; i_8_++) {
-				int i_9_ = hierMesh().chunkFindCheck(string + "_D" + i_8_);
+				int i_9_ = this.hierMesh().chunkFindCheck(string + "_D" + i_8_);
 				if (i_9_ >= 0) {
-					hierMesh().setCurChunk(i_9_);
-					if (hierMesh().isChunkVisible())
-						break;
+					this.hierMesh().setCurChunk(i_9_);
+					if (this.hierMesh().isChunkVisible()) { break; }
 				}
 			}
-			if (i_8_ > 9)
-				i = -1;
+			if (i_8_ > 9) { i = -1; }
 		}
 		ActorMesh actormesh = null;
 		if (i >= 0) {
 			actormesh = Wreckage.makeWreck(this, i);
 			actormesh.setOwner(this, false, false, false);
 		}
-		int[] is = hideSubTrees(string + "_D");
-		if (is == null)
-			return false;
+		int[] is = this.hideSubTrees(string + "_D");
+		if (is == null) { return false; }
 		for (int i_10_ = 0; i_10_ < is.length; i_10_++) {
-			if (i < 0)
+			if (i < 0) {
 				actormesh = new Wreckage(this, is[i_10_]);
-			else
-				hierMesh().setCurChunk(is[i_10_]);
+			} else {
+				this.hierMesh().setCurChunk(is[i_10_]);
+			}
 			for (int i_11_ = 0; i_11_ < 4; i_11_++) {
-				if (hierMesh().chunkName().startsWith(FM.AS.astateEffectChunks[i_11_ + 0]))
-					FM.AS.changeTankEffectBase(i_11_, actormesh);
+				if (this.hierMesh().chunkName().startsWith(this.FM.AS.astateEffectChunks[i_11_ + 0])) { this.FM.AS.changeTankEffectBase(i_11_, actormesh); }
 			}
 			for (int i_12_ = 0; i_12_ < 4; i_12_++) {
-				if (hierMesh().chunkName().startsWith(FM.AS.astateEffectChunks[i_12_ + 4])) {
-					FM.AS.changeEngineEffectBase(i_12_, actormesh);
-					FM.AS.changeSootEffectBase(i_12_, actormesh);
+				if (this.hierMesh().chunkName().startsWith(this.FM.AS.astateEffectChunks[i_12_ + 4])) {
+					this.FM.AS.changeEngineEffectBase(i_12_, actormesh);
+					this.FM.AS.changeSootEffectBase(i_12_, actormesh);
 				}
 			}
-			if (hierMesh().chunkName().startsWith(string) && World.Rnd().nextInt(0, 99) < 50)
-				Eff3DActor.New(actormesh, null, null, 1.0F, Wreckage.SMOKE, 3.0F);
-			Vd.set(FM.Vwld);
-			if (i < 0)
+			if (this.hierMesh().chunkName().startsWith(string) && World.Rnd().nextInt(0, 99) < 50) { Eff3DActor.New(actormesh, null, null, 1.0F, Wreckage.SMOKE, 3.0F); }
+			Vd.set(this.FM.Vwld);
+			if (i < 0) {
 				((Wreckage) actormesh).setSpeed(Vd);
-			else
+			} else {
 				((Wreck) actormesh).setSpeed(Vd);
+			}
 		}
-		is = hierMesh().getSubTrees(string + "_D");
-		for (int i_13_ = 0; i_13_ < is.length; i_13_++)
-			detachGun(is[i_13_]);
+		is = this.hierMesh().getSubTrees(string + "_D");
+		for (int i_13_ = 0; i_13_ < is.length; i_13_++) {
+			this.detachGun(is[i_13_]);
+		}
 		String string_14_ = string + "_CAP";
-		if (hierMesh().chunkFindCheck(string_14_) >= 0)
-			hierMesh().chunkVisible(string_14_, true);
+		if (this.hierMesh().chunkFindCheck(string_14_) >= 0) { this.hierMesh().chunkVisible(string_14_, true); }
 		for (int i_15_ = 0; i_15_ < is.length; i_15_++) {
-			for (int i_16_ = 3; i_16_ < FM.Gears.pnti.length; i_16_++) {
+			for (int i_16_ = 3; i_16_ < this.FM.Gears.pnti.length; i_16_++) {
 				try {
-					if (FM.Gears.pnti[i_16_] != -1 && is[i_15_] == hierMesh().chunkByHookNamed(FM.Gears.pnti[i_16_]))
-						FM.Gears.pnti[i_16_] = -1;
+					if (this.FM.Gears.pnti[i_16_] != -1 && is[i_15_] == this.hierMesh().chunkByHookNamed(this.FM.Gears.pnti[i_16_])) { this.FM.Gears.pnti[i_16_] = -1; }
 				} catch (Exception exception) {
-					System.out.println(
-							"FATAL ERROR: Gear pnti[] cut failed on tt[] = " + i_16_ + " - " + FM.Gears.pnti.length);
+					System.out.println("FATAL ERROR: Gear pnti[] cut failed on tt[] = " + i_16_ + " - " + this.FM.Gears.pnti.length);
 				}
 			}
 		}
-		hierMesh().setCurChunk(is[0]);
-		hierMesh().getChunkLocObj(tmpLoc1);
-		sfxCrash(tmpLoc1.getPoint());
+		this.hierMesh().setCurChunk(is[0]);
+		this.hierMesh().getChunkLocObj(tmpLoc1);
+		this.sfxCrash(tmpLoc1.getPoint());
 		return true;
 	}
 
 	protected boolean cutFM(int i, int i_17_, Actor actor) {
-		FM.dryFriction = 1.0F;
+		this.FM.dryFriction = 1.0F;
 		switch (i) {
-		case 2:
-			if (isEnablePostEndAction(0.0))
-				postEndAction(0.0, actor, 2, null);
-			return false;
-		case 3:
-			if (FM.EI.engines.length > 0) {
-				hitProp(0, i_17_, actor);
-				FM.EI.engines[0].setEngineStuck(actor);
-			}
-			break;
-		case 4:
-			if (FM.EI.engines.length > 1) {
-				hitProp(1, i_17_, actor);
-				FM.EI.engines[1].setEngineStuck(actor);
-			}
-			break;
-		case 5:
-			if (FM.EI.engines.length > 2) {
-				hitProp(2, i_17_, actor);
-				FM.EI.engines[2].setEngineStuck(actor);
-			}
-			break;
-		case 6:
-			if (FM.EI.engines.length > 3) {
-				hitProp(3, i_17_, actor);
-				FM.EI.engines[3].setEngineStuck(actor);
-			}
-			break;
+			case 2:
+				if (this.isEnablePostEndAction(0.0)) { this.postEndAction(0.0, actor, 2, null); }
+				return false;
+			case 3:
+				if (this.FM.EI.engines.length > 0) {
+					this.hitProp(0, i_17_, actor);
+					this.FM.EI.engines[0].setEngineStuck(actor);
+				}
+				break;
+			case 4:
+				if (this.FM.EI.engines.length > 1) {
+					this.hitProp(1, i_17_, actor);
+					this.FM.EI.engines[1].setEngineStuck(actor);
+				}
+				break;
+			case 5:
+				if (this.FM.EI.engines.length > 2) {
+					this.hitProp(2, i_17_, actor);
+					this.FM.EI.engines[2].setEngineStuck(actor);
+				}
+				break;
+			case 6:
+				if (this.FM.EI.engines.length > 3) {
+					this.hitProp(3, i_17_, actor);
+					this.FM.EI.engines[3].setEngineStuck(actor);
+				}
+				break;
 		}
-		return cut(partNames[i]);
+		return this.cut(partNames[i]);
 	}
 
 	protected int curDMGLevel(int i) {
-		return curDMGLevel(partNames[i] + "_D0");
+		return this.curDMGLevel(partNames[i] + "_D0");
 	}
 
 	private int curDMGLevel(String string) {
 		int i = string.length() - 1;
-		if (i < 2)
-			return 0;
-		boolean bool = (string.charAt(i - 2) == '_' && Character.toUpperCase(string.charAt(i - 1)) == 'D'
-				&& Character.isDigit(string.charAt(i)));
-		if (!bool)
-			return 0;
-		HierMesh hiermesh = hierMesh();
+		if (i < 2) { return 0; }
+		boolean bool = string.charAt(i - 2) == '_' && Character.toUpperCase(string.charAt(i - 1)) == 'D' && Character.isDigit(string.charAt(i));
+		if (!bool) { return 0; }
+		HierMesh hiermesh = this.hierMesh();
 		String string_18_ = string.substring(0, i);
 		int i_19_;
 		for (i_19_ = 0; i_19_ < 10; i_19_++) {
 			String string_20_ = string_18_ + i_19_;
-			if (hiermesh.chunkFindCheck(string_20_) < 0)
-				return 0;
-			if (hiermesh.isChunkVisible(string_20_))
-				break;
+			if (hiermesh.chunkFindCheck(string_20_) < 0) { return 0; }
+			if (hiermesh.isChunkVisible(string_20_)) { break; }
 		}
-		if (i_19_ == 10)
-			return 0;
+		if (i_19_ == 10) { return 0; }
 		return i_19_;
 	}
 
 	protected void nextDMGLevel(String string, int i, Actor actor) {
 		int i_21_ = string.length() - 1;
-		HierMesh hiermesh = hierMesh();
+		HierMesh hiermesh = this.hierMesh();
 		String string_22_ = string;
-		boolean bool = (string.charAt(i_21_ - 2) == '_' && Character.toUpperCase(string.charAt(i_21_ - 1)) == 'D'
-				&& Character.isDigit(string.charAt(i_21_)));
-		FM.dryFriction = 1.0F;
+		boolean bool = string.charAt(i_21_ - 2) == '_' && Character.toUpperCase(string.charAt(i_21_ - 1)) == 'D' && Character.isDigit(string.charAt(i_21_));
+		this.FM.dryFriction = 1.0F;
 		String string_23_;
 		if (bool) {
 			int i_24_ = string.charAt(i_21_) - 48;
 			String string_25_ = string.substring(0, i_21_);
 			while_0_: do {
 				do {
-					if (hiermesh.isChunkVisible(string_22_))
-						break while_0_;
-					if (i_24_ >= 9)
-						break;
+					if (hiermesh.isChunkVisible(string_22_)) { break while_0_; }
+					if (i_24_ >= 9) { break; }
 					i_24_++;
 					string_22_ = string_25_ + i_24_;
 				} while (hiermesh.chunkFindCheck(string_22_) >= 0);
@@ -534,22 +498,20 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 			if (i_24_ < 9) {
 				i_24_++;
 				string_23_ = string_25_ + i_24_;
-				if (hiermesh.chunkFindCheck(string_23_) < 0)
-					string_23_ = null;
-			} else
+				if (hiermesh.chunkFindCheck(string_23_) < 0) { string_23_ = null; }
+			} else {
 				string_23_ = null;
+			}
 			string_25_ = string.substring(0, i_21_ - 2);
 		} else {
-			if (!hiermesh.isChunkVisible(string_22_))
-				return;
+			if (!hiermesh.isChunkVisible(string_22_)) { return; }
 			string_23_ = null;
 		}
 		if (string_23_ == null) {
-			if (!isNet() || isNetMaster())
-				nextCUTLevel(string, i, actor);
+			if (!this.isNet() || this.isNetMaster()) { this.nextCUTLevel(string, i, actor); }
 		} else {
-			int i_27_ = part(string);
-			FM.hit(i_27_);
+			int i_27_ = this.part(string);
+			this.FM.hit(i_27_);
 			hiermesh.chunkVisible(string_22_, false);
 			hiermesh.chunkVisible(string_23_, true);
 		}
@@ -557,12 +519,10 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 
 	protected void nextDMGLevels(int i, int i_28_, String string, Actor actor) {
 		if (i > 0) {
-			if (i > 4)
-				i = 4;
+			if (i > 4) { i = 4; }
 			if (this != World.getPlayerAircraft() || World.cur().diffCur.Vulnerability) {
-				if (isNet()) {
-					if (isNetPlayer() && !World.cur().diffCur.Vulnerability || !Actor.isValid(actor))
-						return;
+				if (this.isNet()) {
+					if (this.isNetPlayer() && !World.cur().diffCur.Vulnerability || !Actor.isValid(actor)) { return; }
 
 					// TODO: Added by |ZUTI|: manage player vulnerability
 					// ---------------------------------------------------
@@ -572,218 +532,194 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 					}
 					// ---------------------------------------------------
 
-					int i_29_ = part(string);
-					if (!isNetMaster())
-						netPutHits(true, null, i, i_28_, i_29_, actor);
-					netPutHits(false, null, i, i_28_, i_29_, actor);
-					if (actor != this && FM.isPlayers() && actor instanceof Aircraft && ((Aircraft) actor).isNetPlayer()
-							&& i_28_ != 0 && i > 3) {
+					int i_29_ = this.part(string);
+					if (!this.isNetMaster()) { this.netPutHits(true, null, i, i_28_, i_29_, actor); }
+					this.netPutHits(false, null, i, i_28_, i_29_, actor);
+					if (actor != this && this.FM.isPlayers() && actor instanceof Aircraft && ((Aircraft) actor).isNetPlayer() && i_28_ != 0 && i > 3) {
 						if (string.startsWith("Wing")) {
-							if (!FM.isSentBuryNote())
-								Chat.sendLogRnd(3, "gore_blowwing", (Aircraft) actor, this);
-							FM.setSentWingNote(true);
-						} else if (string.startsWith("Tail") && !FM.isSentBuryNote())
-							Chat.sendLogRnd(3, "gore_blowtail", (Aircraft) actor, this);
+							if (!this.FM.isSentBuryNote()) { Chat.sendLogRnd(3, "gore_blowwing", (Aircraft) actor, this); }
+							this.FM.setSentWingNote(true);
+						} else if (string.startsWith("Tail") && !this.FM.isSentBuryNote()) { Chat.sendLogRnd(3, "gore_blowtail", (Aircraft) actor, this); }
 					}
 				}
-				while (i-- > 0)
-					nextDMGLevel(string, i_28_, actor);
+				while (i-- > 0) {
+					this.nextDMGLevel(string, i_28_, actor);
+				}
 			}
 		}
 	}
 
 	protected void nextCUTLevel(String string, int i, Actor actor) {
-		FM.dryFriction = 1.0F;
-		debugprintln("Detected NCL in " + string + "..");
+		this.FM.dryFriction = 1.0F;
+		this.debugprintln("Detected NCL in " + string + "..");
 		if (this != World.getPlayerAircraft() || World.cur().diffCur.Vulnerability) {
 			int i_30_ = string.length() - 1;
-			HierMesh hiermesh = hierMesh();
+			HierMesh hiermesh = this.hierMesh();
 			String string_31_ = string;
-			boolean bool = (string.charAt(i_30_ - 2) == '_' && Character.toUpperCase(string.charAt(i_30_ - 1)) == 'D'
-					&& Character.isDigit(string.charAt(i_30_)));
-			if (!bool && !hiermesh.isChunkVisible(string_31_)) {
-				return;
-			}
-			int i_34_ = part(string);
-			if (cutFM(i_34_, i, actor)) {
-				FM.cut(i_34_, i, actor);
-				netPutCut(i_34_, i, actor);
-				if (FM.isPlayers() && this != actor && actor instanceof Aircraft && ((Aircraft) actor).isNetPlayer()
-						&& i == 2 && !FM.isSentWingNote() && !FM.isSentBuryNote()
-						&& (i_34_ == 34 || i_34_ == 37 || i_34_ == 33 || i_34_ == 36)) {
+			boolean bool = string.charAt(i_30_ - 2) == '_' && Character.toUpperCase(string.charAt(i_30_ - 1)) == 'D' && Character.isDigit(string.charAt(i_30_));
+			if (!bool && !hiermesh.isChunkVisible(string_31_)) { return; }
+			int i_34_ = this.part(string);
+			if (this.cutFM(i_34_, i, actor)) {
+				this.FM.cut(i_34_, i, actor);
+				this.netPutCut(i_34_, i, actor);
+				if (this.FM.isPlayers() && this != actor && actor instanceof Aircraft && ((Aircraft) actor).isNetPlayer() && i == 2 && !this.FM.isSentWingNote() && !this.FM.isSentBuryNote() && (i_34_ == 34 || i_34_ == 37 || i_34_ == 33 || i_34_ == 36)) {
 					Chat.sendLogRnd(3, "gore_sawwing", (Aircraft) actor, this);
-					FM.setSentWingNote(true);
+					this.FM.setSentWingNote(true);
 				}
 			}
 		}
 	}
 
 	public boolean isEnablePostEndAction(double d) {
-		if (timePostEndAction < 0L)
-			return true;
+		if (this.timePostEndAction < 0L) { return true; }
 		long l = Time.current() + (int) (d * 1000.0);
-		if (l < timePostEndAction)
-			return true;
+		if (l < this.timePostEndAction) { return true; }
 		return false;
 	}
 
 	public void postEndAction(double d, Actor actor, int i, Eff3DActor eff3dactor) {
-		if (isEnablePostEndAction(d)) {
-			timePostEndAction = Time.current() + (int) (d * 1000.0);
+		if (this.isEnablePostEndAction(d)) {
+			this.timePostEndAction = Time.current() + (int) (d * 1000.0);
 			MsgEndAction.post(0, d, this, new EndActionParam(actor, eff3dactor), i);
 		}
 	}
 
 	public void msgEndAction(Object object, int i) {
 		EndActionParam endactionparam = (EndActionParam) object;
-		if (isAlive()) {
-			if (FM.isPlayers() && !FM.isSentBuryNote()) {
+		if (this.isAlive()) {
+			if (this.FM.isPlayers() && !this.FM.isSentBuryNote()) {
 				switch (i) {
-				case 2:
-					if (Actor.isAlive(endactionparam.initiator) && endactionparam.initiator instanceof Aircraft
-							&& ((Aircraft) endactionparam.initiator).isNetPlayer()
-							&& (FM.Loc.z - Engine.land().HQ_Air(FM.Loc.x, FM.Loc.y) > 100.0))
-						Chat.sendLogRnd(1, "gore_blowup", (Aircraft) endactionparam.initiator, this);
-					break;
+					case 2:
+						if (Actor.isAlive(endactionparam.initiator) && endactionparam.initiator instanceof Aircraft && ((Aircraft) endactionparam.initiator).isNetPlayer() && this.FM.Loc.z - Engine.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y) > 100.0) {
+							Chat.sendLogRnd(1, "gore_blowup", (Aircraft) endactionparam.initiator, this);
+						}
+						break;
 				}
 			}
 			switch (i) {
-			case 2: {
-				netExplode();
-				if (endactionparam.smoke != null) {
-					Eff3DActor.finish(endactionparam.smoke);
-					sfxSmokeState(0, 0, false);
-				}
-				doExplosion();
-				for (int i_35_ = 0; i_35_ < FM.AS.astateEngineStates.length; i_35_++)
-					FM.AS.hitEngine(this, i_35_, 1000);
-				for (int i_36_ = 0; i_36_ < FM.AS.astateTankStates.length; i_36_++)
-					FM.AS.hitTank(this, i_36_, 1000);
-				float f = 50.0F;
-				Actor actor = null;
-				String string = null;
-				if (FM.Gears.onGround() && FM.Vrel.lengthSquared() < 70.0)
-					f = 0.0F;
-				else {
-					Point3d point3d = new Point3d(FM.Loc);
-					Point3d point3d_37_ = new Point3d(FM.Loc);
-					Point3d point3d_38_ = new Point3d();
-					FM.Vrel.set(FM.Vwld);
-					FM.Vrel.normalize();
-					FM.Vrel.scale(20.0);
-					point3d_37_.add(FM.Vrel);
-					actor = Engine.collideEnv().getLine(point3d, point3d_37_, false, this, point3d_38_);
-					if (Actor.isAlive(actor) && actor instanceof ActorHMesh) {
-						Mesh mesh = ((ActorMesh) actor).mesh();
-						Loc loc = actor.pos.getAbs();
-						float f_39_ = mesh.detectCollisionLine(loc, point3d, point3d_37_);
-						if (f_39_ >= 0.0F)
-							string = Mesh.collisionChunk(0);
-						if (actor instanceof BigshipGeneric || actor instanceof ShipGeneric) {
-							float f_40_ = 0.018F * (float) FM.Vwld.length();
-							if (f_40_ > 1.0F)
-								f_40_ = 1.0F;
-							if (f_40_ < 0.1F)
-								f_40_ = 0.1F;
-							float f_41_ = FM.M.fuel;
-							if (f_41_ > 300.0F)
-								f_41_ = 300.0F;
-							f = f_40_ * (50.0F + 0.7F * FM.CT.getWeaponMass() + 0.3F * f_41_);
+				case 2: {
+					this.netExplode();
+					if (endactionparam.smoke != null) {
+						Eff3DActor.finish(endactionparam.smoke);
+						this.sfxSmokeState(0, 0, false);
+					}
+					this.doExplosion();
+					for (int i_35_ = 0; i_35_ < this.FM.AS.astateEngineStates.length; i_35_++) {
+						this.FM.AS.hitEngine(this, i_35_, 1000);
+					}
+					for (int i_36_ = 0; i_36_ < this.FM.AS.astateTankStates.length; i_36_++) {
+						this.FM.AS.hitTank(this, i_36_, 1000);
+					}
+					float f = 50.0F;
+					Actor actor = null;
+					String string = null;
+					if (this.FM.Gears.onGround() && this.FM.Vrel.lengthSquared() < 70.0) {
+						f = 0.0F;
+					} else {
+						Point3d point3d = new Point3d(this.FM.Loc);
+						Point3d point3d_37_ = new Point3d(this.FM.Loc);
+						Point3d point3d_38_ = new Point3d();
+						this.FM.Vrel.set(this.FM.Vwld);
+						this.FM.Vrel.normalize();
+						this.FM.Vrel.scale(20.0);
+						point3d_37_.add(this.FM.Vrel);
+						actor = Engine.collideEnv().getLine(point3d, point3d_37_, false, this, point3d_38_);
+						if (Actor.isAlive(actor) && actor instanceof ActorHMesh) {
+							Mesh mesh = ((ActorMesh) actor).mesh();
+							Loc loc = actor.pos.getAbs();
+							float f_39_ = mesh.detectCollisionLine(loc, point3d, point3d_37_);
+							if (f_39_ >= 0.0F) { string = Mesh.collisionChunk(0); }
+							if (actor instanceof BigshipGeneric || actor instanceof ShipGeneric) {
+								float f_40_ = 0.018F * (float) this.FM.Vwld.length();
+								if (f_40_ > 1.0F) { f_40_ = 1.0F; }
+								if (f_40_ < 0.1F) { f_40_ = 0.1F; }
+								float f_41_ = this.FM.M.fuel;
+								if (f_41_ > 300.0F) { f_41_ = 300.0F; }
+								f = f_40_ * (50.0F + 0.7F * this.FM.CT.getWeaponMass() + 0.3F * f_41_);
+							}
 						}
 					}
+					float f_42_ = 0.5F * f;
+					if (f_42_ < 50.0F) { f_42_ = 50.0F; }
+					if (f_42_ > 300.0F) { f_42_ = 300.0F; }
+					float f_43_ = 0.7F * f;
+					if (f_43_ < 70.0F) { f_43_ = 70.0F; }
+					if (f_43_ > 350.0F) { f_43_ = 350.0F; }
+					MsgExplosion.send(actor, string, this.FM.Loc, this, f, 0.9F * f, 0, f_42_);
+					MsgExplosion.send(actor, string, this.FM.Loc, this, 0.5F * f, 0.25F * f, 1, f_43_);
 				}
-				float f_42_ = 0.5F * f;
-				if (f_42_ < 50.0F)
-					f_42_ = 50.0F;
-				if (f_42_ > 300.0F)
-					f_42_ = 300.0F;
-				float f_43_ = 0.7F * f;
-				if (f_43_ < 70.0F)
-					f_43_ = 70.0F;
-				if (f_43_ > 350.0F)
-					f_43_ = 350.0F;
-				MsgExplosion.send(actor, string, FM.Loc, this, f, 0.9F * f, 0, f_42_);
-				MsgExplosion.send(actor, string, FM.Loc, this, 0.5F * f, 0.25F * f, 1, f_43_);
-			}
-			/* fall through */
-			case 3:
-				explode();
 				/* fall through */
-			default:
-				for (int i_44_ = 0; i_44_ < Math.min(FM.crew, 9); i_44_++) {
-					if (!FM.AS.isPilotDead(i_44_))
-						FM.AS.hitPilot(FM.actor, i_44_, 100);
-				}
-				setDamager(endactionparam.initiator, 4);
-				World.onActorDied(this, getDamager());
+				case 3:
+					this.explode();
+					/* fall through */
+				default:
+					for (int i_44_ = 0; i_44_ < Math.min(this.FM.crew, 9); i_44_++) {
+						if (!this.FM.AS.isPilotDead(i_44_)) { this.FM.AS.hitPilot(this.FM.actor, i_44_, 100); }
+					}
+					this.setDamager(endactionparam.initiator, 4);
+					World.onActorDied(this, this.getDamager());
 			}
 		}
 		MsgDestroy.Post(Time.current(), this);
 	}
 
 	protected void doExplosion() {
-		if (FM.Loc.z < Engine.cur.land.HQ_Air(FM.Loc.x, FM.Loc.y) + 3.0) {
+		if (this.FM.Loc.z < Engine.cur.land.HQ_Air(this.FM.Loc.x, this.FM.Loc.y) + 3.0) {
 			World.cur();
-			if (World.land().isWater(FM.Loc.x, FM.Loc.y))
-				Explosions.AirDrop_Water(FM.Loc);
-			else {
-				Explosions.AirDrop_Land(FM.Loc);
-				Loc loc = new Loc(FM.Loc);
+			if (World.land().isWater(this.FM.Loc.x, this.FM.Loc.y)) {
+				Explosions.AirDrop_Water(this.FM.Loc);
+			} else {
+				Explosions.AirDrop_Land(this.FM.Loc);
+				Loc loc = new Loc(this.FM.Loc);
 				Point3d point3d = loc.getPoint();
 				World.cur();
-				point3d.z = World.land().HQ(FM.Loc.x, FM.Loc.y);
+				point3d.z = World.land().HQ(this.FM.Loc.x, this.FM.Loc.y);
 				Eff3DActor.New(loc, 1.0F, "EFFECTS/Smokes/SmokeBoiling.eff", 1200.0F);
 				Eff3DActor.New(loc, 1.0F, "3DO/Effects/Aircraft/FireGND.eff", 1200.0F);
 				Eff3DActor.New(loc, 1.0F, "3DO/Effects/Aircraft/BlackHeavyGND.eff", 1200.0F);
 			}
-		} else
-			Explosions.ExplodeFuel(FM.Loc);
+		} else {
+			Explosions.ExplodeFuel(this.FM.Loc);
+		}
 	}
 
 	public void msgCollisionRequest(Actor actor, boolean[] bools) {
-		boolean bool = (Engine.collideEnv().isDoCollision() && World.getPlayerAircraft() != this);
+		boolean bool = Engine.collideEnv().isDoCollision() && World.getPlayerAircraft() != this;
 		if (actor instanceof BigshipGeneric) {
-			FM.Gears.bFlatTopGearCheck = true;
-			if (bool && (Time.tickCounter() + hashCode() & 0xf) != 0)
-				bools[0] = false;
-		} else if (bool && (Time.tickCounter() & 0xf) != 0 && actor instanceof Aircraft && FM.Gears.isUnderDeck())
-			bools[0] = !((Aircraft) actor).FM.Gears.isUnderDeck();
-		if (Engine.collideEnv().isDoCollision() && actor instanceof Aircraft && Mission.isCoop() && actor.isNetMirror()
-				&& (isMirrorUnderDeck() || FM.Gears.isUnderDeck() || Time.tickCounter() <= 2))
-			bools[0] = false;
+			this.FM.Gears.bFlatTopGearCheck = true;
+			if (bool && (Time.tickCounter() + this.hashCode() & 0xf) != 0) { bools[0] = false; }
+		} else if (bool && (Time.tickCounter() & 0xf) != 0 && actor instanceof Aircraft && this.FM.Gears.isUnderDeck()) { bools[0] = !((Aircraft) actor).FM.Gears.isUnderDeck(); }
+		if (Engine.collideEnv().isDoCollision() && actor instanceof Aircraft && Mission.isCoop() && actor.isNetMirror() && (this.isMirrorUnderDeck() || this.FM.Gears.isUnderDeck() || Time.tickCounter() <= 2)) { bools[0] = false; }
 	}
 
 	public void msgCollision(Actor actor, String string, String string_45_) {
-		if ((!isNet() || !isNetMirror()) && (!(actor instanceof ActorCrater)
-				|| (string.startsWith("Gear") && (netUser() == null || netUser() != ((ActorCrater) actor).netOwner)))) {
-			if (this == World.getPlayerAircraft())
-				TimeSkip.airAction(1);
-			FM.dryFriction = 1.0F;
+		if ((!this.isNet() || !this.isNetMirror()) && (!(actor instanceof ActorCrater) || string.startsWith("Gear") && (this.netUser() == null || this.netUser() != ((ActorCrater) actor).netOwner))) {
+			if (this == World.getPlayerAircraft()) { TimeSkip.airAction(1); }
+			this.FM.dryFriction = 1.0F;
 			if (string.startsWith("Pilot")) {
 				if (this != World.getPlayerAircraft() || World.cur().diffCur.Vulnerability) {
 					int i = string.charAt(5) - 49;
-					killPilot(this, i);
+					this.killPilot(this, i);
 				}
 			} else if (string.startsWith("Head")) {
 				if (this != World.getPlayerAircraft() || World.cur().diffCur.Vulnerability) {
 					int i = string.charAt(4) - 49;
-					killPilot(this, i);
+					this.killPilot(this, i);
 				}
 			} else if (actor instanceof Wreckage) {
-				if (!string.startsWith("CF_") && actor.getOwner() != this
-						&& (netUser() == null || netUser() != ((Wreckage) actor).netOwner)) {
+				if (!string.startsWith("CF_") && actor.getOwner() != this && (this.netUser() == null || this.netUser() != ((Wreckage) actor).netOwner)) {
 					actor.collide(false);
-					nextDMGLevels(3, 0, string, this);
+					this.nextDMGLevels(3, 0, string, this);
 				}
 			} else if (actor instanceof Paratrooper) {
-				FM.getSpeed(v1);
+				this.FM.getSpeed(v1);
 				actor.getSpeed(Vd);
 				Vd.x -= v1.x;
 				Vd.y -= v1.y;
 				Vd.z -= v1.z;
 				if (Vd.length() > 30.0) {
-					setDamager(actor, 4);
-					nextDMGLevels(4, 0, string, actor);
+					this.setDamager(actor, 4);
+					this.nextDMGLevels(4, 0, string, actor);
 				}
 			} else {
 				if (actor instanceof RocketryRocket && string_45_.startsWith("Wing")) {
@@ -792,56 +728,54 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 					Point3d point3d = new Point3d();
 					Vector3d vector3d = new Vector3d();
 					Vector3d vector3d_46_ = new Vector3d();
-					pos.getAbs(loc);
+					this.pos.getAbs(loc);
 					point3d.set(actor.pos.getAbsPoint());
 					loc.transformInv(point3d);
 					boolean bool = point3d.y > 0.0;
-					vector3d.set(0.0, bool ? hierMesh().collisionR() : -hierMesh().collisionR(), 0.0);
+					vector3d.set(0.0, bool ? this.hierMesh().collisionR() : -this.hierMesh().collisionR(), 0.0);
 					loc.transform(vector3d);
-					point3d.set(FM.Loc);
+					point3d.set(this.FM.Loc);
 					point3d.add(vector3d);
 					actor.pos.getAbs(loc);
 					loc.transformInv(point3d);
-					vector3d.set(FM.Vwld);
+					vector3d.set(this.FM.Vwld);
 					actor.pos.speed(vector3d_46_);
 					vector3d.sub(vector3d_46_);
 					loc.transformInv(vector3d);
 					Vector3d vector3d_47_ = vector3d;
-					vector3d_47_.z = (vector3d_47_.z + ((bool ? 1.0 : -1.0) * FM.getW().x * hierMesh().collisionR()));
+					vector3d_47_.z = vector3d_47_.z + (bool ? 1.0 : -1.0) * this.FM.getW().x * this.hierMesh().collisionR();
 					if (vector3d.x * vector3d.x + vector3d.y * vector3d.y < 4.0) {
-						if (point3d.y * vector3d.z > 0.0)
+						if (point3d.y * vector3d.z > 0.0) {
 							rocketryrocket.sendRocketStateChange('a', this);
-						else
+						} else {
 							rocketryrocket.sendRocketStateChange('b', this);
+						}
 						return;
 					}
 					rocketryrocket.sendRocketStateChange(bool ? 'l' : 'r', this);
 				}
-				if (!FM.turnOffCollisions || (!string.startsWith("Wing") && !string.startsWith("Arone")
-						&& !string.startsWith("Keel") && !string.startsWith("Rudder") && !string.startsWith("Stab")
-						&& !string.startsWith("Vator") && !string.startsWith("Nose") && !string.startsWith("Tail"))) {
-					if (actor instanceof Aircraft && Actor.isValid(actor) && getArmy() == actor.getArmy()) {
-						double d = Engine.cur.land.HQ(FM.Loc.x, FM.Loc.y);
+				if (!this.FM.turnOffCollisions || !string.startsWith("Wing") && !string.startsWith("Arone") && !string.startsWith("Keel") && !string.startsWith("Rudder") && !string.startsWith("Stab") && !string.startsWith("Vator")
+						&& !string.startsWith("Nose") && !string.startsWith("Tail")) {
+					if (actor instanceof Aircraft && Actor.isValid(actor) && this.getArmy() == actor.getArmy()) {
+						double d = Engine.cur.land.HQ(this.FM.Loc.x, this.FM.Loc.y);
 						Aircraft aircraft_48_ = (Aircraft) actor;
-						if (FM.Loc.z - 2.0F * FM.Gears.H < d
-								&& ((aircraft_48_.FM.Loc.z - 2.0F * aircraft_48_.FM.Gears.H) < d))
-							setDamagerExclude(actor);
+						if (this.FM.Loc.z - 2.0F * this.FM.Gears.H < d && aircraft_48_.FM.Loc.z - 2.0F * aircraft_48_.FM.Gears.H < d) { this.setDamagerExclude(actor); }
 					}
-					if (string != null && hierMesh().chunkFindCheck(string) != -1) {
-						hierMesh().setCurChunk(string);
-						hierMesh().getChunkLocObj(tmpLoc1);
-						Vd.set(FM.Vwld);
-						FM.Or.transformInv(Vd);
+					if (string != null && this.hierMesh().chunkFindCheck(string) != -1) {
+						this.hierMesh().setCurChunk(string);
+						this.hierMesh().getChunkLocObj(tmpLoc1);
+						Vd.set(this.FM.Vwld);
+						this.FM.Or.transformInv(Vd);
 						Vd.normalize();
 						Vd.negate();
-						Vd.scale(2000.0F / FM.M.mass);
+						Vd.scale(2000.0F / this.FM.M.mass);
 						Vd.cross(tmpLoc1.getPoint(), Vd);
-						FM.getW().x += (float) Vd.x;
-						FM.getW().y += (float) Vd.y;
-						FM.getW().z += (float) Vd.z;
+						this.FM.getW().x += (float) Vd.x;
+						this.FM.getW().y += (float) Vd.y;
+						this.FM.getW().z += (float) Vd.z;
 					}
-					setDamager(actor, 4);
-					nextDMGLevels(4, 0, string, actor);
+					this.setDamager(actor, 4);
+					this.nextDMGLevels(4, 0, string, actor);
 				}
 			}
 		}
@@ -849,9 +783,9 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 
 	private void splintersHit(Explosion explosion) {
 		float[] fs = new float[2];
-		float f = mesh().collisionR();
+		float f = this.mesh().collisionR();
 		float f_49_ = 1.0F;
-		pos.getTime(Time.current(), tmpLocExp);
+		this.pos.getTime(Time.current(), tmpLocExp);
 		tmpLocExp.get(Pd);
 		explosion.computeSplintersHit(Pd, f, 1.0F, fs);
 		Shot shot = new Shot();
@@ -869,60 +803,56 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 				tmpLocExp.get(tmpP2);
 				double d = tmpP1.distance(tmpP2);
 				tmpP2.add(World.Rnd().nextDouble(-f, f), World.Rnd().nextDouble(-f, f), World.Rnd().nextDouble(-f, f));
-				if (d > f)
-					tmpP1.interpolate(tmpP1, tmpP2, 1.0 - f / d);
+				if (d > f) { tmpP1.interpolate(tmpP1, tmpP2, 1.0 - f / d); }
 				tmpP2.interpolate(tmpP1, tmpP2, 2.0);
-				int i_51_ = hierMesh().detectCollisionLineMulti(tmpLocExp, tmpP1, tmpP2);
+				int i_51_ = this.hierMesh().detectCollisionLineMulti(tmpLocExp, tmpP1, tmpP2);
 				if (i_51_ > 0) {
 					Shot shot_52_ = shot;
 					shot_52_.mass = 0.015F * World.Rnd().nextFloat(0.25F, 1.75F) * f_49_;
 					if (World.Rnd().nextFloat() < 0.1F) {
 						Shot shot_53_ = shot;
-						shot_53_.mass = (0.015F * World.Rnd().nextFloat(0.1F, 10.0F) * f_49_);
+						shot_53_.mass = 0.015F * World.Rnd().nextFloat(0.1F, 10.0F) * f_49_;
 					}
 					float f_54_ = explosion.power * 10.0F;
-					if (shot.mass > f_54_)
-						shot.mass = f_54_;
+					if (shot.mass > f_54_) { shot.mass = f_54_; }
 					Point3d point3d = shot.p;
 					Point3d point3d_55_ = tmpP1;
 					Point3d point3d_56_ = tmpP2;
-					hierMesh();
+					this.hierMesh();
 					point3d.interpolate(point3d_55_, point3d_56_, Mesh.collisionDistMulti(0));
-					if (World.Rnd().nextFloat() < 0.333333F)
+					if (World.Rnd().nextFloat() < 0.333333F) {
 						shot.powerType = 2;
-					else if (World.Rnd().nextFloat() < 0.5F)
+					} else if (World.Rnd().nextFloat() < 0.5F) {
 						shot.powerType = 3;
-					else
+					} else {
 						shot.powerType = 0;
+					}
 					shot.v.x = (float) (tmpP2.x - tmpP1.x);
 					shot.v.y = (float) (tmpP2.y - tmpP1.y);
 					shot.v.z = (float) (tmpP2.z - tmpP1.z);
 					shot.v.normalize();
-					if (World.Rnd().nextFloat() < 0.02F)
+					if (World.Rnd().nextFloat() < 0.02F) {
 						shot.v.scale(fs[1] * World.Rnd().nextFloat(0.1F, 10.0F));
-					else
+					} else {
 						shot.v.scale(fs[1] * World.Rnd().nextFloat(0.9F, 1.1F));
-					msgShot(shot);
+					}
+					this.msgShot(shot);
 				}
 			}
 		}
 	}
 
 	public void msgExplosion(Explosion explosion) {
-		if (this == World.getPlayerAircraft())
-			TimeSkip.airAction(3);
-		setExplosion(explosion);
-		FM.dryFriction = 1.0F;
-		if (explosion.power <= 0.0F || (explosion.chunkName != null && explosion.chunkName.equals(partNames[43])))
-			debugprintln("Splash hit from "
-					+ (explosion.initiator instanceof Aircraft ? ((Aircraft) explosion.initiator).typedName()
-							: explosion.initiator.name())
-					+ " in " + explosion.chunkName + " is Nill..");
-		else {
+		if (this == World.getPlayerAircraft()) { TimeSkip.airAction(3); }
+		this.setExplosion(explosion);
+		this.FM.dryFriction = 1.0F;
+		if (explosion.power <= 0.0F || explosion.chunkName != null && explosion.chunkName.equals(partNames[43])) {
+			this.debugprintln("Splash hit from " + (explosion.initiator instanceof Aircraft ? ((Aircraft) explosion.initiator).typedName() : explosion.initiator.name()) + " in " + explosion.chunkName + " is Nill..");
+		} else {
 			int i = explosion.powerType;
-			if (i == 1)
-				splintersHit(explosion);
-			else {
+			if (i == 1) {
+				this.splintersHit(explosion);
+			} else {
 				float f = explosion.power;
 				float f_57_ = 0.0F;
 				int i_58_ = explosion.powerType;
@@ -931,91 +861,82 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 					f_57_ = f;
 				}
 				if (explosion.chunkName != null) {
-					if (explosion.chunkName.startsWith("Wing") && explosion.chunkName.endsWith("_D3"))
-						FM.setCapableOfACM(false);
+					if (explosion.chunkName.startsWith("Wing") && explosion.chunkName.endsWith("_D3")) { this.FM.setCapableOfACM(false); }
 					if (explosion.chunkName.startsWith("Wing") && explosion.power > 0.017F) {
 						if (explosion.chunkName.startsWith("WingL")) {
-							debugprintln("Large Shockwave Hits the Left Wing - Wing Stalls.");
-							FM.AS.setFMSFX(explosion.initiator, 2, 20);
+							this.debugprintln("Large Shockwave Hits the Left Wing - Wing Stalls.");
+							this.FM.AS.setFMSFX(explosion.initiator, 2, 20);
 						}
 						if (explosion.chunkName.startsWith("WingR")) {
-							debugprintln("Large Shockwave Hits the Right Wing - Wing Stalls.");
-							FM.AS.setFMSFX(explosion.initiator, 3, 20);
+							this.debugprintln("Large Shockwave Hits the Right Wing - Wing Stalls.");
+							this.FM.AS.setFMSFX(explosion.initiator, 3, 20);
 						}
 					}
 				}
 				float f_59_;
-				if (explosion.chunkName == null)
+				if (explosion.chunkName == null) {
 					f_59_ = explosion.receivedTNT_1meter(this);
-				else
+				} else {
 					f_59_ = f;
+				}
 				if (!(f_59_ <= 5.0000006E-7F)) {
-					debugprintln("Splash hit from "
-							+ (explosion.initiator instanceof Aircraft ? ((Aircraft) explosion.initiator).typedName()
-									: explosion.initiator.name())
-							+ " in " + explosion.chunkName + " for "
-							+ (int) (100.0F * f_59_ / (0.01F + 3.0F * (FM.Sq.getToughness(part(explosion.chunkName)))))
-							+ " % ( " + f_59_ + " kg)..");
-					if (explosion.chunkName == null)
+					this.debugprintln("Splash hit from " + (explosion.initiator instanceof Aircraft ? ((Aircraft) explosion.initiator).typedName() : explosion.initiator.name()) + " in " + explosion.chunkName + " for "
+							+ (int) (100.0F * f_59_ / (0.01F + 3.0F * this.FM.Sq.getToughness(this.part(explosion.chunkName)))) + " % ( " + f_59_ + " kg)..");
+					if (explosion.chunkName == null) {
 						f_59_ /= 0.01F;
-					else {
+					} else {
 						if (explosion.chunkName.endsWith("_D0") && !explosion.chunkName.startsWith("Gear")) {
-							if (f_59_ > 0.01F)
-								f_59_ = 1.0F + ((f_59_ - 0.01F) / (FM.Sq.getToughness(part(explosion.chunkName))));
-							else
+							if (f_59_ > 0.01F) {
+								f_59_ = 1.0F + (f_59_ - 0.01F) / this.FM.Sq.getToughness(this.part(explosion.chunkName));
+							} else {
 								f_59_ /= 0.01F;
-						} else
-							f_59_ /= FM.Sq.getToughness(part(explosion.chunkName));
-						f_59_ += FM.Sq.eAbsorber[part(explosion.chunkName)];
+							}
+						} else {
+							f_59_ /= this.FM.Sq.getToughness(this.part(explosion.chunkName));
+						}
+						f_59_ += this.FM.Sq.eAbsorber[this.part(explosion.chunkName)];
 					}
-					if (f_59_ >= 1.0F)
-						setDamager(explosion.initiator, (int) f_59_);
+					if (f_59_ >= 1.0F) { this.setDamager(explosion.initiator, (int) f_59_); }
 					if (explosion.chunkName != null) {
 						if ((int) f_59_ > 0) {
-							setDamager(explosion.initiator, 1);
+							this.setDamager(explosion.initiator, 1);
 							if (explosion.chunkName.startsWith("Pilot")) {
-								killPilot(explosion.initiator, explosion.chunkName.charAt(5) - '1');
+								this.killPilot(explosion.initiator, explosion.chunkName.charAt(5) - '1');
 								return;
 							}
 							if (explosion.chunkName.startsWith("Head")) {
-								killPilot(explosion.initiator, explosion.chunkName.charAt(4) - '1');
+								this.killPilot(explosion.initiator, explosion.chunkName.charAt(4) - '1');
 								return;
 							}
 						}
-						nextDMGLevels((int) f_59_, 1, explosion.chunkName, explosion.initiator);
+						this.nextDMGLevels((int) f_59_, 1, explosion.chunkName, explosion.initiator);
 					} else {
 						for (int i_60_ = 0; i_60_ < partNamesForAll.length; i_60_++) {
 							int i_61_ = World.Rnd().nextInt(partNamesForAll.length);
-							if (isChunkAnyDamageVisible(partNamesForAll[i_61_])) {
-								nextDMGLevels((int) f_59_, 1, partNamesForAll[i_61_] + "_D0", explosion.initiator);
+							if (this.isChunkAnyDamageVisible(partNamesForAll[i_61_])) {
+								this.nextDMGLevels((int) f_59_, 1, partNamesForAll[i_61_] + "_D0", explosion.initiator);
 								break;
 							}
 						}
 					}
-					if (explosion.chunkName != null)
-						FM.Sq.eAbsorber[part(explosion.chunkName)] = f_59_ - (int) f_59_;
+					if (explosion.chunkName != null) { this.FM.Sq.eAbsorber[this.part(explosion.chunkName)] = f_59_ - (int) f_59_; }
 					if (f_59_ > 8.0F) {
 						if (f_59_ / partNamesForAll.length > 1.5F) {
 							for (int i_62_ = 0; i_62_ < partNamesForAll.length; i_62_++) {
-								if (isChunkAnyDamageVisible(partNamesForAll[i_62_]))
-									nextDMGLevels(3, 1, (partNamesForAll[i_62_] + "_D0"), explosion.initiator);
+								if (this.isChunkAnyDamageVisible(partNamesForAll[i_62_])) { this.nextDMGLevels(3, 1, partNamesForAll[i_62_] + "_D0", explosion.initiator); }
 							}
 						} else {
 							int i_63_ = (int) f_59_ / 3 - 1;
-							if (i_63_ > partNamesForAll.length * 2)
-								i_63_ = partNamesForAll.length * 2;
+							if (i_63_ > partNamesForAll.length * 2) { i_63_ = partNamesForAll.length * 2; }
 							for (int i_64_ = 0; i_64_ < i_63_; i_64_++) {
 								int i_65_ = World.Rnd().nextInt(partNamesForAll.length);
-								if (isChunkAnyDamageVisible(partNamesForAll[i_65_]))
-									nextDMGLevels(3, 1, (partNamesForAll[i_65_] + "_D0"), explosion.initiator);
+								if (this.isChunkAnyDamageVisible(partNamesForAll[i_65_])) { this.nextDMGLevels(3, 1, partNamesForAll[i_65_] + "_D0", explosion.initiator); }
 							}
 						}
 					}
-					if (bWasAlive && FM.isTakenMortalDamage() && getDamager() instanceof Aircraft
-							&& FM.actor.getArmy() != getDamager().getArmy() && World.Rnd().nextInt(0, 99) < 66) {
-						if (!buried)
-							Voice.speakNiceKill((Aircraft) getDamager());
-						buried = true;
+					if (bWasAlive && this.FM.isTakenMortalDamage() && this.getDamager() instanceof Aircraft && this.FM.actor.getArmy() != this.getDamager().getArmy() && World.Rnd().nextInt(0, 99) < 66) {
+						if (!this.buried) { Voice.speakNiceKill((Aircraft) this.getDamager()); }
+						this.buried = true;
 					}
 					bWasAlive = true;
 					if (f_57_ > 0.0F) {
@@ -1029,13 +950,10 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 						new MsgAction(false, msgexplosionpostvarset) {
 							public void doAction(Object object) {
 								MsgExplosionPostVarSet msgexplosionpostvarset_67_ = (MsgExplosionPostVarSet) object;
-								if (Actor.isValid(msgexplosionpostvarset_67_.THIS))
-									MsgExplosion.send(msgexplosionpostvarset_67_.THIS,
-											msgexplosionpostvarset_67_.chunkName, msgexplosionpostvarset_67_.p,
-											msgexplosionpostvarset_67_.initiator,
-											(48.0F * msgexplosionpostvarset_67_.power),
-											msgexplosionpostvarset_67_.power, 1,
-											Math.max((msgexplosionpostvarset_67_.radius), 30.0F));
+								if (Actor.isValid(msgexplosionpostvarset_67_.THIS)) {
+									MsgExplosion.send(msgexplosionpostvarset_67_.THIS, msgexplosionpostvarset_67_.chunkName, msgexplosionpostvarset_67_.p, msgexplosionpostvarset_67_.initiator, 48.0F * msgexplosionpostvarset_67_.power,
+											msgexplosionpostvarset_67_.power, 1, Math.max(msgexplosionpostvarset_67_.radius, 30.0F));
+								}
 							}
 						};
 					}
@@ -1050,8 +968,8 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		v1.z *= World.Rnd().nextFloat(-1.0F, -0.25F);
 		v1.normalize();
 		v1.scale(World.Rnd().nextFloat(10.0F, 600.0F));
-		FM.Or.transform(v1);
-		doRicochet(shot.p, v1);
+		this.FM.Or.transform(v1);
+		this.doRicochet(shot.p, v1);
 		shot.power = 0.0F;
 	}
 
@@ -1060,37 +978,35 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		v1.y *= -1.0;
 		v1.z *= -1.0;
 		v1.scale(World.Rnd().nextFloat(0.25F, 1.0F));
-		FM.Or.transform(v1);
-		doRicochet(shot.p, v1);
+		this.FM.Or.transform(v1);
+		this.doRicochet(shot.p, v1);
 	}
 
 	protected void doRicochet(Point3d point3d, Vector3d vector3d) {
 		BallisticProjectile ballisticprojectile = new BallisticProjectile(point3d, vector3d, 1.0F);
 		Eff3DActor.New(ballisticprojectile, null, null, 4.0F, "3DO/Effects/Tracers/TrailRicochet.eff", 1.0F);
-		pos.getAbs(tmpLoc1);
+		this.pos.getAbs(tmpLoc1);
 		tmpLoc1.transformInv(point3d);
 		Eff3DActor.New(this, null, new Loc(point3d), 1.0F, "3DO/Effects/Fireworks/12mmRicochet.eff", 0.2F);
 		Eff3DActor.New(this, null, new Loc(point3d), 0.5F, "3DO/Effects/Fireworks/20_Sparks.eff", -1.0F);
 	}
 
 	protected void setShot(Shot shot) {
-		if ((this == World.getPlayerAircraft() || isNetPlayer()) && !World.cur().diffCur.Vulnerability) {
+		if ((this == World.getPlayerAircraft() || this.isNetPlayer()) && !World.cur().diffCur.Vulnerability) {
 			shot.chunkName = partNames[43];
 			shot.power = 0.0F;
 			shot.mass = 0.0F;
 		}
-		if (bWasAlive)
-			bWasAlive = !FM.isTakenMortalDamage();
-		v1.sub(shot.v, FM.Vwld);
+		if (bWasAlive) { bWasAlive = !this.FM.isTakenMortalDamage(); }
+		v1.sub(shot.v, this.FM.Vwld);
 		double d = v1.length();
 		shot.power = (float) (shot.mass * d * d) * 0.5F;
-		if (shot.powerType == 0)
-			shot.power *= 0.666F;
-		FM.Or.transformInv(v1);
+		if (shot.powerType == 0) { shot.power *= 0.666F; }
+		this.FM.Or.transformInv(v1);
 		v1.normalize();
 		tmpLoc1.set(shot.p);
-		pos.getAbs(tmpLoc2);
-		pos.getCurrent(tmpLoc3);
+		this.pos.getAbs(tmpLoc2);
+		this.pos.getCurrent(tmpLoc3);
 		tmpLoc3.interpolate(tmpLoc2, shot.tickOffset);
 		tmpLoc1.sub(tmpLoc3);
 		tmpLoc1.get(Pd);
@@ -1103,7 +1019,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		Vd.scale(48.900001525878906);
 		tmpP2.set(shot.p);
 		tmpP2.add(Vd);
-		tmpBonesHit = hierMesh().detectCollisionLineMulti(tmpLoc3, tmpP1, tmpP2);
+		tmpBonesHit = this.hierMesh().detectCollisionLineMulti(tmpLoc3, tmpP1, tmpP2);
 		if (Config.isUSE_RENDER() && World.cur().isArcade()) {
 			ActorSimpleMesh actorsimplemesh = new ActorSimpleMesh("3DO/Arms/MatrixXX/mono.sim");
 			actorsimplemesh.pos.setBase(this, null, false);
@@ -1117,95 +1033,82 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	protected void setExplosion(Explosion explosion) {
-		if ((this == World.getPlayerAircraft() || isNetPlayer()) && !World.cur().diffCur.Vulnerability)
-			explosion.chunkName = partNames[43];
-		if (explosion.chunkName == null && !isChunkAnyDamageVisible("CF"))
-			explosion.chunkName = partNames[43];
-		if (bWasAlive)
-			bWasAlive = !FM.isTakenMortalDamage();
+		if ((this == World.getPlayerAircraft() || this.isNetPlayer()) && !World.cur().diffCur.Vulnerability) { explosion.chunkName = partNames[43]; }
+		if (explosion.chunkName == null && !this.isChunkAnyDamageVisible("CF")) { explosion.chunkName = partNames[43]; }
+		if (bWasAlive) { bWasAlive = !this.FM.isTakenMortalDamage(); }
 	}
 
 	protected void msgSndShot(float f, double d, double d_68_, double d_69_) {
 		if (Config.isUSE_RENDER()) {
 			Actor._tmpPoint.set(d, d_68_, d_69_);
-			sfxHit(f, Actor._tmpPoint);
-			if (isNet() && FM.isPlayers() && FM instanceof RealFlightModel) {
-				FM.dryFriction = 1.0F;
-				((RealFlightModel) FM).producedShakeLevel = 1.0F;
-				float f_70_ = 2000.0F * f / FM.M.mass;
-				FM.getW().add(World.Rnd().nextFloat(-f_70_, f_70_), World.Rnd().nextFloat(-f_70_, f_70_),
-						World.Rnd().nextFloat(-f_70_, f_70_));
+			this.sfxHit(f, Actor._tmpPoint);
+			if (this.isNet() && this.FM.isPlayers() && this.FM instanceof RealFlightModel) {
+				this.FM.dryFriction = 1.0F;
+				((RealFlightModel) this.FM).producedShakeLevel = 1.0F;
+				float f_70_ = 2000.0F * f / this.FM.M.mass;
+				this.FM.getW().add(World.Rnd().nextFloat(-f_70_, f_70_), World.Rnd().nextFloat(-f_70_, f_70_), World.Rnd().nextFloat(-f_70_, f_70_));
 			}
 		}
 	}
 
 	public void msgShot(Shot shot) {
-		if (this == World.getPlayerAircraft())
-			TimeSkip.airAction(2);
-		setShot(shot);
-		if (!isNet()) {
-			FM.dryFriction = 1.0F;
-			if (FM.isPlayers() && FM instanceof RealFlightModel)
-				((RealFlightModel) FM).producedShakeLevel = 1.0F;
-			float f = 2000.0F * shot.mass / FM.M.mass;
-			FM.getW().add(World.Rnd().nextFloat(-f, f), World.Rnd().nextFloat(-f, f), World.Rnd().nextFloat(-f, f));
+		if (this == World.getPlayerAircraft()) { TimeSkip.airAction(2); }
+		this.setShot(shot);
+		if (!this.isNet()) {
+			this.FM.dryFriction = 1.0F;
+			if (this.FM.isPlayers() && this.FM instanceof RealFlightModel) { ((RealFlightModel) this.FM).producedShakeLevel = 1.0F; }
+			float f = 2000.0F * shot.mass / this.FM.M.mass;
+			this.FM.getW().add(World.Rnd().nextFloat(-f, f), World.Rnd().nextFloat(-f, f), World.Rnd().nextFloat(-f, f));
 		}
 		if (shot.chunkName != null) {
 			if (shot.chunkName == partNames[43]) {
-				if (World.Rnd().nextFloat() < 0.25F)
-					doRicochet(shot);
+				if (World.Rnd().nextFloat() < 0.25F) { this.doRicochet(shot); }
 			} else {
-				if (shot.chunkName.startsWith("Wing")
-						&& (shot.chunkName.endsWith("_D3") || shot.chunkName.endsWith("_D2") && FM.Skill >= 2))
-					FM.setCapableOfACM(false);
-				if (FM instanceof Pilot && World.Rnd().nextInt(-1, 8) < FM.Skill)
-					((Pilot) FM).setAsDanger(shot.initiator);
-				if (Config.isUSE_RENDER() && FM instanceof RealFlightModel) {
-					Actor._tmpPoint.set(pos.getAbsPoint());
+				if (shot.chunkName.startsWith("Wing") && (shot.chunkName.endsWith("_D3") || shot.chunkName.endsWith("_D2") && this.FM.Skill >= 2)) { this.FM.setCapableOfACM(false); }
+				if (this.FM instanceof Pilot && World.Rnd().nextInt(-1, 8) < this.FM.Skill) { ((Pilot) this.FM).setAsDanger(shot.initiator); }
+				if (Config.isUSE_RENDER() && this.FM instanceof RealFlightModel) {
+					Actor._tmpPoint.set(this.pos.getAbsPoint());
 					Actor._tmpPoint.sub(shot.p);
-					msgSndShot(shot.mass, Actor._tmpPoint.x, Actor._tmpPoint.y, Actor._tmpPoint.z);
+					this.msgSndShot(shot.mass, Actor._tmpPoint.x, Actor._tmpPoint.y, Actor._tmpPoint.z);
 				}
 				shot.bodyMaterial = 2;
-				if (isNetPlayer())
-					sendMsgSndShot(shot);
+				if (this.isNetPlayer()) { this.sendMsgSndShot(shot); }
 				if (tmpBonesHit > 0) {
-					debuggunnery("");
-					debuggunnery("New Bullet: E = " + (int) shot.power + " [J], M = " + (int) (1000.0F * shot.mass)
-							+ " [g], Type = (" + sttp(shot.powerType) + ")");
-					if (shot.powerType == 1)
-						tmpBonesHit = Math.min(tmpBonesHit, 2);
+					this.debuggunnery("");
+					this.debuggunnery("New Bullet: E = " + (int) shot.power + " [J], M = " + (int) (1000.0F * shot.mass) + " [g], Type = (" + this.sttp(shot.powerType) + ")");
+					if (shot.powerType == 1) { tmpBonesHit = Math.min(tmpBonesHit, 2); }
 					for (int i = 0; i < tmpBonesHit; i++) {
-						hierMesh();
+						this.hierMesh();
 						String string = Mesh.collisionNameMulti(i, 1);
 						if (string.length() == 0) {
-							hierMesh();
+							this.hierMesh();
 							string = Mesh.collisionNameMulti(i, 0);
 						}
 						if (shot.power > 0.0F) {
 							Point3d point3d = Pd;
 							Point3d point3d_71_ = tmpP1;
 							Point3d point3d_72_ = tmpP2;
-							hierMesh();
+							this.hierMesh();
 							point3d.interpolate(point3d_71_, point3d_72_, Mesh.collisionDistMulti(i));
 							tmpLoc3.transformInv(Pd);
-							debuggunnery("Hit Bone [" + string + "], E = " + (int) shot.power);
-							hitBone(string, shot, Pd);
+							this.debuggunnery("Hit Bone [" + string + "], E = " + (int) shot.power);
+							this.hitBone(string, shot, Pd);
 							if (!string.startsWith("xx")) {
 								Aircraft aircraft_73_ = this;
 								float f = 33.333F;
 								float f_74_;
-								if (i == tmpBonesHit - 1)
+								if (i == tmpBonesHit - 1) {
 									f_74_ = 0.02F;
-								else {
-									hierMesh();
+								} else {
+									this.hierMesh();
 									float f_75_ = Mesh.collisionDistMulti(i + 1);
-									hierMesh();
-									f_74_ = (f_75_ - Mesh.collisionDistMulti(i));
+									this.hierMesh();
+									f_74_ = f_75_ - Mesh.collisionDistMulti(i);
 								}
 								aircraft_73_.getEnergyPastArmor(f * f_74_, shot);
 								if (World.Rnd().nextFloat() < 0.05F) {
 									shot.power = 0.0F;
-									debuggunnery("Inner Ricochet");
+									this.debuggunnery("Inner Ricochet");
 								}
 							}
 						}
@@ -1213,73 +1116,60 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 				}
 				boolean bool = false;
 				for (int i = 0; i < tmpBonesHit; i++) {
-					hierMesh();
+					this.hierMesh();
 					if (Mesh.collisionNameMulti(i, 1) != null) {
-						hierMesh();
+						this.hierMesh();
 						String string = Mesh.collisionNameMulti(i, 1);
-						hierMesh();
-						if (!string.equals(Mesh.collisionNameMulti(i, 0)))
-							continue;
+						this.hierMesh();
+						if (!string.equals(Mesh.collisionNameMulti(i, 0))) { continue; }
 					}
 					bool = true;
 				}
 				if (bool) {
-					debuggunnery("[+++ PROCESS OLD +++]");
+					this.debuggunnery("[+++ PROCESS OLD +++]");
 					Shot shot_76_ = shot;
-					hierMesh();
+					this.hierMesh();
 					shot_76_.chunkName = Mesh.collisionNameMulti(0, 0);
-					if (shot.chunkName.startsWith("WingLOut") && World.Rnd().nextInt(0, 99) < 20)
-						shot.chunkName = "AroneL_D0";
-					if (shot.chunkName.startsWith("WingROut") && World.Rnd().nextInt(0, 99) < 20)
-						shot.chunkName = "AroneR_D0";
-					if (shot.chunkName.startsWith("StabL") && World.Rnd().nextInt(0, 99) < 45)
-						shot.chunkName = "VatorL_D0";
-					if (shot.chunkName.startsWith("StabR") && World.Rnd().nextInt(0, 99) < 45)
-						shot.chunkName = "VatorR_D0";
-					if (shot.chunkName.startsWith("Keel1") && World.Rnd().nextInt(0, 99) < 33)
-						shot.chunkName = "Rudder1_D0";
-					if (shot.chunkName.startsWith("Keel2") && World.Rnd().nextInt(0, 99) < 33)
-						shot.chunkName = "Rudder2_D0";
+					if (shot.chunkName.startsWith("WingLOut") && World.Rnd().nextInt(0, 99) < 20) { shot.chunkName = "AroneL_D0"; }
+					if (shot.chunkName.startsWith("WingROut") && World.Rnd().nextInt(0, 99) < 20) { shot.chunkName = "AroneR_D0"; }
+					if (shot.chunkName.startsWith("StabL") && World.Rnd().nextInt(0, 99) < 45) { shot.chunkName = "VatorL_D0"; }
+					if (shot.chunkName.startsWith("StabR") && World.Rnd().nextInt(0, 99) < 45) { shot.chunkName = "VatorR_D0"; }
+					if (shot.chunkName.startsWith("Keel1") && World.Rnd().nextInt(0, 99) < 33) { shot.chunkName = "Rudder1_D0"; }
+					if (shot.chunkName.startsWith("Keel2") && World.Rnd().nextInt(0, 99) < 33) { shot.chunkName = "Rudder2_D0"; }
 					float f = shot.powerToTNT();
-					debugprintln("Bullet hit from "
-							+ (shot.initiator instanceof Aircraft ? ((Aircraft) shot.initiator).typedName()
-									: shot.initiator.name())
-							+ " in " + shot.chunkName + " for "
-							+ (int) (100.0F * f / (0.01F + (3.0F * (FM.Sq.getToughness(part(shot.chunkName))))))
-							+ " %..");
+					this.debugprintln("Bullet hit from " + (shot.initiator instanceof Aircraft ? ((Aircraft) shot.initiator).typedName() : shot.initiator.name()) + " in " + shot.chunkName + " for "
+							+ (int) (100.0F * f / (0.01F + 3.0F * this.FM.Sq.getToughness(this.part(shot.chunkName)))) + " %..");
 					shot.bodyMaterial = 2;
-					if (FM instanceof Pilot && World.Rnd().nextInt(-1, 8) < FM.Skill)
-						((Pilot) FM).setAsDanger(shot.initiator);
-					if (f <= 5.0000006E-7F)
-						return;
+					if (this.FM instanceof Pilot && World.Rnd().nextInt(-1, 8) < this.FM.Skill) { ((Pilot) this.FM).setAsDanger(shot.initiator); }
+					if (f <= 5.0000006E-7F) { return; }
 					if (shot.chunkName.endsWith("_D0") && !shot.chunkName.startsWith("Gear")) {
-						if (f > 0.01F)
-							f = (1.0F + ((f - 0.01F) / FM.Sq.getToughness(part(shot.chunkName))));
-						else
+						if (f > 0.01F) {
+							f = 1.0F + (f - 0.01F) / this.FM.Sq.getToughness(this.part(shot.chunkName));
+						} else {
 							f /= 0.01F;
-					} else
-						f /= FM.Sq.getToughness(part(shot.chunkName));
-					f += FM.Sq.eAbsorber[part(shot.chunkName)];
+						}
+					} else {
+						f /= this.FM.Sq.getToughness(this.part(shot.chunkName));
+					}
+					f += this.FM.Sq.eAbsorber[this.part(shot.chunkName)];
 					int i = (int) f;
-					FM.Sq.eAbsorber[part(shot.chunkName)] = f - i;
+					this.FM.Sq.eAbsorber[this.part(shot.chunkName)] = f - i;
 					if (i > 0) {
-						setDamager(shot.initiator, i);
+						this.setDamager(shot.initiator, i);
 						if (shot.chunkName.startsWith("Pilot")) {
-							killPilot(shot.initiator, shot.chunkName.charAt(5) - '1');
+							this.killPilot(shot.initiator, shot.chunkName.charAt(5) - '1');
 							return;
 						}
 						if (shot.chunkName.startsWith("Head")) {
-							killPilot(shot.initiator, shot.chunkName.charAt(4) - '1');
+							this.killPilot(shot.initiator, shot.chunkName.charAt(4) - '1');
 							return;
 						}
 					}
-					nextDMGLevels(i, 2, shot.chunkName, shot.initiator);
+					this.nextDMGLevels(i, 2, shot.chunkName, shot.initiator);
 				}
-				if (bWasAlive && FM.isTakenMortalDamage() && getDamager() instanceof Aircraft
-						&& FM.actor.getArmy() != getDamager().getArmy() && World.Rnd().nextInt(0, 99) < 66) {
-					if (!buried)
-						Voice.speakNiceKill((Aircraft) getDamager());
-					buried = true;
+				if (bWasAlive && this.FM.isTakenMortalDamage() && this.getDamager() instanceof Aircraft && this.FM.actor.getArmy() != this.getDamager().getArmy() && World.Rnd().nextInt(0, 99) < 66) {
+					if (!this.buried) { Voice.speakNiceKill((Aircraft) this.getDamager()); }
+					this.buried = true;
 				}
 				bWasAlive = true;
 			}
@@ -1288,16 +1178,16 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 
 	private String sttp(int i) {
 		switch (i) {
-		case 2:
-			return "AP";
-		case 3:
-			return "API/APIT";
-		case 1:
-			return "CUMULATIVE";
-		case 0:
-			return "HE";
-		default:
-			return null;
+			case 2:
+				return "AP";
+			case 3:
+				return "API/APIT";
+			case 1:
+				return "CUMULATIVE";
+			case 0:
+				return "HE";
+			default:
+				return null;
 		}
 	}
 
@@ -1306,67 +1196,65 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	protected void hitChunk(String string, Shot shot) {
-		if (string.lastIndexOf("_") == -1)
-			string += "_D" + chunkDamageVisible(string);
+		if (string.lastIndexOf("_") == -1) { string += "_D" + this.chunkDamageVisible(string); }
 		float f = shot.powerToTNT();
 		if (string.endsWith("_D0") && !string.startsWith("Gear")) {
-			if (f > 0.01F)
-				f = 1.0F + (f - 0.01F) / FM.Sq.getToughness(part(string));
-			else
+			if (f > 0.01F) {
+				f = 1.0F + (f - 0.01F) / this.FM.Sq.getToughness(this.part(string));
+			} else {
 				f /= 0.01F;
-		} else
-			f /= FM.Sq.getToughness(part(string));
-		f += FM.Sq.eAbsorber[part(string)];
+			}
+		} else {
+			f /= this.FM.Sq.getToughness(this.part(string));
+		}
+		f += this.FM.Sq.eAbsorber[this.part(string)];
 		int i = (int) f;
-		FM.Sq.eAbsorber[part(string)] = f - i;
-		if (i > 0)
-			setDamager(shot.initiator, i);
-		nextDMGLevels(i, 2, string, shot.initiator);
+		this.FM.Sq.eAbsorber[this.part(string)] = f - i;
+		if (i > 0) { this.setDamager(shot.initiator, i); }
+		this.nextDMGLevels(i, 2, string, shot.initiator);
 	}
 
 	protected void hitFlesh(int i, Shot shot, int i_77_) {
 		int i_78_ = (int) (shot.power * 0.0035F * World.Rnd().nextFloat(0.5F, 1.5F));
 		switch (i_77_) {
-		case 0:
-			if (!(World.Rnd().nextFloat() < 0.05F)) {
-				if (shot.initiator == World.getPlayerAircraft() && World.cur().isArcade())
-					HUD.logCenter("H E A D S H O T");
-				i_78_ *= 30.0F;
-			} else
-				return;
-			break;
-		case 1:
-			break;
-		case 2:
-			i_78_ /= 3.0F;
-			break;
+			case 0:
+				if (!(World.Rnd().nextFloat() < 0.05F)) {
+					if (shot.initiator == World.getPlayerAircraft() && World.cur().isArcade()) { HUD.logCenter("H E A D S H O T"); }
+					i_78_ *= 30.0F;
+				} else {
+					return;
+				}
+				break;
+			case 1:
+				break;
+			case 2:
+				i_78_ /= 3.0F;
+				break;
 		}
-		debuggunnery("*** Pilot " + i + " hit for " + i_78_ + "% (" + (int) shot.power + " J)");
-		FM.AS.hitPilot(shot.initiator, i, i_78_);
-		if (FM.AS.astatePilotStates[i] > 95 && i_77_ == 0)
-			debuggunnery("*** Headshot!.");
+		this.debuggunnery("*** Pilot " + i + " hit for " + i_78_ + "% (" + (int) shot.power + " J)");
+		this.FM.AS.hitPilot(shot.initiator, i, i_78_);
+		if (this.FM.AS.astatePilotStates[i] > 95 && i_77_ == 0) { this.debuggunnery("*** Headshot!."); }
 	}
 
 	protected float getEnergyPastArmor(float f, float f_79_, Shot shot) {
 		Shot shot_80_ = shot;
-		shot_80_.power = (float) (shot_80_.power
-				- ((shot.powerType == 0 ? 2.0F : 1.0F) * (f * 1700.0F * Math.cos(f_79_))));
+		shot_80_.power = (float) (shot_80_.power - (shot.powerType == 0 ? 2.0F : 1.0F) * (f * 1700.0F * Math.cos(f_79_)));
 		return shot.power;
 	}
 
 	protected float getEnergyPastArmor(float f, Shot shot) {
 		Shot shot_81_ = shot;
-		shot_81_.power = shot_81_.power - ((shot.powerType == 0 ? 2.0F : 1.0F) * (f * 1700.0F));
+		shot_81_.power = shot_81_.power - (shot.powerType == 0 ? 2.0F : 1.0F) * (f * 1700.0F);
 		return shot.power;
 	}
 
 	public static boolean isArmorPenetrated(float f, Shot shot) {
-		return (shot.power > (shot.powerType == 0 ? 2.0F : 1.0F) * (f * 1700.0F));
+		return shot.power > (shot.powerType == 0 ? 2.0F : 1.0F) * (f * 1700.0F);
 	}
 
 	protected float getEnergyPastArmor(double d, float f, Shot shot) {
 		Shot shot_82_ = shot;
-		shot_82_.power = (float) (shot_82_.power - ((shot.powerType == 0 ? 2.0F : 1.0F) * (d * 1700.0 * Math.cos(f))));
+		shot_82_.power = (float) (shot_82_.power - (shot.powerType == 0 ? 2.0F : 1.0F) * (d * 1700.0 * Math.cos(f)));
 		return shot.power;
 	}
 
@@ -1377,70 +1265,67 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	public static boolean isArmorPenetrated(double d, Shot shot) {
-		return (shot.power > (shot.powerType == 0 ? 2.0F : 1.0F) * (d * 1700.0));
+		return shot.power > (shot.powerType == 0 ? 2.0F : 1.0F) * (d * 1700.0);
 	}
 
 	protected void netHits(int i, int i_84_, int i_85_, Actor actor) {
-		if (isNetMaster())
-			setDamager(actor, i);
-		while (i-- > 0)
-			nextDMGLevel(partNames[i_85_] + "_D0", i_84_, actor);
+		if (this.isNetMaster()) { this.setDamager(actor, i); }
+		while (i-- > 0) {
+			this.nextDMGLevel(partNames[i_85_] + "_D0", i_84_, actor);
+		}
 	}
 
 	public int curDMGProp(int i) {
 		String string = "Prop" + (i + 1) + "_D1";
-		HierMesh hiermesh = hierMesh();
-		if (hiermesh.chunkFindCheck(string) < 0)
-			return 0;
-		if (hiermesh.isChunkVisible(string))
-			return 1;
+		HierMesh hiermesh = this.hierMesh();
+		if (hiermesh.chunkFindCheck(string) < 0) { return 0; }
+		if (hiermesh.isChunkVisible(string)) { return 1; }
 		return 0;
 	}
 
 	protected void addGun(BulletEmitter bulletemitter, int i) {
-		if (this == World.getPlayerAircraft() && !World.cur().diffCur.Limited_Ammo)
-			bulletemitter.loadBullets(-1);
+		if (this == World.getPlayerAircraft() && !World.cur().diffCur.Limited_Ammo) { bulletemitter.loadBullets(-1); }
 		String string = bulletemitter.getHookName();
 		if (string != null) {
-			BulletEmitter[] bulletemitters = FM.CT.Weapons[i];
+			BulletEmitter[] bulletemitters = this.FM.CT.Weapons[i];
 			int i_86_;
-			if (bulletemitters == null)
+			if (bulletemitters == null) {
 				i_86_ = 0;
-			else
+			} else {
 				i_86_ = bulletemitters.length;
+			}
 			BulletEmitter[] bulletemitters_87_ = new BulletEmitter[i_86_ + 1];
 			int i_88_;
-			for (i_88_ = 0; i_88_ < i_86_; i_88_++)
+			for (i_88_ = 0; i_88_ < i_86_; i_88_++) {
 				bulletemitters_87_[i_88_] = bulletemitters[i_88_];
+			}
 			bulletemitters_87_[i_88_] = bulletemitter;
-			FM.CT.Weapons[i] = bulletemitters_87_;
-			if (bulletemitter.isEnablePause())
-				bGunPodsExist = true;
+			this.FM.CT.Weapons[i] = bulletemitters_87_;
+			if (bulletemitter.isEnablePause()) { this.bGunPodsExist = true; }
 		}
 	}
 
 	public void detachGun(int i) {
-		if (FM == null || FM.CT == null || FM.CT.Weapons == null)
-			return;
+		if (this.FM == null || this.FM.CT == null || this.FM.CT.Weapons == null) { return; }
 
-		for (int i_89_ = 0; i_89_ < FM.CT.Weapons.length; i_89_++) {
-			BulletEmitter[] bulletemitters = FM.CT.Weapons[i_89_];
+		for (int i_89_ = 0; i_89_ < this.FM.CT.Weapons.length; i_89_++) {
+			BulletEmitter[] bulletemitters = this.FM.CT.Weapons[i_89_];
 			if (bulletemitters != null) {
-				for (int i_90_ = 0; i_90_ < bulletemitters.length; i_90_++)
-					bulletemitters[i_90_] = bulletemitters[i_90_].detach(hierMesh(), i);
+				for (int i_90_ = 0; i_90_ < bulletemitters.length; i_90_++) {
+					bulletemitters[i_90_] = bulletemitters[i_90_].detach(this.hierMesh(), i);
+				}
 			}
 		}
 	}
 
 	public Gun getGunByHookName(String string) {
-		for (int i = 0; i < FM.CT.Weapons.length; i++) {
-			BulletEmitter[] bulletemitters = FM.CT.Weapons[i];
+		for (int i = 0; i < this.FM.CT.Weapons.length; i++) {
+			BulletEmitter[] bulletemitters = this.FM.CT.Weapons[i];
 			if (bulletemitters != null) {
 				for (int i_91_ = 0; i_91_ < bulletemitters.length; i_91_++) {
 					if (bulletemitters[i_91_] instanceof Gun) {
 						Gun gun = (Gun) bulletemitters[i_91_];
-						if (string.equals(gun.getHookName()))
-							return gun;
+						if (string.equals(gun.getHookName())) { return gun; }
 					}
 				}
 			}
@@ -1449,12 +1334,11 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	public BulletEmitter getBulletEmitterByHookName(String string) {
-		for (int i = 0; i < FM.CT.Weapons.length; i++) {
-			BulletEmitter[] bulletemitters = FM.CT.Weapons[i];
+		for (int i = 0; i < this.FM.CT.Weapons.length; i++) {
+			BulletEmitter[] bulletemitters = this.FM.CT.Weapons[i];
 			if (bulletemitters != null) {
 				for (int i_92_ = 0; i_92_ < bulletemitters.length; i_92_++) {
-					if (string.equals(bulletemitters[i_92_].getHookName()))
-						return bulletemitters[i_92_];
+					if (string.equals(bulletemitters[i_92_].getHookName())) { return bulletemitters[i_92_]; }
 				}
 			}
 		}
@@ -1466,17 +1350,16 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	protected void moveGear(float f) {
-		moveGear(hierMesh(), f);
+		moveGear(this.hierMesh(), f);
 	}
 
 	public void forceGear(float f) {
-		moveGear(f);
+		this.moveGear(f);
 	}
 
 	public static void forceGear(Class var_class, HierMesh hiermesh, float f) {
 		try {
-			Method method = (var_class.getMethod("moveGear",
-					(new Class[] { com.maddox.il2.engine.HierMesh.class, Float.TYPE })));
+			Method method = var_class.getMethod("moveGear", new Class[] { com.maddox.il2.engine.HierMesh.class, Float.TYPE });
 			method.invoke(null, new Object[] { hiermesh, new Float(f) });
 		} catch (Exception exception) {
 			System.out.println(exception.getMessage());
@@ -1538,59 +1421,59 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 
 	protected void moveFan(float f) {
 		int i = 0;
-		for (int i_93_ = 0; i_93_ < FM.EI.getNum(); i_93_++) {
-			if (oldProp[i_93_] < 2) {
-				i = Math.abs((int) (FM.EI.engines[i_93_].getw() * 0.06F));
-				if (i >= 1)
-					i = 1;
-				if (i != oldProp[i_93_] && hierMesh().isChunkVisible(Props[i_93_][oldProp[i_93_]])) {
-					hierMesh().chunkVisible(Props[i_93_][oldProp[i_93_]], false);
-					oldProp[i_93_] = i;
-					hierMesh().chunkVisible(Props[i_93_][i], true);
+		for (int i_93_ = 0; i_93_ < this.FM.EI.getNum(); i_93_++) {
+			if (this.oldProp[i_93_] < 2) {
+				i = Math.abs((int) (this.FM.EI.engines[i_93_].getw() * 0.06F));
+				if (i >= 1) { i = 1; }
+				if (i != this.oldProp[i_93_] && this.hierMesh().isChunkVisible(Props[i_93_][this.oldProp[i_93_]])) {
+					this.hierMesh().chunkVisible(Props[i_93_][this.oldProp[i_93_]], false);
+					this.oldProp[i_93_] = i;
+					this.hierMesh().chunkVisible(Props[i_93_][i], true);
 				}
 			}
-			if (i == 0)
-				propPos[i_93_] = (propPos[i_93_] + 57.3F * FM.EI.engines[i_93_].getw() * f) % 360.0F;
-			else {
-				float f_94_ = 57.3F * FM.EI.engines[i_93_].getw();
+			if (i == 0) {
+				this.propPos[i_93_] = (this.propPos[i_93_] + 57.3F * this.FM.EI.engines[i_93_].getw() * f) % 360.0F;
+			} else {
+				float f_94_ = 57.3F * this.FM.EI.engines[i_93_].getw();
 				f_94_ %= 2880.0F;
 				f_94_ /= 2880.0F;
-				if (f_94_ <= 0.5F)
+				if (f_94_ <= 0.5F) {
 					f_94_ *= 2.0F;
-				else
+				} else {
 					f_94_ = f_94_ * 2.0F - 2.0F;
+				}
 				f_94_ *= 1200.0F;
-				propPos[i_93_] = (propPos[i_93_] + f_94_ * f) % 360.0F;
+				this.propPos[i_93_] = (this.propPos[i_93_] + f_94_ * f) % 360.0F;
 			}
-			hierMesh().chunkSetAngles(Props[i_93_][0], 0.0F, -propPos[i_93_], 0.0F);
+			this.hierMesh().chunkSetAngles(Props[i_93_][0], 0.0F, -this.propPos[i_93_], 0.0F);
 		}
 	}
 
 	public void hitProp(int i, int i_95_, Actor actor) {
-		if (i <= FM.EI.getNum() - 1 && oldProp[i] != 2) {
+		if (i <= this.FM.EI.getNum() - 1 && this.oldProp[i] != 2) {
 			super.hitProp(i, i_95_, actor);
-			FM.cut(part("Engine" + (i + 1)), i_95_, actor);
-			if (isChunkAnyDamageVisible("Prop" + (i + 1)) || isChunkAnyDamageVisible("PropRot" + (i + 1))) {
-				hierMesh().chunkVisible(Props[i][0], false);
-				hierMesh().chunkVisible(Props[i][1], false);
-				hierMesh().chunkVisible(Props[i][2], true);
+			this.FM.cut(this.part("Engine" + (i + 1)), i_95_, actor);
+			if (this.isChunkAnyDamageVisible("Prop" + (i + 1)) || this.isChunkAnyDamageVisible("PropRot" + (i + 1))) {
+				this.hierMesh().chunkVisible(Props[i][0], false);
+				this.hierMesh().chunkVisible(Props[i][1], false);
+				this.hierMesh().chunkVisible(Props[i][2], true);
 			}
-			FM.EI.engines[i].setFricCoeffT(1.0F);
-			oldProp[i] = 2;
+			this.FM.EI.engines[i].setFricCoeffT(1.0F);
+			this.oldProp[i] = 2;
 		}
 	}
 
 	public void updateLLights() {
-		pos.getRender(Actor._tmpLoc);
-		if (lLight == null) {
+		this.pos.getRender(Actor._tmpLoc);
+		if (this.lLight == null) {
 			if (!(Actor._tmpLoc.getX() < 1.0)) {
-				lLight = new LightPointWorld[] { null, null, null, null };
+				this.lLight = new LightPointWorld[] { null, null, null, null };
 				for (int i = 0; i < 4; i++) {
-					lLight[i] = new LightPointWorld();
-					lLight[i].setColor(0.49411765F, 0.9098039F, 0.9607843F);
-					lLight[i].setEmit(0.0F, 0.0F);
+					this.lLight[i] = new LightPointWorld();
+					this.lLight[i].setColor(0.49411765F, 0.9098039F, 0.9607843F);
+					this.lLight[i].setEmit(0.0F, 0.0F);
 					try {
-						lLightHook[i] = new HookNamed(this, "_LandingLight0" + i);
+						this.lLightHook[i] = new HookNamed(this, "_LandingLight0" + i);
 					} catch (Exception exception) {
 						/* empty */
 					}
@@ -1598,111 +1481,101 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 			}
 		} else {
 			for (int i = 0; i < 4; i++) {
-				if (FM.AS.astateLandingLightEffects[i] != null) {
+				if (this.FM.AS.astateLandingLightEffects[i] != null) {
 					lLightLoc1.set(0.0, 0.0, 0.0, 0.0F, 0.0F, 0.0F);
-					lLightHook[i].computePos(this, Actor._tmpLoc, lLightLoc1);
+					this.lLightHook[i].computePos(this, Actor._tmpLoc, lLightLoc1);
 					lLightLoc1.get(lLightP1);
 					lLightLoc1.set(1000.0, 0.0, 0.0, 0.0F, 0.0F, 0.0F);
-					lLightHook[i].computePos(this, Actor._tmpLoc, lLightLoc1);
+					this.lLightHook[i].computePos(this, Actor._tmpLoc, lLightLoc1);
 					lLightLoc1.get(lLightP2);
 					Engine.land();
 					if (Landscape.rayHitHQ(lLightP1, lLightP2, lLightPL)) {
 						lLightPL.z++;
 						lLightP2.interpolate(lLightP1, lLightPL, 0.95F);
-						lLight[i].setPos(lLightP2);
+						this.lLight[i].setPos(lLightP2);
 						float f = (float) lLightP1.distance(lLightPL);
 						float f_96_ = f * 0.5F + 30.0F;
 						float f_97_ = 0.5F - 0.5F * f / 1000.0F;
-						lLight[i].setEmit(f_97_, f_96_);
-					} else
-						lLight[i].setEmit(0.0F, 0.0F);
-				} else if (lLight[i].getR() != 0.0F)
-					lLight[i].setEmit(0.0F, 0.0F);
+						this.lLight[i].setEmit(f_97_, f_96_);
+					} else {
+						this.lLight[i].setEmit(0.0F, 0.0F);
+					}
+				} else if (this.lLight[i].getR() != 0.0F) { this.lLight[i].setEmit(0.0F, 0.0F); }
 			}
 		}
 	}
 
 	public boolean isUnderWater() {
-		Point3d point3d = pos.getAbsPoint();
-		if (!Engine.land().isWater(point3d.x, point3d.y))
-			return false;
+		Point3d point3d = this.pos.getAbsPoint();
+		if (!Engine.land().isWater(point3d.x, point3d.y)) { return false; }
 		return point3d.z < 0.0;
 	}
 
 	public void update(float f) {
 		super.update(f);
 		if (this == World.getPlayerAircraft()) {
-			if (isUnderWater())
-				World.doPlayerUnderWater();
-			EventLog.flyPlayer(pos.getAbsPoint());
-			if (this instanceof TypeBomber)
-				((TypeBomber) this).typeBomberUpdate(f);
+			if (this.isUnderWater()) { World.doPlayerUnderWater(); }
+			EventLog.flyPlayer(this.pos.getAbsPoint());
+			if (this instanceof TypeBomber) { ((TypeBomber) this).typeBomberUpdate(f); }
 		}
-		Controls controls = FM.CT;
-		moveFan(f);
+		Controls controls = this.FM.CT;
+		this.moveFan(f);
 		if (controls.bHasGearControl) {
 			float f_98_ = controls.getGear();
-			if (Math.abs(Gear_ - f_98_) > EpsSmooth_) {
+			if (Math.abs(this.Gear_ - f_98_) > this.EpsSmooth_) {
 				if (!(this instanceof I_16)) {
-					if (Math.abs(f_98_ - controls.GearControl) <= EpsSmooth_)
-						sfxGear(false);
-					else
-						sfxGear(true);
+					if (Math.abs(f_98_ - controls.GearControl) <= this.EpsSmooth_) {
+						this.sfxGear(false);
+					} else {
+						this.sfxGear(true);
+					}
 				}
-				moveGear(Gear_ = f_98_);
+				this.moveGear(this.Gear_ = f_98_);
 			}
 		}
 		if (controls.bHasArrestorControl) {
 			float f_99_ = controls.getArrestor();
-			if (Math.abs(arrestor_ - f_99_) > EpsSmooth_)
-				moveArrestorHook(arrestor_ = f_99_);
+			if (Math.abs(this.arrestor_ - f_99_) > this.EpsSmooth_) { this.moveArrestorHook(this.arrestor_ = f_99_); }
 		}
 		if (controls.bHasWingControl) {
 			float f_100_ = controls.getWing();
-			if (Math.abs(wingfold_ - f_100_) > EpsVerySmooth_)
-				moveWingFold(wingfold_ = f_100_);
+			if (Math.abs(this.wingfold_ - f_100_) > this.EpsVerySmooth_) { this.moveWingFold(this.wingfold_ = f_100_); }
 		}
 		if (controls.bHasCockpitDoorControl) {
 			float f_101_ = controls.getCockpitDoor();
-			if (Math.abs(cockpitDoor_ - f_101_) > EpsVerySmooth_)
-				moveCockpitDoor(cockpitDoor_ = f_101_);
+			if (Math.abs(this.cockpitDoor_ - f_101_) > this.EpsVerySmooth_) { this.moveCockpitDoor(this.cockpitDoor_ = f_101_); }
 		}
 		if (controls.bHasFlapsControl) {
 			float f_102_ = controls.getFlap();
-			if (Math.abs(Flap_ - f_102_) > EpsSmooth_) {
-				if (Math.abs(f_102_ - controls.FlapsControl) <= EpsSmooth_)
-					sfxFlaps(false);
-				else
-					sfxFlaps(true);
-				moveFlap(Flap_ = f_102_);
+			if (Math.abs(this.Flap_ - f_102_) > this.EpsSmooth_) {
+				if (Math.abs(f_102_ - controls.FlapsControl) <= this.EpsSmooth_) {
+					this.sfxFlaps(false);
+				} else {
+					this.sfxFlaps(true);
+				}
+				this.moveFlap(this.Flap_ = f_102_);
 			}
 		}
 		float f_103_ = controls.getRudder();
-		if (Math.abs(Rudder_ - f_103_) > EpsCoarse_)
-			moveRudder(Rudder_ = f_103_);
+		if (Math.abs(this.Rudder_ - f_103_) > this.EpsCoarse_) { this.moveRudder(this.Rudder_ = f_103_); }
 		f_103_ = controls.getElevator();
-		if (Math.abs(Elevator_ - f_103_) > EpsCoarse_)
-			moveElevator(Elevator_ = f_103_);
+		if (Math.abs(this.Elevator_ - f_103_) > this.EpsCoarse_) { this.moveElevator(this.Elevator_ = f_103_); }
 		f_103_ = controls.getAileron();
-		if (Math.abs(Aileron_ - f_103_) > EpsCoarse_)
-			moveAileron(Aileron_ = f_103_);
+		if (Math.abs(this.Aileron_ - f_103_) > this.EpsCoarse_) { this.moveAileron(this.Aileron_ = f_103_); }
 		f_103_ = controls.getBayDoor();
-		if (Math.abs(BayDoor_ - f_103_) > 0.025F) {
+		if (Math.abs(this.BayDoor_ - f_103_) > 0.025F) {
 			Aircraft aircraft_104_ = this;
-			aircraft_104_.BayDoor_ = aircraft_104_.BayDoor_ + 0.025F * (f_103_ > BayDoor_ ? 2.0F : -1.0F);
-			moveBayDoor(BayDoor_);
+			aircraft_104_.BayDoor_ = aircraft_104_.BayDoor_ + 0.025F * (f_103_ > this.BayDoor_ ? 2.0F : -1.0F);
+			this.moveBayDoor(this.BayDoor_);
 		}
 		f_103_ = controls.getAirBrake();
-		if (Math.abs(AirBrake_ - f_103_) > EpsSmooth_) {
-			moveAirBrake(AirBrake_ = f_103_);
-			if (Math.abs(AirBrake_ - 0.5F) >= 0.48F)
-				sfxAirBrake();
+		if (Math.abs(this.AirBrake_ - f_103_) > this.EpsSmooth_) {
+			this.moveAirBrake(this.AirBrake_ = f_103_);
+			if (Math.abs(this.AirBrake_ - 0.5F) >= 0.48F) { this.sfxAirBrake(); }
 		}
-		f_103_ = FM.Gears.getSteeringAngle();
-		if (Math.abs(Steering_ - f_103_) > EpsSmooth_)
-			moveSteering(Steering_ = f_103_);
-		if (FM.Gears.nearGround())
-			moveWheelSink();
+		f_103_ = this.FM.Gears.getSteeringAngle();
+		if (Math.abs(this.Steering_ - f_103_) > this.EpsSmooth_) { this.moveSteering(this.Steering_ = f_103_); }
+		if (this.FM.Gears.nearGround()) { this.moveWheelSink(); }
 
 		// TODO: Added by |ZUTI|
 		// -----------------------------------------------
@@ -1711,45 +1584,45 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	public void setFM(int i, boolean bool) {
-		setFM(Property.stringValue(this.getClass(), "FlightModel", null), i, bool);
+		this.setFM(Property.stringValue(this.getClass(), "FlightModel", null), i, bool);
 	}
 
 	public void setFM(String string, int i, boolean bool) {
-		if (this instanceof JU_88MSTL)
-			i = 1;
+		if (this instanceof JU_88MSTL) { i = 1; }
 		switch (i) {
-		default:
-			FM = new Pilot(string);
-			break;
-		case 1:
-			FM = new RealFlightModel(string);
-			break;
-		case 2:
-			FM = new FlightModel(string);
-			FM.AP = new Autopilotage();
+			default:
+				this.FM = new Pilot(string);
+				break;
+			case 1:
+				this.FM = new RealFlightModel(string);
+				break;
+			case 2:
+				this.FM = new FlightModel(string);
+				this.FM.AP = new Autopilotage();
 		}
-		FM.actor = this;
-		FM.AS.set(this, bool && !NetMissionTrack.isPlaying());
-		FM.EI.setNotMirror(bool && !NetMissionTrack.isPlaying());
+		this.FM.actor = this;
+		this.FM.AS.set(this, bool && !NetMissionTrack.isPlaying());
+		this.FM.EI.setNotMirror(bool && !NetMissionTrack.isPlaying());
 		SectFile sectfile = FlightModelMain.sectFile(string);
 		int i_105_ = 0;
 		String string_106_ = sectfile.get("SOUND", "FeedType", "PNEUMATIC");
-		if (string_106_.compareToIgnoreCase("PNEUMATIC") == 0)
+		if (string_106_.compareToIgnoreCase("PNEUMATIC") == 0) {
 			i_105_ = 0;
-		else if (string_106_.compareToIgnoreCase("ELECTRIC") == 0)
+		} else if (string_106_.compareToIgnoreCase("ELECTRIC") == 0) {
 			i_105_ = 1;
-		else if (string_106_.compareToIgnoreCase("HYDRAULIC") == 0)
+		} else if (string_106_.compareToIgnoreCase("HYDRAULIC") == 0) {
 			i_105_ = 2;
-		else
+		} else {
 			System.out.println("ERROR: Invalid feed type" + string_106_);
-		FM.set(hierMesh());
-		forceGear(this.getClass(), hierMesh(), 1.0F);
-		FM.Gears.computePlaneLandPose(FM);
-		forceGear(this.getClass(), hierMesh(), 0.0F);
-		FM.EI.set(this);
-		initSound(sectfile);
-		sfxInit(i_105_);
-		interpPut(FM, "FlightModel", Time.current(), null);
+		}
+		this.FM.set(this.hierMesh());
+		forceGear(this.getClass(), this.hierMesh(), 1.0F);
+		this.FM.Gears.computePlaneLandPose(this.FM);
+		forceGear(this.getClass(), this.hierMesh(), 0.0F);
+		this.FM.EI.set(this);
+		this.initSound(sectfile);
+		this.sfxInit(i_105_);
+		this.interpPut(this.FM, "FlightModel", Time.current(), null);
 	}
 
 	public void checkTurretSkill() {
@@ -1757,24 +1630,22 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	public void destroy() {
-		if (isAlive() && Mission.isPlaying() && name().charAt(0) != ' ' && FM != null) {
+		if (this.isAlive() && Mission.isPlaying() && this.name().charAt(0) != ' ' && this.FM != null) {
 			Front.checkAircraftCaptured(this);
 			World.onActorDied(this, World.remover);
 		}
-		if (lLight != null) {
-			for (int i = 0; i < 4; i++)
-				ObjState.destroy(lLight[i]);
+		if (this.lLight != null) {
+			for (int i = 0; i < 4; i++) {
+				ObjState.destroy(this.lLight[i]);
+			}
 		}
-		if (World.getPlayerAircraft() == this)
-			deleteCockpits();
-		Wing wing = getWing();
-		if (Actor.isValid(wing) && wing instanceof NetWing)
-			wing.destroy();
-		detachGun(-1);
+		if (World.getPlayerAircraft() == this) { this.deleteCockpits(); }
+		Wing wing = this.getWing();
+		if (Actor.isValid(wing) && wing instanceof NetWing) { wing.destroy(); }
+		this.detachGun(-1);
 		super.destroy();
-		if (World.getPlayerAircraft() == this)
-			World.setPlayerAircraft(null);
-		_removeMesh();
+		if (World.getPlayerAircraft() == this) { World.setPlayerAircraft(null); }
+		this._removeMesh();
 
 		// TODO: Added by |ZUTI|
 		// ---------------------------------------
@@ -1787,27 +1658,28 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	public Aircraft() {
-		wfrGr21dropped = false;
-		headingBug = 0.0F;
-		idleTimeOnCarrier = 0;
+		this.wfrGr21dropped = false;
+		this.headingBug = 0.0F;
+		this.idleTimeOnCarrier = 0;
 
 		// TODO: Storebror: Make Arming Random "real" random!
 		// ------------------------------------
-		armingSeed = TrueRandom.nextInt(65536);
-		armingRnd = new RangeRandom(armingSeed);
+		this.armingSeed = TrueRandom.nextInt(65536);
+		this.armingRnd = new RangeRandom(this.armingSeed);
 		// ------------------------------------
 
-		checkLoadingCountry();
-		if (_loadingCountry == null)
-			_setMesh(Property.stringValue(this.getClass(), "meshName", null));
-		else
-			_setMesh(Property.stringValue(this.getClass(), "meshName_" + _loadingCountry, null));
-		collide(true);
-		drawing(true);
-		dreamFire(true);
+		this.checkLoadingCountry();
+		if (this._loadingCountry == null) {
+			this._setMesh(Property.stringValue(this.getClass(), "meshName", null));
+		} else {
+			this._setMesh(Property.stringValue(this.getClass(), "meshName_" + this._loadingCountry, null));
+		}
+		this.collide(true);
+		this.drawing(true);
+		this.dreamFire(true);
 		// TODO: +++ TD AI code backport from 4.13 +++
-		bSpotter = false;
-		bombScoreOwner = null;
+		this.bSpotter = false;
+		this.bombScoreOwner = null;
 		// TODO: --- TD AI code backport from 4.13 ---
 
 		// TODO: +++ Enhanced Ordnance View by SAS~Storebror +++
@@ -1817,81 +1689,73 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	private void checkLoadingCountry() {
-		_loadingCountry = null;
+		this._loadingCountry = null;
 		if (NetAircraft.loadingCountry != null) {
 			Class var_class = this.getClass();
-			if ((Property.value(var_class, "PaintScheme_" + NetAircraft.loadingCountry) != null)
-					&& Property.stringValue(var_class, ("meshName_" + NetAircraft.loadingCountry), null) != null)
-				_loadingCountry = NetAircraft.loadingCountry;
+			if (Property.value(var_class, "PaintScheme_" + NetAircraft.loadingCountry) != null && Property.stringValue(var_class, "meshName_" + NetAircraft.loadingCountry, null) != null) { this._loadingCountry = NetAircraft.loadingCountry; }
 		}
 	}
 
 	public static String getPropertyMeshDemo(Class var_class, String string) {
 		String string_107_ = "meshNameDemo";
 		String string_108_ = Property.stringValue((Object) var_class, string_107_, null);
-		if (string_108_ != null)
-			return string_108_;
+		if (string_108_ != null) { return string_108_; }
 		return getPropertyMesh(var_class, string);
 	}
 
 	public static String getPropertyMesh(Class var_class, String string) {
 		String string_109_ = "meshName";
 		String string_110_ = null;
-		if (string != null)
-			string_110_ = Property.stringValue(var_class, string_109_ + "_" + string, null);
-		if (string_110_ == null)
-			string_110_ = Property.stringValue(var_class, string_109_);
+		if (string != null) { string_110_ = Property.stringValue(var_class, string_109_ + "_" + string, null); }
+		if (string_110_ == null) { string_110_ = Property.stringValue(var_class, string_109_); }
 		return string_110_;
 	}
 
 	public static PaintScheme getPropertyPaintScheme(Class var_class, String string) {
 		String string_111_ = "PaintScheme";
 		PaintScheme paintscheme = null;
-		if (string != null)
-			paintscheme = (PaintScheme) Property.value(var_class, string_111_ + "_" + string, null);
-		if (paintscheme == null)
-			paintscheme = (PaintScheme) Property.value(var_class, string_111_);
+		if (string != null) { paintscheme = (PaintScheme) Property.value(var_class, string_111_ + "_" + string, null); }
+		if (paintscheme == null) { paintscheme = (PaintScheme) Property.value(var_class, string_111_); }
 		return paintscheme;
 	}
 
 	public String typedName() {
-		return typedName;
+		return this.typedName;
 	}
 
 	private void correctTypedName() {
-		if (typedName != null && typedName.indexOf('_') >= 0) {
+		if (this.typedName != null && this.typedName.indexOf('_') >= 0) {
 			StringBuffer stringbuffer = new StringBuffer();
-			int i = typedName.length();
+			int i = this.typedName.length();
 			for (int i_112_ = 0; i_112_ < i; i_112_++) {
-				char c = typedName.charAt(i_112_);
-				if (c != '_')
-					stringbuffer.append(c);
+				char c = this.typedName.charAt(i_112_);
+				if (c != '_') { stringbuffer.append(c); }
 			}
-			typedName = stringbuffer.toString();
+			this.typedName = stringbuffer.toString();
 		}
 	}
 
 	public void preparePaintScheme() {
-		PaintScheme paintscheme = getPropertyPaintScheme(this.getClass(), _loadingCountry);
+		PaintScheme paintscheme = getPropertyPaintScheme(this.getClass(), this._loadingCountry);
 		if (paintscheme != null) {
-			paintscheme.prepare(this, bPaintShemeNumberOn);
-			typedName = paintscheme.typedName(this);
-			correctTypedName();
+			paintscheme.prepare(this, this.bPaintShemeNumberOn);
+			this.typedName = paintscheme.typedName(this);
+			this.correctTypedName();
 		}
 	}
 
 	public void preparePaintScheme(int i) {
-		PaintScheme paintscheme = getPropertyPaintScheme(this.getClass(), _loadingCountry);
+		PaintScheme paintscheme = getPropertyPaintScheme(this.getClass(), this._loadingCountry);
 		if (paintscheme != null) {
-			paintscheme.prepareNum(this, i, bPaintShemeNumberOn);
-			typedName = paintscheme.typedNameNum(this, i);
-			correctTypedName();
+			paintscheme.prepareNum(this, i, this.bPaintShemeNumberOn);
+			this.typedName = paintscheme.typedNameNum(this, i);
+			this.correctTypedName();
 		}
 	}
 
 	public void prepareCamouflage() {
-		String string = getPropertyMesh(this.getClass(), _loadingCountry);
-		prepareMeshCamouflage(string, hierMesh());
+		String string = getPropertyMesh(this.getClass(), this._loadingCountry);
+		prepareMeshCamouflage(string, this.hierMesh());
 	}
 
 	public static void prepareMeshCamouflage(String string, HierMesh hiermesh) {
@@ -1908,39 +1772,37 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 			if (string_114_ == null) {
 				String string_116_;
 				switch (World.cur().camouflage) {
-				case 0:
-					string_116_ = "summer";
-					break;
-				case 1:
-					string_116_ = "winter";
-					break;
-				case 2:
-					string_116_ = "desert";
-					break;
-				case 3: // '\003'
-					string_116_ = "pacific";
-					break;
-				case 4: // '\004'
-					string_116_ = "eto";
-					break;
-				case 5: // '\005'
-					string_116_ = "mto";
-					break;
-				case 6: // '\006'
-					string_116_ = "cbi";
-					break;
-				default:
-					string_116_ = "summer";
+					case 0:
+						string_116_ = "summer";
+						break;
+					case 1:
+						string_116_ = "winter";
+						break;
+					case 2:
+						string_116_ = "desert";
+						break;
+					case 3: // '\003'
+						string_116_ = "pacific";
+						break;
+					case 4: // '\004'
+						string_116_ = "eto";
+						break;
+					case 5: // '\005'
+						string_116_ = "mto";
+						break;
+					case 6: // '\006'
+						string_116_ = "cbi";
+						break;
+					default:
+						string_116_ = "summer";
 				}
 				if (!existSFSFile(string_115_ + string_116_ + "/skin1o.tga")) {
 					string_116_ = "summer";
-					if (!existSFSFile(string_115_ + string_116_ + "/skin1o.tga"))
-						return;
+					if (!existSFSFile(string_115_ + string_116_ + "/skin1o.tga")) { return; }
 				}
 				string_114_ = string_115_ + string_116_;
 			}
-			String[] strings = { string_114_ + "/skin1o.tga", string_114_ + "/skin1p.tga",
-					string_114_ + "/skin1q.tga" };
+			String[] strings = { string_114_ + "/skin1o.tga", string_114_ + "/skin1p.tga", string_114_ + "/skin1q.tga" };
 			int[] is = new int[4];
 			for (int i = 0; i < _skinMat.length; i++) {
 				int i_117_ = hiermesh.materialFind(_skinMat[i]);
@@ -1953,8 +1815,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 							mat.setLayer(i_118_);
 							String string_119_ = mat.get('\0');
 							for (int i_120_ = 0; i_120_ < 3; i_120_++) {
-								if (string_119_.regionMatches(true, string_119_.length() - 10, _curSkin[i_120_], 0,
-										10)) {
+								if (string_119_.regionMatches(true, string_119_.length() - 10, _curSkin[i_120_], 0, 10)) {
 									is[i_118_] = i_120_;
 									bool = true;
 									break;
@@ -1965,9 +1826,9 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 					if (bool) {
 						String string_121_ = string_114_ + "/" + _skinMat[i] + ".mat";
 						Mat mat_122_;
-						if (FObj.Exist(string_121_))
+						if (FObj.Exist(string_121_)) {
 							mat_122_ = (Mat) FObj.Get(string_121_);
-						else {
+						} else {
 							mat_122_ = (Mat) mat.Clone();
 							mat_122_.Rename(string_121_);
 							for (int i_123_ = 0; i_123_ < 4; i_123_++) {
@@ -1979,8 +1840,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 						}
 						if (mats != null) {
 							for (int i_124_ = 0; i_124_ < 4; i_124_++) {
-								if (is[i_124_] >= 0)
-									mats[is[i_124_]] = mat_122_;
+								if (is[i_124_] >= 0) { mats[is[i_124_]] = mat_122_; }
 							}
 						}
 						hiermesh.materialReplace(_skinMat[i], mat_122_);
@@ -1993,19 +1853,18 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	public static void prepareMeshSkin(String string, HierMesh hiermesh, String string_125_, String string_126_) {
 		String string_127_ = string;
 		int i = string_127_.lastIndexOf('/');
-		if (i >= 0)
+		if (i >= 0) {
 			string_127_ = string_127_.substring(0, i + 1) + "summer";
-		else
+		} else {
 			string_127_ += "summer";
+		}
 		try {
 			File file = new File(HomePath.toFileSystemName(string_126_, 0));
-			if (!file.isDirectory())
-				file.mkdir();
+			if (!file.isDirectory()) { file.mkdir(); }
 		} catch (Exception exception) {
 			return;
 		}
-		if (BmpUtils.bmp8PalTo4TGA4(string_125_, string_127_, string_126_) && string_126_ != null)
-			prepareMeshCamouflage(string, hiermesh, string_126_, null);
+		if (BmpUtils.bmp8PalTo4TGA4(string_125_, string_127_, string_126_) && string_126_ != null) { prepareMeshCamouflage(string, hiermesh, string_126_, null); }
 	}
 
 	public static void prepareMeshPilot(HierMesh hiermesh, int i, String string, String string_128_) {
@@ -2018,60 +1877,55 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 			int i_131_ = hiermesh.materialFind(string_130_);
 			if (i_131_ >= 0) {
 				Mat mat;
-				if (FObj.Exist(string))
+				if (FObj.Exist(string)) {
 					mat = (Mat) FObj.Get(string);
-				else {
+				} else {
 					Mat mat_132_ = hiermesh.material(i_131_);
 					mat = (Mat) mat_132_.Clone();
 					mat.Rename(string);
 					mat.setLayer(0);
 					mat.set('\0', string_129_);
 				}
-				if (mats != null)
-					mats[0] = mat;
+				if (mats != null) { mats[0] = mat; }
 				hiermesh.materialReplace(string_130_, mat);
 			}
 		}
 	}
 
-	public static void prepareMeshNoseart(HierMesh hiermesh, String string, String string_133_, String string_134_,
-			String string_135_) {
+	public static void prepareMeshNoseart(HierMesh hiermesh, String string, String string_133_, String string_134_, String string_135_) {
 		prepareMeshNoseart(hiermesh, string, string_133_, string_134_, string_135_, null);
 	}
 
-	public static void prepareMeshNoseart(HierMesh hiermesh, String string, String string_136_, String string_137_,
-			String string_138_, Mat[] mats) {
+	public static void prepareMeshNoseart(HierMesh hiermesh, String string, String string_136_, String string_137_, String string_138_, Mat[] mats) {
 		if (Config.isUSE_RENDER()) {
 			String string_139_ = "Overlay9";
 			int i = hiermesh.materialFind(string_139_);
 			if (i >= 0) {
 				Mat mat;
-				if (FObj.Exist(string))
+				if (FObj.Exist(string)) {
 					mat = (Mat) FObj.Get(string);
-				else {
+				} else {
 					Mat mat_140_ = hiermesh.material(i);
 					mat = (Mat) mat_140_.Clone();
 					mat.Rename(string);
 					mat.setLayer(0);
 					mat.set('\0', string_137_);
 				}
-				if (mats != null)
-					mats[0] = mat;
+				if (mats != null) { mats[0] = mat; }
 				hiermesh.materialReplace(string_139_, mat);
 				string_139_ = "OverlayA";
 				i = hiermesh.materialFind(string_139_);
 				if (i >= 0) {
-					if (FObj.Exist(string_136_))
+					if (FObj.Exist(string_136_)) {
 						mat = (Mat) FObj.Get(string_136_);
-					else {
+					} else {
 						Mat mat_141_ = hiermesh.material(i);
 						mat = (Mat) mat_141_.Clone();
 						mat.Rename(string_136_);
 						mat.setLayer(0);
 						mat.set('\0', string_138_);
 					}
-					if (mats != null)
-						mats[1] = mat;
+					if (mats != null) { mats[1] = mat; }
 					hiermesh.materialReplace(string_139_, mat);
 				}
 			}
@@ -2091,55 +1945,52 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	public double getSpeed(Vector3d vector3d) {
-		if (FM == null) {
-			if (vector3d != null)
-				vector3d.set(0.0, 0.0, 0.0);
+		if (this.FM == null) {
+			if (vector3d != null) { vector3d.set(0.0, 0.0, 0.0); }
 			return 0.0;
 		}
-		if (vector3d != null)
-			vector3d.set(FM.Vwld);
-		return FM.Vwld.length();
+		if (vector3d != null) { vector3d.set(this.FM.Vwld); }
+		return this.FM.Vwld.length();
 	}
 
 	public void setSpeed(Vector3d vector3d) {
 		super.setSpeed(vector3d);
-		FM.Vwld.set(vector3d);
+		this.FM.Vwld.set(vector3d);
 	}
 
 	public void setOnGround(Point3d point3d, Orient orient, Vector3d vector3d) {
-		FM.CT.setLanded();
-		forceGear(this.getClass(), hierMesh(), FM.CT.getGear());
+		this.FM.CT.setLanded();
+		forceGear(this.getClass(), this.hierMesh(), this.FM.CT.getGear());
 		if (point3d != null && orient != null) {
-			pos.setAbs(point3d, orient);
-			pos.reset();
+			this.pos.setAbs(point3d, orient);
+			this.pos.reset();
 		}
-		if (vector3d != null)
-			setSpeed(vector3d);
+		if (vector3d != null) { this.setSpeed(vector3d); }
 	}
 
 	public void load(SectFile sectfile, String string, int i, NetChannel netchannel, int i_142_) throws Exception {
 		if (this == World.getPlayerAircraft()) {
-			setFM(1, true);
+			this.setFM(1, true);
 			World.setPlayerFM();
-		} else if (netchannel != null)
-			setFM(2, false);
-		else
-			setFM(0, true);
-		if (sectfile.exist(string, "Skill" + i))
-			FM.setSkill(sectfile.get(string, "Skill" + i, 1));
-		else
-			FM.setSkill(sectfile.get(string, "Skill", 1));
-		FM.M.fuel = (sectfile.get(string, "Fuel", 100.0F, 0.0F, 100.0F) * 0.01F * FM.M.maxFuel);
-		if (sectfile.exist(string, "numberOn" + i))
-			bPaintShemeNumberOn = sectfile.get(string, "numberOn" + i, 1, 0, 1) == 1;
-		FM.AS.bIsEnableToBailout = sectfile.get(string, "Parachute", 1, 0, 1) == 1;
-		if (Mission.isServer())
-			createNetObject(null, 0);
-		else if (netchannel != null)
-			createNetObject(netchannel, i_142_);
-		if (net != null) {
-			((NetAircraft.AircraftNet) net).netName = name();
-			((NetAircraft.AircraftNet) net).netUser = null;
+		} else if (netchannel != null) {
+			this.setFM(2, false);
+		} else {
+			this.setFM(0, true);
+		}
+		if (sectfile.exist(string, "Skill" + i)) {
+			this.FM.setSkill(sectfile.get(string, "Skill" + i, 1));
+		} else {
+			this.FM.setSkill(sectfile.get(string, "Skill", 1));
+		}
+		this.FM.M.fuel = sectfile.get(string, "Fuel", 100.0F, 0.0F, 100.0F) * 0.01F * this.FM.M.maxFuel;
+		if (sectfile.exist(string, "numberOn" + i)) { this.bPaintShemeNumberOn = sectfile.get(string, "numberOn" + i, 1, 0, 1) == 1; }
+		this.FM.AS.bIsEnableToBailout = sectfile.get(string, "Parachute", 1, 0, 1) == 1;
+		if (Mission.isServer()) {
+			this.createNetObject(null, 0);
+		} else if (netchannel != null) { this.createNetObject(netchannel, i_142_); }
+		if (this.net != null) {
+			((NetAircraft.AircraftNet) this.net).netName = this.name();
+			((NetAircraft.AircraftNet) this.net).netUser = null;
 		}
 		String string_143_ = string + "_weapons";
 		int i_144_ = sectfile.sectionIndex(string_143_);
@@ -2156,21 +2007,20 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 					BulletEmitter bulletemitter = (BulletEmitter) object;
 					bulletemitter.set(this, string_148_, dumpName(string_148_));
 					int i_150_ = numbertokenizer.next(-12345);
-					if (i_150_ == -12345)
+					if (i_150_ == -12345) {
 						bulletemitter.loadBullets();
-					else
+					} else {
 						bulletemitter._loadBullets(i_150_);
-					addGun(bulletemitter, i_147_);
+					}
+					this.addGun(bulletemitter, i_147_);
 				}
 			}
 		} else {
-			thisWeaponsName = sectfile.get(string, "weapons", (String) null);
-			if (thisWeaponsName != null)
-				weaponsLoad(this, thisWeaponsName);
+			this.thisWeaponsName = sectfile.get(string, "weapons", (String) null);
+			if (this.thisWeaponsName != null) { weaponsLoad(this, this.thisWeaponsName); }
 		}
-		if (this == World.getPlayerAircraft())
-			createCockpits();
-		onAircraftLoaded();
+		if (this == World.getPlayerAircraft()) { this.createCockpits(); }
+		this.onAircraftLoaded();
 	}
 
 	private static String dumpName(String string) {
@@ -2185,8 +2035,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	public boolean turretAngles(int i, float[] fs) {
 		for (int i_151_ = 0; i_151_ < 2; i_151_++) {
 			fs[i_151_] = (fs[i_151_] + 3600.0F) % 360.0F;
-			if (fs[i_151_] > 180.0F)
-				fs[i_151_] -= 360.0F;
+			if (fs[i_151_] > 180.0F) { fs[i_151_] -= 360.0F; }
 		}
 		fs[2] = 0.0F;
 		return true;
@@ -2198,50 +2047,34 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 
 	public int HitbyMask() {
 		// TODO: Add null checks
-		if (FM == null)
-			return -25;
-		if (FM.Vwld == null)
-			return -25;
-		return FM.Vwld.length() < 2.0 ? -1 : -25;
+		if (this.FM == null) { return -25; }
+		if (this.FM.Vwld == null) { return -25; }
+		return this.FM.Vwld.length() < 2.0 ? -1 : -25;
 	}
 
 	public int chooseBulletType(BulletProperties[] bulletpropertieses) {
-		if (FM.isTakenMortalDamage())
-			return -1;
-		if (bulletpropertieses.length == 1)
-			return 0;
-		if (bulletpropertieses.length <= 0)
-			return -1;
-		if (bulletpropertieses[0].power <= 0.0F)
-			return 1;
-		if (bulletpropertieses[1].power <= 0.0F)
-			return 0;
-		if (bulletpropertieses[0].powerType == 1)
-			return 0;
-		if (bulletpropertieses[1].powerType == 1)
-			return 1;
-		if (bulletpropertieses[0].powerType == 0)
-			return 0;
-		if (bulletpropertieses[1].powerType == 0)
-			return 1;
-		if (bulletpropertieses[0].powerType == 2)
-			return 1;
+		if (this.FM.isTakenMortalDamage()) { return -1; }
+		if (bulletpropertieses.length == 1) { return 0; }
+		if (bulletpropertieses.length <= 0) { return -1; }
+		if (bulletpropertieses[0].power <= 0.0F) { return 1; }
+		if (bulletpropertieses[1].power <= 0.0F) { return 0; }
+		if (bulletpropertieses[0].powerType == 1) { return 0; }
+		if (bulletpropertieses[1].powerType == 1) { return 1; }
+		if (bulletpropertieses[0].powerType == 0) { return 0; }
+		if (bulletpropertieses[1].powerType == 0) { return 1; }
+		if (bulletpropertieses[0].powerType == 2) { return 1; }
 		return 0;
 	}
 
 	public int chooseShotpoint(BulletProperties bulletproperties) {
-		if (FM.isTakenMortalDamage())
-			return -1;
+		if (this.FM.isTakenMortalDamage()) { return -1; }
 		return 0;
 	}
 
 	public boolean getShotpointOffset(int i, Point3d point3d) {
-		if (FM.isTakenMortalDamage())
-			return false;
-		if (i != 0)
-			return false;
-		if (point3d != null)
-			point3d.set(0.0, 0.0, 0.0);
+		if (this.FM.isTakenMortalDamage()) { return false; }
+		if (i != 0) { return false; }
+		if (point3d != null) { point3d.set(0.0, 0.0, 0.0); }
 		return true;
 	}
 
@@ -2250,33 +2083,28 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	private static int[] getSwTbl(int i) {
-		if (i < 0)
-			i = -i;
+		if (i < 0) { i = -i; }
 		int i_152_ = i % 16 + 11;
 		int i_153_ = i % Finger.kTable.length;
-		if (i_152_ < 0)
-			i_152_ = -i_152_ % 16;
-		if (i_152_ < 10)
-			i_152_ = 10;
-		if (i_153_ < 0)
-			i_153_ = -i_153_ % Finger.kTable.length;
+		if (i_152_ < 0) { i_152_ = -i_152_ % 16; }
+		if (i_152_ < 10) { i_152_ = 10; }
+		if (i_153_ < 0) { i_153_ = -i_153_ % Finger.kTable.length; }
 		int[] is = new int[i_152_];
-		for (int i_154_ = 0; i_154_ < i_152_; i_154_++)
+		for (int i_154_ = 0; i_154_ < i_152_; i_154_++) {
 			is[i_154_] = Finger.kTable[(i_153_ + i_154_) % Finger.kTable.length];
+		}
 		return is;
 	}
 
 	public static void weapons(Class var_class) {
 		try {
 			int i = Finger.Int("ce" + var_class.getName() + "vd");
-			BufferedReader bufferedreader = (new BufferedReader(new InputStreamReader(new KryptoInputFilter(
-					(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(i, "adt")))), getSwTbl(i)))));
+			BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(i, "adt"))), getSwTbl(i))));
 			ArrayList arraylist = weaponsListProperty(var_class);
 			HashMapInt hashmapint = weaponsMapProperty(var_class);
 			for (;;) {
 				String string = bufferedreader.readLine();
-				if (string == null)
-					break;
+				if (string == null) { break; }
 				StringTokenizer stringtokenizer = new StringTokenizer(string, ",");
 				int i_155_ = stringtokenizer.countTokens() - 1;
 				String string_156_ = stringtokenizer.nextToken();
@@ -2285,8 +2113,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 					String string_158_ = stringtokenizer.nextToken();
 					if (string_158_ != null && string_158_.length() > 3) {
 						NumberTokenizer numbertokenizer = new NumberTokenizer(string_158_);
-						var__WeaponSlots[i_157_] = new _WeaponSlot(numbertokenizer.next(0),
-								numbertokenizer.next((String) null), numbertokenizer.next(-12345));
+						var__WeaponSlots[i_157_] = new _WeaponSlot(numbertokenizer.next(0), numbertokenizer.next((String) null), numbertokenizer.next(-12345));
 					}
 				}
 				arraylist.add(string_156_);
@@ -2305,16 +2132,17 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		l = Finger.incLong(l, Property.stringValue(var_class, "meshName", null));
 		Object object = Property.value(var_class, "cockpitClass", null);
 		if (object != null) {
-			if (object instanceof Class)
+			if (object instanceof Class) {
 				l = Finger.incLong(l, ((Class) object).getName());
-			else {
+			} else {
 				Class[] var_classes = (Class[]) object;
-				for (int i = 0; i < var_classes.length; i++)
+				for (int i = 0; i < var_classes.length; i++) {
 					l = Finger.incLong(l, var_classes[i].getName());
+				}
 			}
 		}
-		for (int i = 0; i < FM.CT.Weapons.length; i++) {
-			BulletEmitter[] bulletemitters = FM.CT.Weapons[i];
+		for (int i = 0; i < this.FM.CT.Weapons.length; i++) {
+			BulletEmitter[] bulletemitters = this.FM.CT.Weapons[i];
 			if (bulletemitters != null) {
 				for (int i_159_ = 0; i_159_ < bulletemitters.length; i_159_++) {
 					BulletEmitter bulletemitter = bulletemitters[i_159_];
@@ -2322,49 +2150,49 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 					if (bulletemitter instanceof Gun) {
 						GunProperties gunproperties = ((Gun) bulletemitter).prop;
 						l = Finger.incLong(l, gunproperties.shotFreq);
-						l = Finger.incLong(l, (gunproperties.shotFreqDeviation));
-						l = Finger.incLong(l, (gunproperties.maxDeltaAngle));
+						l = Finger.incLong(l, gunproperties.shotFreqDeviation);
+						l = Finger.incLong(l, gunproperties.maxDeltaAngle);
 						l = Finger.incLong(l, gunproperties.bullets);
 						BulletProperties[] bulletpropertieses = gunproperties.bullet;
 						if (bulletpropertieses != null) {
 							for (int i_160_ = 0; i_160_ < bulletpropertieses.length; i_160_++) {
-								l = Finger.incLong(l, (bulletpropertieses[i_160_].massa));
-								l = Finger.incLong(l, (bulletpropertieses[i_160_].kalibr));
-								l = Finger.incLong(l, (bulletpropertieses[i_160_].speed));
-								l = (Finger.incLong(l, (bulletpropertieses[i_160_].cumulativePower)));
-								l = Finger.incLong(l, (bulletpropertieses[i_160_].power));
-								l = Finger.incLong(l, (bulletpropertieses[i_160_].powerType));
-								l = Finger.incLong(l, (bulletpropertieses[i_160_].powerRadius));
-								l = Finger.incLong(l, (bulletpropertieses[i_160_].timeLife));
+								l = Finger.incLong(l, bulletpropertieses[i_160_].massa);
+								l = Finger.incLong(l, bulletpropertieses[i_160_].kalibr);
+								l = Finger.incLong(l, bulletpropertieses[i_160_].speed);
+								l = Finger.incLong(l, bulletpropertieses[i_160_].cumulativePower);
+								l = Finger.incLong(l, bulletpropertieses[i_160_].power);
+								l = Finger.incLong(l, bulletpropertieses[i_160_].powerType);
+								l = Finger.incLong(l, bulletpropertieses[i_160_].powerRadius);
+								l = Finger.incLong(l, bulletpropertieses[i_160_].timeLife);
 							}
 						}
 					} else if (bulletemitter instanceof RocketGun) {
 						RocketGun rocketgun = (RocketGun) bulletemitter;
 						Class var_class_161_ = (Class) Property.value(rocketgun.getClass(), "bulletClass", null);
 						l = Finger.incLong(l, Property.intValue(rocketgun.getClass(), "bullets", 1));
-						l = Finger.incLong(l, (Property.floatValue(rocketgun.getClass(), "shotFreq", 0.5F)));
+						l = Finger.incLong(l, Property.floatValue(rocketgun.getClass(), "shotFreq", 0.5F));
 						if (var_class_161_ != null) {
-							l = Finger.incLong(l, (Property.floatValue(var_class_161_, "radius", 1.0F)));
-							l = Finger.incLong(l, (Property.floatValue(var_class_161_, "timeLife", 1.0F)));
-							l = Finger.incLong(l, (Property.floatValue(var_class_161_, "timeFire", 1.0F)));
-							l = Finger.incLong(l, (Property.floatValue(var_class_161_, "force", 1.0F)));
-							l = Finger.incLong(l, (Property.floatValue(var_class_161_, "power", 1.0F)));
-							l = (Finger.incLong(l, Property.intValue(var_class_161_, "powerType", 1)));
-							l = Finger.incLong(l, (Property.floatValue(var_class_161_, "kalibr", 1.0F)));
-							l = Finger.incLong(l, (Property.floatValue(var_class_161_, "massa", 1.0F)));
-							l = Finger.incLong(l, (Property.floatValue(var_class_161_, "massaEnd", 1.0F)));
+							l = Finger.incLong(l, Property.floatValue(var_class_161_, "radius", 1.0F));
+							l = Finger.incLong(l, Property.floatValue(var_class_161_, "timeLife", 1.0F));
+							l = Finger.incLong(l, Property.floatValue(var_class_161_, "timeFire", 1.0F));
+							l = Finger.incLong(l, Property.floatValue(var_class_161_, "force", 1.0F));
+							l = Finger.incLong(l, Property.floatValue(var_class_161_, "power", 1.0F));
+							l = Finger.incLong(l, Property.intValue(var_class_161_, "powerType", 1));
+							l = Finger.incLong(l, Property.floatValue(var_class_161_, "kalibr", 1.0F));
+							l = Finger.incLong(l, Property.floatValue(var_class_161_, "massa", 1.0F));
+							l = Finger.incLong(l, Property.floatValue(var_class_161_, "massaEnd", 1.0F));
 						}
 					} else if (bulletemitter instanceof BombGun) {
 						BombGun bombgun = (BombGun) bulletemitter;
 						Class var_class_162_ = (Class) Property.value(bombgun.getClass(), "bulletClass", null);
 						l = Finger.incLong(l, Property.intValue(bombgun.getClass(), "bullets", 1));
-						l = Finger.incLong(l, (Property.floatValue(bombgun.getClass(), "shotFreq", 0.5F)));
+						l = Finger.incLong(l, Property.floatValue(bombgun.getClass(), "shotFreq", 0.5F));
 						if (var_class_162_ != null) {
-							l = Finger.incLong(l, (Property.floatValue(var_class_162_, "radius", 1.0F)));
-							l = Finger.incLong(l, (Property.floatValue(var_class_162_, "power", 1.0F)));
-							l = (Finger.incLong(l, Property.intValue(var_class_162_, "powerType", 1)));
-							l = Finger.incLong(l, (Property.floatValue(var_class_162_, "kalibr", 1.0F)));
-							l = Finger.incLong(l, (Property.floatValue(var_class_162_, "massa", 1.0F)));
+							l = Finger.incLong(l, Property.floatValue(var_class_162_, "radius", 1.0F));
+							l = Finger.incLong(l, Property.floatValue(var_class_162_, "power", 1.0F));
+							l = Finger.incLong(l, Property.intValue(var_class_162_, "powerType", 1));
+							l = Finger.incLong(l, Property.floatValue(var_class_162_, "kalibr", 1.0F));
+							l = Finger.incLong(l, Property.floatValue(var_class_162_, "massa", 1.0F));
 						}
 					}
 				}
@@ -2382,8 +2210,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	protected static void weaponHooksRegister(Class var_class, String[] strings) {
-		if (strings.length != getWeaponTriggersRegistered(var_class).length)
-			throw new RuntimeException("Sizeof 'weaponHooks' != sizeof 'weaponTriggers'");
+		if (strings.length != getWeaponTriggersRegistered(var_class).length) { throw new RuntimeException("Sizeof 'weaponHooks' != sizeof 'weaponTriggers'"); }
 		Property.set(var_class, "weaponHooks", strings);
 	}
 
@@ -2408,8 +2235,9 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	public static String[] getWeaponsRegistered(Class var_class) {
 		ArrayList arraylist = weaponsListProperty(var_class);
 		String[] strings = new String[arraylist.size()];
-		for (int i = 0; i < strings.length; i++)
+		for (int i = 0; i < strings.length; i++) {
 			strings[i] = (String) arraylist.get(i);
+		}
 		return strings;
 	}
 
@@ -2433,11 +2261,9 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	public static boolean isWeaponDateOk(Class class1, String s) {
 		com.maddox.util.HashMapInt hashmapint = Aircraft.weaponsMapProperty(class1);
 		int i = Finger.Int(s);
-		if (!hashmapint.containsKey(i))
-			return true;
+		if (!hashmapint.containsKey(i)) { return true; }
 		int j = Mission.getMissionDate(false);
-		if (j == 0)
-			return true;
+		if (j == 0) { return true; }
 		java.lang.String s1 = "";
 		try {
 			s1 = class1.toString().substring(class1.toString().lastIndexOf(".") + 1, class1.toString().length());
@@ -2447,13 +2273,10 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		java.lang.String as[] = Aircraft.getWeaponHooksRegistered(class1);
 		_WeaponSlot a_lweaponslot[] = (_WeaponSlot[]) hashmapint.get(i);
 		for (int k = 0; k < as.length; k++) {
-			if (a_lweaponslot[k] == null)
-				continue;
+			if (a_lweaponslot[k] == null) { continue; }
 			int l = com.maddox.rts.Property.intValue(a_lweaponslot[k].clazz, "dateOfUse_" + s1, 0);
-			if (l == 0)
-				l = com.maddox.rts.Property.intValue(a_lweaponslot[k].clazz, "dateOfUse", 0);
-			if (l != 0 && j < l)
-				return false;
+			if (l == 0) { l = com.maddox.rts.Property.intValue(a_lweaponslot[k].clazz, "dateOfUse", 0); }
+			if (l != 0 && j < l) { return false; }
 		}
 
 		return true;
@@ -2467,17 +2290,13 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		Class var_class = aircraft.getClass();
 		HashMapInt hashmapint = weaponsMapProperty(var_class);
 		int i = Finger.Int(string);
-		if (!hashmapint.containsKey(i))
-			throw new RuntimeException(
-					"Weapon set '" + string + "' not registered in " + ObjIO.classGetName(var_class));
+		if (!hashmapint.containsKey(i)) { throw new RuntimeException("Weapon set '" + string + "' not registered in " + ObjIO.classGetName(var_class)); }
 		weaponsLoad(aircraft, i, hashmapint);
 	}
 
 	protected static void weaponsLoad(Aircraft aircraft, int i) throws Exception {
 		HashMapInt hashmapint = weaponsMapProperty(aircraft.getClass());
-		if (!hashmapint.containsKey(i))
-			throw new RuntimeException(
-					"Weapon set '" + i + "' not registered in " + ObjIO.classGetName(aircraft.getClass()));
+		if (!hashmapint.containsKey(i)) { throw new RuntimeException("Weapon set '" + i + "' not registered in " + ObjIO.classGetName(aircraft.getClass())); }
 		weaponsLoad(aircraft, i, hashmapint);
 	}
 
@@ -2487,90 +2306,91 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		for (int i_163_ = 0; i_163_ < strings.length; i_163_++) {
 			if (var__WeaponSlots[i_163_] != null) {
 				if (aircraft.mesh().hookFind(strings[i_163_]) != -1) {
-					BulletEmitter bulletemitter = ((BulletEmitter) var__WeaponSlots[i_163_].clazz.newInstance());
+					BulletEmitter bulletemitter = (BulletEmitter) var__WeaponSlots[i_163_].clazz.newInstance();
 					bulletemitter.set(aircraft, strings[i_163_], dumpName(strings[i_163_]));
 					if (aircraft.isNet() && aircraft.isNetMirror()) {
-						if (!World.cur().diffCur.Limited_Ammo)
+						if (!World.cur().diffCur.Limited_Ammo) {
 							bulletemitter.loadBullets(-1);
-						else if (var__WeaponSlots[i_163_].trigger == 2 || var__WeaponSlots[i_163_].trigger == 3
-								|| var__WeaponSlots[i_163_].trigger >= 10) {
-							if (var__WeaponSlots[i_163_].bullets == -12345)
+						} else if (var__WeaponSlots[i_163_].trigger == 2 || var__WeaponSlots[i_163_].trigger == 3 || var__WeaponSlots[i_163_].trigger >= 10) {
+							if (var__WeaponSlots[i_163_].bullets == -12345) {
 								bulletemitter.loadBullets();
-							else
+							} else {
 								bulletemitter._loadBullets(var__WeaponSlots[i_163_].bullets);
-						} else
+							}
+						} else {
 							bulletemitter.loadBullets(-1);
-					} else if (var__WeaponSlots[i_163_].bullets == -12345)
+						}
+					} else if (var__WeaponSlots[i_163_].bullets == -12345) {
 						bulletemitter.loadBullets();
-					else
+					} else {
 						bulletemitter.loadBullets(var__WeaponSlots[i_163_].bullets);
+					}
 					aircraft.addGun(bulletemitter, var__WeaponSlots[i_163_].trigger);
 					Property.set(bulletemitter, "_count", var__WeaponSlots[i_163_].bullets);
 					switch (var__WeaponSlots[i_163_].trigger) {
-					case 0:
-						if (bulletemitter instanceof MGunAircraftGeneric) {
-							if (World.getPlayerAircraft() == aircraft)
-								((MGunAircraftGeneric) bulletemitter).setConvDistance(World.cur().userCoverMashineGun,
-										Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F));
-							else if (aircraft.isNet() && aircraft.isNetPlayer())
-								((MGunAircraftGeneric) bulletemitter).setConvDistance(400.0F,
-										Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F));
-							else
-								((MGunAircraftGeneric) bulletemitter).setConvDistance(400.0F, 0.0F);
-						}
-						break;
-					case 1:
-						if (bulletemitter instanceof MGunAircraftGeneric) {
-							if (World.getPlayerAircraft() == aircraft)
-								((MGunAircraftGeneric) bulletemitter).setConvDistance(World.cur().userCoverCannon,
-										Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F));
-							else if (aircraft.isNet() && aircraft.isNetPlayer())
-								((MGunAircraftGeneric) bulletemitter).setConvDistance(400.0F,
-										Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F));
-							else
-								((MGunAircraftGeneric) bulletemitter).setConvDistance(400.0F, 0.0F);
-						}
-						break;
-					case 2:
-						if (bulletemitter instanceof RocketGun) {
-							if (World.getPlayerAircraft() == aircraft) {
-								((RocketGun) bulletemitter).setRocketTimeLife(World.cur().userRocketDelay);
-								((RocketGun) bulletemitter).setConvDistance(World.cur().userCoverRocket,
-										Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F) - 2.81F);
-							} else if (aircraft.isNet() && aircraft.isNetPlayer())
-								((RocketGun) bulletemitter).setConvDistance(400.0F,
-										Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F) - 2.81F);
-							else if (aircraft instanceof TypeFighter)
-								((RocketGun) bulletemitter).setConvDistance(400.0F, -1.8F);
-							else if (((RocketGun) bulletemitter).bulletMassa() > 10.0F) {
-								if (aircraft instanceof IL_2)
-									((RocketGun) bulletemitter).setConvDistance(400.0F, -2.0F);
-								else
-									((RocketGun) bulletemitter).setConvDistance(400.0F, -1.65F);
-							} else if (aircraft instanceof IL_2)
-								((RocketGun) bulletemitter).setConvDistance(400.0F, -2.1F);
-							else
-								((RocketGun) bulletemitter).setConvDistance(400.0F, -1.9F);
-						}
-						break;
-					case 3:
-						if (bulletemitter instanceof BombGun && World.getPlayerAircraft() == aircraft)
-							// TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
-							// ((BombGun) bulletemitter).setBombDelay(World.cur().userBombDelay);
-							((BombGun) bulletemitter).setBombDelay(World.cur().userBombDelay, World.cur().userBombFuze);
-						// TODO: --- Bomb Fuze Setting by SAS~Storebror ---
-						break;
+						case 0:
+							if (bulletemitter instanceof MGunAircraftGeneric) {
+								if (World.getPlayerAircraft() == aircraft) {
+									((MGunAircraftGeneric) bulletemitter).setConvDistance(World.cur().userCoverMashineGun, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F));
+								} else if (aircraft.isNet() && aircraft.isNetPlayer()) {
+									((MGunAircraftGeneric) bulletemitter).setConvDistance(400.0F, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F));
+								} else {
+									((MGunAircraftGeneric) bulletemitter).setConvDistance(400.0F, 0.0F);
+								}
+							}
+							break;
+						case 1:
+							if (bulletemitter instanceof MGunAircraftGeneric) {
+								if (World.getPlayerAircraft() == aircraft) {
+									((MGunAircraftGeneric) bulletemitter).setConvDistance(World.cur().userCoverCannon, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F));
+								} else if (aircraft.isNet() && aircraft.isNetPlayer()) {
+									((MGunAircraftGeneric) bulletemitter).setConvDistance(400.0F, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F));
+								} else {
+									((MGunAircraftGeneric) bulletemitter).setConvDistance(400.0F, 0.0F);
+								}
+							}
+							break;
+						case 2:
+							if (bulletemitter instanceof RocketGun) {
+								if (World.getPlayerAircraft() == aircraft) {
+									((RocketGun) bulletemitter).setRocketTimeLife(World.cur().userRocketDelay);
+									((RocketGun) bulletemitter).setConvDistance(World.cur().userCoverRocket, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F) - 2.81F);
+								} else if (aircraft.isNet() && aircraft.isNetPlayer()) {
+									((RocketGun) bulletemitter).setConvDistance(400.0F, Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F) - 2.81F);
+								} else if (aircraft instanceof TypeFighter) {
+									((RocketGun) bulletemitter).setConvDistance(400.0F, -1.8F);
+								} else if (((RocketGun) bulletemitter).bulletMassa() > 10.0F) {
+									if (aircraft instanceof IL_2) {
+										((RocketGun) bulletemitter).setConvDistance(400.0F, -2.0F);
+									} else {
+										((RocketGun) bulletemitter).setConvDistance(400.0F, -1.65F);
+									}
+								} else if (aircraft instanceof IL_2) {
+									((RocketGun) bulletemitter).setConvDistance(400.0F, -2.1F);
+								} else {
+									((RocketGun) bulletemitter).setConvDistance(400.0F, -1.9F);
+								}
+							}
+							break;
+						case 3:
+							if (bulletemitter instanceof BombGun && World.getPlayerAircraft() == aircraft) {
+								// TODO: +++ Bomb Fuze Setting by SAS~Storebror +++
+								// ((BombGun) bulletemitter).setBombDelay(World.cur().userBombDelay);
+								((BombGun) bulletemitter).setBombDelay(World.cur().userBombDelay, World.cur().userBombFuze);
+							}
+							// TODO: --- Bomb Fuze Setting by SAS~Storebror ---
+							break;
 					}
-				} else
+				} else {
 					System.err.println("Hook '" + strings[i_163_] + "' NOT found in mesh of " + aircraft.getClass());
+				}
 			}
 		}
 	}
 
 	private static ArrayList weaponsListProperty(Class var_class) {
 		Object object = Property.value((Object) var_class, "weaponsList", null);
-		if (object != null)
-			return (ArrayList) object;
+		if (object != null) { return (ArrayList) object; }
 		ArrayList arraylist = new ArrayList();
 		Property.set(var_class, "weaponsList", arraylist);
 		return arraylist;
@@ -2580,24 +2400,22 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	// ZutiTimer_ChangeLoadout
 	public static HashMapInt weaponsMapProperty(Class var_class) {
 		Object object = Property.value((Object) var_class, "weaponsMap", null);
-		if (object != null)
-			return (HashMapInt) object;
+		if (object != null) { return (HashMapInt) object; }
 		HashMapInt hashmapint = new HashMapInt();
 		Property.set(var_class, "weaponsMap", hashmapint);
 		return hashmapint;
 	}
 
 	public void hideWingWeapons(boolean bool) {
-		for (int i = 0; i < FM.CT.Weapons.length; i++) {
-			BulletEmitter[] bulletemitters = FM.CT.Weapons[i];
+		for (int i = 0; i < this.FM.CT.Weapons.length; i++) {
+			BulletEmitter[] bulletemitters = this.FM.CT.Weapons[i];
 			if (bulletemitters != null) {
 				for (int i_164_ = 0; i_164_ < bulletemitters.length; i_164_++) {
-					if (bulletemitters[i_164_] instanceof BombGun)
+					if (bulletemitters[i_164_] instanceof BombGun) {
 						((BombGun) bulletemitters[i_164_]).hide(bool);
-					else if (bulletemitters[i_164_] instanceof RocketGun)
+					} else if (bulletemitters[i_164_] instanceof RocketGun) {
 						((RocketGun) bulletemitters[i_164_]).hide(bool);
-					else if (bulletemitters[i_164_] instanceof Pylon)
-						((Pylon) bulletemitters[i_164_]).drawing(!bool);
+					} else if (bulletemitters[i_164_] instanceof Pylon) { ((Pylon) bulletemitters[i_164_]).drawing(!bool); }
 				}
 			}
 		}
@@ -2605,7 +2423,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 
 	public void createCockpits() {
 		if (Config.isUSE_RENDER()) {
-			deleteCockpits();
+			this.deleteCockpits();
 			Object object = Property.value(this.getClass(), "cockpitClass");
 			if (object != null) {
 				Cockpit._newAircraft = this;
@@ -2623,8 +2441,9 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 					Class[] var_classes = (Class[]) object;
 					try {
 						Main3D.cur3D().cockpits = new Cockpit[var_classes.length];
-						for (int i = 0; i < var_classes.length; i++)
+						for (int i = 0; i < var_classes.length; i++) {
 							Main3D.cur3D().cockpits[i] = (Cockpit) var_classes[i].newInstance();
+						}
 						Main3D.cur3D().cockpitCur = Main3D.cur3D().cockpits[0];
 					} catch (Exception exception) {
 						System.out.println(exception.getMessage());
@@ -2651,34 +2470,32 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	private void explode() {
-		if (FM.Wingman != null)
-			FM.Wingman.Leader = FM.Leader;
-		if (FM.Leader != null)
-			FM.Leader.Wingman = FM.Wingman;
-		FM.Wingman = null;
-		FM.Leader = null;
-		HierMesh hiermesh = hierMesh();
+		if (this.FM.Wingman != null) { this.FM.Wingman.Leader = this.FM.Leader; }
+		if (this.FM.Leader != null) { this.FM.Leader.Wingman = this.FM.Wingman; }
+		this.FM.Wingman = null;
+		this.FM.Leader = null;
+		HierMesh hiermesh = this.hierMesh();
 		int i = -1;
 		float f = 30.0F;
 		for (int i_165_ = 9; i_165_ >= 0 && (i = hiermesh.chunkFindCheck("CF_D" + i_165_)) < 0; i_165_--) {
 			/* empty */
 		}
-		int[] is = hideSubTrees("");
+		int[] is = this.hideSubTrees("");
 		if (is != null) {
 			int[] is_166_ = is;
 			is = new int[is_166_.length + 1];
 			int i_167_;
-			for (i_167_ = 0; i_167_ < is_166_.length; i_167_++)
+			for (i_167_ = 0; i_167_ < is_166_.length; i_167_++) {
 				is[i_167_] = is_166_[i_167_];
+			}
 			is[i_167_] = i;
 			for (i_167_ = 0; i_167_ < is.length; i_167_++) {
 				Wreckage wreckage = new Wreckage(this, is[i_167_]);
 				if (World.Rnd().nextInt(0, 99) < 20) {
 					Eff3DActor.New(wreckage, null, null, 1.0F, Wreckage.FIRE, 2.5F);
-					if (World.Rnd().nextInt(0, 99) < 50)
-						Eff3DActor.New(wreckage, null, null, 1.0F, Wreckage.SMOKE_EXPLODE, 3.0F);
+					if (World.Rnd().nextInt(0, 99) < 50) { Eff3DActor.New(wreckage, null, null, 1.0F, Wreckage.SMOKE_EXPLODE, 3.0F); }
 				}
-				getSpeed(Vd);
+				this.getSpeed(Vd);
 				Vd.x += f * (World.Rnd().nextDouble(0.0, 1.0) - 0.5);
 				Vd.y += f * (World.Rnd().nextDouble(0.0, 1.0) - 0.5);
 				Vd.z += f * (World.Rnd().nextDouble(0.0, 1.0) - 0.5);
@@ -2688,82 +2505,71 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	public int aircNumber() {
-		Wing wing = (Wing) getOwner();
-		if (wing == null)
-			return -1;
+		Wing wing = (Wing) this.getOwner();
+		if (wing == null) { return -1; }
 		return wing.aircReady();
 	}
 
 	public int aircIndex() {
-		Wing wing = (Wing) getOwner();
-		if (wing == null)
-			return -1;
+		Wing wing = (Wing) this.getOwner();
+		if (wing == null) { return -1; }
 		return wing.aircIndex(this);
 	}
 
 	public boolean isInPlayerWing() {
-		if (!Actor.isValid(World.getPlayerAircraft()))
-			return false;
-		return getWing() == World.getPlayerAircraft().getWing();
+		if (!Actor.isValid(World.getPlayerAircraft())) { return false; }
+		return this.getWing() == World.getPlayerAircraft().getWing();
 	}
 
 	public boolean isInPlayerSquadron() {
-		if (!Actor.isValid(World.getPlayerAircraft()))
-			return false;
-		return getSquadron() == World.getPlayerAircraft().getSquadron();
+		if (!Actor.isValid(World.getPlayerAircraft())) { return false; }
+		return this.getSquadron() == World.getPlayerAircraft().getSquadron();
 	}
 
 	public boolean isInPlayerRegiment() {
-		return getRegiment() == World.getPlayerRegiment();
+		return this.getRegiment() == World.getPlayerRegiment();
 	}
 
 	public boolean isChunkAnyDamageVisible(String string) {
-		if (string.lastIndexOf("_") == -1)
-			string += "_D";
+		if (string.lastIndexOf("_") == -1) { string += "_D"; }
 		for (int i = 0; i < 4; i++) {
-			if (hierMesh().chunkFindCheck(string + i) != -1 && hierMesh().isChunkVisible(string + i))
-				return true;
+			if (this.hierMesh().chunkFindCheck(string + i) != -1 && this.hierMesh().isChunkVisible(string + i)) { return true; }
 		}
 		return false;
 	}
 
 	protected int chunkDamageVisible(String string) {
-		if (string.lastIndexOf("_") == -1)
-			string += "_D";
+		if (string.lastIndexOf("_") == -1) { string += "_D"; }
 		for (int i = 0; i < 4; i++) {
-			if (hierMesh().chunkFindCheck(string + i) != -1 && hierMesh().isChunkVisible(string + i))
-				return i;
+			if (this.hierMesh().chunkFindCheck(string + i) != -1 && this.hierMesh().isChunkVisible(string + i)) { return i; }
 		}
 		return 0;
 	}
 
 	public Wing getWing() {
-		return (Wing) getOwner();
+		return (Wing) this.getOwner();
 	}
 
 	public Squadron getSquadron() {
-		Wing wing = getWing();
-		if (wing == null)
-			return null;
+		Wing wing = this.getWing();
+		if (wing == null) { return null; }
 		return wing.squadron();
 	}
 
 	public Regiment getRegiment() {
-		Wing wing = getWing();
-		if (wing == null)
-			return null;
+		Wing wing = this.getWing();
+		if (wing == null) { return null; }
 		return wing.regiment();
 	}
 
 	public void hitDaSilk() {
-		FM.AS.hitDaSilk();
-		FM.setReadyToDie(true);
-		if (FM.Loc.z - Engine.land().HQ_Air(FM.Loc.x, FM.Loc.y) > 20.0)
-			Voice.speakBailOut(this);
+		this.FM.AS.hitDaSilk();
+		this.FM.setReadyToDie(true);
+		if (this.FM.Loc.z - Engine.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y) > 20.0) { Voice.speakBailOut(this); }
 	}
 
 	protected void killPilot(Actor actor, int i) {
-		FM.AS.hitPilot(actor, i, 100);
+		this.FM.AS.hitPilot(actor, i, 100);
 	}
 
 	public void doWoundPilot(int i, float f) {
@@ -2774,55 +2580,46 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	public void doRemoveBodyFromPlane(int i) {
-		doRemoveBodyChunkFromPlane("Pilot" + i);
-		doRemoveBodyChunkFromPlane("Head" + i);
-		doRemoveBodyChunkFromPlane("HMask" + i);
-		doRemoveBodyChunkFromPlane("Pilot" + i + "a");
-		doRemoveBodyChunkFromPlane("Head" + i + "a");
-		doRemoveBodyChunkFromPlane("Pilot" + i + "FAK");
-		doRemoveBodyChunkFromPlane("Head" + i + "FAK");
-		doRemoveBodyChunkFromPlane("Pilot" + i + "FAL");
-		doRemoveBodyChunkFromPlane("Head" + i + "FAL");
+		this.doRemoveBodyChunkFromPlane("Pilot" + i);
+		this.doRemoveBodyChunkFromPlane("Head" + i);
+		this.doRemoveBodyChunkFromPlane("HMask" + i);
+		this.doRemoveBodyChunkFromPlane("Pilot" + i + "a");
+		this.doRemoveBodyChunkFromPlane("Head" + i + "a");
+		this.doRemoveBodyChunkFromPlane("Pilot" + i + "FAK");
+		this.doRemoveBodyChunkFromPlane("Head" + i + "FAK");
+		this.doRemoveBodyChunkFromPlane("Pilot" + i + "FAL");
+		this.doRemoveBodyChunkFromPlane("Head" + i + "FAL");
 	}
 
 	protected void doRemoveBodyChunkFromPlane(String string) {
-		if (hierMesh().chunkFindCheck(string + "_D0") != -1)
-			hierMesh().chunkVisible(string + "_D0", false);
-		if (hierMesh().chunkFindCheck(string + "_D1") != -1)
-			hierMesh().chunkVisible(string + "_D1", false);
+		if (this.hierMesh().chunkFindCheck(string + "_D0") != -1) { this.hierMesh().chunkVisible(string + "_D0", false); }
+		if (this.hierMesh().chunkFindCheck(string + "_D1") != -1) { this.hierMesh().chunkVisible(string + "_D1", false); }
 	}
 
 	public void doSetSootState(int i, int i_168_) {
 		for (int i_169_ = 0; i_169_ < 2; i_169_++) {
-			if (FM.AS.astateSootEffects[i][i_169_] != null)
-				Eff3DActor.finish(FM.AS.astateSootEffects[i][i_169_]);
-			FM.AS.astateSootEffects[i][i_169_] = null;
+			if (this.FM.AS.astateSootEffects[i][i_169_] != null) { Eff3DActor.finish(this.FM.AS.astateSootEffects[i][i_169_]); }
+			this.FM.AS.astateSootEffects[i][i_169_] = null;
 		}
 		switch (i_168_) {
-		case 0:
-			break;
-		case 1:
-			FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 1.0F,
-					"3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1.0F);
-			FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_02"), null, 1.0F,
-					"3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1.0F);
-			break;
-		case 3:
-			FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F,
-					"3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1.0F);
-			/* fall through */
-		case 2:
-			FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F,
-					"3DO/Effects/Aircraft/TurboZippo.eff", -1.0F);
-			break;
-		case 5:
-			FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 3.0F,
-					"3DO/Effects/Aircraft/TurboJRD1100F.eff", -1.0F);
-			/* fall through */
-		case 4:
-			FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F,
-					"3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1.0F);
-			break;
+			case 0:
+				break;
+			case 1:
+				this.FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "ES_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1.0F);
+				this.FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "ES_02"), null, 1.0F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1.0F);
+				break;
+			case 3:
+				this.FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1.0F);
+				/* fall through */
+			case 2:
+				this.FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/TurboZippo.eff", -1.0F);
+				break;
+			case 5:
+				this.FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "EF_01"), null, 3.0F, "3DO/Effects/Aircraft/TurboJRD1100F.eff", -1.0F);
+				/* fall through */
+			case 4:
+				this.FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, this.findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1.0F);
+				break;
 		}
 	}
 
@@ -2832,8 +2629,8 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		ZutiSupportMethods_Air.executeWhenAircraftIsCreated(this);
 		// -------------------------
 
-		if (FM instanceof Maneuver) {
-			Maneuver maneuver = (Maneuver) FM;
+		if (this.FM instanceof Maneuver) {
+			Maneuver maneuver = (Maneuver) this.FM;
 			float[] fs = maneuver.takeIntoAccount;
 
 			fs[0] = 1.0F;
@@ -2844,7 +2641,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 
 			fs_171_[2] = 0.7F;
 			if (this instanceof TypeFighter) {
-				if (aircIndex() % 2 == 0) {
+				if (this.aircIndex() % 2 == 0) {
 					float[] fs_172_ = maneuver.takeIntoAccount;
 					fs_172_[3] = 0.0F;
 					float[] fs_173_ = maneuver.takeIntoAccount;
@@ -2864,7 +2661,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 				float[] fs_179_ = maneuver.takeIntoAccount;
 				fs_179_[7] = 0.1F;
 			} else if (this instanceof TypeStormovik) {
-				if (aircIndex() != 0) {
+				if (this.aircIndex() != 0) {
 					float[] fs_180_ = maneuver.takeIntoAccount;
 					fs_180_[2] = 0.5F;
 				}
@@ -2879,7 +2676,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 				float[] fs_185_ = maneuver.takeIntoAccount;
 				fs_185_[7] = 0.6F;
 			} else {
-				if (aircIndex() != 0) {
+				if (this.aircIndex() != 0) {
 					float[] fs_186_ = maneuver.takeIntoAccount;
 					fs_186_[2] = 0.4F;
 				}
@@ -2900,8 +2697,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 				if (maneuver == null) {
 					/* empty */
 				}
-				if (i_192_ >= 8)
-					break;
+				if (i_192_ >= 8) { break; }
 				maneuver.AccountCoeff[i] = 0.0F;
 				i++;
 			}
@@ -2914,59 +2710,44 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	protected void debugprintln(String string) {
-		if (World.cur().isDebugFM())
-			System.out.println("<" + name() + "> (" + typedName() + ") " + string);
+		if (World.cur().isDebugFM()) { System.out.println("<" + this.name() + "> (" + this.typedName() + ") " + string); }
 	}
 
 	public static void debugprintln(Actor actor, String string) {
 		if (World.cur().isDebugFM()) {
 			if (Actor.isValid(actor)) {
 				System.out.print("<" + actor.name() + ">");
-				if (actor instanceof Aircraft)
-					System.out.print(" (" + ((Aircraft) actor).typedName() + ")");
-			} else
+				if (actor instanceof Aircraft) { System.out.print(" (" + ((Aircraft) actor).typedName() + ")"); }
+			} else {
 				System.out.print("<INVALIDACTOR>");
+			}
 			System.out.println(" " + string);
 		}
 	}
 
 	public void debuggunnery(String string) {
-		if (World.cur().isDebugFM())
-			System.out.println("<" + name() + "> (" + typedName() + ") *** BULLET *** : " + string);
+		if (World.cur().isDebugFM()) { System.out.println("<" + this.name() + "> (" + this.typedName() + ") *** BULLET *** : " + string); }
 	}
 
 	protected float bailProbabilityOnCut(String string) {
-		if (string.startsWith("Nose"))
-			return 0.5F;
-		if (string.startsWith("Wing"))
-			return 0.99F;
-		if (string.startsWith("Aroone"))
-			return 0.05F;
-		if (string.startsWith("Tail"))
-			return 0.99F;
-		if (string.startsWith("StabL") && !isChunkAnyDamageVisible("VatorR"))
-			return 0.99F;
-		if (string.startsWith("StabR") && !isChunkAnyDamageVisible("VatorL"))
-			return 0.99F;
-		if (string.startsWith("Stab"))
-			return 0.33F;
-		if (string.startsWith("VatorL") && !isChunkAnyDamageVisible("VatorR"))
-			return 0.99F;
-		if (string.startsWith("VatorR") && !isChunkAnyDamageVisible("VatorL"))
-			return 0.99F;
-		if (string.startsWith("Vator"))
-			return 0.01F;
-		if (string.startsWith("Keel"))
-			return 0.5F;
-		if (string.startsWith("Rudder"))
-			return 0.05F;
-		if (string.startsWith("Engine"))
-			return 0.12F;
+		if (string.startsWith("Nose")) { return 0.5F; }
+		if (string.startsWith("Wing")) { return 0.99F; }
+		if (string.startsWith("Aroone")) { return 0.05F; }
+		if (string.startsWith("Tail")) { return 0.99F; }
+		if (string.startsWith("StabL") && !this.isChunkAnyDamageVisible("VatorR")) { return 0.99F; }
+		if (string.startsWith("StabR") && !this.isChunkAnyDamageVisible("VatorL")) { return 0.99F; }
+		if (string.startsWith("Stab")) { return 0.33F; }
+		if (string.startsWith("VatorL") && !this.isChunkAnyDamageVisible("VatorR")) { return 0.99F; }
+		if (string.startsWith("VatorR") && !this.isChunkAnyDamageVisible("VatorL")) { return 0.99F; }
+		if (string.startsWith("Vator")) { return 0.01F; }
+		if (string.startsWith("Keel")) { return 0.5F; }
+		if (string.startsWith("Rudder")) { return 0.05F; }
+		if (string.startsWith("Engine")) { return 0.12F; }
 		return -0.0F;
 	}
 
 	private void _setMesh(String string) {
-		setMesh(string);
+		this.setMesh(string);
 		CacheItem cacheitem = (CacheItem) meshCache.get(string);
 		if (cacheitem == null) {
 			cacheitem = new CacheItem();
@@ -2993,8 +2774,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		if (cacheitem != null) {
 			airCache.remove(this);
 			cacheitem.loaded--;
-			if (cacheitem.loaded == 0)
-				cacheitem.time = Time.real();
+			if (cacheitem.loaded == 0) { cacheitem.time = Time.real(); }
 			checkMeshCache();
 		}
 	}
@@ -3008,8 +2788,9 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 					HierMesh hiermesh = cacheitem.mesh;
 					int i = hiermesh.materials();
 					Mat mat = Mat.New("3do/textures/clear.mat");
-					for (int i_197_ = 0; i_197_ < i; i_197_++)
+					for (int i_197_ = 0; i_197_ < i; i_197_++) {
 						hiermesh.materialReplace(i_197_, mat);
+					}
 					cacheitem.bExistTextures = false;
 				}
 			}
@@ -3022,8 +2803,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	public void setCockpitState(int i) {
-		if (FM.isPlayers() && World.cur().diffCur.Vulnerability && Actor.isValid(Main3D.cur3D().cockpitCur))
-			Main3D.cur3D().cockpitCur.doReflectCockitState();
+		if (this.FM.isPlayers() && World.cur().diffCur.Vulnerability && Actor.isValid(Main3D.cur3D().cockpitCur)) { Main3D.cur3D().cockpitCur.doReflectCockitState(); }
 	}
 
 	protected void resetYPRmodifier() {
@@ -3032,12 +2812,11 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 
 	public CellAirPlane getCellAirPlane() {
 		CellAirPlane cellairplane = (CellAirPlane) Property.value(this, "CellAirPlane", null);
-		if (cellairplane != null)
-			return cellairplane;
+		if (cellairplane != null) { return cellairplane; }
 		cellairplane = (CellAirPlane) Property.value((Object) this.getClass(), "CellObject", null);
 		if (cellairplane == null) {
-			tmpLocCell.set(0.0, 0.0, FM.Gears.H, 0.0F, FM.Gears.Pitch, 0.0F);
-			cellairplane = new CellAirPlane(new CellObject[1][1], hierMesh(), tmpLocCell, 1.0);
+			tmpLocCell.set(0.0, 0.0, this.FM.Gears.H, 0.0F, this.FM.Gears.Pitch, 0.0F);
+			cellairplane = new CellAirPlane(new CellObject[1][1], this.hierMesh(), tmpLocCell, 1.0);
 			cellairplane.blurSiluet8x();
 			cellairplane.clampCells();
 			Property.set(this.getClass(), "CellObject", cellairplane);
@@ -3058,95 +2837,87 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 
 	public boolean dropExternalStores(boolean flag) {
 		boolean flag1 = false;
-		for (int i = 0; i < FM.CT.Weapons.length; i++) {
-			com.maddox.il2.ai.BulletEmitter abulletemitter[] = FM.CT.Weapons[i];
-			if (abulletemitter == null)
-				continue;
+		for (int i = 0; i < this.FM.CT.Weapons.length; i++) {
+			com.maddox.il2.ai.BulletEmitter abulletemitter[] = this.FM.CT.Weapons[i];
+			if (abulletemitter == null) { continue; }
 			for (int j = 0; j < abulletemitter.length; j++) {
 				com.maddox.il2.ai.BulletEmitter bulletemitter = abulletemitter[j];
-				if (!(bulletemitter instanceof com.maddox.il2.objects.weapons.BombGun)
-						|| (bulletemitter instanceof com.maddox.il2.objects.weapons.FuelTankGun))
-					continue;
+				if (!(bulletemitter instanceof com.maddox.il2.objects.weapons.BombGun) || bulletemitter instanceof com.maddox.il2.objects.weapons.FuelTankGun) { continue; }
 				((com.maddox.il2.objects.weapons.BombGun) bulletemitter).setArmingTime(0xfffffffL);
-				if (bulletemitter.countBullets() <= 0)
-					continue;
+				if (bulletemitter.countBullets() <= 0) { continue; }
 				flag1 = true;
 				bulletemitter.shots(99);
-				if (bulletemitter.getHookName().startsWith("_BombSpawn"))
-					FM.CT.BayDoorControl = 1.0F;
+				if (bulletemitter.getHookName().startsWith("_BombSpawn")) { this.FM.CT.BayDoorControl = 1.0F; }
 			}
 
 		}
 
-		if (!flag1)
-			return dropWfrGr21();
-		else
+		if (!flag1) {
+			return this.dropWfrGr21();
+		} else {
 			return flag1;
+		}
 	}
 
 	private boolean dropWfrGr21() {
-		if (!wfrGr21dropped) {
-			java.lang.Object aobj[] = pos.getBaseAttached();
+		if (!this.wfrGr21dropped) {
+			java.lang.Object aobj[] = this.pos.getBaseAttached();
 			if (aobj != null) {
 				for (int i = 0; i < aobj.length; i++) {
 					if (aobj[i] instanceof com.maddox.il2.objects.weapons.PylonRO_WfrGr21) {
 						com.maddox.il2.objects.weapons.PylonRO_WfrGr21 pylonro_wfrgr21 = (com.maddox.il2.objects.weapons.PylonRO_WfrGr21) aobj[i];
 						pylonro_wfrgr21.drawing(false);
 						pylonro_wfrgr21.visibilityAsBase(false);
-						wfrGr21dropped = true;
-						if (com.maddox.il2.ai.World.getPlayerAircraft() == this)
-							com.maddox.il2.ai.World.cur().scoreCounter.playerDroppedExternalStores(2);
+						this.wfrGr21dropped = true;
+						if (com.maddox.il2.ai.World.getPlayerAircraft() == this) { com.maddox.il2.ai.World.cur().scoreCounter.playerDroppedExternalStores(2); }
 					}
-					if (!(aobj[i] instanceof com.maddox.il2.objects.weapons.PylonRO_WfrGr21Dual))
-						continue;
+					if (!(aobj[i] instanceof com.maddox.il2.objects.weapons.PylonRO_WfrGr21Dual)) { continue; }
 					com.maddox.il2.objects.weapons.PylonRO_WfrGr21Dual pylonro_wfrgr21dual = (com.maddox.il2.objects.weapons.PylonRO_WfrGr21Dual) aobj[i];
 					pylonro_wfrgr21dual.drawing(false);
 					pylonro_wfrgr21dual.visibilityAsBase(false);
-					wfrGr21dropped = true;
-					if (com.maddox.il2.ai.World.getPlayerAircraft() == this)
-						com.maddox.il2.ai.World.cur().scoreCounter.playerDroppedExternalStores(4);
+					this.wfrGr21dropped = true;
+					if (com.maddox.il2.ai.World.getPlayerAircraft() == this) { com.maddox.il2.ai.World.cur().scoreCounter.playerDroppedExternalStores(4); }
 				}
 
 			}
-			if (wfrGr21dropped) {
-				for (int j = 0; j < FM.CT.Weapons.length; j++) {
-					BulletEmitter abulletemitter[] = FM.CT.Weapons[j];
-					if (abulletemitter == null)
-						continue;
+			if (this.wfrGr21dropped) {
+				for (int j = 0; j < this.FM.CT.Weapons.length; j++) {
+					BulletEmitter abulletemitter[] = this.FM.CT.Weapons[j];
+					if (abulletemitter == null) { continue; }
 					for (int k = 0; k < abulletemitter.length; k++) {
 						Object obj = abulletemitter[k];
 						if (obj instanceof RocketGunWfrGr21) {
 							RocketGunWfrGr21 rocketgunwfrgr21 = (RocketGunWfrGr21) obj;
-							FM.CT.Weapons[j][k] = GunEmpty.get();
+							this.FM.CT.Weapons[j][k] = GunEmpty.get();
 							rocketgunwfrgr21.setHookToRel(true);
 							rocketgunwfrgr21.shots(0);
 							rocketgunwfrgr21.hide(true);
 							obj = GunEmpty.get();
 							rocketgunwfrgr21.doDestroy();
 						}
-						if ((obj instanceof PylonRO_WfrGr21) || (obj instanceof PylonRO_WfrGr21Dual)) {
+						if (obj instanceof PylonRO_WfrGr21 || obj instanceof PylonRO_WfrGr21Dual) {
 							((Pylon) obj).destroy();
-							FM.CT.Weapons[j][k] = GunEmpty.get();
+							this.FM.CT.Weapons[j][k] = GunEmpty.get();
 							obj = GunEmpty.get();
 						}
 					}
 
 				}
 
-				sfxHit(1.0F, new Point3d(0.0D, 0.0D, -1D));
+				this.sfxHit(1.0F, new Point3d(0.0D, 0.0D, -1D));
 				com.maddox.JGP.Vector3d vector3d = new Vector3d();
-				vector3d.set(FM.Vwld);
+				vector3d.set(this.FM.Vwld);
 				vector3d.z = vector3d.z - 6D;
-				com.maddox.il2.objects.Wreckage wreckage = new Wreckage(this, hierMesh().chunkFind("WfrGr21L"));
+				com.maddox.il2.objects.Wreckage wreckage = new Wreckage(this, this.hierMesh().chunkFind("WfrGr21L"));
 				vector3d.x += java.lang.Math.random() + 0.5D;
 				vector3d.y += java.lang.Math.random() + 0.5D;
 				vector3d.z += java.lang.Math.random() + 0.5D;
 				wreckage.setSpeed(vector3d);
 				wreckage.collide(true);
 				com.maddox.JGP.Vector3d vector3d1 = new Vector3d();
-				vector3d1.set(FM.Vwld);
+				vector3d1.set(this.FM.Vwld);
 				vector3d1.z = vector3d1.z - 7D;
-				com.maddox.il2.objects.Wreckage wreckage1 = new Wreckage(this, hierMesh().chunkFind("WfrGr21R"));
+				com.maddox.il2.objects.Wreckage wreckage1 = new Wreckage(this, this.hierMesh().chunkFind("WfrGr21R"));
 				vector3d1.x += java.lang.Math.random() + 0.5D;
 				vector3d1.y += java.lang.Math.random() + 0.5D;
 				vector3d1.z += java.lang.Math.random() + 0.5D;
@@ -3166,12 +2937,9 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 
 	public static boolean hasPlaneZBReceiver(Aircraft aircraft) {
 		for (int i = 0; i < planesWithZBReceiver.length; i++) {
-			if (!planesWithZBReceiver[i].isInstance(aircraft))
-				continue;
+			if (!planesWithZBReceiver[i].isInstance(aircraft)) { continue; }
 			java.lang.String s = aircraft.getRegiment().country();
-			if (s.equals(PaintScheme.countryBritain) || s.equals(PaintScheme.countryUSA)
-					|| s.equals(PaintScheme.countryNewZealand))
-				return true;
+			if (s.equals(PaintScheme.countryBritain) || s.equals(PaintScheme.countryUSA) || s.equals(PaintScheme.countryNewZealand)) { return true; }
 		}
 
 		return false;
@@ -3179,13 +2947,12 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 
 	// TODO: +++ TD AI code backport from 4.13 +++
 	public boolean isAircraftTaxing() {
-		return FM.Gears.isUnderDeck() || FM.Gears.getWheelsOnGround() || FM.Gears.onGround();
+		return this.FM.Gears.isUnderDeck() || this.FM.Gears.getWheelsOnGround() || this.FM.Gears.onGround();
 	}
 
 	public static boolean isPlayerTaxing() {
 		Aircraft aircraft = World.getPlayerAircraft();
-		return aircraft.isDestroyed() || aircraft.FM.Gears.isUnderDeck() || aircraft.FM.Gears.getWheelsOnGround()
-				|| aircraft.FM.Gears.onGround();
+		return aircraft.isDestroyed() || aircraft.FM.Gears.isUnderDeck() || aircraft.FM.Gears.getWheelsOnGround() || aircraft.FM.Gears.onGround();
 	}
 
 	public void setHumanControlledTurretAngels(Turret turret, float af[], HierMesh hiermesh, ActorHMesh actorhmesh) {
@@ -3202,15 +2969,12 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		showTaxingWay = false;
 		Aircraft aircraft = World.getPlayerAircraft();
 		playerTaxingWay = new ArrayList();
-		if (aircraft.FM == null || aircraft.FM.AP == null)
-			return;
+		if (aircraft.FM == null || aircraft.FM.AP == null) { return; }
 		int i = 0;
 		do {
-			if (i >= aircraft.FM.AP.way.size())
-				break;
+			if (i >= aircraft.FM.AP.way.size()) { break; }
 			WayPoint waypoint = aircraft.FM.AP.way.look_at_point(i);
-			if ((waypoint == null || waypoint.waypointType != 4) && waypoint.waypointType != 5)
-				break;
+			if ((waypoint == null || waypoint.waypointType != 4) && waypoint.waypointType != 5) { break; }
 			World.cur();
 			World.land();
 			double d = Landscape.HQ_Air(waypoint.x(), waypoint.y()) + 0.1F;
@@ -3225,11 +2989,11 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 	}
 
 	public void setBombScoreOwner(Aircraft aircraft) {
-		bombScoreOwner = aircraft;
+		this.bombScoreOwner = aircraft;
 	}
 
 	public Aircraft getBombScoreOwner() {
-		return bombScoreOwner;
+		return this.bombScoreOwner;
 	}
 
 	// TODO: +++ Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn
@@ -3240,10 +3004,11 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		if (hook.chunkName().toLowerCase().startsWith("cf")) {
 			hook.computePos(this, loc, loc1);
 			Point3d point3d = loc1.getPoint();
-			if (point3d.z > 0.0D)
+			if (point3d.z > 0.0D) {
 				loc = new Loc(0.0D, 0.0D, 0.5D, 0.0F, 0.0F, 0.0F);
-			else
+			} else {
 				loc = new Loc(0.0D, 0.0D, -0.75D, 0.0F, 0.0F, 0.0F);
+			}
 			loc1 = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
 		} else {
 			loc = new Loc(-1D, 0.0D, 0.5D, 0.0F, 0.0F, 0.0F);
@@ -3261,17 +3026,18 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 
 	// TODO: +++ Enhanced Ordnance View by SAS~Storebror +++
 	public Actor getNextOrdnance() {
-		if (this.activeOrdnance.isEmpty())
+		if (this.activeOrdnance.isEmpty()) {
 			return null; // No Ordnance available
+		}
 		if (this.lastSelectedOrdnance == null) {
 			this.lastSelectedOrdnance = (Actor) this.activeOrdnance.getFirst(); // Select first available Ordnance if
-																				// nothing was selected before
+																				 // nothing was selected before
 		} else {
 			int lastSelectedOrdnanceIndex = this.activeOrdnance.indexOf(this.lastSelectedOrdnance);
 			if (lastSelectedOrdnanceIndex == -1) {
 				this.lastSelectedOrdnance = (Actor) this.activeOrdnance.getFirst(); // Select first available Ordnance
-																					// if last selected doesn't exist
-																					// anymore
+																					 // if last selected doesn't exist
+																					 // anymore
 			} else {
 				if (lastSelectedOrdnanceIndex < this.activeOrdnance.size() - 1) {
 					lastSelectedOrdnanceIndex++; // Select next Ordnance after last selected if available
@@ -3304,23 +3070,20 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 
 	public static float floatindex(float f, float[] fs) {
 		int i = (int) f;
-		if (i >= fs.length - 1)
-			return fs[fs.length - 1];
-		if (i < 0)
-			return fs[0];
+		if (i >= fs.length - 1) { return fs[fs.length - 1]; }
+		if (i < 0) { return fs[0]; }
 		if (i == 0) {
-			if (f > 0.0F)
-				return fs[0] + f * (fs[1] - fs[0]);
+			if (f > 0.0F) { return fs[0] + f * (fs[1] - fs[0]); }
 			return fs[0];
 		}
 		return fs[i] + f % i * (fs[i + 1] - fs[i]);
 	}
 
-	private static final float[] defTurretRest = { 0.0F, 0.0F };
-	private Aircraft bombScoreOwner;
-	public static boolean showTaxingWay = false;
-	public static List playerTaxingWay = null;
-	public boolean bSpotter;
+	private static final float[] defTurretRest   = { 0.0F, 0.0F };
+	private Aircraft             bombScoreOwner;
+	public static boolean        showTaxingWay   = false;
+	public static List           playerTaxingWay = null;
+	public boolean               bSpotter;
 	// TODO: --- TD AI code backport from 4.13 ---
 
 	// TODO: +++ Backport from 4.13.4: "Semi Self Illuminating" Engine and Tank Burn
@@ -3331,20 +3094,20 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 
 	// TODO: |ZUTI| variables
 	// -------------------------------------------------------------------------------------------
-	public float zutiAircraftFuel = 0.0F;
-	protected ArrayList zutiMotorsArray = null;
-	protected boolean zutiWingsUnfolded = false;
-	protected long zutiLastUnfoldCheck = Time.current();
+	public float        zutiAircraftFuel           = 0.0F;
+	protected ArrayList zutiMotorsArray            = null;
+	protected boolean   zutiWingsUnfolded          = false;
+	protected long      zutiLastUnfoldCheck        = Time.current();
 	// This repeat timer we need because we could join the game when AC is just
 	// lining up the carrier deck
 	// This case messes things up because AC got command to expand it's wings but
 	// client does not now
 	// that and speed difference is not there to trigger auto unfolding
-	protected int zutiUnfoldCheckRepeatCount = 10;
+	protected int       zutiUnfoldCheckRepeatCount = 10;
 	// -------------------------------------------------------------------------------------------
 
 	// TODO: +++ Enhanced Ordnance View by SAS~Storebror +++
 	private LinkedList activeOrdnance;
-	private Actor lastSelectedOrdnance;
+	private Actor      lastSelectedOrdnance;
 	// TODO: --- Enhanced Ordnance View by SAS~Storebror ---
 }

@@ -8,12 +8,12 @@ import com.maddox.rts.Time;
 public class ActiveMissile {
 
 	private boolean isAI;
-	private Actor theOwner;
-	private int theOwnerArmy;
-	private Actor theVictim;
-	private int theVictimArmy;
+	private Actor   theOwner;
+	private int     theOwnerArmy;
+	private Actor   theVictim;
+	private int     theVictimArmy;
 	private Missile theMissile;
-	private long launchTime;
+	private long    launchTime;
 
 	public long getLaunchTime() {
 		return this.launchTime;
@@ -70,17 +70,17 @@ public class ActiveMissile {
 	public void setMissile(Missile theMissile) {
 		this.theMissile = theMissile;
 	}
-	
+
 	public boolean isValidMissile() {
-		if (!Actor.isValid(this.theMissile)) return false;
-		if (!Actor.isAlive(this.theMissile)) return false;
-		if (!this.theMissile.isAlive()) return false;
-		if (!Actor.isValid(this.theOwner)) return false;
-		if (!Actor.isAlive(this.theOwner)) return false;
-		if (!this.theOwner.isAlive()) return false;
-		if (!Actor.isValid(this.theVictim)) return false;
-		if (!Actor.isAlive(this.theVictim)) return false;
-		if (!this.theVictim.isAlive()) return false;
+		if (!Actor.isValid(this.theMissile)) { return false; }
+		if (!Actor.isAlive(this.theMissile)) { return false; }
+		if (!this.theMissile.isAlive()) { return false; }
+		if (!Actor.isValid(this.theOwner)) { return false; }
+		if (!Actor.isAlive(this.theOwner)) { return false; }
+		if (!this.theOwner.isAlive()) { return false; }
+		if (!Actor.isValid(this.theVictim)) { return false; }
+		if (!Actor.isAlive(this.theVictim)) { return false; }
+		if (!this.theVictim.isAlive()) { return false; }
 		return true;
 	}
 

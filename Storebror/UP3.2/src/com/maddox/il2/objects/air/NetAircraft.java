@@ -69,62 +69,62 @@ import com.maddox.rts.Time;
 import com.maddox.util.IntHashtable;
 
 public abstract class NetAircraft extends SndAircraft {
-	static long timeOfPrevSpawn = -1L;
+	static long              timeOfPrevSpawn                   = -1L;
 
-	public static final int FM_AI = 0;
-	public static final int FM_REAL = 1;
-	public static final int FM_NET_CLIENT = 2;
-	public static String loadingCountry;
-	public static boolean loadingCoopPlane;
-	protected String thisWeaponsName = null;
-	protected boolean bPaintShemeNumberOn = true;
-	private boolean bCoopPlane;
+	public static final int  FM_AI                             = 0;
+	public static final int  FM_REAL                           = 1;
+	public static final int  FM_NET_CLIENT                     = 2;
+	public static String     loadingCountry;
+	public static boolean    loadingCoopPlane;
+	protected String         thisWeaponsName                   = null;
+	protected boolean        bPaintShemeNumberOn               = true;
+	private boolean          bCoopPlane;
 	private FlightModelTrack fmTrack;
-	public static final int NETG_ID_TOMASTER = 128;
-	public static final int NETG_ID_CODE_ASTATE = 0;
-	public static final int NETG_ID_CODE_UPDATE_WAY = 1;
-	public static final int NETG_ID_CODE_UPDATE_WEAPONS = 2;
-	public static final int NETG_ID_CODE_GUNPODS_ON = 3;
-	public static final int NETG_ID_CODE_GUNPODS_OFF = 4;
-	public static final int NETG_ID_CODE_DROP_FUEL_TANKS = 5;
-	public static final int NETG_ID_CODE_HIT = 6;
-	public static final int NETG_ID_CODE_HIT_PROP = 7;
-	public static final int NETG_ID_CODE_CUT = 8;
-	public static final int NETG_ID_CODE_EXPLODE = 9;
-	public static final int NETG_ID_CODE_DEAD = 10;
-	public static final int NETG_ID_CODE_FIRST_UPDATE = 11;
-	public static final int NETG_ID_CODE_COCKPIT_ENTER = 12;
-	public static final int NETG_ID_CODE_COCKPIT_AUTO = 13;
-	public static final int NETG_ID_CODE_COCKPIT_DRIVER = 14;
-	public static final int NETG_ID_CODE_DROP_EXTERNAL_STORES = 15;
+	public static final int  NETG_ID_TOMASTER                  = 128;
+	public static final int  NETG_ID_CODE_ASTATE               = 0;
+	public static final int  NETG_ID_CODE_UPDATE_WAY           = 1;
+	public static final int  NETG_ID_CODE_UPDATE_WEAPONS       = 2;
+	public static final int  NETG_ID_CODE_GUNPODS_ON           = 3;
+	public static final int  NETG_ID_CODE_GUNPODS_OFF          = 4;
+	public static final int  NETG_ID_CODE_DROP_FUEL_TANKS      = 5;
+	public static final int  NETG_ID_CODE_HIT                  = 6;
+	public static final int  NETG_ID_CODE_HIT_PROP             = 7;
+	public static final int  NETG_ID_CODE_CUT                  = 8;
+	public static final int  NETG_ID_CODE_EXPLODE              = 9;
+	public static final int  NETG_ID_CODE_DEAD                 = 10;
+	public static final int  NETG_ID_CODE_FIRST_UPDATE         = 11;
+	public static final int  NETG_ID_CODE_COCKPIT_ENTER        = 12;
+	public static final int  NETG_ID_CODE_COCKPIT_AUTO         = 13;
+	public static final int  NETG_ID_CODE_COCKPIT_DRIVER       = 14;
+	public static final int  NETG_ID_CODE_DROP_EXTERNAL_STORES = 15;
 	// TODO: +++ TD AI code backport from 4.13 +++
-	public static final int NETG_ID_CODE_GENERATE_WP = 16;
+	public static final int  NETG_ID_CODE_GENERATE_WP          = 16;
 	// TODO: --- TD AI code backport from 4.13 ---
-	protected boolean bGunPodsExist = false;
-	protected boolean bGunPodsOn = true;
-	private int netCockpitIndxPilot = 0;
-	private int netCockpitWeaponControlNum = 0;
-	private int netCockpitTuretNum = -1;
-	private boolean netCockpitValid = false;
-	private NetMsgGuaranted netCockpitMsg = null;
-	private boolean bWeaponsEventLog = false;
-	private Actor[] netCockpitDrivers = null;
-	private static Point3d corn = new Point3d();
-	private static Point3d corn1 = new Point3d();
-	private static Point3d pship = new Point3d();
-	private static Loc lCorn = new Loc();
-	static ClipFilter clipFilter = new ClipFilter();
-	private ArrayList damagers = new ArrayList();
-	private Actor damagerExclude = null;
-	private Actor damager_ = null;
+	protected boolean        bGunPodsExist                     = false;
+	protected boolean        bGunPodsOn                        = true;
+	private int              netCockpitIndxPilot               = 0;
+	private int              netCockpitWeaponControlNum        = 0;
+	private int              netCockpitTuretNum                = -1;
+	private boolean          netCockpitValid                   = false;
+	private NetMsgGuaranted  netCockpitMsg                     = null;
+	private boolean          bWeaponsEventLog                  = false;
+	private Actor[]          netCockpitDrivers                 = null;
+	private static Point3d   corn                              = new Point3d();
+	private static Point3d   corn1                             = new Point3d();
+	private static Point3d   pship                             = new Point3d();
+	private static Loc       lCorn                             = new Loc();
+	static ClipFilter        clipFilter                        = new ClipFilter();
+	private ArrayList        damagers                          = new ArrayList();
+	private Actor            damagerExclude                    = null;
+	private Actor            damager_                          = null;
 
 	// TODO: |ZUTI| variables
 	public static boolean ZUTI_REFLY_OWERRIDE = false;
 
 	static class DamagerItem {
 		public Actor damager;
-		public int damage;
-		public long lastTime;
+		public int   damage;
+		public long  lastTime;
 
 		public DamagerItem(Actor actor, int i) {
 			this.damager = actor;
@@ -134,7 +134,7 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	public static class SPAWN implements ActorSpawn, NetSpawn {
-		public Class cls;
+		public Class    cls;
 		private NetUser _netUser;
 
 		public SPAWN(Class var_class) {
@@ -143,18 +143,15 @@ public abstract class NetAircraft extends SndAircraft {
 		}
 
 		private Actor actorSpawnCoop(ActorSpawnArg actorspawnarg) {
-			if (actorspawnarg.name == null)
-				return null;
+			if (actorspawnarg.name == null) { return null; }
 			String string = actorspawnarg.name.substring(3);
 			boolean bool = false;
 			NetAircraft netaircraft = (NetAircraft) Actor.getByName(string);
 			if (netaircraft == null) {
 				netaircraft = (NetAircraft) Actor.getByName(" " + string);
-				if (netaircraft != null)
-					bool = true;
+				if (netaircraft != null) { bool = true; }
 			}
-			if (netaircraft == null)
-				return null;
+			if (netaircraft == null) { return null; }
 			actorspawnarg.name = null;
 			Wing wing = netaircraft.getWing();
 			NetAircraft.loadingCountry = wing.regiment().country();
@@ -177,14 +174,15 @@ public abstract class NetAircraft extends SndAircraft {
 				World.setPlayerAircraft((Aircraft) netaircraft_0_);
 				netaircraft_0_.setFM(1, true);
 				World.setPlayerFM();
-			} else if (Mission.isServer())
+			} else if (Mission.isServer()) {
 				netaircraft_0_.setFM(1, actorspawnarg.netChannel == null);
-			else if (this._netUser != null && this._netUser.isTrackWriter()) {
+			} else if (this._netUser != null && this._netUser.isTrackWriter()) {
 				World.setPlayerAircraft((Aircraft) netaircraft_0_);
 				netaircraft_0_.setFM(1, false);
 				World.setPlayerFM();
-			} else
+			} else {
 				netaircraft_0_.setFM(2, actorspawnarg.netChannel == null);
+			}
 			netaircraft_0_.FM.M.fuel = actorspawnarg.fuel * netaircraft_0_.FM.M.maxFuel;
 
 			netaircraft_0_.bPaintShemeNumberOn = actorspawnarg.bNumberOn;
@@ -201,17 +199,14 @@ public abstract class NetAircraft extends SndAircraft {
 			} catch (Exception exception) {
 				printDebug(exception);
 			}
-			if (this._netUser != null && (netaircraft_0_.net.isMaster() || this._netUser.isTrackWriter()))
-				netaircraft_0_.createCockpits();
+			if (this._netUser != null && (netaircraft_0_.net.isMaster() || this._netUser.isTrackWriter())) { netaircraft_0_.createCockpits(); }
 			netaircraft_0_.FM.AP.way = new Way(netaircraft.FM.AP.way);
 			netaircraft_0_.onAircraftLoaded();
 			wing.airc[i] = (Aircraft) netaircraft_0_;
 			netaircraft_0_.setArmy(netaircraft.getArmy());
 			netaircraft_0_.setOwner(wing);
-			if (this._netUser != null && (netaircraft_0_.net.isMaster() || this._netUser.isTrackWriter()))
-				World.setPlayerRegiment();
-			if (Mission.isServer())
-				((Maneuver) netaircraft.FM).Group.changeAircraft((Aircraft) netaircraft, (Aircraft) netaircraft_0_);
+			if (this._netUser != null && (netaircraft_0_.net.isMaster() || this._netUser.isTrackWriter())) { World.setPlayerRegiment(); }
+			if (Mission.isServer()) { ((Maneuver) netaircraft.FM).Group.changeAircraft((Aircraft) netaircraft, (Aircraft) netaircraft_0_); }
 			netaircraft_0_.FM.CT.set(netaircraft.FM.CT);
 			netaircraft_0_.FM.CT.forceGear(netaircraft_0_.FM.CT.GearControl);
 //            if ((Aircraft) netaircraft_0_ != null) {
@@ -244,11 +239,9 @@ public abstract class NetAircraft extends SndAircraft {
 				this._netUser.tryPrepareNoseart(netaircraft_0_);
 				this._netUser.tryPreparePilot(netaircraft_0_);
 				this._netUser.setArmy(netaircraft_0_.getArmy());
-			} else if (Config.isUSE_RENDER())
-				Mission.cur().prepareSkinAI((Aircraft) netaircraft_0_);
+			} else if (Config.isUSE_RENDER()) { Mission.cur().prepareSkinAI((Aircraft) netaircraft_0_); }
 			netaircraft_0_.restoreLinksInCoopWing();
-			if (netaircraft_0_.net.isMaster() && (!World.cur().diffCur.Takeoff_N_Landing
-					|| netaircraft.FM.AP.way.get(0).Action != 1 || !netaircraft.FM.isStationedOnGround())) {
+			if (netaircraft_0_.net.isMaster() && (!World.cur().diffCur.Takeoff_N_Landing || netaircraft.FM.AP.way.get(0).Action != 1 || !netaircraft.FM.isStationedOnGround())) {
 				netaircraft_0_.FM.EI.setCurControlAll(true);
 				netaircraft_0_.FM.EI.setEngineRunning();
 				netaircraft_0_.FM.CT.setPowerControl(0.75F);
@@ -292,9 +285,9 @@ public abstract class NetAircraft extends SndAircraft {
 					int i_3_ = actorspawnarg.name.charAt(i_2_ - 3) - 48;
 					int i_4_ = actorspawnarg.name.charAt(i_2_ - 4) - 48;
 					Regiment regiment;
-					if (i_2_ == 4)
+					if (i_2_ == 4) {
 						regiment = this._netUser.netUserRegiment;
-					else {
+					} else {
 						String string = actorspawnarg.name.substring(0, i_2_ - 4);
 						regiment = (Regiment) Actor.getByName(string);
 					}
@@ -314,10 +307,8 @@ public abstract class NetAircraft extends SndAircraft {
 
 				netaircraft = (NetAircraft) this.cls.newInstance();
 			} catch (Exception exception) {
-				if (netsquadron != null)
-					netsquadron.destroy();
-				if (netwing != null)
-					netwing.destroy();
+				if (netsquadron != null) { netsquadron.destroy(); }
+				if (netwing != null) { netwing.destroy(); }
 				NetAircraft.loadingCountry = null;
 				printDebug(exception);
 				return null;
@@ -330,8 +321,7 @@ public abstract class NetAircraft extends SndAircraft {
 				actorspawnarg.name = null;
 				this.makeName(netaircraft);
 			}
-			if (actorspawnarg.bPlayer && actorspawnarg.netChannel == null
-					|| this._netUser != null && this._netUser.isTrackWriter()) {
+			if (actorspawnarg.bPlayer && actorspawnarg.netChannel == null || this._netUser != null && this._netUser.isTrackWriter()) {
 				World.cur().resetUser();
 				World.setPlayerAircraft((Aircraft) netaircraft);
 				netaircraft.setFM(1, actorspawnarg.netChannel == null);
@@ -340,11 +330,12 @@ public abstract class NetAircraft extends SndAircraft {
 			}
 			// TODO: Added by |ZUTI|
 			// ---------------------------------------------------------
-			else if (Mission.isServer())
+			else if (Mission.isServer()) {
 				netaircraft.setFM(1, actorspawnarg.netChannel == null);
-			// ---------------------------------------------------------
-			else
+				// ---------------------------------------------------------
+			} else {
 				netaircraft.setFM(2, actorspawnarg.netChannel == null);
+			}
 			netaircraft.FM.setSkill(3);
 			netaircraft.FM.M.fuel = actorspawnarg.fuel * netaircraft.FM.M.maxFuel;
 
@@ -364,14 +355,13 @@ public abstract class NetAircraft extends SndAircraft {
 			} catch (Exception exception) {
 				printDebug(exception);
 			}
-			if (netaircraft.net.isMaster() || this._netUser != null && this._netUser.isTrackWriter())
-				netaircraft.createCockpits();
+			if (netaircraft.net.isMaster() || this._netUser != null && this._netUser.isTrackWriter()) { netaircraft.createCockpits(); }
 			netaircraft.onAircraftLoaded();
 			NetAircraft.loadingCountry = null;
 			boolean airStarting = false;
 			BornPlace bornplace = null;
 			if (actorspawnarg.bornPlaceExist) {
-				bornplace = ((BornPlace) World.cur().bornPlaces.get(actorspawnarg.bornPlace));
+				bornplace = (BornPlace) World.cur().bornPlaces.get(actorspawnarg.bornPlace);
 				// System.out.println("NetAircraft - spawn place designation: " +
 				// actorspawnarg.stayPlace);
 				Loc loc = bornplace.getAircraftPlace((Aircraft) netaircraft, actorspawnarg.stayPlace);
@@ -400,11 +390,7 @@ public abstract class NetAircraft extends SndAircraft {
 
 				// TODO: Edited by |ZUTI|: added my checks for air spawn occasions
 				boolean carrierAirStart = actorspawnarg.stayPlace < 0 && bornplace.zutiAirspawnIfQueueFull;
-				if (bornplace.zutiAirspawnOnly || !World.cur().diffCur.Takeoff_N_Landing
-						|| (!bornplace.zutiIsStandAloneBornPlace
-								&& (actorspawnarg.stayPlace >= World.cur().airdrome.stayHold.length)
-								&& !netaircraft.FM.brakeShoe)
-						|| (carrierAirStart)) {
+				if (bornplace.zutiAirspawnOnly || !World.cur().diffCur.Takeoff_N_Landing || !bornplace.zutiIsStandAloneBornPlace && actorspawnarg.stayPlace >= World.cur().airdrome.stayHold.length && !netaircraft.FM.brakeShoe || carrierAirStart) {
 					// TODO: Set spawn point location in the air to home base location coordinates,
 					// IF it is placed on the carrier
 					if (carrierAirStart) {
@@ -423,25 +409,18 @@ public abstract class NetAircraft extends SndAircraft {
 					netaircraft.FM.CT.setLanded();
 					Aircraft.forceGear(netaircraft.getClass(), netaircraft.hierMesh(), netaircraft.FM.CT.getGear());
 					AirportCarrier airportcarrier1 = (AirportCarrier) Airport.nearest(loc.getPoint(), -1, 4);
-					if (airportcarrier1 != null && airportcarrier1.ship() != null
-							&& ((airportcarrier1.ship() instanceof RwyTransp)
-									|| (airportcarrier1.ship() instanceof RwyTranspWide)
-									|| (airportcarrier1.ship() instanceof RwyTranspSqr))
-							&& Engine.land().isWater(actorspawnarg.point.x, actorspawnarg.point.y))
+					if (airportcarrier1 != null && airportcarrier1.ship() != null && (airportcarrier1.ship() instanceof RwyTransp || airportcarrier1.ship() instanceof RwyTranspWide || airportcarrier1.ship() instanceof RwyTranspSqr)
+							&& Engine.land().isWater(actorspawnarg.point.x, actorspawnarg.point.y)) {
 						netaircraft.FM.brakeShoe = false;
+					}
 				}
 				netaircraft.FM.AS.bIsEnableToBailout = bornplace.bParachute;
 			} else {
-				if (com.maddox.il2.game.Mission.isDogfight() && com.maddox.il2.ai.World.cur().diffCur.Takeoff_N_Landing
-						&& com.maddox.il2.game.Main.cur().netServerParams.isMaster()) {
-					com.maddox.il2.engine.Loc loc = new Loc(actorspawnarg.point.x, actorspawnarg.point.y, 0.0D, 0.0F,
-							0.0F, 0.0F);
-					com.maddox.il2.ai.AirportCarrier airportcarrier = (com.maddox.il2.ai.AirportCarrier) com.maddox.il2.ai.Airport
-							.nearest(loc.getPoint(), -1, 4);
-					if (airportcarrier != null && !NetAircraft.isOnCarrierDeck(airportcarrier, loc))
-						airportcarrier = null;
-					if (airportcarrier != null)
-						airportcarrier.setCellUsed((Aircraft) netaircraft);
+				if (com.maddox.il2.game.Mission.isDogfight() && com.maddox.il2.ai.World.cur().diffCur.Takeoff_N_Landing && com.maddox.il2.game.Main.cur().netServerParams.isMaster()) {
+					com.maddox.il2.engine.Loc loc = new Loc(actorspawnarg.point.x, actorspawnarg.point.y, 0.0D, 0.0F, 0.0F, 0.0F);
+					com.maddox.il2.ai.AirportCarrier airportcarrier = (com.maddox.il2.ai.AirportCarrier) com.maddox.il2.ai.Airport.nearest(loc.getPoint(), -1, 4);
+					if (airportcarrier != null && !NetAircraft.isOnCarrierDeck(airportcarrier, loc)) { airportcarrier = null; }
+					if (airportcarrier != null) { airportcarrier.setCellUsed((Aircraft) netaircraft); }
 				}
 			}
 			actorspawnarg.set(netaircraft);
@@ -456,34 +435,28 @@ public abstract class NetAircraft extends SndAircraft {
 				netaircraft.FM.setStationedOnGround(false);
 				netaircraft.FM.setWasAirborne(true);
 			}
-			if (actorspawnarg.speed == null)
-				netaircraft.setSpeed(new Vector3d());
+			if (actorspawnarg.speed == null) { netaircraft.setSpeed(new Vector3d()); }
 			if (this._netUser != null) {
 				this._netUser.tryPrepareSkin(netaircraft);
 				this._netUser.tryPrepareNoseart(netaircraft);
 				this._netUser.tryPreparePilot(netaircraft);
 				this._netUser.setArmy(netaircraft.getArmy());
-			} else if (Config.isUSE_RENDER())
-				Mission.cur().prepareSkinAI((Aircraft) netaircraft);
-			if (netaircraft.net.isMaster() || this._netUser != null && this._netUser.isTrackWriter())
-				World.setPlayerRegiment();
+			} else if (Config.isUSE_RENDER()) { Mission.cur().prepareSkinAI((Aircraft) netaircraft); }
+			if (netaircraft.net.isMaster() || this._netUser != null && this._netUser.isTrackWriter()) { World.setPlayerRegiment(); }
 
 			// TODO: Edit by |ZUTI|
 			if (netaircraft != null) {
 				// If we are not spawning on carrier, align us with ground
-				if (netaircraft.FM.brakeShoeLastCarrier == null && !airStarting && bornplace != null
-						&& bornplace.zutiIsStandAloneBornPlace) {
+				if (netaircraft.FM.brakeShoeLastCarrier == null && !airStarting && bornplace != null && bornplace.zutiIsStandAloneBornPlace) {
 					ZutiSupportMethods_Air.alignAircraftToLandscape(netaircraft);
 					// System.out.println("NetAircraft aligned to terrain.");
 				}
 				// Report user resources that he can have for his AC
-				if (Mission.isServer())
-					ZutiSupportMethods_NetSend.reportSpawnResources((Aircraft) netaircraft);
+				if (Mission.isServer()) { ZutiSupportMethods_NetSend.reportSpawnResources((Aircraft) netaircraft); }
 
 				// Disable chocks if air starting disables hanged up ac in the sky in some
 				// cases!
-				if (airStarting)
-					World.getPlayerFM().brakeShoe = false;
+				if (airStarting) { World.getPlayerFM().brakeShoe = false; }
 
 				// Set up deck related limitations. Only for carrier based home bases.
 				if (bornplace != null && bornplace.zutiAlreadyAssigned) {
@@ -528,29 +501,22 @@ public abstract class NetAircraft extends SndAircraft {
 				actorspawnarg.netIdRemote = i;
 				netSpawnCommon(netmsginput, actorspawnarg);
 				NetAircraft netaircraft = (NetAircraft) this._actorSpawn(actorspawnarg);
-				if (netaircraft != null) {
-					netSpawnCommon(netmsginput, actorspawnarg, netaircraft);
-				}
+				if (netaircraft != null) { netSpawnCommon(netmsginput, actorspawnarg, netaircraft); }
 			} catch (Exception exception) {
 				printDebug(exception);
 			}
 		}
 
 		public Actor actorSpawn(ActorSpawnArg actorspawnarg) {
-			if (!Mission.isNet())
-				return null;
-			if (Main.cur().netServerParams == null)
-				return null;
-			if (actorspawnarg.netChannel == null && actorspawnarg.bPlayer)
-				this._netUser = (NetUser) NetEnv.host();
+			if (!Mission.isNet()) { return null; }
+			if (Main.cur().netServerParams == null) { return null; }
+			if (actorspawnarg.netChannel == null && actorspawnarg.bPlayer) { this._netUser = (NetUser) NetEnv.host(); }
 			Actor actor = null;
-			if (Main.cur().netServerParams.isDogfight())
+			if (Main.cur().netServerParams.isDogfight()) {
 				actor = this._actorSpawn(actorspawnarg);
-			else if (Main.cur().netServerParams.isCoop())
-				actor = this.actorSpawnCoop(actorspawnarg);
+			} else if (Main.cur().netServerParams.isCoop()) { actor = this.actorSpawnCoop(actorspawnarg); }
 			this._netUser = null;
-			if (actor != null && actor == World.getPlayerAircraft() && NetMissionTrack.isRecording()
-					&& Main.cur().netServerParams.isDogfight()) {
+			if (actor != null && actor == World.getPlayerAircraft() && NetMissionTrack.isRecording() && Main.cur().netServerParams.isDogfight()) {
 				try {
 					NetMsgSpawn netmsgspawn = actor.netReplicate(NetMissionTrack.netChannelOut());
 					actor.net.postTo(NetMissionTrack.netChannelOut(), netmsgspawn);
@@ -564,17 +530,19 @@ public abstract class NetAircraft extends SndAircraft {
 		public void netSpawn(int i, NetMsgInput netmsginput) {
 			if (Main.cur().netServerParams != null) {
 				if (netmsginput.channel() instanceof NetChannelInStream && NetMissionTrack.playingVersion() == 100) {
-					if (Main.cur().netServerParams.isCoop())
+					if (Main.cur().netServerParams.isCoop()) {
 						this.netSpawnCoop(i, netmsginput);
-					else
+					} else {
 						this._netSpawn(i, netmsginput);
+					}
 				} else {
 					try {
 						byte i_8_ = netmsginput.readByte();
-						if ((i_8_ & 0x1) == 1)
+						if ((i_8_ & 0x1) == 1) {
 							this.netSpawnCoop(i, netmsginput);
-						else
+						} else {
 							this._netSpawn(i, netmsginput);
+						}
 					} catch (Exception exception) {
 						printDebug(exception);
 						return;
@@ -586,29 +554,29 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	public class Mirror extends AircraftNet {
-		NetMsgFiltered out = new NetMsgFiltered();
-		private long tupdate = -1L;
-		private long _t;
-		private long tcur;
-		private Point3f _p = new Point3f();
-		private Vector3f _v = new Vector3f();
-		private Orient _o = new Orient();
-		private Vector3f _w = new Vector3f();
-		private Vector3f TmpV = new Vector3f();
-		private Vector3d TmpVd = new Vector3d();
-		private float save_dt = 0.0010F;
-		private float saveCoeff = 1.0F;
-		private boolean bGround = false;
-		private boolean bUnderDeck = false;
-		private long tint;
-		private long tlag;
-		private boolean bFirstUpdate = true;
-		private Loc _lRel = new Loc();
+		NetMsgFiltered   out          = new NetMsgFiltered();
+		private long     tupdate      = -1L;
+		private long     _t;
+		private long     tcur;
+		private Point3f  _p           = new Point3f();
+		private Vector3f _v           = new Vector3f();
+		private Orient   _o           = new Orient();
+		private Vector3f _w           = new Vector3f();
+		private Vector3f TmpV         = new Vector3f();
+		private Vector3d TmpVd        = new Vector3d();
+		private float    save_dt      = 0.0010F;
+		private float    saveCoeff    = 1.0F;
+		private boolean  bGround      = false;
+		private boolean  bUnderDeck   = false;
+		private long     tint;
+		private long     tlag;
+		private boolean  bFirstUpdate = true;
+		private Loc      _lRel        = new Loc();
 		// TODO: Storebror: Implement Aircraft Control Surfaces and Pilot View
 		// Replication
-		private int oldRudd = -99999;
-		private int oldAil = -99999;
-		private int oldElev = -99999;
+		private int      oldRudd      = -99999;
+		private int      oldAil       = -99999;
+		private int      oldElev      = -99999;
 
 		// ---
 
@@ -617,10 +585,8 @@ public abstract class NetAircraft extends SndAircraft {
 				NetAircraft.corn.set(NetAircraft.this.pos.getAbsPoint());
 				NetAircraft.corn1.set(NetAircraft.this.pos.getAbsPoint());
 				NetAircraft.corn1.z -= 20.0;
-				Actor actor = Engine.collideEnv().getLine(NetAircraft.corn, NetAircraft.corn1, false,
-						NetAircraft.clipFilter, NetAircraft.pship);
-				if (!(actor instanceof BigshipGeneric) && Mission.isCoop() && Time.current() < 60000L)
-					actor = NetAircraft.this.FM.brakeShoeLastCarrier;
+				Actor actor = Engine.collideEnv().getLine(NetAircraft.corn, NetAircraft.corn1, false, NetAircraft.clipFilter, NetAircraft.pship);
+				if (!(actor instanceof BigshipGeneric) && Mission.isCoop() && Time.current() < 60000L) { actor = NetAircraft.this.FM.brakeShoeLastCarrier; }
 				if (actor instanceof BigshipGeneric) {
 					this.bUnderDeck = true;
 					this._lRel.set(NetAircraft.this.pos.getAbs());
@@ -629,8 +595,7 @@ public abstract class NetAircraft extends SndAircraft {
 			}
 		}
 
-		public void netFirstUpdate(float f, float f_9_, float f_10_, float f_11_, float f_12_, float f_13_, float f_14_,
-				float f_15_, float f_16_) {
+		public void netFirstUpdate(float f, float f_9_, float f_10_, float f_11_, float f_12_, float f_13_, float f_14_, float f_15_, float f_16_) {
 			NetAircraft.this.FM.Vwld.set(f_14_, f_15_, f_16_);
 			NetAircraft.this.FM.getAccel().set(0.0, 0.0, 0.0);
 			this._t = this.tcur = this.tupdate = Time.current();
@@ -645,10 +610,8 @@ public abstract class NetAircraft extends SndAircraft {
 		}
 
 		public boolean netInput(NetMsgInput netmsginput) throws IOException {
-			if (netmsginput.isGuaranted())
-				return NetAircraft.this.netGetGMsg(netmsginput, false);
-			if (Time.isPaused() && !NetMissionTrack.isPlaying())
-				return true;
+			if (netmsginput.isGuaranted()) { return NetAircraft.this.netGetGMsg(netmsginput, false); }
+			if (Time.isPaused() && !NetMissionTrack.isPlaying()) { return true; }
 			if (netmsginput.channel() != this.masterChannel()) {
 				this.postRealTo(Message.currentTime(true), this.masterChannel(), new NetMsgFiltered(netmsginput, 0));
 				return true;
@@ -700,16 +663,14 @@ public abstract class NetAircraft extends SndAircraft {
 			float f_29_ = i_26_ * 50.0F / 32000.0F;
 			float f_30_ = i_27_ * 50.0F / 32000.0F;
 			float f_31_ = i_28_ * 50.0F / 32000.0F;
-			if (this.bUnderDeck)
-				f_29_ = f_30_ = f_31_ = 0.0F;
+			if (this.bUnderDeck) { f_29_ = f_30_ = f_31_ = 0.0F; }
 			short i_32_ = netmsginput.readShort();
 			short i_33_ = netmsginput.readShort();
 			short i_34_ = netmsginput.readShort();
 			float f_35_ = i_32_ * 400.0F / 32000.0F;
 			float f_36_ = i_33_ * 400.0F / 32000.0F;
 			float f_37_ = i_34_ * 400.0F / 32000.0F;
-			if (this.bGround && !this.bUnderDeck)
-				f_37_ = 0.0F;
+			if (this.bGround && !this.bUnderDeck) { f_37_ = 0.0F; }
 			short i_38_ = netmsginput.readShort();
 			short i_39_ = netmsginput.readShort();
 			short i_40_ = netmsginput.readShort();
@@ -721,31 +682,26 @@ public abstract class NetAircraft extends SndAircraft {
 				f_42_ = 0.0F;
 				f_43_ = 0.0F;
 			}
-			if (this.bUnderDeck)
-				this._lRel.set(i_38_ * 200.0 / 32000.0, i_39_ * 200.0 / 32000.0, i_40_ * 200.0 / 32000.0,
-						-(i_26_ * 180.0F / 32000.0F), i_27_ * 90.0F / 32000.0F, i_28_ * 180.0F / 32000.0F);
+			if (this.bUnderDeck) { this._lRel.set(i_38_ * 200.0 / 32000.0, i_39_ * 200.0 / 32000.0, i_40_ * 200.0 / 32000.0, -(i_26_ * 180.0F / 32000.0F), i_27_ * 90.0F / 32000.0F, i_28_ * 180.0F / 32000.0F); }
 			long l = Message.currentTime(false) + i_17_;
 			this._t = l;
 			if (NetEnv.testLag) {
 				long l_44_ = Time.tickNext() - l;
-				if (l_44_ < 0L)
-					l_44_ = 0L;
+				if (l_44_ < 0L) { l_44_ = 0L; }
 				if (this.bFirstUpdate || this.tlag >= l_44_) {
 					this.bFirstUpdate = false;
 					this.tlag = l_44_;
 				} else if (l > this.tupdate) {
-					double d = ((double) (l_44_ - (this.tcur - this.tint)) / (double) (l - this.tupdate));
-					if (d > 0.015)
-						d = 0.015;
+					double d = (double) (l_44_ - (this.tcur - this.tint)) / (double) (l - this.tupdate);
+					if (d > 0.015) { d = 0.015; }
 					long l_45_ = (long) ((l - this.tupdate) * d);
-					if (l_45_ > Time.tickConstLen() / 2)
-						l_45_ = Time.tickConstLen() / 2;
+					if (l_45_ > Time.tickConstLen() / 2) { l_45_ = Time.tickConstLen() / 2; }
 					this.tlag = this.tcur - this.tint + l_45_;
-					if (this.tlag >= l_44_)
-						this.tlag = l_44_;
+					if (this.tlag >= l_44_) { this.tlag = l_44_; }
 				}
-			} else
+			} else {
 				this.bFirstUpdate = false;
+			}
 			this.tupdate = this._t;
 			NetAircraft.this.FM.Vwld.set(f_35_, f_36_, f_37_);
 			NetAircraft.this.FM.getAccel().set(f_41_, f_42_, f_43_);
@@ -768,8 +724,8 @@ public abstract class NetAircraft extends SndAircraft {
 				}
 			} else {
 				for (int i_50_ = 0; i_50_ < i_46_; i_50_++) {
-					float f_51_ = (netmsginput.readUnsignedByte() / 255.0F * 640.0F);
-					float f_52_ = (netmsginput.readUnsignedByte() / 255.0F * 1.6F);
+					float f_51_ = netmsginput.readUnsignedByte() / 255.0F * 640.0F;
+					float f_52_ = netmsginput.readUnsignedByte() / 255.0F * 1.6F;
 					if (!NetAircraft.this.isFMTrackMirror()) {
 						NetAircraft.this.FM.EI.engines[i_50_].setw(f_51_);
 						NetAircraft.this.FM.EI.engines[i_50_].setPropPhi(f_52_);
@@ -781,12 +737,10 @@ public abstract class NetAircraft extends SndAircraft {
 				int i_54_ = netmsginput.readUnsignedShort();
 				float f_55_ = this.unpackSY(i_53_);
 				float f_56_ = this.unpackSP(i_54_ & 0x7fff);
-				NetAircraft.this.FM.CT.WeaponControl[NetAircraft.this.netCockpitWeaponControlNum] = (i_54_
-						& 0x8000) != 0;
+				NetAircraft.this.FM.CT.WeaponControl[NetAircraft.this.netCockpitWeaponControlNum] = (i_54_ & 0x8000) != 0;
 				if (this.superObj() == World.getPlayerAircraft()) {
 					Actor._tmpOrient.set(f_55_, f_56_, 0.0F);
-					((CockpitGunner) Main3D.cur3D().cockpits[NetAircraft.this.netCockpitIndxPilot])
-							.moveGun(Actor._tmpOrient);
+					((CockpitGunner) Main3D.cur3D().cockpits[NetAircraft.this.netCockpitIndxPilot]).moveGun(Actor._tmpOrient);
 				} else {
 					Turret turret = NetAircraft.this.FM.turret[NetAircraft.this.netCockpitTuretNum];
 					turret.tu[0] = f_55_;
@@ -796,9 +750,7 @@ public abstract class NetAircraft extends SndAircraft {
 
 			// TODO: Storebror: Implement Aircraft Control Surfaces and Pilot View
 			// Replication
-			if (netmsginput.available() == 0) {
-				return true;
-			}
+			if (netmsginput.available() == 0) { return true; }
 			int i11 = netmsginput.readUnsignedShort();
 			i11 = i11 << 8 | netmsginput.readUnsignedByte();
 
@@ -813,7 +765,7 @@ public abstract class NetAircraft extends SndAircraft {
 //                Reflection.setFloat(NetAircraft.this.FM.CT, "Rudder", f18);
 				NetAircraft.this.FM.CT.Rudder = f18;
 				NetAircraft.this.FM.CT.RudderControl = f18;
-				this.oldRudd = (i11 % 21);
+				this.oldRudd = i11 % 21;
 			}
 			i11 /= 21;
 
@@ -823,7 +775,7 @@ public abstract class NetAircraft extends SndAircraft {
 //                Reflection.setFloat(NetAircraft.this.FM.CT, "Elevators", f18);
 				NetAircraft.this.FM.CT.Elevators = f18;
 				NetAircraft.this.FM.CT.ElevatorControl = f18;
-				this.oldElev = (i11 % 21);
+				this.oldElev = i11 % 21;
 			}
 			i11 /= 21;
 
@@ -833,7 +785,7 @@ public abstract class NetAircraft extends SndAircraft {
 //                Reflection.setFloat(NetAircraft.this.FM.CT, "Ailerons", f18);
 				NetAircraft.this.FM.CT.Ailerons = f18;
 				NetAircraft.this.FM.CT.AileronControl = f18;
-				this.oldAil = (i11 % 21);
+				this.oldAil = i11 % 21;
 			}
 			// ---
 
@@ -861,42 +813,32 @@ public abstract class NetAircraft extends SndAircraft {
 		// ---
 
 		public void fmUpdate(float f) {
-			if (this.tupdate < 0L)
-				this.netFirstUpdate((float) NetAircraft.this.FM.Loc.x, (float) NetAircraft.this.FM.Loc.y,
-						(float) NetAircraft.this.FM.Loc.z, NetAircraft.this.FM.Or.getAzimut(),
-						NetAircraft.this.FM.Or.getTangage(), NetAircraft.this.FM.Or.getKren(),
-						(float) NetAircraft.this.FM.Vwld.x, (float) NetAircraft.this.FM.Vwld.y,
-						(float) NetAircraft.this.FM.Vwld.z);
+			if (this.tupdate < 0L) {
+				this.netFirstUpdate((float) NetAircraft.this.FM.Loc.x, (float) NetAircraft.this.FM.Loc.y, (float) NetAircraft.this.FM.Loc.z, NetAircraft.this.FM.Or.getAzimut(), NetAircraft.this.FM.Or.getTangage(), NetAircraft.this.FM.Or.getKren(),
+						(float) NetAircraft.this.FM.Vwld.x, (float) NetAircraft.this.FM.Vwld.y, (float) NetAircraft.this.FM.Vwld.z);
+			}
 			f = (Time.tickNext() - this.tcur) * 0.0010F;
 			if (!(f < 0.0010F)) {
 				this.tcur = Time.tickNext();
-				NetAircraft.this.FM.CT.update(f, 50.0F, NetAircraft.this.FM.EI, false,
-						NetAircraft.this.isFMTrackMirror());
+				NetAircraft.this.FM.CT.update(f, 50.0F, NetAircraft.this.FM.EI, false, NetAircraft.this.isFMTrackMirror());
 				NetAircraft.this.FM.Gears.ground(NetAircraft.this.FM, false, this.bGround);
 				NetAircraft.this.FM.Gears.bFlatTopGearCheck = false;
 				for (int i = 0; i < 3; i++) {
-					NetAircraft.this.FM.Gears.gWheelAngles[i] = ((NetAircraft.this.FM.Gears.gWheelAngles[i]
-							+ (float) Math.toDegrees(Math.atan((NetAircraft.this.FM.Gears.gVelocity[i]) * f / 0.375)))
-							% 360.0F);
+					NetAircraft.this.FM.Gears.gWheelAngles[i] = (NetAircraft.this.FM.Gears.gWheelAngles[i] + (float) Math.toDegrees(Math.atan(NetAircraft.this.FM.Gears.gVelocity[i] * f / 0.375))) % 360.0F;
 					NetAircraft.this.FM.Gears.gVelocity[i] *= 0.949999988079071;
 				}
-				NetAircraft.this.hierMesh().chunkSetAngles("GearL1_D0", 0.0F,
-						-(NetAircraft.this.FM.Gears.gWheelAngles[0]), 0.0F);
-				NetAircraft.this.hierMesh().chunkSetAngles("GearR1_D0", 0.0F,
-						-(NetAircraft.this.FM.Gears.gWheelAngles[1]), 0.0F);
-				NetAircraft.this.hierMesh().chunkSetAngles("GearC1_D0", 0.0F,
-						-(NetAircraft.this.FM.Gears.gWheelAngles[2]), 0.0F);
+				NetAircraft.this.hierMesh().chunkSetAngles("GearL1_D0", 0.0F, -NetAircraft.this.FM.Gears.gWheelAngles[0], 0.0F);
+				NetAircraft.this.hierMesh().chunkSetAngles("GearR1_D0", 0.0F, -NetAircraft.this.FM.Gears.gWheelAngles[1], 0.0F);
+				NetAircraft.this.hierMesh().chunkSetAngles("GearC1_D0", 0.0F, -NetAircraft.this.FM.Gears.gWheelAngles[2], 0.0F);
 				float f_57_ = NetAircraft.this.FM.Gears.getSteeringAngle();
 				NetAircraft.this.moveSteering(f_57_);
-				if (NetAircraft.this.FM.Gears.nearGround())
-					NetAircraft.this.moveWheelSink();
+				if (NetAircraft.this.FM.Gears.nearGround()) { NetAircraft.this.moveWheelSink(); }
 				NetAircraft.this.FM.EI.netupdate(f, NetAircraft.this.isFMTrackMirror());
 				NetAircraft.this.FM.FMupdate(f);
 				long l;
 				for (this.tint = this.tcur - this.tlag; this.tint > this._t; this._t += l) {
 					l = this.tint - this._t;
-					if (l > Time.tickConstLen())
-						l = Time.tickConstLen();
+					if (l > Time.tickConstLen()) { l = Time.tickConstLen(); }
 					float f_58_ = l * 0.0010F;
 					this._p.x += this._v.x * f_58_;
 					this._p.y += this._v.y * f_58_;
@@ -905,42 +847,33 @@ public abstract class NetAircraft extends SndAircraft {
 					this._v.y += NetAircraft.this.FM.getAccel().y * f_58_;
 					this._v.z += NetAircraft.this.FM.getAccel().z * f_58_;
 					this.TmpV.scale(f_58_, this._w);
-					this._o.increment((float) -Math.toDegrees(this.TmpV.z), (float) -Math.toDegrees(this.TmpV.y),
-							(float) Math.toDegrees(this.TmpV.x));
+					this._o.increment((float) -Math.toDegrees(this.TmpV.z), (float) -Math.toDegrees(this.TmpV.y), (float) Math.toDegrees(this.TmpV.x));
 				}
 				World.land();
 				float f_59_ = Landscape.HQ(this._p.x, this._p.y);
 				if (World.land().isWater(this._p.x, this._p.y)) {
-					if (this._p.z < f_59_ - 20.0F)
-						this._p.z = f_59_ - 20.0F;
-				} else if (this._p.z < f_59_ + 1.0F)
-					this._p.z = f_59_ + 1.0F;
+					if (this._p.z < f_59_ - 20.0F) { this._p.z = f_59_ - 20.0F; }
+				} else if (this._p.z < f_59_ + 1.0F) { this._p.z = f_59_ + 1.0F; }
 				this.TmpVd.set(this._p);
 				this.save_dt = 0.98F * this.save_dt + 0.02F * ((this.tint - this.tupdate) * 0.0010F);
 				f_57_ = 0.03F;
 				if (this._v.length() > 0.0F) {
 					f_57_ = 1.08F - this.save_dt * 2.0F;
-					if (f_57_ > 1.0F)
-						f_57_ = 1.0F;
-					if (f_57_ < 0.03F)
-						f_57_ = 0.03F;
+					if (f_57_ > 1.0F) { f_57_ = 1.0F; }
+					if (f_57_ < 0.03F) { f_57_ = 0.03F; }
 				}
 				this.saveCoeff = 0.98F * this.saveCoeff + 0.02F * f_57_;
 				NetAircraft.this.FM.Loc.interpolate(this.TmpVd, this.saveCoeff);
 				float f_60_ = this.saveCoeff * 2.0F;
-				if (NetMissionTrack.isPlaying())
-					f_60_ = this.saveCoeff / 4.0F;
-				if (f_60_ > 1.0F)
-					f_60_ = 1.0F;
+				if (NetMissionTrack.isPlaying()) { f_60_ = this.saveCoeff / 4.0F; }
+				if (f_60_ > 1.0F) { f_60_ = 1.0F; }
 				NetAircraft.this.FM.Or.interpolate(this._o, f_60_);
 				if (this.bUnderDeck) {
 					NetAircraft.corn.set(NetAircraft.this.FM.Loc);
 					NetAircraft.corn1.set(NetAircraft.this.FM.Loc);
 					NetAircraft.corn1.z -= 20.0;
-					Actor actor = Engine.collideEnv().getLine(NetAircraft.corn, NetAircraft.corn1, false,
-							NetAircraft.clipFilter, NetAircraft.pship);
-					if (!(actor instanceof BigshipGeneric) && Mission.isCoop() && Time.current() < 60000L)
-						actor = NetAircraft.this.FM.brakeShoeLastCarrier;
+					Actor actor = Engine.collideEnv().getLine(NetAircraft.corn, NetAircraft.corn1, false, NetAircraft.clipFilter, NetAircraft.pship);
+					if (!(actor instanceof BigshipGeneric) && Mission.isCoop() && Time.current() < 60000L) { actor = NetAircraft.this.FM.brakeShoeLastCarrier; }
 					if (actor instanceof BigshipGeneric) {
 						NetAircraft.lCorn.set(this._lRel);
 						NetAircraft.lCorn.add(actor.pos.getAbs());
@@ -955,17 +888,14 @@ public abstract class NetAircraft extends SndAircraft {
 						this._v.z = (float) NetAircraft.this.FM.Vwld.z;
 					}
 				}
-				if (NetAircraft.this.isFMTrackMirror())
-					NetAircraft.this.fmTrack.FMupdate(NetAircraft.this.FM);
+				if (NetAircraft.this.isFMTrackMirror()) { NetAircraft.this.fmTrack.FMupdate(NetAircraft.this.FM); }
 				if (NetAircraft.this.FM.isTick(44, 0)) {
 					NetAircraft.this.FM.AS.update(f * 44.0F);
 					((Aircraft) this.superObj()).rareAction(f * 44.0F, false);
-					if (NetAircraft.this.FM.Loc.z
-							- Engine.land().HQ_Air(NetAircraft.this.FM.Loc.x, NetAircraft.this.FM.Loc.y) > 40.0) {
+					if (NetAircraft.this.FM.Loc.z - Engine.land().HQ_Air(NetAircraft.this.FM.Loc.x, NetAircraft.this.FM.Loc.y) > 40.0) {
 						NetAircraft.this.FM.setWasAirborne(true);
 						NetAircraft.this.FM.setStationedOnGround(false);
-					} else if (NetAircraft.this.FM.Vwld.length() < 1.0)
-						NetAircraft.this.FM.setStationedOnGround(true);
+					} else if (NetAircraft.this.FM.Vwld.length() < 1.0) { NetAircraft.this.FM.setStationedOnGround(true); }
 				}
 				// TODO: Storebror: +++ Bomb Release Bug hunting
 				NetAircraft.this.decUpdatePending(UPDATE_MIRROR);
@@ -994,21 +924,16 @@ public abstract class NetAircraft extends SndAircraft {
 				NetAircraft.this.FM.CT.WeaponControl[wCTLindex] = (netWeaponBits & bitMask) != 0;
 				// TODO: Storebror: +++ Bomb Release Bug hunting
 
-				if ((wCTLindex == 2 || wCTLindex == 3)) {
-					if (NetAircraft.this.FM.CT.WeaponControl[wCTLindex]
-							&& NetAircraft.this.hasBulletsLeftOnTrigger(wCTLindex)) {
-						printDebugMessage(NetAircraft.this,
-								"MIRROR: " + NetAircraft.TRIGGER_NAMES[wCTLindex - 2] + " Trigger pressed!");
+				if (wCTLindex == 2 || wCTLindex == 3) {
+					if (NetAircraft.this.FM.CT.WeaponControl[wCTLindex] && NetAircraft.this.hasBulletsLeftOnTrigger(wCTLindex)) {
+						printDebugMessage(NetAircraft.this, "MIRROR: " + NetAircraft.TRIGGER_NAMES[wCTLindex - 2] + " Trigger pressed!");
 						NetAircraft.this.incUpdatePending(UPDATE_MIRROR);
 						NetAircraft.this.setTriggerActive(TRIGGER_MIRROR, wCTLindex - 2, true);
 					} else if (NetAircraft.this.isTriggerActive(TRIGGER_MIRROR, wCTLindex - 2)) {
-						printDebugMessage(NetAircraft.this,
-								"MIRROR: " + NetAircraft.TRIGGER_NAMES[wCTLindex - 2] + " Trigger released!");
-						if (NetAircraft.this.isUpdatePending(UPDATE_MIRROR)
-								&& NetAircraft.this.hasBulletsLeftOnTrigger(wCTLindex)) {
+						printDebugMessage(NetAircraft.this, "MIRROR: " + NetAircraft.TRIGGER_NAMES[wCTLindex - 2] + " Trigger released!");
+						if (NetAircraft.this.isUpdatePending(UPDATE_MIRROR) && NetAircraft.this.hasBulletsLeftOnTrigger(wCTLindex)) {
 							NetAircraft.this.FM.CT.WeaponControl[wCTLindex] = true;
-							printDebugMessage(NetAircraft.this, "MIRROR: " + NetAircraft.TRIGGER_NAMES[wCTLindex - 2]
-									+ " Trigger restored to \"pressed\" because fmUpdate was pending!");
+							printDebugMessage(NetAircraft.this, "MIRROR: " + NetAircraft.TRIGGER_NAMES[wCTLindex - 2] + " Trigger restored to \"pressed\" because fmUpdate was pending!");
 						} else {
 							NetAircraft.this.setTriggerActive(TRIGGER_MIRROR, wCTLindex - 2, false);
 						}
@@ -1025,8 +950,7 @@ public abstract class NetAircraft extends SndAircraft {
 			try {
 				this.out.setIncludeTime(true);
 				this.out.setFilterArg(actor);
-			} catch (Exception exception) {
-			}
+			} catch (Exception exception) {}
 		}
 	}
 
@@ -1037,31 +961,29 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	class Master extends AircraftNet implements NetUpdate {
-		NetMsgFiltered out = new NetMsgFiltered();
+		NetMsgFiltered   out             = new NetMsgFiltered();
 
-		public byte[] weaponsBitStates;
+		public byte[]    weaponsBitStates;
 
-		public boolean weaponsIsEmpty = false;
+		public boolean   weaponsIsEmpty  = false;
 
-		public boolean weaponsCheck = false;
+		public boolean   weaponsCheck    = false;
 
-		public long weaponsSyncTime = 0L;
+		public long      weaponsSyncTime = 0L;
 
-		public int curWayPoint = 0;
+		public int       curWayPoint     = 0;
 
-		private Vector3f vec3f = new Vector3f();
+		private Vector3f vec3f           = new Vector3f();
 
-		private Point3d p = new Point3d();
+		private Point3d  p               = new Point3d();
 
-		private Orient o = new Orient();
+		private Orient   o               = new Orient();
 
-		private int countUpdates = 0;
+		private int      countUpdates    = 0;
 
 		public boolean netInput(NetMsgInput netmsginput) throws IOException {
-			if (netmsginput.isGuaranted())
-				return NetAircraft.this.netGetGMsg(netmsginput, true);
-			if (!Config.isUSE_RENDER())
-				return true;
+			if (netmsginput.isGuaranted()) { return NetAircraft.this.netGetGMsg(netmsginput, true); }
+			if (!Config.isUSE_RENDER()) { return true; }
 			int i = netmsginput.readByte();
 			int i_64_ = netmsginput.readByte();
 			int i_65_ = (i & 0x1) << 1 | i_64_ & 0x1;
@@ -1077,10 +999,7 @@ public abstract class NetAircraft extends SndAircraft {
 //                return;
 			if (Time.tickCounter() <= 2) {
 				if (NetAircraft.this.isUpdatePending(UPDATE_MASTER)) {
-					printDebugMessage(NetAircraft.this,
-							"Master netUpdate() Time.tickCounter()=" + Time.tickCounter()
-									+ ", enforcing Update since number of Master Updates pending is "
-									+ NetAircraft.this.getUpdatePending(UPDATE_MASTER));
+					printDebugMessage(NetAircraft.this, "Master netUpdate() Time.tickCounter()=" + Time.tickCounter() + ", enforcing Update since number of Master Updates pending is " + NetAircraft.this.getUpdatePending(UPDATE_MASTER));
 				} else {
 					return;
 				}
@@ -1088,26 +1007,24 @@ public abstract class NetAircraft extends SndAircraft {
 			// TODO: Storebror: --- Bomb Release Bug hunting
 			if (this.netUser == null && NetAircraft.this.FM.brakeShoe) {
 				int i = NetAircraft.this.FM.actor.hashCode() & 0xf;
-				if ((this.countUpdates++ & 0xf) != i)
+				if ((this.countUpdates++ & 0xf) != i) {
 					// TODO: Storebror: +++ Bomb Release Bug hunting
 					if (NetAircraft.this.isUpdatePending(UPDATE_MASTER)) {
-						printDebugMessage(NetAircraft.this,
-								"Master netUpdate() NetAircraft.this.FM.actor.hashCode() & 0xf="
-										+ (NetAircraft.this.FM.actor.hashCode() & 0xf) + ", this.countUpdates="
-										+ this.countUpdates
-										+ ", enforcing Update since number of Master Updates pending is "
-										+ NetAircraft.this.getUpdatePending(UPDATE_MASTER));
-					} else
+						printDebugMessage(NetAircraft.this, "Master netUpdate() NetAircraft.this.FM.actor.hashCode() & 0xf=" + (NetAircraft.this.FM.actor.hashCode() & 0xf) + ", this.countUpdates=" + this.countUpdates
+								+ ", enforcing Update since number of Master Updates pending is " + NetAircraft.this.getUpdatePending(UPDATE_MASTER));
+					} else {
 						// TODO: Storebror: --- Bomb Release Bug hunting
 						return;
-			} else
+					}
+				}
+			} else {
 				this.countUpdates = 0;
+			}
 			// TODO: Storebror: +++ Bomb Release Bug hunting
 			if (this.weaponsIsEmpty) {
 				if (NetAircraft.this.FM.CT.WCT != 0) {
 					if (!NetAircraft.this.wctResetLogged) {
-						printDebugMessage(NetAircraft.this,
-								"Master netUpdate() !!! WCT RESET TO ZERO !!! - this will be the only time logging this issue, but it might happen multiple times hereafter.");
+						printDebugMessage(NetAircraft.this, "Master netUpdate() !!! WCT RESET TO ZERO !!! - this will be the only time logging this issue, but it might happen multiple times hereafter.");
 						NetAircraft.this.wctResetLogged = true;
 					}
 				}
@@ -1123,54 +1040,47 @@ public abstract class NetAircraft extends SndAircraft {
 				boolean engineWChangedFromLastNetUpdate = false;
 //                boolean engineWMatches = false;
 				boolean engineWMatches = true; // TODO: Storebror, Multi Engine Aircraft Net Replication Bugfix backport
-												// from 4.13
+												 // from 4.13
 				int lastEngineW = 0;
 				for (int engineIndex = 0; engineIndex < NetAircraft.this.FM.EI.getNum(); engineIndex++) {
 					int curEngineW = (int) (NetAircraft.this.FM.EI.engines[engineIndex].getw() / 640.0F * 255.0F);
-					if (engineIndex == 0)
+					if (engineIndex == 0) {
 						lastEngineW = curEngineW;
-					else if (lastEngineW != curEngineW)
+					} else if (lastEngineW != curEngineW) {
 						// engineWMatches = true;
 						engineWMatches = false; // TODO: Storebror, Multi Engine Aircraft Net Replication Bugfix
-												// backport from 4.13
+					}
+					// backport from 4.13
 					if (curEngineW != NetAircraft.this.FM.EI.engines[engineIndex].wNetPrev) {
 						engineWChangedFromLastNetUpdate = true;
 						NetAircraft.this.FM.EI.engines[engineIndex].wNetPrev = curEngineW;
 					}
 				}
 				if (engineWChangedFromLastNetUpdate) {
-					if (engineWMatches)
+					if (engineWMatches) {
 						i = 1;
-					else {
+					} else {
 						i = NetAircraft.this.FM.EI.getNum();
-						if (i > 15)
-							i = 15;
+						if (i > 15) { i = 15; }
 					}
 				}
-				if (NetAircraft.this.netCockpitValid && NetAircraft.this.netCockpitTuretNum >= 0)
-					i |= 0x10;
-				if (NetAircraft.this.FM.Gears.onGround())
-					i |= 0x20;
+				if (NetAircraft.this.netCockpitValid && NetAircraft.this.netCockpitTuretNum >= 0) { i |= 0x10; }
+				if (NetAircraft.this.FM.Gears.onGround()) { i |= 0x20; }
 				if (NetAircraft.this.FM.Gears.isUnderDeck() && NetAircraft.this.FM.Vrel.lengthSquared() < 2.0) {
 					NetAircraft.corn.set(NetAircraft.this.FM.Loc);
 					NetAircraft.corn1.set(NetAircraft.this.FM.Loc);
 					NetAircraft.corn1.z -= 20.0;
-					Actor actor = Engine.collideEnv().getLine(NetAircraft.corn, NetAircraft.corn1, false,
-							(NetAircraft.clipFilter), NetAircraft.pship);
-					if (!(actor instanceof BigshipGeneric) && Mission.isCoop() && Time.current() < 60000L)
-						actor = NetAircraft.this.FM.brakeShoeLastCarrier;
+					Actor actor = Engine.collideEnv().getLine(NetAircraft.corn, NetAircraft.corn1, false, NetAircraft.clipFilter, NetAircraft.pship);
+					if (!(actor instanceof BigshipGeneric) && Mission.isCoop() && Time.current() < 60000L) { actor = NetAircraft.this.FM.brakeShoeLastCarrier; }
 					if (actor instanceof BigshipGeneric) {
 						NetAircraft.lCorn.set(NetAircraft.this.pos.getAbs());
 						NetAircraft.lCorn.sub(actor.pos.getAbs());
-						if (Math.abs(NetAircraft.lCorn.getX()) < 200.0 && Math.abs(NetAircraft.lCorn.getY()) < 200.0
-								&& Math.abs(NetAircraft.lCorn.getZ()) < 200.0)
-							i |= 0x40;
+						if (Math.abs(NetAircraft.lCorn.getX()) < 200.0 && Math.abs(NetAircraft.lCorn.getY()) < 200.0 && Math.abs(NetAircraft.lCorn.getZ()) < 200.0) { i |= 0x40; }
 					}
 				}
 				this.out.writeByte(i);
 				int i_71_ = (int) (Time.tickNext() - Time.current());
-				if (i_71_ > 255)
-					i_71_ = 255;
+				if (i_71_ > 255) { i_71_ = 255; }
 				this.out.writeByte(i_71_);
 				this.out.writeByte(NetAircraft.this.FM.CT.CTL);
 
@@ -1178,22 +1088,19 @@ public abstract class NetAircraft extends SndAircraft {
 
 				// TODO: Storebror: +++ Bomb Release Bug hunting
 				for (int wctlIndex = 2; wctlIndex <= 3; wctlIndex++) {
-					boolean triggerPressed = ((NetAircraft.this.FM.CT.WCT & (1 << wctlIndex)) != 0);
+					boolean triggerPressed = (NetAircraft.this.FM.CT.WCT & 1 << wctlIndex) != 0;
 					if (triggerPressed) {
 						if (NetAircraft.this.hasBulletsLeftOnTrigger(wctlIndex)) {
-							printDebugMessage(NetAircraft.this, "Master netUpdate(): "
-									+ NetAircraft.TRIGGER_NAMES[wctlIndex - 2] + " Trigger pressed!");
+							printDebugMessage(NetAircraft.this, "Master netUpdate(): " + NetAircraft.TRIGGER_NAMES[wctlIndex - 2] + " Trigger pressed!");
 							NetAircraft.this.setTriggerActive(TRIGGER_MASTER, wctlIndex - 2, true);
 							NetAircraft.this.setLastBulletLogged(wctlIndex - 2, false);
 						} else if (!NetAircraft.this.isLastBulletLogged(wctlIndex - 2)) {
-							printDebugMessage(NetAircraft.this, "Master netUpdate(): "
-									+ NetAircraft.TRIGGER_NAMES[wctlIndex - 2] + " Trigger pressed!");
+							printDebugMessage(NetAircraft.this, "Master netUpdate(): " + NetAircraft.TRIGGER_NAMES[wctlIndex - 2] + " Trigger pressed!");
 							NetAircraft.this.setTriggerActive(TRIGGER_MASTER, wctlIndex - 2, true);
 							NetAircraft.this.setLastBulletLogged(wctlIndex - 2, true);
 						}
 					} else if (NetAircraft.this.isTriggerActive(TRIGGER_MASTER, wctlIndex - 2)) {
-						printDebugMessage(NetAircraft.this, "Master netUpdate(): "
-								+ NetAircraft.TRIGGER_NAMES[wctlIndex - 2] + " Trigger released!");
+						printDebugMessage(NetAircraft.this, "Master netUpdate(): " + NetAircraft.TRIGGER_NAMES[wctlIndex - 2] + " Trigger released!");
 						NetAircraft.this.setTriggerActive(TRIGGER_MASTER, wctlIndex - 2, false);
 					}
 				}
@@ -1255,8 +1162,7 @@ public abstract class NetAircraft extends SndAircraft {
 				}
 				for (int i_86_ = 0; i_86_ < (i & 0xf); i_86_++) {
 					this.out.writeByte((byte) (int) (NetAircraft.this.FM.EI.engines[i_86_].getw() / 640.0F * 255.0F));
-					this.out.writeByte(
-							(byte) (int) (NetAircraft.this.FM.EI.engines[i_86_].getPropPhi() / 1.6F * 255.0F));
+					this.out.writeByte((byte) (int) (NetAircraft.this.FM.EI.engines[i_86_].getPropPhi() / 1.6F * 255.0F));
 				}
 				if (NetAircraft.this.netCockpitValid && NetAircraft.this.netCockpitTuretNum >= 0) {
 					Turret turret = NetAircraft.this.FM.turret[NetAircraft.this.netCockpitTuretNum];
@@ -1267,11 +1173,8 @@ public abstract class NetAircraft extends SndAircraft {
 
 				// TODO: Storebror: Implement Aircraft Control Surfaces and Pilot View
 				// Replication
-				int i7 = (((this.packScale(NetAircraft.this.FM.CT.getAileron(), -1.0F, 0.0952481F) * 21
-						+ this.packScale(NetAircraft.this.FM.CT.getElevator(), -1.0F, 0.0952481F)) * 21
-						+ this.packScale(NetAircraft.this.FM.CT.getRudder(), -1.0F, 0.0952481F)) * 69
-						+ this.packScale(NetAircraft.this.viewAzimut, -107.0F, 3.101459F)) * 26
-						+ this.packScale(NetAircraft.this.viewTangage, -22.0F, 3.038472F);
+				int i7 = (((this.packScale(NetAircraft.this.FM.CT.getAileron(), -1.0F, 0.0952481F) * 21 + this.packScale(NetAircraft.this.FM.CT.getElevator(), -1.0F, 0.0952481F)) * 21
+						+ this.packScale(NetAircraft.this.FM.CT.getRudder(), -1.0F, 0.0952481F)) * 69 + this.packScale(NetAircraft.this.viewAzimut, -107.0F, 3.101459F)) * 26 + this.packScale(NetAircraft.this.viewTangage, -22.0F, 3.038472F);
 
 				this.out.writeShort(i7 >> 8 & 0xFFFF);
 				this.out.writeByte(i7 & 0xFF);
@@ -1299,12 +1202,10 @@ public abstract class NetAircraft extends SndAircraft {
 //                    this.weaponsIsEmpty = NetAircraft.this.isWeaponsAllEmpty();
 //                }
 //            }
-			if ((this.weaponsCheck && Time.current() > this.weaponsSyncTime)
-					|| NetAircraft.this.netPutWeaponsBitStatesPending) {
+			if (this.weaponsCheck && Time.current() > this.weaponsSyncTime || NetAircraft.this.netPutWeaponsBitStatesPending) {
 				if (NetAircraft.this.isUpdatePending(NetAircraft.UPDATE_MASTER)) {
 					NetAircraft.this.netPutWeaponsBitStatesPending = true;
-					printDebugMessage(NetAircraft.this,
-							"Master netUpdate() deferring weaponsBitStates replication because Master Update is pending!");
+					printDebugMessage(NetAircraft.this, "Master netUpdate() deferring weaponsBitStates replication because Master Update is pending!");
 				} else {
 					this.weaponsSyncTime = Time.current() + 5000L;
 					this.weaponsCheck = false;
@@ -1317,16 +1218,15 @@ public abstract class NetAircraft extends SndAircraft {
 				}
 			}
 			// TODO: Storebror: --- Bomb Release Bug hunting
-			if (bool)
-				this.weaponsCheck = true;
+			if (bool) { this.weaponsCheck = true; }
 		}
 
 		int packSY(float f) {
-			return (0xffff & (int) ((f % 360.0 + 180.0) * 65000.0 / 360.0));
+			return 0xffff & (int) ((f % 360.0 + 180.0) * 65000.0 / 360.0);
 		}
 
 		int packSP(float f) {
-			return (0x7fff & (int) ((f % 360.0 + 180.0) * 32000.0 / 360.0));
+			return 0x7fff & (int) ((f % 360.0 + 180.0) * 32000.0 / 360.0);
 		}
 
 		// TODO: Storebror: Implement Aircraft Control Surfaces and Pilot View
@@ -1349,15 +1249,14 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	public class AircraftNet extends ActorNet {
-		public NetUser netUser;
+		public NetUser      netUser;
 
-		public String netName;
+		public String       netName;
 
 		public IntHashtable filterTable;
 
 		private void createFilterTable() {
-			if (Main.cur().netServerParams != null && !Main.cur().netServerParams.isMirror())
-				this.filterTable = new IntHashtable();
+			if (Main.cur().netServerParams != null && !Main.cur().netServerParams.isMirror()) { this.filterTable = new IntHashtable(); }
 		}
 
 		public AircraftNet(Actor actor) {
@@ -1436,20 +1335,17 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	public NetUser netUser() {
-		if (!this.isNet())
-			return null;
+		if (!this.isNet()) { return null; }
 		return ((AircraftNet) this.net).netUser;
 	}
 
 	public String netName() {
-		if (!this.isNet())
-			return null;
+		if (!this.isNet()) { return null; }
 		return ((AircraftNet) this.net).netName;
 	}
 
 	public boolean isNetPlayer() {
-		if (!this.isNet())
-			return false;
+		if (!this.isNet()) { return false; }
 		return ((AircraftNet) this.net).netUser != null;
 	}
 
@@ -1474,44 +1370,37 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	public boolean netNewAState_isEnable(boolean bool) {
-		if (!this.isNet())
-			return false;
-		if (bool && this.net.isMaster())
-			return false;
-		if (!bool && !this.net.isMirrored())
-			return false;
-		if (bool && this.net.masterChannel() instanceof NetChannelInStream)
-			return false;
+		if (!this.isNet()) { return false; }
+		if (bool && this.net.isMaster()) { return false; }
+		if (!bool && !this.net.isMirrored()) { return false; }
+		if (bool && this.net.masterChannel() instanceof NetChannelInStream) { return false; }
 		return true;
 	}
 
 	public NetMsgGuaranted netNewAStateMsg(boolean bool) throws IOException {
-		if (!this.isNet())
-			return null;
-		if (bool && this.net.isMaster())
-			return null;
-		if (!bool && !this.net.isMirrored())
-			return null;
-		if (bool && this.net.masterChannel() instanceof NetChannelInStream)
-			return null;
+		if (!this.isNet()) { return null; }
+		if (bool && this.net.isMaster()) { return null; }
+		if (!bool && !this.net.isMirrored()) { return null; }
+		if (bool && this.net.masterChannel() instanceof NetChannelInStream) { return null; }
 		NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
-		if (bool)
+		if (bool) {
 			netmsgguaranted.writeByte(128);
-		else
+		} else {
 			netmsgguaranted.writeByte(0);
+		}
 		return netmsgguaranted;
 	}
 
 	public void netSendAStateMsg(boolean bool, NetMsgGuaranted netmsgguaranted) throws IOException {
-		if (bool)
+		if (bool) {
 			this.net.postTo(this.net.masterChannel(), netmsgguaranted);
-		else
+		} else {
 			this.net.post(netmsgguaranted);
+		}
 	}
 
 	public void netUpdateWayPoint() {
-		if (this.net != null && Main.cur().netServerParams != null && Main.cur().netServerParams.isCoop()
-				&& !Main.cur().netServerParams.isMaster() && this.net.isMaster() && this.net.isMirrored()) {
+		if (this.net != null && Main.cur().netServerParams != null && Main.cur().netServerParams.isCoop() && !Main.cur().netServerParams.isMaster() && this.net.isMaster() && this.net.isMirrored()) {
 			Master master = (Master) this.net;
 			if (master.curWayPoint != this.FM.AP.way.Cur()) {
 				master.curWayPoint = this.FM.AP.way.Cur();
@@ -1528,13 +1417,11 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	private boolean netGetUpdateWayPoint(NetMsgInput netmsginput, boolean bool, boolean bool_90_) throws IOException {
-		if (bool)
-			return false;
+		if (bool) { return false; }
 		int i = netmsginput.readUnsignedShort();
 		if (Main.cur().netServerParams.isMaster()) {
 			this.FM.AP.way.setCur(i);
-			if (i == this.FM.AP.way.size() - 1)
-				this.FM.AP.way.next();
+			if (i == this.FM.AP.way.size() - 1) { this.FM.AP.way.next(); }
 		} else {
 			try {
 				NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
@@ -1550,9 +1437,7 @@ public abstract class NetAircraft extends SndAircraft {
 
 	// TODO: +++ TD AI code backport from 4.13 +++
 	public void netSendNewWayPoint(WayPoint waypoint, int i) {
-		if (net == null || Main.cur().netServerParams == null || !Main.cur().netServerParams.isCoop()
-				|| !Main.cur().netServerParams.isMaster() || !net.isMaster() || !net.isMirrored())
-			return;
+		if (this.net == null || Main.cur().netServerParams == null || !Main.cur().netServerParams.isCoop() || !Main.cur().netServerParams.isMaster() || !this.net.isMaster() || !this.net.isMirrored()) { return; }
 		try {
 			NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
 			netmsgguaranted.writeByte(16);
@@ -1565,15 +1450,14 @@ public abstract class NetAircraft extends SndAircraft {
 			netmsgguaranted.writeInt(waypoint.waypointType);
 			netmsgguaranted.writeInt(waypoint.targetTrigger);
 			netmsgguaranted.writeInt(waypoint.delayTimer);
-			net.post(netmsgguaranted);
+			this.net.post(netmsgguaranted);
 		} catch (Exception exception) {
 			printDebug(exception);
 		}
 	}
 
 	private boolean netReceiveNewWayPoint(NetMsgInput netmsginput, boolean flag, boolean flag1) throws IOException {
-		if (flag1)
-			return false;
+		if (flag1) { return false; }
 		if (flag) {
 			return false;
 		} else {
@@ -1599,15 +1483,13 @@ public abstract class NetAircraft extends SndAircraft {
 
 	private int getWeaponsAmount() {
 		int i = this.FM.CT.Weapons.length;
-		if (this.FM.CT.Weapons.length == 0)
-			return 0;
+		if (this.FM.CT.Weapons.length == 0) { return 0; }
 		int i_91_ = 0;
 		for (int i_92_ = 0; i_92_ < i; i_92_++) {
 			BulletEmitter[] bulletemitters = this.FM.CT.Weapons[i_92_];
 			if (bulletemitters != null) {
 				for (int i_93_ = 0; i_93_ < bulletemitters.length; i_93_++) {
-					if (bulletemitters[i_93_] != null)
-						i_91_++;
+					if (bulletemitters[i_93_] != null) { i_91_++; }
 				}
 			}
 		}
@@ -1616,14 +1498,12 @@ public abstract class NetAircraft extends SndAircraft {
 
 	private boolean isWeaponsAllEmpty() {
 		int i = this.FM.CT.Weapons.length;
-		if (this.FM.CT.Weapons.length == 0)
-			return true;
+		if (this.FM.CT.Weapons.length == 0) { return true; }
 		for (int i_94_ = 0; i_94_ < i; i_94_++) {
 			BulletEmitter[] bulletemitters = this.FM.CT.Weapons[i_94_];
 			if (bulletemitters != null) {
 				for (int i_95_ = 0; i_95_ < bulletemitters.length; i_95_++) {
-					if (bulletemitters[i_95_] != null && bulletemitters[i_95_].countBullets() != 0)
-						return false;
+					if (bulletemitters[i_95_] != null && bulletemitters[i_95_].countBullets() != 0) { return false; }
 				}
 			}
 		}
@@ -1632,20 +1512,18 @@ public abstract class NetAircraft extends SndAircraft {
 
 	private byte[] getWeaponsBitStatesBuf(byte[] is) {
 		int i = this.getWeaponsAmount();
-		if (i == 0)
-			return null;
+		if (i == 0) { return null; }
 		int i_96_ = (i + 7) / 8;
-		if (is == null || is.length != i_96_)
-			is = new byte[i_96_];
-		for (int i_97_ = 0; i_97_ < i_96_; i_97_++)
+		if (is == null || is.length != i_96_) { is = new byte[i_96_]; }
+		for (int i_97_ = 0; i_97_ < i_96_; i_97_++) {
 			is[i_97_] = (byte) 0;
+		}
 		return is;
 	}
 
 	private byte[] getWeaponsBitStates(byte[] is) {
 		is = this.getWeaponsBitStatesBuf(is);
-		if (is == null)
-			return null;
+		if (is == null) { return null; }
 		int i = 0;
 		int i_98_ = this.FM.CT.Weapons.length;
 		for (int i_99_ = 0; i_99_ < i_98_; i_99_++) {
@@ -1653,8 +1531,7 @@ public abstract class NetAircraft extends SndAircraft {
 			if (bulletemitters != null) {
 				for (int i_100_ = 0; i_100_ < bulletemitters.length; i_100_++) {
 					if (bulletemitters[i_100_] != null) {
-						if (bulletemitters[i_100_].countBullets() != 0)
-							is[i / 8] |= 1 << i % 8;
+						if (bulletemitters[i_100_].countBullets() != 0) { is[i / 8] |= 1 << i % 8; }
 						i++;
 					}
 				}
@@ -1678,24 +1555,16 @@ public abstract class NetAircraft extends SndAircraft {
 						if ((is[i / 8] & 1 << i % 8) == 0) {
 							// TODO: Storebror: +++ Bomb Release Bug hunting
 							do {
-								if (this.isNetMirror() && (weaponsIndex == 2 || weaponsIndex == 3)
-										&& !this.isNetSpawnSetWeaponsBitStates()) {
+								if (this.isNetMirror() && (weaponsIndex == 2 || weaponsIndex == 3) && !this.isNetSpawnSetWeaponsBitStates()) {
 
 									if (this.isUpdatePending(UPDATE_MIRROR)) {
 										printDebugMessage(NetAircraft.this,
-												"MIRROR: Emptying Request for "
-														+ NetAircraft.TRIGGER_NAMES[weaponsIndex - 2] + " Emitter No."
-														+ beIndex + " (" + simpleClassName(bulletemitters[beIndex])
-														+ ") skipped, fmUpdate is pending!");
+												"MIRROR: Emptying Request for " + NetAircraft.TRIGGER_NAMES[weaponsIndex - 2] + " Emitter No." + beIndex + " (" + simpleClassName(bulletemitters[beIndex]) + ") skipped, fmUpdate is pending!");
 										break;
 									} else if (bulletemitters[beIndex].haveBullets()) {
 										int numBullets = bulletemitters[beIndex].countBullets();
-										printDebugMessage(NetAircraft.this,
-												"MIRROR: Emptying Request for "
-														+ NetAircraft.TRIGGER_NAMES[weaponsIndex - 2] + " Emitter No."
-														+ beIndex + " (" + simpleClassName(bulletemitters[beIndex])
-														+ ") skipped, >>> releasing ordnance (" + numBullets
-														+ ") instead! <<<");
+										printDebugMessage(NetAircraft.this, "MIRROR: Emptying Request for " + NetAircraft.TRIGGER_NAMES[weaponsIndex - 2] + " Emitter No." + beIndex + " (" + simpleClassName(bulletemitters[beIndex])
+												+ ") skipped, >>> releasing ordnance (" + numBullets + ") instead! <<<");
 										bulletemitters[beIndex].shots(numBullets);
 										break;
 									}
@@ -1718,10 +1587,8 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	private boolean isWeaponsChanged(byte[] is) {
-		if (this.getWeaponsAmount() == 0)
-			return false;
-		if (is == null)
-			return true;
+		if (this.getWeaponsAmount() == 0) { return false; }
+		if (is == null) { return true; }
 		int i = 0;
 		int i_104_ = this.FM.CT.Weapons.length;
 		for (int i_105_ = 0; i_105_ < i_104_; i_105_++) {
@@ -1729,8 +1596,7 @@ public abstract class NetAircraft extends SndAircraft {
 			if (bulletemitters != null) {
 				for (int i_106_ = 0; i_106_ < bulletemitters.length; i_106_++) {
 					if (bulletemitters[i_106_] != null) {
-						if (((is[i / 8] & 1 << i % 8) == 0) != (bulletemitters[i_106_].countBullets() == 0))
-							return true;
+						if ((is[i / 8] & 1 << i % 8) == 0 != (bulletemitters[i_106_].countBullets() == 0)) { return true; }
 						i++;
 					}
 				}
@@ -1741,8 +1607,7 @@ public abstract class NetAircraft extends SndAircraft {
 
 	private void netPutWeaponsBitStates(byte[] is) {
 		// TODO: Storebror: +++ Bomb Release Bug hunting
-		NetAircraft.printDebugMessage(this, "NetAircraft netPutWeaponsBitStates this.isNet()=" + this.isNet()
-				+ ", this.net.countMirrors()=" + (this.isNet() ? this.net.countMirrors() : 0));
+		NetAircraft.printDebugMessage(this, "NetAircraft netPutWeaponsBitStates this.isNet()=" + this.isNet() + ", this.net.countMirrors()=" + (this.isNet() ? this.net.countMirrors() : 0));
 		this.dumpWeaponsBitStates(is);
 //        Exception e = new Exception("NetAircraft netPutWeaponsBitStates");
 //        e.printStackTrace();
@@ -1759,13 +1624,12 @@ public abstract class NetAircraft extends SndAircraft {
 		}
 	}
 
-	private boolean netGetWeaponsBitStates(NetMsgInput netmsginput, boolean bool, boolean bool_107_)
-			throws IOException {
-		if (bool || bool_107_)
-			return false;
+	private boolean netGetWeaponsBitStates(NetMsgInput netmsginput, boolean bool, boolean bool_107_) throws IOException {
+		if (bool || bool_107_) { return false; }
 		byte[] is = this.getWeaponsBitStatesBuf(null);
-		for (int i = 0; i < is.length; i++)
+		for (int i = 0; i < is.length; i++) {
 			is[i] = (byte) netmsginput.readUnsignedByte();
+		}
 		this.setWeaponsBitStates(is);
 		this.netPutWeaponsBitStates(is);
 		return true;
@@ -1785,8 +1649,7 @@ public abstract class NetAircraft extends SndAircraft {
 				BulletEmitter[] bulletemitters = this.FM.CT.Weapons[i];
 				if (bulletemitters != null) {
 					for (int i_108_ = 0; i_108_ < bulletemitters.length; i_108_++) {
-						if (bulletemitters[i_108_] != null)
-							bulletemitters[i_108_].setPause(!bool);
+						if (bulletemitters[i_108_] != null) { bulletemitters[i_108_].setPause(!bool); }
 					}
 				}
 			}
@@ -1794,10 +1657,11 @@ public abstract class NetAircraft extends SndAircraft {
 			if (this.isNet() && this.net.countMirrors() != 0) {
 				try {
 					NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
-					if (bool)
+					if (bool) {
 						netmsgguaranted.writeByte(3);
-					else
+					} else {
 						netmsgguaranted.writeByte(4);
+					}
 					this.net.post(netmsgguaranted);
 				} catch (Exception exception) {
 					printDebug(exception);
@@ -1819,20 +1683,22 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	protected void netPutHits(boolean bool, NetChannel netchannel, int i, int i_109_, int i_110_, Actor actor) {
-		if ((bool || this.net.countMirrors() != 0) && (Actor.isValid(actor) && actor.isNet())) {
+		if ((bool || this.net.countMirrors() != 0) && Actor.isValid(actor) && actor.isNet()) {
 			try {
 				NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
-				if (bool)
+				if (bool) {
 					netmsgguaranted.writeByte(134);
-				else
+				} else {
 					netmsgguaranted.writeByte(6);
+				}
 				netmsgguaranted.writeByte(i & 0xf | i_109_ << 4 & 0xf0);
 				netmsgguaranted.writeByte(i_110_);
 				netmsgguaranted.writeNetObj(actor.net);
-				if (bool)
+				if (bool) {
 					this.net.postTo(this.net.masterChannel(), netmsgguaranted);
-				else
+				} else {
 					this.net.postExclude(netchannel, netmsgguaranted);
+				}
 			} catch (Exception exception) {
 				printDebug(exception);
 			}
@@ -1840,24 +1706,18 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	private boolean netGetHits(NetMsgInput netmsginput, boolean bool, boolean bool_111_) throws IOException {
-		if (bool && !bool_111_)
-			return false;
+		if (bool && !bool_111_) { return false; }
 		int i = netmsginput.readUnsignedByte();
 		int i_112_ = i >> 4 & 0xf;
 		i &= 0xf;
 		int i_113_ = netmsginput.readUnsignedByte();
-		if (i_113_ >= 44)
-			return false;
+		if (i_113_ >= 44) { return false; }
 		NetObj netobj = netmsginput.readNetObj();
-		if (netobj == null)
-			return true;
+		if (netobj == null) { return true; }
 		Actor actor = (Actor) netobj.superObj();
-		if (!Actor.isValid(actor))
-			return true;
-		if (!bool && bool_111_)
-			this.netPutHits(true, null, i, i_112_, i_113_, actor);
-		if (this.net.countMirrors() > 1)
-			this.netPutHits(false, netmsginput.channel(), i, i_112_, i_113_, actor);
+		if (!Actor.isValid(actor)) { return true; }
+		if (!bool && bool_111_) { this.netPutHits(true, null, i, i_112_, i_113_, actor); }
+		if (this.net.countMirrors() > 1) { this.netPutHits(false, netmsginput.channel(), i, i_112_, i_113_, actor); }
 		this.netHits(i, i_112_, i_113_, actor);
 		return true;
 	}
@@ -1878,8 +1738,7 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	private boolean netGetHitProp(NetMsgInput netmsginput, boolean bool, boolean bool_115_) throws IOException {
-		if (bool || bool_115_)
-			return false;
+		if (bool || bool_115_) { return false; }
 		int i = netmsginput.readUnsignedByte();
 		int i_116_ = netmsginput.readUnsignedByte();
 		NetObj netobj = netmsginput.readNetObj();
@@ -1903,11 +1762,9 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	private boolean netGetCut(NetMsgInput netmsginput, boolean bool, boolean bool_118_) throws IOException {
-		if (bool || bool_118_)
-			return false;
+		if (bool || bool_118_) { return false; }
 		int i = netmsginput.readUnsignedByte();
-		if (i >= 44)
-			return false;
+		if (i >= 44) { return false; }
 		int i_119_ = netmsginput.readUnsignedByte();
 		NetObj netobj = netmsginput.readNetObj();
 		this.nextCUTLevel(partNames()[i] + "_D0", i_119_, netobj != null ? (Actor) netobj.superObj() : null);
@@ -1927,16 +1784,14 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	private boolean netGetExplode(NetMsgInput netmsginput, boolean bool, boolean bool_120_) throws IOException {
-		if (bool || bool_120_)
-			return false;
+		if (bool || bool_120_) { return false; }
 		this.netExplode();
 		this.doExplosion();
 		return true;
 	}
 
 	public void setDiedFlag(boolean bool) {
-		if (this.isAlive() && bool && this.isNet() && Actor.isValid(this.getDamager()) && this.getDamager().isNet()
-				&& this.net.countMirrors() > 0) {
+		if (this.isAlive() && bool && this.isNet() && Actor.isValid(this.getDamager()) && this.getDamager().isNet() && this.net.countMirrors() > 0) {
 			try {
 				NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
 				netmsgguaranted.writeByte(10);
@@ -1952,8 +1807,7 @@ public abstract class NetAircraft extends SndAircraft {
 	private boolean netGetDead(NetMsgInput netmsginput, boolean bool, boolean bool_121_) throws IOException {
 		NetObj netobj = netmsginput.readNetObj();
 		if (netobj != null) {
-			if (this.isAlive())
-				World.onActorDied(this, (Actor) netobj.superObj());
+			if (this.isAlive()) { World.onActorDied(this, (Actor) netobj.superObj()); }
 			if (this.net.countMirrors() > 0) {
 				try {
 					NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
@@ -1973,22 +1827,23 @@ public abstract class NetAircraft extends SndAircraft {
 		// folded wings etc.
 		// if (!Mission.isDogfight() && (!Mission.isCoop() || !isNetPlayer()) &&
 		// netchannel instanceof NetChannelOutStream)
-		if ((!Mission.isCoop() || !this.isNetPlayer())
-				&& ((netchannel instanceof NetChannelOutStream) || Mission.isDogfight())) {
+		if ((!Mission.isCoop() || !this.isNetPlayer()) && (netchannel instanceof NetChannelOutStream || Mission.isDogfight())) {
 			NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
 			netmsgguaranted.writeByte(11);
 			this.netReplicateFirstUpdate(netchannel, netmsgguaranted);
 			this.net.postTo(netchannel, netmsgguaranted);
 			if (Mission.isSingle() && World.getPlayerAircraft() == this) {
 				if (this.fmTrack() == null) {
-					if (this.isNetMaster())
+					if (this.isNetMaster()) {
 						new MsgAction(true, this) {
 							public void doAction(Object object) {
 								new FlightModelTrack((Aircraft) object);
 							}
 						};
-				} else
+					}
+				} else {
 					MsgNet.postRealNewChannel(this.fmTrack(), netchannel);
+				}
 			}
 		}
 		this.netCockpitFirstUpdate(this, netchannel);
@@ -2013,19 +1868,15 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	public static int netCockpitAstatePilotIndx(Class var_class, int i) {
-		if (i < 0)
-			return -1;
+		if (i < 0) { return -1; }
 		Object object = Property.value(var_class, "cockpitClass");
-		if (object == null)
-			return -1;
+		if (object == null) { return -1; }
 		if (object instanceof Class) {
-			if (i > 0)
-				return -1;
+			if (i > 0) { return -1; }
 			return Property.intValue((Class) object, "astatePilotIndx", 0);
 		}
 		Class[] var_classes = (Class[]) object;
-		if (i >= var_classes.length)
-			return -1;
+		if (i >= var_classes.length) { return -1; }
 		return Property.intValue(var_classes[i], "astatePilotIndx", 0);
 	}
 
@@ -2035,13 +1886,11 @@ public abstract class NetAircraft extends SndAircraft {
 		if (object != null) {
 			int i_124_;
 			if (object instanceof Class) {
-				if (i > 0)
-					return;
+				if (i > 0) { return; }
 				i_124_ = Property.intValue((Class) object, "weaponControlNum", 10);
 			} else {
 				Class[] var_classes = (Class[]) object;
-				if (i >= var_classes.length)
-					return;
+				if (i >= var_classes.length) { return; }
 				i_124_ = Property.intValue(var_classes[i], "weaponControlNum", 10);
 			}
 			if (World.cur().diffCur.Limited_Ammo) {
@@ -2050,10 +1899,11 @@ public abstract class NetAircraft extends SndAircraft {
 					is = new short[bulletemitters.length];
 					for (int i_125_ = 0; i_125_ < bulletemitters.length; i_125_++) {
 						int i_126_ = bulletemitters[i_125_].countBullets();
-						if (i_126_ < 0)
+						if (i_126_ < 0) {
 							is[i_125_] = (short) -1;
-						else
+						} else {
 							is[i_125_] = (short) i_126_;
+						}
 					}
 				}
 			}
@@ -2066,13 +1916,11 @@ public abstract class NetAircraft extends SndAircraft {
 		if (object != null) {
 			Class var_class;
 			if (object instanceof Class) {
-				if (i > 0)
-					return;
+				if (i > 0) { return; }
 				var_class = (Class) object;
 			} else {
 				Class[] var_classes = (Class[]) object;
-				if (i >= var_classes.length)
-					return;
+				if (i >= var_classes.length) { return; }
 				var_class = var_classes[i];
 			}
 			if (!CockpitPilot.class.isAssignableFrom(var_class)) {
@@ -2087,22 +1935,18 @@ public abstract class NetAircraft extends SndAircraft {
 				}
 				BulletEmitter[] bulletemitters = this.FM.CT.Weapons[i_128_];
 				if (bulletemitters != null) {
-					boolean bool_130_ = (!actor.net.isMaster() || World.cur().diffCur.Realistic_Gunnery);
-					if (bool)
-						bool_130_ = true;
+					boolean bool_130_ = !actor.net.isMaster() || World.cur().diffCur.Realistic_Gunnery;
+					if (bool) { bool_130_ = true; }
 					for (int i_131_ = 0; i_131_ < bulletemitters.length; i_131_++) {
 						if (bulletemitters[i_131_] instanceof Actor) {
 							((Actor) bulletemitters[i_131_]).setOwner(bool ? (Actor) this : actor);
-							if (bulletemitters[i_131_] instanceof Gun)
-								((Gun) bulletemitters[i_131_]).initRealisticGunnery(bool_130_);
+							if (bulletemitters[i_131_] instanceof Gun) { ((Gun) bulletemitters[i_131_]).initRealisticGunnery(bool_130_); }
 						}
 						if (is != null) {
 							short i_132_ = is[i_131_];
-							if (i_132_ == 65535)
-								i_132_ = (short) -1;
+							if (i_132_ == 65535) { i_132_ = (short) -1; }
 							bulletemitters[i_131_]._loadBullets(i_132_);
-						} else if (!World.cur().diffCur.Limited_Ammo)
-							bulletemitters[i_131_].loadBullets(-1);
+						} else if (!World.cur().diffCur.Limited_Ammo) { bulletemitters[i_131_].loadBullets(-1); }
 					}
 				}
 				if (actor instanceof NetGunner) {
@@ -2112,63 +1956,62 @@ public abstract class NetAircraft extends SndAircraft {
 					this.netCockpitTuretNum = bool ? -1 : i_129_;
 					this.netCockpitWeaponControlNum = i_128_;
 				}
-			} else if (actor instanceof NetGunner)
+			} else if (actor instanceof NetGunner) {
 				((NetGunner) actor).netCockpitTuretNum = -1;
-			else
+			} else {
 				this.netCockpitTuretNum = -1;
+			}
 			int i_133_ = this.net.countMirrors();
-			if (this.net.isMirror())
-				i_133_++;
-			if (netchannel != null)
-				i_133_--;
+			if (this.net.isMirror()) { i_133_++; }
+			if (netchannel != null) { i_133_--; }
 			if (i_133_ > 0) {
-				if (actor instanceof NetGunner)
+				if (actor instanceof NetGunner) {
 					((NetGunner) actor).netCockpitValid = false;
-				else
+				} else {
 					this.netCockpitValid = false;
+				}
 				try {
 					NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted() {
 						public void unLocking() {
 							try {
-								Actor actor_135_ = ((Actor) ((NetObj) this.objects().get(0)).superObj());
+								Actor actor_135_ = (Actor) ((NetObj) this.objects().get(0)).superObj();
 								if (actor_135_ instanceof NetGunner) {
-									if (((NetGunner) actor_135_).netCockpitMsg == this)
-										((NetGunner) actor_135_).netCockpitValid = true;
-								} else if (NetAircraft.this.netCockpitMsg == this)
-									NetAircraft.this.netCockpitValid = true;
+									if (((NetGunner) actor_135_).netCockpitMsg == this) { ((NetGunner) actor_135_).netCockpitValid = true; }
+								} else if (NetAircraft.this.netCockpitMsg == this) { NetAircraft.this.netCockpitValid = true; }
 							} catch (Exception exception) {
 								printDebug(exception);
 							}
 						}
 					};
-					if (actor instanceof NetGunner)
+					if (actor instanceof NetGunner) {
 						((NetGunner) actor).netCockpitMsg = netmsgguaranted;
-					else
+					} else {
 						this.netCockpitMsg = netmsgguaranted;
+					}
 					netmsgguaranted.writeByte(13);
 					netmsgguaranted.writeNetObj(actor.net);
-					if (bool)
-						i |= 0x80;
+					if (bool) { i |= 0x80; }
 					netmsgguaranted.writeByte(i);
 					if (is != null) {
-						for (int i_136_ = 0; i_136_ < is.length; i_136_++)
+						for (int i_136_ = 0; i_136_ < is.length; i_136_++) {
 							netmsgguaranted.writeShort(is[i_136_]);
+						}
 					}
 					this.net.postExclude(netchannel, netmsgguaranted);
 				} catch (Exception exception) {
 					printDebug(exception);
 				}
-			} else if (actor instanceof NetGunner)
+			} else if (actor instanceof NetGunner) {
 				((NetGunner) actor).netCockpitValid = true;
-			else
+			} else {
 				this.netCockpitValid = true;
+			}
 		}
 	}
 
 	private boolean netGetCockpitAuto(NetMsgInput netmsginput, boolean bool, boolean bool_137_) throws IOException {
 		NetObj netobj = netmsginput.readNetObj();
-		if (netobj == null)
-			return false;
+		if (netobj == null) { return false; }
 		Actor actor = (Actor) netobj.superObj();
 		int i = netmsginput.readUnsignedByte();
 		boolean bool_138_ = (i & 0x80) != 0;
@@ -2177,8 +2020,9 @@ public abstract class NetAircraft extends SndAircraft {
 		int i_139_ = netmsginput.available() / 2;
 		if (i_139_ > 0) {
 			is = new short[i_139_];
-			for (int i_140_ = 0; i_140_ < is.length; i_140_++)
+			for (int i_140_ = 0; i_140_ < is.length; i_140_++) {
 				is[i_140_] = (short) netmsginput.readUnsignedShort();
+			}
 		}
 		this.netCockpitAuto(actor, i, bool_138_, is, netmsginput.channel());
 		return true;
@@ -2190,14 +2034,13 @@ public abstract class NetAircraft extends SndAircraft {
 
 	public void netCockpitEnter(Actor actor, int i, boolean bool) {
 		if (bool) {
-			if (actor instanceof NetGunner)
+			if (actor instanceof NetGunner) {
 				EventLog.onOccupied((Aircraft) this, ((NetGunner) actor).getUser(), this.netCockpitAstatePilotIndx(i));
-			else {
+			} else {
 				EventLog.onOccupied((Aircraft) this, ((Aircraft) actor).netUser(), this.netCockpitAstatePilotIndx(i));
 				if (actor == World.getPlayerAircraft() && actor.isNetMaster() && i == 0 && !this.bWeaponsEventLog) {
 					this.bWeaponsEventLog = true;
-					EventLog.onWeaponsLoad(actor, this.thisWeaponsName,
-							(int) (this.FM.M.fuel * 100.0F / this.FM.M.maxFuel));
+					EventLog.onWeaponsLoad(actor, this.thisWeaponsName, (int) (this.FM.M.fuel * 100.0F / this.FM.M.maxFuel));
 				}
 			}
 		}
@@ -2206,20 +2049,17 @@ public abstract class NetAircraft extends SndAircraft {
 
 	private void netCockpitEnter(Actor actor, int i, NetChannel netchannel) {
 		int i_141_ = this.netCockpitIndxPilot;
-		if (actor instanceof NetGunner)
-			i_141_ = ((NetGunner) actor).netCockpitIndxPilot;
+		if (actor instanceof NetGunner) { i_141_ = ((NetGunner) actor).netCockpitIndxPilot; }
 		Object object_143_ = Property.value(this.getClass(), "cockpitClass");
 		if (object_143_ != null) {
 			Class var_class;
 			Class var_class_144_;
 			if (object_143_ instanceof Class) {
-				if (i_141_ > 0 || i > 0)
-					return;
+				if (i_141_ > 0 || i > 0) { return; }
 				var_class = var_class_144_ = (Class) object_143_;
 			} else {
 				Class[] var_classes = (Class[]) object_143_;
-				if (i_141_ >= var_classes.length || i >= var_classes.length)
-					return;
+				if (i_141_ >= var_classes.length || i >= var_classes.length) { return; }
 				var_class = var_classes[i_141_];
 				var_class_144_ = var_classes[i];
 			}
@@ -2233,20 +2073,22 @@ public abstract class NetAircraft extends SndAircraft {
 				Turret turret = this.FM.turret[i_146_];
 				turret.bIsNetMirror = actor.net.isMirror();
 			}
-			if (actor instanceof NetGunner)
+			if (actor instanceof NetGunner) {
 				((NetGunner) actor).netCockpitIndxPilot = i;
-			else
+			} else {
 				this.netCockpitIndxPilot = i;
+			}
 			this.netCockpitDriverSet(actor, i);
 			int i_147_ = 0;
 			int i_148_ = -1;
 			if (!CockpitPilot.class.isAssignableFrom(var_class_144_)) {
 				i_148_ = Property.intValue(var_class_144_, "aiTuretNum", 0);
 				Turret turret = this.FM.turret[i_148_];
-				if (turret.bIsAIControlled)
+				if (turret.bIsAIControlled) {
 					i_148_ = -1;
-				else
+				} else {
 					i_147_ = Property.intValue(var_class_144_, "weaponControlNum", 10);
+				}
 			}
 			if (actor instanceof NetGunner) {
 				((NetGunner) actor).netCockpitTuretNum = i_148_;
@@ -2256,10 +2098,8 @@ public abstract class NetAircraft extends SndAircraft {
 				this.netCockpitWeaponControlNum = i_147_;
 			}
 			int i_149_ = this.net.countMirrors();
-			if (this.net.isMirror())
-				i_149_++;
-			if (netchannel != null)
-				i_149_--;
+			if (this.net.isMirror()) { i_149_++; }
+			if (netchannel != null) { i_149_--; }
 			if (i_149_ > 0) {
 				try {
 					NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
@@ -2276,8 +2116,7 @@ public abstract class NetAircraft extends SndAircraft {
 
 	private boolean netGetCockpitEnter(NetMsgInput netmsginput, boolean bool, boolean bool_150_) throws IOException {
 		NetObj netobj = netmsginput.readNetObj();
-		if (netobj == null)
-			return false;
+		if (netobj == null) { return false; }
 		Actor actor = (Actor) netobj.superObj();
 		int i = netmsginput.readUnsignedByte();
 		this.netCockpitEnter(actor, i, netmsginput.channel());
@@ -2304,13 +2143,11 @@ public abstract class NetAircraft extends SndAircraft {
 			if (object != null) {
 				Class var_class;
 				if (object instanceof Class) {
-					if (i > 0)
-						return;
+					if (i > 0) { return; }
 					var_class = (Class) object;
 				} else {
 					Class[] var_classes = (Class[]) object;
-					if (i >= var_classes.length)
-						return;
+					if (i >= var_classes.length) { return; }
 					var_class = var_classes[i];
 				}
 				int i_153_ = Property.intValue(var_class, "weaponControlNum", 10);
@@ -2320,10 +2157,11 @@ public abstract class NetAircraft extends SndAircraft {
 						is = new short[bulletemitters.length];
 						for (int i_154_ = 0; i_154_ < bulletemitters.length; i_154_++) {
 							int i_155_ = bulletemitters[i_154_].countBullets();
-							if (i_155_ < 0)
+							if (i_155_ < 0) {
 								is[i_154_] = (short) -1;
-							else
+							} else {
 								is[i_154_] = (short) i_155_;
+							}
 						}
 					}
 				}
@@ -2331,23 +2169,20 @@ public abstract class NetAircraft extends SndAircraft {
 					public void unLocking() {
 						Actor actor_157_ = (Actor) ((NetObj) this.objects().get(0)).superObj();
 						if (actor_157_ instanceof NetGunner) {
-							if (((NetGunner) actor_157_).netCockpitMsg == this)
-								((NetGunner) actor_157_).netCockpitValid = true;
-						} else if (NetAircraft.this.netCockpitMsg == this)
-							NetAircraft.this.netCockpitValid = true;
+							if (((NetGunner) actor_157_).netCockpitMsg == this) { ((NetGunner) actor_157_).netCockpitValid = true; }
+						} else if (NetAircraft.this.netCockpitMsg == this) { NetAircraft.this.netCockpitValid = true; }
 					}
 				};
 				if (actor instanceof NetGunner) {
-					if (!((NetGunner) actor).netCockpitValid)
-						((NetGunner) actor).netCockpitMsg = netmsgguaranted;
-				} else if (!this.netCockpitValid)
-					this.netCockpitMsg = netmsgguaranted;
+					if (!((NetGunner) actor).netCockpitValid) { ((NetGunner) actor).netCockpitMsg = netmsgguaranted; }
+				} else if (!this.netCockpitValid) { this.netCockpitMsg = netmsgguaranted; }
 				netmsgguaranted.writeByte(13);
 				netmsgguaranted.writeNetObj(actor.net);
 				netmsgguaranted.writeByte(i);
 				if (is != null) {
-					for (int i_158_ = 0; i_158_ < is.length; i_158_++)
+					for (int i_158_ = 0; i_158_ < is.length; i_158_++) {
 						netmsgguaranted.writeShort(is[i_158_]);
+					}
 				}
 				this.net.postTo(netchannel, netmsgguaranted);
 			}
@@ -2355,14 +2190,12 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	private boolean netCockpitCheckDrivers() {
-		if (this.netCockpitDrivers != null)
-			return true;
+		if (this.netCockpitDrivers != null) { return true; }
 		Object object = Property.value(this.getClass(), "cockpitClass");
-		if (object == null)
-			return false;
-		if (object instanceof Class)
+		if (object == null) { return false; }
+		if (object instanceof Class) {
 			this.netCockpitDrivers = new Actor[1];
-		else {
+		} else {
 			Class[] var_classes = (Class[]) object;
 			this.netCockpitDrivers = new Actor[var_classes.length];
 		}
@@ -2370,20 +2203,16 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	public Actor netCockpitGetDriver(int i) {
-		if (!this.netCockpitCheckDrivers())
-			return null;
-		if (i < 0 || i >= this.netCockpitDrivers.length)
-			return null;
+		if (!this.netCockpitCheckDrivers()) { return null; }
+		if (i < 0 || i >= this.netCockpitDrivers.length) { return null; }
 		return this.netCockpitDrivers[i];
 	}
 
 	private void netCockpitDriverSet(Actor actor, int i) {
 		if (this.netCockpitCheckDrivers()) {
 			NetUser netuser = this.netUser();
-			if (actor instanceof NetGunner)
-				netuser = ((NetGunner) actor).getUser();
-			if (netuser == null)
-				netuser = (NetUser) NetEnv.host();
+			if (actor instanceof NetGunner) { netuser = ((NetGunner) actor).getUser(); }
+			if (netuser == null) { netuser = (NetUser) NetEnv.host(); }
 			for (int i_159_ = 0; i_159_ < this.netCockpitDrivers.length; i_159_++) {
 				if (this.netCockpitDrivers[i_159_] == actor) {
 					this.netCockpitDrivers[i_159_] = null;
@@ -2396,7 +2225,7 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	public void netCockpitDriverRequest(Actor actor, int i) {
-		if (this.netCockpitCheckDrivers() && (i >= 0 && i < this.netCockpitDrivers.length)) {
+		if (this.netCockpitCheckDrivers() && i >= 0 && i < this.netCockpitDrivers.length) {
 			if (this.net.isMaster()) {
 				if (this.netCockpitDrivers[i] == null) {
 					this.netCockpitDriverSet(actor, i);
@@ -2418,17 +2247,13 @@ public abstract class NetAircraft extends SndAircraft {
 
 	private boolean netGetCockpitDriver(NetMsgInput netmsginput, boolean bool, boolean bool_160_) throws IOException {
 		NetObj netobj = netmsginput.readNetObj();
-		if (netobj == null)
-			return false;
+		if (netobj == null) { return false; }
 		Actor actor = (Actor) netobj.superObj();
 		int i = netmsginput.readUnsignedByte();
-		if (!this.netCockpitCheckDrivers())
-			return false;
-		if (i < 0 || i >= this.netCockpitDrivers.length)
-			return true;
+		if (!this.netCockpitCheckDrivers()) { return false; }
+		if (i < 0 || i >= this.netCockpitDrivers.length) { return true; }
 		if (bool) {
-			if (this.netCockpitDrivers[i] != null)
-				return true;
+			if (this.netCockpitDrivers[i] != null) { return true; }
 			this.netCockpitDriverSet(actor, i);
 		} else if (bool_160_) {
 			try {
@@ -2442,8 +2267,7 @@ public abstract class NetAircraft extends SndAircraft {
 			}
 		} else {
 			this.netCockpitDriverSet(actor, i);
-			if (actor.net.isMaster())
-				Main3D.cur3D().aircraftHotKeys.netSwitchToCockpit(i);
+			if (actor.net.isMaster()) { Main3D.cur3D().aircraftHotKeys.netSwitchToCockpit(i); }
 		}
 		if (this.net.countMirrors() > 0) {
 			try {
@@ -2464,57 +2288,55 @@ public abstract class NetAircraft extends SndAircraft {
 
 		// TODO: Added by |ZUTI|
 		// -----------------------------------------------------------------
-		if (ZutiSupportMethods_Air.processNetAircraftMirroredMessage((Aircraft) this, i, netmsginput)) {
-			return true;
-		}
+		if (ZutiSupportMethods_Air.processNetAircraftMirroredMessage((Aircraft) this, i, netmsginput)) { return true; }
 		// -----------------------------------------------------------------
 
 		boolean bool2 = (i & 0x80) == 128;
 		i &= ~0x80;
 		switch (i) {
-		case 0:
-			this.FM.AS.netUpdate(bool, bool2, netmsginput);
-			return true;
-		case 1:
-			return this.netGetUpdateWayPoint(netmsginput, bool, bool2);
-		case 2:
-			return this.netGetWeaponsBitStates(netmsginput, bool, bool2);
-		case 3:
-			this.setGunPodsOn(true);
-			return true;
-		case 4:
-			this.setGunPodsOn(false);
-			return true;
-		case 5:
-			this.FM.CT.dropFuelTanks();
-			return true;
-		case 6:
-			return this.netGetHits(netmsginput, bool, bool2);
-		case 7:
-			return this.netGetHitProp(netmsginput, bool, bool2);
-		case 8:
-			return this.netGetCut(netmsginput, bool, bool2);
-		case 9:
-			return this.netGetExplode(netmsginput, bool, bool2);
-		case 10:
-			return this.netGetDead(netmsginput, bool, bool2);
-		case 11:
-			return this.netGetFirstUpdate(netmsginput);
-		case 12:
-			return this.netGetCockpitEnter(netmsginput, bool, bool2);
-		case 13:
-			return this.netGetCockpitAuto(netmsginput, bool, bool2);
-		case 14:
-			return this.netGetCockpitDriver(netmsginput, bool, bool2);
-		case 15:
-			this.FM.CT.dropExternalStores(false);
-			return true;
-		// TODO: +++ TD AI code backport from 4.13 +++
-		case NETG_ID_CODE_GENERATE_WP:
-			return netReceiveNewWayPoint(netmsginput, bool, bool2);
-		// TODO: --- TD AI code backport from 4.13 ---
-		default:
-			return false;
+			case 0:
+				this.FM.AS.netUpdate(bool, bool2, netmsginput);
+				return true;
+			case 1:
+				return this.netGetUpdateWayPoint(netmsginput, bool, bool2);
+			case 2:
+				return this.netGetWeaponsBitStates(netmsginput, bool, bool2);
+			case 3:
+				this.setGunPodsOn(true);
+				return true;
+			case 4:
+				this.setGunPodsOn(false);
+				return true;
+			case 5:
+				this.FM.CT.dropFuelTanks();
+				return true;
+			case 6:
+				return this.netGetHits(netmsginput, bool, bool2);
+			case 7:
+				return this.netGetHitProp(netmsginput, bool, bool2);
+			case 8:
+				return this.netGetCut(netmsginput, bool, bool2);
+			case 9:
+				return this.netGetExplode(netmsginput, bool, bool2);
+			case 10:
+				return this.netGetDead(netmsginput, bool, bool2);
+			case 11:
+				return this.netGetFirstUpdate(netmsginput);
+			case 12:
+				return this.netGetCockpitEnter(netmsginput, bool, bool2);
+			case 13:
+				return this.netGetCockpitAuto(netmsginput, bool, bool2);
+			case 14:
+				return this.netGetCockpitDriver(netmsginput, bool, bool2);
+			case 15:
+				this.FM.CT.dropExternalStores(false);
+				return true;
+			// TODO: +++ TD AI code backport from 4.13 +++
+			case NETG_ID_CODE_GENERATE_WP:
+				return this.netReceiveNewWayPoint(netmsginput, bool, bool2);
+			// TODO: --- TD AI code backport from 4.13 ---
+			default:
+				return false;
 		}
 	}
 
@@ -2540,27 +2362,22 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	public void makeMirrorCarrierRelPos() {
-		if (this.net != null && !this.net.isMaster())
-			((Mirror) this.net).makeFirstUnderDeck();
+		if (this.net != null && !this.net.isMaster()) { ((Mirror) this.net).makeFirstUnderDeck(); }
 	}
 
 	public boolean isMirrorUnderDeck() {
-		if (this.net == null || this.net.isMaster())
-			return false;
+		if (this.net == null || this.net.isMaster()) { return false; }
 		return ((Mirror) this.net).bUnderDeck;
 	}
 
 	public void destroy() {
 		if (!this.isDestroyed()) {
-			if (this.isNetMaster() && this.fmTrack != null && !this.fmTrack.isDestroyed())
-				this.fmTrack.destroy();
+			if (this.isNetMaster() && this.fmTrack != null && !this.fmTrack.isDestroyed()) { this.fmTrack.destroy(); }
 			this.fmTrack = null;
 
 			// TODO: Added by |ZUTI| - eject all connected gunners
 			// ------------------------------------------------------------------
-			if (this.isNetMaster()) {
-				ZutiSupportMethods_Multicrew.ejectGunnersForAircraft(this.name());
-			}
+			if (this.isNetMaster()) { ZutiSupportMethods_Multicrew.ejectGunnersForAircraft(this.name()); }
 			// ------------------------------------------------------------------
 			super.destroy();
 			this.damagers.clear();
@@ -2568,10 +2385,11 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	public void createNetObject(NetChannel netchannel, int i) {
-		if (netchannel == null)
+		if (netchannel == null) {
 			this.net = new Master(this);
-		else
+		} else {
 			this.net = new Mirror(this, netchannel, i);
+		}
 	}
 
 	public void restoreLinksInCoopWing() {
@@ -2580,8 +2398,7 @@ public abstract class NetAircraft extends SndAircraft {
 			Aircraft[] aircrafts = wing.airc;
 			int i;
 			for (i = 0; i < aircrafts.length; i++) {
-				if (Actor.isValid(aircrafts[i]))
-					break;
+				if (Actor.isValid(aircrafts[i])) { break; }
 			}
 			if (i != aircrafts.length) {
 				aircrafts[i].FM.Leader = null;
@@ -2602,29 +2419,26 @@ public abstract class NetAircraft extends SndAircraft {
 		actorspawnarg.speed = new Vector3d(netmsginput.readFloat(), netmsginput.readFloat(), netmsginput.readFloat());
 	}
 
-	private static void netSpawnCommon(NetMsgInput netmsginput, ActorSpawnArg actorspawnarg, NetAircraft netaircraft)
-			throws Exception {
+	private static void netSpawnCommon(NetMsgInput netmsginput, ActorSpawnArg actorspawnarg, NetAircraft netaircraft) throws Exception {
 		Mirror mirror = (Mirror) netaircraft.net;
-		mirror.netFirstUpdate((float) actorspawnarg.point.x, (float) actorspawnarg.point.y,
-				(float) actorspawnarg.point.z, actorspawnarg.orient.azimut(), actorspawnarg.orient.tangage(),
-				actorspawnarg.orient.kren(), (float) actorspawnarg.speed.x, (float) actorspawnarg.speed.y,
-				(float) actorspawnarg.speed.z);
+		mirror.netFirstUpdate((float) actorspawnarg.point.x, (float) actorspawnarg.point.y, (float) actorspawnarg.point.z, actorspawnarg.orient.azimut(), actorspawnarg.orient.tangage(), actorspawnarg.orient.kren(), (float) actorspawnarg.speed.x,
+				(float) actorspawnarg.speed.y, (float) actorspawnarg.speed.z);
 		int i = 0;
 		for (int i_167_ = 0; i_167_ < 44; i_167_++) {
 			int i_168_;
 			if ((i_167_ & 0x1) == 0) {
 				i = netmsginput.readUnsignedByte();
 				i_168_ = i & 0xff;
-			} else
+			} else {
 				i_168_ = i >> 8 & 0xff;
+			}
 			while (i_168_-- > 0) {
 				NetAircraft netaircraft_169_ = netaircraft;
 				StringBuffer stringbuffer = new StringBuffer();
 				if (netaircraft != null) {
 					/* empty */
 				}
-				netaircraft_169_.nextDMGLevel(stringbuffer.append(partNames()[i_167_]).append("_D0").toString(), 0,
-						null);
+				netaircraft_169_.nextDMGLevel(stringbuffer.append(partNames()[i_167_]).append("_D0").toString(), 0, null);
 			}
 		}
 		long l = netmsginput.readLong();
@@ -2638,8 +2452,7 @@ public abstract class NetAircraft extends SndAircraft {
 					if (netaircraft != null) {
 						/* empty */
 					}
-					netaircraft_172_.nextCUTLevel(stringbuffer.append(partNames()[i_170_]).append("_D0").toString(), 0,
-							null);
+					netaircraft_172_.nextCUTLevel(stringbuffer.append(partNames()[i_170_]).append("_D0").toString(), 0, null);
 				}
 				i_170_++;
 				l_171_ <<= 1;
@@ -2647,15 +2460,14 @@ public abstract class NetAircraft extends SndAircraft {
 		}
 		int i_173_ = netmsginput.readByte();
 		for (int i_174_ = 0; i_174_ < 4; i_174_++) {
-			if ((i_173_ & 1 << i_174_) != 0)
-				netaircraft.hitProp(i_174_, 0, null);
+			if ((i_173_ & 1 << i_174_) != 0) { netaircraft.hitProp(i_174_, 0, null); }
 		}
-		if ((i_173_ & 0x10) != 0)
-			netaircraft.setGunPodsOn(false);
+		if ((i_173_ & 0x10) != 0) { netaircraft.setGunPodsOn(false); }
 		byte[] is = netaircraft.getWeaponsBitStatesBuf(null);
 		if (is != null) {
-			for (int i_175_ = 0; i_175_ < is.length; i_175_++)
+			for (int i_175_ = 0; i_175_ < is.length; i_175_++) {
 				is[i_175_] = (byte) netmsginput.readUnsignedByte();
+			}
 			// TODO: Storebror: +++ Bomb Release Bug hunting
 			netaircraft.setNetSpawnSetWeaponsBitStates(true);
 			// TODO: Storebror: --- Bomb Release Bug hunting
@@ -2697,23 +2509,20 @@ public abstract class NetAircraft extends SndAircraft {
 		int i1 = 0;
 		int i2;
 		for (i2 = 0; i2 < 44; i2++) {
-			if ((i2 & 0x1) == 0)
+			if ((i2 & 0x1) == 0) {
 				i1 = this.curDMGLevel(i2) & 0xff;
-			else {
+			} else {
 				i1 |= (this.curDMGLevel(i2) & 0xff) << 8;
 				netmsgguaranted.writeByte(i1);
 			}
 		}
-		if ((i2 & 0x1) == 1)
-			netmsgguaranted.writeByte(i1);
+		if ((i2 & 0x1) == 1) { netmsgguaranted.writeByte(i1); }
 		netmsgguaranted.writeLong(this.FM.Operate);
-		int i3 = (this.curDMGProp(0) | this.curDMGProp(1) << 1 | this.curDMGProp(2) << 2 | this.curDMGProp(3) << 3);
-		if (!this.isGunPodsOn())
-			i3 |= 0x10;
+		int i3 = this.curDMGProp(0) | this.curDMGProp(1) << 1 | this.curDMGProp(2) << 2 | this.curDMGProp(3) << 3;
+		if (!this.isGunPodsOn()) { i3 |= 0x10; }
 		netmsgguaranted.writeByte(i3);
 		byte[] is = this.getWeaponsBitStates(null);
-		if (is != null)
-			netmsgguaranted.write(is);
+		if (is != null) { netmsgguaranted.write(is); }
 		this.FM.AS.netReplicate(netmsgguaranted);
 	}
 
@@ -2736,25 +2545,26 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	public NetMsgSpawn netReplicate(NetChannel netchannel) throws IOException {
-		if (Main.cur().netServerParams == null)
-			return null;
-		if (netchannel.isMirrored(this.net))
-			return null;
+		if (Main.cur().netServerParams == null) { return null; }
+		if (netchannel.isMirrored(this.net)) { return null; }
 		NetMsgSpawn netmsgspawn;
-		if (this.isCoopPlane())
+		if (this.isCoopPlane()) {
 			netmsgspawn = this.netReplicateCoop(netchannel);
-		else
+		} else {
 			netmsgspawn = this._netReplicate(netchannel);
+		}
 		if (World.getPlayerAircraft() == this && netchannel instanceof NetChannelOutStream) {
 			if (this.fmTrack() == null) {
-				if (this.isNetMaster())
+				if (this.isNetMaster()) {
 					new MsgAction(true, this) {
 						public void doAction(Object object_180_) {
 							new FlightModelTrack((Aircraft) object_180_);
 						}
 					};
-			} else
+				}
+			} else {
 				MsgNet.postRealNewChannel(this.fmTrack(), netchannel);
+			}
 		}
 
 		return netmsgspawn;
@@ -2766,8 +2576,7 @@ public abstract class NetAircraft extends SndAircraft {
 
 	public void setDamagerExclude(Actor actor) {
 		this.damagerExclude = actor;
-		if (this.damager_ == actor)
-			this.damager_ = null;
+		if (this.damager_ == actor) { this.damager_ = null; }
 	}
 
 	public void setDamager(Actor actor) {
@@ -2776,8 +2585,7 @@ public abstract class NetAircraft extends SndAircraft {
 
 	public void setDamager(Actor actor, int i) {
 		if (Actor.isValid(actor) && this != actor && i > 0) {
-			if (i > 4)
-				i = 4;
+			if (i > 4) { i = 4; }
 			this.damager_ = null;
 			int i_181_ = this.damagers.size();
 			for (int i_182_ = 0; i_182_ < i_181_; i_182_++) {
@@ -2793,16 +2601,14 @@ public abstract class NetAircraft extends SndAircraft {
 				Aircraft.debugprintln(this, "Printing Registered Damagers: *****");
 				for (int i_183_ = 0; i_183_ < i_181_; i_183_++) {
 					DamagerItem damageritem = (DamagerItem) this.damagers.get(i_183_);
-					if (Actor.isValid(damageritem.damager))
-						Aircraft.debugprintln(damageritem.damager, ("inflicted " + damageritem.damage + " puntos.."));
+					if (Actor.isValid(damageritem.damager)) { Aircraft.debugprintln(damageritem.damager, "inflicted " + damageritem.damage + " puntos.."); }
 				}
 			}
 		}
 	}
 
 	public Actor getDamager() {
-		if (Actor.isValid(this.damager_))
-			return this.damager_;
+		if (Actor.isValid(this.damager_)) { return this.damager_; }
 		this.damager_ = null;
 		long l = 0L;
 		Actor actor = null;
@@ -2818,28 +2624,26 @@ public abstract class NetAircraft extends SndAircraft {
 						l_184_ = damageritem.lastTime;
 						actor_185_ = damageritem.damager;
 					}
-				} else if (damageritem.damager == Engine.actorLand())
+				} else if (damageritem.damager == Engine.actorLand()) {
 					actor_186_ = damageritem.damager;
-				else if (damageritem.lastTime > l) {
+				} else if (damageritem.lastTime > l) {
 					l = damageritem.lastTime;
 					actor = damageritem.damager;
 				}
 			}
 		}
-		if (actor_185_ != null)
+		if (actor_185_ != null) {
 			this.damager_ = actor_185_;
-		else if (actor != null)
+		} else if (actor != null) {
 			this.damager_ = actor;
-		else if (actor_186_ != null)
-			this.damager_ = actor_186_;
+		} else if (actor_186_ != null) { this.damager_ = actor_186_; }
 		return this.damager_;
 	}
 
 	public boolean isDamagerExclusive() {
 		int i = 0;
 		for (int i_188_ = 0; i_188_ < this.damagers.size(); i_188_++) {
-			if (this.damagerExclude != this.damagers.get(i_188_))
-				i++;
+			if (this.damagerExclude != this.damagers.get(i_188_)) { i++; }
 		}
 		return i == 1;
 	}
@@ -2854,7 +2658,7 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	public void replicateDropExternalStores() {
-		if (this.isNet() && this.net.countMirrors() != 0)
+		if (this.isNet() && this.net.countMirrors() != 0) {
 			try {
 				com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
 				netmsgguaranted.writeByte(15);
@@ -2862,45 +2666,43 @@ public abstract class NetAircraft extends SndAircraft {
 			} catch (java.lang.Exception exception) {
 				NetAircraft.printDebug(exception);
 			}
+		}
 	}
 
-	public static boolean isOnCarrierDeck(com.maddox.il2.ai.AirportCarrier airportcarrier,
-			com.maddox.il2.engine.Loc loc) {
+	public static boolean isOnCarrierDeck(com.maddox.il2.ai.AirportCarrier airportcarrier, com.maddox.il2.engine.Loc loc) {
 		return isOnCarrierDeck(airportcarrier, loc.getPoint());
 	}
 
-	public static boolean isOnCarrierDeck(com.maddox.il2.ai.AirportCarrier airportcarrier,
-			com.maddox.JGP.Point3d point3d) {
+	public static boolean isOnCarrierDeck(com.maddox.il2.ai.AirportCarrier airportcarrier, com.maddox.JGP.Point3d point3d) {
 		com.maddox.JGP.Point3d point3d1 = new Point3d();
 		com.maddox.JGP.Point3d point3d2 = new Point3d();
 		point3d1.set(point3d);
 		point3d2.set(point3d);
 		point3d1.z = com.maddox.il2.engine.Engine.cur.land.HQ(point3d.x, point3d.y);
 		point3d2.z = point3d1.z + 40D;
-		com.maddox.il2.engine.Actor actor = com.maddox.il2.engine.Engine.collideEnv().getLine(point3d1, point3d2, false,
-				clipFilter, pship);
+		com.maddox.il2.engine.Actor actor = com.maddox.il2.engine.Engine.collideEnv().getLine(point3d1, point3d2, false, clipFilter, pship);
 		return airportcarrier.ship() == actor;
 	}
 
 	// TODO: |ZUTI| methods
 	// ------------------------------------------------------------------
 	public void restoreLinksInDogWing() {
-		if (com.maddox.il2.game.Main.cur().netServerParams == null)
-			return;
+		if (com.maddox.il2.game.Main.cur().netServerParams == null) { return; }
 		com.maddox.il2.ai.Wing wing = this.getWing();
 		Aircraft aaircraft[] = wing.airc;
 		int i;
-		for (i = 0; i < aaircraft.length && !com.maddox.il2.engine.Actor.isValid(aaircraft[i]); i++)
+		for (i = 0; i < aaircraft.length && !com.maddox.il2.engine.Actor.isValid(aaircraft[i]); i++) {
 			;
-		if (i == aaircraft.length)
-			return;
+		}
+		if (i == aaircraft.length) { return; }
 		aaircraft[i].FM.Leader = null;
-		for (int j = i + 1; j < aaircraft.length; j++)
+		for (int j = i + 1; j < aaircraft.length; j++) {
 			if (com.maddox.il2.engine.Actor.isValid(aaircraft[j])) {
 				aaircraft[i].FM.Wingman = aaircraft[j].FM;
 				aaircraft[j].FM.Leader = aaircraft[i].FM;
 				i = j;
 			}
+		}
 
 	}
 
@@ -2908,50 +2710,44 @@ public abstract class NetAircraft extends SndAircraft {
 
 	// TODO: Storebror: Implement Aircraft Control Surfaces and Pilot View
 	// Replication
-	float viewAzimut = 0.0F;
+	float viewAzimut  = 0.0F;
 	float viewTangage = 0.0F;
 
 	public void setHeadAngles(float f, float f1) {
 		this.viewAzimut = f % 360F;
 		this.viewTangage = f1;
-		if (this.viewAzimut > 180F)
-			this.viewAzimut -= 360F;
-		if (this.viewAzimut < -180F)
-			this.viewAzimut += 360F;
-		if (this.viewAzimut < -107F)
-			this.viewAzimut = -107F;
-		if (this.viewAzimut > 107F)
-			this.viewAzimut = 107F;
-		if (this.viewTangage > 57F)
-			this.viewTangage = 57F;
-		if (this.viewTangage < -22F)
-			this.viewTangage = -22F;
+		if (this.viewAzimut > 180F) { this.viewAzimut -= 360F; }
+		if (this.viewAzimut < -180F) { this.viewAzimut += 360F; }
+		if (this.viewAzimut < -107F) { this.viewAzimut = -107F; }
+		if (this.viewAzimut > 107F) { this.viewAzimut = 107F; }
+		if (this.viewTangage > 57F) { this.viewTangage = 57F; }
+		if (this.viewTangage < -22F) { this.viewTangage = -22F; }
 	}
 
 	// ---
 	// TODO: Storebror: +++ Bomb Release Bug hunting
-	int iFMTrackMirror = -1;
+	int                          iFMTrackMirror                = -1;
 
-	private boolean[][] triggerActive = { { false, false }, { false, false } };
-	private boolean[] lastBulletLogged = { false, false };
-	public static final int TRIGGER_ROCKET = 0;
-	public static final int TRIGGER_BOMB = 1;
-	public static final int TRIGGER_MASTER = 0;
-	public static final int TRIGGER_MIRROR = 1;
+	private boolean[][]          triggerActive                 = { { false, false }, { false, false } };
+	private boolean[]            lastBulletLogged              = { false, false };
+	public static final int      TRIGGER_ROCKET                = 0;
+	public static final int      TRIGGER_BOMB                  = 1;
+	public static final int      TRIGGER_MASTER                = 0;
+	public static final int      TRIGGER_MIRROR                = 1;
 
-	private int[] updatePending = { 0, 0 };
-	public static final int UPDATE_MASTER = 0;
-	public static final int UPDATE_MIRROR = 1;
+	private int[]                updatePending                 = { 0, 0 };
+	public static final int      UPDATE_MASTER                 = 0;
+	public static final int      UPDATE_MIRROR                 = 1;
 
-	public static final String[] TRIGGER_NAMES = { "ROCKET", "BOMB" };
-	public static final String[] UPDATE_NAMES = { "MASTER", "MIRROR" };
+	public static final String[] TRIGGER_NAMES                 = { "ROCKET", "BOMB" };
+	public static final String[] UPDATE_NAMES                  = { "MASTER", "MIRROR" };
 
-	private boolean netPutWeaponsBitStatesPending = false;
-	private boolean netSpawnSetWeaponsBitStates = false;
-	private boolean wctResetLogged = false;
+	private boolean              netPutWeaponsBitStatesPending = false;
+	private boolean              netSpawnSetWeaponsBitStates   = false;
+	private boolean              wctResetLogged                = false;
 
-	private static int debugLevel = Integer.MIN_VALUE;
-	private static final int DEBUG_DEFAULT = 0;
+	private static int           debugLevel                    = Integer.MIN_VALUE;
+	private static final int     DEBUG_DEFAULT                 = 0;
 
 	public void setLastBulletLogged(int triggerType, boolean isLastBulletLogged) {
 		this.lastBulletLogged[triggerType] = isLastBulletLogged;
@@ -2980,10 +2776,11 @@ public abstract class NetAircraft extends SndAircraft {
 
 	public void decUpdatePending(int updateSource) {
 		this.updatePending[updateSource]--;
-		if (this.updatePending[updateSource] < 0)
+		if (this.updatePending[updateSource] < 0) {
 			this.updatePending[updateSource] = 0;
 //        else
 //            printDebugMessage(this, "Updates Pending for " + UPDATE_NAMES[updateSource] + " = " + this.updatePending[updateSource]);
+		}
 	}
 
 	public int getUpdatePending(int updateSource) {
@@ -2996,17 +2793,15 @@ public abstract class NetAircraft extends SndAircraft {
 
 	private boolean hasBulletsLeftOnTrigger(int Trigger) {
 		BulletEmitter[] be = this.FM.CT.Weapons[Trigger];
-		if (be == null)
-			return false;
+		if (be == null) { return false; }
 		for (int i = 0; i < be.length; i++) {
-			if (be[i] != null && be[i].haveBullets())
-				return true;
+			if (be[i] != null && be[i].haveBullets()) { return true; }
 		}
 		return false;
 	}
 
 	public boolean isNetSpawnSetWeaponsBitStates() {
-		return netSpawnSetWeaponsBitStates;
+		return this.netSpawnSetWeaponsBitStates;
 	}
 
 	public void setNetSpawnSetWeaponsBitStates(boolean netSpawnSetWeaponsBitStates) {
@@ -3014,33 +2809,27 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	private static int curDebugLevel() {
-		if (debugLevel == Integer.MIN_VALUE)
-			debugLevel = Config.cur.ini.get("Mods", "DEBUG_NETAIRCRAFT", DEBUG_DEFAULT);
+		if (debugLevel == Integer.MIN_VALUE) { debugLevel = Config.cur.ini.get("Mods", "DEBUG_NETAIRCRAFT", DEBUG_DEFAULT); }
 		return debugLevel;
 	}
 
 	public static void printDebugMessage(Actor actor, String theMessage) {
-		if (curDebugLevel() == 0)
-			return;
+		if (curDebugLevel() == 0) { return; }
 		if (!(actor instanceof NetAircraft)) {
-			System.out
-					.println("[DEBUG_NETAIRCRAFT] " + actor.name() + " (" + simpleClassName(actor) + ") " + theMessage);
+			System.out.println("[DEBUG_NETAIRCRAFT] " + actor.name() + " (" + simpleClassName(actor) + ") " + theMessage);
 			return;
 		}
 		NetAircraft netAircraft = (NetAircraft) actor;
 		if (netAircraft.netUser() != null) {
-			System.out.println("[DEBUG_NETAIRCRAFT] " + netAircraft.netUser().uniqueName() + " ("
-					+ simpleClassName(actor) + ") " + theMessage);
+			System.out.println("[DEBUG_NETAIRCRAFT] " + netAircraft.netUser().uniqueName() + " (" + simpleClassName(actor) + ") " + theMessage);
 		} else {
-			System.out.println(
-					"[DEBUG_NETAIRCRAFT] " + netAircraft.name() + " (" + simpleClassName(actor) + ") " + theMessage);
+			System.out.println("[DEBUG_NETAIRCRAFT] " + netAircraft.name() + " (" + simpleClassName(actor) + ") " + theMessage);
 		}
 
 	}
 
 	public static void printDebug(String message) {
-		if (curDebugLevel() == 0)
-			return;
+		if (curDebugLevel() == 0) { return; }
 		Exception exception = new Exception(message);
 		System.out.println(exception.getMessage());
 		exception.printStackTrace();
@@ -3060,15 +2849,17 @@ public abstract class NetAircraft extends SndAircraft {
 
 	public static String toBinary(byte[] bytes) {
 		String retVal = "";
-		for (int i = 0; i < 8 * bytes.length; i++)
+		for (int i = 0; i < 8 * bytes.length; i++) {
 			retVal += "" + ((bytes[i / 8] << i % 8 & 0x80) == 0 ? '0' : '1');
+		}
 		return retVal;
 	}
 
 	public static String toBinaryLittleEndian(byte[] bytes) {
 		String retVal = "";
-		for (int i = 0; i < 8 * bytes.length; i++)
+		for (int i = 0; i < 8 * bytes.length; i++) {
 			retVal += "" + ((bytes[i / 8] >> i % 8 & 0x01) == 0 ? '0' : '1');
+		}
 		return retVal;
 	}
 
@@ -3078,8 +2869,7 @@ public abstract class NetAircraft extends SndAircraft {
 	}
 
 	private void dumpWeaponsBitStates(byte[] is) {
-		printDebugMessage(NetAircraft.this,
-				"NetAircraft setWeaponsBitStates(" + bytesToHex(is) + " = " + toBinaryLittleEndian(is) + ") :");
+		printDebugMessage(NetAircraft.this, "NetAircraft setWeaponsBitStates(" + bytesToHex(is) + " = " + toBinaryLittleEndian(is) + ") :");
 		int i = 0;
 		String bulletEmitterStates = "";
 		for (int weaponsIndex = 0; weaponsIndex < this.FM.CT.Weapons.length; weaponsIndex++) {
@@ -3087,10 +2877,8 @@ public abstract class NetAircraft extends SndAircraft {
 			if (bulletemitters != null) {
 				for (int beIndex = 0; beIndex < bulletemitters.length; beIndex++) {
 					if (bulletemitters[beIndex] != null) {
-						if (i > 0)
-							bulletEmitterStates += ", ";
-						bulletEmitterStates += simpleClassName(bulletemitters[beIndex]) + "="
-								+ ((is[i / 8] & (1 << i % 8)) != 0);
+						if (i > 0) { bulletEmitterStates += ", "; }
+						bulletEmitterStates += simpleClassName(bulletemitters[beIndex]) + "=" + ((is[i / 8] & 1 << i % 8) != 0);
 						i++;
 					}
 				}

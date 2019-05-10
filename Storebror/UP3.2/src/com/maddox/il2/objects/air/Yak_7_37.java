@@ -42,9 +42,7 @@ public class Yak_7_37 extends YAK implements TypeTNBFighter {
 		Property.set(class1, "cockpitClass", new Class[] { CockpitYAK_7.class });
 		Property.set(class1, "LOSElevation", 0.6116F);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 9, 9, 9, 9, 9, 9, 2, 2, 2, 2, 2, 2 });
-		Aircraft.weaponHooksRegister(class1,
-				new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03",
-						"_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalRock01", "_ExternalRock02",
-						"_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06" });
+		Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalRock01", "_ExternalRock02",
+				"_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06" });
 	}
 }

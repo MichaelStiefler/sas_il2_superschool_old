@@ -21,17 +21,17 @@ import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
 public class CockpitFW_190A5 extends CockpitPilot {
-	private Gun[] gun;
-	private Variables setOld;
-	private Variables setNew;
-	private Variables setTmp;
-	private LightPointActor light1;
-	private LightPointActor light2;
-	private BulletEmitter[] bomb;
-	private long t1;
-	private float pictAiler;
-	private float pictElev;
-	public Vector3f w;
+	private Gun[]                gun;
+	private Variables            setOld;
+	private Variables            setNew;
+	private Variables            setTmp;
+	private LightPointActor      light1;
+	private LightPointActor      light2;
+	private BulletEmitter[]      bomb;
+	private long                 t1;
+	private float                pictAiler;
+	private float                pictElev;
+	public Vector3f              w;
 	private static final float[] speedometerScale;
 	private static final float[] rpmScale;
 	private static final float[] fuelScale;
@@ -44,10 +44,8 @@ public class CockpitFW_190A5 extends CockpitPilot {
 	 *
 	 * @author: SAS~Skylla
 	 *
-	 * @params: int bullets: number of bullets still in the gun; float offset:
-	 * offset at which the ammocounter shows zero bullets left (-0.018f for outer,
-	 * -0.045f for inner) int counterrange: number of bullets the counter can
-	 * display (100 for outer, 500 for inner)
+	 * @params: int bullets: number of bullets still in the gun; float offset: offset at which the ammocounter shows zero bullets left (-0.018f for outer, -0.045f for inner) int counterrange: number of bullets the counter can display (100 for outer, 500
+	 * for inner)
 	 */
 	private static int mg17lbullets = 0;
 	private static int mg17rbullets = 0;
@@ -55,7 +53,7 @@ public class CockpitFW_190A5 extends CockpitPilot {
 	private static float ammoCounter(int bullets, float offset, int counterrange) {
 		float f = (0.026f - offset) / counterrange;
 		bullets = Math.min(bullets, counterrange);
-		return (f * bullets + offset);
+		return f * bullets + offset;
 	}
 	// ------------------------------------------------------------------------
 
@@ -127,87 +125,47 @@ public class CockpitFW_190A5 extends CockpitPilot {
 			this.t1 = Time.current();
 		}
 		if ((this.fm.AS.astateCockpitState & 0x20) == 0x0 && (this.fm.AS.astateCockpitState & 0x80) == 0x0) {
-			this.mesh.chunkSetAngles("NeedleALT",
-					-this.cvt(this.interp(this.setNew.altimeter, this.setOld.altimeter, f_54_), 0.0f, 10000.0f, 0.0f,
-							3600.0f),
-					0.0f, 0.0f);
-			this.mesh.chunkSetAngles("NeedleALTKm", 0.0f, 0.0f,
-					this.cvt(this.setNew.altimeter, 0.0f, 10000.0f, 0.0f, -180.0f));
+			this.mesh.chunkSetAngles("NeedleALT", -this.cvt(this.interp(this.setNew.altimeter, this.setOld.altimeter, f_54_), 0.0f, 10000.0f, 0.0f, 3600.0f), 0.0f, 0.0f);
+			this.mesh.chunkSetAngles("NeedleALTKm", 0.0f, 0.0f, this.cvt(this.setNew.altimeter, 0.0f, 10000.0f, 0.0f, -180.0f));
 		}
-		this.mesh.chunkSetAngles("NeedleManPress",
-				-this.cvt(this.fm.EI.engines[0].getManifoldPressure(), 0.6f, 1.8f, 0.0f, 336.0f), 0.0f, 0.0f);
-		this.mesh.chunkSetAngles("NeedleKMH", -this.floatindex(
-				this.cvt(Pitot.Indicator((float) this.fm.Loc.z, this.fm.getSpeedKMH()), 0.0f, 900.0f, 0.0f, 9.0f),
-				CockpitFW_190A5.speedometerScale), 0.0f, 0.0f);
-		if ((this.fm.AS.astateCockpitState & 0x40) == 0x0 && (this.fm.AS.astateCockpitState & 0x8) == 0x0
-				&& (this.fm.AS.astateCockpitState & 0x10) == 0x0) {
-			this.mesh.chunkSetAngles("NeedleRPM",
-					-this.floatindex(this.cvt(this.fm.EI.engines[0].getRPM(), 0.0f, 4000.0f, 0.0f, 8.0f),
-							CockpitFW_190A5.rpmScale),
-					0.0f, 0.0f);
+		this.mesh.chunkSetAngles("NeedleManPress", -this.cvt(this.fm.EI.engines[0].getManifoldPressure(), 0.6f, 1.8f, 0.0f, 336.0f), 0.0f, 0.0f);
+		this.mesh.chunkSetAngles("NeedleKMH", -this.floatindex(this.cvt(Pitot.Indicator((float) this.fm.Loc.z, this.fm.getSpeedKMH()), 0.0f, 900.0f, 0.0f, 9.0f), CockpitFW_190A5.speedometerScale), 0.0f, 0.0f);
+		if ((this.fm.AS.astateCockpitState & 0x40) == 0x0 && (this.fm.AS.astateCockpitState & 0x8) == 0x0 && (this.fm.AS.astateCockpitState & 0x10) == 0x0) {
+			this.mesh.chunkSetAngles("NeedleRPM", -this.floatindex(this.cvt(this.fm.EI.engines[0].getRPM(), 0.0f, 4000.0f, 0.0f, 8.0f), CockpitFW_190A5.rpmScale), 0.0f, 0.0f);
 		}
-		this.mesh.chunkSetAngles("NeedleFuel",
-				this.floatindex(this.cvt(this.fm.M.fuel / 0.72f, 0.0f, 400.0f, 0.0f, 4.0f), CockpitFW_190A5.fuelScale),
-				0.0f, 0.0f);
-		this.mesh.chunkSetAngles("NeedleOilTemp",
-				this.floatindex(this.cvt(this.fm.EI.engines[0].tOilOut, 0.0f, 120.0f, 0.0f, 3.0f),
-						CockpitFW_190A5.oilTempScale),
-				0.0f, 0.0f);
-		if ((this.fm.AS.astateCockpitState & 0x2) == 0x0 && (this.fm.AS.astateCockpitState & 0x1) == 0x0
-				&& (this.fm.AS.astateCockpitState & 0x4) == 0x0) {
-			this.mesh.chunkSetAngles("NeedleFuelPress",
-					this.cvt((this.fm.M.fuel <= 1.0f) ? 0.0f : 0.26f, 0.0f, 3.0f, 0.0f, 135.0f), 0.0f, 0.0f);
-			this.mesh.chunkSetAngles("NeedleOilPress",
-					-this.cvt(1.0f + 0.05f * this.fm.EI.engines[0].tOilOut, 0.0f, 15.0f, 0.0f, 135.0f), 0.0f, 0.0f);
+		this.mesh.chunkSetAngles("NeedleFuel", this.floatindex(this.cvt(this.fm.M.fuel / 0.72f, 0.0f, 400.0f, 0.0f, 4.0f), CockpitFW_190A5.fuelScale), 0.0f, 0.0f);
+		this.mesh.chunkSetAngles("NeedleOilTemp", this.floatindex(this.cvt(this.fm.EI.engines[0].tOilOut, 0.0f, 120.0f, 0.0f, 3.0f), CockpitFW_190A5.oilTempScale), 0.0f, 0.0f);
+		if ((this.fm.AS.astateCockpitState & 0x2) == 0x0 && (this.fm.AS.astateCockpitState & 0x1) == 0x0 && (this.fm.AS.astateCockpitState & 0x4) == 0x0) {
+			this.mesh.chunkSetAngles("NeedleFuelPress", this.cvt(this.fm.M.fuel <= 1.0f ? 0.0f : 0.26f, 0.0f, 3.0f, 0.0f, 135.0f), 0.0f, 0.0f);
+			this.mesh.chunkSetAngles("NeedleOilPress", -this.cvt(1.0f + 0.05f * this.fm.EI.engines[0].tOilOut, 0.0f, 15.0f, 0.0f, 135.0f), 0.0f, 0.0f);
 		}
-		if ((this.fm.AS.astateCockpitState & 0x40) == 0x0 && (this.fm.AS.astateCockpitState & 0x8) == 0x0
-				&& (this.fm.AS.astateCockpitState & 0x10) == 0x0) {
-			this.mesh.chunkSetAngles("NeedleAHTurn", this.cvt(this.setNew.turn, -0.23562f, 0.23562f, -50.0f, 50.0f),
-					0.0f, 0.0f);
-			this.mesh.chunkSetAngles("NeedleAHBank", this.cvt(this.getBall(7.0), -7.0f, 7.0f, 11.0f, -11.0f), 0.0f,
-					0.0f);
+		if ((this.fm.AS.astateCockpitState & 0x40) == 0x0 && (this.fm.AS.astateCockpitState & 0x8) == 0x0 && (this.fm.AS.astateCockpitState & 0x10) == 0x0) {
+			this.mesh.chunkSetAngles("NeedleAHTurn", this.cvt(this.setNew.turn, -0.23562f, 0.23562f, -50.0f, 50.0f), 0.0f, 0.0f);
+			this.mesh.chunkSetAngles("NeedleAHBank", this.cvt(this.getBall(7.0), -7.0f, 7.0f, 11.0f, -11.0f), 0.0f, 0.0f);
 			this.mesh.chunkSetAngles("NeedleAHCyl", 0.0f, 0.0f, this.fm.Or.getKren());
-			this.mesh.chunkSetAngles("NeedleAHBar", 0.0f, 0.0f,
-					this.cvt(this.fm.Or.getTangage(), -45.0f, 45.0f, 12.0f, -12.0f));
+			this.mesh.chunkSetAngles("NeedleAHBar", 0.0f, 0.0f, this.cvt(this.fm.Or.getTangage(), -45.0f, 45.0f, 12.0f, -12.0f));
 		}
 		if ((this.fm.AS.astateCockpitState & 0x20) == 0x0 && (this.fm.AS.astateCockpitState & 0x80) == 0x0) {
-			this.mesh.chunkSetAngles("NeedleCD",
-					(this.setNew.vspeed < 0.0f)
-							? this.floatindex(this.cvt(-this.setNew.vspeed, 0.0f, 30.0f, 0.0f, 6.0f),
-									CockpitFW_190A5.vsiNeedleScale)
-							: (-this.floatindex(this.cvt(this.setNew.vspeed, 0.0f, 30.0f, 0.0f, 6.0f),
-									CockpitFW_190A5.vsiNeedleScale)),
-					0.0f, 0.0f);
+			this.mesh.chunkSetAngles("NeedleCD", this.setNew.vspeed < 0.0f ? this.floatindex(this.cvt(-this.setNew.vspeed, 0.0f, 30.0f, 0.0f, 6.0f), CockpitFW_190A5.vsiNeedleScale)
+					: -this.floatindex(this.cvt(this.setNew.vspeed, 0.0f, 30.0f, 0.0f, 6.0f), CockpitFW_190A5.vsiNeedleScale), 0.0f, 0.0f);
 		}
-		if ((this.fm.AS.astateCockpitState & 0x40) == 0x0 && (this.fm.AS.astateCockpitState & 0x8) == 0x0
-				&& (this.fm.AS.astateCockpitState & 0x10) == 0x0) {
+		if ((this.fm.AS.astateCockpitState & 0x40) == 0x0 && (this.fm.AS.astateCockpitState & 0x8) == 0x0 && (this.fm.AS.astateCockpitState & 0x10) == 0x0) {
 			if (this.useRealisticNavigationInstruments()) {
-				this.mesh.chunkSetAngles("RepeaterPlane",
-						-this.setNew.azimuth.getDeg(f_54_) + this.setNew.waypointAzimuth.getDeg(f_54_), 0.0f, 0.0f);
+				this.mesh.chunkSetAngles("RepeaterPlane", -this.setNew.azimuth.getDeg(f_54_) + this.setNew.waypointAzimuth.getDeg(f_54_), 0.0f, 0.0f);
 				this.mesh.chunkSetAngles("RepeaterOuter", this.setNew.waypointAzimuth.getDeg(f_54_), 0.0f, 0.0f);
 			} else {
 				this.mesh.chunkSetAngles("RepeaterOuter", this.setNew.azimuth.getDeg(f_54_), 0.0f, 0.0f);
-				this.mesh.chunkSetAngles("RepeaterPlane", -this.setNew.waypointAzimuth.getDeg(f_54_ * 0.1f), 0.0f,
-						0.0f);
+				this.mesh.chunkSetAngles("RepeaterPlane", -this.setNew.waypointAzimuth.getDeg(f_54_ * 0.1f), 0.0f, 0.0f);
 			}
 		}
 		if ((this.fm.AS.astateCockpitState & 0x20) == 0x0 && (this.fm.AS.astateCockpitState & 0x80) == 0x0) {
-			this.mesh.chunkSetAngles("NeedleHBSmall", -105.0f
-					+ (float) Math.toDegrees(this.fm.EI.engines[0].getPropPhi() - this.fm.EI.engines[0].getPropPhiMin())
-							* 5.0f,
-					0.0f, 0.0f);
-			this.mesh.chunkSetAngles("NeedleHBLarge", -270.0f
-					+ (float) Math.toDegrees(this.fm.EI.engines[0].getPropPhi() - this.fm.EI.engines[0].getPropPhiMin())
-							* 60.0f,
-					0.0f, 0.0f);
+			this.mesh.chunkSetAngles("NeedleHBSmall", -105.0f + (float) Math.toDegrees(this.fm.EI.engines[0].getPropPhi() - this.fm.EI.engines[0].getPropPhiMin()) * 5.0f, 0.0f, 0.0f);
+			this.mesh.chunkSetAngles("NeedleHBLarge", -270.0f + (float) Math.toDegrees(this.fm.EI.engines[0].getPropPhi() - this.fm.EI.engines[0].getPropPhiMin()) * 60.0f, 0.0f, 0.0f);
 		}
 		this.mesh.chunkSetAngles("NeedleTrimmung", this.fm.CT.getTrimElevatorControl() * 25.0f, 0.0f, 0.0f);
-		this.mesh.chunkSetAngles("NeedleHClock", -this.cvt(World.getTimeofDay(), 0.0f, 24.0f, 0.0f, 720.0f), 0.0f,
-				0.0f);
-		this.mesh.chunkSetAngles("NeedleMClock", -this.cvt(World.getTimeofDay() % 1.0f, 0.0f, 1.0f, 0.0f, 360.0f), 0.0f,
-				0.0f);
-		this.mesh.chunkSetAngles("NeedleSClock",
-				-this.cvt(World.getTimeofDay() % 1.0f * 60.0f % 1.0f, 0.0f, 1.0f, 0.0f, 360.0f), 0.0f, 0.0f);
+		this.mesh.chunkSetAngles("NeedleHClock", -this.cvt(World.getTimeofDay(), 0.0f, 24.0f, 0.0f, 720.0f), 0.0f, 0.0f);
+		this.mesh.chunkSetAngles("NeedleMClock", -this.cvt(World.getTimeofDay() % 1.0f, 0.0f, 1.0f, 0.0f, 360.0f), 0.0f, 0.0f);
+		this.mesh.chunkSetAngles("NeedleSClock", -this.cvt(World.getTimeofDay() % 1.0f * 60.0f % 1.0f, 0.0f, 1.0f, 0.0f, 360.0f), 0.0f, 0.0f);
 		this.resetYPRmodifier();
 
 		// ------------------------------------------------------------------------
@@ -239,33 +197,24 @@ public class CockpitFW_190A5 extends CockpitPilot {
 		}
 		if (this.gun[2] != null) {
 			Cockpit.xyz[0] = ammoCounter(this.gun[2].countBullets(), -0.018f, 100); // <- new code with
-																					// CockpitFW_190A4.ammoCounter();
-																					// see Cockpit class of FW-190A4 for
-																					// more details
+																					 // CockpitFW_190A4.ammoCounter();
+																					 // see Cockpit class of FW-190A4 for
+																					 // more details
 			this.mesh.chunkSetLocate("RC_MG151_L", Cockpit.xyz, Cockpit.ypr);
 		}
 		if (this.gun[3] != null) {
 			Cockpit.xyz[0] = ammoCounter(this.gun[3].countBullets(), -0.018f, 100); // <- new code with
-																					// CockpitFW_190A4.ammoCounter();
-																					// see Cockpit class of FW-190A4 for
-																					// more details
+																					 // CockpitFW_190A4.ammoCounter();
+																					 // see Cockpit class of FW-190A4 for
+																					 // more details
 			this.mesh.chunkSetLocate("RC_MG151_R", Cockpit.xyz, Cockpit.ypr);
 		}
 		this.resetYPRmodifier();
 		/*
-		 * old code: if (this.gun[0] != null) { Cockpit.xyz[0] =
-		 * this.cvt(this.gun[0].countBullets(), 0.0f, 500.0f, -0.044f, 0.0f);
-		 * this.mesh.chunkSetLocate("RC_MG17_L", Cockpit.xyz, Cockpit.ypr);
-		 * this.mesh.chunkVisible("XLampMG17_1", !this.gun[0].haveBullets()); } if
-		 * (this.gun[1] != null) { Cockpit.xyz[0] = this.cvt(this.gun[1].countBullets(),
-		 * 0.0f, 500.0f, -0.044f, 0.0f); this.mesh.chunkSetLocate("RC_MG17_R",
-		 * Cockpit.xyz, Cockpit.ypr); this.mesh.chunkVisible("XLampMG17_2",
-		 * !this.gun[1].haveBullets()); } if (this.gun[4] != null) { Cockpit.xyz[0] =
-		 * this.cvt(this.gun[4].countBullets(), 0.0f, 200.0f, -0.017f, 0.0f);
-		 * this.mesh.chunkSetLocate("RC_MG151_L", Cockpit.xyz, Cockpit.ypr); } if
-		 * (this.gun[5] != null) { Cockpit.xyz[0] = this.cvt(this.gun[5].countBullets(),
-		 * 0.0f, 200.0f, -0.017f, 0.0f); this.mesh.chunkSetLocate("RC_MG151_R",
-		 * Cockpit.xyz, Cockpit.ypr); }
+		 * old code: if (this.gun[0] != null) { Cockpit.xyz[0] = this.cvt(this.gun[0].countBullets(), 0.0f, 500.0f, -0.044f, 0.0f); this.mesh.chunkSetLocate("RC_MG17_L", Cockpit.xyz, Cockpit.ypr); this.mesh.chunkVisible("XLampMG17_1",
+		 * !this.gun[0].haveBullets()); } if (this.gun[1] != null) { Cockpit.xyz[0] = this.cvt(this.gun[1].countBullets(), 0.0f, 500.0f, -0.044f, 0.0f); this.mesh.chunkSetLocate("RC_MG17_R", Cockpit.xyz, Cockpit.ypr); this.mesh.chunkVisible("XLampMG17_2",
+		 * !this.gun[1].haveBullets()); } if (this.gun[4] != null) { Cockpit.xyz[0] = this.cvt(this.gun[4].countBullets(), 0.0f, 200.0f, -0.017f, 0.0f); this.mesh.chunkSetLocate("RC_MG151_L", Cockpit.xyz, Cockpit.ypr); } if (this.gun[5] != null) {
+		 * Cockpit.xyz[0] = this.cvt(this.gun[5].countBullets(), 0.0f, 200.0f, -0.017f, 0.0f); this.mesh.chunkSetLocate("RC_MG151_R", Cockpit.xyz, Cockpit.ypr); }
 		 */
 		// ------------------------------------------------------------------------
 		if (this.t1 < Time.current()) {
@@ -276,21 +225,19 @@ public class CockpitFW_190A5 extends CockpitPilot {
 			this.mesh.chunkVisible("XLampBombR", this.bomb[3].haveBullets());
 		}
 		this.mesh.chunkSetAngles("IgnitionSwitch", 24.0f * this.fm.EI.engines[0].getControlMagnetos(), 0.0f, 0.0f);
-		Cockpit.xyz[2] = this.cvt(this.interp(this.setNew.dimPosition, this.setOld.dimPosition, f_54_), 0.0f, 1.0f,
-				0.0f, 0.058f);
+		Cockpit.xyz[2] = this.cvt(this.interp(this.setNew.dimPosition, this.setOld.dimPosition, f_54_), 0.0f, 1.0f, 0.0f, 0.058f);
 		this.mesh.chunkSetLocate("Revi16Tinter", Cockpit.xyz, Cockpit.ypr);
 		final HierMesh mesh = this.mesh;
 		final String s = "Stick";
 		final float n = 0.0f;
 		final float pictAiler = 0.85f * this.pictAiler + 0.15f * this.fm.CT.AileronControl;
 		this.pictAiler = pictAiler;
-		mesh.chunkSetAngles(s, n, pictAiler * 20.0f,
-				(this.pictElev = 0.85f * this.pictElev + 0.15f * this.fm.CT.ElevatorControl) * 20.0f);
+		mesh.chunkSetAngles(s, n, pictAiler * 20.0f, (this.pictElev = 0.85f * this.pictElev + 0.15f * this.fm.CT.ElevatorControl) * 20.0f);
 		this.resetYPRmodifier();
-		Cockpit.xyz[2] = (this.fm.CT.WeaponControl[1] ? -0.004f : 0.0f);
+		Cockpit.xyz[2] = this.fm.CT.WeaponControl[1] ? -0.004f : 0.0f;
 		this.mesh.chunkSetLocate("SecTrigger", Cockpit.xyz, Cockpit.ypr);
 		Cockpit.ypr[0] = this.interp(this.setNew.throttle, this.setOld.throttle, f_54_) * 34.0f * 0.91f;
-		Cockpit.xyz[2] = ((Cockpit.ypr[0] <= 7.0f) ? 0.0f : -0.006f);
+		Cockpit.xyz[2] = Cockpit.ypr[0] <= 7.0f ? 0.0f : -0.006f;
 		this.mesh.chunkSetLocate("ThrottleQuad", Cockpit.xyz, Cockpit.ypr);
 		this.mesh.chunkSetAngles("RPedalBase", 0.0f, 0.0f, this.fm.CT.getRudder() * 15.0f);
 		this.mesh.chunkSetAngles("RPedalStrut", 0.0f, 0.0f, -this.fm.CT.getRudder() * 15.0f);
@@ -312,10 +259,8 @@ public class CockpitFW_190A5 extends CockpitPilot {
 		this.mesh.chunkVisible("XLampGearR_2", this.fm.CT.getGear() > 0.95f && this.fm.Gears.rgear);
 		this.mesh.chunkVisible("XLampGearC_1", this.fm.CT.getGear() < 0.05f);
 		this.mesh.chunkVisible("XLampGearC_2", this.fm.CT.getGear() > 0.95f);
-		this.mesh.chunkSetAngles("NeedleNahe1", this.cvt(this.setNew.beaconDirection, -45.0f, 45.0f, 20.0f, -20.0f),
-				0.0f, 0.0f);
-		this.mesh.chunkSetAngles("NeedleNahe2", this.cvt(this.setNew.beaconRange, 0.0f, 1.0f, -20.0f, 20.0f), 0.0f,
-				0.0f);
+		this.mesh.chunkSetAngles("NeedleNahe1", this.cvt(this.setNew.beaconDirection, -45.0f, 45.0f, 20.0f, -20.0f), 0.0f, 0.0f);
+		this.mesh.chunkSetAngles("NeedleNahe2", this.cvt(this.setNew.beaconRange, 0.0f, 1.0f, -20.0f, 20.0f), 0.0f, 0.0f);
 		this.mesh.chunkVisible("AFN2_RED", this.isOnBlindLandingMarker());
 	}
 
@@ -347,8 +292,7 @@ public class CockpitFW_190A5 extends CockpitPilot {
 	}
 
 	public void reflectCockpitState() {
-		if ((this.fm.AS.astateCockpitState & 0x2) != 0x0 || (this.fm.AS.astateCockpitState & 0x1) != 0x0
-				|| (this.fm.AS.astateCockpitState & 0x4) != 0x0) {
+		if ((this.fm.AS.astateCockpitState & 0x2) != 0x0 || (this.fm.AS.astateCockpitState & 0x1) != 0x0 || (this.fm.AS.astateCockpitState & 0x4) != 0x0) {
 			if ((this.fm.AS.astateCockpitState & 0x2) != 0x0) {
 				this.mesh.chunkVisible("Revi16", false);
 				this.mesh.chunkVisible("Revi16Tinter", false);
@@ -362,8 +306,7 @@ public class CockpitFW_190A5 extends CockpitPilot {
 			this.mesh.materialReplace("A4GP1_night", "DA5GP1_night");
 			this.mesh.chunkVisible("NeedleManPress", false);
 		}
-		if ((this.fm.AS.astateCockpitState & 0x40) != 0x0 || (this.fm.AS.astateCockpitState & 0x8) != 0x0
-				|| (this.fm.AS.astateCockpitState & 0x10) != 0x0) {
+		if ((this.fm.AS.astateCockpitState & 0x40) != 0x0 || (this.fm.AS.astateCockpitState & 0x8) != 0x0 || (this.fm.AS.astateCockpitState & 0x10) != 0x0) {
 			this.mesh.chunkVisible("XGlassDamage2", true);
 			this.mesh.chunkVisible("XGlassDamage4", true);
 			this.mesh.chunkVisible("HullDamage3", true);
@@ -388,8 +331,7 @@ public class CockpitFW_190A5 extends CockpitPilot {
 	}
 
 	static {
-		speedometerScale = new float[] { 0.0f, 18.5f, 67.0f, 117.0f, 164.0f, 215.0f, 267.0f, 320.0f, 379.0f, 427.0f,
-				428.0f };
+		speedometerScale = new float[] { 0.0f, 18.5f, 67.0f, 117.0f, 164.0f, 215.0f, 267.0f, 320.0f, 379.0f, 427.0f, 428.0f };
 		rpmScale = new float[] { 0.0f, 11.25f, 53.0f, 108.0f, 170.0f, 229.0f, 282.0f, 334.0f, 342.5f, 342.5f };
 		fuelScale = new float[] { 0.0f, 16.0f, 35.0f, 52.5f, 72.0f, 72.0f };
 		vsiNeedleScale = new float[] { 0.0f, 48.0f, 82.0f, 96.5f, 111.0f, 120.5f, 130.0f, 130.0f };
@@ -406,50 +348,38 @@ public class CockpitFW_190A5 extends CockpitPilot {
 				CockpitFW_190A5.this.setNew = CockpitFW_190A5.this.setTmp;
 				CockpitFW_190A5.this.setNew.altimeter = CockpitFW_190A5.this.fm.getAltitude();
 				if (CockpitFW_190A5.this.cockpitDimControl) {
-					if (CockpitFW_190A5.this.setNew.dimPosition > 0.0f) {
-						CockpitFW_190A5.this.setNew.dimPosition = CockpitFW_190A5.this.setOld.dimPosition - 0.05f;
-					}
-				} else if (CockpitFW_190A5.this.setNew.dimPosition < 1.0f) {
-					CockpitFW_190A5.this.setNew.dimPosition = CockpitFW_190A5.this.setOld.dimPosition + 0.05f;
-				}
-				CockpitFW_190A5.this.setNew.throttle = (10.0f * CockpitFW_190A5.this.setOld.throttle
-						+ CockpitFW_190A5.this.fm.CT.PowerControl) / 11.0f;
-				CockpitFW_190A5.this.setNew.vspeed = (499.0f * CockpitFW_190A5.this.setOld.vspeed
-						+ CockpitFW_190A5.this.fm.getVertSpeed()) / 500.0f;
+					if (CockpitFW_190A5.this.setNew.dimPosition > 0.0f) { CockpitFW_190A5.this.setNew.dimPosition = CockpitFW_190A5.this.setOld.dimPosition - 0.05f; }
+				} else if (CockpitFW_190A5.this.setNew.dimPosition < 1.0f) { CockpitFW_190A5.this.setNew.dimPosition = CockpitFW_190A5.this.setOld.dimPosition + 0.05f; }
+				CockpitFW_190A5.this.setNew.throttle = (10.0f * CockpitFW_190A5.this.setOld.throttle + CockpitFW_190A5.this.fm.CT.PowerControl) / 11.0f;
+				CockpitFW_190A5.this.setNew.vspeed = (499.0f * CockpitFW_190A5.this.setOld.vspeed + CockpitFW_190A5.this.fm.getVertSpeed()) / 500.0f;
 				final float waypointAzimuth = CockpitFW_190A5.this.waypointAzimuth();
 				if (CockpitFW_190A5.this.useRealisticNavigationInstruments()) {
 					CockpitFW_190A5.this.setNew.waypointAzimuth.setDeg(waypointAzimuth - 90.0f);
 					CockpitFW_190A5.this.setOld.waypointAzimuth.setDeg(waypointAzimuth - 90.0f);
 				} else {
-					CockpitFW_190A5.this.setNew.waypointAzimuth.setDeg(
-							CockpitFW_190A5.this.setOld.waypointAzimuth.getDeg(0.1f),
-							waypointAzimuth - CockpitFW_190A5.this.setOld.azimuth.getDeg(1.0f));
+					CockpitFW_190A5.this.setNew.waypointAzimuth.setDeg(CockpitFW_190A5.this.setOld.waypointAzimuth.getDeg(0.1f), waypointAzimuth - CockpitFW_190A5.this.setOld.azimuth.getDeg(1.0f));
 				}
-				CockpitFW_190A5.this.setNew.azimuth.setDeg(CockpitFW_190A5.this.setOld.azimuth.getDeg(1.0f),
-						CockpitFW_190A5.this.fm.Or.azimut());
+				CockpitFW_190A5.this.setNew.azimuth.setDeg(CockpitFW_190A5.this.setOld.azimuth.getDeg(1.0f), CockpitFW_190A5.this.fm.Or.azimut());
 				CockpitFW_190A5.this.w.set(CockpitFW_190A5.this.fm.getW());
 				CockpitFW_190A5.this.fm.Or.transform(CockpitFW_190A5.this.w);
-				CockpitFW_190A5.this.setNew.turn = (12.0f * CockpitFW_190A5.this.setOld.turn + CockpitFW_190A5.this.w.z)
-						/ 13.0f;
-				CockpitFW_190A5.this.setNew.beaconDirection = (10.0f * CockpitFW_190A5.this.setOld.beaconDirection
-						+ CockpitFW_190A5.this.getBeaconDirection()) / 11.0f;
-				CockpitFW_190A5.this.setNew.beaconRange = (10.0f * CockpitFW_190A5.this.setOld.beaconRange
-						+ CockpitFW_190A5.this.getBeaconRange()) / 11.0f;
+				CockpitFW_190A5.this.setNew.turn = (12.0f * CockpitFW_190A5.this.setOld.turn + CockpitFW_190A5.this.w.z) / 13.0f;
+				CockpitFW_190A5.this.setNew.beaconDirection = (10.0f * CockpitFW_190A5.this.setOld.beaconDirection + CockpitFW_190A5.this.getBeaconDirection()) / 11.0f;
+				CockpitFW_190A5.this.setNew.beaconRange = (10.0f * CockpitFW_190A5.this.setOld.beaconRange + CockpitFW_190A5.this.getBeaconRange()) / 11.0f;
 			}
 			return true;
 		}
 	}
 
 	private class Variables {
-		float altimeter;
-		float throttle;
-		float dimPosition;
+		float      altimeter;
+		float      throttle;
+		float      dimPosition;
 		AnglesFork azimuth;
 		AnglesFork waypointAzimuth;
-		float beaconDirection;
-		float beaconRange;
-		float turn;
-		float vspeed;
+		float      beaconDirection;
+		float      beaconRange;
+		float      turn;
+		float      vspeed;
 
 		private Variables() {
 			this.azimuth = new AnglesFork();

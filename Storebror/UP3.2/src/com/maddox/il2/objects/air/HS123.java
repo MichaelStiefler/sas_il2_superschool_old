@@ -58,9 +58,7 @@ public class HS123 extends HS123xyz {
 		Property.set(class1, "cockpitClass", new Class[] { CockpitHS123.class });
 		Property.set(class1, "LOSElevation", 0.66F);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1, 3, 3, 9, 3, 3, 3, 3, 9, 3, 3, 3 });
-		Aircraft.weaponHooksRegister(class1,
-				new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalDev03", "_ExternalDev04",
-						"_ExternalDev01", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04",
-						"_ExternalDev02", "_ExternalBomb05", "_ExternalDev05", "_ExternalDev06" });
+		Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalDev03", "_ExternalDev04", "_ExternalDev01", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalDev02",
+				"_ExternalBomb05", "_ExternalDev05", "_ExternalDev06" });
 	}
 }

@@ -28,20 +28,14 @@ public class SB_2M100A extends SB implements TypeBomber {
 
 	public void typeBomberAdjDistancePlus() {
 		this.fSightCurForwardAngle += 0.2F;
-		if (this.fSightCurForwardAngle > 75F) {
-			this.fSightCurForwardAngle = 75F;
-		}
-		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation",
-				new Object[] { new Integer((int) (this.fSightCurForwardAngle * 1.0F)) });
+		if (this.fSightCurForwardAngle > 75F) { this.fSightCurForwardAngle = 75F; }
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) (this.fSightCurForwardAngle * 1.0F)) });
 	}
 
 	public void typeBomberAdjDistanceMinus() {
 		this.fSightCurForwardAngle -= 0.2F;
-		if (this.fSightCurForwardAngle < -15F) {
-			this.fSightCurForwardAngle = -15F;
-		}
-		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation",
-				new Object[] { new Integer((int) (this.fSightCurForwardAngle * 1.0F)) });
+		if (this.fSightCurForwardAngle < -15F) { this.fSightCurForwardAngle = -15F; }
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int) (this.fSightCurForwardAngle * 1.0F)) });
 	}
 
 	public void typeBomberAdjSideslipReset() {
@@ -50,20 +44,14 @@ public class SB_2M100A extends SB implements TypeBomber {
 
 	public void typeBomberAdjSideslipPlus() {
 		this.fSightCurSideslip++;
-		if (this.fSightCurSideslip > 45F) {
-			this.fSightCurSideslip = 45F;
-		}
-		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip",
-				new Object[] { new Integer((int) (this.fSightCurSideslip * 1.0F)) });
+		if (this.fSightCurSideslip > 45F) { this.fSightCurSideslip = 45F; }
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int) (this.fSightCurSideslip * 1.0F)) });
 	}
 
 	public void typeBomberAdjSideslipMinus() {
 		this.fSightCurSideslip--;
-		if (this.fSightCurSideslip < -45F) {
-			this.fSightCurSideslip = -45F;
-		}
-		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip",
-				new Object[] { new Integer((int) (this.fSightCurSideslip * 1.0F)) });
+		if (this.fSightCurSideslip < -45F) { this.fSightCurSideslip = -45F; }
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int) (this.fSightCurSideslip * 1.0F)) });
 	}
 
 	public void typeBomberAdjAltitudeReset() {
@@ -72,20 +60,14 @@ public class SB_2M100A extends SB implements TypeBomber {
 
 	public void typeBomberAdjAltitudePlus() {
 		this.fSightCurAltitude += 10F;
-		if (this.fSightCurAltitude > 10000F) {
-			this.fSightCurAltitude = 10000F;
-		}
-		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude",
-				new Object[] { new Integer((int) this.fSightCurAltitude) });
+		if (this.fSightCurAltitude > 10000F) { this.fSightCurAltitude = 10000F; }
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) this.fSightCurAltitude) });
 	}
 
 	public void typeBomberAdjAltitudeMinus() {
 		this.fSightCurAltitude -= 10F;
-		if (this.fSightCurAltitude < 300F) {
-			this.fSightCurAltitude = 300F;
-		}
-		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude",
-				new Object[] { new Integer((int) this.fSightCurAltitude) });
+		if (this.fSightCurAltitude < 300F) { this.fSightCurAltitude = 300F; }
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int) this.fSightCurAltitude) });
 	}
 
 	public void typeBomberAdjSpeedReset() {
@@ -94,24 +76,18 @@ public class SB_2M100A extends SB implements TypeBomber {
 
 	public void typeBomberAdjSpeedPlus() {
 		this.fSightCurSpeed += 5F;
-		if (this.fSightCurSpeed > 520F) {
-			this.fSightCurSpeed = 520F;
-		}
-		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed",
-				new Object[] { new Integer((int) this.fSightCurSpeed) });
+		if (this.fSightCurSpeed > 520F) { this.fSightCurSpeed = 520F; }
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) this.fSightCurSpeed) });
 	}
 
 	public void typeBomberAdjSpeedMinus() {
 		this.fSightCurSpeed -= 5F;
-		if (this.fSightCurSpeed < 50F) {
-			this.fSightCurSpeed = 50F;
-		}
-		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed",
-				new Object[] { new Integer((int) this.fSightCurSpeed) });
+		if (this.fSightCurSpeed < 50F) { this.fSightCurSpeed = 50F; }
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int) this.fSightCurSpeed) });
 	}
 
 	public void typeBomberUpdate(float f) {
-		double d = (this.fSightCurSpeed / 3.6D) * Math.sqrt(this.fSightCurAltitude * 0.203873598D);
+		double d = this.fSightCurSpeed / 3.6D * Math.sqrt(this.fSightCurAltitude * 0.203873598D);
 		d -= this.fSightCurAltitude * this.fSightCurAltitude * 1.419E-005D;
 		this.fSightSetForwardAngle = (float) Math.toDegrees(Math.atan(d / this.fSightCurAltitude));
 	}
@@ -148,10 +124,8 @@ public class SB_2M100A extends SB implements TypeBomber {
 		Property.set(class1, "yearService", 1935F);
 		Property.set(class1, "yearExpired", 1944F);
 		Property.set(class1, "FlightModel", "FlightModels/SB-2M-100A.fmd");
-		Property.set(class1, "cockpitClass", new Class[] { CockpitSB_2M100A.class, CockpitSB2M100A_Bombardier.class,
-				CockpitSB2M100A_NGunner.class, CockpitSB2M100A_TGunner.class, CockpitSB2M100A_BGunner.class });
+		Property.set(class1, "cockpitClass", new Class[] { CockpitSB_2M100A.class, CockpitSB2M100A_Bombardier.class, CockpitSB2M100A_NGunner.class, CockpitSB2M100A_TGunner.class, CockpitSB2M100A_BGunner.class });
 		Aircraft.weaponTriggersRegister(class1, new int[] { 10, 10, 11, 12, 3, 3, 3, 3, 3, 3, 3 });
-		Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_BombSpawn01",
-				"_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07" });
+		Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07" });
 	}
 }

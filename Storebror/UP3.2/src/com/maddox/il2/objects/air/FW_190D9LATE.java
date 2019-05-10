@@ -10,9 +10,9 @@ import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 
 public class FW_190D9LATE extends FW_190 implements TypeFighterAceMaker {
-	public int k14Mode;
-	public int k14WingspanType;
-	public float k14Distance;
+	public int    k14Mode;
+	public int    k14WingspanType;
+	public float  k14Distance;
 	private float kangle;
 
 	public FW_190D9LATE() {
@@ -24,9 +24,7 @@ public class FW_190D9LATE extends FW_190 implements TypeFighterAceMaker {
 
 	public boolean typeFighterAceMakerToggleAutomation() {
 		++this.k14Mode;
-		if (this.k14Mode > 2) {
-			this.k14Mode = 0;
-		}
+		if (this.k14Mode > 2) { this.k14Mode = 0; }
 		HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerMode" + this.k14Mode);
 		return true;
 	}
@@ -50,19 +48,13 @@ public class FW_190D9LATE extends FW_190 implements TypeFighterAceMaker {
 		this.k14Distance += f;
 		if (this.k14Distance > 1000.0f) {
 			this.k14Distance = 1000.0f;
-		} else if (this.k14Distance < 160.0f) {
-			this.k14Distance = 160.0f;
-		}
-		HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Distance: " + (int) (this.k14Distance) + "m");
+		} else if (this.k14Distance < 160.0f) { this.k14Distance = 160.0f; }
+		HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Distance: " + (int) this.k14Distance + "m");
 	}
 	/*
-	 * public void typeFighterAceMakerAdjDistancePlus() { this.k14Distance += 10.0f;
-	 * if (this.k14Distance > 800.0f) { this.k14Distance = 800.0f; }
-	 * HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerInc"); }
+	 * public void typeFighterAceMakerAdjDistancePlus() { this.k14Distance += 10.0f; if (this.k14Distance > 800.0f) { this.k14Distance = 800.0f; } HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerInc"); }
 	 *
-	 * public void typeFighterAceMakerAdjDistanceMinus() { this.k14Distance -=
-	 * 10.0f; if (this.k14Distance < 200.0f) { this.k14Distance = 200.0f; }
-	 * HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerDec"); }
+	 * public void typeFighterAceMakerAdjDistanceMinus() { this.k14Distance -= 10.0f; if (this.k14Distance < 200.0f) { this.k14Distance = 200.0f; } HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerDec"); }
 	 */
 
 	// Allied plane wingspans (approximately):
@@ -83,70 +75,62 @@ public class FW_190D9LATE extends FW_190 implements TypeFighterAceMaker {
 	}
 
 	private void adjustAceMakerSideSlip(int i) throws IOException {
-		if (!((i == 1) || (i == -1))) {
-			throw new IOException("Wrong input value! Only +1 and -1 allowed!");
-		}
+		if (!(i == 1 || i == -1)) { throw new IOException("Wrong input value! Only +1 and -1 allowed!"); }
 		this.k14WingspanType += i;
 		String s = "Wingspan Selected: ";
 		String s1 = "Yak-3/Yak-9/La-5/P-39/MiG-3";
 		String s2 = "B-24";
 
 		switch (this.k14WingspanType) {
-		// case 0: s += s1; break; //like Bf-109
-		case 1:
-			s += "P-51/P-47/P-80/Spitfire/Typhoon/Hurricane";
-			break; // like Fw-190
-		case 2:
-			s += "P-38";
-			break; // like Ju-87
-		case 3:
-			s += "Mosquito/IL-2/Beaufighter";
-			break; // like Me-210
-		case 4:
-			s += "A-20/Pe-2";
-			break; // like Do-217
-		case 5:
-			s += "20m";
-			break; // like Ju-88
-		case 6:
-			s += "B-25/A-26";
-			break; // like Ju-188
-		case 7:
-			s += "DC-3";
-			break; // like Ju-52
-		case 8:
-			s += "B-17/Halifax/Lancaster";
-			break; // like He-177
-		case 9:
-			s += s2;
-			break; // like Fw-200
-		case 10:
-			this.adjustAceMakerSideSlip(-1);
-			s += s2;
-			break;
-		case -1:
-			this.adjustAceMakerSideSlip(1);
-			s += s1;
-			break;
-		default:
-			this.k14WingspanType = 0;
-			s += s1;
-			break;
+			// case 0: s += s1; break; //like Bf-109
+			case 1:
+				s += "P-51/P-47/P-80/Spitfire/Typhoon/Hurricane";
+				break; // like Fw-190
+			case 2:
+				s += "P-38";
+				break; // like Ju-87
+			case 3:
+				s += "Mosquito/IL-2/Beaufighter";
+				break; // like Me-210
+			case 4:
+				s += "A-20/Pe-2";
+				break; // like Do-217
+			case 5:
+				s += "20m";
+				break; // like Ju-88
+			case 6:
+				s += "B-25/A-26";
+				break; // like Ju-188
+			case 7:
+				s += "DC-3";
+				break; // like Ju-52
+			case 8:
+				s += "B-17/Halifax/Lancaster";
+				break; // like He-177
+			case 9:
+				s += s2;
+				break; // like Fw-200
+			case 10:
+				this.adjustAceMakerSideSlip(-1);
+				s += s2;
+				break;
+			case -1:
+				this.adjustAceMakerSideSlip(1);
+				s += s1;
+				break;
+			default:
+				this.k14WingspanType = 0;
+				s += s1;
+				break;
 		}
 
 		HUD.log(AircraftHotKeys.hudLogWeaponId, s);
 	}
 
 	/*
-	 * old code: public void typeFighterAceMakerAdjSideslipPlus() {
-	 * --this.k14WingspanType; if (this.k14WingspanType < 0) { this.k14WingspanType
-	 * = 0; } HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerWing" +
-	 * this.k14WingspanType); }
+	 * old code: public void typeFighterAceMakerAdjSideslipPlus() { --this.k14WingspanType; if (this.k14WingspanType < 0) { this.k14WingspanType = 0; } HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerWing" + this.k14WingspanType); }
 	 *
-	 * public void typeFighterAceMakerAdjSideslipMinus() { ++this.k14WingspanType;
-	 * if (this.k14WingspanType > 9) { this.k14WingspanType = 9; }
-	 * HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerWing" +
-	 * this.k14WingspanType); }
+	 * public void typeFighterAceMakerAdjSideslipMinus() { ++this.k14WingspanType; if (this.k14WingspanType > 9) { this.k14WingspanType = 9; } HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerWing" + this.k14WingspanType); }
 	 */
 	// -------------------------------------------------------------------------------------------------------
 
@@ -182,9 +166,7 @@ public class FW_190D9LATE extends FW_190 implements TypeFighterAceMaker {
 	}
 
 	public void moveSteering(final float n) {
-		if (this.FM.CT.getGear() < 0.98f) {
-			return;
-		}
+		if (this.FM.CT.getGear() < 0.98f) { return; }
 		this.hierMesh().chunkSetAngles("GearC2_D0", 0.0f, -n, 0.0f);
 	}
 
@@ -192,7 +174,7 @@ public class FW_190D9LATE extends FW_190 implements TypeFighterAceMaker {
 		for (int i = 1; i < 13; ++i) {
 			this.hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0f, -10.0f * this.kangle, 0.0f);
 		}
-		this.kangle = (0.95f * this.kangle) + (0.05f * this.FM.EI.engines[0].getControlRadiator());
+		this.kangle = 0.95f * this.kangle + 0.05f * this.FM.EI.engines[0].getControlRadiator();
 		super.update(n);
 	}
 

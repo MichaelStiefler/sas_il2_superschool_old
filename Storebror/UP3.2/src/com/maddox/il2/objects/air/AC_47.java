@@ -22,26 +22,19 @@ import com.maddox.rts.Property;
  *
  * @see MGunAdjustableMiniGun, MGunMiniGun3000, MGunMiniGun6000
  *
- *      Modifications: - Imported new 3D by SAS~GJE52 from here:
- *      http://www.sas1946.com/main/index.php/topic,32003.0.html - Reduced
- *      Recoil on the miniguns - Added the option to select the rpm-values on
- *      the miniguns: + MGunMiniGun3000 can be set to 2000rpm / 4000rpm +
- *      MGunMiniGun6000 can be set to 3000rpm / 6000rpm - Reworked the Minigun
- *      belt: After 2 belts normal .50cal there is one 0.50cal APIT ammo - Added
- *      the opion to select either 1, 2 or all three guns when firing - Moved to
- *      flare drop position to the open cargo door. - Added 4.12 compatible gear
- *      code & randomized the gear animation - Added net replication for gun rpm
- *      and active guns
+ *      Modifications: - Imported new 3D by SAS~GJE52 from here: http://www.sas1946.com/main/index.php/topic,32003.0.html - Reduced Recoil on the miniguns - Added the option to select the rpm-values on the miniguns: + MGunMiniGun3000 can be set to 2000rpm
+ *      / 4000rpm + MGunMiniGun6000 can be set to 3000rpm / 6000rpm - Reworked the Minigun belt: After 2 belts normal .50cal there is one 0.50cal APIT ammo - Added the opion to select either 1, 2 or all three guns when firing - Moved to flare drop
+ *      position to the open cargo door. - Added 4.12 compatible gear code & randomized the gear animation - Added net replication for gun rpm and active guns
  *
  **/
 
 public class AC_47 extends Scheme2 implements TypeTransport, TypeBomber {
 
-	private float[] rndgear = { 0.0F, 0.0F, 0.0F };
+	private float[]        rndgear     = { 0.0F, 0.0F, 0.0F };
 	private static float[] rndgearnull = { 0.0F, 0.0F, 0.0F };
 
-	private int gunsActive = 0;
-	private int gunsRPM = 0;
+	private int            gunsActive  = 0;
+	private int            gunsRPM     = 0;
 
 	public AC_47() {
 		SecureRandom secRandom = new SecureRandom();
@@ -88,30 +81,13 @@ public class AC_47 extends Scheme2 implements TypeTransport, TypeBomber {
 
 	public void msgShot(final Shot shot) {
 		this.setShot(shot);
-		if (shot.chunkName.startsWith("WingLOut") && (World.Rnd().nextFloat(0.0f, 1.0f) < 0.1f)
-				&& (Math.abs(Aircraft.Pd.y) < 6.0)) {
-			this.FM.AS.hitTank(shot.initiator, 0, 1);
-		}
-		if (shot.chunkName.startsWith("WingROut") && (World.Rnd().nextFloat(0.0f, 1.0f) < 0.1f)
-				&& (Math.abs(Aircraft.Pd.y) < 6.0)) {
-			this.FM.AS.hitTank(shot.initiator, 3, 1);
-		}
-		if (shot.chunkName.startsWith("WingLIn") && (World.Rnd().nextFloat(0.0f, 1.0f) < 0.1f)
-				&& (Math.abs(Aircraft.Pd.y) < 1.94)) {
-			this.FM.AS.hitTank(shot.initiator, 1, 1);
-		}
-		if (shot.chunkName.startsWith("WingRIn") && (World.Rnd().nextFloat(0.0f, 1.0f) < 0.1f)
-				&& (Math.abs(Aircraft.Pd.y) < 1.94)) {
-			this.FM.AS.hitTank(shot.initiator, 2, 1);
-		}
-		if (shot.chunkName.startsWith("Engine1") && (World.Rnd().nextFloat(0.0f, 1.0f) < 0.1f)) {
-			this.FM.AS.hitEngine(shot.initiator, 0, 1);
-		}
-		if (shot.chunkName.startsWith("Engine2") && (World.Rnd().nextFloat(0.0f, 1.0f) < 0.1f)) {
-			this.FM.AS.hitEngine(shot.initiator, 1, 1);
-		}
-		if (shot.chunkName.startsWith("Nose") && (Aircraft.Pd.x > 4.9) && (Aircraft.Pd.z > -0.09)
-				&& (World.Rnd().nextFloat() < 0.1f)) {
+		if (shot.chunkName.startsWith("WingLOut") && World.Rnd().nextFloat(0.0f, 1.0f) < 0.1f && Math.abs(Aircraft.Pd.y) < 6.0) { this.FM.AS.hitTank(shot.initiator, 0, 1); }
+		if (shot.chunkName.startsWith("WingROut") && World.Rnd().nextFloat(0.0f, 1.0f) < 0.1f && Math.abs(Aircraft.Pd.y) < 6.0) { this.FM.AS.hitTank(shot.initiator, 3, 1); }
+		if (shot.chunkName.startsWith("WingLIn") && World.Rnd().nextFloat(0.0f, 1.0f) < 0.1f && Math.abs(Aircraft.Pd.y) < 1.94) { this.FM.AS.hitTank(shot.initiator, 1, 1); }
+		if (shot.chunkName.startsWith("WingRIn") && World.Rnd().nextFloat(0.0f, 1.0f) < 0.1f && Math.abs(Aircraft.Pd.y) < 1.94) { this.FM.AS.hitTank(shot.initiator, 2, 1); }
+		if (shot.chunkName.startsWith("Engine1") && World.Rnd().nextFloat(0.0f, 1.0f) < 0.1f) { this.FM.AS.hitEngine(shot.initiator, 0, 1); }
+		if (shot.chunkName.startsWith("Engine2") && World.Rnd().nextFloat(0.0f, 1.0f) < 0.1f) { this.FM.AS.hitEngine(shot.initiator, 1, 1); }
+		if (shot.chunkName.startsWith("Nose") && Aircraft.Pd.x > 4.9 && Aircraft.Pd.z > -0.09 && World.Rnd().nextFloat() < 0.1f) {
 			if (Aircraft.Pd.y > 0.0) {
 				this.killPilot(shot.initiator, 0);
 				this.FM.setCapableOfBMP(false, shot.initiator);
@@ -119,28 +95,25 @@ public class AC_47 extends Scheme2 implements TypeTransport, TypeBomber {
 				this.killPilot(shot.initiator, 1);
 			}
 		}
-		if ((this.FM.AS.astateEngineStates[0] > 2) && (this.FM.AS.astateEngineStates[1] > 2)
-				&& (World.Rnd().nextInt(0, 99) < 33)) {
-			this.FM.setCapableOfBMP(false, shot.initiator);
-		}
+		if (this.FM.AS.astateEngineStates[0] > 2 && this.FM.AS.astateEngineStates[1] > 2 && World.Rnd().nextInt(0, 99) < 33) { this.FM.setCapableOfBMP(false, shot.initiator); }
 		super.msgShot(shot);
 	}
 
 	public void doMurderPilot(final int n) {
 		switch (n) {
-		case 0: {
-			this.hierMesh().chunkVisible("Pilot1_D0", false);
-			this.hierMesh().chunkVisible("Head1_D0", false);
-			this.hierMesh().chunkVisible("HMask1_D0", false);
-			this.hierMesh().chunkVisible("Pilot1_D1", true);
-			break;
-		}
-		case 1: {
-			this.hierMesh().chunkVisible("Pilot2_D0", false);
-			this.hierMesh().chunkVisible("HMask2_D0", false);
-			this.hierMesh().chunkVisible("Pilot2_D1", true);
-			break;
-		}
+			case 0: {
+				this.hierMesh().chunkVisible("Pilot1_D0", false);
+				this.hierMesh().chunkVisible("Head1_D0", false);
+				this.hierMesh().chunkVisible("HMask1_D0", false);
+				this.hierMesh().chunkVisible("Pilot1_D1", true);
+				break;
+			}
+			case 1: {
+				this.hierMesh().chunkVisible("Pilot2_D0", false);
+				this.hierMesh().chunkVisible("HMask2_D0", false);
+				this.hierMesh().chunkVisible("Pilot2_D1", true);
+				break;
+			}
 		}
 	}
 
@@ -161,25 +134,25 @@ public class AC_47 extends Scheme2 implements TypeTransport, TypeBomber {
 
 	protected boolean cutFM(final int n, final int n2, final Actor actor) {
 		switch (n) {
-		case 13: {
-			this.killPilot(this, 0);
-			this.killPilot(this, 1);
-			break;
-		}
-		case 35: {
-			if (World.Rnd().nextFloat() < 0.25f) {
-				this.FM.AS.hitTank(this, 1, World.Rnd().nextInt(2, 6));
+			case 13: {
+				this.killPilot(this, 0);
+				this.killPilot(this, 1);
 				break;
 			}
-			break;
-		}
-		case 38: {
-			if (World.Rnd().nextFloat() < 0.25f) {
-				this.FM.AS.hitTank(this, 2, World.Rnd().nextInt(2, 6));
+			case 35: {
+				if (World.Rnd().nextFloat() < 0.25f) {
+					this.FM.AS.hitTank(this, 1, World.Rnd().nextInt(2, 6));
+					break;
+				}
 				break;
 			}
-			break;
-		}
+			case 38: {
+				if (World.Rnd().nextFloat() < 0.25f) {
+					this.FM.AS.hitTank(this, 2, World.Rnd().nextInt(2, 6));
+					break;
+				}
+				break;
+			}
 		}
 		return super.cutFM(n, n2, actor);
 	}
@@ -211,26 +184,24 @@ public class AC_47 extends Scheme2 implements TypeTransport, TypeBomber {
 			if (e instanceof MGunAdjustableMiniGun) {
 				MGunAdjustableMiniGun m = (MGunAdjustableMiniGun) e;
 				switch (dir) {
-				case -1:
-					f = m.decRPM();
-					break;
-				case 0:
-					m.resRPM();
-					break;
-				case 1:
-					f = m.incRPM();
-					break;
-				default:
-					return;
+					case -1:
+						f = m.decRPM();
+						break;
+					case 0:
+						m.resRPM();
+						break;
+					case 1:
+						f = m.incRPM();
+						break;
+					default:
+						return;
 				}
 			} else {
 				return;
 			}
 		}
 		if (f > 0) {
-			if (this == World.getPlayerAircraft()) {
-				HUD.log("Current Rate of Fire: " + (int) f + "rpm");
-			}
+			if (this == World.getPlayerAircraft()) { HUD.log("Current Rate of Fire: " + (int) f + "rpm"); }
 			this.gunsRPM = (int) f;
 		}
 	}
@@ -259,35 +230,29 @@ public class AC_47 extends Scheme2 implements TypeTransport, TypeBomber {
 		for (int i = 0; i < e.length; i++) {
 			e[i] = this.getBulletEmitterByHookName("_MGUN0" + (i + 1));
 			if (e[i] != null) {
-				if (!e[i].isPause()) {
-					active++;
-				}
+				if (!e[i].isPause()) { active++; }
 			} else {
 				return;
 			}
 		}
-		if (((active + dir) > 0) && ((active + dir) < 4)) {
-			active += dir;
-		}
+		if (active + dir > 0 && active + dir < 4) { active += dir; }
 		switch (active) {
-		case 1:
-			e[0].setPause(false);
-			e[1].setPause(true);
-			e[2].setPause(true);
-			break;
-		case 2:
-			e[0].setPause(false);
-			e[1].setPause(false);
-			e[2].setPause(true);
-			break;
-		default:
-			e[0].setPause(false);
-			e[1].setPause(false);
-			e[2].setPause(false);
+			case 1:
+				e[0].setPause(false);
+				e[1].setPause(true);
+				e[2].setPause(true);
+				break;
+			case 2:
+				e[0].setPause(false);
+				e[1].setPause(false);
+				e[2].setPause(true);
+				break;
+			default:
+				e[0].setPause(false);
+				e[1].setPause(false);
+				e[2].setPause(false);
 		}
-		if (this == World.getPlayerAircraft()) {
-			HUD.log("Active Guns: " + active);
-		}
+		if (this == World.getPlayerAircraft()) { HUD.log("Active Guns: " + active); }
 		this.gunsActive = active;
 	}
 
@@ -310,64 +275,44 @@ public class AC_47 extends Scheme2 implements TypeTransport, TypeBomber {
 	}
 
 	private void replicateGunStateFromNet() {
-		if ((this == World.getPlayerAircraft()) && !NetMissionTrack.isPlaying()) {
-			return;
-		}
+		if (this == World.getPlayerAircraft() && !NetMissionTrack.isPlaying()) { return; }
 		int fromNet = this.FM.AS.torpedoGyroAngle;
-		int tmpRPM = (fromNet / 10) * 10;
+		int tmpRPM = fromNet / 10 * 10;
 		fromNet -= tmpRPM;
 		int tmpActive = fromNet;
 
-		for (int i = 0; (this.gunsRPM != tmpRPM) && (i < 100); i++) {
+		for (int i = 0; this.gunsRPM != tmpRPM && i < 100; i++) {
 			if (this.gunsRPM < tmpRPM) {
 				this.setGunsRPM(+1);
-			} else if (this.gunsRPM > tmpRPM) {
-				this.setGunsRPM(-1);
-			}
+			} else if (this.gunsRPM > tmpRPM) { this.setGunsRPM(-1); }
 		}
-		for (int i = 0; (this.gunsActive != tmpActive) && (i < 4); i++) {
+		for (int i = 0; this.gunsActive != tmpActive && i < 4; i++) {
 			if (this.gunsActive < tmpActive) {
 				this.setGunsActive(+1);
-			} else if (this.gunsActive > tmpActive) {
-				this.setGunsActive(-1);
-			}
+			} else if (this.gunsActive > tmpActive) { this.setGunsActive(-1); }
 		}
 	}
 
 	private void replicateGunStateToNet() {
-		if (!this.FM.AS.isMaster() || NetMissionTrack.isPlaying()) {
-			return;
-		}
+		if (!this.FM.AS.isMaster() || NetMissionTrack.isPlaying()) { return; }
 		int toSend = 0;
-		if ((this.gunsActive < 4) && (this.gunsActive > 1)) {
-			toSend += this.gunsActive;
-		}
-		if ((this.gunsRPM > 10) && (this.gunsRPM < 60000)) {
-			toSend += this.gunsRPM;
-		}
+		if (this.gunsActive < 4 && this.gunsActive > 1) { toSend += this.gunsActive; }
+		if (this.gunsRPM > 10 && this.gunsRPM < 60000) { toSend += this.gunsRPM; }
 		int byte1 = (toSend & 0xFF00) >> 8;
 		int byte2 = toSend & 0xFF;
 		this.FM.AS.netToMirrors(AircraftState._AS_GYROANGLE, byte1, byte2, null);
 	}
 
 	/*
-	 * alternative coarse Version only using 1 byte. private void
-	 * replicateGunStateToNet() { if (!this.FM.AS.isMaster() ||
-	 * NetMissionTrack.isPlaying()) { return; } byte toSend = (byte)(gunsActive &
-	 * 0x03); toSend |= ((gunsRPM / 1000) & 0x0F) << 2;
+	 * alternative coarse Version only using 1 byte. private void replicateGunStateToNet() { if (!this.FM.AS.isMaster() || NetMissionTrack.isPlaying()) { return; } byte toSend = (byte)(gunsActive & 0x03); toSend |= ((gunsRPM / 1000) & 0x0F) << 2;
 	 * this.FM.AS.netToMirrors(AircraftState._AS_GYROANGLE, toSend, 0, null); }
 	 *
-	 * private void replicateGunStateFromNet() { if(this ==
-	 * World.getPlayerAircraft() && !NetMissionTrack.isPlaying()) { return; } byte
-	 * data = (byte) this.FM.AS.torpedoGyroAngle; int tmpActive = (int)(data &
-	 * 0x03); int tmpRPM = (((int)data >> 2) & 0x0F)*1000;
+	 * private void replicateGunStateFromNet() { if(this == World.getPlayerAircraft() && !NetMissionTrack.isPlaying()) { return; } byte data = (byte) this.FM.AS.torpedoGyroAngle; int tmpActive = (int)(data & 0x03); int tmpRPM = (((int)data >> 2) &
+	 * 0x0F)*1000;
 	 *
 	 *
-	 * for(int i = 0; (this.gunsRPM != tmpRPM) && i < 100; i++) { if(gunsRPM <
-	 * tmpRPM) { setGunsRPM(+1); } else if(gunsRPM > tmpRPM){ setGunsRPM(-1); } }
-	 * for(int i = 0; (this.gunsActive != tmpActive) && i < 4; i++) { if(gunsActive
-	 * < tmpActive) { setGunsActive(+1); } else if(gunsActive > tmpActive) {
-	 * setGunsActive(-1); } } }
+	 * for(int i = 0; (this.gunsRPM != tmpRPM) && i < 100; i++) { if(gunsRPM < tmpRPM) { setGunsRPM(+1); } else if(gunsRPM > tmpRPM){ setGunsRPM(-1); } } for(int i = 0; (this.gunsActive != tmpActive) && i < 4; i++) { if(gunsActive < tmpActive) {
+	 * setGunsActive(+1); } else if(gunsActive > tmpActive) { setGunsActive(-1); } } }
 	 */
 
 	// --------------------------------------------------------------------------------------

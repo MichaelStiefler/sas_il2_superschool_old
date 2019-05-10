@@ -16,10 +16,10 @@ import com.maddox.rts.Property;
 public class JU_87C extends JU_87 {
 
 	private boolean bDynamoOperational;
-	private float dynamoOrient;
-	private float arrestor2;
+	private float   dynamoOrient;
+	private float   arrestor2;
 	private boolean bDynamoRotary;
-	private int pk;
+	private int     pk;
 	private boolean bGearJettisoned;
 	private boolean bGearInitialized;
 	private boolean bOldStatusAI;
@@ -44,13 +44,12 @@ public class JU_87C extends JU_87 {
 	}
 
 	private boolean isAI() {
-		return (this != World.getPlayerAircraft() || !((RealFlightModel) super.FM).isRealMode())
-				&& (super.FM instanceof Pilot);
+		return (this != World.getPlayerAircraft() || !((RealFlightModel) super.FM).isRealMode()) && super.FM instanceof Pilot;
 	}
 
 	private void updateGearStatus() {
 		float f = this.FM.getAltitude() - Landscape.HQ_Air((float) this.FM.Loc.x, (float) this.FM.Loc.y);
-		if ((f < 30F) && !this.bGearJettisoned) {
+		if (f < 30F && !this.bGearJettisoned) {
 			this.FM.Gears.rgear = true;
 			this.FM.Gears.lgear = true;
 		} else {
@@ -58,26 +57,26 @@ public class JU_87C extends JU_87 {
 			this.FM.Gears.lgear = false;
 		}
 		if (!this.bGearInitialized) {
-			((FlightModelMain) (super.FM)).CT.GearControl = 1.0F;
-			((FlightModelMain) (super.FM)).CT.setGear(1.0F);
+			((FlightModelMain) super.FM).CT.GearControl = 1.0F;
+			((FlightModelMain) super.FM).CT.setGear(1.0F);
 			this.bGearInitialized = true;
 		}
 		if (this.isAI()) {
 			if (this.bGearJettisoned) {
-				((FlightModelMain) (super.FM)).CT.GearControl = 0.0F;
-				((FlightModelMain) (super.FM)).CT.setGear(0.0F);
+				((FlightModelMain) super.FM).CT.GearControl = 0.0F;
+				((FlightModelMain) super.FM).CT.setGear(0.0F);
 			} else {
-				((FlightModelMain) (super.FM)).CT.GearControl = 1.0F;
-				((FlightModelMain) (super.FM)).CT.setGear(1.0F);
+				((FlightModelMain) super.FM).CT.GearControl = 1.0F;
+				((FlightModelMain) super.FM).CT.setGear(1.0F);
 			}
-			((FlightModelMain) (super.FM)).CT.bHasGearControl = false;
+			((FlightModelMain) super.FM).CT.bHasGearControl = false;
 			this.bOldStatusAI = true;
 		} else {
 			if (!this.bGearJettisoned) {
-				((FlightModelMain) (super.FM)).CT.bHasGearControl = true;
+				((FlightModelMain) super.FM).CT.bHasGearControl = true;
 				if (this.bOldStatusAI) {
-					((FlightModelMain) (super.FM)).CT.GearControl = 1.0F;
-					((FlightModelMain) (super.FM)).CT.setGear(1.0F);
+					((FlightModelMain) super.FM).CT.GearControl = 1.0F;
+					((FlightModelMain) super.FM).CT.setGear(1.0F);
 				}
 			}
 			this.bOldStatusAI = false;
@@ -85,27 +84,23 @@ public class JU_87C extends JU_87 {
 	}
 
 	protected void moveGear(float f) {
-		if (this.isAI()) {
-			return;
-		}
+		if (this.isAI()) { return; }
 		if (this.bGearJettisoned) {
-			((FlightModelMain) (super.FM)).CT.GearControl = 0.0F;
-			((FlightModelMain) (super.FM)).CT.setGear(0.0F);
+			((FlightModelMain) super.FM).CT.GearControl = 0.0F;
+			((FlightModelMain) super.FM).CT.setGear(0.0F);
 			return;
 		}
 		if (!this.bGearJettisoned && f < 0.95F) {
 			this.bGearJettisoned = true;
 			this.cutFM(9, 0, this);
 			this.cutFM(10, 0, this);
-			((FlightModelMain) (super.FM)).CT.GearControl = 0.0F;
-			((FlightModelMain) (super.FM)).CT.setGear(0.0F);
-			((FlightModelMain) (super.FM)).Gears.setOperable(false);
-			((FlightModelMain) (super.FM)).CT.bHasGearControl = false;
+			((FlightModelMain) super.FM).CT.GearControl = 0.0F;
+			((FlightModelMain) super.FM).CT.setGear(0.0F);
+			((FlightModelMain) super.FM).Gears.setOperable(false);
+			((FlightModelMain) super.FM).CT.bHasGearControl = false;
 			super.FM.setGCenter(-0.5F);
 			super.FM.GearCX = 0.0F;
-			if (this == World.getPlayerAircraft()) {
-				HUD.log("Gear Jettisoned");
-			}
+			if (this == World.getPlayerAircraft()) { HUD.log("Gear Jettisoned"); }
 			return;
 		} else {
 			return;
@@ -123,7 +118,7 @@ public class JU_87C extends JU_87 {
 			this.hideWingWeapons(false);
 		} else {
 			this.setGunPodsOn(false);
-			((FlightModelMain) (super.FM)).CT.WeaponControl[0] = false;
+			((FlightModelMain) super.FM).CT.WeaponControl[0] = false;
 			this.hideWingWeapons(true);
 		}
 		this.moveWingFold(this.hierMesh(), f);
@@ -134,9 +129,7 @@ public class JU_87C extends JU_87 {
 		Aircraft.xyz[0] = Aircraft.cvt(f, 0.0F, 1.0F, 0.0F, -0.6F);
 		this.hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
 		if (Config.isUSE_RENDER()) {
-			if (Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null) {
-				Main3D.cur3D().cockpits[0].onDoorMoved(f);
-			}
+			if (Main3D.cur3D().cockpits != null && Main3D.cur3D().cockpits[0] != null) { Main3D.cur3D().cockpits[0].onDoorMoved(f); }
 			this.setDoorSnd(f);
 		}
 	}
@@ -148,33 +141,21 @@ public class JU_87C extends JU_87 {
 	public void msgCollision(Actor actor, String s, String s1) {
 		// System.out.println("Ju-87C msgCollision(" + actor.getClass().getName() + ", "
 		// + s + ", " + s1 + ")");
-		if (actor == this) {
-			if (s.equals(s1)) {
-				if (s.startsWith("Gear")) {
-					return;
-				}
-			}
-		}
-		if ((!this.isNet() || !this.isNetMirror()) && !s.startsWith("Hook")) {
-			super.msgCollision(actor, s, s1);
-		}
+		if (actor == this) { if (s.equals(s1)) { if (s.startsWith("Gear")) { return; } } }
+		if ((!this.isNet() || !this.isNetMirror()) && !s.startsWith("Hook")) { super.msgCollision(actor, s, s1); }
 	}
 
 	protected void moveFan(float f) {
 		if (this.bDynamoOperational) {
-			this.pk = Math.abs((int) (((FlightModelMain) (super.FM)).Vwld.length() / 14D));
-			if (this.pk >= 1) {
-				this.pk = 1;
-			}
+			this.pk = Math.abs((int) (((FlightModelMain) super.FM).Vwld.length() / 14D));
+			if (this.pk >= 1) { this.pk = 1; }
 		}
 		if (this.bDynamoRotary != (this.pk == 1)) {
 			this.bDynamoRotary = this.pk == 1;
 			this.hierMesh().chunkVisible("GearR3_D0", !this.bDynamoRotary);
 			this.hierMesh().chunkVisible("GearR3Rot_D0", this.bDynamoRotary);
 		}
-		this.dynamoOrient = this.bDynamoRotary ? (this.dynamoOrient - 17.987F) % 360F
-				: (float) (this.dynamoOrient - ((FlightModelMain) (super.FM)).Vwld.length() * 1.5444015264511108D)
-						% 360F;
+		this.dynamoOrient = this.bDynamoRotary ? (this.dynamoOrient - 17.987F) % 360F : (float) (this.dynamoOrient - ((FlightModelMain) super.FM).Vwld.length() * 1.5444015264511108D) % 360F;
 		this.hierMesh().chunkSetAngles("GearR3_D0", 0.0F, this.dynamoOrient, 0.0F);
 		super.moveFan(f);
 	}
@@ -187,52 +168,42 @@ public class JU_87C extends JU_87 {
 	public void update(float f) {
 		this.updateGearStatus();
 		for (int i = 1; i < 9; i++) {
-			this.hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F,
-					-15F * ((FlightModelMain) (super.FM)).EI.engines[0].getControlRadiator(), 0.0F);
+			this.hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -15F * ((FlightModelMain) super.FM).EI.engines[0].getControlRadiator(), 0.0F);
 		}
 
 		// this.FM.CT.bHasGearControl = false;
 		super.update(f);
 		// this.FM.CT.bHasGearControl = !bGearJettisoned;
-		if (((FlightModelMain) (super.FM)).CT.getArrestor() > 0.9F) {
-			if (((FlightModelMain) (super.FM)).Gears.arrestorVAngle != 0.0F) {
-				this.arrestor2 = Aircraft.cvt(((FlightModelMain) (super.FM)).Gears.arrestorVAngle, -65F, 3F, 45F, -23F);
+		if (((FlightModelMain) super.FM).CT.getArrestor() > 0.9F) {
+			if (((FlightModelMain) super.FM).Gears.arrestorVAngle != 0.0F) {
+				this.arrestor2 = Aircraft.cvt(((FlightModelMain) super.FM).Gears.arrestorVAngle, -65F, 3F, 45F, -23F);
 				this.hierMesh().chunkSetAngles("Hook_D0", 0.0F, this.arrestor2, 0.0F);
-				((FlightModelMain) (super.FM)).Gears.getClass();
+				((FlightModelMain) super.FM).Gears.getClass();
 			} else {
-				float f1 = -41F * ((FlightModelMain) (super.FM)).Gears.arrestorVSink;
-				if (f1 < 0.0F && super.FM.getSpeedKMH() > 60F) {
-					Eff3DActor.New(this, ((FlightModelMain) (super.FM)).Gears.arrestorHook, null, 1.0F,
-							"3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
-				}
-				if (f1 > 0.0F && ((FlightModelMain) (super.FM)).CT.getArrestor() < 0.9F) {
-					f1 = 0.0F;
-				}
-				if (f1 > 6.2F) {
-					f1 = 6.2F;
-				}
+				float f1 = -41F * ((FlightModelMain) super.FM).Gears.arrestorVSink;
+				if (f1 < 0.0F && super.FM.getSpeedKMH() > 60F) { Eff3DActor.New(this, ((FlightModelMain) super.FM).Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F); }
+				if (f1 > 0.0F && ((FlightModelMain) super.FM).CT.getArrestor() < 0.9F) { f1 = 0.0F; }
+				if (f1 > 6.2F) { f1 = 6.2F; }
 				this.arrestor2 += f1;
 				if (this.arrestor2 < -23F) {
 					this.arrestor2 = -23F;
-				} else if (this.arrestor2 > 45F) {
-					this.arrestor2 = 45F;
-				}
+				} else if (this.arrestor2 > 45F) { this.arrestor2 = 45F; }
 				this.hierMesh().chunkSetAngles("Hook_D0", 0.0F, this.arrestor2, 0.0F);
 			}
 		}
-		if ((this == World.getPlayerAircraft()) && ((this.FM instanceof RealFlightModel))) {
+		if (this == World.getPlayerAircraft() && this.FM instanceof RealFlightModel) {
 			if (((RealFlightModel) this.FM).isRealMode()) {
 				switch (this.diveMechStage) {
-				case 1:
-					this.FM.CT.setTrimElevatorControl(-0.40F);
-					this.FM.CT.trimElevator = -0.40F;
-					break;
-				case 2:
-					if (this.FM.isTick(41, 0)) {
-						this.FM.CT.setTrimElevatorControl(0.40F);
-						this.FM.CT.trimElevator = 0.40F;
-					}
-					break;
+					case 1:
+						this.FM.CT.setTrimElevatorControl(-0.40F);
+						this.FM.CT.trimElevator = -0.40F;
+						break;
+					case 2:
+						if (this.FM.isTick(41, 0)) {
+							this.FM.CT.setTrimElevatorControl(0.40F);
+							this.FM.CT.trimElevator = 0.40F;
+						}
+						break;
 				}
 			}
 		}
@@ -250,7 +221,6 @@ public class JU_87C extends JU_87 {
 		Property.set(class1, "yearService", 1939.9F);
 		Property.set(class1, "yearExpired", 1945.5F);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 10, 3, 3, 3, 3, 3 });
-		Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_ExternalBomb01",
-				"_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05" });
+		Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05" });
 	}
 }

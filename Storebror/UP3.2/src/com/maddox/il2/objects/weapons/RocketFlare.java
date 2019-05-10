@@ -20,9 +20,9 @@ public class RocketFlare extends Rocket {
 	public void start(float f, int i) {
 		float f1 = 30F;
 		super.start(f1, i);
-		getOwner().getSpeed(super.speed);
+		this.getOwner().getSpeed(super.speed);
 		super.speed.z = -20D;
-		setSpeed(super.speed);
+		this.setSpeed(super.speed);
 		Eff3DActor.New(this, null, new Loc(), 1.0F, "3do/Effects/Fireworks/Piropatron.eff", f1);
 		Eff3DActor.New(this, null, new Loc(), 0.8F, "3do/Effects/RocketSidewinder/RocketSidewinderSmoke.eff", f1);
 		Engine.countermeasures().add(this);
@@ -30,17 +30,17 @@ public class RocketFlare extends Rocket {
 
 	protected void doExplosion(Actor actor, String s) {
 		super.pos.getTime(Time.current(), p);
-		Class class1 = getClass();
+		Class class1 = this.getClass();
 		float f = Property.floatValue(class1, "power", 1000F);
 		int i = Property.intValue(class1, "powerType", 0);
 		float f1 = Property.floatValue(class1, "radius", 0.0F);
-		getSpeed(super.speed);
+		this.getSpeed(super.speed);
 		Vector3f vector3f = new Vector3f(super.speed);
 		vector3f.normalize();
 		vector3f.scale(850F);
-		MsgShot.send(actor, s, p, vector3f, super.M, getOwner(), (float) (0.5F * super.M * super.speed.lengthSquared()), 3, 0.0D);
-		MsgExplosion.send(actor, s, p, getOwner(), super.M, f, i, f1);
-		destroy();
+		MsgShot.send(actor, s, p, vector3f, super.M, this.getOwner(), (float) (0.5F * super.M * super.speed.lengthSquared()), 3, 0.0D);
+		MsgExplosion.send(actor, s, p, this.getOwner(), super.M, f, i, f1);
+		this.destroy();
 		Engine.missiles().remove(this);
 	}
 

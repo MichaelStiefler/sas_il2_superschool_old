@@ -7,8 +7,8 @@ import com.maddox.rts.Property;
 
 public class PylonKS1 extends Pylon {
 
-  static {
-    Class localClass = PylonKS1.class;
-    Property.set(localClass, "mesh", "3DO/Arms/KS1_Pylon/mono.sim");
-  }
+	static {
+		Class localClass = PylonKS1.class;
+		Property.set(localClass, "mesh", "3DO/Arms/KS1_Pylon/mono.sim");
+	}
 }

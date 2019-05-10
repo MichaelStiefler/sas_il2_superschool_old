@@ -30,18 +30,10 @@ public class CockpitIL2_GunnerOpenFieldMod extends CockpitGunner {
 			} else {
 				float f = orient.getYaw();
 				float f1 = orient.getTangage();
-				if (f1 < -15F) {
-					f1 = -15F;
-				}
-				if (f1 > 45F) {
-					f1 = 45F;
-				}
-				if (f < -135F) {
-					f = -135F;
-				}
-				if (f > 135F) {
-					f = 135F;
-				}
+				if (f1 < -15F) { f1 = -15F; }
+				if (f1 > 45F) { f1 = 45F; }
+				if (f < -135F) { f = -135F; }
+				if (f > 135F) { f = 135F; }
 				orient.setYPR(f, f1, 0.0F);
 				orient.wrap();
 			}
@@ -50,18 +42,12 @@ public class CockpitIL2_GunnerOpenFieldMod extends CockpitGunner {
 
 	protected void interpTick() {
 		if (this.isRealMode()) {
-			if ((this.emitter == null) || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) {
-				this.bGunFire = false;
-			}
+			if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) { this.bGunFire = false; }
 			this.fm.CT.WeaponControl[this.weaponControlNum()] = this.bGunFire;
 			if (this.bGunFire) {
-				if (this.hook1 == null) {
-					this.hook1 = new HookNamed(this.aircraft(), "_MGUN03");
-				}
+				if (this.hook1 == null) { this.hook1 = new HookNamed(this.aircraft(), "_MGUN03"); }
 				this.doHitMasterAircraft(this.aircraft(), this.hook1, "_MGUN03");
-				if (this.hook2 == null) {
-					this.hook2 = new HookNamed(this.aircraft(), "_MGUN04");
-				}
+				if (this.hook2 == null) { this.hook2 = new HookNamed(this.aircraft(), "_MGUN04"); }
 				this.doHitMasterAircraft(this.aircraft(), this.hook2, "_MGUN04");
 			}
 		}
@@ -69,7 +55,7 @@ public class CockpitIL2_GunnerOpenFieldMod extends CockpitGunner {
 
 	public void doGunFire(boolean flag) {
 		if (this.isRealMode()) {
-			if ((this.emitter == null) || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) {
+			if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) {
 				this.bGunFire = false;
 			} else {
 				this.bGunFire = flag;
@@ -118,9 +104,9 @@ public class CockpitIL2_GunnerOpenFieldMod extends CockpitGunner {
 	}
 
 	private boolean bNeedSetUp;
-	Loc l;
-	private Hook hook1;
-	private Hook hook2;
+	Loc             l;
+	private Hook    hook1;
+	private Hook    hook2;
 
 	static {
 		Class clazz = CockpitIL2_GunnerOpenFieldMod.class;

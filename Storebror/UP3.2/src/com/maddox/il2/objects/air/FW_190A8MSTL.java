@@ -33,8 +33,7 @@ import com.maddox.sas1946.il2.util.Reflection;
 public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 
 	public FW_190A8MSTL() {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL()");
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL()"); }
 		this.bNeedSetup = true;
 		this.dtime = -1L;
 		this.target_ = null;
@@ -43,35 +42,27 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 	}
 
 	public Aircraft getDrone() {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL getDrone()");
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL getDrone()"); }
 		return this;
 	}
 
 	public Aircraft getQueen() {
-		if (!(this.mistelQueen instanceof Aircraft))
-			return null;
+		if (!(this.mistelQueen instanceof Aircraft)) { return null; }
 		return (Aircraft) this.mistelQueen;
 	}
 
 	public void mistelExplosion() {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL mistelExplosion()");
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL mistelExplosion()"); }
 		if (this.mistelQueen == null) {
-			if (DEBUG >= 1)
-				System.out.println("FW_190A8MSTL mistelExplosion() mistelQueen=null");
+			if (DEBUG >= 1) { System.out.println("FW_190A8MSTL mistelExplosion() mistelQueen=null"); }
 			return;
 		}
-		if (this.mistelQueen.pos.getAbsPoint().z - Engine.cur.land.HQ(this.mistelQueen.pos.getAbsPoint().x,
-				this.mistelQueen.pos.getAbsPoint().y) > 50D) {
-			if (DEBUG >= 1)
-				System.out.println("FW_190A8MSTL mistelExplosion() Altitude above land > 50m");
-			MsgExplosion.send(this.mistelQueen, null, this.mistelQueen.pos.getAbsPoint(), this, 0.0F, 6550.0F, 0,
-					890.0F);
+		if (this.mistelQueen.pos.getAbsPoint().z - Engine.cur.land.HQ(this.mistelQueen.pos.getAbsPoint().x, this.mistelQueen.pos.getAbsPoint().y) > 50D) {
+			if (DEBUG >= 1) { System.out.println("FW_190A8MSTL mistelExplosion() Altitude above land > 50m"); }
+			MsgExplosion.send(this.mistelQueen, null, this.mistelQueen.pos.getAbsPoint(), this, 0.0F, 6550.0F, 0, 890.0F);
 			return;
 		}
-		if (DEBUG >= 1)
-			System.out.println("FW_190A8MSTL mistelExplosion() spawning BombFAB5000");
+		if (DEBUG >= 1) { System.out.println("FW_190A8MSTL mistelExplosion() spawning BombFAB5000"); }
 		BombFAB5000 bomb = new BombFAB5000();
 		bomb.pos.setUpdateEnable(true);
 		bomb.pos.setAbs(this.mistelQueen.pos.getAbs());
@@ -84,21 +75,18 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 	}
 
 	protected void finalize() {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL finalize()");
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL finalize()"); }
 		super.finalize();
 		NetMistel.removeNetMistelFromList(this);
 	}
 
 	protected void moveFan(float f) {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL moveFan(" + f + ")");
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL moveFan(" + f + ")"); }
 		int i = 0;
 		for (int j = 0; j < 1; j++) {
 			if (this.oldProp[j] < 2) {
 				i = Math.abs((int) (this.FM.EI.engines[j].getw() * 0.12F * 1.5F));
-				if (i >= 1)
-					i = 1;
+				if (i >= 1) { i = 1; }
 				if (i != this.oldProp[j]) {
 					this.hierMesh().chunkVisible(Props[j][this.oldProp[j]], false);
 					this.oldProp[j] = i;
@@ -111,10 +99,11 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 				float f1 = 57.3F * this.FM.EI.engines[j].getw();
 				f1 %= 2880F;
 				f1 /= 2880F;
-				if (f1 <= 0.5F)
+				if (f1 <= 0.5F) {
 					f1 *= 2.0F;
-				else
+				} else {
 					f1 = f1 * 2.0F - 2.0F;
+				}
 				f1 *= 1200F;
 				this.propPos[j] = (this.propPos[j] + f1 * f) % 360F;
 			}
@@ -124,8 +113,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 	}
 
 	public static void moveGear(HierMesh hiermesh, float f) {
-		if (DEBUG_METHODS)
-			System.out.println("FW_190A8MSTL moveGear(" + hiermesh.hashCode() + ", " + f + ")");
+		if (DEBUG_METHODS) { System.out.println("FW_190A8MSTL moveGear(" + hiermesh.hashCode() + ", " + f + ")"); }
 		hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 77F * f, 0.0F);
 		hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 77F * f, 0.0F);
 		hiermesh.chunkSetAngles("GearL3_D0", 0.0F, 157F * f, 0.0F);
@@ -138,17 +126,16 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 	}
 
 	protected void moveGear(float f) {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL moveGear(" + f + ")");
-		if (this.typeDockableIsDocked())
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL moveGear(" + f + ")"); }
+		if (this.typeDockableIsDocked()) {
 			moveGear(this.hierMesh(), 0.0F);
-		else
+		} else {
 			moveGear(this.hierMesh(), f);
+		}
 	}
 
 	public void moveSteering(float f) {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL moveSteering(" + f + ")");
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL moveSteering(" + f + ")"); }
 		if (this.FM.CT.getGear() < 0.98F) {
 			return;
 		} else {
@@ -158,18 +145,16 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 	}
 
 	public void update(float f) {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL update(" + f + ")");
-		if (this.bNeedSetup)
-			this.checkAsDrone();
-		if (this.FM instanceof Maneuver)
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL update(" + f + ")"); }
+		if (this.bNeedSetup) { this.checkAsDrone(); }
+		if (this.FM instanceof Maneuver) {
 			if (this.typeDockableIsDocked()) {
 				if (!(this.FM instanceof RealFlightModel) || !((RealFlightModel) this.FM).isRealMode()) {
 					((Maneuver) this.FM).set_maneuver(48);
 					((Maneuver) this.FM).AP.way.setCur(((Aircraft) this.queen_).FM.AP.way.Cur());
 					((Pilot) this.FM).setDumbTime(3000L);
 				}
-			} else if (!(this.FM instanceof RealFlightModel) || !((RealFlightModel) this.FM).isRealMode())
+			} else if (!(this.FM instanceof RealFlightModel) || !((RealFlightModel) this.FM).isRealMode()) {
 				if (this.dtime > 0L) {
 					((Maneuver) this.FM).set_maneuver(22);
 					((Pilot) this.FM).setDumbTime(3000L);
@@ -183,6 +168,8 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 					((Maneuver) this.FM).set_maneuver(21);
 					((Pilot) this.FM).setDumbTime(30000L);
 				}
+			}
+		}
 		if (this.typeDockableIsDocked()) {
 			Aircraft aircraft = (Aircraft) this.typeDockableGetQueen();
 			NetMistel.mistelToMirrors(this);
@@ -198,14 +185,11 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 			aircraft.FM.CT.FlapsControl = this.FM.CT.FlapsControl;
 			aircraft.FM.CT.forceFlaps(this.FM.CT.getFlap());
 			this.moveSteering(0.0F);
-			this.FM.canChangeBrakeShoe = (aircraft.FM.Gears.onGround() && this.FM.getSpeedKMH() < 10F);
-			if (aircraft.FM.Gears.onGround()) {
-				this.FM.Loc.z = Engine.cur.land.HQ(this.FM.Loc.x, this.FM.Loc.y) + 51D;
-			}
+			this.FM.canChangeBrakeShoe = aircraft.FM.Gears.onGround() && this.FM.getSpeedKMH() < 10F;
+			if (aircraft.FM.Gears.onGround()) { this.FM.Loc.z = Engine.cur.land.HQ(this.FM.Loc.x, this.FM.Loc.y) + 51D; }
 		}
 		super.update(f);
-		if (this.FM.CT.saveWeaponControl[3] || this.FM.CT.WeaponControl[3])
-			this.typeDockableAttemptDetach();
+		if (this.FM.CT.saveWeaponControl[3] || this.FM.CT.WeaponControl[3]) { this.typeDockableAttemptDetach(); }
 	}
 
 	public void rareAction(float f, boolean flag) {
@@ -215,18 +199,16 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 			if (this.queen_ != null) {
 				if (this.queen_ instanceof JU_88MSTL) {
 					((JU_88MSTL) this.queen_).cutFM(cutFMParams[this.nextCutIndex++], 0, Engine.actorLand());
-					if (this.nextCutIndex >= cutFMParams.length)
-						this.nextCutIndex = 0;
+					if (this.nextCutIndex >= cutFMParams.length) { this.nextCutIndex = 0; }
 				}
 			}
 		}
 	}
 
 	public void onAircraftLoaded() {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL onAircraftLoaded()");
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL onAircraftLoaded()"); }
 		super.onAircraftLoaded();
-		if (Mission.isCoop() && !Mission.isServer() && !this.isSpawnFromMission() && this.net.isMaster())
+		if (Mission.isCoop() && !Mission.isServer() && !this.isSpawnFromMission() && this.net.isMaster()) {
 			new MsgAction(64, 0.0D, this) {
 
 				public void doAction() {
@@ -234,97 +216,80 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 				}
 
 			};
+		}
 	}
 
 	private void onCoopMasterSpawned() {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL onCoopMasterSpawned()");
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL onCoopMasterSpawned()"); }
 		Actor actor = null;
 		String s = null;
-		if (this.FM.AP.way.curr().getTargetName() == null)
-			this.FM.AP.way.next();
+		if (this.FM.AP.way.curr().getTargetName() == null) { this.FM.AP.way.next(); }
 		s = this.FM.AP.way.curr().getTargetName();
-		if (s != null)
-			actor = Actor.getByName(s);
-		if (Actor.isValid(actor) && (actor instanceof Wing) && actor.getOwnerAttachedCount() > 0)
-			actor = (Actor) actor.getOwnerAttached(0);
+		if (s != null) { actor = Actor.getByName(s); }
+		if (Actor.isValid(actor) && actor instanceof Wing && actor.getOwnerAttachedCount() > 0) { actor = (Actor) actor.getOwnerAttached(0); }
 		this.FM.AP.way.setCur(0);
-		if (Actor.isValid(actor) && (actor instanceof JU_88MSTL))
+		if (Actor.isValid(actor) && actor instanceof JU_88MSTL) {
 			try {
 				Aircraft aircraft = (Aircraft) actor;
 				float f = 100F;
-				if (aircraft.FM.M.maxFuel > 0.0F)
-					f = (aircraft.FM.M.fuel / aircraft.FM.M.maxFuel) * 100F;
-				String s1 = "spawn " + actor.getClass().getName() + " NAME net" + actor.name() + " FUEL " + f
-						+ " WEAPONS " + aircraft.thisWeaponsName + (aircraft.bPaintShemeNumberOn ? "" : " NUMBEROFF")
-						+ " OVR";
+				if (aircraft.FM.M.maxFuel > 0.0F) { f = aircraft.FM.M.fuel / aircraft.FM.M.maxFuel * 100F; }
+				String s1 = "spawn " + actor.getClass().getName() + " NAME net" + actor.name() + " FUEL " + f + " WEAPONS " + aircraft.thisWeaponsName + (aircraft.bPaintShemeNumberOn ? "" : " NUMBEROFF") + " OVR";
 				CmdEnv.top().exec(s1);
 			} catch (Exception exception) {
 				System.out.println(exception.getMessage());
 				exception.printStackTrace();
 			}
+		}
 	}
 
 	public void missionStarting() {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL missionStarting()");
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL missionStarting()"); }
 		this.checkAsDrone();
 	}
 
 	private void checkAsDrone() {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL checkAsDrone()");
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL checkAsDrone()"); }
 		if (this.target_ == null) {
-			if (this.FM.AP.way.curr().getTarget() == null)
-				this.FM.AP.way.next();
+			if (this.FM.AP.way.curr().getTarget() == null) { this.FM.AP.way.next(); }
 			this.target_ = this.FM.AP.way.curr().getTarget();
-			if (Actor.isValid(this.target_))
-				this.target_ = this.FM.AP.way.curr().getTargetActorRandom();
+			if (Actor.isValid(this.target_)) { this.target_ = this.FM.AP.way.curr().getTargetActorRandom(); }
 		}
-		if (Actor.isValid(this.target_) && (this.target_ instanceof JU_88MSTL) && this.isNetMaster())
-			((TypeDockable) this.target_).typeDockableRequestAttach(this, 0, true);
+		if (Actor.isValid(this.target_) && this.target_ instanceof JU_88MSTL && this.isNetMaster()) { ((TypeDockable) this.target_).typeDockableRequestAttach(this, 0, true); }
 		this.bNeedSetup = false;
 		this.target_ = null;
 	}
 
 	public int typeDockableGetDockport() {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL typeDockableGetDockport()");
-		if (this.typeDockableIsDocked())
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL typeDockableGetDockport()"); }
+		if (this.typeDockableIsDocked()) {
 			return this.dockport_;
-		else
+		} else {
 			return -1;
+		}
 	}
 
 	public Actor typeDockableGetQueen() {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL typeDockableGetQueen()");
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL typeDockableGetQueen()"); }
 		return this.queen_;
 	}
 
 	public boolean typeDockableIsDocked() {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL typeDockableIsDocked()");
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL typeDockableIsDocked()"); }
 		return Actor.isValid(this.queen_);
 	}
 
 	public void typeDockableAttemptAttach() {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL typeDockableAttemptAttach()");
-		if (!this.FM.AS.isMaster())
-			return;
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL typeDockableAttemptAttach()"); }
+		if (!this.FM.AS.isMaster()) { return; }
 		if (!this.typeDockableIsDocked()) {
 			Aircraft aircraft = War.getNearestFriend(this);
-			if (aircraft instanceof JU_88MSTL)
-				((TypeDockable) aircraft).typeDockableRequestAttach(this);
+			if (aircraft instanceof JU_88MSTL) { ((TypeDockable) aircraft).typeDockableRequestAttach(this); }
 		}
 	}
 
 	public void typeDockableAttemptDetach() {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL typeDockableAttemptDetach()");
-		if (this.FM.AS.isMaster() && this.typeDockableIsDocked() && Actor.isValid(this.queen_))
-			((TypeDockable) this.queen_).typeDockableRequestDetach(this);
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL typeDockableAttemptDetach()"); }
+		if (this.FM.AS.isMaster() && this.typeDockableIsDocked() && Actor.isValid(this.queen_)) { ((TypeDockable) this.queen_).typeDockableRequestDetach(this); }
 	}
 
 	public void typeDockableRequestAttach(Actor actor) {
@@ -346,8 +311,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 	}
 
 	public void typeDockableDoAttachToQueen(Actor actor, int i) {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL typeDockableDoAttachToQueen(" + actor.hashCode() + ", " + i + ")");
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL typeDockableDoAttachToQueen(" + actor.hashCode() + ", " + i + ")"); }
 		this.queen_ = actor;
 		this.mistelQueen = actor;
 		this.dockport_ = i;
@@ -369,7 +333,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 			this.FM.EI.engines[0] = motor;
 			this.FM.EI.engines[1] = aircraft.FM.EI.engines[0];
 			this.FM.EI.engines[2] = aircraft.FM.EI.engines[1];
-			this.FM.EI.bCurControl = (new boolean[] { true, true, true });
+			this.FM.EI.bCurControl = new boolean[] { true, true, true };
 		}
 		this.FM.EI.setEngineRunning();
 		this.FM.CT.setGearAirborne();
@@ -377,11 +341,10 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 		this.moveSteering(0.0F);
 		this.FM.CT.GearControl = ((Aircraft) actor).FM.CT.GearControl;
 		FlightModel flightmodel = ((Aircraft) this.queen_).FM;
-		if ((this.FM instanceof Maneuver) && (flightmodel instanceof Maneuver)) {
+		if (this.FM instanceof Maneuver && flightmodel instanceof Maneuver) {
 			Maneuver maneuver = (Maneuver) flightmodel;
 			Maneuver maneuver1 = (Maneuver) this.FM;
-			if (maneuver.Group != null && maneuver1.Group != null
-					&& maneuver1.Group.numInGroup(this) == maneuver1.Group.nOfAirc - 1) {
+			if (maneuver.Group != null && maneuver1.Group != null && maneuver1.Group.numInGroup(this) == maneuver1.Group.nOfAirc - 1) {
 				AirGroup airgroup = new AirGroup(maneuver1.Group);
 				maneuver1.Group.delAircraft(this);
 				airgroup.addAircraft(this);
@@ -389,19 +352,15 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 				airgroup.rejoinGroup = null;
 			}
 		}
-		if (this.FM.CT.Weapons[3] == null) {
-			this.FM.CT.Weapons[3] = new BulletEmitter[1];
-		}
+		if (this.FM.CT.Weapons[3] == null) { this.FM.CT.Weapons[3] = new BulletEmitter[1]; }
 		this.FM.CT.Weapons[3][0] = new BombGunNull();
 		this.FM.CT.Weapons[3][0].set(this, "_Clip00");
 		this.FM.CT.Weapons[3][0].loadBullets(2);
 	}
 
 	public void typeDockableDoDetachFromQueen(int i) {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL typeDockableDoDetachFromQueen(" + i + ")");
-		if (this.dockport_ != i)
-			return;
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL typeDockableDoDetachFromQueen(" + i + ")"); }
+		if (this.dockport_ != i) { return; }
 		this.queen_ = null;
 		this.dockport_ = 0;
 		this.FM.CT.setTrimElevatorControl(0.51F);
@@ -413,7 +372,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 			Motor motor = this.FM.EI.engines[0];
 			this.FM.EI.engines = new Motor[1];
 			this.FM.EI.engines[0] = motor;
-			this.FM.EI.bCurControl = (new boolean[] { true });
+			this.FM.EI.bCurControl = new boolean[] { true };
 			for (int j = 1; j < 3; j++) {
 				if (this.FM.Gears.clpEngineEff[j][0] != null) {
 					Eff3DActor.finish(this.FM.Gears.clpEngineEff[j][0]);
@@ -429,15 +388,13 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 	}
 
 	public void typeDockableReplicateToNet(NetMsgGuaranted netmsgguaranted) throws IOException {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL typeDockableReplicateToNet(" + netmsgguaranted.hashCode() + ")");
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL typeDockableReplicateToNet(" + netmsgguaranted.hashCode() + ")"); }
 		if (this.typeDockableIsDocked()) {
 			netmsgguaranted.writeByte(1);
 			ActorNet actornet = null;
 			if (Actor.isValid(this.queen_)) {
 				actornet = this.queen_.net;
-				if (actornet.countNoMirrors() > 0)
-					actornet = null;
+				if (actornet.countNoMirrors() > 0) { actornet = null; }
 			}
 			netmsgguaranted.writeByte(this.dockport_);
 			netmsgguaranted.writeNetObj(actornet);
@@ -447,8 +404,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 	}
 
 	public void typeDockableReplicateFromNet(NetMsgInput netmsginput) throws IOException {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL typeDockableReplicateFromNet(" + netmsginput.hashCode() + ")");
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL typeDockableReplicateFromNet(" + netmsginput.hashCode() + ")"); }
 		if (netmsginput.readByte() == 1) {
 			this.dockport_ = netmsginput.readByte();
 			NetObj netobj = netmsginput.readNetObj();
@@ -460,36 +416,30 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 	}
 
 	public boolean netGetGMsg(NetMsgInput netmsginput, boolean bool) throws IOException {
-		if (Debug_Methods())
-			System.out.println("FW_190A8MSTL netGetGMsg(" + netmsginput.hashCode() + ", " + bool + ")");
-		if (!NetMistel.netGetGMsg(this, netmsginput, bool))
-			return super.netGetGMsg(netmsginput, bool);
+		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL netGetGMsg(" + netmsginput.hashCode() + ", " + bool + ")"); }
+		if (!NetMistel.netGetGMsg(this, netmsginput, bool)) { return super.netGetGMsg(netmsginput, bool); }
 		return true;
 	}
 
 	private boolean Debug_Methods() {
-		if (!DEBUG_METHODS)
-			return false;
-		if (this.getQueen() == null)
-			return false;
-		if (!(this.getQueen() instanceof JU_88MSTL))
-			return false;
-		if (!((JU_88MSTL) this.getQueen()).wasInCutFM)
-			return false;
+		if (!DEBUG_METHODS) { return false; }
+		if (this.getQueen() == null) { return false; }
+		if (!(this.getQueen() instanceof JU_88MSTL)) { return false; }
+		if (!((JU_88MSTL) this.getQueen()).wasInCutFM) { return false; }
 		return true;
 	}
 
-	private boolean bNeedSetup;
-	private long dtime;
-	private Actor target_;
-	private Actor queen_;
-	private int dockport_;
-	private Actor mistelQueen;
-	private static int DEBUG = 0;
+	private boolean        bNeedSetup;
+	private long           dtime;
+	private Actor          target_;
+	private Actor          queen_;
+	private int            dockport_;
+	private Actor          mistelQueen;
+	private static int     DEBUG         = 0;
 	private static boolean DEBUG_METHODS = false;
-	private boolean navLightsOn = false;
-	private static int cutFMParams[] = { 19, 37, 34, 10, 9 };
-	private int nextCutIndex = 0;
+	private boolean        navLightsOn   = false;
+	private static int     cutFMParams[] = { 19, 37, 34, 10, 9 };
+	private int            nextCutIndex  = 0;
 
 	static {
 		Class class1 = FW_190A8MSTL.class;
@@ -502,14 +452,9 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 		Property.set(class1, "FlightModel", "FlightModels/Fw-190A-8.fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitFW_190F8MSTL.class });
 		Property.set(class1, "LOSElevation", 0.764106F);
-		weaponTriggersRegister(class1,
-				new int[] { 0, 0, 0, 0, 3, 9, 9, 1, 1, 9, 9, 1, 1, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 2, 2 });
-		weaponHooksRegister(class1,
-				new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalDev01",
-						"_ExternalDev02", "_CANNON03", "_CANNON04", "_ExternalDev03", "_ExternalDev04", "_CANNON05",
-						"_CANNON06", "_CANNON07", "_CANNON08", "_ExternalDev05", "_ExternalDev06", "_CANNON09",
-						"_CANNON10", "_ExternalDev07", "_ExternalDev08", "_CANNON11", "_CANNON12", "_ExternalDev09",
-						"_ExternalDev10", "_ExternalRock01", "_ExternalRock02" });
+		weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 3, 9, 9, 1, 1, 9, 9, 1, 1, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 2, 2 });
+		weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalDev01", "_ExternalDev02", "_CANNON03", "_CANNON04", "_ExternalDev03", "_ExternalDev04", "_CANNON05", "_CANNON06", "_CANNON07",
+				"_CANNON08", "_ExternalDev05", "_ExternalDev06", "_CANNON09", "_CANNON10", "_ExternalDev07", "_ExternalDev08", "_CANNON11", "_CANNON12", "_ExternalDev09", "_ExternalDev10", "_ExternalRock01", "_ExternalRock02" });
 	}
 
 }
