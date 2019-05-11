@@ -61,7 +61,7 @@ public abstract class MissileGun extends RocketGun {
 	}
 
 	public void shots(int numMissilesToShoot, boolean isValidForNetMirrors) {
-//		System.out.println("MissileGun 1 shots(" + numMissilesToShoot + ") class=" + this.getClass().getName() + ", hash=" + this.hashCode() + ", isValidForNetMirrors=" + isValidForNetMirrors);
+//	    System.out.println("MissileGun 1 shots(" + numMissilesToShoot + ") class=" + this.getClass().getName() + ", hash=" + this.hashCode() + ", actor.isNetMirror=" + this.actor.isNetMirror() + ", isValidForNetMirrors=" + isValidForNetMirrors + ", actor=" + this.actor.getClass().getName());
 //		Exception e = new Exception("shots");
 //		e.printStackTrace();
 		this.isValidForNetMirrors = isValidForNetMirrors;
@@ -196,7 +196,8 @@ public abstract class MissileGun extends RocketGun {
 //		Exception e = new Exception("loadBullets");
 //		e.printStackTrace();
 		super.loadBullets(numBulletsToLoad);
-		if (numBulletsToLoad != 0 && this.actor instanceof TypeGuidedMissileCarrier) { ((TypeGuidedMissileCarrier) this.actor).getGuidedMissileUtils().onAircraftLoaded(); }
+//		if (numBulletsToLoad != 0 && this.actor instanceof TypeGuidedMissileCarrier) { ((TypeGuidedMissileCarrier) this.actor).getGuidedMissileUtils().onAircraftLoaded(); }
+		if (this.actor instanceof TypeGuidedMissileCarrier) { ((TypeGuidedMissileCarrier) this.actor).getGuidedMissileUtils().onAircraftLoaded(); }
 	}
 
 }
