@@ -518,7 +518,7 @@ public class GuidedMissileUtils {
 				}
 			}
 		} catch (Exception exception) {
-			EventLog.type("Exception in initParams: " + exception.getMessage());
+			EventLog.type("Exception in createMissileList: " + exception.getMessage());
 		}
 		if (theMissileClass == null) { return; }
 		this.getMissileProperties(theMissileClass);
