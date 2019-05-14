@@ -814,6 +814,11 @@ public class GuidedMissileUtils {
 		} else if ((targetType & Missile.TARGET_GROUND) != 0) {
 			this.lookForGuidedMissileTargetGround(actor, maxFOVfrom, maxFOVto, maxDistance);
 		} else if ((targetType & Missile.TARGET_SHIP) != 0) { this.lookForGuidedMissileTargetShip(actor, maxFOVfrom, maxFOVto, maxDistance); }
+		if (this.trgtMissile == null) return;
+		if (!(actor instanceof Aircraft)) return;
+		Aircraft aircraft = (Aircraft)actor;
+		if (aircraft.FM instanceof RealFlightModel && ((RealFlightModel) aircraft.FM).isRealMode() || !(aircraft.FM instanceof Pilot)) return;
+		if (actor.getArmy() == this.trgtMissile.getArmy()) this.trgtMissile = null;
 	}
 
 	public void lookForGuidedMissileTargetAircraft(Actor actor, float maxFOVfrom, float maxFOVto, double maxDistance) {
