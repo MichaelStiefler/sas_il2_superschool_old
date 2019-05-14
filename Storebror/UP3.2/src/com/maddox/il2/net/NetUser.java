@@ -138,13 +138,13 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
 	public static final String MIN_PATCH_LEVEL        = "0";
 	public static final String MAX_PATCH_LEVEL        = "100";
 	public static final String UP_VERSION             = "3.2";
-	public static final String PATCH_LEVEL            = "3";
+	public static final String PATCH_LEVEL            = "4";
 	public static final String PATCH_LEVEL_TEST       = "102b1";
 	public static String[]     PATCHLEVEL_G           = { "3" };
 	public static String[]     PATCHLEVEL_Y           = { "303" };
 	private String             patchLevel             = "none";
 	private String             selectorVersion        = "unknown";
-	private String             ultrapackVersion       = "unknown";
+	private String             ultrapackVersion       = "3 RC4";
 	public static final long   UPDATE_CHAT_INTERVAL   = 10000L;
 	private long               lastUpdateChatMessages = 0L;
 

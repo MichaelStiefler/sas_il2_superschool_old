@@ -18,9 +18,8 @@ public class F_86F_30 extends F_86F {
 		Property.set(localClass, "meshName_de", "3DO/Plane/F-86F(Multi1)/hier.him");
 		Property.set(localClass, "PaintScheme_de", new PaintSchemeFMPar1956());
 		Property.set(localClass, "yearService", 1949.9F);
-		Property.set(localClass, "yearService", 1949.9F);
 		Property.set(localClass, "yearExpired", 1960.3F);
-		Property.set(localClass, "FlightModel", "FlightModels/F-86F-25L.fmd");
+		Property.set(localClass, "FlightModel", "FlightModels/F-86F-30.fmd");
 		Property.set(localClass, "cockpitClass", new Class[] { CockpitF_86Flate.class });
 		Property.set(localClass, "LOSElevation", 0.725F);
 		Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 0, 0, 9, 9, 9, 9, 9, 3, 3, 9, 3, 3, 9, 2, 2, 9, 2, 2, 9, 9, 9, 9, 9, 3, 3, 9, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3 });

@@ -5,9 +5,6 @@ import com.maddox.rts.Property;
 
 public class MiG_15SB extends Mig_15F implements TypeStormovik {
 
-	public MiG_15SB() {
-	}
-
 	public void update(float f) {
 		super.update(f);
 		if (this.FM.getSpeedKMH() > 1100F) {

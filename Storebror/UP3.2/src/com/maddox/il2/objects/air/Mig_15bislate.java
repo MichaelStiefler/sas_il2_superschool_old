@@ -5,9 +5,6 @@ import com.maddox.rts.Property;
 
 public class Mig_15bislate extends Mig_15F {
 
-	public Mig_15bislate() {
-	}
-
 	public void update(float f) {
 		super.update(f);
 		if (this.FM.getSpeedKMH() > 1100F) {
@@ -32,7 +29,7 @@ public class Mig_15bislate extends Mig_15F {
 		Property.set(class1, "PaintScheme", new PaintSchemeFMPar06());
 		Property.set(class1, "yearService", 1951.4F);
 		Property.set(class1, "yearExpired", 1960.3F);
-		Property.set(class1, "FlightModel", "FlightModels/MiG-15F.fmd");
+		Property.set(class1, "FlightModel", "FlightModels/MiG-15bis.fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitMig_15F.class });
 		Property.set(class1, "LOSElevation", 0.725F);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 1, 0, 0, 9, 9 });

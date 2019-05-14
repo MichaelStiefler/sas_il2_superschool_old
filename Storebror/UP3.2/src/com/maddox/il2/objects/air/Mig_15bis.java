@@ -4,9 +4,6 @@ import com.maddox.rts.Property;
 
 public class Mig_15bis extends Mig_15F {
 
-	public Mig_15bis() {
-	}
-
 	static {
 		Class class1 = Mig_15bis.class;
 		new NetAircraft.SPAWN(class1);
@@ -23,7 +20,7 @@ public class Mig_15bis extends Mig_15F {
 		Property.set(class1, "PaintScheme", new PaintSchemeFMPar06());
 		Property.set(class1, "yearService", 1949.9F);
 		Property.set(class1, "yearExpired", 1960.3F);
-		Property.set(class1, "FlightModel", "FlightModels/MiG-15F.fmd");
+		Property.set(class1, "FlightModel", "FlightModels/MiG-15bis.fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitMig_15F.class });
 		Property.set(class1, "LOSElevation", 0.725F);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 1, 0, 0, 9, 9 });

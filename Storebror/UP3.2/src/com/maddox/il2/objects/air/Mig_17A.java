@@ -32,7 +32,7 @@ public class Mig_17A extends Mig_17 {
 		Property.set(class1, "PaintScheme", new PaintSchemeFMPar06());
 		Property.set(class1, "yearService", 1952.11F);
 		Property.set(class1, "yearExpired", 1960.3F);
-		Property.set(class1, "FlightModel", "FlightModels/MiG-17.fmd");
+		Property.set(class1, "FlightModel", "FlightModels/MiG-17A.fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitMig_17.class });
 		Property.set(class1, "LOSElevation", 0.725F);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 1, 0, 0, 9, 9 });

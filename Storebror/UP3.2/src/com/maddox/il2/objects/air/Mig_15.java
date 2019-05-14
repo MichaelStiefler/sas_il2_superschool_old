@@ -4,9 +4,6 @@ import com.maddox.rts.Property;
 
 public class Mig_15 extends Mig_15F {
 
-	public Mig_15() {
-	}
-
 	static {
 		Class class1 = Mig_15.class;
 		new NetAircraft.SPAWN(class1);

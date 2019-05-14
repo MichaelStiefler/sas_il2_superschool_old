@@ -389,7 +389,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		if (newTurnDiffMax > this.turnDiffMax) { this.turnDiffMax = (this.turnDiffMax * this.stepsForFullTurn + newTurnDiffMax) / (this.stepsForFullTurn + 1.0F); }
 
 		if (this.getFailState() == FAIL_TYPE_IVAN) {
-			System.out.println("IRRER IVAN!");
+//			System.out.println("IRRER IVAN!");
 			if (this.ivanTimeLeft < Time.tickLenFs()) {
 				if (TrueRandom.nextFloat() < 0.5F) {
 					if (TrueRandom.nextFloat() < 0.5F) {
@@ -808,7 +808,8 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 
 	public double getLaunchPitch() {
 		double launchPitchTimeFactor = this.getLaunchTimeFactor();
-		double theLaunchPitch = 2.0D * (Math.cos(launchPitchTimeFactor + 0.1D) - 1D + launchPitchTimeFactor / 5.0D);
+		double theLaunchPitch = 1D + 2.0D * (Math.cos(launchPitchTimeFactor) - 1D + launchPitchTimeFactor / 5.0D);
+		System.out.println("getLaunchPitch launchPitchTimeFactor=" + launchPitchTimeFactor + ", theLaunchPitch=" + theLaunchPitch + ", this.launchPitch=" + this.launchPitch);
 		theLaunchPitch *= Math.cos(this.launchKren);
 		theLaunchPitch += this.launchPitch;
 		while (theLaunchPitch > 180F) {
@@ -821,12 +822,12 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	}
 
 	public double getLaunchTimeFactor() {
-		return (Time.current() - this.startTime) / (double) this.trackDelay * 6.0D;
+		return (Time.current() - this.startTime + (this.engineDelayTime<0L?this.engineDelayTime:0L)) / (double) this.trackDelay * 6.0D;
 	}
 
 	public double getLaunchYaw() {
 		double launchYawTimeFactor = this.getLaunchTimeFactor();
-		double theLaunchYaw = 2.0D * (Math.cos(launchYawTimeFactor + 0.1D) - 1D + launchYawTimeFactor / 5.0D);
+		double theLaunchYaw = 1D + 2.0D * (Math.cos(launchYawTimeFactor) - 1D + launchYawTimeFactor / 5.0D);
 		theLaunchYaw *= Math.sin(this.launchKren);
 		theLaunchYaw += this.launchYaw;
 		while (theLaunchYaw > 180F) {
@@ -974,7 +975,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 
 		this.deltaAzimuth = this.deltaTangage = 0.0F;
 		this.pos.setAbs(this.missilePoint3d, this.missileOrient);
-//		System.out.println("Speed: " + (int)(this.pos.speed(null) * 3.6D));
+//		System.out.println("Speed: " + (int)(this.pos.speed(null) * 3.6D) + " (Mach " + (this.pos.speed(null) * 3.6D / MissilePhysics.getMachForAlt((float)this.missilePoint3d.z)) + ")");
 		return this.computeFuzeState();
 	}
 
@@ -1167,13 +1168,15 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 				if (this.ownerIsAircraft()) {
 					this.launchYaw = this.missileOrient.getYaw() - this.getFM().getAOA() * (float) Math.sin(this.launchKren);
 					this.launchPitch = this.missileOrient.getPitch() - this.getFM().getAOA() * (float) Math.cos(this.launchKren);
+//					this.launchYaw = this.getOwner().pos.getCurrentOrient().getYaw() - this.getFM().getAOA() * (float) Math.sin(this.launchKren);
+//					this.launchPitch = this.getOwner().pos.getCurrentOrient().getPitch() - this.getFM().getAOA() * (float) Math.cos(this.launchKren);
 					this.oldRoll = this.missileOrient.getRoll();
 				} else { // if not launched from Aircraft, start in owner's current direction
 					this.launchYaw = this.getOwner().pos.getCurrentOrient().getYaw();
 					this.launchPitch = this.getOwner().pos.getCurrentOrient().getPitch();
 					this.oldRoll = this.getOwner().pos.getCurrentOrient().getRoll();
 				}
-				this.dropFlightPathOrient.setYPR((float) this.launchYaw + 0.5F * (float) Math.sin(this.launchKren), (float) this.launchPitch - 0.5F * (float) Math.cos(this.launchKren), this.oldRoll);
+				this.dropFlightPathOrient.setYPR((float) this.launchYaw /*+ 0.5F * (float) Math.sin(this.launchKren)*/, (float) this.launchPitch /*- 0.5F * (float) Math.cos(this.launchKren)*/, this.oldRoll);
 				break;
 			}
 		}
@@ -1326,9 +1329,9 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 
 		if (this.launchType == LAUNCH_TYPE_DROP) {
 			this.pos.getAbs(Aircraft.tmpOr);
-			float f4 = 0.68F * Property.floatValue(localClass, "maxDeltaAngle", 3.0F);
-			f2 = -1.0F + 2.0F * TrueRandom.nextFloat();
-			f3 = -1.0F + 2.0F * TrueRandom.nextFloat();
+			float f4 = Property.floatValue(localClass, "maxDeltaAngle", 3.0F);
+			f2 = TrueRandom.nextFloat(-1F, 1F);
+			f3 = TrueRandom.nextFloat(-1F, 1F);
 			f2 *= f2 * f2 * f4;
 			f3 *= f3 * f3 * f4;
 			Aircraft.tmpOr.increment(f2, f3, 0.0F);
