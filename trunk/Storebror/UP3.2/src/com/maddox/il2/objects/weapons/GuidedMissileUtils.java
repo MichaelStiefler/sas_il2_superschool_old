@@ -492,6 +492,7 @@ public class GuidedMissileUtils {
 
 	// TODO: ++ Added/changed Code Multiple Missile Type Selection ++
 	public void createMissileList(ArrayList theMissileList, Class theMissileClass) {
+//		System.out.println("createMissileList " + (theMissileClass==null?"null":theMissileClass.getClass().getName()));
 		Aircraft theMissileCarrier = (Aircraft) this.missileOwner;
 		try {
 			for (int l = 0; l < theMissileCarrier.FM.CT.Weapons.length; l++) {
@@ -502,11 +503,11 @@ public class GuidedMissileUtils {
 								MissileGun theMissileGun = (MissileGun) theMissileCarrier.FM.CT.Weapons[l][l1];
 								if (theMissileGun.haveBullets()) {
 									Class theBulletClass = theMissileGun.bulletClass();
-									if (theMissileClass != null) {
-										if (!theBulletClass.getName().equals(theMissileClass.getName())) {
-											continue; // Not the type of missile we're searching for.
-										}
-									}
+//									if (theMissileClass != null) {
+//										if (!theBulletClass.getName().equals(theMissileClass.getName())) {
+//											continue; // Not the type of missile we're searching for.
+//										}
+//									}
 									if (Missile.class.isAssignableFrom(theBulletClass)) { // We've found a missile!
 										if (theMissileClass == null) { theMissileClass = theBulletClass; }
 										theMissileList.add(theMissileCarrier.FM.CT.Weapons[l][l1]);
@@ -814,16 +815,16 @@ public class GuidedMissileUtils {
 		} else if ((targetType & Missile.TARGET_GROUND) != 0) {
 			this.lookForGuidedMissileTargetGround(actor, maxFOVfrom, maxFOVto, maxDistance);
 		} else if ((targetType & Missile.TARGET_SHIP) != 0) { this.lookForGuidedMissileTargetShip(actor, maxFOVfrom, maxFOVto, maxDistance); }
-		if (this.trgtMissile == null) return;
+		if (this.getMissileTarget() == null) return;
 		if (!(actor instanceof Aircraft)) return;
 		Aircraft aircraft = (Aircraft)actor;
 		if (aircraft.FM instanceof RealFlightModel && ((RealFlightModel) aircraft.FM).isRealMode() || !(aircraft.FM instanceof Pilot)) return;
-		if (actor.getArmy() == this.trgtMissile.getArmy()) this.trgtMissile = null;
+		if (actor.getArmy() == this.getMissileTarget().getArmy()) this.setMissileTarget(null);
 	}
 
 	public void lookForGuidedMissileTargetAircraft(Actor actor, float maxFOVfrom, float maxFOVto, double maxDistance) {
 		if (this.iDetectorMode == Missile.DETECTOR_TYPE_MANUAL) {
-			this.trgtMissile = null;
+			this.setMissileTarget(null);
 			this.trgtInSight = null;
 			return;
 		}
@@ -934,13 +935,13 @@ public class GuidedMissileUtils {
 		}
 
 		this.selectedActorOffset.set(theSelectedActorOffset);
-		this.trgtMissile = selectedActor;
+		this.setMissileTarget(selectedActor);
 		this.trgtInSight = visibleActor;
 	}
 
 	public void lookForGuidedMissileTargetGround(Actor actor, float maxFOVfrom, float maxFOVto, double maxDistance) {
 		if (this.iDetectorMode == Missile.DETECTOR_TYPE_MANUAL) {
-			this.trgtMissile = null;
+			this.setMissileTarget(null);
 			this.trgtInSight = null;
 			return;
 		}
@@ -982,7 +983,7 @@ public class GuidedMissileUtils {
 										if (actorIsAI(actor)) {
 											return;
 										} else {
-											this.trgtMissile = theActiveMissile.getVictim();
+											this.setMissileTarget(theActiveMissile.getVictim());
 											return;
 										}
 									}
@@ -1006,7 +1007,7 @@ public class GuidedMissileUtils {
 			EventLog.type(e.getMessage());
 		}
 		this.selectedActorOffset.set(theSelectedActorOffset);
-		this.trgtMissile = selectedActor;
+		this.setMissileTarget(selectedActor);
 	}
 
 	public void lookForGuidedMissileTargetShip(Actor actor, float maxFOVfrom, float maxFOVto, double maxDistance) {
@@ -1018,7 +1019,7 @@ public class GuidedMissileUtils {
 		this.selectedActorOffset.set(new Point3f(0.0F, 0.0F, 0.0F));
 
 		if (!(actor instanceof Aircraft) || this.iDetectorMode == Missile.DETECTOR_TYPE_MANUAL) {
-			this.trgtMissile = null;
+			this.setMissileTarget(null);
 			this.trgtInSight = null;
 			return;
 		}
@@ -1054,7 +1055,7 @@ public class GuidedMissileUtils {
 								if (theActiveMissile.getOwner() == actor) {
 									if (theActiveMissile.getVictim() != null) {
 										if (actorIsAI(actor)) {
-											this.trgtMissile = null;
+											this.setMissileTarget(null);
 											this.trgtInSight = null;
 											return;
 										} else {
@@ -1064,7 +1065,7 @@ public class GuidedMissileUtils {
 													this.selectedActorOffset.set(new Point3f(0.0F, 0.0F, 5.0F));
 												}
 											}
-											this.trgtMissile = theActiveMissile.getVictim();
+											this.setMissileTarget(theActiveMissile.getVictim());
 											this.trgtInSight = null;
 											return;
 										}
@@ -1092,7 +1093,7 @@ public class GuidedMissileUtils {
 			}
 		}
 //		System.out.println("lookForGuidedMissileTargetShip " + (selectedActor == null?"null":selectedActor.getClass().getName()));
-		this.trgtMissile = selectedActor;
+		this.setMissileTarget(selectedActor);
 		this.trgtInSight = null;
 		// return selectedActor;
 	}
@@ -1320,7 +1321,9 @@ public class GuidedMissileUtils {
 				if (ownerAircraft.FM.CT.Weapons[l] != null) {
 					for (int l1 = 0; l1 < ownerAircraft.FM.CT.Weapons[l].length; l1++) {
 						if (ownerAircraft.FM.CT.Weapons[l][l1] == null || !(ownerAircraft.FM.CT.Weapons[l][l1] instanceof GunNull)) { continue; }
-						((GunNull) ownerAircraft.FM.CT.Weapons[l][l1]).setOwner(ownerAircraft);
+						Actor gunNullOwner = ((GunNull) ownerAircraft.FM.CT.Weapons[l][l1]).getOwner();
+//						System.out.println("setGunNullOwner owner=" + (gunNullOwner == ownerAircraft?"ownerAircraft":""+gunNullOwner));
+						if (gunNullOwner != ownerAircraft) ((GunNull) ownerAircraft.FM.CT.Weapons[l][l1]).setOwner(ownerAircraft);
 					}
 				}
 			}
@@ -1380,6 +1383,7 @@ public class GuidedMissileUtils {
 
 	public void setMissileTarget(Actor theTarget) {
 		this.trgtMissile = theTarget;
+//		System.out.println("setMissileTarget this.trgtMissile=" + this.trgtMissile);
 	}
 
 	public void setMultiTrackingCapable(boolean theMultiTrackingCapable) {
@@ -1412,6 +1416,7 @@ public class GuidedMissileUtils {
 
 	public void setStartLastMissile(long theStartTime) {
 		this.tStartLastMissile = theStartTime;
+		if (this.missileOwner != null && this.missileOwner.isNetMirror()) this.tStartLastMissile = 0L;
 	}
 
 	public void setStepsForFullTurn(float value) {

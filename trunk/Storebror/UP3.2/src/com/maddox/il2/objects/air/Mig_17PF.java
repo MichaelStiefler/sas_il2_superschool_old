@@ -1,6 +1,11 @@
 package com.maddox.il2.objects.air;
 
+import com.maddox.il2.ai.air.Pilot;
+import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
+import com.maddox.il2.fm.Controls;
+import com.maddox.il2.fm.RealFlightModel;
+import com.maddox.il2.objects.weapons.ActiveMissile;
 import com.maddox.il2.objects.weapons.GuidedMissileUtils;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
@@ -19,6 +24,10 @@ public class Mig_17PF extends Mig_17 implements TypeGuidedMissileCarrier, TypeCo
 		this.lastMissileLaunchThreatActive = 0L;
 		this.intervalMissileLaunchThreat = 1000L;
 		this.bToFire = false;
+		this.mixedPairs = false;
+		this.launchTwinTime = -1L;
+		this.needsTwinLaunchIndex = -1;
+		this.lastTwinLaunchIndex = -1;
 		this.guidedMissileUtils = new GuidedMissileUtils(this);
 	}
 
@@ -85,12 +94,97 @@ public class Mig_17PF extends Mig_17 implements TypeGuidedMissileCarrier, TypeCo
 			this.FM.CT.bHasCockpitDoorControl = true;
 			this.FM.CT.dvCockpitDoor = 0.5F;
 		}
+		if (this.thisWeaponsName.startsWith("K5M+R55") || this.thisWeaponsName.startsWith("K5Mf+R55f")) this.mixedPairs = true;
 		this.guidedMissileUtils.onAircraftLoaded();
 	}
 
+	public void checkPairLaunch() {
+		if (!this.mixedPairs) return;
+//		for (int j=0; j<this.FM.CT.Weapons[2].length; j++) {
+//			if (this.FM.CT.Weapons[2][j] instanceof MissileGun) {
+//				MissileGun theMissileGun = (MissileGun) this.FM.CT.Weapons[2][j];
+//				if (theMissileGun.haveBullets()) {
+//					Class theBulletClass = theMissileGun.bulletClass();
+//					if (Missile.class.isAssignableFrom(theBulletClass)) { // We've found a missile!
+//						this.guidedMissileUtils.changeMissileClass(theBulletClass);
+//					}
+//				}
+//			}
+//		}
+		if (this.isNetMirror()) return;
+		if (!this.FM.isPlayers()) return;
+		if (this.FM.CT.getRocketFireMode() != Controls.defaultFire) return;
+//		System.out.print("Weapons on Trigger 2: ");
+//		for (int i=0; i<this.FM.CT.Weapons[2].length; i++) {
+//			System.out.print("" + this.FM.CT.Weapons[2][i].getClass().getName() + "(" + this.FM.CT.Weapons[2][i].countBullets() + ") ");
+//		}
+//		System.out.println();
+
+		if (this.needsTwinLaunchIndex != -1) this.lastTwinLaunchIndex = this.needsTwinLaunchIndex;
+
+		if (this.launchTwinTime == -1L) {
+			if (this.needsTwinLaunchIndex != -1) {
+				this.needsTwinLaunchIndex = -1;
+				return;
+			}
+			for (int i = 0; i < 5; i += 4) {
+				if (this.FM.CT.Weapons[2][i] != null && this.FM.CT.Weapons[2][i + 2] != null && !this.FM.CT.Weapons[2][i].haveBullets() && this.FM.CT.Weapons[2][i + 2].haveBullets()) {
+					this.needsTwinLaunchIndex = i + 2;
+//					System.out.println("this.needsTwinLaunchIndex = " + this.needsTwinLaunchIndex + ", this.lastTwinLaunchIndex = " + this.lastTwinLaunchIndex);
+					if (this.lastTwinLaunchIndex == this.needsTwinLaunchIndex) this.needsTwinLaunchIndex = -1;
+//					System.out.print("Weapons on Trigger 2: ");
+//					for (int j=0; j<this.FM.CT.Weapons[2].length; j++) {
+//						System.out.print("" + this.FM.CT.Weapons[2][j].getClass().getName() + "(" + this.FM.CT.Weapons[2][j].countBullets() + ") ");
+//					}
+//					System.out.println();
+					break;
+				}
+			}
+		}
+
+
+		if (needsTwinLaunchIndex > 0) {
+			if (this.launchTwinTime == -1L) {
+				this.launchTwinTime = Time.current() + PAIR_LAUNCH_DELAY;
+//				System.out.println("this.launchTwinTime = " + this.launchTwinTime);
+			} else if (Time.current() > this.launchTwinTime) {
+//				System.out.println("Releasing Missile " + this.needsTwinLaunchIndex);
+				this.guidedMissileUtils.setStartLastMissile(0L);
+				//this.FM.CT.Weapons[2][this.needsTwinLaunchIndex].shots(1);
+				this.guidedMissileUtils.shootNextMissile();
+//				this.FM.CT.WeaponControl[2] = true;
+				this.launchTwinTime = -1L;
+				if (this.FM instanceof RealFlightModel && ((RealFlightModel) this.FM).isRealMode() || !(this.FM instanceof Pilot)) {
+					return;
+				}
+
+//				if (this.FM.AP instanceof AutopilotAI) ((AutopilotAI) this.FM.AP).setOverrideMissileControl(this.FM.CT, true);
+				ActiveMissile twinMissile = null;
+				for (int activeMissileIndex = 0; activeMissileIndex < GuidedMissileUtils.getActiveMissilesSize(); activeMissileIndex++) {
+					ActiveMissile theActiveMissile = GuidedMissileUtils.getActiveMissile(activeMissileIndex);
+					if (this == theActiveMissile.getOwner()) {
+						twinMissile = theActiveMissile;
+					}
+				}
+				if (twinMissile != null) {
+					this.guidedMissileUtils.setMissileTarget(twinMissile.getVictim());
+//					System.out.println("Target set:" + (twinMissile.getVictim() == null ? "null" : twinMissile.getVictim().getClass().getName()));
+				}
+				// this.needsTwinLaunchIndex = -1;
+			}
+		}
+	}
+
+	public boolean isPlayer() {
+		return this.FM instanceof RealFlightModel && this.FM.isPlayers() && ((RealFlightModel) this.FM).isRealMode();
+	}
+
 	public void update(float f) {
+		Actor overrideMissileTarget = (!this.isNetMirror() && !this.isPlayer() && this.launchTwinTime == -1 && this.needsTwinLaunchIndex != -1) ? this.guidedMissileUtils.getMissileTarget() : null;
 		this.guidedMissileUtils.update();
+		if (overrideMissileTarget != null) this.guidedMissileUtils.setMissileTarget(overrideMissileTarget);
 		super.update(f);
+		this.checkPairLaunch();
 		this.typeFighterAceMakerRangeFinder();
 		if (this.FM.AS.isMaster() && Config.isUSE_RENDER()) {
 			if (this.FM.EI.engines[0].getPowerOutput() > 0.5F && this.FM.EI.engines[0].getStage() == 6) {
@@ -125,6 +219,11 @@ public class Mig_17PF extends Mig_17 implements TypeGuidedMissileCarrier, TypeCo
 	private static final float POS_G_TIME_FACTOR      = 1.5F;
 	private static final float POS_G_RECOVERY_FACTOR  = 1F;
 	public boolean             bToFire;
+	private boolean            mixedPairs;
+	private long               launchTwinTime;
+	private int                needsTwinLaunchIndex;
+	private int                lastTwinLaunchIndex;
+	private static final long  PAIR_LAUNCH_DELAY      = 300L;
 
 	static {
 		Class var_class = Mig_17PF.class;

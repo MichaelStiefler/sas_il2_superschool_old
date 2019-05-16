@@ -223,7 +223,8 @@ public class CockpitF_86K extends CockpitPilot {
 		this.fm.Or.transform(this.w);
 		this.mesh.chunkSetAngles("Z_Fuel86", this.cvt(this.fm.M.fuel, 0.0F, 1650F, -150F, 150F), 0.0F, 0.0F);
 		this.mesh.chunkSetAngles("Z_TurnBank86-2", this.cvt(this.getBall(7D), -7F, 7F, -15F, 15F), 0.0F, 0.0F);
-		this.mesh.chunkSetAngles("Z_G-Factor", this.cvt(this.fm.getOverload(), -4F, 12F, -80.5F, 241.5F), 0.0F, 0.0F);
+//		this.mesh.chunkSetAngles("Z_G-Factor", this.cvt(this.fm.getOverload(), -4F, 12F, -80.5F, 241.5F), 0.0F, 0.0F);
+		this.mesh.chunkSetAngles("Z_G-Factor", this.cvt(this.fm.getOverload(), -4F, 12F, -60.375F, 261.625F), 0.0F, 0.0F);
 		this.mesh.chunkVisible("Z_Gear86Green1", this.fm.CT.getGear() > 0.95F);
 		this.mesh.chunkVisible("Z_Gear86Green2", this.fm.CT.getGear() > 0.95F);
 		this.mesh.chunkVisible("Z_Gear86Green3", this.fm.CT.getGear() > 0.95F);

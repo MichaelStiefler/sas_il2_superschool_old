@@ -291,6 +291,23 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		return false;
 	}
 
+	private float alignValue(float valueToAlign, float referenceValue, float alignFactor) {
+		return (valueToAlign*alignFactor + referenceValue) / (1F+alignFactor);
+	}
+
+	private void alignOrient(Orient theOrientToAlign, Orient theReferenceOrient, float min, float max, float current, boolean alignYaw, boolean alignPitch, boolean alignRoll) {
+		float alignFactor = Aircraft.cvt(current, min, max, 20F, 0F);
+		theReferenceOrient.wrap();
+		theOrientToAlign.wrap();
+//		System.out.print("alignFactor=" + alignFactor + ", reference pitch=" + theReferenceOrient.getPitch() + ", pitch before=" + theOrientToAlign.getPitch());
+		theOrientToAlign.setYPR(
+				alignYaw?this.alignValue(theOrientToAlign.getYaw(), theReferenceOrient.getYaw(), alignFactor):theOrientToAlign.getYaw(),
+				alignPitch?this.alignValue(theOrientToAlign.getPitch(), theReferenceOrient.getPitch(), alignFactor):theOrientToAlign.getPitch(),
+				alignRoll?this.alignValue(theOrientToAlign.getRoll(), theReferenceOrient.getRoll(), alignFactor):theOrientToAlign.getRoll()
+				);
+//		System.out.println("pitch after=" + theOrientToAlign.getPitch());
+	}
+
 	private float computeMissileAccelleration() {
 		this.victimOffsetPoint3f.set(this.safeVictimOffset);
 		float missileSpeed = (float) this.getSpeed(null);
@@ -350,6 +367,8 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 		if (Time.current() < this.startTime + this.trackDelay && this.launchType == Missile.LAUNCH_TYPE_DROP) // recover from launch pitch even if there's no target.
 		{
 			this.dropFlightPathOrient.transform(this.trajectoryVector3d);
+			this.alignOrient(this.missileOrient, this.dropFlightPathOrient, this.startTime, this.startTime + this.trackDelay, Time.current(), true, true, false);
+			//this.missileOrient.set(this.dropFlightPathOrient);
 		} else {
 			this.missileOrient.transform(this.trajectoryVector3d);
 		}
@@ -809,7 +828,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 	public double getLaunchPitch() {
 		double launchPitchTimeFactor = this.getLaunchTimeFactor();
 		double theLaunchPitch = 1D + 2.0D * (Math.cos(launchPitchTimeFactor) - 1D + launchPitchTimeFactor / 5.0D);
-		System.out.println("getLaunchPitch launchPitchTimeFactor=" + launchPitchTimeFactor + ", theLaunchPitch=" + theLaunchPitch + ", this.launchPitch=" + this.launchPitch);
+//		System.out.println("getLaunchPitch launchPitchTimeFactor=" + launchPitchTimeFactor + ", theLaunchPitch=" + theLaunchPitch + ", this.launchPitch=" + this.launchPitch);
 		theLaunchPitch *= Math.cos(this.launchKren);
 		theLaunchPitch += this.launchPitch;
 		while (theLaunchPitch > 180F) {
@@ -1227,6 +1246,7 @@ public abstract class Missile extends Rocket implements MsgCollisionRequestListe
 				}
 			}
 		} catch (Exception exception) {}
+//		System.out.println("setMissileVictim this.victim=" + this.victim);
 	}
 
 	private void setSmokeSpriteFlames() {

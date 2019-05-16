@@ -1855,6 +1855,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
 
 	// TODO: Storebror: Implement Aircraft Control Surfaces and Pilot View Replication
 	public void replicatePatchLevel(NetUser theNetUser) {
+		if (theNetUser.getPatchLevel().equalsIgnoreCase("none")) return;
 // replicatePatchLevel(null);
 		NetServerParams netserverparams = Main.cur().netServerParams;
 		if (netserverparams == null) { return; }
@@ -1869,6 +1870,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
 	}
 
 	private void replicatePatchLevel(NetChannel netchannel, NetUser theNetUser) {
+		if (theNetUser.getPatchLevel().equalsIgnoreCase("none")) return;
 // System.out.println("replicatePatchLevel, " + (netchannel == null ? "netchannel == null" : "netchannel != null"));
 		if (!this.isMirrored() && netchannel == null) { return; }
 		try {
@@ -1889,6 +1891,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
 	}
 
 	public void replicateSelectorVersion(NetUser theNetUser) {
+		if (theNetUser.getSelectorVersion().equalsIgnoreCase("unknown")) return;
 // replicateSelectorVersion(null);
 		NetServerParams netserverparams = Main.cur().netServerParams;
 		if (netserverparams == null) { return; }
@@ -1903,6 +1906,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
 	}
 
 	private void replicateSelectorVersion(NetChannel netchannel, NetUser theNetUser) {
+		if (theNetUser.getSelectorVersion().equalsIgnoreCase("unknown")) return;
 // System.out.println("replicateSelectorVersion, " + (netchannel == null ? "netchannel == null" : "netchannel != null"));
 		if (!this.isMirrored() && netchannel == null) { return; }
 		try {
@@ -1923,6 +1927,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
 	}
 
 	public void replicateUltrapackVersion(NetUser theNetUser) {
+		if (theNetUser.getUltrapackVersion().equalsIgnoreCase("3 RC4")) return;
 // replicateSelectorVersion(null);
 		NetServerParams netserverparams = Main.cur().netServerParams;
 		if (netserverparams == null) { return; }
@@ -1937,6 +1942,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
 	}
 
 	private void replicateUltrapackVersion(NetChannel netchannel, NetUser theNetUser) {
+		if (theNetUser.getUltrapackVersion().equalsIgnoreCase("3 RC4")) return;
 // System.out.println("replicateSelectorVersion, " + (netchannel == null ? "netchannel == null" : "netchannel != null"));
 		if (!this.isMirrored() && netchannel == null) { return; }
 		try {
