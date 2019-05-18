@@ -75,6 +75,7 @@ import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.RTSConf;
 import com.maddox.rts.Time;
+import com.maddox.sas1946.il2.util.Reflection;
 import com.maddox.sound.AudioDevice;
 import com.maddox.sound.CmdMusic;
 import com.maddox.sound.RadioChannel;
@@ -188,7 +189,7 @@ public class AircraftHotKeys {
 		if (Config.cur.ini.get("Mods", "SeparateHookUpDown", 0) > 0) bSeparateHookUpDown = true;
 		if (Config.cur.ini.get("Mods", "SeparateRadiatorOpenClose", 0) > 0) bSeparateRadiatorOpenClose = true;
 		if (Config.cur.ini.get("Mods", "ToggleMusic", 1) == 0) bToggleMusic = false;
-		if (Config.cur.ini.get("Mods", "Stab4all", 0) > 0) bStab4all = true;
+		if (Config.cur.ini.get("Mods", "Stab4all", 1) != 0) bStab4all = true;
 		flapIndex = 0;
 		oldFlapIndex = 0;
 		oldFlapsControlSwitch = 0;
@@ -703,7 +704,7 @@ public class AircraftHotKeys {
 				break;
 
 			case 195: // importing 4.13.2m
-			case 196: 
+			case 196:
 				bAAircraft.FM.AS.replicateBombModeStatesToNet();
 				break;
 			}
@@ -1659,7 +1660,7 @@ public class AircraftHotKeys {
 				bAAircraft.FM.CT.toggleBombTrainAmount();
 			return;
 
-		case 196: 
+		case 196:
 			if (bAAircraft.hasIntervalometer())
 				bAAircraft.FM.CT.toggleBombTrainDelay();
 			return;
@@ -3305,8 +3306,11 @@ public class AircraftHotKeys {
 			public void begin() {
 				if(max_drawspeed < 0) {
 					try {
-						max_drawspeed = HUD.drawSpeedMax();
+//						max_drawspeed = HUD.drawSpeedMax();
+						max_drawspeed = ((Integer)Reflection.invokeMethod(HUD.class, "drawSpeedMax")).intValue();
 					} catch (NoSuchMethodError err) {
+						max_drawspeed = 3;
+					} catch (Exception e) {
 						max_drawspeed = 3;
 					}
 				}
@@ -4503,7 +4507,7 @@ public class AircraftHotKeys {
 
 	private Actor nextStationaryCameraActor() {
 		if (Selector.isEnableTrackArgs()) return Selector.setCurRecordArg0(Selector.getTrackArg0());
-		int i = World.getPlayerArmy();  //By PAL, in stock v4.12.2, i not used anywhwere
+//		int i = World.getPlayerArmy();  //By PAL, in stock v4.12.2, i not used anywhwere
 		namedAircraft.clear();
 		Actor actor = Main3D.cur3D().viewActor();
 		if (isViewed(actor)) namedAircraft.put(actor.name(), null);
@@ -4554,7 +4558,7 @@ public class AircraftHotKeys {
 			HotKeyEnv hotkeyenv = HotKeyEnv.env(as[i]);
 			HashMapInt hashmapint = hotkeyenv.all();
 			for (HashMapIntEntry hashmapintentry = hashmapint.nextEntry(null); hashmapintentry != null; hashmapintentry = hashmapint.nextEntry(hashmapintentry)) {
-				int j = hashmapintentry.getKey();  //By PAL, in stock v4.12.2, j not used anywhwere
+//				int j = hashmapintentry.getKey();  //By PAL, in stock v4.12.2, j not used anywhwere
 				String s = (String) (String) hashmapintentry.getValue();
 				if (s.startsWith("-")) s = s.substring(1);
 				if (s.startsWith("power") && s.length() == 6) {
