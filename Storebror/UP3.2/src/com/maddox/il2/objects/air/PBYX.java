@@ -9,11 +9,8 @@ import com.maddox.rts.Property;
 
 public abstract class PBYX extends Scheme2 implements TypeBomber, TypeScout, TypeSailPlane, TypeTransport {
 
-	public PBYX() {
-	}
-
 	public void update(float f) {
-		this.update(f);
+		super.update(f);
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 2; j++) {
 				if (this.FM.Gears.clpGearEff[i][j] != null) {
