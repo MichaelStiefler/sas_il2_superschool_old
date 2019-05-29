@@ -53,7 +53,7 @@ public class MohawkIII_BoB extends P_36 implements TypeFighter {
 		Property.set(class1, "yearExpired", 1945.5F);
 		Property.set(class1, "cockpitClass", new Class[] { CockpitP_36.class });
 		Property.set(class1, "LOSElevation", 1.06965F);
-		Property.set(class1, "FlightModel", "FlightModels/Mohawk_III_BoB.fmd");
+		Property.set(class1, "FlightModel", "FlightModels/Hawk75A-3 (Ultrapack).fmd");
 		Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 0, 0 });
 		Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06" });
 	}

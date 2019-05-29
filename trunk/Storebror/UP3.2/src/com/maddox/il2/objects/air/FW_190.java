@@ -10,9 +10,6 @@ import com.maddox.rts.Property;
 
 public abstract class FW_190 extends Scheme1 implements TypeFighter, TypeBNZFighter {
 
-	public FW_190() {
-	}
-
 	public void doMurderPilot(int i) {
 		switch (i) {
 			case 0:

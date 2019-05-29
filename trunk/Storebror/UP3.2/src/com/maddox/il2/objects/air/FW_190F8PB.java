@@ -2,10 +2,7 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.rts.Property;
 
-public class FW_190F8PB extends FW_190F implements TypeStormovik {
-
-	public FW_190F8PB() {
-	}
+public class FW_190F8PB extends FW_190F_BASE implements TypeStormovik {
 
 	public void onAircraftLoaded() {
 		super.onAircraftLoaded();
@@ -24,7 +21,7 @@ public class FW_190F8PB extends FW_190F implements TypeStormovik {
 		Property.set(class1, "PaintScheme", new PaintSchemeBMPar02());
 		Property.set(class1, "yearService", 1944F);
 		Property.set(class1, "yearExpired", 1948F);
-		Property.set(class1, "FlightModel", "FlightModels/Fw-190A-8.fmd");
+		Property.set(class1, "FlightModel", "FlightModels/Fw-190F-8 (Ultrapack).fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitFW_190F8.class });
 		Property.set(class1, "LOSElevation", 0.764106F);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 9, 9, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 9, 9 });

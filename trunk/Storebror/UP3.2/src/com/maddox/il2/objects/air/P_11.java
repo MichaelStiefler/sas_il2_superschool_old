@@ -1,26 +1,40 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.il2.ai.Explosion;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
+import com.maddox.il2.engine.Actor;
 import com.maddox.rts.Property;
 
 public abstract class P_11 extends Scheme1 implements TypeFighter, TypeTNBFighter {
 
 	public P_11() {
+		bChangedPit = true;
+	}
+
+	protected void nextDMGLevel(String s, int i, Actor actor) {
+		super.nextDMGLevel(s, i, actor);
+		if (this.FM.isPlayers()) bChangedPit = true;
+	}
+
+	protected void nextCUTLevel(String s, int i, Actor actor) {
+		super.nextCUTLevel(s, i, actor);
+		if (this.FM.isPlayers()) bChangedPit = true;
 	}
 
 	protected void hitBone(String s, Shot shot, Point3d point3d) {
 		if (s.startsWith("xx")) {
 			if (s.startsWith("xxarmor")) {
 				Aircraft.debugprintln(this, "*** Armor: Hit..");
-				if (s.endsWith("p1")) { this.getEnergyPastArmor(8.1D / (Math.abs(Aircraft.v1.x) + 9.9999997473787516E-006D), shot); }
+				if (s.endsWith("p1")) this.getEnergyPastArmor(8.1D / (Math.abs(Aircraft.v1.x) + 0.00001D), shot);
 				return;
 			}
 			if (s.startsWith("xxcontrols")) {
 				int i = s.charAt(10) - 48;
 				switch (i) {
+					default:
+						break;
+
 					case 1:
 						if (this.getEnergyPastArmor(World.Rnd().nextFloat(0.1F, 2.3F), shot) > 0.0F) {
 							if (World.Rnd().nextFloat() < 0.25F) {
@@ -38,7 +52,7 @@ public abstract class P_11 extends Scheme1 implements TypeFighter, TypeTNBFighte
 					case 3:
 						if (this.getEnergyPastArmor(1.5F, shot) > 0.0F) {
 							this.FM.AS.setControlsDamage(shot.initiator, 0);
-							Aircraft.debugprintln(this, "*** Aileron Controls: Control Crank Destroyed..");
+							Aircraft.debugprintln(this, "*** Aileron Controls: Disabled..");
 						}
 						break;
 				}
@@ -49,19 +63,19 @@ public abstract class P_11 extends Scheme1 implements TypeFighter, TypeTNBFighte
 					Aircraft.debugprintln(this, "*** Tail1 Spars Broken in Half..");
 					this.nextDMGLevels(1, 2, "Tail1_D3", shot.initiator);
 				}
-				if (s.startsWith("xxsparli") && World.Rnd().nextFloat() < 0.25F && this.getEnergyPastArmor(9.5F * World.Rnd().nextFloat(1.0F, 3F), shot) > 0.0F) {
+				if (s.startsWith("xxsparli") && World.Rnd().nextFloat() > 2.0F && this.getEnergyPastArmor(9.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F) {
 					Aircraft.debugprintln(this, "*** WingLIn Spars Damaged..");
 					this.nextDMGLevels(1, 2, "WingLIn_D" + this.chunkDamageVisible("WingLIn"), shot.initiator);
 				}
-				if (s.startsWith("xxsparri") && World.Rnd().nextFloat() < 0.25F && this.getEnergyPastArmor(9.5F * World.Rnd().nextFloat(1.0F, 3F), shot) > 0.0F) {
+				if (s.startsWith("xxsparri") && World.Rnd().nextFloat() > 2.0F && this.getEnergyPastArmor(9.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F) {
 					Aircraft.debugprintln(this, "*** WingRIn Spars Damaged..");
 					this.nextDMGLevels(1, 2, "WingRIn_D" + this.chunkDamageVisible("WingRIn"), shot.initiator);
 				}
-				if (s.startsWith("xxsparlo") && World.Rnd().nextFloat() < 0.25F && this.getEnergyPastArmor(9.5F * World.Rnd().nextFloat(1.0F, 3F), shot) > 0.0F) {
+				if (s.startsWith("xxsparlo") && World.Rnd().nextFloat() > 2.0F && this.getEnergyPastArmor(9.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F) {
 					Aircraft.debugprintln(this, "*** WingLOut Spars Damaged..");
 					this.nextDMGLevels(1, 2, "WingLOut_D" + this.chunkDamageVisible("WingLOut"), shot.initiator);
 				}
-				if (s.startsWith("xxsparro") && World.Rnd().nextFloat() < 0.25F && this.getEnergyPastArmor(9.5F * World.Rnd().nextFloat(1.0F, 3F), shot) > 0.0F) {
+				if (s.startsWith("xxsparro") && World.Rnd().nextFloat() > 2.0F && this.getEnergyPastArmor(9.5F * World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F) {
 					Aircraft.debugprintln(this, "*** WingROut Spars Damaged..");
 					this.nextDMGLevels(1, 2, "WingROut_D" + this.chunkDamageVisible("WingROut"), shot.initiator);
 				}
@@ -99,12 +113,7 @@ public abstract class P_11 extends Scheme1 implements TypeFighter, TypeTNBFighte
 			}
 			if (s.startsWith("xxeng")) {
 				Aircraft.debugprintln(this, "*** Engine Module: Hit..");
-				if (s.endsWith("prop")) {
-					if (this.getEnergyPastArmor(0.45F, shot) > 0.0F && World.Rnd().nextFloat() < 0.5F) {
-						this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 3);
-						Aircraft.debugprintln(this, "*** Engine Module: Prop Governor Hit, Disabled..");
-					}
-				} else if (s.endsWith("case")) {
+				if (s.endsWith("case")) {
 					if (this.getEnergyPastArmor(2.1F, shot) > 0.0F) {
 						if (World.Rnd().nextFloat() < shot.power / 175000F) {
 							this.FM.AS.setEngineStuck(shot.initiator, 0);
@@ -116,6 +125,10 @@ public abstract class P_11 extends Scheme1 implements TypeFighter, TypeTNBFighte
 						}
 						this.FM.EI.engines[0].setReadyness(shot.initiator, this.FM.EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.0F, shot.power / 48000F));
 						Aircraft.debugprintln(this, "*** Engine Module: Crank Case Hit, Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + "..");
+					}
+					if (World.Rnd().nextFloat() < 0.002F) {
+						this.debuggunnery("Engine Module: Crank Case Hit - Fuel Feed Hit - Engine Flamed..");
+						this.FM.AS.hitEngine(shot.initiator, 0, 10);
 					}
 					this.getEnergyPastArmor(12.7F, shot);
 				} else if (s.startsWith("xxeng1cyls")) {
@@ -141,10 +154,6 @@ public abstract class P_11 extends Scheme1 implements TypeFighter, TypeTNBFighte
 						if (World.Rnd().nextFloat() < 0.1F) {
 							this.FM.EI.engines[0].setMagnetoKnockOut(shot.initiator, 1);
 							Aircraft.debugprintln(this, "*** Engine Module: Magneto 1 Destroyed..");
-						}
-						if (World.Rnd().nextFloat() < 0.1F) {
-							this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 6);
-							Aircraft.debugprintln(this, "*** Engine Module: Prop Controls Cut..");
 						}
 						if (World.Rnd().nextFloat() < 0.1F) {
 							this.FM.AS.setEngineSpecificDamage(shot.initiator, 0, 1);
@@ -177,19 +186,19 @@ public abstract class P_11 extends Scheme1 implements TypeFighter, TypeTNBFighte
 			}
 			if (s.startsWith("xxmgun")) {
 				if (s.endsWith("01")) {
-					Aircraft.debugprintln(this, "*** Cowling Gun: Disabled..");
+					Aircraft.debugprintln(this, "*** Machine Gun: Disabled..");
 					this.FM.AS.setJamBullets(0, 0);
 				}
 				if (s.endsWith("02")) {
-					Aircraft.debugprintln(this, "*** Cowling Gun: Disabled..");
+					Aircraft.debugprintln(this, "*** Machine Gun: Disabled..");
 					this.FM.AS.setJamBullets(0, 1);
 				}
 				if (s.endsWith("03")) {
-					Aircraft.debugprintln(this, "*** Cowling Gun: Disabled..");
+					Aircraft.debugprintln(this, "*** Machine Gun: Disabled..");
 					this.FM.AS.setJamBullets(1, 0);
 				}
 				if (s.endsWith("04")) {
-					Aircraft.debugprintln(this, "*** Cowling Gun: Disabled..");
+					Aircraft.debugprintln(this, "*** Machine Gun: Disabled..");
 					this.FM.AS.setJamBullets(1, 1);
 				}
 				this.getEnergyPastArmor(World.Rnd().nextFloat(0.0F, 28.33F), shot);
@@ -197,29 +206,29 @@ public abstract class P_11 extends Scheme1 implements TypeFighter, TypeTNBFighte
 			return;
 		}
 		if (s.startsWith("xcf") || s.startsWith("xcockpit")) {
-			if (this.chunkDamageVisible("CF") < 3) { this.hitChunk("CF", shot); }
+			if (this.chunkDamageVisible("CF") < 3) this.hitChunk("CF", shot);
 		} else if (s.startsWith("xeng")) {
-			if (this.chunkDamageVisible("Engine1") < 2) { this.hitChunk("Engine1", shot); }
+			if (this.chunkDamageVisible("Engine1") < 2) this.hitChunk("Engine1", shot);
 		} else if (s.startsWith("xtail")) {
-			if (this.chunkDamageVisible("Tail1") < 3) { this.hitChunk("Tail1", shot); }
+			if (this.chunkDamageVisible("Tail1") < 3) this.hitChunk("Tail1", shot);
 		} else if (s.startsWith("xkeel")) {
-			if (this.chunkDamageVisible("Keel1") < 2) { this.hitChunk("Keel1", shot); }
+			if (this.chunkDamageVisible("Keel1") < 2) this.hitChunk("Keel1", shot);
 		} else if (s.startsWith("xrudder")) {
-			if (this.chunkDamageVisible("Rudder1") < 1) { this.hitChunk("Rudder1", shot); }
+			if (this.chunkDamageVisible("Rudder1") < 1) this.hitChunk("Rudder1", shot);
 		} else if (s.startsWith("xstab")) {
-			if (s.startsWith("xstabl") && this.chunkDamageVisible("StabL") < 2) { this.hitChunk("StabL", shot); }
-			if (s.startsWith("xstabr") && this.chunkDamageVisible("StabR") < 1) { this.hitChunk("StabR", shot); }
+			if (s.startsWith("xstabl") && this.chunkDamageVisible("StabL") < 2) this.hitChunk("StabL", shot);
+			if (s.startsWith("xstabr") && this.chunkDamageVisible("StabR") < 2) this.hitChunk("StabR", shot);
 		} else if (s.startsWith("xvator")) {
-			if (s.startsWith("xvatorl") && this.chunkDamageVisible("VatorL") < 1) { this.hitChunk("VatorL", shot); }
-			if (s.startsWith("xvatorr") && this.chunkDamageVisible("VatorR") < 1) { this.hitChunk("VatorR", shot); }
+			if (s.startsWith("xvatorl") && this.chunkDamageVisible("VatorL") < 1) this.hitChunk("VatorL", shot);
+			if (s.startsWith("xvatorr") && this.chunkDamageVisible("VatorR") < 1) this.hitChunk("VatorR", shot);
 		} else if (s.startsWith("xwing")) {
-			if (s.startsWith("xwinglin") && this.chunkDamageVisible("WingLIn") < 3) { this.hitChunk("WingLIn", shot); }
-			if (s.startsWith("xwingrin") && this.chunkDamageVisible("WingRIn") < 3) { this.hitChunk("WingRIn", shot); }
-			if (s.startsWith("xwinglout") && this.chunkDamageVisible("WingLOut") < 3) { this.hitChunk("WingLOut", shot); }
-			if (s.startsWith("xwingrout") && this.chunkDamageVisible("WingROut") < 3) { this.hitChunk("WingROut", shot); }
+			if (s.startsWith("xwinglin") && this.chunkDamageVisible("WingLIn") < 3) this.hitChunk("WingLIn", shot);
+			if (s.startsWith("xwingrin") && this.chunkDamageVisible("WingRIn") < 3) this.hitChunk("WingRIn", shot);
+			if (s.startsWith("xwinglout") && this.chunkDamageVisible("WingLOut") < 3) this.hitChunk("WingLOut", shot);
+			if (s.startsWith("xwingrout") && this.chunkDamageVisible("WingROut") < 3) this.hitChunk("WingROut", shot);
 		} else if (s.startsWith("xarone")) {
-			if (s.startsWith("xaronel") && this.chunkDamageVisible("AroneL") < 1) { this.hitChunk("AroneL", shot); }
-			if (s.startsWith("xaroner") && this.chunkDamageVisible("AroneR") < 1) { this.hitChunk("AroneR", shot); }
+			if (s.startsWith("xaronel") && this.chunkDamageVisible("AroneL") < 1) this.hitChunk("AroneL", shot);
+			if (s.startsWith("xaroner") && this.chunkDamageVisible("AroneR") < 1) this.hitChunk("AroneR", shot);
 		} else if (s.startsWith("xpilot") || s.startsWith("xhead")) {
 			byte byte0 = 0;
 			int j;
@@ -229,20 +238,15 @@ public abstract class P_11 extends Scheme1 implements TypeFighter, TypeTNBFighte
 			} else if (s.endsWith("b")) {
 				byte0 = 2;
 				j = s.charAt(6) - 49;
-			} else {
-				j = s.charAt(5) - 49;
-			}
+			} else j = s.charAt(5) - 49;
 			this.hitFlesh(j, shot, byte0);
 		}
 	}
 
 	public void rareAction(float f, boolean flag) {
 		super.rareAction(f, flag);
-		if (this.FM.getAltitude() < 3000F) {
-			this.hierMesh().chunkVisible("HMask1_D0", false);
-		} else {
-			this.hierMesh().chunkVisible("HMask1_D0", this.hierMesh().isChunkVisible("Head1_D0"));
-		}
+		if (this.FM.getAltitude() < 3000F) this.hierMesh().chunkVisible("HMask1_D0", false);
+		else this.hierMesh().chunkVisible("HMask1_D0", this.hierMesh().isChunkVisible("Head1_D0"));
 	}
 
 	public void doMurderPilot(int i) {
@@ -256,15 +260,6 @@ public abstract class P_11 extends Scheme1 implements TypeFighter, TypeTNBFighte
 		}
 	}
 
-	public void msgExplosion(Explosion explosion) {
-		this.setExplosion(explosion);
-		if (explosion.chunkName != null && explosion.power > 0.0F && explosion.chunkName.startsWith("Tail1")) {
-			if (World.Rnd().nextFloat(0.0F, 0.038F) < explosion.power) { this.FM.AS.setControlsDamage(explosion.initiator, 1); }
-			if (World.Rnd().nextFloat(0.0F, 0.042F) < explosion.power) { this.FM.AS.setControlsDamage(explosion.initiator, 2); }
-		}
-		super.msgExplosion(explosion);
-	}
-
 	public void moveWheelSink() {
 		this.resetYPRmodifier();
 		float f = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.25F, 0.0F, 0.35F);
@@ -275,7 +270,7 @@ public abstract class P_11 extends Scheme1 implements TypeFighter, TypeTNBFighte
 		Aircraft.xyz[2] = -0.21F * f;
 	}
 
-	public static boolean bChangedPit = false;
+	public static boolean bChangedPit;
 
 	static {
 		Class class1 = P_11.class;

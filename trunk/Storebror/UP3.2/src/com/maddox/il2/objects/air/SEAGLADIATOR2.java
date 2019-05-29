@@ -67,7 +67,7 @@ public class SEAGLADIATOR2 extends SEAGLADIATOR {
 		Property.set(class1, "PaintScheme_gb", new PaintSchemeSEAGLAD());
 		Property.set(class1, "yearService", 1939F);
 		Property.set(class1, "yearExpired", 1943F);
-		Property.set(class1, "FlightModel", "FlightModels/SeaGladiatorMkII.fmd");
+		Property.set(class1, "FlightModel", "FlightModels/SeaGladiatorMkII (Ultrapack).fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitSEAGLADIATOR.class });
 		Property.set(class1, "LOSElevation", 0.8472F);
 		Property.set(class1, "originCountry", PaintScheme.countryBritain);

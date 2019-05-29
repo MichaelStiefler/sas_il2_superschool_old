@@ -493,19 +493,25 @@ public class Config {
 		return cur.bAppEditor;
 	}
 
+//	public static String engineDllName() {
+//		if (CLASS.ser() != 0) {
+//			if (Cpu86ID.getVendor() == 1 && Cpu86ID.isSSE4()) { return "il2corSSE4"; }
+//			if (Cpu86ID.getVendor() == 1 && Cpu86ID.isSSE3()) { return "il2corSSE3"; }
+//			if (Cpu86ID.getVendor() == 1 && Cpu86ID.isSSE2()) {
+//				return "il2coreP4";
+//			} else {
+//				return "il2_core";
+//			}
+//		} else {
+//			Cpu86ID.getVendor();
+//			return "il2_server";
+//		}
+//	}
+
 	public static String engineDllName() {
-		if (CLASS.ser() != 0) {
-			if (Cpu86ID.getVendor() == 1 && Cpu86ID.isSSE4()) { return "il2corSSE4"; }
-			if (Cpu86ID.getVendor() == 1 && Cpu86ID.isSSE3()) { return "il2corSSE3"; }
-			if (Cpu86ID.getVendor() == 1 && Cpu86ID.isSSE2()) {
-				return "il2coreP4";
-			} else {
-				return "il2_core";
-			}
-		} else {
-			Cpu86ID.getVendor();
-			return "il2_server";
-		}
+		if (CLASS.ser() != 0) return (Cpu86ID.getVendor() == 1 && Cpu86ID.isSSE2()) ? "il2_coreP4":"il2_core";
+		Cpu86ID.getVendor();
+		return "il2_server";
 	}
 
 	public Config(IniFile inifile, boolean flag) {

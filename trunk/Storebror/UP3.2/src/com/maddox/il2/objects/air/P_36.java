@@ -10,9 +10,6 @@ import com.maddox.rts.Property;
 
 public abstract class P_36 extends Scheme1 implements TypeFighter {
 
-	public P_36() {
-	}
-
 	public static void moveGear(HierMesh hiermesh, float f) {
 		hiermesh.chunkSetAngles("GearC2_D0", 0.0F, -70F * f, 0.0F);
 		hiermesh.chunkSetAngles("GearC4_D0", 0.0F, cvt(f, 0.02F, 0.17F, 0.0F, -60F), 0.0F);

@@ -7,9 +7,6 @@ import com.maddox.rts.Property;
 
 public class FW_190A7 extends FW_190NEW implements TypeFighter, TypeBNZFighter {
 
-	public FW_190A7() {
-	}
-
 	protected void nextDMGLevel(String s, int i, Actor actor) {
 		super.nextDMGLevel(s, i, actor);
 		if (this.FM.isPlayers()) { bChangedPit = true; }
@@ -63,7 +60,7 @@ public class FW_190A7 extends FW_190NEW implements TypeFighter, TypeBNZFighter {
 		Property.set(class1, "PaintScheme", new PaintSchemeFMPar01());
 		Property.set(class1, "yearService", 1943.1F);
 		Property.set(class1, "yearExpired", 1948F);
-		Property.set(class1, "FlightModel", "FlightModels/Fw-190A-7sturm.fmd");
+		Property.set(class1, "FlightModel", "FlightModels/Fw-190A-7 (Ultrapack).fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitFW_190A8.class });
 		Property.set(class1, "LOSElevation", 0.764106F);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 1, 1, 9, 9, 2, 2, 9, 1, 1, 9 });

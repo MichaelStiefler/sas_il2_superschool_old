@@ -3,10 +3,7 @@ package com.maddox.il2.objects.air;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.rts.Property;
 
-public class FW_190F8 extends FW_190 {
-
-	public FW_190F8() {
-	}
+public class FW_190F8 extends FW_190F_BASE {
 
 	public static void moveGear(HierMesh hiermesh, float f) {
 		hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 77F * f, 0.0F);
@@ -41,7 +38,7 @@ public class FW_190F8 extends FW_190 {
 		Property.set(class1, "PaintScheme", new PaintSchemeFMPar03());
 		Property.set(class1, "yearService", 1944F);
 		Property.set(class1, "yearExpired", 1948F);
-		Property.set(class1, "FlightModel", "FlightModels/Fw-190F-8.fmd");
+		Property.set(class1, "FlightModel", "FlightModels/Fw-190F-8 (Ultrapack).fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitFW_190F8.class });
 		Property.set(class1, "LOSElevation", 0.764106F);
 		weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1, 3, 3, 3, 3, 3 });

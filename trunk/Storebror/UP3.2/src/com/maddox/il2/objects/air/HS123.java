@@ -53,7 +53,7 @@ public class HS123 extends HS123xyz {
 		Property.set(class1, "PaintScheme", new PaintSchemeFMPar00());
 		Property.set(class1, "yearService", 1936F);
 		Property.set(class1, "yearExpired", 1944F);
-		Property.set(class1, "FlightModel", "FlightModels/Hs123.fmd");
+		Property.set(class1, "FlightModel", "FlightModels/Hs-123 (Ultrapack).fmd");
 		Property.set(class1, "originCountry", PaintScheme.countryGermany);
 		Property.set(class1, "cockpitClass", new Class[] { CockpitHS123.class });
 		Property.set(class1, "LOSElevation", 0.66F);
