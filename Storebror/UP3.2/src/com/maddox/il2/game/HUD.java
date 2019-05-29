@@ -1269,18 +1269,32 @@ public class HUD {
                 if (Mission.MDS_VARIABLES().zutiHud_ShowPilotACType)
                     ttfont.output(statColor, acDesignationX, statRowY, 0.0F, statuser.sAircraftType);
                 // TODO: Storebror: Implement Aircraft Control Surfaces and Pilot View Replication
+
                 int patchLevelColor = 0xFF0000C0;
-                for (int checkPatchLevelsY = 0; checkPatchLevelsY < NetUser.PATCHLEVEL_Y.length; checkPatchLevelsY++) {
-                    if (statuser.user.getPatchLevel().toLowerCase().startsWith(NetUser.PATCHLEVEL_Y[checkPatchLevelsY].toLowerCase())) {
-                        patchLevelColor = 0xFF00C0C0;
-                        break;
-                    }
-                }
-                for (int checkPatchLevelsG = 0; checkPatchLevelsG < NetUser.PATCHLEVEL_G.length; checkPatchLevelsG++) {
-                    if (statuser.user.getPatchLevel().toLowerCase().startsWith(NetUser.PATCHLEVEL_G[checkPatchLevelsG].toLowerCase())) {
-                        patchLevelColor = 0xFF00C000;
-                        break;
-                    }
+                if (statuser.user.getUltrapackVersion().equalsIgnoreCase(NetUser.UP_VERSION)) {
+                	switch (NetUser.patchLevelState(statuser.user.getPatchLevel())) {
+                		case 1:
+	                        patchLevelColor = 0xFF00C000;
+	                        break;
+                		case 0:
+	                        patchLevelColor = 0xFF00C0C0;
+	                        break;
+	                    default:
+	                    	patchLevelColor = 0xFF0000C0;
+	                    	break;
+                	}
+//	                for (int checkPatchLevelsY = 0; checkPatchLevelsY < NetUser.PATCHLEVEL_Y.length; checkPatchLevelsY++) {
+//	                    if (statuser.user.getPatchLevel().toLowerCase().startsWith(NetUser.PATCHLEVEL_Y[checkPatchLevelsY].toLowerCase())) {
+//	                        patchLevelColor = 0xFF00C0C0;
+//	                        break;
+//	                    }
+//	                }
+//	                for (int checkPatchLevelsG = 0; checkPatchLevelsG < NetUser.PATCHLEVEL_G.length; checkPatchLevelsG++) {
+//	                    if (statuser.user.getPatchLevel().toLowerCase().startsWith(NetUser.PATCHLEVEL_G[checkPatchLevelsG].toLowerCase())) {
+//	                        patchLevelColor = 0xFF00C000;
+//	                        break;
+//	                    }
+//	                }
                 }
                 String versionInfo = "UP " + statuser.user.getUltrapackVersion();
                 versionInfo += " / Patch " + statuser.user.getPatchLevel();

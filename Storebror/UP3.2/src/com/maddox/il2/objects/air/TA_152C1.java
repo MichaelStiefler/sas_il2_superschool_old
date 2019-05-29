@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.maddox.JGP.Point3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Pilot;
-import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
@@ -14,61 +13,28 @@ import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
-public class TA_152C1 extends FW_190 implements TypeFighterAceMaker {
+public class TA_152C1 extends TA_152_BASE implements TypeFighterAceMaker {
 	public boolean bToFire;
 	private long   tX4Prev;
 	public int     k14Mode;
 	public int     k14WingspanType;
 	public float   k14Distance;
-	private float  kangle;
-// private float deltaAzimuth;
-// private float deltaTangage;
 
 	public TA_152C1() {
 		this.k14Mode = 0;
 		this.k14WingspanType = 0;
 		this.k14Distance = 200.0f;
 		this.bToFire = false;
-		this.kangle = 0.0f;
 	}
 
-	public static void moveGear(final HierMesh hierMesh, final float n) {
-		hierMesh.chunkSetAngles("GearL2_D0", 0.0f, -77.0f * n, 0.0f);
-		hierMesh.chunkSetAngles("GearR2_D0", 0.0f, -77.0f * n, 0.0f);
-		hierMesh.chunkSetAngles("GearL3_D0", 0.0f, -102.0f * n, 0.0f);
-		hierMesh.chunkSetAngles("GearR3_D0", 0.0f, -102.0f * n, 0.0f);
-		hierMesh.chunkSetAngles("GearC2_D0", 20.0f * n, 0.0f, 0.0f);
-		hierMesh.chunkSetAngles("GearC3_D0", 0.0f, 0.0f, 0.0f);
-		final float max = Math.max(-n * 1500.0f, -94.0f);
-		hierMesh.chunkSetAngles("GearL5_D0", 0.0f, max, 0.0f);
-		hierMesh.chunkSetAngles("GearR5_D0", 0.0f, max, 0.0f);
+	protected void moveFlap(float f) {
+		float f2 = -50.0f * f;
+		this.hierMesh().chunkSetAngles("Flap01_D0", 0.0f, f2, 0.0f);
+		this.hierMesh().chunkSetAngles("Flap02_D0", 0.0f, -f2, 0.0f);
 	}
 
-	protected void moveGear(final float n) {
-		moveGear(this.hierMesh(), n);
-	}
-
-	public void moveSteering(final float n) {
-		if (super.FM.CT.getGear() < 0.98f) { return; }
-		this.hierMesh().chunkSetAngles("GearC3_D0", 0.0f, -n, 0.0f);
-	}
-
-	public void moveWheelSink() {
-		this.resetYPRmodifier();
-		Aircraft.xyz[1] = Aircraft.cvt(super.FM.Gears.gWheelSinking[0], 0.0f, 0.44f, 0.0f, 0.44f);
-		this.hierMesh().chunkSetLocate("GearL2a_D0", Aircraft.xyz, Aircraft.ypr);
-		Aircraft.xyz[1] = Aircraft.cvt(super.FM.Gears.gWheelSinking[1], 0.0f, 0.44f, 0.0f, 0.44f);
-		this.hierMesh().chunkSetLocate("GearR2a_D0", Aircraft.xyz, Aircraft.ypr);
-	}
-
-	protected void moveFlap(final float n) {
-		final float n2 = -50.0f * n;
-		this.hierMesh().chunkSetAngles("Flap01_D0", 0.0f, n2, 0.0f);
-		this.hierMesh().chunkSetAngles("Flap02_D0", 0.0f, -n2, 0.0f);
-	}
-
-	public void rareAction(final float n, final boolean b) {
-		super.rareAction(n, b);
+	public void rareAction(float f, boolean b) {
+		super.rareAction(f, b);
 		if (super.FM instanceof RealFlightModel && ((RealFlightModel) super.FM).isRealMode() || !b || !(super.FM instanceof Pilot)) { return; }
 		final Pilot pilot = (Pilot) super.FM;
 		if (pilot.get_maneuver() == 63 && pilot.target != null) {
@@ -80,14 +46,6 @@ public class TA_152C1 extends FW_190 implements TypeFighterAceMaker {
 				this.tX4Prev = Time.current();
 			}
 		}
-	}
-
-	public void update(final float n) {
-		for (int i = 1; i < 15; ++i) {
-			this.hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0f, -10.0f * this.kangle, 0.0f);
-		}
-		this.kangle = 0.95f * this.kangle + 0.05f * super.FM.EI.engines[0].getControlRadiator();
-		super.update(n);
 	}
 
 	public boolean typeFighterAceMakerToggleAutomation() {
@@ -224,7 +182,7 @@ public class TA_152C1 extends FW_190 implements TypeFighterAceMaker {
 		Property.set(this1, "PaintScheme", new PaintSchemeFMPar06());
 		Property.set(this1, "yearService", 1944.6f);
 		Property.set(this1, "yearExpired", 1948.0f);
-		Property.set(this1, "FlightModel", "FlightModels/Ta-152C1.fmd");
+		Property.set(this1, "FlightModel", "FlightModels/Ta-152C1 (Ultrapack).fmd");
 		Property.set(this1, "cockpitClass", new Class[] { CockpitTA_152C1.class });
 		Property.set(this1, "LOSElevation", 0.755f);
 		Aircraft.weaponTriggersRegister(this1, new int[] { 0, 1, 1, 1, 1, 9, 9, 2, 2, 2, 2, 3, 3 });

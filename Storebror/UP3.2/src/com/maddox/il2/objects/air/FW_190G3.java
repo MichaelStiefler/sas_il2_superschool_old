@@ -3,7 +3,7 @@ package com.maddox.il2.objects.air;
 import com.maddox.il2.objects.weapons.FuelTank_Type_D;
 import com.maddox.rts.Property;
 
-public class FW_190G3 extends FW_190G implements TypeStormovik, TypeBomber {
+public class FW_190G3 extends FW_190F_BASE {
 
 	public FW_190G3() {
 		this.fuel_tank = 0;
@@ -43,7 +43,7 @@ public class FW_190G3 extends FW_190G implements TypeStormovik, TypeBomber {
 		Property.set(class1, "PaintScheme", new PaintSchemeBMPar02());
 		Property.set(class1, "yearService", 1942.6F);
 		Property.set(class1, "yearExpired", 1948F);
-		Property.set(class1, "FlightModel", "FlightModels/Fw-190A-5-165.fmd");
+		Property.set(class1, "FlightModel", "FlightModels/Fw-190G-3 (Ultrapack).fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitFW_190A5.class });
 		Property.set(class1, "LOSElevation", 0.764106F);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 1, 1, 9, 9, 9, 9, 9, 9, 2, 2, 9, 9, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 9, 9, 3, 3, 9, 3, 3, 3, 3, 3, 3, 3, 3 });

@@ -137,6 +137,12 @@ public abstract class HS123xyz extends Scheme1 implements TypeScout, TypeFighter
 		this.hierMesh().chunkSetAngles("AroneR_D0", 0.0F, 30F * f, 0.0F);
 	}
 
+	protected void moveFlap(float f) {
+		float f1 = -60.0F * f;
+		hierMesh().chunkSetAngles("Flap01_D0", 0.0F, f1, 0.0F);
+		hierMesh().chunkSetAngles("Flap02_D0", 0.0F, f1, 0.0F);
+	}
+
 	public void rareAction(float f, boolean flag) {
 		super.rareAction(f, flag);
 		if (this.FM.getAltitude() < 3000F) {

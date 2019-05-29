@@ -135,18 +135,22 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
 	public static final byte   MSG_PATCHLEVEL         = 101;
 	public static final byte   MSG_SELECTOR_VERSION   = 102;
 	public static final byte   MSG_ULTRAPACK_VERSION  = 103;
-	public static final String MIN_PATCH_LEVEL        = "0";
+	public static final String MIN_PATCH_LEVEL        = "5";
 	public static final String MAX_PATCH_LEVEL        = "100";
 	public static final String UP_VERSION             = "3.2";
-	public static final String PATCH_LEVEL            = "4";
+	public static final String PATCH_LEVEL            = "5";
 	public static final String PATCH_LEVEL_TEST       = "102b1";
-	public static String[]     PATCHLEVEL_G           = { "3" };
-	public static String[]     PATCHLEVEL_Y           = { "303" };
+	public static String[]     PATCHLEVEL_G           = { "5" };
+	public static String[]     PATCHLEVEL_Y           = { "4" };
 	private String             patchLevel             = "none";
 	private String             selectorVersion        = "unknown";
 	private String             ultrapackVersion       = "3 RC4";
 	public static final long   UPDATE_CHAT_INTERVAL   = 10000L;
 	private long               lastUpdateChatMessages = 0L;
+	private static int         minPatchLevel          = Integer.MIN_VALUE;
+	private static int         maxPatchLevel          = Integer.MAX_VALUE;
+	private static int []      greenPatchLevels;
+	private static int []      yellowPatchLevels;
 
 	public String getPatchLevel() {
 		return this.patchLevel;
@@ -176,7 +180,30 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
 	}
 
 	public boolean needsUpdate(String patchLevel) {
-		return patchLevel.compareTo(MIN_PATCH_LEVEL) < 0 || patchLevel.compareTo(MAX_PATCH_LEVEL) > 0;
+		int curPatchLevel;
+		try {
+			curPatchLevel = Integer.parseInt(patchLevel);
+		}
+		catch (NumberFormatException e)
+		{
+		   return true;
+		}
+		return curPatchLevel < minPatchLevel || curPatchLevel > maxPatchLevel;
+	}
+
+	public static int patchLevelState(String patchLevel) {
+		int curPatchLevel;
+		try {
+			curPatchLevel = Integer.parseInt(patchLevel);
+			for (int i=0; i<greenPatchLevels.length; i++)
+				if (curPatchLevel == greenPatchLevels[i]) return 1;
+			for (int i=0; i<yellowPatchLevels.length; i++)
+				if (curPatchLevel == yellowPatchLevels[i]) return 0;
+		}
+		catch (NumberFormatException e) {
+			return -1;
+		}
+		return -1;
 	}
 	// ---
 
@@ -2590,4 +2617,21 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
 		return new Point3d(dx, dy, dz);
 	}
 	// TODO: --- New "slap" command implementation by SAS~Storebror ---
+
+	static {
+		try {
+			minPatchLevel = Integer.parseInt(MIN_PATCH_LEVEL);
+			maxPatchLevel = Integer.parseInt(MAX_PATCH_LEVEL);
+			greenPatchLevels = new int[PATCHLEVEL_G.length];
+			yellowPatchLevels = new int[PATCHLEVEL_Y.length];
+			for (int i=0; i<PATCHLEVEL_G.length; i++) {
+				greenPatchLevels[i] = Integer.parseInt(PATCHLEVEL_G[i]);
+			}
+			for (int i=0; i<PATCHLEVEL_Y.length; i++) {
+				yellowPatchLevels[i] = Integer.parseInt(PATCHLEVEL_Y[i]);
+			}
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
+	}
 }

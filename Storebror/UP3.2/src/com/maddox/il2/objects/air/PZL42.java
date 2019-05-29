@@ -9,27 +9,24 @@ import com.maddox.rts.Property;
 
 public class PZL42 extends PZL42xyz implements TypeDiveBomber {
 
-	public PZL42() {
-	}
-
 	protected void nextDMGLevel(String s, int i, Actor actor) {
 		super.nextDMGLevel(s, i, actor);
-		if (this.FM.isPlayers()) { bChangedPit = true; }
+		if (this.FM.isPlayers()) bChangedPit = true;
 	}
 
 	protected void nextCUTLevel(String s, int i, Actor actor) {
 		super.nextCUTLevel(s, i, actor);
-		if (this.FM.isPlayers()) { bChangedPit = true; }
+		if (this.FM.isPlayers()) bChangedPit = true;
 	}
 
-	public void doKillPilot(int i) {
-		super.doKillPilot(i);
-		if (this.FM.isPlayers()) { bChangedPit = true; }
+	public void doWoundPilot(int i, float f) {
+		super.doWoundPilot(i, f);
+		if (this.FM.isPlayers()) bChangedPit = true;
 	}
 
 	public void doMurderPilot(int i) {
 		super.doMurderPilot(i);
-		if (this.FM.isPlayers()) { bChangedPit = true; }
+		if (this.FM.isPlayers()) bChangedPit = true;
 	}
 
 	public boolean typeDiveBomberToggleAutomation() {

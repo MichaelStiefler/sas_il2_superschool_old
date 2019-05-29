@@ -1,10 +1,13 @@
 package com.maddox.il2.objects.air;
 
+import com.maddox.il2.game.HUD;
 import com.maddox.rts.Property;
 
 public class CR_42 extends CR_42X {
 
-	public CR_42() {
+	public void update(float f) {
+		HUD.training("AoA=" + this.FM.getAOA() + ", RPM=" + this.FM.EI.engines[0].getRPM());
+		super.update(f);
 	}
 
 	static {
@@ -17,7 +20,7 @@ public class CR_42 extends CR_42X {
 		Property.set(class1, "PaintScheme_it", new PaintSchemeBMPar09());
 		Property.set(class1, "yearService", 1939F);
 		Property.set(class1, "yearExpired", 1943F);
-		Property.set(class1, "FlightModel", "FlightModels/CR42.fmd");
+		Property.set(class1, "FlightModel", "FlightModels/CR42 (Ultrapack).fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitCR42.class });
 		Property.set(class1, "LOSElevation", 0.742F);
 		weaponTriggersRegister(class1, new int[] { 0, 0, 3, 3 });

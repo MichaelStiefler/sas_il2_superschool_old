@@ -16,7 +16,17 @@ Credits:
 
 Changelog:
 
-Ultrapack 3.2
+Ultrapack 3.2 (Patch 5)
+=============
+* PZL 24 added (SAS~Loku)
+* PZL 11, 23 and 42 3D Updates (SAS~Loku)
+* Fw 190 + Ta 152 Family Flight Model Rework
+* Gloster Gladiator Family Flight Model Rework
+* Henschel Hs 123 Flight Model Rework
+* Fiat CR.32 / CR.42 Flight Model Rework
+* Several other small glitches fixed
+
+Ultrapack 3.2 (Patch 4)
 =============
 * Added planes: Avro Anson, Lockheed Electra, Lockheed Hudson (I/III), MiG-15 (early Farmer version)
 * Added Weapons: Tu-4 nuke and KS-1 missile, MiG-17PF mixed missile loadout (launching IR+Radar missiles in pairs)

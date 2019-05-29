@@ -1,17 +1,13 @@
 package com.maddox.il2.objects.air;
 
-import java.io.IOException;
-
 import com.maddox.JGP.Point3d;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.rts.NetMsgGuaranted;
-import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 
-public abstract class FW_190G extends Scheme1 implements TypeFighter, TypeBNZFighter, TypeStormovik, TypeBomber {
+public abstract class FW_190F_BASE extends Scheme1 implements TypeFighter, TypeBNZFighter, TypeStormovik {
 
 	public void doMurderPilot(int i) {
 		switch (i) {
@@ -394,57 +390,8 @@ public abstract class FW_190G extends Scheme1 implements TypeFighter, TypeBNZFig
 		}
 	}
 
-	public boolean typeBomberToggleAutomation() {
-		return false;
-	}
-
-	public void typeBomberAdjDistanceReset() {
-	}
-
-	public void typeBomberAdjDistancePlus() {
-	}
-
-	public void typeBomberAdjDistanceMinus() {
-	}
-
-	public void typeBomberAdjSideslipReset() {
-	}
-
-	public void typeBomberAdjSideslipPlus() {
-	}
-
-	public void typeBomberAdjSideslipMinus() {
-	}
-
-	public void typeBomberAdjAltitudeReset() {
-	}
-
-	public void typeBomberAdjAltitudePlus() {
-	}
-
-	public void typeBomberAdjAltitudeMinus() {
-	}
-
-	public void typeBomberAdjSpeedReset() {
-	}
-
-	public void typeBomberAdjSpeedPlus() {
-	}
-
-	public void typeBomberAdjSpeedMinus() {
-	}
-
-	public void typeBomberUpdate(float f) {
-	}
-
-	public void typeBomberReplicateToNet(NetMsgGuaranted netmsgguaranted) throws IOException {
-	}
-
-	public void typeBomberReplicateFromNet(NetMsgInput netmsginput) throws IOException {
-	}
-
 	static {
-		Class class1 = FW_190G.class;
+		Class class1 = FW_190F_BASE.class;
 		Property.set(class1, "originCountry", PaintScheme.countryGermany);
 	}
 }

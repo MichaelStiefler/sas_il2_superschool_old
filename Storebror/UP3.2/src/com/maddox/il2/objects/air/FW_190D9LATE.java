@@ -9,17 +9,15 @@ import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 
-public class FW_190D9LATE extends FW_190 implements TypeFighterAceMaker {
+public class FW_190D9LATE extends FW_190D_BASE implements TypeFighterAceMaker {
 	public int    k14Mode;
 	public int    k14WingspanType;
 	public float  k14Distance;
-	private float kangle;
 
 	public FW_190D9LATE() {
 		this.k14Mode = 0;
 		this.k14WingspanType = 0;
 		this.k14Distance = 200.0f;
-		this.kangle = 0.0f;
 	}
 
 	public boolean typeFighterAceMakerToggleAutomation() {
@@ -161,23 +159,6 @@ public class FW_190D9LATE extends FW_190 implements TypeFighterAceMaker {
 		hierMesh.chunkSetAngles("GearR5_D0", 0.0f, -max, 0.0f);
 	}
 
-	protected void moveGear(final float n) {
-		moveGear(this.hierMesh(), n);
-	}
-
-	public void moveSteering(final float n) {
-		if (this.FM.CT.getGear() < 0.98f) { return; }
-		this.hierMesh().chunkSetAngles("GearC2_D0", 0.0f, -n, 0.0f);
-	}
-
-	public void update(final float n) {
-		for (int i = 1; i < 13; ++i) {
-			this.hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0f, -10.0f * this.kangle, 0.0f);
-		}
-		this.kangle = 0.95f * this.kangle + 0.05f * this.FM.EI.engines[0].getControlRadiator();
-		super.update(n);
-	}
-
 	static {
 		final Class var_class = FW_190D9LATE.class;
 		new SPAWN(var_class);
@@ -186,7 +167,7 @@ public class FW_190D9LATE extends FW_190 implements TypeFighterAceMaker {
 		Property.set(var_class, "PaintScheme", new PaintSchemeFMPar06());
 		Property.set(var_class, "yearService", 1944.6f);
 		Property.set(var_class, "yearExpired", 1948.0f);
-		Property.set(var_class, "FlightModel", "FlightModels/Fw-190D-9Late.fmd");
+		Property.set(var_class, "FlightModel", "FlightModels/Fw-190D-9Late (Ultrapack).fmd");
 		Property.set(var_class, "cockpitClass", new Class[] { CockpitFW_190D9LATE.class });
 		Property.set(var_class, "LOSElevation", 0.764106f);
 		Aircraft.weaponTriggersRegister(var_class, new int[] { 0, 0, 1, 1 });

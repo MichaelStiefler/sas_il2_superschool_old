@@ -14,7 +14,6 @@ import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorNet;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.Engine;
-import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Motor;
 import com.maddox.il2.fm.RealFlightModel;
@@ -30,7 +29,7 @@ import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 import com.maddox.sas1946.il2.util.Reflection;
 
-public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
+public class FW_190A8MSTL extends FW_190A_BASE implements TypeDockable, Mistel {
 
 	public FW_190A8MSTL() {
 		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL()"); }
@@ -39,6 +38,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 		this.target_ = null;
 		this.queen_ = null;
 		this.mistelQueen = null;
+		this.applyLoadoutVisibility = false;
 	}
 
 	public Aircraft getDrone() {
@@ -112,35 +112,12 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 
 	}
 
-	public static void moveGear(HierMesh hiermesh, float f) {
-		if (DEBUG_METHODS) { System.out.println("FW_190A8MSTL moveGear(" + hiermesh.hashCode() + ", " + f + ")"); }
-		hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 77F * f, 0.0F);
-		hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 77F * f, 0.0F);
-		hiermesh.chunkSetAngles("GearL3_D0", 0.0F, 157F * f, 0.0F);
-		hiermesh.chunkSetAngles("GearR3_D0", 0.0F, 157F * f, 0.0F);
-		hiermesh.chunkSetAngles("GearC99_D0", 20F * f, 0.0F, 0.0F);
-		hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 0.0F, 0.0F);
-		float f1 = Math.max(-f * 1500F, -94F);
-		hiermesh.chunkSetAngles("GearL5_D0", 0.0F, -f1, 0.0F);
-		hiermesh.chunkSetAngles("GearR5_D0", 0.0F, -f1, 0.0F);
-	}
-
 	protected void moveGear(float f) {
 		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL moveGear(" + f + ")"); }
 		if (this.typeDockableIsDocked()) {
 			moveGear(this.hierMesh(), 0.0F);
 		} else {
 			moveGear(this.hierMesh(), f);
-		}
-	}
-
-	public void moveSteering(float f) {
-		if (this.Debug_Methods()) { System.out.println("FW_190A8MSTL moveSteering(" + f + ")"); }
-		if (this.FM.CT.getGear() < 0.98F) {
-			return;
-		} else {
-			this.hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -f, 0.0F);
-			return;
 		}
 	}
 
@@ -449,7 +426,7 @@ public class FW_190A8MSTL extends FW_190 implements TypeDockable, Mistel {
 		Property.set(class1, "PaintScheme", new PaintSchemeFMPar01());
 		Property.set(class1, "yearService", 1944F);
 		Property.set(class1, "yearExpired", 1948F);
-		Property.set(class1, "FlightModel", "FlightModels/Fw-190A-8.fmd");
+		Property.set(class1, "FlightModel", "FlightModels/Fw-190A-8-Mistel (Ultrapack).fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitFW_190F8MSTL.class });
 		Property.set(class1, "LOSElevation", 0.764106F);
 		weaponTriggersRegister(class1, new int[] { 0, 0, 0, 0, 3, 9, 9, 1, 1, 9, 9, 1, 1, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 2, 2 });

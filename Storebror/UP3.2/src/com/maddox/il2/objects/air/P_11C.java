@@ -5,24 +5,15 @@ import com.maddox.rts.Property;
 
 public class P_11C extends P_11 {
 
-	public P_11C() {
-	}
-
 	public void onAircraftLoaded() {
 		super.onAircraftLoaded();
-		Object aobj[] = this.pos.getBaseAttached();
-		if (aobj != null) {
-			for (int i = 0; i < aobj.length; i++) {
-				if (aobj[i] instanceof Bomb) {
-					this.hierMesh().chunkVisible("RackL_D0", true);
-					this.hierMesh().chunkVisible("RackR_D0", true);
-				}
+		Object aobj[] = super.pos.getBaseAttached();
+		if (aobj != null) for (int i = 0; i < aobj.length; i++)
+			if (aobj[i] instanceof Bomb) {
+				this.hierMesh().chunkVisible("RackL_D0", true);
+				this.hierMesh().chunkVisible("RackR_D0", true);
 			}
-
-		}
 	}
-
-	public static boolean bChangedPit = false;
 
 	static {
 		Class class1 = P_11C.class;
@@ -40,7 +31,7 @@ public class P_11C extends P_11 {
 		Property.set(class1, "FlightModel", "FlightModels/P-11c.fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitP_11C.class });
 		Property.set(class1, "LOSElevation", 0.7956F);
-		weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1, 3, 3 });
-		weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalBomb01", "_ExternalBomb02" });
+		Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 1, 1, 3, 3 });
+		Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalBomb01", "_ExternalBomb02" });
 	}
 }

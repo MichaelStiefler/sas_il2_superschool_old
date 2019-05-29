@@ -5,9 +5,15 @@ import com.maddox.il2.ai.Explosion;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
+import com.maddox.il2.game.HUD;
 import com.maddox.rts.Property;
 
 public class CR_32quater extends Scheme1 implements TypeFighter, TypeTNBFighter {
+
+	public void update(float f) {
+		HUD.training("AoA=" + this.FM.getAOA() + ", RPM=" + this.FM.EI.engines[0].getRPM());
+		super.update(f);
+	}
 
 	public void onAircraftLoaded() {
 		super.onAircraftLoaded();
@@ -336,7 +342,7 @@ public class CR_32quater extends Scheme1 implements TypeFighter, TypeTNBFighter 
 		Property.set(class1, "PaintScheme", new PaintSchemeFMPar00());
 		Property.set(class1, "yearService", 1936F);
 		Property.set(class1, "yearExpired", 1941F);
-		Property.set(class1, "FlightModel", "FlightModels/CR32.fmd");
+		Property.set(class1, "FlightModel", "FlightModels/CR32 (Ultrapack).fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitCR32quater.class });
 		Property.set(class1, "LOSElevation", 0.742F);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 0, 0, 3, 3, 3 });

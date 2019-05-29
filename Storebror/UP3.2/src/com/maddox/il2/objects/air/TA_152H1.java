@@ -1,59 +1,15 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.engine.HierMesh;
 import com.maddox.rts.Property;
 
-public class TA_152H1 extends FW_190 {
-
-	public TA_152H1() {
-		this.kangle = 0.0F;
-	}
-
-	public static void moveGear(HierMesh hiermesh, float f) {
-		hiermesh.chunkSetAngles("GearL2_D0", 0.0F, -77F * f, 0.0F);
-		hiermesh.chunkSetAngles("GearR2_D0", 0.0F, -77F * f, 0.0F);
-		hiermesh.chunkSetAngles("GearL3_D0", 0.0F, -102F * f, 0.0F);
-		hiermesh.chunkSetAngles("GearR3_D0", 0.0F, -102F * f, 0.0F);
-		hiermesh.chunkSetAngles("GearC2_D0", 20F * f, 0.0F, 0.0F);
-		float f1 = Math.max(-f * 1500F, -94F);
-		hiermesh.chunkSetAngles("GearL5_D0", 0.0F, f1, 0.0F);
-		hiermesh.chunkSetAngles("GearR5_D0", 0.0F, f1, 0.0F);
-	}
-
-	protected void moveGear(float f) {
-		moveGear(this.hierMesh(), f);
-	}
-
-	public void moveSteering(float f) {
-		if (this.FM.CT.getGear() < 0.98F) {
-			return;
-		} else {
-			this.hierMesh().chunkSetAngles("GearC3_D0", 0.0F, -f, 0.0F);
-			return;
-		}
-	}
-
-	public void moveWheelSink() {
-		this.resetYPRmodifier();
-		xyz[1] = cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.44F, 0.0F, 0.44F);
-		this.hierMesh().chunkSetLocate("GearL2a_D0", xyz, ypr);
-		xyz[1] = cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.44F, 0.0F, 0.44F);
-		this.hierMesh().chunkSetLocate("GearR2a_D0", xyz, ypr);
-	}
+public class TA_152H1 extends TA_152_BASE {
 
 	public void update(float f) {
-		for (int i = 1; i < 15; i++) {
-			this.hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -10F * this.kangle, 0.0F);
-		}
-
-		this.kangle = 0.95F * this.kangle + 0.05F * this.FM.EI.engines[0].getControlRadiator();
 		if (this.FM.Loc.z > 9000D) {
 			if (!this.FM.EI.engines[0].getControlAfterburner()) { this.FM.EI.engines[0].setAfterburnerType(2); }
 		} else if (!this.FM.EI.engines[0].getControlAfterburner()) { this.FM.EI.engines[0].setAfterburnerType(1); }
 		super.update(f);
 	}
-
-	private float kangle;
 
 	static {
 		Class class1 = TA_152H1.class;
@@ -63,7 +19,7 @@ public class TA_152H1 extends FW_190 {
 		Property.set(class1, "PaintScheme", new PaintSchemeFMPar06());
 		Property.set(class1, "yearService", 1944.6F);
 		Property.set(class1, "yearExpired", 1948F);
-		Property.set(class1, "FlightModel", "FlightModels/Ta-152H-1.fmd");
+		Property.set(class1, "FlightModel", "FlightModels/Ta-152H1 (Ultrapack).fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitTA_152.class });
 		Property.set(class1, "LOSElevation", 0.764106F);
 		weaponTriggersRegister(class1, new int[] { 0, 1, 1 });

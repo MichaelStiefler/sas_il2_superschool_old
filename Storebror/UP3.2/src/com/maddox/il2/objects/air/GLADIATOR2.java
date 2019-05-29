@@ -4,9 +4,6 @@ import com.maddox.rts.Property;
 
 public class GLADIATOR2 extends GLADIATOR {
 
-	public GLADIATOR2() {
-	}
-
 	static {
 		Class class1 = GLADIATOR2.class;
 		new NetAircraft.SPAWN(class1);
@@ -15,7 +12,7 @@ public class GLADIATOR2 extends GLADIATOR {
 		Property.set(class1, "PaintScheme", new PaintSchemeFMPar00());
 		Property.set(class1, "yearService", 1939F);
 		Property.set(class1, "yearExpired", 1943F);
-		Property.set(class1, "FlightModel", "FlightModels/GladiatorMkII.fmd");
+		Property.set(class1, "FlightModel", "FlightModels/GladiatorMkII (Ultrapack).fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitGLADIATOR2.class });
 		Property.set(class1, "LOSElevation", 0.8472F);
 		Property.set(class1, "originCountry", PaintScheme.countryFinland);
