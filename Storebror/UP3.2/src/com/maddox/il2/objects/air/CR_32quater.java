@@ -5,15 +5,9 @@ import com.maddox.il2.ai.Explosion;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.game.HUD;
 import com.maddox.rts.Property;
 
 public class CR_32quater extends Scheme1 implements TypeFighter, TypeTNBFighter {
-
-	public void update(float f) {
-		HUD.training("AoA=" + this.FM.getAOA() + ", RPM=" + this.FM.EI.engines[0].getRPM());
-		super.update(f);
-	}
 
 	public void onAircraftLoaded() {
 		super.onAircraftLoaded();
