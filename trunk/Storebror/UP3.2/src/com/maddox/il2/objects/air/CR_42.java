@@ -1,14 +1,8 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.game.HUD;
 import com.maddox.rts.Property;
 
 public class CR_42 extends CR_42X {
-
-	public void update(float f) {
-		HUD.training("AoA=" + this.FM.getAOA() + ", RPM=" + this.FM.EI.engines[0].getRPM());
-		super.update(f);
-	}
 
 	static {
 		Class class1 = CR_42.class;
