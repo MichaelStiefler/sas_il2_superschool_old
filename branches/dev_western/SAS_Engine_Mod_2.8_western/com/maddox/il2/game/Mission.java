@@ -211,9 +211,11 @@ public class Mission implements Destroy {
 	public float zutiMisc_BombsCat2_CratersVisibilityMultiplier;
 	public float zutiMisc_BombsCat3_CratersVisibilityMultiplier;
 	private static DateFormat shortDate;
-//	/* synthetic */static Class class$java$lang$String;
-//	/* synthetic */static Class class$com$maddox$rts$SectFile;
-//	/* synthetic */static Class class$com$maddox$il2$game$Mission;
+
+	// TODO: Mission Date Range Added by SAS~Storebror
+	private static final int YEAR_MIN = 1900;
+	private static final int YEAR_MAX = 2200;
+
 
 	static class SPAWN implements NetSpawn {
 		public void netSpawn(int i, NetMsgInput netmsginput) {
@@ -851,7 +853,7 @@ public class Mission implements Destroy {
 			}
 		}
 		LOADING_STEP(0.0F, "task.Load_landscape");
-		int i_12_ = sectfile.get("SEASON", "Year", 1940, 1930, 1960);
+		int i_12_ = sectfile.get("SEASON", "Year", 1940, YEAR_MIN, YEAR_MAX);
 		int i_13_ = sectfile.get("SEASON", "Month", World.land().config.getDefaultMonth("maps/" + string), 1, 12);
 		int i_14_ = sectfile.get("SEASON", "Day", 15, 1, 31);
 		setDate(i_12_, i_13_, i_14_);
@@ -935,8 +937,8 @@ public class Mission implements Destroy {
 	}
 
 	public static void setYear(int i) {
-		if (i < 1930) i = 1930;
-		if (i > 1960) i = 1960;
+		if (i < YEAR_MIN) i = YEAR_MIN;
+		if (i > YEAR_MAX) i = YEAR_MAX;
 		curYear = i;
 	}
 
@@ -1422,19 +1424,6 @@ public class Mission implements Destroy {
 									else {
 										Constructor constructor;
 										try {
-//											Class[] var_classes = new Class[6];
-//											var_classes[0] = String.class;
-////											var_classes[0] = ((class$java$lang$String == null) ? (class$java$lang$String = (class$("java.lang.String"))) : class$java$lang$String);
-//											var_classes[1] = Integer.TYPE;
-//											var_classes[2] = SectFile.class;
-////											var_classes[2] = ((class$com$maddox$rts$SectFile == null) ? (class$com$maddox$rts$SectFile = (class$("com.maddox.rts.SectFile"))) : class$com$maddox$rts$SectFile);
-//											var_classes[3] = String.class;
-////											var_classes[3] = ((class$java$lang$String == null) ? (class$java$lang$String = (class$("java.lang.String"))) : class$java$lang$String);
-//											var_classes[4] = SectFile.class;
-////											var_classes[4] = ((class$com$maddox$rts$SectFile == null) ? (class$com$maddox$rts$SectFile = (class$("com.maddox.rts.SectFile"))) : class$com$maddox$rts$SectFile);
-//											var_classes[5] = String.class;
-////											var_classes[5] = ((class$java$lang$String == null) ? (class$java$lang$String = (class$("java.lang.String"))) : class$java$lang$String);
-//											constructor = (var_class.getConstructor(var_classes));
 											constructor = var_class.getConstructor(new Class[] {String.class, Integer.TYPE, SectFile.class, String.class, SectFile.class, String.class});
 										} catch (Exception exception) {
 											System.out.println("Mission: No required constructor in chief's class [" + string_92_ + "]");
@@ -1443,13 +1432,6 @@ public class Mission implements Destroy {
 										int i_94_ = curActor;
 										Object object;
 										try {
-//											Object[] objects = new Object[6];
-//											objects[0] = string;
-//											objects[1] = new Integer(i_88_);
-//											objects[2] = chiefsIni;
-//											objects[3] = string_87_;
-//											objects[4] = sectfile;
-//											objects[5] = string + "_Road";
 											object = constructor.newInstance(new Object[] {string, new Integer(i_88_), chiefsIni, string_87_, sectfile, string + "_Road"});
 										} catch (Exception exception) {
 											System.out.println("Mission: Can't create chief '" + string + "' [class:" + string_92_ + "]");
@@ -2810,7 +2792,7 @@ public class Mission implements Destroy {
 			if (sectfile == null) return i_227_;
 			String string = sectfile.get("MAIN", "MAP");
 			int i_228_ = World.land().config.getDefaultMonth("maps/" + string);
-			i = sectfile.get("SEASON", "Year", 1940, 1930, 1960);
+			i = sectfile.get("SEASON", "Year", 1940, YEAR_MIN, YEAR_MAX);
 			i_225_ = sectfile.get("SEASON", "Month", i_228_, 1, 12);
 			i_226_ = sectfile.get("SEASON", "Day", 15, 1, 31);
 			i_227_ = i * 10000 + i_225_ * 100 + i_226_;
@@ -2842,7 +2824,6 @@ public class Mission implements Destroy {
 
 	static {
 		Spawn.add(Mission.class, new SPAWN());
-//		Spawn.add((class$com$maddox$il2$game$Mission == null ? (class$com$maddox$il2$game$Mission = class$("com.maddox.il2.game.Mission")) : class$com$maddox$il2$game$Mission), new SPAWN());
 		ZUTI_RADAR_IN_ADV_MODE = false;
 		shortDate = null;
 	}
