@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import java.io.IOException;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.Explosion;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
@@ -1043,7 +1042,7 @@ public abstract class Halifax extends Scheme4
             if ((Aircraft.Pd.x > 9.5299997329711914D) && (Aircraft.Pd.z < 0.14D) && (Aircraft.Pd.z > -0.62999999523162842D)) {
                 this.FM.AS.hitPilot(shot.initiator, 2, (int) (shot.power * 0.002F));
             }
-            if ((((Tuple3d) (Aircraft.Pd)).x > 2.4749999046325684D) && (Aircraft.Pd.x < 4.4899997711181641D) && (Aircraft.Pd.z > 0.61D) && ((shot.power * Math.sqrt((Aircraft.v1.y * Aircraft.v1.y) + (Aircraft.v1.z * Aircraft.v1.z))) > 11900D) && (World.Rnd().nextFloat() < 0.45F)) {
+            if ((Aircraft.Pd.x > 2.4749999046325684D) && (Aircraft.Pd.x < 4.4899997711181641D) && (Aircraft.Pd.z > 0.61D) && ((shot.power * Math.sqrt((Aircraft.v1.y * Aircraft.v1.y) + (Aircraft.v1.z * Aircraft.v1.z))) > 11900D) && (World.Rnd().nextFloat() < 0.45F)) {
                 for (int i = 0; i < 4; i++) {
                     this.FM.AS.setEngineSpecificDamage(shot.initiator, i, 0);
                 }
