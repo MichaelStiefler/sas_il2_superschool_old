@@ -36,7 +36,7 @@ public class CockpitWellington8_Bombardier extends CockpitPilot {
 			HookPilot hookpilot = HookPilot.current;
 			hookpilot.doAim(false);
 			Point3d point3d = new Point3d();
-			point3d.set(0.25D, 0.0D, -0.039999999105930328D);
+			point3d.set(0.25D, 0.0D, -0.04D);
 			hookpilot.setTubeSight(point3d);
 			return true;
 		} else return false;

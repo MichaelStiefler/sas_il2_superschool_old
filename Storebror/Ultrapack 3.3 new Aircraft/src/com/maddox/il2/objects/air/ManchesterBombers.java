@@ -301,9 +301,9 @@ public abstract class ManchesterBombers extends Scheme2
                 {
                     if(getEnergyPastArmor(0.1F, shot) > 0.0F)
                     {
-                        if(Aircraft.Pd.y > 0.0D && Aircraft.Pd.z < 0.18899999558925629D && World.Rnd().nextFloat(0.0F, 16000F) < shot.power)
+                        if(Aircraft.Pd.y > 0.0D && Aircraft.Pd.z < 0.189D && World.Rnd().nextFloat(0.0F, 16000F) < shot.power)
                             this.FM.EI.engines[j].setMagnetoKnockOut(shot.initiator, 0);
-                        if(Aircraft.Pd.y < 0.0D && Aircraft.Pd.z < 0.18899999558925629D && World.Rnd().nextFloat(0.0F, 16000F) < shot.power)
+                        if(Aircraft.Pd.y < 0.0D && Aircraft.Pd.z < 0.189D && World.Rnd().nextFloat(0.0F, 16000F) < shot.power)
                             this.FM.EI.engines[j].setMagnetoKnockOut(shot.initiator, 1);
                         if(World.Rnd().nextFloat(0.0F, 26700F) < shot.power)
                             this.FM.AS.setEngineSpecificDamage(shot.initiator, j, 4);
@@ -430,7 +430,7 @@ public abstract class ManchesterBombers extends Scheme2
             } else
             if(s.startsWith("xxpar"))
             {
-                if(s.startsWith("xxpark") && chunkDamageVisible("Keel1") > 2 && getEnergyPastArmor(10.699999809265137D / (1.0001000165939331D - Math.abs(Aircraft.v1.y)), shot) > 0.0F)
+                if(s.startsWith("xxpark") && chunkDamageVisible("Keel1") > 2 && getEnergyPastArmor(10.7D / (1.0001000165939331D - Math.abs(Aircraft.v1.y)), shot) > 0.0F)
                 {
                     debuggunnery("*** Keel1 Spars Damaged..");
                     nextDMGLevels(1, 2, "Keel1_D2", shot.initiator);

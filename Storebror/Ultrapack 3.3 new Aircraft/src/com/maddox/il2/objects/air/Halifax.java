@@ -1017,7 +1017,7 @@ public abstract class Halifax extends Scheme4
             this.FM.AS.hitEngine(shot.initiator, 3, 1);
         }
         if (shot.chunkName.startsWith("CF")) {
-            if ((Aircraft.Pd.x > 4.55D) && (Aircraft.Pd.x < 7.15D) && (Aircraft.Pd.z > 0.57999998331069946D)) {
+            if ((Aircraft.Pd.x > 4.55D) && (Aircraft.Pd.x < 7.15D) && (Aircraft.Pd.z > 0.58D)) {
                 if (World.Rnd().nextFloat() < 0.233F) {
                     if (Aircraft.Pd.z > 1.21D) {
                         this.killPilot(shot.initiator, 0);
@@ -1039,10 +1039,10 @@ public abstract class Halifax extends Scheme4
                     }
                 }
             }
-            if ((Aircraft.Pd.x > 9.5299997329711914D) && (Aircraft.Pd.z < 0.14D) && (Aircraft.Pd.z > -0.62999999523162842D)) {
+            if ((Aircraft.Pd.x > 9.53D) && (Aircraft.Pd.z < 0.14D) && (Aircraft.Pd.z > -0.63D)) {
                 this.FM.AS.hitPilot(shot.initiator, 2, (int) (shot.power * 0.002F));
             }
-            if ((Aircraft.Pd.x > 2.4749999046325684D) && (Aircraft.Pd.x < 4.4899997711181641D) && (Aircraft.Pd.z > 0.61D) && ((shot.power * Math.sqrt((Aircraft.v1.y * Aircraft.v1.y) + (Aircraft.v1.z * Aircraft.v1.z))) > 11900D) && (World.Rnd().nextFloat() < 0.45F)) {
+            if ((Aircraft.Pd.x > 2.475D) && (Aircraft.Pd.x < 4.49D) && (Aircraft.Pd.z > 0.61D) && ((shot.power * Math.sqrt((Aircraft.v1.y * Aircraft.v1.y) + (Aircraft.v1.z * Aircraft.v1.z))) > 11900D) && (World.Rnd().nextFloat() < 0.45F)) {
                 for (int i = 0; i < 4; i++) {
                     this.FM.AS.setEngineSpecificDamage(shot.initiator, i, 0);
                 }
@@ -1050,7 +1050,7 @@ public abstract class Halifax extends Scheme4
             }
         }
         if (shot.chunkName.startsWith("Turret1")) {
-            if (Aircraft.Pd.z > 0.033449999988079071D) {
+            if (Aircraft.Pd.z > 0.03345D) {
                 this.killPilot(shot.initiator, 2);
                 if ((shot.initiator == World.getPlayerAircraft()) && World.cur().isArcade()) {
                     HUD.logCenter("H E A D S H O T");
