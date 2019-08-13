@@ -108,33 +108,33 @@ public abstract class B26 extends Scheme2a
                     if(Math.abs(Aircraft.v1.x) > 0.5D)
                         getEnergyPastArmor(7.94D / Math.abs(Aircraft.v1.x), shot);
                     else
-                        getEnergyPastArmor(9.5299997329711914D / (1.0D - Math.abs(Aircraft.v1.x)), shot);
+                        getEnergyPastArmor(9.53D / (1.0D - Math.abs(Aircraft.v1.x)), shot);
                 if(string.endsWith("p3"))
                     getEnergyPastArmor(7.94D / (Math.abs(Aircraft.v1.z) + 9.9999999747524271E-007D), shot);
                 if(string.endsWith("p4"))
-                    getEnergyPastArmor(9.5299997329711914D / (Math.abs(Aircraft.v1.x) + 9.9999999747524271E-007D), shot);
+                    getEnergyPastArmor(9.53D / (Math.abs(Aircraft.v1.x) + 9.9999999747524271E-007D), shot);
                 if(string.endsWith("p5") || string.endsWith("p6"))
-                    getEnergyPastArmor(9.5299997329711914D / (Math.abs(Aircraft.v1.y) + 9.9999999747524271E-007D), shot);
+                    getEnergyPastArmor(9.53D / (Math.abs(Aircraft.v1.y) + 9.9999999747524271E-007D), shot);
                 if(string.endsWith("p7"))
                     getEnergyPastArmor(0.5D / (Math.abs(Aircraft.v1.z) + 9.9999999747524271E-007D), shot);
                 if(string.endsWith("p8"))
-                    getEnergyPastArmor(9.5299997329711914D / (Math.abs(Aircraft.v1.x) + 9.9999999747524271E-007D), shot);
+                    getEnergyPastArmor(9.53D / (Math.abs(Aircraft.v1.x) + 9.9999999747524271E-007D), shot);
                 if(string.endsWith("a1"))
-                    getEnergyPastArmor(9.5299997329711914D / (Math.abs(Aircraft.v1.y) + 9.9999999747524271E-007D), shot);
+                    getEnergyPastArmor(9.53D / (Math.abs(Aircraft.v1.y) + 9.9999999747524271E-007D), shot);
                 if(string.endsWith("a2"))
-                    getEnergyPastArmor(9.5299997329711914D / (Math.abs(Aircraft.v1.y) + 9.9999999747524271E-007D), shot);
+                    getEnergyPastArmor(9.53D / (Math.abs(Aircraft.v1.y) + 9.9999999747524271E-007D), shot);
                 if(string.endsWith("a3"))
-                    getEnergyPastArmor(6.3499999046325684D / (Math.abs(Aircraft.v1.x) + 9.9999999747524271E-007D), shot);
+                    getEnergyPastArmor(6.35D / (Math.abs(Aircraft.v1.x) + 9.9999999747524271E-007D), shot);
                 if(string.endsWith("a4") || string.endsWith("a5"))
-                    getEnergyPastArmor(12.699999809265137D / (Math.abs(Aircraft.v1.x) + 9.9999999747524271E-007D), shot);
+                    getEnergyPastArmor(12.7D / (Math.abs(Aircraft.v1.x) + 9.9999999747524271E-007D), shot);
                 if(string.endsWith("a6") || string.endsWith("a7"))
-                    getEnergyPastArmor(6.3499999046325684D / (Math.abs(Aircraft.v1.x) + 9.9999999747524271E-007D), shot);
+                    getEnergyPastArmor(6.35D / (Math.abs(Aircraft.v1.x) + 9.9999999747524271E-007D), shot);
                 if(string.endsWith("r1"))
                     getEnergyPastArmor(3.17D / (Math.abs(Aircraft.v1.x) + 9.9999999747524271E-007D), shot);
                 if(string.endsWith("r2") || string.endsWith("r3"))
-                    getEnergyPastArmor(9.5299997329711914D / (Math.abs(Aircraft.v1.x) + 9.9999999747524271E-007D), shot);
+                    getEnergyPastArmor(9.53D / (Math.abs(Aircraft.v1.x) + 9.9999999747524271E-007D), shot);
                 if(string.endsWith("c1") || string.endsWith("c2"))
-                    getEnergyPastArmor(8.7299995422363281D / (Math.abs(Aircraft.v1.x) + 9.9999999747524271E-007D), shot);
+                    getEnergyPastArmor(8.73D / (Math.abs(Aircraft.v1.x) + 9.9999999747524271E-007D), shot);
             } else
             if(string.startsWith("xxcontrols"))
             {

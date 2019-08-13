@@ -13,36 +13,41 @@ import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 
-public abstract class WhitleyBombers extends Scheme2
+public abstract class G3M extends Scheme2
 {
 
-    public WhitleyBombers()
+    public G3M()
     {
-        bSightAutomation = false;
-        bSightBombDump = false;
-        fSightCurDistance = 0.0F;
+        fSightCurAltitude = 300F;
+        fSightCurSpeed = 50F;
         fSightCurForwardAngle = 0.0F;
+        fSightSetForwardAngle = 0.0F;
         fSightCurSideslip = 0.0F;
-        fSightCurAltitude = 850F;
-        fSightCurSpeed = 150F;
-        fSightCurReadyness = 0.0F;
     }
 
-    public static void moveGear(HierMesh hiermesh, float f)
+    protected void moveRudder(float f)
+    {
+        hierMesh().chunkSetAngles("Rudder1_D0", 0.0F, -30F * f, 0.0F);
+        hierMesh().chunkSetAngles("Rudder2_D0", 0.0F, -30F * f, 0.0F);
+    }
+
+    public void onAircraftLoaded()
+    {
+        super.onAircraftLoaded();
+        FM.AS.wantBeaconsNet(true);
+    }
+
+    public static void moveGear(HierMesh hiermesh, float f, float f1, float f2)
     {
         hiermesh.chunkSetAngles("GearL2_D0", 0.0F, -90F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearL3_D0", 0.0F, -30F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.1F, 0.0F, -45F), 0.0F);
-        hiermesh.chunkSetAngles("GearL5_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.1F, 0.0F, -45F), 0.0F);
-        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, -90F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearR3_D0", 0.0F, -30F * f, 0.0F);
-        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.1F, 0.0F, -45F), 0.0F);
-        hiermesh.chunkSetAngles("GearR5_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.1F, 0.0F, -45F), 0.0F);
+        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.1F, 0.0F, -90F), 0.0F);
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, -90F * f1, 0.0F);
+        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, Aircraft.cvt(f1, 0.01F, 0.1F, 0.0F, -90F), 0.0F);
     }
 
-    protected void moveGear(float f)
+    protected void moveGear(float f, float f1, float f2)
     {
-        moveGear(hierMesh(), f);
+        moveGear(hierMesh(), f, f1, f2);
     }
 
     public void moveSteering(float f)
@@ -52,45 +57,6 @@ public abstract class WhitleyBombers extends Scheme2
 
     public void moveWheelSink()
     {
-        resetYPRmodifier();
-        Aircraft.xyz[1] = Aircraft.cvt(FM.Gears.gWheelSinking[0], 0.0F, 0.2375F, 0.0F, 0.2375F);
-        hierMesh().chunkSetLocate("GearL3_D0", Aircraft.xyz, Aircraft.ypr);
-        Aircraft.xyz[1] = Aircraft.cvt(FM.Gears.gWheelSinking[1], 0.0F, 0.2375F, 0.0F, 0.2375F);
-        hierMesh().chunkSetLocate("GearR3_D0", Aircraft.xyz, Aircraft.ypr);
-    }
-
-    public void update(float f)
-    {
-        World.cur().diffCur.Torque_N_Gyro_Effects = false;
-        super.update(f);
-        hierMesh().chunkSetAngles("GearL3_D0", 0.0F, -FM.Gears.gWheelAngles[0], 0.0F);
-        hierMesh().chunkSetAngles("GearR3_D0", 0.0F, -FM.Gears.gWheelAngles[1], 0.0F);
-        FM.EI.engines[0].addVside *= 9.9999999999999995E-008D;
-    }
-
-    protected void moveRudder(float f)
-    {
-        hierMesh().chunkSetAngles("Rudder1_D0", 0.0F, -25F * f, 0.0F);
-        hierMesh().chunkSetAngles("Rudder2_D0", 0.0F, -25F * f, 0.0F);
-    }
-
-    protected void moveElevator(float f)
-    {
-        hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -25F * f, 0.0F);
-        hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -25F * f, 0.0F);
-    }
-
-    protected void moveAileron(float f)
-    {
-        hierMesh().chunkSetAngles("AroneL_D0", 0.0F, -15F * f, 0.0F);
-        hierMesh().chunkSetAngles("AroneR_D0", 0.0F, -15F * f, 0.0F);
-    }
-
-    protected void moveFlap(float f)
-    {
-        float f1 = -15F * f;
-        hierMesh().chunkSetAngles("Flap01_D0", 0.0F, f1, 0.0F);
-        hierMesh().chunkSetAngles("Flap02_D0", 0.0F, f1, 0.0F);
     }
 
     public void rareAction(float f, boolean flag)
@@ -145,19 +111,18 @@ public abstract class WhitleyBombers extends Scheme2
         float f1 = af[1];
         switch(i)
         {
-        case 2:
         default:
             break;
 
         case 0:
-            if(f < -70F)
+            if(f < -35F)
             {
-                f = -70F;
+                f = -35F;
                 flag = false;
             }
-            if(f > 70F)
+            if(f > 35F)
             {
-                f = 70F;
+                f = 35F;
                 flag = false;
             }
             if(f1 < -45F)
@@ -165,35 +130,52 @@ public abstract class WhitleyBombers extends Scheme2
                 f1 = -45F;
                 flag = false;
             }
-            if(f1 > 20F)
+            if(f1 > 25F)
             {
-                f1 = 20F;
+                f1 = 25F;
                 flag = false;
             }
             break;
 
         case 1:
-            if(f < -40F)
+            if(f < -45F)
             {
-                f = -40F;
+                f = -45F;
                 flag = false;
             }
-            if(f > 40F)
+            if(f > 45F)
             {
-                f = 40F;
+                f = 45F;
                 flag = false;
             }
-            if(f1 < -40F)
+            if(f1 < -45F)
             {
-                f1 = -40F;
+                f1 = -45F;
                 flag = false;
             }
-            if(f1 > 35F)
+            if(f1 > 25F)
             {
-                f1 = 35F;
+                f1 = 25F;
                 flag = false;
             }
-            // fall through
+            break;
+
+        case 2:
+            if(f < -50F)
+            {
+                f = -50F;
+                flag = false;
+            }
+            if(f > 50F)
+            {
+                f = 50F;
+                flag = false;
+            }
+            if(f1 > Aircraft.cvt(Math.abs(f), 0.0F, 50F, 40F, 25F))
+                f1 = Aircraft.cvt(Math.abs(f), 0.0F, 50F, 40F, 25F);
+            if(f1 < Aircraft.cvt(Math.abs(f), 0.0F, 50F, -10F, -3.5F))
+                f1 = Aircraft.cvt(Math.abs(f), 0.0F, 50F, -10F, -3.5F);
+            break;
 
         case 3:
             if(f < -55F)
@@ -280,14 +262,6 @@ public abstract class WhitleyBombers extends Scheme2
         return super.cutFM(i, j, actor);
     }
 
-    protected void moveBayDoor(float f)
-    {
-        hierMesh().chunkSetAngles("Bay01_D0", 0.0F, -85F * f, 0.0F);
-        hierMesh().chunkSetAngles("Bay02_D0", 0.0F, -85F * f, 0.0F);
-        hierMesh().chunkSetAngles("Bay03_D0", 0.0F, 85F * f, 0.0F);
-        hierMesh().chunkSetAngles("Bay04_D0", 0.0F, 85F * f, 0.0F);
-    }
-
     protected void hitBone(String s, Shot shot, Point3d point3d)
     {
         if(s.startsWith("xx"))
@@ -297,8 +271,11 @@ public abstract class WhitleyBombers extends Scheme2
                 int i = s.charAt(9) - 48;
                 switch(i)
                 {
+                default:
+                    break;
+
                 case 1:
-                    if(getEnergyPastArmor(3F, shot) > 0.0F)
+                    if(getEnergyPastArmor(2.2F, shot) > 0.0F)
                     {
                         if(World.Rnd().nextFloat() < 0.1F)
                             FM.AS.setControlsDamage(shot.initiator, 2);
@@ -309,11 +286,12 @@ public abstract class WhitleyBombers extends Scheme2
 
                 case 2:
                 case 3:
-                    if(getEnergyPastArmor(3F, shot) > 0.0F && World.Rnd().nextFloat() < 0.25F)
+                    if(getEnergyPastArmor(2.2F, shot) > 0.0F && World.Rnd().nextFloat() < 0.25F)
                         FM.AS.setControlsDamage(shot.initiator, 0);
                     break;
                 }
-            } else
+                return;
+            }
             if(s.startsWith("xxeng"))
             {
                 int j = s.charAt(5) - 49;
@@ -344,11 +322,11 @@ public abstract class WhitleyBombers extends Scheme2
                 }
                 if(s.endsWith("cyls"))
                 {
-                    if(getEnergyPastArmor(0.85F, shot) > 0.0F && World.Rnd().nextFloat() < FM.EI.engines[j].getCylindersRatio() * 0.66F)
+                    if(getEnergyPastArmor(0.85F, shot) > 0.0F && World.Rnd().nextFloat() < FM.EI.engines[j].getCylindersRatio() * 0.9878F)
                     {
-                        FM.EI.engines[j].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int)(shot.power / 32200F)));
+                        FM.EI.engines[j].setCyliderKnockOut(shot.initiator, World.Rnd().nextInt(1, (int)(shot.power / 19000F)));
                         debuggunnery("*** Engine" + j + " Cylinders Hit, " + FM.EI.engines[j].getCylindersOperable() + "/" + FM.EI.engines[j].getCylinders() + " Left..");
-                        if(World.Rnd().nextFloat() < shot.power / 1000000F)
+                        if(World.Rnd().nextFloat() < shot.power / 48000F)
                         {
                             FM.AS.hitEngine(shot.initiator, 0, 2);
                             debuggunnery("*** Engine Cylinders Hit - Engine Fires..");
@@ -386,13 +364,15 @@ public abstract class WhitleyBombers extends Scheme2
                     FM.AS.hitOil(shot.initiator, j);
                     getEnergyPastArmor(0.42F, shot);
                 }
-            } else
+                return;
+            }
             if(s.startsWith("xxfuel"))
             {
                 int k = s.charAt(6) - 48;
                 int i1;
                 switch(k)
                 {
+                case 1:
                 default:
                     if(World.Rnd().nextFloat() < 0.1F)
                         hitBone("xxfuel2", shot, point3d);
@@ -440,19 +420,21 @@ public abstract class WhitleyBombers extends Scheme2
                     if(shot.powerType == 3 && World.Rnd().nextFloat() < 0.5F)
                         FM.AS.hitTank(shot.initiator, i1, 2);
                 }
-            } else
+                return;
+            }
             if(s.startsWith("xxgun"))
             {
                 int l = s.charAt(5) - 49;
                 if(World.Rnd().nextFloat() < 0.5F)
                     FM.AS.setJamBullets(10 + l, 0);
                 getEnergyPastArmor(22.7F, shot);
-            } else
+                return;
+            }
             if(s.startsWith("xxlock"))
             {
                 if(s.startsWith("xxlockal"))
                 {
-                    if(getEnergyPastArmor(6.5F, shot) > 0.0F)
+                    if(getEnergyPastArmor(4.35F, shot) > 0.0F)
                     {
                         debuggunnery("*** AroneL Lock Damaged..");
                         nextDMGLevels(1, 2, "AroneL_D0", shot.initiator);
@@ -460,7 +442,7 @@ public abstract class WhitleyBombers extends Scheme2
                 } else
                 if(s.startsWith("xxlockar"))
                 {
-                    if(getEnergyPastArmor(6.5F, shot) > 0.0F)
+                    if(getEnergyPastArmor(4.35F, shot) > 0.0F)
                     {
                         debuggunnery("*** AroneR Lock Damaged..");
                         nextDMGLevels(1, 2, "AroneR_D0", shot.initiator);
@@ -468,7 +450,7 @@ public abstract class WhitleyBombers extends Scheme2
                 } else
                 if(s.startsWith("xxlocksl"))
                 {
-                    if(getEnergyPastArmor(6.5F, shot) > 0.0F)
+                    if(getEnergyPastArmor(4.32F, shot) > 0.0F)
                     {
                         debuggunnery("*** VatorL Lock Damaged..");
                         nextDMGLevels(1, 2, "VatorL_D0", shot.initiator);
@@ -476,24 +458,35 @@ public abstract class WhitleyBombers extends Scheme2
                 } else
                 if(s.startsWith("xxlocksr"))
                 {
-                    if(getEnergyPastArmor(6.5F, shot) > 0.0F)
+                    if(getEnergyPastArmor(4.32F, shot) > 0.0F)
                     {
                         debuggunnery("*** VatorR Lock Damaged..");
                         nextDMGLevels(1, 2, "VatorR_D0", shot.initiator);
                     }
                 } else
-                if(s.startsWith("xxlockk") && getEnergyPastArmor(6.5F, shot) > 0.0F)
+                if(s.startsWith("xxlockk1") && getEnergyPastArmor(4.32F, shot) > 0.0F)
                 {
                     debuggunnery("*** Rudder1 Lock Damaged..");
                     nextDMGLevels(1, 2, "Rudder1_D0", shot.initiator);
                 }
-            } else
+                if(s.startsWith("xxlockk4") && getEnergyPastArmor(4.32F, shot) > 0.0F)
+                {
+                    debuggunnery("*** Rudder2 Lock Damaged..");
+                    nextDMGLevels(1, 2, "Rudder2_D0", shot.initiator);
+                }
+                return;
+            }
             if(s.startsWith("xxpar"))
             {
-                if(s.startsWith("xxpark") && chunkDamageVisible("Keel1") > 1 && getEnergyPastArmor(10.7D / (1.0001000165939331D - Math.abs(Aircraft.v1.y)), shot) > 0.0F)
+                if(s.startsWith("xxpark1") && chunkDamageVisible("Keel1") > 1 && getEnergyPastArmor(10.7D / (1.0001000165939331D - Math.abs(Aircraft.v1.y)), shot) > 0.0F)
                 {
                     debuggunnery("*** Keel1 Spars Damaged..");
                     nextDMGLevels(1, 2, "Keel1_D2", shot.initiator);
+                }
+                if(s.startsWith("xxpark3") && chunkDamageVisible("Keel2") > 1 && getEnergyPastArmor(10.7D / (1.0001000165939331D - Math.abs(Aircraft.v1.y)), shot) > 0.0F)
+                {
+                    debuggunnery("*** Keel2 Spars Damaged..");
+                    nextDMGLevels(1, 2, "Keel2_D2", shot.initiator);
                 }
                 if(s.startsWith("xxparli") && chunkDamageVisible("WingLIn") > 2 && getEnergyPastArmor(12.8D / (1.0001000165939331D - Math.abs(Aircraft.v1.y)), shot) > 0.0F)
                 {
@@ -535,8 +528,12 @@ public abstract class WhitleyBombers extends Scheme2
                     debuggunnery("*** StabR Spars Damaged..");
                     nextDMGLevels(1, 2, "StabR_D2", shot.initiator);
                 }
+                return;
+            } else
+            {
+                return;
             }
-        } else
+        }
         if(s.startsWith("xcf"))
         {
             if(chunkDamageVisible("CF") < 3)
@@ -547,15 +544,25 @@ public abstract class WhitleyBombers extends Scheme2
             if(chunkDamageVisible("Tail1") < 3)
                 hitChunk("Tail1", shot);
         } else
-        if(s.startsWith("xkeel"))
+        if(s.startsWith("xkeel1"))
         {
             if(chunkDamageVisible("Keel1") < 2)
                 hitChunk("Keel1", shot);
         } else
-        if(s.startsWith("xrudder"))
+        if(s.startsWith("xkeel2"))
+        {
+            if(chunkDamageVisible("Keel2") < 2)
+                hitChunk("Keel2", shot);
+        } else
+        if(s.startsWith("xrudder1"))
         {
             if(chunkDamageVisible("Rudder1") < 2)
                 hitChunk("Rudder1", shot);
+        } else
+        if(s.startsWith("xrudder2"))
+        {
+            if(chunkDamageVisible("Rudder2") < 2)
+                hitChunk("Rudder2", shot);
         } else
         if(s.startsWith("xstabl"))
         {
@@ -661,20 +668,28 @@ public abstract class WhitleyBombers extends Scheme2
         }
     }
 
-    public void doKillPilot(int i)
+    public void doWoundPilot(int i, float f)
     {
         switch(i)
         {
         case 2:
-            FM.turret[0].bIsOperable = false;
+            FM.turret[0].setHealth(f);
             break;
 
         case 3:
-            FM.turret[1].bIsOperable = false;
+            FM.turret[2].setHealth(f);
             break;
 
         case 4:
-            FM.turret[2].bIsOperable = false;
+            FM.turret[4].setHealth(f);
+            break;
+
+        case 5:
+            FM.turret[3].setHealth(f);
+            break;
+
+        case 6:
+            FM.turret[1].setHealth(f);
             break;
         }
     }
@@ -688,42 +703,32 @@ public abstract class WhitleyBombers extends Scheme2
 
     public boolean typeBomberToggleAutomation()
     {
-        bSightAutomation = !bSightAutomation;
-        bSightBombDump = false;
-        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAutomation" + (bSightAutomation ? "ON" : "OFF"));
-        return bSightAutomation;
+        return false;
     }
 
     public void typeBomberAdjDistanceReset()
     {
-        fSightCurDistance = 0.0F;
         fSightCurForwardAngle = 0.0F;
     }
 
     public void typeBomberAdjDistancePlus()
     {
-        fSightCurForwardAngle++;
-        if(fSightCurForwardAngle > 85F)
-            fSightCurForwardAngle = 85F;
-        fSightCurDistance = fSightCurAltitude * (float)Math.tan(Math.toRadians(fSightCurForwardAngle));
+        fSightCurForwardAngle += 0.2F;
+        if(fSightCurForwardAngle > 75F)
+            fSightCurForwardAngle = 75F;
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] {
-            new Integer((int)fSightCurForwardAngle)
+            new Integer((int)(fSightCurForwardAngle * 1.0F))
         });
-        if(bSightAutomation)
-            typeBomberToggleAutomation();
     }
 
     public void typeBomberAdjDistanceMinus()
     {
-        fSightCurForwardAngle--;
-        if(fSightCurForwardAngle < 0.0F)
-            fSightCurForwardAngle = 0.0F;
-        fSightCurDistance = fSightCurAltitude * (float)Math.tan(Math.toRadians(fSightCurForwardAngle));
+        fSightCurForwardAngle -= 0.2F;
+        if(fSightCurForwardAngle < -15F)
+            fSightCurForwardAngle = -15F;
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] {
-            new Integer((int)fSightCurForwardAngle)
+            new Integer((int)(fSightCurForwardAngle * 1.0F))
         });
-        if(bSightAutomation)
-            typeBomberToggleAutomation();
     }
 
     public void typeBomberAdjSideslipReset()
@@ -733,61 +738,59 @@ public abstract class WhitleyBombers extends Scheme2
 
     public void typeBomberAdjSideslipPlus()
     {
-        fSightCurSideslip += 0.1F;
-        if(fSightCurSideslip > 3F)
-            fSightCurSideslip = 3F;
+        fSightCurSideslip++;
+        if(fSightCurSideslip > 45F)
+            fSightCurSideslip = 45F;
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] {
-            new Integer((int)(fSightCurSideslip * 10F))
+            new Integer((int)(fSightCurSideslip * 1.0F))
         });
     }
 
     public void typeBomberAdjSideslipMinus()
     {
-        fSightCurSideslip -= 0.1F;
-        if(fSightCurSideslip < -3F)
-            fSightCurSideslip = -3F;
+        fSightCurSideslip--;
+        if(fSightCurSideslip < -45F)
+            fSightCurSideslip = -45F;
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] {
-            new Integer((int)(fSightCurSideslip * 10F))
+            new Integer((int)(fSightCurSideslip * 1.0F))
         });
     }
 
     public void typeBomberAdjAltitudeReset()
     {
-        fSightCurAltitude = 850F;
+        fSightCurAltitude = 300F;
     }
 
     public void typeBomberAdjAltitudePlus()
     {
         fSightCurAltitude += 10F;
-        if(fSightCurAltitude > 10000F)
-            fSightCurAltitude = 10000F;
+        if(fSightCurAltitude > 6000F)
+            fSightCurAltitude = 6000F;
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] {
             new Integer((int)fSightCurAltitude)
         });
-        fSightCurDistance = fSightCurAltitude * (float)Math.tan(Math.toRadians(fSightCurForwardAngle));
     }
 
     public void typeBomberAdjAltitudeMinus()
     {
         fSightCurAltitude -= 10F;
-        if(fSightCurAltitude < 850F)
-            fSightCurAltitude = 850F;
+        if(fSightCurAltitude < 300F)
+            fSightCurAltitude = 300F;
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] {
             new Integer((int)fSightCurAltitude)
         });
-        fSightCurDistance = fSightCurAltitude * (float)Math.tan(Math.toRadians(fSightCurForwardAngle));
     }
 
     public void typeBomberAdjSpeedReset()
     {
-        fSightCurSpeed = 150F;
+        fSightCurSpeed = 50F;
     }
 
     public void typeBomberAdjSpeedPlus()
     {
-        fSightCurSpeed += 10F;
-        if(fSightCurSpeed > 600F)
-            fSightCurSpeed = 600F;
+        fSightCurSpeed += 5F;
+        if(fSightCurSpeed > 650F)
+            fSightCurSpeed = 650F;
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] {
             new Integer((int)fSightCurSpeed)
         });
@@ -795,9 +798,9 @@ public abstract class WhitleyBombers extends Scheme2
 
     public void typeBomberAdjSpeedMinus()
     {
-        fSightCurSpeed -= 10F;
-        if(fSightCurSpeed < 150F)
-            fSightCurSpeed = 150F;
+        fSightCurSpeed -= 5F;
+        if(fSightCurSpeed < 50F)
+            fSightCurSpeed = 50F;
         HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] {
             new Integer((int)fSightCurSpeed)
         });
@@ -805,79 +808,38 @@ public abstract class WhitleyBombers extends Scheme2
 
     public void typeBomberUpdate(float f)
     {
-        if((double)Math.abs(FM.Or.getKren()) > 4.5D)
-        {
-            fSightCurReadyness -= 0.0666666F * f;
-            if(fSightCurReadyness < 0.0F)
-                fSightCurReadyness = 0.0F;
-        }
-        if(fSightCurReadyness < 1.0F)
-            fSightCurReadyness += 0.0333333F * f;
-        else
-        if(bSightAutomation)
-        {
-            fSightCurDistance -= (fSightCurSpeed / 3.6F) * f;
-            if(fSightCurDistance < 0.0F)
-            {
-                fSightCurDistance = 0.0F;
-                typeBomberToggleAutomation();
-            }
-            fSightCurForwardAngle = (float)Math.toDegrees(Math.atan(fSightCurDistance / fSightCurAltitude));
-            if((double)fSightCurDistance < (double)(fSightCurSpeed / 3.6F) * Math.sqrt(fSightCurAltitude * (2F / 9.81F)))
-                bSightBombDump = true;
-            if(bSightBombDump)
-                if(FM.isTick(3, 0))
-                {
-                    if(FM.CT.Weapons[3] != null && FM.CT.Weapons[3][FM.CT.Weapons[3].length - 1] != null && FM.CT.Weapons[3][FM.CT.Weapons[3].length - 1].haveBullets())
-                    {
-                        FM.CT.WeaponControl[3] = true;
-                        HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
-                    }
-                } else
-                {
-                    FM.CT.WeaponControl[3] = false;
-                }
-        }
+        double d = ((double)fSightCurSpeed / 3.6D) * Math.sqrt((double)fSightCurAltitude * 0.203873598D);
+        d -= (double)(fSightCurAltitude * fSightCurAltitude) * 1.419E-005D;
+        fSightSetForwardAngle = (float)Math.toDegrees(Math.atan(d / (double)fSightCurAltitude));
     }
 
     public void typeBomberReplicateToNet(NetMsgGuaranted netmsgguaranted)
         throws IOException
     {
-        netmsgguaranted.writeByte((bSightAutomation ? 1 : 0) | (bSightBombDump ? 2 : 0));
-        netmsgguaranted.writeFloat(fSightCurDistance);
-        netmsgguaranted.writeByte((int)fSightCurForwardAngle);
-        netmsgguaranted.writeByte((int)((fSightCurSideslip + 3F) * 33.33333F));
         netmsgguaranted.writeFloat(fSightCurAltitude);
-        netmsgguaranted.writeByte((int)(fSightCurSpeed / 2.5F));
-        netmsgguaranted.writeByte((int)(fSightCurReadyness * 200F));
+        netmsgguaranted.writeFloat(fSightCurSpeed);
+        netmsgguaranted.writeFloat(fSightCurForwardAngle);
+        netmsgguaranted.writeFloat(fSightCurSideslip);
     }
 
     public void typeBomberReplicateFromNet(NetMsgInput netmsginput)
         throws IOException
     {
-        int i = netmsginput.readUnsignedByte();
-        bSightAutomation = (i & 1) != 0;
-        bSightBombDump = (i & 2) != 0;
-        fSightCurDistance = netmsginput.readFloat();
-        fSightCurForwardAngle = netmsginput.readUnsignedByte();
-        fSightCurSideslip = -3F + (float)netmsginput.readUnsignedByte() / 33.33333F;
         fSightCurAltitude = netmsginput.readFloat();
-        fSightCurSpeed = (float)netmsginput.readUnsignedByte() * 2.5F;
-        fSightCurReadyness = (float)netmsginput.readUnsignedByte() / 200F;
+        fSightCurSpeed = netmsginput.readFloat();
+        fSightCurForwardAngle = netmsginput.readFloat();
+        fSightCurSideslip = netmsginput.readFloat();
     }
 
-    private boolean bSightAutomation;
-    private boolean bSightBombDump;
-    private float fSightCurDistance;
-    public float fSightCurForwardAngle;
-    public float fSightCurSideslip;
     public float fSightCurAltitude;
     public float fSightCurSpeed;
-    public float fSightCurReadyness;
+    public float fSightCurForwardAngle;
+    public float fSightSetForwardAngle;
+    public float fSightCurSideslip;
 
     static 
     {
-        Class class1 = WhitleyBombers.class;
-        Property.set(class1, "originCountry", PaintScheme.countryBritain);
+        Class class1 = G3M.class;
+        Property.set(class1, "originCountry", PaintScheme.countryJapan);
     }
 }

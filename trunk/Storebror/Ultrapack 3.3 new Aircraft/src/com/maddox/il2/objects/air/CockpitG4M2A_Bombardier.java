@@ -1,36 +1,33 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Vector3f;
 import com.maddox.il2.engine.HookNamed;
 import com.maddox.il2.engine.InterpolateRef;
 import com.maddox.il2.engine.Loc;
 import com.maddox.il2.engine.hotkey.HookPilot;
-import com.maddox.il2.fm.Pitot;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.CmdEnv;
 import com.maddox.rts.HotKeyEnv;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
-public class CockpitB24D140CO_Bombardier extends CockpitPilot
+public class CockpitG4M2A_Bombardier extends CockpitPilot
 {
     class Interpolater extends InterpolateRef
     {
 
         public boolean tick()
         {
-            float f = ((B_24D140CO)aircraft()).fSightCurForwardAngle;
-            float f1 = ((B_24D140CO)aircraft()).fSightCurSideslip;
-            CockpitB24D140CO_Bombardier.calibrAngle = 360F - fm.Or.getPitch();
-            mesh.chunkSetAngles("BlackBox", -10F * f1, 0.0F, CockpitB24D140CO_Bombardier.calibrAngle + f);
+            float f = ((G4M)aircraft()).fSightCurForwardAngle;
+            float f1 = ((G4M)aircraft()).fSightCurSideslip;
+            mesh.chunkSetAngles("BlackBox", -10F * f1, 0.0F, f);
             if(bEntered)
             {
                 HookPilot hookpilot = HookPilot.current;
-                hookpilot.setInstantOrient(aAim + 10F * f1, tAim + CockpitB24D140CO_Bombardier.calibrAngle + f, 0.0F);
+                hookpilot.setInstantOrient(aAim + 10F * f1, tAim + f, 0.0F);
             }
-            mesh.chunkSetAngles("TurretA", 0.0F, aircraft().FM.turret[0].tu[0], 0.0F);
-            mesh.chunkSetAngles("TurretB", 0.0F, aircraft().FM.turret[0].tu[1], 0.0F);
+            mesh.chunkSetAngles("Turret1A", 0.0F, -aircraft().FM.turret[0].tu[0], 0.0F);
+            mesh.chunkSetAngles("Turret1B", 0.0F, aircraft().FM.turret[0].tu[1], 0.0F);
             return true;
         }
 
@@ -44,10 +41,13 @@ public class CockpitB24D140CO_Bombardier extends CockpitPilot
     {
         if(super.doFocusEnter())
         {
+            aircraft().hierMesh().chunkVisible("NoseAXX_D0", false);
+            aircraft().hierMesh().chunkVisible("Pilot3_D0", false);
+            aircraft().hierMesh().chunkVisible("Pilot3_D1", false);
             HookPilot hookpilot = HookPilot.current;
             hookpilot.doAim(false);
             Point3d point3d = new Point3d();
-            point3d.set(0.25D, 0.0D, -0.04D);
+            point3d.set(0.15D, 0.09D, -0.06D);
             hookpilot.setTubeSight(point3d);
             return true;
         } else
@@ -63,6 +63,9 @@ public class CockpitB24D140CO_Bombardier extends CockpitPilot
             return;
         } else
         {
+            aircraft().hierMesh().chunkVisible("NoseAXX_D0", aircraft().isChunkAnyDamageVisible("CF_D"));
+            aircraft().hierMesh().chunkVisible("Pilot3_D0", aircraft().FM.AS.astatePilotStates[2] < 95);
+            aircraft().hierMesh().chunkVisible("Pilot3_D1", aircraft().FM.AS.astatePilotStates[2] > 95 && aircraft().FM.AS.astateBailoutStep < 12);
             leave();
             super.doFocusLeave();
             return;
@@ -75,7 +78,7 @@ public class CockpitB24D140CO_Bombardier extends CockpitPilot
         if(hookpilot.isPadlock())
             hookpilot.stopPadlock();
         hookpilot.doAim(true);
-        hookpilot.setSimpleAimOrient(0.0F, -27F, 0.0F);
+        hookpilot.setSimpleAimOrient(-30F, -49.5F, 0.0F);
         enteringAim = true;
     }
 
@@ -98,7 +101,7 @@ public class CockpitB24D140CO_Bombardier extends CockpitPilot
         if(enteringAim)
         {
             HookPilot hookpilot = HookPilot.current;
-            hookpilot.setInstantOrient(0.0F, -27F, 0.0F);
+            hookpilot.setInstantOrient(-30F, -49.5F, 0.0F);
             hookpilot.doAim(false);
             hookpilot.setSimpleAimOrient(0.0F, 0.0F, 0.0F);
             return;
@@ -111,7 +114,7 @@ public class CockpitB24D140CO_Bombardier extends CockpitPilot
             Main3D.cur3D().aircraftHotKeys.setEnableChangeFov(true);
             CmdEnv.top().exec("fov " + saveFov);
             HookPilot hookpilot1 = HookPilot.current;
-            hookpilot1.setInstantOrient(0.0F, -27F, 0.0F);
+            hookpilot1.setInstantOrient(-30F, -49.5F, 0.0F);
             hookpilot1.doAim(false);
             hookpilot1.setSimpleAimOrient(0.0F, 0.0F, 0.0F);
             hookpilot1.setSimpleUse(false);
@@ -142,17 +145,16 @@ public class CockpitB24D140CO_Bombardier extends CockpitPilot
             leave();
     }
 
-    public CockpitB24D140CO_Bombardier()
+    public CockpitG4M2A_Bombardier()
     {
-        super("3DO/Cockpit/B-25J-Bombardier/BombardierB24D.him", "he111");
-        w = new Vector3f();
+        super("3DO/Cockpit/G4M2A-Bombardier/hier.him", "he111");
         enteringAim = false;
         bEntered = false;
         try
         {
             Loc loc = new Loc();
-            HookNamed hooknamed = new HookNamed(this.mesh, "CAMERAAIM");
-            hooknamed.computePos(this, this.pos.getAbs(), loc);
+            HookNamed hooknamed = new HookNamed(mesh, "CAMERAAIM");
+            hooknamed.computePos(this, pos.getAbs(), loc);
             aAim = loc.getOrient().getAzimut();
             tAim = loc.getOrient().getTangage();
         }
@@ -161,32 +163,11 @@ public class CockpitB24D140CO_Bombardier extends CockpitPilot
             System.out.println(exception.getMessage());
             exception.printStackTrace();
         }
-        this.cockpitNightMats = (new String[] {
-            "4_gauges"
-        });
-        setNightMats(false);
         interpPut(new Interpolater(), null, Time.current(), null);
-    }
-
-    public void toggleLight()
-    {
-        this.cockpitLightControl = !this.cockpitLightControl;
-        if(this.cockpitLightControl)
-            setNightMats(true);
-        else
-            setNightMats(false);
     }
 
     public void reflectWorldToInstruments(float f)
     {
-        this.mesh.chunkSetAngles("zSpeed", 0.0F, floatindex(cvt(Pitot.Indicator((float)this.fm.Loc.z, this.fm.getSpeedKMH()), 0.0F, 804.6721F, 0.0F, 10F), speedometerScale), 0.0F);
-        this.mesh.chunkSetAngles("zAlt1", 0.0F, cvt((float)this.fm.Loc.z, 0.0F, 9144F, 0.0F, 1080F), 0.0F);
-        this.mesh.chunkSetAngles("zAlt2", 0.0F, cvt((float)this.fm.Loc.z, 0.0F, 9144F, 0.0F, 10800F), 0.0F);
-        this.mesh.chunkSetAngles("zCompass1", 0.0F, this.fm.Or.getAzimut(), 0.0F);
-        w.set(this.fm.getW());
-        this.fm.Or.transform(w);
-        this.mesh.chunkSetAngles("Z_TurnBank1", 0.0F, cvt(w.z, -0.23562F, 0.23562F, 22F, -22F), 0.0F);
-        this.mesh.chunkSetAngles("Z_TurnBank2", 0.0F, cvt(this.fm.getAOS(), -8F, 8F, -12F, 12F), 0.0F);
         if(enteringAim)
         {
             HookPilot hookpilot = HookPilot.current;
@@ -200,46 +181,24 @@ public class CockpitB24D140CO_Bombardier extends CockpitPilot
         }
         if(bEntered)
         {
-            this.mesh.chunkSetAngles("zAngleMark", -floatindex(cvt(((B_24D140CO)aircraft()).fSightCurForwardAngle, 7F, 140F, 0.7F, 14F), angleScale), 0.0F, 0.0F);
-            boolean flag = ((B_24D140CO)aircraft()).fSightCurReadyness > 0.93F;
-            this.mesh.chunkVisible("BlackBox", true);
-            this.mesh.chunkVisible("zReticle", flag);
-            this.mesh.chunkVisible("zAngleMark", flag);
+            mesh.chunkSetAngles("zAngleMark", -floatindex(cvt(((G4M)aircraft()).fSightCurForwardAngle, 7F, 140F, 0.7F, 14F), angleScale), 0.0F, 0.0F);
+            boolean flag = ((G4M)aircraft()).fSightCurReadyness > 0.93F;
+            mesh.chunkVisible("BlackBox", true);
+            mesh.chunkVisible("zReticle", flag);
+            mesh.chunkVisible("zAngleMark", flag);
         } else
         {
-            this.mesh.chunkVisible("BlackBox", false);
-            this.mesh.chunkVisible("zReticle", false);
-            this.mesh.chunkVisible("zAngleMark", false);
+            mesh.chunkVisible("BlackBox", false);
+            mesh.chunkVisible("zReticle", false);
+            mesh.chunkVisible("zAngleMark", false);
         }
     }
 
-    public void reflectCockpitState()
-    {
-        if((this.fm.AS.astateCockpitState & 1) != 0)
-            this.mesh.chunkVisible("XGlassDamage1", true);
-        if((this.fm.AS.astateCockpitState & 8) != 0)
-            this.mesh.chunkVisible("XGlassDamage2", true);
-        if((this.fm.AS.astateCockpitState & 0x20) != 0)
-            this.mesh.chunkVisible("XGlassDamage2", true);
-        if((this.fm.AS.astateCockpitState & 2) != 0)
-            this.mesh.chunkVisible("XGlassDamage3", true);
-        if((this.fm.AS.astateCockpitState & 4) != 0)
-            this.mesh.chunkVisible("XGlassDamage4", true);
-        if((this.fm.AS.astateCockpitState & 0x10) != 0)
-            this.mesh.chunkVisible("XGlassDamage4", true);
-    }
-
-    public Vector3f w;
     private boolean enteringAim;
     private static final float angleScale[] = {
         -38.5F, 16.5F, 41.5F, 52.5F, 59.25F, 64F, 67F, 70F, 72F, 73.25F, 
         75F, 76.5F, 77F, 78F, 79F, 80F
     };
-    private static final float speedometerScale[] = {
-        0.0F, 17.5F, 82F, 143.5F, 205F, 226.5F, 248.5F, 270F, 292F, 315F, 
-        338.5F
-    };
-    private static float calibrAngle = 0.0F;
     private float saveFov;
     private float aAim;
     private float tAim;
@@ -247,11 +206,6 @@ public class CockpitB24D140CO_Bombardier extends CockpitPilot
 
     static 
     {
-        Property.set(CockpitB24D140CO_Bombardier.class, "astatePilotIndx", 0);
+        Property.set(CockpitG4M2A_Bombardier.class, "astatePilotIndx", 0);
     }
-
-
-
-
-
 }

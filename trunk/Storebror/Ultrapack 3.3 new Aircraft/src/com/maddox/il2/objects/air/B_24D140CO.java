@@ -565,10 +565,10 @@ public class B_24D140CO extends B_24_413
                     getEnergyPastArmor(12.7D / (Math.abs(Aircraft.v1.x) + 0.000001D), shot);
                 else
                 if(s.endsWith("03"))
-                    getEnergyPastArmor(9.5299997329711914D / (Math.abs(Aircraft.v1.y) + 0.000001D), shot);
+                    getEnergyPastArmor(9.53D / (Math.abs(Aircraft.v1.y) + 0.000001D), shot);
                 else
                 if(s.endsWith("04"))
-                    getEnergyPastArmor(9.5299997329711914D / (Math.abs(Aircraft.v1.y) + 0.000001D), shot);
+                    getEnergyPastArmor(9.53D / (Math.abs(Aircraft.v1.y) + 0.000001D), shot);
                 else
                 if(s.endsWith("05"))
                 {
@@ -576,16 +576,16 @@ public class B_24D140CO extends B_24_413
                     this.FM.AS.setCockpitState(shot.initiator, this.FM.AS.astateCockpitState | 0x80);
                 } else
                 if(s.endsWith("06"))
-                    getEnergyPastArmor(9.5299997329711914D / (Math.abs(Aircraft.v1.x) + 0.000001D), shot);
+                    getEnergyPastArmor(9.53D / (Math.abs(Aircraft.v1.x) + 0.000001D), shot);
                 else
                 if(s.endsWith("07"))
-                    getEnergyPastArmor(9.5299997329711914D / (Math.abs(Aircraft.v1.y) + 0.000001D), shot);
+                    getEnergyPastArmor(9.53D / (Math.abs(Aircraft.v1.y) + 0.000001D), shot);
                 else
                 if(s.endsWith("08"))
-                    getEnergyPastArmor(9.5299997329711914D / (Math.abs(Aircraft.v1.y) + 0.000001D), shot);
+                    getEnergyPastArmor(9.53D / (Math.abs(Aircraft.v1.y) + 0.000001D), shot);
                 else
                 if(s.endsWith("09"))
-                    getEnergyPastArmor(6.3499999046325684D / (Math.abs(Aircraft.v1.x) + 0.000001D), shot);
+                    getEnergyPastArmor(6.35D / (Math.abs(Aircraft.v1.x) + 0.000001D), shot);
                 else
                 if(s.endsWith("10"))
                 {

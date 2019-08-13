@@ -232,9 +232,9 @@ public class HAMPDEN extends Scheme2
                 {
                     if(getEnergyPastArmor(0.1F, shot) > 0.0F)
                     {
-                        if(Aircraft.Pd.y > 0.0D && Aircraft.Pd.z < 0.18899999558925629D && World.Rnd().nextFloat(0.0F, 16000F) < shot.power)
+                        if(Aircraft.Pd.y > 0.0D && Aircraft.Pd.z < 0.189D && World.Rnd().nextFloat(0.0F, 16000F) < shot.power)
                             this.FM.EI.engines[i].setMagnetoKnockOut(shot.initiator, 0);
-                        if(Aircraft.Pd.y < 0.0D && Aircraft.Pd.z < 0.18899999558925629D && World.Rnd().nextFloat(0.0F, 16000F) < shot.power)
+                        if(Aircraft.Pd.y < 0.0D && Aircraft.Pd.z < 0.189D && World.Rnd().nextFloat(0.0F, 16000F) < shot.power)
                             this.FM.EI.engines[i].setMagnetoKnockOut(shot.initiator, 1);
                         if(World.Rnd().nextFloat(0.0F, 26700F) < shot.power)
                             this.FM.AS.setEngineSpecificDamage(shot.initiator, i, 4);

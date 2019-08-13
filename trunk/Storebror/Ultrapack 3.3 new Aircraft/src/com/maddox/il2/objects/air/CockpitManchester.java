@@ -81,7 +81,7 @@ public class CockpitManchester extends CockpitPilot
 
     protected void setCameraOffset()
     {
-        this.cameraCenter.add(0.059999998658895493D, -0.019999999552965164D, 0.0D);
+        this.cameraCenter.add(0.06D, -0.02D, 0.0D);
     }
 
     public CockpitManchester()
