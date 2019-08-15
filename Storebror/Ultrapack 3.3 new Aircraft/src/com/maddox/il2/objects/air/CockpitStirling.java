@@ -55,10 +55,6 @@ public class CockpitStirling extends CockpitPilot {
 
 		private Variables() {
 		}
-
-		Variables(Variables variables) {
-			this();
-		}
 	}
 
 	protected float waypointAzimuth() {
@@ -73,8 +69,8 @@ public class CockpitStirling extends CockpitPilot {
 
 	public CockpitStirling() {
 		super("3DO/Cockpit/Stirling/hier.him", "he111");
-		this.setOld = new Variables(null);
-		this.setNew = new Variables(null);
+		this.setOld = new Variables();
+		this.setNew = new Variables();
 		this.w = new Vector3f();
 		this.pictAiler = 0.0F;
 		this.pictElev = 0.0F;

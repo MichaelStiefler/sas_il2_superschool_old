@@ -50,10 +50,6 @@ public class CockpitWellington_MKIII extends CockpitPilot {
 			this.azimuth = new AnglesFork();
 			this.waypointAzimuth = new AnglesFork();
 		}
-
-		Variables(Variables variables) {
-			this();
-		}
 	}
 
 	protected float waypointAzimuth() {
@@ -71,8 +67,8 @@ public class CockpitWellington_MKIII extends CockpitPilot {
 
 	public CockpitWellington_MKIII() {
 		super("3DO/Cockpit/Wellington/Wellington_MKIII.him", "he111");
-		this.setOld = new Variables(null);
-		this.setNew = new Variables(null);
+		this.setOld = new Variables();
+		this.setNew = new Variables();
 		this.w = new Vector3f();
 		this.pictAiler = 0.0F;
 		this.pictElev = 0.0F;

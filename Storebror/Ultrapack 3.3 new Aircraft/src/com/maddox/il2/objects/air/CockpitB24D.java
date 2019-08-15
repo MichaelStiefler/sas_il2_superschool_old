@@ -117,17 +117,13 @@ public class CockpitB24D extends CockpitPilot {
 			this.waypointAzimuth = new AnglesFork();
 			this.radioCompassAzimuth = new AnglesFork();
 		}
-
-		Variables(Variables variables) {
-			this();
-		}
 	}
 
 	public CockpitB24D() {
 		super("3DO/Cockpit/B-24D-Cockpit/hier.him", "bf109");
 		this.bNeedSetUp = true;
-		this.setOld = new Variables(null);
-		this.setNew = new Variables(null);
+		this.setOld = new Variables();
+		this.setNew = new Variables();
 		this.w = new Vector3f();
 		this.pictAiler = 0.0F;
 		this.pictElev = 0.0F;
