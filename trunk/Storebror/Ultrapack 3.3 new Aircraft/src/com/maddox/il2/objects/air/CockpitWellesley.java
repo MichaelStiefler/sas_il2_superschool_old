@@ -51,10 +51,6 @@ public class CockpitWellesley extends CockpitPilot {
 
 		private Variables() {
 		}
-
-		Variables(Variables variables) {
-			this();
-		}
 	}
 
 	protected float waypointAzimuth() {
@@ -69,8 +65,8 @@ public class CockpitWellesley extends CockpitPilot {
 
 	public CockpitWellesley() {
 		super("3DO/Cockpit/Wellesley/hier.him", "bf109");
-		this.setOld = new Variables(null);
-		this.setNew = new Variables(null);
+		this.setOld = new Variables();
+		this.setNew = new Variables();
 		this.w = new Vector3f();
 		this.pictAiler = 0.0F;
 		this.pictElev = 0.0F;

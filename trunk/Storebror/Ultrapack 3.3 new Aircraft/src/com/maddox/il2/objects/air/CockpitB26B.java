@@ -68,10 +68,6 @@ public class CockpitB26B extends CockpitPilot {
 			this.waypointAzimuth = new AnglesFork();
 			this.radioCompassAzimuth = new AnglesFork();
 		}
-
-		Variables(CockpitB26B arg2) {
-			this();
-		}
 	}
 
 	protected float waypointAzimuth() {
@@ -80,8 +76,8 @@ public class CockpitB26B extends CockpitPilot {
 
 	public CockpitB26B() {
 		super("3DO/Cockpit/B-26B/hier.him", "bf109");
-		this.setOld = new Variables(null);
-		this.setNew = new Variables(null);
+		this.setOld = new Variables();
+		this.setNew = new Variables();
 		this.w = new Vector3f();
 		this.pictAiler = 0.0F;
 		this.pictElev = 0.0F;

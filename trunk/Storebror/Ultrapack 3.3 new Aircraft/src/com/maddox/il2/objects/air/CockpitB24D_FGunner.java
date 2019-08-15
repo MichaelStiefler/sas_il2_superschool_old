@@ -22,10 +22,6 @@ public abstract class CockpitB24D_FGunner extends CockpitGunner {
 			this.waypointAzimuth = new AnglesFork();
 			this.radioCompassAzimuth = new AnglesFork();
 		}
-
-		Variables(Variables variables) {
-			this();
-		}
 	}
 
 	protected void interpTick() {
@@ -105,8 +101,8 @@ public abstract class CockpitB24D_FGunner extends CockpitGunner {
 		this.patron = 1.0F;
 		this.patronMat = null;
 		this.salvoLever = 0.0F;
-		this.setOld = new Variables(null);
-		this.setNew = new Variables(null);
+		this.setOld = new Variables();
+		this.setNew = new Variables();
 		this.cockpitNightMats = new String[] { "APanelSides", "Needles2", "oxygen2", "RadioComp", "textrbm9", "texture25" };
 		this.setNightMats(false);
 		for (int i = 0; i < this.internalBombs.length; i++) {

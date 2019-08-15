@@ -62,10 +62,6 @@ public class CockpitPB4Y_2 extends CockpitPilot {
 			this.waypointAzimuth = new AnglesFork();
 			this.waypointDeviation = new AnglesFork();
 		}
-
-		Variables(Variables variables) {
-			this();
-		}
 	}
 
 	protected float waypointAzimuth() {
@@ -83,8 +79,8 @@ public class CockpitPB4Y_2 extends CockpitPilot {
 
 	public CockpitPB4Y_2() {
 		super("3DO/Cockpit/PB4Y/CockpitPB4Y.him", "bf109");
-		this.setOld = new Variables(null);
-		this.setNew = new Variables(null);
+		this.setOld = new Variables();
+		this.setNew = new Variables();
 		this.w = new Vector3f();
 		this.pictAiler = 0.0F;
 		this.pictElev = 0.0F;

@@ -54,10 +54,6 @@ public class CockpitB25B extends CockpitPilot {
 			this.waypointAzimuth = new AnglesFork();
 			this.waypointDeviation = new AnglesFork();
 		}
-
-		Variables(Variables variables) {
-			this();
-		}
 	}
 
 	protected float waypointAzimuth() {
@@ -75,8 +71,8 @@ public class CockpitB25B extends CockpitPilot {
 
 	public CockpitB25B() {
 		super("3DO/Cockpit/B-25J/CockpitB25C25.him", "bf109");
-		this.setOld = new Variables(null);
-		this.setNew = new Variables(null);
+		this.setOld = new Variables();
+		this.setNew = new Variables();
 		this.w = new Vector3f();
 		this.pictAiler = 0.0F;
 		this.pictElev = 0.0F;

@@ -54,10 +54,6 @@ public class CockpitLiberator_GR_V extends CockpitPilot {
 			this.waypointAzimuth = new AnglesFork();
 			this.waypointDeviation = new AnglesFork();
 		}
-
-		Variables(Variables variables) {
-			this();
-		}
 	}
 
 	protected float waypointAzimuth() {
@@ -75,8 +71,8 @@ public class CockpitLiberator_GR_V extends CockpitPilot {
 
 	public CockpitLiberator_GR_V() {
 		super("3DO/Cockpit/LiberatorGRV/CockpitB24D.him", "bf109");
-		this.setOld = new Variables(null);
-		this.setNew = new Variables(null);
+		this.setOld = new Variables();
+		this.setNew = new Variables();
 		this.w = new Vector3f();
 		this.pictAiler = 0.0F;
 		this.pictElev = 0.0F;

@@ -24,10 +24,6 @@ public class CockpitPB4Y_2_Bombardier extends CockpitPilot {
 			this.azimuth = new AnglesFork();
 			this.waypointAzimuth = new AnglesFork();
 		}
-
-		Variables(Variables variables) {
-			this();
-		}
 	}
 
 	class Interpolater extends InterpolateRef {
@@ -140,8 +136,8 @@ public class CockpitPB4Y_2_Bombardier extends CockpitPilot {
 		super("3DO/Cockpit/PB4Y-Bombardier/BombardierPB4Y.him", "bf109");
 		this.enteringAim = false;
 		this.bEntered = false;
-		this.setOld = new Variables(null);
-		this.setNew = new Variables(null);
+		this.setOld = new Variables();
+		this.setNew = new Variables();
 		try {
 			Loc loc = new Loc();
 			HookNamed hooknamed = new HookNamed(this.mesh, "CAMERAAIM");

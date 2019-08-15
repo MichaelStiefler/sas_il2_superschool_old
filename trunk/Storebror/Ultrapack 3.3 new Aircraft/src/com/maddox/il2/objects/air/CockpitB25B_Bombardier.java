@@ -53,10 +53,6 @@ public class CockpitB25B_Bombardier extends CockpitPilot {
 			this.azimuth = new AnglesFork();
 			this.waypointAzimuth = new AnglesFork();
 		}
-
-		Variables(Variables variables) {
-			this();
-		}
 	}
 
 	protected boolean doFocusEnter() {
@@ -142,8 +138,8 @@ public class CockpitB25B_Bombardier extends CockpitPilot {
 		super("3DO/Cockpit/B-25J-Bombardier/BombardierB25C25.him", "bf109");
 		this.enteringAim = false;
 		this.bEntered = false;
-		this.setOld = new Variables(null);
-		this.setNew = new Variables(null);
+		this.setOld = new Variables();
+		this.setNew = new Variables();
 		try {
 			Loc loc = new Loc();
 			HookNamed hooknamed = new HookNamed(this.mesh, "CAMERAAIM");

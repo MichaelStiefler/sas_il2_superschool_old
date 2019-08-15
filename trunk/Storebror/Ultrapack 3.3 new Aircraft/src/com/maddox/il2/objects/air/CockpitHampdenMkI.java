@@ -59,10 +59,6 @@ public class CockpitHampdenMkI extends CockpitPilot {
 			this.waypointAzimuth = new AnglesFork();
 			this.waypointDeviation = new AnglesFork();
 		}
-
-		Variables(Variables variables) {
-			this();
-		}
 	}
 
 	protected float waypointAzimuth() {
@@ -80,8 +76,8 @@ public class CockpitHampdenMkI extends CockpitPilot {
 
 	public CockpitHampdenMkI() {
 		super("3DO/Cockpit/Hampden-P/hier.him", "bf109");
-		this.setOld = new Variables(null);
-		this.setNew = new Variables(null);
+		this.setOld = new Variables();
+		this.setNew = new Variables();
 		this.w = new Vector3f();
 		this.pictAiler = 0.0F;
 		this.pictElev = 0.0F;
