@@ -14,19 +14,15 @@ public class CockpitHE_177A3_HGunner extends CockpitGunner {
 		if (super.doFocusEnter()) {
 			this.bEntered = true;
 			this.saveFov = Main3D.FOVX;
-			if (Config.cur.windowsWideScreenFoV) {
-				CmdEnv.top().exec("fov 35");
-			} else {
-				CmdEnv.top().exec("fov 30");
-			}
+			if (Config.cur.windowsWideScreenFoV) CmdEnv.top().exec("fov 35");
+			else CmdEnv.top().exec("fov 30");
 			Main3D.cur3D().aircraftHotKeys.setEnableChangeFov(false);
 			HotKeyEnv.enable("PanView", false);
 			HotKeyEnv.enable("SnapView", false);
 			HierMesh hiermesh = this.aircraft().hierMesh();
 			hiermesh.chunkVisible("Turret6B_D0", false);
 			return true;
-		} else
-			return false;
+		} else return false;
 	}
 
 	protected void doFocusLeave() {
@@ -50,27 +46,17 @@ public class CockpitHE_177A3_HGunner extends CockpitGunner {
 	}
 
 	public void clipAnglesGun(Orient orient) {
-		if (this.isRealMode())
-			if (!this.aiTurret().bIsOperable) {
-				orient.setYPR(0.0F, 0.0F, 0.0F);
-			} else {
-				float f = orient.getYaw();
-				float f1 = orient.getTangage();
-				if (f < -22.5F) {
-					f = -22.5F;
-				}
-				if (f > 22.5F) {
-					f = 22.5F;
-				}
-				if (f1 > 40F) {
-					f1 = 40F;
-				}
-				if (f1 < -20F) {
-					f1 = -20F;
-				}
-				orient.setYPR(f, f1, 0.0F);
-				orient.wrap();
-			}
+		if (this.isRealMode()) if (!this.aiTurret().bIsOperable) orient.setYPR(0.0F, 0.0F, 0.0F);
+		else {
+			float f = orient.getYaw();
+			float f1 = orient.getTangage();
+			if (f < -22.5F) f = -22.5F;
+			if (f > 22.5F) f = 22.5F;
+			if (f1 > 40F) f1 = 40F;
+			if (f1 < -20F) f1 = -20F;
+			orient.setYPR(f, f1, 0.0F);
+			orient.wrap();
+		}
 	}
 
 	protected void interpTick() {
@@ -79,20 +65,15 @@ public class CockpitHE_177A3_HGunner extends CockpitGunner {
 			this.bNeedSetUp = false;
 		}
 		if (this.isRealMode()) {
-			if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) {
-				this.bGunFire = false;
-			}
+			if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) this.bGunFire = false;
 			this.fm.CT.WeaponControl[this.weaponControlNum()] = this.bGunFire;
 		}
 	}
 
 	public void doGunFire(boolean flag) {
 		if (this.isRealMode()) {
-			if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) {
-				this.bGunFire = false;
-			} else {
-				this.bGunFire = flag;
-			}
+			if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) this.bGunFire = false;
+			else this.bGunFire = flag;
 			this.fm.CT.WeaponControl[this.weaponControlNum()] = this.bGunFire;
 		}
 	}
@@ -116,7 +97,7 @@ public class CockpitHE_177A3_HGunner extends CockpitGunner {
 
 	private boolean bNeedSetUp;
 	private boolean bEntered;
-	private float saveFov;
+	private float   saveFov;
 
 	static {
 		Class class1 = CockpitHE_177A3_HGunner.class;

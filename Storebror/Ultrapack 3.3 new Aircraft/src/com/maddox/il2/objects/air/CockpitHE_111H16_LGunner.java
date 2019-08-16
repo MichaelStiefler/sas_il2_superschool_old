@@ -6,145 +6,111 @@ import com.maddox.il2.engine.Interpolate;
 import com.maddox.il2.engine.Orient;
 import com.maddox.rts.Property;
 
-public class CockpitHE_111H16_LGunner extends CockpitGunner
-{
+public class CockpitHE_111H16_LGunner extends CockpitGunner {
 
-    protected boolean doFocusEnter()
-    {
-        if(super.doFocusEnter())
-        {
-            ((HE_111)((Interpolate) (this.fm)).actor).bPitUnfocused = false;
-            aircraft().hierMesh().chunkVisible("Korzina_D0", false);
-            aircraft().hierMesh().chunkVisible("Turret3B_D0", false);
-            aircraft().hierMesh().chunkVisible("Turret5B_D0", false);
-            aircraft().hierMesh().chunkVisible("Pilot4_FAK", false);
-            aircraft().hierMesh().chunkVisible("Pilot4_FAL", false);
-            return true;
-        } else
-        {
-            return false;
-        }
-    }
+	protected boolean doFocusEnter() {
+		if (super.doFocusEnter()) {
+			((HE_111) ((Interpolate) this.fm).actor).bPitUnfocused = false;
+			this.aircraft().hierMesh().chunkVisible("Korzina_D0", false);
+			this.aircraft().hierMesh().chunkVisible("Turret3B_D0", false);
+			this.aircraft().hierMesh().chunkVisible("Turret5B_D0", false);
+			this.aircraft().hierMesh().chunkVisible("Pilot4_FAK", false);
+			this.aircraft().hierMesh().chunkVisible("Pilot4_FAL", false);
+			return true;
+		} else return false;
+	}
 
-    protected void doFocusLeave()
-    {
-        if(isFocused())
-        {
-            ((HE_111)((Interpolate) (this.fm)).actor).bPitUnfocused = true;
-            aircraft().hierMesh().chunkVisible("Korzina_D0", true);
-            aircraft().hierMesh().chunkVisible("Turret3B_D0", true);
-            aircraft().hierMesh().chunkVisible("Turret5B_D0", true);
-            aircraft().hierMesh().chunkVisible("Pilot4_FAK", aircraft().hierMesh().isChunkVisible("Pilot4_D0"));
-            aircraft().hierMesh().chunkVisible("Pilot4_FAL", aircraft().hierMesh().isChunkVisible("Pilot4_D1"));
-            super.doFocusLeave();
-        }
-    }
+	protected void doFocusLeave() {
+		if (this.isFocused()) {
+			((HE_111) ((Interpolate) this.fm).actor).bPitUnfocused = true;
+			this.aircraft().hierMesh().chunkVisible("Korzina_D0", true);
+			this.aircraft().hierMesh().chunkVisible("Turret3B_D0", true);
+			this.aircraft().hierMesh().chunkVisible("Turret5B_D0", true);
+			this.aircraft().hierMesh().chunkVisible("Pilot4_FAK", this.aircraft().hierMesh().isChunkVisible("Pilot4_D0"));
+			this.aircraft().hierMesh().chunkVisible("Pilot4_FAL", this.aircraft().hierMesh().isChunkVisible("Pilot4_D1"));
+			super.doFocusLeave();
+		}
+	}
 
-    public void reflectWorldToInstruments(float f)
-    {
-        mesh.chunkSetAngles("TurretBA", 0.0F, fm.turret[2].tu[0], 0.0F);
-        mesh.chunkSetAngles("TurretBB", 0.0F, fm.turret[2].tu[1], 0.0F);
-        mesh.chunkSetAngles("TurretRA", 0.0F, fm.turret[4].tu[0], 0.0F);
-        mesh.chunkSetAngles("TurretRB", 0.0F, fm.turret[4].tu[1], 0.0F);
-    }
+	public void reflectWorldToInstruments(float f) {
+		this.mesh.chunkSetAngles("TurretBA", 0.0F, this.fm.turret[2].tu[0], 0.0F);
+		this.mesh.chunkSetAngles("TurretBB", 0.0F, this.fm.turret[2].tu[1], 0.0F);
+		this.mesh.chunkSetAngles("TurretRA", 0.0F, this.fm.turret[4].tu[0], 0.0F);
+		this.mesh.chunkSetAngles("TurretRB", 0.0F, this.fm.turret[4].tu[1], 0.0F);
+	}
 
-    public void moveGun(Orient orient)
-    {
-        super.moveGun(orient);
-        float f = -orient.getYaw();
-        float f1 = orient.getTangage();
-        mesh.chunkSetAngles("TurretLA", 0.0F, f, 0.0F);
-        mesh.chunkSetAngles("TurretLB", 0.0F, f1, 0.0F);
-        mesh.chunkSetAngles("CameraRodA", 0.0F, f, 0.0F);
-        mesh.chunkSetAngles("CameraRodB", 0.0F, f1, 0.0F);
-    }
+	public void moveGun(Orient orient) {
+		super.moveGun(orient);
+		float f = -orient.getYaw();
+		float f1 = orient.getTangage();
+		this.mesh.chunkSetAngles("TurretLA", 0.0F, f, 0.0F);
+		this.mesh.chunkSetAngles("TurretLB", 0.0F, f1, 0.0F);
+		this.mesh.chunkSetAngles("CameraRodA", 0.0F, f, 0.0F);
+		this.mesh.chunkSetAngles("CameraRodB", 0.0F, f1, 0.0F);
+	}
 
-    public void clipAnglesGun(Orient orient)
-    {
-        if(!isRealMode())
-            return;
-        if(!aiTurret().bIsOperable)
-        {
-            orient.setYPR(0.0F, 0.0F, 0.0F);
-            return;
-        }
-        float f = orient.getYaw();
-        float f1 = orient.getTangage();
-        if(f < -40F)
-            f = -40F;
-        if(f > 30F)
-            f = 30F;
-        if(f1 > 30F)
-            f1 = 30F;
-        if(f1 < -40F)
-            f1 = -40F;
-        orient.setYPR(f, f1, 0.0F);
-        orient.wrap();
-    }
+	public void clipAnglesGun(Orient orient) {
+		if (!this.isRealMode()) return;
+		if (!this.aiTurret().bIsOperable) {
+			orient.setYPR(0.0F, 0.0F, 0.0F);
+			return;
+		}
+		float f = orient.getYaw();
+		float f1 = orient.getTangage();
+		if (f < -40F) f = -40F;
+		if (f > 30F) f = 30F;
+		if (f1 > 30F) f1 = 30F;
+		if (f1 < -40F) f1 = -40F;
+		orient.setYPR(f, f1, 0.0F);
+		orient.wrap();
+	}
 
-    protected void interpTick()
-    {
-        if(!isRealMode())
-            return;
-        if(emitter == null || !emitter.haveBullets() || !aiTurret().bIsOperable)
-            bGunFire = false;
-        fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
-        if(bGunFire)
-        {
-            if(hook1 == null)
-                hook1 = new HookNamed(aircraft(), "_MGUN04");
-            doHitMasterAircraft(aircraft(), hook1, "_MGUN04");
-            if(hook2 == null)
-                hook2 = new HookNamed(aircraft(), "_MGUN07");
-            doHitMasterAircraft(aircraft(), hook2, "_MGUN07");
-        }
-    }
+	protected void interpTick() {
+		if (!this.isRealMode()) return;
+		if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) this.bGunFire = false;
+		this.fm.CT.WeaponControl[this.weaponControlNum()] = this.bGunFire;
+		if (this.bGunFire) {
+			if (this.hook1 == null) this.hook1 = new HookNamed(this.aircraft(), "_MGUN04");
+			this.doHitMasterAircraft(this.aircraft(), this.hook1, "_MGUN04");
+			if (this.hook2 == null) this.hook2 = new HookNamed(this.aircraft(), "_MGUN07");
+			this.doHitMasterAircraft(this.aircraft(), this.hook2, "_MGUN07");
+		}
+	}
 
-    public void doGunFire(boolean flag)
-    {
-        if(!isRealMode())
-            return;
-        if(emitter == null || !emitter.haveBullets() || !aiTurret().bIsOperable)
-            bGunFire = false;
-        else
-            bGunFire = flag;
-        fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
-    }
+	public void doGunFire(boolean flag) {
+		if (!this.isRealMode()) return;
+		if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) this.bGunFire = false;
+		else this.bGunFire = flag;
+		this.fm.CT.WeaponControl[this.weaponControlNum()] = this.bGunFire;
+	}
 
-    public CockpitHE_111H16_LGunner()
-    {
-        super("3DO/Cockpit/He-111P-4-LGun/hier-H16.him", "he111_gunner");
-        hook1 = null;
-        hook2 = null;
-    }
+	public CockpitHE_111H16_LGunner() {
+		super("3DO/Cockpit/He-111P-4-LGun/hier-H16.him", "he111_gunner");
+		this.hook1 = null;
+		this.hook2 = null;
+	}
 
-    public void toggleLight()
-    {
-        cockpitLightControl = !cockpitLightControl;
-        if(cockpitLightControl)
-        {
-            mesh.chunkVisible("Flare", true);
-            setNightMats(true);
-        } else
-        {
-            mesh.chunkVisible("Flare", false);
-            setNightMats(false);
-        }
-    }
+	public void toggleLight() {
+		this.cockpitLightControl = !this.cockpitLightControl;
+		if (this.cockpitLightControl) {
+			this.mesh.chunkVisible("Flare", true);
+			this.setNightMats(true);
+		} else {
+			this.mesh.chunkVisible("Flare", false);
+			this.setNightMats(false);
+		}
+	}
 
-    public void reflectCockpitState()
-    {
-        if(fm.AS.astateCockpitState != 0)
-            mesh.chunkVisible("Holes_D1", true);
-    }
+	public void reflectCockpitState() {
+		if (this.fm.AS.astateCockpitState != 0) this.mesh.chunkVisible("Holes_D1", true);
+	}
 
-    private Hook hook1;
-    private Hook hook2;
+	private Hook hook1;
+	private Hook hook2;
 
-    static 
-    {
-        Property.set(CockpitHE_111H16_LGunner.class, "aiTuretNum", 3);
-        Property.set(CockpitHE_111H16_LGunner.class, "weaponControlNum", 13);
-        Property.set(CockpitHE_111H16_LGunner.class, "astatePilotIndx", 4);
-    }
+	static {
+		Property.set(CockpitHE_111H16_LGunner.class, "aiTuretNum", 3);
+		Property.set(CockpitHE_111H16_LGunner.class, "weaponControlNum", 13);
+		Property.set(CockpitHE_111H16_LGunner.class, "astatePilotIndx", 4);
+	}
 }

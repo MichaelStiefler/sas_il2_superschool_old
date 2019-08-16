@@ -8,44 +8,42 @@ import com.maddox.rts.Property;
 public class CockpitHE_177A5_NGunner extends CockpitGunner {
 
 	protected boolean doFocusEnter() {
-		if (!super.doFocusEnter())
-			return false;
+		if (!super.doFocusEnter()) return false;
 //		if (CommonUtils.is411orLater()) {
-			if (doToKGCheck) {
-				doToKGCheck = false;
-				if ((aircraft() instanceof HE_177A5) && ((HE_177A5) aircraft()).hasToKG) {
-					hasToKG = true;
-					showToKG();
-				}
+		if (this.doToKGCheck) {
+			this.doToKGCheck = false;
+			if (this.aircraft() instanceof HE_177A5 && ((HE_177A5) this.aircraft()).hasToKG) {
+				this.hasToKG = true;
+				this.showToKG();
 			}
+		}
 //		}
 
-		((HE_177A5) fm.actor).bPitUnfocused = false;
-		aircraft().hierMesh().chunkVisible("Pilot1_D0", false);
-		aircraft().hierMesh().chunkVisible("Head1_D0", false);
-		aircraft().hierMesh().chunkVisible("Hmask1_D0", false);
-		aircraft().hierMesh().chunkVisible("Pilot2_D0", false);
-		aircraft().hierMesh().chunkVisible("Hmask2_D0", false);
-		aircraft().hierMesh().chunkVisible("Pilot1_D1", false);
-		aircraft().hierMesh().chunkVisible("Pilot2_D1", false);
-		aircraft().hierMesh().chunkVisible("Turret1B_D0", false);
+		((HE_177A5) this.fm.actor).bPitUnfocused = false;
+		this.aircraft().hierMesh().chunkVisible("Pilot1_D0", false);
+		this.aircraft().hierMesh().chunkVisible("Head1_D0", false);
+		this.aircraft().hierMesh().chunkVisible("Hmask1_D0", false);
+		this.aircraft().hierMesh().chunkVisible("Pilot2_D0", false);
+		this.aircraft().hierMesh().chunkVisible("Hmask2_D0", false);
+		this.aircraft().hierMesh().chunkVisible("Pilot1_D1", false);
+		this.aircraft().hierMesh().chunkVisible("Pilot2_D1", false);
+		this.aircraft().hierMesh().chunkVisible("Turret1B_D0", false);
 		return true;
 	}
 
 	protected void doFocusLeave() {
-		if (!isFocused())
-			return;
-		((HE_177A5) fm.actor).bPitUnfocused = true;
+		if (!this.isFocused()) return;
+		((HE_177A5) this.fm.actor).bPitUnfocused = true;
 		if (!this.fm.AS.isPilotParatrooper(0)) {
-			aircraft().hierMesh().chunkVisible("Pilot1_D0", !this.fm.AS.isPilotDead(0));
-			aircraft().hierMesh().chunkVisible("Head1_D0", !this.fm.AS.isPilotDead(0));
-			aircraft().hierMesh().chunkVisible("Pilot1_D1", this.fm.AS.isPilotDead(0));
+			this.aircraft().hierMesh().chunkVisible("Pilot1_D0", !this.fm.AS.isPilotDead(0));
+			this.aircraft().hierMesh().chunkVisible("Head1_D0", !this.fm.AS.isPilotDead(0));
+			this.aircraft().hierMesh().chunkVisible("Pilot1_D1", this.fm.AS.isPilotDead(0));
 		}
 		if (!this.fm.AS.isPilotParatrooper(1)) {
-			aircraft().hierMesh().chunkVisible("Pilot2_D0", !this.fm.AS.isPilotDead(1));
-			aircraft().hierMesh().chunkVisible("Pilot2_D1", this.fm.AS.isPilotDead(1));
+			this.aircraft().hierMesh().chunkVisible("Pilot2_D0", !this.fm.AS.isPilotDead(1));
+			this.aircraft().hierMesh().chunkVisible("Pilot2_D1", this.fm.AS.isPilotDead(1));
 		}
-		aircraft().hierMesh().chunkVisible("Turret1B_D0", true);
+		this.aircraft().hierMesh().chunkVisible("Turret1B_D0", true);
 		super.doFocusLeave();
 	}
 
@@ -56,62 +54,47 @@ public class CockpitHE_177A5_NGunner extends CockpitGunner {
 	}
 
 	public void clipAnglesGun(Orient orient) {
-		if (!isRealMode())
-			return;
-		if (!aiTurret().bIsOperable) {
+		if (!this.isRealMode()) return;
+		if (!this.aiTurret().bIsOperable) {
 			orient.setYPR(0.0F, 0.0F, 0.0F);
 			return;
 		}
 		float f = orient.getYaw() + GUN_OFFSET_YAW;
 		float f1 = orient.getTangage();
-		if (f1 > 40F)
-			f1 = 40F;
-		if (f1 < -40F)
-			f1 = -40F;
-		if (f > 60F)
-			f = 60F;
-		if (f < -20F)
-			f = -20F;
+		if (f1 > 40F) f1 = 40F;
+		if (f1 < -40F) f1 = -40F;
+		if (f > 60F) f = 60F;
+		if (f < -20F) f = -20F;
 		orient.setYPR(f - GUN_OFFSET_YAW, f1, 0.0F);
 		orient.wrap();
 	}
 
 	protected void interpTick() {
-		if (!isRealMode())
-			return;
-		if (this.emitter == null || !this.emitter.haveBullets() || !aiTurret().bIsOperable)
-			this.bGunFire = false;
-		this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
+		if (!this.isRealMode()) return;
+		if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) this.bGunFire = false;
+		this.fm.CT.WeaponControl[this.weaponControlNum()] = this.bGunFire;
 		if (this.bGunFire) {
-			if (hook1 == null)
-				hook1 = new HookNamed(aircraft(), "_MGUN01");
-			doHitMasterAircraft(aircraft(), hook1, "_MGUN01");
-			if (iCocking > 0)
-				iCocking = 0;
-			else
-				iCocking = 1;
-		} else {
-			iCocking = 0;
-		}
+			if (this.hook1 == null) this.hook1 = new HookNamed(this.aircraft(), "_MGUN01");
+			this.doHitMasterAircraft(this.aircraft(), this.hook1, "_MGUN01");
+			if (this.iCocking > 0) this.iCocking = 0;
+			else this.iCocking = 1;
+		} else this.iCocking = 0;
 	}
 
 	public void doGunFire(boolean flag) {
-		if (!isRealMode())
-			return;
-		if (this.emitter == null || !this.emitter.haveBullets() || !aiTurret().bIsOperable)
-			this.bGunFire = false;
-		else
-			this.bGunFire = flag;
-		this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
+		if (!this.isRealMode()) return;
+		if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) this.bGunFire = false;
+		else this.bGunFire = flag;
+		this.fm.CT.WeaponControl[this.weaponControlNum()] = this.bGunFire;
 	}
 
 	public void reflectWorldToInstruments(float f) {
 //		if (CommonUtils.is411orLater()) {
-			if (hasToKG) {
-				mesh.chunkSetAngles("Ship", 0.0F, -((HE_177A5) aircraft()).fAOB, 0.0F);
-				mesh.chunkSetAngles("speedDial", 0.0F, 6.4F * ((HE_177A5) aircraft()).fShipSpeed, 0.0F);
-				mesh.chunkSetAngles("Z_Angle", 0.0F, ((HE_177A5) aircraft()).FM.AS.getGyroAngle(), 0.0F);
-			}
+		if (this.hasToKG) {
+			this.mesh.chunkSetAngles("Ship", 0.0F, -((HE_177A5) this.aircraft()).fAOB, 0.0F);
+			this.mesh.chunkSetAngles("speedDial", 0.0F, 6.4F * ((HE_177A5) this.aircraft()).fShipSpeed, 0.0F);
+			this.mesh.chunkSetAngles("Z_Angle", 0.0F, ((HE_177A5) this.aircraft()).FM.AS.getGyroAngle(), 0.0F);
+		}
 //		}
 	}
 
@@ -129,12 +112,10 @@ public class CockpitHE_177A5_NGunner extends CockpitGunner {
 			this.mesh.chunkVisible("XGlassHoles5", true);
 			this.mesh.chunkVisible("XGlassHoles3", true);
 		}
-		if ((this.fm.AS.astateCockpitState & 0x20) != 0)
-			this.mesh.chunkVisible("XGlassHoles1", true);
+		if ((this.fm.AS.astateCockpitState & 0x20) != 0) this.mesh.chunkVisible("XGlassHoles1", true);
 		this.mesh.chunkVisible("XGlassHoles6", true);
 		this.mesh.chunkVisible("XGlassHoles4", true);
-		if ((this.fm.AS.astateCockpitState & 1) != 0)
-			this.mesh.chunkVisible("XGlassHoles6", true);
+		if ((this.fm.AS.astateCockpitState & 1) != 0) this.mesh.chunkVisible("XGlassHoles6", true);
 		if ((this.fm.AS.astateCockpitState & 0x40) != 0) {
 			this.mesh.chunkVisible("XGlassHoles7", true);
 			this.mesh.chunkVisible("XGlassHoles2", true);
@@ -147,26 +128,26 @@ public class CockpitHE_177A5_NGunner extends CockpitGunner {
 
 	private void showToKG() {
 		System.out.println("CockpitHE_177_NGunner showToKG()");
-		mesh.chunkVisible("Lofte", false);
-		mesh.chunkVisible("TorpedoBoxNew", true);
-		mesh.chunkVisible("speedDial", true);
-		mesh.chunkVisible("angleDial", true);
-		mesh.chunkVisible("Ship", true);
-		mesh.chunkVisible("Z_Angle", true);
+		this.mesh.chunkVisible("Lofte", false);
+		this.mesh.chunkVisible("TorpedoBoxNew", true);
+		this.mesh.chunkVisible("speedDial", true);
+		this.mesh.chunkVisible("angleDial", true);
+		this.mesh.chunkVisible("Ship", true);
+		this.mesh.chunkVisible("Z_Angle", true);
 	}
 
 	public CockpitHE_177A5_NGunner() {
 		super("3DO/Cockpit/He-177A-5/NGunner.him", "he111_gunner");
-		doToKGCheck = true;
-		hasToKG = false;
-		hook1 = null;
-		iCocking = 0;
+		this.doToKGCheck = true;
+		this.hasToKG = false;
+		this.hook1 = null;
+		this.iCocking = 0;
 	}
 
-	private Hook hook1;
-	private int iCocking;
-	private boolean doToKGCheck;
-	private boolean hasToKG;
+	private Hook                 hook1;
+	private int                  iCocking;
+	private boolean              doToKGCheck;
+	private boolean              hasToKG;
 	protected static final float GUN_OFFSET_YAW = 20.0F;
 
 	static {

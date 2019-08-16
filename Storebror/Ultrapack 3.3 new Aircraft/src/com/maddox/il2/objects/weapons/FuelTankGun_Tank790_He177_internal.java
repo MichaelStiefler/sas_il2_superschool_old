@@ -6,8 +6,7 @@ import com.maddox.rts.Property;
 public class FuelTankGun_Tank790_He177_internal extends FuelTankGun {
 	public void shots(int paramInt) {
 		if (paramInt != 0) {
-			if (((HE_177_MOD) this.actor).FM.CT.getBayDoor() < 0.9F)
-				return;
+			if (((HE_177_MOD) this.actor).FM.CT.getBayDoor() < 0.9F) return;
 			super.shots(paramInt);
 		}
 	}
