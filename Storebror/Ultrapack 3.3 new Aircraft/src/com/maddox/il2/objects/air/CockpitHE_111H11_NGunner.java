@@ -1,6 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.engine.Interpolate;
 import com.maddox.il2.engine.InterpolateRef;
 import com.maddox.il2.engine.Orient;
 import com.maddox.rts.Property;
@@ -45,7 +44,8 @@ public class CockpitHE_111H11_NGunner extends CockpitGunner {
 
 	protected boolean doFocusEnter() {
 		if (super.doFocusEnter()) {
-			((HE_111) ((Interpolate) this.fm).actor).bPitUnfocused = false;
+			if (this.fm.actor instanceof HE_111) ((HE_111) this.fm.actor).bPitUnfocused = false;
+			else if (this.fm.actor instanceof HE_111xyz) ((HE_111xyz) this.fm.actor).bPitUnfocused = false;
 			this.aircraft().hierMesh().chunkVisible("Cockpit_D0", false);
 			this.aircraft().hierMesh().chunkVisible("Turret1C_D0", false);
 			this.aircraft().hierMesh().chunkVisible("Pilot1_FAK", false);
@@ -59,7 +59,8 @@ public class CockpitHE_111H11_NGunner extends CockpitGunner {
 	}
 
 	protected void doFocusLeave() {
-		((HE_111) ((Interpolate) this.fm).actor).bPitUnfocused = true;
+		if (this.fm.actor instanceof HE_111) ((HE_111) this.fm.actor).bPitUnfocused = true;
+		else if (this.fm.actor instanceof HE_111xyz) ((HE_111xyz) this.fm.actor).bPitUnfocused = true;
 		this.aircraft().hierMesh().chunkVisible("Cockpit_D0", this.aircraft().hierMesh().isChunkVisible("Nose_D0") || this.aircraft().hierMesh().isChunkVisible("Nose_D1") || this.aircraft().hierMesh().isChunkVisible("Nose_D2"));
 		this.aircraft().hierMesh().chunkVisible("Turret1C_D0", this.aircraft().hierMesh().isChunkVisible("Turret1B_D0"));
 		this.aircraft().hierMesh().chunkVisible("Pilot1_FAK", this.aircraft().hierMesh().isChunkVisible("Pilot1_D0"));
