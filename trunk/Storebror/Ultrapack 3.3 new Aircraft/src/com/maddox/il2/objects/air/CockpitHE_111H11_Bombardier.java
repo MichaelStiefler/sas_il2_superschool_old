@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import com.maddox.JGP.Point3d;
 import com.maddox.il2.ai.AnglesFork;
 import com.maddox.il2.engine.HookNamed;
-import com.maddox.il2.engine.Interpolate;
 import com.maddox.il2.engine.InterpolateRef;
 import com.maddox.il2.engine.Loc;
 import com.maddox.il2.engine.hotkey.HookPilot;
@@ -35,8 +34,14 @@ public class CockpitHE_111H11_Bombardier extends CockpitPilot {
 	class Interpolater extends InterpolateRef {
 
 		public boolean tick() {
-			float f = ((HE_111) CockpitHE_111H11_Bombardier.this.aircraft()).fSightCurForwardAngle;
-			float f1 = ((HE_111) CockpitHE_111H11_Bombardier.this.aircraft()).fSightCurSideslip;
+			float f = 0F, f1 = 0F;
+			if (CockpitHE_111H11_Bombardier.this.aircraft() instanceof HE_111) {
+				f = ((HE_111) CockpitHE_111H11_Bombardier.this.aircraft()).fSightCurForwardAngle;
+				f1 = ((HE_111) CockpitHE_111H11_Bombardier.this.aircraft()).fSightCurSideslip;
+			} else if (CockpitHE_111H11_Bombardier.this.aircraft() instanceof HE_111xyz) {
+				f = ((HE_111xyz) CockpitHE_111H11_Bombardier.this.aircraft()).fSightCurForwardAngle;
+				f1 = ((HE_111xyz) CockpitHE_111H11_Bombardier.this.aircraft()).fSightCurSideslip;
+			}
 			CockpitHE_111H11_Bombardier.this.mesh.chunkSetAngles("BlackBox", -10F * f1, 0.0F, f);
 			if (CockpitHE_111H11_Bombardier.this.bEntered) {
 				HookPilot hookpilot = HookPilot.current;
@@ -76,7 +81,8 @@ public class CockpitHE_111H11_Bombardier extends CockpitPilot {
 
 	protected boolean doFocusEnter() {
 		if (super.doFocusEnter()) {
-			((HE_111) ((Interpolate) this.fm).actor).bPitUnfocused = false;
+			if (this.fm.actor instanceof HE_111) ((HE_111) this.fm.actor).bPitUnfocused = false;
+			else if (this.fm.actor instanceof HE_111xyz) ((HE_111xyz) this.fm.actor).bPitUnfocused = false;
 			this.bTurrVisible = this.aircraft().hierMesh().isChunkVisible("Turret1C_D0");
 			this.aircraft().hierMesh().chunkVisible("Cockpit_D0", false);
 			this.aircraft().hierMesh().chunkVisible("Turret1C_D0", false);
@@ -99,7 +105,8 @@ public class CockpitHE_111H11_Bombardier extends CockpitPilot {
 	protected void doFocusLeave() {
 		if (!this.isFocused()) return;
 		else {
-			((HE_111) ((Interpolate) this.fm).actor).bPitUnfocused = false;
+			if (this.fm.actor instanceof HE_111) ((HE_111) this.fm.actor).bPitUnfocused = false;
+			else if (this.fm.actor instanceof HE_111xyz) ((HE_111xyz) this.fm.actor).bPitUnfocused = false;
 			this.aircraft().hierMesh().chunkVisible("Turret1C_D0", this.bTurrVisible);
 			this.aircraft().hierMesh().chunkVisible("Cockpit_D0", this.aircraft().hierMesh().isChunkVisible("Nose_D0") || this.aircraft().hierMesh().isChunkVisible("Nose_D1") || this.aircraft().hierMesh().isChunkVisible("Nose_D2"));
 			this.aircraft().hierMesh().chunkVisible("Turret1C_D0", this.aircraft().hierMesh().isChunkVisible("Turret1B_D0"));
@@ -212,8 +219,14 @@ public class CockpitHE_111H11_Bombardier extends CockpitPilot {
 			} else if (!hookpilot.isAim()) this.enteringAim = false;
 		}
 		if (this.bEntered) {
-			this.mesh.chunkSetAngles("zAngleMark", -this.floatindex(this.cvt(((HE_111) this.aircraft()).fSightCurForwardAngle, 7F, 140F, 0.7F, 14F), angleScale), 0.0F, 0.0F);
-			boolean flag = ((HE_111) this.aircraft()).fSightCurReadyness > 0.93F;
+			boolean flag = false;
+			if (this.aircraft() instanceof HE_111) {
+				this.mesh.chunkSetAngles("zAngleMark", -this.floatindex(this.cvt(((HE_111) this.aircraft()).fSightCurForwardAngle, 7F, 140F, 0.7F, 14F), angleScale), 0.0F, 0.0F);
+				flag = ((HE_111) this.aircraft()).fSightCurReadyness > 0.93F;
+			} else if (this.aircraft() instanceof HE_111xyz) {
+				this.mesh.chunkSetAngles("zAngleMark", -this.floatindex(this.cvt(((HE_111xyz) this.aircraft()).fSightCurForwardAngle, 7F, 140F, 0.7F, 14F), angleScale), 0.0F, 0.0F);
+				flag = ((HE_111xyz) this.aircraft()).fSightCurReadyness > 0.93F;
+			}
 			this.mesh.chunkVisible("BlackBox", true);
 			this.mesh.chunkVisible("zReticle", flag);
 			this.mesh.chunkVisible("zAngleMark", flag);
@@ -222,12 +235,20 @@ public class CockpitHE_111H11_Bombardier extends CockpitPilot {
 			this.mesh.chunkVisible("zReticle", false);
 			this.mesh.chunkVisible("zAngleMark", false);
 		}
-		this.mesh.chunkSetAngles("zAltWheel", 0.0F, this.cvt(((HE_111) this.aircraft()).fSightCurAltitude, 0.0F, 10000F, 0.0F, 375.8333F), 0.0F);
-		this.mesh.chunkSetAngles("zAnglePointer", 0.0F, ((HE_111) this.aircraft()).fSightCurForwardAngle, 0.0F);
-		this.mesh.chunkSetAngles("zAngleWheel", 0.0F, -10F * ((HE_111) this.aircraft()).fSightCurForwardAngle, 0.0F);
+		if (this.aircraft() instanceof HE_111) {
+			this.mesh.chunkSetAngles("zAltWheel", 0.0F, this.cvt(((HE_111) this.aircraft()).fSightCurAltitude, 0.0F, 10000F, 0.0F, 375.8333F), 0.0F);
+			this.mesh.chunkSetAngles("zAnglePointer", 0.0F, ((HE_111) this.aircraft()).fSightCurForwardAngle, 0.0F);
+			this.mesh.chunkSetAngles("zAngleWheel", 0.0F, -10F * ((HE_111) this.aircraft()).fSightCurForwardAngle, 0.0F);
+			this.mesh.chunkSetAngles("zSpeedPointer", 0.0F, this.cvt(((HE_111) this.aircraft()).fSightCurSpeed, 150F, 600F, 0.0F, 60F), 0.0F);
+			this.mesh.chunkSetAngles("zSpeedWheel", 0.0F, 0.333F * ((HE_111) this.aircraft()).fSightCurSpeed, 0.0F);
+		} else if (this.aircraft() instanceof HE_111xyz) {
+			this.mesh.chunkSetAngles("zAltWheel", 0.0F, this.cvt(((HE_111xyz) this.aircraft()).fSightCurAltitude, 0.0F, 10000F, 0.0F, 375.8333F), 0.0F);
+			this.mesh.chunkSetAngles("zAnglePointer", 0.0F, ((HE_111xyz) this.aircraft()).fSightCurForwardAngle, 0.0F);
+			this.mesh.chunkSetAngles("zAngleWheel", 0.0F, -10F * ((HE_111xyz) this.aircraft()).fSightCurForwardAngle, 0.0F);
+			this.mesh.chunkSetAngles("zSpeedPointer", 0.0F, this.cvt(((HE_111xyz) this.aircraft()).fSightCurSpeed, 150F, 600F, 0.0F, 60F), 0.0F);
+			this.mesh.chunkSetAngles("zSpeedWheel", 0.0F, 0.333F * ((HE_111xyz) this.aircraft()).fSightCurSpeed, 0.0F);
+		}
 		this.mesh.chunkSetAngles("zSpeed", 0.0F, this.floatindex(this.cvt(Pitot.Indicator((float) this.fm.Loc.z, this.fm.getSpeedKMH()), 0.0F, 550F, 0.0F, 11F), speedometerScale), 0.0F);
-		this.mesh.chunkSetAngles("zSpeedPointer", 0.0F, this.cvt(((HE_111) this.aircraft()).fSightCurSpeed, 150F, 600F, 0.0F, 60F), 0.0F);
-		this.mesh.chunkSetAngles("zSpeedWheel", 0.0F, 0.333F * ((HE_111) this.aircraft()).fSightCurSpeed, 0.0F);
 		this.mesh.chunkSetAngles("zAlt1", 0.0F, this.cvt(this.fm.getAltitude(), 0.0F, 10000F, 0.0F, 3600F), 0.0F);
 		this.mesh.chunkSetAngles("zAlt2", -this.cvt(this.fm.getAltitude(), 0.0F, 10000F, 0.0F, 180F), 0.0F, 0.0F);
 		this.mesh.chunkVisible("zRed1", this.fm.CT.BayDoorControl > 0.66F);

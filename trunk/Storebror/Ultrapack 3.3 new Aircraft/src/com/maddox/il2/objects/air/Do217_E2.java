@@ -63,6 +63,5 @@ public class Do217_E2 extends Do217 {
 		Aircraft.weaponTriggersRegister(class1, new int[] { 10, 10, 11, 12, 13, 14, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
 		Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN10", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn06", "_BombSpawn07", "_BombSpawn08", "_BombSpawn09",
 				"_BombSpawn10", "_BombSpawn05" });
-//        Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn06", "_BombSpawn07", "_BombSpawn08", "_BombSpawn09", "_BombSpawn10", "_BombSpawn05" });
 	}
 }
