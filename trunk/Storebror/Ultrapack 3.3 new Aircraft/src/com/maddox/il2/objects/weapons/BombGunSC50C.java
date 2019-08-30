@@ -4,9 +4,6 @@ import com.maddox.rts.Property;
 
 public class BombGunSC50C extends BombGun {
 
-	public BombGunSC50C() {
-	}
-
 	static {
 		Class class1 = BombGunSC50C.class;
 		Property.set(class1, "bulletClass", (Object) BombSC50C.class);

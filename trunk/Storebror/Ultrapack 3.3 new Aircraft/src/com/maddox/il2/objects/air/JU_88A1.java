@@ -573,7 +573,8 @@ public class JU_88A1 extends JU_88Axx implements TypeBomber, TypeDiveBomber, Typ
 		Property.set(class1, "PaintScheme", new PaintSchemeBMPar02());
 		Property.set(class1, "yearService", 1939F);
 		Property.set(class1, "yearExpired", 1945.5F);
-		Property.set(class1, "FlightModel", "FlightModels/Ju-88A-1.fmd:Ju-88A-4Late");
+		Property.set(class1, "FlightModel", "FlightModels/Ju-88A-1.fmd");
+	    Property.set(class1, "cockpitClass", new Class[] { CockpitJU_88A1.class, CockpitJU_88A1_Bombardier.class });
 		Property.set(class1, "LOSElevation", 1.0976F);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 10, 11, 12, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 9, 9, 9, 9 });
 		Aircraft.weaponHooksRegister(class1,

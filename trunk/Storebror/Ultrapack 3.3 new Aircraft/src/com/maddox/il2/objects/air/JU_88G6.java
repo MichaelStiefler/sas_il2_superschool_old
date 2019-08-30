@@ -164,7 +164,7 @@ public class JU_88G6 extends JU_88NEW implements TypeStormovik, TypeFighter, Typ
 		Property.set(class1, "PaintScheme", new PaintSchemeBMPar04());
 		Property.set(class1, "yearService", 1944F);
 		Property.set(class1, "yearExpired", 1945.5F);
-		Property.set(class1, "FlightModel", "FlightModels/Ju-88G-6.fmd:JU88G6");
+		Property.set(class1, "FlightModel", "FlightModels/Ju-88G-6.fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitJU_88G6.class, CockpitJU_88G6_Radar.class, CockpitJU_88G6_RGunner.class });
 		Property.set(class1, "LOSElevation", 1.0976F);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 10, 0, 0, 0, 0, 1, 1 });

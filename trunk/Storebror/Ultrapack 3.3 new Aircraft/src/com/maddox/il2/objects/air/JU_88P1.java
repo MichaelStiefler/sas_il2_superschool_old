@@ -323,7 +323,7 @@ public class JU_88P1 extends JU_88Axx implements TypeBNZFighter, TypeStormovik {
 		Property.set(class1, "PaintScheme", new PaintSchemeBMPar02());
 		Property.set(class1, "yearService", 1943F);
 		Property.set(class1, "yearExpired", 1945.5F);
-		Property.set(class1, "FlightModel", "FlightModels/Ju-88P-1.fmd:Ju-88A-4Late");
+		Property.set(class1, "FlightModel", "FlightModels/Ju-88P-1.fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitJU_88P1.class, CockpitJU_88P1_LGunner.class, CockpitJU_88P1_RGunner.class });
 		Property.set(class1, "LOSElevation", 0.5F);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 10, 11, 12, 12, 1, 9 });

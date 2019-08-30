@@ -37,9 +37,9 @@ public class CockpitJU_88GStechmucke extends CockpitPilot {
 	class Interpolater extends InterpolateRef {
 
 		public boolean tick() {
-			if (Ju88G1_Stechmucke.bChangedPit) {
+			if (JU_88G1_Stechmucke.bChangedPit) {
 				CockpitJU_88GStechmucke.this.reflectPlaneToModel();
-				Ju88G1_Stechmucke.bChangedPit = false;
+				JU_88G1_Stechmucke.bChangedPit = false;
 			}
 			if (CockpitJU_88GStechmucke.this.fm != null) {
 				CockpitJU_88GStechmucke.this.setTmp = CockpitJU_88GStechmucke.this.setOld;
@@ -164,7 +164,7 @@ public class CockpitJU_88GStechmucke extends CockpitPilot {
 		this.mesh.chunkSetAngles("zBall", 0.0F, this.cvt(this.getBall(4D), -4F, 4F, -9F, 9F), 0.0F);
 		this.mesh.chunkSetAngles("zAlt1", this.cvt(this.interp(this.setNew.altimeter, this.setOld.altimeter, f), 0.0F, 20000F, 0.0F, 7200F), 0.0F, 0.0F);
 		this.mesh.chunkSetAngles("zAlt2", this.cvt(this.interp(this.setNew.altimeter, this.setOld.altimeter, f), 0.0F, 6000F, 0.0F, 360F), 0.0F, 0.0F);
-		this.mesh.chunkSetAngles("zAlt3", ((Ju88G1_Stechmucke) this.aircraft()).fDiveRecoveryAlt * 360F / 6000F, 0.0F, 0.0F);
+		this.mesh.chunkSetAngles("zAlt3", ((JU_88G1_Stechmucke) this.aircraft()).fDiveRecoveryAlt * 360F / 6000F, 0.0F, 0.0F);
 		this.mesh.chunkSetAngles("zSpeed", this.floatindex(this.cvt(Pitot.Indicator((float) this.fm.Loc.z, this.fm.getSpeedKMH()), 50F, 750F, 0.0F, 14F), speedometerScale), 0.0F, 0.0F);
 		this.mesh.chunkSetAngles("Z_Climb1", this.cvt(this.setNew.vspeed, -15F, 15F, -151F, 151F), 0.0F, 0.0F);
 		this.mesh.chunkSetAngles("zWaterTemp1", this.cvt(this.fm.EI.engines[0].tWaterOut, 0.0F, 120F, 0.0F, 64F), 0.0F, 0.0F);
