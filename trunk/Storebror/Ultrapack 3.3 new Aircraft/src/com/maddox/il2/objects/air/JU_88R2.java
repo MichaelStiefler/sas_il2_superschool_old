@@ -53,6 +53,13 @@ public class JU_88R2 extends JU_88NEW implements TypeFighter, TypeBNZFighter {
 
 	}
 
+	protected void moveBayDoor(float f) {
+		this.hierMesh().chunkSetAngles("Bay1_D0", 0.0F, 87F * f, 0.0F);
+		this.hierMesh().chunkSetAngles("Bay2_D0", 0.0F, -86F * f, 0.0F);
+		this.hierMesh().chunkSetAngles("Bay3_D0", 0.0F, 86F * f, 0.0F);
+		this.hierMesh().chunkSetAngles("Bay4_D0", 0.0F, -87F * f, 0.0F);
+	}
+
 	public static boolean bChangedPit = false;
 	public int            diveMechStage;
 	public boolean        bNDives;

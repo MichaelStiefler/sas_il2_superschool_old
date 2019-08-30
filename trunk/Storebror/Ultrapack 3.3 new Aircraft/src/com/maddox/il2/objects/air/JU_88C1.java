@@ -240,7 +240,7 @@ public class JU_88C1 extends JU_88Axx implements TypeFighter, TypeBNZFighter, Ty
 		Property.set(class1, "yearService", 1940F);
 		Property.set(class1, "yearExpired", 1945.5F);
 		Property.set(class1, "FlightModel", "FlightModels/Ju-88C-1.fmd");
-	    Property.set(class1, "cockpitClass", new Class[] { CockpitJU_88C1.class });
+		Property.set(class1, "cockpitClass", new Class[] { CockpitJU_88C1.class });
 		Property.set(class1, "LOSElevation", 1.0F);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 10, 11, 0, 0, 0, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
 		Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MG1701", "_MG1702", "_MG1703", "_MGFF01", "_BombSpawn15", "_BombSpawn16", "_BombSpawn17", "_BombSpawn18", "_BombSpawn19", "_BombSpawn20", "_BombSpawn21", "_BombSpawn22",
