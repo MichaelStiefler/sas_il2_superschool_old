@@ -3,9 +3,9 @@ package com.maddox.il2.objects.air;
 import com.maddox.il2.engine.Actor;
 import com.maddox.rts.Property;
 
-public class Ju88G1d extends JU_88 implements TypeStormovik, TypeFighter, TypeScout {
+public class JU_88G1d extends JU_88 implements TypeStormovik, TypeFighter, TypeScout {
 
-	public Ju88G1d() {
+	public JU_88G1d() {
 		this.diveMechStage = 0;
 		this.bNDives = false;
 		this.fSightCurForwardAngle = 0.0F;
@@ -82,14 +82,14 @@ public class Ju88G1d extends JU_88 implements TypeStormovik, TypeFighter, TypeSc
 	protected int         spreadAngle;
 
 	static {
-		Class class1 = Ju88G1d.class;
+		Class class1 = JU_88G1d.class;
 		new NetAircraft.SPAWN(class1);
 		Property.set(class1, "iconFar_shortClassName", "Ju-88");
 		Property.set(class1, "meshName", "3DO/Plane/Ju-88G1d(Multi1)/hier.him");
 		Property.set(class1, "PaintScheme", new PaintSchemeBMPar02());
 		Property.set(class1, "yearService", 1942F);
 		Property.set(class1, "yearExpired", 1945.5F);
-		Property.set(class1, "FlightModel", "FlightModels/JU-88R-1.fmd:JU88R1_FM");
+		Property.set(class1, "FlightModel", "FlightModels/JU-88R-1.fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitJU_88Gd.class, CockpitJU_88Gd_RGunner.class });
 		Property.set(class1, "LOSElevation", 1.0976F);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 10, 0, 0, 0, 0, 1, 1, 9, 9, 3, 3, 9, 9, 9, 9, 3, 3, 9, 3, 9, 9, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 9 });

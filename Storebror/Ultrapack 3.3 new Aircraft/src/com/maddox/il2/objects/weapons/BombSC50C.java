@@ -4,9 +4,6 @@ import com.maddox.rts.Property;
 
 public class BombSC50C extends Bomb {
 
-	public BombSC50C() {
-	}
-
 	protected boolean haveSound() {
 		return this.index % 16 == 0;
 	}

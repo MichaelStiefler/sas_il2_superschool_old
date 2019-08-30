@@ -3,9 +3,9 @@ package com.maddox.il2.objects.air;
 import com.maddox.il2.engine.Actor;
 import com.maddox.rts.Property;
 
-public class Ju88G1_Stechmucke extends JU_88 implements TypeStormovik, TypeFighter, TypeScout {
+public class JU_88G1_Stechmucke extends JU_88 implements TypeStormovik, TypeFighter, TypeScout {
 
-	public Ju88G1_Stechmucke() {
+	public JU_88G1_Stechmucke() {
 		this.diveMechStage = 0;
 		this.bNDives = false;
 		this.fSightCurForwardAngle = 0.0F;
@@ -82,14 +82,14 @@ public class Ju88G1_Stechmucke extends JU_88 implements TypeStormovik, TypeFight
 	protected int         spreadAngle;
 
 	static {
-		Class class1 = Ju88G1_Stechmucke.class;
+		Class class1 = JU_88G1_Stechmucke.class;
 		new NetAircraft.SPAWN(class1);
 		Property.set(class1, "iconFar_shortClassName", "Ju-88");
 		Property.set(class1, "meshName", "3DO/Plane/Ju-88G1_Stechmucke(Multi1)/hier.him");
 		Property.set(class1, "PaintScheme", new PaintSchemeBMPar04());
 		Property.set(class1, "yearService", 1942F);
 		Property.set(class1, "yearExpired", 1945.5F);
-		Property.set(class1, "FlightModel", "FlightModels/Ju-88G-6.fmd:JU88G6");
+		Property.set(class1, "FlightModel", "FlightModels/Ju-88G-6.fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitJU_88GStechmucke.class, CockpitJU_88GStechmucke_RGunner.class });
 		Property.set(class1, "LOSElevation", 1.0976F);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 10, 0, 0, 0, 0, 1, 1, 9, 9, 3, 3, 9, 9, 9, 9, 3, 3, 9, 3, 9, 9, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 9 });

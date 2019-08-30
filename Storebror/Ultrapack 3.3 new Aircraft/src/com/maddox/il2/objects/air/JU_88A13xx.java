@@ -9,9 +9,9 @@ import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.objects.Wreckage;
 import com.maddox.rts.Property;
 
-public abstract class JU88A13 extends Scheme2 {
+public abstract class JU_88A13xx extends Scheme2 {
 
-	public JU88A13() {
+	public JU_88A13xx() {
 		this.topBlisterRemoved = false;
 		this.suspR = 0.0F;
 		this.suspL = 0.0F;
@@ -598,7 +598,7 @@ public abstract class JU88A13 extends Scheme2 {
 	boolean         secondaryRearGunActive;
 
 	static {
-		Class class1 = JU88A13.class;
+		Class class1 = JU_88A13xx.class;
 		Property.set(class1, "originCountry", PaintScheme.countryGermany);
 	}
 }

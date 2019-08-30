@@ -651,7 +651,7 @@ public class JU_88A5Late extends JU_88Axx implements TypeBomber, TypeDiveBomber,
 		Property.set(class1, "PaintScheme", new PaintSchemeBMPar02());
 		Property.set(class1, "yearService", 1941F);
 		Property.set(class1, "yearExpired", 1945.5F);
-		Property.set(class1, "FlightModel", "FlightModels/Ju-88A-5.fmd:Ju-88A-4Late");
+		Property.set(class1, "FlightModel", "FlightModels/Ju-88A-5.fmd");
 		Property.set(class1, "cockpitClass",
 				new Class[] { CockpitJU_88A5Late.class, CockpitJU_88A5Late_Bombardier.class, CockpitJU_88A5Late_NGunner.class, CockpitJU_88A5Late_LGunner.class, CockpitJU_88A5Late_RGunner.class, CockpitJU_88A5Late_BGunner.class });
 		Property.set(class1, "LOSElevation", 1.0976F);

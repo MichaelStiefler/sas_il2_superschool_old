@@ -72,11 +72,11 @@ public class JU_88R2 extends JU_88NEW implements TypeFighter, TypeBNZFighter {
 		Class class1 = JU_88R2.class;
 		new NetAircraft.SPAWN(class1);
 		Property.set(class1, "iconFar_shortClassName", "JU-88");
-		Property.set(class1, "meshName", "3DO/Plane/JU-88R-2(Multi1)/hier.him");
+		Property.set(class1, "meshName", "3DO/Plane/Ju-88R-2(Multi1)/hier.him");
 		Property.set(class1, "PaintScheme", new PaintSchemeBMPar02());
 		Property.set(class1, "yearService", 1942F);
 		Property.set(class1, "yearExpired", 1945.5F);
-		Property.set(class1, "FlightModel", "FlightModels/JU-88R-1.fmd:JU88R1_FM");
+		Property.set(class1, "FlightModel", "FlightModels/Ju-88R-1.fmd");
 		Property.set(class1, "LOSElevation", 1.0976F);
 		Property.set(class1, "cockpitClass", new Class[] { CockpitJU_88R2.class, CockpitJU_88R2_RGunner.class });
 		Aircraft.weaponTriggersRegister(class1, new int[] { 10, 0, 0, 0, 1, 1, 1, 3, 3, 9, 9, 9, 9 });

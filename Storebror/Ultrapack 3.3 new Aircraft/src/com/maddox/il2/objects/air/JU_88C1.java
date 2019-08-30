@@ -121,15 +121,14 @@ public class JU_88C1 extends JU_88Axx implements TypeFighter, TypeBNZFighter, Ty
 		super.update(f);
 		if (Pitot.Indicator((float) this.FM.Loc.z, this.FM.getSpeed()) > 70F && this.FM.CT.getFlap() > 0.01D && this.FM.CT.FlapsControl != 0.0F) {
 			this.FM.CT.FlapsControl = 0.0F;
-			World.cur();
 			if (((Interpolate) this.FM).actor == World.getPlayerAircraft()) HUD.log("FlapsRaised");
 		}
 		float f1 = this.FM.EI.engines[0].getControlRadiator();
 		if (f1 != 0.0F) this.hierMesh().chunkSetAngles("Radl11_D0", -30F * f1, 0.0F, 0.0F);
 		f1 = this.FM.EI.engines[1].getControlRadiator();
 		if (f1 != 0.0F) this.hierMesh().chunkSetAngles("Radr11_D0", -30F * f1, 0.0F, 0.0F);
-		if (this.FM.AS.bNavLightsOn) this.FM.CT.StabilizerControl = true;
-		else this.FM.CT.StabilizerControl = false;
+//		if (this.FM.AS.bNavLightsOn) this.FM.CT.StabilizerControl = true;
+//		else this.FM.CT.StabilizerControl = false;
 	}
 
 	public boolean turretAngles(int i, float af[]) {
@@ -240,7 +239,8 @@ public class JU_88C1 extends JU_88Axx implements TypeFighter, TypeBNZFighter, Ty
 		Property.set(class1, "PaintScheme", new PaintSchemeBMPar02());
 		Property.set(class1, "yearService", 1940F);
 		Property.set(class1, "yearExpired", 1945.5F);
-		Property.set(class1, "FlightModel", "FlightModels/Ju-88C-1.fmd:Ju-88A-4Late");
+		Property.set(class1, "FlightModel", "FlightModels/Ju-88C-1.fmd");
+	    Property.set(class1, "cockpitClass", new Class[] { CockpitJU_88C1.class });
 		Property.set(class1, "LOSElevation", 1.0F);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 10, 11, 0, 0, 0, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
 		Aircraft.weaponHooksRegister(class1, new String[] { "_MGUN01", "_MGUN02", "_MG1701", "_MG1702", "_MG1703", "_MGFF01", "_BombSpawn15", "_BombSpawn16", "_BombSpawn17", "_BombSpawn18", "_BombSpawn19", "_BombSpawn20", "_BombSpawn21", "_BombSpawn22",

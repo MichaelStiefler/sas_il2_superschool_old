@@ -66,8 +66,8 @@ public class CockpitJU_88GStechmucke_RGunner extends CockpitGunner {
 				f1 /= Time.tickLenFs();
 				f1 *= 3600F;
 				CockpitJU_88GStechmucke_RGunner.this.setNew.cons = 0.91F * CockpitJU_88GStechmucke_RGunner.this.setOld.cons + 0.09F * f1;
-				if (CockpitJU_88GStechmucke_RGunner.this.buzzerFX != null) if (CockpitJU_88GStechmucke_RGunner.this.fm.Loc.z < ((Ju88G1_Stechmucke) CockpitJU_88GStechmucke_RGunner.this.aircraft()).fDiveRecoveryAlt
-						&& ((Ju88G1_Stechmucke) ((Interpolate) CockpitJU_88GStechmucke_RGunner.this.fm).actor).diveMechStage == 1)
+				if (CockpitJU_88GStechmucke_RGunner.this.buzzerFX != null) if (CockpitJU_88GStechmucke_RGunner.this.fm.Loc.z < ((JU_88G1_Stechmucke) CockpitJU_88GStechmucke_RGunner.this.aircraft()).fDiveRecoveryAlt
+						&& ((JU_88G1_Stechmucke) ((Interpolate) CockpitJU_88GStechmucke_RGunner.this.fm).actor).diveMechStage == 1)
 					CockpitJU_88GStechmucke_RGunner.this.buzzerFX.play();
 				else if (CockpitJU_88GStechmucke_RGunner.this.buzzerFX.isPlaying()) CockpitJU_88GStechmucke_RGunner.this.buzzerFX.stop();
 			}
@@ -199,7 +199,7 @@ public class CockpitJU_88GStechmucke_RGunner extends CockpitGunner {
 		this.mesh.chunkSetAngles("zMinute1", this.cvt(World.getTimeofDay() % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F, 0.0F);
 		this.mesh.chunkSetAngles("zAlt1", this.cvt(this.interp(this.setNew.altimeter, this.setOld.altimeter, f), 0.0F, 20000F, 0.0F, 7200F), 0.0F, 0.0F);
 		this.mesh.chunkSetAngles("zAlt2", this.cvt(this.interp(this.setNew.altimeter, this.setOld.altimeter, f), 0.0F, 6000F, 0.0F, 360F), 0.0F, 0.0F);
-		this.mesh.chunkSetAngles("zAlt3", ((Ju88G1_Stechmucke) this.aircraft()).fDiveRecoveryAlt * 360F / 6000F, 0.0F, 0.0F);
+		this.mesh.chunkSetAngles("zAlt3", ((JU_88G1_Stechmucke) this.aircraft()).fDiveRecoveryAlt * 360F / 6000F, 0.0F, 0.0F);
 		this.mesh.chunkSetAngles("zSpeed", this.floatindex(this.cvt(Pitot.Indicator((float) this.fm.Loc.z, this.fm.getSpeedKMH()), 50F, 750F, 0.0F, 14F), speedometerScale), 0.0F, 0.0F);
 		this.mesh.chunkSetAngles("Z_Climb1", this.cvt(this.setNew.vspeed, -15F, 15F, -151F, 151F), 0.0F, 0.0F);
 		this.mesh.chunkSetAngles("zWaterTemp1", this.cvt(this.fm.EI.engines[0].tWaterOut, 0.0F, 120F, 0.0F, 64F), 0.0F, 0.0F);

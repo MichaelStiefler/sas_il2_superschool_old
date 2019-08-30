@@ -14,7 +14,7 @@ import com.maddox.il2.objects.weapons.GunEmpty;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
-public class JU_88A13 extends JU88A13 implements TypeStormovik, TypeScout {
+public class JU_88A13 extends JU_88A13xx implements TypeStormovik, TypeScout {
 
 	public JU_88A13() {
 		this.booster = new Bomb[2];
@@ -232,7 +232,7 @@ public class JU_88A13 extends JU88A13 implements TypeStormovik, TypeScout {
 		Property.set(class1, "PaintScheme", new PaintSchemeBMPar02());
 		Property.set(class1, "yearService", 1941F);
 		Property.set(class1, "yearExpired", 1945.5F);
-		Property.set(class1, "FlightModel", "FlightModels/Ju-88A-13.fmd:JU88A1317_FM");
+		Property.set(class1, "FlightModel", "FlightModels/Ju-88A-13.fmd");
 		Property.set(class1, "cockpitClass", new Class[] { CockpitJU_88A13.class, CockpitJU_88A13_NGunner.class, CockpitJU_88A13_RGunner.class, CockpitJU_88A13_BGunner.class });
 		Property.set(class1, "LOSElevation", 1.0976F);
 		Aircraft.weaponTriggersRegister(class1, new int[] { 10, 11, 12, 13, 13, 1, 14, 15, 9, 9, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
