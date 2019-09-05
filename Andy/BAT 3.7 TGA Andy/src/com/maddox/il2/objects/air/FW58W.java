@@ -1,4 +1,4 @@
-// Decompiled by DJ v3.10.10.93 Copyright 2007 Atanas Neshkov  Date: 25.05.2019 19:23:57
+// Decompiled by DJ v3.10.10.93 Copyright 2007 Atanas Neshkov  Date: 04.09.2019 16:30:46
 // Home Page: http://members.fortunecity.com/neshkov/dj.html  http://www.neshkov.com/dj.html - Check often for new version!
 // Decompiler options: fullnames 
 // Source File Name:   FW58W.java
@@ -6,17 +6,19 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
+import com.maddox.il2.engine.ActorHMesh;
 import com.maddox.il2.engine.ActorPos;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.AircraftState;
-import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.fm.Gear;
+import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.rts.Finger;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
@@ -26,10 +28,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 // Referenced classes of package com.maddox.il2.objects.air:
-//            Scheme2, PaintSchemeBMPar02, TypeTransport, TypeSeaPlane, 
-//            TypeBomber, Aircraft, NetAircraft
+//            Scheme1, TypeTransport, TypeSeaPlane, TypeBomber, 
+//            PaintSchemeBMPar02, Aircraft, AircraftLH, NetAircraft
 
-public class FW58W extends com.maddox.il2.objects.air.Scheme2
+public class FW58W extends com.maddox.il2.objects.air.Scheme1
     implements com.maddox.il2.objects.air.TypeTransport, com.maddox.il2.objects.air.TypeSeaPlane, com.maddox.il2.objects.air.TypeBomber
 {
 
@@ -76,10 +78,6 @@ public class FW58W extends com.maddox.il2.objects.air.Scheme2
         hierMesh().chunkSetAngles("Flap02_D0", 0.0F, f1, 0.0F);
         hierMesh().chunkSetAngles("Flap03_D0", 0.0F, f1, 0.0F);
         hierMesh().chunkSetAngles("Flap04_D0", 0.0F, f1, 0.0F);
-    }
-
-    protected void moveBayDoor(float f)
-    {
     }
 
     public void moveCockpitDoor(float f)
@@ -195,30 +193,26 @@ public class FW58W extends com.maddox.il2.objects.air.Scheme2
     {
     }
 
-    public void typeBomberUpdate(float f)
+    public void typeBomberUpdate(float f1)
     {
     }
 
-    public void typeBomberReplicateToNet(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+    public void typeBomberReplicateToNet(com.maddox.rts.NetMsgGuaranted netmsgguaranted1)
         throws java.io.IOException
     {
     }
 
-    public void typeBomberReplicateFromNet(com.maddox.rts.NetMsgInput netmsginput)
+    public void typeBomberReplicateFromNet(com.maddox.rts.NetMsgInput netmsginput1)
         throws java.io.IOException
     {
     }
 
-    static java.lang.Class _mthclass$(java.lang.String s)
+    protected void moveBayDoor(float f1)
     {
-        try
-        {
-            return java.lang.Class.forName(s);
-        }
-        catch(java.lang.ClassNotFoundException classnotfoundexception)
-        {
-            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
-        }
+    }
+
+    public void onAircraftLoaded()
+    {
     }
 
     private com.maddox.JGP.Point3d tmpp;
@@ -230,18 +224,20 @@ public class FW58W extends com.maddox.il2.objects.air.Scheme2
         com.maddox.rts.Property.set(class1, "meshName", "3do/plane/FW-58W/hier.him");
         com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "FW58W");
         com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeBMPar02());
-        com.maddox.rts.Property.set(class1, "yearService", 1937F);
-        com.maddox.rts.Property.set(class1, "yearExpired", 1945F);
-        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/Fw-58W.fmd:FW58s_FM");
+        com.maddox.rts.Property.set(class1, "yearService", 1937.5F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1945.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/Fw-58W.fmd:FW58W_FM");
         com.maddox.rts.Property.set(class1, "cockpitClass", new java.lang.Class[] {
-            com.maddox.il2.objects.air.CockpitFW58B.class
+            com.maddox.il2.objects.air.CockpitFW200.class
         });
         com.maddox.rts.Property.set(class1, "LOSElevation", 0.742F);
         com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
-            10, 11, 3, 3, 3, 3, 3, 3
+            10, 11, 3, 3, 3, 3, 3, 3, 3, 3, 
+            3
         });
         com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
-            "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06"
+            "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", 
+            "_ExternalBomb09"
         });
-     }
+    }
 }
