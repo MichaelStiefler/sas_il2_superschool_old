@@ -13,7 +13,7 @@ import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 
-public class SHORT extends Scheme4 implements TypeBomber {
+public abstract class SHORT extends Scheme4 implements TypeBomber {
 
 	public SHORT() {
 		this.bSightAutomation = false;

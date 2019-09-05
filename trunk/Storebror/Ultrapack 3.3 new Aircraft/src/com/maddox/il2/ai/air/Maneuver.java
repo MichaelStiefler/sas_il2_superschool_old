@@ -68,6 +68,7 @@ import com.maddox.il2.objects.air.TypeFighter;
 import com.maddox.il2.objects.air.TypeGlider;
 import com.maddox.il2.objects.air.TypeGuidedBombCarrier;
 import com.maddox.il2.objects.air.TypeHasToKG;
+import com.maddox.il2.objects.air.TypeJazzPlayer;
 import com.maddox.il2.objects.air.TypeSailPlane;
 import com.maddox.il2.objects.air.TypeStormovik;
 import com.maddox.il2.objects.air.TypeSupersonic;
@@ -831,6 +832,7 @@ public class Maneuver extends AIFlightModel {
 	}
 
 	public boolean hasCourseWeaponBullets() {
+		if (this.actor instanceof TypeJazzPlayer) return ((TypeJazzPlayer) this.actor).hasCourseWeaponBullets();
 		if (this.actor instanceof KI_46_OTSUHEI) {
 			if (this.CT.Weapons[1] != null && this.CT.Weapons[1][0] != null && this.CT.Weapons[1][0].countBullets() != 0) return true;
 			return false;
@@ -6408,9 +6410,14 @@ public class Maneuver extends AIFlightModel {
 			case 10:
 				this.ApproachV.set(-600.0F + World.Rnd().nextFloat(-100.0F, 100.0F), 0.0, -300.0F + World.Rnd().nextFloat(-100.0F, 100.0F));
 				// TODO: +++ TD AI code backport from 4.13 +++
-				// TargV.set(((TypeJazzPlayer)actor).getAttackVector()); // Would be 4.13 code...
+				this.TargV.set(((TypeJazzPlayer) this.actor).getAttackVector()); // Would be 4.13 code...
 				// TODO: --- TD AI code backport from 4.13 ---
-				this.TargV.set(100.0, 0.0, -400.0);
+				// this.TargV.set(100.0, 0.0, -400.0);
+
+				// New TypeJazzPlayer Implementation
+				if (this.actor instanceof TypeJazzPlayer) this.TargV.set(((TypeJazzPlayer) this.actor).getAttackVector());
+				else this.TargV.set(100.0, 0.0, -400.0);
+
 				this.ApproachR = 300.0F;
 				this.TargY = 2.1F * f;
 				this.TargZ = 3.9F * f;
@@ -6753,32 +6760,43 @@ public class Maneuver extends AIFlightModel {
 				if (f3 > 4000.0F || this.Vtarg.z > 2000.0) {
 					this.submaneuver = 0;
 					this.sub_Man_Count = 0;
-				} else {
-					if (this.AS.astatePilotStates[1] < 100 && f3 < 330.0F && Math.abs(this.Or.getKren()) < 3.0F)
-					// TODO: +++ TD AI code backport from 4.13 +++
-					{
-						this.CT.WeaponControl[0] = true;
-						this.CT.WeaponControl[1] = true;
-					}
-					// TODO: --- TD AI code backport from 4.13 ---
-					Ve.normalize();
-					if (Ve.x < 0.3) {
-						this.Vtarg.z += 0.01F * this.Skill * (800.0F + f3) * (0.3 - Ve.x);
-						Ve.set(this.Vtarg);
-						this.Or.transformInv(Ve);
-						Ve.normalize();
-					}
-					// TODO: +++ TD AI code backport from 4.13 +++
-					this.attackTurn(f3, f, 6.0F + this.Skill * 3.0F);
-					// TODO: --- TD AI code backport from 4.13 ---
-					this.setSpeedMode(1);
-					this.tailForStaying = this.target;
-					this.tailOffset.set(-190.0, 0.0, 0.0);
-					if (this.sub_Man_Count > 10000 || f3 < 240.0F) {
-						this.push(9);
-						this.pop();
-					}
+					break;
 				}
+
+				// New TypeJazzPlayer Implementation
+				if (f3 < 330F && Math.abs(this.Or.getKren()) < 3F) if (this.actor instanceof TypeJazzPlayer) {
+					if (((TypeJazzPlayer) this.actor).hasSlantedWeaponBullets()) this.CT.WeaponControl[1] = true;
+				} else {
+					this.CT.WeaponControl[0] = true;
+					this.CT.WeaponControl[1] = true;
+				}
+
+//				else {
+//					if (this.AS.astatePilotStates[1] < 100 && f3 < 330.0F && Math.abs(this.Or.getKren()) < 3.0F)
+//					// TODO: +++ TD AI code backport from 4.13 +++
+//					{
+//						this.CT.WeaponControl[0] = true;
+//						this.CT.WeaponControl[1] = true;
+//					}
+//					// TODO: --- TD AI code backport from 4.13 ---
+				Ve.normalize();
+				if (Ve.x < 0.3) {
+					this.Vtarg.z += 0.01F * this.Skill * (800.0F + f3) * (0.3 - Ve.x);
+					Ve.set(this.Vtarg);
+					this.Or.transformInv(Ve);
+					Ve.normalize();
+				}
+				// TODO: +++ TD AI code backport from 4.13 +++
+				this.attackTurn(f3, f, 6.0F + this.Skill * 3.0F);
+				// TODO: --- TD AI code backport from 4.13 ---
+				this.setSpeedMode(1);
+				this.tailForStaying = this.target;
+				this.tailOffset.set(-190.0, 0.0, 0.0);
+				if (this.sub_Man_Count > 10000 || f3 < 240.0F) {
+					this.push(9);
+					this.pop();
+				}
+//				}
 				break;
 			}
 			default:
@@ -6820,7 +6838,12 @@ public class Maneuver extends AIFlightModel {
 
 			case 7:
 				this.ApproachV.set(-400F + World.Rnd().nextFloat(-100F, 100F), 0.0D, -300F + World.Rnd().nextFloat(-100F, 100F));
-				this.TargV.set(100D, 0.0D, -400D);
+
+				// New TypeJazzPlayer Implementation
+				if (this.actor instanceof TypeJazzPlayer) this.TargV.set(((TypeJazzPlayer) this.actor).getAttackVector());
+				else this.TargV.set(100D, 0.0D, -400D);
+
+				// this.TargV.set(100D, 0.0D, -400D);
 				break;
 
 			case 8:
