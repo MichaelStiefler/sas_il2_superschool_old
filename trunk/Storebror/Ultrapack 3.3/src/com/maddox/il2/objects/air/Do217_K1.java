@@ -4,17 +4,6 @@ import com.maddox.rts.Property;
 
 public class Do217_K1 extends Do217 {
 
-    public Do217_K1() {
-    }
-
-    public void onAircraftLoaded() {
-        super.onAircraftLoaded();
-    }
-
-    public void rareAction(float f, boolean flag) {
-        super.rareAction(f, flag);
-    }
-
     protected void moveBayDoor(float f) {
         if (f < 0.02F) {
             this.hierMesh().chunkVisible("Bay_D0", true);

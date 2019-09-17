@@ -172,6 +172,6 @@ class ConsoleGL0Render extends Render {
     public String           sstep;
 
     private static String   VERSION_STRING1 = "IL-2 1946 v" + Config.CORE_VERSION_NUMBER + "m";
-    private static String   VERSION_STRING2 = Config.VERSION_STRING + " " + Config.VERSION_NUMBER + " · Patch ";
+    private static String   VERSION_STRING2 = Config.VERSION_STRING + " " + Config.VERSION_NUMBER + " \"" + Config.VERSION_NAME + "\" · Patch ";
 
 }
