@@ -549,6 +549,7 @@ public class Config {
 //    private static final String _VERSION                      = "4.10.1_(UP_EDITION)";
     public static final String   CORE_VERSION_NUMBER   = "4.51";
     public static final String   VERSION_NUMBER        = "3.3";
+    public static final String   VERSION_NAME          = "Bigfoot";
     public static final String   CONNECT_VERSION       = "IL2_UP" + VERSION_NUMBER;
     public static final String[] CONNECT_VERSION2      = { "IL2_UP3.2", "IL2_UP3_RC_MDS_v1.2_v2" };
 

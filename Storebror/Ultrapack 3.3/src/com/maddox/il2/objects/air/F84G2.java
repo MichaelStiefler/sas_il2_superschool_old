@@ -3,6 +3,7 @@ package com.maddox.il2.objects.air;
 import java.io.IOException;
 
 import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Pilot;
@@ -10,6 +11,7 @@ import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.HierMesh;
+import com.maddox.il2.engine.Orient;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
@@ -23,7 +25,7 @@ import com.maddox.rts.Time;
 public class F84G2 extends DO_335 implements TypeFighter, TypeBNZFighter, TypeFighterAceMaker {
 
     public F84G2() {
-        this.bHasBoosters = true;
+        this.bHasBoosters = false;
         this.boosterFireOutTime = -1L;
         this.AirBrakeControl = 0.0F;
         this.k14Mode = 0;
@@ -61,18 +63,34 @@ public class F84G2 extends DO_335 implements TypeFighter, TypeBNZFighter, TypeFi
 
     }
 
-    public void onAircraftLoaded() {
-        super.onAircraftLoaded();
-        for (int i = 0; i < 2; i++)
+//    public void onAircraftLoaded() {
+//        super.onAircraftLoaded();
+//        for (int i = 0; i < 2; i++)
+//            try {
+//                this.booster[i] = new BombJATO();
+//                this.booster[i].pos.setBase(this, this.findHook("_BoosterH" + (i + 1)), false);
+//                this.booster[i].pos.resetAsBase();
+//                this.booster[i].drawing(true);
+//            } catch (Exception exception) {
+//                this.debugprintln("Structure corrupt - can't hang Starthilferakete..");
+//            }
+//
+//    }
+
+    public void setOnGround(Point3d point3d, Orient orient, Vector3d vector3d) {
+        super.setOnGround(point3d, orient, vector3d);
+        for (int i = 0; i < 2; i++) {
             try {
                 this.booster[i] = new BombJATO();
                 this.booster[i].pos.setBase(this, this.findHook("_BoosterH" + (i + 1)), false);
                 this.booster[i].pos.resetAsBase();
                 this.booster[i].drawing(true);
             } catch (Exception exception) {
-                this.debugprintln("Structure corrupt - can't hang Starthilferakete..");
+                this.debugprintln("Structure corrupt - can't hang JATO..");
+                return;
             }
-
+        }
+        this.bHasBoosters = true;
     }
 
     protected boolean cutFM(int i, int j, Actor actor) {

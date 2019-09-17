@@ -2447,12 +2447,12 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
         if (this.hierMesh().chunkFindCheck(string + "_D1") != -1) this.hierMesh().chunkVisible(string + "_D1", false);
     }
 
-    public void doSetSootState(int i, int i_168_) {
-        for (int i_169_ = 0; i_169_ < 2; i_169_++) {
-            if (this.FM.AS.astateSootEffects[i][i_169_] != null) Eff3DActor.finish(this.FM.AS.astateSootEffects[i][i_169_]);
-            this.FM.AS.astateSootEffects[i][i_169_] = null;
+    public void doSetSootState(int i, int j) {
+        for (int k = 0; k < 2; k++) {
+            if (this.FM.AS.astateSootEffects[i][k] != null) Eff3DActor.finish(this.FM.AS.astateSootEffects[i][k]);
+            this.FM.AS.astateSootEffects[i][k] = null;
         }
-        switch (i_168_) {
+        switch (j) {
             case 0:
                 break;
             case 1:

@@ -2,10 +2,13 @@ package com.maddox.il2.objects.air;
 
 import java.io.IOException;
 
+import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Eff3DActor;
+import com.maddox.il2.engine.Orient;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.objects.weapons.Bomb;
@@ -18,7 +21,7 @@ import com.maddox.rts.Time;
 public class AR_234B2NJ extends AR_234F {
 
     public AR_234B2NJ() {
-        this.bHasBoosters = true;
+        this.bHasBoosters = false;
         this.boosterFireOutTime = -1L;
         this.bSightAutomation = false;
         this.bSightBombDump = false;
@@ -46,12 +49,25 @@ public class AR_234B2NJ extends AR_234F {
                 this.booster[i].start();
                 this.booster[i] = null;
             }
-
     }
 
-    public void onAircraftLoaded() {
-        super.onAircraftLoaded();
-        for (int i = 0; i < 2; i++)
+//    public void onAircraftLoaded() {
+//        super.onAircraftLoaded();
+//        for (int i = 0; i < 2; i++)
+//            try {
+//                this.booster[i] = new BombStarthilfe109500();
+//                this.booster[i].pos.setBase(this, this.findHook("_BoosterH" + (i + 1)), false);
+//                this.booster[i].pos.resetAsBase();
+//                this.booster[i].drawing(true);
+//            } catch (Exception exception) {
+//                this.debugprintln("Structure corrupt - can't hang Starthilferakete..");
+//            }
+//
+//    }
+
+    public void setOnGround(Point3d point3d, Orient orient, Vector3d vector3d) {
+        super.setOnGround(point3d, orient, vector3d);
+        for (int i = 0; i < 2; i++) {
             try {
                 this.booster[i] = new BombStarthilfe109500();
                 this.booster[i].pos.setBase(this, this.findHook("_BoosterH" + (i + 1)), false);
@@ -59,8 +75,10 @@ public class AR_234B2NJ extends AR_234F {
                 this.booster[i].drawing(true);
             } catch (Exception exception) {
                 this.debugprintln("Structure corrupt - can't hang Starthilferakete..");
+                return;
             }
-
+        }
+        this.bHasBoosters = true;
     }
 
     protected boolean cutFM(int i, int j, Actor actor) {
@@ -97,7 +115,7 @@ public class AR_234B2NJ extends AR_234F {
             }
             if (this.bHasBoosters && this.boosterFireOutTime > 0L) {
                 if (Time.current() < this.boosterFireOutTime) this.FM.producedAF.x += 20000D;
-                if (Time.current() > this.boosterFireOutTime + 10000L) {
+                if (Time.current() > this.boosterFireOutTime + 10000L) { // cut boosters 10 seconds after burnout regardless altitude if not done so before.
                     this.doCutBoosters();
                     this.FM.AS.setGliderBoostOff();
                     this.bHasBoosters = false;

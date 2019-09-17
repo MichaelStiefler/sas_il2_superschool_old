@@ -52,10 +52,6 @@ public class Do217_K2 extends Do217 implements TypeX4Carrier, TypeGuidedBombCarr
         return flag;
     }
 
-    public void rareAction(float f, boolean flag) {
-        super.rareAction(f, flag);
-    }
-
     public boolean typeGuidedBombCisMasterAlive() {
         return this.isMasterAlive;
     }

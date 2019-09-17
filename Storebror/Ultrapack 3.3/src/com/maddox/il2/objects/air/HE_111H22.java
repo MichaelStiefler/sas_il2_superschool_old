@@ -3,6 +3,7 @@ package com.maddox.il2.objects.air;
 import java.io.IOException;
 
 import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Pilot;
@@ -10,6 +11,7 @@ import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.HookNamed;
 import com.maddox.il2.engine.Loc;
+import com.maddox.il2.engine.Orient;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.BombStarthilfe109500;
@@ -32,7 +34,7 @@ public class HE_111H22 extends HE_111xyz implements TypeBomber, TypeTransport, T
         this.pilot2kill = false;
         this.pilot4kill = false;
         this.pilot5kill = false;
-        this.bHasBoosters = true;
+        this.bHasBoosters = false;
         this.boosterFireOutTime = -1L;
         this.FZG76 = false;
     }
@@ -231,16 +233,29 @@ public class HE_111H22 extends HE_111xyz implements TypeBomber, TypeTransport, T
         }
     }
 
-    public void onAircraftLoaded() {
-        super.onAircraftLoaded();
-        this.FM.crew = 5;
-        this.FM.AS.astatePilotFunctions[0] = 1;
-        this.FM.AS.astatePilotFunctions[1] = 9;
-        this.FM.AS.astatePilotFunctions[2] = 4;
-        this.FM.AS.astatePilotFunctions[3] = 6;
-        this.FM.AS.astatePilotFunctions[4] = 5;
-        this.FM.CT.bHasCockpitDoorControl = false;
-        for (int i = 0; i < 2; i++)
+//    public void onAircraftLoaded() {
+//        super.onAircraftLoaded();
+//        this.FM.crew = 5;
+//        this.FM.AS.astatePilotFunctions[0] = 1;
+//        this.FM.AS.astatePilotFunctions[1] = 9;
+//        this.FM.AS.astatePilotFunctions[2] = 4;
+//        this.FM.AS.astatePilotFunctions[3] = 6;
+//        this.FM.AS.astatePilotFunctions[4] = 5;
+//        this.FM.CT.bHasCockpitDoorControl = false;
+////        for (int i = 0; i < 2; i++)
+////            try {
+////                this.booster[i] = new BombStarthilfe109500();
+////                this.booster[i].pos.setBase(this, this.findHook("_BoosterH" + (i + 1)), false);
+////                this.booster[i].pos.resetAsBase();
+////                this.booster[i].drawing(true);
+////            } catch (Exception exception) {
+////                this.debugprintln("Structure corrupt - can't hang Starthilferakete..");
+////            }
+//    }
+
+    public void setOnGround(Point3d point3d, Orient orient, Vector3d vector3d) {
+        super.setOnGround(point3d, orient, vector3d);
+        for (int i = 0; i < 2; i++) {
             try {
                 this.booster[i] = new BombStarthilfe109500();
                 this.booster[i].pos.setBase(this, this.findHook("_BoosterH" + (i + 1)), false);
@@ -248,8 +263,10 @@ public class HE_111H22 extends HE_111xyz implements TypeBomber, TypeTransport, T
                 this.booster[i].drawing(true);
             } catch (Exception exception) {
                 this.debugprintln("Structure corrupt - can't hang Starthilferakete..");
+                return;
             }
-
+        }
+        this.bHasBoosters = true;
     }
 
     protected boolean cutFM(int i, int j, Actor actor) {
@@ -356,7 +373,10 @@ public class HE_111H22 extends HE_111xyz implements TypeBomber, TypeTransport, T
         super.update(f);
         if (!(this.FM instanceof Pilot)) return;
         if (this.bHasBoosters) {
-            if (this.FM.getAltitude() > 300F && this.boosterFireOutTime == -1L && this.FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
+            // TODO: Changed Booster cutoff reasons from absolute altitude to altitude above
+            // ground
+            if (this.FM.getAltitude() - World.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y) > 300F && this.boosterFireOutTime == -1L && this.FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
+            //if (this.FM.getAltitude() > 300F && this.boosterFireOutTime == -1L && this.FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
                 this.doCutBoosters();
                 this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;

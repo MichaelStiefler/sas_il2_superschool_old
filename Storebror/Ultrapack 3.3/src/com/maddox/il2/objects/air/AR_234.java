@@ -15,9 +15,6 @@ import com.maddox.rts.Property;
 
 public abstract class AR_234 extends Scheme2 implements TypeBomber, TypeDiveBomber {
 
-    public AR_234() {
-    }
-
     public void doMurderPilot(int i) {
         switch (i) {
             case 0:

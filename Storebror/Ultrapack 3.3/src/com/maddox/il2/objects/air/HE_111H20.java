@@ -1,9 +1,12 @@
 package com.maddox.il2.objects.air;
 
+import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Eff3DActor;
+import com.maddox.il2.engine.Orient;
 import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.BombPC1600;
 import com.maddox.il2.objects.weapons.BombSC1000;
@@ -18,7 +21,7 @@ public class HE_111H20 extends HE_111xyz {
 
     public HE_111H20() {
         this.booster = new Bomb[2];
-        this.bHasBoosters = true;
+        this.bHasBoosters = false;
         this.boosterFireOutTime = -1L;
     }
 
@@ -28,43 +31,75 @@ public class HE_111H20 extends HE_111xyz {
     }
 
     public void doFireBoosters() {
-        Object aobj[] = this.pos.getBaseAttached();
-        if (aobj != null) {
-            int i = 0;
-            do {
-                if (i >= aobj.length) break;
-                if (aobj[i] instanceof BombSC1000 || aobj[i] instanceof BombSC2000 || aobj[i] instanceof BombPC1600 || aobj[i] instanceof BombSC1800 || aobj[i] instanceof BombSC2500) {
-                    Eff3DActor.New(this, this.findHook("_Booster1"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
-                    Eff3DActor.New(this, this.findHook("_Booster2"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
-                    break;
-                }
-                i++;
-            } while (true);
-        }
+        Eff3DActor.New(this, this.findHook("_Booster1"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
+        Eff3DActor.New(this, this.findHook("_Booster2"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
+//        Object aobj[] = this.pos.getBaseAttached();
+//        if (aobj != null) {
+//            int i = 0;
+//            do {
+//                if (i >= aobj.length) break;
+//                if (aobj[i] instanceof BombSC1000 || aobj[i] instanceof BombSC2000 || aobj[i] instanceof BombPC1600 || aobj[i] instanceof BombSC1800 || aobj[i] instanceof BombSC2500) {
+//                    Eff3DActor.New(this, this.findHook("_Booster1"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
+//                    Eff3DActor.New(this, this.findHook("_Booster2"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
+//                    break;
+//                }
+//                i++;
+//            } while (true);
+//        }
     }
 
     public void doCutBoosters() {
-        Object aobj[] = this.pos.getBaseAttached();
-        if (aobj != null) {
-            int i = 0;
-            do {
-                if (i >= aobj.length) break;
-                if (aobj[i] instanceof BombSC1000 || aobj[i] instanceof BombSC2000 || aobj[i] instanceof BombPC1600 || aobj[i] instanceof BombSC1800 || aobj[i] instanceof BombSC2500) {
-                    for (int j = 0; j < 2; j++)
-                        if (this.booster[j] != null) {
-                            this.booster[j].start();
-                            this.booster[j] = null;
-                        }
-
-                    break;
-                }
-                i++;
-            } while (true);
-        }
+        for (int i = 0; i < 2; i++)
+            if (this.booster[i] != null) {
+                this.booster[i].start();
+                this.booster[i] = null;
+            }
+//        Object aobj[] = this.pos.getBaseAttached();
+//        if (aobj != null) {
+//            int i = 0;
+//            do {
+//                if (i >= aobj.length) break;
+//                if (aobj[i] instanceof BombSC1000 || aobj[i] instanceof BombSC2000 || aobj[i] instanceof BombPC1600 || aobj[i] instanceof BombSC1800 || aobj[i] instanceof BombSC2500) {
+//                    for (int j = 0; j < 2; j++)
+//                        if (this.booster[j] != null) {
+//                            this.booster[j].start();
+//                            this.booster[j] = null;
+//                        }
+//
+//                    break;
+//                }
+//                i++;
+//            } while (true);
+//        }
     }
 
-    public void onAircraftLoaded() {
-        super.onAircraftLoaded();
+//    public void onAircraftLoaded() {
+//        super.onAircraftLoaded();
+//        Object aobj[] = this.pos.getBaseAttached();
+//        if (aobj != null) {
+//            int i = 0;
+//            do {
+//                if (i >= aobj.length) break;
+//                if (aobj[i] instanceof BombSC1000 || aobj[i] instanceof BombSC2000 || aobj[i] instanceof BombPC1600 || aobj[i] instanceof BombSC1800 || aobj[i] instanceof BombSC2500) {
+//                    for (int j = 0; j < 2; j++)
+//                        try {
+//                            this.booster[j] = new BombStarthilfe109500();
+//                            this.booster[j].pos.setBase(this, this.findHook("_BoosterH" + (j + 1)), false);
+//                            this.booster[j].pos.resetAsBase();
+//                            this.booster[j].drawing(true);
+//                        } catch (Exception exception) {
+//                            this.debugprintln("Structure corrupt - can't hang Starthilferakete..");
+//                        }
+//
+//                    break;
+//                }
+//                i++;
+//            } while (true);
+//        }
+//    }
+    
+    public void setOnGround(Point3d point3d, Orient orient, Vector3d vector3d) {
+        super.setOnGround(point3d, orient, vector3d);
         Object aobj[] = this.pos.getBaseAttached();
         if (aobj != null) {
             int i = 0;
@@ -77,6 +112,7 @@ public class HE_111H20 extends HE_111xyz {
                             this.booster[j].pos.setBase(this, this.findHook("_BoosterH" + (j + 1)), false);
                             this.booster[j].pos.resetAsBase();
                             this.booster[j].drawing(true);
+                            this.bHasBoosters = true;
                         } catch (Exception exception) {
                             this.debugprintln("Structure corrupt - can't hang Starthilferakete..");
                         }
@@ -87,6 +123,8 @@ public class HE_111H20 extends HE_111xyz {
             } while (true);
         }
     }
+
+
 
     protected boolean cutFM(int i, int j, Actor actor) {
         switch (i) {
@@ -106,31 +144,20 @@ public class HE_111H20 extends HE_111xyz {
 
     public void update(float f) {
         super.update(f);
-        if (this.FM instanceof Pilot && this.bHasBoosters) {
-            if (this.FM.getAltitude() > 300F && this.boosterFireOutTime == -1L && this.FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
+        if (!(this.FM instanceof Pilot)) return;
+        if (this.bHasBoosters) {
+            // TODO: Changed Booster cutoff reasons from absolute altitude to altitude above
+            // ground
+            if (this.FM.getAltitude() - World.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y) > 300F && this.boosterFireOutTime == -1L && this.FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
+            //if (this.FM.getAltitude() > 300F && this.boosterFireOutTime == -1L && this.FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
                 this.doCutBoosters();
                 this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
             }
             if (this.bHasBoosters && this.boosterFireOutTime == -1L && this.FM.Gears.onGround() && this.FM.EI.getPowerOutput() > 0.8F && this.FM.EI.engines[0].getStage() == 6 && this.FM.EI.engines[1].getStage() == 6 && this.FM.getSpeedKMH() > 20F) {
-                Object aobj[] = this.pos.getBaseAttached();
-                if (aobj != null) {
-                    int i = 0;
-                    do {
-                        if (i >= aobj.length) break;
-                        if (aobj[i] instanceof BombSC1000 || aobj[i] instanceof BombSC2000 || aobj[i] instanceof BombPC1600 || aobj[i] instanceof BombSC1800 || aobj[i] instanceof BombSC2500) {
-                            this.boosterFireOutTime = Time.current() + 30000L;
-                            this.doFireBoosters();
-                            this.FM.AS.setGliderBoostOn();
-                            break;
-                        }
-                        i++;
-                    } while (true);
-                } else {
-                    this.doCutBoosters();
-                    this.FM.AS.setGliderBoostOff();
-                    this.bHasBoosters = false;
-                }
+                this.boosterFireOutTime = Time.current() + 30000L;
+                this.doFireBoosters();
+                this.FM.AS.setGliderBoostOn();
             }
             if (this.bHasBoosters && this.boosterFireOutTime > 0L) {
                 if (Time.current() < this.boosterFireOutTime) this.FM.producedAF.x += 20000D;
@@ -141,6 +168,43 @@ public class HE_111H20 extends HE_111xyz {
                 }
             }
         }
+
+        
+//        if (this.FM instanceof Pilot && this.bHasBoosters) {
+//            if (this.FM.getAltitude() > 300F && this.boosterFireOutTime == -1L && this.FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
+//                this.doCutBoosters();
+//                this.FM.AS.setGliderBoostOff();
+//                this.bHasBoosters = false;
+//            }
+//            if (this.bHasBoosters && this.boosterFireOutTime == -1L && this.FM.Gears.onGround() && this.FM.EI.getPowerOutput() > 0.8F && this.FM.EI.engines[0].getStage() == 6 && this.FM.EI.engines[1].getStage() == 6 && this.FM.getSpeedKMH() > 20F) {
+//                Object aobj[] = this.pos.getBaseAttached();
+//                if (aobj != null) {
+//                    int i = 0;
+//                    do {
+//                        if (i >= aobj.length) break;
+//                        if (aobj[i] instanceof BombSC1000 || aobj[i] instanceof BombSC2000 || aobj[i] instanceof BombPC1600 || aobj[i] instanceof BombSC1800 || aobj[i] instanceof BombSC2500) {
+//                            this.boosterFireOutTime = Time.current() + 30000L;
+//                            this.doFireBoosters();
+//                            this.FM.AS.setGliderBoostOn();
+//                            break;
+//                        }
+//                        i++;
+//                    } while (true);
+//                } else {
+//                    this.doCutBoosters();
+//                    this.FM.AS.setGliderBoostOff();
+//                    this.bHasBoosters = false;
+//                }
+//            }
+//            if (this.bHasBoosters && this.boosterFireOutTime > 0L) {
+//                if (Time.current() < this.boosterFireOutTime) this.FM.producedAF.x += 20000D;
+//                if (Time.current() > this.boosterFireOutTime + 10000L) {
+//                    this.doCutBoosters();
+//                    this.FM.AS.setGliderBoostOff();
+//                    this.bHasBoosters = false;
+//                }
+//            }
+//        }
     }
 
     protected boolean boostersEnable;
