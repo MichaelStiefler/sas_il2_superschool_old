@@ -1476,6 +1476,16 @@ public abstract class Plane {
 
     public static class OS2U extends PlaneGeneric {}
 
+    public static class P_24A extends PlaneGeneric {}
+
+    public static class P_24B extends PlaneGeneric {}
+
+    public static class P_24E extends PlaneGeneric {}
+
+    public static class P_24F extends PlaneGeneric {}
+
+    public static class P_24G extends PlaneGeneric {}
+
     public static class P_39Q30 extends PlaneGeneric {}
 
     public static class P_47B1 extends PlaneGeneric {}
@@ -2328,6 +2338,11 @@ public abstract class Plane {
         new PlaneGeneric.SPAWN(Manchester_Ia.class);
         new PlaneGeneric.SPAWN(Manchester_early.class);
         new PlaneGeneric.SPAWN(OS2U.class);
+        new PlaneGeneric.SPAWN(P_24A.class);
+        new PlaneGeneric.SPAWN(P_24B.class);
+        new PlaneGeneric.SPAWN(P_24E.class);
+        new PlaneGeneric.SPAWN(P_24F.class);
+        new PlaneGeneric.SPAWN(P_24G.class);
         new PlaneGeneric.SPAWN(P_39Q30.class);
         new PlaneGeneric.SPAWN(P_47B1.class);
         new PlaneGeneric.SPAWN(P_47B15.class);

@@ -1,73 +1,100 @@
 package com.maddox.il2.objects.air;
 
+import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.Hook;
 import com.maddox.il2.engine.HookNamed;
 import com.maddox.il2.engine.Orient;
 import com.maddox.rts.Property;
 
-public class CockpitPZL23B_TGunner extends CockpitGunner {
+public class CockpitPZL23B_TGunner extends CockpitGunner
+{
 
-    public void moveGun(Orient orient) {
+    public void moveGun(Orient orient)
+    {
         super.moveGun(orient);
         this.mesh.chunkSetAngles("Turret1A", 0.0F, orient.getYaw(), 0.0F);
         this.mesh.chunkSetAngles("Turret1B", 0.0F, orient.getTangage(), 0.0F);
     }
 
-    public void clipAnglesGun(Orient orient) {
-        if (!this.isRealMode()) return;
-        if (!this.aiTurret().bIsOperable) {
+    public void clipAnglesGun(Orient orient)
+    {
+        if(!isRealMode())
+            return;
+        if(!aiTurret().bIsOperable)
+        {
             orient.setYPR(0.0F, 0.0F, 0.0F);
             return;
         }
         float f = orient.getYaw();
         float f1 = orient.getTangage();
-        if (f < -135F) f = -135F;
-        if (f > 135F) f = 135F;
-        if (f1 > 50F) f1 = 50F;
-        if (f1 < -15F) f1 = -15F;
+        if(f < -135F)
+            f = -135F;
+        if(f > 135F)
+            f = 135F;
+        if(f1 > 50F)
+            f1 = 50F;
+        if(f1 < -15F)
+            f1 = -15F;
         orient.setYPR(f, f1, 0.0F);
         orient.wrap();
     }
 
-    protected void interpTick() {
-        if (!this.isRealMode()) return;
-        if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) this.bGunFire = false;
-        this.fm.CT.WeaponControl[this.weaponControlNum()] = this.bGunFire;
-        if (this.bGunFire) {
-            if (this.hook1 == null) this.hook1 = new HookNamed(this.aircraft(), "_MGUN02");
-            this.doHitMasterAircraft(this.aircraft(), this.hook1, "_MGUN02");
+    protected void interpTick()
+    {
+        if(!isRealMode())
+            return;
+        if(this.emitter == null || !this.emitter.haveBullets() || !aiTurret().bIsOperable)
+            this.bGunFire = false;
+        this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
+        if(this.bGunFire)
+        {
+            if(hook1 == null)
+                hook1 = new HookNamed(aircraft(), "_MGUN02");
+            doHitMasterAircraft(aircraft(), hook1, "_MGUN02");
         }
     }
 
-    public void doGunFire(boolean flag) {
-        if (!this.isRealMode()) return;
-        if (this.emitter == null || !this.emitter.haveBullets() || !this.aiTurret().bIsOperable) this.bGunFire = false;
-        else this.bGunFire = flag;
-        this.fm.CT.WeaponControl[this.weaponControlNum()] = this.bGunFire;
+    public void doGunFire(boolean flag)
+    {
+        if(!isRealMode())
+            return;
+        if(this.emitter == null || !this.emitter.haveBullets() || !aiTurret().bIsOperable)
+            this.bGunFire = false;
+        else
+            this.bGunFire = flag;
+        this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
     }
 
-    public CockpitPZL23B_TGunner() {
+    public CockpitPZL23B_TGunner()
+    {
         super("3DO/Cockpit/PZL23B_TGun/hier.him", "he111_gunner");
-        this.hook1 = null;
-        this.bNeedSetUp = true;
+        hook1 = null;
+        bNeedSetUp = true;
     }
 
-    public void reflectWorldToInstruments(float f) {
-        if (this.bNeedSetUp) {
-            this.reflectPlaneMats();
-            this.bNeedSetUp = false;
+    public void reflectWorldToInstruments(float f)
+    {
+        if(bNeedSetUp)
+        {
+            reflectPlaneMats();
+            bNeedSetUp = false;
         }
     }
 
-    protected void reflectPlaneMats() {
-        this.mesh.materialReplace("Gloss1D0o", this.aircraft().hierMesh().material(this.aircraft().hierMesh().materialFind("Gloss1D0o")));
-        this.mesh.materialReplace("Gloss2D0o", this.aircraft().hierMesh().material(this.aircraft().hierMesh().materialFind("Gloss2D0o")));
+    protected void reflectPlaneMats()
+    {
+        HierMesh hiermesh = aircraft().hierMesh();
+        com.maddox.il2.engine.Mat mat = hiermesh.material(hiermesh.materialFind("Gloss1D0o"));
+        this.mesh.materialReplace("Gloss1D0o", mat);
+        mat = hiermesh.material(hiermesh.materialFind("Gloss2D0o"));
+        this.mesh.materialReplace("Gloss2D0o", mat);
     }
 
-    private Hook    hook1;
+    private Hook hook1;
     private boolean bNeedSetUp;
 
-    static {
+    static 
+    {
         Property.set(CockpitPZL23B_TGunner.class, "aiTuretNum", 0);
         Property.set(CockpitPZL23B_TGunner.class, "weaponControlNum", 10);
         Property.set(CockpitPZL23B_TGunner.class, "astatePilotIndx", 1);
