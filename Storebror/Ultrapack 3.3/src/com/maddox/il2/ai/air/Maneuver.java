@@ -479,14 +479,15 @@ public class Maneuver extends AIFlightModel {
         }
         boolean fightAgainstCheater = false;
         String cheaterNames = "";
-        if (this.danger != null) {
+        if (this.danger != null && this.danger.actor != null) {
             fightAgainstCheater |= AircraftState.isCheater(this.danger.actor);
-            cheaterNames = AircraftState.netUserName(this.danger.actor);
+            String dangerName = AircraftState.netUserName(this.danger.actor);
+            if (dangerName != null) cheaterNames = dangerName;
         }
-        if (this.target != null) {
+        if (this.target != null && this.target.actor != null) {
             fightAgainstCheater |= AircraftState.isCheater(this.target.actor);
             String targetName = AircraftState.netUserName(this.target.actor);
-            if (!targetName.equals(cheaterNames)) {
+            if (targetName != null && !targetName.equals(cheaterNames)) {
                 if (cheaterNames.length() > 0) cheaterNames += " & ";
                 cheaterNames += AircraftState.netUserName(this.target.actor);
             }

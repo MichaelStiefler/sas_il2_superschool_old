@@ -279,11 +279,7 @@ public class DServer extends Main {
     }
 
     public static void main(String[] paramArrayOfString) {
-        System.out.println("UP 3.2 dedicated server without obfuscation");
-
-        // TODO: Patch Pack Replication
-        System.out.println("Patch Pack: " + NetUser.PATCH_LEVEL);
-        // ---
+        System.out.println(Config.VERSION_STRING + " " + Config.VERSION_NUMBER + " \"" + Config.VERSION_NAME + "\" Dedicated Server Patch Level " + Config.PATCH_LEVEL);
 
         DServer.args = paramArrayOfString;
         String str1 = "confs.ini";
