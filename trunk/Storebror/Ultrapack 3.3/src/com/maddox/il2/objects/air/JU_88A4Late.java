@@ -2,18 +2,19 @@ package com.maddox.il2.objects.air;
 
 import java.io.IOException;
 
+import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.Interpolate;
+import com.maddox.il2.engine.Orient;
 import com.maddox.il2.fm.Pitot;
 import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.objects.Wreckage;
-import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.BombAB1000;
 import com.maddox.il2.objects.weapons.BombSC1000;
 import com.maddox.il2.objects.weapons.BombSC1800;
@@ -27,8 +28,8 @@ import com.maddox.rts.Time;
 public class JU_88A4Late extends JU_88Axx implements TypeBomber, TypeDiveBomber, TypeScout {
 
     public JU_88A4Late() {
-        this.booster = new Bomb[2];
-        this.bHasBoosters = true;
+        this.booster = new BombStarthilfe109500[2];
+        this.bHasBoosters = false;
         this.boosterFireOutTime = -1L;
         this.diveMechStage = 0;
         this.bNDives = false;
@@ -51,41 +52,68 @@ public class JU_88A4Late extends JU_88Axx implements TypeBomber, TypeDiveBomber,
     }
 
     public void doFireBoosters() {
-        Object aobj[] = this.pos.getBaseAttached();
-        if (aobj != null) {
-            int i = 0;
-            do {
-                if (i >= aobj.length) break;
-                if (aobj[i] instanceof BombSC1000 || aobj[i] instanceof BombAB1000 || aobj[i] instanceof BombSC1800 || aobj[i] instanceof BombSC2000) {
-                    Eff3DActor.New(this, this.findHook("_Booster1"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
-                    Eff3DActor.New(this, this.findHook("_Booster2"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
-                    break;
-                }
-                i++;
-            } while (true);
-        }
+        Eff3DActor.New(this, this.findHook("_Booster1"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
+        Eff3DActor.New(this, this.findHook("_Booster2"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
+        this.startBoosterSound();
+//        Object aobj[] = this.pos.getBaseAttached();
+//        if (aobj != null) {
+//            int i = 0;
+//            do {
+//                if (i >= aobj.length) break;
+//                if (aobj[i] instanceof BombSC1000 || aobj[i] instanceof BombAB1000 || aobj[i] instanceof BombSC1800 || aobj[i] instanceof BombSC2000) {
+//                    Eff3DActor.New(this, this.findHook("_Booster1"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
+//                    Eff3DActor.New(this, this.findHook("_Booster2"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
+//                    break;
+//                }
+//                i++;
+//            } while (true);
+//        }
     }
 
     public void doCutBoosters() {
-        Object aobj[] = this.pos.getBaseAttached();
-        if (aobj != null) {
-            int i = 0;
-            do {
-                if (i >= aobj.length) break;
-                if (aobj[i] instanceof BombSC1000 || aobj[i] instanceof BombAB1000 || aobj[i] instanceof BombSC1800 || aobj[i] instanceof BombSC2000) {
-                    for (int j = 0; j < 2; j++)
-                        if (this.booster[j] != null) {
-                            this.booster[j].start();
-                            this.booster[j] = null;
-                        }
+        for (int i = 0; i < 2; i++) {
+            if (this.booster[i] != null) {
+                this.booster[i].start();
+                this.booster[i] = null;
+            }
+        }
+        this.stopBoosterSound();
+        this.bHasBoosters = false;
+//        Object aobj[] = this.pos.getBaseAttached();
+//        if (aobj != null) {
+//            int i = 0;
+//            do {
+//                if (i >= aobj.length) break;
+//                if (aobj[i] instanceof BombSC1000 || aobj[i] instanceof BombAB1000 || aobj[i] instanceof BombSC1800 || aobj[i] instanceof BombSC2000) {
+//                    for (int j = 0; j < 2; j++)
+//                        if (this.booster[j] != null) {
+//                            this.booster[j].start();
+//                            this.booster[j] = null;
+//                        }
+//
+//                    break;
+//                }
+//                i++;
+//            } while (true);
+//        }
+    }
 
-                    break;
-                }
-                i++;
-            } while (true);
+    public void startBoosterSound() {
+        for (int i = 0; i < 2; i++) {
+            if (this.booster[i] != null) {
+                this.booster[i].startSound();
+            }
         }
     }
 
+    public void stopBoosterSound() {
+        for (int i = 0; i < 2; i++) {
+            if (this.booster[i] != null) {
+                this.booster[i].stopSound();
+            }
+        }
+    }
+    
     public void onAircraftLoaded() {
         super.onAircraftLoaded();
         float f = 0.0F;
@@ -121,13 +149,17 @@ public class JU_88A4Late extends JU_88Axx implements TypeBomber, TypeDiveBomber,
         this.FM.M.fuel += f2 * f;
         this.FM.M.maxFuel += f;
         this.FM.M.massEmpty += f1;
+    }
+
+    public void setOnGround(Point3d point3d, Orient orient, Vector3d vector3d) {
+        super.setOnGround(point3d, orient, vector3d);
         Object aobj[] = this.pos.getBaseAttached();
         if (aobj != null) {
             int i = 0;
             do {
                 if (i >= aobj.length) break;
                 if (aobj[i] instanceof BombSC1000 || aobj[i] instanceof BombAB1000 || aobj[i] instanceof BombSC1800 || aobj[i] instanceof BombSC2000) {
-                    for (int j = 0; j < 2; j++)
+                    for (int j = 0; j < 2; j++) {
                         try {
                             this.booster[j] = new BombStarthilfe109500();
                             this.booster[j].pos.setBase(this, this.findHook("_BoosterH" + (j + 1)), false);
@@ -136,7 +168,8 @@ public class JU_88A4Late extends JU_88Axx implements TypeBomber, TypeDiveBomber,
                         } catch (Exception exception) {
                             this.debugprintln("Structure corrupt - can't hang Starthilferakete..");
                         }
-
+                    }
+                    this.bHasBoosters = true;
                     break;
                 }
                 i++;
@@ -214,41 +247,67 @@ public class JU_88A4Late extends JU_88Axx implements TypeBomber, TypeDiveBomber,
             if (((Interpolate) this.FM).actor == World.getPlayerAircraft()) HUD.log("FlapsRaised");
         }
         super.update(f);
-        if (this.FM instanceof Pilot && this.bHasBoosters) {
-            if (this.FM.getAltitude() > 300F && this.boosterFireOutTime == -1L && this.FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
+        if (!(this.FM instanceof Pilot)) return;
+        if (this.bHasBoosters) {
+            // TODO: Changed Booster cutoff reasons from absolute altitude to altitude above ground
+//          if (FM.getAltitude() > 300F && boosterFireOutTime == -1L && FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
+            if (this.FM.getAltitude() - World.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y) > 300F && this.boosterFireOutTime == -1L && this.FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
                 this.doCutBoosters();
                 this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
             }
             if (this.bHasBoosters && this.boosterFireOutTime == -1L && this.FM.Gears.onGround() && this.FM.EI.getPowerOutput() > 0.8F && this.FM.EI.engines[0].getStage() == 6 && this.FM.EI.engines[1].getStage() == 6 && this.FM.getSpeedKMH() > 20F) {
-                Object aobj[] = this.pos.getBaseAttached();
-                if (aobj != null) {
-                    int i = 0;
-                    do {
-                        if (i >= aobj.length) break;
-                        if (aobj[i] instanceof BombSC1000 || aobj[i] instanceof BombAB1000 || aobj[i] instanceof BombSC1800 || aobj[i] instanceof BombSC2000) {
-                            this.boosterFireOutTime = Time.current() + 30000L;
-                            this.doFireBoosters();
-                            this.FM.AS.setGliderBoostOn();
-                            break;
-                        }
-                        i++;
-                    } while (true);
-                } else {
-                    this.doCutBoosters();
-                    this.FM.AS.setGliderBoostOff();
-                    this.bHasBoosters = false;
-                }
+                this.boosterFireOutTime = Time.current() + 30000L;
+                this.doFireBoosters();
+                this.FM.AS.setGliderBoostOn();
             }
             if (this.bHasBoosters && this.boosterFireOutTime > 0L) {
-                if (Time.current() < this.boosterFireOutTime) this.FM.producedAF.x += 20000D;
-                if (Time.current() > this.boosterFireOutTime + 10000L) {
+                if (Time.current() < this.boosterFireOutTime)
+                    this.FM.producedAF.x += 20000D;
+                else // Stop sound
+                    this.stopBoosterSound();
+                if (Time.current() > this.boosterFireOutTime + 10000L) { // cut boosters 10 seconds after burnout regardless altitude if not done so before.
                     this.doCutBoosters();
                     this.FM.AS.setGliderBoostOff();
                     this.bHasBoosters = false;
                 }
             }
         }
+//        if (this.FM instanceof Pilot && this.bHasBoosters) {
+//            if (this.FM.getAltitude() > 300F && this.boosterFireOutTime == -1L && this.FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
+//                this.doCutBoosters();
+//                this.FM.AS.setGliderBoostOff();
+//                this.bHasBoosters = false;
+//            }
+//            if (this.bHasBoosters && this.boosterFireOutTime == -1L && this.FM.Gears.onGround() && this.FM.EI.getPowerOutput() > 0.8F && this.FM.EI.engines[0].getStage() == 6 && this.FM.EI.engines[1].getStage() == 6 && this.FM.getSpeedKMH() > 20F) {
+//                Object aobj[] = this.pos.getBaseAttached();
+//                if (aobj != null) {
+//                    int i = 0;
+//                    do {
+//                        if (i >= aobj.length) break;
+//                        if (aobj[i] instanceof BombSC1000 || aobj[i] instanceof BombAB1000 || aobj[i] instanceof BombSC1800 || aobj[i] instanceof BombSC2000) {
+//                            this.boosterFireOutTime = Time.current() + 30000L;
+//                            this.doFireBoosters();
+//                            this.FM.AS.setGliderBoostOn();
+//                            break;
+//                        }
+//                        i++;
+//                    } while (true);
+//                } else {
+//                    this.doCutBoosters();
+//                    this.FM.AS.setGliderBoostOff();
+//                    this.bHasBoosters = false;
+//                }
+//            }
+//            if (this.bHasBoosters && this.boosterFireOutTime > 0L) {
+//                if (Time.current() < this.boosterFireOutTime) this.FM.producedAF.x += 20000D;
+//                if (Time.current() > this.boosterFireOutTime + 10000L) {
+//                    this.doCutBoosters();
+//                    this.FM.AS.setGliderBoostOff();
+//                    this.bHasBoosters = false;
+//                }
+//            }
+//        }
     }
 
     public void updateJU87(float f) {
@@ -540,7 +599,7 @@ public class JU_88A4Late extends JU_88Axx implements TypeBomber, TypeDiveBomber,
     public float          fDiveRecoveryAlt;
     public float          fDiveVelocity;
     public float          fDiveAngle;
-    private Bomb          booster[];
+    private BombStarthilfe109500          booster[];
     protected boolean     bHasBoosters;
     protected long        boosterFireOutTime;
 

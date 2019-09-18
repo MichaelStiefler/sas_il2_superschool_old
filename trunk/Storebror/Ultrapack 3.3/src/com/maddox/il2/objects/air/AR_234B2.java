@@ -11,7 +11,6 @@ import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
-import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.BombStarthilfe109500;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
@@ -41,14 +40,34 @@ public class AR_234B2 extends AR_234 {
     public void doFireBoosters() {
         Eff3DActor.New(this, this.findHook("_Booster1"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
         Eff3DActor.New(this, this.findHook("_Booster2"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
+        this.startBoosterSound();
     }
 
     public void doCutBoosters() {
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 2; i++) {
             if (this.booster[i] != null) {
                 this.booster[i].start();
                 this.booster[i] = null;
             }
+        }
+        this.stopBoosterSound();
+        this.bHasBoosters = false;
+    }
+    
+    public void startBoosterSound() {
+        for (int i = 0; i < 2; i++) {
+            if (this.booster[i] != null) {
+                this.booster[i].startSound();
+            }
+        }
+    }
+
+    public void stopBoosterSound() {
+        for (int i = 0; i < 2; i++) {
+            if (this.booster[i] != null) {
+                this.booster[i].stopSound();
+            }
+        }
     }
 
 //    public void onAircraftLoaded() {
@@ -100,8 +119,7 @@ public class AR_234B2 extends AR_234 {
         super.update(f);
         if (!(this.FM instanceof Pilot)) return;
         if (this.bHasBoosters) {
-            // TODO: Changed Booster cutoff reasons from absolute altitude to altitude above
-            // ground
+            // TODO: Changed Booster cutoff reasons from absolute altitude to altitude above ground
 //			if (FM.getAltitude() > 300F && boosterFireOutTime == -1L && FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
             if (this.FM.getAltitude() - World.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y) > 300F && this.boosterFireOutTime == -1L && this.FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
                 this.doCutBoosters();
@@ -114,7 +132,10 @@ public class AR_234B2 extends AR_234 {
                 this.FM.AS.setGliderBoostOn();
             }
             if (this.bHasBoosters && this.boosterFireOutTime > 0L) {
-                if (Time.current() < this.boosterFireOutTime) this.FM.producedAF.x += 20000D;
+                if (Time.current() < this.boosterFireOutTime)
+                    this.FM.producedAF.x += 20000D;
+                else // Stop sound
+                    this.stopBoosterSound();
                 if (Time.current() > this.boosterFireOutTime + 10000L) { // cut boosters 10 seconds after burnout regardless altitude if not done so before.
                     this.doCutBoosters();
                     this.FM.AS.setGliderBoostOff();
@@ -284,7 +305,7 @@ public class AR_234B2 extends AR_234 {
         this.fSightCurReadyness = netmsginput.readUnsignedByte() / 200F;
     }
 
-    private Bomb      booster[] = { null, null };
+    private BombStarthilfe109500      booster[] = { null, null };
     protected boolean bHasBoosters;
     protected long    boosterFireOutTime;
     private boolean   bSightAutomation;

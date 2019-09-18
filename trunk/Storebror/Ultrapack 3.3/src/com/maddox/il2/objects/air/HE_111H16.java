@@ -3,14 +3,15 @@ package com.maddox.il2.objects.air;
 import java.io.IOException;
 
 import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.Loc;
+import com.maddox.il2.engine.Orient;
 import com.maddox.il2.game.Main3D;
-import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.BombStarthilfe109500;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
@@ -26,7 +27,7 @@ public class HE_111H16 extends HE_111 {
         this.pilot2kill = false;
         this.pilot4kill = false;
         this.pilot5kill = false;
-        this.bHasBoosters = true;
+        this.bHasBoosters = false;
         this.boosterFireOutTime = -1L;
     }
 
@@ -38,15 +39,34 @@ public class HE_111H16 extends HE_111 {
     public void doFireBoosters() {
         Eff3DActor.New(this, this.findHook("_Booster1"), (Loc) null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
         Eff3DActor.New(this, this.findHook("_Booster2"), (Loc) null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
+        this.startBoosterSound();
     }
 
     public void doCutBoosters() {
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 2; i++) {
             if (this.booster[i] != null) {
                 this.booster[i].start();
                 this.booster[i] = null;
             }
+        }
+        this.stopBoosterSound();
+        this.bHasBoosters = false;
+    }
 
+    public void startBoosterSound() {
+        for (int i = 0; i < 2; i++) {
+            if (this.booster[i] != null) {
+                this.booster[i].startSound();
+            }
+        }
+    }
+
+    public void stopBoosterSound() {
+        for (int i = 0; i < 2; i++) {
+            if (this.booster[i] != null) {
+                this.booster[i].stopSound();
+            }
+        }
     }
 
     protected void hitBone(String s, Shot shot, Point3d point3d) {
@@ -147,7 +167,21 @@ public class HE_111H16 extends HE_111 {
         else if (this.thisWeaponsName.startsWith("1xPC1600_F2555")) this.FM.CT.bHasBayDoorControl = false;
         else if (this.thisWeaponsName.startsWith("1xAB1000_F3175")) this.FM.CT.bHasBayDoorControl = false;
         else if (this.thisWeaponsName.startsWith("1xSC1000_F3000")) this.FM.CT.bHasBayDoorControl = false;
-        for (int i = 0; i < 2; i++)
+//        for (int i = 0; i < 2; i++)
+//            try {
+//                this.booster[i] = new BombStarthilfe109500();
+//                this.booster[i].pos.setBase(this, this.findHook("_BoosterH" + (i + 1)), false);
+//                this.booster[i].pos.resetAsBase();
+//                this.booster[i].drawing(true);
+//            } catch (Exception exception) {
+//                this.debugprintln("Structure corrupt - can't hang Starthilferakete..");
+//            }
+
+    }
+
+    public void setOnGround(Point3d point3d, Orient orient, Vector3d vector3d) {
+        super.setOnGround(point3d, orient, vector3d);
+        for (int i = 0; i < 2; i++) {
             try {
                 this.booster[i] = new BombStarthilfe109500();
                 this.booster[i].pos.setBase(this, this.findHook("_BoosterH" + (i + 1)), false);
@@ -155,8 +189,10 @@ public class HE_111H16 extends HE_111 {
                 this.booster[i].drawing(true);
             } catch (Exception exception) {
                 this.debugprintln("Structure corrupt - can't hang Starthilferakete..");
+                return;
             }
-
+        }
+        this.bHasBoosters = true;
     }
 
     protected boolean cutFM(int i, int j, Actor actor) {
@@ -247,7 +283,9 @@ public class HE_111H16 extends HE_111 {
         super.update(f);
         if (!(this.FM instanceof Pilot)) return;
         if (this.bHasBoosters) {
-            if (this.FM.getAltitude() > 300F && this.boosterFireOutTime == -1L && this.FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
+            // TODO: Changed Booster cutoff reasons from absolute altitude to altitude above ground
+            if (this.FM.getAltitude() - World.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y) > 300F && this.boosterFireOutTime == -1L && this.FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
+//            if (this.FM.getAltitude() > 300F && this.boosterFireOutTime == -1L && this.FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
                 this.doCutBoosters();
                 this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
@@ -258,7 +296,10 @@ public class HE_111H16 extends HE_111 {
                 this.FM.AS.setGliderBoostOn();
             }
             if (this.bHasBoosters && this.boosterFireOutTime > 0L) {
-                if (Time.current() < this.boosterFireOutTime) this.FM.producedAF.x += 20000D;
+                if (Time.current() < this.boosterFireOutTime)
+                    this.FM.producedAF.x += 20000D;
+                else // Stop sound
+                    this.stopBoosterSound();
                 if (Time.current() > this.boosterFireOutTime + 10000L) {
                     this.doCutBoosters();
                     this.FM.AS.setGliderBoostOff();
@@ -552,7 +593,7 @@ public class HE_111H16 extends HE_111 {
     private boolean   pilot2kill;
     private boolean   pilot4kill;
     private boolean   pilot5kill;
-    private Bomb      booster[] = { null, null };
+    private BombStarthilfe109500      booster[] = { null, null };
     protected boolean bHasBoosters;
     protected long    boosterFireOutTime;
 

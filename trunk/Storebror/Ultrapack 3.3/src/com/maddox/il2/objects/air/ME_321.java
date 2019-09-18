@@ -15,9 +15,6 @@ import com.maddox.rts.Property;
 
 public class ME_321 extends Scheme0 implements TypeGlider, TypeTransport, TypeBomber {
 
-    public ME_321() {
-    }
-
     public void msgCollision(Actor actor, String s, String s1) {
         if (actor instanceof ActorLand && this.FM.getVertSpeed() > -10F) return;
         else {

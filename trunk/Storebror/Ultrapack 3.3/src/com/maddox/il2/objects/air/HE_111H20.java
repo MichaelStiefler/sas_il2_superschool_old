@@ -7,7 +7,6 @@ import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.Orient;
-import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.BombPC1600;
 import com.maddox.il2.objects.weapons.BombSC1000;
 import com.maddox.il2.objects.weapons.BombSC1800;
@@ -20,7 +19,7 @@ import com.maddox.rts.Time;
 public class HE_111H20 extends HE_111xyz {
 
     public HE_111H20() {
-        this.booster = new Bomb[2];
+        this.booster = new BombStarthilfe109500[2];
         this.bHasBoosters = false;
         this.boosterFireOutTime = -1L;
     }
@@ -33,6 +32,7 @@ public class HE_111H20 extends HE_111xyz {
     public void doFireBoosters() {
         Eff3DActor.New(this, this.findHook("_Booster1"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
         Eff3DActor.New(this, this.findHook("_Booster2"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
+        this.startBoosterSound();
 //        Object aobj[] = this.pos.getBaseAttached();
 //        if (aobj != null) {
 //            int i = 0;
@@ -54,6 +54,8 @@ public class HE_111H20 extends HE_111xyz {
                 this.booster[i].start();
                 this.booster[i] = null;
             }
+        this.stopBoosterSound();
+        this.bHasBoosters = false;
 //        Object aobj[] = this.pos.getBaseAttached();
 //        if (aobj != null) {
 //            int i = 0;
@@ -71,6 +73,22 @@ public class HE_111H20 extends HE_111xyz {
 //                i++;
 //            } while (true);
 //        }
+    }
+
+    public void startBoosterSound() {
+        for (int i = 0; i < 2; i++) {
+            if (this.booster[i] != null) {
+                this.booster[i].startSound();
+            }
+        }
+    }
+
+    public void stopBoosterSound() {
+        for (int i = 0; i < 2; i++) {
+            if (this.booster[i] != null) {
+                this.booster[i].stopSound();
+            }
+        }
     }
 
 //    public void onAircraftLoaded() {
@@ -160,7 +178,10 @@ public class HE_111H20 extends HE_111xyz {
                 this.FM.AS.setGliderBoostOn();
             }
             if (this.bHasBoosters && this.boosterFireOutTime > 0L) {
-                if (Time.current() < this.boosterFireOutTime) this.FM.producedAF.x += 20000D;
+                if (Time.current() < this.boosterFireOutTime)
+                    this.FM.producedAF.x += 20000D;
+                else // Stop sound
+                    this.stopBoosterSound();
                 if (Time.current() > this.boosterFireOutTime + 10000L) {
                     this.doCutBoosters();
                     this.FM.AS.setGliderBoostOff();
@@ -208,7 +229,7 @@ public class HE_111H20 extends HE_111xyz {
     }
 
     protected boolean boostersEnable;
-    private Bomb      booster[];
+    private BombStarthilfe109500      booster[];
     protected boolean bHasBoosters;
     protected long    boosterFireOutTime;
 

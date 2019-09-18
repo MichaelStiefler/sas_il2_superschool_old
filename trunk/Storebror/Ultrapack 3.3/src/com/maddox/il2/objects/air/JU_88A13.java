@@ -1,10 +1,12 @@
 package com.maddox.il2.objects.air;
 
+import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Eff3DActor;
-import com.maddox.il2.objects.weapons.Bomb;
+import com.maddox.il2.engine.Orient;
 import com.maddox.il2.objects.weapons.BombAB23;
 import com.maddox.il2.objects.weapons.BombSC50;
 import com.maddox.il2.objects.weapons.BombSC50C;
@@ -17,7 +19,7 @@ import com.maddox.rts.Time;
 public class JU_88A13 extends JU_88A13xx implements TypeStormovik, TypeScout {
 
     public JU_88A13() {
-        this.booster = new Bomb[2];
+        this.booster = new BombStarthilfe109500[2];
         this.JU88A13 = true;
         this.MassBoost = 12000F;
         this.massFuelTank = 0.0F;
@@ -25,8 +27,7 @@ public class JU_88A13 extends JU_88A13xx implements TypeStormovik, TypeScout {
         this.enableBombFirstBombBox = false;
         this.enableBombSecondBombBox = false;
         this.bomb50 = 0;
-        this.boostersEnable = false;
-        this.bHasBoosters = true;
+        this.bHasBoosters = false;
         this.boosterFireOutTime = -1L;
         this.diveMechStage = 0;
         this.bNDives = false;
@@ -77,8 +78,21 @@ public class JU_88A13 extends JU_88A13xx implements TypeStormovik, TypeScout {
             this.hierMesh().chunkVisible("Bay8_D0", true);
         }
         this.fullMass = this.FM.M.getFullMass() + this.FM.M.fuel + this.FM.CT.getWeaponMass() + this.massFuelTank;
-        if (this.fullMass >= this.MassBoost) this.boostersEnable = true;
-        if (this.boostersEnable) for (int j = 0; j < 2; j++)
+//        for (int j = 0; j < 2; j++)
+//            try {
+//                this.booster[j] = new BombStarthilfe109500();
+//                this.booster[j].pos.setBase(this, this.findHook("_BoosterH" + (j + 1)), false);
+//                this.booster[j].pos.resetAsBase();
+//                this.booster[j].drawing(true);
+//            } catch (Exception exception) {
+//                this.debugprintln("Structure corrupt - can't hang Starthilferakete..");
+//            }
+    }
+    
+    public void setOnGround(Point3d point3d, Orient orient, Vector3d vector3d) {
+        super.setOnGround(point3d, orient, vector3d);
+        if (this.fullMass < this.MassBoost) return;
+        for (int j = 0; j < 2; j++) {
             try {
                 this.booster[j] = new BombStarthilfe109500();
                 this.booster[j].pos.setBase(this, this.findHook("_BoosterH" + (j + 1)), false);
@@ -87,7 +101,10 @@ public class JU_88A13 extends JU_88A13xx implements TypeStormovik, TypeScout {
             } catch (Exception exception) {
                 this.debugprintln("Structure corrupt - can't hang Starthilferakete..");
             }
+        }
+        this.bHasBoosters = true;
     }
+
 
     public void destroy() {
         this.doCutBoosters();
@@ -95,18 +112,36 @@ public class JU_88A13 extends JU_88A13xx implements TypeStormovik, TypeScout {
     }
 
     public void doFireBoosters() {
-        if (this.boostersEnable) {
-            Eff3DActor.New(this, this.findHook("_Booster1"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
-            Eff3DActor.New(this, this.findHook("_Booster2"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
-        }
+        Eff3DActor.New(this, this.findHook("_Booster1"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
+        Eff3DActor.New(this, this.findHook("_Booster2"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
+        this.startBoosterSound();
     }
 
     public void doCutBoosters() {
-        if (this.boostersEnable) for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 2; i++) {
             if (this.booster[i] != null) {
                 this.booster[i].start();
                 this.booster[i] = null;
             }
+    }
+    this.stopBoosterSound();
+    this.bHasBoosters = false;
+    }
+
+    public void startBoosterSound() {
+        for (int i = 0; i < 2; i++) {
+            if (this.booster[i] != null) {
+                this.booster[i].startSound();
+            }
+        }
+    }
+
+    public void stopBoosterSound() {
+        for (int i = 0; i < 2; i++) {
+            if (this.booster[i] != null) {
+                this.booster[i].stopSound();
+            }
+        }
     }
 
     protected boolean cutFM(int i, int j, Actor actor) {
@@ -127,31 +162,57 @@ public class JU_88A13 extends JU_88A13xx implements TypeStormovik, TypeScout {
 
     public void update(float f) {
         super.update(f);
-        if (this.FM instanceof Pilot && this.bHasBoosters) {
-            if (this.FM.getAltitude() > 300F && this.boosterFireOutTime == -1L && this.FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
+        if (!(this.FM instanceof Pilot)) return;
+        if (this.bHasBoosters) {
+            // TODO: Changed Booster cutoff reasons from absolute altitude to altitude above ground
+//          if (FM.getAltitude() > 300F && boosterFireOutTime == -1L && FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
+            if (this.FM.getAltitude() - World.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y) > 300F && this.boosterFireOutTime == -1L && this.FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
                 this.doCutBoosters();
                 this.FM.AS.setGliderBoostOff();
                 this.bHasBoosters = false;
             }
-            if (this.bHasBoosters && this.boosterFireOutTime == -1L && this.FM.Gears.onGround() && this.FM.EI.getPowerOutput() > 0.8F && this.FM.EI.engines[0].getStage() == 6 && this.FM.EI.engines[1].getStage() == 6 && this.FM.getSpeedKMH() > 20F)
-                if (this.boostersEnable) {
-                    this.boosterFireOutTime = Time.current() + 30000L;
-                    this.doFireBoosters();
-                    this.FM.AS.setGliderBoostOn();
-                } else {
-                    this.doCutBoosters();
-                    this.FM.AS.setGliderBoostOff();
-                    this.bHasBoosters = false;
-                }
+            if (this.bHasBoosters && this.boosterFireOutTime == -1L && this.FM.Gears.onGround() && this.FM.EI.getPowerOutput() > 0.8F && this.FM.EI.engines[0].getStage() == 6 && this.FM.EI.engines[1].getStage() == 6 && this.FM.getSpeedKMH() > 20F) {
+                this.boosterFireOutTime = Time.current() + 30000L;
+                this.doFireBoosters();
+                this.FM.AS.setGliderBoostOn();
+            }
             if (this.bHasBoosters && this.boosterFireOutTime > 0L) {
-                if (Time.current() < this.boosterFireOutTime) this.FM.producedAF.x += 20000D;
-                if (Time.current() > this.boosterFireOutTime + 10000L) {
+                if (Time.current() < this.boosterFireOutTime)
+                    this.FM.producedAF.x += 20000D;
+                else // Stop sound
+                    this.stopBoosterSound();
+                if (Time.current() > this.boosterFireOutTime + 10000L) { // cut boosters 10 seconds after burnout regardless altitude if not done so before.
                     this.doCutBoosters();
                     this.FM.AS.setGliderBoostOff();
                     this.bHasBoosters = false;
                 }
             }
         }
+//        if (this.FM instanceof Pilot && this.bHasBoosters) {
+//            if (this.FM.getAltitude() > 300F && this.boosterFireOutTime == -1L && this.FM.Loc.z != 0.0D && World.Rnd().nextFloat() < 0.05F) {
+//                this.doCutBoosters();
+//                this.FM.AS.setGliderBoostOff();
+//                this.bHasBoosters = false;
+//            }
+//            if (this.bHasBoosters && this.boosterFireOutTime == -1L && this.FM.Gears.onGround() && this.FM.EI.getPowerOutput() > 0.8F && this.FM.EI.engines[0].getStage() == 6 && this.FM.EI.engines[1].getStage() == 6 && this.FM.getSpeedKMH() > 20F)
+//                if (this.boostersEnable) {
+//                    this.boosterFireOutTime = Time.current() + 30000L;
+//                    this.doFireBoosters();
+//                    this.FM.AS.setGliderBoostOn();
+//                } else {
+//                    this.doCutBoosters();
+//                    this.FM.AS.setGliderBoostOff();
+//                    this.bHasBoosters = false;
+//                }
+//            if (this.bHasBoosters && this.boosterFireOutTime > 0L) {
+//                if (Time.current() < this.boosterFireOutTime) this.FM.producedAF.x += 20000D;
+//                if (Time.current() > this.boosterFireOutTime + 10000L) {
+//                    this.doCutBoosters();
+//                    this.FM.AS.setGliderBoostOff();
+//                    this.bHasBoosters = false;
+//                }
+//            }
+//        }
     }
 
     protected void nextDMGLevel(String s, int i, Actor actor) {
@@ -208,8 +269,7 @@ public class JU_88A13 extends JU_88A13xx implements TypeStormovik, TypeScout {
     protected boolean     enableBombFirstBombBox;
     protected boolean     enableBombSecondBombBox;
     private int           bomb50;
-    protected boolean     boostersEnable;
-    protected Bomb        booster[];
+    protected BombStarthilfe109500        booster[];
     protected boolean     bHasBoosters;
     protected long        boosterFireOutTime;
     public static boolean bChangedPit = false;
