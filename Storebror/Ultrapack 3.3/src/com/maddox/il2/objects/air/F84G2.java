@@ -15,7 +15,6 @@ import com.maddox.il2.engine.Orient;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
-import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.BombJATO;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
@@ -52,18 +51,37 @@ public class F84G2 extends DO_335 implements TypeFighter, TypeBNZFighter, TypeFi
     public void doFireBoosters() {
         Eff3DActor.New(this, this.findHook("_Booster1"), null, 1.0F, "3DO/Effects/Rocket/RocketSmokeWhite.eff", 30F);
         Eff3DActor.New(this, this.findHook("_Booster2"), null, 1.0F, "3DO/Effects/Rocket/RocketSmokeWhite.eff", 30F);
+        this.startBoosterSound();
     }
 
     public void doCutBoosters() {
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 2; i++) {
             if (this.booster[i] != null) {
                 this.booster[i].start();
                 this.booster[i] = null;
             }
-
+        }
+        this.stopBoosterSound();
+        this.bHasBoosters = false;
     }
 
-//    public void onAircraftLoaded() {
+    public void startBoosterSound() {
+        for (int i = 0; i < 2; i++) {
+            if (this.booster[i] != null) {
+                this.booster[i].startSound();
+            }
+        }
+    }
+
+    public void stopBoosterSound() {
+        for (int i = 0; i < 2; i++) {
+            if (this.booster[i] != null) {
+                this.booster[i].stopSound();
+            }
+        }
+    }
+
+    //    public void onAircraftLoaded() {
 //        super.onAircraftLoaded();
 //        for (int i = 0; i < 2; i++)
 //            try {
@@ -130,7 +148,10 @@ public class F84G2 extends DO_335 implements TypeFighter, TypeBNZFighter, TypeFi
                 this.FM.AS.setGliderBoostOn();
             }
             if (this.bHasBoosters && this.boosterFireOutTime > 0L) {
-                if (Time.current() < this.boosterFireOutTime) this.FM.producedAF.x += 20000D;
+                if (Time.current() < this.boosterFireOutTime)
+                    this.FM.producedAF.x += 20000D;
+                else // Stop sound
+                    this.stopBoosterSound();
                 if (Time.current() > this.boosterFireOutTime + 10000L) {
                     this.doCutBoosters();
                     this.FM.AS.setGliderBoostOff();
@@ -418,7 +439,7 @@ public class F84G2 extends DO_335 implements TypeFighter, TypeBNZFighter, TypeFi
     }
 
     public static boolean bChangedPit = false;
-    private Bomb          booster[]   = { null, null };
+    private BombJATO          booster[]   = { null, null };
     protected boolean     bHasBoosters;
     protected long        boosterFireOutTime;
     public float          AirBrakeControl;

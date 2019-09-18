@@ -13,7 +13,6 @@ import com.maddox.il2.engine.HookNamed;
 import com.maddox.il2.engine.Loc;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.game.Main3D;
-import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.BombStarthilfe109500;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
@@ -25,7 +24,7 @@ public class HE_111H22 extends HE_111xyz implements TypeBomber, TypeTransport, T
 
     public HE_111H22() {
         this.drones = new Actor[1];
-        this.booster = new Bomb[2];
+        this.booster = new BombStarthilfe109500[2];
         this.kangle1 = 0.0F;
         this.kangle2 = 0.0F;
         this.slider = false;
@@ -47,15 +46,34 @@ public class HE_111H22 extends HE_111xyz implements TypeBomber, TypeTransport, T
     public void doFireBoosters() {
         Eff3DActor.New(this, this.findHook("_Booster1"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
         Eff3DActor.New(this, this.findHook("_Booster2"), null, 1.0F, "3DO/Effects/Tracers/HydrogenRocket/rocket.eff", 30F);
+        this.startBoosterSound();
     }
 
     public void doCutBoosters() {
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 2; i++) {
             if (this.booster[i] != null) {
                 this.booster[i].start();
                 this.booster[i] = null;
             }
+        }
+        this.stopBoosterSound();
+        this.bHasBoosters = false;
+    }
 
+    public void startBoosterSound() {
+        for (int i = 0; i < 2; i++) {
+            if (this.booster[i] != null) {
+                this.booster[i].startSound();
+            }
+        }
+    }
+
+    public void stopBoosterSound() {
+        for (int i = 0; i < 2; i++) {
+            if (this.booster[i] != null) {
+                this.booster[i].stopSound();
+            }
+        }
     }
 
     public void FZG76() {
@@ -387,7 +405,10 @@ public class HE_111H22 extends HE_111xyz implements TypeBomber, TypeTransport, T
                 this.FM.AS.setGliderBoostOn();
             }
             if (this.bHasBoosters && this.boosterFireOutTime > 0L) {
-                if (Time.current() < this.boosterFireOutTime) this.FM.producedAF.x += 20000D;
+                if (Time.current() < this.boosterFireOutTime)
+                    this.FM.producedAF.x += 20000D;
+                else // Stop sound
+                    this.stopBoosterSound();
                 if (Time.current() > this.boosterFireOutTime + 10000L) {
                     this.doCutBoosters();
                     this.FM.AS.setGliderBoostOff();
@@ -652,7 +673,7 @@ public class HE_111H22 extends HE_111xyz implements TypeBomber, TypeTransport, T
     private boolean   pilot2kill;
     private boolean   pilot4kill;
     private boolean   pilot5kill;
-    private Bomb      booster[];
+    private BombStarthilfe109500      booster[];
     protected boolean bHasBoosters;
     protected long    boosterFireOutTime;
 
