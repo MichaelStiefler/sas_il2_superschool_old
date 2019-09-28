@@ -13,22 +13,26 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-public class Tu16N extends Tu16
+public class HY6D extends Tu16
     implements TypeTransport, TypeDockable, TypeTankerDrogue
 {
 
-    public Tu16N()
+    public HY6D()
     {
         APmode1 = false;
         APmode2 = false;
         APmode3 = false;
         bDrogueExtended = false;
-        bInRefueling = false;
-        maxSendRefuel = 15.14F;      // max send rate = 300gal per 1minute
-          // 300gal == 1135.5liter == 907.5kg jet fuel ---> 1 sec cycle = 15.14 kg
-        drones = new Actor[1];
+        maxSendRefuel = 10.093F;      // max send rate = 200gal per 1minute 
+          // 200gal == 757liter == 605kg jet fuel ---> 1 sec cycle = 10.093 kg
+        drones = new Actor[2];
         waitRefuelTimer = 0L;
         bEmpty = false;
+    }
+
+    public static String getSkinPrefix(String s, Regiment regiment)
+    {
+        return "HY6_";
     }
 
     public boolean isDrogueExtended()
@@ -46,11 +50,11 @@ public class Tu16N extends Tu16
         else
         {
             bEmpty = false;
-            FM.M.maxFuel += 880F;  // additional fuel 300gal for Refueling
-            FM.M.fuel += 880F;
+            FM.M.maxFuel += 2000F;  // additional fuel 2000kg for Refueling
+            FM.M.fuel += 2000F;
             FM.M.massEmpty += 370F;   // empty weight of Refuel kit
             FM.M.mass += 370F;
-            FM.M.maxWeight += 1250F;
+            FM.M.maxWeight += 2370F;
         }
     }
 
@@ -72,6 +76,9 @@ public class Tu16N extends Tu16
     public void update(float f)
     {
         drogueRefuel();
+
+        if(FM.getSpeedKMH() > 185F)
+            RATrot();
 
         super.update(f);
         if(FM.CT.DragChuteControl > 0.0F && !bHasDeployedDragChute)
@@ -137,6 +144,40 @@ public class Tu16N extends Tu16
         super.missionStarting();
 
         bFirstTime = true;
+    }
+
+    private void RATrot()
+    {
+        for(int i=0; i<2; i++)
+        {
+            if(FM.getSpeedKMH() < 250F)
+                ratdeg[i] -= 10F + World.Rnd().nextFloat(-0.3F, 0.3F);
+            else if(FM.getSpeedKMH() < 400F)
+                ratdeg[i] -= 20F + World.Rnd().nextFloat(-0.8F, 0.8F);
+            else if(FM.getSpeedKMH() < 550F)
+                ratdeg[i] -= 25F + World.Rnd().nextFloat(-0.9F, 0.9F);
+            else
+                ratdeg[i] -= 31F + World.Rnd().nextFloat(-1.0F, 1.0F);
+            if(ratdeg[i] < -720F) ratdeg[i] += 1440F;
+        }
+
+        hierMesh().chunkSetAngles("HY6_rat1", 0.0F, 0.0F, ratdeg[0]);
+        hierMesh().chunkSetAngles("HY6_rat2", 0.0F, 0.0F, ratdeg[1]);
+
+        if(FM.getSpeedKMH() > 300F)
+        {
+            hierMesh().chunkVisible("HY6_rat_rot1", true);
+            hierMesh().chunkVisible("HY6_rat_rot2", true);
+            hierMesh().chunkVisible("HY6_rat1", false);
+            hierMesh().chunkVisible("HY6_rat2", false);
+        }
+        else
+        {
+            hierMesh().chunkVisible("HY6_rat_rot1", false);
+            hierMesh().chunkVisible("HY6_rat_rot2", false);
+            hierMesh().chunkVisible("HY6_rat1", true);
+            hierMesh().chunkVisible("HY6_rat2", true);
+        }
     }
 
     public boolean typeDockableIsDocked()
@@ -217,7 +258,7 @@ public class Tu16N extends Tu16
     {
         if(bFirstTime)
             drogueRefuel();
-        if(i >= 0 && i < 1 && bDrogueExtended)
+        if(i >= 0 && i <= 1 && bDrogueExtended)
             if(flag)
             {
                 if(FM.AS.isMaster())
@@ -337,31 +378,6 @@ public class Tu16N extends Tu16
 
     private void drogueRefuel()
     {
-        if(!(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode() || !(FM instanceof Pilot))
-            drogueRefuelAI();
-
-        if(bDrogueExtended && FM.AS.isMaster())
-        {
-            for(int i = 0; i < drones.length; i++)
-                if(Actor.isValid(drones[i]))
-                {
-                    if(bInRefueling == false)
-                    {
-                        bInRefueling = true;
-                    }
-                }
-                else
-                {
-                    if(bInRefueling == true)
-                    {
-                        bInRefueling = false;
-                    }
-                }
-        }
-    }
-
-    private void drogueRefuelAI()
-    {
         float ias = Pitot.Indicator((float) (((Tuple3d) ((FlightModelMain)FM).Loc).z), FM.getSpeed()) * 3.6F;
         Aircraft enemy1 = War.GetNearestEnemyAircraft(this, 5000F, 9);
         Aircraft enemy2 = War.GetNearestEnemyAircraft(this, 6000F, 9);
@@ -371,22 +387,60 @@ public class Tu16N extends Tu16
         {
 //            if(Time.current() > waitRefuelTimer)
 //            {
-                FM.CT.BayDoorControl = 0.0F;
+                hierMesh().chunkVisible("HY6_Drogue1_D0", false);
+                hierMesh().chunkVisible("HY6_Drogue2_D0", false);
+                hierMesh().chunkVisible("HY6_FuelLine1_D0", false);
+                hierMesh().chunkVisible("HY6_FuelLine2_D0", false);
+                hierMesh().chunkVisible("HY6_Drogue1_Fold_D0", true);
+                hierMesh().chunkVisible("HY6_Drogue2_Fold_D0", true);
+
+                bDrogueExtended = false;
                 waitRefuelTimer = Time.current() + 8000L;
-                if(bInRefueling == true)
+                typeDockableAttemptDetach();
+
+                boolean bTempFlag = false;
+                for(int i=0; i<2; i++)
                 {
-                    bInRefueling = false;
+                    if(bInRefueling[i] == true)
+                    {
+                        bInRefueling[i] = false;
+                        bTempFlag = true;
+                    }
                 }
 //            }
-        } else if(enemy2 == null)
+        } else
         {
 //            if(Time.current() > waitRefuelTimer)
 //            {
-                FM.CT.BayDoorControl = 1.0F;
+                hierMesh().chunkVisible("HY6_Drogue1_D0", true);
+                hierMesh().chunkVisible("HY6_FuelLine1_D0", true);
+                hierMesh().chunkVisible("HY6_Drogue2_D0", true);
+                hierMesh().chunkVisible("HY6_FuelLine2_D0", true);
+                hierMesh().chunkVisible("HY6_Drogue1_Fold_D0", false);
+                hierMesh().chunkVisible("HY6_Drogue2_Fold_D0", false);
+                bDrogueExtended = true;
                 waitRefuelTimer = Time.current() + 8000L;
 //            }
         }
 
+        if(bDrogueExtended && FM.AS.isMaster())
+        {
+            for(int i = 0; i < drones.length; i++)
+                if(Actor.isValid(drones[i]))
+                {
+                    if(bInRefueling[i] == false)
+                    {
+                        bInRefueling[i] = true;
+                    }
+                }
+                else
+                {
+                    if(bInRefueling[i] == true)
+                    {
+                        bInRefueling[i] = false;
+                    }
+                }
+        }
         if(bFirstTime && !(FM.getAltitude() == 0.0F && ias == 0.0F))
             bFirstTime = false;
     }
@@ -420,39 +474,6 @@ public class Tu16N extends Tu16
             hierMesh().chunkSetAngles("Flap1_D0", 0.0F, -35F * f, 0.0F);
             hierMesh().chunkSetAngles("Flap4_D0", 0.0F, -35F * f, 0.0F);
         }
-    }
-
-    protected void moveBayDoor(float f)
-    {
-        super.moveBayDoor(f);
-        if(FM.CT.getGear() < 0.1F)
-        {
-            if(!bEmpty && f > 0.98F && !bDrogueExtended && FM.M.fuel > FM.M.maxFuel * 0.40F)
-                decideRefuel(true);
-            if((f < 0.95F || FM.M.fuel < FM.M.maxFuel * 0.40F) && bDrogueExtended)
-                decideRefuel(false);
-        }
-        else if(bDrogueExtended)
-            decideRefuel(false);
-    }
-
-    protected void moveGear(float f)
-    {
-        super.moveGear(f);
-        if(FM.CT.getGear() > 0.1F && bDrogueExtended)
-            decideRefuel(false);
-    }
-
-    private boolean decideRefuel(boolean flag)
-    {
-        if(bDrogueExtended == true && flag == false)
-            typeDockableAttemptDetach();
-
-        bDrogueExtended = flag;
-        hierMesh().chunkVisible("tu16N_FuelLine1_D0", flag);
-        hierMesh().chunkVisible("tu16N_Drogue1_D0", flag);
-
-        return flag;
     }
 
     public void rareAction(float f, boolean flag)
@@ -598,22 +619,23 @@ public class Tu16N extends Tu16
     public static boolean bChangedPit = false;
     private boolean bFirstTime = true;
     private boolean bDrogueExtended;
-    private boolean bInRefueling;
+    private boolean bInRefueling[] = { false, false };
     private Actor drones[];
     private float maxSendRefuel;
     private long waitRefuelTimer;
+    private float ratdeg[] = { 0.0F, 0.0F };
     private boolean bEmpty;
 
     static
     {
-        Class class1 = com.maddox.il2.objects.air.Tu16N.class;
+        Class class1 = com.maddox.il2.objects.air.HY6D.class;
         new NetAircraft.SPAWN(class1);
-        Property.set(class1, "iconFar_shortClassName", "Tu-16");
-        Property.set(class1, "meshName", "3DO/Plane/Tu16A/hier_tu16N.him");
+        Property.set(class1, "iconFar_shortClassName", "HY-6");
+        Property.set(class1, "meshName", "3DO/Plane/Tu16A/hier_hy6d.him");
         Property.set(class1, "PaintScheme", new PaintSchemeBMPar05());
         Property.set(class1, "PaintScheme", new PaintSchemeFMPar06());
-        Property.set(class1, "yearService", 1960F);
-        Property.set(class1, "yearExpired", 1991F);
+        Property.set(class1, "yearService", 1990F);
+        Property.set(class1, "yearExpired", 2030F);
         Property.set(class1, "FlightModel", "FlightModels/Tu_16A.fmd:TU_16");
         Property.set(class1, "LOSElevation", 0.73425F);
         Aircraft.weaponTriggersRegister(class1, new int[] {
