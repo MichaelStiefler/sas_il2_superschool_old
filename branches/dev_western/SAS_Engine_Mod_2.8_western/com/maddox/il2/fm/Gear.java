@@ -1,10 +1,10 @@
 /* Gear class for the SAS Engine Mod*/
 
-
 /*By PAL, from current Western Engine MOD*/
 /*By PAL, implemented Diagonal extra force in Catapult*/
 /*By western, landing wheel brake stronger for Heavy Jet on 25th/Jul./2018*/
 /*By western, catapult Z force retouch on 12th/Feb./2019*/
+/*By western, add historical wheel parameters on 29th/Sep./2019*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 package com.maddox.il2.fm;
@@ -173,6 +173,10 @@ public class Gear {
 	private float carrierSpeedKMH;
 	public ZutiAirfieldPoint zutiCurrentZAP;
 	private boolean bUseOldCatapultPowerProcedure;
+	private boolean bCatapultArmed;
+	private double dCatapultForce;
+	private int iCatapultNumber;
+	private long lCatapultStartTime;
 	private boolean bDebugCatapult;
 	// --------------------------------------------------------
 	private double[] dCatapultOffsetX = new double[4];
@@ -334,6 +338,9 @@ public class Gear {
 		if (Mission.cur().sectFile().get("Mods", "StandardDeckCVL", 0) == 1) bStandardDeckCVL = true;
 		if (Config.cur.ini.get("Mods", "OldCatapultPowerCode", 0) == 0) bUseOldCatapultPowerProcedure = false;
 		if (Config.cur.ini.get("Mods", "DebugCatapult", 0) == 1) bDebugCatapult = true;
+		bCatapultArmed = false;
+		dCatapultForce = 0.0D;
+		iCatapultNumber = 0;
 		// TODO: --- CTO Mod 4.12 ---
 
 		//By PAL, for Chocks:
@@ -963,10 +970,6 @@ public class Gear {
 		return iCatapultNumber;
 	}
 
-	private boolean bCatapultArmed = false;
-	private double dCatapultForce = 0.0D;
-	private int iCatapultNumber = 0;
-	private long lCatapultStartTime;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	private boolean testNonGearCollision(int i) {
@@ -2334,7 +2337,7 @@ public class Gear {
 					}
 				}
 			}
-			catch (Exception e){}
+			catch (Exception e){ }
 
 			//By PAL, **********create Right Wheel Chocks**********
 			try {
@@ -2377,7 +2380,7 @@ public class Gear {
 					}
 				}
 			}
-			catch (Exception e){}
+			catch (Exception e){ }
 
 			//By PAL and western, **********create Center Wheel Chocks when MeshName is defined**********
 			if (gChockCMeshName != null) {
@@ -2529,6 +2532,60 @@ public class Gear {
 			gWheelRadius[0] = gWheelRadius[1] = 0.648D;  // main Tire Diameter 51"
 			gWheelRadius[2] = 0.238D;					// aux Tire Diameter 18.75"
 		}
+		else if (aircraft instanceof CR_42X) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.310D;  // main Tire Diameter measured by 3d shape
+			gWheelRadius[2] = 0.128D;					// aux Tire Diameter measured by 3d shape
+		}
+		else if (aircraft instanceof G50) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.315D;  // main Tire Diameter measured by 3d shape
+			gWheelRadius[2] = 0.140D;					// aux Tire Diameter measured by 3d shape
+		}
+		else if (aircraft instanceof G_55xyz) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.286D;  // main Tire Diameter measured by 3d shape
+			gWheelRadius[2] = 0.150D;					// aux Tire Diameter measured by 3d shape
+		}
+		else if ((aircraft instanceof MC_200xyz) || (aircraft instanceof MC_202xyz)) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.310D;  // main Tire Diameter measured by 3d shape
+			gWheelRadius[2] = 0.145D;					// aux Tire Diameter measured by 3d shape
+		}
+		else if (aircraft instanceof RE_2000) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.336D;  // main Tire Diameter measured by 3d shape
+			gWheelRadius[2] = 0.287D;					// aux Tire Diameter measured by 3d shape
+			gChockLOffset[0] = 0.13D;
+			gChockLOffset[1] = 0.20D;
+		}
+		else if (aircraft instanceof RE_2002) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.336D;  // main Tire Diameter measured by 3d shape
+			gWheelRadius[2] = 0.166D;					// aux Tire Diameter measured by 3d shape
+			gChockLOffset[0] = 0.13D;
+			gChockLOffset[1] = 0.20D;
+		}
+		else if (aircraft instanceof CantZ1007bis) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.572D;  // main Tire Diameter measured by 3d shape
+			gWheelRadius[2] = 0.23D;					// aux Tire Diameter measured by 3d shape
+		}
+		else if (aircraft instanceof SM79i) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.580D;  // main Tire Diameter measured by 3d shape
+			gWheelRadius[2] = 0.286D;					// aux Tire Diameter measured by 3d shape
+			gChockLOffset[0] = 0.22D;
+		}
+		else if (aircraft instanceof LetovS_328) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.503D;  // main Tire Diameter measured by 3d shape
+				// NO aux Tire for S-328
+		}
+		else if (aircraft instanceof AVIA_B534) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.422D;  // main Tire Diameter measured by 3d shape
+			gWheelRadius[2] = 0.11D;					// aux Tire Diameter measured by 3d shape
+		}
+
+/*  checked list as default values OK
+        D.XXI
+        M.S.406/ 410/ MM
+        B-239
+        P.11c
+        I.A.R.80/ 81
+        IK-3
+*/
 		bLoadedWheelRadius = true;
 		return;
 	}

@@ -2,6 +2,8 @@
 
 //By PAL, changes on precission of methods (flaps, etc.), previous errors and bouncing on operation
 //By western, on 26th/Apr./2018, expanded for 8x Engines / Scheme8 aircrafts
+//By western, on 24th/Jun./2018, expanded for 10x Engines / Scheme10 aircrafts
+//By western, on 29th/Sep./2019, bugfix cannot remove chocks for IK-3 etc. after spawned with Chocks set.
 
 package com.maddox.il2.game;
 
@@ -1466,6 +1468,12 @@ public class AircraftHotKeys {
 			break;
 
 		case 130:
+			if (FM.brakeShoe && FM.spawnedWithChocks) {
+				FM.brakeShoe = false;
+				HUD.log("BrakeShoeOff");
+				FM.spawnedWithChocks = false;
+				break;
+			}
 			if (!FM.canChangeBrakeShoe || (FM.actor instanceof TypeSeaPlane) || (FM.actor instanceof HE_LERCHE3)) break;
 			if (FM.brakeShoe) {
 				FM.brakeShoe = false;

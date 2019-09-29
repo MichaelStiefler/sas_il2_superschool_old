@@ -1,5 +1,6 @@
 /*Modified FlightModel class for the SAS Engine Mod*/
-// 2017.Nov.19 , western0221: Turrets can shoot not only Enemy Aircraft, but also ALL enemy actors 
+//By western, on 19th/Nov./2017, Turrets can shoot not only Enemy Aircraft, but also ALL enemy actors.
+//By western, on 29th/Sep./2019, bugfix cannot remove chocks for IK-3 etc. after spawned with Chocks set.
 package com.maddox.il2.fm;
 
 import java.util.StringTokenizer;
@@ -73,6 +74,7 @@ public class FlightModel extends FlightModelMain {
 	private static com.maddox.JGP.Vector3d v2 = new Vector3d();
 	private static com.maddox.JGP.Vector3d v3 = new Vector3d();
 
+	public boolean spawnedWithChocks;
 	// --------------------------------------------------------------------------
 	static class ClipFilter implements ActorFilter {
 
@@ -136,6 +138,7 @@ public class FlightModel extends FlightModelMain {
 		brakeShoeLoc = new Loc();
 		brakeShoeLastCarrier = null;
 		canChangeBrakeShoe = false;
+		spawnedWithChocks = false;
 		dryFriction = 1.0F;
 		rotSpeed = 0.0F;
 		prev1 = 0.0F;
