@@ -4,6 +4,8 @@
 /*By western, landing wheel brake control for FastJet on 25th/Jul./2018*/
 /*By western, AI gun and rocket Ground-Attack for FastJet on 04th/Aug./2018*/
 /*By western, AI dive bombing debug, more retouch AI gun and rocket Ground-Attack for FastJet on 04th/Mar./2019*/
+/*By Storebror, AI shallow dive Ground-Attack fix on 16th/Jul./2019*/
+/*By western, bugfix cannot remove chocks for IK-3 etc. after spawned with Chocks set on 29th/Sep./2019*/
 package com.maddox.il2.ai.air;
 
 import java.util.ArrayList;
@@ -38,7 +40,6 @@ import com.maddox.il2.engine.TextScr;
 import com.maddox.il2.fm.AIFlightModel;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.FlightModelMain;
-import com.maddox.il2.fm.Gear;
 import com.maddox.il2.fm.Pitot;
 import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.game.HUD;
@@ -875,7 +876,7 @@ public class Maneuver extends AIFlightModel {
 			// TODO By western: set Chocks for Parking with conf.ini custom setting
 			Vector3d vtemp = new Vector3d();
 			actor.pos.speed(vtemp);
-			if (Gear.bUseChocksParking && vtemp.length() == 0.0D && !(actor instanceof TypeSeaPlane)) brakeShoe = true;
+			if (Gears.bUseChocksParking && vtemp.length() == 0.0D && !(actor instanceof TypeSeaPlane)) brakeShoe = true;
 			break;
 
 		case 48: // '0'  // DELAY
@@ -3474,6 +3475,7 @@ public class Maneuver extends AIFlightModel {
 						EI.setCurControlAll(true);
 						// TODO By western: get rid of Chocks, close Canopy
 						brakeShoe = false;
+						spawnedWithChocks = false;
 						if (CT.bHasCockpitDoorControl && CT.bNoCarrierCanopyOpen) AS.setCockpitDoor(actor, 0);
 						CT.BrakeControl = 0.0F;
 						setSpeedMode(8);
@@ -3656,6 +3658,7 @@ public class Maneuver extends AIFlightModel {
 							bStage7 = true;
 							// TODO By western: get rid of Chocks, close Canopy
 							brakeShoe = false;
+							spawnedWithChocks = false;
 							if (CT.bHasCockpitDoorControl) {
 								if (bFastLaunchAI) CT.forceCockpitDoor(0.0F);
 								AS.setCockpitDoor(actor, 0);
@@ -3788,6 +3791,7 @@ public class Maneuver extends AIFlightModel {
 			if (EI.engines[0].getStage() == 6 && CT.getPower() > fPowThresReleaseBrake) {
 				CT.BrakeControl = 0.0F;
 				brakeShoe = false;
+				spawnedWithChocks = false;
 				float f43 = (float) ((double) ((Vmin + VminFLAPS) * 0.5F) * Math.sqrt(M.getFullMass() / M.referenceWeight));
 				float fPitchTarget = (AOA_Crit - 2.0F) * (getSpeed() / f43);
 				if (Gears.bIsSail) fPitchTarget *= 2.0F;
@@ -3896,6 +3900,7 @@ public class Maneuver extends AIFlightModel {
 				if (actor instanceof TypeGlider) push(24);
 				maneuver = 0;
 				brakeShoe = false;
+				spawnedWithChocks = false;
 				turnOffCollisions = false;
 				if (CT.bHasCockpitDoorControl) AS.setCockpitDoor(actor, 0);
 				pop();
@@ -3948,6 +3953,7 @@ public class Maneuver extends AIFlightModel {
 				CT.BrakeControl = 0.0F;
 				CT.AirBrakeControl = 1.0F;
 				brakeShoe = false;
+				spawnedWithChocks = false;
 				CT.setPowerControl(1.1F);
 				setSpeedMode(11);
 			}
@@ -3958,6 +3964,7 @@ public class Maneuver extends AIFlightModel {
 				CT.AirBrakeControl = 0.0F;
 				if (Or.getTangage() < 25F) maneuver = 0;
 				brakeShoe = false;
+				spawnedWithChocks = false;
 				turnOffCollisions = false;
 				if (CT.bHasCockpitDoorControl) AS.setCockpitDoor(actor, 0);
 				pop();

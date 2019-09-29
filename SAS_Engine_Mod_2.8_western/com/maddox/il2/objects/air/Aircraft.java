@@ -2065,7 +2065,10 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		// TODO: By western, forcing set Chocks when customized in conf.ini
 		Vector3d vtemp = new Vector3d();
 		FM.actor.pos.speed(vtemp);
-		if (FM.Gears.bUseChocksParking && vtemp.length() == 0.0D && !(FM.actor instanceof TypeSeaPlane)) FM.brakeShoe = true;
+		if (FM.Gears.bUseChocksParking && vtemp.length() == 0.0D && !(FM.actor instanceof TypeSeaPlane)) {
+			FM.brakeShoe = true;
+			FM.spawnedWithChocks = true;	// to avoid unremovable chocks trouble about IK-3 etc.
+		}
 	}
 
 	public void load(SectFile sectfile, String s, int i, NetChannel netchannel, int j) throws Exception {
@@ -2215,21 +2218,21 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		try {
 //			ArrayList arraylist = weaponsListProperty(class1);
 //			HashMapInt hashmapint = weaponsMapProperty(class1);
-		    
+
 			// By western: ignoring cod/ weapon loadout flag, added in Engine mod 2.8.12w
 			boolean bIgnoreCodWeapon = (Property.intValue(class1, "IgnoreCodWeapon", 0) == 1);
 			if (bIgnoreCodWeapon) return;
 			int i = Finger.Int("ce" + class1.getName() + "vd");
-			
-            // FIXME: By SAS~Storebror: Avoid duplicate Loadout Lists
-            BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(i, "adt"))), getSwTbl(i))));
-            ArrayList arraylist = new ArrayList();
-            Property.set(class1, "weaponsList", arraylist);
-            HashMapInt hashmapint = new HashMapInt();
-            Property.set(class1, "weaponsMap", hashmapint);         
-            
+
+			// FIXME: By SAS~Storebror: Avoid duplicate Loadout Lists
+			BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(i, "adt"))), getSwTbl(i))));
+			ArrayList arraylist = new ArrayList();
+			Property.set(class1, "weaponsList", arraylist);
+			HashMapInt hashmapint = new HashMapInt();
+			Property.set(class1, "weaponsMap", hashmapint);
+
 //			BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(i, "adt"))), getSwTbl(i))));
-            
+
 			do {
 				String s = bufferedreader.readLine();
 				if (s == null) break;
@@ -2249,11 +2252,11 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 				hashmapint.put(Finger.Int(s1), a_lweaponslot);
 			} while (true);
 			bufferedreader.close();
-			
-        // FIXME: By SAS~Storebror: Don't hide potential errors inside cod files
-        } catch (FileNotFoundException fnfe) {
+
+		// FIXME: By SAS~Storebror: Don't hide potential errors inside cod files
+		} catch (FileNotFoundException fnfe) {
 		} catch (Exception exception) {
-		    exception.printStackTrace();
+			exception.printStackTrace();
 		}
 	}
 
