@@ -6,6 +6,7 @@
 /*By western, AI dive bombing debug, more retouch AI gun and rocket Ground-Attack for FastJet on 04th/Mar./2019*/
 /*By Storebror, AI shallow dive Ground-Attack fix on 16th/Jul./2019*/
 /*By western, bugfix cannot remove chocks for IK-3 etc. after spawned with Chocks set on 29th/Sep./2019*/
+/*By western, bugfix helicopters carrier / ground take-off on 08th/Oct./2019*/
 package com.maddox.il2.ai.air;
 
 import java.util.ArrayList;
@@ -73,6 +74,7 @@ import com.maddox.il2.objects.air.TypeFighter;
 import com.maddox.il2.objects.air.TypeGlider;
 import com.maddox.il2.objects.air.TypeGuidedBombCarrier;
 import com.maddox.il2.objects.air.TypeHasToKG;
+import com.maddox.il2.objects.air.TypeHelicopter;
 import com.maddox.il2.objects.air.TypeJazzPlayer;
 import com.maddox.il2.objects.air.TypeSeaPlane;
 import com.maddox.il2.objects.air.TypeStormovik;
@@ -92,6 +94,9 @@ import com.maddox.rts.MsgDestroy;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Time;
+
+
+
 
 public class Maneuver extends AIFlightModel {
 	// TODO: Default Parameters
@@ -860,6 +865,7 @@ public class Maneuver extends AIFlightModel {
 			set_maneuver(99);
 		}
 		boolean bFJ = (actor instanceof TypeFastJet);
+		boolean bHeli = (actor instanceof TypeHelicopter);
 		switch (maneuver) {
 		default:
 			break;
@@ -3587,7 +3593,7 @@ public class Maneuver extends AIFlightModel {
 			boolean bCarrierTakeoff = false;
 			AirportCarrier airportcarrier = null;
 			// +++ Engine2.8.1 TypeFastJet release brakes in reaching more thrust to make take-off length shorter
-			float fPowThresReleaseBrake = (bFJ ? 0.8F : 0.4F);
+			float fPowThresReleaseBrake = (bFJ ? 0.8F : (bHeli ? 0.55F : 0.4F));
 			if (Actor.isAlive(AP.way.takeoffAirport) && (AP.way.takeoffAirport instanceof AirportCarrier)) {
 				airportcarrier = (AirportCarrier) AP.way.takeoffAirport;
 				if (!(airportcarrier.ship() instanceof TestRunway)) bCarrierTakeoff = true;
@@ -3596,7 +3602,7 @@ public class Maneuver extends AIFlightModel {
 				fAlt -= ((AirportCarrier) AP.way.takeoffAirport).height();
 				if (Alt < 9F && Vwld.z < 0.0D) Vwld.z *= 0.850D;
 				// +++ Engine2.7 use afterburner enough in taking-off
-				fPowThresReleaseBrake = (EI.engines[0].getBoostFactor() > 1.0F) ? 1.0599F : 0.97F;
+				fPowThresReleaseBrake = ((EI.engines[0].getBoostFactor() > 1.0F) ? 1.0599F : (bHeli ? 0.55F : 0.97F));
 				if (maxThrottleAITakeoffavoidOH > 0.1F && fPowThresReleaseBrake > maxThrottleAITakeoffavoidOH * 0.98F) fPowThresReleaseBrake = maxThrottleAITakeoffavoidOH * 0.98F;
 				// --- Engine2.7
 				if (CT.bHasCockpitDoorControl && !bStage6) AS.setCockpitDoor(actor, 1);
@@ -3815,15 +3821,29 @@ public class Maneuver extends AIFlightModel {
 				}
 				if (fPitchTarget < 1.0F) fPitchTarget = 1.0F;
 				if (fPitchTarget > AOA_Crit - 2.0F) fPitchTarget = AOA_Crit - 2.0F;
+				if (bHeli) fPitchTarget = -1.5F;  // By western
 				float f48 = 1.5F;
 				if (bCarrierTakeoff && !Gears.isUnderDeck()) {
 					CT.GearControl = 0.0F;
-					if (fAlt < 0.0F) {
-						fPitchTarget = 18F;
-						f48 = 0.05F;
+					if (bHeli) {  // By western
+						if (fAlt < 0.0F) {
+							fPitchTarget = -1.0F;
+							f48 = 0.06F;
+						} else if (fAlt > 8.0F) {
+							fPitchTarget = -5.0F;
+							f48 = 0.40F;
+						} else {
+							fPitchTarget = -3.0F;
+							f48 = 0.35F;
+						}
 					} else {
-						fPitchTarget = 14F;
-						f48 = 0.3F;
+						if (fAlt < 0.0F) {
+							fPitchTarget = 18F;
+							f48 = 0.05F;
+						} else {
+							fPitchTarget = 14F;
+							f48 = 0.3F;
+						}
 					}
 				}
 				if (Or.getTangage() < fPitchTarget) dA = -0.7F * (Or.getTangage() - fPitchTarget) + f48 * (float) getW().y + 0.5F * (float) getAW().y;
@@ -3844,6 +3864,7 @@ public class Maneuver extends AIFlightModel {
 				} else CT.ElevatorControl += (dA - CT.ElevatorControl) * 3F * f;
 			} else {
 				if (bFJ && !bCarrierTakeoff) CT.ElevatorControl = 0.0F;
+				else if (bHeli) CT.ElevatorControl = 0.0F;
 				else CT.ElevatorControl = 1.0F;
 			}
 		// === western trial v2
@@ -3873,6 +3894,7 @@ public class Maneuver extends AIFlightModel {
 			double d2 = AFo.getDiffRad();
 			if (EI.engines[0].getStage() == 6) {
 				if (bCatapultAI) CT.RudderControl = 0.0F;  // TODO: CTO Mod 4.12 , canceling rudder diff on the catapult.
+				else if (bHeli) CT.RudderControl = 0.0F;  // By western
 				else CT.RudderControl = 8F * (float) d2;
 				if (d2 > -1D && d2 < 1.0D) {
 					if (flag8 && Actor.isAlive(AP.way.takeoffAirport) && CT.getPower() > 0.3F) {
@@ -3883,6 +3905,7 @@ public class Maneuver extends AIFlightModel {
 						if (d7 > 1.5D) d7 = 1.5D;
 						if (d7 < -1.5D) d7 = -1.5D;
 						if (bCatapultAI) CT.RudderControl = 0.0F;  // TODO: CTO Mod 4.12 , canceling rudder diff on the catapult.
+						else if (bHeli) CT.RudderControl = 0.0F;  // By western
 						else CT.RudderControl += (float) d7;
 					}
 				} else {
@@ -3893,7 +3916,7 @@ public class Maneuver extends AIFlightModel {
 			if ((fAlt > fCenterZDiff + 5F || (float) Loc.z > fRunwayHeight + 5F) && !Gears.isUnderDeck()) CT.GearControl = 0.0F;
 			float f49 = 1.0F;
 			if (hasBombs() || !flag8) f49 *= 1.7F;
-			if (fAlt > (bFJ ? 300F : 120F) * f49 || getSpeed() > Vmin * 1.8F * f49 || fAlt > (bFJ ? 250F : 80F) * f49 && getSpeed() > Vmin * 1.6F * f49 || fAlt > (bFJ ? 250F : 40F) * f49 && getSpeed() > Vmin * (bFJ ? 1.5F : 1.3F) * f49 && mn_time > 60F + (float) ((Aircraft) actor).aircIndex() * 3F) {
+			if (fAlt > (bFJ ? 300F : 120F) * f49 || !bHeli && getSpeed() > Vmin * 1.8F * f49 || fAlt > (bFJ ? 250F : 80F) * f49 && getSpeed() > Vmin * 1.6F * f49 || fAlt > (bFJ ? 250F : 40F) * f49 && getSpeed() > Vmin * (bFJ ? 1.5F : 1.3F) * f49 && mn_time > 60F + (float) ((Aircraft) actor).aircIndex() * 3F) {
 				if (!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
 				CT.GearControl = 0.0F;
 				rwLoc = null;
