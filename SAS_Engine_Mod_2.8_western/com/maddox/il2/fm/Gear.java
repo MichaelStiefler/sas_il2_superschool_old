@@ -5,6 +5,7 @@
 /*By western, landing wheel brake stronger for Heavy Jet on 25th/Jul./2018*/
 /*By western, catapult Z force retouch on 12th/Feb./2019*/
 /*By western, add historical wheel parameters on 29th/Sep./2019*/
+/*By western, Helicopters or V/STOL planes don't use catapult on 07th/Oct./2019*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 package com.maddox.il2.fm;
@@ -695,6 +696,11 @@ public class Gear {
 			if (Mission.isCoop() && !Mission.isServer() && Actor.isAlive(flightmodel.brakeShoeLastCarrier) && Time.current() < 60000L)
 			// TODO: --- CTO Mod 4.12 ---
 				bigshipgeneric1 = (BigshipGeneric) flightmodel.brakeShoeLastCarrier;
+			// By western, Helicopter or V/STOL planes don't use catapult
+			if ((flightmodel.actor instanceof TypeHelicopter) || flightmodel.CT.bUseVarWingAsNozzleRot) {
+				bCatapultAllow = false;
+				bCatapultAllowAI = false;
+			}
 			if (bigshipgeneric1 != null) {
 				if (flightmodel.brakeShoe) {
 					if (!isAnyDamaged()) {

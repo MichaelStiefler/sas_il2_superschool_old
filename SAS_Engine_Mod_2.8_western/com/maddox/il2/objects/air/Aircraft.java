@@ -2231,8 +2231,6 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 			HashMapInt hashmapint = new HashMapInt();
 			Property.set(class1, "weaponsMap", hashmapint);
 
-//			BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(i, "adt"))), getSwTbl(i))));
-
 			do {
 				String s = bufferedreader.readLine();
 				if (s == null) break;
@@ -2256,6 +2254,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		// FIXME: By SAS~Storebror: Don't hide potential errors inside cod files
 		} catch (FileNotFoundException fnfe) {
 		} catch (Exception exception) {
+			System.out.println("Aircraft cod/ register error in " + class1.getName());
 			exception.printStackTrace();
 		}
 	}
