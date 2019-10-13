@@ -41,6 +41,13 @@ public class Su_25 extends Su_25X
         deltaAzimuth = 0.0F;
         deltaTangage = 0.0F;
         removeChuteTimer = -1L;
+        sppuList = new ArrayList();
+        sppuDegree = 0.0F;
+        sppuAutomationDoing = false;
+        sppuReseting = false;
+        sppuAutomationCarrierDegree = 0.0F;
+        sppuAutomationFinishedTime = -1L;
+        bHasSPPU = false;
         tLastLaserLockKeyInput = 0L;
         tangateLaserHead = 0;
         azimultLaserHead = 0;
@@ -114,15 +121,21 @@ public class Su_25 extends Su_25X
             if(FM.CT.Weapons[i] != null)
             {
                 for(int j = 0; j < FM.CT.Weapons[i].length; j++)
-                    if(FM.CT.Weapons[i][j].haveBullets())
+                {
+                    if(FM.CT.Weapons[i][j] instanceof Pylon_SPPU22_gn16)
+                        sppuList.add(FM.CT.Weapons[i][j]);
+                    else if(FM.CT.Weapons[i][j].haveBullets())
                     {
                         if(FM.CT.Weapons[i][j] instanceof RocketGunFlare_gn16)
                             counterFlareList.add(FM.CT.Weapons[i][j]);
                         else if(FM.CT.Weapons[i][j] instanceof RocketGunChaff_gn16)
                             counterChaffList.add(FM.CT.Weapons[i][j]);
                     }
+                }
             }
 
+        if(sppuList.size() > 0)
+            bHasSPPU = true;
     }
 
     public void backFire()
@@ -162,42 +175,42 @@ public class Su_25 extends Su_25X
             if(!APmode1)
             {
                 APmode1 = true;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Autopilot Mode: Altitude ON");
-                ((FlightModelMain) (super.FM)).AP.setStabAltitude(FM.getAltitude());
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "AutopilotMode__AltitudeON");
+                FM.AP.setStabAltitude(FM.getAltitude());
             } else
             if(APmode1)
             {
                 APmode1 = false;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Autopilot Mode: Altitude OFF");
-                ((FlightModelMain) (super.FM)).AP.setStabAltitude(false);
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "AutopilotMode__AltitudeOFF");
+                FM.AP.setStabAltitude(false);
             }
         if(i == 21)
             if(!APmode2)
             {
                 APmode2 = true;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Autopilot Mode: Direction ON");
-                ((FlightModelMain) (super.FM)).AP.setStabDirection(true);
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "AutopilotMode__DirectionON");
+                FM.AP.setStabDirection(true);
                 FM.CT.bHasRudderControl = false;
             } else
             if(APmode2)
             {
                 APmode2 = false;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Autopilot Mode: Direction OFF");
-                ((FlightModelMain) (super.FM)).AP.setStabDirection(false);
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "AutopilotMode__DirectionOFF");
+                FM.AP.setStabDirection(false);
                 FM.CT.bHasRudderControl = true;
             }
         if(i == 22)
             if(!APmode3)
             {
                 APmode3 = true;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Autopilot Mode: Route ON");
-                ((FlightModelMain) (super.FM)).AP.setWayPoint(true);
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "AutopilotMode__RouteON");
+                FM.AP.setWayPoint(true);
             } else
             if(APmode3)
             {
                 APmode3 = false;
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Autopilot Mode: Route OFF");
-                ((FlightModelMain) (super.FM)).AP.setWayPoint(false);
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "AutopilotMode__RouteOFF");
+                FM.AP.setWayPoint(false);
                 FM.CT.AileronControl = 0.0F;
                 FM.CT.ElevatorControl = 0.0F;
                 FM.CT.RudderControl = 0.0F;
@@ -207,13 +220,37 @@ public class Su_25 extends Su_25X
             FM.CT.AileronControl = 0.0F;
             FM.CT.ElevatorControl = 0.0F;
             FM.CT.RudderControl = 0.0F;
-            ((FlightModelMain) (super.FM)).AP.setWayPoint(false);
-            ((FlightModelMain) (super.FM)).AP.setStabDirection(false);
-            ((FlightModelMain) (super.FM)).AP.setStabAltitude(false);
+            FM.AP.setWayPoint(false);
+            FM.AP.setStabDirection(false);
+            FM.AP.setStabAltitude(false);
             APmode1 = false;
             APmode2 = false;
             APmode3 = false;
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "Autopilot Mode: All Off");
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "AutopilotMode__AllOff");
+        }
+        if(i == 25)
+        {
+            if(!bHasSPPU) return;
+
+            if(sppuAutomationDoing)
+            {
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "SPPU__StopAutomation");
+                sppuAutomationDoing = false;
+                sppuAutomationCarrierDegree = 0.0F;
+                typeX4CResetControls();
+            }
+            else
+            {
+                sppuAutomationCarrierDegree = FM.Or.getTangage();
+                for(; sppuAutomationCarrierDegree > 180F; sppuAutomationCarrierDegree -= 360F) ;
+                for(; sppuAutomationCarrierDegree < -180F; sppuAutomationCarrierDegree += 360F) ;
+                if(sppuAutomationCarrierDegree < -3F && sppuAutomationCarrierDegree > -90F)
+                {
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "SPPU__StartAutomation");
+                    sppuAutomationDoing = true;
+                    sppuReseting = false;
+                }
+            }
         }
         if(i == 26 && getLaserOn())
         {
@@ -224,7 +261,7 @@ public class Su_25 extends Su_25X
                 actorFollowing = null;
                 tangateLaserHeadOffset = 0;
                 azimultLaserHeadOffset = 0;
-                HUD.log("Laser Pos Unlock");
+                HUD.log("Laser_Pos_Unlock");
                 tLastLaserLockKeyInput = Time.current();
             }
             if(!holdLaser && tLastLaserLockKeyInput + 200L < Time.current())
@@ -233,7 +270,7 @@ public class Su_25 extends Su_25X
                 holdFollowLaser = false;
                 actorFollowing = null;
                 laserSpotPosSaveHold.set(getLaserSpot());
-                HUD.log("Laser Pos Lock");
+                HUD.log("Laser_Pos_Lock");
                 tLastLaserLockKeyInput = Time.current();
             }
         }
@@ -342,10 +379,10 @@ public class Su_25 extends Su_25X
             if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F)
                 break;
             targetDistance = this.pos.getAbsPoint().distance(point3d);
-            if (targetDistance > maxLGBombDistance)
+            if(targetDistance > maxLGBombDistance)
                 break;
             targetAngle = angleBetween(this, point3d);
-            if (targetAngle > maxLGBombFOVfrom)
+            if(targetAngle > maxLGBombFOVfrom)
                 break;
 
             laseron = true;
@@ -367,14 +404,14 @@ public class Su_25 extends Su_25X
                     if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F)
                         continue;
                     targetDistance = this.pos.getAbsPoint().distance(point3d);
-                    if (targetDistance > maxLGBombDistance)
+                    if(targetDistance > maxLGBombDistance)
                         continue;
                     targetAngle = angleBetween(this, point3d);
-                    if (targetAngle > maxLGBombFOVfrom)
+                    if(targetAngle > maxLGBombFOVfrom)
                         continue;
 
                     targetBait = 1 / targetAngle / (float) (targetDistance * targetDistance);
-                    if (targetBait <= maxTargetBait)
+                    if(targetBait <= maxTargetBait)
                         continue;
 
                     maxTargetBait = targetBait;
@@ -431,7 +468,7 @@ public class Su_25 extends Su_25X
             if(bLaserOn == false)
             {
                 if(this == World.getPlayerAircraft())
-                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser: ON");
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "LaserON");
                 holdLaser = false;
                 holdFollowLaser = false;
                 actorFollowing = null;
@@ -443,7 +480,7 @@ public class Su_25 extends Su_25X
             else
             {
                 if(this == World.getPlayerAircraft())
-                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser: OFF");
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "LaserOFF");
                 holdLaser = false;
                 holdFollowLaser = false;
                 actorFollowing = null;
@@ -469,12 +506,12 @@ public class Su_25 extends Su_25X
             if(bLGBengaged == false)
             {
                 if(this == World.getPlayerAircraft())
-                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser Bomb: Engaged");
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "LaserBomb_Engaged");
             }
             else
             {
                 if(this == World.getPlayerAircraft())
-                    HUD.log(AircraftHotKeys.hudLogWeaponId, "Laser Bomb: Disengaged");
+                    HUD.log(AircraftHotKeys.hudLogWeaponId, "LaserBomb_Disengaged");
             }
         }
 
@@ -506,16 +543,47 @@ public class Su_25 extends Su_25X
     public void typeX4CAdjAttitudePlus()
     {
         deltaTangage = 0.1F;
+
+        if(bHasSPPU && sppuDegree < 0.0F)
+        {
+            sppuDegree += 1.0F;
+            if(sppuDegree > 0.0F)
+                sppuDegree = 0.0F;
+            if(sppuReseting && sppuDegree == 0.0F) sppuReseting = false;
+            for(int i = 0; i < sppuList.size(); i++)
+                ((Pylon_SPPU22_gn16)(sppuList.get(i))).setGunDegree(-sppuDegree);
+            hierMesh().chunkSetAngles("SPPUgun00", 0.0F, sppuDegree, 0.0F);
+            hierMesh().chunkSetAngles("SPPUgun01", 0.0F, sppuDegree, 0.0F);
+            hierMesh().chunkSetAngles("SPPUgun02", 0.0F, sppuDegree, 0.0F);
+            hierMesh().chunkSetAngles("SPPUgun03", 0.0F, sppuDegree, 0.0F);
+        }
     }
 
     public void typeX4CAdjAttitudeMinus()
     {
         deltaTangage = -0.1F;
+
+        if(bHasSPPU && sppuDegree > -30.0F)
+        {
+            if(sppuReseting) return;
+
+            sppuDegree -= 1.0F;
+            if(sppuDegree < -30.0F) sppuDegree = -30.0F;
+            for(int i = 0; i < sppuList.size(); i++)
+                ((Pylon_SPPU22_gn16)(sppuList.get(i))).setGunDegree(-sppuDegree);
+            hierMesh().chunkSetAngles("SPPUgun00", 0.0F, sppuDegree, 0.0F);
+            hierMesh().chunkSetAngles("SPPUgun01", 0.0F, sppuDegree, 0.0F);
+            hierMesh().chunkSetAngles("SPPUgun02", 0.0F, sppuDegree, 0.0F);
+            hierMesh().chunkSetAngles("SPPUgun03", 0.0F, sppuDegree, 0.0F);
+        }
     }
 
     public void typeX4CResetControls()
     {
         deltaAzimuth = deltaTangage = 0.0F;
+
+        if(bHasSPPU)
+            sppuReseting = true;
     }
 
     public float typeX4CgetdeltaAzimuth()
@@ -586,53 +654,14 @@ public class Su_25 extends Su_25X
         if(backfire)
             backFire();
         super.update(f);
-        if(FM.CT.DragChuteControl > 0.0F && !bHasDeployedDragChute)
+        calculateDragChute();
+        if(bHasSPPU)
         {
-            chute1 = new Chute(this);
-            chute2 = new Chute(this);
-            chute1.setMesh("3do/plane/ChuteSu_25/mono.sim");
-            chute2.setMesh("3do/plane/ChuteSu_25/mono.sim");
-            chute1.mesh().setScale(0.5F);
-            chute2.mesh().setScale(0.5F);
-            ((Actor) (chute1)).pos.setRel(new Point3d(-8D, 0.0D, 0.6D), new Orient(20F, 90F, 0.0F));
-            ((Actor) (chute2)).pos.setRel(new Point3d(-8D, 0.0D, 0.6D), new Orient(-20F, 90F, 0.0F));
-            bHasDeployedDragChute = true;
-        } else
-        if(bHasDeployedDragChute && FM.CT.bHasDragChuteControl)
-            if(FM.CT.DragChuteControl == 1.0F && super.FM.getSpeedKMH() > 600F || FM.CT.DragChuteControl < 1.0F)
-            {
-                if(chute1 != null && chute2 != null)
-                {
-                    chute1.tangleChute(this);
-                    chute2.tangleChute(this);
-                    ((Actor) (chute1)).pos.setRel(new Point3d(-15D, 0.0D, 1.0D), new Orient(20F, 90F, 0.0F));
-                    ((Actor) (chute2)).pos.setRel(new Point3d(-15D, 0.0D, 1.0D), new Orient(-20F, 90F, 0.0F));
-                }
-                FM.CT.DragChuteControl = 0.0F;
-                FM.CT.bHasDragChuteControl = false;
-                ((FlightModelMain) (super.FM)).Sq.dragChuteCx = 0.0F;
-                removeChuteTimer = Time.current() + 250L;
-            } else
-            if(FM.CT.DragChuteControl == 1.0F && super.FM.getSpeedKMH() < 20F)
-            {
-                if(chute1 != null && chute2 != null)
-                {
-                    chute1.tangleChute(this);
-                    chute2.tangleChute(this);
-                }
-                ((Actor) (chute1)).pos.setRel(new Orient(10F, 100F, 0.0F));
-                ((Actor) (chute2)).pos.setRel(new Orient(-10F, 100F, 0.0F));
-                FM.CT.DragChuteControl = 0.0F;
-                FM.CT.bHasDragChuteControl = false;
-                ((FlightModelMain) (super.FM)).Sq.dragChuteCx = 0.0F;
-                removeChuteTimer = Time.current() + 10000L;
-            }
-        if(removeChuteTimer > 0L && !FM.CT.bHasDragChuteControl && Time.current() > removeChuteTimer)
-        {
-            chute1.destroy();
-            chute2.destroy();
+            if(sppuAutomationDoing)
+                sppuAutomation();
+            else if(sppuReseting)
+                typeX4CAdjAttitudePlus();
         }
-        guidedMissileUtils.update();
     }
 
     public void moveCockpitDoor(float f)
@@ -673,12 +702,93 @@ public class Su_25 extends Su_25X
         }
 ;
         hierMesh().chunkVisible("Seat1_D0", false);
-        super.FM.setTakenMortalDamage(true, null);
+        FM.setTakenMortalDamage(true, null);
         FM.CT.WeaponControl[0] = false;
         FM.CT.WeaponControl[1] = false;
         FM.CT.bHasAileronControl = false;
         FM.CT.bHasRudderControl = false;
         FM.CT.bHasElevatorControl = false;
+    }
+
+    private void calculateDragChute()
+    {
+        if(FM.CT.DragChuteControl > 0.0F && !bHasDeployedDragChute)
+        {
+            chute1 = new Chute(this);
+            chute2 = new Chute(this);
+            chute1.setMesh("3do/plane/ChuteSu_25/mono.sim");
+            chute2.setMesh("3do/plane/ChuteSu_25/mono.sim");
+            chute1.mesh().setScale(0.5F);
+            chute2.mesh().setScale(0.5F);
+            ((Actor) (chute1)).pos.setRel(new Point3d(-8D, 0.0D, 0.6D), new Orient(20F, 90F, 0.0F));
+            ((Actor) (chute2)).pos.setRel(new Point3d(-8D, 0.0D, 0.6D), new Orient(-20F, 90F, 0.0F));
+            bHasDeployedDragChute = true;
+        } else
+        if(bHasDeployedDragChute && FM.CT.bHasDragChuteControl)
+            if(FM.CT.DragChuteControl == 1.0F && FM.getSpeedKMH() > 600F || FM.CT.DragChuteControl < 1.0F)
+            {
+                if(chute1 != null && chute2 != null)
+                {
+                    chute1.tangleChute(this);
+                    chute2.tangleChute(this);
+                    ((Actor) (chute1)).pos.setRel(new Point3d(-15D, 0.0D, 1.0D), new Orient(20F, 90F, 0.0F));
+                    ((Actor) (chute2)).pos.setRel(new Point3d(-15D, 0.0D, 1.0D), new Orient(-20F, 90F, 0.0F));
+                }
+                FM.CT.DragChuteControl = 0.0F;
+                FM.CT.bHasDragChuteControl = false;
+                FM.Sq.dragChuteCx = 0.0F;
+                removeChuteTimer = Time.current() + 250L;
+            } else
+            if(FM.CT.DragChuteControl == 1.0F && FM.getSpeedKMH() < 20F)
+            {
+                if(chute1 != null && chute2 != null)
+                {
+                    chute1.tangleChute(this);
+                    chute2.tangleChute(this);
+                }
+                ((Actor) (chute1)).pos.setRel(new Orient(10F, 100F, 0.0F));
+                ((Actor) (chute2)).pos.setRel(new Orient(-10F, 100F, 0.0F));
+                FM.CT.DragChuteControl = 0.0F;
+                FM.CT.bHasDragChuteControl = false;
+                FM.Sq.dragChuteCx = 0.0F;
+                removeChuteTimer = Time.current() + 10000L;
+            }
+        if(removeChuteTimer > 0L && !FM.CT.bHasDragChuteControl && Time.current() > removeChuteTimer)
+        {
+            chute1.destroy();
+            chute2.destroy();
+        }
+    }
+
+    private void sppuAutomation()
+    {
+        if(sppuDegree > -30.0F) sppuAutomationFinishedTime = -1L;
+
+        float nowPitch = FM.Or.getTangage();
+        for(; nowPitch > 180F; nowPitch -= 360F) ;
+        for(; nowPitch < -180F; nowPitch += 360F) ;
+
+        float sppudiff = nowPitch - sppuAutomationCarrierDegree;
+        if(Math.abs(sppudiff + sppuDegree) < 0.85F) return;
+
+        if(sppudiff + sppuDegree > 0F)
+            typeX4CAdjAttitudeMinus();
+        else
+            typeX4CAdjAttitudePlus();
+
+        if(sppuDegree == -30.0F)
+        {
+            if(sppuAutomationFinishedTime == -1L)
+                sppuAutomationFinishedTime = Time.current();
+            else if(Time.current() - sppuAutomationFinishedTime > 10000L)
+            {
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "SPPU__StopAutomation");
+                sppuAutomationDoing = false;
+                sppuAutomationCarrierDegree = 0.0F;
+                typeX4CResetControls();
+                sppuAutomationFinishedTime = -1L;
+            }
+        }
     }
 
     static Class _mthclass$(String s)
@@ -716,9 +826,14 @@ public class Su_25 extends Su_25X
     private Chute chute1;
     private Chute chute2;
     private long removeChuteTimer;
-    private BulletEmitter g1;
-    private int oldbullets;
-    public static boolean bChangedPit = false;
+    private ArrayList sppuList;
+    private float sppuDegree;
+    private boolean bHasSPPU;
+    private boolean sppuAutomationDoing;
+    private boolean sppuReseting;
+    private float sppuAutomationCarrierDegree;
+    private long sppuAutomationFinishedTime;
+//    public static boolean bChangedPit = false;   // already prepaired in Su_25X.class
 
     //By western0221, Radar Warning Receiver
     private RadarWarningReceiverUtils rwrUtils;
@@ -1042,7 +1157,7 @@ public class Su_25 extends Su_25X
         return a_lweaponslot;
     }
 
-    static 
+    static
     {
         Class class1 = CLASS.THIS();
         new NetAircraft.SPAWN(class1);
@@ -2566,10 +2681,10 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xSPPU22+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[15] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -2580,10 +2695,10 @@ public class Su_25 extends Su_25X
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertFAB100ooutConfig(a_lweaponslot);
             a_lweaponslot = InsertFAB100outConfig(a_lweaponslot);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[15] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -2592,10 +2707,10 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xSPPU22+4xFAB250+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[15] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -2608,10 +2723,10 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xSPPU22+4xRBK250(PTAB2.5)+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[15] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -2624,10 +2739,10 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xSPPU22+4xRBK250(AO1)+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[15] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -2641,10 +2756,10 @@ public class Su_25 extends Su_25X
             s = "4xSPPU22+4xUB32+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertUB32ooutConfig(a_lweaponslot);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon_UB32_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "Pylon_UB32_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -2658,10 +2773,10 @@ public class Su_25 extends Su_25X
             s = "4xSPPU22+4xB8+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertB8ooutConfig(a_lweaponslot);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon_B8M1_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "Pylon_B8M1_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -2674,10 +2789,10 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xSPPU22+4xB13+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(9, "Pylon_B13_gn16", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(9, "Pylon_B13_gn16", 1);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon_B13_gn16", 1);
@@ -2694,10 +2809,10 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xSPPU22+4xS24+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(9, "Pylon_APU68UM2_gn16", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(9, "Pylon_APU68UM2_gn16", 1);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon_APU68UM2_gn16", 1);
@@ -2719,10 +2834,10 @@ public class Su_25 extends Su_25X
             s = "4xSPPU22+8xSAB100+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertSAB100ooutConfig(a_lweaponslot);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[15] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -2733,10 +2848,10 @@ public class Su_25 extends Su_25X
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertSAB100ooutConfig(a_lweaponslot);
             a_lweaponslot = InsertFAB100outConfig(a_lweaponslot);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[15] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -2746,10 +2861,10 @@ public class Su_25 extends Su_25X
             s = "4xSPPU22+2xUB32+2xSAB100+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertSAB100ooutConfig(a_lweaponslot);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon_UB32_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "Pylon_UB32_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -2762,10 +2877,10 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xSPPU22+2xPTB800+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -2777,10 +2892,10 @@ public class Su_25 extends Su_25X
             s = "4xSPPU22+8xFAB100+2xPTB800+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertFAB100ooutConfig(a_lweaponslot);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -2791,10 +2906,10 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xSPPU22+2xFAB250+2xPTB800+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -2807,10 +2922,10 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xSPPU22+2xRBK250(PTAB2.5)+2xPTB800+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -2823,10 +2938,10 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xSPPU22+2xRBK250(AO1)+2xPTB800+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -2840,10 +2955,10 @@ public class Su_25 extends Su_25X
             s = "4xSPPU22+2xUB32+2xPTB800+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertUB32ooutConfig(a_lweaponslot);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -2855,10 +2970,10 @@ public class Su_25 extends Su_25X
             s = "4xSPPU22+2xB8+2xPTB800+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertB8ooutConfig(a_lweaponslot);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -2869,10 +2984,10 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "4xSPPU22+2xB13+2xPTB800+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[2] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[3] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(9, "Pylon_B13_gn16", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(9, "Pylon_B13_gn16", 1);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
@@ -2890,16 +3005,16 @@ public class Su_25 extends Su_25X
             a_lweaponslot = InsertFAB100ooutConfig(a_lweaponslot);
             a_lweaponslot = InsertFAB100outConfig(a_lweaponslot);
             a_lweaponslot = InsertFAB100midConfig(a_lweaponslot);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[17] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             arraylist.add(s);
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xSPPU22+6xFAB250+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[17] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[18] = new Aircraft._WeaponSlot(3, "BombGunFAB250M46_gn16", 1);
@@ -2912,8 +3027,8 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xSPPU22+6xRBK250(PTAB2.5)+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[17] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[18] = new Aircraft._WeaponSlot(3, "BombGunRBK250_PTAB25_gn16", 1);
@@ -2926,8 +3041,8 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xSPPU22+6xRBK250(AO1)+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[17] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[18] = new Aircraft._WeaponSlot(3, "BombGunRBK250270_AO1_gn16", 1);
@@ -2941,8 +3056,8 @@ public class Su_25 extends Su_25X
             s = "2xSPPU22+6xUB32+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertUB32ooutConfig(a_lweaponslot);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon_UB32_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "Pylon_UB32_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_UB32_gn16", 1);
@@ -2958,8 +3073,8 @@ public class Su_25 extends Su_25X
             s = "2xSPPU22+6xB8+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertB8ooutConfig(a_lweaponslot);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon_B8M1_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "Pylon_B8M1_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_B8M1_gn16", 1);
@@ -2974,8 +3089,8 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xSPPU22+6xB13+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(9, "Pylon_B13_gn16", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(9, "Pylon_B13_gn16", 1);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon_B13_gn16", 1);
@@ -2994,8 +3109,8 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xSPPU22+6xS24+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(9, "Pylon_APU68UM2_gn16", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(9, "Pylon_APU68UM2_gn16", 1);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon_APU68UM2_gn16", 1);
@@ -3023,8 +3138,8 @@ public class Su_25 extends Su_25X
             a_lweaponslot = InsertSAB100ooutConfig(a_lweaponslot);
             a_lweaponslot = InsertFAB100outConfig(a_lweaponslot);
             a_lweaponslot = InsertFAB100midConfig(a_lweaponslot);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[17] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             arraylist.add(s);
@@ -3032,8 +3147,8 @@ public class Su_25 extends Su_25X
             s = "2xSPPU22+4xFAB250+8xSAB100+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertSAB100ooutConfig(a_lweaponslot);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[17] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[20] = new Aircraft._WeaponSlot(3, "BombGunFAB250M46_gn16", 1);
@@ -3045,8 +3160,8 @@ public class Su_25 extends Su_25X
             s = "2xSPPU22+4xUB32+8xSAB100+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertSAB100ooutConfig(a_lweaponslot);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon_UB32_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "Pylon_UB32_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_UB32_gn16", 1);
@@ -3062,8 +3177,8 @@ public class Su_25 extends Su_25X
             s = "2xSPPU22+4xB8+8xSAB100+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertSAB100ooutConfig(a_lweaponslot);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon_B8M1_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "Pylon_B8M1_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_B8M1_gn16", 1);
@@ -3080,8 +3195,8 @@ public class Su_25 extends Su_25X
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertFAB100ooutConfig(a_lweaponslot);
             a_lweaponslot = InsertFAB100midConfig(a_lweaponslot);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -3090,8 +3205,8 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xSPPU22+4xFAB250+2xPTB800+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -3104,8 +3219,8 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xSPPU22+4xRBK250(PTAB2.5)+2xPTB800+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -3118,8 +3233,8 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xSPPU22+4xRBK250(AO1)+2xPTB800+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
@@ -3133,8 +3248,8 @@ public class Su_25 extends Su_25X
             s = "2xSPPU22+4xUB32+2xPTB800+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertUB32ooutConfig(a_lweaponslot);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_UB32_gn16", 1);
@@ -3148,8 +3263,8 @@ public class Su_25 extends Su_25X
             s = "2xSPPU22+4xB8+2xPTB800+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertB8ooutConfig(a_lweaponslot);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_B8M1_gn16", 1);
@@ -3162,8 +3277,8 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xSPPU22+4xB13+2xPTB800+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(9, "Pylon_B13_gn16", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(9, "Pylon_B13_gn16", 1);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
@@ -3180,8 +3295,8 @@ public class Su_25 extends Su_25X
             hashmapint.put(Finger.Int(s), a_lweaponslot);
             s = "2xSPPU22+4xS24+2xPTB800+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[10] = new Aircraft._WeaponSlot(9, "Pylon_APU68UM2_gn16", 1);
             a_lweaponslot[11] = new Aircraft._WeaponSlot(9, "Pylon_APU68UM2_gn16", 1);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "FuelTankGun_Su25PTB800L_gn16", 1);
@@ -3205,8 +3320,8 @@ public class Su_25 extends Su_25X
             a_lweaponslot = InsertB8ooutConfig(a_lweaponslot);
             a_lweaponslot = InsertFAB100outConfig(a_lweaponslot);
             a_lweaponslot = InsertFAB100midConfig(a_lweaponslot);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[17] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             arraylist.add(s);
@@ -3214,8 +3329,8 @@ public class Su_25 extends Su_25X
             s = "2xSPPU22+4xFAB250+2xB8+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertB8ooutConfig(a_lweaponslot);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[17] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[20] = new Aircraft._WeaponSlot(3, "BombGunFAB250M46_gn16", 1);
@@ -3227,8 +3342,8 @@ public class Su_25 extends Su_25X
             s = "2xSPPU22+4xRBK250(PTAB2.5)+2xB8+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertB8ooutConfig(a_lweaponslot);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[17] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[20] = new Aircraft._WeaponSlot(3, "BombGunRBK250_PTAB25_gn16", 1);
@@ -3240,8 +3355,8 @@ public class Su_25 extends Su_25X
             s = "2xSPPU22+4xRBK250(AO1)+2xB8+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertB8ooutConfig(a_lweaponslot);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[16] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[17] = new Aircraft._WeaponSlot(9, "Pylon_SPPU22_gn16", 1);
             a_lweaponslot[18] = new Aircraft._WeaponSlot(3, "BombGunRBK250270_AO1_gn16", 1);
@@ -3253,8 +3368,8 @@ public class Su_25 extends Su_25X
             s = "2xSPPU22+4xB13+2xB8+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertB8ooutConfig(a_lweaponslot);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon_B13_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "Pylon_B13_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_B13_gn16", 1);
@@ -3270,8 +3385,8 @@ public class Su_25 extends Su_25X
             s = "2xSPPU22+4xS24+2xB8+2xR60";
             a_lweaponslot = GenerateDefaultConfig(byte0);
             a_lweaponslot = InsertB8ooutConfig(a_lweaponslot);
-            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23ki", 260);
+            a_lweaponslot[4] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
+            a_lweaponslot[5] = new Aircraft._WeaponSlot(1, "MGunGSH23kit", 260);
             a_lweaponslot[12] = new Aircraft._WeaponSlot(9, "Pylon_APU68UM2_gn16", 1);
             a_lweaponslot[13] = new Aircraft._WeaponSlot(9, "Pylon_APU68UM2_gn16", 1);
             a_lweaponslot[14] = new Aircraft._WeaponSlot(9, "Pylon_APU68UM2_gn16", 1);
