@@ -49,15 +49,15 @@ public class Su_25X extends Scheme2
         if(k14Mode == 0)
         {
             if(FM.actor == World.getPlayerAircraft())
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Unguided Bomb");
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "SightMode_UnguidedBomb");
         } else
         if(k14Mode == 1)
         {
             if(FM.actor == World.getPlayerAircraft())
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Unguided Rocket");
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "SightMode_UnguidedRocket");
         } else
         if(k14Mode == 2 && FM.actor == World.getPlayerAircraft())
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Navigation");
+            HUD.log(AircraftHotKeys.hudLogWeaponId, "SightMode_Navigation");
         return true;
     }
 
@@ -1350,12 +1350,12 @@ public class Su_25X extends Scheme2
         if(k14Mode == 0)
         {
             if(FM.actor == World.getPlayerAircraft())
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Caged");
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "SightMode_Caged");
         } else
         if(k14Mode == 1)
         {
             if(FM.actor == World.getPlayerAircraft())
-                HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Mode: Uncaged");
+                HUD.log(AircraftHotKeys.hudLogWeaponId, "SightMode_Uncaged");
         } else
         if(k14Mode == 2 && FM.actor == World.getPlayerAircraft())
             HUD.log(AircraftHotKeys.hudLogWeaponId, "Sight Off");
