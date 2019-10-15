@@ -9,8 +9,8 @@ import com.maddox.il2.engine.Config;
  * This information can be used to conditionally call methods or access fields depending on the base game version, therefore creating mods which can run on multiple different base game versions.
  * This Class is intended to be used with other classes of this package, e.g. the "Reflection" class e.g. in order to get access to fields which are not part of the base game version a mod is currently compiled against.
  * <p>
- * 
- * @version 1.1.0
+ *
+ * @version 1.1.1
  * @since 1.0.2
  * @author SAS~Storebror
  */
@@ -24,7 +24,7 @@ public class BaseGameVersion {
 	private BaseGameVersion() throws Exception{
         throw new Exception("Class com.maddox.sas1946.il2.util.BaseGameVersion cannot be instanciated!");
 	}
-	
+
 	// *****************************************************************************************************************************************************************************************************
 	// Public interface section.
 	// Methods and Arguments are supposed to be final here.
@@ -36,7 +36,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.09m
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.09m
      * @since 1.0.2
 	 */
@@ -46,7 +46,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.10m or IL-2 4.10.1m
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.10m or IL-2 4.10.1m
      * @since 1.0.2
 	 */
@@ -56,7 +56,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.10m (and NOT IL-2 4.10.1m)
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.10m (and NOT IL-2 4.10.1m)
      * @since 1.0.2
 	 */
@@ -66,7 +66,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.10.1m
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.10.1m
      * @since 1.0.2
 	 */
@@ -76,7 +76,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.11m or IL-2 4.11.1m
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.11m or IL-2 4.11.1m
      * @since 1.0.2
 	 */
@@ -86,7 +86,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.11m (and NOT IL-2 4.11.1m)
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.11m (and NOT IL-2 4.11.1m)
      * @since 1.0.2
 	 */
@@ -96,7 +96,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.11.1m
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.11.1m
      * @since 1.0.2
 	 */
@@ -106,7 +106,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.12m or IL-2 4.12.1m or IL-2 4.12.2m
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.12m or IL-2 4.12.1m or IL-2 4.12.2m
      * @since 1.0.2
 	 */
@@ -116,7 +116,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.12m (and neither IL-2 4.12.1m nor IL-2 4.12.2m)
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.12m (and neither IL-2 4.12.1m nor IL-2 4.12.2m)
      * @since 1.0.2
 	 */
@@ -126,7 +126,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.12.1m
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.12.1m
      * @since 1.0.2
 	 */
@@ -136,7 +136,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.12.2m
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.12.2m
      * @since 1.0.2
 	 */
@@ -146,7 +146,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.13m or IL-2 4.13.xm
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.13m or IL-2 4.13.xm
      * @since 1.0.2
 	 */
@@ -156,7 +156,7 @@ public class BaseGameVersion {
 
     /**
      * Checks whether the running game is IL-2 4.13.RC4m
-     * 
+     *
      * @return true if the running game is IL-2 4.13.RC4m
      * @since 1.1.0
      */
@@ -166,7 +166,7 @@ public class BaseGameVersion {
 
     /**
      * Checks whether the running game is IL-2 4.13.RC4m
-     * 
+     *
      * @return true if the running game is IL-2 4.13.RC4m
      * @since 1.1.0
      */
@@ -176,7 +176,7 @@ public class BaseGameVersion {
 
     /**
      * Checks whether the running game is IL-2 4.13.1m
-     * 
+     *
      * @return true if the running game is IL-2 4.13.1m
      * @since 1.1.0
      */
@@ -186,7 +186,7 @@ public class BaseGameVersion {
 
     /**
      * Checks whether the running game is IL-2 4.13.2m
-     * 
+     *
      * @return true if the running game is IL-2 4.13.2m
      * @since 1.1.0
      */
@@ -196,7 +196,7 @@ public class BaseGameVersion {
 
     /**
      * Checks whether the running game is IL-2 4.13.3m
-     * 
+     *
      * @return true if the running game is IL-2 4.13.3m
      * @since 1.1.0
      */
@@ -206,7 +206,7 @@ public class BaseGameVersion {
 
     /**
      * Checks whether the running game is IL-2 4.13.4m
-     * 
+     *
      * @return true if the running game is IL-2 4.13.4m
      * @since 1.1.0
      */
@@ -216,7 +216,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.14m or IL-2 4.14.xm
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.14m or IL-2 4.14.xm
      * @since 1.0.2
 	 */
@@ -226,7 +226,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.15m or IL-2 4.15.xm
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.15m or IL-2 4.15.xm
      * @since 1.0.2
 	 */
@@ -236,7 +236,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.16m or IL-2 4.16.xm
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.16m or IL-2 4.16.xm
      * @since 1.0.2
 	 */
@@ -246,7 +246,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.17m or IL-2 4.17.xm
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.17m or IL-2 4.17.xm
      * @since 1.0.2
 	 */
@@ -256,7 +256,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.18m or IL-2 4.18.xm
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.18m or IL-2 4.18.xm
      * @since 1.0.2
 	 */
@@ -266,7 +266,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.19m or IL-2 4.19.xm
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.19m or IL-2 4.19.xm
      * @since 1.0.2
 	 */
@@ -276,7 +276,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.20m or IL-2 4.20.xm
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.20m or IL-2 4.20.xm
      * @since 1.0.2
 	 */
@@ -286,7 +286,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.09m or later
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.09m or later
      * @since 1.0.2
 	 */
@@ -296,7 +296,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.10m or later
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.10m or later
      * @since 1.0.2
 	 */
@@ -306,7 +306,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.10m or later
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.10m or later
      * @since 1.0.2
 	 */
@@ -316,7 +316,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.10.1m or later
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.10.1m or later
      * @since 1.0.2
 	 */
@@ -326,7 +326,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.11m or later
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.11m or later
      * @since 1.0.2
 	 */
@@ -336,7 +336,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.11m or later
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.11m or later
      * @since 1.0.2
 	 */
@@ -346,7 +346,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.11.1m or later
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.11.1m or later
      * @since 1.0.2
 	 */
@@ -356,7 +356,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.12m or later
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.12m or later
      * @since 1.0.2
 	 */
@@ -366,7 +366,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.12m or later
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.12m or later
      * @since 1.0.2
 	 */
@@ -376,7 +376,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.12.1m or later
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.12.1m or later
      * @since 1.0.2
 	 */
@@ -386,7 +386,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.12.2m or later
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.12.2m or later
      * @since 1.0.2
 	 */
@@ -396,7 +396,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.13m or later
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.13m or later
      * @since 1.0.2
 	 */
@@ -406,7 +406,7 @@ public class BaseGameVersion {
 
     /**
      * Checks whether the running game is IL-2 4.13.RC4m or later
-     * 
+     *
      * @return true if the running game is IL-2 4.13.RC4m or later
      * @since 1.1.0
      */
@@ -416,7 +416,7 @@ public class BaseGameVersion {
 
     /**
      * Checks whether the running game is IL-2 4.13.RC4m or later
-     * 
+     *
      * @return true if the running game is IL-2 4.13.RC4m or later
      * @since 1.1.0
      */
@@ -426,7 +426,7 @@ public class BaseGameVersion {
 
     /**
      * Checks whether the running game is IL-2 4.13.1m or later
-     * 
+     *
      * @return true if the running game is IL-2 4.13.1m or later
      * @since 1.1.0
      */
@@ -436,7 +436,7 @@ public class BaseGameVersion {
 
     /**
      * Checks whether the running game is IL-2 4.13.2m or later
-     * 
+     *
      * @return true if the running game is IL-2 4.13.2m or later
      * @since 1.1.0
      */
@@ -446,7 +446,7 @@ public class BaseGameVersion {
 
     /**
      * Checks whether the running game is IL-2 4.13.3m or later
-     * 
+     *
      * @return true if the running game is IL-2 4.13.3m or later
      * @since 1.1.0
      */
@@ -456,7 +456,7 @@ public class BaseGameVersion {
 
     /**
      * Checks whether the running game is IL-2 4.13.4m or later
-     * 
+     *
      * @return true if the running game is IL-2 4.13.4m or later
      * @since 1.1.0
      */
@@ -466,7 +466,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.14m or later
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.14m or later
      * @since 1.0.2
 	 */
@@ -476,7 +476,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.15m or later
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.15m or later
      * @since 1.0.2
 	 */
@@ -486,7 +486,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.16m or later
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.16m or later
      * @since 1.0.2
 	 */
@@ -496,7 +496,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.17m or later
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.17m or later
      * @since 1.0.2
 	 */
@@ -506,7 +506,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.18m or later
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.18m or later
      * @since 1.0.2
 	 */
@@ -516,7 +516,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.19m or later
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.19m or later
      * @since 1.0.2
 	 */
@@ -526,7 +526,7 @@ public class BaseGameVersion {
 
 	/**
 	 * Checks whether the running game is IL-2 4.20m or later
-	 * 
+	 *
 	 * @return true if the running game is IL-2 4.20m or later
      * @since 1.0.2
 	 */
@@ -547,7 +547,7 @@ public class BaseGameVersion {
      *            BaseGameVersion.SELECTOR_INFO_PRODUCTVERSION:  The raw String showing the IL-2 Selector Product Version, e.g. "3.1.4.2"<BR>
      *            BaseGameVersion.SELECTOR_INFO_SPECIAL_BUILD:   A string describing a special build type, e.g. "Vista June 2015 Patch Comctl32.dll bugfix"<BR>
      *            BaseGameVersion.SELECTOR_INFO_COPYRIGHT:       The IL-2 Selector Copyright String, e.g. "(C) SAS June 2015"<BR>
-     *            
+     *
      * @return A String representing the information requested from the IL-2 Selector.
      * @since 1.0.8
      */
@@ -558,49 +558,49 @@ public class BaseGameVersion {
         } catch (UnsatisfiedLinkError e) {}
         return "N/A";
     }
-    
+
     /**
      * This Parameter is used by the {@link #selectorInfo(int) selectorInfo} method.<BR>
      * It returns a preformatted string giving information about the IL-2 Selector File Version, e.g. "3.1.4.2 Build 15062901"
      * @since 1.0.8
      */
     public static final int SELECTOR_INFO_FILE_VERSION     = 1;
-    
+
     /**
      * This Parameter is used by the {@link #selectorInfo(int) selectorInfo} method.<BR>
      * It returns a preformatted string giving information about the IL-2 Selector Product Version, e.g. "3.1.4"
      * @since 1.0.8
      */
     public static final int SELECTOR_INFO_PRODUCT_VERSION  = 2;
-    
+
     /**
      * This Parameter is used by the {@link #selectorInfo(int) selectorInfo} method.<BR>
      * It returns the raw String showing the IL-2 Selector File Version, e.g. "3.1.4.2"
      * @since 1.0.8
      */
     public static final int SELECTOR_INFO_FILEVERSION      = 3;
-    
+
     /**
      * This Parameter is used by the {@link #selectorInfo(int) selectorInfo} method.<BR>
      * It returns the raw String showing the IL-2 Selector Product Version, e.g. "3.1.4.2"
      * @since 1.0.8
      */
     public static final int SELECTOR_INFO_PRODUCTVERSION   = 4;
-    
+
     /**
      * This Parameter is used by the {@link #selectorInfo(int) selectorInfo} method.<BR>
      * It returns a string describing a special build type, e.g. "Vista June 2015 Patch Comctl32.dll bugfix"
      * @since 1.0.8
      */
     public static final int SELECTOR_INFO_SPECIAL_BUILD    = 5;
-    
+
     /**
      * This Parameter is used by the {@link #selectorInfo(int) selectorInfo} method.<BR>
      * It returns the IL-2 Selector Copyright String, e.g. "(C) SAS June 2015"
      * @since 1.0.8
      */
     public static final int SELECTOR_INFO_COPYRIGHT        = 6;
-    
+
 	// *****************************************************************************************************************************************************************************************************
 	// Private implementation section.
 	// Do whatever you like here but keep it private to this class.
@@ -612,7 +612,7 @@ public class BaseGameVersion {
 		if (fConfigVersion > 0.0F) return fConfigVersion;
 		String theVersion = "4.00m";
 		try {
-			theVersion = (String) Config.class.getDeclaredField("VERSION").get(null);
+			theVersion = Reflection.getString(Config.class, "VERSION");//(String) Config.class.getDeclaredField("VERSION").get(null);
 		} catch (Exception e) {
 			System.out.println("Couldn't resolve game version due to following error:");
 			e.printStackTrace();
@@ -621,6 +621,7 @@ public class BaseGameVersion {
 		String versionToParse = "";
 		boolean digitSet = false;
 		theVersion = theVersion.trim();
+		if (theVersion.toLowerCase().startsWith("ultrapack_")) return UltrapackVersionToFloat(theVersion.substring(10));
 		for (int pos=0; pos<theVersion.length(); pos++) {
 			if (Character.isDigit(theVersion.charAt(pos)))
 				versionToParse+=theVersion.charAt(pos);
@@ -646,9 +647,31 @@ public class BaseGameVersion {
 		return fConfigVersion;
 	}
 
-    private static final native String getSelectorInfo(int infoRequested);
+	private static float UltrapackVersionToFloat(String theVersion) {
+		String versionToParse = "";
+		boolean digitSet = false;
+		for (int pos=0; pos<theVersion.length(); pos++) {
+			if (Character.isDigit(theVersion.charAt(pos)))
+				versionToParse+=theVersion.charAt(pos);
+			else if (theVersion.charAt(pos) == '.') {
+				if (digitSet) continue;
+				digitSet = true;
+				versionToParse+=theVersion.charAt(pos);
+			} else break;
+		}
+		versionToParse += 'F';
+		float ultrapackVersion = Float.parseFloat(versionToParse);
+		if (ultrapackVersion >= 3.0F)
+			fConfigVersion = 4.101F;
+		else
+			fConfigVersion = 4.101F;
+		System.out.println("SAS Common Utils Game Version = " + fConfigVersion);
+		return fConfigVersion;
+	}
+
+	private static final native String getSelectorInfo(int infoRequested);
     private static boolean libLoaded = false;
-    
+
     private static final void loadNative()
     {
       if (!libLoaded) {
@@ -660,7 +683,7 @@ public class BaseGameVersion {
 
     static {
         try{
-            loadNative(); 
+            loadNative();
         } catch (Exception e) {
             System.out.println(" *** no suitable IL-2 Selector found *** ");
         }
