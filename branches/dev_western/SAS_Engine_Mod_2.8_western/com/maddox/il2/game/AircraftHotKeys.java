@@ -4,6 +4,7 @@
 //By western, on 26th/Apr./2018, expanded for 8x Engines / Scheme8 aircrafts
 //By western, on 24th/Jun./2018, expanded for 10x Engines / Scheme10 aircrafts
 //By western, on 29th/Sep./2019, bugfix cannot remove chocks for IK-3 etc. after spawned with Chocks set.
+//By western, on 15th/Oct./2019, bugfix Smart Axis enabled for 10x Engines / Scheme10 aircrafts
 
 package com.maddox.il2.game;
 
@@ -2112,6 +2113,17 @@ public class AircraftHotKeys {
 				setPowerControl(f3, 1);
 				setPowerControl(f3, 2);
 				break;
+			} else if (useSmartAxisForPower && FM.EI.engines.length == 10) {
+				setPowerControl(f3, 1);
+				setPowerControl(f3, 2);
+				setPowerControl(f3, 3);
+				setPowerControl(f3, 4);
+				setPowerControl(f3, 5);
+				break;
+			} else if (useSmartAxisForPower2 && FM.EI.engines.length == 10) {
+				setPowerControl(f3, 1);
+				setPowerControl(f3, 2);
+				break;
 			} else {
 				setPowerControl(f3, 1);
 			}
@@ -2170,6 +2182,18 @@ public class AircraftHotKeys {
 				setPowerControl(f4, 3);
 				setPowerControl(f4, 4);
 				break;
+			} else if (useSmartAxisForPower && FM.EI.engines.length == 10) {
+				setPowerControl(f4, 6);
+				setPowerControl(f4, 7);
+				setPowerControl(f4, 8);
+				setPowerControl(f4, 9);
+				setPowerControl(f4, 10);
+				break;
+			} else if (useSmartAxisForPower2 && FM.EI.engines.length == 10) {
+				setPowerControl(f4, 3);
+				setPowerControl(f4, 4);
+				setPowerControl(f4, 5);
+				break;
 			} else {
 				setPowerControl(f4, 2);
 			}
@@ -2198,6 +2222,11 @@ public class AircraftHotKeys {
 				setPowerControl(f5, 5);
 				setPowerControl(f5, 6);
 				break;
+			} else if (useSmartAxisForPower2 && FM.EI.engines.length == 10) {
+				setPowerControl(f5, 6);
+				setPowerControl(f5, 7);
+				setPowerControl(f5, 8);
+				break;
 			} else {
 				setPowerControl(f5, 3);
 			}
@@ -2222,6 +2251,10 @@ public class AircraftHotKeys {
 			} else if (useSmartAxisForPower2 && FM.EI.engines.length == 8) {
 				setPowerControl(f6, 7);
 				setPowerControl(f6, 8);
+				break;
+			} else if (useSmartAxisForPower2 && FM.EI.engines.length == 10) {
+				setPowerControl(f6, 9);
+				setPowerControl(f6, 10);
 				break;
 			} else {
 				setPowerControl(f6, 4);
@@ -2292,6 +2325,17 @@ public class AircraftHotKeys {
 				setPropControl(f11, 1);
 				setPropControl(f11, 2);
 				break;
+			} else if (useSmartAxisForPitch && FM.EI.engines.length == 10) {
+				setPropControl(f11, 1);
+				setPropControl(f11, 2);
+				setPropControl(f11, 3);
+				setPropControl(f11, 4);
+				setPropControl(f11, 5);
+				break;
+			} else if (useSmartAxisForPitch2 && FM.EI.engines.length == 10) {
+				setPropControl(f11, 1);
+				setPropControl(f11, 2);
+				break;
 			} else {
 				setPropControl(f11, 1);
 			}
@@ -2350,6 +2394,18 @@ public class AircraftHotKeys {
 				setPropControl(f12, 3);
 				setPropControl(f12, 4);
 				break;
+			} else if (useSmartAxisForPitch && FM.EI.engines.length == 10) {
+				setPropControl(f12, 6);
+				setPropControl(f12, 7);
+				setPropControl(f12, 8);
+				setPropControl(f12, 9);
+				setPropControl(f12, 10);
+				break;
+			} else if (useSmartAxisForPitch2 && FM.EI.engines.length == 10) {
+				setPropControl(f12, 3);
+				setPropControl(f12, 4);
+				setPropControl(f12, 5);
+				break;
 			} else {
 				setPropControl(f12, 2);
 			}
@@ -2378,6 +2434,11 @@ public class AircraftHotKeys {
 				setPropControl(f13, 5);
 				setPropControl(f13, 6);
 				break;
+			} else if (useSmartAxisForPitch2 && FM.EI.engines.length == 10) {
+				setPropControl(f13, 6);
+				setPropControl(f13, 7);
+				setPropControl(f13, 8);
+				break;
 			} else {
 				setPropControl(f13, 3);
 			}
@@ -2402,6 +2463,10 @@ public class AircraftHotKeys {
 			} else if (useSmartAxisForPitch2 && FM.EI.engines.length == 8) {
 				setPropControl(f14, 7);
 				setPropControl(f14, 8);
+				break;
+			} else if (useSmartAxisForPitch2 && FM.EI.engines.length == 10) {
+				setPropControl(f14, 9);
+				setPropControl(f14, 10);
 				break;
 			} else {
 				setPropControl(f14, 4);
@@ -4567,7 +4632,7 @@ public class AircraftHotKeys {
 			HashMapInt hashmapint = hotkeyenv.all();
 			for (HashMapIntEntry hashmapintentry = hashmapint.nextEntry(null); hashmapintentry != null; hashmapintentry = hashmapint.nextEntry(hashmapintentry)) {
 //				int j = hashmapintentry.getKey();  //By PAL, in stock v4.12.2, j not used anywhwere
-				String s = (String) (String) hashmapintentry.getValue();
+				String s = (String) hashmapintentry.getValue();
 				if (s.startsWith("-")) s = s.substring(1);
 				if (s.startsWith("power") && s.length() == 6) {
 					int k = (new Integer(s.substring(5))).intValue();
