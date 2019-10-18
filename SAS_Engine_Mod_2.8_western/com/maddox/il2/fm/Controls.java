@@ -2,14 +2,16 @@
 
 /*
  * Changelog:
- * 2014.08.11: doSetRocketHook method changed to make this class independent from Guided Missile Mod
- * 2016.06.16: importing 4.13.2m's Bomb release mode codes and adding Select bomb function.
- * 2016.10.22: By PAL, modified incorrect static variables
- * 2017.01.03: By western, implement limit Ailerons, debug Select bomb and Unlimited Ammo
- * 2017.01.14: By western, implement Rocket mode Ripple (continuous Pairs)
- * 2017.02.07: By western, implement Formation lights and Anti-Collision lights
- * 2017.11.18: By western, add No Jettison variant of external Fueltanks
- * 2018.04.03: By western, add AI take-off rotation and climb pitch target values
+ * 11th/Aug./2014: doSetRocketHook method changed to make this class independent from Guided Missile Mod
+ * 16th/Jun./2016: importing 4.13.2m's Bomb release mode codes and adding Select bomb function.
+ * 22nd/Oct./2016: By PAL, modified incorrect static variables
+ * 03rd/Jan./2017: By western, implement limit Ailerons, debug Select bomb and Unlimited Ammo
+ * 14th/Jan./2017: By western, implement Rocket mode Ripple (continuous Pairs)
+ * 07th/Feb./2017: By western, implement Formation lights and Anti-Collision lights
+ * 18th/Nov./2017: By western, add No Jettison variant of external Fueltanks
+ * 03rd/Apr./2018: By western, add AI take-off rotation and climb pitch target values
+ * 16th/Oct./2019: By western, add getter methods of bombing time and class, Bomb Select treats in the same group for subtypes "groupLeader" property value written
+ * 18th/Oct./2019: By western, array size and for() end values are written in static MAX int for future expanding.
  */
 
 package com.maddox.il2.fm;
@@ -114,17 +116,18 @@ public class Controls {
 	public float PowerControlArr[];
 	public float StepControlArr[];
 	private FlightModelMain FM;
-	//By PAL, static?
-	private /* static */ float tmpF;
+	//By PAL, static? --- Yes, static OK for temporary flashable value and to save memory and overhead.
+	private static float tmpF;
 	public boolean bDropWithPlayer;
 	public Aircraft dropWithPlayer;
 	boolean bDropWithMe;
-	//By PAL, static?
-	private /* static */ Vector3d tmpV3d = new Vector3d();
+	//By PAL, static? --- Yes, static OK for temporary flashable value and to save memory and overhead.
+	private static Vector3d tmpV3d = new Vector3d();
 	// --------------------------------------------------------
 
 	// TODO: New parameters
 	// --------------------------------------------------------
+	public static final int MAX_ENGINE_NUM = 10;
 	public boolean bHasCatLaunchBarControl;
 	public float CatLaunchBarControl;
 	public float dvCatLaunchBar;
@@ -160,10 +163,11 @@ public class Controls {
 	private float fSaveSideDoorControl;
 	public boolean bMoveSideDoor = false;
 	private int SIDE_DOOR = 2;
-	public static final int LEFT = 1;
-	public static final int RIGHT = 2;
-	public int iToggleRocketSide = LEFT;
-	public int iToggleBombSide = LEFT;
+// These 4x static values were used by commented-out old missile codes only
+//	public static final int LEFT = 1;
+//	public static final int RIGHT = 2;
+//	public int iToggleRocketSide = LEFT;
+//	public int iToggleBombSide = LEFT;
 	public long lWeaponTime = System.currentTimeMillis();
 	public static final int WEAPON_FIRE_MODE_SALVO = 0;
 	public static final int WEAPON_FIRE_MODE_SINGLE = 1;
@@ -205,8 +209,13 @@ public class Controls {
 	public boolean bHasSideDoor;
 	public boolean bHasBombSelect;
 	private Class[] bombClassArr;
+	private Class[][] bombLeaderClassRvsIdx;
+	private static final int B_CLASSES_MAX = 8;
+	private static final int B_SUBCLASSES_MAX = 8;
 	private int bombClassNumber;
 	public int curBombSelected;
+	private long timeOfLastBombReleaseRecorded;
+	private Class classOfLastBombReleaseRecorded;
 	public boolean bHasFormationLights;
 	public boolean bFormationLights;
 	public boolean bHasAntiColLights;
@@ -220,12 +229,12 @@ public class Controls {
 
 	// Import values from 4.13.2m
 	// --------------------------------------------------------
-	public static final int B_RELEASE_SALVO = 0;
-	public static final int B_RELEASE_SINGLE_WINGS_FIRST = 1;
+	private static final int B_RELEASE_SALVO = 0;
+	private static final int B_RELEASE_SINGLE_WINGS_FIRST = 1;
 	private static final int B_RELEASE_SINGLE_FC_FIRST = 2;
 	private static final int B_RELEASE_PAIRS_WINGS_FIRST = 3;
 	private static final int B_RELEASE_PAIRS_FC_FIRST = 4;
-	public static final int B_RELEASE_TRAIN = 5;
+	private static final int B_RELEASE_TRAIN = 5;
 	public int bombReleaseMode;
 	public int bombTrainDelay;
 	public int bombTrainAmount;
@@ -310,14 +319,13 @@ public class Controls {
 		dropWithPlayer = null;
 		bDropWithMe = false;
 		FM = flightmodelmain;
-		// TODO: Expanded to allow for 8 engines
+		// TODO: Expanded to allow for 10 engines, use MAX_ENGINE_NUM static int value for future more expanding
 		// --------------------------------------------------------
-		PowerControlArr = new float[8];
-		StepControlArr = new float[8];
-		FM = flightmodelmain;
-		for (int i = 0; i < 8; i++)
+		PowerControlArr = new float[MAX_ENGINE_NUM];
+		StepControlArr = new float[MAX_ENGINE_NUM];
+		for (int i = 0; i < MAX_ENGINE_NUM; i++)
 			PowerControlArr[i] = 0.0F;
-		for (int j = 0; j < 8; j++)
+		for (int j = 0; j < MAX_ENGINE_NUM; j++)
 			StepControlArr[j] = 1.0F;
 		// --------------------------------------------------------
 
@@ -374,11 +382,14 @@ public class Controls {
 		bNoCarrierCanopyOpen = false;
 		bHasSideDoor = false;
 		bHasBombSelect = false;
-		bombClassArr = new Class[8];
+		bombClassArr = new Class[B_CLASSES_MAX];
+		bombLeaderClassRvsIdx = new Class[B_CLASSES_MAX][B_SUBCLASSES_MAX];
 		bombClassNumber = 0;
 		curBombSelected = -1;
 		bombsHangedNumber = 0;
 		bombsHangedNumberByClass = new int[8];
+		timeOfLastBombReleaseRecorded = -1L;
+		classOfLastBombReleaseRecorded = null;
 		bDroptanksDropped = false;
 		targetDegreeAITakeoffRotation = -1.0F;
 		targetDegreeAITakeoffClimb = -1.0F;
@@ -387,7 +398,7 @@ public class Controls {
 
 		// Import values from 4.13.2m
 		// --------------------------------------------------------
-		bombReleaseMode = 3;
+		bombReleaseMode = B_RELEASE_PAIRS_WINGS_FIRST;
 		bombTrainDelay = 0;
 		bombTrainAmount = 1;
 		bombsReleased = 0;
@@ -511,9 +522,10 @@ public class Controls {
 		if (f > 1.1F)
 			f = 1.1F;
 		PowerControl = f;
-		// TODO: Increased to 8 to allow aircraft with up to 8 engines to work
+		// TODO: Increased to 10 to allow aircraft with up to 10 engines to work
+		//       Use MAX_ENGINE_NUM static int value for future more expanding
 		// --------------------------------------------------------
-		for (int i = 0; i < 8; i++)
+		for (int i = 0; i < MAX_ENGINE_NUM; i++)
 			if (i < FM.EI.getNum() && FM.EI.bCurControl[i])
 				PowerControlArr[i] = f;
 		// --------------------------------------------------------
@@ -545,9 +557,10 @@ public class Controls {
 			if (f < 0.0F)
 				f = 0.0F;
 			StepControl = f;
-			// TODO: Expanded to allow for 8 engines
+			// TODO: Expanded to allow for 10 engines
+			//       Use MAX_ENGINE_NUM static int value for future more expanding
 			// --------------------------------------------------------
-			for (int i = 0; i < 8; i++)
+			for (int i = 0; i < MAX_ENGINE_NUM; i++)
 				if (i < FM.EI.getNum() && FM.EI.bCurControl[i])
 					StepControlArr[i] = f;
 			// --------------------------------------------------------
@@ -813,6 +826,14 @@ public class Controls {
 
 	public float getCatLaunchBar() {
 		return catLaunchBar;
+	}
+
+	public long getLastBombReleaseTime() {
+		return timeOfLastBombReleaseRecorded;
+	}
+
+	public Class getLastBombReleaseClass() {
+		return classOfLastBombReleaseRecorded;
 	}
 
 	// --------------------------------------------------------
@@ -1231,9 +1252,9 @@ public class Controls {
 		// TODO: Start of weapon control & release mod
 		// --------------------------------------------------------
 		long delay = weaponReleaseDelay;
-		if ((float)Time.speed() == 0.5) {
+		if (Time.speed() == 0.5D) {
 			delay *= 2L;
-		} else if ((float)Time.speed() == 0.25) {
+		} else if (Time.speed() == 0.25D) {
 			delay *= 4L;
 		} else
 			delay /= (long)Time.speed();
@@ -1533,8 +1554,8 @@ public class Controls {
 		if (i >= Weapons.length || Weapons[i] == null)
 			return 0;
 		int l = Weapons[i].length;
-		int k;
-		int j = k = 0;
+		int k = 0;
+		int j = 0;
 		for (; k < l; k++) {
 			BulletEmitter bulletemitter = Weapons[i][k];
 			if (bulletemitter != null && !(bulletemitter instanceof FuelTankGun))
@@ -1558,6 +1579,20 @@ public class Controls {
 			if (bulletemitter == null || !(bulletemitter instanceof BombGun)) continue;
 			if (((BombGun)bulletemitter).bulletClass() == class1)
 				j += bulletemitter.countBullets();
+			else if (Property.stringValue(((BombGun)bulletemitter).bulletClass(), "groupLeader", null) != null) {
+				boolean mBreak = false;
+				for (int m = 0; m < B_CLASSES_MAX && !mBreak; m++) {
+					if (bombClassArr[m] == class1) {
+						for (int n = 0; n < B_SUBCLASSES_MAX; n++) {
+							if (bombLeaderClassRvsIdx[m][n] == ((BombGun)bulletemitter).bulletClass()) {
+								j += bulletemitter.countBullets();
+								mBreak = true;
+								break;
+							}
+						}
+					}
+				}
+			}
 		}
 		if (j < 0) j = -1;	// TODO: by western, debug Unlimited-Ammo
 
@@ -1570,9 +1605,24 @@ public class Controls {
 	private boolean getBombClassExist(Class class1) {
 		if (bombClassNumber == 0)
 			return false;
-		for (int i = 0; i < bombClassNumber; i++) {
-			if (bombClassArr[i] == class1)
-				return true;
+		String leaderName = Property.stringValue(class1, "groupLeader", null);
+		if (leaderName == null) {
+			for (int i = 0; i < bombClassNumber; i++) {
+				if (bombClassArr[i] == class1)
+					return true;
+			}
+		} else {
+			Class classLeader = null;
+			try {
+				classLeader = Class.forName("com.maddox.il2.objects.weapons." + leaderName);
+			} catch(ClassNotFoundException classnotfoundexception) {
+				System.out.println("Error: " + class1.getName().substring(31) + "'s groupLeader value '" + leaderName + "' is invalid.");
+				throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+			}
+			for (int i = 0; i < bombClassNumber; i++) {
+				if (bombClassArr[i] == classLeader)
+					return true;
+			}
 		}
 
 		return false;
@@ -1581,12 +1631,38 @@ public class Controls {
 	private int getBombClassIndex(Class class1) {
 		if (bombClassNumber == 0)
 			return -1;
-		for (int i = 0; i < bombClassNumber; i++) {
-			if (bombClassArr[i] == class1)
-				return i;
+		String leaderName = Property.stringValue(class1, "groupLeader", null);
+		if (leaderName == null) {
+			for (int i = 0; i < bombClassNumber; i++) {
+				if (bombClassArr[i] == class1)
+					return i;
+			}
+		} else {
+			for (int i = 0; i < bombClassNumber; i++) {
+				if (bombClassArr[i].getName().substring(31) == leaderName)
+					return i;
+			}
 		}
 
 		return -1;
+	}
+
+	private boolean isMatchBombSelectedNum(int selectedNum, Class class1) {
+		if (bombClassArr[selectedNum] == null)
+			return false;
+		if (bombClassArr[selectedNum] == class1)
+			return true;
+
+		if (Property.stringValue(class1, "groupLeader", null) != null) {
+			for (int n = 0; n < B_SUBCLASSES_MAX; n++) {
+				if (bombLeaderClassRvsIdx[selectedNum][n] == null)
+					break;
+				if (bombLeaderClassRvsIdx[selectedNum][n] == class1)
+					return true;
+			}
+		}
+
+		return false;
 	}
 
 			// TODO: Add a new Bomb class to the array
@@ -1596,7 +1672,26 @@ public class Controls {
 			return false;
 		if (getBombClassExist(class1))
 			return false;
-		bombClassArr[bombClassNumber] = class1;
+		String leaderName = Property.stringValue(class1, "groupLeader", null);
+		if (leaderName == null) {
+			bombClassArr[bombClassNumber] = class1;
+		} else {
+			Class classLeader = null;
+			try {
+				classLeader = Class.forName("com.maddox.il2.objects.weapons." + leaderName);
+			} catch(ClassNotFoundException classnotfoundexception) {
+				System.out.println("Error: " + class1.getName().substring(31) + "'s groupLeader value '" + leaderName + "' is invalid.");
+				throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+			}
+			bombClassArr[bombClassNumber] = classLeader;
+			for (int i = 0; i < B_CLASSES_MAX; i++) {
+				if (bombLeaderClassRvsIdx[bombClassNumber][i] == null) {
+					bombLeaderClassRvsIdx[bombClassNumber][i] = class1;
+					break;
+				} else if (bombLeaderClassRvsIdx[bombClassNumber][i] == class1)
+					break;
+			}
+		}
 		bombClassNumber++;
 
 		return true;
@@ -1607,6 +1702,9 @@ public class Controls {
 	public boolean registerBombs() {
 		for (int i = 0; i < bombClassArr.length; i++)
 			bombClassArr[i] = null;
+		for (int k = 0; k < B_CLASSES_MAX; k++)
+			for (int j = 0; j < B_SUBCLASSES_MAX; j++)
+				bombLeaderClassRvsIdx[k][j] = null;
 		bombClassNumber = 0;
 
 		if (Weapons[3] == null || Weapons[3].length == 0)
@@ -1924,14 +2022,14 @@ public class Controls {
 		boolean bHasWingB = hasWingBombs();
 		boolean bHasFuselB = hasFuselageBombs();
 		int i = bombReleaseMode + 1;
-		if (i == 1 && bHasBombSelect && curBombSelected == -1)
-			i = 5;		// When selected ALL bombs, Single/Pair modes are ignored.
+		if (i == B_RELEASE_SINGLE_WINGS_FIRST && bHasBombSelect && curBombSelected == -1)
+			i = B_RELEASE_TRAIN;		// When selected ALL bombs, Single/Pair modes are ignored.
 		if (bHasBombSelect && curBombSelected > -1)
 			if (getWeaponCount(3, bombClassArr[curBombSelected]) == 1)
 				i = 6;		// When rest amount of the bomb selected is only 1, Single/Pair/Train modes are ignored and go to next bomb class.
-		if ((i == 2 || i == 4) && (bHasFuselB != bHasWingB || bHasBombSelect))
+		if ((i == B_RELEASE_SINGLE_FC_FIRST || i == B_RELEASE_PAIRS_FC_FIRST) && (bHasFuselB != bHasWingB || bHasBombSelect))
 			i++;
-		if (i > 5 || i == 5 && (!((Aircraft)FM.actor).hasIntervalometer() || !World.cur().diffCur.Limited_Ammo)) {
+		if (i > B_RELEASE_TRAIN || i == B_RELEASE_TRAIN && (!((Aircraft)FM.actor).hasIntervalometer() || !World.cur().diffCur.Limited_Ammo)) {
 			if (bHasBombSelect && getNumberOfValidBombClass() > 1) {
 				curBombSelected++;
 				for (; curBombSelected < bombClassNumber; curBombSelected++)
@@ -1942,9 +2040,9 @@ public class Controls {
 				if (bombTrainAmount < 0) bombTrainAmount = 1;
 			}
 
-			i = 0;
+			i = B_RELEASE_SALVO;
 		}
-		if (i == 5) {
+		if (i == B_RELEASE_TRAIN) {
 			bombsReleased = 0;
 			timeOfLastBombRelease = -1L;
 		}
@@ -1957,7 +2055,7 @@ public class Controls {
 			classname = (index > 0) ? classnametemp.substring(0, index) : classnametemp;
 		}
 		switch(bombReleaseMode) {
-		case 0: // '\0'
+		case 0: // B_RELEASE_SALVO
 			if (bHasBombSelect) {
 				if (curBombSelected == -1)
 					HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseSalvoAll");
@@ -1967,7 +2065,7 @@ public class Controls {
 				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseSalvo");
 			return;
 
-		case 3: // '\003'
+		case 3: // B_RELEASE_PAIRS_WINGS_FIRST
 			if (bHasBombSelect)
 				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleasePairsName" , new Object[] { new String(classname) });
 			else if (bHasWingB && bHasFuselB)
@@ -1976,14 +2074,14 @@ public class Controls {
 				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleasePairs");
 			return;
 
-		case 4: // '\004'
+		case 4: // B_RELEASE_PAIRS_FC_FIRST
 			if (bHasWingB && bHasFuselB)
 				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleasePairsFF");
 			else
 				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleasePairs");
 			return;
 
-		case 1: // '\001'
+		case 1: // B_RELEASE_SINGLE_WINGS_FIRST
 			if (bHasBombSelect)
 				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseSingleName" , new Object[] { new String(classname) });
 			else if (bHasWingB && bHasFuselB)
@@ -1992,14 +2090,14 @@ public class Controls {
 				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseSingle");
 			return;
 
-		case 2: // '\002'
+		case 2: // B_RELEASE_SINGLE_FC_FIRST
 			if (bHasWingB && bHasFuselB)
 				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseSingleFF");
 			else
 				HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseSingle");
 			return;
 
-		case 5: // '\005'
+		case 5: // B_RELEASE_TRAIN
 			if (bHasBombSelect) {
 				if (curBombSelected == -1)
 					HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseTrainAll");
@@ -2012,8 +2110,8 @@ public class Controls {
 	}
 
 	private void autoSwitchToTrain() {
-		if (bombReleaseMode != 5) {
-			bombReleaseMode = 5;
+		if (bombReleaseMode != B_RELEASE_TRAIN) {
+			bombReleaseMode = B_RELEASE_TRAIN;
 			HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseTrain");
 		}
 	}
@@ -2057,27 +2155,27 @@ public class Controls {
 	}
 
 	public boolean isTrainStillDropping() {
-		return bombReleaseMode == 5 && bombsReleased > 0;
+		return bombReleaseMode == B_RELEASE_TRAIN && bombsReleased > 0;
 	}
 
 	private void doBombRelease() {
 		byte byte0 = 3;
-		if (isTrainStillDropping() && (float)Time.current() < (float)timeOfLastBombRelease + getBombTrainDelay())
+		if (isTrainStillDropping() && Time.current() < timeOfLastBombRelease + (long)getBombTrainDelay())
 			return;
 		int i = bombsReleased;
-		if (bombReleaseMode == 4 || bombReleaseMode == 3) {
+		if (bombReleaseMode == B_RELEASE_PAIRS_FC_FIRST || bombReleaseMode == B_RELEASE_PAIRS_WINGS_FIRST) {
 			boolean flag = hasWingBombs();
 			boolean flag2 = hasFuselageBombs();
 			weaponReleaseCycle(byte0, bombReleaseMode, 0, 2, flag, flag2);
 			weaponReleaseCycle(byte0, bombReleaseMode, 1, 2, flag, flag2);
-		} else if (bombReleaseMode == 2 || bombReleaseMode == 1) {
+		} else if (bombReleaseMode == B_RELEASE_SINGLE_FC_FIRST || bombReleaseMode == B_RELEASE_SINGLE_WINGS_FIRST) {
 			boolean flag1 = hasWingBombs();
 			boolean flag3 = hasFuselageBombs();
 			weaponReleaseCycle(byte0, bombReleaseMode, 0, 1, flag1, flag3);
 		} else {
 			weaponReleaseCycle(byte0, bombReleaseMode, 0, 1, false, false);
 		}
-		if (bombReleaseMode != 5) {
+		if (bombReleaseMode != B_RELEASE_TRAIN) {
 			WeaponControl[byte0] = false;
 			bombsReleased = 0;
 			timeOfLastBombRelease = -1L;
@@ -2102,13 +2200,13 @@ public class Controls {
 		for (int i1 = start; i1 < Weapons[i].length; i1 += unit) {
 			if (Weapons[i][i1] instanceof FuelTankGun)
 				continue;
-			if ((Weapons[i][i1] instanceof BombGunNull) && i == 3 && relMode != 4 && relMode != 3) {
+			if ((Weapons[i][i1] instanceof BombGunNull) && i == 3 && relMode != B_RELEASE_PAIRS_FC_FIRST && relMode != B_RELEASE_PAIRS_WINGS_FIRST) {
 				Weapons[i][i1].shots(1);
 				continue;
 			}
 			if (!Weapons[i][i1].haveBullets())
 				continue;
-			if (i == 3 && bHasBombSelect && curBombSelected > -1 && ((BombGun)Weapons[i][i1]).bulletClass() != bombClassArr[curBombSelected])
+			if (i == 3 && bHasBombSelect && curBombSelected > -1 && !isMatchBombSelectedNum(curBombSelected, ((BombGun)Weapons[i][i1]).bulletClass()))
 				continue;
 			if (Weapons[i][i1].getHookName().startsWith("_BombSpawn") && ((Aircraft)FM.actor).needsOpenBombBay())
 				if (bHasBayDoorControl && isPlayers((Aircraft)FM.actor)) {
@@ -2117,16 +2215,22 @@ public class Controls {
 				} else {
 					BayDoorControl = 1.0F;
 				}
-			if (relMode == 0) {
+			if (relMode == B_RELEASE_SALVO) {
 				if (World.cur().diffCur.Limited_Ammo) Weapons[i][i1].shots(Weapons[i][i1].countBullets());
 				else Weapons[i][i1].shots(1);
 				if (i == 2) {
 					rocketsReleased++;
 					timeOfLastRocketRelease = Time.current();
 				}
+				else if (i == 3) {
+					timeOfLastBombReleaseRecorded = Time.current();
+					if (bHasBombSelect && curBombSelected > -1)
+						classOfLastBombReleaseRecorded = bombClassArr[curBombSelected];
+				}
 			} else {
-				if (i == 3 && relMode != 0 && relMode != 5 && !bHasBombSelect &&
-				(bHasFuselB && (relMode == 4 || relMode == 2) && isWingBomb(Weapons[i][i1]) || bHasWingB && (relMode == 3 || relMode == 1) && isFuselageBomb(Weapons[i][i1])))
+				if (i == 3 && relMode != B_RELEASE_SALVO && relMode != B_RELEASE_TRAIN && !bHasBombSelect &&
+				(bHasFuselB && (relMode == B_RELEASE_PAIRS_FC_FIRST || relMode == B_RELEASE_SINGLE_FC_FIRST) && isWingBomb(Weapons[i][i1])
+				 || bHasWingB && (relMode == B_RELEASE_PAIRS_WINGS_FIRST || relMode == B_RELEASE_SINGLE_WINGS_FIRST) && isFuselageBomb(Weapons[i][i1])))
 					continue;
 				Weapons[i][i1].shots(1);
 				if (i == 3) {
@@ -2137,6 +2241,9 @@ public class Controls {
 					}
 					bombsReleased++;
 					timeOfLastBombRelease = Time.current();
+					timeOfLastBombReleaseRecorded = Time.current();
+					if (bHasBombSelect && curBombSelected > -1)
+						classOfLastBombReleaseRecorded = bombClassArr[curBombSelected];
 				}
 			}
 
@@ -2150,7 +2257,7 @@ public class Controls {
 					HUD.log(AircraftHotKeys.hudLogWeaponId, "BombReleaseEmptyName" , new Object[] { classnametemp });
 			}
 
-			if ((Weapons[i][i1] instanceof BombGun) && !((BombGun)Weapons[i][i1]).isCassette() && relMode != 0)
+			if ((Weapons[i][i1] instanceof BombGun) && !((BombGun)Weapons[i][i1]).isCassette() && relMode != B_RELEASE_SALVO)
 				return;
 			if ((Weapons[i][i1] instanceof RocketGun) && !((RocketGun)Weapons[i][i1]).isCassette())
 				return;
@@ -2173,20 +2280,20 @@ public class Controls {
 			for (int i = 0; i < abulletemitter[3].length; i++)
 				if (abulletemitter[3][i].haveBullets()) {
 					if ((abulletemitter[3][i] instanceof RocketGunHS_293) || (abulletemitter[3][i] instanceof RocketGunFritzX) || (abulletemitter[3][i] instanceof RocketGunBat)) {
-						bombReleaseMode = 1;
+						bombReleaseMode = B_RELEASE_SINGLE_WINGS_FIRST;
 						return;
 					}
 			   //  ---   No FlareBombGun.class of 4.13.2m in 4.12.2m   ---
 			   //	 if (abulletemitter[3][i] instanceof FlareBombGun)
 			   //	 {
-			   //		 bombReleaseMode = 1;
+			   //		 bombReleaseMode = B_RELEASE_SINGLE_WINGS_FIRST;
 			   //		 return;
 			   //	 }
 				}
 
 		}
 		if ((FM.actor instanceof TypeBomber) && ((Aircraft)FM.actor).hasIntervalometer() && World.cur().diffCur.Limited_Ammo)
-			bombReleaseMode = 5;
+			bombReleaseMode = B_RELEASE_TRAIN;
 		int j = 0;
 		for (int k = 0; k < FM.AP.way.size(); k++) {
 			WayPoint waypoint = FM.AP.way.look_at_point(k);
@@ -2264,6 +2371,8 @@ public class Controls {
 		}
 		if (weaponReleaseDelay > 1000L)
 			this.doSetWeaponReleaseDelay(33L);
-		HUD.log(hudLogWeaponId, "Release Delay: " + (float)weaponReleaseDelay / 1000F + " sec");
+		HUD.log(hudLogWeaponId, "RocketReleaseDelay", new Object[] {
+			new Float(weaponReleaseDelay)
+		});
 	}
 }
