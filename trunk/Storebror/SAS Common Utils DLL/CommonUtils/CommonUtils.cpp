@@ -84,35 +84,41 @@ std::wstring GetLinkTarget(const std::wstring& a_Link) {
 		return std::wstring(a_Link);
 	}
 
-	if (isVistaOrNewer()) {
-		const size_t requiredSize = ::GetFinalPathNameByHandleW(h.get(), nullptr, 0,
-			FILE_NAME_NORMALIZED);
-		if (requiredSize == 0) {
-			//throw std::runtime_error("GetFinalPathNameByHandleW() failed.");
-			return std::wstring(a_Link);
-		}
-		std::vector<wchar_t> buffer(requiredSize);
-		::GetFinalPathNameByHandleW(h.get(), buffer.data(),
-			static_cast<DWORD>(buffer.size()),
-			FILE_NAME_NORMALIZED);
+	try
+	{
+		if (isVistaOrNewer()) {
+			const size_t requiredSize = ::GetFinalPathNameByHandleW(h.get(), nullptr, 0,
+				FILE_NAME_NORMALIZED);
+			if (requiredSize == 0) {
+				//throw std::runtime_error("GetFinalPathNameByHandleW() failed.");
+				return std::wstring(a_Link);
+			}
+			std::vector<wchar_t> buffer(requiredSize);
+			::GetFinalPathNameByHandleW(h.get(), buffer.data(),
+				static_cast<DWORD>(buffer.size()),
+				FILE_NAME_NORMALIZED);
 
-		std::wstring targetPath = std::wstring(buffer.begin(), buffer.end() - 1);
-		if (targetPath.substr(0, 8).compare(L"\\\\?\\UNC\\") == 0)
-		{
-			// In case of a network path, replace "\\?\UNC\" with "\\".
-			targetPath = L"\\" + targetPath.substr(7);
-		}
-		else if (targetPath.substr(0, 4).compare(L"\\\\?\\") == 0)
-		{
-			// In case of a local path, crop "\\?\".
-			targetPath = targetPath.substr(4);
+			std::wstring targetPath = std::wstring(buffer.begin(), buffer.end() - 1);
+			if (targetPath.substr(0, 8).compare(L"\\\\?\\UNC\\") == 0)
+			{
+				// In case of a network path, replace "\\?\UNC\" with "\\".
+				targetPath = L"\\" + targetPath.substr(7);
+			}
+			else if (targetPath.substr(0, 4).compare(L"\\\\?\\") == 0)
+			{
+				// In case of a local path, crop "\\?\".
+				targetPath = targetPath.substr(4);
+			}
+
+			return targetPath;
 		}
 
-		return targetPath;
+		LPWSTR lpPath = GetXpFilePath(h.get());
+		if (lpPath == NULL) return std::wstring(a_Link); // TODO: Added by SAS~Storebror: If anything goes wrong in XP Symlink dereferencing, just return the original path.
+		return std::wstring(lpPath);
+	} catch (...) {
+		return std::wstring(a_Link); // TODO: Added by SAS~Storebror: If anything goes wrong in dereferencing, just return the original path.
 	}
-
-	LPWSTR lpPath = GetXpFilePath(h.get());
-	return std::wstring(lpPath);
 }
 
 JNIEXPORT jlong JNICALL Java_com_maddox_sas1946_il2_util_HighPrecisionTimer_queryPerformanceFrequency
