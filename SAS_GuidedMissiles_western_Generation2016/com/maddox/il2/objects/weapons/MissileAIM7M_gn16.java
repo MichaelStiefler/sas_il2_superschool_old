@@ -31,10 +31,10 @@ public class MissileAIM7M_gn16 extends Missile {
 		Property.set(class1, "emitMax", 0.4F); // Amount of emitted Smoke
 		Property.set(class1, "sound", "weapon.rocket_132"); // Sound of Rocket Motor
 		Property.set(class1, "timeLife", 120F); // Rocket life time in Seconds
-		Property.set(class1, "timeFire", 3.0F); // Rocket Booster Burn time in Seconds
+		Property.set(class1, "timeFire", 3.3F); // Rocket Booster Burn time in Seconds
 		Property.set(class1, "force", 49500F); // Rocket Booster Power (in Newton)
 		Property.set(class1, "timeSustain", 13.0F); // Rocket Sustained Motor Burn time in Seconds (0 for single stage rockets)
-		Property.set(class1, "forceSustain", 18700F); // Rocket Sustained Power (in Newton)
+		Property.set(class1, "forceSustain", 12700F); // Rocket Sustained Power (in Newton)
 		Property.set(class1, "forceT1", 0.5F); // Time1, i.e. time until Rocket Engine force output maximum reached (in Seconds), 0 disables this feature
 		Property.set(class1, "forceP1", 0.0F); // Power1, i.e. Rocket Engine force output at beginning (in Percent)
 		Property.set(class1, "dragCoefficient", 0.3F); // Aerodynamic Drag Coefficient
