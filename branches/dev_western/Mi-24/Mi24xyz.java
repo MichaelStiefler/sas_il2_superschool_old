@@ -341,6 +341,16 @@ public class Mi24xyz extends Mi8_24HeliFamily
         boolean flag1 = this instanceof Mi24xyz;
         if(s.startsWith("xx"))
         {
+            if(s.startsWith("xxmainrotor"))
+            {
+                if(getEnergyPastArmor(0.11F, shot) > 0.0F && World.Rnd().nextFloat() < 0.33F)
+                    hitProp(0, 2, shot.initiator);
+            }
+            if(s.startsWith("xxtailrotor"))
+            {
+                if(getEnergyPastArmor(0.063F, shot) > 0.0F && World.Rnd().nextFloat() < 0.3F)
+                    hitProp(1, 2, shot.initiator);
+            }
             if(s.startsWith("xxarmor"))
             {
                 debuggunnery("Armor: Hit..");
