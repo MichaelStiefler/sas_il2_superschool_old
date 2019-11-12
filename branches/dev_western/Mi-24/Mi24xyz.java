@@ -800,34 +800,12 @@ public class Mi24xyz extends Mi8_24HeliFamily
             if(s.startsWith("xstabr") && chunkDamageVisible("StabR") < 1)
                 hitChunk("StabR", shot);
         } else
-        if(s.startsWith("xvator"))
-        {
-            if(s.startsWith("xvatorl") && chunkDamageVisible("VatorL") < 1)
-                hitChunk("VatorL", shot);
-            if(s.startsWith("xvatorr") && chunkDamageVisible("VatorR") < 1)
-                hitChunk("VatorR", shot);
-        } else
         if(s.startsWith("xwing"))
         {
-            if(s.startsWith("xwinglin") && chunkDamageVisible("WingLIn") < 3)
-                hitChunk("WingLIn", shot);
-            if(s.startsWith("xwingrin") && chunkDamageVisible("WingRIn") < 3)
-                hitChunk("WingRIn", shot);
-            if(s.startsWith("xwinglmid") && chunkDamageVisible("WingLMid") < 3)
-                hitChunk("WingLMid", shot);
-            if(s.startsWith("xwingrmid") && chunkDamageVisible("WingRMid") < 3)
-                hitChunk("WingRMid", shot);
-            if(s.startsWith("xwinglout") && chunkDamageVisible("WingLOut") < 3)
-                hitChunk("WingLOut", shot);
-            if(s.startsWith("xwingrout") && chunkDamageVisible("WingROut") < 3)
-                hitChunk("WingROut", shot);
-        } else
-        if(s.startsWith("xarone"))
-        {
-            if(s.startsWith("xaronel"))
-                hitChunk("AroneL", shot);
-            if(s.startsWith("xaroner"))
-                hitChunk("AroneR", shot);
+            if(s.startsWith("xwingl") && chunkDamageVisible("WingL") < 1)
+                hitChunk("WingL", shot);
+            if(s.startsWith("xwingr") && chunkDamageVisible("WingR") < 1)
+                hitChunk("WingR", shot);
         } else
         if(s.startsWith("xgear"))
         {
