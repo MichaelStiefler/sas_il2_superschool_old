@@ -11,9 +11,10 @@ import com.maddox.il2.engine.InterpolateRef;
 import com.maddox.il2.fm.Atmosphere;
 import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.fm.Pitot;
+import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
-public class Cockpit_G10N1_P extends CockpitPilot {
+public class CockpitG10N1 extends CockpitPilot {
 	private class Variables {
 
 		float      throttle[];
@@ -36,21 +37,21 @@ public class Cockpit_G10N1_P extends CockpitPilot {
 	class Interpolater extends InterpolateRef {
 
 		public boolean tick() {
-			if (Cockpit_G10N1_P.this.fm != null) {
-				Cockpit_G10N1_P.this.setTmp = Cockpit_G10N1_P.this.setOld;
-				Cockpit_G10N1_P.this.setOld = Cockpit_G10N1_P.this.setNew;
-				Cockpit_G10N1_P.this.setNew = Cockpit_G10N1_P.this.setTmp;
+			if (CockpitG10N1.this.fm != null) {
+				CockpitG10N1.this.setTmp = CockpitG10N1.this.setOld;
+				CockpitG10N1.this.setOld = CockpitG10N1.this.setNew;
+				CockpitG10N1.this.setNew = CockpitG10N1.this.setTmp;
 				for (int i = 0; i < 6; i++) {
-					Cockpit_G10N1_P.this.setNew.throttle[i] = 0.85F * Cockpit_G10N1_P.this.setOld.throttle[i] + Cockpit_G10N1_P.this.fm.EI.engines[i].getControlThrottle() * 0.15F;
-					Cockpit_G10N1_P.this.setNew.prop[i] = 0.85F * Cockpit_G10N1_P.this.setOld.prop[i] + Cockpit_G10N1_P.this.fm.EI.engines[i].getControlProp() * 0.15F;
+					CockpitG10N1.this.setNew.throttle[i] = 0.85F * CockpitG10N1.this.setOld.throttle[i] + CockpitG10N1.this.fm.EI.engines[i].getControlThrottle() * 0.15F;
+					CockpitG10N1.this.setNew.prop[i] = 0.85F * CockpitG10N1.this.setOld.prop[i] + CockpitG10N1.this.fm.EI.engines[i].getControlProp() * 0.15F;
 				}
 
-				Cockpit_G10N1_P.this.setNew.altimeter = Cockpit_G10N1_P.this.fm.getAltitude();
-				float f = Cockpit_G10N1_P.this.waypointAzimuth();
-				Cockpit_G10N1_P.this.setNew.azimuth.setDeg(Cockpit_G10N1_P.this.setOld.azimuth.getDeg(1.0F), ((FlightModelMain) Cockpit_G10N1_P.this.fm).Or.azimut());
-				Cockpit_G10N1_P.this.setNew.waypointAzimuth.setDeg(Cockpit_G10N1_P.this.setOld.waypointAzimuth.getDeg(1.0F), f);
-				Cockpit_G10N1_P.this.setNew.waypointDeviation.setDeg(Cockpit_G10N1_P.this.setOld.waypointDeviation.getDeg(0.1F), f - Cockpit_G10N1_P.this.setOld.azimuth.getDeg(1.0F) + World.Rnd().nextFloat(-10F, 10F));
-				Cockpit_G10N1_P.this.setNew.vspeed = (199F * Cockpit_G10N1_P.this.setOld.vspeed + Cockpit_G10N1_P.this.fm.getVertSpeed()) / 200F;
+				CockpitG10N1.this.setNew.altimeter = CockpitG10N1.this.fm.getAltitude();
+				float f = CockpitG10N1.this.waypointAzimuth();
+				CockpitG10N1.this.setNew.azimuth.setDeg(CockpitG10N1.this.setOld.azimuth.getDeg(1.0F), ((FlightModelMain) CockpitG10N1.this.fm).Or.azimut());
+				CockpitG10N1.this.setNew.waypointAzimuth.setDeg(CockpitG10N1.this.setOld.waypointAzimuth.getDeg(1.0F), f);
+				CockpitG10N1.this.setNew.waypointDeviation.setDeg(CockpitG10N1.this.setOld.waypointDeviation.getDeg(0.1F), f - CockpitG10N1.this.setOld.azimuth.getDeg(1.0F) + World.Rnd().nextFloat(-10F, 10F));
+				CockpitG10N1.this.setNew.vspeed = (199F * CockpitG10N1.this.setOld.vspeed + CockpitG10N1.this.fm.getVertSpeed()) / 200F;
 			}
 			return true;
 		}
@@ -72,7 +73,7 @@ public class Cockpit_G10N1_P extends CockpitPilot {
 		return f;
 	}
 
-	public Cockpit_G10N1_P() {
+	public CockpitG10N1() {
 		super("3DO/Cockpit/G10N1-P/hier.him", "bf109");
 		this.setOld = new Variables();
 		this.setNew = new Variables();
@@ -89,9 +90,13 @@ public class Cockpit_G10N1_P extends CockpitPilot {
 	}
 
 	public void reflectWorldToInstruments(float f) {
-		this.mesh.chunkSetAngles("Z_Column", 0.0F, -(this.pictElev = 0.85F * this.pictElev + 0.15F * this.fm.CT.ElevatorControl) * 8F, 0.0F);
-		this.mesh.chunkSetAngles("Z_AroneL", 0.0F, -(this.pictAiler = 0.85F * this.pictAiler + 0.15F * this.fm.CT.AileronControl) * 68F, 0.0F);
-		this.mesh.chunkSetAngles("Z_AroneR", 0.0F, -(this.pictAiler = 0.85F * this.pictAiler + 0.15F * this.fm.CT.AileronControl) * 68F, 0.0F);
+        this.resetYPRmodifier();
+        Cockpit.xyz[0] = (this.pictElev = 0.99F * this.pictElev + 0.01F * this.fm.CT.ElevatorControl) * 0.1F;
+        Cockpit.xyz[2] = (this.pictElev = 0.99F * this.pictElev + 0.01F * this.fm.CT.ElevatorControl) * 0.012F;
+        this.mesh.chunkSetLocate("Z_Column", Cockpit.xyz, Cockpit.ypr);
+        
+		this.mesh.chunkSetAngles("Z_AroneL", 0.0F, -(this.pictAiler = 0.99F * this.pictAiler + 0.01F * this.fm.CT.AileronControl) * 68F, 0.0F);
+		this.mesh.chunkSetAngles("Z_AroneR", 0.0F, -(this.pictAiler = 0.99F * this.pictAiler + 0.01F * this.fm.CT.AileronControl) * 68F, 0.0F);
 		this.mesh.chunkSetAngles("Z_RightPedal", 0.0F, -10F * this.fm.CT.getRudder(), 0.0F);
 		this.mesh.chunkSetAngles("Z_LeftPedal", 0.0F, 10F * this.fm.CT.getRudder(), 0.0F);
 		this.mesh.chunkSetAngles("Z_RPedalStep", 0.0F, -10F * this.fm.CT.getRudder(), 0.0F);
@@ -209,6 +214,31 @@ public class Cockpit_G10N1_P extends CockpitPilot {
 			this.setNightMats(false);
 		}
 	}
+	
+    protected boolean doFocusEnter() {
+        if (super.doFocusEnter()) {
+            aircraft().hierMesh().chunkVisible("nose", false);
+            aircraft().hierMesh().chunkVisible("nose1", false);
+            aircraft().hierMesh().chunkVisible("nose2", false);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected void doFocusLeave() {
+        if (!isFocused()) {
+            return;
+        } else {
+            aircraft().hierMesh().chunkVisible("nose", aircraft().isChunkAnyDamageVisible("CF_D"));
+            aircraft().hierMesh().chunkVisible("nose1", aircraft().isChunkAnyDamageVisible("CF_D"));
+            aircraft().hierMesh().chunkVisible("nose2", aircraft().isChunkAnyDamageVisible("CF_D"));
+            super.doFocusLeave();
+            return;
+        }
+    }
+
+
 
 	private Variables          setOld;
 	private Variables          setNew;
@@ -223,4 +253,11 @@ public class Cockpit_G10N1_P extends CockpitPilot {
 	private Point3d            tmpP;
 	private Vector3d           tmpV;
 	private static String      tmpstr             = null;
+	
+    static 
+    {
+        Class class1 = CockpitG10N1.class;
+        Property.set(class1, "normZN", 2.0F);
+        Property.set(class1, "gsZN", 2.0F);
+    }
 }
