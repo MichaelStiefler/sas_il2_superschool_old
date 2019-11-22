@@ -205,7 +205,7 @@ public final class HotKeyCmdEnv {
     
     // Show the Time Lapse / Slow Motion value just selected by pressing the corresponding hotkey.
     private static void showTimeSpeed(float f) {
-        int i = Math.round(f * 4.0F);
+        int i = (int) Math.floor(f * 4.0F);
         
         // In the range of 1/4 through 8x, localized hud log messages exist already, show them.
         if (i > 0 && i < 64) {
