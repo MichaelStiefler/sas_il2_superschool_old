@@ -15,7 +15,6 @@ import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.fm.Gear;
-import com.maddox.il2.fm.Polares;
 import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
@@ -45,7 +44,6 @@ public class G10N1 extends Scheme7 implements TypeBomber, TypeX4Carrier, TypeGui
         this.boosterEffects = new Eff3DActor[6];
         this.boostState = 0;
         this.boosterFireOutTime = -1L;
-        this.lineCyCoeff = -1F;
         this.prevFuel = -1F;
         this.totalBombs = 0;
         this.fuelTanks = 0;
@@ -132,7 +130,7 @@ public class G10N1 extends Scheme7 implements TypeBomber, TypeX4Carrier, TypeGui
                 if (maneuver.Or.getTangage() > 6F) { // Limit nose up attitude to 6 degrees on touchdown to avoid tail strike (only for AI)!
                     maneuver.Or.increment(0.0F, -(maneuver.Or.getTangage() - 6F), 0.0F); // apply AoA limit
                 }
-            } else if (maneuver.get_maneuver() == Maneuver.TAKEOFF && this.FM.getSpeedKMH() > 10F && this.FM.getSpeedKMH() < 210F) { // Plane is in takeoff run but well below rotate speed
+            } else if (maneuver.get_maneuver() == Maneuver.TAKEOFF && this.FM.getSpeedKMH() > 10F && this.FM.getSpeedKMH() < 210F && (this.FM.Gears.onGround() || this.FM.Gears.nearGround())) { // Plane is in takeoff run but well below rotate speed
                 Reflection.setFloat(this.FM.CT, "Elevators", this.FM.CT.ElevatorControl = CommonTools.cvt(this.FM.getSpeedKMH(), 180F, 210F, 0F, this.FM.CT.ElevatorControl));
             }
         }
@@ -145,26 +143,8 @@ public class G10N1 extends Scheme7 implements TypeBomber, TypeX4Carrier, TypeGui
 
         this.scheme7PropCollisionFix();
         this.boostUpdate();
-        this.computeLift();
     }
     
-    public void computeLift() {
-        Polares wing = (Polares) Reflection.getValue(this.FM, "Wing");
-        if (this.lineCyCoeff == -1F) this.oldLineCyCoeff = this.lineCyCoeff = wing.lineCyCoeff;
-        float maxCoeff = 1.5F;
-        if ((!this.FM.isPlayers() || !(this.FM instanceof RealFlightModel) || !((RealFlightModel) this.FM).isRealMode()) && (this.FM instanceof Maneuver)) {
-            if (this.FM.AP != null && this.FM.AP.way != null && this.FM.AP.way.isLanding()) wing.lineCyCoeff = this.lineCyCoeff / 1.25F;
-            return;
-        } else {
-            maxCoeff = CommonTools.cvt(this.FM.getSpeedKMH(), 660F, 680F, 1.5F, 1F);
-        }
-        float massCoeff = CommonTools.cvt(this.FM.M.getFullMass(), 70000F, 100000F, 1F, maxCoeff);
-        float altCoeff = CommonTools.cvt(this.FM.getAltitude(), 3000F, 6000F, 1F, maxCoeff);
-        
-        wing.lineCyCoeff = this.oldLineCyCoeff * 0.99F + this.lineCyCoeff * altCoeff * massCoeff * 0.01F;
-        this.oldLineCyCoeff = wing.lineCyCoeff;
-    }
-
     public void setBoostState(int state) {
         if (this.boostState == state) return; // Nothing to do here, we are in the requested state already.
         if (((state ^ this.boostState) & 1) != 0) { // The existence of boosters has changed
@@ -1277,8 +1257,6 @@ public class G10N1 extends Scheme7 implements TypeBomber, TypeX4Carrier, TypeGui
     public float        fSightCurAltitude;
     public float        fSightCurSpeed;
     public float        fSightCurReadyness;
-    private float       lineCyCoeff;
-    private float       oldLineCyCoeff;
 
     private BombRatoJap booster[];
     private Eff3DActor  boosterEffects[];
@@ -1308,6 +1286,7 @@ public class G10N1 extends Scheme7 implements TypeBomber, TypeX4Carrier, TypeGui
         Property.set(class1, "cockpitClass", new Class[] { CockpitG10N1.class, CockpitG10N1_Bombardier.class, CockpitG10N1_T1Gunner.class, CockpitG10N1_T2Gunner.class, CockpitG10N1_T3Gunner.class, CockpitG10N1_B1Gunner.class, CockpitG10N1_B2Gunner.class,
                 CockpitG10N1_AGunner.class });
         Property.set(class1, "FlightModel", "FlightModels/G10N1.fmd:G10N1");
+        Property.set(class1, "AutopilotElevatorAboveReferenceAltitudeFactor", 1.2E-4F); // TODO: Avoid AI Autopilot pulling up above reference altitude. Needs BAT 3.8 or newer, UP3.3 Patch 5 or newer, or appropriate EngineMod Version (newer than 2.8.16).
         int triggerLength = 12 + 1108*2; // 12 Gun + 1208 Bomb Spawns, Bombs are twice for BombGunNull
         int triggers[] = new int[triggerLength];
         String hooks[] = new String[triggerLength];
