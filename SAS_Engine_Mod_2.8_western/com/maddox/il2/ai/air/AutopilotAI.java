@@ -23,6 +23,7 @@ import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.TypeBomber;
 import com.maddox.il2.objects.air.TypeFastJet;
 import com.maddox.il2.objects.sounds.Voice;
+import com.maddox.rts.Property;
 
 public class AutopilotAI extends Autopilotage {
 	public boolean bWayPoint;
@@ -399,7 +400,15 @@ public class AutopilotAI extends Autopilotage {
 			double d1 = 0.0D;
 			double d2 = 0.0D;
 			float minuspitchlimit = (bFJ ? -5F : -4F);
-			if (way.isLanding() && iLandingFailCountAlt > 0) minuspitchlimit -= (float) iLandingFailCountAlt;
+			
+			// TODO: +++ Added by SAS~Storebror: Avoid Heavy Planes pulling up above reference altitude +++
+			// This Modification is based on a new (optional) property for aircraft classes, e.g. from G10N1:
+			// Property.set(class1, "AutopilotElevatorAboveReferenceAltitudeFactor", 1.2E-4F);
+			// If this property isn't set, the old default value of 0.00033F will be used so there's no side effect for existing aircraft.
+            float fAutopilotElevatorAboveReferenceAltitudeFactor = Property.floatValue(this.FM.actor.getClass(), "AutopilotElevatorAboveReferenceAltitudeFactor", 0.00033F);
+            // TODO: --- Added by SAS~Storebror: Avoid Heavy Planes pulling up above reference altitude ---
+
+            if (way.isLanding() && iLandingFailCountAlt > 0) minuspitchlimit -= (float) iLandingFailCountAlt;
 			if (d > (bFJ ? -250D : -50D)) {
 				float f4 = 5F + 0.00025F * FM.getAltitude();
 				f4 = f4 + 0.02F * (250F - ((FM.Vmax > 300F) ? 300F : FM.Vmax));
@@ -407,8 +416,13 @@ public class AutopilotAI extends Autopilotage {
 				d1 = Math.min(FM.getAOA() - f4, FM.Or.getTangage() - 1.0F) * 1.0F * f + 0.5F * FM.getForwAccel();
 			}
 			if (d < (bFJ ? 250D : 50D)) {
-				float f5 = -15F + FM.M.mass * Aircraft.cvt(FM.M.mass, 50000F, 300000F, 0.00033F, 0.00005F) * Aircraft.cvt(FM.CT.getFlap(), 0.0F, 1.0F, 1.0F, 0.2F);
-				if (bFJ && d < -20D && FM.getVertSpeed() > -10.0F) {
+			    
+	            // TODO: +++ Added by SAS~Storebror: Avoid Heavy Planes pulling up above reference altitude +++
+				// float f5 = -15F + FM.M.mass * Aircraft.cvt(FM.M.mass, 50000F, 300000F, 0.00033F, 0.00005F) * Aircraft.cvt(FM.CT.getFlap(), 0.0F, 1.0F, 1.0F, 0.2F);
+                float f5 = -15F + FM.M.mass * Aircraft.cvt(FM.M.mass, 50000F, 300000F, fAutopilotElevatorAboveReferenceAltitudeFactor, 0.00005F) * Aircraft.cvt(FM.CT.getFlap(), 0.0F, 1.0F, 1.0F, 0.2F);
+	            // TODO: --- Added by SAS~Storebror: Avoid Heavy Planes pulling up above reference altitude ---
+				
+                if (bFJ && d < -20D && FM.getVertSpeed() > -10.0F) {
 					if (Math.abs(FM.Or.getRoll() - 360F) < 10F) {
 						float fmulti = Aircraft.cvt((float)d, -50F, -600F, 0.10F, 1.85F) * Aircraft.cvt(FM.getVertSpeed(), 0.005F, 15.0F, 0.05F, 0.40F) * Aircraft.cvt(FM.getVertSpeed(), -10.0F, 0.005F, 0.0F, 1.0F);
 						if (fmulti > 0.75F) fmulti = 0.75F;
@@ -469,7 +483,12 @@ public class AutopilotAI extends Autopilotage {
 			if (FM.VminFLAPS < 28F) f6 = 10F;
 			if (f6 > 25F) f6 = 25F;
 			float f7 = (f6 - FM.Or.getTangage()) * 0.1F;
-			float f8 = -15F + FM.M.mass * Aircraft.cvt(FM.M.mass, 50000F, 300000F, 0.00033F, 0.00005F) * Aircraft.cvt(FM.CT.getFlap(), 0.0F, 1.0F, 1.0F, 0.2F);
+
+			// TODO: +++ Added by SAS~Storebror: Avoid Heavy Planes pulling up above reference altitude +++
+			// float f8 = -15F + FM.M.mass * Aircraft.cvt(FM.M.mass, 50000F, 300000F, 0.00033F, 0.00005F) * Aircraft.cvt(FM.CT.getFlap(), 0.0F, 1.0F, 1.0F, 0.2F);
+            float f8 = -15F + FM.M.mass * Aircraft.cvt(FM.M.mass, 50000F, 300000F, fAutopilotElevatorAboveReferenceAltitudeFactor, 0.00005F) * Aircraft.cvt(FM.CT.getFlap(), 0.0F, 1.0F, 1.0F, 0.2F);
+            // TODO: --- Added by SAS~Storebror: Avoid Heavy Planes pulling up above reference altitude ---
+
 			float fpt = 0.0F;
 			if (FM.getVertSpeed() > 2.0F && d < -150D) {
 				fpt = Aircraft.cvt(FM.getVertSpeed(), 2.0F, 10.0F, 0.5F, -2.0F) + Aircraft.cvt((float) d, -400F, -150F, -3.0F, -0.5F);
