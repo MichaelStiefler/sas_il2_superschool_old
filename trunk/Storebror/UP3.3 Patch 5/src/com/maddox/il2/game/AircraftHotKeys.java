@@ -585,11 +585,19 @@ public class AircraftHotKeys {
         this.bViewExternalWhenDead = false;
         this.bViewExternalFriendlies = false;
         if (Mission.cur().sectFile() != null) {
-            if (Mission.cur().sectFile().get("Mods", "ViewExternalSelf", 0) > 0) this.bViewExternalSelf = true;
-            if (Mission.cur().sectFile().get("Mods", "ViewExternalOnGround", 0) > 0) this.bViewExternalOnGround = true;
-            if (Mission.cur().sectFile().get("Mods", "ViewExternalWhenDead", 0) > 0) this.bViewExternalWhenDead = true;
-            if (Mission.cur().sectFile().get("Mods", "ViewExternalFriendlies", 0) > 0) this.bViewExternalFriendlies = true;
-            int i = Mission.cur().sectFile().get("Mods", "ExternalViewLevel", -1);
+            
+            // TODO: +++ Changed by SAS~Storebror, default to enabling external views on ground +++
+//            if (Mission.cur().sectFile().get("Mods", "ViewExternalSelf", 0) > 0) this.bViewExternalSelf = true;
+//            if (Mission.cur().sectFile().get("Mods", "ViewExternalOnGround", 0) > 0) this.bViewExternalOnGround = true;
+//            if (Mission.cur().sectFile().get("Mods", "ViewExternalWhenDead", 0) > 0) this.bViewExternalWhenDead = true;
+//            if (Mission.cur().sectFile().get("Mods", "ViewExternalFriendlies", 0) > 0) this.bViewExternalFriendlies = true;
+//            int i = Mission.cur().sectFile().get("Mods", "ExternalViewLevel", -1);
+            if (Mission.cur().sectFile().get("Mods", "ViewExternalSelf", 1) > 0) this.bViewExternalSelf = true;
+            if (Mission.cur().sectFile().get("Mods", "ViewExternalOnGround", 1) > 0) this.bViewExternalOnGround = true;
+            if (Mission.cur().sectFile().get("Mods", "ViewExternalWhenDead", 1) > 0) this.bViewExternalWhenDead = true;
+            if (Mission.cur().sectFile().get("Mods", "ViewExternalFriendlies", 1) > 0) this.bViewExternalFriendlies = true;
+            int i = Mission.cur().sectFile().get("Mods", "ExternalViewLevel", 2);
+            // TODO: --- Changed by SAS~Storebror, default to enabling external views on ground ---
             if (i == 2) {
                 this.bExtViewEnemy = true;
                 this.bExtViewFriendly = true;
@@ -616,7 +624,7 @@ public class AircraftHotKeys {
         }
     }
 
-    private boolean viewAllowed(boolean bool) {
+    public boolean viewAllowed(boolean bool) {
         if (!World.cur().diffCur.No_Outside_Views) return true;
         if (!bool) return false;
         if (bool && this.iExtViewGround == -1 && this.iExtViewDead == -1) return true;
@@ -3870,5 +3878,33 @@ public class AircraftHotKeys {
         this.bombSightFovEnabled = true;
     }
     // TODO: --- 4.12.2 adaptations by SAS~Storebror
+
+    public boolean isbExtViewEnemy() {
+        return bExtViewEnemy;
+    }
+
+    public boolean isbExtViewFriendly() {
+        return bExtViewFriendly;
+    }
+
+    public boolean isbExtViewSelf() {
+        return bExtViewSelf;
+    }
+
+    public boolean isbExtViewGround() {
+        return bExtViewGround;
+    }
+
+    public boolean isbExtViewDead() {
+        return bExtViewDead;
+    }
+
+    public boolean isbExtPadlockEnemy() {
+        return bExtPadlockEnemy;
+    }
+
+    public boolean isbExtPadlockFriendly() {
+        return bExtPadlockFriendly;
+    }
 
 }

@@ -507,17 +507,17 @@ public class Controls {
         return this.trimRudderControl;
     }
 
-    public void interpolate(Controls controls_1_, float f) {
-        this.PowerControl = FMMath.interpolate(this.PowerControl, controls_1_.PowerControl, f);
-        this.FlapsControl = FMMath.interpolate(this.FlapsControl, controls_1_.FlapsControl, f);
-        this.AileronControl = FMMath.interpolate(this.AileronControl, controls_1_.AileronControl, f);
-        this.ElevatorControl = FMMath.interpolate(this.ElevatorControl, controls_1_.ElevatorControl, f);
-        this.RudderControl = FMMath.interpolate(this.RudderControl, controls_1_.RudderControl, f);
-        this.BrakeControl = FMMath.interpolate(this.BrakeControl, controls_1_.BrakeControl, f);
+    public void interpolate(Controls controls, float f) {
+        this.PowerControl = FMMath.interpolate(this.PowerControl, controls.PowerControl, f);
+        this.FlapsControl = FMMath.interpolate(this.FlapsControl, controls.FlapsControl, f);
+        this.AileronControl = FMMath.interpolate(this.AileronControl, controls.AileronControl, f);
+        this.ElevatorControl = FMMath.interpolate(this.ElevatorControl, controls.ElevatorControl, f);
+        this.RudderControl = FMMath.interpolate(this.RudderControl, controls.RudderControl, f);
+        this.BrakeControl = FMMath.interpolate(this.BrakeControl, controls.BrakeControl, f);
 
         // TAK++
-        this.BrakeRightControl = FMMath.interpolate(this.BrakeRightControl, controls_1_.BrakeRightControl, f);
-        this.BrakeLeftControl = FMMath.interpolate(this.BrakeLeftControl, controls_1_.BrakeLeftControl, f);
+        this.BrakeRightControl = FMMath.interpolate(this.BrakeRightControl, controls.BrakeRightControl, f);
+        this.BrakeLeftControl = FMMath.interpolate(this.BrakeLeftControl, controls.BrakeLeftControl, f);
         // TAK--
     }
 
