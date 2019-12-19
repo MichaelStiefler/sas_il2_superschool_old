@@ -583,6 +583,7 @@ public abstract class NetAircraft extends SndAircraft {
     public class Mirror extends AircraftNet {
         NetMsgFiltered   out          = new NetMsgFiltered();
         private long     tupdate      = -1L;
+        private boolean  ghostDetected= false;
         private long     _t;
         private long     tcur;
         private Point3f  _p           = new Point3f();
@@ -842,10 +843,16 @@ public abstract class NetAircraft extends SndAircraft {
             f = (Time.tickNext() - this.tcur) * 0.0010F;
             if (!(f < 0.0010F)) {
                 this.tcur = Time.tickNext();
-                if (this.tupdate > 0L && this.tcur > this.tupdate && this.tcur - this.tupdate > 10000L) {
+                if (!this.ghostDetected && this.tupdate > 0L && this.tcur > this.tupdate && this.tcur - this.tupdate > 10000L) {
+                    this.tupdate = tcur;
+                    this.ghostDetected = true;
                     if (Config.cur.ini.get("Mods", "destroyGhostPlanes", 1) != 0) {
                         System.out.println("Destroying Ghost Plane: " + this.hashCode() + " (" + this.netName + "), Tick Diff to last Update: " + (this.tcur - this.tupdate));
-                        this.destroy();
+                        try {
+                            NetAircraft.this.destroy();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         return;
                     } else {
                         System.out.println("Possible Ghost Plane: " + this.hashCode() + " (" + this.netName + "), Tick Diff to last Update: " + (this.tcur - this.tupdate) + " - not destroyed because of conf.ini destroyGhostPlanes=0");
