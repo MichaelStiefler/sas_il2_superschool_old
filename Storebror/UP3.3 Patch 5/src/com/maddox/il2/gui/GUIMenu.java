@@ -36,7 +36,9 @@ import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.I18N;
 import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Main3D;
+import com.maddox.il2.game.Mission;
 import com.maddox.il2.game.TimeSkip;
+import com.maddox.il2.net.NetMissionTrack;
 import com.maddox.il2.objects.ActorLand;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.rts.BackgroundTask;
@@ -341,7 +343,7 @@ public class GUIMenu
             }
 
         }
-);
+).bEnable = !NetMissionTrack.isPlaying() && !Mission.isCoop() && !Mission.isNet();
         int itemDy = (int)mMission.subMenu.getItem(0).win.dy;
         mMission.subMenu.addItem(new GWindowMenuItem(mMission.subMenu, Plugin.i18n("Pause/Play"), Plugin.i18n("Pause/Play Current Mission...")) {
 
@@ -368,7 +370,7 @@ public class GUIMenu
             }
 
         }
-);
+).bEnable = !Mission.isCoop() && !Mission.isNet();
         mMission.subMenu.addItem(new GWindowMenuItem(mMission.subMenu, Plugin.i18n("Time Speed"), Plugin.i18n("Relative Speed of Playing")) {
 
             public void created()
@@ -468,7 +470,7 @@ public class GUIMenu
             }
 
         }
-);
+).bEnable = !Mission.isCoop() && !Mission.isNet();
         mMission.subMenu.addItem(new GWindowMenuItem(mMission.subMenu, Plugin.i18n("Bail Out"), Plugin.i18n("Bail Out from Plane...")) {
 
             public void execute()
@@ -572,13 +574,27 @@ public class GUIMenu
                     };
             String[] menuHelp = {
                     "View from outside Planes of your same Country or Army",
-                    "View from outside Planes of your same Country or Army",
+                    "View from outside Enemy (or Neutral) Planes",
                     "View from outside Actors of your same Country or Army",
                     "View from outside Enemy (or Neutral) Actors"
                     };
             
-            
             for (int actorType = 0; actorType < 4; actorType++) {
+                switch (actorType) {
+                    case 0:
+                    case 2:
+                        if (!Main3D.cur3D().aircraftHotKeys.viewAllowed(Main3D.cur3D().aircraftHotKeys.isbExtViewFriendly())) {
+                            mView.subMenu.addItem(new GWindowMenuItem(mView.subMenu, menuCaption[actorType], menuHelp[actorType]){}).bEnable=false;
+                            continue;
+                        }
+                    case 1:
+                    case 3:
+                        if (!Main3D.cur3D().aircraftHotKeys.viewAllowed(Main3D.cur3D().aircraftHotKeys.isbExtPadlockEnemy())) {
+                            mView.subMenu.addItem(new GWindowMenuItem(mView.subMenu, menuCaption[actorType], menuHelp[actorType]){}).bEnable=false;
+                            continue;
+                        }
+                }
+                
                 Collections.sort(viewActors[actorType]);
                 int actorIndex = 0;
                 GWindowMenuItem menuItem = null;
@@ -614,7 +630,7 @@ public class GUIMenu
                         public void execute()
                         {
                             System.out.println("* Trying to switch View to '" + selectableActor.getName() + "' " + (finalActorType < 2?"Plane!":"Actor!"));
-                            /*ActorAux.*/doViewActor(selectableActor.actor);
+                            doViewActor(selectableActor);
                             GUIMenu.doCloseMenu();
                         }
 
@@ -1499,22 +1515,22 @@ public class GUIMenu
         return simpleName.substring(simpleName.lastIndexOf("$") + 1);
     }
 
-    public static void doViewActor(Actor actor)
+    public static void doViewActor(SelectableActor selectableActor)
     {
         Actor actor1 = Actor.getByName("camera");
         if(actor1 == null)
             System.out.println("* Camera named 'camera' not found!");
-        if(actor != null)
+        if(selectableActor.actor != null)
         {
-            if(actor.pos == null)
-                System.out.println("* Actor '" + actor.name() + "' doesn't have a position!");
-            Main3D.cur3D().setViewFlow10(actor, false);
-            Class class1 = actor.getClass();
+            if(selectableActor.actor.pos == null)
+                System.out.println("* Actor '" + selectableActor.getName() + "' doesn't have a position!");
+            Main3D.cur3D().setViewFlow10(selectableActor.actor, false);
+            Class class1 = selectableActor.actor.getClass();
             String name = Property.stringValue(class1, "iconFar_shortClassName", null);
             if(name == null) {
                 name = getSimpleInnerName(class1);
             }
-            HUD.log("Viewing Actor '" + name + " ("+ actor.name() + ")'.");
+            HUD.log("Viewing Actor '"+ selectableActor.getName() + "'.");
         }
     }
     

@@ -19,6 +19,7 @@ import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.ME_163B1A;
+import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.air.TypeBNZFighter;
 import com.maddox.il2.objects.air.TypeBomber;
 import com.maddox.il2.objects.air.TypeDiveBomber;
@@ -123,7 +124,7 @@ public class Pilot extends Maneuver {
 
     public void update(float f) {
         if (this.actor.net != null && this.actor.net.isMirror()) {
-            ((com.maddox.il2.objects.air.NetAircraft.Mirror) this.actor.net).fmUpdate(f);
+            ((NetAircraft.Mirror) this.actor.net).fmUpdate(f);
             return;
         }
         this.moveCarrier();
