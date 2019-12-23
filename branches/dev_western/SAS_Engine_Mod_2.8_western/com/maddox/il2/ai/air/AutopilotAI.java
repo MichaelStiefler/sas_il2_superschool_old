@@ -2,6 +2,7 @@
 /*By western, add AI landing process flexible gear / hook / flap controls on 05th-15th/Jul./2018*/
 /*By western, rework elevator control for very heavy planes on 18th-23rd/Jul./2018*/
 /*By western, rework reach waypoint decision on 07th/Sep./2018*/
+/*By SAS~Storebror, Avoid Heavy Planes pulling up above reference altitude on 19th/Dec./2019*/
 package com.maddox.il2.ai.air;
 
 import com.maddox.JGP.Point3d;
@@ -400,15 +401,15 @@ public class AutopilotAI extends Autopilotage {
 			double d1 = 0.0D;
 			double d2 = 0.0D;
 			float minuspitchlimit = (bFJ ? -5F : -4F);
-			
+
 			// TODO: +++ Added by SAS~Storebror: Avoid Heavy Planes pulling up above reference altitude +++
 			// This Modification is based on a new (optional) property for aircraft classes, e.g. from G10N1:
 			// Property.set(class1, "AutopilotElevatorAboveReferenceAltitudeFactor", 1.2E-4F);
 			// If this property isn't set, the old default value of 0.00033F will be used so there's no side effect for existing aircraft.
-            float fAutopilotElevatorAboveReferenceAltitudeFactor = Property.floatValue(this.FM.actor.getClass(), "AutopilotElevatorAboveReferenceAltitudeFactor", 0.00033F);
-            // TODO: --- Added by SAS~Storebror: Avoid Heavy Planes pulling up above reference altitude ---
+			float fAutopilotElevatorAboveReferenceAltitudeFactor = Property.floatValue(this.FM.actor.getClass(), "AutopilotElevatorAboveReferenceAltitudeFactor", 0.00033F);
+			// TODO: --- Added by SAS~Storebror: Avoid Heavy Planes pulling up above reference altitude ---
 
-            if (way.isLanding() && iLandingFailCountAlt > 0) minuspitchlimit -= (float) iLandingFailCountAlt;
+			if (way.isLanding() && iLandingFailCountAlt > 0) minuspitchlimit -= (float) iLandingFailCountAlt;
 			if (d > (bFJ ? -250D : -50D)) {
 				float f4 = 5F + 0.00025F * FM.getAltitude();
 				f4 = f4 + 0.02F * (250F - ((FM.Vmax > 300F) ? 300F : FM.Vmax));
@@ -416,13 +417,13 @@ public class AutopilotAI extends Autopilotage {
 				d1 = Math.min(FM.getAOA() - f4, FM.Or.getTangage() - 1.0F) * 1.0F * f + 0.5F * FM.getForwAccel();
 			}
 			if (d < (bFJ ? 250D : 50D)) {
-			    
-	            // TODO: +++ Added by SAS~Storebror: Avoid Heavy Planes pulling up above reference altitude +++
+
+				// TODO: +++ Added by SAS~Storebror: Avoid Heavy Planes pulling up above reference altitude +++
 				// float f5 = -15F + FM.M.mass * Aircraft.cvt(FM.M.mass, 50000F, 300000F, 0.00033F, 0.00005F) * Aircraft.cvt(FM.CT.getFlap(), 0.0F, 1.0F, 1.0F, 0.2F);
-                float f5 = -15F + FM.M.mass * Aircraft.cvt(FM.M.mass, 50000F, 300000F, fAutopilotElevatorAboveReferenceAltitudeFactor, 0.00005F) * Aircraft.cvt(FM.CT.getFlap(), 0.0F, 1.0F, 1.0F, 0.2F);
-	            // TODO: --- Added by SAS~Storebror: Avoid Heavy Planes pulling up above reference altitude ---
-				
-                if (bFJ && d < -20D && FM.getVertSpeed() > -10.0F) {
+				float f5 = -15F + FM.M.mass * Aircraft.cvt(FM.M.mass, 50000F, 300000F, fAutopilotElevatorAboveReferenceAltitudeFactor, 0.00005F) * Aircraft.cvt(FM.CT.getFlap(), 0.0F, 1.0F, 1.0F, 0.2F);
+				// TODO: --- Added by SAS~Storebror: Avoid Heavy Planes pulling up above reference altitude ---
+
+				if (bFJ && d < -20D && FM.getVertSpeed() > -10.0F) {
 					if (Math.abs(FM.Or.getRoll() - 360F) < 10F) {
 						float fmulti = Aircraft.cvt((float)d, -50F, -600F, 0.10F, 1.85F) * Aircraft.cvt(FM.getVertSpeed(), 0.005F, 15.0F, 0.05F, 0.40F) * Aircraft.cvt(FM.getVertSpeed(), -10.0F, 0.005F, 0.0F, 1.0F);
 						if (fmulti > 0.75F) fmulti = 0.75F;
@@ -486,8 +487,8 @@ public class AutopilotAI extends Autopilotage {
 
 			// TODO: +++ Added by SAS~Storebror: Avoid Heavy Planes pulling up above reference altitude +++
 			// float f8 = -15F + FM.M.mass * Aircraft.cvt(FM.M.mass, 50000F, 300000F, 0.00033F, 0.00005F) * Aircraft.cvt(FM.CT.getFlap(), 0.0F, 1.0F, 1.0F, 0.2F);
-            float f8 = -15F + FM.M.mass * Aircraft.cvt(FM.M.mass, 50000F, 300000F, fAutopilotElevatorAboveReferenceAltitudeFactor, 0.00005F) * Aircraft.cvt(FM.CT.getFlap(), 0.0F, 1.0F, 1.0F, 0.2F);
-            // TODO: --- Added by SAS~Storebror: Avoid Heavy Planes pulling up above reference altitude ---
+			float f8 = -15F + FM.M.mass * Aircraft.cvt(FM.M.mass, 50000F, 300000F, fAutopilotElevatorAboveReferenceAltitudeFactor, 0.00005F) * Aircraft.cvt(FM.CT.getFlap(), 0.0F, 1.0F, 1.0F, 0.2F);
+			// TODO: --- Added by SAS~Storebror: Avoid Heavy Planes pulling up above reference altitude ---
 
 			float fpt = 0.0F;
 			if (FM.getVertSpeed() > 2.0F && d < -150D) {

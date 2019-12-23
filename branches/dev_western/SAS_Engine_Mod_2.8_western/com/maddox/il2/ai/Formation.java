@@ -66,10 +66,17 @@ public class Formation
             return 1.9F;
         if(aircraft instanceof FW_190)
             return 1.4F;
-        
+
         // TODO: Changed by SAS~Storebror, increase distance in formation depending on number of engines
+        // TODO: Changed by western0221, make a bit narrow with many engines from Storebror's code
 //        return (aircraft instanceof Scheme1) ? 1.2F : 2.2F;
-        return 1.2F * aircraft.FM.EI.getNum();
+        if(aircraft.FM.EI.getNum() < 2)
+            return 1.2F;
+        if(aircraft.FM.EI.getNum() < 4)
+            return 1.1F * (float) aircraft.FM.EI.getNum();
+        if(aircraft.FM.EI.getNum() < 8)
+            return 1.0F * (float) aircraft.FM.EI.getNum();
+        return 0.9F * (float) aircraft.FM.EI.getNum();
     }
 
     public static final void gather(FlightModel flightmodel, byte formationType)
