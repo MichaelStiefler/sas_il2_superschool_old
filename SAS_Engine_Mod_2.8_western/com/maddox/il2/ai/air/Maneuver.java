@@ -170,13 +170,13 @@ public class Maneuver extends AIFlightModel {
 	private static final int MIN_SPEED = 5;
 	private static final int MAX_SPEED = 6;
 	private static final int CONST_POWER = 7;
-	protected static final int ZERO_POWER = 8;
+	private static final int ZERO_POWER = 8;
 	private static final int BOOST_ON = 9;
 	private static final int FOLLOW_WITHOUT_FLAPS = 10;
 	private static final int BOOST_FULL = 11;
 	private int speedMode;
 	private float smConstSpeed;
-	protected float smConstPower;
+	private float smConstPower;
 	private FlightModel tailForStaying;
 	private Vector3d tailOffset;
 	protected int Speak5minutes;
@@ -840,6 +840,8 @@ public class Maneuver extends AIFlightModel {
 		f1 = (float) Math.max(f1, Engine.land().HQ_Air(Po.x, Po.y));
 		Alt = (float) Loc.z - f1;
 		indSpeed = getSpeed() * (float) Math.sqrt(Density / 1.225F);
+		boolean bFJ = (actor instanceof TypeFastJet);
+		boolean bHeli = (actor instanceof TypeHelicopter);
 		if (!Gears.onGround() && isOk() && Alt > 8F) {
 			if (AOA > AOA_Crit - 2.0F) Or.increment(0.0F, 0.05F * (AOA_Crit - 2.0F - AOA), 0.0F);
 			if (AOA < -5F) Or.increment(0.0F, 0.05F * (-5F - AOA), 0.0F);
@@ -864,8 +866,6 @@ public class Maneuver extends AIFlightModel {
 			push();
 			set_maneuver(99);
 		}
-		boolean bFJ = (actor instanceof TypeFastJet);
-		boolean bHeli = (actor instanceof TypeHelicopter);
 		switch (maneuver) {
 		default:
 			break;
@@ -977,8 +977,8 @@ public class Maneuver extends AIFlightModel {
 			else dA -= 335F;
 			if (dA < -180F) dA += 360F;
 			dA = -0.01F * dA;
-			CT.AileronControl = dA;
-			CT.ElevatorControl = -0.04F * (Or.getTangage() - 1.0F) + 0.002F * ((AP.way.curr().z() - (float) Loc.z) + 250F);
+			CT.AileronControl = clamp11(dA);
+			CT.ElevatorControl = clamp11(-0.04F * (Or.getTangage() - 1.0F) + 0.002F * ((AP.way.curr().z() - (float) Loc.z) + 250F));
 			if (mn_time > 60F) {
 				mn_time = 0.0F;
 				pop();
@@ -1027,10 +1027,10 @@ public class Maneuver extends AIFlightModel {
 				else dA -= 315F;
 				if (dA < -180F) dA += 360F;
 				dA = -0.01F * dA;
-				CT.AileronControl = dA;
+				CT.AileronControl = clamp11(dA);
 				dA = 0.002F * ((desiredAlt - (float) Loc.z) + 250F);
 				if (dA > 0.66F) dA = 0.66F;
-				CT.ElevatorControl = -0.04F * (Or.getTangage() - 1.0F) + dA;
+				CT.ElevatorControl = clamp11(-0.04F * (Or.getTangage() - 1.0F) + dA);
 				if (actionTimerStop < Time.current()) {
 					((Aircraft) actor).bSpotter = false;
 					target_ground = null;
@@ -1052,15 +1052,20 @@ public class Maneuver extends AIFlightModel {
 				if (Skill > 1) setReadyToReturn(true);
 			}
 			setSpeedMode(4);
-			smConstSpeed = 100F;
+			if (bFJ)
+				smConstSpeed = 150F;
+			else if (bHeli)
+				smConstSpeed = 66F;
+			else
+				smConstSpeed = 100F;
 			dA = Or.getKren();
 			if (dA > 0.0F) dA -= 50F;
 			else dA -= 310F;
 			if (dA < -180F) dA += 360F;
 			dA = -0.01F * dA;
-			CT.AileronControl = dA;
+			CT.AileronControl = clamp11(dA);
 			dA = (-10F - Or.getTangage()) * 0.05F;
-			CT.ElevatorControl = dA;
+			CT.ElevatorControl = clamp11(dA);
 			if ((double) getOverload() < 1.0D / Math.abs(Math.cos(DEG2RAD(dA)))) CT.ElevatorControl += 1.0F * f;
 			else CT.ElevatorControl -= 1.0F * f;
 			if (Alt < 100F) {
@@ -1080,7 +1085,7 @@ public class Maneuver extends AIFlightModel {
 			else dA -= 310F;
 			if (dA < -180F) dA += 360F;
 			dA = -0.01F * dA;
-			CT.AileronControl = dA;
+			CT.AileronControl = clamp11(dA);
 			if (mn_time > 5F) pop();
 			break;
 
@@ -1135,8 +1140,8 @@ public class Maneuver extends AIFlightModel {
 				dA -= bankAngle;
 				if (dA < -180F) dA += 360F;
 				dA = -0.01F * dA;
-				CT.AileronControl = dA;
-				CT.RudderControl = -0.1F * getAOS();
+				CT.AileronControl = clamp11(dA);
+				CT.RudderControl = clamp11(-0.1F * getAOS());
 				break;
 			}
 			nShakeMe(flying, Skill);
@@ -1212,7 +1217,7 @@ public class Maneuver extends AIFlightModel {
 					else sinKren = World.Rnd().nextFloat(75F, 90F);
 				}
 				setSpeedMode(8);
-				CT.AileronControl = -0.2F * (Or.getKren() + sinKren);
+				CT.AileronControl = clamp11(-0.2F * (Or.getKren() + sinKren));
 				sub_Man_Count++;
 				if (sub_Man_Count > 16 + World.Rnd().nextInt(0, 14)) {
 					sub_Man_Count = 0;
@@ -1245,7 +1250,7 @@ public class Maneuver extends AIFlightModel {
 
 			case 2: // '\002'
 				sub_Man_Count++;
-				CT.AileronControl = -0.2F * (Or.getKren() + sinKren);
+				CT.AileronControl = clamp11(-0.2F * (Or.getKren() + sinKren));
 				setSpeedMode(8);
 				CT.RudderControl = CT.AileronControl * -1F;
 				CT.ElevatorControl = -1F;
@@ -1266,7 +1271,7 @@ public class Maneuver extends AIFlightModel {
 				submaneuver = World.Rnd().nextInt(0, 1);
 				direction = World.Rnd().nextFloat(-5F, -1F);
 			}
-			CT.AileronControl = -0.08F * (Or.getKren() - direction);
+			CT.AileronControl = clamp11(-0.08F * (Or.getKren() - direction));
 			switch (submaneuver) {
 			case 0: // '\0'
 				direction = World.Rnd().nextFloat(-5F, -1F);
@@ -1295,7 +1300,7 @@ public class Maneuver extends AIFlightModel {
 
 		case 4: // '\004'  // ROLL
 			CT.AileronControl = getW().x <= 0.0D ? -1F : 1.0F;
-			CT.ElevatorControl = 0.1F * (float) Math.cos(DEG2RAD(Or.getKren()));
+			CT.ElevatorControl = clamp11(0.1F * (float) Math.cos(DEG2RAD(Or.getKren())));
 			CT.RudderControl = 0.0F;
 			if (getSpeedKMH() < 220F) {
 				push(3);
@@ -1312,13 +1317,14 @@ public class Maneuver extends AIFlightModel {
 				CT.RudderControl = 0.0F;
 				if (World.Rnd().nextInt(0, 99) < 10 && Alt < 80F) Voice.speakPullUp((Aircraft) actor);
 			}
-			if (getSpeed() < Vmax * 0.7F || Or.getTangage() > 8F) setSpeedMode(11);
+			// By western, add Helicopter decision
+			if (getSpeed() < Vmax * 0.7F || Or.getTangage() > 8F || bHeli) setSpeedMode(11);
 			else setSpeedMode(8);
 			dA = Or.getKren();
 			CT.BayDoorControl = 0.0F;
 			CT.AirBrakeControl = 0.0F;
-			CT.AileronControl = -0.04F * dA;
-			CT.ElevatorControl = 1.0F + 0.3F * (float) getW().y;
+			CT.AileronControl = clamp11(-0.04F * dA);
+			CT.ElevatorControl = clamp11(1.0F + 0.3F * (float) getW().y);
 			if (CT.ElevatorControl < 0.0F) CT.ElevatorControl = 0.0F;
 			if (AOA > 15F) Or.increment(0.0F, (15F - AOA) * 0.5F * f, 0.0F);
 			if (Alt < 10F && Vwld.z < 0.0D) Vwld.z *= 0.89999997615814209D;
@@ -1403,9 +1409,9 @@ public class Maneuver extends AIFlightModel {
 				if (Or.getTangage() > 20F) dA -= (Or.getTangage() - 20F) * 0.1F * f;
 				else dA = (((float) Vwld.length() / VminFLAPS) * 140F - 50F - Or.getTangage() * 20F) * 0.004F;
 				dA += 0.5D * getW().y;
-				CT.ElevatorControl = dA;
+				CT.ElevatorControl = clamp11(dA);
 				if (Vwld.z < 0.0D || CT.ElevatorControl <= 0.05F || mn_time > 0.75F) {
-					if (mn_time > 3F) CT.AileronControl = -0.04F * Or.getKren();
+					if (mn_time > 3F) CT.AileronControl = clamp11(-0.04F * Or.getKren());
 					if (target != null || danger != null) {
 						if (target != null) {
 							if (!Landscape.rayHitHQ(Loc, target.Loc, tempPoint) || mn_time > 3F) pop();
@@ -1456,9 +1462,9 @@ public class Maneuver extends AIFlightModel {
 		case 3: // '\003'  // LEVEL_PLANE
 			if (first && program[0] == 49) pop();
 			setSpeedMode(6);
-			CT.AileronControl = -0.04F * Or.getKren();
+			CT.AileronControl = clamp11(-0.04F * Or.getKren());
 			dA = (getSpeedKMH() - 180F - Or.getTangage() * 10F - getVertSpeed() * 5F) * 0.004F;
-			CT.ElevatorControl = dA;
+			CT.ElevatorControl = clamp11(dA);
 			if (getSpeed() > Vmin * 1.2F && getVertSpeed() > 0.0F) {
 				setSpeedMode(7);
 				smConstPower = 0.7F;
@@ -1468,10 +1474,10 @@ public class Maneuver extends AIFlightModel {
 
 		case 86: // 'V'  // SMOOTH_LEVEL
 			setSpeedMode(8);
-			CT.AileronControl = -0.04F * Or.getKren();
+			CT.AileronControl = clamp11(-0.04F * Or.getKren());
 			dA = -((float) Vwld.z / (Math.abs(getSpeed()) + 1.0F) + 0.07F);
 			if (dA < -0.0075F) dA = -0.0075F;
-			CT.ElevatorControl = CT.ElevatorControl * 0.9F + dA * 0.1F + 0.25F * (float) getW().y;
+			CT.ElevatorControl = clamp11(CT.ElevatorControl * 0.9F + dA * 0.1F + 0.25F * (float) getW().y);
 			if (getSpeed() < VmaxAllowed * 0.93F) {
 				setSpeedMode(7);
 				smConstPower = 0.87F;
@@ -1482,7 +1488,7 @@ public class Maneuver extends AIFlightModel {
 		case 10: // '\n'  // CLIMB
 			AP.setStabAll(false);
 			setSpeedMode(6);
-			CT.AileronControl = -0.04F * Or.getKren();
+			CT.AileronControl = clamp11(-0.04F * Or.getKren());
 			dA = CT.ElevatorControl;
 			if (Or.getTangage() > 15F) {
 				dA -= (Or.getTangage() - 15F) * 0.1F * f;
@@ -1492,25 +1498,25 @@ public class Maneuver extends AIFlightModel {
 			}
 			// TODO: Review please. The following line is not part of 4.12.2 base code and has hence been commented out!
 			// dA += 0.5D * getW().y;
-			CT.ElevatorControl = dA;
+			CT.ElevatorControl = clamp11(dA);
 			if (Alt > 250F && mn_time > 6F || mn_time > 20F) pop();
 			break;
 
 		case 97: // 'a'  // COMBAT_CLIMB
 			AP.setStabAll(false);
 			setSpeedMode(11);
-			CT.AileronControl = -0.04F * Or.getKren();
+			CT.AileronControl = clamp11(-0.04F * Or.getKren());
 			dA = CT.ElevatorControl;
 			if (Or.getTangage() > 15F) dA -= (Or.getTangage() - 15F) * 0.1F * f;
 			else dA = (((float) Vwld.length() / VminFLAPS) * 140F - 50F - Or.getTangage() * 20F) * 0.004F;
 			dA += 0.5D * getW().y;
-			CT.ElevatorControl = dA;
+			CT.ElevatorControl = clamp11(dA);
 			if (mn_time > 20F || dangerAggressiveness > 0.65F) pop();
 			break;
 
 		case 96: // '`'  // PANIC_FREEZE
-			CT.AileronControl = -0.04F * Or.getKren();
-			CT.ElevatorControl = -0.04F * Or.getTangage();
+			CT.AileronControl = clamp11(-0.04F * Or.getKren());
+			CT.ElevatorControl = clamp11(-0.04F * Or.getTangage());
 			CT.RudderControl = 0.0F;
 			if (mn_time > (10F - (float) subSkill) * 0.5F) {
 				if (World.Rnd().nextInt(0, 1000) < 20 - 4 * subSkill) {
@@ -1531,8 +1537,8 @@ public class Maneuver extends AIFlightModel {
 			else dA -= 290F;
 			if (dA < -180F) dA += 360F;
 			dA = -0.015F * dA;
-			CT.AileronControl = dA;
-			CT.RudderControl = -0.1F * getAOS();
+			CT.AileronControl = clamp11(dA);
+			CT.RudderControl = clamp11(-0.1F * getAOS());
 			nSmackMe((float) W.z, Sq.squareWing, (float) Vflow.length(), subSkill, Skill);
 			if (mn_time > (16F - (float) subSkill) * 0.125F) if (subSkill > 7 || World.Rnd().nextInt(0, 1000) < 50 - 3 * subSkill) pop();
 			else if (World.Rnd().nextInt(0, 1000) < 30 - 4 * subSkill || World.Rnd().nextInt(0, 100) < 20 && Alt < 200F) {
@@ -1552,12 +1558,12 @@ public class Maneuver extends AIFlightModel {
 			minElevCoeff = 20F;
 			setSpeedMode(9);
 			CT.setPowerControl(1.1F);
-			CT.AileronControl = -0.04F * Or.getKren();
+			CT.AileronControl = clamp11(-0.04F * Or.getKren());
 			dA = CT.ElevatorControl;
 			if (Or.getTangage() > 25F) dA -= (Or.getTangage() - 25F) * 0.1F * f;
 			else dA = (((float) Vwld.length() / VminFLAPS) * 140F - 50F - Or.getTangage() * 15F) * 0.004F;
 			dA += 0.5D * getW().y;
-			CT.ElevatorControl = dA;
+			CT.ElevatorControl = clamp11(dA);
 			if (Alt > 150F || Alt > 100F && mn_time > 2.0F || mn_time > 3F) pop();
 			break;
 
@@ -1572,10 +1578,10 @@ public class Maneuver extends AIFlightModel {
 
 			case 1: // '\001'
 				setSpeedMode(11);
-				CT.AileronControl = -0.04F * Or.getKren();
+				CT.AileronControl = clamp11(-0.04F * Or.getKren());
 				dA = -((float) Vwld.z / (Math.abs(getSpeed()) + 1.0F) + 0.37F);
 				if (dA < -0.075F) dA = -0.075F;
-				CT.ElevatorControl = CT.ElevatorControl * 0.9F + dA * 0.1F + 0.25F * (float) getW().y;
+				CT.ElevatorControl = clamp11(CT.ElevatorControl * 0.9F + dA * 0.1F + 0.25F * (float) getW().y);
 				if (Loc.z <= (double) (cloudHeight + 400F)) {
 					push();
 					push(86);
@@ -1586,12 +1592,12 @@ public class Maneuver extends AIFlightModel {
 			case 2: // '\002'
 				AP.setStabAll(false);
 				setSpeedMode(9);
-				CT.AileronControl = -0.04F * Or.getKren();
+				CT.AileronControl = clamp11(-0.04F * Or.getKren());
 				dA = CT.ElevatorControl;
 				if (Or.getTangage() > 15F) dA -= (Or.getTangage() - 15F) * 0.1F * f;
 				else dA = (((float) Vwld.length() / VminFLAPS) * 140F - 50F - Or.getTangage() * 20F) * 0.004F;
 				dA += 0.5D * getW().y;
-				CT.ElevatorControl = dA;
+				CT.ElevatorControl = clamp11(dA);
 				if (Loc.z >= (double) (cloudHeight + 300F)) {
 					push();
 					push(22);
@@ -1621,16 +1627,16 @@ public class Maneuver extends AIFlightModel {
 		case 11: // '\013'  // DIVING_0_RPM
 			setSpeedMode(8);
 			if (Math.abs(Or.getKren()) < 90F) {
-				CT.AileronControl = -0.04F * Or.getKren();
+				CT.AileronControl = clamp11(-0.04F * Or.getKren());
 				if (Vwld.z > 0.0D || getSpeedKMH() < 270F) dA = -0.04F;
 				else dA = 0.04F;
-				CT.ElevatorControl = CT.ElevatorControl * 0.9F + dA * 0.1F;
+				CT.ElevatorControl = clamp11(CT.ElevatorControl * 0.9F + dA * 0.1F);
 			} else {
-				CT.AileronControl = 0.04F * (180F - Math.abs(Or.getKren()));
+				CT.AileronControl = clamp11(0.04F * (180F - Math.abs(Or.getKren())));
 				if (Or.getTangage() > -25F) dA = 0.33F;
 				else if (Vwld.z > 0.0D || getSpeedKMH() < 270F) dA = 0.04F;
 				else dA = -0.04F;
-				CT.ElevatorControl = CT.ElevatorControl * 0.9F + dA * 0.1F;
+				CT.ElevatorControl = clamp11(CT.ElevatorControl * 0.9F + dA * 0.1F);
 			}
 			if (Alt < 120F || mn_time > 4F) pop();
 			break;
@@ -1638,11 +1644,11 @@ public class Maneuver extends AIFlightModel {
 		case 12: // '\f'  // DIVING_30_DEG
 			setSpeedMode(4);
 			smConstSpeed = 80F;
-			CT.AileronControl = -0.04F * Or.getKren();
+			CT.AileronControl = clamp11(-0.04F * Or.getKren());
 			if (Vwld.length() > (double) (VminFLAPS * 2.0F)) Vwld.scale(0.99500000476837158D);
 			dA = -((float) Vwld.z / (Math.abs(getSpeed()) + 1.0F) + 0.5F);
 			if (dA < -0.1F) dA = -0.1F;
-			CT.ElevatorControl = CT.ElevatorControl * 0.9F + dA * 0.1F + 0.3F * (float) getW().y;
+			CT.ElevatorControl = clamp11(CT.ElevatorControl * 0.9F + dA * 0.1F + 0.3F * (float) getW().y);
 			if (mn_time > 5F || Alt < 200F) pop();
 			break;
 
@@ -1656,7 +1662,7 @@ public class Maneuver extends AIFlightModel {
 				dA = Or.getKren() - 180F;
 				if (dA < -180F) dA += 360F;
 				dA = -0.04F * dA;
-				CT.AileronControl = dA;
+				CT.AileronControl = clamp11(dA);
 				if (mn_time > 3F || Math.abs(Or.getKren()) > 175F - 5F * (float) Skill) submaneuver++;
 				break;
 
@@ -1664,8 +1670,8 @@ public class Maneuver extends AIFlightModel {
 				dA = Or.getKren() - 180F;
 				if (dA < -180F) dA += 360F;
 				dA = -0.04F * dA;
-				CT.AileronControl = dA;
-				CT.RudderControl = -0.1F * getAOS();
+				CT.AileronControl = clamp11(dA);
+				CT.RudderControl = clamp11(-0.1F * getAOS());
 				setSpeedMode(8);
 				if (Or.getTangage() > -45F && getOverload() < maxG) CT.ElevatorControl += 1.5F * f;
 				else CT.ElevatorControl -= 0.5F * f;
@@ -1675,10 +1681,10 @@ public class Maneuver extends AIFlightModel {
 
 			case 2: // '\002'
 				setSpeedMode(8);
-				CT.AileronControl = -0.04F * Or.getKren();
+				CT.AileronControl = clamp11(-0.04F * Or.getKren());
 				dA = -((float) Vwld.z / (Math.abs(getSpeed()) + 1.0F) + 0.707F);
 				if (dA < -0.75F) dA = -0.75F;
-				CT.ElevatorControl = CT.ElevatorControl * 0.9F + dA * 0.1F + 0.5F * (float) getW().y;
+				CT.ElevatorControl = clamp11(CT.ElevatorControl * 0.9F + dA * 0.1F + 0.5F * (float) getW().y);
 				if ((double) Alt < -5D * Vwld.z || mn_time > 5F) pop();
 				break;
 			}
@@ -1695,7 +1701,7 @@ public class Maneuver extends AIFlightModel {
 				dA = Or.getKren() - 180F;
 				if (dA < -180F) dA += 360F;
 				dA = -0.04F * dA;
-				CT.AileronControl = dA;
+				CT.AileronControl = clamp11(dA);
 				if (mn_time > 3F || Math.abs(Or.getKren()) > 175F - 5F * (float) Skill) submaneuver++;
 				break;
 
@@ -1703,8 +1709,8 @@ public class Maneuver extends AIFlightModel {
 				dA = Or.getKren() - 180F;
 				if (dA < -180F) dA += 360F;
 				dA = -0.04F * dA;
-				CT.AileronControl = dA;
-				CT.RudderControl = -0.1F * getAOS();
+				CT.AileronControl = clamp11(dA);
+				CT.RudderControl = clamp11(-0.1F * getAOS());
 				setSpeedMode(11);
 				if (Or.getTangage() > -88F && getOverload() < maxG) CT.ElevatorControl += 1.5F * f;
 				else CT.ElevatorControl -= 0.5F * f;
@@ -1714,10 +1720,10 @@ public class Maneuver extends AIFlightModel {
 
 			case 2: // '\002'
 				setSpeedMode(11);
-				CT.AileronControl = -0.04F * Or.getKren();
+				CT.AileronControl = clamp11(-0.04F * Or.getKren());
 				dA = -((float) Vwld.z / (Math.abs(getSpeed()) + 1.0F) + 0.707F);
 				if (dA < -0.75F) dA = -0.75F;
-				CT.ElevatorControl = CT.ElevatorControl * 0.9F + dA * 0.1F + 0.5F * (float) getW().y;
+				CT.ElevatorControl = clamp11(CT.ElevatorControl * 0.9F + dA * 0.1F + 0.5F * (float) getW().y);
 				if ((double) Alt < -5D * Vwld.z || mn_time > 5F) pop();
 				break;
 			}
@@ -1730,14 +1736,14 @@ public class Maneuver extends AIFlightModel {
 			else dA -= 90F;
 			if (dA < -180F) dA += 360F;
 			dA = -0.02F * dA;
-			CT.AileronControl = dA;
+			CT.AileronControl = clamp11(dA);
 			if (mn_time > 5F || Math.abs(Math.abs(Or.getKren()) - 90F) < 1.0F) pop();
 			break;
 
 		case 6: // '\006'  // ROLL_180
 			dA = Or.getKren() - 180F;
 			if (dA < -180F) dA += 360F;
-			CT.AileronControl = (float) ((double) (-0.04F * dA) - 0.5D * getW().x);
+			CT.AileronControl = clamp11((float) ((double) (-0.04F * dA) - 0.5D * getW().x));
 			if (mn_time > 4F || Math.abs(Or.getKren()) > 178F) {
 				W.x = 0.0D;
 				pop();
@@ -1757,10 +1763,10 @@ public class Maneuver extends AIFlightModel {
 			float f3 = Or.getKren();
 			if (f3 > -90F && f3 < 90F) {
 				float f7 = 0.01111F * (90F - Math.abs(f3));
-				CT.ElevatorControl = -0.08F * f7 * (Or.getTangage() - 3F);
+				CT.ElevatorControl = clamp11(-0.08F * f7 * (Or.getTangage() - 3F));
 			} else {
 				float f8 = 0.01111F * (90F - Math.abs(f3));
-				CT.ElevatorControl = 0.08F * f8 * (Or.getTangage() - 3F);
+				CT.ElevatorControl = clamp11(0.08F * f8 * (Or.getTangage() - 3F));
 			}
 			if (Or.getKren() * direction < 0.0F) tmpi = 1;
 			if (tmpi == 1 && (submaneuver > 0 ? Or.getKren() > direction : Or.getKren() < direction) || mn_time > 17.5F) pop();
@@ -1796,14 +1802,14 @@ public class Maneuver extends AIFlightModel {
 				CT.ElevatorControl -= 0.1F * f;
 				if (CT.bHasElevatorTrim) CT.setTrimElevatorControl(0.0F);
 			}
-			CT.AileronControl = 0.5F + dA / (2.0F + mn_time);
+			CT.AileronControl = clamp11(0.5F + dA / (2.0F + mn_time));
 			if (mn_time > direction || Alt < 100F) pop();
 			break;
 
 		case 22: // '\026'  // SPEEDUP
 			setSpeedMode(11);
-			CT.AileronControl = -0.04F * Or.getKren();
-			CT.ElevatorControl = -0.04F * (Or.getTangage() + 5F);
+			CT.AileronControl = clamp11(-0.04F * Or.getKren());
+			CT.ElevatorControl = clamp11(-0.04F * (Or.getTangage() + 5F));
 			CT.RudderControl = 0.0F;
 			if (getSpeed() > Vmax || mn_time > 30F) pop();
 			break;
@@ -1849,10 +1855,10 @@ public class Maneuver extends AIFlightModel {
 					raRudShift = f19 * World.Rnd().nextFloat(-0.5F, 0.5F);
 					raElevShift = f19 * World.Rnd().nextFloat(-0.8F, 0.8F);
 				}
-				CT.AileronControl = 0.9F * CT.AileronControl + 0.1F * raAilShift;
-				CT.RudderControl = 0.95F * CT.RudderControl + 0.05F * raRudShift;
-				if (f4 > -90F && f4 < 90F) CT.ElevatorControl = -0.04F * (Or.getTangage() + 5F);
-				else CT.ElevatorControl = 0.05F * (Or.getTangage() + 5F);
+				CT.AileronControl = clamp11(0.9F * CT.AileronControl + 0.1F * raAilShift);
+				CT.RudderControl = clamp11(0.95F * CT.RudderControl + 0.05F * raRudShift);
+				if (f4 > -90F && f4 < 90F) CT.ElevatorControl = clamp11(-0.04F * (Or.getTangage() + 5F));
+				else CT.ElevatorControl = clamp11(0.05F * (Or.getTangage() + 5F));
 				CT.ElevatorControl += 0.1F * raElevShift;
 				sub_Man_Count++;
 				if ((float) sub_Man_Count >= 80F * (1.5F - f19) && f4 > -70F && f4 < 70F) sub_Man_Count = 0;
@@ -1879,14 +1885,14 @@ public class Maneuver extends AIFlightModel {
 			switch (submaneuver) {
 			case 0: // '\0'
 				CT.ElevatorControl = 0.05F;
-				CT.AileronControl = -0.04F * Or.getKren();
-				CT.RudderControl = -0.1F * getAOS();
+				CT.AileronControl = clamp11(-0.04F * Or.getKren());
+				CT.RudderControl = clamp11(-0.1F * getAOS());
 				if (Math.abs(Or.getKren()) < 2.0F) submaneuver++;
 				break;
 
 			case 1: // '\001'
-				CT.AileronControl = -0.04F * Or.getKren();
-				CT.RudderControl = -0.1F * getAOS();
+				CT.AileronControl = clamp11(-0.04F * Or.getKren());
+				CT.RudderControl = clamp11(-0.1F * getAOS());
 				dA = 0.5F;
 				if (getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA) CT.ElevatorControl -= 0.4F * f;
 				else CT.ElevatorControl += 0.4F * f;
@@ -1895,7 +1901,7 @@ public class Maneuver extends AIFlightModel {
 				break;
 
 			case 2: // '\002'
-				CT.RudderControl = -0.1F * getAOS() * (getSpeed() > 300F ? 1.0F : 0.0F);
+				CT.RudderControl = clamp11(-0.1F * getAOS() * (getSpeed() > 300F ? 1.0F : 0.0F));
 				dA = 1.0F;
 				if (getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA) CT.ElevatorControl -= 0.4F * f;
 				else CT.ElevatorControl += 0.4F * f;
@@ -1903,7 +1909,7 @@ public class Maneuver extends AIFlightModel {
 				break;
 
 			case 3: // '\003'
-				CT.RudderControl = -0.1F * getAOS() * (getSpeed() > 300F ? 1.0F : 0.0F);
+				CT.RudderControl = clamp11(-0.1F * getAOS() * (getSpeed() > 300F ? 1.0F : 0.0F));
 				dA = 1.0F;
 				if (getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA) CT.ElevatorControl -= 0.2F * f;
 				else CT.ElevatorControl += 0.2F * f;
@@ -1912,10 +1918,10 @@ public class Maneuver extends AIFlightModel {
 
 			case 4: // '\004'
 				if (Or.getTangage() > -45F) {
-					CT.AileronControl = -0.04F * Or.getKren();
+					CT.AileronControl = clamp11(-0.04F * Or.getKren());
 					maxAOA = 3.5F;
 				}
-				CT.RudderControl = -0.1F * getAOS();
+				CT.RudderControl = clamp11(-0.1F * getAOS());
 				dA = 0.5F;
 				if (getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA) CT.ElevatorControl -= 1.0F * f;
 				else CT.ElevatorControl += 0.4F * f;
@@ -1954,8 +1960,8 @@ public class Maneuver extends AIFlightModel {
 			switch (submaneuver) {
 			case 0: // '\0'
 				CT.ElevatorControl = 0.05F;
-				CT.AileronControl = 0.04F * (Or.getKren() > 0.0F ? 180F - Or.getKren() : -180F + Or.getKren());
-				CT.RudderControl = -0.1F * getAOS();
+				CT.AileronControl = clamp11(0.04F * (Or.getKren() > 0.0F ? 180F - Or.getKren() : -180F + Or.getKren()));
+				CT.RudderControl = clamp11(-0.1F * getAOS());
 				if (Math.abs(Or.getKren()) > 178F) submaneuver++;
 				break;
 
@@ -1963,7 +1969,7 @@ public class Maneuver extends AIFlightModel {
 				setSpeedMode(7);
 				smConstPower = 0.5F;
 				CT.AileronControl = 0.0F;
-				CT.RudderControl = -0.1F * getAOS();
+				CT.RudderControl = clamp11(-0.1F * getAOS());
 				dA = 1.0F;
 				if (getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA) CT.ElevatorControl -= 0.2F * f;
 				else CT.ElevatorControl += 1.2F * f;
@@ -1972,11 +1978,11 @@ public class Maneuver extends AIFlightModel {
 
 			case 2: // '\002'
 				if (Or.getTangage() > -45F) {
-					CT.AileronControl = -0.04F * Or.getKren();
+					CT.AileronControl = clamp11(-0.04F * Or.getKren());
 					setSpeedMode(11);
 					maxAOA = 7F;
 				}
-				CT.RudderControl = -0.1F * getAOS();
+				CT.RudderControl = clamp11(-0.1F * getAOS());
 				dA = 0.5F;
 				if (getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA) CT.ElevatorControl -= 0.8F * f;
 				else CT.ElevatorControl += 0.4F * f;
@@ -2001,14 +2007,14 @@ public class Maneuver extends AIFlightModel {
 			maxAOA = Vwld.z > 0.0D ? 7F : 12F;
 			switch (submaneuver) {
 			case 0: // '\0'
-				CT.AileronControl = -0.04F * Or.getKren();
-				CT.RudderControl = -0.1F * getAOS();
+				CT.AileronControl = clamp11(-0.04F * Or.getKren());
+				CT.RudderControl = clamp11(-0.1F * getAOS());
 				if (Math.abs(Or.getKren()) < 2.0F) submaneuver++;
 				break;
 
 			case 1: // '\001'
-				CT.AileronControl = -0.04F * Or.getKren();
-				CT.RudderControl = -0.1F * getAOS();
+				CT.AileronControl = clamp11(-0.04F * Or.getKren());
+				CT.RudderControl = clamp11(-0.1F * getAOS());
 				dA = 1.0F;
 				if (getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA) CT.ElevatorControl -= 0.4F * f;
 				else CT.ElevatorControl += 0.8F * f;
@@ -2026,8 +2032,8 @@ public class Maneuver extends AIFlightModel {
 
 			case 3: // '\003'
 				if (Math.abs(Or.getKren()) < 60F) CT.ElevatorControl = 0.05F;
-				CT.AileronControl = -0.04F * Or.getKren();
-				CT.RudderControl = -0.1F * getAOS();
+				CT.AileronControl = clamp11(-0.04F * Or.getKren());
+				CT.RudderControl = clamp11(-0.1F * getAOS());
 				if (Math.abs(Or.getKren()) < 30F) submaneuver++;
 				break;
 
@@ -2178,8 +2184,8 @@ public class Maneuver extends AIFlightModel {
 				}
 			}
 			setSpeedMode(6);
-			CT.AileronControl = -0.04F * Or.getKren();
-			CT.RudderControl = -0.1F * getAOS();
+			CT.AileronControl = clamp11(-0.04F * Or.getKren());
+			CT.RudderControl = clamp11(-0.1F * getAOS());
 			if (Or.getTangage() < 70F && getOverload() < maxG && AOA < 14F) CT.ElevatorControl += 0.5F * f;
 			else CT.ElevatorControl -= 0.5F * f;
 			if (Vwld.z < 1.0D) pop();
@@ -2783,10 +2789,10 @@ public class Maneuver extends AIFlightModel {
 				break;
 
 			case 0: // '\0'
-				CT.AileronControl = -0.04F * Or.getKren();
-				CT.RudderControl = -0.1F * getAOS();
+				CT.AileronControl = clamp11(-0.04F * Or.getKren());
+				CT.RudderControl = clamp11(-0.1F * getAOS());
 				dA = (getSpeedKMH() - 180F - Or.getTangage() * 10F - getVertSpeed() * 5F) * 0.004F;
-				CT.ElevatorControl = dA;
+				CT.ElevatorControl = clamp11(dA);
 				sub_Man_Count++;
 				if (sub_Man_Count > ((Aircraft) actor).aircIndex() * World.Rnd().nextInt(40, 75)) submaneuver++;
 				break;
@@ -3052,10 +3058,10 @@ public class Maneuver extends AIFlightModel {
 					else dA -= 325F;
 					if (dA < -180F) dA += 360F;
 					dA = -0.01F * dA;
-					CT.AileronControl = dA;
+					CT.AileronControl = clamp11(dA);
 					dA = 0.002F * ((desiredAlt - (float) Loc.z) + 250F);
 					if (dA > 0.66F) dA = 0.66F;
-					CT.ElevatorControl = -0.04F * (Or.getTangage() - 1.0F) + dA;
+					CT.ElevatorControl = clamp11(-0.04F * (Or.getTangage() - 1.0F) + dA);
 				}
 			}
 			break;
@@ -3256,7 +3262,7 @@ public class Maneuver extends AIFlightModel {
 			dA = CT.ElevatorControl;
 			AP.update(f);
 			setSpeedControl(f);
-			CT.ElevatorControl = dA;
+			CT.ElevatorControl = clamp11(dA);
 			if (maneuver != 25) return;
 			if (Alt > 60F) {
 				if (Alt < 160F) {
@@ -3593,7 +3599,7 @@ public class Maneuver extends AIFlightModel {
 			boolean bCarrierTakeoff = false;
 			AirportCarrier airportcarrier = null;
 			// +++ Engine2.8.1 TypeFastJet release brakes in reaching more thrust to make take-off length shorter
-			float fPowThresReleaseBrake = (bFJ ? 0.8F : (bHeli ? 0.55F : 0.4F));
+			float fPowThresReleaseBrake = (bFJ ? 0.8F : (bHeli ? 0.3F : 0.4F));
 			if (Actor.isAlive(AP.way.takeoffAirport) && (AP.way.takeoffAirport instanceof AirportCarrier)) {
 				airportcarrier = (AirportCarrier) AP.way.takeoffAirport;
 				if (!(airportcarrier.ship() instanceof TestRunway)) bCarrierTakeoff = true;
@@ -3602,8 +3608,9 @@ public class Maneuver extends AIFlightModel {
 				fAlt -= ((AirportCarrier) AP.way.takeoffAirport).height();
 				if (Alt < 9F && Vwld.z < 0.0D) Vwld.z *= 0.850D;
 				// +++ Engine2.7 use afterburner enough in taking-off
-				fPowThresReleaseBrake = ((EI.engines[0].getBoostFactor() > 1.0F) ? 1.0599F : (bHeli ? 0.55F : 0.97F));
+				fPowThresReleaseBrake = ((EI.engines[0].getBoostFactor() > 1.0F) ? 1.0599F : 0.97F);
 				if (maxThrottleAITakeoffavoidOH > 0.1F && fPowThresReleaseBrake > maxThrottleAITakeoffavoidOH * 0.98F) fPowThresReleaseBrake = maxThrottleAITakeoffavoidOH * 0.98F;
+				if (bHeli) fPowThresReleaseBrake = 0.3F;
 				// --- Engine2.7
 				if (CT.bHasCockpitDoorControl && !bStage6) AS.setCockpitDoor(actor, 1);
 			}
@@ -3821,20 +3828,17 @@ public class Maneuver extends AIFlightModel {
 				}
 				if (fPitchTarget < 1.0F) fPitchTarget = 1.0F;
 				if (fPitchTarget > AOA_Crit - 2.0F) fPitchTarget = AOA_Crit - 2.0F;
-				if (bHeli) fPitchTarget = -1.5F;  // By western
+				if (bHeli) fPitchTarget = (fAlt > 8.0F) ? -1.0F : -0.5F;  // By western
 				float f48 = 1.5F;
 				if (bCarrierTakeoff && !Gears.isUnderDeck()) {
 					CT.GearControl = 0.0F;
 					if (bHeli) {  // By western
 						if (fAlt < 0.0F) {
-							fPitchTarget = -1.0F;
-							f48 = 0.06F;
+							fPitchTarget = -0.5F;
 						} else if (fAlt > 8.0F) {
-							fPitchTarget = -5.0F;
-							f48 = 0.40F;
-						} else {
 							fPitchTarget = -3.0F;
-							f48 = 0.35F;
+						} else {
+							fPitchTarget = -1.5F;
 						}
 					} else {
 						if (fAlt < 0.0F) {
@@ -3849,7 +3853,8 @@ public class Maneuver extends AIFlightModel {
 				if (Or.getTangage() < fPitchTarget) dA = -0.7F * (Or.getTangage() - fPitchTarget) + f48 * (float) getW().y + 0.5F * (float) getAW().y;
 				else dA = -0.1F * (Or.getTangage() - fPitchTarget) + f48 * (float) getW().y + 0.5F * (float) getAW().y;
 		// === western trial v2
-				if (bFJ && !bCarrierTakeoff) {
+				if (bHeli && Gears.onGround()) CT.ElevatorControl = 0.0F;
+				else if (bFJ && !bCarrierTakeoff) {
 					boolean bBeginRotation = false;
 					boolean bKeepPitchup = false;
 					if (fAlt > fCenterZDiff + 8F || (float) Loc.z > fRunwayHeight + 8F) bKeepPitchup = true;
@@ -3912,7 +3917,7 @@ public class Maneuver extends AIFlightModel {
 					CT.BrakeControl = 1.0F;
 				}
 			}
-			CT.AileronControl = -0.05F * Or.getKren() + 0.3F * (float) getW().y;
+			CT.AileronControl = clamp11(-0.05F * Or.getKren() + 0.3F * (float) getW().y);
 			if ((fAlt > fCenterZDiff + 5F || (float) Loc.z > fRunwayHeight + 5F) && !Gears.isUnderDeck()) CT.GearControl = 0.0F;
 			float f49 = 1.0F;
 			if (hasBombs() || !flag8) f49 *= 1.7F;
@@ -4003,7 +4008,7 @@ public class Maneuver extends AIFlightModel {
 				submaneuver = 0;
 				if (getSpeed() < Vmin * 1.5F) pop();
 			}
-			CT.AileronControl = -0.04F * (Or.getKren() - direction);
+			CT.AileronControl = clamp11(-0.04F * (Or.getKren() - direction));
 			switch (submaneuver) {
 			case 0: // '\0'
 				dA = 1.0F;
@@ -4067,7 +4072,7 @@ public class Maneuver extends AIFlightModel {
 				if (CT.bHasBlownFlaps) CT.BlownFlapsControl = 1.0F;
 			}
 			if (getSpeed() < 80F && !CT.bHasFlapsControlSwitch) CT.FlapsControl = 1.0F;
-			CT.AileronControl = -0.08F * (Or.getKren() + sinKren);
+			CT.AileronControl = clamp11(-0.08F * (Or.getKren() + sinKren));
 			CT.ElevatorControl = 0.9F;
 			CT.RudderControl = 0.0F;
 			nShakeMe(flying, Skill);
@@ -4081,7 +4086,7 @@ public class Maneuver extends AIFlightModel {
 				submaneuver = World.Rnd().nextInt(0, 1);
 				direction = World.Rnd().nextFloat(-20F, -10F);
 			}
-			CT.AileronControl = -0.08F * (Or.getKren() - direction);
+			CT.AileronControl = clamp11(-0.08F * (Or.getKren() - direction));
 			switch (submaneuver) {
 			case 0: // '\0'
 				dA = 1.0F;
@@ -4156,9 +4161,9 @@ public class Maneuver extends AIFlightModel {
 				dA = Or.getKren() - 180F;
 				if (dA < -180F) dA += 360F;
 				dA = -0.08F * dA;
-				CT.AileronControl = dA;
+				CT.AileronControl = clamp11(dA);
 				CT.RudderControl = dA > 0.0F ? 1.0F : -1F;
-				CT.ElevatorControl = 0.01111111F * Math.abs(Or.getKren());
+				CT.ElevatorControl = clamp11(0.01111111F * Math.abs(Or.getKren()));
 				if (mn_time > 2.0F || Math.abs(Or.getKren()) > direction) {
 					submaneuver++;
 					CT.RudderControl = World.Rnd().nextFloat(-0.5F, 0.5F);
@@ -4171,7 +4176,7 @@ public class Maneuver extends AIFlightModel {
 				dA = Or.getKren() - 180F;
 				if (dA < -180F) dA += 360F;
 				dA = -0.04F * dA;
-				CT.AileronControl = dA;
+				CT.AileronControl = clamp11(dA);
 				if (Or.getTangage() > direction + 5F && getOverload() < maxG && AOA < maxAOA) {
 					if (CT.ElevatorControl < 0.0F) CT.ElevatorControl = 0.0F;
 					CT.ElevatorControl += 1.0F * f;
@@ -4194,7 +4199,7 @@ public class Maneuver extends AIFlightModel {
 
 			case 3: // '\003'
 				dA = Or.getKren() - direction;
-				CT.AileronControl = -0.04F * dA;
+				CT.AileronControl = clamp11(-0.04F * dA);
 				CT.RudderControl = dA > 0.0F ? 1.0F : -1F;
 				CT.ElevatorControl = 0.5F;
 				if (Math.abs(dA) < 4F + 3F * (float) Skill) submaneuver++;
@@ -4208,8 +4213,8 @@ public class Maneuver extends AIFlightModel {
 
 			case 5: // '\005'
 				dA = Or.getKren() - direction;
-				CT.AileronControl = -0.04F * dA;
-				CT.RudderControl = -0.1F * getAOS();
+				CT.AileronControl = clamp11(-0.04F * dA);
+				CT.RudderControl = clamp11(-0.1F * getAOS());
 				dA = 1.0F;
 				if (getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA || Or.getTangage() > 40F) CT.ElevatorControl -= 0.8F * f;
 				else CT.ElevatorControl += 1.6F * f;
@@ -4237,8 +4242,8 @@ public class Maneuver extends AIFlightModel {
 				else if (getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > 1.0F) CT.ElevatorControl -= 0.2F * f;
 				else CT.ElevatorControl += 1.2F * f;
 				dA = Or.getKren() - direction;
-				CT.AileronControl = -0.04F * dA;
-				CT.RudderControl = -0.1F * getAOS();
+				CT.AileronControl = clamp11(-0.04F * dA);
+				CT.RudderControl = clamp11(-0.1F * getAOS());
 				if (Math.abs(dA) < 4F + 1.0F * (float) Skill) submaneuver++;
 				break;
 
@@ -4246,7 +4251,7 @@ public class Maneuver extends AIFlightModel {
 				setSpeedMode(7);
 				smConstPower = 0.5F;
 				CT.AileronControl = 0.0F;
-				CT.RudderControl = -0.1F * getAOS();
+				CT.RudderControl = clamp11(-0.1F * getAOS());
 				dA = 1.0F;
 				if (getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA) CT.ElevatorControl -= 0.2F * f;
 				else CT.ElevatorControl += 1.2F * f;
@@ -4255,11 +4260,11 @@ public class Maneuver extends AIFlightModel {
 
 			case 2: // '\002'
 				if (Or.getTangage() > -45F) {
-					CT.AileronControl = -0.04F * Or.getKren();
+					CT.AileronControl = clamp11(-0.04F * Or.getKren());
 					setSpeedMode(9);
 					maxAOA = 7F;
 				}
-				CT.RudderControl = -0.1F * getAOS();
+				CT.RudderControl = clamp11(-0.1F * getAOS());
 				dA = 1.0F;
 				if (getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA) CT.ElevatorControl -= 0.8F * f;
 				else CT.ElevatorControl += 0.4F * f;
@@ -4279,7 +4284,7 @@ public class Maneuver extends AIFlightModel {
 				setSpeedMode(9);
 			}
 			dA = Or.getKren() - (Or.getKren() > 0.0F ? 35F : -35F);
-			CT.AileronControl = -0.04F * dA;
+			CT.AileronControl = clamp11(-0.04F * dA);
 			CT.RudderControl = Or.getKren() > 0.0F ? 1.0F : -1F;
 			CT.ElevatorControl = -1F;
 			if (direction > Or.getTangage() + 45F || Or.getTangage() < -60F || mn_time > 4F) pop();
@@ -4301,8 +4306,8 @@ public class Maneuver extends AIFlightModel {
 			maxAOA = Vwld.z > 0.0D ? 14F : 24F;
 			switch (submaneuver) {
 			case 0: // '\0'
-				CT.AileronControl = -0.04F * Or.getKren();
-				CT.RudderControl = -0.1F * getAOS();
+				CT.AileronControl = clamp11(-0.04F * Or.getKren());
+				CT.RudderControl = clamp11(-0.1F * getAOS());
 				if (Math.abs(Or.getKren()) < 45F) submaneuver++;
 				break;
 
@@ -4328,14 +4333,14 @@ public class Maneuver extends AIFlightModel {
 			if (CT.AileronControl > 0.1F) CT.AileronControl = 0.1F;
 			if (CT.AileronControl < -0.1F) CT.AileronControl = -0.1F;
 			dA = (getSpeedKMH() - 180F - Or.getTangage() * 10F - getVertSpeed() * 5F) * 0.004F;
-			CT.ElevatorControl = dA;
+			CT.ElevatorControl = clamp11(dA);
 			if (mn_time > 3.5F) pop();
 			break;
 
 		case 39: // '\''  // SLIDE_DESCENT
 			setSpeedMode(6);
-			CT.AileronControl = -0.04F * Or.getKren();
-			CT.ElevatorControl = -0.04F * (Or.getTangage() + 10F);
+			CT.AileronControl = clamp11(-0.04F * Or.getKren());
+			CT.ElevatorControl = clamp11(-0.04F * (Or.getTangage() + 10F));
 			if (CT.RudderControl > 0.1F) CT.RudderControl = 0.8F;
 			else if (CT.RudderControl < -0.1F) CT.RudderControl = -0.8F;
 			else CT.RudderControl = Or.getKren() > 0.0F ? 1.0F : -1F;
@@ -4343,10 +4348,10 @@ public class Maneuver extends AIFlightModel {
 			break;
 
 		case 89: // 'Y'  // FISHTAIL_RIGHT
-			CT.AileronControl = -0.04F * Or.getKren();
+			CT.AileronControl = clamp11(-0.04F * Or.getKren());
 			if (Alt > 50F) {
 				dA = (getSpeedKMH() - 180F - Or.getTangage() * 10F - getVertSpeed() * 5F) * 0.004F;
-				CT.ElevatorControl = dA;
+				CT.ElevatorControl = clamp11(dA);
 			}
 			CT.RudderControl += 0.1F;
 			if (CT.RudderControl > 0.9F) CT.RudderControl = 0.9F;
@@ -4355,10 +4360,10 @@ public class Maneuver extends AIFlightModel {
 			break;
 
 		case 88: // 'X'  // FISHTAIL_LEFT
-			CT.AileronControl = -0.04F * Or.getKren();
+			CT.AileronControl = clamp11(-0.04F * Or.getKren());
 			if (Alt > 50F) {
 				dA = (getSpeedKMH() - 180F - Or.getTangage() * 10F - getVertSpeed() * 5F) * 0.004F;
-				CT.ElevatorControl = dA;
+				CT.ElevatorControl = clamp11(dA);
 			}
 			CT.RudderControl -= 0.1F;
 			if (CT.RudderControl < -0.9F) CT.RudderControl = -0.9F;
@@ -4432,7 +4437,7 @@ public class Maneuver extends AIFlightModel {
 			if (dA < -180F) dA += 360F;
 			if (Math.abs(dA) > 60F) set_maneuver(2);
 			dA = 0.03F * dA;
-			CT.AileronControl = dA;
+			CT.AileronControl = clamp11(dA);
 			CT.ElevatorControl = 1.0F;
 			if (mn_time > 1.5F + World.Rnd().nextFloat(0.0F, 2.0F)) pop();
 			break;
@@ -4673,9 +4678,10 @@ public class Maneuver extends AIFlightModel {
 		maxAOA = 15F;
 		minElevCoeff = 20F;
 		boolean bFJSS = ((actor instanceof TypeSupersonic) || (actor instanceof TypeFastJet));
+		boolean bHeli = (actor instanceof TypeHelicopter);
 		Point3d nloc = new Point3d();
 		nloc.set(Loc);
-		if(bFJSS) actor.futurePosition(3.0F, nloc);  // get 3.0 seconds future position
+		if (bFJSS) actor.futurePosition(3.0F, nloc);  // get 3.0 seconds future position
 		switch (submaneuver) {
 		case 0: // '\0'
 			setCheckGround(true);
@@ -4772,7 +4778,10 @@ public class Maneuver extends AIFlightModel {
 						setSpeedMode(6);
 					} else {
 						setSpeedMode(4);
-						smConstSpeed = 100F;
+						if (bHeli)
+							smConstSpeed = 66F;
+						else
+							smConstSpeed = 100F;
 					}
 				}
 				if (f3 > (bFJSS ? 1150F : 1000F)) farTurnToDirection(8F);
@@ -4808,7 +4817,10 @@ public class Maneuver extends AIFlightModel {
 					setSpeedMode(6);
 				} else {
 					setSpeedMode(4);
-					smConstSpeed = 100F;
+					if (bHeli)
+						smConstSpeed = 66F;
+					else
+						smConstSpeed = 100F;
 				}
 			}
 			if (f4 > (bFJSS ? 1150F : 1000F)) farTurnToDirection(8F);
@@ -4895,7 +4907,10 @@ public class Maneuver extends AIFlightModel {
 			}
 			else {
 				setSpeedMode(4);
-				smConstSpeed = 100F;
+				if (bHeli)
+					smConstSpeed = 66F;
+				else
+					smConstSpeed = 100F;
 			}
 			break;
 
@@ -4919,6 +4934,8 @@ public class Maneuver extends AIFlightModel {
 			float tempCS = CruiseSpeed;
 			if (tempCS > 200F) tempCS = 200F;
 			smConstSpeed = tempCS;
+		} else if (actor instanceof TypeHelicopter) {
+			smConstSpeed = 72F;
 		} else {
 			smConstSpeed = 120F;
 		}
@@ -4997,9 +5014,10 @@ public class Maneuver extends AIFlightModel {
 					push(10);
 					pop();
 				}
-				if (Math.abs(((Tuple3d) (Ve)).y) > 0.10000000149011612D) CT.AileronControl = -(float) Math.atan2(((Tuple3d) (Ve)).y, ((Tuple3d) (Ve)).z) - 0.016F * super.Or.getKren();
-				else CT.AileronControl = -(float) Math.atan2(((Tuple3d) (Ve)).y, ((Tuple3d) (Ve)).x) - 0.016F * super.Or.getKren();
-				if (Math.abs(((Tuple3d) (Ve)).y) > 0.0010000000474974513D) CT.RudderControl = -98F * (float) Math.atan2(((Tuple3d) (Ve)).y, ((Tuple3d) (Ve)).x);
+				if (Math.abs(((Tuple3d) (Ve)).y) > 0.10000000149011612D) CT.AileronControl = clamp11(-(float) Math.atan2(((Tuple3d) (Ve)).y, ((Tuple3d) (Ve)).z) - 0.016F * super.Or.getKren());
+				else CT.AileronControl = clamp11(-(float) Math.atan2(((Tuple3d) (Ve)).y, ((Tuple3d) (Ve)).x) - 0.016F * super.Or.getKren());
+				if (Math.abs(((Tuple3d) (Ve)).y) > 0.0010000000474974513D)
+					CT.RudderControl = clamp11(((actor instanceof TypeHelicopter) ? -49F : -98F) * (float) Math.atan2(((Tuple3d) (Ve)).y, ((Tuple3d) (Ve)).x));
 				else CT.RudderControl = 0.0F;
 				if ((double) CT.RudderControl * ((Tuple3d) (super.W)).z > 0.0D) super.W.z = 0.0D;
 				else super.W.z *= 1.0399999618530273D;
@@ -5017,6 +5035,7 @@ public class Maneuver extends AIFlightModel {
 				if (getOverload() > maxG || super.AOA > f1 || CT.ElevatorControl > f7) CT.ElevatorControl -= 0.2F * f;
 				else CT.ElevatorControl += 0.2F * f;
 			}
+			CT.ElevatorControl = clamp11(CT.ElevatorControl);
 		}
 	}
 
@@ -5359,7 +5378,10 @@ public class Maneuver extends AIFlightModel {
 				smConstSpeed = tempCS;
 			} else {
 				setSpeedMode(4);
-				smConstSpeed = 120F;
+				if (actor instanceof TypeHelicopter)
+					smConstSpeed = 75F;
+				else
+					smConstSpeed = 120F;
 			}
 			Ve.set(actorTarg.pos.getAbsPoint());
 			Ve.sub(super.Loc);
@@ -5368,8 +5390,8 @@ public class Maneuver extends AIFlightModel {
 			if (f1 < 0.0F) f1 = 0.0F;
 			Ve.z += 250D;
 			float f2 = (float) Math.sqrt(((Tuple3d) (Ve)).x * ((Tuple3d) (Ve)).x + ((Tuple3d) (Ve)).y * ((Tuple3d) (Ve)).y) + RandomVal * (2.75F - (float) super.Skill);
-			if (((Tuple3d) (Ve)).z < (double) (-0.1F * f2)) Ve.z = -0.1F * f2;
-			if ((double) Alt + ((Tuple3d) (Ve)).z < 250D) Ve.z = 250F - Alt;
+			if (((Tuple3d) (Ve)).z < (double) (-0.1F * f2)) Ve.z = (double) (-0.1F * f2);
+			if ((double) Alt + ((Tuple3d) (Ve)).z < 250D) Ve.z = (double) (250F - Alt);
 			if (Alt < 50F) {
 				push(10);
 				pop();
@@ -5495,9 +5517,9 @@ public class Maneuver extends AIFlightModel {
 			float f5 = 0.0F;
 			f5 = Alt / 120F;
 			f5 *= 0.33333F;
-			Vtarg.x += (float) tmpV3d.x * f5 * (float) Skill;
-			Vtarg.y += (float) tmpV3d.y * f5 * (float) Skill;
-			Vtarg.z += (float) tmpV3d.z * f5 * (float) Skill;
+			Vtarg.x += tmpV3d.x * (double) f5 * (double) Skill;
+			Vtarg.y += tmpV3d.y * (double) f5 * (double) Skill;
+			Vtarg.z += tmpV3d.z * (double) f5 * (double) Skill;
 		}
 		Ve.set(Vtarg);
 		Ve.sub(Loc);
@@ -5556,9 +5578,10 @@ public class Maneuver extends AIFlightModel {
 				f2 -= 180F;
 				if (f2 < -180F) f2 += 360F;
 			}
-			CT.AileronControl = (float) ((double) (-0.04F * f2) - 0.5D * getW().x);
+			CT.AileronControl = clamp11(-0.04F * f2 - 0.5F * (float) getW().x);
 			if (getOverload() < 4F) CT.ElevatorControl += 0.3F * f;
 			else CT.ElevatorControl -= 0.3F * f;
+			CT.ElevatorControl = clamp11(CT.ElevatorControl);
 			if (sub_Man_Count > 30 && Or.getTangage() < -90F || sub_Man_Count > 150) {
 				sub_Man_Count = 0;
 				submaneuver++;
@@ -5660,9 +5683,9 @@ public class Maneuver extends AIFlightModel {
 			double d1 = Math.sqrt(0.2040D * Loc.z);
 			double d2 = 1.0D * d1 * (double) getSpeed();
 			double d3 = ((double) (f12 + f5) - d2) / (double) f7;
-			Vtarg.x += (float) (tmpV3d.x * d3);
-			Vtarg.y += (float) (tmpV3d.y * d3);
-			Vtarg.z = f4;
+			Vtarg.x += tmpV3d.x * d3;
+			Vtarg.y += tmpV3d.y * d3;
+			Vtarg.z = (double) f4;
 			if (Loc.z < 30D) Vtarg.z += 3D * (30D - Loc.z);
 			Vtarg.add(TargDevV);
 		}
@@ -5673,7 +5696,7 @@ public class Maneuver extends AIFlightModel {
 		Vpl.set(Vwld);
 		Vpl.normalize();
 		if (Alt < f4 - 5F) {
-			if (Vwld.z < 0.0D) Vwld.z += (f4 - Alt) * 0.25F;
+			if (Vwld.z < 0.0D) Vwld.z += (double) ((f4 - Alt) * 0.25F);
 			if (Alt < 8F) set_maneuver(2);
 			if (Alt < 20F && f2 < 75F) set_maneuver(2);
 		} else if (Alt > f4 + 5F && submaneuver == 1 && Vwld.z > 0.0D) Vwld.z--;
@@ -5908,7 +5931,10 @@ public class Maneuver extends AIFlightModel {
 			if (tempCS > 200F) tempCS = 200F;
 			smConstSpeed = tempCS;
 		} else {
-			smConstSpeed = 120F;
+			if (actor instanceof TypeHelicopter)
+				smConstSpeed = 66F;
+			else
+				smConstSpeed = 120F;
 		}
 		minElevCoeff = 20F;
 		Ve.set(actorTarg.pos.getAbsPoint());
@@ -6151,8 +6177,8 @@ public class Maneuver extends AIFlightModel {
 
 		case 1: // '\001'
 			setSpeedMode(11);
-			CT.AileronControl = -0.04F * Or.getKren();
-			CT.ElevatorControl = -0.04F * (Or.getTangage() + 5F);
+			CT.AileronControl = clamp11(-0.04F * Or.getKren());
+			CT.ElevatorControl = clamp11(-0.04F * (Or.getTangage() + 5F));
 			CT.RudderControl = 0.0F;
 			break;
 
@@ -6318,8 +6344,8 @@ public class Maneuver extends AIFlightModel {
 
 		case 1: // '\001'
 			setSpeedMode(11);
-			CT.AileronControl = -0.04F * Or.getKren();
-			CT.ElevatorControl = -0.04F * (Or.getTangage() + 5F);
+			CT.AileronControl = clamp11(-0.04F * Or.getKren());
+			CT.ElevatorControl = clamp11(-0.04F * (Or.getTangage() + 5F));
 			CT.RudderControl = 0.0F;
 			break;
 
@@ -7188,9 +7214,9 @@ public class Maneuver extends AIFlightModel {
 	}
 
 	private void turnToDirection(float f) {
-		if (Math.abs(Ve.y) > 0.10000000149011612D) CT.AileronControl = -(float) Math.atan2(Ve.y, Ve.z) - 0.016F * Or.getKren();
-		else CT.AileronControl = -(float) Math.atan2(Ve.y, Ve.x) - 0.016F * Or.getKren();
-		CT.RudderControl = -10F * (float) Math.atan2(Ve.y, Ve.x);
+		if (Math.abs(Ve.y) > 0.10000000149011612D) CT.AileronControl = clamp11(-(float) Math.atan2(Ve.y, Ve.z) - 0.016F * Or.getKren());
+		else CT.AileronControl = clamp11(-(float) Math.atan2(Ve.y, Ve.x) - 0.016F * Or.getKren());
+		CT.RudderControl = clamp11(-10F * (float) Math.atan2(Ve.y, Ve.x));
 		if ((double) CT.RudderControl * W.z > 0.0D) W.z = 0.0D;
 		else W.z *= 1.0399999618530273D;
 		float f1 = (float) Math.atan2(Ve.z, Ve.x);
@@ -7206,6 +7232,7 @@ public class Maneuver extends AIFlightModel {
 		}
 		if (getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > f1) CT.ElevatorControl -= 0.3F * f;
 		else CT.ElevatorControl += 0.3F * f;
+		CT.ElevatorControl = clamp11(CT.ElevatorControl);
 	}
 
 	private void farTurnToDirection() {
@@ -7216,7 +7243,9 @@ public class Maneuver extends AIFlightModel {
 		Vpl.set(1.0D, 0.0D, 0.0D);
 		tmpV3f.cross(Vpl, Ve);
 		Or.transform(tmpV3f);
-		CT.RudderControl = -10F * (float) Math.atan2(Ve.y, Ve.x) + 1.0F * (float) W.y;
+		float ftemprd = (float) (Math.atan2(Ve.y, Ve.x) + 1.0F * (float) W.y);
+		if (actor instanceof TypeHelicopter) ftemprd *= 0.4F;
+		CT.RudderControl = clamp11(ftemprd);
 		float f7 = (getSpeed() / Vmax) * 45F;
 		if (f7 > 85F) f7 = 85F;
 		float f8 = (float) Ve.x;
@@ -7240,20 +7269,21 @@ public class Maneuver extends AIFlightModel {
 		if (f10 < 0.0F || Ve.x < 0.0D) f10 = 0.0F;
 		float f3 = f10 * f2 + (1.0F - f10) * f1;
 		float f6 = f10 * f5 + (1.0F - f10) * f4;
-		CT.AileronControl = f3;
-		CT.ElevatorControl = f6;
+		CT.AileronControl = clamp11(f3);
+		CT.ElevatorControl = clamp11(f6);
 	}
 
 	private void turnBaby(float f, float f1, float f2) {
 		if (Ve.x < 0.0099999997764825821D) Ve.x = 0.0099999997764825821D;
 		if (sub_Man_Count == 0) oldVe.set(Ve);
 		minElevCoeff = 20F;
-		CT.RudderControl = (float) (-3D * Math.atan2(Ve.y, Ve.x) + 0.050D * (Ve.y - oldVe.y));
+		CT.RudderControl = clamp11((float) (-3D * Math.atan2(Ve.y, Ve.x) + 0.050D * (Ve.y - oldVe.y)));
 		float f3 = (float) (10D * Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - oldVe.z));
-		CT.AileronControl = (-3F * (float) Math.atan2(Ve.y, Ve.x) - 0.006F * Or.getKren()) + 0.3F * (float) W.x;
-		if (Math.abs(CT.ElevatorControl - f3) < f2 * f1) CT.ElevatorControl = f3;
+		CT.AileronControl = clamp11((-3F * (float) Math.atan2(Ve.y, Ve.x) - 0.006F * Or.getKren()) + 0.3F * (float) W.x);
+		if (Math.abs(CT.ElevatorControl - f3) < f2 * f1) CT.ElevatorControl = clamp11(f3);
 		else if (CT.ElevatorControl < f3) CT.ElevatorControl += f2 * f1;
 		else CT.ElevatorControl -= 0.2F * f2 * f1;
+		CT.ElevatorControl = clamp11(CT.ElevatorControl);
 		if (AOA < AOA_Crit * 0.75F && AOA > 0.0F) nShakeMe(flying, Skill);
 		oldVe.set(Ve);
 	}
@@ -7262,21 +7292,23 @@ public class Maneuver extends AIFlightModel {
 		if (Ve.x < 0.0099999997764825821D) Ve.x = 0.0099999997764825821D;
 		if (sub_Man_Count == 0) oldVe.set(Ve);
 		if (Ve.x > 0.94999998807907104D) {
-			CT.RudderControl = (float) (-30D * Math.atan2(Ve.y, Ve.x) + 1.5D * (Ve.y - oldVe.y));
+			float ftemprd = (float) (-30D * Math.atan2(Ve.y, Ve.x) + 1.5D * (Ve.y - oldVe.y));
+			if (actor instanceof TypeHelicopter) ftemprd *= 0.4F;
+			CT.RudderControl = clamp11(ftemprd);
 			float f3;
 			if (Ve.z > 0.0D || CT.RudderControl > 0.9F) {
 				f3 = (float) (10D * Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - oldVe.z));
-				CT.AileronControl = (-30F * (float) Math.atan2(Ve.y, Ve.x) - 0.02F * Or.getKren()) + 5F * (float) W.x;
+				CT.AileronControl = clamp11((-30F * (float) Math.atan2(Ve.y, Ve.x) - 0.02F * Or.getKren()) + 5F * (float) W.x);
 			} else {
 				f3 = (float) (5D * Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - oldVe.z));
-				CT.AileronControl = (-5F * (float) Math.atan2(Ve.y, Ve.x) - 0.02F * Or.getKren()) + 5F * (float) W.x;
+				CT.AileronControl = clamp11((-5F * (float) Math.atan2(Ve.y, Ve.x) - 0.02F * Or.getKren()) + 5F * (float) W.x);
 			}
 			if (Ve.x > (double) (1.0F - 0.005F * (float) Skill)) {
 				tmpOr.set(Or);
 				tmpOr.increment((float) Math.toDegrees(Math.atan2(Ve.y, Ve.x)), (float) Math.toDegrees(Math.atan2(Ve.z, Ve.x)), 0.0F);
 				Or.interpolate(tmpOr, 0.1F);
 			}
-			if (Math.abs(CT.ElevatorControl - f3) < f2 * f1) CT.ElevatorControl = f3;
+			if (Math.abs(CT.ElevatorControl - f3) < f2 * f1) CT.ElevatorControl = clamp11(f3);
 			else if (CT.ElevatorControl < f3) CT.ElevatorControl += f2 * f1;
 			else CT.ElevatorControl -= f2 * f1;
 		} else {
@@ -7284,21 +7316,24 @@ public class Maneuver extends AIFlightModel {
 			else if (!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
 			float f5 = 0.6F - (float) Ve.z;
 			if (f5 < 0.0F) f5 = 0.0F;
-			CT.RudderControl = (float) (-30D * Math.atan2(Ve.y, Ve.x) * (double) f5 + 1.0D * (Ve.y - oldVe.y) * Ve.x + 0.5D * W.z);
+			float ftemprd = (float) (-30D * Math.atan2(Ve.y, Ve.x) * (double) f5 + 1.0D * (Ve.y - oldVe.y) * Ve.x + 0.5D * W.z);
+			if (actor instanceof TypeHelicopter) ftemprd *= 0.4F;
+			CT.RudderControl = clamp11(ftemprd);
 			float f4;
 			if (Ve.z > 0.0D) {
 				f4 = (float) (10D * Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - oldVe.z) + 0.5D * W.y);
 				if (f4 < 0.0F) f4 = 0.0F;
-				CT.AileronControl = (float) ((-20D * Math.atan2(Ve.y, Ve.z) - 0.050D * (double) Or.getKren()) + 5D * W.x);
+				CT.AileronControl = clamp11((float) ((-20D * Math.atan2(Ve.y, Ve.z) - 0.050D * (double) Or.getKren()) + 5D * W.x));
 			} else {
 				f4 = (float) (-5D * Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - oldVe.z) + 0.5D * W.y);
-				CT.AileronControl = (float) ((-20D * Math.atan2(Ve.y, Ve.z) - 0.050D * (double) Or.getKren()) + 5D * W.x);
+				CT.AileronControl = clamp11((float) ((-20D * Math.atan2(Ve.y, Ve.z) - 0.050D * (double) Or.getKren()) + 5D * W.x));
 			}
 			if (f4 < 0.0F) f4 = 0.0F;
-			if (Math.abs(CT.ElevatorControl - f4) < f2 * f1) CT.ElevatorControl = f4;
+			if (Math.abs(CT.ElevatorControl - f4) < f2 * f1) CT.ElevatorControl = clamp11(f4);
 			else if (CT.ElevatorControl < f4) CT.ElevatorControl += 0.3F * f1;
 			else CT.ElevatorControl -= 0.3F * f1;
 		}
+		CT.ElevatorControl = clamp11(CT.ElevatorControl);
 		float f6 = 0.054F * (600F - f);
 		if (f6 < 4F) f6 = 4F;
 		if (f6 > AOA_Crit) f6 = AOA_Crit;
@@ -7315,7 +7350,7 @@ public class Maneuver extends AIFlightModel {
 		else if (Ve.x < 0.0099999997764825821D) Ve.x = 0.0099999997764825821D;
 		if (sub_Man_Count == 0) oldVe.set(Ve);
 		if (Ve.x > 0.94999998807907104D) {
-			CT.RudderControl = (float) (-10D * Math.atan2(Ve.y, Ve.x) + 1.5D * (Ve.y - oldVe.y));
+			CT.RudderControl = clamp11((float) (-10D * Math.atan2(Ve.y, Ve.x) + 1.5D * (Ve.y - oldVe.y)));
 			float f3;
 			float f5;
 			if (Ve.z > 0.0D || CT.RudderControl > 0.9F) {
@@ -7325,7 +7360,7 @@ public class Maneuver extends AIFlightModel {
 				f3 = (float) (5D * Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - oldVe.z));
 				f5 = (-5F * (float) Math.atan2(Ve.y, Ve.x) - 0.02F * Or.getKren()) + 5F * (float) W.x;
 			}
-			CT.AileronControl = f5;
+			CT.AileronControl = clamp11(f5);
 			if (Ve.x > (double) (1.0F - 0.005F * (float) Skill)) {
 				tmpOr.set(Or);
 				tmpOr.increment((float) Math.toDegrees(Math.atan2(Ve.y, Ve.x)), (float) Math.toDegrees(Math.atan2(Ve.z, Ve.x)), 0.0F);
@@ -7339,21 +7374,22 @@ public class Maneuver extends AIFlightModel {
 			else if (!CT.bHasFlapsControlSwitch) CT.FlapsControl = 0.0F;
 			float f6 = 0.6F - (float) Ve.z;
 			if (f6 < 0.0F) f6 = 0.0F;
-			CT.RudderControl = (float) (-30D * Math.atan2(Ve.y, Ve.x) * (double) f6 + 1.0D * (Ve.y - oldVe.y) * Ve.x + 0.5D * W.z);
+			CT.RudderControl = clamp11((float) (-30D * Math.atan2(Ve.y, Ve.x) * (double) f6 + 1.0D * (Ve.y - oldVe.y) * Ve.x + 0.5D * W.z));
 			float f4;
 			if (Ve.z > 0.0D) {
 				f4 = (float) (10D * Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - oldVe.z) + 0.5D * W.y);
 				if (f4 < 0.0F) f4 = 0.0F;
-				CT.AileronControl = (float) ((-20D * Math.atan2(Ve.y, Ve.z) - 0.050D * (double) Or.getKren()) + 5D * W.x);
+				CT.AileronControl = clamp11((float) ((-20D * Math.atan2(Ve.y, Ve.z) - 0.050D * (double) Or.getKren()) + 5D * W.x));
 			} else {
 				f4 = (float) (-5D * Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - oldVe.z) + 0.5D * W.y);
-				CT.AileronControl = (float) ((-20D * Math.atan2(Ve.y, Ve.z) - 0.050D * (double) Or.getKren()) + 5D * W.x);
+				CT.AileronControl = clamp11((float) ((-20D * Math.atan2(Ve.y, Ve.z) - 0.050D * (double) Or.getKren()) + 5D * W.x));
 			}
 			if (f4 < 0.0F) f4 = 0.0F;
 			if (Math.abs(CT.ElevatorControl - f4) < f2 * f1) CT.ElevatorControl = f4;
 			else if (CT.ElevatorControl < f4) CT.ElevatorControl += 0.3F * f1;
 			else CT.ElevatorControl -= 0.3F * f1;
 		}
+		CT.ElevatorControl = clamp11(CT.ElevatorControl);
 		float f7 = 0.054F * (600F - f);
 		if (f7 < 4F) f7 = 4F;
 		if (f7 > AOA_Crit) f7 = AOA_Crit;
@@ -7722,7 +7758,13 @@ public class Maneuver extends AIFlightModel {
 		boolean flag = false;
 		CT.setAfterburnerControl(false);
 		switch (speedMode) {
-		case 1: // '\001'
+		case 1: // '\001'  // STAY_ON_THE_TAIL
+			// By western, Helicopter has different decision
+			if (actor instanceof TypeHelicopter) {
+				f1 = helicopterThrottleControl(f);
+				break;
+			}
+
 			if (tailForStaying == null) {
 				f1 = 1.0F;
 			} else {
@@ -7773,11 +7815,23 @@ public class Maneuver extends AIFlightModel {
 			}
 			break;
 
-		case 2: // '\002'
+		case 2: // '\002'  // NOT_TOO_FAST
+			// By western, Helicopter has different decision
+			if (actor instanceof TypeHelicopter) {
+				f1 = helicopterThrottleControl(f);
+				break;
+			}
+
 			f1 = (float) (1.0D - 8.0000000000000007E-005D * (0.5D * Vwld.lengthSquared() - 9.800D * Ve.z - 0.5D * tailForStaying.Vwld.lengthSquared()));
 			break;
 
-		case 3: // '\003'
+		case 3: // '\003'  // FROM_WAYPOINT
+			// By western, Helicopter has different decision
+			if (actor instanceof TypeHelicopter) {
+				f1 = helicopterThrottleControl(f);
+				break;
+			}
+
 			f14 = -0.1F;
 			f1 = CT.PowerControl;
 			float fthrincr = 0.0F;
@@ -7844,34 +7898,52 @@ public class Maneuver extends AIFlightModel {
 			if (f1 < 0.35F && !AP.way.isLanding()) f1 = 0.35F;
 			break;
 
-		case 4: // '\004'
+		case 4: // '\004'  // CONST_SPEED
+			// By western, Helicopter has different decision
+			if (actor instanceof TypeHelicopter) {
+				f1 = helicopterThrottleControl(f);
+				break;
+			}
+
 			f1 = CT.PowerControl;
 			f1 = (float) ((double) f1 + ((double) (f4 * (smConstSpeed - Pitot.Indicator((float) Loc.z, getSpeed()))) - ((double) f5 * getLocalAccel().x) / 9.8100004196166992D) * (double) f);
 			if (f1 > 1.0F) f1 = 1.0F;
 			break;
 
-		case 5: // '\005'
+		case 5: // '\005'  // MIN_SPEED
+			// By western, Helicopter has different decision
+			if (actor instanceof TypeHelicopter) {
+				f1 = helicopterThrottleControl(f);
+				break;
+			}
+
 			f1 = CT.PowerControl;
 			if (!CT.bHasFlapsControlSwitch) CT.FlapsControl = 1.0F;
 			f1 += (f4 * (1.3F * VminFLAPS - Pitot.Indicator((float) Loc.z, getSpeed())) - f5 * getForwAccel()) * f;
 			break;
 
-		case 8: // '\b'
+		case 8: // '\b'  // ZERO_POWER
 			f1 = 0.0F;
 			break;
 
-		case 6: // '\006'
+		case 6: // '\006'  // MAX_SPEED
+			// By western, Helicopter has different decision
+			if (actor instanceof TypeHelicopter) {
+				f1 = helicopterThrottleControl(f);
+				break;
+			}
+
 			f1 = 1.0F;
 			f14 = 0.0F;
 			break;
 
-		case 9: // '\t'
+		case 9: // '\t'  // BOOST_ON
 			f1 = 1.1F;
 			CT.setAfterburnerControl(true);
 			f14 = 0.01F;
 			break;
 
-		case 11: // '\013'
+		case 11: // '\013'  // BOOST_FULL
 			f1 = 1.1F;
 			CT.setAfterburnerControl(true);
 			f14 = 0.04F;
@@ -7879,11 +7951,17 @@ public class Maneuver extends AIFlightModel {
 			maxThrottleAITakeoffavoidOH = 1.1F;
 			break;
 
-		case 7: // '\007'
+		case 7: // '\007'  // CONST_POWER
 			f1 = smConstPower;
 			break;
 
-		case 10: // '\n'
+		case 10: // '\n'  // FOLLOW_WITHOUT_FLAPS
+			// By western, Helicopter has different decision
+			if (actor instanceof TypeHelicopter) {
+				f1 = helicopterThrottleControl(f);
+				break;
+			}
+
 			if (tailForStaying == null) {
 				f1 = 1.0F;
 			} else {
@@ -7964,16 +8042,52 @@ public class Maneuver extends AIFlightModel {
 		else if (CT.PowerControl < f1) CT.setPowerControl(CT.getPowerControl() + 0.5F * f);
 		else CT.setPowerControl(CT.getPowerControl() - 0.5F * f);
 		float f28 = EI.engines[0].getCriticalW();
-		if (EI.engines[0].getw() > 0.9F * f28) {
+		if (!(actor instanceof TypeHelicopter && getVertSpeed() < -10.0F) && EI.engines[0].getw() > 0.9F * f28) {
 			float f2 = (10F * (f28 - EI.engines[0].getw())) / f28;
 			if (f2 < CT.PowerControl) CT.setPowerControl(f2);
 			if (CT.PowerControl < maxThrottleAITakeoffavoidOH) maxThrottleAITakeoffavoidOH = CT.PowerControl;
 		}
-		if (indSpeed > 0.8F * VmaxAllowed) {
+		if (!(actor instanceof TypeHelicopter) && indSpeed > 0.8F * VmaxAllowed) {
 			float f3 = (1.0F * (VmaxAllowed - indSpeed)) / VmaxAllowed;
 			if (f3 < CT.PowerControl) CT.setPowerControl(f3);
 		}
 	}
+
+	// +++ By western, Helicopter has different throttle decision
+	protected float helicopterThrottleControl(float f) {
+		float f14 = -0.1F;
+		float f1 = CT.PowerControl;
+		float fthrincrh = 0.05F * (AP.way.curr().z() - getAltitude()) - getVertSpeed();
+		if (Or.getTangage() < 0.0F)
+			fthrincrh += cvt(Math.abs(Or.getTangage()), 2F, 8F, 0.0F, 0.1F);
+		else if (Or.getTangage() < 5.0F)
+			fthrincrh += cvt(Math.abs(Or.getTangage()), 3F, 5F, 0.0F, 0.05F);
+		else {
+			if (AP.way.curr().z() + 50F < getAltitude())
+				fthrincrh += cvt(Math.abs(Or.getTangage()), 5F, 10F, 0.05F, -0.15F);
+			else if (AP.way.curr().z() + 10F < getAltitude())
+				fthrincrh += cvt(Math.abs(Or.getTangage()), 5F, 10F, 0.05F, -0.05F);
+			else
+				fthrincrh += cvt(Math.abs(Or.getTangage()), 5F, 10F, 0.05F, 0.0F);
+		}
+		if (getAltitude() - (float) Engine.land().HQ_Air(Loc.x, Loc.y) < 100F) {
+			float restsec = (getAltitude() - (float) Engine.land().HQ_Air(Loc.x, Loc.y)) / getVertSpeed();
+			fthrincrh += cvt(restsec, 1F, 20F, 1.0F, 0.01F);
+		}
+		if (fthrincrh > 0F) fthrincrh *= 0.25F;
+		else fthrincrh *= 0.1F;
+		if (f1 < 0.5F && getVertSpeed() < -5.0F && AP.way.curr().z() - 10F > getAltitude()) fthrincrh += 0.06F;
+		f1 += fthrincrh;
+
+		if (speedMode == 2) f1 -= 0.04F;
+		if (speedMode == 5) f1 -= 0.08F;
+		if (speedMode == 6) f1 += 0.12F;
+		if (f1 > 1.0F) f1 = 1.0F;
+		if (f1 < 0.1F) f1 = 0.1F;
+
+		return f1;
+	}
+	// --- By western, Helicopter has different throttle decision
 
 	private void setRandomTargDeviation(float f) {
 		if (isTick(16, 0)) {
@@ -8057,9 +8171,9 @@ public class Maneuver extends AIFlightModel {
 	}
 
 	private void emergencyTurnToDirection(float f) {
-		if (Math.abs(Ve.y) > 0.10000000149011612D) CT.AileronControl = -(float) Math.atan2(Ve.y, Ve.z) - 0.016F * Or.getKren();
-		else CT.AileronControl = -(float) Math.atan2(Ve.y, Ve.x) - 0.016F * Or.getKren();
-		CT.RudderControl = -10F * (float) Math.atan2(Ve.y, Ve.x);
+		if (Math.abs(Ve.y) > 0.10000000149011612D) CT.AileronControl = clamp11(-(float) Math.atan2(Ve.y, Ve.z) - 0.016F * Or.getKren());
+		else CT.AileronControl = clamp11(-(float) Math.atan2(Ve.y, Ve.x) - 0.016F * Or.getKren());
+		CT.RudderControl = clamp11(-10F * (float) Math.atan2(Ve.y, Ve.x));
 		if ((double) CT.RudderControl * W.z > 0.0D) W.z = 0.0D;
 		else W.z *= 1.0399999618530273D;
 	}
@@ -8106,7 +8220,7 @@ public class Maneuver extends AIFlightModel {
 		smConstSpeed = VminFLAPS * 1.25F;
 		if (Alt < 500F && ((actor instanceof TypeGlider) || (actor instanceof TypeSeaPlane))) CT.GearControl = 1.0F;
 		if (Alt < 10F) {
-			CT.AileronControl = -0.04F * Or.getKren();
+			CT.AileronControl = clamp11(-0.04F * Or.getKren());
 			setSpeedMode(4);
 			smConstSpeed = VminFLAPS * 1.1F;
 			if (Alt < 5F) setSpeedMode(8);
@@ -8131,7 +8245,7 @@ public class Maneuver extends AIFlightModel {
 		}
 		dA = 0.2F * (getSpeed() - Vmin * 1.3F) - 0.8F * (getAOA() - 5F);
 		if (Alt < 40F) {
-			CT.AileronControl = -0.04F * Or.getKren();
+			CT.AileronControl = clamp11(-0.04F * Or.getKren());
 			CT.RudderControl = 0.0F;
 			if ((actor instanceof BI_1) || (actor instanceof ME_163B1A)) CT.GearControl = 1.0F;
 			float f1;
@@ -8172,10 +8286,10 @@ public class Maneuver extends AIFlightModel {
 					emergencyTurnToDirection(f);
 					if ((double) Alt > d) submaneuver = 0;
 				} else {
-					CT.AileronControl = -0.04F * Or.getKren();
+					CT.AileronControl = clamp11(-0.04F * Or.getKren());
 				}
 			} else {
-				CT.AileronControl = -0.04F * Or.getKren();
+				CT.AileronControl = clamp11(-0.04F * Or.getKren());
 			}
 			if (Or.getTangage() > -1F) dA -= 0.1F * (Or.getTangage() + 1.0F);
 			if (Or.getTangage() < -10F) dA -= 0.1F * (Or.getTangage() + 10F);
@@ -8587,6 +8701,12 @@ public class Maneuver extends AIFlightModel {
 			if (CT.bHasGearControl) return CT.getGearL() == 1.0F && CT.getGearR() == 1.0F;
 			else return true;
 		}
+	}
+
+	private float clamp11(float f) {
+		if (f < -1.0F) f = -1.0F;
+		else if (f > 1.0F) f = 1.0F;
+		return f;
 	}
 
 	// TODO: +++ CTO Mod 4.12 +++
