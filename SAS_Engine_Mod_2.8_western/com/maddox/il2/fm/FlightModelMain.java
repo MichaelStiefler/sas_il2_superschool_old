@@ -165,6 +165,12 @@ public class FlightModelMain extends FMMath {
 	public float VmaxH;
 	public float Vmin;
 	public float HofVmax;
+    
+    // TODO: Added by SAS~Storebror: +++ Additional parameter for max flaps & gear speeds +++
+    private float               vMaxGear;
+    private float               vJamFlaps;
+    // TODO: Added by SAS~Storebror: --- Additional parameter for max flaps & gear speeds ---
+    
 	public float VmaxFLAPS;
 	public float VminFLAPS;
 	public float VmaxAllowed;
@@ -752,15 +758,24 @@ public class FlightModelMain extends FMMath {
 		Range = sectfile.get(s2, "Range", 800F);
 		CruiseSpeed = sectfile.get(s2, "CruiseSpeed", 0.7F * Vmax);
 		FuelConsumption = M.maxFuel / (0.64F * ((Range / CruiseSpeed) * 3600F) * (float) EI.getNum());
-		Vmax *= 0.2777778F;
-		VmaxH *= 0.2777778F;
-		Vmin *= 0.2777778F;
-		VmaxFLAPS *= 0.2777778F;
+        
+        // TODO: Added by SAS~Storebror: +++ Additional parameter for max flaps & gear speeds +++
+        this.vMaxGear = sectfile.get(s2, "VmaxGEAR", 405F);
+        this.vJamFlaps = sectfile.get(s2, "VjamFLAPS", -1F);
+        if (this.vJamFlaps < 0F) this.vJamFlaps = Math.max(this.VmaxFLAPS, 300F);
+        this.vMaxGear /= 3.6F;
+        this.vJamFlaps /= 3.6F;
+        // TODO: Added by SAS~Storebror: --- Additional parameter for max flaps & gear speeds ---
+        
+		Vmax /= 3.6F;
+		VmaxH /= 3.6F;
+		Vmin /= 3.6F;
+		VmaxFLAPS /= 3.6F;
 		VminFLAPS *= 0.2416667F;
-		VmaxAllowed *= 0.2777778F;
-		if(Vlanding > 0F) Vlanding *= 0.2777778F;
-		if(VtakeoffRot > 0F) VtakeoffRot *= 0.2777778F;
-		if(VminAI > 0F) VminAI *= 0.2777778F;
+		VmaxAllowed /= 3.6F;
+		if(Vlanding > 0F) Vlanding /= 3.6F;
+		if(VtakeoffRot > 0F) VtakeoffRot /= 3.6F;
+		if(VminAI > 0F) VminAI /= 3.6F;
 		Fusel.lineCyCoeff = 0.02F;
 		Fusel.AOAMinCx_Shift = 0.0F;
 		Fusel.Cy0_0 = 0.0F;
@@ -1126,7 +1141,13 @@ public class FlightModelMain extends FMMath {
 		speedFile = new String();
 		craftFile = new String();
 		Operate = 0xfffffffffffL;
-		load(s);
+        
+        // TODO: Added by SAS~Storebror: +++ Additional parameter for max flaps & gear speeds +++
+        this.vMaxGear = 405F;
+        this.vJamFlaps = 300F;
+        // TODO: Added by SAS~Storebror: --- Additional parameter for max flaps & gear speeds ---
+
+        load(s);
 		init_G_Limits();
 	}
 
@@ -2304,6 +2325,24 @@ public class FlightModelMain extends FMMath {
 		}
 
 	}
+
+    // TODO: Added by SAS~Storebror: +++ Additional parameter for max flaps & gear speeds +++
+    public float getvMaxGear() {
+        return vMaxGear;
+    }
+
+    public void setvMaxGear(float vMaxGear) {
+        this.vMaxGear = vMaxGear;
+    }
+
+    public float getvJamFlaps() {
+        return vJamFlaps;
+    }
+
+    public void setvJamFlaps(float vJamFlaps) {
+        this.vJamFlaps = vJamFlaps;
+    }
+    // TODO: Added by SAS~Storebror: --- Additional parameter for max flaps & gear speeds ---
 
 	private static final int FM_LOGLEVEL_ERROR = 0x1;
 	private static final int FM_LOGLEVEL_DEBUGFM = 0x2;
