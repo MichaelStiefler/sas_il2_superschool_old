@@ -1,11 +1,13 @@
 // US CBU-87 Cluster bomb
 
+// TODO: Edited by SAS~Storebror 0n 2019-12-26: Reduce number of spawned bomblets to reasonable figures, bomblet vector calculation fixed, code cleanup.
+
 package com.maddox.il2.objects.weapons;
 
-import com.maddox.JGP.*;
-import com.maddox.il2.ai.RangeRandom;
-import com.maddox.il2.ai.World;
-import com.maddox.il2.engine.*;
+import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Vector3d;
+import com.maddox.il2.engine.Actor;
+import com.maddox.il2.engine.Orient;
 import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
@@ -14,10 +16,6 @@ import com.maddox.sas1946.il2.util.TrueRandom;
 
 public class BombCBU87_gn16 extends Bomb
 {
-
-    public BombCBU87_gn16()
-    {
-    }
 
     public void start()
     {
@@ -51,22 +49,22 @@ public class BombCBU87_gn16 extends Bomb
 
     private void doFireContaineds()
     {
-        Explosions.AirFlak(super.pos.getAbsPoint(), 1);
+        Explosions.AirFlak(pos.getAbsPoint(), 1);
         Actor actor = null;
         if(Actor.isValid(getOwner()))
             actor = getOwner();
-        Point3d point3d = new Point3d(super.pos.getAbsPoint());
+        Point3d point3d = new Point3d(pos.getAbsPoint());
         Orient orient = new Orient();
         Vector3d vector3d = new Vector3d();
-        for(int i = 0; i < 202; i++)
+        for(int i = 0; i < 51; i++)
         {
             orient.set(TrueRandom.nextFloat(0.0F, 360F), TrueRandom.nextFloat(-90F, 90F), TrueRandom.nextFloat(-180F, 180F));
             getSpeed(vector3d);
             vector3d.add(TrueRandom.nextDouble(-15D, 15D), TrueRandom.nextDouble(-15D, 15D), TrueRandom.nextDouble(-15D, 15D));
             BombletBLU97 bombletblu97 = new BombletBLU97();
-            ((Actor) (bombletblu97)).pos.setUpdateEnable(true);
-            ((Actor) (bombletblu97)).pos.setAbs(point3d, orient);
-            ((Actor) (bombletblu97)).pos.reset();
+            bombletblu97.pos.setUpdateEnable(true);
+            bombletblu97.pos.setAbs(point3d, orient);
+            bombletblu97.pos.reset();
             bombletblu97.start();
             bombletblu97.setOwner(actor, false, false, false);
             bombletblu97.setSpeed(vector3d);
@@ -89,6 +87,6 @@ public class BombCBU87_gn16 extends Bomb
         Property.set(class1, "kalibr", 0.396F);
         Property.set(class1, "massa", 430.9F);
         Property.set(class1, "sound", "weapon.bomb_std");
- 		Property.set(class1, "dragCoefficient", 0.36F); // Aerodynamic Drag Coefficient, Stock WWII bombs=1.0F
+ 		Property.set(class1, "dragCoefficient", 0.36F);
     }
 }
