@@ -26,14 +26,14 @@
 
 */
 
+// TODO: Edited by SAS~Storebror 0n 2019-12-26: Reduce number of spawned bomblets to reasonable figures, bomblet vector calculation fixed, code cleanup.
 
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
-import com.maddox.il2.ai.RangeRandom;
-import com.maddox.il2.ai.World;
-import com.maddox.il2.engine.*;
+import com.maddox.il2.engine.Actor;
+import com.maddox.il2.engine.Orient;
 import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
@@ -42,10 +42,6 @@ import com.maddox.sas1946.il2.util.TrueRandom;
 
 public class BombCBU24_gn16 extends Bomb
 {
-
-    public BombCBU24_gn16()
-    {
-    }
 
     public void matGray()
     {
@@ -84,15 +80,15 @@ public class BombCBU24_gn16 extends Bomb
         Point3d point3d = new Point3d(pos.getAbsPoint());
         Orient orient = new Orient();
         Vector3d vector3d = new Vector3d();
-        for(int i = 0; i < 660; i++)
+        for(int i = 0; i < 66; i++)
         {
             orient.set(TrueRandom.nextFloat(0.0F, 360F), TrueRandom.nextFloat(-90F, 90F), TrueRandom.nextFloat(-180F, 180F));
             getSpeed(vector3d);
             vector3d.add(TrueRandom.nextDouble(-15D, 15D), TrueRandom.nextDouble(-15D, 15D), TrueRandom.nextDouble(-15D, 15D));
             BombletBLU26 bombletblu26 = new BombletBLU26();
-            ((Bomb) (bombletblu26)).pos.setUpdateEnable(true);
-            ((Bomb) (bombletblu26)).pos.setAbs(point3d, orient);
-            ((Bomb) (bombletblu26)).pos.reset();
+            bombletblu26.pos.setUpdateEnable(true);
+            bombletblu26.pos.setAbs(point3d, orient);
+            bombletblu26.pos.reset();
             bombletblu26.start();
             bombletblu26.setOwner(actor, false, false, false);
             bombletblu26.setSpeed(vector3d);
@@ -105,7 +101,7 @@ public class BombCBU24_gn16 extends Bomb
 
     static 
     {
-        Class class1 = com.maddox.il2.objects.weapons.BombCBU24_gn16.class;
+        Class class1 = BombCBU24_gn16.class; // TODO: surplus full package name removed
         Property.set(class1, "mesh", "3DO/Arms/CBU24_gn16/mono.sim");
         Property.set(class1, "radius", 1.0F);
         Property.set(class1, "power", 0.15F);
